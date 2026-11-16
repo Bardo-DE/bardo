@@ -31,6 +31,7 @@ pub struct Fraction(pub u16);
 pub struct Count(pub u16);
 
 /// Micrometres on the touch surface: every length and position threshold.
+///
 /// Integers, like every other key, so a file compares exactly; the gesture core rounds them
 /// onto its grid per axis (`sensor::lattice`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -43,6 +44,7 @@ pub struct Um(pub i32);
 pub struct Units(pub i32);
 
 impl Ms {
+    #[must_use]
     pub fn duration(self) -> Duration {
         Duration::from_millis(u64::from(self.0))
     }
@@ -50,12 +52,14 @@ impl Ms {
 
 impl Fraction {
     /// The ratio as a float; 1500 is exactly 1.5.
+    #[must_use]
     pub fn ratio(self) -> f64 {
         f64::from(self.0) / 1000.0
     }
 }
 
 impl Percent {
+    #[must_use]
     pub fn share(self) -> f64 {
         f64::from(self.0) / 100.0
     }

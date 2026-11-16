@@ -86,6 +86,7 @@ pub struct Config {
 impl Config {
     /// A configuration over `dirs` on `bus`: the configuration file at `dirs.config`, Tailscale
     /// at its usual socket, callers read from `/proc`.
+    #[must_use]
     pub fn new(dirs: Dirs, bus: BusTarget) -> Self {
         let programs = ProgramSearch::system_with_installs(engine_probe::Roots::new(
             PathBuf::from(engine_probe::Roots::SYSTEM),
@@ -400,7 +401,7 @@ impl Daemon {
         let relayed = |one: &LocalModel| {
             one.attached
                 .as_ref()
-                .is_some_and(|target| target.is_relayed())
+                .is_some_and(inference_router::attached::Target::is_relayed)
         };
         // A model another computer lends is not also one this computer runs: the one here stays.
         attached.retain(|one| {

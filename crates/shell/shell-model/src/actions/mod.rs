@@ -95,6 +95,7 @@ impl Panel {
     /// True when the panel's action opens it and leaves it open (the power menu stays up until
     /// Escape or a button, as the Mac's does); false when the action flips it, open when closed
     /// and closed when open (every other panel).
+    #[must_use]
     pub fn opens(self) -> bool {
         match self {
             Panel::PowerMenu => true,
@@ -149,11 +150,13 @@ pub enum Pref {
 }
 
 /// The action that takes a screenshot of `kind`.
+#[must_use]
 pub fn screenshot_action(kind: ShotKind) -> ActionId {
     action_with(Effect::Shot(kind))
 }
 
 /// The action that opens `panel`.
+#[must_use]
 pub fn panel_action(panel: Panel) -> ActionId {
     action_with(Effect::Panel(panel))
 }
@@ -170,6 +173,7 @@ fn action_with(effect: Effect) -> ActionId {
 
 /// What `id` is. Every action is a row here: the match has no wildcard, so a new `ActionId` is
 /// a compile error until it is described.
+#[must_use]
 pub fn def(id: ActionId) -> ActionDef {
     use ActionId as A;
     let row = |label, chord, effect| ActionDef {

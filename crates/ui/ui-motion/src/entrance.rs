@@ -11,6 +11,7 @@ use dioxus::prelude::*;
 /// `data-presence` for a surface that plays `anim` as it mounts: `Presence::Entering` until
 /// `settle(anim)`, then `Presence::Present`. A surface that leaves is removed at once, so there
 /// is no leaving state here; one that must leave with an exit animation owns that itself.
+#[must_use]
 pub fn use_entrance(anim: Anim) -> Presence {
     let timer = use_motion_timer(anim);
     use_hook(|| timer.start(EventHandler::new(|()| {})));

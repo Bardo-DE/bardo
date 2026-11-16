@@ -72,11 +72,7 @@ fn decode_touch_report(d: &[u8]) -> Result<Report, DecodeError> {
         dx: i16::from_le_bytes([d[2], d[3]]),
         dy: i16::from_le_bytes([d[4], d[5]]),
     };
-    let stamp = if len >= HEADER_LEN {
-        Some(Stamp::Ticks(ticks(d[11], d[12], d[13])))
-    } else {
-        None
-    };
+    let stamp = (len >= HEADER_LEN).then(|| Stamp::Ticks(ticks(d[11], d[12], d[13])));
     let touches = (0..count)
         .map(|i| {
             let at = HEADER_LEN + TOUCH_LEN * i;
@@ -102,6 +98,7 @@ fn decode_touch_report(d: &[u8]) -> Result<Report, DecodeError> {
 
 /// The number of touches a 0x12 report of this length carries, or `None` if the length is
 /// not one the mouse sends.
+#[must_use]
 pub fn touch_count(len: usize) -> Option<usize> {
     if len == SHORT_LEN {
         return Some(0);
@@ -111,11 +108,13 @@ pub fn touch_count(len: usize) -> Option<usize> {
 }
 
 /// The 18-bit timestamp from header bytes 11..=13.
+#[must_use]
 pub fn ticks(d11: u8, d12: u8, d13: u8) -> u32 {
     (u32::from(d11) >> 6) | (u32::from(d12) << 2) | (u32::from(d13) << 10)
 }
 
 /// One 8-byte touch block, in the kernel's reading.
+#[must_use]
 pub fn decode_touch(t: [u8; 8]) -> RawTouch {
     let x = sign_extend_12(u16::from(t[1] & 0x0f) << 8 | u16::from(t[0]));
     let y = -sign_extend_12(u16::from(t[2]) << 4 | u16::from(t[1] >> 4));

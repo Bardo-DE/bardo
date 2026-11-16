@@ -35,6 +35,7 @@ impl Entrance {
 }
 
 /// The entrance of the surface being built.
+#[must_use]
 pub fn use_entrance() -> Entrance {
     Entrance {
         link: use_link::<ActionLink>(),

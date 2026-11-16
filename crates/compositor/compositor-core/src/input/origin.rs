@@ -16,7 +16,7 @@ pub enum Origin {
     Feed,
     /// The agent seat of this lease.
     Agent(LeaseId),
-    /// A RemoteDesktop portal session.
+    /// A `RemoteDesktop` portal session.
     Remote(PortalSessionId),
     /// Headless tests only; never compiled into a release seat.
     Test,
@@ -45,6 +45,7 @@ impl Origin {
     /// a `uinput` group member, a forged "pad") is [`Origin::Virtual`], so the trusted surfaces,
     /// the lock and VT switching never hear it. Virtual events still move the pointer, fire bindings
     /// and drive swipes.
+    #[must_use]
     pub fn of_kernel_device(class: DeviceClass, ids: KernelIds) -> Origin {
         match ids {
             KernelIds {
@@ -57,6 +58,7 @@ impl Origin {
 
     /// Whether this origin is a touchpad that moves the pointer and swipes spaces: the person's
     /// own pad, or palmrest's (whose swipes arrive as pad gestures, not as a feed).
+    #[must_use]
     pub fn is_pad(&self) -> bool {
         matches!(
             self,
@@ -66,6 +68,7 @@ impl Origin {
 
     /// Whether this origin counts as a person at the hardware (I8): a physical device, or the
     /// headless tests standing in for one. A virtual device never does.
+    #[must_use]
     pub fn is_physical(&self) -> bool {
         matches!(self, Origin::Physical(_) | Origin::Test)
     }
@@ -73,6 +76,7 @@ impl Origin {
     /// Whether a key chord from this origin may fire a binding: the keyboard the person
     /// types on, a virtual keyboard (an on-screen one, keycap's output) and the tests. Never
     /// the agent seat, a remote session or a feed.
+    #[must_use]
     pub fn fires_bindings(&self) -> bool {
         matches!(
             self,
@@ -84,6 +88,7 @@ impl Origin {
     /// 2026-10-16): only a kernel keyboard casement opened itself. A virtual keyboard, a remote
     /// session, the agent seat and a feed never do, so no client can send the compositor to a
     /// text console, the lock included.
+    #[must_use]
     pub fn switches_vt(&self) -> bool {
         matches!(self, Origin::Physical(_))
     }
@@ -107,7 +112,7 @@ pub enum DeviceClass {
     Switch,
 }
 
-/// One RemoteDesktop portal session.
+/// One `RemoteDesktop` portal session.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct PortalSessionId(pub u64);

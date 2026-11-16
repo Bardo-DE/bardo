@@ -160,7 +160,7 @@ impl RealKms {
             .insert_source(notifier, move |event, _, _| match event {
                 DrmEvent::VBlank(crtc) => into.borrow_mut().done(crtc),
                 DrmEvent::Error(error) => {
-                    tracing::warn!(%error, "the display device reported an error")
+                    tracing::warn!(%error, "the display device reported an error");
                 }
             })
             .map_err(|error| io_error(error.error))?;
@@ -205,14 +205,14 @@ impl RealKms {
         if let Some(renderer) = &self.renderer {
             return Ok(Rc::clone(renderer));
         }
-        let shared = match (&self.hub, self.route()) {
-            (Some(hub), Some(OutputRoute::Direct { .. })) => hub.renderer(Some(self.gbm()?))?,
-            _ => {
+        let shared =
+            if let (Some(hub), Some(OutputRoute::Direct { .. })) = (&self.hub, self.route()) {
+                hub.renderer(Some(self.gbm()?))?
+            } else {
                 let renderer = compositor_render::gles_on(self.gbm()?.clone())
                     .map_err(|error| KmsError::Io(io::Error::other(error.to_string())))?;
                 Rc::new(RefCell::new(renderer))
-            }
-        };
+            };
         self.renderer = Some(Rc::clone(&shared));
         Ok(shared)
     }
@@ -563,6 +563,7 @@ pub struct RealKmsOpener<D: 'static> {
 
 impl<D: 'static> RealKmsOpener<D> {
     /// An opener that gets descriptors from `fds` and has `handle`'s loop read each device.
+    #[must_use]
     pub fn new(fds: Box<dyn FdSource>, handle: LoopHandle<'static, D>) -> RealKmsOpener<D> {
         RealKmsOpener {
             fds,

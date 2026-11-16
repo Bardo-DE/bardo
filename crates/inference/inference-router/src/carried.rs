@@ -57,6 +57,7 @@ impl Tally {
     }
 
     /// The tally of a turn that starts with `request`.
+    #[must_use]
     pub fn begin(request: &InferRequest) -> Self {
         let (images, rate) = match request {
             InferRequest::Chat(chat) => (
@@ -85,6 +86,7 @@ impl Tally {
 
     /// What the turn carried, given how it ended: the audio the reply says it produced adds to
     /// the audio that was sent.
+    #[must_use]
     pub fn closing(&self, reply: &InferReply) -> Carried {
         let produced = match reply {
             InferReply::Spoke(spoke) => spoke.audio_ms,

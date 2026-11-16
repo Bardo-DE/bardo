@@ -1,4 +1,4 @@
-//! A typed view of one response's CardDAV properties: what discovery, sync and multiget ask
+//! A typed view of one response's `CardDAV` properties: what discovery, sync and multiget ask
 //! for. Only properties the server found are read; one from a failed `propstat` is absent
 //! rather than empty.
 
@@ -8,7 +8,7 @@ use crate::names::{
     RESOURCETYPE, SYNC_TOKEN, split,
 };
 
-/// The CardDAV properties of one response, as far as the server gave them.
+/// The `CardDAV` properties of one response, as far as the server gave them.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Props {
     /// The kinds its `resourcetype` names.
@@ -32,7 +32,7 @@ pub struct Props {
 pub enum Resource {
     /// `DAV:collection`.
     Collection,
-    /// A CardDAV address book (RFC 6352 section 5.2).
+    /// A `CardDAV` address book (RFC 6352 section 5.2).
     AddressBook,
     /// `DAV:principal`.
     Principal,
@@ -42,6 +42,7 @@ pub enum Resource {
 
 impl Props {
     /// The properties `response` carries with a 2xx status.
+    #[must_use]
     pub fn of(response: &Response) -> Self {
         let found = |name: &str| response.found(name).map(str::to_owned);
         let hrefs = |name: &str| -> Vec<String> {
@@ -73,6 +74,7 @@ impl Props {
     }
 
     /// Whether the resource is an address book.
+    #[must_use]
     pub fn is_address_book(&self) -> bool {
         self.resource.contains(&Resource::AddressBook)
     }

@@ -249,7 +249,7 @@ async fn flow_c_an_injected_body_never_reaches_the_planner_and_the_send_still_as
         panic!("recipients: {:?}", ask.detail);
     };
     assert!(
-        matches!(&to[..], [Shown::Quoted { text, from: provenance::Source::Mail }] if text == "x@evil.example"),
+        matches!(&**to, [Shown::Quoted { text, from: provenance::Source::Mail }] if text == "x@evil.example"),
         "{to:?}"
     );
     assert!(
@@ -303,7 +303,7 @@ async fn flow_c_a_reply_to_the_related_sender_is_a_handle_and_still_asks_quoted(
         panic!("recipients: {:?}", ask.detail);
     };
     assert!(
-        matches!(&to[..], [Shown::Quoted { text, from: provenance::Source::Mail }] if text == "eve@evil.example"),
+        matches!(&**to, [Shown::Quoted { text, from: provenance::Source::Mail }] if text == "eve@evil.example"),
         "{to:?}"
     );
     assert!(

@@ -263,16 +263,17 @@ fn submit(sheet: Sheet, answers: Vec<FieldAnswer>) -> (Sheet, Vec<SheetEffect>) 
         };
         return to(sheet, stage);
     }
-    let credential = match answers
+    let credential = if answers
         .iter()
         .any(|a| a.kind == FieldKind::Token && !crate::fields::is_empty(&a.value))
     {
-        true => FieldKind::Token,
-        false => fields
+        FieldKind::Token
+    } else {
+        fields
             .iter()
             .map(|f| f.kind)
             .find(|k| matches!(k, FieldKind::Password | FieldKind::AppPassword))
-            .unwrap_or(FieldKind::Password),
+            .unwrap_or(FieldKind::Password)
     };
     let held = fields.clone();
     let feed = SheetEffect::Feed(SignInInput::Fields(asked(fields, answers)));

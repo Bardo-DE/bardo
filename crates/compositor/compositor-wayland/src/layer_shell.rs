@@ -57,6 +57,7 @@ pub struct LayerRecord {
 
 impl LayerShellPart {
     /// Creates the global (version 5), filtered by the I7 table (not for sandboxed clients).
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> LayerShellPart
     where
         D: GlobalDispatch<ZwlrLayerShellV1, WlrLayerShellGlobalData> + 'static,
@@ -72,6 +73,7 @@ impl LayerShellPart {
     }
 
     /// How many layer surfaces `client` holds.
+    #[must_use]
     pub fn held_by(&self, client: ClientKey) -> usize {
         self.layers
             .values()
@@ -80,6 +82,7 @@ impl LayerShellPart {
     }
 
     /// The key of the layer whose `wl_surface` is `surface`.
+    #[must_use]
     pub fn key_of(&self, surface: &WlSurface) -> Option<LayerKey> {
         self.layers
             .iter()

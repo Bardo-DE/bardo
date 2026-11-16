@@ -66,6 +66,7 @@ fn bool_of(line: &str, key: &str) -> Option<bool> {
 }
 
 /// The text form of `records`.
+#[must_use]
 pub fn render(records: &[Record]) -> String {
     records
         .iter()

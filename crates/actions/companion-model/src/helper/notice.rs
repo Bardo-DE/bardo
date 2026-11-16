@@ -24,6 +24,7 @@ pub enum Notice {
 
 impl Notice {
     /// The sentence, for the helper `name`.
+    #[must_use]
     pub fn plain(&self, name: &HelperName) -> String {
         let name = name.as_str();
         match self {
@@ -51,6 +52,7 @@ impl Notice {
 }
 
 /// What the person is told when a write is refused because another helper's job owns the thing.
+#[must_use]
 pub fn owned_sentence(owner: &HelperName) -> String {
     format!("{} is working on this.", owner.as_str())
 }

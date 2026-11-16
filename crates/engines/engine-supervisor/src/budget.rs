@@ -16,7 +16,7 @@ pub struct EngineSpec {
     pub unit: UnitSpec,
 }
 
-/// GPU memory as last observed. Others (a ComfyUI run, a game) are observed, never killed.
+/// GPU memory as last observed. Others (a `ComfyUI` run, a game) are observed, never killed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GpuMemory {
     pub total: MiB,
@@ -43,6 +43,7 @@ pub enum BudgetVerdict {
 /// `free` and it is never named as a victim. Every other engine in `running` is a candidate;
 /// `NoRoom::free` is what the budget would be with every candidate evicted. Engines still
 /// starting stay out of `running` and in `gpu.used_by_others`, so they can never be named either.
+#[must_use]
 pub fn budget(
     want: &EngineSpec,
     running: &[(EngineId, MiB, MonoMs)],

@@ -84,7 +84,7 @@ fn every_declared_action_reads_and_every_option_is_one_the_model_knows() {
             .iter()
             .any(|p| matches!(p.need, ParamNeed::Required));
         match (needs, &bare) {
-            (true, Err(AppRefusal::NeedsParam { .. })) | (false, Ok(_)) => {}
+            (true, Err(AppRefusal::NeedsParam { .. })) | (false, Ok(())) => {}
             _ => panic!("{}: {bare:?} with required params {needs}", action.name),
         }
         // Every declared option of every choice is read.

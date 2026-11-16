@@ -114,7 +114,7 @@ async fn a_worker_is_asked_in_a_message_runs_in_its_own_session_and_reports_back
         .find(|e| e.agent == worker("w-1"))
         .expect("the worker's episode");
     assert_eq!(
-        mine.parent.as_ref().map(|p| p.as_str()),
+        mine.parent.as_ref().map(memory_core::EpisodeId::as_str),
         Some(front.task.as_str())
     );
     assert_eq!(mine.skeleton.label.integrity, Integrity::Trusted);
@@ -357,7 +357,7 @@ async fn a_message_across_spaces_carries_its_labels_shows_presence_only_and_gran
     let view = w.infer.user_text(2);
     assert!(view.contains("from another Space [request]"), "{view}");
     assert!(!view.contains("IGNORE PREVIOUS"), "{view}");
-    assert!(view.contains("#"), "{view}");
+    assert!(view.contains('#'), "{view}");
     let answer = w.companion.shared.answer(&work.task).expect("answer");
     assert_eq!(answer.phase, AnswerPhase::Done);
 

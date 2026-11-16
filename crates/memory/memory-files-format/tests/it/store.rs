@@ -146,7 +146,7 @@ fn untrusted_fact_lands_in_pending() {
         assert_eq!(waiting.len(), 1);
         assert_eq!(waiting[0].0, t);
         assert_eq!(waiting[0].1, fact(3, vec![thread("a")]));
-        assert!(store.vault().read(&VaultPath::pending(&id(3))).is_ok());
+        store.vault().read(&VaultPath::pending(&id(3))).unwrap();
     });
 }
 
@@ -204,7 +204,7 @@ fn remove_cascades_through_topics_and_pending() {
         assert_eq!(left.blocks.len(), 1);
         assert!(matches!(&left.blocks[0], Block::Fact(f) if f.id == id(2)));
         assert_eq!(store.pending().expect("pending"), []);
-        assert!(store.vault().read(&VaultPath::pending(&id(3))).is_err());
+        store.vault().read(&VaultPath::pending(&id(3))).unwrap_err();
         // Removing what is not there removes nothing.
         assert_eq!(store.remove(&doomed), Ok(Count(0)));
     });
@@ -222,7 +222,7 @@ fn journal_rollups_are_plain_topics() {
         let mut topics = store.topics().expect("topics");
         topics.sort();
         assert_eq!(topics, [day.clone(), week]);
-        assert!(store.vault().read(&VaultPath::topic(&day)).is_ok());
+        store.vault().read(&VaultPath::topic(&day)).unwrap();
         // A rollup is removed like any other fact.
         assert_eq!(store.remove(&[id(1), id(2)]), Ok(Count(2)));
     });

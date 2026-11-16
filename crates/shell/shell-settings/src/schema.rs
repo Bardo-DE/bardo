@@ -38,6 +38,7 @@ fn on_page(mut schema: Schema, paths: &[&str], page: &Page) -> Schema {
 }
 
 /// One schema per domain, in `ShellFile` order.
+#[must_use]
 pub fn schemas() -> Vec<Schema> {
     vec![
         BarSettings::schema(),
@@ -66,6 +67,7 @@ pub fn schemas() -> Vec<Schema> {
 
 /// The one `shell.settings.toml` the package installs: every domain's keys under app `bardo-shell`,
 /// file `shell/settings.toml`.
+#[must_use]
 pub fn schema() -> Schema {
     let parts = schemas();
     Schema {

@@ -162,7 +162,7 @@ mod tests {
         let source = book.add_source(key("HEADLESS-1"));
         let session = book.add_session(source).expect("session");
         book.drop_source(source);
-        assert!(book.request_frame(session, SIZE).is_ok());
+        book.request_frame(session, SIZE).unwrap();
         assert!(
             book.add_session(source).is_err(),
             "no session on a gone source"

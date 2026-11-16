@@ -45,7 +45,7 @@ fn calm(scheme: Scheme) -> RgbImage {
     let (width, height) = (CALM_WIDTH as f32, CALM_HEIGHT as f32);
     RgbImage::from_fn(CALM_WIDTH, CALM_HEIGHT, |x, y| {
         let (u, v) = (x as f32 / width, y as f32 / height);
-        let t = ((u + v) / 2.0).clamp(0.0, 1.0);
+        let t = f32::midpoint(u, v).clamp(0.0, 1.0);
         let (dx, dy) = (u - 0.72, (v - 0.28) * 0.8);
         let g = (-(dx * dx + dy * dy) / 0.06).exp() * 0.7;
         let channel = |c: usize| {

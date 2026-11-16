@@ -14,7 +14,7 @@ use zbus::zvariant::{OwnedValue, Value};
 pub const MACHINE_KEY_NODE: &str = "node";
 /// The vardict key of the name people call the computer by (`s`).
 pub const MACHINE_KEY_NAME: &str = "name";
-/// The vardict key of its MagicDNS name without the dot at the end (`s`).
+/// The vardict key of its `MagicDNS` name without the dot at the end (`s`).
 pub const MACHINE_KEY_DNS: &str = "dns";
 /// The vardict key of its Tailscale addresses (`as`).
 pub const MACHINE_KEY_ADDRESSES: &str = "addresses";
@@ -154,6 +154,6 @@ mod tests {
             cut.remove(key);
             assert!(machine_from_dbus(&(node.clone(), cut)).is_err(), "{key}");
         }
-        assert!(machine_from_dbus(&("not a node".to_owned(), details)).is_err());
+        machine_from_dbus(&("not a node".to_owned(), details)).unwrap_err();
     }
 }

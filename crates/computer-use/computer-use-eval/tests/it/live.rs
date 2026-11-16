@@ -46,8 +46,8 @@ fn provider(scripts: Vec<Script>) -> Arc<ScriptedProvider> {
 
 #[test]
 fn the_catalogue_entry_of_a_computer_use_model_makes_a_plan() {
-    assert!(Plan::of(ENTRY, "holo", Thinking::Off).is_ok());
-    assert!(Plan::of(ENTRY, "holo", Thinking::On).is_ok());
+    Plan::of(ENTRY, "holo", Thinking::Off).unwrap();
+    Plan::of(ENTRY, "holo", Thinking::On).unwrap();
     assert!(matches!(
         Plan::of("nonsense", "holo", Thinking::Off),
         Err(LiveError::Entry(_))

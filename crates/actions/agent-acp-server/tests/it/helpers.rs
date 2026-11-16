@@ -201,7 +201,7 @@ async fn list_shows_the_helpers_of_the_workspaces_space_beside_the_companions_se
         );
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -222,7 +222,7 @@ async fn a_list_without_a_workspace_shows_no_helpers() {
         assert_eq!(all["result"]["sessions"], json!([]));
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -257,7 +257,7 @@ async fn new_with_a_helper_in_meta_opens_a_job_and_a_plain_new_stays_the_compani
         }
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     assert_eq!(seen.lock().expect("seen").opened, [helper(2)]);
 }
 
@@ -291,7 +291,7 @@ async fn a_prompt_in_a_helpers_job_session_is_the_persons_turn_with_the_editors_
         assert_eq!(ed.permission_requests().len(), 1);
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     let host = server.into_host();
     assert_eq!(host.turns.len(), 1);
     let (at, turn) = &host.turns[0];
@@ -320,7 +320,7 @@ async fn a_prompt_in_a_helpers_conversation_goes_to_the_helper_and_streams_its_w
         assert!(ed.permission_requests().is_empty());
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     // The turn did not run in this host: it went through the seam, as the editor's words.
     let said = seen.lock().expect("seen").said.clone();
     assert_eq!(said.len(), 1);
@@ -348,7 +348,7 @@ async fn a_helper_that_cannot_answer_in_its_conversation_is_a_plain_error() {
         );
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -381,7 +381,7 @@ async fn load_replays_the_recent_jobs_in_plain_words() {
         );
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -406,7 +406,7 @@ async fn a_board_change_streams_as_a_plain_line_in_that_helpers_session() {
         assert_eq!(update["content"]["text"], line);
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 fn files_scope() -> StandingScope {
@@ -466,7 +466,7 @@ async fn allow_always_in_a_helpers_job_session_reaches_the_host_as_always() {
         ed.prompt("s-70", "archive them", &mut always).await;
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     // The router records the grant under the helper's id, so the host is told what was chosen.
     let id = ConfirmId::parse("c-1").expect("id");
     assert_eq!(server.into_host().sheets, vec![(id, SheetChoice::Always)]);
@@ -503,5 +503,5 @@ async fn a_refusal_from_the_helpers_app_in_a_job_reaches_the_editor_with_the_app
         assert_eq!(failed[0]["content"][0]["content"]["text"], own);
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }

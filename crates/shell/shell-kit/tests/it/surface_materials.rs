@@ -258,7 +258,7 @@ fn SlimMenu() -> Element {
                 anchor: Anchor::Point(Point { x: Px(40.0), y: Px(40.0) }),
                 items: entries,
                 onpick: move |_| {},
-                onclose: move |_| {},
+                onclose: move |()| {},
             }
         }
     }

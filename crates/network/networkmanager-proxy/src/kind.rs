@@ -1,5 +1,5 @@
-//! The numbers NetworkManager sends for kinds and states, as enums. Each has an `Other` that keeps
-//! a value this crate does not name, so a newer NetworkManager never decodes to a wrong variant,
+//! The numbers `NetworkManager` sends for kinds and states, as enums. Each has an `Other` that keeps
+//! a value this crate does not name, so a newer `NetworkManager` never decodes to a wrong variant,
 //! and `to_wire` gives back the number it came from.
 
 /// `NMDeviceType`: what kind of device it is.
@@ -18,11 +18,11 @@ pub enum DeviceType {
     Modem,
     /// 13: a bridge.
     Bridge,
-    /// 14: a generic or virtual device, such as a TUN interface NetworkManager does not manage.
+    /// 14: a generic or virtual device, such as a TUN interface `NetworkManager` does not manage.
     Generic,
     /// 16: a TUN or TAP interface.
     Tun,
-    /// 29: a WireGuard tunnel.
+    /// 29: a `WireGuard` tunnel.
     WireGuard,
     /// 32: the loopback interface.
     Loopback,
@@ -45,11 +45,13 @@ impl DeviceType {
     ];
 
     /// The kind for a `DeviceType` value.
+    #[must_use]
     pub fn from_wire(value: u32) -> Self {
         named(Self::WIRE, value).unwrap_or(Self::Other(value))
     }
 
     /// The `DeviceType` value for this kind.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::Other(value) => value,
@@ -65,7 +67,7 @@ pub enum DeviceState {
     /// 0: not known.
     #[default]
     Unknown,
-    /// 10: NetworkManager does not manage it.
+    /// 10: `NetworkManager` does not manage it.
     Unmanaged,
     /// 20: managed, but it cannot be used (no carrier, Wi-Fi switched off, firmware missing).
     Unavailable,
@@ -111,11 +113,13 @@ impl DeviceState {
     ];
 
     /// The state for a `State` value.
+    #[must_use]
     pub fn from_wire(value: u32) -> Self {
         named(Self::WIRE, value).unwrap_or(Self::Other(value))
     }
 
     /// The `State` value for this state.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::Other(value) => value,
@@ -153,11 +157,13 @@ impl ActiveState {
     ];
 
     /// The state for a `State` value.
+    #[must_use]
     pub fn from_wire(value: u32) -> Self {
         named(Self::WIRE, value).unwrap_or(Self::Other(value))
     }
 
     /// The `State` value for this state.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::Other(value) => value,
@@ -195,11 +201,13 @@ impl Connectivity {
     ];
 
     /// The reach for a `Connectivity` value.
+    #[must_use]
     pub fn from_wire(value: u32) -> Self {
         named(Self::WIRE, value).unwrap_or(Self::Other(value))
     }
 
     /// The `Connectivity` value for this reach.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::Other(value) => value,

@@ -16,6 +16,7 @@ const RASTER_EXTENSIONS: [&str; 5] = ["png", "jpg", "jpeg", "webp", "gif"];
 /// Whether a file at `path` of `len` bytes may be an app's icon: it has an image extension and is
 /// no larger than the cap for its kind. That it is a regular file is for the caller to have
 /// checked (it takes a read of the file's metadata).
+#[must_use]
 pub fn icon_file_fits(path: &Path, len: u64) -> bool {
     let Some(extension) = path.extension().and_then(|ext| ext.to_str()) else {
         return false;

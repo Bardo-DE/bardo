@@ -23,7 +23,7 @@ use shell_model::apps::{App, AppIcon, AppIndex, DesktopActionEntry, Listing};
 const ACTION_JOINER: char = '\u{1}';
 
 /// How much of its own rank a desktop action keeps, in thousandths: "Check Mail" is a row of
-/// KMail and ranks under KMail, as Spotlight lists an app before its actions.
+/// `KMail` and ranks under `KMail`, as Spotlight lists an app before its actions.
 const ACTION_WEIGHT: u32 = 850;
 
 /// Rows for every listed app matching the query, and one row per matching desktop action; the
@@ -202,6 +202,7 @@ fn action_of(entry: &DesktopActionEntry) -> Action {
 
 /// The app a launcher row of this provider stands for: its id before [`ACTION_JOINER`] (an app
 /// row's whole id, a desktop-action row's app part).
+#[must_use]
 pub fn row_app_id(id: &ItemId) -> AppId {
     split_id(id).0
 }

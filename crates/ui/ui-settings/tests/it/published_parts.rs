@@ -49,9 +49,9 @@ fn every_app_is_found_once_and_a_misnamed_file_is_skipped() {
     assert_eq!(
         apps,
         [
-            ("files", &classes(&["files-path"])[..]),
-            ("shell", &classes(&["shell-bar"])[..]),
-            ("temor", &classes(&["temor-tab"])[..]),
+            ("files", (&*classes(&["files-path"]))),
+            ("shell", (&*classes(&["shell-bar"]))),
+            ("temor", (&*classes(&["temor-tab"]))),
         ]
     );
 }

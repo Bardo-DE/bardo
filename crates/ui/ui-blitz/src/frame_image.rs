@@ -28,6 +28,7 @@ pub struct FrameImageClick {
 }
 
 /// The click released at `at`, over `under`: nothing when it was not on an image in a frame.
+#[must_use]
 pub fn ask(under: Option<ImageUnder>, at: Point, book: &FrameBook) -> Option<FrameImageClick> {
     under.map(|under| FrameImageClick {
         tag: book.tag(under.frame),

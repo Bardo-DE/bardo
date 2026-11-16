@@ -63,6 +63,7 @@ pub struct LocalView {
 
 impl LocalView {
     /// The models of the engine chosen; none while no engine is.
+    #[must_use]
     pub fn models(&self) -> &[LocalModel] {
         self.engine
             .as_deref()
@@ -115,6 +116,7 @@ impl ModelRow {
 
     /// The ways to run models on this computer for this row, in the order the module lists
     /// their models.
+    #[must_use]
     pub fn engines(&self) -> Vec<LocalEngine> {
         self.local_words()
             .fold(Vec::new(), |mut engines: Vec<LocalEngine>, word| {
@@ -145,6 +147,7 @@ impl ModelRow {
     }
 
     /// What Local asks, when Local is what the row has chosen.
+    #[must_use]
     pub fn local_view(&self) -> Option<LocalView> {
         match self.choice() {
             Choice::Local { engine, model } => Some(LocalView {

@@ -5,7 +5,7 @@
 //! `bardo-shell display brightness ...`, which are what the volume and brightness keys run (bound
 //! in the compositor's shortcuts), so a key press always shows. A level another app sets (a player's own slider,
 //! `pactl`, the monitor's buttons) never does: macOS shows its indicator for the keys only, and
-//! following every PipeWire change would flash it whenever an app ramps its stream. `bardo-shell debug
+//! following every `PipeWire` change would flash it whenever an app ramps its stream. `bardo-shell debug
 //! osd` shows a made-up change and moves nothing real.
 //!
 //! **Where.** Volume: the output of the active window (the daemon's stand-in for the output under
@@ -27,6 +27,7 @@ use shell_ui_kit::links::{Level, OsdKind, OsdLink};
 use shell_ui_kit::services::Services;
 
 /// The outputs that show a `kind` change whose level comes from `level`: see the module doc.
+#[must_use]
 pub fn osd_outputs(
     kind: OsdKind,
     level: Option<Level>,
@@ -57,6 +58,7 @@ pub fn osd_outputs(
 }
 
 /// What a display request changes.
+#[must_use]
 pub fn kind_of(request: DisplayRequest) -> OsdKind {
     match request {
         DisplayRequest::Brightness(_) => OsdKind::Brightness,
@@ -65,6 +67,7 @@ pub fn kind_of(request: DisplayRequest) -> OsdKind {
 }
 
 /// A made-up change's level: `percent` is held to 0-100.
+#[must_use]
 pub fn fake_level(percent: Percent, mute: Mute) -> Level {
     let percent = Percent(percent.0.min(100));
     Level { percent, mute }

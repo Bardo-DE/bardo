@@ -50,12 +50,13 @@ pub struct Dialer {
 
 /// IPv4 first: it is the address every Tailscale has.
 fn v4_first(mut addresses: Vec<IpAddr>) -> Vec<IpAddr> {
-    addresses.sort_by_key(|ip| ip.is_ipv6());
+    addresses.sort_by_key(std::net::IpAddr::is_ipv6);
     addresses
 }
 
 impl Dialer {
     /// A dialer that asks the Tailscale `api` reaches and connects to `port`.
+    #[must_use]
     pub fn new(api: LocalApi, port: u16) -> Self {
         Self {
             api,

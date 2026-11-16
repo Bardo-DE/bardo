@@ -52,11 +52,13 @@ mod porter_relays {
 
     impl PorterRelays {
         /// A host that trusts the platform's roots.
+        #[must_use]
         pub fn new() -> Self {
             Self::default()
         }
 
         /// A host that dials with `connector` (a test's scratch CA, for one).
+        #[must_use]
         pub fn with_connector(connector: RustlsConnect) -> Self {
             Self {
                 connector: Arc::new(OnceCell::new_with(Some(connector))),

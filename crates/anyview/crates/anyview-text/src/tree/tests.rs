@@ -459,11 +459,11 @@ mod editing {
             ),
             (
                 "a node below the only one of a compact array",
-                r#"[1]"#,
+                r"[1]",
                 |s| {
                     s.insert_below(&p(&[0])).unwrap();
                 },
-                r#"[1,null]"#,
+                r"[1,null]",
             ),
             (
                 "the root takes a node after its last",

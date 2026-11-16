@@ -1,5 +1,5 @@
-//! The PackageKit backend against a fake PackageKit on a private bus: Installed, Declined,
-//! NotFound, plus the failure and absent-daemon cases. Nothing here reaches the real system or
+//! The `PackageKit` backend against a fake `PackageKit` on a private bus: Installed, Declined,
+//! `NotFound`, plus the failure and absent-daemon cases. Nothing here reaches the real system or
 //! session bus, and nothing is installed.
 
 mod bus;
@@ -128,7 +128,7 @@ async fn an_install_error_carries_the_daemons_words() {
     );
 }
 
-/// PackageKit's own error numbers (PackageKitGlib-1.0: 17 transaction-cancelled, 48
+/// `PackageKit`'s own error numbers (PackageKitGlib-1.0: 17 transaction-cancelled, 48
 /// not-authorized, 23 failed-finalise): the first two are the person saying no, the third is not.
 #[tokio::test]
 async fn install_error_codes_map_to_outcomes() {

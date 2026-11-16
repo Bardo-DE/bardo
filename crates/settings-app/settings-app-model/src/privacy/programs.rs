@@ -156,6 +156,7 @@ impl ProgramBook {
 
     /// What `subject` is called and looks like: the name and icon of the system entry that names
     /// it, else its file name and folder (or the app's id), else no name.
+    #[must_use]
     pub fn look_of(&self, subject: &ProgramSubject) -> ProgramLook {
         let entry = self.app_of(subject);
         let named = entry

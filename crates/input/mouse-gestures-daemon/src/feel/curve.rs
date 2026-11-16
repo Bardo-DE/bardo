@@ -32,12 +32,14 @@ const EXPONENT: Fraction = Fraction(1600);
 const GAIN_MAX: Fraction = Fraction(6000);
 
 /// The gain at `speed` raw units per second.
+#[must_use]
 pub fn gain(speed: f64) -> f64 {
     let over = (speed - f64::from(PRECISE_BELOW.0)).max(0.0) / f64::from(RAMP.0);
     (1.0 + over.powf(EXPONENT.ratio())).min(GAIN_MAX.ratio())
 }
 
 /// The gain of one sample of `raw` units `dt` seconds after the previous motion.
+#[must_use]
 pub fn sample_gain(raw: i32, dt: f64) -> f64 {
     if dt <= 0.0 || dt > VELOCITY_DT_MAX {
         return 1.0;

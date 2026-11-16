@@ -5,6 +5,7 @@ use super::model::SyncHoldState;
 
 /// `state` after `event`, with the effects it calls for. A repeat for a dataset replaces its
 /// hold and its notification; the end of a hold nobody was told about does nothing.
+#[must_use]
 pub fn step(state: SyncHoldState, event: SyncHoldEvent) -> (SyncHoldState, Vec<SyncHoldEffect>) {
     let mut holds = state.holds;
     let effects = match event {
@@ -18,9 +19,10 @@ pub fn step(state: SyncHoldState, event: SyncHoldEvent) -> (SyncHoldState, Vec<S
         SyncHoldEvent::Ended(dataset) => {
             let before = holds.len();
             holds.retain(|known| known.dataset != dataset);
-            match holds.len() < before {
-                true => vec![SyncHoldEffect::Withdraw(dataset)],
-                false => Vec::new(),
+            if holds.len() < before {
+                vec![SyncHoldEffect::Withdraw(dataset)]
+            } else {
+                Vec::new()
             }
         }
     };

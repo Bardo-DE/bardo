@@ -1,4 +1,4 @@
-//! PaneStack on a real Blitz document: a chevron row pushes its detail page into the same pane
+//! `PaneStack` on a real Blitz document: a chevron row pushes its detail page into the same pane
 //! under a header whose back button names the parent; the back button, Escape, the command chord
 //! `[` and Alt+Left pop it; the focus lands on the new page after a push and returns to the row
 //! that opened it after a pop; both pages are drawn while the spring moves and only the shown
@@ -211,10 +211,10 @@ fn every_way_back_pops_and_returns_the_focus_to_the_row() {
         ("back button", |h| click(h, "#pane-back-detail")),
         ("escape", |h| h.send(Input::key(ShortcutKey::Escape))),
         ("command bracket", |h| {
-            h.send(Input::chord(&[ShortcutKey::Super], ShortcutKey::Char('[')))
+            h.send(Input::chord(&[ShortcutKey::Super], ShortcutKey::Char('[')));
         }),
         ("alt left", |h| {
-            h.send(Input::chord(&[ShortcutKey::Alt], ShortcutKey::Left))
+            h.send(Input::chord(&[ShortcutKey::Alt], ShortcutKey::Left));
         }),
     ];
     for (name, way) in ways {

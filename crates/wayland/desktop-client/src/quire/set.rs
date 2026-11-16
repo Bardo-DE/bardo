@@ -54,11 +54,13 @@ impl Quire {
     }
 
     /// One app, announced or not.
+    #[must_use]
     pub fn app(&self, key: AppKey) -> Option<&QuireApp> {
         self.apps.get(&key)
     }
 
     /// The announced app with this key string.
+    #[must_use]
     pub fn app_by_id(&self, id: &AppId) -> Option<&QuireApp> {
         self.apps().find(|a| a.id.as_ref() == Some(id))
     }
@@ -71,6 +73,7 @@ impl Quire {
     }
 
     /// The window of a toplevel, announced or not.
+    #[must_use]
     pub fn window(&self, key: ToplevelKey) -> Option<&QuireWindow> {
         self.windows.get(&key)
     }
@@ -88,16 +91,19 @@ impl Quire {
     }
 
     /// One Space, announced or not.
+    #[must_use]
     pub fn space(&self, key: SpaceKey) -> Option<&QuireSpace> {
         self.spaces.get(&key)
     }
 
     /// The announced Space with this id.
+    #[must_use]
     pub fn space_by_id(&self, id: &SpaceId) -> Option<&QuireSpace> {
         self.spaces().find(|s| s.id.as_ref() == Some(id))
     }
 
     /// The announced Spaces of one output, left to right.
+    #[must_use]
     pub fn spaces_on(&self, output: &OutputName) -> Vec<&QuireSpace> {
         let mut spaces: Vec<_> = self
             .spaces()
@@ -108,11 +114,13 @@ impl Quire {
     }
 
     /// The active app and key window.
+    #[must_use]
     pub fn active(&self) -> &Active {
         &self.active
     }
 
     /// The shell's state.
+    #[must_use]
     pub fn shell(&self) -> &Shell {
         &self.shell
     }

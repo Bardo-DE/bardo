@@ -152,7 +152,7 @@ fn a_new_look_is_a_new_commit() {
         STAND_IN,
     );
     let softer = blur.clone().with_look(look(40.0), 1.0);
-    assert!(blur.current_commit() != softer.current_commit());
+    assert_ne!(blur.current_commit(), softer.current_commit());
 }
 
 #[test]
@@ -216,7 +216,7 @@ fn a_solid_blur_is_its_colour_and_a_new_commit() {
     assert_eq!(solid.finish(), BlurFinish::Solid(paper));
     assert!(frosted.is_framebuffer_effect() && !solid.is_framebuffer_effect());
     assert_eq!((frosted.stand_in(), solid.stand_in()), (STAND_IN, paper));
-    assert!(frosted.current_commit() != solid.current_commit());
+    assert_ne!(frosted.current_commit(), solid.current_commit());
     let other = Rgba8 { r: 236, ..paper };
     assert!(
         solid.current_commit()

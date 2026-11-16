@@ -21,6 +21,7 @@ pub struct WmClass {
 impl WmClass {
     /// The two names in a `WM_CLASS` property value (`instance\0class\0`); none for a value
     /// without both.
+    #[must_use]
     pub fn parse(value: &[u8]) -> Option<WmClass> {
         let mut names = value
             .split(|byte| *byte == 0)
@@ -64,12 +65,14 @@ impl Spared {
 
 /// The text X11 windows of `app` are named by: the id a claimed key declared (satellite's app
 /// id is the window's class), or the name of a proven app.
+#[must_use]
 pub fn name_of(app: &AppKey) -> String {
     let wire = app.wire();
     wire.strip_prefix("claimed:").unwrap_or(&wire).to_owned()
 }
 
 /// The processes behind the windows of `windows` that `app` names, but for the spared ones.
+#[must_use]
 pub fn pids_of_app(windows: &[XWindow], app: &str, spared: &Spared) -> BTreeSet<RawPid> {
     windows
         .iter()

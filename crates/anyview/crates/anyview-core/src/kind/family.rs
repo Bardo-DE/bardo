@@ -71,9 +71,10 @@ pub(crate) mod tests {
             ("TreeFormat", assert_well_formed::<TreeFormat>),
         ];
         for (name, check) in families {
-            if std::panic::catch_unwind(check).is_err() {
-                panic!("the table of {name} is not well formed (see the message above)");
-            }
+            assert!(
+                !std::panic::catch_unwind(check).is_err(),
+                "the table of {name} is not well formed (see the message above)"
+            );
         }
     }
 }

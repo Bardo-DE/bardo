@@ -50,6 +50,7 @@ const EDGE_NOISE: f64 = 1e-6;
 /// per physical row of the window. Two strips share one rounded edge between them, so they
 /// meet without a gap and without an overlap. Each band is the whole columns its strip touches
 /// (`StripPlan::edges` says how much of the first and last the window covers).
+#[must_use]
 pub fn strip_plans(
     visual: LogicalRect,
     tile: LogicalRect,
@@ -255,10 +256,7 @@ fn shared<E>(list: Vec<E>) -> Vec<SharedElement<E>> {
 /// How far the shadow's strip at `position` (of 0 to `last`) reaches past its band: `reach`
 /// sideways, and the first strip also above, the last also below.
 fn halo(position: usize, last: usize, reach: i32) -> Margins {
-    let when = |hit: bool| match hit {
-        true => reach,
-        false => 0,
-    };
+    let when = |hit: bool| if hit { reach } else { 0 };
     Margins {
         side: reach,
         top: when(position == 0),

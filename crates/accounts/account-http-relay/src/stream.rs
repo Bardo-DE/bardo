@@ -42,6 +42,7 @@ impl RelayStream {
 
     /// A stream over an in-memory end the caller holds (a test's end of
     /// [`account_core::stream::duplex`]: no kernel I/O, so a paused clock is safe with it).
+    #[must_use]
     pub fn from_memory(end: DuplexEnd) -> Self {
         Self(End::Memory(end))
     }

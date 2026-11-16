@@ -30,6 +30,7 @@ struct Packages {
 
 impl Entry {
     /// The packages to try on `family`, best first; empty when the file names none for it.
+    #[must_use]
     pub fn candidates(&self, family: Family) -> &[PackageName] {
         match family {
             Family::Dnf => &self.packages.dnf,
@@ -184,6 +185,7 @@ impl Catalog {
     }
 
     /// What `capability` needs, if the file declares it.
+    #[must_use]
     pub fn get(&self, capability: &CapabilityName) -> Option<&Entry> {
         self.entries.get(capability)
     }
@@ -233,7 +235,7 @@ mod tests {
         let dnf: Vec<_> = probe
             .candidates(Family::Dnf)
             .iter()
-            .map(|p| p.as_str())
+            .map(super::super::capability::PackageName::as_str)
             .collect();
         assert_eq!(dnf, ["ffmpeg", "ffmpeg-free"]);
         assert_eq!(probe.probe.len(), 2);

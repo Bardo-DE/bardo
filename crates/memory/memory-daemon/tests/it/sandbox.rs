@@ -148,10 +148,10 @@ fn the_sandbox_confines_the_thread_that_applies_it() {
             read_inside: std::fs::read(inside.join("mine")),
             write_outside: std::fs::write(outside.join("planted"), b"x"),
             read_outside: std::fs::read(outside.join("secret")),
-            read_system: std::fs::read_dir("/usr").map(|d| d.count()),
+            read_system: std::fs::read_dir("/usr").map(std::iter::Iterator::count),
             proc_cgroup: std::fs::read_to_string("/proc/1/cgroup"),
             proc_exe: std::fs::read_link("/proc/1/exe"),
-            proc_listing: std::fs::read_dir("/proc").map(|d| d.count()),
+            proc_listing: std::fs::read_dir("/proc").map(std::iter::Iterator::count),
             bus: UnixStream::connect(&bus_path),
             other_socket: UnixStream::connect(&other_path),
             tcp: TcpStream::connect(tcp_addr),
@@ -212,5 +212,5 @@ fn the_sandbox_confines_the_thread_that_applies_it() {
         );
     }
     // This thread was never restricted.
-    assert!(std::fs::read(root.join("elsewhere/secret")).is_ok());
+    std::fs::read(root.join("elsewhere/secret")).unwrap();
 }

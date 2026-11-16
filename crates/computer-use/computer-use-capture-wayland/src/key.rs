@@ -47,6 +47,7 @@ impl Rounds {
     }
 
     /// Whether round trip `n` has come back.
+    #[must_use]
     pub fn reached(&self, n: u64) -> bool {
         self.done >= n
     }

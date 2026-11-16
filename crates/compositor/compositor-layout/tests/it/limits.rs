@@ -1,4 +1,4 @@
-//! RustScene under random limits and Spaces: minimums honoured or reported, maximums kept,
+//! `RustScene` under random limits and Spaces: minimums honoured or reported, maximums kept,
 //! sizes inside the area and positions within reach of it (the grip on screen, never above
 //! it), the answer a fixed point of layout, and the same on every call.
 

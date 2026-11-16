@@ -97,6 +97,7 @@ impl SplitChoices {
     /// let choices = SplitChoices::new(WindowId(1), SplitSide::Left, vec![WindowId(2)]);
     /// assert_eq!(choices.candidates, [WindowId(2)]);
     /// ```
+    #[must_use]
     pub fn new(first: WindowId, side: SplitSide, candidates: Vec<WindowId>) -> Self {
         Self {
             first,
@@ -134,6 +135,7 @@ impl WindowMenuShow {
     /// };
     /// assert_eq!(show.enabled(), 1 << WindowEntry::Fill.code());
     /// ```
+    #[must_use]
     pub fn enabled(&self) -> u32 {
         enabled_mask(&self.items)
     }

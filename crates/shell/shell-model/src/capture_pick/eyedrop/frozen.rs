@@ -37,6 +37,7 @@ pub enum EyedropOut {
 
 /// `frozen` after `input`, and what to do about it. A question already held is not asked again,
 /// a picture nobody waits for is dropped, and a question whose every picture failed is cancelled.
+#[must_use]
 pub fn eyedrop_step(frozen: Option<Frozen>, input: EyedropIn) -> (Option<Frozen>, Vec<EyedropOut>) {
     match (frozen, input) {
         (_, EyedropIn::Asked(None)) => (None, Vec::new()),
@@ -49,9 +50,10 @@ pub fn eyedrop_step(frozen: Option<Frozen>, input: EyedropIn) -> (Option<Frozen>
 
 fn ask(id: AskId, screens: Vec<String>) -> (Option<Frozen>, Vec<EyedropOut>) {
     let waiting: BTreeSet<String> = screens.into_iter().collect();
-    let out = match waiting.is_empty() {
-        true => vec![EyedropOut::Cancel(id)],
-        false => waiting.iter().cloned().map(EyedropOut::Capture).collect(),
+    let out = if waiting.is_empty() {
+        vec![EyedropOut::Cancel(id)]
+    } else {
+        waiting.iter().cloned().map(EyedropOut::Capture).collect()
     };
     let held = Frozen {
         id,

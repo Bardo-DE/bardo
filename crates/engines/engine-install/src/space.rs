@@ -14,6 +14,7 @@ pub struct NoSpace {
 
 /// The bytes free to a program that is not root on the file system holding `path`, or on the
 /// nearest of its parents that exists. `None` when it cannot be read.
+#[must_use]
 pub fn free_bytes(path: &Path) -> Option<u64> {
     let near = path.ancestors().find(|ancestor| ancestor.exists())?;
     let stat = rustix::fs::statvfs(near).ok()?;

@@ -28,11 +28,13 @@ pub struct PendingHints {
 
 impl PendingHints {
     /// Nothing staged.
+    #[must_use]
     pub fn none() -> PendingHints {
         PendingHints::default()
     }
 
     /// With `first_mouse` staged (a later request replaces an earlier one).
+    #[must_use]
     pub fn with_first_mouse(self, first_mouse: Vec<LogicalRect>) -> PendingHints {
         PendingHints {
             first_mouse: Some(first_mouse),
@@ -41,6 +43,7 @@ impl PendingHints {
     }
 
     /// With `frame` staged (a later request replaces an earlier one).
+    #[must_use]
     pub fn with_frame(self, frame: FrameHint) -> PendingHints {
         PendingHints {
             frame: Some(frame),
@@ -62,6 +65,7 @@ impl PendingHints {
 /// subtracted rectangle is not representable as a list of rectangles, so a region with any
 /// subtraction keeps only the added rectangles no subtraction fully covers; an empty region
 /// is none.
+#[must_use]
 pub fn first_mouse_of(region: &RegionAttributes) -> Vec<LogicalRect> {
     let read: Vec<_> = region.rects.iter().take(MAX_FIRST_MOUSE_RECTS).collect();
     let subtracted: Vec<_> = read
@@ -82,6 +86,7 @@ pub fn first_mouse_of(region: &RegionAttributes) -> Vec<LogicalRect> {
 }
 
 /// The frame a `set_frame` asks for.
+#[must_use]
 pub fn frame_of(mode: FrameMode, corner_radius: u32) -> FrameHint {
     FrameHint {
         mode,
@@ -94,7 +99,7 @@ pub fn frame_of(mode: FrameMode, corner_radius: u32) -> FrameHint {
 pub struct BadRole;
 
 /// The role `set_role` may set: `document`, `utility` and `pip`; `dialog` and `shell` are known
-/// from other protocols (xdg-dialog, bardo_shell_v1) and a client cannot ask for them.
+/// from other protocols (xdg-dialog, `bardo_shell_v1`) and a client cannot ask for them.
 pub fn role_request(role: WindowRole) -> Result<WindowRole, BadRole> {
     match role {
         WindowRole::Document | WindowRole::Utility | WindowRole::Pip => Ok(role),
@@ -123,6 +128,7 @@ pub struct A11yTooLong;
 
 /// The events a proven `request_placement` makes: the model places the window (its `place`),
 /// and the object is told the window's new mark when its state changes.
+#[must_use]
 pub fn placement_events(window: WindowId, target: PlaceTarget, serial: InputSerial) -> Vec<Event> {
     vec![Event::ToplevelRequest {
         window,
@@ -133,6 +139,7 @@ pub fn placement_events(window: WindowId, target: PlaceTarget, serial: InputSeri
 /// What the model goes back to when the extension object is destroyed (the compositor forgets
 /// every value set through it): no first-mouse regions, a client frame with square corners that says nothing, a
 /// saved document, no accessibility root, and the role the window had without the object.
+#[must_use]
 pub fn forgotten(base_role: WindowRole) -> Vec<WindowHintChange> {
     vec![
         WindowHintChange::FirstMouse(Vec::new()),

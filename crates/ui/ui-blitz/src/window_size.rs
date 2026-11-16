@@ -14,6 +14,7 @@ pub struct Extent {
 
 impl Extent {
     /// `width` by `height`.
+    #[must_use]
     pub const fn new(width: u32, height: u32) -> Self {
         Extent { width, height }
     }
@@ -32,6 +33,7 @@ pub struct WindowSize {
 
 impl WindowSize {
     /// A window that opens `width` by `height` and may be resized to anything.
+    #[must_use]
     pub const fn new(width: u32, height: u32) -> Self {
         WindowSize {
             start: Extent::new(width, height),
@@ -41,6 +43,7 @@ impl WindowSize {
 
     /// The same window, never resized below `width` by `height`: the least its layout fits in,
     /// so panes with least widths of their own are never squeezed past them.
+    #[must_use]
     pub const fn with_least(self, width: u32, height: u32) -> Self {
         WindowSize {
             least: Some(Extent::new(width, height)),
@@ -49,11 +52,13 @@ impl WindowSize {
     }
 
     /// What the window opens at.
+    #[must_use]
     pub fn start(&self) -> Extent {
         self.start
     }
 
     /// The least the window may be resized to, if it has one.
+    #[must_use]
     pub fn least(&self) -> Option<Extent> {
         self.least
     }

@@ -101,6 +101,7 @@ pub enum ActionClass {
 }
 
 impl<S: CoordSpace> CuaAction<S> {
+    #[must_use]
     pub fn class(&self) -> ActionClass {
         match self {
             CuaAction::Observe | CuaAction::Zoom { .. } | CuaAction::Wait { .. } => {

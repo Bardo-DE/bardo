@@ -26,6 +26,7 @@ pub enum NewWindow {
 
 impl FilesDoc {
     /// Where a new window opens. A chosen folder with no path written is the home folder.
+    #[must_use]
     pub fn new_window(&self) -> NewWindow {
         let general = &self.general;
         match general.new_windows_show {
@@ -41,6 +42,7 @@ impl FilesDoc {
     }
 
     /// What the window follows while it is open.
+    #[must_use]
     pub fn preferences(&self) -> Preferences {
         let advanced = &self.advanced;
         Preferences {

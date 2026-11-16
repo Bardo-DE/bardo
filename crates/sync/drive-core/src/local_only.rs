@@ -1,7 +1,7 @@
 //! What stays on this computer and is never sent to the drive: the one list of it.
 //!
 //! - **Lock files** an app keeps beside a file it has open, which mean nothing anywhere else:
-//!   LibreOffice's `.~lock.<name>#`, Microsoft Office's `~$<name>` and vim's swap files
+//!   `LibreOffice`'s `.~lock.<name>#`, Microsoft Office's `~$<name>` and vim's swap files
 //!   (`.<name>.swp`, `.swo`, `.swx`). They are shown here like any file and never uploaded.
 //! - **The desktop's trash** at the top of the drive (`.Trash-<uid>`, and a shared `.Trash`),
 //!   where Files and `gio trash` put what is moved to the trash on a drive of its own. It and
@@ -10,6 +10,7 @@
 //! The list is kept short on purpose: anything not on it is sent.
 
 /// Whether a file named `name` is a lock file an app keeps beside one it has open.
+#[must_use]
 pub fn is_lock_file(name: &str) -> bool {
     (name.starts_with(".~lock.") && name.ends_with('#'))
         || name.starts_with("~$")
@@ -20,6 +21,7 @@ pub fn is_lock_file(name: &str) -> bool {
 }
 
 /// Whether a folder at the top of the drive named `name` is the desktop's trash.
+#[must_use]
 pub fn is_trash(name: &str) -> bool {
     name == ".Trash"
         || name

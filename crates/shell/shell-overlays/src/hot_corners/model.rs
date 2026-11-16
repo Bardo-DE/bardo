@@ -6,6 +6,7 @@ use ui_components::base::word::Word;
 use shell_ui_kit::links::Corner;
 
 /// What `corner` does per `settings`: its bindings, one per set of held keys.
+#[must_use]
 pub fn corner_bindings(settings: &HotCornerSettings, corner: Corner) -> &CornerBindings {
     match corner {
         Corner::TopLeft => &settings.top_left,
@@ -16,6 +17,7 @@ pub fn corner_bindings(settings: &HotCornerSettings, corner: Corner) -> &CornerB
 }
 
 /// The corners that get a surface: every one with at least one binding.
+#[must_use]
 pub fn active_corners(settings: &HotCornerSettings) -> Vec<Corner> {
     Corner::ALL
         .iter()

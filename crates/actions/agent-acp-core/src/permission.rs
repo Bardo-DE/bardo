@@ -19,6 +19,7 @@ pub const REJECT_ONCE: &str = "reject_once";
 
 /// Whether the editor's person let the call go on, to our gate: only a selection of `allow_once`
 /// does.
+#[must_use]
 pub fn allows(outcome: &RequestPermissionOutcome) -> bool {
     matches!(
         outcome,
@@ -27,12 +28,14 @@ pub fn allows(outcome: &RequestPermissionOutcome) -> bool {
 }
 
 /// Whether a reply to our request let the call go on: anything unreadable is a reject.
+#[must_use]
 pub fn allows_reply(reply: Result<RequestPermissionResponse, Error>) -> bool {
     reply.is_ok_and(|r| allows(&r.outcome))
 }
 
 /// The choice in an outcome on `sheet`: anything but a listed allow is a refusal, and `always`
 /// counts only if the sheet offered it.
+#[must_use]
 pub fn choice(outcome: &RequestPermissionOutcome, sheet: &ConfirmRequest) -> SheetChoice {
     match outcome {
         RequestPermissionOutcome::Selected(chosen) => match &*chosen.option_id.0 {
@@ -45,6 +48,7 @@ pub fn choice(outcome: &RequestPermissionOutcome, sheet: &ConfirmRequest) -> She
 }
 
 /// The choice in a reply to our request: anything unreadable is a refusal.
+#[must_use]
 pub fn choice_of_reply(
     reply: Result<RequestPermissionResponse, Error>,
     sheet: &ConfirmRequest,

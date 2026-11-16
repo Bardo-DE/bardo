@@ -58,6 +58,7 @@ fn var(name: &str, value: &str) -> EnvVar {
 
 /// The environment for a command, given the variables the requester asked for. Later duplicates
 /// win; `PATH` and `HOME` are never the requester's.
+#[must_use]
 pub fn sandbox_env(requested: &[(String, String)]) -> Vec<EnvVar> {
     let mut env = vec![
         var("PATH", SANDBOX_PATH),
@@ -77,6 +78,7 @@ pub fn sandbox_env(requested: &[(String, String)]) -> Vec<EnvVar> {
 }
 
 /// The names of the variables an agent asked for that were dropped, for the caller to show.
+#[must_use]
 pub fn dropped(requested: &[(String, String)]) -> Vec<String> {
     requested
         .iter()

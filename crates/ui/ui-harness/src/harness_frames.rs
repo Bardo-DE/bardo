@@ -38,6 +38,7 @@ impl Harness {
     }
 
     /// How many frames the document has laid out and painted since it was built.
+    #[must_use]
     pub fn frames(&self) -> u64 {
         self.doc.frames
     }

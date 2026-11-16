@@ -29,6 +29,7 @@ impl Default for StoredHistory {
 }
 
 /// What `state` writes: its history and last id, pixel images dropped.
+#[must_use]
 pub fn for_disk(state: &NotesState) -> StoredHistory {
     let mut history = state.history.clone();
     for note in history.groups.iter_mut().flat_map(|g| g.notes.iter_mut()) {

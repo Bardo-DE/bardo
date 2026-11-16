@@ -109,16 +109,19 @@ pub struct UntrustedWords(String);
 
 impl UntrustedWords {
     /// The words as the agent gave them.
+    #[must_use]
     pub fn new(text: String) -> Self {
         Self(text)
     }
 
     /// The words. Whoever reads them has to treat them as data.
+    #[must_use]
     pub fn as_untrusted_str(&self) -> &str {
         &self.0
     }
 
     /// The words, given up.
+    #[must_use]
     pub fn into_inner(self) -> String {
         self.0
     }

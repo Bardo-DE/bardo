@@ -22,6 +22,7 @@ pub struct PrivacyRow {
 
 impl Privilege {
     /// Every row Settings lists, ordered by power, then program, then who set it.
+    #[must_use]
     pub fn rows(&self) -> Vec<PrivacyRow> {
         let administrator = self.floor.rules().iter().map(|rule| PrivacyRow {
             power: rule.power,

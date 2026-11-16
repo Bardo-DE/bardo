@@ -82,6 +82,7 @@ impl FakeEis {
 
     /// The same server with the letter `a` at evdev code `code` in the keymap it sends (30 in the
     /// stock one), as after a layout change.
+    #[must_use]
     pub fn with_a_at(self, code: u32) -> Self {
         let keymap = US_KEYMAP.replace("<AC01> = 38;", &format!("<AC01> = {};", code + 8));
         Self { keymap, ..self }

@@ -27,11 +27,13 @@ pub struct ClosingFrame {
 
 impl ClosingFrame {
     /// A snapshot of the frame `style` makes, without a body.
+    #[must_use]
     pub fn new(style: FrameStyle) -> ClosingFrame {
         ClosingFrame { style, body: None }
     }
 
     /// The same frame with the window's last image inside it.
+    #[must_use]
     pub fn with_body(self, body: ClosingBody) -> ClosingFrame {
         ClosingFrame {
             body: Some(body),
@@ -53,6 +55,7 @@ impl ClosingFrame {
 /// assert_eq!((content.origin.x, content.origin.y), (100, 200));
 /// assert_eq!((content.size.w, content.size.h), (800, 600));
 /// ```
+#[must_use]
 pub fn closing_content(at: SubPoint, size: SubSize) -> LogicalRect {
     let origin = compositor_core::geometry::LogicalPoint {
         x: at.x.round_logical(),

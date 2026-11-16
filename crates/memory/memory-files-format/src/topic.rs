@@ -163,6 +163,7 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
 }
 
 /// Renders a topic file; dated headings use `tz`.
+#[must_use]
 pub fn render_topic(file: &TopicFile, tz: &FixedOffset) -> String {
     let mut out = format!(
         "---\nformat: {FORMAT_LINE}\ntopic: {}\ntitle: {}\n---\n\n",

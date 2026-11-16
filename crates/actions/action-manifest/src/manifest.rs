@@ -43,6 +43,7 @@ pub enum Visibility {
 
 impl Visibility {
     /// Whether this is the default, so the file need not say it.
+    #[must_use]
     pub fn is_everyone(&self) -> bool {
         *self == Self::Everyone
     }
@@ -110,6 +111,7 @@ pub struct RelationDecl {
 /// The name of the read action that resolves the relations of `kind` (`mail.thread` resolves by
 /// `mail.thread.related`). The router derives it from the declared relations; a manifest never
 /// declares it itself.
+#[must_use]
 pub fn related_name(kind: &EntityKind) -> Option<ActionName> {
     ActionName::parse(&format!("{}.related", kind.as_str())).ok()
 }
@@ -334,6 +336,7 @@ impl EntityDecl {
     /// kind in, the `relation` to follow as a choice, the things it names out. `None` when the
     /// kind declares no relation. `classes` is the kind's data class and the class of every
     /// kind in `others` that a relation names, so the gate asks for what resolving reveals.
+    #[must_use]
     pub fn related_action(&self, others: &[EntityDecl]) -> Option<ActionDecl> {
         let first = self.relations.first()?;
         let name = related_name(&self.kind)?;
@@ -380,6 +383,7 @@ impl EntityDecl {
     }
 
     /// The relation of this kind named `name`.
+    #[must_use]
     pub fn relation(&self, name: &RelationName) -> Option<&RelationDecl> {
         self.relations.iter().find(|r| &r.name == name)
     }
@@ -387,6 +391,7 @@ impl EntityDecl {
 
 impl Manifest {
     /// The kind whose relations `action` resolves, if `action` is a derived related action.
+    #[must_use]
     pub fn related_kind(&self, action: &ActionName) -> Option<&EntityDecl> {
         self.entities
             .iter()

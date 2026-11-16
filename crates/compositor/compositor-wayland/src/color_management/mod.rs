@@ -51,6 +51,7 @@ pub struct ColorPart {
 
 impl ColorPart {
     /// Creates the global (version 2), behind the I7 filter.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ColorPart
     where
         D: GlobalDispatch<WpColorManagerV1, ManagerGlobal> + 'static,
@@ -67,11 +68,13 @@ impl ColorPart {
     }
 
     /// The gamut of `output` (sRGB until [`set_gamut`] says otherwise).
+    #[must_use]
     pub fn gamut_of(&self, output: &OutputKey) -> Gamut {
         self.gamuts.get(output).copied().unwrap_or(Gamut::Srgb)
     }
 
     /// The tag that describes what `output` shows.
+    #[must_use]
     pub fn output_tag(&self, output: &OutputKey) -> ColorTag {
         match self.gamut_of(output) {
             Gamut::Srgb => ColorTag::SRGB,

@@ -55,6 +55,7 @@ impl<H: Http> OAuthSession<Google, H> {
     /// The same session knowing the person signed in at `at`, so a refusal can be told from
     /// Google's seven days (`reason_of_refusal`). accountd does not keep that date yet
     /// (FINDINGS), so `open` leaves it unknown.
+    #[must_use]
     pub fn signed_in_at(self, at: UnixSeconds) -> Self {
         self.state().extra.signed_in = Some(at);
         self
@@ -62,6 +63,7 @@ impl<H: Http> OAuthSession<Google, H> {
 
     /// Why the last refresh was refused, in words for the sheet, once one has been: the account
     /// is then `NeedsReauth` and this is what to tell the person.
+    #[must_use]
     pub fn reauth_reason(&self) -> Option<ReauthReason> {
         self.state().extra.reauth
     }
@@ -261,14 +263,16 @@ impl BrowserIssuer for Google {
     ) -> Result<(Option<String>, TokenKind), ProviderError> {
         let wanted = audience.0.trim_end_matches('/');
         if wanted == "imap" || wanted == "smtp" {
-            return match session.byo() {
-                true => Ok((None, TokenKind::Xoauth2)),
-                false => Err(ProviderError::Forbidden),
+            return if session.byo() {
+                Ok((None, TokenKind::Xoauth2))
+            } else {
+                Err(ProviderError::Forbidden)
             };
         }
-        match names_a_row(session.spec(), wanted) {
-            true => Ok((None, TokenKind::Bearer)),
-            false => Err(ProviderError::Forbidden),
+        if names_a_row(session.spec(), wanted) {
+            Ok((None, TokenKind::Bearer))
+        } else {
+            Err(ProviderError::Forbidden)
         }
     }
 
@@ -413,14 +417,15 @@ fn restriction_for(testing: bool, claims: &[Claim], now: UnixSeconds) -> Restric
     if present(CapabilityKind::Photos) {
         limits.push(Limit::new(CapabilityKind::Photos, LimitReason::PickerOnly));
     }
-    let (verification, token_lifetime) = match testing {
-        true => (
+    let (verification, token_lifetime) = if testing {
+        (
             Verification::Unverified {
                 user_cap: Count(TESTING_USER_CAP),
             },
             TokenLifetime::SevenDays,
-        ),
-        false => (Verification::Verified, TokenLifetime::Standard),
+        )
+    } else {
+        (Verification::Verified, TokenLifetime::Standard)
     };
     let restriction = Restriction::none()
         .with_verification(verification)
@@ -428,9 +433,10 @@ fn restriction_for(testing: bool, claims: &[Claim], now: UnixSeconds) -> Restric
         .with_consent(TenantConsent::User)
         .with_limits(limits);
     // Only a sign-in that expires needs its date.
-    match token_lifetime == TokenLifetime::SevenDays {
-        true => restriction.with_signed_in(now),
-        false => restriction,
+    if token_lifetime == TokenLifetime::SevenDays {
+        restriction.with_signed_in(now)
+    } else {
+        restriction
     }
 }
 

@@ -523,7 +523,7 @@ async fn only_intentd_may_ask_or_cancel() {
     let proxy = ConfirmProxy::new(&desk.intentd)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    assert!(proxy.confirm("{\"not\":\"a request\"}").await.is_err());
+    proxy.confirm("{\"not\":\"a request\"}").await.unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -653,7 +653,7 @@ async fn no_session_bus_is_no_sheet_and_not_a_crash() {
     })
     .await;
     // The handle still takes commands.
-    assert!(seat.control.send(IntentsCommand::RefreshGrants).is_ok());
+    seat.control.send(IntentsCommand::RefreshGrants).unwrap();
 }
 
 /// An invocation of `action` with no arguments, as intentd sends it.
@@ -719,7 +719,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
         serde_json::from_str(&reply).unwrap_or_else(|e| panic!("{reply}: {e}"));
     let outcome = outcome.unwrap_or_else(|e| panic!("{e:?}"));
     assert_eq!(
-        outcome.said.as_ref().map(|s| s.as_str()),
+        outcome.said.as_ref().map(action_vocab::LabelText::as_str),
         Some("Locked the screen")
     );
     let desk = doer.await.unwrap_or_else(|e| panic!("{e}"));

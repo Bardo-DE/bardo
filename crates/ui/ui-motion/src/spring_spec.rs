@@ -25,6 +25,7 @@ pub enum SpringResponse {
 
 impl SpringResponse {
     /// The response.
+    #[must_use]
     pub fn millis(self) -> Millis {
         match self {
             SpringResponse::Quick => Millis(260),
@@ -33,6 +34,7 @@ impl SpringResponse {
     }
 
     /// The token's name.
+    #[must_use]
     pub fn var(self) -> &'static str {
         match self {
             SpringResponse::Quick => "--spring-quick",
@@ -60,6 +62,7 @@ pub struct SpringSpec {
 
 impl SpringSpec {
     /// The spring for a motion `touch` caused, at [`SpringResponse::Move`].
+    #[must_use]
     pub fn for_touch(touch: Touch) -> SpringSpec {
         SpringSpec {
             touch,
@@ -68,17 +71,20 @@ impl SpringSpec {
     }
 
     /// The same spring at another response.
+    #[must_use]
     pub fn response(self, response: SpringResponse) -> SpringSpec {
         SpringSpec { response, ..self }
     }
 
     /// The touch it was chosen for.
+    #[must_use]
     pub fn touch(self) -> Touch {
         self.touch
     }
 
     /// The velocity the hand hands to the spring, in pixels per second: the contact's release
     /// velocity; nothing for a remote change, and nothing under Reduced (no throw overshoots).
+    #[must_use]
     pub fn thrown(self, level: MotionLevel) -> Velocity {
         match (level, self.touch) {
             (MotionLevel::Reduced, _) | (_, Touch::Remote) => Velocity::ZERO,
@@ -89,6 +95,7 @@ impl SpringSpec {
     /// The spring for a leg that has `travel` (target minus where it is, in pixels) to go:
     /// 0.8 when the release carried momentum toward the target, else critical; always critical
     /// under Reduced.
+    #[must_use]
     pub fn spring(self, travel: f64, level: MotionLevel) -> SpringTuning {
         let v = self.thrown(level).0;
         let toward = v.abs() >= MOMENTUM_PX_PER_S && (f64::from(v) * travel) > 0.0;

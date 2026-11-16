@@ -30,6 +30,7 @@ impl OnlineUrl {
     }
 
     /// The address as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

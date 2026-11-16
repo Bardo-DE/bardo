@@ -18,6 +18,7 @@ pub struct EntryFile {
 /// skipped. A folder is entered once however many links lead to it, so a link back up the tree
 /// ends the walk. The same id can come twice (one per root); [`first_of_each_id`] drops the
 /// shadowed ones.
+#[must_use]
 pub fn walk_applications(roots: &[PathBuf]) -> Vec<EntryFile> {
     let mut walk = Walk::default();
     for root in roots {
@@ -28,6 +29,7 @@ pub fn walk_applications(roots: &[PathBuf]) -> Vec<EntryFile> {
 
 /// `files` without any file whose id an earlier one already has: the entry in the more important
 /// folder shadows the others, as the specification says.
+#[must_use]
 pub fn first_of_each_id(files: Vec<EntryFile>) -> Vec<EntryFile> {
     let mut seen = BTreeSet::new();
     files

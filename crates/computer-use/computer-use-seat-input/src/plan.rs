@@ -80,6 +80,7 @@ const NOTCH_PX: u32 = 40;
 
 /// The centre of a window of `size`: half of each side, rounded down (a window one pixel wide
 /// has its centre on pixel 0).
+#[must_use]
 pub fn centre_of(size: Size<WindowSpace>) -> Point<WindowSpace> {
     Point::new(Coord(size.w.0 / 2), Coord(size.h.0 / 2))
 }
@@ -96,9 +97,10 @@ fn resolve(
         Target::Point(own) => given.unwrap_or(*own),
         Target::Node(_) => given.ok_or(PlanError::Unresolved)?,
     };
-    match point.x.0 < window.w.0 && point.y.0 < window.h.0 {
-        true => Ok(point),
-        false => Err(PlanError::OutsideWindow(point)),
+    if point.x.0 < window.w.0 && point.y.0 < window.h.0 {
+        Ok(point)
+    } else {
+        Err(PlanError::OutsideWindow(point))
     }
 }
 

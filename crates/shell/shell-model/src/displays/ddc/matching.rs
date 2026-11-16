@@ -12,6 +12,7 @@ pub fn bus_number(entry: &str) -> Option<DdcId> {
 
 /// Whether a PCI class (`0x030000`, as sysfs prints it) is a display controller (class 0x03:
 /// VGA, XGA, 3D), whose i2c buses are the ones that reach monitors.
+#[must_use]
 pub fn is_display_class(class: &str) -> bool {
     class
         .trim()
@@ -20,6 +21,7 @@ pub fn is_display_class(class: &str) -> bool {
 }
 
 /// The connector whose EDID's base block equals `bus_edid`'s, if exactly one does.
+#[must_use]
 pub fn connector_for<'a>(
     bus_edid: &[u8],
     connectors: &'a [(OutputName, Vec<u8>)],

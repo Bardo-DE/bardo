@@ -20,6 +20,7 @@
 /// casement has no renderer that draws across two GPUs for a capture, so such a buffer is
 /// filled from a read-back (FINDINGS `wave-2026-10-15/dmabuf`). A failed direct draw always
 /// falls back to the read-back, which every buffer has.
+#[must_use]
 pub fn direct(wanted: Option<u64>, drawing: Option<u64>, binds_format: bool) -> bool {
     let foreign = matches!((wanted, drawing), (Some(wanted), Some(drawing)) if wanted != drawing);
     binds_format && !foreign

@@ -56,7 +56,7 @@ pub struct Hello {
     /// The requests it answers.
     pub provides: Vec<Capability>,
     /// The export targets it can write on this machine, which may be fewer than its manifest
-    /// lists (a distribution's FFmpeg may lack an encoder). Empty when it does not say.
+    /// lists (a distribution's `FFmpeg` may lack an encoder). Empty when it does not say.
     #[serde(default)]
     pub targets: Vec<String>,
 }

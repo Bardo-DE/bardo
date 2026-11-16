@@ -38,6 +38,7 @@ pub enum LockPhase {
 
 impl LockPhase {
     /// Whether the lock is over: nothing moves it any more.
+    #[must_use]
     pub fn ended(self) -> Ended {
         match self {
             LockPhase::Unlocked | LockPhase::Finished => Ended::Yes,

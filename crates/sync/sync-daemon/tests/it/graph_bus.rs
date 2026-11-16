@@ -1,4 +1,4 @@
-//! syncd syncing a folder of OneDrive's app folder against a fake Graph drive through accountd's
+//! syncd syncing a folder of `OneDrive`'s app folder against a fake Graph drive through accountd's
 //! authenticated relay, on one private bus: accountd (hosted in process over
 //! in-memory secrets, a fake provider that mints a token for the endpoint's audience) holds the
 //! OAuth credential and runs the relay, which adds the bearer; syncd's replica gets only a stream

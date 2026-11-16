@@ -19,7 +19,7 @@ fn three() -> (Tabs, [TabId; 3]) {
 }
 
 fn ids(tabs: &Tabs) -> Vec<TabId> {
-    tabs.iter().map(|tab| tab.id()).collect()
+    tabs.iter().map(files_model::Tab::id).collect()
 }
 
 fn places(tabs: &Tabs) -> Vec<Location> {

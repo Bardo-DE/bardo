@@ -123,6 +123,7 @@ impl SpeechRunner {
     /// The runner of one turn on `model` (an engine of kind speech host), answering as `served`
     /// and keeping the engine marked in use through `engines`. `None` when the model's engine
     /// is not a speech host.
+    #[must_use]
     pub fn for_model(model: &LocalModel, served: ServedBy, engines: Supervised) -> Option<Self> {
         (model.profile.kind == EngineKind::SpeechHost).then(|| Self {
             backend: SttBackend::SpeechHost(SpeechHostClient::new(HostSocket(
@@ -262,6 +263,7 @@ pub struct Ears {
 
 impl Ears {
     /// Ears over these engines.
+    #[must_use]
     pub fn new(engines: Engines) -> Self {
         Self { engines }
     }

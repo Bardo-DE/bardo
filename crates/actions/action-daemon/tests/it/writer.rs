@@ -178,7 +178,11 @@ async fn nothing_in_the_draft_is_believed_as_written() {
     );
     assert_eq!(policy.max_count.0, 100);
     assert_eq!(
-        policy.kinds.iter().map(|k| k.as_str()).collect::<Vec<_>>(),
+        policy
+            .kinds
+            .iter()
+            .map(provenance::EntityKind::as_str)
+            .collect::<Vec<_>>(),
         ["mail.thread"]
     );
     assert_eq!(

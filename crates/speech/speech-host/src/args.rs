@@ -53,12 +53,11 @@ impl Seen {
             CHUNK_MS => (CHUNK_MS, &mut self.chunk_ms),
             other => return Err(ArgsError::Unknown(other.to_string())),
         };
-        match slot {
-            Some(_) => Err(ArgsError::Invalid(name)),
-            None => {
-                *slot = Some(value);
-                Ok(())
-            }
+        if slot.is_some() {
+            Err(ArgsError::Invalid(name))
+        } else {
+            *slot = Some(value);
+            Ok(())
         }
     }
 }

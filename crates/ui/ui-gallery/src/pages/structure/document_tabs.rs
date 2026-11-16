@@ -1,11 +1,11 @@
-//! DocumentTabs: the Finder and Safari tab strip, live: select, close, new and drag to reorder.
+//! `DocumentTabs`: the Finder and Safari tab strip, live: select, close, new and drag to reorder.
 
 use crate::pages::Section;
 use dioxus::prelude::*;
 use ui_components::components::chrome::document_tabs::{DocumentTab, DocumentTabs};
 use ui_components::components::chrome::document_tabs_model::strip_shown;
 
-/// The DocumentTabs section.
+/// The `DocumentTabs` section.
 #[component]
 pub fn DocumentTabsSection() -> Element {
     let mut titles = use_signal(|| {
@@ -32,7 +32,7 @@ pub fn DocumentTabsSection() -> Element {
                             let last = titles.read().len().saturating_sub(1);
                             selected.set(selected().min(last));
                         },
-                        onnew: move |_| {
+                        onnew: move |()| {
                             opened += 1;
                             titles.write().push(format!("Untitled {opened}"));
                             selected.set(titles.read().len() - 1);

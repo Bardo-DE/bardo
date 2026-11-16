@@ -27,6 +27,7 @@ pub struct Conflict {
 
 impl Conflict {
     /// The name `item` is taken in `folder` while doing `kind`, with `rest` items still to come.
+    #[must_use]
     pub fn new(item: FileName, folder: FolderPath, kind: Bring, rest: usize) -> Conflict {
         Conflict {
             item,
@@ -61,6 +62,7 @@ pub struct Resolution {
 
 impl Resolution {
     /// `answer` for this item only.
+    #[must_use]
     pub fn once(answer: Answer) -> Resolution {
         Resolution {
             answer,
@@ -69,6 +71,7 @@ impl Resolution {
     }
 
     /// `answer` for this item and every later conflict.
+    #[must_use]
     pub fn for_rest(answer: Answer) -> Resolution {
         Resolution {
             answer,

@@ -1,10 +1,11 @@
-//! A device's kind from BlueZ's `Device1.Icon`: the freedesktop icon name BlueZ derives from
+//! A device's kind from `BlueZ`'s `Device1.Icon`: the freedesktop icon name `BlueZ` derives from
 //! the device class (`audio-headphones`, `input-keyboard`, ...). Compared whole: an icon name
 //! is a token, not a substring.
 
 use super::BtKind;
 
 /// The kind `icon` names; `Other` for an icon this list does not know, or none at all.
+#[must_use]
 pub fn device_kind(icon: &str) -> BtKind {
     match icon {
         "audio-headphones" => BtKind::Headphones,

@@ -1076,14 +1076,11 @@ mod storms {
         fn nothing_storms_and_a_refusal_holds(acts in proptest::collection::vec(any_act(), 1..80)) {
             let mut desk = started();
             for act in acts {
-                let effects = match event_of(&act) {
-                    Some(event) => desk.send(event),
-                    None => {
-                        if let Act::Wait(secs) = act {
-                            desk.wait(Duration::from_secs(secs));
-                        }
-                        Vec::new()
+                let effects = if let Some(event) = event_of(&act) { desk.send(event) } else {
+                    if let Act::Wait(secs) = act {
+                        desk.wait(Duration::from_secs(secs));
                     }
+                    Vec::new()
                 };
                 prop_assert!(questions(&effects).len() <= 1, "{:?}", act);
                 let shown = desk.model.privilege().asks().iter()

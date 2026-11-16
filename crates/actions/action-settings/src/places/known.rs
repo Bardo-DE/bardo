@@ -20,6 +20,7 @@ impl Places {
     /// The setting with a row for every known place. A row the person set keeps its choice; a new
     /// one is Off, even for a computer inferd already used (the person has not said yes here).
     /// A setting row for a place no longer known is kept, so signing back in restores it.
+    #[must_use]
     pub fn merged(mut self, known: &Known) -> Self {
         for place in &known.0 {
             match place {

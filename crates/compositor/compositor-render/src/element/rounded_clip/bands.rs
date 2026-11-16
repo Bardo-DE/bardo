@@ -51,9 +51,10 @@ fn corner_pieces(shape: &ClipShape) -> (Vec<Rect>, BTreeMap<u8, Vec<Rect>>) {
         for y in top..top + radius {
             let mut start: Option<i32> = None;
             for x in left..=left + radius {
-                let level = match x < left + radius {
-                    true => level_of(shape.coverage(x as f32 + 0.5, y as f32 + 0.5)),
-                    false => 0,
+                let level = if x < left + radius {
+                    level_of(shape.coverage(x as f32 + 0.5, y as f32 + 0.5))
+                } else {
+                    0
                 };
                 match (level == LEVELS, start) {
                     (true, None) => start = Some(x),

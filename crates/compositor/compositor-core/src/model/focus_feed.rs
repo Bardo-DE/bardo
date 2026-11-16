@@ -69,12 +69,13 @@ impl Model {
                     (model, moved)
                 });
         let raised = Moved::of(model).with(Effect::Raise(windows.to_vec()));
-        match moved.is_empty() {
-            true => raised,
-            false => raised.then(|model| {
+        if moved.is_empty() {
+            raised
+        } else {
+            raised.then(|model| {
                 let outputs = model.outputs_of(&moved);
                 model.redrawn(Cause::Configure, outputs)
-            }),
+            })
         }
     }
 

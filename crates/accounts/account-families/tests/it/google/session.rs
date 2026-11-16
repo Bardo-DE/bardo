@@ -328,12 +328,10 @@ async fn a_young_sign_in_refused_is_not_blamed_on_the_seven_days() {
         .await
         .signed_in_at(UnixSeconds(1_000_000 - 86_400));
     rig.google.issuer.refuse_refreshes(1);
-    assert!(
-        session
-            .access_token(&audience("google_tasks"))
-            .await
-            .is_err()
-    );
+    session
+        .access_token(&audience("google_tasks"))
+        .await
+        .unwrap_err();
     assert_eq!(session.reauth_reason(), None);
 }
 

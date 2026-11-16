@@ -41,6 +41,7 @@ pub enum Due {
 /// The next check after `last`, seen from `now`. A good check is followed by one 24 hours plus a
 /// jitter of up to an hour (from `seed`) later; a failed one by a retry an hour later. A start
 /// that finds the check overdue checks at once.
+#[must_use]
 pub fn next_check(last: Option<Attempt>, now: UnixSeconds, seed: u64) -> Due {
     let Some(last) = last else { return Due::Now };
     let jitter = i64::try_from(seed % JITTER_SECS).unwrap_or(0);

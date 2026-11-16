@@ -31,6 +31,7 @@ pub enum FileIconColour {
 
 impl FileIconColour {
     /// The colour in `scheme`.
+    #[must_use]
     pub const fn hex(self, scheme: Scheme) -> Hex {
         let (light, dark): (u32, u32) = match self {
             FileIconColour::Fold => (0xDCDDE1, 0xDCDDE1),

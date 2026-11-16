@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 pub enum AuthKind {
     /// A remote endpoint that needs no credential (a vLLM on the local network).
     None,
-    /// A runtime on this computer found by a probe (Ollama, llama.cpp, ComfyUI).
+    /// A runtime on this computer found by a probe (Ollama, llama.cpp, `ComfyUI`).
     LocalRuntime,
     /// The account password (generic IMAP/DAV servers).
     Password,
@@ -23,15 +23,15 @@ pub enum AuthKind {
     LocalBridge,
     /// An access key pair (S3, B2).
     KeyPair,
-    /// An API key the user pastes (Anthropic, OpenAI, Gemini).
+    /// An API key the user pastes (Anthropic, `OpenAI`, Gemini).
     ApiKey,
     /// OAuth 2.0 with PKCE and a loopback redirect (Google, Microsoft, Dropbox).
     #[serde(rename = "oauth_pkce")]
     OAuthPkce,
-    /// OAuth PKCE that mints a user-owned API key (OpenRouter, R10).
+    /// OAuth PKCE that mints a user-owned API key (`OpenRouter`, R10).
     #[serde(rename = "oauth_mints_key")]
     OAuthMintsKey,
-    /// OAuth that spends a subscription plan's allowance (ChatGPT sign-in, R9; an option).
+    /// OAuth that spends a subscription plan's allowance (`ChatGPT` sign-in, R9; an option).
     #[serde(rename = "oauth_plan")]
     OAuthPlan,
     /// A cloud identity (Entra, Vertex ADC, an AWS profile).
@@ -86,6 +86,7 @@ pub struct AuthFacts {
 
 impl AuthKind {
     /// The facts of this kind. No wildcard arm: a new kind is placed here.
+    #[must_use]
     pub fn facts(self) -> AuthFacts {
         let base = AuthFacts {
             way: SignInWay::Nothing,

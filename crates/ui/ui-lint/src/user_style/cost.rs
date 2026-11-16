@@ -34,18 +34,18 @@ pub(super) fn notes(
         "backdrop-filter" | "filter" if heavy_blur(value, scope) => {
             push(UserStyleNoteKind::HeavyBlur {
                 property: name.clone(),
-            })
+            });
         }
         "box-shadow" if shadow_blur(value) > MAX_SHADOW_BLUR_TOTAL_PX => {
-            push(UserStyleNoteKind::LargeShadow)
+            push(UserStyleNoteKind::LargeShadow);
         }
         "animation" | "animation-iteration-count"
             if has_ident(value, "infinite") && !in_spinner(scope) =>
         {
-            push(UserStyleNoteKind::EndlessAnimation)
+            push(UserStyleNoteKind::EndlessAnimation);
         }
         "transition" | "transition-property" if has_ident(value, "all") => {
-            push(UserStyleNoteKind::AnimatesEverything)
+            push(UserStyleNoteKind::AnimatesEverything);
         }
         _ => {}
     }

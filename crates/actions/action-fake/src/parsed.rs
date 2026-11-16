@@ -28,7 +28,10 @@ pub struct ParsedReviewer {
 impl ParsedReviewer {
     /// Sets what `stage` says from now on; the other stages keep what they had.
     pub fn say(&self, stage: Stage, words: &str) {
-        let mut spoiled = self.spoiled.lock().unwrap_or_else(|e| e.into_inner());
+        let mut spoiled = self
+            .spoiled
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         spoiled.retain(|(s, _)| *s != stage);
         spoiled.push((stage, words.to_owned()));
     }
@@ -37,19 +40,25 @@ impl ParsedReviewer {
     pub fn reset(&self) {
         self.spoiled
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .clear();
     }
 
     /// The stages asked since the last `forget`, in order.
     pub fn asked(&self) -> Vec<Stage> {
-        self.asked.lock().unwrap_or_else(|e| e.into_inner()).clone()
+        self.asked
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .clone()
     }
 }
 
 impl Forget for ParsedReviewer {
     fn forget(&self) {
-        self.asked.lock().unwrap_or_else(|e| e.into_inner()).clear();
+        self.asked
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .clear();
     }
 }
 
@@ -61,10 +70,13 @@ impl Reviewer for ParsedReviewer {
     ) -> Result<ReviewVerdict, ReviewError> {
         self.asked
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .push(stage);
         let words = {
-            let spoiled = self.spoiled.lock().unwrap_or_else(|e| e.into_inner());
+            let spoiled = self
+                .spoiled
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             spoiled
                 .iter()
                 .find(|(s, _)| *s == stage)

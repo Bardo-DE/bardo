@@ -1,7 +1,7 @@
 //! `org.bardo.Inference1.Agents` at `/org/bardo/Inference1`: inferd as an external coding agent's
 //! model endpoint (agent-session ask P4). Only a connection whose caller role is `AgentLauncher`
 //! may call it; every other role is refused `AccessDenied`. A call opens a per-session loopback
-//! HTTP listener that serves Anthropic Messages and OpenAI Chat Completions, and returns where it
+//! HTTP listener that serves Anthropic Messages and `OpenAI` Chat Completions, and returns where it
 //! is and the secret the agent sends as its "API key". The session ends at `CloseEndpoint`, or
 //! when the launcher's bus connection goes away.
 //!

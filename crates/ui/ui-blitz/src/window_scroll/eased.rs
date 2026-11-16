@@ -40,9 +40,10 @@ impl Eased {
 
 /// `target` with `by` added, unchanged for no motion.
 fn push_axis(target: Target, by: f64, now: Elapsed, cap: f64) -> Target {
-    match by == 0.0 {
-        true => target,
-        false => target.push_capped(by, now, cap),
+    if by == 0.0 {
+        target
+    } else {
+        target.push_capped(by, now, cap)
     }
 }
 

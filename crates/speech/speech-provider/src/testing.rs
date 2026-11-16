@@ -22,6 +22,7 @@ pub struct ScriptedStt {
 }
 
 impl ScriptedStt {
+    #[must_use]
     pub fn new(
         models: Vec<SpeechModelInfo>,
         script: Vec<(SampleIndex, TranscriptEvent)>,
@@ -104,6 +105,7 @@ pub struct ScriptedTts {
 }
 
 impl ScriptedTts {
+    #[must_use]
     pub fn new(models: Vec<SpeechModelInfo>, script: TtsScript) -> Self {
         Self {
             models,
@@ -171,6 +173,7 @@ pub struct ScriptedVad {
 }
 
 impl ScriptedVad {
+    #[must_use]
     pub fn new(verdicts: Vec<Voiced>) -> Self {
         Self { verdicts, next: 0 }
     }

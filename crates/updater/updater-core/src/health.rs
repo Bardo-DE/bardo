@@ -32,6 +32,7 @@ pub struct LoginSession {
 impl LoginSession {
     /// Whether `other` is provably the same login: the same known boot and the same session
     /// (neither having one counts as the same). An unknown boot proves nothing.
+    #[must_use]
     pub fn is_same_as(&self, other: &Self) -> bool {
         self.boot.is_some() && self.boot == other.boot && self.session == other.session
     }
@@ -52,6 +53,7 @@ pub struct Pending {
 
 impl Pending {
     /// The marker an install in login `session` leaves.
+    #[must_use]
     pub fn installed(version: Version, session: LoginSession) -> Self {
         Self {
             version,
@@ -61,6 +63,7 @@ impl Pending {
     }
 
     /// The marker after the first login on the release started, in login `session`.
+    #[must_use]
     pub fn first_login_seen(self, session: LoginSession) -> Self {
         Self {
             stage: PendingStage::FirstLoginSeen,
@@ -102,6 +105,7 @@ pub enum Boot {
 
 /// Decides from the release now current, the marker, the release last confirmed, whether a
 /// rollback is possible and the login this start belongs to.
+#[must_use]
 pub fn decide_boot(
     current: Option<&Version>,
     pending: Option<&Pending>,

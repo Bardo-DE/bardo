@@ -53,6 +53,7 @@ pub struct SpeechCaps {
 }
 
 impl SpeechCaps {
+    #[must_use]
     pub fn dir(&self) -> SpeechDir {
         match self.io {
             SpeechIo::In { .. } => SpeechDir::In,

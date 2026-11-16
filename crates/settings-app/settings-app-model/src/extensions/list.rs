@@ -64,6 +64,7 @@ const GROUPS: &[(&str, ExtensionKind)] = &[
 
 impl ExtensionRow {
     /// The switch this row draws: none for an Extension that cannot be used.
+    #[must_use]
     pub fn power(&self) -> Option<bool> {
         match self.standing {
             ExtensionStanding::Usable { on } if !self.holds_changes => Some(on),
@@ -72,6 +73,7 @@ impl ExtensionRow {
     }
 
     /// Whether the Extension cannot be used (the page says so where the switch would be).
+    #[must_use]
     pub fn is_unusable(&self) -> bool {
         matches!(self.standing, ExtensionStanding::Unusable(_))
     }
@@ -105,6 +107,7 @@ pub struct ExtensionList {
 
 impl ExtensionList {
     /// The list of `rows`, grouped and sorted by name.
+    #[must_use]
     pub fn of(rows: Vec<ExtensionRow>) -> ExtensionList {
         let order = GROUPS
             .iter()
@@ -125,6 +128,7 @@ impl ExtensionList {
     }
 
     /// Whether nothing is installed.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.groups.is_empty()
     }

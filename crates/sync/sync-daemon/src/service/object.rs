@@ -54,9 +54,10 @@ impl<C: Callers> Core<C> {
     fn visible(&self, caller: &Caller, text: &str) -> Result<DatasetName, RefusedError> {
         let name = DatasetName::parse(text)
             .ok_or_else(|| RefusedError::invalid(format!("`{text}` is not <account>/<dataset>")))?;
-        match self.hub.sees(caller, &name) {
-            true => Ok(name),
-            false => Err(RefusedError::of(Refusal::NoFittingAccount)),
+        if self.hub.sees(caller, &name) {
+            Ok(name)
+        } else {
+            Err(RefusedError::of(Refusal::NoFittingAccount))
         }
     }
 

@@ -23,6 +23,7 @@ pub enum IntentsError {
 
 impl IntentsError {
     /// The wire refusal this error carries, or `None` for a bus failure.
+    #[must_use]
     pub fn refusal(&self) -> Option<WireRefusal> {
         match self {
             IntentsError::ZBus(_) => None,
@@ -35,6 +36,7 @@ impl IntentsError {
 
     /// The error for a refusal that is one; `None` for a refused call or message, which are
     /// answers.
+    #[must_use]
     pub fn from_refusal(refusal: &WireRefusal) -> Option<Self> {
         let text = String::new();
         match refusal {

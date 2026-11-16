@@ -15,6 +15,7 @@ pub struct MailShare {
 
 impl MailShare {
     /// Sharing that starts programs through `env`.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         MailShare { env }
     }

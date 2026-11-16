@@ -55,7 +55,7 @@ impl Dispatch<XdgActivationV1, ()> for Quiet {
         _: &mut Self,
         _: &XdgActivationV1,
         _: <XdgActivationV1 as wayland_client::Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

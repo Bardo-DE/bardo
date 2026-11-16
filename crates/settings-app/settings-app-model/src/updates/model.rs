@@ -31,6 +31,7 @@ pub enum UpdatePhase {
 
 impl UpdatePhase {
     /// The phase the service's word names; `None` for a word this window does not know.
+    #[must_use]
     pub fn of_word(word: &str) -> Option<UpdatePhase> {
         Some(match word {
             "idle" => UpdatePhase::Idle,
@@ -46,6 +47,7 @@ impl UpdatePhase {
     }
 
     /// Whether the service is working, so a new request would be refused.
+    #[must_use]
     pub fn is_busy(self) -> bool {
         matches!(
             self,
@@ -66,6 +68,7 @@ pub struct ByteCount(pub u64);
 pub struct Permille(pub u32);
 
 /// What kind of failure the service reports (its `ProblemKind`), for the kinds this window acts on.
+///
 /// It is never shown; the person reads the service's own sentence. A word this window does not
 /// know, a word that is too long, and no word at all (an older service) are all [`Self::Other`], a
 /// plain failure.
@@ -81,6 +84,7 @@ pub enum ProblemKind {
 
 impl ProblemKind {
     /// The kind the service's word names.
+    #[must_use]
     pub fn of_word(word: &str) -> ProblemKind {
         match word {
             "version-changed" => ProblemKind::VersionChanged,
@@ -90,6 +94,7 @@ impl ProblemKind {
 }
 
 /// A version the service offered, as the person reads it: a short run of version characters.
+///
 /// It is only made by [`UpdateVersion::parse`], so holding one means it passed the bounds, and it
 /// is the one thing an install may name.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -102,6 +107,7 @@ impl UpdateVersion {
     }
 
     /// The version as the person reads it: "0.4.0".
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

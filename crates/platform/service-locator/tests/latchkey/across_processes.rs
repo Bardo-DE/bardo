@@ -16,9 +16,10 @@ use std::time::{Duration, Instant};
 /// extracted somewhere else, so nextest sets `NEXTEST_BIN_EXE_` at run time to the remapped path;
 /// that wins when present. A binary that is not where either says fails loudly, not skips.
 fn the_example() -> std::path::PathBuf {
-    let built = std::env::var_os("NEXTEST_BIN_EXE_latchkey-test-agent")
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|| env!("CARGO_BIN_EXE_service-locator-test-agent").into());
+    let built = std::env::var_os("NEXTEST_BIN_EXE_latchkey-test-agent").map_or_else(
+        || env!("CARGO_BIN_EXE_service-locator-test-agent").into(),
+        std::path::PathBuf::from,
+    );
     assert!(built.exists(), "{} is missing", built.display());
     built
 }
@@ -149,8 +150,8 @@ fn a_killed_agent_locks_nobody_out() {
             home.join("agent.sock").exists(),
             "the residue is the whole point"
         );
-        assert!(home.join("agent.lock").exists());
-    }
+        assert!(home.join("agent.lock").exists())
+    };
     assert!(
         !matches!(agent.connect(), Ok(Some(_))),
         "the socket is still there and nothing is behind it"

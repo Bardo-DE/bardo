@@ -27,6 +27,7 @@ pub struct ThumbnailFrames {
 
 impl ThumbnailFrames {
     /// The cache under `cache_dir` (the person's `XDG_CACHE_HOME`): `<cache_dir>/thumbnails`.
+    #[must_use]
     pub fn in_cache(cache_dir: &Path) -> ThumbnailFrames {
         // The platform crate reads only the cache directory of its `Env`; the rest is isolated
         // and refuses to reach a bus or start a program.

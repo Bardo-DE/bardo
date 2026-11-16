@@ -20,6 +20,7 @@ impl SceneSpec {
     /// let scene = SceneSpec { outputs: Vec::new() };
     /// assert_eq!(scene.clone().in_mission_control(), scene);
     /// ```
+    #[must_use]
     pub fn in_mission_control(self) -> SceneSpec {
         let outputs = self
             .outputs

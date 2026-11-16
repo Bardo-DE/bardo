@@ -18,6 +18,7 @@ fn class_in(rows: &[ClassFragments], text: &str) -> Option<WindowClass> {
 }
 
 /// The class of the window of `app` titled `title`.
+#[must_use]
 pub fn window_class_of(rules: &WindowRules, app: &AppName, title: &str) -> WindowClass {
     let id = app.as_str().to_lowercase();
     if let Some(class) = class_in(&rules.apps, &id) {
@@ -42,6 +43,7 @@ pub fn window_class_of(rules: &WindowRules, app: &AppName, title: &str) -> Windo
 /// The class of the window of `app` titled `title` whose accessibility tree is `nodes`: what
 /// [`window_class_of`] says, and when that is `Ordinary`, `Payments` if a pay control is on
 /// screen (a button named for paying, wherever the page's title is silent).
+#[must_use]
 pub fn window_class_in(
     rules: &Rules,
     app: &AppName,

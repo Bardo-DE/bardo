@@ -122,6 +122,7 @@ fn reason(reason: &AskReason, effect: Effect, undo: bool) -> Result<(), Withheld
 
 /// The first reason a standing grant cannot replace this ask, in a fixed order: breaker, budget,
 /// effect class, the action's own rule, then each reason the router gave, then the labels.
+#[must_use]
 pub fn blocker(f: &AskFacts<'_>) -> Option<Withheld> {
     if f.breaker_tripped {
         return Some(Withheld::BreakerTripped);
@@ -158,6 +159,7 @@ pub fn blocker(f: &AskFacts<'_>) -> Option<Withheld> {
 
 /// Whether a caller can hold standing grants: an editor or an ACP agent. The terminal, the
 /// companion, computer use and apps have their own consent; this model leaves them as they are.
+#[must_use]
 pub fn holds_standing(caller: &GrantCaller) -> bool {
     matches!(
         caller,
@@ -251,6 +253,7 @@ fn reads_only(caller: &GrantCaller, call: &CallFacts, f: &AskFacts<'_>) -> bool 
 
 /// May this confirmation offer "allow always"? `Offered` carries the exact scope the grant would
 /// have; `Withheld` says why not.
+#[must_use]
 pub fn may_offer(caller: &GrantCaller, call: &CallFacts, f: &AskFacts<'_>) -> AlwaysOffer {
     if !holds_standing(caller) {
         return AlwaysOffer::Withheld(Withheld::CallerCannotHold);

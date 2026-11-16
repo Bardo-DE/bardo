@@ -54,14 +54,12 @@ fn an_openai_stream_asks_for_usage_and_every_other_body_goes_as_it_came() {
         whole,
         "nothing of an Anthropic request is touched"
     );
-    assert!(
-        body_for(
-            &Request::new("POST", "/", &[], &[0xff, 0xfe]),
-            Shape::Anthropic,
-            false
-        )
-        .is_err()
-    );
+    body_for(
+        &Request::new("POST", "/", &[], &[0xff, 0xfe]),
+        Shape::Anthropic,
+        false,
+    )
+    .unwrap_err();
 }
 
 #[test]

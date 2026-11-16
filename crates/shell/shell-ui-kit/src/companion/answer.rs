@@ -201,6 +201,7 @@ fn refused(refusal: &RefusalWire, footer: CardFooter) -> AnswerView {
 
 /// `view` without its card buttons: where the buttons are drawn elsewhere (the launcher's pane
 /// lists the row's actions with their keys), the card is the body and the footer alone.
+#[must_use]
 pub fn without_actions(view: AnswerView) -> AnswerView {
     match view {
         AnswerView::Text(text) => AnswerView::Text(TextAnswer {

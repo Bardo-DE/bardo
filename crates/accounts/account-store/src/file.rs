@@ -41,16 +41,19 @@ pub struct RegistryRefusal {
 
 impl RegistryRefusal {
     /// The registry file.
+    #[must_use]
     pub fn file(&self) -> &std::path::Path {
         &self.file
     }
 
     /// The copy from before its last change, when one is there.
+    #[must_use]
     pub fn backup(&self) -> Option<&std::path::Path> {
         self.backup.as_deref()
     }
 
     /// What was wrong with the file.
+    #[must_use]
     pub fn cause(&self) -> &str {
         &self.cause
     }
@@ -68,16 +71,19 @@ impl FileStore {
     }
 
     /// The directory the store keeps its files in.
+    #[must_use]
     pub fn dir(&self) -> &Path {
         &self.dir
     }
 
     /// The registry file.
+    #[must_use]
     pub fn path(&self) -> PathBuf {
         self.file.path()
     }
 
     /// The copy of the registry file from before its last change.
+    #[must_use]
     pub fn backup_path(&self) -> PathBuf {
         self.file.backup_path()
     }

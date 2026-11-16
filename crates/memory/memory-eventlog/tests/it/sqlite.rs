@@ -313,8 +313,8 @@ fn an_unknown_schema_is_refused() {
         conn.pragma_update(None, "key", key().pragma())
             .expect("key");
         conn.pragma_update(None, "user_version", 9)
-            .expect("version");
-    }
+            .expect("version")
+    };
     assert!(matches!(
         SqliteLog::open(&path(&dir), &key()),
         Err(LogError::Schema { found: 9 })
@@ -327,8 +327,8 @@ fn a_plain_sqlite_file_is_locked_to_a_keyed_open() {
     {
         let conn = rusqlite::Connection::open(path(&dir)).expect("open");
         conn.execute_batch("CREATE TABLE t(x); INSERT INTO t VALUES (1);")
-            .expect("plain");
-    }
+            .expect("plain")
+    };
     assert!(matches!(
         SqliteLog::open(&path(&dir), &key()),
         Err(LogError::Locked)

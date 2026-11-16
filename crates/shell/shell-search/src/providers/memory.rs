@@ -1,4 +1,5 @@
 //! What the companion remembers, as the memory timeline: newest first, who did what to which thing.
+//!
 //! Only the Memory filter (`Scope::Only`) lists it: the timeline is read from memoryd on demand,
 //! through the companion service (which holds the shell's seat), and waited for under the
 //! query's generation as the things provider waits for a search.
@@ -46,9 +47,10 @@ impl Provider for MemoryProvider {
             return;
         }
         let state = self.companion.borrow().clone();
-        let waiting = match alone && ready {
-            true => asked_of(&state, query),
-            false => Vec::new(),
+        let waiting = if alone && ready {
+            asked_of(&state, query)
+        } else {
+            Vec::new()
         };
         let notice = state
             .memory_notice
@@ -126,9 +128,10 @@ impl MemoryProvider {
 
 /// What waits for the person, if it was read for this query.
 fn asked_of(state: &Companion, query: &Query) -> Vec<FactView> {
-    match state.waiting.generation == query.generation {
-        true => state.waiting.found.clone(),
-        false => Vec::new(),
+    if state.waiting.generation == query.generation {
+        state.waiting.found.clone()
+    } else {
+        Vec::new()
     }
 }
 

@@ -51,6 +51,7 @@ impl EhloReply {
     }
 
     /// Whether the server offers the extension `keyword` (compared without case).
+    #[must_use]
     pub fn offers(&self, keyword: &str) -> bool {
         self.extensions.iter().any(|e| {
             e.split(' ')
@@ -76,6 +77,7 @@ impl EhloReply {
 
     /// The reply the app sees: the same domain and extensions less `STARTTLS` and `AUTH`, the
     /// last line closing the reply.
+    #[must_use]
     pub fn offered_to_app(&self) -> Vec<u8> {
         let kept: Vec<&String> = self
             .extensions
@@ -93,9 +95,12 @@ impl EhloReply {
         lines
             .iter()
             .enumerate()
-            .map(|(at, line)| match at == last {
-                true => format!("250 {line}\r\n"),
-                false => format!("250-{line}\r\n"),
+            .map(|(at, line)| {
+                if at == last {
+                    format!("250 {line}\r\n")
+                } else {
+                    format!("250-{line}\r\n")
+                }
             })
             .collect::<String>()
             .into_bytes()
@@ -116,6 +121,7 @@ impl SmtpAuth {
 }
 
 /// What the app is greeted with before it sends `EHLO`.
+#[must_use]
 pub fn app_greeting() -> Vec<u8> {
     b"220 porter ESMTP ready\r\n".to_vec()
 }
@@ -170,16 +176,19 @@ pub struct SmtpRelay {
 
 impl SmtpRelay {
     /// What the relay presents and where.
+    #[must_use]
     pub fn plan(&self) -> &RelayPlan {
         &self.plan
     }
 
     /// Where the relay stands.
+    #[must_use]
     pub fn phase(&self) -> &SmtpPhase {
         &self.phase
     }
 
     /// A relay at the start of a connection.
+    #[must_use]
     pub fn new(plan: RelayPlan) -> Self {
         Self {
             plan,

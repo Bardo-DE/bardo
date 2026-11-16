@@ -31,6 +31,7 @@ pub struct PopupKey(pub u32);
 
 impl PopupKey {
     /// The key of `popup`.
+    #[must_use]
     pub fn of(popup: &PopupSurface) -> PopupKey {
         PopupKey(popup.surface_role.id().protocol_id())
     }
@@ -38,6 +39,7 @@ impl PopupKey {
 
 impl InputMethodPart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> InputMethodPart
     where
         D: GlobalDispatch<ZwpInputMethodManagerV2, InputMethodManagerGlobalData>

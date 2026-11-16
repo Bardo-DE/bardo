@@ -33,6 +33,7 @@ pub struct WindowGeometry {
 
 impl WindowGeometry {
     /// A geometry.
+    #[must_use]
     pub const fn new(rect: Rect, scale120: u32) -> Self {
         Self { rect, scale120 }
     }
@@ -49,11 +50,13 @@ pub struct Lease {
 
 impl Lease {
     /// A lease state.
+    #[must_use]
     pub const fn new(state: LeaseState, glow: GlowCode) -> Self {
         Self { state, glow }
     }
 
     /// No lease.
+    #[must_use]
     pub const fn free() -> Self {
         Self::new(LeaseState::Free, GlowCode::Off)
     }
@@ -101,6 +104,7 @@ pub struct QuireWindow {
 
 impl QuireWindow {
     /// A window that has just appeared: nothing known yet.
+    #[must_use]
     pub fn new(key: ToplevelKey) -> Self {
         Self {
             key,

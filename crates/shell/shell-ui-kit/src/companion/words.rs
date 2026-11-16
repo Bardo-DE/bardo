@@ -8,6 +8,7 @@ use permission_core::DenyCode;
 use super::ViewCx;
 
 /// A refused call, in a sentence a person can act on. Total: every refusal has words.
+#[must_use]
 pub fn refusal_words(refusal: &CallRefusal) -> String {
     match refusal {
         CallRefusal::App(_) => "The app said no.".to_owned(),

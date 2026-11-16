@@ -1,5 +1,5 @@
 //! The terminal rules: the Primary alias on our desktop, the Primary form, the Shift stand-in
-//! and AltGr text.
+//! and `AltGr` text.
 
 use super::*;
 use crate::action::AppId;

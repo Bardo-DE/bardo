@@ -113,6 +113,7 @@ impl Default for Abilities {
 impl Media {
     /// The player the control center shows: the one that most recently started playing; with
     /// none playing, the most recently paused; a stopped player is never shown.
+    #[must_use]
     pub fn current(&self) -> Option<&MediaPlayer> {
         self.players
             .iter()

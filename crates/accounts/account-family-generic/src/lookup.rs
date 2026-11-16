@@ -18,7 +18,7 @@ use account_sheet::{
 #[derive(Debug, Clone, Copy, Default)]
 pub struct MailLookup;
 
-/// CalDAV and CardDAV, found from a server's name.
+/// `CalDAV` and `CardDAV`, found from a server's name.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct DavLookup;
 

@@ -31,6 +31,7 @@ pub async fn wait_out_busy(attempt: usize) {
 
 /// Ready once the render in progress has ended: an effect of the polling task's scope wakes it,
 /// and dioxus runs effects after the renderer has let go of the document. Call it from a task.
+#[must_use]
 pub fn after_render() -> AfterRender {
     AfterRender {
         stage: Stage::Unqueued,

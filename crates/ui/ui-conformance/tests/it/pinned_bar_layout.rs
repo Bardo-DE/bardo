@@ -1,4 +1,4 @@
-//! PinnedBar on a real Blitz document: the bar lies over the container's top or bottom edge, and
+//! `PinnedBar` on a real Blitz document: the bar lies over the container's top or bottom edge, and
 //! the scroller beneath it keeps the whole container.
 
 use dioxus::prelude::*;

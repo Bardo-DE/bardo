@@ -55,6 +55,7 @@ impl ChatControl {
     /// The plain controls: the model decides about functions, one call at a time, no output
     /// limit, whatever the engine does about reasoning, the model's own sampling, no stop
     /// strings, and no scores.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             tool_choice: ToolChoice::Auto,
@@ -68,42 +69,49 @@ impl ChatControl {
     }
 
     /// The same controls with this tool choice.
+    #[must_use]
     pub fn with_tool_choice(mut self, tool_choice: ToolChoice) -> Self {
         self.tool_choice = tool_choice;
         self
     }
 
     /// The same controls with this tool parallelism.
+    #[must_use]
     pub fn with_tool_calls(mut self, tool_calls: ToolParallelism) -> Self {
         self.tool_calls = tool_calls;
         self
     }
 
     /// The same controls with this output limit.
+    #[must_use]
     pub fn with_max_output(mut self, max_output: Knob<Tokens>) -> Self {
         self.max_output = max_output;
         self
     }
 
     /// The same controls with this reasoning.
+    #[must_use]
     pub fn with_reasoning(mut self, reasoning: Reasoning) -> Self {
         self.reasoning = reasoning;
         self
     }
 
     /// The same controls with this sampling.
+    #[must_use]
     pub fn with_sampling(mut self, sampling: Knob<Sampling>) -> Self {
         self.sampling = sampling;
         self
     }
 
     /// The same controls with these stop strings.
+    #[must_use]
     pub fn with_stop(mut self, stop: Vec<String>) -> Self {
         self.stop = stop;
         self
     }
 
     /// The same controls asking for these option scores.
+    #[must_use]
     pub fn with_scores(mut self, scores: Knob<ScoreOptions>) -> Self {
         self.scores = scores;
         self

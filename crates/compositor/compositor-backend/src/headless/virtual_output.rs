@@ -118,6 +118,7 @@ impl VirtualOutputSpec {
     }
 
     /// The spec as text, in the grammar [`VirtualOutputSpec::parse`] reads.
+    #[must_use]
     pub fn text(&self) -> String {
         let mut text = format!(
             "{}:{}x{}@{}:{}:{},{}",

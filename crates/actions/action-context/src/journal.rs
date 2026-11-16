@@ -13,6 +13,7 @@ pub struct UndoJournal {
 
 impl UndoJournal {
     /// An empty journal.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -45,11 +46,13 @@ impl UndoJournal {
     }
 
     /// One row.
+    #[must_use]
     pub fn get(&self, id: UndoId) -> Option<&UndoEntry> {
         self.entries.iter().find(|e| e.id == id)
     }
 
     /// Every row, oldest first.
+    #[must_use]
     pub fn entries(&self) -> &[UndoEntry] {
         &self.entries
     }
@@ -66,6 +69,7 @@ impl UndoJournal {
 
     /// The rows an undo of `scope` would undo, newest first, only those still available. A
     /// task's rows are those of its sessions.
+    #[must_use]
     pub fn plan_undo(&self, scope: &UndoScope, task_sessions: &[SessionId]) -> Vec<UndoId> {
         let inside = |e: &UndoEntry| match scope {
             UndoScope::Entry(id) => e.id == *id,

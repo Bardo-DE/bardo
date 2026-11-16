@@ -36,6 +36,7 @@ pub struct Calendars {
 
 impl Calendars {
     /// Whether any calendar is set (until one is, the probe's one primary calendar answers).
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.calendars.is_empty()
     }
@@ -113,6 +114,7 @@ impl Calendars {
     }
 
     /// The live events of a calendar: id and JSON.
+    #[must_use]
     pub fn events(&self, calendar: &str) -> Vec<(String, Value)> {
         self.rows
             .iter()
@@ -263,6 +265,7 @@ impl Calendars {
     }
 
     /// Answers `rest` (what follows `/calendar/v3`), or `None` when it is not a calendar route.
+    #[must_use]
     pub fn answer(&self, rest: &str, request: &Request) -> Option<Response> {
         let parts: Vec<&str> = rest.trim_matches('/').split('/').collect();
         let response = match parts.as_slice() {
@@ -282,9 +285,10 @@ impl Calendars {
             }
             _ => return None,
         };
-        Some(match request.method == "GET" {
-            true => response,
-            false => error(405, "methodNotAllowed"),
+        Some(if request.method == "GET" {
+            response
+        } else {
+            error(405, "methodNotAllowed")
         })
     }
 }

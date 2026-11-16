@@ -31,7 +31,7 @@ pub struct Found {
     pub claims: Vec<Claim>,
     /// Where it came from.
     pub source: Source,
-    /// What an autoconfig document offers for OAuth2 sign-in; `None` from every other source and
+    /// What an autoconfig document offers for `OAuth2` sign-in; `None` from every other source and
     /// from a document that offers none. Data only: which provider an issuer names stays with the
     /// caller (mailo's `issuer_named` and `issuer_for_server`).
     pub oauth: Option<OAuthOffer>,
@@ -52,8 +52,8 @@ pub struct OAuthServer {
     pub port: u16,
 }
 
-/// The OAuth2 a document offers: the authorization server it names, if any, and the servers that
-/// take OAuth2, in document order (incoming first). Present only when some server takes OAuth2.
+/// The `OAuth2` a document offers: the authorization server it names, if any, and the servers that
+/// take `OAuth2`, in document order (incoming first). Present only when some server takes `OAuth2`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OAuthOffer {
     /// The `oAuth2/issuer` text, as written.
@@ -86,9 +86,9 @@ pub struct SearchOptions {
     /// A document's POP3 servers are listed on [`Found::pop3`]; a document with POP3 and SMTP but
     /// no IMAP is a finding. When off, POP3 is not looked at and a POP3-only document is a miss.
     pub report_pop3: bool,
-    /// A document whose servers take OAuth2 and no password is a finding: a server that lists
+    /// A document whose servers take `OAuth2` and no password is a finding: a server that lists
     /// `OAuth2` serves as an endpoint, and [`Found::oauth`] says which. The caller must sign in
-    /// with OAuth2 or drop the finding; this crate does not say the password rule was met. When
+    /// with `OAuth2` or drop the finding; this crate does not say the password rule was met. When
     /// off, no password endpoint can be built, so it is a miss (providers that know the issuer
     /// take the address instead).
     pub oauth_only_ok: bool,

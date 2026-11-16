@@ -356,7 +356,11 @@ async fn page_instruction_is_shown_and_trusted_only_if_kept() {
     );
     assert_eq!(shown[0].offer, ConfirmOffer::OnceOnly);
     assert_eq!(
-        sheet.pieces.iter().map(|p| p.as_str()).collect::<Vec<_>>(),
+        sheet
+            .pieces
+            .iter()
+            .map(action_vocab::LabelText::as_str)
+            .collect::<Vec<_>>(),
         ["legs", "seat", "assemble"]
     );
     // Pinned so nobody thinks the router blocks it: what the person kept can be given as a job.
@@ -380,7 +384,7 @@ async fn the_log_keeps_no_words_and_the_step_says_what_changed() {
     let rig = rig(yes(Some(SPECS))).await;
     let kept = draft(&rig, &drafted()).await.expect("confirmed");
     assert_eq!(
-        kept.said.as_ref().map(|s| s.as_str()),
+        kept.said.as_ref().map(action_vocab::LabelText::as_str),
         Some("You checked the brief (you changed it)")
     );
     let records = rig.router.seams.sink.records();
@@ -403,7 +407,7 @@ async fn the_log_keeps_no_words_and_the_step_says_what_changed() {
     let same = self::rig(yes(Some(SPECS))).await;
     let kept = draft(&same, SPECS).await.expect("confirmed");
     assert_eq!(
-        kept.said.as_ref().map(|s| s.as_str()),
+        kept.said.as_ref().map(action_vocab::LabelText::as_str),
         Some("You checked the brief")
     );
 }

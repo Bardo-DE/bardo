@@ -24,6 +24,7 @@ pub enum SheetOutput {
 
 impl SheetOutput {
     /// Whether `output`'s sheet surface is the one that shows.
+    #[must_use]
     pub fn shows_on(self, output: OutputId) -> bool {
         self == SheetOutput::On(output)
     }
@@ -37,6 +38,7 @@ pub struct SheetLink {
 
 impl SheetLink {
     /// Nowhere yet.
+    #[must_use]
     pub fn new() -> SheetLink {
         SheetLink::default()
     }
@@ -47,11 +49,13 @@ impl SheetLink {
     }
 
     /// Where they show now.
+    #[must_use]
     pub fn now(&self) -> SheetOutput {
         self.output.now()
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<SheetOutput> {
         self.output.subscribe()
     }

@@ -25,6 +25,7 @@ pub mod text {
 }
 
 /// The page `id` (`wifi`, `bluetooth`, `wallpaper`) as a target.
+#[must_use]
 pub fn page(id: &str) -> SettingsTarget {
     SettingsTarget::Page(PageId::new(id))
 }

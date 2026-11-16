@@ -100,8 +100,8 @@ async fn an_agent_that_needs_no_sign_in_is_not_sent_one() {
 
 #[test]
 fn a_sign_in_id_is_a_short_plain_word() {
-    assert!(SignIn::parse("oauth-personal").is_ok());
-    assert!(SignIn::parse("a.b_c-9").is_ok());
+    SignIn::parse("oauth-personal").unwrap();
+    SignIn::parse("a.b_c-9").unwrap();
     for bad in ["", "two words", "a/b", "tab\t", &"x".repeat(65)] {
         assert!(SignIn::parse(bad).is_err(), "{bad:?}");
     }

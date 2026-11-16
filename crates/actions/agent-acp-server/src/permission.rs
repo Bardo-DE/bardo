@@ -18,6 +18,7 @@ use agent_session::CallOpen;
 use permission_core::AlwaysOffer;
 
 /// The options offered: two, always.
+#[must_use]
 pub fn options() -> Vec<PermissionOption> {
     vec![
         PermissionOption::new(ALLOW_ONCE, "Allow once", PermissionOptionKind::AllowOnce),
@@ -36,6 +37,7 @@ pub fn request(session: &SessionId, call: &CallOpen) -> RequestPermissionRequest
 
 /// The options of a sheet: `allow_always` is there only when the router offered it, and says
 /// what it covers.
+#[must_use]
 pub fn sheet_options(sheet: &ConfirmRequest) -> Vec<PermissionOption> {
     let always = match &sheet.always {
         AlwaysOffer::Offered(scope) => Some(PermissionOption::new(
@@ -60,6 +62,7 @@ pub fn sheet_options(sheet: &ConfirmRequest) -> Vec<PermissionOption> {
 }
 
 /// The request for the router's `sheet`, named by the manifest's label for the action.
+#[must_use]
 pub fn sheet_request(session: &SessionId, sheet: &ConfirmRequest) -> RequestPermissionRequest {
     let fields = ToolCallUpdateFields::new()
         .title(sheet.action.as_str().to_owned())

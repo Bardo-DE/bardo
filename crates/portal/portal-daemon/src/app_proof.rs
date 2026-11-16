@@ -86,6 +86,7 @@ pub enum AppProof {
 
 impl AppProof {
     /// The id the app is proven to have, if it is.
+    #[must_use]
     pub fn id(&self) -> Option<&str> {
         match self {
             Self::Proven(id) => Some(id),
@@ -178,6 +179,7 @@ pub struct PeerProver {
 
 impl PeerProver {
     /// A prover asking through `link`, finding desktop entries with `names`.
+    #[must_use]
     pub fn new(link: BusLink, names: AppNames) -> Self {
         Self::with_root(link, names, RealRoot)
     }
@@ -260,6 +262,7 @@ fn runs(program: &str, exe: &ExePath) -> bool {
 /// The bus name of the app a session handle belongs to: the path ends in
 /// `.../<sender>/<token>`, where `<sender>` is the app's unique name without its colon and with
 /// dots written as underscores (`:1.42` is `1_42`).
+#[must_use]
 pub fn sender_of(session: &str) -> Option<String> {
     let mut parts = session.rsplit('/');
     let token = parts.next().filter(|t| !t.is_empty())?;

@@ -15,13 +15,15 @@ pub enum Host {
 impl Host {
     /// From `XDG_CURRENT_DESKTOP` (colon-separated).
     pub fn of(current_desktop: &str) -> Host {
-        match current_desktop.split(':').any(is_own_desktop) {
-            true => Host::SillSession,
-            false => Host::Guest,
+        if current_desktop.split(':').any(is_own_desktop) {
+            Host::SillSession
+        } else {
+            Host::Guest
         }
     }
 
     /// Whether logind's `Lock` and `PrepareForSleep` are ours to act on: a bardo-shell session only.
+    #[must_use]
     pub fn follows_logind(self) -> bool {
         self == Host::SillSession
     }

@@ -174,9 +174,10 @@ fn form(specs: &[FieldSpec], draft: Draft, action: SheetAction) -> (Draft, Optio
                 FieldKind::Protocol | FieldKind::Security | FieldKind::OutgoingSecurity
             );
             (
-                match reshapes {
-                    true => draft.refitted(specs),
-                    false => draft,
+                if reshapes {
+                    draft.refitted(specs)
+                } else {
+                    draft
                 },
                 None,
             )

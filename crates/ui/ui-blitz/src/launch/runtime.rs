@@ -145,11 +145,13 @@ impl TokioSpawner {
     ///
     /// # Panics
     /// When no runtime is entered on this thread, a caller contract like Tokio's own.
+    #[must_use]
     pub fn current() -> Self {
         TokioSpawner(Handle::current())
     }
 
     /// The runtime `handle` belongs to, for a program that owns its own (a daemon's).
+    #[must_use]
     pub fn on(handle: Handle) -> Self {
         TokioSpawner(handle)
     }

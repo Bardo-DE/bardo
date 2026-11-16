@@ -70,16 +70,19 @@ impl BundlePath {
     }
 
     /// The path text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The path, to join onto a root.
+    #[must_use]
     pub fn as_path(&self) -> &Path {
         Path::new(&self.0)
     }
 
     /// Every directory above this path, shortest first (`a/b/c` has `a` and `a/b`).
+    #[must_use]
     pub fn ancestors(&self) -> Vec<&str> {
         self.0
             .match_indices('/')

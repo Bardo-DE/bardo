@@ -94,14 +94,14 @@ mod tests {
     #[test]
     fn a_working_service_makes_service_sessions_only() {
         let (service, node) = (FakeSource::new(), FakeSource::new());
-        assert!(open_from(Origin::Service, &service, &node).is_ok());
+        open_from(Origin::Service, &service, &node).unwrap();
         assert_eq!((service.state().opened, node.state().opened), (1, 0));
     }
 
     #[test]
     fn the_direct_choice_makes_node_sessions_only() {
         let (service, node) = (FakeSource::new(), FakeSource::new());
-        assert!(open_from(Origin::Direct, &service, &node).is_ok());
+        open_from(Origin::Direct, &service, &node).unwrap();
         assert_eq!((service.state().opened, node.state().opened), (0, 1));
     }
 }

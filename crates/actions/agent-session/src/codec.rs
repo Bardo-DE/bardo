@@ -17,6 +17,7 @@ pub struct EntryVersion(pub u32);
 pub const CURRENT: EntryVersion = EntryVersion(1);
 
 /// The kind tag of an entry in the eventlog.
+#[must_use]
 pub fn kind_tag(slug: &str) -> String {
     format!("{SESSION_KIND_PREFIX}.{slug}")
 }
@@ -118,6 +119,7 @@ const KINDS: [&str; 15] = [
 
 /// Reads a stored body of kind `companion.session.<slug>`; `place` is the row's position in the
 /// log, used when the body carries none.
+#[must_use]
 pub fn decode(slug: &str, json: &str, place: Seq) -> Logged {
     let unread = |why| Logged {
         seq: place,

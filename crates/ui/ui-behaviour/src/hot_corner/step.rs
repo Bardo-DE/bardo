@@ -27,7 +27,7 @@ impl Machine for Corner {
     type Params = CornerParams;
     type Ctx = ();
 
-    fn step(self, input: CornerIn, at: Stamp, params: &CornerParams, _: &()) -> Step {
+    fn step(self, input: CornerIn, at: Stamp, params: &CornerParams, (): &()) -> Step {
         match (self, input) {
             (Corner::Armed, CornerIn::Enter) => quiet(Corner::Dwelling {
                 until: at.after_span(params.dwell),

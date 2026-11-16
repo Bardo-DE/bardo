@@ -12,16 +12,19 @@ pub struct Facts(Option<Registry>);
 
 impl Facts {
     /// The facts of the fake apps' manifests.
+    #[must_use]
     pub fn shipped() -> Self {
         Self(action_fake::registry().ok())
     }
 
     /// What `action` does to the world, if the registry knows it.
+    #[must_use]
     pub fn effect(&self, action: &ActionRef) -> Option<Effect> {
         self.0.as_ref()?.action(action).map(|decl| decl.effect)
     }
 
     /// The label a sheet gives `action`, if the registry knows it.
+    #[must_use]
     pub fn label(&self, action: &ActionRef) -> Option<String> {
         let decl = self.0.as_ref()?.action(action)?;
         Some(decl.label.as_str().to_owned())

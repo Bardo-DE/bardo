@@ -1,4 +1,4 @@
-//! The row cases: ThreadRow in every weight and star state, Row in every accessory, leading
+//! The row cases: `ThreadRow` in every weight and star state, Row in every accessory, leading
 //! element and state, and List, with the helpers that draw a thread row the way a consumer does.
 
 use super::cases::Case;

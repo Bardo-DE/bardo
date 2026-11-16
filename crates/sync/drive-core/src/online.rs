@@ -1,10 +1,12 @@
 //! An online document's link file: what reading `<name>.gdoc` gives, made here and never cached.
+//!
 //! A JSON object whose `url` is where the document opens and whose `doc_id` is the drive's id
 //! for it, as Google's own desktop client writes them.
 
 use sync_core::RemoteId;
 
 /// The link file of the document `id` that opens at `url`.
+#[must_use]
 pub fn link_file(url: &str, id: &RemoteId) -> Vec<u8> {
     let quote = |text: &str| serde_json::Value::String(text.to_owned()).to_string();
     format!(

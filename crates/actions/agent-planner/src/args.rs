@@ -20,6 +20,7 @@ pub struct ReadCall {
 }
 
 /// The label of what a model wrote: its own words, untrusted, from the planner.
+#[must_use]
 pub fn planner_label() -> Label {
     Label {
         integrity: Integrity::Untrusted,

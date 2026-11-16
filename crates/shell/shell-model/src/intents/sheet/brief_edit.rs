@@ -31,6 +31,7 @@ pub enum Reach {
 
 impl Reach {
     /// The state for a text before any scroll: seen at once when it fits the field.
+    #[must_use]
     pub fn of_text(text: &str) -> Reach {
         if lines_of(text) <= FIELD_LINES {
             Reach::Seen
@@ -40,6 +41,7 @@ impl Reach {
     }
 
     /// The state after a scroll: seen once the end is in view, and seen stays seen.
+    #[must_use]
     pub fn after(self, spot: ScrollSpot) -> Reach {
         let end = spot.top + f64::from(spot.client) + END_SLACK >= f64::from(spot.height);
         match (self, end) {
@@ -51,6 +53,7 @@ impl Reach {
 
 impl Reach {
     /// The state after the text changed to `text`: a text that now fits the field has been seen.
+    #[must_use]
     pub fn after_edit(self, text: &str) -> Reach {
         match (self, Reach::of_text(text)) {
             (Reach::Seen, _) | (Reach::Unseen, Reach::Seen) => Reach::Seen,
@@ -67,6 +70,7 @@ fn lines_of(text: &str) -> usize {
 }
 
 /// The characters of `text` that `span` covers.
+#[must_use]
 pub fn span_text(text: &str, span: BriefSpan) -> String {
     text.chars()
         .skip(span.start)
@@ -75,6 +79,7 @@ pub fn span_text(text: &str, span: BriefSpan) -> String {
 }
 
 /// `text` with the span of `flag` deleted, and the other flags moved to match.
+#[must_use]
 pub fn removed(text: &str, flags: &[BriefFlag], flag: BriefFlag) -> (String, Vec<BriefFlag>) {
     let next: String = text
         .chars()
@@ -93,6 +98,7 @@ pub fn removed(text: &str, flags: &[BriefFlag], flag: BriefFlag) -> (String, Vec
 
 /// `flags` of `old`, as they stand in `new` after an edit: the changed region is what the two
 /// texts do not share at their start and end.
+#[must_use]
 pub fn remapped(old: &str, new: &str, flags: &[BriefFlag]) -> Vec<BriefFlag> {
     let (old, new): (Vec<char>, Vec<char>) = (old.chars().collect(), new.chars().collect());
     let shared = old.iter().zip(&new).take_while(|(a, b)| a == b).count();

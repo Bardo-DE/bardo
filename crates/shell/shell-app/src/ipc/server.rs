@@ -49,9 +49,10 @@ const WRITE_DEADLINE: Duration = Duration::from_secs(2);
 pub const MAX_CONNECTIONS: usize = 16;
 
 /// Serve `door` until [`Serving::stop`] or until the process exits with the host.
+#[must_use]
 pub fn spawn(door: Door, host: HostHandle<ShellMsg>) -> Serving {
     spawn_with(door, move |request, reply| {
-        dispatch_via_host(&host, request, reply)
+        dispatch_via_host(&host, request, reply);
     })
 }
 
@@ -69,6 +70,7 @@ impl Serving {
     /// path is no longer ours to knock on. The thread's handle is returned for a caller that wants
     /// to wait for it; a displaced daemon's loop ends only with the process, so waiting on it
     /// there would wait for ever.
+    #[must_use]
     pub fn stop(self, agent: &Agent) -> JoinHandle<()> {
         let _ = self.end.send(());
         if !self.door.displaced() {

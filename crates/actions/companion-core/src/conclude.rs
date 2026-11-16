@@ -79,11 +79,13 @@ impl Conclusion {
     }
 
     /// A job whose task panicked: it failed, and only it.
+    #[must_use]
     pub fn crashed(job: JobId, close: Option<SessionId>) -> Self {
         Self::failed(job, JobFault::Crashed, close)
     }
 
     /// A job whose task was cut off: it was stopped.
+    #[must_use]
     pub fn cut_off(job: JobId, close: Option<SessionId>) -> Self {
         Self::bare(BoardEvent::Stopped(job), close)
     }
@@ -91,6 +93,7 @@ impl Conclusion {
 
 /// How a job's end is told to the board. A run that ended in a words answer keeps its session open
 /// for its answer to be handed on; every other end closes it.
+#[must_use]
 pub fn conclude(job: JobId, done: Finished) -> Conclusion {
     let Finished {
         opened,

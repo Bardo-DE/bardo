@@ -13,6 +13,7 @@ fn row(name: &str, allowed: &str, model: Option<&ModelChoice>) -> toml::Table {
 }
 
 /// The settings text for `places`: the `assistant` table alone, for the app to merge into the file.
+#[must_use]
 pub fn write_places(places: &Places) -> String {
     let own: Vec<toml::Value> = places
         .own

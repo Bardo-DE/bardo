@@ -57,12 +57,13 @@ pub fn geom(doc: &BaseDocument, scroller: Scroller, axis: ScrollAxis) -> Option<
         Scroller::Node(id) => {
             let node = doc.get_node(NodeId::from_u64(id))?;
             let layout = node.final_layout();
-            let max = match scrolls(doc, node, axis) {
-                true => pick(
+            let max = if scrolls(doc, node, axis) {
+                pick(
                     f64::from(layout.scroll_width()),
                     f64::from(layout.scroll_height()),
-                ),
-                false => 0.0,
+                )
+            } else {
+                0.0
             }
             .max(0.0);
             let offset = node.scroll_offset();
@@ -88,7 +89,7 @@ pub fn write(doc: &mut BaseDocument, scroller: Scroller, axis: ScrollAxis, raw: 
     match scroller {
         Scroller::Framed(framed) => {
             in_frame_mut(doc, framed.host, |sub| {
-                write(sub, framed.inside.scroller(), axis, raw)
+                write(sub, framed.inside.scroller(), axis, raw);
             });
         }
         Scroller::Viewport => {

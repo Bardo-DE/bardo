@@ -20,6 +20,7 @@ pub struct BarDrops {
 impl BarDrops {
     /// The same drops with `output`'s Space tile changed to `space`, or taken away for `None`. A
     /// Space under the window is not the plus, so the plus goes out.
+    #[must_use]
     pub fn with(mut self, output: &str, space: Option<SpaceId>) -> BarDrops {
         match space {
             Some(space) => {
@@ -32,6 +33,7 @@ impl BarDrops {
     }
 
     /// The same drops with the plus of `output` lit while `over` is `Shown`, unlit otherwise.
+    #[must_use]
     pub fn with_new(mut self, output: &str, over: Shown) -> BarDrops {
         match over {
             Shown::Shown => self.new_space.insert(output.to_owned()),
@@ -42,6 +44,7 @@ impl BarDrops {
 
     /// The same drops with a window drag under way on `output` while `drag` is `Shown`, over
     /// otherwise.
+    #[must_use]
     pub fn with_dragging(mut self, output: &str, drag: Shown) -> BarDrops {
         match drag {
             Shown::Shown => self.dragging.insert(output.to_owned()),
@@ -53,14 +56,16 @@ impl BarDrops {
     /// What a tile shows on `output` when the dragged window is not over it: that it accepts the
     /// window while a drag is under way, nothing otherwise.
     fn resting(&self, output: Option<&str>) -> DropState {
-        match output.is_some_and(|name| self.dragging.contains(name)) {
-            true => DropState::Accepts,
-            false => DropState::Idle,
+        if output.is_some_and(|name| self.dragging.contains(name)) {
+            DropState::Accepts
+        } else {
+            DropState::Idle
         }
     }
 
     /// The tile of `space` on `output`: lit while the dragged window is over it, outlined as
     /// accepting while a drag is under way elsewhere.
+    #[must_use]
     pub fn state_of(&self, output: Option<&str>, space: &SpaceId) -> DropState {
         match output.and_then(|name| self.spaces.get(name)) {
             Some(over) if over == space => DropState::Target,
@@ -70,10 +75,12 @@ impl BarDrops {
 
     /// The plus on `output`: lit while the dragged window is over it, outlined as accepting while
     /// a drag is under way elsewhere.
+    #[must_use]
     pub fn new_state_of(&self, output: Option<&str>) -> DropState {
-        match output.is_some_and(|name| self.new_space.contains(name)) {
-            true => DropState::Target,
-            false => self.resting(output),
+        if output.is_some_and(|name| self.new_space.contains(name)) {
+            DropState::Target
+        } else {
+            self.resting(output)
         }
     }
 }

@@ -17,6 +17,7 @@ const ROWS: &[Row] = &[
 ];
 
 /// The desktop's own bindings; an unreadable row is left out.
+#[must_use]
 pub fn system_bindings() -> Vec<SystemBinding> {
     ROWS.iter()
         .map(|(action, chords)| SystemBinding {

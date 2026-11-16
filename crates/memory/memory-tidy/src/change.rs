@@ -36,6 +36,7 @@ fn recorded(event: &EventRef, kind: &str) -> Change {
 }
 
 /// What `reply` to `request` changed. A refusal changes nothing, so it implies none.
+#[must_use]
 pub fn changes(request: &MemoryRequest, reply: &MemoryReply) -> Vec<Change> {
     use MemoryReply as P;
     use MemoryRequest as R;

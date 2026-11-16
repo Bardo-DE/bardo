@@ -71,6 +71,7 @@ pub struct Agenda {
 
 impl Agenda {
     /// Today and nothing else, before any source is read.
+    #[must_use]
     pub fn starting(today: Date) -> Agenda {
         Agenda {
             today,
@@ -82,6 +83,7 @@ impl Agenda {
 
 /// The days the service keeps events for around `today`: five weeks back (the month grid's
 /// previous month) and ten weeks ahead (the next month and Up Next's longest reach).
+#[must_use]
 pub fn held_window(today: Date) -> Window {
     Window {
         from: today.saturating_sub(35.days()),

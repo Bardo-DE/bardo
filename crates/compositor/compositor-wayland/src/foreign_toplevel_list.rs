@@ -33,6 +33,7 @@ pub struct ForeignToplevelListPart {
 
 impl ForeignToplevelListPart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ForeignToplevelListPart
     where
         D: ForeignToplevelListHandler
@@ -54,12 +55,14 @@ impl ForeignToplevelListPart {
 
 /// The identifier clients see for `window`: casement's own, stable for the window's life and
 /// never reused in a session (window ids are not), printable ASCII of at most 32 bytes.
+#[must_use]
 pub fn identifier_of(window: WindowId) -> String {
     format!("w{}", window.0)
 }
 
 /// The window an identifier names: the inverse of [`identifier_of`] (`None` for text casement
 /// did not make). The desktop and shell protocols name windows by it across connections.
+#[must_use]
 pub fn window_of_identifier(identifier: &str) -> Option<WindowId> {
     let digits = identifier.strip_prefix('w')?;
     let plain = !digits.is_empty() && digits.bytes().all(|byte| byte.is_ascii_digit());
@@ -67,8 +70,10 @@ pub fn window_of_identifier(identifier: &str) -> Option<WindowId> {
 }
 
 /// Whether the session being in `lock` lets a list client be told a window's title and app id.
+///
 /// A locked session tells nothing of what is open: titles and app ids are the person's mail,
 /// documents and sites, and the window-list protocols are open to every client that binds them.
+#[must_use]
 pub fn disclosed(lock: &LockState) -> bool {
     match lock {
         LockState::Unlocked => true,
@@ -79,6 +84,7 @@ pub fn disclosed(lock: &LockState) -> bool {
 }
 
 /// `text` as a list client is told it: as is when `disclosed`, else empty.
+#[must_use]
 pub fn told(disclosed: bool, text: &str) -> &str {
     if disclosed { text } else { "" }
 }
@@ -93,24 +99,21 @@ pub fn apply_toplevel(
 ) -> Result<(), WaylandFault> {
     let title = told(disclosed, window.title.0.as_str());
     let app_id = told(disclosed, window.claimed_id.as_str());
-    match part.handles.get(&window.id) {
-        Some(handle) => {
-            let changed = handle.title() != title || handle.app_id() != app_id;
-            handle.send_title(title);
-            handle.send_app_id(app_id);
-            if changed {
-                handle.send_done();
-            }
+    if let Some(handle) = part.handles.get(&window.id) {
+        let changed = handle.title() != title || handle.app_id() != app_id;
+        handle.send_title(title);
+        handle.send_app_id(app_id);
+        if changed {
+            handle.send_done();
         }
-        None => {
-            let handle = (part.spawn)(
-                &mut part.state,
-                title.to_owned(),
-                app_id.to_owned(),
-                identifier_of(window.id),
-            );
-            part.handles.insert(window.id, handle);
-        }
+    } else {
+        let handle = (part.spawn)(
+            &mut part.state,
+            title.to_owned(),
+            app_id.to_owned(),
+            identifier_of(window.id),
+        );
+        part.handles.insert(window.id, handle);
     }
     Ok(())
 }

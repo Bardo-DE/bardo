@@ -1,6 +1,6 @@
 //! The dock's layer surface (design/10 §10.3.1, §10.7): Top, bottom edge, tall enough for a
 //! magnified tile and the hover label above it (`gut + pad + S + T`), reserving `gut + H_p` unless auto-hide
-//! is on, no keyboard (OnDemand while its menu is open, layer-shell-host's rule), input and blur
+//! is on, no keyboard (`OnDemand` while its menu is open, layer-shell-host's rule), input and blur
 //! following the `dock-hit` and `dock-pill` elements.
 //!
 //! Anchored bottom, left and right with a full-width buffer: the plan's `BOTTOM` alone would

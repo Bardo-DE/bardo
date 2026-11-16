@@ -276,11 +276,9 @@ fn a_history_that_cannot_be_read_is_never_replaced() {
     let (path, _) = viewed_file(scratch.path(), "a.txt", "a");
     let writer = StoreWriter::new(&root, cap(5));
 
-    assert!(
-        writer
-            .record_view(&path, FormatKind::PlainText, 1, &Resume::Nothing)
-            .is_err()
-    );
+    writer
+        .record_view(&path, FormatKind::PlainText, 1, &Resume::Nothing)
+        .unwrap_err();
     assert!(root.join("history.json").is_dir(), "left as it was");
 }
 

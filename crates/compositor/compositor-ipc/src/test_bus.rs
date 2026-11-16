@@ -17,6 +17,7 @@ pub struct PrivateBus {
 
 impl PrivateBus {
     /// Starts the daemon and reads the address it listens on; panics when it cannot (tests only).
+    #[must_use]
     pub fn start() -> PrivateBus {
         let config = concat!(env!("CARGO_MANIFEST_DIR"), "/../dev/private-bus.conf");
         let daemon = Command::new("dbus-daemon")
@@ -56,6 +57,7 @@ impl Drop for PrivateBus {
 }
 
 /// The unique bus name of `connection`.
+#[must_use]
 pub fn name_of(connection: &Connection) -> String {
     connection
         .unique_name()

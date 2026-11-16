@@ -1,4 +1,4 @@
-//! DatePicker as markup (design/30 section 2.3): each specimen is linted against the stylesheet and
+//! `DatePicker` as markup (design/30 section 2.3): each specimen is linted against the stylesheet and
 //! every `ds-date-picker` class in it is styled by the picker's sheet.
 
 use crate::support::specimens::{Checks, Specimen};

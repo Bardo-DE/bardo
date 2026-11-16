@@ -30,12 +30,13 @@ pub enum GrantsError {
 pub struct ListedAccount {
     /// The account: its id, provider, label, state, what it claims and where its servers are.
     pub account: Account,
-    /// What accountd calls the account's provider ("OneDrive"), when it knows.
+    /// What accountd calls the account's provider ("`OneDrive`"), when it knows.
     pub provider_label: Option<String>,
 }
 
 impl ListedAccount {
     /// `account`, its provider called `provider_label`.
+    #[must_use]
     pub fn new(account: Account, provider_label: Option<String>) -> Self {
         Self {
             account,

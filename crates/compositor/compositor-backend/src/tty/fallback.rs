@@ -28,6 +28,7 @@ use compositor_core::output::Mode;
 /// assert_eq!(ladder, [big, small]);
 /// assert_eq!(mode_ladder(big, None, &[big, small], Some(big)), [small]);
 /// ```
+#[must_use]
 pub fn mode_ladder(
     wanted: Mode,
     previous: Option<Mode>,
@@ -60,10 +61,7 @@ pub fn mode_ladder(
         .filter(|mode| !avoid.is_some_and(|avoided| same(&avoided, mode)))
         .copied()
         .collect();
-    match kept.is_empty() {
-        true => ladder,
-        false => kept,
-    }
+    if kept.is_empty() { ladder } else { kept }
 }
 
 #[cfg(test)]

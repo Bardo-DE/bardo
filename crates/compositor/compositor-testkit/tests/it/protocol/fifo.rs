@@ -57,7 +57,7 @@ fn a_fifo_barrier_waits_for_the_next_vblank() {
     assert!(fixture.client(id).protocol_error().is_none());
 }
 
-/// A second fifo object on one surface is wp_fifo_manager_v1.already_exists (0), posted on the
+/// A second fifo object on one surface is `wp_fifo_manager_v1.already_exists` (0), posted on the
 /// surface.
 #[test]
 fn a_second_fifo_object_is_a_protocol_error() {
@@ -71,7 +71,7 @@ fn a_second_fifo_object_is_a_protocol_error() {
     assert_eq!(fault(&mut fixture, id), ("wl_surface".to_owned(), 0));
 }
 
-/// Requests on a fifo object whose surface is gone are wp_fifo_v1.surface_destroyed (0).
+/// Requests on a fifo object whose surface is gone are `wp_fifo_v1.surface_destroyed` (0).
 #[test]
 fn a_fifo_outliving_its_surface_is_a_protocol_error() {
     let (mut fixture, id) = boot();

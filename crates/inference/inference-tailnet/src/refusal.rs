@@ -43,6 +43,7 @@ pub enum Refusal {
 
 impl Refusal {
     /// The HTTP status the refusal is answered with.
+    #[must_use]
     pub fn status(&self) -> u16 {
         match self {
             Refusal::Busy | Refusal::TooManyAsking => 429,
@@ -52,6 +53,7 @@ impl Refusal {
     }
 
     /// The code the refusal travels as (`error.code` of the answer's body).
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             Refusal::ThisComputer => "this_computer",
@@ -69,6 +71,7 @@ impl Refusal {
     }
 
     /// The refusal a code stands for, if this build knows it.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|r| r.slug() == slug)
     }

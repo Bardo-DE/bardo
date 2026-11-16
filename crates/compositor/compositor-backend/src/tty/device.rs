@@ -31,6 +31,7 @@ pub struct OpenDevice {
 
 impl TtyDevices {
     /// No device open.
+    #[must_use]
     pub fn empty() -> TtyDevices {
         TtyDevices::default()
     }
@@ -92,6 +93,7 @@ impl TtyDevices {
     /// The renderer of the first open device that lends one, to draw captures with. With more
     /// than one GPU the first by node path answers every capture (a client buffer on another
     /// GPU fails over to the software renderer).
+    #[must_use]
     pub fn capture_gpu(&self) -> Option<Box<dyn CaptureGpu>> {
         self.devices
             .values()
@@ -102,25 +104,21 @@ impl TtyDevices {
     /// device and connector order. Until it is made, `added`, `changed` and `removed` report
     /// nothing (what they saw is in the announcement); after it, it reports nothing.
     pub fn announce(&mut self) -> Vec<ConnectorEvent> {
-        match self.announced {
-            true => Vec::new(),
-            false => {
-                self.announced = true;
-                self.devices
-                    .values()
-                    .flat_map(|device| device.known.0.values())
-                    .cloned()
-                    .map(ConnectorEvent::Plugged)
-                    .collect()
-            }
+        if self.announced {
+            Vec::new()
+        } else {
+            self.announced = true;
+            self.devices
+                .values()
+                .flat_map(|device| device.known.0.values())
+                .cloned()
+                .map(ConnectorEvent::Plugged)
+                .collect()
         }
     }
 
     /// `events` when the announcement is made, else nothing.
     fn released(&self, events: Vec<ConnectorEvent>) -> Vec<ConnectorEvent> {
-        match self.announced {
-            true => events,
-            false => Vec::new(),
-        }
+        if self.announced { events } else { Vec::new() }
     }
 }

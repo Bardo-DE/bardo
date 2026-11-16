@@ -4,10 +4,10 @@
 //!
 //! The first window has an "Open message" button: each press opens the message in a window of
 //! its own (`ui_blitz::open_window_with`), handed its subject by props and a shared count of
-//! opens through an `Arc` (a `Signal` cannot cross into another VirtualDom). The message window
+//! opens through an `Arc` (a `Signal` cannot cross into another `VirtualDom`). The message window
 //! closes with its own button or its frame, and the first window closes on its own: closing any
 //! window closes only that one, and the app ends when the last is gone. Each close prints that
-//! the VirtualDom was dropped.
+//! the `VirtualDom` was dropped.
 //!
 //! `BARDO_AUTOPILOT=1` drives it without a person: it prints the host contexts each window's
 //! document sees, opens a message window, focuses it, closes it by its handle, opens one that

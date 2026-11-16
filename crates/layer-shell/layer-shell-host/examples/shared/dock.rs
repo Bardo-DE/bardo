@@ -360,7 +360,7 @@ mod tests {
         None
     }
 
-    /// A compositor may call back every 1-2 ms (mailbox, no vblank), KWin at 60 Hz: the
+    /// A compositor may call back every 1-2 ms (mailbox, no vblank), `KWin` at 60 Hz: the
     /// tiles settle, and the drive is dropped, at every rate, within a few time constants.
     #[test]
     fn the_tiles_settle_at_any_tick_rate() {

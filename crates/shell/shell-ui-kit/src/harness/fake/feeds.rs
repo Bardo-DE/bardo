@@ -96,6 +96,7 @@ pub struct Feeds {
 }
 
 /// Fake services at the fixed values the registry gives them, and their senders.
+#[must_use]
 pub fn services() -> (Services, Feeds) {
     let (services, mut ios) = Services::fake();
     let mut keep: Vec<Box<dyn std::any::Any>> = Vec::new();

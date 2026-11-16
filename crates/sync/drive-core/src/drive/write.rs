@@ -225,9 +225,10 @@ impl Inner {
                 _ => break,
             }
         }
-        match len > max {
-            true => Err(WriteError::BadName),
-            false => Ok(()),
+        if len > max {
+            Err(WriteError::BadName)
+        } else {
+            Ok(())
         }
     }
 
@@ -349,8 +350,8 @@ impl Inner {
         {
             let mut index = held(&self.index);
             edit.seq = index.take_seq();
-            index.edits.insert(id.clone(), edit);
-        }
+            index.edits.insert(id.clone(), edit)
+        };
         self.touched();
         self.wake.notify_one();
         id
@@ -387,7 +388,7 @@ impl Inner {
             });
             at.handles += 1;
             at.last = Instant::now();
-        }
+        };
         *held(&self.open).entry(id.clone()).or_default() += 1;
         WriteHandle(handle)
     }
@@ -434,15 +435,14 @@ impl Inner {
             .items
             .get(&remote.0)
             .is_some_and(|row| row.version == entry.version.0 && row.present.covers(0, size));
-        let copied = match cached {
-            true => {
-                let (from, to) = (self.content(remote, &entry.version.0), path.clone());
-                // A whole file's copy waits on the disk: off the runtime's threads.
-                tokio::task::spawn_blocking(move || copy_span(&from, &to, size))
-                    .await
-                    .unwrap_or(Err(WriteError::Cache))
-            }
-            false => self.download_into(drive, &id, &path, size).await,
+        let copied = if cached {
+            let (from, to) = (self.content(remote, &entry.version.0), path.clone());
+            // A whole file's copy waits on the disk: off the runtime's threads.
+            tokio::task::spawn_blocking(move || copy_span(&from, &to, size))
+                .await
+                .unwrap_or(Err(WriteError::Cache))
+        } else {
+            self.download_into(drive, &id, &path, size).await
         };
         if let Err(why) = copied {
             self.drop_file(n);
@@ -461,17 +461,15 @@ impl Inner {
                 file: n,
                 size,
                 modified,
-                generation: match cut {
-                    true => index.take_generation(),
-                    false => 0,
-                },
+                generation: if cut { index.take_generation() } else { 0 },
             });
             edit.refused = None;
             true
         };
-        let took = match removed {
-            true => self.change(&id, made_dirty).ok_or(WriteError::Gone),
-            false => self.change_remote(remote, made_dirty),
+        let took = if removed {
+            self.change(&id, made_dirty).ok_or(WriteError::Gone)
+        } else {
+            self.change_remote(remote, made_dirty)
         };
         match took {
             Ok(true) => {
@@ -516,10 +514,10 @@ impl Inner {
                     .is_some_and(|now| {
                         now.file == dirty.file && now.generation == dirty.generation
                     });
-                match same {
-                    true => copied.map(|()| true),
-                    // Written, sent or removed meanwhile: taken again as it is now.
-                    false => Ok(false),
+                if same {
+                    copied.map(|()| true)
+                } else {
+                    Ok(false)
                 }
             })
             .await
@@ -819,10 +817,7 @@ impl Inner {
             edit.refused = None;
             self.abandon(edit);
             edit.seq = index.take_seq();
-            match keep_bytes {
-                true => None,
-                false => edit.dirty.take(),
-            }
+            if keep_bytes { None } else { edit.dirty.take() }
         })?;
         if let Some(dirty) = dropped {
             self.drop_file(dirty.file);
@@ -839,7 +834,7 @@ impl Inner {
                 return true;
             }
             match self.parent_of(&at) {
-                Ok(Some(NodeId::Top)) | Ok(None) | Err(_) => return false,
+                Ok(Some(NodeId::Top) | None) | Err(_) => return false,
                 Ok(Some(parent)) => at = parent,
             }
         }
@@ -1017,6 +1012,7 @@ impl Drive {
 
     /// What the handle writes to now: the file it opened, as the drive names it, or this
     /// computer's version of it (see [`WriteHandle`]); `None` once it writes nowhere.
+    #[must_use]
     pub fn written(&self, handle: WriteHandle) -> Option<NodeId> {
         self.inner.written(handle)
     }
@@ -1059,13 +1055,11 @@ impl Drive {
         inner.writable()?;
         let id = inner.canonical(id);
         for _ in 0..TRIES {
-            match inner.set_len_locked(&id, size)? {
-                true => {
-                    inner.emit(vec![id]);
-                    return Ok(());
-                }
-                false => inner.make_dirty(self, &id, Some(size)).await?,
+            if inner.set_len_locked(&id, size)? {
+                inner.emit(vec![id]);
+                return Ok(());
             }
+            inner.make_dirty(self, &id, Some(size)).await?;
         }
         Err(WriteError::Gone)
     }
@@ -1192,12 +1186,10 @@ impl Drive {
             NodeId::Top => return Err(WriteError::NotAllowed),
             NodeId::Local(n) => {
                 held(&inner.index).unpair(id);
-                match open {
-                    // Kept, unseen and never sent, until it is closed.
-                    true => {
-                        inner.change(id, |edit, _| edit.removed = true);
-                    }
-                    false => inner.forget_made(*n),
+                if open {
+                    inner.change(id, |edit, _| edit.removed = true);
+                } else {
+                    inner.forget_made(*n)
                 }
             }
             NodeId::Remote(remote) => inner.remove_remote(remote, open)?,
@@ -1348,36 +1340,36 @@ impl Drive {
             }
             let n = held(&inner.index).take_local();
             let now = now_secs();
-            let edit = match node.kind {
-                NodeKind::Folder => Edit::made_here(n, folder.clone(), name.to_owned(), None, now),
-                _ => {
-                    let path = inner.new_local(n)?;
-                    let size = match &node.kind {
-                        NodeKind::Online { .. } => {
-                            let link = self.read(&node.id, 0, node.size).await;
-                            let link = link.map_err(WriteError::Read)?;
-                            std::fs::write(&path, &link)?;
-                            link.len() as u64
+            let edit = if node.kind == NodeKind::Folder {
+                Edit::made_here(n, folder.clone(), name.to_owned(), None, now)
+            } else {
+                let path = inner.new_local(n)?;
+                let size = match &node.kind {
+                    NodeKind::Online { .. } => {
+                        let link = self.read(&node.id, 0, node.size).await;
+                        let link = link.map_err(WriteError::Read)?;
+                        std::fs::write(&path, &link)?;
+                        link.len() as u64
+                    }
+                    _ => {
+                        if let Some(size) = inner.copy_written(&node.id, &path).await? {
+                            size
+                        } else {
+                            inner
+                                .download_into(self, &node.id, &path, node.size)
+                                .await?;
+                            node.size
                         }
-                        _ => match inner.copy_written(&node.id, &path).await? {
-                            Some(size) => size,
-                            None => {
-                                inner
-                                    .download_into(self, &node.id, &path, node.size)
-                                    .await?;
-                                node.size
-                            }
-                        },
-                    };
-                    let dirty = Dirty {
-                        file: n,
-                        size,
-                        modified: node.modified.map_or(now, |m| m.0),
-                        generation: held(&inner.index).take_generation(),
-                    };
-                    inner.wrote(&path);
-                    Edit::made_here(n, folder.clone(), name.to_owned(), Some(dirty), now)
-                }
+                    }
+                };
+                let dirty = Dirty {
+                    file: n,
+                    size,
+                    modified: node.modified.map_or(now, |m| m.0),
+                    generation: held(&inner.index).take_generation(),
+                };
+                inner.wrote(&path);
+                Edit::made_here(n, folder.clone(), name.to_owned(), Some(dirty), now)
             };
             let copy = inner.put_new(edit);
             made.push(copy.clone());
@@ -1458,14 +1450,13 @@ impl Drive {
                 #[cfg(test)]
                 inner.at_hook("saved over");
                 drop(guards);
-                match from {
-                    NodeId::Local(n) => inner.alias(*n, over),
-                    _ => {
-                        let ino = inner.ino(from);
-                        held(&inner.index).inos.insert(key_text(over), ino);
-                        held(&inner.inodes).insert(ino, over.clone());
-                        inner.rekey(from, over);
-                    }
+                if let NodeId::Local(n) = from {
+                    inner.alias(*n, over)
+                } else {
+                    let ino = inner.ino(from);
+                    held(&inner.index).inos.insert(key_text(over), ino);
+                    held(&inner.inodes).insert(ino, over.clone());
+                    inner.rekey(from, over);
                 }
                 inner.touched_write(over);
             }

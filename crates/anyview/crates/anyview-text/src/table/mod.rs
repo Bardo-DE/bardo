@@ -110,6 +110,7 @@ impl Table {
 
     /// The table of `rows` read from a spreadsheet, `coverage` saying whether they are all of
     /// the sheet.
+    #[must_use]
     pub fn from_rows(rows: Vec<Vec<String>>, mode: HeaderMode, coverage: Coverage) -> Self {
         Table::of_records(Separator::Comma, rows, mode, coverage)
     }
@@ -211,11 +212,13 @@ impl Table {
     }
 
     /// Whether the table holds every row of its source or only the start.
+    #[must_use]
     pub fn coverage(&self) -> Coverage {
         self.coverage
     }
 
     /// The separator the cells were split by.
+    #[must_use]
     pub fn separator(&self) -> Separator {
         self.separator
     }
@@ -223,6 +226,7 @@ impl Table {
     /// How wide each column wants to be, in characters: the longest cell among the header and a
     /// sample of the first rows, held between 4 and 60 characters. A wide character (CJK, full-width)
     /// counts for two.
+    #[must_use]
     pub fn column_widths(&self) -> Vec<u16> {
         let (least, most) = WIDTH_RANGE;
         let sample = self
@@ -257,11 +261,13 @@ impl Table {
     }
 
     /// The column names, when the table has a header.
+    #[must_use]
     pub fn header(&self) -> Option<&[String]> {
         self.header.as_deref()
     }
 
     /// The number of data rows.
+    #[must_use]
     pub fn row_count(&self) -> u32 {
         match &self.rows {
             Rows::Held(rows) => u32::try_from(rows.len()).unwrap_or(u32::MAX),
@@ -270,6 +276,7 @@ impl Table {
     }
 
     /// The width of the widest row, header included.
+    #[must_use]
     pub fn columns(&self) -> u32 {
         self.columns
     }
@@ -289,6 +296,7 @@ impl Table {
 
     /// The cell at `row` and `column`, or an empty string where the row is shorter, is missing or
     /// cannot be read.
+    #[must_use]
     pub fn cell(&self, row: RowIndex, column: usize) -> String {
         match &self.rows {
             Rows::Held(rows) => rows

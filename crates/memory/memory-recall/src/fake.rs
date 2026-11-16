@@ -23,6 +23,7 @@ pub const FAKE_DIMS: u32 = 64;
 
 impl FakeEmbedder {
     /// A working fake.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             card: EmbedderCard {
@@ -38,6 +39,7 @@ impl FakeEmbedder {
     }
 
     /// A fake that always answers `EmbedError::Unavailable`.
+    #[must_use]
     pub fn unavailable() -> Self {
         Self {
             mode: Mode::Unavailable,
@@ -46,6 +48,7 @@ impl FakeEmbedder {
     }
 
     /// A working fake whose card says it takes at most `max_batch` texts at once.
+    #[must_use]
     pub fn with_max_batch(mut self, max_batch: u32) -> Self {
         self.card.max_batch = MaxBatch(max_batch);
         self
@@ -53,6 +56,7 @@ impl FakeEmbedder {
 
     /// A working fake whose card says passages are embedded after `prefix`, so an index built
     /// without one is in another space.
+    #[must_use]
     pub fn with_document_prefix(mut self, prefix: &str) -> Self {
         self.card.prompts.document = prefix.to_owned();
         self
@@ -60,6 +64,7 @@ impl FakeEmbedder {
 
     /// A working fake that claims to be another model, so an index built with one is stale for
     /// the other.
+    #[must_use]
     pub fn named(model: &str) -> Self {
         let mut fake = Self::new();
         fake.card.model = model.to_owned();
@@ -67,6 +72,7 @@ impl FakeEmbedder {
     }
 
     /// The vector of one text.
+    #[must_use]
     pub fn vector(text: &str) -> Vector {
         let mut buckets = vec![0.0f32; usize::try_from(FAKE_DIMS).unwrap_or(64)];
         for word in text

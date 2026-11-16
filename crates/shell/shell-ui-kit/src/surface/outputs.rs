@@ -18,6 +18,7 @@ pub enum OutputPolicy {
 
 impl OutputPolicy {
     /// Whether the surface lives on `output`, given the main display.
+    #[must_use]
     pub fn spawns_on(self, output: OutputId, main: Option<OutputId>) -> bool {
         match self {
             OutputPolicy::Every | OutputPolicy::FocusedWindow => true,

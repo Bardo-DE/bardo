@@ -84,6 +84,7 @@ pub struct ConnectorFacts {
 impl ConnectorFacts {
     /// A connector with no modes, no EDID and no size, that cannot vary its refresh and can be
     /// driven by no CRTC yet.
+    #[must_use]
     pub fn new(id: ConnectorId, name: OutputName, status: ConnectorStatus) -> ConnectorFacts {
         ConnectorFacts {
             id,
@@ -153,6 +154,7 @@ fn default_gamma_size() -> u32 {
 
 impl CrtcFacts {
     /// A CRTC with a [`DEFAULT_GAMMA_SIZE`] gamma table.
+    #[must_use]
     pub fn new(id: CrtcId, vrr: bool) -> CrtcFacts {
         CrtcFacts {
             id,
@@ -183,6 +185,7 @@ pub struct PlaneFacts {
 
 impl PlaneFacts {
     /// A plane.
+    #[must_use]
     pub fn new(
         id: PlaneId,
         kind: PlaneKind,
@@ -211,6 +214,7 @@ pub struct KmsResources {
 
 impl KmsResources {
     /// A device's resources.
+    #[must_use]
     pub fn new(
         connectors: Vec<ConnectorFacts>,
         crtcs: Vec<CrtcFacts>,
@@ -239,6 +243,7 @@ pub struct OutputCommit {
 
 impl OutputCommit {
     /// An output's commit.
+    #[must_use]
     pub fn new(connector: ConnectorId, crtc: CrtcId, mode: Mode, vrr: bool) -> OutputCommit {
         OutputCommit {
             connector,
@@ -261,6 +266,7 @@ pub struct KmsCommit {
 
 impl KmsCommit {
     /// A commit.
+    #[must_use]
     pub fn new(outputs: Vec<OutputCommit>, modeset_allowed: bool) -> KmsCommit {
         KmsCommit {
             outputs,

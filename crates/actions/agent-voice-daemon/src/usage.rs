@@ -31,6 +31,7 @@ pub struct FileUse {
 
 impl FileUse {
     /// Reads `path` on every call.
+    #[must_use]
     pub fn new(path: PathBuf) -> Self {
         Self { path }
     }

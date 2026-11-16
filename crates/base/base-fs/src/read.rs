@@ -52,6 +52,7 @@ pub enum ReadError {
 
 impl ReadError {
     /// Whether the file is simply absent.
+    #[must_use]
     pub fn is_missing(&self) -> bool {
         matches!(self, ReadError::NotFound { .. })
     }
@@ -102,8 +103,8 @@ fn open(path: &Path) -> io::Result<File> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.custom_flags(NONBLOCK);
-    }
+        options.custom_flags(NONBLOCK)
+    };
     options.open(path)
 }
 

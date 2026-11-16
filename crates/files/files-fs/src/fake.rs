@@ -21,6 +21,7 @@ pub struct FakeLister {
 
 impl FakeLister {
     /// A lister that knows no folder.
+    #[must_use]
     pub fn new() -> FakeLister {
         FakeLister::default()
     }
@@ -88,11 +89,13 @@ impl std::fmt::Debug for FakeWatcher {
 
 impl FakeWatcher {
     /// A watcher with nothing watched.
+    #[must_use]
     pub fn new() -> FakeWatcher {
         FakeWatcher::default()
     }
 
     /// The folders watched now, oldest first (one per live handle).
+    #[must_use]
     pub fn watched(&self) -> Vec<FolderPath> {
         let registry = locked(&self.registry);
         registry.sinks.iter().map(|(_, f, _)| f.clone()).collect()

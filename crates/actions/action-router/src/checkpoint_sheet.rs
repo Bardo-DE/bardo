@@ -44,6 +44,7 @@ fn group(title: &str, paths: &[WorkPath], app: &Label) -> Vec<Option<FactLine>> 
 }
 
 /// The sheet's lines for restoring `plan`, as the app `app` (the provider) says them.
+#[must_use]
 pub fn restore_sheet(plan: &RestorePlan, app: &AppName) -> Vec<FactLine> {
     let said = app_label(app);
     let mut lines = Vec::new();

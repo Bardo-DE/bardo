@@ -24,6 +24,7 @@ pub enum Pane {
 }
 
 /// What the selected row is, as the keys machine reads it.
+#[must_use]
 pub fn selected_of(item: Option<&Item>) -> Selected {
     match item.map(|item| &item.subject) {
         None => Selected::Nothing,
@@ -40,6 +41,7 @@ fn is_ask(item: Option<&Item>) -> bool {
 
 /// The pane for the selected row: an answer row shows its answer, by how far the answer is;
 /// anything else is the prompt being composed.
+#[must_use]
 pub fn pane_of(selected: &Selected, companion: &Companion) -> Pane {
     let Selected::Answer(task) = selected else {
         return Pane::Composing;
@@ -59,6 +61,7 @@ pub fn pane_of(selected: &Selected, companion: &Companion) -> Pane {
 }
 
 /// The run a selected row names, if it is a run.
+#[must_use]
 pub fn run_of(selected: &Selected) -> Option<&RunId> {
     match selected {
         Selected::Run(run) => Some(run),

@@ -1,4 +1,4 @@
-//! DragImage: the ghost of one item and of several, pinned near the top right while shown.
+//! `DragImage`: the ghost of one item and of several, pinned near the top right while shown.
 
 use crate::axes::{Axes, Showcase};
 use crate::pages::Section;
@@ -8,7 +8,7 @@ use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_core::press::Press;
 
-/// The DragGhost section.
+/// The `DragGhost` section.
 #[component]
 pub fn DragGhostSection() -> Element {
     let showcase = use_context::<Signal<Axes>>()().showcase;

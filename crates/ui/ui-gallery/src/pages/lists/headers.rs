@@ -1,4 +1,4 @@
-//! SectionHeader and Disclosure: the one header look with and without a value, an action or a
+//! `SectionHeader` and Disclosure: the one header look with and without a value, an action or a
 //! collapse, and the triangle that opens a body (design/30 sections 2.1 and 2.6).
 
 use crate::pages::{Section, Specimen};

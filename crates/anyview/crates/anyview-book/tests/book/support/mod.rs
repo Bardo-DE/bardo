@@ -52,11 +52,11 @@ const OPF: &str = r#"<?xml version="1.0"?>
 <spine><itemref idref="c1"/><itemref idref="c2"/></spine>
 </package>"#;
 
-const NAV: &str = r##"<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body>
+const NAV: &str = r#"<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body>
 <nav epub:type="toc"><ol>
 <li><a href="text/one.xhtml">One</a><ol><li><a href="text/one.xhtml#s">One, part</a></li></ol></li>
 <li><a href="text/two.xhtml">Two</a></li>
-</ol></nav></body></html>"##;
+</ol></nav></body></html>"#;
 
 const ONE: &str = r#"<html xmlns="http://www.w3.org/1999/xhtml"><head><title>x</title>
 <link rel="stylesheet" href="../style.css"/><script>alert(1)</script></head>

@@ -76,12 +76,14 @@ pub fn parse_multistatus(xml: &str) -> Result<Multistatus, Error> {
 }
 
 /// The code of an HTTP status line: `HTTP/1.1 404 Not Found` is 404.
+#[must_use]
 pub fn parse_status_line(line: &str) -> Option<u16> {
     line.split_whitespace().nth(1)?.parse().ok()
 }
 
 impl Multistatus {
     /// The value of `name` in the first response that found it, when it is not empty.
+    #[must_use]
     pub fn first_found(&self, name: &str) -> Option<&str> {
         self.responses
             .iter()
@@ -91,6 +93,7 @@ impl Multistatus {
 
     /// The entries of `name` in the first response that found it with a non-empty value
     /// ([`Prop::items`]).
+    #[must_use]
     pub fn first_found_items(&self, name: &str) -> Option<&[String]> {
         self.responses
             .iter()
@@ -101,17 +104,20 @@ impl Multistatus {
 
 impl Response {
     /// The first property called `name` (qualified), whatever its status.
+    #[must_use]
     pub fn prop(&self, name: &str) -> Option<&Prop> {
         self.props.iter().find(|p| p.name == name)
     }
 
     /// The value of `name` when the server found it.
+    #[must_use]
     pub fn found(&self, name: &str) -> Option<&str> {
         self.found_prop(name).map(|p| p.value.as_str())
     }
 
     /// The entries of `name` when the server found it, each kept whole: an href with a space
     /// in it is one entry ([`Prop::items`]).
+    #[must_use]
     pub fn found_items(&self, name: &str) -> Option<&[String]> {
         self.found_prop(name).map(|p| p.items.as_slice())
     }
@@ -123,6 +129,7 @@ impl Response {
     }
 
     /// Whether the response reports the resource as no longer there (a 404 status).
+    #[must_use]
     pub fn gone(&self) -> bool {
         self.status == Some(404)
     }
@@ -169,17 +176,21 @@ fn items(node: Node<'_, '_>) -> Vec<String> {
     let elements: Vec<String> = node
         .children()
         .filter(Node::is_element)
-        .map(|c| match c.has_tag_name((DAV, "href")) {
-            true => text(c),
-            false => qualify(c.tag_name().namespace(), c.tag_name().name()),
+        .map(|c| {
+            if c.has_tag_name((DAV, "href")) {
+                text(c)
+            } else {
+                qualify(c.tag_name().namespace(), c.tag_name().name())
+            }
         })
         .collect();
-    match elements.is_empty() {
-        false => elements,
-        true => Some(text(node))
+    if elements.is_empty() {
+        Some(text(node))
             .filter(|t| !t.is_empty())
             .into_iter()
-            .collect(),
+            .collect()
+    } else {
+        elements
     }
 }
 

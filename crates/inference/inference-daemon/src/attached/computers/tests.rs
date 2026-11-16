@@ -111,7 +111,7 @@ fn a_computer_is_added_to_the_file_the_keys_and_the_book_and_reads_back_as_the_s
         & 0o777;
     assert_eq!(mode, 0o600);
     // The engine reads that key, as a hand-written key file is read.
-    assert!(target.key.as_ref().expect("key").read().is_ok());
+    target.key.as_ref().expect("key").read().unwrap();
 
     // At the next start the file gives the same engine, and nothing is refused.
     let file = AddedFile::read(&rig.file()).expect("reads");
@@ -250,7 +250,7 @@ fn a_model_can_be_on_one_computer_only_and_a_name_is_taken_once() {
         computers.add(twice),
         Err(ComputerError::ModelTaken(entries::ATTACHED.into()))
     );
-    assert!(computers.add(studio(None)).is_ok());
+    computers.add(studio(None)).unwrap();
     // The same name, however it is typed.
     for label in ["Studio PC", "studio pc", "  STUDIO-pc "] {
         let again = NewComputer {
@@ -282,7 +282,7 @@ fn a_computer_that_was_added_is_removed_with_its_models_and_its_keys_and_one_by_
     // test's catalogue has one attached entry, so add and remove it on a book without the hand one.
     let free = Rig::new("remove2");
     let computers_free = free.computers(&[]);
-    assert!(computers_free.add(studio(Some(KEY))).is_ok());
+    computers_free.add(studio(Some(KEY))).unwrap();
     let key_path = free
         .keys()
         .join(format!("studio-pc--{}.key", entries::ATTACHED));
@@ -298,7 +298,7 @@ fn a_computer_that_was_added_is_removed_with_its_models_and_its_keys_and_one_by_
     let file = AddedFile::read(&free.file()).expect("reads");
     assert_eq!(file, AddedFile::default());
     // And it can be added again, by the name alone this time.
-    assert!(computers_free.add(studio(None)).is_ok());
+    computers_free.add(studio(None)).unwrap();
     assert_eq!(computers_free.remove("studio-pc"), Ok(None));
 
     assert_eq!(computers.remove("lab"), Err(ComputerError::AddedByHand));

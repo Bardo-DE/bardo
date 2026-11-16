@@ -224,11 +224,9 @@ async fn a_second_redirect_after_the_first_is_refused() {
     server.wait(&pkce.state).await.expect("the first redirect");
     browser.await.expect("task").expect("browser");
     // The listener took one request and is gone.
-    assert!(
-        tokio::net::TcpStream::connect(("127.0.0.1", port))
-            .await
-            .is_err()
-    );
+    tokio::net::TcpStream::connect(("127.0.0.1", port))
+        .await
+        .unwrap_err();
 }
 
 #[tokio::test]

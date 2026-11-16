@@ -86,7 +86,7 @@ fn collect_own(doc: &BaseDocument, parent: NodeId, found: &mut Vec<NodeId>) {
     let Some(node) = doc.get_node(parent) else {
         return;
     };
-    for &child in node.children.iter() {
+    for &child in &node.children {
         let Some(child_node) = doc.get_node(child) else {
             continue;
         };
@@ -117,7 +117,7 @@ fn collect_laid(doc: &BaseDocument, parent: NodeId, boxes: &[u64], found: &mut V
     let Some(node) = doc.get_node(parent) else {
         return;
     };
-    for &child in node.children.iter() {
+    for &child in &node.children {
         let Some(child_node) = doc.get_node(child) else {
             continue;
         };
@@ -172,7 +172,7 @@ fn collect_segments(doc: &BaseDocument, parent: NodeId, found: &mut Vec<Segment>
     let Some(node) = doc.get_node(parent) else {
         return;
     };
-    for &child in node.children.iter() {
+    for &child in &node.children {
         let Some(child_node) = doc.get_node(child) else {
             continue;
         };

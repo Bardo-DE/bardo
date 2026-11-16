@@ -58,6 +58,7 @@ pub(crate) fn acp_client(program: &ProgramName) -> Option<ClientName> {
 
 /// The editor the person last spoke through in `record`: the app that recorded its latest turn,
 /// if that turn came from an editor.
+#[must_use]
 pub fn editor_of(record: &SessionRecord) -> Option<ClientName> {
     let from = &record.turns.last()?.from;
     if from.role() != CallerRole::Editor {
@@ -67,6 +68,7 @@ pub fn editor_of(record: &SessionRecord) -> Option<ClientName> {
 }
 
 /// Where a sheet for a call of `who` goes when an editor is driving its session.
+#[must_use]
 pub fn route_of(who: &Who) -> Option<action_core::EditorRoute> {
     let client = match &who.agent {
         Some(seat) => seat.host.clone()?,
@@ -80,6 +82,7 @@ pub fn route_of(who: &Who) -> Option<action_core::EditorRoute> {
 
 impl Who {
     /// The consent a grant for this party is keyed by.
+    #[must_use]
     pub fn grant_caller(&self) -> GrantCaller {
         if let Some(seat) = &self.agent {
             return match &seat.helper {
@@ -207,30 +210,29 @@ impl RouterState {
             | CallerRole::Control => return Err(WireRefusal::NotAllowed),
         };
         let key = (role, app.clone());
-        let session = match self
+        let session = if let Some(existing) = self
             .implicit
             .get(&key)
             .filter(|s| self.sessions.contains_key(*s))
         {
-            Some(existing) => existing.clone(),
-            None => {
-                let n = self.mint();
-                let session =
-                    SessionId::parse(&format!("s-{n}")).map_err(|_| WireRefusal::Malformed)?;
-                let task = TaskId::parse(&format!("t-{n}")).map_err(|_| WireRefusal::Malformed)?;
-                let mut record = SessionRecord::new(
-                    task,
-                    actor.clone(),
-                    app,
-                    provenance::SpaceId::desktop(),
-                    now,
-                );
-                // A program that opened no session acts in one that starts in the start mode.
-                record.mode = start;
-                self.sessions.insert(session.clone(), record);
-                self.implicit.insert(key, session.clone());
-                session
-            }
+            existing.clone()
+        } else {
+            let n = self.mint();
+            let session =
+                SessionId::parse(&format!("s-{n}")).map_err(|_| WireRefusal::Malformed)?;
+            let task = TaskId::parse(&format!("t-{n}")).map_err(|_| WireRefusal::Malformed)?;
+            let mut record = SessionRecord::new(
+                task,
+                actor.clone(),
+                app,
+                provenance::SpaceId::desktop(),
+                now,
+            );
+            // A program that opened no session acts in one that starts in the start mode.
+            record.mode = start;
+            self.sessions.insert(session.clone(), record);
+            self.implicit.insert(key, session.clone());
+            session
         };
         Ok(Who {
             caller: caller.clone(),
@@ -281,6 +283,7 @@ impl RouterState {
 }
 
 /// Who acts in the session of `agent`, opened by `opener`: how calls and the journal name it.
+#[must_use]
 pub fn actor_of(
     agent: &AgentRef,
     external: Option<&ExternalAgent>,

@@ -46,12 +46,7 @@ impl FrameParser {
 }
 
 impl HtmlParserProvider for FrameParser {
-    fn parse_inner_html<'m, 'doc>(
-        &self,
-        mutr: &'m mut DocumentMutator<'doc>,
-        element_id: NodeId,
-        html: &str,
-    ) {
+    fn parse_inner_html(&self, mutr: &mut DocumentMutator<'_>, element_id: NodeId, html: &str) {
         self.inner.parse_inner_html(mutr, element_id, html);
     }
 

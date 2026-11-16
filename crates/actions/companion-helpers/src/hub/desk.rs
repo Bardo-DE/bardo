@@ -55,7 +55,10 @@ where
     /// the apps installed.
     async fn draft_of(&self, form: HelperForm, space: &SpaceId) -> Result<CardDraft, Refusal> {
         let manifests = self.manifests().await;
-        let installed: Vec<&Manifest> = manifests.iter().map(|m| m.manifest()).collect();
+        let installed: Vec<&Manifest> = manifests
+            .iter()
+            .map(action_manifest::ValidManifest::manifest)
+            .collect();
         card_draft(form, space, &installed)
     }
 

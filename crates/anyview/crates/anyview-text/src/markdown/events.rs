@@ -164,8 +164,8 @@ pub(super) fn prepare<'a>(
                 dest_url,
                 title,
                 id,
-            }) => match inliner.data_url(dest_url) {
-                Some(url) => {
+            }) => {
+                if let Some(url) = inliner.data_url(dest_url) {
                     images.push(ImageEnd::Kept);
                     out.push(Event::Start(Tag::Image {
                         link_type: *link_type,
@@ -173,12 +173,11 @@ pub(super) fn prepare<'a>(
                         title: title.clone(),
                         id: id.clone(),
                     }));
-                }
-                None => {
+                } else {
                     images.push(ImageEnd::Dropped);
                     out.push(html("<span class=\"missing-image\">"));
                 }
-            },
+            }
             Event::End(TagEnd::Image) => match images.pop() {
                 Some(ImageEnd::Dropped) => out.push(html("</span>")),
                 Some(ImageEnd::Kept) | None => out.push(Event::End(TagEnd::Image)),

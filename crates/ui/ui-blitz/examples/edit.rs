@@ -1,5 +1,5 @@
 //! An edit surface in a real window, for trying the IME by hand: click in the text, type, compose
-//! with an input method (fcitx5, IBus), paste. Every input the surface hands the app is printed on
+//! with an input method (fcitx5, `IBus`), paste. Every input the surface hands the app is printed on
 //! stdout, and the caret the app would draw sits at the last position a press reported. With
 //! `BARDO_EDIT_SECONDS=n` it closes itself after n seconds.
 //!

@@ -205,7 +205,7 @@ async fn a_terminal_cannot_use_what_is_not_its_to_use() {
 async fn the_control_centre_lists_and_revokes_the_grants() {
     let mut router = router();
     answering(&mut router, vec![from_terminal()]);
-    assert!(run(&router, archive()).await.is_ok());
+    run(&router, archive()).await.unwrap();
     assert_eq!(
         ask(&router, &control(), IntentsRequest::ControlTerminalGrants).await,
         IntentsReply::TerminalGrants(vec![action("mail.thread.archive")])

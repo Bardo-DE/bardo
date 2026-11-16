@@ -163,29 +163,26 @@ pub fn frecency() -> Frecency {
 /// provider's rows alone.
 pub fn placed(rows: &[Item], text: &str, only: Option<ProviderKind>) -> Placement {
     let plan = SectionPlan::default_plan();
-    match only {
-        Some(kind) => {
-            let items: Vec<Item> = rows
-                .iter()
-                .filter(|i| i.provider == kind)
-                .cloned()
-                .collect();
-            let spans = match (plan.rule(kind), items.len()) {
-                (Some(rule), n) if n > 0 => vec![SectionSpan {
-                    section: rule.section,
-                    rows: n as u32,
-                }],
-                _ => Vec::new(),
-            };
-            Placement { items, spans }
-        }
-        None => {
-            let shape = match text.trim() {
-                "" => QueryShape::Empty,
-                _ => QueryShape::Text,
-            };
-            place(rows, &plan, shape, &frecency(), NOW)
-        }
+    if let Some(kind) = only {
+        let items: Vec<Item> = rows
+            .iter()
+            .filter(|i| i.provider == kind)
+            .cloned()
+            .collect();
+        let spans = match (plan.rule(kind), items.len()) {
+            (Some(rule), n) if n > 0 => vec![SectionSpan {
+                section: rule.section,
+                rows: n as u32,
+            }],
+            _ => Vec::new(),
+        };
+        Placement { items, spans }
+    } else {
+        let shape = match text.trim() {
+            "" => QueryShape::Empty,
+            _ => QueryShape::Text,
+        };
+        place(rows, &plan, shape, &frecency(), NOW)
     }
 }
 

@@ -130,6 +130,7 @@ impl Loopback {
     }
 
     /// The port.
+    #[must_use]
     pub fn port(&self) -> u16 {
         self.0.port()
     }

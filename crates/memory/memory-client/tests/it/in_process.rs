@@ -111,5 +111,5 @@ async fn a_provided_key_seals_a_space_file_with_no_key_service() {
     let again = ProvidedKeys::new(SpaceKey::from_bytes([9; 32]));
     let key = again.get(&work()).await.expect("key");
     let sub = derive(&key, &work(), Purpose::Files);
-    assert!(unseal(&sub, &aad, &sealed).is_ok());
+    unseal(&sub, &aad, &sealed).unwrap();
 }

@@ -129,6 +129,7 @@ pub struct FloorOnlyStore {
 
 impl FloorOnlyStore {
     /// The store over `floor`.
+    #[must_use]
     pub fn new(floor: FloorFiles) -> FloorOnlyStore {
         FloorOnlyStore { floor }
     }
@@ -175,12 +176,14 @@ pub struct FilePrivacyStore {
 
 impl FilePrivacyStore {
     /// The store over `files`.
+    #[must_use]
     pub fn new(files: PrivacyFiles) -> FilePrivacyStore {
         FilePrivacyStore { files }
     }
 
     /// Where the book is written: a handle that writes the book from any thread (the loop
     /// hands it to a thread of its own, since a durable write waits for the disk).
+    #[must_use]
     pub fn book_sink(&self) -> BookSink {
         BookSink {
             book: self.files.book.clone(),

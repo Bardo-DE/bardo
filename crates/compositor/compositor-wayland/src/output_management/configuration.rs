@@ -88,12 +88,11 @@ struct AlreadySet;
 
 /// Sets `slot` to `value` unless the client set it before.
 fn claim<T>(slot: &mut Option<T>, value: T) -> Result<(), AlreadySet> {
-    match slot {
-        Some(_) => Err(AlreadySet),
-        None => {
-            *slot = Some(value);
-            Ok(())
-        }
+    if slot.is_some() {
+        Err(AlreadySet)
+    } else {
+        *slot = Some(value);
+        Ok(())
     }
 }
 
@@ -346,21 +345,21 @@ where
                 claim(&mut head.change.position, LogicalPoint { x, y })
             }
             Request::SetTransform { transform } => {
-                match transform.into_result().ok().and_then(transform_from) {
-                    Some(transform) => claim(&mut head.change.transform, transform),
-                    None => {
-                        resource.post_error(Error::InvalidTransform, "no such transform");
-                        return;
-                    }
+                if let Some(transform) = transform.into_result().ok().and_then(transform_from) {
+                    claim(&mut head.change.transform, transform)
+                } else {
+                    resource.post_error(Error::InvalidTransform, "no such transform");
+                    return;
                 }
             }
-            Request::SetScale { scale } => match Scale::from_factor(scale) {
-                Some(scale) => claim(&mut head.change.scale, scale),
-                None => {
+            Request::SetScale { scale } => {
+                if let Some(scale) = Scale::from_factor(scale) {
+                    claim(&mut head.change.scale, scale)
+                } else {
                     resource.post_error(Error::InvalidScale, "the scale must be positive");
                     return;
                 }
-            },
+            }
             // Adaptive sync is not offered: a request to change it changes nothing.
             _ => return,
         };

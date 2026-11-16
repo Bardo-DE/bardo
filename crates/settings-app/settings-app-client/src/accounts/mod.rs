@@ -59,16 +59,19 @@ impl Accounts {
     }
 
     /// Gives the pane `input` now; the returned work carries out what it asks for.
+    #[must_use]
     pub fn send(&self, input: AccountsInput) -> Pending {
         self.dispatch(input)
     }
 
     /// The sync service's held deletions.
+    #[must_use]
     pub fn holds(&self) -> &HeldDeletions {
         &self.holds
     }
 
     /// What the sync service says of the accounts' datasets.
+    #[must_use]
     pub fn datasets(&self) -> &Datasets {
         &self.datasets
     }

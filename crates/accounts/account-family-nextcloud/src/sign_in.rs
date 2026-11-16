@@ -148,9 +148,10 @@ fn signed(who: &Who, found: Found) -> Signed {
 /// The host (and a port that is not the scheme's own) the account is shown by.
 fn host_of(server: &EndpointUrl) -> String {
     let origin = server.origin();
-    match origin.port == origin.scheme.default_port() {
-        true => origin.host,
-        false => format!("{}:{}", origin.host, origin.port),
+    if origin.port == origin.scheme.default_port() {
+        origin.host
+    } else {
+        format!("{}:{}", origin.host, origin.port)
     }
 }
 

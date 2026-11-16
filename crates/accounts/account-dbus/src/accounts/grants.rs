@@ -113,6 +113,6 @@ mod tests {
             from_text::<Availability>(&text),
             Ok(Availability::NeedsAccount)
         );
-        assert!(from_text::<Availability>("nonsense").is_err());
+        from_text::<Availability>("nonsense").unwrap_err();
     }
 }

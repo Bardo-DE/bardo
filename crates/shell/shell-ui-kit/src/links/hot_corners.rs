@@ -24,6 +24,7 @@ pub struct CornerLink {
 
 impl CornerLink {
     /// No hit yet.
+    #[must_use]
     pub fn new() -> CornerLink {
         CornerLink::default()
     }
@@ -41,11 +42,13 @@ impl CornerLink {
     }
 
     /// The latest hit.
+    #[must_use]
     pub fn last(&self) -> Option<CornerHit> {
         self.hits.now()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Option<CornerHit>> {
         self.hits.subscribe()
     }

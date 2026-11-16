@@ -32,6 +32,7 @@ const SEVEN_DAY_REFUSAL_FROM: i64 = 6 * 24 * 60 * 60;
 
 impl Restriction {
     /// An account nothing limits.
+    #[must_use]
     pub fn none() -> Self {
         Self {
             verification: Verification::NotNeeded,
@@ -43,30 +44,35 @@ impl Restriction {
     }
 
     /// The same restriction with this verification state.
+    #[must_use]
     pub fn with_verification(mut self, verification: Verification) -> Self {
         self.verification = verification;
         self
     }
 
     /// The same restriction with this sign-in lifetime.
+    #[must_use]
     pub fn with_token_lifetime(mut self, token_lifetime: TokenLifetime) -> Self {
         self.token_lifetime = token_lifetime;
         self
     }
 
     /// The same restriction with this organisation consent.
+    #[must_use]
     pub fn with_consent(mut self, consent: TenantConsent) -> Self {
         self.consent = consent;
         self
     }
 
     /// The same restriction with these per-kind limits.
+    #[must_use]
     pub fn with_limits(mut self, limits: Vec<Limit>) -> Self {
         self.limits = limits;
         self
     }
 
     /// The same restriction, signed in at `at`.
+    #[must_use]
     pub fn with_signed_in(mut self, at: UnixSeconds) -> Self {
         self.signed_in = Some(at);
         self
@@ -74,6 +80,7 @@ impl Restriction {
 
     /// When a sign-in that lasts seven days stops working: what Settings shows. `None` for any
     /// other lifetime or when the sign-in's date is not known.
+    #[must_use]
     pub fn expires_at(&self) -> Option<UnixSeconds> {
         match (self.token_lifetime, self.signed_in) {
             (TokenLifetime::SevenDays, Some(at)) => Some(UnixSeconds(at.0 + SEVEN_DAYS)),
@@ -83,6 +90,7 @@ impl Restriction {
 
     /// Why an account the provider refused (`NeedsReauth`) was refused, when it is the seven
     /// days: the lifetime is seven days and the sign-in is old enough, or of unknown age.
+    #[must_use]
     pub fn reauth_reason(&self, now: UnixSeconds) -> Option<ReauthReason> {
         match self.token_lifetime {
             TokenLifetime::SevenDays => ReauthReason::of_seven_days(self.signed_in, now),
@@ -104,6 +112,7 @@ impl ReauthReason {
     /// The reason for a refusal of a sign-in that lasts seven days, given when the person signed
     /// in when that is known: the seven days when the sign-in is old enough, or of unknown age; a
     /// young sign-in was ended by someone. The one place the rule is written.
+    #[must_use]
     pub fn of_seven_days(signed_in: Option<UnixSeconds>, now: UnixSeconds) -> Option<Self> {
         signed_in
             .is_none_or(|at| now.0 - at.0 >= SEVEN_DAY_REFUSAL_FROM)
@@ -161,6 +170,7 @@ pub struct Limit {
 
 impl Limit {
     /// A limit on `kind`, for this reason.
+    #[must_use]
     pub fn new(kind: CapabilityKind, reason: LimitReason) -> Self {
         Self { kind, reason }
     }

@@ -293,7 +293,7 @@ fn a_handle_token_is_a_path_segment_or_it_is_not_one() {
         let path = request_path(":1.42", token);
         assert_eq!(path.is_some(), ok, "{token:?}");
         if let Some(path) = path {
-            assert!(zbus::zvariant::ObjectPath::try_from(path.as_str()).is_ok());
+            zbus::zvariant::ObjectPath::try_from(path.as_str()).unwrap();
             assert_eq!(path, format!("/org/bardo/Accounts1/request/1_42/{token}"));
         }
     }

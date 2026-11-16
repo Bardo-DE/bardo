@@ -26,6 +26,7 @@ pub struct Prober<P = RealProc> {
 
 impl Prober<RealProc> {
     /// A prober of the machine's own `/proc`.
+    #[must_use]
     pub fn system() -> Prober<RealProc> {
         Prober::new(RealProc::system())
     }

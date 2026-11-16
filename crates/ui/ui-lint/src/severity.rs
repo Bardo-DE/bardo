@@ -27,6 +27,7 @@ pub const WARNINGS: [Rule; 5] = [
 
 impl Rule {
     /// How much an offence of this rule weighs.
+    #[must_use]
     pub fn severity(self) -> Severity {
         if WARNINGS.contains(&self) {
             Severity::Warning
@@ -38,6 +39,7 @@ impl Rule {
 
 impl Offence {
     /// Its rule's severity.
+    #[must_use]
     pub fn severity(&self) -> Severity {
         self.rule.severity()
     }

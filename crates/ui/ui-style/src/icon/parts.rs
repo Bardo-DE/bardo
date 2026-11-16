@@ -135,6 +135,7 @@ const BATTERY: Parts = Parts {
 
 impl Icon {
     /// The annotation of the icon's moving parts, for the icons a symbol effect animates by part.
+    #[must_use]
     pub fn parts(self) -> Option<&'static Parts> {
         match self {
             Icon::Trash => Some(&TRASH),

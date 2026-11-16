@@ -67,14 +67,16 @@ pub enum BringupError {
 
 fn quote(word: &str) -> String {
     let plain = |c: char| c.is_ascii_alphanumeric() || "/._-:=@,+".contains(c);
-    match word.chars().all(plain) {
-        true => word.to_owned(),
-        false => format!("'{}'", word.replace('\'', "'\\''")),
+    if word.chars().all(plain) {
+        word.to_owned()
+    } else {
+        format!("'{}'", word.replace('\'', "'\\''"))
     }
 }
 
-/// The command line that adds an OpenRouter key to a root whose accountd keeps its keys in the
+/// The command line that adds an `OpenRouter` key to a root whose accountd keeps its keys in the
 /// root's own file (the run without `--keys-home`). accountd must be stopped while it runs.
+#[must_use]
 pub fn add_command(root: &Path, accountd: &Path) -> String {
     let keys = format!("file:{}", root.join("keys/accountd.keys").display());
     let env: Vec<String> = env_of(root)

@@ -134,6 +134,7 @@ impl Flight {
     /// let rect = |x| LogicalRect::new(LogicalPoint { x, y: 0 }, LogicalSize { w: 10, h: 10 });
     /// assert_eq!(Flight::new(rect(0), rect(90), Fraction(500)).progress, Fraction(500));
     /// ```
+    #[must_use]
     pub fn new(window: LogicalRect, tile: LogicalRect, progress: Fraction) -> Flight {
         Flight {
             window,

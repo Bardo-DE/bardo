@@ -194,7 +194,7 @@ impl Dispatch<ExtSessionLockManagerV1, ()> for State {
         _: &mut Self,
         _: &ExtSessionLockManagerV1,
         _: <ExtSessionLockManagerV1 as wayland_client::Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -206,7 +206,7 @@ impl Dispatch<ExtSessionLockV1, ()> for State {
         state: &mut Self,
         _: &ExtSessionLockV1,
         event: ext_session_lock_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

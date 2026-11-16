@@ -29,6 +29,7 @@ pub enum IndexAction {
 }
 
 /// One transition. Total and pure.
+#[must_use]
 pub fn index_step(state: IndexState, event: IndexEvent) -> (IndexState, IndexAction) {
     use IndexAction as A;
     use IndexEvent as V;

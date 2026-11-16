@@ -28,6 +28,7 @@ pub enum DragAction {
 impl DragAction {
     /// The action a `wl_data_source.action` event chose; `None` for none, or for `ask` (the
     /// target settles an ask with a later `action` before it finishes).
+    #[must_use]
     pub fn from_wire(action: DndAction) -> Option<DragAction> {
         if action == DndAction::Copy {
             Some(DragAction::Copy)

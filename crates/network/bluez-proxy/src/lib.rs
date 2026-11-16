@@ -1,4 +1,4 @@
-//! Typed `zbus` proxies for BlueZ's D-Bus API (`org.bluez`), written from BlueZ's documented
+//! Typed `zbus` proxies for `BlueZ`'s D-Bus API (`org.bluez`), written from `BlueZ`'s documented
 //! interfaces. Not `bluer` or `bluez-async`: both run on the `dbus` crate and link libdbus, a
 //! second D-Bus stack beside `zbus`.
 //!
@@ -20,10 +20,10 @@ use std::collections::HashMap;
 use zbus::names::OwnedInterfaceName;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 
-/// The bus name BlueZ owns, on the system bus.
+/// The bus name `BlueZ` owns, on the system bus.
 pub const SERVICE: &str = "org.bluez";
 
-/// What `org.freedesktop.DBus.ObjectManager.GetManagedObjects` on BlueZ's `/` answers: every
+/// What `org.freedesktop.DBus.ObjectManager.GetManagedObjects` on `BlueZ`'s `/` answers: every
 /// adapter and device, its interfaces and their properties.
 pub type Objects =
     HashMap<OwnedObjectPath, HashMap<OwnedInterfaceName, HashMap<String, OwnedValue>>>;

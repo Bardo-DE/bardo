@@ -33,6 +33,7 @@ pub enum Step {
 
 impl Step {
     /// The step as a clause of the log line.
+    #[must_use]
     pub fn words(self) -> &'static str {
         match self {
             Step::Opening => "the opening names no agent or folder",

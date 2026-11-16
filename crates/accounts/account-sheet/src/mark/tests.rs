@@ -59,8 +59,8 @@ fn serde_refuses_a_bad_letter_or_colour_and_keeps_the_text() {
         r##"{"letter":"","colour":"#10A37F"}"##,
         r##"{"letter":"ABC","colour":"#10A37F"}"##,
         r##"{"letter":"A","colour":"#FFF"}"##,
-        r##"{"letter":"A","colour":"red"}"##,
-        r##"{"letter":"A"}"##,
+        r#"{"letter":"A","colour":"red"}"#,
+        r#"{"letter":"A"}"#,
     ] {
         assert!(serde_json::from_str::<MarkFace>(bad).is_err(), "{bad}");
     }

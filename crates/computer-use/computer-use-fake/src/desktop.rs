@@ -47,6 +47,7 @@ pub struct FakeDesktop {
 
 impl FakeDesktop {
     /// A desktop of this backend over these windows.
+    #[must_use]
     pub fn new(kind: BackendKind, windows: Vec<ToplevelInfo>) -> Self {
         Self {
             caps: BackendCaps::of(kind),
@@ -89,12 +90,11 @@ impl Desktop for FakeDesktop {
     async fn next_event(&self) -> DesktopEvent {
         std::future::poll_fn(|cx| {
             let mut events = self.events.lock().expect("fake desktop lock");
-            match events.queue.pop_front() {
-                Some(event) => Poll::Ready(event),
-                None => {
-                    events.waiting = Some(cx.waker().clone());
-                    Poll::Pending
-                }
+            if let Some(event) = events.queue.pop_front() {
+                Poll::Ready(event)
+            } else {
+                events.waiting = Some(cx.waker().clone());
+                Poll::Pending
             }
         })
         .await
@@ -174,9 +174,10 @@ impl LeaseControl for FakeDesktop {
         };
         let mut windows = self.windows.lock().expect("fake desktop lock");
         for window in windows.iter_mut() {
-            match window.ident == ident {
-                true => window.state.insert(ToplevelState::Activated),
-                false => window.state.remove(&ToplevelState::Activated),
+            if window.ident == ident {
+                window.state.insert(ToplevelState::Activated)
+            } else {
+                window.state.remove(&ToplevelState::Activated)
             };
         }
         drop(windows);

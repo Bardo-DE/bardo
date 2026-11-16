@@ -1,4 +1,5 @@
 //! The preview pane's content, decided from a row alone: Quick Look for the launcher.
+//!
 //! [`preview_for`] is pure. A file is previewed by the viewer's own parts (`anyview_peek`): the
 //! pane sniffs it and peeks at it off the UI thread, so what a file looks like is the viewer's to
 //! say and this crate names no format. What a clipboard image is, the pane loads from the
@@ -70,6 +71,7 @@ pub enum PreviewKind {
 
 impl Preview {
     /// This preview's kind.
+    #[must_use]
     pub fn kind(&self) -> PreviewKind {
         match self {
             Preview::None => PreviewKind::None,
@@ -114,6 +116,7 @@ impl ExcerptLimit {
 /// `Run.Preview`, so it is `None` here (the pane asks, and shows `Intent` when it has the
 /// answer); an `Answer`, a `Run` and a `Memory` row are previewed live by their key; an
 /// `Activity` row and a terminal session row have no pane.
+#[must_use]
 pub fn preview_for(item: &Item) -> Preview {
     match &item.subject {
         Subject::None => Preview::None,
@@ -138,6 +141,7 @@ pub fn preview_for(item: &Item) -> Preview {
 /// The first lines of `bytes` as the pane shows them: decoded as UTF-8 (invalid sequences
 /// replaced), cut at `limit` on a character boundary, trailing whitespace trimmed; binary data
 /// (a NUL in the first 1024 bytes) is an empty excerpt.
+#[must_use]
 pub fn excerpt_of(bytes: &[u8], limit: ExcerptLimit) -> Excerpt {
     let head = &bytes[..bytes.len().min(BINARY_PROBE)];
     if head.contains(&0) {

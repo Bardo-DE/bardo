@@ -40,6 +40,7 @@ pub struct FedDevice {
 
 impl FedDevice {
     /// A device.
+    #[must_use]
     pub fn new(id: DeviceId, class: DeviceClass, name: DeviceName) -> FedDevice {
         FedDevice { id, class, name }
     }
@@ -69,6 +70,7 @@ pub struct PollContext {
 
 impl PollContext {
     /// A poll at `now` over `extent`.
+    #[must_use]
     pub fn new(now: Mono, extent: LogicalRect) -> PollContext {
         PollContext { now, extent }
     }

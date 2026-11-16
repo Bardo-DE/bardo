@@ -53,6 +53,7 @@ pub type BusWarm = TransportWarm<DbusTransport>;
 
 impl TransportWarm<DbusTransport> {
     /// Warms over `connection` for `tier`.
+    #[must_use]
     pub fn new(connection: zbus::Connection, tier: Tier) -> Self {
         Self::over(DbusTransport::over(connection), tier)
     }

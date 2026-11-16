@@ -57,6 +57,7 @@ pub struct A11yRoot {
 impl WindowHints {
     /// What a window has before its client says anything: no first-mouse regions, a client
     /// frame with square corners, saved, no accessibility root.
+    #[must_use]
     pub fn unset() -> WindowHints {
         WindowHints {
             first_mouse: Vec::new(),
@@ -72,6 +73,7 @@ impl WindowHints {
     }
 
     /// What the client wants of its frame.
+    #[must_use]
     pub fn frame_choice(&self) -> FrameChoice {
         match (self.frame_said, self.frame.mode) {
             (false, _) => FrameChoice::Silent,

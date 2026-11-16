@@ -1,4 +1,4 @@
-//! The battery, power profile and keyboard backlight services against stand-ins for UPower and
+//! The battery, power profile and keyboard backlight services against stand-ins for `UPower` and
 //! power-profiles-daemon on a private bus playing the system bus, never the real one. The tests
 //! need a `dbus-daemon` and skip without one.
 
@@ -32,7 +32,9 @@ struct Heard {
 type Shared = Arc<Mutex<Heard>>;
 
 fn lock(shared: &Shared) -> MutexGuard<'_, Heard> {
-    shared.lock().unwrap_or_else(|e| e.into_inner())
+    shared
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 struct Manager;

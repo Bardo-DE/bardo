@@ -60,7 +60,7 @@ async fn a_link_inside_the_directory_cannot_lead_a_read_or_a_write_out() {
         view.reply("via_dir").is_err(),
         "a link to a directory outside"
     );
-    assert!(view.reply("put_dir").is_err());
+    view.reply("put_dir").unwrap_err();
     assert!(
         !outside.join("new.txt").exists(),
         "nothing was created outside"
@@ -69,7 +69,7 @@ async fn a_link_inside_the_directory_cannot_lead_a_read_or_a_write_out() {
         std::fs::read_to_string(outside.join("secret.txt")).expect("kept"),
         "TOP SECRET"
     );
-    assert!(view.reply("put_in").is_ok());
+    view.reply("put_in").unwrap();
     assert_eq!(
         std::fs::read_to_string(app.join("made.txt")).expect("made"),
         "two"
@@ -116,9 +116,9 @@ fn a_refused_write_leaves_no_new_file_and_spares_an_old_one() {
 
     let mut files = OsFiles;
     let outside = |path: &std::path::Path| abs(path.to_str().expect("utf8"));
-    assert!(files.write(&outside(&fresh), &within, "evil").is_err());
+    files.write(&outside(&fresh), &within, "evil").unwrap_err();
     assert!(!fresh.exists(), "the empty file is not left behind");
-    assert!(files.write(&outside(&old), &within, "evil").is_err());
+    files.write(&outside(&old), &within, "evil").unwrap_err();
     assert_eq!(std::fs::read_to_string(&old).expect("old"), "kept");
 }
 

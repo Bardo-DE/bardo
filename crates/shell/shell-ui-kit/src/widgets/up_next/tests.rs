@@ -27,8 +27,7 @@ fn an_events_time_line_reads_from_now() {
         date(2026, 9, d)
             .at(h, m, 0, 0)
             .to_zoned(utc.clone())
-            .map(|z| z.timestamp())
-            .unwrap_or_else(|e| panic!("{e}"))
+            .map_or_else(|e| panic!("{e}"), |z| z.timestamp())
     };
     let event = |title: &str, when| CalEvent {
         uid: EventUid("x".to_owned()),

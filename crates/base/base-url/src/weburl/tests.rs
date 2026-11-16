@@ -88,9 +88,9 @@ fn what_a_web_url_is_and_what_it_is_not() {
 #[test]
 fn a_url_over_the_length_cap_is_refused() {
     let long = format!("https://h/?q={}", "a".repeat(MAX_LEN));
-    assert!(WebUrl::parse(&long).is_err());
+    WebUrl::parse(&long).unwrap_err();
     let fits = format!("https://h/?q={}", "a".repeat(MAX_LEN - 14));
-    assert!(WebUrl::parse(&fits).is_ok());
+    WebUrl::parse(&fits).unwrap();
 }
 
 #[test]
@@ -114,5 +114,5 @@ fn the_serde_form_is_the_text_and_a_bad_text_is_refused() {
     let json = serde_json::to_string(&url).expect("json");
     assert_eq!(json, "\"https://login.example/a?x=1\"");
     assert_eq!(serde_json::from_str::<WebUrl>(&json).expect("back"), url);
-    assert!(serde_json::from_str::<WebUrl>("\"http://example.org/\"").is_err());
+    serde_json::from_str::<WebUrl>("\"http://example.org/\"").unwrap_err();
 }

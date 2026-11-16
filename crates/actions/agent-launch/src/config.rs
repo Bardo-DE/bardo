@@ -283,6 +283,7 @@ impl Entry {
     /// The arguments that make the app's own command-line program pick the conversation `own`
     /// up (the app's own id for it, put where `{session}` stands); none when the entry has no
     /// such flag.
+    #[must_use]
     pub fn resume_line(&self, own: &str) -> Option<Vec<String>> {
         let args = self.resume.as_ref()?;
         Some(
@@ -322,11 +323,13 @@ impl AgentsFile {
     }
 
     /// The entry for `name`, if listed.
+    #[must_use]
     pub fn get(&self, name: &ProgramName) -> Option<&Entry> {
         self.entries.values().find(|e| &e.name == name)
     }
 
     /// The entry for the porter-side name.
+    #[must_use]
     pub fn by_program(&self, program: &AgentProgram) -> Option<&Entry> {
         self.entries.get(program)
     }
@@ -337,16 +340,19 @@ impl AgentsFile {
     }
 
     /// The programs, for `Launcher::register`.
+    #[must_use]
     pub fn programs(&self) -> Vec<AgentProgram> {
         self.entries.keys().cloned().collect()
     }
 
     /// How many are listed.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.entries.len()
     }
 
     /// Whether none are.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }

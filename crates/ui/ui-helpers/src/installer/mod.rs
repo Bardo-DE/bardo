@@ -1,4 +1,4 @@
-//! The seam to whatever installs packages: [`Install`], with the real PackageKit backend and a
+//! The seam to whatever installs packages: [`Install`], with the real `PackageKit` backend and a
 //! scripted one for tests and the gallery. The backend is a trait object so the handle that holds
 //! it, [`crate::Helpers`], needs no type parameter: an app picks the backend once, where it builds
 //! the handle, and everything that holds the handle is the same type either way.
@@ -59,6 +59,7 @@ pub struct Timeouts {
 
 impl Timeouts {
     /// Timeouts of `step` for the quick calls and `install` for an installation.
+    #[must_use]
     pub const fn new(step: Deadline, install: Deadline) -> Timeouts {
         Timeouts { step, install }
     }

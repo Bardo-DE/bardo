@@ -8,6 +8,7 @@ pub struct Plane {
 
 impl Plane {
     /// A plane of one value.
+    #[must_use]
     pub fn filled(width: u32, height: u32, value: f32) -> Self {
         Self {
             width,
@@ -30,6 +31,7 @@ impl Plane {
     }
 
     /// The value at (x, y); outside the plane it is 0.
+    #[must_use]
     pub fn at(&self, x: i64, y: i64) -> f32 {
         if x < 0 || y < 0 || x >= i64::from(self.width) || y >= i64::from(self.height) {
             return 0.0;
@@ -38,6 +40,7 @@ impl Plane {
     }
 
     /// The plane moved by (dx, dy) pixels; uncovered pixels are 0.
+    #[must_use]
     pub fn shifted(&self, dx: i64, dy: i64) -> Self {
         Self::from_fn(self.width, self.height, |x, y| {
             self.at(i64::from(x) - dx, i64::from(y) - dy)
@@ -45,11 +48,13 @@ impl Plane {
     }
 
     /// Mean value: the covered fraction for a mask.
+    #[must_use]
     pub fn mean(&self) -> f32 {
         self.data.iter().sum::<f32>() / self.data.len().max(1) as f32
     }
 
     /// An approximate Gaussian blur: three box passes per axis (the usual 3-box approximation).
+    #[must_use]
     pub fn blurred(&self, sigma: f32) -> Self {
         if sigma < 0.5 {
             return self.clone();

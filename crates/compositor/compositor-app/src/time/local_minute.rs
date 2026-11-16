@@ -17,12 +17,14 @@ const MINUTE: Duration = Duration::from_secs(60);
 
 /// The minute of the local day `local` falls in: its wall-clock hour and minute, so a day
 /// that skips or repeats an hour (daylight saving) skips or repeats those minutes too.
+#[must_use]
 pub fn minute_of(local: &Zoned) -> MinuteOfDay {
     let minutes = i32::from(local.hour()) * 60 + i32::from(local.minute());
     MinuteOfDay::wrapping(u16::try_from(minutes).unwrap_or(0))
 }
 
 /// How long from `local` to the next minute boundary (a whole minute when on one).
+#[must_use]
 pub fn until_next_minute(local: &Zoned) -> Duration {
     let seconds = u64::try_from(local.second()).unwrap_or(0);
     let nanos = u32::try_from(local.subsec_nanosecond()).unwrap_or(0);
@@ -30,6 +32,7 @@ pub fn until_next_minute(local: &Zoned) -> Duration {
 }
 
 /// Tells the model the local minute on the loop's first turn and at every minute boundary after.
+///
 /// Each firing reads the clock again and sleeps to the next boundary, not a fixed minute, so a
 /// suspend or a clock change is caught up at the next firing.
 pub fn tick_every_minute(handle: &LoopHandle<'static, State>) {

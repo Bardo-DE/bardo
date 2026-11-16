@@ -26,6 +26,7 @@ pub struct CancelToken(Arc<AtomicBool>);
 
 impl CancelToken {
     /// A token nobody has used to cancel.
+    #[must_use]
     pub fn new() -> CancelToken {
         CancelToken::default()
     }

@@ -25,6 +25,7 @@ pub struct PlacesState {
 
 impl PlacesState {
     /// The state over `places`, nothing asked.
+    #[must_use]
     pub fn of(places: Places) -> PlacesState {
         PlacesState {
             places,
@@ -80,6 +81,7 @@ pub enum PlacesEffect {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn places_step(state: PlacesState, input: PlacesInput) -> (PlacesState, Vec<PlacesEffect>) {
     let PlacesState {
         mut places,
@@ -170,6 +172,7 @@ fn written(places: Places, confirming: Option<PlaceName>) -> (PlacesState, Vec<P
 impl PlacesState {
     /// The question before a cloud account is turned on, as a title and the line under it: the
     /// words are docket's, split where the question ends.
+    #[must_use]
     pub fn question(&self) -> Option<(String, String)> {
         let name = self.confirming.as_ref()?;
         let provider = self

@@ -111,6 +111,7 @@ impl WinitBackend {
 
     /// The configuration the window's output has: its size and scale, which the model must not
     /// choose for itself.
+    #[must_use]
     pub fn config(&self) -> OutputConfig {
         OutputConfig {
             mode: self.output.mode,
@@ -122,6 +123,7 @@ impl WinitBackend {
     }
 
     /// The connector name of the window's output.
+    #[must_use]
     pub fn output_name(&self) -> &compositor_core::OutputName {
         &self.output.name
     }

@@ -1,4 +1,4 @@
-//! The host_wire state machine, pure: one message in, the replies out.
+//! The `host_wire` state machine, pure: one message in, the replies out.
 
 use model_provider::ProviderError;
 use speech_provider::{HostIn, HostOut, HostVocab};

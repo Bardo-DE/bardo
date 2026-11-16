@@ -17,6 +17,7 @@ pub const DATASET_NAME_MAX: usize = 256;
 impl DatasetName {
     /// The name `text`, when it is no longer than [`DATASET_NAME_MAX`]: the one way a name the sync
     /// service sent becomes a dataset name.
+    #[must_use]
     pub fn bounded(text: &str) -> Option<DatasetName> {
         (text.len() <= DATASET_NAME_MAX).then(|| DatasetName(text.to_owned()))
     }

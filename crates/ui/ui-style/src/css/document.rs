@@ -31,6 +31,7 @@ fn push_sections(css: &mut String, sections: &[(&str, String)]) {
 /// `own`, in its order, with each of `extra` placed right after the sheet it names, the sheets
 /// that name it after it in turn. A sheet whose anchor is in neither list goes last, so it is
 /// still styled, and `unplaced` names it for a test to catch.
+#[must_use]
 pub fn placed(
     own: &[(&'static str, &'static str)],
     extra: &[Sheet],
@@ -62,6 +63,7 @@ pub fn unplaced<'a>(
 }
 
 /// Component sheets, each under its marker, in the order given.
+#[must_use]
 pub fn sheets(sheets: &[(&str, &str)]) -> String {
     sheets
         .iter()
@@ -70,6 +72,7 @@ pub fn sheets(sheets: &[(&str, &str)]) -> String {
 }
 
 /// `.ds-truncate` and the other utilities, then the grain tile on `.ds-grain`.
+#[must_use]
 pub fn utilities_css() -> String {
     let grain = rule(
         ".ds-grain",

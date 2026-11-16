@@ -100,7 +100,7 @@ async fn a_frame_carries_the_windows_pixels_at_logical_resolution() {
     );
     assert_eq!(frame.pixels.size, DeviceSize { w: 4, h: 3 });
     assert_eq!(frame.pixels.stride, 16);
-    assert_eq!(&*frame.pixels.data, &window.pixels[..]);
+    assert_eq!(&*frame.pixels.data, &*window.pixels);
     assert_eq!(frame.logical, Size::new(Coord(4), Coord(3)));
     assert_eq!(frame.scale, Scale120(120));
     assert_eq!(frame.at, Stamp(41));
@@ -192,7 +192,7 @@ async fn a_still_window_gives_the_current_frame_when_the_wait_ends() {
             .await
             .expect("after show");
         assert_eq!(next.damage.len(), 1, "{want:?}: the change is named");
-        assert_eq!(&*next.pixels.data, &changed[..], "{want:?}");
+        assert_eq!(&*next.pixels.data, &*changed, "{want:?}");
     }
 }
 
@@ -235,7 +235,7 @@ async fn a_resized_window_gets_a_new_buffer() {
     server.resize(0, bigger.size, bigger.pixels.clone());
     let frame = session.frame(FrameWant::Now, &[]).await.expect("frame");
     assert_eq!(frame.pixels.size, DeviceSize { w: 6, h: 5 });
-    assert_eq!(&*frame.pixels.data, &bigger.pixels[..]);
+    assert_eq!(&*frame.pixels.data, &*bigger.pixels);
     assert_eq!(frame.logical, Size::new(Coord(6), Coord(5)));
     assert_eq!(
         frame.damage[0].size,
@@ -317,7 +317,7 @@ async fn a_masked_frame_is_the_compositors_and_the_hints_go_to_it() {
         .await
         .expect("frame");
     // The fake compositor masks nothing: cuad did not either.
-    assert_eq!(&*frame.pixels.data, &window.pixels[..]);
+    assert_eq!(&*frame.pixels.data, &*window.pixels);
     assert_eq!(
         frame.masks.applied_by,
         computer_use_desktop::MaskWhere::Compositor

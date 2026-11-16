@@ -49,6 +49,7 @@ pub struct SpaceRegistration {
 
 impl SpaceRegistration {
     /// The registration of `id` under `name`.
+    #[must_use]
     pub fn new(id: SpaceId, name: String) -> SpaceRegistration {
         SpaceRegistration { id, name }
     }
@@ -77,6 +78,7 @@ pub struct RegisterFailure {
 
 impl RegisterFailure {
     /// The registration of `id` failed for `fault`.
+    #[must_use]
     pub fn new(id: SpaceId, fault: RegisterFault) -> RegisterFailure {
         RegisterFailure { id, fault }
     }
@@ -127,6 +129,7 @@ pub struct ZbusSpaceRegistry {
 
 impl ZbusSpaceRegistry {
     /// A registry calling the bus at `address` (the session bus).
+    #[must_use]
     pub fn at(address: String) -> ZbusSpaceRegistry {
         ZbusSpaceRegistry {
             address,

@@ -120,7 +120,7 @@ impl Walk<'_> {
         if shown && has_text {
             self.layouts.push((id, (inner.owner, inner.placed)));
         }
-        for &child in node.children.iter() {
+        for &child in &node.children {
             self.visit(child, inner.clone());
         }
     }
@@ -305,8 +305,9 @@ fn label(node: &Node) -> String {
 }
 
 fn join(parent: &str, label: &str) -> String {
-    match parent.is_empty() {
-        true => label.to_owned(),
-        false => format!("{parent} > {label}"),
+    if parent.is_empty() {
+        label.to_owned()
+    } else {
+        format!("{parent} > {label}")
     }
 }

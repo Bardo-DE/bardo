@@ -35,7 +35,7 @@ pub struct FileFacet {
     pub hashes: Option<Hashes>,
 }
 
-/// The hashes OneDrive reports.
+/// The hashes `OneDrive` reports.
 #[derive(Debug, Deserialize)]
 pub struct Hashes {
     #[serde(rename = "quickXorHash")]
@@ -72,7 +72,7 @@ impl DriveItem {
         self.parent.as_ref()?.id.as_deref()
     }
 
-    /// Its QuickXorHash as hex (Graph sends it as base64 of 20 bytes).
+    /// Its `QuickXorHash` as hex (Graph sends it as base64 of 20 bytes).
     pub fn hash(&self) -> Option<ContentHash> {
         use base64::Engine;
         let text = self.file.as_ref()?.hashes.as_ref()?.quick_xor.as_ref()?;

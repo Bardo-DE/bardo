@@ -58,6 +58,7 @@ pub(crate) fn loop_end(action: &ActionRef, end: StepEnd) -> StepEnd {
 
 impl TaskRuntime {
     /// Whether `action` starts a run while this task already has one live.
+    #[must_use]
     pub fn holds_run(&self, action: &ActionRef) -> bool {
         starts_screen_run(action) && self.live_runs != LiveRuns::default()
     }

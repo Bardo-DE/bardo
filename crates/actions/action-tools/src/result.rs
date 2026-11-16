@@ -6,9 +6,10 @@ use action_core::Outcome;
 use serde_json::{Value as Json, json};
 
 /// The JSON of an outcome: `{ "said": <text or null>, "value": <Value or null> }`.
+#[must_use]
 pub fn outcome_json(outcome: &Outcome) -> Json {
     json!({
-        "said": outcome.said.as_ref().map(|s| s.as_str()),
+        "said": outcome.said.as_ref().map(action_vocab::LabelText::as_str),
         "value": outcome.value.as_ref().map(|held| &held.value),
     })
 }

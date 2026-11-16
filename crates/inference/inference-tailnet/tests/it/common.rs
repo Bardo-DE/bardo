@@ -129,7 +129,12 @@ pub fn config(port: u16) -> Config {
 pub async fn observed(api: &LocalApi) -> (Observer, watch::Receiver<Seen>) {
     let observer = Observer::start(api.clone(), quick());
     let mut seen = observer.seen();
-    wait(&mut seen, |now| now.is_some(), "this computer to be seen").await;
+    wait(
+        &mut seen,
+        std::option::Option::is_some,
+        "this computer to be seen",
+    )
+    .await;
     (observer, seen)
 }
 

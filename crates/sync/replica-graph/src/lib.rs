@@ -1,5 +1,5 @@
 //! The Microsoft Graph replica (design/31 §6.1, porter PLAN W6c): [`GraphReplica`] implements
-//! sync-core's `Replica` over a folder of OneDrive's app folder (`/me/drive/special/approot`)
+//! sync-core's `Replica` over a folder of `OneDrive`'s app folder (`/me/drive/special/approot`)
 //! or, given [`Root::Drive`], of the whole drive (`/me/drive/root`).
 //!
 //! - **Changes** are a delta query with the delta link as the anchor; a `410` (`resyncRequired`)
@@ -16,7 +16,7 @@
 //! - **Whole-drive writes** ([`sync_core::DriveWrite`], for a replica of [`Root::Drive`]): a
 //!   folder or a file made in a parent by id, new content for an item by id, a rename or move
 //!   as a `PATCH`, the recycle bin as a `DELETE`, each with `If-Match`; a large file in an
-//!   upload session that a new replica resumes; the names OneDrive refuses ([`accepts_name`]).
+//!   upload session that a new replica resumes; the names `OneDrive` refuses ([`accepts_name`]).
 //! - **Quota** is the drive's `quota` (`used`, `total`).
 //! - **The connection** is whatever [`account_http::Http`] the replica is handed. In syncd it is a
 //!   `account_http_relay::Routed`: a `account_http_relay::RelayHttp` over the relays of accountd's

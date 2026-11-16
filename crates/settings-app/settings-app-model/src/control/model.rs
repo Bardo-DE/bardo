@@ -100,6 +100,7 @@ impl Control {
 
     /// `value` if this control can hold it (a number in range, a word of its set, text), else
     /// `None`: the lenient loader then uses the key's default.
+    #[must_use]
     pub fn admit(&self, value: &toml::Value) -> Option<toml::Value> {
         let word_of = |words: &[String]| {
             value

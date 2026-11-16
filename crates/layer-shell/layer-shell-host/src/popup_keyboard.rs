@@ -2,12 +2,12 @@
 //!
 //! A bar is a `KeyboardMode::None` layer, and a compositor may give a grabbing popup of a layer the
 //! keyboard only when the layer itself takes keyboard input, so the host switches the parent to
-//! `OnDemand` while a grabbing popup is open (the plan's input rule). KWin needs no lift: its
+//! `OnDemand` while a grabbing popup is open (the plan's input rule). `KWin` needs no lift: its
 //! popup filter focuses the topmost grabbing popup itself and, when the popup closes, hands the
-//! keyboard back to the active window. Lifting there makes KWin *activate* the bar
+//! keyboard back to the active window. Lifting there makes `KWin` *activate* the bar
 //! (`LayerShellV1Window::handleAcceptsFocusChanged`), and nothing deactivates it when the host
 //! drops it back to `None`: the bar keeps the keyboard after every menu closes, and the app the
-//! user was typing in never gets it back. casement behaves as KWin does there (an xdg_popup grab
+//! user was typing in never gets it back. casement behaves as `KWin` does there (an `xdg_popup` grab
 //! takes the keyboard from the layer under it and gives it back on the dismiss), so it takes the
 //! same arm. Pure.
 //!
@@ -17,7 +17,7 @@ use crate::layer::KeyboardMode;
 use crate::popup::PopupGrab;
 
 /// Whether the host lifts a parent layer's keyboard for a grabbing popup on this compositor:
-/// everywhere except KWin and casement. KWin is recognised by `org_kde_plasma_shell` (wlroots
+/// everywhere except `KWin` and casement. `KWin` is recognised by `org_kde_plasma_shell` (wlroots
 /// compositors offer some `org_kde_kwin_*` globals, never this one); casement by
 /// `bardo_window_manager_v1` (advertised from its first phase, C50). `interfaces` are the
 /// globals the compositor advertises.
@@ -28,7 +28,7 @@ pub(crate) fn lifts_parent_keyboard<'a>(interfaces: impl IntoIterator<Item = &'a
 }
 
 /// The rule: a grabbing popup of a `None` layer lifts the parent (to `OnDemand` until its last
-/// grabbing popup closes), except where `lifts` is false (KWin, casement). `parent` is the
+/// grabbing popup closes), except where `lifts` is false (`KWin`, casement). `parent` is the
 /// layer's current mode (already `OnDemand` while another grabbing popup holds it lifted).
 pub(crate) fn parent_keyboard(lifts: bool, grab: PopupGrab, parent: KeyboardMode) -> bool {
     lifts && grab == PopupGrab::Grabbed && parent == KeyboardMode::None

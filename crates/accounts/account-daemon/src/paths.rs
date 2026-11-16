@@ -81,6 +81,7 @@ impl Paths {
 
     /// [`Paths::provider_dirs`] with whose each is, as `resolve` laid them out: the system's,
     /// the person's, then the ones named on the command line.
+    #[must_use]
     pub fn provider_layers(&self) -> Vec<(Layer, PathBuf)> {
         self.provider_dirs
             .iter()
@@ -97,6 +98,7 @@ impl Paths {
     }
 
     /// The clients files the OAuth families read: the shipped one and the one Settings writes.
+    #[must_use]
     pub fn client_files(&self) -> account_family_oauth::ClientFiles {
         account_family_oauth::ClientFiles {
             shipped: self.clients_shipped.clone(),
@@ -390,17 +392,15 @@ mod tests {
     #[test]
     fn no_home_and_no_xdg_is_an_error() {
         assert_eq!(Paths::resolve(env(&[]), &[]), Err(PathError));
-        assert!(
-            Paths::resolve(
-                env(&[
-                    ("XDG_STATE_HOME", "/s"),
-                    ("XDG_CONFIG_HOME", "/c"),
-                    ("XDG_DATA_HOME", "/d")
-                ]),
-                &[]
-            )
-            .is_ok()
-        );
+        Paths::resolve(
+            env(&[
+                ("XDG_STATE_HOME", "/s"),
+                ("XDG_CONFIG_HOME", "/c"),
+                ("XDG_DATA_HOME", "/d"),
+            ]),
+            &[],
+        )
+        .unwrap();
     }
 }
 

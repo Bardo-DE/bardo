@@ -12,6 +12,7 @@ impl TabId {
     pub const FIRST: TabId = TabId(0);
 
     /// The id as a number, for a caller that needs a key.
+    #[must_use]
     pub fn number(self) -> u64 {
         self.0
     }
@@ -28,11 +29,13 @@ pub struct Tabbed {
 
 impl Tabbed {
     /// `effect`, asked for by `tab`.
+    #[must_use]
     pub fn new(tab: TabId, effect: Effect) -> Tabbed {
         Tabbed { tab, effect }
     }
 
     /// Each of `effects`, asked for by `tab`.
+    #[must_use]
     pub fn all(tab: TabId, effects: Vec<Effect>) -> Vec<Tabbed> {
         effects
             .into_iter()
@@ -50,11 +53,13 @@ pub struct Tab {
 
 impl Tab {
     /// The tab's id.
+    #[must_use]
     pub fn id(&self) -> TabId {
         self.id
     }
 
     /// The tab's browser.
+    #[must_use]
     pub fn browser(&self) -> &Browser {
         &self.browser
     }

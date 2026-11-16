@@ -25,6 +25,7 @@ pub struct PrefBook {
 
 impl PrefBook {
     /// How `folder` is remembered to be shown, if it is.
+    #[must_use]
     pub fn get(&self, folder: &FolderPath) -> Option<FolderPrefs> {
         self.folders.get(folder).map(|found| found.prefs)
     }
@@ -53,17 +54,20 @@ impl PrefBook {
     }
 
     /// How many folders are remembered.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.folders.len()
     }
 
     /// Whether no folder is remembered.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.folders.is_empty()
     }
 
     /// The book as stored text: one `[[folder]]` table per folder, oldest change first. A path
     /// that is not valid text is not stored.
+    #[must_use]
     pub fn render(&self) -> String {
         let mut ordered: Vec<(&FolderPath, &Remembered)> = self.folders.iter().collect();
         ordered.sort_by_key(|(_, found)| found.set);

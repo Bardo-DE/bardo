@@ -139,11 +139,11 @@ async fn a_pressed_card_is_performed_in_the_answers_session_and_the_answer_follo
     );
 
     // Only the shell may press.
-    assert!(intruder.act("archive").await.is_err());
+    intruder.act("archive").await.unwrap_err();
     assert!(router.seams.link.mail.has_thread("t1"));
     assert!(!router.seams.link.mail.is_archived("t1"));
     // A card the answer does not offer is no card.
-    assert!(answers.act("nope").await.is_err());
+    answers.act("nope").await.unwrap_err();
 
     // Pressing runs the card's own call as the companion, in the answer's session.
     let mut updates = Box::pin(

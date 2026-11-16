@@ -224,16 +224,17 @@ fn refusal_hint(refusal: &CallRefusal, step: &StepLine, seen: &Seen<'_>) -> Opti
                 .iter()
                 .map(|o| format!("\"{}\"", o.id.key.as_str()))
                 .collect();
-            Some(match listed.is_empty() {
-                true => format!(
+            Some(if listed.is_empty() {
+                format!(
                     "argument \"{}\" is needed; ask the person with quire_ask",
                     param.as_str()
-                ),
-                false => format!(
+                )
+            } else {
+                format!(
                     "argument \"{}\" must be one of {}; if none fits, ask the person with quire_ask",
                     param.as_str(),
                     listed.join(", ")
-                ),
+                )
             })
         }
         _ => None,

@@ -47,6 +47,7 @@ pub enum Section {
 
 impl Section {
     /// The heading's words.
+    #[must_use]
     pub fn title(self) -> &'static str {
         match self {
             Section::TopHit => "Top Hit",
@@ -115,6 +116,7 @@ impl SectionPlan {
     /// clipboard, emoji, things, helpers, runs, memory, companion, web) have weight 0. Emoji
     /// rows also score on a scale of their own (the position bits that order the grid), which
     /// no weight could compare with an app's.
+    #[must_use]
     pub fn default_plan() -> SectionPlan {
         use ProviderKind as K;
         use Section as S;
@@ -163,6 +165,7 @@ impl SectionPlan {
     }
 
     /// `kind`'s rule.
+    #[must_use]
     pub fn rule(&self, kind: ProviderKind) -> Option<&ProviderRule> {
         self.rules.iter().find(|rule| rule.kind == kind)
     }
@@ -175,6 +178,7 @@ impl Default for SectionPlan {
 }
 
 /// `score` scaled by `weight`: what a row brings to the Top Hit contest.
+#[must_use]
 pub fn weighted(score: Score, weight: Weight) -> Score {
     Score(score.0.saturating_mul(u32::from(weight.0)) / 1000)
 }
@@ -209,6 +213,7 @@ pub struct Placement {
 /// are left out. Nothing typed: `Actions` (every System row) then `Recent` (the `plan.recent` most
 /// frecent other rows at `now`, never-chosen rows left out; Clipboard and Web rows are never
 /// Recent).
+#[must_use]
 pub fn place(
     merged: &[Item],
     plan: &SectionPlan,
@@ -336,6 +341,7 @@ pub struct ShownSection {
 
 /// `placement`'s sections as shown: each capped at its provider's cap unless `expanded` names
 /// it (Top Hit, Actions and Recent are never capped further). Lane d fills; `sections_tests`.
+#[must_use]
 pub fn shown(placement: &Placement, plan: &SectionPlan, expanded: &Expanded) -> Vec<ShownSection> {
     let mut rows = placement.items.iter();
     placement

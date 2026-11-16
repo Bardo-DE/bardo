@@ -49,6 +49,7 @@ impl Reaped {
     }
 
     /// The child's PID.
+    #[must_use]
     pub fn pid(&self) -> u32 {
         self.child.id()
     }

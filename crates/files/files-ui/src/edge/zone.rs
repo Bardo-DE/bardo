@@ -19,6 +19,7 @@ pub enum Zone {
 
 impl Zone {
     /// `at` as the Date Modified column writes it, or a dash when the filesystem gave no time.
+    #[must_use]
     pub fn words(self, at: Option<SystemTime>) -> String {
         let Some(at) = at else {
             return NONE.to_owned();

@@ -214,7 +214,7 @@ mod tests {
             let refused = decode(line).unwrap_err().to_string();
             assert!(refused.contains(mentions), "{name}: {refused}");
         }
-        assert!(decode(r#"{"op":"peek","file":"a/b.png"}"#).is_err());
+        decode(r#"{"op":"peek","file":"a/b.png"}"#).unwrap_err();
     }
 
     #[test]

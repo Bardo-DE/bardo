@@ -61,6 +61,7 @@ pub struct StreamDecoder {
 }
 
 impl StreamDecoder {
+    #[must_use]
     pub fn new(flavor: Flavor, served: ModelName) -> Self {
         Self {
             flavor,
@@ -82,6 +83,7 @@ impl StreamDecoder {
     /// The marker of a tool call the server left in the content, when the turn delivered no call
     /// of its own: the server's tool parser did not read it, so it is text and never a call.
     /// Read it before `finish`.
+    #[must_use]
     pub fn leaked_call(&self) -> Option<LeakMarker> {
         self.leak.found().filter(|_| self.delivered == 0)
     }

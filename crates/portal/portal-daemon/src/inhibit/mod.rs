@@ -132,11 +132,13 @@ impl InhibitService {
     }
 
     /// A service holding no requests, telling the system's login manager.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// A service holding no requests, telling `effect`.
+    #[must_use]
     pub fn with_effect(effect: Box<dyn InhibitEffect>) -> Self {
         Self {
             hub: Arc::new(AsyncMutex::new(InhibitHub::new(effect))),
@@ -145,6 +147,7 @@ impl InhibitService {
     }
 
     /// This service letting through the callers `guard` admits. Without it, no wire call passes.
+    #[must_use]
     pub fn with_guard(mut self, guard: RoleGuard) -> Self {
         self.guard = guard;
         self
@@ -154,7 +157,11 @@ impl InhibitService {
 // The D-Bus interface lives in a private module: zbus's macro generates undocumented
 // property-change methods, which the crate's `missing_docs` would flag on a public impl.
 mod interface {
-    use super::*;
+    use super::{
+        Arc, Dict, Header, InhibitFlags, InhibitService, MonitorAdded, MonitorKnown, MonitorObject,
+        ObjectPath, ObjectServer, OwnedObjectPath, RequestHandle, RequestObject, SignalEmitter,
+        Tether, fdo, initial_state,
+    };
 
     #[zbus::interface(name = "org.freedesktop.impl.portal.Inhibit")]
     impl InhibitService {

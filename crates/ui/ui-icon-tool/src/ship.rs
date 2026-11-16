@@ -67,6 +67,7 @@ impl Style {
     pub const ALL: [Style; 3] = [Style::Colour, Style::Muted, Style::Monochrome];
 
     /// The directory under `assets/icons/apps/<app>/`; the Colour set sits in the app's own.
+    #[must_use]
     pub const fn dir(self) -> Option<&'static str> {
         match self {
             Style::Colour => None,
@@ -78,6 +79,7 @@ impl Style {
 
 /// The look an app takes in a style. Monochrome is exported neutral (no hue): it is tinted at
 /// run time by `ui_components::style::icon::retint::retint` from `icons.monochrome_tint`.
+#[must_use]
 pub fn style_look(app: &ShipApp, style: Style, m: &Manifest) -> Look {
     match style {
         Style::Colour => Look {
@@ -105,6 +107,7 @@ pub fn style_look(app: &ShipApp, style: Style, m: &Manifest) -> Look {
 pub const FACE_CROP: f32 = 0.78;
 
 /// A Klein face retinted into a look, at its render's size.
+#[must_use]
 pub fn klein_face(raw: &Rgba32FImage, look: Look) -> Rgba32FImage {
     let side = (raw.width().min(raw.height()) as f32 * FACE_CROP) as u32;
     let (x0, y0) = ((raw.width() - side) / 2, (raw.height() - side) / 2);
@@ -116,27 +119,31 @@ pub fn klein_face(raw: &Rgba32FImage, look: Look) -> Rgba32FImage {
 
 /// One size of a Klein-derived icon: the face resampled onto the size's plate, the grain from
 /// 48 px, then the same finish and shadow as a procedural icon.
+#[must_use]
 pub fn face_icon(face: &Rgba32FImage, size: u32, t: &Template, tile: &Plane) -> Rgba32FImage {
     let grid = grid_for(size, t);
     let small = resize(face, grid.side, grid.side, FilterType::Lanczos3);
     let placed = placed(&small, grid);
-    let placed = match size >= 48 {
-        true => apply_grain(&placed, crate::Grain(20), tile),
-        false => placed,
+    let placed = if size >= 48 {
+        apply_grain(&placed, crate::Grain(20), tile)
+    } else {
+        placed
     };
     let flat = finish(grid, &placed, t);
-    match size >= 48 {
-        true => drop_shadow(&flat, grid, t),
-        false => flat,
+    if size >= 48 {
+        drop_shadow(&flat, grid, t)
+    } else {
+        flat
     }
 }
 
 fn placed(small: &Rgba32FImage, grid: PlateGrid) -> Rgba32FImage {
     let inside = grid.origin..grid.origin + grid.side;
     Rgba32FImage::from_fn(grid.canvas, grid.canvas, |x, y| {
-        match inside.contains(&x) && inside.contains(&y) {
-            true => *small.get_pixel(x - grid.origin, y - grid.origin),
-            false => Rgba([0.0; 4]),
+        if inside.contains(&x) && inside.contains(&y) {
+            *small.get_pixel(x - grid.origin, y - grid.origin)
+        } else {
+            Rgba([0.0; 4])
         }
     })
 }
@@ -149,6 +156,7 @@ pub enum Prepared<'a> {
 }
 
 /// One export size of a prepared icon.
+#[must_use]
 pub fn ship_icon(p: &Prepared, size: u32, t: &Template, tile: &Plane) -> Rgba32FImage {
     match p {
         Prepared::Procedural(spec, look) => render_icon(spec, *look, size, t, tile),

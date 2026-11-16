@@ -104,6 +104,7 @@ fn function_key(key: &Key) -> Option<ChordKey> {
 
 /// The standard actions `chord` is bound to in any platform's conventions (Ctrl+N and Command+N
 /// are both "new"). Empty for a key no shortcut here uses.
+#[must_use]
 pub fn standard_actions_of(chord: &Chord) -> Vec<StandardAction> {
     let Some(key) = key_of(&chord.key) else {
         return Vec::new();
@@ -127,6 +128,7 @@ pub fn standard_actions_of(chord: &Chord) -> Vec<StandardAction> {
 /// Whether `chord` is one the desktop acts on itself on `platform`: bound to a desktop-wide action
 /// in the platform's conventions, or reserved by the platform. Ordinary shortcuts (copy, paste,
 /// undo, save, find) are not.
+#[must_use]
 pub fn acts_on_desktop(chord: &Chord, platform: Platform) -> bool {
     let Some(key) = key_of(&chord.key) else {
         return false;

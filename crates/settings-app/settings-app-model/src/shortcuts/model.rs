@@ -113,6 +113,7 @@ pub struct ShortcutProblem {
 
 /// The desktop's standard keymap: chordkit's conventions for our desktop with `system` (the
 /// desktop's own bindings) laid over them.
+#[must_use]
 pub fn desktop_keymap(system: Vec<SystemBinding>) -> Keymap {
     Keymap::conventional(OURS).with_system(system)
 }
@@ -136,6 +137,7 @@ pub struct ShortcutsState {
 
 impl ShortcutsState {
     /// The list over `base` with no file read yet.
+    #[must_use]
     pub fn over(base: Keymap) -> ShortcutsState {
         ShortcutsState {
             base,
@@ -149,6 +151,7 @@ impl ShortcutsState {
     }
 
     /// The desktop's standard keymap with nothing laid over it.
+    #[must_use]
     pub fn standard() -> ShortcutsState {
         ShortcutsState::over(desktop_keymap(Vec::new()))
     }
@@ -161,12 +164,14 @@ impl ShortcutsState {
 
     /// What was wrong in the files: skipped lines, chords the desktop keeps for itself, a file
     /// that could not be read.
+    #[must_use]
     pub fn problems(&self) -> &[ShortcutProblem] {
         &self.problems
     }
 
     /// The groups and their rows, as the keymap in force has them; a group with nothing the
     /// desktop handles is left out.
+    #[must_use]
     pub fn sections(&self) -> Vec<ShortcutSection> {
         let live = self.live();
         ShortcutGroup::ALL
@@ -212,6 +217,7 @@ impl ShortcutsState {
     }
 
     /// Whether the person's own keymap holds a change to a standard action.
+    #[must_use]
     pub fn has_own(&self) -> bool {
         self.person
             .entries()
@@ -221,6 +227,7 @@ impl ShortcutsState {
 }
 
 /// The question to ask while a chord waits to be taken over.
+#[must_use]
 pub fn replace_question(state: &ShortcutsState) -> Option<ReplaceQuestion> {
     let asking = state.asking.as_ref()?;
     Some(ReplaceQuestion {

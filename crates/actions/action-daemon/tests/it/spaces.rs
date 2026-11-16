@@ -109,11 +109,9 @@ fn a_damaged_file_is_left_alone_when_a_space_goes() {
     let path = dir.path().join("grants.json");
     std::fs::write(&path, "not json").expect("plant");
     let store = FileGrants::at(path.clone());
-    assert!(
-        store
-            .end_space(&SpaceId::parse("work").expect("space"))
-            .is_err()
-    );
+    store
+        .end_space(&SpaceId::parse("work").expect("space"))
+        .unwrap_err();
     assert_eq!(std::fs::read_to_string(&path).expect("read"), "not json");
 }
 

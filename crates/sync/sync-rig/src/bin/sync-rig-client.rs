@@ -78,8 +78,9 @@ async fn main() -> ExitCode {
         Err(why) => return fail(format!("no session bus: {why}")),
     };
     let ok = run(&connection, args.command, &mut |line| println!("{line}")).await;
-    match ok {
-        true => ExitCode::SUCCESS,
-        false => ExitCode::FAILURE,
+    if ok {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
     }
 }

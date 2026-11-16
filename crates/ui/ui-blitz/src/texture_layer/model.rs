@@ -25,6 +25,7 @@ pub struct TexelRect {
 
 impl TexelRect {
     /// The rectangle whose top-left texel is (`x`, `y`) and whose size is `width` by `height`.
+    #[must_use]
     pub fn new(x: u32, y: u32, width: u32, height: u32) -> Self {
         TexelRect {
             x: Texels(x),
@@ -35,6 +36,7 @@ impl TexelRect {
     }
 
     /// The whole of a `width` by `height` texture.
+    #[must_use]
     pub fn whole(width: Texels, height: Texels) -> Self {
         TexelRect {
             x: Texels(0),
@@ -112,6 +114,7 @@ pub enum PixelFormat {
 
 impl PixelFormat {
     /// Bytes in one pixel.
+    #[must_use]
     pub fn bytes_per_pixel(self) -> usize {
         match self {
             PixelFormat::Rgb8 => 3,
@@ -189,21 +192,25 @@ impl<'a> Pixels<'a> {
     }
 
     /// The width in pixels.
+    #[must_use]
     pub fn width(&self) -> Texels {
         Texels(self.width)
     }
 
     /// The height in pixels.
+    #[must_use]
     pub fn height(&self) -> Texels {
         Texels(self.height)
     }
 
     /// How the bytes are laid out.
+    #[must_use]
     pub fn format(&self) -> PixelFormat {
         self.format
     }
 
     /// The bytes as given.
+    #[must_use]
     pub fn bytes(&self) -> &'a [u8] {
         self.bytes
     }
@@ -224,6 +231,6 @@ mod tests {
             })
         );
         let exact = Pixels::new(PixelFormat::Rgba8Premultiplied, 1, 1, &[0; 4]);
-        assert!(exact.is_ok());
+        exact.unwrap();
     }
 }

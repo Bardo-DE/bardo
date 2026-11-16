@@ -22,6 +22,7 @@ pub struct LockLink {
 }
 
 impl LockLink {
+    #[must_use]
     pub fn new() -> LockLink {
         LockLink::default()
     }
@@ -31,10 +32,12 @@ impl LockLink {
         self.prompt.set(output);
     }
 
+    #[must_use]
     pub fn now(&self) -> PromptOutput {
         self.prompt.now()
     }
 
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<PromptOutput> {
         self.prompt.subscribe()
     }

@@ -91,7 +91,7 @@ fn policy() -> impl Strategy<Value = Policy> {
         proptest::sample::select(vec![Floor::OnDevice, Floor::Anywhere]),
     )
         .prop_map(|(local_only, voice)| Policy {
-            local_only: if local_only { true } else { false },
+            local_only: local_only,
             floors: vec![
                 ClassFloor {
                     class: DataClass::Voice,
@@ -120,7 +120,7 @@ proptest! {
         describe in any::<bool>(),
     ) {
         let shape = shape(class, &inputs, if speech { Answer::Speech } else { Answer::Text });
-        let describe = if describe { true } else { false };
+        let describe = describe;
         let once = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, describe));
         let again = plan_pipeline(&shape, &picks, &catalogue, &granted, rules(&policy, describe));
         prop_assert_eq!(&once, &again);

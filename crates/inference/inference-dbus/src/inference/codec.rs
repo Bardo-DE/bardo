@@ -56,6 +56,6 @@ mod tests {
     #[test]
     fn an_unknown_kind_is_refused() {
         let arg = ("teleport".to_owned(), Default::default());
-        assert!(need_from_dbus(arg).is_err());
+        need_from_dbus(arg).unwrap_err();
     }
 }

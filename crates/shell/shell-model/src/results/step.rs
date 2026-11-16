@@ -4,6 +4,7 @@ use super::{Results, ResultsEvent};
 
 /// `results` after `event`. A batch from an older generation is dropped; one from a newer
 /// generation (it overtook its own `Began`) starts that generation.
+#[must_use]
 pub fn step(results: Results, event: ResultsEvent) -> Results {
     match event {
         ResultsEvent::Began(generation) if generation > results.generation => Results {

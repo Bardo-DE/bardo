@@ -9,6 +9,7 @@ use shell_model::wifi::{AccessPoint, Association, Radio, Saved, Wifi};
 
 /// The Wi-Fi tile's status line: "Off", "Unavailable" (no device, or blocked in hardware),
 /// the connected network's name, "Connecting…", or "Not connected".
+#[must_use]
 pub fn wifi_status(wifi: &Wifi, network: &Network) -> String {
     match (wifi.device, wifi.radio, &network.link) {
         (Presence::Absent, _, _) | (_, Radio::Blocked, _) => "Unavailable".to_owned(),
@@ -23,6 +24,7 @@ pub fn wifi_status(wifi: &Wifi, network: &Network) -> String {
 
 /// The Bluetooth tile's status line: "Unavailable" (no adapter), "Off" or "On". No device name:
 /// several can be connected at once, and the device list is one chevron away.
+#[must_use]
 pub fn bluetooth_tile_status(bluetooth: &Bluetooth) -> &'static str {
     match (bluetooth.presence, bluetooth.power) {
         (Presence::Absent, _) => "Unavailable",
@@ -33,6 +35,7 @@ pub fn bluetooth_tile_status(bluetooth: &Bluetooth) -> &'static str {
 
 /// The bar's Bluetooth item's tooltip line: "Unavailable" (no adapter), "Off", the connected
 /// devices' names joined with ", " (at most two, then "and N more"), or "On".
+#[must_use]
 pub fn bluetooth_status(bluetooth: &Bluetooth) -> String {
     let connected: Vec<&str> = bluetooth
         .devices
@@ -53,11 +56,13 @@ pub fn bluetooth_status(bluetooth: &Bluetooth) -> String {
 }
 
 /// The Focus tile's status line: "On" or "Off".
+#[must_use]
 pub fn focus_status(mode: bool) -> &'static str {
     if mode { "On" } else { "Off" }
 }
 
 /// A power profile's segment label: "Saver", "Balanced", "Performance".
+#[must_use]
 pub fn profile_label(profile: Profile) -> &'static str {
     match profile {
         Profile::PowerSaver => "Saver",
@@ -68,6 +73,7 @@ pub fn profile_label(profile: Profile) -> &'static str {
 
 /// A network row's detail: "Connected", "Connecting…", "Saved", or "" for a new one; a secured
 /// network the row also marks with a lock glyph, not words.
+#[must_use]
 pub fn network_detail(access_point: &AccessPoint, saved: Saved) -> String {
     match (access_point.association, saved) {
         (Association::Connected, _) => "Connected",
@@ -81,6 +87,7 @@ pub fn network_detail(access_point: &AccessPoint, saved: Saved) -> String {
 /// A device row's detail: "Connected", "Connecting…", "Not connected" (paired) or "" (not
 /// paired), then " · 80%" when a device that is not connected reports a battery (a connected
 /// one's battery is the row's trailing ring, design/26 G21).
+#[must_use]
 pub fn device_detail(device: &BtDevice) -> String {
     let state = match (device.connection, device.pairing) {
         (BtConnection::Connected, _) => "Connected",

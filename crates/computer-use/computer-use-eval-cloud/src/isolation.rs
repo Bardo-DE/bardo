@@ -26,11 +26,13 @@ pub struct Isolation {
 
 impl Isolation {
     /// Whether nothing of a key is in reach.
+    #[must_use]
     pub fn clean(&self) -> bool {
         self.secret_names.is_empty() && self.key_files_open.is_empty()
     }
 
     /// One line for the log.
+    #[must_use]
     pub fn line(&self) -> String {
         format!(
             "computer-use-eval-cloud: isolation: {} environment variables, {} with a credential-looking name, {} key file(s) open: {}",
@@ -54,6 +56,7 @@ fn looks_like_key_file(path: &std::path::Path) -> bool {
 }
 
 /// Looks at this process.
+#[must_use]
 pub fn look() -> Isolation {
     let names: Vec<String> = std::env::vars_os()
         .map(|(k, _)| k.to_string_lossy().into_owned())

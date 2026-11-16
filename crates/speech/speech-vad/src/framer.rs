@@ -36,11 +36,13 @@ pub struct Framer {
 }
 
 impl Framer {
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Samples held back, fewer than a frame.
+    #[must_use]
     pub fn pending(&self) -> usize {
         self.carry.len()
     }

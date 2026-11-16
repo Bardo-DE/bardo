@@ -45,6 +45,7 @@ pub struct View {
 
 /// What the panel shows of `results` for an opening over generation `since`, typed `query`,
 /// under `filter`, with `expanded` sections opened.
+#[must_use]
 pub fn view(
     results: &Results,
     since: Generation,
@@ -105,6 +106,7 @@ impl View {
     }
 
     /// The line of `section`'s "Show More" or "Show Less", when it has one.
+    #[must_use]
     pub fn more_line(&self, section: Section) -> Option<usize> {
         let mut offset = 0;
         for shown in &self.sections {
@@ -132,6 +134,7 @@ impl View {
     }
 
     /// The row on line `index`, when that line is a row.
+    #[must_use]
     pub fn row(&self, index: usize) -> Option<Item> {
         match self.spot(index)? {
             Spot::Row(section, at) => section.rows.get(at).cloned(),
@@ -141,6 +144,7 @@ impl View {
 
     /// How line `index` is laid out: a grid cell for an Emoji row (the palette draws that
     /// section as `PaletteGroup::grid`), else a list line (a header's action included).
+    #[must_use]
     pub fn layout(&self, index: usize) -> Layout {
         match self.spot(index) {
             Some(Spot::Row(section, _)) if section.section == Section::Emoji => Layout::Grid,
@@ -174,16 +178,19 @@ impl View {
     }
 
     /// Whether nothing shows.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.sections.is_empty()
     }
 
     /// Every row, with the "Show More" lines left out (what a pick is looked up among).
+    #[must_use]
     pub fn rows(&self) -> Vec<&Item> {
         self.sections.iter().flat_map(|s| s.rows.iter()).collect()
     }
 
     /// The providers that show a row (Tab's ring under typed text).
+    #[must_use]
     pub fn providers(&self) -> Vec<ProviderKind> {
         let mut kinds: Vec<ProviderKind> = self.rows().iter().map(|item| item.provider).collect();
         kinds.sort();
@@ -192,6 +199,7 @@ impl View {
     }
 
     /// The panel as `bardo-shell debug launcher-rows` reports it (clipboard titles withheld).
+    #[must_use]
     pub fn report(&self, query: &str, selected: usize) -> ShownRows {
         ShownRows {
             query: query.to_owned(),
@@ -252,6 +260,7 @@ fn line_title(line: &Line) -> String {
 }
 
 /// `expanded` with `section` opened, or closed when it was open.
+#[must_use]
 pub fn toggled(expanded: &Expanded, section: Section) -> Expanded {
     let mut sections: Vec<Section> = expanded
         .0

@@ -41,6 +41,7 @@ pub enum GraceVerdict {
 }
 
 /// The rule (module doc).
+#[must_use]
 pub fn grace_verdict(case: &GraceCase) -> GraceVerdict {
     let LockGrace(IdleSecs(grace_s)) = case.grace;
     let within = case.woke.0 < u64::from(grace_s) * 1_000;
@@ -69,6 +70,7 @@ pub struct GraceTicket {
 }
 
 /// A ticket when `case` earns the grace, else `None`.
+#[must_use]
 pub fn ticket(case: &GraceCase) -> Option<GraceTicket> {
     match grace_verdict(case) {
         GraceVerdict::NoPassword => Some(GraceTicket { _minted: () }),

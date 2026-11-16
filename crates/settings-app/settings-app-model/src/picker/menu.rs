@@ -68,6 +68,7 @@ impl ModelRow {
     /// The row's menu: the ungrouped choices first with Local right after Automatic, then each
     /// group under its name. The models this computer runs are not listed; Local asks for them,
     /// and a group left with none of its own choices has no header.
+    #[must_use]
     pub fn menu(&self, clearing: Clearing) -> Vec<MenuLine> {
         let mut lines = Vec::new();
         let mut local_listed = false;

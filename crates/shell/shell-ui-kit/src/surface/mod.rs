@@ -66,6 +66,7 @@ pub trait Surface: 'static {
     /// The value of `Self::Link` in the daemon's links.
     fn link(links: &Links) -> Self::Link;
     /// The other links its document reads by type, given to its root beside `Self::Link`.
+    #[must_use]
     fn needs(root: HostRoot, _links: &Links) -> HostRoot {
         root
     }
@@ -74,6 +75,7 @@ pub trait Surface: 'static {
     /// The layer configuration of `slot` on `output`.
     fn layer(output: &OutputInfo, settings: &ShellFile, slot: Self::Slot) -> LayerConfig;
     /// Whether a new surface is mapped at once or waits to be shown.
+    #[must_use]
     fn start() -> Start {
         match Self::PRESENCE {
             Presence::Always => Start::Shown,

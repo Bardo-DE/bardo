@@ -141,7 +141,7 @@ fn a_base64_image_is_read_and_the_other_sources_are_refused() {
     let url = json!({ "model": "m", "max_tokens": 1, "messages": [{ "role": "user", "content": [
         { "type": "image", "source": { "type": "url", "url": "https://x/y.png" } },
     ]}]});
-    assert!(read(&url).is_err());
+    read(&url).unwrap_err();
 }
 
 #[test]
@@ -184,7 +184,7 @@ fn what_cannot_be_mapped_is_refused_by_name() {
             why.0
         );
     }
-    assert!(parse(b"not json", DataClass::Files).is_err());
+    parse(b"not json", DataClass::Files).unwrap_err();
 }
 
 #[test]

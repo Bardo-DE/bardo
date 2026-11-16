@@ -165,6 +165,6 @@ fn the_shipped_configuration_is_the_defaults_and_a_bad_file_is_refused() {
         CompaniondConfig::shipped().expect("shipped"),
         CompaniondConfig::default()
     );
-    assert!(CompaniondConfig::parse("shell = 4").is_err());
-    assert!(CompaniondConfig::parse("shel = \"org.bardo.Desk\"").is_err());
+    CompaniondConfig::parse("shell = 4").unwrap_err();
+    CompaniondConfig::parse("shel = \"org.bardo.Desk\"").unwrap_err();
 }

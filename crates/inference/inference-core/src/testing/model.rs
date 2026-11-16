@@ -18,6 +18,7 @@ pub struct FakeModel {
 
 impl FakeModel {
     /// The model `model` of `account`, on this computer, free, with `capabilities`.
+    #[must_use]
     pub fn on_device(account: AccountId, model: ModelId, capabilities: Vec<Capability>) -> Self {
         Self {
             card: ModelCard {

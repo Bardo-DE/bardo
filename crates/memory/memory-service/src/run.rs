@@ -1,6 +1,6 @@
 //! Consolidation as the service runs it: gather, draft, check, apply what is mechanical, keep
 //! enough to revert (the facts a run added, what it superseded, and the files it rewrote as they
-//! were). Every kind of hunk is applied: Promote and Supersede here, Tidy, Stamp, ExternalEdit and
+//! were). Every kind of hunk is applied: Promote and Supersede here, Tidy, Stamp, `ExternalEdit` and
 //! Flag in `hunks.rs`.
 
 use crate::backend::Backend;

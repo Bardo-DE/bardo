@@ -4,7 +4,7 @@
 //! the session and one input and returns the next session and what the caller must do. Nothing
 //! here opens a stream or shows a chooser; the outputs say so and the caller does it.
 
-/// A PipeWire node id: the stream an app connects to.
+/// A `PipeWire` node id: the stream an app connects to.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct PwNode(pub u32);
 
@@ -24,6 +24,7 @@ impl CastSource {
     /// use portal_core::screencast::CastSource;
     /// assert_eq!(CastSource::Output("DP-1".into()).wire(), ("output", "DP-1"));
     /// ```
+    #[must_use]
     pub fn wire(&self) -> (&'static str, &str) {
         match self {
             CastSource::Output(name) => ("output", name),
@@ -45,6 +46,7 @@ pub enum CursorMode {
 
 impl CursorMode {
     /// The portal's value for this mode.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::Hidden => 1,
@@ -54,6 +56,7 @@ impl CursorMode {
     }
 
     /// The mode for a portal value; `None` for anything but exactly 1, 2 or 4.
+    #[must_use]
     pub fn from_wire(value: u32) -> Option<Self> {
         match value {
             1 => Some(Self::Hidden),
@@ -134,6 +137,7 @@ pub enum CastReply {
 ///
 /// Whether to hand back a restore token is the caller's business: it records the app's persist
 /// mode when the app selects sources and mints a token when it sees [`CastReply::Granted`].
+#[must_use]
 pub fn step(session: CastSession, input: CastIn) -> (CastSession, Vec<CastOut>) {
     use CastIn as I;
     use CastOut as O;

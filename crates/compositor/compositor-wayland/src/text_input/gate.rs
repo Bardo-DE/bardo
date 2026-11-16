@@ -63,6 +63,7 @@ impl Default for KeyGate {
 
 impl KeyGate {
     /// An idle gate holding nothing.
+    #[must_use]
     pub fn new() -> KeyGate {
         KeyGate {
             phase: Phase::Idle,
@@ -92,6 +93,7 @@ impl KeyGate {
     }
 
     /// When the oldest wait ends, if a key is waiting: arm a timer for it.
+    #[must_use]
     pub fn due(&self) -> Option<Mono> {
         match (self.phase, self.held.is_empty()) {
             (Phase::Waiting { since }, false) => Some(since.after(HOLD_LIMIT)),

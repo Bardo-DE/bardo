@@ -284,7 +284,7 @@ async fn a_call_outside_the_task_is_never_offered() {
     narrow.actions = [ActionMatch::AppUpTo(mail_app(), Effect::Read)].into();
     give_policy(&router, &session, narrow);
     let result = perform_in(&router, &session, send()).await;
-    assert!(result.is_err());
+    result.unwrap_err();
     assert!(
         router
             .seams

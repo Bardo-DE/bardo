@@ -25,8 +25,8 @@ use computer_use_eval::report::{Check, Report, render};
 use computer_use_eval::run::RunRecord;
 use keymap::Platform;
 use model_http::{
-    AuthHeader, HostName, HttpClient, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts,
-    UrlPath, WaitMs,
+    AuthHeader, HostName, HttpClient, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts, UrlPath,
+    WaitMs,
 };
 use model_openai_compat::{Flavor, OpenAiCodec};
 use std::path::PathBuf;
@@ -92,12 +92,12 @@ fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
             "--port" => {
                 args.port = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--port"))?
+                    .map_err(|_| FlagError::NotANumber("--port"))?;
             }
             "--repeat" => {
                 args.repeat = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--repeat"))?
+                    .map_err(|_| FlagError::NotANumber("--repeat"))?;
             }
             "--engine" => {
                 args.engine = match value()?.as_str() {

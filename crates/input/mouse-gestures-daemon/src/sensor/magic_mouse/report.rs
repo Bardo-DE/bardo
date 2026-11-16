@@ -19,6 +19,7 @@ pub struct Report {
 impl Report {
     /// A report with no touches and nothing pressed: what the mouse sends when the last finger
     /// lifts.
+    #[must_use]
     pub fn empty() -> Self {
         Self {
             buttons: Buttons::NONE,

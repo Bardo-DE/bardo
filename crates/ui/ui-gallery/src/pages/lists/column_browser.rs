@@ -1,4 +1,4 @@
-//! ColumnBrowser: Finder's column view over a small tree the page keeps, as an app keeps its
+//! `ColumnBrowser`: Finder's column view over a small tree the page keeps, as an app keeps its
 //! folders. A pick in a column cuts the columns after it and shows the picked folder's contents
 //! in the next; a file ends the columns and fills the preview. Drag a divider to resize the
 //! columns.

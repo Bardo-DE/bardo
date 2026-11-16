@@ -24,6 +24,7 @@ impl Lang {
         if ok { Ok(Self(text)) } else { Err(LangError) }
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -72,6 +73,7 @@ impl VoiceId {
         if ok { Ok(Self(id)) } else { Err(VoiceIdError) }
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -113,6 +115,7 @@ impl SpokenText {
         }
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

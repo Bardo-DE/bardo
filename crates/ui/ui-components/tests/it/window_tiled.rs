@@ -33,7 +33,10 @@ impl HostWindow for Tiling {
 }
 
 fn reads() -> Element {
-    let words: Vec<&str> = use_window_tiled().edges().map(|e| e.slug()).collect();
+    let words: Vec<&str> = use_window_tiled()
+        .edges()
+        .map(ui_components::prelude::Word::slug)
+        .collect();
     rsx! { p { "{words.join(\",\")}" } }
 }
 

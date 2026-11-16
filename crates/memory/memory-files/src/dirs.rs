@@ -16,11 +16,13 @@ pub struct PlainDir {
 
 impl PlainDir {
     /// A vault rooted at `root` (the Space's directory).
+    #[must_use]
     pub fn new(root: PathBuf) -> Self {
         Self { root }
     }
 
     /// The root directory.
+    #[must_use]
     pub fn root(&self) -> &PathBuf {
         &self.root
     }
@@ -111,21 +113,25 @@ pub struct SealedDir {
 
 impl SealedDir {
     /// A sealed vault for `space`, with the key derived for `Purpose::Files`.
+    #[must_use]
     pub fn new(inner: PlainDir, space: SpaceId, key: SubKey) -> Self {
         Self { inner, space, key }
     }
 
     /// The Space the files are bound to.
+    #[must_use]
     pub fn space(&self) -> &SpaceId {
         &self.space
     }
 
     /// The directory beneath.
+    #[must_use]
     pub fn inner(&self) -> &PlainDir {
         &self.inner
     }
 
     /// The files subkey.
+    #[must_use]
     pub fn key(&self) -> &SubKey {
         &self.key
     }

@@ -24,6 +24,7 @@ pub struct BusPrepare {
 
 impl BusPrepare {
     /// Prepares over `connection`.
+    #[must_use]
     pub fn over(connection: zbus::Connection) -> Self {
         Self {
             transport: DbusTransport::over(connection),

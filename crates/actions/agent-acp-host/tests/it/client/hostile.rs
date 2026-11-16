@@ -95,10 +95,10 @@ async fn secrets_are_unreadable_and_code_that_runs_later_always_asks() {
     .await;
     files.put(&abs("/work/app/.ssh/id_ed25519"), "PRIVATE KEY");
     run_turn(&mut rig, "go").await;
-    assert!(rig.agent.reply("ssh").is_err());
+    rig.agent.reply("ssh").unwrap_err();
     assert_eq!(files.reads(), 0, "the secret was never opened");
-    assert!(rig.agent.reply("hook").is_ok());
-    assert!(rig.agent.reply("hook2").is_ok());
+    rig.agent.reply("hook").unwrap();
+    rig.agent.reply("hook2").unwrap();
     let sheets = rig.sheets();
     assert_eq!(
         sheets.len(),
@@ -158,7 +158,7 @@ async fn a_grant_for_one_command_does_not_cover_a_pipeline() {
     .await;
     run_turn(&mut rig, "go").await;
     assert!(rig.agent.reply("ok").is_ok(), "covered by the grant");
-    assert!(rig.agent.reply("pipe").is_err());
+    rig.agent.reply("pipe").unwrap_err();
     assert!(
         rig.agent.reply("semi").is_err(),
         "an operator anywhere voids the prefix"
@@ -310,7 +310,7 @@ async fn unknown_methods_wrong_sessions_and_elicitation_are_refused() {
     run_turn(&mut rig, "go").await;
     assert_eq!(rig.agent.reply("unk").unwrap_err()["code"], -32601);
     assert_eq!(rig.agent.reply("bad").unwrap_err()["code"], -32602);
-    assert!(rig.agent.reply("other").is_err());
+    rig.agent.reply("other").unwrap_err();
     assert_eq!(files.reads(), 0);
     assert_eq!(rig.routed(FILES_READ), 0);
     assert_eq!(rig.agent.reply("form").unwrap()["action"], "decline");

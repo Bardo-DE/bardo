@@ -27,6 +27,7 @@ use crate::outputs::Outputs;
 
 /// What is focused now: the active window, its app (named as its entry declares), and the
 /// panel.
+#[must_use]
 pub fn focus_of(services: &Services, launcher: &LauncherLink) -> FocusInput {
     let toplevels = services.windows.state.borrow();
     let apps = services.apps.state.borrow();
@@ -42,6 +43,7 @@ pub fn focus_of(services: &Services, launcher: &LauncherLink) -> FocusInput {
 }
 
 /// Answer `bardo-shell companion ...`: tell the service, which decides.
+#[must_use]
 pub fn dispatch(reach: &Reach, request: CompanionRequest) -> Response {
     let focus = || focus_of(reach.services, &reach.links.launcher);
     let command = match request {

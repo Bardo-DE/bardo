@@ -1,7 +1,7 @@
 //! sync-core's contract tests (`sync-core/tests/contract.rs`), the same cases, run against the
 //! reference `MemoryReplica` (so the suite is the reference's) and against `WebDavReplica` over the
 //! fake server, in both of its feeds: sync-collection, and the etag tree walk of a server that has
-//! none. A rule the memory replica passes, the WebDAV replica passes.
+//! none. A rule the memory replica passes, the `WebDAV` replica passes.
 
 use crate::common;
 
@@ -83,11 +83,10 @@ impl<const SYNC: bool> Harness for WebDav<SYNC> {
     }
 
     fn expire_anchors(&mut self) {
-        match SYNC {
-            // The server pruned its change log.
-            true => self.server.dav.expire_sync_tokens(),
-            // A walk's anchor is good only for the replica that made it: a new process.
-            false => self.replica = self.server.replica(self.page),
+        if SYNC {
+            self.server.dav.expire_sync_tokens()
+        } else {
+            self.replica = self.server.replica(self.page)
         }
     }
 }

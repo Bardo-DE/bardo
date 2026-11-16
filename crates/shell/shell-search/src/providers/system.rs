@@ -98,6 +98,7 @@ pub struct SystemProvider {
 
 impl SystemProvider {
     /// Rows for what `session` says logind offers.
+    #[must_use]
     pub fn new(session: watch::Receiver<Session>) -> SystemProvider {
         SystemProvider { session }
     }

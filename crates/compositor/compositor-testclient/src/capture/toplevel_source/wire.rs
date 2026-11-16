@@ -93,7 +93,7 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for Wire {
         state: &mut Self,
         _: &ExtImageCopyCaptureSessionV1,
         event: ext_image_copy_capture_session_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -115,7 +115,7 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, ()> for Wire {
         state: &mut Self,
         _: &ExtImageCopyCaptureFrameV1,
         event: ext_image_copy_capture_frame_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

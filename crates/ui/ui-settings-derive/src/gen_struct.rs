@@ -74,20 +74,22 @@ pub(crate) fn expand(input: &syn::DeriveInput, data: &syn::DataStruct) -> syn::R
         } else {
             quote! { ::std::option::Option::None }
         };
-        let note = match note {
-            Some(note) => quote! {
+        let note = if let Some(note) = note {
+            quote! {
                 ::std::option::Option::Some(::ui_settings::schema::Note(#note.to_owned()))
-            },
-            None => quote! { ::std::option::Option::None },
+            }
+        } else {
+            quote! { ::std::option::Option::None }
         };
-        let ends = match ends.map(|ends| *ends) {
-            Some(EndsAttr { low, high }) => quote! {
+        let ends = if let Some(EndsAttr { low, high }) = ends.map(|ends| *ends) {
+            quote! {
                 ::std::option::Option::Some(::ui_settings::schema::SliderEnds {
                     low: ::ui_settings::schema::Label(#low.to_owned()),
                     high: ::ui_settings::schema::Label(#high.to_owned()),
                 })
-            },
-            None => quote! { ::std::option::Option::None },
+            }
+        } else {
+            quote! { ::std::option::Option::None }
         };
         pushes.push(quote! {
             key.push(::ui_settings::schema::KeySpec {

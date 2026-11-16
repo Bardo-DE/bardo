@@ -35,23 +35,20 @@ impl<B: Backend> Open<B> {
     ) -> Result<EntriesPage, Refusal> {
         let after = q.after.map_or(Seq(0), |c| c.0);
         let limit = usize::try_from(q.limit.0).unwrap_or(usize::MAX);
-        let (page, more) = match &q.about {
-            Some(thing) => {
-                let seqs = self
-                    .rt
-                    .log
-                    .touching(thing, RoleFilter::Subject)
-                    .map_err(log_refusal)?;
-                let entries = seqs
-                    .into_iter()
-                    .filter(|s| *s > after)
-                    .filter_map(|s| self.entry_at(s));
-                take_page(entries, &q.kinds, limit)
-            }
-            None => {
-                let entries = self.rt.log.scan(Seq(after.0 + 1)).map_err(log_refusal)?;
-                take_page(entries.into_iter(), &q.kinds, limit)
-            }
+        let (page, more) = if let Some(thing) = &q.about {
+            let seqs = self
+                .rt
+                .log
+                .touching(thing, RoleFilter::Subject)
+                .map_err(log_refusal)?;
+            let entries = seqs
+                .into_iter()
+                .filter(|s| *s > after)
+                .filter_map(|s| self.entry_at(s));
+            take_page(entries, &q.kinds, limit)
+        } else {
+            let entries = self.rt.log.scan(Seq(after.0 + 1)).map_err(log_refusal)?;
+            take_page(entries.into_iter(), &q.kinds, limit)
         };
         let entries: Vec<RecentEntry> = page
             .iter()

@@ -5,6 +5,7 @@ use crate::units::{Percent, Presence};
 
 /// `volume` after `event`. A level or mute change with no sink is dropped: there is nothing
 /// for it to describe.
+#[must_use]
 pub fn step(volume: Volume, event: VolumeEvent) -> Volume {
     match (volume.presence, event) {
         (_, VolumeEvent::Sink { sink, level, mute }) => Volume {
@@ -22,6 +23,7 @@ pub fn step(volume: Volume, event: VolumeEvent) -> Volume {
 
 /// The level one key press moves to: 5 points, clamped to 0..=100 (a level already above 100,
 /// set elsewhere, steps down normally and never steps further up).
+#[must_use]
 pub fn stepped(level: Percent, step: Step) -> Percent {
     match step {
         Step::Up if level.0 >= 100 => level,

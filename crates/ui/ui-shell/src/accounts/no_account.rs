@@ -1,4 +1,4 @@
-//! NoAccount: what an app shows when it has no account to use (design/31 section 5.1): an empty
+//! `NoAccount`: what an app shows when it has no account to use (design/31 section 5.1): an empty
 //! state that says why, with the one action that can help.
 
 use super::adapter::{Action, Intent};

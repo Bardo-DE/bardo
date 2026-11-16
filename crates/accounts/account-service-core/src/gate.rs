@@ -35,7 +35,7 @@ impl Gate {
         // Every critical section is a plain data update that cannot panic midway.
         self.state
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 }
 
@@ -73,14 +73,13 @@ impl<'a> Future for Acquire<'a> {
             state.held = true;
             return Poll::Ready(Held { gate: this.gate });
         }
-        let ticket = match this.ticket {
-            Some(ticket) => ticket,
-            None => {
-                let ticket = state.next;
-                state.next += 1;
-                this.ticket = Some(ticket);
-                ticket
-            }
+        let ticket = if let Some(ticket) = this.ticket {
+            ticket
+        } else {
+            let ticket = state.next;
+            state.next += 1;
+            this.ticket = Some(ticket);
+            ticket
         };
         match state.waiting.iter_mut().find(|(t, _)| *t == ticket) {
             Some(entry) => entry.1 = cx.waker().clone(),

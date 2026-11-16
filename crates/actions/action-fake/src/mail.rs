@@ -92,6 +92,7 @@ pub struct FakeMail {
 
 impl FakeMail {
     /// A mail app with this manifest, working in `space`.
+    #[must_use]
     pub fn new(manifest: ValidManifest, space: SpaceId) -> Self {
         let app = manifest.manifest().app.clone();
         Self {

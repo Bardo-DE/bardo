@@ -34,9 +34,10 @@ impl ScanoutMaker for FakeMaker<'_> {
     ) -> Result<Box<dyn ScanoutSurface>, KmsError> {
         let _ = config;
         *self.asked += 1;
-        match self.refuses.contains(&connector) {
-            true => Err(KmsError::Io(std::io::Error::other("the fake GPU refuses"))),
-            false => Ok(self.hand_out(connector)),
+        if self.refuses.contains(&connector) {
+            Err(KmsError::Io(std::io::Error::other("the fake GPU refuses")))
+        } else {
+            Ok(self.hand_out(connector))
         }
     }
 

@@ -84,11 +84,13 @@ fn read(head: &ResponseHead, parsed: Option<&Value>) -> ProviderError {
         _ => overflow_in_message(parsed)
             .map(|limit| ProviderError::ContextOverflow { limit })
             .or(envelope)
-            .map(|error| match error {
-                ProviderError::RateLimited(RetrySeconds(0)) => ProviderError::RateLimited(wait),
-                other => other,
-            })
-            .unwrap_or_else(|| ProviderError::BadRequest(format!("http_{status}"))),
+            .map_or_else(
+                || ProviderError::BadRequest(format!("http_{status}")),
+                |error| match error {
+                    ProviderError::RateLimited(RetrySeconds(0)) => ProviderError::RateLimited(wait),
+                    other => other,
+                },
+            ),
     }
 }
 

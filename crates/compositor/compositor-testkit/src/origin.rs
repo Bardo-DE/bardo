@@ -9,7 +9,7 @@ use compositor_core::input::{DeviceClass, Origin, PortalSessionId};
 pub enum TestOrigin {
     /// A kernel device of this class.
     Physical(DeviceClass),
-    /// A RemoteDesktop session.
+    /// A `RemoteDesktop` session.
     Remote,
     /// Plain test input.
     Test,
@@ -17,6 +17,7 @@ pub enum TestOrigin {
 
 impl TestOrigin {
     /// The model's origin (a remote origin is the test kit's portal session 0).
+    #[must_use]
     pub fn origin(self) -> Origin {
         match self {
             TestOrigin::Physical(class) => Origin::Physical(class),

@@ -141,6 +141,7 @@ impl<T: Terminal> TerminalSheets<T> {
     }
 
     /// The terminal.
+    #[must_use]
     pub fn terminal(&self) -> &T {
         &self.inner.terminal
     }
@@ -266,9 +267,10 @@ impl<T: Terminal> TerminalLink<T> {
             .ask("Add this account? [Y/n]".to_owned(), false)
             .await?;
         let no = matches!(typed.trim().to_ascii_lowercase().as_str(), "n" | "no");
-        Ok(match no {
-            true => SheetInput::Dismiss,
-            false => SheetInput::Confirm(
+        Ok(if no {
+            SheetInput::Dismiss
+        } else {
+            SheetInput::Confirm(
                 view.review
                     .services
                     .iter()
@@ -278,7 +280,7 @@ impl<T: Terminal> TerminalLink<T> {
                         toggle: true,
                     })
                     .collect(),
-            ),
+            )
         })
     }
 }

@@ -37,12 +37,14 @@ impl DesktopFile {
     }
 
     /// The group called `name`, if the file has one.
+    #[must_use]
     pub fn group(&self, name: &str) -> Option<&DesktopGroup> {
         self.groups.iter().find(|group| group.name() == name)
     }
 
     /// The `[Desktop Entry]` group: the entry itself. Its `Desktop Action` groups are named by its
     /// `Actions` list and found with [`DesktopFile::group`].
+    #[must_use]
     pub fn entry(&self) -> Option<&DesktopGroup> {
         self.group(ENTRY_GROUP)
     }
@@ -54,6 +56,7 @@ impl DesktopFile {
 
     /// How many lines were skipped as neither a comment, a group header nor a `Key=value` pair,
     /// or as a pair before any group.
+    #[must_use]
     pub fn skipped_lines(&self) -> usize {
         self.skipped
     }

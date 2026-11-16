@@ -64,6 +64,7 @@ const SCROLLBAR_EXPAND_ZONE_PX: host::ScrollPx = host::ScrollPx(16);
 const SCROLLBAR_EXPAND_DURATION_MS: host::ScrollMs = host::ScrollMs(240);
 
 /// `file.scroll` and `file.scrollbar`, as `HostCtx::set_scroll_config` wants them.
+#[must_use]
 pub fn config(file: &ShellFile) -> host::ScrollConfig {
     host::ScrollConfig {
         scroll: scroll(&file.scroll),

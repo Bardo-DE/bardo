@@ -56,6 +56,7 @@ pub struct RunConfig {
 
 impl RunConfig {
     /// A run that starts as `start` says, with no debug bus.
+    #[must_use]
     pub fn new(start: cli::StartConfig) -> RunConfig {
         RunConfig {
             start,
@@ -173,6 +174,7 @@ pub enum RunError {
 
 impl RunError {
     /// The process exit code this error maps to: 5 for a jail breach (11 §6.1), 1 otherwise.
+    #[must_use]
     pub fn exit_code(&self) -> u8 {
         match self {
             #[cfg(any(feature = "testing", feature = "debug-inject"))]

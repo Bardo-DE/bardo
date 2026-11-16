@@ -78,9 +78,10 @@ pub fn key_focus(doc: &BaseDocument, axis: ScrollAxis) -> KeyFocus {
     // body counts the same), unless a key listener sits there.
     let unfocused = is_root(doc, focus) || body(doc).is_some_and(|b| b.id == focus);
     if unfocused {
-        return match ancestors(doc, focus).any(listens_for_keys) {
-            true => KeyFocus::Document,
-            false => KeyFocus::Free,
+        return if ancestors(doc, focus).any(listens_for_keys) {
+            KeyFocus::Document
+        } else {
+            KeyFocus::Free
         };
     }
     let handled = ancestors(doc, focus).enumerate().any(|(depth, node)| {

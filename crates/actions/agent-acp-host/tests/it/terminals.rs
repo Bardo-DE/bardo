@@ -267,8 +267,8 @@ async fn output_is_capped_and_redacted() {
 #[tokio::test]
 async fn a_cwd_outside_the_session_and_a_foreign_session_are_refused() {
     let mut b = bench(vec![Script::done("", 0)]);
-    assert!(b.create("ls", &[], "/etc").await.is_err());
-    assert!(b.create("ls", &[], "/work/app/../other").await.is_err());
+    b.create("ls", &[], "/etc").await.unwrap_err();
+    b.create("ls", &[], "/work/app/../other").await.unwrap_err();
     let id = b.create("ls", &[], "/work/app").await.expect("created");
     let params = json!({"sessionId": "someone-else", "terminalId": id});
     let foreign = b

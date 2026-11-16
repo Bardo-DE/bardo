@@ -1277,21 +1277,19 @@ async fn the_mail_servers_are_tried_with_the_password_before_the_review() {
         (PASSWORD, true, None),
     ] {
         let mail = published().await;
-        let provider = match reachable {
-            true => mail.provider.clone(),
-            false => mail.provider.clone().with_connect(Wire::nowhere()),
+        let provider = if reachable {
+            mail.provider.clone()
+        } else {
+            mail.provider.clone().with_connect(Wire::nowhere())
         };
         let mut signin = provider.sign_in(add()).expect("sign-in");
         let steps = drive(&mut signin, mail_person("ada@fake.test", password, "")).await;
-        match ending {
-            Some(fault) => {
-                assert_eq!(steps.last(), Some(&SignInStep::Failed(fault)), "{steps:?}");
-                assert!(!has_review(&steps), "{steps:?}");
-            }
-            None => {
-                assert!(has_review(&steps), "{steps:?}");
-                done(&steps);
-            }
+        if let Some(fault) = ending {
+            assert_eq!(steps.last(), Some(&SignInStep::Failed(fault)), "{steps:?}");
+            assert!(!has_review(&steps), "{steps:?}");
+        } else {
+            assert!(has_review(&steps), "{steps:?}");
+            done(&steps);
         }
     }
 }
@@ -1299,7 +1297,7 @@ async fn the_mail_servers_are_tried_with_the_password_before_the_review() {
 #[tokio::test]
 async fn a_wrong_pop3_password_is_refused_and_a_right_one_goes_on() {
     let mail = nothing_published().await;
-    let typed = |_: ()| {
+    let typed = |(): ()| {
         vec![
             plain(FieldKind::Protocol, "pop3"),
             plain(FieldKind::Server, "pop.fake.test"),
@@ -1451,9 +1449,10 @@ fn noting_person<'a>(
     move |step| match step {
         SignInStep::Review { .. } => {
             at_review.set(Some(counted.dials()));
-            match confirm {
-                true => person(step),
-                false => SignInInput::Cancel,
+            if confirm {
+                person(step)
+            } else {
+                SignInInput::Cancel
             }
         }
         other => person(other),

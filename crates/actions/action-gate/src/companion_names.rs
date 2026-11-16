@@ -24,6 +24,7 @@ pub const BRIEF_CONFIRM: &str = "companion.brief.confirm";
 
 /// Whether `action` is one of the helper actions: only the companion's own planners may call
 /// them, however an app or an outside client names them.
+#[must_use]
 pub fn is_helper_action(action: &ActionRef) -> bool {
     action.app.as_str() == COMPANION_APP
         && matches!(
@@ -37,6 +38,7 @@ fn name() -> AppName {
 }
 
 /// The thing of kind `companion.task` that stands for `task`.
+#[must_use]
 pub fn task_entity(task: &TaskId) -> Option<EntityId> {
     Some(EntityId {
         app: name(),
@@ -46,6 +48,7 @@ pub fn task_entity(task: &TaskId) -> Option<EntityId> {
 }
 
 /// The task an entity of kind `companion.task` names.
+#[must_use]
 pub fn task_of(entity: &EntityId) -> Option<TaskId> {
     (entity.app == name() && entity.kind.as_str() == TASK_KIND)
         .then(|| TaskId::parse(entity.key.as_str()).ok())

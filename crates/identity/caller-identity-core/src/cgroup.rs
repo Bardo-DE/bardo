@@ -28,6 +28,7 @@ impl CgroupPath {
     }
 
     /// The path's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -38,11 +39,13 @@ impl CgroupPath {
     }
 
     /// The last component: the unit, or the delegated child of one, the process sits in.
+    #[must_use]
     pub fn leaf(&self) -> &str {
         self.0.rsplit('/').next().unwrap_or_default()
     }
 
     /// The leaf as a unit name, when it is one.
+    #[must_use]
     pub fn unit_leaf(&self) -> Option<UnitName> {
         UnitName::new(self.leaf()).ok()
     }
@@ -50,6 +53,7 @@ impl CgroupPath {
 
 /// `text` as a systemd unit-name component: a byte other than `[A-Za-z0-9:_]`, or a `.` at the
 /// start, becomes `\xHH` (so `-` becomes `\x2d` and a dash in a unit name is a separator).
+#[must_use]
 pub fn escape_unit(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     for (i, byte) in text.bytes().enumerate() {
@@ -65,6 +69,7 @@ pub fn escape_unit(text: &str) -> String {
 }
 
 /// `text` with its `\xHH` escapes undone, or `None` for a broken escape or non-UTF-8 result.
+#[must_use]
 pub fn unescape_unit(text: &str) -> Option<String> {
     let mut bytes = Vec::with_capacity(text.len());
     let mut rest = text.as_bytes();
@@ -100,6 +105,7 @@ fn is_word(text: &str) -> bool {
 /// The app a launcher's scope names, as a **claim**: `app-[<launcher>-]<id>-<n>.scope` anywhere
 /// in the path. Anyone may run `systemd-run --user --scope -u app-<id>-1`, so this is for display
 /// and grouping, never for authorisation. Flatpak's own scopes name nobody here.
+#[must_use]
 pub fn scope_app(cgroup: &CgroupPath) -> Option<AppKey> {
     cgroup.segments().find_map(|segment| {
         let unit = segment.strip_prefix("app-")?.strip_suffix(".scope")?;
@@ -120,6 +126,7 @@ pub fn scope_app(cgroup: &CgroupPath) -> Option<AppKey> {
 
 /// Whether the path holds the scope Flatpak makes for a run of `app`:
 /// `app-flatpak-<escaped id>-<number>.scope`.
+#[must_use]
 pub fn flatpak_scope_in(cgroup: &CgroupPath, app: &AppKey) -> bool {
     let prefix = format!("app-{FLATPAK_LAUNCHER}-{}-", escape_unit(app.as_str()));
     cgroup.segments().any(|segment| {

@@ -27,9 +27,10 @@ pub fn spawn_surface<S: Surface>(
         };
         // A surface that lives on the main display only is closed where it is not wanted any more
         // (the main display moved), like a slot the settings dropped.
-        let wanted = match S::OUTPUTS.spawns_on(info.id, main) {
-            true => S::slots(&place),
-            false => Vec::new(),
+        let wanted = if S::OUTPUTS.spawns_on(info.id, main) {
+            S::slots(&place)
+        } else {
+            Vec::new()
         };
         close_dropped::<S>(ctx, row, &wanted);
         for slot in wanted {

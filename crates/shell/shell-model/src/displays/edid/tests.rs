@@ -87,7 +87,7 @@ fn the_ma270u_block_parses_to_what_the_panel_is() {
 #[test]
 fn the_ma270u_primaries_read_as_the_panel_reports_them() {
     let p = parse(MA270U).unwrap_or_else(|e| panic!("{e}")).primaries;
-    let got = [p.red, p.green, p.blue, p.white].map(|c| c.thousandths());
+    let got = [p.red, p.green, p.blue, p.white].map(super::chroma::Chromaticity::thousandths);
     assert_eq!(got, [(681, 316), (256, 680), (152, 62), (313, 329)]);
 }
 

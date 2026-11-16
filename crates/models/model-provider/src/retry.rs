@@ -29,6 +29,7 @@ pub enum RetryClass {
 impl ProviderError {
     /// 408, 425, 429 and 5xx are retryable (`Server`, `RateLimited`); a refusal never is; an
     /// unreachable or not-ready engine and a timeout are transient; the rest are not.
+    #[must_use]
     pub fn retry_class(&self) -> RetryClass {
         match self {
             ProviderError::RateLimited(wait) => RetryClass::Overload(*wait),
@@ -63,8 +64,10 @@ pub struct RetryPolicy {
 }
 
 /// How long to wait before try `attempt + 1`, or `None` when the class or the budget says stop.
+///
 /// `jitter` scales the wait down by up to that share, so callers spread out. No wait, a
 /// server-requested one included, exceeds `policy.cap`.
+#[must_use]
 pub fn next_wait(
     policy: &RetryPolicy,
     attempt: Attempt,

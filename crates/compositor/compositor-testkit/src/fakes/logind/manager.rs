@@ -96,6 +96,7 @@ impl SleepPhase {
     }
 
     /// The phase the wire argument names.
+    #[must_use]
     pub fn from_starting(starting: bool) -> SleepPhase {
         if starting {
             SleepPhase::Starting

@@ -33,6 +33,7 @@ pub type ProcessEnv = fn(&str) -> Option<String>;
 impl Xdg<ProcessEnv> {
     /// The directories the running process's environment names. A daemon's `main` makes this one;
     /// everything below it takes an `Xdg` so a test hands in its own.
+    #[must_use]
     pub fn process() -> Self {
         Self::new(|name| std::env::var(name).ok())
     }

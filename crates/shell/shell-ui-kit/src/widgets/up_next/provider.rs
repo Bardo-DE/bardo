@@ -39,15 +39,17 @@ pub struct EventLines {
 }
 
 /// `event`'s lines as seen at `now` in `zone`.
+#[must_use]
 pub fn event_lines(
     event: &CalEvent,
     now: Timestamp,
     zone: &TimeZone,
     hours: ClockHours,
 ) -> EventLines {
-    let title = match event.title.trim().is_empty() {
-        true => "Untitled".to_owned(),
-        false => event.title.clone(),
+    let title = if event.title.trim().is_empty() {
+        "Untitled".to_owned()
+    } else {
+        event.title.clone()
     };
     let today = now.to_zoned(zone.clone()).date();
     let when = match event.when {
@@ -90,6 +92,7 @@ const MONTHS: [&str; 12] = [
 
 /// A calendar's colour: one of quire's label hues, picked by the calendar's name, so a calendar
 /// keeps its colour everywhere (Up Next's bar, the month widget's events).
+#[must_use]
 pub fn calendar_hue(calendar: &CalendarName) -> LabelHue {
     let hash = calendar.0.bytes().fold(2_166_136_261_u32, |h, b| {
         (h ^ u32::from(b)).wrapping_mul(16_777_619)
@@ -113,6 +116,7 @@ fn quiet_line(status: &SourceStatus) -> Option<String> {
 
 /// The widget's entry: today, then up to `max` next events of `agenda` over `ahead` days as
 /// seen at `now` in `zone`.
+#[must_use]
 pub fn up_next_entry(
     agenda: &Agenda,
     now: Timestamp,
@@ -146,6 +150,7 @@ pub fn up_next_entry(
 /// Today's events still to come, as the month widget lists them (its Medium card shows the
 /// first; quire caps the list at `shell_kit::widget::LARGE_EVENTS`): the same agenda and lines Up Next
 /// draws.
+#[must_use]
 pub fn today_events(
     agenda: &Agenda,
     now: Timestamp,

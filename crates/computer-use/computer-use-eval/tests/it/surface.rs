@@ -90,7 +90,7 @@ fn a_click_elsewhere_takes_the_focus_away_and_tab_gives_it_back() {
     assert_eq!(s.focused(), Some("subject"));
     s.type_text("hi");
     assert!(s.holds(&Cond::Field(["subject".into(), "hi".into()])));
-    assert!(s.holds(&Cond::Field(["to".into(), "".into()])));
+    assert!(s.holds(&Cond::Field(["to".into(), String::new()])));
 }
 
 #[test]
@@ -99,7 +99,7 @@ fn a_terminal_takes_typing_at_once() {
     s.type_text("ls");
     s.press(Stroke::Enter);
     assert!(s.holds(&Cond::Var(["last".into(), "ls".into()])));
-    assert!(s.holds(&Cond::Field(["cmd".into(), "".into()])));
+    assert!(s.holds(&Cond::Field(["cmd".into(), String::new()])));
 }
 
 #[test]
@@ -107,7 +107,7 @@ fn a_newline_in_typed_text_is_enter() {
     let mut s = Surface::new(def("terminal"), "shell", &[]).unwrap();
     s.type_text("ls\n");
     assert!(s.holds(&Cond::Var(["last".into(), "ls".into()])));
-    assert!(s.holds(&Cond::Field(["cmd".into(), "".into()])));
+    assert!(s.holds(&Cond::Field(["cmd".into(), String::new()])));
 }
 
 #[test]

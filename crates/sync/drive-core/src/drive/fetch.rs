@@ -294,17 +294,16 @@ impl Inner {
 /// Fills `transfer`'s file: the chunks readers wait for first, then the rest from the start;
 /// then checks it.
 async fn run(weak: Weak<Inner>, transfer: Arc<Transfer>, background: bool) {
-    let _permit = match background {
-        true => {
-            let Some(inner) = weak.upgrade() else { return };
-            let semaphore = Arc::clone(&inner.background);
-            drop(inner);
-            tokio::select! {
-                permit = semaphore.acquire_owned() => permit.ok(),
-                () = transfer.promoted.notified() => None,
-            }
+    let _permit = if background {
+        let Some(inner) = weak.upgrade() else { return };
+        let semaphore = Arc::clone(&inner.background);
+        drop(inner);
+        tokio::select! {
+            permit = semaphore.acquire_owned() => permit.ok(),
+            () = transfer.promoted.notified() => None,
         }
-        false => None,
+    } else {
+        None
     };
     loop {
         let Some(inner) = weak.upgrade() else { return };
@@ -401,44 +400,38 @@ async fn finish(weak: Weak<Inner>, transfer: Arc<Transfer>) {
     let Some(inner) = weak.upgrade() else { return };
     let kind = inner.source.hashes();
     let expected = transfer.hash.clone().filter(|_| hash::computes(kind));
-    let same = match expected {
-        Some(expected) => {
-            drop(inner);
-            let file = transfer.file.clone();
-            let got = tokio::task::spawn_blocking(move || hash::of_file(kind, &file)).await;
-            let Some(again) = weak.upgrade() else { return };
-            match got {
-                Ok(Ok(Some(got))) => Some((again, got.eq_ignore_ascii_case(&expected.0))),
-                // The file went (the download was removed), or could not be read.
-                _ => {
-                    again.retire(&transfer);
-                    None
-                }
+    let same = if let Some(expected) = expected {
+        drop(inner);
+        let file = transfer.file.clone();
+        let got = tokio::task::spawn_blocking(move || hash::of_file(kind, &file)).await;
+        let Some(again) = weak.upgrade() else { return };
+        match got {
+            Ok(Ok(Some(got))) => Some((again, got.eq_ignore_ascii_case(&expected.0))),
+            // The file went (the download was removed), or could not be read.
+            _ => {
+                again.retire(&transfer);
+                None
             }
         }
-        None => {
-            let same = inner
-                .entry_open(&transfer.id)
-                .ok()
-                .flatten()
-                .is_some_and(|entry| entry.version.0 == transfer.version);
-            Some((inner, same))
-        }
+    } else {
+        let same = inner
+            .entry_open(&transfer.id)
+            .ok()
+            .flatten()
+            .is_some_and(|entry| entry.version.0 == transfer.version);
+        Some((inner, same))
     };
     let Some((inner, same)) = same else {
         transfer.fail(ReadError::Cache);
         return;
     };
-    match same {
-        true => {
-            inner.note(&transfer, &Ranges::whole(transfer.size), true);
-            inner.retire(&transfer);
-            transfer.moved.send_modify(|n| *n += 1);
-        }
-        false => {
-            inner.stale(&transfer);
-            transfer.fail(ReadError::Changed);
-        }
+    if same {
+        inner.note(&transfer, &Ranges::whole(transfer.size), true);
+        inner.retire(&transfer);
+        transfer.moved.send_modify(|n| *n += 1);
+    } else {
+        inner.stale(&transfer);
+        transfer.fail(ReadError::Changed);
     }
     inner.emit(vec![NodeId::Remote(transfer.id.clone())]);
     inner.evict();
@@ -462,9 +455,10 @@ impl Inner {
             .filter(|dirty| dirty.file == n)
             .map(|dirty| dirty.size)?;
         let end = offset.saturating_add(len).min(size);
-        Some(match offset < end {
-            true => read_at(&self.local_file(n), offset, end - offset),
-            false => Ok(Vec::new()),
+        Some(if offset < end {
+            read_at(&self.local_file(n), offset, end - offset)
+        } else {
+            Ok(Vec::new())
         })
     }
 }
@@ -611,7 +605,7 @@ impl Drive {
                 starts.retain(|start| !state.present.covers(*start, (*start + chunk).min(end)));
                 starts.reverse();
                 state.wanted.extend(starts);
-            }
+            };
             transfer.promoted.notify_one();
             let mut moved = transfer.moved.subscribe();
             loop {

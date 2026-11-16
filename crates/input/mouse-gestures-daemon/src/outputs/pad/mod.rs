@@ -9,7 +9,7 @@
 //!   compositor reads as a four-finger swipe. It never lands again mid-swipe: at the edge it
 //!   stops.
 //!
-//! Contacts land at the decision (never at MayBegin, so a resting finger makes nothing). A
+//! Contacts land at the decision (never at `MayBegin`, so a resting finger makes nothing). A
 //! scroll's two contacts that have not moved never lift before `MIN_DOWN` (`Down::could_tap`):
 //! libinput reads two contacts that go down and up inside its tap timeout without moving as a
 //! two-finger tap, a right click (measured 2026-11-15: a flick's last reverse step re-landed
@@ -42,7 +42,7 @@ const MIN_DOWN: Ms = Ms(200);
 /// from where the touch went down, and 2 mm leaves a margin.
 const TAP_SLOP_MM: f64 = 2.0;
 
-/// Pad units per millimetre (resolution of ABS_MT_POSITION_*).
+/// Pad units per millimetre (resolution of `ABS_MT_POSITION`_*).
 pub const UNITS_PER_MM: i32 = 40;
 /// The pad's extent in units (100 x 70 mm).
 pub const PAD_X_MAX: i32 = 4000;
@@ -144,6 +144,7 @@ impl Pad {
     /// (lifting a pending row first, so the tool count never changes under a client's feet). A
     /// scroll over a pending scroll's lift takes its contacts over instead, where they are, so
     /// they never go up as a tap.
+    #[must_use]
     pub fn land(self, intent: Intent, lead: Motion, now: Mono) -> (Self, Vec<PadFrame>) {
         if let Pad::Lifting { down, .. } = self
             && layout::shape(down.intent).fingers == layout::shape(intent).fingers
@@ -175,6 +176,7 @@ impl Pad {
     /// runs out of room lands again on the opposite side, unless its contacts could still tap:
     /// then they stop at the edge like a swipe's. Nothing moves when nothing of that
     /// intent is down.
+    #[must_use]
     pub fn moved(self, intent: Intent, by: Motion, now: Mono) -> (Self, Vec<PadFrame>) {
         match self {
             Pad::Down(down) if down.intent == intent => {
@@ -205,6 +207,7 @@ impl Pad {
 
     /// The stroke Ended. A swipe lifts now. A scroll lifts now, still moving so the app's
     /// momentum carries on, or at `landed + MIN_DOWN` if its contacts could still tap.
+    #[must_use]
     pub fn end(self, now: Mono) -> (Self, Vec<PadFrame>) {
         match self {
             Pad::Down(down) if down.could_tap(now) => (down.lifting(), vec![]),
@@ -225,6 +228,7 @@ impl Pad {
     /// The stroke was Cancelled (a click or a palm). A scroll ends as it would have. A swipe
     /// first moves the row back to where it landed, in one frame, and then lifts, so the
     /// compositor reads no travel and returns to the Space it was on.
+    #[must_use]
     pub fn cancel(self, now: Mono) -> (Self, Vec<PadFrame>) {
         match self {
             swipe @ Pad::Down(Down {
@@ -236,6 +240,7 @@ impl Pad {
     }
 
     /// Performs a delayed lift that has come due.
+    #[must_use]
     pub fn tick(self, now: Mono) -> (Self, Vec<PadFrame>) {
         match self {
             Pad::Lifting { until, .. } if now >= until => (Pad::Up, vec![PadFrame::Lift]),
@@ -244,6 +249,7 @@ impl Pad {
     }
 
     /// Lifts whatever is down, immediately (disconnect).
+    #[must_use]
     pub fn lift_now(self) -> (Self, Vec<PadFrame>) {
         match self {
             Pad::Up => (Pad::Up, vec![]),
@@ -253,6 +259,7 @@ impl Pad {
 
     /// Takes away whatever the policy no longer allows: a host took the pointer from a scroll,
     /// or the session locked on a swipe.
+    #[must_use]
     pub fn enforce(self, policy: Policy, now: Mono) -> (Self, Vec<PadFrame>) {
         match self.intent() {
             Some(intent) if !policy.allows(intent) => self.withdraw(now),
@@ -281,6 +288,7 @@ impl Pad {
     }
 
     /// When `tick` next has work.
+    #[must_use]
     pub fn deadline(&self) -> Option<Mono> {
         match self {
             Pad::Lifting { until, .. } => Some(*until),
@@ -319,8 +327,8 @@ fn point(at: MmPoint) -> PadPoint {
 fn shown_after(intent: Intent, before: MmPoint, after: MmPoint) -> MmPoint {
     match intent {
         Intent::SpaceSwipe => MmPoint {
-            x: Mm((before.x.0 + after.x.0) / 2.0),
-            y: Mm((before.y.0 + after.y.0) / 2.0),
+            x: Mm(f64::midpoint(before.x.0, after.x.0)),
+            y: Mm(f64::midpoint(before.y.0, after.y.0)),
         },
         Intent::Scroll(_) => after,
     }

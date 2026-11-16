@@ -239,7 +239,10 @@ fn a_prompt_from_a_panel_summoned_over_a_window_keeps_the_window_chip_only() {
         "the ask is made in the Space it was given"
     );
     assert_eq!(ask.window, Some(WindowKey(4)));
-    assert_eq!(ask.app.as_ref().map(|a| a.as_str()), Some("org.bardo.Mail"));
+    assert_eq!(
+        ask.app.as_ref().map(provenance::AppName::as_str),
+        Some("org.bardo.Mail")
+    );
     assert_eq!(ask.keep.window, Keep::Kept);
     assert_eq!(
         (ask.keep.query, ask.keep.results, ask.keep.selection),

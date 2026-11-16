@@ -42,7 +42,7 @@ fn chosen(args: &CorpusArgs, all: Vec<Case>) -> Vec<Case> {
         .collect()
 }
 
-/// What `--corpus` names to play the attack suite (`eval/injection/attacks`): AgentDojo's utility
+/// What `--corpus` names to play the attack suite (`eval/injection/attacks`): `AgentDojo`'s utility
 /// without attack, utility under attack and targeted attack success rate, in the report.
 const ATTACKS: &str = "attacks";
 
@@ -56,12 +56,14 @@ fn chosen_attacks(args: &CorpusArgs) -> Result<Vec<AttackCase>, CommandFault> {
     let all = load_attacks(&args.eval_dir.join("injection").join(ATTACKS))?;
     Ok(all
         .into_iter()
-        .filter(|a| match args.cases.is_empty() {
-            true => named,
-            false => args
-                .cases
-                .iter()
-                .any(|c| *c == a.id.0 || *c == a.clean_id().0 || *c == a.attacked_id().0),
+        .filter(|a| {
+            if args.cases.is_empty() {
+                named
+            } else {
+                args.cases
+                    .iter()
+                    .any(|c| *c == a.id.0 || *c == a.clean_id().0 || *c == a.attacked_id().0)
+            }
         })
         .collect())
 }
@@ -189,9 +191,10 @@ async fn corpus_live_planner(
     ran.unscored
         .iter()
         .for_each(|(id, why)| eprintln!("agent-live: {id} was not scored: {why}"));
-    Ok(match ran.unscored.is_empty() {
-        true => ExitCode::SUCCESS,
-        false => ExitCode::from(1),
+    Ok(if ran.unscored.is_empty() {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::from(1)
     })
 }
 
@@ -226,35 +229,31 @@ pub(super) async fn corpus(
     let mut misses = Vec::new();
     let mut outcomes = Vec::new();
     let all = load_all(&args.eval_dir)?;
-    match &args.regress {
-        Some(dir) => {
-            for pair in regress::load(dir, &all)? {
-                options.cassette = Some(pair.cassette.clone());
-                options.out = args.out.join(&pair.case.id.0);
-                let ran =
-                    run_corpus_live(binaries, std::slice::from_ref(&pair.case), &options).await?;
-                misses.extend(ran.note.missed.clone());
-                outcomes.push(ran);
-            }
-        }
-        None => {
-            let attacks = chosen_attacks(&args)?;
-            let mut cases = chosen(&args, all);
-            cases.extend(attacks.iter().flat_map(|a| {
-                let (clean, attacked) = a.cases();
-                [clean, attacked]
-            }));
-            if cases.is_empty() {
-                return Err(CommandFault::NoCase);
-            }
-            let mut ran = run_corpus_live(binaries, &cases, &options).await?;
-            if !attacks.is_empty() {
-                let scores = score_traces(&attacks, &ran.traces)?;
-                ran.report.attack = Some(AttackMetrics::from_scores(&scores));
-            }
+    if let Some(dir) = &args.regress {
+        for pair in regress::load(dir, &all)? {
+            options.cassette = Some(pair.cassette.clone());
+            options.out = args.out.join(&pair.case.id.0);
+            let ran = run_corpus_live(binaries, std::slice::from_ref(&pair.case), &options).await?;
             misses.extend(ran.note.missed.clone());
             outcomes.push(ran);
         }
+    } else {
+        let attacks = chosen_attacks(&args)?;
+        let mut cases = chosen(&args, all);
+        cases.extend(attacks.iter().flat_map(|a| {
+            let (clean, attacked) = a.cases();
+            [clean, attacked]
+        }));
+        if cases.is_empty() {
+            return Err(CommandFault::NoCase);
+        }
+        let mut ran = run_corpus_live(binaries, &cases, &options).await?;
+        if !attacks.is_empty() {
+            let scores = score_traces(&attacks, &ran.traces)?;
+            ran.report.attack = Some(AttackMetrics::from_scores(&scores));
+        }
+        misses.extend(ran.note.missed.clone());
+        outcomes.push(ran);
     }
     if outcomes.is_empty() {
         return Err(CommandFault::NothingToRun);

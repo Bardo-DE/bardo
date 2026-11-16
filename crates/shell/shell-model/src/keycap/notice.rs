@@ -15,6 +15,7 @@ pub enum NoticeChange {
 
 /// The change from `previous` (what the notification now says) to `next` (what keycap now needs
 /// the person to know).
+#[must_use]
 pub fn notice_for(previous: Option<&Attention>, next: Option<&Attention>) -> NoticeChange {
     match (previous, next) {
         (previous, Some(next)) if previous != Some(next) => NoticeChange::Show(next.clone()),
@@ -32,6 +33,7 @@ pub struct Notice {
 
 /// What the person is told about `attention`. The notification carries no action: the way out is
 /// the command line.
+#[must_use]
 pub fn notice_text(attention: &Attention) -> Notice {
     let (summary, body) = match attention {
         Attention::Failed => (

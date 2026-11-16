@@ -32,6 +32,7 @@ pub struct ColorAsking {
 
 /// The portal's `a(ddd)`: the colour as red, green and blue in 0..1, or an empty array when the
 /// person cancelled.
+#[must_use]
 pub fn color_wire(color: Option<Rgb8>) -> Vec<(f64, f64, f64)> {
     let unit = |channel: u8| f64::from(channel) / 255.0;
     color

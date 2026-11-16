@@ -6,11 +6,13 @@ use std::fmt::Write as _;
 
 /// The readable transcript of a flow: the person's words, the answer's phases, every model
 /// exchange, the sheets, what the mail app did, and what failed.
+#[must_use]
 pub fn transcript(flow: Flow, e: &Evidence, failures: &[Failure]) -> String {
     transcript_of(flow.slug(), flow.prompt(), e, failures)
 }
 
 /// [`transcript`] for anything that plays the person's words: `name` heads it.
+#[must_use]
 pub fn transcript_of(name: &str, prompt: &str, e: &Evidence, failures: &[Failure]) -> String {
     let mut out = format!("flow {name}\nperson: {prompt:?}\n");
     out.push_str("\nanswer phases:\n");

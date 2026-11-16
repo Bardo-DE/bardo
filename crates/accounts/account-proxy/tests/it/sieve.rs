@@ -1,4 +1,4 @@
-//! The ManageSieve relay against a minimal fake in the tests.
+//! The `ManageSieve` relay against a minimal fake in the tests.
 
 use crate::common;
 

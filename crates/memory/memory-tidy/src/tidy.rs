@@ -27,6 +27,7 @@ fn loose_blocks(file: &TopicFile) -> Vec<String> {
 /// it). The unstamped bullets and verbatim lines stay exactly as they were (a tidy adds no
 /// knowledge, and cannot plant a bullet for a later run to stamp). Headings and the title are
 /// free.
+#[must_use]
 pub fn tidy_accepts(current: &TopicFile, after: &TopicFile) -> bool {
     let facts = |file: &TopicFile| -> Vec<Fact> {
         file.blocks
@@ -57,6 +58,7 @@ pub fn tidy_accepts(current: &TopicFile, after: &TopicFile) -> bool {
 /// Whether `after` is an acceptable tidy of the file `before` (both as text): both parse and
 /// [`tidy_accepts`] says so. A consolidator checks its own tidies with this before it proposes
 /// them.
+#[must_use]
 pub fn tidy_is_acceptable(before: &str, after: &str) -> bool {
     match (parse_topic(before), parse_topic(after)) {
         (Ok(current), Ok(tidied)) => tidy_accepts(&current, &tidied),

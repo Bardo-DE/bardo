@@ -36,6 +36,7 @@ fn capitalised(words: &str) -> String {
 /// way the person sees them ("Copy ⌘C" on a Mac, "Copy Ctrl+C" elsewhere), and, where the
 /// Command key is the primary one, that it is sent as Super. An action the keymap leaves
 /// unbound is left out; `None` when it binds none of them.
+#[must_use]
 pub fn shortcut_hint(keymap: &Keymap) -> Option<String> {
     let platform = keymap.platform();
     let listed: Vec<String> = LISTED
@@ -55,9 +56,10 @@ pub fn shortcut_hint(keymap: &Keymap) -> Option<String> {
     if listed.is_empty() {
         return None;
     }
-    let command = match platform.is_mac_style() {
-        true => " The \u{2318} key is Super: to press \u{2318}C, send super+c.",
-        false => "",
+    let command = if platform.is_mac_style() {
+        " The \u{2318} key is Super: to press \u{2318}C, send super+c."
+    } else {
+        ""
     };
     Some(format!(
         "Shortcuts on this desktop: {}.{command}",

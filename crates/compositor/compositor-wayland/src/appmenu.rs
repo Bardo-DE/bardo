@@ -27,6 +27,7 @@ pub struct AppMenuPart {
 
 impl AppMenuPart {
     /// An empty table.
+    #[must_use]
     pub fn new() -> AppMenuPart {
         AppMenuPart::default()
     }
@@ -62,6 +63,7 @@ pub fn on_released(part: &mut AppMenuPart, window: WindowId, mapped: bool) -> Ve
 }
 
 /// The window mapped: what it declared before goes to the model.
+#[must_use]
 pub fn on_mapped(part: &AppMenuPart, window: WindowId) -> Vec<Event> {
     part.declared
         .get(&window)
@@ -77,18 +79,20 @@ pub fn on_forgotten(part: &mut AppMenuPart, window: WindowId) {
 /// The hint for `window` when the model holds it (`mapped`); otherwise nothing yet: the table
 /// keeps the address until [`on_mapped`].
 fn announce(window: WindowId, source: MenuSource, mapped: bool) -> Vec<Event> {
-    match mapped {
-        true => vec![Event::WindowHint {
+    if mapped {
+        vec![Event::WindowHint {
             window,
             hint: WindowHintChange::Menu(source),
-        }],
-        false => Vec::new(),
+        }]
+    } else {
+        Vec::new()
     }
 }
 
 /// Whether `name` is a well-formed D-Bus bus name: a unique name (`:1.42`) or a well-known one
 /// (`org.kde.Foo`), at most 255 bytes, two or more elements of letters, digits, `_` and `-`.
 /// Elements of a well-known name do not start with a digit.
+#[must_use]
 pub fn valid_bus_name(name: &str) -> bool {
     let (unique, rest) = match name.strip_prefix(':') {
         Some(rest) => (true, rest),
@@ -106,6 +110,7 @@ pub fn valid_bus_name(name: &str) -> bool {
 
 /// Whether `path` is a well-formed D-Bus object path: `/`, or `/` followed by non-empty
 /// elements of letters, digits and `_` separated by `/`, with no trailing `/`.
+#[must_use]
 pub fn valid_object_path(path: &str) -> bool {
     path.len() <= NAME_MAX_LEN
         && path.starts_with('/')

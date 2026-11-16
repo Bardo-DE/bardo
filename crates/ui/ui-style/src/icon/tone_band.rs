@@ -1,5 +1,5 @@
 //! The dark scheme's tone band for a re-coloured icon (design/29-SIZING.md section 11, fix F3,
-//! settled 2026-09-28). Under Muted or Monochrome a colour keeps its OKLCh lightness in the light
+//! settled 2026-09-28). Under Muted or Monochrome a colour keeps its `OKLCh` lightness in the light
 //! scheme; in the dark one a plate kept at the dark neutral paper's lightness (L .24-.30) read
 //! about 1:1 against the dark dock, and a raster's dark ink vanished on it. So in the dark:
 //!
@@ -29,7 +29,7 @@ pub enum Tone {
 }
 
 impl Tone {
-    /// The OKLCh lightness `l` takes in `scheme`: kept in the light, banded in the dark.
+    /// The `OKLCh` lightness `l` takes in `scheme`: kept in the light, banded in the dark.
     pub fn lightness(self, l: f64, scheme: Scheme) -> f64 {
         match (scheme, self) {
             (Scheme::Light, _) => l,

@@ -34,6 +34,7 @@ pub enum Badge {
 
 impl Badge {
     /// The glyph, when there is one.
+    #[must_use]
     pub fn mark(self) -> Option<Mark> {
         match self {
             Badge::Clear => None,
@@ -42,6 +43,7 @@ impl Badge {
     }
 
     /// How far the transfer is, while one moves.
+    #[must_use]
     pub fn share(self) -> Option<Share> {
         match self {
             Badge::Moving(_, share) => Some(share),
@@ -59,6 +61,7 @@ const CONFLICT: Mark = Mark::new(Icon::OctagonAlert, words::CONFLICT);
 const ONLINE: Mark = Mark::new(Icon::Globe, words::ONLINE);
 
 /// The badge of an item whose details are `item` (`None` before they are read).
+#[must_use]
 pub fn badge_of(item: Option<&CloudItem>) -> Badge {
     let Some(item) = item else {
         return Badge::Clear;
@@ -82,6 +85,7 @@ pub fn badge_of(item: Option<&CloudItem>) -> Badge {
 }
 
 /// The mark after a drive's name in the sidebar; none while it is up to date.
+#[must_use]
 pub fn drive_mark(state: DriveState) -> Option<Mark> {
     match state {
         DriveState::Ready => None,

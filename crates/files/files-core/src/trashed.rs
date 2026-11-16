@@ -17,6 +17,7 @@ impl TrashId {
     }
 
     /// The handle as the Trash wrote it.
+    #[must_use]
     pub fn as_os_str(&self) -> &OsStr {
         &self.0
     }
@@ -40,6 +41,7 @@ pub struct TrashedItem {
 
 impl TrashedItem {
     /// An item the Trash holds under `id`.
+    #[must_use]
     pub fn new(
         id: TrashId,
         original: ItemRef,
@@ -57,6 +59,7 @@ impl TrashedItem {
     /// The name it has inside the Trash, which is unique there: its original name, with a number
     /// added when two items of the same name were thrown away. It is the handle's file name
     /// without the `.trashinfo` ending; `None` when the handle is not shaped like that.
+    #[must_use]
     pub fn stored_name(&self) -> Option<FileName> {
         let stem = Path::new(self.id.as_os_str()).file_stem()?;
         FileName::new(stem).ok()

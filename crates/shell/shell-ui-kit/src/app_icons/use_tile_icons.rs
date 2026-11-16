@@ -12,6 +12,7 @@ use crate::look::use_active_look;
 use crate::root::use_host_scale;
 
 /// The icons of a tile `side` points across on `output`'s surface.
+#[must_use]
 pub fn use_tile_icons(output: &OutputInfo, side: LogicalPx) -> TileIcons {
     let environment = use_appearance()();
     let look = use_active_look(output);

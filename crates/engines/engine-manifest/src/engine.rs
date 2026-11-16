@@ -6,6 +6,7 @@ use engine_spec::engine_from_disk_word;
 use model_catalog::EngineKind;
 
 /// The engine a word names; `None` for any other text.
+#[must_use]
 pub fn engine_from_slug(text: &str) -> Option<EngineKind> {
     engine_from_disk_word(text)
 }

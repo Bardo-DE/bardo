@@ -51,6 +51,7 @@ const KINDS: &[(&str, &str, &str)] = &[
 
 /// The extension of the link file of a document saved as `export`: `gdoc`, `gsheet`,
 /// `gslides`, or `glink` for every other kind and for shortcuts.
+#[must_use]
 pub fn link_extension(export: Option<&str>) -> &'static str {
     export
         .and_then(|mime| KINDS.iter().find(|(m, _, _)| *m == mime))
@@ -59,6 +60,7 @@ pub fn link_extension(export: Option<&str>) -> &'static str {
 
 /// The extension a copy saved as `export` is named with; `None` for a type with no file kind
 /// here.
+#[must_use]
 pub fn copy_extension(export: &str) -> Option<&'static str> {
     KINDS
         .iter()
@@ -68,6 +70,7 @@ pub fn copy_extension(export: &str) -> Option<&'static str> {
 
 /// `name` with each `/` shown as [`SLASH`]; a name a folder cannot hold (`""`, `.`, `..`) is
 /// shown with the slash in it too, so it can.
+#[must_use]
 pub fn shown_base(name: &str) -> String {
     match name {
         "" | "." | ".." => format!("{name}{SLASH}"),
@@ -77,6 +80,7 @@ pub fn shown_base(name: &str) -> String {
 
 /// The name an item of `kind` named `name` is shown by before two of a folder are told apart:
 /// an online document's has its link file's extension.
+#[must_use]
 pub fn base_of(name: &str, kind: &ItemKind) -> String {
     let base = shown_base(name);
     match kind {
@@ -94,6 +98,7 @@ fn split(name: &str) -> Option<(&str, &str)> {
 }
 
 /// `name` numbered `n`: "Plan.docx" as "Plan 2.docx", "Notes" as "Notes 2".
+#[must_use]
 pub fn numbered(name: &str, n: u32) -> String {
     match split(name) {
         Some((stem, ext)) => format!("{stem} {n}.{ext}"),
@@ -103,6 +108,7 @@ pub fn numbered(name: &str, n: u32) -> String {
 
 /// `name` with `mark` before its extension: "Plan.docx" marked " (this computer)" is
 /// "Plan (this computer).docx".
+#[must_use]
 pub fn marked(name: &str, mark: &str) -> String {
     match split(name) {
         Some((stem, ext)) => format!("{stem}{mark}.{ext}"),
@@ -112,6 +118,7 @@ pub fn marked(name: &str, mark: &str) -> String {
 
 /// The name the drive is to have for an item of `kind` shown as `shown` and now named `drive`
 /// on the drive, when it is given the shown name `wanted` here (see the module's rules).
+#[must_use]
 pub fn drive_name(wanted: &str, shown: &str, drive: &str, kind: &ItemKind) -> String {
     if wanted == shown {
         return drive.to_owned();
@@ -153,9 +160,10 @@ pub fn assign(bases: &[String]) -> Vec<String> {
     bases
         .iter()
         .zip(first)
-        .map(|(base, first)| match first {
-            true => base.clone(),
-            false => {
+        .map(|(base, first)| {
+            if first {
+                base.clone()
+            } else {
                 let name = free(base, |candidate| taken.contains(candidate));
                 taken.insert(name.clone());
                 name

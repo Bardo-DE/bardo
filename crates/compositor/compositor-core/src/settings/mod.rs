@@ -48,6 +48,7 @@ pub struct CasementSettings {
 impl CasementSettings {
     /// The defaults: 03 §1.17's Mac defaults, a 400 ms key-repeat delay at 10 per second, the
     /// system's XKB defaults, and the Mac's first-sight scale.
+    #[must_use]
     pub fn defaults() -> CasementSettings {
         CasementSettings {
             windows: WindowSettings::defaults(),

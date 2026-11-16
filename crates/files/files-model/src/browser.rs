@@ -72,6 +72,7 @@ pub struct Browser {
 
 impl Browser {
     /// A browser at `location` with nothing loaded yet, and the effects that load it.
+    #[must_use]
     pub fn new(location: Location) -> (Browser, Vec<Effect>) {
         let effects = Browser::entering(&location);
         let browser = Browser {
@@ -107,11 +108,13 @@ impl Browser {
     }
 
     /// Where the browser is.
+    #[must_use]
     pub fn location(&self) -> &Location {
         &self.location
     }
 
     /// The folder, when the location is one on disk.
+    #[must_use]
     pub fn folder(&self) -> Option<&FolderPath> {
         if let Location::Folder(path) = &self.location {
             Some(path)
@@ -121,96 +124,115 @@ impl Browser {
     }
 
     /// What was last read of the location.
+    #[must_use]
     pub fn listing(&self) -> &Listing {
         &self.listing
     }
 
     /// The rows to show, in order: hidden entries left out unless shown, sorted.
+    #[must_use]
     pub fn rows(&self) -> &[Entry] {
         &self.rows
     }
 
     /// What is selected.
+    #[must_use]
     pub fn selection(&self) -> &Selection {
         &self.selection
     }
 
     /// The row the keyboard is on.
+    #[must_use]
     pub fn cursor(&self) -> Option<&files_core::FileName> {
         self.selection.cursor()
     }
 
     /// The rename in progress, if any.
+    #[must_use]
     pub fn rename(&self) -> &Rename {
         &self.rename
     }
 
     /// How this folder is shown.
+    #[must_use]
     pub fn prefs(&self) -> FolderPrefs {
         self.prefs
     }
 
     /// Whether hidden files are shown.
+    #[must_use]
     pub fn show_hidden(&self) -> bool {
         self.show_hidden
     }
 
     /// How the window behaves where the person has a choice.
+    #[must_use]
     pub fn behaviour(&self) -> Behaviour {
         self.behaviour
     }
 
     /// The letters typed to jump to a name, lower-cased; empty before the first.
+    #[must_use]
     pub fn typed(&self) -> &str {
         self.typeselect.prefix()
     }
 
     /// The change being made now, if any.
+    #[must_use]
     pub fn work(&self) -> &Work {
         &self.work
     }
 
     /// What the window is waiting for an answer to.
+    #[must_use]
     pub fn question(&self) -> &Question {
         &self.question
     }
 
     /// What undoing would take back now, if anything.
+    #[must_use]
     pub fn undo_summary(&self) -> Option<&Summary> {
         self.undo.as_ref()
     }
 
     /// Whether Undo works.
+    #[must_use]
     pub fn can_undo(&self) -> bool {
         self.undo.is_some()
     }
 
     /// Whether Paste works: something was copied and this is a folder.
+    #[must_use]
     pub fn can_paste(&self) -> bool {
         self.folder().is_some() && !self.clipboard.is_empty()
     }
 
     /// What was copied, for a paste.
+    #[must_use]
     pub fn clipboard(&self) -> &[ItemRef] {
         &self.clipboard
     }
 
     /// The places behind and ahead.
+    #[must_use]
     pub fn history(&self) -> &History {
         &self.history
     }
 
     /// Whether Back works.
+    #[must_use]
     pub fn can_go_back(&self) -> bool {
         self.history.has_back()
     }
 
     /// Whether Forward works.
+    #[must_use]
     pub fn can_go_forward(&self) -> bool {
         self.history.has_forward()
     }
 
     /// Whether Enclosing Folder works.
+    #[must_use]
     pub fn can_go_enclosing(&self) -> bool {
         self.enclosing().is_some()
     }

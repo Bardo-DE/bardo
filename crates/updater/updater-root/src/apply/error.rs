@@ -95,6 +95,7 @@ impl ApplyError {
     }
 
     /// The exit code for this failure.
+    #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self {
             Self::NoKey => ExitCode::NoKey,

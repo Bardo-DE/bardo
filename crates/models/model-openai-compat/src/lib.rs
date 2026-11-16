@@ -1,4 +1,4 @@
-//! The chat-completions wire that llama-server, vLLM, LiteLLM and OpenRouter share.
+//! The chat-completions wire that llama-server, vLLM, `LiteLLM` and `OpenRouter` share.
 //!
 //! `OpenAiCodec` is a `model-wire` codec and pure: a `TurnRequest` becomes an `Exchange`, and the
 //! server's SSE frames become `TurnEvent`s. the `Server` trait holds what differs between

@@ -24,6 +24,7 @@ impl GatedFrame {
     }
 
     /// The session and the frame, to be served.
+    #[must_use]
     pub fn into_parts(self) -> (SessionRef, Frame) {
         (self.session, self.frame)
     }

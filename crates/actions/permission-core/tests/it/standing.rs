@@ -225,13 +225,13 @@ fn grants_round_trip_through_their_text_and_ids_are_checked() {
     let text = encode_standing(std::slice::from_ref(&g)).expect("encode");
     assert_eq!(decode_standing(&text), Ok(vec![g.clone()]));
     assert_eq!(decode_standing(""), Ok(vec![]));
-    assert!(decode_standing("{").is_err());
-    assert!(StandingGrantId::parse("sg-123").is_err());
-    assert!(StandingGrantId::parse(g.id.as_str()).is_ok());
+    decode_standing("{").unwrap_err();
+    StandingGrantId::parse("sg-123").unwrap_err();
+    StandingGrantId::parse(g.id.as_str()).unwrap();
     // A hand-edited file cannot smuggle a shell prefix or a relative path past the types.
     assert!(text.contains("cargo test"));
-    assert!(decode_standing(&text.replace("cargo test", "cargo test; id")).is_err());
-    assert!(decode_standing(&text.replace("/w/p", "w/p")).is_err());
+    decode_standing(&text.replace("cargo test", "cargo test; id")).unwrap_err();
+    decode_standing(&text.replace("/w/p", "w/p")).unwrap_err();
 }
 
 #[test]

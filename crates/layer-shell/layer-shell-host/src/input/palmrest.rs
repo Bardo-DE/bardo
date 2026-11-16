@@ -383,7 +383,7 @@ fn read_up_to(fd: impl AsFd, datagrams: usize) -> (Vec<ToHost>, Stream) {
     let mut messages = Vec::new();
     let mut buf = vec![0u8; MAX_PACKET];
     for _ in 0..datagrams {
-        match recv(fd.as_fd(), &mut buf[..], RecvFlags::DONTWAIT) {
+        match recv(fd.as_fd(), &mut *buf, RecvFlags::DONTWAIT) {
             Ok((_, 0)) => return (messages, Stream::Closed),
             Ok((len, full)) if full <= len => {
                 let Ok(message) = decode::<ToHost>(&buf[..len]) else {

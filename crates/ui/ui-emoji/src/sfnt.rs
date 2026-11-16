@@ -1,6 +1,7 @@
 //! Reading the table directory of an sfnt font file: which tables it lists, nothing more.
 
 /// Whether the sfnt (or collection member `index`) lists a table `tag`.
+#[must_use]
 pub fn table_listed(data: &[u8], index: u32, tag: [u8; 4]) -> bool {
     let be32 = |at: usize| -> Option<usize> {
         let bytes = data.get(at..at + 4)?;

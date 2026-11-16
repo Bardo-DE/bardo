@@ -124,12 +124,11 @@ impl Clipboard {
             .as_ref()
             .map(|offer| receive_text(offer, self.conn.as_ref()));
         self.offer = offer;
-        self.pending_read = match pipe {
-            Some(Ok(pipe)) => Some(PendingRead { pipe, generation }),
-            Some(Err(_)) | None => {
-                self.selection.publish(generation, None);
-                None
-            }
+        self.pending_read = if let Some(Ok(pipe)) = pipe {
+            Some(PendingRead { pipe, generation })
+        } else {
+            self.selection.publish(generation, None);
+            None
         };
     }
 

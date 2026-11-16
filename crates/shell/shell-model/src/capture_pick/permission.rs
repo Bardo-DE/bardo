@@ -48,6 +48,7 @@ pub struct PermissionAsk {
 impl PermissionAsk {
     /// The question a call carries: every text on one line with control and direction marks
     /// dropped and cut to its ceiling, and the buttons' own words when the call named none.
+    #[must_use]
     pub fn from_wire(
         app_label: &str,
         title: &str,
@@ -114,6 +115,7 @@ pub enum PermissionOutcome {
 impl PermissionOutcome {
     /// What the compositor is told: the yes button allows, the no button refuses and is kept,
     /// and a sheet that went away is dismissed, which is never kept.
+    #[must_use]
     pub fn answer(self) -> Answer {
         match self {
             PermissionOutcome::Grant => Answer::Allow,
@@ -123,6 +125,7 @@ impl PermissionOutcome {
     }
 
     /// The number `AskPermission` returns: 0 granted, 1 denied, 2 closed without answering.
+    #[must_use]
     pub fn wire(self) -> u32 {
         match self {
             PermissionOutcome::Grant => 0,

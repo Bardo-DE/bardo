@@ -63,6 +63,7 @@ impl VoicedConfig {
     }
 
     /// The role a bus name plays, ignoring `App` (which a route decides).
+    #[must_use]
     pub fn role_of(&self, name: &AppName) -> Option<VoiceRole> {
         self.roles
             .iter()

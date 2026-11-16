@@ -48,9 +48,11 @@ pub enum CommitStep {
 }
 
 /// The step a commit takes: the whole life of a toplevel, one row per case.
+///
 /// `configured`: whether the initial configure has gone out. `buffer`: the logical size of the
 /// buffer a commit left attached (the window geometry when the client set one), none when nothing
 /// is attached.
+#[must_use]
 pub fn commit_step(phase: Phase, configured: bool, buffer: Option<LogicalSize>) -> CommitStep {
     match (configured, phase, buffer) {
         // smithay resets a toplevel's role (the initial configure included) in the very commit

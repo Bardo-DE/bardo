@@ -26,14 +26,17 @@ use provenance::{
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
+#[must_use]
 pub fn space() -> SpaceId {
     SpaceId::parse("desktop").unwrap()
 }
 
+#[must_use]
 pub fn app() -> AppName {
     AppName::parse("org.mozilla.firefox").unwrap()
 }
 
+#[must_use]
 pub fn frame(seq: u64) -> Frame {
     Frame {
         seq: FrameSeq(seq),
@@ -55,6 +58,7 @@ pub fn frame(seq: u64) -> Frame {
     }
 }
 
+#[must_use]
 pub fn window() -> ToplevelInfo {
     ToplevelInfo {
         ident: ToplevelIdent::parse("w1").unwrap(),
@@ -82,6 +86,7 @@ pub fn reply(action: CuaAction<WindowSpace>) -> Result<CuaStepReply, CuaModelErr
     Ok(CuaStepReply::new(vec![action]))
 }
 
+#[must_use]
 pub fn click() -> CuaAction<WindowSpace> {
     CuaAction::Click {
         at: Target::Point(Point::new(Coord(10), Coord(10))),
@@ -92,6 +97,7 @@ pub fn click() -> CuaAction<WindowSpace> {
 }
 
 /// Ctrl+A: an action that sends keys (the fake keymap has `a`).
+#[must_use]
 pub fn ctrl_a() -> CuaAction<WindowSpace> {
     CuaAction::Key {
         chord: serde_json::from_str(r#"{"mods":["ctrl"],"key":{"Character":"a"}}"#)
@@ -100,6 +106,7 @@ pub fn ctrl_a() -> CuaAction<WindowSpace> {
     }
 }
 
+#[must_use]
 pub fn finish() -> CuaAction<WindowSpace> {
     CuaAction::Finish {
         outcome: FinishOutcome::Done,
@@ -108,6 +115,7 @@ pub fn finish() -> CuaAction<WindowSpace> {
     }
 }
 
+#[must_use]
 pub fn user_goal() -> Labelled<String> {
     Labelled::new(
         "sign in".to_owned(),
@@ -150,11 +158,13 @@ pub fn world_over(
 }
 
 /// The screen rules the daemon ships, parsed from the same file.
+#[must_use]
 pub fn rules() -> Rules {
     toml::from_str(include_str!("../../dist/screen-rules.toml"))
         .expect("the shipped screen rules read")
 }
 
+#[must_use]
 pub fn task() -> CuaTask {
     CuaTask {
         app: app(),
@@ -178,6 +188,7 @@ pub fn task() -> CuaTask {
     }
 }
 
+#[must_use]
 pub fn started(kind: BackendKind) -> Run {
     let env = RunEnv::new(&CuaConfig::default(), BackendCaps::of(kind), rules());
     Run::start(RunId::parse("r-1").unwrap(), task(), env, Stamp(0)).0

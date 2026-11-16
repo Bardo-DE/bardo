@@ -12,6 +12,7 @@ const SHIPPED: &str = include_str!("../../dist/voiced-callers.toml");
 
 /// The table the package ships. A shipped file that does not read is an empty table: nobody is
 /// identified, which is the strict way to fail.
+#[must_use]
 pub fn shipped() -> CallerTable {
     table_from_toml(SHIPPED).unwrap_or_default()
 }

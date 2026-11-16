@@ -41,6 +41,7 @@ impl UiOnlyReason {
     }
 
     /// The reason as written.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -81,7 +82,7 @@ mod tests {
     #[test]
     fn a_stored_empty_reason_is_refused_on_load() {
         let loaded: Result<UiOnlyReason, _> = serde_json::from_str("\"  \"");
-        assert!(loaded.is_err());
+        loaded.unwrap_err();
         let kept: UiOnlyReason = serde_json::from_str("\"window chrome\"").unwrap();
         assert_eq!(serde_json::to_string(&kept).unwrap(), "\"window chrome\"");
     }

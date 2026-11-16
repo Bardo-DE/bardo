@@ -29,11 +29,13 @@ impl IconUrl {
 
     /// A PNG's bytes as a `data:image/png;base64,…` URL (a status item's `IconPixmap`, once the
     /// caller has encoded it).
+    #[must_use]
     pub fn png(bytes: &[u8]) -> Self {
         IconUrl(format!("data:image/png;base64,{}", base64::encode(bytes)))
     }
 
     /// An SVG document as a `data:image/svg+xml,…` URL, percent-encoded (spike S7's form).
+    #[must_use]
     pub fn svg(document: &str) -> Self {
         IconUrl(format!(
             "data:image/svg+xml,{}",
@@ -53,6 +55,7 @@ impl IconUrl {
     }
 
     /// The URL as written into the page.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

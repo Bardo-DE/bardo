@@ -245,7 +245,7 @@ mod tests {
         assert_eq!(server.wait(&state()).await, Err(LoopbackFault::WrongState));
         let page = client.await.expect("client");
         assert!(!page.contains("stolen"));
-        assert!(TcpStream::connect(("127.0.0.1", port)).await.is_err());
+        TcpStream::connect(("127.0.0.1", port)).await.unwrap_err();
     }
 
     #[tokio::test]
@@ -288,7 +288,7 @@ mod tests {
         assert!(page.contains("Signed in"));
         let code = wait.await.expect("join").expect("code");
         assert_eq!(code.0.expose(), "abc");
-        assert!(TcpStream::connect(("127.0.0.1", port)).await.is_err());
+        TcpStream::connect(("127.0.0.1", port)).await.unwrap_err();
     }
 
     #[tokio::test]
@@ -301,7 +301,7 @@ mod tests {
             probe(port, "GET /?code=x&state=wrong HTTP/1.1\r\n\r\n").await;
         }
         assert_eq!(wait.await.expect("join"), Err(LoopbackFault::WrongState));
-        assert!(TcpStream::connect(("127.0.0.1", port)).await.is_err());
+        TcpStream::connect(("127.0.0.1", port)).await.unwrap_err();
     }
 
     #[tokio::test]
@@ -317,7 +317,7 @@ mod tests {
         probe(port, "GET /?state=wrong HTTP/1.1\r\n\r\n").await;
         wait.abort();
         let _ = wait.await;
-        assert!(TcpStream::connect(("127.0.0.1", port)).await.is_err());
+        TcpStream::connect(("127.0.0.1", port)).await.unwrap_err();
     }
 
     #[tokio::test]

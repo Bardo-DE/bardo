@@ -42,11 +42,13 @@ pub struct AppNames {
 
 impl AppNames {
     /// Looks nowhere: every app is shown by its id.
+    #[must_use]
     pub fn none() -> Self {
         Self::default()
     }
 
     /// Looks in `dirs` (data directories, earlier wins), preferring `locales`.
+    #[must_use]
     pub fn new(dirs: Vec<PathBuf>, locales: Vec<String>) -> Self {
         Self {
             dirs: dirs.into(),
@@ -58,6 +60,7 @@ impl AppNames {
     /// never longer than [`MAX_LABEL_CHARS`], never with control or direction characters.
     ///
     /// Reads at most one small regular file per data directory; it does not block on a FIFO.
+    #[must_use]
     pub fn label(&self, app_id: &str) -> String {
         let id = app_id.strip_suffix(".desktop").unwrap_or(app_id).trim();
         let named = self
@@ -297,6 +300,7 @@ pub enum Layout {
 
 /// `text` without hidden or reordering characters, trimmed, and cut to `max_chars` with an
 /// ellipsis. For text an app wrote and the shell will show.
+#[must_use]
 pub fn tidy_to(text: &str, max_chars: usize, layout: Layout) -> String {
     let keep = |c: char| layout == Layout::Paragraphs && c == '\n';
     let clean: String = text
@@ -313,6 +317,7 @@ pub fn tidy_to(text: &str, max_chars: usize, layout: Layout) -> String {
 }
 
 /// An app's name on one line, cut to [`MAX_LABEL_CHARS`].
+#[must_use]
 pub fn tidy(text: &str) -> String {
     tidy_to(text, MAX_LABEL_CHARS, Layout::OneLine)
 }

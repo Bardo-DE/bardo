@@ -47,6 +47,7 @@ pub enum SheetEffect {
 }
 
 /// `sheets` after `event`.
+#[must_use]
 pub fn step(sheets: Sheets, event: SheetEvent) -> (Sheets, Vec<SheetEffect>) {
     match event {
         SheetEvent::Asked(serial, request) => asked(sheets, serial, *request),

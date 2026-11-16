@@ -75,7 +75,7 @@ fn Page() -> Element {
             if let Some(anchor) = anchor {
                 Sheet {
                     label: "Sheet",
-                    onclose: |_| {},
+                    onclose: |()| {},
                     attach: Attach::Within(anchor),
                     width: WIDTH.with(Cell::get),
                     div { style: "height:900px", "content" }

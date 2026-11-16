@@ -50,6 +50,7 @@ pub struct InhibitHub {
 
 impl InhibitHub {
     /// A hub holding nothing, telling `effect` of every change.
+    #[must_use]
     pub fn new(effect: Box<dyn InhibitEffect>) -> Self {
         Self {
             book: InhibitBook::new(),
@@ -116,11 +117,13 @@ impl InhibitHub {
     }
 
     /// The union of what is held.
+    #[must_use]
     pub fn active(&self) -> InhibitFlags {
         self.book.active()
     }
 
     /// How many requests are held.
+    #[must_use]
     pub fn held(&self) -> usize {
         self.book.len()
     }
@@ -157,6 +160,7 @@ impl InhibitHub {
     }
 
     /// A monitor's state.
+    #[must_use]
     pub fn monitor(&self, session: &str) -> Option<MonitorState> {
         self.monitors.get(session).copied()
     }

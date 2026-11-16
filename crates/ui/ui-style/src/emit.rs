@@ -11,16 +11,19 @@
 use crate::tokens::name::VarName;
 
 /// A custom property declaration: `--t-quick:150ms;`.
+#[must_use]
 pub fn declaration(var: VarName, value: &str) -> String {
     format!("{}:{value};", var.as_str())
 }
 
 /// A rule: `selector{declarations}`.
+#[must_use]
 pub fn rule(selector: &str, declarations: &[String]) -> String {
     format!("{selector}{{{}}}\n", declarations.concat())
 }
 
 /// An attribute selector in the form Blitz matches: `[*|data-theme=dark]`.
+#[must_use]
 pub fn attr_selector(attribute: &str, value: &str) -> String {
     format!("[*|{attribute}={value}]")
 }
@@ -32,6 +35,7 @@ pub(crate) fn presence_selector(attribute: &str) -> String {
 
 /// A plain (non-custom) declaration, `animation:gulp …;`, for the few rules the generators
 /// write that are not token blocks.
+#[must_use]
 pub fn property(name: &str, value: &str) -> String {
     format!("{name}:{value};")
 }

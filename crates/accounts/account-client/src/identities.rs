@@ -44,6 +44,7 @@ pub struct Picked {
 
 impl Picked {
     /// The identity `id`, at `address`, of `provider`.
+    #[must_use]
     pub fn new(id: IdentityId, address: IdentityAddress, provider: ProviderId) -> Self {
         Self {
             id,

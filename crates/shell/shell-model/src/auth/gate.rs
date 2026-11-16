@@ -52,6 +52,7 @@ pub enum GateOut {
 }
 
 /// `checks` after `input`.
+#[must_use]
 pub fn step(checks: Checks, input: GateIn) -> (Checks, Vec<GateOut>) {
     match (checks.checking, input) {
         (false, GateIn::Submit) => (

@@ -27,6 +27,7 @@ impl SwipeFingers {
     /// assert!(!SwipeFingers::Four.matches(3));
     /// assert!(!SwipeFingers::Off.matches(0));
     /// ```
+    #[must_use]
     pub fn matches(self, fingers: u8) -> bool {
         match self {
             SwipeFingers::Off => false,
@@ -50,6 +51,7 @@ pub struct GestureSettings {
 
 impl GestureSettings {
     /// Settings with these fields.
+    #[must_use]
     pub fn new(
         spaces: SwipeFingers,
         mission_control: SwipeFingers,
@@ -63,6 +65,7 @@ impl GestureSettings {
     }
 
     /// The Mac's defaults: four fingers for both, and the Spaces follow the fingers.
+    #[must_use]
     pub fn defaults() -> GestureSettings {
         GestureSettings::new(SwipeFingers::Four, SwipeFingers::Four, true)
     }

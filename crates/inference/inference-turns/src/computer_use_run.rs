@@ -55,6 +55,7 @@ pub struct StepJob<'a, P> {
 
 impl CuaRun {
     /// A run for this goal, with nothing done.
+    #[must_use]
     pub fn begin(begin: CuaBegin) -> Self {
         Self {
             begin,

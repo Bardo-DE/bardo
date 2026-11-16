@@ -58,6 +58,7 @@ pub enum WorkspaceEvent {
 }
 
 /// `workspaces` after `event`. Activating an unknown key changes nothing.
+#[must_use]
 pub fn step(workspaces: Workspaces, event: WorkspaceEvent) -> Workspaces {
     match event {
         WorkspaceEvent::Replaced(all) => all,
@@ -101,6 +102,7 @@ impl Workspaces {
     /// The workspace one `step` away from the active one, in the first group that has an active
     /// workspace (the main display's, in the compositor's order). There is no wrap-around: at
     /// the first or last workspace this is `None`, as keyboard shortcuts stop there.
+    #[must_use]
     pub fn neighbour(&self, step: Step) -> Option<WorkspaceKey> {
         let group = self.main_group()?;
         let at = group.active_index()?;
@@ -113,6 +115,7 @@ impl Workspaces {
 
     /// The group an index or a step counts in: the first with an active workspace (the main
     /// display's, in the compositor's order), else the first.
+    #[must_use]
     pub fn main_group(&self) -> Option<&WorkspaceGroup> {
         self.groups
             .iter()
@@ -121,11 +124,13 @@ impl Workspaces {
     }
 
     /// The group showing on `output`, if any.
+    #[must_use]
     pub fn group_on(&self, output: &OutputName) -> Option<&WorkspaceGroup> {
         self.groups.iter().find(|g| g.outputs.contains(output))
     }
 
     /// The active workspace of the group on `output`.
+    #[must_use]
     pub fn active_on(&self, output: &OutputName) -> Option<&Workspace> {
         self.group_on(output)?.active()
     }
@@ -133,11 +138,13 @@ impl Workspaces {
 
 impl WorkspaceGroup {
     /// The position of the active workspace in this group.
+    #[must_use]
     pub fn active_index(&self) -> Option<usize> {
         self.workspaces.iter().position(|w| w.active)
     }
 
     /// The active workspace of this group.
+    #[must_use]
     pub fn active(&self) -> Option<&Workspace> {
         self.workspaces.get(self.active_index()?)
     }

@@ -28,6 +28,7 @@ impl Corner {
 
     // SCHEMA: the corner keys are `hot_corners.<corner>` and hold a list of tables.
     /// The key that holds the corner's bindings.
+    #[must_use]
     pub fn path(self) -> &'static str {
         match self {
             Corner::TopLeft => "hot_corners.top_left",
@@ -38,6 +39,7 @@ impl Corner {
     }
 
     /// The corner whose bindings the key `path` holds.
+    #[must_use]
     pub fn of_path(path: &str) -> Option<Corner> {
         Corner::ALL.into_iter().find(|corner| corner.path() == path)
     }

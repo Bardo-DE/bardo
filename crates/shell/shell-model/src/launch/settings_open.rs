@@ -16,17 +16,20 @@ pub struct SettingsOpen {
 
 impl SettingsOpen {
     /// A request with no token.
+    #[must_use]
     pub fn at(link: SettingsTarget) -> SettingsOpen {
         SettingsOpen { link, token: None }
     }
 
     /// This request carrying `token`.
+    #[must_use]
     pub fn with_token(self, token: Option<String>) -> SettingsOpen {
         SettingsOpen { token, ..self }
     }
 }
 
 /// The picker for the assistant's model: opened when a turn needs a model and none is set.
+#[must_use]
 pub fn assistant_model() -> SettingsTarget {
     page("assistant-model")
 }

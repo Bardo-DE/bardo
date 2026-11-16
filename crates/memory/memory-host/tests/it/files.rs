@@ -30,5 +30,5 @@ fn config_files_are_written_whole_private_and_read_without_mistaking_damage_for_
     // A directory where the file should be is a read error, not an empty file.
     let odd = dir.path().join("odd");
     std::fs::create_dir(&odd).expect("dir");
-    assert!(read_config(&odd).is_err());
+    read_config(&odd).unwrap_err();
 }

@@ -20,6 +20,7 @@ pub struct MemoryLog {
 
 impl MemoryLog {
     /// An empty log for `space` on `replica`, whose bodies are digested with `digest_key`.
+    #[must_use]
     pub fn new(space: &SpaceId, replica: ReplicaId, digest_key: SubKey) -> Self {
         Self {
             digest_key,

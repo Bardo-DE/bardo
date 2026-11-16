@@ -86,6 +86,7 @@ pub enum Standing {
 }
 
 /// Compares the list with the agents directory. Reads only.
+#[must_use]
 pub fn standing(dir: &AgentsDir, snapshot: &Snapshot, id: &str) -> Standing {
     let (Some(listing), Ok(slug)) = (snapshot.find(id), Slug::parse(id)) else {
         return Standing::Unknown;
@@ -121,6 +122,7 @@ pub struct Offer {
 
 /// Every agent in the list, in the list's order, with whether its offered version is installed.
 /// Reads only.
+#[must_use]
 pub fn offers(dir: &AgentsDir, snapshot: &Snapshot) -> Vec<Offer> {
     snapshot
         .agents

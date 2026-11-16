@@ -13,6 +13,7 @@ pub struct Days(pub u16);
 /// The events still to come or under way at `now`, starting before the end of the day `ahead`
 /// days after today (in `zone`), in start order, all-day events first on their day, at most
 /// `max`. An all-day event counts as under way for the whole of its days in `zone`.
+#[must_use]
 pub fn up_next(
     events: &[CalEvent],
     now: Timestamp,
@@ -86,8 +87,7 @@ mod tests {
             date(2026, 9, d)
                 .at(h, 0, 0, 0)
                 .to_zoned(utc.clone())
-                .map(|z| z.timestamp())
-                .unwrap_or_else(|e| panic!("{e}"))
+                .map_or_else(|e| panic!("{e}"), |z| z.timestamp())
         };
         let timed = |uid, d, from, to| {
             event(

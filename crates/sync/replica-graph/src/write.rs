@@ -44,9 +44,10 @@ impl<H: Http> GraphReplica<H> {
             }
         };
         let bytes = item.content.0;
-        let response = match bytes.len() <= self.uploads.simple_max || bytes.is_empty() {
-            true => self.put_simple(&target, guard.as_deref(), bytes).await?,
-            false => self.put_session(&target, guard.as_deref(), bytes).await?,
+        let response = if bytes.len() <= self.uploads.simple_max || bytes.is_empty() {
+            self.put_simple(&target, guard.as_deref(), bytes).await?
+        } else {
+            self.put_session(&target, guard.as_deref(), bytes).await?
         };
         self.settle(response, &target, &base).await
     }

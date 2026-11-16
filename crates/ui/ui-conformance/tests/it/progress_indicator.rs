@@ -1,4 +1,4 @@
-//! ProgressIndicator on a real Blitz document, on the virtual clock (design/30 section 1.3 and
+//! `ProgressIndicator` on a real Blitz document, on the virtual clock (design/30 section 1.3 and
 //! 2.9): a determinate bar moves linearly over `--t-move` to a new value and stands at its value on
 //! mount (nothing sweeps in), a running spinner steps at once and only while the operation runs,
 //! and a busy button shows one in its leading slot and takes no press.

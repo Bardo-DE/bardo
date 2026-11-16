@@ -19,6 +19,7 @@ pub enum JobRefusal {
 
 impl JobRefusal {
     /// The sentence the person (or the giving planner) is told.
+    #[must_use]
     pub fn plain(&self) -> String {
         match self {
             JobRefusal::NoSuchHelper => "There is no helper by that name.".to_owned(),

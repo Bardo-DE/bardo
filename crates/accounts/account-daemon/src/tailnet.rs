@@ -42,6 +42,7 @@ pub struct TailnetWatch {
 impl TailnetWatch {
     /// The usual timing, over `api`: a look every 30 seconds behind the stream, a new try every
     /// 10 seconds without one, and one signal a second at most.
+    #[must_use]
     pub fn new(api: LocalApi) -> Self {
         Self {
             api,
@@ -52,6 +53,7 @@ impl TailnetWatch {
     }
 
     /// This computer's own Tailscale, at the path it uses.
+    #[must_use]
     pub fn system() -> Self {
         Self::new(LocalApi::system())
     }

@@ -77,7 +77,7 @@ impl Scratch {
         Scratch(dir)
     }
 
-    /// Nothing reaches the real logind, UPower, session bus, compositor or files.
+    /// Nothing reaches the real logind, `UPower`, session bus, compositor or files.
     fn env(&self) -> shell_services::env::Env {
         shell_services::env::Env::isolated(&self.0)
     }

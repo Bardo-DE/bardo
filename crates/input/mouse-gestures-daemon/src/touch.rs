@@ -1,4 +1,4 @@
-//! One touch as the mouse reports it: 12-bit coordinates, a 4-bit id, an MTTouch state; and
+//! One touch as the mouse reports it: 12-bit coordinates, a 4-bit id, an `MTTouch` state; and
 //! the grid `Point` the gesture core works in.
 //!
 // TODO(untested): `wrap_delta` takes every delta on the 12-bit circle, as the Magic Mouse's
@@ -30,11 +30,13 @@ pub struct Point {
 }
 
 impl Point {
+    #[must_use]
     pub const fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
 
     /// The wrap-safe displacement from `from` to `self`.
+    #[must_use]
     pub fn delta_from(self, from: Point) -> Point {
         Point::new(wrap_delta(self.x, from.x), wrap_delta(self.y, from.y))
     }
@@ -49,12 +51,13 @@ impl Point {
     }
 
     /// Euclidean length, for "moved less than N units" rules.
+    #[must_use]
     pub fn length(self) -> f64 {
         f64::from(self.x).hypot(f64::from(self.y))
     }
 }
 
-/// The MTTouch state carried in the high nibble of the touch's last byte (12.3.2).
+/// The `MTTouch` state carried in the high nibble of the touch's last byte (12.3.2).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TouchState {
     NotTracking,
@@ -71,6 +74,7 @@ pub enum TouchState {
 
 impl TouchState {
     /// The state for a raw nibble (only the low four bits are read).
+    #[must_use]
     pub fn from_nibble(n: u8) -> Self {
         match n & 0x0f {
             0 => Self::NotTracking,
@@ -86,6 +90,7 @@ impl TouchState {
     }
 
     /// The nibble this state came from.
+    #[must_use]
     pub fn nibble(self) -> u8 {
         match self {
             Self::NotTracking => 0,
@@ -115,6 +120,7 @@ pub struct RawTouch {
 }
 
 /// Sign-extends the low 12 bits of `raw`.
+#[must_use]
 pub fn sign_extend_12(raw: u16) -> i32 {
     let v = i32::from(raw & 0x0fff);
     if v >= 0x800 { v - COORD_SPAN } else { v }
@@ -124,6 +130,7 @@ pub fn sign_extend_12(raw: u16) -> i32 {
 ///
 /// For the kernel reading this is plain subtraction (the surface never spans half the circle);
 /// for the unsigned reading it undoes the wrap. Both give the same answer, by construction.
+#[must_use]
 pub fn wrap_delta(new: i32, old: i32) -> i32 {
     let d = new - old;
     if d > COORD_SPAN / 2 {

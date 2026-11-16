@@ -60,19 +60,20 @@ impl OpenSheets {
     /// the method answers the bus's own error and no sheet or Request object is made.
     pub fn claim(&self, app: &AppId, kind: SheetKind) -> Result<SheetClaim, fdo::Error> {
         let key = (app.clone(), kind);
-        match self
+        if self
             .0
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .insert(key.clone())
         {
-            true => Ok(SheetClaim {
+            Ok(SheetClaim {
                 open: self.clone(),
                 key,
-            }),
-            false => Err(fdo::Error::LimitsExceeded(
+            })
+        } else {
+            Err(fdo::Error::LimitsExceeded(
                 "this app already has a sheet of this kind open".to_owned(),
-            )),
+            ))
         }
     }
 }
@@ -99,21 +100,20 @@ impl RequestServer for RequestObject {
 
     /// Closes the sheet; no `Response` follows. Only the caller that started it may.
     async fn close(&self, Call { header, .. }: Call<'_>) -> fdo::Result<()> {
-        match header.sender().map(UniqueName::as_str) == Some(self.owner.as_str()) {
-            true => {
-                if let Some(task) = self
-                    .task
-                    .lock()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .take()
-                {
-                    task.abort();
-                }
-                Ok(())
+        if header.sender().map(UniqueName::as_str) == Some(self.owner.as_str()) {
+            if let Some(task) = self
+                .task
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .take()
+            {
+                task.abort();
             }
-            false => Err(fdo::Error::AccessDenied(
+            Ok(())
+        } else {
+            Err(fdo::Error::AccessDenied(
                 "only the caller that opened the sheet may close it".to_owned(),
-            )),
+            ))
         }
     }
 }
@@ -130,6 +130,7 @@ pub struct RequestObjects {
 
 impl RequestObjects {
     /// The Request objects of `service`'s daemon, served on `connection`.
+    #[must_use]
     pub fn new(connection: Connection, service: ServiceRoot) -> Self {
         Self {
             connection,
@@ -286,10 +287,7 @@ async fn departed(mut owners: NameOwnerChangedStream) {
         let next = std::future::poll_fn(|cx| Pin::new(&mut owners).poll_next(cx)).await;
         match next {
             Some(signal) => {
-                let gone = signal
-                    .args()
-                    .map(|args| args.new_owner().is_none())
-                    .unwrap_or(false);
+                let gone = signal.args().is_ok_and(|args| args.new_owner().is_none());
                 if gone {
                     return;
                 }

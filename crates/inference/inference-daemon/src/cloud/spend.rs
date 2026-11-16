@@ -148,6 +148,7 @@ pub struct Ledger {
 
 impl Ledger {
     /// A ledger that remembers nothing across a restart.
+    #[must_use]
     pub fn in_memory() -> Self {
         Self::default()
     }
@@ -163,21 +164,21 @@ impl Ledger {
             Err(ReadError::NotFound { .. }) => Ok(Document::default()),
             Err(_) => Err(()),
         };
-        let (document, lost) = match read {
-            Ok(document) => (document, false),
-            Err(()) => {
-                set_aside(&file, now);
-                (Document::default(), true)
-            }
+        let (document, lost) = if let Ok(document) = read {
+            (document, false)
+        } else {
+            set_aside(&file, now);
+            (Document::default(), true)
         };
         // A loss from an earlier run counts while its period lasts.
-        let unknown = match lost {
-            true => Some(Unknown::at(now)),
-            false => document.unknown.filter(|u| {
+        let unknown = if lost {
+            Some(Unknown::at(now))
+        } else {
+            document.unknown.filter(|u| {
                 [Period::Daily, Period::Monthly]
                     .into_iter()
                     .any(|period| u.covers(period, now))
-            }),
+            })
         };
         let rows = document
             .rows
@@ -276,10 +277,10 @@ impl Ledger {
         let rows = self.rows.lock().unwrap_or_else(PoisonError::into_inner);
         line.caps_for(app, account)
             .iter()
-            .map(|cap| match self.is_unknown(cap.period, now) {
-                // What was spent this period is lost: a cap cannot be told to hold, so it stops.
-                true => SpendVerdict::Stop,
-                false => {
+            .map(|cap| {
+                if self.is_unknown(cap.period, now) {
+                    SpendVerdict::Stop
+                } else {
                     let key = Key {
                         scope: cap.scope.clone(),
                         period: cap.period,
@@ -342,6 +343,7 @@ pub enum UsageValue {
 
 /// An amount as the `Usage` dictionary and the settings rows write it: its decimal digits, a
 /// space and its ISO 4217 code (`0.0095 USD`).
+#[must_use]
 pub fn written(money: Money) -> String {
     format!("{} {}", money.amount.normalize(), money.currency.code())
 }

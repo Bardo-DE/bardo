@@ -38,6 +38,7 @@ impl ScreencopyPart {
     }
 
     /// How many copies `client` has waiting for an answer.
+    #[must_use]
     pub fn held_of(&self, client: ClientKey) -> usize {
         self.waiting.count(client)
     }

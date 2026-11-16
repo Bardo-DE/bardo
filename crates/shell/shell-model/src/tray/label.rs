@@ -3,6 +3,7 @@
 /// `label` without its access-key marks: dbusmenu writes `__` for a literal underscore and any
 /// other `_` marks the next character as the row's access key, which a menu drawn without
 /// underlines leaves out.
+#[must_use]
 pub fn plain_label(label: &str) -> String {
     let mut plain = String::with_capacity(label.len());
     let mut chars = label.chars().peekable();

@@ -82,20 +82,27 @@ struct Inferd {
 #[zbus::interface(name = "org.bardo.Inference1")]
 impl Inferd {
     fn guests(&self) -> Vec<Row> {
-        self.book.lock().unwrap_or_else(|e| e.into_inner()).reads += 1;
         self.book
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .reads += 1;
+        self.book
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .rows
             .clone()
     }
 
     fn answer_guest(&self, node: String, answer: String) -> Result<(), Refusal> {
-        let mut book = self.book.lock().unwrap_or_else(|e| e.into_inner());
+        let mut book = self
+            .book
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         book.answers.push((node, answer));
-        match book.gone {
-            true => Err(Refusal::NotAsking("Nobody is asking.".to_owned())),
-            false => Ok(()),
+        if book.gone {
+            Err(Refusal::NotAsking("Nobody is asking.".to_owned()))
+        } else {
+            Ok(())
         }
     }
 
@@ -150,20 +157,26 @@ impl FakeInferd {
 
     /// The rows are now `rows`, as `GuestsChanged` tells.
     async fn settle(&self, rows: Vec<Row>) {
-        self.book.lock().unwrap_or_else(|e| e.into_inner()).rows = rows;
+        self.book
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .rows = rows;
         Inferd::guests_changed(&self.emitter())
             .await
             .unwrap_or_else(|e| panic!("{e}"));
     }
 
     fn reads(&self) -> usize {
-        self.book.lock().unwrap_or_else(|e| e.into_inner()).reads
+        self.book
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .reads
     }
 
     fn answers(&self) -> Vec<(String, String)> {
         self.book
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .answers
             .clone()
     }
@@ -328,7 +341,11 @@ async fn a_question_already_waiting_is_told_at_start_and_one_answered_elsewhere_
     );
 
     // Settings answers first: the notification goes, and a late press is quiet.
-    inferd.book.lock().unwrap_or_else(|e| e.into_inner()).gone = true;
+    inferd
+        .book
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .gone = true;
     press(&shell, id, Verdict::Deny).await;
     until("the press was not given to inferd", || {
         !inferd.answers().is_empty()

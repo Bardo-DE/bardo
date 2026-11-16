@@ -15,9 +15,10 @@ pub struct ProcessCredentialId(Box<str>);
 impl ProcessCredentialId {
     /// The id written as `text`.
     pub fn parse(text: &str) -> Result<Self, IdError> {
-        match is_id(text) {
-            true => Ok(Self(text.into())),
-            false => Err(IdError::malformed("process credential id", text)),
+        if is_id(text) {
+            Ok(Self(text.into()))
+        } else {
+            Err(IdError::malformed("process credential id", text))
         }
     }
 }
@@ -48,6 +49,6 @@ mod tests {
             serde_json::from_str::<ProcessCredentialId>(r#""cred-7""#).expect("id"),
             id
         );
-        assert!(serde_json::from_str::<ProcessCredentialId>(r#""a/b""#).is_err());
+        serde_json::from_str::<ProcessCredentialId>(r#""a/b""#).unwrap_err();
     }
 }

@@ -103,12 +103,14 @@ pub struct Timing {
 }
 
 /// `curve` at time `t` (thousandths, at most all): quire's one evaluator, [`CubicBezier::at`].
+#[must_use]
 pub fn eased(curve: CubicBezier, t: Permille) -> Permille {
     let at = Fraction(u16::try_from(t.0.min(1000)).unwrap_or(1000));
     Permille(u32::from(curve.at(at).0))
 }
 
 /// `phase` after `input` at `now`, and what the surface must do about it.
+#[must_use]
 pub fn advance(
     phase: Phase,
     input: Input,
@@ -159,11 +161,13 @@ pub fn advance(
 }
 
 /// Whether the slide needs a frame every refresh.
+#[must_use]
 pub fn animating(phase: &Phase) -> bool {
     matches!(phase, Phase::Showing { .. } | Phase::Hiding { .. })
 }
 
 /// How far out of its place, towards `distance`, the surface is drawn at `now`.
+#[must_use]
 pub fn slide_offset(phase: &Phase, now: Stamp, t: &Timing, distance: Cpx) -> Cpx {
     let along = |since: Stamp| {
         Permille(

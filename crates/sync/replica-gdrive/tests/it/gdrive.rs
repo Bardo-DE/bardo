@@ -370,7 +370,7 @@ async fn a_throttled_request_is_a_retry_with_the_servers_wait_and_a_bad_path_is_
         replica.quota().await,
         Err(ReplicaError::Transient(RetryAfter(17)))
     );
-    assert!(replica.quota().await.is_ok());
+    replica.quota().await.unwrap();
     server.google.throttle(1, 9);
     assert_eq!(
         replica

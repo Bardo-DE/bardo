@@ -203,6 +203,6 @@ async fn nobody_but_the_router_is_answered() {
         ),
     )
     .await;
-    assert!(refused.is_err());
+    refused.unwrap_err();
     assert!(s.window.asked().is_empty());
 }

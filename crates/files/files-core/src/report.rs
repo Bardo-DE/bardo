@@ -28,6 +28,7 @@ pub struct Outcome {
 
 impl Outcome {
     /// `summary` ended as `finish`, leaving `undo` to take back; it touched no place yet.
+    #[must_use]
     pub fn new(summary: Summary, finish: Finish, undo: Option<Summary>) -> Outcome {
         Outcome {
             summary,
@@ -38,6 +39,7 @@ impl Outcome {
     }
 
     /// The same outcome, having changed `touched`.
+    #[must_use]
     pub fn touching(self, touched: Vec<Location>) -> Outcome {
         Outcome { touched, ..self }
     }

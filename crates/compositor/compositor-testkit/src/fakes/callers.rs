@@ -6,6 +6,7 @@ use compositor_ipc::dbus::Proven;
 use compositor_ipc::dbus::peer::{AppKey, RoleName, roles};
 
 /// The caller `app` holding `role`.
+#[must_use]
 pub fn proven(app: &str, role: &str) -> Proven {
     Proven::new(
         AppKey::new(app).expect("an app key"),
@@ -14,6 +15,7 @@ pub fn proven(app: &str, role: &str) -> Proven {
 }
 
 /// The shell (sill).
+#[must_use]
 pub fn shell() -> Proven {
     Proven::new(
         AppKey::new("org.bardo.Shell").expect("an app key"),
@@ -22,6 +24,7 @@ pub fn shell() -> Proven {
 }
 
 /// The agent tier (cuad).
+#[must_use]
 pub fn agent_tier() -> Proven {
     Proven::new(
         AppKey::new("org.bardo.Agent").expect("an app key"),
@@ -30,6 +33,7 @@ pub fn agent_tier() -> Proven {
 }
 
 /// The portal backend (transom).
+#[must_use]
 pub fn portal() -> Proven {
     Proven::new(
         AppKey::new("org.bardo.Portal").expect("an app key"),
@@ -38,6 +42,7 @@ pub fn portal() -> Proven {
 }
 
 /// Some other desktop program (a role that is no connection's).
+#[must_use]
 pub fn companion() -> Proven {
     Proven::new(
         AppKey::new("org.bardo.Companion").expect("an app key"),

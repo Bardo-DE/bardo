@@ -1,7 +1,7 @@
-//! The WebDAV replica as syncd runs it: connections come from accountd's
+//! The `WebDAV` replica as syncd runs it: connections come from accountd's
 //! `Tokens.OpenAuthenticated`, so syncd never holds the account's credential (porter PLAN G3, D8).
 //!
-//! [`RelayDial`] asks accountd for one authenticated stream to the account's WebDAV endpoint each
+//! [`RelayDial`] asks accountd for one authenticated stream to the account's `WebDAV` endpoint each
 //! time the replica needs a connection; the relay at the far end adds `Authorization`, speaks TLS
 //! and reaches that endpoint's origin only. [`webdav_replica`] builds the replica of a dataset's
 //! folder under that endpoint over them.

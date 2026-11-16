@@ -16,10 +16,12 @@ pub struct TranscriptSink {
 }
 
 impl TranscriptSink {
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
+    #[must_use]
     pub fn finish(self, end: TurnEnd) -> TurnTranscript {
         TurnTranscript {
             text: self.text,

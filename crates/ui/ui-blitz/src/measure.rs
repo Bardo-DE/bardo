@@ -3,7 +3,7 @@
 //!
 //! dioxus-native-dom's own `get_client_rect` borrows the document mutably. A task that dioxus
 //! polls inside `render_immediate` (it does, when the task woke in the same turn as a dirty
-//! scope) runs while the mutation writer holds that borrow, and the read panics with "RefCell
+//! scope) runs while the mutation writer holds that borrow, and the read panics with "`RefCell`
 //! already borrowed" (the hover card's anchor read, 450 ms after the pointer
 //! came to rest). Reading through `NodeHandle::try_doc` turns that into `Measured::Busy`, and
 //! quire's reader waits a frame.
@@ -18,6 +18,7 @@ use ui_components::prelude::*;
 
 /// `element`'s border box, if the document is free and the element is a Blitz node: a component's
 /// own mounted handle, or an element found by selector (`GeometryHost::find`).
+#[must_use]
 pub fn measure(element: &MountedData) -> Measured {
     let Some(node) = NodeRef::of(element) else {
         return Measured::Unknown;

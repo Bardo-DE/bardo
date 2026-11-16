@@ -150,6 +150,7 @@ pub struct OutputState {
 
 impl Model {
     /// An empty desktop at `epoch` under `settings`, minting Space ids from `seed`.
+    #[must_use]
     pub fn new(settings: CasementSettings, epoch: Mono, seed: SpaceSeed) -> Model {
         Model {
             windows: BTreeMap::new(),
@@ -185,11 +186,13 @@ impl Model {
 
     /// What the bar does in full screen now (it slides in over the window until the shell says
     /// to keep it).
+    #[must_use]
     pub fn full_screen_bar(&self) -> FullScreenBar {
         self.full_screen_bar
     }
 
     /// Whether the shell says the person wants reduced motion (full until it says otherwise).
+    #[must_use]
     pub fn reduced_motion(&self) -> bool {
         self.reduced_motion
     }
@@ -200,6 +203,7 @@ impl Model {
     /// Input events change nothing, except the multi-finger swipes: those move the Spaces and
     /// Mission Control (`model/swipe.rs`). What a key or a press means is decided where the target
     /// is known ([`Model::reach`], [`Model::press`], [`Model::command`]).
+    #[must_use]
     pub fn step(self, event: Event, now: Mono) -> (Model, Vec<Effect>) {
         // An input event that is not a swipe changes nothing a window-list or desktop client
         // is shown, so it skips the two snapshots (each clones every window): at input rate
@@ -334,61 +338,73 @@ impl Model {
     }
 
     /// Every window.
+    #[must_use]
     pub fn windows(&self) -> &BTreeMap<WindowId, crate::window::Window> {
         &self.windows
     }
 
     /// Every app.
+    #[must_use]
     pub fn apps(&self) -> &BTreeMap<AppKey, App> {
         &self.apps
     }
 
     /// Every Space.
+    #[must_use]
     pub fn spaces(&self) -> &SpaceBook {
         &self.spaces
     }
 
     /// Where `window` should minimise to, when its window-list client set a rectangle.
+    #[must_use]
     pub fn minimise_target(&self, window: WindowId) -> Option<&MinimiseTarget> {
         self.minimise_rects.get(&window)
     }
 
     /// Every plugged output.
+    #[must_use]
     pub fn outputs(&self) -> &OutputBook {
         &self.outputs
     }
 
     /// Every layer surface.
+    #[must_use]
     pub fn layers(&self) -> &LayerBook {
         &self.layers
     }
 
     /// The session lock.
+    #[must_use]
     pub fn lock(&self) -> &LockState {
         &self.lock
     }
 
     /// The agent's leases.
+    #[must_use]
     pub fn leases(&self) -> &Leases {
         &self.leases
     }
 
     /// Focus.
+    #[must_use]
     pub fn focus(&self) -> &Focus {
         &self.focus
     }
 
     /// The armed timers.
+    #[must_use]
     pub fn timers(&self) -> &TimerBook {
         &self.timers
     }
 
     /// The settings.
+    #[must_use]
     pub fn settings(&self) -> &CasementSettings {
         &self.settings
     }
 
     /// The instant of the latest step (the epoch before any).
+    #[must_use]
     pub fn now(&self) -> Mono {
         self.now
     }

@@ -4,6 +4,7 @@
 
 const SAMPLING: &str = r#"sampling = { reasoning_on = { temperature = 600, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_off = { temperature = 0, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_default = "off" }"#;
 
+#[must_use]
 pub fn chat() -> String {
     format!(
         r#"id = "tiny-chat"
@@ -27,6 +28,7 @@ weights = {{ kind = "gguf", v = {{ model = "m.gguf", mmproj = "p.gguf" }} }}
 }
 
 /// An embedding-only entry: the `vector_out` table is all it needs (no chat fields).
+#[must_use]
 pub fn embed() -> String {
     r#"id = "tiny-embed"
 label = "Tiny embedder"
@@ -47,6 +49,7 @@ weights = { kind = "gguf", v = { model = "e.gguf", mmproj = "" } }
     .to_string()
 }
 
+#[must_use]
 pub fn cua() -> String {
     format!(
         r#"id = "tiny-cua"
@@ -72,6 +75,7 @@ weights = {{ kind = "hf_snapshot" }}
 
 /// A hosted entry: `reaches` are (provider, the model's id there, wire). It takes text and images, calls tools natively and
 /// writes no sampling, as the shipped hosted entries do.
+#[must_use]
 pub fn hosted(id: &str, label: &str, family: &str, reaches: &[(&str, &str, &str)]) -> String {
     let reach = reaches
         .iter()
@@ -97,7 +101,8 @@ image_in = {{ per_prompt = 1, rule = {{ kind = "identity" }}, space = {{ kind = 
     )
 }
 
-/// Claude Opus 5.5 as the shipped catalogue reaches it: Anthropic's own account, and OpenRouter.
+/// Claude Opus 5.5 as the shipped catalogue reaches it: Anthropic's own account, and `OpenRouter`.
+#[must_use]
 pub fn claude() -> String {
     hosted(
         "claude-opus-5.5",
@@ -110,7 +115,8 @@ pub fn claude() -> String {
     )
 }
 
-/// GPT-6 Luna: OpenAI's own account, and OpenRouter.
+/// GPT-6 Luna: `OpenAI`'s own account, and `OpenRouter`.
+#[must_use]
 pub fn luna() -> String {
     hosted(
         "gpt-6-luna",
@@ -123,7 +129,8 @@ pub fn luna() -> String {
     )
 }
 
-/// Kimi K3: Moonshot's own account, and OpenRouter.
+/// Kimi K3: Moonshot's own account, and `OpenRouter`.
+#[must_use]
 pub fn kimi() -> String {
     hosted(
         "kimi-k3",
@@ -138,6 +145,7 @@ pub fn kimi() -> String {
 
 /// A speech-to-text entry on the speech host, as the shipped Nemotron entry is written (CPU only:
 /// no VRAM, 16 kHz, a 560 ms chunk and six threads in its engine args).
+#[must_use]
 pub fn speech_in() -> String {
     r#"id = "tiny-ears"
 label = "Tiny ears"
@@ -169,6 +177,7 @@ pub const SERVED: &str = "lab-qwen";
 /// The shipped entry of an attached engine (a vendored copy of stoker's
 /// `catalog/qwen3.5-35b-a3b-fp8.toml` in `tests/fixtures`, so a plain clone builds: serving
 /// attached, locality on-device, no engine profile), with the served name `SERVED`.
+#[must_use]
 pub fn attached() -> String {
     include_str!("../../fixtures/qwen3.5-35b-a3b-fp8.toml").replace(
         "served_name = \"qwen3.5-35b-a3b-fp8\"",

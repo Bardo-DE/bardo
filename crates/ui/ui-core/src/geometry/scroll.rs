@@ -31,6 +31,7 @@ pub struct ScrollSpan {
 /// The scroll offset that shows `item` in a scrollport `view` long scrolled to `current`, moving
 /// the least: unchanged when the item is inside the view (or the view inside it), else the item's
 /// nearer edge aligned with the view's (CSSOM `scrollIntoView` with `block: nearest`).
+#[must_use]
 pub fn nearest_scroll(current: f32, view: f32, item: ScrollSpan) -> f32 {
     let end = item.start + item.length;
     let inside = item.start >= current && end <= current + view;
@@ -49,11 +50,13 @@ pub fn nearest_scroll(current: f32, view: f32, item: ScrollSpan) -> f32 {
 
 impl Scroll {
     /// The largest offset the content allows: none when it fits the viewport.
+    #[must_use]
     pub fn max_offset(self) -> Px {
         Px((self.content.0 - self.viewport.0).max(0.0))
     }
 
     /// The same scroller with its offset brought into `0..=max_offset`.
+    #[must_use]
     pub fn clamped(self) -> Scroll {
         Scroll {
             offset: Px(self.offset.0.clamp(0.0, self.max_offset().0)),
@@ -62,21 +65,25 @@ impl Scroll {
     }
 
     /// Scrolled to `offset`, kept in range.
+    #[must_use]
     pub fn to(self, offset: Px) -> Scroll {
         Scroll { offset, ..self }.clamped()
     }
 
     /// Scrolled `delta` further (negative goes back), kept in range.
+    #[must_use]
     pub fn by(self, delta: Px) -> Scroll {
         self.to(self.offset + delta)
     }
 
     /// Scrolled the least that shows `span`, kept in range.
+    #[must_use]
     pub fn reveal(self, span: ScrollSpan) -> Scroll {
         self.to(Px(nearest_scroll(self.offset.0, self.viewport.0, span)))
     }
 
     /// Scrolled the least that shows row `index` of rows `pitch` apart.
+    #[must_use]
     pub fn reveal_row(self, index: usize, pitch: Px) -> Scroll {
         self.reveal(ScrollSpan {
             start: index as f32 * pitch.0,
@@ -87,6 +94,7 @@ impl Scroll {
     /// The rows of `len` rows `pitch` apart that show, plus `overscan` more on each side, as a
     /// range of row indexes. Empty for no rows or a pitch that is not positive; a viewport not
     /// measured yet shows only the overscan below the offset.
+    #[must_use]
     pub fn rows(self, pitch: Px, len: usize, overscan: usize) -> Range<usize> {
         if len == 0 || pitch.0 <= 0.0 {
             return 0..0;
@@ -100,6 +108,7 @@ impl Scroll {
 
     /// Whether no more than `within` of the content lies below the viewport: the cue to fetch the
     /// next page. Never before the viewport has been measured.
+    #[must_use]
     pub fn near_end(self, within: Px) -> bool {
         self.viewport.0 > 0.0 && self.content.0 - (self.offset.0 + self.viewport.0) <= within.0
     }

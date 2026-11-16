@@ -1,5 +1,5 @@
-//! A fake Nextcloud: Login Flow v2, the OCS app-password DELETE and capabilities, WebDAV with
-//! sync tokens and quota, CalDAV and CardDAV collections, and the Notes API, behind HTTP Basic
+//! A fake Nextcloud: Login Flow v2, the OCS app-password DELETE and capabilities, `WebDAV` with
+//! sync tokens and quota, `CalDAV` and `CardDAV` collections, and the Notes API, behind HTTP Basic
 //! with the app passwords the login flow hands out.
 
 mod login;
@@ -92,11 +92,13 @@ impl FakeNextcloud {
 
 impl NextcloudHandle {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
 
     /// The user.
+    #[must_use]
     pub fn user(&self) -> String {
         lock(&self.shared.state).user.clone()
     }
@@ -118,6 +120,7 @@ impl NextcloudHandle {
     }
 
     /// The app passwords that work now.
+    #[must_use]
     pub fn app_passwords(&self) -> Vec<String> {
         lock(&self.shared.state).app_passwords.clone()
     }
@@ -267,6 +270,7 @@ impl NextcloudHandle {
     }
 
     /// The sync token a client would get now.
+    #[must_use]
     pub fn sync_token(&self) -> String {
         lock(&self.shared.state).tree.sync_token()
     }
@@ -287,6 +291,7 @@ impl NextcloudHandle {
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn hits(&self) -> Vec<Hit> {
         self.shared.hits.all()
     }

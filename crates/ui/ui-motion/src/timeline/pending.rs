@@ -38,7 +38,7 @@ impl Timeline for Pending {
                 let into = Duration::from_millis(
                     u64::try_from(from.as_millis() % step.as_millis().max(1)).unwrap_or(0),
                 );
-                step - into
+                step.checked_sub(into).unwrap()
             }
         }
     }

@@ -75,15 +75,14 @@ pub fn declassify<T>(
     let Witness::UserConfirmed(receipt) = witness;
     // `a.join(b) == b` says `b` is at least as restrictive as `a`; joining `Public` normalises.
     let within = receipt.covers.join(&to) == to.join(&Confidentiality::Public);
-    match within {
-        true => {
-            let mut label = value.label;
-            label.confidentiality = to;
-            Ok(Labelled { label, ..value })
-        }
-        false => Err(BeyondReceipt {
+    if within {
+        let mut label = value.label;
+        label.confidentiality = to;
+        Ok(Labelled { label, ..value })
+    } else {
+        Err(BeyondReceipt {
             covers: receipt.covers.clone(),
-        }),
+        })
     }
 }
 
@@ -197,7 +196,7 @@ mod tests {
             Confidentiality::Public,
             &witness(Confidentiality::Secret),
         );
-        assert!(refused.is_err());
+        refused.unwrap_err();
         let endorsed = endorse(note, &witness(Confidentiality::Secret));
         assert_eq!(endorsed.label.confidentiality, Confidentiality::Secret);
         assert_eq!(endorsed.label.integrity, Integrity::Trusted);

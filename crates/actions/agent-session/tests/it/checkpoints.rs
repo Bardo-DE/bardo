@@ -70,7 +70,7 @@ fn a_checkpoint_entry_round_trips_and_an_unknown_kind_is_kept_not_refused() {
     assert_eq!(kept.kind, "future_kind");
     assert_eq!(kept.v["anything"][1], 2);
     // It is never written back.
-    assert!(encode(Seq(0), &SessionEntry::Unknown(kept)).is_err());
+    encode(Seq(0), &SessionEntry::Unknown(kept)).unwrap_err();
 }
 
 #[test]

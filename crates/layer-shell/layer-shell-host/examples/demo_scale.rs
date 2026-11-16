@@ -151,7 +151,7 @@ fn run() -> Result<(), String> {
             }
         }
         HostEvent::App(Step::Quit) | HostEvent::SurfaceClosed { .. } | HostEvent::QuitAsked => {
-            ctx.exit()
+            ctx.exit();
         }
         _ => {}
     })

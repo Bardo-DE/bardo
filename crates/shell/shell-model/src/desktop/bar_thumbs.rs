@@ -34,6 +34,7 @@ pub struct BarPictures(BTreeMap<(String, SpaceId), BarPicture>);
 
 impl BarPictures {
     /// The same pictures with `answer` for `space` of `output` taken in.
+    #[must_use]
     pub fn with(mut self, output: &str, space: SpaceId, answer: &SpacePicture) -> BarPictures {
         let key = (output.to_owned(), space);
         let before = self.0.get(&key);
@@ -47,11 +48,13 @@ impl BarPictures {
     }
 
     /// How many answers `space` of `output` has had.
+    #[must_use]
     pub fn seq_of(&self, output: &str, space: &SpaceId) -> u64 {
         self.get(output, space).map_or(0, |picture| picture.seq)
     }
 
     /// The picture to show for `space` of `output`, if one has arrived.
+    #[must_use]
     pub fn png_of(&self, output: &str, space: &SpaceId) -> Option<Arc<[u8]>> {
         self.get(output, space)
             .and_then(|picture| picture.png.clone())
@@ -116,6 +119,7 @@ fn looks_of(view: &DesktopView, space: &SpaceId) -> Vec<WindowMark> {
 /// look different: a held request is the compositor's damage gate, and asking in a loop for a
 /// picture that did not change would spin. A bar that went away, or a Space that left it, forgets
 /// its ask, so the next opening asks again.
+#[must_use]
 pub fn thumbs_wanted(
     asks: &ThumbAsks,
     layouts: &BarLayouts,

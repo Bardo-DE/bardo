@@ -25,6 +25,7 @@ pub struct DisplayTrial {
 }
 
 /// Whole seconds left of `seconds` once `elapsed_ms` milliseconds have passed.
+#[must_use]
 pub fn seconds_left(seconds: u32, elapsed_ms: u64) -> u32 {
     let gone = u32::try_from(elapsed_ms / 1000).unwrap_or(u32::MAX);
     seconds.saturating_sub(gone)
@@ -32,11 +33,13 @@ pub fn seconds_left(seconds: u32, elapsed_ms: u64) -> u32 {
 
 /// Milliseconds from `elapsed_ms` to the next whole second of the countdown, so the line changes
 /// on the second rather than drifting.
+#[must_use]
 pub fn until_next_second(elapsed_ms: u64) -> u64 {
     1000 - elapsed_ms % 1000
 }
 
 /// The line under the headline for `left` seconds to go.
+#[must_use]
 pub fn countdown_line(left: u32) -> String {
     match left {
         0 => "Reverting now".to_owned(),

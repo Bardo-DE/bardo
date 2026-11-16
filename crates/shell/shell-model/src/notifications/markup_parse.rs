@@ -173,23 +173,20 @@ fn pieces(raw: &str) -> Vec<Piece> {
     let mut rest = raw;
     while let Some(c) = rest.chars().next() {
         let tag = (c == '<').then(|| tag_at(rest)).flatten();
-        match tag {
-            Some((piece, used)) => {
-                if !text.is_empty() {
-                    out.push(Piece::Text(std::mem::take(&mut text)));
-                }
-                out.push(piece);
-                rest = &rest[used..];
+        if let Some((piece, used)) = tag {
+            if !text.is_empty() {
+                out.push(Piece::Text(std::mem::take(&mut text)));
             }
-            None => {
-                let (decoded, used) = if c == '&' {
-                    entity_at(rest).unwrap_or(('&', 1))
-                } else {
-                    (c, c.len_utf8())
-                };
-                text.push(decoded);
-                rest = &rest[used..];
-            }
+            out.push(piece);
+            rest = &rest[used..];
+        } else {
+            let (decoded, used) = if c == '&' {
+                entity_at(rest).unwrap_or(('&', 1))
+            } else {
+                (c, c.len_utf8())
+            };
+            text.push(decoded);
+            rest = &rest[used..];
         }
     }
     if !text.is_empty() {

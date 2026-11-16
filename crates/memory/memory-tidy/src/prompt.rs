@@ -63,6 +63,7 @@ fn section<I: Iterator<Item = String>>(
 /// The prompt for one run: what to answer, then the active facts and the events since the last
 /// run, one JSON object per line in fenced, size-capped sections. Event bodies are not in it
 /// (`InputEvent` has none).
+#[must_use]
 pub fn render_prompt(input: &ConsolidationInput) -> String {
     let run = input.run.to_string();
     let mut out = String::from(

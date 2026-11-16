@@ -1,5 +1,5 @@
 //! A removed desktop-wide Space settled by the daemon: the note it keeps so a crash mid-move is
-//! finished by the next start, and the Spaces the registry does not know. Real SQLCipher and
+//! finished by the next start, and the Spaces the registry does not know. Real `SQLCipher` and
 //! sealed files over scratch directories; no bus, no clock.
 
 use crate::support::{SharedKeys, TestBackend, dirs_in, service, space};

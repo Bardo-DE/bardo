@@ -40,6 +40,7 @@ pub struct MenuItem {
 }
 
 /// The words the menu shows, as the Mac words them.
+#[must_use]
 pub fn entry_label(entry: WindowEntry) -> &'static str {
     match entry {
         WindowEntry::EnterFullScreen => "Enter Full Screen",
@@ -61,6 +62,7 @@ pub fn entry_label(entry: WindowEntry) -> &'static str {
 }
 
 /// Where the menu shows it.
+#[must_use]
 pub fn entry_group(entry: WindowEntry) -> MenuGroup {
     match entry {
         WindowEntry::Left
@@ -78,6 +80,7 @@ pub fn entry_group(entry: WindowEntry) -> MenuGroup {
 }
 
 /// What picking it asks of the model.
+#[must_use]
 pub fn entry_action(entry: WindowEntry) -> MenuAction {
     match entry {
         WindowEntry::EnterFullScreen => MenuAction::FullScreen(Toggle::On),
@@ -120,6 +123,7 @@ fn entry_zone(entry: WindowEntry) -> Option<TileZone> {
 /// assert_eq!(items[0].entry, WindowEntry::EnterFullScreen);
 /// assert!(items.iter().any(|i| i.entry == WindowEntry::Left && i.enabled));
 /// ```
+#[must_use]
 pub fn menu_for(state: &WindowState, split: bool) -> Vec<MenuItem> {
     let full = matches!(state, WindowState::FullScreen { .. });
     WindowEntry::ALL
@@ -156,6 +160,7 @@ fn offered(entry: WindowEntry, state: &WindowState, split: bool) -> bool {
 }
 
 /// Whether `entry` can be picked in `items`.
+#[must_use]
 pub fn is_offered(items: &[MenuItem], entry: WindowEntry) -> bool {
     items.iter().any(|item| item.entry == entry && item.enabled)
 }
@@ -172,6 +177,7 @@ pub fn is_offered(items: &[MenuItem], entry: WindowEntry) -> bool {
 /// ];
 /// assert_eq!(enabled_mask(&items), 1);
 /// ```
+#[must_use]
 pub fn enabled_mask(items: &[MenuItem]) -> u32 {
     items
         .iter()
@@ -188,6 +194,7 @@ pub fn enabled_mask(items: &[MenuItem]) -> u32 {
 /// let light = LogicalRect::new(LogicalPoint { x: 50, y: 10 }, LogicalSize { w: 12, h: 12 });
 /// assert_eq!(menu_point(light), LogicalPoint { x: 50, y: 26 });
 /// ```
+#[must_use]
 pub fn menu_point(light: LogicalRect) -> LogicalPoint {
     LogicalPoint {
         x: light.origin.x,

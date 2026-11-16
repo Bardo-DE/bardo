@@ -28,11 +28,13 @@ impl FrameBudget {
     /// The most past frames a prompt of `per_prompt` images can keep: the current frame is one of
     /// the images, so a model limited to three (Holo's `--limit-mm-per-prompt image:3`) keeps
     /// two earlier ones. A model that takes no image keeps none.
+    #[must_use]
     pub fn within(per_prompt: ImageCount) -> FrameBudget {
         FrameBudget(u8::try_from(per_prompt.0.saturating_sub(1)).unwrap_or(u8::MAX))
     }
 
     /// `wanted` (the setting `ai.cua.history_frames`), cut to what `per_prompt` allows.
+    #[must_use]
     pub fn at_most(self, per_prompt: ImageCount) -> FrameBudget {
         FrameBudget(self.0.min(FrameBudget::within(per_prompt).0))
     }
@@ -103,6 +105,7 @@ impl CuaProfile {
     /// The profile of a model whose catalog entry says how it takes images: the resize rule and
     /// the point space come from `images`, and the history is `wanted` cut to
     /// `images.per_prompt - 1` frames (the current frame is one of the prompt's images).
+    #[must_use]
     pub fn for_model(
         dialect: CuaDialect,
         images: &ImageLimits,
@@ -122,6 +125,7 @@ impl CuaProfile {
     }
 
     /// The same profile for a model whose catalog entry states an action profile.
+    #[must_use]
     pub fn with_actions(self, actions: ActionProfile) -> CuaProfile {
         CuaProfile { actions, ..self }
     }
@@ -184,6 +188,7 @@ pub struct ObservationIn {
 
 impl ObservationIn {
     /// An observation with no tree and no notes: the form every step had before they existed.
+    #[must_use]
     pub fn new(
         step: StepIndex,
         cursor: Option<Point<WindowSpace>>,
@@ -200,6 +205,7 @@ impl ObservationIn {
         }
     }
 
+    #[must_use]
     pub fn with_tree(self, tree: TreeText) -> ObservationIn {
         ObservationIn {
             tree: Some(tree),
@@ -207,6 +213,7 @@ impl ObservationIn {
         }
     }
 
+    #[must_use]
     pub fn with_notes(self, notes: Vec<StepNote>) -> ObservationIn {
         ObservationIn { notes, ..self }
     }
@@ -226,6 +233,7 @@ pub struct TurnTranscript {
 
 impl TurnTranscript {
     /// A reply with no safety signals.
+    #[must_use]
     pub fn new(text: String, thought: String, calls: Vec<ToolCall>, end: TurnEnd) -> Self {
         TurnTranscript {
             text,

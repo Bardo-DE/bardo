@@ -1,4 +1,4 @@
-//! SearchField with its suggestions panel, and the rows a result list draws: marks over the
+//! `SearchField` with its suggestions panel, and the rows a result list draws: marks over the
 //! characters a query matched, an avatar, a second line.
 
 use crate::axes::{Axes, Showcase};
@@ -93,7 +93,7 @@ pub fn SearchSuggestions() -> Element {
                                 flow: Flow::Inline,
                                 active: MenuCursor::Controlled(Some(1)),
                                 onpick: |_| {},
-                                onclose: |_| {},
+                                onclose: |()| {},
                             }
                         }
                         p { class: "g-note g-stage-caption", "Marks, avatar, second line" }

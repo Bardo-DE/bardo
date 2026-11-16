@@ -30,6 +30,7 @@ pub struct AtspiSource {
 
 impl AtspiSource {
     /// A source that has not connected yet; the first snapshot connects.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             connection: OnceCell::new(),
@@ -37,6 +38,7 @@ impl AtspiSource {
     }
 
     /// A source over a connection that is already open (a host that connects itself).
+    #[must_use]
     pub fn over(connection: zbus::Connection) -> Self {
         Self {
             connection: OnceCell::new_with(Some(connection)),

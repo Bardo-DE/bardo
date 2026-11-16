@@ -33,6 +33,7 @@ pub struct Offence {
 
 impl Offence {
     /// The last four elements of the box's path: enough to find it.
+    #[must_use]
     pub fn tail(&self) -> String {
         let parts: Vec<&str> = self.path.split(" > ").collect();
         let from = parts.len().saturating_sub(4);
@@ -80,6 +81,7 @@ impl Findings {
     }
 
     /// The offences as a readable block: grouped by box, tightest gap first.
+    #[must_use]
     pub fn text(&self) -> String {
         let mut by_box: BTreeMap<&str, Vec<&Offence>> = BTreeMap::new();
         for offence in &self.offences {

@@ -306,6 +306,6 @@ async fn the_answer_object_names_its_session_and_close_removes_it() {
     );
 
     proxy.close(opened.session.as_str()).await.expect("close");
-    assert!(answers.session().await.is_err());
+    answers.session().await.unwrap_err();
     assert!(refused(launcher.session_display(session, READ).await));
 }

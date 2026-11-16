@@ -26,6 +26,7 @@ pub struct FlipTracker {
 
 impl FlipTracker {
     /// A tracker with no flip pending.
+    #[must_use]
     pub fn new() -> FlipTracker {
         FlipTracker::default()
     }
@@ -40,6 +41,7 @@ impl FlipTracker {
 
     /// The flip finished: what became of the frame, and the tracker with nothing pending. A
     /// flip nobody queued (a modeset's first frame) is on time by definition.
+    #[must_use]
     pub fn presented(self, presented: Presented) -> (FlipTracker, FrameOutcome) {
         let wanted = self.wanted.unwrap_or(presented.seq);
         (FlipTracker::new(), judge(wanted, presented.seq))

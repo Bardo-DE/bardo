@@ -13,6 +13,7 @@ pub struct FixedAuthority {
 
 impl FixedAuthority {
     /// Every peer is `caller`.
+    #[must_use]
     pub fn naming(caller: Caller) -> Self {
         Self {
             answer: Some(caller),
@@ -20,6 +21,7 @@ impl FixedAuthority {
     }
 
     /// No peer can be identified.
+    #[must_use]
     pub fn failing() -> Self {
         Self { answer: None }
     }

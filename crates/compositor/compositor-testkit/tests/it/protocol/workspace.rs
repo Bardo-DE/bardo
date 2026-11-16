@@ -89,7 +89,7 @@ fn the_workspace_id_survives_a_restart() {
     assert_eq!(ids(&chosen_watch), [chosen], "the id comes from the file");
 }
 
-/// activate, create_workspace and remove reach the model as `Event::Workspace`, at `commit`.
+/// activate, `create_workspace` and remove reach the model as `Event::Workspace`, at `commit`.
 #[test]
 fn requests_reach_the_model() {
     let (mut fixture, _client, mut watch) = watched(FixtureSpec::desktop());

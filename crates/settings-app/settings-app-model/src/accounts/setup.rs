@@ -25,6 +25,7 @@ pub struct SignedIn {
 
 /// The accounts the step lists: the person's Internet accounts, in the pane's order. The assistants
 /// and AI keys belong to the assistant's step, and the sync service's accounts to Sync.
+#[must_use]
 pub fn signed_in(pane: &AccountsPane) -> Vec<SignedIn> {
     pane.in_group(ProviderGroup::Internet)
         .filter(|account| account.module != ModuleId::Syncd)
@@ -38,6 +39,7 @@ pub fn signed_in(pane: &AccountsPane) -> Vec<SignedIn> {
 }
 
 /// Whether `button` can be pressed: Skip always; Continue once an account is listed.
+#[must_use]
 pub fn accounts_setup_offer(listed: &[SignedIn], button: SetupAction) -> SetupAvailability {
     match (button, listed.is_empty()) {
         (SetupAction::Skip, _) | (SetupAction::Continue, false) => SetupAvailability::Now,
@@ -67,7 +69,7 @@ mod tests {
             (SetupAction::Continue, true, SetupAvailability::Now),
         ];
         for (button, any, want) in cases {
-            let shown: &[SignedIn] = if any { &listed[..] } else { &[] };
+            let shown: &[SignedIn] = if any { &*listed } else { &[] };
             assert_eq!(
                 accounts_setup_offer(shown, button),
                 want,

@@ -46,7 +46,7 @@ impl Harness {
             let mut doc = self.doc.doc.inner.borrow_mut();
             doc.set_viewport(viewport);
             doc.set_media_type(media);
-        }
+        };
         self.settle_now();
         printed
     }

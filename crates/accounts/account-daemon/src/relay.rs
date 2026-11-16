@@ -22,11 +22,13 @@ pub struct Relays {
 
 impl Relays {
     /// Relays that trust the platform's roots.
+    #[must_use]
     pub fn platform() -> Self {
         Self::default()
     }
 
     /// Relays that dial with `connector` (a test's scratch CA, for one).
+    #[must_use]
     pub fn with_connector(connector: RustlsConnect) -> Self {
         Self {
             connector: Arc::new(OnceCell::new_with(Some(connector))),

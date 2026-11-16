@@ -17,6 +17,7 @@ pub struct RenderPlan {
 
 impl RenderPlan {
     /// A plan.
+    #[must_use]
     pub fn new(render: DrmNodeId, scanout: BTreeMap<OutputName, DrmNodeId>) -> RenderPlan {
         RenderPlan { render, scanout }
     }

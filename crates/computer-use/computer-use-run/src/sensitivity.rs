@@ -36,11 +36,13 @@ pub enum WindowSensitivity {
 
 impl WindowSensitivity {
     /// Whether the run asks before driving this window.
+    #[must_use]
     pub fn asks(self) -> bool {
         self != WindowSensitivity::Ordinary
     }
 
     /// The window as the question to the person names it.
+    #[must_use]
     pub fn noun(self) -> &'static str {
         match self {
             WindowSensitivity::Ordinary => "a window",

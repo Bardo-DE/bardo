@@ -29,6 +29,7 @@ pub enum Chooser {
 
 impl Asker {
     /// The pool owner this asker chooses with: the person's turn is the assistant's.
+    #[must_use]
     pub fn chooser(&self) -> Chooser {
         match self {
             Asker::Person => Chooser::Assistant,
@@ -42,6 +43,7 @@ const HELPER_PREFIX: &str = "helper:";
 
 impl Asker {
     /// The text form the bus carries: `person`, or `helper:<id>`.
+    #[must_use]
     pub fn to_text(&self) -> String {
         match self {
             Asker::Person => "person".to_owned(),

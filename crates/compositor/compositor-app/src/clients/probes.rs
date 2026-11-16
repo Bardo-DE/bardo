@@ -1,6 +1,6 @@
 //! Looking at the program behind a new public connection, off the loop thread (NEW-CASB-4,
 //! NEW-CAS-3). Holding the process and reading its facts touches `/proc` and stats the program's
-//! image; an image on a hung network or FUSE mount (an AppImage whose helper is stuck) blocks that
+//! image; an image on a hung network or FUSE mount (an `AppImage` whose helper is stuck) blocks that
 //! stat in the kernel, and on the loop that is the whole session. The look runs on a thread of
 //! its own, on a copy of the connection's descriptor, and is given [`PROBE_DEADLINE`]: the
 //! connection is taken in with what the look found, or, if it has not finished by then, as a

@@ -2,7 +2,7 @@
 //! reference backdrops, and the wash laid over either (design/03-COLOR.md section 20.6).
 //!
 //! The card's four grounds alone were not enough: a menu's match highlight
-//! sits on a selected row's wash, and PolkitPrompt's "Details" on a Sheet that is 82 % tint over
+//! sits on a selected row's wash, and `PolkitPrompt`'s "Details" on a Sheet that is 82 % tint over
 //! whatever lies behind it. Each is measured here as a screen composites it.
 //!
 //! One text accent cannot serve both kinds of ground and stay the band's: over a black backdrop
@@ -23,7 +23,7 @@ use crate::tokens::tint::tint;
 pub const BACKDROPS: [Hex; 2] = [Hex([0, 0, 0]), Hex([0xFF, 0xFF, 0xFF])];
 
 /// The materials that carry accent text: a menu's marks and checks (Popover), the launcher,
-/// the control and notification centers and PolkitPrompt (Sheet), a banner's link (Toast).
+/// the control and notification centers and `PolkitPrompt` (Sheet), a banner's link (Toast).
 ///
 /// The bar, the dock and the OSD draw no accent text. The widget's tint is gated at the
 /// large-text 3:1 (design/23-WIDGETS.md section 4.3) and its accent text is the widget card's
@@ -63,6 +63,7 @@ pub struct TextGround {
 }
 
 /// Each of [`TEXT_MATERIALS`] in `scheme` over each of [`BACKDROPS`].
+#[must_use]
 pub fn material_grounds(scheme: Scheme) -> Vec<Hex> {
     TEXT_MATERIALS
         .into_iter()
@@ -78,6 +79,7 @@ pub fn material_grounds(scheme: Scheme) -> Vec<Hex> {
 /// cannot be asked to read where the ink does not, and such a ground is the material's
 /// shortfall (in the band as settled, one: the dark Popover's wash over a white backdrop, where
 /// the ink reaches 4.1:1; `tests::the_only_ground_the_ink_misses_is_the_dark_popover_wash`).
+#[must_use]
 pub fn text_grounds(on: TextOn, scheme: Scheme, fill: Hex, wash: Alpha) -> Vec<TextGround> {
     let ink = card_ink(scheme);
     let plain = |kind: GroundKind, hexes: Vec<Hex>| {
@@ -103,6 +105,7 @@ pub fn text_grounds(on: TextOn, scheme: Scheme, fill: Hex, wash: Alpha) -> Vec<T
 }
 
 /// Whether `material` points `--accent-text` at `--accent-text-material`.
+#[must_use]
 pub fn text_on(material: Material) -> TextOn {
     if TEXT_MATERIALS.contains(&material) {
         TextOn::Material

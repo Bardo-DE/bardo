@@ -28,6 +28,7 @@ impl HeadlessBackend {
     }
 
     /// The gamma ramp last set on `name` (none when it is not plugged).
+    #[must_use]
     pub fn gamma_of(&self, name: &OutputName) -> Option<&GammaRamp> {
         self.outputs.get(name).map(|output| &output.gamma)
     }

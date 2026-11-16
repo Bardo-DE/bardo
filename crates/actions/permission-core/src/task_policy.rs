@@ -158,6 +158,7 @@ pub struct ArgLabels {
 /// anything the old did not (the first such things are listed), narrows when only the old
 /// covered something, and is the same otherwise. The task, turns, rationale and state are
 /// not coverage.
+#[must_use]
 pub fn compare(new: &TaskPolicy, old: &TaskPolicy) -> PolicyChange {
     let wider = widenings(new, old);
     if !wider.is_empty() {
@@ -215,6 +216,7 @@ fn widenings(new: &TaskPolicy, old: &TaskPolicy) -> Vec<Widening> {
 /// the other covers. It never covers more than either (`compare` says `Narrows` or `Same`
 /// against both), and a policy in another Space shares nothing: Spaces are walls. It is the
 /// derivation of a child task's policy from its parent's.
+#[must_use]
 pub fn intersection(a: &TaskPolicy, b: &TaskPolicy) -> TaskPolicy {
     let ceiling = a.ceiling.min(b.ceiling);
     let shared_space = a.space == b.space;
@@ -324,6 +326,7 @@ fn patterns_for(policy: &TaskPolicy, sink: ArgSink) -> &[TrustedPattern] {
 /// argument that feeds a sink is either trusted or matches a trusted pattern for that sink. An
 /// argument the manifest does not declare is treated as a body. Expiry by the clock is the
 /// router's.
+#[must_use]
 pub fn covers(
     policy: &TaskPolicy,
     decl: &ActionDecl,
@@ -338,6 +341,7 @@ pub fn covers(
 /// a routine, loading a skill), which no card names. The person set on the card what the helper may change in each app; what it writes
 /// there stays in the app, and a session that has read untrusted content still asks by the taint
 /// rule. Where things go (recipients, destinations, paths) is judged as for any policy.
+#[must_use]
 pub fn covers_reach(
     reach: &TaskPolicy,
     decl: &ActionDecl,

@@ -41,6 +41,7 @@ pub enum State {
 
 impl State {
     /// The word on the bus and in the file.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             State::Approved => "approved",
@@ -157,6 +158,7 @@ fn held<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
 
 impl Guests {
     /// Records kept nowhere: for a computer that is not to remember, and for tests.
+    #[must_use]
     pub fn in_memory() -> Self {
         Self {
             #[cfg(feature = "persist")]
@@ -171,11 +173,13 @@ impl Guests {
     /// second part says so, in a line for a log. A record whose id is not a computer's is
     /// dropped.
     #[cfg(feature = "persist")]
+    #[must_use]
     pub fn open(path: &Path) -> (Self, Option<String>) {
         let (file, said) = match std::fs::read_to_string(path) {
-            Ok(text) => match toml::from_str::<File>(&text) {
-                Ok(file) => (file, None),
-                Err(_) => {
+            Ok(text) => {
+                if let Ok(file) = toml::from_str::<File>(&text) {
+                    (file, None)
+                } else {
                     let mut aside = path.as_os_str().to_owned();
                     aside.push(".unusable");
                     let aside = PathBuf::from(aside);
@@ -189,7 +193,7 @@ impl Guests {
                         )),
                     )
                 }
-            },
+            }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => (File::default(), None),
             Err(e) => (
                 File::default(),
@@ -324,8 +328,8 @@ impl Guests {
                 .insert(node.to_string(), record(&ask.name, answer, now));
             self.save(&next)?;
             inner.file = next;
-            inner.asking.remove(node);
-        }
+            inner.asking.remove(node)
+        };
         self.tell(&[GuestEvent::Changed]);
         Ok(())
     }
@@ -354,8 +358,8 @@ impl Guests {
                 .insert(node.to_string(), record(&name, answer, now));
             self.save(&next)?;
             inner.file = next;
-            inner.asking.remove(node);
-        }
+            inner.asking.remove(node)
+        };
         self.tell(&[GuestEvent::Changed]);
         Ok(())
     }

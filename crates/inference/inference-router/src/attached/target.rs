@@ -31,6 +31,7 @@ impl Target {
     }
 
     /// The socket, when the engine is reached over one.
+    #[must_use]
     pub fn socket(&self) -> Option<&PathBuf> {
         match &self.reach {
             Reach::Socket(path) | Reach::Tailnet { socket: path, .. } => Some(path),
@@ -41,6 +42,7 @@ impl Target {
     /// Whether the engine is a computer on the Tailscale network, reached through a relay that
     /// asks Tailscale and the computer before it answers: slower to answer than a socket the
     /// person's own tunnel holds open.
+    #[must_use]
     pub fn is_relayed(&self) -> bool {
         self.reach.is_tailnet()
     }
@@ -60,6 +62,7 @@ impl Target {
 
     /// The endpoint with no token: what a turn sends when the key file is refused (the engine
     /// answers 401, and no token has gone anywhere).
+    #[must_use]
     pub fn unsigned(&self, base: &str, timeouts: Timeouts) -> HttpEndpoint {
         self.endpoint_with(AuthHeader::None, base, timeouts)
     }

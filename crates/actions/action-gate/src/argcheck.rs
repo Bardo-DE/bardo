@@ -10,6 +10,7 @@ use action_vocab::{Args, ParamName, ParamType, TargetValue, Value};
 use provenance::Labelled;
 
 /// The name a fault about the target carries.
+#[must_use]
 pub fn target_name() -> ParamName {
     ParamName::parse("target").expect("`target` is a valid parameter name")
 }

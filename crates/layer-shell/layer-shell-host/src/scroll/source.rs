@@ -7,7 +7,7 @@ use blitz_embed::scroll::geom::ScrollAxis;
 use blitz_embed::scroll::pad::PointerScroll;
 
 /// libinput's degrees per wheel click, for a wheel event carrying neither `value120` nor
-/// `discrete` (KWin and libinput report a click as 15).
+/// `discrete` (`KWin` and libinput report a click as 15).
 const DEGREES_PER_DETENT: f64 = 15.0;
 
 /// `wl_pointer.axis_source`.

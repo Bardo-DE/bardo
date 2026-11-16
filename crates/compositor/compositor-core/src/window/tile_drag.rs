@@ -38,6 +38,7 @@ pub enum TileTarget {
 
 impl TileTarget {
     /// The placement that carries it out.
+    #[must_use]
     pub fn place(self) -> PlaceTarget {
         match self {
             TileTarget::Fill => PlaceTarget::Fill,
@@ -59,6 +60,7 @@ pub struct TileKnobs {
 
 impl TileKnobs {
     /// The knobs `settings` give.
+    #[must_use]
     pub fn of(settings: &WindowSettings) -> TileKnobs {
         TileKnobs {
             edges: settings.tile_edges,
@@ -116,11 +118,13 @@ pub enum TileDrag {
 
 impl TileDrag {
     /// A move of `window` begins.
+    #[must_use]
     pub fn begin(window: WindowId) -> TileDrag {
         TileDrag::Moving { window }
     }
 
     /// The pointer is at `at` with `mods` held.
+    #[must_use]
     pub fn moved(
         self,
         at: LogicalPoint,
@@ -138,6 +142,7 @@ impl TileDrag {
     }
 
     /// The window being moved, while a move is in progress.
+    #[must_use]
     pub fn window(&self) -> Option<WindowId> {
         match self {
             TileDrag::Idle => None,
@@ -146,6 +151,7 @@ impl TileDrag {
     }
 
     /// The zone armed, if any.
+    #[must_use]
     pub fn target(&self) -> Option<TileTarget> {
         match self {
             TileDrag::Previewing { target, .. } => Some(*target),
@@ -154,6 +160,7 @@ impl TileDrag {
     }
 
     /// The move ends: the drag is over, and the window is to tile when a zone was armed.
+    #[must_use]
     pub fn released(self) -> (TileDrag, Option<TileDrop>) {
         match self {
             TileDrag::Previewing { window, target } => {
@@ -165,6 +172,7 @@ impl TileDrag {
 }
 
 /// The zone the pointer at `at` arms, if any.
+#[must_use]
 pub fn target_at(
     at: LogicalPoint,
     mods: HeldMods,
@@ -289,9 +297,10 @@ fn at_edge(at: LogicalPoint, scene: &TileScene<'_>, knobs: TileKnobs) -> Option<
         (Some(across), None) => {
             let down = in_reach(at.y, home.origin.y, home.size.h, past_y, scene);
             Some(down.map_or(
-                match across {
-                    false => TileTarget::Zone(TileZone::Left),
-                    true => TileTarget::Zone(TileZone::Right),
+                if across {
+                    TileTarget::Zone(TileZone::Right)
+                } else {
+                    TileTarget::Zone(TileZone::Left)
                 },
                 |down| corner(across, down),
             ))

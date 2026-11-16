@@ -96,6 +96,7 @@ pub enum Admit {
 }
 
 /// Whether `Open` of `handle` is taken: not twice, and not without limit.
+#[must_use]
 pub fn admits(sheets: &AccountsSheets, handle: &SheetHandle) -> Admit {
     if sheets.open.iter().any(|sheet| &sheet.handle == handle) {
         Admit::Duplicate

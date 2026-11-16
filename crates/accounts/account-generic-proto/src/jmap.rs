@@ -26,6 +26,7 @@ pub fn session_text(response: &Response<Vec<u8>>) -> Result<&str, Error> {
 /// The session's endpoints, logged in as `login`: the session names the login it knows the
 /// account by, but the one the person typed is what authenticated, so that is what the relay
 /// presents.
+#[must_use]
 pub fn as_login(endpoints: Vec<ServiceEndpoint>, login: &LoginName) -> Vec<ServiceEndpoint> {
     endpoints
         .into_iter()

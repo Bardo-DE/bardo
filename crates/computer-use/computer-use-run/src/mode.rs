@@ -13,6 +13,7 @@ use computer_use_desktop::{BackendCaps, RunMode, SeatIsolation};
 ///   agent seat, so it is unsupported there (`NoHiddenInput`); a compositor that stops rendering
 ///   them is `HiddenCaptureWithheld`.
 /// - Nested session: needs a nested compositor host; no backend ships one yet.
+#[must_use]
 pub fn mode_support(caps: &BackendCaps, mode: RunMode) -> ModeSupport {
     match mode {
         RunMode::InPlace => match caps.seat {
@@ -30,6 +31,7 @@ pub fn mode_support(caps: &BackendCaps, mode: RunMode) -> ModeSupport {
 
 /// The mode a run gets: the setting's own when it names one, and for `auto` the agent workspace
 /// where it is fully supported, otherwise in place. `None` when the named mode is unsupported.
+#[must_use]
 pub fn choose_mode(default: DefaultMode, caps: &BackendCaps) -> Option<RunMode> {
     let supported = |mode| !matches!(mode_support(caps, mode), ModeSupport::Unsupported(_));
     match default {

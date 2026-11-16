@@ -21,6 +21,7 @@ pub enum ListError {
 
 impl ListError {
     /// The error `err` stands for.
+    #[must_use]
     pub fn from_io(err: &io::Error) -> ListError {
         let kind = err.kind();
         if kind == io::ErrorKind::NotFound {

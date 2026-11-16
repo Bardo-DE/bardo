@@ -12,11 +12,13 @@ pub struct RevealBook(BTreeMap<(OutputKey, RevealEdge), Reveal>);
 
 impl RevealBook {
     /// No machines.
+    #[must_use]
     pub fn new() -> RevealBook {
         RevealBook::default()
     }
 
     /// The machine of `edge` of `output`; a machine never told anything when there is none.
+    #[must_use]
     pub fn get(&self, output: &OutputKey, edge: RevealEdge) -> Reveal {
         self.0
             .get(&(output.clone(), edge))
@@ -26,6 +28,7 @@ impl RevealBook {
 
     /// The book with the machine of `edge` of `output` stepped by `input` at `now`, and what the
     /// edge does about it.
+    #[must_use]
     pub fn step(
         self,
         output: &OutputKey,

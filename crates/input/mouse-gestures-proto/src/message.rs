@@ -34,6 +34,7 @@ pub enum Filter {
 
 impl Filter {
     /// Whether `msg` passes this filter.
+    #[must_use]
     pub fn admits(&self, msg: &ToHost) -> bool {
         match (self, msg.topic()) {
             (_, None) | (Filter::All, _) => true,
@@ -81,6 +82,7 @@ pub enum ToHost {
 
 impl ToHost {
     /// The topic a subscriber filters this message by; `None` for always-delivered messages.
+    #[must_use]
     pub fn topic(&self) -> Option<Topic> {
         match self {
             Self::Hello { .. } | Self::DeviceGone | Self::Run { .. } => None,

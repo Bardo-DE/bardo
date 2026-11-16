@@ -28,6 +28,7 @@ pub struct SeatCaps {
 impl SeatCaps {
     /// What a seat of this isolation offers. Stock types ASCII through key codes only (S10);
     /// the fork's agent seat adds its own text input.
+    #[must_use]
     pub fn for_isolation(isolation: SeatIsolation) -> SeatCaps {
         let text = match isolation {
             SeatIsolation::AgentSeat => vec![TextPath::AgentTextInput, TextPath::EiKeymap],

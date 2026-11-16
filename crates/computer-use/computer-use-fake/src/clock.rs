@@ -15,6 +15,7 @@ pub struct FixedClock {
 
 impl FixedClock {
     /// A clock at `stamp` and `unix`.
+    #[must_use]
     pub fn at(stamp: Stamp, unix: UnixSeconds) -> Self {
         Self {
             stamp: AtomicU64::new(stamp.0),

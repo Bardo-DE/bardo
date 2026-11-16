@@ -103,7 +103,7 @@ pub(crate) fn keyframes(css: &str) -> Vec<(&str, &str)> {
         let Some(close) = matching(&after[open..]) else {
             break;
         };
-        found.push((name, &after[open..open + close + 1]));
+        found.push((name, &after[open..=(open + close)]));
         rest = &after[open + close + 1..];
     }
     found

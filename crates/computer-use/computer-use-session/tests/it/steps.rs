@@ -83,7 +83,7 @@ fn a_tool_dialect_request_declares_the_function_and_the_space() {
                 description,
                 parameters,
             },
-        ] = &request.tools[..]
+        ] = &*request.tools
         else {
             panic!("one function")
         };
@@ -225,7 +225,7 @@ fn a_click_maps_from_the_grid_into_the_window() {
         CuaAction::Click {
             at, button, count, ..
         },
-    ] = &actions[..]
+    ] = &*actions
     else {
         panic!("one click")
     };
@@ -295,7 +295,7 @@ fn a_scroll_distance_maps_with_the_points() {
             by: computer_use_action::ScrollBy::Distance(len),
             ..
         },
-    ] = &kept[..]
+    ] = &*kept
     else {
         panic!("a scroll by distance: {kept:?}")
     };
@@ -316,7 +316,7 @@ fn one_repair_then_unparseable_and_the_step_still_counts() {
     assert_eq!(s.repairs_left().0, 0);
     assert_eq!(s.remembered(), 0, "a repair is not a step yet");
     // The repair is the same request plus one message, with the same frame and not the reply.
-    assert_eq!(&repair.messages[..sent.messages.len()], &sent.messages[..]);
+    assert_eq!(&repair.messages[..sent.messages.len()], &*sent.messages);
     assert_eq!(repair.messages.len(), sent.messages.len() + 1);
     assert_eq!(images(&repair), images(&sent));
     assert!(!format!("{repair:?}").contains("ignore previous"));
@@ -464,7 +464,7 @@ fn ui_tars_points_map_from_image_pixels() {
             at: computer_use_action::Target::Point(p),
             ..
         },
-    ] = &actions[..]
+    ] = &*actions
     else {
         panic!("one click")
     };

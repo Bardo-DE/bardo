@@ -31,11 +31,13 @@ impl Proven {
     /// let shell = Proven::new(AppKey::new("org.bardo.Shell").expect("an app"), roles::SHELL);
     /// assert_eq!(shell.role, roles::SHELL);
     /// ```
+    #[must_use]
     pub fn new(app: AppKey, role: RoleName) -> Proven {
         Proven { app, role }
     }
 
     /// The app and role of a table row's standing; nothing for any other standing.
+    #[must_use]
     pub fn of(standing: &Standing) -> Option<Proven> {
         match standing {
             Standing::Service { app, role, .. } => Some(Proven::new(app.clone(), role.clone())),
@@ -139,6 +141,7 @@ impl ConnectAsk {
     /// let ask = ConnectAsk::new(ConnectionRole::Shell, caller);
     /// assert_eq!(ask.role, ConnectionRole::Shell);
     /// ```
+    #[must_use]
     pub fn new(role: ConnectionRole, caller: Proven) -> ConnectAsk {
         ConnectAsk {
             role,
@@ -164,6 +167,7 @@ impl ConnectAsk {
 
     /// The portal connection `owner` left the bus; `portal` is who it had proven to be. Only
     /// casement's bus thread makes this.
+    #[must_use]
     pub fn owner_gone(owner: &str, portal: Proven) -> ConnectAsk {
         ConnectAsk {
             // Not read: `gone` decides.
@@ -192,6 +196,7 @@ impl ConnectAsk {
     /// let ask = ConnectAsk::remote_eis(7, 3, caller);
     /// assert_eq!(ask.remote.map(|remote| remote.session), Some(7));
     /// ```
+    #[must_use]
     pub fn remote_eis(session: u64, devices: u32, caller: Proven) -> ConnectAsk {
         ConnectAsk {
             // Not read: `remote` decides.
@@ -217,6 +222,7 @@ impl ConnectAsk {
     /// let ask = ConnectAsk::end_eis(7, caller);
     /// assert_eq!(ask.end.map(|end| end.session), Some(7));
     /// ```
+    #[must_use]
     pub fn end_eis(session: u64, caller: Proven) -> ConnectAsk {
         ConnectAsk {
             // Not read: `end` decides.
@@ -245,6 +251,7 @@ impl ConnectAsk {
     /// let ask = ConnectAsk::lease_window("w7", 7, caller);
     /// assert_eq!(ask.lease.map(|lease| lease.window), Some("w7".to_owned()));
     /// ```
+    #[must_use]
     pub fn lease_window(window: &str, devices: u32, caller: Proven) -> ConnectAsk {
         ConnectAsk {
             lease: Some(LeaseAsk {
@@ -257,6 +264,7 @@ impl ConnectAsk {
     }
 
     /// The question of `caller`, asking that the window `lease` holds take the key.
+    #[must_use]
     pub fn focus_lease(lease: u64, caller: Proven) -> ConnectAsk {
         ConnectAsk {
             focus_lease: Some(FocusLeaseAsk { lease }),
@@ -266,6 +274,7 @@ impl ConnectAsk {
     }
 
     /// The question of `caller`, asking to end `lease`.
+    #[must_use]
     pub fn end_lease(lease: u64, caller: Proven) -> ConnectAsk {
         ConnectAsk {
             end_lease: Some(EndLeaseAsk { lease }),
@@ -323,6 +332,7 @@ pub enum ConnectRefusal {
 
 impl ConnectRefusal {
     /// The D-Bus error the caller gets.
+    #[must_use]
     pub fn to_error(self) -> fdo::Error {
         match self {
             ConnectRefusal::UnknownUnit => fdo::Error::AccessDenied(

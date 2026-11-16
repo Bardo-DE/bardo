@@ -22,6 +22,7 @@ pub const SETTINGS_APP: &str = "org.bardo.Settings";
 /// app the `settings` role of [`SETTINGS_APP`]; any other
 /// row, or an app scope or Flatpak scope the table does not name, is that app. The fixed callers
 /// need the role as well as the app, so a row cannot make an app the router by naming it.
+#[must_use]
 pub fn caller_for(found: account_callers::Caller) -> Caller {
     let name = found.app.name.as_str();
     match found.role {

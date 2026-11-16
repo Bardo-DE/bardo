@@ -21,6 +21,7 @@ pub struct RootContexts {
 
 impl RootContexts {
     /// No contexts.
+    #[must_use]
     pub fn new() -> Self {
         RootContexts::default()
     }
@@ -34,6 +35,7 @@ impl RootContexts {
     }
 
     /// These contexts, then every one of `more`.
+    #[must_use]
     pub fn and(mut self, more: RootContexts) -> Self {
         self.factories.extend(more.factories);
         self

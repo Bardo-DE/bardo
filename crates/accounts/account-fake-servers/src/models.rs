@@ -29,6 +29,7 @@ pub struct ModelDef {
 
 impl ModelDef {
     /// A chat model with tool calling.
+    #[must_use]
     pub fn chat(name: &str, context: u64) -> Self {
         Self {
             name: name.to_owned(),
@@ -39,6 +40,7 @@ impl ModelDef {
     }
 
     /// An embedding model.
+    #[must_use]
     pub fn embedding(name: &str, context: u64) -> Self {
         Self {
             name: name.to_owned(),
@@ -110,7 +112,7 @@ pub struct FakeModels {
 }
 
 impl FakeModels {
-    /// Binds a server of this wire holding `models`; `key` (OpenAI wire) is the bearer token it
+    /// Binds a server of this wire holding `models`; `key` (`OpenAI` wire) is the bearer token it
     /// requires.
     pub async fn bind(wire: Wire, models: Vec<ModelDef>, key: Option<&str>) -> io::Result<Self> {
         Self::bind_on(&Bind::Port(0), wire, models, key).await
@@ -160,16 +162,19 @@ impl FakeModels {
 
 impl ModelsHandle {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn hits(&self) -> Vec<Hit> {
         self.shared.hits.all()
     }
 
     /// The JSON bodies of the chat requests received, oldest first.
+    #[must_use]
     pub fn chats(&self) -> Vec<Value> {
         self.shared.chats.all()
     }

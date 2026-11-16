@@ -31,6 +31,7 @@ pub enum ConflictRule {
 
 impl DatasetKind {
     /// The dataset's conflict rule.
+    #[must_use]
     pub fn conflict_rule(self) -> ConflictRule {
         match self {
             DatasetKind::PhotosOriginals => ConflictRule::Impossible,

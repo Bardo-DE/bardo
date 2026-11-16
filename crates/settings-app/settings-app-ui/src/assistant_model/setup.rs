@@ -30,7 +30,7 @@ pub(crate) fn AssistantSetup() -> Element {
             async move {
                 client
                     .start(PageKind::AssistantModel.traits().modules)
-                    .await
+                    .await;
             }
         }
     });

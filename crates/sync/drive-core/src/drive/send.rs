@@ -195,9 +195,10 @@ impl Inner {
             Some(writing) if writing.handles > 0 => Err(None),
             Some(writing) => {
                 let at = writing.last + self.quiet;
-                match at <= Instant::now() {
-                    true => Ok(()),
-                    false => Err(Some(at)),
+                if at <= Instant::now() {
+                    Ok(())
+                } else {
+                    Err(Some(at))
                 }
             }
             None => Ok(()),
@@ -1058,6 +1059,7 @@ impl Drive {
     }
 
     /// Whether what waits to be sent is held.
+    #[must_use]
     pub fn paused(&self) -> bool {
         self.inner.paused.load(Ordering::SeqCst)
     }
@@ -1072,12 +1074,14 @@ impl Drive {
     }
 
     /// Whether the drive refused the account's sign-in when it was last sent something.
+    #[must_use]
     pub fn signed_out(&self) -> bool {
         self.inner.signed_out.load(Ordering::SeqCst)
     }
 
     /// Told each time a listing pass is wanted: a change was sent (the listing shows it on its
     /// next pass), or the drive has a newer version than a change was made against.
+    #[must_use]
     pub fn listing_wanted(&self) -> Arc<Notify> {
         Arc::clone(&self.inner.wanted)
     }
@@ -1099,6 +1103,7 @@ impl Drive {
     }
 
     /// How many changes made here are not on the drive yet.
+    #[must_use]
     pub fn unsent(&self) -> usize {
         held(&self.inner.index)
             .edits

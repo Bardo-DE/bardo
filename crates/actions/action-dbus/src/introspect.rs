@@ -43,6 +43,7 @@ impl Bus {
     ];
 
     /// The file under `dbus/` holding its introspection.
+    #[must_use]
     pub fn file_name(self) -> &'static str {
         match self {
             Bus::Intents => "org.bardo.Intents1.xml",
@@ -57,6 +58,7 @@ impl Bus {
 }
 
 /// The introspection document of `bus`: every interface it serves, in one `<node>`.
+#[must_use]
 pub fn introspection(bus: Bus) -> String {
     let reach = ReachServer::new();
     let interfaces: Vec<&dyn Interface> = match bus {

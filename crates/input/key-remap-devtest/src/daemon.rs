@@ -93,26 +93,31 @@ impl Daemon {
     }
 
     /// The control socket.
+    #[must_use]
     pub fn socket_path(&self) -> PathBuf {
         self.runtime_dir.join("key-remap.sock")
     }
 
     /// The process id.
+    #[must_use]
     pub fn pid(&self) -> u32 {
         self.child.id()
     }
 
     /// Everything the daemon wrote to stderr, all runs.
+    #[must_use]
     pub fn stderr(&self) -> String {
         std::fs::read_to_string(&self.stderr_log).unwrap_or_default()
     }
 
     /// The `sd_notify` messages received.
+    #[must_use]
     pub fn notifications(&self) -> &Notifications {
         &self.notifications
     }
 
     /// Time since the spawn.
+    #[must_use]
     pub fn uptime(&self) -> Duration {
         self.started.elapsed()
     }

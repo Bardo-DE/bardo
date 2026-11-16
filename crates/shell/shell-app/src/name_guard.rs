@@ -18,6 +18,7 @@ use tokio::sync::watch;
 use crate::daemon::msg::ShellMsg;
 
 /// What the bus said, when the seat could not take a name because another program owns it.
+#[must_use]
 pub fn taken(link: &IntentsLink) -> Option<&str> {
     match link {
         IntentsLink::Unavailable(ClaimError::NameTaken(said)) => Some(said),
@@ -28,6 +29,7 @@ pub fn taken(link: &IntentsLink) -> Option<&str> {
 }
 
 /// The line the shell stops with.
+#[must_use]
 pub fn line(said: &str) -> String {
     format!(
         "another program already owns a name on the session bus that only the shell may hold \

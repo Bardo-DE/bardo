@@ -28,6 +28,7 @@ const NO_MODE: Mode = Mode {
 /// cannot be met, and to the largest, fastest mode when none is marked preferred. An exact
 /// wish matches on resolution and refresh rate and returns the mode as the display lists it.
 /// Ties go to the mode listed first. A display with no modes yields a mode of size 0 x 0.
+#[must_use]
 pub fn pick_mode(facts: &OutputFacts, wish: &ModeWish) -> Mode {
     let wished = match wish {
         ModeWish::Preferred => None,

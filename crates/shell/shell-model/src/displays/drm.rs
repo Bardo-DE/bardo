@@ -24,6 +24,7 @@ pub enum Placement {
 
 /// The connector name a sysfs entry stands for: `card1-HDMI-A-2` is `HDMI-A-2` (the name the
 /// compositor gives the output too). `None` for anything that is not `card<N>-<name>`.
+#[must_use]
 pub fn connector_name(entry: &str) -> Option<OutputName> {
     let rest = entry.strip_prefix("card")?;
     let (index, name) = rest.split_once('-')?;
@@ -33,6 +34,7 @@ pub fn connector_name(entry: &str) -> Option<OutputName> {
 
 /// Whether `name` is a built-in panel's connector, by its type prefix (`eDP-1`, `LVDS-1`,
 /// `DSI-1`), matched up to the dash.
+#[must_use]
 pub fn placement(name: &OutputName) -> Placement {
     let kind = name.0.rsplit_once('-').map_or(name.0.as_str(), |(k, _)| k);
     match kind {

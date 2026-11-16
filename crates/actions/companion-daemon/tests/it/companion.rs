@@ -151,7 +151,11 @@ async fn restart_rebuilds_the_front_and_the_roster_from_recent_with_bodies() {
     assert_eq!(queries.len(), 1);
     assert_eq!(queries[0].bodies, BodyMode::Json);
     assert_eq!(queries[0].since, provenance::UnixSeconds(0));
-    let kinds: Vec<&str> = queries[0].kinds.iter().map(|k| k.as_str()).collect();
+    let kinds: Vec<&str> = queries[0]
+        .kinds
+        .iter()
+        .map(memory_core::KindPattern::as_str)
+        .collect();
     assert_eq!(
         kinds,
         vec![

@@ -19,7 +19,7 @@ impl MemorySecrets {
         // A panic while the lock is held already failed the test that caused it.
         self.entries
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 }
 

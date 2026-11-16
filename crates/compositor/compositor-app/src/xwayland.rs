@@ -73,6 +73,7 @@ pub struct XwaylandConfig {
 
 impl XwaylandConfig {
     /// No X11 clients.
+    #[must_use]
     pub fn off() -> XwaylandConfig {
         XwaylandConfig {
             mode: XwaylandMode::Off,
@@ -82,6 +83,7 @@ impl XwaylandConfig {
     }
 
     /// X11 clients through the satellite at `path`.
+    #[must_use]
     pub fn satellite(path: &str) -> XwaylandConfig {
         XwaylandConfig {
             mode: XwaylandMode::Satellite,
@@ -145,11 +147,13 @@ impl Xwayland {
     }
 
     /// The display it serves.
+    #[must_use]
     pub fn display(&self) -> &DisplayName {
         self.sockets.display()
     }
 
     /// The variables programs started afterwards get (`DISPLAY`).
+    #[must_use]
     pub fn env(&self) -> Vec<EnvVar> {
         display_env(self.sockets.display())
     }
@@ -268,6 +272,7 @@ impl XwaylandState {
     }
 
     /// The display being served, when X11 is on.
+    #[must_use]
     pub fn display(&self) -> Option<&DisplayName> {
         match self {
             XwaylandState::Off => None,
@@ -279,6 +284,7 @@ impl XwaylandState {
     /// The process of the running satellite. It is one Wayland client that carries every X11
     /// program's windows, so its process is never the process of an app: force quit must not
     /// signal it (`clients::Processes`, `exec::quit`).
+    #[must_use]
     pub fn satellite_pid(&self) -> Option<RawPid> {
         match self {
             XwaylandState::Running(running) => RawPid::try_from(running.process.pid.0).ok(),
@@ -288,6 +294,7 @@ impl XwaylandState {
 
     /// The variables programs started afterwards get: `DISPLAY` from the moment the sockets
     /// are bound, nothing when off.
+    #[must_use]
     pub fn env(&self) -> Vec<EnvVar> {
         match self {
             XwaylandState::Off => Vec::new(),

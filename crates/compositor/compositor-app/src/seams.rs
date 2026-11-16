@@ -69,6 +69,7 @@ impl fmt::Debug for Seams {
 
 impl Seams {
     /// These seams.
+    #[must_use]
     pub fn new(
         space_store: Box<dyn SpaceStore>,
         shell_calls: Box<dyn ShellCalls>,
@@ -128,7 +129,7 @@ impl Seams {
         Seams { notify, ..self }
     }
 
-    /// The same with the tty backend's seams injected (the FakeKms suite).
+    /// The same with the tty backend's seams injected (the `FakeKms` suite).
     #[must_use]
     pub fn with_tty(self, tty: TtySeams) -> Seams {
         Seams {
@@ -140,6 +141,7 @@ impl Seams {
     /// The real seams: the Spaces file and the privacy book in `home` (none kept for an
     /// ephemeral run), the administrator's floor in `system` (read by every run, ephemeral or
     /// not), the system clock, the session bus on first use, child processes.
+    #[must_use]
     pub fn real(home: Option<&StateDirs>, system: &SystemDir) -> Seams {
         let space_store: Box<dyn SpaceStore> = match home {
             Some(dirs) => Box::new(BackgroundSpaceStore::new(dirs)),

@@ -42,6 +42,7 @@ impl CapabilityName {
     }
 
     /// The name as written in the file.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -55,7 +56,7 @@ impl fmt::Display for CapabilityName {
 
 /// A package name as the distro spells it (`libheif-tools`): ASCII letters and digits with `+`, `.`,
 /// `_` and `-` inside, starting with a letter or digit. That is every name the four package
-/// managers use, and it is also what keeps a name from being anything else: PackageKit reads
+/// managers use, and it is also what keeps a name from being anything else: `PackageKit` reads
 /// `@name` as a group and `name;version;arch;repo` as an exact id, and the install line shown to
 /// copy (`sudo dnf install <name>`) is pasted into a shell, where `$(`, a backtick, `|` or `&`
 /// would run.
@@ -78,6 +79,7 @@ impl PackageName {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -107,6 +109,7 @@ impl Executable {
     }
 
     /// The file name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -170,8 +173,8 @@ mod tests {
 
     #[test]
     fn executables_have_no_directory() {
-        assert!(Executable::new("mpv").is_ok());
-        assert!(Executable::new("/usr/bin/mpv").is_err());
-        assert!(Executable::new("").is_err());
+        Executable::new("mpv").unwrap();
+        Executable::new("/usr/bin/mpv").unwrap_err();
+        Executable::new("").unwrap_err();
     }
 }

@@ -48,6 +48,7 @@ pub enum SuccessCheck {
 }
 
 /// Where the run's reports go: the requester's address, and the conversation they continue.
+///
 /// Progress and the final report are `provenance::Message`s of kind `Report`, sent through
 /// `Intents1.Message.Send` (cua's role may send); the router stamps the id, the sender and the
 /// label. A report carries no authority.

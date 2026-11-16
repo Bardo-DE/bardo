@@ -54,6 +54,7 @@ pub struct Seq(pub u64);
 
 impl Seq {
     /// The next position.
+    #[must_use]
     pub fn next(self) -> Seq {
         Seq(self.0.saturating_add(1))
     }
@@ -264,6 +265,7 @@ pub enum SessionEntry {
 
 impl SessionEntry {
     /// The entry's slug, the tail of its kind tag.
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             SessionEntry::Opened(_) => "opened",

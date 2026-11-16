@@ -29,6 +29,7 @@ pub struct FontRendering {
 pub const HIGH_DENSITY: Ppi = Ppi(150);
 
 /// The defaults for the densest display (the one whose text a person reads closest).
+#[must_use]
 pub fn font_rendering_for(max: Ppi) -> FontRendering {
     FontRendering {
         hinting: if max >= HIGH_DENSITY {
@@ -47,6 +48,7 @@ pub const FILE_NAME: &str = "50-shell-rendering.conf";
 pub const HEADER: &str = "<!-- Written by bardo-shell (display.font_rendering = auto).";
 
 /// The fontconfig snippet for `rendering`.
+#[must_use]
 pub fn snippet(rendering: FontRendering) -> String {
     let (hinting, hintstyle) = match rendering.hinting {
         Hinting::None => ("false", "hintnone"),
@@ -73,6 +75,7 @@ pub fn snippet(rendering: FontRendering) -> String {
 }
 
 /// Whether `text` is a file bardo-shell wrote.
+#[must_use]
 pub fn is_ours(text: &str) -> bool {
     text.lines()
         .any(|line| line.trim_start().starts_with(HEADER))
@@ -84,6 +87,7 @@ const CONTESTED: &[&str] = &["antialias", "hinting", "hintstyle", "rgba"];
 /// Whether a person's fontconfig file sets one of the rendering properties: an `<edit>` whose
 /// `name` attribute is exactly one of them (compared as a whole quoted value, so
 /// `name="hintstyle_extra"` or a comment mentioning hinting is not a conflict).
+#[must_use]
 pub fn conflicts(text: &str) -> bool {
     text.split("<edit").skip(1).any(|element| {
         let head = element.split('>').next().unwrap_or_default();
@@ -156,7 +160,7 @@ mod tests {
             ),
             (
                 "a family alias",
-                r#"<alias><family>serif</family><prefer><family>Noto Serif</family></prefer></alias>"#,
+                r"<alias><family>serif</family><prefer><family>Noto Serif</family></prefer></alias>",
                 false,
             ),
             (

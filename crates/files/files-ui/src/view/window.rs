@@ -64,11 +64,12 @@ pub(super) fn Window() -> Element {
         .places
         .clone()
         .with_sidebar(browse.preferences.read().sidebar.clone());
-    let side_body = match shown {
-        true => rsx! {
+    let side_body = if shown {
+        rsx! {
             PlacesPane { browse, places }
-        },
-        false => rsx! {},
+        }
+    } else {
+        rsx! {}
     };
     rsx! {
         // The box that hears the keys: a press in the table or the sidebar bubbles up to it, and

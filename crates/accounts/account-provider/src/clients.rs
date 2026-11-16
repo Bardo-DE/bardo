@@ -75,6 +75,7 @@ impl ClientEntry {
     /// Whether the row's own `endpoints` leave its issuer's servers: some endpoint's origin
     /// (scheme, host, port) is none of the origins the issuer publishes. A path may differ
     /// (Microsoft's `organizations` or `consumers` tenant). A row with no endpoints stays.
+    #[must_use]
     pub fn leaves_the_issuer(&self) -> bool {
         let origins = |e: &IssuerEndpoints| -> Vec<base_url::Origin> {
             [Some(&e.authorize), Some(&e.token), e.revoke.as_ref()]

@@ -29,6 +29,7 @@ pub struct ModelOffer {
 
 impl ModelOffer {
     /// The line shown beside it ("Reads text and images", "Text only"); none when not known.
+    #[must_use]
     pub fn facts(&self) -> Option<&'static str> {
         match self.takes {
             Takes::Unknown => None,
@@ -40,6 +41,7 @@ impl ModelOffer {
     }
 
     /// The model choosing it names.
+    #[must_use]
     pub fn model(&self) -> Option<&ModelRef> {
         match &self.choice {
             HelperModel::Named(model) => Some(model),

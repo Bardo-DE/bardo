@@ -57,16 +57,20 @@ impl ClientRegistry {
     /// issuer's servers keeps its id with the issuer's published endpoints, and is listed by
     /// [`ClientRegistry::moved_endpoints`] for the daemon to log. The shipped file is the
     /// install's, and may point anywhere (a sovereign cloud; a test's fake issuer).
+    #[must_use]
     pub fn layered(shipped: ClientsFile, own: ClientsFile) -> Self {
         let own = own
             .clients
             .into_iter()
-            .map(|row| match row.leaves_the_issuer() {
-                true => ClientEntry {
-                    endpoints: None,
-                    ..row
-                },
-                false => row,
+            .map(|row| {
+                if row.leaves_the_issuer() {
+                    ClientEntry {
+                        endpoints: None,
+                        ..row
+                    }
+                } else {
+                    row
+                }
             })
             .collect();
         Self {
@@ -92,6 +96,7 @@ impl ClientRegistry {
 
     /// The same registry, the row [`ClientRegistry::lookup`] finds for `issuer` on `channel`
     /// having `traits` (nothing changes when there is no such row).
+    #[must_use]
     pub fn with_traits(
         mut self,
         issuer: Issuer,
@@ -116,6 +121,7 @@ impl ClientRegistry {
     /// What the row [`ClientRegistry::lookup`] finds for `issuer` on `channel` says besides its
     /// id: the person's own row's if they have one, else the shipped row's. A client with
     /// nothing said has the defaults (no mail, verified).
+    #[must_use]
     pub fn traits(&self, issuer: Issuer, channel: ClientChannel) -> ClientTraits {
         let row = |entries: &[ClientEntry], traits: &[TraitRow]| {
             entries
@@ -136,6 +142,7 @@ impl ClientRegistry {
 
     /// The client for `issuer` on `channel`: the person's own if they registered one, else the
     /// shipped one.
+    #[must_use]
     pub fn lookup(&self, issuer: Issuer, channel: ClientChannel) -> Option<&ClientEntry> {
         self.own
             .iter()
@@ -145,6 +152,7 @@ impl ClientRegistry {
 }
 
 /// The endpoints to use with `client`: its own override, else the issuer's published ones.
+#[must_use]
 pub fn endpoints_of(client: &ClientEntry) -> IssuerEndpoints {
     client
         .endpoints

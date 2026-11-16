@@ -75,6 +75,7 @@ fn per_mille(elapsed: u64, total: u64) -> u32 {
 
 /// The eased progress and pointer x to draw at `now` (design/10 §10.5.4); zero progress when
 /// magnification is off.
+#[must_use]
 pub fn displayed(dock: &DockState, now: Stamp, p: &DockParams) -> (Permille, Cpx) {
     if !p.magnification {
         return (Permille::ZERO, dock.x);

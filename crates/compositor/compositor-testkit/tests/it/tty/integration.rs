@@ -155,7 +155,7 @@ fn frames_are_queued_on_every_lit_output_and_none_is_late() {
             .tty()
             .scanouts
             .get(&name(output))
-            .map(|scanout| scanout.tally())
+            .map(compositor_backend::tty::Scanout::tally)
             .expect("lit");
         assert!(tally.presented > 0, "{output} presented frames");
         assert_eq!(tally.missed, 0, "{output} missed no vblank");
@@ -470,8 +470,8 @@ fn input_devices_are_configured_and_their_keys_reach_the_bindings() {
     let applied = seat.world.input.applied();
     assert_eq!(applied.len(), 1, "only the touchpad takes pointer settings");
     assert_eq!(applied[0].0, touchpad);
-    assert_eq!(
-        applied[0].1.natural_scroll, true,
+    assert!(
+        applied[0].1.natural_scroll,
         "the touchpad profile's default"
     );
 

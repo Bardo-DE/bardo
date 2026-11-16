@@ -22,11 +22,13 @@ pub struct TableFiles {
 
 impl TableFiles {
     /// A table in `main`, with additions in the `*.toml` files of `drop_ins`.
+    #[must_use]
     pub fn new(main: PathBuf, drop_ins: PathBuf) -> TableFiles {
         TableFiles { main, drop_ins }
     }
 
     /// The desktop's own place: `/etc/bardo/desktop-callers.toml` and `/etc/bardo/desktop-callers.d`.
+    #[must_use]
     pub fn desktop() -> TableFiles {
         TableFiles::new(
             PathBuf::from("/etc/bardo/desktop-callers.toml"),

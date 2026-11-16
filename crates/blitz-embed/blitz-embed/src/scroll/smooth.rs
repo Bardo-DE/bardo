@@ -10,16 +10,19 @@ const MAX_S: f64 = 0.2;
 const E_OUT: (f64, f64, f64, f64) = (0.22, 0.9, 0.30, 1.0);
 
 /// How long a step of `distance` px animates, seconds.
+#[must_use]
 pub fn duration(distance: f64) -> f64 {
     duration_capped(distance, MAX_S)
 }
 
 /// How long a step of `distance` px animates when it may take no longer than `cap` seconds.
+#[must_use]
 pub fn duration_capped(distance: f64, cap: f64) -> f64 {
     (distance.abs() / SPEED).min(cap.min(MAX_S))
 }
 
 /// The eased progress at linear progress `p` (clamped to `0..=1`).
+#[must_use]
 pub fn e_out(p: f64) -> f64 {
     let p = p.clamp(0.0, 1.0);
     let (x1, y1, x2, y2) = E_OUT;
@@ -38,14 +41,14 @@ fn bezier(u: f64, c1: f64, c2: f64) -> f64 {
 fn solve_u(x: f64, x1: f64, x2: f64) -> f64 {
     let (mut lo, mut hi) = (0.0, 1.0);
     for _ in 0..40 {
-        let mid = 0.5 * (lo + hi);
+        let mid = f64::midpoint(lo, hi);
         if bezier(mid, x1, x2) < x {
             lo = mid;
         } else {
             hi = mid;
         }
     }
-    0.5 * (lo + hi)
+    f64::midpoint(lo, hi)
 }
 
 #[cfg(test)]

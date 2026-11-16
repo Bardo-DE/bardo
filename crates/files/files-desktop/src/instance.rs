@@ -26,6 +26,7 @@ pub struct Served {
 impl Served {
     /// Whether the file manager name is ours: programs that ask the desktop for "the file
     /// manager" reach this app. False when another file manager has it; this app does not take it.
+    #[must_use]
     pub fn owns_file_manager(&self) -> bool {
         self.owns_file_manager
     }

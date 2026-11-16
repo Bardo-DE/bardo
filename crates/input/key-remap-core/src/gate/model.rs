@@ -9,11 +9,13 @@ pub struct KeysDown([u8; KEYS_DOWN_BYTES]);
 
 impl KeysDown {
     /// The bitmap as the ioctl filled it.
+    #[must_use]
     pub const fn from_bytes(bytes: [u8; KEYS_DOWN_BYTES]) -> Self {
         Self(bytes)
     }
 
     /// Whether any key is down.
+    #[must_use]
     pub fn any(&self) -> bool {
         self.0.iter().any(|&b| b != 0)
     }

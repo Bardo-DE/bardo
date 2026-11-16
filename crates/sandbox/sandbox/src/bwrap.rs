@@ -56,27 +56,31 @@ pub struct BwrapSandbox {
 
 /// Fails closed where a descriptor would leak into the sandbox, unless the person allowed it.
 fn no_leaks(allowed: bool) -> Result<(), StartFault> {
-    match allowed {
-        true => Ok(()),
-        false => match inherited_fds() {
+    if allowed {
+        Ok(())
+    } else {
+        match inherited_fds() {
             Ok(found) if found.is_empty() => Ok(()),
             _ => Err(StartFault::InheritedFds),
-        },
+        }
     }
 }
 
 impl BwrapSandbox {
     /// The `bwrap` program this sandbox runs.
+    #[must_use]
     pub fn program(&self) -> &Path {
         &self.program
     }
 
     /// How the resource limits are enforced for this sandbox.
+    #[must_use]
     pub fn enforcement(&self) -> Enforcement {
         self.launcher.enforcement()
     }
 
     /// The profile this sandbox adds to every command line: scratch directory sizes.
+    #[must_use]
     pub fn profile(&self) -> Profile {
         let mut sized = match self.launcher.limits() {
             Some(limits) => Profile::bare().with_tmpfs_size(limits.tmpfs),
@@ -160,15 +164,14 @@ impl BwrapSandbox {
         if !bwrap_runs(&program, &[], None) {
             return Err(refusal_at(Path::new(RESTRICT_USERNS)));
         }
-        let filter = match hardening.seccomp {
-            false => None,
-            true => {
-                let bytes = default_filter().map_err(|_| CannotSandbox::SeccompUnavailable)?;
-                if !bwrap_runs(&program, &["--seccomp", "0"], Some(&bytes)) {
-                    return Err(CannotSandbox::SeccompUnavailable);
-                }
-                Some(bytes)
+        let filter = if hardening.seccomp {
+            let bytes = default_filter().map_err(|_| CannotSandbox::SeccompUnavailable)?;
+            if !bwrap_runs(&program, &["--seccomp", "0"], Some(&bytes)) {
+                return Err(CannotSandbox::SeccompUnavailable);
             }
+            Some(bytes)
+        } else {
+            None
         };
         let launcher = Launcher::resolve(path, &hardening.limits, session)?;
         if launcher.limits().is_some()
@@ -285,11 +288,13 @@ impl Detected {
     /// # Ok(())
     /// # }
     /// ```
+    #[must_use]
     pub fn probe(path: &str) -> Self {
         Self::probe_with(path, &Hardening::default(), &UserSession::from_env())
     }
 
     /// `probe` for chosen hardening and user session.
+    #[must_use]
     pub fn probe_with(path: &str, hardening: &Hardening, session: &UserSession) -> Self {
         match BwrapSandbox::detect_with(path, hardening, session) {
             Ok(found) => Detected::Bwrap(found),

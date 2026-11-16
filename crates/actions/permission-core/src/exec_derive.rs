@@ -119,6 +119,7 @@ impl Served {
     }
 
     /// Nothing has been served and nothing unseen has come in.
+    #[must_use]
     pub fn is_untouched(&self) -> bool {
         !self.partial && self.paths.is_empty()
     }
@@ -133,6 +134,7 @@ impl Served {
     }
 
     /// Whether the command `words` (program first) run in `cwd` derives from what was served.
+    #[must_use]
     pub fn derivation(&self, words: &[String], cwd: &AbsPath) -> Derivation {
         if self.partial {
             return Derivation::Derived;

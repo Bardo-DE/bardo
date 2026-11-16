@@ -19,6 +19,7 @@ pub struct Roots {
 impl Roots {
     /// The roots for the given data directories (`$XDG_DATA_HOME` and the entries of
     /// `$XDG_DATA_DIRS`): each gets `bardo/skills` appended.
+    #[must_use]
     pub fn in_data_dirs(home: Option<&Path>, dirs: &[PathBuf]) -> Self {
         let skills = |d: &Path| d.join("bardo").join("skills");
         Self {
@@ -29,6 +30,7 @@ impl Roots {
 
     /// The roots for data directories in precedence order, the person's own first (what intentd
     /// holds as `data_dirs`). Empty: no skills.
+    #[must_use]
     pub fn from_dirs(dirs: &[PathBuf]) -> Self {
         match dirs.split_first() {
             Some((home, rest)) => Self::in_data_dirs(Some(home), rest),
@@ -53,6 +55,7 @@ impl Roots {
     }
 
     /// Skill directories to read as they are (`agent-eval --check-skills <dirs>`): all shipped.
+    #[must_use]
     pub fn shipped_only(dirs: Vec<PathBuf>) -> Self {
         Self {
             own: None,

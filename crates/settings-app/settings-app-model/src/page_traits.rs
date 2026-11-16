@@ -84,6 +84,7 @@ pub struct PageTraits {
 
 impl PageTraits {
     /// The group and the place inside it: the order the sidebar draws.
+    #[must_use]
     pub fn slot(&self) -> (SidebarGroup, u8) {
         (self.group, self.place)
     }
@@ -128,6 +129,7 @@ impl PageKind {
     /// The page's row. The match names every kind, so a new page cannot be added without
     /// deciding each of its traits; Intelligence also reads accountd and syncd for the accounts
     /// the local runtimes and the cloud places read.
+    #[must_use]
     pub fn traits(self) -> PageTraits {
         use Body::{After, Before, Intelligence, Only, Styles};
         use LivePane as P;

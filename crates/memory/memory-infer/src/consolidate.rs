@@ -40,6 +40,7 @@ impl<T: Transport> InferdConsolidator<T> {
     }
 
     /// The same consolidator with these deadlines instead of [`Deadlines::DRAFT`].
+    #[must_use]
     pub fn with_deadlines(mut self, deadlines: Deadlines) -> Self {
         self.deadlines = deadlines;
         self

@@ -133,10 +133,12 @@ pub struct HttpClient {
 
 impl HttpClient {
     /// A client trusting the platform's roots for a `Tls` target.
+    #[must_use]
     pub fn new(endpoint: HttpEndpoint) -> Self {
         Self::with_roots(endpoint, TlsRoots::Platform)
     }
 
+    #[must_use]
     pub fn with_roots(endpoint: HttpEndpoint, roots: TlsRoots) -> Self {
         Self {
             endpoint,
@@ -146,10 +148,12 @@ impl HttpClient {
         }
     }
 
+    #[must_use]
     pub fn roots(&self) -> &TlsRoots {
         &self.roots
     }
 
+    #[must_use]
     pub fn endpoint(&self) -> &HttpEndpoint {
         &self.endpoint
     }

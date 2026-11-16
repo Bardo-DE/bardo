@@ -6,7 +6,7 @@ use std::sync::Once;
 use std::time::Duration;
 
 /// How long an executable may run before the guard ends it: far above any honest run.
-const LIMIT: Duration = Duration::from_secs(20 * 60);
+const LIMIT: Duration = Duration::from_mins(20);
 
 /// The exit code of a hung executable (that of `timeout`).
 const HUNG: i32 = 124;

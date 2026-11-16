@@ -53,6 +53,7 @@ pub enum Reading {
 
 impl Reading {
     /// What `browser` says to `query`.
+    #[must_use]
     pub fn of(browser: &Browser, query: Query) -> Reading {
         match query {
             Query::Selection => Reading::Selection(
@@ -144,6 +145,7 @@ pub struct Requests {
 
 impl Requests {
     /// A source that never sends: a window nobody can ask anything of.
+    #[must_use]
     pub fn none() -> Requests {
         Requests::default()
     }
@@ -158,6 +160,7 @@ impl Requests {
 }
 
 /// A sender and the source it feeds. Requests sent before the window starts wait for it.
+#[must_use]
 pub fn channel() -> (RequestSender, Requests) {
     let (sender, receiver) = unbounded_channel();
     let requests = Requests {

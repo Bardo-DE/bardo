@@ -29,12 +29,14 @@ impl Locator {
     }
 
     /// The `bardo` folders of the configuration directories, the person's first.
+    #[must_use]
     pub fn dirs(&self) -> &[PathBuf] {
         &self.dirs
     }
 
     /// The directory a live watch looks at: the person's own `bardo/actions` directory, where the
     /// Settings app writes.
+    #[must_use]
     pub fn watch_dir(&self) -> Option<PathBuf> {
         let person = self.dirs.first()?;
         Path::new(SETTINGS_FILE)
@@ -51,6 +53,7 @@ impl Locator {
     }
 
     /// The file as it is now over `base`; no file is `base`, nothing to report.
+    #[must_use]
     pub fn read(&self, base: AgentSettings) -> Loaded {
         match self.text() {
             Some(text) => read(&text, base),

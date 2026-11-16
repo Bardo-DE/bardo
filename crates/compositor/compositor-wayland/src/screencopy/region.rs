@@ -17,6 +17,7 @@ use ui_core::geometry::scale::Scale;
 /// let rect = physical_region((10, 10, 100, 50), Scale(240), mode).expect("on the output");
 /// assert_eq!((rect.x, rect.y, rect.w, rect.h), (20, 20, 200, 100));
 /// ```
+#[must_use]
 pub fn physical_region(
     (x, y, w, h): (i32, i32, i32, i32),
     scale: Scale,

@@ -28,7 +28,7 @@ fn Page() -> Element {
         Ds { appearance: Appearance::default(), material: Material::Sheet, extent: RootExtent::Viewport,
             Sheet {
                 label: "Sheet",
-                onclose: |_| {},
+                onclose: |()| {},
                 attach: ATTACH.with(|cell| cell.borrow().clone()),
                 width: WIDTH.with(Cell::get),
                 div { style: "height:900px", "content" }

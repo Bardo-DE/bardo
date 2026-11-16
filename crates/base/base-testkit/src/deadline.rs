@@ -27,11 +27,13 @@ pub struct Deadline {
 
 impl Deadline {
     /// A deadline [`GENEROUS`] from now.
+    #[must_use]
     pub fn generous() -> Self {
         Self::after(GENEROUS)
     }
 
     /// A deadline `limit` from now.
+    #[must_use]
     pub fn after(limit: Duration) -> Self {
         let now = Instant::now();
         Self {
@@ -44,6 +46,7 @@ impl Deadline {
     /// An idle deadline: it ends once `limit` has passed since the last [`Self::progress`], or
     /// since it began when no progress has come. Use it for a wait whose work grows with a loaded
     /// machine: each item done is progress, so only a daemon that stops makes the wait fail.
+    #[must_use]
     pub fn idle(limit: Duration) -> Self {
         Self::after(limit)
     }
@@ -54,11 +57,13 @@ impl Deadline {
     }
 
     /// Whether the time is up: `limit` has passed since the last progress (or since it began).
+    #[must_use]
     pub fn passed(&self) -> bool {
         self.progressed.elapsed() >= self.limit
     }
 
     /// How long has been waited so far, progress or not.
+    #[must_use]
     pub fn waited(&self) -> Duration {
         self.began.elapsed()
     }

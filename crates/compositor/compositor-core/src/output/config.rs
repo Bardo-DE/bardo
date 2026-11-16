@@ -28,6 +28,7 @@ impl OutputConfig {
     /// The output's whole rectangle in the global logical space: its mode (turned for a
     /// sideways transform) divided by its scale, each side rounded to the nearest logical
     /// pixel, at its position.
+    #[must_use]
     pub fn logical_rect(&self) -> LogicalRect {
         let PhysicalSize { w, h } = turned(self.mode.size, self.transform);
         let n = u64::from(self.scale.numerator()).max(1);

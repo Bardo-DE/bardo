@@ -70,8 +70,9 @@ async fn main() -> ExitCode {
     let ok = match args.command {
         Command::Open(asked) => open(&connection, asked, &mut |line| println!("{line}")).await,
     };
-    match ok {
-        true => ExitCode::SUCCESS,
-        false => ExitCode::FAILURE,
+    if ok {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::FAILURE
     }
 }

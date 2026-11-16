@@ -1,4 +1,4 @@
-//! wl_pointer: enter/leave, motion, buttons, axis frames with source and value120. Filled by
+//! `wl_pointer`: enter/leave, motion, buttons, axis frames with source and value120. Filled by
 //! P0-H4.
 //!
 //! Every event reaches the transcript through the connection's tap; the helper remembers the
@@ -64,11 +64,13 @@ impl Pointer {
     }
 
     /// The `wl_pointer`.
+    #[must_use]
     pub fn pointer(&self) -> &WlPointer {
         &self.pointer
     }
 
     /// The `wl_seat`.
+    #[must_use]
     pub fn seat(&self) -> &WlSeat {
         &self.seat
     }

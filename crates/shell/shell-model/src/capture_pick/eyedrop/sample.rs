@@ -15,6 +15,7 @@ pub struct ShotPixel {
 /// give the scale on each axis, so a fractional scale (and the rounding of the logical size) is
 /// exact; the pixel is the one the position falls in. None when the pointer is off the surface or
 /// either size is empty.
+#[must_use]
 pub fn pixel_under(shot: (u32, u32), surface: (u32, u32), at: (f64, f64)) -> Option<ShotPixel> {
     let across = |size: u32, extent: u32, position: f64| -> Option<u32> {
         let (size, extent) = (f64::from(size), f64::from(extent));
@@ -29,6 +30,7 @@ pub fn pixel_under(shot: (u32, u32), surface: (u32, u32), at: (f64, f64)) -> Opt
 }
 
 /// The colour of `pixel` in `shot`, none when it lies outside the picture.
+#[must_use]
 pub fn colour_at(shot: &OutputShot, pixel: ShotPixel) -> Option<Rgb8> {
     let (width, height) = shot.size;
     if pixel.x >= width || pixel.y >= height {
@@ -43,6 +45,7 @@ pub fn colour_at(shot: &OutputShot, pixel: ShotPixel) -> Option<Rgb8> {
 
 /// The colour under a pointer at `at` on a surface `surface` logical pixels across and down that
 /// shows `shot`.
+#[must_use]
 pub fn pick_at(shot: &OutputShot, surface: (u32, u32), at: (f64, f64)) -> Option<Rgb8> {
     pixel_under(shot.size, surface, at).and_then(|pixel| colour_at(shot, pixel))
 }

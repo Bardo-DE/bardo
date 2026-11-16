@@ -47,6 +47,7 @@ impl GrantScope {
     /// The scope's word, which carries no session: `once`, `always`, `session`. A session
     /// travels beside it ([`GrantScope::session`]) where a scope is one string
     /// (`Peer.Verdicts`).
+    #[must_use]
     pub fn word(&self) -> &'static str {
         match self {
             GrantScope::Once => "once",
@@ -56,6 +57,7 @@ impl GrantScope {
     }
 
     /// The session a session scope lasts for.
+    #[must_use]
     pub fn session(&self) -> Option<&SessionToken> {
         match self {
             GrantScope::Session(session) => Some(session),
@@ -65,6 +67,7 @@ impl GrantScope {
 
     /// The scope a word and an optional session stand for: `session` needs its session and the
     /// other two take none.
+    #[must_use]
     pub fn from_words(word: &str, session: Option<&SessionToken>) -> Option<Self> {
         match (word, session) {
             ("once", None) => Some(GrantScope::Once),

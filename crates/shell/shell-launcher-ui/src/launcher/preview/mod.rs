@@ -95,6 +95,7 @@ fn pane_state(shown: bool, kind: shell_launcher::PreviewKind, load: Load) -> Pan
 }
 
 /// A row's actions as the pane's, each with its chord (none: no keys drawn).
+#[must_use]
 pub fn pane_actions(actions: &[Action]) -> Vec<PaneAction> {
     actions
         .iter()

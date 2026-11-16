@@ -86,6 +86,7 @@ pub struct Copied {
 impl Copied {
     /// The pixels as tightly packed R, G, B, A bytes (the buffer was `argb8888` or
     /// `xrgb8888`: little-endian B, G, R, A or X).
+    #[must_use]
     pub fn to_rgba8(&self) -> Vec<u8> {
         let row = usize::try_from(self.size.w).unwrap_or(0).saturating_mul(4);
         let stride = usize::try_from(self.stride).unwrap_or(row);
@@ -182,6 +183,7 @@ impl ScreenCopy {
     }
 
     /// The connector names of the outputs, once they have arrived.
+    #[must_use]
     pub fn output_names(&self) -> Vec<String> {
         self.state
             .outputs
@@ -227,11 +229,13 @@ impl ScreenCopy {
     }
 
     /// The buffers the frame offered so far.
+    #[must_use]
     pub fn offers(&self) -> &[Offer] {
         &self.state.offers
     }
 
     /// The dma-buf formats the frame offered (`linux_dmabuf`) so far.
+    #[must_use]
     pub fn dmabuf_offers(&self) -> &[DmabufOffer] {
         &self.state.dmabuf
     }
@@ -239,7 +243,7 @@ impl ScreenCopy {
     /// Copies the frame into a buffer made to `offer`, with `kind`.
     pub fn copy(&mut self, offer: Offer, kind: CopyKind) -> Result<(), ClientError> {
         let format = Format::try_from(offer.format)
-            .map_err(|_| ClientError::Dispatch(format!("shm format {}", offer.format)))?;
+            .map_err(|()| ClientError::Dispatch(format!("shm format {}", offer.format)))?;
         let length = u64::from(offer.stride) * u64::from(offer.size.h);
         let file = File::from(
             memfd_create("casement-screencopy", MemfdFlags::CLOEXEC)
@@ -329,7 +333,7 @@ impl Dispatch<ZwlrScreencopyManagerV1, ()> for Copying {
         _: &mut Self,
         _: &ZwlrScreencopyManagerV1,
         _: zwlr_screencopy_manager_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -341,7 +345,7 @@ impl Dispatch<ZwlrScreencopyFrameV1, ()> for Copying {
         state: &mut Self,
         _: &ZwlrScreencopyFrameV1,
         event: zwlr_screencopy_frame_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -403,7 +407,7 @@ impl Dispatch<WlShm, ()> for Copying {
         _: &mut Self,
         _: &WlShm,
         _: wl_shm::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -415,7 +419,7 @@ impl Dispatch<WlShmPool, ()> for Copying {
         _: &mut Self,
         _: &WlShmPool,
         _: wl_shm_pool::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -427,7 +431,7 @@ impl Dispatch<WlBuffer, ()> for Copying {
         _: &mut Self,
         _: &WlBuffer,
         _: wl_buffer::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

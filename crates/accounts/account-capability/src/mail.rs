@@ -12,7 +12,7 @@ pub struct IdentityCap {
     /// An address the provider has verified.
     #[serde(with = "crate::terms::present")]
     pub verified_address: bool,
-    /// It can act as an OpenID identity for other sites.
+    /// It can act as an `OpenID` identity for other sites.
     #[serde(with = "crate::terms::present")]
     pub sign_in: bool,
 }

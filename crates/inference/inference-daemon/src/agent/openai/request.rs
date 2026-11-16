@@ -1,4 +1,4 @@
-//! An OpenAI Chat Completions request as inferd's chat request.
+//! An `OpenAI` Chat Completions request as inferd's chat request.
 
 use crate::agent::wire::{Parsed, Unmapped, limit_of, sampling_of, text_of};
 use account_core::DataClass;
@@ -10,7 +10,7 @@ use inference_core::{
 };
 use serde_json::Value;
 
-/// OpenAI's default temperature.
+/// `OpenAI`'s default temperature.
 const DEFAULT_TEMPERATURE: f64 = 1.0;
 
 fn data_url(url: &str) -> Result<MessagePart, Unmapped> {
@@ -240,7 +240,7 @@ fn guided_choice(root: &Value) -> Result<Option<Vec<String>>, Unmapped> {
     Ok(Some(options))
 }
 
-/// The most `top_logprobs` OpenAI allows.
+/// The most `top_logprobs` `OpenAI` allows.
 const MOST_TOP_LOGPROBS: u64 = 20;
 
 /// Reads the body of a `POST /v1/chat/completions`.

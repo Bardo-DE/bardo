@@ -5,6 +5,7 @@ use files_core::{EjectFailure, MountFailure, ProgramName, VolumeName, VolumeTrou
 /// The sentence for a disk that did not eject or open.
 ///
 /// A busy disk says so as Finder does, and names the programs when they could be found.
+#[must_use]
 pub fn volume_trouble_words(name: &VolumeName, trouble: &VolumeTrouble) -> String {
     let disk = format!("The disk \u{201c}{name}\u{201d}");
     match trouble {
@@ -16,7 +17,10 @@ pub fn volume_trouble_words(name: &VolumeName, trouble: &VolumeTrouble) -> Strin
                 if programs.is_empty() {
                     format!("{busy}.")
                 } else {
-                    let names: Vec<&str> = programs.iter().map(|p| p.as_str()).collect();
+                    let names: Vec<&str> = programs
+                        .iter()
+                        .map(files_core::ProgramName::as_str)
+                        .collect();
                     format!("{busy}: {}.", names.join(", "))
                 }
             }
@@ -38,6 +42,7 @@ pub fn volume_trouble_words(name: &VolumeName, trouble: &VolumeTrouble) -> Strin
 
 /// Finder's question for a disk that is in use: the title, and the programs found as the
 /// informative text (a line about forcing when none could be found).
+#[must_use]
 pub fn force_eject_words(name: &VolumeName, programs: &[ProgramName]) -> (String, String) {
     let title = format!(
         "The disk \u{201c}{name}\u{201d} wasn\u{2019}t ejected because one or more programs may be \
@@ -46,7 +51,10 @@ pub fn force_eject_words(name: &VolumeName, programs: &[ProgramName]) -> (String
     let message = if programs.is_empty() {
         "To eject the disk immediately, click Force Eject.".to_owned()
     } else {
-        let names: Vec<&str> = programs.iter().map(|p| p.as_str()).collect();
+        let names: Vec<&str> = programs
+            .iter()
+            .map(files_core::ProgramName::as_str)
+            .collect();
         format!("Programs using it: {}.", names.join(", "))
     };
     (title, message)

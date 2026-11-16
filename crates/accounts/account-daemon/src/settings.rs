@@ -42,15 +42,17 @@ use ui_settings::schema::KeyPath;
 use zbus::Connection;
 
 /// The settings module's path.
+#[must_use]
 pub fn settings_path() -> String {
     ACCOUNTS_SETTINGS_PATH.to_owned()
 }
 
 /// The channel this build presents its client ids under.
 fn channel() -> ClientChannel {
-    match cfg!(debug_assertions) {
-        true => ClientChannel::Development,
-        false => ClientChannel::Stable,
+    if cfg!(debug_assertions) {
+        ClientChannel::Development
+    } else {
+        ClientChannel::Stable
     }
 }
 
@@ -302,22 +304,19 @@ impl<H: Host, C: Callers> Acts for AccountsSettings<H, C> {
         let agent = account.auth == AuthKind::AgentLogin;
         Box::pin(async move {
             tokio::spawn(async move {
-                let reply = match agent {
-                    true => {
-                        core.host
-                            .login_agent_any(
-                                &settings_app(),
-                                &id,
-                                ParentWindow::Unparented,
-                                &core.launchers,
-                            )
-                            .await
-                    }
-                    false => {
-                        core.host
-                            .reauthenticate_any(&settings_app(), &id, ParentWindow::Unparented)
-                            .await
-                    }
+                let reply = if agent {
+                    core.host
+                        .login_agent_any(
+                            &settings_app(),
+                            &id,
+                            ParentWindow::Unparented,
+                            &core.launchers,
+                        )
+                        .await
+                } else {
+                    core.host
+                        .reauthenticate_any(&settings_app(), &id, ParentWindow::Unparented)
+                        .await
                 };
                 if let AccountsReply::Refused(why) = &reply {
                     eprintln!("accountd: sign in again from Settings refused: {why:?}");

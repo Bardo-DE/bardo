@@ -1,4 +1,4 @@
-//! `SqliteLog`: the log in SQLCipher. Frozen: the schema and the signatures.
+//! `SqliteLog`: the log in `SQLCipher`. Frozen: the schema and the signatures.
 //!
 //! One transaction per write, `secure_delete=ON`, WAL, and a truncating checkpoint after every
 //! erase so forgotten bodies do not linger in the write-ahead log. The row codec is in
@@ -19,7 +19,7 @@ use std::path::Path;
 /// The schema number stored in `PRAGMA user_version`.
 pub const SCHEMA_VERSION: u32 = 1;
 
-/// The tables of `events.db` (SQLCipher; `PRAGMA secure_delete=ON`, `journal_mode=WAL`, and
+/// The tables of `events.db` (`SQLCipher`; `PRAGMA secure_delete=ON`, `journal_mode=WAL`, and
 /// `wal_checkpoint(TRUNCATE)` after an erase). Bodies and `things` rows are the erasable part;
 /// `events` is the chain.
 pub const SCHEMA_V1: &str = "
@@ -43,7 +43,7 @@ CREATE TABLE checkpoints(cut INTEGER PRIMARY KEY, link BLOB NOT NULL, at INTEGER
 /// checkpoint. [`SqliteLog::open_for`] is the form the daemon uses.
 const UNBOUND_SPACE: &str = "unbound";
 
-/// The event log of one Space in one SQLCipher file.
+/// The event log of one Space in one `SQLCipher` file.
 #[derive(Debug)]
 pub struct SqliteLog {
     conn: Connection,

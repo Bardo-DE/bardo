@@ -32,6 +32,7 @@ fn as_offset(pixels: u32) -> i32 {
 
 /// Where `display` goes to sit on `side` of `other`, edge to edge and top or left aligned. `None`
 /// when either does not say how big it is.
+#[must_use]
 pub fn place_beside(
     display: &Monitor,
     other: &Monitor,
@@ -62,6 +63,7 @@ pub fn place_beside(
 }
 
 /// The side of `other` that `display` sits on, when it sits edge to edge against it.
+#[must_use]
 pub fn side_of(display: &Monitor, other: &Monitor) -> Option<ArrangeSide> {
     ArrangeSide::ALL
         .into_iter()

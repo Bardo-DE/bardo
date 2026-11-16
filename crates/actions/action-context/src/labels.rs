@@ -44,21 +44,25 @@ fn label(integrity: Integrity, source: Source) -> Label {
 }
 
 /// The person's own words.
+#[must_use]
 pub fn user_label() -> Label {
     Label::trusted_user()
 }
 
 /// Text a model wrote.
+#[must_use]
 pub fn model_label() -> Label {
     label(Integrity::Untrusted, Source::Model(ModelRole::Planner))
 }
 
 /// The name of a file in a workspace: written by an agent or by the person, so third-party text.
+#[must_use]
 pub fn path_label() -> Label {
     label(Integrity::Untrusted, Source::File)
 }
 
 /// What an app authored about its own things.
+#[must_use]
 pub fn app_label(app: &AppName) -> Label {
     label(Integrity::Trusted, Source::App(app.clone()))
 }
@@ -226,6 +230,7 @@ fn trace(session: &SessionRecord, value: &Value) -> Label {
 
 /// The integrity of what each sink receives: the least trusted argument that feeds it. A sink
 /// no argument feeds receives nothing untrusted.
+#[must_use]
 pub fn sink_integrity(decl: &ActionDecl, args: &Args) -> SinkIntegrity {
     let of = |wanted: &[ArgSink]| {
         let untrusted = decl
@@ -249,6 +254,7 @@ pub fn sink_integrity(decl: &ActionDecl, args: &Args) -> SinkIntegrity {
 }
 
 /// What the router knows about the arguments of one call.
+#[must_use]
 pub fn arg_labels(args: &Args, session: &SessionRecord) -> ArgLabels {
     ArgLabels {
         per_arg: args
@@ -261,14 +267,17 @@ pub fn arg_labels(args: &Args, session: &SessionRecord) -> ArgLabels {
 }
 
 /// A planner that has seen untrusted content is untrusted.
+#[must_use]
 pub fn planner_integrity(saw: &SessionSaw) -> Integrity {
-    match saw.untrusted {
-        true => Integrity::Untrusted,
-        false => Integrity::Trusted,
+    if saw.untrusted {
+        Integrity::Untrusted
+    } else {
+        Integrity::Trusted
     }
 }
 
 /// The confidentiality of everything a call carries.
+#[must_use]
 pub fn args_confidentiality(args: &Args) -> Confidentiality {
     args.values()
         .map(|a| a.label.confidentiality.clone())

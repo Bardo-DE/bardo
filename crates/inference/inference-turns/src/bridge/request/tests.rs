@@ -115,7 +115,7 @@ fn tools_shapes_and_tool_choices_map_one_to_one() {
         let turn = chat_turn(&model, &chat, &Frames::default()).expect("turn");
         assert_eq!(turn.tool_choice, expected);
         assert!(
-            matches!(&turn.tools[..], [sp::ToolSpec::Function { name, .. }] if name.as_str() == "mail.send")
+            matches!(&*turn.tools, [sp::ToolSpec::Function { name, .. }] if name.as_str() == "mail.send")
         );
     }
     let shapes = [
@@ -151,7 +151,7 @@ fn tools_shapes_and_tool_choices_map_one_to_one() {
     assert_eq!(turn.output, sp::OutputShape::JsonObject);
     assert_eq!(turn.messages[0].role, sp::Role::System);
     assert!(matches!(
-        &turn.messages[0].parts[..],
+        &*turn.messages[0].parts,
         [sp::Part::Text(text)] if text.contains(r#"{"type":"object"}"#)
     ));
     assert_eq!(turn.messages.len(), json.messages.len() + 1);
@@ -204,14 +204,14 @@ fn history_with_calls_results_thoughts_and_roles_maps_part_by_part() {
         ]
     );
     assert!(matches!(
-        &turn.messages[2].parts[..],
+        &*turn.messages[2].parts,
         [
             sp::Part::Thought { seal: sp::ThoughtSeal::Signed(_), .. },
             sp::Part::ToolCall(sp::ToolCall { id, .. })
         ] if id.0 == "c1"
     ));
     assert!(matches!(
-        &turn.messages[3].parts[..],
+        &*turn.messages[3].parts,
         [sp::Part::ToolResult(sp::ToolResult { status: sp::ToolStatus::Error, parts, .. })] if parts.len() == 1
     ));
 }

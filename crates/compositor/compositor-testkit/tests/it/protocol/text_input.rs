@@ -45,9 +45,10 @@ impl Typing {
     /// starts after the apps binds later with [`Typing::start_method`]).
     pub(crate) fn start_with(with_method: bool) -> Typing {
         let (fixture, client) = boot();
-        let method = match with_method {
-            true => Method::Bound,
-            false => Method::Later,
+        let method = if with_method {
+            Method::Bound
+        } else {
+            Method::Later
         };
         Typing::in_world(fixture, client, method)
     }
@@ -360,7 +361,7 @@ fn a_method_that_never_grabs_lets_the_key_through_after_the_hold_limit() {
     );
 }
 
-/// Preedit then commit_string: the transcript matches tests/golden/transcripts/text_input-commit.txt.
+/// Preedit then `commit_string`: the transcript matches tests/golden/transcripts/text_input-commit.txt.
 #[test]
 fn ime_commit_transcript() {
     let mut typing = Typing::start();

@@ -48,6 +48,7 @@ fn plain(text: &str) -> String {
 
 /// The marker `text` holds when it is, or holds, a tool call the model wrote instead of making.
 /// `None` for ordinary words, including words that talk about tools.
+#[must_use]
 pub fn leaked_call(text: &str) -> Option<&'static str> {
     let plain = plain(text);
     TAGS.into_iter().find(|tag| plain.contains(tag))

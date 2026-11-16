@@ -18,6 +18,7 @@ pub enum ThumbSize {
 
 impl ThumbSize {
     /// The longest edge a thumbnail of this size may have.
+    #[must_use]
     pub fn edge(self) -> PixelLen {
         match self {
             ThumbSize::Normal => PixelLen(128),
@@ -46,6 +47,7 @@ pub struct ThumbPixels {
 impl ThumbPixels {
     /// `rgba` as a picture of `size`, or `None` when it is not four bytes per pixel or the
     /// picture is empty.
+    #[must_use]
     pub fn new(size: PixelSize, rgba: Vec<u8>) -> Option<ThumbPixels> {
         let wanted = size.area().0.checked_mul(4)?;
         let fits = u64::try_from(rgba.len()).is_ok_and(|len| len == wanted);
@@ -53,11 +55,13 @@ impl ThumbPixels {
     }
 
     /// Width and height.
+    #[must_use]
     pub fn size(&self) -> PixelSize {
         self.size
     }
 
     /// The pixels, four bytes each.
+    #[must_use]
     pub fn rgba(&self) -> &[u8] {
         &self.rgba
     }

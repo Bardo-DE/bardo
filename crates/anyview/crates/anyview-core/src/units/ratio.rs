@@ -54,11 +54,13 @@ impl Quality {
     pub const MAX: Quality = Quality(Percent(100));
 
     /// `percent` clamped into 1 to 100: zero becomes 1 and anything above becomes 100.
+    #[must_use]
     pub fn clamped(percent: Percent) -> Self {
         Quality(Percent(percent.0.clamp(Self::MIN.0.0, Self::MAX.0.0)))
     }
 
     /// The quality as a percentage, always 1 to 100.
+    #[must_use]
     pub fn percent(self) -> Percent {
         self.0
     }

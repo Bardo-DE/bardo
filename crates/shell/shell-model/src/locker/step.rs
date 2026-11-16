@@ -6,6 +6,7 @@ use super::{
 use ui_core::time::stamp::Stamp;
 
 /// `locker` after `event`, and the effects to perform.
+#[must_use]
 pub fn step(locker: Locker, event: LockerEvent) -> (Locker, Vec<LockerEffect>) {
     match event {
         LockerEvent::Configured { own, follow_logind } => configured(locker, own, follow_logind),
@@ -30,6 +31,7 @@ pub fn step(locker: Locker, event: LockerEvent) -> (Locker, Vec<LockerEffect>) {
 }
 
 /// The next time [`step`] wants a `Tick`, if any.
+#[must_use]
 pub fn next_deadline(locker: &Locker) -> Option<Stamp> {
     let until = match locker.hold {
         Hold::Delaying { until } => Some(until),

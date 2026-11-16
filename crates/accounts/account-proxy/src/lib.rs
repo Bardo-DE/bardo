@@ -7,11 +7,11 @@
 //!   `* PREAUTH [CAPABILITY ...]` greeting, then relays bytes.
 //! - **SMTP** (`smtp`): the relay does `EHLO`, `STARTTLS` and `AUTH`; the app sees a `220` and
 //!   an `EHLO` reply without `AUTH` and `STARTTLS`, then relays bytes.
-//! - **HTTP/1.1** (`http1`): WebDAV, CalDAV, CardDAV, OCS and JMAP. The app speaks plain HTTP on
+//! - **HTTP/1.1** (`http1`): `WebDAV`, `CalDAV`, `CardDAV`, OCS and JMAP. The app speaks plain HTTP on
 //!   the stream; the relay adds `Authorization`, forwards over TLS to the endpoint's origin
 //!   only, refuses any other origin and strips the app's own `Authorization`.
 //!
-//! - **ManageSieve** (`sieve`, RFC 5804): the relay does `STARTTLS` and `AUTHENTICATE`; the app
+//! - **`ManageSieve`** (`sieve`, RFC 5804): the relay does `STARTTLS` and `AUTHENTICATE`; the app
 //!   sees the capability list without `SASL` and `STARTTLS`, then relays bytes.
 //! - **POP3** (`pop3`): the relay does `CAPA`, `STLS` and `USER`/`PASS` (or `AUTH`); the app sees
 //!   `+OK porter relay ready` in the transaction state, and its own login commands are answered

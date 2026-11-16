@@ -155,7 +155,7 @@ mod keys_home {
         mode(&loose, 0o750);
         assert!(matches!(check_dir(&loose), Err(HomeFault::LooseMode(..))));
         mode(&loose, 0o700);
-        assert!(check_dir(&loose).is_ok());
+        check_dir(&loose).unwrap();
         let repo = tmp.path().join("repo");
         std::fs::create_dir_all(repo.join(".git")).expect("git");
         let inside = repo.join("keys");

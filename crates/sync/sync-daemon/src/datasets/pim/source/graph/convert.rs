@@ -43,6 +43,7 @@ pub enum ConvertError {
 const CRLF: &str = "\r\n";
 
 /// A `TEXT` value: backslash, semicolon, comma and newlines escaped.
+#[must_use]
 pub fn escape(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     for c in text.chars() {
@@ -59,6 +60,7 @@ pub fn escape(text: &str) -> String {
 }
 
 /// A content line folded at 75 octets, never inside a character, and ended with CRLF.
+#[must_use]
 pub fn fold(line: &str) -> String {
     let mut out = String::with_capacity(line.len() + 8);
     let mut width = 0;
@@ -84,9 +86,10 @@ pub(in crate::datasets::pim::source) fn param(text: &str) -> String {
         .chars()
         .filter(|c| !matches!(c, '"' | '\r' | '\n'))
         .collect();
-    match clean.contains([':', ';', ',']) {
-        true => format!("\"{clean}\""),
-        false => clean,
+    if clean.contains([':', ';', ',']) {
+        format!("\"{clean}\"")
+    } else {
+        clean
     }
 }
 
@@ -209,16 +212,18 @@ fn attendee_line(attendee: &Attendee) -> Option<String> {
 
 fn recurrence_id(event: &Event, all_day: bool) -> Option<String> {
     let original = event.original_start.as_deref()?;
-    match all_day {
-        true => Some(format!(
+    if all_day {
+        Some(format!(
             "RECURRENCE-ID;VALUE=DATE:{}",
             compact_date(original)?
-        )),
-        false => Some(format!("RECURRENCE-ID:{}", stamp(original)?)),
+        ))
+    } else {
+        Some(format!("RECURRENCE-ID:{}", stamp(original)?))
     }
 }
 
 /// The UID the event is known by.
+#[must_use]
 pub fn uid(event: &Event) -> &str {
     [
         event.ical_uid.as_deref(),

@@ -31,6 +31,7 @@ pub const ISPDB: &str = "https://autoconfig.thunderbird.net/v1.1/";
 /// `.well-known` path, then the ISP database. All HTTPS. The first two carry the address as
 /// mailo sends it, `?emailaddress=<address>` percent-encoded, because some hosts answer per
 /// mailbox; the ISP database is a third party's public service and is asked for the domain only.
+#[must_use]
 pub fn autoconfig_urls(domain: &DomainName, address: &str) -> Vec<WebUrl> {
     let query = format!(
         "?emailaddress={}",
@@ -54,7 +55,7 @@ pub(crate) fn ispdb_url(domain: &DomainName) -> String {
 /// The servers a `config-v1.1.xml` document names for `address`: incoming IMAP (POP3 is
 /// mailo's), outgoing SMTP, each with its security and login pattern resolved.
 ///
-/// The defaults of [`SearchOptions`]: `STARTTLS` accepted, POP3 ignored. The document's OAuth2
+/// The defaults of [`SearchOptions`]: `STARTTLS` accepted, POP3 ignored. The document's `OAuth2`
 /// offer is on the result either way.
 pub fn parse_autoconfig(xml: &str, address: &str) -> Result<Found, DiscoverFault> {
     parse_autoconfig_with(xml, address, &SearchOptions::default())
@@ -77,9 +78,10 @@ pub fn parse_autoconfig_with(
 /// The domain of an address: after the last `@`; `None` for something that is not an address.
 pub(crate) fn domain_of(address: &str) -> Option<DomainName> {
     let (local, domain) = address.rsplit_once('@')?;
-    match local.is_empty() {
-        true => None,
-        false => DomainName::parse(domain).ok(),
+    if local.is_empty() {
+        None
+    } else {
+        DomainName::parse(domain).ok()
     }
 }
 
@@ -106,9 +108,10 @@ fn select(
         oauth_ok,
         smtp_endpoint,
     );
-    let pop3 = match options.report_pop3 {
-        false => Vec::new(),
-        true => pop3_servers(&config.incoming, address, tries, oauth_ok),
+    let pop3 = if options.report_pop3 {
+        pop3_servers(&config.incoming, address, tries, oauth_ok)
+    } else {
+        Vec::new()
     };
     let oauth = oauth_offer(config, address);
     let (endpoints, claims) = match (incoming, outgoing) {
@@ -127,12 +130,13 @@ fn select(
 
 /// The socket types a search accepts, best first.
 fn tries(starttls_only: bool) -> &'static [(SocketType, Tls)] {
-    match starttls_only {
-        false => &[
+    if starttls_only {
+        &[(SocketType::Ssl, Tls::Implicit)]
+    } else {
+        &[
             (SocketType::Ssl, Tls::Implicit),
             (SocketType::StartTls, Tls::StartTls),
-        ],
-        true => &[(SocketType::Ssl, Tls::Implicit)],
+        ]
     }
 }
 
@@ -153,12 +157,13 @@ fn oauth_offer(config: &ClientConfig, address: &str) -> Option<OAuthOffer> {
         .into_iter()
         .chain(side(&config.outgoing, Direction::Outgoing))
         .collect();
-    match servers.is_empty() {
-        true => None,
-        false => Some(OAuthOffer {
+    if servers.is_empty() {
+        None
+    } else {
+        Some(OAuthOffer {
             issuer: config.oauth_issuer.clone(),
             servers,
-        }),
+        })
     }
 }
 
@@ -223,9 +228,10 @@ fn takes_password(server: &Server) -> bool {
 /// a login almost always is; the format's placeholders are filled in.
 fn login(raw: &str, address: &str) -> LoginName {
     let raw = raw.trim();
-    match raw.is_empty() {
-        true => LoginName(address.to_owned()),
-        false => LoginName(expand(raw, address)),
+    if raw.is_empty() {
+        LoginName(address.to_owned())
+    } else {
+        LoginName(expand(raw, address))
     }
 }
 

@@ -52,6 +52,7 @@ impl AttachedBook {
     }
 
     /// The same book, its lines logged through `log`.
+    #[must_use]
     pub fn logging_to(self, log: Log) -> Self {
         Self(Arc::new(Inner {
             models: RwLock::new(self.models()),
@@ -65,6 +66,7 @@ impl AttachedBook {
 
     /// The same book that can make the model of a computer added later: over the catalogue
     /// `entries`, with the engines' sockets under `sockets`.
+    #[must_use]
     pub fn with_catalogue(self, entries: Vec<ModelEntry>, sockets: PathBuf) -> Self {
         Self(Arc::new(Inner {
             models: RwLock::new(self.models()),
@@ -77,26 +79,31 @@ impl AttachedBook {
     }
 
     /// The catalogue new models are made over.
+    #[must_use]
     pub fn catalogue(&self) -> &[ModelEntry] {
         &self.0.catalogue
     }
 
     /// Where the sockets of engines that name none would go.
+    #[must_use]
     pub fn sockets(&self) -> &Path {
         &self.0.sockets
     }
 
     /// Whether there is nothing attached.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         read(&self.0.models).is_empty()
     }
 
     /// Every attached model.
+    #[must_use]
     pub fn models(&self) -> Vec<Arc<LocalModel>> {
         read(&self.0.models).clone()
     }
 
     /// The attached model `model` names.
+    #[must_use]
     pub fn find(&self, model: &ModelRef) -> Option<Arc<LocalModel>> {
         read(&self.0.models)
             .iter()
@@ -132,6 +139,7 @@ impl AttachedBook {
     }
 
     /// The name the person gave computer `name`, when it was added in Settings.
+    #[must_use]
     pub fn label_of(&self, name: &ComputerName) -> Option<String> {
         read(&self.0.labels).get(name).cloned()
     }
@@ -155,12 +163,14 @@ impl AttachedBook {
     }
 
     /// What the last look found of `model`; none before the first look.
+    #[must_use]
     pub fn state(&self, model: &ModelRef) -> Option<Outcome> {
         self.last().get(model).cloned()
     }
 
     /// How ready `model` is by the last look: `Ready` when it answered, `Unavailable` when it did
     /// not or has not been looked at (the next open looks).
+    #[must_use]
     pub fn readiness(&self, model: &ModelRef) -> Readiness {
         match self.state(model) {
             Some(Ok(())) => Readiness::Ready,

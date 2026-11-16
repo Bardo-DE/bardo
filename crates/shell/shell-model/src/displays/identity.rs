@@ -14,6 +14,7 @@ pub struct IdentityKey(pub String);
 
 impl IdentityKey {
     /// The key for what an EDID says.
+    #[must_use]
     pub fn of_edid(edid: &Edid) -> IdentityKey {
         let serial = match &edid.serial {
             Serial::Text(text) => text.clone(),
@@ -24,6 +25,7 @@ impl IdentityKey {
 
     /// The key for an output with no EDID of its own (a nested compositor's window, a virtual
     /// output): the make and model the compositor reports, with no product code or serial.
+    #[must_use]
     pub fn of_head(make: &str, model: &str) -> IdentityKey {
         IdentityKey::of_parts(make, 0, model)
     }

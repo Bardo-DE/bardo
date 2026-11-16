@@ -118,6 +118,7 @@ fn printable(data: &[u8]) -> String {
 /// );
 /// assert_eq!(output_facts(&connector).key.as_str(), "connector:DP-1");
 /// ```
+#[must_use]
 pub fn output_facts(connector: &ConnectorFacts) -> OutputFacts {
     let edid = parse_edid(&connector.edid).unwrap_or_else(|_| EdidFacts {
         make: "Unknown".to_owned(),
@@ -145,6 +146,7 @@ pub fn output_facts(connector: &ConnectorFacts) -> OutputFacts {
 ///
 /// assert!(attached_outputs(&KmsResources::default()).is_empty());
 /// ```
+#[must_use]
 pub fn attached_outputs(resources: &KmsResources) -> BTreeMap<ConnectorId, OutputFacts> {
     let mut attached: Vec<(ConnectorId, OutputFacts)> = resources
         .connectors
@@ -157,9 +159,10 @@ pub fn attached_outputs(resources: &KmsResources) -> BTreeMap<ConnectorId, Outpu
     attached
         .into_iter()
         .map(|(id, facts)| {
-            let facts = match taken.insert(facts.key.clone()) {
-                true => facts,
-                false => keyed_by_connector(facts),
+            let facts = if taken.insert(facts.key.clone()) {
+                facts
+            } else {
+                keyed_by_connector(facts)
             };
             (id, facts)
         })
@@ -181,6 +184,7 @@ fn keyed_by_connector(facts: OutputFacts) -> OutputFacts {
 /// Whether variable refresh is on for an output: only when `asked_for` (`true` asks for it
 /// wherever it is possible) and when both the monitor and the CRTC can do it, so a commit never
 /// sets a property the device lacks.
+#[must_use]
 pub fn vrr_enabled(asked_for: bool, connector: &ConnectorFacts, crtc: &CrtcFacts) -> bool {
     asked_for && connector.vrr && crtc.vrr
 }
@@ -189,6 +193,7 @@ pub fn vrr_enabled(asked_for: bool, connector: &ConnectorFacts, crtc: &CrtcFacts
 /// connector name (the preferred mode otherwise), on the first CRTC that can drive it and is
 /// not taken, with variable refresh when `asked_for_vrr`. A connector with no mode is left dark, and
 /// so is one no CRTC is left for.
+#[must_use]
 pub fn plan_outputs(
     resources: &KmsResources,
     wishes: &BTreeMap<OutputName, ModeWish>,

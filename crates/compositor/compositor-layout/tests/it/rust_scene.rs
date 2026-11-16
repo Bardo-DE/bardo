@@ -1,4 +1,4 @@
-//! RustScene's P0 rules: floating windows, centre-then-cascade, Space origins (the tables and
+//! `RustScene`'s P0 rules: floating windows, centre-then-cascade, Space origins (the tables and
 //! the properties P0-F1-layout makes pass).
 
 use crate::support;

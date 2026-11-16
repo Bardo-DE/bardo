@@ -12,6 +12,7 @@ use shell_model::windows::app_for;
 use crate::app_icons::IconFile;
 
 /// The desktop entry `app` names, if the index has it.
+#[must_use]
 pub fn entry_for<'a>(app: &AppRef, index: &'a AppIndex) -> Option<&'a App> {
     let claimed = app.desktop_entry.as_deref().unwrap_or(app.name.as_str());
     app_for(claimed, index).entry(index).or_else(|| {

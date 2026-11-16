@@ -47,6 +47,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> std::fmt::Debug
 
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> HubHost<P, I, K, S> {
     /// The host over `hub`.
+    #[must_use]
     pub fn new(hub: Hub<P, I, K, S>, timers: Timers) -> Self {
         Self {
             hub,

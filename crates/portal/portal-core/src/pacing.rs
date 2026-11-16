@@ -17,7 +17,7 @@ pub const SHORTEST_GAP_NS: u64 = NANOS_PER_SECOND / 60;
 /// The gap used when the app accepts any rate and names no ceiling: five pictures a second.
 pub const OPEN_RATE_GAP_NS: u64 = NANOS_PER_SECOND / 5;
 
-/// A frame rate as PipeWire writes it: pictures per second as a fraction.
+/// A frame rate as `PipeWire` writes it: pictures per second as a fraction.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct FrameRate {
     /// Pictures.
@@ -51,7 +51,8 @@ pub enum Negotiated {
 
 impl Negotiated {
     /// The rate for the `framerate` and `max_framerate` of a negotiated format. A zero
-    /// `framerate` is PipeWire's way to say the rate is open.
+    /// `framerate` is `PipeWire`'s way to say the rate is open.
+    #[must_use]
     pub fn from_wire(framerate: FrameRate, max_framerate: FrameRate) -> Self {
         match framerate.gap_ns() {
             Some(_) => Self::Fixed(framerate),
@@ -104,6 +105,7 @@ pub enum Step {
 ///
 /// A new picture is never made to wait, so the pace of a changing screen is the screen's own. A
 /// repeat goes out only once a full gap has passed since the last send.
+#[must_use]
 pub fn decide(held: Held, gap_ns: u64) -> Step {
     match held {
         Held::Unsent => Step::SendNew,

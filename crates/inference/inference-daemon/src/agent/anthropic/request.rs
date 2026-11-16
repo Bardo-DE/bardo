@@ -285,6 +285,7 @@ pub fn parse(body: &[u8], class: DataClass) -> Result<Parsed, Unmapped> {
 /// What `POST /v1/messages/count_tokens` answers: an estimate, a quarter of the characters the
 /// request carries in its messages, system prompt and tools (rounded up). Not the provider's
 /// count, and the same for every route; a client that needs the exact figure has none to get here.
+#[must_use]
 pub fn estimate_tokens(body: &[u8]) -> Option<u32> {
     let root: Value = serde_json::from_slice(body).ok()?;
     let chars: usize = ["system", "messages", "tools"]

@@ -133,7 +133,9 @@ fn direction(value: Option<&str>) -> Result<ScrollDir, DropReason> {
 /// `<|box_start|>` and `<point>` are skipped; a number that is not a whole `u32` is `BadNumber`.
 fn centre(value: &str) -> Result<(u32, u32), DropReason> {
     let numbers = numbers(value)?;
-    let mid = |a: u32, b: u32| u32::try_from((u64::from(a) + u64::from(b)) / 2).unwrap_or(u32::MAX);
+    let mid = |a: u32, b: u32| {
+        u32::try_from(u64::midpoint(u64::from(a), u64::from(b))).unwrap_or(u32::MAX)
+    };
     match numbers.as_slice() {
         [x, y] => Ok((*x, *y)),
         [x1, y1, x2, y2] => Ok((mid(*x1, *x2), mid(*y1, *y2))),

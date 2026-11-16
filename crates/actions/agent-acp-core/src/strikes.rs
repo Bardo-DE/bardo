@@ -35,6 +35,7 @@ impl Strikes {
     }
 
     /// Why the turn pauses, if it does.
+    #[must_use]
     pub fn trip(&self) -> Option<BreakerTrip> {
         self.tripped.then_some(BreakerTrip::Consecutive)
     }

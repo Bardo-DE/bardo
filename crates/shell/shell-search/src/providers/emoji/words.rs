@@ -19,9 +19,10 @@ pub enum Words {
 pub fn words_in<'a>(needle: &str, fields: impl IntoIterator<Item = &'a str>) -> Words {
     let have: Vec<String> = fields.into_iter().flat_map(words).collect();
     let prefixed = words(needle).all(|typed| have.iter().any(|word| word.starts_with(&typed)));
-    match prefixed {
-        true => Words::Prefixed,
-        false => Words::Scattered,
+    if prefixed {
+        Words::Prefixed
+    } else {
+        Words::Scattered
     }
 }
 

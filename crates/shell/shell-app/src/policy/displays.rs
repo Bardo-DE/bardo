@@ -7,6 +7,7 @@ use super::Policy;
 use shell_settings::{DisplaySettings, ShellFile};
 
 /// `display.*` as the service's policy.
+#[must_use]
 pub fn policy_from(settings: &DisplaySettings) -> DisplayPolicy {
     DisplayPolicy {
         keys_target: settings.brightness_keys_target,

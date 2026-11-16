@@ -46,9 +46,12 @@ fn entries(dir: &Path) -> Vec<PathBuf> {
 fn sources(dir: &Path) -> Vec<PathBuf> {
     entries(dir)
         .into_iter()
-        .flat_map(|path| match path.is_dir() {
-            true => sources(&path),
-            false => vec![path],
+        .flat_map(|path| {
+            if path.is_dir() {
+                sources(&path)
+            } else {
+                vec![path]
+            }
         })
         .filter(|path| path.extension().is_some_and(|ext| ext == "rs"))
         .collect()
@@ -58,8 +61,9 @@ fn sources(dir: &Path) -> Vec<PathBuf> {
 /// with a `mod.rs` (a directory without one holds `#[path]` files, which name themselves).
 fn module_of(path: &Path) -> Option<(String, bool)> {
     let stem = path.file_stem()?.to_str()?.to_owned();
-    match path.is_dir() {
-        true => path.join("mod.rs").is_file().then_some((stem, true)),
-        false => (path.extension()? == "rs" && stem != "main").then_some((stem, false)),
+    if path.is_dir() {
+        path.join("mod.rs").is_file().then_some((stem, true))
+    } else {
+        (path.extension()? == "rs" && stem != "main").then_some((stem, false))
     }
 }

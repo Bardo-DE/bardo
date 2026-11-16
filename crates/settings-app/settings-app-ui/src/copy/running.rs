@@ -31,11 +31,10 @@ pub(crate) fn model_name(model: &str) -> &str {
 /// `mib` MiB as the person reads memory: gigabytes rounded to one decimal from 1 GB, else
 /// megabytes.
 pub(crate) fn memory_words(mib: u32) -> String {
-    match mib {
-        0..=1023 => format!("{mib} MB"),
-        _ => {
-            let tenths = (u64::from(mib) * 10 + 512) / 1024;
-            format!("{}.{} GB", tenths / 10, tenths % 10)
-        }
+    if let 0..=1023 = mib {
+        format!("{mib} MB")
+    } else {
+        let tenths = (u64::from(mib) * 10 + 512) / 1024;
+        format!("{}.{} GB", tenths / 10, tenths % 10)
     }
 }

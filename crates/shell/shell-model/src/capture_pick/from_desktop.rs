@@ -9,6 +9,7 @@ use crate::desktop::DesktopView;
 /// documents that are showing and not hidden from captures. Minimised windows have nothing to
 /// capture, a panel or a sheet is not something to share, and a window the compositor hides from every capture is never
 /// offered. A window with no title shows its app's name.
+#[must_use]
 pub fn windows_of(view: &DesktopView) -> Vec<WindowCandidate> {
     view.windows
         .iter()

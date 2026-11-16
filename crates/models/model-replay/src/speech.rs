@@ -49,6 +49,7 @@ const FALLBACK_FORMAT: AudioFormat = AudioFormat {
 
 impl AudioPrint {
     /// The print of `chunks`, hashed in order.
+    #[must_use]
     pub fn of(chunks: &[AudioChunk]) -> AudioPrint {
         let format = chunks.first().map_or(FALLBACK_FORMAT, |c| c.format);
         let bytes: Vec<u8> = chunks
@@ -87,6 +88,7 @@ pub struct SttPrint {
 }
 
 impl SttPrint {
+    #[must_use]
     pub fn of(request: &SttRequest, audio: &[AudioChunk]) -> SttPrint {
         SttPrint {
             model: request.model.clone(),
@@ -109,6 +111,7 @@ pub struct TtsPrint {
 }
 
 impl TtsPrint {
+    #[must_use]
     pub fn of(request: &TtsRequest) -> TtsPrint {
         let text = request.text.as_str();
         TtsPrint {
@@ -149,6 +152,7 @@ pub struct SpeechCassette {
 }
 
 impl SpeechCassette {
+    #[must_use]
     pub fn to_jsonl(&self) -> String {
         write_jsonl(&self.header, &self.interactions)
     }
@@ -213,6 +217,7 @@ struct TtsCall<'a> {
 }
 
 impl SpeechReplay {
+    #[must_use]
     pub fn new(cassette: SpeechCassette, mode: ReplayMode) -> Self {
         Self {
             cassette,
@@ -445,7 +450,10 @@ impl SpeechToText for SpeechReplay {
         let calls = self.stt_calls();
         let prints: Vec<(usize, &SttPrint)> = calls.iter().map(|c| (c.at, c.print)).collect();
         let at = {
-            let mut cursor = self.cursor.lock().unwrap_or_else(|e| e.into_inner());
+            let mut cursor = self
+                .cursor
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             let Cursor {
                 stt_next, stt_used, ..
             } = &mut *cursor;
@@ -488,7 +496,10 @@ impl TextToSpeech for SpeechReplay {
         let calls = self.tts_calls();
         let prints: Vec<(usize, &TtsPrint)> = calls.iter().map(|c| (c.at, c.print)).collect();
         let picked = {
-            let mut cursor = self.cursor.lock().unwrap_or_else(|e| e.into_inner());
+            let mut cursor = self
+                .cursor
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             let Cursor {
                 tts_next, tts_used, ..
             } = &mut *cursor;

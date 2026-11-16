@@ -75,6 +75,7 @@ pub enum Request {
 
 impl Request {
     /// Where it goes.
+    #[must_use]
     pub fn target(&self) -> &Target {
         match self {
             Request::Tunnel(t) | Request::Relay(t) => t,

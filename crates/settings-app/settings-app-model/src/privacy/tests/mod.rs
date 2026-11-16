@@ -139,8 +139,10 @@ fn standing(pane: &PrivacyPane, who: &str, power: PrivacyPower) -> PowerStanding
         .iter()
         .find(|program| program.subject.0 == who)
         .and_then(|program| program.cell(power))
-        .map(|cell| cell.standing)
-        .unwrap_or_else(|| panic!("{who} has a {power:?} cell"))
+        .map_or_else(
+            || panic!("{who} has a {power:?} cell"),
+            |cell| cell.standing,
+        )
 }
 
 fn ready(publication: &Publication) -> PrivacyState {

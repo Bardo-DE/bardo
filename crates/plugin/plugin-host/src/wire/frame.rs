@@ -184,7 +184,7 @@ mod tests {
             b"\x20\0\0\0\x03\0\0\0{\"kind\":\"ask\",\"v\":{\"text\":\"hi\"}}\xde\xad\xbe";
         let ask = Msg::Ask { text: "hi".into() };
         assert_eq!(encode_frame(&ask, &[0xde, 0xad, 0xbe]).unwrap(), FRAME);
-        let frame: Frame<Msg> = read_frame(&mut &FRAME[..]).unwrap();
+        let frame: Frame<Msg> = read_frame(&mut &*FRAME).unwrap();
         assert_eq!(frame.message, ask);
         assert_eq!(frame.payload, [0xde, 0xad, 0xbe]);
     }

@@ -15,6 +15,7 @@ pub struct AuthSpec {
 
 impl AuthSpec {
     /// Whether `kind` signs in through an OAuth issuer, and so needs one named.
+    #[must_use]
     pub fn needs_issuer(&self) -> bool {
         matches!(
             self.kind,
@@ -38,10 +39,10 @@ pub enum Issuer {
     Box,
     /// Fastmail.
     Fastmail,
-    /// OpenRouter (mints a key, R10).
+    /// `OpenRouter` (mints a key, R10).
     #[serde(rename = "openrouter")]
     OpenRouter,
-    /// OpenAI (ChatGPT sign-in, R9).
+    /// `OpenAI` (`ChatGPT` sign-in, R9).
     #[serde(rename = "openai")]
     OpenAi,
     /// Yahoo (mail over IMAP and SMTP with XOAUTH2).
@@ -62,6 +63,7 @@ pub struct IssuerEndpoints {
 
 impl Issuer {
     /// The endpoints the issuer publishes (`issuers.toml`).
+    #[must_use]
     pub fn endpoints(self) -> IssuerEndpoints {
         self.data().endpoints()
     }

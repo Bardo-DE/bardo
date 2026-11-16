@@ -44,6 +44,7 @@ pub struct FakeBackend {
 
 impl FakeBackend {
     /// An empty fake kernel.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

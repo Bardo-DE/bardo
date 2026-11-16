@@ -11,13 +11,14 @@ use std::path::Path;
 pub struct PluginSet<'a> {
     /// The `mpv` and the C plugin that play, when playing is installed.
     pub play: Option<(&'a Path, &'a Path)>,
-    /// The FFmpeg plugin's program, when it is installed.
+    /// The `FFmpeg` plugin's program, when it is installed.
     pub ffmpeg: Option<&'a Path>,
     /// What its manifest adds to the program's command line (`--ffmpeg PATH`).
     pub ffmpeg_args: &'a [String],
 }
 
 /// The registry `set` makes.
+#[must_use]
 pub fn plugins_with(set: PluginSet<'_>) -> Plugins {
     let mut candidates = Vec::new();
     if let Some((mpv, cplugin)) = set.play {

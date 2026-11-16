@@ -26,11 +26,13 @@ impl HeldMods {
     pub const FUNCTION: HeldMods = HeldMods(32);
 
     /// Whether every key of `required` is held (any others may be held too).
+    #[must_use]
     pub fn holds(self, required: HeldMods) -> bool {
         self.0 & required.0 == required.0
     }
 
     /// This set with `other`'s keys added.
+    #[must_use]
     pub fn with(self, other: HeldMods) -> HeldMods {
         HeldMods(self.0 | other.0)
     }

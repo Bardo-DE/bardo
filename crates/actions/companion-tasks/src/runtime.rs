@@ -172,6 +172,7 @@ pub(crate) enum Notes {
 }
 
 /// The loop of a task nothing has been asked of.
+#[must_use]
 pub fn idle_state() -> LoopState {
     LoopState {
         phase: LoopPhase::Idle,

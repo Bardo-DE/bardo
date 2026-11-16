@@ -58,6 +58,7 @@ pub struct FakeSpec {
 
 impl FakeSpec {
     /// An Apple keyboard: vendor `0x05ac`, so keycap gives it the Apple layout.
+    #[must_use]
     pub fn apple(name: &str) -> Self {
         Self {
             name: name.to_owned(),
@@ -69,6 +70,7 @@ impl FakeSpec {
     }
 
     /// A PC keyboard: vendor `0x046d`.
+    #[must_use]
     pub fn pc(name: &str) -> Self {
         Self {
             vendor: 0x046d,
@@ -78,6 +80,7 @@ impl FakeSpec {
     }
 
     /// The same keyboard with a pointer.
+    #[must_use]
     pub fn with_pointer(self, pointer: Pointer) -> Self {
         Self { pointer, ..self }
     }
@@ -122,11 +125,13 @@ impl FakeKeyboard {
     }
 
     /// The device node the kernel made for it.
+    #[must_use]
     pub fn node(&self) -> &Path {
         &self.node
     }
 
     /// The name it registered under.
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }

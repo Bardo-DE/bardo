@@ -25,7 +25,13 @@ fn a_cheap_frame_starts_late_enough_and_ends_on_the_next_vblank() {
     assert_eq!(deadline.vblank, clock.next_after(ms(1)).0);
     assert_eq!(
         deadline.render_at,
-        Mono(deadline.vblank.0 - Duration::from_millis(5)),
+        Mono(
+            deadline
+                .vblank
+                .0
+                .checked_sub(Duration::from_millis(5))
+                .unwrap()
+        ),
         "predicted cost plus slack before the vblank"
     );
 }

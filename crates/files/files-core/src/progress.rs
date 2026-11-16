@@ -17,6 +17,7 @@ pub struct Progress {
 
 impl Progress {
     /// Nothing done yet, out of `items_total` items and `bytes_total` bytes.
+    #[must_use]
     pub fn start(items_total: usize, bytes_total: ByteSize) -> Progress {
         Progress {
             items_done: 0,
@@ -28,6 +29,7 @@ impl Progress {
 
     /// How far along, in thousandths: by bytes when there are any to write, else by items. A
     /// piece of work with nothing to do is whole.
+    #[must_use]
     pub fn permille(&self) -> u16 {
         let (done, total) = if self.bytes_total.0 > 0 {
             (self.bytes_done.0, self.bytes_total.0)
@@ -42,6 +44,7 @@ impl Progress {
     }
 
     /// The same, with `bytes` more written.
+    #[must_use]
     pub fn wrote(self, bytes: u64) -> Progress {
         Progress {
             bytes_done: ByteSize(self.bytes_done.0.saturating_add(bytes)),
@@ -50,6 +53,7 @@ impl Progress {
     }
 
     /// The same, with one more item finished.
+    #[must_use]
     pub fn finished_one(self) -> Progress {
         Progress {
             items_done: self.items_done + 1,

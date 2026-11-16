@@ -24,6 +24,7 @@ impl Sha256Hex {
     }
 
     /// The digest of `bytes`.
+    #[must_use]
     pub fn of(bytes: &[u8]) -> Self {
         let mut hasher = Hasher::new();
         hasher.update(bytes);
@@ -31,6 +32,7 @@ impl Sha256Hex {
     }
 
     /// The hex text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -72,6 +74,7 @@ impl Default for Hasher {
 
 impl Hasher {
     /// A new, empty hasher.
+    #[must_use]
     pub fn new() -> Self {
         Self(<Sha256 as Digest>::new())
     }
@@ -82,10 +85,11 @@ impl Hasher {
     }
 
     /// The digest of everything fed so far.
+    #[must_use]
     pub fn finish(self) -> Sha256Hex {
         let out = Digest::finalize(self.0);
         let mut text = String::with_capacity(64);
-        for byte in out.iter() {
+        for byte in &out {
             text.push_str(&format!("{byte:02x}"));
         }
         Sha256Hex(text)

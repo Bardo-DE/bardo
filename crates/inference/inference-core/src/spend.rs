@@ -78,6 +78,7 @@ impl ChargeTotal {
     /// The total after one more turn that carried `charge`. A turn with none is `unpriced`, and so
     /// is one whose charge cannot be added: another currency than the total's, or a sum too large
     /// to hold. Nothing is converted, guessed or dropped.
+    #[must_use]
     pub fn counting(self, charge: Option<Money>) -> Self {
         let unpriced = Self {
             unpriced: TurnCount(self.unpriced.0.saturating_add(1)),
@@ -102,6 +103,7 @@ impl ChargeTotal {
 /// What a cap says about one more request, given what has been reported so far. A cap in another
 /// currency than the reported total is never met, and a turn that reported nothing never meets
 /// one.
+#[must_use]
 pub fn spend_verdict(cap: &SpendCap, spent: &ChargeTotal) -> SpendVerdict {
     if spent.reported.currency != cap.limit.currency {
         return SpendVerdict::Within;

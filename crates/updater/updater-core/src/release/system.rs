@@ -151,6 +151,7 @@ fn plain_name(name: &str) -> bool {
 
 /// Whether `path` is a file a release may place: directly in a listed folder, spelled plainly, and
 /// accepted by that folder's rule.
+#[must_use]
 pub fn is_allowed_system_path(path: &str) -> bool {
     let Some((dir, name)) = path.rsplit_once('/') else {
         return false;

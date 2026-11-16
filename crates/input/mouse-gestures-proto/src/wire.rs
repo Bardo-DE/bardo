@@ -6,6 +6,7 @@ use thiserror::Error;
 use crate::message::ToHost;
 
 /// The protocol version carried by `Hello`.
+///
 /// 2 added `ToHost::Run` and `ToDaemon::UserConfig` and the larger packet; 3 made the workspace
 /// steps one `HostAction::Workspace(Workspace)`. Only the current version is read.
 pub const PROTOCOL_VERSION: u16 = 3;
@@ -49,6 +50,7 @@ pub enum Compat {
 }
 
 /// `message`'s verdict on the connection: only a `Hello` of another version is incompatible.
+#[must_use]
 pub fn compat(message: &ToHost) -> Compat {
     match message {
         ToHost::Hello { version, .. } if *version != PROTOCOL_VERSION => {

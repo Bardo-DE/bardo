@@ -43,11 +43,13 @@ pub struct FileStore {
 
 impl FileStore {
     /// A store at `path`.
+    #[must_use]
     pub fn new(path: PathBuf) -> Self {
         Self { path }
     }
 
     /// Where this store reads and writes.
+    #[must_use]
     pub fn path(&self) -> &std::path::Path {
         &self.path
     }
@@ -63,7 +65,9 @@ impl RestoreStore for FileStore {
             Ok(text) => text,
             Err(ReadError::NotFound { .. }) => return Ok(RestoreBook::new()),
             // A file that is not text, not a regular file or far too large is not one we wrote.
-            Err(ReadError::NotText { .. } | ReadError::NotRegular { .. } | ReadError::TooBig { .. }) => {
+            Err(
+                ReadError::NotText { .. } | ReadError::NotRegular { .. } | ReadError::TooBig { .. },
+            ) => {
                 self.set_aside(Aside::Move);
                 return Err(StoreError::Damaged);
             }
@@ -111,6 +115,7 @@ enum Aside {
 
 impl FileStore {
     /// Where a file that could not be read is kept.
+    #[must_use]
     pub fn bad_path(&self) -> PathBuf {
         self.with_suffix(".bad")
     }

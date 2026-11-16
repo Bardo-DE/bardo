@@ -27,7 +27,7 @@ use std::collections::HashMap;
 pub const DRIVE_KEY_ACCOUNT: &str = "account";
 /// A drive row's account label, the person's words for it (`s`).
 pub const DRIVE_KEY_LABEL: &str = "label";
-/// A drive row's provider name as people say it, "OneDrive", "Google Drive" (`s`).
+/// A drive row's provider name as people say it, "`OneDrive`", "Google Drive" (`s`).
 pub const DRIVE_KEY_PROVIDER: &str = "provider";
 /// A drive row's folder, where every app reaches its files (`s`).
 pub const DRIVE_KEY_PATH: &str = "path";
@@ -59,7 +59,7 @@ pub const ITEM_KEY_WORDS: &str = "words";
 /// What the item is ([`ItemKind`], `s`).
 pub const ITEM_KEY_KIND: &str = "kind";
 /// An online document's address (`s`), always there when the kind is `online`: a caller opens
-/// it with the OpenURI portal.
+/// it with the `OpenURI` portal.
 pub const ITEM_KEY_URL: &str = "url";
 /// The other version of a file in `conflict` (`s`): its path, on the same drive, next to this
 /// one. Each of the two names the other.
@@ -89,12 +89,14 @@ pub enum DriveState {
 
 impl DriveState {
     /// Its word on the bus.
+    #[must_use]
     pub fn as_str(self) -> &'static str {
         word(&self)
     }
 
     /// The state a word names; `None` for one this build does not know (a newer syncd's), which a
     /// caller shows as it shows `Error`.
+    #[must_use]
     pub fn from_word(text: &str) -> Option<DriveState> {
         from_word(text)
     }
@@ -126,11 +128,13 @@ pub enum ItemState {
 
 impl ItemState {
     /// Its word on the bus.
+    #[must_use]
     pub fn as_str(self) -> &'static str {
         word(&self)
     }
 
     /// The state a word names; `None` for one this build does not know.
+    #[must_use]
     pub fn from_word(text: &str) -> Option<ItemState> {
         from_word(text)
     }
@@ -152,11 +156,13 @@ pub enum ItemKind {
 
 impl ItemKind {
     /// Its word on the bus.
+    #[must_use]
     pub fn as_str(self) -> &'static str {
         word(&self)
     }
 
     /// The kind a word names; `None` for one this build does not know.
+    #[must_use]
     pub fn from_word(text: &str) -> Option<ItemKind> {
         from_word(text)
     }

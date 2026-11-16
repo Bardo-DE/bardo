@@ -39,15 +39,14 @@ impl<S: Seams> Router<S> {
         let mut depth = 0u8;
         while let Follow::Next(next) = outcome.follow.clone() {
             depth = depth.saturating_add(1);
-            match self
+            if let Ok(done) = self
                 .perform_once(&who, next, window.clone(), None, Depth(depth), watch)
                 .await
             {
-                Ok(done) => outcome = done,
-                Err(_) => {
-                    outcome.follow = Follow::Nothing;
-                    break;
-                }
+                outcome = done
+            } else {
+                outcome.follow = Follow::Nothing;
+                break;
             }
         }
         Ok(outcome)

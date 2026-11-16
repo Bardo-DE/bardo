@@ -148,10 +148,7 @@ impl Bridge {
     /// Draws the frame into the picture and waits for the render GPU to finish; whether anything
     /// changed.
     fn paint(&mut self, source: &dyn FrameSource) -> Result<bool, KmsError> {
-        let age = match self.holds_last {
-            false => 0,
-            true => 1,
-        };
+        let age = usize::from(self.holds_last);
         let mut render = self.render.borrow_mut();
         let elements = source.gles(&mut render);
         let elements = routed(&mut *render, &elements);

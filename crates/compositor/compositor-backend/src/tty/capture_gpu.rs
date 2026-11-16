@@ -133,6 +133,7 @@ pub trait CaptureGpu: std::fmt::Debug {
 /// assert!(!body_on_gpu(1, 0));
 /// assert!(!body_on_gpu(2, 2));
 /// ```
+#[must_use]
 pub fn body_on_gpu(devices: usize, lending: usize) -> bool {
     (devices, lending) == (1, 1)
 }
@@ -150,6 +151,7 @@ pub struct Picture {
 
 impl Picture {
     /// The picture an output shows with `config`.
+    #[must_use]
     pub fn of(config: &OutputConfig) -> Picture {
         Picture {
             size: config.mode.size,
@@ -159,6 +161,7 @@ impl Picture {
     }
 
     /// Whether `area` has pixels and lies wholly inside the picture.
+    #[must_use]
     pub fn holds(&self, area: PhysicalRect) -> bool {
         let right = i64::from(area.x) + i64::from(area.w);
         let bottom = i64::from(area.y) + i64::from(area.h);
@@ -172,6 +175,7 @@ impl Picture {
 }
 
 /// `first` followed by the formats of `second` it does not have: the offer of both renderers.
+#[must_use]
 pub fn merged_formats(first: Vec<Format>, second: Vec<Format>) -> Vec<Format> {
     let mut all = first;
     for format in second {

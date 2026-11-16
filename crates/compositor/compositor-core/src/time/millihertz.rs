@@ -14,6 +14,7 @@ pub struct Millihertz(pub u32);
 impl Millihertz {
     /// The time between two refreshes, truncated to whole nanoseconds. A zero rate (an output
     /// that reports none) is read as 1 mHz rather than dividing by zero.
+    #[must_use]
     pub fn period(self) -> Duration {
         Duration::from_nanos(self.nanos_for(1))
     }

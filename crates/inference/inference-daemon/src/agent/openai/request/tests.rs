@@ -79,8 +79,8 @@ fn a_data_url_image_is_read_and_a_web_url_is_refused() {
         panic!("an image");
     };
     assert_eq!(image.media_type, "image/png");
-    assert!(read(&with("https://x/y.png")).is_err());
-    assert!(read(&with("data:image/png,rawbytes")).is_err());
+    read(&with("https://x/y.png")).unwrap_err();
+    read(&with("data:image/png,rawbytes")).unwrap_err();
 }
 
 #[test]

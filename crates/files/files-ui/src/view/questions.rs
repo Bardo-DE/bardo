@@ -113,16 +113,14 @@ fn ConflictAlert(browse: Browse, conflict: Conflict) -> Element {
         button("Keep Both", AlertRole::Normal, Answer::KeepBoth),
         button("Replace", AlertRole::Normal, Answer::Replace),
     ];
-    let suppression = if conflict.rest > 0 {
+    let suppression = (conflict.rest > 0).then(|| {
         buttons.push(button("Skip", AlertRole::Normal, Answer::Skip));
-        Some(Suppression {
+        Suppression {
             label: "Apply to All".to_owned(),
             value: all(),
             onchange: EventHandler::new(move |now: Check| all.set(now)),
-        })
-    } else {
-        None
-    };
+        }
+    });
     buttons.push(button("Stop", AlertRole::Cancel, Answer::Stop));
     rsx! {
         Alert {

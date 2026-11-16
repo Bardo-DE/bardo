@@ -97,6 +97,7 @@ pub enum Standing {
 
 impl Standing {
     /// Nothing is known about the process beyond `why`.
+    #[must_use]
     pub fn unverified(why: WhyNot) -> Standing {
         Standing::Unverified {
             exe_name: None,

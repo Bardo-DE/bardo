@@ -66,6 +66,7 @@ pub fn load(home: Option<&Path>) -> Result<CasementDoc, ConfigError> {
 
 /// The `xwayland.*` keys of `home`'s document, read without the log lines `load` writes (the
 /// settings are loaded, and reported, once more when the compositor starts).
+#[must_use]
 pub fn xwayland_of(home: Option<&Path>) -> XwaylandSection {
     store(home).load::<CasementDoc>().value.xwayland
 }

@@ -33,8 +33,8 @@ pub(super) fn render(state: &mut HostState, id: SurfaceId) -> Result<()> {
         // which hoists positioned descendants with the offsets current then.
         {
             let mut doc = surface.document.base_mut();
-            surface.scroll.frame(&mut doc, now_host);
-        }
+            surface.scroll.frame(&mut doc, now_host)
+        };
         // Layout first, so element-following regions land in this frame's commit, and a
         // `FitContent` popup can be measured before anything else this frame reads its size.
         // The only resolve of the frame: it runs the pre-paint hook, and the present paints
@@ -76,23 +76,20 @@ pub(super) fn render(state: &mut HostState, id: SurfaceId) -> Result<()> {
         return Ok(());
     };
     let presented = presenter.present(state.gpu.as_mut(), &mut surface.document, target, &overlay);
-    let input = match &presented {
-        Ok(_) => {
-            let now = Instant::now();
-            surface.stats.presented(now - started, now);
-            // Resolve may have asked for a redraw itself; continuation is decided on the
-            // callback by is_animating, or the machine never idles. A load that
-            // completed on another thread meanwhile is not dropped: the next flush takes it
-            // and dirties the frame in flight.
-            surface.shell.drop_echo();
-            FrameInput::Presented {
-                animating: surface.pacing(now_host),
-            }
+    let input = if presented.is_ok() {
+        let now = Instant::now();
+        surface.stats.presented(now - started, now);
+        // Resolve may have asked for a redraw itself; continuation is decided on the
+        // callback by is_animating, or the machine never idles. A load that
+        // completed on another thread meanwhile is not dropped: the next flush takes it
+        // and dirties the frame in flight.
+        surface.shell.drop_echo();
+        FrameInput::Presented {
+            animating: surface.pacing(now_host),
         }
-        Err(_) => {
-            surface.stats.skipped();
-            FrameInput::PresentFailed
-        }
+    } else {
+        surface.stats.skipped();
+        FrameInput::PresentFailed
     };
     let first_frame = presented.is_ok();
     if first_frame && let Some(lock) = state.lock.as_mut() {

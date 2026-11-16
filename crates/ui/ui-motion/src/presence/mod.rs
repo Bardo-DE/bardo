@@ -30,6 +30,7 @@ pub enum Presence {
 
 impl Presence {
     /// The `data-presence` value.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Presence::Hidden => "hidden",
@@ -40,6 +41,7 @@ impl Presence {
     }
 
     /// The `data-presence` value of something drawn, or `None` while it is hidden.
+    #[must_use]
     pub fn drawn_slug(self) -> Option<&'static str> {
         match self {
             Presence::Hidden => None,
@@ -48,6 +50,7 @@ impl Presence {
     }
 
     /// The `data-shown` value: whether anything is drawn.
+    #[must_use]
     pub fn shown(self) -> bool {
         match self {
             Presence::Hidden => false,

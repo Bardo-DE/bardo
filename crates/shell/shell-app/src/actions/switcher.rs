@@ -11,11 +11,13 @@ use shell_ui_kit::links::{Dir, SwitcherAsk};
 use crate::ipc::dispatch::{Reach, unsupported};
 
 /// A step of the switcher.
+#[must_use]
 pub fn chord(reach: &Reach, step: SwitcherStep) -> Response {
     ask(reach, ask_of(step))
 }
 
 /// Write `ask` for the switcher's output.
+#[must_use]
 pub fn ask(reach: &Reach, ask: SwitcherAsk) -> Response {
     match reach.outputs.open_on::<Switcher>(reach.services) {
         Some(output) => {

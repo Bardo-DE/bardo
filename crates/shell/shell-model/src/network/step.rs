@@ -32,6 +32,7 @@ fn activating_step(now: Attempt, state: Activating) -> Step {
 }
 
 /// `network` after `event`.
+#[must_use]
 pub fn step(network: Network, event: NetworkEvent) -> Network {
     match event {
         NetworkEvent::Link(link) => Network {

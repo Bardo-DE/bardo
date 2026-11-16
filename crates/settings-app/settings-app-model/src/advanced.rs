@@ -6,9 +6,11 @@ use crate::catalogue::SectionModel;
 const UNTITLED: &str = "More";
 
 /// The name of the sheet row for `section`, and the sheet's title (the row adds the ellipsis).
+///
 /// It is the section's title, except where a basic section of the same page has that title too:
 /// then the row would read like the basic section, so it says what is inside instead, the one
 /// row's own label, or "<Title> Details" for several.
+#[must_use]
 pub fn advanced_name(section: &SectionModel, basic: &[SectionModel]) -> String {
     if section.title.is_empty() {
         return UNTITLED.to_owned();

@@ -43,6 +43,7 @@ impl std::fmt::Debug for DsNet {
 impl DsNet {
     /// The app document's provider: under `Local`, other schemes go to `fallback`. Its `file:`
     /// requests read only from inside `roots`; empty roots read no file at all.
+    #[must_use]
     pub fn top(
         policy: NetPolicy,
         fallback: Option<Arc<dyn NetProvider>>,
@@ -59,6 +60,7 @@ impl DsNet {
     }
 
     /// Every frame document's provider.
+    #[must_use]
     pub fn frame(
         policy: NetPolicy,
         waker: Option<Arc<dyn NetWaker>>,

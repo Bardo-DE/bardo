@@ -121,6 +121,7 @@ impl BackedUp {
     }
 
     /// The version that holds the original.
+    #[must_use]
     pub fn kept(&self) -> &VersionId {
         &self.kept.id
     }

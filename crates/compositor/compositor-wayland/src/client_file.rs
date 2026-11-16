@@ -14,11 +14,13 @@ use std::os::unix::fs::FileExt;
 
 /// Whether `file` is a memory file (a `memfd` or a `tmpfs` file): one whose reads never wait on
 /// another process.
+#[must_use]
 pub fn is_memory(file: &File) -> bool {
     fcntl_get_seals(file).is_ok()
 }
 
 /// The first `length` bytes of `file`, when it is a memory file and holds them; none otherwise.
+#[must_use]
 pub fn read_exactly(file: &File, length: usize) -> Option<Vec<u8>> {
     if !is_memory(file) {
         return None;

@@ -64,6 +64,7 @@ pub struct Files(PathBuf);
 
 impl Files {
     /// Serves the files under `dir`.
+    #[must_use]
     pub fn under(dir: &Path) -> Self {
         Self(dir.to_owned())
     }

@@ -173,6 +173,7 @@ impl ExecLine {
     }
 
     /// How many files the command takes.
+    #[must_use]
     pub fn takes(&self) -> Takes {
         let codes = self.args.iter().flat_map(|arg| arg.0.iter());
         let mut takes = Takes::NoFiles;
@@ -192,6 +193,7 @@ impl ExecLine {
     /// A list code (`%F`, `%U`) that is an argument on its own becomes one argument per file; a
     /// single code (`%f`, `%u`) on its own with no file is left out, as `%i` is without an icon.
     /// Inside a longer argument a code is replaced by its first value, or by nothing.
+    #[must_use]
     pub fn expand(&self, with: &Expand<'_>) -> Vec<OsString> {
         let mut argv = Vec::new();
         for arg in &self.args {

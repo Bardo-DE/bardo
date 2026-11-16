@@ -66,12 +66,10 @@ fn rollback_moves_the_exports_of_the_release_it_returns_to() {
             .link("/usr/share/wayland-sessions/bardo.desktop")
             .exists()
     );
-    assert!(std::fs::symlink_metadata(sandbox.link("/usr/local/bin/bardo-compositor")).is_err());
+    std::fs::symlink_metadata(sandbox.link("/usr/local/bin/bardo-compositor")).unwrap_err();
 
     rollback(&sandbox.layout, &Accept).expect("rollback");
     assert!(sandbox.link("/usr/local/bin/bardo-compositor").exists());
-    assert!(
-        std::fs::symlink_metadata(sandbox.link("/usr/share/wayland-sessions/bardo.desktop"))
-            .is_err()
-    );
+    std::fs::symlink_metadata(sandbox.link("/usr/share/wayland-sessions/bardo.desktop"))
+        .unwrap_err();
 }

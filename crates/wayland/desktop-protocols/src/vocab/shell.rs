@@ -181,6 +181,7 @@ impl WindowEntries {
     /// assert!(!offered.contains(WindowEntry::ExitFullScreen));
     /// assert!(offered.contains(WindowEntry::Left));
     /// ```
+    #[must_use]
     pub fn from_bits(bits: u32) -> WindowEntries {
         WindowEntries(
             WindowEntry::ALL
@@ -196,6 +197,7 @@ impl WindowEntries {
     }
 
     /// Whether `entry` can be picked.
+    #[must_use]
     pub fn contains(&self, entry: WindowEntry) -> bool {
         self.0.contains(&entry)
     }

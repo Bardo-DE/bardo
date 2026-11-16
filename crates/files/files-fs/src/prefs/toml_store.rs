@@ -34,6 +34,7 @@ pub struct TomlPrefs {
 impl TomlPrefs {
     /// A store over `file` (its folder is made on the first save). The caller says where: this
     /// crate reads no environment.
+    #[must_use]
     pub fn new(file: PathBuf) -> TomlPrefs {
         TomlPrefs {
             file,

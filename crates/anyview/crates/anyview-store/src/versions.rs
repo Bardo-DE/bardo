@@ -52,11 +52,13 @@ pub const DEFAULT_KEEP: KeepPeriod = KeepPeriod::days(30);
 
 impl KeepPeriod {
     /// A period of `days` whole days; zero keeps nothing past the second it was kept in.
+    #[must_use]
     pub const fn days(days: u32) -> KeepPeriod {
         KeepPeriod { days }
     }
 
     /// The period in seconds.
+    #[must_use]
     pub fn seconds(self) -> u64 {
         u64::from(self.days) * SECONDS_PER_DAY
     }
@@ -266,7 +268,7 @@ impl Versions {
         for n in 0_u32..10_000 {
             let id = VersionId {
                 key: key.to_owned(),
-                stem: format!("{:012}-{n:04}", at),
+                stem: format!("{at:012}-{n:04}"),
             };
             match fs::hard_link(data, id.data_path(&self.root)) {
                 Ok(()) => return Ok(id),
@@ -293,7 +295,7 @@ impl Versions {
         for n in 0_u32.. {
             let id = VersionId {
                 key: key.to_owned(),
-                stem: format!("{:012}-{n:04}", at),
+                stem: format!("{at:012}-{n:04}"),
             };
             let data = id.data_path(&self.root);
             let mut slot =

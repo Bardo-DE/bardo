@@ -22,6 +22,7 @@ pub enum HistoryRead {
 
 impl HistoryRead {
     /// The files to offer, newest first; empty unless the history loaded.
+    #[must_use]
     pub fn entries(&self) -> &[HistoryEntry] {
         match self {
             HistoryRead::Loaded(history) => &history.entries,
@@ -30,6 +31,7 @@ impl HistoryRead {
     }
 
     /// Why the history is unavailable, for the caller's log.
+    #[must_use]
     pub fn fault(&self) -> Option<&StoreError> {
         match self {
             HistoryRead::Unavailable(error) => Some(error),

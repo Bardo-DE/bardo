@@ -94,7 +94,9 @@ impl Inbox {
         let Some(space_path) = space_path(path) else {
             return;
         };
-        let meta = std::fs::metadata(path).ok().filter(|m| m.is_file());
+        let meta = std::fs::metadata(path)
+            .ok()
+            .filter(std::fs::Metadata::is_file);
         let inode = match (&meta, &change) {
             (Some(m), _) => {
                 self.inodes.insert(path.to_owned(), m.ino());

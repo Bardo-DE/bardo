@@ -17,6 +17,7 @@ pub struct CursorShapePart {
 
 impl CursorShapePart {
     /// Creates the global (version 2). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> CursorShapePart
     where
         D: GlobalDispatch<WpCursorShapeManagerV1, GlobalData>

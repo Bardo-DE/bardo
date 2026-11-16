@@ -1,4 +1,4 @@
-//! IdleDim's fade on a real Blitz document (design/04-COMPONENTS.md section 53;
+//! `IdleDim`'s fade on a real Blitz document (design/04-COMPONENTS.md section 53;
 //! design/22-SETTINGS.md section 3.24; CONSUMING.md "Idle dim"): dimming fades in over
 //! `--t-idle-dim`, waking always snaps even mid-fade, a live settings edit never animates, and
 //! Reduced motion shows the level at once. Every case ends at 0 frames (R3).

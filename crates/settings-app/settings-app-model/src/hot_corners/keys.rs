@@ -25,6 +25,7 @@ impl HotModifier {
     ];
 
     /// The word the settings file writes.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             HotModifier::Control => "control",
@@ -35,6 +36,7 @@ impl HotModifier {
     }
 
     /// The modifier a file's word names.
+    #[must_use]
     pub fn of_word(word: &str) -> Option<HotModifier> {
         HotModifier::ALL.into_iter().find(|m| m.word() == word)
     }
@@ -61,11 +63,13 @@ impl HotKeys {
     }
 
     /// Whether nothing is held.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
     /// Whether `modifier` is in the set.
+    #[must_use]
     pub fn holds(&self, modifier: HotModifier) -> bool {
         self.0.contains(&modifier)
     }
@@ -80,11 +84,13 @@ impl HotKeys {
     }
 
     /// The words a file writes, in glyph order.
+    #[must_use]
     pub fn words(&self) -> Vec<&'static str> {
         self.0.iter().map(|m| m.word()).collect()
     }
 
     /// The modifiers held, in glyph order.
+    #[must_use]
     pub fn modifiers(&self) -> Vec<HotModifier> {
         self.0.iter().copied().collect()
     }

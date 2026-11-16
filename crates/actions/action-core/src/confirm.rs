@@ -256,6 +256,7 @@ pub struct ConfirmParts {
 
 impl ConfirmRequest {
     /// A request with no standing-grant offer; add one with [`ConfirmRequest::offering`].
+    #[must_use]
     pub fn new(parts: ConfirmParts) -> Self {
         let ConfirmParts {
             id,
@@ -299,26 +300,31 @@ impl ConfirmRequest {
     }
 
     /// The same request for a brief the person is to check.
+    #[must_use]
     pub fn for_brief(self, brief: Option<BriefSheet>) -> Self {
         ConfirmRequest { brief, ..self }
     }
 
     /// The same request for a call in a session an editor drives.
+    #[must_use]
     pub fn for_editor(self, editor: Option<EditorRoute>) -> Self {
         ConfirmRequest { editor, ..self }
     }
 
     /// The same request for a call one of the person's helpers makes.
+    #[must_use]
     pub fn for_helper(self, helper: Option<HelperName>) -> Self {
         ConfirmRequest { helper, ..self }
     }
 
     /// The same request with these limits.
+    #[must_use]
     pub fn limiting(self, limits: SheetLimits) -> Self {
         ConfirmRequest { limits, ..self }
     }
 
     /// The same request with this "allow always" offer.
+    #[must_use]
     pub fn offering(self, always: AlwaysOffer) -> Self {
         ConfirmRequest { always, ..self }
     }
@@ -364,6 +370,7 @@ pub enum ConfirmAnswer {
 impl ConfirmAnswer {
     /// For a sheet that did not offer "allow from the terminal" (a computer-use step, a widened
     /// policy): that answer was never on it, so it counts as the router withdrawing the sheet.
+    #[must_use]
     pub fn without_terminal_grant(self) -> ConfirmAnswer {
         match self {
             ConfirmAnswer::AllowedFromTerminal { .. } => {
@@ -375,6 +382,7 @@ impl ConfirmAnswer {
 
     /// For a sheet that did not offer "never": that answer was never on it, so it counts as the
     /// person saying no this once, and nothing is kept.
+    #[must_use]
     pub fn without_never(self) -> ConfirmAnswer {
         match self {
             ConfirmAnswer::Never { .. } => ConfirmAnswer::Ended(ConfirmEnd::Refused),

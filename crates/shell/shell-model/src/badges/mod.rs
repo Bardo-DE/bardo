@@ -1,4 +1,4 @@
-//! App badges: LauncherEntry counts, progress and urgency per app, as the dock draws them.
+//! App badges: `LauncherEntry` counts, progress and urgency per app, as the dock draws them.
 
 mod command;
 mod model;

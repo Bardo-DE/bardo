@@ -73,6 +73,7 @@ fn of(shapes: &[Shape]) -> Vec<Shape> {
 impl Icon {
     /// The solid form of an icon in [`Icon::ANIMATED_BY_PART`], split like its [`Icon::parts`];
     /// `None` for any other.
+    #[must_use]
     pub fn solid_parts(self) -> Option<SolidParts> {
         self.parts()?;
         let split = |still: &[Shape], parts: &[&[Shape]]| SolidParts {

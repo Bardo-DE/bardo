@@ -77,6 +77,7 @@ pub enum PeekError {
 impl PeekError {
     /// Whether the peek ended because its time ran out and left nothing to show: a back end's
     /// interrupted error. It is no fault of the file, and the card says nothing of it.
+    #[must_use]
     pub fn is_interrupted(&self) -> bool {
         matches!(
             self,

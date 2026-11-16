@@ -52,7 +52,7 @@ pub fn edited(
         (RowEdit::Id(""), Some(at)) => {
             rows.remove(at);
         }
-        (RowEdit::Id(""), None) | (RowEdit::Secret(""), None) => {}
+        (RowEdit::Id("") | RowEdit::Secret(""), None) => {}
         (RowEdit::Id(id), Some(at)) => set(&mut rows[at], "client_id", id),
         (RowEdit::Id(id), None) => {
             let mut row = Table::new();

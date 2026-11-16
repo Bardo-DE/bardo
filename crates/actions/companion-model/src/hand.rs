@@ -45,6 +45,7 @@ impl AppSessionId {
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -113,6 +114,7 @@ impl SeenCommand {
     }
 
     /// The words, the program first.
+    #[must_use]
     pub fn tokens(&self) -> &[String] {
         &self.0
     }

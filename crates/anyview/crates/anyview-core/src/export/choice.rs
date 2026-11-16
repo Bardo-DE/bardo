@@ -12,6 +12,7 @@ pub trait ExportChoice: Clone + PartialEq + 'static {
     type Kind: Word;
 
     /// What the dialog's format list shows, in order. Every kind by default.
+    #[must_use]
     fn kinds() -> &'static [Self::Kind] {
         <Self::Kind as Word>::ALL
     }

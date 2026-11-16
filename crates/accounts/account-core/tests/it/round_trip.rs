@@ -500,7 +500,7 @@ fn agent_values_keep_their_slugs_and_hold_no_secret() {
     for bad in ["", "anthropic_api_key", "1KEY", "A-B", "A B"] {
         assert!(EnvName::parse(bad).is_err(), "{bad:?}");
     }
-    assert!(serde_json::from_str::<AgentProgram>("\"Not Ok\"").is_err());
+    serde_json::from_str::<AgentProgram>("\"Not Ok\"").unwrap_err();
     assert!(AccountState::NeedsLogin.needs_person() && AccountState::NeedsReauth.needs_person());
     assert!(!AccountState::Ok.needs_person() && !AccountState::Offline.needs_person());
 }

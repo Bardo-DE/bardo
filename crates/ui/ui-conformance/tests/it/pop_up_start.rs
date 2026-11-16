@@ -1,4 +1,4 @@
-//! PopUpButton's `start` and `anchor` on a real Blitz document: a pop-up that starts open draws
+//! `PopUpButton`'s `start` and `anchor` on a real Blitz document: a pop-up that starts open draws
 //! its menu once the button is laid out, against the button; with an `anchor` it draws it
 //! there instead. Shots in light and dark.
 

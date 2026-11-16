@@ -106,6 +106,7 @@ impl ClockSource {
     }
 
     /// Now, on this clock.
+    #[must_use]
     pub fn now(&self) -> Mono {
         match self {
             ClockSource::Monotonic(wall) => wall.now(),
@@ -117,6 +118,7 @@ impl ClockSource {
     /// `Mono` to it gives the reading the same instant has on the clock a script reads
     /// (`time.clock_gettime_ns(time.CLOCK_MONOTONIC)`). A virtual clock stands for no real
     /// instant: its epoch is 0, so a test's stamps are its `Mono` in nanoseconds.
+    #[must_use]
     pub fn monotonic_epoch_ns(&self) -> u64 {
         match self {
             ClockSource::Monotonic(wall) => wall.epoch_ns,
@@ -127,11 +129,13 @@ impl ClockSource {
     /// `at` as `CLOCK_MONOTONIC` reads it: what a client is told when the protocol names that
     /// clock (`wp_presentation`, `wp_commit_timing_v1`). The epoch plus the session time; a
     /// virtual clock's epoch is 0, so tests see their own `Mono`.
+    #[must_use]
     pub fn on_monotonic(&self, at: Mono) -> Mono {
         Mono(at.0.saturating_add(Duration::from_nanos(self.monotonic_epoch_ns())))
     }
 
     /// The virtual clock, when this is one.
+    #[must_use]
     pub fn shared(&self) -> Option<&SharedClock> {
         match self {
             ClockSource::Monotonic(_) => None,
@@ -194,11 +198,13 @@ impl ClockSource {
 
     /// The real instant now, for a wait that depends on processes outside the session (a
     /// stepped clock stands still while a client starts).
+    #[must_use]
     pub fn wall_instant(&self) -> Instant {
         Instant::now()
     }
 
     /// `Mono` after `by` (a timer's due instant).
+    #[must_use]
     pub fn after(&self, by: Duration) -> Mono {
         self.now().after(by)
     }

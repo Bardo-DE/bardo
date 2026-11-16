@@ -55,6 +55,7 @@ pub enum AccountState {
 impl AccountState {
     /// Whether the person has to do something before the account works again: sign it in again
     /// (`NeedsReauth`) or sign the agent in (`NeedsLogin`). The shell hears both the same way.
+    #[must_use]
     pub fn needs_person(self) -> bool {
         matches!(self, AccountState::NeedsReauth | AccountState::NeedsLogin)
     }

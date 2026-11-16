@@ -47,6 +47,7 @@ impl ImapAuth {
 /// The capabilities the app is told: the server's, less what concerns authenticating or
 /// upgrading (`STARTTLS`, `LOGINDISABLED`, every `AUTH=` mechanism), since the app has no
 /// credential to present and the connection is already as secure as the relay made it.
+#[must_use]
 pub fn app_capabilities(server: &[String]) -> Vec<String> {
     server
         .iter()
@@ -59,6 +60,7 @@ pub fn app_capabilities(server: &[String]) -> Vec<String> {
 }
 
 /// The greeting the app sees: `* PREAUTH [CAPABILITY ...] porter relay ready`.
+#[must_use]
 pub fn preauth_greeting(server_capabilities: &[String]) -> Vec<u8> {
     let caps = app_capabilities(server_capabilities).join(" ");
     format!("* PREAUTH [CAPABILITY {caps}] porter relay ready\r\n").into_bytes()
@@ -102,16 +104,19 @@ pub struct ImapRelay {
 
 impl ImapRelay {
     /// What the relay presents and where.
+    #[must_use]
     pub fn plan(&self) -> &RelayPlan {
         &self.plan
     }
 
     /// Where the relay stands.
+    #[must_use]
     pub fn phase(&self) -> &ImapPhase {
         &self.phase
     }
 
     /// A relay at the start of a connection.
+    #[must_use]
     pub fn new(plan: RelayPlan) -> Self {
         Self {
             plan,

@@ -6,7 +6,8 @@ use crate::{Locality, ModelEntry};
 
 impl Reach {
     /// Whether this reach goes through a gateway rather than the model's own company (so a
-    /// footer can say "via OpenRouter"). The gateway's id is `openrouter`.
+    /// footer can say "via `OpenRouter`"). The gateway's id is `openrouter`.
+    #[must_use]
     pub fn is_via_gateway(&self) -> bool {
         self.provider.0 == "openrouter"
     }
@@ -16,6 +17,7 @@ impl Reach {
 /// is in `wires`, a direct one before a gateway one, and otherwise the first listed. `None` for an
 /// on-device entry and when nothing is granted or speakable. The chosen reach comes back whole, so
 /// the caller can name the provider.
+#[must_use]
 pub fn reachable<'a>(
     entry: &'a ModelEntry,
     granted: &[ProviderId],

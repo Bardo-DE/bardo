@@ -204,6 +204,6 @@ mod tests {
         let over_black = thin
             .iter()
             .find(|floor| floor.tint == Tint::OverBlur && floor.backdrop == Backdrop::Black);
-        assert_eq!(over_black.map(|floor| floor.clears()), Some(false));
+        assert_eq!(over_black.map(super::Floor::clears), Some(false));
     }
 }

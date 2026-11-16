@@ -182,7 +182,7 @@ impl Provides for Provision {
                         cplugin: absolute(cplugin)?,
                     },
                 })),
-                (None, Some(_)) | (Some(_), None) | (None, None) => {
+                (None, Some(_) | None) | (Some(_), None) => {
                     Err(Refusal::Fault(ProvisionFault::PlayerIncomplete))
                 }
             },

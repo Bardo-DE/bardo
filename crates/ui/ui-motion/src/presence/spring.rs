@@ -79,11 +79,13 @@ pub struct SpringPresence {
 
 impl SpringPresence {
     /// Whether the surface is drawn at all: not once gone.
+    #[must_use]
     pub fn drawn(&self) -> bool {
         !matches!(*self.stage.peek(), Stage::Gone | Stage::Unmounted)
     }
 
     /// `data-presence`: entering, present, or leaving.
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match *self.stage.peek() {
             Stage::Arrival => match self.entrance.phase() {
@@ -102,11 +104,13 @@ impl SpringPresence {
     }
 
     /// Whether the surface is on its way out: its scrim fades with it.
+    #[must_use]
     pub fn leaving(&self) -> bool {
         *self.stage.peek() == Stage::Leaving
     }
 
     /// `data-drive`: `spring` once the spring draws it, nothing while its first entrance plays.
+    #[must_use]
     pub fn drive(&self) -> Option<&'static str> {
         match *self.stage.peek() {
             Stage::Arrival | Stage::Unmounted => None,
@@ -115,6 +119,7 @@ impl SpringPresence {
     }
 
     /// The spring's place for the stylesheet, `--present-p:0.500`.
+    #[must_use]
     pub fn style(&self) -> String {
         format!("--present-p:{}", self.spring.peek().css())
     }
@@ -122,6 +127,7 @@ impl SpringPresence {
 
 /// The showing hook. `shown` is the caller's (`None`: always shown); `entrance` is the keyframe
 /// its first showing plays; `on_hidden` runs when a hidden surface's spring comes to rest.
+#[must_use]
 pub fn use_spring_presence(
     shown: Option<bool>,
     on_hidden: Option<EventHandler<()>>,

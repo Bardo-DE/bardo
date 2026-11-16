@@ -34,6 +34,7 @@ pub struct PictureDirs {
 
 impl PictureDirs {
     /// These folders: `system` ones, and `added` for the person's.
+    #[must_use]
     pub fn new(system: Vec<PathBuf>, added: PathBuf) -> PictureDirs {
         PictureDirs { system, added }
     }
@@ -48,12 +49,14 @@ impl PictureDirs {
 
     /// The folders the pictures are in: the system's, then the added ones. What the window may
     /// read pictures from is these and nothing else.
+    #[must_use]
     pub fn folders(&self) -> Vec<PathBuf> {
         self.system.iter().chain([&self.added]).cloned().collect()
     }
 
     /// Every picture in the folders, the system's first, each folder in name order, each marked
     /// with whose folder it is in. The system's and the added ones are each cut at the most.
+    #[must_use]
     pub fn list(&self) -> Vec<Picture> {
         let mut system = Vec::new();
         for folder in &self.system {

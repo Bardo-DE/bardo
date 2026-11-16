@@ -50,6 +50,7 @@ pub struct QuireMaskedCapture {
 
 impl StockToplevelCapture {
     /// Captures over an open connection. Nothing is asked of the compositor until `open`.
+    #[must_use]
     pub fn over(connection: Connection) -> Self {
         let queue = connection.new_event_queue::<CapState>();
         let state = CapState::new(&connection, queue.handle());
@@ -68,6 +69,7 @@ impl StockToplevelCapture {
     }
 
     /// The connection.
+    #[must_use]
     pub fn connection(&self) -> &Connection {
         self.pump.connection()
     }
@@ -75,6 +77,7 @@ impl StockToplevelCapture {
 
 impl QuireMaskedCapture {
     /// Captures over an open agent connection. Nothing is asked of the compositor until `open`.
+    #[must_use]
     pub fn over(connection: Connection) -> Self {
         let queue = connection.new_event_queue::<CapState>();
         let state = CapState::new(&connection, queue.handle());
@@ -92,6 +95,7 @@ impl QuireMaskedCapture {
     }
 
     /// The connection.
+    #[must_use]
     pub fn connection(&self) -> &Connection {
         self.pump.connection()
     }

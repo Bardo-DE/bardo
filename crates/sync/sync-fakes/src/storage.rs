@@ -217,7 +217,7 @@ const PLANTED: &[(&str, &str, ItemKind, ItemState, bool, u64)] = &[
 ];
 
 impl World {
-    /// Two drives under `dir/drives/`, a OneDrive and a Google Drive, their files written to
+    /// Two drives under `dir/drives/`, a `OneDrive` and a Google Drive, their files written to
     /// disk.
     pub fn plant(dir: &Path) -> std::io::Result<World> {
         let root = dir.join("drives");
@@ -290,6 +290,7 @@ impl World {
     }
 
     /// The drive rows, as `Drives` answers.
+    #[must_use]
     pub fn drives(&self) -> Vec<(String, Details)> {
         self.drives
             .iter()
@@ -360,6 +361,7 @@ impl World {
     }
 
     /// Each known path's details, as `Items` answers; unknown paths are left out.
+    #[must_use]
     pub fn items(&self, paths: &[String]) -> ItemDetails {
         paths
             .iter()
@@ -943,6 +945,7 @@ impl World {
     }
 
     /// The details of `changed`'s paths of one drive, for `ItemsChanged`.
+    #[must_use]
     pub fn details_of(&self, paths: &BTreeSet<PathBuf>) -> ItemDetails {
         paths
             .iter()
@@ -1018,6 +1021,7 @@ pub struct FakeStorage {
 
 impl FakeStorage {
     /// The object over `world`.
+    #[must_use]
     pub fn new(world: World) -> FakeStorage {
         FakeStorage {
             world: Arc::new(Mutex::new(world)),
@@ -1169,6 +1173,7 @@ pub async fn serve(connection: &Connection, name: &str, storage: FakeStorage) ->
 }
 
 /// The details by key, for tests and the bin's printout.
+#[must_use]
 pub fn word_of(details: &Details, key: &str) -> Option<String> {
     details
         .get(key)
@@ -1176,6 +1181,7 @@ pub fn word_of(details: &Details, key: &str) -> Option<String> {
 }
 
 /// Every item path the fake plants, for printing what there is.
+#[must_use]
 pub fn planted_paths(world: &World) -> Vec<PathBuf> {
     world.items.keys().cloned().collect()
 }

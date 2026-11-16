@@ -1,4 +1,4 @@
-//! The disks, as the window sees them: the desktop crate's UDisks2 service on the runtime the
+//! The disks, as the window sees them: the desktop crate's `UDisks2` service on the runtime the
 //! rest of the bus work runs on. The window's disk thread calls these and may block.
 
 use files_core::{EjectFailure, FolderPath, MountFailure, Volume, VolumeId};
@@ -7,7 +7,7 @@ use files_ui::{Changed, VolumeError, Volumes, WatchGuard};
 use tokio::runtime::Handle;
 use tokio::task::JoinHandle;
 
-/// UDisks2 behind [`Volumes`].
+/// `UDisks2` behind [`Volumes`].
 #[derive(Debug, Clone)]
 pub struct DesktopVolumes {
     disks: Disks,

@@ -193,8 +193,8 @@ mod tests {
         {
             let mut ring = shared.ring.lock().expect("ring");
             ring.samples.extend(std::iter::repeat_n(1_000_i16, 100));
-            ring.fade = Some((10, 10));
-        }
+            ring.fade = Some((10, 10))
+        };
         let mut bytes = [0_u8; 40];
         fill(&shared, &mut bytes);
         let out: Vec<i16> = samples_of(&bytes);

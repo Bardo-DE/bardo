@@ -43,6 +43,7 @@ fn use_once(anim: Anim, moments: &'static [Moment], cue: Option<Cue>) -> PulseKe
 }
 
 /// `shake-x` once per new Failure cue (R6); the same amplitude every time; nothing under Reduced.
+#[must_use]
 pub fn use_shake(cue: Cue) -> PulseKey {
     use_once(Anim::ShakeX, &[Moment::Failure], Some(cue))
 }
@@ -50,6 +51,7 @@ pub fn use_shake(cue: Cue) -> PulseKey {
 /// The incoming content's `fade` at `--t-quick` once per new Preview, Change or Failure cue: what
 /// a part that swaps its content in place (the preview pane's media) plays instead of its
 /// entrance. Nothing under Reduced: the content snaps (R7).
+#[must_use]
 pub fn use_cross_fade(cue: Option<Cue>) -> PulseKey {
     use_once(
         Anim::MorphFadeIn,

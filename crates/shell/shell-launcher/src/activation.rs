@@ -54,6 +54,7 @@ pub enum Activation {
 impl Activation {
     /// Perform `action` of `app` through intentd, on nothing and with no arguments (a hot
     /// corner's app action). `None` when either name is not a valid name.
+    #[must_use]
     pub fn app_action(app: &str, action: &str) -> Option<Activation> {
         let action = action_vocab::ActionRef {
             app: provenance::AppName::parse(app).ok()?,

@@ -73,6 +73,7 @@ fn blocked_by(row: &AgentRow, switch: bool) -> Option<AgentReason> {
 /// The agents the assistant can be handed to, in the file's order, then the known programs found
 /// on this computer that no entry runs (greyed: "Not set up yet"). An entry whose name is not
 /// an id cannot be a word and is left out.
+#[must_use]
 pub fn offers(agents: &Agents, found: &[Found], switch: bool) -> Vec<AgentOffer> {
     let listed = agents
         .rows

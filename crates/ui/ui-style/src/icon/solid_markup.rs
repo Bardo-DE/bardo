@@ -1,5 +1,5 @@
-//! Solid forms of the markup and document-view glyphs (Hand, Crop, MousePointer, Highlighter, Type,
-//! Circle, Line, ArrowUpRight, PenLine, ListTree, Table): filled paths on the 24 grid, no stroke
+//! Solid forms of the markup and document-view glyphs (Hand, Crop, `MousePointer`, Highlighter, Type,
+//! Circle, Line, `ArrowUpRight`, `PenLine`, `ListTree`, Table): filled paths on the 24 grid, no stroke
 //! (design/08-ICONS.md section 1.2).
 //!
 //! Each constant says where its geometry comes from. Tabler and Phosphor are MIT, notices in

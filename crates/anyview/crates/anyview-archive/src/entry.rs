@@ -39,6 +39,7 @@ pub enum EntryCount {
 
 impl EntryCount {
     /// The count, whether or not it is exact.
+    #[must_use]
     pub fn get(self) -> u32 {
         match self {
             EntryCount::Exact(count) | EntryCount::AtLeast(count) => count,
@@ -46,6 +47,7 @@ impl EntryCount {
     }
 
     /// `12`, or `12+` for a lower bound.
+    #[must_use]
     pub fn text(self) -> String {
         match self {
             EntryCount::Exact(count) => count.to_string(),

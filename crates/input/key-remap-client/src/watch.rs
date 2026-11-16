@@ -83,31 +83,28 @@ impl Files {
 fn run(socket: &Path, mut files: Files, on_change: &ChangeCallback, stopped: &AtomicBool) {
     let mut last: Option<KeymapState> = None;
     while !stopped.load(Ordering::Relaxed) {
-        match subscribe(socket) {
-            Ok(connection) => {
-                while !stopped.load(Ordering::Relaxed) {
-                    match connection.recv(TICK) {
-                        Ok(Heard::Message(ToClient::Keymap(state))) => {
-                            if last.as_ref().is_some_and(|before| *before != state) {
-                                on_change();
-                            }
-                            last = Some(state);
+        if let Ok(connection) = subscribe(socket) {
+            while !stopped.load(Ordering::Relaxed) {
+                match connection.recv(TICK) {
+                    Ok(Heard::Message(ToClient::Keymap(state))) => {
+                        if last.as_ref().is_some_and(|before| *before != state) {
+                            on_change();
                         }
-                        Ok(Heard::Message(_) | Heard::Silence) => {}
-                        Ok(Heard::Closed) | Err(_) => break,
+                        last = Some(state);
                     }
-                    if files.person_changed() {
-                        on_change();
-                    }
+                    Ok(Heard::Message(_) | Heard::Silence) => {}
+                    Ok(Heard::Closed) | Err(_) => break,
                 }
-                files.machine = fingerprint(&files.machine_file);
-            }
-            Err(_) => {
-                let machine = files.machine_changed();
-                let person = files.person_changed();
-                if machine || person {
+                if files.person_changed() {
                     on_change();
                 }
+            }
+            files.machine = fingerprint(&files.machine_file);
+        } else {
+            let machine = files.machine_changed();
+            let person = files.person_changed();
+            if machine || person {
+                on_change();
             }
         }
         std::thread::sleep(RETRY);

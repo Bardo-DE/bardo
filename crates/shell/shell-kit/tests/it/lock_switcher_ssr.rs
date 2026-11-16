@@ -111,7 +111,7 @@ fn polkit_with(user: LockUser, state: PromptState, caps: CapsLock) -> Element {
                 caps,
                 oninput: |_| {},
                 onsubmit: |_| {},
-                oncancel: |_| {},
+                oncancel: |()| {},
             }
         },
     )
@@ -228,8 +228,7 @@ fn specimen(name: &str) -> fn() -> Element {
     SPECIMENS
         .iter()
         .find(|(known, _)| *known == name)
-        .map(|(_, make)| *make)
-        .unwrap_or_else(|| panic!("no specimen {name}"))
+        .map_or_else(|| panic!("no specimen {name}"), |(_, make)| *make)
 }
 
 /// Build the dom and flush the effects that register overlays, so a sheet is in the markup.
@@ -369,7 +368,7 @@ fn polkit_named() -> Element {
                 user: user(),
                 oninput: |_| {},
                 onsubmit: |_| {},
-                oncancel: |_| {},
+                oncancel: |()| {},
                 common: Common { id: Some("polkit-panel".to_owned()), ..Common::default() },
             }
         },

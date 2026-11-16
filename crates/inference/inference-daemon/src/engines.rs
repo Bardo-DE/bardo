@@ -53,6 +53,7 @@ pub enum GpuState {
 
 impl GpuState {
     /// The slug on the bus.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             GpuState::Idle => "idle",
@@ -149,6 +150,7 @@ impl Engines {
     }
 
     /// The same, starting from these settings (a new holder: the old one's clones keep theirs).
+    #[must_use]
     pub fn with_settings(self, settings: Settings) -> Self {
         self.supervised.set_lengths(settings.lengths);
         let book = Book {
@@ -167,11 +169,13 @@ impl Engines {
     }
 
     /// The settings in force now.
+    #[must_use]
     pub fn settings(&self) -> Arc<Settings> {
         self.book.live.get()
     }
 
     /// Follows the settings in force: the receiver changes whenever they are put in force.
+    #[must_use]
     pub fn watch_settings(&self) -> tokio::sync::watch::Receiver<Arc<Settings>> {
         self.book.live.subscribe()
     }
@@ -188,6 +192,7 @@ impl Engines {
     /// The same, with models of accounts that are not on this computer. They take part in
     /// routing (so a floor refuses them), but nothing serves a turn from them yet: a route that
     /// lands on one is `Unavailable`.
+    #[must_use]
     pub fn with_remote(self, remote: Vec<ModelCard>) -> Self {
         let book = Book {
             local: self.book.local.clone(),
@@ -206,6 +211,7 @@ impl Engines {
 
     /// The same, serving the hosted models of the catalogue to the apps that hold a grant on an
     /// account that reaches them.
+    #[must_use]
     pub fn with_cloud(self, cloud: Cloud) -> Self {
         let book = Book {
             local: self.book.local.clone(),
@@ -224,6 +230,7 @@ impl Engines {
 
     /// The same, using the engines the person attached (`attached::models`). They are in no
     /// supervisor: nothing here starts, stops, evicts or kills them.
+    #[must_use]
     pub fn with_attached(self, attached: AttachedBook) -> Self {
         let book = Book {
             local: self.book.local.clone(),
@@ -241,6 +248,7 @@ impl Engines {
     }
 
     /// The same, with these results of the tool-call check (read from, and kept in, a file).
+    #[must_use]
     pub fn with_tool_proofs(self, proofs: ToolProofs) -> Self {
         let book = Book {
             local: self.book.local.clone(),
@@ -258,28 +266,33 @@ impl Engines {
     }
 
     /// Which models have shown they can make a valid tool call.
+    #[must_use]
     pub fn tool_proofs(&self) -> &ToolProofs {
         &self.book.proofs
     }
 
     /// The engines the person attached, and what the last look found of each.
+    #[must_use]
     pub fn attached(&self) -> &AttachedBook {
         &self.book.attached
     }
 
     /// The runtimes the person runs themselves, as the last probe found them. The probe writes
     /// here (`watch`); routing, the picker and the session machine read.
+    #[must_use]
     pub fn probed(&self) -> &ProbedBook {
         &self.book.probed
     }
 
     /// The hosted models, when this daemon serves any.
+    #[must_use]
     pub fn cloud(&self) -> Option<&Cloud> {
         self.book.cloud.as_ref()
     }
 
     /// What `app` has used of hosted models today and this month, by name; empty when this daemon
     /// has none (the `Usage` dictionary of `Inference1`).
+    #[must_use]
     pub fn usage_of(&self, app: &AppId) -> Vec<(String, UsageValue)> {
         match &self.book.cloud {
             Some(cloud) => cloud
@@ -340,6 +353,7 @@ impl Engines {
     }
 
     /// The supervisor handle (the runner marks engines used through it).
+    #[must_use]
     pub fn supervised(&self) -> &Supervised {
         &self.supervised
     }
@@ -356,12 +370,14 @@ impl Engines {
 
     /// The local model `model` names, when this computer has it (the speech `Hear` stage looks
     /// up the host to run on this way).
+    #[must_use]
     pub fn local_model(&self, model: &ModelRef) -> Option<Arc<LocalModel>> {
         self.local(model)
     }
 
     /// How ready one local model is now: a supervised one by its engine, a probed one by whether
     /// its runtime answered the last look.
+    #[must_use]
     pub fn readiness(&self, model: &LocalModel) -> Readiness {
         match (&model.attached, model.loopback) {
             (Some(_), _) => self.book.attached.readiness(&model.model_ref()),
@@ -379,11 +395,13 @@ impl Engines {
 
     /// Every model a session may be routed to, with its readiness now and what loading it would
     /// take (stoker's `budget`, asked speculatively: nothing is started).
+    #[must_use]
     pub fn listed(&self) -> Vec<Listed> {
         self.listed_with(&Offered::default())
     }
 
     /// `listed`, and the hosted models `offered` to the app that is asking.
+    #[must_use]
     pub fn listed_with(&self, offered: &Offered) -> Vec<Listed> {
         let snapshot = self.supervised.snapshot();
         let running = running_of(snapshot.states.iter(), |id| {
@@ -564,11 +582,12 @@ impl Engines {
         // A request that offers tools is not given to a model of Automatic's pool that failed to
         // make a valid call; when none of the pool can, it is refused with that reason. A named
         // model is not touched.
-        let tiers = match asks_for_tools(&spec.need) {
-            true => tiers
+        let tiers = if asks_for_tools(&spec.need) {
+            tiers
                 .for_tools(Slot::Text, spec.tier, &self.book.proofs.failed())
-                .map_err(|refusal| Unplaced::Other(refusal.into()))?,
-            false => tiers,
+                .map_err(|refusal| Unplaced::Other(refusal.into()))?
+        } else {
+            tiers
         };
         let policy = settings.routing_policy();
         let decided = match allowed {
@@ -699,6 +718,7 @@ impl Engines {
 
     /// What a turn on `model` is pinned to, for a model that is not the one a session's route
     /// chose (the answering stage of a pipeline). None for a model nothing here can run.
+    #[must_use]
     pub fn pinned_for(&self, model: &ModelRef, offered: &Offered) -> Option<Pinned> {
         let (locality, local, cloud) = self.backing(model, offered, &self.settings())?;
         Some(Pinned {
@@ -829,12 +849,14 @@ impl Engines {
 
     /// The GPU's state now: loading if any supervised engine is starting, busy if a turn is
     /// using one, else idle.
+    #[must_use]
     pub fn gpu(&self) -> GpuState {
         gpu_in(&self.supervised.snapshot(), self.supervised.probe_every())
     }
 
     /// What an app is told about a need without a session (`Inference1.Availability`): whether
     /// the route would run, without revealing which account or model.
+    #[must_use]
     pub fn availability(&self, need: &Need, class: DataClass, role: Role) -> Availability {
         self.availability_with(
             need,
@@ -929,6 +951,7 @@ impl Engines {
 
     /// The router for one session of a caller of this role: it decides once and writes the
     /// decision to `pin`.
+    #[must_use]
     pub fn router(&self, pin: Pin, role: Role) -> SessionRouter {
         SessionRouter {
             engines: self.clone(),
@@ -943,11 +966,13 @@ impl Engines {
 
     /// The router for one session of `caller`: as `router`, and the hosted models its grants reach
     /// are among the candidates. (A router made by `router` knows no app and serves none.)
+    #[must_use]
     pub fn router_for(&self, pin: Pin, caller: &Caller) -> SessionRouter {
         self.router_for_in(pin, caller, None)
     }
 
     /// `router_for`, routing inside the places `allowed` names when it does.
+    #[must_use]
     pub fn router_for_in(
         &self,
         pin: Pin,
@@ -962,6 +987,7 @@ impl Engines {
     }
 
     /// `router_for_in` for a session that names its own model (see [`Engines::route_as`]).
+    #[must_use]
     pub fn router_named(
         &self,
         pin: Pin,
@@ -976,7 +1002,7 @@ impl Engines {
     }
 }
 
-/// How a hosted model is reached, as the footer says it ("via OpenRouter").
+/// How a hosted model is reached, as the footer says it ("via `OpenRouter`").
 fn reached_of(reach: &model_catalog::Reach) -> Why {
     Why::Reached {
         provider: reach.provider.clone(),
@@ -1101,6 +1127,7 @@ pub struct SessionRouter {
 
 impl SessionRouter {
     /// The same router for a session of `asker`, which sees the helpers' seats through `gate`.
+    #[must_use]
     pub fn asked_by(self, asker: Asker, gate: Gate) -> Self {
         Self {
             asking: Some((asker, gate)),
@@ -1118,12 +1145,11 @@ impl SessionRouter {
 
     /// What the session's app is offered: the hosted models its grants reach, when it is known.
     async fn offered(&self, spec: &SessionSpec) -> Offered {
-        match &self.app {
-            Some(app) => self.engines.offer(app, spec.class, spec.usage).await,
-            None => {
-                self.engines.look_at_attached().await;
-                Offered::default()
-            }
+        if let Some(app) = &self.app {
+            self.engines.offer(app, spec.class, spec.usage).await
+        } else {
+            self.engines.look_at_attached().await;
+            Offered::default()
         }
     }
 }

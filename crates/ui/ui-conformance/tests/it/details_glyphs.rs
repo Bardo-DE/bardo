@@ -1,4 +1,4 @@
-//! design/26 D0b's glyph morphs on a real Blitz document: MorphGlyph stacks the outgoing and
+//! design/26 D0b's glyph morphs on a real Blitz document: `MorphGlyph` stacks the outgoing and
 //! incoming layers only while the cross-fade plays, draws its slash on, and snaps under Reduced;
 //! each ends at 0 frames (R2, R3, R7).
 

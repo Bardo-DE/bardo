@@ -40,6 +40,7 @@ pub fn check_audio(
 }
 
 /// Whole milliseconds of audio in `samples` at `rate` (zero for a zero rate).
+#[must_use]
 pub fn audio_ms(rate: AudioRate, samples: u64) -> u32 {
     let ms = samples.saturating_mul(1_000).checked_div(u64::from(rate.0));
     ms.map_or(0, |ms| u32::try_from(ms).unwrap_or(u32::MAX))

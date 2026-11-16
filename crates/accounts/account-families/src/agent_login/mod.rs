@@ -1,4 +1,4 @@
-//! The AgentLogin family (lane P1): an external coding agent that signs itself in (Claude Code,
+//! The `AgentLogin` family (lane P1): an external coding agent that signs itself in (Claude Code,
 //! Gemini CLI, Codex, any ACP agent; any file with `kind = "agent_login"`). The account holds NO
 //! credential of any kind: the agent's own login lives in the agent's own state directory, which
 //! porter never reads (design/31 R7, R8). Adding the account asks nothing; the person reviews the
@@ -35,7 +35,7 @@ pub(crate) fn claims(spec: &ProviderSpec) -> Vec<Claim> {
         .collect()
 }
 
-/// The AgentLogin family's provider.
+/// The `AgentLogin` family's provider.
 #[derive(Debug, Clone)]
 pub struct AgentLoginProvider {
     spec: ProviderSpec,
@@ -43,6 +43,7 @@ pub struct AgentLoginProvider {
 
 impl AgentLoginProvider {
     /// The provider serving the accounts of `spec`.
+    #[must_use]
     pub fn new(spec: ProviderSpec) -> Self {
         Self { spec }
     }

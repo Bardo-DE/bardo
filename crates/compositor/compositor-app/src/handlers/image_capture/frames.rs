@@ -149,11 +149,12 @@ pub(in crate::handlers) fn last_frame(
         presented(state, output)?.map(|frame| &frame.pixels),
         Some(FramePixels::Resident(_))
     );
-    let captured = match resident {
-        true => read_resident(state, output, cursor, area)?,
-        false => read_shadow(state, output, cursor)?
+    let captured = if resident {
+        read_resident(state, output, cursor, area)?
+    } else {
+        read_shadow(state, output, cursor)?
             .cropped(area)
-            .ok_or(CaptureFailure::BufferMismatch)?,
+            .ok_or(CaptureFailure::BufferMismatch)?
     };
     Ok(Some((captured, shown.at)))
 }

@@ -268,7 +268,7 @@ fn inferd_saying_who_answers_is_recorded_once() {
 fn every_input_in_every_phase_has_a_row_and_leaves_a_valid_run() {
     // Not a table of outcomes: every input fed to every phase must not panic, and a finished
     // run stays finished.
-    let inputs = |_: ()| -> Vec<RunInput> {
+    let inputs = |(): ()| -> Vec<RunInput> {
         vec![
             RunInput::Granted(GrantAnswer::Granted),
             RunInput::GrantFailed(computer_use_run::LinkError::Unavailable),

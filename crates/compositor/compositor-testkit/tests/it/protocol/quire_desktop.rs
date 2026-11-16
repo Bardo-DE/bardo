@@ -336,7 +336,11 @@ fn the_shells_requests_reach_the_model() {
     assert_eq!(live_spaces(&watch), 1);
 
     // create_space, to_space, space.activate and move_to
-    ask(&mut fixture, &mut watch, |w| w.create_space());
+    ask(
+        &mut fixture,
+        &mut watch,
+        compositor_testclient::quire::desktop::DesktopWatch::create_space,
+    );
     assert_eq!(live_spaces(&watch), 2);
     assert_eq!(fixture.model().spaces().row(&output).len(), 2);
     let made = watch.spaces()[2].id.clone();
@@ -461,7 +465,11 @@ fn the_manager_follows_what_goes_away() {
     assert!(!watch.windows()[1].gone);
     assert!(!watch.apps()[0].gone, "the app still runs");
 
-    ask(&mut fixture, &mut watch, |w| w.create_space());
+    ask(
+        &mut fixture,
+        &mut watch,
+        compositor_testclient::quire::desktop::DesktopWatch::create_space,
+    );
     assert_eq!(live_spaces(&watch), 2);
     ask(&mut fixture, &mut watch, |w| {
         w.space(1, SpaceRequest::Remove)
@@ -469,10 +477,18 @@ fn the_manager_follows_what_goes_away() {
     assert!(watch.spaces()[1].gone);
     assert_eq!(live_spaces(&watch), 1);
 
-    ask(&mut fixture, &mut watch, |w| w.stop());
+    ask(
+        &mut fixture,
+        &mut watch,
+        compositor_testclient::quire::desktop::DesktopWatch::stop,
+    );
     assert!(watch.finished(), "stop is answered with finished");
     let announced = watch.spaces().len();
-    ask(&mut fixture, &mut watch, |w| w.create_space());
+    ask(
+        &mut fixture,
+        &mut watch,
+        compositor_testclient::quire::desktop::DesktopWatch::create_space,
+    );
     assert_eq!(
         watch.spaces().len(),
         announced,

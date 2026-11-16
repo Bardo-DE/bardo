@@ -9,6 +9,7 @@ use std::fmt;
 pub const CAPTURE_RATE: SampleRate = SampleRate(16_000);
 
 /// How many samples `ms` milliseconds hold at [`CAPTURE_RATE`].
+#[must_use]
 pub fn samples_in(ms: u32) -> usize {
     usize::try_from(u64::from(ms) * u64::from(CAPTURE_RATE.0) / 1000).unwrap_or(usize::MAX)
 }
@@ -37,6 +38,7 @@ pub struct PcmBuffer {
 
 impl PcmBuffer {
     /// An empty buffer of the full capacity.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             slots: vec![0; BUFFER_SAMPLES],
@@ -46,11 +48,13 @@ impl PcmBuffer {
     }
 
     /// How many samples it holds.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.len
     }
 
     /// Whether it holds none.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len == 0
     }
@@ -97,6 +101,7 @@ impl PcmBuffer {
     }
 
     /// Test hook: how many backing slots are not zero, held or not.
+    #[must_use]
     pub fn nonzero_slots(&self) -> usize {
         self.slots.iter().filter(|s| **s != 0).count()
     }

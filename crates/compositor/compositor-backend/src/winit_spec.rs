@@ -30,6 +30,7 @@ const UNIT_SCALE: Scale = Scale(120);
 /// let spec = window_spec(&base, PhysicalSize { w: 2880, h: 1800 }, 2.0);
 /// assert_eq!((spec.mode.size.w, spec.scale.0), (2880, 240));
 /// ```
+#[must_use]
 pub fn window_spec(
     base: &VirtualOutputSpec,
     size: PhysicalSize,

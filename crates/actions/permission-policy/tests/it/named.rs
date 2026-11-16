@@ -41,7 +41,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
         (
             "other Space",
             with(Effect::Read, |r| {
-                r.context.target_space = SpaceRelation::Other
+                r.context.target_space = SpaceRelation::Other;
             }),
             Cell::Ask,
             Some(AskReason::CrossSpace),
@@ -49,7 +49,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
         (
             "unbound Space reads freely",
             with(Effect::Read, |r| {
-                r.context.target_space = SpaceRelation::Unbound
+                r.context.target_space = SpaceRelation::Unbound;
             }),
             Cell::Final,
             None,
@@ -87,7 +87,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
         (
             "first use",
             with(Effect::UndoableWrite, |r| {
-                r.context.grant = GrantState::None
+                r.context.grant = GrantState::None;
             }),
             Cell::Ask,
             Some(AskReason::FirstUse),
@@ -95,7 +95,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
         (
             "grant once",
             with(Effect::UndoableWrite, |r| {
-                r.context.grant = GrantState::Once
+                r.context.grant = GrantState::Once;
             }),
             Cell::Ask,
             Some(AskReason::FirstUse),
@@ -112,7 +112,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
         (
             "lasting from trusted",
             with(Effect::UndoableWrite, |r| {
-                r.resource.lasting = Lasting::AgentMemory
+                r.resource.lasting = Lasting::AgentMemory;
             }),
             Cell::Final,
             None,
@@ -162,7 +162,7 @@ fn the_named_rules_of_the_table_ask_or_deny() {
 #[test]
 fn a_deny_names_the_forbid() {
     let got = pdp().decide(&with(Effect::Read, |r| {
-        r.resource.reach = AgentReach::Hidden
+        r.resource.reach = AgentReach::Hidden;
     }));
     assert_eq!(
         got,
@@ -211,7 +211,7 @@ fn an_mcp_client_reads_and_otherwise_asks() {
         Cell::Ask
     );
     let other = mcp(Effect::Read, |r| {
-        r.context.target_space = SpaceRelation::Other
+        r.context.target_space = SpaceRelation::Other;
     });
     assert_eq!(
         cell(&pdp.decide(&other)),
@@ -278,7 +278,7 @@ fn a_fact_that_refuses_denies_by_its_rule_whatever_else_is_granted() {
         (
             "a budget that is out",
             with(Effect::Read, |r| {
-                r.context.budget = BudgetFact::Over(BudgetKind::Calls)
+                r.context.budget = BudgetFact::Over(BudgetKind::Calls);
             }),
             "over-budget",
         ),

@@ -22,26 +22,31 @@ impl DeviceKinds {
     pub const NONE: Self = Self(0);
 
     /// The kinds a portal value names; bits this backend does not offer are dropped.
+    #[must_use]
     pub fn from_wire(value: u32) -> Self {
         Self(value & DEVICE_TYPES)
     }
 
     /// The portal's value.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         self.0
     }
 
     /// Whether no kind is named.
+    #[must_use]
     pub fn is_empty(self) -> bool {
         self.0 == 0
     }
 
     /// Whether every kind of `wanted` is also named here.
+    #[must_use]
     pub fn covers(self, wanted: Self) -> bool {
         wanted.0 & !self.0 == 0
     }
 
     /// The kinds in plain words, in a fixed order: "keyboard", "pointer", "touchscreen".
+    #[must_use]
     pub fn words(self) -> Vec<&'static str> {
         [
             (KEYBOARD, "keyboard"),
@@ -56,6 +61,7 @@ impl DeviceKinds {
 
     /// The kinds as one phrase: "keyboard", "keyboard and pointer", "keyboard, pointer and
     /// touchscreen".
+    #[must_use]
     pub fn phrase(self) -> String {
         match self.words().as_slice() {
             [] => String::new(),

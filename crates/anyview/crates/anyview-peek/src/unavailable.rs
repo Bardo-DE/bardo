@@ -30,6 +30,7 @@ pub enum Unavailable {
 impl Unavailable {
     /// The words for this: one sentence, naming no path. The pane shows them for every reason but
     /// [`TooBig`](Unavailable::TooBig), which it draws as a plain file with its facts.
+    #[must_use]
     pub fn label(&self) -> String {
         match self {
             Unavailable::Missing => "the file does not exist".to_owned(),

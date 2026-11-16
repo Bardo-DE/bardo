@@ -88,7 +88,7 @@ pub(crate) fn anthropic(done: &[StepResult], next: &ImageInput) -> Vec<Part> {
     parts
 }
 
-/// OpenAI and Gemini: every call's result carries the new screenshot (a `computer_call_output`
+/// `OpenAI` and Gemini: every call's result carries the new screenshot (a `computer_call_output`
 /// and a `function_response` each need one); a call that did not run says why before it.
 pub(crate) fn with_screenshot_each(done: &[StepResult], next: &ImageInput) -> Vec<Part> {
     let shot = || Part::Image(next.clone());

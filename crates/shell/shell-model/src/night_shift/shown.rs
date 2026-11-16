@@ -20,6 +20,7 @@ pub enum Shown {
 }
 
 /// The switch's state for `night_shift`.
+#[must_use]
 pub fn shown(night_shift: &NightShift) -> Shown {
     match (
         night_shift.reached,
@@ -44,6 +45,7 @@ const MORE_WARM: u32 = 2700;
 
 /// Where `warmth` lies on the slider, in thousandths from "Less Warm" to "More Warm"; a warmth
 /// outside the slider's range sits at its nearer end.
+#[must_use]
 pub fn warmth_fraction(warmth: Warmth) -> u16 {
     let kelvin = u32::from(warmth.kelvin()).clamp(MORE_WARM, LESS_WARM);
     let thousandths = (LESS_WARM - kelvin) * 1000 / (LESS_WARM - MORE_WARM);
@@ -51,6 +53,7 @@ pub fn warmth_fraction(warmth: Warmth) -> u16 {
 }
 
 /// The warmth at `thousandths` of the slider.
+#[must_use]
 pub fn warmth_at(thousandths: u16) -> Warmth {
     let along = u32::from(thousandths.min(1000));
     Warmth::clamped(LESS_WARM - along * (LESS_WARM - MORE_WARM) / 1000)

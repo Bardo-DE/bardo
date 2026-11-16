@@ -68,7 +68,7 @@ fn Fixture() -> Element {
                 anchor: Anchor::Point(Point { x: Px(191.0), y: Px(81.0) }),
                 items: entries,
                 onpick: move |_| {},
-                onclose: move |_| {},
+                onclose: move |()| {},
             }
         }
     }

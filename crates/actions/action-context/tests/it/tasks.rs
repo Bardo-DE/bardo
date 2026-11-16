@@ -86,7 +86,7 @@ fn a_child_policy_is_never_wider_than_its_parents() {
             "a recipient the parent never trusted",
             edit(|p| {
                 p.recipients
-                    .push(TrustedPattern::Domain("evil.test".into()))
+                    .push(TrustedPattern::Domain("evil.test".into()));
             }),
         ),
         (

@@ -16,12 +16,14 @@ pub struct ItemKey(pub String);
 
 impl ItemKey {
     /// The key for `item` from `provider`.
+    #[must_use]
     pub fn of(provider: ProviderKind, item: &ItemId) -> ItemKey {
         ItemKey(format!("{}:{}", provider.slug(), item.0))
     }
 
     /// The provider this key was made for by [`ItemKey::of`], read back from its own prefix
     /// (the format is this module's, so this is not a guess at someone else's text).
+    #[must_use]
     pub fn provider(&self) -> Option<ProviderKind> {
         let (prefix, _) = self.0.split_once(':')?;
         ProviderKind::ALL
@@ -30,6 +32,7 @@ impl ItemKey {
     }
 
     /// The item id this key was made for by [`ItemKey::of`].
+    #[must_use]
     pub fn item(&self) -> Option<ItemId> {
         let (_, item) = self.0.split_once(':')?;
         Some(ItemId(item.to_owned()))
@@ -74,6 +77,7 @@ pub const MAX_ENTRIES: usize = 2000;
 impl Frecency {
     /// `self` with one more use of `key` at `now`, the history kept within [`MAX_ENTRIES`] by
     /// dropping the results used least recently.
+    #[must_use]
     pub fn record(mut self, key: ItemKey, now: UnixTime) -> Frecency {
         let entry = self.entries.entry(key).or_insert(Use {
             count: 0,
@@ -128,6 +132,7 @@ impl Frecency {
     }
 
     /// `key`'s frecency at `now`.
+    #[must_use]
     pub fn score(&self, key: &ItemKey, now: UnixTime) -> FrecencyScore {
         self.entries.get(key).map_or(FrecencyScore::NONE, |used| {
             let raw = u64::from(age_bucket(now.days_since(used.last))) * u64::from(used.count);
@@ -142,11 +147,13 @@ impl Frecency {
 
     /// The file's contents; a damaged or foreign file is an empty history, never an error (a
     /// lost ranking hint is not worth a failed launcher).
+    #[must_use]
     pub fn from_json(text: &str) -> Frecency {
         Frecency::parse(text).unwrap_or_default()
     }
 
     /// The file's contents to write.
+    #[must_use]
     pub fn to_json(&self) -> String {
         // Keys are strings and values are integers: nothing here can fail to encode.
         serde_json::to_string_pretty(self).unwrap_or_default()
@@ -155,6 +162,7 @@ impl Frecency {
 
 /// The weight of a use made `days` ago. Buckets at 4, 14, 31 and 90 days (the plan names the
 /// weights, not the boundaries; these are Firefox's frecency buckets).
+#[must_use]
 pub fn age_bucket(days: u64) -> u16 {
     match days {
         0..=4 => 100,

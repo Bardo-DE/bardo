@@ -28,6 +28,7 @@ pub fn encode(r: &Report) -> Vec<u8> {
 }
 
 /// Wraps two encoded reports in an 0xF7 double, the way Bluetooth sometimes delivers them.
+#[must_use]
 pub fn encode_double(first: &[u8], second: &[u8]) -> Vec<u8> {
     let mut out = vec![DOUBLE_REPORT, u8::try_from(first.len()).unwrap_or(u8::MAX)];
     out.extend_from_slice(first);
@@ -36,6 +37,7 @@ pub fn encode_double(first: &[u8], second: &[u8]) -> Vec<u8> {
 }
 
 /// One 8-byte touch block in the kernel's layout.
+#[must_use]
 pub fn encode_touch(t: &RawTouch) -> [u8; 8] {
     let x = (t.at.x & 0x0fff) as u16;
     let y = ((-t.at.y) & 0x0fff) as u16;

@@ -14,6 +14,7 @@ pub struct FakeMediaHandle {
 
 impl FakeMediaHandle {
     /// Every state published, oldest first.
+    #[must_use]
     pub fn published(&self) -> Vec<MediaState> {
         locked(&self.published).clone()
     }
@@ -35,6 +36,7 @@ pub struct FakeMediaSession {
 
 impl FakeMediaSession {
     /// The test's end of this session, for when the session itself is given away.
+    #[must_use]
     pub fn handle(&self) -> FakeMediaHandle {
         FakeMediaHandle {
             published: Arc::clone(&self.published),
@@ -43,6 +45,7 @@ impl FakeMediaSession {
     }
 
     /// A session with nothing published.
+    #[must_use]
     pub fn new() -> Self {
         let (sender, controls) = unbounded_channel();
         FakeMediaSession {
@@ -53,6 +56,7 @@ impl FakeMediaSession {
     }
 
     /// Every state published, oldest first.
+    #[must_use]
     pub fn published(&self) -> Vec<MediaState> {
         locked(&self.published).clone()
     }

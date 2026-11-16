@@ -38,6 +38,7 @@ pub struct Layout {
 
 impl Layout {
     /// A layout whose export links live in the real file system.
+    #[must_use]
     pub fn new(root: PathBuf) -> Self {
         Self {
             root,
@@ -46,47 +47,56 @@ impl Layout {
     }
 
     /// The directory holding all releases.
+    #[must_use]
     pub fn releases_dir(&self) -> PathBuf {
         self.root.join("releases")
     }
 
     /// One release's directory.
+    #[must_use]
     pub fn release_dir(&self, version: &Version) -> PathBuf {
         self.releases_dir().join(version.to_string())
     }
 
     /// Where a release is unpacked before it is published.
+    #[must_use]
     pub fn partial_dir(&self, version: &Version) -> PathBuf {
         self.releases_dir().join(format!("{version}.partial"))
     }
 
     /// The `current` symlink.
+    #[must_use]
     pub fn current(&self) -> PathBuf {
         self.root.join("current")
     }
 
     /// The `previous` symlink.
+    #[must_use]
     pub fn previous(&self) -> PathBuf {
         self.root.join("previous")
     }
 
     /// The folder only root can open (mode 0700). Nothing a person can name is read from it.
+    #[must_use]
     pub fn private_dir(&self) -> PathBuf {
         self.root.join(PRIVATE_DIR)
     }
 
     /// The root-side health record: which boots a release has been started in without being confirmed.
+    #[must_use]
     pub fn health_file(&self) -> PathBuf {
         self.private_dir().join("health.toml")
     }
 
     /// The lock file. It lives in the private folder: `flock` works on a file opened for reading, so a
     /// lock in a folder others can enter could be held by anybody.
+    #[must_use]
     pub fn lock_file(&self) -> PathBuf {
         self.private_dir().join("lock")
     }
 
     /// The kept `release.toml` of an installed release.
+    #[must_use]
     pub fn record(&self, version: &Version) -> PathBuf {
         self.release_dir(version)
             .join(RECORD_DIR)
@@ -94,6 +104,7 @@ impl Layout {
     }
 
     /// The signature of the kept `release.toml` of an installed release.
+    #[must_use]
     pub fn record_signature(&self, version: &Version) -> PathBuf {
         self.release_dir(version)
             .join(RECORD_DIR)
@@ -101,11 +112,13 @@ impl Layout {
     }
 
     /// Where an absolute export link path is on this system.
+    #[must_use]
     pub fn export_path(&self, link: &str) -> PathBuf {
         self.export_base.join(link.trim_start_matches('/'))
     }
 
     /// The symlink target that names a release from `<root>`.
+    #[must_use]
     pub fn relative_target(version: &Version) -> PathBuf {
         PathBuf::from("releases").join(version.to_string())
     }
@@ -144,6 +157,7 @@ impl Layout {
 }
 
 /// Reads the version `current` names, without the rest.
+#[must_use]
 pub fn current_version(root: &Path) -> Option<Version> {
     Layout::new(root.to_owned()).installed().ok()?.current
 }

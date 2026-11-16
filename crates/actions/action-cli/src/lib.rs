@@ -98,6 +98,7 @@ impl Report {
 
 /// Whether a command line needs bardo-actiond at all: help, the version and a command line that does
 /// not parse are answered without a bus.
+#[must_use]
 pub fn needs_bus(words: &[String]) -> bool {
     !matches!(
         parse(words),

@@ -7,7 +7,7 @@ use crate::protocol::xdg_shell::{boot, map_toplevel};
 use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testclient::surface::toplevel::extras::TagManager;
 
-/// Set_toplevel_tag is kept for placement memory.
+/// `Set_toplevel_tag` is kept for placement memory.
 #[test]
 fn a_tag_is_stored() {
     let (mut fixture, id) = boot();

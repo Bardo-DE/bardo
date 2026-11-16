@@ -84,7 +84,7 @@ async fn the_daemons_own_causes_and_bad_bodies_are_refused_and_the_mic_stays_ope
         cause_wire(CancelCause::TooLong),
         "not json".to_owned(),
         "{\"vocab\":9,\"body\":\"shell\"}".to_owned(),
-        "".to_owned(),
+        String::new(),
     ];
     for body in bodies {
         let error = utterance.cancel(&body).await.expect_err("refused");

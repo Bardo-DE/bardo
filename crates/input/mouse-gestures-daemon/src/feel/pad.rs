@@ -22,12 +22,14 @@ const REFERENCE_SPEED: u16 = 22;
 const STEPS_PER_DOUBLING: f64 = 20.0;
 
 /// The multiplier `scroll.speed` makes on the pad's finger distance.
+#[must_use]
 pub fn multiplier(speed: Count) -> f64 {
     let steps = f64::from(speed.0) - f64::from(REFERENCE_SPEED);
     (steps / STEPS_PER_DOUBLING).exp2()
 }
 
 /// The pad distance for `finger` millimetres of finger travel.
+#[must_use]
 pub fn travel(finger: Mm, speed: Count) -> Mm {
     Mm(finger.0 * multiplier(speed))
 }

@@ -31,6 +31,7 @@ impl Env {
     }
 
     /// The environment `bless` and `out` describe (`BARDO_COMPOSITOR_BLESS` is on only as `1`).
+    #[must_use]
     pub fn of(bless: Option<&str>, out: Option<PathBuf>) -> Env {
         Env {
             bless: bless == Some("1"),
@@ -84,6 +85,7 @@ pub enum GoldenOutcome {
 /// `<name>.diff.png` into `out_dir` (`<name>` is the scene's last path component), or with
 /// `bless` replaces the golden (`BARDO_COMPOSITOR_BLESS=1`, with a reason in the commit). A write that fails still reports
 /// [`GoldenOutcome::Differs`], naming the paths it tried.
+#[must_use]
 pub fn compare(golden: &Golden, actual: &RgbaImage, out_dir: &Path, bless: bool) -> GoldenOutcome {
     let golden_path = PathBuf::from(format!("{}.png", golden.scene));
     let expected = image::open(&golden_path).ok().map(|image| image.to_rgba8());

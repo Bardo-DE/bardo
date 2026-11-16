@@ -12,7 +12,7 @@ use crate::settings::ConnectionToAdd;
     default_path = "/org/freedesktop/NetworkManager"
 )]
 pub trait NetworkManager {
-    /// Every device, including those NetworkManager does not manage.
+    /// Every device, including those `NetworkManager` does not manage.
     fn get_all_devices(&self) -> zbus::Result<Vec<OwnedObjectPath>>;
 
     /// Activates a saved connection on a device; `specific_object` is an access point for Wi-Fi,

@@ -3,6 +3,7 @@
 use crate::places::{Heading, PlaceKind};
 
 /// The row's name for `kind`.
+#[must_use]
 pub fn place_label(kind: PlaceKind) -> &'static str {
     match kind {
         PlaceKind::Home => "Home",
@@ -18,6 +19,7 @@ pub fn place_label(kind: PlaceKind) -> &'static str {
 }
 
 /// The heading's words.
+#[must_use]
 pub fn heading_label(heading: Heading) -> &'static str {
     match heading {
         Heading::Favorites => "Favorites",

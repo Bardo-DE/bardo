@@ -19,6 +19,7 @@ pub struct ToolSchema(pub serde_json::Value);
 /// properties. A parameter a planner may fill from something it
 /// holds only by handle also accepts `{ "handle": n }`; entities are the `{app, kind, key}`
 /// object of an `EntityId`.
+#[must_use]
 pub fn tool_schema(action: &ActionDecl) -> ToolSchema {
     let properties: Map<String, Value> = action
         .params
@@ -52,6 +53,7 @@ pub struct OneOf {
 
 impl OneOf {
     /// Whether `text` is one of the values.
+    #[must_use]
     pub fn admits(&self, text: &str) -> bool {
         self.values.iter().any(|v| v == text)
     }

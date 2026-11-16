@@ -33,6 +33,7 @@ impl Wallpaper {
     }
 
     /// The folders the window may draw pictures from.
+    #[must_use]
     pub fn roots(&self) -> Vec<PathBuf> {
         self.0.roots()
     }

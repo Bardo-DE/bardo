@@ -29,6 +29,7 @@ pub struct VoiceSettings {
 }
 
 /// What the voice service runs on for `settings`.
+#[must_use]
 pub fn params(settings: &VoiceSettings) -> VoiceParams {
     VoiceParams {
         hold_to_talk: settings.hold_to_talk,

@@ -6,6 +6,7 @@
 
 /// A mark that reorders the text around it: the bidirectional embeddings, overrides and
 /// isolates (U+202A to U+202E, U+2066 to U+2069). Nothing a model writes needs one.
+#[must_use]
 pub fn reorders(c: char) -> bool {
     matches!(c, '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}')
 }
@@ -13,6 +14,7 @@ pub fn reorders(c: char) -> bool {
 /// A mark that draws nothing: zero-width space, word joiner and the invisible operators,
 /// the byte order mark and the soft hyphen. (The joiners, U+200C and U+200D, and the
 /// directional marks are left out: scripts and emoji sequences need them.)
+#[must_use]
 pub fn hides(c: char) -> bool {
     matches!(
         c,
@@ -22,6 +24,7 @@ pub fn hides(c: char) -> bool {
 
 /// Whether `text` holds nothing that reorders or hides, and no control character but the
 /// ones in `allowed`.
+#[must_use]
 pub fn plain_text(text: &str, allowed: &[char]) -> bool {
     text.chars()
         .all(|c| !reorders(c) && !hides(c) && (!c.is_control() || allowed.contains(&c)))

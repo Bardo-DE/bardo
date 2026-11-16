@@ -61,6 +61,7 @@ pub struct FrameLook {
 
 impl FrameLook {
     /// `light`'s look.
+    #[must_use]
     pub fn light(&self, light: Light) -> LightDraw {
         match light {
             Light::Close => self.lights[0],
@@ -82,6 +83,7 @@ pub struct FrameStyle {
 
 impl FrameStyle {
     /// The frame round `content`.
+    #[must_use]
     pub fn around(&self, content: LogicalRect) -> FrameGeometry {
         FrameGeometry::new(self.metrics, content)
     }

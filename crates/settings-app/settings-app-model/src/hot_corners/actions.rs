@@ -44,6 +44,7 @@ fn last_element(app: &str) -> &str {
 
 impl HotKnown {
     /// What the app `id` is called: its desktop entry's name, else the last element of its name.
+    #[must_use]
     pub fn app_title(&self, id: &str) -> String {
         self.apps
             .iter()
@@ -53,6 +54,7 @@ impl HotKnown {
 
     /// "Mail › Compose": the app and the action of a binding, in the person's words; the
     /// action's own name when no manifest offers it.
+    #[must_use]
     pub fn action_line(&self, app: &str, action: &str) -> String {
         let label = self
             .actions
@@ -66,6 +68,7 @@ impl HotKnown {
 /// The actions of the manifest `text` that a corner can run: for everyone, not kept for the person
 /// alone, acting on nothing in particular and with no parameter that must be given. A text that
 /// is not a valid manifest offers none.
+#[must_use]
 pub fn actions_of(text: &str) -> Vec<HotActionChoice> {
     let Ok(parsed) = toml::from_str::<Manifest>(text) else {
         return Vec::new();

@@ -31,6 +31,7 @@ impl Locator {
 
     /// The directory a live watch looks at: the person's own `bardo/computer-use` directory, where the Settings
     /// app writes.
+    #[must_use]
     pub fn watch_dir(&self) -> Option<PathBuf> {
         let person = self.dirs.first()?;
         Path::new(SETTINGS_FILE)

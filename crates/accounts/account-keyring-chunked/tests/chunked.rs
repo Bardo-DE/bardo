@@ -359,7 +359,7 @@ fn the_store_wraps_a_store_chosen_at_run_time_and_searches_without_parts() {
         k.get_specifiers(),
         Some((SERVICE.to_owned(), "k".to_owned()))
     );
-    assert!(k.get_credential().is_ok());
+    k.get_credential().unwrap();
 }
 
 #[test]

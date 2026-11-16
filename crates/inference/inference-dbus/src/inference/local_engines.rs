@@ -58,11 +58,13 @@ pub enum EnginePlace {
 
 impl EnginePlace {
     /// The word on the wire.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         word(&self)
     }
 
     /// The place a word names; `None` for any other text.
+    #[must_use]
     pub fn from_slug(text: &str) -> Option<Self> {
         from_word(text)
     }
@@ -107,6 +109,7 @@ fn owned(value: Value<'_>) -> Option<OwnedValue> {
 }
 
 /// An engine as its id and a vardict of the rest.
+#[must_use]
 pub fn local_engine_to_dbus(engine: &LocalEngine) -> (String, Details) {
     let (state, path) = match &engine.state {
         EngineState::Found(path) => (FOUND, Some(path.to_string_lossy().into_owned())),

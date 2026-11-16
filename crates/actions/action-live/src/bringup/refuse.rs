@@ -108,8 +108,9 @@ pub fn check_bus(bus: &str, own: &Own) -> Result<(), Refusal> {
             return Err(Refusal::BusIsOwn(real.clone()));
         }
     }
-    match mine.iter().any(|p| real_path(p)) {
-        true => Err(Refusal::BusLooksReal(bus.to_owned())),
-        false => Ok(()),
+    if mine.iter().any(|p| real_path(p)) {
+        Err(Refusal::BusLooksReal(bus.to_owned()))
+    } else {
+        Ok(())
     }
 }

@@ -3,7 +3,7 @@
 //! counter that delta queries read, and the upload sessions in flight. Pure state; `routes` is
 //! the HTTP over it.
 //!
-//! What it keeps from OneDrive: an item's `eTag` is `"{ID},version"` with its quotes and changes
+//! What it keeps from `OneDrive`: an item's `eTag` is `"{ID},version"` with its quotes and changes
 //! with every write; a parent folder changes when a child does; a deleted folder is reported once,
 //! its children not at all; a re-created path is a new item with a new id.
 
@@ -56,7 +56,7 @@ impl Node {
         }
     }
 
-    /// The QuickXorHash of the content, in base64 as Graph sends it.
+    /// The `QuickXorHash` of the content, in base64 as Graph sends it.
     pub fn quick_xor(&self) -> Option<String> {
         use base64::Engine;
         use quickxorhash::{Digest, QuickXorHash};
@@ -109,7 +109,7 @@ pub struct Drive {
     limit: Option<u64>,
     uploads: BTreeMap<String, Upload>,
     approot: String,
-    /// What was deleted through the API, oldest first: OneDrive's recycle bin.
+    /// What was deleted through the API, oldest first: `OneDrive`'s recycle bin.
     bin: Vec<String>,
 }
 
@@ -149,11 +149,13 @@ impl Default for Drive {
 
 impl Drive {
     /// The app folder's id.
+    #[must_use]
     pub fn approot(&self) -> &str {
         &self.approot
     }
 
     /// The change counter now.
+    #[must_use]
     pub fn seq(&self) -> u64 {
         self.seq
     }
@@ -166,6 +168,7 @@ impl Drive {
     }
 
     /// Whether a token read at `from` still resumes.
+    #[must_use]
     pub fn resumes(&self, from: u64) -> bool {
         from >= self.oldest_valid && from <= self.seq
     }
@@ -176,6 +179,7 @@ impl Drive {
     }
 
     /// The limit, if one was set.
+    #[must_use]
     pub fn limit(&self) -> Option<u64> {
         self.limit
     }
@@ -190,16 +194,19 @@ impl Drive {
     }
 
     /// A live item.
+    #[must_use]
     pub fn live(&self, id: &str) -> Option<&Node> {
         self.nodes.get(id).filter(|n| !n.deleted)
     }
 
     /// An item, deleted or not.
+    #[must_use]
     pub fn any(&self, id: &str) -> Option<&Node> {
         self.nodes.get(id)
     }
 
     /// The live child of `parent` named `name`.
+    #[must_use]
     pub fn child(&self, parent: &str, name: &str) -> Option<&Node> {
         self.nodes
             .values()
@@ -207,11 +214,13 @@ impl Drive {
     }
 
     /// The live item at `names` below the app folder; no names is the app folder.
+    #[must_use]
     pub fn at(&self, names: &[String]) -> Option<&Node> {
         self.at_from(&self.approot, names)
     }
 
     /// The live item at `names` below the folder `from`; no names is `from` itself.
+    #[must_use]
     pub fn at_from(&self, from: &str, names: &[String]) -> Option<&Node> {
         names
             .iter()
@@ -219,6 +228,7 @@ impl Drive {
     }
 
     /// Whether `id` is `scope` or below it (deleted items keep their parents).
+    #[must_use]
     pub fn within(&self, id: &str, scope: &str) -> bool {
         let mut at = Some(id);
         while let Some(current) = at {
@@ -232,6 +242,7 @@ impl Drive {
 
     /// Items below `scope` (itself included) changed after `from` up to `end`, oldest change
     /// first. A listing from the start (`from == 0`) holds live items only.
+    #[must_use]
     pub fn changes(&self, scope: &str, from: u64, end: u64) -> Vec<&Node> {
         let mut found: Vec<&Node> = self
             .nodes
@@ -313,34 +324,31 @@ impl Drive {
         {
             return Err(Refused::Full);
         }
-        match existing {
-            Some((id, _)) => {
-                let node = self.nodes.get_mut(&id).ok_or(Refused::Blocked)?;
-                if node.body == Body::Folder {
-                    return Err(Refused::Blocked);
-                }
-                node.body = Body::File(bytes);
-                node.version += 1;
-                self.touch(&id);
-                Ok(id)
+        if let Some((id, _)) = existing {
+            let node = self.nodes.get_mut(&id).ok_or(Refused::Blocked)?;
+            if node.body == Body::Folder {
+                return Err(Refused::Blocked);
             }
-            None => {
-                let id = self.fresh();
-                self.nodes.insert(
-                    id.clone(),
-                    Node {
-                        id: id.clone(),
-                        parent: Some(parent.to_owned()),
-                        name: name.to_owned(),
-                        body: Body::File(bytes),
-                        version: 1,
-                        changed: 0,
-                        deleted: false,
-                    },
-                );
-                self.touch(&id);
-                Ok(id)
-            }
+            node.body = Body::File(bytes);
+            node.version += 1;
+            self.touch(&id);
+            Ok(id)
+        } else {
+            let id = self.fresh();
+            self.nodes.insert(
+                id.clone(),
+                Node {
+                    id: id.clone(),
+                    parent: Some(parent.to_owned()),
+                    name: name.to_owned(),
+                    body: Body::File(bytes),
+                    version: 1,
+                    changed: 0,
+                    deleted: false,
+                },
+            );
+            self.touch(&id);
+            Ok(id)
         }
     }
 
@@ -398,6 +406,7 @@ impl Drive {
     }
 
     /// The items in the recycle bin, oldest first.
+    #[must_use]
     pub fn bin(&self) -> Vec<&Node> {
         self.bin
             .iter()

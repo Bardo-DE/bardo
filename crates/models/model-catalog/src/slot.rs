@@ -53,6 +53,7 @@ impl Slot {
     ];
 
     /// The slot's stable slug: its serde form and its settings-key segment.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Slot::Text => "text",
@@ -65,6 +66,7 @@ impl Slot {
     }
 
     /// The slot a slug names.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Slot> {
         Slot::ALL.into_iter().find(|slot| slot.slug() == slug)
     }
@@ -72,6 +74,7 @@ impl Slot {
     /// The slot's capability signature. Only `Text` needs tools: capabilities.md section 2 writes it
     /// "text in -> text out (+ tools)", because the agent loop is built on tool calls; a text model
     /// without them is not offered there. The other slots are one conversion each.
+    #[must_use]
     pub fn signature(self) -> Signature {
         let (takes, gives, needs_tools) = match self {
             Slot::Text => (Modality::Text, Modality::Text, true),
@@ -90,6 +93,7 @@ impl Slot {
 }
 
 /// Whether capabilities (usually engine-narrowed) satisfy a slot's signature.
+#[must_use]
 pub fn fits(slot: Slot, caps: &Capabilities) -> bool {
     let Signature {
         takes,
@@ -109,6 +113,7 @@ pub fn fits(slot: Slot, caps: &Capabilities) -> bool {
 /// through (`Capabilities::on_engine`) fit the slot; a remote entry has no engine here and is a
 /// member when its capabilities fit; an attached entry is a member when its engine kind is in
 /// `engines` (the wire a client speaks to it) and its capabilities fit.
+#[must_use]
 pub fn slot_members<'a>(
     slot: Slot,
     catalogue: &'a [ModelEntry],

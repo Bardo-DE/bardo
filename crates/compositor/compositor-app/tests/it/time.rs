@@ -30,7 +30,7 @@ fn looped(clock: &SharedClock) -> EventLoop<'static, Vec<Stop>> {
         .handle()
         .insert_source(
             VirtualTimerSource::new(clock.clone()),
-            |stop, _, seen: &mut Vec<Stop>| seen.push(stop),
+            |stop, (), seen: &mut Vec<Stop>| seen.push(stop),
         )
         .expect("source");
     event_loop
@@ -147,7 +147,7 @@ fn running_to_a_goal_hands_stops_out_one_instant_at_a_time_so_arming_shows() {
         .handle()
         .insert_source(
             VirtualTimerSource::new(clock.clone()),
-            move |stop, _, ()| {
+            move |stop, (), ()| {
                 // The first vblank arms a timer 5 ms later: it must come before the next vblank.
                 if matches!(stop, Stop::Vblank(..)) && log.borrow().is_empty() {
                     arm.update(|c| {

@@ -436,6 +436,7 @@ pub fn read_cache_limit(file: &Path) -> CacheLimit {
 }
 
 /// The drives `file` keeps paused (`[storage] paused = ["<drive id>", ...]`).
+#[must_use]
 pub fn read_paused(file: &Path) -> BTreeSet<String> {
     read_drives(file, "paused")
 }
@@ -446,6 +447,7 @@ pub fn write_paused(file: &Path, id: &str, paused: bool) -> std::io::Result<()> 
 }
 
 /// The drives `file` keeps downloaded whole (`[storage] keep_all = ["<drive id>", ...]`).
+#[must_use]
 pub fn read_keep_all(file: &Path) -> BTreeSet<String> {
     read_drives(file, "keep_all")
 }
@@ -475,9 +477,10 @@ fn read_drives(file: &Path, list: &str) -> BTreeSet<String> {
 /// in one atomic write.
 fn write_drives(file: &Path, list: &str, id: &str, listed: bool) -> std::io::Result<()> {
     let mut ids = read_drives(file, list);
-    match listed {
-        true => ids.insert(id.to_owned()),
-        false => ids.remove(id),
+    if listed {
+        ids.insert(id.to_owned())
+    } else {
+        ids.remove(id)
     };
     let mut table = settings_text(file)
         .and_then(|text| text.parse::<toml::Table>().ok())

@@ -23,7 +23,7 @@ pub enum Delta {
     None,
     /// A change token the client polls (Drive page token, Graph delta, sync-token).
     Poll,
-    /// The server pushes (IMAP IDLE, JMAP EventSource, long-poll).
+    /// The server pushes (IMAP IDLE, JMAP `EventSource`, long-poll).
     Push,
 }
 
@@ -85,6 +85,7 @@ pub enum Ask {
 
 impl Ask {
     /// Whether this is the default, asked with the sign-in.
+    #[must_use]
     pub fn is_sign_in(&self) -> bool {
         *self == Ask::SignIn
     }
@@ -143,6 +144,6 @@ mod tests {
         );
         // Not a word of the flag: refused, as the enum refused it.
         let bad = text.replace("\"reported\"", "\"true\"");
-        assert!(serde_json::from_str::<Capability>(&bad).is_err());
+        serde_json::from_str::<Capability>(&bad).unwrap_err();
     }
 }

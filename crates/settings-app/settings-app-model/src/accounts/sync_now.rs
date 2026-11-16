@@ -18,6 +18,7 @@ pub enum SyncNowEnd {
 
 impl DatasetName {
     /// The dataset the sync switch at `row` (`accounts.<id>.sync.<leaf>`) of `account` controls.
+    #[must_use]
     pub fn of_switch(account: &AccountKey, row: &KeyPath) -> Self {
         let leaf = row.0.rsplit('.').next().unwrap_or_default();
         Self(format!("{}/{leaf}", super::hold::segment_of(account)))

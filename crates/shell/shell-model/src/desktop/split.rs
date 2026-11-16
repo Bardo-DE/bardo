@@ -21,6 +21,7 @@ pub struct SplitCard {
 /// use shell_model::desktop::{DesktopView, cards_of};
 /// assert!(cards_of(&DesktopView::default(), &["w1".to_owned()]).is_empty());
 /// ```
+#[must_use]
 pub fn cards_of(view: &DesktopView, candidates: &[String]) -> Vec<SplitCard> {
     candidates
         .iter()
@@ -43,6 +44,7 @@ pub fn cards_of(view: &DesktopView, candidates: &[String]) -> Vec<SplitCard> {
 /// use shell_model::desktop::{DesktopView, output_of};
 /// assert_eq!(output_of(&DesktopView::default(), "w1"), "");
 /// ```
+#[must_use]
 pub fn output_of(view: &DesktopView, first: &str) -> String {
     view.windows
         .iter()

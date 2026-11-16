@@ -43,6 +43,7 @@ pub fn use_frame_tick() -> ReadSignal<FrameTick> {
 ///
 /// For a design system's device-pixel snapping (quire's `HostScale`, or `Ds { scale }`); the
 /// layout half of snapping is `HostConfig::prepaint`.
+#[must_use]
 pub fn use_surface_scale() -> ReadSignal<Scale120> {
     let live = use_surface().scale;
     let mut latest = use_signal(|| live.get());
@@ -68,6 +69,7 @@ pub fn use_surface_scale() -> ReadSignal<Scale120> {
 /// and drop the shadow when maximized or tiled, dim the traffic lights when inactive. The
 /// host already removes the resize band in those states. The default (floating, inactive)
 /// before the first configure, and forever on a layer surface or popup.
+#[must_use]
 pub fn use_toplevel_state() -> ReadSignal<ToplevelState> {
     let live = use_surface().toplevel;
     let mut latest = use_signal(|| live.get());
@@ -96,6 +98,7 @@ pub fn use_toplevel_state() -> ReadSignal<ToplevelState> {
 /// Not delivered through `HostEvent`, whose match stays exhaustive for the shell: this hook is
 /// the only way to it. Blitz's own key events keep their modifiers unchanged, from the same
 /// `wl_keyboard.modifiers` through a separate, pre-existing path.
+#[must_use]
 pub fn use_modifiers() -> ReadSignal<Modifiers> {
     let live = use_surface().modifiers;
     let mut latest = use_signal(|| live.get());
@@ -122,6 +125,7 @@ pub fn use_modifiers() -> ReadSignal<Modifiers> {
 /// What a design system's `:focus-visible`-like focus ring follows (Blitz never matches
 /// `:focus-visible`): quire's `ui_components::HostModality`, bridged in the shell's root (README,
 /// "Consuming: input modality").
+#[must_use]
 pub fn use_input_modality() -> ReadSignal<InputModality> {
     let live = use_surface().modality;
     let mut latest = use_signal(|| live.get());
@@ -162,6 +166,7 @@ pub fn use_wheel(on_wheel: impl FnMut(WheelEvent) + 'static) {
 
 /// The handle of the surface this component renders in. Panics outside a host surface (a
 /// caller contract, like any missing Dioxus context).
+#[must_use]
 pub fn use_surface() -> SurfaceHandle {
     dioxus::prelude::use_context::<SurfaceHandle>()
 }

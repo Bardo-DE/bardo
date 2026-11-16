@@ -24,13 +24,14 @@ pub enum BackendKind {
     Headless(HeadlessBackend),
     /// A window on the user's own session: the user's feel checks only (never an agent, §3.2).
     Winit(Box<WinitBackend>),
-    /// A real seat: DRM devices, libseat, udev (P1; the seams are injected, so the FakeKms
+    /// A real seat: DRM devices, libseat, udev (P1; the seams are injected, so the `FakeKms`
     /// suite runs it in the jail).
     Tty(Box<TtyBackend>),
 }
 
 impl BackendKind {
     /// The running backend as the verbs every backend shares.
+    #[must_use]
     pub fn driver(&self) -> &dyn Backend {
         match self {
             BackendKind::Headless(backend) => backend,

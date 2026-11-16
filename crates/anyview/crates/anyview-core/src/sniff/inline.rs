@@ -22,6 +22,7 @@ pub fn image_mime(bytes: &[u8], name: &FileName) -> Option<String> {
 }
 
 /// `bytes` as a base64 `data:` URL of their picture type, or `None` when they are not a picture.
+#[must_use]
 pub fn image_data_url(bytes: &[u8], name: &FileName) -> Option<String> {
     let mime = image_mime(bytes, name)?;
     Some(format!(

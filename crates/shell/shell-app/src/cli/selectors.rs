@@ -38,6 +38,7 @@ pub const SILL_SELECTORS: AppSelectors = AppSelectors {
 };
 
 /// The table as data, the file Settings reads.
+#[must_use]
 pub fn parts() -> PublishedParts {
     PublishedParts::new(APP.name(), SILL_SELECTORS.classes())
 }

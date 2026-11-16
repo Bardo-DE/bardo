@@ -146,16 +146,19 @@ impl Privilege {
     }
 
     /// The person's book as it is now.
+    #[must_use]
     pub fn book(&self) -> &Book {
         &self.book
     }
 
     /// The administrator's floor as it is now.
+    #[must_use]
     pub fn floor(&self) -> &Floor {
         &self.floor
     }
 
     /// The questions that are open.
+    #[must_use]
     pub fn asks(&self) -> Vec<AskView> {
         self.asks.views()
     }
@@ -163,6 +166,7 @@ impl Privilege {
     /// What the compositor established about the program behind public client `client`, when it
     /// has: the shell's and the agent tier's connections are handed out by the compositor and a
     /// sandbox's has no program of its own, so none of them has a standing.
+    #[must_use]
     pub fn standing_of(&self, client: ClientKey) -> Option<&ClientStanding> {
         match &self.clients.get(&client)?.class {
             Class::Public(standing) => Some(standing),
@@ -171,12 +175,14 @@ impl Privilege {
     }
 
     /// The program or app behind public client `client` as text (`ClientStanding::subject_text`).
+    #[must_use]
     pub fn subject_of(&self, client: ClientKey) -> Option<&str> {
         self.standing_of(client)?.subject_text()
     }
 
     /// The powers a public client whose program is `standing` is refused outright: the
     /// globals of those are not advertised to it. Nothing for any other kind of connection.
+    #[must_use]
     pub fn hidden_for(&self, role: &ConnectionRole, standing: &ClientStanding) -> PowerSet {
         match role {
             ConnectionRole::Public => {
@@ -205,9 +211,10 @@ impl Privilege {
                     .service_role()
                     .map(trusted_powers)
                     .unwrap_or_default();
-                match trusted.contains(&power) {
-                    true => decide_trusted(&self.floor, &self.book, subject.as_ref(), power),
-                    false => decide(&self.floor, &self.book, subject.as_ref(), power),
+                if trusted.contains(&power) {
+                    decide_trusted(&self.floor, &self.book, subject.as_ref(), power)
+                } else {
+                    decide(&self.floor, &self.book, subject.as_ref(), power)
                 }
             }
         }

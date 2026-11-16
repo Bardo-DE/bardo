@@ -39,6 +39,7 @@ impl TitleKey {
     /// assert_eq!(key.title, "a b");
     /// assert_eq!(key.device_size(), (600, 42));
     /// ```
+    #[must_use]
     pub fn new(
         title: &str,
         width: u32,
@@ -58,6 +59,7 @@ impl TitleKey {
     }
 
     /// The raster's size in device pixels, rounded as the surface buffers are.
+    #[must_use]
     pub fn device_size(&self) -> (u32, u32) {
         (
             device(self.width, self.scale),
@@ -74,6 +76,7 @@ impl TitleKey {
 ///
 /// assert_eq!(tidy("  Notes\t- draft\n"), "Notes - draft");
 /// ```
+#[must_use]
 pub fn tidy(raw: &str) -> String {
     let spaced: String = raw
         .chars()

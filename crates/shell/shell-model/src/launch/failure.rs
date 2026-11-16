@@ -26,6 +26,7 @@ pub struct LaunchNotice {
 }
 
 /// What the person is told when `app_name` did not open because of `cause`.
+#[must_use]
 pub fn failure_text(app_name: &str, cause: FailureCause) -> LaunchNotice {
     let body = match cause {
         FailureCause::NotInstalled => "It is not in your apps any more.",
@@ -41,6 +42,7 @@ pub fn failure_text(app_name: &str, cause: FailureCause) -> LaunchNotice {
 }
 
 /// One plain sentence for the command line: `app_name` did not open, and why.
+#[must_use]
 pub fn failure_sentence(app_name: &str, cause: FailureCause) -> String {
     let why = match cause {
         FailureCause::NotInstalled => "it is not in your apps any more",

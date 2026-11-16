@@ -6,7 +6,8 @@ use memory_core::Integrity;
 use memory_store::EmbedderCard;
 use std::collections::BTreeSet;
 
-/// The tables of `index.db` (SQLCipher, deletable and rebuilt from the files and the log).
+/// The tables of `index.db` (`SQLCipher`, deletable and rebuilt from the files and the log).
+///
 /// `docs` is the FTS5 table; `vectors` holds `ExactScan`'s BLOBs; `meta` records the embedder
 /// card the vectors came from (`space` is `EmbedderCard::space_key`, empty until vectors exist;
 /// a file made before the column is given it when the card is first recorded) and the format.
@@ -20,6 +21,7 @@ CREATE TABLE meta(format INTEGER NOT NULL, model TEXT, dims INTEGER, metric TEXT
 
 /// The FTS5 `MATCH` expression for free text: every alphanumeric word quoted, joined with `OR`
 /// so ranking (bm25) decides, never a syntax error. Empty text gives `None`.
+#[must_use]
 pub fn match_expression(text: &str) -> Option<String> {
     let words: Vec<String> = text
         .split(|c: char| !c.is_alphanumeric())

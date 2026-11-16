@@ -73,6 +73,7 @@ impl FakeDav {
 
 impl DavHandle {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
@@ -105,6 +106,7 @@ impl DavHandle {
     }
 
     /// The sync token a client would get now.
+    #[must_use]
     pub fn sync_token(&self) -> String {
         lock(&self.shared.tree).sync_token()
     }
@@ -125,6 +127,7 @@ impl DavHandle {
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn hits(&self) -> Vec<Hit> {
         self.shared.hits.all()
     }

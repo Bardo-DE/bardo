@@ -20,17 +20,20 @@ impl FileName {
     }
 
     /// The name of a file that has none (a root, or bytes nobody named).
+    #[must_use]
     pub fn unnamed() -> Self {
         FileName("file".to_owned())
     }
 
     /// The whole name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The text after the last dot, or `None` when there is no dot, the dot is the first
     /// character (`.bashrc` is a name, not an extension) or the dot is last. Case is kept.
+    #[must_use]
     pub fn extension(&self) -> Option<&str> {
         let (stem, extension) = self.0.rsplit_once('.')?;
         (!stem.is_empty() && !extension.is_empty()).then_some(extension)
@@ -54,7 +57,7 @@ mod tests {
         for (name, input) in CASES {
             assert!(FileName::new(input).is_err(), "{name}");
         }
-        assert!(FileName::new("a.b").is_ok());
+        FileName::new("a.b").unwrap();
     }
 
     #[test]

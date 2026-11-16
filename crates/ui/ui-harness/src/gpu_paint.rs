@@ -1,4 +1,4 @@
-//! A hybrid harness's painter: the document painted through anyrender_vello_hybrid, the
+//! A hybrid harness's painter: the document painted through `anyrender_vello_hybrid`, the
 //! renderer shell surfaces use, into an offscreen texture on one wgpu device kept for the
 //! harness's life. The renderer, its resources (glyph caches, image atlas) and the uploaded
 //! images live across frames, as in a window. Every frame is submitted and waited for, so a
@@ -19,10 +19,10 @@ use ui_blitz::seam::attached_gpu;
 use vello_hybrid::{RenderSize, RenderTargetConfig, Renderer, Resources, Scene, TextureBindings};
 use wgpu_context::DeviceHandle;
 
-/// The target format: premultiplied RGBA bytes on readback, the layout vello_cpu writes.
+/// The target format: premultiplied RGBA bytes on readback, the layout `vello_cpu` writes.
 const FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8Unorm;
 
-/// vello_hybrid on one offscreen device.
+/// `vello_hybrid` on one offscreen device.
 pub(crate) struct GpuPainter {
     handle: DeviceHandle,
     adapter: String,
@@ -227,7 +227,7 @@ impl GpuPainter {
                 &self.handle,
             );
             draw(&mut painter, doc, canvas);
-        }
+        };
         let encoded = started.elapsed();
         let mut textures = TextureBindings::new();
         for (resource, view) in &self.bindings {

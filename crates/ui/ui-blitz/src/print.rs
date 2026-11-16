@@ -13,7 +13,7 @@
 //! treated as no portal, and the PDF opens in the viewer. The dialog is not parented to the app's window: the
 //! portal wants `wayland:<xdg-foreign handle>` for that, and neither winit nor `launch` exports
 //! one yet, so it opens as its own window. A GTK portal backend has been seen to lose the file
-//! on a second PreparePrint + Print in one backend process (xdg-desktop-portal-gtk issue #562);
+//! on a second `PreparePrint` + Print in one backend process (xdg-desktop-portal-gtk issue #562);
 //! a lost print is not detected here.
 
 mod open;

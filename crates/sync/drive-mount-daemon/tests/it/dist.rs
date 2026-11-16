@@ -1,5 +1,5 @@
 //! The helper's units as shipped: the socket syncd finds, and a service whose every setting keeps
-//! NoNewPrivileges off and makes no mount namespace, so fusermount3 keeps working and the mount
+//! `NoNewPrivileges` off and makes no mount namespace, so fusermount3 keeps working and the mount
 //! is seen by the session.
 
 use drive_mount_daemon::wire;

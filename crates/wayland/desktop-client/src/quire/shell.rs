@@ -190,16 +190,19 @@ pub struct SplitChoice {
 
 impl SplitChoice {
     /// The window already full screen.
+    #[must_use]
     pub fn first(&self) -> &ToplevelIdentifier {
         &self.first
     }
 
     /// The half the first window took.
+    #[must_use]
     pub fn side(&self) -> SplitSide {
         self.side
     }
 
     /// The windows that can fill the other half, most recently used first.
+    #[must_use]
     pub fn candidates(&self) -> &[ToplevelIdentifier] {
         &self.candidates
     }
@@ -214,16 +217,19 @@ pub struct Switcher {
 
 impl Switcher {
     /// The apps, in the compositor's order.
+    #[must_use]
     pub fn apps(&self) -> &[AppId] {
         &self.apps
     }
 
     /// The selected index while the switcher is shown.
+    #[must_use]
     pub fn selected(&self) -> Option<u32> {
         self.selected
     }
 
     /// Whether the switcher is on screen.
+    #[must_use]
     pub fn is_shown(&self) -> bool {
         self.selected.is_some()
     }
@@ -306,26 +312,31 @@ impl Default for Overview {
 
 impl Overview {
     /// Which overview the last state event named.
+    #[must_use]
     pub fn mode(&self) -> OverviewMode {
         self.mode
     }
 
     /// Where the overview is in its life.
+    #[must_use]
     pub fn state(&self) -> OverviewState {
         self.state
     }
 
     /// Progress in thousandths: 0 closed, 1000 open.
+    #[must_use]
     pub fn progress(&self) -> u32 {
         self.progress
     }
 
     /// The window slots of the last complete layout.
+    #[must_use]
     pub fn slots(&self) -> &[OverviewSlot] {
         &self.slots
     }
 
     /// The Space thumbnails of the last complete layout.
+    #[must_use]
     pub fn spaces(&self) -> &[OverviewSpaceSlot] {
         &self.spaces
     }
@@ -333,6 +344,7 @@ impl Overview {
     /// Whether Mission Control is up on `output`. Before any `OverviewOutput` (a compositor of
     /// version 1) every output counts as shown while the overview is not closed, as it always
     /// was.
+    #[must_use]
     pub fn shown_on(&self, output: &OutputName) -> bool {
         match self.per_output.get(output).and_then(|known| known.shown) {
             Some(shown) => shown == Shown::Shown,
@@ -344,6 +356,7 @@ impl Overview {
     }
 
     /// The Space target the dragged window is over on `output`, if any.
+    #[must_use]
     pub fn drop_target(&self, output: &OutputName) -> Option<&SpaceId> {
         self.per_output
             .get(output)
@@ -351,6 +364,7 @@ impl Overview {
     }
 
     /// Whether the dragged window is over the new-Space target of `output` (version 3).
+    #[must_use]
     pub fn over_new_space(&self, output: &OutputName) -> bool {
         self.per_output
             .get(output)
@@ -359,6 +373,7 @@ impl Overview {
 
     /// The window being dragged on `output` in Mission Control, if a drag is under way
     /// (version 4). While there is one, the Spaces bar shows its targets as accepting.
+    #[must_use]
     pub fn dragged_window(&self, output: &OutputName) -> Option<&ToplevelIdentifier> {
         self.per_output
             .get(output)
@@ -366,6 +381,7 @@ impl Overview {
     }
 
     /// How the last drag on `output` ended, until the next one starts (version 4).
+    #[must_use]
     pub fn last_drag_outcome(&self, output: &OutputName) -> Option<DragOutcome> {
         self.per_output
             .get(output)
@@ -399,6 +415,7 @@ pub struct Reveals(pub(crate) BTreeMap<(RevealOutput, ScreenEdge), Shown>);
 impl Reveals {
     /// Whether `edge` of `output` is revealed: what the compositor said for that output, else
     /// for no output in particular; hidden until it says otherwise.
+    #[must_use]
     pub fn at(&self, output: &OutputName, edge: ScreenEdge) -> Shown {
         self.0
             .get(&(RevealOutput::Named(output.clone()), edge))

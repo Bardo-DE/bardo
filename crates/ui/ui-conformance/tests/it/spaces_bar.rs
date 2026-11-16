@@ -114,7 +114,7 @@ fn harness(page: fn() -> Element) -> Harness {
 fn set(harness: &mut Harness, to: bool) {
     harness.within(|| {
         dioxus::core::Runtime::current()
-            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to))
+            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to));
     });
 }
 
@@ -217,7 +217,7 @@ fn a_hidden_bar_lifts_away_reports_at_its_settle_and_draws_nothing_after() {
         Some("leaving")
     );
     let exit = settle(Anim::LiftOut, MotionLevel::Standard);
-    harness.advance(exit - ms(21));
+    harness.advance(exit.checked_sub(ms(21)).unwrap());
     assert_eq!(log(&harness), "", "not before the settle");
     let reported = ui_harness::harness::settle_until(&mut harness, |h| log(h) == "hidden");
     assert_eq!(reported.duration_since(asked), exit);

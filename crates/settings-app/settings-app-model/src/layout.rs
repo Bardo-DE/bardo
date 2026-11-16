@@ -57,11 +57,13 @@ fn without_corner_rows(sections: &[SectionModel]) -> Vec<SectionModel> {
 }
 
 /// The sections of `page` that are drawn as rows.
+#[must_use]
 pub fn basic_sections(page: &PageModel) -> Vec<SectionModel> {
     without_corner_rows(&page.sections)
 }
 
 /// The advanced sections of `page` that are drawn as rows.
+#[must_use]
 pub fn advanced_sections(page: &PageModel) -> Vec<SectionModel> {
     without_corner_rows(&page.advanced)
 }
@@ -84,6 +86,7 @@ fn rank(title: &str) -> usize {
 /// Intelligence: its sections follow design/22's order and the model picker sits right after
 /// Models (the runtimes first, then the picker), or where Models would be when no schema has that
 /// section; and Accounts, whose live pane comes first.
+#[must_use]
 pub fn blocks(page: &PageModel) -> Vec<Block> {
     let corners = corner_keys(page);
     let drawn = drawn(page);

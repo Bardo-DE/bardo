@@ -41,6 +41,7 @@ impl Exit {
     ];
 
     /// The process exit status.
+    #[must_use]
     pub fn code(self) -> u8 {
         match self {
             Exit::Done => 0,
@@ -55,6 +56,7 @@ impl Exit {
     }
 
     /// A short word for the code, for the JSON error object.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             Exit::Done => "done",
@@ -98,6 +100,7 @@ impl Failure {
     }
 
     /// The error object of `--json`.
+    #[must_use]
     pub fn json(&self) -> Value {
         json!({
             "vocab": action_vocab::IntentsVocab::CURRENT,
@@ -117,6 +120,7 @@ fn with_detail<T: serde::Serialize>(mut failure: Failure, detail: &T) -> Failure
 }
 
 /// How a call ended, when it did not end well: which code, and in which words.
+#[must_use]
 pub fn of_refusal(refusal: &CallRefusal) -> Failure {
     let (exit, what) = match refusal {
         CallRefusal::App(AppRefusal::NeedsParam { param, .. }) => {
@@ -175,6 +179,7 @@ fn slug<T: serde::Serialize>(value: &T) -> String {
 }
 
 /// A request that did not give the reply its caller wanted.
+#[must_use]
 pub fn of_client(error: &ClientError) -> Failure {
     match error {
         ClientError::Transport(TransportError::Closed) => {
@@ -211,6 +216,7 @@ pub fn of_client(error: &ClientError) -> Failure {
 }
 
 /// How an undo that reached the app ended badly.
+#[must_use]
 pub fn of_undo(fault: UndoFault) -> Failure {
     match fault {
         UndoFault::Gone => Failure::usage("there is nothing to undo for that"),

@@ -20,7 +20,7 @@ fn boot() -> (Fixture, ClientId) {
 const CLOCK_MONOTONIC: u32 = 1;
 const OUTPUT: &str = "HEADLESS-1";
 
-/// The compositor announces CLOCK_MONOTONIC at both versions.
+/// The compositor announces `CLOCK_MONOTONIC` at both versions.
 #[test]
 fn every_version_binds_and_announces_its_clock() {
     let (mut fixture, id) = boot();

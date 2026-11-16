@@ -140,7 +140,7 @@ fn task_policy_compare_table() {
             "a new recipient widens, as a recipient",
             edit(|p| {
                 p.recipients
-                    .push(TrustedPattern::Domain("example.com".into()))
+                    .push(TrustedPattern::Domain("example.com".into()));
             }),
             policy(),
             PolicyChange::Widens(vec![Widening::Pattern(
@@ -152,11 +152,11 @@ fn task_policy_compare_table() {
             "a subdomain of a trusted domain narrows nothing and widens nothing",
             edit(|p| {
                 p.recipients
-                    .push(TrustedPattern::Domain("mail.example.com".into()))
+                    .push(TrustedPattern::Domain("mail.example.com".into()));
             }),
             edit(|p| {
                 p.recipients
-                    .push(TrustedPattern::Domain("example.com".into()))
+                    .push(TrustedPattern::Domain("example.com".into()));
             }),
             PolicyChange::Narrows,
         ),
@@ -164,11 +164,11 @@ fn task_policy_compare_table() {
             "a parent of a trusted domain widens",
             edit(|p| {
                 p.recipients
-                    .push(TrustedPattern::Domain("example.com".into()))
+                    .push(TrustedPattern::Domain("example.com".into()));
             }),
             edit(|p| {
                 p.recipients
-                    .push(TrustedPattern::Domain("mail.example.com".into()))
+                    .push(TrustedPattern::Domain("mail.example.com".into()));
             }),
             PolicyChange::Widens(vec![Widening::Pattern(
                 ArgSink::Recipient,
@@ -430,7 +430,7 @@ fn the_declaration_decides_the_effect_the_cap_and_the_sinks() {
     );
     let wide = edit(|p| {
         p.recipients
-            .push(TrustedPattern::Exact(Value::Text("hi".into())))
+            .push(TrustedPattern::Exact(Value::Text("hi".into())));
     });
     assert_eq!(
         covers(

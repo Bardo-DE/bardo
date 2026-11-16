@@ -75,6 +75,7 @@ struct Row {
 
 /// `count` strips of `window` at `progress` (0 is the window as it is, 1 is all of it inside
 /// `tile`; held to that range), top strip first. At least one strip.
+#[must_use]
 pub fn strips(window: RectF, tile: RectF, progress: f64, count: usize) -> Vec<Strip> {
     let count = count.max(1);
     let shares: Vec<f64> = (0..=count)
@@ -100,6 +101,7 @@ pub fn strips(window: RectF, tile: RectF, progress: f64, count: usize) -> Vec<St
 /// assert_eq!(strips_fine(window, tile, 0.0, STRIPS, 1.0, 120).len(), STRIPS);
 /// assert!(strips_fine(window, tile, 0.5, STRIPS, 1.0, 120).len() > STRIPS);
 /// ```
+#[must_use]
 pub fn strips_fine(
     window: RectF,
     tile: RectF,
@@ -128,9 +130,12 @@ pub fn strips_fine(
     let budget = limit.saturating_sub(base);
     let pieces: Vec<usize> = wanted
         .iter()
-        .map(|n| match extra > budget {
-            true => 1 + (n - 1) * budget / extra,
-            false => *n,
+        .map(|n| {
+            if extra > budget {
+                1 + (n - 1) * budget / extra
+            } else {
+                *n
+            }
         })
         .collect();
     let shares: Vec<f64> = edges
@@ -197,8 +202,8 @@ fn strips_at(window: RectF, tile: RectF, progress: f64, shares: &[f64]) -> Vec<S
         .zip(shares.windows(2))
         .map(|(pair, share)| {
             let (above, below) = (pair[0], pair[1]);
-            let width = (above.width + below.width) / 2.0;
-            let centre = (above.centre + below.centre) / 2.0;
+            let width = f64::midpoint(above.width, below.width);
+            let centre = f64::midpoint(above.centre, below.centre);
             Strip {
                 top: share[0],
                 bottom: share[1],

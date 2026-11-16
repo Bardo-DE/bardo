@@ -1,4 +1,4 @@
-//! SplitView: a sidebar pane and the content, dragged, collapsed and reset; and a pane whose body
+//! `SplitView`: a sidebar pane and the content, dragged, collapsed and reset; and a pane whose body
 //! is an `EdgePeek`, which keeps its peek while folded.
 
 use crate::pages::Section;
@@ -13,7 +13,7 @@ use ui_components::style::tokens::control_size::ControlSize;
 use ui_core::press::Press;
 use ui_core::vocab::RowState;
 
-/// The SplitView section.
+/// The `SplitView` section.
 #[component]
 pub fn SplitViewSection() -> Element {
     let mut sidebar = use_signal(|| true);

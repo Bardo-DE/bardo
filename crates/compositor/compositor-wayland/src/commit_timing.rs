@@ -33,6 +33,7 @@ enum Watched {}
 
 impl CommitTimingPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> CommitTimingPart
     where
         D: GlobalDispatch<WpCommitTimingManagerV1, CommitTimingManagerData> + 'static,
@@ -99,7 +100,7 @@ pub fn apply_presented(
             states
                 .data_map
                 .get::<CommitTimerBarrierStateUserData>()
-                .map(|barriers| {
+                .map_or((false, false), |barriers| {
                     let mut barriers = barriers
                         .lock()
                         .unwrap_or_else(std::sync::PoisonError::into_inner);
@@ -108,14 +109,14 @@ pub fn apply_presented(
                         barriers.next_deadline().is_some(),
                     )
                 })
-                .unwrap_or((false, false))
         });
         if signalled && let Some(client) = surface.client() {
             part.cleared.note(client);
         }
-        match remaining {
-            true => still.push(watched),
-            false => watch_mark::clear::<Watched>(&surface),
+        if remaining {
+            still.push(watched)
+        } else {
+            watch_mark::clear::<Watched>(&surface)
         }
     }
     part.watched = still;

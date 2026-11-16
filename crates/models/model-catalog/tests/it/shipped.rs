@@ -29,8 +29,8 @@ const REMOTE: [&str; 8] = [
     "gpt-6-luna",
 ];
 
-/// The hosted entries reached through OpenRouter and the provider's own API, checked below with
-/// their own asserts: DeepSeek V4 Pro (text only) and Muse Spark 1.3 contributor (one reach).
+/// The hosted entries reached through `OpenRouter` and the provider's own API, checked below with
+/// their own asserts: `DeepSeek` V4 Pro (text only) and Muse Spark 1.3 contributor (one reach).
 const MORE_HOSTED: [&str; 2] = ["deepseek-v4-pro", "muse-spark-1.3-contributor"];
 
 /// The Holo ladder above 4B: local computer-use entries with estimated vram, checked on their own.

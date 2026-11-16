@@ -22,6 +22,7 @@ use crate::daemon::msg::ShellMsg;
 ///
 /// assert_eq!(asked_of(&CapturePicker::default()), EyedropIn::Asked(None));
 /// ```
+#[must_use]
 pub fn asked_of(picker: &CapturePicker) -> EyedropIn {
     EyedropIn::Asked(picker.color.as_ref().map(|asking| {
         let screens = picker.candidates.outputs.iter();
@@ -33,11 +34,13 @@ pub fn asked_of(picker: &CapturePicker) -> EyedropIn {
 }
 
 /// Whether an eyedropper is drawn, given how many surfaces exist.
+#[must_use]
 pub fn presence_of(surfaces: u32) -> bool {
     surfaces > 0
 }
 
 /// The request for the compositor that `out` asks for, if it asks for one.
+#[must_use]
 pub fn desktop_command(out: &EyedropOut) -> Option<DesktopCommand> {
     match out {
         EyedropOut::Capture(output) => Some(DesktopCommand::CaptureOutput {
@@ -48,6 +51,7 @@ pub fn desktop_command(out: &EyedropOut) -> Option<DesktopCommand> {
 }
 
 /// The command for the capture service that `out` asks for, if it asks for one.
+#[must_use]
 pub fn capture_command(out: &EyedropOut) -> Option<CaptureCommand> {
     match out {
         EyedropOut::Cancel(id) => Some(CaptureCommand::ColorAnswer(*id, None)),

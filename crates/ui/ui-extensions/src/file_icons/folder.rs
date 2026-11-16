@@ -42,6 +42,7 @@ impl IconFolder {
     }
 
     /// The folder of pictures.
+    #[must_use]
     pub fn dir(&self) -> &Path {
         &self.dir
     }

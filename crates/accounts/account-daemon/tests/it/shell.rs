@@ -69,7 +69,7 @@ async fn the_shell_is_told_of_a_refusal_and_a_recovery_and_reads_the_account() {
         .build()
         .await
         .expect("account");
-    assert!(hidden.state().await.is_err());
+    hidden.state().await.unwrap_err();
     // No grant is asked of the shell to sign the account in again.
     account
         .reauthenticate("", &Details::new())

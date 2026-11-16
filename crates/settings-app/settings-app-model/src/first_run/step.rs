@@ -31,6 +31,7 @@ pub enum FirstRunEffect {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn first_run_step(
     mut state: FirstRun,
     input: FirstRunInput,

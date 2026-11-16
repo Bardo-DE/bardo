@@ -50,6 +50,7 @@ pub trait SettingsDoc:
     /// The range of every bounded key of the file. A number outside its range is brought to the
     /// nearest end when the file is read, and reported in [`Loaded::clamped`](crate::Loaded). A
     /// document with a schema returns [`Limits::of_schema`]; the default is no ranges.
+    #[must_use]
     fn limits() -> Limits {
         Limits::none()
     }

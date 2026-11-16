@@ -1,4 +1,4 @@
-//! SignInForm: the fields a sign-in asks for (design/31 section 5.6, PLAN 2.6): the address, a
+//! `SignInForm`: the fields a sign-in asks for (design/31 section 5.6, PLAN 2.6): the address, a
 //! password, an app password or an API key, a server when the lookup missed it. The host owns
 //! every value and hears each keystroke; Continue stays disabled until every required field has
 //! text, and Return does the same as Continue. A refusal marks its field with a sentence under it

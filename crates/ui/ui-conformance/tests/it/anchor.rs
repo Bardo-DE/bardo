@@ -64,7 +64,7 @@ fn Anchored() -> Element {
                 anchor: Anchor::Mounted(button),
                 items: entries,
                 onpick: move |_: u8| open.set(Check::Off),
-                onclose: move |_| open.set(Check::Off),
+                onclose: move |()| open.set(Check::Off),
             }
         }
     }

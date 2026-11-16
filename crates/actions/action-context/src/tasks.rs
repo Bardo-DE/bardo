@@ -59,6 +59,7 @@ pub struct TaskTable {
 
 impl TaskTable {
     /// An empty table.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -69,6 +70,7 @@ impl TaskTable {
     }
 
     /// One task.
+    #[must_use]
     pub fn get(&self, task: &TaskId) -> Option<&TaskRecord> {
         self.tasks.get(task)
     }
@@ -86,12 +88,14 @@ impl TaskTable {
 
 /// The policy a child task starts with: the requested one cut down to the parent's, never
 /// wider. A child of a task with no policy has none (every non-read call is outside).
+#[must_use]
 pub fn child_policy(parent: &TaskPolicy, requested: &TaskPolicy) -> TaskPolicy {
     intersection(requested, parent)
 }
 
 impl TaskState {
     /// How the roster words this state.
+    #[must_use]
     pub fn roster_state(self) -> RosterState {
         match self {
             TaskState::Starting => RosterState::Starting,
@@ -107,12 +111,14 @@ impl TaskState {
 
 /// The roster as an agent working in `active` sees it: a task in the same Space shows its
 /// goal, last step and what the person told it; a task in another Space shows presence only.
+#[must_use]
 pub fn roster_of(table: &TaskTable, active: &SpaceId) -> Roster {
     roster_by(table, active, |_| None)
 }
 
 /// `roster_of` with each task's model spend: its session's ledger under `budget`. A line seen
 /// from another Space still shows presence only.
+#[must_use]
 pub fn roster_with_totals(
     table: &TaskTable,
     sessions: &BTreeMap<SessionId, SessionRecord>,
@@ -156,12 +162,11 @@ fn roster_by(
 /// Ends a task that is not ended yet and returns the skeleton it leaves. A session nobody used
 /// (no turn, no step) leaves no episode: there is nothing to remember.
 pub fn end_task(t: &mut TaskRecord, now: provenance::UnixSeconds) -> Option<Episode> {
-    let outcome = match t.state {
-        TaskState::Ended(_) => None,
-        _ => {
-            t.state = TaskState::Ended(ReportStatus::Done);
-            Some(EpisodeOutcome::Done)
-        }
+    let outcome = if let TaskState::Ended(_) = t.state {
+        None
+    } else {
+        t.state = TaskState::Ended(ReportStatus::Done);
+        Some(EpisodeOutcome::Done)
     };
     outcome
         .and_then(|o| close(&t.ledger, EpisodeKind::Task, now, o))

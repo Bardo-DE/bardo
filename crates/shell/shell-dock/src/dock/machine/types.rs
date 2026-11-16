@@ -68,6 +68,7 @@ pub enum Hit {
 
 impl Hit {
     /// The tile under the pointer, if any.
+    #[must_use]
     pub fn tile(self) -> Option<TileId> {
         match self {
             Hit::Tile { tile, .. } => Some(tile),
@@ -112,6 +113,7 @@ pub struct DockState {
 
 impl DockState {
     /// A dock at rest; `Reveal::Hidden` when auto-hide is on.
+    #[must_use]
     pub fn new(reveal: Reveal) -> DockState {
         DockState {
             reveal,

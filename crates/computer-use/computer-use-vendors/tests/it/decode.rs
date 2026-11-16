@@ -1,5 +1,5 @@
 //! The decoders, over examples written from each vendor's documentation (2026-10-03): the
-//! Anthropic toolset and `computer_20251124`, OpenAI's `computer_call`, Gemini's computer use.
+//! Anthropic toolset and `computer_20251124`, `OpenAI`'s `computer_call`, Gemini's computer use.
 
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, GridMax, GridSpace, ImageSpace, Modifier, Notches,
@@ -351,7 +351,7 @@ fn gemini_safety_only_adds() {
     };
     assert_eq!(actions.len(), plain_actions.len() + 1);
     assert!(matches!(&actions[0], CuaAction::Ask { .. }));
-    assert_eq!(&actions[1..], &plain_actions[..]);
+    assert_eq!(&actions[1..], &*plain_actions);
     // A block removes the actions and ends the run as infeasible.
     let blocked = gemini
         .decode(&click, &[SafetySignal::Blocked("not allowed".into())])
@@ -360,7 +360,7 @@ fn gemini_safety_only_adds() {
         panic!()
     };
     assert!(matches!(
-        &actions[..],
+        &*actions,
         [CuaAction::Finish {
             outcome: computer_use_action::FinishOutcome::Infeasible,
             ..

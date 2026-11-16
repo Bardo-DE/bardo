@@ -183,9 +183,10 @@ impl Provider for ScriptedProvider {
         let begun = (start.login_hint.clone(), start.signed_in_before);
         self.script.starts.lock().expect("starts").push(begun);
         self.script.modes.lock().expect("modes").push(start.mode);
-        match self.refuses_to_start {
-            true => Err(ProviderError::Forbidden),
-            false => Ok(ScriptedSignIn(self.script.clone())),
+        if self.refuses_to_start {
+            Err(ProviderError::Forbidden)
+        } else {
+            Ok(ScriptedSignIn(self.script.clone()))
         }
     }
 
@@ -207,9 +208,10 @@ impl Provider for ScriptedProvider {
             .lock()
             .expect("revoked")
             .push(account.clone());
-        match *self.script.revoke_fails.lock().expect("flag") {
-            true => Err(ProviderError::Unreachable),
-            false => Ok(RevokeOutcome::Revoked),
+        if *self.script.revoke_fails.lock().expect("flag") {
+            Err(ProviderError::Unreachable)
+        } else {
+            Ok(RevokeOutcome::Revoked)
         }
     }
 }

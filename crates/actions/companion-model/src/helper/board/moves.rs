@@ -32,16 +32,15 @@ impl Board {
     }
 
     pub(super) fn streak(&mut self, helper: &HelperId) -> &mut Streak {
-        let at = match self.streaks.iter().position(|s| &s.helper == helper) {
-            Some(at) => at,
-            None => {
-                self.streaks.push(Streak {
-                    helper: helper.clone(),
-                    denied: 0,
-                    failed: 0,
-                });
-                self.streaks.len() - 1
-            }
+        let at = if let Some(at) = self.streaks.iter().position(|s| &s.helper == helper) {
+            at
+        } else {
+            self.streaks.push(Streak {
+                helper: helper.clone(),
+                denied: 0,
+                failed: 0,
+            });
+            self.streaks.len() - 1
         };
         &mut self.streaks[at]
     }

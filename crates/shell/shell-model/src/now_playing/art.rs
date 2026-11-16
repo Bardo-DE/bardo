@@ -35,9 +35,10 @@ pub fn art_source(url: &str) -> ArtSource {
         "file" => {
             let decoded = percent_decode(rest);
             let path = PathBuf::from(&decoded);
-            match path.is_absolute() && !decoded.contains('\0') {
-                true => ArtSource::File(path),
-                false => ArtSource::Unusable,
+            if path.is_absolute() && !decoded.contains('\0') {
+                ArtSource::File(path)
+            } else {
+                ArtSource::Unusable
             }
         }
         "http" | "https" if has_host(rest) && !url.contains(char::is_whitespace) => {
@@ -57,6 +58,7 @@ fn has_host(rest: &str) -> bool {
 
 /// The cache file name for remote art at `url`: a stable hash of the whole URL (so a new cover
 /// is a new file) with the URL's own extension when it has a known image one, else none.
+#[must_use]
 pub fn art_cache_name(url: &str) -> String {
     let hash = fnv1a(url.as_bytes());
     match image_extension(url) {
@@ -68,6 +70,7 @@ pub fn art_cache_name(url: &str) -> String {
 /// The cache file name for a local cover: a stable hash of its path, its modification time and its
 /// size (so a player that writes each track's cover to the same file gets a new copy each time),
 /// with the file's own extension when it is a known image one.
+#[must_use]
 pub fn local_art_cache_name(path: &Path, modified: Duration, len: u64) -> String {
     let shown = path.to_string_lossy();
     let key = format!("file\0{shown}\0{}\0{len}", modified.as_nanos());

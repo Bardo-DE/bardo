@@ -40,17 +40,20 @@ impl ExtControl {
     }
 
     /// The device.
+    #[must_use]
     pub fn device(&self) -> &ExtDataControlDeviceV1 {
         &self.device
     }
 
     /// The manager.
+    #[must_use]
     pub fn manager(&self) -> &ExtDataControlManagerV1 {
         &self.manager
     }
 
     /// Makes a data source on the manager: what a clipboard manager does to set the
     /// clipboard. The compositor answers `cancelled` when it refuses it.
+    #[must_use]
     pub fn source(&self, client: &TestClient) -> ExtDataControlSourceV1 {
         let source = self.manager.create_data_source(&client.qh(), ControlPlain);
         let _ = client.connection().flush();
@@ -149,17 +152,20 @@ pub mod wlr {
         }
 
         /// The device.
+        #[must_use]
         pub fn device(&self) -> &ZwlrDataControlDeviceV1 {
             &self.device
         }
 
         /// The manager.
+        #[must_use]
         pub fn manager(&self) -> &ZwlrDataControlManagerV1 {
             &self.manager
         }
 
         /// Makes a data source on the manager: what a clipboard manager does to set the
         /// clipboard. The compositor answers `cancelled` when it refuses it.
+        #[must_use]
         pub fn source(&self, client: &TestClient) -> ZwlrDataControlSourceV1 {
             let source = self
                 .manager

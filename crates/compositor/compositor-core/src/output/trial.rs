@@ -27,6 +27,7 @@ pub enum Requester {
 
 impl Requester {
     /// Who a request is from, by the socket its connection came through.
+    #[must_use]
     pub fn of(role: &ConnectionRole) -> Requester {
         match role {
             ConnectionRole::Shell => Requester::Shell,

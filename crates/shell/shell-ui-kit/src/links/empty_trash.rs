@@ -30,11 +30,13 @@ pub struct EmptyTrashLink {
 
 impl EmptyTrashLink {
     /// Closed, nothing answered.
+    #[must_use]
     pub fn new() -> EmptyTrashLink {
         EmptyTrashLink::default()
     }
 
     /// The current value.
+    #[must_use]
     pub fn now(&self) -> EmptyTrashShown {
         self.panel.now()
     }
@@ -50,6 +52,7 @@ impl EmptyTrashLink {
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<EmptyTrashShown> {
         self.panel.subscribe()
     }
@@ -61,11 +64,13 @@ impl EmptyTrashLink {
     }
 
     /// The latest yes.
+    #[must_use]
     pub fn last_answered(&self) -> Option<EmptyTrashAnswered> {
         self.answered.latest()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe_answered(&self) -> watch::Receiver<Option<EmptyTrashAnswered>> {
         self.answered.subscribe()
     }

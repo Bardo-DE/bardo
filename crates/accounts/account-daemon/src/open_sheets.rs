@@ -26,19 +26,20 @@ impl OpenSheets {
     /// the method answers the bus's own error and no sheet or Request object is made.
     pub(crate) fn claim(&self, app: &AppId, kind: SheetKind) -> Result<SheetClaim, RefusedError> {
         let key = (app.clone(), kind);
-        match self
+        if self
             .0
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .insert(key.clone())
         {
-            true => Ok(SheetClaim {
+            Ok(SheetClaim {
                 open: self.clone(),
                 key,
-            }),
-            false => Err(RefusedError::busy(
+            })
+        } else {
+            Err(RefusedError::busy(
                 "this app already has a sheet of this kind open",
-            )),
+            ))
         }
     }
 }

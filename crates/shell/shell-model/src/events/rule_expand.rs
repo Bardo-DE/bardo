@@ -52,13 +52,15 @@ pub(super) fn plan(rule: &Rule) -> Result<Pattern, Vec<String>> {
         }
     }
     unknown.extend(unfit(&pattern));
-    match unknown.is_empty() {
-        true => Ok(pattern),
-        false => Err(unknown),
+    if unknown.is_empty() {
+        Ok(pattern)
+    } else {
+        Err(unknown)
     }
 }
 
 /// The parts of `rule` an expansion leaves out (the event then shows once).
+#[must_use]
 pub fn unsupported_parts(rule: &Rule) -> Vec<String> {
     plan(rule).err().unwrap_or_default()
 }
@@ -110,9 +112,10 @@ fn unfit(pattern: &Pattern) -> Vec<String> {
         Freq::Monthly => !(ordinal && month_days),
         Freq::Yearly => (by_month || (!ordinal && !plain)) && !(ordinal && month_days),
     };
-    match fits {
-        true => Vec::new(),
-        false => vec![format!("{:?} with this BYDAY/BYMONTHDAY", pattern.freq)],
+    if fits {
+        Vec::new()
+    } else {
+        vec![format!("{:?} with this BYDAY/BYMONTHDAY", pattern.freq)]
     }
 }
 
@@ -166,9 +169,12 @@ fn period(pattern: &Pattern, first: Date, k: i32) -> Option<(Date, Vec<Date>)> {
             let back = i64::from(first.weekday().since(pattern.week_start));
             let start = first.checked_sub(back.days()).ok()?;
             let start = start.checked_add((i64::from(step) * 7).days()).ok()?;
-            let wanted = |day: Date| match pattern.days.is_empty() {
-                true => day.weekday() == first.weekday(),
-                false => pattern.days.iter().any(|(_, w)| *w == day.weekday()),
+            let wanted = |day: Date| {
+                if pattern.days.is_empty() {
+                    day.weekday() == first.weekday()
+                } else {
+                    pattern.days.iter().any(|(_, w)| *w == day.weekday())
+                }
             };
             let days = (0..7)
                 .filter_map(|i| start.checked_add(i.days()).ok())
@@ -190,9 +196,10 @@ fn period(pattern: &Pattern, first: Date, k: i32) -> Option<(Date, Vec<Date>)> {
         Freq::Yearly => {
             let year = i16::try_from(i32::from(first.year()) + step).ok()?;
             let start = Date::new(year, 1, 1).ok()?;
-            let mut months = match pattern.months.is_empty() {
-                true => vec![first.month()],
-                false => pattern.months.clone(),
+            let mut months = if pattern.months.is_empty() {
+                vec![first.month()]
+            } else {
+                pattern.months.clone()
             };
             months.sort_unstable();
             months.dedup();
@@ -246,9 +253,10 @@ fn month_days(pattern: &Pattern, first: Date, year: i16, month: i8) -> Vec<Date>
 /// Day `n` of the month (negative from its end), when the month has it.
 fn resolve_month_day(year: i16, month: i8, n: i8) -> Option<Date> {
     let first = Date::new(year, month, 1).ok()?;
-    let day = match n > 0 {
-        true => n,
-        false => first.days_in_month() + 1 + n,
+    let day = if n > 0 {
+        n
+    } else {
+        first.days_in_month() + 1 + n
     };
     Date::new(year, month, day).ok()
 }

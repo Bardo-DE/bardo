@@ -49,6 +49,7 @@ pub struct PageModel {
 impl PageModel {
     /// Whether a key of the page is a choice among installed things, whose menu is filled when
     /// the page is shown.
+    #[must_use]
     pub fn has_provided(&self) -> bool {
         self.sections
             .iter()
@@ -58,6 +59,7 @@ impl PageModel {
     }
 
     /// This page with the choices of `offers` in each of its `Provided` keys.
+    #[must_use]
     pub fn offering(&self, offers: &Offers) -> PageModel {
         let fill = |sections: &[SectionModel]| -> Vec<SectionModel> {
             sections
@@ -105,6 +107,7 @@ pub struct Catalogue {
 
 impl Catalogue {
     /// The catalogue of `programs`.
+    #[must_use]
     pub fn build(programs: &[ProgramSchema]) -> Catalogue {
         let entries: Vec<KeyEntry> = programs
             .iter()
@@ -122,17 +125,20 @@ impl Catalogue {
     }
 
     /// The page with `slug`.
+    #[must_use]
     pub fn page(&self, slug: &PageSlug) -> Option<&PageModel> {
         self.pages.iter().find(|page| &page.slug == slug)
     }
 
     /// The file's spec.
+    #[must_use]
     pub fn file(&self, file: &ConfigFile) -> Option<&FileSpec> {
         self.files.iter().find(|spec| &spec.file == file)
     }
 
     /// The key at `path`, when exactly one key of any schema has that path (two programs that
     /// name the same path make it ambiguous, and neither is returned).
+    #[must_use]
     pub fn entry(&self, path: &KeyPath) -> Option<&KeyEntry> {
         let mut found = self.entries().filter(|(_, e)| &e.spec.path == path);
         match (found.next(), found.next()) {
@@ -200,19 +206,18 @@ fn group_pages(entries: &[KeyEntry], footnotes: &[&Footnote]) -> Vec<PageModel> 
     let table = PageTable::built_in();
     let mut pages: Vec<PageModel> = entries.iter().fold(Vec::new(), |mut pages, entry| {
         let slug = PageSlug::of(&entry.spec.page);
-        let at = match pages.iter().position(|p| p.slug == slug) {
-            Some(at) => at,
-            None => {
-                pages.push(PageModel {
-                    kind: PageKind::of(&entry.spec.page),
-                    page: entry.spec.page.clone(),
-                    title: title_of(&table, &entry.spec.page),
-                    slug,
-                    sections: Vec::new(),
-                    advanced: Vec::new(),
-                });
-                pages.len() - 1
-            }
+        let at = if let Some(at) = pages.iter().position(|p| p.slug == slug) {
+            at
+        } else {
+            pages.push(PageModel {
+                kind: PageKind::of(&entry.spec.page),
+                page: entry.spec.page.clone(),
+                title: title_of(&table, &entry.spec.page),
+                slug,
+                sections: Vec::new(),
+                advanced: Vec::new(),
+            });
+            pages.len() - 1
         };
         let page = &mut pages[at];
         match entry.spec.exposure {

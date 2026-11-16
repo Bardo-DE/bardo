@@ -1,4 +1,4 @@
-//! PullDownButton on a real Blitz document: a click or Down opens its menu, a pick fires
+//! `PullDownButton` on a real Blitz document: a click or Down opens its menu, a pick fires
 //! `onpick` and leaves the button's label as it was, and Escape closes the menu and gives the
 //! keyboard back to the button.
 

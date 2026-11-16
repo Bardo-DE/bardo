@@ -40,6 +40,7 @@ pub struct Launch {
 
 impl Launch {
     /// A request to run `argv` in `cwd`, with no extra environment and the default output limit.
+    #[must_use]
     pub fn new(argv: Argv, cwd: AbsPath) -> Self {
         Self {
             argv,

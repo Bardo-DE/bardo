@@ -28,6 +28,7 @@ pub struct Latched {
 /// Latch a gesture on `axis` moving toward `dir` (design/11 §11.3.3): the innermost scroller
 /// that can move that way; else the innermost elastic one, which rubber-bands; else nothing.
 /// `chain` holds only scrollers that scroll on `axis`.
+#[must_use]
 pub fn latch(chain: &[Candidate], axis: ScrollAxis, dir: Dir) -> Option<Latched> {
     let movable = chain
         .iter()
@@ -54,6 +55,7 @@ pub fn latch(chain: &[Candidate], axis: ScrollAxis, dir: Dir) -> Option<Latched>
 }
 
 /// A wheel's target: the innermost scroller that can move (no rubber band for wheels).
+#[must_use]
 pub fn latch_rigid(chain: &[Candidate], axis: ScrollAxis, dir: Dir) -> Option<Latch> {
     chain.iter().find(|c| c.geom.can_move(dir)).map(|c| Latch {
         scroller: c.scroller,
@@ -78,6 +80,7 @@ impl AxisLock {
 
     /// Feed a delta. Returns the new lock and, when this delta locked it, the pending motion
     /// on the locked axis (applied, so a slow start does not lose its first 10 px).
+    #[must_use]
     pub fn feed(self, dx: f64, dy: f64) -> (AxisLock, Option<f64>) {
         match self {
             AxisLock::Locked(_) => (self, None),
@@ -104,6 +107,7 @@ pub struct WheelBurst {
 
 impl WheelBurst {
     /// The previous target, if a detent on `axis` at `now` continues its burst.
+    #[must_use]
     pub fn current(&self, axis: ScrollAxis, now: Elapsed, window: Duration) -> Option<Latch> {
         self.last
             .filter(|(latch, at)| latch.axis == axis && now.0.saturating_sub(at.0) < window)
@@ -111,6 +115,7 @@ impl WheelBurst {
     }
 
     /// Remember `latch` as the burst's target at `now`.
+    #[must_use]
     pub fn record(self, latch: Latch, now: Elapsed) -> WheelBurst {
         WheelBurst {
             last: Some((latch, now)),

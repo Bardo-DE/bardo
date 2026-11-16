@@ -27,6 +27,7 @@ pub struct CuaBegin {
 
 impl CuaBegin {
     /// A run toward `goal` in `env`, with no hints.
+    #[must_use]
     pub fn new(goal: String, env: CuaEnv) -> Self {
         Self {
             goal,
@@ -36,6 +37,7 @@ impl CuaBegin {
     }
 
     /// The same run with these hints from the planner.
+    #[must_use]
     pub fn with_hints(mut self, hints: Vec<String>) -> Self {
         self.hints = hints;
         self
@@ -81,6 +83,7 @@ impl CuaStepRequest {
     /// Step `step`: what the window shows (`frame`, in `window`) and its accessibility text. No
     /// pointer position, no earlier results, no masked regions and no notes until the `with_*`
     /// methods say so.
+    #[must_use]
     pub fn new(
         step: StepIndex,
         window: WindowGeometry,
@@ -100,24 +103,28 @@ impl CuaStepRequest {
     }
 
     /// The same step with the pointer at `cursor`.
+    #[must_use]
     pub fn with_cursor(mut self, cursor: Point<WindowSpace>) -> Self {
         self.cursor = Some(cursor);
         self
     }
 
     /// The same step with what became of the previous step's actions.
+    #[must_use]
     pub fn with_prev(mut self, prev: Vec<PrevResult>) -> Self {
         self.prev = prev;
         self
     }
 
     /// The same step with this many regions blacked out of the frame.
+    #[must_use]
     pub fn with_masked(mut self, masked: MaskedRegions) -> Self {
         self.masked = masked;
         self
     }
 
     /// The same step with what was said to the run since the last one.
+    #[must_use]
     pub fn with_notes(mut self, notes: Vec<StepNote>) -> Self {
         self.notes = notes;
         self
@@ -220,6 +227,7 @@ pub struct CuaStepReply {
 impl CuaStepReply {
     /// A reply proposing these actions: no reasoning, nothing dropped and no vendor hints until
     /// the `with_*` methods say so.
+    #[must_use]
     pub fn new(actions: Vec<CuaAction<WindowSpace>>) -> Self {
         Self {
             thought: None,
@@ -230,18 +238,21 @@ impl CuaStepReply {
     }
 
     /// The same reply with the model's reasoning.
+    #[must_use]
     pub fn with_thought(mut self, thought: String) -> Self {
         self.thought = Some(thought);
         self
     }
 
     /// The same reply with what was read but not usable.
+    #[must_use]
     pub fn with_dropped(mut self, dropped: Vec<DroppedAction>) -> Self {
         self.dropped = dropped;
         self
     }
 
     /// The same reply with these vendor hints.
+    #[must_use]
     pub fn with_safety(mut self, safety: Vec<SafetyHint>) -> Self {
         self.safety = safety;
         self

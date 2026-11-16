@@ -154,6 +154,7 @@ impl CallerRole {
     /// it: `Settings`, `SheetHost`, `PorterDaemon`, `AiBroker`, `AgentLauncher`, `Cua`, `Terminal` and
     /// `Compositor`. `App` and `Agent` hold no standing beyond an app (`Agent` is refused more
     /// than `App` is), so a user's file may name them.
+    #[must_use]
     pub const fn is_fixed(self) -> bool {
         !matches!(self, Self::App | Self::Agent)
     }
@@ -229,6 +230,7 @@ impl CallerTable {
     /// an app's identity is its system rows, which docket and memoryd answer by, so a user row
     /// for it is kept only where it replaces one of them. A row left out gets one warning on
     /// stderr.
+    #[must_use]
     pub fn layered(system: CallerTable, user: CallerTable) -> Self {
         let same = |a: &CallerRow, b: &CallerRow| match (&a.unit, &b.unit) {
             (Some(x), Some(y)) => x == y,
@@ -278,6 +280,7 @@ impl CallerTable {
     /// come last), `App` for an app the table does not name. A row that names a unit gives its
     /// role only to that unit ([`CallerTable::resolve_unit`]): any process may start a scope
     /// called `app-<id>-<n>.scope`, so a unit's role reached by app name would be anyone's.
+    #[must_use]
     pub fn role_of(&self, name: &AppName) -> CallerRole {
         self.callers
             .iter()
@@ -289,6 +292,7 @@ impl CallerTable {
 
     /// The name a row gives the app `name`: its last row that has one (the user's rows come
     /// last), whether or not the row names a unit.
+    #[must_use]
     pub fn title_of(&self, name: &AppName) -> Option<&AppTitle> {
         self.callers
             .iter()
@@ -299,6 +303,7 @@ impl CallerTable {
 
     /// The caller that is the unit `unit` (a service, or a scope outside the `app-` namespace),
     /// an unsandboxed native process. The first row for a unit wins.
+    #[must_use]
     pub fn resolve_unit(&self, unit: &str) -> Option<Caller> {
         self.callers
             .iter()

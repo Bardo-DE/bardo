@@ -82,6 +82,7 @@ pub enum Transport {
 
 impl Transport {
     /// The service's verb.
+    #[must_use]
     pub fn verb(self) -> MediaVerb {
         match self {
             Transport::Previous => MediaVerb::Previous,
@@ -92,6 +93,7 @@ impl Transport {
 }
 
 /// `player`'s face, or `Idle` without one.
+#[must_use]
 pub fn media_face(player: Option<&MediaPlayer>) -> MediaFace {
     let Some(player) = player else {
         return MediaFace::Idle;
@@ -177,6 +179,7 @@ pub fn playback_of(playback: shell_model::now_playing::Playback) -> Playback {
 }
 
 /// The track's times when the player reports both its position and the track's length.
+#[must_use]
 pub fn position_of(timeline: Timeline) -> Option<TrackTimes> {
     match timeline {
         Timeline::Known {

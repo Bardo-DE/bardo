@@ -54,6 +54,7 @@ pub struct HelperOpening {
 /// The opening for `user` and `cookie` on `route`: the socket gets the user and the cookie as
 /// two lines; the setuid helper gets the user as its argument and the cookie as one line.
 /// `None` for `Missing`.
+#[must_use]
 pub fn opening(route: &HelperRoute, user: &UserName, cookie: &Cookie) -> Option<HelperOpening> {
     match route {
         HelperRoute::Socket(_) => Some(HelperOpening {

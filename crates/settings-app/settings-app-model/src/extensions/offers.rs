@@ -15,6 +15,7 @@ pub struct Offer {
 
 impl Offer {
     /// Only the built-in choice: what a menu offers while nothing is installed.
+    #[must_use]
     pub fn standard() -> Offer {
         Offer {
             words: vec![STANDARD.to_owned()],
@@ -46,6 +47,7 @@ impl Offers {
 
 /// The stored word of `value` when it is on none of `words`: a choice whose Extension is gone
 /// or turned off, which the menu keeps and shows as unavailable.
+#[must_use]
 pub fn stray_word<'a>(words: &[String], value: &'a toml::Value) -> Option<&'a str> {
     value
         .as_str()

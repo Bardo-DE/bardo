@@ -185,7 +185,7 @@ async fn plain_http_is_for_this_computer_only() {
         request_to(Method::GET, &other).map(|_| ()),
         Err(HttpError::Malformed)
     );
-    assert!(WebUrl::parse("http://192.0.2.1/").is_err());
+    WebUrl::parse("http://192.0.2.1/").unwrap_err();
     // A request built without a `WebUrl` meets the same rule in the client.
     let raw = |uri: &str| http::Request::get(uri).body(Vec::new()).expect("request");
     let client = ReqwestHttp::new();

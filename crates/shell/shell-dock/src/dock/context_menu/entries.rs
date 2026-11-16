@@ -18,6 +18,7 @@ struct Target<'a> {
 
 /// `rows` as the ds menu's entries. `app` is the tile's app, if it has one; `windows` are the
 /// windows `rows` lists, in the same order.
+#[must_use]
 pub fn menu_entries(
     rows: &[DockMenuRow],
     app: Option<&AppId>,

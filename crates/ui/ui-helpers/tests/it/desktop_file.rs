@@ -74,7 +74,7 @@ fn an_entry_is_read_by_key_type() {
         })
         .collect();
     assert_eq!(names, ["Desktop Action new-window"]);
-    let groups: Vec<_> = file.groups().map(|group| group.name()).collect();
+    let groups: Vec<_> = file.groups().map(ui_helpers::DesktopGroup::name).collect();
     assert_eq!(groups, ["Desktop Entry", "Desktop Action new-window"]);
 }
 

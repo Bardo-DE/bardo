@@ -120,7 +120,7 @@ impl Compositor1 {
         self.ask(ConnectAsk::new(role, caller)).await
     }
 
-    /// `ConnectEis(session: t, devices: u) -> h`: an EIS socket for the RemoteDesktop portal
+    /// `ConnectEis(session: t, devices: u) -> h`: an EIS socket for the `RemoteDesktop` portal
     /// session `session`, offering the device kinds in `devices` (1 keyboard, 2 pointer, 4
     /// touchscreen). Only the portal may ask. Input sent down the socket reaches the desktop
     /// tagged as remote.

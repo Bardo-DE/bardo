@@ -13,6 +13,7 @@ use std::collections::BTreeMap;
 pub struct KnownConnectors(pub BTreeMap<ConnectorId, OutputFacts>);
 
 /// The events that take `known` to what `now` shows, and the connectors known after them.
+///
 /// Unplugs come first, then plugs and changes in connector order. A connector whose display was
 /// swapped for another between two looks (a different key) is an unplug and a plug, never a
 /// change: the model files settings by key.
@@ -23,6 +24,7 @@ pub struct KnownConnectors(pub BTreeMap<ConnectorId, OutputFacts>);
 /// let (known, events) = reconcile(&KnownConnectors::default(), &KmsResources::default());
 /// assert!(known.0.is_empty() && events.is_empty());
 /// ```
+#[must_use]
 pub fn reconcile(
     known: &KnownConnectors,
     now: &KmsResources,

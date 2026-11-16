@@ -181,9 +181,10 @@ impl Transport for LosesOneAck {
         };
         async move {
             let reply = self.inner.call(request).await?;
-            match n == self.lose_at {
-                true => Err(TransportError::Closed),
-                false => Ok(reply),
+            if n == self.lose_at {
+                Err(TransportError::Closed)
+            } else {
+                Ok(reply)
             }
         }
     }
@@ -428,8 +429,8 @@ async fn a_session_is_restored_from_almanac_after_the_router_is_dropped() {
         );
         let handles = record.handles.forgotten();
         assert_eq!(handles.len(), 1);
-        assert_eq!(handles[0].1.integrity, Integrity::Untrusted);
-    }
+        assert_eq!(handles[0].1.integrity, Integrity::Untrusted)
+    };
     assert!(
         again.seams.writer.calls().is_empty(),
         "the policy writer is never asked"

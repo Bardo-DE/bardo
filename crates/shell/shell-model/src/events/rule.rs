@@ -177,6 +177,7 @@ pub fn occurrences(
 
 /// The first day of the week an occurrence of a weekly rule falls in (Monday, RFC 5545's
 /// default `WKST`).
+#[must_use]
 pub fn week_start(day: Date) -> Date {
     let back = i64::from(day.weekday().to_monday_zero_offset());
     day.checked_sub(jiff::Span::new().days(back)).unwrap_or(day)

@@ -1,5 +1,5 @@
 //! A window that draws its own frame is shaped by what its client said about it: `set_frame`
-//! (compositor_shadow) clips its four corners and casts casement's shadow, saying nothing does
+//! (`compositor_shadow`) clips its four corners and casts casement's shadow, saying nothing does
 //! the same (without the shadow when the buffer holds a margin the toolkit drew its own in), and
 //! `set_frame(client)` and full screen leave it as it is. The window is one solid colour that
 //! nothing else on the desktop has, over a light wallpaper a shadow darkens.
@@ -108,8 +108,8 @@ fn a_window_with_a_margin_in_its_buffer_is_clipped_at_its_geometry_and_gets_no_s
         let geometry = (left + MARGIN, top + MARGIN, right - MARGIN, bottom - MARGIN);
         assert_round(&shots.shot, geometry, renderer);
         assert_eq!(
-            shots.shot.get_pixel(left - 4, (top + bottom) / 2),
-            shots.bare.get_pixel(left - 4, (top + bottom) / 2),
+            shots.shot.get_pixel(left - 4, u32::midpoint(top, bottom)),
+            shots.bare.get_pixel(left - 4, u32::midpoint(top, bottom)),
             "casement adds no shadow beside the toolkit's own on {renderer:?}"
         );
     }
@@ -134,7 +134,7 @@ fn a_window_that_says_it_draws_its_own_frame_is_left_square_and_unshadowed() {
             let pixel = shots.shot.get_pixel(x, y).0;
             assert!(is_client(pixel), "{name} on {renderer:?}");
         }
-        let (x, y) = (left - 4, (top + bottom) / 2);
+        let (x, y) = (left - 4, u32::midpoint(top, bottom));
         assert_eq!(
             shots.shot.get_pixel(x, y),
             shots.bare.get_pixel(x, y),
@@ -268,7 +268,7 @@ fn assert_round(shot: &image::RgbaImage, found: Rect, renderer: SoftRenderer) {
 /// shadow falls round the window.
 fn assert_shadow(shots: &Shots, found: Rect, renderer: SoftRenderer) {
     let (left, top, right, bottom) = found;
-    let (middle_x, middle_y) = ((left + right) / 2, (top + bottom) / 2);
+    let (middle_x, middle_y) = (u32::midpoint(left, right), u32::midpoint(top, bottom));
     for (name, x, y) in [
         ("left", left - 4, middle_y),
         ("right", right + 4, middle_y),

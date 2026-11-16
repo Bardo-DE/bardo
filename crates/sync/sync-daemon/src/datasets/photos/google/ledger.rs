@@ -42,11 +42,13 @@ pub enum LedgerError {
 
 impl Ledger {
     /// The entry for content with this SHA-256.
+    #[must_use]
     pub fn find(&self, sha256: &str) -> Option<&Entry> {
         self.entries.iter().find(|e| e.sha256 == sha256)
     }
 
     /// The first entry for this media item.
+    #[must_use]
     pub fn of_media(&self, media: &str) -> Option<&Entry> {
         self.entries.iter().find(|e| e.media == media)
     }

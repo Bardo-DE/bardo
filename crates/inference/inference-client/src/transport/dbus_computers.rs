@@ -138,7 +138,7 @@ impl DbusTransport {
 }
 
 mod computers {
-    use super::*;
+    use super::{DbusTransport, Details, NodeId, TransportError, bus_error};
     use crate::computers::{ComputerReach, NewComputer};
     use account_dbus::zvariant::{OwnedValue, Value};
     use inference_core::{ComputerName, PlaceId};

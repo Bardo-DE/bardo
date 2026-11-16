@@ -33,23 +33,27 @@ impl<'h> FrameView<'h> {
     }
 
     /// The frame's document: what its requests and link clicks carry as their origin.
+    #[must_use]
     pub fn id(&self) -> FrameId {
         self.id
     }
 
     /// Every text in the frame's document, scripts' and styles' source included.
+    #[must_use]
     pub fn text(&self) -> String {
         self.read(|doc| doc.root_element().text_content())
             .unwrap_or_default()
     }
 
     /// The frame's document as HTML.
+    #[must_use]
     pub fn html(&self) -> String {
         self.read(|doc| doc.root_element().outer_html())
             .unwrap_or_default()
     }
 
     /// How many elements in the frame match `selector`.
+    #[must_use]
     pub fn count(&self, selector: &str) -> usize {
         self.read(|doc| {
             doc.query_selector_all(selector)
@@ -59,12 +63,14 @@ impl<'h> FrameView<'h> {
     }
 
     /// The text inside the frame's first element matching `selector`, if any.
+    #[must_use]
     pub fn text_of(&self, selector: &str) -> Option<String> {
         self.read(|doc| Some(doc.get_node(first(doc, selector)?)?.text_content()))
             .flatten()
     }
 
     /// Attribute `name` of the frame's first element matching `selector`, if both exist.
+    #[must_use]
     pub fn attr(&self, selector: &str, name: &str) -> Option<String> {
         self.read(|doc| {
             let node = doc.get_node(first(doc, selector)?)?;
@@ -75,6 +81,7 @@ impl<'h> FrameView<'h> {
 
     /// The width of the frame's first element matching `selector`, in logical pixels: whether
     /// an image in the frame loaded.
+    #[must_use]
     pub fn width(&self, selector: &str) -> Option<Px> {
         self.read(|doc| {
             let rect = doc.get_client_bounding_rect(first(doc, selector)?)?;
@@ -85,6 +92,7 @@ impl<'h> FrameView<'h> {
 
     /// The centre of the frame's first element matching `selector`, in the app document's
     /// coordinates: where a test clicks it with [`Input::click`](crate::Input::click).
+    #[must_use]
     pub fn centre(&self, selector: &str) -> Option<Point> {
         self.harness.with_doc(|doc| {
             let node = doc.get_node(self.iframe)?;

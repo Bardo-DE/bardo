@@ -69,7 +69,7 @@ fn a_dialog_hint_set_after_the_map_opens_and_closes_a_sheet() {
         "the sheet closed: the parent has the key"
     );
     let unknown = support::driver::run_from(run.model, vec![hint(Modality::None)]);
-    assert!(unknown.model.check_invariants().is_ok());
+    unknown.model.check_invariants().unwrap();
 }
 
 #[test]

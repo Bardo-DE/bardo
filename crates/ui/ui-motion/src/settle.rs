@@ -8,6 +8,7 @@ use ui_style::appearance::motion::MotionLevel;
 
 /// `duration(anim, level) + FRAME_SLACK`. Worked values, Standard: `settle(RowOut)` 184 ms,
 /// `settle(Heal)` 284 ms; Reduced: every settle is 184 ms.
+#[must_use]
 pub fn settle(anim: Anim, level: MotionLevel) -> Duration {
     anim.recipe().duration.duration(level) + FRAME_SLACK
 }

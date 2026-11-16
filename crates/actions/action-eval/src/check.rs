@@ -54,6 +54,7 @@ pub struct CheckReport {
 
 impl CheckReport {
     /// How many findings are failures.
+    #[must_use]
     pub fn failures(&self) -> usize {
         self.findings
             .iter()
@@ -62,6 +63,7 @@ impl CheckReport {
     }
 
     /// The report as lines: `ok`, `note` or `FAIL`, the file and the words.
+    #[must_use]
     pub fn render(&self) -> String {
         self.findings
             .iter()

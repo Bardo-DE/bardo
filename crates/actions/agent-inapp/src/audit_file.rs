@@ -110,16 +110,19 @@ impl AuditFile {
     }
 
     /// The file keeps at most `limit` records.
+    #[must_use]
     pub fn bounded(self, limit: usize) -> Self {
         Self { limit, ..self }
     }
 
     /// The path.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.path
     }
 
     /// What the file held when it was opened, oldest first.
+    #[must_use]
     pub fn waiting(&self) -> &[AuditRecord] {
         &self.waiting
     }

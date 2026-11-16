@@ -63,22 +63,26 @@ fn reason(status: u16) -> &'static str {
 }
 
 /// The bytes of an error body: the shape engines use, with the replay's slug as the `type`.
+#[must_use]
 pub fn error(status: u16, slug: &str, message: &str) -> Vec<Vec<u8>> {
     let body = json!({"error": {"message": message, "type": slug, "code": status}});
     vec![json_response(status, &body)]
 }
 
 /// A request that no entry answers: a typed error, status 422.
+#[must_use]
 pub fn miss(why: &ReplayError) -> Vec<Vec<u8>> {
     error(422, why.slug(), &why.to_string())
 }
 
 /// What `GET /health` answers.
+#[must_use]
 pub fn health() -> Vec<Vec<u8>> {
     vec![json_response(200, &json!({"status": "ok"}))]
 }
 
 /// What any other route answers.
+#[must_use]
 pub fn not_found() -> Vec<Vec<u8>> {
     error(404, "replay_no_route", "replay: no such route")
 }
@@ -90,6 +94,7 @@ fn call_json(at: usize, call: &Call) -> Value {
 
 /// The pieces to write for `reply`, in order. A stream a wire reply says was cut ends without
 /// its terminating chunk, so the client sees a broken connection.
+#[must_use]
 pub fn reply(reply: &Reply, delivery: Delivery) -> Vec<Vec<u8>> {
     match (reply, delivery) {
         (Reply::Fail(status), _) => error(*status, "replay_scripted", "replay: scripted failure"),

@@ -16,6 +16,7 @@ pub struct Shape {
 impl Shape {
     /// What does not hold of `said`, one sentence each; empty is a pass. An answer never shows
     /// a developer word, whatever else the shape says.
+    #[must_use]
     pub fn check(&self, said: &str) -> Vec<String> {
         let mut out = Vec::new();
         let chars = said.chars().count();
@@ -60,6 +61,7 @@ fn has_phrase(words: &[&str], phrase: &[&str]) -> bool {
 
 /// The first word of `said` that is an identifier rather than language: a name with an
 /// underscore (`org_bardo_Memory-memory_recall`) or with two dots or more (`mail.thread.search`).
+#[must_use]
 pub fn developer_word(said: &str) -> Option<&str> {
     said.split_whitespace()
         .map(|t| t.trim_matches(|c: char| !c.is_alphanumeric()))

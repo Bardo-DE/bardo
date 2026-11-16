@@ -105,9 +105,11 @@ mod with_feature {
             roles::ACCOUNTS,
             SERVICE_PROOF,
         )];
-        assert!(named.holds(&real_only).is_err());
+        named.holds(&real_only).unwrap_err();
         // Another service's name, and an image no row names, are not let in.
-        assert!(named.holds(&allowing(roles::SYNC, SERVICE_PROOF)).is_err());
+        named
+            .holds(&allowing(roles::SYNC, SERVICE_PROOF))
+            .unwrap_err();
         let other = standing_with(&rows, "/home/p/proj/target/debug/other");
         assert!(!is_accountd(&other), "{other:?}");
     }

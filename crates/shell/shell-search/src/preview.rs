@@ -7,6 +7,7 @@ use shell_launcher::ClipKey;
 use shell_model::clipboard::{ClipContent, ClipImage, Clipboard};
 
 /// The image kept under `key`, if the history still holds it as an image.
+#[must_use]
 pub fn clip_image(history: &Clipboard, key: ClipKey) -> Option<ClipImage> {
     history
         .entries

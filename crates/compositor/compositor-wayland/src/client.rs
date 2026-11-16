@@ -124,6 +124,7 @@ pub struct ClientState {
 
 impl ClientState {
     /// The data for a client keyed `key` that arrived through `role`.
+    #[must_use]
     pub fn new(key: ClientKey, role: ConnectionRole, peer: PeerIdentity) -> ClientState {
         ClientState {
             key,
@@ -182,6 +183,7 @@ impl ClientState {
     }
 
     /// The state `client` was inserted with, if it was inserted by casement.
+    #[must_use]
     pub fn of(client: &Client) -> Option<&ClientState> {
         client.get_data::<ClientState>()
     }
@@ -203,6 +205,7 @@ pub struct ClientMint {
 
 impl ClientMint {
     /// A mint whose first key is 1.
+    #[must_use]
     pub fn start() -> ClientMint {
         let ledger = Ledger::default();
         ClientMint {
@@ -214,16 +217,19 @@ impl ClientMint {
 
     /// The consent ledger: the latest word per client and power, shared with every client
     /// minted here.
+    #[must_use]
     pub fn ledger(&self) -> &Ledger {
         &self.ledger
     }
 
     /// The queue every client minted here reports its disconnect to.
+    #[must_use]
     pub fn gone_queue(&self) -> GoneQueue {
         self.gone.clone()
     }
 
     /// The next key, and the mint after it.
+    #[must_use]
     pub fn next(self) -> (ClientMint, ClientKey) {
         (
             ClientMint {

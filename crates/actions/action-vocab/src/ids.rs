@@ -155,6 +155,7 @@ text_id!(
 impl RelationName {
     /// The choice that names this relation as the `relation` argument of a kind's related
     /// action. A relation name is always a choice id.
+    #[must_use]
     pub fn choice(&self) -> Option<ChoiceId> {
         ChoiceId::parse(self.as_str()).ok()
     }
@@ -164,6 +165,7 @@ impl ChoiceId {
     /// The id that free text names, if there is exactly one obvious: lowercased, spaces, `-`, `_`
     /// and `.` as `_`, any other character dropped, runs of `_` joined. Text that is already an
     /// id is itself. `None` when nothing is left or the result is too long.
+    #[must_use]
     pub fn slug(text: &str) -> Option<Self> {
         if let Ok(id) = Self::parse(text) {
             return Some(id);
@@ -238,6 +240,7 @@ pub struct EntityRef {
 
 /// The conventional action-name prefix of an app: its last name element, lowercased
 /// (`org.bardo.Mail` owns `mail.*`).
+#[must_use]
 pub fn action_prefix(app: &AppName) -> String {
     app.as_str()
         .rsplit('.')
@@ -271,6 +274,7 @@ impl NoteSlug {
     }
 
     /// The slug.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -309,11 +313,11 @@ mod tests {
             assert_eq!(ChoiceId::parse(text).is_ok(), *choice, "choice {text:?}");
             assert_eq!(ViewName::parse(text).is_ok(), *view, "view {text:?}");
         }
-        assert!(LabelText::parse("Archive").is_ok());
-        assert!(LabelText::parse("a\nb").is_err());
-        assert!(LabelText::parse(&"x".repeat(201)).is_err());
+        LabelText::parse("Archive").unwrap();
+        LabelText::parse("a\nb").unwrap_err();
+        LabelText::parse(&"x".repeat(201)).unwrap_err();
         assert!(UtteranceId::parse("u-12").is_ok() && UtteranceId::parse("U 12").is_err());
-        assert!(IconName::parse("archive-box").is_ok());
+        IconName::parse("archive-box").unwrap();
     }
 
     #[test]

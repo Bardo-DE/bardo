@@ -72,6 +72,7 @@ fn read(shape: &pi::ReplyShape, limits: Limits) -> Option<(Shape, Kind)> {
 }
 
 /// How the request's reply is checked on this model.
+#[must_use]
 pub fn shaping(model: &LocalModel, request: &pi::ChatRequest, limits: Limits) -> Shaping {
     let (Some(caps), Some(flavor)) = (model.caps(), model.flavor) else {
         return Shaping::Unchecked;

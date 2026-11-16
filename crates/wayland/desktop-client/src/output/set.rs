@@ -20,16 +20,19 @@ impl Outputs {
     }
 
     /// One head.
+    #[must_use]
     pub fn get(&self, key: HeadKey) -> Option<&Head> {
         self.heads.get(&key)
     }
 
     /// The head named `name`.
+    #[must_use]
     pub fn by_name(&self, name: &OutputName) -> Option<&Head> {
         self.heads.values().find(|h| &h.name == name)
     }
 
     /// The serial of the last `done`; a configuration quotes it. `None` before the first.
+    #[must_use]
     pub fn serial(&self) -> Option<u32> {
         self.serial
     }

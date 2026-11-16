@@ -87,7 +87,7 @@ fn glyph_clusters(run: &Run<'_, TextBrush>) -> Vec<Range<usize>> {
                 Some((held, _)) if !cluster.is_rtl() => *held = union(held, &range),
                 _ => {
                     swallowed =
-                        Some(swallowed.map_or_else(|| range.clone(), |held| union(&held, &range)))
+                        Some(swallowed.map_or_else(|| range.clone(), |held| union(&held, &range)));
                 }
             }
             continue;

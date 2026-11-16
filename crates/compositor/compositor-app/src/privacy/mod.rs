@@ -24,6 +24,7 @@ use compositor_ipc::dbus::peer::{Exe, Standing};
 /// The floor in `system`: `/etc/bardo`, or an injected folder whose files this user owns in a
 /// build for the jail (a test or a scenario cannot make a root-owned floor) and the
 /// administrator anywhere else.
+#[must_use]
 pub fn floor_in(system: &SystemDir) -> FloorFiles {
     system.floor(injected_owner())
 }
@@ -46,6 +47,7 @@ fn injected_owner() -> Owner {
 /// scenario can pre-approve what it runs from its build folder; every other build, and every
 /// floor not injected, leaves `standing` as it is. This is the second exception beside
 /// [`injected_owner`], and like it exists only under `testing` or `debug-inject`.
+#[must_use]
 pub fn writable_image(
     system: &SystemDir,
     floor: &Floor,

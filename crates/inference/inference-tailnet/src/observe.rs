@@ -30,6 +30,7 @@ pub struct Timing {
 
 impl Timing {
     /// A look every half minute behind the stream, a new try every ten seconds without one.
+    #[must_use]
     pub const fn usual() -> Self {
         Self {
             backstop: Duration::from_secs(30),
@@ -50,6 +51,7 @@ pub struct Observer {
 
 impl Observer {
     /// Starts following the Tailscale that `api` reaches.
+    #[must_use]
     pub fn start(api: LocalApi, timing: Timing) -> Self {
         let (tx, seen) = watch::channel(None);
         let task = tokio::spawn(follow(api, timing, tx));
@@ -57,6 +59,7 @@ impl Observer {
     }
 
     /// What this computer is now; the receiver changes when it does.
+    #[must_use]
     pub fn seen(&self) -> watch::Receiver<Seen> {
         self.seen.clone()
     }

@@ -170,11 +170,12 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             else {
                 return Err(refused("Say which helper and what it is to do."));
             };
-            let origin = match from_checked_brief(&outcome) {
-                true => GoalOrigin::ConfirmedBrief,
-                false => GoalOrigin::Planner {
+            let origin = if from_checked_brief(&outcome) {
+                GoalOrigin::ConfirmedBrief
+            } else {
+                GoalOrigin::Planner {
                     saw_untrusted: false,
-                },
+                }
             };
             desk.post_from_planner(PostFromPlanner {
                 helper,
@@ -223,9 +224,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 /// reads as finished and not as something to do again. The router's own words stay when the
 /// helper's name is not at hand.
 fn posted(outcome: Outcome, helper: Option<String>, job: JobId) -> Outcome {
-    let from = match from_checked_brief(&outcome) {
-        true => ", from your checked brief",
-        false => "",
+    let from = if from_checked_brief(&outcome) {
+        ", from your checked brief"
+    } else {
+        ""
     };
     let said = helper
         .and_then(|name| LabelText::parse(&format!("Gave {name} the job {job}{from}")).ok())

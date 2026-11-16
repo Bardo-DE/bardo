@@ -104,14 +104,13 @@ struct Platform(OnceLock<RustlsConnect>);
 impl DynLogin for Platform {
     fn check_boxed(&self, plan: RelayPlan) -> Answer<'_> {
         Box::pin(async move {
-            let connect = match self.0.get() {
-                Some(connect) => connect.clone(),
-                None => {
-                    let read = tokio::task::spawn_blocking(RustlsConnect::platform)
-                        .await
-                        .map_err(|_| SignInFault::Unreachable)?;
-                    self.0.get_or_init(|| read).clone()
-                }
+            let connect = if let Some(connect) = self.0.get() {
+                connect.clone()
+            } else {
+                let read = tokio::task::spawn_blocking(RustlsConnect::platform)
+                    .await
+                    .map_err(|_| SignInFault::Unreachable)?;
+                self.0.get_or_init(|| read).clone()
             };
             login(plan, &connect).await
         })

@@ -59,6 +59,7 @@ impl RateLimit {
     }
 
     /// How many callers are counted now.
+    #[must_use]
     pub fn tracked(&self) -> usize {
         self.calls.len()
     }
@@ -73,6 +74,7 @@ pub struct Intake {
 
 impl Intake {
     /// The door over `calls`, a channel made with `calloop::channel::sync_channel(CONNECT_QUEUE)`.
+    #[must_use]
     pub fn new(calls: SyncSender<ConnectCall>) -> Intake {
         Intake {
             calls,

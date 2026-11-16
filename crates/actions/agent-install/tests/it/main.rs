@@ -171,7 +171,7 @@ fn a_wrong_digest_installs_nothing() {
     let fault =
         install(&dir, &snap, want("agy-acp", "1.0.0"), (&net, &FakeNpm)).expect_err("refused");
     assert!(matches!(fault, InstallFault::Digest { .. }));
-    assert!(installed(&dir, "agy-acp", "1.0.0").is_err());
+    installed(&dir, "agy-acp", "1.0.0").unwrap_err();
 }
 
 #[test]
@@ -208,7 +208,7 @@ fn a_reinstall_with_no_declared_digest_is_compared_with_the_first_one() {
     assert_eq!(go(b"x").expect("same").check, Check::Pinned);
     let fault = go(b"swapped").expect_err("changed");
     assert!(matches!(fault, InstallFault::Digest { .. }));
-    assert!(installed(&dir, "agy-acp", "1.0.0").is_err());
+    installed(&dir, "agy-acp", "1.0.0").unwrap_err();
 }
 
 #[test]
@@ -232,11 +232,11 @@ fn only_the_listed_version_installs_and_a_newer_one_is_never_taken_alone() {
             installed: vec!["1.0.0".into()]
         }
     );
-    assert!(installed(&dir, "agy-acp", "1.0.0").is_ok());
+    installed(&dir, "agy-acp", "1.0.0").unwrap();
     // Asking again for the installed version reaches nothing.
     let old = snapshot(None, "1.0.0");
     let none = Served(BTreeMap::new());
-    assert!(install(&dir, &old, want("agy-acp", "1.0.0"), (&none, &FakeNpm)).is_ok());
+    install(&dir, &old, want("agy-acp", "1.0.0"), (&none, &FakeNpm)).unwrap();
     let stale =
         install(&dir, &newer, want("agy-acp", "0.9.0"), (&net, &FakeNpm)).expect_err("stale");
     assert!(matches!(stale, InstallFault::Version { .. }));
@@ -313,7 +313,7 @@ fn a_python_program_missing_after_uv_installs_nothing() {
     let fault =
         install(&dir, &snap, want("py", "1"), (&net, &FakeUv::default())).expect_err("no program");
     assert_eq!(fault, InstallFault::NoProgram);
-    assert!(installed(&dir, "py", "1").is_err());
+    installed(&dir, "py", "1").unwrap_err();
     assert!(versions(&dir, &Slug::parse("py").expect("slug")).is_empty());
 }
 
@@ -324,9 +324,9 @@ fn python_package_forms_are_read_and_direct_references_refused() {
     assert_eq!(pinned.name, "minion-code");
     let extra = PythonPackage::parse("pkg[acp]==2").expect("extra");
     assert_eq!(extra.name, "pkg");
-    assert!(PythonPackage::parse("git+https://example.test/x").is_err());
-    assert!(PythonPackage::parse("pkg @ https://example.test/x.whl").is_err());
-    assert!(PythonPackage::parse("../escape").is_err());
+    PythonPackage::parse("git+https://example.test/x").unwrap_err();
+    PythonPackage::parse("pkg @ https://example.test/x.whl").unwrap_err();
+    PythonPackage::parse("../escape").unwrap_err();
 }
 
 #[test]

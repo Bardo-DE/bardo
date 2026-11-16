@@ -68,7 +68,7 @@ fn Demo() -> Element {
                 anchor: Anchor::Point(Point { x: Px(24.0), y: Px(72.0) }),
                 items: entries(),
                 onpick: move |_: u8| open.set(Check::Off),
-                onclose: move |_| open.set(Check::Off),
+                onclose: move |()| open.set(Check::Off),
             }
         }
     }

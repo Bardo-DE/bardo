@@ -37,6 +37,7 @@ pub enum NoScores {
 
 /// What a turn asks the engine for: the first-token candidates when the app set the knob and the
 /// shape is a `Choice` of two or more options, else nothing.
+#[must_use]
 pub fn choice_scores(control: &pi::ChatControl, shape: &sp::OutputShape) -> sp::ChoiceScores {
     match (control.scores, shape) {
         (pi::Knob::Set(options), sp::OutputShape::Choice(choices)) if choices.len() >= 2 => {
@@ -60,6 +61,7 @@ pub(crate) fn asked_options(turn: &sp::TurnRequest) -> Option<Vec<String>> {
 
 /// The shares a turn asked for, from the first token its engine reported: `None` when the turn
 /// did not ask, else the shares or why there are none.
+#[must_use]
 pub fn turn_scores(
     turn: &sp::TurnRequest,
     first_token: Option<&FirstTokenLogprobs>,

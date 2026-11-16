@@ -111,9 +111,12 @@ fn update(
     let entries = deck
         .entries
         .into_iter()
-        .map(|e| match e.key == key {
-            true => feed(e, input, now, p, out, true),
-            false => e,
+        .map(|e| {
+            if e.key == key {
+                feed(e, input, now, p, out, true)
+            } else {
+                e
+            }
         })
         .collect();
     Deck { entries, ..deck }
@@ -129,12 +132,15 @@ pub(super) fn release_leavers(deck: Deck, mut out: Vec<DeckOut>) -> (Deck, Vec<D
     let entries: Vec<Entry> = deck
         .entries
         .into_iter()
-        .map(|e| match left(&e) {
-            true => Entry {
-                keys_held: false,
-                ..e
-            },
-            false => e,
+        .map(|e| {
+            if left(&e) {
+                Entry {
+                    keys_held: false,
+                    ..e
+                }
+            } else {
+                e
+            }
         })
         .collect();
     if !entries.iter().any(|e| e.keys_held) {

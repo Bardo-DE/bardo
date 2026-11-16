@@ -25,6 +25,7 @@ pub enum EngineAction {
 
 impl EngineAction {
     /// What taking the action tells the offer.
+    #[must_use]
     pub fn input(self) -> EngineOfferInput {
         match self {
             Self::Download | Self::ChooseFolder | Self::TryAgain => EngineOfferInput::Go,
@@ -84,6 +85,7 @@ pub struct EngineBrief {
 }
 
 /// The facts of `offer`; `None` while nothing is offered.
+#[must_use]
 pub fn engine_brief(offer: &EngineOffer) -> Option<EngineBrief> {
     let plain = |engine: &EngineRef, matter: EngineMatter| EngineBrief {
         engine: engine.clone(),

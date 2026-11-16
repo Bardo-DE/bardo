@@ -75,6 +75,7 @@ pub enum HueColour {
 
 impl HueColour {
     /// The hue and member this token is: the family in its order, each hue's three members.
+    #[must_use]
     pub fn parts(self) -> (LabelHue, HueMember) {
         let index = Self::ALL
             .iter()
@@ -90,6 +91,7 @@ impl HueColour {
 
 impl LabelHue {
     /// The token for one member: `--c-red-deep`.
+    #[must_use]
     pub fn colour(self, member: HueMember) -> HueColour {
         let hue = LabelHue::ALL
             .iter()
@@ -111,6 +113,7 @@ fn hue_css(token: HueColour, scope: TokenScope) -> CssValue {
 
 impl LabelHue {
     /// The member's value in `scheme`.
+    #[must_use]
     pub fn value(self, member: HueMember, scheme: Scheme) -> Hex {
         let [base, deep, soft] = self.family(scheme);
         let rgb = match member {

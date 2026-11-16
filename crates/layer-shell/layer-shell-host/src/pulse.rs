@@ -25,6 +25,7 @@ pub struct Pulse(Arc<AtomicU64>);
 
 impl Pulse {
     /// The beats so far.
+    #[must_use]
     pub fn beats(&self) -> u64 {
         self.0.load(Ordering::Relaxed)
     }
@@ -41,7 +42,7 @@ pub(crate) fn start<D: 'static>(handle: &LoopHandle<'static, D>, every: Duration
     let pulse = Pulse::default();
     let beating = pulse.clone();
     handle
-        .insert_source(Timer::from_duration(every), move |_, _, _| {
+        .insert_source(Timer::from_duration(every), move |_, (), _| {
             beating.beat();
             TimeoutAction::ToDuration(every)
         })

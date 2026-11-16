@@ -1,4 +1,4 @@
-//! A PopUpButton opened in a document with no renderer (a `VirtualDom` and `dioxus-ssr`, the
+//! A `PopUpButton` opened in a document with no renderer (a `VirtualDom` and `dioxus-ssr`, the
 //! way an app's unit tests build one): a renderer reports the button's element after layout and
 //! this document never does, so the menu opens against `anchor` instead, from `start` or from
 //! the first click's state. Without either the menu stays closed, as it does before layout.

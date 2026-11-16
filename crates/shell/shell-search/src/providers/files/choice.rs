@@ -39,6 +39,7 @@ pub struct Detected {
 
 /// The index asked on a machine with `detected`, or none: a running Tracker, else `fd`, else
 /// `plocate`. A dormant Tracker is not asked (a query would start its indexer).
+#[must_use]
 pub fn pick(detected: &Detected) -> Option<IndexKind> {
     [IndexKind::Tracker, IndexKind::Fd, IndexKind::Plocate]
         .into_iter()
@@ -47,6 +48,7 @@ pub fn pick(detected: &Detected) -> Option<IndexKind> {
 
 /// What this machine has. Blocking (a bus call, `PATH` lookups): the
 /// provider asks once, off the UI thread, and caches it.
+#[must_use]
 pub fn detect(session: &Bus) -> Detected {
     let search_path = std::env::var_os("PATH").unwrap_or_default();
     let program = |names: &[&str]| on_path_any(names, &search_path, Path::is_file);

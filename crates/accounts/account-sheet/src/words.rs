@@ -7,6 +7,7 @@ use crate::ProviderGroup;
 use account_capability::{Access, Capability, StorageCap, StorageScope};
 
 /// The group as a person reads it, the heading of its part of the page.
+#[must_use]
 pub fn group_heading(group: ProviderGroup) -> &'static str {
     match group {
         ProviderGroup::Internet => "Internet Accounts",
@@ -18,6 +19,7 @@ pub fn group_heading(group: ProviderGroup) -> &'static str {
 /// What this capability lets porter do with the account, in the words a sign-in that asks
 /// for it shows ("See and change this account's files"), where those say more than the
 /// kind's name: today only a whole store does.
+#[must_use]
 pub fn access_words(capability: &Capability) -> Option<&'static str> {
     match capability {
         Capability::Storage(StorageCap {

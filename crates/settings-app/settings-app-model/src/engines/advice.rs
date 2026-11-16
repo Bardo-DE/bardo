@@ -68,6 +68,7 @@ fn package(family: Family, release: &OsRelease) -> Option<&'static str> {
 /// How to get llama.cpp on the computer whose `os-release` file holds `os_release` (empty when
 /// there is none): the family's install command with the package that holds it, or the releases
 /// page where this release has no package, the family is unknown, or openSUSE.
+#[must_use]
 pub fn install_advice(os_release: &str) -> InstallAdvice {
     let release = OsRelease::parse(os_release);
     Family::detect(os_release)

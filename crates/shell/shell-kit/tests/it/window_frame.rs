@@ -260,7 +260,7 @@ fn Switching() -> Element {
     }
 }
 
-/// The moment the `--t-big` / `--e-out` curve reaches a quarter (bar_frame.rs has the same).
+/// The moment the `--t-big` / `--e-out` curve reaches a quarter (`bar_frame.rs` has the same).
 fn quarter_of_the_curve() -> Duration {
     let length = DurationToken::Big.duration(MotionLevel::Standard);
     let curve = EasingToken::Out.easing();

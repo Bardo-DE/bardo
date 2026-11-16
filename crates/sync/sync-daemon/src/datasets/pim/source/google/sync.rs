@@ -70,6 +70,7 @@ pub enum TaskCursor {
 
 impl TaskCursor {
     /// The time a listing from here asks updates since.
+    #[must_use]
     pub fn since(&self) -> Option<&str> {
         match self {
             TaskCursor::Since(since) | TaskCursor::Paging { since, .. } => since.as_deref(),

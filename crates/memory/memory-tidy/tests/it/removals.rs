@@ -54,7 +54,7 @@ fn a_removal_no_one_asked_about_keeps_everything_unless_a_choice_was_noted() {
     let notes = Removals::new(MemLedger::default());
     let (removal, noted) = notes.begin_unasked(&space("new"));
     assert_eq!(removal, Removal::KEEP_ALL);
-    assert!(noted.is_ok());
+    noted.unwrap();
     assert_eq!(notes.open(), vec![(space("new"), Removal::KEEP_ALL)]);
 
     notes.begin(&space("asked"), DELETE_HISTORY).expect("note");
@@ -74,5 +74,5 @@ fn the_file_round_trips_and_an_older_one_reads_as_keep_everything() {
         removals_from_toml("removed = [\"old\"]\n").expect("older file"),
         BTreeMap::from([(space("old"), Removal::KEEP_ALL)])
     );
-    assert!(removals_from_toml("removed = 3").is_err());
+    removals_from_toml("removed = 3").unwrap_err();
 }

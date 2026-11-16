@@ -26,6 +26,7 @@ const LOCKED_SCREEN_OFF: IdleSecs = IdleSecs(60);
 /// The idle config `file` makes: the four `*_min` keys times 60 (0 is `Never`); the lock and
 /// `session.lock_grace_s` in seconds, and the dim and the lock screen's own time as constants.
 /// Each value is held to its key's range, so a hand-edited file cannot ask for an hour of grace.
+#[must_use]
 pub fn policy_of(file: &ShellFile) -> IdleConfig {
     let idle = &file.idle;
     let minutes = |count: Mins, max: u16| match count.0.min(max) {
@@ -58,6 +59,7 @@ pub fn policy_of(file: &ShellFile) -> IdleConfig {
 /// `--idle-times`' text as times in seconds for both sources: `<screen_off_s>,<suspend_s>`
 /// (0 never); anything else is `None`.
 #[cfg(feature = "debug")]
+#[must_use]
 pub fn test_times(text: &str) -> Option<IdleTimes> {
     let (off, suspend) = text.trim().split_once(',')?;
     let secs = |part: &str| {

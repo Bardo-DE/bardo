@@ -20,7 +20,7 @@ fn reply(calls: &[(&str, &str)]) -> ChatReply {
         cached: Tokens(0),
         charge: None,
     };
-    ChatReply::new("".to_owned(), StopReason::ToolUse, usage, served).with_tool_calls(
+    ChatReply::new(String::new(), StopReason::ToolUse, usage, served).with_tool_calls(
         calls
             .iter()
             .map(|(name, args)| ToolCallPart {

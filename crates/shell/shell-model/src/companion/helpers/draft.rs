@@ -74,6 +74,7 @@ pub struct Draft {
 
 impl Draft {
     /// A new card: nothing filled in, the narrowest limit, and no model.
+    #[must_use]
     pub fn blank(space: SpaceId) -> Draft {
         Draft {
             name: String::new(),
@@ -90,6 +91,7 @@ impl Draft {
     }
 
     /// The draft that says what `view` says.
+    #[must_use]
     pub fn of(view: &HelperCardView) -> Draft {
         Draft {
             name: view.line.name.as_str().to_owned(),

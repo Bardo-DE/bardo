@@ -74,6 +74,7 @@ impl std::fmt::Debug for AppHandle {
 
 impl AppHandle {
     /// A handle bound to no app yet. Hand it to `AppConfig::with_handle`.
+    #[must_use]
     pub fn new() -> Self {
         AppHandle::default()
     }
@@ -141,6 +142,7 @@ impl AppHandle {
     /// no monitor. It is the monitor's whole size ([`ScreenArea::output`]): winit has no
     /// work-area query, so panels and docks (Wayland exclusive zones) are not subtracted.
     /// [`screen_area`](AppHandle::screen_area) says the same with the scale and what is known.
+    #[must_use]
     pub fn screen_extent(&self) -> Option<Extent> {
         self.screen_area().map(|area| area.output)
     }
@@ -148,11 +150,13 @@ impl AppHandle {
     /// The monitor the next window opens on, with its work area and scale (see [`ScreenArea`] for
     /// what a client can and cannot know of it). `None` where [`screen_extent`](AppHandle::screen_extent)
     /// is.
+    #[must_use]
     pub fn screen_area(&self) -> Option<ScreenArea> {
         self.lock().screen
     }
 
     /// Whether the event loop has ended.
+    #[must_use]
     pub fn has_ended(&self) -> bool {
         matches!(self.lock().binding, Binding::Ended)
     }
@@ -259,7 +263,7 @@ mod tests {
     #[test]
     fn a_request_before_the_loop_binds_waits_and_wakes_it_at_the_bind() {
         let handle = AppHandle::new();
-        assert!(handle.open_window(spec(), empty).is_ok());
+        handle.open_window(spec(), empty).unwrap();
         let woken = counting(&handle);
         assert_eq!(woken.load(Ordering::SeqCst), 1);
         assert_eq!(handle.take().len(), 1);
@@ -276,9 +280,9 @@ mod tests {
         );
         let other = handle.clone();
         std::thread::spawn(move || {
-            assert!(other.open_window_with(spec(), |_: u32| rsx! {}, 7).is_ok());
-            assert!(other.redraw().is_ok());
-            assert!(other.quit().is_ok());
+            other.open_window_with(spec(), |_: u32| rsx! {}, 7).unwrap();
+            other.redraw().unwrap();
+            other.quit().unwrap();
         })
         .join()
         .ok();
@@ -316,11 +320,9 @@ mod tests {
     #[test]
     fn the_root_a_remote_open_carries_is_built_where_it_is_taken() {
         let handle = AppHandle::new();
-        assert!(
-            handle
-                .open_window_with(spec(), |_: String| rsx! {}, "x".to_owned())
-                .is_ok()
-        );
+        handle
+            .open_window_with(spec(), |_: String| rsx! {}, "x".to_owned())
+            .unwrap();
         let built = handle.take().into_iter().find_map(|request| match request {
             Remote::Open { make, .. } => Some(make()),
             Remote::Redraw | Remote::Screen | Remote::Quit | Remote::Hold | Remote::Release => None,
@@ -353,7 +355,7 @@ mod tests {
         let hold = handle.hold().expect("not ended yet");
         handle.end();
         drop(hold);
-        assert!(handle.hold().is_err());
+        handle.hold().unwrap_err();
     }
 
     #[test]

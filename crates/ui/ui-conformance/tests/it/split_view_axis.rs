@@ -1,4 +1,4 @@
-//! SplitView on a real Blitz document (design/30 section 2.7): panes in a column, panes sized as
+//! `SplitView` on a real Blitz document (design/30 section 2.7): panes in a column, panes sized as
 //! shares of the view, a split inside a split, and the dim of the panes without the focus.
 
 use dioxus::prelude::*;

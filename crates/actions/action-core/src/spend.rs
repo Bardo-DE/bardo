@@ -29,6 +29,7 @@ impl TokenTotals {
     };
 
     /// These and `more`, never wrapping.
+    #[must_use]
     pub fn plus(self, more: Self) -> Self {
         let add = |a: Tokens, b: Tokens| Tokens(a.0.saturating_add(b.0));
         Self {
@@ -53,6 +54,7 @@ pub struct Spent {
 
 impl Spent {
     /// Nothing used yet; also the serde default for ledgers written before spend was counted.
+    #[must_use]
     pub fn none() -> Self {
         Self {
             tokens: TokenTotals::NONE,
@@ -73,6 +75,7 @@ pub struct TurnReport {
 
 /// The ledger after one model turn. Always recorded, even if it takes the session over its
 /// cap: the money is spent. A turn with no charge is counted as unpriced.
+#[must_use]
 pub fn charge_turn(ledger: &Ledger, report: &TurnReport) -> Ledger {
     let before = ledger.spent;
     let spent = Spent {
@@ -108,6 +111,7 @@ pub struct TaskTotals {
 }
 
 /// The totals of a session's ledger under its budget.
+#[must_use]
 pub fn totals_of(ledger: &Ledger, budget: &Budget) -> TaskTotals {
     let charges = ledger.spent.charges;
     let remaining = budget

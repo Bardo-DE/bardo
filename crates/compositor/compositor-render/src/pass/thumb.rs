@@ -18,6 +18,7 @@ pub struct ThumbLayer<'a> {
 
 impl<'a> ThumbLayer<'a> {
     /// The window pixels `rgba` of size `src`, drawn into `dest`.
+    #[must_use]
     pub fn new(dest: PhysicalRect, src: PhysicalSize, rgba: &'a [u8]) -> ThumbLayer<'a> {
         ThumbLayer { dest, src, rgba }
     }
@@ -35,6 +36,7 @@ impl<'a> ThumbLayer<'a> {
 /// let dest = thumb_dest(rect(960, 540, 960, 540), rect(0, 0, 1920, 1080), PhysicalSize { w: 192, h: 108 });
 /// assert_eq!((dest.x, dest.y, dest.w, dest.h), (96, 54, 96, 54));
 /// ```
+#[must_use]
 pub fn thumb_dest(window: LogicalRect, output: LogicalRect, picture: PhysicalSize) -> PhysicalRect {
     let edge = |from: i32, origin: i32, span: u32, pixels: u32| -> i32 {
         let offset = i64::from(from) - i64::from(origin);
@@ -81,6 +83,7 @@ pub fn thumb_dest(window: LogicalRect, output: LogicalRect, picture: PhysicalSiz
 /// let picture = compose_thumb(PhysicalSize { w: 2, h: 1 }, &[layer]);
 /// assert_eq!(picture, [0, 0, 0, 0, 255, 0, 0, 255]);
 /// ```
+#[must_use]
 pub fn compose_thumb(size: PhysicalSize, layers: &[ThumbLayer<'_>]) -> Vec<u8> {
     let (w, h) = (size.w as usize, size.h as usize);
     let mut picture = vec![0_u8; w.saturating_mul(h).saturating_mul(4)];

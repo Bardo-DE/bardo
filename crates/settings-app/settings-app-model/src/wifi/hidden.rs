@@ -33,11 +33,13 @@ impl HiddenSecurity {
     ];
 
     /// Whether the sheet asks for a password.
+    #[must_use]
     pub fn takes_password(self) -> bool {
         self != HiddenSecurity::Open
     }
 
     /// Whether the sheet asks for a username.
+    #[must_use]
     pub fn takes_username(self) -> bool {
         self == HiddenSecurity::Enterprise
     }
@@ -91,6 +93,7 @@ pub struct HiddenNetwork {
 impl HiddenForm {
     /// The network the form describes; none while it is incomplete (no name, a name too long for
     /// the air, a password too short to be one, a missing username).
+    #[must_use]
     pub fn network(&self) -> Option<HiddenNetwork> {
         if self.name.is_empty() || self.name.len() > NAME_LONGEST {
             return None;

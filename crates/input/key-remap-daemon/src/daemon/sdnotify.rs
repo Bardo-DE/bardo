@@ -145,9 +145,9 @@ mod tests {
     #[test]
     fn without_a_socket_every_call_is_a_no_op() {
         let notifier = Notifier::new(None).unwrap();
-        assert!(notifier.ready().is_ok());
-        assert!(notifier.watchdog().is_ok());
-        assert!(notifier.status("x").is_ok());
+        notifier.ready().unwrap();
+        notifier.watchdog().unwrap();
+        notifier.status("x").unwrap();
     }
 
     #[test]

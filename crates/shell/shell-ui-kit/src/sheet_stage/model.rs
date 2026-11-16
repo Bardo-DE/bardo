@@ -35,6 +35,7 @@ pub enum Mapped {
 
 impl Mapped {
     /// The surface's visibility for this mapping.
+    #[must_use]
     pub fn visibility(self) -> Visibility {
         match self {
             Mapped::Yes => Visibility::Shown,

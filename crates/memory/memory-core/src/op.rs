@@ -153,6 +153,7 @@ pub enum MemoryOp {
 
 impl MemoryOp {
     /// The last element of the event's kind tag (`memory.fact_added`).
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             MemoryOp::FactAdded { .. } => "fact_added",

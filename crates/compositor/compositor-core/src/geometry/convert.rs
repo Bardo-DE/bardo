@@ -6,6 +6,7 @@ use ui_core::geometry::scale::Scale;
 /// `rect` in device pixels at `scale`. Edges are scaled and rounded (halves away from zero),
 /// then the size is the distance between them, so rectangles that touch in logical space touch
 /// in device space with no gap or overlap.
+#[must_use]
 pub fn to_physical(rect: LogicalRect, scale: Scale) -> PhysicalRect {
     let n = i64::from(scale.numerator());
     let left = i64::from(rect.origin.x);
@@ -23,6 +24,7 @@ pub fn to_physical(rect: LogicalRect, scale: Scale) -> PhysicalRect {
 }
 
 /// The buffer a surface of `logical` size needs at `scale`: each side `round(l × s)`.
+#[must_use]
 pub fn buffer_size(logical: LogicalSize, scale: Scale) -> PhysicalSize {
     let n = i64::from(scale.numerator());
     PhysicalSize {

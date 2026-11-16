@@ -7,7 +7,7 @@
 //! - [`revoke`]: taking the app password back.
 //! - [`paths`]: where a server keeps things, and the account's endpoints ([`endpoints`]).
 //!
-//! The WebDAV walk (the principal, the home sets) is account-dav-proto's. The credential is the caller's:
+//! The `WebDAV` walk (the principal, the home sets) is account-dav-proto's. The credential is the caller's:
 //! each request takes the `Authorization` value it carries, already marked sensitive.
 
 #![warn(missing_docs)]
@@ -72,6 +72,7 @@ pub fn judged(response: &Response<Vec<u8>>) -> Result<&Response<Vec<u8>>, Error>
 /// and task home when the server offers either, the address book home for contacts, the Notes
 /// API for notes. `calendars` and `books` are the homes the DAV walk named, else the
 /// conventional paths. `None` when an endpoint cannot be made.
+#[must_use]
 pub fn endpoints(
     server: &EndpointUrl,
     user: &str,

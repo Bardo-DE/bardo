@@ -92,6 +92,7 @@ pub(super) fn sections<const N: usize>(parts: [Vec<DockMenuRow>; N]) -> Vec<Dock
 
 /// The windows the menu lists for `item`, most recent first: its app's, as `app_of`
 /// against that app's entry alone decides, or the raw app id's for an unmatched tile.
+#[must_use]
 pub fn menu_windows<'a>(
     item: &DockItem,
     app: Option<&App>,

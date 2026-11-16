@@ -11,7 +11,7 @@ use crate::source::FileName;
 ///
 /// Magic bytes decide first. A head with no signature is text when it holds no NUL and is valid
 /// UTF-8, or starts with a UTF-16 byte-order mark, or, under a text name, holds no NUL and almost
-/// no control bytes (a file in a legacy encoding such as Windows-1252 or Shift_JIS); the name then
+/// no control bytes (a file in a legacy encoding such as Windows-1252 or `Shift_JIS`); the name then
 /// picks Markdown, a table, a tree,
 /// SVG, a syntax or plain text. Any other head is binary, and the name picks among the binary
 /// families or leaves it `Other`. A zip is not decided here: the answer asks for its entries.

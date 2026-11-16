@@ -35,6 +35,7 @@ pub struct Export {
 
 impl Export {
     /// The link as a path.
+    #[must_use]
     pub fn link_path(&self) -> &Path {
         Path::new(&self.link)
     }

@@ -25,7 +25,7 @@ impl FileIndex for Scripted {
     fn search(&self, ask: &FileAsk, _query: &Query) -> FileAnswer {
         self.asks
             .lock()
-            .unwrap_or_else(|p| p.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .push(ask.clone());
         self.answer.clone()
     }

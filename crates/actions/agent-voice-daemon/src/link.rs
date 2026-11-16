@@ -84,18 +84,15 @@ where
                         return;
                     }
                 }
-                event = session.next() => match event {
-                    Ok(event) => {
-                        if outbox.send(LinkEvent::Infer(Box::new(event))).is_err() {
-                            return;
-                        }
-                    }
-                    Err(_) => {
-                        let _ = outbox.send(LinkEvent::Closed(VoiceFault::Engine(
-                            ModelError::Unreachable,
-                        )));
+                event = session.next() => if let Ok(event) = event {
+                    if outbox.send(LinkEvent::Infer(Box::new(event))).is_err() {
                         return;
                     }
+                } else {
+                    let _ = outbox.send(LinkEvent::Closed(VoiceFault::Engine(
+                        ModelError::Unreachable,
+                    )));
+                    return;
                 },
             }
         }

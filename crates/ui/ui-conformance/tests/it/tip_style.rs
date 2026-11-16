@@ -42,7 +42,7 @@ fn Page() -> Element {
                 frame: FrameVars::of(&SpaceLook::default(), Scheme::Light),
                 selection: false,
                 shortcut: cmd('1'),
-                onclick: |_| {},
+                onclick: |()| {},
             }
             SegmentedControl::<u8> {
                 label: "View".to_owned(),
@@ -57,7 +57,7 @@ fn Page() -> Element {
             Chip {
                 variant: ChipVariant::Person(MarkProvider::Imap.avatar(AvatarSize::Size28)),
                 text: "Ada".to_owned(),
-                onremove: |_| {},
+                onremove: |()| {},
             }
             Row { title: "Folder", outline: Outline::Branch(false), on_toggle: |_| {} }
             ThreadRow {

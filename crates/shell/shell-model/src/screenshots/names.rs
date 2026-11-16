@@ -15,6 +15,7 @@ pub enum ShotName {
 /// `Screenshot_2026-09-26_10-15-02.png`, GNOME's `Screenshot From 2026-09-26 10-15-02.png`,
 /// spectacle's `Screenshot_20260926_101502.png`) and ends in `.png`, `.jpg`, `.jpeg` or `.webp`;
 /// hidden, partial (`.part`, `.tmp`, `~`) and other names are `Other`.
+#[must_use]
 pub fn is_screenshot_name(name: &str) -> ShotName {
     let lower = name.to_lowercase();
     let named = lower.starts_with("screenshot");
@@ -43,9 +44,10 @@ pub fn parse_folders(text: &str, home: &Path) -> ShotFolders {
         .filter(|part| !part.is_empty())
         .map(|part| expand_home(part, home))
         .collect();
-    match folders.is_empty() {
-        true => ShotFolders::Off,
-        false => ShotFolders::At(folders),
+    if folders.is_empty() {
+        ShotFolders::Off
+    } else {
+        ShotFolders::At(folders)
     }
 }
 
@@ -60,6 +62,7 @@ fn expand_home(part: &str, home: &Path) -> PathBuf {
 
 /// The folders to watch: `Auto` is `pictures` and `pictures/Screenshots` (none without a
 /// Pictures folder), `At` its own, `Off` none. Existence is the caller's to check.
+#[must_use]
 pub fn folders_of(folders: &ShotFolders, pictures: Option<&Path>) -> Vec<PathBuf> {
     match (folders, pictures) {
         (ShotFolders::Auto, Some(pictures)) => {
@@ -72,6 +75,7 @@ pub fn folders_of(folders: &ShotFolders, pictures: Option<&Path>) -> Vec<PathBuf
 
 /// The cache file name of `shot`'s preview: stable across builds for one path and its size and
 /// mtime (not std's `DefaultHasher`), ending in `.png`.
+#[must_use]
 pub fn preview_name(shot: &Path, size: u64, modified_ms: i64) -> String {
     let hash = fnv1a(FNV_OFFSET_BASIS, shot.as_os_str().as_encoded_bytes());
     let hash = fnv1a(hash, &size.to_le_bytes());

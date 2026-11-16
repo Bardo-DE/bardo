@@ -23,17 +23,19 @@ impl DomainName {
                     .bytes()
                     .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
         };
-        match name.len() <= 253 && name.split('.').all(label_ok) {
-            true => Ok(Self(name)),
-            false => Err(CoreError::MalformedId {
+        if name.len() <= 253 && name.split('.').all(label_ok) {
+            Ok(Self(name))
+        } else {
+            Err(CoreError::MalformedId {
                 what: "domain name",
                 text: text.to_owned(),
-            }),
+            })
         }
     }
 
     /// Whether this name is `suffix` or a name under it, compared label by label:
     /// `mx.outlook.com` is within `outlook.com`, `evil-outlook.com` is not.
+    #[must_use]
     pub fn is_within(&self, suffix: &DomainName) -> bool {
         self.0 == suffix.0
             || self
@@ -71,6 +73,7 @@ pub enum DomainMatch {
 impl Matching {
     /// Whether the provider claims an address at `domain` whose MX hosts are `mx_hosts`; a
     /// listed domain wins over an MX hint.
+    #[must_use]
     pub fn claims(&self, domain: &DomainName, mx_hosts: &[DomainName]) -> Option<DomainMatch> {
         if self.domains.contains(domain) || self.domain_suffixes.iter().any(|s| domain.is_within(s))
         {
@@ -107,7 +110,7 @@ mod tests {
         ] {
             assert!(DomainName::parse(bad).is_err(), "{bad:?}");
         }
-        assert!(DomainName::parse(&"a".repeat(64)).is_err());
+        DomainName::parse(&"a".repeat(64)).unwrap_err();
     }
 
     #[test]

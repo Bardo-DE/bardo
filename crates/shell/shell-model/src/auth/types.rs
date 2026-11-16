@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct UserName(pub String);
 
-/// The name a person goes by (GECOS's first field, or AccountsService's `RealName`).
+/// The name a person goes by (GECOS's first field, or `AccountsService`'s `RealName`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct RealName(pub String);
@@ -69,6 +69,7 @@ pub struct Verdict {
 
 impl Verdict {
     /// An outcome with no notes.
+    #[must_use]
     pub fn plain(outcome: Outcome) -> Verdict {
         Verdict {
             outcome,
@@ -81,7 +82,7 @@ impl Verdict {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum AvatarSource {
-    /// An image file: AccountsService's `IconFile`, else `$HOME/.face`.
+    /// An image file: `AccountsService`'s `IconFile`, else `$HOME/.face`.
     File(PathBuf),
     /// No picture: quire's `Avatar` draws the initials on the person colour.
     #[default]

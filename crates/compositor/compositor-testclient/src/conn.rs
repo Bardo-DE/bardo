@@ -41,6 +41,7 @@ pub struct SyncDone(Arc<AtomicBool>);
 
 impl SyncDone {
     /// Whether the compositor has answered the sync.
+    #[must_use]
     pub fn is_done(&self) -> bool {
         self.0.load(Ordering::SeqCst)
     }
@@ -246,6 +247,7 @@ impl TestClient {
 
     /// The descriptor that becomes readable when the compositor sends something, for a binary
     /// that polls it together with other inputs (the probe's session reads stdin too).
+    #[must_use]
     pub fn wait_fd(&self) -> std::os::fd::BorrowedFd<'_> {
         std::os::fd::AsFd::as_fd(self.tap.server())
     }
@@ -256,21 +258,25 @@ impl TestClient {
     }
 
     /// The globals the registry advertised.
+    #[must_use]
     pub fn globals(&self) -> &GlobalList {
         &self.globals
     }
 
     /// Every event this client received, in order.
+    #[must_use]
     pub fn transcript(&self) -> &Transcript {
         &self.tap.transcript
     }
 
     /// The connection, for helpers that send requests.
+    #[must_use]
     pub fn connection(&self) -> &Connection {
         &self.connection
     }
 
     /// The queue's handle, to create objects with.
+    #[must_use]
     pub fn qh(&self) -> QueueHandle<ClientState> {
         self.queue.handle()
     }
@@ -310,40 +316,47 @@ impl TestClient {
 
     /// The protocol error the compositor reported, if it did (read off the wire, so it
     /// carries the compositor's text and holds for errors posted on `wl_display` too).
+    #[must_use]
     pub fn protocol_error(&self) -> Option<ClientProtocolError> {
         self.tap.error.clone()
     }
 
     /// Whether the protocol error the compositor reported is one its interface documents.
     /// `None` when there is no error.
+    #[must_use]
     pub fn error_is_documented(&self) -> Option<bool> {
         let error = self.protocol_error()?;
         Some(errors::is_documented(&error.interface, error.code).unwrap_or(false))
     }
 
     /// Whether the compositor still holds the connection and nothing has failed here.
+    #[must_use]
     pub fn is_connected(&self) -> bool {
         self.tap.is_open() && self.fault.is_none() && self.protocol_error().is_none()
     }
 
     /// What went wrong on this connection, if anything did (a dispatch or read failure).
+    #[must_use]
     pub fn fault(&self) -> Option<&str> {
         self.fault.as_deref()
     }
 
     /// The objects created and not yet destroyed, as (id, interface), in id order.
+    #[must_use]
     pub fn live_objects(&self) -> Vec<(u32, String)> {
         self.tap.objects.listed(Life::Live)
     }
 
     /// The objects destroyed, as (id, interface), in id order (their ids are not reused until
     /// the compositor's `delete_id`).
+    #[must_use]
     pub fn destroyed_objects(&self) -> Vec<(u32, String)> {
         self.tap.objects.listed(Life::Dead)
     }
 
     /// The interfaces the clients can decode and build requests for, as (name, request count),
     /// in name order.
+    #[must_use]
     pub fn known_interfaces() -> Vec<(&'static str, usize)> {
         catalogue::all()
             .values()
@@ -352,6 +365,7 @@ impl TestClient {
     }
 
     /// The opcode of request `request` of `interface`, when both are known.
+    #[must_use]
     pub fn request_opcode(interface: &str, request: &str) -> Option<u16> {
         let known = catalogue::lookup(interface)?;
         let at = known

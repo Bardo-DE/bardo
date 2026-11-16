@@ -1,4 +1,4 @@
-//! TextField on a real Blitz document: the ring is drawn from `data-focus` while the input has the
+//! `TextField` on a real Blitz document: the ring is drawn from `data-focus` while the input has the
 //! caret (Blitz's `:focus-within` is always false), a search field's clear button appears with text
 //! and empties it, a rejected value writes its message and `aria-invalid`, and a busy field takes
 //! no typing and shows a spinner.

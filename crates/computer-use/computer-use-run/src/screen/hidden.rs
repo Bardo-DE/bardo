@@ -82,7 +82,7 @@ fn has_tags(chars: &[char]) -> bool {
 /// Zero-width characters, plus joiners that sit between two ASCII letters (where no script
 /// needs them).
 fn zero_width_count(chars: &[char]) -> usize {
-    let ascii_letter = |c: Option<&char>| c.is_some_and(|c| c.is_ascii_alphabetic());
+    let ascii_letter = |c: Option<&char>| c.is_some_and(char::is_ascii_alphabetic);
     chars
         .iter()
         .enumerate()

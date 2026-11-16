@@ -138,6 +138,7 @@ fn matches_rule(rule: &Rule, chord: Chord) -> bool {
 }
 
 /// Why `chord` is off limits to apps on `platform`, in plain words, or `None` if it is free.
+#[must_use]
 pub fn reserved_reason(platform: Platform, chord: Chord) -> Option<&'static str> {
     rows(platform)
         .iter()

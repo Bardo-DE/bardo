@@ -151,7 +151,7 @@ impl<S: Seams> Router<S> {
                 return refuse(WireRefusal::NoSuchSession);
             };
             labels.iter().for_each(|l| absorb(record, l));
-        }
+        };
         let value = match self
             .seams
             .reader()

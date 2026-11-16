@@ -34,6 +34,7 @@ pub const DATA_HOME_UNDER_HOME: &str = ".local/share";
 /// [`STATE_HOME_UNDER_HOME`] and [`DATA_HOME_UNDER_HOME`] as `under_home`, and the two variables'
 /// values as the caller read them (this function reads no environment). The rules are
 /// `base_xdg`'s; a value that is not UTF-8 reads as unset.
+#[must_use]
 pub fn base_dir(xdg: Option<&OsStr>, home: Option<&OsStr>, under_home: &str) -> Option<PathBuf> {
     const VAR: &str = "XDG_BASE";
     let env = |name: &str| match name {
@@ -47,6 +48,7 @@ pub fn base_dir(xdg: Option<&OsStr>, home: Option<&OsStr>, under_home: &str) -> 
 /// The directories of a `:`-separated search list such as `$XDG_DATA_DIRS`: `value` when it is
 /// set and non-empty, else `/usr/local/share:/usr/share`, with every empty or relative entry
 /// dropped.
+#[must_use]
 pub fn search_dirs(value: Option<&OsStr>) -> Vec<PathBuf> {
     let env = |name: &str| match name {
         "XDG_DATA_DIRS" => text(value),

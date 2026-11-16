@@ -14,6 +14,7 @@ pub struct FakeSettings {
 
 impl FakeSettings {
     /// Every place opened, oldest first.
+    #[must_use]
     pub fn opened(&self) -> Vec<SettingsTarget> {
         locked(&self.opened).clone()
     }

@@ -30,6 +30,7 @@ pub enum Wal {
 
 impl Wal {
     /// A recorded session with nothing queued, at `taint`.
+    #[must_use]
     pub fn on(taint: bool) -> Self {
         Wal::On {
             pending: Vec::new(),
@@ -85,12 +86,14 @@ impl Wal {
     }
 
     /// Whether anything is queued.
+    #[must_use]
     pub fn is_queued(&self) -> bool {
         matches!(self, Wal::On { pending, .. } if !pending.is_empty())
     }
 
     /// Whether what is queued holds a reveal that must not be lost to a reply: a taint entry or
     /// a handle of untrusted text waiting to be made durable.
+    #[must_use]
     pub fn reveals(&self) -> bool {
         match self {
             Wal::On { pending, .. } => pending.iter().any(|e| match e {
@@ -103,6 +106,7 @@ impl Wal {
     }
 
     /// Whether the session is on the record.
+    #[must_use]
     pub fn is_on(&self) -> bool {
         matches!(self, Wal::On { .. })
     }
@@ -126,11 +130,13 @@ pub type Lane = Arc<futures_util::lock::Mutex<Writer>>;
 
 impl Writer {
     /// The writer of a session whose log is empty.
+    #[must_use]
     pub fn fresh() -> Self {
         Self::at(Seq(0), false)
     }
 
     /// The writer of a log that holds `next` entries and the taint `taint`.
+    #[must_use]
     pub fn at(next: Seq, taint: bool) -> Self {
         Self {
             next,

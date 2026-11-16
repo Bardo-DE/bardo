@@ -47,6 +47,7 @@ pub struct MemoryStore {
 
 impl MemoryStore {
     /// A store with no folders; any folder it is asked about is empty and has history.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

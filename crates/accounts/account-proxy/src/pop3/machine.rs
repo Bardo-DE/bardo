@@ -25,9 +25,10 @@ fn busy(line: &str) -> bool {
 }
 
 fn refused(line: &str) -> Vec<Effect> {
-    match busy(line) {
-        true => fail(RelayFault::Unreachable),
-        false => fail(RelayFault::Refused),
+    if busy(line) {
+        fail(RelayFault::Unreachable)
+    } else {
+        fail(RelayFault::Refused)
     }
 }
 
@@ -116,13 +117,14 @@ impl Pop3Relay {
 
     fn on_line(&mut self, line: &str) -> Vec<Effect> {
         match self.phase.clone() {
-            Pop3Phase::Greeting => match ok(line) {
-                true => {
+            Pop3Phase::Greeting => {
+                if ok(line) {
                     self.phase = Pop3Phase::Capability;
                     vec![send_line(Side::Server, "CAPA")]
+                } else {
+                    fail(RelayFault::Protocol)
                 }
-                false => fail(RelayFault::Protocol),
-            },
+            }
             Pop3Phase::Capability | Pop3Phase::CapabilityAgain => self.on_capability_line(line),
             Pop3Phase::StartTls => match (ok(line), self.buffer.is_empty()) {
                 // Bytes after the `+OK` and before the handshake would be read as TLS.
@@ -177,27 +179,30 @@ impl Pop3Relay {
                 return effects;
             }
         }
-        match overlong(&self.buffer) {
-            true => fail(RelayFault::Protocol),
-            false => effects,
+        if overlong(&self.buffer) {
+            fail(RelayFault::Protocol)
+        } else {
+            effects
         }
     }
 
     fn on_app_bytes(&mut self, data: &[u8]) -> Vec<Effect> {
         self.early.extend_from_slice(data);
         if self.phase != Pop3Phase::Relaying {
-            return match self.early.len() > MAX_EARLY {
-                true => fail(RelayFault::Protocol),
-                false => Vec::new(),
+            return if self.early.len() > MAX_EARLY {
+                fail(RelayFault::Protocol)
+            } else {
+                Vec::new()
             };
         }
         let mut effects = Vec::new();
         while let Some(line) = take_line(&mut self.early) {
             effects.extend(command(&text(&line), &line));
         }
-        match overlong(&self.early) {
-            true => fail(RelayFault::Protocol),
-            false => effects,
+        if overlong(&self.early) {
+            fail(RelayFault::Protocol)
+        } else {
+            effects
         }
     }
 }

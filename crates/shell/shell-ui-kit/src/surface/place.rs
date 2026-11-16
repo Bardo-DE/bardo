@@ -14,6 +14,7 @@ pub enum OutputRank {
 
 impl OutputRank {
     /// The rank of the output at `index` in the daemon's output order.
+    #[must_use]
     pub fn of_index(index: usize) -> OutputRank {
         match index {
             0 => OutputRank::Primary,

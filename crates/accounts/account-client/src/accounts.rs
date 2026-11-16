@@ -140,6 +140,7 @@ pub struct AccountRef {
 impl AccountRef {
     /// The account the object path `/org/bardo/Accounts1/account/<segment>` names; `None` for any
     /// other path.
+    #[must_use]
     pub fn of_object_path(path: &str) -> Option<Self> {
         let prefix = format!("{ACCOUNTS_PATH}/account/");
         let segment = path.strip_prefix(&prefix)?;
@@ -149,6 +150,7 @@ impl AccountRef {
     }
 
     /// The object `account` is served at.
+    #[must_use]
     pub fn of_account(account: &AccountId) -> Self {
         Self {
             segment: object_segment(account.as_str()),
@@ -156,6 +158,7 @@ impl AccountRef {
     }
 
     /// The segment: what names the account's directories (`a1`, `67e55044_10b1_x`).
+    #[must_use]
     pub fn segment(&self) -> &str {
         &self.segment
     }
@@ -172,6 +175,7 @@ pub struct NeedsReauth {
 
 impl NeedsReauth {
     /// `account`, called `label`.
+    #[must_use]
     pub fn new(account: AccountRef, label: AccountLabel) -> Self {
         Self { account, label }
     }
@@ -194,6 +198,7 @@ pub struct AccountView {
 
 impl AccountView {
     /// An account with these properties.
+    #[must_use]
     pub fn new(
         id: AccountId,
         provider: ProviderId,

@@ -36,6 +36,7 @@ pub struct Seen {
 
 /// Whether the frame's state makes this touch a contact at all (12.3.2): a state nibble from
 /// 1 to 4 (in range, making touch or touching), and on the Magic Mouse a non-zero size.
+#[must_use]
 pub fn is_contact(t: &FrameContact) -> bool {
     let counted = (1..=4).contains(&t.state.nibble());
     counted && t.shape.is_none_or(|m| m.size > 0)
@@ -43,11 +44,13 @@ pub fn is_contact(t: &FrameContact) -> bool {
 
 impl Contacts {
     /// The ids counted in the last report, sorted.
+    #[must_use]
     pub fn set(&self) -> &[TouchId] {
         &self.set
     }
 
     /// Consumes one frame's contacts, with the bands of the surface they are on.
+    #[must_use]
     pub fn step(self, touches: &[FrameContact], now: Mono, bands: &Bands) -> (Self, Seen) {
         let live: Vec<Touch> = touches
             .iter()

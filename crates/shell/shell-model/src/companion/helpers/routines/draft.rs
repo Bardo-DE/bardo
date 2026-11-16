@@ -52,6 +52,7 @@ pub struct RoutineDraft {
 
 impl RoutineDraft {
     /// A blank routine for `helper`: every day at 8:00.
+    #[must_use]
     pub fn blank(helper: HelperId) -> RoutineDraft {
         RoutineDraft {
             helper,

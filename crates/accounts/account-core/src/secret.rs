@@ -19,7 +19,7 @@ pub struct SecretKey {
 }
 
 /// What a secret is for. One account may hold several (IMAP and SMTP passwords differ on some
-/// servers; a CardDAV password may differ from the mail one).
+/// servers; a `CardDAV` password may differ from the mail one).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum SecretPurpose {
@@ -29,7 +29,7 @@ pub enum SecretPurpose {
     IncomingPassword,
     /// The outgoing mail server's password, where it differs.
     OutgoingPassword,
-    /// The password for one other service of the account (CardDAV for `Contacts`).
+    /// The password for one other service of the account (`CardDAV` for `Contacts`).
     ServicePassword(CapabilityKind),
     /// An OAuth refresh token (with the access token it last minted).
     #[serde(rename = "oauth_refresh")]
@@ -90,6 +90,7 @@ pub struct GrantedScopes(Option<Vec<String>>);
 impl GrantedScopes {
     /// Not known: a credential stored before porter kept its scopes, or an issuer that does not
     /// say.
+    #[must_use]
     pub fn unknown() -> Self {
         Self(None)
     }
@@ -110,16 +111,19 @@ impl GrantedScopes {
     }
 
     /// Whether nothing is known.
+    #[must_use]
     pub fn is_unknown(&self) -> bool {
         self.0.is_none()
     }
 
     /// The scopes, when known.
+    #[must_use]
     pub fn scopes(&self) -> Option<&[String]> {
         self.0.as_deref()
     }
 
     /// Whether `scope` was granted, or `None` when that is not known.
+    #[must_use]
     pub fn holds(&self, scope: &str) -> Option<bool> {
         self.0.as_ref().map(|held| held.iter().any(|s| s == scope))
     }

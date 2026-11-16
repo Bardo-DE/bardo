@@ -56,11 +56,13 @@ struct Latest {
 
 impl SerialBook {
     /// No presses.
+    #[must_use]
     pub fn empty() -> SerialBook {
         SerialBook::default()
     }
 
     /// The book with `serial` recorded as `press` (forgetting the oldest beyond the bound).
+    #[must_use]
     pub fn record(self, serial: InputSerial, press: PressRecord) -> SerialBook {
         let mut presses = self.presses;
         let mut latest = self.latest;
@@ -92,6 +94,7 @@ impl SerialBook {
     /// The input `serial` answers, if it is `client`'s latest recorded input, or the press the
     /// latest release ended (a popup grab's proof: a stale serial, a forged one and another
     /// client's are all refused).
+    #[must_use]
     pub fn answers_latest(&self, serial: InputSerial, client: ClientKey) -> Option<&PressRecord> {
         self.answers(serial, client).filter(|_| {
             self.latest
@@ -101,11 +104,13 @@ impl SerialBook {
     }
 
     /// The pointer button the press `serial` answers was made with, if it was a button press.
+    #[must_use]
     pub fn button_of(&self, serial: InputSerial) -> Option<ButtonCode> {
         self.presses.get(&serial).and_then(|press| press.button)
     }
 
     /// The press `serial` answers, if it is recent and was delivered to `client`.
+    #[must_use]
     pub fn answers(&self, serial: InputSerial, client: ClientKey) -> Option<&PressRecord> {
         self.presses
             .get(&serial)

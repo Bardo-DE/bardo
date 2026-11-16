@@ -87,6 +87,7 @@ fn media_of(media_type: &str) -> Result<model_vision_prep::MediaType, BridgeErro
 }
 
 /// An encoded image of this media type, ready for a turn.
+#[must_use]
 pub fn image_input(media: model_vision_prep::MediaType, bytes: Vec<u8>) -> sp::ImageInput {
     sp::ImageInput {
         media,
@@ -169,6 +170,7 @@ fn sampling(sampling: pi::Sampling) -> sp::Sampling {
 }
 
 /// What the engine's flavor understands beyond the shared fields.
+#[must_use]
 pub fn extras(flavor: Option<Flavor>) -> sp::EngineExtras {
     match flavor {
         Some(Flavor::LlamaServer) => sp::EngineExtras::LlamaServer(sp::LlamaExtras {
@@ -209,6 +211,7 @@ pub enum JsonReply {
 impl JsonReply {
     /// What a model's output constraints say: `ObjectOnly` when it takes a JSON object and no
     /// schema.
+    #[must_use]
     pub fn of(output: &std::collections::BTreeSet<sp::Constraint>) -> Self {
         if output.contains(&sp::Constraint::JsonObject)
             && !output.contains(&sp::Constraint::JsonSchema)

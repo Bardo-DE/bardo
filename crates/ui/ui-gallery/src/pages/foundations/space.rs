@@ -35,7 +35,7 @@ pub fn SpacePage() -> Element {
                         frame: FrameVars::of(&candidate.look(), scheme),
                         selection: candidate == preset,
                         shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char(char::from(b'1' + candidate.0))]),
-                        onclick: move |_| axes.with_mut(|axes| *axes = axes.clone().with_preset(candidate)),
+                        onclick: move |()| axes.with_mut(|axes| *axes = axes.clone().with_preset(candidate)),
                     }
                 }
             }
@@ -48,7 +48,7 @@ pub fn SpacePage() -> Element {
                         frame: FrameVars::of(&candidate.look(), scheme),
                         selection: candidate == preset,
                         shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char(char::from(b'1' + candidate.0))]),
-                        onclick: move |_| axes.with_mut(|axes| *axes = axes.clone().with_preset(candidate)),
+                        onclick: move |()| axes.with_mut(|axes| *axes = axes.clone().with_preset(candidate)),
                     }
                 }
             }

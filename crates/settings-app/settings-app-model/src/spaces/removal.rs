@@ -28,6 +28,7 @@ pub enum RemovalInput {
 
 impl RemovalAsk {
     /// The question for `space`: memories move to the apps, history is kept.
+    #[must_use]
     pub fn of(space: SpaceKey, name: String) -> RemovalAsk {
         RemovalAsk {
             space,
@@ -53,6 +54,7 @@ impl RemovalAsk {
     }
 
     /// What the choices send.
+    #[must_use]
     pub fn removal(&self) -> Removal {
         Removal {
             memories: self.memories,
@@ -61,6 +63,7 @@ impl RemovalAsk {
     }
 
     /// Whether Remove destroys something: a delete choice is on.
+    #[must_use]
     pub fn destroys(&self) -> bool {
         needs_memory(&self.removal())
     }
@@ -69,6 +72,7 @@ impl RemovalAsk {
 /// Whether `removal` deletes what only memory holds, so that it has to wait for memory when memory
 /// is not running (a removal that keeps everything has nothing to tell it): no Space is removed with
 /// memories or history left behind that the person asked to delete.
+#[must_use]
 pub fn needs_memory(removal: &Removal) -> bool {
     removal.memories == MemoryFate::Delete || removal.history == HistoryFate::Delete
 }

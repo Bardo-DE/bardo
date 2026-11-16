@@ -38,6 +38,7 @@ pub fn repo_dir(hf_cache: &Path, source: &WeightSource) -> PathBuf {
 }
 
 /// `<repo dir>/snapshots/<revision>`: one exact set of files.
+#[must_use]
 pub fn snapshot_dir(repo_dir: &Path, source: &WeightSource) -> PathBuf {
     let revision = match source {
         WeightSource::HuggingFace { revision, .. } => revision.0.as_str(),

@@ -36,6 +36,7 @@ pub struct FakeVolumes {
 
 impl FakeVolumes {
     /// A computer with these disks.
+    #[must_use]
     pub fn with(volumes: Vec<Volume>) -> FakeVolumes {
         let fake = FakeVolumes::default();
         fake.lock().volumes = volumes;

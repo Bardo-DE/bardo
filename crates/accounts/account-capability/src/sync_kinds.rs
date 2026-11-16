@@ -1,4 +1,4 @@
-//! KeyValue and Push (design/31 §2.2): the kinds syncd plans with.
+//! `KeyValue` and Push (design/31 §2.2): the kinds syncd plans with.
 
 use super::terms::Delta;
 use base_ids::Bytes;
@@ -27,7 +27,7 @@ pub struct PushCap {
 pub enum PushChannel {
     /// IMAP IDLE.
     ImapIdle,
-    /// JMAP's EventSource.
+    /// JMAP's `EventSource`.
     JmapEventSource,
     /// An HTTP long-poll (Dropbox, Box).
     LongPoll,

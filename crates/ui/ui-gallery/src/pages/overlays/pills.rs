@@ -211,7 +211,7 @@ fn Countdown(showcase: Showcase) -> Element {
                 text: match operation() { Operation::Running(_) => "Sending…", Operation::Idle => "Sent" },
                 progress: elapsed(),
                 operation: operation(),
-                onundo: move |_| {
+                onundo: move |()| {
                     run += 1;
                     operation.set(Operation::Idle);
                 },

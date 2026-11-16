@@ -46,6 +46,7 @@ impl DisplayKind {
     /// The kind of the device bound to `driver` (a name from `device/driver`), whose platform
     /// device is called `device` (`simple-framebuffer.0`) and which sits on `bus` (the name of
     /// its `subsystem` link); each may be absent.
+    #[must_use]
     pub fn of_names(driver: Option<&str>, device: Option<&str>, bus: Option<&str>) -> DisplayKind {
         if bus == Some(VIRTUAL_BUS) || driver == Some(VIRTUAL_DRIVER) {
             return DisplayKind::Virtual;
@@ -55,9 +56,10 @@ impl DisplayKind {
                 let stem = name.split('.').next().unwrap_or(name);
                 FIRMWARE_DRIVERS.contains(&stem)
             });
-        match firmware {
-            true => DisplayKind::Firmware,
-            false => DisplayKind::Gpu,
+        if firmware {
+            DisplayKind::Firmware
+        } else {
+            DisplayKind::Gpu
         }
     }
 }

@@ -65,7 +65,7 @@ fn compressed(
 ) -> Result<Listing, ArchiveError> {
     let unpacked = stream::unpack(src, format, codec, budget.0, interrupt)?;
     let mut tally = Tally::new(limit);
-    let mut archive = ::tar::Archive::new(Cursor::new(&unpacked.bytes[..]));
+    let mut archive = ::tar::Archive::new(Cursor::new(&*unpacked.bytes));
     let read = tar::fill(&mut archive, &mut tally, interrupt);
     if tally.is_empty() && unpacked.interrupted {
         // What was unpacked is too little to say whether it is a tar or one file.

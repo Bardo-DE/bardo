@@ -9,6 +9,7 @@ use desktop_protocols::vocab::TileZone;
 
 impl Model {
     /// The states a configure to `window` carries now.
+    #[must_use]
     pub fn states_of(&self, window: WindowId) -> Option<ToplevelStates> {
         self.windows
             .get(&window)

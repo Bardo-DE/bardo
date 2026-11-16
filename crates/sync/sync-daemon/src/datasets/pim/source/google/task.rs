@@ -54,6 +54,7 @@ pub struct Task {
 
 impl Task {
     /// Whether the task was deleted: the item is gone.
+    #[must_use]
     pub fn is_deleted(&self) -> bool {
         self.deleted == Some(true)
     }
@@ -95,9 +96,10 @@ pub fn to_ics(task: &Task) -> String {
     );
     let done = task.status.as_deref() == Some("completed");
     lines.push(
-        match done {
-            true => "STATUS:COMPLETED",
-            false => "STATUS:NEEDS-ACTION",
+        if done {
+            "STATUS:COMPLETED"
+        } else {
+            "STATUS:NEEDS-ACTION"
         }
         .into(),
     );

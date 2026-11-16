@@ -28,6 +28,7 @@ pub struct CallerTomlError {
 
 impl CallerTomlError {
     /// The same error as the failure of the file at `path`.
+    #[must_use]
     pub fn in_file(self, path: &Path) -> CallerFileError {
         CallerFileError {
             path: path.to_owned(),
@@ -120,8 +121,8 @@ mod tests {
         std::fs::write(&bad, "[[caller]]\napp = \"org.x.A\"\nrole = \"root\"\n").expect("bad");
         let err = table_from_file(&bad).expect_err("unknown role");
         assert_eq!(err.path, bad);
-        assert!(load_callers(&bad, &dir.join("nope.toml")).is_err());
-        assert!(table_from_toml("[[caller]]\napp = \"not a name\"\nrole = \"app\"\n").is_err());
+        load_callers(&bad, &dir.join("nope.toml")).unwrap_err();
+        table_from_toml("[[caller]]\napp = \"not a name\"\nrole = \"app\"\n").unwrap_err();
     }
 
     #[test]
@@ -148,8 +149,6 @@ mod tests {
             Some(&crate::AppTitle("Sync".to_owned()))
         );
         assert_eq!(table.title_of(&name("org.bardo.Settings")), None);
-        assert!(
-            table_from_toml("[[caller]]\napp = \"org.x.A\"\nrole = \"app\"\nname = 3\n").is_err()
-        );
+        table_from_toml("[[caller]]\napp = \"org.x.A\"\nrole = \"app\"\nname = 3\n").unwrap_err();
     }
 }

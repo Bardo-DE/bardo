@@ -99,7 +99,7 @@ pub(crate) fn held_points(session: &SessionId, stdout: &[u8]) -> Vec<Saved> {
 
 /// The first line of a command's output as an object id.
 pub(crate) fn object_id(stdout: &[u8]) -> Result<String, Unexpected> {
-    let first = text(stdout)?.lines().next().map(str::trim).unwrap_or("");
+    let first = text(stdout)?.lines().next().map_or("", str::trim);
     if first.is_empty() || !first.bytes().all(|b| b.is_ascii_hexdigit()) {
         return Err(Unexpected);
     }

@@ -35,21 +35,25 @@ impl PageCount {
     }
 
     /// The number of pages.
+    #[must_use]
     pub fn get(self) -> u32 {
         self.0.get()
     }
 
     /// The last page.
+    #[must_use]
     pub fn last(self) -> PageIndex {
         PageIndex(self.0.get() - 1) // a NonZeroU32 is at least 1
     }
 
     /// `page`, or the last page when it is past the end.
+    #[must_use]
     pub fn clamp(self, page: PageIndex) -> PageIndex {
         page.min(self.last())
     }
 
     /// Whether `page` exists.
+    #[must_use]
     pub fn contains(self, page: PageIndex) -> bool {
         page <= self.last()
     }
@@ -92,6 +96,7 @@ impl PageRange {
     }
 
     /// The range of one page.
+    #[must_use]
     pub fn single(page: PageIndex) -> Self {
         PageRange {
             first: page,
@@ -100,27 +105,32 @@ impl PageRange {
     }
 
     /// The first page.
+    #[must_use]
     pub fn first(self) -> PageIndex {
         self.first
     }
 
     /// The last page.
+    #[must_use]
     pub fn last(self) -> PageIndex {
         self.last
     }
 
     /// How many pages the range covers.
+    #[must_use]
     pub fn len(self) -> PageCount {
         let span = self.last.0 - self.first.0; // last >= first by construction
         PageCount::new(span.saturating_add(1)).unwrap_or(PageCount(NonZeroU32::MIN))
     }
 
     /// Whether `page` is in the range.
+    #[must_use]
     pub fn contains(self, page: PageIndex) -> bool {
         self.first <= page && page <= self.last
     }
 
     /// The range cut to a document of `count` pages, or `None` when it starts past the end.
+    #[must_use]
     pub fn within(self, count: PageCount) -> Option<PageRange> {
         count.contains(self.first).then(|| PageRange {
             first: self.first,
@@ -177,7 +187,7 @@ mod tests {
             PageRange::new(PageIndex(4), PageIndex(2)),
             Err(CoreError::PageRangeReversed { start: 4, end: 2 })
         );
-        assert!(PageRange::new(PageIndex(2), PageIndex(2)).is_ok());
+        PageRange::new(PageIndex(2), PageIndex(2)).unwrap();
     }
 
     #[test]
@@ -219,8 +229,8 @@ mod tests {
         let json = serde_json::to_string(&r).unwrap();
         assert_eq!(json, r#"{"first":1,"last":4}"#);
         assert_eq!(serde_json::from_str::<PageRange>(&json).unwrap(), r);
-        assert!(serde_json::from_str::<PageRange>(r#"{"first":4,"last":1}"#).is_err());
+        serde_json::from_str::<PageRange>(r#"{"first":4,"last":1}"#).unwrap_err();
         assert_eq!(serde_json::from_str::<PageCount>("7").unwrap().get(), 7);
-        assert!(serde_json::from_str::<PageCount>("0").is_err());
+        serde_json::from_str::<PageCount>("0").unwrap_err();
     }
 }

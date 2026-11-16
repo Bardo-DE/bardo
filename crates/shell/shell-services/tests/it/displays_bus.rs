@@ -207,8 +207,7 @@ async fn a_change_of_the_levels_is_announced() {
         .msg_type(zbus::message::Type::Signal)
         .interface(INTERFACE)
         .and_then(|b| b.member("Changed"))
-        .map(|b| b.build())
-        .unwrap_or_else(|e| panic!("{e}"));
+        .map_or_else(|e| panic!("{e}"), zbus::match_rule::Builder::build);
     let mut changes = zbus::MessageStream::for_match_rule(rule, &settings, None)
         .await
         .unwrap_or_else(|e| panic!("{e}"));

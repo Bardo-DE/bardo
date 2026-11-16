@@ -30,6 +30,7 @@ pub struct FoundAgent {
 
 impl FoundAgent {
     /// What the person is first shown for it: `claude-code` reads `Claude Code`.
+    #[must_use]
     pub fn name(&self) -> String {
         self.id
             .split(['-', '_', '.'])
@@ -51,6 +52,7 @@ fn is_listed(found: &FoundAgent, row: &AgentRow) -> bool {
 }
 
 /// The installed assistants no row lists yet, in the order found.
+#[must_use]
 pub fn unlisted_found(found: &[FoundAgent], rows: &[AgentRow]) -> Vec<FoundAgent> {
     found
         .iter()
@@ -120,11 +122,13 @@ impl AddForm {
     }
 
     /// The form while the list of assistants is fetched; the installed ones not in `rows` wait in it.
+    #[must_use]
     pub fn loading(found: &[FoundAgent], rows: &[AgentRow]) -> Self {
         Self::start(found, rows, Listing::Loading)
     }
 
     /// The form over the installed assistants only, when there is nothing to fetch a list with.
+    #[must_use]
     pub fn offline(found: &[FoundAgent], rows: &[AgentRow]) -> Self {
         Self::start(found, rows, Listing::Offline)
     }
@@ -157,6 +161,7 @@ impl AddForm {
 
     /// The form with the reason the list was not fetched, the installed ones still offered. Only a
     /// form still loading takes it.
+    #[must_use]
     pub fn unreachable(mut self, said: &str) -> Self {
         if self.list == Listing::Loading {
             self.list = Listing::Failed(said_line(said));
@@ -165,36 +170,43 @@ impl AddForm {
     }
 
     /// How far the list has come.
+    #[must_use]
     pub fn listing(&self) -> &Listing {
         &self.list
     }
 
     /// How far Add has come.
+    #[must_use]
     pub fn step(&self) -> Step {
         self.step
     }
 
     /// What to choose from, in order.
+    #[must_use]
     pub fn entries(&self) -> &[Candidate] {
         &self.choices
     }
 
     /// The assistant picked.
+    #[must_use]
     pub fn picked(&self) -> Option<&Candidate> {
         self.choices.get(self.picked)
     }
 
     /// The id picked.
+    #[must_use]
     pub fn picked_id(&self) -> &str {
         self.picked().map_or("", |one| &one.id)
     }
 
     /// The name as typed.
+    #[must_use]
     pub fn label(&self) -> &str {
         &self.label
     }
 
     /// What the Add button can do now.
+    #[must_use]
     pub fn button(&self) -> AddAction {
         match (&self.list, self.step, self.choices.is_empty()) {
             (_, Step::Starting | Step::Downloading, _) => AddAction::Busy,
@@ -205,6 +217,7 @@ impl AddForm {
 
     /// Picks `id`, and names the assistant after itself; an id not offered changes nothing, and
     /// nothing is picked while a download runs.
+    #[must_use]
     pub fn pick(mut self, id: &str) -> Self {
         if self.step != Step::Idle {
             return self;
@@ -218,6 +231,7 @@ impl AddForm {
     }
 
     /// The name typed.
+    #[must_use]
     pub fn typed(mut self, label: String) -> Self {
         self.label = label;
         self.refusal = None;
@@ -245,6 +259,7 @@ impl AddForm {
     }
 
     /// The form with the download asked for.
+    #[must_use]
     pub fn installing(mut self) -> Self {
         self.step = Step::Starting;
         self.refusal = None;
@@ -252,6 +267,7 @@ impl AddForm {
     }
 
     /// The form with the download begun.
+    #[must_use]
     pub fn downloading(mut self) -> Self {
         if self.step == Step::Starting {
             self.step = Step::Downloading;
@@ -260,11 +276,13 @@ impl AddForm {
     }
 
     /// The assistant being downloaded, once the download has begun; nothing before.
+    #[must_use]
     pub fn download_of(&self) -> Option<&Candidate> {
         self.picked().filter(|_| self.step == Step::Downloading)
     }
 
     /// The form with the download's failure shown, ready for another Add.
+    #[must_use]
     pub fn install_failed(mut self, said: &str) -> Self {
         self.step = Step::Idle;
         self.refusal = Some(match said_line(said) {
@@ -275,6 +293,7 @@ impl AddForm {
     }
 
     /// The form with the refusal of the write shown.
+    #[must_use]
     pub fn refused(mut self, fault: AddFault) -> Self {
         self.step = Step::Idle;
         self.refusal = Some(AddRefusal::Fault(fault));
@@ -293,6 +312,7 @@ pub struct RemoveQuestion {
 
 /// The question for `assistant`, when it can be removed: an assistant added from the installed
 /// ones. One whose program the person wrote by hand is theirs to edit, and has no Remove.
+#[must_use]
 pub fn removal_of(assistant: &Assistant) -> Option<RemoveQuestion> {
     let row = assistant.agent.as_ref()?;
     match row.source {

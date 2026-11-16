@@ -19,6 +19,7 @@ pub struct CenterLink {
 
 impl CenterLink {
     /// Closed.
+    #[must_use]
     pub fn new() -> CenterLink {
         CenterLink::default()
     }
@@ -44,11 +45,13 @@ impl CenterLink {
     }
 
     /// The state now.
+    #[must_use]
     pub fn now(&self) -> Reveal<CenterOpening> {
         self.panel.now()
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Reveal<CenterOpening>> {
         self.panel.subscribe()
     }

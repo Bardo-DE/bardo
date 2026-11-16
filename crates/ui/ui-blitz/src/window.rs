@@ -178,7 +178,7 @@ impl HostWindow for WinitWindow {
             let mut viewport = doc.viewport_mut();
             let next = crate::shell_keys::zoomed(viewport.zoom(), step);
             viewport.set_zoom(next);
-        }
+        };
         // The next frame lays the page out at its new size, and the host's scale follows it.
         self.window.request_redraw();
     }

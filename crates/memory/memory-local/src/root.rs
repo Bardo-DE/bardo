@@ -16,11 +16,13 @@ impl Root {
     }
 
     /// The directory itself.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.0
     }
 
     /// The layout, as the service's [`Dirs`].
+    #[must_use]
     pub fn dirs(&self) -> Dirs {
         Dirs::new(
             self.0.join("data"),

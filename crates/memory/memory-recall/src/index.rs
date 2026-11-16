@@ -71,11 +71,17 @@ impl<V: VectorIndex> Index<V> {
 
     /// Where the index is.
     pub fn state(&self) -> IndexView {
-        *self.state.lock().unwrap_or_else(|e| e.into_inner())
+        *self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     fn apply(&self, event: IndexEvent) {
-        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         *state = step(*state, event);
     }
 

@@ -1,8 +1,8 @@
-//! The rows of a settings pane on a real Blitz document: a FieldRow leads with a tile, its label
-//! keeps its words' width when the window narrows, and a row inside a FormSection keeps its
+//! The rows of a settings pane on a real Blitz document: a `FieldRow` leads with a tile, its label
+//! keeps its words' width when the window narrows, and a row inside a `FormSection` keeps its
 //! height and vertical padding; a source list's tiles follow the sidebar's size; a source list's
-//! glyphs take the ink of a selection that moves, dark on its neutral wash; RowMore's press
-//! reaches the host first; a grouped list after a FieldRow in one FormSection has the hairline
+//! glyphs take the ink of a selection that moves, dark on its neutral wash; `RowMore`'s press
+//! reaches the host first; a grouped list after a `FieldRow` in one `FormSection` has the hairline
 //! between them; a neutral family tile turns dark with the scheme and its glyph shows on it.
 
 use dioxus::prelude::*;
@@ -52,7 +52,7 @@ fn Pane() -> Element {
     }
 }
 
-/// A FormSection holding a FieldRow and then a grouped List of one row.
+/// A `FormSection` holding a `FieldRow` and then a grouped List of one row.
 #[allow(non_snake_case)]
 fn RowThenList() -> Element {
     rsx! {
@@ -328,7 +328,7 @@ fn ShortLabelToggle() -> Element {
 }
 
 /// A short label does not leave the control floating mid-row: in a setting row the control sits
-/// at the trailing edge, inside the row's padding (14 px in a FormSection).
+/// at the trailing edge, inside the row's padding (14 px in a `FormSection`).
 #[test]
 fn a_setting_rows_control_sits_at_the_trailing_edge() {
     let mut harness = on_virtual(ShortLabelToggle);
@@ -369,7 +369,7 @@ fn a_grouped_list_after_a_field_row_has_the_hairline_between_them() {
     );
 }
 
-/// A FormSection in the dark scheme whose row leads with the neutral family's tile.
+/// A `FormSection` in the dark scheme whose row leads with the neutral family's tile.
 #[allow(non_snake_case)]
 fn NeutralTileInDark() -> Element {
     rsx! {

@@ -110,6 +110,7 @@ impl Sheet {
     }
 
     /// The `options` dictionary of the sheet method: it names the Request object's path.
+    #[must_use]
     pub fn options(&self) -> Details {
         OwnedValue::try_from(Value::from(self.token.clone()))
             .map(|token| Details::from([(OPTION_HANDLE_TOKEN.to_owned(), token)]))
@@ -125,6 +126,7 @@ impl Sheet {
     }
 
     /// A handle that closes the sheet at `path` (`None`: the expected one).
+    #[must_use]
     pub fn closer(&self, path: Option<OwnedObjectPath>) -> Option<Closer> {
         path.or_else(|| self.expected_path()).map(|path| Closer {
             connection: self.connection.clone(),

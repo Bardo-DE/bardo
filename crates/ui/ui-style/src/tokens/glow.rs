@@ -1,4 +1,5 @@
 //! The glow the compositor draws around the window the companion acts in (design/32 section 3).
+//!
 //! quire owns the values and the compositor links this crate to read them, so the glow it draws
 //! is the one the design system describes; this module is plain data and names no renderer.
 
@@ -51,6 +52,7 @@ pub struct GlowSpec {
 }
 
 /// The glow for `look` in `scheme`, from the orb's tokens. `None` and `Waiting` have no period.
+#[must_use]
 pub fn glow_spec(_look: &GlowLook, _scheme: Scheme) -> GlowSpec {
     todo!(
         "glow_spec: values per design/32 section 3; glow_spec_idle_and_waiting_have_no_period pins the still looks"

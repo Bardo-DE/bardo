@@ -41,6 +41,7 @@ pub struct Life {
 
 impl Life {
     /// A surface not drawn: before its first showing.
+    #[must_use]
     pub fn hidden() -> Life {
         Life {
             presence: Presence::Hidden,

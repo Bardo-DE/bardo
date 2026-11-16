@@ -12,6 +12,7 @@ pub struct SpaceSeed {
 
 impl SpaceSeed {
     /// A seed from 16 random bytes.
+    #[must_use]
     pub fn from_entropy(entropy: [u8; 16]) -> SpaceSeed {
         SpaceSeed { entropy, minted: 0 }
     }
@@ -23,6 +24,7 @@ impl SpaceSeed {
     /// give distinct steps) and goes through splitmix64's finalizer, a bijection on 64 bits:
     /// the low half of the minted entropy is `mix(low + step)`, so two counts never give one
     /// id, and an all-zero seed does not mint the all-zero id.
+    #[must_use]
     pub fn next(self) -> (SpaceSeed, SpaceId) {
         let SpaceSeed { entropy, minted } = self;
         let (high, low) = halves(entropy);
@@ -45,6 +47,7 @@ impl SpaceSeed {
 /// The Space id for 16 bytes of entropy: `s-` and 32 lowercase hex digits, a valid porter
 /// [`SpaceId`] (it starts with a lowercase letter, holds only `[0-9a-f-]` and is 34 bytes, within
 /// the 64 every porter id allows).
+#[must_use]
 pub fn mint_space_id(entropy: [u8; 16]) -> SpaceId {
     let hex: String = entropy.iter().map(|byte| format!("{byte:02x}")).collect();
     SpaceId::parse(&format!("s-{hex}"))

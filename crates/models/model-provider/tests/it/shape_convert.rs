@@ -357,7 +357,7 @@ fn an_or_handle_grammar_takes_the_inner_shape_or_a_handle() {
         r#"{"handle":1.5}"#,
         r#"{"handle":"1"}"#,
         r#"{"handle":1,"x":2}"#,
-        r#"{}"#,
+        r"{}",
         "3",
     ] {
         assert!(!grammar.accepts(bad), "{bad}");

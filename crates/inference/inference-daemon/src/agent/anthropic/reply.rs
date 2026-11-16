@@ -28,6 +28,7 @@ fn usage_json(reply: &ChatReply) -> Value {
 }
 
 /// The whole message for a non-streaming request. `model` is the id the agent named.
+#[must_use]
 pub fn message_json(model: &str, id: &str, reply: &ChatReply) -> Value {
     let mut content = Vec::new();
     if let Some(thought) = reply.thought.as_deref().filter(|t| !t.is_empty()) {
@@ -80,6 +81,7 @@ pub struct Stream {
 
 impl Stream {
     /// A stream for the reply `id` of the model id the agent named.
+    #[must_use]
     pub fn new(model: &str, id: &str) -> Self {
         Self {
             model: model.to_owned(),

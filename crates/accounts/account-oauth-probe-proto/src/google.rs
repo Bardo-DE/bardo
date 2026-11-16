@@ -33,6 +33,7 @@ fn claim(offer: Offer, provenance: Provenance) -> Claim {
 /// The claim for `kind` that needs no read, when there is one: Mail without the restricted
 /// scope (this build cannot read mail), a service the person unticked (`covers` is false), and
 /// a kind with no cheap read (`has_read` is false), which the grant alone shows as `granted`.
+#[must_use]
 pub fn settled(
     kind: CapabilityKind,
     (byo, covers, has_read): (bool, bool, bool),
@@ -79,9 +80,10 @@ fn refusal_reason(answer: &Response<Vec<u8>>, address: &str) -> AbsentReason {
     if body.contains("accessNotConfigured") || body.contains("SERVICE_DISABLED") {
         return AbsentReason::UnverifiedBuild;
     }
-    match is_personal(address) {
-        true => AbsentReason::ProviderOffersNone,
-        false => AbsentReason::TenantConsent,
+    if is_personal(address) {
+        AbsentReason::ProviderOffersNone
+    } else {
+        AbsentReason::TenantConsent
     }
 }
 

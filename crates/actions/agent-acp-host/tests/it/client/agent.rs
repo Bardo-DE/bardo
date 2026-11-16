@@ -229,7 +229,7 @@ pub struct Seen {
 pub struct View(Arc<Mutex<Seen>>);
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
-    m.lock().unwrap_or_else(|e| e.into_inner())
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 impl View {

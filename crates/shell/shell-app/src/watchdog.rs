@@ -68,6 +68,7 @@ impl Notifier {
     }
 
     /// The notifier of this process's environment.
+    #[must_use]
     pub fn from_process() -> Notifier {
         Notifier::from_value(std::env::var("NOTIFY_SOCKET").ok().as_deref())
     }
@@ -108,10 +109,7 @@ enum Ping {
 /// A ping when `now` beats differ from the `last` look's: the count only moves while the loop
 /// dispatches.
 fn ping_for(last: u64, now: u64) -> Ping {
-    match now != last {
-        true => Ping::Send,
-        false => Ping::Skip,
-    }
+    if now == last { Ping::Skip } else { Ping::Send }
 }
 
 /// Start the watcher: every [`PING_EVERY`] it reads `beats` and, if the count moved, pings. It

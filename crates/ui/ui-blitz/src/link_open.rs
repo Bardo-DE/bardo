@@ -270,6 +270,8 @@ mod tests {
         let started = Instant::now();
         opener.start("https", "https://example.org/");
         assert!(started.elapsed() < Duration::from_secs(1));
-        assert!(reports.recv_timeout(Duration::from_millis(100)).is_err());
+        reports
+            .recv_timeout(Duration::from_millis(100))
+            .unwrap_err();
     }
 }

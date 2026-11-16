@@ -154,8 +154,8 @@ mod tests {
     fn the_service_flag_is_a_run_with_no_window() {
         let cli = Cli::try_parse_from(["bardo-settings", "--service"]).expect("valid flags");
         assert_eq!(cli.run(), Run::Service);
-        assert!(Cli::try_parse_from(["bardo-settings", "--service", "--page", "dock"]).is_err());
-        assert!(Cli::try_parse_from(["bardo-settings", "--service", "--first-run"]).is_err());
+        Cli::try_parse_from(["bardo-settings", "--service", "--page", "dock"]).unwrap_err();
+        Cli::try_parse_from(["bardo-settings", "--service", "--first-run"]).unwrap_err();
     }
 
     #[test]
@@ -177,7 +177,7 @@ mod tests {
                 schemas: vec!["/a/bardo/settings".into(), "/b/bardo/settings".into()],
             }
         );
-        assert!(Cli::try_parse_from(["bardo-settings", "--schemas", "/a"]).is_err());
+        Cli::try_parse_from(["bardo-settings", "--schemas", "/a"]).unwrap_err();
     }
 
     #[test]

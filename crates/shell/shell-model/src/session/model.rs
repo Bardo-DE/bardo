@@ -20,6 +20,7 @@ pub enum Offer {
 
 impl Offer {
     /// logind's `Can*` word (`yes`, `challenge`, `no`, `na`), compared whole.
+    #[must_use]
     pub fn from_logind(word: &str) -> Offer {
         match word {
             "yes" => Offer::Available,
@@ -47,6 +48,7 @@ pub struct Session {
 
 impl Session {
     /// Every action offered (a dry run's session).
+    #[must_use]
     pub fn everything() -> Session {
         Session {
             presence: Presence::Present,
@@ -59,6 +61,7 @@ impl Session {
     }
 
     /// What logind says about `action`.
+    #[must_use]
     pub fn offer(&self, action: SessionAction) -> Offer {
         match action {
             SessionAction::Lock => self.lock,

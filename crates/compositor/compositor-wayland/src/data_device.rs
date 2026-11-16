@@ -43,6 +43,7 @@ pub enum Drag {
 
 impl DataDevicePart {
     /// Creates the global (version 3). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> DataDevicePart
     where
         D: GlobalDispatch<WlDataDeviceManager, GlobalData> + DataDeviceHandler + 'static,
@@ -67,6 +68,7 @@ pub enum SelectionKind {
 
 impl SelectionKind {
     /// smithay's selection target as ours.
+    #[must_use]
     pub fn of(target: SelectionTarget) -> SelectionKind {
         match target {
             SelectionTarget::Clipboard => SelectionKind::Clipboard,

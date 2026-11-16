@@ -156,6 +156,7 @@ impl Dirs {
 impl InferdConfig {
     /// The engines' weights cache: the file's, or the default; and the programs found at the
     /// system's fixed paths ([`ProgramSearch::system`]).
+    #[must_use]
     pub fn engines_in(&self, dirs: &Dirs) -> EngineConfig {
         self.engines_with(dirs, &ProgramSearch::system())
     }
@@ -163,6 +164,7 @@ impl InferdConfig {
     /// [`Self::engines_in`] with the fixed paths looked in by `programs`. The one place the
     /// effective engine programs are decided: the engine starter, the picker's note and
     /// `LocalEngines` all read what this returns.
+    #[must_use]
     pub fn engines_with(&self, dirs: &Dirs, programs: &ProgramSearch) -> EngineConfig {
         let mut engines = self.engines.clone();
         engines.llama_server = programs.llama_server(engines.llama_server.as_deref());

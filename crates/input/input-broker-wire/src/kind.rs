@@ -17,6 +17,7 @@ impl Delivery {
     pub const ALL: [Delivery; 2] = [Delivery::Proxied, Delivery::Handed];
 
     /// The byte on the wire.
+    #[must_use]
     pub const fn code(self) -> u8 {
         match self {
             Self::Proxied => 0,
@@ -25,6 +26,7 @@ impl Delivery {
     }
 
     /// The delivery with wire byte `code`.
+    #[must_use]
     pub fn from_code(code: u8) -> Option<Self> {
         Self::ALL.into_iter().find(|d| d.code() == code)
     }
@@ -56,6 +58,7 @@ impl Kind {
     ];
 
     /// The byte on the wire.
+    #[must_use]
     pub const fn code(self) -> u8 {
         match self {
             Self::PalmrestTouchpad => 1,
@@ -67,11 +70,13 @@ impl Kind {
     }
 
     /// The kind with wire byte `code`.
+    #[must_use]
     pub fn from_code(code: u8) -> Option<Self> {
         Self::ALL.into_iter().find(|k| k.code() == code)
     }
 
     /// How events of this kind reach the kernel.
+    #[must_use]
     pub const fn delivery(self) -> Delivery {
         match self {
             Self::PalmrestTouchpad | Self::PalmrestWheel | Self::PalmrestKeys => Delivery::Proxied,
@@ -80,6 +85,7 @@ impl Kind {
     }
 
     /// The only service that may ask for this kind, and the one every device of it is made for.
+    #[must_use]
     pub const fn maker(self) -> Maker {
         match self {
             Self::PalmrestTouchpad | Self::PalmrestWheel | Self::PalmrestKeys => Maker::PadDaemon,
@@ -88,6 +94,7 @@ impl Kind {
     }
 
     /// A short name for the log.
+    #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
             Self::PalmrestTouchpad => "mouse-gestures-touchpad",

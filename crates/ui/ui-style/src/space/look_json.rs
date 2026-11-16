@@ -31,6 +31,7 @@ impl std::error::Error for LookJsonError {}
 impl SpaceLook {
     /// The look as compact JSON. It is held to the dot limits first (one to three dots), so it
     /// is always well under [`LOOK_JSON_MOST`].
+    #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(&clamp_look(self.clone())).unwrap_or_default()
     }

@@ -57,6 +57,7 @@ pub enum Compat {
 
 /// `message`'s verdict on the connection: only a `Hello` of a version outside
 /// `MIN_PROTOCOL_VERSION..=PROTOCOL_VERSION` is incompatible.
+#[must_use]
 pub fn compat(message: &ToClient) -> Compat {
     match message {
         ToClient::Hello { version, .. }

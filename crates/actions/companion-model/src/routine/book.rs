@@ -171,6 +171,7 @@ impl RoutineBook {
     }
 
     /// One record per routine, as the book now stands.
+    #[must_use]
     pub fn records(&self) -> Vec<RoutineRecord> {
         self.routines
             .iter()
@@ -179,16 +180,19 @@ impl RoutineBook {
     }
 
     /// Every routine, oldest first.
+    #[must_use]
     pub fn routines(&self) -> &[Routine] {
         &self.routines
     }
 
     /// One routine.
+    #[must_use]
     pub fn routine(&self, id: RoutineId) -> Option<&Routine> {
         self.routines.iter().find(|r| r.id == id)
     }
 
     /// The routines that run at a time and are not paused: each wants a timer.
+    #[must_use]
     pub fn timers(&self) -> Vec<TimerEntry> {
         self.routines
             .iter()
@@ -204,6 +208,7 @@ impl RoutineBook {
     }
 
     /// The routines that wait for an event and are not paused, with what they wait for.
+    #[must_use]
     pub fn watches(&self) -> Vec<(&Routine, &EventMatch)> {
         self.routines
             .iter()
@@ -216,6 +221,7 @@ impl RoutineBook {
     }
 
     /// The jobs of runs that have not ended.
+    #[must_use]
     pub fn running_jobs(&self) -> Vec<JobId> {
         self.routines
             .iter()
@@ -226,6 +232,7 @@ impl RoutineBook {
     }
 
     /// The jobs that routines wait for, which have not started them yet.
+    #[must_use]
     pub fn awaited_jobs(&self) -> Vec<JobId> {
         self.routines
             .iter()
@@ -431,6 +438,7 @@ impl RoutineBook {
 }
 
 /// Moves the book by `event` and returns it with what to carry out.
+#[must_use]
 pub fn step(mut book: RoutineBook, event: RoutineEvent) -> (RoutineBook, Vec<RoutineEffect>) {
     let mut fx = Vec::new();
     match event {

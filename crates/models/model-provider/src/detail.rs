@@ -40,6 +40,7 @@ pub struct ProviderDetail {
 
 impl ProviderDetail {
     /// Keeps `status` and a redacted, bounded excerpt of `raw_message`.
+    #[must_use]
     pub fn new(status: u16, raw_message: &str) -> Self {
         Self {
             status: ServerStatus(status),
@@ -56,6 +57,7 @@ impl fmt::Display for ProviderDetail {
 
 /// One line of `raw`, every credential-shaped word replaced, cut to a fixed length. Redaction runs
 /// before the cut, so a token cut in half cannot slip through.
+#[must_use]
 pub fn redact_excerpt(raw: &str) -> String {
     let mut words: Vec<&str> = Vec::new();
     let mut next_is_secret = false;

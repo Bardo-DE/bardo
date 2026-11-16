@@ -122,11 +122,13 @@ impl PimMirror {
     }
 
     /// How many items [`PimMirror::open`] found damaged and queued to be fetched again.
+    #[must_use]
     pub fn healed(&self) -> usize {
         self.healed
     }
 
     /// The collection's directory.
+    #[must_use]
     pub fn root(&self) -> &std::path::Path {
         &self.inner.root
     }
@@ -168,12 +170,13 @@ impl Inner {
     }
 
     fn checked(&self, item: &LocalId) -> Result<(), DatasetError> {
-        match vdir::is_item_name(&item.0) {
-            true => Ok(()),
-            false => Err(DatasetError(format!(
+        if vdir::is_item_name(&item.0) {
+            Ok(())
+        } else {
+            Err(DatasetError(format!(
                 "{:?} is not a file of the mirror",
                 item.0
-            ))),
+            )))
         }
     }
 

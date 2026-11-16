@@ -1,4 +1,4 @@
-//! A private `dbus-daemon` for the PackageKit tests: a scratch config, a scratch socket, a
+//! A private `dbus-daemon` for the `PackageKit` tests: a scratch config, a scratch socket, a
 //! scratch HOME and XDG. It never reaches the session bus; the guard kills the daemon by PID.
 
 use std::io::{BufRead, BufReader};

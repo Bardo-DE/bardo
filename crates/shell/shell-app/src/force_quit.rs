@@ -19,6 +19,7 @@ use crate::outgoing::Outgoing;
 /// let asked = link.last_asked().expect("asked");
 /// assert_eq!(shell_app::force_quit::command_of(&asked), DesktopCommand::ForceQuitApp("term".to_owned()));
 /// ```
+#[must_use]
 pub fn command_of(asked: &ForceQuitAsked) -> DesktopCommand {
     DesktopCommand::ForceQuitApp(asked.app.clone())
 }

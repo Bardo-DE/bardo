@@ -44,6 +44,7 @@ impl ItemKey {
     }
 
     /// The key as a listing writes it; [`ItemKey::parse`] reads it back.
+    #[must_use]
     pub fn text(self) -> String {
         match self {
             ItemKey::Own(OwnItem::Raise(key)) => format!("raise:{}", key.0),
@@ -129,6 +130,7 @@ fn proven_action(
 }
 
 /// What `route` costs.
+#[must_use]
 pub fn effect_of(route: &Route, actions: &ActionIndex) -> Effect {
     match route {
         Route::Own(own) => own.effect(),

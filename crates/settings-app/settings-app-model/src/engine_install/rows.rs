@@ -83,12 +83,14 @@ pub struct EngineRow {
 
 impl EngineRow {
     /// Whether choosing it asks for something: it is not there for the assistant to use.
+    #[must_use]
     pub fn needs_getting(&self) -> bool {
         !matches!(self.standing, EngineStanding::Ready)
     }
 }
 
 /// The row named `name` in `rows`.
+#[must_use]
 pub fn engine_named<'a>(rows: &'a [EngineRow], name: &str) -> Option<&'a EngineRow> {
     rows.iter().find(|row| row.name == name)
 }

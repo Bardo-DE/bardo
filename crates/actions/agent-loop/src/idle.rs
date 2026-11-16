@@ -22,11 +22,9 @@ pub enum NarrativeVia {
 
 impl NarrativeVia {
     /// Where a task's narrative runs: in readerd when the task read untrusted content.
+    #[must_use]
     pub fn of(taint: bool) -> Self {
-        match taint {
-            true => Self::Reader,
-            false => Self::Companion,
-        }
+        if taint { Self::Reader } else { Self::Companion }
     }
 
     fn taint(self) -> bool {
@@ -87,6 +85,7 @@ pub struct IdleState {
 
 impl IdleState {
     /// A pass that starts when nothing has been asked since `now`.
+    #[must_use]
     pub fn quiet_since(now: UnixSeconds) -> Self {
         Self {
             phase: IdlePhase::Quiet { since: now },
@@ -127,6 +126,7 @@ pub enum IdleEffect {
 
 /// One transition. A narrative starts only after `idle_after` of quiet; anything interactive
 /// cancels a running one and puts its job back at the front of the queue.
+#[must_use]
 pub fn idle_step(
     state: IdleState,
     input: IdleInput,

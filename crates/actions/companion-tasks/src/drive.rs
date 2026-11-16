@@ -37,6 +37,7 @@ use std::collections::VecDeque;
 pub const MOST_TASK_DEPTH: usize = 3;
 
 /// What a call to the router came to, as the loop is told.
+#[must_use]
 pub fn refusal_of(error: ClientError) -> CallRefusal {
     match error {
         ClientError::Refused(WireRefusal::Call(refusal)) => refusal,

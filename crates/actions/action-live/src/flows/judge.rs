@@ -190,12 +190,14 @@ pub struct Judged {
 const PLANNER_INTERNALS: &str = "inspects the companion's planner";
 
 /// Judges one flow's observations. Pure.
+#[must_use]
 pub fn judge(flow: Flow, e: &Evidence) -> Vec<Failure> {
     judge_in(None, flow, e).failures
 }
 
 /// [`judge`] for a run played by the external ACP agent of this program, through the host, or
 /// by the companion's planner (`None`).
+#[must_use]
 pub fn judge_in(agent: Option<&str>, flow: Flow, e: &Evidence) -> Judged {
     let planner = agent.is_none();
     let mut judged = Judged {

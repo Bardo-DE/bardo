@@ -151,6 +151,7 @@ pub enum Threshold {
 
 /// Who owns idle here: `Own` only in a bardo-shell session; else `Off` with the reason (a guest
 /// session: another desktop's, never touched).
+#[must_use]
 pub fn resolve_mode(host: Host) -> IdleMode {
     match host {
         Host::Guest => IdleMode::Off(OffReason::Guest),
@@ -160,6 +161,7 @@ pub fn resolve_mode(host: Host) -> IdleMode {
 
 /// AC or battery from the battery service: `Battery` while discharging (or empty), else `Ac`;
 /// a machine with no battery is always on AC.
+#[must_use]
 pub fn power_source(battery: &Battery) -> PowerSource {
     match (battery.presence, battery.charge) {
         (Presence::Present, Charge::Discharging | Charge::Empty) => PowerSource::Battery,
@@ -174,14 +176,16 @@ pub fn power_source(battery: &Battery) -> PowerSource {
 /// mode is `Off`; `Dim` and `ScreenOff` (or `LockedScreenOff` while locked, when set), and
 /// `Suspend`, each only when its time is not `Never`; a dim lead longer than the screen-off time
 /// dims from the start of idleness (after zero seconds is never asked: at least one second).
+#[must_use]
 pub fn watches(policy: &IdlePolicy, power: PowerSource, locked: bool) -> Vec<Watch> {
     match policy.mode {
         IdleMode::Off(_) => return Vec::new(),
         IdleMode::Own => {}
     }
-    let off = match locked {
-        false => (Threshold::ScreenOff, policy.times.screen_off.on(power)),
-        true => (Threshold::LockedScreenOff, locked_off(policy, power)),
+    let off = if locked {
+        (Threshold::LockedScreenOff, locked_off(policy, power))
+    } else {
+        (Threshold::ScreenOff, policy.times.screen_off.on(power))
     };
     let dim = match (policy.dim.lead, off.1) {
         (IdleSecs(0), _) | (_, Timeout::Never) => None,
@@ -208,6 +212,7 @@ fn locked_off(policy: &IdlePolicy, power: PowerSource) -> Timeout {
 
 impl PowerPair {
     /// The time for `power`.
+    #[must_use]
     pub fn on(self, power: PowerSource) -> Timeout {
         match power {
             PowerSource::Ac => self.ac,

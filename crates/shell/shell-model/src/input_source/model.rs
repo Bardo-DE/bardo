@@ -25,6 +25,7 @@ pub enum InputRefusal {
 
 impl InputRefusal {
     /// What a person is told of this refusal.
+    #[must_use]
     pub fn sentence(&self) -> &'static str {
         match self {
             InputRefusal::NoFramework | InputRefusal::NothingToSwitchTo => {

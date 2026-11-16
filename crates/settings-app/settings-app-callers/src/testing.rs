@@ -8,6 +8,7 @@ use zbus::Connection;
 
 /// Peers on `connection` with an empty table and an unchecked manager. A sender nobody introduced
 /// is looked at through the real `/proc` of the test's own process, which is never a service.
+#[must_use]
 pub fn private_peers(connection: &Connection) -> BusPeers {
     BusPeers::new(connection.clone(), Table::empty(), ManagerCheck::Unchecked)
 }

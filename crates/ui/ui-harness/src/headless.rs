@@ -102,7 +102,7 @@ pub(crate) struct Headless {
     /// The last pointer event, replayed when a resolve moves the hover by itself
     /// (`blitz_embed::hover`).
     resting: LastMove,
-    /// What paints it: vello_cpu unless the harness asked for vello_hybrid.
+    /// What paints it: `vello_cpu` unless the harness asked for `vello_hybrid`.
     pub(crate) painter: Painter,
     /// The frame phase: the writes the app queued and the values it watches, run after each
     /// layout.

@@ -27,6 +27,7 @@ pub enum HandFault {
 
 impl HandFault {
     /// What the person is told, in plain words.
+    #[must_use]
     pub fn plain(self) -> &'static str {
         match self {
             HandFault::NotResumable => "This app can't pick its conversation back up here.",

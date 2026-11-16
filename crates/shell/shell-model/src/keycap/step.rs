@@ -8,6 +8,7 @@ use super::model::{Attention, KeycapState};
 /// `state` after `event`. The socket decides `Connected` and a drop out of it; the unit decides
 /// everything else, so a drop followed by `Failed` is `Failed` and one followed by `Active` and a
 /// new `Hello` is back to `Connected` without anyone being told.
+#[must_use]
 pub fn step(state: KeycapState, event: KeycapEvent) -> KeycapState {
     match (state, event) {
         (_, KeycapEvent::Hello(status) | KeycapEvent::Status(status)) => {
@@ -29,6 +30,7 @@ pub fn step(state: KeycapState, event: KeycapEvent) -> KeycapState {
 
 /// What the person should be told, if anything. A conflict outranks a pause: it needs them to
 /// act on another program, a pause only a key chord.
+#[must_use]
 pub fn attention(state: &KeycapState) -> Option<Attention> {
     match state {
         KeycapState::Failed => Some(Attention::Failed),

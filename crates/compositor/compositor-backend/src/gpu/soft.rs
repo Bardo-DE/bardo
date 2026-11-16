@@ -98,11 +98,13 @@ impl SoftPixman {
     }
 
     /// The copy-path counters so far.
+    #[must_use]
     pub fn counters(&self) -> CopyCounters {
         self.counters.snapshot()
     }
 
     /// A handle that keeps reading this renderer's counters after it moves.
+    #[must_use]
     pub fn counter_handle(&self) -> CounterHandle {
         self.counters.clone()
     }

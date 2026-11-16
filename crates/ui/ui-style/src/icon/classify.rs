@@ -152,12 +152,12 @@ mod tests {
         assert_eq!(ChromaLimit::try_from(0.04), Ok(ChromaLimit(40)));
         assert_eq!(ChromaLimit::try_from(0.0), Ok(ChromaLimit(0)));
         assert_eq!(ChromaLimit::try_from(0.2), Ok(ChromaLimit(200)));
-        assert!(ChromaLimit::try_from(-0.01).is_err());
-        assert!(ChromaLimit::try_from(0.201).is_err());
+        ChromaLimit::try_from(-0.01).unwrap_err();
+        ChromaLimit::try_from(0.201).unwrap_err();
     }
 
     #[test]
     fn bytes_that_are_not_a_png_are_refused() {
-        assert!(classify_with(b"not a png", ChromaLimit::default()).is_err());
+        classify_with(b"not a png", ChromaLimit::default()).unwrap_err();
     }
 }

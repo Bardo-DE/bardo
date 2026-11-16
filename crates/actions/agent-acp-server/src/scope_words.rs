@@ -13,6 +13,7 @@ fn to(recipient: &Recipient) -> String {
 }
 
 /// The option's name for `scope`, for the action the sheet calls `label`.
+#[must_use]
 pub fn always_words(label: &str, scope: &StandingScope) -> String {
     match scope {
         StandingScope::Files { under, .. } => {

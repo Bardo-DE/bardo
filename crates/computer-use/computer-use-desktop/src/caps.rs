@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum BackendKind {
-    /// Stock KWin: the nested-session host and the portability reference.
+    /// Stock `KWin`: the nested-session host and the portability reference.
     KwinStock,
     /// casement, our own compositor. Until its agent seat lands (casement P4) input is a
     /// lease-scoped socket on the person's seat (`Compositor1.LeaseWindow`) and cuad masks.
@@ -54,8 +54,9 @@ pub struct BackendCaps {
 }
 
 impl BackendCaps {
-    /// The capabilities of `kind`. KWin's row is the portability reference (shared seat,
+    /// The capabilities of `kind`. `KWin`'s row is the portability reference (shared seat,
     /// unmasked capture, hidden windows render) and is unverified until Spike B.
+    #[must_use]
     pub fn of(kind: BackendKind) -> BackendCaps {
         match kind {
             BackendKind::KwinStock => BackendCaps {

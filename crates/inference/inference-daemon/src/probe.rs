@@ -42,6 +42,7 @@ impl Runtime {
     pub const ALL: [Runtime; 3] = [Runtime::Ollama, Runtime::LlamaCpp, Runtime::LmStudio];
 
     /// The provider file of the runtime, which is also the id of its account.
+    #[must_use]
     pub fn provider(self) -> &'static str {
         match self {
             Runtime::Ollama => "ollama",
@@ -95,11 +96,13 @@ impl ProbeConfig {
     }
 
     /// Whether this is the table nobody wrote.
+    #[must_use]
     pub fn is_default(&self) -> bool {
         *self == Self::default()
     }
 
     /// No port is probed: nothing is asked of this computer.
+    #[must_use]
     pub fn off() -> Self {
         Self {
             ollama: Vec::new(),
@@ -110,6 +113,7 @@ impl ProbeConfig {
     }
 
     /// The ports asked for `runtime`.
+    #[must_use]
     pub fn ports(&self, runtime: Runtime) -> &[u16] {
         match runtime {
             Runtime::Ollama => &self.ollama,
@@ -119,11 +123,13 @@ impl ProbeConfig {
     }
 
     /// The shortest wait between two looks.
+    #[must_use]
     pub fn base(&self) -> Duration {
         Duration::from_secs(self.every_s.max(1))
     }
 
     /// The longest wait between two looks.
+    #[must_use]
     pub fn longest(&self) -> Duration {
         Duration::from_secs(self.longest_s).max(self.base())
     }
@@ -165,6 +171,7 @@ pub struct Found {
 
 impl Found {
     /// Every claim of every model: what is reported to accountd.
+    #[must_use]
     pub fn claims(&self) -> Vec<Claim> {
         self.models
             .iter()
@@ -173,6 +180,7 @@ impl Found {
     }
 
     /// The local models these are, with the runtime's port as where each is served.
+    #[must_use]
     pub fn local_models(&self, sockets: &Path) -> Vec<LocalModel> {
         self.models
             .iter()

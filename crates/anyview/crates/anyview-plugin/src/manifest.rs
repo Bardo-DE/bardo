@@ -204,11 +204,9 @@ cplugin = "/c.so"
     #[test]
     fn the_file_must_be_named_for_the_id() {
         let manifest = Manifest::parse(FULL).unwrap();
-        assert!(
-            manifest
-                .check_file_name(Path::new("/x/ffmpeg.toml"))
-                .is_ok()
-        );
+        manifest
+            .check_file_name(Path::new("/x/ffmpeg.toml"))
+            .unwrap();
         assert!(
             manifest
                 .check_file_name(Path::new("/x/other.toml"))

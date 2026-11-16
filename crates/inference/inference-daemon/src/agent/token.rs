@@ -8,6 +8,7 @@ use subtle::ConstantTimeEq;
 const PREFIX: &str = "sk-porter-agent-";
 
 /// `N` random bytes from the kernel, as hex.
+#[must_use]
 pub fn random_hex<const N: usize>() -> Option<String> {
     let mut bytes = [0_u8; N];
     getrandom::fill(&mut bytes).ok()?;
@@ -26,17 +27,20 @@ impl std::fmt::Debug for Token {
 
 impl Token {
     /// A fresh token, or `None` when the kernel gives no randomness.
+    #[must_use]
     pub fn fresh() -> Option<Self> {
         Some(Self(format!("{PREFIX}{}", random_hex::<32>()?)))
     }
 
     /// The token as text, for the one reply to the launcher and for tests.
+    #[must_use]
     pub fn expose(&self) -> &str {
         &self.0
     }
 
     /// Whether `presented` is this token. Takes the same time for every input of the same
     /// length, and the length is not a secret.
+    #[must_use]
     pub fn matches(&self, presented: &str) -> bool {
         self.0.as_bytes().ct_eq(presented.as_bytes()).into()
     }

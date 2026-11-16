@@ -45,6 +45,7 @@ pub struct Found {
 }
 
 /// The directories `path` (the value of `PATH`) names.
+#[must_use]
 pub fn dirs_of(path: &str) -> Vec<PathBuf> {
     std::env::split_paths(path)
         .filter(|dir| !dir.as_os_str().is_empty())
@@ -66,6 +67,7 @@ pub fn find_known(dirs: &[PathBuf], is_file: impl Fn(&Path) -> bool) -> Vec<Foun
 }
 
 /// The found programs that no entry of `agents` runs: the same file, or one of the same name.
+#[must_use]
 pub fn unlisted<'a>(agents: &Agents, found: &'a [Found]) -> Vec<&'a Found> {
     let runs = |found: &Found| {
         agents

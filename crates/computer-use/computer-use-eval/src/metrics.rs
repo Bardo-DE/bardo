@@ -32,6 +32,7 @@ const Z: f64 = 1.96;
 
 /// The Wilson score interval for `k` of `n`. With no trials nothing is known: the interval is the
 /// whole range.
+#[must_use]
 pub fn wilson(n: u32, k: u32) -> Rate {
     if n == 0 {
         return Rate {
@@ -59,6 +60,7 @@ pub fn wilson(n: u32, k: u32) -> Rate {
 }
 
 /// The nearest-rank percentile (`pct` of 100) of `values`; zero for none.
+#[must_use]
 pub fn percentile(values: &[u64], pct: u32) -> u64 {
     if values.is_empty() {
         return 0;
@@ -105,6 +107,7 @@ fn count(n: usize) -> u32 {
 }
 
 /// The tally of `runs`, each with the task it played.
+#[must_use]
 pub fn tally(runs: &[(&TaskDef, &RunRecord)]) -> Tally {
     let n = count(runs.len());
     let of = |f: &dyn Fn(&TaskDef, &RunRecord) -> bool| {
@@ -154,6 +157,7 @@ pub enum Group {
 }
 
 /// Whether `task` belongs to `group`.
+#[must_use]
 pub fn member(task: &TaskDef, group: Group) -> bool {
     match group {
         Group::Category(c) => task.category == c,

@@ -93,13 +93,13 @@ pub struct Seam<'a, S: Seams> {
     pub rules: &'a Rules,
 }
 
-impl<'a, S: Seams> Clone for Seam<'a, S> {
+impl<S: Seams> Clone for Seam<'_, S> {
     fn clone(&self) -> Self {
         *self
     }
 }
 
-impl<'a, S: Seams> Copy for Seam<'a, S> {}
+impl<S: Seams> Copy for Seam<'_, S> {}
 
 impl<'a, S: Seams> Seam<'a, S> {
     /// The seams of `parts`.
@@ -156,6 +156,7 @@ impl<S: Seams> std::fmt::Debug for Exec<'_, S> {
 
 impl<'a, S: Seams> Exec<'a, S> {
     /// An executor for `run` doing `task`.
+    #[must_use]
     pub fn new(seam: Seam<'a, S>, run: RunId, task: CuaTask) -> Self {
         Self {
             seam,
@@ -184,6 +185,7 @@ impl<'a, S: Seams> Exec<'a, S> {
     }
 
     /// Whether `effect` talks to the model, and so needs it handed in.
+    #[must_use]
     pub fn needs_model(effect: &RunEffect) -> bool {
         matches!(
             effect,

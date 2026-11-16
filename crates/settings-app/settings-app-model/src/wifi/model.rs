@@ -25,6 +25,7 @@ pub enum SignalBars {
 
 impl SignalStrength {
     /// The signal this strength is drawn as.
+    #[must_use]
     pub fn signal(self) -> SignalBars {
         match self.0 {
             0..=33 => SignalBars::Weak,
@@ -107,6 +108,7 @@ pub struct WifiStatus {
 
 impl WifiStatus {
     /// The status `wire` describes: one network per name (hidden ones left out), sorted.
+    #[must_use]
     pub fn of_wire(wire: WifiWire) -> WifiStatus {
         let mut folded: BTreeMap<Ssid, WifiNetwork> = BTreeMap::new();
         for point in wire
@@ -144,6 +146,7 @@ impl WifiStatus {
     }
 
     /// The network this computer is on.
+    #[must_use]
     pub fn joined(&self) -> Option<&WifiNetwork> {
         self.networks.iter().find(|n| n.link == NetworkLink::Joined)
     }
@@ -156,6 +159,7 @@ impl WifiStatus {
     }
 
     /// The network called `ssid`.
+    #[must_use]
     pub fn network(&self, ssid: &Ssid) -> Option<&WifiNetwork> {
         self.networks.iter().find(|n| &n.ssid == ssid)
     }

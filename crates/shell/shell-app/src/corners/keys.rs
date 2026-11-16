@@ -4,6 +4,7 @@ use shell_model::desktop::HeldMods;
 use shell_settings::{CornerBinding, CornerBindings, CornerKey, CornerKeys};
 
 /// The corner keys for the modifiers `mods` holds (Caps Lock and Fn are not corner keys).
+#[must_use]
 pub fn keys_of(mods: HeldMods) -> CornerKeys {
     [
         (HeldMods::COMMAND, CornerKey::Command),
@@ -18,6 +19,7 @@ pub fn keys_of(mods: HeldMods) -> CornerKeys {
 }
 
 /// The binding of `bindings` for exactly the keys `held`; none when no binding matches.
+#[must_use]
 pub fn pick(bindings: &CornerBindings, held: HeldMods) -> Option<&CornerBinding> {
     let held = keys_of(held);
     bindings.0.iter().find(|binding| binding.keys == held)

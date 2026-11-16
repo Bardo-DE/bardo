@@ -11,6 +11,7 @@ fn param(name: &str) -> ParamName {
 }
 
 /// The text argument `name` of `inv`, if it holds words.
+#[must_use]
 pub fn text_arg(inv: &Invocation, name: &str) -> Option<String> {
     match inv.args.get(&param(name)).map(|a| &a.value) {
         Some(Value::Text(t)) if !t.trim().is_empty() => Some(t.clone()),
@@ -19,6 +20,7 @@ pub fn text_arg(inv: &Invocation, name: &str) -> Option<String> {
 }
 
 /// The choice argument `name` of `inv`, if it holds a choice.
+#[must_use]
 pub fn choice_arg(inv: &Invocation, name: &str) -> Option<String> {
     match inv.args.get(&param(name)).map(|a| &a.value) {
         Some(Value::Choice(c)) => Some(c.to_string()),
@@ -28,6 +30,7 @@ pub fn choice_arg(inv: &Invocation, name: &str) -> Option<String> {
 
 /// The level the `level` choice names: `ask` or `never`. Nothing else is a level, so the
 /// action cannot carry an allow.
+#[must_use]
 pub fn level_of(choice: Option<&str>) -> Option<LimitLevel> {
     match choice {
         Some("ask") => Some(LimitLevel::AlwaysAsk),
@@ -37,6 +40,7 @@ pub fn level_of(choice: Option<&str>) -> Option<LimitLevel> {
 }
 
 /// The weakest effect the `reach` choice covers.
+#[must_use]
 pub fn reach_of(choice: Option<&str>) -> Option<Effect> {
     match choice {
         None | Some("changes") => Some(Effect::UndoableWrite),

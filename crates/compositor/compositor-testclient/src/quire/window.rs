@@ -52,6 +52,7 @@ impl WindowManager {
     }
 
     /// How many times the person asked the app to quit.
+    #[must_use]
     pub fn quit_count(&self) -> u32 {
         self.quits.with(|count| *count)
     }
@@ -77,11 +78,13 @@ pub struct Window {
 
 impl Window {
     /// The newest emphasis.
+    #[must_use]
     pub fn emphasis(&self) -> Option<Emphasis> {
         self.log.with(|seen| seen.emphasis.last().copied())
     }
 
     /// The newest placement mark.
+    #[must_use]
     pub fn placement(&self) -> Option<PlacementMark> {
         self.log.with(|seen| seen.placement.last().copied())
     }

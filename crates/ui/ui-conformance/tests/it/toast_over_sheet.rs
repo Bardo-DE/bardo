@@ -28,7 +28,7 @@ fn WithSheet() -> Element {
     let toasts = use_toasts();
     let mut presses = use_signal(|| 0u32);
     rsx! {
-        Sheet { label: "Add studio", onclose: |_| {},
+        Sheet { label: "Add studio", onclose: |()| {},
             div { style: "height:320px" }
             div { style: "display:flex; justify-content:flex-end; padding:20px",
                 Button {

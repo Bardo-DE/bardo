@@ -16,6 +16,7 @@ pub enum RenderCostModel {
 
 impl RenderCostModel {
     /// The cost of frame `n` when it is not measured (`None` for [`RenderCostModel::Measured`]).
+    #[must_use]
     pub fn cost_of(&self, n: u64) -> Option<Duration> {
         match self {
             RenderCostModel::Measured => None,

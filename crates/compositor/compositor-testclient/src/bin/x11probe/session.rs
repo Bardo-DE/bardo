@@ -367,7 +367,7 @@ impl Session {
             Event::FocusIn(e) => self.report(e.event, "focus-in", &format!("mode={:?}", e.mode)),
             Event::FocusOut(e) => self.report(e.event, "focus-out", &format!("mode={:?}", e.mode)),
             Event::EnterNotify(e) => {
-                self.report(e.event, "enter", &format!("at {},{}", e.event_x, e.event_y))
+                self.report(e.event, "enter", &format!("at {},{}", e.event_x, e.event_y));
             }
             Event::LeaveNotify(e) => self.report(e.event, "leave", ""),
             Event::MotionNotify(e) => self.report(
@@ -381,13 +381,13 @@ impl Session {
                 &format!("detail={} at {},{}", e.detail, e.event_x, e.event_y),
             ),
             Event::ButtonRelease(e) => {
-                self.report(e.event, "button-release", &format!("detail={}", e.detail))
+                self.report(e.event, "button-release", &format!("detail={}", e.detail));
             }
             Event::KeyPress(e) => {
-                self.report(e.event, "key-press", &format!("detail={}", e.detail))
+                self.report(e.event, "key-press", &format!("detail={}", e.detail));
             }
             Event::KeyRelease(e) => {
-                self.report(e.event, "key-release", &format!("detail={}", e.detail))
+                self.report(e.event, "key-release", &format!("detail={}", e.detail));
             }
             Event::ClientMessage(e) if e.type_ == self.atoms.protocols => {
                 if e.data.as_data32()[0] == self.atoms.delete_window {

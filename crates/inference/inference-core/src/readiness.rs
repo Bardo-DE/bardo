@@ -23,6 +23,7 @@ pub enum Readiness {
 
 impl Readiness {
     /// The slug `Inference1.Prepare` answers with.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Readiness::Ready => "ready",

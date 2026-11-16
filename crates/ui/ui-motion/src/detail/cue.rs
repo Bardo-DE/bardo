@@ -31,11 +31,13 @@ impl Cue {
     }
 
     /// What the change means.
+    #[must_use]
     pub fn moment(self) -> Moment {
         self.moment
     }
 
     /// Who caused it.
+    #[must_use]
     pub fn touch(self) -> Touch {
         self.touch
     }

@@ -127,6 +127,7 @@ fn texts_of(content: Option<&Value>) -> Vec<String> {
 
 impl When {
     /// Whether a request of this look is the one this describes.
+    #[must_use]
     pub fn admits(&self, seen: &Seen) -> bool {
         let tools = match self.tools {
             Tools::Any => true,
@@ -176,6 +177,7 @@ impl Cassette {
 
     /// The first entry that admits `seen` and has not used itself up. `used` is the indexes of
     /// the `Once` entries answered so far.
+    #[must_use]
     pub fn pick(&self, seen: &Seen, used: &[usize]) -> Option<usize> {
         self.entries.iter().enumerate().find_map(|(at, entry)| {
             let spent = entry.uses == Uses::Once && used.contains(&at);

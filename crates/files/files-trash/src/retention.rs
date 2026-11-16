@@ -8,10 +8,11 @@ use crate::error::TrashError;
 use crate::store::Trash;
 
 /// Finder's "Remove items from the Trash after 30 days".
-pub const THIRTY_DAYS: Duration = Duration::from_secs(30 * 24 * 60 * 60);
+pub const THIRTY_DAYS: Duration = Duration::from_hours(720);
 
 /// The items of `items` thrown away more than `keep` before `now`. An item with a date after
 /// `now` (a clock that moved back) is not old.
+#[must_use]
 pub fn expired(items: Vec<TrashedItem>, now: SystemTime, keep: Duration) -> Vec<TrashedItem> {
     items
         .into_iter()

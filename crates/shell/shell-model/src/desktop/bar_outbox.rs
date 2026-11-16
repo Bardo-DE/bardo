@@ -16,6 +16,7 @@ pub struct Outbox {
 /// The commands the compositor needs now: the drop targets that changed, then a request for the
 /// picture of each Space that is due one ([`thumbs_wanted`]). The outbox that follows is returned
 /// with them.
+#[must_use]
 pub fn outgoing(
     outbox: Outbox,
     layouts: &BarLayouts,

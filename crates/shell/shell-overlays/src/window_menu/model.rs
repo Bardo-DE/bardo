@@ -52,9 +52,10 @@ pub(super) fn label(entry: WindowEntry) -> &'static str {
 
 /// One entry, dimmed when `enabled` does not offer it.
 fn item(enabled: &WindowEntries, entry: WindowEntry) -> MenuItem<WindowEntry> {
-    let availability = match offered(enabled, entry) {
-        true => Availability::Enabled,
-        false => Availability::Disabled,
+    let availability = if offered(enabled, entry) {
+        Availability::Enabled
+    } else {
+        Availability::Disabled
     };
     MenuItem::new(entry, label(entry)).with_availability(availability)
 }
@@ -69,9 +70,10 @@ fn submenu(
         MenuItem::Item { value, .. } => offered(enabled, *value),
         _ => false,
     });
-    let availability = match any {
-        true => Availability::Enabled,
-        false => Availability::Disabled,
+    let availability = if any {
+        Availability::Enabled
+    } else {
+        Availability::Disabled
     };
     MenuItem::Submenu {
         title: title.to_owned(),
@@ -84,9 +86,10 @@ fn submenu(
 /// The first entry: Exit Full Screen when the window is in full screen (the only thing the
 /// compositor offers it), else Enter Full Screen (dimmed when the window cannot).
 fn full_screen(enabled: &WindowEntries) -> WindowEntry {
-    match offered(enabled, WindowEntry::ExitFullScreen) {
-        true => WindowEntry::ExitFullScreen,
-        false => WindowEntry::EnterFullScreen,
+    if offered(enabled, WindowEntry::ExitFullScreen) {
+        WindowEntry::ExitFullScreen
+    } else {
+        WindowEntry::EnterFullScreen
     }
 }
 

@@ -21,6 +21,7 @@ pub enum BarShow {
 
 /// The bar for an overview in `mode` at `state`: up from the moment Mission Control starts to
 /// open (a gesture counts) until it starts to close; App Exposé and Show Desktop have no bar.
+#[must_use]
 pub fn bar_show(mode: OverviewMode, state: OverviewState) -> BarShow {
     match (mode, state) {
         (
@@ -55,6 +56,7 @@ fn spaces_here<'a>(view: &'a DesktopView, output: Option<&str>) -> Vec<&'a Space
 }
 
 /// The ids of the Spaces on the output called `output`, left to right.
+#[must_use]
 pub fn bar_space_ids(view: &DesktopView, output: Option<&str>) -> Vec<SpaceId> {
     spaces_here(view, output)
         .into_iter()
@@ -64,6 +66,7 @@ pub fn bar_space_ids(view: &DesktopView, output: Option<&str>) -> Vec<SpaceId> {
 
 /// The Spaces on the output called `output` (`None` for an unnamed output), left to right. A
 /// Space the desktop does not place on an output is listed on every output.
+#[must_use]
 pub fn bar_spaces(view: &DesktopView, output: Option<&str>, apps: &AppIndex) -> Vec<BarSpace> {
     let mut desktops = 0_u32;
     spaces_here(view, output)
@@ -122,6 +125,7 @@ pub enum BarPick {
 
 /// The commands a pick sends, in order. A Space switched to ends Mission Control, as on the Mac;
 /// a new Space stays in it.
+#[must_use]
 pub fn commands_of(pick: &BarPick) -> Vec<DesktopCommand> {
     match pick {
         BarPick::Switch(id) => vec![

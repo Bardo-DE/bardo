@@ -97,11 +97,13 @@ pub struct PowerMenuLink {
 
 impl PowerMenuLink {
     /// A hidden power menu.
+    #[must_use]
     pub fn new() -> PowerMenuLink {
         PowerMenuLink::default()
     }
 
     /// The current value.
+    #[must_use]
     pub fn now(&self) -> Reveal<PowerMenuOpening> {
         self.panel.now()
     }
@@ -132,6 +134,7 @@ impl PowerMenuLink {
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Reveal<PowerMenuOpening>> {
         self.panel.subscribe()
     }
@@ -151,7 +154,7 @@ mod tests {
     #[test]
     fn toggle_opens_at_the_default_and_closes_counting_openings() {
         let first = toggle(&Reveal::default(), ONE);
-        let opening = first.opening().cloned();
+        let opening = first.opening().copied();
         assert_eq!(opening.as_ref().map(|o| o.serial), Some(OpenSerial(1)));
         assert_eq!(
             opening.as_ref().map(|o| o.preselect),

@@ -1,6 +1,6 @@
 //! Microsoft's rules (lane W5b): personal and work or school accounts through one multi-tenant
 //! public client. Sign-in is PKCE through a loopback redirect; mail is IMAP and SMTP with XOAUTH2
-//! (tokens for Exchange Online); calendar, contacts, tasks, OneNote and OneDrive are Graph,
+//! (tokens for Exchange Online); calendar, contacts, tasks, `OneNote` and `OneDrive` are Graph,
 //! probed at add time so a tenant that forbids one shows it as absent for consent (R13). Revoking
 //! has no API: the person is sent to account.microsoft.com (`issuers.toml`).
 //!
@@ -84,26 +84,25 @@ impl BrowserIssuer for Microsoft {
             .refresh_token
             .clone()
             .ok_or(SignInFault::Unreadable)?;
-        let (graph, refresh) = match self.redeem_scope(&grant.scopes) {
-            None => (tokens, refresh),
-            Some(_) => {
-                let all = Issuer::Microsoft
-                    .data()
-                    .all_scope
-                    .as_deref()
-                    .ok_or(SignInFault::Unreadable)?;
-                let graph = refresh_scoped(
-                    &*cx.env.http,
-                    &grant.endpoints,
-                    &grant.client,
-                    &refresh,
-                    Some(all),
-                )
-                .await
-                .map_err(exchange_fault)?;
-                let rotated = graph.refresh_token.clone().unwrap_or(refresh);
-                (graph, rotated)
-            }
+        let (graph, refresh) = if self.redeem_scope(&grant.scopes).is_none() {
+            (tokens, refresh)
+        } else {
+            let all = Issuer::Microsoft
+                .data()
+                .all_scope
+                .as_deref()
+                .ok_or(SignInFault::Unreadable)?;
+            let graph = refresh_scoped(
+                &*cx.env.http,
+                &grant.endpoints,
+                &grant.client,
+                &refresh,
+                Some(all),
+            )
+            .await
+            .map_err(exchange_fault)?;
+            let rotated = graph.refresh_token.clone().unwrap_or(refresh);
+            (graph, rotated)
         };
         let base = graph_origin(cx.spec);
         let found = probe(&*cx.env.http, cx.spec, &base, graph.access_token.expose())
@@ -299,9 +298,10 @@ fn given<H>(session: &OAuthSession<Microsoft, H>, scope: &str, ask: Ask) -> bool
 
 fn signed_from(spec: &ProviderSpec, found: Found, credential: Credential) -> Signed {
     let endpoints = endpoints_for(spec, &found);
-    let restriction = Restriction::none().with_consent(match found.tenant_refused() {
-        true => TenantConsent::AdminRequired,
-        false => TenantConsent::User,
+    let restriction = Restriction::none().with_consent(if found.tenant_refused() {
+        TenantConsent::AdminRequired
+    } else {
+        TenantConsent::User
     });
     Signed::new(
         AccountLabel(found.address),

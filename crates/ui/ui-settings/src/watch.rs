@@ -53,11 +53,13 @@ impl<D: SettingsDoc> Watch<D> {
     }
 
     /// The file as last read.
+    #[must_use]
     pub fn current(&self) -> D {
         self.changes.latest().value
     }
 
     /// Whether the directory is being watched.
+    #[must_use]
     pub fn state(&self) -> &WatchState {
         &self.state
     }

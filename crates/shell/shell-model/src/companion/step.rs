@@ -21,6 +21,7 @@ use super::terminals::{TerminalsMsg, update as update_terminals};
 use super::words::SETTLE_FAILED;
 
 /// `state` after `event` at `at`, and what the outside must do.
+#[must_use]
 pub fn step(
     state: Companion,
     event: CompanionEvent,
@@ -87,6 +88,7 @@ fn helped(state: Companion, msg: HelpersMsg) -> (Companion, Vec<CompanionEffect>
 }
 
 /// When the machines next want to be stepped with no input: the earlier of their wakes.
+#[must_use]
 pub fn wake(state: &Companion) -> Option<Stamp> {
     [state.tap.wake(), state.summon.wake()]
         .into_iter()
@@ -364,6 +366,7 @@ fn with_answer(
 
 impl<T: Clone> Lookup<T> {
     /// A newer ask replaces the lookup; an older one is ignored.
+    #[must_use]
     pub fn asked(self, generation: Generation) -> Lookup<T> {
         if generation >= self.generation {
             Lookup {
@@ -377,6 +380,7 @@ impl<T: Clone> Lookup<T> {
     }
 
     /// The answer of the ask in flight.
+    #[must_use]
     pub fn answered(self, generation: Generation, found: Vec<T>) -> Lookup<T> {
         if generation == self.generation {
             Lookup {
@@ -411,6 +415,7 @@ impl<T: Clone> Lookup<T> {
     }
 
     /// The ask in flight failed.
+    #[must_use]
     pub fn failed(self, generation: Generation) -> Lookup<T> {
         if generation == self.generation {
             Lookup {

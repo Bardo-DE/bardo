@@ -12,6 +12,7 @@ use base_time::Clock;
 /// The accounts `filed` holds secrets for that `registry` does not name. Nothing is an orphan
 /// when the registry names no account at all: an empty registry is as likely a lost file as a
 /// true absence, and a credential removed wrongly cannot be brought back.
+#[must_use]
 pub fn orphans(registry: &Registry, filed: &[AccountId]) -> Vec<AccountId> {
     if registry.accounts.is_empty() {
         return Vec::new();
@@ -24,6 +25,7 @@ pub fn orphans(registry: &Registry, filed: &[AccountId]) -> Vec<AccountId> {
 }
 
 /// Removes the secrets of each orphan in `secrets` and records one `SecretsSwept` line for it.
+///
 /// Returns the accounts swept. A store that cannot list, or a removal that fails, is said and
 /// left for the next start; nothing here stops the daemon.
 pub async fn sweep_orphan_secrets<S: Secrets, A: AuditSink>(

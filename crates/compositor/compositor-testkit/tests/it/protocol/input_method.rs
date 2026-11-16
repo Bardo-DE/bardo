@@ -8,7 +8,7 @@ use compositor_testclient::ime::text_input::TextInputEvent;
 use compositor_testkit::{ASKED_PROGRAM, Fixture, FixtureSpec};
 use desktop_protocols::vocab::{Answer, Power};
 
-/// The input method's commit_string reaches the focused text field: `commit_string` then `done`
+/// The input method's `commit_string` reaches the focused text field: `commit_string` then `done`
 /// carrying the serial of the field's own last `commit`.
 #[test]
 fn an_input_method_commits_to_the_focused_field() {

@@ -1,4 +1,5 @@
 //! The one value every surface gets through `Root::context`: every service's [`Handle`].
+//!
 //! Clone is cheap (channels are reference-counted). The daemon starts them
 //! (`Services::start`); `registry` is the one place a service is declared.
 

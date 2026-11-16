@@ -5,6 +5,7 @@ use super::{Tray, TrayEvent, TrayItem, TrayItemId};
 
 /// `tray` after `event`. A change for an unknown item is dropped (it raced its removal), and so is
 /// the registration of a new item once [`TRAY_ITEMS_MAX`] are held.
+#[must_use]
 pub fn step(tray: Tray, event: TrayEvent) -> Tray {
     let Tray { mut items } = tray;
     match event {

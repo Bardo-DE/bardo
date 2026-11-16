@@ -29,6 +29,7 @@ pub struct Layout {
 
 /// The rest centres of `count` tiles in a pill centred on the output (clamped to the edge
 /// distance when the pill is wider than the output allows).
+#[must_use]
 pub fn rest_centers(count: usize, p: &MagnifyParams) -> Vec<Cpx> {
     let n = i32::try_from(count).unwrap_or(i32::MAX);
     if n == 0 {
@@ -50,6 +51,7 @@ enum Anchor {
 }
 
 /// The layout for rest centres `centers`, pointer `pointer_x` and progress `progress`.
+#[must_use]
 pub fn magnify(centers: &[Cpx], pointer_x: Cpx, progress: Permille, p: &MagnifyParams) -> Layout {
     let Some((&first, &last)) = centers.first().zip(centers.last()) else {
         let middle = Cpx(p.output_width.0 / 2);
@@ -61,7 +63,7 @@ pub fn magnify(centers: &[Cpx], pointer_x: Cpx, progress: Permille, p: &MagnifyP
     };
     let tile = f64::from(p.tile.0);
     let gap = f64::from(p.gap.0);
-    let half = (tile + gap) / 2.0;
+    let half = f64::midpoint(tile, gap);
     let rest_left: Vec<f64> = centers.iter().map(|c| f64::from(c.0) - half).collect();
     let x = f64::from(pointer_x.0).clamp(f64::from(first.0) - half, f64::from(last.0) + half);
     let widths: Vec<f64> = centers
@@ -223,7 +225,12 @@ mod tests {
             let centers = rest_centers(n, &p);
             let rest_slots: Vec<(i32, i32)> = centers
                 .iter()
-                .map(|c| (c.0 - (p.tile.0 + gap) / 2, c.0 + (p.tile.0 + gap) / 2))
+                .map(|c| {
+                    (
+                        c.0 - i32::midpoint(p.tile.0, gap),
+                        c.0 + i32::midpoint(p.tile.0, gap),
+                    )
+                })
                 .collect();
             let (start, end) = (rest_slots[0].0, rest_slots[n - 1].1);
             for progress in [Permille(500), Permille::ONE] {

@@ -15,6 +15,7 @@ pub struct SinglePixelPart {
 
 impl SinglePixelPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> SinglePixelPart
     where
         D: GlobalDispatch<WpSinglePixelBufferManagerV1, GlobalData>

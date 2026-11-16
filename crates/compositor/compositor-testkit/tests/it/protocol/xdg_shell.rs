@@ -231,7 +231,7 @@ pub(crate) fn flow_text(fixture: &mut Fixture, id: ClientId) -> String {
     lines_of(fixture, id, &["xdg_"])
 }
 
-/// Xdg_wm_base binds at every version from 1 to 7; asking for 8 is refused by the client side.
+/// `Xdg_wm_base` binds at every version from 1 to 7; asking for 8 is refused by the client side.
 #[test]
 fn every_version_binds() {
     let (mut fixture, _) = boot();

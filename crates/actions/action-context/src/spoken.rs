@@ -36,6 +36,7 @@ fn open_after(tail: &str) -> bool {
 }
 
 /// Whether `text` stands in `turn` from one token edge to another.
+#[must_use]
 pub fn whole_in(turn: &str, text: &str) -> bool {
     !text.is_empty()
         && turn

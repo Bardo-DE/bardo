@@ -29,6 +29,7 @@ pub struct Resolved {
 
 impl Resolved {
     /// `data-theme`, `data-accent` and `data-motion` with their values, in that order.
+    #[must_use]
     pub fn attrs(&self) -> [(&'static str, &'static str); 3] {
         [
             ("data-theme", self.scheme.slug()),
@@ -47,6 +48,7 @@ impl Resolved {
 /// rule and `system` there means "the viewer's scheme" (`S:1157-1159`), which is the app's
 /// choice before it is the desktop's. Whether the shell honours a per-workspace theme is
 /// design/03-COLOR.md open decision 13; this is the proposed reading.
+#[must_use]
 pub fn resolve(app: Appearance, look_theme: Theme, system: SystemPrefs) -> Resolved {
     let scheme = explicit(look_theme)
         .or_else(|| explicit(app.theme))

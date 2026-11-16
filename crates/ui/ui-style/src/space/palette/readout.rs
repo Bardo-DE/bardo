@@ -25,6 +25,7 @@ pub struct ContrastCheck {
 
 impl ContrastCheck {
     /// Whether the pair clears its floor.
+    #[must_use]
     pub fn clears(&self) -> bool {
         self.measured >= self.need
     }
@@ -37,6 +38,7 @@ impl ContrastCheck {
 /// is composited before it is measured). The last two measure the chosen accent, since a Space
 /// never changes the accent the card wears. A colour that is not a hex pair
 /// measures 0, which fails, rather than being left out.
+#[must_use]
 pub fn readout(space: &SpaceLook, scheme: Scheme) -> Vec<ContrastCheck> {
     let palette = derive(&space.dots, scheme);
     let post = card(scheme);

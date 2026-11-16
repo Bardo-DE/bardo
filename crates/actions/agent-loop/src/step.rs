@@ -165,6 +165,7 @@ pub enum LoopEffect {
 /// ending in `Calls`, `Read`, `Ask` or `Finish` (companiond sends `Finish` for a reply that
 /// only spoke). Inputs that do not fit the phase change nothing, so a late or duplicate event
 /// is harmless.
+#[must_use]
 pub fn agent_step(state: LoopState, input: LoopInput) -> (LoopState, Vec<LoopEffect>) {
     use LoopPhase::{AwaitingCalls, AwaitingReader, Finished, Idle, Paused, Planning};
     match (state.phase, input) {

@@ -68,18 +68,17 @@ impl<B: Backend> Open<B> {
                 .iter_mut()
                 .find(|slot| slot.as_ref().is_some_and(|e| is_same(&wanted, e)))
                 .and_then(Option::take);
-            let landed = match held {
-                Some(held) => held,
-                None => {
-                    wanted.cause = rehomed_cause(wanted.cause, from, moved);
-                    let body = match entry.body {
-                        BodyState::Present(ref body) => Some(body.clone()),
-                        BodyState::Erased => None,
-                    };
-                    let landed = self.rt.log.append(wanted, body).map_err(append_refusal)?;
-                    self.index_entry(cx, &landed).await;
-                    landed
-                }
+            let landed = if let Some(held) = held {
+                held
+            } else {
+                wanted.cause = rehomed_cause(wanted.cause, from, moved);
+                let body = match entry.body {
+                    BodyState::Present(ref body) => Some(body.clone()),
+                    BodyState::Erased => None,
+                };
+                let landed = self.rt.log.append(wanted, body).map_err(append_refusal)?;
+                self.index_entry(cx, &landed).await;
+                landed
             };
             moved.insert(event_ref(from, &entry), event_ref(&here, &landed));
         }

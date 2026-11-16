@@ -20,6 +20,7 @@ pub enum Decision {
 
 /// Whether the turn that starts now takes a point. A session with no workspace (a plain chat)
 /// writes nothing; an agent that keeps its own history is skipped, and the list says so.
+#[must_use]
 pub fn decide(rewind: Rewind, cwd: Option<&Workspace>) -> Decision {
     let Some(workspace) = cwd else {
         return Decision::Nothing;
@@ -35,6 +36,7 @@ pub fn decide(rewind: Rewind, cwd: Option<&Workspace>) -> Decision {
 
 /// The number for the next point: one more than any the notes name (a taken point or the safety
 /// point of a restore), 1 for a session with none. Numbers are never reused.
+#[must_use]
 pub fn next_id(notes: &[CheckpointNote]) -> CheckpointId {
     let highest = notes
         .iter()
@@ -50,6 +52,7 @@ pub fn next_id(notes: &[CheckpointNote]) -> CheckpointId {
 
 /// The points to drop, oldest first: any that is not among the newest `keep.last` (by number) or
 /// is older than `keep.days` (by the time it was taken). Both limits apply.
+#[must_use]
 pub fn retention(held: &[Saved], now: UnixSeconds, keep: Retention) -> Vec<CheckpointId> {
     let mut by_number: Vec<&Saved> = held.iter().collect();
     by_number.sort_by_key(|saved| saved.id);

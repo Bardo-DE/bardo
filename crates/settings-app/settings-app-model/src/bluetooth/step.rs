@@ -10,7 +10,7 @@ pub type BtState = Live<BtReady>;
 /// The page with something to show.
 #[derive(Debug, Clone, PartialEq)]
 pub struct BtReady {
-    /// What BlueZ last said.
+    /// What `BlueZ` last said.
     pub status: BtStatus,
     /// What the person is asked over the page, if anything.
     pub asking: BtAsking,
@@ -32,7 +32,7 @@ pub enum BtAsking {
 /// What the page hears.
 #[derive(Debug, Clone)]
 pub enum BtInput {
-    /// A read of BlueZ, or why there is none.
+    /// A read of `BlueZ`, or why there is none.
     Heard(Result<BtStatus, Absence>),
     /// The person moved the switch.
     Switch(bool),
@@ -54,11 +54,11 @@ pub enum BtInput {
     Answer(PairingAnswer),
     /// A connect, a pairing or a forget ended, with the words to say if it failed.
     Ended(BtAddress, Result<(), String>),
-    /// BlueZ refused a request, in these words.
+    /// `BlueZ` refused a request, in these words.
     Refused(String),
 }
 
-/// What the page asks of BlueZ.
+/// What the page asks of `BlueZ`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BtEffect {
     /// Move the switch.
@@ -77,7 +77,8 @@ pub enum BtEffect {
     Tell(String),
 }
 
-/// The next state, and what to ask of BlueZ.
+/// The next state, and what to ask of `BlueZ`.
+#[must_use]
 pub fn bluetooth_step(state: BtState, input: BtInput) -> (BtState, Vec<BtEffect>) {
     match (state, input) {
         (state, BtInput::Heard(heard)) => (heard_step(state, heard), Vec::new()),
@@ -178,8 +179,8 @@ fn ended(
     let effects = result.err().map(BtEffect::Tell).into_iter().collect();
     (
         BtReady {
-            busy,
             asking,
+            busy,
             ..page
         },
         effects,
@@ -188,6 +189,7 @@ fn ended(
 
 impl BtReady {
     /// Whether `address` is the device work is under way for, or is connecting.
+    #[must_use]
     pub fn is_working(&self, address: &BtAddress) -> bool {
         self.busy.as_ref() == Some(address)
             || self
@@ -197,6 +199,7 @@ impl BtReady {
     }
 
     /// Whether `address` is a device this computer is paired with.
+    #[must_use]
     pub fn is_paired(&self, address: &BtAddress) -> bool {
         self.status.device(address).is_some_and(|d| d.paired)
     }
@@ -204,6 +207,7 @@ impl BtReady {
 
 impl PairingQuestion {
     /// Whether the question wants an answer (the number to type on the device needs none).
+    #[must_use]
     pub fn wants_answer(&self) -> bool {
         match self.ask {
             PairingAsk::Compare(_)

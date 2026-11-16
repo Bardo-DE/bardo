@@ -104,6 +104,7 @@ pub struct DbusTransport {
 #[cfg(feature = "dbus")]
 impl DbusTransport {
     /// Over an existing session-bus connection.
+    #[must_use]
     pub fn new(connection: memory_dbus::BusConnection) -> Self {
         Self { connection }
     }

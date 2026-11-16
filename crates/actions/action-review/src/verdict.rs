@@ -32,6 +32,7 @@ pub enum ReviewVerdict {
 
 impl ReviewVerdict {
     /// The verdict without its reason, for the audit.
+    #[must_use]
     pub fn kind(&self) -> VerdictKind {
         match self {
             ReviewVerdict::Allow => VerdictKind::Allow,

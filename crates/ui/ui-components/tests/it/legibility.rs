@@ -574,7 +574,7 @@ fn widget_grounds_of_every_space(scheme: Scheme) -> Vec<(String, Hex)> {
     let mut grounds = Vec::new();
     for (index, preset) in PRESETS.iter().enumerate() {
         for stop in derive(preset.dots, scheme).stops {
-            for &wallpaper in WALLPAPERS.iter() {
+            for &wallpaper in &WALLPAPERS {
                 let ground = widget_card_over(wallpaper, scheme, Some(&stop));
                 grounds.push((
                     format!("preset {} stop {stop} over {}", index + 1, wallpaper.css()),

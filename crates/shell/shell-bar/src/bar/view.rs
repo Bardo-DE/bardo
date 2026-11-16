@@ -1,4 +1,4 @@
-//! The bar's document: `Ds` root with the workspace's SpaceLook, `Material::Bar`, the left group
+//! The bar's document: `Ds` root with the workspace's `SpaceLook`, `Material::Bar`, the left group
 //! (the system menu, the app's name and menus, the workspaces) and the right one, and the one
 //! reusable menu popup's session in context. The bar also carries the crash guard's notice that
 //! the person's styles were turned off (`StylesNotice`): it is the one surface every session has.

@@ -178,6 +178,7 @@ impl<T: Send + 'static> PeekWorker<T> {
 impl PeekWorker<AnyPeeked> {
     /// A worker that [`look`]s at each file as `peeking` says. A file that cannot be read is an
     /// unavailable card, as `look` makes it.
+    #[must_use]
     pub fn looking(config: WorkerConfig, peeking: Peeking) -> Self {
         let work: PeekWork<AnyPeeked> = Arc::new(move |input| look(input, &peeking));
         let failed: PeekFailure<AnyPeeked> = Arc::new(|input| {

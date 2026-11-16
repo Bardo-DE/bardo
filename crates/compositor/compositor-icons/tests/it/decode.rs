@@ -54,9 +54,9 @@ fn what_is_not_a_picture_or_not_there_is_an_error() {
     let dir = tempfile::tempdir().expect("scratch");
     let junk = dir.path().join("junk.png");
     std::fs::write(&junk, b"not a picture").expect("write");
-    assert!(load(&junk, 32).is_err());
-    assert!(load(&dir.path().join("absent.png"), 32).is_err());
-    assert!(load(&junk, 0).is_err());
+    load(&junk, 32).unwrap_err();
+    load(&dir.path().join("absent.png"), 32).unwrap_err();
+    load(&junk, 0).unwrap_err();
 }
 
 #[test]

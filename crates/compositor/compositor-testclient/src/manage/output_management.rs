@@ -179,6 +179,7 @@ impl OutputManager {
     }
 
     /// The heads announced and not finished, in the order they were announced.
+    #[must_use]
     pub fn heads(&self) -> Vec<HeadInfo> {
         self.roster
             .heads
@@ -189,21 +190,25 @@ impl OutputManager {
     }
 
     /// How many heads the compositor has finished.
+    #[must_use]
     pub fn finished_heads(&self) -> usize {
         self.roster.heads.iter().filter(|entry| entry.gone).count()
     }
 
     /// The serial of the last `done`.
+    #[must_use]
     pub fn serial(&self) -> u32 {
         self.roster.serial
     }
 
     /// How many `done` events arrived.
+    #[must_use]
     pub fn dones(&self) -> u32 {
         self.roster.dones
     }
 
     /// Whether the compositor sent `finished` on the manager.
+    #[must_use]
     pub fn finished(&self) -> bool {
         self.roster.finished
     }
@@ -269,6 +274,7 @@ impl OutputManager {
     }
 
     /// How the compositor answered configuration `id`, once it has.
+    #[must_use]
     pub fn answer(&self, id: ConfigId) -> Option<ConfigOutcome> {
         self.roster
             .answers

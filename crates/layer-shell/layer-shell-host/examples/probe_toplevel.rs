@@ -140,7 +140,7 @@ fn run(args: &[String]) -> Result<(), String> {
     handle
         .insert_source(
             calloop::timer::Timer::from_duration(std::time::Duration::from_secs(60)),
-            |_, _, probe| {
+            |_, (), probe| {
                 probe.exit = true;
                 calloop::timer::TimeoutAction::Drop
             },
@@ -195,8 +195,8 @@ impl WindowHandler for Probe {
         cfg: WindowConfigure,
         _: u32,
     ) {
-        let w = cfg.new_size.0.map_or(256, |v| v.get());
-        let h = cfg.new_size.1.map_or(256, |v| v.get());
+        let w = cfg.new_size.0.map_or(256, std::num::NonZero::get);
+        let h = cfg.new_size.1.map_or(256, std::num::NonZero::get);
         self.logical = (w, h);
         self.configured = true;
         let line = serde_json::json!({
@@ -220,7 +220,7 @@ impl Dispatch<WpFractionalScaleV1, ()> for Probe {
         probe: &mut Probe,
         _: &WpFractionalScaleV1,
         event: wp_fractional_scale_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Probe>,
     ) {

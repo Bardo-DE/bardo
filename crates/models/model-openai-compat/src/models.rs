@@ -24,7 +24,7 @@ pub(crate) fn describe(flavor: Flavor) -> Exchange {
     }
 }
 
-/// The models a body lists: `{"data": [...]}` (vLLM `max_model_len`, OpenRouter
+/// The models a body lists: `{"data": [...]}` (vLLM `max_model_len`, `OpenRouter`
 /// `context_length`, llama-server `meta.n_ctx_train`) or llama-server's `/props` object (the
 /// per-slot `n_ctx` it loaded). A size the server does not report is `Tokens(0)`: the planner
 /// then uses the catalog's context for that model. When only one of the two sizes is reported

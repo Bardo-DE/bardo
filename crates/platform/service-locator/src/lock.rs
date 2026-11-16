@@ -54,6 +54,7 @@ impl Held {
     /// client would then create a fresh file, lock it without conflict and start a second agent.
     /// An agent that calls this now and then (once a minute is plenty) and exits when it returns
     /// `true` turns that from two agents for ever into a short overlap.
+    #[must_use]
     pub fn displaced(&self) -> bool {
         !same_file(&self.file, &self.path)
     }

@@ -208,6 +208,7 @@ impl Sheet {
     /// The sheet as first shown: the provider list, or, where the provider is already known (a
     /// hint, a re-sign-in), working on it until the sign-in says what it needs. An edit of an
     /// account's servers opens on its form, prefilled (`edit_form`).
+    #[must_use]
     pub fn new(purpose: Purpose, providers: Vec<ProviderRow>) -> Self {
         let stage = match &purpose {
             Purpose::Add {
@@ -242,18 +243,21 @@ impl Sheet {
 
     /// The sheet as first shown, and what the host does to begin: an edit opens on its form and a
     /// sheet that is already working on a provider starts its sign-in, behind the first view.
+    #[must_use]
     pub fn start(purpose: Purpose, providers: Vec<ProviderRow>) -> (Self, Vec<SheetEffect>) {
         let sheet = Self::new(purpose, providers);
         let begun = matches!(sheet.stage, Stage::Working(_))
             || matches!(sheet.purpose, Purpose::EditServers { .. });
-        let effects = match begun {
-            true => vec![SheetEffect::Feed(SignInInput::Start)],
-            false => Vec::new(),
+        let effects = if begun {
+            vec![SheetEffect::Feed(SignInInput::Start)]
+        } else {
+            Vec::new()
         };
         (sheet, effects)
     }
 
     /// The provider a sign-in under way is for, while there is one.
+    #[must_use]
     pub fn provider(&self) -> Option<&ProviderId> {
         match &self.stage {
             Stage::Working(provider)
@@ -273,11 +277,13 @@ impl Sheet {
     }
 
     /// The row of `provider` among the providers this sheet lists.
+    #[must_use]
     pub fn row_of(&self, provider: &ProviderId) -> Option<ProviderRow> {
         self.providers.iter().find(|r| r.id == *provider).cloned()
     }
 
     /// What the host draws for this state.
+    #[must_use]
     pub fn view(&self) -> SheetView {
         let row = |provider: &ProviderId| self.row_of(provider);
         let allow = match &self.purpose {
@@ -337,6 +343,7 @@ impl Sheet {
 }
 
 /// The sheet after `event`, and what the host must do about it.
+#[must_use]
 pub fn step(sheet: Sheet, event: SheetEvent) -> (Sheet, Vec<SheetEffect>) {
     machine::step(sheet, event)
 }

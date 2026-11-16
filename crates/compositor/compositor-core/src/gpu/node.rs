@@ -16,6 +16,7 @@ pub struct DrmNodeId {
 
 impl DrmNodeId {
     /// The node `major:minor`.
+    #[must_use]
     pub fn new(major: u32, minor: u32) -> DrmNodeId {
         DrmNodeId { major, minor }
     }
@@ -28,6 +29,7 @@ impl DrmNodeId {
     ///
     /// assert_eq!(DrmNodeId::from_dev_t((226 << 8) | 128), DrmNodeId::new(226, 128));
     /// ```
+    #[must_use]
     pub fn from_dev_t(dev: u64) -> DrmNodeId {
         let major = ((dev >> 32) & 0xffff_f000) | ((dev >> 8) & 0x0fff);
         let minor = ((dev >> 12) & 0xffff_ff00) | (dev & 0x00ff);
@@ -45,6 +47,7 @@ impl DrmNodeId {
     /// let node = DrmNodeId::new(226, 129);
     /// assert_eq!(DrmNodeId::from_dev_t(node.dev_t()), node);
     /// ```
+    #[must_use]
     pub fn dev_t(&self) -> u64 {
         let (major, minor) = (u64::from(self.major), u64::from(self.minor));
         ((major & 0xffff_f000) << 32)
@@ -90,6 +93,7 @@ impl ByPathId {
     }
 
     /// The id's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -123,6 +127,7 @@ pub enum VendorFact {
 
 impl VendorFact {
     /// The vendor a PCI vendor id names.
+    #[must_use]
     pub fn from_pci_vendor(id: u16) -> VendorFact {
         match id {
             0x1002 => VendorFact::Amd,
@@ -160,6 +165,7 @@ pub struct GpuFacts {
 
 impl GpuFacts {
     /// A GPU's facts.
+    #[must_use]
     pub fn new(
         node: DrmNodeId,
         vendor: VendorFact,

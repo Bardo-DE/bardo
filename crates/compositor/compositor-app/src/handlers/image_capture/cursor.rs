@@ -254,9 +254,10 @@ fn image(
         .cursors
         .get(id)
         .and_then(|hold| hold.shown.as_ref());
-    match shown == Some(&argb) {
-        true => Ok(Image::Same),
-        false => Ok(Image::Fresh(argb, wanted.size)),
+    if shown == Some(&argb) {
+        Ok(Image::Same)
+    } else {
+        Ok(Image::Fresh(argb, wanted.size))
     }
 }
 

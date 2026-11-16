@@ -49,6 +49,7 @@ fn reach(role: CallerRole) -> Reach {
 
 /// Whether `claimant` may restore a session opened by `opener` (none for a legacy log that
 /// records no opener, which only the shell or the companion restores).
+#[must_use]
 pub fn may_restore(claimant: Claimant<'_>, opener: Option<&AppName>) -> bool {
     match (reach(claimant.role), opener) {
         (Reach::Any, _) => true,
@@ -61,6 +62,7 @@ pub fn may_restore(claimant: Claimant<'_>, opener: Option<&AppName>) -> bool {
 /// a conversation a terminal started through the companion. Any terminal sees any such
 /// conversation, not only its own scope: terminal scopes are advisory and every one runs as the
 /// person. An editor, an app and the rest still see only what their own app opened.
+#[must_use]
 pub fn may_restore_opening(claimant: Claimant<'_>, opening: &Opening) -> bool {
     may_restore(claimant, opening.opener.as_ref())
         || (claimant.role == CallerRole::Cli
@@ -75,6 +77,7 @@ pub fn may_restore_opening(claimant: Claimant<'_>, opening: &Opening) -> bool {
 ///
 /// A fork is not asked here: it copies the log, seat included, and would be a second
 /// conversation for the helper, so a fork keeps asking [`may_restore_opening`].
+#[must_use]
 pub fn may_restore_plan(claimant: Claimant<'_>, plan: &ResumePlan) -> bool {
     may_restore_opening(claimant, &plan.opening)
         || (claimant.role == CallerRole::Editor

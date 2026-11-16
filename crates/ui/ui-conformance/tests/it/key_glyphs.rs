@@ -1,7 +1,7 @@
 //! The modifier glyphs `⌃ ⌥ ⇧ ⌘` and the keys `⌫ ↩` are drawn by the bundled faces, not by
 //! whatever system face the renderer falls back to. U+2303 (control) was missing from every
 //! face, so a fallback face drew it as a caret (`^`): `⌃⌘S` read "^⌘S". The probe renders a
-//! KeyEquivalent per glyph in both styles and checks each is wide ink, not a caret.
+//! `KeyEquivalent` per glyph in both styles and checks each is wide ink, not a caret.
 
 use crate::support::probe;
 

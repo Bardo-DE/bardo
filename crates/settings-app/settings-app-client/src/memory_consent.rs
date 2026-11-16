@@ -25,6 +25,7 @@ impl MemoryConsent {
     }
 
     /// What waits and what failed, as of the last read.
+    #[must_use]
     pub fn state(&self) -> ConsentState {
         self.live.state()
     }
@@ -48,6 +49,7 @@ impl MemoryConsent {
 
     /// The person saved `value` of `entry`. When it is a memory setting and memory reports that
     /// value as looser than the shipped one, saving it is the person's word, and memory is told.
+    #[must_use]
     pub fn saved(&self, entry: &KeyEntry, value: &toml::Value) -> Pending {
         if !is_memory_setting(entry) {
             return Box::pin(std::future::ready(()));
@@ -58,6 +60,7 @@ impl MemoryConsent {
     }
 
     /// The person pressed Confirm on the value of `key` that waits.
+    #[must_use]
     pub fn confirm(&self, key: &str) -> Pending {
         let Some(held) = self.state().waiting_for(key).cloned() else {
             return Box::pin(std::future::ready(()));

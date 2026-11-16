@@ -9,21 +9,25 @@ fn with(mut error: Error, message: &str) -> Error {
 }
 
 /// The parameters do not fit the method, or say something that is not so.
+#[must_use]
 pub fn invalid(message: &str) -> Error {
     with(Error::invalid_params(), message)
 }
 
 /// The request is not allowed now.
+#[must_use]
 pub fn not_now(message: &str) -> Error {
     with(Error::invalid_request(), message)
 }
 
 /// Something went wrong on our side; no detail leaves.
+#[must_use]
 pub fn internal(message: &str) -> Error {
     with(Error::internal_error(), message)
 }
 
 /// No such session, as far as this editor may know.
+#[must_use]
 pub fn unknown_session() -> Error {
     with(Error::resource_not_found(None), "no such session")
 }

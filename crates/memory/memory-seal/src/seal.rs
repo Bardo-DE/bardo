@@ -42,6 +42,7 @@ pub struct Aad(Vec<u8>);
 
 impl Aad {
     /// The associated data of the file at `path` in `space`.
+    #[must_use]
     pub fn file(space: &SpaceId, path: &str) -> Self {
         let mut bytes = Vec::new();
         for part in [space.as_str(), path] {
@@ -52,12 +53,13 @@ impl Aad {
     }
 
     /// The bytes.
+    #[must_use]
     pub fn as_bytes(&self) -> &[u8] {
         &self.0
     }
 }
 
-/// A 24-byte XChaCha nonce. Injected into [`seal`], so sealing is testable.
+/// A 24-byte `XChaCha` nonce. Injected into [`seal`], so sealing is testable.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Nonce(pub [u8; NONCE_LEN]);
 

@@ -13,6 +13,7 @@ use crate::ipc::dispatch::{Reach, sent};
 pub struct Stash(pub Vec<WindowKey>);
 
 /// Show Desktop, or bring the windows it put away back.
+#[must_use]
 pub fn toggle(reach: &Reach) -> Response {
     let wl = reach.services.windows.state.borrow().clone();
     let active: Vec<WorkspaceKey> = wl

@@ -22,6 +22,7 @@ pub struct PointerGesturesPart {
 
 impl PointerGesturesPart {
     /// Creates the global (version 3). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> PointerGesturesPart
     where
         D: GlobalDispatch<ZwpPointerGesturesV1, GlobalData>

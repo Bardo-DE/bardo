@@ -51,6 +51,7 @@ pub struct XdgForeignPart {
 
 impl XdgForeignPart {
     /// Creates both globals (version 1). Every connection sees them.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> XdgForeignPart
     where
         D: GlobalDispatch<ZxdgExporterV2, ForeignGlobal>

@@ -56,6 +56,7 @@ pub enum Confinement {
 
 impl Confinement {
     /// The word the property carries.
+    #[must_use]
     pub const fn as_word(self) -> &'static str {
         match self {
             Confinement::Confined => "confined",
@@ -94,6 +95,7 @@ const SYSTEM_READ: [&str; 7] = [
 
 /// The socket the session bus is on: `unix:path=...` in `address` (a `DBUS_SESSION_BUS_ADDRESS`),
 /// else `<runtime>/bus`, which is where the bus listens by default.
+#[must_use]
 pub fn bus_socket(address: Option<&str>, runtime_dir: &Path) -> PathBuf {
     address
         .into_iter()

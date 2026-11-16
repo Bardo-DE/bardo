@@ -77,11 +77,13 @@ pub struct Href(pub Arc<str>);
 
 impl Href {
     /// `target` as a link target.
+    #[must_use]
     pub fn new(target: &str) -> Href {
         Href(Arc::from(target))
     }
 
     /// No target: a link the sender gave no usable address.
+    #[must_use]
     pub fn empty() -> Href {
         Href::new("")
     }
@@ -105,6 +107,7 @@ pub const LINK_SCHEMES: &[&str] = &["http", "https", "mailto"];
 impl Body {
     /// `text` as one unstyled run, markup and all (a sender that did not ask for markup, and
     /// `bardo-shell debug notify`); no runs for an empty text.
+    #[must_use]
     pub fn plain(text: &str) -> Body {
         let runs = (!text.is_empty())
             .then(|| BodyRun {
@@ -117,12 +120,14 @@ impl Body {
     }
 
     /// Every run's text, joined: the accessible name, and what a search matches.
+    #[must_use]
     pub fn text(&self) -> String {
         self.runs.iter().map(|run| run.text.as_str()).collect()
     }
 }
 
 /// `raw` (a `Notify` body) parsed per the module doc.
+#[must_use]
 pub fn parse_body(raw: &str) -> Body {
     super::markup_parse::parse(raw)
 }

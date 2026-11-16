@@ -30,6 +30,7 @@ pub enum LockCause {
 /// The cause to publish after one step of the locker's machine: `None` once unlocked; `why`
 /// when the step moved the lock off `Unlocked`; else the cause already kept (a request while
 /// locked never changes it).
+#[must_use]
 pub fn cause_after(
     kept: Option<LockCause>,
     was: LockPhase,
@@ -44,6 +45,7 @@ pub fn cause_after(
 }
 
 /// The cause a machine event carries if it starts a lock.
+#[must_use]
 pub fn cause_of(event: &LockerEvent) -> Option<LockCause> {
     match event {
         LockerEvent::Requested(cause, _) => Some(*cause),

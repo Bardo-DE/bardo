@@ -157,6 +157,7 @@ pub enum DesktopCommand {
 /// standard protocol does), cannot hide or quit an app, and cannot take a minimise target on the
 /// connection the arm runs on: the protocol needs the dock's own `wl_surface`, which lives on
 /// the shell host's connection. Bare has no windows to carry anything.
+#[must_use]
 pub fn supports(backend: DesktopBackend, command: &DesktopCommand) -> bool {
     match backend {
         DesktopBackend::Quire => true,

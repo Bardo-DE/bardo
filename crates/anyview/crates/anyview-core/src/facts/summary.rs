@@ -6,6 +6,7 @@ use super::{FactLabel, Facts};
 impl Facts {
     /// The kind and the size, `kind · size`, with the size in its short form (`3.2 MB`, not the
     /// exact byte count beside it). `None` when the facts have neither.
+    #[must_use]
     pub fn summary(&self) -> Option<String> {
         let value = |label: FactLabel| {
             self.rows()

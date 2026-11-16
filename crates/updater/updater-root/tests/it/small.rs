@@ -93,7 +93,7 @@ fn keys_load_from_a_file_or_the_compiled_in_text_and_say_why_not() {
         format!("untrusted comment: minisign public key\n{KEY}\n"),
     )
     .expect("write");
-    assert!(load_key(&file).is_ok());
+    load_key(&file).unwrap();
     std::fs::write(&file, "garbage").expect("write");
     assert!(matches!(load_key(&file), Err(KeyError::Unreadable)));
     assert!(matches!(from_compiled(None), Err(KeyError::Missing)));
@@ -102,7 +102,7 @@ fn keys_load_from_a_file_or_the_compiled_in_text_and_say_why_not() {
         from_compiled(Some("nonsense")),
         Err(KeyError::Unreadable)
     ));
-    assert!(from_compiled(Some(KEY)).is_ok());
+    from_compiled(Some(KEY)).unwrap();
 }
 
 #[test]

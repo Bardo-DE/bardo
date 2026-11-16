@@ -8,7 +8,7 @@
 //! Each store crate implements them: `eventlog` (`SqliteLog`), `memfiles` (`PlainDir`,
 //! `SealedDir`), `recall` (`Index`), plus the in-memory ones behind their `testing` features.
 //! The service depends on this crate and on none of them, so a build of the service links no
-//! SQLite, SQLCipher or OpenSSL; whoever builds a service picks the concrete stores
+//! SQLite, `SQLCipher` or OpenSSL; whoever builds a service picks the concrete stores
 //! (`memory-local`, `memory-fake`, `memoryd`). Every name here is re-exported from the crate
 //! it used to live in, so old paths keep working.
 //!

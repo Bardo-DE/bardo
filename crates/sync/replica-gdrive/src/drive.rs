@@ -41,6 +41,7 @@ fn again() -> PutRefused {
 }
 
 /// Whether Drive takes `name`: any but an empty one.
+#[must_use]
 pub fn accepts_name(name: &str) -> bool {
     !name.is_empty()
 }

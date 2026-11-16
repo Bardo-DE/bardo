@@ -35,6 +35,7 @@ pub struct HarnessConfig {
 
 impl HarnessConfig {
     /// A document at `viewport` with no app contexts.
+    #[must_use]
     pub fn new(viewport: Viewport) -> Self {
         HarnessConfig {
             viewport,
@@ -56,6 +57,7 @@ impl HarnessConfig {
 
     /// Who answers the document's requests beyond `data:`, and its frames' (default
     /// [`NetPolicy::Local`]).
+    #[must_use]
     pub fn with_net(mut self, policy: NetPolicy) -> Self {
         self.setup.net = policy;
         self
@@ -66,6 +68,7 @@ impl HarnessConfig {
     /// request anywhere else, one that only reaches a root through a symlink or `..`, and one for
     /// anything but a regular file of at most 32 MiB is refused. An app that sets no roots reads
     /// no `file:` URLs at all; `data:` is not affected, and a frame is never served `file:`.
+    #[must_use]
     pub fn with_file_roots(mut self, roots: FileRoots) -> Self {
         self.setup.file_roots = roots;
         self
@@ -73,6 +76,7 @@ impl HarnessConfig {
 
     /// What a link clicked inside a frame does (default [`FrameLinks::default`]): a frame never
     /// navigates, so the app opens the link itself or nothing happens.
+    #[must_use]
     pub fn with_frame_links(mut self, links: FrameLinks) -> Self {
         self.setup.frame_links = links;
         self
@@ -80,12 +84,14 @@ impl HarnessConfig {
 
     /// Where the keyboard goes after a click on nothing focusable (default
     /// [`FocusFallback::Ancestor`]: the nearest focusable ancestor, as in a browser).
+    #[must_use]
     pub fn with_focus_fallback(mut self, fallback: FocusFallback) -> Self {
         self.setup.focus_fallback = fallback;
         self
     }
 
     /// Provide every value in `contexts` at the root, after any already given.
+    #[must_use]
     pub fn with_contexts(mut self, contexts: RootContexts) -> Self {
         self.setup.contexts = self.setup.contexts.and(contexts);
         self
@@ -94,6 +100,7 @@ impl HarnessConfig {
     /// Fix the document's keymap to `platform`'s conventions, so a test reads no real system
     /// (default: our desktop's, where Command is the primary modifier and arrives as Super). A
     /// key the platform does not bind does nothing, as on that platform.
+    #[must_use]
     pub fn with_platform(mut self, platform: Platform) -> Self {
         self.setup.keys = KeySource::conventions(platform);
         self
@@ -101,6 +108,7 @@ impl HarnessConfig {
 
     /// Give the document `source` instead of a platform's conventions: a fake of the desktop's
     /// own keymap source, for a test of how the document follows a reload.
+    #[must_use]
     pub fn with_keymap_source(mut self, source: KeySource) -> Self {
         self.setup.keys = source;
         self
@@ -108,6 +116,7 @@ impl HarnessConfig {
 
     /// The renderer pictures and [`Harness::paint_timed`](crate::Harness::paint_timed) paint
     /// with (default [`Backend::Cpu`]). See [`Backend::Hybrid`] for how a missing GPU shows.
+    #[must_use]
     pub fn with_backend(mut self, backend: Backend) -> Self {
         self.backend = backend;
         self
@@ -115,6 +124,7 @@ impl HarnessConfig {
 
     /// Which GPU a [`Backend::Hybrid`] harness opens (default [`AdapterPref::Auto`]); a
     /// non-empty `WGPU_ADAPTER_NAME` overrides it.
+    #[must_use]
     pub fn with_adapter(mut self, adapter: AdapterPref) -> Self {
         self.adapter = adapter;
         self
@@ -123,6 +133,7 @@ impl HarnessConfig {
     /// Whether a [`Backend::Hybrid`] harness's GPU instance names its objects and validates
     /// (default [`GpuDiagnostics::Off`], whatever `WGPU_DEBUG` and `WGPU_VALIDATION` say). Turn
     /// it on for one debugging session; see [`GpuDiagnostics`] for why a suite should not.
+    #[must_use]
     pub fn with_gpu_diagnostics(mut self, diagnostics: GpuDiagnostics) -> Self {
         self.diagnostics = diagnostics;
         self
@@ -131,6 +142,7 @@ impl HarnessConfig {
     /// The clock the harness's timers run on (default [`Clock::Wall`]). [`Clock::Virtual`]
     /// makes `advance` move one clock for CSS animations and every ds timer, so a test sees the
     /// same frames however loaded the machine is.
+    #[must_use]
     pub fn with_clock(mut self, clock: Clock) -> Self {
         self.clock = clock;
         self
@@ -140,6 +152,7 @@ impl HarnessConfig {
     /// [`Layout::Held`] builds it as a shell surface is built before it is mapped: its renders
     /// run and its tasks are polled, but nothing is styled or laid out until
     /// [`Harness::map`](crate::Harness::map) (every rect reads 0 x 0 until then).
+    #[must_use]
     pub fn with_layout(mut self, layout: Layout) -> Self {
         self.layout = layout;
         self
@@ -148,6 +161,7 @@ impl HarnessConfig {
     /// How the harness's window answers a component's `WindowSizer::request_size` (default
     /// [`SizerAck::Now`]). Every harness has a window sizer, so `use_window_sizer()` is `Some`;
     /// this is the one call that changes its answers.
+    #[must_use]
     pub fn with_sizer_ack(mut self, ack: SizerAck) -> Self {
         self.window.ack = ack;
         self
@@ -157,6 +171,7 @@ impl HarnessConfig {
     /// [`WindowHosting::Recorded`] gives it one that keeps every title and icon set through it,
     /// read with [`Harness::window_titles`](crate::Harness::window_titles) and
     /// [`Harness::window_icon`](crate::Harness::window_icon).
+    #[must_use]
     pub fn with_window_hosting(mut self, hosting: WindowHosting) -> Self {
         self.window.hosting = hosting;
         self
@@ -164,32 +179,38 @@ impl HarnessConfig {
 
     /// The output the harness's window reports through `WindowSizer::screen` (default
     /// [`WindowScreen::Standard`]).
+    #[must_use]
     pub fn with_window_screen(mut self, screen: WindowScreen) -> Self {
         self.window.screen = screen;
         self
     }
 
     /// The clock the harness's timers run on.
+    #[must_use]
     pub fn clock(&self) -> Clock {
         self.clock
     }
 
     /// Whether the document is laid out as it renders.
+    #[must_use]
     pub fn layout(&self) -> Layout {
         self.layout
     }
 
     /// The renderer the document paints with.
+    #[must_use]
     pub fn backend(&self) -> Backend {
         self.backend
     }
 
     /// Whether a hybrid harness's GPU instance names objects and validates.
+    #[must_use]
     pub fn gpu_diagnostics(&self) -> GpuDiagnostics {
         self.diagnostics
     }
 
     /// The GPU a hybrid harness prefers.
+    #[must_use]
     pub fn adapter(&self) -> &AdapterPref {
         &self.adapter
     }
@@ -202,6 +223,7 @@ impl HarnessConfig {
     }
 
     /// The size and scale the document renders at.
+    #[must_use]
     pub fn viewport(&self) -> Viewport {
         self.viewport
     }

@@ -70,6 +70,7 @@ pub enum SpaceEffect {
 }
 
 /// The next state and the effects.
+#[must_use]
 pub fn step(state: SpaceState, event: SpaceEvent) -> (SpaceState, Vec<SpaceEffect>) {
     use SpaceEffect as E;
     use SpaceEvent as V;

@@ -225,11 +225,13 @@ pub enum CuaRecord {
 
 impl CuaRecord {
     /// The kind tag of this record: the serde tag, as stored.
+    #[must_use]
     pub fn kind(&self) -> String {
         crate::slug_of(self).unwrap_or_default()
     }
 
     /// The run the record belongs to; none for a learned procedure's own row.
+    #[must_use]
     pub fn run(&self) -> &RunId {
         match self {
             CuaRecord::RunStarted { run, .. }
@@ -248,6 +250,7 @@ impl CuaRecord {
 }
 
 /// The actor of every record of a run, as the almanac log stores it.
+#[must_use]
 pub fn cua_actor(session: SessionId, run: RunId) -> Actor {
     Actor::Companion {
         session,

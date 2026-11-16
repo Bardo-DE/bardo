@@ -111,6 +111,7 @@ fn row(entry: &toml::Table, dir: &AgentsDir) -> Option<AgentRow> {
 }
 
 /// The rows of `agents.toml` (its text), one per listed agent, against the records in `dir`.
+///
 /// Lenient: text that is not TOML gives no rows, and an entry with no name is left out. Reads
 /// files; starts nothing.
 pub fn read_agents(agents_toml: &str, dir: &AgentsDir) -> Agents {

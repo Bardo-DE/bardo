@@ -21,7 +21,7 @@ pub struct CaptureRequest {
     /// The cursor.
     pub cursor: CursorMode,
     /// The Space of `output` to capture instead of the whole output, and the size of the
-    /// picture (bardo_shell_v1 version 2); `None` for the output as it is shown.
+    /// picture (`bardo_shell_v1` version 2); `None` for the output as it is shown.
     pub space: Option<SpaceShot>,
 }
 
@@ -36,6 +36,7 @@ pub struct SpaceShot {
 
 impl CaptureRequest {
     /// A capture of `output` with the cursor hidden.
+    #[must_use]
     pub fn new(output: OutputName) -> Self {
         Self {
             output,
@@ -46,6 +47,7 @@ impl CaptureRequest {
 
     /// A picture of `space` of `output`, `size` pixels, with the cursor hidden. The windows are
     /// drawn without frames over a transparent background; ask again when the Space changed.
+    #[must_use]
     pub fn of_space(output: OutputName, space: SpaceId, size: Size) -> Self {
         Self {
             space: Some(SpaceShot { space, size }),
@@ -54,6 +56,7 @@ impl CaptureRequest {
     }
 
     /// This capture with `cursor`.
+    #[must_use]
     pub fn with_cursor(mut self, cursor: CursorMode) -> Self {
         self.cursor = cursor;
         self

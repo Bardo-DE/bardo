@@ -38,6 +38,7 @@ pub enum Dir {
 
 impl Dir {
     /// The direction of a signed offset change; `None` for no change.
+    #[must_use]
     pub fn of(delta: f64) -> Option<Dir> {
         if delta > 0.0 {
             Some(Dir::Pos)
@@ -49,6 +50,7 @@ impl Dir {
     }
 
     /// `+1` or `-1`.
+    #[must_use]
     pub fn sign(self) -> f64 {
         match self {
             Dir::Neg => -1.0,
@@ -82,6 +84,7 @@ pub enum Inside {
 
 impl Inside {
     /// The scroller this names within its own document.
+    #[must_use]
     pub fn scroller(self) -> Scroller {
         match self {
             Inside::Viewport => Scroller::Viewport,
@@ -90,6 +93,7 @@ impl Inside {
     }
 
     /// `scroller` of a frame's document, if it is one a frame can hold (not another frame's).
+    #[must_use]
     pub fn of(scroller: Scroller) -> Option<Inside> {
         match scroller {
             Scroller::Viewport => Some(Inside::Viewport),
@@ -121,6 +125,7 @@ pub struct Geom {
 
 impl Geom {
     /// Whether the scroller can move from its current offset toward `dir`.
+    #[must_use]
     pub fn can_move(&self, dir: Dir) -> bool {
         const EPSILON: f64 = 0.5;
         match dir {
@@ -130,11 +135,13 @@ impl Geom {
     }
 
     /// `x` clamped into `0..=max`.
+    #[must_use]
     pub fn clamp(&self, x: f64) -> f64 {
         x.clamp(0.0, self.max.0.max(0.0))
     }
 
     /// The edge offset on the `dir` side.
+    #[must_use]
     pub fn edge(&self, dir: Dir) -> f64 {
         match dir {
             Dir::Neg => 0.0,

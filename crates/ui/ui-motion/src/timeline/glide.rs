@@ -31,6 +31,7 @@ pub struct Pose {
 
 impl Glide {
     /// From `from` to `to` over `length` along `easing`.
+    #[must_use]
     pub fn between(from: i64, to: i64, length: Duration, easing: Easing) -> Glide {
         Glide {
             from,
@@ -40,6 +41,7 @@ impl Glide {
     }
 
     /// A glide that is already where it is going.
+    #[must_use]
     pub fn still(at: i64) -> Glide {
         Glide::between(at, at, Duration::ZERO, Easing::Linear)
     }

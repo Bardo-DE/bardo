@@ -104,6 +104,7 @@ pub enum CassetteError {
 
 impl Cassette {
     /// The file's text: the header, then one line per interaction.
+    #[must_use]
     pub fn to_jsonl(&self) -> String {
         write_jsonl(&self.header, &self.interactions)
     }

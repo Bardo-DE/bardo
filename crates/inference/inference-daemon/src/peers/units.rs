@@ -28,6 +28,7 @@ pub enum Unit {
 
 impl Unit {
     /// The systemd unit.
+    #[must_use]
     pub fn name(&self) -> &str {
         match self {
             Self::Named(unit) | Self::Running { unit, .. } => unit,
@@ -35,6 +36,7 @@ impl Unit {
     }
 
     /// The programs the entry names (none for a bare unit name).
+    #[must_use]
     pub fn exe(&self) -> Vec<String> {
         match self {
             Self::Named(_) => Vec::new(),

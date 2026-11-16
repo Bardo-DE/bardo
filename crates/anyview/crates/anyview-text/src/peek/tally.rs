@@ -22,6 +22,7 @@ impl Tally {
     }
 
     /// `1,234`, or `1,234+` for a lower bound.
+    #[must_use]
     pub fn text(self) -> String {
         match self {
             Tally::Exact(count) => grouped(count),

@@ -289,6 +289,7 @@ pub const SETTING_ROWS: &[SettingRow] = &[
 
 impl AgentConfig {
     /// What this configuration holds for `key`, in the row's unit; none for an unknown key.
+    #[must_use]
     pub fn value(&self, key: &str) -> Option<SettingValue> {
         let num = |v: i64| Some(SettingValue::Number(v));
         let c = |count: Count| i64::from(count.0);

@@ -43,6 +43,7 @@ impl Default for Run {
 
 impl Run {
     /// A call that has just arrived.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             state: CallState::Received,
@@ -60,6 +61,7 @@ impl Run {
 
     /// Who decided the call: the person if they answered, else the last reviewer that ran, else
     /// policy alone.
+    #[must_use]
     pub fn decided_by(&self, p: &Prepared) -> DecidedBy {
         match (&self.receipt, self.codes.last()) {
             (Some(receipt), _) => DecidedBy::User(receipt.clone()),
@@ -95,6 +97,7 @@ fn ruling_ids(ruling: &Ruling) -> Vec<PolicyId> {
 }
 
 /// The reason code a reviewer's verdict, or its failure, comes to.
+#[must_use]
 pub fn code_of(verdict: &Result<ReviewVerdict, ReviewError>) -> ReasonCode {
     match verdict {
         Ok(ReviewVerdict::Allow) => ReasonCode::WithinRequest,
@@ -104,11 +107,13 @@ pub fn code_of(verdict: &Result<ReviewVerdict, ReviewError>) -> ReasonCode {
 }
 
 /// The id of a sheet that was never issued.
+#[must_use]
 pub fn unissued() -> ConfirmId {
     ConfirmId::parse("c-0").expect("`c-0` is a valid confirmation id")
 }
 
 /// The model id the reviewer of `stage` is named by.
+#[must_use]
 pub fn reviewer_model(stage: Stage) -> ModelId {
     let name = match stage {
         Stage::Quick => "reviewer-quick",
@@ -120,6 +125,7 @@ pub fn reviewer_model(stage: Stage) -> ModelId {
 
 /// The breaker's mark for a call that ended: allowed if it ran, denied if policy, a reviewer or
 /// the person said no, and nothing for a halt, a budget or an app that failed.
+#[must_use]
 pub fn decision_of(
     driven: &Driven,
     p: &Prepared,
@@ -140,6 +146,7 @@ pub fn decision_of(
 }
 
 /// How a call's end reads in the session history.
+#[must_use]
 pub fn step_end(driven: &Driven, outcome: Option<&Outcome>) -> StepEnd {
     match &driven.end {
         CallEnd::Done => StepEnd::Done {

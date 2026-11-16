@@ -177,6 +177,7 @@ impl Shape {
         }])
     }
 
+    #[must_use]
     pub fn to_json_schema(&self, dialect: SchemaDialect) -> SchemaText {
         self.schema_text(dialect)
     }
@@ -191,6 +192,7 @@ impl Shape {
 
     /// A regex over the bare value, for Choice and a bounded Integer only: the reply is `allow`,
     /// not `"allow"` (vLLM's `structured_outputs.regex` constrains the whole reply).
+    #[must_use]
     pub fn to_regex(&self) -> Option<String> {
         match self {
             Shape::Choice(choices) if !choices.is_empty() => Some(

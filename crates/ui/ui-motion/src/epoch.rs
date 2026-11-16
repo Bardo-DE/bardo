@@ -12,6 +12,7 @@ pub struct Epoch(pub u32);
 
 impl Epoch {
     /// The epoch one step later.
+    #[must_use]
     pub fn next(self) -> Epoch {
         Epoch(self.0.wrapping_add(1))
     }

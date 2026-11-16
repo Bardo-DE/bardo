@@ -7,7 +7,7 @@
 //! to them when it ends.
 //!
 //! Nothing of the request is mapped: tool calls and results, thinking, images, server tools and
-//! cache hints pass as the agent wrote them. The one change is OpenAI streaming, which asks for
+//! cache hints pass as the agent wrote them. The one change is `OpenAI` streaming, which asks for
 //! a usage chunk so the stream can be metered. A provider's error body is never relayed (it may
 //! echo the prompt); the agent is told the kind of thing that went wrong, in its own error shape.
 
@@ -122,7 +122,7 @@ fn upstream(head: Option<&ResponseHead>) -> Failure {
     }
 }
 
-/// The body to send: as the agent wrote it, except that an OpenAI stream asks for its usage.
+/// The body to send: as the agent wrote it, except that an `OpenAI` stream asks for its usage.
 fn body_for(request: &Request, shape: Shape, stream: bool) -> Result<String, Failure> {
     let invalid = || Failure::new(Cause::Invalid, "the body is not JSON text");
     if shape == Shape::OpenAi && stream {

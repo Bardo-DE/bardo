@@ -2,7 +2,12 @@
 //! constructors are stubs in porter until its fill.
 
 use crate::clock::NOW;
-use memory_core::*;
+use memory_core::{
+    Actor, AgentRole, AppName, AreaPayload, AreaTag, Cause, Confidentiality, ContentDigest,
+    DataClass, Effect, EventBody, FileChange, FileView, FileWhy, Integrity, JsonText, KindTag,
+    Label, Record, RunId, SessionId, Source, SpaceId, SpacePath, SystemPart, ThingKey, ThingKind,
+    ThingRef, ThingRole, ThingView, UserText, Verb,
+};
 use std::collections::BTreeSet;
 
 fn space() -> SpaceId {
@@ -19,11 +24,13 @@ fn unreachable_name() -> AppName {
 }
 
 /// The Mail app.
+#[must_use]
 pub fn mail() -> AppName {
     app("org.bardo.Mail")
 }
 
 /// A thing in Mail.
+#[must_use]
 pub fn thing(kind: &str, key: &str) -> Option<ThingRef> {
     Some(ThingRef {
         app: mail(),
@@ -41,6 +48,7 @@ fn view(kind: &str, key: &str, title: &str) -> Option<ThingView> {
 }
 
 /// The person's own words: trusted, public.
+#[must_use]
 pub fn trusted_label() -> Label {
     Label {
         integrity: Integrity::Trusted,
@@ -51,6 +59,7 @@ pub fn trusted_label() -> Label {
 }
 
 /// Mail from someone else: untrusted, private to the Space.
+#[must_use]
 pub fn mail_label() -> Label {
     Label {
         integrity: Integrity::Untrusted,
@@ -73,6 +82,7 @@ fn record(actor: Actor, effect: Effect, label: Label, body: EventBody, cause: Ca
 }
 
 /// The person archived the thread "Q4 budget" in Mail.
+#[must_use]
 pub fn mail_thread_archived() -> Option<Record> {
     Some(record(
         Actor::User { via: mail() },
@@ -88,6 +98,7 @@ pub fn mail_thread_archived() -> Option<Record> {
 }
 
 /// A receipt attachment was saved to Downloads and Mail said why.
+#[must_use]
 pub fn file_saved_from_attachment() -> Option<Record> {
     let cause = thing("mail.message", "m1")?;
     Some(record(
@@ -112,6 +123,7 @@ pub fn file_saved_from_attachment() -> Option<Record> {
 }
 
 /// The companion forwarded a thread (the router records it on the companion's behalf).
+#[must_use]
 pub fn companion_forwarded() -> Option<Record> {
     Some(record(
         Actor::Companion {
@@ -142,6 +154,7 @@ fn area(area: AreaTag, kind: &str, json: &str) -> Option<EventBody> {
 }
 
 /// One computer-use step, as cuad records it.
+#[must_use]
 pub fn cua_run_step() -> Option<Record> {
     let run = RunId::parse("r-1").ok()?;
     Some(record(
@@ -157,6 +170,7 @@ pub fn cua_run_step() -> Option<Record> {
 }
 
 /// The router asked the person before an outbound action.
+#[must_use]
 pub fn policy_ask() -> Option<Record> {
     Some(record(
         Actor::System {
@@ -174,6 +188,7 @@ pub fn policy_ask() -> Option<Record> {
 }
 
 /// The thing a companion session's entries name as their `Subject`: the stream key.
+#[must_use]
 pub fn session_thing(session: &str) -> Option<ThingRef> {
     Some(ThingRef {
         app: app("org.bardo.Companion"),
@@ -184,6 +199,7 @@ pub fn session_thing(session: &str) -> Option<ThingRef> {
 
 /// One entry of a companion session's durable log, as docket writes it: an `Area(Companion)`
 /// payload of kind `companion.session.<slug>` that names its session as the `Subject`.
+#[must_use]
 pub fn session_entry(session: &str, slug: &str, text: &str) -> Option<Record> {
     let json = serde_json::json!({ "session": session, "text": text }).to_string();
     Some(record(

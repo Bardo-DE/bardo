@@ -39,6 +39,7 @@ pub const SHELL_SCALE: ShellScale = ShellScale {
 impl ShellScale {
     /// A bar item's height, 22: the bar keeps its 24 (design/34 step 2 changes its transparency,
     /// not its size), so its pill stays below the ladder's taller Regular control.
+    #[must_use]
     pub fn item(self) -> WholePx {
         WholePx(22)
     }

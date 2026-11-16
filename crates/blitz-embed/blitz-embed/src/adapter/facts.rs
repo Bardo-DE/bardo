@@ -33,6 +33,7 @@ pub struct AdapterFacts {
 
 impl AdapterFacts {
     /// The facts of a wgpu adapter.
+    #[must_use]
     pub fn of(adapter: &wgpu::Adapter) -> AdapterFacts {
         let info = adapter.get_info();
         AdapterFacts {
@@ -51,6 +52,7 @@ impl AdapterFacts {
     }
 
     /// `name (backend, driver)`, as `FrameStats::adapter` reports it.
+    #[must_use]
     pub fn label(&self) -> String {
         format!("{} ({:?}, {})", self.name, self.backend, self.driver)
     }

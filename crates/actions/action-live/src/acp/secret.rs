@@ -65,6 +65,7 @@ impl Credentials {
     }
 
     /// Where the copy is.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.at
     }
@@ -100,11 +101,13 @@ fn strings(value: &serde_json::Value, out: &mut Vec<String>) {
 
 impl Redactor {
     /// Scrubs nothing: a run with no credentials.
+    #[must_use]
     pub fn none() -> Self {
         Self::default()
     }
 
     /// Scrubs the content of a secret file given as `bytes`.
+    #[must_use]
     pub fn of(bytes: &[u8]) -> Self {
         let text = String::from_utf8_lossy(bytes).trim().to_owned();
         let mut needles = vec![text.clone()];
@@ -118,6 +121,7 @@ impl Redactor {
     }
 
     /// `text` with every secret replaced.
+    #[must_use]
     pub fn scrub(&self, text: &str) -> String {
         self.needles
             .iter()
@@ -125,6 +129,7 @@ impl Redactor {
     }
 
     /// Whether `bytes` hold none of the secrets.
+    #[must_use]
     pub fn is_clean(&self, bytes: &[u8]) -> bool {
         let text = String::from_utf8_lossy(bytes);
         self.needles.iter().all(|n| !text.contains(n.as_str()))

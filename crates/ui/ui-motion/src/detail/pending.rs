@@ -19,6 +19,7 @@ pub const SPIN_STEPS: u8 = 12;
 
 impl PendingSpec {
     /// Steps in one cycle: a layer each for Iterate, twelve twelfths for Spin.
+    #[must_use]
     pub fn cycle(self) -> u8 {
         match self {
             PendingSpec::Iterate { layers } => layers.max(1),
@@ -39,6 +40,7 @@ pub enum PendingFrame {
 
 impl PendingFrame {
     /// The `data-pending` word: `idle` or `step`.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             PendingFrame::Idle => "idle",
@@ -48,6 +50,7 @@ impl PendingFrame {
 
     /// Whether `layer` (0 first) is drawn in this frame of `spec`: Idle draws every layer;
     /// Iterate lights one layer a step; Spin is always On (it turns instead).
+    #[must_use]
     pub fn lit(self, spec: PendingSpec, layer: u8) -> bool {
         let PendingFrame::Step(n) = self else {
             return true;

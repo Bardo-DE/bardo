@@ -15,6 +15,7 @@ pub struct DockPins {
 impl DockPins {
     /// The pins with each id of an app that was renamed (`X-Flatpak-RenamedFrom`) replaced by
     /// its current id. An app pinned under both ids is pinned once, where the first of them was.
+    #[must_use]
     pub fn renamed(self, index: &AppIndex) -> DockPins {
         let renames = index.renames();
         let mut pinned: Vec<AppId> = Vec::with_capacity(self.pinned.len());

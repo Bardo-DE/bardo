@@ -18,6 +18,7 @@ pub enum ServiceEvent {
 }
 
 /// The status of a Space that cannot be opened: locked, nothing counted.
+#[must_use]
 pub fn locked_status() -> SpaceStatus {
     SpaceStatus {
         state: SpaceState::Locked,

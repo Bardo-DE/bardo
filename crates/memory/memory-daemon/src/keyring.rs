@@ -28,6 +28,7 @@ fn rule() -> MatchRule<'static> {
 }
 
 /// Does this message say a collection's `Locked` changed? (Pure over the message body.)
+#[must_use]
 pub fn is_lock_change(message: &Message) -> bool {
     let body = message.body();
     let parsed: Result<

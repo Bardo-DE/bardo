@@ -44,6 +44,7 @@ pub enum Source {
 
 impl Source {
     /// The reply's `(kind, name)` pair.
+    #[must_use]
     pub fn wire(&self) -> (&'static str, &str) {
         match self {
             Source::Output(name) => ("output", name),
@@ -72,6 +73,7 @@ pub struct Plan {
 
 impl Plan {
     /// The choices on `tab`.
+    #[must_use]
     pub fn on(&self, tab: Tab) -> &[Choice] {
         match tab {
             Tab::Screens => &self.screens,
@@ -80,6 +82,7 @@ impl Plan {
     }
 
     /// Whether `source` is offered on any tab.
+    #[must_use]
     pub fn offers(&self, source: &Source) -> bool {
         self.screens
             .iter()
@@ -89,6 +92,7 @@ impl Plan {
 }
 
 /// The plan for `ask` over `candidates`. A kind the app did not accept offers nothing.
+#[must_use]
 pub fn plan(ask: &Ask, candidates: &Candidates) -> Plan {
     let tabs = match ask.kinds {
         Kinds::Screens => vec![Tab::Screens],

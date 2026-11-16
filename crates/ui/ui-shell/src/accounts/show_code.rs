@@ -1,4 +1,4 @@
-//! ShowCode: the device-code sign-in (PLAN 2.6): the code the person types at the provider's page,
+//! `ShowCode`: the device-code sign-in (PLAN 2.6): the code the person types at the provider's page,
 //! large, the address of that page, and "Copy Code". Used where no browser can be opened for the
 //! person (a headless or remote session).
 

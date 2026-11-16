@@ -20,6 +20,7 @@ pub struct FileManagerReveal {
 
 impl FileManagerReveal {
     /// A reveal on `env`'s session bus.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         FileManagerReveal { env }
     }

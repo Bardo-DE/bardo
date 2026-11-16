@@ -14,11 +14,11 @@ pub struct Parsed {
     pub model: String,
     /// Whether it asked for a stream.
     pub stream: bool,
-    /// Whether a stream is to end with a usage chunk (OpenAI's `stream_options.include_usage`).
+    /// Whether a stream is to end with a usage chunk (`OpenAI`'s `stream_options.include_usage`).
     pub include_usage: bool,
     /// The request, as inferd's own chat request.
     pub chat: ChatRequest,
-    /// For OpenAI's `logprobs` on a `Choice`: how many of the options' log-probabilities the
+    /// For `OpenAI`'s `logprobs` on a `Choice`: how many of the options' log-probabilities the
     /// reply lists beside the chosen one (`top_logprobs`, 0 to 20). `None` when the request did
     /// not ask, or is not a `Choice`: the reply then has no `logprobs`.
     pub top_logprobs: Option<u32>,
@@ -48,6 +48,7 @@ fn permille(value: f64) -> Permille {
 
 /// The sampling a request names: `Off` when it names none of temperature, `top_p` or `top_k`.
 /// A temperature left out takes `default_temperature` (a protocol's own default).
+#[must_use]
 pub fn sampling_of(
     temperature: Option<f64>,
     top_p: Option<f64>,
@@ -69,6 +70,7 @@ pub fn sampling_of(
 }
 
 /// A reply limit given as a number.
+#[must_use]
 pub fn limit_of(value: Option<u64>) -> Knob<Tokens> {
     value.map_or(Knob::Off, |n| {
         Knob::Set(Tokens(u32::try_from(n).unwrap_or(u32::MAX)))
@@ -76,6 +78,7 @@ pub fn limit_of(value: Option<u64>) -> Knob<Tokens> {
 }
 
 /// How hard to reason for a thinking budget in tokens.
+#[must_use]
 pub fn effort_for_budget(budget: u64) -> Reasoning {
     Reasoning::On(match budget {
         0..=2_048 => Effort::Low,
@@ -85,6 +88,7 @@ pub fn effort_for_budget(budget: u64) -> Reasoning {
 }
 
 /// Whether the reply is only reasoning: it says nothing and calls nothing.
+#[must_use]
 pub fn only_thought(reply: &ChatReply) -> Option<(StopReason, u32)> {
     let thought = reply.thought.as_deref().filter(|t| !t.is_empty())?;
     (reply.text.is_empty() && reply.tool_calls.is_empty())
@@ -92,12 +96,14 @@ pub fn only_thought(reply: &ChatReply) -> Option<(StopReason, u32)> {
 }
 
 /// The tokens of a reply in the units both protocols count: uncached input, output, cached.
+#[must_use]
 pub fn counted(usage: TokenUsage) -> (u32, u32, u32) {
     let cached = usage.cached.0.min(usage.input.0);
     (usage.input.0 - cached, usage.output.0, cached)
 }
 
 /// A tool call's arguments as JSON (the text was checked JSON where it entered).
+#[must_use]
 pub fn args_value(call: &ToolCallPart) -> Value {
     serde_json::from_str(call.args.as_str()).unwrap_or(Value::Null)
 }

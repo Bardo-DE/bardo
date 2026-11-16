@@ -65,12 +65,14 @@ impl SettingsDoc for FilesDoc {
 }
 
 /// The store `settings.toml` lives in, under `root`.
+#[must_use]
 pub fn store(root: ConfigRoot) -> Store {
     Store::new(root, APP)
 }
 
 /// The settings in force under `root`: the defaults for a file that is missing, and the default
 /// for any one value that cannot be used.
+#[must_use]
 pub fn load(root: &ConfigRoot) -> FilesDoc {
     store(root.clone()).load::<FilesDoc>().value
 }

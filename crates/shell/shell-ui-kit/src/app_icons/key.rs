@@ -20,6 +20,7 @@ pub struct TintKey {
 
 impl TintKey {
     /// `tint`, rounded to the key's steps.
+    #[must_use]
     pub fn of(tint: Tint) -> TintKey {
         let hue = (f64::from(tint.hue).rem_euclid(360.0) * 10.0).round() as u16 % 3600;
         let chroma = (f64::from(tint.chroma).clamp(0.0, 1.0) * 10_000.0).round() as u16;
@@ -46,6 +47,7 @@ impl IconKey {
     /// The cache file's name: readable parts for whoever looks in the directory, then a hash
     /// of the whole key so two keys never share a file. Stable across runs and builds (FNV-1a,
     /// not std's hasher, whose output may change between releases).
+    #[must_use]
     pub fn file_name(&self) -> String {
         let name = stem(&self.path);
         let style = style_word(self.style);

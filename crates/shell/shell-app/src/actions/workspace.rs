@@ -9,6 +9,7 @@ use shell_model::windows::{Step, WlCommand, Workspaces};
 use crate::ipc::dispatch::{Carried, Reach, sent, unsupported};
 
 /// Go to the Space one `step` over from the active one, through the compositor service.
+#[must_use]
 pub fn step(reach: &Reach, step: Step) -> Response {
     let handle = &reach.services.windows;
     let plan = plan(&handle.state.borrow().workspaces, Ask::Step(step));
@@ -16,6 +17,7 @@ pub fn step(reach: &Reach, step: Step) -> Response {
 }
 
 /// Open Mission Control on the desktop's own compositor.
+#[must_use]
 pub fn overview(reach: &Reach) -> Response {
     carry(reach, plan(&Workspaces::default(), Ask::Overview))
 }

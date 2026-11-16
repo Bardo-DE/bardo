@@ -75,8 +75,8 @@ fn a_program_the_table_does_not_name_is_nobody() {
 
 #[test]
 fn a_table_with_a_malformed_app_name_does_not_parse() {
-    assert!(CallerTable::from_toml_text("[apps]\n\"not a name\" = [\"x.service\"]\n").is_err());
-    assert!(CallerTable::from_toml_text("cua = 3").is_err());
+    CallerTable::from_toml_text("[apps]\n\"not a name\" = [\"x.service\"]\n").unwrap_err();
+    CallerTable::from_toml_text("cua = 3").unwrap_err();
 }
 
 #[test]
@@ -236,7 +236,7 @@ fn settings_is_a_unit_and_an_app_name_stands_for_its_service() {
     }
 }
 
-/// sec-3 follow-up, through account_dbus's fixture tree (`<root>/<pid>/cgroup`,
+/// sec-3 follow-up, through `account_dbus`'s fixture tree (`<root>/<pid>/cgroup`,
 /// `<root>/units/<unit>` for a unit's main process): only the main process of the Settings unit
 /// has the role; a process moved into its cgroup, and one in an app scope named like the app,
 /// do not.

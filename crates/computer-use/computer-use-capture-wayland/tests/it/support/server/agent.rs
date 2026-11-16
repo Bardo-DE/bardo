@@ -25,7 +25,7 @@ impl GlobalDispatch<BardoAgentManagerV1, ()> for Compositor {
         _: &DisplayHandle,
         _: &Client,
         resource: New<BardoAgentManagerV1>,
-        _: &(),
+        (): &(),
         init: &mut DataInit<'_, Self>,
     ) {
         init.init(resource, ());
@@ -38,7 +38,7 @@ impl Dispatch<BardoAgentManagerV1, ()> for Compositor {
         _: &Client,
         _: &BardoAgentManagerV1,
         request: bardo_agent_manager_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {

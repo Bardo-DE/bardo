@@ -97,6 +97,7 @@ pub struct Batch<S: CoordSpace> {
 }
 
 impl<S: CoordSpace> Batch<S> {
+    #[must_use]
     pub fn new(limits: ParseLimits) -> Self {
         Batch {
             limit: usize::from(limits.max_actions.0),

@@ -20,9 +20,10 @@ pub(crate) struct Endpoint {
 impl Endpoint {
     /// The `Host` header value: `host:port`, with brackets round an IPv6 literal.
     pub(crate) fn host_header(&self) -> String {
-        match self.host.contains(':') {
-            true => format!("[{}]:{}", self.host, self.port),
-            false => format!("{}:{}", self.host, self.port),
+        if self.host.contains(':') {
+            format!("[{}]:{}", self.host, self.port)
+        } else {
+            format!("{}:{}", self.host, self.port)
         }
     }
 }

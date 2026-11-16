@@ -22,11 +22,13 @@ impl Deadline {
     pub const PROMPT: Deadline = Deadline(Duration::from_secs(600));
 
     /// A deadline of `duration`, for a test that must not wait the real one out.
+    #[must_use]
     pub const fn of(duration: Duration) -> Deadline {
         Deadline(duration)
     }
 
     /// How long it is.
+    #[must_use]
     pub const fn duration(self) -> Duration {
         self.0
     }

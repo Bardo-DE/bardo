@@ -42,11 +42,13 @@ pub enum RunState {
 
 impl RunState {
     /// The word on the wire.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         word(&self)
     }
 
     /// The state a word names; `None` for any other text.
+    #[must_use]
     pub fn from_slug(text: &str) -> Option<Self> {
         from_word(text)
     }
@@ -91,6 +93,7 @@ impl RunningModel {
     }
 
     /// The same, whose state began at `since`.
+    #[must_use]
     pub fn since(self, since: SystemTime) -> Self {
         Self {
             since: Some(since),
@@ -99,6 +102,7 @@ impl RunningModel {
     }
 
     /// The same, started with `window` tokens.
+    #[must_use]
     pub fn window(self, window: u32) -> Self {
         Self {
             window: Some(window),
@@ -138,6 +142,7 @@ fn unix_seconds(at: SystemTime) -> i64 {
 }
 
 /// A model as its id and a vardict of the rest.
+#[must_use]
 pub fn running_to_dbus(running: &RunningModel) -> (String, Details) {
     let fields = [
         (RUNNING_KEY_STATE, owned(Value::from(running.state.slug()))),

@@ -80,16 +80,18 @@ fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
 }
 
 /// How long an item stays in Today after it was last opened.
-pub const IDLE: Duration = Duration::from_secs(12 * 60 * 60);
+pub const IDLE: Duration = Duration::from_hours(12);
 
 impl Epoch {
     /// The wall clock now.
+    #[must_use]
     pub fn now() -> Epoch {
         use base_time::Clock as _;
         Epoch(base_time::SystemClock.now().0)
     }
 
     /// `self` moved later by `by`.
+    #[must_use]
     pub fn plus(self, by: Duration) -> Epoch {
         Epoch(
             self.0

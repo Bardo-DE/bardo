@@ -71,6 +71,7 @@ pub enum SessionRecord {
 
 impl SessionRecord {
     /// The record's slug, the tail of its kind tag.
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             SessionRecord::Opened { .. } => "opened",

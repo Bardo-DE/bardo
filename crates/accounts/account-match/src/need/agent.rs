@@ -21,6 +21,7 @@ pub struct AgentNeed {
 impl AgentNeed {
     /// An account that runs `program`, speaking these protocols, with a base-URL override if
     /// `base_url` is set.
+    #[must_use]
     pub fn new(program: AgentProgram, protocols: BTreeSet<AgentProtocol>, base_url: bool) -> Self {
         Self {
             program,

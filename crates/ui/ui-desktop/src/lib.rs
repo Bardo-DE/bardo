@@ -3,7 +3,7 @@
 //! An app's core never asks which OS it runs on; it asks whether a capability answers. A
 //! [`Capability`] names one extra and the D-Bus service that means it; [`Desktop::probe`] reports
 //! each as here or absent, and [`Desktop::watch`] follows the changes.
-//! Feature `dbus` does the asking (zbus, session bus, plus the system bus for PackageKit); without
+//! Feature `dbus` does the asking (zbus, session bus, plus the system bus for `PackageKit`); without
 //! it everything is `Absent` and no D-Bus crate is linked. Feature `dioxus` adds [`use_desktop`].
 
 mod capability;

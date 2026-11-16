@@ -22,11 +22,13 @@ pub enum ActionKeys {
 
 impl ActionKeys {
     /// Bound to the standard `action`.
+    #[must_use]
     pub fn standard(action: StandardAction) -> ActionKeys {
         ActionKeys::Bound(Action::Standard(action))
     }
 
     /// Bound to one of the launcher's own actions.
+    #[must_use]
     pub fn own(action: OwnAction) -> ActionKeys {
         action
             .action()
@@ -55,6 +57,7 @@ pub enum OwnAction {
 
 impl OwnAction {
     /// The shared action, or none for an id the keymap would refuse (never for these).
+    #[must_use]
     pub fn action(self) -> Option<AppAction> {
         AppAction::new(&format!("{APP}.{}", self.slug())).ok()
     }
@@ -63,6 +66,7 @@ impl OwnAction {
     /// a standard action's chord, which the keymap would refuse: the launcher offers no bold and
     /// no Move to Trash, so [`registration`] forgoes both; Search the web keeps Spotlight's ⌘B
     /// and forgetting a clipboard entry keeps ⌘⌫.
+    #[must_use]
     pub fn default_chord(self) -> Option<DefaultChord> {
         let text = match self {
             OwnAction::SearchWeb => "Primary+B",
@@ -77,6 +81,7 @@ impl OwnAction {
     }
 
     /// The own action `action` is, when it is one.
+    #[must_use]
     pub fn of(action: &Action) -> Option<OwnAction> {
         match action {
             Action::App(app) => OwnAction::ALL
@@ -94,6 +99,7 @@ pub const APP: &str = "shell";
 /// What the panel registers for `app`: every own action with its default chord, and the standard
 /// actions the launcher does not offer (Bold, whose ⌘B Search the web takes, and Move to Trash,
 /// whose ⌘⌫ forgets a clipboard entry).
+#[must_use]
 pub fn registration(app: &AppId) -> Registration {
     let rows = OwnAction::ALL
         .iter()
@@ -107,6 +113,7 @@ pub fn registration(app: &AppId) -> Registration {
 }
 
 /// The action of `item` bound to `action`, if any.
+#[must_use]
 pub fn action_for_key<'a>(item: &'a Item, action: &Action) -> Option<&'a ActionId> {
     item.actions
         .iter()

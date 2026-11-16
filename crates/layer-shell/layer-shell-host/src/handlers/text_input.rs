@@ -139,7 +139,7 @@ impl Dispatch<ZwpTextInputV3, ()> for HostState {
 /// Apply a document's IME request (the caret rectangle, `None` for disable, read by whoever drains
 /// `HostShellProvider::ime()` at flush, `HostCtx`) to the protocol object: `enable` +
 /// a default content type, or `disable`, followed by `set_cursor_rectangle` and `commit` (plan
-/// "set_ime_enabled -> enable + content type + commit, cursor area -> set_cursor_rectangle").
+/// "`set_ime_enabled` -> enable + content type + commit, cursor area -> `set_cursor_rectangle`").
 /// Does nothing without a text input object (no `zwp_text_input_manager_v3`, or no keyboard
 /// capability yet). Not gated on the `done` serial matching our own commit count (a compositor
 /// that acknowledges a stale commit is treated the same as one that is current) — a known

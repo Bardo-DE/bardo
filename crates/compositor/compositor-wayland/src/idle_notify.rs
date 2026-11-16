@@ -48,6 +48,7 @@ pub const UNTRUSTED_MIN_TIMEOUT: Duration = Duration::from_secs(5);
 /// other peer [`UNTRUSTED_MIN_TIMEOUT`] (NEW-CAS-7). A native peer proven only by the name of a
 /// launcher's scope is no exception: any program of the person's can make a scope of any name,
 /// so the name proves nothing about who it is.
+#[must_use]
 pub fn timeout_floor(role: &ConnectionRole, peer: &PeerIdentity) -> Duration {
     let _ = peer;
     match role {
@@ -70,6 +71,7 @@ pub struct IdleNotifyPart {
 
 impl IdleNotifyPart {
     /// Creates the global (version 2). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> IdleNotifyPart
     where
         D: GlobalDispatch<ExtIdleNotifierV1, IdleGlobal> + 'static,

@@ -93,7 +93,7 @@ async fn a_check_that_is_dropped_before_its_answer_leaves_the_gate_usable() {
         once.next().await.is_err(),
         "an answered check has nothing more to say"
     );
-    assert!(once.proceed().await.is_ok());
+    once.proceed().await.unwrap();
 }
 
 fn links(

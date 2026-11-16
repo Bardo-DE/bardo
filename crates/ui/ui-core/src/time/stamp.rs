@@ -38,16 +38,19 @@ impl From<u32> for Ms {
 
 impl Stamp {
     /// Milliseconds from `earlier` to `self`, zero if `earlier` is later.
+    #[must_use]
     pub fn since(self, earlier: Stamp) -> u64 {
         self.0.saturating_sub(earlier.0)
     }
 
     /// `self` plus `span`.
+    #[must_use]
     pub fn after(self, span: Ms) -> Stamp {
         Stamp(self.0.saturating_add(span.0))
     }
 
     /// `self` plus `span`, in whole milliseconds, saturating: a configured delay as a deadline.
+    #[must_use]
     pub fn after_span(self, span: Duration) -> Stamp {
         self.after(Ms(u64::try_from(span.as_millis()).unwrap_or(u64::MAX)))
     }
@@ -62,16 +65,19 @@ pub struct FrameClock {
 
 impl FrameClock {
     /// A clock whose zero is `origin` (a daemon passes its start through its root context).
+    #[must_use]
     pub fn new(origin: Instant) -> FrameClock {
         FrameClock { origin }
     }
 
     /// A clock whose zero is now, on this thread's clock (a surface with no daemon origin).
+    #[must_use]
     pub fn started() -> FrameClock {
         FrameClock::new(super::clock::now())
     }
 
     /// `at` as a stamp; an instant before the origin is 0.
+    #[must_use]
     pub fn stamp(&self, at: Instant) -> Stamp {
         Stamp(
             u64::try_from(at.saturating_duration_since(self.origin).as_millis())
@@ -81,11 +87,13 @@ impl FrameClock {
 
     /// `at` as an instant on this thread's clock: the origin plus its milliseconds. The inverse of
     /// [`Self::stamp`] up to the whole millisecond `stamp` drops.
+    #[must_use]
     pub fn instant(&self, at: Stamp) -> Instant {
         self.origin + Duration::from_millis(at.0)
     }
 
     /// Now on this thread's clock, as a stamp.
+    #[must_use]
     pub fn now(&self) -> Stamp {
         self.stamp(super::clock::now())
     }
@@ -117,7 +125,7 @@ mod tests {
             origin + Duration::from_millis(1500)
         );
         assert_eq!(
-            clock.stamp(origin - Duration::from_millis(1)),
+            clock.stamp(origin.checked_sub(Duration::from_millis(1)).unwrap()),
             Stamp(0),
             "before the origin"
         );

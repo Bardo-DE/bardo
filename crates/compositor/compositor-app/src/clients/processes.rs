@@ -88,12 +88,15 @@ impl Processes {
         let peer = rustix::net::sockopt::socket_peercred(stream)
             .ok()
             .map(|peer| peer.pid.as_raw_pid())
-            .map(|pid| match Some(pid) == satellite {
-                true => Peer::Satellite,
-                false => Peer::App(Held {
-                    pid,
-                    handle: handle_of(stream, pid),
-                }),
+            .map(|pid| {
+                if Some(pid) == satellite {
+                    Peer::Satellite
+                } else {
+                    Peer::App(Held {
+                        pid,
+                        handle: handle_of(stream, pid),
+                    })
+                }
             });
         if let Some(peer) = peer {
             self.0.insert(client, peer);
@@ -118,6 +121,7 @@ impl Processes {
     /// Sends `signal` to the processes of `clients`, except init, `own` and `spared` (the
     /// satellite): through the handle held since the connection was accepted where there is one,
     /// by pid otherwise. The pids reached.
+    #[must_use]
     pub fn signal(
         &self,
         clients: &[ClientKey],
@@ -140,6 +144,7 @@ impl Processes {
 
     /// Where the toplevels of `client` come from: X11 when it is the connection
     /// xwayland-satellite carries every X11 program's windows on.
+    #[must_use]
     pub fn origin_of(&self, client: ClientKey) -> WindowOrigin {
         match self.0.get(&client) {
             Some(Peer::Satellite) => WindowOrigin::X11,

@@ -21,6 +21,7 @@ impl AppKey {
     /// peer's process proves one (`account_core::identity_of`), else the declared id, however
     /// well it matches a real app's name. A kind of identity this build does not know counts as
     /// unproven.
+    #[must_use]
     pub fn of(peer: &PeerIdentity, claimed: &ClaimedId) -> AppKey {
         match peer {
             PeerIdentity::Proven(app) => AppKey::Proven(app.clone()),
@@ -31,6 +32,7 @@ impl AppKey {
 
     /// The key as `bardo_desktop_app_v1.identity` sends it: the app name, or
     /// `claimed:<id>` for a claimed key (03 §1.1).
+    #[must_use]
     pub fn wire(&self) -> String {
         match self {
             AppKey::Proven(app) => app.name.as_str().to_owned(),
@@ -39,6 +41,7 @@ impl AppKey {
     }
 
     /// How the key was established, as the wire says it.
+    #[must_use]
     pub fn proof(&self) -> ProofKind {
         match self {
             AppKey::Proven(AppId {

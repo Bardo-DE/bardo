@@ -1,4 +1,4 @@
-//! zwp_keyboard_shortcuts_inhibitor_v1. Filled by P0-H4.
+//! `zwp_keyboard_shortcuts_inhibitor_v1`. Filled by P0-H4.
 //!
 //! The inhibitor's `active` and `inactive` events reach the transcript through the
 //! connection's tap.
@@ -36,6 +36,7 @@ impl Inhibitor {
     }
 
     /// The inhibitor object.
+    #[must_use]
     pub fn inhibitor(&self) -> &ZwpKeyboardShortcutsInhibitorV1 {
         &self.inhibitor
     }

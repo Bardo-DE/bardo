@@ -60,6 +60,7 @@ impl LauncherFault {
     ];
 
     /// The bare name of the fault, the last part of its bus error name.
+    #[must_use]
     pub fn name(self) -> &'static str {
         match self {
             LauncherFault::AlreadyRegistered => "AlreadyRegistered",
@@ -74,6 +75,7 @@ impl LauncherFault {
     }
 
     /// The fault a bare name stands for.
+    #[must_use]
     pub fn from_name(name: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|fault| fault.name() == name)
     }

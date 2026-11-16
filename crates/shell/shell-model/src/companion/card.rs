@@ -11,6 +11,7 @@ use action_vocab::{ActionRef, CardActionId, Handle};
 use super::model::{AnswerFacts, Busy, Opener};
 
 /// The buttons an answer's body offers.
+#[must_use]
 pub fn cards_of(body: &AnswerBody) -> &[CardWire] {
     match body {
         AnswerBody::DraftReply { actions, .. } | AnswerBody::ProposedEvent { actions, .. } => {
@@ -21,6 +22,7 @@ pub fn cards_of(body: &AnswerBody) -> &[CardWire] {
 }
 
 /// The action `action`'s button calls, if `answer` offers that button.
+#[must_use]
 pub fn card_call(answer: &AnswerFacts, action: &CardActionId) -> Option<ActionRef> {
     cards_of(&answer.wire.body)
         .iter()
@@ -29,6 +31,7 @@ pub fn card_call(answer: &AnswerFacts, action: &CardActionId) -> Option<ActionRe
 }
 
 /// The button a person means by "open it in its app": the first one that only reads.
+#[must_use]
 pub fn promote_card(answer: &AnswerFacts) -> Option<CardActionId> {
     cards_of(&answer.wire.body)
         .iter()
@@ -68,6 +71,7 @@ pub(super) fn handle_fallback(handle: Handle) -> String {
 
 /// The handles `answer` shows that the router has not yet been asked to show, in the order they
 /// appear.
+#[must_use]
 pub fn unresolved_handles(answer: &AnswerFacts) -> Vec<Handle> {
     let mut found: Vec<Handle> = Vec::new();
     let mut note = |text: &Reveal<String>| {

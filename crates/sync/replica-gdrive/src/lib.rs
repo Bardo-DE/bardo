@@ -32,7 +32,7 @@
 //!   (`/upload/drive/v3`) and a resumable session's URL are the same origin as the API, so one
 //!   relay serves all; a session URL on another origin is refused.
 //! - **Version** is Drive's `version`, which grows with every change to the file (a rename too).
-//!   There is no ETag to keep.
+//!   There is no `ETag` to keep.
 //!
 //! The crate is pure: no runtime and no socket. It keeps its own vendor error reasons and wire reading on top of sync-core's
 //! `status` and dates its tombstones with sync-core's `Clock`. Every

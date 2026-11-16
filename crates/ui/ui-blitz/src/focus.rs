@@ -7,7 +7,7 @@
 //! dioxus-native-dom's own `set_focus` borrows the document mutably when it is called. A task
 //! that dioxus polls inside `render_immediate` (it does, when the task woke in the same turn as
 //! a dirty scope) runs while the mutation writer holds that borrow, and the call panicked with
-//! "RefCell already borrowed" (a palette's field focusing on mount while its
+//! "`RefCell` already borrowed" (a palette's field focusing on mount while its
 //! results re-rendered). Probing the document first turns that into `Focused::Busy`, and quire
 //! tries again a frame later.
 

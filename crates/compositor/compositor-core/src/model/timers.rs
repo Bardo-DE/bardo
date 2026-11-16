@@ -84,24 +84,23 @@ impl Model {
             held(TimerKey::Ping(client)),
             held(TimerKey::PingGap(client)),
         );
-        match due {
-            false => Moved::of(self),
-            true => {
-                let deadline = Due {
-                    at: self.now.after(PING_DEADLINE),
-                    key: TimerKey::Ping(client),
-                };
-                let gap = Due {
-                    at: self.now.after(PING_GAP),
-                    key: TimerKey::PingGap(client),
-                };
-                let mut model = self;
-                model.timers = model.timers.arm(deadline.clone()).arm(gap.clone());
-                Moved::of(model)
-                    .with(Effect::Ping { client })
-                    .with(Effect::ArmTimer(deadline))
-                    .with(Effect::ArmTimer(gap))
-            }
+        if due {
+            let deadline = Due {
+                at: self.now.after(PING_DEADLINE),
+                key: TimerKey::Ping(client),
+            };
+            let gap = Due {
+                at: self.now.after(PING_GAP),
+                key: TimerKey::PingGap(client),
+            };
+            let mut model = self;
+            model.timers = model.timers.arm(deadline.clone()).arm(gap.clone());
+            Moved::of(model)
+                .with(Effect::Ping { client })
+                .with(Effect::ArmTimer(deadline))
+                .with(Effect::ArmTimer(gap))
+        } else {
+            Moved::of(self)
         }
     }
 

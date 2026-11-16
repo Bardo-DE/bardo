@@ -13,6 +13,7 @@ use std::sync::Arc;
 /// Why a relay could not be had, as the client takes it: access the account has not given yet
 /// (`NeedsConsent`, a whole drive before the person turned it on) is its own error, so the
 /// dataset says so instead of retrying; anything else is a connection that did not open.
+#[must_use]
 pub fn dial_error(error: GrantsError) -> HttpError {
     match error {
         GrantsError::Refused(Refusal::NeedsConsent) => HttpError::NotGranted,
@@ -22,10 +23,12 @@ pub fn dial_error(error: GrantsError) -> HttpError {
 
 /// The origin as the bare URL `OpenLinked` and `OpenAuthenticated` take (`https://host[:port]`,
 /// an IPv6 host bracketed), or `None` for a scheme that is not HTTP.
+#[must_use]
 pub fn bare_url(origin: &Origin) -> Option<EndpointUrl> {
-    let host = match origin.host.contains(':') {
-        true => format!("[{}]", origin.host),
-        false => origin.host.clone(),
+    let host = if origin.host.contains(':') {
+        format!("[{}]", origin.host)
+    } else {
+        origin.host.clone()
     };
     let scheme = match origin.scheme {
         UrlScheme::Https => "https",
@@ -56,6 +59,7 @@ pub struct RelayDial<T> {
 impl<T> RelayDial<T> {
     /// Relays to `endpoint` under `grant`, authenticated by the daemon at the far end
     /// (`OpenAuthenticated`), opened through `accounts`.
+    #[must_use]
     pub fn authenticated(accounts: Arc<Grants<T>>, grant: GrantId, endpoint: EndpointUrl) -> Self {
         Self {
             accounts,
@@ -67,6 +71,7 @@ impl<T> RelayDial<T> {
     /// Relays to `origin` under `grant`, with no credential added (`OpenLinked`: a
     /// pre-authenticated link on another host). An origin `OpenLinked` cannot name (`None`) is
     /// one no connection opens to.
+    #[must_use]
     pub fn linked(accounts: Arc<Grants<T>>, grant: GrantId, origin: Option<EndpointUrl>) -> Self {
         Self {
             accounts,

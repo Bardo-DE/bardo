@@ -63,6 +63,7 @@ pub enum FactEffect {
 
 /// Where a proposal lands: a trusted label goes straight to a topic; anything untrusted
 /// waits in `pending/` for the person.
+#[must_use]
 pub fn lands(label: &Label) -> Lands {
     match label.integrity {
         Integrity::Trusted => Lands::Active,
@@ -71,6 +72,7 @@ pub fn lands(label: &Label) -> Lands {
 }
 
 /// The next life and the effects.
+#[must_use]
 pub fn step(life: FactLife, event: FactEvent) -> (FactLife, Vec<FactEffect>) {
     use FactEffect as E;
     use FactEvent as V;

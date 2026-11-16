@@ -6,6 +6,7 @@ use agent_voice_wire::{UtteranceEnd, VoiceEvent};
 use ui_intents::{HeardEndMark, HeardMark, InputLevel};
 
 /// The field's view of one frame; frames a field has no use for (`Opened`, `Waiting`) give none.
+#[must_use]
 pub fn heard_of(event: &VoiceEvent) -> Option<HeardMark> {
     match event {
         VoiceEvent::Opened | VoiceEvent::Waiting(_) => None,

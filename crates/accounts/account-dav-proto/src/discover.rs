@@ -38,14 +38,15 @@ use std::collections::VecDeque;
 /// Which home set to read.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Home {
-    /// `calendar-home-set` (CalDAV).
+    /// `calendar-home-set` (`CalDAV`).
     Calendar,
-    /// `addressbook-home-set` (CardDAV).
+    /// `addressbook-home-set` (`CardDAV`).
     Addressbook,
 }
 
 impl Home {
     /// The home set's property name.
+    #[must_use]
     pub fn property(self) -> &'static str {
         match self {
             Home::Calendar => CALENDAR_HOME_SET,
@@ -62,6 +63,7 @@ impl Home {
 }
 
 /// The principal URL, as written (a path or a URL).
+#[must_use]
 pub fn current_user_principal(status: &Multistatus) -> Option<String> {
     status
         .first_found_items(CURRENT_USER_PRINCIPAL)?
@@ -80,6 +82,7 @@ pub fn home_set(status: &Multistatus, home: Home) -> Vec<String> {
 
 /// The hrefs among the responses whose `resourcetype` is a `home` collection (a calendar or an
 /// address book): what a PROPFIND at depth 1 on the home lists.
+#[must_use]
 pub fn collections(status: &Multistatus, home: Home) -> Vec<String> {
     status
         .responses
@@ -379,14 +382,15 @@ impl Walk {
         if href.is_empty() {
             return None;
         }
-        let mut text = match href.contains("://") {
-            true => href.to_owned(),
-            false => format!(
+        let mut text = if href.contains("://") {
+            href.to_owned()
+        } else {
+            format!(
                 "{}://{}/{}",
                 base.scheme_str()?,
                 base.authority()?,
                 href.trim_start_matches('/')
-            ),
+            )
         };
         text = text.replace(' ', "%20");
         if collection && !text.ends_with('/') {

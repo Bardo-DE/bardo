@@ -34,6 +34,7 @@ pub struct LightState {
 /// The lights in the window `activity` describes, with the pointer as `hover` says: coloured in
 /// the key window and whenever the pointer is over the group, grey otherwise; the marks show only
 /// over the group.
+#[must_use]
 pub fn light_state(activity: bool, hover: GroupHover) -> LightState {
     let fill = match (activity, hover) {
         (true, _) | (false, GroupHover::Over) => LightFill::Colour,

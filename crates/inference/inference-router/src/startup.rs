@@ -39,6 +39,7 @@ pub struct Tail(pub Vec<String>);
 
 impl Tail {
     /// The last line, cut to a short length: what a failure cause carries.
+    #[must_use]
     pub fn short(&self) -> Option<String> {
         self.0.last().map(|line| cut(line, SHORT_BYTES))
     }
@@ -121,6 +122,7 @@ impl TailBuf {
     }
 
     /// The lines kept, and the unfinished one when the engine has not ended it.
+    #[must_use]
     pub fn tail(&self) -> Tail {
         let mut lines: Vec<String> = self.lines.iter().cloned().collect();
         let open = clean(&self.partial);
@@ -201,6 +203,7 @@ pub enum Cause {
 impl Cause {
     /// Whether a person cannot fix this by waiting: a bad path or a missing program stays so, and
     /// is logged at error.
+    #[must_use]
     pub fn is_setup(&self) -> bool {
         matches!(
             self,
@@ -214,6 +217,7 @@ impl Cause {
     }
 
     /// The tail of standard error, when this cause has one.
+    #[must_use]
     pub fn tail(&self) -> Option<&Tail> {
         match self {
             Cause::Exited { tail, .. } | Cause::NeverReady { tail } => Some(tail),
@@ -223,6 +227,7 @@ impl Cause {
 
     /// Whether a later request waits out a pause before the engine is tried again (a failure to
     /// start; not the GPU being full, which a request may find freed at once).
+    #[must_use]
     pub fn pauses(&self) -> bool {
         !matches!(
             self,
@@ -408,11 +413,13 @@ struct Note {
 
 impl Diagnostics {
     /// The same, logging through `log`.
+    #[must_use]
     pub fn logging_to(self, log: Log) -> Self {
         Self { log, ..self }
     }
 
     /// The log lines go through.
+    #[must_use]
     pub fn log(&self) -> &Log {
         &self.log
     }
@@ -423,6 +430,7 @@ impl Diagnostics {
 
     /// A start begins: what was known of the last one is forgotten; the buffer to read the new
     /// process's standard error into.
+    #[must_use]
     pub fn begin(&self, id: &EngineId) -> Arc<Mutex<TailBuf>> {
         let note = Note::default();
         let live = Arc::clone(&note.live);
@@ -436,11 +444,13 @@ impl Diagnostics {
     }
 
     /// Why the last spawn of `id` was refused, when it was.
+    #[must_use]
     pub fn refusal(&self, id: &EngineId) -> Option<Cause> {
         self.notes().get(id).and_then(|note| note.refusal.clone())
     }
 
     /// What the last process of `id` said on standard error.
+    #[must_use]
     pub fn tail(&self, id: &EngineId) -> Tail {
         let live = self.notes().get(id).map(|note| Arc::clone(&note.live));
         live.map(|live| live.lock().unwrap_or_else(PoisonError::into_inner).tail())

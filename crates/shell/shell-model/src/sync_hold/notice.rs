@@ -19,13 +19,15 @@ pub struct Notice {
 }
 
 /// What the person is told about `hold`. Settings, not the shell, offers the choice.
+#[must_use]
 pub fn notice_text(hold: &Hold) -> Notice {
-    let removed = match hold.discard == hold.held {
-        true => format!("All {} files were removed online.", hold.held),
-        false => format!(
+    let removed = if hold.discard == hold.held {
+        format!("All {} files were removed online.", hold.held)
+    } else {
+        format!(
             "{} of {} files were removed online.",
             hold.discard, hold.held
-        ),
+        )
     };
     Notice {
         summary: format!("Files removed online in {}", hold.account_name),
@@ -35,6 +37,7 @@ pub fn notice_text(hold: &Hold) -> Notice {
 }
 
 /// The action key of the button that opens Settings for `dataset`.
+#[must_use]
 pub fn open_key(dataset: &Dataset) -> ActionKey {
     ActionKey(format!("{KEY_PREFIX}{}", dataset.as_str()))
 }
@@ -48,6 +51,7 @@ pub fn dataset_of(key: &ActionKey) -> Option<Dataset> {
 }
 
 /// The notification for `dataset` already held, banner or history.
+#[must_use]
 pub fn shown_for(notes: &NotesState, dataset: &Dataset) -> Option<NotificationId> {
     shown_with_action(notes, NOTICE_ENTRY, &open_key(dataset))
 }

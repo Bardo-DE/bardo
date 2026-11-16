@@ -80,7 +80,7 @@ pub async fn run<S: CheckpointStore, W: Workbench>(store: &S, bench: &W) {
     assert_eq!((saved.id, saved.at), (CheckpointId(1), UnixSeconds(100)));
     assert_eq!(store.held(&root, &session).await, Ok(vec![saved.clone()]));
     // Numbers are create-only, and sessions keep their own points.
-    assert!(store.take(take(&root, &session, 1, 100)).await.is_err());
+    store.take(take(&root, &session, 1, 100)).await.unwrap_err();
     assert_eq!(store.held(&root, &other).await, Ok(Vec::new()));
 
     // A folder that has not changed has nothing to restore.

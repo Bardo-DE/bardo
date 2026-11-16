@@ -37,10 +37,12 @@ impl EvdevSpec {
     }
 
     /// How many slots the node has.
+    #[must_use]
     pub fn slots(&self) -> usize {
         usize::from(self.slots)
     }
 
+    #[must_use]
     pub fn resolution(&self) -> Resolution {
         Resolution {
             x: UnitsPerMm(f64::from(self.x.resolution)),
@@ -49,6 +51,7 @@ impl EvdevSpec {
     }
 
     /// The surface this node describes.
+    #[must_use]
     pub fn surface(&self) -> Surface {
         let res = self.resolution();
         let range = |per: UnitsPerMm, a: AbsAxis| MmRange {

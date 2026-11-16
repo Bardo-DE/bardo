@@ -156,7 +156,7 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
             "AUTH" if !secure_enough(ctx.tls, secure) => {
                 lines
                     .send("530 Must issue a STARTTLS command first")
-                    .await?
+                    .await?;
             }
             "AUTH" => authed = auth(&mut lines, ctx, (n, peer), rest).await? || authed,
             "MAIL" if !authed => lines.send("530 Authentication required").await?,
@@ -247,13 +247,12 @@ async fn auth<S: AsyncRead + AsyncWrite + Unpin>(
     };
     let admitted =
         credentials.is_some_and(|(mech, user, secret)| ctx.attempt(n, peer, mech, user, secret));
-    match admitted {
-        true => lines.send("235 2.7.0 Authentication successful").await?,
-        false => {
-            lines
-                .send("535 5.7.8 Authentication credentials invalid")
-                .await?
-        }
+    if admitted {
+        lines.send("235 2.7.0 Authentication successful").await?
+    } else {
+        lines
+            .send("535 5.7.8 Authentication credentials invalid")
+            .await?;
     }
     Ok(admitted)
 }
@@ -263,12 +262,11 @@ async fn sasl<S: AsyncRead + AsyncWrite + Unpin>(
     initial: Option<String>,
     decode: fn(&str) -> Option<(String, Secret)>,
 ) -> io::Result<Option<(String, Secret)>> {
-    let response = match initial {
-        Some(r) => r,
-        None => {
-            lines.send("334 ").await?;
-            lines.read_line().await?.unwrap_or_default()
-        }
+    let response = if let Some(r) = initial {
+        r
+    } else {
+        lines.send("334 ").await?;
+        lines.read_line().await?.unwrap_or_default()
     };
     Ok(decode(&response))
 }
@@ -277,12 +275,11 @@ async fn login<S: AsyncRead + AsyncWrite + Unpin>(
     lines: &mut Lines<S>,
     initial: Option<String>,
 ) -> io::Result<Option<(Mechanism, String, Secret)>> {
-    let user = match initial {
-        Some(u) => u,
-        None => {
-            lines.send(&format!("334 {}", b64("Username:"))).await?;
-            lines.read_line().await?.unwrap_or_default()
-        }
+    let user = if let Some(u) = initial {
+        u
+    } else {
+        lines.send(&format!("334 {}", b64("Username:"))).await?;
+        lines.read_line().await?.unwrap_or_default()
     };
     lines.send(&format!("334 {}", b64("Password:"))).await?;
     let password = lines.read_line().await?.unwrap_or_default();

@@ -33,6 +33,7 @@ fn agents_own() -> Entry {
 
 /// The models `row` can run: its own choice first, then what it offered, then the one the file
 /// names when the agent no longer offers it (so the menu never hides what is written).
+#[must_use]
 pub fn model_menu(row: &AgentRow) -> Vec<Entry> {
     let mut menu = vec![agents_own()];
     if let Offers::Seen { models, .. } = &row.offers {
@@ -45,6 +46,7 @@ pub fn model_menu(row: &AgentRow) -> Vec<Entry> {
 }
 
 /// The word of the model the file names; the agent's own when it names none.
+#[must_use]
 pub fn model_word(row: &AgentRow) -> Option<String> {
     match &row.model {
         action_settings::ModelState::AgentsOwn => None,
@@ -53,6 +55,7 @@ pub fn model_word(row: &AgentRow) -> Option<String> {
 }
 
 /// The ways `row` listed for signing in, none unless it asked for a sign-in.
+#[must_use]
 pub fn way_menu(row: &AgentRow) -> Vec<Entry> {
     match &row.sign_in {
         SignInState::NeedsSignIn { ways } => ways.iter().map(|w| entry(&w.id, &w.name)).collect(),
@@ -61,6 +64,7 @@ pub fn way_menu(row: &AgentRow) -> Vec<Entry> {
 }
 
 /// What picking `word` in the model menu writes.
+#[must_use]
 pub fn model_choice(word: &str) -> AgentChoice {
     AgentChoice {
         model: if word == AGENTS_OWN {
@@ -73,6 +77,7 @@ pub fn model_choice(word: &str) -> AgentChoice {
 }
 
 /// What picking `word` in the way menu writes.
+#[must_use]
 pub fn way_choice(word: &str) -> AgentChoice {
     AgentChoice {
         model: Pick::Keep,
@@ -106,6 +111,7 @@ fn is_same(agent: &AgentRow, label: &str, key: &str, provider: Option<&str>) -> 
 
 /// The assistants: each agent docket lists, joined with its account where there is one, then the
 /// accounts no agent claims.
+#[must_use]
 pub fn assistants_of(agents: &[AgentRow], accounts: &[Account]) -> Vec<Assistant> {
     let claims = |agent: &AgentRow, account: &Account| {
         let provider = account.provider.as_ref().map(|p| p.id.as_str());

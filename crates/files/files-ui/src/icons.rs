@@ -165,10 +165,10 @@ mod tests {
             let choice = icons.choice_for(Some(&home), &entry);
             match (choice, file_kind, folder_kind) {
                 (FileIconChoice::Standard { kind, .. }, Some(want), None) => {
-                    assert_eq!(kind, want, "{}", entry.name)
+                    assert_eq!(kind, want, "{}", entry.name);
                 }
                 (FileIconChoice::Folder(kind), None, Some(want)) => {
-                    assert_eq!(kind, want, "{}", entry.name)
+                    assert_eq!(kind, want, "{}", entry.name);
                 }
                 (other, ..) => panic!("{}: {other:?}", entry.name),
             }

@@ -1,4 +1,4 @@
-//! [`GraphReplica`]: sync-core's [`Replica`] over a folder of OneDrive's app folder, or of the
+//! [`GraphReplica`]: sync-core's [`Replica`] over a folder of `OneDrive`'s app folder, or of the
 //! whole drive.
 
 use crate::addr::{Addr, Root};
@@ -41,6 +41,7 @@ pub struct Uploads {
 
 impl Uploads {
     /// These limits, the chunk rounded down to a whole number of units (at least one).
+    #[must_use]
     pub fn new(simple_max: usize, chunk: usize) -> Self {
         Self {
             simple_max,

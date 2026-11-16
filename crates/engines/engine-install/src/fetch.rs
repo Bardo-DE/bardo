@@ -61,12 +61,14 @@ pub struct Fetcher {
 
 impl Fetcher {
     /// A fetcher that trusts the system's certificate authorities, with the usual waits.
+    #[must_use]
     pub fn system() -> Self {
         Self::new(TlsRoots::Platform)
     }
 
     /// A fetcher whose servers must chain to `roots`: 30 seconds of silence is a lost
     /// connection, and a lost connection is retried three times, two seconds apart.
+    #[must_use]
     pub fn new(roots: TlsRoots) -> Self {
         Self {
             roots,
@@ -186,7 +188,7 @@ impl Fetcher {
                     let _gone = std::fs::remove_file(part);
                     meter.set_done(base);
                 }
-                (Err(HttpError::Rejected), other) | (Ok(_), other) => {
+                (Err(HttpError::Rejected) | Ok(_), other) => {
                     return Err(FetchError::Refused(other));
                 }
                 (Err(other), _) => return Err(FetchError::Network(other)),

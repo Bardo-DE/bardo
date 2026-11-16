@@ -140,7 +140,7 @@ fn a_candidate_whose_path_is_another_account_is_refused() {
     let [first, second] = <[Candidate; 2]>::try_from(candidates()).expect("two");
     let (_, label, details) = candidate_to_dbus(&first);
     let wrong = OwnedObjectPath::try_from(account_path(&second.account)).expect("path");
-    assert!(candidate_from_dbus((wrong, label, details)).is_err());
+    candidate_from_dbus((wrong, label, details)).unwrap_err();
 }
 
 #[test]

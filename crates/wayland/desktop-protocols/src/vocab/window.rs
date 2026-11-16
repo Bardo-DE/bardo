@@ -129,6 +129,7 @@ wire_enum! {
 
 impl PlaceTarget {
     /// The tile zone this target names; `None` for fill, centre and restore.
+    #[must_use]
     pub fn zone(self) -> Option<TileZone> {
         match self {
             Self::Left => Some(TileZone::Left),

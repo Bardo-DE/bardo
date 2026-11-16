@@ -29,6 +29,7 @@ use crate::standing::{Proof, Standing, WhyNot};
 use crate::table::{Row, Table};
 
 /// Who `facts` describe, judged against `table`.
+#[must_use]
 pub fn judge(facts: &Facts, table: &Table) -> Standing {
     match &facts.sandbox {
         SandboxFacts::Native => judge_native(facts, table),

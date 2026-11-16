@@ -30,6 +30,7 @@ pub struct PrivateBus {
 
 impl PrivateBus {
     /// Start a bus, or `None` with a message on stderr when `dbus-daemon` is not installed.
+    #[must_use]
     pub fn start() -> Option<PrivateBus> {
         let scratch = tempfile::tempdir().ok()?;
         let socket = scratch.path().join("bus");
@@ -59,11 +60,13 @@ impl PrivateBus {
     }
 
     /// An environment whose session bus is this one and whose directories are scratch.
+    #[must_use]
     pub fn env(&self) -> Env {
         Env::isolated(self.scratch.path()).with_session(BusRoute::Address(self.address.clone()))
     }
 
     /// The bus address.
+    #[must_use]
     pub fn address(&self) -> &str {
         &self.address
     }

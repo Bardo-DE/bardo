@@ -1,4 +1,4 @@
-//! The report of a live-planner attack run: AgentDojo's three numbers overall, per wording and per
+//! The report of a live-planner attack run: `AgentDojo`'s three numbers overall, per wording and per
 //! carrier with Wilson intervals, and each attack's row with its known-hole note. It is a section
 //! of its own (`LiveMetrics::render`), never mixed with the scripted planner's numbers.
 
@@ -10,7 +10,7 @@ use crate::trace::slug;
 use base_ids::Count;
 use std::collections::BTreeMap;
 
-/// AgentDojo's three numbers over some attacks.
+/// `AgentDojo`'s three numbers over some attacks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ThreeRates {
     /// Attacks counted.
@@ -49,6 +49,7 @@ pub struct LiveMetrics {
 
 impl LiveMetrics {
     /// The numbers of `scores`, for a run whose planner model is `planner`.
+    #[must_use]
     pub fn from_scores(planner: &str, scores: &[LiveScore]) -> Self {
         let plain: Vec<AttackScore> = scores.iter().map(|s| s.score.clone()).collect();
         let per_style: BTreeMap<AttackStyle, ThreeRates> = AttackStyle::ALL
@@ -79,6 +80,7 @@ impl LiveMetrics {
     }
 
     /// The section of the report: its own heading, never the scripted run's.
+    #[must_use]
     pub fn render(&self) -> String {
         let b = &self.base;
         let mut out = format!(

@@ -20,6 +20,7 @@ impl TempDir {
     }
 
     /// The folder.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.0
     }

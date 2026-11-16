@@ -91,6 +91,7 @@ impl Reason {
     ];
 
     /// The reason as a stable word: how the index keeps it.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Reason::NotOnADrive => "not_on_a_drive",
@@ -116,6 +117,7 @@ impl Reason {
     }
 
     /// The reason a word stands for.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|reason| reason.slug() == slug)
     }

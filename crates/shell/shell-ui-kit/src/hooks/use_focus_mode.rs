@@ -10,6 +10,7 @@ use crate::links::FocusLink;
 ///
 /// # Panics
 /// When the surface's `Root` was built without `.context(FocusLink)`: a daemon wiring bug.
+#[must_use]
 pub fn use_focus_mode() -> ReadSignal<bool> {
     use_watch(use_context::<FocusLink>().mode())
 }

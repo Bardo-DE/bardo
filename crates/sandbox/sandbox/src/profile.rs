@@ -20,6 +20,7 @@ pub(crate) const FILTER_FD: &str = "3";
 
 impl Profile {
     /// Nothing added: scratch directories are as big as bubblewrap makes them.
+    #[must_use]
     pub fn bare() -> Self {
         Self::default()
     }
@@ -80,9 +81,10 @@ impl Profile {
 
     /// The `--seccomp` words, when the filter is on.
     pub(crate) fn seccomp(&self) -> Vec<String> {
-        match self.seccomp {
-            true => vec!["--seccomp".to_owned(), FILTER_FD.to_owned()],
-            false => Vec::new(),
+        if self.seccomp {
+            vec!["--seccomp".to_owned(), FILTER_FD.to_owned()]
+        } else {
+            Vec::new()
         }
     }
 

@@ -27,6 +27,7 @@ pub enum HoverSync {
 
 /// Where the old element is probed: its centre, then its corners 1 px inside, so an element
 /// covered in the middle (a banner over part of a list) is still found at an edge.
+#[must_use]
 pub fn probe_points(bounds: Bounds) -> [PagePoint; 5] {
     let inset_x = 1.0_f64.min(bounds.width / 2.0);
     let inset_y = 1.0_f64.min(bounds.height / 2.0);

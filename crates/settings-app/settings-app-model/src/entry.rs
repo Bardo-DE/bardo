@@ -18,6 +18,7 @@ pub struct KeyEntry {
 
 impl KeyEntry {
     /// `spec`, held in `file`.
+    #[must_use]
     pub fn new(spec: KeySpec, file: ConfigFile) -> KeyEntry {
         let control = Control::of(&spec);
         KeyEntry {
@@ -30,6 +31,7 @@ impl KeyEntry {
     /// This entry with the choices of `offers` in it when its key is a `Provided` one (a look):
     /// the spec takes them as a menu of words and labels (`KeySpec::offering`) and the control
     /// holds the words. Any other entry comes back as it is.
+    #[must_use]
     pub fn offering(&self, offers: &Offers) -> KeyEntry {
         match &self.spec.kind {
             KeyKind::Provided { capability } => {
@@ -48,6 +50,7 @@ impl KeyEntry {
     /// `ui_settings::schema::discover` admitted and `Schema::from_toml` checked (a key under a
     /// never-settable prefix cannot carry the mark); `discover` has already cleared it for a schema
     /// from a folder the person can write.
+    #[must_use]
     pub fn agent(&self) -> AgentSetting {
         self.spec.agent
     }

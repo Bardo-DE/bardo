@@ -23,7 +23,7 @@ const CALENDAR: &[(&str, &str)] = &[
     ),
     ("date-body", r#"[0-9]{4} "-" month-day"#),
     ("hour", r#"[01] [0-9] | "2" [0-3]"#),
-    ("minute", r#"[0-5] [0-9]"#),
+    ("minute", r"[0-5] [0-9]"),
 ];
 const DATE: &str = r#""\"" date-body "\"""#;
 const DATE_TIME: &str = r#""\"" date-body "T" hour ":" minute ":" minute ("." [0-9]+)? ("Z" | ("+" | "-") hour ":" minute) "\"""#;
@@ -94,9 +94,10 @@ impl Rules {
                         Ok(format!("{key} ws \":\" ws {value}"))
                     })
                     .collect::<Result<Vec<_>, ShapeFault>>()?;
-                Ok(match members.is_empty() {
-                    true => "\"{\" ws \"}\"".to_owned(),
-                    false => format!("\"{{\" ws {} ws \"}}\"", members.join(" ws \",\" ws ")),
+                Ok(if members.is_empty() {
+                    "\"{\" ws \"}\"".to_owned()
+                } else {
+                    format!("\"{{\" ws {} ws \"}}\"", members.join(" ws \",\" ws "))
                 })
             }
             Shape::Date => Ok(self.calendar("date", DATE)),

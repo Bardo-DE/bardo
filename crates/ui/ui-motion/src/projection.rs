@@ -21,6 +21,7 @@ pub struct Throw {
 
 impl Throw {
     /// Where the throw would come to rest: `from + v·r/(1-r)`.
+    #[must_use]
     pub fn projected(self) -> Px {
         let per_ms = self.velocity.px_per_s() / 1000.0;
         let travel = per_ms * DECELERATION_PER_MS / (1.0 - DECELERATION_PER_MS);
@@ -28,6 +29,7 @@ impl Throw {
     }
 
     /// The endpoint of `ends` nearest the projection; `None` when there are none.
+    #[must_use]
     pub fn landing(self, ends: &[Px]) -> Option<Px> {
         let projected = self.projected().0;
         ends.iter()

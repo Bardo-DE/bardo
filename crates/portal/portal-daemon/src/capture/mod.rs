@@ -150,6 +150,7 @@ pub struct Canceller(UnixStream);
 
 impl Canceller {
     /// A canceller for the connection behind `fd` (a duplicate of its socket).
+    #[must_use]
     pub fn new(fd: OwnedFd) -> Self {
         Self(UnixStream::from(fd))
     }

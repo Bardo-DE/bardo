@@ -23,9 +23,8 @@ fn a_changed_profile_reaches_the_device_as_applied() {
     let applied = device_settings(&settings, DeviceClass::Touchpad);
     assert!(!applied.tap);
     assert_eq!(applied.scroll_factor, settings.touchpad.scroll_factor);
-    assert_eq!(
+    assert!(
         device_settings(&settings, DeviceClass::Pointer).tap,
-        true,
         "the mouse profile is its own"
     );
 }
@@ -59,14 +58,8 @@ fn every_pointing_class_gets_natural_scroll_from_the_defaults() {
 fn turning_natural_scroll_off_for_mice_leaves_the_touchpad_natural() {
     let mut settings = PointerSettings::defaults();
     settings.mouse.natural_scroll = false;
-    assert_eq!(
-        device_settings(&settings, DeviceClass::Pointer).natural_scroll,
-        false
-    );
-    assert_eq!(
-        device_settings(&settings, DeviceClass::Touchpad).natural_scroll,
-        true
-    );
+    assert!(!device_settings(&settings, DeviceClass::Pointer).natural_scroll);
+    assert!(device_settings(&settings, DeviceClass::Touchpad).natural_scroll);
 }
 
 const MOUSE: DeviceId = DeviceId(1);

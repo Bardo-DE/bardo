@@ -1,11 +1,11 @@
-//! BannerActionRow (a banner asking for text) and PinnedBar (an offer bar over a scroller's edge).
+//! `BannerActionRow` (a banner asking for text) and `PinnedBar` (an offer bar over a scroller's edge).
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The BannerActionRow and PinnedBar sections.
+/// The `BannerActionRow` and `PinnedBar` sections.
 #[component]
 pub fn BannerAndPinned() -> Element {
     let mut name = use_signal(|| "Work".to_owned());

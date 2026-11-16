@@ -63,8 +63,9 @@ pub fn check_sequence(events: &[TurnEvent]) -> Result<(), StreamFault> {
             _ => {}
         }
     }
-    match calls.values().any(|c| matches!(c, Call::Open(_))) {
-        true => Err(StreamFault::Unclosed),
-        false => Ok(()),
+    if calls.values().any(|c| matches!(c, Call::Open(_))) {
+        Err(StreamFault::Unclosed)
+    } else {
+        Ok(())
     }
 }

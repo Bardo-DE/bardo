@@ -17,12 +17,14 @@ use super::walk;
 /// beyond the design system's own token table; a property the stylesheet declares on some
 /// selector (`.foo { --local: 4px; ... }`) is always allowed too, whether or not it is listed
 /// there, since the declaration is right there to review.
+#[must_use]
 pub fn stylesheet(css: &str, config: &LintConfig) -> Vec<Offence> {
     severity::split(config.partition(every_offence(css, config)).0).0
 }
 
 /// Every warning in `css` under `config` that none of `config.exceptions` covers: the rules
 /// that report without failing (the HIG guardrails, design/27 section 7).
+#[must_use]
 pub fn warnings(css: &str, config: &LintConfig) -> Vec<Offence> {
     severity::split(config.partition(every_offence(css, config)).0).1
 }

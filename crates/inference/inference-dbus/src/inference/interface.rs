@@ -1,6 +1,6 @@
 //! `org.bardo.Inference1` at `/org/bardo/Inference1`: inferd. A session is the fd `Open`
 //! returns: the client writes `inference_core::ClientFrame` frames (requests, `Cancel`, audio),
-//! inferd writes `InferEvent` frames; memfds ride on frames as SCM_RIGHTS. Speech and
+//! inferd writes `InferEvent` frames; memfds ride on frames as `SCM_RIGHTS`. Speech and
 //! computer-use steps use the same fd, so this interface has no member for them.
 
 use super::codec::NeedArg;

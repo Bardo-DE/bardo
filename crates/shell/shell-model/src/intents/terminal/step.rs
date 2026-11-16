@@ -18,6 +18,7 @@ pub enum TerminalEvent {
 }
 
 /// `terminal` after `event`. Grants are kept sorted and without repeats.
+#[must_use]
 pub fn step(terminal: Terminal, event: TerminalEvent) -> Terminal {
     match event {
         TerminalEvent::Loaded(mut grants) => {

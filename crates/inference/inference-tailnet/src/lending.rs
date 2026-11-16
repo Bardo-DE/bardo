@@ -22,6 +22,7 @@ impl GuestAnswer {
     pub const ALL: [GuestAnswer; 2] = [GuestAnswer::Allow, GuestAnswer::Deny];
 
     /// The word on the bus.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             GuestAnswer::Allow => "allow",
@@ -30,6 +31,7 @@ impl GuestAnswer {
     }
 
     /// The answer a word names; none for any other word.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|answer| answer.slug() == slug)
     }
@@ -51,6 +53,7 @@ impl RowState {
     pub const ALL: [RowState; 3] = [RowState::Approved, RowState::Denied, RowState::Asking];
 
     /// The word on the bus.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             RowState::Approved => "approved",
@@ -60,6 +63,7 @@ impl RowState {
     }
 
     /// The state a word names; none for any other word.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|state| state.slug() == slug)
     }
@@ -80,6 +84,7 @@ pub struct GuestRow {
 
 impl GuestRow {
     /// A line for the computer `node`, called `name`, standing as `state` since `since`.
+    #[must_use]
     pub fn new(node: NodeId, name: String, state: RowState, since: UnixSeconds) -> Self {
         Self {
             node,
@@ -111,6 +116,7 @@ pub struct GuestAsk {
 
 impl GuestAsk {
     /// A question from the computer called `name`.
+    #[must_use]
     pub fn new(name: String, since: UnixSeconds) -> Self {
         Self { name, since }
     }
@@ -127,6 +133,7 @@ pub struct CandidateModel {
 
 impl CandidateModel {
     /// A model with its catalogue id and shown name.
+    #[must_use]
     pub fn new(id: String, name: String) -> Self {
         Self { id, name }
     }
@@ -148,6 +155,7 @@ pub struct ComputerCandidate {
 
 impl ComputerCandidate {
     /// A candidate computer.
+    #[must_use]
     pub fn new(
         node: NodeId,
         name: String,

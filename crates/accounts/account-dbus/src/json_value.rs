@@ -90,6 +90,7 @@ fn key_text(key: &Value<'_>) -> Result<String, CoreError> {
 }
 
 /// The entries of a record as a vardict; `null` fields are left out.
+#[must_use]
 pub fn to_vardict(fields: &Map<String, Json>) -> std::collections::HashMap<String, OwnedValue> {
     fields
         .iter()
@@ -165,6 +166,6 @@ mod tests {
     #[test]
     fn a_value_porter_does_not_use_is_refused() {
         let value = Value::from(zbus::zvariant::Signature::Str);
-        assert!(from_value(&value).is_err());
+        from_value(&value).unwrap_err();
     }
 }

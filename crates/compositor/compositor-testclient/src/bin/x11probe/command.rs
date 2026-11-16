@@ -146,8 +146,8 @@ mod tests {
             Ok(Command::OwnClipboard("hello  there".to_owned()))
         );
         assert!(parse("map w").is_err(), "no class");
-        assert!(parse("map w class=A size=3").is_err());
-        assert!(parse("dance").is_err());
-        assert!(parse("focus").is_err());
+        parse("map w class=A size=3").unwrap_err();
+        parse("dance").unwrap_err();
+        parse("focus").unwrap_err();
     }
 }

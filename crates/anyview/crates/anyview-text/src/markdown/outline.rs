@@ -9,11 +9,13 @@ pub struct HeadingLevel(u8);
 
 impl HeadingLevel {
     /// The level of a heading written with `hashes` `#` characters, held to 1 through 6.
+    #[must_use]
     pub fn clamped(hashes: u8) -> Self {
         HeadingLevel(hashes.clamp(1, 6))
     }
 
     /// The number of `#` characters, 1 to 6.
+    #[must_use]
     pub fn get(self) -> u8 {
         self.0
     }
@@ -25,6 +27,7 @@ pub struct Anchor(String);
 
 impl Anchor {
     /// The id, without the `#`.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

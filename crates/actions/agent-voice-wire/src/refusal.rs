@@ -41,6 +41,7 @@ impl VoiceRefusal {
     ];
 
     /// The full D-Bus error name.
+    #[must_use]
     pub fn error_name(self) -> String {
         let variant = match self {
             VoiceRefusal::Disabled => "Disabled",
@@ -54,6 +55,7 @@ impl VoiceRefusal {
     }
 
     /// The refusal a D-Bus error name stands for.
+    #[must_use]
     pub fn from_error_name(name: &str) -> Option<VoiceRefusal> {
         Self::ALL.into_iter().find(|r| r.error_name() == name)
     }

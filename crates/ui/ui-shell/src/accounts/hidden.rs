@@ -21,11 +21,13 @@ impl Hidden {
     }
 
     /// The text itself, for the host to hand to the sign-in.
+    #[must_use]
     pub fn reveal(&self) -> &str {
         &self.0
     }
 
     /// Whether nothing is typed.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }

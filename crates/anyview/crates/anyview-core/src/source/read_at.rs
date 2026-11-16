@@ -179,7 +179,7 @@ mod tests {
         let mut tail = Vec::new();
         stream.read_to_end(&mut tail).unwrap();
         assert_eq!(tail, b"789");
-        assert!(stream.seek(SeekFrom::Current(-99)).is_err());
+        stream.seek(SeekFrom::Current(-99)).unwrap_err();
         assert_eq!(stream.seek(SeekFrom::Start(2)).unwrap(), 2);
     }
 }

@@ -55,6 +55,7 @@ pub enum Key {
 
 impl Key {
     /// The key of a row that has one path.
+    #[must_use]
     pub fn row(id: AccountId, row: Row) -> Key {
         let tail = row.0.suffix().to_owned();
         Key::Account(id, row, tail)
@@ -119,6 +120,7 @@ pub fn parse(path: &str, registry: &Registry) -> Option<Key> {
 }
 
 /// The path of `key`.
+#[must_use]
 pub fn path(key: &Key) -> String {
     match key {
         Key::Account(id, _, tail) => format!("accounts.{id}.{tail}"),
@@ -129,6 +131,7 @@ pub fn path(key: &Key) -> String {
 
 /// What the `expires` row says: when Google signs the account out, or that it did. Only for an
 /// account whose sign-in expires and whose sign-in date is known. The date is the UTC day.
+#[must_use]
 pub fn expiry_text(account: &Account) -> Option<String> {
     let day = account.restriction.expires_at()?.utc_date()?;
     Some(match account.state {
@@ -138,6 +141,7 @@ pub fn expiry_text(account: &Account) -> Option<String> {
 }
 
 /// What the `since` row of `grant` says: the UTC day it was given, `YYYY-MM-DD`.
+#[must_use]
 pub fn since_text(grant: &Grant) -> String {
     grant.at.utc_date().unwrap_or_default()
 }
@@ -340,7 +344,7 @@ mod tests {
                 ),
             ]
         );
-        assert!(schema.check().is_ok());
+        schema.check().unwrap();
         let key = Key::Account(storage, USED_BY, "used_by.1".to_owned());
         assert_eq!(
             parse("accounts.fake-storage.used_by.1", &registry),

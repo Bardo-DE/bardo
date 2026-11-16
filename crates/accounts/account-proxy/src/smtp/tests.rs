@@ -238,13 +238,15 @@ mod scripted {
             assert_eq!(sent(&effects, Side::App), "354 go\r\n");
             assert_eq!(relay.phase, SmtpPhase::Data);
             let (left, right) = BODY.split_at(cut);
-            let (relay, mut effects) = match left.is_empty() {
-                true => (relay, Vec::new()),
-                false => whole(relay, Side::App, left),
+            let (relay, mut effects) = if left.is_empty() {
+                (relay, Vec::new())
+            } else {
+                whole(relay, Side::App, left)
             };
-            let (relay, more) = match right.is_empty() {
-                true => (relay, Vec::new()),
-                false => whole(relay, Side::App, right),
+            let (relay, more) = if right.is_empty() {
+                (relay, Vec::new())
+            } else {
+                whole(relay, Side::App, right)
             };
             effects.extend(more);
             assert_eq!(sent(&effects, Side::Server).as_bytes(), BODY, "cut {cut}");

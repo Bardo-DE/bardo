@@ -1,4 +1,4 @@
-//! zwp_pointer_constraints_v1: lock and confine. Filled by P0-H4.
+//! `zwp_pointer_constraints_v1`: lock and confine. Filled by P0-H4.
 //!
 //! The constraint objects' events (`locked`, `unlocked`, `confined`, `unconfined`) reach the
 //! transcript through the connection's tap.

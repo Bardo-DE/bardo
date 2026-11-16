@@ -138,7 +138,7 @@ pub(crate) fn paint_cpu(doc: &mut BaseDocument, target: FrameTarget, overlay: &O
 
 /// Swap the first and third byte of every 4-byte pixel from `src` into `dst`: RGBA8 to the
 /// byte order of `wl_shm` ARGB8888 on a little-endian machine (B, G, R, A), and the GPU's
-/// BGRA8 back to RGBA8. Both sides are premultiplied (vello_cpu renders premultiplied, and
+/// BGRA8 back to RGBA8. Both sides are premultiplied (`vello_cpu` renders premultiplied, and
 /// Wayland's ARGB8888 is premultiplied), so alpha and the colour values pass through. Stops at
 /// the shorter of the two.
 pub(crate) fn swap_red_blue(src: &[u8], dst: &mut [u8]) {

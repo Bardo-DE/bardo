@@ -63,6 +63,7 @@ pub struct Loaded {
 
 impl Loaded {
     /// A read of nothing: the base values, nothing to report.
+    #[must_use]
     pub fn of(value: AgentSettings) -> Self {
         Self {
             value,
@@ -72,6 +73,7 @@ impl Loaded {
     }
 
     /// One line per fallback and per unknown key, for the daemon's log.
+    #[must_use]
     pub fn lines(&self, daemon: &str) -> Vec<String> {
         let fell = self.fallbacks.iter().map(|f| {
             format!(
@@ -112,6 +114,7 @@ fn leaves(prefix: &str, table: &toml::Table, out: &mut Vec<String>) {
 
 /// Reads `text` over `base`: each key the file sets and the table accepts replaces its base
 /// value; every other key keeps it.
+#[must_use]
 pub fn read(text: &str, base: AgentSettings) -> Loaded {
     let doc = match text.parse::<toml::Table>() {
         Ok(doc) => doc,

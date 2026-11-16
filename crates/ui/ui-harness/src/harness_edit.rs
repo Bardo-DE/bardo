@@ -49,16 +49,19 @@ impl Harness {
 
     /// The text position the host resolves at `at` inside the first edit surface matching
     /// `selector`, as a press there reports it.
+    #[must_use]
     pub fn hit_test(&self, selector: &str, at: Point) -> Option<TextPosition> {
         self.with_doc(|doc| hit(doc, first(doc, selector)?, at))
     }
 
     /// Whether the document has the IME on (a surface switches it on as it takes the keyboard).
+    #[must_use]
     pub fn ime_switch(&self) -> bool {
         self.doc.shell.ime_switch()
     }
 
     /// Where the document last put the IME's candidate window.
+    #[must_use]
     pub fn ime_cursor_area(&self) -> Option<Rect> {
         self.doc.shell.ime_area()
     }

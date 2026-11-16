@@ -1,4 +1,4 @@
-//! KeyEquivalent: the plain text and the key caps, in the Mac's key order, at each size.
+//! `KeyEquivalent`: the plain text and the key caps, in the Mac's key order, at each size.
 
 use crate::pages::Section;
 use dioxus::prelude::*;
@@ -6,7 +6,7 @@ use ui_components::components::controls::key_equivalent::{KeyEquivalent, KeyStyl
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The KeyEquivalent section.
+/// The `KeyEquivalent` section.
 #[component]
 pub fn KeyEquivalentSection() -> Element {
     let shortcuts = [

@@ -17,6 +17,7 @@ pub const SCHEMA: &str = "org.quire.Memory.SpaceKey";
 pub struct Oo7Keys;
 
 /// The attributes that find one Space's item: `xdg:schema` and `space`.
+#[must_use]
 pub fn attributes(space: &SpaceId) -> [(&'static str, String); 2] {
     [
         ("xdg:schema", SCHEMA.to_owned()),
@@ -29,10 +30,10 @@ pub fn attributes(space: &SpaceId) -> [(&'static str, String); 2] {
 fn failure(e: oo7::Error) -> KeyError {
     match e {
         oo7::Error::File(oo7::file::Error::Locked)
-        | oo7::Error::DBus(oo7::dbus::Error::Dismissed)
-        | oo7::Error::DBus(oo7::dbus::Error::Service(oo7::dbus::ServiceError::IsLocked(_))) => {
-            KeyError::Locked
-        }
+        | oo7::Error::DBus(
+            oo7::dbus::Error::Dismissed
+            | oo7::dbus::Error::Service(oo7::dbus::ServiceError::IsLocked(_)),
+        ) => KeyError::Locked,
         other => KeyError::Store(other.to_string()),
     }
 }

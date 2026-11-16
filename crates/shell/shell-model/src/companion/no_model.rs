@@ -10,6 +10,7 @@ pub const NO_MODEL_LINE: &str = "Choose a model to use the assistant.";
 pub const CHOOSE_MODEL_LABEL: &str = "Choose Model\u{2026}";
 
 /// Whether the companion refused `body` for want of a model.
+#[must_use]
 pub fn lacks_model(body: &AnswerBody) -> bool {
     matches!(body, AnswerBody::Refused(RefusalWire::NoModel))
 }

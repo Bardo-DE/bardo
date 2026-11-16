@@ -98,6 +98,7 @@ pub struct ServerModel {
 
 /// The models of `described` that run on this computer or a computer of the person's, once each,
 /// in the order the module lists them.
+#[must_use]
 pub fn server_models(described: &Described) -> Vec<ServerModel> {
     let mut found: Vec<ServerModel> = Vec::new();
     for kind in Ready::of(described).kinds {
@@ -301,6 +302,7 @@ pub struct NewServer {
 
 impl NewServer {
     /// A sheet just opened, with the models still being looked up.
+    #[must_use]
     pub fn opened() -> NewServer {
         NewServer {
             form: ServerForm::default(),
@@ -311,6 +313,7 @@ impl NewServer {
     }
 
     /// The sheet with `models` on offer, the first picked unless one is.
+    #[must_use]
     pub fn offering(mut self, models: Vec<ServerModel>) -> NewServer {
         if self.form.model.is_none() {
             self.form.model = models.first().map(|model| model.id.clone());
@@ -320,6 +323,7 @@ impl NewServer {
     }
 
     /// The sheet, back to editing with `refusal` under the fields.
+    #[must_use]
     pub fn refused(mut self, refusal: ServerRefusal) -> NewServer {
         self.phase = ServerPhase::Editing;
         self.fault = Some(refusal);

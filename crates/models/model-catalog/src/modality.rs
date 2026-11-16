@@ -20,6 +20,7 @@ pub enum Modality {
 
 impl Modality {
     /// Whether a model can be handed this; `Vector` and `Actions` are for output only.
+    #[must_use]
     pub fn is_input(self) -> bool {
         matches!(self, Modality::Text | Modality::Image | Modality::Audio)
     }
@@ -31,25 +32,30 @@ impl Modality {
 pub struct Modalities(pub BTreeSet<Modality>);
 
 impl Modalities {
+    #[must_use]
     pub fn contains(&self, modality: Modality) -> bool {
         self.0.contains(&modality)
     }
 
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
     /// Whether every member of `self` is also in `wider`.
+    #[must_use]
     pub fn is_subset_of(&self, wider: &Modalities) -> bool {
         self.0.is_subset(&wider.0)
     }
 
     /// The members both sets have.
+    #[must_use]
     pub fn intersection(&self, other: &Modalities) -> Modalities {
         Modalities(self.0.intersection(&other.0).copied().collect())
     }
 
     /// The first member that cannot be an input, if any.
+    #[must_use]
     pub fn first_output_only(&self) -> Option<Modality> {
         self.0.iter().copied().find(|m| !m.is_input())
     }

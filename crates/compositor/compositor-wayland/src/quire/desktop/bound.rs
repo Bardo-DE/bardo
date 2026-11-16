@@ -207,9 +207,10 @@ impl Bound {
         view: &DesktopView<'_>,
         now: &WindowFacts,
     ) -> Outcome {
-        let app = match self.apps.contains_key(now.app()) {
-            true => Outcome::Same,
-            false => self.app(makers, view, now.app()),
+        let app = if self.apps.contains_key(now.app()) {
+            Outcome::Same
+        } else {
+            self.app(makers, view, now.app())
         };
         let space = match now.space() {
             Some(id) if !self.spaces.contains_key(id) => self.space(makers, view, id),

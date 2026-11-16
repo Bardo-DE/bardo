@@ -19,6 +19,7 @@ pub struct Requirement {
 
 impl Requirement {
     /// The role `role`, proved at least `at_least`, with either pin.
+    #[must_use]
     pub fn new(role: RoleName, at_least: Proof) -> Requirement {
         Requirement {
             role,
@@ -32,11 +33,13 @@ impl Requirement {
     /// built in a checkout is let in; a shipped build never lists it. It also lets in the real
     /// service at any of the higher proofs, which is the point of a debug build.
     #[cfg(feature = "dev-rows")]
+    #[must_use]
     pub fn dev(role: RoleName) -> Requirement {
         Requirement::new(role, Proof::Dev)
     }
 
     /// The same, demanding the stated pin.
+    #[must_use]
     pub fn pinned(self, pin: PinNeed) -> Requirement {
         Requirement { pin, ..self }
     }

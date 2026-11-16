@@ -13,6 +13,7 @@ use provenance::{Actor, EntityKind, UnixSeconds};
 use std::collections::BTreeSet;
 
 /// Whether the terminal session `record` holds a standing grant for `action` at `now`.
+#[must_use]
 pub fn held(record: &SessionRecord, action: &ActionRef, now: UnixSeconds) -> TerminalGrant {
     let named = ActionMatch::One(action.clone());
     match &record.policy {
@@ -29,6 +30,7 @@ pub fn held(record: &SessionRecord, action: &ActionRef, now: UnixSeconds) -> Ter
 }
 
 /// The kinds of thing `decl` acts on, which a terminal grant for it covers.
+#[must_use]
 pub fn kinds_of(decl: &ActionDecl) -> BTreeSet<EntityKind> {
     match &decl.on {
         TargetKind::One(kind) | TargetKind::Many(kind) => BTreeSet::from([kind.clone()]),
@@ -38,6 +40,7 @@ pub fn kinds_of(decl: &ActionDecl) -> BTreeSet<EntityKind> {
 
 /// The task policy a terminal session starts with when the person first allows an action from
 /// the terminal: no action yet, the declaration's kinds and ceiling, until logout.
+#[must_use]
 pub fn grant_policy(record: &SessionRecord, decl: &ActionDecl, mass_at: Count) -> TaskPolicy {
     TaskPolicy {
         task: record.task.clone(),

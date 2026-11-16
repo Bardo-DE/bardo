@@ -51,14 +51,14 @@ impl RealSession {
         let pending = Rc::new(RefCell::new(Vec::new()));
         let queue = Rc::clone(&pending);
         handle
-            .insert_source(notifier, move |event, _, _| {
+            .insert_source(notifier, move |event, (), _| {
                 queue.borrow_mut().push(note_of(event));
             })
             .map_err(|error| unavailable(error.error.to_string()))?;
         // The ping only wakes the loop: the notes themselves wait in the link's channel.
         let (ping, wake) = make_ping().map_err(|error| unavailable(error.to_string()))?;
         handle
-            .insert_source(wake, |(), _, _| {})
+            .insert_source(wake, |(), (), _| {})
             .map_err(|error| unavailable(error.error.to_string()))?;
         let (link, sleep) = sleep_channel(move || ping.ping());
         Ok(RealSession {
@@ -70,16 +70,19 @@ impl RealSession {
     }
 
     /// A second handle on the libseat session, for the input devices to be opened through.
+    #[must_use]
     pub fn seat_handle(&self) -> LibSeatSession {
         self.seat.clone()
     }
 
     /// The KMS seam's device opener: a second handle on this libseat session.
+    #[must_use]
     pub fn fds(&self) -> SessionFds {
         SessionFds(self.seat.clone())
     }
 
     /// The seat's name (`seat0`), for the udev monitor.
+    #[must_use]
     pub fn seat_name(&self) -> String {
         self.seat.seat()
     }

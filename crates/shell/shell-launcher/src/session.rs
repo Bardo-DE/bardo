@@ -36,6 +36,7 @@ impl SessionAction {
 
     /// Whether choosing the action asks first: Log Out, Restart and Shut Down end the session's
     /// apps, so the power menu asks about them; Lock and Sleep keep every app and happen at once.
+    #[must_use]
     pub fn confirm(self) -> Confirm {
         match self {
             SessionAction::LogOut | SessionAction::Restart | SessionAction::PowerOff => {
@@ -58,6 +59,7 @@ pub enum Route {
 
 impl SessionAction {
     /// Where choosing the action goes, by its [`confirm`](SessionAction::confirm).
+    #[must_use]
     pub fn route(self) -> Route {
         match self.confirm() {
             Confirm::Ask => Route::Ask(self),

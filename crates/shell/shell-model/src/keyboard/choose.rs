@@ -22,6 +22,7 @@ pub fn choose(sources: &[&dyn ProfileSource], window: Option<FocusedWindow<'_>>)
 /// The profile the focused window wants under bardo-shell's sources, most specific first: the user's
 /// overrides, what the app declares, the profiles keycap has for one app (Ghostty), then the
 /// category table.
+#[must_use]
 pub fn wanted(
     overrides: &UserOverrides,
     own: &OwnProfiles,
@@ -38,6 +39,7 @@ pub fn wanted(
 /// Only toplevels are considered. bardo-shell's own surfaces (the bar, the dock, the launcher) are
 /// layer surfaces, which the compositor never lists as toplevels, so they can never be the
 /// focused window here, and no source is ever asked about them.
+#[must_use]
 pub fn focused<'a>(toplevels: &'a Toplevels, apps: &'a AppIndex) -> Option<FocusedWindow<'a>> {
     let toplevel = toplevels.active()?;
     let app = app_of(toplevel, apps).entry(apps);

@@ -224,7 +224,7 @@ fn chords_parse_in_any_order_and_print_in_the_macs() {
             assert_eq!(Chord::parse(&chord.text()), Ok(chord), "{text} round trip");
         }
     }
-    assert!(Chord::parse("").is_err());
+    Chord::parse("").unwrap_err();
     // Texts that only need to parse, or not (names, case, repeated or missing parts).
     const PARSES: &[(&str, bool)] = &[
         ("cmd+plus", true),

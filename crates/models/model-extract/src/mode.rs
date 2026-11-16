@@ -39,6 +39,7 @@ pub enum ToolsPresent {
 /// constrained reply with tools (`with_tools` is `Together`): a constraint over the whole reply
 /// would suppress the tool calls. `with_tools` is the engine flavor's property
 /// (`Flavor::shape_with_tools` in the codec crate).
+#[must_use]
 pub fn choose(
     caps: &Caps,
     shape: &Shape,

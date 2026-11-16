@@ -23,6 +23,7 @@ pub enum Keep {
 
 impl Keep {
     /// The keep for a portal value; `None` for anything but 1 or 2.
+    #[must_use]
     pub fn from_wire(value: u32) -> Option<Self> {
         match value {
             1 => Some(Self::WhileRunning),
@@ -32,6 +33,7 @@ impl Keep {
     }
 
     /// The portal's value for this keep.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::WhileRunning => 1,
@@ -59,6 +61,7 @@ impl PersistMode {
     }
 
     /// The portal's value for this mode.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::DoNot => 0,
@@ -89,6 +92,7 @@ impl RestoreToken {
     }
 
     /// A token read back from the wire or a file; `None` unless it is 32 lower-case hex digits.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         let shaped =
             text.len() == 32 && text.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'));
@@ -97,6 +101,7 @@ impl RestoreToken {
 
     /// The text to put on the wire. Handle with care: whoever holds it can ask for the same
     /// sources.
+    #[must_use]
     pub fn expose(&self) -> &str {
         &self.0
     }
@@ -146,6 +151,7 @@ fn counts(keep: Keep, granted_at: u64, now: u64) -> bool {
 impl Grant {
     /// The grant to remember for `app_id`, or `None` when none may be kept: the app has no identity (an empty app id is shared by every app that has none), or
     /// shared nothing.
+    #[must_use]
     pub fn issue(app_id: &str, sources: Vec<CastSource>, keep: Keep, now: u64) -> Option<Self> {
         (!app_id.is_empty() && !sources.is_empty()).then(|| Self {
             app_id: app_id.to_owned(),
@@ -156,6 +162,7 @@ impl Grant {
     }
 
     /// Whether the grant still counts at `now`.
+    #[must_use]
     pub fn valid_at(&self, now: u64) -> bool {
         counts(self.keep, self.granted_at, now)
     }
@@ -178,6 +185,7 @@ pub struct InputGrant {
 impl InputGrant {
     /// The grant to remember for `app_id`, or `None` when none may be kept: the app has no
     /// identity, or was given no device.
+    #[must_use]
     pub fn issue(app_id: &str, devices: DeviceKinds, keep: Keep, now: u64) -> Option<Self> {
         (!app_id.is_empty() && !devices.is_empty()).then(|| Self {
             app_id: app_id.to_owned(),
@@ -188,6 +196,7 @@ impl InputGrant {
     }
 
     /// Whether the grant still counts at `now`.
+    #[must_use]
     pub fn valid_at(&self, now: u64) -> bool {
         counts(self.keep, self.granted_at, now)
     }
@@ -215,6 +224,7 @@ pub struct RestoreBook {
 
 impl RestoreBook {
     /// An empty book.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -242,6 +252,7 @@ impl RestoreBook {
 
     /// The displays `app_id` may share without asking, among the `live` sources: empty when it has
     /// no standing grant for the screen, `app_id` is empty, or there is no display.
+    #[must_use]
     pub fn standing_sources(&self, app_id: &str, live: &[CastSource]) -> Vec<CastSource> {
         match self.standing.get(app_id) {
             Some(StandingGrant {
@@ -254,6 +265,7 @@ impl RestoreBook {
 
     /// The input `app_id` may take over without asking when it wants `wanted`: all it was given,
     /// or none, so an app cannot grow what it was allowed.
+    #[must_use]
     pub fn standing_devices(&self, app_id: &str, wanted: DeviceKinds) -> DeviceKinds {
         match self.standing.get(app_id) {
             Some(grant) if !app_id.is_empty() && grant.input.covers(wanted) => grant.input,
@@ -272,6 +284,7 @@ impl RestoreBook {
     ///
     /// All or nothing: if the token is unknown, expired, belongs to another app, `app_id` is
     /// empty, or any remembered source is gone, the result is empty and the person is asked again.
+    #[must_use]
     pub fn resolve(
         &self,
         token: &RestoreToken,
@@ -299,6 +312,7 @@ impl RestoreBook {
     /// All or nothing, as for [`RestoreBook::resolve`]; and a token that was given fewer kinds
     /// than are wanted restores nothing, so an app cannot grow what it was allowed. An app that
     /// asks for fewer gets what it asks for, and the grant it is remembered by keeps all its kinds.
+    #[must_use]
     pub fn resolve_input(
         &self,
         token: &RestoreToken,
@@ -348,6 +362,7 @@ impl RestoreBook {
 
     /// The apps with a grant, of either kind, that still counts at `now`, one entry each, by app
     /// id: what a list the person can edit shows. Tokens are not part of it.
+    #[must_use]
     pub fn remembered(&self, now: u64) -> Vec<Remembered> {
         let screens = self
             .grants
@@ -397,11 +412,13 @@ impl RestoreBook {
     }
 
     /// How many grants are remembered, tokens and standing grants together.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.grants.len() + self.inputs.len() + self.standing.len()
     }
 
     /// Whether the book is empty.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.grants.is_empty() && self.inputs.is_empty() && self.standing.is_empty()
     }

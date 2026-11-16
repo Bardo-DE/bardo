@@ -90,17 +90,16 @@ pub(super) async fn fetch<S: AsyncRead + AsyncWrite + Unpin>(
             || items.contains("RFC822)")
             || items.ends_with("RFC822");
         let head = format!("* {number} FETCH ({}", items_out.join(" "));
-        match wants_body {
-            true => {
-                lines
-                    .send_raw(&format!(
-                        "{head} BODY[] {{{}}}\r\n{})\r\n",
-                        message.raw.len(),
-                        message.raw
-                    ))
-                    .await?;
-            }
-            false => lines.send(&format!("{head})")).await?,
+        if wants_body {
+            lines
+                .send_raw(&format!(
+                    "{head} BODY[] {{{}}}\r\n{})\r\n",
+                    message.raw.len(),
+                    message.raw
+                ))
+                .await?;
+        } else {
+            lines.send(&format!("{head})")).await?
         }
     }
     lines.send(&format!("{tag} OK FETCH completed")).await

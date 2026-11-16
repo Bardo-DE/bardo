@@ -1,6 +1,6 @@
 //! Moving frames from a [`CaptureSource`] to a [`FrameSink`].
 //!
-//! The sink is the seam in front of PipeWire: the real one is [`super::pipewire::PipewireSink`],
+//! The sink is the seam in front of `PipeWire`: the real one is [`super::pipewire::PipewireSink`],
 //! [`FakeSink`] records what it was given. [`Pump`] is the whole loop body, so the logic between
 //! them is tested without either.
 
@@ -20,7 +20,7 @@ pub enum SinkError {
     /// No app is reading the stream any more.
     #[error("nobody is reading the stream")]
     NoReader,
-    /// PipeWire failed.
+    /// `PipeWire` failed.
     #[error("pipewire: {0}")]
     Pipewire(String),
 }
@@ -122,6 +122,7 @@ pub struct FakeSink {
 
 impl FakeSink {
     /// A sink serving `node`.
+    #[must_use]
     pub fn new(node: PwNode) -> Self {
         Self {
             node,

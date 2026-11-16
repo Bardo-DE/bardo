@@ -46,7 +46,7 @@ impl<'de> Deserialize<'de> for Base64Bytes {
     }
 }
 
-/// The index of a file descriptor received with SCM_RIGHTS on the `Open` fd, in the order sent
+/// The index of a file descriptor received with `SCM_RIGHTS` on the `Open` fd, in the order sent
 /// with the frame that names it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -80,6 +80,7 @@ impl Traceparent {
     }
 
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -105,7 +106,7 @@ mod tests {
     #[test]
     fn traceparents_follow_the_w3c_grammar() {
         let ok = "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01";
-        assert!(Traceparent::parse(ok).is_ok());
+        Traceparent::parse(ok).unwrap();
         let bad = [
             "",
             "01-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",

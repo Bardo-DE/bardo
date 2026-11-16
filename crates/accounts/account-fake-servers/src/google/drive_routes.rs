@@ -209,15 +209,16 @@ fn list(drive: &Drive, request: &Request) -> Response {
 }
 
 fn change(drive: &Drive, node: &Node) -> Value {
-    match node.removed {
-        true => json!({
+    if node.removed {
+        json!({
             "kind": "drive#change", "changeType": "file", "type": "file",
             "fileId": node.id, "removed": true,
-        }),
-        false => json!({
+        })
+    } else {
+        json!({
             "kind": "drive#change", "changeType": "file", "type": "file",
             "fileId": node.id, "removed": false, "file": file_json(drive, node),
-        }),
+        })
     }
 }
 

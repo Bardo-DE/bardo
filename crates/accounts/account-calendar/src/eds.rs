@@ -62,6 +62,7 @@ pub struct Eds {
 
 impl Eds {
     /// The store reached over `bus` (the session bus) at `names`.
+    #[must_use]
     pub fn new(bus: Connection, names: Names) -> Self {
         Self { bus, names }
     }

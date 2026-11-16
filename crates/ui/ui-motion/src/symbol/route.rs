@@ -31,6 +31,7 @@ pub enum Route {
 
 /// The driver for `effect` on `icon`: an effect that moves a part falls back to a whole-icon one
 /// (a bounce, a pulse) on an icon with no part to move.
+#[must_use]
 pub fn route(effect: SymbolEffect, icon: Icon) -> Route {
     let gesture = icon.parts().map(|parts| parts.gesture);
     match (effect, gesture) {
@@ -65,6 +66,7 @@ pub fn route(effect: SymbolEffect, icon: Icon) -> Route {
 }
 
 /// The animation a `Once` effect plays on the wrapper; the part effects are routed away first.
+#[must_use]
 pub fn once_anim(effect: OnceEffect) -> Anim {
     match effect {
         OnceEffect::Bounce | OnceEffect::Part => Anim::Bounce,
@@ -76,6 +78,7 @@ pub fn once_anim(effect: OnceEffect) -> Anim {
 }
 
 /// The animation a `While` effect plays on the wrapper while active.
+#[must_use]
 pub fn loop_anim(effect: LoopEffect) -> Anim {
     match effect {
         LoopEffect::Bounce | LoopEffect::Part => Anim::BounceLoop,

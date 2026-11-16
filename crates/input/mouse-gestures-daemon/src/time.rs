@@ -15,28 +15,33 @@ pub struct Mono(pub u64);
 
 impl Mono {
     /// An instant `ms` milliseconds after the clock's origin; for tests and fixtures.
+    #[must_use]
     pub const fn from_millis(ms: u64) -> Self {
         Self(ms * 1_000_000)
     }
 
     /// The time from `earlier` to `self`, zero if `earlier` is later (clocks never run backwards,
     /// but a fixture may repeat an instant).
+    #[must_use]
     pub fn since(self, earlier: Mono) -> Duration {
         Duration::from_nanos(self.0.saturating_sub(earlier.0))
     }
 
     /// The instant `d` after `self`.
+    #[must_use]
     pub fn after(self, d: Duration) -> Mono {
         let ns = u64::try_from(d.as_nanos()).unwrap_or(u64::MAX);
         Mono(self.0.saturating_add(ns))
     }
 
     /// Seconds as a float, the unit the scroll feel formulas are written in.
+    #[must_use]
     pub fn seconds_since(self, earlier: Mono) -> f64 {
         self.since(earlier).as_secs_f64()
     }
 
     /// The instant as float seconds.
+    #[must_use]
     pub fn secs(self) -> f64 {
         self.0 as f64 / 1e9
     }
@@ -44,6 +49,7 @@ impl Mono {
     /// `self - earlier` as a difference of float seconds. The scroll feel uses this wherever a
     /// result is truncated, because the reference-feel goldens were computed this way and a
     /// differently rounded `dt` moves a truncation by one unit.
+    #[must_use]
     pub fn float_since(self, earlier: Mono) -> f64 {
         self.secs() - earlier.secs()
     }

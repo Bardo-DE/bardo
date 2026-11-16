@@ -83,6 +83,7 @@ impl<H: Http> OAuthEnv<H> {
     }
 
     /// Reading the clients from `files` at every use, in place of the registry it was made with.
+    #[must_use]
     pub fn with_files(self, files: ClientFiles) -> Self {
         Self {
             files: Some(files),
@@ -91,6 +92,7 @@ impl<H: Http> OAuthEnv<H> {
     }
 
     /// With this build channel.
+    #[must_use]
     pub fn with_channel(self, channel: ClientChannel) -> Self {
         Self { channel, ..self }
     }
@@ -106,11 +108,13 @@ impl<H: Http> OAuthEnv<H> {
     }
 
     /// With this poll wait.
+    #[must_use]
     pub fn with_poll_slice(self, poll_slice: Duration) -> Self {
         Self { poll_slice, ..self }
     }
 
     /// Reading the account's identity from `userinfo` (a fake issuer in a test).
+    #[must_use]
     pub fn with_userinfo(self, userinfo: EndpointUrl) -> Self {
         Self {
             userinfo: Some(userinfo),
@@ -121,6 +125,7 @@ impl<H: Http> OAuthEnv<H> {
 
 impl<H> OAuthEnv<H> {
     /// The clients as they are now: the files' when it reads files, else its registry.
+    #[must_use]
     pub fn clients(&self) -> Cow<'_, ClientRegistry> {
         clients_now(self.files.as_ref(), &self.registry)
     }

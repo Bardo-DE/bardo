@@ -33,6 +33,7 @@ fn one_line(text: &str) -> String {
 
 impl Report {
     /// The text the helper prints.
+    #[must_use]
     pub fn render(&self) -> String {
         let mut text = String::new();
         if let Some(version) = &self.version {
@@ -48,6 +49,7 @@ impl Report {
     }
 
     /// Reads what [`Report::render`] wrote. Lines it does not know are ignored.
+    #[must_use]
     pub fn parse(text: &str) -> Self {
         let mut report = Self::default();
         for line in text.lines() {

@@ -119,6 +119,7 @@ fn token_url(seq: u64) -> String {
 
 impl Tree {
     /// An empty tree with these collections.
+    #[must_use]
     pub fn with_collections(collections: &[(&str, Kind)]) -> Self {
         let mut tree = Self {
             nodes: BTreeMap::new(),
@@ -141,6 +142,7 @@ impl Tree {
     }
 
     /// Nextcloud's layout for `user`: files, a calendar, a task list and an address book.
+    #[must_use]
     pub fn nextcloud(user: &str) -> Self {
         let dav = "/remote.php/dav";
         let paths = [
@@ -195,6 +197,7 @@ impl Tree {
     }
 
     /// Whether anything is at `path`.
+    #[must_use]
     pub fn exists(&self, path: &str) -> bool {
         self.nodes.contains_key(path)
     }
@@ -283,6 +286,7 @@ impl Tree {
     }
 
     /// The body at `path`, for a GET.
+    #[must_use]
     pub fn body(&self, path: &str) -> Option<(&[u8], &str)> {
         let node = self.nodes.get(path).filter(|n| n.kind == Kind::Item)?;
         Some((&node.body, &node.content_type))
@@ -305,11 +309,13 @@ impl Tree {
     }
 
     /// The etag of the node at `path`, quoted as the server sends it.
+    #[must_use]
     pub fn etag_of(&self, path: &str) -> Option<String> {
         self.nodes.get(path).map(|n| etag(n.changed))
     }
 
     /// The sync token a client would get now.
+    #[must_use]
     pub fn sync_token(&self) -> String {
         token_url(self.seq)
     }
@@ -379,9 +385,10 @@ impl Tree {
                 Kind::AddressBook => "<card:addressbook/>",
                 _ => "",
             };
-            out.push_str(&match collection {
-                true => format!("<d:resourcetype><d:collection/>{extra}</d:resourcetype>"),
-                false => "<d:resourcetype/>".to_owned(),
+            out.push_str(&if collection {
+                format!("<d:resourcetype><d:collection/>{extra}</d:resourcetype>")
+            } else {
+                "<d:resourcetype/>".to_owned()
             });
         }
         if wants("getetag") {
@@ -554,6 +561,7 @@ impl Tree {
     }
 
     /// PROPFIND at `path` with `Depth` `depth` (`0`, `1`; anything else reads as `1`).
+    #[must_use]
     pub fn propfind(&self, path: &str, depth: &str, requested: &str) -> Response {
         let Some(node) = self.nodes.get(path) else {
             return Response::new(404);
@@ -569,6 +577,7 @@ impl Tree {
 
     /// The `sync-collection` REPORT: what changed under `path` since the token in `body`, among
     /// its members (`sync-level` 1) or everything below it (`infinite`).
+    #[must_use]
     pub fn report(&self, path: &str, body: &str) -> Response {
         if body.contains("calendar-query") {
             return self.calendar_query(path, body);
@@ -590,9 +599,10 @@ impl Tree {
                 .and_then(|n| n.parse::<u64>().ok()),
         };
         // The first listing (no token) is always good; a token must not predate the pruning.
-        let valid = match token.trim().is_empty() {
-            true => Some(0),
-            false => since.filter(|s| *s >= self.oldest_valid),
+        let valid = if token.trim().is_empty() {
+            Some(0)
+        } else {
+            since.filter(|s| *s >= self.oldest_valid)
         };
         let Some(since) = valid else {
             let error =
@@ -601,9 +611,12 @@ impl Tree {
         };
         let infinite = element_text(body, "sync-level").is_some_and(|l| l.trim() == "infinite");
         let below = format!("{path}/");
-        let within = |p: &str| match infinite {
-            true => p.starts_with(&below),
-            false => parent_of(p) == path,
+        let within = |p: &str| {
+            if infinite {
+                p.starts_with(&below)
+            } else {
+                parent_of(p) == path
+            }
         };
         let mut out = String::new();
         for (child_path, child) in self
@@ -707,10 +720,7 @@ impl Tree {
         }
         match self.put(path, &request.body) {
             Ok(created) => {
-                let status = match created {
-                    true => 201,
-                    false => 204,
-                };
+                let status = if created { 201 } else { 204 };
                 let tag = self.etag_of(path).unwrap_or_default();
                 Response::new(status).with_header("ETag", &tag)
             }
@@ -737,10 +747,13 @@ impl Tree {
             "PUT" => self.put_request(request, path),
             "MKCOL" => created(self.mkcol(path).map(|()| true)),
             "DELETE" if self.precondition_failed(request, path) => Response::new(412),
-            "DELETE" => match self.delete(path) {
-                true => Response::new(204),
-                false => Response::new(404),
-            },
+            "DELETE" => {
+                if self.delete(path) {
+                    Response::new(204)
+                } else {
+                    Response::new(404)
+                }
+            }
             "GET" => self.get(request, path),
             _ => Response::new(405),
         }
@@ -757,6 +770,7 @@ pub enum PutError {
 }
 
 /// The text of the first element named `name` (any prefix) in `xml`.
+#[must_use]
 pub fn element_text(xml: &str, name: &str) -> Option<String> {
     let start = xml
         .find(&format!(":{name}>"))

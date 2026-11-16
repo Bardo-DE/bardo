@@ -44,6 +44,7 @@ pub fn expand(text: &str, home: Option<&FolderPath>) -> Result<FolderPath, GoToP
 
 impl Browser {
     /// The Go to Folder sheet.
+    #[must_use]
     pub fn go_to(&self) -> &GoTo {
         &self.goto
     }
@@ -159,6 +160,7 @@ impl Browser {
     }
 
     /// The same browser, knowing the person's home folder, which `~` means in Go to Folder.
+    #[must_use]
     pub fn with_home(self, home: FolderPath) -> Browser {
         Browser {
             home: Some(home),

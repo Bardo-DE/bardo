@@ -1,5 +1,5 @@
-//! The charge of an OpenRouter reply: `usage.cost` in the last chunk, read exactly, and only for
-//! that flavor. The fixture is built from OpenRouter's documented response shape, not recorded.
+//! The charge of an `OpenRouter` reply: `usage.cost` in the last chunk, read exactly, and only for
+//! that flavor. The fixture is built from `OpenRouter`'s documented response shape, not recorded.
 
 use model_openai_compat::{Flavor, StreamDecoder, read_charge};
 use model_provider::{ModelName, Money, Tokens, TurnEvent, TurnUsage};

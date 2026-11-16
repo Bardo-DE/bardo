@@ -17,6 +17,7 @@ pub struct SharedDisplay(pub Rc<RefCell<Display<State>>>, pub Rc<Cell<u64>>);
 
 impl SharedDisplay {
     /// How many client messages have been dispatched so far.
+    #[must_use]
     pub fn dispatched(&self) -> u64 {
         self.1.get()
     }

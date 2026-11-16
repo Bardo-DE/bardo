@@ -133,14 +133,10 @@ impl<E: Ports> Accounts<'_, E> {
         self.ctx
             .transact(|registry| {
                 // Only a kind switched off has a row.
-                let was = match registry
+                let was = !registry
                     .toggles
                     .iter()
-                    .any(|t| t.account == *id && t.kind == kind)
-                {
-                    true => false,
-                    false => true,
-                };
+                    .any(|t| t.account == *id && t.kind == kind);
                 let spec = registry
                     .accounts
                     .iter()
@@ -204,13 +200,14 @@ impl<E: Ports> Accounts<'_, E> {
                         account.capabilities = capabilities;
                     }
                 }
-                let lines = match was != toggle {
-                    true => vec![Audited::new(
+                let lines = if was == toggle {
+                    Vec::new()
+                } else {
+                    vec![Audited::new(
                         None,
                         Some(id.clone()),
                         AuditEvent::ServiceToggled { kind, toggle },
-                    )],
-                    false => Vec::new(),
+                    )]
                 };
                 Ok((lines, ()))
             })

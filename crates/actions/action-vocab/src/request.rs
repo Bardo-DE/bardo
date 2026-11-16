@@ -50,6 +50,7 @@ pub struct CallRequest {
 impl CallRequest {
     /// The handles the call names: its target first, then its arguments in order (a handle
     /// inside a list or a record counts). A request the router has already resolved names none.
+    #[must_use]
     pub fn handles(&self) -> Vec<Handle> {
         fn walk(value: &Value, into: &mut Vec<Handle>) {
             match value {

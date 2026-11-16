@@ -131,9 +131,10 @@ pub(super) fn proceed(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, want: F
     };
     match head.action.class() {
         ActionClass::Pointer | ActionClass::Keyboard => authorise(run, fx, n, head),
-        ActionClass::Observe => match head.action {
-            CuaAction::Wait { for_ms } => wait(run, fx, at, n, for_ms.ms()),
-            _ => {
+        ActionClass::Observe => {
+            if let CuaAction::Wait { for_ms } = head.action {
+                wait(run, fx, at, n, for_ms.ms())
+            } else {
                 run.pending.actions.pop_front();
                 let done = ActionOutcome {
                     action: head,
@@ -143,7 +144,7 @@ pub(super) fn proceed(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, want: F
                 drop_rest(run);
                 observe(run, fx, next(n), FrameWant::Now, AlsoContext::No);
             }
-        },
+        }
         ActionClass::Conclude => match &head.action {
             CuaAction::Finish { .. } => conclude(run, fx, n),
             _ => ask(run, fx, n, head),

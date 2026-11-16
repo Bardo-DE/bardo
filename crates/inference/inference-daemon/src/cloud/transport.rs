@@ -32,6 +32,7 @@ impl std::fmt::Debug for ShapedTransport {
 
 impl ShapedTransport {
     /// Talks to `endpoint` (a `Tls` target, direct) trusting `roots`, shaping each body.
+    #[must_use]
     pub fn new(endpoint: HttpEndpoint, roots: TlsRoots, shape: BodyShape) -> Self {
         Self {
             client: HttpClient::with_roots(endpoint, roots),

@@ -40,6 +40,7 @@ pub struct CaptureRequest {
 
 impl CaptureRequest {
     /// A request.
+    #[must_use]
     pub fn new(area: PhysicalRect, cursor: bool) -> CaptureRequest {
         CaptureRequest { area, cursor }
     }
@@ -81,6 +82,7 @@ impl CapturedFrame {
     /// assert_eq!(frame.format, CaptureFormat::Argb8888);
     /// assert_eq!(frame.bytes, [3, 2, 1, 4]);
     /// ```
+    #[must_use]
     pub fn from_rgba(area: PhysicalRect, rgba: &[u8]) -> CapturedFrame {
         let bytes = rgba
             .as_chunks::<4>()
@@ -108,6 +110,7 @@ impl CapturedFrame {
     /// assert_eq!(frame.format, CaptureFormat::Argb8888);
     /// assert_eq!(frame.bytes, [3, 2, 1, 4]);
     /// ```
+    #[must_use]
     pub fn from_argb(area: PhysicalRect, argb: Vec<u8>) -> CapturedFrame {
         CapturedFrame {
             area,

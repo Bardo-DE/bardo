@@ -44,6 +44,7 @@ impl Default for ForceQuitLink {
 
 impl ForceQuitLink {
     /// Closed, listing the apps of `desktop`, nothing asked.
+    #[must_use]
     pub fn following(desktop: watch::Receiver<DesktopView>) -> ForceQuitLink {
         ForceQuitLink {
             panel: PanelLink::default(),
@@ -53,11 +54,13 @@ impl ForceQuitLink {
     }
 
     /// Closed, no apps listed (a desktop nobody writes), nothing asked.
+    #[must_use]
     pub fn new() -> ForceQuitLink {
         ForceQuitLink::following(watch::Sender::new(DesktopView::default()).subscribe())
     }
 
     /// The current value.
+    #[must_use]
     pub fn now(&self) -> ForceQuitShown {
         self.panel.now()
     }
@@ -79,11 +82,13 @@ impl ForceQuitLink {
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<ForceQuitShown> {
         self.panel.subscribe()
     }
 
     /// A receiver for the desktop the panel lists the apps of.
+    #[must_use]
     pub fn subscribe_desktop(&self) -> watch::Receiver<DesktopView> {
         self.desktop.clone()
     }
@@ -94,11 +99,13 @@ impl ForceQuitLink {
     }
 
     /// The latest confirmation.
+    #[must_use]
     pub fn last_asked(&self) -> Option<ForceQuitAsked> {
         self.asked.latest()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe_asked(&self) -> watch::Receiver<Option<ForceQuitAsked>> {
         self.asked.subscribe()
     }

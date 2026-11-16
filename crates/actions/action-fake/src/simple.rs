@@ -18,6 +18,7 @@ pub struct RecordingSink {
 
 impl RecordingSink {
     /// An empty sink.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -72,6 +73,7 @@ pub struct MemoryGrants {
 
 impl MemoryGrants {
     /// A store with no grants.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -98,6 +100,7 @@ impl MemoryGrants {
     }
 
     /// A store that starts with these grants.
+    #[must_use]
     pub fn with(grants: Vec<ActionGrant>) -> Self {
         Self {
             grants: Mutex::new(grants),

@@ -17,7 +17,7 @@ fn id(s: &str) -> ToolCallId {
 
 fn config(dialect: WireDialect) -> String {
     let tools = dialect.tools(Size::new(Coord(1024), Coord(768)));
-    let [ToolSpec::Native(native)] = &tools[..] else {
+    let [ToolSpec::Native(native)] = &*tools else {
         panic!("one native tool")
     };
     assert_eq!(native.dialect, dialect);

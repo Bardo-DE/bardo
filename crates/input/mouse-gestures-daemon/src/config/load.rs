@@ -47,6 +47,7 @@ pub struct Loaded {
 /// Reads the file from `dir` (if any). A missing file is the defaults; an unreadable or
 /// non-TOML file is the defaults plus a warning, because the mouse must keep scrolling whatever
 /// the file says.
+#[must_use]
 pub fn load(dir: Option<&Path>) -> Loaded {
     let found = dir.map(|d| d.join(FILE_NAME)).filter(|p| p.exists());
     let (config, text, warnings) = match &found {

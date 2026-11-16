@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-/// A PipeWire node id.
+/// A `PipeWire` node id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct NodeId(pub u32);

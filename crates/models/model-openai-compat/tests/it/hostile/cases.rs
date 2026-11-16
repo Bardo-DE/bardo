@@ -113,7 +113,7 @@ fn invalid_utf8_in_a_line_is_a_framing_error_and_split_characters_are_not() {
     assert_eq!(reply.end, Err(Refused::Framing(SseError::NotUtf8)));
     let body = sse(&scenario());
     let at = body.iter().position(|b| *b == 0xE4).unwrap();
-    let split = run(&[&body[..at + 1], &body[at + 1..at + 2], &body[at + 2..]]);
+    let split = run(&[&body[..=at], &body[at + 1..at + 2], &body[at + 2..]]);
     assert_eq!(split, run(&[&body]));
 }
 
@@ -205,12 +205,12 @@ fn many_short_lines_and_one_byte_chunks_cost_linear_time() {
     // Each of these was quadratic: the consumed prefix was drained per line, and an unfinished
     // line was rescanned per chunk.
     let newlines = vec![b'\n'; 4 << 20];
-    assert!(run(&[&newlines]).end.is_err());
+    run(&[&newlines]).end.unwrap_err();
     let crs = vec![b'\r'; 1 << 20];
-    assert!(run(&[&crs]).end.is_err());
+    run(&[&crs]).end.unwrap_err();
     let line = [b"data: ".as_slice(), &vec![b'a'; 400_000]].concat();
     let bytes: Vec<&[u8]> = line.chunks(1).collect();
-    assert!(run(&bytes).end.is_err());
+    run(&bytes).end.unwrap_err();
 }
 
 #[test]
@@ -224,5 +224,5 @@ fn an_embedding_outside_f32_range_is_unreadable_not_infinite() {
         decode(r#"{"data":[{"embedding":[0.5,1e300]}]}"#),
         Err(CodecError::Unreadable)
     );
-    assert!(decode(r#"{"data":[{"embedding":[0.5,-1e30]}]}"#).is_ok());
+    decode(r#"{"data":[{"embedding":[0.5,-1e30]}]}"#).unwrap();
 }

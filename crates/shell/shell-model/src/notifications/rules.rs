@@ -14,6 +14,7 @@ use super::{
 type Step = (NotesState, Vec<NotificationsEffect>);
 
 /// Whether the service holds `id`: a live banner or a kept notification.
+#[must_use]
 pub fn holds(state: &NotesState, id: NotificationId) -> bool {
     find(state, id).is_some()
 }

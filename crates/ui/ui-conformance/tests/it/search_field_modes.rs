@@ -1,4 +1,4 @@
-//! SearchField's options on a real Blitz document: the top hit is lit and Return picks it, the
+//! `SearchField`'s options on a real Blitz document: the top hit is lit and Return picks it, the
 //! host reads the lit row and completes it on Tab, Escape takes one step a press in either
 //! order, and the card draws the field and its results as one surface.
 
@@ -254,7 +254,7 @@ fn rows_the_host_shows_are_up_before_any_focus_and_survive_escape_on_an_empty_fi
         cell.set(Setup {
             open: Panel::Shown,
             ..popup()
-        })
+        });
     });
     let mut harness = Harness::new(Page, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.advance(ms(300));

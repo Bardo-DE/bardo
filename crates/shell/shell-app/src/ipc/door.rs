@@ -29,6 +29,7 @@ impl Door {
     }
 
     /// Is the lock file no longer the one this daemon holds?
+    #[must_use]
     pub fn displaced(&self) -> bool {
         self.0.displaced()
     }

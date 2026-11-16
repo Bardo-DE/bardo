@@ -5,7 +5,7 @@
 //!
 //! Precomputed washes (section 11 and open decisions 3-4; every value here is proposed):
 //! `--ok-wash` is `--ok` at .16 over transparent, exactly what `color-mix(in oklab, var(--ok)
-//! 16%, transparent)` paints; `--warn-wash` is `--warn` 14% over `--surface`, mixed in OKLab
+//! 16%, transparent)` paints; `--warn-wash` is `--warn` 14% over `--surface`, mixed in `OKLab`
 //! and rounded to 8 bits; `--danger-wash` takes the failing pill's form, `--danger` at .16 over
 //! transparent (the spoof flag's 12% over `--raise` is within a step of it on white);
 //! the accent family (`--accent`, `--accent-ink`, `--accent-soft`, `--accent-text`,
@@ -52,7 +52,7 @@ pub enum ColourToken {
     InkFaint,
     /// `--line`: borders and dividers.
     Line,
-    /// `--fill-quaternary`: NSColor's quaternarySystemFill, the wash a search field takes for its
+    /// `--fill-quaternary`: `NSColor`'s quaternarySystemFill, the wash a search field takes for its
     /// ground: black at .06 in light, white at .10 in dark, over whatever lies beneath.
     FillQuaternary,
     /// `--fill-btn`: the wash a filled push button and a bezeled field take in place of a
@@ -183,6 +183,7 @@ pub enum ColourToken {
 impl ColourToken {
     /// The value in `scheme`, with Blue as the accent (the band's roles,
     /// section 20).
+    #[must_use]
     pub fn value(self, scheme: Scheme) -> Colour {
         // Only the accent family asks the band: the band measures against the card's grounds,
         // which are this table's too.

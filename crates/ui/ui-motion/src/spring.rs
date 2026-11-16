@@ -1,4 +1,4 @@
-//! A spring described the way [FLUID] and SwiftUI describe one (design/05-MOTION.md section 14):
+//! A spring described the way [FLUID] and `SwiftUI` describe one (design/05-MOTION.md section 14):
 //! a damping ratio and a response, not a duration. A spring has no length; it ends when it comes
 //! to rest, and a new target mid-flight starts from where it is at the speed it has.
 //!
@@ -29,6 +29,7 @@ pub struct Millis(pub u32);
 
 impl Millis {
     /// As a `Duration`.
+    #[must_use]
     pub fn duration(self) -> Duration {
         Duration::from_millis(u64::from(self.0))
     }
@@ -49,11 +50,13 @@ impl SpringTuning {
     }
 
     /// Its damping ratio.
+    #[must_use]
     pub fn damping(self) -> Ratio {
         self.damping
     }
 
     /// Its response.
+    #[must_use]
     pub fn response(self) -> Millis {
         self.response
     }
@@ -104,6 +107,7 @@ pub enum SpringPhase {
 
 impl Leg {
     /// A leg standing still at `at`.
+    #[must_use]
     pub fn still(at: f64, spring: SpringTuning) -> Leg {
         Leg {
             start: State {
@@ -117,6 +121,7 @@ impl Leg {
 
     /// The state `elapsed` into the leg, in closed form (no step error, so the state at any
     /// instant is exact however the frames fall).
+    #[must_use]
     pub fn at(self, elapsed: Duration) -> State {
         let t = elapsed.as_secs_f64();
         let omega = self.spring.omega();
@@ -136,6 +141,7 @@ impl Leg {
 
     /// Whether the leg has come to rest by `elapsed`, `px_per_unit` saying how many pixels one
     /// of its units draws.
+    #[must_use]
     pub fn phase(self, elapsed: Duration, px_per_unit: f64) -> SpringPhase {
         let now = self.at(elapsed);
         let near = ((now.position - self.target) * px_per_unit).abs() < REST_PX;

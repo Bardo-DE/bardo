@@ -99,6 +99,7 @@ impl Gpu {
     }
 
     /// The device the window's renderer draws with, once it has made one.
+    #[must_use]
     pub fn device(&self) -> Option<wgpu::Device> {
         lock(&self.state)
             .attached
@@ -107,6 +108,7 @@ impl Gpu {
     }
 
     /// The queue of that device.
+    #[must_use]
     pub fn queue(&self) -> Option<wgpu::Queue> {
         lock(&self.state)
             .attached
@@ -115,6 +117,7 @@ impl Gpu {
     }
 
     /// The adapter that device came from.
+    #[must_use]
     pub fn adapter(&self) -> Option<wgpu::Adapter> {
         lock(&self.state)
             .attached
@@ -123,6 +126,7 @@ impl Gpu {
     }
 
     /// The instance that adapter came from.
+    #[must_use]
     pub fn instance(&self) -> Option<wgpu::Instance> {
         lock(&self.state)
             .attached
@@ -132,12 +136,14 @@ impl Gpu {
 
     /// How many devices this window has had. A texture made on an earlier device is not drawn;
     /// an app that holds GPU resources made on `device()` rebuilds them when this changes.
+    #[must_use]
     pub fn generation(&self) -> u64 {
         lock(&self.state).generation
     }
 
     /// A handle with no texture in it yet: a layer given it paints nothing until a texture is
     /// put in.
+    #[must_use]
     pub fn handle(&self) -> TextureHandle {
         TextureHandle {
             inner: Arc::new(HandleInner {
@@ -151,6 +157,7 @@ impl Gpu {
     /// as float and does not decode (`Rgba8Unorm`, `Bgra8Unorm`, `Rgba16Float`; never an sRGB
     /// format, which would be decoded to linear), premultiplied alpha, one mip level and
     /// `TEXTURE_BINDING` usage.
+    #[must_use]
     pub fn register(&self, texture: wgpu::Texture) -> TextureHandle {
         let handle = self.handle();
         handle.replace(texture);
@@ -159,6 +166,7 @@ impl Gpu {
 
     /// A handle showing the whole texture `view` looks at, under the same rules as
     /// [`Gpu::register`].
+    #[must_use]
     pub fn register_view(&self, view: wgpu::TextureView) -> TextureHandle {
         let handle = self.handle();
         handle.replace_view(view);
@@ -221,6 +229,7 @@ impl Gpu {
 
 /// A GPU on a device its owner already has: the headless harness's, which opens one before the
 /// first frame.
+#[must_use]
 pub fn attached_gpu(
     instance: wgpu::Instance,
     adapter: wgpu::Adapter,
@@ -319,12 +328,14 @@ impl PartialEq for TextureHandle {
 
 impl TextureHandle {
     /// The GPU this handle's textures are on.
+    #[must_use]
     pub fn gpu(&self) -> &Gpu {
         &self.inner.gpu
     }
 
     /// The size of the texture in it, or `None` while it is empty (or made on a device that has
     /// gone).
+    #[must_use]
     pub fn size(&self) -> Option<(Texels, Texels)> {
         self.frame().map(|frame| (frame.width, frame.height))
     }
@@ -412,14 +423,15 @@ impl TextureHandle {
             },
             size,
         );
-        match fresh {
-            true => self.put(
+        if fresh {
+            self.put(
                 Source::Texture(texture),
                 pixels.width(),
                 pixels.height(),
                 Origin::Upload,
-            ),
-            false => self.redraw(),
+            );
+        } else {
+            self.redraw()
         }
         Ok(())
     }
@@ -430,7 +442,7 @@ impl TextureHandle {
             let mut state = lock(&self.inner.state);
             state.content = None;
             state.version += 1;
-        }
+        };
         self.redraw();
     }
 
@@ -459,7 +471,7 @@ impl TextureHandle {
                 origin,
             });
             state.version += 1;
-        }
+        };
         self.redraw();
     }
 

@@ -241,8 +241,8 @@ async fn open_in(router: &Router<Rig>) -> SessionOpened {
     {
         let mut st = router.state.lock().expect("lock");
         let record = st.sessions.get_mut(&opened.session).expect("session");
-        record.policy = Some(wide_policy(&opened.task, "work"));
-    }
+        record.policy = Some(wide_policy(&opened.task, "work"))
+    };
     use account_core::consent::{Decision, Grant, GrantScope as Scope, Usage};
     use action_router::GrantStore;
     for (n, class) in [provenance::DataClass::Mail, provenance::DataClass::Contacts]

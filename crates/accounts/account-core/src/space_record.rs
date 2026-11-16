@@ -23,12 +23,13 @@ impl SpaceName {
         let ok = !text.trim().is_empty()
             && text.chars().count() <= SPACE_NAME_MAX_CHARS
             && !text.chars().any(char::is_control);
-        match ok {
-            true => Ok(Self(text.to_owned())),
-            false => Err(CoreError::MalformedId {
+        if ok {
+            Ok(Self(text.to_owned()))
+        } else {
+            Err(CoreError::MalformedId {
                 what: "space name",
                 text: text.chars().take(SPACE_NAME_MAX_CHARS).collect(),
-            }),
+            })
         }
     }
 }
@@ -45,12 +46,13 @@ pub struct SpaceLook(String);
 impl SpaceLook {
     /// The look `text`, or why it is not one.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
-        match text.len() <= SPACE_LOOK_MAX_BYTES {
-            true => Ok(Self(text.to_owned())),
-            false => Err(CoreError::MalformedId {
+        if text.len() <= SPACE_LOOK_MAX_BYTES {
+            Ok(Self(text.to_owned()))
+        } else {
+            Err(CoreError::MalformedId {
                 what: "space look",
                 text: format!("{} bytes", text.len()),
-            }),
+            })
         }
     }
 }
@@ -111,13 +113,13 @@ mod tests {
     fn a_look_is_opaque_and_only_its_length_is_checked() {
         let json = r#"{"colour":"teal","symbol":"briefcase"}"#;
         assert_eq!(SpaceLook::parse(json).expect("look").as_str(), json);
-        assert!(SpaceLook::parse("not json at all {").is_ok());
-        assert!(SpaceLook::parse("").is_ok());
-        assert!(SpaceLook::parse(&"x".repeat(1024)).is_ok());
-        assert!(SpaceLook::parse(&"x".repeat(1025)).is_err());
+        SpaceLook::parse("not json at all {").unwrap();
+        SpaceLook::parse("").unwrap();
+        SpaceLook::parse(&"x".repeat(1024)).unwrap();
+        SpaceLook::parse(&"x".repeat(1025)).unwrap_err();
         // Bytes, not characters: 512 two-byte characters fit, 513 do not.
-        assert!(SpaceLook::parse(&"é".repeat(512)).is_ok());
-        assert!(SpaceLook::parse(&"é".repeat(513)).is_err());
+        SpaceLook::parse(&"é".repeat(512)).unwrap();
+        SpaceLook::parse(&"é".repeat(513)).unwrap_err();
     }
 
     #[test]

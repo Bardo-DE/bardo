@@ -45,7 +45,7 @@ fn fake(scratch: &Scratch, body: &str) -> PathBuf {
 fn the_list_is_read_from_the_program_and_an_install_lands_in_the_folder() {
     let _forks = FORKS
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let scratch = Scratch::under(TMP, "agents-tool-ok");
     let data = DataHome(scratch.join("data"));
     let tool = AgentsTool::new(fake(&scratch, FAKE), &data);
@@ -78,7 +78,7 @@ fn the_list_is_read_from_the_program_and_an_install_lands_in_the_folder() {
 fn a_program_that_fails_gives_its_sentence_and_one_that_is_missing_gives_none() {
     let _forks = FORKS
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let scratch = Scratch::under(TMP, "agents-tool-fail");
     let data = DataHome(scratch.join("data"));
     let failing = format!(
@@ -110,7 +110,7 @@ fn a_program_that_fails_gives_its_sentence_and_one_that_is_missing_gives_none() 
 fn the_program_is_found_beside_the_running_one_first_then_on_path() {
     let _forks = FORKS
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let scratch = Scratch::under(TMP, "agents-tool-find");
     let prefix = scratch.join("prefix");
     let other = scratch.join("other");

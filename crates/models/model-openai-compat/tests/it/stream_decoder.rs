@@ -768,10 +768,8 @@ fn an_error_envelope_in_a_200_is_unreadable_and_names_its_fault() {
     ];
     for (frame, want) in cases {
         let mut d = decoder(Flavor::Vllm);
-        assert!(
-            d.feed(r#"{"choices":[{"index":0,"delta":{"content":"hi"}}]}"#)
-                .is_ok()
-        );
+        d.feed(r#"{"choices":[{"index":0,"delta":{"content":"hi"}}]}"#)
+            .unwrap();
         assert_eq!(
             d.feed(&frame.to_string()),
             Err(CodecError::Unreadable),
@@ -782,11 +780,9 @@ fn an_error_envelope_in_a_200_is_unreadable_and_names_its_fault() {
         assert!(!format!("{fault:?}").contains("secret"));
     }
     // A null error is not an error.
-    assert!(
-        decoder(Flavor::Vllm)
-            .feed(r#"{"error":null,"choices":[{"index":0,"delta":{"content":"x"}}]}"#)
-            .is_ok()
-    );
+    decoder(Flavor::Vllm)
+        .feed(r#"{"error":null,"choices":[{"index":0,"delta":{"content":"x"}}]}"#)
+        .unwrap();
 }
 
 #[test]

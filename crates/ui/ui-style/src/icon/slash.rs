@@ -51,6 +51,7 @@ fn tip(drawn: Thousandths) -> (f32, f32) {
 }
 
 /// The slash drawn `drawn` thousandths of the way, as a path `d`; `None` when nothing is drawn.
+#[must_use]
 pub fn slash_path(drawn: Thousandths) -> Option<String> {
     (drawn.0 > 0).then(|| capsule(FROM, tip(drawn), WIDTH))
 }

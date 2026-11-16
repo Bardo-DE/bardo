@@ -38,6 +38,7 @@ pub struct Hello {
 
 impl Hello {
     /// A hello offering `models` to a computer with this `approval`.
+    #[must_use]
     pub fn new(models: Vec<LentModel>, approval: Approval) -> Self {
         Self {
             service: SERVICE.to_owned(),
@@ -48,22 +49,26 @@ impl Hello {
     }
 
     /// The models offered.
+    #[must_use]
     pub fn models(&self) -> &[LentModel] {
         &self.models
     }
 
     /// Whether the asking computer must still be allowed on the lending one.
+    #[must_use]
     pub fn needs_approval(&self) -> bool {
         self.needs_approval
     }
 
     /// The hello as the JSON it is answered in.
+    #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(self).unwrap_or_default()
     }
 
     /// Reads a hello; none when the text is not one of this program's (another service on the
     /// port, a newer form, too many models).
+    #[must_use]
     pub fn parse(body: &[u8]) -> Option<Self> {
         let hello: Hello = serde_json::from_slice(body).ok()?;
         let fine = hello.service == SERVICE

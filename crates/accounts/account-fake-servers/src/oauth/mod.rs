@@ -208,11 +208,13 @@ impl FakeIssuer {
 
 impl IssuerHandle {
     /// The issuer's origin, `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
 
     /// The endpoints, as a client registration pointing at this issuer would carry them.
+    #[must_use]
     pub fn endpoints(&self) -> IssuerEndpoints {
         let url = |path: &str| {
             EndpointUrl::parse(&format!("{}{path}", self.shared.base)).expect("a loopback URL")
@@ -241,6 +243,7 @@ impl IssuerHandle {
     }
 
     /// The query of every authorize request, decoded, oldest first.
+    #[must_use]
     pub fn authorize_queries(&self) -> Vec<Vec<(String, String)>> {
         self.shared.queries.all()
     }
@@ -264,12 +267,14 @@ impl IssuerHandle {
 
     /// Issues a refresh token as if the person had already signed in (a seeded account). A
     /// refresh with it is served whatever scope it asks.
+    #[must_use]
     pub fn seed_refresh(&self, client_id: &str, scope: &str) -> String {
         self.seed(client_id, scope, false)
     }
 
     /// [`IssuerHandle::seed_refresh`] for a grant held to `scope`, as one a sign-in made is: a
     /// refresh that asks beyond it is refused as the issuer's style refuses it.
+    #[must_use]
     pub fn seed_held_refresh(&self, client_id: &str, scope: &str) -> String {
         self.seed(client_id, scope, true)
     }
@@ -309,12 +314,14 @@ impl IssuerHandle {
     }
 
     /// Whether this refresh token is live (issued, not rotated away, not revoked).
+    #[must_use]
     pub fn refresh_is_live(&self, token: &str) -> bool {
         lock(&self.shared.state).refresh.contains_key(token)
     }
 
     /// Whether this access token is live: issued, not revoked, and not past the `expires_in` it
     /// was issued with (a real service answers `401` for a lapsed token).
+    #[must_use]
     pub fn access_is_live(&self, token: &str) -> bool {
         let state = lock(&self.shared.state);
         state.access.contains_key(token)
@@ -326,11 +333,13 @@ impl IssuerHandle {
 
     /// The scopes this access token was issued for, when the issuer issued it (a token planted
     /// with `seed_access_as` has none recorded).
+    #[must_use]
     pub fn access_scope(&self, token: &str) -> Option<String> {
         lock(&self.shared.state).access_scopes.get(token).cloned()
     }
 
     /// Everything the issuer received, oldest first.
+    #[must_use]
     pub fn events(&self) -> Vec<IssuerEvent> {
         self.shared.events.all()
     }

@@ -58,6 +58,7 @@ pub struct SpaceShotBook {
 /// use compositor_wayland::quire::space_shot::clamp_side;
 /// assert_eq!((clamp_side(0), clamp_side(160), clamp_side(5000)), (1, 160, 1024));
 /// ```
+#[must_use]
 pub fn clamp_side(side: u32) -> u32 {
     side.clamp(MIN_SIDE, MAX_SIDE)
 }
@@ -119,16 +120,19 @@ impl SpaceShotBook {
     }
 
     /// What the source shows, while it lives.
+    #[must_use]
     pub fn source(&self, source: SpaceSourceId) -> Option<&SpaceShot> {
         self.sources.get(&source)
     }
 
     /// What the session shows, while it lives.
+    #[must_use]
     pub fn session(&self, session: SpaceSessionId) -> Option<&SpaceShot> {
         self.sessions.get(&session)
     }
 
     /// The live sessions.
+    #[must_use]
     pub fn sessions(&self) -> Vec<SpaceSessionId> {
         self.sessions.keys().copied().collect()
     }
@@ -203,6 +207,7 @@ impl SpaceShotBook {
     }
 
     /// Whether any session waits or runs (the loop need not fingerprint anything otherwise).
+    #[must_use]
     pub fn is_watching(&self) -> bool {
         !self.sessions.is_empty()
     }
@@ -225,6 +230,7 @@ impl SpaceShotPart {
     }
 
     /// The held session.
+    #[must_use]
     pub fn session(&self, id: SpaceSessionId) -> Option<&Session> {
         self.held.get(&id)
     }
@@ -264,6 +270,7 @@ impl SpaceShotPart {
     }
 
     /// How often `window` committed while a session watched.
+    #[must_use]
     pub fn commits_of(&self, window: compositor_core::WindowId) -> u64 {
         self.commits.get(&window).copied().unwrap_or_default()
     }

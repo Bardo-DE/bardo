@@ -27,12 +27,14 @@ pub struct PageTable {
 
 impl PageTable {
     /// The built-in pages alone.
+    #[must_use]
     pub fn built_in() -> PageTable {
         let file: PageFile = toml::from_str(BUILT_IN).unwrap_or_default();
         PageTable::default().declaring(&file.page)
     }
 
     /// The built-in pages and the `[[page]]` tables of `schemas`.
+    #[must_use]
     pub fn of_schemas(schemas: &[Schema]) -> PageTable {
         schemas.iter().fold(PageTable::built_in(), |table, schema| {
             table.declaring(&schema.pages)
@@ -41,6 +43,7 @@ impl PageTable {
 
     /// This table with `declared` added. A page whose id is already here replaces the earlier
     /// one, so a program can retitle a built-in page; the table stays in sidebar order.
+    #[must_use]
     pub fn declaring(mut self, declared: &[PageDecl]) -> PageTable {
         for decl in declared {
             self.pages.retain(|page| page.id != decl.id);
@@ -51,6 +54,7 @@ impl PageTable {
     }
 
     /// The pages in sidebar order.
+    #[must_use]
     pub fn pages(&self) -> &[PageDecl] {
         &self.pages
     }
@@ -64,12 +68,14 @@ impl PageTable {
     }
 
     /// The page declared with `id`.
+    #[must_use]
     pub fn get(&self, id: &PageId) -> Option<&PageDecl> {
         self.pages.iter().find(|page| page.id == *id)
     }
 
     /// The id `text` names: an id, one of a page's aliases, or an id behind the old `app:` prefix.
     /// `None` when no declared page answers to it.
+    #[must_use]
     pub fn resolve(&self, text: &str) -> Option<PageId> {
         let text = text.trim();
         let text = text.strip_prefix("app:").unwrap_or(text);
@@ -83,12 +89,14 @@ impl PageTable {
 
     /// The declaration `page` names, through its aliases: `Page::App("Software Update")` is the
     /// `software-update` page.
+    #[must_use]
     pub fn declared(&self, page: &Page) -> Option<&PageDecl> {
         self.resolve(page.id().as_str())
             .and_then(|id| self.get(&id))
     }
 
     /// Whether `page` is declared.
+    #[must_use]
     pub fn status(&self, page: &Page) -> PageStatus {
         match self.declared(page) {
             Some(_) => PageStatus::Declared,
@@ -97,6 +105,7 @@ impl PageTable {
     }
 
     /// The title of `page`: the declared one, else its label.
+    #[must_use]
     pub fn title_of(&self, page: &Page) -> PageTitle {
         self.declared(page).map_or_else(
             || PageTitle(page.label().to_owned()),

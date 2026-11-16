@@ -7,6 +7,6 @@ use std::sync::Mutex;
 pub(super) fn copy_of<T: Clone>(shared: &Mutex<T>) -> T {
     shared
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner())
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
         .clone()
 }

@@ -43,6 +43,7 @@ pub struct CaptureSession {
 
 impl CaptureSession {
     /// A capture that has just been requested.
+    #[must_use]
     pub fn new(id: CaptureId) -> Self {
         Self {
             id,
@@ -62,12 +63,14 @@ pub struct Captures(pub(crate) BTreeMap<CaptureId, CaptureSession>);
 
 impl Captures {
     /// One capture.
+    #[must_use]
     pub fn get(&self, id: CaptureId) -> Option<&CaptureSession> {
         self.0.get(&id)
     }
 
     /// Takes a finished capture out: its frame, or why it failed. `None` while it is still
     /// going or unknown.
+    #[must_use]
     pub fn take_ready(mut self, id: CaptureId) -> (Self, Option<Result<Frame, CaptureFailure>>) {
         let Some(session) = self.0.remove(&id) else {
             return (self, None);

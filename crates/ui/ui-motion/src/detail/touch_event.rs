@@ -37,6 +37,7 @@ impl Contact {
     /// // A contact cannot be written by hand: its fields are private.
     /// let forged = ui_components::motion::detail::touch::Contact { proof: () };
     /// ```
+    #[must_use]
     pub fn from_event<T: Handled>(event: &Event<T>) -> Contact {
         let _ = event;
         Contact::proven()
@@ -45,6 +46,7 @@ impl Contact {
 
 impl Touch {
     /// `Touch::Contact` from a handler's event.
+    #[must_use]
     pub fn from_event<T: Handled>(event: &Event<T>) -> Touch {
         Touch::Contact(Contact::from_event(event))
     }

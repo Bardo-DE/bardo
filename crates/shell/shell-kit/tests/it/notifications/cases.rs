@@ -178,7 +178,7 @@ pub fn stack_bottom_right_dark() -> Element {
 fn center(theme: Theme) -> Element {
     rsx! {
         Ds { appearance: Appearance { theme, ..Appearance::default() }, material: Material::Popover, stylesheet: Inject::Host, extent: RootExtent::Viewport,
-            SidePanel { label: "Notification Center", shown: true, width: Px(384.0), onclose: |_| {},
+            SidePanel { label: "Notification Center", shown: true, width: Px(384.0), onclose: |()| {},
                 GroupHeader { icon: IconSource::Glyph(Icon::Mail), name: "Mail", count: 2, expanded: true, on_toggle: |_| {}, on_clear: |_| {} }
                 NotificationCard { app: mail(), age: "9:41", summary: "Grace Hopper", body: "Are we still on for Thursday?", on_close: |_| {}, on_open: |_| {} }
                 NotificationCard { app: mail(), age: "9:12", summary: "Ada Lovelace", on_close: |_| {}, on_open: |_| {} }

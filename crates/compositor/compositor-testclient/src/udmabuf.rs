@@ -52,6 +52,7 @@ pub enum UdmabufError {
 impl Layout {
     /// The layout of a `size` ARGB8888 buffer: stride is `width * 4` bytes (not bits), the
     /// length rounds up to a page.
+    #[must_use]
     pub fn of(size: PhysicalSize) -> Layout {
         let stride = size.w * BYTES_PER_PIXEL;
         let bytes = u64::from(stride) * u64::from(size.h);
@@ -80,11 +81,13 @@ impl UdmabufSource {
     }
 
     /// The memfd, for the test kit's allocator.
+    #[must_use]
     pub fn memfd(&self) -> &OwnedFd {
         &self.memfd
     }
 
     /// Its layout.
+    #[must_use]
     pub fn layout(&self) -> Layout {
         self.layout
     }

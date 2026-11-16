@@ -1,9 +1,9 @@
 //! The two launcher crashes, reproduced on a real Blitz document.
 //!
 //! A motion hook's settle task outlived its component, so unmounting a palette or a menu
-//! before its entrance settled set a dropped signal ("ValueDroppedError"). A field's
+//! before its entrance settled set a dropped signal ("`ValueDroppedError`"). A field's
 //! `Focus::OnMount` set the focus from a task polled inside the render pass, where the renderer
-//! holds the document ("RefCell already borrowed"). Each test drives mounts and unmounts from a
+//! holds the document ("`RefCell` already borrowed"). Each test drives mounts and unmounts from a
 //! script inside the page, on the harness's clock, and passes only if nothing panics.
 
 use dioxus::prelude::*;

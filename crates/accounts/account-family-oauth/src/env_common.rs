@@ -36,6 +36,7 @@ pub struct ClientFiles {
 impl ClientFiles {
     /// The clients the files name now. A damaged file leaves the registry empty, so a sign-in
     /// says it needs a client id rather than guessing one.
+    #[must_use]
     pub fn read(&self) -> account_oauth::ClientRegistry {
         account_oauth::ClientRegistry::from_paths(&self.shipped, &self.own).unwrap_or_default()
     }

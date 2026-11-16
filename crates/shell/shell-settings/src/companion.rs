@@ -68,6 +68,7 @@ pub struct CompanionSettings {
 
 /// What the companion service's machines run on for `settings`: the double tap's window and
 /// the app's response time are the machines' own constants, the summon's place the key's.
+#[must_use]
 pub fn params(settings: &CompanionSettings) -> CompanionParams {
     CompanionParams {
         summon: SummonParams {
@@ -83,6 +84,7 @@ pub fn params(settings: &CompanionSettings) -> CompanionParams {
 pub const CONFIRM_ARM: Duration = Duration::from_millis(600);
 
 /// [`CONFIRM_ARM`], for the surfaces that arm their buttons.
+#[must_use]
 pub fn confirm_arm() -> Duration {
     CONFIRM_ARM
 }

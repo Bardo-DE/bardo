@@ -5,6 +5,7 @@ use crate::chain::{BodyState, Entry};
 use memory_core::{ActorFilter, ActorKind, Integrity, TimelineFilter, TrustFilter};
 
 /// Whether `entry` passes `filter`.
+#[must_use]
 pub fn passes(filter: &TimelineFilter, entry: &Entry) -> bool {
     let h = &entry.header;
     let actor_ok = match filter.actors {

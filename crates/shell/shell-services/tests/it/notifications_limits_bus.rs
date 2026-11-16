@@ -179,8 +179,10 @@ fn banner_of(notes: &watch::Receiver<NotesState>, app: &str) -> Notification {
         .banners
         .iter()
         .find(|banner| banner.note.app.name == app)
-        .map(|banner| banner.note.clone())
-        .unwrap_or_else(|| panic!("no banner from {app}"))
+        .map_or_else(
+            || panic!("no banner from {app}"),
+            |banner| banner.note.clone(),
+        )
 }
 
 #[test]

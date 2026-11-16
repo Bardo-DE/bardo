@@ -29,6 +29,7 @@ pub struct JoinStep {
 }
 
 /// The change an app's verb implies when no filesystem observation came with it.
+#[must_use]
 pub fn change_for(verb: Verb) -> FileChange {
     match verb {
         Verb::Created | Verb::Downloaded | Verb::Imported | Verb::Copied | Verb::Exported => {
@@ -80,6 +81,7 @@ fn partner(observed: &Observed, whys: &[WhyAt], window: JoinWindow) -> Option<us
 
 /// Joins what is pending as of `now`: pairs observations with explanations, settles the ones
 /// whose window has elapsed, and leaves the rest waiting. Pure.
+#[must_use]
 pub fn join(pending: Pending, now: Stamp, window: JoinWindow) -> JoinStep {
     let Pending {
         mut observed,

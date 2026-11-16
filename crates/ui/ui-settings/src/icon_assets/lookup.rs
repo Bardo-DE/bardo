@@ -60,6 +60,7 @@ pub struct AssetsEnv {
 
 impl AssetsEnv {
     /// This process's environment.
+    #[must_use]
     pub fn current() -> AssetsEnv {
         AssetsEnv {
             quire_icon_assets: std::env::var_os("BARDO_ICON_ASSETS"),
@@ -125,17 +126,19 @@ pub fn find_apps_dir(env: &AssetsEnv, probe: impl Fn(&Path) -> Presence) -> Opti
 
 /// Whether `path` is a directory on disk.
 pub(super) fn a_directory(path: &Path) -> Presence {
-    match path.is_dir() {
-        true => Presence::Present,
-        false => Presence::Absent,
+    if path.is_dir() {
+        Presence::Present
+    } else {
+        Presence::Absent
     }
 }
 
 /// Whether `path` is a file on disk.
 pub(super) fn a_file(path: &Path) -> Presence {
-    match path.is_file() {
-        true => Presence::Present,
-        false => Presence::Absent,
+    if path.is_file() {
+        Presence::Present
+    } else {
+        Presence::Absent
     }
 }
 
@@ -145,6 +148,7 @@ pub fn apps_dir() -> Option<PathBuf> {
 }
 
 /// Where `icons install` copies the set: `$XDG_DATA_HOME/bardo/icons/apps` (step 2).
+#[must_use]
 pub fn install_dir(env: &AssetsEnv) -> Option<PathBuf> {
     data_home(env).map(|home| home.join(SUBDIR))
 }
@@ -250,9 +254,12 @@ mod tests {
             ("nothing anywhere", &[], None),
         ];
         for (name, present, want) in cases {
-            let probe = |path: &Path| match present.iter().any(|p| Path::new(p) == path) {
-                true => Presence::Present,
-                false => Presence::Absent,
+            let probe = |path: &Path| {
+                if present.iter().any(|p| Path::new(p) == path) {
+                    Presence::Present
+                } else {
+                    Presence::Absent
+                }
             };
             let got = find_apps_dir(&everything, probe).map(|dir| (dir.origin, dir.path));
             let want = want.map(|(origin, path)| (origin, PathBuf::from(path)));

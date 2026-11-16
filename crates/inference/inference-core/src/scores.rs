@@ -78,11 +78,13 @@ impl OptionScores {
     }
 
     /// The shares, in the declared order.
+    #[must_use]
     pub fn as_slice(&self) -> &[OptionScore] {
         &self.0
     }
 
     /// The share of `option`, if it is one of the declared options.
+    #[must_use]
     pub fn share_of(&self, option: &str) -> Option<Permille> {
         self.0
             .iter()
@@ -143,7 +145,7 @@ mod tests {
     #[test]
     fn a_wire_value_that_is_not_a_whole_does_not_read() {
         let bad = r#"[{"option":"a","share":600},{"option":"b","share":600}]"#;
-        assert!(serde_json::from_str::<OptionScores>(bad).is_err());
+        serde_json::from_str::<OptionScores>(bad).unwrap_err();
         let good = r#"[{"option":"a","share":600},{"option":"b","share":400}]"#;
         let scores: OptionScores = serde_json::from_str(good).expect("reads");
         assert_eq!(serde_json::to_string(&scores).expect("writes"), good);

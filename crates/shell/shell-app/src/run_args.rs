@@ -102,6 +102,7 @@ fn dev_callers(
 
 impl RunArgs {
     /// The daemon's seams: the process's own, with this build's stand-ins in place.
+    #[must_use]
     pub fn env(&self) -> Env {
         #[cfg(feature = "debug")]
         {
@@ -235,7 +236,7 @@ mod tests {
             args.debug.idle_times,
             crate::policy::idle::test_times("6,10")
         );
-        assert!(parse("6").is_err());
+        parse("6").unwrap_err();
     }
 
     /// Only a named bus leaves polkitd, and never for polkit's own helper.
@@ -283,16 +284,14 @@ mod tests {
         for (args, want) in cases {
             assert_eq!(setup(&args), want, "{args:?}");
         }
-        assert!(
-            Cli::try_parse_from(["bardo-shell", "run", "--polkit-helper", "/x/helper"]).is_err()
-        );
+        Cli::try_parse_from(["bardo-shell", "run", "--polkit-helper", "/x/helper"]).unwrap_err();
     }
 
     /// The dry run's offers only make sense with the dry run.
     #[test]
     fn dry_run_offers_need_a_session_dry_run() {
         let parse = |args: &[&str]| Cli::try_parse_from([&["bardo-shell", "run"], args].concat());
-        assert!(parse(&["--session-dry-run-offers", "logind"]).is_err());
+        parse(&["--session-dry-run-offers", "logind"]).unwrap_err();
         let Ok(Cli {
             command: Some(Command::Run(args)),
             ..

@@ -9,6 +9,7 @@ use shell_settings::ShellFile;
 use super::Policy;
 
 /// The sources `file` names (`parse_sources` against `home`).
+#[must_use]
 pub fn sources_of(file: &ShellFile, home: &Path) -> EventSources {
     parse_sources(&file.calendar.sources, home)
 }

@@ -32,6 +32,7 @@ pub enum RuleAction {
 impl RuleAction {
     /// Tapping `strokes` in order; no strokes at all is `Swallow`, so a `Sequence` is never
     /// empty.
+    #[must_use]
     pub fn sequence(strokes: Vec<Stroke>) -> RuleAction {
         if strokes.is_empty() {
             RuleAction::Swallow

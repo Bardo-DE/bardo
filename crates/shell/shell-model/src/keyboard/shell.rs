@@ -29,31 +29,37 @@ pub struct ShellKeys {
 
 impl ShellKeys {
     /// These holders after `surface` gained the keyboard (`gained`) or lost it.
+    #[must_use]
     pub fn after(mut self, surface: u64, gained: bool) -> ShellKeys {
-        match gained {
-            true => self.holders.insert(surface),
-            false => self.holders.remove(&surface),
+        if gained {
+            self.holders.insert(surface)
+        } else {
+            self.holders.remove(&surface)
         };
         self
     }
 
     /// These holders after `surface` closed: a surface that goes away holding the keyboard may
     /// never say it lost it.
+    #[must_use]
     pub fn closed(self, surface: u64) -> ShellKeys {
         self.after(surface, false)
     }
 
     /// Whether any surface of the shell holds the keyboard.
+    #[must_use]
     pub fn focus(&self) -> ShellFocus {
-        match self.holders.is_empty() {
-            true => ShellFocus::Elsewhere,
-            false => ShellFocus::Held,
+        if self.holders.is_empty() {
+            ShellFocus::Elsewhere
+        } else {
+            ShellFocus::Held
         }
     }
 }
 
 /// The profile keycap is to have: `keymap-aware` while the shell holds the keyboard, else the
 /// one the focused window wants.
+#[must_use]
 pub fn under_shell(shell: ShellFocus, window: ProfileName) -> ProfileName {
     match shell {
         ShellFocus::Held => keymap_aware_profile(),

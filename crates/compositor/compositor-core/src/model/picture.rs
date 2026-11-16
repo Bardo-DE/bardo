@@ -13,6 +13,7 @@ impl Model {
     /// The windows a picture of Space `id` shows, back first: those on it that are not in the
     /// dock and whose app is not hidden, whether or not an output shows the Space now, and the
     /// windows on every Space of its output. Empty for a Space the model does not have.
+    #[must_use]
     pub fn pictured(&self, id: &SpaceId) -> Vec<WindowId> {
         let Some(space) = self.spaces.get(id) else {
             return Vec::new();

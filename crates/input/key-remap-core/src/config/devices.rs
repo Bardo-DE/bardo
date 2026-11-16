@@ -57,6 +57,7 @@ pub struct LayoutOverrides(Vec<DeviceEntry>);
 impl LayoutOverrides {
     /// The layout configured for the keyboard, if any entry picks it. Later layers and later
     /// entries win.
+    #[must_use]
     pub fn layout_of(&self, name: &str, vendor: u16, product: u16) -> Option<Layout> {
         self.0
             .iter()
@@ -67,6 +68,7 @@ impl LayoutOverrides {
 }
 
 /// The overrides of `layers`, earliest first.
+#[must_use]
 pub fn layout_overrides(layers: &[ConfigLayer]) -> LayoutOverrides {
     LayoutOverrides(layers.iter().flat_map(|l| l.devices.clone()).collect())
 }

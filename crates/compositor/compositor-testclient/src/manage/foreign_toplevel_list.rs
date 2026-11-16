@@ -73,6 +73,7 @@ impl ToplevelList {
     }
 
     /// Every window announced so far, in order, as of its last `done`.
+    #[must_use]
     pub fn listed(&self) -> Vec<Listed> {
         self.roster
             .entries
@@ -82,6 +83,7 @@ impl ToplevelList {
     }
 
     /// The handle of the open window announced as `identifier`, to make a capture source from.
+    #[must_use]
     pub fn handle_of(&self, identifier: &str) -> Option<ExtForeignToplevelHandleV1> {
         self.roster
             .entries
@@ -99,6 +101,7 @@ impl ToplevelList {
     }
 
     /// Whether the compositor sent `finished`.
+    #[must_use]
     pub fn finished(&self) -> bool {
         self.roster.finished
     }
@@ -159,7 +162,7 @@ impl Dispatch<ExtForeignToplevelHandleV1, ()> for Roster {
             }
             ext_foreign_toplevel_handle_v1::Event::Title { title } => entry.pending.title = title,
             ext_foreign_toplevel_handle_v1::Event::AppId { app_id } => {
-                entry.pending.app_id = app_id
+                entry.pending.app_id = app_id;
             }
             ext_foreign_toplevel_handle_v1::Event::Done => entry.shown = entry.pending.clone(),
             ext_foreign_toplevel_handle_v1::Event::Closed => {

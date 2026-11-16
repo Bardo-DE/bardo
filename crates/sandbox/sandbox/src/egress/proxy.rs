@@ -161,7 +161,7 @@ impl Gate {
                 reply_established(&mut client);
                 (&head.bytes[head.end..], Outcome::Tunnelled)
             }
-            Request::Relay(_) => (&head.bytes[..], Outcome::Relayed),
+            Request::Relay(_) => ((&*head.bytes), Outcome::Relayed),
         };
         if upstream.write_all(first).is_err() {
             return;

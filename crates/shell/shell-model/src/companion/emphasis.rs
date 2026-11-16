@@ -33,23 +33,21 @@ const MARKS: [(&str, Emphasis); 4] = [
 ];
 
 /// `line` as spans, in order, with no empty span.
+#[must_use]
 pub fn spans(line: &str) -> Vec<Span> {
     let mut done = Vec::new();
     let mut plain = String::new();
     let mut rest = line;
     while let Some(next) = rest.chars().next() {
-        match marked(rest, &plain) {
-            Some(found) => {
-                if !plain.is_empty() {
-                    done.push(span(std::mem::take(&mut plain), Emphasis::Plain));
-                }
-                done.push(span(found.inner.to_owned(), found.emphasis));
-                rest = &rest[found.used..];
+        if let Some(found) = marked(rest, &plain) {
+            if !plain.is_empty() {
+                done.push(span(std::mem::take(&mut plain), Emphasis::Plain));
             }
-            None => {
-                plain.push(next);
-                rest = &rest[next.len_utf8()..];
-            }
+            done.push(span(found.inner.to_owned(), found.emphasis));
+            rest = &rest[found.used..];
+        } else {
+            plain.push(next);
+            rest = &rest[next.len_utf8()..];
         }
     }
     if !plain.is_empty() {
@@ -59,6 +57,7 @@ pub fn spans(line: &str) -> Vec<Span> {
 }
 
 /// `line` as the words alone: every mark `spans` reads removed.
+#[must_use]
 pub fn plain_of(line: &str) -> String {
     spans(line).into_iter().map(|span| span.text).collect()
 }

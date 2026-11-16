@@ -61,6 +61,7 @@ pub struct HueShades {
 
 impl HueShades {
     /// The shade for `scheme` at `contrast`.
+    #[must_use]
     pub const fn pick(self, scheme: Scheme, contrast: Contrast) -> Hex {
         match (scheme, contrast) {
             (Scheme::Light, Contrast::Normal) => self.light,
@@ -86,6 +87,7 @@ const fn shades(light: u32, light_increased: u32, dark: u32, dark_increased: u32
 
 impl SystemHue {
     /// The hue's four values.
+    #[must_use]
     pub const fn shades(self) -> HueShades {
         match self {
             SystemHue::Red => shades(0xFF383C, 0xE9152D, 0xFF4245, 0xFF6165),
@@ -105,6 +107,7 @@ impl SystemHue {
     }
 
     /// The hue in `scheme` at `contrast`.
+    #[must_use]
     pub const fn value(self, scheme: Scheme, contrast: Contrast) -> Hex {
         self.shades().pick(scheme, contrast)
     }

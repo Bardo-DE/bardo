@@ -12,6 +12,7 @@ pub struct WorkRoot(AbsPath);
 
 impl WorkRoot {
     /// `path` as a root.
+    #[must_use]
     pub fn new(path: AbsPath) -> Self {
         Self(path)
     }
@@ -22,6 +23,7 @@ impl WorkRoot {
     }
 
     /// The folder.
+    #[must_use]
     pub fn path(&self) -> &AbsPath {
         &self.0
     }
@@ -38,6 +40,7 @@ impl TreeId {
     }
 
     /// The id as the store wrote it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -55,6 +58,7 @@ impl EntryId {
     }
 
     /// The id as the store wrote it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

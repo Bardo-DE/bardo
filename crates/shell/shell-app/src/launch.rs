@@ -122,6 +122,7 @@ pub async fn serve(
 }
 
 /// What `bardo-shell launch` is told of a launch that ended as `done`.
+#[must_use]
 pub fn response_of(done: &LaunchDone, name: &str) -> Response {
     match done {
         LaunchDone::Spawned(timing) => Response::Launched(timing.clone()),

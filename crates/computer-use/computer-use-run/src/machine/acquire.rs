@@ -34,6 +34,7 @@ pub struct AcquireFailure {
 
 impl AcquireFailure {
     /// What the report says: the step is named in plain words.
+    #[must_use]
     pub fn words(&self) -> &'static str {
         match (self.phase, &self.why) {
             (AcquirePhase::Attach, AcquireWhy::TimedOut) => {

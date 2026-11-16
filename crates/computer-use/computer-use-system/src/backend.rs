@@ -31,6 +31,7 @@ pub enum CaptureBackend {
 
 impl CaptureBackend {
     /// The backend that fits desktop backend `kind`, over an open connection.
+    #[must_use]
     pub fn over(kind: BackendKind, connection: Connection) -> Self {
         if compositor_masks(kind) {
             CaptureBackend::QuireMasked(QuireMaskedCapture::over(connection))

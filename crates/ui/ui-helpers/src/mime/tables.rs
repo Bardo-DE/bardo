@@ -14,6 +14,7 @@ pub struct Aliases {
 
 impl Aliases {
     /// The aliases of one `aliases` text.
+    #[must_use]
     pub fn parse(text: &str) -> Aliases {
         let to_canonical = data_lines(text)
             .filter_map(|line| {
@@ -38,6 +39,7 @@ impl Aliases {
     }
 
     /// The type `mime` is an alias of, or `mime` itself.
+    #[must_use]
     pub fn canonical(&self, mime: &MimeType) -> MimeType {
         self.to_canonical.get(mime).unwrap_or(mime).clone()
     }
@@ -51,6 +53,7 @@ pub struct Subclasses {
 
 impl Subclasses {
     /// The relations of one `subclasses` text.
+    #[must_use]
     pub fn parse(text: &str) -> Subclasses {
         let mut parents: HashMap<MimeType, Vec<MimeType>> = HashMap::new();
         for line in data_lines(text) {
@@ -100,6 +103,7 @@ pub struct IconNames {
 
 impl IconNames {
     /// The names of one `icons` or `generic-icons` text.
+    #[must_use]
     pub fn parse(text: &str) -> IconNames {
         let names = data_lines(text)
             .filter_map(|line| {

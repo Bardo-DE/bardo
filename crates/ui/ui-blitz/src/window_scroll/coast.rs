@@ -184,21 +184,22 @@ impl Coast {
         let worth = by.0.abs() >= DUST_PX || by.1.abs() >= DUST_PX;
         let moved = worth.then(|| heard(GesturePhase::Changed, by));
         let heard_now = if worth { (x, y) } else { glide.heard };
-        match left(glide.v0.0) || left(glide.v0.1) {
-            true => (
+        if left(glide.v0.0) || left(glide.v0.1) {
+            (
                 Coast::Gliding(Gliding {
                     heard: heard_now,
                     ..glide
                 }),
                 moved.into_iter().collect(),
-            ),
-            false => (
+            )
+        } else {
+            (
                 Coast::Idle,
                 moved
                     .into_iter()
                     .chain([heard(GesturePhase::Ended, (0.0, 0.0))])
                     .collect(),
-            ),
+            )
         }
     }
 
@@ -224,9 +225,10 @@ fn heard(phase: GesturePhase, by: (f64, f64)) -> Heard {
 /// end of the run.
 fn lift(track: &Track, by: (f64, f64), now: Elapsed, physics: &Physics) -> (Coast, Vec<Heard>) {
     let v0 = track.release(now, physics);
-    match v0 == (0.0, 0.0) {
-        true => (Coast::Idle, vec![heard(GesturePhase::Ended, by)]),
-        false => (
+    if v0 == (0.0, 0.0) {
+        (Coast::Idle, vec![heard(GesturePhase::Ended, by)])
+    } else {
+        (
             Coast::Gliding(Gliding {
                 v0,
                 since: now,
@@ -236,7 +238,7 @@ fn lift(track: &Track, by: (f64, f64), now: Elapsed, physics: &Physics) -> (Coas
                 .then(|| heard(GesturePhase::Changed, by))
                 .into_iter()
                 .collect(),
-        ),
+        )
     }
 }
 

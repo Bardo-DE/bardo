@@ -11,6 +11,7 @@ use inference_router::local::LocalModel;
 use model_provider as sp;
 
 /// The turn target of a model on this computer.
+#[must_use]
 pub fn local_target(model: &LocalModel) -> Target {
     Target {
         name: model.name.clone(),

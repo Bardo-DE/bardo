@@ -11,6 +11,7 @@ impl Harness {
     /// The border box of the first element matching `selector`, through the host's `find` and
     /// then its `measure`: what `use_document_host().geometry()` answers a component. `Unknown`
     /// when nothing matches or the selector is not valid.
+    #[must_use]
     pub fn measure_found(&self, selector: &str) -> Measured {
         let doc = DocRef::Cell(Rc::clone(&self.doc.doc.inner));
         match focus_finder(move || Some(doc.clone()))(selector) {

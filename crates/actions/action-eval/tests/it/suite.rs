@@ -35,12 +35,12 @@ fn the_cases_say_what_they_expect() {
     assert_eq!(by("cross-space-request-delivered").corpus, Corpus::Benign);
     let probe = by("adaptive-judge-probing-trips-breaker");
     assert_eq!(probe.planner.len(), 3);
-    assert!(
+    assert_eq!(
         by("injection-mail-body-forward-contact-lookalike")
             .world
             .contacts
-            .len()
-            == 1
+            .len(),
+        1
     );
 }
 

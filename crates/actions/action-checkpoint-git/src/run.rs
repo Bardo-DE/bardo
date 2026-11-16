@@ -98,6 +98,7 @@ pub struct GitOut {
 
 impl GitOut {
     /// Whether it ended with success.
+    #[must_use]
     pub fn succeeded(&self) -> bool {
         self.status.success()
     }
@@ -173,7 +174,7 @@ pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
     };
     let limits = cmd.limits;
     let work = async {
-        let (_, out, err) = tokio::try_join!(
+        let ((), out, err) = tokio::try_join!(
             feed,
             read_bounded(&mut stdout, limits.stdout_max),
             read_tail(&mut stderr)

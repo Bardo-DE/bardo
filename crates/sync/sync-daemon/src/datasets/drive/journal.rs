@@ -252,14 +252,15 @@ impl DriveJournal {
     /// name; none when nothing is there or it is not a folder.
     pub fn children(&self, path: &ItemPath) -> Result<Vec<DriveEntry>, JournalError> {
         let top = path.0.trim_matches('/').is_empty();
-        let rows = match top {
-            true => rows_where(&self.connection(), TOP, params![])?,
-            false => match self.entry_at(path)? {
+        let rows = if top {
+            rows_where(&self.connection(), TOP, params![])?
+        } else {
+            match self.entry_at(path)? {
                 Some(folder) if folder.kind == ItemKind::Folder => {
                     rows_where(&self.connection(), "parent = ?1", params![folder.id.0])?
                 }
                 _ => Vec::new(),
-            },
+            }
         };
         let base = path.0.trim_matches('/');
         Ok(rows
@@ -408,12 +409,12 @@ fn name_below(path: &ItemPath, parent: Option<&RemoteId>, folders: &Folders) -> 
     }
     names.reverse();
     let above = names.join("/");
-    match above.is_empty() {
-        true => path.0.clone(),
-        false => path
-            .0
+    if above.is_empty() {
+        path.0.clone()
+    } else {
+        path.0
             .strip_prefix(&format!("{above}/"))
-            .map_or_else(|| last_part(&path.0), str::to_owned),
+            .map_or_else(|| last_part(&path.0), str::to_owned)
     }
 }
 

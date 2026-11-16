@@ -2,7 +2,7 @@
 //!
 //! A fake `org.bardo.Storage1` at `/org/bardo/Storage1` on the session bus
 //! (`DBUS_SESSION_BUS_ADDRESS`), for building Files before syncd serves the real one. It plants
-//! two drives of real files under `<scratch>/drives/` (a OneDrive and a Google Drive), prints
+//! two drives of real files under `<scratch>/drives/` (a `OneDrive` and a Google Drive), prints
 //! their folders, and moves their states as the real ones will: Download Now fills a progress
 //! fraction ten times a second, Keep Downloaded and Remove Download change what they say. Lines
 //! on stdin change the world (`offline gdrive`, `upload <path>`, `conflict <path>`, ...; an

@@ -47,7 +47,7 @@ pub fn load_fixture(path: &Path) -> Result<KmsResources, KmsFixtureError> {
     })
 }
 
-/// Builders for the synthetic topologies the FakeKms suite runs.
+/// Builders for the synthetic topologies the `FakeKms` suite runs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SyntheticTopology {
     /// One laptop panel, `eDP-1`, 2880x1800 at 120 Hz, variable refresh capable.
@@ -68,6 +68,7 @@ impl SyntheticTopology {
     ///
     /// assert_eq!(SyntheticTopology::Dock.resources().connectors.len(), 3);
     /// ```
+    #[must_use]
     pub fn resources(self) -> KmsResources {
         match self {
             SyntheticTopology::LaptopPanel => device(vec![panel(1)], 1),
@@ -78,6 +79,7 @@ impl SyntheticTopology {
     }
 
     /// How the topology's links behave after a commit.
+    #[must_use]
     pub fn link(self) -> LinkBehaviour {
         match self {
             SyntheticTopology::RetrainingMonitor => LinkBehaviour::Retrains,
@@ -184,6 +186,7 @@ fn blind(id: u32) -> ConnectorFacts {
 
 /// An EDID base block: header, the three-letter `make`, the monitor `name` and an optional
 /// serial text descriptor, with the checksum that makes the block sum to zero.
+#[must_use]
 pub fn edid(make: &str, name: &str, serial: Option<&str>) -> Vec<u8> {
     let mut block = vec![0u8; 128];
     block[..8].copy_from_slice(&[0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0]);

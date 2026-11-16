@@ -13,6 +13,7 @@ pub struct FakeShellCalls {
 
 impl FakeShellCalls {
     /// A recorder with no calls.
+    #[must_use]
     pub fn new() -> FakeShellCalls {
         FakeShellCalls::default()
     }

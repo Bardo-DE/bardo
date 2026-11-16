@@ -45,8 +45,9 @@ fn account(
     }
 }
 
-/// `fake-storage`: files (read-write, poll, full) and calendars, at one WebDAV and one CalDAV
+/// `fake-storage`: files (read-write, poll, full) and calendars, at one `WebDAV` and one `CalDAV`
 /// root.
+#[must_use]
 pub fn storage_account() -> Account {
     let endpoints = vec![
         endpoint(
@@ -71,6 +72,7 @@ pub fn storage_account() -> Account {
 }
 
 /// `fake-mail`: IMAP mail with push and sending, at an IMAP and an SMTP host.
+#[must_use]
 pub fn mail_account() -> Account {
     let endpoints = vec![
         endpoint(
@@ -90,6 +92,7 @@ pub fn mail_account() -> Account {
 }
 
 /// `fake-llm`: a local chat model, which has no endpoint.
+#[must_use]
 pub fn llm_account() -> Account {
     account(
         "fake-llm",

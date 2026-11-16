@@ -1,4 +1,4 @@
-//! LimitedNote: the one secondary line under an account or a service that is less than the
+//! `LimitedNote`: the one secondary line under an account or a service that is less than the
 //! provider's full product (design/31 section 2.5).
 
 use super::model::Limitation;

@@ -35,6 +35,7 @@ pub enum AutoMode {
 
 impl AutoMode {
     /// The settings value.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             AutoMode::WarmFirst => "warm_first",
@@ -42,6 +43,7 @@ impl AutoMode {
     }
 
     /// The mode a settings value names.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         [AutoMode::WarmFirst]
             .into_iter()
@@ -62,6 +64,7 @@ pub enum AutoEvict {
 
 impl AutoEvict {
     /// The settings value.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             AutoEvict::Never => "never",
@@ -70,6 +73,7 @@ impl AutoEvict {
     }
 
     /// The value a settings string names.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         [AutoEvict::Never, AutoEvict::IdleOnly]
             .into_iter()
@@ -184,6 +188,7 @@ pub struct PickCandidate {
 
 impl PickCandidate {
     /// The model it is.
+    #[must_use]
     pub fn model_ref(&self) -> ModelRef {
         ModelRef {
             account: self.route.account.clone(),
@@ -222,7 +227,7 @@ pub enum Why {
         /// The idle model that is unloaded.
         model: ModelRef,
     },
-    /// A hosted model is reached through this provider, by this door ("via OpenRouter"). Appended
+    /// A hosted model is reached through this provider, by this door ("via `OpenRouter`"). Appended
     /// after the others: a reader that does not know it must skip it.
     Reached {
         /// The provider's id (`openrouter`, `anthropic`, ...).
@@ -238,7 +243,7 @@ pub enum Why {
 pub enum Door {
     /// The model's own company's account.
     Direct,
-    /// A gateway that reaches many companies (OpenRouter).
+    /// A gateway that reaches many companies (`OpenRouter`).
     Gateway,
 }
 
@@ -416,7 +421,7 @@ fn eligible(candidate: &PickCandidate, rules: PickPolicy<'_>) -> bool {
             },
             AutoEvict::IdleOnly,
         ) => true,
-        (SwapCost::Evicts { .. }, _) | (SwapCost::Purge { .. } | SwapCost::NoRoom, _) => false,
+        (SwapCost::Evicts { .. } | SwapCost::Purge { .. } | SwapCost::NoRoom, _) => false,
     };
     can_answer && open_licence && swap_allowed
 }
@@ -468,7 +473,11 @@ fn auto(
         admit(ask, usable.iter().map(|c| &c.route), rules.policy).map_err(PickRefusal::from)?;
     let mut ranked: Vec<&PickCandidate> = usable
         .into_iter()
-        .filter(|c| admitted.iter().any(|a| std::ptr::eq(*a, &c.route)))
+        .filter(|c| {
+            admitted
+                .iter()
+                .any(|a| std::ptr::eq(*a, &raw const c.route))
+        })
         .collect();
     ranked.sort_by_key(|c| key(c));
     let (first, rest) = ranked

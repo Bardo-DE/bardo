@@ -14,6 +14,7 @@ pub struct TableCallers(Mutex<BTreeMap<String, Caller>>);
 
 impl TableCallers {
     /// Nobody is known.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

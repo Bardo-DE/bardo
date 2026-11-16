@@ -139,9 +139,10 @@ impl HeadlessBackend {
             .outputs
             .insert(name, VirtualOutput::new(spec, canvas))
             .is_some();
-        match known {
-            true => ConnectorEvent::Changed(facts),
-            false => ConnectorEvent::Plugged(facts),
+        if known {
+            ConnectorEvent::Changed(facts)
+        } else {
+            ConnectorEvent::Plugged(facts)
         }
     }
 
@@ -198,6 +199,7 @@ impl HeadlessBackend {
     }
 
     /// The last frame `name` presented (screenshots and capture).
+    #[must_use]
     pub fn last_frame(&self, name: &OutputName) -> Option<&PresentedFrame> {
         self.outputs
             .get(name)
@@ -217,6 +219,7 @@ impl HeadlessBackend {
     }
 
     /// The dma-buf formats a capture can be drawn into by this backend's renderer.
+    #[must_use]
     pub fn capture_formats(&self) -> Vec<smithay::backend::allocator::Format> {
         self.renderer.capture_formats()
     }
@@ -231,6 +234,7 @@ impl HeadlessBackend {
     }
 
     /// Whether this backend's renderer can draw a capture into a dma-buf of format `wanted`.
+    #[must_use]
     pub fn binds_format(&self, wanted: smithay::backend::allocator::Format) -> bool {
         self.renderer.binds_format(wanted)
     }
@@ -262,9 +266,10 @@ impl HeadlessBackend {
         let last = output.last.as_ref().ok_or(BackendError::NoFrame)?;
         // As the read-back does: without a cursor-less frame, the one shown is the best there is.
         let bare = last.bare.as_ref().and(output.bare.as_ref());
-        let canvas = match cursor {
-            false => bare.map(BareLayer::canvas),
-            true => None,
+        let canvas = if cursor {
+            None
+        } else {
+            bare.map(BareLayer::canvas)
         }
         .or(output.canvas.as_ref())
         .ok_or(BackendError::NoFrame)?;
@@ -285,17 +290,20 @@ impl HeadlessBackend {
     }
 
     /// The plugged outputs.
+    #[must_use]
     pub fn outputs(&self) -> &OutputSet {
         &self.outputs
     }
 
     /// What a frame costs, when the model says (the frame's number counts every output's
     /// presented frames).
+    #[must_use]
     pub fn render_cost(&self, frame: u64) -> Option<std::time::Duration> {
         self.cost.cost_of(frame)
     }
 
     /// Frame callbacks sent so far, as the composition root reported them.
+    #[must_use]
     pub fn callbacks_sent(&self) -> u64 {
         self.callbacks
     }
@@ -306,6 +314,7 @@ impl HeadlessBackend {
     }
 
     /// How many frames every output has presented.
+    #[must_use]
     pub fn frames_presented(&self) -> u64 {
         self.outputs
             .iter()
@@ -406,12 +415,11 @@ impl HeadlessBackend {
         let same_picture = output.spec.mode.size == spec.mode.size
             && output.spec.scale == spec.scale
             && output.spec.transform == spec.transform;
-        match same_picture {
-            true => VirtualOutput { spec, ..output },
-            false => {
-                let canvas = self.canvas_for(&spec);
-                output.respecified(spec, canvas)
-            }
+        if same_picture {
+            VirtualOutput { spec, ..output }
+        } else {
+            let canvas = self.canvas_for(&spec);
+            output.respecified(spec, canvas)
         }
     }
 }
@@ -495,6 +503,7 @@ fn synthetic_edid() -> EdidFacts {
 }
 
 /// What `spec`'s display reports about itself.
+#[must_use]
 pub fn facts_of(spec: &VirtualOutputSpec) -> OutputFacts {
     let edid = match &spec.edid {
         EdidSource::Synthetic(facts) => facts.clone(),

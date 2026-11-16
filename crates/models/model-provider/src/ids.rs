@@ -38,6 +38,7 @@ impl ToolName {
         }
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -77,10 +78,12 @@ impl JsonText {
 
     /// The compact JSON of a `Value`. A `Value` always prints as valid JSON, so this cannot fail
     /// and needs no check.
+    #[must_use]
     pub fn from_value(value: &serde_json::Value) -> Self {
         Self(value.to_string())
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -112,7 +115,7 @@ impl fmt::Debug for JsonText {
 pub struct SchemaText(pub JsonText);
 
 /// A model's signature over a thought, to be handed back unchanged (Anthropic `signature`,
-/// OpenRouter `reasoning_details`). Opaque.
+/// `OpenRouter` `reasoning_details`). Opaque.
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SignatureText(pub String);

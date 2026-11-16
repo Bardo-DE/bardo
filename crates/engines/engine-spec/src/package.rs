@@ -14,6 +14,7 @@ pub enum PackageManager {
 
 impl PackageManager {
     /// The program, by its fixed absolute path: nothing a caller or the environment names.
+    #[must_use]
     pub fn program(self) -> &'static str {
         match self {
             Self::Apt => "/usr/bin/apt-get",
@@ -23,6 +24,7 @@ impl PackageManager {
     }
 
     /// The arguments before the package name: install without asking.
+    #[must_use]
     pub fn install_args(self) -> &'static [&'static str] {
         match self {
             Self::Apt => &["install", "-y"],

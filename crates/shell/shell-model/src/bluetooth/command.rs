@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{BtAddress, BtBattery, BtConnection, BtDevice, BtPower};
 
-/// One change BlueZ reported (or a command's own progress).
+/// One change `BlueZ` reported (or a command's own progress).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BluetoothEvent {
@@ -23,9 +23,9 @@ pub enum BluetoothEvent {
         address: BtAddress,
         battery: BtBattery,
     },
-    /// BlueZ dropped a device.
+    /// `BlueZ` dropped a device.
     DeviceRemoved(BtAddress),
-    /// The adapter went away, or BlueZ left the bus.
+    /// The adapter went away, or `BlueZ` left the bus.
     Gone,
 }
 

@@ -15,6 +15,7 @@ use inference_core::{
 ///
 /// The fd server feeds it the route's decision, the engine's readiness, the client's frames and
 /// the running turn's events, and carries out what comes back; the machine never waits.
+#[must_use]
 pub fn step(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<SessionOut>) {
     match (phase, input) {
         (Phase::Closed, _) => (Phase::Closed, vec![]),

@@ -39,6 +39,7 @@ pub enum PlaceKind {
 
 impl PlaceKind {
     /// The kind's slug.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             PlaceKind::ThisComputer => "this_computer",
@@ -48,6 +49,7 @@ impl PlaceKind {
     }
 
     /// The kind a slug names.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         [
             PlaceKind::ThisComputer,
@@ -93,11 +95,13 @@ impl ComputerName {
 
     /// The computer an engine on another machine of the person's belongs to when nothing names
     /// the machine (`other-computer`).
+    #[must_use]
     pub fn other() -> Self {
         Self("other-computer".to_owned())
     }
 
     /// The name's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -135,6 +139,7 @@ pub enum PlaceTarget {
 
 impl PlaceTarget {
     /// The kind of place this is.
+    #[must_use]
     pub fn kind(&self) -> PlaceKind {
         match self {
             PlaceTarget::ThisComputer => PlaceKind::ThisComputer,
@@ -152,16 +157,19 @@ pub struct PlaceId(String);
 
 impl PlaceId {
     /// This computer.
+    #[must_use]
     pub fn this_computer() -> Self {
         Self(THIS_COMPUTER.to_owned())
     }
 
     /// The computer called `name`.
+    #[must_use]
     pub fn computer(name: &ComputerName) -> Self {
         Self(format!("{COMPUTER_PREFIX}{name}"))
     }
 
     /// The cloud account `account`.
+    #[must_use]
     pub fn account(account: &AccountId) -> Self {
         Self(format!("{ACCOUNT_PREFIX}{account}"))
     }
@@ -189,6 +197,7 @@ impl PlaceId {
     }
 
     /// The id's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -208,6 +217,7 @@ impl PlaceId {
     }
 
     /// What kind of place it is.
+    #[must_use]
     pub fn kind(&self) -> PlaceKind {
         self.target().kind()
     }
@@ -272,6 +282,7 @@ pub struct PlaceModel {
 
 impl PlaceModel {
     /// A model with its name and no engine.
+    #[must_use]
     pub fn new(id: account_capability::ModelId, name: String) -> Self {
         Self {
             id,
@@ -282,12 +293,14 @@ impl PlaceModel {
     }
 
     /// The same model, taking in `takes`.
+    #[must_use]
     pub fn with_takes(mut self, takes: Takes) -> Self {
         self.takes = takes;
         self
     }
 
     /// The same model, run by `engine`.
+    #[must_use]
     pub fn with_engine(mut self, engine: PlaceEngine) -> Self {
         self.engine = Some(engine);
         self
@@ -314,6 +327,7 @@ pub struct PlaceRow {
 impl PlaceRow {
     /// A row for the place `id`, of this kind, called `name`, in this state: no provider name and
     /// no models until the `with_*` methods say so.
+    #[must_use]
     pub fn new(id: PlaceId, kind: PlaceKind, name: String, state: PlaceState) -> Self {
         Self {
             id,
@@ -326,12 +340,14 @@ impl PlaceRow {
     }
 
     /// The same row with the provider's display name (a cloud account).
+    #[must_use]
     pub fn with_provider(mut self, provider: String) -> Self {
         self.provider = Some(provider);
         self
     }
 
     /// The same row with the models the place can serve now.
+    #[must_use]
     pub fn with_models(mut self, models: Vec<PlaceModel>) -> Self {
         self.models = models;
         self
@@ -366,6 +382,7 @@ impl NoPlaceReason {
     ];
 
     /// The reason's slug (its serde form).
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             NoPlaceReason::NotReady => "not_ready",
@@ -377,6 +394,7 @@ impl NoPlaceReason {
 
     /// The reason's name in Pascal case, the last segment of its D-Bus error name
     /// (`org.bardo.Inference1.Error.NoAllowedPlace.NotReady`).
+    #[must_use]
     pub fn name(self) -> &'static str {
         match self {
             NoPlaceReason::NotReady => "NotReady",
@@ -387,6 +405,7 @@ impl NoPlaceReason {
     }
 
     /// The reason a Pascal-case name stands for.
+    #[must_use]
     pub fn from_name(name: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|reason| reason.name() == name)
     }
@@ -406,6 +425,7 @@ pub struct PlaceRefusal {
 impl PlaceRefusal {
     /// Nothing allowed can serve, for this reason; `would_need` is the kind of place outside the
     /// set that could, if there is one.
+    #[must_use]
     pub fn new(reason: NoPlaceReason, would_need: Option<PlaceKind>) -> Self {
         Self { reason, would_need }
     }
@@ -502,7 +522,7 @@ mod tests {
             );
         }
         let long = format!("computer:{}", "x".repeat(65));
-        assert!(PlaceId::parse(&long).is_err());
+        PlaceId::parse(&long).unwrap_err();
     }
 
     #[test]

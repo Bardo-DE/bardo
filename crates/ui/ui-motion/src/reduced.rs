@@ -40,6 +40,7 @@ impl ReducedForm {
 
 impl Anim {
     /// Its form under Reduced motion.
+    #[must_use]
     pub fn reduced(self) -> ReducedForm {
         use crate::reduced::ReducedForm::{CrossFade, Same, Still};
         use FadeWay::{In, Out};
@@ -128,7 +129,7 @@ mod tests {
             let form = anim.reduced();
             let reduced = form.keyframes(recipe.keyframes);
             if moves(body(reduced)) {
-                wrong.push(format!("{anim:?}: {} under Reduced still moves", reduced));
+                wrong.push(format!("{anim:?}: {reduced} under Reduced still moves"));
             }
             if form == ReducedForm::Same && moves(body(recipe.keyframes)) {
                 wrong.push(format!(

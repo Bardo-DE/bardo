@@ -55,12 +55,14 @@ pub enum ExportAction {
 
 /// Whether `target` is a path inside the install root `root`, with no climbing out of it: what a link
 /// made by one of our releases' exports points at.
+#[must_use]
 pub fn into_root(target: &Path, root: &Path) -> bool {
     target.starts_with(root) && !target.components().any(|c| c == Component::ParentDir)
 }
 
 /// Plans the links for the release `new`, coming from the release whose exports were `old`.
 /// `found` says what is at each link of either list (a missing key counts as nothing there).
+#[must_use]
 pub fn plan_exports(
     root: &Path,
     new: &[Export],

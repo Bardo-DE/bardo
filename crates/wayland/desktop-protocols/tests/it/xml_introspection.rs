@@ -376,8 +376,16 @@ fn every_interface_has_exactly_the_frozen_messages_in_opcode_order() {
             .iter()
             .find(|interface| interface.name == *name)
             .unwrap_or_else(|| panic!("{file} has no {name}"));
-        let got_requests: Vec<String> = interface.requests.iter().map(|m| m.signature()).collect();
-        let got_events: Vec<String> = interface.events.iter().map(|m| m.signature()).collect();
+        let got_requests: Vec<String> = interface
+            .requests
+            .iter()
+            .map(super::support::Message::signature)
+            .collect();
+        let got_events: Vec<String> = interface
+            .events
+            .iter()
+            .map(super::support::Message::signature)
+            .collect();
         assert_eq!(got_requests, *requests, "{name} requests");
         assert_eq!(got_events, *events, "{name} events");
     }
@@ -404,20 +412,17 @@ fn every_enum_entry_has_a_distinct_code() {
                 .collect();
             let what = format!("{}.{}", interface.name, enumeration.name);
             assert!(!codes.is_empty(), "{what} has no entries");
-            match enumeration.bitfield.as_deref() {
-                Some("true") => {
-                    let bits: Vec<u32> = codes.iter().copied().filter(|code| *code != 0).collect();
-                    assert!(
-                        bits.iter().all(|bit| bit.is_power_of_two()),
-                        "{what}: {codes:?}"
-                    );
-                    let unique: BTreeSet<u32> = bits.iter().copied().collect();
-                    assert_eq!(unique.len(), bits.len(), "{what}: {codes:?}");
-                }
-                _ => {
-                    let dense: Vec<u32> = (0..codes.len() as u32).collect();
-                    assert_eq!(codes, dense, "{what}: codes run 0, 1, 2, ... in order");
-                }
+            if let Some("true") = enumeration.bitfield.as_deref() {
+                let bits: Vec<u32> = codes.iter().copied().filter(|code| *code != 0).collect();
+                assert!(
+                    bits.iter().all(|bit| bit.is_power_of_two()),
+                    "{what}: {codes:?}"
+                );
+                let unique: BTreeSet<u32> = bits.iter().copied().collect();
+                assert_eq!(unique.len(), bits.len(), "{what}: {codes:?}");
+            } else {
+                let dense: Vec<u32> = (0..codes.len() as u32).collect();
+                assert_eq!(codes, dense, "{what}: codes run 0, 1, 2, ... in order");
             }
         }
     }

@@ -27,10 +27,7 @@ impl Shown {
 
     /// The month shown when today is `today`.
     pub fn month(self, today: Date) -> MonthKey {
-        let offset = match self.on == today {
-            true => self.offset,
-            false => 0,
-        };
+        let offset = if self.on == today { self.offset } else { 0 };
         let step = if offset >= 0 {
             MonthStep::Next
         } else {
@@ -41,10 +38,7 @@ impl Shown {
 
     /// One step from what is shown on `today`.
     pub fn stepped(self, today: Date, step: MonthStep) -> Shown {
-        let base = match self.on == today {
-            true => self.offset,
-            false => 0,
-        };
+        let base = if self.on == today { self.offset } else { 0 };
         let offset = match step {
             MonthStep::Next => base.saturating_add(1),
             MonthStep::Previous => base.saturating_sub(1),
@@ -56,9 +50,10 @@ impl Shown {
 /// `September 2026`, or `September` in today's year.
 pub(super) fn month_title(month: MonthKey, today: Date) -> String {
     let name = MONTHS[usize::try_from(month.month - 1).unwrap_or(0) % 12];
-    match month.year == today.year() {
-        true => name.to_owned(),
-        false => format!("{name} {}", month.year),
+    if month.year == today.year() {
+        name.to_owned()
+    } else {
+        format!("{name} {}", month.year)
     }
 }
 

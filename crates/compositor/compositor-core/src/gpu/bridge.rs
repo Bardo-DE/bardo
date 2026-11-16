@@ -23,6 +23,7 @@ impl Modifier {
 /// assert_eq!(bridge_format(&render, &scanout, &[xrgb]), Some(entry(0)));
 /// assert_eq!(bridge_format(&render, &[], &[xrgb]), None);
 /// ```
+#[must_use]
 pub fn bridge_format(
     render: &[FormatEntry],
     scanout: &[FormatEntry],

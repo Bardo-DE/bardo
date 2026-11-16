@@ -5,7 +5,7 @@
 //! API-key account, or a model on this computer), for data of one class. inferd binds a
 //! per-session listener on `127.0.0.1`, on an ephemeral port, and answers with where it is and a
 //! fresh random token the agent sends as its API key. The listener speaks Anthropic Messages and
-//! OpenAI Chat Completions (`wire`, `anthropic`, `openai`):
+//! `OpenAI` Chat Completions (`wire`, `anthropic`, `openai`):
 //!
 //! * an account route forwards the request, bytes and all, to the account's provider with the
 //!   real key, which inferd resolves from accountd for each request (`account`) and which never

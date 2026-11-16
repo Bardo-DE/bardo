@@ -59,6 +59,7 @@ impl Mortal for SessionLocker {
 
 impl SessionLockPart {
     /// Creates the global (version 1), filtered by the I7 table (not for sandboxed clients).
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> SessionLockPart
     where
         D: GlobalDispatch<ExtSessionLockManagerV1, SessionLockManagerGlobalData>
@@ -94,6 +95,7 @@ impl SessionLockPart {
     }
 
     /// The output whose lock surface is `surface`.
+    #[must_use]
     pub fn output_of(&self, surface: &WlSurface) -> Option<OutputKey> {
         self.surfaces
             .iter()
@@ -191,11 +193,12 @@ pub fn on_lock_surface_destroyed(part: &mut SessionLockPart, surface: &WlSurface
 /// The model hears that `output`'s lock surface stopped covering it, if it had been told that
 /// it did; `shown` forgets the output either way.
 fn surface_gone(part: &mut SessionLockPart, output: &OutputKey) -> Vec<Event> {
-    match part.shown.remove(output) {
-        true => vec![Event::Lock(LockEvent::SurfaceGone {
+    if part.shown.remove(output) {
+        vec![Event::Lock(LockEvent::SurfaceGone {
             output: output.clone(),
-        })],
-        false => Vec::new(),
+        })]
+    } else {
+        Vec::new()
     }
 }
 

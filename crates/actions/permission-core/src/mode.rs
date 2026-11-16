@@ -29,6 +29,7 @@ impl From<Strictness> for Mode {
 
 impl Mode {
     /// What a reviewer is told: Manual reviews with the most care, Auto with the usual.
+    #[must_use]
     pub fn strictness(self) -> Strictness {
         match self {
             Mode::Auto => Strictness::Default,
@@ -37,6 +38,7 @@ impl Mode {
     }
 
     /// The word the wire, the settings and the policy files use.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             Mode::Auto => "auto",
@@ -59,6 +61,7 @@ pub enum AskOrRun {
 
 impl AskOrRun {
     /// The word the settings and the policy files use.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             AskOrRun::Runs => "runs",
@@ -79,6 +82,7 @@ pub enum OtherRow {
 
 impl OtherRow {
     /// The word the settings and the policy files use.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             OtherRow::Check => "check",
@@ -99,6 +103,7 @@ pub enum ScreenRow {
 
 impl ScreenRow {
     /// The word the settings and the policy files use.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             ScreenRow::Once => "once",
@@ -162,6 +167,7 @@ impl Default for RowSets {
 
 impl RowSets {
     /// The rows of `mode`.
+    #[must_use]
     pub fn of(&self, mode: Mode) -> ModeRows {
         match mode {
             Mode::Auto => self.auto,

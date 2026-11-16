@@ -30,6 +30,7 @@ pub struct PopupSpec {
 impl PopupSpec {
     /// A menu 100 x 50 hanging down and right from the top-left of a 10 x 10 anchor at `at`,
     /// allowed to slide.
+    #[must_use]
     pub fn menu_at(at: (i32, i32)) -> PopupSpec {
         PopupSpec {
             size: (100, 50),
@@ -191,6 +192,7 @@ impl Popup {
     }
 
     /// Acks the newest `xdg_surface.configure`; says which serial, if any.
+    #[must_use]
     pub fn ack_latest(&self) -> Option<u32> {
         let serial = self.log.with(|seen| seen.serials.last().copied())?;
         self.xdg_surface.ack_configure(serial);
@@ -211,6 +213,7 @@ impl Popup {
     }
 
     /// Asks for a frame callback and commits: the returned handle says when it came back.
+    #[must_use]
     pub fn request_frame(&self, client: &TestClient) -> crate::SyncDone {
         let done = crate::SyncDone::default();
         self.surface.frame(&client.qh(), done.clone());
@@ -237,6 +240,7 @@ impl Popup {
     }
 
     /// The `xdg_popup.configure`s so far.
+    #[must_use]
     pub fn geometry(&self) -> Option<(i32, i32, i32, i32)> {
         self.log.with(|seen| seen.configures.last().copied())
     }
@@ -247,7 +251,7 @@ impl Dispatch<XdgPositioner, ()> for Host {
         _: &mut Self,
         _: &XdgPositioner,
         _: <XdgPositioner as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

@@ -1,4 +1,4 @@
-//! wp_cursor_shape_v1: a named cursor for the pointer, instead of a cursor surface. Filled by
+//! `wp_cursor_shape_v1`: a named cursor for the pointer, instead of a cursor surface. Filled by
 //! P0-H4.
 
 use crate::conn::{ClientError, ClientState, TestClient};
@@ -39,6 +39,7 @@ impl CursorShape {
     }
 
     /// The manager.
+    #[must_use]
     pub fn manager(&self) -> &WpCursorShapeManagerV1 {
         &self.manager
     }

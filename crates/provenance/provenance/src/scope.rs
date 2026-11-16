@@ -26,6 +26,7 @@ impl Confidentiality {
     /// other when one is `Public`, else the union of the Spaces with the `desktop` member
     /// dropped when another Space is present. Commutative, associative and idempotent on
     /// normalised values; a non-normalised `Private` is normalised on the way through.
+    #[must_use]
     pub fn join(&self, other: &Confidentiality) -> Confidentiality {
         match (self, other) {
             (Confidentiality::Secret, _) | (_, Confidentiality::Secret) => Confidentiality::Secret,
@@ -42,6 +43,7 @@ impl Confidentiality {
 
     /// Whether data this confidential may go into `space`: `Public` anywhere; `Private` where
     /// every named Space is `space` or `desktop`; `Secret` nowhere.
+    #[must_use]
     pub fn flow_to(&self, space: &SpaceId) -> bool {
         let desktop = SpaceId::desktop();
         match self {

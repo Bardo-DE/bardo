@@ -79,11 +79,13 @@ impl<S: Clone> Live<S> {
     }
 
     /// The state now.
+    #[must_use]
     pub fn state(&self) -> S {
         self.lock().clone()
     }
 
     /// What the pane tells, for the window to read.
+    #[must_use]
     pub fn events(&self) -> Events<S> {
         self.events.clone()
     }

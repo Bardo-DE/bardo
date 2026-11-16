@@ -33,6 +33,7 @@ pub struct Press {
 impl Press {
     /// A primary press with no modifiers at the origin: what a keyboard activation or a test
     /// reports.
+    #[must_use]
     pub fn primary() -> Self {
         Press {
             button: PointerButton::Primary,

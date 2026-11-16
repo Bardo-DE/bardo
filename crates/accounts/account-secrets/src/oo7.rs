@@ -33,6 +33,7 @@ pub struct Oo7Secrets;
 impl Oo7Secrets {
     /// The user's Secret Service collection, filing under `namespace` (the same collection
     /// [`Oo7Secrets`] opens; only the `service` attribute differs).
+    #[must_use]
     pub fn in_namespace(namespace: Namespace) -> Oo7NamedSecrets {
         Oo7NamedSecrets::new(namespace)
     }
@@ -46,11 +47,13 @@ pub struct Oo7NamedSecrets {
 
 impl Oo7NamedSecrets {
     /// The user's Secret Service collection, filing under `namespace`.
+    #[must_use]
     pub fn new(namespace: Namespace) -> Self {
         Self { namespace }
     }
 
     /// The namespace items are filed under.
+    #[must_use]
     pub fn namespace(&self) -> &Namespace {
         &self.namespace
     }
@@ -81,6 +84,7 @@ impl Oo7KeyringSecrets {
     }
 
     /// The namespace items are filed under.
+    #[must_use]
     pub fn namespace(&self) -> &Namespace {
         &self.namespace
     }
@@ -112,7 +116,7 @@ impl<K> Held<K> {
     fn slot(&self) -> std::sync::MutexGuard<'_, Option<Arc<K>>> {
         self.slot
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     async fn open<O, Opening>(&self, open: &O) -> Result<Arc<K>, SecretsError>
@@ -189,9 +193,7 @@ fn refused(error: oo7::Error) -> SecretsError {
     match error {
         oo7::Error::File(File::Locked | File::IncorrectSecret)
         | oo7::Error::DBus(Bus::Dismissed) => SecretsError::Locked,
-        oo7::Error::File(File::Portal(_)) | oo7::Error::File(_) | oo7::Error::DBus(_) => {
-            SecretsError::Unavailable
-        }
+        oo7::Error::File(File::Portal(_) | _) | oo7::Error::DBus(_) => SecretsError::Unavailable,
     }
 }
 
@@ -248,14 +250,14 @@ impl Secrets for Oo7KeyringSecrets {
             // The Secret Service has no create-if-missing: read, then create, with a window.
             oo7::Keyring::DBus(_) => {
                 let found = self.keyring.search_items(&at).await.map_err(refused)?;
-                match found.is_empty() {
-                    false => Ok(false),
-                    true => self
-                        .keyring
+                if found.is_empty() {
+                    self.keyring
                         .create_item(&label, &at, oo7::Secret::blob(encoded.as_slice()), false)
                         .await
                         .map(|()| true)
-                        .map_err(refused),
+                        .map_err(refused)
+                } else {
+                    Ok(false)
                 }
             }
         }
@@ -419,9 +421,10 @@ mod tests {
         }
 
         async fn read(&self, keyring: Arc<u32>) -> Result<u32, SecretsError> {
-            match *keyring >= self.started.load(Ordering::SeqCst) {
-                true => Ok(*keyring),
-                false => Err(SecretsError::Unavailable),
+            if *keyring >= self.started.load(Ordering::SeqCst) {
+                Ok(*keyring)
+            } else {
+                Err(SecretsError::Unavailable)
             }
         }
     }

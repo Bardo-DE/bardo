@@ -13,6 +13,7 @@ pub const FILE_NAME: &str = "frecency.json";
 
 /// The history in `dir`; missing is empty, and so is one that cannot be read, which is kept as
 /// `.damaged` (the next save would replace it).
+#[must_use]
 pub fn load_frecency(dir: &Path) -> Frecency {
     let path = dir.join(FILE_NAME);
     let Ok(text) = std::fs::read_to_string(&path) else {

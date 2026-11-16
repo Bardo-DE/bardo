@@ -32,6 +32,7 @@ impl ServiceRole {
     }
 
     /// The role's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -80,6 +81,7 @@ pub struct AskSubject {
 
 impl ClientStanding {
     /// A connection nobody has vouched for yet: what a client is until the root says more.
+    #[must_use]
     pub fn unproven() -> ClientStanding {
         ClientStanding::Unverified { exe_name: None }
     }
@@ -87,6 +89,7 @@ impl ClientStanding {
     /// The desktop portal as the bus proved it, for the connection casement hands it: the
     /// standing a portal proven at `Full` has on the public socket, with no image to name it by.
     /// Trusted for the powers `trusted_powers` gives the `portal` role, asked about the rest.
+    #[must_use]
     pub fn portal() -> ClientStanding {
         ClientStanding::Service {
             role: ServiceRole("portal".to_owned()),
@@ -97,6 +100,7 @@ impl ClientStanding {
     /// Whom decisions about this connection are about: a program that can be named and so
     /// remembered (unless the floor says otherwise), or `None` for one that cannot, which gets a
     /// question valid for its connection only.
+    #[must_use]
     pub fn subject(&self) -> Option<Subject> {
         match self {
             ClientStanding::Service { exe: Some(exe), .. } | ClientStanding::Program { exe } => {
@@ -113,6 +117,7 @@ impl ClientStanding {
     /// The program or app this connection is, as text: the image path of a program (or of a
     /// service whose image is known), the id of a sandboxed app. Nothing for a connection that
     /// cannot be named (an unverified program, a service whose image is not known).
+    #[must_use]
     pub fn subject_text(&self) -> Option<&str> {
         match self {
             ClientStanding::Service { exe: Some(exe), .. } | ClientStanding::Program { exe } => {
@@ -126,6 +131,7 @@ impl ClientStanding {
     /// The file name of the image of a program nothing can name (it is only a name: any program
     /// can have any file name), for the pause before it is asked again. Nothing for a program
     /// that can be named, or whose image is unknown.
+    #[must_use]
     pub fn image_name(&self) -> Option<&str> {
         match self {
             ClientStanding::Unverified { exe_name } => exe_name.as_deref(),
@@ -134,6 +140,7 @@ impl ClientStanding {
     }
 
     /// The desktop service role of this connection, if it is one.
+    #[must_use]
     pub fn service_role(&self) -> Option<&ServiceRole> {
         match self {
             ClientStanding::Service { role, .. } => Some(role),
@@ -142,6 +149,7 @@ impl ClientStanding {
     }
 
     /// What the question says about this program.
+    #[must_use]
     pub fn ask_subject(&self) -> AskSubject {
         match self.subject() {
             Some(subject) => AskSubject {

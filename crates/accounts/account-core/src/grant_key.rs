@@ -42,6 +42,7 @@ impl GrantKey {
     /// Whether the key's Space may be decided for its app: an app's own Space belongs to that
     /// app alone, so a key of one app over another's own Space is never granted. Checked against
     /// the key's `app`, which is the caller's verified identity, never against a request's text.
+    #[must_use]
     pub fn space_is_open(&self) -> bool {
         self.space.open_to(&self.app.name)
     }
@@ -49,10 +50,12 @@ impl GrantKey {
 
 /// [`decide`] for an account key, with the Space ownership rule first: a key of one app over
 /// another app's own Space is `Denied` whatever the store holds, and is never asked.
+#[must_use]
 pub fn decide_key(grants: &[Grant], key: &GrantKey) -> Verdict {
-    match key.space_is_open() {
-        true => decide(grants, key),
-        false => Verdict::Denied,
+    if key.space_is_open() {
+        decide(grants, key)
+    } else {
+        Verdict::Denied
     }
 }
 

@@ -72,7 +72,7 @@ fn a_header_that_names_billions_of_entries_is_refused() {
     // The header, a files-info block of 2^40 entries with no properties.
     let header = [&[0x01, 0x05][..], &number(1 << 40), &[0x00, 0x00]].concat();
     let bytes = with_start_header(0, header.len() as u64, &header);
-    assert!(listed(&bytes).is_err());
+    listed(&bytes).unwrap_err();
 }
 
 #[test]

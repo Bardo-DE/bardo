@@ -6,6 +6,7 @@
 use super::DockMenuRow;
 
 /// The rows, given how hiding and magnification are set now.
+#[must_use]
 pub fn rows(autohide: bool, magnification: bool) -> Vec<DockMenuRow> {
     vec![
         DockMenuRow::Hiding(autohide),

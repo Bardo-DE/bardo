@@ -14,6 +14,7 @@ impl Dataset {
     }
 
     /// The name as syncd spells it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

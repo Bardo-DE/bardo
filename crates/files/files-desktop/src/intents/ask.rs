@@ -68,6 +68,7 @@ const KINDS: [(OpKind, &str); 4] = [
 
 impl Undoing {
     /// The token that names this change: `undo:trash:3`.
+    #[must_use]
     pub fn token(&self) -> Option<String> {
         let word = KINDS
             .iter()
@@ -77,6 +78,7 @@ impl Undoing {
     }
 
     /// The change a token names, when it is one of ours.
+    #[must_use]
     pub fn parse(token: &str) -> Option<Undoing> {
         let rest = token.strip_prefix("undo:")?;
         let (word, count) = rest.split_once(':')?;

@@ -57,6 +57,7 @@ fn coarse(why: &CallRefusal) -> &'static str {
 }
 
 /// What the editor is told of how a step ended.
+#[must_use]
 pub fn outcome(end: &StepEnd) -> Outcome {
     match end {
         StepEnd::Done { said, .. } => {

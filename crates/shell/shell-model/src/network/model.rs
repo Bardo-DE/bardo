@@ -33,7 +33,7 @@ pub enum Link {
     Other,
 }
 
-/// NetworkManager's `Connectivity`.
+/// `NetworkManager`'s `Connectivity`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Connectivity {
@@ -47,7 +47,8 @@ pub enum Connectivity {
 }
 
 impl Connectivity {
-    /// NetworkManager's `NMConnectivityState` number; anything else is `Unknown`.
+    /// `NetworkManager`'s `NMConnectivityState` number; anything else is `Unknown`.
+    #[must_use]
     pub fn from_nm(state: u32) -> Connectivity {
         match state {
             1 => Connectivity::None,
@@ -59,7 +60,7 @@ impl Connectivity {
     }
 }
 
-/// What NetworkManager's `ActivatingConnection` reports about a connection other than the
+/// What `NetworkManager`'s `ActivatingConnection` reports about a connection other than the
 /// current primary: the primary's own activation already reaches the join through `Link` (a
 /// primary connection can itself be seen `Connecting`), so this only carries a second, independent
 /// connection trying to become primary, Wi-Fi only (the case the reference's

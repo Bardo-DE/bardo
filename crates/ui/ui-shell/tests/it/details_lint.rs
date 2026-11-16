@@ -33,8 +33,10 @@ fn sheets() -> Vec<(&'static str, String)> {
     let motion = sheet
         .split_once("/* == motion == */\n")
         .and_then(|(_, rest)| rest.split_once("/* == utilities == */"))
-        .map(|(motion, _)| motion.to_owned())
-        .unwrap_or_else(|| panic!("the stylesheet has no motion section"));
+        .map_or_else(
+            || panic!("the stylesheet has no motion section"),
+            |(motion, _)| motion.to_owned(),
+        );
     all.push(("motion", motion));
     all
 }

@@ -26,11 +26,13 @@ pub struct Standard(Issuer);
 
 impl Standard {
     /// Whether `issuer` needs no rules of its own: its data names a userinfo endpoint.
+    #[must_use]
     pub fn serves(issuer: Issuer) -> bool {
         issuer.data().userinfo.is_some()
     }
 
     /// The rules of `issuer`.
+    #[must_use]
     pub fn of(issuer: Issuer) -> Self {
         Self(issuer)
     }
@@ -158,9 +160,10 @@ impl BrowserIssuer for Standard {
             .iter()
             .filter(|row| row.capability.kind() == kind)
             .any(|row| names(row, &wanted));
-        match named {
-            true => Ok((None, form_of(session.spec(), audience)?)),
-            false => Err(ProviderError::Forbidden),
+        if named {
+            Ok((None, form_of(session.spec(), audience)?))
+        } else {
+            Err(ProviderError::Forbidden)
         }
     }
 }
@@ -184,9 +187,10 @@ fn form_of(spec: &ProviderSpec, audience: &Audience) -> Result<TokenKind, Provid
     if wanted == "imap" || wanted == "smtp" {
         return Ok(TokenKind::Xoauth2);
     }
-    match spec.capabilities.iter().any(|row| names(row, &wanted)) {
-        true => Ok(TokenKind::Bearer),
-        false => Err(ProviderError::Forbidden),
+    if spec.capabilities.iter().any(|row| names(row, &wanted)) {
+        Ok(TokenKind::Bearer)
+    } else {
+        Err(ProviderError::Forbidden)
     }
 }
 

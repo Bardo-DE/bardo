@@ -25,6 +25,7 @@ pub struct OutputChangeSet {
 
 impl OutputChangeSet {
     /// A request that changes nothing.
+    #[must_use]
     pub fn none() -> OutputChangeSet {
         OutputChangeSet {
             mode: None,

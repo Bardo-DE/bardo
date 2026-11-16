@@ -102,11 +102,13 @@ impl<P: Provides> Registry<P> {
     }
 
     /// The usable plugins, in serving order.
+    #[must_use]
     pub fn installed(&self) -> &[Installed<P>] {
         &self.installed
     }
 
     /// The plugins that were found and cannot be used.
+    #[must_use]
     pub fn unusable(&self) -> &[Unusable<P>] {
         &self.unusable
     }
@@ -137,6 +139,7 @@ impl<P: Provides> Registry<P> {
     /// Whether the plugin `id` is set aside only because the file named `tool` is missing or not
     /// executable: the tool is what is absent, not the plugin, and installing the tool is what
     /// makes the plugin usable.
+    #[must_use]
     pub fn tool_absent(&self, id: &str, tool: &str) -> bool {
         use crate::manifest::ManifestError::{FileMissing, NotExecutable};
         self.unusable.iter().any(|unusable| {

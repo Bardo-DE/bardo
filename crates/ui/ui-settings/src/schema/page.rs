@@ -67,6 +67,7 @@ impl From<PageWire> for Page {
 
 impl Page {
     /// The twelve fixed pages, in the order Settings listed them.
+    #[must_use]
     pub fn fixed() -> [Page; 12] {
         [
             Page::Appearance,
@@ -86,6 +87,7 @@ impl Page {
 
     /// The page whose id is `id`: a fixed page when the id is one of theirs, else `Page::App(id)`.
     /// Use this to name a declared page (`Page::declared("wallpaper")`).
+    #[must_use]
     pub fn declared(id: &str) -> Page {
         let id = PageId::new(id);
         Page::fixed()
@@ -95,6 +97,7 @@ impl Page {
     }
 
     /// The page's id: the one name every entrance to Settings uses for it.
+    #[must_use]
     pub fn id(&self) -> PageId {
         PageId(match self {
             Page::Appearance => "appearance".to_owned(),
@@ -115,6 +118,7 @@ impl Page {
 
     /// The name a person reads for the page: a fixed page by its name in section 9.3, any other
     /// page by its id. The declared title of a page is [`PageTable::title_of`](super::PageTable).
+    #[must_use]
     pub fn label(&self) -> &str {
         match self {
             Page::Appearance => "Appearance",

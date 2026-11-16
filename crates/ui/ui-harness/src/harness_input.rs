@@ -27,11 +27,13 @@ pub struct HeldButtons(MouseEventButtons);
 
 impl HeldButtons {
     /// Whether `button` is down.
+    #[must_use]
     pub fn contains(self, button: PointerButton) -> bool {
         self.0.contains(blitz_button(button).1)
     }
 
     /// Whether none is down.
+    #[must_use]
     pub fn is_empty(self) -> bool {
         self.0.is_empty()
     }

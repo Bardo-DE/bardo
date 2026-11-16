@@ -96,7 +96,7 @@ pub(crate) fn paint_document(
             target.scale.factor(),
             (f64::from(x), f64::from(y)),
         );
-    }
+    };
     let painted =
         image_cache::painted_missing_images(evicted, refused_before, image_cache::refused(images));
     if painted {
@@ -117,7 +117,7 @@ pub(crate) fn paint_document(
     Ok(painted)
 }
 
-/// An empty scene of exactly the render size (vello_hybrid wants the two equal).
+/// An empty scene of exactly the render size (`vello_hybrid` wants the two equal).
 fn fit_scene(scene: &mut vello_hybrid::Scene, width: u32, height: u32) -> Result<()> {
     let w = u16::try_from(width).map_err(|_| too_large(width, height))?;
     let h = u16::try_from(height).map_err(|_| too_large(width, height))?;

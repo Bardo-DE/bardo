@@ -40,6 +40,7 @@ impl MenuSource {
     ///
     /// assert_eq!(MenuSource::None.kind(), MenuSourceKind::None);
     /// ```
+    #[must_use]
     pub fn kind(&self) -> MenuSourceKind {
         match self {
             MenuSource::None => MenuSourceKind::None,
@@ -49,6 +50,7 @@ impl MenuSource {
     }
 
     /// The bus name, empty for none.
+    #[must_use]
     pub fn bus(&self) -> &str {
         match self {
             MenuSource::None => "",
@@ -58,6 +60,7 @@ impl MenuSource {
 
     /// The application object path, empty when the source has none (a dbusmenu has no app
     /// object).
+    #[must_use]
     pub fn app_path(&self) -> &str {
         match self {
             MenuSource::GtkMenus { app_path, .. } => app_path,
@@ -66,6 +69,7 @@ impl MenuSource {
     }
 
     /// The menu bar's object path: the dbusmenu object for Qt, the `org.gtk.Menus` path for GTK.
+    #[must_use]
     pub fn menubar_path(&self) -> &str {
         match self {
             MenuSource::DbusMenu { path, .. } => path,
@@ -76,6 +80,7 @@ impl MenuSource {
 
     /// The path the shell is told for the window itself (`bardo_desktop_window_v1.menu_path`):
     /// the dbusmenu object, or the GTK window's own object.
+    #[must_use]
     pub fn window_path(&self) -> &str {
         match self {
             MenuSource::DbusMenu { path, .. } => path,
@@ -85,6 +90,7 @@ impl MenuSource {
     }
 
     /// Whether the window declared a menu.
+    #[must_use]
     pub fn is_declared(&self) -> bool {
         !matches!(self, MenuSource::None)
     }

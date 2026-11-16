@@ -2,7 +2,7 @@
 //!
 //! `scripts/dev/lib/compositor.sh` sets `BARDO_LAYER_SHELL_HOST_BACKEND=cpu` for a headless compositor with
 //! no GPU behind it (casement in its jail): the demos then paint into `wl_shm` buffers
-//! (`Backend::Cpu`) instead of probing for a GPU adapter. Unset (KWin, a developer's shell) or
+//! (`Backend::Cpu`) instead of probing for a GPU adapter. Unset (`KWin`, a developer's shell) or
 //! `gpu`, the demos run the library default, so the F80 adapter fallback stays under test.
 
 use layer_shell_host::{Backend, HostConfig};

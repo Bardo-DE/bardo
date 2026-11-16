@@ -37,7 +37,7 @@ fn the_bridge_reaches_the_ipv4_loopback_and_nothing_else() {
     ] {
         assert!(Loopback::new(host, 8080).is_err(), "{host:?}");
     }
-    assert!(Loopback::new("127.0.0.1", 0).is_err());
+    Loopback::new("127.0.0.1", 0).unwrap_err();
     assert_eq!(Loopback::new("127.0.0.1", 8080).expect("ok").port(), 8080);
 }
 

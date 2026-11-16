@@ -50,6 +50,7 @@ impl Default for StampClock {
 }
 
 impl StampClock {
+    #[must_use]
     pub fn new() -> Self {
         Self {
             fit: None,
@@ -63,11 +64,13 @@ impl StampClock {
     }
 
     /// The fit event times currently come from; `None` while the arrival time stands in.
+    #[must_use]
     pub fn fit(&self) -> Option<Fit> {
         self.fit
     }
 
     /// The most recent fit that failed the residual test, for the log.
+    #[must_use]
     pub fn rejected(&self) -> Option<Fit> {
         self.rejected
     }
@@ -75,6 +78,7 @@ impl StampClock {
     /// Takes one frame's stamp and its arrival time; returns the event time. The Magic Mouse's
     /// ticks go through the fit; a kernel stamp is already on the monotonic clock and stands in
     /// for the arrival time; no stamp is the arrival time. Event time never runs backwards.
+    #[must_use]
     pub fn observe(self, stamp: Option<Stamp>, arrival: Mono) -> (Self, Mono) {
         let raw = match stamp {
             Some(Stamp::Ticks(raw)) => raw,

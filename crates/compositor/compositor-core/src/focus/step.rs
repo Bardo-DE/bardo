@@ -14,6 +14,7 @@ use outcome::Outcome;
 /// The focus after `input`, and what it asks for. Effects come in one order: raise, the press
 /// route, the keyboard, emphasis, the active app, then attention and the bell. The keyboard,
 /// emphasis and active-app effects appear only when they changed.
+#[must_use]
 pub fn step(focus: Focus, input: FocusIn, view: &FocusView) -> (Focus, Vec<FocusOut>) {
     let before = focus.clone();
     let outcome = match input {

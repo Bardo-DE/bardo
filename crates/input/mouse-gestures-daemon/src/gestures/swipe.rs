@@ -38,6 +38,7 @@ pub struct SwipeFire {
 
 impl SwipeFire {
     /// Consumes one phase of a stroke; returns the direction when the swipe fires.
+    #[must_use]
     pub fn step(self, e: &Event, now: Mono) -> (Self, Option<FingerDirection>) {
         match e.moment {
             Moment::Began {

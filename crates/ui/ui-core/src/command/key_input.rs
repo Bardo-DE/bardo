@@ -10,7 +10,7 @@ use keymap::{Key as ChordKey, KeyInput};
 // conversions below go away when dioxus moves to 0.8 (phase 1b).
 
 /// The chordkit flags `held` reports, by name: Super and Meta are both the OS key (`META`).
-/// Locks and the like are left out; AltGraph is kept for [`key_input`].
+/// Locks and the like are left out; `AltGraph` is kept for [`key_input`].
 fn flags_of(held: Modifiers) -> ChordModifiers {
     [
         (Modifiers::CONTROL, ChordModifiers::CONTROL),
@@ -25,14 +25,16 @@ fn flags_of(held: Modifiers) -> ChordModifiers {
     .fold(ChordModifiers::empty(), |flags, (_, mapped)| flags | mapped)
 }
 
-/// The chord modifiers `held` reports (Ctrl, Alt, Shift and the OS key). Lock and AltGraph
+/// The chord modifiers `held` reports (Ctrl, Alt, Shift and the OS key). Lock and `AltGraph`
 /// flags are not chord modifiers.
+#[must_use]
 pub fn modifiers_of(held: Modifiers) -> ChordModifiers {
     flags_of(held).difference(ChordModifiers::ALT_GRAPH)
 }
 
 /// The toolkit flags that stand for the chord modifiers `held`: the reverse of
 /// [`modifiers_of`], for a test or a driver that presses a chord. The OS key is `META`.
+#[must_use]
 pub fn modifiers_held(held: ChordModifiers) -> Modifiers {
     [
         (ChordModifiers::CONTROL, Modifiers::CONTROL),
@@ -82,14 +84,16 @@ fn function_key(key: &Key) -> Option<LogicalKey> {
 
 /// The chord key `key` is, or `None` for a key that is no chord key (a modifier on its own, a
 /// multi-character string from an IME, a media key).
+#[must_use]
 pub fn chord_key_of(key: &Key) -> Option<ChordKey> {
     ChordKey::from_logical(&logical_key(key)?)
 }
 
 /// The key press `key` with `modifiers` held, as chordkit takes it. The key is as the toolkit
 /// reports it: a shifted symbol (`!` for Shift+1) is not unshifted here, so an app chord that
-/// holds Shift with a symbol key reads the base key from the physical code. AltGraph rides in
+/// holds Shift with a symbol key reads the base key from the physical code. `AltGraph` rides in
 /// the flags: it types a character, and chordkit then reads no chord from the press.
+#[must_use]
 pub fn key_input(key: &Key, modifiers: Modifiers) -> Option<KeyInput> {
     KeyInput::from_logical(flags_of(modifiers), &logical_key(key)?)
 }

@@ -26,6 +26,7 @@ impl Dpi {
     }
 
     /// The resolution in dots per inch.
+    #[must_use]
     pub fn get(self) -> u32 {
         u32::from(self.0)
     }
@@ -76,6 +77,6 @@ mod tests {
     fn dpi_round_trips_and_refuses_a_bad_value_on_load() {
         assert_eq!(serde_json::to_string(&Dpi::PRINT).unwrap(), "300");
         assert_eq!(serde_json::from_str::<Dpi>("300").unwrap(), Dpi::PRINT);
-        assert!(serde_json::from_str::<Dpi>("0").is_err());
+        serde_json::from_str::<Dpi>("0").unwrap_err();
     }
 }

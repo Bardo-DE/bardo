@@ -20,6 +20,7 @@ pub struct TreeSeal(String);
 
 impl TreeSeal {
     /// The seal of a tree whose entries made these lines.
+    #[must_use]
     pub fn of(mut lines: Vec<SealLine>) -> Self {
         lines.sort();
         let mut hasher = Sha256::new();
@@ -30,11 +31,13 @@ impl TreeSeal {
     }
 
     /// The hex text.
+    #[must_use]
     pub fn as_hex(&self) -> &str {
         &self.0
     }
 
     /// Whether this seal is the pinned `hex`.
+    #[must_use]
     pub fn is(&self, hex: &str) -> bool {
         self.0 == hex
     }
@@ -49,6 +52,7 @@ pub struct SealLine {
 
 impl SealLine {
     /// A file at `rel`: whether any execute bit is set, its size and the SHA-256 of its content.
+    #[must_use]
     pub fn file(rel: &str, executable: bool, size: u64, digest: &str) -> Self {
         let mode = if executable { 'x' } else { '-' };
         Self {
@@ -58,6 +62,7 @@ impl SealLine {
     }
 
     /// A symbolic link at `rel` pointing at `target`.
+    #[must_use]
     pub fn link(rel: &str, target: &str) -> Self {
         Self {
             path: rel.to_owned(),
@@ -67,6 +72,7 @@ impl SealLine {
 }
 
 /// Lower-case hex of `bytes`.
+#[must_use]
 pub fn hex(bytes: &[u8]) -> String {
     bytes.iter().fold(String::new(), |mut out, byte| {
         let _written = write!(out, "{byte:02x}");

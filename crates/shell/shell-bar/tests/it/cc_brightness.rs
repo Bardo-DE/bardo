@@ -84,7 +84,7 @@ fn a_drag_on_the_capsule_follows_the_pointer_to_the_service() {
     drag_at(100);
 }
 
-/// The user's BenQ MA270U runs at scale 2.
+/// The user's `BenQ` MA270U runs at scale 2.
 #[test]
 fn a_drag_follows_the_pointer_at_scale_2() {
     drag_at(200);

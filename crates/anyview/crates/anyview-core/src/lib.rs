@@ -37,6 +37,7 @@ pub mod work;
 mod xml_depth;
 
 /// What a person sees the program called: the window titles, the now-playing entry and the helper sheet.
+///
 /// The binary, the app id and the bus names stay `anyview`, `org.bardo.Anyview` and `org.bardo.Anyview1`.
 pub const APP_NAME: &str = "Viewer";
 

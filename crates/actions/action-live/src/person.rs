@@ -21,6 +21,7 @@ pub struct Person {
 
 impl Person {
     /// A person who allows the sheets of these actions (app and label) once, and refuses the rest.
+    #[must_use]
     pub fn saying_yes_to(yes: BTreeSet<(AppName, String)>) -> Self {
         Self {
             yes,
@@ -42,8 +43,8 @@ impl Person {
     }
 
     fn answer(&self, request: &ConfirmRequest) -> ConfirmAnswer {
-        match self.says_yes(&request.app, request.action.as_str()) {
-            true => ConfirmAnswer::Allowed {
+        if self.says_yes(&request.app, request.action.as_str()) {
+            ConfirmAnswer::Allowed {
                 written: None,
                 scope: GrantScope::Once,
                 receipt: ConfirmReceipt {
@@ -52,8 +53,9 @@ impl Person {
                     at: UnixSeconds(1),
                     covers: Confidentiality::Secret,
                 },
-            },
-            false => ConfirmAnswer::Ended(ConfirmEnd::Refused),
+            }
+        } else {
+            ConfirmAnswer::Ended(ConfirmEnd::Refused)
         }
     }
 }

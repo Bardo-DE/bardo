@@ -4,7 +4,7 @@
 //! makes one in Settings (or a test seeds one), since a daemon cannot draw a consent sheet.
 //!
 //! Which service an account is reached through is read from the endpoints its candidate lists,
-//! never from the provider's name: a `graph` endpoint is OneDrive's app folder (and, for Photos,
+//! never from the provider's name: a `graph` endpoint is `OneDrive`'s app folder (and, for Photos,
 //! its Photos folders), a `google_drive` endpoint is Drive's app data folder, and the
 //! `google_photos_upload` and `google_photos_picker` endpoints are Google Photos.
 
@@ -30,7 +30,7 @@ pub enum StorageKind {
     /// picker import. Made by the same row.
     GooglePhotos,
     /// The whole drive, listed for Files (`DataClass::Files`, a grant that reaches the whole
-    /// store, made by "Show in Files"): OneDrive's or My Drive, by the endpoint.
+    /// store, made by "Show in Files"): `OneDrive`'s or My Drive, by the endpoint.
     Drive,
 }
 
@@ -44,6 +44,7 @@ impl StorageKind {
     ];
 
     /// The data class the grant covers.
+    #[must_use]
     pub fn class(self) -> DataClass {
         match self {
             StorageKind::AppFolder | StorageKind::Drive => DataClass::Files,
@@ -52,12 +53,14 @@ impl StorageKind {
     }
 
     /// Whether the kind is one of the Photos datasets (a grant of class Photos).
+    #[must_use]
     pub fn is_photos(self) -> bool {
         !matches!(self, StorageKind::AppFolder | StorageKind::Drive)
     }
 }
 
 /// The need syncd asks accounts to meet: read and write the app folder and poll it.
+#[must_use]
 pub fn storage_need() -> Need {
     Need::Storage(StorageNeed::new(
         Access::ReadWrite,
@@ -69,6 +72,7 @@ pub fn storage_need() -> Need {
 
 /// The need of the whole drive ("Show in Files"): read and write all of it and poll it. An
 /// account fits it only once it was given that access (the account service's `extend_access`).
+#[must_use]
 pub fn drive_need() -> Need {
     Need::Storage(StorageNeed::new(
         Access::ReadWrite,
@@ -79,6 +83,7 @@ pub fn drive_need() -> Need {
 }
 
 /// The need syncd asks Google Photos to meet: upload into albums the app made, and the picker.
+#[must_use]
 pub fn photos_need() -> Need {
     Need::Photos(PhotosNeed::new(
         LibraryRead::PickerOnly,
@@ -102,6 +107,7 @@ pub fn picker_need() -> Need {
 }
 
 /// Whether the candidate is reached over Graph (OneDrive): the endpoint to dial.
+#[must_use]
 pub fn graph_endpoint(candidate: &Candidate) -> Option<&ServiceEndpoint> {
     candidate
         .endpoints
@@ -112,7 +118,7 @@ pub fn graph_endpoint(candidate: &Candidate) -> Option<&ServiceEndpoint> {
 /// The store an app folder mirror runs over, by the endpoint the candidate lists.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppFolderStore<'a> {
-    /// OneDrive's app folder, over Graph.
+    /// `OneDrive`'s app folder, over Graph.
     Graph(&'a ServiceEndpoint),
     /// Drive's app data folder.
     Drive(&'a ServiceEndpoint),
@@ -129,6 +135,7 @@ pub fn app_folder_store(candidate: &Candidate) -> Option<AppFolderStore<'_>> {
 /// The two Google Photos endpoints of a candidate, upload API and picker. Each stands alone: an
 /// account where the person granted only the picker scope has no upload endpoint (accountd's
 /// family leaves it out), and the other way round. `None` when it has neither.
+#[must_use]
 pub fn google_photos_endpoints(
     candidate: &Candidate,
 ) -> Option<(Option<&ServiceEndpoint>, Option<&ServiceEndpoint>)> {
@@ -169,6 +176,7 @@ pub struct ClientStorageGrants<T> {
 
 impl<T> ClientStorageGrants<T> {
     /// Grants as `accounts` finds them.
+    #[must_use]
     pub fn new(accounts: Arc<Grants<T>>) -> Self {
         Self { accounts }
     }

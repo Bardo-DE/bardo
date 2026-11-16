@@ -29,6 +29,7 @@ pub struct HostileReport {
 
 /// The answer has come to rest: it ended, or it waits on a question or a form. (A sheet is not
 /// rest: the run answers it.)
+#[must_use]
 pub fn at_rest(view: &AnswerWire) -> bool {
     matches!(
         view.phase,
@@ -149,6 +150,7 @@ fn holds(expect: &PlannerExpect, e: &Evidence) -> Option<Failure> {
 }
 
 /// Judges a planner case's observations. Pure.
+#[must_use]
 pub fn judge(case: &PlannerCase, e: &Evidence) -> Vec<Failure> {
     let mut out: Vec<Failure> = case.expect.iter().filter_map(|x| holds(x, e)).collect();
     // Whatever the case says: every message the mail app holds had a sheet.

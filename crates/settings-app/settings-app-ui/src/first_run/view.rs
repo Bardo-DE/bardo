@@ -70,7 +70,7 @@ fn FirstRunWindow() -> Element {
             async move {
                 client
                     .start(PageKind::AssistantModel.traits().modules)
-                    .await
+                    .await;
             }
         }
     });

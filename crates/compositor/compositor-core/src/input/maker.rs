@@ -25,6 +25,7 @@ impl Maker {
     /// The maker a `phys` text names, or `None` for any other text: no label, another prefix, a
     /// role this version does not know, anything after the role. A trailing newline (sysfs adds
     /// one) is ignored.
+    #[must_use]
     pub fn parse(phys: &str) -> Option<Maker> {
         match phys.trim_end_matches('\n').strip_prefix(PREFIX)? {
             "pad_daemon" => Some(Maker::PadDaemon),
@@ -41,6 +42,7 @@ impl Maker {
     /// switch the virtual terminal or answer a consent sheet. They still move the pointer's scroll,
     /// fire bindings and drive swipes like a pad's. The mouse's own clicks and motion do not pass
     /// through palmrest (it never grabs the mouse), so they stay physical.
+    #[must_use]
     pub fn origin(self, class: DeviceClass) -> Origin {
         match self {
             Maker::KeymapDaemon => Origin::Physical(class),

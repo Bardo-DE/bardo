@@ -3,7 +3,7 @@
 //! `EvdevMultitouch` as the raw bytes do through `MagicMouseHid`, except where the Magic
 //! Mouse's contact size and major axis decide (P1, P3), which evdev does not carry.
 //!
-//! Synthetic: the kernel is modelled as reporting only touches in MakeTouch or Touching, and
+//! Synthetic: the kernel is modelled as reporting only touches in `MakeTouch` or Touching, and
 //! its fuzz filter is not modelled.
 
 use mouse_gestures_daemon::Config;

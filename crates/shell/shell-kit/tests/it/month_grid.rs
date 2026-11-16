@@ -1,4 +1,4 @@
-//! MonthGrid on a real Blitz document (design/04-COMPONENTS.md section 39): the
+//! `MonthGrid` on a real Blitz document (design/04-COMPONENTS.md section 39): the
 //! header's next button hands `Step::Next` to `onstep`; the new month's weeks carry the slide
 //! class (`a-slide-r` for a later month, `a-slide-l` for an earlier one) right after the change
 //! and drop it once the slide settles, never before `settle(Anim::SlideR)`; and a pressable day

@@ -5,6 +5,7 @@
 use super::{Identity, Uid};
 
 /// The uid to authenticate as, `own` being this session's user.
+#[must_use]
 pub fn pick_identity(identities: &[Identity], own: Uid) -> Option<Uid> {
     let users: Vec<Uid> = identities
         .iter()

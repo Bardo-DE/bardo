@@ -28,6 +28,7 @@ impl Default for PrivacyBoard {
 
 impl PrivacyBoard {
     /// A board with no rows.
+    #[must_use]
     pub fn new() -> PrivacyBoard {
         let (rows, _) = watch::channel(Arc::new(Vec::new()));
         PrivacyBoard {
@@ -48,11 +49,13 @@ impl PrivacyBoard {
     }
 
     /// The list now.
+    #[must_use]
     pub fn rows(&self) -> Arc<Vec<PrivacyRow>> {
         Arc::clone(&self.rows.borrow())
     }
 
     /// A receiver that wakes when the list changes.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Arc<Vec<PrivacyRow>>> {
         self.rows.subscribe()
     }
@@ -69,6 +72,7 @@ pub struct PrivacyLink {
 impl PrivacyLink {
     /// A new link, and the channel the event loop reads the changes from (the root turns each into
     /// an event, stamped with the wall-clock second).
+    #[must_use]
     pub fn new() -> (PrivacyLink, Channel<Edit>) {
         let (edits, channel) = sync_channel(EDIT_QUEUE);
         let link = PrivacyLink {
@@ -79,6 +83,7 @@ impl PrivacyLink {
     }
 
     /// The board, for the event loop to publish to.
+    #[must_use]
     pub fn board(&self) -> PrivacyBoard {
         self.board.clone()
     }

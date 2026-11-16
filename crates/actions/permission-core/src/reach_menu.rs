@@ -26,6 +26,7 @@ pub const SKILL_LOAD: &str = "companion.skill.load";
 impl TaskPolicy {
     /// Whether a helper whose reach this is is offered `action`: an action of one of the reach's
     /// apps at any effect, or one of the companion actions a helper keeps.
+    #[must_use]
     pub fn offers(&self, action: &ActionRef) -> bool {
         if action.app.as_str() == COMPANION_APP {
             return kept_by_helpers(action);
@@ -51,6 +52,7 @@ pub(crate) fn kept_by_helpers(action: &ActionRef) -> bool {
 /// Whether the planner of `agent` is offered `action` at all. A task does its own goal, so a worker
 /// is not offered `companion.task.start`: only the person's assistant hands out work, and a
 /// worker that did would start the goal it was given again, one run nested in the last.
+#[must_use]
 pub fn offered_to(action: &ActionRef, agent: &AgentRef) -> bool {
     !(matches!(agent, AgentRef::Worker { .. })
         && action.app.as_str() == COMPANION_APP

@@ -8,6 +8,7 @@ use super::face::{MediaFace, Transport, media_face};
 use crate::hooks::{use_control, use_service};
 
 /// The current player's face and where its presses go: read by the control center's module.
+#[must_use]
 pub fn use_media() -> (MediaFace, EventHandler<Transport>) {
     let media = use_service::<NowPlayingService>()();
     let control = use_control::<NowPlayingService>();

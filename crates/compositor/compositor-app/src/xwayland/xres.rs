@@ -47,6 +47,7 @@ pub struct XServer {
 
 impl XServer {
     /// The server serving `display`.
+    #[must_use]
     pub fn at(display: &DisplayName) -> XServer {
         XServer {
             display: display.clone(),

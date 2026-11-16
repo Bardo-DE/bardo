@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::KbdLevel;
 use crate::units::Percent;
 
-/// One change UPower reported.
+/// One change `UPower` reported.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum KbdEvent {
@@ -13,7 +13,7 @@ pub enum KbdEvent {
     Found(KbdLevel),
     /// `BrightnessChanged`: the new step (a key, another app, or this shell's own set).
     Brightness(u32),
-    /// No backlight, or UPower left the bus.
+    /// No backlight, or `UPower` left the bus.
     Gone,
 }
 

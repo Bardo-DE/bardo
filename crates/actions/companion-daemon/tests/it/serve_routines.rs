@@ -142,11 +142,11 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
         proposals(theirs.routine_proposals().await.expect("read")).len(),
         2
     );
-    assert!(theirs.accept_routine_proposal("p-1").await.is_err());
+    theirs.accept_routine_proposal("p-1").await.unwrap_err();
     assert!(theirs.decline_routine_proposal("p-1").await.is_err());
     let nobody = CompanionHelpers2Proxy::new(&stranger).await.expect("proxy");
-    assert!(nobody.routine_proposals().await.is_err());
-    assert!(nobody.accept_routine_proposal("p-1").await.is_err());
+    nobody.routine_proposals().await.unwrap_err();
+    nobody.accept_routine_proposal("p-1").await.unwrap_err();
     assert_eq!(
         proposals(helpers.routine_proposals().await.expect("list")).len(),
         2
@@ -181,7 +181,10 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
     )
     .expect("reply");
     assert!(matches!(gone, RoutineReply::Refused(_)));
-    assert!(helpers.accept_routine_proposal("nonsense").await.is_err());
+    helpers
+        .accept_routine_proposal("nonsense")
+        .await
+        .unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -283,12 +286,15 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
         serde_json::from_str(&helpers.say(other.as_str(), 1, "hello").await.expect("say"))
             .expect("reply");
     assert!(matches!(refused, SayReply::Refused(_)), "{refused:?}");
-    assert!(helpers.say("not a session", 1, "hello").await.is_err());
+    helpers.say("not a session", 1, "hello").await.unwrap_err();
     assert_eq!(research_model.opened().len(), 1);
 
     // A process nothing names speaks nowhere.
     let nobody = CompanionHelpers2Proxy::new(&stranger).await.expect("proxy");
-    assert!(nobody.say(talk.as_str(), turn.0, "hello").await.is_err());
+    nobody
+        .say(talk.as_str(), turn.0, "hello")
+        .await
+        .unwrap_err();
     assert_eq!(research_model.opened().len(), 1);
 }
 

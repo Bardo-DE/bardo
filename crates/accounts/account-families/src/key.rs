@@ -32,7 +32,7 @@ pub(crate) fn key_of(presented: &Presented) -> Result<&SecretText, ProviderError
 }
 
 /// The path of the one call that checks a key, under the file's chat endpoint: the models list,
-/// except at OpenRouter, whose list is public and so accepts any key; its own `key` call (the
+/// except at `OpenRouter`, whose list is public and so accepts any key; its own `key` call (the
 /// key's label and limits) needs a live one.
 fn check_path(provider: &account_core::ProviderId) -> &'static str {
     match provider.as_str() {
@@ -81,7 +81,7 @@ const ANTHROPIC_VERSION: &str = "2023-06-01";
 
 /// `request` carrying `key` the way the company documents: `x-api-key` and `anthropic-version`
 /// for Anthropic's Messages API, `x-goog-api-key` for Gemini, a bearer token for the
-/// OpenAI-compatible rest (OpenAI, Moonshot). An empty key is no key: the request goes without
+/// OpenAI-compatible rest (`OpenAI`, Moonshot). An empty key is no key: the request goes without
 /// (a server of the person's own may need none).
 pub(crate) fn present_key(request: Builder, family: Family, key: &SecretText) -> Builder {
     if key.expose().is_empty() {
@@ -115,7 +115,7 @@ pub(crate) fn models_url(server: &EndpointUrl) -> Result<EndpointUrl, ProviderEr
         .map_err(|_| ProviderError::Unreadable)
 }
 
-/// [`check`] of the server of the person's own at `server`, which speaks the OpenAI chat
+/// [`check`] of the server of the person's own at `server`, which speaks the `OpenAI` chat
 /// protocol: `GET <server address>/models`, with the bearer key when there is one.
 pub(crate) async fn check_server<H: Http>(
     http: &H,
@@ -145,10 +145,13 @@ async fn check_at<H: Http>(
         .await
         .map_err(|_| ProviderError::Unreachable)?;
     match response.status().as_u16() {
-        200..=299 => match is_listing(response.body()) {
-            true => Ok(()),
-            false => Err(ProviderError::Unreadable),
-        },
+        200..=299 => {
+            if is_listing(response.body()) {
+                Ok(())
+            } else {
+                Err(ProviderError::Unreadable)
+            }
+        }
         401 => Err(ProviderError::Unauthorized),
         403 => Err(ProviderError::Forbidden),
         408 | 425 | 429 | 500..=599 => Err(ProviderError::Unreachable),
@@ -156,7 +159,7 @@ async fn check_at<H: Http>(
     }
 }
 
-/// Whether `body` looks like a models list or a key's description: a JSON object with `data` (OpenAI, Anthropic,
+/// Whether `body` looks like a models list or a key's description: a JSON object with `data` (`OpenAI`, Anthropic,
 /// Moonshot) or `models` (Gemini). A cheap structural check; nothing is parsed or kept.
 fn is_listing(body: &[u8]) -> bool {
     let text = String::from_utf8_lossy(body);
@@ -212,9 +215,10 @@ pub(crate) fn signed_server(
     key: SecretText,
 ) -> Signed {
     let origin = server.url.origin();
-    let label = match origin.port == origin.scheme.default_port() {
-        true => origin.host.clone(),
-        false => format!("{}:{}", origin.host, origin.port),
+    let label = if origin.port == origin.scheme.default_port() {
+        origin.host.clone()
+    } else {
+        format!("{}:{}", origin.host, origin.port)
     };
     Signed::new(
         AccountLabel(label),
@@ -238,6 +242,7 @@ impl KeySession {
     }
 
     /// The account it is open for.
+    #[must_use]
     pub fn account(&self) -> &AccountId {
         &self.account
     }

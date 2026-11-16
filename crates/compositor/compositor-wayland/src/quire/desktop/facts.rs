@@ -285,9 +285,10 @@ impl WindowFacts {
             .apps()
             .get(&held.app)
             .is_some_and(|app| app.life.kind() == vocab::AppLifeKind::NotResponding);
-        let responsiveness = match silent {
-            true => window::Responsiveness::NotResponding,
-            false => window::Responsiveness::Responding,
+        let responsiveness = if silent {
+            window::Responsiveness::NotResponding
+        } else {
+            window::Responsiveness::Responding
         };
         Some(WindowFacts {
             identifier: crate::foreign_toplevel_list::identifier_of(id),

@@ -340,14 +340,12 @@ fn one_caller_cannot_fill_the_book_of_sessions() {
     let hung_on = Tether::new(Some(":1.7".to_owned()), None);
     for n in 0..portal_daemon::peers::SESSION_LIMITS.per_caller {
         let n = u32::try_from(n).expect("small");
-        assert!(service.create_for(key(n), "a", hung_on.clone()).is_ok());
+        service.create_for(key(n), "a", hung_on.clone()).unwrap();
     }
-    assert!(service.create_for(key(999), "a", hung_on).is_err());
-    assert!(
-        service
-            .create_for(key(1000), "a", Tether::new(Some(":1.8".to_owned()), None))
-            .is_ok()
-    );
+    service.create_for(key(999), "a", hung_on).unwrap_err();
+    service
+        .create_for(key(1000), "a", Tether::new(Some(":1.8".to_owned()), None))
+        .unwrap();
 }
 
 /// NEW-PI-8: the compositor outlives the portal, so a restarted portal must not reuse the numbers

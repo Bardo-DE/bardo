@@ -38,7 +38,7 @@ fn arm_watchdog<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId, wait: Duration)
     cancel_watchdog(ctx, id);
     let armed = ctx
         .handle
-        .insert_source(Timer::from_duration(wait), move |_, _, ctx| {
+        .insert_source(Timer::from_duration(wait), move |_, (), ctx| {
             watchdog_fired(ctx, id);
             TimeoutAction::Drop
         });
@@ -85,7 +85,7 @@ fn start_repeat<M: 'static>(ctx: &mut HostCtx<M>, delay: Duration, interval: Dur
     stop_repeat(ctx);
     let started = ctx
         .handle
-        .insert_source(Timer::from_duration(delay), move |_, _, ctx| {
+        .insert_source(Timer::from_duration(delay), move |_, (), ctx| {
             ctx.state.key_repeat();
             TimeoutAction::ToDuration(interval)
         });
@@ -108,7 +108,7 @@ fn scroll_wake<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId, after: Duration)
     }
     let armed = ctx
         .handle
-        .insert_source(Timer::from_duration(after), move |_, _, ctx| {
+        .insert_source(Timer::from_duration(after), move |_, (), ctx| {
             ctx.scroll_wakes.remove(&id);
             ctx.state.invalidate(id);
             TimeoutAction::Drop

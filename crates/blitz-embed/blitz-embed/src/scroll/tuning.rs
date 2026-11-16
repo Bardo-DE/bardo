@@ -13,6 +13,7 @@ pub struct Tuning {
 
 impl Tuning {
     /// The tuning `settings` give.
+    #[must_use]
     pub fn new(settings: ScrollSettings) -> Tuning {
         Tuning {
             physics: Physics::from_settings(&settings),
@@ -21,6 +22,7 @@ impl Tuning {
     }
 
     /// This tuning at `now`.
+    #[must_use]
     pub fn at(&self, now: Elapsed) -> Env<'_> {
         Env {
             settings: &self.settings,

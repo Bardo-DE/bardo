@@ -10,6 +10,7 @@ use action_vocab::{CallRequest, TargetValue, Value};
 use provenance::EntityId;
 
 /// The things a call touches: its targets and the things among its arguments.
+#[must_use]
 pub fn touched(request: &CallRequest) -> Vec<EntityId> {
     let mut things: Vec<EntityId> = match &request.target {
         TargetValue::Entities(es) => es.clone(),
@@ -38,6 +39,7 @@ fn alive(st: &RouterState, record: &SessionRecord) -> bool {
 }
 
 /// Whether a live job of another session owns one of `things`.
+#[must_use]
 pub fn owned_by_another(st: &RouterState, mine: &SessionRecord, things: &[EntityId]) -> bool {
     st.sessions
         .values()

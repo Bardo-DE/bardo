@@ -114,11 +114,13 @@ pub struct FolderDataset {
 impl FolderDataset {
     /// The files under `root` (made when it is first written to), as the dataset
     /// `storage_app_folder`.
+    #[must_use]
     pub fn new(root: PathBuf) -> Self {
         Self::named(root, SLUG).expect("the app folder's slug is one")
     }
 
     /// The files under `root` as the dataset `slug`; `None` if that is not a dataset name.
+    #[must_use]
     pub fn named(root: PathBuf, slug: &str) -> Option<Self> {
         Some(Self {
             root,
@@ -127,6 +129,7 @@ impl FolderDataset {
     }
 
     /// The directory.
+    #[must_use]
     pub fn root(&self) -> &Path {
         &self.root
     }

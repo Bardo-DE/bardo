@@ -81,7 +81,7 @@ async fn the_run_opens_its_own_session_once_and_a_withdrawn_check_leaves_the_gat
     let mut asked = gate.check(step(Effect::Outbound)).await.expect("a check");
     assert!(matches!(
         asked.next().await,
-        Ok(GateEvent::Confirming(_)) | Ok(GateEvent::Answered(_))
+        Ok(GateEvent::Confirming(_) | GateEvent::Answered(_))
     ));
     assert_eq!(asked.close().await, Ok(()));
     drop(asked);

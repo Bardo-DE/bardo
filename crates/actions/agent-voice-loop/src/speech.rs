@@ -42,6 +42,7 @@ pub struct SpeechState {
 
 impl SpeechState {
     /// Silent, mic closed.
+    #[must_use]
     pub fn quiet() -> Self {
         Self {
             phase: SpeechPhase::Quiet,
@@ -146,6 +147,7 @@ fn next_sentence(mut state: SpeechState) -> (SpeechState, Vec<SpeechEffect>) {
 }
 
 /// One transition. Total and pure.
+#[must_use]
 pub fn speech_step(mut state: SpeechState, event: SpeechEvent) -> (SpeechState, Vec<SpeechEffect>) {
     match (state.phase, event) {
         (_, V::Mic { open }) => {

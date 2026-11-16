@@ -68,6 +68,7 @@ impl PermissionKind {
     ];
 
     /// The kind's word.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             PermissionKind::Read => "read",
@@ -84,11 +85,13 @@ impl PermissionKind {
     }
 
     /// The kind a word names, if it names one: the inverse of [`word`](Self::word).
+    #[must_use]
     pub fn from_word(word: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|k| k.word() == word)
     }
 
     /// The action name: `acpagent.<kind>`.
+    #[must_use]
     pub fn action_name(self) -> String {
         format!("acpagent.{}", self.word())
     }
@@ -96,6 +99,7 @@ impl PermissionKind {
     /// The effect it is gated as: reads read; edit and move write (undoable, the host keeps the
     /// old text); execute and fetch go out (`EXECUTE_AS`); delete, a mode switch and anything
     /// unclassified are destructive until classified (they never offer "always").
+    #[must_use]
     pub fn effect(self) -> Effect {
         match self {
             PermissionKind::Read | PermissionKind::Search | PermissionKind::Think => Effect::Read,
@@ -109,11 +113,13 @@ impl PermissionKind {
 }
 
 /// The pseudo-app's name.
+#[must_use]
 pub fn app() -> Option<AppName> {
     AppName::parse(ACP_AGENT_APP).ok()
 }
 
 /// `name` in the pseudo-app.
+#[must_use]
 pub fn action(name: &str) -> Option<ActionRef> {
     Some(ActionRef {
         app: app()?,
@@ -122,6 +128,7 @@ pub fn action(name: &str) -> Option<ActionRef> {
 }
 
 /// Whether `action` is one of the pseudo-app's.
+#[must_use]
 pub fn is_agent_action(action: &ActionRef) -> bool {
     action.app.as_str() == ACP_AGENT_APP
 }
@@ -130,6 +137,7 @@ pub fn is_agent_action(action: &ActionRef) -> bool {
 /// write of those files; an execute approves the next command of that line in that directory. A
 /// permission request is the person's yes to the thing it names, so the matching call does not
 /// ask again; every other check still runs on it. Nothing else approves anything.
+#[must_use]
 pub fn approves(permission: &CallFacts) -> Option<CallFacts> {
     if !is_agent_action(&permission.action) {
         return None;
@@ -154,6 +162,7 @@ pub fn approves(permission: &CallFacts) -> Option<CallFacts> {
 
 /// Whether the approval `held` covers a call whose facts are `call`: the same action, every path
 /// of the call among the approved ones, or the same command line in the same directory.
+#[must_use]
 pub fn covers_approval(held: &CallFacts, call: &CallFacts) -> bool {
     if held.action != call.action {
         return false;

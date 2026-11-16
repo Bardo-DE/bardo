@@ -65,7 +65,7 @@ async fn seeded() -> Arc<MemoryLog> {
         .await;
     };
     let (ran, ()) = tokio::join!(server.run(), run);
-    assert!(ran.is_ok());
+    ran.unwrap();
     opening_by(&log, "s-50", Some("org.bardo.Shell")).await;
     opening_by(&log, "s-51", None).await;
     opening_by(&log, "s-52", Some(OTHER)).await;
@@ -117,7 +117,7 @@ async fn list_shows_an_editor_only_the_sessions_it_opened() {
         assert_eq!(there["result"]["sessions"].as_array().unwrap().len(), 1);
     };
     let (ran, ()) = tokio::join!(zed.run(), mine);
-    assert!(ran.is_ok());
+    ran.unwrap();
 
     let (mut other, mut ed) = rig(&log, vec![], OTHER);
     let theirs = async move {
@@ -138,7 +138,7 @@ async fn list_shows_an_editor_only_the_sessions_it_opened() {
         assert_eq!(ids, ["s-52"], "only its own");
     };
     let (ran, ()) = tokio::join!(other.run(), theirs);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -213,5 +213,5 @@ async fn load_replays_for_the_opener_and_answers_everyone_else_as_unknown() {
         assert_eq!(reply["result"]["stopReason"], "end_turn");
     };
     let (ran, ()) = tokio::join!(zed.run(), run);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }

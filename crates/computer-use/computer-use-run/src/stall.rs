@@ -47,12 +47,14 @@ impl Repeats {
     }
 
     /// Equal frames in a row, newest first (zero before the first frame).
+    #[must_use]
     pub fn count(&self) -> Count {
         self.count
     }
 
     /// `Stalled` when the newest `limit` frames are all equal; `Moving` otherwise, and always
     /// `Moving` for a limit of zero. Pure.
+    #[must_use]
     pub fn stall(&self, limit: Count) -> Stall {
         if limit.0 == 0 || self.count.0 < limit.0 {
             Stall::Moving

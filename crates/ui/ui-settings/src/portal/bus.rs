@@ -43,8 +43,7 @@ fn prefs_from_namespace(namespace: &HashMap<String, OwnedValue>) -> SystemPrefs 
             namespace
                 .get(KEY_REDUCED_MOTION)
                 .and_then(as_u32)
-                .map(reduced_motion_from_portal)
-                .unwrap_or_default(),
+                .is_some_and(reduced_motion_from_portal),
         )
         .with_contrast(
             namespace

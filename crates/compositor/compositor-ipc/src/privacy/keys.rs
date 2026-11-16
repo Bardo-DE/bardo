@@ -244,6 +244,7 @@ fn filled(rows: &[PrivacyRow]) -> BTreeSet<&Subject> {
 /// [`ASK`] for each program in [`filled`] that has no row for it, or the line that says nobody
 /// has asked. Two rows that would share a name (a hash collision, which needs 2^24 programs)
 /// list the first only, so the schema never repeats a key.
+#[must_use]
 pub fn listed(rows: &[PrivacyRow]) -> Vec<Listed> {
     let mut seen = BTreeSet::new();
     let mut out = Vec::new();

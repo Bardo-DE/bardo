@@ -191,25 +191,22 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
         if let Some(row) = self.journal.item_by_remote(&item.id)? {
             return self.upsert_known(row, item, report).await;
         }
-        match self.journal.new_item_at(&item.path)? {
-            Some(row) => {
-                // Ours, uploaded before a crash could record the id; or someone else's file at
-                // the same path.
-                let same = self.compare(&row, &item.id, item.hash.as_ref()).await?;
-                let ops = match same {
-                    Compared::Same => vec![Op::PutItem(self.synced(&row, &item.id, &item.version))],
-                    Compared::Differs(_) => {
-                        let remote = RemoteSide::Exists(item.id.clone(), item.version.clone());
-                        let conflict = conflict_of(&item.id, BaseVersion::Absent, remote);
-                        self.conflict_ops(&row, conflict, report)
-                    }
-                };
-                Ok(self.journal.apply(&ops)?)
-            }
-            None => {
-                let row = self.fetching_row(None, &item);
-                self.fetch_into(&row, &item.id, None, report).await
-            }
+        if let Some(row) = self.journal.new_item_at(&item.path)? {
+            // Ours, uploaded before a crash could record the id; or someone else's file at
+            // the same path.
+            let same = self.compare(&row, &item.id, item.hash.as_ref()).await?;
+            let ops = match same {
+                Compared::Same => vec![Op::PutItem(self.synced(&row, &item.id, &item.version))],
+                Compared::Differs(_) => {
+                    let remote = RemoteSide::Exists(item.id.clone(), item.version.clone());
+                    let conflict = conflict_of(&item.id, BaseVersion::Absent, remote);
+                    self.conflict_ops(&row, conflict, report)
+                }
+            };
+            Ok(self.journal.apply(&ops)?)
+        } else {
+            let row = self.fetching_row(None, &item);
+            self.fetch_into(&row, &item.id, None, report).await
         }
     }
 

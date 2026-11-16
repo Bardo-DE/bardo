@@ -402,7 +402,7 @@ fn alternatives_of(mut node: Node, key: &str, alternatives: &Value) -> Found<Sha
         })
     };
     let others: Vec<(usize, &Value)> = items.iter().enumerate().filter(|(_, v)| !null(v)).collect();
-    let shape = match (items.len(), &others[..]) {
+    let shape = match (items.len(), (&*others)) {
         (2, [(at, other)]) => {
             let inner = read(node.child(other, &[key, &at.to_string()])?)?;
             Shape::Optional(Box::new(inner))

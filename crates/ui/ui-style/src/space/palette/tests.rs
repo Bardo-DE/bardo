@@ -351,7 +351,7 @@ fn the_readout_is_the_ratio_of_the_derived_tokens() {
         let got: Vec<f64> = checks.iter().map(|check| check.measured).collect();
         assert_eq!(got, want, "dark={dark}");
         assert!(
-            checks.iter().all(|check| check.clears()),
+            checks.iter().all(super::readout::ContrastCheck::clears),
             "dark={dark}: {checks:?}"
         );
     }

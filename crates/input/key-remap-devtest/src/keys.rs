@@ -22,11 +22,13 @@ pub const KEYS: &[(&str, u16)] = &[
 ];
 
 /// The code of the key called `name`.
+#[must_use]
 pub fn code_of(name: &str) -> Option<u16> {
     KEYS.iter().find(|&&(n, _)| n == name).map(|&(_, c)| c)
 }
 
 /// The name of the key with `code`, or `key<code>` when the harness has none.
+#[must_use]
 pub fn name_of(code: u16) -> String {
     KEYS.iter()
         .find(|&&(_, c)| c == code)

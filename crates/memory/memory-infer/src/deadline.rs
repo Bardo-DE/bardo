@@ -25,7 +25,7 @@ impl Deadlines {
     /// For a consolidation draft: a local model reading a day of events is slow.
     pub const DRAFT: Deadlines = Deadlines {
         open: Duration::from_secs(60),
-        turn: Duration::from_secs(15 * 60),
+        turn: Duration::from_mins(15),
     };
 }
 

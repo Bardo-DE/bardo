@@ -34,6 +34,7 @@ pub struct TailnetProvider {
 impl TailnetProvider {
     /// The provider serving the accounts of `spec`, asking Tailscale through `api`, and waiting
     /// between its questions through `sleep`.
+    #[must_use]
     pub fn new(spec: ProviderSpec, api: LocalApi, sleep: SharedSleep) -> Self {
         Self { spec, api, sleep }
     }

@@ -237,7 +237,7 @@ async fn a_terminal_way_is_handed_to_the_shell_and_the_agent_is_asked_again_afte
     assert_eq!(starts.lock().expect("starts").len(), 1);
 
     // The shell says the window closed: the agent is asked again, with no way chosen.
-    assert!(helper.check().await.is_ok());
+    helper.check().await.unwrap();
     assert!(starts.lock().expect("starts")[1].sign_in.is_none());
     let ended = helper.run("Compare the offers", AT).await;
     assert!(matches!(ended, AgentEnd::Done(w) if w.as_untrusted_str() == "Back to it."));

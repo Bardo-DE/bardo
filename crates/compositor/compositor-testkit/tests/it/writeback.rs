@@ -64,7 +64,7 @@ fn a_malformed_buffer_is_refused_not_misread() {
 fn the_last_row_needs_no_trailing_padding() {
     // pitch 12, height 2, width 2: 12 + 8 = 20 bytes are enough.
     let image = decode(&frame(), &grey_raw(100)[..20]);
-    assert!(image.is_ok());
+    image.unwrap();
 }
 
 #[test]

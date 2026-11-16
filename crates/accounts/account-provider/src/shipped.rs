@@ -9,6 +9,7 @@ pub const SHIPPED_FILES: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/s
 
 /// The shipped provider files, parsed. Every file parses (porter's `tests/shipped_files.rs`
 /// checks each one and that this list is the whole `providers/` directory).
+#[must_use]
 pub fn shipped_specs() -> Vec<ProviderSpec> {
     SHIPPED_FILES
         .iter()
@@ -19,6 +20,7 @@ pub fn shipped_specs() -> Vec<ProviderSpec> {
 }
 
 /// The shipped provider files as a set, with no user files layered over them.
+#[must_use]
 pub fn shipped() -> ProviderSet {
     ProviderSet::layered(shipped_specs(), Vec::new())
 }

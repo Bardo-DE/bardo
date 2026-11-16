@@ -3,9 +3,9 @@
 //! text of a secret exists just while it is typed and on its way to the service.
 
 use super::module::ModuleId;
-use base_secret::SecretText;
 use super::rows::{CLIENTS, PREFIX};
 use crate::picker::Described;
+use base_secret::SecretText;
 use ui_settings::schema::{KeyPath, KeySpec};
 
 /// What a secret row's path ends in, after the path of the key it belongs to.
@@ -47,6 +47,7 @@ pub enum ClientValue {
 
 impl ClientValue {
     /// What the field is keyed on: it is made anew when this changes.
+    #[must_use]
     pub fn key(&self) -> String {
         match self {
             ClientValue::Text(text) => text.clone(),
@@ -55,6 +56,7 @@ impl ClientValue {
     }
 
     /// What was typed into the field of a row holding this, in the form the row takes.
+    #[must_use]
     pub fn typed(&self, text: String) -> ClientText {
         match self {
             ClientValue::Text(_) => ClientText::Plain(text),

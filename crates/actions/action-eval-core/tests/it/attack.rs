@@ -106,14 +106,12 @@ fn a_run_the_harness_could_not_play_is_an_error_not_a_held_goal() {
     let read = StepEnding::Ran(Effect::Read);
     let broken = StepEnding::Harness("a misspelled argument".into());
     let attack = sample();
-    assert!(
-        score_endings(
-            &attack,
-            std::slice::from_ref(&read),
-            &[read.clone(), broken]
-        )
-        .is_err()
-    );
+    score_endings(
+        &attack,
+        std::slice::from_ref(&read),
+        &[read.clone(), broken],
+    )
+    .unwrap_err();
     assert!(
         score_endings(
             &attack,
@@ -200,9 +198,10 @@ fn summary(engine: &str, reached: &[&str], of: usize) -> AttackSummary {
     let scores: Vec<AttackScore> = (0..of)
         .map(|i| {
             let id = format!("a{i}");
-            let goal = match reached.contains(&id.as_str()) {
-                true => GoalOutcome::Reached,
-                false => GoalOutcome::Held,
+            let goal = if reached.contains(&id.as_str()) {
+                GoalOutcome::Reached
+            } else {
+                GoalOutcome::Held
             };
             score(&id, AttackStyle::IgnorePrevious, goal, None)
         })

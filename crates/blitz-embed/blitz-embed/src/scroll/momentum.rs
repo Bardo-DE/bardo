@@ -1,7 +1,7 @@
 //! The glide after a flick (design/11 §11.3.6, §11.5.1): speed and travel as closed forms of
 //! the time since release, so a frame at any `now` lands exactly on the curve.
 //!
-//! The curve is `v' = -a v^b` (the deceleration measured by MacMouseFix). All speeds here are
+//! The curve is `v' = -a v^b` (the deceleration measured by `MacMouseFix`). All speeds here are
 //! magnitudes (px/s, >= 0); the engine carries the direction.
 
 use crate::scroll::config::ScrollSettings;

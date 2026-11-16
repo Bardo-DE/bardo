@@ -53,6 +53,7 @@ pub struct CloudDrive {
 
 impl CloudDrive {
     /// A drive that is up to date, with no label, words or usage.
+    #[must_use]
     pub fn new(id: DriveId, provider: ProviderName, folder: FolderPath) -> CloudDrive {
         CloudDrive {
             id,
@@ -66,16 +67,19 @@ impl CloudDrive {
     }
 
     /// The same drive for the account called `label`.
+    #[must_use]
     pub fn labelled(self, label: AccountLabel) -> CloudDrive {
         CloudDrive { label, ..self }
     }
 
     /// The same drive in `state`.
+    #[must_use]
     pub fn in_state(self, state: DriveState) -> CloudDrive {
         CloudDrive { state, ..self }
     }
 
     /// The same drive saying `words`.
+    #[must_use]
     pub fn saying(self, words: CloudWords) -> CloudDrive {
         CloudDrive {
             words: Some(words),
@@ -84,24 +88,27 @@ impl CloudDrive {
     }
 
     /// The same drive using `usage`.
+    #[must_use]
     pub fn using(self, usage: Usage) -> CloudDrive {
         CloudDrive { usage, ..self }
     }
 
     /// Whether `folder` is the drive's own folder or inside it.
+    #[must_use]
     pub fn holds(&self, folder: &FolderPath) -> bool {
         folder.as_path().starts_with(self.folder.as_path())
     }
 
     /// The name the sidebar shows among `all` the drives: the provider, and the account's words
     /// after it when another drive is of the same provider.
+    #[must_use]
     pub fn name_among(&self, all: &[CloudDrive]) -> String {
         let shared = all
             .iter()
             .any(|other| other.id != self.id && other.provider == self.provider);
         match (shared, self.label.as_str()) {
             (true, label) if !label.is_empty() => format!("{} ({label})", self.provider),
-            (true, _) | (false, _) => self.provider.to_string(),
+            (true | false, _) => self.provider.to_string(),
         }
     }
 }

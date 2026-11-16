@@ -28,16 +28,18 @@ impl NodeId {
             && text
                 .bytes()
                 .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_');
-        match good {
-            true => Ok(Self(text.into())),
-            false => Err(IdError::malformed(
+        if good {
+            Ok(Self(text.into()))
+        } else {
+            Err(IdError::malformed(
                 "node id",
                 &text.chars().take(80).collect::<String>(),
-            )),
+            ))
         }
     }
 
     /// The id as written.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -84,6 +86,7 @@ impl MachineOwner {
     ];
 
     /// The word on the bus.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             MachineOwner::Mine => "mine",
@@ -93,6 +96,7 @@ impl MachineOwner {
     }
 
     /// The owner a word stands for.
+    #[must_use]
     pub fn from_slug(text: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|owner| owner.slug() == text)
     }
@@ -105,7 +109,7 @@ pub struct Machine {
     pub node: NodeId,
     /// The name people call it by (the first part of its network name).
     pub name: String,
-    /// Its MagicDNS name without the dot at the end: what to connect to.
+    /// Its `MagicDNS` name without the dot at the end: what to connect to.
     pub dns: String,
     /// Its Tailscale addresses.
     pub addresses: Vec<IpAddr>,
@@ -124,8 +128,9 @@ pub struct Machine {
 }
 
 impl Machine {
-    /// A machine with this id, name and MagicDNS name, whose it is: offline, with no addresses,
+    /// A machine with this id, name and `MagicDNS` name, whose it is: offline, with no addresses,
     /// no known system, no last-seen time and no SSH, until the `with_*` methods say more.
+    #[must_use]
     pub fn new(node: NodeId, name: String, dns: String, owner: MachineOwner) -> Self {
         Self {
             node,
@@ -142,24 +147,28 @@ impl Machine {
     }
 
     /// The same machine with its Tailscale addresses.
+    #[must_use]
     pub fn with_addresses(mut self, addresses: Vec<IpAddr>) -> Self {
         self.addresses = addresses;
         self
     }
 
     /// The same machine with its operating system as Tailscale says it.
+    #[must_use]
     pub fn with_os(mut self, os: String) -> Self {
         self.os = os;
         self
     }
 
     /// The same machine, connected or not.
+    #[must_use]
     pub fn with_online(mut self, online: bool) -> Self {
         self.online = online;
         self
     }
 
     /// The same machine, last connected at `at`.
+    #[must_use]
     pub fn with_last_seen(mut self, at: UnixSeconds) -> Self {
         self.last_seen = Some(at);
         self
@@ -167,6 +176,7 @@ impl Machine {
 
     /// The same machine with the SSH host keys it advertises; Tailscale's SSH is on when there
     /// are any.
+    #[must_use]
     pub fn with_ssh_host_keys(mut self, keys: Vec<String>) -> Self {
         self.ssh = !keys.is_empty();
         self.ssh_host_keys = keys;
@@ -174,6 +184,7 @@ impl Machine {
     }
 
     /// The same machine with Tailscale's SSH on or off, whatever keys it lists.
+    #[must_use]
     pub fn with_ssh(mut self, ssh: bool) -> Self {
         self.ssh = ssh;
         self

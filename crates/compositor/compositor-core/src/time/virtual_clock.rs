@@ -42,6 +42,7 @@ pub struct VirtualClock {
 
 impl VirtualClock {
     /// A clock standing at `epoch` with no timers and no outputs.
+    #[must_use]
     pub fn new(epoch: Mono) -> VirtualClock {
         VirtualClock {
             now: epoch,
@@ -51,26 +52,31 @@ impl VirtualClock {
     }
 
     /// Now on this clock.
+    #[must_use]
     pub fn now(&self) -> Mono {
         self.now
     }
 
     /// How far past the session epoch the clock stands (ui-core's `elapsed`).
+    #[must_use]
     pub fn elapsed(&self) -> Duration {
         self.now.0
     }
 
     /// The armed timers.
+    #[must_use]
     pub fn timers(&self) -> &TimerBook {
         &self.timers
     }
 
     /// The clock with `timers` in place of its own.
+    #[must_use]
     pub fn with_timers(self, timers: TimerBook) -> VirtualClock {
         VirtualClock { timers, ..self }
     }
 
     /// The clock with `due` armed (ui-core's `schedule`).
+    #[must_use]
     pub fn schedule(self, due: Due) -> VirtualClock {
         let VirtualClock {
             now,
@@ -85,6 +91,7 @@ impl VirtualClock {
     }
 
     /// The clock with `key`'s vblanks following `clock`.
+    #[must_use]
     pub fn with_output(self, key: OutputKey, clock: VblankClock) -> VirtualClock {
         let mut outputs = self.outputs;
         outputs.insert(key, clock);
@@ -92,6 +99,7 @@ impl VirtualClock {
     }
 
     /// The clock without `key`'s vblanks.
+    #[must_use]
     pub fn without_output(self, key: &OutputKey) -> VirtualClock {
         let mut outputs = self.outputs;
         outputs.remove(key);
@@ -99,6 +107,7 @@ impl VirtualClock {
     }
 
     /// The earliest instant a timer is due strictly after now (ui-core's `next_due`).
+    #[must_use]
     pub fn next_due(&self) -> Option<Mono> {
         self.timers.next_after(self.now)
     }
@@ -106,6 +115,7 @@ impl VirtualClock {
     /// Where the next advance stops, at most `limit`: a timer due now or later (one already
     /// due stops at now), else the earliest vblank strictly after now, else `limit` with
     /// [`Stop::End`]. Never before now.
+    #[must_use]
     pub fn next_stop(&self, limit: Mono) -> (Mono, Stop) {
         let timer = self
             .timers
@@ -131,6 +141,7 @@ impl VirtualClock {
 
     /// The clock moved to `t` (never backwards). Timers due by then stay armed until
     /// [`VirtualClock::fire_due`] takes them.
+    #[must_use]
     pub fn advance_to(self, t: Mono) -> VirtualClock {
         VirtualClock {
             now: self.now.max(t),
@@ -146,6 +157,7 @@ impl VirtualClock {
     ///
     /// Vblanks are reported only when the clock moves: one that falls at the instant an output
     /// is added, or at an instant already arrived at, is not.
+    #[must_use]
     pub fn arrive(self, t: Mono) -> (VirtualClock, Arrival) {
         let moved = t > self.now;
         let clock = self.advance_to(t);
@@ -175,6 +187,7 @@ impl VirtualClock {
     }
 
     /// The clock without every timer due by now, and their keys in firing order.
+    #[must_use]
     pub fn fire_due(self) -> (VirtualClock, Vec<TimerKey>) {
         let (timers, fired) = self.timers.fire_until(self.now);
         (VirtualClock { timers, ..self }, fired)

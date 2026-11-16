@@ -18,11 +18,13 @@ impl Clock {
     }
 
     /// A clock that always says `at`.
+    #[must_use]
     pub fn fixed(at: UnixSeconds) -> Self {
         Self::new(FixedClock(at))
     }
 
     /// Now.
+    #[must_use]
     pub fn now(&self) -> UnixSeconds {
         self.0.now()
     }

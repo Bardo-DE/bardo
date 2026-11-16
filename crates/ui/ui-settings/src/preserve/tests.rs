@@ -93,5 +93,5 @@ fn the_typed_document_is_laid_over_the_file() {
 
 #[test]
 fn text_that_is_not_toml_is_refused() {
-    assert!(merge("size = = 3", "size = 3\n", &[]).is_err());
+    merge("size = = 3", "size = 3\n", &[]).unwrap_err();
 }

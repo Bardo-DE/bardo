@@ -67,6 +67,7 @@ pub enum DisplaysEffect {
 }
 
 /// The next state, and what to ask of the compositor.
+#[must_use]
 pub fn displays_step(
     state: DisplaysState,
     input: DisplaysInput,
@@ -144,6 +145,7 @@ fn arrange(
 
 impl DisplaysReady {
     /// Whether a change is under way.
+    #[must_use]
     pub fn is_applying(&self) -> bool {
         self.applying.is_some()
     }

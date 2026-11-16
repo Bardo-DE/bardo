@@ -76,16 +76,15 @@ impl PrivateBus {
             let read = BufReader::new(stdout).read_line(&mut address);
             let _ = said.send(read.map(|_| address));
         });
-        let address = match heard.recv_timeout(DEADLINE) {
-            Ok(read) => read.expect("the daemon prints its address"),
-            Err(_) => {
-                let _ = child.kill();
-                let _ = child.wait();
-                panic!(
-                    "waited {} s for dbus-daemon to print its address",
-                    DEADLINE.as_secs()
-                );
-            }
+        let address = if let Ok(read) = heard.recv_timeout(DEADLINE) {
+            read.expect("the daemon prints its address")
+        } else {
+            let _ = child.kill();
+            let _ = child.wait();
+            panic!(
+                "waited {} s for dbus-daemon to print its address",
+                DEADLINE.as_secs()
+            );
         };
         assert!(
             !address.trim().is_empty(),

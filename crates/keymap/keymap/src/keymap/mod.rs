@@ -35,6 +35,7 @@ pub struct Keymap {
 
 impl Keymap {
     /// The platform's conventions and nothing else.
+    #[must_use]
     pub fn conventional(platform: Platform) -> Keymap {
         let entries = ConventionTable::for_platform(platform)
             .iter()
@@ -57,6 +58,7 @@ impl Keymap {
 
     /// This keymap with the system's own settings laid over the conventions: each action the
     /// system names takes the system's chords (none, when the system unbinds it).
+    #[must_use]
     pub fn with_system(mut self, bindings: Vec<SystemBinding>) -> Keymap {
         for binding in bindings {
             upsert(
@@ -108,13 +110,15 @@ impl Keymap {
     }
 
     /// The platform this keymap is for.
+    #[must_use]
     pub fn platform(&self) -> Platform {
         self.platform
     }
 
     /// The action `input` triggers in `context`, if any. The input is normalised for this
     /// platform and context first (so on our desktop a terminal's Ctrl+Shift+D is Super+D), and
-    /// a press with AltGr held types text and triggers nothing.
+    /// a press with `AltGr` held types text and triggers nothing.
+    #[must_use]
     pub fn resolve(&self, input: &KeyInput, context: Context) -> Option<Action> {
         if input.types_text() {
             return None;
@@ -131,7 +135,8 @@ impl Keymap {
     /// holds the Primary modifiers (Ctrl+Shift for a terminal off the Mac style; Super or, on
     /// our desktop in a terminal, Ctrl+Shift too) and its key is a letter, digit, punctuation
     /// or symbol. A terminal drops such a chord when `resolve` finds nothing, rather than send
-    /// a control byte to the program. A press with AltGr held is text, so never in this form.
+    /// a control byte to the program. A press with `AltGr` held is text, so never in this form.
+    #[must_use]
     pub fn is_primary_form(&self, input: &KeyInput, context: Context) -> bool {
         let chord = input.normalise_in(self.platform, context);
         !input.types_text()
@@ -140,11 +145,13 @@ impl Keymap {
     }
 
     /// The chords that trigger `action` in ordinary window content, best first.
+    #[must_use]
     pub fn chords_of(&self, action: &Action) -> Vec<Chord> {
         self.chords_in(action, Context::Normal)
     }
 
     /// The chords that trigger `action` in `context`.
+    #[must_use]
     pub fn chords_in(&self, action: &Action, context: Context) -> Vec<Chord> {
         self.resolved
             .in_context(context)
@@ -156,12 +163,14 @@ impl Keymap {
     }
 
     /// Every live (action, chord) in `context`, for menus and settings screens.
+    #[must_use]
     pub fn bindings(&self, context: Context) -> &[(Action, Chord)] {
         self.resolved.in_context(context).pairs()
     }
 
     /// App actions the person has changed that no app has registered (yet). An action an app
     /// registered but had refused is not dormant: the person's change binds.
+    #[must_use]
     pub fn dormant_overrides(&self) -> Vec<AppAction> {
         let registered = |action: &Action| {
             self.entries
@@ -180,6 +189,7 @@ impl Keymap {
 
     /// The standard action's chords as the conventions and system give them, ignoring the
     /// person's changes: what "reset to default" would restore.
+    #[must_use]
     pub fn default_chords_of(&self, action: StandardAction) -> Vec<Chord> {
         let without_person: Vec<Entry> = self
             .entries

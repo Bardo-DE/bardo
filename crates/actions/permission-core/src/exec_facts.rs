@@ -26,6 +26,7 @@ pub const NETWORK_CLOSED: &str = "closed";
 pub const NETWORK_OPEN: &str = "open";
 
 /// The choice id the host sends for `derivation`.
+#[must_use]
 pub fn derives_choice(derivation: Derivation) -> &'static str {
     match derivation {
         Derivation::Independent => DERIVES_OWN,
@@ -34,6 +35,7 @@ pub fn derives_choice(derivation: Derivation) -> &'static str {
 }
 
 /// The choice id the host sends for a network that is `open` or closed.
+#[must_use]
 pub fn network_choice(open: bool) -> &'static str {
     if open { NETWORK_OPEN } else { NETWORK_CLOSED }
 }
@@ -49,6 +51,7 @@ pub struct ExecFacts {
 
 impl ExecFacts {
     /// The facts for `line` from the two choices the host sent.
+    #[must_use]
     pub fn from_choices(
         derives: Option<&str>,
         network: Option<&str>,
@@ -70,11 +73,13 @@ impl ExecFacts {
     /// nothing in it comes from what was read, and it cannot send anything out. The session's
     /// taint then says nothing about this command (the Rule of Two needs a channel out; an
     /// untrusted sink needs an untrusted argument).
+    #[must_use]
     pub fn is_session_taint_only(&self) -> bool {
         self.derivation == Derivation::Independent && !self.reach
     }
 
     /// Whether `reason` is the session's taint and nothing more.
+    #[must_use]
     pub fn excuses(&self, reason: &AskReason) -> bool {
         self.is_session_taint_only()
             && matches!(

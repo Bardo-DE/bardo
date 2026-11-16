@@ -19,7 +19,7 @@ const VIEW: Viewport = Viewport {
 fn Overlay(extent: RootExtent) -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet, extent,
-            Sheet { label: "Power", onclose: move |_| {},
+            Sheet { label: "Power", onclose: move |()| {},
                 p { "Shut down?" }
             }
         }

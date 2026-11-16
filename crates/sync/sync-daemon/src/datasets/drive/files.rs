@@ -107,7 +107,7 @@ pub struct LiveDrive {
     pub account: String,
     /// The account's label.
     pub label: String,
-    /// The provider's name as people say it ("OneDrive", "Google Drive").
+    /// The provider's name as people say it ("`OneDrive`", "Google Drive").
     pub provider: &'static str,
     /// Its folder (`~/Cloud/OneDrive`).
     pub path: PathBuf,
@@ -122,6 +122,7 @@ pub struct LiveDrive {
 
 impl LiveDrive {
     /// A drive, `starting` until its listing is read.
+    #[must_use]
     pub fn new(
         id: String,
         account: String,
@@ -299,12 +300,14 @@ impl Default for DriveSet {
 
 impl DriveSet {
     /// The set, keeping which drives are paused in `file` (syncd's settings) across restarts.
+    #[must_use]
     pub fn with_settings(mut self, file: PathBuf) -> Self {
         self.settings = Some(file);
         self
     }
 
     /// Pauses or resumes the drive `id`, and keeps that across restarts; whether it is here.
+    #[must_use]
     pub fn set_paused(&self, id: &str, paused: bool) -> bool {
         let Some(drive) = self.get(id) else {
             return false;
@@ -319,6 +322,7 @@ impl DriveSet {
     }
 
     /// Whether the drive `id` was left paused.
+    #[must_use]
     pub fn was_paused(&self, id: &str) -> bool {
         self.settings
             .as_ref()
@@ -342,6 +346,7 @@ impl DriveSet {
 
     /// Whether the drive `id` is kept downloaded whole, as syncd's settings say (also while it is
     /// not shown).
+    #[must_use]
     pub fn keeps_all(&self, id: &str) -> bool {
         match &self.settings {
             Some(file) => crate::settings::read_keep_all(file).contains(id),
@@ -351,6 +356,7 @@ impl DriveSet {
 
     /// Whether keeping the drive `id` downloaded whole needs more room than this computer has
     /// free; `false` for a drive not shown.
+    #[must_use]
     pub fn short_of_room(&self, id: &str) -> bool {
         self.get(id).is_some_and(|live| live.drive.short_of_room())
     }
@@ -382,14 +388,13 @@ impl DriveSet {
         let to = into.clone();
         // Opened here, not in the blocking task: opening waits for the cache's lock on the
         // runtime, yielding to it.
-        let drive = match drive {
-            Some(drive) => drive,
-            None => {
-                let listing = super::DriveJournal::open(&journal).map_err(|e| e.to_string())?;
-                Drive::open(DriveConfig::new(cache), Arc::new(listing), Arc::new(Away))
-                    .await
-                    .map_err(|e| e.to_string())?
-            }
+        let drive = if let Some(drive) = drive {
+            drive
+        } else {
+            let listing = super::DriveJournal::open(&journal).map_err(|e| e.to_string())?;
+            Drive::open(DriveConfig::new(cache), Arc::new(listing), Arc::new(Away))
+                .await
+                .map_err(|e| e.to_string())?
         };
         let count =
             tokio::task::spawn_blocking(move || drive.keep_unsent(&to).map_err(|e| e.to_string()))
@@ -399,6 +404,7 @@ impl DriveSet {
     }
 
     /// Whether the drive of the account `id` is held for its removal: not to be started.
+    #[must_use]
     pub fn is_held(&self, id: &str) -> bool {
         held(&self.held).contains(id)
     }
@@ -475,6 +481,7 @@ impl DriveSet {
     }
 
     /// Takes the drive `id` out.
+    #[must_use]
     pub fn remove(&self, id: &str) -> Option<Arc<LiveDrive>> {
         let gone = held(&self.drives).remove(id);
         self.tell_drives();
@@ -482,22 +489,26 @@ impl DriveSet {
     }
 
     /// Every drive, by id.
+    #[must_use]
     pub fn all(&self) -> Vec<Arc<LiveDrive>> {
         held(&self.drives).values().cloned().collect()
     }
 
     /// The drive `id`.
+    #[must_use]
     pub fn get(&self, id: &str) -> Option<Arc<LiveDrive>> {
         held(&self.drives).get(id).cloned()
     }
 
     /// Hears the ids of the drives whose room to keep everything downloaded changes from now on:
     /// short of it, or no longer ([`drive_core::Drive::short_of_room`]).
+    #[must_use]
     pub fn watch_room(&self) -> broadcast::Receiver<String> {
         self.room.subscribe()
     }
 
     /// Hears what changes from now on.
+    #[must_use]
     pub fn subscribe(&self) -> broadcast::Receiver<DriveEvent> {
         self.events.subscribe()
     }
@@ -730,7 +741,7 @@ mod tests {
         set.insert(Arc::clone(&live));
         let paths = paths(&dir);
         let account = AccountDir::parse("one").expect("account");
-        assert!(set.retire(&paths, &account).await.is_err());
+        set.retire(&paths, &account).await.unwrap_err();
         assert!(
             !dir.join("Cloud").join("OneDrive (Not Uploaded)").exists(),
             "nothing written"
@@ -782,8 +793,8 @@ mod tests {
             drive.set_paused(true);
             let (_, handle) = drive.create(&NodeId::Top, "offline.txt").expect("create");
             drive.write(handle, 0, b"not sent").await.expect("write");
-            drive.release_write(handle);
-        }
+            drive.release_write(handle)
+        };
         let kept = DriveSet::default()
             .retire(&paths, &account)
             .await

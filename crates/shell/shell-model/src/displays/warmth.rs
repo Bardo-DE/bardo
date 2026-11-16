@@ -38,6 +38,7 @@ impl Gains {
 
 /// The temperature a strength stands for: linear in mireds (1e6 / K), which is how evenly
 /// warmer light looks to the eye, from [`NEUTRAL`] at 0 to [`WARMEST`] at 100.
+#[must_use]
 pub fn temperature(strength: Percent) -> Kelvin {
     let s = f64::from(strength.0.min(100)) / 100.0;
     let mired = |k: Kelvin| 1e6 / f64::from(k.0);
@@ -46,6 +47,7 @@ pub fn temperature(strength: Percent) -> Kelvin {
 }
 
 /// The multipliers for `kelvin`, normalised to 6500 K, and clamped to 1000-6500 K.
+#[must_use]
 pub fn gains(kelvin: Kelvin) -> Gains {
     let k = f64::from(kelvin.0.clamp(1000, NEUTRAL.0));
     let (r, g, b) = blackbody(k);
@@ -59,11 +61,13 @@ pub fn gains(kelvin: Kelvin) -> Gains {
 }
 
 /// The gains for night warmth at `strength`.
+#[must_use]
 pub fn warmth_gains(strength: Percent) -> Gains {
     gains(temperature(strength))
 }
 
 /// A monitor gain `original` (its raw VCP value) scaled by `factor`.
+#[must_use]
 pub fn scaled(original: u16, factor: Permille) -> u16 {
     let v = (u32::from(original) * factor.0 + 500) / 1000;
     u16::try_from(v).unwrap_or(u16::MAX)

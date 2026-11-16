@@ -35,6 +35,7 @@ impl SchemaOrigin {
     /// The origin of `dir`: `System` only when the folder and every parent above it (after links
     /// are resolved) are root's and closed to everyone else, since a writable parent could swap
     /// the folder. A folder that cannot be read is the person's.
+    #[must_use]
     pub fn of_dir(dir: &Path) -> SchemaOrigin {
         let Ok(real) = dir.canonicalize() else {
             return SchemaOrigin::PersonWritable;
@@ -67,11 +68,13 @@ pub enum OriginRule {
 impl OriginRule {
     /// A rule that treats exactly `system` as system folders.
     #[cfg(debug_assertions)]
+    #[must_use]
     pub fn declared(system: &[std::path::PathBuf]) -> OriginRule {
         OriginRule::Declared(system.to_vec())
     }
 
     /// The origin of `dir` under this rule.
+    #[must_use]
     pub fn judge(&self, dir: &Path) -> SchemaOrigin {
         match self {
             OriginRule::Ownership => SchemaOrigin::of_dir(dir),

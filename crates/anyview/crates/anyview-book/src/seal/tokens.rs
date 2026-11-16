@@ -152,20 +152,17 @@ fn attributes(text: &str) -> (Vec<(String, String)>, &str) {
 
 /// An attribute value, quoted or bare, and what follows it.
 fn value(text: &str) -> (&str, &str) {
-    match text.chars().next() {
-        Some(quote @ ('"' | '\'')) => {
-            let inner = &text[1..];
-            match inner.find(quote) {
-                Some(end) => (&inner[..end], &inner[end + 1..]),
-                None => (inner, ""),
-            }
+    if let Some(quote @ ('"' | '\'')) = text.chars().next() {
+        let inner = &text[1..];
+        match inner.find(quote) {
+            Some(end) => (&inner[..end], &inner[end + 1..]),
+            None => (inner, ""),
         }
-        _ => {
-            let end = text
-                .find(|c: char| c.is_ascii_whitespace() || c == '>')
-                .unwrap_or(text.len());
-            (&text[..end], &text[end..])
-        }
+    } else {
+        let end = text
+            .find(|c: char| c.is_ascii_whitespace() || c == '>')
+            .unwrap_or(text.len());
+        (&text[..end], &text[end..])
     }
 }
 

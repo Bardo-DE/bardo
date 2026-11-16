@@ -106,9 +106,10 @@ impl Wire {
         let count = bytes.len();
         self.inbox.extend(bytes);
         self.fds.extend(fds);
-        match self.fds.len() > MAX_QUEUED_FDS {
-            true => Err(std::io::Error::other("too many descriptors queued")),
-            false => Ok(count),
+        if self.fds.len() > MAX_QUEUED_FDS {
+            Err(std::io::Error::other("too many descriptors queued"))
+        } else {
+            Ok(count)
         }
     }
 

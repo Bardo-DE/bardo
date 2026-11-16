@@ -19,6 +19,7 @@ pub struct FileLedger {
 
 impl FileLedger {
     /// The notes in `path`; a file that is missing or unreadable holds none.
+    #[must_use]
     pub fn load(path: PathBuf) -> Self {
         let open = read_text_capped(&path, ReadCap::mib(1))
             .ok()

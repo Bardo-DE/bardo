@@ -62,6 +62,7 @@ pub fn hand_out(wanted: &ConnectionRole, held: &RoleName) -> Result<Handed, Refu
 /// The connection role a proven caller role stands for: the shell the shell's, the agent tier
 /// the agent's, the portal the portal's, every other role none. The role comes from the shipped
 /// caller table (the caller-identity library), never from a unit name.
+#[must_use]
 pub fn connection_role(held: &RoleName) -> Option<ConnectionRole> {
     match held {
         held if *held == roles::SHELL => Some(ConnectionRole::Shell),

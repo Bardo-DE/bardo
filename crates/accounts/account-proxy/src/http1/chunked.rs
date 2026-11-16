@@ -38,7 +38,7 @@ fn size_of(line: &[u8]) -> Result<u64, Malformed> {
     let digits: Vec<u8> = line
         .iter()
         .copied()
-        .take_while(|b| b.is_ascii_hexdigit())
+        .take_while(u8::is_ascii_hexdigit)
         .collect();
     let rest = &line[digits.len()..];
     let extension_ok = rest.is_empty() || rest[0] == b';' || rest[0] == b' ' || rest[0] == b'\t';
@@ -86,9 +86,10 @@ impl ChunkParser {
     fn line_byte(&mut self, byte: u8) -> Result<usize, Malformed> {
         if byte != b'\n' {
             self.line.push(byte);
-            return match self.line.len() > MAX_LINE {
-                true => Err(Malformed),
-                false => Ok(1),
+            return if self.line.len() > MAX_LINE {
+                Err(Malformed)
+            } else {
+                Ok(1)
             };
         }
         let line = std::mem::take(&mut self.line);

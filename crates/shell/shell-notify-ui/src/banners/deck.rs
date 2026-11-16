@@ -138,9 +138,12 @@ pub fn advance(deck: Deck, input: DeckIn, now: Stamp, p: &BannerParams) -> (Deck
     let entries = deck
         .entries
         .into_iter()
-        .map(|e| match keyed.is_none_or(|key| key == e.key) {
-            true => feed(e, input, now, p, &mut out, true),
-            false => e,
+        .map(|e| {
+            if keyed.is_none_or(|key| key == e.key) {
+                feed(e, input, now, p, &mut out, true)
+            } else {
+                e
+            }
         })
         .filter(|e| e.banner != Banner::Gone)
         .collect();

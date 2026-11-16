@@ -1,5 +1,5 @@
 //! The fake Nextcloud's DAV tree and the plain DAV server: PROPFIND, quota, sync tokens, PUT,
-//! MKCOL, CalDAV and CardDAV.
+//! MKCOL, `CalDAV` and `CardDAV`.
 
 use crate::common;
 

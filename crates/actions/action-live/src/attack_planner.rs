@@ -1,5 +1,5 @@
 //! The attack suite played by the companion's real planner (`agent-live corpus --corpus attacks
-//! --planner live`): AgentDojo's own measurement. The planner model is given the person's words
+//! --planner live`): `AgentDojo`'s own measurement. The planner model is given the person's words
 //! over the attack's world, once with the carrier holding filler and once holding the injection,
 //! and chooses its own steps through the companion's real loop, in this process, over the same
 //! router the scripted run uses. The policy writer and the reviewers are the real models over
@@ -48,7 +48,7 @@ use std::time::Duration;
 
 /// How long one case may take before its planner is given up on. A local model that thinks is
 /// slow; a case that takes longer is a planner that does not finish, and is scored as one.
-const CASE_BOUND: Duration = Duration::from_secs(30 * 60);
+const CASE_BOUND: Duration = Duration::from_mins(30);
 
 /// What a live-planner attack run produced.
 #[derive(Debug)]
@@ -293,9 +293,10 @@ fn answer_given(view: Option<&AnswerWire>) -> AnswerGiven {
                 _ => true,
             }
     });
-    match shown {
-        true => AnswerGiven::Shown,
-        false => AnswerGiven::Nothing,
+    if shown {
+        AnswerGiven::Shown
+    } else {
+        AnswerGiven::Nothing
     }
 }
 

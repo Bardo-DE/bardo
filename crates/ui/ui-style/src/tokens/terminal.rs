@@ -121,6 +121,7 @@ impl TerminalColour {
     ];
 
     /// The colour in `scheme` with `accent` as the accent the cursor and selection follow.
+    #[must_use]
     pub fn value(self, scheme: Scheme, accent: Accent) -> Colour {
         let roles = accent_of(accent, scheme);
         let (light, dark) = match self {

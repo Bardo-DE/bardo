@@ -78,6 +78,7 @@ pub enum IcsError {
 /// A continuation starting with a space loses that space (RFC 5545 §3.1); one starting with a
 /// tab keeps one space in its place, since the producers that fold with a tab (Outlook, Lotus)
 /// fold at a word gap and drop the space they folded at.
+#[must_use]
 pub fn unfold(text: &str) -> Vec<String> {
     let text = text.strip_prefix('\u{feff}').unwrap_or(text);
     let mut lines: Vec<String> = Vec::new();

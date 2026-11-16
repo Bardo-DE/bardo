@@ -184,11 +184,12 @@ impl<C: Callers> Core<C> {
             .caller_of(sender.as_str())
             .await
             .ok_or_else(|| RefusedError::access_denied("syncd does not know this caller"))?;
-        match admitted(&self.apps, &caller) {
-            true => Ok(caller),
-            false => Err(RefusedError::access_denied(
+        if admitted(&self.apps, &caller) {
+            Ok(caller)
+        } else {
+            Err(RefusedError::access_denied(
                 "this caller may not see the person's files",
-            )),
+            ))
         }
     }
 

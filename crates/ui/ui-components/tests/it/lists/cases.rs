@@ -32,7 +32,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "command_pill",
         state: "default",
-        make: || rsx! { CommandPill { label: "Search or run a command", shortcut: Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('k')]), onclick: |_| {} } },
+        make: || rsx! { CommandPill { label: "Search or run a command", shortcut: Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('k')]), onclick: |()| {} } },
     },
     // ProviderMark: every provider's letter across the three sizes, and a favicon.
     Case {
@@ -115,12 +115,12 @@ pub const CASES: &[Case] = &[
     Case {
         component: "edge_peek",
         state: "pinned",
-        make: || rsx! { EdgePeek { label: "Sidebar", pinned: true, onpin: |_| {}, "Inbox" } },
+        make: || rsx! { EdgePeek { label: "Sidebar", pinned: true, onpin: |()| {}, "Inbox" } },
     },
     Case {
         component: "edge_peek",
         state: "hidden",
-        make: || rsx! { EdgePeek { label: "Sidebar", pinned: false, onpin: |_| {}, "Inbox" } },
+        make: || rsx! { EdgePeek { label: "Sidebar", pinned: false, onpin: |()| {}, "Inbox" } },
     },
     // A Today tab's row: what it has left, and about to expire.
     Case {

@@ -29,6 +29,7 @@ pub struct SrvAnswers {
 }
 
 /// The SRV names asked for `domain`, in the order of [`SrvAnswers`]' fields.
+#[must_use]
 pub fn srv_names(domain: &DomainName) -> [String; 5] {
     ["_imaps", "_imap", "_pop3s", "_submissions", "_submission"]
         .map(|label| format!("{label}._tcp.{domain}"))
@@ -49,15 +50,16 @@ pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswe
         .iter()
         .any(|a| !matches!(a, Err(DnsFault::Unreachable)));
     let [imaps, imap, pop3s, submissions, submission] = answers.map(Result::unwrap_or_default);
-    match reached {
-        true => Ok(SrvAnswers {
+    if reached {
+        Ok(SrvAnswers {
             imaps,
             imap,
             pop3s,
             submissions,
             submission,
-        }),
-        false => Err(DnsFault::Unreachable),
+        })
+    } else {
+        Err(DnsFault::Unreachable)
     }
 }
 
@@ -81,9 +83,10 @@ pub fn found_from_srv_with(
         .or_else(|| best(&answers.imap, Tls::StartTls, login(), imap_endpoint));
     let outgoing = best(&answers.submissions, Tls::Implicit, login(), smtp_endpoint)
         .or_else(|| best(&answers.submission, Tls::StartTls, login(), smtp_endpoint));
-    let pop3 = match report_pop3 {
-        false => Vec::new(),
-        true => pop3_servers(&answers.pop3s, address),
+    let pop3 = if report_pop3 {
+        pop3_servers(&answers.pop3s, address)
+    } else {
+        Vec::new()
     };
     let (endpoints, claims) = match (incoming, outgoing) {
         (Some(imap), Some(smtp)) => (vec![imap, smtp], vec![imap_claim()]),

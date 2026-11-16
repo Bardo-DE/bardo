@@ -20,6 +20,7 @@ pub struct OutputConfig {
 
 impl OutputConfig {
     /// A configuration of these heads.
+    #[must_use]
     pub fn new(heads: Vec<HeadConfig>) -> Self {
         Self { heads }
     }
@@ -87,6 +88,7 @@ pub struct HeadConfig {
 
 impl HeadConfig {
     /// A head's part.
+    #[must_use]
     pub fn new(head: HeadKey, request: HeadChangeRequest) -> Self {
         Self { head, request }
     }
@@ -118,29 +120,34 @@ pub struct HeadSettings {
 
 impl HeadSettings {
     /// Settings that change nothing.
+    #[must_use]
     pub fn keep() -> Self {
         Self::default()
     }
 
     /// These settings with `mode`.
+    #[must_use]
     pub fn with_mode(mut self, mode: ModeChoice) -> Self {
         self.mode = Some(mode);
         self
     }
 
     /// These settings at `position`.
+    #[must_use]
     pub fn at(mut self, position: Point) -> Self {
         self.position = Some(position);
         self
     }
 
     /// These settings with `scale`.
+    #[must_use]
     pub fn scaled(mut self, scale: ScaleMilli) -> Self {
         self.scale = Some(scale);
         self
     }
 
     /// These settings with `transform`.
+    #[must_use]
     pub fn transformed(mut self, transform: Transform) -> Self {
         self.transform = Some(transform);
         self

@@ -43,9 +43,10 @@ impl BodySink for Reply {
     fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         let room = MOST_BODY.saturating_sub(self.body.len());
         self.body.extend_from_slice(&bytes[..bytes.len().min(room)]);
-        match self.body.len() < MOST_BODY {
-            true => ControlFlow::Continue(()),
-            false => ControlFlow::Break(()),
+        if self.body.len() < MOST_BODY {
+            ControlFlow::Continue(())
+        } else {
+            ControlFlow::Break(())
         }
     }
 }

@@ -56,12 +56,13 @@ fn resume_of(
         && args
             .iter()
             .all(|arg| !arg.is_empty() && !arg.contains('\0'));
-    match fine {
-        true => Ok(Some(args)),
-        false => Err(bad(
+    if fine {
+        Ok(Some(args))
+    } else {
+        Err(bad(
             at,
             "resume needs arguments, one of them naming {session}",
-        )),
+        ))
     }
 }
 

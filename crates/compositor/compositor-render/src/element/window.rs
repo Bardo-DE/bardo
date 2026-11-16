@@ -139,6 +139,7 @@ fn scaled_origin(root: &WlSurface, at: SubPoint, ratio: (f64, f64)) -> SubPoint 
 /// Where `placed`'s content is, in global logical pixels: its place, at the size of its window
 /// geometry (its committed size when it declared none). The frame is drawn round it and the
 /// hit test reads it, so the two agree.
+#[must_use]
 pub fn window_content(placed: &PlacedWindow, root: &WlSurface) -> LogicalRect {
     let size = geometry_size(root).map_or(placed.committed, |size| LogicalSize {
         w: u32::try_from(size.w).unwrap_or(0),
@@ -156,6 +157,7 @@ pub fn window_content(placed: &PlacedWindow, root: &WlSurface) -> LogicalRect {
 /// Where `placed`'s content is drawn under `effect`: [`window_content`], at the sampled size
 /// while a window in a minimise flight is scaled to it. The frame goes round this, and a title
 /// is made for its titlebar.
+#[must_use]
 pub fn window_drawn(
     placed: &PlacedWindow,
     root: &WlSurface,

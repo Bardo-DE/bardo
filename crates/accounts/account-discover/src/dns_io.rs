@@ -34,9 +34,10 @@ impl HickoryDns {
 }
 
 fn fault(e: NetError) -> DnsFault {
-    match e.is_no_records_found() {
-        true => DnsFault::NoRecords,
-        false => DnsFault::Unreachable,
+    if e.is_no_records_found() {
+        DnsFault::NoRecords
+    } else {
+        DnsFault::Unreachable
     }
 }
 

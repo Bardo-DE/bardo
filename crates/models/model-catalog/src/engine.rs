@@ -89,6 +89,7 @@ pub enum Serving {
 }
 
 impl Serving {
+    #[must_use]
     pub fn is_launched(&self) -> bool {
         matches!(self, Serving::Launched)
     }

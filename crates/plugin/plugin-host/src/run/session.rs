@@ -35,6 +35,7 @@ impl<W: Protocol> Session<W> {
     }
 
     /// The plugin's id.
+    #[must_use]
     pub fn id(&self) -> &PluginId {
         self.process.id()
     }

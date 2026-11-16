@@ -11,15 +11,15 @@ pub enum OfficeFormat {
     Docx,
     /// Excel, Open XML.
     Xlsx,
-    /// PowerPoint, Open XML.
+    /// `PowerPoint`, Open XML.
     Pptx,
-    /// OpenDocument text.
+    /// `OpenDocument` text.
     Odt,
-    /// OpenDocument spreadsheet.
+    /// `OpenDocument` spreadsheet.
     Ods,
-    /// OpenDocument presentation.
+    /// `OpenDocument` presentation.
     Odp,
-    /// OpenDocument graphics.
+    /// `OpenDocument` graphics.
     Odg,
     /// Apple Pages.
     Pages,
@@ -31,13 +31,14 @@ pub enum OfficeFormat {
     Doc,
     /// Excel, the binary format.
     Xls,
-    /// PowerPoint, the binary format.
+    /// `PowerPoint`, the binary format.
     Ppt,
 }
 
 impl OfficeFormat {
     /// The kind a file of this format is: a spreadsheet is a table the viewer shows its sheets
     /// of, every other format is an office document shown as facts.
+    #[must_use]
     pub fn kind(self) -> FormatKind {
         match self {
             OfficeFormat::Xlsx | OfficeFormat::Ods | OfficeFormat::Xls => FormatKind::Table,

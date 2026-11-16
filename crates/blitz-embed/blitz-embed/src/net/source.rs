@@ -28,6 +28,7 @@ impl LocalSource {
     /// file read from disk. `None` when the payload is malformed or over [`MAX_RESOURCE_BYTES`],
     /// the file unreadable, not a regular file (a symlink, a device, a pipe) or unservable. The
     /// file may be anywhere; [`LocalSource::read_within`] limits it to a consumer's roots.
+    #[must_use]
     pub fn read(&self) -> Option<Vec<u8>> {
         match self {
             LocalSource::Data(raw) => read_data(raw),
@@ -37,6 +38,7 @@ impl LocalSource {
     }
 
     /// [`LocalSource::read`], reading a file only when `roots` hold it.
+    #[must_use]
     pub fn read_within(&self, roots: &FileRoots) -> Option<Vec<u8>> {
         match self {
             LocalSource::File(path) => read_regular(&roots.admit(path)?, MAX_RESOURCE_BYTES),
@@ -45,6 +47,7 @@ impl LocalSource {
     }
 
     /// Classify a request URL.
+    #[must_use]
     pub fn of(url: &Url) -> LocalSource {
         match url.scheme() {
             "data" => LocalSource::Data(url.as_str().to_owned()),

@@ -11,6 +11,7 @@ pub const PLACE_ERROR_PREFIX: &str = "org.bardo.Inference1.Error.NoAllowedPlace.
 /// What a no-allowed-place reply says, as the text the daemon wrote: the reason's name (the error
 /// name's last segment) and, when a place outside the set could have served, its kind's slug.
 /// `None` for any other error.
+#[must_use]
 pub fn place_refusal_of(error: &zbus::Error) -> Option<(String, Option<String>)> {
     let zbus::Error::MethodError(name, _, message) = error else {
         return None;
@@ -28,6 +29,7 @@ pub fn place_refusal_of(error: &zbus::Error) -> Option<(String, Option<String>)>
 /// What a refusal of a computer call says (`org.bardo.Inference1.Error.Computer.<Name>`): the
 /// error's name after the prefix and the plain sentence the daemon wrote for the person (empty
 /// when it sent none). `None` for any other error.
+#[must_use]
 pub fn computer_refusal_of(error: &zbus::Error) -> Option<(String, String)> {
     let zbus::Error::MethodError(name, words, _) = error else {
         return None;

@@ -17,6 +17,7 @@ pub enum Depth {
 
 impl Depth {
     /// The header's value: `0` or `1`.
+    #[must_use]
     pub fn as_str(self) -> &'static str {
         match self {
             Depth::Zero => "0",
@@ -53,6 +54,7 @@ pub enum Multiget {
 }
 
 /// A PROPFIND body asking for `props` (namespace-qualified names, as in [`crate::names`]).
+#[must_use]
 pub fn propfind(props: &[&str]) -> String {
     let asked = asked(props);
     format!(r#"{HEAD}<d:propfind xmlns:d="{DAV}"><d:prop>{asked}</d:prop></d:propfind>"#)
@@ -61,6 +63,7 @@ pub fn propfind(props: &[&str]) -> String {
 /// A sync-collection REPORT body (RFC 6578 section 3.2) asking for every change since `token`
 /// at `level`, with `props` for each changed member. An empty `token` asks for everything: the
 /// first listing.
+#[must_use]
 pub fn sync_collection(token: &str, level: SyncLevel, props: &[&str]) -> String {
     let token = escape(token);
     let level = level.as_str();
@@ -71,6 +74,7 @@ pub fn sync_collection(token: &str, level: SyncLevel, props: &[&str]) -> String 
 }
 
 /// A multiget REPORT body for `hrefs`, asking for each one's etag and data.
+#[must_use]
 pub fn multiget(kind: Multiget, hrefs: &[&str]) -> String {
     let (element, ns, data) = match kind {
         Multiget::Addressbook => ("addressbook-multiget", CARDDAV, "address-data"),
@@ -86,6 +90,7 @@ pub fn multiget(kind: Multiget, hrefs: &[&str]) -> String {
 }
 
 /// XML character escaping for text and attribute content.
+#[must_use]
 pub fn escape(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     for ch in text.chars() {

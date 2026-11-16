@@ -206,7 +206,7 @@ fn parse_table_record() {
             r#"{"verdict":"allow""#.into(),
             Err(ReviewError::Unparseable),
         ),
-        ("empty", "".into(), Err(ReviewError::Unparseable)),
+        ("empty", String::new(), Err(ReviewError::Unparseable)),
         (
             "fenced",
             format!("```json\n{allow}\n```"),

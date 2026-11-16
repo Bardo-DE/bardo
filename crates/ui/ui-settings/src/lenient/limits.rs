@@ -21,12 +21,14 @@ pub struct Limits {
 
 impl Limits {
     /// No ranges: every value is kept as the file gives it.
+    #[must_use]
     pub fn none() -> Limits {
         Limits::default()
     }
 
     /// The ranges of the bounded keys among `keys`. A key whose low end is above its high end
     /// (a hand-written schema) has no range.
+    #[must_use]
     pub fn of_keys(keys: &[KeySpec]) -> Limits {
         let bounds = keys
             .iter()
@@ -45,11 +47,13 @@ impl Limits {
     }
 
     /// The ranges of the bounded keys of `schema`.
+    #[must_use]
     pub fn of_schema(schema: &Schema) -> Limits {
         Limits::of_keys(&schema.key)
     }
 
     /// The range of the key at `path`, if it has one.
+    #[must_use]
     pub fn bounds(&self, path: &str) -> Option<LimitBounds> {
         self.bounds.get(path).copied()
     }

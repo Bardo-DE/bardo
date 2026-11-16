@@ -27,6 +27,7 @@ pub enum ForkFault {
 /// The names a fork of `parent` (running `task`) takes when `taken` forks of it exist: the
 /// session `<parent>-f<n>` and the task `<task>-f<n>`. The router's own ids are `s-<n>` and
 /// `t-<n>`, so a fork's name never meets one of them. None when the suffixed names are not ids.
+#[must_use]
 pub fn child_names(parent: &SessionId, task: &TaskId, taken: usize) -> Option<(SessionId, TaskId)> {
     let suffix = format!("-f{}", taken + 1);
     Some((
@@ -36,6 +37,7 @@ pub fn child_names(parent: &SessionId, task: &TaskId, taken: usize) -> Option<(S
 }
 
 /// How many forks of `parent` the sessions in `all` already hold.
+#[must_use]
 pub fn forks_of(parent: &SessionId, all: &[SessionId]) -> usize {
     let prefix = format!("{parent}-f");
     all.iter()

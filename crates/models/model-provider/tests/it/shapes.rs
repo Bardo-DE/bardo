@@ -5,16 +5,16 @@ fn image_bytes_serialise_as_base64_and_debug_hides_them() {
     let bytes = ImageBytes(vec![0xff, 0xd8, 0xff]);
     assert_eq!(serde_json::to_string(&bytes).unwrap(), r#""/9j/""#);
     assert_eq!(format!("{bytes:?}"), "ImageBytes(<3 bytes>)");
-    assert!(serde_json::from_str::<ImageBytes>(r#""!!""#).is_err());
+    serde_json::from_str::<ImageBytes>(r#""!!""#).unwrap_err();
 }
 
 #[test]
 fn json_text_and_tool_names_refuse_bad_input() {
-    assert!(JsonText::new("{not json").is_err());
-    assert!(serde_json::from_str::<JsonText>(r#""{not json""#).is_err());
-    assert!(ToolName::new("").is_err());
-    assert!(ToolName::new("has space").is_err());
-    assert!(ToolName::new("mail.thread.archive").is_ok());
+    JsonText::new("{not json").unwrap_err();
+    serde_json::from_str::<JsonText>(r#""{not json""#).unwrap_err();
+    ToolName::new("").unwrap_err();
+    ToolName::new("has space").unwrap_err();
+    ToolName::new("mail.thread.archive").unwrap();
 }
 
 #[test]

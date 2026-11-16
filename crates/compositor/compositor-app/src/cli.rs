@@ -103,6 +103,7 @@ pub struct DirectTty {
 
 impl DirectTty {
     /// The test mode on `node`, with no report and no writeback.
+    #[must_use]
     pub fn new(node: PathBuf) -> DirectTty {
         DirectTty {
             node,
@@ -242,7 +243,7 @@ pub fn parse_args(args: &[String]) -> Result<Command, CliError> {
                         ("winit", BackendChoice::Winit),
                         ("tty", BackendChoice::Tty),
                     ],
-                )?
+                )?;
             }
             "--clock" => {
                 config.clock = word(
@@ -252,7 +253,7 @@ pub fn parse_args(args: &[String]) -> Result<Command, CliError> {
                         ("wall", ClockChoice::Wall),
                         ("stepped", ClockChoice::Stepped),
                     ],
-                )?
+                )?;
             }
             "--renderer" => {
                 config.renderer = word(
@@ -262,10 +263,10 @@ pub fn parse_args(args: &[String]) -> Result<Command, CliError> {
                         ("pixman", SoftRenderer::Pixman),
                         ("llvmpipe", SoftRenderer::Llvmpipe),
                     ],
-                )?
+                )?;
             }
             "--dmabuf" => {
-                config.dmabuf = word(flag, &value()?, &[("none", false), ("soft", true)])?
+                config.dmabuf = word(flag, &value()?, &[("none", false), ("soft", true)])?;
             }
             "--safe" => config.mode = StartMode::Safe,
             "--config-home" => config.config_home = Some(PathBuf::from(value()?)),
@@ -280,11 +281,11 @@ pub fn parse_args(args: &[String]) -> Result<Command, CliError> {
                         ("satellite", XwaylandMode::Satellite),
                         ("off", XwaylandMode::Off),
                     ],
-                )?
+                )?;
             }
             "--xwayland-satellite" => {
                 config.xwayland_source = XwaylandSource::Flag;
-                config.xwayland.satellite = SatellitePath(PathBuf::from(value()?))
+                config.xwayland.satellite = SatellitePath(PathBuf::from(value()?));
             }
             "--drm-node" => node = Some(PathBuf::from(value()?)),
             "--kms-report" => report = Some(PathBuf::from(value()?)),

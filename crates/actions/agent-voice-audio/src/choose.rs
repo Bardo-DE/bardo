@@ -7,7 +7,7 @@ use crate::node::{AudioNode, NodeKind};
 pub enum ChosenBy {
     /// `input = "<node.name>"` in voiced.toml named it.
     Override,
-    /// It is PipeWire's default source.
+    /// It is `PipeWire`'s default source.
     Default,
     /// Nothing better: the first physical source.
     First,
@@ -15,6 +15,7 @@ pub enum ChosenBy {
 
 impl ChosenBy {
     /// The word the by-hand script prints.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             Self::Override => "override",
@@ -37,9 +38,10 @@ fn physical(node: &AudioNode) -> bool {
     node.kind == NodeKind::Source && node.media_class == "Audio/Source"
 }
 
-/// The source to capture: the configured `input` if that physical node exists, else PipeWire's
+/// The source to capture: the configured `input` if that physical node exists, else `PipeWire`'s
 /// default source if it is a physical node, else the first physical source. A monitor or a sink is
 /// never returned, whatever the override or the metadata names.
+#[must_use]
 pub fn choose_capture<'a>(
     nodes: &'a [AudioNode],
     default: Option<&str>,

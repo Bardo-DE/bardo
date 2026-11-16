@@ -49,12 +49,14 @@ impl XdgEnv {
 
     /// The person's data folder: `XDG_DATA_HOME` when it is an absolute path, else
     /// `$HOME/.local/share`; none when neither is usable.
+    #[must_use]
     pub fn data_home(&self) -> Option<PathBuf> {
         self.rules().data_home().ok()
     }
 
     /// The system data folders: `XDG_DATA_DIRS` without its empty and relative entries, or
     /// `/usr/local/share:/usr/share` when it is unset or empty.
+    #[must_use]
     pub fn data_dirs(&self) -> Vec<PathBuf> {
         self.rules().data_dirs()
     }

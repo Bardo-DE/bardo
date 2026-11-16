@@ -92,6 +92,7 @@ impl Corpus {
 
     /// The same set played on `platform`: the surfaces take only that platform's chords, and the
     /// model is told that platform's shortcuts.
+    #[must_use]
     pub fn on(self, platform: Platform) -> Corpus {
         Corpus {
             keymap: Keymap::conventional(platform),
@@ -100,6 +101,7 @@ impl Corpus {
     }
 
     /// The keymap the set is played on.
+    #[must_use]
     pub fn keymap(&self) -> &Keymap {
         &self.keymap
     }
@@ -202,7 +204,7 @@ enum Dangling {
 fn check_act(def: &SurfaceDef, act: &Act) -> Result<(), Dangling> {
     match act {
         Act::Goto(id) if !def.screens.iter().any(|s| &s.id == id) => {
-            Err(Dangling::Goto(id.to_string()))
+            Err(Dangling::Goto(id.clone()))
         }
         Act::When(w) => {
             check_cond(def, &w.cond)?;
@@ -218,7 +220,7 @@ fn check_act(def: &SurfaceDef, act: &Act) -> Result<(), Dangling> {
 fn check_cond(def: &SurfaceDef, cond: &Cond) -> Result<(), Dangling> {
     match cond {
         Cond::Screen(id) if !def.screens.iter().any(|s| &s.id == id) => {
-            Err(Dangling::Condition(id.to_string()))
+            Err(Dangling::Condition(id.clone()))
         }
         Cond::Not(inner) => check_cond(def, inner),
         _ => Ok(()),

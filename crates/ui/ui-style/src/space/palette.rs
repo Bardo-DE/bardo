@@ -142,6 +142,7 @@ const PILL_LIGHT: &str = "rgba(255,255,255,.72)";
 ///
 /// An empty list is the neutral dot (hue 250, chroma 0.06), the same grey as
 /// the last of the eight presets. `scheme` selects the light or the dark frame.
+#[must_use]
 pub fn derive(dots: &[Dot], scheme: Scheme) -> Palette {
     let dark = scheme == Scheme::Dark;
     let neutral = [NEUTRAL_DOT];
@@ -243,6 +244,7 @@ fn space_accent(hue: f64, chroma: f64, scheme: Scheme) -> AccentRoles {
 ///
 /// The pick's own lightness: L 0.74 on a light field and 0.66 on a dark one, at up to the
 /// pick's chroma. The editor draws the field from this and computes no colour of its own.
+#[must_use]
 pub fn swatch(dot: Dot, scheme: Scheme) -> String {
     let lightness = match scheme {
         Scheme::Light => PICK_L,

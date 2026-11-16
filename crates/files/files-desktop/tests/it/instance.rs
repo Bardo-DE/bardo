@@ -57,7 +57,7 @@ async fn the_second_claim_finds_the_first_running_and_forwards_to_it() {
         assert_eq!(next(&mut first_heard).await, show);
     }
     // The launch that found one running serves nothing itself.
-    assert!(second_heard.try_recv().is_err());
+    second_heard.try_recv().unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

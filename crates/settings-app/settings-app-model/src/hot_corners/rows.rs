@@ -15,6 +15,7 @@ pub enum HotAddFault {
 
 /// The sets of keys the corner shows a pop-up for: none held, then the sets that have a binding
 /// or that the person added and has not filled yet (`added`), each once, in key order.
+#[must_use]
 pub fn shown_rows(bindings: &[HotBinding], added: &[HotKeys]) -> Vec<HotKeys> {
     let mut rows: Vec<HotKeys> = std::iter::once(HotKeys::default())
         .chain(bindings.iter().map(|binding| binding.keys.clone()))
@@ -43,6 +44,7 @@ pub fn add_row(
 
 /// The bindings and the added rows after the row for `keys` is removed. The row without keys
 /// cannot be removed; its pop-up is set to nothing instead.
+#[must_use]
 pub fn remove_row(
     bindings: &[HotBinding],
     added: &[HotKeys],
@@ -59,6 +61,7 @@ pub fn remove_row(
 }
 
 /// The corner's bindings with the one for `keys` set to `does`, or gone when `does` is `None`.
+#[must_use]
 pub fn with_binding(
     bindings: &[HotBinding],
     keys: &HotKeys,
@@ -76,6 +79,7 @@ pub fn with_binding(
 }
 
 /// What the corner does with exactly `keys` held.
+#[must_use]
 pub fn binding_for<'a>(bindings: &'a [HotBinding], keys: &HotKeys) -> Option<&'a HotDo> {
     bindings
         .iter()

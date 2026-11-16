@@ -66,6 +66,7 @@ impl PageKind {
     ];
 
     /// The kind of `page`. The one place a page is told apart from the others.
+    #[must_use]
     pub fn of(page: &Page) -> PageKind {
         match page {
             Page::Appearance => PageKind::Appearance,
@@ -99,11 +100,13 @@ impl PageKind {
 
     /// Whether `slug` names the first-run step "Choose an assistant model": a page of its own that
     /// is reached by its slug and never listed.
+    #[must_use]
     pub fn is_assistant_setup(slug: &PageSlug) -> bool {
         slug.0 == ASSISTANT_SETUP_SLUG
     }
 
     /// Whether `slug` names the first-run step "Sign in to your accounts".
+    #[must_use]
     pub fn is_accounts_setup(slug: &PageSlug) -> bool {
         slug.0 == ACCOUNTS_SETUP_SLUG
     }

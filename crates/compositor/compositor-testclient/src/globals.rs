@@ -25,6 +25,7 @@ impl GlobalListContents {
     }
 
     /// A copy of the current list, in advertisement order.
+    #[must_use]
     pub fn clone_list(&self) -> Vec<Global> {
         self.lock().clone()
     }
@@ -50,11 +51,13 @@ impl GlobalList {
     }
 
     /// What the registry has advertised so far.
+    #[must_use]
     pub fn contents(&self) -> &GlobalListContents {
         &self.contents
     }
 
     /// The `wl_registry` itself.
+    #[must_use]
     pub fn registry(&self) -> &WlRegistry {
         &self.registry
     }

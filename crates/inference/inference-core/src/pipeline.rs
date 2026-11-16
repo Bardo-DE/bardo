@@ -57,6 +57,7 @@ pub struct SlotPicks(pub BTreeMap<Slot, Pick>);
 
 impl SlotPicks {
     /// The pick for `slot`, if the row says one.
+    #[must_use]
     pub fn get(&self, slot: Slot) -> Option<&Pick> {
         self.0.get(&slot)
     }
@@ -79,6 +80,7 @@ pub struct CatalogueModel {
 
 impl CatalogueModel {
     /// The model it is.
+    #[must_use]
     pub fn model_ref(&self) -> ModelRef {
         self.candidate.model_ref()
     }
@@ -109,6 +111,7 @@ pub struct ClassSet(pub BTreeSet<DataClass>);
 impl ClassSet {
     /// The class whose floor is the tightest here (the first, in class order, among equals).
     /// `Public` for an empty set, which no stage has.
+    #[must_use]
     pub fn strictest(&self, policy: &Policy) -> DataClass {
         self.0
             .iter()
@@ -149,6 +152,7 @@ pub struct Stage {
 
 impl Stage {
     /// Who runs the stage, as the wire names it.
+    #[must_use]
     pub fn served(&self) -> ServedBy {
         ServedBy {
             account: self.picked.chosen.account.clone(),
@@ -368,6 +372,7 @@ pub fn plan_pipeline(
 /// A refusal that carries no model, for a caller that only needs the typed reason.
 impl Refusal {
     /// The `InferRefusal` a session ends with for this.
+    #[must_use]
     pub fn infer_refusal(&self) -> InferRefusal {
         match self {
             Refusal::ImagesNeedDescribing | Refusal::NotYet(_) => InferRefusal::Unsupported,
@@ -376,6 +381,7 @@ impl Refusal {
     }
 
     /// The named model that could not serve, when that is why.
+    #[must_use]
     pub fn declined(&self) -> Option<&Declined> {
         match self {
             Refusal::Stage { refusal, .. } => refusal.declined.as_ref(),
@@ -385,6 +391,7 @@ impl Refusal {
 }
 
 /// The tier a plan is for, spelled out where a caller builds [`SlotPicks`].
+#[must_use]
 pub fn picks_for(map: &crate::choice::TierMap, tier: Tier) -> SlotPicks {
     SlotPicks(
         Slot::ALL

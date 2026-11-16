@@ -27,7 +27,7 @@ fn now_reads_the_installed_clock_and_the_guard_restores_the_wall() {
     clock.advance_to(ms(250));
     assert_eq!(now() - start, ms(250));
     drop(guard);
-    assert!(now() >= clock.now() - ms(250));
+    assert!(now() >= clock.now().checked_sub(ms(250)).unwrap());
 }
 
 #[test]

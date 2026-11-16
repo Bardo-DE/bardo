@@ -39,6 +39,7 @@ impl From<Place> for Standing {
 /// How many requests the engine launched with `args` takes at once: vLLM's `--max-num-seqs`,
 /// llama.cpp's `--parallel` (or `-np`), as written in the launch arguments; one when they say
 /// nothing or the engine is not a chat engine.
+#[must_use]
 pub fn seats_in(kind: EngineKind, args: &[EngineArg]) -> Seats {
     let names = engine(kind).seat_flags().unwrap_or_default();
     let value = args.iter().enumerate().find_map(|(index, arg)| {
@@ -67,14 +68,13 @@ struct Inner {
 
 impl Inner {
     fn lane_of(&mut self, engine: &EngineId, seats: Seats) -> Lane {
-        let lane = match self.lanes.get(engine) {
-            Some(lane) => *lane,
-            None => {
-                let lane = Lane(self.next_lane);
-                self.next_lane = self.next_lane.saturating_add(1);
-                self.lanes.insert(engine.clone(), lane);
-                lane
-            }
+        let lane = if let Some(lane) = self.lanes.get(engine) {
+            *lane
+        } else {
+            let lane = Lane(self.next_lane);
+            self.next_lane = self.next_lane.saturating_add(1);
+            self.lanes.insert(engine.clone(), lane);
+            lane
         };
         let promoted = self.admission.set_lane(lane, seats);
         self.seat(promoted);
@@ -126,6 +126,7 @@ impl Gate {
 
     /// A request of `asker` for the engine instance `engine`, which takes `seats` at once. It
     /// has a seat at once when one is free; otherwise it waits and the pass says where.
+    #[must_use]
     pub fn pass(&self, engine: &EngineId, seats: Seats, asker: &Asker) -> Pass {
         self.pass_among(&[(engine.clone(), seats)], asker)
     }
@@ -133,6 +134,7 @@ impl Gate {
     /// A request of `asker` for a model served by several engine instances, each with its seats:
     /// it goes to an instance with a free seat, else to the one where fewest stand ahead of it.
     /// The pass says which instance it is on.
+    #[must_use]
     pub fn pass_among(&self, instances: &[(EngineId, Seats)], asker: &Asker) -> Pass {
         let mut inner = self.locked();
         let lanes: Vec<Lane> = instances
@@ -163,6 +165,7 @@ impl Gate {
 
 impl Gate {
     /// How many helpers have a request seated or waiting on the engine instance `engine`.
+    #[must_use]
     pub fn helpers_using(&self, engine: &EngineId) -> Count {
         let inner = self.locked();
         let Some(lane) = inner.lanes.get(engine) else {
@@ -179,6 +182,7 @@ impl Gate {
     }
 
     /// The engine instances a helper other than `asker` has a request on now, seated or waiting.
+    #[must_use]
     pub fn engines_of_other_helpers(&self, asker: &Asker) -> Vec<EngineId> {
         let inner = self.locked();
         let other_helper = |ticket: &Ticket| {
@@ -196,6 +200,7 @@ impl Gate {
     }
 
     /// How many helpers have requests anywhere, and how many requests wait anywhere.
+    #[must_use]
     pub fn totals(&self) -> (Count, Count) {
         let inner = self.locked();
         let helpers: HashSet<&Asker> = inner
@@ -213,6 +218,7 @@ impl Gate {
     }
 
     /// How many requests wait for a seat on the engine instance `engine`.
+    #[must_use]
     pub fn waiting_on(&self, engine: &EngineId) -> Count {
         let inner = self.locked();
         let waiting = inner
@@ -236,11 +242,13 @@ pub struct Pass {
 
 impl Pass {
     /// The engine instance the request is on.
+    #[must_use]
     pub fn engine(&self) -> Option<&EngineId> {
         self.engine.as_ref()
     }
 
     /// Where the request stands now.
+    #[must_use]
     pub fn standing(&self) -> Standing {
         *self.listen.borrow()
     }

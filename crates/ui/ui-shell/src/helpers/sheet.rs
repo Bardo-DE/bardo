@@ -1,4 +1,4 @@
-//! HelperBody and HelperSheet: the missing-helper question and what follows it, as `ds`'s
+//! `HelperBody` and `HelperSheet`: the missing-helper question and what follows it, as `ds`'s
 //! `AlertColumn`, with the install command or the spinner in its content slot.
 
 use super::model::HelperPhase;

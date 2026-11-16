@@ -82,7 +82,7 @@ fn Buttons() -> Element {
     rsx! {
         Section { title: "CommandPill and KeyEquivalent",
             div { class: "g-row",
-                CommandPill { label: "Search or run a command", shortcut: Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('k')]), onclick: |_| {} }
+                CommandPill { label: "Search or run a command", shortcut: Shortcut(vec![ShortcutKey::Super, ShortcutKey::Char('k')]), onclick: |()| {} }
                 KeyEquivalent { shortcut: Shortcut(vec![ShortcutKey::Shift, ShortcutKey::Super, ShortcutKey::Char('p')]) , style: KeyStyle::Cap}
                 KeyEquivalent { shortcut: Shortcut(vec![ShortcutKey::Super, ShortcutKey::Enter]), style: KeyStyle::Cap, size: ControlSize::Mini}
                 KeyEquivalent { shortcut: Shortcut(vec![ShortcutKey::Escape, ShortcutKey::Tab, ShortcutKey::Backspace, ShortcutKey::Up, ShortcutKey::Down, ShortcutKey::Left, ShortcutKey::Right, ShortcutKey::Space]), style: KeyStyle::Cap, size: ControlSize::Mini}

@@ -6,11 +6,13 @@ pub struct VarName(pub &'static str);
 
 impl VarName {
     /// The name as written in a declaration: `--t-tap`.
+    #[must_use]
     pub fn as_str(self) -> &'static str {
         self.0
     }
 
     /// A reference to it as a value: `var(--t-tap)`.
+    #[must_use]
     pub fn reference(self) -> String {
         format!("var({})", self.0)
     }

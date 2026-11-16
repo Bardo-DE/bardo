@@ -11,7 +11,7 @@ use std::sync::Arc;
 use tokio::io::{AsyncWrite, AsyncWriteExt};
 use tokio::net::TcpStream;
 
-/// The path without the `/v1` an OpenAI base URL carries (and an Anthropic one does not).
+/// The path without the `/v1` an `OpenAI` base URL carries (and an Anthropic one does not).
 fn bare(request: &Request) -> &str {
     let path = request.path();
     path.strip_prefix("/v1").unwrap_or(path)

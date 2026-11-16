@@ -24,6 +24,7 @@ pub enum HoverProfile {
 
 impl HoverProfile {
     /// How long the pointer rests before it opens, cold; a tip waits as `tip` says.
+    #[must_use]
     pub fn open(self, tip: TipDelay) -> Duration {
         match self {
             HoverProfile::Tip => tip.open(),
@@ -33,6 +34,7 @@ impl HoverProfile {
     }
 
     /// How long after the pointer leaves it closes.
+    #[must_use]
     pub fn close(self) -> Duration {
         match self {
             HoverProfile::Card => DelayToken::CardClose.delay(),
@@ -155,7 +157,7 @@ impl<K: Clone + PartialEq + 'static> Machine for HoverIntent<K> {
         event: HoverEvent<K>,
         now: Stamp,
         tip: &TipDelay,
-        _: &(),
+        (): &(),
     ) -> (Self, Vec<IntentEffect<K>>) {
         let (next, effect) = self.advance(event, now, *tip);
         (next, effect.into_iter().collect())
@@ -229,7 +231,7 @@ impl<K: Clone + PartialEq> HoverIntent<K> {
     }
 
     /// Whether cards and fly labels open at once (warm, no wait for intent): a card is open, or
-    /// one closed less than HoverWarm ago.
+    /// one closed less than `HoverWarm` ago.
     pub fn warmth(&self, now: Stamp) -> bool {
         let open = matches!(
             self.phase,

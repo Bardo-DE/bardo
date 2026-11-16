@@ -1,6 +1,6 @@
-//! The phases of one stroke as the shell stream guarantees them: MayBegin when a set of one or
+//! The phases of one stroke as the shell stream guarantees them: `MayBegin` when a set of one or
 //! two fingers lands; Began when the intent is decided; Changed per motion; Ended when the set
-//! ends, changes or a scroll's lock times out; Cancelled on a click or a palm. Every MayBegin is
+//! ends, changes or a scroll's lock times out; Cancelled on a click or a palm. Every `MayBegin` is
 //! closed by exactly one Ended or Cancelled, so a host never holds a gesture open.
 
 use super::lock::Signal;
@@ -10,7 +10,7 @@ use mouse_gestures_proto::GestureId;
 /// How far the current gesture has got.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Stage {
-    /// MayBegin sent, no decision yet.
+    /// `MayBegin` sent, no decision yet.
     Announced,
     Began(Intent),
     /// The last gesture was Cancelled and the fingers are still down; the next decision opens

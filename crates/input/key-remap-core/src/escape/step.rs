@@ -6,6 +6,7 @@ use crate::key::Key;
 
 impl Escape {
     /// Nothing held.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -13,6 +14,7 @@ impl Escape {
     /// Track `key`'s `edge` on `device`; true when the chord fired. The chord fires only when
     /// Esc is the last of the three pressed, with each Shift down on some keyboard; repeats
     /// change nothing.
+    #[must_use]
     pub fn step(mut self, device: DeviceId, key: Physical, edge: Edge) -> (Self, bool) {
         if !matches!(key.0, Key::LEFTSHIFT | Key::RIGHTSHIFT | Key::ESC) {
             return (self, false);
@@ -30,6 +32,7 @@ impl Escape {
     }
 
     /// Forget every key `device` had down.
+    #[must_use]
     pub fn device_gone(mut self, device: DeviceId) -> Self {
         self.down.retain(|(d, _)| *d != device);
         self

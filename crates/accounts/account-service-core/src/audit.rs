@@ -65,6 +65,7 @@ pub struct AuditEntry {
 impl AuditEntry {
     /// An entry for `event` at `at`, caused by `app` and concerning `account` where there are
     /// any.
+    #[must_use]
     pub fn new(
         at: UnixSeconds,
         app: Option<AppId>,
@@ -83,6 +84,7 @@ impl AuditEntry {
     /// added when it is needed and an old line keeps reading. A line this build cannot read (a
     /// kind a newer daemon wrote, or a damaged line) is skipped, so the lines around it are kept;
     /// nothing is rewritten, the file stays as it was.
+    #[must_use]
     pub fn read_all(text: &str) -> Vec<AuditEntry> {
         text.lines()
             .filter_map(|line| serde_json::from_str(line).ok())

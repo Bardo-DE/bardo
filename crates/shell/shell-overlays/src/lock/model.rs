@@ -43,7 +43,7 @@ pub fn lock_user(account: &Account) -> LockUser {
     LockUser::new(name, picture)
 }
 
-/// The person's picture: their photo when the account has one (AccountsService's icon, else
+/// The person's picture: their photo when the account has one (`AccountsService`'s icon, else
 /// `$HOME/.face`, read by the auth service: `shell_services::auth::avatar_source`), which quire
 /// crops round; else the initial of `name` on their hue, at 64. The one place a picture is
 /// chosen.

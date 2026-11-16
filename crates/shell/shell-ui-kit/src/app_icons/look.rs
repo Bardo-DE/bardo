@@ -36,6 +36,7 @@ impl Default for IconLook {
 }
 
 /// The look `icons` asks for on a Space drawn as `space` in `scheme`.
+#[must_use]
 pub fn icon_look(icons: &IconsSettings, space: &SpaceLook, scheme: Scheme) -> IconLook {
     let style = icons.style;
     let tint = match style {

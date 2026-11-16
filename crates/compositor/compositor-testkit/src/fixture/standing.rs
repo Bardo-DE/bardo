@@ -18,6 +18,7 @@ use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 
 /// The standing of the desktop's own shell: trusted with every power, never asked.
+#[must_use]
 pub fn trusted_standing() -> ClientStanding {
     ClientStanding::Service {
         role: ServiceRole::parse("shell").expect("a role in the grammar"),
@@ -26,6 +27,7 @@ pub fn trusted_standing() -> ClientStanding {
 }
 
 /// The standing of a program the system owns, at `path`: asked, and remembered by its path.
+#[must_use]
 pub fn program_standing(path: &str) -> ClientStanding {
     ClientStanding::Program {
         exe: ProgramPath::parse(path).expect("an absolute path"),

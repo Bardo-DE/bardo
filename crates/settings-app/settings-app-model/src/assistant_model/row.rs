@@ -15,6 +15,7 @@ fn assistant_row(ready: &Ready) -> Option<&ModelRow> {
 }
 
 /// The assistant's row, when the picker is there and lists one.
+#[must_use]
 pub fn assistant_of(state: &PickerState) -> Option<&ModelRow> {
     match state {
         PickerState::Ready(ready) => assistant_row(ready),

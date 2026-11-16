@@ -303,7 +303,7 @@ async fn a_program_in_no_row_of_the_table_cannot_raise_or_open_anything() {
             &(data,),
         )
         .await;
-    assert!(raised.is_err());
+    raised.unwrap_err();
     let path = ObjectPath::try_from(ACCOUNT).expect("a path");
     let opened = stranger
         .call_method(
@@ -314,7 +314,7 @@ async fn a_program_in_no_row_of_the_table_cannot_raise_or_open_anything() {
             &("open-account", vec![Value::from(path)], no_data()),
         )
         .await;
-    assert!(opened.is_err());
+    opened.unwrap_err();
     assert_eq!(world.window.told(), [], "the window heard nothing");
 }
 

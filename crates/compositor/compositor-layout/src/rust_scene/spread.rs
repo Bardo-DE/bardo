@@ -86,16 +86,13 @@ pub(super) fn spread(
             },
         )
         .unwrap_or((ruler.floor, vec![order.clone()]));
-    match scale >= ruler.floor {
-        true => {
-            let cells = placed(&dealt, &ruler.sizes(scale), area);
-            (ruler.slots(&cells, scale, usable), Fit::Apart)
-        }
-        false => {
-            let mut cells = placed(&dealt, &ruler.sizes(ruler.floor), area);
-            held(&mut cells, area);
-            (ruler.slots(&cells, ruler.floor, usable), Fit::Overflow)
-        }
+    if scale >= ruler.floor {
+        let cells = placed(&dealt, &ruler.sizes(scale), area);
+        (ruler.slots(&cells, scale, usable), Fit::Apart)
+    } else {
+        let mut cells = placed(&dealt, &ruler.sizes(ruler.floor), area);
+        held(&mut cells, area);
+        (ruler.slots(&cells, ruler.floor, usable), Fit::Overflow)
     }
 }
 
@@ -168,10 +165,7 @@ impl<'a> Ruler<'a> {
         let (mut low, mut high) = (0, WHOLE);
         while low < high {
             let mid = low + (high - low + 1) / 2;
-            match fits(mid) {
-                true => low = mid,
-                false => high = mid - 1,
-            }
+            if fits(mid) { low = mid } else { high = mid - 1 }
         }
         low
     }

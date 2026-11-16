@@ -202,16 +202,19 @@ impl FakeGoogle {
 
 impl GoogleHandle {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
 
     /// Where userinfo is read: `OAuthEnv::with_userinfo` takes it.
+    #[must_use]
     pub fn userinfo_url(&self) -> String {
         format!("{}/v1/userinfo", self.shared.base)
     }
 
     /// `spec` with the Google API rows pointed here, each keeping its path.
+    #[must_use]
     pub fn rewrite(&self, spec: &ProviderSpec) -> ProviderSpec {
         point_at(&self.shared.base, spec)
     }
@@ -236,6 +239,7 @@ impl GoogleHandle {
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn hits(&self) -> Vec<Hit> {
         self.shared.hits.all()
     }

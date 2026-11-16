@@ -30,6 +30,7 @@ pub const SERVICE_PROOF: Proof = Proof::Full;
 
 /// The role the owner of `name` must hold; none for a name that is not one of the eight (such a
 /// name is never vouched for).
+#[must_use]
 pub fn required_role(name: &str) -> Option<RoleName> {
     let role = match name {
         ACCOUNTS_BUS => roles::ACCOUNTS,

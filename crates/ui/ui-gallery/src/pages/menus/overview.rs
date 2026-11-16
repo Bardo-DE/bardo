@@ -151,7 +151,7 @@ fn Menus() -> Element {
     let mut anchor = use_signal(|| None::<MountedRef>);
     let mut picked = use_signal(|| "nothing yet".to_string());
     let at = anchor().map_or(Anchor::Point(Point::default()), Anchor::Mounted);
-    let close = move |_| opened.set(None);
+    let close = move |()| opened.set(None);
     let button = move |what: Opened, label: &'static str| {
         rsx! {
             Button {
@@ -195,7 +195,7 @@ fn Menus() -> Element {
                                 active: MenuCursor::Controlled(at),
                                 expanded,
                                 onpick: |_| {},
-                                onclose: |_| {},
+                                onclose: |()| {},
                             }
                         }
                         p { class: "g-note g-stage-caption", "{caption}" }
@@ -254,7 +254,7 @@ fn Posed(
                 active: MenuCursor::Controlled(at),
                 expanded,
                 onpick: |_| {},
-                onclose: |_| {},
+                onclose: |()| {},
             }
         }
     }

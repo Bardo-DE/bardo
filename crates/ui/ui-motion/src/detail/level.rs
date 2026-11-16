@@ -11,6 +11,7 @@ pub struct Level(Option<Signal<Scope>>);
 
 impl Level {
     /// The level now, read without subscribing.
+    #[must_use]
     pub fn now(self) -> MotionLevel {
         self.0
             .and_then(|env| env.try_peek().ok().map(|env| env.resolved.motion))
@@ -19,6 +20,7 @@ impl Level {
 }
 
 /// The level of the enclosing `Ds` or `Surface`.
+#[must_use]
 pub fn use_level() -> Level {
     Level(try_use_context::<Signal<Scope>>())
 }

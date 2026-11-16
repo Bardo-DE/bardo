@@ -68,6 +68,7 @@ impl People {
     }
 
     /// The live contacts: resource name and JSON.
+    #[must_use]
     pub fn all(&self) -> Vec<(String, Value)> {
         self.rows
             .iter()
@@ -157,6 +158,7 @@ impl People {
     }
 
     /// Answers `rest` (what follows `/v1`), or `None` when it is not a people route.
+    #[must_use]
     pub fn answer(&self, rest: &str, request: &Request) -> Option<Response> {
         let parts: Vec<&str> = rest.trim_matches('/').split('/').collect();
         let response = match parts.as_slice() {
@@ -173,9 +175,10 @@ impl People {
             }
             _ => return None,
         };
-        Some(match request.method == "GET" {
-            true => response,
-            false => error(405, "methodNotAllowed"),
+        Some(if request.method == "GET" {
+            response
+        } else {
+            error(405, "methodNotAllowed")
         })
     }
 }

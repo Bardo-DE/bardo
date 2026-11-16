@@ -31,6 +31,7 @@ impl std::fmt::Display for JailBreach {
 
 /// The first condition under `root` (`/` in the binary, a scratch tree in tests) that does not
 /// hold for the user `uid`, or `None` inside the jail.
+#[must_use]
 pub fn breach(root: &Path, uid: u32) -> Option<JailBreach> {
     let present = |path: String| root.join(path).symlink_metadata().is_ok();
     let pid_one = std::fs::read_to_string(root.join("proc/1/comm")).unwrap_or_default();

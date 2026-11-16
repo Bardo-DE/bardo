@@ -76,6 +76,7 @@ pub struct ModelExchange {
 
 impl ModelExchange {
     /// Every word the model was sent, joined: what a `lacks` or `contains` check reads.
+    #[must_use]
     pub fn sent_text(&self) -> String {
         self.messages
             .iter()

@@ -48,6 +48,7 @@ pub enum InstallError {
 
 impl InstallError {
     /// What a person is told.
+    #[must_use]
     pub fn failure(&self) -> Failure {
         let full = |kind: &std::io::ErrorKind| *kind == std::io::ErrorKind::StorageFull;
         match self {
@@ -103,11 +104,13 @@ pub struct Installer {
 
 impl Installer {
     /// An installer that downloads with `fetcher` and installs under `roots`.
+    #[must_use]
     pub fn new(fetcher: Fetcher, roots: Roots) -> Self {
         Self { fetcher, roots }
     }
 
     /// The roots it installs under.
+    #[must_use]
     pub fn roots(&self) -> &Roots {
         &self.roots
     }

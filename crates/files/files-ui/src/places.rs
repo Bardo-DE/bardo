@@ -44,6 +44,7 @@ impl PlaceKind {
     ];
 
     /// The row's name.
+    #[must_use]
     pub fn label(self) -> &'static str {
         words::place_label(self)
     }
@@ -79,6 +80,7 @@ pub enum Heading {
 
 impl Heading {
     /// The heading's words.
+    #[must_use]
     pub fn label(self) -> &'static str {
         words::heading_label(self)
     }
@@ -138,6 +140,7 @@ impl Default for Sidebar {
 
 impl Sidebar {
     /// The same sidebar without the row for `kind`.
+    #[must_use]
     pub fn leaving_out(mut self, kind: PlaceKind) -> Sidebar {
         if !self.left_out.contains(&kind) {
             self.left_out.push(kind);
@@ -146,16 +149,19 @@ impl Sidebar {
     }
 
     /// The same sidebar listing the attached disks (a row each) or not.
+    #[must_use]
     pub fn with_disks(self, disks: bool) -> Sidebar {
         Sidebar { disks, ..self }
     }
 
     /// Whether the row for `kind` is listed (when it has a place to go to).
+    #[must_use]
     pub fn lists(&self, kind: PlaceKind) -> bool {
         kind == PlaceKind::Trash || !self.left_out.contains(&kind)
     }
 
     /// Whether the attached disks are listed.
+    #[must_use]
     pub fn disks(&self) -> bool {
         self.disks
     }
@@ -171,17 +177,20 @@ pub struct Places {
 
 impl Places {
     /// The same places listed as `sidebar` says. Where a row goes is not changed by this.
+    #[must_use]
     pub fn with_sidebar(self, sidebar: Sidebar) -> Places {
         Places { sidebar, ..self }
     }
 
     /// Which rows are listed.
+    #[must_use]
     pub fn sidebar(&self) -> &Sidebar {
         &self.sidebar
     }
 
     /// `kind` is `folder`, replacing any folder it had. [`PlaceKind::Computer`] is always `/` and
     /// ignores this.
+    #[must_use]
     pub fn with(mut self, kind: PlaceKind, folder: FolderPath) -> Places {
         self.folders.retain(|(known, _)| *known != kind);
         self.folders.push((kind, folder));
@@ -241,6 +250,7 @@ pub struct Group {
 /// out (none, no group), then the computer, unless left out, and the Trash.
 ///
 /// Recents is left out until the place behind it is built.
+#[must_use]
 pub fn groups(places: &Places) -> Vec<Group> {
     let listed = |kind: &PlaceKind| places.sidebar().lists(*kind);
     let favorites: Vec<PlaceKind> = PlaceKind::FAVORITES
@@ -267,6 +277,7 @@ pub fn groups(places: &Places) -> Vec<Group> {
 
 /// The words for the toolbar's title and the window's: the folder's own name (`/` for the
 /// filesystem's root), or `Trash`.
+#[must_use]
 pub fn title_words(location: &Location) -> String {
     match location {
         Location::Folder(folder) => folder.as_path().file_name().map_or_else(

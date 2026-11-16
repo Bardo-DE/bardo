@@ -47,6 +47,7 @@ pub struct DuplexEnd {
 
 /// Two connected ends; each holds at most `capacity` unread bytes per direction (at least one),
 /// and a write past that waits for the reader.
+#[must_use]
 pub fn duplex(capacity: usize) -> (DuplexEnd, DuplexEnd) {
     let (a_to_b, b_to_a) = (Shared::default(), Shared::default());
     let capacity = capacity.max(1);

@@ -46,6 +46,7 @@ pub struct EntryFile {
 }
 
 impl EntryFile {
+    #[must_use]
     pub fn capabilities(&self) -> Capabilities {
         Capabilities {
             inputs: self.inputs.clone(),
@@ -60,6 +61,7 @@ impl EntryFile {
     }
 
     /// The entry.
+    #[must_use]
     pub fn into_entry(self) -> ModelEntry {
         let capabilities = self.capabilities();
         ModelEntry {

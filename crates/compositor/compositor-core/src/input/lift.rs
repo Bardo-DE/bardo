@@ -82,6 +82,7 @@ impl Lift {
     /// let (_, out) = lift.step(LiftIn::Ended, Stamp(500));
     /// assert!(out.contains(&LiftOut::Done(LiftEnd::Open)));
     /// ```
+    #[must_use]
     pub fn step(self, input: LiftIn, at: Stamp) -> (Lift, Vec<LiftOut>) {
         match (self, input) {
             (_, LiftIn::Began(opening)) => (

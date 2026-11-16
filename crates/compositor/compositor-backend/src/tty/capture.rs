@@ -71,12 +71,14 @@ impl TtyBackend {
     }
 
     /// The device the display GPU draws on, when it can tell (its render node's number).
+    #[must_use]
     pub fn capture_device(&self) -> Option<u64> {
         self.devices.capture_gpu()?.device()
     }
 
     /// How a closing window's last image is kept on this seat: on the display GPU when it is the
     /// seat's only device and lends its renderer, else read back.
+    #[must_use]
     pub fn body_on_gpu(&self) -> bool {
         let lending = self
             .devices
@@ -109,6 +111,7 @@ impl TtyBackend {
 
     /// Whether the display GPU can draw a capture into a dma-buf of format `wanted` (a window:
     /// the scene is rendered fresh). `false` when no device lends a renderer.
+    #[must_use]
     pub fn binds_format(&self, wanted: Format) -> bool {
         self.devices
             .capture_gpu()
@@ -117,6 +120,7 @@ impl TtyBackend {
 
     /// Whether a capture of `output` can be drawn into a dma-buf of format `wanted`: the display
     /// GPU when the frame last drawn is on it, else the software shadow, which cannot.
+    #[must_use]
     pub fn output_binds_format(&self, output: &OutputName, wanted: Format) -> bool {
         self.readback.on_gpu(output) && self.binds_format(wanted)
     }

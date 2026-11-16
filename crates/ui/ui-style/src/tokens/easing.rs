@@ -39,6 +39,7 @@ impl EasingToken {
     ///
     /// No easing follows the motion level: Reduced changes durations, never curves. A spring is a
     /// Rust `Spring`, not an easing.
+    #[must_use]
     pub fn easing(self) -> Easing {
         const OUT: CubicBezier = CubicBezier([220, 900, 300, 1000]);
         Easing::Cubic(match self {
@@ -58,6 +59,7 @@ fn easing_css(token: EasingToken, _scope: TokenScope) -> CssValue {
 
 impl Easing {
     /// The CSS text: `linear` or `cubic-bezier(.22,.9,.3,1)`.
+    #[must_use]
     pub fn css(self) -> String {
         match self {
             Easing::Linear => "linear".to_owned(),

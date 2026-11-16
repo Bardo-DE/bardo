@@ -47,6 +47,7 @@ pub struct EvdevMultitouch {
 }
 
 impl EvdevMultitouch {
+    #[must_use]
     pub fn new(spec: EvdevSpec) -> Self {
         Self {
             spec,
@@ -54,12 +55,14 @@ impl EvdevMultitouch {
         }
     }
 
+    #[must_use]
     pub fn spec(&self) -> EvdevSpec {
         self.spec
     }
 }
 
 impl EvdevMultitouch {
+    #[must_use]
     pub fn surface(&self) -> Surface {
         self.spec.surface()
     }

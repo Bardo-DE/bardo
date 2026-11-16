@@ -9,6 +9,7 @@ const USUAL: &[(&str, &str)] = &[("en", "en_US"), ("pt", "pt_BR"), ("zh", "zh_CN
 /// The installed dictionary for `lang`: the same name; else, for a language or a region with no
 /// dictionary of its own, the usual region (`en_US`), the language's own region (`de_DE`), the
 /// bare language (`de`), or the first of its regions installed.
+#[must_use]
 pub fn pick(lang: &Lang, installed: &[Lang]) -> Option<Lang> {
     let code = lang.code();
     let usual = USUAL
@@ -33,6 +34,7 @@ pub fn pick(lang: &Lang, installed: &[Lang]) -> Option<Lang> {
 
 /// The locale's language: `LC_ALL`, else `LANG` (`en_US.UTF-8` is `en_US`); none for `C` or
 /// `POSIX`.
+#[must_use]
 pub fn locale_lang(lc_all: Option<&str>, lang: Option<&str>) -> Option<Lang> {
     [lc_all, lang]
         .into_iter()

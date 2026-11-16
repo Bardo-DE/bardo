@@ -37,6 +37,7 @@ pub enum Notice {
 
 impl Notice {
     /// The datagram's text (newline-separated `KEY=value` lines).
+    #[must_use]
     pub fn datagram(&self) -> String {
         match self {
             Notice::Ready { status } => {
@@ -76,6 +77,7 @@ pub struct SocketNotify {
 
 impl SocketNotify {
     /// Notices to `socket`.
+    #[must_use]
     pub fn new(socket: Endpoint) -> SocketNotify {
         SocketNotify { socket }
     }
@@ -117,6 +119,7 @@ impl Notify for SocketNotify {
 /// assert_eq!(watchdog_period(Some("20000000"), Some("8"), 7), None);
 /// assert_eq!(watchdog_period(None, None, 7), None);
 /// ```
+#[must_use]
 pub fn watchdog_period(usec: Option<&str>, pid: Option<&str>, own_pid: u32) -> Option<Duration> {
     let addressed_here = pid.is_none_or(|text| text.trim().parse::<u32>() == Ok(own_pid));
     let micros = usec

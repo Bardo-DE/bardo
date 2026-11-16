@@ -9,15 +9,12 @@ pub(super) fn decode(value: &str) -> String {
     while let Some(amp) = rest.find('&') {
         out.push_str(&rest[..amp]);
         rest = &rest[amp..];
-        match reference(rest) {
-            Some((c, length)) => {
-                out.push(c);
-                rest = &rest[length..];
-            }
-            None => {
-                out.push('&');
-                rest = &rest[1..];
-            }
+        if let Some((c, length)) = reference(rest) {
+            out.push(c);
+            rest = &rest[length..];
+        } else {
+            out.push('&');
+            rest = &rest[1..];
         }
     }
     out.push_str(rest);

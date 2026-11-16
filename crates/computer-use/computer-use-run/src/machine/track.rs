@@ -47,6 +47,7 @@ pub enum SettleWatch {
 
 impl SettleWatch {
     /// Whether the driver should feed this watch the window's damage.
+    #[must_use]
     pub fn wants_damage(&self) -> bool {
         !matches!(self, SettleWatch::Idle)
     }
@@ -120,6 +121,7 @@ pub struct RunTrack {
 
 impl RunTrack {
     /// A run that has not started a step.
+    #[must_use]
     pub fn new() -> RunTrack {
         RunTrack {
             capture: CaptureTries::First,

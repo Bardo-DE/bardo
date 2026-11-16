@@ -12,7 +12,7 @@ fn id(text: &str) -> SpaceId {
 fn the_reserved_desktop_space_is_a_valid_id() {
     assert_eq!(SpaceId::parse("desktop"), Ok(SpaceId::desktop()));
     assert_eq!(SpaceId::desktop().kind(), SpaceKind::Outside);
-    assert!(SpaceId::parse("Work Space").is_err());
+    SpaceId::parse("Work Space").unwrap_err();
 }
 
 #[test]
@@ -103,7 +103,7 @@ fn texts_that_are_neither_form_are_refused() {
 fn an_app_form_never_reads_as_a_slug_nor_a_slug_as_the_app_form() {
     // The app form holds `:`, which no slug may; so no text is both.
     let space = SpaceId::app(&app("org.bardo.Photos"), LocalSpace(1));
-    assert!(DesktopSpace::parse(space.as_str()).is_err());
+    DesktopSpace::parse(space.as_str()).unwrap_err();
     assert!(!base_ids::is_id(space.as_str()));
     // A slug that starts like the prefix is still a slug.
     assert!(matches!(id("app").kind(), SpaceKind::Linked(_)));
@@ -112,8 +112,8 @@ fn an_app_form_never_reads_as_a_slug_nor_a_slug_as_the_app_form() {
 
 #[test]
 fn desktop_is_not_a_desktop_wide_space() {
-    assert!(DesktopSpace::parse("desktop").is_err());
-    assert!(DesktopSpace::parse("work").is_ok());
+    DesktopSpace::parse("desktop").unwrap_err();
+    DesktopSpace::parse("work").unwrap();
 }
 
 #[test]

@@ -157,7 +157,10 @@ pub(super) fn ask(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex, head: Ta
     };
     run.pending.actions.truncate(1);
     run.track.held = Held::Nothing;
-    let choices: Vec<&str> = choices.iter().map(|c| c.as_str()).collect();
+    let choices: Vec<&str> = choices
+        .iter()
+        .map(computer_use_action::Choice::as_str)
+        .collect();
     raise(run, fx, n, question.as_str(), &choices);
 }
 

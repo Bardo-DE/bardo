@@ -7,6 +7,7 @@ use super::{
 
 /// When a turn-on made at `now` ends: the next time the clock reads `to` (the end of the night),
 /// a whole day on when it reads it now.
+#[must_use]
 pub fn until_tomorrow(now: Now, to: MinuteOfDay) -> UnixSeconds {
     let ahead = (u32::from(to.minutes()) + 1440 - u32::from(now.minute.minutes())) % 1440;
     let ahead = if ahead == 0 { 1440 } else { ahead };
@@ -15,6 +16,7 @@ pub fn until_tomorrow(now: Now, to: MinuteOfDay) -> UnixSeconds {
 }
 
 /// `state` after `event`, and the writes it asks for.
+#[must_use]
 pub fn step(state: NightShift, event: NightShiftEvent) -> (NightShift, Vec<NightShiftEffect>) {
     match event {
         NightShiftEvent::Loaded { light, manual } => loaded(state, light, manual),

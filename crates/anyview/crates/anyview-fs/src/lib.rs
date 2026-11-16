@@ -38,6 +38,7 @@ use std::path::Path;
 use std::sync::{Arc, OnceLock};
 
 /// Whether `meta` describes a regular file.
+#[must_use]
 pub fn is_regular(meta: &Metadata) -> bool {
     meta.file_type().is_file()
 }
@@ -179,7 +180,7 @@ impl PathBytes {
 
 impl ReadAt for PathBytes {
     fn len(&self) -> ByteLen {
-        self.file().map_or(ByteLen(0), |file| file.len())
+        self.file().map_or(ByteLen(0), anyview_core::ReadAt::len)
     }
 
     fn read_at(&self, offset: u64, buf: &mut [u8]) -> Result<usize> {
@@ -189,7 +190,7 @@ impl ReadAt for PathBytes {
     fn stamp(&self) -> Option<FileStamp> {
         let meta = std::fs::metadata(self.path.as_path());
         Some(FileStamp {
-            len: ByteLen(meta.as_ref().map_or(0, |meta| meta.len())),
+            len: ByteLen(meta.as_ref().map_or(0, std::fs::Metadata::len)),
             modified: meta
                 .and_then(|meta| meta.modified())
                 .map_or(ModTime(0), ModTime::from_system_time),

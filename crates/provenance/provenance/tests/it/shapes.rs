@@ -340,9 +340,9 @@ fn entities_and_witnesses_round_trip() {
 
 #[test]
 fn malformed_ids_do_not_deserialize() {
-    assert!(serde_json::from_str::<EntityKind>("\"Mail\"").is_err());
-    assert!(serde_json::from_str::<SessionId>("\"Has Space\"").is_err());
-    assert!(serde_json::from_str::<ConfirmId>("\"\"").is_err());
+    serde_json::from_str::<EntityKind>("\"Mail\"").unwrap_err();
+    serde_json::from_str::<SessionId>("\"Has Space\"").unwrap_err();
+    serde_json::from_str::<ConfirmId>("\"\"").unwrap_err();
 }
 
 #[test]

@@ -13,6 +13,7 @@ impl Scratch {
     /// # Panics
     /// If the directory cannot be created: a test that cannot get a scratch directory has
     /// nothing to run in.
+    #[must_use]
     pub fn under(base: &str, name: &str) -> Scratch {
         let dir = Path::new(base).join(name);
         let _ = std::fs::remove_dir_all(&dir);
@@ -21,11 +22,13 @@ impl Scratch {
     }
 
     /// The directory.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.0
     }
 
     /// `relative` inside the directory.
+    #[must_use]
     pub fn join(&self, relative: &str) -> PathBuf {
         self.0.join(relative)
     }

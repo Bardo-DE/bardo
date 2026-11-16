@@ -17,13 +17,14 @@
 //!    some other process, runs
 //!    `account-rig-client --app-id org.example.App --proc-root <dir>/proc write-identity --pid N`.
 //!
-//! The role of the app (App, Settings, SheetHost, PorterDaemon, ...) is the daemons' own table
+//! The role of the app (App, Settings, `SheetHost`, `PorterDaemon`, ...) is the daemons' own table
 //! (`callers.toml`), not something the fixture says.
 
 use std::io;
 use std::path::{Path, PathBuf};
 
 /// The text of `<pid>/cgroup` for Flatpak app `app`.
+#[must_use]
 pub fn cgroup_text(app: &str, pid: u32) -> String {
     format!(
         "0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-flatpak-{}-{pid}.scope\n",
@@ -32,6 +33,7 @@ pub fn cgroup_text(app: &str, pid: u32) -> String {
 }
 
 /// The text of `<pid>/root/.flatpak-info` for Flatpak app `app`.
+#[must_use]
 pub fn flatpak_info_text(app: &str, pid: u32) -> String {
     format!("[Application]\nname={app}\n\n[Instance]\ninstance-id={pid}\n")
 }

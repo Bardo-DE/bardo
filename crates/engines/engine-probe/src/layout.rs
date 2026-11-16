@@ -23,6 +23,7 @@ pub enum Scope {
 
 impl Scope {
     /// The word on the bus.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Self::AllUsers => "all_users",
@@ -31,6 +32,7 @@ impl Scope {
     }
 
     /// The scope a word names; `None` for any other text.
+    #[must_use]
     pub fn from_slug(text: &str) -> Option<Self> {
         [Self::AllUsers, Self::JustMe]
             .into_iter()
@@ -50,11 +52,13 @@ impl Roots {
     pub const SYSTEM: &'static str = "/usr/local/lib/bardo/engines";
 
     /// These two roots (a test's own).
+    #[must_use]
     pub fn new(system: PathBuf, person: PathBuf) -> Self {
         Self { system, person }
     }
 
     /// The standard roots: [`Self::SYSTEM`] and `<data_home>/bardo/engines`.
+    #[must_use]
     pub fn standard(data_home: &Path) -> Self {
         Self::new(
             PathBuf::from(Self::SYSTEM),
@@ -63,6 +67,7 @@ impl Roots {
     }
 
     /// The root of `scope`.
+    #[must_use]
     pub fn root(&self, scope: Scope) -> &Path {
         match scope {
             Scope::AllUsers => &self.system,
@@ -71,18 +76,21 @@ impl Roots {
     }
 
     /// The directory that holds every install of `engine` for `scope`.
+    #[must_use]
     pub fn engine_dir(&self, scope: Scope, engine: EngineKind) -> PathBuf {
         self.root(scope)
             .join(engine_spec::engine(engine).disk_word())
     }
 
     /// Where `row` installs for `scope`.
+    #[must_use]
     pub fn dir(&self, scope: Scope, row: &Row) -> InstallDir {
         InstallDir(self.engine_dir(scope, row.engine).join(row.dir_name()))
     }
 
     /// The install a program path lies in: its scope, engine and directory name. `None` for a
     /// path that is not under an install of ours.
+    #[must_use]
     pub fn locate(&self, program: &Path) -> Option<(Scope, EngineKind, String)> {
         [Scope::AllUsers, Scope::JustMe]
             .into_iter()
@@ -102,31 +110,37 @@ pub struct InstallDir(PathBuf);
 
 impl InstallDir {
     /// The install directory at `path`.
+    #[must_use]
     pub fn at(path: PathBuf) -> Self {
         Self(path)
     }
 
     /// The directory.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.0
     }
 
     /// The unpacked tree.
+    #[must_use]
     pub fn tree(&self) -> PathBuf {
         self.0.join("engine")
     }
 
     /// The record.
+    #[must_use]
     pub fn record(&self) -> PathBuf {
         self.0.join("installed.json")
     }
 
     /// The program of `row`.
+    #[must_use]
     pub fn program(&self, row: &Row) -> PathBuf {
         self.tree().join(row.program)
     }
 
     /// The directory the install is built in before it is renamed to this one.
+    #[must_use]
     pub fn partial(&self) -> PathBuf {
         let name = self
             .0

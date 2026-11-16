@@ -8,6 +8,7 @@ use std::path::Path;
 /// Reads `drm` (`/sys/class/drm`) for the cards and `nvidia_version` (the module's `version`
 /// file under `/sys/module/nvidia`) for the driver. A file that is not there is no card and no
 /// driver.
+#[must_use]
 pub fn read_gpus(drm: &Path, nvidia_version: &Path) -> Gpus {
     let mut names: Vec<String> = std::fs::read_dir(drm)
         .into_iter()
@@ -40,6 +41,7 @@ fn is_card(name: &str) -> bool {
 /// The computer whose files are under `root` (`/` for this one; a test's own directory
 /// otherwise): its processor is this program's, its cards are what `<root>/sys/class/drm`
 /// lists, its distro is `<root>/etc/os-release`. `None` for a processor no engine is built for.
+#[must_use]
 pub fn read_host(root: &Path, choice: BackendChoice) -> Option<Host> {
     let under = |path: &str| root.join(path.trim_start_matches('/'));
     Some(Host {

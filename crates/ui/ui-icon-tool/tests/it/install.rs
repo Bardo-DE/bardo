@@ -17,9 +17,12 @@ fn install_copies_the_set_where_the_lookup_finds_it() {
         .status()
         .expect("icons runs");
     assert!(status.success());
-    let present = |path: &Path| match path.is_file() {
-        true => Presence::Present,
-        false => Presence::Absent,
+    let present = |path: &Path| {
+        if path.is_file() {
+            Presence::Present
+        } else {
+            Presence::Absent
+        }
     };
     for app in ["mail", "files", "terminal", "notes", "photos", "viewer"] {
         let name = AppIconName::parse(app).expect("a name");

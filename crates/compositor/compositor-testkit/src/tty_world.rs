@@ -40,6 +40,7 @@ impl TtyWorld {
     /// let world = TtyWorld::new(FakeKms::synthetic(SyntheticTopology::Dock));
     /// assert_eq!(world.kms.seat_changes(), (0, 0));
     /// ```
+    #[must_use]
     pub fn new(kms: FakeKms) -> TtyWorld {
         let card = DevicePath(PathBuf::from(CARD));
         let session = FakeSession::with(vec![SessionFixture {
@@ -63,6 +64,7 @@ impl TtyWorld {
 
     /// The seams the compositor starts over: this world's session, udev, display device and
     /// input, with `nodes` as the machine's GPUs and `formats` as what they draw into.
+    #[must_use]
     pub fn seams(
         &self,
         nodes: Box<dyn RenderNodes>,

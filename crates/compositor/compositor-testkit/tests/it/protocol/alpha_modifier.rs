@@ -123,7 +123,7 @@ fn a_multiplier_is_accepted() {
     );
 }
 
-/// A second alpha object on one surface is wp_alpha_modifier_v1.already_constructed (0).
+/// A second alpha object on one surface is `wp_alpha_modifier_v1.already_constructed` (0).
 #[test]
 fn a_second_alpha_object_is_a_protocol_error() {
     let (mut fixture, id) = boot();

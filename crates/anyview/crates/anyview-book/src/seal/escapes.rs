@@ -51,10 +51,8 @@ fn one(after: &str) -> (Option<char>, usize) {
 fn closing_space(after: &str) -> usize {
     if after.starts_with("\r\n") {
         2
-    } else if after.starts_with([' ', '\t', '\n', '\r', '\u{c}']) {
-        1
     } else {
-        0
+        usize::from(after.starts_with([' ', '\t', '\n', '\r', '\u{c}']))
     }
 }
 

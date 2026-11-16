@@ -175,9 +175,10 @@ async fn a_two_sided_edit_is_a_conflict_signal_and_keep_remote_or_keep_local_set
         sync.resolve(FILES_DATASET, number, how)
             .await
             .expect("resolve");
-        let (here, there): (&[u8], &[u8]) = match local_wins {
-            true => (b"mine", b"mine"),
-            false => (b"theirs", b"theirs"),
+        let (here, there): (&[u8], &[u8]) = if local_wins {
+            (b"mine", b"mine")
+        } else {
+            (b"theirs", b"theirs")
         };
         eventually(&rig, "both sides agree", || {
             local_is(&rig, file, here) && remote_is(&rig, file, there)

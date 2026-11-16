@@ -82,6 +82,7 @@ impl Snapshot {
     }
 
     /// The agent with `id`.
+    #[must_use]
     pub fn find(&self, id: &str) -> Option<&Listing> {
         self.agents.iter().find(|a| a.id == id)
     }

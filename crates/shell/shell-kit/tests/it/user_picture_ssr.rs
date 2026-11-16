@@ -65,7 +65,7 @@ fn redacted(html: &str) -> String {
         let end = tail.find(['"', '&', ')']).unwrap_or(tail.len());
         match &tail[..end] {
             "data:image/png;base64,AAAA" => out.push_str(&tail[..end]),
-            _ => out.push_str(&format!("data:image/png;base64,({} chars)", end)),
+            _ => out.push_str(&format!("data:image/png;base64,({end} chars)")),
         }
         rest = &tail[end..];
     }

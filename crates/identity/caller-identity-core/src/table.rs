@@ -48,6 +48,7 @@ impl Row {
     }
 
     /// Whether the image `path` is one of this row's.
+    #[must_use]
     pub fn matches_image(&self, path: &ExePath) -> bool {
         self.exe.iter().any(|pattern| pattern.matches(path))
     }
@@ -112,6 +113,7 @@ pub struct Table {
 
 impl Table {
     /// A table with no rows: nobody is a service.
+    #[must_use]
     pub fn empty() -> Table {
         Table::default()
     }
@@ -168,6 +170,7 @@ impl Table {
     /// programs and units, and cannot take over a unit the shipped table names. With feature
     /// `dev-rows`, developer rows always end up after the shipped ones, whatever the order of
     /// the merge, and a shipped row displaces a developer row that names its unit.
+    #[must_use]
     pub fn merge(mut self, other: Table) -> Table {
         for row in other.rows {
             #[cfg(feature = "dev-rows")]
@@ -186,11 +189,13 @@ impl Table {
     }
 
     /// The rows, in order.
+    #[must_use]
     pub fn rows(&self) -> &[Row] {
         &self.rows
     }
 
     /// The row for the unit `unit`.
+    #[must_use]
     pub fn row_for_unit(&self, unit: &UnitName) -> Option<&Row> {
         self.rows.iter().find(|r| r.unit.as_ref() == Some(unit))
     }
@@ -203,6 +208,7 @@ impl Table {
     }
 
     /// Whether any row names `role`.
+    #[must_use]
     pub fn has_role(&self, role: &RoleName) -> bool {
         self.rows.iter().any(|r| &r.role == role)
     }

@@ -29,6 +29,7 @@ pub enum PolicyChangeKind {
 
 impl PolicyChange {
     /// The change without its detail.
+    #[must_use]
     pub fn kind(&self) -> PolicyChangeKind {
         match self {
             PolicyChange::Narrows => PolicyChangeKind::Narrows,

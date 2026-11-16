@@ -36,6 +36,7 @@ impl SyncClass {
     pub const ALL: [SyncClass; 2] = [SyncClass::Files, SyncClass::Photos];
 
     /// The class of data the grant is for.
+    #[must_use]
     pub fn class(self) -> DataClass {
         match self {
             SyncClass::Files => DataClass::Files,
@@ -44,6 +45,7 @@ impl SyncClass {
     }
 
     /// The word a settings key ends in.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             SyncClass::Files => "files",
@@ -53,6 +55,7 @@ impl SyncClass {
 }
 
 /// syncd as an app of consent: a native daemon, as the caller table names it.
+#[must_use]
 pub fn sync_app() -> AppId {
     AppId {
         name: AppName::parse("org.bardo.Sync").expect("a literal app name"),
@@ -61,6 +64,7 @@ pub fn sync_app() -> AppId {
 }
 
 /// The key of the grant that lets syncd keep `class` of `account`.
+#[must_use]
 pub fn sync_key(account: &AccountId, class: SyncClass) -> GrantKey {
     GrantKey {
         app: sync_app(),
@@ -75,6 +79,7 @@ pub fn sync_key(account: &AccountId, class: SyncClass) -> GrantKey {
 
 /// The key of the grant that lets syncd list the whole drive of `account` for Files ("Show in
 /// Files"): the Files grant's, reaching the whole store, so it is never the app folder's.
+#[must_use]
 pub fn drive_key(account: &AccountId) -> GrantKey {
     GrantKey {
         reach: StorageScope::Full,
@@ -84,6 +89,7 @@ pub fn drive_key(account: &AccountId) -> GrantKey {
 
 /// Whether `grant` is under one of the `wanted` keys: the same but for the app, which accountd
 /// names itself ([`sync_app`] is what the caller table calls syncd).
+#[must_use]
 pub fn holds(grant: &Grant, wanted: &[GrantKey]) -> bool {
     wanted.iter().any(|key| {
         let key = GrantKey {
@@ -95,6 +101,7 @@ pub fn holds(grant: &Grant, wanted: &[GrantKey]) -> bool {
 }
 
 /// Whether syncd holds an allowing grant of the whole drive of `account`.
+#[must_use]
 pub fn drive_allowed(grants: &[Grant], account: &AccountId) -> bool {
     let wanted = [drive_key(account)];
     grants
@@ -102,13 +109,15 @@ pub fn drive_allowed(grants: &[Grant], account: &AccountId) -> bool {
         .any(|g| holds(g, &wanted) && g.decision == Decision::Allow)
 }
 
-/// Whether `account` is reached over a drive the listing reads whole: OneDrive (Graph) or
+/// Whether `account` is reached over a drive the listing reads whole: `OneDrive` (Graph) or
 /// Google Drive. Its provider must also ask the whole drive on use for Files to offer it.
+#[must_use]
 pub fn lists_whole_drive(account: &Account) -> bool {
     has_endpoint(account, Family::Graph) || has_endpoint(account, Family::GoogleDrive)
 }
 
 /// Whether `account` was given the whole drive: it claims an offer the drive's need fits.
+#[must_use]
 pub fn claims_whole_drive(account: &Account) -> bool {
     let need = drive_need();
     account
@@ -119,6 +128,7 @@ pub fn claims_whole_drive(account: &Account) -> bool {
 
 /// The key of the grant that lets syncd upload to, and import from, the Google Photos of
 /// `account`: `Photos` kind, class `Photos`.
+#[must_use]
 pub fn photos_key(account: &AccountId) -> GrantKey {
     GrantKey {
         kind: CapabilityKind::Photos,
@@ -144,6 +154,7 @@ fn google_photos(account: &Account) -> bool {
 /// or the Google Drive app data folder (the stores syncd mirrors), and Photos besides when that
 /// store takes resumable uploads, which original photos need; for a Google account, Photos is
 /// the upload target and the picker import, whatever its Drive offers.
+#[must_use]
 pub fn sync_offers(account: &Account) -> Vec<SyncClass> {
     let storage = account
         .capabilities
@@ -173,6 +184,7 @@ pub fn sync_offers(account: &Account) -> Vec<SyncClass> {
 
 /// Every key a grant for `class` of `account` may have: the Storage one, and for Photos the
 /// Photos-kind one of a Google account.
+#[must_use]
 pub fn keys_of(account: &AccountId, class: SyncClass) -> Vec<GrantKey> {
     let mut keys = vec![sync_key(account, class)];
     if class == SyncClass::Photos {
@@ -183,6 +195,7 @@ pub fn keys_of(account: &AccountId, class: SyncClass) -> Vec<GrantKey> {
 
 /// Whether syncd holds an allowing grant for `class` of `account`: under either key it may
 /// have (the Storage one, or the Photos one of a Google account).
+#[must_use]
 pub fn sync_allowed(grants: &[Grant], account: &AccountId, class: SyncClass) -> bool {
     let wanted = keys_of(account, class);
     grants
@@ -192,6 +205,7 @@ pub fn sync_allowed(grants: &[Grant], account: &AccountId, class: SyncClass) -> 
 
 /// The need syncd's grant for `class` of `account` is asked under: the app folder's for Files,
 /// Google Photos' for the Photos of a Google account, the Photos folders' (Graph) otherwise.
+#[must_use]
 pub fn need_for(account: &Account, class: SyncClass) -> Need {
     match (class, google_photos(account)) {
         (SyncClass::Photos, true) => photos_need(),

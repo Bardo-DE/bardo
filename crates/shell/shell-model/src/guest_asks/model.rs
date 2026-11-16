@@ -12,6 +12,7 @@ impl Computer {
     }
 
     /// The node id as inferd spells it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

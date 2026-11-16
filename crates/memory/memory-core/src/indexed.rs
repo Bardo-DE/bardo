@@ -30,6 +30,7 @@ pub struct IndexText {
 impl IndexPart {
     /// The document id's prefix: `e` for a message and a skeleton (an event body), `n` for a
     /// narrative.
+    #[must_use]
     pub const fn prefix(self) -> &'static str {
         match self {
             IndexPart::Message | IndexPart::Skeleton => "e",
@@ -38,6 +39,7 @@ impl IndexPart {
     }
 
     /// The `Facets.kind` of the document.
+    #[must_use]
     pub const fn facet_kind(self) -> &'static str {
         match self {
             IndexPart::Message => "message",
@@ -48,6 +50,7 @@ impl IndexPart {
 
     /// The document id: `e:<replica>:<seq>` or `n:<replica>:<seq>`. Both parts of a hit map back
     /// to `MemoryItem::Event` of the same event.
+    #[must_use]
     pub fn doc_id(self, event: &EventRef) -> String {
         format!(
             "{}:{}:{}",
@@ -61,6 +64,7 @@ impl IndexPart {
 impl RecallOver {
     /// The `Facets.kind` values a search over this covers. `Events` is every event document
     /// with text; `Messages` and `Episodes` narrow it.
+    #[must_use]
     pub const fn facet_kinds(self) -> &'static [&'static str] {
         match self {
             RecallOver::Facts => &["fact"],
@@ -76,6 +80,7 @@ impl EventBody {
     /// The documents this body adds to the index. Messages and episodes carry their text in the
     /// typed body, so it is a pure function of it; other bodies' text (thing titles, search
     /// text) is built by the service from their views and is not listed here.
+    #[must_use]
     pub fn index_texts(&self) -> Vec<IndexText> {
         match self {
             EventBody::Message(m) => vec![IndexText {

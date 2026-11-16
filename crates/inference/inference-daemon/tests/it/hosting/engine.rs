@@ -192,7 +192,7 @@ fn stream_for(answer: &Chat) -> Vec<Vec<u8>> {
         }
         Chat::Choose { text, top } => {
             let entry = |(token, probability): &(&str, f64)| json!({"token": token, "logprob": probability.ln(), "bytes": null});
-            let mut first = top.first().map(entry).unwrap_or_else(|| json!({}));
+            let mut first = top.first().map_or_else(|| json!({}), entry);
             first["top_logprobs"] = top.iter().map(entry).collect();
             let logprobs = json!({"content": [first], "refusal": null});
             pieces.push(chunk(&frame_with_logprobs(
@@ -247,7 +247,7 @@ fn event(name: &str, data: &Value) -> String {
     format!("event: {name}\ndata: {data}\n\n")
 }
 
-/// What an Anthropic Messages server streams for `answer`: text deltas, or one tool_use block.
+/// What an Anthropic Messages server streams for `answer`: text deltas, or one `tool_use` block.
 fn messages_stream(answer: &Chat) -> Vec<Vec<u8>> {
     let head = b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n".to_vec();
     let mut events = vec![event(

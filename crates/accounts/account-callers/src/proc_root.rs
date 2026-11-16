@@ -83,6 +83,7 @@ pub fn proc_path(root: &ProcRoot) -> &Path {
 
 /// The line for standard error at start, when the variable `var` was set: that a fixture is being
 /// read, or that the variable was ignored. `daemon` is the program's name, which begins the line.
+#[must_use]
 pub fn proc_notice(root: &ProcRoot, daemon: &str, var: &str) -> Option<String> {
     match root {
         Override::Unset => None,

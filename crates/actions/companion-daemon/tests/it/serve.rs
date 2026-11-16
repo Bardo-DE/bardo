@@ -165,14 +165,12 @@ async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
     assert_eq!(answer.phase, AnswerPhase::Done);
     assert_eq!(answer.task, opened.task);
     // The task is over: a follow-up on its session is refused on the bus.
-    assert!(
-        proxy
-            .ask(&serde_json::to_string(&ask).expect("json"), &Details::new())
-            .await
-            .is_err()
-    );
+    proxy
+        .ask(&serde_json::to_string(&ask).expect("json"), &Details::new())
+        .await
+        .unwrap_err();
     // There is no card to act on.
-    assert!(answers.act("{}").await.is_err());
+    answers.act("{}").await.unwrap_err();
 
     // Served as declared: the root object and the answer object.
     let declared = introspection(Bus::Companion);
@@ -193,7 +191,7 @@ async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
 
     // Closing the session removes the answer object.
     proxy.close(opened.session.as_str()).await.expect("close");
-    assert!(answers.view().await.is_err());
+    answers.view().await.unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -321,7 +319,7 @@ async fn only_the_shell_speaks_for_the_person() {
     let agent = serde_json::to_string(&AgentRef::Worker { task: task("t-9") }).expect("json");
 
     let refused = CompanionProxy::new(&stranger).await.expect("proxy");
-    assert!(refused.ask(&ask, &Details::new()).await.is_err());
+    refused.ask(&ask, &Details::new()).await.unwrap_err();
     assert!(
         refused
             .told(&agent, "work", &told(&words_of_the_person))
@@ -340,7 +338,7 @@ async fn only_the_shell_speaks_for_the_person() {
         acts_for: None,
     })
     .expect("json");
-    assert!(refused.open(&open).await.is_err());
+    refused.open(&open).await.unwrap_err();
     assert!(refused.close("s-1").await.is_err());
     assert!(companion.lock().await.roster().entries.is_empty());
 

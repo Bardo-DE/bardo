@@ -70,13 +70,13 @@ pub const PALETTE_AND_HOVER_CASES: &[Case] = &[
     Case {
         component: "menu",
         state: "cursor-controlled",
-        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: at(), items: recent_items(), onpick: |_: u8| {}, onclose: |_| {}, active: MenuCursor::Controlled(Some(2)) } },
+        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: at(), items: recent_items(), onpick: |_: u8| {}, onclose: |()| {}, active: MenuCursor::Controlled(Some(2)) } },
         wait: NOW,
     },
     Case {
         component: "menu",
         state: "cursor-none",
-        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: at(), items: recent_items(), onpick: |_: u8| {}, onclose: |_| {}, active: MenuCursor::Controlled(None) } },
+        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: at(), items: recent_items(), onpick: |_: u8| {}, onclose: |()| {}, active: MenuCursor::Controlled(None) } },
         wait: NOW,
     },
     Case {

@@ -1,4 +1,4 @@
-//! TextField: plain, secure and search fields, bezeled and plain, at each size, with help and a
+//! `TextField`: plain, secure and search fields, bezeled and plain, at each size, with help and a
 //! rejected value, prefix and suffix, disabled and busy.
 
 use crate::pages::{Section, Specimen};
@@ -8,7 +8,7 @@ use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The TextField section.
+/// The `TextField` section.
 #[component]
 pub fn TextFieldSection() -> Element {
     let mut name = use_signal(|| "Dana Okafor".to_owned());

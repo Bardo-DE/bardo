@@ -9,11 +9,11 @@ use ui_core::word::Word;
 pub enum Helper {
     /// mpv, which plays video and every audio format the built-in player does not.
     VideoPlayback,
-    /// FFmpeg and ffprobe, which read a recording's facts and write its exports.
+    /// `FFmpeg` and ffprobe, which read a recording's facts and write its exports.
     MediaProbe,
     /// libheif's `heif-dec` (or `heif-convert`), which decodes HEIC pictures.
     HeicDecode,
-    /// LibRaw's `dcraw_emu` (or `dcraw`), which develops camera raw files.
+    /// `LibRaw`'s `dcraw_emu` (or `dcraw`), which develops camera raw files.
     RawDecode,
 }
 

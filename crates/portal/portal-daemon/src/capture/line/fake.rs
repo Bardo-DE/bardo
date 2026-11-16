@@ -35,21 +35,25 @@ impl FakeLine {
     }
 
     /// A line that grants a connection each time.
+    #[must_use]
     pub fn granting() -> Self {
         Self::answering(Answer::Grant)
     }
 
     /// A line with nobody on the bus to ask.
+    #[must_use]
     pub fn unowned() -> Self {
         Self::answering(Answer::Unavailable)
     }
 
     /// A line the compositor refuses.
+    #[must_use]
     pub fn refusing() -> Self {
         Self::answering(Answer::Refuse)
     }
 
     /// A line the compositor never answers.
+    #[must_use]
     pub fn silent() -> Self {
         Self::answering(Answer::TimeOut)
     }

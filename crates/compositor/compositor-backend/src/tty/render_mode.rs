@@ -67,6 +67,7 @@ pub struct Routes {
 
 impl Routes {
     /// Routes for a session drawing in `mode`.
+    #[must_use]
     pub fn new(mode: RenderMode) -> Routes {
         Routes {
             mode,
@@ -75,6 +76,7 @@ impl Routes {
     }
 
     /// How the session draws.
+    #[must_use]
     pub fn mode(&self) -> RenderMode {
         self.mode
     }

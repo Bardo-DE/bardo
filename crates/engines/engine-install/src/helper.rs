@@ -52,7 +52,7 @@ pub fn parse_args<I: IntoIterator<Item = OsString>>(args: I) -> Result<Request, 
         .map(OsString::into_string)
         .collect::<Result<_, _>>()
         .map_err(|_| ArgError::Usage)?;
-    let [verb, engine, backend] = &words[..] else {
+    let [verb, engine, backend] = &*words else {
         return Err(ArgError::Usage);
     };
     if verb != "install" {
@@ -77,6 +77,7 @@ pub enum Report {
 
 impl Report {
     /// The line, without its newline.
+    #[must_use]
     pub fn line(self) -> String {
         match self {
             Self::Progress(permille) => format!("progress {permille}"),
@@ -113,6 +114,7 @@ pub struct Helper {
 
 impl Helper {
     /// A helper that installs under `roots` on a computer of `arch` running `release`.
+    #[must_use]
     pub fn new(fetcher: Fetcher, roots: Roots, arch: Arch, release: OsRelease) -> Self {
         Self {
             installer: Installer::new(fetcher, roots),

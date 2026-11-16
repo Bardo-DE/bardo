@@ -12,6 +12,7 @@ use std::collections::BTreeSet;
 /// an upsert for every listed item the journal does not hold at that version, a tombstone for
 /// every journal item the listing no longer has. An item whose version is the journal's is
 /// not mentioned, so applying the result re-uploads and re-fetches nothing known.
+#[must_use]
 pub fn reconcile(known: &[JournalItem], listing: &[RemoteItem], now: UnixSeconds) -> Vec<Change> {
     let at_version = |item: &RemoteItem| {
         known.iter().any(|row| {
@@ -60,6 +61,7 @@ pub struct MassDelete {
 /// more than [`MASS_DELETE_FLOOR`] items and more than half of it. An empty or failed listing
 /// from a server that is in trouble looks exactly like that, and acting on it would wipe the
 /// local mirror, so the caller halts for confirmation instead.
+#[must_use]
 pub fn mass_delete(known: &[JournalItem], changes: &[Change]) -> Option<MassDelete> {
     // Only settled items are discarded by a deletion; a pending one becomes a conflict instead.
     let settled = |row: &&JournalItem| matches!(row.state, ItemState::Synced | ItemState::Fetching);
@@ -107,6 +109,7 @@ pub enum LocalChange {
 
 /// The changes a scan makes against the journal. Items mid-fetch, mid-discard or in conflict
 /// are left to their own step.
+#[must_use]
 pub fn local_changes(known: &[JournalItem], scan: &[Scanned]) -> Vec<LocalChange> {
     let mut out: Vec<LocalChange> = Vec::new();
     for seen in scan {

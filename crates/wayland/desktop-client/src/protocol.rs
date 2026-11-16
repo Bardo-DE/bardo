@@ -44,6 +44,7 @@ impl Protocol {
     ];
 
     /// The global's interface name in the registry.
+    #[must_use]
     pub const fn interface(self) -> &'static str {
         match self {
             Self::ExtForeignToplevelList => "ext_foreign_toplevel_list_v1",
@@ -59,6 +60,7 @@ impl Protocol {
     }
 
     /// The protocol a registry interface name belongs to, if this crate uses it.
+    #[must_use]
     pub fn from_interface(interface: &str) -> Option<Protocol> {
         Self::ALL.into_iter().find(|p| p.interface() == interface)
     }
@@ -76,6 +78,7 @@ pub struct ProtocolSet(BTreeSet<Protocol>);
 
 impl ProtocolSet {
     /// Nothing offered.
+    #[must_use]
     pub fn empty() -> Self {
         Self::default()
     }
@@ -92,12 +95,14 @@ impl ProtocolSet {
     }
 
     /// This set and `protocol`.
+    #[must_use]
     pub fn with(mut self, protocol: Protocol) -> Self {
         self.0.insert(protocol);
         self
     }
 
     /// Whether `protocol` is offered.
+    #[must_use]
     pub fn contains(&self, protocol: Protocol) -> bool {
         self.0.contains(&protocol)
     }

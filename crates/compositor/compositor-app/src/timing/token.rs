@@ -12,6 +12,7 @@ pub struct Token(String);
 
 impl Token {
     /// `text` as one word.
+    #[must_use]
     pub fn of(text: &str) -> Token {
         let word: String = text
             .chars()

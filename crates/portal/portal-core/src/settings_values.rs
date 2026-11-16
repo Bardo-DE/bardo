@@ -21,6 +21,7 @@ pub struct Rgb {
 
 impl Rgb {
     /// A colour from 8-bit channels.
+    #[must_use]
     pub fn from_u8(r: u8, g: u8, b: u8) -> Self {
         Self {
             r: f64::from(r) / 255.0,
@@ -170,6 +171,7 @@ pub fn read_all<S: AsRef<str>>(
 }
 
 /// The settings whose value differs between two appearances (for `SettingChanged`).
+#[must_use]
 pub fn changes(old: &Appearance, new: &Appearance) -> Vec<(SettingKey, SettingValue)> {
     ALL_KEYS
         .iter()

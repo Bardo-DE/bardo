@@ -29,6 +29,7 @@ pub struct EiSeat {
 
 impl EiSeat {
     /// A seat that is not connected yet; `attach` connects it.
+    #[must_use]
     pub fn new(isolation: SeatIsolation) -> Self {
         Self {
             caps: SeatCaps::for_isolation(isolation),

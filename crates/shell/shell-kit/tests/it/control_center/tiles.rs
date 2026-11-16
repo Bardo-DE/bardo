@@ -1,4 +1,4 @@
-//! ModuleTile's specimens: every state in each span, in both schemes, and the chevron's forms
+//! `ModuleTile`'s specimens: every state in each span, in both schemes, and the chevron's forms
 //! (live, disabled with the tile, absent, open).
 
 use dioxus::prelude::*;

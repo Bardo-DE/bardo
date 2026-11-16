@@ -83,6 +83,7 @@ pub struct Limits {
 
 impl Limits {
     /// Limits with these schema limits and this repair budget.
+    #[must_use]
     pub fn new(schema: SchemaLimits, repairs: RepairBudget) -> Self {
         Self { schema, repairs }
     }
@@ -105,6 +106,7 @@ pub struct Resolved {
 
 impl StructuredConfig {
     /// The limits for this table.
+    #[must_use]
     pub fn resolve(&self) -> Resolved {
         let said = self;
         let (open_text, a) = OPEN_TEXT.pick(said.open_text);

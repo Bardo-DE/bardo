@@ -188,7 +188,7 @@ pub(super) fn grab(state: &mut State, surface: PopupSurface, _seat: WlSeat, seri
 /// The keyboard is about to go to `next` while a popup holds the grab: when `next` is not the
 /// toplevel (or layer) the popup hangs from, the user has moved on (another window was
 /// activated, the screen locked), and the grab is dismissed with its popups, the topmost first
-/// (xdg_popup.grab: "dismissed when the user dismisses the popup"). The seat's grabs end here, so
+/// (`xdg_popup.grab`: "dismissed when the user dismisses the popup"). The seat's grabs end here, so
 /// the focus change that follows reaches the new target.
 pub(crate) fn dismiss_for_focus(state: &mut State, next: Option<&WlSurface>) {
     let keyboard = state.wl.seat.keyboard.clone();

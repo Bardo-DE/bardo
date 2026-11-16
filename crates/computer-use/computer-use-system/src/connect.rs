@@ -25,6 +25,7 @@ impl Links {
     /// Links that reach intentd, memoryd and inferd through `connection`. Nothing is called
     /// yet: a daemon that is not there is found when it is first asked, and each seam says so
     /// in its own words (`LinkError::Unavailable`, `Transient`).
+    #[must_use]
     pub fn over(connection: &Connection, tier: Tier) -> Links {
         Links {
             gate: IntentsGate::over(action_client::DbusTransport::new(connection.clone())),

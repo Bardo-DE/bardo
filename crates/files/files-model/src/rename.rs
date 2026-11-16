@@ -23,6 +23,7 @@ pub enum Rename {
 
 impl Rename {
     /// The editing state for `name`, with its own name as the draft.
+    #[must_use]
     pub fn begin(name: FileName) -> Rename {
         Rename::Editing {
             draft: name.display().into_owned(),
@@ -40,6 +41,7 @@ impl Rename {
     }
 
     /// The same, when `name` is still in `entries`; otherwise nothing is being renamed any more.
+    #[must_use]
     pub fn kept_in(self, entries: &[Entry]) -> Rename {
         let present = match &self {
             Rename::Editing { name, .. } => entries.iter().any(|e| e.name == *name),

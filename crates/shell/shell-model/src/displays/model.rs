@@ -21,6 +21,7 @@ pub struct Displays {
 
 impl Displays {
     /// What a brightness change on output `name` drives.
+    #[must_use]
     pub fn target(&self, name: &OutputName) -> BrightnessTarget {
         let placement = self
             .outputs
@@ -37,6 +38,7 @@ impl Displays {
     }
 
     /// The brightness `target` is at now (the OSD's level), if it has one.
+    #[must_use]
     pub fn brightness(&self, target: &BrightnessTarget) -> Option<Percent> {
         match target {
             BrightnessTarget::Backlight(name) => self

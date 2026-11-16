@@ -83,8 +83,8 @@ fn the_name_stands_above_the_magnified_tile_centred_on_it() {
         "clear of the tile"
     );
     let (label_centre, tile_centre) = (
-        (label.left + label.right) / 2.0,
-        (tile.left + tile.right) / 2.0,
+        f32::midpoint(label.left, label.right),
+        f32::midpoint(tile.left, tile.right),
     );
     assert!(
         (label_centre - tile_centre).abs() <= 1.0,

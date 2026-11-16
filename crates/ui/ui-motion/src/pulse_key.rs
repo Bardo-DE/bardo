@@ -25,6 +25,7 @@ pub struct PulseKey {
 
 impl PulseKey {
     /// A pulse of `anim` that is not playing.
+    #[must_use]
     pub fn rest(anim: Anim) -> Self {
         PulseKey {
             anim,
@@ -33,16 +34,19 @@ impl PulseKey {
     }
 
     /// The animation this key plays.
+    #[must_use]
     pub fn anim(self) -> Anim {
         self.anim
     }
 
     /// Which alias is playing.
+    #[must_use]
     pub fn phase(self) -> PulsePhase {
         self.phase
     }
 
     /// The same animation with the other alias playing: what `Pulse::fire` stores.
+    #[must_use]
     pub fn fired(self) -> Self {
         let phase = match self.phase {
             PulsePhase::Rest | PulsePhase::B => PulsePhase::A,
@@ -52,6 +56,7 @@ impl PulseKey {
     }
 
     /// `base` with this pulse's class added while it plays, and its `data-pulse` alias.
+    #[must_use]
     pub fn wear(self, base: &str) -> (String, Option<&'static str>) {
         match self.attrs() {
             Some((anim, alias)) => (format!("{base} {anim}"), Some(alias)),
@@ -60,6 +65,7 @@ impl PulseKey {
     }
 
     /// The class and `data-pulse` value to render, or `None` while at rest.
+    #[must_use]
     pub fn attrs(self) -> Option<(String, &'static str)> {
         let alias = match self.phase {
             PulsePhase::Rest => return None,

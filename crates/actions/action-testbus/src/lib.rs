@@ -66,17 +66,20 @@ pub struct PrivateBus {
 
 impl PrivateBus {
     /// A bus in `dir`.
+    #[must_use]
     pub fn start(dir: &Path) -> Self {
         Self::launch(dir, Policy::Plain, None, &[])
     }
 
     /// A bus that also activates the services described in `servicedir`, and whose own
     /// environment (what an activated service inherits) is `env`.
+    #[must_use]
     pub fn start_with(dir: &Path, servicedir: Option<&Path>, env: &[(&str, &str)]) -> Self {
         Self::launch(dir, Policy::Plain, servicedir, env)
     }
 
     /// A bus whose connections may eavesdrop (for a test that watches what a binary sends).
+    #[must_use]
     pub fn start_eavesdropping(dir: &Path) -> Self {
         Self::launch(dir, Policy::Eavesdrop, None, &[])
     }
@@ -119,11 +122,13 @@ impl PrivateBus {
     }
 
     /// The address a daemon started by the test is told to use.
+    #[must_use]
     pub fn address(&self) -> &str {
         &self.address
     }
 
     /// The PID of the `dbus-daemon` itself.
+    #[must_use]
     pub fn pid(&self) -> u32 {
         self.daemon.pid()
     }

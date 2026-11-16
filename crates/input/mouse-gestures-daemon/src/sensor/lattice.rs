@@ -34,22 +34,26 @@ fn per_mm(axis: Axis) -> UnitsPerMm {
 }
 
 /// A position in millimetres on the grid.
+#[must_use]
 pub fn point(at: MmPoint) -> Point {
     Point::new(REFERENCE.x.units(at.x), REFERENCE.y.units(at.y))
 }
 
 /// `units` of the grid along `axis`, in millimetres.
+#[must_use]
 pub fn mm(units: i32, axis: Axis) -> Mm {
     per_mm(axis).mm(units)
 }
 
 /// A length in millimetres on the grid along `axis`, rounded to the nearest unit. The inverse of
 /// [`mm`]: a whole number of units comes back exactly.
+#[must_use]
 pub fn grid(mm: Mm, axis: Axis) -> i32 {
     per_mm(axis).units(mm)
 }
 
 /// A configured length on the grid along `axis`, rounded to the nearest unit.
+#[must_use]
 pub fn units(um: Um, axis: Axis) -> i32 {
     per_mm(axis).units(Mm(f64::from(um.0) / 1000.0))
 }
@@ -64,6 +68,7 @@ pub struct GridExtent {
 }
 
 impl GridExtent {
+    #[must_use]
     pub fn of(s: &Surface) -> Self {
         Self {
             x_min: REFERENCE.x.units(s.extent.x.min),
@@ -84,6 +89,7 @@ pub struct Ellipse {
 
 impl Ellipse {
     /// The ellipse of two configured radii.
+    #[must_use]
     pub fn of(x: Um, y: Um) -> Self {
         Self {
             x: units(x, Axis::X),
@@ -102,12 +108,14 @@ impl Ellipse {
     }
 
     /// Whether `d` is on or outside the ellipse.
+    #[must_use]
     pub fn reached(self, d: Point) -> bool {
         let (len, r) = self.scaled(d);
         len >= r
     }
 
     /// Whether `d` is on or inside the ellipse.
+    #[must_use]
     pub fn contains(self, d: Point) -> bool {
         let (len, r) = self.scaled(d);
         len <= r

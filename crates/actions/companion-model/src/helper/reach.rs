@@ -26,6 +26,7 @@ pub enum Ceiling {
 
 impl Ceiling {
     /// The most consequential effect it allows.
+    #[must_use]
     pub fn effect(self) -> Effect {
         match self {
             Ceiling::Look => Effect::Read,
@@ -104,6 +105,7 @@ fn how_far(effect: Effect) -> &'static str {
 }
 
 /// What a reach lets a helper do, one plain line per app: "org.bardo.Mail: look at things".
+#[must_use]
 pub fn reach_lines(policy: &TaskPolicy) -> Vec<String> {
     policy
         .actions

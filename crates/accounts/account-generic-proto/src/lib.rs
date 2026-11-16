@@ -3,7 +3,7 @@
 //! client it has and tests need no network.
 //!
 //! - [`mail`]: the mail servers a person typed, or a provider file names, as endpoints and claims.
-//! - [`dav`]: finding CalDAV and CardDAV at a server: `.well-known`, then a PROPFIND with the
+//! - [`dav`]: finding `CalDAV` and `CardDAV` at a server: `.well-known`, then a PROPFIND with the
 //!   password (account-dav-proto's walk).
 //! - [`jmap`]: the session request of a JMAP server typed by hand.
 //! - [`check`]: what the password is tried against at the incoming mail server.
@@ -69,6 +69,7 @@ pub(crate) fn bodiless(
 }
 
 /// What the provider file declares, as claims at `Declared` provenance.
+#[must_use]
 pub fn declared(spec: &ProviderSpec) -> Vec<Claim> {
     spec.capabilities
         .iter()

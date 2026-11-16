@@ -15,6 +15,7 @@ const FILES_BUDGET: Duration = Duration::from_millis(150);
 const WEB_SEARCH_URL: &str = "https://duckduckgo.com/?q={query}";
 
 /// The search runner's policy `l` makes.
+#[must_use]
 pub fn search_policy_of(l: &LauncherSettings) -> LauncherPolicy {
     LauncherPolicy {
         files_budget: FILES_BUDGET,

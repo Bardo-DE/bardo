@@ -1,4 +1,4 @@
-//! wl_touch: down, motion, up, frame, cancel. Every event reaches the transcript through the
+//! `wl_touch`: down, motion, up, frame, cancel. Every event reaches the transcript through the
 //! connection's tap; the helper only binds the seat and asks it for its touch.
 
 use crate::conn::{ClientError, ClientState, TestClient};
@@ -27,6 +27,7 @@ impl Touch {
     }
 
     /// The `wl_touch`.
+    #[must_use]
     pub fn touch(&self) -> &WlTouch {
         &self.touch
     }

@@ -1,4 +1,4 @@
-//! AccountPicker: a pop-up button listing the accounts an app may use, with "Add Account..." under
+//! `AccountPicker`: a pop-up button listing the accounts an app may use, with "Add Account..." under
 //! them (design/31 section 5.1). The chosen account is the host's.
 
 use super::adapter::{ChoiceMenu, Disc};

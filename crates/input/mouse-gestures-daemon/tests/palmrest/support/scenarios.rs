@@ -21,9 +21,9 @@ pub const GOLDEN_HEADER: [u8; 14] = [
 ];
 /// id 6 at (1100, 1217), major 64, minor 48, size 12, orientation -15, Touching.
 pub const GOLDEN_A: [u8; 8] = [0x4c, 0xf4, 0xb3, 0x40, 0x30, 0x8c, 0x45, 0x40];
-/// id 0 at (-2048, 2048), major 16, minor 16, size 5, orientation 0, MakeTouch.
+/// id 0 at (-2048, 2048), major 16, minor 16, size 5, orientation 0, `MakeTouch`.
 pub const GOLDEN_B: [u8; 8] = [0x00, 0x08, 0x80, 0x10, 0x10, 0x05, 0x80, 0x30];
-/// id 12 at (-1, -487), major 5, minor 4, size 63, orientation 30, OutOfRange.
+/// id 12 at (-1, -487), major 5, minor 4, size 63, orientation 30, `OutOfRange`.
 pub const GOLDEN_C: [u8; 8] = [0xff, 0x7f, 0x1e, 0x05, 0x04, 0x3f, 0xfb, 0x70];
 
 fn golden(touches: &[[u8; 8]]) -> Vec<u8> {

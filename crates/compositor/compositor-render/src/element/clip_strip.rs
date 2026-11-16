@@ -44,6 +44,7 @@ impl<R: Renderer> fmt::Debug for ClipStripElement<R> {
 impl<R: Renderer + ImportAll> ClipStripElement<R> {
     /// The strip `plan` makes of `surface` at the output scale `output_scale`, clipped to
     /// `shape` (the window's rounded rectangle at rest); `None` when the band holds none of it.
+    #[must_use]
     pub fn new(
         surface: SharedSurface<R>,
         output_scale: f64,
@@ -61,6 +62,7 @@ impl<R: Renderer + ImportAll> ClipStripElement<R> {
     }
 
     /// The plain strip this one clips.
+    #[must_use]
     pub fn strip(&self) -> &StripElement<SharedSurface<R>> {
         &self.strip
     }

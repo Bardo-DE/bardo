@@ -117,9 +117,10 @@ impl FakeMemoryd {
         stored.extend(records.iter().cloned());
         drop(stored);
         let first = self.event();
-        match batch {
-            false => MemoryReply::Recorded(first),
-            true => MemoryReply::RecordedBatch(first, Count(records.len() as u32)),
+        if batch {
+            MemoryReply::RecordedBatch(first, Count(records.len() as u32))
+        } else {
+            MemoryReply::Recorded(first)
         }
     }
 

@@ -66,6 +66,7 @@ pub struct AiAccounts {
 
 impl Bus {
     /// The handle on ai accounts.
+    #[must_use]
     pub fn ai_accounts(&self) -> AiAccounts {
         AiAccounts { bus: self.clone() }
     }

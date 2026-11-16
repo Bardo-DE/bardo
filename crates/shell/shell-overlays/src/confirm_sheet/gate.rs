@@ -111,7 +111,7 @@ impl Machine for AnswerGate {
         input: GateIn,
         at: Stamp,
         params: &GateParams,
-        _: &(),
+        (): &(),
     ) -> (AnswerGate, Vec<GateOut>) {
         let answer = |choice| (AnswerGate::Answered, vec![GateOut::Answer(choice)]);
         match (self, input) {

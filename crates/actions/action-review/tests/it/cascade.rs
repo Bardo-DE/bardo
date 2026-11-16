@@ -78,7 +78,7 @@ fn tighten_never_loosens() {
                     .any(|(_, v)| matches!(v, Ok(ReviewVerdict::Deny { .. })));
                 match (&ruling, gate) {
                     (Ruling::Deny(_), g) => {
-                        assert_eq!(g, Gate::Refuse(DenyCode::NotAllowed), "{name}")
+                        assert_eq!(g, Gate::Refuse(DenyCode::NotAllowed), "{name}");
                     }
                     (Ruling::Ask(_), g) => assert_eq!(g, Gate::Confirm, "{name}"),
                     (Ruling::AllowFinal(_), g) => assert_eq!(g, Gate::Run, "{name}"),
@@ -89,10 +89,10 @@ fn tighten_never_loosens() {
                         );
                     }
                     (Ruling::AllowJudged(_), Gate::Refuse(_)) => {
-                        assert!(any_deny, "refused without a deny: {verdicts:?}")
+                        assert!(any_deny, "refused without a deny: {verdicts:?}");
                     }
                     (Ruling::AllowJudged(_), Gate::Confirm) => {
-                        assert!(!all_planned_allowed || any_deny || planned.is_empty())
+                        assert!(!all_planned_allowed || any_deny || planned.is_empty());
                     }
                 }
             }

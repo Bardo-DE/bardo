@@ -93,11 +93,13 @@ pub struct Standing {
 
 impl Standing {
     /// The standing of `role` in the app `app`.
+    #[must_use]
     pub const fn new(app: &'static str, role: Role) -> Self {
         Self { app, role }
     }
 
     /// Whether `caller` holds this standing.
+    #[must_use]
     pub fn held_by(&self, caller: &Caller) -> bool {
         caller.app.name.as_str() == self.app && caller.role == self.role
     }
@@ -112,12 +114,14 @@ pub const COMPANIOND: Standing = Standing::new("org.bardo.Companion1", Role::Age
 pub const SHELL: Standing = Standing::new("org.bardo.Shell", Role::SheetHost);
 
 /// The table of a process that answers intentd alone and reads no file: one row, intentd's unit.
+///
 /// An app serving `IntentProvider1` has no `/etc/bardo` file of its own to keep, and the router is
 /// the same on every machine.
 pub const INTENTD_ONLY: &str =
     "[[caller]]\napp = \"org.bardo.Intents\"\nunit = \"bardo-actiond.service\"\nrole = \"agent\"\n";
 
 /// The table of [`INTENTD_ONLY`]: one row, intentd's unit.
+#[must_use]
 pub fn intentd_only() -> CallerTable {
     table_from_toml(INTENTD_ONLY).unwrap_or_default()
 }
@@ -177,6 +181,7 @@ enum Procs {
 
 impl Identity {
     /// Reads the system's `/proc`, and asks the systemd manager for a service's main process.
+    #[must_use]
     pub fn on_system(connection: BusConnection, table: CallerTable) -> Self {
         Self::over(Procs::Read(ProcCallers::new(connection, table)))
     }
@@ -186,6 +191,7 @@ impl Identity {
     /// `<root>/units/<unit>`): how a test or the acceptance harness presents its processes. Only
     /// with the feature `fixture-callers`.
     #[cfg(feature = "fixture-callers")]
+    #[must_use]
     pub fn on_fixture(connection: BusConnection, table: CallerTable, proc_root: PathBuf) -> Self {
         Self::over(Procs::Read(ProcCallers::with_proc_root(
             connection, table, proc_root,
@@ -194,6 +200,7 @@ impl Identity {
 
     /// The fixture tree when there is one, else the system's `/proc`. A build without
     /// `fixture-callers` that is handed a fixture tree identifies nobody.
+    #[must_use]
     pub fn on(connection: BusConnection, table: CallerTable, fixture: Option<&Path>) -> Self {
         match fixture {
             #[cfg(feature = "fixture-callers")]

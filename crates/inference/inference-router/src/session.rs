@@ -74,7 +74,7 @@ pub struct Routing {
     /// Why this model: announced to the client, and recorded in the audit entry.
     pub why: Why,
     /// For a hosted model, how it is reached (`Why::Reached`): announced beside `why`, so the
-    /// footer can say "via OpenRouter". None for a model on this computer.
+    /// footer can say "via `OpenRouter`". None for a model on this computer.
     pub reached: Option<Why>,
     /// Whether the reason is announced (`ai.auto.show_reason`); an eviction always is.
     pub show: bool,
@@ -84,6 +84,7 @@ pub struct Routing {
 
 impl Routing {
     /// The `Answer` stage note of a turn this routing serves.
+    #[must_use]
     pub fn answer_note(&self) -> StageNote {
         StageNote {
             role: StageRole::Answer,
@@ -94,6 +95,7 @@ impl Routing {
     }
 
     /// The decision without its reason.
+    #[must_use]
     pub fn decision(&self) -> RouteDecision {
         RouteDecision {
             served: self.served.clone(),
@@ -281,6 +283,7 @@ pub enum SessionOut {
 /// Whether a request of this kind fits the need the session was opened with: chat and tasks
 /// need a language model, embeddings an embedding model, computer-use steps a computer-use
 /// model, transcription a speech model with `Stt`, speaking one with `Tts`.
+#[must_use]
 pub fn fits(need: &Need, kind: RequestKind) -> bool {
     match (need, kind) {
         (Need::Llm(_), RequestKind::Chat | RequestKind::Task) => true,

@@ -72,6 +72,7 @@ pub struct NewHeader {
 
 impl NewHeader {
     /// The header of `record`, stamped with the recorded time and the body's keyed digest.
+    #[must_use]
     pub fn of(record: &Record, recorded: UnixSeconds, digest_key: &SubKey) -> NewHeader {
         NewHeader {
             occurred: record.occurred,
@@ -86,6 +87,7 @@ impl NewHeader {
     }
 
     /// The header with its place in the chain.
+    #[must_use]
     pub fn chained(self, seq: Seq, replica: ReplicaId, prev: Link32) -> Header {
         Header {
             seq,
@@ -124,6 +126,7 @@ const fn effect_byte(effect: Effect) -> u8 {
 }
 
 /// The canonical bytes of a header. Pure, golden-tested.
+#[must_use]
 pub fn header_bytes(h: &Header) -> Vec<u8> {
     let mut out = Vec::with_capacity(256);
     out.extend_from_slice(HEADER_MAGIC);
@@ -142,11 +145,13 @@ pub fn header_bytes(h: &Header) -> Vec<u8> {
 }
 
 /// The entry's link: `blake3` of its canonical header bytes.
+#[must_use]
 pub fn link(h: &Header) -> Link32 {
     Link32(*blake3::hash(&header_bytes(h)).as_bytes())
 }
 
 /// The `prev` of the first entry of a (Space, replica) chain.
+#[must_use]
 pub fn genesis_link(space: &SpaceId, replica: &ReplicaId) -> Link32 {
     let mut hasher = blake3::Hasher::new();
     hasher.update(GENESIS_CONTEXT);
@@ -157,6 +162,7 @@ pub fn genesis_link(space: &SpaceId, replica: &ReplicaId) -> Link32 {
 
 /// The keyed digest of a body (`blake3` keyed with the Space's digest subkey), so an erased
 /// body cannot be guessed from the chain.
+#[must_use]
 pub fn body_digest(key: &SubKey, body: &EventBody) -> Digest32 {
     Digest32(*blake3::keyed_hash(key.expose(), &json(body)).as_bytes())
 }

@@ -36,6 +36,7 @@ pub enum FirstShow {
 impl FirstShow {
     /// A toplevel that just mapped. The stamps are put in order: a commit is not before its
     /// connection.
+    #[must_use]
     pub fn committed(opened: Opened) -> FirstShow {
         let first_commit_at = opened.first_commit_at.or_later(opened.connected_at);
         FirstShow::Committed(Opened {
@@ -46,6 +47,7 @@ impl FirstShow {
 
     /// Whether a frame already showed the window, so it waits for the end of its open
     /// animation (otherwise it waits for the first frame that shows it).
+    #[must_use]
     pub fn is_shown(&self) -> bool {
         matches!(self, FirstShow::Shown { .. })
     }

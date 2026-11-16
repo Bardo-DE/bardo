@@ -26,6 +26,7 @@ pub struct ScriptedProvider {
 }
 
 impl ScriptedProvider {
+    #[must_use]
     pub fn new(models: Vec<ModelInfo>, scripts: Vec<Script>) -> Self {
         Self {
             models,

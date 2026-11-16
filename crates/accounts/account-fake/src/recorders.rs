@@ -11,7 +11,7 @@ fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
     // A panic while the lock is held already failed the test that caused it.
     mutex
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner())
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// A registry store in memory. Clones share what is stored.
@@ -24,6 +24,7 @@ pub struct MemoryStore {
 
 impl MemoryStore {
     /// A store already holding `state`.
+    #[must_use]
     pub fn holding(state: Persisted) -> Self {
         Self {
             kept: Arc::new(Mutex::new(Some(state))),
@@ -32,11 +33,13 @@ impl MemoryStore {
     }
 
     /// What was last saved, if anything.
+    #[must_use]
     pub fn stored(&self) -> Option<Persisted> {
         lock(&self.kept).clone()
     }
 
     /// How many saves succeeded.
+    #[must_use]
     pub fn saves(&self) -> usize {
         *lock(&self.saves)
     }
@@ -68,6 +71,7 @@ pub struct RecordingAudit(Arc<Mutex<Vec<AuditEntry>>>);
 
 impl RecordingAudit {
     /// Every entry so far, in order.
+    #[must_use]
     pub fn entries(&self) -> Vec<AuditEntry> {
         lock(&self.0).clone()
     }

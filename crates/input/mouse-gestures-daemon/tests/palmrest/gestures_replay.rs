@@ -279,7 +279,7 @@ fn a_click_cancels_the_scroll_and_holds_gestures_off() {
         phases[cancel + 1..].iter().all(|p| *p != Phase::Changed),
         "no scroll while the button is held: {phases:?}"
     );
-    assert!(phases.iter().filter(|p| **p == Phase::Began).count() == 1);
+    assert_eq!(phases.iter().filter(|p| **p == Phase::Began).count(), 1);
     let pad: Vec<&Out> = all.iter().filter(|o| matches!(o, Out::Pad(_))).collect();
     assert!(matches!(
         pad.last(),

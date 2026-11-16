@@ -68,7 +68,7 @@ fn watch_settings<M: 'static>(ctx: &mut HostCtx<M>) {
     let every = Palmrest::look_every();
     let armed = ctx
         .handle
-        .insert_source(Timer::from_duration(every), move |_, _, ctx| {
+        .insert_source(Timer::from_duration(every), move |_, (), ctx| {
             ctx.state.palmrest.settings_changed();
             TimeoutAction::ToDuration(every)
         });
@@ -87,7 +87,7 @@ fn look_again_later<M: 'static>(ctx: &mut HostCtx<M>) {
     };
     let armed = ctx
         .handle
-        .insert_source(Timer::from_duration(wait), |_, _, ctx| {
+        .insert_source(Timer::from_duration(wait), |_, (), ctx| {
             ctx.palmrest_retry = None;
             ctx.state.palmrest.retry_now();
             TimeoutAction::Drop

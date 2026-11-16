@@ -42,6 +42,7 @@ impl ContentFit {
 /// first layout.
 ///
 /// Outside a window that can be resized (a server render, a snapshot) this measures nothing.
+#[must_use]
 pub fn use_content_fit(width: u32, least: Extent) -> ContentFit {
     let probe = use_rect();
     let sizer = use_window_sizer();

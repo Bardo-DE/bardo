@@ -37,6 +37,7 @@ use ui_core::geometry::scale::Scale;
 
 /// The size of the image a window with `content` logical pixels is drawn into at `scale`: each
 /// side `round(l x s)`, the same conversion every buffer uses.
+#[must_use]
 pub fn window_capture_size(content: LogicalSize, scale: Scale) -> PhysicalSize {
     buffer_size(content, scale)
 }

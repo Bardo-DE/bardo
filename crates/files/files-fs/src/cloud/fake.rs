@@ -61,6 +61,7 @@ pub struct FakeClouds {
 
 impl FakeClouds {
     /// A computer with these drives and no items.
+    #[must_use]
     pub fn with(drives: Vec<CloudDrive>) -> FakeClouds {
         let fake = FakeClouds::default();
         fake.lock().drives = drives;

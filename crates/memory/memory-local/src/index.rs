@@ -1,11 +1,11 @@
-//! `index.db`: FTS5 and the vectors in one SQLCipher file.
+//! `index.db`: FTS5 and the vectors in one `SQLCipher` file.
 
 use memory_recall::{Embedder, ExactScan, Fts5, Index, IndexError};
 use memory_seal::DbKey;
 use rusqlite::Connection;
 use std::path::Path;
 
-/// A SQLCipher file opened with `key` (`PRAGMA key`, then `secure_delete` so removed rows do not
+/// A `SQLCipher` file opened with `key` (`PRAGMA key`, then `secure_delete` so removed rows do not
 /// linger in free pages, and no temporary files). A wrong key shows at the first query.
 pub(crate) fn open_keyed(path: &Path, key: &DbKey) -> Result<Connection, IndexError> {
     let conn = Connection::open(path)?;

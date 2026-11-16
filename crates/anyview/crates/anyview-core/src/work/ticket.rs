@@ -7,6 +7,7 @@ pub struct Ticket(pub u64);
 
 impl Ticket {
     /// The ticket of the load after this one.
+    #[must_use]
     pub fn next(self) -> Ticket {
         Ticket(self.0.saturating_add(1))
     }

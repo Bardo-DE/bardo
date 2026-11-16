@@ -78,6 +78,7 @@ pub enum Unframed<T> {
 }
 
 /// Reads the first frame of `buffer`.
+#[must_use]
 pub fn unframe<T: DeserializeOwned>(buffer: &[u8]) -> Unframed<T> {
     let Some((head, rest)) = buffer.split_first_chunk::<4>() else {
         return Unframed::Partial;
@@ -177,6 +178,6 @@ mod tests {
             frame(&body),
             Err(FrameError::TooLong { len }) if len > MAX_FRAME as usize
         ));
-        assert!(frame(&"x").is_ok());
+        frame(&"x").unwrap();
     }
 }

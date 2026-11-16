@@ -39,6 +39,7 @@ pub enum CornerMenuLine {
 
 /// The lines of every corner's pop-up: the desktop's actions, then Open and App Action, then
 /// Command, then nothing, a rule between the groups.
+#[must_use]
 pub fn corner_menu() -> Vec<CornerMenuLine> {
     let desk = HotDesk::OFFERED
         .into_iter()
@@ -65,6 +66,7 @@ pub enum HotPicked {
 }
 
 /// What picking `choice` comes to.
+#[must_use]
 pub fn corner_picked(choice: CornerChoice) -> HotPicked {
     match choice {
         CornerChoice::Desk(desk) => HotPicked::Set(Some(HotDo::Desk(desk))),
@@ -86,6 +88,7 @@ pub struct HotShown {
 
 /// What the pop-up shows for `does`: a desktop action or nothing marks its line; any other
 /// binding is said in its own words.
+#[must_use]
 pub fn corner_shown(does: Option<&HotDo>) -> HotShown {
     match does {
         None => HotShown {

@@ -86,6 +86,7 @@ const DIM: i32 = 300;
 const RISE_SHARE: i32 = 100;
 
 /// The pose of part `index` of `count` at `at` thousandths of a cycle in `gesture`.
+#[must_use]
 pub fn pose(gesture: PartGesture, index: usize, count: usize, at: Thousandths) -> PartPose {
     let at = at.0.clamp(0, 1000);
     match gesture {

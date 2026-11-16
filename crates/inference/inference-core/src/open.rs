@@ -46,6 +46,7 @@ pub struct OpenOptions {
 
 impl OpenOptions {
     /// These options carrying the caller's trace, so the daemon's spans continue it.
+    #[must_use]
     pub fn with_traceparent(self, traceparent: Traceparent) -> Self {
         Self {
             traceparent: Some(traceparent),
@@ -54,6 +55,7 @@ impl OpenOptions {
     }
 
     /// These options limited to `places`, in this order of preference.
+    #[must_use]
     pub fn with_places(self, places: Vec<PlaceId>) -> Self {
         Self {
             places: Some(places),
@@ -62,12 +64,14 @@ impl OpenOptions {
     }
 
     /// These options naming `model` for `place`.
+    #[must_use]
     pub fn with_place_model(mut self, place: PlaceId, model: ModelId) -> Self {
         self.place_models.insert(place, model);
         self
     }
 
     /// These options with the session's usage named.
+    #[must_use]
     pub fn with_usage(self, usage: Usage) -> Self {
         Self {
             usage: Some(usage),
@@ -76,6 +80,7 @@ impl OpenOptions {
     }
 
     /// These options for a turn asked by `asker`.
+    #[must_use]
     pub fn with_asker(self, asker: Asker) -> Self {
         Self {
             asker: Some(asker),
@@ -84,6 +89,7 @@ impl OpenOptions {
     }
 
     /// These options naming `model` as the session's own model.
+    #[must_use]
     pub fn with_model(self, model: ModelRef) -> Self {
         Self {
             model: Some(model),
@@ -92,11 +98,13 @@ impl OpenOptions {
     }
 
     /// Whose turn the session carries: the one named, else the person.
+    #[must_use]
     pub fn asker_or_default(&self) -> Asker {
         self.asker.clone().unwrap_or(Asker::Person)
     }
 
     /// The usage the session is for: the one named, else `Interactive`.
+    #[must_use]
     pub fn usage_or_default(&self) -> Usage {
         self.usage.unwrap_or(Usage::Interactive)
     }

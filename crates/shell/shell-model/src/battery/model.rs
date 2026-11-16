@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::units::{Minutes, Percent, Presence, Seconds};
 
-/// UPower's display device, as the bar draws it.
+/// `UPower`'s display device, as the bar draws it.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Battery {
     /// `IsPresent`: a desktop has no battery, and the bar hides the item.
@@ -18,7 +18,7 @@ pub struct Battery {
     pub time_to_full: Seconds,
 }
 
-/// UPower's `State`, folded to what the icon distinguishes.
+/// `UPower`'s `State`, folded to what the icon distinguishes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Charge {
@@ -28,13 +28,14 @@ pub enum Charge {
     Discharging,
     Empty,
     Full,
-    /// Plugged in and not charging (UPower's pending-charge and pending-discharge).
+    /// Plugged in and not charging (`UPower`'s pending-charge and pending-discharge).
     Idle,
 }
 
 impl Charge {
-    /// UPower's `State` number (0 unknown, 1 charging, 2 discharging, 3 empty, 4 fully
+    /// `UPower`'s `State` number (0 unknown, 1 charging, 2 discharging, 3 empty, 4 fully
     /// charged, 5 pending charge, 6 pending discharge); anything else is `Unknown`.
+    #[must_use]
     pub fn from_upower(state: u32) -> Charge {
         match state {
             1 => Charge::Charging,
@@ -57,8 +58,9 @@ pub enum Remaining {
 }
 
 impl Battery {
-    /// The time left in the direction the charge is going; `Unknown` when UPower has no
+    /// The time left in the direction the charge is going; `Unknown` when `UPower` has no
     /// estimate for that direction.
+    #[must_use]
     pub fn remaining(&self) -> Remaining {
         let minutes = |s: Seconds| Minutes(u32::try_from(s.0 / 60).unwrap_or(u32::MAX));
         match self.charge {

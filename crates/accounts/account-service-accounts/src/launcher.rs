@@ -25,6 +25,7 @@ pub enum LoginEnd {
 
 impl LoginEnd {
     /// What the sheet says of an end that was not a success.
+    #[must_use]
     pub fn fault(self) -> SignInFault {
         match self {
             LoginEnd::Reported(LoginOutcome::Ready) => SignInFault::Unreadable,
@@ -92,6 +93,7 @@ pub trait Launchers: Send + Sync {
 
 /// The program an agent account runs: the one its claims are about. None for an account that
 /// names none.
+#[must_use]
 pub fn program_of(account: &Account) -> Option<AgentProgram> {
     account
         .capabilities

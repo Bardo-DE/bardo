@@ -113,7 +113,7 @@ async fn no_model_configured_leaves_the_agents_own_and_lists_what_it_offers() {
 
 #[test]
 fn a_model_id_has_no_spaces() {
-    assert!(ModelId::parse("gemini-pro-agent").is_ok());
+    ModelId::parse("gemini-pro-agent").unwrap();
     for bad in ["", "two words", "tab\t"] {
         assert!(ModelId::parse(bad).is_err(), "{bad:?}");
     }

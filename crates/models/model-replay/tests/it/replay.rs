@@ -334,7 +334,7 @@ fn mismatch_names_index() {
     let mut sink = Collect(vec![], usize::MAX);
     let got = block_on(p.turn(&request("nope", b"png"), &mut sink));
     assert!(matches!(got, Err(ProviderError::BadRequest(_))));
-    let [ReplayError::Mismatch { index, want, got }] = &p.misses()[..] else {
+    let [ReplayError::Mismatch { index, want, got }] = &*p.misses() else {
         panic!("one mismatch: {:?}", p.misses());
     };
     assert_eq!(*index, InteractionId(0));

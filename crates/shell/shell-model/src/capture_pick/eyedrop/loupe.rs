@@ -35,6 +35,7 @@ pub struct Loupe {
 
 /// The magnifier for a pointer at `at` on a surface `surface` logical pixels across and down that
 /// shows a picture `shot` device pixels across and down; none when the pointer is off the picture.
+#[must_use]
 pub fn loupe_at(shot: (u32, u32), surface: (u32, u32), at: (f64, f64)) -> Option<Loupe> {
     let pixel = pixel_under(shot, surface, at)?;
     let centre = (GRID / 2) as i32;

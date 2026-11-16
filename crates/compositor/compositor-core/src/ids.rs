@@ -21,7 +21,7 @@ pub struct ClientKey(pub u64);
 #[serde(transparent)]
 pub struct LayerKey(pub u64);
 
-/// One popup (an xdg_popup of a window or a layer).
+/// One popup (an `xdg_popup` of a window or a layer).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct PopupKey(pub u64);
@@ -75,6 +75,7 @@ impl OutputName {
     }
 
     /// The name's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -107,6 +108,7 @@ impl OutputKey {
     /// model and serial text are percent-encoded (`%2F`, `%25`) so the separators stay the only
     /// slashes: make `a/b` + model `c` and make `a` + model `b/c` are different keys (CASC-08).
     /// A key changes only for EDID text that holds one of those two characters.
+    #[must_use]
     pub fn of(facts: &EdidFacts, name: &OutputName) -> OutputKey {
         match &facts.serial {
             EdidSerial::Known(serial) => OutputKey(format!(
@@ -120,6 +122,7 @@ impl OutputKey {
     }
 
     /// The key's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -147,23 +150,27 @@ pub struct IdMint {
 
 impl IdMint {
     /// A mint whose first id is 1.
+    #[must_use]
     pub fn start() -> IdMint {
         IdMint { next: 1 }
     }
 
     /// The next window id, and the mint after it.
+    #[must_use]
     pub fn window(self) -> (IdMint, WindowId) {
         let (mint, n) = self.take();
         (mint, WindowId(n))
     }
 
     /// The next layer id, and the mint after it.
+    #[must_use]
     pub fn layer(self) -> (IdMint, LayerKey) {
         let (mint, n) = self.take();
         (mint, LayerKey(n))
     }
 
     /// The next lease id, and the mint after it.
+    #[must_use]
     pub fn lease(self) -> (IdMint, LeaseId) {
         let (mint, n) = self.take();
         (mint, LeaseId(n))

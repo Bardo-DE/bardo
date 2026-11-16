@@ -25,9 +25,10 @@ struct Flaky {
 
 impl PimGrants for Flaky {
     async fn granted(&self, _kind: PimKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
-        match self.down.load(Ordering::SeqCst) {
-            true => Err(AccountdUnavailable),
-            false => Ok(Vec::new()),
+        if self.down.load(Ordering::SeqCst) {
+            Err(AccountdUnavailable)
+        } else {
+            Ok(Vec::new())
         }
     }
 }

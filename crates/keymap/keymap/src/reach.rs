@@ -22,6 +22,7 @@ impl StandardAction {
     /// Whether every app honours this action, or only apps that offer the feature.
     ///
     /// The match below is the one list: it names every action, so a new action cannot be left out.
+    #[must_use]
     pub fn reach(self) -> Reach {
         use StandardAction as S;
         match self {

@@ -27,6 +27,7 @@ pub struct VisibleLogin {
 
 impl VisibleLogin {
     /// A runner that gives its commands exactly `env`.
+    #[must_use]
     pub fn new(env: Vec<(String, String)>) -> Self {
         Self { env }
     }

@@ -18,6 +18,7 @@ use crate::ipc::dispatch::{Reach, sent};
 
 /// Answer `bardo-shell voice ...`. A hold begins by putting the launcher in companion mode (a summon no
 /// app takes, so the prompt is the launcher's) and starting the utterance over what was focused.
+#[must_use]
 pub fn dispatch(reach: &Reach, request: VoiceRequest) -> Response {
     let services = reach.services;
     let voice = |command| sent(services.voice.control.send(command), "voice");

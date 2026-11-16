@@ -11,6 +11,7 @@ pub struct ProgramLabels(BTreeMap<String, String>);
 
 impl ProgramLabels {
     /// The labels of the agent-login rows among `rows`.
+    #[must_use]
     pub fn of_rows(rows: &[ProviderRow]) -> ProgramLabels {
         ProgramLabels(
             rows.iter()
@@ -26,7 +27,7 @@ impl ProgramLabels {
     /// never read.
     pub fn name_of(&self, program: &str, label: Option<&String>) -> Option<String> {
         label
-            .map(|label| label.as_str())
+            .map(std::string::String::as_str)
             .or_else(|| self.0.get(program).map(String::as_str))
             .map(str::to_owned)
     }

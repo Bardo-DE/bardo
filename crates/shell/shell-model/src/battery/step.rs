@@ -4,6 +4,7 @@ use super::{Battery, BatteryEvent};
 use crate::units::Percent;
 
 /// `battery` after `event`.
+#[must_use]
 pub fn step(battery: Battery, event: BatteryEvent) -> Battery {
     match event {
         BatteryEvent::Presence(presence) => Battery {

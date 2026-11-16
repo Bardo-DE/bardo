@@ -11,6 +11,7 @@ pub struct RecordingSpawn {
 
 impl RecordingSpawn {
     /// Everything started so far, oldest first.
+    #[must_use]
     pub fn started(&self) -> Vec<Argv> {
         locked(&self.started).clone()
     }

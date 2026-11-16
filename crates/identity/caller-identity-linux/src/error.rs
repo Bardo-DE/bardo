@@ -31,6 +31,7 @@ pub enum PinError {
 impl PinError {
     /// Why a peer that could not be held is unknown: gone, or unreadable. A new variant fails as
     /// unreadable until it is given its own reason.
+    #[must_use]
     pub fn why_not(&self) -> WhyNot {
         match self {
             PinError::PeerGone => WhyNot::PeerGone,
@@ -66,6 +67,7 @@ pub enum ProbeError {
 impl ProbeError {
     /// Why a process that could not be probed is unknown: gone, or unreadable. A new variant
     /// fails as unreadable until it is given its own reason.
+    #[must_use]
     pub fn why_not(&self) -> WhyNot {
         match self {
             ProbeError::PeerGone => WhyNot::PeerGone,

@@ -1,4 +1,4 @@
-//! The HTTP/1.1 relay (WebDAV, CalDAV, CardDAV, OCS, JMAP). The app speaks plain HTTP on its
+//! The HTTP/1.1 relay (`WebDAV`, `CalDAV`, `CardDAV`, OCS, JMAP). The app speaks plain HTTP on its
 //! stream; the relay forwards each request over TLS to the endpoint's origin and nowhere else:
 //!
 //! - the request target is origin-form, or absolute-form with the endpoint's origin (rewritten
@@ -53,16 +53,19 @@ pub struct HttpRelay {
 
 impl HttpRelay {
     /// What the relay presents and where.
+    #[must_use]
     pub fn plan(&self) -> &RelayPlan {
         &self.plan
     }
 
     /// Where the relay stands.
+    #[must_use]
     pub fn phase(&self) -> &HttpPhase {
         &self.phase
     }
 
     /// A relay at the start of a connection.
+    #[must_use]
     pub fn new(plan: RelayPlan) -> Self {
         Self {
             plan,

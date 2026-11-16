@@ -99,9 +99,10 @@ pub(super) fn hover(state: &mut State, at: LogicalPoint) {
     if drag::moved(state, at) {
         return;
     }
-    state.render.overview_hover = match escape_leaves(state) {
-        true => window_at(state, at),
-        false => None,
+    state.render.overview_hover = if escape_leaves(state) {
+        window_at(state, at)
+    } else {
+        None
     };
 }
 
@@ -166,9 +167,10 @@ pub(super) fn draw(state: &mut State, view: &OutputView) -> Option<OverviewDraw>
         Drag::Dragging { window, .. } => Some(*window),
         _ => None,
     };
-    let icons = match takes_input(state) {
-        true => icons_of(state, view),
-        false => BTreeMap::new(),
+    let icons = if takes_input(state) {
+        icons_of(state, view)
+    } else {
+        BTreeMap::new()
     };
     Some(OverviewDraw {
         hover,

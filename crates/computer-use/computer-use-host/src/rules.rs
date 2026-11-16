@@ -27,6 +27,7 @@ pub fn parse_rules(text: &str) -> Result<Rules, RulesError> {
 }
 
 /// The rules the program ships.
+#[must_use]
 pub fn shipped_rules() -> Rules {
     parse_rules(SHIPPED_RULES).expect("the shipped screen rules read (a test holds them to it)")
 }
@@ -55,6 +56,6 @@ mod tests {
 
     #[test]
     fn a_file_that_is_not_rules_is_refused() {
-        assert!(parse_rules("[injection]\naddressees = 3").is_err());
+        parse_rules("[injection]\naddressees = 3").unwrap_err();
     }
 }

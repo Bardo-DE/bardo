@@ -16,6 +16,7 @@ use super::words;
 const TOLD_KEPT: usize = 30;
 
 /// `model` after `msg`, and what the screen asks the companion.
+#[must_use]
 pub fn update(model: HelpersModel, msg: HelpersMsg) -> (HelpersModel, Vec<HelpersCommand>) {
     match msg {
         HelpersMsg::Listed(view) => (listed(model, view), Vec::new()),

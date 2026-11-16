@@ -1,4 +1,4 @@
-//! Disks over a private bus with a stand-in for UDisks2: which are listed, opening, ejecting,
+//! Disks over a private bus with a stand-in for `UDisks2`: which are listed, opening, ejecting,
 //! what is told when a disk is busy, and hot-plug.
 
 use std::sync::Arc;

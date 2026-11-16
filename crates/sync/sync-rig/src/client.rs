@@ -143,9 +143,7 @@ async fn status(
     .await;
     match answer {
         Ok(details) => {
-            let fields = from_vardict(&details)
-                .map(Value::Object)
-                .unwrap_or(Value::Null);
+            let fields = from_vardict(&details).map_or(Value::Null, Value::Object);
             emit(json!({ "result": "ok", "dataset": dataset, "status": fields }));
             true
         }
@@ -193,13 +191,14 @@ async fn watch_conflicts(
         }
         let next = std::future::poll_fn(|cx| std::pin::Pin::new(&mut conflicts).poll_next(cx));
         let signal = match deadline {
-            Some(at) => match tokio::time::timeout_at(at, next).await {
-                Ok(signal) => signal,
-                Err(_) => {
+            Some(at) => {
+                if let Ok(signal) = tokio::time::timeout_at(at, next).await {
+                    signal
+                } else {
                     emit(json!({ "result": "timeout", "seen": seen }));
                     return seen > 0;
                 }
-            },
+            }
             None => next.await,
         };
         let Some(signal) = signal else {
@@ -207,9 +206,7 @@ async fn watch_conflicts(
             return false;
         };
         let Ok(args) = signal.args() else { continue };
-        let conflict = from_vardict(args.conflict())
-            .map(Value::Object)
-            .unwrap_or(Value::Null);
+        let conflict = from_vardict(args.conflict()).map_or(Value::Null, Value::Object);
         emit(json!({ "event": "conflict", "dataset": args.dataset(), "conflict": conflict }));
         seen += 1;
     }

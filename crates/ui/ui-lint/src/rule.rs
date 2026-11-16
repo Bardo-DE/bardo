@@ -164,6 +164,7 @@ pub struct Exception {
 
 impl Exception {
     /// Whether this exception silences `offence`.
+    #[must_use]
     pub fn covers(&self, offence: &Offence) -> bool {
         self.rule == offence.rule && self.selector == offence.selector
     }
@@ -186,6 +187,7 @@ pub struct LintConfig {
 impl LintConfig {
     /// The default profile with no exceptions and no consumer variables, over the vocabulary of
     /// `kits`.
+    #[must_use]
     pub fn new(kits: &Kits) -> LintConfig {
         LintConfig {
             profile: Profile::default(),
@@ -196,6 +198,7 @@ impl LintConfig {
     }
 
     /// Splits `offences` into those no exception covers and those one does.
+    #[must_use]
     pub fn partition(&self, offences: Vec<Offence>) -> (Vec<Offence>, Vec<Offence>) {
         offences.into_iter().partition(|offence| {
             !self

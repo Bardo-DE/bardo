@@ -33,6 +33,7 @@ impl Profile {
 
     /// The daemon's word for a profile (`power-saver`, `balanced`, `performance`); `None` for any
     /// other word. Compared whole.
+    #[must_use]
     pub fn from_daemon(word: &str) -> Option<Profile> {
         match word {
             "power-saver" => Some(Profile::PowerSaver),
@@ -43,6 +44,7 @@ impl Profile {
     }
 
     /// The word the daemon takes for this profile.
+    #[must_use]
     pub fn daemon_word(self) -> &'static str {
         match self {
             Profile::PowerSaver => "power-saver",

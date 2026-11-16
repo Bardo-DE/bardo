@@ -82,12 +82,14 @@ pub struct OutputSurfaces {
 
 impl OutputSurfaces {
     /// Whether any surface of this row is `id`.
+    #[must_use]
     pub fn contains(&self, id: SurfaceId) -> bool {
         self.ids().any(|held| held == id)
     }
 
     /// The id of `S`'s surface in this row, if one is spawned. A slotted kind has several; this
     /// is the first.
+    #[must_use]
     pub fn surface_of<S: Surface>(&self) -> Option<SurfaceId> {
         self.spawned
             .iter()
@@ -96,6 +98,7 @@ impl OutputSurfaces {
     }
 
     /// The surface `id`, if this row holds it.
+    #[must_use]
     pub fn spawned_by(&self, id: SurfaceId) -> Option<&Spawned> {
         self.spawned.iter().find(|surface| surface.id == id)
     }
@@ -119,6 +122,7 @@ pub struct Outputs {
 
 impl Outputs {
     /// `info`'s surfaces, if this output is known.
+    #[must_use]
     pub fn get(&self, id: OutputId) -> Option<&OutputSurfaces> {
         self.outputs
             .iter()
@@ -142,6 +146,7 @@ impl Outputs {
     }
 
     /// The output called `name`, when it is connected.
+    #[must_use]
     pub fn named(&self, name: &str) -> Option<OutputId> {
         self.outputs
             .iter()
@@ -155,6 +160,7 @@ impl Outputs {
     /// A panel opens on the focused window's output (`focus`). The rule wants the pointer's
     /// output next, but the daemon does not know the pointer's output, so the fallback, and the
     /// main display, is the first output the compositor announced.
+    #[must_use]
     pub fn pick(&self, policy: OutputPolicy, focus: Option<&OutputName>) -> Option<OutputId> {
         let focused = focus.and_then(|focus| {
             self.outputs
@@ -169,6 +175,7 @@ impl Outputs {
     }
 
     /// The output a panel of kind `S` opens on.
+    #[must_use]
     pub fn open_on<S: Surface>(&self, services: &Services) -> Option<OutputId> {
         let focus = services.windows.state.borrow().toplevels.focused_output();
         self.pick(S::OUTPUTS, focus.as_ref())
@@ -193,6 +200,7 @@ pub enum OutputAction {
 }
 
 /// The actions that turn `current` into one set of surfaces per output in `now`.
+#[must_use]
 pub fn reconcile(current: &Outputs, now: &[OutputInfo]) -> Vec<OutputAction> {
     let existing = |id| current.outputs.iter().find(|(info, _)| info.id == id);
     let mut actions: Vec<OutputAction> = now

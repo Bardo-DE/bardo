@@ -43,6 +43,7 @@ const UNICODE_BASE: u32 = 0x0100_0000;
 ///
 /// chordkit writes `Shift+=` as `+` and `Shift+/` as `?`; the keyboard reports the unshifted
 /// key with Shift held, so those two are written back that way.
+#[must_use]
 pub fn chord_of(chord: keymap::Chord) -> Option<Chord> {
     let (key, shifted) = match chord.key() {
         Key::Char('+') => (Keysym(0x3d), true),
@@ -51,9 +52,10 @@ pub fn chord_of(chord: keymap::Chord) -> Option<Chord> {
     };
     let mods = mods_of(chord.modifiers());
     Some(Chord {
-        mods: match shifted {
-            true => mods.with(HeldMods::SHIFT),
-            false => mods,
+        mods: if shifted {
+            mods.with(HeldMods::SHIFT)
+        } else {
+            mods
         },
         key,
     })

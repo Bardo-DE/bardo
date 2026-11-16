@@ -21,7 +21,7 @@ use std::time::Duration;
 const LOOK_EVERY: Duration = Duration::from_secs(2);
 
 /// How long the person has to finish signing in.
-const SIGN_IN_LIMIT: Duration = Duration::from_secs(5 * 60);
+const SIGN_IN_LIMIT: Duration = Duration::from_mins(5);
 
 /// How many looks Tailscale gets to leave "starting" or to give its page, a look each.
 const SETTLE_LOOKS: u32 = 8;
@@ -89,9 +89,10 @@ impl TailnetFlow {
             return Move::Fail(SignInFault::Unreadable);
         };
         let signed = Self::signed(label.clone());
-        match self.review {
-            true => Move::Review(signed),
-            false => Move::Done(signed),
+        if self.review {
+            Move::Review(signed)
+        } else {
+            Move::Done(signed)
         }
     }
 

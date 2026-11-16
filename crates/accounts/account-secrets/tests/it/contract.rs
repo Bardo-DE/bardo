@@ -283,8 +283,8 @@ async fn namespaces_keep_their_items_apart() {
         .expect("entry")
         .get_password()
     };
-    assert!(entry("porter").is_ok());
-    assert!(entry("mailo/work").is_ok());
+    entry("porter").unwrap();
+    entry("mailo/work").unwrap();
     mailo.delete_account(&filed.account).await.expect("wipe");
     assert_eq!(mailo.get(&filed).await, Err(SecretsError::Missing));
     assert_eq!(porter.get(&filed).await, Ok(password("a")));
@@ -464,9 +464,10 @@ impl Secrets for Plain {
         self.0.put(key, value).await
     }
     async fn get(&self, key: &SecretKey) -> Result<Credential, SecretsError> {
-        match self.1.load(std::sync::atomic::Ordering::SeqCst) {
-            true => Err(SecretsError::Locked),
-            false => self.0.get(key).await,
+        if self.1.load(std::sync::atomic::Ordering::SeqCst) {
+            Err(SecretsError::Locked)
+        } else {
+            self.0.get(key).await
         }
     }
     async fn delete(&self, key: &SecretKey) -> Result<(), SecretsError> {

@@ -23,6 +23,7 @@ impl Extent {
     /// `least`. A `least` larger than the cap wins (a window is never smaller than its layout
     /// fits in), as does an extent of zero against any `least`. It is
     /// [`fit_with`](Extent::fit_with) [`Fit::PerAxis`].
+    #[must_use]
     pub fn fit(self, screen: Extent, least: Option<Extent>) -> Extent {
         self.fit_with(screen, least, Fit::PerAxis)
     }
@@ -31,6 +32,7 @@ impl Extent {
     /// each axis, applied per axis or to the shape as a whole, and the result is then raised
     /// per axis to `least`, which wins over the cap. A natural size with a zero axis has no
     /// shape to keep and is capped per axis.
+    #[must_use]
     pub fn fit_with(self, screen: Extent, least: Option<Extent>, fit: Fit) -> Extent {
         let share = |pixels: u32| pixels.saturating_mul(CAP_PERCENT) / 100;
         let cap = Extent::new(share(screen.width), share(screen.height));
@@ -60,9 +62,10 @@ impl Extent {
         // Whichever axis is further over its cap sets the factor: width when `cw / w` is the
         // smaller of the two ratios. Rounded to the nearest pixel, never past the cap.
         let scaled = |value: u64, by: u64, of: u64| ((value * by + of / 2) / of) as u32;
-        match cw * h <= ch * w {
-            true => Extent::new(cap.width, scaled(h, cw, w).min(cap.height)),
-            false => Extent::new(scaled(w, ch, h).min(cap.width), cap.height),
+        if cw * h <= ch * w {
+            Extent::new(cap.width, scaled(h, cw, w).min(cap.height))
+        } else {
+            Extent::new(scaled(w, ch, h).min(cap.width), cap.height)
         }
     }
 
@@ -87,12 +90,14 @@ impl WindowSize {
     /// A window that opens at `natural` fitted to `screen` (see [`Extent::fit`]) and keeps
     /// `least` as its least. With no `screen` known (the loop is not up, or winit lists no
     /// monitor) the window opens at `natural` raised to `least`, uncapped.
+    #[must_use]
     pub fn fitting(natural: Extent, screen: Option<Extent>, least: Extent) -> WindowSize {
         WindowSize::fitting_with(natural, screen, least, Fit::PerAxis)
     }
 
     /// [`WindowSize::fitting`], choosing how a natural size that is too big shrinks
     /// ([`Fit::KeepRatio`] for content with a shape of its own).
+    #[must_use]
     pub fn fitting_with(
         natural: Extent,
         screen: Option<Extent>,

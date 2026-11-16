@@ -155,9 +155,10 @@ impl HeadlessRenderer for DummyRenderer {
         let mut framebuffer = smithay::backend::renderer::test::DummyFramebuffer;
         let rendered = render_output(self, &mut framebuffer, tracker, &elements, age.0)
             .map_err(BackendError::from)?;
-        Ok(match rendered.damage.is_empty() {
-            true => Drawn::Unchanged,
-            false => Drawn::Nothing(rendered.damage),
+        Ok(if rendered.damage.is_empty() {
+            Drawn::Unchanged
+        } else {
+            Drawn::Nothing(rendered.damage)
         })
     }
 
@@ -330,6 +331,7 @@ fn argb_formats<R: Bind<Dmabuf>>(renderer: &R) -> Vec<Format> {
 
 /// The formats a software renderer draws a capture into when it has not been started: linear
 /// `Argb8888` and `Xrgb8888`, what pixman binds.
+#[must_use]
 pub fn linear_capture_formats() -> Vec<Format> {
     [Fourcc::Argb8888, Fourcc::Xrgb8888]
         .into_iter()

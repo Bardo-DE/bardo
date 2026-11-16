@@ -1,4 +1,5 @@
 //! `zwp_virtual_keyboard_v1`: the client side of an on-screen keyboard. Filled by P0-H7.
+//!
 //! The keyboard has no events, so the client state needs no sink: it names
 //! [`VirtualKeyboardDelegate`] for the manager and the keyboard with
 //! `wayland_client::delegate_dispatch!`.

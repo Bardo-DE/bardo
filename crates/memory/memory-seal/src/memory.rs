@@ -28,6 +28,7 @@ pub struct MemoryKeys {
 
 impl MemoryKeys {
     /// An empty, unlocked store.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

@@ -125,7 +125,7 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::Tick => tick(run, fx, at),
         RunInput::Granted(answer) => granted(run, fx, answer),
         RunInput::GrantFailed(_) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::ConsentDenied))
+            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::ConsentDenied));
         }
         RunInput::GrantUnanswered if run.phase == RunPhase::Granting => {
             finish_unanswered(run, fx);
@@ -137,7 +137,7 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         }
         RunInput::Leased(grant) => leased(run, fx, grant.id),
         RunInput::LeaseRefused(_) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::LeaseRefused))
+            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::LeaseRefused));
         }
         RunInput::AcquireFailed(failure) => acquire_failed(run, fx, &failure),
         RunInput::Observed(obs) => observed(run, fx, *obs),
@@ -150,7 +150,7 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::Confirming(id) => confirming(run, fx, id),
         RunInput::Verdict(answer) => verdict(run, fx, at, answer),
         RunInput::GateFailed(_) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::RouterUnreachable))
+            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::RouterUnreachable));
         }
         RunInput::Injected(receipt) => injected(run, fx, at, receipt),
         RunInput::InjectFailed(error) => inject_failed(run, fx, error),

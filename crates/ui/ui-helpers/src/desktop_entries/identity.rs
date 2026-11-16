@@ -34,6 +34,7 @@ pub struct AppIdentity {
 impl AppIdentity {
     /// The identity the `[Desktop Entry]` group `entry` declares for the file `desktop_id`.
     /// Nothing here can fail: a key that is missing or blank falls back or stays empty.
+    #[must_use]
     pub fn from_entry(desktop_id: DesktopId, entry: &DesktopGroup) -> AppIdentity {
         let text = |key: &str| {
             entry

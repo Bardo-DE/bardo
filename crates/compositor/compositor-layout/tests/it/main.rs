@@ -1,4 +1,4 @@
-//! compositor-layout's integration tests: knobs, limits, the model's spec, RustScene and the spread.
+//! compositor-layout's integration tests: knobs, limits, the model's spec, `RustScene` and the spread.
 //!
 //! One integration binary: every former `tests/*.rs` is a module here, and `support` is shared.
 

@@ -51,6 +51,7 @@ pub enum Guard {
 
 impl Record {
     /// A fresh record for a release nobody has vouched for.
+    #[must_use]
     pub fn unconfirmed(version: Version) -> Self {
         Self {
             version: Some(version),
@@ -60,6 +61,7 @@ impl Record {
     }
 
     /// A record for a release that is known to work.
+    #[must_use]
     pub fn confirmed(version: Version) -> Self {
         Self {
             version: Some(version),
@@ -70,6 +72,7 @@ impl Record {
 
     /// Notes a start of `current` in boot `boot` and says what to do. A record about another release
     /// is replaced; a confirmed release is always fine; the same boot counts once.
+    #[must_use]
     pub fn started(self, current: &Version, boot: &str, restore: Restore) -> (Self, Guard) {
         let mut record = if self.version.as_ref() == Some(current) {
             self

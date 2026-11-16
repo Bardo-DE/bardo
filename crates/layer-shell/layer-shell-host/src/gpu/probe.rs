@@ -268,7 +268,7 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for Probe {
         state: &mut Self,
         layer: &ZwlrLayerSurfaceV1,
         event: zwlr_layer_surface_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

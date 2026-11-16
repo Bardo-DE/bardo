@@ -34,6 +34,7 @@ const WIDE_OVER_SRGB: f64 = 1.20;
 
 /// The gamut `primaries` describe. A degenerate triangle (all zero from a display that leaves
 /// the chromaticity bytes empty) is `Srgb`, the assumption every desktop already makes.
+#[must_use]
 pub fn classify(primaries: &Primaries) -> Gamut {
     let panel = [
         primaries.red.xy(),

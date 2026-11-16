@@ -22,6 +22,7 @@ pub struct AgentDown(BTreeSet<(LeaseId, Pressed)>);
 
 impl AgentDown {
     /// Nothing down.
+    #[must_use]
     pub fn none() -> AgentDown {
         AgentDown::default()
     }
@@ -41,6 +42,7 @@ impl AgentDown {
     }
 
     /// Whether `lease`'s press of `what` was delivered and is still down.
+    #[must_use]
     pub fn holds(&self, lease: LeaseId, what: Pressed) -> bool {
         self.0.contains(&(lease, what))
     }

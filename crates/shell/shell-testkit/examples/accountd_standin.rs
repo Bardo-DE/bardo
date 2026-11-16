@@ -60,8 +60,7 @@ async fn serve(address: String) {
         .msg_type(zbus::message::Type::Signal)
         .interface("org.bardo.AccountsSheet1")
         .and_then(|b| b.member("Input"))
-        .map(|b| b.build())
-        .unwrap_or_else(|e| panic!("{e}"));
+        .map_or_else(|e| panic!("{e}"), zbus::match_rule::Builder::build);
     let mut inputs = MessageStream::for_match_rule(rule, &accountd, None)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
@@ -88,9 +87,10 @@ async fn host(connection: &Connection) -> AccountsSheetProxy<'static> {
 }
 
 fn view_file(path: &str) -> String {
-    std::fs::read_to_string(path)
-        .map(|text| text.split_whitespace().collect::<Vec<_>>().join(" "))
-        .unwrap_or_else(|e| panic!("{path}: {e}"))
+    std::fs::read_to_string(path).map_or_else(
+        |e| panic!("{path}: {e}"),
+        |text| text.split_whitespace().collect::<Vec<_>>().join(" "),
+    )
 }
 
 async fn command(proxy: &AccountsSheetProxy<'_>, forged: &AccountsSheetProxy<'_>, line: &str) {

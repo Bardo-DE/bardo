@@ -24,6 +24,7 @@ use crate::outgoing::Outgoing;
 ///     DesktopCommand::PickWindowMenu("w3".to_owned(), WindowEntry::Left)
 /// );
 /// ```
+#[must_use]
 pub fn command_of(picked: &WindowMenuPicked) -> DesktopCommand {
     DesktopCommand::PickWindowMenu(picked.window.clone(), picked.entry)
 }

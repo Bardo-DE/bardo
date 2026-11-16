@@ -26,9 +26,12 @@ fn tag(text: &str) -> String {
 fn dir_name(segment: &str) -> String {
     let cleaned: String = segment
         .chars()
-        .map(|c| match c.is_ascii_alphanumeric() || "._-".contains(c) {
-            true => c,
-            false => '_',
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || "._-".contains(c) {
+                c
+            } else {
+                '_'
+            }
         })
         .collect();
     match cleaned.trim_start_matches('.') {
@@ -42,15 +45,19 @@ fn dir_name(segment: &str) -> String {
 fn slug(kind: PimKind, dir: &str) -> String {
     let body: String = dir
         .chars()
-        .map(|c| match c.is_ascii_alphanumeric() {
-            true => c.to_ascii_lowercase(),
-            false => '_',
+        .map(|c| {
+            if c.is_ascii_alphanumeric() {
+                c.to_ascii_lowercase()
+            } else {
+                '_'
+            }
         })
         .collect();
     let room = 48 - kind.slug().len() - 1;
-    match body.len() > room {
-        true => format!("{}_{}_{}", kind.slug(), &body[..room - 7], tag(dir)),
-        false => format!("{}_{body}", kind.slug()),
+    if body.len() > room {
+        format!("{}_{}_{}", kind.slug(), &body[..room - 7], tag(dir))
+    } else {
+        format!("{}_{body}", kind.slug())
     }
 }
 
@@ -59,6 +66,7 @@ fn slug(kind: PimKind, dir: &str) -> String {
 /// directory whatever order they are found in. Two of one kind that would share a directory (or
 /// a slug, which is only lowercasing of it) all get the same name plus a short hash of their
 /// URL, so the names depend on the set and never on the order the server lists it in.
+#[must_use]
 pub fn plan(kind: PimKind, found: Vec<Found>) -> Vec<Planned> {
     let names: Vec<(String, String)> = found
         .iter()
@@ -78,13 +86,12 @@ pub fn plan(kind: PimKind, found: Vec<Found>) -> Vec<Planned> {
         .into_iter()
         .enumerate()
         .map(|(at, found)| {
-            let (dir, slug) = match clashes(at) {
-                false => names[at].clone(),
-                true => {
-                    let dir = format!("{}-{}", names[at].0, tag(found.url.as_str()));
-                    let slug = slug(kind, &dir);
-                    (dir, slug)
-                }
+            let (dir, slug) = if clashes(at) {
+                let dir = format!("{}-{}", names[at].0, tag(found.url.as_str()));
+                let slug = slug(kind, &dir);
+                (dir, slug)
+            } else {
+                names[at].clone()
             };
             Planned {
                 dataset: DatasetId::parse(&slug).expect("a slug made of [a-z0-9_]"),

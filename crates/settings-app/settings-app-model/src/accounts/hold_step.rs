@@ -38,6 +38,7 @@ impl Holds {
     }
 
     /// Whether `account` has a hold on any of its datasets.
+    #[must_use]
     pub fn any_of(&self, account: &Account) -> bool {
         self.0.iter().any(|hold| hold.belongs_to(&account.key))
     }
@@ -75,6 +76,7 @@ pub enum HoldEffect {
 }
 
 /// The holds after `input`, and what to do about it.
+#[must_use]
 pub fn hold_step(holds: Holds, input: HoldInput) -> (Holds, Vec<HoldEffect>) {
     let Holds(mut list) = holds;
     let mut effects = Vec::new();

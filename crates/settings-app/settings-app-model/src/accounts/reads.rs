@@ -15,6 +15,7 @@ pub enum Reads {
 impl Reads {
     /// A read is wanted: it starts now when none runs (the answer is `true`), else the running one
     /// reads again after (`false`).
+    #[must_use]
     pub fn ask(self) -> (Self, bool) {
         match self {
             Self::Idle => (Self::InFlight, true),
@@ -23,6 +24,7 @@ impl Reads {
     }
 
     /// The running read ended: read once more when something asked meanwhile (`true`).
+    #[must_use]
     pub fn finish(self) -> (Self, bool) {
         match self {
             Self::Stale => (Self::InFlight, true),

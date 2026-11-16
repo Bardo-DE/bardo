@@ -20,6 +20,7 @@ impl HistoryCap {
     }
 
     /// The number of files kept.
+    #[must_use]
     pub fn get(self) -> usize {
         self.0.get()
     }

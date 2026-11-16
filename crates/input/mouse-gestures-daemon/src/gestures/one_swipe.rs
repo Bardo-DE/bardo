@@ -44,6 +44,7 @@ pub enum OneSwipe {
 
 impl OneSwipe {
     /// Consumes one report's contacts and the recogniser's decision after it.
+    #[must_use]
     pub fn step(
         self,
         contacts: &[Sample],

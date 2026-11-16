@@ -9,12 +9,14 @@ pub struct NoteText(String);
 
 impl NoteText {
     /// The note `text` says; `None` when it says nothing.
+    #[must_use]
     pub fn new(text: &str) -> Option<NoteText> {
         let kept: String = text.trim().chars().take(NOTE_LIMIT).collect();
         (!kept.is_empty()).then_some(NoteText(kept))
     }
 
     /// The words.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

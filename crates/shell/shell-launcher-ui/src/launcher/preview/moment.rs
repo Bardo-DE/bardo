@@ -52,6 +52,7 @@ impl Detailed for PaneState {
 
 /// Track the pane's `state`, caused by `touch` (a key or a press in the panel, else
 /// `Touch::Remote`). The pane mounts when the person shows it, so its first frame animates.
+#[must_use]
 pub fn use_pane_detail(state: PaneState, touch: Touch) -> Detail<PaneState> {
     use_detail(state, touch)
 }

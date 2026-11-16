@@ -23,6 +23,7 @@ impl FakeCapture {
     }
 
     /// A source that serves this run: a frame for each `Some`, a quiet spell for each `None`.
+    #[must_use]
     pub fn scripted(size: Extent, run: Vec<Option<CapturedFrame>>) -> Self {
         Self {
             size,
@@ -32,6 +33,7 @@ impl FakeCapture {
 
     /// `count` solid shm frames of `size`; frame `n` is filled with the byte `n` (mod 256) and
     /// stamped `n` milliseconds, so a test can tell them apart.
+    #[must_use]
     pub fn solid(size: Extent, count: u32) -> Self {
         let stride = size.width * 4;
         let frames = (0..count)
@@ -49,6 +51,7 @@ impl FakeCapture {
     }
 
     /// How many frames are still to come.
+    #[must_use]
     pub fn remaining(&self) -> usize {
         self.frames.iter().flatten().count()
     }

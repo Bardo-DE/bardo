@@ -186,7 +186,7 @@ async fn a_refused_line_or_a_gone_host_is_a_tool_error_and_never_a_success() {
 async fn without_a_session_token_the_bridge_does_not_start() {
     let dir = tempfile::tempdir().expect("scratch");
     let socket = dir.path().join("host.sock");
-    for token in [None, Some("short"), Some(&"G".repeat(64)[..])] {
+    for token in [None, Some("short"), Some((&*"G".repeat(64)))] {
         let mut bridge = spawn(dir.path(), &socket, token);
         let status = bridge.child.wait().await.expect("exit");
         assert_eq!(status.code(), Some(1), "{token:?}");

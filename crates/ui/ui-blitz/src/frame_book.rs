@@ -40,6 +40,7 @@ impl std::fmt::Debug for FrameBook {
 
 impl FrameBook {
     /// An empty book.
+    #[must_use]
     pub fn new() -> Self {
         FrameBook(Arc::new(Mutex::new(Book::default())))
     }

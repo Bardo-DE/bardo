@@ -49,7 +49,7 @@ fn Page() -> Element {
                 anchor: Anchor::Point(Point { x: Px(100.0), y: Px(y) }),
                 items,
                 onpick: move |_: u8| {},
-                onclose: move |_| {},
+                onclose: move |()| {},
               }
             }
         }

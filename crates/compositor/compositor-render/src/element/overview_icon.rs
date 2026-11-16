@@ -63,6 +63,7 @@ fn arrival(full: u32, drawn: u32, rest: u32) -> f64 {
 /// assert_eq!((at_rest.at, at_rest.alpha), (icon.rest, 1.0));
 /// assert!(icon_place(&icon, rect(0, 0, 400, 600), full).is_none());
 /// ```
+#[must_use]
 pub fn icon_place(
     icon: &OverviewIcon,
     content: LogicalRect,

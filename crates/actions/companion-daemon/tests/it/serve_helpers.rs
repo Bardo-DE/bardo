@@ -94,14 +94,14 @@ async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
         .expect("text")
         .to_owned();
     let refused = CompanionHelpersProxy::new(&stranger).await.expect("proxy");
-    assert!(refused.list(0).await.is_err());
-    assert!(refused.card(&id_text).await.is_err());
-    assert!(refused.create(&form).await.is_err());
+    refused.list(0).await.unwrap_err();
+    refused.card(&id_text).await.unwrap_err();
+    refused.create(&form).await.unwrap_err();
     assert!(refused.pause(&id_text).await.is_err());
     assert!(refused.remove(&id_text).await.is_err());
     // The shell reads a card, and a helper that is not there is an error, not a guess.
-    assert!(helpers.card(&id_text).await.is_ok());
-    assert!(helpers.card("h-404").await.is_err());
+    helpers.card(&id_text).await.unwrap();
+    helpers.card("h-404").await.unwrap_err();
 }
 
 /// Routines that hold nothing and make nothing: enough to see the calls reach the desk.
@@ -222,37 +222,37 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
         serde_json::from_str(&terminals.bring_back("s-404").await.expect("bring back"))
             .expect("reply");
     assert!(matches!(gone, BroughtBack::Refused(_)), "{gone:?}");
-    assert!(terminals.bring_back("not a session").await.is_err());
+    terminals.bring_back("not a session").await.unwrap_err();
     // A command line is recognised by the host of the apps, and with none the answer is null.
     let line = serde_json::to_string(&["/usr/bin/claude", "--resume", "ab-1"]).expect("json");
     assert_eq!(terminals.recognise(&line).await.expect("recognise"), "null");
-    assert!(terminals.recognise("[]").await.is_err());
-    assert!(terminals.recognise("not json").await.is_err());
+    terminals.recognise("[]").await.unwrap_err();
+    terminals.recognise("not json").await.unwrap_err();
 
     // The routines reach their desk; one that is not there is an error, not a guess.
     let listed: RoutinesView =
         serde_json::from_str(&helpers.routines().await.expect("routines")).expect("view");
     assert!(listed.routines.is_empty());
-    assert!(helpers.routine_card("r-1").await.is_err());
-    assert!(helpers.routine_card("not a routine").await.is_err());
+    helpers.routine_card("r-1").await.unwrap_err();
+    helpers.routine_card("not a routine").await.unwrap_err();
     helpers.pause_routine("r-1").await.expect("pause");
     helpers.resume_routine("r-1").await.expect("resume");
     helpers.remove_routine("r-1").await.expect("remove");
 
     // Nobody else speaks for the person here.
     let refused = CompanionHelpers2Proxy::new(&stranger).await.expect("proxy");
-    assert!(refused.list(0).await.is_err());
-    assert!(refused.sign_in(&id_text, "browser").await.is_err());
-    assert!(refused.routines().await.is_err());
+    refused.list(0).await.unwrap_err();
+    refused.sign_in(&id_text, "browser").await.unwrap_err();
+    refused.routines().await.unwrap_err();
     assert!(refused.remove_routine("r-1").await.is_err());
-    assert!(refused.open_in_terminal(&id_text).await.is_err());
-    assert!(refused.bring_back(&id_text).await.is_err());
+    refused.open_in_terminal(&id_text).await.unwrap_err();
+    refused.bring_back(&id_text).await.unwrap_err();
     let nobody = CompanionTerminalsProxy::new(&stranger)
         .await
         .expect("proxy");
-    assert!(nobody.sessions().await.is_err());
-    assert!(nobody.bring_back("s-1").await.is_err());
-    assert!(nobody.recognise(&line).await.is_err());
+    nobody.sessions().await.unwrap_err();
+    nobody.bring_back("s-1").await.unwrap_err();
+    nobody.recognise(&line).await.unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -365,8 +365,8 @@ async fn the_editor_bridge_reads_the_helpers_and_changes_nothing_and_a_stranger_
 
     // A process nothing names reads nothing.
     let nobody = CompanionHelpers2Proxy::new(&stranger).await.expect("proxy");
-    assert!(nobody.list(0).await.is_err());
-    assert!(nobody.card(&id_text).await.is_err());
+    nobody.list(0).await.unwrap_err();
+    nobody.card(&id_text).await.unwrap_err();
 
     // The helper is still there.
     let after: HelpersView =

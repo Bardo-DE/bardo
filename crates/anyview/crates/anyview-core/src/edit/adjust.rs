@@ -38,12 +38,14 @@ impl Adjust {
     };
 
     /// Whether nothing has been done.
+    #[must_use]
     pub fn is_none(&self) -> bool {
         *self == Adjust::NONE
     }
 
     /// This, and then the picture as shown is turned clockwise by `by`. A size chosen with
     /// Adjust Size turns with the picture.
+    #[must_use]
     pub fn turned(self, by: QuarterTurn) -> Adjust {
         let swaps = matches!(by, QuarterTurn::Quarter | QuarterTurn::ThreeQuarter);
         Adjust {
@@ -65,6 +67,7 @@ impl Adjust {
     /// This, and then the picture as shown is mirrored across `axis`. A mirror then a turn,
     /// mirrored again, is the opposite mirror and the reverse turn; a flip across the horizontal
     /// line is that and a half turn more.
+    #[must_use]
     pub fn flipped(self, axis: Axis) -> Adjust {
         let across_vertical = Adjust {
             mirrored: !self.mirrored,
@@ -81,6 +84,7 @@ impl Adjust {
     }
 
     /// The part of a picture of size `base` that is kept.
+    #[must_use]
     pub fn kept(&self, base: PixelSize) -> PixelRect {
         self.crop.unwrap_or(PixelRect {
             left: PixelLen(0),
@@ -91,6 +95,7 @@ impl Adjust {
 
     /// The size of the kept part once it is turned, before any resize: what the person sees
     /// while they choose a new crop.
+    #[must_use]
     pub fn turned_size(&self, base: PixelSize) -> PixelSize {
         let kept = self.kept(base).size;
         match self.turn {
@@ -103,6 +108,7 @@ impl Adjust {
     }
 
     /// The size of the result.
+    #[must_use]
     pub fn result_size(&self, base: PixelSize) -> PixelSize {
         self.size.unwrap_or_else(|| self.turned_size(base))
     }
@@ -112,6 +118,7 @@ impl Adjust {
     /// picture, so a mirror or a turn made before or after does not move it. The rectangle is
     /// held inside the picture, and a resize chosen earlier is let go: it was a size for the
     /// picture before it was cut.
+    #[must_use]
     pub fn cropped(self, base: PixelSize, shown: PixelRect) -> Adjust {
         let kept = self.kept(base);
         let (width, height) = (kept.size.width.0, kept.size.height.0);

@@ -366,11 +366,13 @@ impl Workbook {
 
     /// How many sheets the file has, which is more than [`Workbook::sheets`] holds when only the
     /// start was read.
+    #[must_use]
     pub fn sheet_count(&self) -> u32 {
         self.sheet_count
     }
 
     /// The sheets, in file order.
+    #[must_use]
     pub fn sheets(&self) -> &[Sheet] {
         &self.sheets
     }

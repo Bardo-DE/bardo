@@ -23,7 +23,9 @@ const KEY_SPACE: KeyCode = KeyCode(57);
 #[test]
 fn only_the_portal_is_handed_a_remote_socket() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");
-    assert!(fixture.connect_remote_eis(&callers::portal(), 1, 7).is_ok());
+    fixture
+        .connect_remote_eis(&callers::portal(), 1, 7)
+        .unwrap();
     // (case, the caller, what comes back)
     let refused = [
         (

@@ -27,6 +27,7 @@ pub struct Floor(pub PlaceKind);
 
 impl Floor {
     /// Whether a place of `kind` is within the floor.
+    #[must_use]
     pub fn admits(self, kind: PlaceKind) -> bool {
         kind <= self.0
     }
@@ -83,6 +84,7 @@ pub enum Place {
 
 impl Place {
     /// Its kind.
+    #[must_use]
     pub fn kind(&self) -> PlaceKind {
         match self {
             Place::ThisComputer { .. } => PlaceKind::ThisComputer,
@@ -105,6 +107,7 @@ pub struct Places {
 
 impl Places {
     /// A machine with nothing added: this computer only.
+    #[must_use]
     pub fn none() -> Self {
         Self {
             this_computer: None,

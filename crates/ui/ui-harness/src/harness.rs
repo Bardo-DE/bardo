@@ -112,11 +112,13 @@ impl Harness {
 
     /// What the window would have told the platform about the last [`Input::FileDrag`] step: a
     /// copy over a drop target, a refusal elsewhere (a refusal before any step).
+    #[must_use]
     pub fn drop_answer(&self) -> DropAcceptance {
         self.drop_answer
     }
 
     /// The mouse buttons down now.
+    #[must_use]
     pub fn held_buttons(&self) -> HeldButtons {
         self.held
     }
@@ -132,6 +134,7 @@ impl Harness {
     }
 
     /// Which clock this harness's timers run on.
+    #[must_use]
     pub fn clock(&self) -> Clock {
         self.time.choice()
     }
@@ -139,6 +142,7 @@ impl Harness {
     /// Now on this harness's clock: the wall clock's now, or the virtual clock's (which
     /// `ui_components::base::time::clock::now` also reads on this thread). Compare it with other instants from the same
     /// harness, e.g. the one [`settle_until`] returns.
+    #[must_use]
     pub fn now(&self) -> Instant {
         self.time.now()
     }
@@ -180,6 +184,7 @@ impl Harness {
     }
 
     /// The document as HTML, for assertions.
+    #[must_use]
     pub fn html(&self) -> String {
         self.with_doc(|doc| doc.root_element().outer_html())
     }
@@ -195,11 +200,13 @@ impl Harness {
     /// landed. Unchanged across an `advance` means nothing woke the document in that time, so no
     /// Rust timer asked for a frame (the idle-frame rule's other half: `is_animating` sees only
     /// CSS).
+    #[must_use]
     pub fn wakes(&self) -> u64 {
         self.doc.wakeup().generation()
     }
 
     /// The centre of the first element matching `selector`: where a test clicks it.
+    #[must_use]
     pub fn centre(&self, selector: &str) -> Option<Point> {
         self.rect(selector).map(|rect| Point {
             x: Px(rect.origin.x.0 + rect.size.width.0 / 2.0),
@@ -250,12 +257,14 @@ impl Harness {
 
     /// What was last copied (Ctrl+C in a field, `ui_blitz::clipboard::write_text`): the
     /// harness's clipboard is in memory, never the desktop's.
+    #[must_use]
     pub fn clipboard_text(&self) -> Option<String> {
         self.doc.shell.text()
     }
 
     /// What was last put on the harness's primary selection
     /// (`ui_blitz::clipboard::write_to(ClipboardTarget::Primary, ..)`).
+    #[must_use]
     pub fn primary_text(&self) -> Option<String> {
         self.doc.shell.primary_text()
     }
@@ -266,6 +275,7 @@ impl Harness {
     }
 
     /// The text selected in the first text field matching `selector`, if it has a selection.
+    #[must_use]
     pub fn selected_text(&self, selector: &str) -> Option<String> {
         self.with_doc(|doc| {
             let input = doc
@@ -278,6 +288,7 @@ impl Harness {
 
     /// The sub-document of the first `iframe` matching `selector`, once it has one: what a
     /// frame shows, read without the app's document seeing into it.
+    #[must_use]
     pub fn frame(&self, selector: &str) -> Option<FrameView<'_>> {
         FrameView::find(self, selector)
     }

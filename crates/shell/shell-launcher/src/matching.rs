@@ -31,6 +31,7 @@ pub struct Needle {
 impl Needle {
     /// Parse `text` with nucleo's pattern syntax (`^`, `$`, `'`, `!`), smart case and smart
     /// Unicode normalisation.
+    #[must_use]
     pub fn parse(text: &str) -> Needle {
         let pattern = Pattern::parse(text, CaseMatching::Smart, Normalization::Smart);
         let mut buf = Vec::new();
@@ -43,11 +44,13 @@ impl Needle {
     }
 
     /// The text as typed.
+    #[must_use]
     pub fn text(&self) -> &str {
         &self.text
     }
 
     /// Whether nothing was typed (whitespace only counts as nothing).
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.pattern.atoms.is_empty()
     }
@@ -67,6 +70,7 @@ impl Needle {
 }
 
 /// A matcher with nucleo's default (non-path) configuration. One per thread; reuse it.
+#[must_use]
 pub fn matcher() -> Matcher {
     Matcher::new(Config::DEFAULT)
 }

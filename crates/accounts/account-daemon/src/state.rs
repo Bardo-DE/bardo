@@ -203,19 +203,21 @@ impl<H: Host, C: Callers> Core<H, C> {
 
 /// The `parent_window` argument: empty is no parent.
 pub(crate) fn window(text: &str) -> ParentWindow {
-    match text.is_empty() {
-        true => ParentWindow::Unparented,
-        false => ParentWindow::Handle(text.to_owned()),
+    if text.is_empty() {
+        ParentWindow::Unparented
+    } else {
+        ParentWindow::Handle(text.to_owned())
     }
 }
 
 /// The `provider_hint` argument: empty is the provider list.
 pub(crate) fn hint(text: &str) -> Result<ProviderHint, RefusedError> {
-    match text.is_empty() {
-        true => Ok(ProviderHint::Any),
-        false => ProviderId::parse(text)
+    if text.is_empty() {
+        Ok(ProviderHint::Any)
+    } else {
+        ProviderId::parse(text)
             .map(ProviderHint::Provider)
-            .map_err(RefusedError::invalid),
+            .map_err(RefusedError::invalid)
     }
 }
 

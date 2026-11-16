@@ -8,6 +8,7 @@ use companion_wire::{AnswerPhase, NeedsYou};
 /// working, or waiting for the person; a finished or absent front task gets none (the roster
 /// and the episode carry it). A result that needs the person makes the front answer wait for
 /// them.
+#[must_use]
 pub fn completion_effects(note: &CompletionNote, front: Option<&LoopState>) -> Vec<LoopEffect> {
     let Some(line) = completion_line(note) else {
         return vec![];

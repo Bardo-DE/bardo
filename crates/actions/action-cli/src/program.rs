@@ -74,9 +74,10 @@ pub async fn execute(process: Process, buses: SessionBus) -> Report {
     {
         return ask(&buses, text, space.clone(), parsed.json, &process).await;
     }
-    let stdin = match process.words.iter().any(|w| w == "-") {
-        true => (process.stdin)(),
-        false => Stdin::Closed,
+    let stdin = if process.words.iter().any(|w| w == "-") {
+        (process.stdin)()
+    } else {
+        Stdin::Closed
     };
     let roots = agent_skills::Roots::from_env(&process.env);
     let bus = needs_bus(&process.words);
@@ -103,6 +104,7 @@ pub async fn execute(process: Process, buses: SessionBus) -> Report {
 
 /// What a run that panicked is reported as: a terminal should read "unavailable", not a
 /// backtrace.
+#[must_use]
 pub fn broken(why: &str) -> Report {
     Report {
         stdout: String::new(),

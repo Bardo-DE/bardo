@@ -89,6 +89,7 @@ pub struct YourChanges {
 impl YourChanges {
     /// The changes held under the data root `person` (the shape of `$XDG_DATA_HOME`, as
     /// [`Search::new`] takes it): `<person>/bardo/extensions/user.YourChanges`.
+    #[must_use]
     pub fn in_root(person: &Path) -> YourChanges {
         YourChanges {
             folder: person
@@ -104,6 +105,7 @@ impl YourChanges {
     }
 
     /// The Extension's folder.
+    #[must_use]
     pub fn folder(&self) -> &Path {
         &self.folder
     }
@@ -163,6 +165,7 @@ impl YourChanges {
 
     /// Whether Remove may be offered: never while a change is held, since removing the Extension
     /// would throw the changes away. A folder that cannot be read counts as holding changes.
+    #[must_use]
     pub fn removable(&self) -> bool {
         matches!(self.changed(), Ok(names) if names.is_empty())
     }

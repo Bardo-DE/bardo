@@ -62,6 +62,7 @@ impl BlurAsk {
 
     /// The surface the effect belongs to (to give it a role, an xdg toplevel say, so the blur
     /// is behind a window).
+    #[must_use]
     pub fn surface(&self) -> &WlSurface {
         &self.surface
     }
@@ -72,6 +73,7 @@ impl BlurAsk {
     }
 
     /// Whether the manager announced that it blurs.
+    #[must_use]
     pub fn blur_announced(&self) -> bool {
         matches!(
             self.announced.capabilities,

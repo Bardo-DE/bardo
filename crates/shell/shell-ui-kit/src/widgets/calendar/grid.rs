@@ -24,6 +24,7 @@ pub(super) fn month_of(date: Date) -> MonthKey {
 }
 
 /// The month after or before `month`.
+#[must_use]
 pub fn shift_month(month: MonthKey, step: MonthStep) -> MonthKey {
     match (step, month.month) {
         (MonthStep::Next, 12) => MonthKey {
@@ -47,6 +48,7 @@ pub fn shift_month(month: MonthKey, step: MonthStep) -> MonthKey {
 
 /// `month` laid out from `first`, `today` marked, each day in `busy` marked busy, with its title
 /// and weekday initials in words.
+#[must_use]
 pub fn month_grid(
     month: MonthKey,
     first: FirstWeekday,
@@ -124,6 +126,7 @@ fn day_of(date: Date, month: MonthKey, today: Date, busy: &[Date]) -> MonthDay {
 
 /// The days of `month` that have at least one event in `zone` (an all-day event marks each of
 /// its days, a timed one each local day it touches), sorted, once each.
+#[must_use]
 pub fn busy_days(events: &[CalEvent], zone: &TimeZone, month: MonthKey) -> Vec<Date> {
     let opening = first_of(month);
     let closing = opening.last_of_month();
@@ -149,13 +152,13 @@ fn local_days(event: &CalEvent, zone: &TimeZone) -> Option<(Date, Date)> {
         EventTime::AllDay { first, last } => Some((first, last)),
         EventTime::Timed { start, end } => {
             let first = start.to_zoned(zone.clone()).date();
-            let last = match end > start {
-                true => end
-                    .checked_sub(1.nanosecond())
+            let last = if end > start {
+                end.checked_sub(1.nanosecond())
                     .ok()?
                     .to_zoned(zone.clone())
-                    .date(),
-                false => first,
+                    .date()
+            } else {
+                first
             };
             Some((first, last.max(first)))
         }

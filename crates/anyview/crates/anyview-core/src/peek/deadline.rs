@@ -15,6 +15,7 @@ impl Deadline {
 
     /// The deadline of a peek that starts at `start` inside `budget`. A budget whose time cannot be
     /// added to an instant has no limit.
+    #[must_use]
     pub fn of(budget: &PeekBudget, start: Instant) -> Deadline {
         Deadline(start.checked_add(budget.time))
     }
@@ -25,6 +26,7 @@ impl Deadline {
     }
 
     /// Whether `now` is at or past the deadline; the caller reads the clock, once per check.
+    #[must_use]
     pub fn passed(self, now: Instant) -> bool {
         self.0.is_some_and(|limit| now >= limit)
     }

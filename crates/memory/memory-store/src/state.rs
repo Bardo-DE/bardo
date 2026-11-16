@@ -30,6 +30,7 @@ pub enum IndexEvent {
 /// The next state: absent, then building, then ready; ready goes stale or lexical-only;
 /// stale and lexical-only build again when the embedder returns (`Begin`). Events that do not
 /// apply leave the state as it is.
+#[must_use]
 pub fn step(state: IndexView, event: IndexEvent) -> IndexView {
     match (state, event) {
         (

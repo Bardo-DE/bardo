@@ -121,6 +121,7 @@ impl SoftScanout {
     }
 
     /// The connector it scans out to.
+    #[must_use]
     pub fn connector(&self) -> ConnectorId {
         self.connector
     }

@@ -376,8 +376,7 @@ fn the_detail_tables_hold_every_fixture_kind() {
         let agrees = match (&case.detail, case.kind) {
             (FormatDetail::Raster(_), FormatKind::Raster)
             | (FormatDetail::Code(_), FormatKind::Code)
-            | (FormatDetail::Table(_), FormatKind::Table)
-            | (FormatDetail::Office(_), FormatKind::Table)
+            | (FormatDetail::Table(_) | FormatDetail::Office(_), FormatKind::Table)
             | (FormatDetail::Tree(_), FormatKind::Tree)
             | (FormatDetail::Text(_), FormatKind::PlainText)
             | (FormatDetail::Media(_), FormatKind::Video | FormatKind::Audio)
@@ -391,16 +390,19 @@ fn the_detail_tables_hold_every_fixture_kind() {
                     | FormatKind::Folder
                     | FormatKind::Other
             ),
-            (FormatDetail::Book(_), _)
-            | (FormatDetail::Office(_), _)
-            | (FormatDetail::Raster(_), _)
-            | (FormatDetail::Code(_), _)
-            | (FormatDetail::Table(_), _)
-            | (FormatDetail::Tree(_), _)
-            | (FormatDetail::Text(_), _)
-            | (FormatDetail::Media(_), _)
-            | (FormatDetail::Font(_), _)
-            | (FormatDetail::Archive(_), _) => false,
+            (
+                FormatDetail::Book(_)
+                | FormatDetail::Office(_)
+                | FormatDetail::Raster(_)
+                | FormatDetail::Code(_)
+                | FormatDetail::Table(_)
+                | FormatDetail::Tree(_)
+                | FormatDetail::Text(_)
+                | FormatDetail::Media(_)
+                | FormatDetail::Font(_)
+                | FormatDetail::Archive(_),
+                _,
+            ) => false,
         };
         assert!(
             agrees,

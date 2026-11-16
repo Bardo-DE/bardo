@@ -60,6 +60,7 @@ pub fn plan(ask: &WindowAsk, wl: &WindowModel) -> Result<WindowAnswer, WindowFau
 }
 
 /// The window whose id is exactly `id`: the listing's id, never an app id or a title.
+#[must_use]
 pub fn window_by_id<'a>(wl: &'a WindowModel, id: &str) -> Option<&'a Toplevel> {
     let key = id.trim().parse::<u64>().ok()?;
     wl.toplevels.windows.iter().find(|w| w.key.0 == key)

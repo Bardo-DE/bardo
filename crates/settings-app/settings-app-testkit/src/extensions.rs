@@ -22,6 +22,7 @@ fn write(folder: &Path, file: &str, text: &str) {
 ///
 /// # Panics
 /// If the files cannot be written.
+#[must_use]
 pub fn install_look(data_home: &Path, id: &str, name: &str, summary: &str) -> PathBuf {
     let folder = data_home.join("bardo").join("extensions").join(id);
     write(&folder, "extension.toml", &look_manifest(id, name, summary));
@@ -33,6 +34,7 @@ pub fn install_look(data_home: &Path, id: &str, name: &str, summary: &str) -> Pa
 ///
 /// # Panics
 /// If the manifest cannot be written.
+#[must_use]
 pub fn install_torn_look(data_home: &Path, id: &str, name: &str) -> PathBuf {
     let folder = data_home.join("bardo").join("extensions").join(id);
     write(&folder, "extension.toml", &look_manifest(id, name, "Torn"));
@@ -43,6 +45,7 @@ pub fn install_torn_look(data_home: &Path, id: &str, name: &str) -> PathBuf {
 ///
 /// # Panics
 /// If the files cannot be written.
+#[must_use]
 pub fn install_file_icons(data_home: &Path, id: &str, name: &str, summary: &str) -> PathBuf {
     let folder = data_home.join("bardo").join("extensions").join(id);
     write(
@@ -66,6 +69,7 @@ pub fn install_file_icons(data_home: &Path, id: &str, name: &str, summary: &str)
 ///
 /// # Panics
 /// If the files cannot be written.
+#[must_use]
 pub fn install_your_changes(data_home: &Path, holds_changes: bool) -> PathBuf {
     let folder = data_home
         .join("bardo")

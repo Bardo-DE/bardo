@@ -22,6 +22,7 @@ pub struct UnitsPerMm(pub f64);
 
 impl UnitsPerMm {
     /// `units` of this axis in millimetres.
+    #[must_use]
     pub fn mm(self, units: i32) -> Mm {
         Mm(f64::from(units) / self.0)
     }
@@ -31,6 +32,7 @@ impl UnitsPerMm {
     /// For any integer `u` well inside `i32`, `units(mm(u)) == u` exactly: the round trip is off
     /// by far less than half a unit, so the rounding restores it. That is what keeps the
     /// Magic Mouse bit for bit through the millimetre frame.
+    #[must_use]
     pub fn units(self, mm: Mm) -> i32 {
         (mm.0 * self.0).round() as i32
     }
@@ -45,6 +47,7 @@ pub struct Resolution {
 
 impl Resolution {
     /// A position given in device units, in millimetres.
+    #[must_use]
     pub fn point(self, x: i32, y: i32) -> MmPoint {
         MmPoint {
             x: self.x.mm(x),
@@ -62,6 +65,7 @@ pub struct MmRange {
 
 impl MmRange {
     /// The distance from edge to edge.
+    #[must_use]
     pub fn length(self) -> Mm {
         Mm(self.max.0 - self.min.0)
     }

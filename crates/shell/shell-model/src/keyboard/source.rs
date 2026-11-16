@@ -24,6 +24,7 @@ impl ProfileSource for DeclaredProfile {
 
 impl CategoryTable {
     /// What every install starts with: terminal emulators get the terminal profile.
+    #[must_use]
     pub fn standard() -> Self {
         Self(vec![("TerminalEmulator".to_owned(), terminal_profile())])
     }
@@ -36,6 +37,7 @@ fn terminal_profile() -> ProfileName {
 
 /// The profile of an app that resolves Command itself through the shared keymap: keycap leaves
 /// Command as Super for it (the desktop's own chords stay rewritten).
+#[must_use]
 pub fn keymap_aware_profile() -> ProfileName {
     ProfileName::parse("keymap-aware").unwrap_or_else(|_| ProfileName::default_profile())
 }
@@ -44,6 +46,7 @@ impl OwnProfiles {
     /// The apps keycap's built-in config has a profile for: Ghostty (`com.mitchellh.ghostty`),
     /// whose split and clear chords differ from the other terminals', and temor, which resolves
     /// Command itself and so must receive Super (`keymap-aware`).
+    #[must_use]
     pub fn standard() -> Self {
         let ghostty =
             ProfileName::parse("ghostty").unwrap_or_else(|_| ProfileName::default_profile());

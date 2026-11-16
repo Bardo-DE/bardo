@@ -45,6 +45,7 @@ impl SpaceStrip {
     /// Where the row's first Space starts, in global sub-pixels, when each Space is as wide as
     /// `usable` (the output's usable area): the shown Space sits at `usable`'s left edge when the
     /// position is its index, and a neighbour is one page further per thousand.
+    #[must_use]
     pub fn first_x(&self, usable: LogicalRect) -> SubPx {
         let width = i32::try_from(usable.size.w).unwrap_or(i32::MAX);
         let page = i64::from(SubPx::of_logical(width).0);
@@ -75,12 +76,14 @@ pub(super) struct SwipeState {
 impl Model {
     /// Whether the latest swipe step was the desktop's (it was taken, so no client sees it)
     /// rather than the clients': ask right after the step went through `step`.
+    #[must_use]
     pub fn desktop_owns_swipe(&self) -> bool {
         self.swipe.desktop_owns
     }
 
     /// Where the row of Spaces is drawn at `now` while a swipe or its finish moves it; none
     /// when the Spaces sit still.
+    #[must_use]
     pub fn space_strip(&self, now: Mono) -> Option<SpaceStrip> {
         let output = self.swipe.output.clone()?;
         let position = match &self.swipe.space {
@@ -104,6 +107,7 @@ impl Model {
 
     /// How open the fingers have made Mission Control, in thousandths (0 closed, 1000 open),
     /// while a vertical swipe is down; none otherwise.
+    #[must_use]
     pub fn overview_progress(&self) -> Option<PageMilli> {
         self.swipe.progress
     }
@@ -118,13 +122,14 @@ impl Model {
             && (event.origin.is_physical()
                 || event.origin.is_pad()
                 || matches!(event.origin, Origin::Feed));
-        let (next, fate) = match ours {
-            true => route(
+        let (next, fate) = if ours {
+            route(
                 model.swipe.route,
                 step.map(|d| d.unaccelerated),
                 &model.settings.gestures,
-            ),
-            false => abandoned(model.swipe.route),
+            )
+        } else {
+            abandoned(model.swipe.route)
         };
         model.swipe.route = next;
         let drives = match fate {
@@ -161,6 +166,7 @@ impl Model {
     }
 
     /// The index in `output`'s row of the Space it shows.
+    #[must_use]
     pub fn shown_index(&self, output: &OutputKey) -> Option<u32> {
         let shown = self.spaces.shown_on(output)?;
         let at = self

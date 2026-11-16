@@ -34,6 +34,7 @@ pub struct FakeInstaller {
 impl FakeInstaller {
     /// One that answers `outcome` to every request. The `Missing` inside a `NotFound` or
     /// `Unsupported` is replaced by the request's own, as a real backend would give it.
+    #[must_use]
     pub fn new(outcome: Outcome) -> FakeInstaller {
         FakeInstaller {
             outcome,
@@ -43,6 +44,7 @@ impl FakeInstaller {
     }
 
     /// On [`Outcome::Installed`], also create these executables in `dir`.
+    #[must_use]
     pub fn leaving(self, dir: PathBuf, names: &[&str]) -> FakeInstaller {
         let empty = |name: &&str| StandIn {
             name: (*name).to_owned(),
@@ -53,6 +55,7 @@ impl FakeInstaller {
 
     /// On [`Outcome::Installed`], also create these stand-in tools in `dir`, each with its own
     /// script text.
+    #[must_use]
     pub fn leaving_with(mut self, dir: PathBuf, tools: Vec<StandIn>) -> FakeInstaller {
         self.drop = Some(Drop { dir, tools });
         self

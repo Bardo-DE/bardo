@@ -1,4 +1,4 @@
-//! zwp_tablet_manager_v2: the tablet seat of a `wl_seat` and the tablets, tools and pads it
+//! `zwp_tablet_manager_v2`: the tablet seat of a `wl_seat` and the tablets, tools and pads it
 //! announces. Filled by P0-H4.
 //!
 //! The wire events reach the transcript through the connection's tap; the objects the seat
@@ -43,11 +43,13 @@ impl TabletSeat {
     }
 
     /// The manager.
+    #[must_use]
     pub fn manager(&self) -> &ZwpTabletManagerV2 {
         &self.manager
     }
 
     /// The tablet seat.
+    #[must_use]
     pub fn seat(&self) -> &ZwpTabletSeatV2 {
         &self.seat
     }

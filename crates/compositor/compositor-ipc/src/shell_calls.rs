@@ -95,6 +95,7 @@ pub struct ZbusShellCalls {
 
 impl ZbusShellCalls {
     /// A caller that connects to the session bus when the first call is made.
+    #[must_use]
     pub fn lazy() -> ZbusShellCalls {
         ZbusShellCalls::default()
     }

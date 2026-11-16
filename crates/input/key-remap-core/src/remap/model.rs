@@ -59,6 +59,7 @@ pub struct Remapper {
 
 impl Remapper {
     /// Nothing held, running, focused on `default`.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             held: Held::new(),
@@ -70,6 +71,7 @@ impl Remapper {
     }
 
     /// Whether keys are being mapped; `Paused` after the escape chord, until `RemapInput::Resume`.
+    #[must_use]
     pub fn paused(&self) -> bool {
         self.paused
     }

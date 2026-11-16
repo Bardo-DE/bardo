@@ -60,6 +60,7 @@ pub struct ChatReply {
 impl ChatReply {
     /// An answer with this text, ended for this reason, that cost `usage` and was given by
     /// `served`: no function calls, no reasoning and no scores until the `with_*` methods say so.
+    #[must_use]
     pub fn new(text: String, stop: StopReason, usage: TokenUsage, served: ServedBy) -> Self {
         Self {
             text,
@@ -73,18 +74,21 @@ impl ChatReply {
     }
 
     /// The same answer with the function calls the model made.
+    #[must_use]
     pub fn with_tool_calls(mut self, tool_calls: Vec<crate::request::ToolCallPart>) -> Self {
         self.tool_calls = tool_calls;
         self
     }
 
     /// The same answer with what the model reasoned.
+    #[must_use]
     pub fn with_thought(mut self, thought: String) -> Self {
         self.thought = Some(thought);
         self
     }
 
     /// The same answer with how likely each declared option was.
+    #[must_use]
     pub fn with_scores(mut self, scores: OptionScores) -> Self {
         self.scores = Some(scores);
         self
@@ -104,6 +108,7 @@ pub struct EmbedReply {
 
 impl EmbedReply {
     /// These vectors, in input order, that cost `usage` and were given by `served`.
+    #[must_use]
     pub fn new(vectors: Vec<EmbedVector>, usage: TokenUsage, served: ServedBy) -> Self {
         Self {
             vectors,
@@ -126,6 +131,7 @@ pub struct TranscribeReply {
 
 impl TranscribeReply {
     /// A transcript of `audio_ms` milliseconds of audio, given by `served`.
+    #[must_use]
     pub fn new(text: String, audio_ms: u32, served: ServedBy) -> Self {
         Self {
             text,
@@ -157,6 +163,7 @@ pub struct SpeakReply {
 
 impl SpeakReply {
     /// Speech of `audio_ms` milliseconds, given by `served`.
+    #[must_use]
     pub fn new(audio_ms: u32, served: ServedBy) -> Self {
         Self { audio_ms, served }
     }

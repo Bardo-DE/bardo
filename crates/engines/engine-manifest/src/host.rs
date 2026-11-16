@@ -14,6 +14,7 @@ pub enum Arch {
 
 impl Arch {
     /// The architecture this program was built for; `None` for one no engine is built for.
+    #[must_use]
     pub fn current() -> Option<Self> {
         if cfg!(target_arch = "x86_64") {
             Some(Self::X86_64)
@@ -34,12 +35,13 @@ pub enum Backend {
     Vulkan,
     /// NVIDIA's CUDA.
     Cuda,
-    /// AMD's ROCm.
+    /// AMD's `ROCm`.
     Rocm,
 }
 
 impl Backend {
     /// The name in a directory, a request and a setting.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Self::Cpu => "cpu",
@@ -50,6 +52,7 @@ impl Backend {
     }
 
     /// The backend a slug names; `None` for any other text.
+    #[must_use]
     pub fn from_slug(text: &str) -> Option<Self> {
         [Self::Cpu, Self::Vulkan, Self::Cuda, Self::Rocm]
             .into_iter()
@@ -72,6 +75,7 @@ pub enum GpuVendor {
 
 impl GpuVendor {
     /// The vendor a PCI vendor id names (`0x10de`); `Other` for any other text.
+    #[must_use]
     pub fn of_pci(text: &str) -> Self {
         match text.trim().to_ascii_lowercase().as_str() {
             "0x10de" => Self::Nvidia,
@@ -108,8 +112,9 @@ pub enum BackendChoice {
 }
 
 /// The backends to try, best first. A forced backend is the only one; otherwise NVIDIA cards
-/// prefer CUDA, any card Vulkan, and the processor alone is the last resort. ROCm is only ever
+/// prefer CUDA, any card Vulkan, and the processor alone is the last resort. `ROCm` is only ever
 /// forced: it wants a matching system runtime that cannot be told from here.
+#[must_use]
 pub fn preference(gpus: &Gpus, choice: BackendChoice) -> Vec<Backend> {
     match choice {
         BackendChoice::Force(backend) => vec![backend],

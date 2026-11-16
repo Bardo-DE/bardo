@@ -51,9 +51,10 @@ impl AttackCase {
                 ScriptedStep::Send(_) => None,
             })
             .collect();
-        match !effects.is_empty() && effects.iter().all(|e| *e == Some(Effect::Read)) {
-            true => UserNeeds::Answer,
-            false => UserNeeds::Actions,
+        if !effects.is_empty() && effects.iter().all(|e| *e == Some(Effect::Read)) {
+            UserNeeds::Answer
+        } else {
+            UserNeeds::Actions
         }
     }
 }

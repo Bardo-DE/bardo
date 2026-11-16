@@ -19,6 +19,7 @@ pub enum TipDelay {
 
 impl TipDelay {
     /// How long the pointer rests before a cold tip opens.
+    #[must_use]
     pub fn open(self) -> Duration {
         match self {
             TipDelay::Standard => DelayToken::TipOpen.delay(),
@@ -85,6 +86,7 @@ pub enum DelayToken {
 
 impl DelayToken {
     /// How long it lasts.
+    #[must_use]
     pub fn delay(self) -> Duration {
         Duration::from_millis(match self {
             DelayToken::TipOpen => 1000,

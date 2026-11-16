@@ -14,11 +14,13 @@ impl CommandDeadline {
     pub const DEFAULT: Self = Self(Duration::from_secs(600));
 
     /// A deadline of `limit` after a command starts.
+    #[must_use]
     pub const fn new(limit: Duration) -> Self {
         Self(limit)
     }
 
     /// How long after it starts a command is killed.
+    #[must_use]
     pub const fn limit(self) -> Duration {
         self.0
     }

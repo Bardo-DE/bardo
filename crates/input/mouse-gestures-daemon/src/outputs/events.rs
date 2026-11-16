@@ -42,6 +42,7 @@ const SYN: InputEvent = ev(EV_SYN, SYN_REPORT, 0);
 
 impl InputEvent {
     /// The 24-byte `struct input_event` of a 64-bit kernel, zero time.
+    #[must_use]
     pub fn to_bytes(self) -> [u8; 24] {
         let mut b = [0u8; 24];
         b[16..18].copy_from_slice(&self.kind.to_le_bytes());
@@ -52,6 +53,7 @@ impl InputEvent {
 }
 
 /// A key combination: modifiers then key down, report, then up in reverse, report.
+#[must_use]
 pub fn key_events(k: &KeyCombo) -> Vec<InputEvent> {
     let codes: Vec<u16> = k.codes().collect();
     let down = codes.iter().map(|&c| ev(EV_KEY, c, 1));
@@ -72,6 +74,7 @@ impl PadEncoder {
     ///
     /// A landing while contacts are still down lifts them first, so `BTN_TOOL_*` never changes
     /// from one finger count to another without every contact having lifted.
+    #[must_use]
     pub fn encode(self, f: &PadFrame) -> (Self, Vec<InputEvent>) {
         match *f {
             PadFrame::Land {

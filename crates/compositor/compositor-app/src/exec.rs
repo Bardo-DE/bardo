@@ -102,7 +102,7 @@ fn apply(state: &mut State, effect: Effect) {
             log(xdg_shell::apply_close(&mut state.wl.xdg_shell, window));
         }
         Effect::SendQuit { client } => {
-            log(quire_window::apply_quit(&mut state.wl.quire_window, client))
+            log(quire_window::apply_quit(&mut state.wl.quire_window, client));
         }
         Effect::Keyboard(target) => keyboard(state, &target),
         Effect::Emphasis(list) => {
@@ -164,7 +164,7 @@ fn apply(state: &mut State, effect: Effect) {
         // A display change a program made waits for the person to keep it
         // (`handlers/quire_shell.rs`, `bardo_shell_v1` version 6).
         Effect::AskKeepDisplays { trial, within } => {
-            crate::handlers::quire_shell::trial_ask(state, trial, within)
+            crate::handlers::quire_shell::trial_ask(state, trial, within);
         }
         Effect::EndDisplaysTrial { trial } => crate::handlers::quire_shell::trial_end(state, trial),
         Effect::Resolve {
@@ -274,6 +274,7 @@ pub fn end_popup_keyboard(state: &mut State) {
 }
 
 /// A client left: when the seat's keyboard is not where the model says it is, it goes there.
+///
 /// Smithay drops a popup grab whose client died before the popup's destruction reaches us, so
 /// `end_popup_keyboard` never ran: the seat is left holding a dead surface, or keyed to
 /// something the model does not name, and the app that should have the keys gets none. A live
@@ -355,9 +356,10 @@ fn apply_output(state: &mut State, output: &OutputKey, config: &OutputConfig) {
         physical: facts.physical,
     };
     let advertised = state.wl.output.outputs.contains_key(output);
-    let result = match advertised {
-        true => output::apply_change(&mut state.wl.output, &wire),
-        false => output::apply_plug::<State>(&mut state.wl.output, &state.display, &wire),
+    let result = if advertised {
+        output::apply_change(&mut state.wl.output, &wire)
+    } else {
+        output::apply_plug::<State>(&mut state.wl.output, &state.display, &wire)
     };
     log(result);
     core_loop::resend_scale(state, output, config.scale);

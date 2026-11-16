@@ -189,7 +189,7 @@ async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
 #[tokio::test(flavor = "multi_thread")]
 async fn the_shell_may_list_the_places_and_ask_for_no_model() {
     let (world, _lab) = world("shell", Role::Shell, "org.bardo.Shell").await;
-    assert!(world.accounts.places().await.is_ok());
+    world.accounts.places().await.unwrap();
     let need = account_match::Need::Llm(account_match::LlmNeed::new(
         [account_capability::LlmFeature::Chat].into(),
         base_ids::Tokens(1000),
@@ -274,7 +274,7 @@ mod routing {
         PlaceId::parse(text).expect("place")
     }
 
-    /// A local chat model, a lab machine called `lab` with one model, and OpenRouter granted to
+    /// A local chat model, a lab machine called `lab` with one model, and `OpenRouter` granted to
     /// the companion; the caller is the companion (a placer) unless the test says otherwise.
     pub async fn placed_world(dir: &str, role: Role, who: &str) -> (World, Lab) {
         placed_world_with(dir, role, who, true).await
@@ -397,13 +397,11 @@ mod routing {
                 role: Role::Placer,
             },
         );
-        assert!(
-            world
-                .accounts
-                .prepare(&llm(), DataClass::Public, Tier::Balanced, &options)
-                .await
-                .is_ok()
-        );
+        world
+            .accounts
+            .prepare(&llm(), DataClass::Public, Tier::Balanced, &options)
+            .await
+            .unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -805,15 +803,13 @@ mod computers {
             )
         );
         // And the same name can be used again.
-        assert!(
-            proxy
-                .add_computer(
-                    "Studio PC",
-                    vec![model(entries::ATTACHED, Some(&lab.socket()), None, None)]
-                )
-                .await
-                .is_ok()
-        );
+        proxy
+            .add_computer(
+                "Studio PC",
+                vec![model(entries::ATTACHED, Some(&lab.socket()), None, None)],
+            )
+            .await
+            .unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -973,7 +969,7 @@ mod computers {
             name_and_words(&model_taken).0,
             format!("{COMPUTER_ERROR_PREFIX}ModelTaken")
         );
-        assert!(world.accounts.places().await.is_ok());
+        world.accounts.places().await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]

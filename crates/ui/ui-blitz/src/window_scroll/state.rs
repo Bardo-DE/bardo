@@ -206,6 +206,7 @@ impl WindowScroll {
 
     /// Scrolling the document `phase` is attached to, publishing gestures to `bus`, on a
     /// timeline that starts at `origin`, on `platform` (whose primary modifier zooms the wheel).
+    #[must_use]
     pub fn new(phase: Phase, bus: GestureBus, origin: Instant, platform: Platform) -> WindowScroll {
         WindowScroll {
             shared: Rc::new(Shared {
@@ -235,11 +236,13 @@ impl WindowScroll {
     }
 
     /// The window's gesture listeners.
+    #[must_use]
     pub fn bus(&self) -> GestureBus {
         self.shared.bus.clone()
     }
 
     /// The pointer's place and the modifier keys down, as the gestures report them.
+    #[must_use]
     pub fn pointer(&self) -> (Point, Modifiers) {
         let state = self.shared.state.borrow();
         (state.point(), state.held)
@@ -298,6 +301,7 @@ impl WindowScroll {
 
     /// A wheel or touchpad event: the listeners hear it, and the engine scrolls for it unless
     /// the element under the pointer takes the wheel itself.
+    #[must_use]
     pub fn wheel(&self, input: WheelInput, now: Instant) -> Handled {
         let el = self.elapsed(now);
         let role = self.role_of(input, el);
@@ -337,13 +341,13 @@ impl WindowScroll {
                 self.shared.state.borrow().driver.engine(),
                 Engine::Tracking(_)
             );
-        let routed = match latched {
-            true => Some(WheelRoute::Engine),
-            false => self
-                .shared
+        let routed = if latched {
+            Some(WheelRoute::Engine)
+        } else {
+            self.shared
                 .phase
                 .document()
-                .and_then(|doc| doc.read(|doc| doc::wheel_route(doc, pointer))),
+                .and_then(|doc| doc.read(|doc| doc::wheel_route(doc, pointer)))
         };
         match routed {
             Some(WheelRoute::Engine) => {
@@ -423,6 +427,7 @@ impl WindowScroll {
 
     /// A scroll key went down or repeated. The key still goes on to the document: the engine
     /// takes it only when nothing on the focus path does (`blitz_embed::scroll::doc::key_focus`).
+    #[must_use]
     pub fn key(&self, key: ScrollKey, repeat: KeyRepeat, now: Instant) -> bool {
         let el = self.elapsed(now);
         let moved = self.with_doc(|doc, state| {
@@ -433,6 +438,7 @@ impl WindowScroll {
     }
 
     /// A held scroll key came up.
+    #[must_use]
     pub fn key_up(&self, now: Instant) -> bool {
         let el = self.elapsed(now);
         let moved = self.with_doc(|doc, state| {
@@ -445,6 +451,7 @@ impl WindowScroll {
     /// A frame is about to be drawn at `now`: run the queued commands, advance the engine, and
     /// hand the listeners that asked for eased detents this frame's share. Called before the
     /// document resolves, so the layout sees this frame's offsets.
+    #[must_use]
     pub fn frame(&self, now: Instant) -> bool {
         let el = self.elapsed(now);
         let moved = self.with_doc(|doc, state| {

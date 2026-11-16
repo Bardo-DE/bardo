@@ -8,6 +8,7 @@ use crate::sort::compare;
 /// The indexes into `entries` of the rows to show, in order: hidden entries are left out unless
 /// `show_hidden` shows them, and the rest are sorted by `prefs.sort`. With `behaviour` putting
 /// folders first and a sort by name, the folders come before the files in either direction.
+#[must_use]
 pub fn arrange(
     entries: &[Entry],
     prefs: &FolderPrefs,

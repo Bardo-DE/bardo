@@ -26,6 +26,7 @@ impl Affine2 {
     };
 
     /// A move by `(x, y)`.
+    #[must_use]
     pub const fn translate(x: f64, y: f64) -> Affine2 {
         Affine2 {
             e: x,
@@ -35,6 +36,7 @@ impl Affine2 {
     }
 
     /// A scale by `(x, y)` about the origin.
+    #[must_use]
     pub const fn scale(x: f64, y: f64) -> Affine2 {
         Affine2 {
             a: x,
@@ -44,6 +46,7 @@ impl Affine2 {
     }
 
     /// A turn by `radians` (clockwise on screen, y down) about the origin.
+    #[must_use]
     pub fn rotate(radians: f64) -> Affine2 {
         let (sin, cos) = radians.sin_cos();
         Affine2 {
@@ -60,6 +63,7 @@ impl Affine2 {
     /// keeps it in device px (`S * T * S^-1`: the translation is multiplied by the viewport
     /// `scale`, the linear part is not), so divide the translation back out. A non-positive
     /// scale is taken as 1.
+    #[must_use]
     pub fn from_device(coeffs: [f64; 6], scale: f64) -> Affine2 {
         let scale = if scale > 0.0 { scale } else { 1.0 };
         let [a, b, c, d, e, f] = coeffs;

@@ -146,9 +146,10 @@ impl Model {
         let (model, heir) = self.heir_of(&space);
         let heir_for_show = heir.clone();
         let model = model.without_space(id, &heir);
-        match was_shown {
-            true => Moved::of(model).then(|model| model.show(&heir_for_show)),
-            false => Moved::of(model),
+        if was_shown {
+            Moved::of(model).then(|model| model.show(&heir_for_show))
+        } else {
+            Moved::of(model)
         }
     }
 

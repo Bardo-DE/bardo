@@ -224,9 +224,10 @@ pub fn watch(harness: &mut Harness, done: impl Fn(&Harness) -> bool) -> Seen {
         std::thread::sleep(BETWEEN);
         harness.advance(FRAME);
     }
-    match done(harness) {
-        true => Seen::Once,
-        false => Seen::Never,
+    if done(harness) {
+        Seen::Once
+    } else {
+        Seen::Never
     }
 }
 
@@ -243,9 +244,10 @@ pub fn await_off_thread(harness: &mut Harness, done: impl Fn(&Harness) -> bool) 
         std::thread::sleep(Duration::from_millis(10));
         harness.advance(Duration::ZERO);
     }
-    match done(harness) {
-        true => Seen::Once,
-        false => Seen::Never,
+    if done(harness) {
+        Seen::Once
+    } else {
+        Seen::Never
     }
 }
 

@@ -34,6 +34,7 @@ pub fn apply(link: &DisplayTrialLink, note: ShellNote) {
 }
 
 /// The command an answer is.
+#[must_use]
 pub fn command_of(answered: &TrialAnswered) -> DesktopCommand {
     DesktopCommand::AnswerTrial {
         trial: answered.trial,

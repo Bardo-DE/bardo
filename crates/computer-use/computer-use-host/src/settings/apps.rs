@@ -20,6 +20,7 @@ impl AppAllow {
 
     /// The allow a word names. `session`, a word of an earlier schema, reads as `ask`: a
     /// conversation is what it meant, and the router now remembers the answer for one.
+    #[must_use]
     pub fn of_word(word: &str) -> Option<Self> {
         match word {
             "ask" | "session" => Some(AppAllow::Ask),
@@ -32,6 +33,7 @@ impl AppAllow {
 impl AppAllow {
     /// The consent level the router is asked for under this allow: `Ask` is asked (and the
     /// router keeps the answer for the conversation), `Always` is remembered for the Space.
+    #[must_use]
     pub fn grant_level(self) -> Level {
         match self {
             AppAllow::Ask => Level::AlwaysAsk,
@@ -60,6 +62,7 @@ pub enum Apps {
 
 impl Apps {
     /// The rule for `app`: none when computer use may not drive it.
+    #[must_use]
     pub fn rule_for(&self, app: &AppName) -> Option<AppAllow> {
         match self {
             Apps::Unrestricted => Some(AppAllow::Ask),
@@ -85,6 +88,7 @@ const BROWSERS: &[&str] = &[
 ];
 
 /// Whether `app` is a web browser, as far as its id says.
+#[must_use]
 pub fn is_browser(app: &AppName) -> bool {
     let id = app.as_str().to_lowercase();
     BROWSERS.iter().any(|fragment| id.contains(fragment))

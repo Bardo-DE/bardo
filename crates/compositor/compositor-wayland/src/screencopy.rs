@@ -89,6 +89,7 @@ impl ScreencopyOutput {
     /// What a request for `region` copies, in physical pixels of the frame; none when nothing
     /// of it is on the output. A region of a turned output is refused: its logical pixels do
     /// not line up with the frame's rows.
+    #[must_use]
     pub fn target(&self, region: Region) -> Option<Target> {
         let area = match region {
             Region::Whole => PhysicalRect {
@@ -153,6 +154,7 @@ pub struct ScreencopyPart {
 
 impl ScreencopyPart {
     /// Creates the global (version 3), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ScreencopyPart
     where
         D: GlobalDispatch<ZwlrScreencopyManagerV1, ScreencopyGlobal> + 'static,
@@ -181,6 +183,7 @@ impl ScreencopyPart {
     }
 
     /// How many copies `client` has waiting.
+    #[must_use]
     pub fn pending_of(&self, client: &ClientId) -> usize {
         self.pending
             .iter()
@@ -193,6 +196,7 @@ impl ScreencopyPart {
     }
 
     /// The instant of the frame `copy`'s client was last given of its output.
+    #[must_use]
     pub fn last_delivery(&self, copy: &PendingCopy) -> Option<Mono> {
         let client = copy.frame.client()?.id();
         self.delivered
@@ -203,6 +207,7 @@ impl ScreencopyPart {
 
     /// Whether a copy waits for a frame of `output`: a real seat draws the frame only while
     /// someone asks for it.
+    #[must_use]
     pub fn wants(&self, output: &OutputKey) -> bool {
         self.pending
             .iter()

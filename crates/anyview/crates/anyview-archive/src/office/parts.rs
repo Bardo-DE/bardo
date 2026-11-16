@@ -24,7 +24,7 @@ pub(super) enum Reading {
     SlideCount,
     /// `xl/workbook.xml`: one `sheet` element per sheet.
     SheetList,
-    /// OpenDocument `meta.xml`, with the statistic its count is read from.
+    /// `OpenDocument` `meta.xml`, with the statistic its count is read from.
     DocumentMeta(Statistic),
 }
 

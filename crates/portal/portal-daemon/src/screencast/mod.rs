@@ -1,4 +1,4 @@
-//! `org.freedesktop.impl.portal.ScreenCast`: sharing a display or a window as a PipeWire stream.
+//! `org.freedesktop.impl.portal.ScreenCast`: sharing a display or a window as a `PipeWire` stream.
 //!
 //! The call sequence is the portal's: `CreateSession`, `SelectSources`, `Start`, then the app
 //! reads the node the reply names. The decisions are `portal_core::step` on a [`session::SessionBook`];
@@ -41,6 +41,7 @@ pub struct ScreenCastService {
 
 impl ScreenCastService {
     /// A service with no sessions, asking `chooser` and keeping tokens in `restore`.
+    #[must_use]
     pub fn new(chooser: Box<dyn Chooser>, restore: Box<dyn RestoreStore>) -> Self {
         Self {
             shared: Arc::new(Shared::new(chooser, restore)),
@@ -49,6 +50,7 @@ impl ScreenCastService {
     }
 
     /// This service letting through the callers `guard` admits. Without it, no wire call passes.
+    #[must_use]
     pub fn with_guard(mut self, guard: RoleGuard) -> Self {
         self.guard = guard;
         self
@@ -73,6 +75,7 @@ impl ScreenCastService {
 
     /// The service the Settings app lists and takes back what is remembered through, over the
     /// same book as this one.
+    #[must_use]
     pub fn grants(
         &self,
         guard: crate::peers::RoleGuard,
@@ -92,12 +95,14 @@ impl ScreenCastService {
 
     /// The book of what is remembered, for the remote-control interface to remember in too, so
     /// there is one list and one way to take an app's access back.
+    #[must_use]
     pub fn keeper(&self) -> Arc<crate::keeper::Keeper> {
         Arc::clone(&self.shared.keeper)
     }
 
     /// This service capturing on `display` (the connection the compositor hands this portal, when
     /// it is set up to ask for one). Call it before the service is shared.
+    #[must_use]
     pub fn with_display(mut self, display: crate::capture::DisplayName) -> Self {
         if let Some(shared) = Arc::get_mut(&mut self.shared) {
             shared.display = display;
@@ -106,6 +111,7 @@ impl ScreenCastService {
     }
 
     /// This service showing apps by the names `names` finds. Call it before the service is shared.
+    #[must_use]
     pub fn with_names(mut self, names: crate::names::AppNames) -> Self {
         if let Some(shared) = Arc::get_mut(&mut self.shared) {
             shared.names = names;
@@ -199,9 +205,10 @@ impl ScreenCastService {
         let key = SessionKey(session_handle.to_string());
         self.admit_for(&header, &key).await?;
         let selection = options::selection(&options);
-        Ok(match self.shared.select(&key, app_id, selection) {
-            true => Response::granted().into_wire(),
-            false => Response::Failed.into_wire(),
+        Ok(if self.shared.select(&key, app_id, selection) {
+            Response::granted().into_wire()
+        } else {
+            Response::Failed.into_wire()
         })
     }
 

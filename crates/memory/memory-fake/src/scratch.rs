@@ -25,11 +25,13 @@ impl Scratch {
     }
 
     /// The injected directories.
+    #[must_use]
     pub fn dirs(&self) -> &Dirs {
         &self.dirs
     }
 
     /// The temporary directory holding all four.
+    #[must_use]
     pub fn root(&self) -> &std::path::Path {
         self.dir.path()
     }

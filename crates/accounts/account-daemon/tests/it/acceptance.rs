@@ -105,7 +105,7 @@ async fn acceptance_8_removal_leaves_nothing_and_the_reader_is_told() {
 
     // Secrets: this account's are gone, the other's stay.
     assert_eq!(rig.secrets.get(&password).await, Err(SecretsError::Missing));
-    assert!(rig.secrets.get(&mail).await.is_ok());
+    rig.secrets.get(&mail).await.unwrap();
     // Registry, in memory and on the store.
     let registry = rig.service.registry();
     assert!(
@@ -117,7 +117,7 @@ async fn acceptance_8_removal_leaves_nothing_and_the_reader_is_told() {
     let stored = rig.store.stored().expect("stored");
     assert!(stored.accounts.iter().all(|a| a.id != storage_account().id));
     // The object is gone.
-    assert!(account.id().await.is_err());
+    account.id().await.unwrap_err();
     // The reader was told, once.
     let told = heard_names(&mut hears, &["AccountRemoved"]).await;
     assert_eq!(

@@ -9,6 +9,7 @@ use zbus::object_server::Interface;
 pub const VOICE1_FILE: &str = "org.bardo.Voice1.xml";
 
 /// The introspection document: every interface in one `<node>`.
+#[must_use]
 pub fn introspection() -> String {
     let (voice, utterance, speech) = (
         VoiceSkeleton::default(),

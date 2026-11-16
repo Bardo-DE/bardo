@@ -12,18 +12,21 @@ impl<'a> FileHead<'a> {
     pub const MAX: ByteLen = ByteLen(4096);
 
     /// The first 4 KiB of `bytes`, or all of them when there are fewer.
+    #[must_use]
     pub fn new(bytes: &'a [u8]) -> Self {
         let max = usize::try_from(Self::MAX.0).unwrap_or(usize::MAX);
         FileHead(&bytes[..bytes.len().min(max)])
     }
 
     /// The bytes.
+    #[must_use]
     pub fn bytes(&self) -> &'a [u8] {
         self.0
     }
 
     /// Whether the head is as long as it can be, so the file may continue past it and its last
     /// character may be cut in half.
+    #[must_use]
     pub fn is_full(&self) -> bool {
         u64::try_from(self.0.len()).is_ok_and(|len| len >= Self::MAX.0)
     }

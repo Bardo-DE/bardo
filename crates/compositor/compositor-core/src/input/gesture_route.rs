@@ -89,6 +89,7 @@ pub type Fate = Option<Vec<Drive>>;
 /// assert!(matches!(next, Route::Deciding { fingers: 4, .. }));
 /// assert_eq!(fate, Some(Vec::new()));
 /// ```
+#[must_use]
 pub fn route(
     state: Route,
     step: GestureStep<SubPoint>,
@@ -122,16 +123,17 @@ pub fn route(
 
 /// A swipe of `fingers` began: the desktop's when either swipe uses that count.
 fn begin(fingers: u8, settings: GestureSettings) -> (Route, Fate) {
-    match settings.spaces.matches(fingers) || settings.mission_control.matches(fingers) {
-        true => (
+    if settings.spaces.matches(fingers) || settings.mission_control.matches(fingers) {
+        (
             Route::Deciding {
                 fingers,
                 x: 0,
                 y: 0,
             },
             Some(Vec::new()),
-        ),
-        false => (Route::Passing, None),
+        )
+    } else {
+        (Route::Passing, None)
     }
 }
 
@@ -145,16 +147,15 @@ fn decide(fingers: u8, x: i64, y: i64, settings: GestureSettings) -> (Route, Fat
     } else {
         (Axis::Vertical, y, settings.mission_control.matches(fingers))
     };
-    match wanted {
-        false => (Route::Dead, Some(Vec::new())),
-        true => {
-            let (route, moved) = advance(axis, 0, along, settings);
-            let drives = [Some(Drive::Began(axis)), moved]
-                .into_iter()
-                .flatten()
-                .collect();
-            (route, Some(drives))
-        }
+    if wanted {
+        let (route, moved) = advance(axis, 0, along, settings);
+        let drives = [Some(Drive::Began(axis)), moved]
+            .into_iter()
+            .flatten()
+            .collect();
+        (route, Some(drives))
+    } else {
+        (Route::Dead, Some(Vec::new()))
     }
 }
 

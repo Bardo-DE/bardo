@@ -69,6 +69,7 @@ impl TimeOfDay {
     }
 
     /// As a person says it: `8:00`.
+    #[must_use]
     pub fn plain(self) -> String {
         format!("{}:{:02}", self.hour, self.minute)
     }
@@ -157,6 +158,7 @@ impl Schedule {
     }
 
     /// The schedule as a person says it.
+    #[must_use]
     pub fn plain(self) -> String {
         match self {
             Schedule::Daily(time) => format!("Every day at {}", time.plain()),
@@ -167,6 +169,7 @@ impl Schedule {
     }
 
     /// The same rule as a systemd `OnCalendar=` value, for the timers companiond writes.
+    #[must_use]
     pub fn calendar(self) -> String {
         match self {
             Schedule::Daily(time) => format!("*-*-* {time}:00"),
@@ -176,6 +179,7 @@ impl Schedule {
     }
 
     /// The first time after `now` the rule names, on the clock of `zone`.
+    #[must_use]
     pub fn next_after(self, now: UnixSeconds, zone: Zone) -> UnixSeconds {
         let offset = i64::from(zone.0);
         let local = now.0 + offset;

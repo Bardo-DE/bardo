@@ -1,5 +1,5 @@
 //! The Nextcloud family: Login Flow v2 (a browser sign-in that mints an app password), OCS
-//! discovery, WebDAV, CalDAV, CardDAV and the Notes API, over one app password.
+//! discovery, `WebDAV`, `CalDAV`, `CardDAV` and the Notes API, over one app password.
 //!
 //! A password never leaves accountd, so a session mints no token; apps reach the servers through
 //! the authenticated relay. The trait's `discover` and `revoke` are handed the account, whose
@@ -56,6 +56,7 @@ impl NextcloudProvider {
     }
 
     /// The same provider polling at this pace.
+    #[must_use]
     pub fn with_pacing(self, pacing: Pacing) -> Self {
         Self {
             io: Io { pacing, ..self.io },
@@ -84,6 +85,7 @@ pub struct NextcloudSession {
 
 impl NextcloudSession {
     /// The account it is open for.
+    #[must_use]
     pub fn account(&self) -> &AccountId {
         &self.account
     }

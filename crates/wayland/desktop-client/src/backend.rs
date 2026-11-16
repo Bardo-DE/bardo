@@ -29,6 +29,7 @@ pub enum DesktopBackend {
 /// assert_eq!(backend_for(&quire), Some(DesktopBackend::Quire));
 /// assert_eq!(backend_for(&ProtocolSet::empty()), None);
 /// ```
+#[must_use]
 pub fn backend_for(offered: &ProtocolSet) -> Option<DesktopBackend> {
     let has = |p| offered.contains(p);
     if has(Protocol::QuireDesktop) && has(Protocol::ExtForeignToplevelList) {

@@ -89,6 +89,7 @@ impl Model {
     }
 
     /// Whether window `id` was put by hand and layout keeps its rectangle as given.
+    #[must_use]
     pub fn is_placed_by_hand(&self, id: WindowId) -> bool {
         self.hand_placed.contains(&id)
     }
@@ -153,6 +154,7 @@ impl Model {
 
     /// Where `window` travels when it is minimised: the dock tile its client or the shell set,
     /// else the bottom centre of its output (a point). None when it is on no plugged output.
+    #[must_use]
     pub fn minimise_destination(&self, window: &Window) -> Option<MinimiseTarget> {
         let output = self.output_of(window)?;
         self.set_minimise_target(window.id).or_else(|| {
@@ -186,9 +188,10 @@ impl Model {
     /// so the ask is refused and noted. The person's own hand (the shell's window menu and desktop
     /// asks, Split View) goes through `full_screened` and is never refused.
     pub(super) fn enter_full_screen(self, window: &Window, wanted: Option<OutputKey>) -> Moved {
-        match self.focus.key == Some(window.id) {
-            true => self.full_screened(window, wanted),
-            false => Moved::of(self).with(Effect::Note(CoreNote::RefusedFullScreen(window.id))),
+        if self.focus.key == Some(window.id) {
+            self.full_screened(window, wanted)
+        } else {
+            Moved::of(self).with(Effect::Note(CoreNote::RefusedFullScreen(window.id)))
         }
     }
 

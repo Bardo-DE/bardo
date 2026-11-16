@@ -28,6 +28,7 @@ fn place(pane: Pane) -> f32 {
 /// The switch's state for this render and the spring's frame. The switcher is moving until the
 /// spring rests on the pane asked for; a round counts each switch asked (a reversal is a new
 /// one), and `on_settled` hears the pane each time the spring comes to rest on a switch.
+#[must_use]
 pub fn use_pane_slide(
     shown: Pane,
     on_settled: Option<EventHandler<Pane>>,

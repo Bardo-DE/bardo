@@ -27,6 +27,7 @@ pub struct Seen {
 
 impl Seen {
     /// The figures, when the provider gave any.
+    #[must_use]
     pub fn usage(self) -> Option<TokenUsage> {
         let given = self.input.is_some() || self.output.is_some() || self.charge.is_some();
         given.then(|| TokenUsage {
@@ -37,7 +38,7 @@ impl Seen {
         })
     }
 
-    /// Takes the `usage` object of an Anthropic message, message_start or message_delta. Input
+    /// Takes the `usage` object of an Anthropic message, `message_start` or `message_delta`. Input
     /// counts the cached and the cache-written tokens too: they are billed as input.
     fn anthropic(&mut self, usage: &Value) {
         let number = |name: &str| usage.get(name).and_then(Value::as_u64);
@@ -56,7 +57,7 @@ impl Seen {
         }
     }
 
-    /// Takes the `usage` object of an OpenAI completion or final chunk.
+    /// Takes the `usage` object of an `OpenAI` completion or final chunk.
     fn openai(&mut self, usage: &Value) {
         let to_u32 = |n: u64| u32::try_from(n).unwrap_or(u32::MAX);
         if let Some(input) = usage.get("prompt_tokens").and_then(Value::as_u64) {
@@ -105,6 +106,7 @@ pub struct Reading {
 
 impl Reading {
     /// A reader of a stream of server-sent events from a provider that reports `charges`.
+    #[must_use]
     pub fn of_stream(shape: Shape, charges: Charges) -> Self {
         Self {
             shape,
@@ -115,6 +117,7 @@ impl Reading {
     }
 
     /// A reader of one JSON body, which `finish_body` is given whole.
+    #[must_use]
     pub fn of_body(shape: Shape, charges: Charges) -> Self {
         Self {
             shape,
@@ -156,6 +159,7 @@ impl Reading {
     }
 
     /// What was seen.
+    #[must_use]
     pub fn seen(&self) -> Seen {
         self.seen
     }
@@ -178,6 +182,7 @@ pub enum End {
 /// or came part way (a turn without a charge is unpriced, never worked out from a price), a turn
 /// of no tokens when the model may have run and no figure came, and nothing (`None`) when no model
 /// ran.
+#[must_use]
 pub fn counted(end: End, seen: Seen) -> Option<TokenUsage> {
     match end {
         End::Answered | End::Unknown => Some(seen.usage().unwrap_or(NO_TOKENS)),

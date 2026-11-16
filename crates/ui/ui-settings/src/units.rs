@@ -25,6 +25,7 @@ pub struct Percent(pub u8);
 
 impl Percent {
     /// `value`, clamped to 100.
+    #[must_use]
     pub fn new(value: u8) -> Self {
         Percent(value.min(100))
     }

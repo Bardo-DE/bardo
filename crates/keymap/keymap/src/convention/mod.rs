@@ -51,6 +51,7 @@ pub struct ConventionTable {
 
 impl ConventionTable {
     /// The conventions of `platform`.
+    #[must_use]
     pub fn for_platform(platform: Platform) -> ConventionTable {
         let (overrides, base, spaces): (&[TableRow], &[TableRow], &Spaces) = match platform {
             Platform::MacOs
@@ -77,6 +78,7 @@ impl ConventionTable {
     }
 
     /// The platform this table is for.
+    #[must_use]
     pub fn platform(&self) -> Platform {
         self.platform
     }

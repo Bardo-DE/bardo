@@ -8,6 +8,7 @@ use shell_model::windows::{Toplevel, Toplevels, WlCommand};
 use crate::ipc::dispatch::{Reach, sent};
 
 /// Bring the front app's next window forward.
+#[must_use]
 pub fn ask(reach: &Reach) -> Response {
     let handle = &reach.services.windows;
     let command = next(&handle.state.borrow().toplevels);

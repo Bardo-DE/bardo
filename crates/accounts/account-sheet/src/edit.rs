@@ -29,12 +29,14 @@ pub enum ServersFixed {
 /// Whether an account that signs in by `auth` may have its servers edited: a password or an app
 /// password only. A host asks this before it offers to edit, and shows the servers read-only
 /// otherwise.
+#[must_use]
 pub fn servers_editable(auth: AuthKind) -> bool {
     servers_fixed(auth).is_none()
 }
 
 /// Why an account that signs in by `auth` may not have its servers edited, or `None` when it
 /// may.
+#[must_use]
 pub fn servers_fixed(auth: AuthKind) -> Option<ServersFixed> {
     match auth {
         AuthKind::Password | AuthKind::AppPassword => None,
@@ -70,6 +72,7 @@ impl EditServers {
     /// An edit of `account`, of `provider`, called `label` (the login name when the form leaves
     /// it empty), whose servers are `current`. `current` holds no token: the form never
     /// prefills a secret.
+    #[must_use]
     pub fn new(
         account: AccountId,
         provider: ProviderId,
@@ -102,26 +105,31 @@ impl EditServers {
     }
 
     /// The account.
+    #[must_use]
     pub fn account(&self) -> &AccountId {
         &self.account
     }
 
     /// Its provider.
+    #[must_use]
     pub fn provider(&self) -> &ProviderId {
         &self.provider
     }
 
     /// Its name, the login name when the form leaves it empty.
+    #[must_use]
     pub fn label(&self) -> &AccountLabel {
         &self.label
     }
 
     /// Its servers as they are.
+    #[must_use]
     pub fn current(&self) -> &Manual {
         &self.current
     }
 
     /// The name shown in From to prefill, when the form asks for one.
+    #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
@@ -185,21 +193,25 @@ impl EditedServers {
     }
 
     /// The servers, as typed and tried. A JMAP token typed in place of the password is in it.
+    #[must_use]
     pub fn servers(&self) -> &Manual {
         &self.servers
     }
 
     /// The servers the sign-in logged in at, as the account will hold them.
+    #[must_use]
     pub fn endpoints(&self) -> &[ServiceEndpoint] {
         &self.endpoints
     }
 
     /// The name shown in From; `None` when the field was left empty or not asked.
+    #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
     /// Whether a new password was typed: when not, the one the account has stays.
+    #[must_use]
     pub fn has_password(&self) -> bool {
         self.password.is_some()
     }

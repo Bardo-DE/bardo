@@ -10,6 +10,7 @@ pub type ScreenGrantRow = (String, String, u32, u64);
 /// once, and no more than [`GRANTS_MAX`] are kept. The portal's own name for an app (the second
 /// field) is not read: it comes from a desktop entry the app or the person may have written, and
 /// an app is named from the id it was proven by (`ProgramBook::look_of`).
+#[must_use]
 pub fn screen_grants_of(rows: &[ScreenGrantRow]) -> Vec<ScreenGrant> {
     let mut seen = BTreeSet::new();
     rows.iter()

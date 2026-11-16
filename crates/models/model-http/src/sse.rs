@@ -72,6 +72,7 @@ pub struct SseDecoder {
 }
 
 impl SseDecoder {
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -84,6 +85,7 @@ impl SseDecoder {
 
     /// The stream ended: an event left half-built is dropped, as the SSE standard says. The only
     /// event this can return is one whose blank line was a final `\r`.
+    #[must_use]
     pub fn finish(mut self) -> Vec<SseEvent> {
         self.drain(Stream::Over).unwrap_or_default()
     }

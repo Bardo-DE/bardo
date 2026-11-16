@@ -11,7 +11,7 @@
 //! |---|---|
 //! | mount request | `1`, `mount`, the folder name, the access (`ro` or `rw`) |
 //! | unmount request | `1`, `unmount`, the folder name |
-//! | reply, done | `ok` (a mount's reply carries the open FUSE connection as one SCM_RIGHTS fd) |
+//! | reply, done | `ok` (a mount's reply carries the open FUSE connection as one `SCM_RIGHTS` fd) |
 //! | reply, refused | `no`, the [`Code`] of the refusal (its [`Code::slug`]) |
 //!
 //! `1` is the format's version; a helper refuses a version it does not know. A request is at
@@ -38,6 +38,7 @@ pub const MAX_MESSAGE: usize = 1024;
 pub const FSTYPE: &str = "fuse.bardo";
 
 /// Where the helper listens, under the runtime directory `$XDG_RUNTIME_DIR`.
+#[must_use]
 pub fn socket_in(runtime_dir: &Path) -> PathBuf {
     runtime_dir.join("bardo/drive-mount.sock")
 }
@@ -89,6 +90,7 @@ impl FolderName {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -111,6 +113,7 @@ pub enum Access {
 
 impl Access {
     /// Its field on the wire.
+    #[must_use]
     pub fn field(self) -> &'static str {
         match self {
             Access::ReadOnly => "ro",
@@ -128,6 +131,7 @@ impl Access {
 
     /// The options `fusermount3 -o` is given for it: the access, then what every drive's folder
     /// has.
+    #[must_use]
     pub fn options(self) -> String {
         format!(
             "{},nosuid,nodev,noatime,fsname=bardo,subtype=bardo",
@@ -202,6 +206,7 @@ fn fields(bytes: &[u8]) -> Result<Vec<&str>, BadMessage> {
 
 impl Request {
     /// The request as bytes.
+    #[must_use]
     pub fn encode(&self) -> Vec<u8> {
         match self {
             Request::Mount { name, access } => {
@@ -249,6 +254,7 @@ pub enum Code {
 
 impl Code {
     /// The code as it travels.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Code::NotHere => "not_here",
@@ -259,6 +265,7 @@ impl Code {
     }
 
     /// The code a word stands for.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         [
             Code::NotHere,
@@ -293,6 +300,7 @@ pub enum Reply {
 
 impl Reply {
     /// The reply as bytes.
+    #[must_use]
     pub fn encode(&self) -> Vec<u8> {
         match self {
             Reply::Done => encode(&["ok"]),
@@ -316,7 +324,7 @@ impl Reply {
     }
 }
 
-/// Sends `bytes` on `socket` with `fd`, when given, beside them (SCM_RIGHTS).
+/// Sends `bytes` on `socket` with `fd`, when given, beside them (`SCM_RIGHTS`).
 ///
 /// # Errors
 /// The socket's.
@@ -392,7 +400,7 @@ mod tests {
         }
         assert_eq!(FolderName::parse(""), Err(BadName::Empty));
         assert_eq!(FolderName::parse(&"x".repeat(256)), Err(BadName::TooLong));
-        assert!(FolderName::parse(&"x".repeat(255)).is_ok());
+        FolderName::parse(&"x".repeat(255)).unwrap();
         for bad in ["a/b", "/abs", "..", ".", ".hidden", "nul\0", "../Documents"] {
             assert_eq!(FolderName::parse(bad), Err(BadName::NotOneName), "{bad:?}");
         }
@@ -466,6 +474,6 @@ mod tests {
             let bytes = Reply::Refused(code).encode();
             assert_eq!(Reply::decode(&bytes), Ok(Reply::Refused(code)));
         }
-        assert!(Reply::decode(b"no\0There is no room.\0").is_err());
+        Reply::decode(b"no\0There is no room.\0").unwrap_err();
     }
 }

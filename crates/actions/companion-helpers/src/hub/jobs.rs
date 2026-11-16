@@ -243,11 +243,13 @@ where
     }
 
     /// The words a finished job answered, while they are kept.
+    #[must_use]
     pub fn answer_words(&self, job: JobId) -> Option<String> {
         self.with_state(|state| state.answers.words(job).map(str::to_owned))
     }
 
     /// What is kept of a job's words: its answer, and why it stopped.
+    #[must_use]
     pub fn job_words(&self, job: JobId) -> companion_wire::JobWords {
         self.with_state(|state| companion_wire::JobWords {
             answer: state.answers.words(job).map(str::to_owned),

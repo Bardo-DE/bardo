@@ -28,6 +28,7 @@ pub enum Style {
 impl Style {
     /// The style for a run: JSON when asked for or when stdout is a pipe, text for a person at a
     /// terminal.
+    #[must_use]
     pub fn choose(json: JsonFlag, stdout: Stdout) -> Self {
         match (json, stdout) {
             (JsonFlag::Asked, _) | (_, Stdout::Pipe) => Style::Json,

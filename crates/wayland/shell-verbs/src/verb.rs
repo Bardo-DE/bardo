@@ -64,6 +64,7 @@ shell_verbs! {
 impl ShellVerb {
     /// The verb `args` spell, the exact inverse of [`argv`](Self::argv): any other words, or
     /// extra words after a verb's own, are `None`.
+    #[must_use]
     pub fn parse(args: &[&str]) -> Option<Self> {
         ALL.iter().copied().find(|verb| verb.argv() == args)
     }

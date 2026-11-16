@@ -1,4 +1,4 @@
-//! The Graph replica as syncd runs it: the same relays as the WebDAV replica
+//! The Graph replica as syncd runs it: the same relays as the `WebDAV` replica
 //! ([`RelayDial`]: one authenticated stream per connection, from `OpenAuthenticated`
 //! on the account service syncd hosts itself), so the replica never holds the Microsoft token. The
 //! relay adds `Authorization: Bearer` and reaches the endpoint's origin
@@ -12,7 +12,7 @@
 //! request redirects to) are on other hosts. Requests to them go through [`RelayDial::linked`]:
 //! `OpenLinked`, a relay that adds no credential and that the service opens only for an origin
 //! the provider file declares (`linked_origins`). [`graph_replica`] builds the replica of a
-//! dataset's folder in the account's OneDrive app folder over both. Which grant and endpoint a
+//! dataset's folder in the account's `OneDrive` app folder over both. Which grant and endpoint a
 //! Storage account on a Microsoft account is reached through is the service's candidate: the
 //! `graph` endpoint under a Storage grant.
 

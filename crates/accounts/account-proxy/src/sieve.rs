@@ -1,4 +1,4 @@
-//! The ManageSieve relay (RFC 5804), for the sieve client of mailo's mail runtime. The server
+//! The `ManageSieve` relay (RFC 5804), for the sieve client of mailo's mail runtime. The server
 //! opens with a capability list; the relay upgrades with `STARTTLS` when the endpoint says so
 //! (the server announces its capabilities again after the handshake), authenticates with
 //! `AUTHENTICATE` and the initial response, and gives the app the capability list without
@@ -12,7 +12,7 @@ use account_core::{RelayAuth, RelayPlan, Tls};
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD;
 
-/// How the relay authenticates to a ManageSieve server.
+/// How the relay authenticates to a `ManageSieve` server.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SieveAuth {
     /// `AUTHENTICATE "PLAIN"`.
@@ -70,6 +70,7 @@ impl SieveAuth {
 
 /// What the app is told on connecting: the server's capability lines less `SASL` and
 /// `STARTTLS`, then `OK`.
+#[must_use]
 pub fn app_greeting(capabilities: &[String]) -> Vec<u8> {
     let mut out: String = capabilities
         .iter()
@@ -93,7 +94,7 @@ pub enum SievePhase {
     Relaying,
 }
 
-/// One ManageSieve relay.
+/// One `ManageSieve` relay.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SieveRelay {
     /// What it presents and where.
@@ -110,16 +111,19 @@ pub struct SieveRelay {
 
 impl SieveRelay {
     /// What the relay presents and where.
+    #[must_use]
     pub fn plan(&self) -> &RelayPlan {
         &self.plan
     }
 
     /// Where the relay stands.
+    #[must_use]
     pub fn phase(&self) -> &SievePhase {
         &self.phase
     }
 
     /// A relay at the start of a connection.
+    #[must_use]
     pub fn new(plan: RelayPlan) -> Self {
         Self {
             plan,
@@ -199,11 +203,13 @@ impl SieveRelay {
                 Vec::new()
             }
             (SievePhase::Capability, true, "OK") => self.listed(),
-            (SievePhase::StartTls, true, "OK") => match self.buffer.is_empty() {
-                // Bytes after the `OK` and before the handshake would be read as TLS.
-                true => vec![Effect::StartTls],
-                false => fail(RelayFault::Protocol),
-            },
+            (SievePhase::StartTls, true, "OK") => {
+                if self.buffer.is_empty() {
+                    vec![Effect::StartTls]
+                } else {
+                    fail(RelayFault::Protocol)
+                }
+            }
             (SievePhase::Authenticating, true, "OK") => self.start_relaying(),
             (SievePhase::Authenticating, true, "NO") => fail(RelayFault::Refused),
             // An error challenge: an empty string gets the real refusal.
@@ -227,9 +233,10 @@ impl SieveRelay {
                 return effects;
             }
         }
-        match overlong(&self.buffer) {
-            true => fail(RelayFault::Protocol),
-            false => effects,
+        if overlong(&self.buffer) {
+            fail(RelayFault::Protocol)
+        } else {
+            effects
         }
     }
 
@@ -238,9 +245,10 @@ impl SieveRelay {
             return vec![send(Side::Server, data)];
         }
         self.early.extend_from_slice(data);
-        match self.early.len() > MAX_EARLY {
-            true => fail(RelayFault::Protocol),
-            false => Vec::new(),
+        if self.early.len() > MAX_EARLY {
+            fail(RelayFault::Protocol)
+        } else {
+            Vec::new()
         }
     }
 }

@@ -20,6 +20,7 @@ pub enum ClickGuard {
 impl ClickGuard {
     /// Advances by one report's button bits. The flag is whether this report is the one where a
     /// button went down.
+    #[must_use]
     pub fn step(self, buttons: Buttons, now: Mono, guard: Duration) -> (Self, bool) {
         match (self, buttons.any()) {
             (Self::Pressed, true) => (Self::Pressed, false),
@@ -31,6 +32,7 @@ impl ClickGuard {
     }
 
     /// Whether a physical click holds gestures off at `now` (P4).
+    #[must_use]
     pub fn held(self, now: Mono) -> bool {
         match self {
             Self::Pressed => true,

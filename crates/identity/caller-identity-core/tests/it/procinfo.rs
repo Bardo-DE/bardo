@@ -8,7 +8,10 @@ use caller_identity_core::procinfo::{
 #[test]
 fn the_effective_user_is_the_second_uid() {
     let status = "Name:\tx\nUid:\t1000\t1001\t1000\t1001\nGid:\t1\t1\t1\t1\n";
-    assert_eq!(parse_status_euid(status).map(|u| u.get()), Some(1001));
+    assert_eq!(
+        parse_status_euid(status).map(caller_identity_core::Uid::get),
+        Some(1001)
+    );
     assert!(parse_status_euid("Name:\tx\n").is_none());
     assert!(parse_status_euid("Uid:\tx\ty\n").is_none());
 }
@@ -16,7 +19,8 @@ fn the_effective_user_is_the_second_uid() {
 #[test]
 fn a_pidfds_pid_is_read_and_an_exited_process_is_none() {
     assert_eq!(
-        parse_fdinfo_pid("pos:\t0\nflags:\t02000002\nPid:\t1234\nNSpid:\t1234\n").map(|p| p.get()),
+        parse_fdinfo_pid("pos:\t0\nflags:\t02000002\nPid:\t1234\nNSpid:\t1234\n")
+            .map(caller_identity_core::Pid::get),
         Some(1234)
     );
     assert!(parse_fdinfo_pid("Pid:\t-1\n").is_none());

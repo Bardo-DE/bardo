@@ -71,7 +71,7 @@ fn at(
     )
 }
 
-/// A pixel's OKLCh hue and chroma (chroma capped at 0.07, which none of these reach).
+/// A pixel's `OKLCh` hue and chroma (chroma capped at 0.07, which none of these reach).
 fn lch(pixel: Rgba<u8>) -> Tint {
     Tint::from_hex(&format!(
         "#{:02x}{:02x}{:02x}",
@@ -138,7 +138,7 @@ fn an_untinted_plate_is_unchanged() {
         let centre = at(&frame, &harness, scheme, "plain", CENTRE);
         let corner = at(&frame, &harness, scheme, "plain", DEEP);
         for i in 0..3 {
-            let mean = (i32::from(base[i]) + i32::from(deep[i])) / 2;
+            let mean = i32::midpoint(i32::from(base[i]), i32::from(deep[i]));
             assert!(
                 (i32::from(centre[i]) - mean).abs() <= 2,
                 "{scheme:?} centre {centre:?}, mean of the stops {mean} in channel {i}"

@@ -50,7 +50,7 @@ struct Rig {
     _config: TempDir,
 }
 
-/// A window on the scratch folder, which is the OneDrive's folder; `report.pdf` is in the cloud
+/// A window on the scratch folder, which is the `OneDrive`'s folder; `report.pdf` is in the cloud
 /// and `notes.txt` is downloaded.
 fn open(extra: Vec<CloudDrive>, state: DriveState) -> Rig {
     let dir = scratch_folder();

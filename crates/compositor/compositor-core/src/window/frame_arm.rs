@@ -76,6 +76,7 @@ impl LightArm {
     /// let (arm, _) = LightArm::Idle.step(ArmInput::Press { on, button: ButtonCode(0x110) });
     /// assert_eq!(arm.pressed(), Some(on));
     /// ```
+    #[must_use]
     pub fn pressed(self) -> Option<LightAt> {
         match self {
             LightArm::Held {
@@ -88,6 +89,7 @@ impl LightArm {
     }
 
     /// The state after `input`, and what to do about it.
+    #[must_use]
     pub fn step(self, input: ArmInput) -> (LightArm, ArmOutcome) {
         match (self, input) {
             (_, ArmInput::Press { on, button }) => (
@@ -112,10 +114,13 @@ impl LightArm {
                     button: released,
                     over,
                 },
-            ) if released == button => match over == Some(light) {
-                true => (LightArm::Idle, ArmOutcome::Fire(light)),
-                false => (LightArm::Idle, ArmOutcome::Nothing),
-            },
+            ) if released == button => {
+                if over == Some(light) {
+                    (LightArm::Idle, ArmOutcome::Fire(light))
+                } else {
+                    (LightArm::Idle, ArmOutcome::Nothing)
+                }
+            }
             (_, ArmInput::Lost) => (LightArm::Idle, ArmOutcome::Nothing),
             (held, _) => (held, ArmOutcome::Nothing),
         }

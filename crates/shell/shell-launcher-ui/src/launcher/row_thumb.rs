@@ -50,6 +50,7 @@ struct Folders {
 }
 
 /// The row pictures for this component: from the services' directories, else the file itself.
+#[must_use]
 pub fn use_row_thumbs() -> RowThumbs {
     use_hook(|| {
         try_consume_context::<Services>().map_or_else(RowThumbs::direct, |services| {
@@ -60,11 +61,13 @@ pub fn use_row_thumbs() -> RowThumbs {
 
 impl RowThumbs {
     /// Every picture from the file itself.
+    #[must_use]
     pub fn direct() -> RowThumbs {
         RowThumbs(Source::Direct)
     }
 
     /// The cache of `dirs`.
+    #[must_use]
     pub fn in_dirs(dirs: &Dirs) -> RowThumbs {
         // The platform crate reads only the cache directory of its `Env`; the rest is isolated.
         let mut env = Env::isolated(&dirs.cache);
@@ -77,6 +80,7 @@ impl RowThumbs {
     }
 
     /// The picture for a row of a file of type `mime` at `path`, if it has one.
+    #[must_use]
     pub fn of(&self, mime: &str, path: &Path) -> Option<ImageSource> {
         if !PICTURES.contains(&mime) {
             return None;

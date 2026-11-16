@@ -33,6 +33,7 @@ pub struct AppNames {
 impl AppNames {
     /// Names from `table`'s rows, then from desktop entries in `applications` (the `applications`
     /// directories, the person's before the system's).
+    #[must_use]
     pub fn new(table: CallerTable, applications: Vec<PathBuf>) -> Self {
         Self {
             table,
@@ -52,6 +53,7 @@ impl AppNames {
     }
 
     /// What a person reads for `app`.
+    #[must_use]
     pub fn title_of(&self, app: &AppName) -> AppTitle {
         self.named(app)
             .unwrap_or_else(|| AppTitle(app.as_str().to_owned()))
@@ -59,6 +61,7 @@ impl AppNames {
 
     /// The name there is for `app`, if there is one: the id itself is not a name, so an app
     /// nothing names is `None` and the sheet host keeps naming it as it can.
+    #[must_use]
     pub fn label_of(&self, app: &AppName) -> Option<AppLabel> {
         self.named(app).map(|title| AppLabel(title.0))
     }

@@ -110,6 +110,7 @@ pub enum ComputerReason {
 
 impl ComputerReason {
     /// The reason a daemon's error name stands for (the part after the `Computer.` prefix).
+    #[must_use]
     pub fn from_name(name: &str) -> Self {
         match name {
             "BadName" => Self::BadName,
@@ -153,6 +154,7 @@ impl ClientError {
     /// The call named the places it may run (`OpenOptions::places`) and none of them can serve
     /// it: why, and the kind of place outside the set that could have served it, if there is one,
     /// so an app can offer to turn it on.
+    #[must_use]
     pub fn no_allowed_place(&self) -> Option<(NoPlaceReason, Option<PlaceKind>)> {
         match self {
             ClientError::Transport(TransportError::NoAllowedPlace { reason, would_need }) => {

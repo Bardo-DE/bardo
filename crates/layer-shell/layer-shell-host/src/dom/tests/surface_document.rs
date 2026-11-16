@@ -139,7 +139,7 @@ async fn poll_reports_a_change_and_the_waker_pings_when_a_watched_value_changes(
     let mut ping_loop: EventLoop<bool> = EventLoop::try_new().expect("event loop");
     ping_loop
         .handle()
-        .insert_source(ping_source, |_, _, fired: &mut bool| *fired = true)
+        .insert_source(ping_source, |(), (), fired: &mut bool| *fired = true)
         .expect("insert ping source");
 
     tx.send(7).expect("receiver still alive");

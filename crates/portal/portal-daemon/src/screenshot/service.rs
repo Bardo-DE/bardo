@@ -86,11 +86,13 @@ impl Default for ScreenshotService {
 
 impl ScreenshotService {
     /// A service with no screens: every screenshot is answered as failed.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// A service taking screenshots as `setup` says.
+    #[must_use]
     pub fn with_setup(setup: ScreenshotSetup) -> Self {
         Self {
             setup: Arc::new(setup),

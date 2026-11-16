@@ -71,6 +71,7 @@ pub struct FakeKms {
 
 impl FakeKms {
     /// A device offering `resources`.
+    #[must_use]
     pub fn with(resources: KmsResources) -> FakeKms {
         FakeKms {
             world: Arc::new(Mutex::new(KmsWorld {
@@ -81,6 +82,7 @@ impl FakeKms {
     }
 
     /// A device offering `topology`, with the link behaviour it calls for.
+    #[must_use]
     pub fn synthetic(topology: SyntheticTopology) -> FakeKms {
         let kms = FakeKms::with(topology.resources());
         kms.world().link = topology.link();
@@ -100,11 +102,13 @@ impl FakeKms {
     }
 
     /// How many times a GPU surface was asked for.
+    #[must_use]
     pub fn gpu_asked(&self) -> u32 {
         self.world().gpu_asked
     }
 
     /// What drew the surface last handed out for `connector`.
+    #[must_use]
     pub fn drawn_by(&self, connector: ConnectorId) -> Option<RenderMode> {
         self.world().drawn.get(&connector).copied()
     }
@@ -127,9 +131,10 @@ impl FakeKms {
         world.resources.connectors.retain(|c| c.id != connector.id);
         world.resources.connectors.push(connector);
         world.resources.connectors.sort_by_key(|c| c.id);
-        world.pending.push(match was_attached {
-            true => ConnectorEvent::Changed(facts),
-            false => ConnectorEvent::Plugged(facts),
+        world.pending.push(if was_attached {
+            ConnectorEvent::Changed(facts)
+        } else {
+            ConnectorEvent::Plugged(facts)
         });
     }
 
@@ -153,30 +158,35 @@ impl FakeKms {
     }
 
     /// The commits applied so far.
+    #[must_use]
     pub fn commits(&self) -> Vec<KmsCommit> {
         self.world().commits.clone()
     }
 
     /// The scanout surface last handed out for `connector`.
+    #[must_use]
     pub fn glass(&self, connector: ConnectorId) -> Option<GlassHandle> {
         self.world().glass.get(&connector).cloned()
     }
 
     /// How many times the seat was lent away and how many times it came back.
+    #[must_use]
     pub fn seat_changes(&self) -> (u32, u32) {
         let world = self.world();
         (world.pauses, world.resumes)
     }
 
     /// The power `connector` was last given.
+    #[must_use]
     pub fn power_of(&self, connector: ConnectorId) -> Option<bool> {
         self.world().power.get(&connector).copied()
     }
 
     fn known(world: &KmsWorld, connector: ConnectorId) -> Result<(), KmsError> {
-        match world.resources.connectors.iter().any(|c| c.id == connector) {
-            true => Ok(()),
-            false => Err(KmsError::UnknownConnector(connector)),
+        if world.resources.connectors.iter().any(|c| c.id == connector) {
+            Ok(())
+        } else {
+            Err(KmsError::UnknownConnector(connector))
         }
     }
 }

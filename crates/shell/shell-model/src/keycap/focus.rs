@@ -5,12 +5,14 @@ use key_remap_proto::{MAX_PACKET, ProfileName, Steer, ToDaemon, encode};
 
 /// `next` when keycap has not been told it yet: keycap hears a `Focus` only when the profile
 /// changes, never for a window change that leaves it the same.
+#[must_use]
 pub fn focus_to_send(previous: Option<&ProfileName>, next: ProfileName) -> Option<ProfileName> {
     (previous != Some(&next)).then_some(next)
 }
 
 /// The `UserConfig` carrying `toml`, unless it would not fit in one packet (keycap would not
 /// read half a config).
+#[must_use]
 pub fn user_config(toml: String) -> Option<ToDaemon> {
     let message = ToDaemon::Steer(Steer::UserConfig { toml });
     (encode(&message).len() < MAX_PACKET).then_some(message)
@@ -26,6 +28,7 @@ pub struct Wants {
 
 impl Wants {
     /// These wants after `message` has been sent.
+    #[must_use]
     pub fn after(self, message: &ToDaemon) -> Wants {
         match message {
             ToDaemon::Steer(Steer::Focus { profile }) => Wants {
@@ -43,6 +46,7 @@ impl Wants {
     }
 
     /// The messages that bring a new connection up to date: the focus, then the config.
+    #[must_use]
     pub fn greeting(&self) -> Vec<ToDaemon> {
         let focus = self.focus.iter().map(|profile| {
             ToDaemon::Steer(Steer::Focus {

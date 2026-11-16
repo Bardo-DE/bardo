@@ -50,11 +50,13 @@ impl<T: Timeline> std::fmt::Debug for Playback<T> {
 
 impl<T: Timeline> Playback<T> {
     /// The frame now, subscribing the caller's render to the run's frames.
+    #[must_use]
     pub fn frame(self) -> T::Frame {
         (self.frame)()
     }
 
     /// The frame last drawn, without subscribing; `None` once the owner has gone.
+    #[must_use]
     pub fn peek(self) -> Option<T::Frame> {
         self.frame.try_peek().ok().map(|frame| frame.clone())
     }

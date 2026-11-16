@@ -74,8 +74,11 @@ const SECURITIES: [(&str, &str); 2] = [
 
 /// The hand-typed form for `protocol`, as a host refits it: newer servers have no outgoing fields.
 fn by_hand(protocol: &str, port: &str, hint: &'static str) -> Vec<FormField> {
-    use FieldRole::*;
-    use FormPart::*;
+    use FieldRole::{
+        OutgoingPort, OutgoingSecurity, OutgoingServer, Password, Port, Protocol, Security, Server,
+        SessionUrl, Token, Username,
+    };
+    use FormPart::{Incoming, Outgoing, SignIn};
     let ported = |role, text: &str, hint, part| {
         let port = manual(role, text, part).hinted(hint);
         FormField {
@@ -150,10 +153,10 @@ pub fn AccountsPage() -> Element {
         Section { title: "Choose a provider", note: "ProviderList: a search field over the providers' rows with their marks, and a generic Other row. The keyboard starts in the search; Return picks the row under the cursor, else the first match; Escape cancels.",
             div { class: "g-row g-row-top",
                 Stage { theme: Theme::Light, body: step(rsx! {
-                    ProviderList { providers: providers(), query: String::new(), on_query: |_| {}, on_cursor: |_| {}, on_pick: |_| {}, on_cancel: |_| {} }
+                    ProviderList { providers: providers(), query: String::new(), on_query: |_| {}, on_cursor: |_| {}, on_pick: |_| {}, on_cancel: |()| {} }
                 }) }
                 Stage { theme: Theme::Dark, body: step(rsx! {
-                    ProviderList { providers: providers(), query: "mail".to_owned(), on_query: |_| {}, on_cursor: |_| {}, on_pick: |_| {}, on_cancel: |_| {} }
+                    ProviderList { providers: providers(), query: "mail".to_owned(), on_query: |_| {}, on_cursor: |_| {}, on_pick: |_| {}, on_cancel: |()| {} }
                 }) }
             }
         }
@@ -181,20 +184,20 @@ pub fn AccountsPage() -> Element {
         Section { title: "Browser and device code", note: "BrowserWait: the page that was opened, Copy Link (the host copies; Copied once it says so), Open Again and Cancel. ShowCode: the device code large, the page to type it at, Copy Code.",
             div { class: "g-row g-row-top",
                 Stage { theme: Theme::Light, body: step(rsx! {
-                    BrowserWait { provider: "Nextcloud", url: "https://cloud.example.org/login/v2/flow/abc123", on_open_again: |_| {}, on_copy: |_| {}, on_cancel: |_| {} }
+                    BrowserWait { provider: "Nextcloud", url: "https://cloud.example.org/login/v2/flow/abc123", on_open_again: |()| {}, on_copy: |_| {}, on_cancel: |()| {} }
                 }) }
                 Stage { theme: Theme::Dark, body: step(rsx! {
-                    ShowCode { provider: "Microsoft 365", code: "BQKD-4MZP", url: "https://microsoft.com/devicelogin", copied: true, on_copy: |_| {}, on_cancel: |_| {} }
+                    ShowCode { provider: "Microsoft 365", code: "BQKD-4MZP", url: "https://microsoft.com/devicelogin", copied: true, on_copy: |_| {}, on_cancel: |()| {} }
                 }) }
             }
         }
         Section { title: "Working and failed", note: "SignInWorking: nothing can be pressed but Cancel. SignInFailed: why it ended without an account in a sentence, with Back, Cancel and Try Again (the default). With Recovery::NoRetry a retry cannot help: no Try Again, Done is the default, and an optional FailureAction (Open Settings) stands before it.",
             div { class: "g-row g-row-top",
                 Stage { theme: Theme::Light, body: step(rsx! {
-                    SignInWorking { provider: "Fastmail", on_cancel: |_| {} }
+                    SignInWorking { provider: "Fastmail", on_cancel: |()| {} }
                 }) }
                 Stage { theme: Theme::Dark, body: step(rsx! {
-                    SignInFailed { provider: "Fastmail", why: SignInFault::Unreachable, on_retry: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+                    SignInFailed { provider: "Fastmail", why: SignInFault::Unreachable, on_retry: |()| {}, on_back: |()| {}, on_cancel: |()| {} }
                 }) }
             }
             div { class: "g-row g-row-top",
@@ -204,8 +207,8 @@ pub fn AccountsPage() -> Element {
                         why: SignInFault::Forbidden,
                         recovery: Recovery::NoRetry,
                         extra: Some(FailureAction { label: "Open Settings".to_owned(), on_press: EventHandler::new(|()| {}) }),
-                        on_back: |_| {},
-                        on_cancel: |_| {},
+                        on_back: |()| {},
+                        on_cancel: |()| {},
                     }
                 }) }
             }
@@ -213,10 +216,10 @@ pub fn AccountsPage() -> Element {
         Section { title: "Review", note: "ReviewServices: each service the provider offers with a switch, a limited one with its reason, and one the provider lacks with why. The last button reads Done, or Add, and allow Mail to use it when an app's chooser sent the person here.",
             div { class: "g-row g-row-top",
                 Stage { theme: Theme::Light, body: step(rsx! {
-                    ReviewServices { account: "ada@example.org", services: services(), on_toggle: |_| {}, on_done: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+                    ReviewServices { account: "ada@example.org", services: services(), on_toggle: |_| {}, on_done: |()| {}, on_back: |()| {}, on_cancel: |()| {} }
                 }) }
                 Stage { theme: Theme::Dark, body: step(rsx! {
-                    ReviewServices { account: "ada@example.org", services: services(), allow: Some("Mail".to_owned()), on_toggle: |_| {}, on_done: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+                    ReviewServices { account: "ada@example.org", services: services(), allow: Some("Mail".to_owned()), on_toggle: |_| {}, on_done: |()| {}, on_back: |()| {}, on_cancel: |()| {} }
                 }) }
             }
         }
@@ -229,7 +232,7 @@ pub fn AccountsPage() -> Element {
             div { class: "g-row g-row-top",
                 for why in [NoAccountWhy::NeedsAccount, NoAccountWhy::Denied, NoAccountWhy::Unsupported] {
                     div { class: "g-col",
-                        NoAccount { why, on_add: |_| {}, on_settings: |_| {} }
+                        NoAccount { why, on_add: |()| {}, on_settings: |()| {} }
                     }
                 }
             }
@@ -246,13 +249,13 @@ fn consent(choices: Vec<AccountChoice>) -> Element {
 /// A step in the standalone panel, as a host without a window of its own would show it.
 fn step(body: Element) -> Element {
     rsx! {
-        AccountSheet { label: "Add Account", on_dismiss: |_| {}, {body} }
+        AccountSheet { label: "Add Account", on_dismiss: |()| {}, {body} }
     }
 }
 
 fn sign_in(fields: Vec<FormField>, problem: Option<FieldProblem>) -> Element {
     step(rsx! {
-        SignInForm { provider: "Fastmail", mark: MarkProvider::Fastmail, fields, problem, on_input: |_| {}, on_submit: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+        SignInForm { provider: "Fastmail", mark: MarkProvider::Fastmail, fields, problem, on_input: |_| {}, on_submit: |()| {}, on_back: |()| {}, on_cancel: |()| {} }
     })
 }
 

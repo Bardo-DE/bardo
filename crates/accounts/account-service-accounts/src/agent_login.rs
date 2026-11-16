@@ -72,7 +72,7 @@ impl<E: Ports> Accounts<'_, E> {
             .ctx
             .catalog()
             .get(&provider)
-            .map(|spec| spec.sheet_row());
+            .map(account_provider::ProviderSpec::sheet_row);
         let Ok(mut link) = self
             .ctx
             .sheets()

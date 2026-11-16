@@ -1,4 +1,4 @@
-//! PaneSwitcher on a real Blitz document: a switch plays both panes at once,
+//! `PaneSwitcher` on a real Blitz document: a switch plays both panes at once,
 //! the arriving one entering and the outgoing one leaving out of the flow, the height following
 //! the arriving pane; it settles on the new pane after `settle(PaneInR)` and reports it; and a
 //! switch asked for mid-slide reverses: the panes trade animations, the reversed round's settle

@@ -46,7 +46,7 @@ fn Dialog(theme: Theme, attach: Attach) -> Element {
                 div { class: "g-modal-stage" }
                 Sheet {
                     label: "Power",
-                    onclose: |_| {},
+                    onclose: |()| {},
                     attach,
                     div { class: "g-panel",
                         h3 { "Shut down this computer?" }

@@ -16,11 +16,13 @@ pub const LOOK: &str = "look";
 pub const ORDER: &str = "@layer ds, app, look;";
 
 /// `css` as a consumer's sheet: in the `app` layer, after the order statement.
+#[must_use]
 pub fn app(css: &str) -> String {
     format!("{ORDER}\n@layer {APP} {{\n{}\n}}\n", css.trim_end())
 }
 
 /// `css` as the chosen look: in the `look` layer, after the order statement.
+#[must_use]
 pub fn look(css: &str) -> String {
     format!("{ORDER}\n@layer {LOOK} {{\n{}\n}}\n", css.trim_end())
 }

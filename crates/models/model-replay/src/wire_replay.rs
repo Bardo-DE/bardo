@@ -33,6 +33,7 @@ pub struct ReplayTransport {
 }
 
 impl ReplayTransport {
+    #[must_use]
     pub fn new(cassette: WireCassette, mode: ReplayMode, plan: ChunkPlan) -> Self {
         Self {
             cassette,
@@ -51,7 +52,10 @@ impl ReplayTransport {
     }
 
     fn pick(&self, got: &WireRequest) -> Result<WireReply, WireMiss> {
-        let mut cursor = self.cursor.lock().unwrap_or_else(|e| e.into_inner());
+        let mut cursor = self
+            .cursor
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let picked = pick(&self.cassette.exchanges, self.mode, &mut cursor, got);
         if let Err(miss) = &picked {
             cursor.misses.push(miss.clone());

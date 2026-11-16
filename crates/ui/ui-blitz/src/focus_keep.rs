@@ -183,17 +183,16 @@ pub fn keep(keeper: &mut FocusKeeper, doc: &DocRef) -> bool {
     let Some(Some(next)) = doc.read(|read| keeper.look(read)) else {
         return false;
     };
-    match doc.write(|write| {
+    if let Ok(()) = doc.write(|write| {
         write.set_focus_to(next);
         crate::focus::caret_after_text(write, next);
         write.shell_provider.request_redraw();
     }) {
-        Ok(()) => true,
-        Err(_) => {
-            // Look again next time, from what was known before this look.
-            *keeper = before;
-            false
-        }
+        true
+    } else {
+        // Look again next time, from what was known before this look.
+        *keeper = before;
+        false
     }
 }
 

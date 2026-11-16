@@ -16,6 +16,7 @@ pub struct Threshold {
 
 impl Threshold {
     /// The same number of grid units on both axes.
+    #[must_use]
     pub const fn both(units: i32) -> Self {
         Self { x: units, y: units }
     }
@@ -40,6 +41,7 @@ pub struct Params {
 
 impl Params {
     /// The shipped rule, with the P5 threshold multiplier applied while the mouse is moving.
+    #[must_use]
     pub fn standard(threshold_multiplier: f64) -> Self {
         Self {
             threshold: Threshold {

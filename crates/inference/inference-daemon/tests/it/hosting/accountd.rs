@@ -173,19 +173,20 @@ impl Accountd for FakeAccountd {
                 calls
                     .verdicts
                     .push((app.name.as_str().to_owned(), slug(&class)));
-                calls.usages.push(usage_asked.clone());
-            }
+                calls.usages.push(usage_asked.clone())
+            };
             let looks = self.looks.lock().expect("lock").clone();
             let accounts = self.accounts.lock().expect("lock").clone();
             let servers = self.servers.lock().expect("lock").clone();
             let name = app.name.as_str();
             let own = servers.into_iter().filter_map(|server| {
-                let verdict = match server.to.contains(&name) {
-                    true => Verdict::Granted {
+                let verdict = if server.to.contains(&name) {
+                    Verdict::Granted {
                         grant: GrantId::parse(server.grant).ok()?,
                         scope: GrantScope::Always,
-                    },
-                    false => Verdict::Ask,
+                    }
+                } else {
+                    Verdict::Ask
                 };
                 Some(AccountVerdict {
                     account: AccountId::parse(server.id).ok()?,

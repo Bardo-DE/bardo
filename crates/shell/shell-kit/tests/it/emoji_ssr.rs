@@ -42,7 +42,7 @@ fn redacted(html: &str) -> String {
         out.push_str(&rest[..at]);
         let tail = &rest[at..];
         let end = tail.find(['"', '&', ')']).unwrap_or(tail.len());
-        out.push_str(&format!("data:image/png;base64,({} chars)", end));
+        out.push_str(&format!("data:image/png;base64,({end} chars)"));
         rest = &tail[end..];
     }
     out.push_str(rest);

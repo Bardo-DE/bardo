@@ -42,11 +42,13 @@ pub enum CrossSupport {
 /// assert_eq!(route_for(&render, &plan), ImportRoute::Local);
 /// assert_eq!(route_for(&DrmNodeId::new(226, 129), &plan), ImportRoute::Refused);
 /// ```
+#[must_use]
 pub fn route_for(source: &DrmNodeId, plan: &RenderPlan) -> ImportRoute {
     route_with(source, plan, CrossSupport::Direct)
 }
 
 /// The route for a buffer on `source`, given how the render GPU takes foreign buffers.
+#[must_use]
 pub fn route_with(source: &DrmNodeId, plan: &RenderPlan, cross: CrossSupport) -> ImportRoute {
     if *source == plan.render {
         return ImportRoute::Local;
@@ -76,6 +78,7 @@ pub fn route_with(source: &DrmNodeId, plan: &RenderPlan, cross: CrossSupport) ->
 /// assert_eq!(tag_node(&plan, &a), a);
 /// assert_eq!(tag_node(&plan, &b), a);
 /// ```
+#[must_use]
 pub fn tag_node(plan: &RenderPlan, tranche_target: &DrmNodeId) -> DrmNodeId {
     let named =
         *tranche_target == plan.render || plan.scanout.values().any(|node| node == tranche_target);

@@ -22,6 +22,7 @@ pub enum Pattern {
 
 impl Pattern {
     /// The ARGB8888 value of pixel (`x`, `y`) of a `size` buffer.
+    #[must_use]
     pub fn pixel(self, x: u32, y: u32, size: PhysicalSize) -> u32 {
         let argb =
             |r: u32, g: u32, b: u32| 0xff00_0000 | (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
@@ -46,6 +47,7 @@ impl Pattern {
 
     /// The whole buffer, rows top to bottom, ARGB8888 little-endian (what `wl_shm` calls
     /// `argb8888`).
+    #[must_use]
     pub fn bytes(self, size: PhysicalSize) -> Vec<u8> {
         if let Pattern::Solid(argb) = self {
             let pixel = argb.to_le_bytes();

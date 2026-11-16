@@ -14,6 +14,7 @@ pub struct BackgroundSpaceStore {
 
 impl BackgroundSpaceStore {
     /// The store for `dirs`' Spaces file.
+    #[must_use]
     pub fn new(dirs: &StateDirs) -> BackgroundSpaceStore {
         let file = FileSpaceStore::new(dirs);
         let path = file.path.clone();

@@ -168,7 +168,7 @@ fn the_gate_names_the_engines_other_helpers_use() {
     assert!(gate.engines_of_other_helpers(&helper()).is_empty());
     let second = Asker::from_text("helper:h-2").expect("helper");
     assert_eq!(gate.engines_of_other_helpers(&second), [engine()]);
-    assert!(gate.engines_of_other_helpers(&Asker::Person).len() == 1);
+    assert_eq!(gate.engines_of_other_helpers(&Asker::Person).len(), 1);
     drop(first);
     assert!(gate.engines_of_other_helpers(&second).is_empty());
 }

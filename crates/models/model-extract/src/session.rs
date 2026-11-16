@@ -50,6 +50,7 @@ pub struct ExtractSession<T: Extract> {
 }
 
 impl<T: Extract> ExtractSession<T> {
+    #[must_use]
     pub fn new(mode: ExtractMode, budget: RepairBudget) -> Self {
         Self {
             machine: Machine::new(mode, budget),
@@ -57,10 +58,12 @@ impl<T: Extract> ExtractSession<T> {
         }
     }
 
+    #[must_use]
     pub fn mode(&self) -> &ExtractMode {
         &self.machine.mode
     }
 
+    #[must_use]
     pub fn left(&self) -> RepairsLeft {
         self.machine.left
     }
@@ -68,6 +71,7 @@ impl<T: Extract> ExtractSession<T> {
     /// `base` with this session's output shape, tools and tool choice set; after a fault, with
     /// the fixed repair turn appended (it never repeats what the model said). A request that
     /// carries tools of its own keeps them, and `limits` are the base's.
+    #[must_use]
     pub fn request(&self, base: &TurnRequest) -> TurnRequest {
         self.machine.request(base, &T::shape())
     }
@@ -236,6 +240,7 @@ fn unfenced(text: &str) -> &str {
     let text = text.trim();
     text.strip_prefix("```")
         .and_then(|rest| rest.strip_suffix("```"))
-        .map(|body| body.strip_prefix("json").unwrap_or(body).trim())
-        .unwrap_or(text)
+        .map_or(text, |body| {
+            body.strip_prefix("json").unwrap_or(body).trim()
+        })
 }

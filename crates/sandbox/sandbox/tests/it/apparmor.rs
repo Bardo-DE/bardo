@@ -1,4 +1,4 @@
-//! Why a refused user namespace is refused: the AppArmor switch, read from a scratch file.
+//! Why a refused user namespace is refused: the `AppArmor` switch, read from a scratch file.
 
 use sandbox::{CannotSandbox, namespaces_refused, refusal_at};
 

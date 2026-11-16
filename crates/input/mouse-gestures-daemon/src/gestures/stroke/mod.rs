@@ -72,7 +72,7 @@ pub struct Event {
 /// come before the decision (Ended, Cancelled) hold it as an option.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Moment {
-    /// MayBegin: a set of one or two fingers landed.
+    /// `MayBegin`: a set of one or two fingers landed.
     Announced,
     /// The intent was decided. `lead` is the motion that accumulated before the decision and
     /// was dropped from the stroke; its direction says which way the stroke starts.
@@ -92,6 +92,7 @@ pub enum Moment {
 
 impl Event {
     /// The phase the shell stream names this event by.
+    #[must_use]
     pub fn phase(&self) -> Phase {
         match self.moment {
             Moment::Announced => Phase::MayBegin,
@@ -112,11 +113,13 @@ pub struct Recogniser {
 
 impl Recogniser {
     /// The decided intent after the last report.
+    #[must_use]
     pub fn intent(&self) -> Option<Intent> {
         self.lock.intent()
     }
 
     /// Consumes one report's contacts.
+    #[must_use]
     pub fn step(
         self,
         contacts: &[Sample],
@@ -131,6 +134,7 @@ impl Recogniser {
 
     /// Cancels the running stroke (P3 palm, P4 click): the fingers stay followed, and the next
     /// motion decides afresh.
+    #[must_use]
     pub fn cancel(self) -> (Self, Vec<Event>) {
         let (life, events) = self.life.cancel();
         let lock = if events.is_empty() {
@@ -142,6 +146,7 @@ impl Recogniser {
     }
 
     /// Cancels and forgets everything (device gone).
+    #[must_use]
     pub fn disconnect(self) -> (Self, Vec<Event>) {
         let (life, events) = self.life.disconnect();
         (

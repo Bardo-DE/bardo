@@ -26,6 +26,7 @@ const SOCKET: &str = "key-remap.sock";
 /// The keymap source of `home`. The real home reads the environment (`$BARDO_KEY_REMAP_SOCKET`,
 /// `$BARDO_KEY_REMAP_CONFIG_DIR`, `$XDG_CONFIG_HOME`); a stand-in directory reads only inside itself, and
 /// no daemon answers there, so a test or a jail never reaches the real machine's keymap.
+#[must_use]
 pub fn source_for(home: Option<&Path>) -> KeycapSource {
     match home {
         None => KeycapSource::standard(),
@@ -42,6 +43,7 @@ fn stand_in(dir: &Path) -> KeycapSource {
 }
 
 /// The shell bindings `source` gives now, and every problem it reported in plain words.
+#[must_use]
 pub fn load_bindings(source: &KeycapSource) -> (Bindings, Vec<String>) {
     let (keymap, problems) = source.load_reporting(OURS);
     (bindings_of(&keymap), problems)

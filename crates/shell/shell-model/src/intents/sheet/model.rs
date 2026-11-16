@@ -33,11 +33,13 @@ pub struct Sheets {
 
 impl Sheets {
     /// The question on screen.
+    #[must_use]
     pub fn current(&self) -> Option<&Pending> {
         self.queue.first()
     }
 
     /// How many more wait behind it.
+    #[must_use]
     pub fn waiting(&self) -> usize {
         self.queue.len().saturating_sub(1)
     }
@@ -71,6 +73,7 @@ pub enum Reply {
 /// Whether the sheet may be answered with `choice` when it asked `request`: "always" only when
 /// the router offered it, "from the terminal" only when it offered that, "never" only when the
 /// request's limits offer it, and a plain yes or no whatever was offered.
+#[must_use]
 pub fn permits(request: &ConfirmRequest, choice: SheetChoice) -> bool {
     match choice {
         SheetChoice::Deny | SheetChoice::AllowOnce => true,

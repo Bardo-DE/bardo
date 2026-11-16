@@ -39,6 +39,7 @@ pub struct CuaSettings {
 impl CuaSettings {
     /// The settings of a machine with no file: `config`'s values and no restriction on apps (what
     /// a supervisor built in code runs under; the daemon reads the file and lists the apps).
+    #[must_use]
     pub fn over(config: CuaConfig) -> Self {
         Self {
             config,

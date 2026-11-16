@@ -21,6 +21,7 @@ pub enum TaintSource {
 }
 
 /// Whether a tool call the agent reports brings untrusted content into the session.
+#[must_use]
 pub fn brings_content(kind: PermissionKind) -> bool {
     matches!(
         kind,
@@ -33,8 +34,10 @@ pub fn brings_content(kind: PermissionKind) -> bool {
 }
 
 /// Where what a tainting kind brings in comes from: the network for a fetch, a file for the rest.
+///
 /// `None` for a kind that brings nothing in. The one rule behind both the host's record
 /// ([`brings_content`]) and the label the performer gives a reported call.
+#[must_use]
 pub fn source(kind: PermissionKind) -> Option<Source> {
     match (brings_content(kind), kind) {
         (false, _) => None,

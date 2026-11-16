@@ -25,6 +25,7 @@ pub enum Maker {
 
 impl Maker {
     /// The peephole role name.
+    #[must_use]
     pub const fn role(self) -> &'static str {
         match self {
             Self::PadDaemon => "pad_daemon",
@@ -35,6 +36,7 @@ impl Maker {
     /// The maker a `phys` text names, or `None` for any other text (no label, another prefix, a role
     /// this version does not know, anything after the role). A trailing newline, as sysfs adds, is
     /// ignored.
+    #[must_use]
     pub fn parse(phys: &str) -> Option<Self> {
         let role = phys.trim_end_matches('\n').strip_prefix(PREFIX)?;
         [Self::PadDaemon, Self::KeymapDaemon]

@@ -37,6 +37,7 @@ impl Model {
 
     /// Whether `window` is `held` or a window whose parent chain leads to it. The chain is
     /// walked at most once per window, so a loop in it ends the walk.
+    #[must_use]
     pub fn within(&self, held: WindowId, window: WindowId) -> bool {
         let mut at = Some(window);
         for _ in 0..=self.windows.len() {
@@ -68,6 +69,7 @@ impl Model {
     /// a [`Effect::Route`], and a raise and the keyboard when it activates. A press on a layer
     /// surface never comes here: layer surfaces always receive their presses and take the
     /// keyboard only by their own interactivity.
+    #[must_use]
     pub fn press(self, press: Press, now: Mono) -> (Model, Vec<Effect>) {
         self.run(now, |model| {
             let seen = model
@@ -90,6 +92,7 @@ impl Model {
     /// comes back first. When the app has no window on a Space an output shows, the output
     /// that shows the Space of its most recent window switches to it and focus keys that window
     /// (rule S5), unless `spaces.switch_on_activate` is off.
+    #[must_use]
     pub fn activate_app(self, app: AppKey, by: ActorKind, now: Mono) -> (Model, Vec<Effect>) {
         self.run(now, |model| match model.lock {
             LockState::Unlocked => model.activation(app, by),
@@ -98,6 +101,7 @@ impl Model {
     }
 
     /// A desktop command a key binding resolved to, run for the person at the keyboard.
+    #[must_use]
     pub fn command(self, command: DesktopCommand, now: Mono) -> (Model, Vec<Effect>) {
         self.run(now, |model| match model.lock {
             LockState::Unlocked => model.carry_out_command(command),

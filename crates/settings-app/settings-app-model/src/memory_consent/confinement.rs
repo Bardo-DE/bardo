@@ -27,6 +27,7 @@ pub enum Confinement {
 
 impl Confinement {
     /// The value memory's `word` names; any other word is [`Confinement::Unknown`].
+    #[must_use]
     pub fn from_word(word: &str) -> Confinement {
         match word {
             "confined" => Confinement::Confined,

@@ -35,6 +35,7 @@ pub struct ModuleRow {
 
 impl ModuleRow {
     /// The row at `path` of `module`.
+    #[must_use]
     pub fn new(module: ModuleId, path: KeyPath) -> ModuleRow {
         ModuleRow { module, path }
     }
@@ -61,6 +62,7 @@ impl Sources {
     }
 
     /// What `module` last said.
+    #[must_use]
     pub fn of(&self, module: ModuleId) -> &Source {
         match module {
             ModuleId::Accountd => &self.accountd,
@@ -78,11 +80,13 @@ impl Sources {
     }
 
     /// Whether `module`'s rows are held.
+    #[must_use]
     pub fn has_read(&self, module: ModuleId) -> bool {
         matches!(self.of(module), Source::Ready(_))
     }
 
     /// The pane the modules that answered make; none when none did.
+    #[must_use]
     pub fn pane(&self) -> Option<crate::accounts::AccountsPane> {
         let read: Vec<(ModuleId, &Described)> = ModuleId::ALL
             .into_iter()
@@ -96,6 +100,7 @@ impl Sources {
 
     /// Why nothing is shown, once every module has answered and none is there: accountd's
     /// reason first. `None` while one is still being looked for, or when one is there.
+    #[must_use]
     pub fn absence(&self) -> Option<Absence> {
         let mut first = None;
         for module in ModuleId::ALL {

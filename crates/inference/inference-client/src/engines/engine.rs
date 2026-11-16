@@ -15,13 +15,15 @@ pub struct EngineId(String);
 impl EngineId {
     /// The id named `text`.
     pub fn parse(text: &str) -> Result<Self, EngineError> {
-        match base_ids::is_id(text) {
-            true => Ok(Self(text.to_owned())),
-            false => Err(EngineError::Id(text.to_owned())),
+        if base_ids::is_id(text) {
+            Ok(Self(text.to_owned()))
+        } else {
+            Err(EngineError::Id(text.to_owned()))
         }
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -62,10 +64,10 @@ pub enum EngineError {
 pub enum Dialect {
     /// llama.cpp's server, and the runtimes inferd probes the same way (Ollama, LM Studio).
     LlamaServer,
-    /// OpenAI's own and the companies that follow it (a usage chunk asked for,
+    /// `OpenAI`'s own and the companies that follow it (a usage chunk asked for,
     /// `reasoning_effort`).
     OpenAi,
-    /// OpenRouter's.
+    /// `OpenRouter`'s.
     OpenRouter,
 }
 
@@ -136,8 +138,8 @@ impl EngineUrl {
                 .chars()
                 .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-'));
         let base = path.trim_end_matches('/');
-        match plain_host && !base.contains(['?', '#', ' ']) {
-            true => Ok(Self {
+        if plain_host && !base.contains(['?', '#', ' ']) {
+            Ok(Self {
                 scheme,
                 host: host.to_owned(),
                 port,
@@ -146,13 +148,15 @@ impl EngineUrl {
                 } else {
                     format!("/{base}")
                 },
-            }),
-            false => Err(bad()),
+            })
+        } else {
+            Err(bad())
         }
     }
 
     /// Whether this is this computer: the loopback name or address, which is the one place a key
     /// may go over plain http.
+    #[must_use]
     pub fn is_loopback(&self) -> bool {
         self.host == "localhost" || self.host == "127.0.0.1"
     }
@@ -211,6 +215,7 @@ impl Engine {
     }
 
     /// The same engine, sending the account's key as a bearer token.
+    #[must_use]
     pub fn with_key(self) -> Self {
         Self {
             key: KeyUse::Bearer,

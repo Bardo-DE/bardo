@@ -64,6 +64,7 @@ impl Mortal for WaitingControl {
 
 impl OutputPowerPart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> OutputPowerPart
     where
         D: GlobalDispatch<ZwlrOutputPowerManagerV1, OutputPowerGlobal> + 'static,
@@ -142,13 +143,14 @@ pub fn on_released(part: &mut OutputPowerPart, output: &OutputKey) -> Vec<Event>
     part.objects.remove(output);
     part.controls.remove(output);
     part.shown.remove(output);
-    match part.darkened.remove(output) {
-        true => vec![Event::OutputRequested {
+    if part.darkened.remove(output) {
+        vec![Event::OutputRequested {
             output: output.clone(),
             change: OutputChangeSet::none().with_power(true),
             by: Requester::Restore,
-        }],
-        false => Vec::new(),
+        }]
+    } else {
+        Vec::new()
     }
 }
 

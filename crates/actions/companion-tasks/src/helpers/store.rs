@@ -21,6 +21,7 @@ const MOST_RECORDS: u32 = 5_000;
 
 /// What a restart asks memory for: every kind of helper record, from the beginning of time. A
 /// helper outlives the 30 days the companion's session records are read back for.
+#[must_use]
 pub fn helper_query() -> RecentQuery {
     RecentQuery {
         since: UnixSeconds(0),
@@ -45,6 +46,7 @@ pub fn routine_query() -> RecentQuery {
 
 /// The helper records in `entries` (newest first, as `Recent` answers), oldest first. An entry
 /// that is not one of ours, has no body or does not parse is left out.
+#[must_use]
 pub fn helper_records_of(entries: &[RecentEntry]) -> Vec<HelperRecord> {
     entries
         .iter()

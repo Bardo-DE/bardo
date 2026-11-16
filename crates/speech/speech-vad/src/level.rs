@@ -11,6 +11,7 @@ use speech_provider::Frame512;
 pub struct Level(pub u16);
 
 /// The level of one frame. Integer arithmetic only (no floats anywhere in stoker).
+#[must_use]
 pub fn level_of(frame: &Frame512) -> Level {
     let energy: u64 = frame
         .samples()
@@ -48,7 +49,7 @@ fn level_of_energy(energy: u64) -> Level {
 /// squaring the mantissa one bit at a time. Integer arithmetic only.
 fn log2_fixed(x: u64) -> u32 {
     const ONE: u64 = 1 << 30;
-    let whole = 63 - x.leading_zeros();
+    let whole = x.ilog2();
     // The mantissa in [1, 2), as a 30-bit fixed-point number.
     let mut mantissa = if whole >= 30 {
         x >> (whole - 30)

@@ -24,6 +24,7 @@ pub struct TimedEvent {
 
 impl TimedEvent {
     /// The event's 24 bytes, as the kernel writes them.
+    #[must_use]
     pub fn to_bytes(self) -> [u8; EVENT_LEN] {
         let mut b = self.event.to_bytes();
         let sec = i64::try_from(self.at.0 / 1_000_000_000).unwrap_or(i64::MAX);

@@ -62,6 +62,7 @@ pub struct SplitPickerLink {
 
 impl SplitPickerLink {
     /// No offer, no answer.
+    #[must_use]
     pub fn new() -> SplitPickerLink {
         SplitPickerLink::default()
     }
@@ -126,11 +127,13 @@ impl SplitPickerLink {
     }
 
     /// The open offer, if any.
+    #[must_use]
     pub fn latest(&self) -> Option<SplitOffer> {
         self.offer.now()
     }
 
     /// A receiver for the surfaces to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Option<SplitOffer>> {
         self.offer.subscribe()
     }
@@ -144,11 +147,13 @@ impl SplitPickerLink {
     }
 
     /// The latest answer.
+    #[must_use]
     pub fn last_answer(&self) -> Option<SplitAnswered> {
         self.answered.latest()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe_answers(&self) -> watch::Receiver<Option<SplitAnswered>> {
         self.answered.subscribe()
     }

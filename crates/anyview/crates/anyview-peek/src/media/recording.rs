@@ -198,7 +198,9 @@ mod tests {
             ..Recording::default()
         };
         assert_eq!(
-            recording.bitrate(ByteLen(160_000)).map(|rate| rate.kbps()),
+            recording
+                .bitrate(ByteLen(160_000))
+                .map(anyview_core::Bitrate::kbps),
             Some(128)
         );
         assert_eq!(Recording::default().bitrate(ByteLen(1)), None);

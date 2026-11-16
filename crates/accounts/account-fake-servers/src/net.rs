@@ -144,6 +144,7 @@ fn no_unix_socket(path: &std::path::Path) -> io::Error {
 
 /// The port of a loopback address; a Unix socket has none, so the caller named the wrong
 /// kind of bind.
+#[must_use]
 pub fn port_of(address: &FakeAddress) -> u16 {
     match address {
         FakeAddress::Loopback(port) => *port,

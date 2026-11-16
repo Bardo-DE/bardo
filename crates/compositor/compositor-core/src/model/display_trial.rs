@@ -97,18 +97,20 @@ impl Model {
         let armed = model.timers.is_armed(&TimerKey::DisplayTrial);
         model.timers = model.timers.cancel(&TimerKey::DisplayTrial);
         let ended = Moved::of(model).with(Effect::EndDisplaysTrial { trial: trial.id });
-        let ended = match armed {
-            true => ended.with(Effect::CancelTimer(TimerKey::DisplayTrial)),
-            false => ended,
+        let ended = if armed {
+            ended.with(Effect::CancelTimer(TimerKey::DisplayTrial))
+        } else {
+            ended
         };
-        match revert {
-            false => ended,
-            true => trial
+        if revert {
+            trial
                 .before
                 .into_iter()
                 .fold(ended, |moved, (output, config)| {
                     moved.then(|model| model.put_back(&output, config))
-                }),
+                })
+        } else {
+            ended
         }
     }
 
@@ -119,14 +121,15 @@ impl Model {
             .0
             .get(output)
             .is_some_and(|plugged| plugged.config != config);
-        match differs {
-            true => Moved::of(self)
+        if differs {
+            Moved::of(self)
                 .with(Effect::ApplyOutput {
                     output: output.clone(),
                     config,
                 })
-                .then(|model| model.configure_output(output, config)),
-            false => Moved::of(self),
+                .then(|model| model.configure_output(output, config))
+        } else {
+            Moved::of(self)
         }
     }
 

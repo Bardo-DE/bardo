@@ -29,11 +29,13 @@ impl Eq for MemorySpaceStore {}
 
 impl MemorySpaceStore {
     /// A store with no file yet.
+    #[must_use]
     pub fn empty() -> MemorySpaceStore {
         MemorySpaceStore::default()
     }
 
     /// A store already holding `text`.
+    #[must_use]
     pub fn holding(text: &str) -> MemorySpaceStore {
         let store = MemorySpaceStore::default();
         store.lock().text = Some(text.to_owned());
@@ -41,11 +43,13 @@ impl MemorySpaceStore {
     }
 
     /// The stored text, if any was stored.
+    #[must_use]
     pub fn stored(&self) -> Option<String> {
         self.lock().text.clone()
     }
 
     /// How many times the text was written.
+    #[must_use]
     pub fn writes(&self) -> usize {
         self.lock().writes
     }

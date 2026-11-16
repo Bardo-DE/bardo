@@ -140,9 +140,10 @@ impl Model {
     /// One window of the Split View in `space` closed: the other stays, full screen, in a
     /// Space of its own again.
     pub(super) fn split_survivor(self, space: &SpaceId, pair: SplitPair, gone: WindowId) -> Moved {
-        let other = match pair.leading == gone {
-            true => pair.trailing,
-            false => pair.leading,
+        let other = if pair.leading == gone {
+            pair.trailing
+        } else {
+            pair.leading
         };
         self.with_content(space, SpaceContent::FullScreen(other))
             .then(|model| model.relaid_out(other, Cause::Configure))
@@ -207,20 +208,19 @@ impl Model {
             desktop,
         };
         let candidates = self.split_candidates(&choice);
-        match candidates.is_empty() {
-            false => {
-                let note = ShellNote::SplitChoose(SplitChoices {
-                    first,
-                    side,
-                    candidates,
-                });
-                let model = Model {
-                    split_choice: Some(choice),
-                    ..self
-                };
-                Moved::of(model).with(Effect::Shell(note))
-            }
-            true => Moved::of(self),
+        if candidates.is_empty() {
+            Moved::of(self)
+        } else {
+            let note = ShellNote::SplitChoose(SplitChoices {
+                first,
+                side,
+                candidates,
+            });
+            let model = Model {
+                split_choice: Some(choice),
+                ..self
+            };
+            Moved::of(model).with(Effect::Shell(note))
         }
     }
 

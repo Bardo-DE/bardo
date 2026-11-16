@@ -76,9 +76,10 @@ impl Deletions {
             }
             _ => false,
         };
-        match gone {
-            true => SourceState::Gone,
-            false => SourceState::Exists,
+        if gone {
+            SourceState::Gone
+        } else {
+            SourceState::Exists
         }
     }
 }

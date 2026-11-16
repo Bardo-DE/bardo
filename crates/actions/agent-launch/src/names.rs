@@ -28,6 +28,7 @@ fn digest(text: &str) -> String {
 }
 
 /// The launcher session for `session`.
+#[must_use]
 pub fn launcher_session(session: &SessionId) -> Option<SessionToken> {
     let whole = format!("{PREFIX}{}", session.as_str());
     let name = if fits(&whole) {

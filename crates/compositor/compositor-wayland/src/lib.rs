@@ -1,7 +1,7 @@
 //! casement's protocol edge: one module per Wayland protocol.
 //!
 //! Every module has the same shape (ARCHITECTURE.md, "Add a protocol"): a `<Protocol>Part`
-//! holding smithay's state and our own tables (BTreeMaps only, row B17); `Part::new`, which
+//! holding smithay's state and our own tables (`BTreeMaps` only, row B17); `Part::new`, which
 //! creates the global behind the I7 filter; `on_<request>` functions turning a request into
 //! `compositor_core::Event`s; and `apply_<effect>` functions carrying an `Effect` onto the wire.
 //! The composition root's `handlers/<protocol>.rs` implements smithay's handler trait and calls

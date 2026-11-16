@@ -28,6 +28,7 @@ pub enum OwnItem {
 
 impl OwnItem {
     /// What doing it costs: the effect the gate would weigh.
+    #[must_use]
     pub fn effect(self) -> Effect {
         match self {
             OwnItem::Raise(_)
@@ -57,12 +58,14 @@ pub fn quit_offered(served: Option<&ServedMenu>) -> bool {
 }
 
 /// As [`quit_offered`], for titles already made.
+#[must_use]
 pub fn quit_offered_in(made: Option<&Titles>) -> bool {
     made.and_then(|made| made.app.as_ref()).is_none()
 }
 
 /// The shell's own groups for the app called `name` with `windows`: its windows, then Minimise (the
 /// first window), Hide, Hide Others and Show All, then Quit when `offer_quit`.
+#[must_use]
 pub fn own_groups(name: &str, windows: &[(WindowKey, String)], offer_quit: bool) -> Vec<OwnGroup> {
     let row = |item, label: String| OwnRow { item, label };
     let raise: OwnGroup = windows
@@ -80,9 +83,10 @@ pub fn own_groups(name: &str, windows: &[(WindowKey, String)], offer_quit: bool)
             row(OwnItem::ShowAll, "Show All".to_owned()),
         ])
         .collect();
-    let quit = match offer_quit {
-        true => vec![row(OwnItem::Quit, format!("Quit {name}"))],
-        false => Vec::new(),
+    let quit = if offer_quit {
+        vec![row(OwnItem::Quit, format!("Quit {name}"))]
+    } else {
+        Vec::new()
     };
     [raise, hide, quit]
         .into_iter()
@@ -91,6 +95,7 @@ pub fn own_groups(name: &str, windows: &[(WindowKey, String)], offer_quit: bool)
 }
 
 /// The compositor commands `item` is, for the app whose windows have `app_id`.
+#[must_use]
 pub fn commands(item: OwnItem, app_id: &str, toplevels: &Toplevels) -> Vec<WlCommand> {
     let windows = toplevels.windows.iter();
     match item {

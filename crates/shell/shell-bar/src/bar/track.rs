@@ -29,6 +29,7 @@ const SUBMENU_DELAY: Duration = Duration::from_millis(200);
 const TRIANGLE_TIMEOUT: Duration = Duration::from_millis(300);
 
 /// The tracker's timings.
+#[must_use]
 pub fn timing() -> MenuTiming {
     MenuTiming {
         submenu_delay: SUBMENU_DELAY,
@@ -37,6 +38,7 @@ pub fn timing() -> MenuTiming {
 }
 
 /// A pointer position in whole logical pixels, as the tracker's point.
+#[must_use]
 pub fn point(at: layer_shell_host::Point) -> Point {
     Point {
         x: Px(at.x as f32),
@@ -45,6 +47,7 @@ pub fn point(at: layer_shell_host::Point) -> Point {
 }
 
 /// `track` after `event` at `now` with the bar's `timing`, and what the bar must do.
+#[must_use]
 pub fn step(track: Track, event: Event, now: Stamp, timing: &MenuTiming) -> (Track, Vec<Effect>) {
     track.step(event, now, timing, &())
 }

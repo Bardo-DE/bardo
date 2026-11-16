@@ -29,9 +29,10 @@ impl MarkLetter {
     pub fn parse(text: &str) -> Result<Self, MarkFaceError> {
         let count = text.chars().count();
         let visible = text.chars().all(|c| !c.is_whitespace() && !c.is_control());
-        match (1..=2).contains(&count) && visible {
-            true => Ok(Self(text.to_owned())),
-            false => Err(MarkFaceError::Letter(text.to_owned())),
+        if (1..=2).contains(&count) && visible {
+            Ok(Self(text.to_owned()))
+        } else {
+            Err(MarkFaceError::Letter(text.to_owned()))
         }
     }
 }
@@ -48,9 +49,10 @@ impl MarkColour {
     /// The colour written as `text`, or why it is not one.
     pub fn parse(text: &str) -> Result<Self, MarkFaceError> {
         let digits = text.strip_prefix('#').unwrap_or("");
-        match digits.len() == 6 && digits.bytes().all(|b| b.is_ascii_hexdigit()) {
-            true => Ok(Self(text.to_ascii_uppercase())),
-            false => Err(MarkFaceError::Colour(text.to_owned())),
+        if digits.len() == 6 && digits.bytes().all(|b| b.is_ascii_hexdigit()) {
+            Ok(Self(text.to_ascii_uppercase()))
+        } else {
+            Err(MarkFaceError::Colour(text.to_owned()))
         }
     }
 }

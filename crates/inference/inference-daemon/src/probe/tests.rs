@@ -56,7 +56,7 @@ fn the_probe_table_names_ports_and_a_runtime_with_none_is_not_probed() {
     assert_eq!(config.ports(Runtime::LmStudio), [1234]);
     assert_eq!(config.base(), Duration::from_secs(3));
     assert_eq!(config.longest(), Duration::from_secs(120));
-    assert!(toml::from_str::<ProbeConfig>("ollama = [1]\nhost = \"10.0.0.2\"\n").is_err());
+    toml::from_str::<ProbeConfig>("ollama = [1]\nhost = \"10.0.0.2\"\n").unwrap_err();
 }
 
 #[test]

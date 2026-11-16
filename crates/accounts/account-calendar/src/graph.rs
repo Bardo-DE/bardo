@@ -45,7 +45,7 @@ impl<H: Http> Graph<H> {
         url(&format!("{}{path}", self.base))
     }
 
-    /// The first event in `calendar` matching the OData `filter`.
+    /// The first event in `calendar` matching the `OData` `filter`.
     async fn first(&self, calendar: &str, filter: &str) -> Result<Option<Value>, CalendarError> {
         let at = self.url(&format!(
             "/me/calendars/{}/events?$filter={}&$top=1",
@@ -60,7 +60,7 @@ impl<H: Http> Graph<H> {
     }
 }
 
-/// `text` as an OData string literal.
+/// `text` as an `OData` string literal.
 fn literal(text: &str) -> String {
     format!("'{}'", text.replace('\'', "''"))
 }
@@ -148,27 +148,24 @@ impl<H: Http> CalendarStore for Graph<H> {
 
     async fn put(&self, calendar: &str, event: &Event) -> Result<Stored, CalendarError> {
         let written = graph_event(event);
-        let response = match self.find(calendar, &event.uid).await? {
-            Some(held) => {
-                let mut asked = request(
-                    Method::PATCH,
-                    &self.url(&format!("/me/events/{}", encode(&held.id)))?,
-                    &written,
-                )?;
-                if let Some(etag) = &held.version {
-                    asked = if_match(asked, etag)?;
-                }
-                exchange(&self.http, asked, "the update of an event").await?
+        let response = if let Some(held) = self.find(calendar, &event.uid).await? {
+            let mut asked = request(
+                Method::PATCH,
+                &self.url(&format!("/me/events/{}", encode(&held.id)))?,
+                &written,
+            )?;
+            if let Some(etag) = &held.version {
+                asked = if_match(asked, etag)?;
             }
-            None => {
-                let at = self.url(&format!("/me/calendars/{}/events", encode(calendar)))?;
-                exchange(
-                    &self.http,
-                    request(Method::POST, &at, &written)?,
-                    "the creation of an event",
-                )
-                .await?
-            }
+            exchange(&self.http, asked, "the update of an event").await?
+        } else {
+            let at = self.url(&format!("/me/calendars/{}/events", encode(calendar)))?;
+            exchange(
+                &self.http,
+                request(Method::POST, &at, &written)?,
+                "the creation of an event",
+            )
+            .await?
         };
         stored(calendar, &event.uid, &body(&response)?)
     }

@@ -77,7 +77,7 @@ async fn a_task_reads_mail_sees_only_a_handle_and_leaves_a_trusted_episode() {
         skeleton
             .asked
             .iter()
-            .map(|a| a.as_str())
+            .map(provenance::MessageText::as_str)
             .collect::<Vec<_>>(),
         ["what is the invoice about"]
     );

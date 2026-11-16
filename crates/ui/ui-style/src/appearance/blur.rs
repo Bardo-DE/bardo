@@ -4,6 +4,7 @@
 ///
 /// `data-blur="on"` paints `--m-tint` (translucent); `data-blur="off"` paints
 /// `--m-tint-solid` (alpha at least .94). The default is the safe one: solid (`false`).
+#[must_use]
 pub const fn blur_word(blur: bool) -> &'static str {
     if blur { "on" } else { "off" }
 }

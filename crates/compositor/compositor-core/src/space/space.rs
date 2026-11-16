@@ -22,6 +22,7 @@ pub struct Space {
 impl Space {
     /// The name a person sees for it: "Desktop 1" for the first desktop of a row, and the kind
     /// for the others (ext-workspace's name; also what the account service is registered with).
+    #[must_use]
     pub fn plain_name(&self) -> String {
         match self.content.kind() {
             SpaceKind::Desktop => format!("Desktop {}", self.position.0.saturating_add(1)),
@@ -48,6 +49,7 @@ pub enum SpaceContent {
 
 impl SpaceContent {
     /// The content as the wire names it.
+    #[must_use]
     pub fn kind(&self) -> SpaceKind {
         match self {
             SpaceContent::Desktop => SpaceKind::Desktop,

@@ -27,11 +27,13 @@ impl Scratch {
     }
 
     /// The directory.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.0
     }
 
     /// A subdirectory, created readable and searchable by everyone.
+    #[must_use]
     pub fn dir(&self, name: &str) -> PathBuf {
         let dir = self.0.join(name);
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("creating {}: {e}", dir.display()));

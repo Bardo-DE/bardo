@@ -16,6 +16,7 @@ pub enum AppMatch {
 
 impl AppMatch {
     /// The entry's id, or the raw app id as an `AppId`.
+    #[must_use]
     pub fn id(&self) -> AppId {
         match self {
             Self::Entry(id) => id.clone(),
@@ -24,6 +25,7 @@ impl AppMatch {
     }
 
     /// The desktop entry in `index`, when one matched.
+    #[must_use]
     pub fn entry<'a>(&self, index: &'a AppIndex) -> Option<&'a App> {
         match self {
             Self::Entry(id) => index.get(id),
@@ -32,6 +34,7 @@ impl AppMatch {
     }
 
     /// The entry's name, else the raw app id.
+    #[must_use]
     pub fn name(&self, index: &AppIndex) -> String {
         match (self.entry(index), self) {
             (Some(app), _) => app.name.clone(),
@@ -42,6 +45,7 @@ impl AppMatch {
 }
 
 /// The app for the Wayland app id `raw`.
+#[must_use]
 pub fn app_for(raw: &str, index: &AppIndex) -> AppMatch {
     match index.matching(raw, None) {
         Some(app) => AppMatch::Entry(app.id.clone()),
@@ -52,6 +56,7 @@ pub fn app_for(raw: &str, index: &AppIndex) -> AppMatch {
 /// The name the app of the Wayland app id `raw` has in the intents manifests: what its entry
 /// declares in `X-Bardo-IntentsApp`, else `raw` itself when that is a valid name (an app whose
 /// window id is its bus name, the case before entries declared one). None when neither names it.
+#[must_use]
 pub fn intents_app_for(raw: &str, index: &AppIndex) -> Option<provenance::AppName> {
     let declared = index
         .matching(raw, None)
@@ -60,6 +65,7 @@ pub fn intents_app_for(raw: &str, index: &AppIndex) -> Option<provenance::AppNam
 }
 
 /// The app `window` belongs to.
+#[must_use]
 pub fn app_of(window: &Toplevel, index: &AppIndex) -> AppMatch {
     app_for(&window.app_id, index)
 }

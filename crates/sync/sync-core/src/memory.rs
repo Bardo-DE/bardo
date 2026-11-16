@@ -36,6 +36,7 @@ struct State {
 impl MemoryReplica {
     /// An empty replica offering `features`, paging its feed `page` changes at a time, dating
     /// tombstones `now`.
+    #[must_use]
     pub fn new(features: StorageCap, page: usize, now: UnixSeconds) -> Self {
         Self {
             features,
@@ -67,7 +68,7 @@ impl MemoryReplica {
         // A panic while the lock is held already failed the test that caused it.
         self.state
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 }
 

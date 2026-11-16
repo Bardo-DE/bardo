@@ -8,11 +8,13 @@ use shell_model::units::{Cpx, Permille};
 
 /// The zoom of the tile centred at `center` for pointer `x` at progress `progress`, in
 /// thousandths (1000 = rest).
+#[must_use]
 pub fn zoom(center: Cpx, x: Cpx, progress: Permille, p: &MagnifyParams) -> Permille {
     Permille((factor(center, x, progress, p) * 1000.0).round() as u32)
 }
 
 /// Every tile's magnified size.
+#[must_use]
 pub fn sizes(centers: &[Cpx], x: Cpx, progress: Permille, p: &MagnifyParams) -> Vec<Cpx> {
     centers
         .iter()

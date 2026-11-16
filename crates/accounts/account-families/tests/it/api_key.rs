@@ -1,4 +1,4 @@
-//! The ApiKey family against a loopback fake of each company's key check: the key is asked for
+//! The `ApiKey` family against a loopback fake of each company's key check: the key is asked for
 //! in a hidden field, presented the way the company documents (the fake refuses a right key in a
 //! wrong header), checked with one models-list call whose answer is dropped, and never shown or
 //! handed to an app.
@@ -293,7 +293,7 @@ async fn discover_checks_the_key_and_a_dead_key_is_unauthorized() {
                 Err(ProviderError::Unauthorized),
                 "{id}"
             );
-            assert!(provider.open(&holder.id, presented).await.is_err());
+            provider.open(&holder.id, presented).await.unwrap_err();
         }
     }
 }
@@ -476,7 +476,7 @@ async fn a_server_of_the_persons_own_is_asked_for_its_address_and_an_optional_ke
     // A later check asks the account's own server.
     let mut holder = account("openai-compatible");
     holder.endpoints = endpoints.clone();
-    assert!(provider.discover(&holder, &live(PASTED)).await.is_ok());
+    provider.discover(&holder, &live(PASTED)).await.unwrap();
     assert_eq!(
         provider.discover(&holder, &live("sk-dead")).await,
         Err(ProviderError::Unauthorized)

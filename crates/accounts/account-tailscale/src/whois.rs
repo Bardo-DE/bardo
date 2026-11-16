@@ -16,7 +16,7 @@ use std::net::IpAddr;
 pub struct WhoIsNode {
     /// Its stable id.
     pub id: NodeId,
-    /// Its MagicDNS name without the dot at the end.
+    /// Its `MagicDNS` name without the dot at the end.
     pub dns: String,
     /// The user that made it. With tags this is not who runs it.
     pub user: UserId,
@@ -39,6 +39,7 @@ pub struct WhoIs {
 
 impl WhoIs {
     /// Whose the computer is, as seen by the user `me`: the same rule as a listed computer's.
+    #[must_use]
     pub fn owner(&self, me: UserId) -> MachineOwner {
         let node = &self.node;
         match (
@@ -168,7 +169,7 @@ mod tests {
     #[test]
     fn an_answer_without_both_halves_is_malformed() {
         for body in [
-            "".to_owned(),
+            String::new(),
             "{}".to_owned(),
             json!({"Node": base()}).to_string(),
             json!({"UserProfile": {"ID": 1}}).to_string(),

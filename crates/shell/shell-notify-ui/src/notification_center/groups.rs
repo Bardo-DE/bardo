@@ -19,6 +19,7 @@ pub struct GroupView {
 }
 
 /// `history`'s groups, in its order, each collapsed unless `expanded` names it.
+#[must_use]
 pub fn group_views(history: &History, expanded: &Expanded) -> Vec<GroupView> {
     history
         .groups
@@ -28,21 +29,24 @@ pub fn group_views(history: &History, expanded: &Expanded) -> Vec<GroupView> {
 }
 
 /// `expanded` with `key` opened when it was closed, closed when it was open.
+#[must_use]
 pub fn toggle_group(expanded: Expanded, key: &AppKey) -> Expanded {
     let Expanded(keys) = expanded;
     let open = keys.contains(key);
     let rest = keys.into_iter().filter(|k| k != key);
-    Expanded(match open {
-        true => rest.collect(),
-        false => rest.chain(std::iter::once(key.clone())).collect(),
+    Expanded(if open {
+        rest.collect()
+    } else {
+        rest.chain(std::iter::once(key.clone())).collect()
     })
 }
 
 fn view_of(key: &AppKey, notes: &[Notification], expanded: &Expanded) -> GroupView {
     let ids = notes.iter().map(|note| note.id);
-    let shown: Vec<NotificationId> = match expanded.0.contains(key) {
-        true => ids.collect(),
-        false => ids.take(1).collect(),
+    let shown: Vec<NotificationId> = if expanded.0.contains(key) {
+        ids.collect()
+    } else {
+        ids.take(1).collect()
     };
     GroupView {
         key: key.clone(),

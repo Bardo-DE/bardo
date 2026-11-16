@@ -61,6 +61,7 @@ pub enum Restore {
 
 impl WindowState {
     /// The state as the wire names it.
+    #[must_use]
     pub fn kind(&self) -> WindowStateKind {
         match self {
             WindowState::New(_) | WindowState::Floating(_) => WindowStateKind::Floating,
@@ -73,6 +74,7 @@ impl WindowState {
 
     /// Where the window sits, as `bardo_window_v1.placement` marks it. A minimised window
     /// carries the mark of the state it will return to.
+    #[must_use]
     pub fn mark(&self) -> PlacementMark {
         match self {
             WindowState::New(_) | WindowState::Floating(_) => PlacementMark::Free,
@@ -87,6 +89,7 @@ impl WindowState {
 impl WindowState {
     /// What leaving full screen or the dock goes back to, when this state can be left that
     /// way (full screen and the dock are not).
+    #[must_use]
     pub fn restore(&self) -> Option<Restore> {
         match self {
             WindowState::New(size) => Some(Restore::New(*size)),
@@ -103,6 +106,7 @@ impl WindowState {
 
 impl Restore {
     /// The state this restores.
+    #[must_use]
     pub fn into_state(self) -> WindowState {
         match self {
             Restore::New(size) => WindowState::New(size),

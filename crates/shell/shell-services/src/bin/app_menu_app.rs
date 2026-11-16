@@ -48,15 +48,14 @@ async fn main() {
         .unwrap_or_else(|e| panic!("{e}"))
         .serve_at(MENU_PATH, menu)
         .unwrap_or_else(|e| panic!("{e}"));
-    let connection = match handshake {
-        true => builder.build().await,
-        false => {
-            builder
-                .name(name.as_str())
-                .unwrap_or_else(|e| panic!("{e}"))
-                .build()
-                .await
-        }
+    let connection = if handshake {
+        builder.build().await
+    } else {
+        builder
+            .name(name.as_str())
+            .unwrap_or_else(|e| panic!("{e}"))
+            .build()
+            .await
     }
     .unwrap_or_else(|e| panic!("connecting to {address}: {e}"));
     if handshake {

@@ -45,6 +45,7 @@ pub struct FixtureSpec {
 impl FixtureSpec {
     /// One 1920x1080 output at 60 Hz and scale 1, pixman, one soft GPU, the default settings,
     /// every frame costing 4 ms.
+    #[must_use]
     pub fn desktop() -> FixtureSpec {
         FixtureSpec {
             outputs: vec![
@@ -67,11 +68,13 @@ impl FixtureSpec {
 
     /// [`FixtureSpec::desktop`] on one small 640x480 output, so a frame is a few hundred
     /// kilobytes: for tests that assert nothing about pixel positions on a full-size screen.
+    #[must_use]
     pub fn small() -> FixtureSpec {
         FixtureSpec::desktop().with_outputs(&["HEADLESS-1:640x480@60000:120:0,0"])
     }
 
     /// The same, keeping the privacy book and reading the floor in `files`.
+    #[must_use]
     pub fn with_privacy(self, files: PrivacyFiles) -> FixtureSpec {
         FixtureSpec {
             privacy: Some(files),
@@ -80,11 +83,13 @@ impl FixtureSpec {
     }
 
     /// The same, with the date fixed at `wall`.
+    #[must_use]
     pub fn with_wall(self, wall: UnixSeconds) -> FixtureSpec {
         FixtureSpec { wall, ..self }
     }
 
     /// The same, looking for app icons as `icons` says.
+    #[must_use]
     pub fn with_icons(self, icons: IconSearch) -> FixtureSpec {
         FixtureSpec {
             icons: Some(icons),
@@ -93,11 +98,13 @@ impl FixtureSpec {
     }
 
     /// The same, with dma-buf offered to clients (or not).
+    #[must_use]
     pub fn with_dmabuf(self, dmabuf: bool) -> FixtureSpec {
         FixtureSpec { dmabuf, ..self }
     }
 
     /// The same, starting from (and storing into) this Spaces file.
+    #[must_use]
     pub fn with_space_store(self, space_store: MemorySpaceStore) -> FixtureSpec {
         FixtureSpec {
             space_store,
@@ -106,6 +113,7 @@ impl FixtureSpec {
     }
 
     /// The same, starting from (and keeping) this lock marker.
+    #[must_use]
     pub fn with_lock_marker(self, lock_marker: MemoryLockMarker) -> FixtureSpec {
         FixtureSpec {
             lock_marker,
@@ -114,6 +122,7 @@ impl FixtureSpec {
     }
 
     /// The same, with this ack policy.
+    #[must_use]
     pub fn with_lenient_acks(self, lenient_acks: bool) -> FixtureSpec {
         FixtureSpec {
             lenient_acks,
@@ -122,6 +131,7 @@ impl FixtureSpec {
     }
 
     /// The same, with these outputs.
+    #[must_use]
     pub fn with_outputs(self, specs: &[&str]) -> FixtureSpec {
         FixtureSpec {
             outputs: specs
@@ -136,6 +146,7 @@ impl FixtureSpec {
     }
 
     /// The same, with this renderer.
+    #[must_use]
     pub fn with_renderer(self, renderer: SoftRenderer) -> FixtureSpec {
         FixtureSpec { renderer, ..self }
     }

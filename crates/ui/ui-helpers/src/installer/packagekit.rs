@@ -1,6 +1,6 @@
-//! PackageKit over the system bus: `org.freedesktop.PackageKit`'s `CreateTransaction`, then on
+//! `PackageKit` over the system bus: `org.freedesktop.PackageKit`'s `CreateTransaction`, then on
 //! the transaction `SetHints`, `Resolve` and `InstallPackages`, read through the transaction's
-//! `Package`, `ErrorCode` and `Finished` signals (the interface XML PackageKit ships in
+//! `Package`, `ErrorCode` and `Finished` signals (the interface XML `PackageKit` ships in
 //! `/usr/share/dbus-1/interfaces`). The crate docs say why this route and not `Modify2`.
 
 use super::transaction::{Budget, Fault, PEER, Report, transact};
@@ -23,7 +23,7 @@ const ERROR_PACKAGE_NOT_FOUND: u32 = 8;
 const ERROR_TRANSACTION_CANCELLED: u32 = 17;
 const ERROR_NOT_AUTHORIZED: u32 = 48;
 
-/// Where the system's PackageKit is reached.
+/// Where the system's `PackageKit` is reached.
 #[derive(Debug)]
 enum Bus {
     /// The system bus, connected at the first request (so building the backend never touches
@@ -33,7 +33,7 @@ enum Bus {
     Given(Connection),
 }
 
-/// The PackageKit backend. It never runs a package manager and never uses sudo.
+/// The `PackageKit` backend. It never runs a package manager and never uses sudo.
 #[derive(Debug)]
 pub struct PackageKit {
     bus: Bus,
@@ -49,7 +49,8 @@ enum Found {
 }
 
 impl PackageKit {
-    /// The system's PackageKit, over the system bus.
+    /// The system's `PackageKit`, over the system bus.
+    #[must_use]
     pub fn system() -> PackageKit {
         PackageKit {
             bus: Bus::System,
@@ -57,7 +58,8 @@ impl PackageKit {
         }
     }
 
-    /// A PackageKit (or a stand-in) reached over `connection`.
+    /// A `PackageKit` (or a stand-in) reached over `connection`.
+    #[must_use]
     pub fn on(connection: Connection) -> PackageKit {
         PackageKit {
             bus: Bus::Given(connection),
@@ -65,7 +67,8 @@ impl PackageKit {
         }
     }
 
-    /// This backend with `timeouts` for each wait on PackageKit.
+    /// This backend with `timeouts` for each wait on `PackageKit`.
+    #[must_use]
     pub fn with_timeouts(mut self, timeouts: Timeouts) -> PackageKit {
         self.timeouts = timeouts;
         self
@@ -171,7 +174,7 @@ async fn install_id(
     })
 }
 
-/// A failed transaction as an outcome: a PackageKit that did not answer or went away is a failure
+/// A failed transaction as an outcome: a `PackageKit` that did not answer or went away is a failure
 /// in plain words, a bus-level failure is [`classify_bus`].
 fn classify(fault: &Fault, missing: &Missing) -> Outcome {
     match fault {
@@ -180,7 +183,7 @@ fn classify(fault: &Fault, missing: &Missing) -> Outcome {
     }
 }
 
-/// A bus-level failure as an outcome: policy refusal is a decline, no PackageKit is
+/// A bus-level failure as an outcome: policy refusal is a decline, no `PackageKit` is
 /// unsupported, anything else is a failure with the daemon's words.
 fn classify_bus(error: &zbus::Error, missing: &Missing) -> Outcome {
     use zbus::fdo::Error as Fdo;

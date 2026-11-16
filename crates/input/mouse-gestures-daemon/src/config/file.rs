@@ -23,6 +23,7 @@ pub fn parse(text: &str) -> Result<(Config, Vec<Warning>), toml::de::Error> {
 
 /// Reads a parsed table, leniently like [`parse`]; the layers of the machine's and the person's
 /// files are merged as tables first (`layer`).
+#[must_use]
 pub fn parse_table(root: &toml::Table) -> (Config, Vec<Warning>) {
     let mut warn = Vec::new();
     let w = &mut warn;
@@ -34,6 +35,7 @@ pub fn parse_table(root: &toml::Table) -> (Config, Vec<Warning>) {
 }
 
 /// The defaults as TOML, for `palmrest --print-config` and the install script.
+#[must_use]
 pub fn to_toml(c: &Config) -> String {
     toml::to_string(c).unwrap_or_default() // every field is a plain value or table; cannot fail
 }
@@ -93,6 +95,6 @@ mod tests {
 
     #[test]
     fn not_toml_is_an_error() {
-        assert!(parse("[scroll").is_err());
+        parse("[scroll").unwrap_err();
     }
 }

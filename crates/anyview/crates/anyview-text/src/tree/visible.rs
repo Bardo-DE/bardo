@@ -158,6 +158,7 @@ impl Tree {
     }
 
     /// How many rows the tree shows with `open` nodes open.
+    #[must_use]
     pub fn visible_count(&self, open: &OpenNodes) -> u32 {
         let Some(root) = self.root_row() else {
             return 0;
@@ -169,6 +170,7 @@ impl Tree {
     /// the node is not shown (a node above it is closed) or the file has no such node. Counts the
     /// rows before it without reading them, so a node deep in a long array costs the open nodes
     /// above it, not the rows.
+    #[must_use]
     pub fn visible_index(&self, open: &OpenNodes, path: &TreePath) -> Option<u32> {
         let mut at = TreePath::root();
         let mut before = 0_u64;
@@ -196,6 +198,7 @@ impl Tree {
     }
 
     /// The rows in `window` of the flattened tree, cut to the rows that exist.
+    #[must_use]
     pub fn visible(&self, open: &OpenNodes, window: Range<u32>) -> Vec<VisibleRow> {
         let mut cut = Cut {
             skip: u64::from(window.start),

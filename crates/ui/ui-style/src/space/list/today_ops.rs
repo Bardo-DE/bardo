@@ -67,6 +67,7 @@ impl<I, K> Today<I, K> {
     }
 
     /// The entries of `space` that still have time, newest first, each with what it has left.
+    #[must_use]
     pub fn live(&self, space: SpaceId, now: Epoch) -> Vec<(&Entry<I>, Duration)> {
         self.entries
             .iter()
@@ -79,6 +80,7 @@ impl<I, K> Today<I, K> {
     /// whose Today keeps an entry until it is closed or cleared. Such an app reads this in place
     /// of [`Today::live`] and never calls [`Today::prune`] (it loads with
     /// `SpacesStorage::load_today`, not `boot_today`).
+    #[must_use]
     pub fn all(&self, space: SpaceId) -> Vec<&Entry<I>> {
         self.entries
             .iter()
@@ -87,6 +89,7 @@ impl<I, K> Today<I, K> {
     }
 
     /// What `space` parked, newest first.
+    #[must_use]
     pub fn parked_in(&self, space: SpaceId) -> Vec<&Parked<K>> {
         self.parked
             .iter()

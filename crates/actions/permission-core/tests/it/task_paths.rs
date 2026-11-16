@@ -131,7 +131,7 @@ fn a_path_that_is_not_utf8_is_a_fault_not_a_lossy_name() {
     use std::path::Path;
     let bad = Path::new(std::ffi::OsStr::from_bytes(b"/w/\xff"));
     assert_eq!(AbsPath::try_from(bad), Err(AbsPathError::NotUtf8));
-    assert!(AbsPath::try_from(Path::new("/w/p")).is_ok());
+    AbsPath::try_from(Path::new("/w/p")).unwrap();
     assert_eq!(
         AbsPath::try_from(Path::new("w/p")),
         Err(AbsPathError::NotAbsolute)

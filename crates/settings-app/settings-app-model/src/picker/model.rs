@@ -198,6 +198,7 @@ impl ModelRow {
 
     /// What the menu calls `word`. The empty word has no name here (the window calls it Off): the
     /// module's own name for it would claim a model is chosen for the person.
+    #[must_use]
     pub fn label_of(&self, word: &str) -> String {
         if word.is_empty() {
             return String::new();
@@ -209,6 +210,7 @@ impl ModelRow {
 impl Ready {
     /// The picker `described` makes: its menu rows grouped by slot, slots and rows in the order
     /// they appear in `Describe`. Nothing here knows a slot by name.
+    #[must_use]
     pub fn of(described: &Described) -> Ready {
         let mut kinds: Vec<KindRows> = Vec::new();
         for spec in &described.keys {
@@ -246,6 +248,7 @@ impl Ready {
     }
 
     /// Whether the add-account sheet is open on behalf of a pick.
+    #[must_use]
     pub fn sheet_open(&self) -> bool {
         matches!(self.busy, Busy::Awaiting(_))
     }
@@ -256,6 +259,7 @@ impl Ready {
     }
 
     /// The set in flight, if that is what the picker waits on.
+    #[must_use]
     pub fn applying(&self) -> Option<&Applying> {
         match &self.busy {
             Busy::Applying(applying) => Some(applying),
@@ -264,6 +268,7 @@ impl Ready {
     }
 
     /// The pick that waits on an account, if that is what the picker waits on.
+    #[must_use]
     pub fn awaiting(&self) -> Option<&AwaitingAccount> {
         match &self.busy {
             Busy::Awaiting(pick) => Some(pick),
@@ -272,6 +277,7 @@ impl Ready {
     }
 
     /// The pool write in flight, if that is what the picker waits on.
+    #[must_use]
     pub fn pooling(&self) -> Option<&PoolWrite> {
         match &self.busy {
             Busy::Pooling(write) => Some(write),
@@ -281,6 +287,7 @@ impl Ready {
 
     /// The pick that waits on the person's yes to turning coding agents on, if that is what the
     /// picker waits on.
+    #[must_use]
     pub fn turning_on(&self) -> Option<&TurnOn> {
         match &self.busy {
             Busy::TurningOn(asked) => Some(asked),
@@ -289,6 +296,7 @@ impl Ready {
     }
 
     /// The row at `path`.
+    #[must_use]
     pub fn row(&self, path: &KeyPath) -> Option<&ModelRow> {
         self.kinds
             .iter()
@@ -362,6 +370,7 @@ pub enum Loading {
 }
 
 /// What the row shows while `word` is being set.
+#[must_use]
 pub fn loading_of(row: &ModelRow, word: &str) -> Loading {
     if word.is_empty() || word == AUTO {
         Loading::Applying

@@ -43,6 +43,7 @@ pub struct BusActivate {
 
 impl BusActivate {
     /// Activation over `connection`, with calls driven on `runtime`.
+    #[must_use]
     pub fn new(connection: Connection, runtime: Handle) -> BusActivate {
         BusActivate {
             connection,
@@ -114,6 +115,7 @@ pub struct ActivateCall {
 #[cfg(feature = "testing")]
 impl FakeActivate {
     /// A fake with no calls yet.
+    #[must_use]
     pub fn new() -> FakeActivate {
         FakeActivate::default()
     }

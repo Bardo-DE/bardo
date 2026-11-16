@@ -95,9 +95,10 @@ impl Model {
 
     /// `client` as the holder of a lock it asked for.
     fn holder_of(&self, client: ClientKey) -> LockHolder {
-        match self.is_shell(client) {
-            true => LockHolder::Shell(Some(client)),
-            false => LockHolder::Client(client),
+        if self.is_shell(client) {
+            LockHolder::Shell(Some(client))
+        } else {
+            LockHolder::Client(client)
         }
     }
 
@@ -193,10 +194,13 @@ impl Model {
             LockState::Locked {
                 holder,
                 surfaces: LockSurfaces::Covering(covered),
-            } => match covered.contains(&output) {
-                true => return Moved::of(self),
-                false => (holder, with_output(covered, &output), Vec::new()),
-            },
+            } => {
+                if covered.contains(&output) {
+                    return Moved::of(self);
+                } else {
+                    (holder, with_output(covered, &output), Vec::new())
+                }
+            }
             LockState::Locked {
                 holder,
                 surfaces: LockSurfaces::Pending,
@@ -228,9 +232,10 @@ impl Model {
             return Moved::of(self);
         }
         let rest: Vec<OutputKey> = covered.into_iter().filter(|held| held != output).collect();
-        let surfaces = match rest.is_empty() {
-            true => LockSurfaces::Pending,
-            false => LockSurfaces::Covering(rest),
+        let surfaces = if rest.is_empty() {
+            LockSurfaces::Pending
+        } else {
+            LockSurfaces::Covering(rest)
         };
         self.with_lock(LockState::Locked { holder, surfaces })
             .with(show_cover(output.clone()))
@@ -288,9 +293,10 @@ impl Model {
                     .collect();
                 LockState::Locked {
                     holder: *holder,
-                    surfaces: match rest.is_empty() {
-                        true => LockSurfaces::Pending,
-                        false => LockSurfaces::Covering(rest),
+                    surfaces: if rest.is_empty() {
+                        LockSurfaces::Pending
+                    } else {
+                        LockSurfaces::Covering(rest)
                     },
                 }
             }

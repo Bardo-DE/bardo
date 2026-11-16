@@ -140,6 +140,7 @@ impl Toplevel {
     }
 
     /// Acks the newest configure received, if any; says which serial.
+    #[must_use]
     pub fn ack_latest(&self) -> Option<u32> {
         let serial = self
             .log
@@ -231,11 +232,13 @@ impl Toplevel {
     }
 
     /// The completed configures so far.
+    #[must_use]
     pub fn configures(&self) -> Vec<Configure> {
         self.log.with(|seen| seen.configures.clone())
     }
 
     /// Whether the newest configure has `state`.
+    #[must_use]
     pub fn newest_has(&self, state: State) -> bool {
         self.log.with(|seen| {
             seen.configures
@@ -245,6 +248,7 @@ impl Toplevel {
     }
 
     /// The `wl_surface` object.
+    #[must_use]
     pub fn wl_surface(&self) -> &WlSurface {
         &self.surface
     }

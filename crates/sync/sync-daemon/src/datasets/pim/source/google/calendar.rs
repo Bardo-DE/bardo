@@ -201,13 +201,16 @@ impl<T: GrantsLink + 'static> Feed for GoogleCalendarFeed<T> {
         let changes = listing
             .items
             .iter()
-            .filter_map(|event| match event.is_cancelled() {
-                true => Some(FeedChange::Delete(Tombstone {
-                    id: RemoteId(event.id.clone()),
-                    version: RemoteVersion(DELETED.to_owned()),
-                    deleted_at: self.clock.now(),
-                })),
-                false => self.upsert(event),
+            .filter_map(|event| {
+                if event.is_cancelled() {
+                    Some(FeedChange::Delete(Tombstone {
+                        id: RemoteId(event.id.clone()),
+                        version: RemoteVersion(DELETED.to_owned()),
+                        deleted_at: self.clock.now(),
+                    }))
+                } else {
+                    self.upsert(event)
+                }
             })
             .collect();
         Ok(Page {
@@ -228,11 +231,12 @@ impl<T: GrantsLink + 'static> Feed for GoogleCalendarFeed<T> {
         }
         let event: Event = serde_json::from_slice(response.body())
             .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
-        match event.is_cancelled() {
-            true => Err(ReplicaError::Gone),
-            false => event::to_ics(&event)
+        if event.is_cancelled() {
+            Err(ReplicaError::Gone)
+        } else {
+            event::to_ics(&event)
                 .map(String::into_bytes)
-                .map_err(|_| ReplicaError::Gone),
+                .map_err(|_| ReplicaError::Gone)
         }
     }
 }

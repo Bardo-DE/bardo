@@ -18,22 +18,26 @@ pub struct Collapse {
 
 impl Collapse {
     /// How open the content is, 0 to 1000.
+    #[must_use]
     pub fn open(self) -> Fraction {
         self.open
     }
 
     /// Whether it is between open and closed, so a frame is wanted.
+    #[must_use]
     pub fn is_moving(self) -> bool {
         self.open.0 > 0 && self.open.0 < OPEN.0
     }
 
     /// Whether nothing of it shows.
+    #[must_use]
     pub fn is_closed(self) -> bool {
         self.open.0 == 0
     }
 
     /// The content's `style`: nothing at rest open (it takes its natural size), else the height
     /// and opacity that share of `measured` gives. Closed it is cut to nothing.
+    #[must_use]
     pub fn style(self, measured: Px) -> Option<String> {
         match self.open.0 {
             1000.. => None,
@@ -51,6 +55,7 @@ impl Collapse {
 
 /// Follow `shown`: it stands where `shown` says on mount, and each change moves it there from
 /// wherever it is now, so a toggle mid-move reverses without a jump.
+#[must_use]
 pub fn use_collapse(shown: bool) -> Collapse {
     let target = if shown { OPEN } else { Fraction(0) };
     let open = use_tween(

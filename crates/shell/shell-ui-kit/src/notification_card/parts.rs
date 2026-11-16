@@ -15,6 +15,7 @@ pub enum CardPart {
 }
 
 /// The `id` of `part` of the banner drawing notification `id`.
+#[must_use]
 pub fn part_id(id: NotificationId, part: CardPart) -> String {
     match part {
         CardPart::Plate => format!("toast-{}", id.0),

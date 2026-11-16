@@ -52,6 +52,7 @@ pub enum Shape {
 }
 
 /// `event` without its content.
+#[must_use]
 pub fn shape(event: &BackendEvent) -> Shape {
     match event {
         BackendEvent::Call(CallEvent::Started(open)) => Shape::Started(open.call),
@@ -169,12 +170,11 @@ pub async fn a_dropped_pull_loses_and_repeats_nothing<H: Harness>(h: &mut H) {
     let (mut shapes, mut given_up) = (Vec::new(), 0usize);
     loop {
         let polled = once(backend.next_event());
-        let event = match polled {
-            Some(event) => event,
-            None => {
-                given_up += 1;
-                backend.next_event().await
-            }
+        let event = if let Some(event) = polled {
+            event
+        } else {
+            given_up += 1;
+            backend.next_event().await
         };
         match event {
             Some(event) => shapes.push(shape(&event)),

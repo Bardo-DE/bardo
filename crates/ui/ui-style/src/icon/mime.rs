@@ -29,6 +29,7 @@ pub struct MimeFacts<'a> {
 
 impl<'a> MimeFacts<'a> {
     /// A type with nothing known about it but its name.
+    #[must_use]
     pub fn of(mime: &'a str) -> MimeFacts<'a> {
         MimeFacts {
             mime,
@@ -209,6 +210,7 @@ fn find(table: &[Row], key: &str) -> Option<MimeKind> {
 }
 
 /// The kind and description of the type `facts` describe, by the order in the module docs.
+#[must_use]
 pub fn kind_for_mime(facts: &MimeFacts<'_>) -> MimeKind {
     let exact = essence(facts.mime);
     let major = exact.split('/').next().unwrap_or_default();
@@ -230,6 +232,7 @@ pub fn kind_for_mime(facts: &MimeFacts<'_>) -> MimeKind {
 
 /// The glyph and description of `mime` alone. Parameters (`; charset=utf-8`) and case are
 /// ignored.
+#[must_use]
 pub fn glyph_for_mime(mime: &str) -> MimeGlyph {
     let found = kind_for_mime(&MimeFacts::of(mime));
     MimeGlyph {

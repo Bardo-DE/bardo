@@ -5,11 +5,13 @@ use account_core::Family;
 use account_provider::{ProviderSpec, parse_provider};
 
 /// The shipped `providers/nextcloud.toml`.
+#[must_use]
 pub fn nextcloud() -> ProviderSpec {
     parse(include_str!("../../providers/nextcloud.toml"))
 }
 
 /// The shipped `providers/google.toml`.
+#[must_use]
 pub fn google() -> ProviderSpec {
     parse(include_str!("../../providers/google.toml"))
 }
@@ -17,6 +19,7 @@ pub fn google() -> ProviderSpec {
 /// The shipped `providers/<id>.toml` of an AI company served by the `api_key` family
 /// (`anthropic`, `google-ai`, `moonshot`, `openai`, `openrouter`, and `openai-compatible`, which
 /// names no server: the sign-in asks for one).
+#[must_use]
 pub fn ai(id: &str) -> ProviderSpec {
     let text = match id {
         "openai-compatible" => include_str!("../../providers/openai-compatible.toml"),
@@ -31,12 +34,14 @@ pub fn ai(id: &str) -> ProviderSpec {
 }
 
 /// A provider file's text; panics on a bad file (the shipped files are tested elsewhere).
+#[must_use]
 pub fn parse(text: &str) -> ProviderSpec {
     parse_provider(text).unwrap_or_else(|e| panic!("provider file: {e}"))
 }
 
 /// `spec` with every capability row of `family` given the fixed endpoint `url`, replacing any
 /// it had. Rows of other families are untouched.
+#[must_use]
 pub fn point(spec: &ProviderSpec, family: Family, url: &str) -> ProviderSpec {
     let mut out = spec.clone();
     for row in out

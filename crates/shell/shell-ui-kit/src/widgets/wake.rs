@@ -14,6 +14,7 @@ pub struct WidgetWake(pub Epoch);
 
 /// `wake`, from the nearest host's [`WidgetWake`], or its default when none is running (a widget
 /// mounted alone, as a test does).
+#[must_use]
 pub fn use_widget_wake() -> Epoch {
     try_use_context::<WidgetWake>().unwrap_or_default().0
 }

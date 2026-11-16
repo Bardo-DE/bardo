@@ -17,6 +17,7 @@ pub struct Meter(Arc<Cells>);
 
 impl Meter {
     /// A meter expecting `total` bytes.
+    #[must_use]
     pub fn new(total: u64) -> Self {
         let meter = Self::default();
         meter.0.total.store(total, Ordering::Relaxed);
@@ -34,16 +35,19 @@ impl Meter {
     }
 
     /// Bytes done.
+    #[must_use]
     pub fn done(&self) -> u64 {
         self.0.done.load(Ordering::Relaxed)
     }
 
     /// Bytes expected.
+    #[must_use]
     pub fn total(&self) -> u64 {
         self.0.total.load(Ordering::Relaxed)
     }
 
     /// Thousandths done, never past 1000; 0 while nothing is expected.
+    #[must_use]
     pub fn permille(&self) -> u32 {
         let (done, total) = (u128::from(self.done()), u128::from(self.total()));
         if total == 0 {
@@ -65,6 +69,7 @@ pub struct CancelToken(Arc<Flag>);
 
 impl CancelToken {
     /// A token nobody has used.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -76,6 +81,7 @@ impl CancelToken {
     }
 
     /// Whether a stop was asked for.
+    #[must_use]
     pub fn is_cancelled(&self) -> bool {
         self.0.stopped.load(Ordering::SeqCst)
     }

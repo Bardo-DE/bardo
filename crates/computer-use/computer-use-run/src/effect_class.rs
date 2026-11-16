@@ -21,6 +21,7 @@ use provenance::Effect;
 /// (switching apps, the launcher, locking, logging out, Space switches: [`acts_on_desktop`]) is
 /// `Outbound` whatever the window: it leaves the leased window, and the router asks. The keys are
 /// those of our own desktop. Pure.
+#[must_use]
 pub fn classify_effect(
     rules: &CommitRules,
     action: &CuaAction<WindowSpace>,

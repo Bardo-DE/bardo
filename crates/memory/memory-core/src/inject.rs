@@ -18,6 +18,7 @@ use serde::{Deserialize, Serialize};
 pub const CHARS_PER_TOKEN: usize = 4;
 
 /// The tokens `text` costs: its characters over [`CHARS_PER_TOKEN`], rounded up; empty is 0.
+#[must_use]
 pub fn estimate_tokens(text: &str) -> Tokens {
     let tokens = text.chars().count().div_ceil(CHARS_PER_TOKEN);
     Tokens(u32::try_from(tokens).unwrap_or(u32::MAX))
@@ -80,6 +81,7 @@ slug_enum!(
 );
 
 /// "What happened lately": newest first, for the roster and the recent-episodes section.
+///
 /// Answered with `MemoryReply::Recent`; allowed for the router and the shell, unlike
 /// `Timeline`, which is the shell's alone.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

@@ -56,6 +56,7 @@ pub struct KeyringSecrets;
 impl KeyringSecrets {
     /// The user's platform keyring, filing under `namespace` (the same keyring
     /// [`KeyringSecrets`] opens; only the service differs).
+    #[must_use]
     pub fn in_namespace(namespace: Namespace) -> KeyringNamedSecrets {
         KeyringNamedSecrets::new(namespace)
     }
@@ -69,11 +70,13 @@ pub struct KeyringNamedSecrets {
 
 impl KeyringNamedSecrets {
     /// The user's platform keyring, filing under `namespace`.
+    #[must_use]
     pub fn new(namespace: Namespace) -> Self {
         Self { namespace }
     }
 
     /// The namespace items are filed under.
+    #[must_use]
     pub fn namespace(&self) -> &Namespace {
         &self.namespace
     }
@@ -115,6 +118,7 @@ impl StoreSecrets {
     }
 
     /// The namespace items are filed under.
+    #[must_use]
     pub fn namespace(&self) -> &Namespace {
         &self.namespace
     }
@@ -142,13 +146,12 @@ fn native() -> Result<Arc<CredentialStore>, SecretsError> {
 /// The default store, or the platform's, which is then made the default. A store that could not
 /// be opened is tried again on the next use, not remembered as missing.
 fn resolve(namespace: &Namespace) -> Result<StoreSecrets, SecretsError> {
-    let store = match keyring_core::get_default_store() {
-        Some(store) => store,
-        None => {
-            let store = native()?;
-            keyring_core::set_default_store(store.clone());
-            store
-        }
+    let store = if let Some(store) = keyring_core::get_default_store() {
+        store
+    } else {
+        let store = native()?;
+        keyring_core::set_default_store(store.clone());
+        store
     };
     Ok(StoreSecrets::new(store).in_namespace(namespace.clone()))
 }
@@ -253,7 +256,7 @@ impl StoreSecrets {
         static GUARD: std::sync::Mutex<()> = std::sync::Mutex::new(());
         let _held = GUARD
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         match self.read(&entry_name(key))? {
             Some(_) => Ok(false),
             None => self.put_now(key, value).map(|()| true),

@@ -29,6 +29,7 @@ pub struct QuireSpace {
 
 impl QuireSpace {
     /// A Space that has just appeared: nothing known yet.
+    #[must_use]
     pub fn new(key: SpaceKey) -> Self {
         Self {
             key,

@@ -54,6 +54,7 @@ pub enum Availability {
 }
 
 /// The company a model family belongs to, as a person knows it.
+#[must_use]
 pub fn company_of(family: &str) -> String {
     match family {
         "claude" => "Anthropic".to_owned(),
@@ -84,6 +85,7 @@ fn plain_name(label: &str) -> &str {
 /// The hosted models of `slot`, grouped by company (companies in the order the
 /// catalogue first names them, models in catalogue order), marked by `accounts`: every account of
 /// the person's, whatever the app's grant says.
+#[must_use]
 pub fn choices(
     entries: &[ModelEntry],
     accounts: &[AccountVerdict],

@@ -48,6 +48,7 @@ pub enum WindowAsk {
 impl WindowAsk {
     /// What the ask costs: closing can lose an app's unsaved work, everything else only changes
     /// what is on screen and can be put back.
+    #[must_use]
     pub fn effect(&self) -> Effect {
         match self {
             WindowAsk::Close { .. } => Effect::Destructive,
@@ -64,6 +65,7 @@ impl WindowAsk {
     }
 
     /// What the person is told once it is done, in the shell's own words.
+    #[must_use]
     pub fn said(&self) -> &'static str {
         match self {
             WindowAsk::List => "Listed the windows",

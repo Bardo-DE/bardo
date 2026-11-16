@@ -55,6 +55,7 @@ fn unreadable() -> Failed {
 /// The session for a run on this model, or none when the model has no tool or text dialect (a
 /// vendor's wire needs the vendor's backend, not an engine on this computer).
 /// A reply is never asked to be longer than `ceiling`.
+#[must_use]
 pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<CuaSession> {
     let caps = model.caps()?;
     let CuaSupport::Dialect {

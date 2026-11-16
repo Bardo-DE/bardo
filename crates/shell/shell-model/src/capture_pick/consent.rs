@@ -73,6 +73,7 @@ pub(super) fn subject_name(subject: &ConsentSubject, apps: &AppIndex) -> String 
 
 /// The sheet for `consent`: the headline and explanation of its power, the buttons for whether
 /// the answer is kept. `apps` names the program.
+#[must_use]
 pub fn consent_ask(consent: &Consent, apps: &AppIndex) -> PermissionAsk {
     let name = subject_name(&consent.subject, apps);
     PermissionAsk::from_wire(

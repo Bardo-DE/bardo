@@ -184,13 +184,14 @@ fn keymap_aware_rewrites_only_the_desktops_chords() {
             .rules
             .get(trigger)
             .expect("every default trigger stays ruled");
-        match desktop.contains(trigger) {
-            true => assert_eq!(got, from_default, "{trigger:?} is the desktop's"),
-            false => assert_eq!(
+        if desktop.contains(trigger) {
+            assert_eq!(got, from_default, "{trigger:?} is the desktop's")
+        } else {
+            assert_eq!(
                 *got,
                 as_typed(aware, trigger),
                 "{trigger:?} must pass as typed"
-            ),
+            )
         }
     }
     assert_eq!(aware.rules.len(), default.rules.len());

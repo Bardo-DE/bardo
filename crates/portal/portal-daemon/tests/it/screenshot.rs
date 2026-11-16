@@ -125,7 +125,7 @@ fn a_screenshot_is_a_new_png_in_the_pictures_folder() {
 #[test]
 fn an_unconfigured_service_fails_and_writes_nothing() {
     let dir = tempfile::tempdir().expect("tempdir");
-    assert!(take(&ScreenshotSetup::unconfigured(), 0).is_err());
+    take(&ScreenshotSetup::unconfigured(), 0).unwrap_err();
     assert_eq!(std::fs::read_dir(dir.path()).expect("dir").count(), 0);
 }
 
@@ -395,7 +395,7 @@ impl JobSpy {
     fn note(&self, job: &Job) {
         self.0
             .lock()
-            .unwrap_or_else(|p| p.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .push(std::ptr::from_ref(job).addr());
     }
 }
@@ -429,7 +429,10 @@ fn a_grab_is_one_job_for_the_layout_and_every_output() {
         Box::new(spy.clone()),
     );
     assert_eq!(grab.grab().expect("three outputs").len(), 3);
-    let seen = spy.0.lock().unwrap_or_else(|p| p.into_inner());
+    let seen = spy
+        .0
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     assert_eq!(seen.len(), 4, "the layout and three opens");
     assert!(seen.iter().all(|job| *job == seen[0]), "all one job");
 }

@@ -18,6 +18,7 @@ impl AppPick {
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -25,6 +26,7 @@ impl AppPick {
 
 impl Browser {
     /// Whether the sheet of every installed app is up.
+    #[must_use]
     pub fn chooser_open(&self) -> bool {
         self.chooser
     }
@@ -67,6 +69,7 @@ impl Browser {
     }
 
     /// The selected items, by where they are, in shown order. In the Trash there are none.
+    #[must_use]
     pub fn selected_targets(&self) -> Vec<OpenTarget> {
         self.selected_rows()
             .into_iter()

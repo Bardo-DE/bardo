@@ -21,6 +21,7 @@ impl RgbaBuffer {
     /// assert_eq!(got.rgba, [199, 100, 0, 128]);
     /// assert!(RgbaBuffer::from_argb(2, &[0; 4]).is_none());
     /// ```
+    #[must_use]
     pub fn from_argb(edge: u32, argb: &[u8]) -> Option<RgbaBuffer> {
         let wanted = usize::try_from(u64::from(edge) * u64::from(edge) * 4).ok()?;
         (argb.len() == wanted).then(|| RgbaBuffer {

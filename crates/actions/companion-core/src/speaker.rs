@@ -57,6 +57,7 @@ pub enum Call {
 
 /// Whether `speaker` may make `call`: the shell anything, a terminal only the conversation, the
 /// editor bridge only reading the helpers and speaking in a helper's conversation.
+#[must_use]
 pub fn permits(speaker: &Speaker, call: Call) -> bool {
     match speaker {
         Speaker::Shell => true,

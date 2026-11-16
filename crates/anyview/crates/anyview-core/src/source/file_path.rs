@@ -26,17 +26,20 @@ impl FilePath {
     }
 
     /// The normalised path.
+    #[must_use]
     pub fn as_path(&self) -> &Path {
         &self.0
     }
 
     /// The last component, or `None` for a root.
+    #[must_use]
     pub fn file_name(&self) -> Option<FileName> {
         let name = self.0.file_name()?;
         FileName::new(&name.to_string_lossy()).ok()
     }
 
     /// The directory holding this path, or `None` for a root.
+    #[must_use]
     pub fn parent(&self) -> Option<FilePath> {
         self.0.parent().map(|parent| FilePath(parent.to_path_buf()))
     }
@@ -130,6 +133,6 @@ mod tests {
         let json = serde_json::to_string(&path).unwrap();
         assert_eq!(json, "\"/a/b.txt\"");
         assert_eq!(serde_json::from_str::<FilePath>(&json).unwrap(), path);
-        assert!(serde_json::from_str::<FilePath>("\"b.txt\"").is_err());
+        serde_json::from_str::<FilePath>("\"b.txt\"").unwrap_err();
     }
 }

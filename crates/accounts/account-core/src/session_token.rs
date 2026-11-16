@@ -37,6 +37,6 @@ mod tests {
             serde_json::from_str::<SessionToken>(r#""sess-7""#).expect("id"),
             id
         );
-        assert!(serde_json::from_str::<SessionToken>(r#""Sess 7""#).is_err());
+        serde_json::from_str::<SessionToken>(r#""Sess 7""#).unwrap_err();
     }
 }

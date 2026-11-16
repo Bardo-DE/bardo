@@ -8,7 +8,7 @@
 //! line never costs the entry.
 //!
 //! Duplicates: a group named twice is one group, and a key given twice keeps its last value, as
-//! GLib's key file does (the specification leaves both undefined).
+//! `GLib`'s key file does (the specification leaves both undefined).
 //!
 //! `Exec` and `TryExec` come back as the string the file holds after the value escapes; the field
 //! codes (`%f`, `%U`, ...) and the quoting of the command line are the caller's.

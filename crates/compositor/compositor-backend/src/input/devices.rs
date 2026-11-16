@@ -41,6 +41,7 @@ pub struct DeviceSettings {
 
 impl DeviceSettings {
     /// A device's settings.
+    #[must_use]
     pub fn new(
         accel: AccelProfile,
         natural_scroll: bool,

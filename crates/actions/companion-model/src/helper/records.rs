@@ -35,6 +35,7 @@ impl HelperRecordKind {
     ];
 
     /// The record's kind tag in the event log.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             HelperRecordKind::Card => "helpers.card",
@@ -45,6 +46,7 @@ impl HelperRecordKind {
     }
 
     /// The kind a tag names.
+    #[must_use]
     pub fn of_slug(slug: &str) -> Option<Self> {
         Self::ALL
             .into_iter()
@@ -79,6 +81,7 @@ pub enum HelperRecord {
 
 impl HelperRecord {
     /// Which kind it is.
+    #[must_use]
     pub fn kind(&self) -> HelperRecordKind {
         match self {
             HelperRecord::Card(_) => HelperRecordKind::Card,

@@ -6,6 +6,7 @@ use keyboard_types::{Key, Modifiers};
 use keymap::{Action, Chord, Context, Key as ChordKey, KeyInput, Keymap, Platform};
 
 /// The action `key` with `modifiers` held triggers in `context`, if any.
+#[must_use]
 pub fn resolve(
     keymap: &Keymap,
     key: &Key,
@@ -16,6 +17,7 @@ pub fn resolve(
 }
 
 /// The canonical chord `key` with `modifiers` held is on `platform`.
+#[must_use]
 pub fn chord_of(platform: Platform, key: &Key, modifiers: Modifiers) -> Option<Chord> {
     Some(key_input(key, modifiers)?.normalise(platform))
 }
@@ -24,6 +26,7 @@ pub fn chord_of(platform: Platform, key: &Key, modifiers: Modifiers) -> Option<C
 /// (Shift alone still types). The test a type-ahead list or a text field uses before it takes
 /// the key. A character string longer than one character (an IME's commit) types like any
 /// character.
+#[must_use]
 pub fn types_text(key: &Key, modifiers: Modifiers) -> bool {
     let stand_in = || matches!(key, Key::Character(_)).then_some(ChordKey::Char('a'));
     chord_key_of(key)
@@ -35,6 +38,7 @@ pub fn types_text(key: &Key, modifiers: Modifiers) -> bool {
 
 /// Whether `held` holds `platform`'s primary modifier (Command on a Mac or our desktop, Ctrl
 /// elsewhere): the test for a wheel zoom, which has no key to resolve.
+#[must_use]
 pub fn holds_primary(platform: Platform, held: Modifiers) -> bool {
     let probe = KeyInput::new(modifiers_of(held), ChordKey::SPACE);
     let folded = probe.normalise(platform).modifiers();

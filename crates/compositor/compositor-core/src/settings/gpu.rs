@@ -12,6 +12,7 @@ pub struct GpuSettings {
 
 impl GpuSettings {
     /// Settings that render on `render`.
+    #[must_use]
     pub fn new(render: GpuChoice) -> GpuSettings {
         GpuSettings { render }
     }
@@ -24,6 +25,7 @@ impl GpuSettings {
     ///
     /// assert_eq!(GpuSettings::defaults().render, GpuChoice::Auto);
     /// ```
+    #[must_use]
     pub fn defaults() -> GpuSettings {
         GpuSettings {
             render: GpuChoice::Auto,

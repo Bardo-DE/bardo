@@ -207,9 +207,10 @@ impl Drive {
         if self.inner.offline.load(Ordering::SeqCst) {
             return Err(Reason::Offline);
         }
-        match self.inner.download_all(&missing) {
-            true => Err(Reason::Offline),
-            false => Ok(()),
+        if self.inner.download_all(&missing) {
+            Err(Reason::Offline)
+        } else {
+            Ok(())
         }
     }
 
@@ -256,15 +257,12 @@ impl Drive {
         };
         {
             let mut index = held(&inner.index);
-            match keep {
-                true => {
-                    index.kept.insert(remote.0.clone());
-                }
-                false => {
-                    index.kept.remove(&remote.0);
-                    for inside in &under {
-                        index.kept.remove(&inside.id.0);
-                    }
+            if keep {
+                index.kept.insert(remote.0.clone());
+            } else {
+                index.kept.remove(&remote.0);
+                for inside in &under {
+                    index.kept.remove(&inside.id.0);
                 }
             }
         }
@@ -357,9 +355,10 @@ impl Drive {
             .edits
             .values()
             .any(|edit| !edit.removed && folders.contains(&edit.parent));
-        match waiting {
-            true => Err(Reason::Waiting),
-            false => Ok(()),
+        if waiting {
+            Err(Reason::Waiting)
+        } else {
+            Ok(())
         }
     }
 
@@ -487,6 +486,7 @@ impl Drive {
     }
 
     /// Whether the whole drive is kept downloaded ([`Drive::set_keep_all`]).
+    #[must_use]
     pub fn keeps_all(&self) -> bool {
         self.inner.keeps_all()
     }
@@ -494,16 +494,19 @@ impl Drive {
     /// Whether keeping the whole drive downloaded needs more room than the cache's file system
     /// has free, as the last look found ([`crate::Reason::NoRoomForAll`]): what is not here is
     /// then not fetched until it fits. Always `false` while the drive is not kept whole.
+    #[must_use]
     pub fn short_of_room(&self) -> bool {
         *self.inner.short_of_room.borrow()
     }
 
     /// Hears [`Drive::short_of_room`] change, each time it does and only then.
+    #[must_use]
     pub fn watch_room(&self) -> tokio::sync::watch::Receiver<bool> {
         self.inner.short_of_room.subscribe()
     }
 
     /// Bytes of the drive's files here: what is cached and what was written here.
+    #[must_use]
     pub fn local_bytes(&self) -> u64 {
         let index = held(&self.inner.index);
         index

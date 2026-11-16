@@ -54,6 +54,7 @@ pub struct StoredSpace {
 
 impl StoredSpace {
     /// A stored Space of `output`.
+    #[must_use]
     pub fn new(id: SpaceId, output: OutputKey, position: SpaceIndex) -> StoredSpace {
         StoredSpace {
             id,
@@ -63,6 +64,7 @@ impl StoredSpace {
     }
 
     /// A stored Space with no home output yet.
+    #[must_use]
     pub fn homeless(id: SpaceId, position: SpaceIndex) -> StoredSpace {
         StoredSpace {
             id,
@@ -83,6 +85,7 @@ pub struct StoredShown {
 
 impl StoredShown {
     /// A stored choice.
+    #[must_use]
     pub fn new(output: OutputKey, space: SpaceId) -> StoredShown {
         StoredShown { output, space }
     }
@@ -104,11 +107,13 @@ pub enum SpaceFileError {
 
 impl SpaceFile {
     /// A file with no Spaces.
+    #[must_use]
     pub fn empty() -> SpaceFile {
         SpaceFile::default()
     }
 
     /// A file of these Spaces and choices.
+    #[must_use]
     pub fn new(spaces: Vec<StoredSpace>, shown: Vec<StoredShown>) -> SpaceFile {
         SpaceFile { spaces, shown }
     }
@@ -128,6 +133,7 @@ impl SpaceFile {
     /// Space under an id already seen (the first wins, so a duplicate cannot move windows onto
     /// another Space), a second "shown" entry for an output, and anything past
     /// [`MAX_STORED_SPACES`] / [`MAX_STORED_SHOWN`].
+    #[must_use]
     pub fn trimmed(self) -> Loaded<SpaceFile> {
         let before = self.spaces.len() + self.shown.len();
         let mut seen = BTreeSet::new();
@@ -191,6 +197,7 @@ impl SpaceFile {
     }
 
     /// What `book` stores: its desktop Spaces and what each output shows.
+    #[must_use]
     pub fn of_book(book: &SpaceBook) -> SpaceFile {
         let is_desktop = |id: &SpaceId| {
             book.get(id)

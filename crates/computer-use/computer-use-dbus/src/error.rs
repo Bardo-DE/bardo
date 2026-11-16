@@ -31,6 +31,7 @@ pub enum CuaError {
 
 impl CuaError {
     /// The refusal this error carries, or `None` for a bus failure.
+    #[must_use]
     pub fn refusal(&self) -> Option<ControlRefusal> {
         match self {
             CuaError::ZBus(_) => None,

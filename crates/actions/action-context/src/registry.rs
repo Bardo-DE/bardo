@@ -14,6 +14,7 @@ pub struct Registry {
 
 impl Registry {
     /// An empty registry.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -30,6 +31,7 @@ impl Registry {
     }
 
     /// One app's manifest.
+    #[must_use]
     pub fn get(&self, app: &AppName) -> Option<&ValidManifest> {
         self.manifests.get(app)
     }
@@ -40,6 +42,7 @@ impl Registry {
     }
 
     /// One action's declaration.
+    #[must_use]
     pub fn action(&self, action: &ActionRef) -> Option<&ActionDecl> {
         self.manifests
             .get(&action.app)?
@@ -50,6 +53,7 @@ impl Registry {
     }
 
     /// Every kind some installed app declares.
+    #[must_use]
     pub fn kinds(&self) -> BTreeSet<&EntityKind> {
         self.manifests
             .values()
@@ -59,6 +63,7 @@ impl Registry {
 
     /// The actions that name a kind no installed app declares. Only the registry can tell: it
     /// sees every manifest, and an app may name another app's kind.
+    #[must_use]
     pub fn unresolved(&self) -> Vec<ManifestError> {
         use action_manifest::TargetKind;
         use action_vocab::ParamType;

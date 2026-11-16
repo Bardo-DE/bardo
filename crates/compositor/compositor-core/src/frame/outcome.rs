@@ -23,6 +23,7 @@ pub enum FrameOutcome {
 ///
 /// assert_eq!(judge(VblankSeq(5), VblankSeq(6)), FrameOutcome::Missed { by: 1 });
 /// ```
+#[must_use]
 pub fn judge(wanted: VblankSeq, presented: VblankSeq) -> FrameOutcome {
     let late = presented.0.saturating_sub(wanted.0);
     match late {

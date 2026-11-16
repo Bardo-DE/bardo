@@ -19,6 +19,7 @@ pub fn group_by_space<T>(items: impl IntoIterator<Item = (SpaceId, T)>) -> Vec<(
 
 /// The Space a record belongs to: its helper's. A removed card's helper is no longer on the board
 /// after the event, so the board before it is asked too.
+#[must_use]
 pub fn space_of(record: &HelperRecord, before: &Board, after: &Board) -> Option<SpaceId> {
     let card = |id: &HelperId| {
         after

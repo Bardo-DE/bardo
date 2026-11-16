@@ -1,4 +1,4 @@
-//! A request to close a window, which the app may refuse (GTK's `close-request`, AppKit's
+//! A request to close a window, which the app may refuse (GTK's `close-request`, `AppKit`'s
 //! `windowShouldClose:`).
 //!
 //! The person closes a window with its frame's close button or the compositor's own control. The

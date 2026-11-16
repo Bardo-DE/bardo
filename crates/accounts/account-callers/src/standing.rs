@@ -47,9 +47,10 @@ fn proven(app: &AppKey, isolation: Isolation) -> PeerIdentity {
 /// manager's word (`Unit`, or `Full` where the image can be read too); the others need only that
 /// the process is the row's.
 const fn proof_needed(role: CallerRole) -> Proof {
-    match role.is_fixed() {
-        true => Proof::Unit,
-        false => Proof::Cgroup,
+    if role.is_fixed() {
+        Proof::Unit
+    } else {
+        Proof::Cgroup
     }
 }
 
@@ -57,9 +58,10 @@ const fn proof_needed(role: CallerRole) -> Proof {
 /// plain app. A role the table does not know (the manager's) is nobody's.
 fn service_role(role: &caller_identity_core::RoleName, proof: Proof) -> Option<CallerRole> {
     let row = role_of_name(role)?;
-    Some(match proof >= proof_needed(row) {
-        true => row,
-        false => CallerRole::App,
+    Some(if proof >= proof_needed(row) {
+        row
+    } else {
+        CallerRole::App
     })
 }
 

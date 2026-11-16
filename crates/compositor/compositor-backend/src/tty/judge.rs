@@ -22,6 +22,7 @@ pub type Lit = BTreeMap<ConnectorId, OutputCommit>;
 /// let nothing = KmsCommit::new(Vec::new(), false);
 /// assert_eq!(judge(&KmsResources::default(), &Lit::new(), &nothing), CommitVerdict::Accepted);
 /// ```
+#[must_use]
 pub fn judge(resources: &KmsResources, lit: &Lit, commit: &KmsCommit) -> CommitVerdict {
     let refused = commit
         .outputs
@@ -35,9 +36,10 @@ pub fn judge(resources: &KmsResources, lit: &Lit, commit: &KmsCommit) -> CommitV
         lit.get(&output.connector)
             .is_none_or(|was| was.crtc != output.crtc || was.mode != output.mode)
     });
-    match modeset && !commit.modeset_allowed {
-        true => CommitVerdict::NeedsModeset,
-        false => CommitVerdict::Accepted,
+    if modeset && !commit.modeset_allowed {
+        CommitVerdict::NeedsModeset
+    } else {
+        CommitVerdict::Accepted
     }
 }
 

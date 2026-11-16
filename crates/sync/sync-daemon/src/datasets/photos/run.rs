@@ -48,6 +48,7 @@ pub struct PhotosRun {
 
 impl PhotosRun {
     /// The library the Photos app imports into and reads from.
+    #[must_use]
     pub fn library(&self) -> &PhotoLibrary {
         &self.library
     }

@@ -2,7 +2,7 @@
 //! 2.11; the settings `icons.style` and `icons.monochrome_tint`, design/22-SETTINGS.md 3.3).
 //!
 //! Pure and renderer-free: it works on an RGBA8 byte slice (straight alpha, sRGB), so the caller
-//! decodes and encodes. In OKLCh, every pixel keeps its lightness and alpha:
+//! decodes and encodes. In `OKLCh`, every pixel keeps its lightness and alpha:
 //!
 //! - [`IconStyle::Colour`] leaves the pixels alone.
 //! - [`IconStyle::Muted`] scales chroma by [`MUTED_SCALE`] (0.04 / 0.07: the shipped set's cap
@@ -42,7 +42,7 @@ pub enum IconStyle {
     Monochrome,
 }
 
-/// The hue and chroma a Monochrome icon is tinted with (OKLCh; hue in degrees).
+/// The hue and chroma a Monochrome icon is tinted with (`OKLCh`; hue in degrees).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Tint {
     pub hue: f32,
@@ -64,12 +64,14 @@ impl Tint {
     /// The hue and chroma of the accent the Space derives (its first dot at Blue's weight,
     /// design/03-COLOR.md section 5), so the icons follow the frame; the only tint Monochrome
     /// uses (there is no `icons.monochrome_tint` setting). Capped at [`TINT_CHROMA_MAX`].
+    #[must_use]
     pub fn space(dots: &[Dot]) -> Tint {
         Tint::from_hex(&derive(dots, Scheme::Light).accent).unwrap_or(Tint::NEUTRAL)
     }
 
     /// Any `#RRGGBB` (an accent's): its hue and chroma, capped. `None`
     /// when the text is not a hex colour.
+    #[must_use]
     pub fn from_hex(hex: &str) -> Option<Tint> {
         let digits = hex.strip_prefix('#')?;
         if digits.len() != 6 {
@@ -144,7 +146,7 @@ pub(crate) fn recolour(
     in_gamut(l, chroma, hue)
 }
 
-/// The sRGB bytes of an OKLCh colour, chroma lowered until it fits.
+/// The sRGB bytes of an `OKLCh` colour, chroma lowered until it fits.
 fn in_gamut(l: f64, mut chroma: f64, hue: f64) -> [u8; 3] {
     loop {
         let linear = LinearRgb::from(Oklab::from(Oklch {

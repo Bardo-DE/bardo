@@ -45,6 +45,7 @@ use std::sync::Arc;
 /// transport. Nothing is called here: inferd is found (and started by activation) at the first
 /// `open`, so a daemon that starts before inferd, or without it, still starts and degrades as
 /// designed (lexical-only recall, no consolidation) until inferd answers.
+#[must_use]
 pub fn inferd_link(connection: &zbus::Connection) -> Arc<DbusTransport> {
     Arc::new(DbusTransport::over(connection.clone()))
 }

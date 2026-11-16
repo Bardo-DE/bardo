@@ -15,12 +15,14 @@ impl Velocity {
     pub const ZERO: Velocity = Velocity(0);
 
     /// A swipe's measured speed, rounded to whole pixels per second.
+    #[must_use]
     pub fn from_speed(speed: Speed) -> Velocity {
         let rounded = speed.0.round();
         Velocity(rounded.clamp(i32::MIN as f32, i32::MAX as f32) as i32)
     }
 
     /// As pixels per second.
+    #[must_use]
     pub fn px_per_s(self) -> f64 {
         f64::from(self.0)
     }
@@ -45,6 +47,7 @@ impl VelocityMeter {
     /// The pointer is at `at` at `when`. A move in the same instant as the last (a host that
     /// repeats the position with the release) updates the last position and keeps the one
     /// before, so the speed is still measured over time that passed.
+    #[must_use]
     pub fn moved(
         self,
         at: ui_core::geometry::units::Px,
@@ -60,6 +63,7 @@ impl VelocityMeter {
 
     /// The velocity at a release at `when`: nothing when the pointer had stopped (its last move
     /// was more than `DelayToken::ReleaseWindow` before) or moved only once.
+    #[must_use]
     pub fn released(self, when: std::time::Instant) -> Velocity {
         let (Some(last), Some(before)) = (self.last, self.before) else {
             return Velocity::ZERO;

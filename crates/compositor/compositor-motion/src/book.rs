@@ -19,6 +19,7 @@ pub struct MotionBook {
 
 impl MotionBook {
     /// Nothing moving.
+    #[must_use]
     pub fn empty() -> MotionBook {
         MotionBook {
             windows: BTreeMap::new(),
@@ -27,6 +28,7 @@ impl MotionBook {
     }
 
     /// Whether `window`'s legs are still moving at `now`; a window with no legs is at rest.
+    #[must_use]
     pub fn window_is_moving(&self, window: WindowId, now: Mono) -> bool {
         self.windows
             .get(&window)
@@ -34,6 +36,7 @@ impl MotionBook {
     }
 
     /// Whether any leg is still moving at `now` (frames are wanted).
+    #[must_use]
     pub fn is_moving(&self, now: Mono) -> bool {
         self.windows.values().any(|legs| legs.is_moving(now))
             || self.strips.values().any(|leg| leg.is_moving(now))

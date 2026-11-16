@@ -91,26 +91,31 @@ impl Surface {
     }
 
     /// The app id of the window.
+    #[must_use]
     pub fn app(&self) -> &str {
         &self.def.app
     }
 
     /// The window's size in pixels.
+    #[must_use]
     pub fn size(&self) -> [u32; 2] {
         self.def.size
     }
 
     /// The window title now.
+    #[must_use]
     pub fn title(&self) -> String {
         self.fill(&self.current().title)
     }
 
     /// The id of the screen that shows.
+    #[must_use]
     pub fn screen_id(&self) -> &str {
         &self.current().id
     }
 
     /// The id of the field that has the focus.
+    #[must_use]
     pub fn focused(&self) -> Option<&str> {
         self.focus
             .and_then(|i| self.current().items.get(i))
@@ -122,9 +127,10 @@ impl Surface {
     }
 
     /// Whether `cond` holds now.
+    #[must_use]
     pub fn holds(&self, cond: &Cond) -> bool {
         let has = |map: &BTreeMap<String, String>, name: &str| {
-            map.get(name).map(String::as_str).unwrap_or("").to_owned()
+            map.get(name).map_or("", String::as_str).to_owned()
         };
         match cond {
             Cond::Screen(id) => self.screen_id() == id,
@@ -154,7 +160,7 @@ impl Surface {
             out.push_str(&rest[..open]);
             let name = &rest[open + 1..open + close];
             let value = self.vars.get(name).or_else(|| self.fields.get(name));
-            out.push_str(value.map(String::as_str).unwrap_or(""));
+            out.push_str(value.map_or("", String::as_str));
             rest = &rest[open + close + 1..];
         }
         out.push_str(rest);
@@ -162,6 +168,7 @@ impl Surface {
     }
 
     /// The items the viewport shows, back to front.
+    #[must_use]
     pub fn visible(&self) -> Vec<Placed<'_>> {
         let screen = self.current();
         screen
@@ -219,6 +226,7 @@ impl Surface {
     }
 
     /// The middle of the item named `id` as it shows now; `None` when it is not on the screen.
+    #[must_use]
     pub fn centre_of(&self, id: &str) -> Option<[u32; 2]> {
         self.visible()
             .into_iter()

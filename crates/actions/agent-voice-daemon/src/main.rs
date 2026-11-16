@@ -1,5 +1,5 @@
 //! The voiced binary: reads `voiced.toml`, then serves `org.bardo.Voice1` on the session bus over
-//! PipeWire until the bus closes.
+//! `PipeWire` until the bus closes.
 
 use agent_voice_daemon::{ConfigError, FileUse, VoicedConfig};
 use agent_voice_pipewire::PipeWireDevice;

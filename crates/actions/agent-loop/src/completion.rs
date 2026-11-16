@@ -39,6 +39,7 @@ pub struct CompletionNote {
 
 /// Whether a report needs the person: a failure does; a normal finish, a cancel and progress
 /// do not.
+#[must_use]
 pub fn attention_of(status: ReportStatus) -> Attention {
     match status {
         ReportStatus::Failed => Attention::NeedsYou,
@@ -49,6 +50,7 @@ pub fn attention_of(status: ReportStatus) -> Attention {
 /// The one line the front task gets: `the on-screen run finished: Done, 9 steps, 2 values`. It
 /// names no id: the line is read by the planner and by the person, and an id is for neither.
 /// Progress is not a completion and gets none.
+#[must_use]
 pub fn completion_line(note: &CompletionNote) -> Option<String> {
     let who = match &note.agent {
         AgentRef::Companion => "assistant".to_owned(),

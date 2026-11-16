@@ -18,10 +18,12 @@ pub struct EdgeState(BTreeSet<OutputId>);
 
 impl EdgeState {
     /// Whether the surface on `output` is revealed.
+    #[must_use]
     pub fn on(&self, output: OutputId) -> Shown {
-        match self.0.contains(&output) {
-            true => Shown::Shown,
-            false => Shown::Hidden,
+        if self.0.contains(&output) {
+            Shown::Shown
+        } else {
+            Shown::Hidden
         }
     }
 }
@@ -32,10 +34,12 @@ pub struct FullScreens(pub BTreeSet<OutputId>);
 
 impl FullScreens {
     /// Whether `output` shows a full-screen Space.
+    #[must_use]
     pub fn on(&self, output: OutputId) -> Shown {
-        match self.0.contains(&output) {
-            true => Shown::Shown,
-            false => Shown::Hidden,
+        if self.0.contains(&output) {
+            Shown::Shown
+        } else {
+            Shown::Hidden
         }
     }
 }
@@ -62,6 +66,7 @@ pub struct EdgeFeed {
 
 impl EdgeFeed {
     /// The state of `edge`.
+    #[must_use]
     pub fn at(&self, edge: RevealEdge) -> &EdgeState {
         match edge {
             RevealEdge::Top => &self.top,
@@ -85,6 +90,7 @@ pub struct EdgeLink {
 
 impl EdgeLink {
     /// Both edges away.
+    #[must_use]
     pub fn new() -> EdgeLink {
         EdgeLink::default()
     }
@@ -120,11 +126,13 @@ impl EdgeLink {
     }
 
     /// What the surfaces follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<EdgeFeed> {
         self.feed.subscribe()
     }
 
     /// Both edges now.
+    #[must_use]
     pub fn latest(&self) -> EdgeFeed {
         self.feed.now()
     }

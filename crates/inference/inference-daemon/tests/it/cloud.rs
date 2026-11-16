@@ -28,7 +28,7 @@ use model_provider::Money;
 use rust_decimal::Decimal;
 use std::path::Path;
 
-/// OpenRouter's key, and OpenAI's: distinctive, so a scan for either cannot match by accident.
+/// `OpenRouter`'s key, and `OpenAI`'s: distinctive, so a scan for either cannot match by accident.
 const KEY_OR: &str = "sk-or-v1-S3CRET-CLOUD-KEY-0123456789";
 const KEY_OAI: &str = "sk-proj-OTHER-SECRET-KEY-9876543210";
 
@@ -573,7 +573,7 @@ async fn failing_with(status: u16) -> World {
     World::start(world_plan).await
 }
 
-/// What OpenRouter reports for the scripted reply: 0.00095 US dollars.
+/// What `OpenRouter` reports for the scripted reply: 0.00095 US dollars.
 fn reported() -> Money {
     Money::usd(Decimal::new(95, 5))
 }

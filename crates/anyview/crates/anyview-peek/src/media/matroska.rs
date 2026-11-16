@@ -1,4 +1,4 @@
-//! The header of a Matroska or WebM file through `matroska-demuxer`: the segment's length, its
+//! The header of a Matroska or `WebM` file through `matroska-demuxer`: the segment's length, its
 //! tracks (sizes and codec ids) and its tags. The demuxer reads up to the first cluster and no
 //! further, and it has no accessor for attachments, so a cover picture is not read here.
 
@@ -105,7 +105,7 @@ pub fn read(src: &Input, deadline: Deadline) -> Result<Recording, PeekError> {
         // A tag aimed at one track says nothing of the recording.
         if tag
             .targets()
-            .and_then(|targets| targets.tag_track_uid())
+            .and_then(matroska_demuxer::Targets::tag_track_uid)
             .is_some()
         {
             continue;

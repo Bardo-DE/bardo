@@ -14,6 +14,7 @@ pub enum Opens {
 }
 
 /// What opening `entry` does.
+#[must_use]
 pub fn opens(entry: &Entry) -> Opens {
     match &entry.kind {
         EntryKind::Folder | EntryKind::Link(LinkTo::Folder) => Opens::Folder,

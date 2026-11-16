@@ -42,6 +42,7 @@ pub enum EmbedError {
 impl EmbedError {
     /// Whether trying again can help. `Index::upsert` marks the index `LexicalOnly` and queues a
     /// retry on `Retry`, and reports the document as unembeddable on `Fatal`.
+    #[must_use]
     pub fn retry_class(&self) -> RetryClass {
         match self {
             EmbedError::Unavailable | EmbedError::Busy => RetryClass::Retry,

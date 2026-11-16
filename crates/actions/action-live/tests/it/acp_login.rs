@@ -41,8 +41,8 @@ fn the_login_is_copied_mode_0600_and_removed_when_the_guard_goes() {
             .permissions()
             .mode()
             & 0o777;
-        assert_eq!(dir_mode, 0o700);
-    }
+        assert_eq!(dir_mode, 0o700)
+    };
     assert!(!at.exists(), "dropped, so gone");
     // The source is untouched.
     assert_eq!(

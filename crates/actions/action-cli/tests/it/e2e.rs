@@ -5,7 +5,7 @@
 //! XDG directories (the app's manifest is installed under the scratch `XDG_DATA_DIRS`): the
 //! person's real session bus and `~/.config` are never named.
 //!
-//! The terminal's AppId (`org.bardo.Do`, role cli) comes from the cgroup of the pid behind its
+//! The terminal's `AppId` (`org.bardo.Do`, role cli) comes from the cgroup of the pid behind its
 //! connection: the binary owns no bus name, so intentd names it by the scope it runs in. The test
 //! reads a fake proc root: `quire()` starts the binary through `sh`, which waits for a line on
 //! its stdin, so the child's pid (kept by `exec`) is placed in a `vte-spawn-*.scope` before the

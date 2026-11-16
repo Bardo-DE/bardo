@@ -69,6 +69,7 @@ fn render_at(at: DateTime<Utc>) -> String {
 }
 
 /// The trailer line (without a newline) for `fact`.
+#[must_use]
 pub fn render_trailer(fact: &Fact) -> String {
     let mut parts = vec![
         format!("fact: {}", fact.id),

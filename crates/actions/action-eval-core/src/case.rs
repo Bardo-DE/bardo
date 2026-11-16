@@ -356,6 +356,7 @@ pub struct Case {
 impl Case {
     /// The planner's steps with every `times` unrolled: what is actually played, one entry per
     /// step.
+    #[must_use]
     pub fn expanded(&self) -> Vec<ScriptedStep> {
         self.planner
             .iter()

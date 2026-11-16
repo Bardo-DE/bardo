@@ -95,6 +95,7 @@ pub fn drawn(requested: CursorDraw, book: &TextureBook) -> CursorDraw {
 /// let argb = cursor_pixels(&chrome, Scale(120)).expect("a named cursor has pixels");
 /// assert_eq!(argb.len(), 24 * 24 * 4);
 /// ```
+#[must_use]
 pub fn cursor_pixels(chrome: &ChromeLayer, scale: Scale) -> Option<Vec<u8>> {
     match chrome.cursor {
         CursorDraw::Named(shape) => Some(raster::raster(shape, scale).argb),

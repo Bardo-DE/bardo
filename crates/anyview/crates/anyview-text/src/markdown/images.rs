@@ -91,13 +91,12 @@ impl<'a> Inliner<'a> {
             None => {}
         }
         let path = target(url, self.base)?;
-        let inlined = match self.urls.get(&path) {
-            Some(known) => known.clone(),
-            None => {
-                let read = self.read_image(&path);
-                self.urls.insert(path, read.clone());
-                read
-            }
+        let inlined = if let Some(known) = self.urls.get(&path) {
+            known.clone()
+        } else {
+            let read = self.read_image(&path);
+            self.urls.insert(path, read.clone());
+            read
         }?;
         let spent = self.spent.checked_add(inlined.len())?;
         if spent > MAX_DOCUMENT_INLINE {
@@ -294,8 +293,8 @@ mod tests {
                 rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
             )
             .unwrap();
-            cases.push(("a named pipe", pipe, MAX_INLINE, None));
-        }
+            cases.push(("a named pipe", pipe, MAX_INLINE, None))
+        };
         for (name, path, most, want) in cases {
             assert_eq!(DiskFiles.read(&path, most), want, "{name}");
         }

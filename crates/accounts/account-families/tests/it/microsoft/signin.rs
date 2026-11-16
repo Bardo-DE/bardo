@@ -321,11 +321,9 @@ async fn cancelling_closes_the_listeners_and_ends_the_sign_in() {
     };
     assert_eq!(signin.next(SignInInput::Poll).await, SignInStep::Waiting);
     let port = redirect_port(url.as_str()).expect("the redirect names a port");
-    assert!(
-        tokio::net::TcpStream::connect(("127.0.0.1", port))
-            .await
-            .is_ok()
-    );
+    tokio::net::TcpStream::connect(("127.0.0.1", port))
+        .await
+        .unwrap();
     assert_eq!(
         signin.next(SignInInput::Cancel).await,
         SignInStep::Failed(SignInFault::Cancelled)

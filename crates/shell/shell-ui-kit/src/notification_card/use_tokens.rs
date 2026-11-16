@@ -8,6 +8,7 @@ use crate::hooks::{SurfaceTokens, use_surface_tokens};
 
 /// The surface's resolved tokens (the shipped values until its element mounts: give the reader
 /// to that element's `onmounted`), also provided to the cards below as a context.
+#[must_use]
 pub fn use_notification_tokens() -> (SurfaceTokens<NotificationTokens>, NotificationTokens) {
     let resolved = use_surface_tokens::<NotificationTokens>();
     let tokens = resolved.get();

@@ -23,6 +23,7 @@ pub struct AnswerParts {
 }
 
 /// The wrappers of `text`.
+#[must_use]
 pub fn answer_parts(text: &str) -> AnswerParts {
     // ASCII lowercasing keeps every byte offset, so offsets found in `lower` slice `text`.
     let lower = text.to_ascii_lowercase();

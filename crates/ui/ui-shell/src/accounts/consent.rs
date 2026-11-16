@@ -1,4 +1,4 @@
-//! ConsentAlert: an app asks to use an account (design/31 section 4.5). It stands in a narrow
+//! `ConsentAlert`: an app asks to use an account (design/31 section 4.5). It stands in a narrow
 //! centred sheet as an alert does: the app's icon, "Photos wants to keep its library in your
 //! files", the account it would use (a pop-up when several fit), and Allow Once, Always Allow and
 //! Don't Allow stacked (This Session Only between the first two when the host offers it), the first the default. Escape closes the sheet and answers

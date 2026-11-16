@@ -76,7 +76,7 @@ fn the_command_line_grammar() {
     // Flags may come first, last or between; dashes and underscores are the same flag.
     match command(&["--in-reply-to", "x", "mail", "message.send"]) {
         Ok(Command::Call(call)) => {
-            assert_eq!(call.params, [("in_reply_to".to_owned(), "x".to_owned())])
+            assert_eq!(call.params, [("in_reply_to".to_owned(), "x".to_owned())]);
         }
         other => panic!("{other:?}"),
     }
@@ -85,7 +85,7 @@ fn the_command_line_grammar() {
             .expect_err("id")
             .contains("undo id")
     );
-    assert!(command(&["mail"]).is_err());
+    command(&["mail"]).unwrap_err();
     assert!(
         command(&["mail", "thread.read", "-y"])
             .expect_err("short")

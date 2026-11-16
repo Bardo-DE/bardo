@@ -35,6 +35,7 @@ pub struct Wiring {
 
 impl Wiring {
     /// The daemon's ends, with a seat nobody holds yet and an empty desktop.
+    #[must_use]
     pub fn new(
         shell_calls: UnboundedSender<ShellCall>,
         summons: UnboundedSender<SummonOut>,

@@ -11,6 +11,7 @@ use super::set::Outputs;
 /// The mode of a head with no current mode falls back to its preferred mode, then its first;
 /// a head with no modes has no mode set. Adaptive sync is set only for a head that reports it.
 /// Heads `config` names but `outputs` lacks are passed through untouched (validate first).
+#[must_use]
 pub fn complete(config: &OutputConfig, outputs: &Outputs) -> Vec<HeadConfig> {
     let mut parts: Vec<HeadConfig> = config
         .heads

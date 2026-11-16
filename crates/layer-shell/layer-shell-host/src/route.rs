@@ -76,7 +76,7 @@ mod tests {
     fn a_handed_socket_connects_without_the_environment() {
         let (ours, _compositor) = UnixStream::pair().expect("socketpair");
         let route = WaylandRoute::Handed(OwnedFd::from(ours));
-        assert!(route.connect().is_ok());
+        route.connect().unwrap();
     }
 
     #[test]

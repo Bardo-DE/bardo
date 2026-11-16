@@ -61,12 +61,13 @@ pub(crate) fn resolve(
     let texts = own_texts(doc, marked);
     let Some((text, local)) = text_at(doc, &texts, position.offset.0) else {
         let node = doc.get_node(marked)?;
-        return Some(match has_text_layout(node) {
-            true => Spot::Text {
+        return Some(if has_text_layout(node) {
+            Spot::Text {
                 root: marked,
                 byte: 0,
-            },
-            false => Spot::Empty { element: marked },
+            }
+        } else {
+            Spot::Empty { element: marked }
         });
     };
     let root = doc.get_node(text)?.inline_root_ancestor()?.id;

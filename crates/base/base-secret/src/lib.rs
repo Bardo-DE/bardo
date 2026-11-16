@@ -23,6 +23,7 @@ impl SecretText {
     }
 
     /// The secret itself, for the one call that must present it.
+    #[must_use]
     pub fn expose(&self) -> &str {
         self.0.expose_secret()
     }

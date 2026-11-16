@@ -23,6 +23,7 @@ pub enum ThingError {
 }
 
 /// The row's view of a thing: the words, none of the labels.
+#[must_use]
 pub fn thing_mark(entity: &EntityRef) -> ThingMark {
     ThingMark {
         kind: entity.id.kind.to_string(),

@@ -12,6 +12,7 @@ pub struct FakePicker {
 
 impl FakePicker {
     /// A picker that ends every request in `outcome`.
+    #[must_use]
     pub fn answering(outcome: PickOutcome) -> Self {
         FakePicker {
             outcome,
@@ -20,11 +21,13 @@ impl FakePicker {
     }
 
     /// How many times the dialog was asked for.
+    #[must_use]
     pub fn asked(&self) -> u32 {
         u32::try_from(locked(&self.asked).len()).unwrap_or(u32::MAX)
     }
 
     /// The files each request offered first, oldest first.
+    #[must_use]
     pub fn offered(&self) -> Vec<FileKinds> {
         locked(&self.asked).clone()
     }

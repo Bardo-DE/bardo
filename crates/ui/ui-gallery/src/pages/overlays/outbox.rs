@@ -28,7 +28,7 @@ pub fn Outbox() -> Element {
     rsx! {
         Specimen { name: "scheduled: Cancel",
             div { class: "g-stage",
-                SendPill { text: "Scheduled for 9:00", progress: Fraction(0), operation: Operation::Running(PendingToken::start()), action: PillAction::Cancel, onundo: |_| {} }
+                SendPill { text: "Scheduled for 9:00", progress: Fraction(0), operation: Operation::Running(PendingToken::start()), action: PillAction::Cancel, onundo: |()| {} }
             }
         }
         Specimen { name: "failed: pick a mood",
@@ -38,12 +38,12 @@ pub fn Outbox() -> Element {
                 }
             }
             div { class: "g-stage",
-                SendPill { text, progress: Fraction(700), operation: Operation::Running(PendingToken::start()), mood: mood(), action: PillAction::Nothing, onundo: |_| {} }
+                SendPill { text, progress: Fraction(700), operation: Operation::Running(PendingToken::start()), mood: mood(), action: PillAction::Nothing, onundo: |()| {} }
             }
         }
         Specimen { name: "refused",
             div { class: "g-stage",
-                SendPill { text: "Not sent", progress: Fraction(700), operation: Operation::Running(PendingToken::start()), mood: SendMood::Fatal, refusal: "No recipients", onundo: |_| {} }
+                SendPill { text: "Not sent", progress: Fraction(700), operation: Operation::Running(PendingToken::start()), mood: SendMood::Fatal, refusal: "No recipients", onundo: |()| {} }
             }
         }
     }

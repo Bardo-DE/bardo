@@ -11,6 +11,7 @@ pub struct UnixSeconds(pub i64);
 impl UnixSeconds {
     /// The instant an RFC 3339 time names (`2026-10-06T10:00:00.123-07:00`, `…Z`), as the
     /// storage APIs write a file's last change. A fraction is dropped; `None` for anything else.
+    #[must_use]
     pub fn from_rfc3339(text: &str) -> Option<Self> {
         let time = chrono::DateTime::parse_from_rfc3339(text).ok()?;
         Some(UnixSeconds(time.timestamp()))
@@ -18,6 +19,7 @@ impl UnixSeconds {
 
     /// `YYYY-MM-DD` of the UTC day this instant falls in; `None` for an instant outside the
     /// years chrono can write.
+    #[must_use]
     pub fn utc_date(self) -> Option<String> {
         use chrono::Datelike;
         let day = chrono::DateTime::from_timestamp(self.0, 0)?.date_naive();

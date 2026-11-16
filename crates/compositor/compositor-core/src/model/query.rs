@@ -27,6 +27,7 @@ impl Model {
 
     /// Whether the person can see window `id` now: it is mapped, on a Space an output shows, not
     /// in the dock, and its app not hidden.
+    #[must_use]
     pub fn shows(&self, id: crate::ids::WindowId) -> bool {
         self.windows
             .get(&id)
@@ -34,6 +35,7 @@ impl Model {
     }
 
     /// The output a window is on: its Space's, or its home for a window on every Space.
+    #[must_use]
     pub fn output_of(&self, window: &Window) -> Option<OutputKey> {
         match &window.place {
             SpacePlace::On(id) => self.spaces.get(id).map(|space| space.output.clone()),
@@ -57,6 +59,7 @@ impl Model {
 
     /// Where the pointer starts: the centre of the primary output (never a corner, where it would
     /// dwell in a hot corner before anyone touched the mouse).
+    #[must_use]
     pub fn pointer_start(&self) -> Option<LogicalPoint> {
         self.primary_output()
             .and_then(|key| self.output_rect(&key))
@@ -92,6 +95,7 @@ impl Model {
     }
 
     /// The whole rectangle of every plugged output in the global logical space, by key.
+    #[must_use]
     pub fn output_rects(&self) -> Vec<(OutputKey, LogicalRect)> {
         self.outputs
             .0
@@ -109,6 +113,7 @@ impl Model {
     /// The room a toplevel that asks to open maximised or full screen is given before it maps:
     /// the usable area of, and the whole of, the output new windows go to. `None` with no
     /// output plugged.
+    #[must_use]
     pub fn opening_room(&self) -> Option<OpeningRoom> {
         let output = self.working_output()?;
         let full = self.output_rect(&output)?;

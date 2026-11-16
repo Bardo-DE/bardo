@@ -283,7 +283,7 @@ fn an_own_skill_overrides_a_shipped_one_and_a_bad_directory_is_reported() {
         )])
     );
     assert_eq!(shipped.label.integrity, provenance::Integrity::Trusted);
-    assert!(load_dir(&folder, &skills_path(&sys).join("a"), Origin::Shipped).is_ok());
+    load_dir(&folder, &skills_path(&sys).join("a"), Origin::Shipped).unwrap();
 }
 
 fn skills_path(root: &std::path::Path) -> PathBuf {

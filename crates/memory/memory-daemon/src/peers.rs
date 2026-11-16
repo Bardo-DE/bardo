@@ -48,6 +48,7 @@ pub struct ProcPeers {
 
 impl ProcPeers {
     /// Resolves senders on `connection` through `table`, reading the system's `/proc`.
+    #[must_use]
     pub fn new(connection: zbus::Connection, table: account_callers::CallerTable) -> Self {
         Self::over(ProcCallers::new(connection, table))
     }
@@ -55,6 +56,7 @@ impl ProcPeers {
     /// As [`ProcPeers::new`], reading the fixture tree at `proc_root` instead of `/proc` and the
     /// user manager. Only in a test build (feature `test-proc-root`).
     #[cfg(feature = "test-proc-root")]
+    #[must_use]
     pub fn with_proc_root(
         connection: zbus::Connection,
         table: account_callers::CallerTable,
@@ -107,6 +109,7 @@ pub struct TablePeers(Mutex<BTreeMap<String, Caller>>);
 
 impl TablePeers {
     /// Nobody is known.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

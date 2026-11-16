@@ -14,11 +14,13 @@ pub struct SubPx(pub i32);
 
 impl SubPx {
     /// `px` whole logical pixels.
+    #[must_use]
     pub fn of_logical(px: i32) -> SubPx {
         SubPx(saturate(i64::from(px) * PER_LOGICAL))
     }
 
     /// The nearest whole logical pixel, halves away from zero.
+    #[must_use]
     pub fn round_logical(self) -> i32 {
         let value = i64::from(self.0);
         let half = PER_LOGICAL / 2;

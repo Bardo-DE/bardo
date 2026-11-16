@@ -39,7 +39,7 @@ use shell_ui_kit::menu::PopupLook;
 use ui_components::base::time::stamp::FrameClock;
 use ui_components::style::icon::classify::ChromaLimit;
 
-/// How long a menu opened while the notification center is up waits for it to leave. On KWin
+/// How long a menu opened while the notification center is up waits for it to leave. On `KWin`
 /// the center's unmapping moves the activation to the window under it, and a grabbing popup
 /// opened before that move is dismissed by it at once; by this time the center
 /// is gone and the move is over.

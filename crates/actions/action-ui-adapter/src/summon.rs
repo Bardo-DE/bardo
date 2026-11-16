@@ -7,6 +7,7 @@ use action_wire::{SummonAnswer, SummonOrigin, SummonSerial, VoiceIntent};
 use ui_intents::{SummonAnswerMark, SummonOriginMark, SummonSerial as DsSerial};
 
 /// ds's answer as the wire's. A new wire variant stops the build in the other direction; an unknown ds mark reads as declined.
+#[must_use]
 pub fn summon_answer_of(mark: SummonAnswerMark) -> SummonAnswer {
     match mark {
         SummonAnswerMark::TookField => SummonAnswer::TookField,
@@ -17,6 +18,7 @@ pub fn summon_answer_of(mark: SummonAnswerMark) -> SummonAnswer {
 }
 
 /// The wire's answer as ds's.
+#[must_use]
 pub fn summon_answer_mark(answer: SummonAnswer) -> SummonAnswerMark {
     match answer {
         SummonAnswer::TookField => SummonAnswerMark::TookField,
@@ -27,17 +29,20 @@ pub fn summon_answer_mark(answer: SummonAnswer) -> SummonAnswerMark {
 }
 
 /// The wire's serial as ds's.
+#[must_use]
 pub fn serial_mark(serial: SummonSerial) -> DsSerial {
     DsSerial(serial.0)
 }
 
 /// ds's serial as the wire's.
+#[must_use]
 pub fn serial_of(serial: DsSerial) -> SummonSerial {
     SummonSerial(serial.0)
 }
 
 /// Where a summon came from, as ds's view of it: the double-tap is a key, and a voice summon is
 /// a prompt (`Ask`) or a dictation (`Dictate`). Total.
+#[must_use]
 pub fn summon_origin_mark(origin: &SummonOrigin) -> SummonOriginMark {
     match origin {
         SummonOrigin::DoubleTap => SummonOriginMark::Keyboard,

@@ -20,6 +20,7 @@ pub enum FileText {
 /// Reads the text of the regular file at `path`, at most `max_bytes` of it. A symbolic link to a
 /// regular file is followed (a dotfile manager's); anything that is not a regular file, a file
 /// over the limit and one that is not UTF-8 text are `Unusable`.
+#[must_use]
 pub fn read_text(path: &Path, max_bytes: u64) -> FileText {
     match base_fs::read_text_capped(path, ReadCap::bytes(max_bytes)) {
         Ok(text) => FileText::Text(text),

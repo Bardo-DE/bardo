@@ -11,6 +11,7 @@ fn quoted(summary: &Summary) -> String {
 }
 
 /// The toast after a move to the Trash: `Moved “x” to the Trash`, or the count for several.
+#[must_use]
 pub fn announce_words(summary: &Summary) -> String {
     match summary.count {
         1 => format!("Moved {} to the Trash", quoted(summary)),
@@ -19,6 +20,7 @@ pub fn announce_words(summary: &Summary) -> String {
 }
 
 /// What the progress sheet says is going on: `Copying “x”`, `Moving 3 items to the Trash`.
+#[must_use]
 pub fn busy_words(summary: &Summary) -> String {
     let (doing, after) = match summary.kind {
         OpKind::Copy => ("Copying", ""),
@@ -37,6 +39,7 @@ pub fn busy_words(summary: &Summary) -> String {
 }
 
 /// The question about a taken name: its title, and the message under it.
+#[must_use]
 pub fn conflict_words(conflict: &Conflict) -> (String, &'static str) {
     let title = format!(
         "An item named \u{201c}{}\u{201d} already exists in this location.",
@@ -51,6 +54,7 @@ pub fn conflict_words(conflict: &Conflict) -> (String, &'static str) {
 
 /// The title of the question before erasing `count` items of the Trash for good, the first being
 /// `first`; `None` for the whole Trash.
+#[must_use]
 pub fn erase_words(count: Option<(usize, String)>) -> String {
     match count {
         None => "Are you sure you want to permanently erase the items in the Trash?".to_owned(),
@@ -80,6 +84,7 @@ pub struct ExtensionWords {
 }
 
 /// The question before a rename that changes, adds or takes away a file's extension.
+#[must_use]
 pub fn extension_words(change: &ExtensionChange) -> ExtensionWords {
     let quoted = |extension: &str| format!("\u{201c}.{extension}\u{201d}");
     let message = "If you make this change, your document may open in a different application.";

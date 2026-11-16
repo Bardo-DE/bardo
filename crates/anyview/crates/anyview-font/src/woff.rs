@@ -36,7 +36,7 @@ pub(crate) struct Table<'a> {
     pub(crate) data: Vec<u8>,
 }
 
-fn entry<'a>(bytes: &'a [u8], at: usize) -> Result<Entry<'a>, FontError> {
+fn entry(bytes: &[u8], at: usize) -> Result<Entry<'_>, FontError> {
     let short = || malformed("the WOFF table directory is cut short");
     let tag = bytes.get(at..at + 4).ok_or_else(short)?;
     let offset = be32(bytes, at + 4).ok_or_else(short)? as usize;

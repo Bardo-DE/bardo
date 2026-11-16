@@ -79,6 +79,7 @@ pub enum Layer {
 }
 
 /// The provider files of `dirs`, later directories winning; a missing directory is empty.
+#[must_use]
 pub fn load_specs(dirs: &[(Layer, PathBuf)]) -> Loaded {
     let mut out = Loaded::default();
     for (layer, dir) in dirs {
@@ -146,13 +147,18 @@ fn widened(shipped: &ProviderSpec, file: &ProviderSpec) -> Option<&'static str> 
     let origins = |spec: &ProviderSpec, linked: bool| -> BTreeSet<String> {
         spec.capabilities
             .iter()
-            .flat_map(|row| match linked {
-                true => row
-                    .linked_origins
-                    .iter()
-                    .map(|o| o.to_string())
-                    .collect::<Vec<_>>(),
-                false => row.auth_origins.iter().map(|o| o.to_string()).collect(),
+            .flat_map(|row| {
+                if linked {
+                    row.linked_origins
+                        .iter()
+                        .map(std::string::ToString::to_string)
+                        .collect::<Vec<_>>()
+                } else {
+                    row.auth_origins
+                        .iter()
+                        .map(std::string::ToString::to_string)
+                        .collect()
+                }
             })
             .collect()
     };
@@ -178,9 +184,10 @@ fn read(file: &Path) -> Result<ProviderSpec, SkipReason> {
         .file_stem()
         .and_then(|s| s.to_str())
         .unwrap_or_default();
-    match spec.id.as_str() == stem {
-        true => Ok(spec),
-        false => Err(SkipReason::NameIsNotId(spec.id.to_string())),
+    if spec.id.as_str() == stem {
+        Ok(spec)
+    } else {
+        Err(SkipReason::NameIsNotId(spec.id.to_string()))
     }
 }
 
@@ -236,11 +243,13 @@ impl FamilyIo {
 
     /// The same, with `http` and `dns` as the clients (a test's fakes, or a resolver of one's
     /// own); the providers, clients files and Tailscale socket stay.
+    #[must_use]
     pub fn with_clients(self, http: SharedHttp, dns: SharedDns) -> Self {
         Self { http, dns, ..self }
     }
 
     /// The same, asking Tailscale through `tailscale` (a test names its own socket).
+    #[must_use]
     pub fn with_tailscale(self, tailscale: LocalApi) -> Self {
         Self { tailscale, ..self }
     }
@@ -268,7 +277,7 @@ pub(crate) type Built = Result<Box<dyn DynProvider>, Box<ProviderSpec>>;
 type Build = fn(ProviderSpec, &FamilyIo) -> Built;
 
 /// Every family, one line each; the first that accepts a spec serves it. `OAuthMintsKey`
-/// (OpenRouter's browser sign-in) has no family, so a file asking for it lands in `unserved`
+/// (`OpenRouter`'s browser sign-in) has no family, so a file asking for it lands in `unserved`
 /// with its logged reason.
 static FAMILIES: &[Build] = &[
     build::nextcloud,
@@ -295,6 +304,7 @@ pub fn family_of(
 }
 
 /// The families that serve `specs` through `io`, and the providers none serves.
+#[must_use]
 pub fn served(
     specs: Vec<ProviderSpec>,
     io: &FamilyIo,
@@ -312,6 +322,7 @@ pub fn served(
 /// The local runtimes among the providers no family serves (`ollama`, `llama-cpp`, `lm-studio`):
 /// they sign in through nothing, and inferd hosts them (`with_local_runtimes`), so the service
 /// keeps them in its catalogue.
+#[must_use]
 pub fn local_runtimes(unserved: &[ProviderSpec]) -> Vec<ProviderSpec> {
     unserved
         .iter()
@@ -413,7 +424,7 @@ mod tests {
         );
     }
 
-    /// A provider file in the person's own folder that asks for OpenRouter's browser sign-in
+    /// A provider file in the person's own folder that asks for `OpenRouter`'s browser sign-in
     /// (`oauth_mints_key`), a family that does not exist, under a new id.
     #[test]
     fn a_persons_file_asking_for_an_unbuilt_family_is_not_served_and_names_why() {
@@ -514,16 +525,17 @@ mod tests {
             // the shipped one; nothing serves the id).
             for system in [true, false] {
                 let loaded = over_microsoft(name, system, Layer::Person, &mine);
-                match system {
-                    true => assert_eq!(
+                if system {
+                    assert_eq!(
                         microsoft_of(&loaded),
                         &account_provider::shipped_specs()
                             .into_iter()
                             .find(|s| s.id.as_str() == "microsoft")
                             .expect("shipped"),
                         "{name}"
-                    ),
-                    false => assert!(loaded.specs.is_empty(), "{name}"),
+                    )
+                } else {
+                    assert!(loaded.specs.is_empty(), "{name}")
                 }
                 let [(_, why)] = loaded.skipped.as_slice() else {
                     panic!("{name} {system}: one skipped: {:?}", loaded.skipped);

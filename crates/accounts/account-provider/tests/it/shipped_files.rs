@@ -224,7 +224,7 @@ ask = "sometimes"
 v = { access = "read_write", send = "present", delta = "poll", transport = "imap", labels = "folders" }
 "#,
     );
-    assert!(bad.is_err());
+    bad.unwrap_err();
 }
 
 #[test]
@@ -311,9 +311,19 @@ fn the_agent_files_hold_no_secret_and_name_their_program_and_variables() {
             panic!("{id}: not an agent row");
         };
         assert_eq!(agent.program.as_str(), *program, "{id}");
-        assert_eq!(agent.key_env.as_ref().map(|n| n.as_str()), *key, "{id}");
         assert_eq!(
-            agent.base_url_env.as_ref().map(|n| n.as_str()),
+            agent
+                .key_env
+                .as_ref()
+                .map(account_capability::EnvName::as_str),
+            *key,
+            "{id}"
+        );
+        assert_eq!(
+            agent
+                .base_url_env
+                .as_ref()
+                .map(account_capability::EnvName::as_str),
             *base_url,
             "{id}"
         );

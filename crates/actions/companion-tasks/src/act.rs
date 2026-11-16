@@ -36,16 +36,19 @@ impl std::fmt::Debug for Acting {
 impl Acting {
     /// Where the request lives, when the router has an object for it (a bus); the router in
     /// process has none.
+    #[must_use]
     pub fn request(&self) -> Option<&str> {
         self.watch.request()
     }
 
     /// The call's number in its task.
+    #[must_use]
     pub fn id(&self) -> CallId {
         self.id
     }
 
     /// How long the router may be silent on the call (a sheet may be up) before it is given up on.
+    #[must_use]
     pub fn patience(&self) -> std::time::Duration {
         self.patience
     }

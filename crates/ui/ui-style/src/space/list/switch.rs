@@ -14,6 +14,7 @@ pub enum SlideIn {
 
 impl SlideIn {
     /// The word a stylesheet keys the slide on: `in-r` or `in-l`.
+    #[must_use]
     pub fn attribute(self) -> &'static str {
         match self {
             SlideIn::Right => "in-r",

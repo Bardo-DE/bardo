@@ -27,6 +27,7 @@ pub enum FileChange {
 
 impl FileChange {
     /// The last element of the event's kind tag (`file.created`).
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             FileChange::Created => "created",

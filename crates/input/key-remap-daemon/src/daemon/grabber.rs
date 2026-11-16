@@ -248,7 +248,7 @@ mod tests {
     #[test]
     fn a_busy_device_is_refused_and_the_others_are_held() {
         let mut g = FakeGrabber::with_busy([DeviceId(2)]);
-        assert!(g.grab(DeviceId(1)).is_ok());
+        g.grab(DeviceId(1)).unwrap();
         assert!(matches!(g.grab(DeviceId(2)), Err(GrabError::Busy)));
         assert_eq!(g.held(), [DeviceId(1)]);
         g.ungrab(DeviceId(1));

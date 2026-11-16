@@ -18,6 +18,7 @@ pub enum FrontEvent {
 
 /// One move. Ending a task that is not the front changes nothing; ending the front leaves no
 /// front until the person asks again.
+#[must_use]
 pub fn front_step(front: Option<TaskId>, event: &FrontEvent) -> Option<TaskId> {
     match event {
         FrontEvent::Asked(task) | FrontEvent::Picked(task) => Some(task.clone()),

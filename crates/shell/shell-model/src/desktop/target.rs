@@ -25,6 +25,7 @@ pub struct MinimiseTargets(pub BTreeMap<String, Rect>);
 impl MinimiseTargets {
     /// The targets of the windows of `view`: a window's is the icon of its app on the dock of
     /// its output. A window of an app with no icon there, or on no output, has none.
+    #[must_use]
     pub fn of(rects: &OutputRects, view: &DesktopView) -> MinimiseTargets {
         MinimiseTargets(
             view.windows
@@ -40,6 +41,7 @@ impl MinimiseTargets {
     /// The commands that turn `old` into `self`: a set for each window whose rectangle is new
     /// or changed, a clear for each window that had one and has none. Windows in order of
     /// identifier, clears after sets; equal inputs give none.
+    #[must_use]
     pub fn since(&self, old: &MinimiseTargets) -> Vec<DesktopCommand> {
         let set = self
             .0

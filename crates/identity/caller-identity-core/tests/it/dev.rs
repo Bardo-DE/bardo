@@ -186,7 +186,7 @@ mod with_feature {
             Table::from_toml_dev(&"#".repeat(caller_identity_core::TABLE_BYTES_MAX + 1)),
             Err(TableError::TooLong { .. })
         ));
-        assert!(Table::from_toml_dev("[[peer]]\napp = \"org.x.A\"\nrole = \"r\"\n").is_err());
+        Table::from_toml_dev("[[peer]]\napp = \"org.x.A\"\nrole = \"r\"\n").unwrap_err();
     }
 
     #[test]
@@ -202,17 +202,15 @@ mod with_feature {
             );
         }
         // Asked for by name, in a debug build, it is let in; a different role still is not.
-        assert!(
-            standing
-                .holds(&[Requirement::dev(role("accounts"))])
-                .is_ok()
-        );
-        assert!(
-            standing
-                .holds(&[Requirement::new(role("accounts"), Proof::Dev)])
-                .is_ok()
-        );
-        assert!(standing.holds(&[Requirement::dev(role("shell"))]).is_err());
+        standing
+            .holds(&[Requirement::dev(role("accounts"))])
+            .unwrap();
+        standing
+            .holds(&[Requirement::new(role("accounts"), Proof::Dev)])
+            .unwrap();
+        standing
+            .holds(&[Requirement::dev(role("shell"))])
+            .unwrap_err();
         // The real service passes the debug build's requirement too.
         let real = Standing::Service {
             app: AppKey::new("org.bardo.Accounts").expect("an app"),
@@ -220,7 +218,7 @@ mod with_feature {
             proof: Proof::Full,
             pin: Pin::AtConnect,
         };
-        assert!(real.holds(&[Requirement::dev(role("accounts"))]).is_ok());
+        real.holds(&[Requirement::dev(role("accounts"))]).unwrap();
     }
 
     #[test]

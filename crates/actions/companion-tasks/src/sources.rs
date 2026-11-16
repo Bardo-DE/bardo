@@ -32,6 +32,7 @@ const RECENT_LIMIT: Count = Count(20);
 const RECENT_WINDOW: i64 = 24 * 3600;
 
 /// The view of where the person is when no app was named: nowhere in particular.
+#[must_use]
 pub fn nowhere(app: account_core::AppName) -> ContextView {
     ContextView {
         app,

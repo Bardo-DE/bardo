@@ -24,6 +24,7 @@ impl Debug1 {
     pub const BUS_NAME: &'static str = "org.bardo.Compositor.Debug1";
 
     /// The object over `calls`.
+    #[must_use]
     pub fn new(calls: calloop::channel::Sender<DebugCall>) -> Debug1 {
         Debug1 { calls }
     }
@@ -175,7 +176,7 @@ impl Debug1 {
         }
     }
 
-    /// `Windows() -> s`: JSON in the shape KWin's window list gave the consumer scripts
+    /// `Windows() -> s`: JSON in the shape `KWin`'s window list gave the consumer scripts
     /// (`class`, `frame`, `buffer`; SP1 B2).
     async fn windows(&self) -> fdo::Result<String> {
         self.ask_json(DebugRequest::Windows).await

@@ -11,6 +11,7 @@ pub fn word_label(labels: &WordLabels, word: &str) -> String {
 }
 
 /// `when_scrolling` as `When scrolling`: underscores to spaces, the first letter upper case.
+#[must_use]
 pub fn humanize(word: &str) -> String {
     let spaced = word.replace('_', " ");
     let mut letters = spaced.chars();

@@ -5,6 +5,7 @@ use desktop_protocols::vocab::{OverviewMode, Toggle};
 use super::DesktopCommand;
 
 /// Open Mission Control (`bardo-shell workspace overview`, the hot corner that shows the Spaces).
+#[must_use]
 pub fn open_mission_control() -> DesktopCommand {
     DesktopCommand::Overview {
         mode: OverviewMode::MissionControl,
@@ -13,6 +14,7 @@ pub fn open_mission_control() -> DesktopCommand {
 }
 
 /// Open App Exposé, the focused app's windows spread out (the `app_windows` hot corner).
+#[must_use]
 pub fn open_app_expose() -> DesktopCommand {
     DesktopCommand::Overview {
         mode: OverviewMode::AppExpose,

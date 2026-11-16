@@ -65,10 +65,7 @@ impl Run {
             return (self, Role::Finger);
         };
         let moved = (x, y) != (0.0, 0.0);
-        let with = |last: (f64, f64)| match moved {
-            true => (x, y),
-            false => last,
-        };
+        let with = |last: (f64, f64)| if moved { (x, y) } else { last };
         let following = |at: Elapsed, last: (f64, f64)| {
             let gap = now.0.as_secs_f64() - at.0.as_secs_f64();
             moved && gap <= grace && x * last.0 + y * last.1 > 0.0
@@ -159,6 +156,7 @@ fn pan(dx: f64, dy: f64, phase: GesturePhase, role: Role) -> Vec<PointerScroll> 
 impl WheelInput {
     /// Which device this event is from: clicks are a wheel's, pixels are fingers' (winit reports
     /// no other difference).
+    #[must_use]
     pub fn source(&self) -> ScrollSource {
         match self.delta {
             WheelDelta::Lines { .. } => ScrollSource::Wheel,
@@ -167,6 +165,7 @@ impl WheelInput {
     }
 
     /// How many clicks the wheel turned, whichever way (0 for a touchpad).
+    #[must_use]
     pub fn turned(&self) -> f64 {
         match self.delta {
             WheelDelta::Lines { x, y } => x.abs().max(y.abs()),
@@ -175,6 +174,7 @@ impl WheelInput {
     }
 
     /// The same turn carried `gain` times as far; a touchpad's pixels are its own.
+    #[must_use]
     pub fn scaled(self, gain: f64) -> WheelInput {
         let delta = match self.delta {
             WheelDelta::Lines { x, y } => WheelDelta::Lines {
@@ -188,6 +188,7 @@ impl WheelInput {
 
     /// How far the content moves, in winit's sign: a click is `detent_px`, a touchpad's pixels
     /// are their own.
+    #[must_use]
     pub fn motion(&self, detent_px: f64) -> (f64, f64) {
         match self.delta {
             WheelDelta::Lines { x, y } => (x * detent_px, y * detent_px),
@@ -196,6 +197,7 @@ impl WheelInput {
     }
 
     /// The gesture a listener hears for it.
+    #[must_use]
     pub fn gesture(&self, at: Point, held: Modifiers, detent_px: f64) -> Gesture {
         let (x, y) = self.motion(detent_px);
         Gesture::Scroll {

@@ -27,6 +27,7 @@ pub struct DatasetName {
 
 impl DatasetName {
     /// The name `text` spells, if it is one.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         let (account, dataset) = text.split_once('/')?;
         Some(Self {
@@ -52,6 +53,7 @@ pub struct Access {
 
 impl Access {
     /// Whether `caller` sees the dataset.
+    #[must_use]
     pub fn admits(&self, caller: &Caller) -> bool {
         match caller.role {
             CallerRole::Settings | CallerRole::PorterDaemon => true,
@@ -71,12 +73,14 @@ impl Access {
     /// Whether `caller` is told when a hold on the dataset starts or ends: whoever sees the
     /// dataset, and the shell (`SheetHost`) whether or not it owns it, so it can tell the person.
     /// The shell sees nothing else of a dataset it does not own.
+    #[must_use]
     pub fn hears_holds(&self, caller: &Caller) -> bool {
         self.admits(caller) || caller.role == CallerRole::SheetHost
     }
 
     /// Whether `caller` is an app that owns the dataset (Settings and the porter daemons see it
     /// but do not own it).
+    #[must_use]
     pub fn owned_by(&self, caller: &Caller) -> bool {
         match caller.role {
             CallerRole::App | CallerRole::SheetHost => self.owners.contains(&caller.app.name),
@@ -144,6 +148,7 @@ pub enum Event {
 
 impl Event {
     /// The dataset it is about.
+    #[must_use]
     pub fn dataset(&self) -> &DatasetName {
         match self {
             Event::Progress { dataset, .. }
@@ -245,6 +250,7 @@ impl Hub {
     }
 
     /// Registers a running dataset (replacing one of the same name) and returns the engine's end.
+    #[must_use]
     pub fn register(&self, name: DatasetName, access: Access) -> Handle {
         let (pausing, watching) = watch::channel(Pausing::Running);
         let cycling = Cycling::default();
@@ -292,11 +298,13 @@ impl Hub {
 
     /// How many cycles `name`'s driver has begun and finished; `None` when there is no such
     /// dataset.
+    #[must_use]
     pub fn cycles(&self, name: &DatasetName) -> Option<Cycles> {
         self.datasets().get(name).map(|entry| entry.cycles)
     }
 
     /// The names of every running dataset.
+    #[must_use]
     pub fn names(&self) -> Vec<DatasetName> {
         self.datasets().keys().cloned().collect()
     }
@@ -359,6 +367,7 @@ impl Hub {
     }
 
     /// The names `caller` may see.
+    #[must_use]
     pub fn names_for(&self, caller: &Caller) -> Vec<String> {
         self.datasets()
             .iter()
@@ -368,6 +377,7 @@ impl Hub {
     }
 
     /// Whether `caller` sees `name`.
+    #[must_use]
     pub fn sees(&self, caller: &Caller, name: &DatasetName) -> bool {
         self.datasets()
             .get(name)
@@ -376,6 +386,7 @@ impl Hub {
 
     /// Whether `caller` is told of `event`: a hold ([`Event::Held`]) goes to whoever
     /// [`Access::hears_holds`], every other event to whoever sees its dataset.
+    #[must_use]
     pub fn hears(&self, caller: &Caller, event: &Event) -> bool {
         self.datasets()
             .get(event.dataset())
@@ -387,6 +398,7 @@ impl Hub {
 
     /// The holds that are on now and `caller` is told of, so a connection that joins late learns
     /// of them.
+    #[must_use]
     pub fn holds_for(&self, caller: &Caller) -> Vec<(DatasetName, MassDelete)> {
         self.datasets()
             .iter()
@@ -396,6 +408,7 @@ impl Hub {
     }
 
     /// The status of `name` if `caller` may see it.
+    #[must_use]
     pub fn status_for(&self, caller: &Caller, name: &DatasetName) -> Option<StatusSnapshot> {
         let datasets = self.datasets();
         let entry = datasets
@@ -409,6 +422,7 @@ impl Hub {
     }
 
     /// Pauses or resumes `name` if `caller` may see it; whether there was such a dataset.
+    #[must_use]
     pub fn set_pausing(&self, caller: &Caller, name: &DatasetName, pausing: Pausing) -> bool {
         let datasets = self.datasets();
         let Some(entry) = datasets
@@ -422,11 +436,13 @@ impl Hub {
     }
 
     /// Drops one dataset (its engine stops); whether it was there.
+    #[must_use]
     pub fn forget(&self, name: &DatasetName) -> bool {
         self.datasets().remove(name).is_some()
     }
 
     /// Drops every dataset of `account` (its engines stop): the names that were running.
+    #[must_use]
     pub fn forget_account(&self, account: &AccountDir) -> Vec<DatasetName> {
         let mut datasets = self.datasets();
         let gone: Vec<DatasetName> = datasets
@@ -495,6 +511,7 @@ impl Hub {
     }
 
     /// Events as they happen (a lagging receiver loses the oldest).
+    #[must_use]
     pub fn subscribe(&self) -> broadcast::Receiver<Event> {
         self.0.events.subscribe()
     }
@@ -514,6 +531,7 @@ pub struct Handle {
 
 impl Handle {
     /// The dataset's name.
+    #[must_use]
     pub fn name(&self) -> &DatasetName {
         &self.name
     }
@@ -531,6 +549,7 @@ impl Handle {
     }
 
     /// The user's pause now.
+    #[must_use]
     pub fn pausing(&self) -> Pausing {
         *self.pausing.borrow()
     }
@@ -594,6 +613,7 @@ impl Handle {
     }
 
     /// Whether the hub still holds this dataset.
+    #[must_use]
     pub fn is_registered(&self) -> bool {
         self.hub.datasets().contains_key(&self.name)
     }

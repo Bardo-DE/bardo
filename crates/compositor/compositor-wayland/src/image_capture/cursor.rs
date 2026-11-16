@@ -34,6 +34,7 @@ pub struct CursorView {
 
 impl CursorView {
     /// A view of an output.
+    #[must_use]
     pub fn new(
         origin: LogicalPoint,
         scale: Scale,
@@ -64,6 +65,7 @@ pub struct Placement {
 }
 
 /// The size of the cursor image at `scale`, upright: what the element draws.
+#[must_use]
 pub fn image_size(size: LogicalSize, scale: Scale) -> PhysicalSize {
     buffer_size(size, scale)
 }
@@ -80,6 +82,7 @@ pub fn image_size(size: LogicalSize, scale: Scale) -> PhysicalSize {
 /// let size = LogicalSize { w: 24, h: 16 };
 /// assert_eq!(sent_image_size(size, Scale(120), Transform::R90), PhysicalSize { w: 16, h: 24 });
 /// ```
+#[must_use]
 pub fn sent_image_size(size: LogicalSize, scale: Scale, transform: Transform) -> PhysicalSize {
     turn_size(image_size(size, scale), transform)
 }
@@ -115,6 +118,7 @@ pub fn sent_image_size(size: LogicalSize, scale: Scale, transform: Transform) ->
 /// assert_eq!(placed.position, (151, 76));
 /// assert_eq!(placed.hotspot, (8, 5));
 /// ```
+#[must_use]
 pub fn place(
     view: &CursorView,
     at: LogicalPoint,
@@ -238,6 +242,7 @@ impl CursorBook {
     }
 
     /// The session `id`.
+    #[must_use]
     pub fn get(&self, id: CursorSessionId) -> Option<&CursorHold> {
         self.held.get(&id)
     }
@@ -248,6 +253,7 @@ impl CursorBook {
     }
 
     /// The sessions watching `output`.
+    #[must_use]
     pub fn on(&self, output: &OutputKey) -> Vec<CursorSessionId> {
         self.held
             .iter()

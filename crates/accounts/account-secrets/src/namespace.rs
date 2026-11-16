@@ -40,6 +40,7 @@ impl Namespace {
     }
 
     /// The `service` attribute, as the keyring stores it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

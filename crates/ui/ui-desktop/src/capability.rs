@@ -44,7 +44,7 @@ pub enum Capability {
     Peek,
     /// The shell's share sheet.
     Share,
-    /// PackageKit answers, so a missing helper can be installed on the spot.
+    /// `PackageKit` answers, so a missing helper can be installed on the spot.
     Helpers,
     /// The shell's per-output work area and scale (`org.bardo.Outputs1`), so a window can be
     /// sized and placed against the usable screen. The portable fallback is the window system's
@@ -69,6 +69,7 @@ impl Capability {
 
     /// The D-Bus name that means this capability, or `None` where no service name is settled
     /// (such a capability is always `Absent` until one is).
+    #[must_use]
     pub const fn service(self) -> Option<Service> {
         match self {
             // design/33-AGENT.md section 5 (intentd, docket repo).

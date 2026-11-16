@@ -24,6 +24,7 @@ pub struct KeymapFiles {
 
 impl KeymapFiles {
     /// This machine's and person's keymap, from the process environment.
+    #[must_use]
     pub fn standard() -> KeymapFiles {
         KeymapFiles {
             source: KeycapSource::standard(),
@@ -32,6 +33,7 @@ impl KeymapFiles {
 
     /// The person's keymap under `home` (`<home>/bardo/key-remap/keymap`), no daemon and no machine
     /// keymap: what a test over scratch directories reads.
+    #[must_use]
     pub fn under(home: &ConfigHome) -> KeymapFiles {
         let dir = ui_settings::app_folder(&home.0, "key-remap");
         KeymapFiles {
@@ -50,12 +52,14 @@ impl KeymapFiles {
     }
 
     /// The standard keymap: the conventions with the desktop's own bindings.
+    #[must_use]
     pub fn base(&self) -> Keymap {
         desktop_keymap(system_bindings())
     }
 
     /// Both layers as they are now. A person's file that is not there is empty; one that cannot
     /// be used is empty with the reason.
+    #[must_use]
     pub fn read(&self) -> KeymapTexts {
         let machine = self.source.machine();
         KeymapTexts {

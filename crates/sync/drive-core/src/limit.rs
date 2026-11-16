@@ -18,6 +18,7 @@ pub enum CacheLimit {
 
 impl CacheLimit {
     /// The limit a setting in bytes names: 0 is automatic.
+    #[must_use]
     pub fn from_setting(bytes: u64) -> Self {
         match bytes {
             0 => CacheLimit::Automatic,
@@ -26,6 +27,7 @@ impl CacheLimit {
     }
 
     /// The setting in bytes this limit is written as: 0 for automatic.
+    #[must_use]
     pub fn setting(self) -> u64 {
         match self {
             CacheLimit::Automatic => 0,
@@ -35,6 +37,7 @@ impl CacheLimit {
 
     /// The limit in bytes for a cache in `dir` (a directory that may not exist yet: its nearest
     /// existing parent is measured).
+    #[must_use]
     pub fn bytes_for(self, dir: &Path) -> u64 {
         match self {
             CacheLimit::Bytes(bytes) => bytes,

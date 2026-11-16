@@ -10,6 +10,7 @@ type Stepped = (Browser, Vec<Effect>);
 impl Browser {
     /// The same browser behaving as `behaviour` says, from the start (nothing is listed yet to
     /// arrange).
+    #[must_use]
     pub fn with_behaviour(self, behaviour: Behaviour) -> Browser {
         Browser { behaviour, ..self }.refreshed()
     }

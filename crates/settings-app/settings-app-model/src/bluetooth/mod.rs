@@ -1,5 +1,5 @@
 //! The Bluetooth page, as Settings meets it: the switch, the devices this computer knows, the
-//! ones nearby while the page is open, and pairing. Pure; BlueZ is the window's (`settings-app-ui`).
+//! ones nearby while the page is open, and pairing. Pure; `BlueZ` is the window's (`settings-app-ui`).
 
 mod model;
 mod page;

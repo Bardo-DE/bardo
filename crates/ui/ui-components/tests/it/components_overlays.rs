@@ -106,7 +106,7 @@ fn floating_surfaces_render_through_the_overlay_host() {
                     anchor: Anchor::Point(Point { x: Px(10.0), y: Px(10.0) }),
                     items: vec![MenuItem::new(1u8, "One")],
                     onpick: |_| {},
-                    onclose: |_| {},
+                    onclose: |()| {},
                 }
             }
         }
@@ -134,7 +134,7 @@ fn the_newest_layer_takes_the_escape() {
     fn Layered() -> Element {
         STACK.set(Some(use_context::<Signal<LayerStack>>()));
         rsx! {
-            Peek { mode: PeekMode::Center, label: "Thread", onclose: |_| {},
+            Peek { mode: PeekMode::Center, label: "Thread", onclose: |()| {},
                 p { "reader" }
             }
             Menu {
@@ -142,7 +142,7 @@ fn the_newest_layer_takes_the_escape() {
                 anchor: Anchor::Point(Point::default()),
                 items: Vec::<MenuItem<u8>>::new(),
                 onpick: |_| {},
-                onclose: |_| {},
+                onclose: |()| {},
             }
         }
     }

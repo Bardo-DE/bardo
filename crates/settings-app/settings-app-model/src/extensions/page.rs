@@ -6,6 +6,7 @@ use ui_settings::schema::Page;
 pub const EXTENSIONS_SLUG: &str = "extensions";
 
 /// The Extensions page as the catalogue holds it.
+#[must_use]
 pub fn extensions_page() -> Page {
     Page::declared(EXTENSIONS_SLUG)
 }

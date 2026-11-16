@@ -84,6 +84,7 @@ pub const MAX_CURSOR_BUFFER_SIDE: u32 = 512;
 
 /// Whether a cursor buffer of `size` pixels may be read back: neither side is over
 /// [`MAX_CURSOR_BUFFER_SIDE`] (a buffer with a side over it is not read).
+#[must_use]
 pub const fn cursor_buffer_fits(size: PhysicalSize) -> bool {
     size.w <= MAX_CURSOR_BUFFER_SIDE && size.h <= MAX_CURSOR_BUFFER_SIDE
 }
@@ -117,6 +118,7 @@ pub enum Limit {
 
 impl Limit {
     /// The most a client may hold of this object.
+    #[must_use]
     pub const fn cap(self) -> usize {
         match self {
             Limit::Toplevels => MAX_TOPLEVELS,
@@ -134,6 +136,7 @@ impl Limit {
     }
 
     /// What is capped, for the error text the client reads.
+    #[must_use]
     pub const fn what(self) -> &'static str {
         match self {
             Limit::Toplevels => "toplevel windows",
@@ -151,6 +154,7 @@ impl Limit {
     }
 
     /// Whether a client that holds `held` of these may take one more.
+    #[must_use]
     pub const fn allows(self, held: usize) -> bool {
         held < self.cap()
     }
@@ -158,6 +162,7 @@ impl Limit {
 
 /// Whether `client`, which holds `held` of `limit`, may take one more; a client that may not is
 /// queued to be cut ([`cut`]) before this returns false, and the caller makes nothing.
+#[must_use]
 pub fn admit(_display: &DisplayHandle, client: &Client, limit: Limit, held: usize) -> bool {
     let allowed = limit.allows(held);
     if !allowed {

@@ -64,6 +64,7 @@ impl<K: Eq + Hash + Clone> Notices<K> {
 
 /// The notification already held, banner or history, that belongs to the app named `entry` and
 /// carries a button with the action `key`.
+#[must_use]
 pub fn shown_with_action(
     notes: &NotesState,
     entry: &str,

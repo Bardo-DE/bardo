@@ -21,6 +21,7 @@ pub fn receiving<'a>(
 }
 
 /// The reply to a send that was refused.
+#[must_use]
 pub fn send_refusal(why: SendRefusal) -> IntentsReply {
     IntentsReply::Refused(WireRefusal::Send(why))
 }

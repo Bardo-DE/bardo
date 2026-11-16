@@ -473,7 +473,7 @@ mod tests {
     #[test]
     fn the_shell_verbs_parse_their_words() {
         assert!(matches!(parse("minimise a"), Ok(Command::Minimise(name)) if name == "a"));
-        assert!(parse("minimise").is_err());
+        parse("minimise").unwrap_err();
         assert!(matches!(parse("shell-connect"), Ok(Command::ShellConnect)));
         assert!(matches!(
             parse("shell-role dock d"),

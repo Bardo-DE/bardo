@@ -88,6 +88,7 @@ impl Offered {
 
     /// The record that replaces `before` when `self` is written: its counter one past the one it
     /// replaces. A start that did not get as far as listing models keeps the models listed before.
+    #[must_use]
     pub fn after(self, before: Option<&Self>) -> Self {
         let seen = before.map_or(0, |o| o.seen) + 1;
         let (in_use, models) = match (self.models.is_empty(), before) {

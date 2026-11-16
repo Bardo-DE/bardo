@@ -11,6 +11,7 @@ pub enum Edge {
 impl Edge {
     /// The edge for an evdev key event value (0 release, 1 press, 2 repeat); other values are
     /// not key transitions.
+    #[must_use]
     pub const fn from_value(value: i32) -> Option<Edge> {
         match value {
             0 => Some(Edge::Release),
@@ -21,6 +22,7 @@ impl Edge {
     }
 
     /// The evdev value this edge is written as.
+    #[must_use]
     pub const fn value(self) -> i32 {
         match self {
             Edge::Release => 0,

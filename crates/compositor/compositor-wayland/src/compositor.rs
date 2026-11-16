@@ -29,6 +29,7 @@ pub struct CompositorPart {
 impl CompositorPart {
     /// Creates the `wl_compositor` (version 6) and `wl_subcompositor` globals. Every
     /// connection sees them (I7), so the filter is not consulted.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> CompositorPart
     where
         D: GlobalDispatch<WlCompositor, GlobalData>
@@ -63,6 +64,7 @@ pub enum CommitRoute {
 }
 
 /// The route a surface with `role` takes (the one table of roles).
+#[must_use]
 pub fn route_of_role(role: Option<&str>) -> CommitRoute {
     match role {
         Some(XDG_TOPLEVEL_ROLE) => CommitRoute::Toplevel,
@@ -76,6 +78,7 @@ pub fn route_of_role(role: Option<&str>) -> CommitRoute {
 }
 
 /// The root of `surface`'s subsurface tree (the surface itself when it has no parent).
+#[must_use]
 pub fn root_of(surface: &WlSurface) -> WlSurface {
     let mut root = surface.clone();
     while let Some(parent) = get_parent(&root) {

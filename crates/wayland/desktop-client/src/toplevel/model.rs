@@ -37,6 +37,7 @@ pub struct Toplevel {
 
 impl Toplevel {
     /// A toplevel that has just appeared: nothing known yet.
+    #[must_use]
     pub fn new(key: ToplevelKey) -> Self {
         Self {
             key,

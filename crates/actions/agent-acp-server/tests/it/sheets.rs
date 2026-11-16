@@ -104,7 +104,7 @@ async fn an_offered_scope_shows_allow_always_in_words_and_a_click_reaches_the_ho
         );
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     let id = ConfirmId::parse("c-1").expect("id");
     assert_eq!(server.into_host().sheets, vec![(id, SheetChoice::Always)]);
 }
@@ -125,7 +125,7 @@ async fn a_withheld_offer_shows_no_allow_always_and_choosing_it_anyway_is_a_refu
         );
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     let host = server.into_host();
     assert_eq!(host.sheets.len(), 1);
     assert_eq!(host.sheets[0].1, SheetChoice::Refused);
@@ -148,7 +148,7 @@ async fn once_and_reject_reach_the_host_as_themselves() {
         ed.prompt(&session, "go", &mut answer).await;
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     let chosen: Vec<SheetChoice> = server.into_host().sheets.iter().map(|s| s.1).collect();
     assert_eq!(chosen, [SheetChoice::Once, SheetChoice::Refused]);
 }
@@ -164,7 +164,7 @@ async fn a_cancel_or_an_error_answers_no_sheet_as_a_yes() {
         ed.prompt(&session, "go", &mut cancelled).await;
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     assert_eq!(server.into_host().sheets[0].1, SheetChoice::Refused);
 }
 
@@ -203,7 +203,7 @@ async fn after_always_the_editors_own_prompt_stands_down_for_that_action_only() 
         assert_eq!(asked[2]["params"]["toolCall"]["title"], "mail.forward");
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]

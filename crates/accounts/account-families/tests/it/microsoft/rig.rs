@@ -69,15 +69,15 @@ impl Graph {
             .lock()
             .unwrap()
             .push((path.clone(), bearer.clone()));
-        let status = match self.issuer.access_is_live(&bearer) {
-            false => 401,
-            true => self
-                .statuses
+        let status = if !self.issuer.access_is_live(&bearer) {
+            401
+        } else {
+            self.statuses
                 .lock()
                 .unwrap()
                 .get(&path)
                 .copied()
-                .unwrap_or(200),
+                .unwrap_or(200)
         };
         let body = match (status, path.as_str()) {
             (200, "/v1.0/me") => {
@@ -171,9 +171,10 @@ impl Rig {
             down: Mutex::new(false),
             refresh_scopes: Mutex::default(),
         });
-        let clients = match with_client {
-            true => vec![client(&issuer)],
-            false => Vec::new(),
+        let clients = if with_client {
+            vec![client(&issuer)]
+        } else {
+            Vec::new()
         };
         let clock = Arc::new(AtomicI64::new(1_000_000));
         let ticking = Arc::clone(&clock);

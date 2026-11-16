@@ -19,7 +19,7 @@ pub(super) fn encoding(head: &FileHead) -> Option<TextEncoding> {
 }
 
 /// Whether a head that is not UTF-8 and has no byte-order mark still reads as text in some legacy
-/// single- or double-byte encoding (Windows-1252, Shift_JIS, GBK, KOI8-R): no NUL, and at most one
+/// single- or double-byte encoding (Windows-1252, `Shift_JIS`, GBK, KOI8-R): no NUL, and at most one
 /// byte in twenty a control character other than tab, line feed, form feed, carriage return or
 /// escape. The bytes at 0x80 and above are all taken as printable, since which encoding they are in
 /// is not decided here. A head that is valid UTF-8 is [`encoding`]'s, not this function's.

@@ -333,12 +333,11 @@ fn folder(c: &mut Cursor<'_>) -> Checked<Folder> {
             0 => (1, 1),
             _ => (c.count(MOST_CODERS)? as u64, c.count(MOST_CODERS)? as u64),
         };
-        let props = match flags & 0x20 {
-            0 => Vec::new(),
-            _ => {
-                let size = c.number()?;
-                c.take(size)?.to_vec()
-            }
+        let props = if flags & 0x20 == 0 {
+            Vec::new()
+        } else {
+            let size = c.number()?;
+            c.take(size)?.to_vec()
         };
         check_dictionary(&id, &props)?;
         inputs += ins;
@@ -450,9 +449,10 @@ fn check_dictionary(id: &[u8], props: &[u8]) -> Checked<()> {
         id if id == LZMA2 => lzma2_dictionary(props)?,
         _ => return Ok(()),
     };
-    match u64::from(dictionary) > MOST_DICTIONARY {
-        true => Err(Fault::Large),
-        false => Ok(()),
+    if u64::from(dictionary) > MOST_DICTIONARY {
+        Err(Fault::Large)
+    } else {
+        Ok(())
     }
 }
 

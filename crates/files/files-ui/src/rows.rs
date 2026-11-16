@@ -40,6 +40,7 @@ impl Column {
     ];
 
     /// The columns `location` is shown with.
+    #[must_use]
     pub fn of_location(location: &Location) -> &'static [Column] {
         match location {
             Location::Trash => &Column::TRASH,
@@ -48,16 +49,19 @@ impl Column {
     }
 
     /// The header's words.
+    #[must_use]
     pub fn title(self) -> &'static str {
         words::column_title(self)
     }
 
     /// The header's words in `location`: the date in the Trash is when the item was thrown away.
+    #[must_use]
     pub fn title_in(self, location: &Location) -> &'static str {
         words::column_title_in(self, location)
     }
 
     /// The key a press on this column's header sorts by; `None` for a column that does not sort.
+    #[must_use]
     pub fn sort_key(self) -> Option<SortKey> {
         match self {
             Column::Sort(key) => Some(key),
@@ -67,6 +71,7 @@ impl Column {
 }
 
 /// The table's direction for a model's order.
+#[must_use]
 pub fn direction_of(order: SortOrder) -> SortDirection {
     match order {
         SortOrder::Ascending => SortDirection::Ascending,
@@ -75,6 +80,7 @@ pub fn direction_of(order: SortOrder) -> SortDirection {
 }
 
 /// The model's order for a table's direction.
+#[must_use]
 pub fn order_of(direction: SortDirection) -> SortOrder {
     match direction {
         SortDirection::Ascending => SortOrder::Ascending,
@@ -83,6 +89,7 @@ pub fn order_of(direction: SortDirection) -> SortOrder {
 }
 
 /// What a click's reach means to the model's selection.
+#[must_use]
 pub fn modifier_of(how: PickHow) -> Modifier {
     match how {
         PickHow::Replace => Modifier::None,
@@ -93,6 +100,7 @@ pub fn modifier_of(how: PickHow) -> Modifier {
 
 /// The click a view's pick stands for: the row's name with how it was reached. `None` for a row
 /// the browser no longer lists.
+#[must_use]
 pub fn click_of(browser: &Browser, pick: Pick) -> Option<Input> {
     let row = browser.rows().get(pick.row)?;
     Some(Input::Click(row.name.clone(), modifier_of(pick.how)))
@@ -109,12 +117,14 @@ fn indexes(browser: &Browser) -> HashMap<&FileName, usize> {
 }
 
 /// The row the keyboard is on.
+#[must_use]
 pub fn cursor_of(browser: &Browser) -> Option<usize> {
     let name = browser.cursor()?;
     browser.rows().iter().position(|row| row.name == *name)
 }
 
 /// The selected rows by index, with the anchor of a Shift-click and the cursor.
+#[must_use]
 pub fn selection_of(browser: &Browser) -> RowSelection {
     let index = indexes(browser);
     let at = |name: Option<&FileName>| name.and_then(|name| index.get(name).copied());

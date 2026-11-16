@@ -13,15 +13,17 @@
 pub(super) mod client {
     //! Client-side API of the protocol.
     use wayland_client;
-    use wayland_client::protocol::*;
-    use wayland_protocols::xdg::shell::client::*;
+    use wayland_client::protocol::wl_region;
+    use wayland_protocols::xdg::shell::client::xdg_toplevel;
 
     pub mod __interfaces {
-        use wayland_client::protocol::__interfaces::*;
-        use wayland_protocols::xdg::shell::client::__interfaces::*;
+        use wayland_client::protocol::__interfaces::{WL_REGION_INTERFACE, wl_region_interface};
+        use wayland_protocols::xdg::shell::client::__interfaces::{
+            XDG_TOPLEVEL_INTERFACE, xdg_toplevel_interface,
+        };
         wayland_scanner::generate_interfaces!("protocols/bardo-window-v1.xml");
     }
-    use self::__interfaces::*;
+    use self::__interfaces::{BARDO_WINDOW_MANAGER_V1_INTERFACE, BARDO_WINDOW_V1_INTERFACE};
 
     wayland_scanner::generate_client_code!("protocols/bardo-window-v1.xml");
 }

@@ -104,6 +104,7 @@ impl Browser {
     }
 
     /// Whether the selection is one folder, which "Open in New Tab" can open.
+    #[must_use]
     pub fn can_open_in_new_tab(&self) -> bool {
         self.lone_folder().is_some()
     }

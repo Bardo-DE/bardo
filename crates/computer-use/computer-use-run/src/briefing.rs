@@ -8,6 +8,7 @@ use provenance::RunId;
 const EARLIER: &str = "Earlier attempts at this (check the screen before trusting them):";
 
 /// The task line: the person's own sentence when the router had one, otherwise the planner's goal.
+#[must_use]
 pub fn task_line(task: &CuaTask) -> String {
     match &task.asked {
         Some(asked) => asked.value.clone(),
@@ -18,6 +19,7 @@ pub fn task_line(task: &CuaTask) -> String {
 /// The hints, in order: the planner's plan when the task line is the person's and the plan
 /// differs, then the earlier attempts of `run`'s conversation (a heading and one hint per line),
 /// then `shared`, the hints about the desktop.
+#[must_use]
 pub fn hints(task: &CuaTask, run: &RunId, shared: &[String]) -> Vec<String> {
     let mut hints = Vec::new();
     if let Some(asked) = &task.asked

@@ -1,4 +1,5 @@
 //! A small PNG writer: 8-bit grey with alpha, RGB or RGBA, one IDAT, inside zlib (RFC 1950).
+//!
 //! The DEFLATE body (RFC 1951) is either stored blocks, for noise that would not compress, or
 //! one fixed-Huffman block (section 3.2.6) from a greedy matcher that only tries "one pixel
 //! back" and "one scanline back": the images quire draws are small and regular, so that is
@@ -49,6 +50,7 @@ impl Channels {
 }
 
 /// The PNG of `raster`, every scanline unfiltered, its DEFLATE body written as `deflate` says.
+#[must_use]
 pub fn encode(raster: Raster<'_>, deflate: Deflate) -> Vec<u8> {
     let Raster {
         width,

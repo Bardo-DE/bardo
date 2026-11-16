@@ -15,7 +15,7 @@ use super::origin::Origin;
 use super::{BannerLife, ServerMode};
 
 /// Everything the service is told by the daemon.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub struct NotificationsPolicy {
     /// Whether to own the bus name (fixed by the daemon).
     pub server: ServerMode,
@@ -28,18 +28,6 @@ pub struct NotificationsPolicy {
     pub history_cap: HistoryCap,
     /// `notifications.swipe`.
     pub swipe: Swipe,
-}
-
-impl Default for NotificationsPolicy {
-    fn default() -> Self {
-        NotificationsPolicy {
-            server: ServerMode::default(),
-            quiet: false,
-            style: Presentation::default(),
-            history_cap: HistoryCap::default(),
-            swipe: Swipe::default(),
-        }
-    }
 }
 
 /// `notifications.swipe`: what swiping a banner away does to its notification.
@@ -104,6 +92,7 @@ pub enum Chime {
 /// while Do Not Disturb is on or the style is history-only. Otherwise: nothing but the history
 /// while held back; else a banner that persists for `resident`, `expire_timeout == 0` or the
 /// Alert style, and expires otherwise.
+#[must_use]
 pub fn presented(note: &Notification, policy: &NotificationsPolicy) -> Presented {
     let critical = note.hints.urgency == NotifyUrgency::Critical;
     let through = critical && Origin::of(&note.app) == Origin::System;
@@ -123,6 +112,7 @@ pub fn presented(note: &Notification, policy: &NotificationsPolicy) -> Presented
 /// Whether `note`'s arrival plays a sound: never when the sender suppressed it, nor while Do
 /// Not Disturb holds it back (the shell's own critical notice still sounds); else its hint (or
 /// the default).
+#[must_use]
 pub fn chime(note: &Notification, policy: &NotificationsPolicy) -> Chime {
     let through =
         note.hints.urgency == NotifyUrgency::Critical && Origin::of(&note.app) == Origin::System;

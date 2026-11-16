@@ -99,6 +99,7 @@ fn arg(from: &ArgFrom) -> String {
 }
 
 /// One scripted step in one line: the call and where each argument's words came from.
+#[must_use]
 pub fn plan_line(step: &ScriptedStep) -> String {
     match step {
         ScriptedStep::Call(call) => {
@@ -135,6 +136,7 @@ fn call_end(end: &CallEnd) -> String {
 }
 
 /// One audit record in one line, or none for a record a reader of the trace does not need.
+#[must_use]
 pub fn audit_line(record: &AuditRecord) -> Option<String> {
     match record {
         AuditRecord::Call {
@@ -275,6 +277,7 @@ impl CaseTrace {
     }
 
     /// The trace as text.
+    #[must_use]
     pub fn render(&self) -> String {
         let mut out = String::new();
         let _ = writeln!(
@@ -379,6 +382,7 @@ pub fn render_exchange(out: &mut String, e: &ModelExchange) {
 }
 
 /// The index of a run: one line per case, with the file its trace is in.
+#[must_use]
 pub fn render_index(traces: &[(String, &CaseTrace)]) -> String {
     let mut out = String::from("case | corpus | judgement | steps | model exchanges | trace\n");
     for (file, t) in traces {
@@ -402,6 +406,7 @@ pub fn render_index(traces: &[(String, &CaseTrace)]) -> String {
 }
 
 /// A file name for a case's trace.
+#[must_use]
 pub fn trace_file(id: &CaseId) -> String {
     format!("{}.trace.txt", id.0)
 }

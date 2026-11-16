@@ -97,9 +97,10 @@ pub(super) fn split_widths(
     let want = u64::from(room) * u64::from(share.0.min(1000)) / 1000;
     let want = u32::try_from(want).unwrap_or(room);
     let highest = room.saturating_sub(min_trail);
-    let lead = match min_lead <= highest {
-        true => want.clamp(min_lead, highest),
-        false => want,
+    let lead = if min_lead <= highest {
+        want.clamp(min_lead, highest)
+    } else {
+        want
     };
     (lead, room - lead)
 }

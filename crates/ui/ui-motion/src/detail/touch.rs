@@ -36,11 +36,13 @@ impl Contact {
 
     /// The same contact, released at `velocity`: what a drag's `onpointerup` hands on, from its
     /// own measure of the pointer's speed.
+    #[must_use]
     pub fn with_velocity(self, velocity: Velocity) -> Contact {
         Contact { velocity, ..self }
     }
 
     /// The velocity the hand had when it let go (zero for a tap or a key).
+    #[must_use]
     pub fn velocity(self) -> Velocity {
         self.velocity
     }
@@ -49,6 +51,7 @@ impl Contact {
     /// `onclick` (which hands a [`crate::Press`], not the event): a press reaches it only from the
     /// person's click or key on that button. Crate-private, so a caller outside quire still
     /// proves contact with an event.
+    #[must_use]
     pub fn pressed(press: &ui_core::press::Press) -> Contact {
         let _ = press;
         Contact::proven()
@@ -56,6 +59,7 @@ impl Contact {
 
     /// A contact for a unit test that has no event to hand.
     #[cfg(test)]
+    #[must_use]
     pub fn for_tests() -> Contact {
         Contact::proven()
     }
@@ -74,6 +78,7 @@ pub enum Touch {
 
 impl Touch {
     /// The release velocity a contact carries; zero for a remote change.
+    #[must_use]
     pub fn velocity(self) -> Velocity {
         match self {
             Touch::Contact(contact) => contact.velocity(),

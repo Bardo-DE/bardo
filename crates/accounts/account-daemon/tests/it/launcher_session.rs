@@ -1,4 +1,4 @@
-//! "This session only" (from accountd's session_scope tests): the agent launcher begins and ends
+//! "This session only" (from accountd's `session_scope` tests): the agent launcher begins and ends
 //! sessions, asks the person for an agent program's key (`RequestAgentKey`, a Request object
 //! answered with a permit), and a permit scoped to a session goes with it, with the process
 //! credentials under it.

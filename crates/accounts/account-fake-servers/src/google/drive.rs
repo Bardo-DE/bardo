@@ -582,6 +582,7 @@ impl Drive {
 }
 
 /// The lower-case hex MD5 of `bytes`, the form of Drive's `md5Checksum`.
+#[must_use]
 pub fn md5_hex(bytes: &[u8]) -> String {
     hex::encode(Md5::digest(bytes))
 }

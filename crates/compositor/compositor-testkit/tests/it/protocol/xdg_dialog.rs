@@ -8,7 +8,7 @@ use compositor_testclient::surface::toplevel::extras::{DialogError, WmDialog};
 use compositor_testclient::{Pattern, shm_buffer};
 use desktop_protocols::vocab::{Modality, WindowRole};
 
-/// Set_modal reaches the model as Modality::Modal on the dialog's window.
+/// `Set_modal` reaches the model as `Modality::Modal` on the dialog's window.
 #[test]
 fn a_modal_dialog_is_stored_as_modal() {
     let (mut fixture, id) = boot();

@@ -12,6 +12,7 @@ use crate::toplevel::{ToplevelEvent, reduce_toplevels};
 use crate::workspace::reduce_workspaces;
 
 /// `state` after `event`. Pure and total: an event for something unknown changes nothing.
+#[must_use]
 pub fn reduce(state: DesktopState, event: DesktopEvent) -> DesktopState {
     match event {
         DesktopEvent::Globals(protocols) => DesktopState { protocols, ..state },

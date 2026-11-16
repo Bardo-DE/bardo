@@ -101,9 +101,10 @@ impl StorageGrants for Gate {
             StorageKind::AppFolder | StorageKind::Drive => &self.files,
             StorageKind::Photos | StorageKind::GooglePhotos => &self.photos,
         };
-        match shown.load(Ordering::SeqCst) {
-            true => self.real.granted(kind).await,
-            false => Ok(Vec::new()),
+        if shown.load(Ordering::SeqCst) {
+            self.real.granted(kind).await
+        } else {
+            Ok(Vec::new())
         }
     }
 }

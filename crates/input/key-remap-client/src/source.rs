@@ -88,6 +88,7 @@ impl KeycapSource {
     }
 
     /// The source for this machine and person, from the process environment.
+    #[must_use]
     pub fn standard() -> KeycapSource {
         KeycapSource::from_lookup(|name| std::env::var(name).ok())
     }
@@ -97,35 +98,34 @@ impl KeycapSource {
     }
 
     /// The file Settings writes the person's shortcuts to. It needs no privilege.
+    #[must_use]
     pub fn person_file(&self) -> &Path {
         &self.person_file
     }
 
     /// The machine's keymap: from the daemon, or from its file when no daemon answers.
     pub fn machine(&self) -> Layer {
-        match fetch::keymap(&self.socket) {
-            Ok(state) => {
-                let (overrides, bad) = Overrides::parse(&state.overrides);
-                let mut problems: Vec<String> = state.problems.iter().map(describe).collect();
-                problems.extend(bad.iter().map(ToString::to_string));
-                Layer {
-                    overrides,
-                    problems,
-                    origin: Origin::Daemon,
-                }
+        if let Ok(state) = fetch::keymap(&self.socket) {
+            let (overrides, bad) = Overrides::parse(&state.overrides);
+            let mut problems: Vec<String> = state.problems.iter().map(describe).collect();
+            problems.extend(bad.iter().map(ToString::to_string));
+            Layer {
+                overrides,
+                problems,
+                origin: Origin::Daemon,
             }
-            Err(_) => {
-                let (overrides, problems) = fallback::read(&self.machine_file);
-                Layer {
-                    overrides,
-                    problems,
-                    origin: Origin::MachineFile,
-                }
+        } else {
+            let (overrides, problems) = fallback::read(&self.machine_file);
+            Layer {
+                overrides,
+                problems,
+                origin: Origin::MachineFile,
             }
         }
     }
 
     /// The person's own keymap.
+    #[must_use]
     pub fn person(&self) -> Layer {
         let (overrides, problems) = fallback::read(&self.person_file);
         Layer {
@@ -138,6 +138,7 @@ impl KeycapSource {
     /// The keymap of `platform` with, on ours, the desktop's own bindings, then the machine's
     /// overrides, then the person's (which win); and every problem in plain words, labelled by
     /// the file it came from, the chords the desktop keeps for itself included.
+    #[must_use]
     pub fn load_reporting(&self, platform: Platform) -> (Keymap, Vec<String>) {
         let base = Keymap::conventional(platform);
         let base = if platform == OURS {

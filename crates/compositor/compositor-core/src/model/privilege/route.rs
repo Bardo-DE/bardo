@@ -12,6 +12,7 @@ use crate::time::TimerKey;
 
 impl Model {
     /// The consent machine.
+    #[must_use]
     pub fn privilege(&self) -> &Privilege {
         &self.privilege
     }

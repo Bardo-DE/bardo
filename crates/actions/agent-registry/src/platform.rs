@@ -8,6 +8,7 @@ pub struct Platform(String);
 impl Platform {
     /// The platform of an operating system and architecture as Rust names them
     /// (`std::env::consts::OS` and `ARCH`): `macos` is `darwin` in the registry.
+    #[must_use]
     pub fn of(os: &str, arch: &str) -> Self {
         let os = match os {
             "macos" => "darwin",
@@ -17,11 +18,13 @@ impl Platform {
     }
 
     /// A platform by its registry key.
+    #[must_use]
     pub fn named(key: &str) -> Self {
         Self(key.to_owned())
     }
 
     /// The registry key.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

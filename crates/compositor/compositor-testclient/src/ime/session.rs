@@ -304,21 +304,25 @@ impl ImeSession {
     }
 
     /// Everything the text field was sent, in order.
+    #[must_use]
     pub fn field_events(&self) -> &[Stamped<TextInputEvent>] {
         &self.seen.field
     }
 
     /// Everything the input method was sent, in order.
+    #[must_use]
     pub fn method_events(&self) -> &[Stamped<InputMethodEvent>] {
         &self.seen.method
     }
 
     /// The keys the document's own `wl_keyboard` was sent.
+    #[must_use]
     pub fn document_keys(&self) -> &[DocumentKey] {
         &self.seen.document_keys
     }
 
     /// The field's events as transcript lines: `<seconds>.<millis> zwp_text_input_v3.<event>(<args>)`.
+    #[must_use]
     pub fn field_lines(&self) -> String {
         self.seen
             .field

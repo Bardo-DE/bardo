@@ -22,6 +22,7 @@ pub enum PcmFormat {
 
 impl PcmFormat {
     /// Bytes in one sample.
+    #[must_use]
     pub const fn width(self) -> u32 {
         match self {
             PcmFormat::S16Le => 2,
@@ -57,19 +58,23 @@ pub struct AudioMs(pub u32);
 pub struct PcmBytes(Vec<u8>);
 
 impl PcmBytes {
+    #[must_use]
     pub fn new(bytes: Vec<u8>) -> Self {
         Self(bytes)
     }
 
+    #[must_use]
     pub fn as_slice(&self) -> &[u8] {
         &self.0
     }
 
     /// Length in bytes.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
@@ -114,12 +119,14 @@ pub struct AudioChunk {
 
 impl AudioChunk {
     /// Whole samples in the chunk; a trailing partial sample is not counted.
+    #[must_use]
     pub fn samples(&self) -> u32 {
         let whole = self.pcm.len() as u64 / u64::from(self.format.pcm.width());
         u32::try_from(whole).unwrap_or(u32::MAX)
     }
 
     /// The length of the chunk, rounded down to a millisecond; a rate of zero gives zero.
+    #[must_use]
     pub fn duration(&self) -> AudioMs {
         let rate = u64::from(self.format.rate.0);
         let ms = (u64::from(self.samples()) * 1000)

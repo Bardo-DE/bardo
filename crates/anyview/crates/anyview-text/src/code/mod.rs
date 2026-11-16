@@ -58,6 +58,7 @@ impl Highlighter {
     /// The dump tool's syntect version and regex engine (regex-fancy) must match this workspace's:
     /// a dump from another version fails to load and every file shows plain. The `> 90 syntaxes`
     /// test in `tests.rs` catches that.
+    #[must_use]
     pub fn new() -> Self {
         // The dump is part of the binary and a test loads it; were it ever unreadable, every text
         // would be shown plain, which is what a language without a syntax gets.
@@ -138,6 +139,7 @@ pub struct TokenLine {
 
 impl TokenLine {
     /// The line's text, the spans joined.
+    #[must_use]
     pub fn text(&self) -> String {
         self.spans.iter().map(|span| span.text.as_str()).collect()
     }

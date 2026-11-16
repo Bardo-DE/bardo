@@ -3,7 +3,7 @@
 //! other compositor offers (FINDINGS F50). The rest of the protocol (first-mouse regions,
 //! frame, emphasis, placement mark) is P3.
 //!
-//! The manager is bound only when the compositor advertises it (KWin and wlroots do
+//! The manager is bound only when the compositor advertises it (`KWin` and wlroots do
 //! not); without it every request here is a silent no-op. It is bound at version 1 or 2 and
 //! kept for as long as the host runs, because version 2 adds the manager's `quit` event: the
 //! person asked the whole app to quit, which becomes `HostEvent::QuitAsked` (`quit.rs`). A
@@ -78,7 +78,7 @@ impl QuireWindows {
         window.request_placement(target, request.serial);
     }
 
-    /// Drop toplevel `id`'s extension object (before its xdg_toplevel goes).
+    /// Drop toplevel `id`'s extension object (before its `xdg_toplevel` goes).
     pub(crate) fn forget(&mut self, id: SurfaceId) {
         if let Some(window) = self.windows.remove(&id) {
             window.destroy();

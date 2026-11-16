@@ -108,6 +108,7 @@ pub enum Continued {
 
 impl Continued {
     /// The account either way.
+    #[must_use]
     pub fn account(&self) -> &AccountId {
         match self {
             Continued::SignedIn(id) | Continued::AlreadyHere(id) => id,
@@ -126,6 +127,7 @@ pub struct Snapshot {
 
 impl Snapshot {
     /// The account `id` is.
+    #[must_use]
     pub fn account(&self, id: &AccountId) -> Option<&Account> {
         self.accounts
             .iter()
@@ -134,6 +136,7 @@ impl Snapshot {
     }
 
     /// What accountd calls the provider of the account `id`, when it says.
+    #[must_use]
     pub fn provider_label(&self, id: &AccountId) -> Option<&str> {
         self.accounts
             .iter()
@@ -162,6 +165,7 @@ pub struct Keep<T> {
 
 impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// The accounts of `porter`; a removal wipes what `paths` and `hub` name.
+    #[must_use]
     pub fn new(porter: &Porter<T>, paths: Paths, hub: Hub) -> Self {
         Self {
             grants: Arc::new(porter.grants()),

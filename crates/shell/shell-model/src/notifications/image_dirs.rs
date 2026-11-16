@@ -19,6 +19,7 @@ impl ImageDirs {
     }
 
     /// Whether `path` is absolute, free of `.` and `..`, and inside one of the folders.
+    #[must_use]
     pub fn admits(&self, path: &Path) -> bool {
         path.is_absolute()
             && path
@@ -31,6 +32,7 @@ impl ImageDirs {
 impl IconRef {
     /// This icon if it may be drawn: a name is a name, with no folder in it; a file must be
     /// inside `dirs`. Anything else is no icon.
+    #[must_use]
     pub fn within(self, dirs: &ImageDirs) -> IconRef {
         match self {
             IconRef::File(path) if dirs.admits(&path) => IconRef::File(path),
@@ -43,6 +45,7 @@ impl IconRef {
 impl Posting {
     /// This posting with every picture a bus caller named kept only where [`ImageDirs`] allow it:
     /// `app_icon` and `image-path` that fail are no picture; `image-data` is pixels and stays.
+    #[must_use]
     pub fn within(self, dirs: &ImageDirs) -> Posting {
         let Posting {
             replaces,

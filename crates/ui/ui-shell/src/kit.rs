@@ -17,6 +17,7 @@ pub static KIT: Kit = Kit {
 
 /// Every kit these parts are drawn with: the design system's (style, motion, the components) and
 /// this crate's. A crate with more kits of its own lists these and adds them.
+#[must_use]
 pub fn kits() -> Kits {
     Kits::of(&[
         &ui_style::kit::STYLE_KIT,
@@ -34,6 +35,7 @@ pub fn stylesheet() -> &'static str {
 
 /// Every component sheet, the design system's and these parts', `(name, css)`, in the order the
 /// stylesheet appends them.
+#[must_use]
 pub fn component_sheets() -> Vec<(&'static str, &'static str)> {
     placed(&ui_components::component_sheets(), &SHEETS)
 }

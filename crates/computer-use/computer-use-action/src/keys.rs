@@ -101,6 +101,7 @@ impl Repeat {
         }
     }
 
+    #[must_use]
     pub fn times(&self) -> u8 {
         self.0
     }
@@ -145,6 +146,7 @@ impl WaitMs {
         }
     }
 
+    #[must_use]
     pub fn ms(&self) -> u32 {
         self.0
     }

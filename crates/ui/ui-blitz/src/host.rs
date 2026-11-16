@@ -194,8 +194,8 @@ pub(crate) fn Host(props: HostProps) -> Element {
     {
         let window = Arc::clone(&window);
         let wake: Rc<dyn Fn()> = Rc::new(move || window.request_redraw());
-        use_context_provider(|| ScrollHandle::new(scroll.clone(), wake));
-    }
+        use_context_provider(|| ScrollHandle::new(scroll.clone(), wake))
+    };
     let resized = use_context_provider(WindowResized::new);
     let sizer = use_context_provider(|| WindowSizer::new(Arc::clone(&window), requests.clone()));
     let dragged = use_hook(|| Rc::new(RefCell::new(WindowDrop::default())));

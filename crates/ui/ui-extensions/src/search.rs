@@ -32,6 +32,7 @@ pub struct Search {
 
 impl Search {
     /// A search of `person`'s data directory and each of the `system` ones, most important first.
+    #[must_use]
     pub fn new(person: &Path, system: &[PathBuf]) -> Search {
         Search {
             person: Some(person.to_path_buf()),
@@ -40,12 +41,14 @@ impl Search {
     }
 
     /// The person's data root, if there is one.
+    #[must_use]
     pub fn person_root(&self) -> Option<&Path> {
         self.person.as_deref()
     }
 
     /// A search over the XDG variables as a program has them: `$XDG_DATA_HOME` (else
     /// `$HOME/.local/share`) and `$XDG_DATA_DIRS`.
+    #[must_use]
     pub fn from_env() -> Search {
         Search::from_dirs(
             std::env::var_os("XDG_DATA_HOME").as_deref(),
@@ -56,6 +59,7 @@ impl Search {
 
     /// [`Search::from_env`] with the variables handed in, under the XDG rules (an empty or
     /// relative value is ignored). A person with no home has no personal root.
+    #[must_use]
     pub fn from_dirs(
         xdg_data_home: Option<&OsStr>,
         xdg_data_dirs: Option<&OsStr>,
@@ -73,6 +77,7 @@ impl Search {
     /// [`Found::off`], with their names.
     ///
     /// Nothing here fails: a manifest that cannot be read is in [`Found::rejected`].
+    #[must_use]
     pub fn scan(&self, off: &[ExtensionId]) -> Found {
         let roots = self
             .person
@@ -145,6 +150,7 @@ pub struct Off {
 
 impl Off {
     /// Whether the Extension has an entry for the capability word `word`.
+    #[must_use]
     pub fn serves(&self, word: &str) -> bool {
         self.candidates
             .iter()

@@ -107,7 +107,7 @@ pub(crate) struct HostState {
     pub(crate) quire_window: Option<QuireWindows>,
     /// The compositor's main render device, for the adapter that follows it.
     pub(crate) render_device: Option<RenderDevice>,
-    /// This compositor gets a parent layer's keyboard lifted for a grabbing popup (not KWin or
+    /// This compositor gets a parent layer's keyboard lifted for a grabbing popup (not `KWin` or
     /// casement), from the globals at bind time.
     pub(crate) lifts_parent_keyboard: bool,
     pub(crate) text_input: Option<TextInputManager>,

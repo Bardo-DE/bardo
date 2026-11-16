@@ -56,21 +56,18 @@ async fn serve(listener: UnixListener, node: NodeId, dialer: Dialer, on_fault: O
     let mut carrying = JoinSet::new();
     let mut pause = std::time::Duration::from_millis(50);
     loop {
-        match listener.accept().await {
-            Ok((stream, _)) => {
-                pause = std::time::Duration::from_millis(50);
-                carrying.spawn(carry(
-                    stream,
-                    node.clone(),
-                    dialer.clone(),
-                    Arc::clone(&on_fault),
-                ));
-                while carrying.try_join_next().is_some() {}
-            }
-            Err(_) => {
-                tokio::time::sleep(pause).await;
-                pause = (pause * 2).min(std::time::Duration::from_secs(2));
-            }
+        if let Ok((stream, _)) = listener.accept().await {
+            pause = std::time::Duration::from_millis(50);
+            carrying.spawn(carry(
+                stream,
+                node.clone(),
+                dialer.clone(),
+                Arc::clone(&on_fault),
+            ));
+            while carrying.try_join_next().is_some() {}
+        } else {
+            tokio::time::sleep(pause).await;
+            pause = (pause * 2).min(std::time::Duration::from_secs(2));
         }
     }
 }

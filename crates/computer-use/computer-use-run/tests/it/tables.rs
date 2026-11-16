@@ -430,7 +430,7 @@ fn lease_book_one_run_per_window() {
     assert_eq!(book.claim(&w1, &r2).unwrap_err().by, r1);
     let book = book.release(&r1);
     assert_eq!(book.holder(&w1), None);
-    assert!(book.claim(&w1, &r2).is_ok());
+    book.claim(&w1, &r2).unwrap();
 }
 
 fn observation(tree: A11ySnapshot, masked: usize) -> Observation {

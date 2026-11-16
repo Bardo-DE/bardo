@@ -59,6 +59,7 @@ impl OutputArea {
     }
 
     /// The output's size in device pixels: the frame times the scale, rounded.
+    #[must_use]
     pub fn physical(&self) -> (u32, u32) {
         let device = |logical: u32| {
             let pixels = (u64::from(logical) * u64::from(self.scale) + 60) / 120;
@@ -76,6 +77,7 @@ pub struct Outputs {
 
 impl Outputs {
     /// Outputs from already-known areas.
+    #[must_use]
     pub fn new(areas: Vec<OutputArea>) -> Outputs {
         Outputs { areas }
     }
@@ -102,11 +104,13 @@ impl Outputs {
     }
 
     /// The outputs, in the shell's order.
+    #[must_use]
     pub fn areas(&self) -> &[OutputArea] {
         &self.areas
     }
 
     /// The output called `name`.
+    #[must_use]
     pub fn named(&self, name: &str) -> Option<&OutputArea> {
         self.areas.iter().find(|area| area.name == name)
     }
@@ -115,6 +119,7 @@ impl Outputs {
     /// logical frame is rounded). Outputs of the same size are one answer when they agree on the
     /// work area's size and the scale (two identical monitors with the same bar), and no answer
     /// when they do not.
+    #[must_use]
     pub fn of_physical(&self, physical: (u32, u32)) -> Option<&OutputArea> {
         let near = |a: u32, b: u32| a.abs_diff(b) <= 1;
         let mut matching = self.areas.iter().filter(|area| {

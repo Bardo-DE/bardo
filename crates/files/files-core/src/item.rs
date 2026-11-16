@@ -18,6 +18,7 @@ pub struct ItemRef {
 
 impl ItemRef {
     /// The item `name` in `folder`.
+    #[must_use]
     pub fn new(folder: FolderPath, name: FileName) -> ItemRef {
         ItemRef { folder, name }
     }
@@ -33,11 +34,13 @@ impl ItemRef {
     }
 
     /// Its full path.
+    #[must_use]
     pub fn path(&self) -> PathBuf {
         self.folder.as_path().join(self.name.as_os_str())
     }
 
     /// The same name in another folder.
+    #[must_use]
     pub fn moved_to(&self, folder: &FolderPath) -> ItemRef {
         ItemRef {
             folder: folder.clone(),
@@ -46,6 +49,7 @@ impl ItemRef {
     }
 
     /// The same folder, another name.
+    #[must_use]
     pub fn renamed(&self, name: FileName) -> ItemRef {
         ItemRef {
             folder: self.folder.clone(),
@@ -54,6 +58,7 @@ impl ItemRef {
     }
 
     /// The item as a folder to look inside.
+    #[must_use]
     pub fn as_folder(&self) -> FolderPath {
         self.folder.join(&self.name)
     }

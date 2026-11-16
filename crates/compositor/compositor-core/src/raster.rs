@@ -48,6 +48,7 @@ impl RasterImage {
     /// };
     /// assert_eq!(image.argb(), Some(vec![3, 2, 1, 4]));
     /// ```
+    #[must_use]
     pub fn argb(&self) -> Option<Vec<u8>> {
         let wanted = usize::try_from(u64::from(self.width) * u64::from(self.height) * 4).ok()?;
         (self.rgba.len() == wanted).then(|| {

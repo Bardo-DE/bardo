@@ -355,7 +355,7 @@ impl Dispatch<XdgWmBase, ()> for State {
         _: &mut Self,
         base: &XdgWmBase,
         event: xdg_wm_base::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -370,7 +370,7 @@ impl Dispatch<XdgSurface, ()> for State {
         state: &mut Self,
         surface: &XdgSurface,
         event: xdg_surface::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -387,7 +387,7 @@ impl Dispatch<XdgToplevel, ()> for State {
         state: &mut Self,
         _: &XdgToplevel,
         event: xdg_toplevel::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -411,7 +411,7 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for State {
         state: &mut Self,
         surface: &ZwlrLayerSurfaceV1,
         event: zwlr_layer_surface_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

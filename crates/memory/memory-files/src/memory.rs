@@ -12,6 +12,7 @@ pub struct MemoryVault {
 
 impl MemoryVault {
     /// An empty vault.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

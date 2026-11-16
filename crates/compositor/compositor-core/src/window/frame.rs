@@ -28,6 +28,7 @@ pub struct FrameMetrics {
 
 impl FrameMetrics {
     /// Metrics from their lengths.
+    #[must_use]
     pub fn new(
         titlebar: u32,
         light: u32,
@@ -105,16 +106,19 @@ impl FrameGeometry {
     /// let frame = FrameGeometry::new(FrameMetrics::new(28, 12, 8, 13, 4, 12), content);
     /// assert_eq!(frame.hit(LogicalPoint { x: 300, y: 80 }), FrameHit::Titlebar);
     /// ```
+    #[must_use]
     pub fn new(metrics: FrameMetrics, content: LogicalRect) -> FrameGeometry {
         FrameGeometry { metrics, content }
     }
 
     /// The content rectangle.
+    #[must_use]
     pub fn content(&self) -> LogicalRect {
         self.content
     }
 
     /// The titlebar's rectangle: as wide as the content, just above it.
+    #[must_use]
     pub fn titlebar(&self) -> LogicalRect {
         LogicalRect::new(
             LogicalPoint {
@@ -133,6 +137,7 @@ impl FrameGeometry {
     }
 
     /// The titlebar and the content together.
+    #[must_use]
     pub fn outline(&self) -> LogicalRect {
         let bar = self.titlebar();
         LogicalRect::new(
@@ -145,6 +150,7 @@ impl FrameGeometry {
     }
 
     /// `light`'s rectangle: a square, centred up and down in the titlebar.
+    #[must_use]
     pub fn light(&self, light: Light) -> LogicalRect {
         let bar = self.titlebar();
         let step = self.metrics.light + self.metrics.gap;
@@ -165,6 +171,7 @@ impl FrameGeometry {
     }
 
     /// The rectangle of the three lights together, for the group's hover.
+    #[must_use]
     pub fn lights(&self) -> LogicalRect {
         let (first, last) = (self.light(Light::Close), self.light(Light::Zoom));
         LogicalRect::new(
@@ -180,6 +187,7 @@ impl FrameGeometry {
     }
 
     /// What `at` is on. A corner's square wins over a side's strip, a light over the titlebar.
+    #[must_use]
     pub fn hit(&self, at: LogicalPoint) -> FrameHit {
         if let Some(edges) = self.edges_at(at) {
             return FrameHit::Edge(edges);

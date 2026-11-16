@@ -1,7 +1,7 @@
 //! The replica against a fake Graph whose upload sessions and redirected downloads are on a
 //! SECOND loopback origin, as Graph's are on `*.up.1drv.com` and `*.files.1drv.com`: the home
 //! origin takes the bearer (the way accountd's `OpenAuthenticated` relay adds it), the linked one
-//! takes none and refuses a request that carries any (as OneDrive does). The replica reaches both
+//! takes none and refuses a request that carries any (as `OneDrive` does). The replica reaches both
 //! through `Routed`, and an origin the declaration does not name is never dialled.
 
 use crate::common;
@@ -62,15 +62,16 @@ async fn rig(declared: bool) -> Rig {
     let home_port = port_of(graph.base_url());
     let link_port = port_of(graph.link_url().expect("a linked fake"));
     let base = WebUrl::parse(graph.base_url()).expect("url");
-    let make: Make = Box::new(
-        move |origin: &Origin| match declared && origin.port == link_port {
-            true => Linked(Some(RelayHttp::new(
+    let make: Make = Box::new(move |origin: &Origin| {
+        if declared && origin.port == link_port {
+            Linked(Some(RelayHttp::new(
                 TcpDial(origin.port),
                 RelayLimits::default(),
-            ))),
-            false => Linked(None),
-        },
-    );
+            )))
+        } else {
+            Linked(None)
+        }
+    });
     let replica = GraphReplica::new(
         Routed::new(client(home_port), &base, make),
         &base,

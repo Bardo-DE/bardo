@@ -8,6 +8,7 @@ use jiff::civil::{DateTime, Time, Weekday};
 use super::ClockHours;
 
 /// `now` as `<weekday> <day> <month> <time>`, English abbreviations, the time in `hours`.
+#[must_use]
 pub fn format_clock(now: DateTime, hours: ClockHours) -> String {
     format!(
         "{} {} {} {}",
@@ -19,6 +20,7 @@ pub fn format_clock(now: DateTime, hours: ClockHours) -> String {
 }
 
 /// `time` as `14:05` (24-hour) or `2:05 PM` (12-hour).
+#[must_use]
 pub fn time_of_day(time: Time, hours: ClockHours) -> String {
     let digits = time_digits(time, hours);
     match hours {
@@ -28,6 +30,7 @@ pub fn time_of_day(time: Time, hours: ClockHours) -> String {
 }
 
 /// `time` as `14:05` (24-hour) or `2:05` (12-hour, without AM or PM: the lock screen's).
+#[must_use]
 pub fn time_digits(time: Time, hours: ClockHours) -> String {
     match hours {
         ClockHours::H24 => format!("{:02}:{:02}", time.hour(), time.minute()),
@@ -36,6 +39,7 @@ pub fn time_digits(time: Time, hours: ClockHours) -> String {
 }
 
 /// The minute `minute` of the day (0 to 1439) as a time of day in `hours`.
+#[must_use]
 pub fn time_of_minute(minute: u16, hours: ClockHours) -> String {
     let (hour, rest) = (minute / 60 % 24, minute % 60);
     Time::new(
@@ -48,14 +52,12 @@ pub fn time_of_minute(minute: u16, hours: ClockHours) -> String {
 }
 
 fn day_part(time: Time) -> &'static str {
-    match time.hour() < 12 {
-        true => "AM",
-        false => "PM",
-    }
+    if time.hour() < 12 { "AM" } else { "PM" }
 }
 
 /// How long from `now` until the next minute starts; a full minute when `now` is exactly on
 /// one.
+#[must_use]
 pub fn until_next_minute(now: Time) -> Duration {
     let into_minute = Duration::from_secs(u64::from(now.second().unsigned_abs()))
         + Duration::from_nanos(u64::from(now.subsec_nanosecond().unsigned_abs()));

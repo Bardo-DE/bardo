@@ -4,6 +4,7 @@ use super::{KbdBacklight, KbdEvent, KbdLevel};
 use crate::units::{Percent, Presence};
 
 /// `backlight` after `event`. A step while absent is dropped: `Found` always comes first.
+#[must_use]
 pub fn step(backlight: KbdBacklight, event: KbdEvent) -> KbdBacklight {
     match (backlight.presence, event) {
         (_, KbdEvent::Found(level)) => KbdBacklight {
@@ -26,6 +27,7 @@ pub fn step(backlight: KbdBacklight, event: KbdEvent) -> KbdBacklight {
 }
 
 /// The step nearest `percent` of a range of `max` steps: what a drag to `percent` sets.
+#[must_use]
 pub fn step_for(percent: Percent, max: u32) -> u32 {
     let percent = u64::from(percent.0.min(100));
     let step = (percent * u64::from(max) + 50) / 100;

@@ -1,4 +1,4 @@
-//! The FakeKms suite (P1-D2): modeset, mode pick, hotplug, DPMS, VRR policy, topologies.
+//! The `FakeKms` suite (P1-D2): modeset, mode pick, hotplug, DPMS, VRR policy, topologies.
 
 use compositor_backend::headless::ConnectorEvent;
 use compositor_backend::tty::{

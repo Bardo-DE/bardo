@@ -102,13 +102,12 @@ impl PhotoLibrary {
         let stored = std::fs::read_to_string(root.join("device"))
             .ok()
             .and_then(|text| DeviceId::parse(text.trim()));
-        let device = match stored {
-            Some(stored) => stored,
-            None => {
-                cas::write_atomic(&root.join("device"), device.as_str().as_bytes())
-                    .map_err(|e| io_error("cannot keep the device name", &e))?;
-                device
-            }
+        let device = if let Some(stored) = stored {
+            stored
+        } else {
+            cas::write_atomic(&root.join("device"), device.as_str().as_bytes())
+                .map_err(|e| io_error("cannot keep the device name", &e))?;
+            device
         };
         let library = Self {
             inner: Arc::new(Inner {
@@ -128,11 +127,13 @@ impl PhotoLibrary {
     }
 
     /// This machine's name.
+    #[must_use]
     pub fn device(&self) -> &DeviceId {
         &self.inner.device
     }
 
     /// The library's directory.
+    #[must_use]
     pub fn root(&self) -> &Path {
         &self.inner.root
     }
@@ -145,6 +146,7 @@ impl PhotoLibrary {
     }
 
     /// Where the original of `id` is, if the library holds it.
+    #[must_use]
     pub fn original(&self, id: &ContentId) -> Option<PathBuf> {
         let path = originals_dir(self.root()).join(id.rel());
         path.is_file().then_some(path)

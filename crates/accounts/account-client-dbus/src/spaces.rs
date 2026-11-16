@@ -33,6 +33,7 @@ pub struct Spaces {
 
 impl Bus {
     /// The handle on spaces.
+    #[must_use]
     pub fn spaces(&self) -> Spaces {
         Spaces { bus: self.clone() }
     }

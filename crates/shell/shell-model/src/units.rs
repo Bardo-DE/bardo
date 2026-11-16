@@ -32,6 +32,7 @@ pub struct Cpx(pub i32);
 
 impl Cpx {
     /// `px` whole logical pixels.
+    #[must_use]
     pub const fn px(px: i32) -> Cpx {
         Cpx(px * 100)
     }
@@ -53,6 +54,7 @@ pub struct Ms(pub u16);
 
 impl Ms {
     /// The length as a stamp is advanced by it.
+    #[must_use]
     pub fn span(self) -> ui_core::time::stamp::Ms {
         ui_core::time::stamp::Ms::from(self.0)
     }
@@ -74,7 +76,7 @@ pub enum Presence {
     Present,
 }
 
-/// Whether a value is meant to be shown (LauncherEntry's `count-visible`, a workspace's
+/// Whether a value is meant to be shown (`LauncherEntry`'s `count-visible`, a workspace's
 /// hidden state).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

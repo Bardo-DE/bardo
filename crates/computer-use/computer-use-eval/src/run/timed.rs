@@ -79,9 +79,10 @@ impl<M: CuaModel> CuaModel for Timed<M> {
                 .map(|d| format!("{} ({:?})", d.verb, d.reason))
                 .collect();
             let said = brief(Some(&heard));
-            self.thoughts.push(match dropped.is_empty() {
-                true => said,
-                false => format!("[dropped: {}] {said}", dropped.join(", ")),
+            self.thoughts.push(if dropped.is_empty() {
+                said
+            } else {
+                format!("[dropped: {}] {said}", dropped.join(", "))
             });
         }
         reply

@@ -68,6 +68,7 @@ pub trait ActionDialect: Sync {
 }
 
 /// The implementation of `dialect`. The only `match` on `CuaDialect` that picks behaviour.
+#[must_use]
 pub fn spec(dialect: CuaDialect) -> &'static dyn ActionDialect {
     match dialect {
         CuaDialect::Text(text) => ui_tars::of(text),

@@ -36,6 +36,7 @@ pub struct WorkspaceCaps(Vec<WorkspaceCap>);
 
 impl WorkspaceCaps {
     /// Whether the workspace accepts `cap`.
+    #[must_use]
     pub fn contains(&self, cap: WorkspaceCap) -> bool {
         self.0.binary_search(&cap).is_ok()
     }

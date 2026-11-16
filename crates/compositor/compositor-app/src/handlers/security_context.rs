@@ -39,7 +39,7 @@ impl SecurityContextHandler for State {
             &self.event_loop,
             source,
             accept::ACCEPT_REST,
-            move |stream, _, state: &mut State| {
+            move |stream, (), state: &mut State| {
                 if clients::room_in_session(state) != Room::Free {
                     return;
                 }

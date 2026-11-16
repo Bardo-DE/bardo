@@ -1,4 +1,4 @@
-//! A minimal fake ManageSieve server (RFC 5804): STARTTLS, `AUTHENTICATE "PLAIN"`, and enough
+//! A minimal fake `ManageSieve` server (RFC 5804): STARTTLS, `AUTHENTICATE "PLAIN"`, and enough
 //! of LISTSCRIPTS and LOGOUT to see a session work. It records every login it was shown.
 
 use super::{PASSWORD, USER};
@@ -111,9 +111,10 @@ async fn secure<S: tokio::io::AsyncRead + tokio::io::AsyncWrite + Unpin>(
                 secure: true,
             });
             authed = accepted;
-            match accepted {
-                true => lines.send("OK \"Authenticated\"").await?,
-                false => lines.send("NO \"Authentication failed\"").await?,
+            if accepted {
+                lines.send("OK \"Authenticated\"").await?
+            } else {
+                lines.send("NO \"Authentication failed\"").await?
             }
         } else if upper == "LISTSCRIPTS" && authed {
             lines

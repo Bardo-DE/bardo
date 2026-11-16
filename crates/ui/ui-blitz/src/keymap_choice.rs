@@ -74,6 +74,6 @@ mod tests {
         let named = KeymapChoice::GivenFor(ours, given).resolve(&env);
         assert_eq!(by_env.platform(), Platform::Windows);
         assert_eq!(named.platform(), ours);
-        assert!(named.load().is_ok());
+        named.load().unwrap();
     }
 }

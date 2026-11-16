@@ -27,11 +27,13 @@ pub struct FocusLink {
 
 impl FocusLink {
     /// A link from its halves (the task's, or a test's).
+    #[must_use]
     pub fn new(mode: watch::Receiver<bool>, set: mpsc::UnboundedSender<bool>) -> Self {
         FocusLink { mode, set }
     }
 
     /// A link fixed at `mode` whose sets go nowhere, for a headless render or a test.
+    #[must_use]
     pub fn fixed(mode: bool) -> FocusLink {
         let (_tx, rx) = watch::channel(mode);
         let (set, _commands) = mpsc::unbounded_channel();
@@ -39,11 +41,13 @@ impl FocusLink {
     }
 
     /// A receiver of the mode in effect.
+    #[must_use]
     pub fn mode(&self) -> watch::Receiver<bool> {
         self.mode.clone()
     }
 
     /// Ask for `mode`: stored in `settings.toml`, published once the file settles.
+    #[must_use]
     pub fn set(&self, mode: bool) -> Delivery {
         match self.set.send(mode) {
             Ok(()) => Delivery::Queued,

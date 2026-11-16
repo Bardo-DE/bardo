@@ -31,6 +31,7 @@ pub struct DesktopState {
 
 impl DesktopState {
     /// Nothing known; `protocols` is what was offered.
+    #[must_use]
     pub fn new(protocols: ProtocolSet) -> Self {
         Self {
             protocols,
@@ -39,6 +40,7 @@ impl DesktopState {
     }
 
     /// The arm the offer chose (see [`backend_for`]).
+    #[must_use]
     pub fn backend(&self) -> Option<DesktopBackend> {
         backend_for(&self.protocols)
     }
@@ -54,6 +56,7 @@ impl DesktopState {
     ///
     /// assert_eq!(DesktopState::default().space_shown(SpaceKey::new(1)), Shown::Hidden);
     /// ```
+    #[must_use]
     pub fn space_shown(&self, space: SpaceKey) -> Shown {
         let active = self
             .quire

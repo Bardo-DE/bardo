@@ -184,7 +184,7 @@ fn a_pointer_label_must_be_short_plain_text() {
         b.extend([0, 0, 0, 0, 0, 0, 0, 0]);
         b
     };
-    assert!(decode_request(&with_label(b"ok")).is_ok());
+    decode_request(&with_label(b"ok")).unwrap();
     assert_eq!(
         decode_request(&with_label(&[0xff, 0xfe])),
         Err(WireError::Label)
@@ -197,7 +197,7 @@ fn a_pointer_label_must_be_short_plain_text() {
         decode_request(&with_label(&[b'a'; 63])),
         Err(WireError::Label)
     );
-    assert!(decode_request(&with_label(&[b'a'; 62])).is_ok());
+    decode_request(&with_label(&[b'a'; 62])).unwrap();
 }
 
 #[test]

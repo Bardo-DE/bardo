@@ -1,4 +1,4 @@
-//! KStandardShortcut names and the standard action each one means.
+//! `KStandardShortcut` names and the standard action each one means.
 
 use keymap::StandardAction;
 

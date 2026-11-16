@@ -65,6 +65,7 @@ fn service(entry: &TimerEntry) -> UnitFile {
 }
 
 /// The units for `entries`: a timer and the service it starts, for each.
+#[must_use]
 pub fn units_of(entries: &[TimerEntry]) -> Vec<UnitFile> {
     entries
         .iter()

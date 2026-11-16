@@ -85,6 +85,7 @@ impl<L> GenericProvider<L> {
 
     /// The same provider that lets these providers claim an address first (a Fastmail address
     /// is Fastmail's to sign in).
+    #[must_use]
     pub fn with_providers(self, providers: ProviderSet) -> Self {
         Self { providers, ..self }
     }
@@ -98,6 +99,7 @@ pub struct GenericSession {
 
 impl GenericSession {
     /// The account it is open for.
+    #[must_use]
     pub fn account(&self) -> &AccountId {
         &self.account
     }

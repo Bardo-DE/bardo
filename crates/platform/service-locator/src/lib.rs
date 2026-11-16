@@ -131,11 +131,13 @@ impl Agent {
         })
     }
 
+    #[must_use]
     pub fn address(&self) -> &Address {
         &self.address
     }
 
     /// The socket, for printing. `None` on Windows, where the address is a pipe name.
+    #[must_use]
     pub fn socket(&self) -> Option<&Path> {
         match &self.address.endpoint {
             Endpoint::Socket(path) => Some(path),
@@ -173,6 +175,7 @@ impl Agent {
     /// to a person, never for deciding whether to start. [`Agent::listen`] is that decision, and
     /// it is one step rather than two for exactly this reason. An agent that is between taking
     /// the lock and opening its door reads as not running for that moment.
+    #[must_use]
     pub fn is_running(&self) -> bool {
         // A reply or a busy answer is proof of life. Anything else, including a socket that
         // belongs to another user, is "no": the caller is not looking for that agent.

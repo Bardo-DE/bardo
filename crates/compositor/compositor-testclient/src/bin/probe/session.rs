@@ -224,7 +224,7 @@ impl Session {
             println!("< {}.{}({})", line.object, line.event, line.args.join(", "));
         }
         self.printed = lines.len();
-        for text in notes.iter() {
+        for text in &notes {
             note(text);
         }
         let (done, waiting): (Vec<SyncDone>, Vec<SyncDone>) = std::mem::take(&mut self.syncs)

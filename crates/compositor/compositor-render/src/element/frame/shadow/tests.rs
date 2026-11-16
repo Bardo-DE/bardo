@@ -254,9 +254,12 @@ fn assembled(made: &Tiles, width: u32, height: u32) -> Vec<((u32, u32), [u8; 4])
         };
         for dy in 0..s.dest.size.h {
             for dx in 0..s.dest.size.w {
-                let along = |o: i32, d: u32, len: u32| match len == STRIP_ACROSS {
-                    true => STRIP_PAD,
-                    false => o as u32 + d,
+                let along = |o: i32, d: u32, len: u32| {
+                    if len == STRIP_ACROSS {
+                        STRIP_PAD
+                    } else {
+                        o as u32 + d
+                    }
                 };
                 let (sx, sy) = (
                     along(s.src.origin.x, dx, tile.w),

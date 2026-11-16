@@ -92,7 +92,7 @@ fn wire_json_is_pinned() {
 fn pcm_is_base64_and_never_prints() {
     let pcm = PcmBytes::new(vec![0xff, 0xd8, 0xff]);
     assert_eq!(serde_json::to_string(&pcm).unwrap(), r#""/9j/""#);
-    assert!(serde_json::from_str::<PcmBytes>(r#""!!""#).is_err());
+    serde_json::from_str::<PcmBytes>(r#""!!""#).unwrap_err();
     assert_eq!(format!("{pcm:?}"), "PcmBytes(<3 bytes>)");
 }
 
@@ -133,19 +133,19 @@ fn languages_and_voices_are_checked() {
     for bad in ["", "en_US", "en US", "日本語", &"a".repeat(36)] {
         assert!(Lang::new(bad).is_err(), "{bad}");
     }
-    assert!(serde_json::from_str::<Lang>(r#""en_US""#).is_err());
-    assert!(VoiceId::new("af_heart").is_ok());
-    assert!(VoiceId::new("").is_err());
-    assert!(VoiceId::new("a b").is_err());
-    assert!(SpokenText::new("x".repeat(4096)).is_ok());
-    assert!(SpokenText::new("x".repeat(4097)).is_err());
-    assert!(SpokenText::new("").is_err());
-    assert!(serde_json::from_str::<SpokenText>(r#""""#).is_err());
+    serde_json::from_str::<Lang>(r#""en_US""#).unwrap_err();
+    VoiceId::new("af_heart").unwrap();
+    VoiceId::new("").unwrap_err();
+    VoiceId::new("a b").unwrap_err();
+    SpokenText::new("x".repeat(4096)).unwrap();
+    SpokenText::new("x".repeat(4097)).unwrap_err();
+    SpokenText::new("").unwrap_err();
+    serde_json::from_str::<SpokenText>(r#""""#).unwrap_err();
 }
 
 #[test]
 fn a_frame_is_exactly_512_samples() {
-    assert!(Frame512::new(&[0; 512]).is_ok());
+    Frame512::new(&[0; 512]).unwrap();
     assert_eq!(Frame512::new(&[0; 511]).unwrap_err(), FrameLenError(511));
     assert_eq!(Frame512::new(&[0; 513]).unwrap_err(), FrameLenError(513));
 }
@@ -168,7 +168,7 @@ fn frames_are_length_prefixed_and_capped() {
             len: MAX_FRAME_BYTES + 1
         })
     );
-    assert!(frame_length((MAX_FRAME_BYTES as u32).to_be_bytes()).is_ok());
+    frame_length((MAX_FRAME_BYTES as u32).to_be_bytes()).unwrap();
     assert!(matches!(
         decode_frame::<HostIn>(b"{nope"),
         Err(FrameError::Json(_))

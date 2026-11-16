@@ -24,6 +24,7 @@ pub struct Info {
 
 impl Info {
     /// The facts of `item`, which is of `kind`, with nothing else known yet.
+    #[must_use]
     pub fn new(item: ItemRef, kind: EntryKind) -> Info {
         Info {
             name: item.name,
@@ -36,6 +37,7 @@ impl Info {
     }
 
     /// The same facts, made at `at`.
+    #[must_use]
     pub fn created_at(self, at: SystemTime) -> Info {
         Info {
             created: Some(at),
@@ -44,6 +46,7 @@ impl Info {
     }
 
     /// The same facts, last changed at `at`.
+    #[must_use]
     pub fn modified_at(self, at: SystemTime) -> Info {
         Info {
             modified: Some(at),
@@ -52,6 +55,7 @@ impl Info {
     }
 
     /// The same facts for a folder holding `count` items.
+    #[must_use]
     pub fn holding(self, count: u32) -> Info {
         Info {
             items: Some(count),
@@ -60,11 +64,13 @@ impl Info {
     }
 
     /// The item these are the facts of.
+    #[must_use]
     pub fn item(&self) -> ItemRef {
         ItemRef::new(self.folder.clone(), self.name.clone())
     }
 
     /// Its size in bytes, for a file or a link to one; `None` for anything else.
+    #[must_use]
     pub fn size(&self) -> Option<ByteSize> {
         match &self.kind {
             EntryKind::File(size) | EntryKind::Link(LinkTo::File(size)) => Some(*size),

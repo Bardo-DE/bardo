@@ -91,6 +91,7 @@ fn day_start(text: &str) -> Option<UnixTime> {
 
 /// `code`'s value relative to the base (EUR): `1 / per_euro[code]`, the shape fend's
 /// `relative_to_base_currency` answers. `None` for an unknown code.
+#[must_use]
 pub fn relative_to_euro(rates: &Rates, code: &str) -> Option<f64> {
     let per_euro = *rates.per_euro.get(&code.to_uppercase())?;
     (per_euro != 0.0).then_some(1.0 / per_euro)
@@ -104,6 +105,7 @@ pub struct ExchangeRates(Rates);
 
 impl ExchangeRates {
     /// Wraps `rates` for fend to query while this evaluation lasts.
+    #[must_use]
     pub fn new(rates: Rates) -> ExchangeRates {
         ExchangeRates(rates)
     }

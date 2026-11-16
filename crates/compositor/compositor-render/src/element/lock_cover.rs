@@ -21,6 +21,7 @@ pub struct LockCoverElement {
 impl LockCoverElement {
     /// A cover over `area` (output-local physical pixels) in `colour` (opaque by rule: a
     /// translucent colour is drawn with full alpha).
+    #[must_use]
     pub fn new(id: Id, area: PhysicalRect, colour: Rgba8) -> LockCoverElement {
         LockCoverElement { id, area, colour }
     }
@@ -64,9 +65,10 @@ impl Element for LockCoverElement {
         commit: Option<CommitCounter>,
     ) -> DamageSet<i32, Physical> {
         let _ = scale;
-        match commit == Some(self.current_commit()) {
-            true => DamageSet::default(),
-            false => DamageSet::from_slice(&[self.extent()]),
+        if commit == Some(self.current_commit()) {
+            DamageSet::default()
+        } else {
+            DamageSet::from_slice(&[self.extent()])
         }
     }
 

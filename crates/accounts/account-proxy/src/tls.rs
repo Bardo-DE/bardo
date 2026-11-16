@@ -83,6 +83,7 @@ fn config(roots: RootCertStore) -> Arc<ClientConfig> {
 impl RustlsConnect {
     /// Trusting the platform's roots, or `webpki-roots` when the platform has none. Reads the
     /// platform store from disk: call it once, off the async threads where that matters.
+    #[must_use]
     pub fn platform() -> Self {
         let mut roots = RootCertStore::empty();
         let native = rustls_native_certs::load_native_certs();

@@ -44,6 +44,7 @@ pub struct ExtensionHome {
 impl ExtensionHome {
     /// The Extensions in `data` (the person's own) and in each of the `system` data directories,
     /// with the turned-off list under `config`.
+    #[must_use]
     pub fn under(config: &ConfigHome, data: &DataHome, system: &[PathBuf]) -> ExtensionHome {
         ExtensionHome {
             search: Search::new(&data.0, system),
@@ -53,6 +54,7 @@ impl ExtensionHome {
 
     /// What is installed now: one look at the folders and the turned-off list. Nothing here
     /// fails: a manifest that cannot be read is listed as one that cannot be used.
+    #[must_use]
     pub fn read(&self) -> InstalledExtensions {
         let found = self.search.scan(&self.off_ids());
         InstalledExtensions {

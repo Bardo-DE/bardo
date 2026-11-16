@@ -14,6 +14,7 @@ pub enum LastMove {
 /// The record after the document is fed `event`. A move is kept as it is; a press or release
 /// is kept as a move at its point with the buttons it left held, so the move fed again carries
 /// the buttons that are down now.
+#[must_use]
 pub fn remember(last: LastMove, event: &UiEvent) -> LastMove {
     match event {
         UiEvent::PointerMove(moved) => LastMove::At(moved.clone()),

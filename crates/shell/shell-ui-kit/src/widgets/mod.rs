@@ -22,6 +22,7 @@ pub const SIZE: WidgetSize = WidgetSize::Medium;
 
 /// bardo-shell's own widgets' stylesheets (quire's widgets style themselves), for the notification
 /// center to inject beside its own.
+#[must_use]
 pub fn widgets_css() -> &'static str {
     up_next::CSS
 }

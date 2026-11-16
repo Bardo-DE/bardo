@@ -5,7 +5,7 @@
 //!
 //! Pure over its seams (`base_time::Clock`, `KeyStore`, `Vault`, `LogWrite`, `SearchIndex`, `Embedder`,
 //! `memory_tidy::Consolidator`): the store seams come from `memory-store`, so the service links no SQLite,
-//! SQLCipher or OpenSSL, and builds wherever the stores do. Whoever builds a service picks the
+//! `SQLCipher` or OpenSSL, and builds wherever the stores do. Whoever builds a service picks the
 //! concrete stores by implementing [`Backend`] (`memory-local`, `memory-fake`, `memoryd`). The
 //! machines return effects as values.
 //!

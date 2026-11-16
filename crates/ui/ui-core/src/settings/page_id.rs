@@ -13,11 +13,13 @@ pub struct PageId(pub String);
 
 impl PageId {
     /// The id written as `text`.
+    #[must_use]
     pub fn new(text: &str) -> PageId {
         PageId(text.to_owned())
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

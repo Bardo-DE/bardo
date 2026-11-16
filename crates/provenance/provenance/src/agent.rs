@@ -31,6 +31,7 @@ impl AgentRef {
     /// The roster party an actor is, if it is one: the person, the planner or reader (both are
     /// the companion), a worker or a helper's job (both are a worker task), or a run. Apps, MCP clients, ACP agents, the command line and the system are not on the
     /// roster.
+    #[must_use]
     pub fn of(actor: &Actor) -> Option<AgentRef> {
         match actor {
             Actor::User { .. } => Some(AgentRef::User),
@@ -63,11 +64,13 @@ pub struct Address {
 
 impl Address {
     /// `agent` in `space`.
+    #[must_use]
     pub fn new(agent: AgentRef, space: SpaceId) -> Self {
         Self { agent, space }
     }
 
     /// Whether a message from `self` to `to` crosses Spaces.
+    #[must_use]
     pub fn crosses(&self, to: &Address) -> bool {
         self.space != to.space
     }

@@ -18,6 +18,7 @@ pub enum HostOs {
 
 impl HostOs {
     /// The operating system this build targets.
+    #[must_use]
     pub const fn compiled() -> HostOs {
         if cfg!(target_os = "macos") {
             HostOs::MacOs
@@ -51,6 +52,7 @@ pub fn detect(os: HostOs, var: impl Fn(&str) -> Option<String>) -> Platform {
 }
 
 /// `detect` over this process's real environment: the one ambient read in the crate.
+#[must_use]
 pub fn detect_process() -> Platform {
     detect(HostOs::compiled(), |name| std::env::var(name).ok())
 }

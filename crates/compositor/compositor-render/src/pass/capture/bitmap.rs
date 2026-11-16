@@ -49,6 +49,7 @@ impl ArgbImage {
     /// let image = ArgbImage::new(PhysicalSize { w: 1, h: 1 }, vec![1, 2, 3, 4]);
     /// assert_eq!(image.argb, [1, 2, 3, 4]);
     /// ```
+    #[must_use]
     pub fn new(size: PhysicalSize, mut argb: Vec<u8>) -> ArgbImage {
         let (w, h) = sides(size);
         argb.resize(w.saturating_mul(h).saturating_mul(4), 0);
@@ -64,6 +65,7 @@ impl ArgbImage {
     /// let image = ArgbImage::from_rgba(PhysicalSize { w: 1, h: 1 }, &[1, 2, 3, 4]);
     /// assert_eq!(image.argb, [3, 2, 1, 4]);
     /// ```
+    #[must_use]
     pub fn from_rgba(size: PhysicalSize, rgba: &[u8]) -> ArgbImage {
         let argb = rgba
             .as_chunks::<4>()
@@ -110,6 +112,7 @@ impl ArgbImage {
     /// assert_eq!(fitted.size, PhysicalSize { w: 1, h: 2 });
     /// assert_eq!(fitted.argb, [9, 8, 7, 255, 9, 8, 7, 255]);
     /// ```
+    #[must_use]
     pub fn fitted(&self, target: PhysicalSize, transform: Transform) -> ArgbImage {
         self.resampled(target).turned(transform)
     }

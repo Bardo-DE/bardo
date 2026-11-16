@@ -54,6 +54,7 @@ impl GoalText {
     }
 
     /// The goal.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -142,6 +143,7 @@ pub enum JobFault {
 
 impl JobFault {
     /// The fault as a clause that follows the helper's name ("Research stopped: …").
+    #[must_use]
     pub fn plain(self) -> &'static str {
         match self {
             JobFault::Crashed => "the work stopped unexpectedly",
@@ -207,6 +209,7 @@ pub struct Job {
 
 impl Job {
     /// Whether the job still holds the things it owns: anything but done.
+    #[must_use]
     pub fn is_live(&self) -> bool {
         !matches!(self.status, JobStatus::Done(_))
     }

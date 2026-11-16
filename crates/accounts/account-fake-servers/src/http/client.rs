@@ -1,7 +1,10 @@
 //! The minimal client the fakes' self-tests and the scripted browser use, and the record of what
 //! a fake answered.
 
-use super::*;
+use super::{
+    AsyncBufReadExt, AsyncRead, AsyncWrite, AsyncWriteExt, BufReader, FakeAddress, Request,
+    Response, dial, io, read_body, read_head, tls,
+};
 
 /// How a client reaches a fake.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

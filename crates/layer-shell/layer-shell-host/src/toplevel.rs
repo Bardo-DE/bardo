@@ -97,10 +97,7 @@ pub enum Maximize {
 /// The wire form: sctk hands the configure's states over as bare `bool`s.
 impl From<bool> for Maximize {
     fn from(wire: bool) -> Maximize {
-        match wire {
-            true => Maximize::Set,
-            false => Maximize::Unset,
-        }
+        if wire { Maximize::Set } else { Maximize::Unset }
     }
 }
 
@@ -116,9 +113,10 @@ pub enum Fullscreen {
 /// The wire form: sctk hands the configure's states over as bare `bool`s.
 impl From<bool> for Fullscreen {
     fn from(wire: bool) -> Fullscreen {
-        match wire {
-            true => Fullscreen::Set,
-            false => Fullscreen::Unset,
+        if wire {
+            Fullscreen::Set
+        } else {
+            Fullscreen::Unset
         }
     }
 }
@@ -135,9 +133,10 @@ pub enum Activation {
 /// The wire form: sctk hands the configure's states over as bare `bool`s.
 impl From<bool> for Activation {
     fn from(wire: bool) -> Activation {
-        match wire {
-            true => Activation::Active,
-            false => Activation::Inactive,
+        if wire {
+            Activation::Active
+        } else {
+            Activation::Inactive
         }
     }
 }
@@ -153,10 +152,7 @@ pub enum Tile {
 /// The wire form: sctk hands the configure's states over as bare `bool`s.
 impl From<bool> for Tile {
     fn from(wire: bool) -> Tile {
-        match wire {
-            true => Tile::Tiled,
-            false => Tile::Free,
-        }
+        if wire { Tile::Tiled } else { Tile::Free }
     }
 }
 
@@ -171,6 +167,7 @@ pub struct TileEdges {
 
 impl TileEdges {
     /// Whether any edge is tiled.
+    #[must_use]
     pub fn any(self) -> Tile {
         let edges = [self.top, self.bottom, self.left, self.right];
         if edges.contains(&Tile::Tiled) {

@@ -747,7 +747,7 @@ mod native {
     //!
     //! On a Mac the system follows the fingers' lift with momentum of its own, which winit reports as
     //! more touchpad events: the window applies it as it comes and adds no glide, boost or fling gain
-    //! of its own, and a wheel click is the 40 px Chromium and WebKit use, with no acceleration on top
+    //! of its own, and a wheel click is the 40 px Chromium and `WebKit` use, with no acceleration on top
     //! of the system's. A component that windows over a scroller's offset (`VirtualList`) is handed
     //! the offset the frame draws, not the previous frame's.
 

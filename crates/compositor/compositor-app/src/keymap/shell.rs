@@ -148,6 +148,7 @@ const ROWS: &[Row] = &[
 const SILL: &str = "bardo-shell";
 
 /// What the compositor does for `action`, or `None` when the action belongs to apps.
+#[must_use]
 pub fn shell_action(action: StandardAction) -> Option<BindingAction> {
     match action {
         StandardAction::SwitchToSpace(number) => Some(BindingAction::Desktop(
@@ -180,6 +181,7 @@ fn spawn_of(verb: ShellVerb) -> BindingAction {
 /// Every binding `keymap` gives the compositor's actions, one per chord, actions in
 /// `StandardAction::all` order and each action's chords best first. A chord casement cannot
 /// see as a key press is left out.
+#[must_use]
 pub fn bindings_of(keymap: &Keymap) -> Bindings {
     Bindings(
         StandardAction::all()
@@ -200,6 +202,7 @@ pub fn bindings_of(keymap: &Keymap) -> Bindings {
 
 /// `explicit` (casement's own `[bindings]`) then `from_keymap`: the first match wins, so a
 /// chord casement's document binds is not taken from it by the keymap.
+#[must_use]
 pub fn merge(explicit: &Bindings, from_keymap: &Bindings) -> Bindings {
     Bindings(explicit.0.iter().chain(&from_keymap.0).cloned().collect())
 }
@@ -380,8 +383,7 @@ mod tests {
                 keymap
                     .chords_of(&Action::Standard(*action))
                     .into_iter()
-                    .filter_map(chord_of)
-                    .next()
+                    .find_map(chord_of)
                     .is_none()
             })
             .map(StandardAction::slug)

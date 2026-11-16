@@ -82,7 +82,7 @@ fn Handle() -> Element {
             log.push(format!(
                 "{:?} {} {}",
                 pointer.phase, pointer.at.x.0, pointer.at.y.0
-            ))
+            ));
         });
     });
     rsx! {

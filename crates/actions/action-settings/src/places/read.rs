@@ -44,13 +44,16 @@ fn word<T: Copy>(
         .get("allowed")
         .and_then(toml::Value::as_str)
         .and_then(|w| words.iter().position(|x| *x == w));
-    found.map(|i| values[i]).unwrap_or_else(|| {
-        fallbacks.push(Fallback {
-            key: format!("{PLACES_PATH}.{key}.allowed"),
-            why: Why::NotAWord { words },
-        });
-        off
-    })
+    found.map_or_else(
+        || {
+            fallbacks.push(Fallback {
+                key: format!("{PLACES_PATH}.{key}.allowed"),
+                why: Why::NotAWord { words },
+            });
+            off
+        },
+        |i| values[i],
+    )
 }
 
 /// Reads the places from settings text. Rows without a name are dropped; a missing or unknown

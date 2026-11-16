@@ -23,6 +23,7 @@ pub enum Outcome {
 
 impl Outcome {
     /// The word `down` prints.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             Outcome::AlreadyGone => "gone",
@@ -65,6 +66,7 @@ fn gone_within(record: &Record, bound: Duration) -> bool {
 
 /// Stops one recorded process: SIGTERM, then SIGKILL after the grace period, each only while the
 /// pid still has the recorded start time.
+#[must_use]
 pub fn stop(record: &Record) -> Outcome {
     if record.state() == State::Gone {
         return Outcome::AlreadyGone;

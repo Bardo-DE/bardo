@@ -300,8 +300,8 @@ fn ask_is_a_command_with_its_words_joined_and_nothing_else_is_taken() {
             space: provenance::SpaceId::parse("work").expect("space"),
         }
     );
-    assert!(action_cli::parse(&words(&["ask", "--space", "No Good!", "hi"])).is_err());
-    assert!(action_cli::parse(&words(&["ask"])).is_err());
+    action_cli::parse(&words(&["ask", "--space", "No Good!", "hi"])).unwrap_err();
+    action_cli::parse(&words(&["ask"])).unwrap_err();
 }
 
 #[tokio::test]

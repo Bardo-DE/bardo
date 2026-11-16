@@ -33,6 +33,7 @@ pub enum Everyday {
 
 impl Everyday {
     /// The flow's name, which is its cassette's.
+    #[must_use]
     pub const fn slug(self) -> &'static str {
         match self {
             Everyday::Fact => "fact",
@@ -43,6 +44,7 @@ impl Everyday {
     }
 
     /// What the person says.
+    #[must_use]
     pub const fn prompt(self) -> &'static str {
         match self {
             Everyday::Fact => "What is the capital of Taiwan?",
@@ -53,6 +55,7 @@ impl Everyday {
     }
 
     /// What the person does with a sheet: allow the one write, refuse anything else.
+    #[must_use]
     pub const fn verdict(self) -> SheetChoice {
         match self {
             Everyday::Remember => SheetChoice::Once,
@@ -61,6 +64,7 @@ impl Everyday {
     }
 
     /// The cassette of the gate's run of this flow.
+    #[must_use]
     pub fn cassette(self) -> &'static str {
         match self {
             Everyday::Fact => include_str!("../../dev/accept/cassettes/fact.jsonl"),
@@ -73,6 +77,7 @@ impl Everyday {
     }
 
     /// The shape the answer must have.
+    #[must_use]
     pub const fn shape(self) -> Shape {
         match self {
             Everyday::Fact => Shape {
@@ -90,6 +95,7 @@ impl Everyday {
 
     /// Judges the flow's observations. `planner` is whether the companion's planner played: only
     /// then are its calls known.
+    #[must_use]
     pub fn judge(self, planner: bool, e: &Evidence) -> Checked {
         let mut out = Checked::default();
         if !e.done() {

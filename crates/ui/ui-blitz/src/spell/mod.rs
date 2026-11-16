@@ -23,11 +23,13 @@ use ui_components::prelude::*;
 use ui_components::spell::lang::Lang;
 
 /// Provide the system's spellchecker to the calling component's subtree.
+#[must_use]
 pub fn provide() -> Rc<dyn SpellService> {
     use_context_provider(|| Rc::new(NativeSpell::system()) as Rc<dyn SpellService>)
 }
 
 /// Provide a spellchecker over `config`'s dictionaries, in `languages` by default.
+#[must_use]
 pub fn provide_with(config: SpellConfig, languages: Vec<Lang>) -> Rc<dyn SpellService> {
     use_context_provider(|| {
         Rc::new(NativeSpell::with_config(config, languages)) as Rc<dyn SpellService>

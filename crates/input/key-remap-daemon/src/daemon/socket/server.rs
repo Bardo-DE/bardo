@@ -362,15 +362,14 @@ impl Server {
                     let replies = self.shelf.call(id, call);
                     self.deliver(replies);
                 }
-                Ok(ToDaemon::Steer(steer)) => match request_of(peer, id, steer) {
-                    Some(request) => {
+                Ok(ToDaemon::Steer(steer)) => {
+                    if let Some(request) = request_of(peer, id, steer) {
                         if let Some(refusal) = self.steer(id, request) {
                             self.complain(uid, refusal);
                             alive = false;
                             break;
                         }
-                    }
-                    None => {
+                    } else {
                         self.complain(
                             uid,
                             "sent a request without being the shell of the seat; dropped",
@@ -378,7 +377,7 @@ impl Server {
                         alive = false;
                         break;
                     }
-                },
+                }
                 Err(e) => {
                     self.complain(uid, &format!("sent a malformed message ({e}); dropped"));
                     alive = false;

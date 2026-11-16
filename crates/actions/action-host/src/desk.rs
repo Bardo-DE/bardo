@@ -59,6 +59,7 @@ pub struct EditorDesk {
 
 impl EditorDesk {
     /// A desk with nothing on it.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -68,6 +69,7 @@ impl EditorDesk {
     }
 
     /// How many sheets wait.
+    #[must_use]
     pub fn waiting(&self) -> usize {
         self.with(|held| held.open.len())
     }

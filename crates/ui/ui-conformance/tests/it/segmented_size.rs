@@ -1,5 +1,5 @@
-//! SegmentedControl on the size ladder (design/29-SIZING.md decision 5): the well is a control's
-//! height (Mini 20, Small 24, Regular 28, Large 32, ExtraLarge 40), each segment fills it less the 1 px knob inset
+//! `SegmentedControl` on the size ladder (design/29-SIZING.md decision 5): the well is a control's
+//! height (Mini 20, Small 24, Regular 28, Large 32, `ExtraLarge` 40), each segment fills it less the 1 px knob inset
 //! (18, 22, 26, 30, 38), all whole pixels, at scale 1 and 2. Measured on the laid-out rects.
 
 use dioxus::prelude::*;

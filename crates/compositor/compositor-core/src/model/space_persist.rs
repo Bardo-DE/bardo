@@ -39,6 +39,7 @@ pub(super) fn stored_file(
 impl Model {
     /// The Spaces file for the model as it is (`SpaceFile::of_book`, plus the Spaces that wait
     /// for an output).
+    #[must_use]
     pub fn space_file(&self) -> SpaceFile {
         let plugged: BTreeSet<OutputKey> = self.outputs.0.keys().cloned().collect();
         stored_file(&self.spaces, &self.remembered, &plugged)

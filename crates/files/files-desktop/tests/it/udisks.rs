@@ -1,4 +1,4 @@
-//! A stand-in for UDisks2 on a private bus: block devices, drives and the object manager, with the
+//! A stand-in for `UDisks2` on a private bus: block devices, drives and the object manager, with the
 //! calls recorded. Nothing here touches a real disk or the system bus.
 
 use std::collections::HashMap;
@@ -140,8 +140,8 @@ impl Filesystem {
             if world.busy && !forced {
                 return Err(Refused::DeviceBusy("busy".to_owned()));
             }
-            world.mounted.insert(self.node, None);
-        }
+            world.mounted.insert(self.node, None)
+        };
         self.mount_points_changed(&emitter).await?;
         Ok(())
     }
@@ -232,7 +232,7 @@ pub async fn plug(connection: &Connection, world: &Shared, device: &Device) {
     server.at(at, filesystem).await.unwrap();
 }
 
-/// The fake service, serving `devices` under the name UDisks2 has.
+/// The fake service, serving `devices` under the name `UDisks2` has.
 pub async fn serve(connection: &Connection, devices: &[Device]) -> Shared {
     let world: Shared = Arc::default();
     for device in devices {

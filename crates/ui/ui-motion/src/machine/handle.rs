@@ -91,12 +91,14 @@ impl<M: Machine> MachineRef<M> {
     }
 
     /// The machine's state, live.
+    #[must_use]
     pub fn state(&self) -> ReadSignal<M> {
         self.read
     }
 
     /// Now, as the machine's stamp: what an input stamped by the caller (a seeded deadline) counts
     /// on.
+    #[must_use]
     pub fn now(&self) -> Stamp {
         self.held.clock.now()
     }

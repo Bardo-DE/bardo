@@ -3,6 +3,7 @@
 use layer_shell_host::OutputInfo;
 
 /// `sill-<surface>-<output name>`, or `sill-<surface>-<output id>` for an unnamed output.
+#[must_use]
 pub fn namespace(surface: &str, output: &OutputInfo) -> String {
     match &output.name {
         Some(name) => format!("shell-{surface}-{name}"),

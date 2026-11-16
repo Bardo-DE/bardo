@@ -369,11 +369,13 @@ fn render(prefix: &[&str], modifiers: Modifiers, key: Key, style: &Style) -> Str
 impl Chord {
     /// The chord as `platform` shows it to a person: "⇧⌘Z" on a Mac or our desktop,
     /// "Ctrl+Shift+Z" elsewhere in that platform's order and words. `FromStr` reads it back.
+    #[must_use]
     pub fn display(self, platform: Platform) -> String {
         render(&[], self.modifiers(), self.key(), &style_of(platform))
     }
 
     /// The platform-neutral text form (always words, fixed order), stable for files.
+    #[must_use]
     pub fn canonical(self) -> String {
         DefaultChord::from(self).canonical()
     }
@@ -381,6 +383,7 @@ impl Chord {
 
 impl DefaultChord {
     /// The platform-neutral text form: "Primary+Shift+Z", always words, fixed order.
+    #[must_use]
     pub fn canonical(self) -> String {
         let neutral = Style::Words {
             order: CTRL_FIRST,

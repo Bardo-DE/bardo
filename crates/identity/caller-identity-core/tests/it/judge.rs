@@ -182,7 +182,7 @@ fn a_hidden_image_in_a_real_unit_is_proved_by_the_unit() {
         ("a writable drop-in", |u| u.drop_ins = DropIns::Writable),
         ("transient", |u| u.transient = Transient::Yes),
         ("another main process", |u| {
-            u.main_pid = caller_identity_core::Pid::new(1)
+            u.main_pid = caller_identity_core::Pid::new(1);
         }),
         ("no main process", |u| u.main_pid = None),
         ("a loader variable kept", |u| {

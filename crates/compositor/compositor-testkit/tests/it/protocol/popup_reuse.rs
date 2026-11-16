@@ -1,7 +1,7 @@
-//! A popup's wl_surface shown again. GTK hides a popover by unmapping its wl_surface and
-//! destroying the xdg_popup and xdg_surface, and shows it again with new ones on the same
-//! wl_surface: the same role taken again, which wl_surface allows. Ghostty was disconnected
-//! with xdg_wm_base `role` the second time a menu opened.
+//! A popup's `wl_surface` shown again. GTK hides a popover by unmapping its `wl_surface` and
+//! destroying the `xdg_popup` and `xdg_surface`, and shows it again with new ones on the same
+//! `wl_surface`: the same role taken again, which `wl_surface` allows. Ghostty was disconnected
+//! with `xdg_wm_base` `role` the second time a menu opened.
 
 use super::xdg_shell::{map_toplevel, settle};
 use compositor_core::geometry::PhysicalSize;

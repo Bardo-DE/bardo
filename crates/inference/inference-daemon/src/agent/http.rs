@@ -37,11 +37,13 @@ pub enum ReadError {
 
 impl Request {
     /// The target without its query.
+    #[must_use]
     pub fn path(&self) -> &str {
         self.target.split('?').next().unwrap_or_default()
     }
 
     /// The value of the header `name` (any case).
+    #[must_use]
     pub fn header(&self, name: &str) -> Option<&str> {
         self.headers
             .iter()
@@ -50,6 +52,7 @@ impl Request {
     }
 
     /// The secret the client presented: `x-api-key`, else a bearer token.
+    #[must_use]
     pub fn presented(&self) -> Option<&str> {
         self.header("x-api-key").or_else(|| {
             self.header("authorization").and_then(|value| {
@@ -60,6 +63,7 @@ impl Request {
     }
 
     /// A request for tests and for the dispatcher's own use.
+    #[must_use]
     pub fn new(method: &str, target: &str, headers: &[(&str, &str)], body: &[u8]) -> Self {
         Self {
             method: method.to_owned(),

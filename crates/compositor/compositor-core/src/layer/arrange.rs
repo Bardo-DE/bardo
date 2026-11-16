@@ -38,17 +38,20 @@ struct Slot {
 
 impl Arranged {
     /// What the exclusive zones leave for windows (the whole output when there is none).
+    #[must_use]
     pub fn usable(&self) -> LogicalRect {
         self.usable
     }
 
     /// The room `layer` is arranged in: its surface is sized from it and placed inside it.
+    #[must_use]
     pub fn room(&self, layer: &LayerKey) -> Option<LogicalRect> {
         self.slots.get(layer).map(|slot| slot.room)
     }
 
     /// The size `layer` is configured to: what it asked for on an axis, else all the room less
     /// the margins when it is held to both ends of that axis, else 0 (the surface chooses).
+    #[must_use]
     pub fn configure_size(&self, layer: &LayerKey) -> Option<LogicalSize> {
         self.slots.get(layer).map(|slot| slot.size)
     }
@@ -57,6 +60,7 @@ impl Arranged {
     /// configured size decides where it sits, not the buffer (a smaller buffer sits at the
     /// corner of the box it was given, wlr-layer-shell); the committed size stands in on an
     /// axis the surface chooses.
+    #[must_use]
     pub fn place(&self, layer: &LayerKey, committed: LogicalSize) -> Option<LogicalRect> {
         let slot = self.slots.get(layer)?;
         let own = |configured: u32, committed: u32| {
@@ -80,6 +84,7 @@ impl Arranged {
 
 impl super::LayerBook {
     /// The layers on `output`, whose whole rectangle is `full`, arranged.
+    #[must_use]
     pub fn arrange(&self, output: &OutputKey, full: LogicalRect) -> Arranged {
         let mut here: Vec<(&LayerKey, &LayerSpec)> = self
             .iter()
@@ -191,19 +196,18 @@ fn allowed(
     usable: LogicalRect,
     full: LogicalRect,
 ) -> Reservation {
-    match from_shell {
-        true => taken,
-        false => {
-            let (whole, left) = match taken.edge {
-                ScreenEdge::Top | ScreenEdge::Bottom => (full.size.h, usable.size.h),
-                ScreenEdge::Left | ScreenEdge::Right => (full.size.w, usable.size.w),
-            };
-            let depth = taken
-                .depth
-                .min(whole / CLIENT_ZONE_DIVISOR)
-                .min(left.saturating_sub(whole / CLIENT_KEEPS_DIVISOR));
-            Reservation { depth, ..taken }
-        }
+    if from_shell {
+        taken
+    } else {
+        let (whole, left) = match taken.edge {
+            ScreenEdge::Top | ScreenEdge::Bottom => (full.size.h, usable.size.h),
+            ScreenEdge::Left | ScreenEdge::Right => (full.size.w, usable.size.w),
+        };
+        let depth = taken
+            .depth
+            .min(whole / CLIENT_ZONE_DIVISOR)
+            .min(left.saturating_sub(whole / CLIENT_KEEPS_DIVISOR));
+        Reservation { depth, ..taken }
     }
 }
 
@@ -296,6 +300,7 @@ fn along(room: (i32, u32), ends: (bool, bool), margins: (i32, i32), committed: u
 
 /// The rectangle (global logical) a surface of `committed` size occupies in `room`, from its
 /// anchors and margins.
+#[must_use]
 pub fn place_in(
     anchor: Anchors,
     margin: Margins,

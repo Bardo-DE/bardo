@@ -1,4 +1,4 @@
-//! The Notes API (`/index.php/apps/notes/api/v1/notes`): list with an ETag, get, create, update
+//! The Notes API (`/index.php/apps/notes/api/v1/notes`): list with an `ETag`, get, create, update
 //! and delete.
 
 use crate::http::{Request, Response};

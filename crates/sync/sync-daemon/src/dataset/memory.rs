@@ -17,6 +17,7 @@ pub struct MemoryDataset {
 
 impl MemoryDataset {
     /// An empty dataset named `id` (a slug) settling conflicts by `rule`.
+    #[must_use]
     pub fn new(id: &str, rule: ConflictRule) -> Self {
         Self {
             id: DatasetId::parse(id).expect("a dataset slug"),

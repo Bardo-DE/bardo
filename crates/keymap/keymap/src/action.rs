@@ -44,6 +44,7 @@ impl AppId {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -73,11 +74,13 @@ impl AppAction {
     }
 
     /// The whole id.
+    #[must_use]
     pub fn id(&self) -> &str {
         &self.0
     }
 
     /// The app it belongs to: the part before the first dot.
+    #[must_use]
     pub fn app(&self) -> AppId {
         let first = self.0.split('.').next().unwrap_or_default();
         AppId(first.to_owned())
@@ -103,6 +106,7 @@ pub enum Action {
 
 impl Action {
     /// The stable id: a standard slug ("copy") or an app id ("mail.compose").
+    #[must_use]
     pub fn id(&self) -> String {
         match self {
             Action::Standard(action) => action.slug(),
@@ -153,10 +157,10 @@ mod tests {
 
     #[test]
     fn bad_ids_are_refused_in_words() {
-        assert!(AppAction::new("compose").is_err());
-        assert!(AppAction::new("Mail.compose").is_err());
-        assert!(AppAction::new("mail.").is_err());
-        assert!(AppId::new("").is_err());
+        AppAction::new("compose").unwrap_err();
+        AppAction::new("Mail.compose").unwrap_err();
+        AppAction::new("mail.").unwrap_err();
+        AppId::new("").unwrap_err();
         assert_eq!(
             "teleport".parse::<Action>(),
             Err(ActionIdError::UnknownStandard("teleport".into()))

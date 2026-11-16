@@ -30,6 +30,7 @@ pub enum SignalColour {
 
 impl SignalColour {
     /// The system hue this signal is, or `None` for the folder, which follows the label.
+    #[must_use]
     pub fn hue(self) -> Option<SystemHue> {
         match self {
             SignalColour::Success => Some(SystemHue::Green),

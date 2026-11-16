@@ -215,8 +215,10 @@ fn a_window_is_described_by_its_flags_and_output() {
         all.windows
             .iter()
             .find(|w| w.key == WindowKey(key))
-            .map(|w| (w.active, w.minimized, w.sizing, w.outputs.clone()))
-            .unwrap_or_else(|| panic!("window {key}"))
+            .map_or_else(
+                || panic!("window {key}"),
+                |w| (w.active, w.minimized, w.sizing, w.outputs.clone()),
+            )
     };
     let out = |name: &str| vec![OutputName(name.to_owned())];
     let cases = [
@@ -515,9 +517,10 @@ fn what_sill_says_a_backend_supports_is_what_the_wire_client_accepts() {
                 .into_iter()
                 .try_for_each(|request| session.desktop.send(request).map(drop))
         });
-        match supports(DesktopBackend::Wlr, command) {
-            true => assert_eq!(sent, Ok(Ok(())), "{command:?} is offered and sent"),
-            false => assert_eq!(sent, Err(Refusal::Unsupported), "{command:?} is refused"),
+        if supports(DesktopBackend::Wlr, command) {
+            assert_eq!(sent, Ok(Ok(())), "{command:?} is offered and sent")
+        } else {
+            assert_eq!(sent, Err(Refusal::Unsupported), "{command:?} is refused")
         }
     }
 }

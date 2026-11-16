@@ -16,6 +16,7 @@ pub struct CommitTiming {
 
 impl CommitTiming {
     /// Binds the global (version 1).
+    #[must_use]
     pub fn bind(client: &TestClient) -> CommitTiming {
         CommitTiming {
             manager: client
@@ -25,6 +26,7 @@ impl CommitTiming {
     }
 
     /// The timer object of `surface`.
+    #[must_use]
     pub fn for_surface(&self, client: &TestClient, surface: &Surface) -> WpCommitTimerV1 {
         self.manager
             .get_timer(&surface.surface, &client.qh(), H1Data)

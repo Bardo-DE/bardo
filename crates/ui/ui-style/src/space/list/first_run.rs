@@ -34,6 +34,7 @@ impl<P, R> Spaces<P, R> {
     }
 
     /// The preset names, in order: what the Space editor calls each.
+    #[must_use]
     pub fn preset_names() -> [&'static str; 8] {
         std::array::from_fn(|index| PRESETS[index].name)
     }

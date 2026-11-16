@@ -22,6 +22,7 @@ pub enum SignOutEnd {
 
 impl SignOutEnd {
     /// The end the module's word names, if it is one of the seven.
+    #[must_use]
     pub fn parse(word: &str) -> Option<Self> {
         Some(match word {
             "asked" => Self::Asked,

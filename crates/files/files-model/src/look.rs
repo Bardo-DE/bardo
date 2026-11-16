@@ -24,6 +24,7 @@ pub enum InfoView {
 
 impl InfoView {
     /// The item the panel is about, when it is up.
+    #[must_use]
     pub fn item(&self) -> Option<ItemRef> {
         match self {
             InfoView::Closed => None,
@@ -35,6 +36,7 @@ impl InfoView {
 
 impl Browser {
     /// The entry Quick Look is showing: the row the keyboard is on, while Quick Look is up.
+    #[must_use]
     pub fn quick_look(&self) -> Option<&Entry> {
         if !self.looking {
             return None;
@@ -44,12 +46,14 @@ impl Browser {
     }
 
     /// The item Quick Look is showing, by where it is.
+    #[must_use]
     pub fn quick_item(&self) -> Option<ItemRef> {
         let entry = self.quick_look()?;
         self.item_of(entry)
     }
 
     /// The Get Info panel.
+    #[must_use]
     pub fn info(&self) -> &InfoView {
         &self.info
     }

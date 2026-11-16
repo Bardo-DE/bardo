@@ -141,7 +141,7 @@ async fn the_end_signal_that_beats_the_reply_to_begin_is_not_lost() {
     desk.state(|v| matches!(v.phase, Phase::Idle).then_some(()))
         .await;
     assert_eq!(desk.voice.state.borrow().notice, Notice::None);
-    assert!(desk.asks.try_recv().is_err());
+    desk.asks.try_recv().unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -206,7 +206,7 @@ async fn a_declined_consent_never_calls_begin() {
         "the declined hold made no call: {:?}",
         desk.script.lines()
     );
-    assert!(desk.asks.try_recv().is_err());
+    desk.asks.try_recv().unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -340,7 +340,7 @@ async fn a_frame_over_the_cap_closes_the_stream_and_says_so_plainly() {
     desk.script
         .until(|lines| lines.iter().any(|l| l == "cancel shell").then_some(()))
         .await;
-    assert!(desk.asks.try_recv().is_err());
+    desk.asks.try_recv().unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

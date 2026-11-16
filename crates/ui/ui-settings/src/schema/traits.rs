@@ -37,11 +37,13 @@ fn stored_words<T: Word + Serialize>() -> Vec<String> {
 /// 9.1's widget-by-arity rule, `super::key::kind_from_variants`). The struct derive's only call
 /// for an enum-shaped field: a field type that is neither a shape the derive knows by name (text,
 /// a colour, a list, a number with `range`) nor a `Word` fails to compile here.
+#[must_use]
 pub fn kind_of<T: Word + Serialize>() -> KeyKind {
     kind_from_variants(stored_words::<T>())
 }
 
 /// The column kind for a row field whose type is the closed enum `T`: its stored words.
+#[must_use]
 pub fn choice_of<T: Word + Serialize>() -> ColumnKind {
     ColumnKind::Choice {
         variants: stored_words::<T>(),

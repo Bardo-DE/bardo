@@ -71,6 +71,7 @@ impl NetRequest {
     /// The frame that asked: `None` for the app's own document, whose markup is the app's. A
     /// frame's markup is someone else's (a mail body), so nothing is served to it unless the
     /// app says so for that request.
+    #[must_use]
     pub fn origin(&self) -> Option<FrameId> {
         self.origin
     }
@@ -78,16 +79,19 @@ impl NetRequest {
     /// The asking frame's `data-frame-tag`: which of the app's frames asked (mailo's message),
     /// without inferring it from the URL. `None` for the app's own document and an untagged
     /// frame.
+    #[must_use]
     pub fn frame_tag(&self) -> Option<&FrameTag> {
         self.tag.as_ref()
     }
 
     /// The absolute URL asked for.
+    #[must_use]
     pub fn url(&self) -> &str {
         self.url.as_str()
     }
 
     /// The URL's scheme, lower-case: `https`, `cid`, `file`.
+    #[must_use]
     pub fn scheme(&self) -> &str {
         self.url.scheme()
     }

@@ -1,4 +1,4 @@
-//! A FieldRow's help on request (design/04-COMPONENTS.md, "FieldRow help"), on a real Blitz
+//! A `FieldRow`'s help on request (design/04-COMPONENTS.md, "`FieldRow` help"), on a real Blitz
 //! document: the ⓘ button opens a popover with the label as its title and the help under it;
 //! Escape and an outside press close it; only one row's popover is open at a time; the help text
 //! is never drawn inline and stays the row's `aria-describedby`.

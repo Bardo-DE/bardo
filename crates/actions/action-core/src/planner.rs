@@ -223,6 +223,7 @@ pub struct StepLine {
 impl StepLine {
     /// The line for a reply that could not be read as a call. It names no real action: the
     /// planner's own tools are the companion's, and its history line says what was wrong.
+    #[must_use]
     pub fn unread(call: CallId, fault: ReplyFault) -> Option<Self> {
         Some(StepLine {
             call,

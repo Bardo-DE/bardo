@@ -18,6 +18,7 @@ use ui_core::vocab::Fraction;
 /// let touchpad = device_settings(&PointerSettings::defaults(), DeviceClass::Touchpad);
 /// assert!(touchpad.natural_scroll);
 /// ```
+#[must_use]
 pub fn device_settings(pointer: &PointerSettings, class: DeviceClass) -> DeviceSettings {
     let profile = match class {
         DeviceClass::Touchpad => &pointer.touchpad,
@@ -54,6 +55,7 @@ pub fn device_settings(pointer: &PointerSettings, class: DeviceClass) -> DeviceS
 /// };
 /// assert_eq!((twice.v120, twice.px.y), ((0, 240), SubPx(3600)));
 /// ```
+#[must_use]
 pub fn scaled_scroll(kind: InputKind, factor: Fraction) -> InputKind {
     let scale = |n: i32| {
         let scaled = i64::from(n) * i64::from(factor.0) / 1000;
@@ -80,6 +82,7 @@ pub fn scaled_scroll(kind: InputKind, factor: Fraction) -> InputKind {
 ///
 /// assert_eq!(xkb_of(&CasementSettings::defaults().keyboard).layout, "");
 /// ```
+#[must_use]
 pub fn xkb_of(keyboard: &KeyboardSettings) -> XkbNames {
     keyboard.layout.clone()
 }

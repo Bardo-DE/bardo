@@ -192,6 +192,7 @@ fn pair() -> (Outbox, Receiver) {
 }
 
 /// A new pair: send on the [`Outbox`], the window reads the [`Inbox`].
+#[must_use]
 pub fn inbox() -> (Outbox, Inbox) {
     let (outbox, receiver) = pair();
     (outbox, Inbox(Arc::new(Mutex::new(Some(receiver)))))

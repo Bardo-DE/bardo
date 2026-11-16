@@ -87,12 +87,14 @@ pub enum ManifestError {
 
 /// The name of the action that opens a thing of `kind` (`mail.thread` opens by `mail.thread.open`).
 /// Every indexed kind declares it, and the launcher performs it on a search hit.
+#[must_use]
 pub fn open_name(kind: &EntityKind) -> Option<ActionName> {
     ActionName::parse(&format!("{}.open", kind.as_str())).ok()
 }
 
 impl Manifest {
     /// The action that opens a thing of `kind`, if this app declares one.
+    #[must_use]
     pub fn open_of(&self, kind: &EntityKind) -> Option<&ActionDecl> {
         let name = open_name(kind)?;
         self.actions.iter().find(|a| a.name == name)
@@ -128,6 +130,7 @@ pub struct ValidManifest(Manifest);
 
 impl ValidManifest {
     /// The manifest.
+    #[must_use]
     pub fn manifest(&self) -> &Manifest {
         &self.0
     }
@@ -136,6 +139,7 @@ impl ValidManifest {
 /// Whether an outside agent (an MCP client, an external ACP agent) may be offered `decl` of
 /// `manifest`: the action is `AgentReach::Offered` and the app is not host-only. The one rule the
 /// tools list and the router's gate both read, so what is listed and what is let through agree.
+#[must_use]
 pub fn is_offered(manifest: &ValidManifest, decl: &ActionDecl) -> bool {
     manifest.manifest().visibility == Visibility::Everyone && decl.reach == AgentReach::Offered
 }
@@ -157,6 +161,7 @@ impl From<ValidManifest> for Manifest {
 pub(crate) const DYNAMIC_TEXT_MAX: u32 = 512;
 
 /// Whether `value` is a legal value of `ty`: what a default must satisfy.
+#[must_use]
 pub fn fits(value: &Value, ty: &ParamType) -> bool {
     match (value, ty) {
         (Value::Text(t), ParamType::Text { max, multiline }) => {

@@ -21,6 +21,7 @@ fn file() -> Result<ConfigFile, FilesError> {
 
 /// The places docket's settings file holds; none when there is no file (or it cannot be read:
 /// saving then refuses, with the reason, rather than writing over it).
+#[must_use]
 pub fn load_places(home: &ConfigHome) -> PlacesLoaded {
     let text = file()
         .ok()

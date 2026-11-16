@@ -171,11 +171,13 @@ impl<P: Clone> Clone for PanelLink<P> {
 
 impl<P: Clone + PartialEq> PanelLink<P> {
     /// A hidden panel.
+    #[must_use]
     pub fn new() -> PanelLink<P> {
         PanelLink::default()
     }
 
     /// The current value.
+    #[must_use]
     pub fn now(&self) -> Reveal<Opening<P>> {
         self.shown.now()
     }
@@ -211,6 +213,7 @@ impl<P: Clone + PartialEq> PanelLink<P> {
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> tokio::sync::watch::Receiver<Reveal<Opening<P>>> {
         self.shown.subscribe()
     }

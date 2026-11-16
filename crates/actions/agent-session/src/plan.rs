@@ -141,6 +141,7 @@ pub struct ResumePlan {
 
 impl ResumePlan {
     /// The person's turns the summary does not stand for: all of them when there is none.
+    #[must_use]
     pub fn live_turns(&self) -> &[UserTurn] {
         let from = self
             .summary
@@ -150,6 +151,7 @@ impl ResumePlan {
     }
 
     /// The steps the summary does not stand for: all of them when there is none.
+    #[must_use]
     pub fn live_history(&self) -> &[StepLine] {
         let from = self
             .summary

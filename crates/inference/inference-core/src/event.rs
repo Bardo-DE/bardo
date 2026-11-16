@@ -26,6 +26,7 @@ pub enum ClientFrame {
 
 impl ClientFrame {
     /// How many descriptors ride with this frame (see [`InferRequest::attachments`]).
+    #[must_use]
     pub fn attachments(&self) -> usize {
         match self {
             ClientFrame::Request(request) => request.attachments(),

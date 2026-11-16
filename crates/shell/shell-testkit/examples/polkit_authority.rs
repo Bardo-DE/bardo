@@ -49,7 +49,10 @@ impl Authority {
         _locale: String,
         object_path: String,
     ) -> zbus::fdo::Result<()> {
-        let sender = header.sender().map(|s| s.to_string()).unwrap_or_default();
+        let sender = header
+            .sender()
+            .map(std::string::ToString::to_string)
+            .unwrap_or_default();
         say(&format!(
             "registered {}",
             subject_text(&subject, &object_path)

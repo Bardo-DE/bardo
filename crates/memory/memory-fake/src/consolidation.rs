@@ -2,7 +2,10 @@
 //! one from mail) and her topic file, in the work Space.
 
 use crate::fixtures::{mail_label, trusted_label};
-use memory_core::*;
+use memory_core::{
+    Actor, EventRef, Fact, FactId, FactText, KindTag, Link, ReplicaId, RunId, Seq, SpaceId,
+    TopicPath, UnixSeconds, UserText, Validity,
+};
 use memory_files_format::{Block, TopicFile, render_topic};
 use memory_tidy::{ConsolidationInput, InputEvent, InputTopic};
 
@@ -11,6 +14,7 @@ fn run_id() -> RunId {
 }
 
 /// The event `seq` of the work Space's one replica.
+#[must_use]
 pub fn consolidation_event(seq: u64) -> EventRef {
     EventRef {
         space: SpaceId::parse("work").expect("space"),
@@ -34,6 +38,7 @@ fn ana_fact() -> Fact {
 
 /// The input of a consolidation run: Ana's fact, events 1 (trusted) and 2 (mail), and the
 /// `people/ana` topic file.
+#[must_use]
 pub fn consolidation_input() -> ConsolidationInput {
     let event = |seq| InputEvent {
         event: consolidation_event(seq),
@@ -60,6 +65,7 @@ pub fn consolidation_input() -> ConsolidationInput {
 
 /// `people/ana` as the service reads it back: Ana's fact with its trailer, and a bullet of the
 /// person's own.
+#[must_use]
 pub fn ana_topic_text() -> String {
     let file = TopicFile {
         topic: TopicPath::parse("people/ana").expect("topic"),
@@ -73,6 +79,7 @@ pub fn ana_topic_text() -> String {
 }
 
 /// The JSON of a link to event `seq`, as a model cites it.
+#[must_use]
 pub fn consolidation_event_link(seq: u64) -> String {
     serde_json::to_string(&Link::Event(consolidation_event(seq))).expect("json")
 }

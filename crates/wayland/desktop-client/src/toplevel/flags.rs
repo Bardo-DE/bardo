@@ -18,6 +18,7 @@ pub enum ToplevelFlag {
 impl ToplevelFlag {
     /// The state with this `zwlr_foreign_toplevel_handle_v1.state` code; `None` for a code
     /// this crate does not know.
+    #[must_use]
     pub const fn from_code(code: u32) -> Option<Self> {
         match code {
             0 => Some(Self::Maximized),
@@ -35,6 +36,7 @@ pub struct ToplevelFlags(BTreeSet<ToplevelFlag>);
 
 impl ToplevelFlags {
     /// No state set.
+    #[must_use]
     pub fn none() -> Self {
         Self::default()
     }
@@ -46,6 +48,7 @@ impl ToplevelFlags {
 
     /// The states in a wire `state` array (native-endian `u32` codes); unknown codes and a
     /// trailing partial word are skipped.
+    #[must_use]
     pub fn from_array(bytes: &[u8]) -> Self {
         Self::of(
             bytes
@@ -57,6 +60,7 @@ impl ToplevelFlags {
     }
 
     /// Whether `flag` is set.
+    #[must_use]
     pub fn contains(&self, flag: ToplevelFlag) -> bool {
         self.0.contains(&flag)
     }

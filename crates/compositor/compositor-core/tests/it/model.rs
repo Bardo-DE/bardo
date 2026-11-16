@@ -1,4 +1,4 @@
-//! Model::step routes events to the machines and keeps every invariant: the six rows the
+//! `Model::step` routes events to the machines and keeps every invariant: the six rows the
 //! freeze wrote. The machines have their own tables (`model_*.rs`), and `model_props.rs` runs
 //! random sequences of everything.
 

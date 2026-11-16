@@ -23,11 +23,13 @@ pub struct ApplicationEntry {
 
 impl ApplicationEntry {
     /// `Icon=`: a theme name or an absolute path.
+    #[must_use]
     pub fn icon(&self) -> Option<String> {
         self.value("Icon")
     }
 
     /// The identity the entry declares ([`AppIdentity`]); none when it has no `[Desktop Entry]`.
+    #[must_use]
     pub fn identity(&self) -> Option<AppIdentity> {
         let group = self.file.entry()?;
         Some(AppIdentity::from_entry(self.id.clone(), group))
@@ -47,6 +49,7 @@ fn value_of(file: &DesktopFile, key: &str) -> Option<String> {
 /// Every entry under `dirs` (the `applications` folders, most important first), each id once,
 /// the most important folder's file standing for it. A file that cannot be read, is over
 /// [`DESKTOP_ENTRY_CAP`], is not text, or has no `[Desktop Entry]` group is skipped.
+#[must_use]
 pub fn load_entries(dirs: &[PathBuf]) -> Vec<ApplicationEntry> {
     first_of_each_id(walk_applications(dirs))
         .into_iter()
@@ -71,6 +74,7 @@ pub fn load_entries(dirs: &[PathBuf]) -> Vec<ApplicationEntry> {
 
 /// The entry of `entries` that a window with `app_id` (and X11 `wm_class`) belongs to, by
 /// [`match_app`].
+#[must_use]
 pub fn entry_for_window<'a>(
     entries: &'a [ApplicationEntry],
     app_id: &str,

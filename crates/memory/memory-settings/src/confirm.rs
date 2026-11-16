@@ -69,10 +69,13 @@ fn canonical(key: &str, value: &str) -> Result<String, ConfirmError> {
                 max: *range.end(),
             })),
         },
-        Rule::Word { words, .. } => match words.contains(&value) {
-            true => Ok(value.to_owned()),
-            false => Err(bad(Why::NotAWord { words })),
-        },
+        Rule::Word { words, .. } => {
+            if words.contains(&value) {
+                Ok(value.to_owned())
+            } else {
+                Err(bad(Why::NotAWord { words }))
+            }
+        }
     }
 }
 
@@ -88,6 +91,7 @@ impl Confirmations {
     }
 
     /// Whether the person confirmed exactly `value` for `key` (`value` in canonical text).
+    #[must_use]
     pub fn holds(&self, key: &str, value: &str) -> bool {
         self.confirmed.get(key).is_some_and(|have| have == value)
     }
@@ -108,6 +112,7 @@ impl Confirmations {
 /// `loaded` with each value looser than the shipped default that `confirmed` does not hold put
 /// back to the shipped value, and reported as [`Why::NotConfirmed`]. A value that is not looser
 /// needs nothing; a confirmation for a value the file no longer has is not used.
+#[must_use]
 pub fn gate(loaded: Loaded, confirmed: &Confirmations) -> Loaded {
     let shipped = MemorySettings::default();
     let mut value = loaded.value;
@@ -130,6 +135,7 @@ pub fn gate(loaded: Loaded, confirmed: &Confirmations) -> Loaded {
 
 /// The values of `gated` (a read already put through [`gate`]) that wait for the person's
 /// confirmation, each with the shipped value in force meanwhile, in key order.
+#[must_use]
 pub fn waiting(gated: &Loaded) -> Vec<WaitingSetting> {
     let mut waiting: Vec<WaitingSetting> = gated
         .fallbacks

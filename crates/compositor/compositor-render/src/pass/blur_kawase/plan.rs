@@ -73,6 +73,7 @@ impl BlurLook {
     ///
     /// assert_eq!(BlurLook::of(BlurStrength::Regular), BlurLook::MATERIAL);
     /// ```
+    #[must_use]
     pub fn of(strength: BlurStrength) -> BlurLook {
         match strength {
             BlurStrength::Light => BlurLook::LIGHT,
@@ -90,6 +91,7 @@ impl BlurLook {
     /// assert_eq!(plan.passes, 5);
     /// assert!(plan.offset > 0.0 && plan.offset <= 2.5);
     /// ```
+    #[must_use]
     pub fn plan(self, scale: f64) -> KawasePlan {
         let sigma = self.sigma.max(0.0) * scale_f32(scale);
         let (passes, offset) = passes_and_offset(sigma);
@@ -120,6 +122,7 @@ pub struct KawasePlan {
 
 impl KawasePlan {
     /// The sigma (physical pixels) this plan blurs by.
+    #[must_use]
     pub fn sigma(&self) -> f32 {
         SIGMA_PER_STEP * self.offset * level_scale(self.passes)
     }
@@ -133,6 +136,7 @@ impl KawasePlan {
     /// let look = BlurLook { sigma: 10.0, ..BlurLook::MATERIAL };
     /// assert_eq!(look.plan(1.0).reach(), 31);
     /// ```
+    #[must_use]
     pub fn reach(&self) -> i32 {
         let sigmas = (REACH_SIGMAS * self.sigma()).round();
         // The cast is exact: the value is a small whole number (sigma is bounded by the plan).
@@ -140,6 +144,7 @@ impl KawasePlan {
     }
 
     /// `rect` grown by [`KawasePlan::reach`] on every side.
+    #[must_use]
     pub fn expand(&self, rect: Rectangle<i32, Physical>) -> Rectangle<i32, Physical> {
         let reach = self.reach();
         Rectangle::new(
@@ -173,6 +178,7 @@ pub(crate) fn passes_and_offset(sigma: f32) -> (u8, f32) {
 /// assert_eq!(level_size((100, 51), 2), (25, 13));
 /// assert_eq!(level_size((3, 1), 4), (1, 1));
 /// ```
+#[must_use]
 pub fn level_size((w, h): (i32, i32), level: u8) -> (i32, i32) {
     let side = |n: i32| {
         n.max(1)

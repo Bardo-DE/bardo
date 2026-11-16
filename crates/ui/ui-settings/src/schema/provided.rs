@@ -22,11 +22,13 @@ pub struct Provided(String);
 
 impl Provided {
     /// The built-in choice.
+    #[must_use]
     pub fn standard() -> Provided {
         Provided(STANDARD.to_owned())
     }
 
     /// The choice written as `text`: blank text is the built-in one.
+    #[must_use]
     pub fn new(text: &str) -> Provided {
         let text = text.trim();
         if text.is_empty() {
@@ -37,11 +39,13 @@ impl Provided {
     }
 
     /// The stored text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The id chosen, or `None` for the built-in choice (including blank stored text).
+    #[must_use]
     pub fn chosen(&self) -> Option<&str> {
         let text = self.0.trim();
         (!text.is_empty() && text != STANDARD).then_some(text)

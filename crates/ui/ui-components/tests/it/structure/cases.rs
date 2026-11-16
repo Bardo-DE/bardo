@@ -278,17 +278,17 @@ pub const CASES: &[Case] = &[
     Case {
         component: "document_tabs",
         state: "second",
-        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(3), selected: 1, onselect: |_| {}, onclose: |_| {}, onnew: |_| {} } },
+        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(3), selected: 1, onselect: |_| {}, onclose: |_| {}, onnew: |()| {} } },
     },
     Case {
         component: "document_tabs",
         state: "reorderable",
-        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(2), selected: 0, onselect: |_| {}, onclose: |_| {}, onnew: |_| {}, onreorder: |_| {} } },
+        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(2), selected: 0, onselect: |_| {}, onclose: |_| {}, onnew: |()| {}, onreorder: |_| {} } },
     },
     Case {
         component: "document_tabs",
         state: "seven-no-limit",
-        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(7), selected: 0, onselect: |_| {}, onclose: |_| {}, onnew: |_| {} } },
+        make: || rsx! { DocumentTabs { label: "Documents", tabs: titles(7), selected: 0, onselect: |_| {}, onclose: |_| {}, onnew: |()| {} } },
     },
     Case {
         component: "field_row",

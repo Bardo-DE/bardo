@@ -54,6 +54,7 @@ where
 impl ShmPart {
     /// Creates the `wl_shm` global (version 2) with the two formats every client may assume
     /// (ARGB8888, XRGB8888). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ShmPart
     where
         D: GlobalDispatch<WlShm, GlobalData>

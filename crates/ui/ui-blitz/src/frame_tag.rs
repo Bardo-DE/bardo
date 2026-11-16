@@ -28,6 +28,7 @@ impl FrameTag {
     }
 
     /// The tag's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

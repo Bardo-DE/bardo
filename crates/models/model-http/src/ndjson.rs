@@ -23,6 +23,7 @@ pub struct NdjsonDecoder {
 }
 
 impl NdjsonDecoder {
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -51,6 +52,7 @@ impl NdjsonDecoder {
 
     /// The stream ended: an unterminated last line, if any (the codec decides whether that is
     /// `Truncated`). A last line that is not UTF-8 is not returned.
+    #[must_use]
     pub fn finish(self) -> Option<String> {
         line(&self.pending).ok().flatten()
     }

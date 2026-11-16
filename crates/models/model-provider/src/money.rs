@@ -22,11 +22,13 @@ pub enum MoneyError {
 }
 
 impl Money {
+    #[must_use]
     pub fn new(amount: Decimal, currency: Currency) -> Self {
         Self { amount, currency }
     }
 
-    /// An amount in US dollars (OpenRouter's credits are dollars).
+    /// An amount in US dollars (`OpenRouter`'s credits are dollars).
+    #[must_use]
     pub fn usd(amount: Decimal) -> Self {
         Self::new(amount, Currency::USD)
     }

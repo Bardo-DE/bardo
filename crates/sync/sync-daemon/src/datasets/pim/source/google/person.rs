@@ -80,7 +80,7 @@ pub struct Name {
     /// Dr, Ms.
     #[serde(rename = "honorificPrefix")]
     pub prefix: Option<String>,
-    /// Jr, PhD.
+    /// Jr, `PhD`.
     #[serde(rename = "honorificSuffix")]
     pub suffix: Option<String>,
 }
@@ -162,6 +162,7 @@ pub struct Biography {
 
 impl Person {
     /// Whether the contact was deleted: the item is gone.
+    #[must_use]
     pub fn is_deleted(&self) -> bool {
         self.metadata.as_ref().and_then(|m| m.deleted) == Some(true)
     }
@@ -267,18 +268,16 @@ fn adr_value(address: &Postal) -> Option<String> {
         &address.postal_code,
         &address.country,
     ];
-    match fields.iter().any(|f| present(f).is_some()) {
-        true => Some(
+    if fields.iter().any(|f| present(f).is_some()) {
+        Some(
             fields
                 .iter()
                 .map(|f| escape(text(f)))
                 .collect::<Vec<_>>()
                 .join(";"),
-        ),
-        // Only the formatted text: it all goes in the street field.
-        false => {
-            present(&address.formatted).map(|t| format!(";;{};;;;", escape(&t.replace('\n', ", "))))
-        }
+        )
+    } else {
+        present(&address.formatted).map(|t| format!(";;{};;;;", escape(&t.replace('\n', ", "))))
     }
 }
 
@@ -294,6 +293,7 @@ fn birthday(date: &Date) -> Option<String> {
 }
 
 /// The vCard of `person`.
+#[must_use]
 pub fn to_vcf(person: &Person) -> String {
     let name = person.names.first().cloned().unwrap_or_default();
     let component = |value: &Option<String>| escape(text(value));
@@ -338,9 +338,10 @@ pub fn to_vcf(person: &Person) -> String {
         .find(|o| present(&o.name).or(present(&o.department)).is_some())
     {
         let parts = [text(&org.name), text(&org.department)];
-        let value = match parts[1].is_empty() {
-            true => escape(parts[0]),
-            false => format!("{};{}", escape(parts[0]), escape(parts[1])),
+        let value = if parts[1].is_empty() {
+            escape(parts[0])
+        } else {
+            format!("{};{}", escape(parts[0]), escape(parts[1]))
         };
         lines.push(format!("ORG:{value}"));
     }

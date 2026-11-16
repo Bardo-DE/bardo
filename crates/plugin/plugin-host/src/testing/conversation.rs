@@ -72,6 +72,7 @@ impl<W: Write, Q> Conversation<'_, W, Q> {
     }
 
     /// The fault this plugin was started with, so a closure can honour one of its own kind.
+    #[must_use]
     pub fn fault(&self) -> Option<Fault> {
         self.fault
     }

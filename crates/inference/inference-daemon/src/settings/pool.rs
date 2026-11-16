@@ -133,6 +133,7 @@ pub struct HelperPools {
 
 impl HelperPools {
     /// The writer over `reload`'s file and engines.
+    #[must_use]
     pub fn new(reload: Reload) -> Self {
         Self { reload }
     }

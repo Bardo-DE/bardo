@@ -76,6 +76,7 @@ impl ViewerLook {
     }
 
     /// A look with no source of video frames: a video without a cover shows its facts.
+    #[must_use]
     pub fn without_frames() -> ViewerLook {
         ViewerLook::new(Arc::new(NoStills))
     }
@@ -152,6 +153,7 @@ fn ask(worker: &PeekWorker<Looked>, path: &Path) -> oneshot::Receiver<Looked> {
 }
 
 /// The peek of the file at `path` (`None`: the pane shows no file).
+#[must_use]
 pub fn use_peek(path: Option<PathBuf>) -> Option<Peeking> {
     let mut answer = use_signal(|| None::<(PathBuf, Result<Arc<AnyPeeked>, PreviewFault>)>);
     let worker = use_hook(|| {
@@ -179,6 +181,7 @@ pub fn use_peek(path: Option<PathBuf>) -> Option<Peeking> {
 }
 
 /// The PNG bytes of the clipboard image kept under `key`, while the history holds it.
+#[must_use]
 pub fn use_clip_png(key: Option<ClipKey>) -> Option<Vec<u8>> {
     let history = use_service::<ClipboardService>();
     let key = key?;

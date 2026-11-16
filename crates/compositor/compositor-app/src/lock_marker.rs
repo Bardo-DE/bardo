@@ -52,6 +52,7 @@ pub struct FileLockMarker {
 
 impl FileLockMarker {
     /// The marker `locked` inside `dir` (casement's directory in the runtime directory).
+    #[must_use]
     pub fn in_dir(dir: &Path) -> FileLockMarker {
         FileLockMarker {
             path: dir.join("locked"),
@@ -72,19 +73,19 @@ impl LockMarker for FileLockMarker {
     }
 
     fn set(&mut self, marked: bool) -> Result<(), LockMarkerError> {
-        match marked {
-            true => self
-                .path
+        if marked {
+            self.path
                 .parent()
                 .map_or(Ok(()), std::fs::create_dir_all)
                 .and_then(|()| std::fs::write(&self.path, b"locked\n"))
-                .map_err(|source| self.failed(source)),
-            false => match std::fs::remove_file(&self.path) {
+                .map_err(|source| self.failed(source))
+        } else {
+            match std::fs::remove_file(&self.path) {
                 Err(source) if source.kind() != std::io::ErrorKind::NotFound => {
                     Err(self.failed(source))
                 }
                 Ok(()) | Err(_) => Ok(()),
-            },
+            }
         }
     }
 }

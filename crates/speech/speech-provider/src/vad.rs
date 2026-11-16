@@ -23,6 +23,7 @@ impl Frame512 {
             .map_err(|_| FrameLenError(samples.len()))
     }
 
+    #[must_use]
     pub fn samples(&self) -> &[i16; FRAME_SAMPLES] {
         &self.0
     }

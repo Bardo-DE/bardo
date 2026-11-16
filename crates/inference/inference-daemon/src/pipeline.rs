@@ -10,8 +10,8 @@
 //!
 //! Wired: the text stage on every `Llm` session (so every route goes through the planner), and the
 //! text plus `voice_in` plan run by [`run_pipeline`] over an engine that hears. Typed as not
-//! yet, with a reason ([`unsupported`]): a `describe` stage (image_in), a `speak` stage
-//! (voice_out). A voice chat on a live session ([`Hearing`]) is planned here with the audio in the
+//! yet, with a reason ([`unsupported`]): a `describe` stage (`image_in`), a `speak` stage
+//! (`voice_out`). A voice chat on a live session ([`Hearing`]) is planned here with the audio in the
 //! request's shape and run by [`run_pipeline`]: `speech::Ears` hears it on the speech host,
 //! then the answering model gets the transcript.
 

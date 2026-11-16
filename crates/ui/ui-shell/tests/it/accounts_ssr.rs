@@ -182,9 +182,9 @@ fn sign_in(fields: Vec<FormField>, problem: Option<FieldProblem>) -> Element {
             fields,
             problem,
             on_input: |_| {},
-            on_submit: |_| {},
-            on_back: |_| {},
-            on_cancel: |_| {},
+            on_submit: |()| {},
+            on_back: |()| {},
+            on_cancel: |()| {},
         }
     }
 }
@@ -226,9 +226,9 @@ fn review(allow: Option<&str>) -> Element {
             services,
             allow: allow.map(str::to_owned),
             on_toggle: |_| {},
-            on_done: |_| {},
-            on_back: |_| {},
-            on_cancel: |_| {},
+            on_done: |()| {},
+            on_back: |()| {},
+            on_cancel: |()| {},
         }
     }
 }
@@ -267,7 +267,7 @@ fn provider_list(query: &str, cursor: Option<ProviderPick>) -> Element {
             on_query: |_| {},
             on_cursor: |_| {},
             on_pick: |_| {},
-            on_cancel: |_| {},
+            on_cancel: |()| {},
         }
     }
 }
@@ -290,7 +290,7 @@ fn favicon_list() -> Element {
             on_query: |_| {},
             on_cursor: |_| {},
             on_pick: |_| {},
-            on_cancel: |_| {},
+            on_cancel: |()| {},
         }
     }
 }
@@ -309,7 +309,7 @@ fn faced_list() -> Element {
             on_query: |_| {},
             on_cursor: |_| {},
             on_pick: |_| {},
-            on_cancel: |_| {},
+            on_cancel: |()| {},
         }
     }
 }
@@ -329,21 +329,21 @@ fn favicon_sign_in() -> Element {
             style: MarkStyle::Image(ImageSource(FAVICON.to_owned())),
             fields: vec![address("")],
             on_input: |_| {},
-            on_submit: |_| {},
-            on_back: |_| {},
-            on_cancel: |_| {},
+            on_submit: |()| {},
+            on_back: |()| {},
+            on_cancel: |()| {},
         }
     }
 }
 
 fn failed(why: SignInFault) -> Element {
     rsx! {
-        SignInFailed { provider: "Fastmail", why, on_retry: |_| {}, on_back: |_| {}, on_cancel: |_| {} }
+        SignInFailed { provider: "Fastmail", why, on_retry: |()| {}, on_back: |()| {}, on_cancel: |()| {} }
     }
 }
 
 fn no_account(why: NoAccountWhy) -> Element {
-    rsx! { NoAccount { why, on_add: |_| {}, on_settings: |_| {} } }
+    rsx! { NoAccount { why, on_add: |()| {}, on_settings: |()| {} } }
 }
 
 type Specimen = (&'static str, fn() -> Element);
@@ -445,9 +445,9 @@ const SPECIMENS: &[Specimen] = &[
             BrowserWait {
                 provider: "Nextcloud",
                 url: "https://cloud.example.org/login/v2/flow/abc123",
-                on_open_again: |_| {},
+                on_open_again: |()| {},
                 on_copy: |_| {},
-                on_cancel: |_| {},
+                on_cancel: |()| {},
             }
         }
     }),
@@ -457,9 +457,9 @@ const SPECIMENS: &[Specimen] = &[
                 provider: "Nextcloud",
                 url: "https://cloud.example.org/login/v2/flow/abc123",
                 copied: true,
-                on_open_again: |_| {},
+                on_open_again: |()| {},
                 on_copy: |_| {},
-                on_cancel: |_| {},
+                on_cancel: |()| {},
             }
         }
     }),
@@ -470,15 +470,15 @@ const SPECIMENS: &[Specimen] = &[
                 code: "BQKD-4MZP",
                 url: "https://microsoft.com/devicelogin",
                 on_copy: |_| {},
-                on_cancel: |_| {},
+                on_cancel: |()| {},
             }
         }
     }),
     ("working", || {
-        rsx! { SignInWorking { provider: "Fastmail", on_cancel: |_| {} } }
+        rsx! { SignInWorking { provider: "Fastmail", on_cancel: |()| {} } }
     }),
     ("working-agent", || {
-        rsx! { SignInWorking { provider: "Claude", waiting_for: WorkingFor::Agent("Claude".to_owned()), on_cancel: |_| {} } }
+        rsx! { SignInWorking { provider: "Claude", waiting_for: WorkingFor::Agent("Claude".to_owned()), on_cancel: |()| {} } }
     }),
     ("failed-no-launcher", || failed(SignInFault::NoLauncher)),
     ("failed-already-added", || failed(SignInFault::AlreadyAdded)),
@@ -489,9 +489,9 @@ const SPECIMENS: &[Specimen] = &[
                 provider: "Google",
                 why: SignInFault::NeedsClientId,
                 mark: Some(MarkProvider::Google),
-                on_retry: |_| {},
-                on_back: |_| {},
-                on_cancel: |_| {},
+                on_retry: |()| {},
+                on_back: |()| {},
+                on_cancel: |()| {},
             }
         }
     }),
@@ -505,8 +505,8 @@ const SPECIMENS: &[Specimen] = &[
                     label: "Open Settings".to_owned(),
                     on_press: EventHandler::new(|()| {}),
                 }),
-                on_back: |_| {},
-                on_cancel: |_| {},
+                on_back: |()| {},
+                on_cancel: |()| {},
             }
         }
     }),
@@ -516,9 +516,9 @@ const SPECIMENS: &[Specimen] = &[
                 provider: "Fastmail",
                 why: SignInFault::Refused,
                 detail: Some("535 5.7.8 Authentication credentials invalid".to_owned()),
-                on_retry: |_| {},
-                on_back: |_| {},
-                on_cancel: |_| {},
+                on_retry: |()| {},
+                on_back: |()| {},
+                on_cancel: |()| {},
             }
         }
     }),

@@ -82,6 +82,7 @@ pub struct Supervisor {
 
 impl Supervisor {
     /// All engines `Stopped`.
+    #[must_use]
     pub fn new(specs: Vec<EngineSpec>, gpu: GpuMemory) -> Supervisor {
         let engines = specs
             .into_iter()
@@ -95,6 +96,7 @@ impl Supervisor {
         }
     }
 
+    #[must_use]
     pub fn state(&self, id: &EngineId) -> Option<&EngineState> {
         self.engines
             .iter()
@@ -102,6 +104,7 @@ impl Supervisor {
             .map(|(_, state)| state)
     }
 
+    #[must_use]
     pub fn gpu(&self) -> GpuMemory {
         self.gpu
     }
@@ -112,6 +115,7 @@ impl Supervisor {
 /// table is design: models §4.1. Beyond the table, entering `Ready` and `Backoff` and every
 /// `Tick` in `Ready` schedule a `WakeAt` (idle unload and the retry need a tick), a victim of
 /// eviction reports `Changed`, and `Spawn` from a backoff re-checks the budget.
+#[must_use]
 pub fn step(
     mut s: Supervisor,
     input: SupervisorIn,
@@ -189,7 +193,7 @@ impl Supervisor {
         }
         match state {
             EngineState::Stopped | EngineState::Failed(_) => {
-                self.evaluate(id, Attempt(1), cfg, out)
+                self.evaluate(id, Attempt(1), cfg, out);
             }
             _ => {}
         }

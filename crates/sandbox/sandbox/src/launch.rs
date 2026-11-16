@@ -61,11 +61,13 @@ pub struct UserSession {
 
 impl UserSession {
     /// A session with exactly these variables.
+    #[must_use]
     pub fn new(vars: Vec<(String, String)>) -> Self {
         Self { vars }
     }
 
     /// The session variables of this process. The only place the crate reads its environment.
+    #[must_use]
     pub fn from_env() -> Self {
         let vars = SESSION_VARS
             .iter()

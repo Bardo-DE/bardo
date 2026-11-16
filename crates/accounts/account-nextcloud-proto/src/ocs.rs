@@ -118,16 +118,17 @@ fn present(capability: Capability) -> Claim {
 
 /// `capability` when the app is there, else the kind marked missing on this server.
 fn app(installed: bool, kind: CapabilityKind, capability: Capability) -> Claim {
-    match installed {
-        true => present(capability),
-        false => Claim {
+    if installed {
+        present(capability)
+    } else {
+        Claim {
             subject: Subject::Account,
             offer: Offer::Absent {
                 kind,
                 reason: AbsentReason::NotOnServer,
             },
             provenance: Provenance::Discovered,
-        },
+        }
     }
 }
 

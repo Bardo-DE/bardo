@@ -73,6 +73,7 @@ pub enum DurationToken {
 
 impl DurationToken {
     /// How long it lasts at `level`.
+    #[must_use]
     pub fn duration(self, level: MotionLevel) -> Duration {
         Duration::from_millis(self.millis(level))
     }
@@ -80,6 +81,7 @@ impl DurationToken {
     /// Whether Reduced shortens this token to 60 ms like every other transition, or the token
     /// is a held state a person must still be able to register and so keeps its Standard value
     /// (data on the token rather than a special case in [`Self::millis`]).
+    #[must_use]
     pub fn kind(self) -> DurationKind {
         match self {
             // The undo window is time a person has to act, not motion.

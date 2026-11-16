@@ -32,6 +32,7 @@ impl Workspaces {
     }
 
     /// One committed workspace.
+    #[must_use]
     pub fn get(&self, key: WorkspaceKey) -> Option<&Workspace> {
         self.committed.workspaces.get(&key)
     }

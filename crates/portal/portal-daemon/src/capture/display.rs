@@ -63,6 +63,7 @@ enum Target {
 
 impl DisplayName {
     /// The session's own display, found the way Wayland clients find theirs.
+    #[must_use]
     pub fn session() -> Self {
         Self(Target::Session { handout: None })
     }
@@ -91,6 +92,7 @@ impl DisplayName {
     /// until the compositor answers or the deadline passes; it is a call per connection, and the
     /// compositor limits how often one caller may make it, so a capture job calls it once
     /// ([`Job`](super::Job)) and runs all its steps on what it gets.
+    #[must_use]
     pub fn route(&self) -> Route {
         match &self.0 {
             Target::Session {

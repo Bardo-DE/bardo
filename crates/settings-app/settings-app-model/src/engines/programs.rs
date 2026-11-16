@@ -25,6 +25,7 @@ pub struct ProgramRow {
 }
 
 /// The program rows `described` lists, with their values.
+#[must_use]
 pub fn program_rows(described: &Described) -> Vec<ProgramRow> {
     described
         .keys
@@ -106,6 +107,7 @@ impl Programs {
 }
 
 /// The pane after `input`, and what it asks the window to do.
+#[must_use]
 pub fn programs_step(
     pane: ProgramsPane,
     input: ProgramsInput,

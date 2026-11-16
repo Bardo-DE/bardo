@@ -1,4 +1,4 @@
-//! ShortcutField with `single_keys: true` on a real Blitz document: a bare key and Delete are
+//! `ShortcutField` with `single_keys: true` on a real Blitz document: a bare key and Delete are
 //! recorded, Escape and Backspace still cancel and clear, and `more` draws a cap per extra key
 //! beside the value without being touched by a recording.
 

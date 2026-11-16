@@ -46,6 +46,7 @@ impl Answers {
     }
 
     /// The words a finished job answered, while they are kept.
+    #[must_use]
     pub fn words(&self, job: JobId) -> Option<&str> {
         self.answers.get(&job).map(|a| a.words.as_str())
     }
@@ -56,6 +57,7 @@ impl Answers {
     }
 
     /// The answers `job` is handed that are still held.
+    #[must_use]
     pub fn inputs_for(&self, job: &Job) -> Vec<JobInput> {
         job.with
             .iter()

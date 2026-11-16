@@ -23,7 +23,7 @@ use tokio::sync::watch;
 const RIGHT: &str = "right horse battery";
 
 /// The auth service checking with `authenticator`, with no system bus and a home that is not
-/// there: the account's picture is never asked of the real AccountsService, nor read from the
+/// there: the account's picture is never asked of the real `AccountsService`, nor read from the
 /// real home.
 fn start(authenticator: Arc<dyn Authenticator>) -> (watch::Receiver<Auth>, Control<AuthCommand>) {
     let env = Env {

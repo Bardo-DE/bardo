@@ -75,7 +75,7 @@ impl Dispatch<XdgActivationV1, ()> for Host {
         _: &mut Self,
         _: &XdgActivationV1,
         _: <XdgActivationV1 as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

@@ -32,6 +32,7 @@ pub struct Message {
 }
 
 /// A mailbox of `count` short messages.
+#[must_use]
 pub fn mailbox(count: u32) -> Vec<Message> {
     (1..=count)
         .map(|uid| Message {
@@ -244,7 +245,7 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
                     (false, _) => {
                         lines
                             .send(&format!("{tag} NO [PRIVACYREQUIRED] LOGIN is disabled"))
-                            .await?
+                            .await?;
                     }
                     (true, [user, password]) => {
                         let secret = crate::mail::Secret::Password(password.clone());
@@ -257,7 +258,7 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
                     (true, _) => {
                         lines
                             .send(&format!("{tag} BAD LOGIN needs a user and a password"))
-                            .await?
+                            .await?;
                     }
                 }
             }
@@ -274,7 +275,7 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
                     _ => {
                         lines
                             .send(&format!("{tag} NO [NONEXISTENT] no such mailbox"))
-                            .await?
+                            .await?;
                     }
                 }
             }
@@ -285,7 +286,7 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
                 lines.send(&format!("{tag} OK LIST completed")).await?;
             }
             "FETCH" | "UID" if stage == Stage::Selected => {
-                fetch(&mut lines, shared, &tag, &verb, rest).await?
+                fetch(&mut lines, shared, &tag, &verb, rest).await?;
             }
             "CLOSE" if stage == Stage::Selected => {
                 stage = Stage::Authenticated;
@@ -308,23 +309,20 @@ async fn reply_auth<S: AsyncRead + AsyncWrite + Unpin>(
     admitted: bool,
     stage: Stage,
 ) -> io::Result<Stage> {
-    match admitted {
-        true => {
-            lines
-                .send(&format!(
-                    "{tag} OK [CAPABILITY IMAP4rev1 UIDPLUS] logged in"
-                ))
-                .await?;
-            Ok(Stage::Authenticated)
-        }
-        false => {
-            lines
-                .send(&format!(
-                    "{tag} NO [AUTHENTICATIONFAILED] invalid credentials"
-                ))
-                .await?;
-            Ok(stage)
-        }
+    if admitted {
+        lines
+            .send(&format!(
+                "{tag} OK [CAPABILITY IMAP4rev1 UIDPLUS] logged in"
+            ))
+            .await?;
+        Ok(Stage::Authenticated)
+    } else {
+        lines
+            .send(&format!(
+                "{tag} NO [AUTHENTICATIONFAILED] invalid credentials"
+            ))
+            .await?;
+        Ok(stage)
     }
 }
 
@@ -360,12 +358,11 @@ async fn authenticate<S: AsyncRead + AsyncWrite + Unpin>(
             return Ok(stage);
         }
     };
-    let response = match rest.get(1) {
-        Some(initial) => initial.clone(),
-        None => {
-            lines.send("+ ").await?;
-            lines.read_line().await?.unwrap_or_default()
-        }
+    let response = if let Some(initial) = rest.get(1) {
+        initial.clone()
+    } else {
+        lines.send("+ ").await?;
+        lines.read_line().await?.unwrap_or_default()
     };
     if response == "*" {
         lines

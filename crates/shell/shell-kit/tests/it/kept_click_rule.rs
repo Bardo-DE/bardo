@@ -64,9 +64,10 @@ fn click_handlers(text: &str) -> Vec<(usize, String)> {
                 .trim_end_matches(',');
             let is_name =
                 !named.is_empty() && named.chars().all(|c| c.is_alphanumeric() || c == '_');
-            let body = match is_name {
-                true => function(&lines, named).unwrap_or_else(|| block(&lines, at)),
-                false => block(&lines, at),
+            let body = if is_name {
+                function(&lines, named).unwrap_or_else(|| block(&lines, at))
+            } else {
+                block(&lines, at)
             };
             (at + 1, body)
         })

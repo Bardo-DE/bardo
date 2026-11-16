@@ -83,6 +83,7 @@ impl Record {
     }
 
     /// The program's path, given the version's directory.
+    #[must_use]
     pub fn command_in(&self, dir: &Path) -> PathBuf {
         dir.join(FILES).join(&self.command)
     }

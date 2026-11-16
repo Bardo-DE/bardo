@@ -307,9 +307,10 @@ impl Inner {
             let to = NodeId::Remote(there.clone());
             let adopted = {
                 let mut index = held(&self.index);
-                let made = match index.edits.contains_key(&to) {
-                    true => None,
-                    false => index.edits.remove(id),
+                let made = if index.edits.contains_key(&to) {
+                    None
+                } else {
+                    index.edits.remove(id)
                 };
                 match made {
                     Some(mut edit) => {

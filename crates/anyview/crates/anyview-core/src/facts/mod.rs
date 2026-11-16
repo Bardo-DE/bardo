@@ -82,6 +82,7 @@ impl Facts {
 
     /// These rows, then `later`'s. A row of these that `later` also has (the same section and
     /// label) is dropped: the later, more exact producer wins.
+    #[must_use]
     pub fn then(mut self, later: Facts) -> Self {
         self.0.retain(|own| {
             !later
@@ -101,6 +102,7 @@ impl Facts {
     }
 
     /// The rows in order.
+    #[must_use]
     pub fn rows(&self) -> &[Fact] {
         &self.0
     }
@@ -108,6 +110,7 @@ impl Facts {
     /// The value of the row labelled `label` in the label's own section, else of the first row
     /// with that label. So `Modified` is the file's own date even when a document also lists the
     /// date it says it was modified.
+    #[must_use]
     pub fn value(&self, label: FactLabel) -> Option<&FactValue> {
         self.value_in(label.group(), label).or_else(|| {
             self.0
@@ -118,6 +121,7 @@ impl Facts {
     }
 
     /// The value of the first row labelled `label` in `group`.
+    #[must_use]
     pub fn value_in(&self, group: FactGroup, label: FactLabel) -> Option<&FactValue> {
         self.0
             .iter()
@@ -128,6 +132,7 @@ impl Facts {
     /// The rows by section, sections in display order (General last) and each section's rows in
     /// the order they were given, except that a `Needs` row, which is about the viewer and not the
     /// file, ends the General section. A section with no rows is absent.
+    #[must_use]
     pub fn sections(&self) -> Vec<(FactGroup, Vec<&Fact>)> {
         let mut sections: Vec<(FactGroup, Vec<&Fact>)> = Vec::new();
         for row in &self.0 {

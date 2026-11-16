@@ -36,6 +36,7 @@ pub struct CollectedRule {
 
 /// Every rule in `tokens`, plus at-rule-level offences found along the way (today, only
 /// [`Rule::Keyframes`]).
+#[must_use]
 pub fn walk(tokens: &[Located]) -> (Vec<CollectedRule>, Vec<Offence>) {
     let mut rules = Vec::new();
     let mut offences = Vec::new();

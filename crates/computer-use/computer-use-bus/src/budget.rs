@@ -80,6 +80,7 @@ fn lesser_money(asked: Money, cap: Money) -> Money {
 impl RunBudget {
     /// These limits, held to `cap` (the person's own settings): no limit above the cap. A stall
     /// limit of zero would switch stall detection off, so it takes the cap's instead.
+    #[must_use]
     pub fn capped_by(self, cap: RunBudget) -> RunBudget {
         let stall_frames = if self.stall_frames.0 == 0 {
             cap.stall_frames
@@ -118,6 +119,7 @@ pub struct BudgetUse {
 
 impl BudgetUse {
     /// Nothing used yet.
+    #[must_use]
     pub fn none() -> BudgetUse {
         BudgetUse {
             steps: Count(0),

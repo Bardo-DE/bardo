@@ -13,6 +13,7 @@ pub struct Timeouts {
 
 impl Timeouts {
     /// Timeouts of `read` for reads and `action` for a `Set`.
+    #[must_use]
     pub const fn new(read: Deadline, action: Deadline) -> Timeouts {
         Timeouts { read, action }
     }

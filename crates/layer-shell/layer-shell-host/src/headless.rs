@@ -39,6 +39,7 @@ pub struct PixelSize {
 }
 
 impl PixelSize {
+    #[must_use]
     pub fn new(width: u32, height: u32) -> Self {
         Self { width, height }
     }
@@ -133,7 +134,7 @@ fn render_frame(doc: &mut DioxusDocument, t: f64, size: PixelSize, scale: Scale1
                 size.height,
                 0,
                 0,
-            )
+            );
         },
         size.width,
         size.height,
@@ -165,6 +166,7 @@ fn build_font_context(fonts: Fonts) -> FontContext {
 /// usable font — a render with no glyphs at all is a broken environment, not a value this
 /// function can return. Leaks the bytes to get `&'static [u8]` (`FontFaces`' bound): fine for a
 /// one-time test/example fixture, not something a real host's hot path does.
+#[must_use]
 pub fn bundled_faces() -> FontFaces {
     let quire_fonts = home_dir().join("quire/crates/ds/assets/fonts");
     let path = first_ttf_sorted(&quire_fonts)

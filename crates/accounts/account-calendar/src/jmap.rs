@@ -1,4 +1,4 @@
-//! JMAP for Calendars (`urn:ietf:params:jmap:calendars`), with events as JSCalendar (RFC 8984).
+//! JMAP for Calendars (`urn:ietf:params:jmap:calendars`), with events as `JSCalendar` (RFC 8984).
 //!
 //! The session is the caller's: [`Jmap::new`] takes the API URL and the account the session
 //! named for calendars. Each method here is one JMAP request, its calls chained by result
@@ -153,7 +153,7 @@ impl<H: Http> Jmap<H> {
     }
 }
 
-/// `event` as JSCalendar: a start in `Etc/UTC` and a duration; an all-day event as whole days,
+/// `event` as `JSCalendar`: a start in `Etc/UTC` and a duration; an all-day event as whole days,
 /// shown without a time.
 fn jscalendar(calendar: &str, event: &Event) -> Value {
     let (start, duration, all_day) = match event.when {
@@ -224,28 +224,23 @@ impl<H: Http> CalendarStore for Jmap<H> {
 
     async fn put(&self, calendar: &str, event: &Event) -> Result<Stored, CalendarError> {
         let written = jscalendar(calendar, event);
-        let id = match self.event_id(calendar, &event.uid).await? {
-            Some(id) => {
-                self.set(
-                    json!({ "update": { (id.as_str()): written } }),
-                    Change::Update,
-                    &id,
-                )
+        let id = if let Some(id) = self.event_id(calendar, &event.uid).await? {
+            self.set(
+                json!({ "update": { (id.as_str()): written } }),
+                Change::Update,
+                &id,
+            )
+            .await?
+            .ok_or(CalendarError::Changed)?;
+            id
+        } else {
+            let made = self
+                .set(json!({ "create": { (NEW): written } }), Change::Create, NEW)
                 .await?
                 .ok_or(CalendarError::Changed)?;
-                id
-            }
-            None => {
-                let made = self
-                    .set(json!({ "create": { (NEW): written } }), Change::Create, NEW)
-                    .await?
-                    .ok_or(CalendarError::Changed)?;
-                text(&made, "id")
-                    .ok_or_else(|| {
-                        CalendarError::Malformed("a created event with no id".to_owned())
-                    })?
-                    .to_owned()
-            }
+            text(&made, "id")
+                .ok_or_else(|| CalendarError::Malformed("a created event with no id".to_owned()))?
+                .to_owned()
         };
         Ok(Stored {
             calendar: calendar.to_owned(),

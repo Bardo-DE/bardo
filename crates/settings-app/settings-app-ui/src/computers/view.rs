@@ -18,7 +18,7 @@ use ui_components::style::tokens::control_size::ControlSize;
 
 /// Follows the computers and hands back their state and the way to feed it an input.
 pub(crate) fn use_computers() -> (Signal<ComputersState>, EventHandler<ComputersInput>) {
-    let computers = use_live(|client| client.computers());
+    let computers = use_live(settings_app_client::Client::computers);
     let pane = computers.pane.clone();
     let feed = EventHandler::new(move |input: ComputersInput| {
         spawn(pane.send(input));

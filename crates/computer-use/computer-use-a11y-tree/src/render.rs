@@ -7,7 +7,8 @@ use computer_use_action::NodeId;
 use std::collections::BTreeMap;
 use std::fmt::Write;
 
-/// The word a role is written as in the rendered tree and in the router's `NodeFacts`: its snake_case slug, and `other(<number>)` for a raw role.
+/// The word a role is written as in the rendered tree and in the router's `NodeFacts`: its `snake_case` slug, and `other(<number>)` for a raw role.
+#[must_use]
 pub fn role_word(role: Role) -> String {
     match role {
         Role::Window => "window".to_owned(),
@@ -153,6 +154,7 @@ fn depths(snapshot: &A11ySnapshot) -> BTreeMap<NodeId, usize> {
 /// value (`<hidden>` for a secret one: its value is never rendered) and ` -> <action>` for a
 /// typed hint. A pruned tree ends with a line that says how many nodes are not shown. Stable:
 /// the same snapshot always renders the same text.
+#[must_use]
 pub fn render(snapshot: &A11ySnapshot) -> String {
     let depth = depths(snapshot);
     let mut lines: Vec<String> = snapshot

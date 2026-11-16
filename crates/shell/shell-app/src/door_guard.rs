@@ -24,6 +24,7 @@ use crate::ipc::door::Door;
 pub const STANDING_EVERY: Duration = Duration::from_secs(60);
 
 /// The line the shell stops with.
+#[must_use]
 pub fn line() -> String {
     "the file that keeps this shell the only one was removed, so another could start beside it; \
      this shell stops, and starts again"

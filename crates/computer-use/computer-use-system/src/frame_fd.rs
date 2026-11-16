@@ -12,7 +12,7 @@ use std::os::fd::OwnedFd;
 pub struct FrameFdError(#[from] std::io::Error);
 
 /// The frame's pixels in a new memfd: written whole, the offset put back at the start (a
-/// descriptor sent with SCM_RIGHTS shares its offset with the receiver, who may `read` it), and
+/// descriptor sent with `SCM_RIGHTS` shares its offset with the receiver, who may `read` it), and
 /// sealed against writes and resizing so inferd can map it without a copy. The bytes never pass
 /// through JSON or the bus.
 pub fn frame_fd(frame: &FrameAttachment) -> Result<OwnedFd, FrameFdError> {

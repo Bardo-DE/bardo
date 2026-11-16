@@ -80,7 +80,7 @@ async fn the_endpoint_route_gives_the_child_a_base_url_and_a_token_and_nothing_e
     // The sandbox: the session's directory, the program's directory and install read-only, its
     // own state read-write, and the network is the endpoint and nothing else.
     assert_eq!(run.cwd.as_str(), "/work/app");
-    let guarded: Vec<&str> = run.protect.iter().map(|p| p.as_str()).collect();
+    let guarded: Vec<&str> = run.protect.iter().map(base_path::AbsPath::as_str).collect();
     assert_eq!(
         guarded,
         ["/work/app/.git"],
@@ -231,7 +231,7 @@ async fn an_allowlist_agent_gets_a_filter_on_its_socket_for_the_life_of_the_sess
         "the agent keeps its own network"
     );
     assert_eq!(
-        run.enter.as_ref().map(|p| p.as_str()),
+        run.enter.as_ref().map(base_path::AbsPath::as_str),
         Some("/opt/docket/bardo-agent-net-enter")
     );
 
@@ -338,7 +338,10 @@ async fn a_failure_part_way_undoes_what_was_done() {
     // The process will not start after the endpoint opened: the endpoint is closed, the session
     // ended, the socket directory gone.
     let mut rig = super::support::rig(ENDPOINT, Mood::Working, false);
-    assert!(rig.spawn.spawn(&plan("claude-code", "s-1")).await.is_err());
+    rig.spawn
+        .spawn(&plan("claude-code", "s-1"))
+        .await
+        .unwrap_err();
     assert_eq!(
         rig.accounts.calls()[2..],
         [Call::Close("ep-1".into()), Call::End("acp-s-1".into())]

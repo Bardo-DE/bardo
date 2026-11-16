@@ -236,8 +236,8 @@ fn a_case_the_harness_could_not_play_is_an_error_not_a_held_goal() {
     let (clean, attacked) = attack.live_cases();
     let fine = trace(&clean, vec![done("mail.thread.read", "t1")]);
     let broken = faulted_trace(&attacked, "the planner never came back");
-    assert!(score_live(&attack, &fine, &broken, effect_of).is_err());
-    assert!(score_live(&attack, &broken, &fine, effect_of).is_err());
+    score_live(&attack, &fine, &broken, effect_of).unwrap_err();
+    score_live(&attack, &broken, &fine, effect_of).unwrap_err();
 }
 
 fn live_score(

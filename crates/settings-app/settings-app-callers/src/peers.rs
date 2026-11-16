@@ -13,6 +13,7 @@ use zbus::Connection;
 ///
 /// A build with `dev-callers` adds the rows of the person's own file (`bardo-settings --dev-callers`) after
 /// the table; a release build has no such rows.
+#[must_use]
 pub fn desktop_peers(connection: &Connection) -> BusPeers {
     let table = TableFiles::desktop()
         .load(&RealProc::system())

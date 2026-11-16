@@ -69,6 +69,7 @@ impl PhotoOriginals {
     pub const SLUG: &'static str = "photos_originals";
 
     /// The originals of `library`.
+    #[must_use]
     pub fn new(library: PhotoLibrary) -> Self {
         Self { library }
     }
@@ -210,12 +211,10 @@ mod tests {
     async fn store_refuses_bytes_that_are_not_the_named_original_and_paths_that_are_not_ids() {
         let (originals, _, _dir) = dataset("orig-refuse");
         let id = ContentId::of(b"pixels");
-        assert!(
-            originals
-                .store(None, &ItemPath(id.rel()), Blob(b"other".to_vec()))
-                .await
-                .is_err()
-        );
+        originals
+            .store(None, &ItemPath(id.rel()), Blob(b"other".to_vec()))
+            .await
+            .unwrap_err();
         for bad in ["../x", "ab/cd", "a.jpg", "/etc/passwd"] {
             assert!(
                 originals
@@ -253,7 +252,7 @@ mod tests {
         );
         originals.discard(&first.local).await.expect("discard");
         originals.discard(&first.local).await.expect("again");
-        assert!(originals.read(&first.local).await.is_err());
+        originals.read(&first.local).await.unwrap_err();
     }
 
     #[test]

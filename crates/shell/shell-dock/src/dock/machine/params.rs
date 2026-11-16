@@ -60,6 +60,7 @@ pub struct DockParams {
 
 impl DockParams {
     /// The auto-hide numbers, for the shared reveal machine (`shell_ui_kit::autohide`).
+    #[must_use]
     pub fn timing(&self) -> Timing {
         Timing {
             delay: self.autohide_delay_ms,
@@ -70,6 +71,7 @@ impl DockParams {
     }
 
     /// The parameters for `dock` settings.
+    #[must_use]
     pub fn new(dock: &DockSettings, tokens: &DockTokens) -> DockParams {
         let curve = |token: EasingToken| token.easing().curve();
         let pad = i32::from(tokens.pad);

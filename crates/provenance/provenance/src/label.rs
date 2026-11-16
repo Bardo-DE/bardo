@@ -102,6 +102,7 @@ pub struct Label {
 
 impl Label {
     /// The label of the person's own words.
+    #[must_use]
     pub fn trusted_user() -> Label {
         Label {
             integrity: Integrity::Trusted,
@@ -112,6 +113,7 @@ impl Label {
     }
 
     /// The label of content from `source` of class `class`, private to `space`.
+    #[must_use]
     pub fn untrusted(source: Source, class: DataClass, space: SpaceId) -> Label {
         Label {
             integrity: Integrity::Untrusted,
@@ -122,11 +124,12 @@ impl Label {
     }
 
     /// The label of anything derived from both: the only combiner.
+    #[must_use]
     pub fn join(&self, other: &Label) -> Label {
         Label {
             integrity: self.integrity.min(other.integrity),
             confidentiality: self.confidentiality.join(&other.confidentiality),
-            classes: self.classes.union(&other.classes).cloned().collect(),
+            classes: self.classes.union(&other.classes).copied().collect(),
             sources: self.sources.union(&other.sources).cloned().collect(),
         }
     }
@@ -232,6 +235,7 @@ pub struct ReaderKey(());
 
 impl ReaderKey {
     /// The key, for the reader host's startup. Calling it anywhere else is a review finding.
+    #[must_use]
     pub fn for_reader_host() -> Self {
         Self(())
     }

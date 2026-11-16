@@ -60,6 +60,7 @@ pub struct NotificationsStatus {
 
 impl NotificationsStatus {
     /// The status of the service's `live` state and its `history`.
+    #[must_use]
     pub fn of(live: &Notifications, history: &History) -> Self {
         Self {
             server: live.server.clone(),
@@ -78,6 +79,7 @@ pub struct ClipboardStatus {
 
 impl ClipboardStatus {
     /// The status of `history`.
+    #[must_use]
     pub fn of(history: &Clipboard) -> Self {
         Self {
             status: history.status,
@@ -97,6 +99,7 @@ pub struct PolkitStatus {
 
 impl PolkitStatus {
     /// The status of `polkit`.
+    #[must_use]
     pub fn of(polkit: &Polkit) -> Self {
         Self {
             registration: polkit.registration.clone(),

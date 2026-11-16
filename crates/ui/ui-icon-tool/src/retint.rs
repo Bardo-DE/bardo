@@ -126,9 +126,10 @@ mod tests {
     fn ramp_is_flattened_and_the_symbol_kept() {
         let img = Rgba32FImage::from_fn(128, 128, |x, y| {
             let ramp = 0.45 + 0.3 * x as f32 / 128.0;
-            let v = match (40..88).contains(&x) && (40..88).contains(&y) {
-                true => ramp + 0.15,
-                false => ramp,
+            let v = if (40..88).contains(&x) && (40..88).contains(&y) {
+                ramp + 0.15
+            } else {
+                ramp
             };
             Rgba([v, v, v, 1.0])
         });

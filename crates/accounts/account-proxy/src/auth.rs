@@ -1,4 +1,4 @@
-//! The rule the four relays (IMAP, POP3, SMTP, ManageSieve) share when they choose how to present
+//! The rule the four relays (IMAP, POP3, SMTP, `ManageSieve`) share when they choose how to present
 //! a credential: a token goes by `XOAUTH2`, a password by `PLAIN`, and nothing else is ever sent.
 
 use crate::fault::RelayFault;

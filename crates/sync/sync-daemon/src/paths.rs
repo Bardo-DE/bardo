@@ -51,6 +51,7 @@ impl Paths {
     }
 
     /// The journal file of one dataset of one account.
+    #[must_use]
     pub fn journal(&self, account: &AccountDir, dataset: &str) -> PathBuf {
         self.journals
             .join(account.as_str())
@@ -59,6 +60,7 @@ impl Paths {
 
     /// The Photos library of one account, `$XDG_DATA_HOME/bardo/sync/photos/<account>` (W6f): beside
     /// the PIM mirrors, so `AccountRemoved` wipes it with them.
+    #[must_use]
     pub fn photos_dir(&self, account: &AccountDir) -> PathBuf {
         self.mirrors
             .parent()
@@ -69,6 +71,7 @@ impl Paths {
 
     /// The app folder mirror of one account, `$XDG_DATA_HOME/bardo/sync/storage/<account>`: beside
     /// the PIM mirrors, so `AccountRemoved` wipes it with them.
+    #[must_use]
     pub fn storage_dir(&self, account: &AccountDir) -> PathBuf {
         self.mirrors
             .parent()
@@ -80,18 +83,21 @@ impl Paths {
     /// The folder whose files syncd uploads to the account's Google Photos,
     /// `$XDG_DATA_HOME/bardo/sync/photos/<account>/upload`: inside the Photos library directory, so
     /// `AccountRemoved` wipes it with the rest.
+    #[must_use]
     pub fn photos_upload_dir(&self, account: &AccountDir) -> PathBuf {
         self.photos_dir(account).join("upload")
     }
 
     /// Where the Google Photos picker puts what the person picked,
     /// `$XDG_DATA_HOME/bardo/sync/photos/<account>/picked`; one folder per session below it.
+    #[must_use]
     pub fn photos_picked_dir(&self, account: &AccountDir) -> PathBuf {
         self.photos_dir(account).join("picked")
     }
 
     /// The ledger of what was uploaded to Google Photos (the album and every content hash sent),
     /// beside the account's journals so it goes with them.
+    #[must_use]
     pub fn photos_ledger(&self, account: &AccountDir) -> PathBuf {
         self.journals
             .join(account.as_str())
@@ -99,11 +105,13 @@ impl Paths {
     }
 
     /// The downloaded files of one account's drive, `$XDG_CACHE_HOME/bardo/sync/drives/<account>`.
+    #[must_use]
     pub fn drive_cache_dir(&self, account: &AccountDir) -> PathBuf {
         self.drive_cache.join(account.as_str())
     }
 
     /// Everything of one account that syncd keeps: its journals and its mirrors.
+    #[must_use]
     pub fn account_dirs(&self, account: &AccountDir) -> [PathBuf; 2] {
         [
             self.journals.join(account.as_str()),
@@ -118,6 +126,7 @@ pub struct AccountDir(String);
 
 impl AccountDir {
     /// The segment, if it is one: nothing else may become a path component.
+    #[must_use]
     pub fn parse(segment: &str) -> Option<Self> {
         let ok = !segment.is_empty()
             && segment.len() <= 64
@@ -128,6 +137,7 @@ impl AccountDir {
     }
 
     /// The directory name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

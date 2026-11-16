@@ -212,7 +212,7 @@ fn a_connection_that_asks_for_nothing_is_closed_after_the_handshake_timeout() {
 fn a_connection_with_a_device_may_stay_silent() {
     let (ctx, _) = context(palmrest());
     let (mut client, thread) = connect(&ctx);
-    assert!(client.create(&Create::wheel()).is_ok());
+    client.create(&Create::wheel()).unwrap();
     std::thread::sleep(Duration::from_millis(1_300));
     // Still there after longer than the handshake timeout.
     assert_eq!(

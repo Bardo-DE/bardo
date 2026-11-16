@@ -35,6 +35,7 @@ pub struct HelperProgram {
 
 impl HelperProgram {
     /// Whether both are there: without them nothing can be installed for everyone.
+    #[must_use]
     pub fn present(&self) -> bool {
         Path::new(&self.pkexec).is_file() && Path::new(&self.program).is_file()
     }

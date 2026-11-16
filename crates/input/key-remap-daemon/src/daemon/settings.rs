@@ -238,7 +238,7 @@ mod tests {
         assert!(matches!(refused, Err(Oversize::Profiles { .. })));
         assert_eq!(in_force, Layers::builtin_only());
         let small = parse_user("[profile.work]\nmodmap = { command = \"alt\" }\n").0;
-        assert!(in_force.with_user(small).accepted().is_ok());
+        in_force.with_user(small).accepted().unwrap();
     }
 
     #[test]

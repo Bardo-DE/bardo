@@ -70,7 +70,7 @@ fn formats(fixture: &mut Fixture, id: ClientId, version: u32) -> Vec<String> {
         .collect()
 }
 
-/// Wl_shm advertises argb8888 and xrgb8888.
+/// `Wl_shm` advertises argb8888 and xrgb8888.
 #[test]
 fn argb_and_xrgb_are_advertised() {
     let (mut fixture, id) = boot();
@@ -105,7 +105,7 @@ fn the_format_flow_transcript_matches_its_golden() {
     );
 }
 
-/// A buffer past its pool's end is invalid_stride/invalid_fd and disconnects only that client.
+/// A buffer past its pool's end is `invalid_stride/invalid_fd` and disconnects only that client.
 #[test]
 fn a_pool_too_small_for_its_buffer_is_a_protocol_error() {
     let (mut fixture, bad) = boot();
@@ -120,7 +120,7 @@ fn a_pool_too_small_for_its_buffer_is_a_protocol_error() {
     assert!(fixture.client(good).is_connected());
 }
 
-/// A format the compositor did not advertise is wl_shm.invalid_format (0).
+/// A format the compositor did not advertise is `wl_shm.invalid_format` (0).
 #[test]
 fn an_unadvertised_format_is_a_protocol_error() {
     let (mut fixture, id) = boot();
@@ -131,7 +131,7 @@ fn an_unadvertised_format_is_a_protocol_error() {
     assert_eq!(fault(&mut fixture, id), ("wl_shm_pool".to_owned(), 0));
 }
 
-/// An empty pool is wl_shm.invalid_stride (1), posted on the wl_shm.
+/// An empty pool is `wl_shm.invalid_stride` (1), posted on the `wl_shm`.
 #[test]
 fn an_empty_pool_is_a_protocol_error() {
     let (mut fixture, id) = boot();

@@ -45,6 +45,7 @@ impl MessageText {
     }
 
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -151,6 +152,7 @@ pub enum Fault {
 
 impl Message {
     /// The text parts joined by newlines: what recall indexes.
+    #[must_use]
     pub fn text(&self) -> String {
         self.parts
             .iter()
@@ -163,6 +165,7 @@ impl Message {
     }
 
     /// Whether the message crosses Spaces.
+    #[must_use]
     pub fn crosses(&self) -> bool {
         self.from.crosses(&self.to)
     }
@@ -193,6 +196,7 @@ impl Message {
 
     /// Whether `from.agent` is the roster party `actor` is. It is not for a forged sender, or an
     /// actor that is not on the roster.
+    #[must_use]
     pub fn sender_matches(&self, actor: &Actor) -> bool {
         AgentRef::of(actor).is_some_and(|agent| agent == self.from.agent)
     }

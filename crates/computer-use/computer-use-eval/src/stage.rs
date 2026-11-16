@@ -54,6 +54,7 @@ impl Stage {
     /// A stage over `surface`, watching for `forbid` and for the screen that shows `exposure`.
     /// A shortcut works on it only as `keymap` (the platform's) binds it: the chord of another
     /// platform does nothing.
+    #[must_use]
     pub fn new(surface: Surface, forbid: Vec<Cond>, exposure: Vec<Cond>, keymap: Keymap) -> Stage {
         let stage = Stage {
             state: Mutex::new(State {

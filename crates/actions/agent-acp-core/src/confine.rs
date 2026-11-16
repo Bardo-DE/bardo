@@ -101,6 +101,7 @@ fn parts(path: &AbsPath) -> Vec<&str> {
 }
 
 /// Whether `path` is, or lies in, a place that holds the person's secrets.
+#[must_use]
 pub fn is_secret(path: &AbsPath) -> bool {
     let p = parts(path);
     // `first` then every component of `rest`, in a row anywhere in the path.
@@ -159,7 +160,7 @@ mod tests {
     #[test]
     fn names_are_checked_before_the_file_system_is_asked() {
         let scope = abs("/work/app");
-        assert!(named(&scope, "/work/app/src/a.rs").is_ok());
+        named(&scope, "/work/app/src/a.rs").unwrap();
         assert_eq!(named(&scope, "src/a.rs"), Err(Refusal::BadPath));
         assert_eq!(
             named(&scope, "/work/app/../etc/passwd"),
@@ -182,7 +183,7 @@ mod tests {
             confine(&scope, path.clone(), abs("/etc/x")),
             Err(Refusal::Link)
         );
-        assert!(confine(&scope, path.clone(), abs("/work/app/real/x")).is_ok());
+        confine(&scope, path.clone(), abs("/work/app/real/x")).unwrap();
     }
 
     #[test]
@@ -209,7 +210,7 @@ mod tests {
             "/home/u/proj/.local/state/bardo/notes/x",
         ] {
             let fine = abs(fine);
-            assert!(confine(&scope, fine.clone(), fine).is_ok());
+            confine(&scope, fine.clone(), fine).unwrap();
         }
     }
 

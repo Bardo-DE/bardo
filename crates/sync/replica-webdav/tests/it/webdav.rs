@@ -1,4 +1,4 @@
-//! What is WebDAV's own in the replica, over the fake server: the headers a write carries, a
+//! What is `WebDAV`'s own in the replica, over the fake server: the headers a write carries, a
 //! concurrent remote edit, the fallback from sync-collection to the tree walk, a removed folder,
 //! a restarted replica, parents made on the way, and an expired anchor that uploads nothing.
 

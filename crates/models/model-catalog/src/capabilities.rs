@@ -68,6 +68,7 @@ pub enum Side {
 
 impl DetailTable {
     /// The side and modality that make the table required.
+    #[must_use]
     pub fn needs(self) -> (Side, Modality) {
         match self {
             DetailTable::TextOut => (Side::Out, Modality::Text),
@@ -106,6 +107,7 @@ const NO_IMAGES: ImageLimits = ImageLimits {
 impl Capabilities {
     /// The chat side as a provider's `Caps`: what a turn on this model may carry and ask. `None`
     /// when the model has no text output table.
+    #[must_use]
     pub fn chat_caps(&self) -> Option<Caps> {
         let text = self.text_out.as_ref()?;
         let inputs = [
@@ -130,11 +132,13 @@ impl Capabilities {
     }
 
     /// The model's default sampling, when it has a chat side.
+    #[must_use]
     pub fn sampling(&self) -> Option<SamplingDefaults> {
         self.text_out.as_ref().and_then(|text| text.sampling)
     }
 
     /// Whether the table of `table` is written.
+    #[must_use]
     pub fn has_table(&self, table: DetailTable) -> bool {
         match table {
             DetailTable::TextOut => self.text_out.is_some(),
@@ -147,6 +151,7 @@ impl Capabilities {
     }
 
     /// Whether the modality a table belongs to is declared on the table's side.
+    #[must_use]
     pub fn declares(&self, table: DetailTable) -> bool {
         match table.needs() {
             (Side::In, modality) => self.inputs.contains(modality),
@@ -158,6 +163,7 @@ impl Capabilities {
     /// passes through, and the tables of dropped modalities dropped with them. A profile that
     /// names no subset passes everything. Pure; a profile that names more than the model has
     /// is refused by the parser, and here would only intersect.
+    #[must_use]
     pub fn on_engine(&self, profile: &EngineProfile) -> Capabilities {
         let inputs = match &profile.inputs {
             Some(passed) => self.inputs.intersection(passed),

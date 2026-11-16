@@ -14,6 +14,7 @@ pub struct OutputLevel {
 
 impl OutputLevel {
     /// The bus's `(su)`: the output's name and its percentage, 0 to 100.
+    #[must_use]
     pub fn wire(&self) -> (String, u32) {
         (self.output.0.clone(), u32::from(self.percent.0.min(100)))
     }
@@ -22,6 +23,7 @@ impl OutputLevel {
 impl Displays {
     /// Every output whose brightness bardo-shell can read (a built-in panel's backlight, a monitor that
     /// answers DDC/CI), in the compositor's order. An output with nothing to read is not listed.
+    #[must_use]
     pub fn levels(&self) -> Vec<OutputLevel> {
         self.outputs
             .iter()

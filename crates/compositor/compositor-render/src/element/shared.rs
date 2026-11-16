@@ -19,6 +19,7 @@ impl<E> SharedElement<E> {
     }
 
     /// The element all the clones share.
+    #[must_use]
     pub fn get(&self) -> &E {
         &self.0
     }

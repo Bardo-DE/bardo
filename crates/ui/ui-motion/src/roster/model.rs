@@ -18,6 +18,7 @@ pub struct Heal {
 }
 
 /// The `data-presence` word of a row: `healing` while it heals, else its presence's.
+#[must_use]
 pub fn presence_slug(presence: Presence, heal: Option<Heal>) -> &'static str {
     match heal {
         Some(_) => "healing",
@@ -68,6 +69,7 @@ impl<K: Clone + PartialEq> RosterState<K> {
     }
 
     /// The rows to draw, leaving ones included.
+    #[must_use]
     pub fn entries(&self) -> &[RosterEntry<K>] {
         &self.entries
     }

@@ -166,6 +166,7 @@ impl SpaceBook {
 
 impl SpaceBook {
     /// Every Space, in the order they were made.
+    #[must_use]
     pub fn list(&self) -> &[DesktopSpaceRecord] {
         &self.doc.spaces
     }

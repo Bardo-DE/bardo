@@ -253,15 +253,13 @@ async fn a_write_to_a_thing_another_live_job_owns_is_refused_until_that_job_is_o
     give_policy(&router, &other.session, wide_policy(&other.task, "work"));
 
     // A read of an owned thing is free; a write is refused, and the code says why.
-    assert!(
-        perform_in(
-            &router,
-            &other.session,
-            call("mail.thread.read", &["t1"], vec![])
-        )
-        .await
-        .is_ok()
-    );
+    perform_in(
+        &router,
+        &other.session,
+        call("mail.thread.read", &["t1"], vec![]),
+    )
+    .await
+    .unwrap();
     for owned in ["t1", "t2"] {
         assert_eq!(
             perform_in(&router, &other.session, archive(owned)).await,
@@ -276,11 +274,9 @@ async fn a_write_to_a_thing_another_live_job_owns_is_refused_until_that_job_is_o
 
     // The job's own session may write what it owns.
     give_policy(&router, &first.session, wide_policy(&first.task, "work"));
-    assert!(
-        perform_in(&router, &first.session, archive("t1"))
-            .await
-            .is_ok()
-    );
+    perform_in(&router, &first.session, archive("t1"))
+        .await
+        .unwrap();
 
     // Closing the session frees its things; ending its task does too.
     let closed = ask(
@@ -454,7 +450,7 @@ async fn a_job_for_a_helper_is_allowed_only_when_a_planner_that_read_nothing_unt
     };
 
     // A clean planner's own words are an instruction.
-    assert!(router.companion_perform(post(planners())).is_ok());
+    router.companion_perform(post(planners())).unwrap();
     // Words from a handle (mail, say) never are, even from a clean planner...
     let refused = router
         .companion_perform(post(words_of(Source::Mail)))
@@ -497,11 +493,9 @@ async fn a_helper_proposed_by_a_tainted_planner_has_no_name_and_no_role_to_take(
             ],
         )
     };
-    assert!(
-        router
-            .companion_perform(propose(planners(), planners()))
-            .is_ok()
-    );
+    router
+        .companion_perform(propose(planners(), planners()))
+        .unwrap();
     for (name, role) in [
         (words_of(Source::Mail), planners()),
         (planners(), words_of(Source::Mail)),
@@ -528,11 +522,9 @@ async fn a_routine_may_be_proposed_after_reading_untrusted_text_because_the_pers
             ],
         )
     };
-    assert!(
-        router
-            .companion_perform(propose(planner_actor(&front.session)))
-            .is_ok()
-    );
+    router
+        .companion_perform(propose(planner_actor(&front.session)))
+        .unwrap();
     // Only a planner of the companion can ask at all.
     assert_eq!(
         router
@@ -619,7 +611,13 @@ async fn the_reach_the_person_set_on_the_card_is_its_consent_and_nothing_beyond_
     let asked = router.seams.confirmer.requests();
     assert_eq!(asked.len(), 1);
     // The sheet says which helper asks.
-    assert_eq!(asked[0].helper.as_ref().map(|n| n.as_str()), Some("Inbox"));
+    assert_eq!(
+        asked[0]
+            .helper
+            .as_ref()
+            .map(companion_model::helper::HelperName::as_str),
+        Some("Inbox")
+    );
 }
 
 #[tokio::test]

@@ -153,13 +153,14 @@ fn lock_seen(state: IdleState, seen: LockSeen) -> Step {
 
 /// Unlocked: the idle lock's instant and the sleep mark belong to a lock that is gone.
 fn forget_if_unlocked(state: IdleState) -> IdleState {
-    match state.lock.locked {
-        false => IdleState {
+    if state.lock.locked {
+        state
+    } else {
+        IdleState {
             idle_locked_at: None,
             slept: false,
             ..state
-        },
-        true => state,
+        }
     }
 }
 
@@ -178,9 +179,10 @@ fn idled(state: IdleState, stage: Threshold, now: Stamp) -> Step {
         }
         (Threshold::ScreenOff, IdlePhase::Active | IdlePhase::Dimmed) => screen_off(state, now),
         (Threshold::LockedScreenOff, IdlePhase::Active | IdlePhase::Dimmed) => {
-            match state.lock.locked {
-                true => displays_off(state, Vec::new()),
-                false => (state, Vec::new()),
+            if state.lock.locked {
+                displays_off(state, Vec::new())
+            } else {
+                (state, Vec::new())
             }
         }
         (Threshold::Suspend, IdlePhase::Active | IdlePhase::Dimmed | IdlePhase::DisplaysOff) => (

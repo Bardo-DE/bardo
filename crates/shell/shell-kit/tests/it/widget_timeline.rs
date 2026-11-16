@@ -175,7 +175,7 @@ fn a_card_shows_its_placeholder_before_the_first_entry() {
 #[test]
 fn a_refresh_already_due_waits_for_the_floor() {
     let mut harness = harness(Overdue);
-    harness.advance(REFRESH_FLOOR - Duration::from_millis(1));
+    harness.advance(REFRESH_FLOOR.checked_sub(Duration::from_millis(1)).unwrap());
     assert!(asks().is_empty(), "not before the floor");
     harness.advance(Duration::from_millis(1));
     assert_eq!(asks(), [RefreshAsk::Due]);

@@ -44,11 +44,13 @@ pub struct FloorFiles {
 
 impl FloorFiles {
     /// The floor in `/etc/bardo`, owned by the administrator.
+    #[must_use]
     pub fn system() -> FloorFiles {
         FloorFiles::in_dir(Path::new("/etc/bardo"), Owner::Root)
     }
 
     /// The floor in `dir` (`privacy.toml` and `privacy.d/`), whose files `owner` must own.
+    #[must_use]
     pub fn in_dir(dir: &Path, owner: Owner) -> FloorFiles {
         FloorFiles {
             main: dir.join("privacy.toml"),

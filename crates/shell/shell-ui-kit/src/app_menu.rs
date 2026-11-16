@@ -6,6 +6,7 @@ use shell_model::app_menu::{MenuApp, MenuName};
 use ui_components::components::menus::export::AppMenuAddress;
 
 /// The bus name `app`'s menu is served at, or `None` for an id no name can be made from.
+#[must_use]
 pub fn menu_name_of(app: &MenuApp) -> Option<MenuName> {
     AppMenuAddress::for_app_id(&app.0)
         .ok()

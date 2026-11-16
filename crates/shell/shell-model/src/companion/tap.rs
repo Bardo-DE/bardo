@@ -64,7 +64,7 @@ impl Machine for Tap {
     type Params = TapParams;
     type Ctx = ();
 
-    fn step(self, input: TapIn, at: Stamp, params: &TapParams, _: &()) -> (Tap, Vec<TapOut>) {
+    fn step(self, input: TapIn, at: Stamp, params: &TapParams, (): &()) -> (Tap, Vec<TapOut>) {
         match (self, input) {
             (Tap::Rest, TapIn::Tap) => (
                 Tap::Armed {

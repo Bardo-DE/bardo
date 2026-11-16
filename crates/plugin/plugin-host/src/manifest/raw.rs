@@ -21,16 +21,19 @@ pub struct Raw {
 
 impl Raw {
     /// The `capability` word, as written.
+    #[must_use]
     pub fn word(&self) -> &str {
         &self.word
     }
 
     /// The whole table, `capability` included.
+    #[must_use]
     pub fn table(&self) -> &toml::Table {
         &self.table
     }
 
     /// The folder of the manifest this entry was read from, when it has one.
+    #[must_use]
     pub fn folder(&self) -> Option<&Path> {
         self.folder.as_deref()
     }

@@ -29,7 +29,7 @@ use super::rebuild::map;
 use super::{Initial, insert};
 
 /// Create and map popup `id` on `parent`. A grabbing popup lifts a `KeyboardMode::None` parent
-/// layer to `OnDemand` until it closes, except on KWin (`popup_keyboard`).
+/// layer to `OnDemand` until it closes, except on `KWin` (`popup_keyboard`).
 pub(crate) fn popup(
     state: &mut HostState,
     parent: SurfaceId,

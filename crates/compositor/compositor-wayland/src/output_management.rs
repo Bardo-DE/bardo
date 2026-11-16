@@ -79,6 +79,7 @@ pub struct OutputManagementPart {
 
 impl OutputManagementPart {
     /// Creates the global (version 4), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> OutputManagementPart
     where
         D: GlobalDispatch<ZwlrOutputManagerV1, OutputManagementGlobal> + 'static,
@@ -134,6 +135,7 @@ pub struct HeadRequest {
 
 impl HeadRequest {
     /// A head's request.
+    #[must_use]
     pub fn new(output: OutputKey, change: OutputChangeSet) -> HeadRequest {
         HeadRequest { output, change }
     }
@@ -153,6 +155,7 @@ pub struct Configuration {
 
 impl Configuration {
     /// A configuration `by` its client.
+    #[must_use]
     pub fn new(serial: ConfigSerial, heads: Vec<HeadRequest>, by: Requester) -> Configuration {
         Configuration { serial, heads, by }
     }

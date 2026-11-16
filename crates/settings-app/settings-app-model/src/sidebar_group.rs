@@ -27,6 +27,7 @@ pub enum SidebarGroup {
 
 /// `pages` in groups, each group in its own order; a group with no page is left out. Pages that
 /// share a place (a program's pages) keep the order they came in.
+#[must_use]
 pub fn sidebar_groups<'a>(pages: &[&'a PageModel]) -> Vec<Vec<&'a PageModel>> {
     let mut sorted: Vec<&PageModel> = pages.to_vec();
     sorted.sort_by_key(|page| page.kind.traits().slot());

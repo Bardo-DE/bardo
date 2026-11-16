@@ -113,22 +113,26 @@ impl Pinned {
     }
 
     /// The process.
+    #[must_use]
     pub fn pid(&self) -> Pid {
         self.pid
     }
 
     /// Its effective user.
+    #[must_use]
     pub fn uid(&self) -> Uid {
         self.uid
     }
 
     /// How firmly it was held.
+    #[must_use]
     pub fn pin(&self) -> Pin {
         self.pin
     }
 
     /// The pidfd that holds the process, for a caller that acts on the same process later (a
     /// signal through `pidfd_send_signal`, a wait). `None` only for a test's claim (`fake`).
+    #[must_use]
     pub fn pidfd(&self) -> Option<BorrowedFd<'_>> {
         match &self.hold {
             Hold::Fd(fd) => Some(fd.as_fd()),
@@ -139,6 +143,7 @@ impl Pinned {
 
     /// Whether the process is still running: a pidfd turns readable when its process exits.
     /// Check this after reading its facts; a process that is gone makes them worth nothing.
+    #[must_use]
     pub fn alive(&self) -> Alive {
         match &self.hold {
             Hold::Fd(fd) => {

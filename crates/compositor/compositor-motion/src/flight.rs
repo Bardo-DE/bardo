@@ -24,13 +24,13 @@ impl FlightEnds {
             (f64::from(w.size.w), f64::from(t.size.w), pose.w),
             (f64::from(w.size.h), f64::from(t.size.h), pose.h),
         ];
-        let widest =
-            channels
-                .into_iter()
-                .reduce(|a, b| match (b.1 - b.0).abs() > (a.1 - a.0).abs() {
-                    true => b,
-                    false => a,
-                });
+        let widest = channels.into_iter().reduce(|a, b| {
+            if (b.1 - b.0).abs() > (a.1 - a.0).abs() {
+                b
+            } else {
+                a
+            }
+        });
         match widest {
             Some((from, to, at)) if (to - from).abs() > f64::EPSILON => {
                 ((at - from) / (to - from)).clamp(0.0, 1.0)

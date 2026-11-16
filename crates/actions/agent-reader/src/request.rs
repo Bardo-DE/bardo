@@ -16,6 +16,7 @@ use std::hash::{Hash, Hasher};
 
 /// The fixed instruction of a task. It says what to do with the data and never takes text from
 /// the ask.
+#[must_use]
 pub fn task_instruction(task: ReaderTask) -> &'static str {
     match task {
         ReaderTask::Classify => {
@@ -88,6 +89,7 @@ fn fence_for(inputs: &[Labelled<String>]) -> String {
 /// not a record is wrapped as `{"answer": ...}`, since a structured reply is an object.
 /// A schema that has no shape in that vocabulary falls back to any JSON object; the answer is
 /// checked against the ask afterwards either way.
+#[must_use]
 pub fn reply_shape(want: &ValueSchema) -> ReplyShape {
     if let ValueSchema::Choice(ids) = want {
         return ReplyShape::Choice(ids.iter().map(|id| id.as_str().to_owned()).collect());
@@ -141,6 +143,7 @@ fn message(role: Role, text: String) -> ChatMessage {
 /// the schema as the reply shape (`ValueSchema::shape` rendered by stoker's `Shape`; inferd owns
 /// validation, repair and retry). The class is the strictest of the inputs' classes, and the
 /// request is interactive.
+#[must_use]
 pub fn reader_request(ask: &ReaderAsk, inputs: &[Labelled<String>]) -> ChatRequest {
     ChatRequest::new(
         vec![

@@ -708,13 +708,10 @@ async fn a_local_edit_is_a_conflict_or_an_upload_two_way_and_overwritten_pull_on
         };
         let kept = world.dataset.get("edited.txt");
         let (puts, removes, conflicts) = (world.puts(), report.removed, report.conflicts.len());
-        let want = match pull_only {
-            // The edit is the server's now; nothing was sent; the file the person deleted and
-            // the one they added are left as they are.
-            true => (Some(b"v2".to_vec()), 0, 0, 0),
-            // The edit crossed the server's: a stored conflict, the local copy kept, the
-            // addition uploaded, the deletion sent.
-            false => (Some(b"mine".to_vec()), 1, 1, 1),
+        let want = if pull_only {
+            (Some(b"v2".to_vec()), 0, 0, 0)
+        } else {
+            (Some(b"mine".to_vec()), 1, 1, 1)
         };
         assert_eq!(
             (kept, puts, removes, conflicts),

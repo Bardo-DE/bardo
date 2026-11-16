@@ -88,7 +88,7 @@ fn a_name_and_a_role_are_the_persons_words_and_bounded() {
             "{what}"
         );
     }
-    assert!(Role::parse("Reads the mail.\nSays what needs me.").is_ok());
+    Role::parse("Reads the mail.\nSays what needs me.").unwrap();
     assert_eq!(Role::parse(""), Err(HelperTextFault::Empty));
     assert_eq!(Role::parse(&long_role), Err(HelperTextFault::TooLong));
     assert_eq!(Role::parse("a\u{7}b"), Err(HelperTextFault::NotText));
@@ -96,8 +96,8 @@ fn a_name_and_a_role_are_the_persons_words_and_bounded() {
 
 #[test]
 fn a_name_that_is_not_one_does_not_come_off_the_wire() {
-    assert!(serde_json::from_str::<HelperName>("\"\"").is_err());
-    assert!(serde_json::from_str::<Role>("\"   \"").is_err());
+    serde_json::from_str::<HelperName>("\"\"").unwrap_err();
+    serde_json::from_str::<Role>("\"   \"").unwrap_err();
     let read: HelperName = serde_json::from_str("\"Research\"").expect("name");
     assert_eq!(read.as_str(), "Research");
 }
@@ -168,7 +168,7 @@ fn only_a_free_or_model_less_helper_takes_a_job() {
 
 #[test]
 fn a_goal_is_words_that_fit_and_its_debug_shows_no_words() {
-    assert!(GoalText::parse("compare the three offers").is_ok());
+    GoalText::parse("compare the three offers").unwrap();
     assert_eq!(GoalText::parse(" "), Err(GoalFault::Empty));
     assert_eq!(GoalText::parse(&"g".repeat(1_001)), Err(GoalFault::TooLong));
     // A goal of fewer characters that is too many bytes is too long too.

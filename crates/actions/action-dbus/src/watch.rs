@@ -32,6 +32,7 @@ pub struct InferWatch(Option<Arc<dyn InferObserver>>);
 
 impl InferWatch {
     /// A watch that sees nothing.
+    #[must_use]
     pub fn off() -> Self {
         Self(None)
     }

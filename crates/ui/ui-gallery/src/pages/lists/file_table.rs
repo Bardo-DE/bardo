@@ -1,4 +1,4 @@
-//! VirtualTable as Finder's list view: the first column is an outline (a disclosure triangle,
+//! `VirtualTable` as Finder's list view: the first column is an outline (a disclosure triangle,
 //! Option-click opens a whole folder, Right and Left on the cursor's row open and close it) of
 //! name cells (a glyph and a name cut from the middle), and a drag from empty space below the rows
 //! draws a rubber band that selects the rows it touches. The page keeps which folders are open, as
@@ -131,9 +131,10 @@ pub fn FileTableGallery() -> Element {
     let listed = shown.clone();
     let outline = Callback::new(move |row: usize| {
         let entry = &TREE[listed[row]];
-        match entry.folder {
-            true => OutlineRow::branch(entry.depth, open.read().contains(&listed[row])),
-            false => OutlineRow::leaf(entry.depth),
+        if entry.folder {
+            OutlineRow::branch(entry.depth, open.read().contains(&listed[row]))
+        } else {
+            OutlineRow::leaf(entry.depth)
         }
     });
     let named = shown.clone();

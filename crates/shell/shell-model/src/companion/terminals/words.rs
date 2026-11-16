@@ -22,6 +22,7 @@ pub fn session_title(session: &TerminalSession) -> String {
 }
 
 /// The folder the session works in, or nothing.
+#[must_use]
 pub fn session_subtitle(session: &TerminalSession) -> String {
     session.folder.clone().unwrap_or_default()
 }

@@ -114,6 +114,7 @@ pub fn press_in(events: &[Event], stamp_of: impl Fn(&InputEvent) -> Stamp) -> Op
 /// is `other`; a request is `request`, with the press that probably started it when one came
 /// within [`REQUEST_WINDOW`]; anything else is the press that is within [`DIRECT_WINDOW`] (a
 /// chord is `keyboard`, a click `pointer`), else `other`.
+#[must_use]
 pub fn cause_of(feed: FeedKind, press: Option<Press>, now: Stamp) -> (KeyCause, Stamp) {
     let within = |window: Duration| press.filter(|press| now.within(press.at, window));
     match (feed, within(DIRECT_WINDOW), within(REQUEST_WINDOW)) {

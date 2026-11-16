@@ -19,6 +19,7 @@ use provenance::{ActionName, SpaceScope, UnixSeconds};
 use std::path::Path;
 
 /// A class grant for `action`, to be recorded or compared.
+#[must_use]
 pub fn contract_grant(id: &str, action: &str, scope: GrantScope) -> ActionGrant {
     Grant {
         id: GrantId::parse(id).expect("id"),
@@ -37,6 +38,7 @@ pub fn contract_grant(id: &str, action: &str, scope: GrantScope) -> ActionGrant 
 }
 
 /// A standing grant to move files under `prefix`.
+#[must_use]
 pub fn contract_standing(prefix: &str) -> StandingGrant {
     StandingGrant::new(
         GrantCaller::Companion,

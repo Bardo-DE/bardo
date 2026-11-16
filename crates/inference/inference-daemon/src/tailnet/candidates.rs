@@ -112,21 +112,20 @@ impl Candidates {
         while let Some(done) = due.join_next().await {
             let Ok((node, seen)) = done else { continue };
             let before = looks.remove(&node);
-            let look = match seen {
-                Some(hello) => Look {
+            let look = if let Some(hello) = seen {
+                Look {
                     next: Instant::now() + self.every,
                     failures: 0,
                     found: Some((hello.models().to_vec(), hello.needs_approval())),
-                },
-                None => {
-                    let failures = before.as_ref().map_or(0, |look| look.failures) + 1;
-                    let pause = self.every * 2_u32.pow((failures - 1).min(MOST_BACKOFF));
-                    Look {
-                        next: Instant::now() + pause,
-                        failures,
-                        // A computer that stopped answering is not offered.
-                        found: None,
-                    }
+                }
+            } else {
+                let failures = before.as_ref().map_or(0, |look| look.failures) + 1;
+                let pause = self.every * 2_u32.pow((failures - 1).min(MOST_BACKOFF));
+                Look {
+                    next: Instant::now() + pause,
+                    failures,
+                    // A computer that stopped answering is not offered.
+                    found: None,
                 }
             };
             looks.insert(node, look);

@@ -1,4 +1,4 @@
-//! AccountBadge: an account as a line: its provider's round mark and its name.
+//! `AccountBadge`: an account as a line: its provider's round mark and its name.
 
 use super::adapter::Disc;
 use dioxus::prelude::*;

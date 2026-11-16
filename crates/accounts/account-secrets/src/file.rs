@@ -171,11 +171,13 @@ impl FileSecrets {
     }
 
     /// The namespace items are filed under.
+    #[must_use]
     pub fn namespace(&self) -> &Namespace {
         &self.namespace
     }
 
     /// The file this store keeps its items in.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.path
     }

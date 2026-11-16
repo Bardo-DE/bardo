@@ -26,6 +26,7 @@ use ui_settings::{Count, Ms};
 const FIXED_SCALE: (u16, u16) = (100, 400);
 
 /// The settings `doc` says; every key it leaves out takes `CasementSettings::defaults`'s value.
+#[must_use]
 pub fn to_core(doc: &CasementDoc) -> CasementSettings {
     CasementSettings {
         windows: windows(&doc.windows),

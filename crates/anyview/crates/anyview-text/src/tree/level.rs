@@ -139,36 +139,33 @@ fn fill(c: &mut Cursor<'_>, level: &mut Level, depth: usize, reach: Coverage) ->
         } else {
             read_child(c, form, depth + 1)?;
         }
-        let more = match close {
-            Some(close) => {
-                c.skip_ws();
-                match c.peek() {
-                    Some(b',') => {
-                        c.bump();
-                        c.skip_ws();
-                        true
-                    }
-                    Some(byte) if byte == close => {
-                        c.bump();
-                        false
-                    }
-                    _ => return Err(unexpected(c, "expected `,` or a closing bracket")),
-                }
-            }
-            None => {
-                let skipped = c.skip_ws();
-                if c.peek().is_some() {
+        let more = if let Some(close) = close {
+            c.skip_ws();
+            match c.peek() {
+                Some(b',') => {
+                    c.bump();
+                    c.skip_ws();
                     true
-                } else if reach == Coverage::Prefix {
-                    // The bytes end here, and the file goes on. A value is whole only when white
-                    // space follows it: `12` could be `123`.
-                    if skipped > 0 {
-                        level.commit(start);
-                    }
-                    return Err(eof(c));
-                } else {
+                }
+                Some(byte) if byte == close => {
+                    c.bump();
                     false
                 }
+                _ => return Err(unexpected(c, "expected `,` or a closing bracket")),
+            }
+        } else {
+            let skipped = c.skip_ws();
+            if c.peek().is_some() {
+                true
+            } else if reach == Coverage::Prefix {
+                // The bytes end here, and the file goes on. A value is whole only when white
+                // space follows it: `12` could be `123`.
+                if skipped > 0 {
+                    level.commit(start);
+                }
+                return Err(eof(c));
+            } else {
+                false
             }
         };
         level.commit(start);

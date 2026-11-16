@@ -20,6 +20,7 @@ pub struct MemoryEvents {
 
 impl MemoryEvents {
     /// Nothing recorded, nothing waiting.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

@@ -30,6 +30,7 @@ pub const X_RANGE: (i32, i32) = (-1100, 1258);
 pub const Y_RANGE: (i32, i32) = (-1589, 2047);
 
 /// The Magic Mouse 2's surface: about 90.7 x 51.9 mm at the advertised resolution.
+#[must_use]
 pub fn surface() -> Surface {
     let range = |axis: UnitsPerMm, (lo, hi): (i32, i32)| MmRange {
         min: axis.mm(lo),
@@ -51,11 +52,13 @@ pub struct MagicMouseHid {
 }
 
 impl MagicMouseHid {
+    #[must_use]
     pub fn new(model: Model) -> Self {
         Self { model }
     }
 
     /// Which mouse this decodes for.
+    #[must_use]
     pub fn model(&self) -> Model {
         self.model
     }
@@ -70,6 +73,7 @@ impl Default for MagicMouseHid {
 impl MagicMouseHid {
     // TODO(untested): every model gets the Magic Mouse 2's surface. The USB-C model is assumed
     // to share it; the Magic Mouse 1's ranges and resolution were never read from a device.
+    #[must_use]
     pub fn surface(&self) -> Surface {
         surface()
     }

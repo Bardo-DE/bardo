@@ -47,6 +47,7 @@ impl TraceDir {
     }
 
     /// Where it is.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.path
     }

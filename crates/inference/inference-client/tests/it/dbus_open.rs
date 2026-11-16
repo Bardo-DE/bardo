@@ -1,6 +1,6 @@
 //! `DbusTransport::open_with` against a fake inferd on a private bus: the need, class, tier and
 //! trace context cross as `Inference1.Open` arguments; the returned fd carries wire frames both
-//! ways, memfds ride as SCM_RIGHTS, and every way the daemon can fail shows as an error.
+//! ways, memfds ride as `SCM_RIGHTS`, and every way the daemon can fail shows as an error.
 #![cfg(feature = "dbus")]
 
 use crate::common;

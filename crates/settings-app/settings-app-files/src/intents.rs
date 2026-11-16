@@ -25,6 +25,7 @@ fn manifest_files(dir: &Path) -> Vec<PathBuf> {
 
 /// The text of every manifest under `dirs`, folders in the order given (the order of trust) and
 /// files by name. A file that cannot be read, is over the cap or is not text is skipped.
+#[must_use]
 pub fn read_manifests(dirs: &[PathBuf]) -> Vec<String> {
     dirs.iter()
         .flat_map(|dir| manifest_files(dir))

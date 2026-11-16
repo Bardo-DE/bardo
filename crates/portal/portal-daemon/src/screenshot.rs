@@ -82,6 +82,7 @@ pub struct FakeOpen {
 
 impl FakeOpen {
     /// An opener with no outputs.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -119,6 +120,7 @@ pub struct Placed {
 
 impl Placed {
     /// A frame at `origin` covering exactly its own size.
+    #[must_use]
     pub fn unscaled(origin: Point, frame: CapturedFrame) -> Self {
         Self {
             origin,
@@ -139,6 +141,7 @@ pub struct OutputGrab {
 impl OutputGrab {
     /// A grab, on `display`, of the outputs `layout` lists, opened by `opener`. Each grab makes
     /// one [`Job`] and hands it to the layout and to every open, so they share a connection.
+    #[must_use]
     pub fn new(
         display: DisplayName,
         layout: Box<dyn OutputLayout>,
@@ -186,6 +189,7 @@ pub struct ScreenshotSetup {
 impl ScreenshotSetup {
     /// Screenshots from `grab`, written into the absolute folder `pictures`; `stamp` (a date and
     /// time the caller drew) goes into every file name.
+    #[must_use]
     pub fn new(grab: OutputGrab, pictures: PathBuf, stamp: String) -> Self {
         Self::with_grab(Some(grab), pictures, stamp)
     }
@@ -203,24 +207,28 @@ impl ScreenshotSetup {
 
     /// This setup asking `asker` before it takes a picture nobody else has asked about (without
     /// one, such a request is refused).
+    #[must_use]
     pub fn with_asker(mut self, asker: Box<dyn Asker>) -> Self {
         self.asker = asker;
         self
     }
 
     /// This setup showing apps by the names `names` finds.
+    #[must_use]
     pub fn with_names(mut self, names: AppNames) -> Self {
         self.names = names;
         self
     }
 
     /// This setup with `picker` showing the colour picker (without one, every pick is a cancel).
+    #[must_use]
     pub fn with_picker(mut self, picker: Box<dyn ColorPicker>) -> Self {
         self.picker = picker;
         self
     }
 
     /// A setup with no screens: every screenshot fails.
+    #[must_use]
     pub fn unconfigured() -> Self {
         Self::with_grab(None, PathBuf::new(), String::new())
     }

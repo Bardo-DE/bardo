@@ -154,10 +154,10 @@ fn an_old_file_is_read_by_porters_rules_and_what_it_cannot_place_is_dropped_neve
 
 #[test]
 fn a_file_that_is_wrong_in_any_other_way_is_a_fault_not_a_migration() {
-    assert!(decode_grants("{}").is_err());
-    assert!(decode_grants(r#"[{"id":"g-1"}]"#).is_err());
+    decode_grants("{}").unwrap_err();
+    decode_grants(r#"[{"id":"g-1"}]"#).unwrap_err();
     let mut broken =
         serde_json::to_value(grant("g-1", GrantCaller::Companion, only("work"))).expect("json");
     broken["decision"] = serde_json::json!("maybe");
-    assert!(decode_grants(&format!("[{broken}]")).is_err());
+    decode_grants(&format!("[{broken}]")).unwrap_err();
 }

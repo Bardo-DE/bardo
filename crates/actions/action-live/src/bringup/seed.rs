@@ -46,6 +46,7 @@ pub fn inferd_toml(root: &Path, extra: &str) -> Result<String, ExtraFault> {
 const SHELL_CALLERS: &str = "cua = [\"bardo-computer-use.service\"]\nshell = [\"bardo-shell.service\"]\nplaces = [\"bardo-companiond.service\", \"bardo-readerd.service\", \"bardo-actiond.service\"]\n\n";
 
 /// inferd's system caller table for a root: the shell and the places rows, then the apps.
+#[must_use]
 pub fn inferd_callers() -> String {
     format!("{SHELL_CALLERS}{}", action_accept::world::INFERD_CALLERS)
 }

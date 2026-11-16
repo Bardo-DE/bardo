@@ -1,5 +1,5 @@
-//! A monitor's own speakers following the software volume. PipeWire (through its pulse
-//! server) names an HDMI or DisplayPort sink after the monitor at the other end, from the
+//! A monitor's own speakers following the software volume. `PipeWire` (through its pulse
+//! server) names an HDMI or `DisplayPort` sink after the monitor at the other end, from the
 //! monitor's ELD: `... Digital Stereo (HDMI) [BenQ MA270U]`. When that bracketed name is a DDC
 //! display's EDID product name and the display has a speaker volume (VCP 0x62), a change the
 //! person makes to the software level or mute is sent on to the monitor as well. Pure.
@@ -15,6 +15,7 @@ use crate::units::Presence;
 use crate::volume::Volume;
 
 /// The monitor name a sink description ends with, in square brackets.
+#[must_use]
 pub fn monitor_in_sink(description: &str) -> Option<&str> {
     let inner = description.trim_end().strip_suffix(']')?;
     let (_, name) = inner.rsplit_once('[')?;
@@ -23,6 +24,7 @@ pub fn monitor_in_sink(description: &str) -> Option<&str> {
 }
 
 /// The DDC display whose product name is the sink's monitor, if it has a speaker volume.
+#[must_use]
 pub fn monitor_for_sink<'a>(sink: &str, ddc: &'a [DdcDisplay]) -> Option<&'a DdcDisplay> {
     let name = monitor_in_sink(sink)?;
     ddc.iter()
@@ -30,6 +32,7 @@ pub fn monitor_for_sink<'a>(sink: &str, ddc: &'a [DdcDisplay]) -> Option<&'a Ddc
 }
 
 /// The writes that carry the change from `before` to `after` to the monitor.
+#[must_use]
 pub fn follow(
     policy: HardwareVolume,
     before: &Volume,

@@ -52,11 +52,12 @@ impl Model {
     /// A client set `output`'s gamma: `Effect::SetGamma` for a plugged output, nothing for
     /// one that is gone.
     pub(super) fn set_gamma(self, output: OutputKey, ramp: GammaRamp) -> Moved {
-        match self.outputs.0.contains_key(&output) {
-            true => Moved::of(self.night_client_ramp(&output, &ramp))
+        if self.outputs.0.contains_key(&output) {
+            Moved::of(self.night_client_ramp(&output, &ramp))
                 .with(Effect::SetGamma(output, ramp))
-                .then(Model::night_drive),
-            false => Moved::of(self),
+                .then(Model::night_drive)
+        } else {
+            Moved::of(self)
         }
     }
 }

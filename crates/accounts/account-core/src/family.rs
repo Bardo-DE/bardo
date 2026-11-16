@@ -18,15 +18,15 @@ pub enum Family {
     Pop3,
     /// JMAP (mail, contacts, calendars).
     Jmap,
-    /// ManageSieve (RFC 5804): the server-side mail filters.
+    /// `ManageSieve` (RFC 5804): the server-side mail filters.
     Sieve,
-    /// CalDAV.
+    /// `CalDAV`.
     #[serde(rename = "caldav")]
     CalDav,
-    /// CardDAV.
+    /// `CardDAV`.
     #[serde(rename = "carddav")]
     CardDav,
-    /// WebDAV files.
+    /// `WebDAV` files.
     #[serde(rename = "webdav")]
     WebDav,
     /// Microsoft Graph.
@@ -53,7 +53,7 @@ pub enum Family {
     NextcloudNotes,
     /// OpenAI-compatible Chat Completions.
     ChatCompletions,
-    /// OpenAI Responses.
+    /// `OpenAI` Responses.
     Responses,
     /// Anthropic Messages.
     Messages,
@@ -61,7 +61,7 @@ pub enum Family {
     GenerateContent,
     /// Ollama's own API.
     OllamaNative,
-    /// A ComfyUI workflow registry.
+    /// A `ComfyUI` workflow registry.
     ComfyWorkflow,
     /// An external coding agent that speaks ACP and signs in by itself, or runs on an API key
     /// an account holds.
@@ -72,6 +72,7 @@ pub enum Family {
 impl Family {
     /// The protocol an authenticated relay speaks for this family, or `None` for a family the
     /// relay does not carry (the AI wires go through inferd, the vendor APIs take bearer tokens).
+    #[must_use]
     pub fn relay_protocol(self) -> Option<EndpointProtocol> {
         match self {
             Family::Imap => Some(EndpointProtocol::Imap),
@@ -106,10 +107,11 @@ impl Family {
 
 impl Family {
     /// Whether an endpoint of this family is one a grant for `kind` may reach: mail reaches
-    /// IMAP, SMTP and JMAP; files and photos WebDAV; calendars and tasks CalDAV (or JMAP);
-    /// contacts CardDAV (or JMAP); notes the Nextcloud Notes API; Graph files and photos; the
+    /// IMAP, SMTP and JMAP; files and photos `WebDAV`; calendars and tasks `CalDAV` (or JMAP);
+    /// contacts `CardDAV` (or JMAP); notes the Nextcloud Notes API; Graph files and photos; the
     /// Google Drive API files; the Google Photos APIs photos. Every other family is reached
     /// through its own client, not through an endpoint a candidate lists.
+    #[must_use]
     pub fn serves(self, kind: CapabilityKind) -> bool {
         matches!(
             (self, kind),
@@ -128,7 +130,10 @@ impl Family {
                     Family::CalDav,
                     CapabilityKind::Calendar | CapabilityKind::Tasks
                 )
-                | (Family::CardDav, CapabilityKind::Contacts)
+                | (
+                    Family::CardDav | Family::GooglePeople,
+                    CapabilityKind::Contacts
+                )
                 | (
                     Family::Graph,
                     CapabilityKind::Calendar | CapabilityKind::Contacts | CapabilityKind::Tasks
@@ -139,7 +144,6 @@ impl Family {
                     CapabilityKind::Calendar | CapabilityKind::Contacts
                 )
                 | (Family::GoogleCalendar, CapabilityKind::Calendar)
-                | (Family::GooglePeople, CapabilityKind::Contacts)
                 | (Family::GoogleTasks, CapabilityKind::Tasks)
         )
     }

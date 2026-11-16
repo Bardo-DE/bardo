@@ -28,6 +28,7 @@ pub enum Route {
 }
 
 /// A Mozilla autoconfig document for one domain, as providers publish it.
+#[must_use]
 pub fn autoconfig_xml(domain: &str, imap: (&str, u16), smtp: (&str, u16)) -> String {
     format!(
         "<?xml version=\"1.0\"?><clientConfig version=\"1.1\"><emailProvider id=\"{domain}\">\
@@ -93,6 +94,7 @@ impl FakeAutoconfig {
 
 impl AutoconfigHandle {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
@@ -123,6 +125,7 @@ impl AutoconfigHandle {
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn hits(&self) -> Vec<Hit> {
         self.shared.hits.all()
     }
@@ -179,29 +182,34 @@ pub struct FakeDns {
 
 impl FakeDns {
     /// An empty table.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Answers SRV lookups of `name` with `records`.
+    #[must_use]
     pub fn with_srv(self, name: &str, records: Vec<SrvRecord>) -> Self {
         lock(&self.srv).insert(name.to_ascii_lowercase(), records);
         self
     }
 
     /// Answers MX lookups of `domain` with `records`.
+    #[must_use]
     pub fn with_mx(self, domain: &str, records: Vec<MxRecord>) -> Self {
         lock(&self.mx).insert(domain.to_ascii_lowercase(), records);
         self
     }
 
     /// Makes every lookup fail with `DnsFault::Unreachable`.
+    #[must_use]
     pub fn unreachable(self) -> Self {
         *lock(&self.dead) = true;
         self
     }
 
     /// The names looked up, as `SRV name` and `MX domain`, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<String> {
         self.asked.all()
     }

@@ -1,7 +1,7 @@
 //! The standard file icon under `icons.style = monochrome` (design/08-ICONS.md section 2.10): the
 //! folder and the marks take the tint, as an app icon's plate does.
 //!
-//! The folder's tones and the embossed glyph go through the same OKLCh rule as a plate's stops
+//! The folder's tones and the embossed glyph go through the same `OKLCh` rule as a plate's stops
 //! (`super::retint`), once per scheme; the marks sit on the page, which stays light in the dark, so
 //! they are tinted once, as the light scheme draws them. The values reach the stylesheet as custom
 //! properties on the icon (`--file-tab-l` ... `--file-mark`), which it reads under the root's
@@ -28,6 +28,7 @@ pub enum FileIconStyle {
 impl FileIconStyle {
     /// The style for `icons.style` and the Space's tint (`Tint::space`), the pair bardo-shell already
     /// hands `retint`: only Monochrome changes a file icon (Muted leaves it as designed).
+    #[must_use]
     pub fn of(style: IconStyle, tint: Tint) -> FileIconStyle {
         match style {
             IconStyle::Monochrome => FileIconStyle::Monochrome(tint),
@@ -36,6 +37,7 @@ impl FileIconStyle {
     }
 
     /// The `data-icon-style` word the stylesheet selects the tinted paint by; `None` for Colour.
+    #[must_use]
     pub fn slug(self) -> Option<&'static str> {
         match self {
             FileIconStyle::Colour => None,
@@ -44,6 +46,7 @@ impl FileIconStyle {
     }
 
     /// The inline custom properties of the tinted paint; empty for Colour.
+    #[must_use]
     pub fn style_attribute(self) -> String {
         match self {
             FileIconStyle::Colour => String::new(),

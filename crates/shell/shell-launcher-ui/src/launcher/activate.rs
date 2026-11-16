@@ -41,6 +41,7 @@ impl LauncherProviders {
     /// The real providers over `services`' receivers (the first five, then the four whose
     /// `activate` reads the row alone: their policy here is the default, and they are never
     /// queried, so they reach no bus).
+    #[must_use]
     pub fn from_services(services: &Services) -> LauncherProviders {
         let (_, policy) = watch::channel(LauncherPolicy::default());
         let buses = Buses::absent();
@@ -90,6 +91,7 @@ impl LauncherProviders {
 
     /// What choosing `choice` on `item` does, from its own provider; nothing when no provider
     /// of its kind is here.
+    #[must_use]
     pub fn activation(&self, item: &Item, choice: &Choice) -> Activation {
         self.0
             .iter()
@@ -144,6 +146,7 @@ pub enum AfterEffect {
 impl LauncherEffect {
     /// Every effect closes the launcher but an insertion into its own field and forgetting a
     /// clipboard entry.
+    #[must_use]
     pub fn after(&self) -> AfterEffect {
         match self {
             LauncherEffect::Insert(_)
@@ -169,6 +172,7 @@ impl LauncherEffect {
 }
 
 /// The effect of `activation`.
+#[must_use]
 pub fn effect_of(activation: Activation) -> LauncherEffect {
     match activation {
         Activation::Launch { app, action } => LauncherEffect::Launch { app, action },
@@ -188,6 +192,7 @@ pub fn effect_of(activation: Activation) -> LauncherEffect {
 
 /// The files of `rows`, in the order shown: the results a file opened in the viewer is chosen from,
 /// which its arrow keys walk. A folder is a row of the list but not a file to walk.
+#[must_use]
 pub fn file_results(rows: &[&Item]) -> Vec<PathBuf> {
     rows.iter()
         .filter_map(|item| match &item.subject {
@@ -212,6 +217,7 @@ pub fn file_results(rows: &[&Item]) -> Vec<PathBuf> {
 
 /// `effect` with the results of search `search` added when it opens a file in the viewer: the
 /// provider that chose the effect saw one row, and only the panel knows the list around it.
+#[must_use]
 pub fn with_results(
     effect: LauncherEffect,
     search: Generation,

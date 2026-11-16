@@ -73,6 +73,7 @@ const ROWS: &[Row] = &[
 
 /// Who handles `action`, or `None` when it belongs to apps. Every Space number is the
 /// compositor's.
+#[must_use]
 pub fn handler(action: StandardAction) -> Option<Handler> {
     match action {
         StandardAction::SwitchToSpace(_) => Some(Handler::Compositor),

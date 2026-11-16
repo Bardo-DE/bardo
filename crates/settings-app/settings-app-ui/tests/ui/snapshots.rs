@@ -12,8 +12,7 @@ use ui_harness::snapshot_with;
 
 fn shots_dir() -> PathBuf {
     std::env::var_os("BARDO_SETTINGS_SHOTS")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(TMP).join("shots"))
+        .map_or_else(|| PathBuf::from(TMP).join("shots"), PathBuf::from)
 }
 
 /// The page's picture in `scheme`, saved as `<page>-<scheme>.png`; returns how many distinct

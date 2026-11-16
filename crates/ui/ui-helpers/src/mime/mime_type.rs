@@ -28,11 +28,13 @@ impl MimeType {
     }
 
     /// The type as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The part before the slash: `image` of `image/png`.
+    #[must_use]
     pub fn major(&self) -> &str {
         self.0.split('/').next().unwrap_or_default()
     }

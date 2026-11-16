@@ -14,6 +14,7 @@ pub struct FakeA11y {
 
 impl FakeA11y {
     /// A checker with nothing queued.
+    #[must_use]
     pub fn new() -> FakeA11y {
         FakeA11y::default()
     }

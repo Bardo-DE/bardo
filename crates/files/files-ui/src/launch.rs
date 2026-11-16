@@ -30,6 +30,7 @@ pub struct AppearanceSource {
 impl AppearanceSource {
     /// The person's own: `$XDG_CONFIG_HOME/bardo/appearance.toml` and the desktop's settings
     /// portal.
+    #[must_use]
     pub fn desktop() -> AppearanceSource {
         AppearanceSource {
             store: Store::new(ConfigRoot::Xdg, AppName::QUIRE),
@@ -38,6 +39,7 @@ impl AppearanceSource {
     }
 
     /// A scratch config folder and fixed preferences, for tests and headless runs.
+    #[must_use]
     pub fn scratch(config_dir: PathBuf, system: SystemPrefs) -> AppearanceSource {
         AppearanceSource {
             store: Store::new(ConfigRoot::Scratch(config_dir), AppName::QUIRE),
@@ -93,6 +95,7 @@ impl Launch {
     }
 
     /// The same launch where `~` means `home`.
+    #[must_use]
     pub fn with_home(self, home: FolderPath) -> Launch {
         Launch {
             home: Some(home),
@@ -101,16 +104,19 @@ impl Launch {
     }
 
     /// The same launch with these favourites.
+    #[must_use]
     pub fn with_places(self, places: Places) -> Launch {
         Launch { places, ..self }
     }
 
     /// The same launch with this look.
+    #[must_use]
     pub fn with_appearance(self, appearance: AppearanceSource) -> Launch {
         Launch { appearance, ..self }
     }
 
     /// The same launch following the person's choices as `preferences` sends them.
+    #[must_use]
     pub fn with_preferences(self, preferences: watch::Receiver<Preferences>) -> Launch {
         Launch {
             preferences,
@@ -119,16 +125,19 @@ impl Launch {
     }
 
     /// The same launch showing dates in `zone`.
+    #[must_use]
     pub fn with_zone(self, zone: Zone) -> Launch {
         Launch { zone, ..self }
     }
 
     /// The same launch answering these requests.
+    #[must_use]
     pub fn with_requests(self, requests: Requests) -> Launch {
         Launch { requests, ..self }
     }
 
     /// The same launch running on the runtime `handle` belongs to.
+    #[must_use]
     pub fn with_runtime(self, handle: Handle) -> Launch {
         Launch {
             runtime: Some(handle),
@@ -178,11 +187,13 @@ impl Launch {
     }
 
     /// The same launch drawing file icons from `file_icons`.
+    #[must_use]
     pub fn with_file_icons(self, file_icons: IconSources) -> Launch {
         Launch { file_icons, ..self }
     }
 
     /// The same launch over these seams.
+    #[must_use]
     pub fn with_seams(self, seams: Seams) -> Launch {
         Launch { seams, ..self }
     }

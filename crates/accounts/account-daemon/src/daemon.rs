@@ -67,6 +67,7 @@ pub struct Config {
 
 impl Config {
     /// A configuration over `paths` on `bus`: the Secret Service, callers read from `/proc`.
+    #[must_use]
     pub fn new(paths: Paths, bus: BusTarget) -> Self {
         Self {
             paths,
@@ -202,6 +203,7 @@ pub enum StartError {
 
 impl StartError {
     /// The exit status for this failure: a refused registry has one of its own.
+    #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self {
             Self::RegistryRefused(_) => ExitCode::from(crate::EXIT_REGISTRY_REFUSED),

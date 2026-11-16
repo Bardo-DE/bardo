@@ -282,7 +282,7 @@ fn an_id_too_large_to_count_past_is_read_as_no_id_and_never_repeats() {
     let ids_read = ids(&spaces);
     assert_eq!(ids_read.len(), 2);
     assert!(
-        ids_read.iter().all(|&id| id <= u64::from(u32::MAX)),
+        ids_read.iter().all(|&id| u32::try_from(id).is_ok()),
         "{ids_read:?}"
     );
     let added = spaces.add(Note::default());

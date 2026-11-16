@@ -109,16 +109,19 @@ pub enum ChildKeyError {
 impl ProcessCredential {
     /// A credential of `id` whose key is on the sealed descriptor `key`: what a transport hands
     /// back from `issue_credential`.
+    #[must_use]
     pub fn new(id: ProcessCredentialId, key: OwnedFd) -> Self {
         Self { id, key }
     }
 
     /// The id to end it by (`Launcher::revoke_credential`) and that `Revoked` names.
+    #[must_use]
     pub fn id(&self) -> &ProcessCredentialId {
         &self.id
     }
 
     /// The sealed memfd that holds the key.
+    #[must_use]
     pub fn descriptor(&self) -> &OwnedFd {
         &self.key
     }

@@ -33,8 +33,8 @@ async fn a_call_made_as_soon_as_the_name_is_owned_is_answered() {
     let connection = bus.connect().await;
     {
         let _on = held.handle().enter();
-        connection.object_server();
-    }
+        connection.object_server()
+    };
     let callers = Arc::new(TableCallers::new());
     let service = Arc::new(
         AccountService::new(

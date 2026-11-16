@@ -130,6 +130,7 @@ pub struct PcmDecoder {
 }
 
 impl PcmDecoder {
+    #[must_use]
     pub fn new(format: AudioFormat) -> Self {
         Self {
             format,

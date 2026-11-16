@@ -36,6 +36,7 @@ pub enum ShellError {
 impl ShellError {
     /// Whether the person was never really asked: no shell to ask, not the shell, or the shell
     /// replaced mid-question. Each of these is a no, never a yes.
+    #[must_use]
     pub fn is_refusal(&self) -> bool {
         matches!(
             self,
@@ -113,6 +114,7 @@ pub struct ShellChooser {
 
 impl ShellChooser {
     /// A chooser that asks through `link`.
+    #[must_use]
     pub fn new(link: BusLink) -> Self {
         Self { link }
     }
@@ -162,6 +164,7 @@ pub(crate) fn call_failed(error: zbus::Error) -> ShellError {
 /// Whether the bus said nobody can answer: the shell is not on the bus (no owner, nothing to
 /// start), or it is there but does not serve the picker yet (it has not exported the object, or
 /// does not know the method).
+#[must_use]
 pub fn nobody_answers(error: &zbus::Error) -> bool {
     const GONE: [&str; 5] = [
         "org.freedesktop.DBus.Error.ServiceUnknown",
@@ -218,6 +221,7 @@ pub fn answer_from_wire(
 }
 
 /// Map one wire source to a [`CastSource`]; `None` for a kind we do not know.
+#[must_use]
 pub fn source_from_wire(kind: &str, name: &str) -> Option<CastSource> {
     match kind {
         "output" => Some(CastSource::Output(name.to_owned())),
@@ -238,6 +242,7 @@ pub struct FakeChooser {
 
 impl FakeChooser {
     /// A chooser that will give these answers in order (`None` is a cancel).
+    #[must_use]
     pub fn new(answers: Vec<Option<(Vec<CastSource>, CursorMode)>>) -> Self {
         let mut answers = answers;
         answers.reverse();

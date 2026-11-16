@@ -20,6 +20,7 @@ use std::path::Path;
 /// assert_eq!(format_named("XR24"), Some(CaptureFormat::Xrgb8888));
 /// assert_eq!(format_named("nope"), None);
 /// ```
+#[must_use]
 pub fn format_named(name: &str) -> Option<CaptureFormat> {
     match name {
         "XR24" | "XRGB8888" => Some(CaptureFormat::Xrgb8888),
@@ -43,6 +44,7 @@ pub struct RawFrame {
 
 impl RawFrame {
     /// A frame of `width` x `height` pixels with `pitch` bytes per row.
+    #[must_use]
     pub fn new(width: u32, height: u32, pitch: u32, format: CaptureFormat) -> RawFrame {
         RawFrame {
             width,
@@ -125,6 +127,7 @@ pub fn decode(frame: &RawFrame, bytes: &[u8]) -> Result<RgbaImage, WritebackErro
 /// use compositor_testkit::writeback::tolerance;
 /// assert_eq!(tolerance(2, 1000), GoldenTier::Soft { channel: 2, parts_per_million: 1000 });
 /// ```
+#[must_use]
 pub fn tolerance(channel: u8, parts_per_million: u32) -> GoldenTier {
     GoldenTier::Soft {
         channel,

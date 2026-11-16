@@ -1,5 +1,5 @@
 //! The Bluetooth page: the switch, the devices this computer knows and the ones nearby, and
-//! pairing. BlueZ comes through a handle the environment carries.
+//! pairing. `BlueZ` comes through a handle the environment carries.
 
 mod sheets;
 mod view;

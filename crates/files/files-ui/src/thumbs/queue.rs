@@ -41,11 +41,13 @@ impl Queue {
     }
 
     /// How many wishes are held, waiting or being made.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.wishes.len()
     }
 
     /// Whether there are none.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.wishes.is_empty()
     }

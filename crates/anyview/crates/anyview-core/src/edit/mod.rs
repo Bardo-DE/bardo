@@ -60,6 +60,7 @@ pub enum EditKind {
 
 impl Edit {
     /// Which sort of edit this is.
+    #[must_use]
     pub fn kind(&self) -> EditKind {
         match self {
             Edit::Rotate(_) => EditKind::Rotate,

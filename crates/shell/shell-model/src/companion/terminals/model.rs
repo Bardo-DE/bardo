@@ -25,11 +25,13 @@ pub struct TerminalsModel {
 
 impl TerminalsModel {
     /// The session `id`, when the companion lists it.
+    #[must_use]
     pub fn session(&self, id: &SessionId) -> Option<&TerminalSession> {
         self.sessions.iter().find(|s| s.session == *id)
     }
 
     /// The sentence to show under `id`'s row, when its bring back was refused.
+    #[must_use]
     pub fn refusal_of(&self, id: &SessionId) -> Option<&str> {
         self.refused
             .as_ref()

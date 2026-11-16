@@ -1,4 +1,4 @@
-//! CalDAV (RFC 4791): a calendar is a collection under the account's calendar home, and an event a
+//! `CalDAV` (RFC 4791): a calendar is a collection under the account's calendar home, and an event a
 //! resource in it holding the event's iCalendar text.
 //!
 //! An event put here is named for its UID (`<uid>.ics`, percent-encoded), so it is found again
@@ -19,7 +19,7 @@ use account_http::http::{Method, Request, Response};
 use account_http::{HeaderText, Http, HttpError, request, uri, webdav};
 use base_url::WebUrl;
 
-/// A CalDAV account's calendars, under its calendar home.
+/// A `CalDAV` account's calendars, under its calendar home.
 #[derive(Debug, Clone)]
 pub struct CalDav<H> {
     http: H,

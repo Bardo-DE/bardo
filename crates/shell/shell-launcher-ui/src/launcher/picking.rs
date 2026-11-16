@@ -50,7 +50,7 @@ mod tests {
             (
                 "just before it settles",
                 pick,
-                at(PICK_SETTLE - Duration::from_millis(1)),
+                at(PICK_SETTLE.checked_sub(Duration::from_millis(1)).unwrap()),
                 true,
             ),
             ("settled", pick, at(PICK_SETTLE), false),

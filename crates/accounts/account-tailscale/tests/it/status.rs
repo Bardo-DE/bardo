@@ -10,7 +10,10 @@ async fn a_running_tailscale_lists_the_other_computers() {
     assert_eq!(status.backend, Backend::Running);
     assert_eq!(status.standing(), Standing::Ready);
     assert_eq!(status.label().as_deref(), Some("ada@example.org"));
-    assert_eq!(status.me.as_ref().map(|me| me.name()), Some("desk"));
+    assert_eq!(
+        status.me.as_ref().map(account_tailscale::Node::name),
+        Some("desk")
+    );
     let machines = status.machines();
     let owners: Vec<(&str, MachineOwner)> = machines
         .iter()

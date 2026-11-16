@@ -25,6 +25,7 @@ pub struct CasementLine {
 
 impl CasementLine {
     /// A line that asks through `link`.
+    #[must_use]
     pub fn new(link: BusLink) -> Self {
         Self { link }
     }

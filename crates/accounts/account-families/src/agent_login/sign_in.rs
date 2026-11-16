@@ -1,4 +1,4 @@
-//! The AgentLogin sign-in flow: nothing is asked. It shows the agent and, once the person
+//! The `AgentLogin` sign-in flow: nothing is asked. It shows the agent and, once the person
 //! confirms, ends in a `Signed` with no credential at all. (Signing in again goes through the
 //! same two steps; the sheet confirms the review itself.)
 
@@ -8,7 +8,7 @@ use account_family_kit::{Flow, Move};
 use account_provider::{ProviderSpec, Signed};
 use account_sheet::{SignInFault, SignInInput};
 
-/// The AgentLogin sign-in flow.
+/// The `AgentLogin` sign-in flow.
 #[derive(Debug)]
 pub struct AgentLoginFlow {
     spec: ProviderSpec,

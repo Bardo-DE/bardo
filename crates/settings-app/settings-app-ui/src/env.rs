@@ -79,6 +79,7 @@ pub struct Homes {
 impl Env {
     /// The environment after scanning `schema_dirs` for schemas, reaching the computer through
     /// `client`.
+    #[must_use]
     pub fn discover(
         schema_dirs: &[PathBuf],
         homes: Homes,
@@ -115,16 +116,19 @@ impl Env {
     }
 
     /// This environment with the Shortcuts list over `keymap`.
+    #[must_use]
     pub fn with_keymap(self, keymap: KeymapFiles) -> Env {
         Env { keymap, ..self }
     }
 
     /// This environment reading the distro from `os_release`.
+    #[must_use]
     pub fn with_os_release(self, os_release: PathBuf) -> Env {
         Env { os_release, ..self }
     }
 
     /// This environment finding the programs' desktop entries in `application_dirs`.
+    #[must_use]
     pub fn with_application_dirs(self, application_dirs: Vec<PathBuf>) -> Env {
         Env {
             application_dirs,
@@ -133,12 +137,14 @@ impl Env {
     }
 
     /// This environment judging the desktop entries' folders by `entry_rule`.
+    #[must_use]
     pub fn with_entry_rule(self, entry_rule: OriginRule) -> Env {
         Env { entry_rule, ..self }
     }
 
     /// This environment looking for Extensions and published style parts in `system_data_dirs`
     /// as well as the person's own data home.
+    #[must_use]
     pub fn with_system_data_dirs(self, system_data_dirs: Vec<PathBuf>) -> Env {
         let extensions =
             ExtensionHome::under(&self.config_home, &self.data_home, &system_data_dirs);

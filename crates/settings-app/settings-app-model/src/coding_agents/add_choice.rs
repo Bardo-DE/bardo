@@ -29,6 +29,7 @@ pub struct Candidate {
 
 impl Candidate {
     /// An assistant found in the installed folder, which says nothing of it but its id.
+    #[must_use]
     pub fn installed(found: &FoundAgent) -> Self {
         Self {
             id: found.id.clone(),

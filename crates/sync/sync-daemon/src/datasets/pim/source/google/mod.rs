@@ -80,9 +80,10 @@ impl<T: GrantsLink> Api<T> {
             .iter()
             .map(|(name, value)| format!("{name}={}", encode(value)))
             .collect();
-        match query.is_empty() {
-            true => format!("{}{path}", self.base),
-            false => format!("{}{path}?{}", self.base, query.join("&")),
+        if query.is_empty() {
+            format!("{}{path}", self.base)
+        } else {
+            format!("{}{path}?{}", self.base, query.join("&"))
         }
     }
 

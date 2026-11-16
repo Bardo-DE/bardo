@@ -5,7 +5,7 @@
 //! ([`spawn_in`]) is registered with the owner the same way, through the owner's own `spawn`:
 //! `Runtime::spawn(scope, …)` alone runs the task *for* the scope without registering it, so it
 //! outlived the scope and its signals, and the first `set` after the wait panicked with
-//! "ValueDroppedError" (a palette unmounted mid entrance took the shell down).
+//! "`ValueDroppedError`" (a palette unmounted mid entrance took the shell down).
 //!
 //! A task's body still writes only through [`try_set`] and reads only through [`try_get`]: a
 //! signal can belong to another scope than the task (a hub's timer writing a child's state),

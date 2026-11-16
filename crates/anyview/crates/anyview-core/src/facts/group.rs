@@ -3,6 +3,7 @@
 use ui_core::word::Word;
 
 /// A section of the Info panel. Closed, so every pane names and orders the sections the same way.
+///
 /// The declaration order is the display order: the sections of what the file holds first, and
 /// [`FactGroup::General`] (what any file has: its kind, size and dates) always last.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Word)]

@@ -1,5 +1,5 @@
 //! What mailo relies on, now that it uses this crate directly (`Multistatus`, `carddav::Props`
-//! and the request bodies): matching by namespace, the typed CardDAV view and the request
+//! and the request bodies): matching by namespace, the typed `CardDAV` view and the request
 //! bodies. They began as the tests of mailo's own `mail-pim::dav` (same author, MIT OR
 //! Apache-2.0) and stay as the pin on the public API mailo calls.
 

@@ -142,6 +142,7 @@ pub struct SessionRecord {
 
 impl SessionRecord {
     /// A session that has seen nothing and used nothing.
+    #[must_use]
     pub fn new(
         task: TaskId,
         actor: Actor,
@@ -189,6 +190,7 @@ impl SessionRecord {
     /// Whether `role` may speak in this session without having opened it: an editor, in a
     /// helper's conversation, which the companion opened for the person to talk in. A helper's
     /// job is never one, and the seat is the companion's to give, not the editor's.
+    #[must_use]
     pub fn is_conversation_for(&self, role: CallerRole) -> bool {
         role == CallerRole::Editor
             && self
@@ -252,6 +254,7 @@ pub struct RouterState {
 
 impl RouterState {
     /// A router that has seen nothing: nothing installed, nothing halted.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             registry: Registry::new(),
@@ -301,6 +304,7 @@ impl RouterState {
 
     /// The mode `session` is in: its own, or that of the conversation it works for. None when
     /// the session is not held.
+    #[must_use]
     pub fn mode_of(&self, session: &SessionId) -> Option<Mode> {
         let conversation = self.conversation_of(session)?;
         self.sessions.get(&conversation).map(|record| record.mode)
@@ -308,6 +312,7 @@ impl RouterState {
 
     /// The conversation `session` works for: itself, or the end of its chain of parents the
     /// router still holds. None when the session is not held.
+    #[must_use]
     pub fn conversation_of(&self, session: &SessionId) -> Option<SessionId> {
         let mut at = session;
         for _ in 0..MAX_HOPS {
@@ -325,6 +330,7 @@ impl RouterState {
     }
 
     /// The terminal sessions: every implicit session of the `Cli` role.
+    #[must_use]
     pub fn terminal_sessions(&self) -> Vec<SessionId> {
         self.implicit
             .iter()

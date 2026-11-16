@@ -38,23 +38,20 @@ pub(super) fn act(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, n: StepInde
         finish_plain(run, fx, CuaOutcome::Failed(FailReason::Input));
         return;
     };
-    match aim(&obs, &head.action) {
-        Ok(planned) => {
-            enter(run, fx, RunPhase::Acting(n));
-            fx.push(RunEffect::Glow(glow_for(&planned)));
-            fx.push(RunEffect::Inject(planned));
-        }
-        Err(_) => {
-            // The tree changed under a confirmation: the point is no longer there.
-            run.pending.actions.pop_front();
-            let outcome = ActionOutcome {
-                action: head,
-                result: ActionResult::Refused(Refusal::Local(LocalRefusal::OutsideLease)),
-            };
-            action_ended(run, fx, outcome, None);
-            drop_rest(run);
-            observe(run, fx, next(n), FrameWant::Now, AlsoContext::No);
-        }
+    if let Ok(planned) = aim(&obs, &head.action) {
+        enter(run, fx, RunPhase::Acting(n));
+        fx.push(RunEffect::Glow(glow_for(&planned)));
+        fx.push(RunEffect::Inject(planned));
+    } else {
+        // The tree changed under a confirmation: the point is no longer there.
+        run.pending.actions.pop_front();
+        let outcome = ActionOutcome {
+            action: head,
+            result: ActionResult::Refused(Refusal::Local(LocalRefusal::OutsideLease)),
+        };
+        action_ended(run, fx, outcome, None);
+        drop_rest(run);
+        observe(run, fx, next(n), FrameWant::Now, AlsoContext::No);
     }
 }
 

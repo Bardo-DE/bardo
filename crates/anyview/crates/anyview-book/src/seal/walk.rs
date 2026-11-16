@@ -27,7 +27,7 @@ struct Sealer<'a> {
     open_names: HashMap<&'static str, u32>,
     /// How deep inside an element that is left out with its contents.
     dropped: u32,
-    /// How deep inside SVG or MathML.
+    /// How deep inside SVG or `MathML`.
     foreign: u32,
     /// The stylesheets already sealed into `styles`, so a sheet linked again adds nothing.
     sheets: HashSet<String>,

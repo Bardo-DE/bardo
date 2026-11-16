@@ -42,6 +42,7 @@ pub struct ForceQuitRow {
 }
 
 /// The rows of the Force Quit window: every app that is running, in key order.
+#[must_use]
 pub fn force_quit_rows(apps: &BTreeMap<AppKey, App>) -> Vec<ForceQuitRow> {
     apps.values()
         .filter(|app| !matches!(app.life, AppLife::Launching { .. }))
@@ -80,6 +81,7 @@ pub struct Termination {
 
 impl Termination {
     /// Whether it names nothing to stop.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.clients.is_empty() && self.x11.is_empty()
     }

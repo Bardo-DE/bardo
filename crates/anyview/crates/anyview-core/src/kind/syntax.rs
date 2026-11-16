@@ -33,6 +33,7 @@ impl SyntaxName {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -234,6 +235,6 @@ mod tests {
         let json = serde_json::to_string(&name).unwrap();
         assert_eq!(json, "\"python\"");
         assert_eq!(serde_json::from_str::<SyntaxName>(&json).unwrap(), name);
-        assert!(serde_json::from_str::<SyntaxName>("\"\"").is_err());
+        serde_json::from_str::<SyntaxName>("\"\"").unwrap_err();
     }
 }

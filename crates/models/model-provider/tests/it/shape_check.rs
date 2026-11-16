@@ -299,7 +299,7 @@ fn an_or_handle_takes_the_inner_shape_or_a_handle() {
         (r#"{"handle":1.5}"#, false),
         (r#"{"handle":"1"}"#, false),
         (r#"{"handle":1,"extra":2}"#, false),
-        (r#"{}"#, false),
+        (r"{}", false),
         ("3", false),
         ("null", false),
     ];

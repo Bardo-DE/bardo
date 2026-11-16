@@ -19,6 +19,7 @@ impl ServiceRoot {
     pub const ALL: [ServiceRoot; 1] = [ServiceRoot::Accounts];
 
     /// The service's well-known bus name.
+    #[must_use]
     pub fn bus_name(self) -> &'static str {
         match self {
             ServiceRoot::Accounts => ACCOUNTS_BUS,
@@ -26,6 +27,7 @@ impl ServiceRoot {
     }
 
     /// The parent of the service's Request objects' paths (`<root>/<sender>/<token>`).
+    #[must_use]
     pub fn request_root(self) -> &'static str {
         match self {
             ServiceRoot::Accounts => "/org/bardo/Accounts1/request",
@@ -34,6 +36,7 @@ impl ServiceRoot {
 
     /// The prefix of the service's error names, without the dot that follows it
     /// (`org.bardo.Accounts1.Error`).
+    #[must_use]
     pub fn error_prefix(self) -> &'static str {
         match self {
             ServiceRoot::Accounts => "org.bardo.Accounts1.Error",

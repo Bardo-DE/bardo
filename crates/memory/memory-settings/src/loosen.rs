@@ -111,6 +111,7 @@ pub(crate) fn loosenable(key: &str) -> bool {
 }
 
 /// The keys of `value` that are looser than the shipped defaults, each with a short description.
+#[must_use]
 pub fn loosenings(value: &MemorySettings) -> Vec<String> {
     loose(value).into_iter().map(|l| l.said).collect()
 }

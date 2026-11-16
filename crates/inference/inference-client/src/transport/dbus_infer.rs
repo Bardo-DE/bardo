@@ -51,7 +51,10 @@ fn details(options: &OpenOptions) -> Details {
         .collect();
     // The places the call may run, in order, and the model to use at some of them.
     if let Some(places) = &options.places {
-        let texts: Vec<String> = places.iter().map(|place| place.to_string()).collect();
+        let texts: Vec<String> = places
+            .iter()
+            .map(std::string::ToString::to_string)
+            .collect();
         details.extend(
             OwnedValue::try_from(Value::new(texts))
                 .ok()

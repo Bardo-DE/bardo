@@ -4,6 +4,7 @@ use super::{PowerProfiles, ProfileEvent};
 use crate::units::Presence;
 
 /// `profiles` after `event`. `Found` marks the service present; `Gone` returns to the default.
+#[must_use]
 pub fn step(profiles: PowerProfiles, event: ProfileEvent) -> PowerProfiles {
     match event {
         ProfileEvent::Found => PowerProfiles {

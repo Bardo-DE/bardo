@@ -95,12 +95,11 @@ impl Recognizer for Scripted {
 
     fn begin(&mut self, _request: &SttRequest) -> Result<(), ProviderError> {
         self.calls.push("begin");
-        match self.begin_error.take() {
-            Some(e) => Err(e),
-            None => {
-                self.held = true;
-                Ok(())
-            }
+        if let Some(e) = self.begin_error.take() {
+            Err(e)
+        } else {
+            self.held = true;
+            Ok(())
         }
     }
 

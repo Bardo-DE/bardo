@@ -80,7 +80,7 @@ fn use_openings(ctx: MenuCtx, shown: ReadSignal<Reveal<PowerMenuOpening>>, outpu
             .read()
             .opening()
             .filter(|o| o.output == output)
-            .cloned();
+            .copied();
         let now = *menu.peek();
         match (follow(opening.as_ref(), now), opening) {
             (Follow::Start, Some(opening)) => {

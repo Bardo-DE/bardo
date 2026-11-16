@@ -42,16 +42,15 @@ impl Model {
     /// The bar does `mode` in full screen from now. A change lays the scene out again (the
     /// full-screen windows are sized to it) and asks every output for a frame.
     fn with_full_screen_bar(self, mode: FullScreenBar) -> Moved {
-        match self.full_screen_bar == mode {
-            true => Moved::of(self),
-            false => {
-                let outputs: Vec<OutputKey> = self.outputs.0.keys().cloned().collect();
-                Model {
-                    full_screen_bar: mode,
-                    ..self
-                }
-                .redrawn(Cause::Configure, outputs)
+        if self.full_screen_bar == mode {
+            Moved::of(self)
+        } else {
+            let outputs: Vec<OutputKey> = self.outputs.0.keys().cloned().collect();
+            Model {
+                full_screen_bar: mode,
+                ..self
             }
+            .redrawn(Cause::Configure, outputs)
         }
     }
 

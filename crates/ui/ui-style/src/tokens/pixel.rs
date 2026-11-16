@@ -70,6 +70,7 @@ struct Thousandths(u32);
 
 impl PixelToken {
     /// The value at `scale`, as CSS. At [`Scale::ONE`] it is the design value verbatim.
+    #[must_use]
     pub fn css(self, scale: Scale) -> String {
         if scale == Scale::ONE {
             return self.fallback(TokenScope::BASE).to_owned();
@@ -82,6 +83,7 @@ impl PixelToken {
 
     /// How many device pixels the token covers at `scale`; `None` for `--dpr`, which is no
     /// length.
+    #[must_use]
     pub fn device_pixels(self, scale: Scale) -> Option<u32> {
         self.snap().map(|snap| device_pixels(snap, scale))
     }
@@ -89,6 +91,7 @@ impl PixelToken {
     /// The token's length at `scale` in logical pixels (whole device pixels divided by the
     /// scale), for a host that reports geometry in it: `EditSurface`'s caret rect is
     /// `CaretW.logical(scale)` wide. `None` for `--dpr`.
+    #[must_use]
     pub fn logical(self, scale: Scale) -> Option<Px> {
         let device = self.device_pixels(scale)?;
         let per_logical = scale.numerator() as f32 / Scale::DENOMINATOR as f32;
@@ -109,6 +112,7 @@ impl PixelToken {
 
     /// The root's inline writes for `scale`: nothing at [`Scale::ONE`], where the stylesheet's
     /// defaults already hold, so a root without a scale renders the markup it always did.
+    #[must_use]
     pub fn style_attr(scale: Scale) -> String {
         if scale == Scale::ONE {
             return String::new();

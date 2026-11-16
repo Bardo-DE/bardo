@@ -210,7 +210,7 @@ fn the_model_row_decides_between_models_and_auto_and_empty_hand_back_to_the_cata
     let auto = best(&pooled).expect("served");
     assert_eq!((auto.chosen.model.as_str(), auto.why), ("beta", Why::Warm));
     // A named model that is not there is refused, never replaced.
-    assert!(best(&row("local/ghost")).is_err());
+    best(&row("local/ghost")).unwrap_err();
 }
 
 #[test]
@@ -273,7 +273,10 @@ fn engines(scratch: &Scratch) -> Engines {
             }),
         },
     );
-    let pool = models.iter().map(|model| model.model_ref()).collect();
+    let pool = models
+        .iter()
+        .map(inference_router::LocalModel::model_ref)
+        .collect();
     Engines::new(
         models,
         supervised,
@@ -336,16 +339,16 @@ async fn a_reload_changes_the_route_of_the_next_session_and_a_bad_file_changes_n
             .route_detailed(&spec(), Role::App)
             .map(|(r, _)| r.served.model)
     };
-    assert!(route().is_ok());
+    route().unwrap();
     // A named model that is not here: refused, naming it.
     file.set("ai.model.text.balanced", "local/ghost".into())
         .expect("write");
     reload.now().expect("reload");
-    assert!(route().is_err());
+    route().unwrap_err();
     // A file that does not read keeps what is in force.
     std::fs::write(file.path(), "[ai\nbroken").expect("write");
-    assert!(reload.now().is_err());
-    assert!(route().is_err());
+    reload.now().unwrap_err();
+    route().unwrap_err();
     file.set("ai.model.text.balanced", "".into()).ok();
     std::fs::write(
         file.path(),

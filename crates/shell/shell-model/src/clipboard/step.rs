@@ -20,6 +20,7 @@ use super::{
 };
 
 /// `state` after `event`.
+#[must_use]
 pub fn step(state: ClipState, event: ClipEvent) -> (ClipState, Vec<ClipEffect>) {
     match event {
         ClipEvent::Command(ClipboardCommand::Policy(policy)) => with_policy(state, policy),

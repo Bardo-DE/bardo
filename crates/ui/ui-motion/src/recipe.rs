@@ -51,6 +51,7 @@ pub struct Recipe {
 
 impl Anim {
     /// The canonical declaration.
+    #[must_use]
     pub fn recipe(self) -> Recipe {
         match self {
             // design/30 section 1.3: an inserted row fades and slides down over `--t-move`.

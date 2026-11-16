@@ -64,6 +64,7 @@ pub enum GrantCaller {
 
 impl GrantCaller {
     /// The actor kind this caller acts as.
+    #[must_use]
     pub fn kind(&self) -> ActorKind {
         match self {
             GrantCaller::Companion => ActorKind::Companion,
@@ -100,6 +101,7 @@ impl ProgramName {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

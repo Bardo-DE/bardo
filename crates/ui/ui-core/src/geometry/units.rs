@@ -53,21 +53,25 @@ pub struct Rect {
 
 impl Rect {
     /// The left edge.
+    #[must_use]
     pub fn left(self) -> Px {
         self.origin.x
     }
 
     /// The top edge.
+    #[must_use]
     pub fn top(self) -> Px {
         self.origin.y
     }
 
     /// The right edge.
+    #[must_use]
     pub fn right(self) -> Px {
         self.origin.x + self.size.width
     }
 
     /// The bottom edge.
+    #[must_use]
     pub fn bottom(self) -> Px {
         self.origin.y + self.size.height
     }

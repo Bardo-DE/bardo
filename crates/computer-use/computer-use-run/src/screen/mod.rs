@@ -87,6 +87,7 @@ enum Cause {
 
 impl Reason {
     /// The kind the event log keeps.
+    #[must_use]
     pub fn kind(&self) -> ScreenKind {
         match self {
             Reason::Instruction { .. } => ScreenKind::Instruction,
@@ -97,6 +98,7 @@ impl Reason {
     }
 
     /// The bounded piece of screen text, when there is one to show.
+    #[must_use]
     pub fn excerpt(&self) -> Option<&Excerpt> {
         match self {
             Reason::Instruction { excerpt, .. } | Reason::Unseen { excerpt, .. } => Some(excerpt),
@@ -129,6 +131,7 @@ pub enum ScreenVerdict {
 
 impl ScreenVerdict {
     /// The verdict for `reasons`: `Clear` when there are none.
+    #[must_use]
     pub fn of(reasons: Vec<Reason>) -> ScreenVerdict {
         if reasons.is_empty() {
             ScreenVerdict::Clear
@@ -138,6 +141,7 @@ impl ScreenVerdict {
     }
 
     /// The reasons; none for `Clear`.
+    #[must_use]
     pub fn reasons(&self) -> &[Reason] {
         match self {
             ScreenVerdict::Clear => &[],
@@ -146,6 +150,7 @@ impl ScreenVerdict {
     }
 
     /// The kinds of the reasons, each once, in the order found.
+    #[must_use]
     pub fn kinds(&self) -> Vec<ScreenKind> {
         let mut kinds: Vec<ScreenKind> = Vec::new();
         for reason in self.reasons() {
@@ -173,6 +178,7 @@ pub struct ScreenView<'a> {
 
 impl<'a> ScreenView<'a> {
     /// The view of an observation.
+    #[must_use]
     pub fn of(obs: &'a Observation) -> ScreenView<'a> {
         ScreenView {
             title: &obs.window.title.value,
@@ -280,11 +286,13 @@ impl Found<'_> {
 
 impl<'a> PatternCheck<'a> {
     /// A check over these phrase tables.
+    #[must_use]
     pub fn new(rules: &'a InjectionRules) -> Self {
         Self { rules }
     }
 
     /// The verdict on `view`. Pure.
+    #[must_use]
     pub fn check(&self, view: &ScreenView<'_>) -> ScreenVerdict {
         let mut found = Found {
             rules: self.rules,
@@ -313,6 +321,7 @@ pub struct WindowKey {
 
 impl WindowKey {
     /// The key of the window of `app` titled `title`.
+    #[must_use]
     pub fn of(app: &AppName, title: &str) -> WindowKey {
         WindowKey {
             app: app.clone(),

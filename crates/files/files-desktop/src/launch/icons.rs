@@ -74,6 +74,7 @@ pub struct FakeIcons {
 #[cfg(feature = "testing")]
 impl FakeIcons {
     /// A theme with no icons.
+    #[must_use]
     pub fn new() -> FakeIcons {
         FakeIcons::default()
     }

@@ -60,6 +60,7 @@ pub struct FakeSource {
 
 impl FakeSource {
     /// A working fake.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

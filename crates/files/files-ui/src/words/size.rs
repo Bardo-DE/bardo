@@ -11,6 +11,7 @@ const UNITS: [&str; 5] = ["KB", "MB", "GB", "TB", "PB"];
 ///
 /// Kilobytes are whole; megabytes and up keep one decimal, dropped when it is zero. A size that
 /// rounds up to a thousand of its unit is shown in the next one (`999999` is `1 MB`).
+#[must_use]
 pub fn size_words(size: ByteSize) -> String {
     match size.0 {
         0 => "Zero bytes".to_owned(),
@@ -22,6 +23,7 @@ pub fn size_words(size: ByteSize) -> String {
 
 /// What the Size column says of `entry`: a file's size, or a dash for anything with none (a folder,
 /// a link that leads nowhere, a pipe).
+#[must_use]
 pub fn entry_size_words(entry: &Entry) -> String {
     match &entry.kind {
         EntryKind::File(size) | EntryKind::Link(LinkTo::File(size)) => size_words(*size),

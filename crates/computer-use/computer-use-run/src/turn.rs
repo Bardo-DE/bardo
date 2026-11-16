@@ -95,6 +95,7 @@ fn answer_note(outcome: &ActionOutcome) -> Option<StepNote> {
 /// the person when the sender is the person and from an agent otherwise. A part the router held
 /// back as a handle is not text the run may read, and a message with no plain text says
 /// nothing. Pure.
+#[must_use]
 pub fn note_of(line: &InboundLine) -> Option<StepNote> {
     let text: Vec<&str> = line
         .parts
@@ -133,6 +134,7 @@ fn masked_regions(obs: &Observation) -> MaskedRegions {
 /// step as `StepNote`s, oldest first (empty when none: an agent's note is untrusted text, a
 /// person's is their own words, and neither is authority), then the person's answers to the
 /// model's own questions. Pure.
+#[must_use]
 pub fn turn(obs: &Observation) -> (CuaStepRequest, FrameAttachment) {
     turn_after(obs, false)
 }

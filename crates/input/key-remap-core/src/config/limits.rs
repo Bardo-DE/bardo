@@ -42,6 +42,7 @@ pub enum Oversize {
 
 impl Oversize {
     /// The refusal as a warning in plain words, naming what to shorten.
+    #[must_use]
     pub fn warning(&self) -> Warning {
         const KEPT: &str = "The earlier settings stay in use.";
         match self {

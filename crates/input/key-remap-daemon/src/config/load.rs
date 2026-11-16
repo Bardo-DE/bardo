@@ -16,6 +16,7 @@ pub const FILE_NAME: &str = "key-remap.toml";
 /// empty layer and no warning; a file anyone but root could change, or one that is unreadable
 /// or not TOML, is an empty layer and one warning, because the keyboard must keep working
 /// whatever the file says.
+#[must_use]
 pub fn system(dir: &Path) -> (ConfigLayer, Vec<Warning>) {
     system_through(&RealProc::system(), dir)
 }

@@ -16,10 +16,10 @@ impl Journal for TraceJournal {
     fn record(&self, entry: &Entry) {
         match &entry.target {
             Some(target) => {
-                tracing::info!(%target, outcome = ?entry.outcome, "agent network request")
+                tracing::info!(%target, outcome = ?entry.outcome, "agent network request");
             }
             None => {
-                tracing::info!(outcome = ?entry.outcome, "agent network request not understood")
+                tracing::info!(outcome = ?entry.outcome, "agent network request not understood");
             }
         }
     }

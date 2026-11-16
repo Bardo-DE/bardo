@@ -117,6 +117,7 @@ impl fmt::Debug for Edge {
 
 impl Edge {
     /// An edge over `seams`, and the end where its answers arrive.
+    #[must_use]
     pub fn new(seams: Seams) -> (Edge, UnboundedReceiver<Heard>) {
         let (heard, inbox) = unbounded_channel();
         let sink = ops::sink(heard.clone());
@@ -264,11 +265,13 @@ impl Edge {
 }
 
 /// When the window started, on the clock the window runs on (the wall clock, or a test's).
+#[must_use]
 pub fn start() -> Instant {
     clock::now()
 }
 
 /// The browser's time: how long since `start`.
+#[must_use]
 pub fn now(start: Instant) -> Now {
     Now(clock::since(start))
 }

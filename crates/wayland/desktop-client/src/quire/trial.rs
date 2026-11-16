@@ -22,11 +22,13 @@ pub struct DisplayTrial {
 
 impl DisplayTrial {
     /// A trial of `seconds` seconds.
+    #[must_use]
     pub const fn new(trial: TrialId, seconds: u32) -> Self {
         Self { trial, seconds }
     }
 
     /// How long the person has.
+    #[must_use]
     pub fn within(&self) -> Duration {
         Duration::from_secs(u64::from(self.seconds))
     }

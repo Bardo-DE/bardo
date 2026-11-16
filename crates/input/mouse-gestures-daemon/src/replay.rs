@@ -35,16 +35,19 @@ pub struct Step {
 /// Between records the tracker is ticked at its deadlines, as the reader thread's poll timeout
 /// does, and after the last record until it has none left; each tick that produced outputs is a
 /// `Step` of its own at the deadline. A delayed touchpad lift therefore replays at its own time. A step per record is kept for records; ticks only add steps.
+#[must_use]
 pub fn replay(records: &[Record], cfg: Config, timing: Timing) -> Vec<Step> {
     replay_to_end(records, cfg, timing).1
 }
 
 /// `replay`, also returning the tracker after the last record and its ticks.
+#[must_use]
 pub fn replay_to_end(records: &[Record], cfg: Config, timing: Timing) -> (Tracker, Vec<Step>) {
     replay_from(&RecordedSource::MagicMouseHid, records, cfg, timing)
 }
 
 /// Replays `records` from `source` through a fresh sensor and tracker.
+#[must_use]
 pub fn replay_from(
     source: &RecordedSource,
     records: &[Record],
@@ -97,6 +100,7 @@ fn ticks_until(mut tracker: Tracker, until: Option<Mono>) -> (Tracker, Vec<Step>
 }
 
 /// One Magic Mouse hidraw read through decode, the stamp clock and the tracker.
+#[must_use]
 pub fn feed(
     tracker: Tracker,
     clock: StampClock,
@@ -162,6 +166,7 @@ pub fn feed_from(
 }
 
 /// Every output of a replay, flattened.
+#[must_use]
 pub fn outs(steps: &[Step]) -> Vec<Out> {
     steps.iter().flat_map(|s| s.outs.iter().cloned()).collect()
 }

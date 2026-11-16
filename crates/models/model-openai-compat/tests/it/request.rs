@@ -199,7 +199,7 @@ fn a_native_tool_is_refused() {
         );
     }
     r.tools = vec![function("click", "{}")];
-    assert!(encode_request(&r, Flavor::Vllm).is_ok());
+    encode_request(&r, Flavor::Vllm).unwrap();
 }
 
 #[test]

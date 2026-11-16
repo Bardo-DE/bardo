@@ -1,4 +1,4 @@
-//! Wi-Fi: NetworkManager's wireless radio and the networks in range, as the control center lists
+//! Wi-Fi: `NetworkManager`'s wireless radio and the networks in range, as the control center lists
 //! them.
 
 mod command;

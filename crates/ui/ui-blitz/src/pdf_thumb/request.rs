@@ -10,7 +10,7 @@ use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
 use ui_components::prelude::*;
 
 /// The largest side a thumbnail is rasterised at, in device pixels: a preview pane at 3x, and a
-/// cap so a huge `size` cannot ask vello_cpu for a poster.
+/// cap so a huge `size` cannot ask `vello_cpu` for a poster.
 const LARGEST_SIDE: u32 = 2048;
 
 /// The largest PDF a thumbnail reads whole into memory: a scanned book is a few hundred MiB, and a
@@ -55,6 +55,7 @@ pub struct ThumbKey {
 
 impl ThumbRequest {
     /// The room in device pixels, each side rounded up and held to 1..=2048.
+    #[must_use]
     pub fn device_box(&self) -> DeviceBox {
         let side = |px: f32| {
             let device = (f64::from(px) * self.scale.as_f64()).ceil();

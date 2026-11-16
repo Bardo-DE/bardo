@@ -21,6 +21,7 @@ pub struct TabletPart {
 
 impl TabletPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> TabletPart
     where
         D: GlobalDispatch<ZwpTabletManagerV2, GlobalData>

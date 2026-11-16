@@ -17,6 +17,7 @@ pub enum BriefKind {
 
 impl BriefKind {
     /// Why the span is listed, in the person's words.
+    #[must_use]
     pub fn sentence(self) -> &'static str {
         match self {
             BriefKind::Link => "This opens something outside.",

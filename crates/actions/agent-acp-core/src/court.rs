@@ -65,6 +65,7 @@ pub struct OpenAgent {
 
 impl OpenAgent {
     /// The agent the router is told of.
+    #[must_use]
     pub fn external(&self) -> ExternalAgent {
         ExternalAgent {
             program: self.program.clone(),

@@ -62,7 +62,7 @@ fn a_file_that_does_not_parse_is_a_typed_error_and_an_ephemeral_store_keeps_noth
     let dir = tempfile::tempdir().expect("temp dir");
     let mut store = FileSpaceStore::new(&StateDirs::at(dir.path().to_path_buf()));
     store.write("spaces = 3").expect("write");
-    assert!(load_spaces(&store).is_err());
+    load_spaces(&store).unwrap_err();
     let mut nowhere = EphemeralSpaceStore;
     nowhere.write("anything").expect("write");
     assert_eq!(nowhere.read().expect("read"), None);

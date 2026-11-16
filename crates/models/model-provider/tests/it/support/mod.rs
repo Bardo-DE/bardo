@@ -25,7 +25,7 @@ struct Parser<'a> {
     _text: &'a str,
 }
 
-impl<'a> Parser<'a> {
+impl Parser<'_> {
     fn peek(&self) -> Option<char> {
         self.chars.get(self.at).copied()
     }
@@ -67,7 +67,7 @@ impl<'a> Parser<'a> {
         loop {
             self.ws();
             match self.peek() {
-                None | Some('|') | Some(')') => return Node::Seq(items),
+                None | Some('|' | ')') => return Node::Seq(items),
                 _ => items.push(self.item()),
             }
         }

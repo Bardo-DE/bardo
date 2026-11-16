@@ -131,6 +131,7 @@ pub struct DesktopClouds {
 
 impl DesktopClouds {
     /// The service `storage`, called from threads that are not on `runtime`.
+    #[must_use]
     pub fn new(storage: Storage, runtime: Handle) -> DesktopClouds {
         DesktopClouds { storage, runtime }
     }

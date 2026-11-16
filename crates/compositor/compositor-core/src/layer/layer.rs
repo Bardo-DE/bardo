@@ -34,6 +34,7 @@ impl LayerSpec {
     /// What its keyboard request comes to. `Exclusive` outranks the key window, so only the
     /// shell's surfaces keep it; any other client's is on-demand, and takes the keyboard only
     /// when the person clicks it (CASC-02).
+    #[must_use]
     pub fn granted_keyboard(&self) -> KeyboardInteractivity {
         match (self.keyboard, self.from_shell) {
             (KeyboardInteractivity::Exclusive, false) => KeyboardInteractivity::OnDemand,

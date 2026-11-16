@@ -41,6 +41,7 @@ impl Domain {
     }
 
     /// The domain as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -102,6 +103,7 @@ impl Recipient {
 
     /// Whether this grant recipient covers a recipient a call names. An address grant covers
     /// that address alone; a domain grant covers addresses at the domain, and a URL's host.
+    #[must_use]
     pub fn covers(&self, call: &Recipient) -> bool {
         match self {
             Recipient::Address(_) => self == call,
@@ -151,12 +153,14 @@ impl CommandPrefix {
     }
 
     /// The prefix as text.
+    #[must_use]
     pub fn as_text(&self) -> String {
         self.0.join(" ")
     }
 
     /// Whether `command` starts with these words and is otherwise plain: a command with an
     /// operator, expansion or newline anywhere is never covered, whatever it starts with.
+    #[must_use]
     pub fn covers(&self, command: &str) -> bool {
         let words: Vec<&str> = command.split_whitespace().collect();
         let starts = words.len() >= self.0.len() && self.0.iter().zip(&words).all(|(a, b)| a == b);
@@ -230,6 +234,7 @@ pub enum ScopeKind {
 
 impl StandingScope {
     /// The action it covers.
+    #[must_use]
     pub fn action(&self) -> &ActionRef {
         match self {
             StandingScope::Files { action, .. }
@@ -240,6 +245,7 @@ impl StandingScope {
     }
 
     /// Its kind.
+    #[must_use]
     pub fn kind(&self) -> ScopeKind {
         match self {
             StandingScope::Files { .. } => ScopeKind::Files,
@@ -250,6 +256,7 @@ impl StandingScope {
     }
 
     /// Whether the scope is narrow enough to hold: a directory scope is never `/`.
+    #[must_use]
     pub fn is_narrow(&self) -> bool {
         match self {
             StandingScope::Files { under, .. } => !under.is_root(),
@@ -272,12 +279,14 @@ pub struct StandingIdFault;
 
 impl StandingGrantId {
     /// The id of the grant for `caller` and `scope`.
+    #[must_use]
     pub fn of(caller: &GrantCaller, scope: &StandingScope) -> Self {
         Self::hashed(&serde_json::to_vec(&(caller, scope)).unwrap_or_default())
     }
 
     /// The id of the limit with this key: the same hash over the key and a tag, so a limit is
     /// revoked through the same path as a grant and the two never share an id in practice.
+    #[must_use]
     pub fn of_limit(key: &crate::limit::LimitKey) -> Self {
         Self::hashed(&serde_json::to_vec(&("limit", key)).unwrap_or_default())
     }
@@ -302,6 +311,7 @@ impl StandingGrantId {
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -336,6 +346,7 @@ pub struct StandingGrant {
 
 impl StandingGrant {
     /// The grant `caller` holds for `scope`, given at `at`.
+    #[must_use]
     pub fn new(caller: GrantCaller, scope: StandingScope, at: UnixSeconds) -> Self {
         Self {
             id: StandingGrantId::of(&caller, &scope),
@@ -347,6 +358,7 @@ impl StandingGrant {
 }
 
 /// `grants` with `grant` held: the same id replaces the earlier one.
+#[must_use]
 pub fn held_with(mut grants: Vec<StandingGrant>, grant: StandingGrant) -> Vec<StandingGrant> {
     grants.retain(|g| g.id != grant.id);
     grants.push(grant);
@@ -354,6 +366,7 @@ pub fn held_with(mut grants: Vec<StandingGrant>, grant: StandingGrant) -> Vec<St
 }
 
 /// `grants` without the grant `id`, and whether there was one.
+#[must_use]
 pub fn held_without(
     mut grants: Vec<StandingGrant>,
     id: &StandingGrantId,

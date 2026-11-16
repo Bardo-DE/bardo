@@ -61,6 +61,7 @@ fn strictest_grant() -> Level {
 
 impl RunEnv {
     /// The environment of a run under `config` on a backend with `caps`.
+    #[must_use]
     pub fn new(config: &CuaConfig, caps: BackendCaps, rules: Rules) -> RunEnv {
         RunEnv {
             caps,
@@ -81,6 +82,7 @@ impl RunEnv {
     }
 
     /// The same environment for an app the person allowed at `grant_level`.
+    #[must_use]
     pub fn with_grant_level(self, grant_level: Level) -> RunEnv {
         RunEnv {
             grant_level,
@@ -89,6 +91,7 @@ impl RunEnv {
     }
 
     /// The same environment with the quarantined reader switched `reader`.
+    #[must_use]
     pub fn with_reader(self, reader: ReaderMode) -> RunEnv {
         RunEnv { reader, ..self }
     }
@@ -132,6 +135,7 @@ impl Run {
     /// A mode the backend cannot run (`mode_support`) finishes it at once as
     /// `Blocked(ModeUnsupported(mode))`, and a target of `TaskTarget::App` as
     /// `Blocked(NeedsCapability)` until launching into a mode lands.
+    #[must_use]
     pub fn start(id: RunId, task: CuaTask, env: RunEnv, at: Stamp) -> (Run, Vec<RunEffect>) {
         step::start(id, task, env, at)
     }
@@ -139,6 +143,7 @@ impl Run {
     /// One transition: the next run and the effects to carry out. Every input in every phase has
     /// a row; `Finished` ignores every input (same run, no effects). Active time is counted from
     /// `at` against the previous instant, and only in active phases.
+    #[must_use]
     pub fn step(mut self, input: RunInput, at: Stamp) -> (Run, Vec<RunEffect>) {
         let effects = self.advance(input, at);
         (self, effects)
@@ -152,11 +157,13 @@ impl Run {
 
     /// The next instant the machine wants a `Tick`: a settle wake-up or the active-budget
     /// deadline; none when it is waiting for the world.
+    #[must_use]
     pub fn wake(&self) -> Option<Stamp> {
         step::wake(self)
     }
 
     /// The bus slug of the current phase.
+    #[must_use]
     pub fn slug(&self) -> RunStateSlug {
         self.phase.slug()
     }

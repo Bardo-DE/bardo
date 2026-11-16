@@ -11,6 +11,7 @@ use std::collections::BTreeSet;
 
 /// The power `global` needs consent for; none for a global every client may use (its row in
 /// the globals table).
+#[must_use]
 pub fn power_of(global: GlobalKind) -> Option<Power> {
     global.entry().power
 }
@@ -19,6 +20,7 @@ pub fn power_of(global: GlobalKind) -> Option<Power> {
 /// the shell with all of them, the portal with the screen and the windows (its screenshots,
 /// recordings and window switcher). Every other role is trusted with none; its program is
 /// asked like any other.
+#[must_use]
 pub fn trusted_powers(role: &ServiceRole) -> &'static [Power] {
     match role.as_str() {
         "shell" => <Power as WireCode>::ALL,
@@ -33,6 +35,7 @@ pub struct PowerSet(BTreeSet<Power>);
 
 impl PowerSet {
     /// The set with `power` in it.
+    #[must_use]
     pub fn with(self, power: Power) -> PowerSet {
         let mut powers = self.0;
         powers.insert(power);
@@ -40,11 +43,13 @@ impl PowerSet {
     }
 
     /// Whether `power` is in the set.
+    #[must_use]
     pub fn contains(&self, power: Power) -> bool {
         self.0.contains(&power)
     }
 
     /// Whether the set is empty.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }

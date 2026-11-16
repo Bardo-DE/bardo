@@ -33,6 +33,7 @@ use ui_core::spawner::Spawner;
 /// let current = CasementSettings::defaults();
 /// assert_eq!(followed(&current, &CasementDoc::default()), current);
 /// ```
+#[must_use]
 pub fn followed(current: &CasementSettings, doc: &CasementDoc) -> CasementSettings {
     let read = config::to_core(doc);
     CasementSettings {

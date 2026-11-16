@@ -30,9 +30,10 @@ impl Provider for RunsProvider {
         }
         let state = self.companion.borrow().clone();
         let alone = query.scope == Scope::Only(ProviderKind::Runs);
-        let items = match state.reached {
-            false => Vec::new(),
-            true => rows(&state, alone),
+        let items = if state.reached {
+            rows(&state, alone)
+        } else {
+            Vec::new()
         };
         sink.push(items);
     }

@@ -70,11 +70,13 @@ pub struct Row {
 
 impl Row {
     /// The directory this row installs into, under the engine's directory.
+    #[must_use]
     pub fn dir_name(&self) -> String {
         format!("{}-{}", self.version, self.backend.slug())
     }
 
     /// The files it downloads, in the order they are unpacked.
+    #[must_use]
     pub fn artifacts(&self) -> Vec<Artifact> {
         match self.delivery {
             Delivery::Archives(files) => files.to_vec(),
@@ -83,6 +85,7 @@ impl Row {
     }
 
     /// How many bytes it downloads.
+    #[must_use]
     pub fn download_size(&self) -> u64 {
         match self.delivery {
             Delivery::Archives(files) => files.iter().map(|file| file.size).sum(),
@@ -126,6 +129,7 @@ pub struct Manifest {
 
 impl Manifest {
     /// The manifest this build pins.
+    #[must_use]
     pub fn pinned() -> Self {
         Self {
             rows: crate::rows::ROWS,
@@ -133,16 +137,19 @@ impl Manifest {
     }
 
     /// A manifest of these rows.
+    #[must_use]
     pub fn of(rows: &'static [Row]) -> Self {
         Self { rows }
     }
 
     /// Every row.
+    #[must_use]
     pub fn rows(&self) -> &'static [Row] {
         self.rows
     }
 
     /// The row for exactly this engine, processor and backend.
+    #[must_use]
     pub fn row(&self, engine: EngineKind, arch: Arch, backend: Backend) -> Option<&'static Row> {
         self.rows
             .iter()
@@ -151,6 +158,7 @@ impl Manifest {
 
     /// The row whose directory is `dir_name` under `engine`'s: how an installed tree finds its
     /// pins.
+    #[must_use]
     pub fn row_in_dir(&self, engine: EngineKind, dir_name: &str) -> Option<&'static Row> {
         self.rows
             .iter()
@@ -158,6 +166,7 @@ impl Manifest {
     }
 
     /// The best row for `host`: the first backend it prefers that has a row its driver fits.
+    #[must_use]
     pub fn choose(&self, engine: EngineKind, host: &Host) -> Option<&'static Row> {
         preference(&host.gpus, host.choice)
             .into_iter()
@@ -166,6 +175,7 @@ impl Manifest {
     }
 
     /// What can be installed for `engine` on `host`.
+    #[must_use]
     pub fn offer(&self, engine: EngineKind, host: &Host) -> Offer {
         Offer {
             row: self.choose(engine, host),

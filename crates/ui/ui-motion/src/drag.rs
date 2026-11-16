@@ -46,6 +46,7 @@ pub struct Drag<K> {
 
 impl<K: Clone + PartialEq> Drag<K> {
     /// A drag that goes live after `threshold` of straight-line movement.
+    #[must_use]
     pub fn new(threshold: Px) -> Self {
         Drag {
             phase: DragPhase::Idle,
@@ -136,6 +137,7 @@ impl<K: 'static> Copy for DragTracker<K> {}
 
 impl<K: Clone + PartialEq + 'static> DragTracker<K> {
     /// Where the drag is.
+    #[must_use]
     pub fn phase(&self) -> DragPhase<K> {
         self.drag.read().phase().clone()
     }
@@ -151,6 +153,7 @@ impl<K: Clone + PartialEq + 'static> DragTracker<K> {
     }
 
     /// Feed a pointer-up; returns the drop, if any.
+    #[must_use]
     pub fn up(&self) -> Option<(K, usize)> {
         let (next, dropped) = self.drag.peek().clone().up();
         let mut drag = self.drag;
@@ -173,6 +176,7 @@ impl<K: Clone + PartialEq + 'static> DragTracker<K> {
 
 /// A drag tracker with a straight-line `threshold` ([`DRAG_THRESHOLD`], or
 /// [`WINDOW_DRAG_THRESHOLD`] for a window).
+#[must_use]
 pub fn use_drag<K: Clone + PartialEq + 'static>(threshold: Px) -> DragTracker<K> {
     DragTracker {
         drag: use_signal(|| Drag::new(threshold)),
@@ -197,6 +201,7 @@ fn hit(targets: &[Rect], at: Point) -> Option<usize> {
 /// Where a pointer at `x` sits along `track`, in thousandths, clamped to the track and
 /// rounded to the nearest multiple of `step` (a zero step is continuous): the Slider's value
 /// while its thumb is dragged (design/04-COMPONENTS.md section 5).
+#[must_use]
 pub fn fraction_along(track: Rect, x: Px, step: Fraction) -> Fraction {
     let width = track.size.width.0;
     let raw = if width > 0.0 {

@@ -236,7 +236,11 @@ fn inferd_is_never_given_a_local_engine() {
     let extra = "[ai]\nlocal_only = false\n";
     let with = parsed(&seed::inferd_toml(root, extra).expect("extra rows"));
     assert_eq!(with["ai"]["local_only"].as_bool(), Some(false));
-    assert!(with["engines"].as_table().is_some_and(|t| t.is_empty()));
+    assert!(
+        with["engines"]
+            .as_table()
+            .is_some_and(toml::map::Map::is_empty)
+    );
     let refused = [
         (
             "[engines.attached.\"m\"]\nurl = \"http://127.0.0.1:1\"\n",

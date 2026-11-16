@@ -1,4 +1,4 @@
-//! VirtualList: ten thousand rows of two heights (a heading before every nine messages), of which
+//! `VirtualList`: ten thousand rows of two heights (a heading before every nine messages), of which
 //! only the ones near the viewport are mounted. The cursor moves with the arrow keys and is kept in
 //! view; the buttons jump it far away, and the counter shows how many rows the list has asked for
 //! so far.

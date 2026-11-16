@@ -31,7 +31,7 @@ fn cursor_shot(fixture: &mut Fixture) -> image::RgbaImage {
     fixture.shot(ShotTarget::Region(output, around))
 }
 
-/// Set_shape(text) with the pointer's enter serial sets the named cursor.
+/// `Set_shape(text)` with the pointer's enter serial sets the named cursor.
 #[test]
 fn a_shape_request_sets_the_named_cursor() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");

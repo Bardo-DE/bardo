@@ -24,6 +24,7 @@ impl InfoRow {
 
 /// `size` as Get Info says it: the words the list uses, then the exact bytes once they differ
 /// from the words: `12 KB (12,345 bytes)`, `5 bytes`.
+#[must_use]
 pub fn exact_size_words(size: ByteSize) -> String {
     let words = size_words(size);
     if size.0 < 1000 {
@@ -34,6 +35,7 @@ pub fn exact_size_words(size: ByteSize) -> String {
 }
 
 /// `count` as `Zero items`, `1 item`, `12 items`.
+#[must_use]
 pub fn items_words(count: u32) -> String {
     match count {
         0 => "Zero items".to_owned(),
@@ -79,6 +81,7 @@ pub fn info_rows(info: &Info, when: impl Fn(Option<SystemTime>) -> String) -> Ve
 }
 
 /// The rows for the name: `Name`, and `Extension` when it has one. Read-only for now.
+#[must_use]
 pub fn name_rows(info: &Info) -> Vec<InfoRow> {
     let mut rows = vec![InfoRow::new("Name", info.name.display().into_owned())];
     if let Some(extension) = info.name.extension() {
@@ -91,6 +94,7 @@ pub fn name_rows(info: &Info) -> Vec<InfoRow> {
 }
 
 /// What Get Info says when the facts of an item could not be read.
+#[must_use]
 pub fn info_failure_words(failure: ListFailure) -> &'static str {
     match failure {
         ListFailure::NotFound => {

@@ -1,6 +1,6 @@
 //! The dock holds a `FrameDrive` from `RequestFrames` to `StopFrames`, so
 //! every motion's settle must be reachable at any frame rate. A fast compositor calls back
-//! every 1-2 ms, KWin every 16.7; both are run here, frame by frame, until the machine stops
+//! every 1-2 ms, `KWin` every 16.7; both are run here, frame by frame, until the machine stops
 //! frames.
 
 use super::params::tests::params;

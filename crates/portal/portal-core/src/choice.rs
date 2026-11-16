@@ -21,6 +21,7 @@ pub enum SourceKinds {
 impl SourceKinds {
     /// The kinds for a portal value. An empty set (the app sent 0 or only unknown bits) means
     /// displays, the portal's own default.
+    #[must_use]
     pub fn from_wire(value: u32) -> Self {
         match value & 3 {
             2 => Self::Windows,
@@ -30,6 +31,7 @@ impl SourceKinds {
     }
 
     /// The portal's value.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             Self::Outputs => 1,
@@ -39,6 +41,7 @@ impl SourceKinds {
     }
 
     /// Whether `source` is of an offered kind.
+    #[must_use]
     pub fn offers(self, source: &CastSource) -> bool {
         matches!(
             (self, source),

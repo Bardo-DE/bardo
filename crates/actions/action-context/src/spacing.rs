@@ -39,8 +39,9 @@ pub fn relation_of(
     let elsewhere = targets.iter().any(
         |t| matches!(resolver.scope_of(t), Some(SpaceScope::Only(space)) if space != *session),
     );
-    match elsewhere {
-        true => SpaceRelation::Other,
-        false => SpaceRelation::Same,
+    if elsewhere {
+        SpaceRelation::Other
+    } else {
+        SpaceRelation::Same
     }
 }

@@ -21,6 +21,7 @@ pub struct SurfaceTokens<T: 'static> {
 
 /// The tokens for the calling component. Give [`SurfaceTokens::mounted`] to the `onmounted` of
 /// an element inside the surface's `Ds` root.
+#[must_use]
 pub fn use_surface_tokens<T: ReadTokens>() -> SurfaceTokens<T> {
     let resolved = use_resolved(|lookup: &Lookup| T::read_tokens(&|name| lookup.length(name)));
     SurfaceTokens { resolved }
@@ -33,6 +34,7 @@ impl<T: ReadTokens> SurfaceTokens<T> {
     }
 
     /// The tokens now: the shipped values until the first frame after mount.
+    #[must_use]
     pub fn get(&self) -> T {
         self.resolved.value()().unwrap_or_else(|| T::read_tokens(&|_| None))
     }

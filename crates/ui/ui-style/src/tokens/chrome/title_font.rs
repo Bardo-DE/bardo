@@ -25,6 +25,7 @@ pub struct TitleFont {
 /// let font = title_font();
 /// assert_eq!((font.size_px, font.weight), (13.0, 600));
 /// ```
+#[must_use]
 pub fn title_font() -> TitleFont {
     let size = FontSize::Control.css_value(TokenScope::BASE);
     TitleFont {

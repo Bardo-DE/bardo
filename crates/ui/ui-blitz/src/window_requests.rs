@@ -22,7 +22,7 @@ pub enum WindowLife {
     /// On screen, with its own document.
     Open,
     /// Closed (by its handle, its frame, the compositor, or the main window closing); its
-    /// VirtualDom is dropped.
+    /// `VirtualDom` is dropped.
     Closed,
 }
 

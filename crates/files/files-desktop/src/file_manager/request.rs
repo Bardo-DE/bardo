@@ -10,11 +10,13 @@ pub struct StartupId(String);
 
 impl StartupId {
     /// The id `text`; empty means the caller gave none, so `None`.
+    #[must_use]
     pub fn new(text: &str) -> Option<StartupId> {
         (!text.is_empty()).then(|| StartupId(text.to_owned()))
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -81,6 +83,7 @@ impl Show {
 
 impl ShowRequest {
     /// How many places or files it names.
+    #[must_use]
     pub fn len(&self) -> usize {
         match self {
             ShowRequest::Folders(places) => places.len(),
@@ -89,6 +92,7 @@ impl ShowRequest {
     }
 
     /// Whether it names nothing.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }

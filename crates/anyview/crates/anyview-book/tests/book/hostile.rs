@@ -119,10 +119,7 @@ fn parts_nested_past_the_parsers_stack_are_refused_on_a_small_stack() {
                 assert_eq!(titles, Ok(2), "{name}");
             }
             _ => assert!(
-                matches!(
-                    opened,
-                    Err(BookError::Xml { .. }) | Err(BookError::Missing(_))
-                ),
+                matches!(opened, Err(BookError::Xml { .. } | BookError::Missing(_))),
                 "{name}: {opened:?}"
             ),
         }

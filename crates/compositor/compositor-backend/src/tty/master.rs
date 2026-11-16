@@ -54,6 +54,7 @@ impl MasterWatch {
     }
 
     /// Whether `device` could not take master back: nothing may be drawn on it.
+    #[must_use]
     pub fn is_lost(&self, device: &DevicePath) -> bool {
         self.lost.contains(device)
     }
@@ -70,6 +71,7 @@ impl MasterWatch {
 
     /// How many rounds of asking there have been since the last device regained master (to log
     /// the first and then now and then, not every second).
+    #[must_use]
     pub fn attempts(&self) -> u32 {
         self.attempts
     }

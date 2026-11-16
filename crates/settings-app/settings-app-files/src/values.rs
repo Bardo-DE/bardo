@@ -12,6 +12,7 @@ pub struct ConfigHome(pub PathBuf);
 
 impl ConfigHome {
     /// Where `file` is on disk.
+    #[must_use]
     pub fn path_of(&self, file: &ConfigFile) -> PathBuf {
         self.path_of_relative(file.relative())
     }
@@ -19,6 +20,7 @@ impl ConfigHome {
     /// Where the file `<app>/<name>` of a program is on disk: the program's folder
     /// (`ui_settings::app_folder`) with the name in it. A path of any other shape is under the
     /// config home as it stands.
+    #[must_use]
     pub fn path_of_relative(&self, relative: &Path) -> PathBuf {
         let mut parts = relative.iter();
         let app = parts.next().and_then(|app| app.to_str());
@@ -56,11 +58,13 @@ pub struct FileValues {
 
 impl FileValues {
     /// The value of `path`.
+    #[must_use]
     pub fn get(&self, path: &KeyPath) -> Option<&toml::Value> {
         self.values.get(path)
     }
 
     /// The value the file holds at `path` when no control can represent it.
+    #[must_use]
     pub fn as_written(&self, path: &KeyPath) -> Option<&toml::Value> {
         self.as_written.get(path)
     }

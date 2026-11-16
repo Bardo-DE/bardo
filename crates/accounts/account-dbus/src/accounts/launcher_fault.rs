@@ -8,16 +8,19 @@ use account_wire::LauncherFault;
 
 /// The error name accountd replies with: the same as [`launcher_fault_error_name_in`] with
 /// [`ServiceRoot::Accounts`].
+#[must_use]
 pub fn launcher_fault_error_name(fault: LauncherFault) -> String {
     launcher_fault_error_name_in(fault, ServiceRoot::Accounts)
 }
 
 /// The error name the daemon `service` replies with.
+#[must_use]
 pub fn launcher_fault_error_name_in(fault: LauncherFault, service: ServiceRoot) -> String {
     format!("{}.{}", service.error_prefix(), fault.name())
 }
 
 /// The fault an error name stands for, if it is one of ours, under any service's prefix.
+#[must_use]
 pub fn launcher_fault_from_error_name(name: &str) -> Option<LauncherFault> {
     LauncherFault::ALL.into_iter().find(|fault| {
         ServiceRoot::ALL
@@ -27,6 +30,7 @@ pub fn launcher_fault_from_error_name(name: &str) -> Option<LauncherFault> {
 }
 
 /// The launcher fault a daemon's error reply stands for, if it is one.
+#[must_use]
 pub fn launcher_fault_of(error: &zbus::Error) -> Option<LauncherFault> {
     match error {
         zbus::Error::MethodError(name, _, _) => launcher_fault_from_error_name(name.as_str()),

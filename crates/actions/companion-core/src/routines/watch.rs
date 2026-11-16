@@ -44,6 +44,7 @@ pub struct EventWatch {
 
 impl EventWatch {
     /// A watch that has just asked, at `now`.
+    #[must_use]
     pub fn new(now: UnixSeconds) -> Self {
         Self {
             polled: now,
@@ -89,6 +90,7 @@ pub struct SpaceWatch {
 
 impl SpaceWatch {
     /// The routines `seen` is an event for.
+    #[must_use]
     pub fn covering(&self, seen: &Seen) -> Vec<RoutineId> {
         self.routines
             .iter()

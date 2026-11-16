@@ -46,6 +46,7 @@ pub struct WordLabels(pub std::collections::BTreeMap<String, String>);
 
 impl WordLabels {
     /// Whether no word has a label.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
@@ -127,6 +128,7 @@ pub enum AgentSetting {
 impl AgentSetting {
     /// Whether this is [`AgentSetting::HandsOff`]: serde's `skip_serializing_if` hook, so the
     /// written schema names the mark only when a key is settable.
+    #[must_use]
     pub fn is_hands_off(&self) -> bool {
         matches!(self, AgentSetting::HandsOff)
     }
@@ -240,6 +242,7 @@ impl KeySpec {
     /// The key's choices as sections: the ungrouped ones first (`group: None`, omitted when
     /// empty), then each group in order of first appearance in the choices, each with its
     /// choices in their order. Empty for a key that is not a menu or segmented key.
+    #[must_use]
     pub fn grouped_choices(&self) -> Vec<GroupedChoices<'_>> {
         let words: &[String] = match &self.kind {
             KeyKind::Menu { variants } | KeyKind::Segmented { variants } => variants,
@@ -271,6 +274,7 @@ impl KeySpec {
     /// becomes a [`KeyKind::Menu`] of `words` (the first is the one a person sees first, the
     /// built-in `standard`) and `labels` names them. The stored value is unchanged. Any other
     /// kind comes back as it is.
+    #[must_use]
     pub fn offering(&self, words: Vec<String>, labels: WordLabels) -> KeySpec {
         match &self.kind {
             KeyKind::Provided { .. } => KeySpec {
@@ -283,11 +287,13 @@ impl KeySpec {
     }
 
     /// Where the model behind `word` runs, if the schema says.
+    #[must_use]
     pub fn place_of(&self, word: &str) -> Option<&ChoicePlace> {
         self.places.get(&ChoiceWord(word.to_owned()))
     }
 
     /// The reason `value` cannot be picked, if it is a string naming an unavailable choice.
+    #[must_use]
     pub fn unavailable_reason(&self, value: &toml::Value) -> Option<&UnavailableReason> {
         let word = value.as_str()?;
         self.unavailable.get(&ChoiceWord(word.to_owned()))
@@ -312,6 +318,7 @@ impl KeySpec {
 ///
 /// Pure: takes the words, returns the kind. The derive's `kind_of::<T>()` (`crate::schema`)
 /// is the only caller that reaches for a `Word`'s variants to get them.
+#[must_use]
 pub fn kind_from_variants(mut words: Vec<String>) -> KeyKind {
     match words.len() {
         0 => panic!("a settings enum needs at least one variant, got none"),
@@ -408,7 +415,7 @@ mod agent_tests {
     #[test]
     fn an_unknown_word_is_an_error_not_a_silent_hands_off() {
         let text = format!("agent = \"always\"\n{OLD}");
-        assert!(toml::from_str::<KeySpec>(&text).is_err());
+        toml::from_str::<KeySpec>(&text).unwrap_err();
     }
 }
 
@@ -465,7 +472,7 @@ mod provided_tests {
         // Unchanged behaviour: an unknown kind makes the schema file unreadable to an old reader,
         // which skips the whole file with a warning (`discover`).
         let text = PROVIDED.replace("provided", "hologram");
-        assert!(toml::from_str::<KeySpec>(&text).is_err());
+        toml::from_str::<KeySpec>(&text).unwrap_err();
     }
 }
 

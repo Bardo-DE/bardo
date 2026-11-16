@@ -47,6 +47,7 @@ impl GrantScope {
 impl AccountPermission {
     /// The app and the service the permission's sentence names; none for a sentence of another
     /// shape.
+    #[must_use]
     pub fn sentence(&self) -> Option<GrantSentence> {
         GrantSentence::parse(&self.label)
     }

@@ -687,7 +687,7 @@ fn a_question_waits_for_the_person_and_the_answer_goes_back_as_the_outcome() {
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
     assert_eq!(kinds(&d.effects), ["cua.step"]);
     assert!(
-        matches!(&d.run.track.outcomes[..], [ActionOutcome { result: ActionResult::Answered(a), .. }] if a.value == "Work"),
+        matches!(&*d.run.track.outcomes, [ActionOutcome { result: ActionResult::Answered(a), .. }] if a.value == "Work"),
         "the rest of the batch is dropped, the answer is the outcome"
     );
 }

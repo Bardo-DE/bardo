@@ -14,6 +14,7 @@ impl Failure {
     }
 
     /// The same failure with `context` in front, for the step that was running.
+    #[must_use]
     pub fn during(self, context: &str) -> Self {
         Self(format!("{context}: {}", self.0))
     }

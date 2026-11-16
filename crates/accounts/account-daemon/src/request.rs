@@ -123,10 +123,7 @@ pub(crate) async fn departed(mut owners: NameOwnerChangedStream) {
         let next = std::future::poll_fn(|cx| Pin::new(&mut owners).poll_next(cx)).await;
         match next {
             Some(signal) => {
-                let gone = signal
-                    .args()
-                    .map(|args| args.new_owner().is_none())
-                    .unwrap_or(false);
+                let gone = signal.args().is_ok_and(|args| args.new_owner().is_none());
                 if gone {
                     return;
                 }

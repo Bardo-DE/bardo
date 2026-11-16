@@ -22,6 +22,7 @@ pub struct SharedFonts {
 
 impl SharedFonts {
     /// System fonts (fontconfig, including CJK fallback) plus Blitz's bullet glyph.
+    #[must_use]
     pub fn system() -> SharedFonts {
         let mut ctx = FontContext::new();
         // Shares the backing store across every clone handed to `for_document`, so a font file
@@ -40,6 +41,7 @@ impl SharedFonts {
     /// Only Blitz's bullet glyph plus every face in `faces`: no system fonts, so a render is
     /// reproducible whatever the machine has installed. (`system_fonts` is a construction-time
     /// choice of the collection, not a runtime flag, so this builds its own.)
+    #[must_use]
     pub fn bundled(faces: &FontFaces) -> SharedFonts {
         let ctx = FontContext {
             source_cache: SourceCache::new_shared(),
@@ -57,6 +59,7 @@ impl SharedFonts {
     }
 
     /// [`SharedFonts::system`] plus every face in `faces`, registered once.
+    #[must_use]
     pub fn system_with(faces: &FontFaces) -> SharedFonts {
         let mut fonts = SharedFonts::system();
         for bytes in &faces.0 {
@@ -82,6 +85,7 @@ impl SharedFonts {
     }
 
     /// A clone for a new document's `DocumentConfig::font_ctx`.
+    #[must_use]
     pub fn for_document(&self) -> FontContext {
         self.ctx.clone()
     }

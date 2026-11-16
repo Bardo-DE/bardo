@@ -4,20 +4,20 @@
 //! [`CalendarStore`] is the seam; each backend implements it over the transport its store
 //! speaks:
 //!
-//! - [`CalDav`]: CalDAV (RFC 4791) over the HTTP seam, through account-dav-proto and its discovery walk.
+//! - [`CalDav`]: `CalDAV` (RFC 4791) over the HTTP seam, through account-dav-proto and its discovery walk.
 //!   An event is a resource holding its iCalendar text; a write carries `If-Match` or
 //!   `If-None-Match: *`, so it never overwrites a change it has not seen.
 //! - [`Graph`]: Microsoft Graph's calendars. Graph takes JSON and keeps an `iCalUId` of its own,
 //!   so an event put here carries its UID in an extended property, and is found by either.
 //! - [`Google`]: the Google Calendar API, whose `import` keeps the event's own `iCalUID`.
-//! - [`Jmap`]: JMAP for Calendars, with the event as JSCalendar.
+//! - [`Jmap`]: JMAP for Calendars, with the event as `JSCalendar`.
 //! - `Eds` (feature `eds`): Evolution Data Server over the session bus, the calendar store of
 //!   GNOME and most Linux desktops.
 //!
 //! The iCalendar data stays the caller's: an [`Event`] carries its text whole, for the stores
 //! that keep iCalendar, and the few fields a JSON store needs beside it, which the caller read
 //! from that text with its own parser. Nothing here rewrites iCalendar, and the only part it reads is
-//! a `UID` line, to tell which event a CalDAV query returned. Credentials are
+//! a `UID` line, to tell which event a `CalDAV` query returned. Credentials are
 //! the HTTP seam's (a relay adds them), as for every porter family.
 
 mod caldav;

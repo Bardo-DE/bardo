@@ -92,7 +92,7 @@ fn a_dot_target_or_port_zero_is_not_offered() {
         found_from_srv(ADDRESS, &answers),
         Err(DiscoverFault::NoServers)
     );
-    assert!(DomainName::parse(".").is_err());
+    DomainName::parse(".").unwrap_err();
 }
 
 #[test]

@@ -13,11 +13,13 @@ pub struct Pt(pub f32);
 
 impl Pt {
     /// `mm` millimetres.
+    #[must_use]
     pub fn from_mm(mm: f32) -> Self {
         Pt(mm * 72.0 / 25.4)
     }
 
     /// `inches` inches.
+    #[must_use]
     pub fn from_inches(inches: f32) -> Self {
         Pt(inches * 72.0)
     }
@@ -47,6 +49,7 @@ pub enum PageSize {
 
 impl PageSize {
     /// Across and down, in points.
+    #[must_use]
     pub fn dimensions(self) -> (Pt, Pt) {
         match self {
             PageSize::A4 => (Pt::from_mm(210.0), Pt::from_mm(297.0)),
@@ -72,6 +75,7 @@ pub struct Margins {
 
 impl Margins {
     /// The same margin on all four sides.
+    #[must_use]
     pub fn uniform(margin: Pt) -> Self {
         Margins {
             top: margin,
@@ -82,6 +86,7 @@ impl Margins {
     }
 
     /// `vertical` above and below, `horizontal` left and right.
+    #[must_use]
     pub fn symmetric(vertical: Pt, horizontal: Pt) -> Self {
         Margins {
             top: vertical,

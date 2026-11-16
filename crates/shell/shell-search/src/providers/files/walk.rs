@@ -66,6 +66,7 @@ pub fn fd_args(ask: &FileAsk) -> Vec<OsString> {
 
 /// `plocate`'s arguments: case-insensitive, basename only, at most `ask.limit` results (the
 /// home-directory filter is applied to its output).
+#[must_use]
 pub fn plocate_args(ask: &FileAsk) -> Vec<OsString> {
     vec![
         OsString::from("--ignore-case"),

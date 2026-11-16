@@ -6,6 +6,7 @@ use dioxus::prelude::Key;
 use super::keys::CenterKey;
 
 /// `key`, when the center handles it.
+#[must_use]
 pub fn center_key(key: &Key) -> Option<CenterKey> {
     match key {
         Key::Escape => Some(CenterKey::Escape),

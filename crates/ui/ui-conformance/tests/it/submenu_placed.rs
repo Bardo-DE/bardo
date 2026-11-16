@@ -56,7 +56,7 @@ fn Floating() -> Element {
                 items: entries(),
                 expanded: Some(2),
                 onpick: |_| {},
-                onclose: |_| {},
+                onclose: |()| {},
             }
         }
     }
@@ -75,7 +75,7 @@ fn Inline() -> Element {
                         flow: Flow::Inline,
                         expanded: Some(2),
                         onpick: |_| {},
-                        onclose: |_| {},
+                        onclose: |()| {},
                     }
                 }
             }

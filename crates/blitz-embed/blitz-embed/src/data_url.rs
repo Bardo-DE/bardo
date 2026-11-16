@@ -3,6 +3,7 @@
 //! grain PNG is base64 and its icon masks are percent-encoded SVG.
 
 /// The bytes `url` carries, or `None` when it is not a well-formed `data:` URL.
+#[must_use]
 pub fn decode(url: &str) -> Option<Vec<u8>> {
     let rest = strip_scheme(url)?;
     let (header, body) = rest.split_once(',')?;

@@ -19,6 +19,7 @@ pub struct WordsModel {
 
 impl WordsModel {
     /// A model that always answers with these words.
+    #[must_use]
     pub fn says(words: &str) -> Self {
         Self {
             says: words.to_owned(),
@@ -64,9 +65,10 @@ impl InferSession for WordsSession {
     }
 
     async fn next(&mut self) -> Result<InferEvent, SessionError> {
-        match std::mem::take(&mut self.asked) {
-            true => self.model.reply(),
-            false => Err(SessionError::Closed),
+        if std::mem::take(&mut self.asked) {
+            self.model.reply()
+        } else {
+            Err(SessionError::Closed)
         }
     }
 }

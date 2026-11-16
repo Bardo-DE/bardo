@@ -21,6 +21,7 @@ pub enum Offer {
 
 impl Offer {
     /// The kind offered or missing.
+    #[must_use]
     pub fn kind(&self) -> CapabilityKind {
         match self {
             Offer::Present(capability) => capability.kind(),
@@ -73,6 +74,7 @@ pub enum Provenance {
 }
 
 /// Whether `claims` offer `kind`.
+#[must_use]
 pub fn offers(claims: &[Claim], kind: CapabilityKind) -> bool {
     claims
         .iter()

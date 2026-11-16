@@ -10,6 +10,7 @@ const LONGEST: Duration = Duration::from_secs(30);
 
 /// The wait after one that was `previous` (`None` for the first attempt since the last live
 /// connection): one second, doubling to thirty.
+#[must_use]
 pub fn reconnect_delay(previous: Option<Duration>) -> Duration {
     previous.map_or(FIRST, |previous| (previous * 2).min(LONGEST))
 }

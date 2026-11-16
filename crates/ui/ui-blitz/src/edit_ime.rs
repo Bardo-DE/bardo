@@ -58,6 +58,7 @@ impl EditListeners {
 
     /// The captured surface's sink for `phase`, released with it at the release. `None` when
     /// no surface holds the pointer.
+    #[must_use]
     pub fn captured(&self, phase: PointerPhase) -> Option<EventHandler<CapturedPointer>> {
         let mut registry = self.0.borrow_mut();
         match phase {

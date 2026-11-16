@@ -23,6 +23,7 @@ impl ModMap {
     };
 
     /// What `role` writes when pressed.
+    #[must_use]
     pub const fn out(self, role: Role) -> OutMod {
         match role {
             Role::Command => self.command,

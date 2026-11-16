@@ -8,6 +8,7 @@ use std::path::{Path, PathBuf};
 pub const CACHE_DIR: &str = "wallpaper";
 
 /// `<hash>-<w>x<h>.png`, the hash as 16 lowercase hex digits.
+#[must_use]
 pub fn cache_file_name(hash: u64, width: u32, height: u32) -> String {
     format!("{hash:016x}-{width}x{height}.png")
 }
@@ -27,6 +28,7 @@ fn fnv1a(hash: u64, bytes: &[u8]) -> u64 {
 
 /// A stable hash of the source file's path, size and modification time, so an edited image
 /// at the same path is a new cache entry.
+#[must_use]
 pub fn source_hash(path: &Path, len: u64, modified_unix_nanos: u128) -> u64 {
     let hash = fnv1a(FNV_OFFSET_BASIS, path.as_os_str().as_bytes());
     let hash = fnv1a(hash, &len.to_le_bytes());
@@ -35,6 +37,7 @@ pub fn source_hash(path: &Path, len: u64, modified_unix_nanos: u128) -> u64 {
 
 /// Where the blurred copy of the cached `image` lives: the same directory, `-backdrop` before
 /// the extension (`<hash>-<w>x<h>-backdrop.png`), so it follows the image's own cache key.
+#[must_use]
 pub fn backdrop_file(image: &Path) -> PathBuf {
     let stem = image
         .file_stem()

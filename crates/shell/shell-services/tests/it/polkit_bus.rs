@@ -67,7 +67,7 @@ impl StandIn {
         object_path: String,
     ) -> zbus::fdo::Result<()> {
         if let Ok(mut agent) = self.agent.lock() {
-            *agent = header.sender().map(|s| s.to_string());
+            *agent = header.sender().map(std::string::ToString::to_string);
         }
         let _ = self.heard.send(heard("register", subject, object_path));
         Ok(())
@@ -327,8 +327,7 @@ fn a_made_up_request_takes_the_fake_secret_and_nothing_else() {
             .borrow()
             .current
             .as_ref()
-            .map(|v| v.cookie.0.clone())
-            .unwrap_or_else(|| panic!("shown"));
+            .map_or_else(|| panic!("shown"), |v| v.cookie.0.clone());
         rx.borrow_and_update();
         answer(&control, &cookie, "not it");
         next(&mut rx, "checking", |p| {

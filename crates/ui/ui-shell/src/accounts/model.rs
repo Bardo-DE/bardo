@@ -59,6 +59,7 @@ impl ProviderEntry {
     }
 
     /// The same entry wearing `face`.
+    #[must_use]
     pub fn faced(self, face: MarkFace) -> Self {
         ProviderEntry {
             face: Some(face),
@@ -67,6 +68,7 @@ impl ProviderEntry {
     }
 
     /// The same entry wearing `style`.
+    #[must_use]
     pub fn styled(self, style: MarkStyle) -> Self {
         ProviderEntry { style, ..self }
     }
@@ -137,6 +139,7 @@ pub enum FieldText {
 
 impl FieldText {
     /// Whether nothing, or only blanks, is typed.
+    #[must_use]
     pub fn is_blank(&self) -> bool {
         match self {
             FieldText::Plain(text) => text.trim().is_empty(),
@@ -203,6 +206,7 @@ pub struct FormField {
 
 impl FormField {
     /// A text entry with no choices, hint or group, shown in the form.
+    #[must_use]
     pub fn new(role: FieldRole, required: bool, text: FieldText) -> Self {
         Self {
             role,
@@ -217,6 +221,7 @@ impl FormField {
     }
 
     /// The same field as a choice among `choices`.
+    #[must_use]
     pub fn choosing(self, choices: Vec<Choice>) -> Self {
         Self {
             choices: Some(choices),
@@ -241,6 +246,7 @@ impl FormField {
     }
 
     /// The same field placed in `part`.
+    #[must_use]
     pub fn in_part(self, part: FormPart) -> Self {
         Self {
             part: Some(part),
@@ -249,6 +255,7 @@ impl FormField {
     }
 
     /// The same field under the form's Advanced disclosure, still in its own part there.
+    #[must_use]
     pub fn advanced(self) -> Self {
         Self {
             advanced: true,

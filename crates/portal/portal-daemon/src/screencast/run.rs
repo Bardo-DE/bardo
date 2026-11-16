@@ -1,4 +1,4 @@
-//! A share that is running: for each source a capture, a PipeWire stream and the thread that
+//! A share that is running: for each source a capture, a `PipeWire` stream and the thread that
 //! moves frames from one to the other.
 
 use std::sync::Arc;
@@ -62,7 +62,7 @@ pub struct Share {
 }
 
 impl Share {
-    /// Open a capture and a PipeWire stream for each source and start moving frames. Every stream
+    /// Open a capture and a `PipeWire` stream for each source and start moving frames. Every stream
     /// runs on the one connection of `job`, which stays open as long as any of them runs.
     ///
     /// Blocks while connecting; call it off the async runtime. `ended` runs, on the stream's own
@@ -90,11 +90,13 @@ impl Share {
     }
 
     /// The streams, for the reply.
+    #[must_use]
     pub fn infos(&self) -> Vec<StreamInfo> {
         self.streams.iter().map(|s| s.info.clone()).collect()
     }
 
     /// The first stream's node, the one the session machine reports.
+    #[must_use]
     pub fn first_node(&self) -> Option<PwNode> {
         self.streams.first().map(|s| s.info.node)
     }

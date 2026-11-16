@@ -141,6 +141,7 @@ fn long_edge(src: DeviceSize, max_edge: u32, max_pixels: u64) -> Result<(u32, u3
 /// where the factor already carries the patch merge (28 is 14 times 2, 32 is 16 times 2), so
 /// the grid it counts is the grid of merged tokens. The Anthropic-style rules and `Identity`
 /// charge one token per 750 pixels. An estimate for budgeting, not the engine's own count.
+#[must_use]
 pub fn image_tokens(rule: &ResizeRule, image: Size<ImageSpace>) -> ImageTokens {
     let (w, h) = (u64::from(image.w.0), u64::from(image.h.0));
     let tokens = match rule {

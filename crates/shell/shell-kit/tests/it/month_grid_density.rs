@@ -1,4 +1,4 @@
-//! The compact MonthGrid on a real Blitz document (design/04-COMPONENTS.md section 39):
+//! The compact `MonthGrid` on a real Blitz document (design/04-COMPONENTS.md section 39):
 //! at `MonthDensity::Auto` inside a small desktop `WidgetFrame`, the month fills the
 //! frame's content box (164 less 12 padding a side, 140 x 140, the widgets' measured inset,
 //! design/23 section 1.1), where the regular grid (224 x 254) overflowed it: seven even 20 px

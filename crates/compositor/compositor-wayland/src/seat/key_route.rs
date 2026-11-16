@@ -42,6 +42,7 @@ pub struct RouteFacts {
 }
 
 /// What the seat says about `code` now.
+#[must_use]
 pub fn route_facts<D: SeatHandler + 'static>(seat: &Seat<D>, code: KeyCode) -> RouteFacts {
     let grabbed = seat.input_method().keyboard_grabbed();
     let down = seat
@@ -58,6 +59,7 @@ impl PastKeys {
     /// Whether `key` goes straight to the focused client past the keyboard's grab (`false`: through
     /// the keyboard, the bindings and the input method's grab), given what the seat says now, and the
     /// record after it.
+    #[must_use]
     pub fn route(mut self, key: &KeyDelivery, facts: RouteFacts) -> (PastKeys, bool) {
         let held = (key.device, key.code);
         let route = match key.edge {
@@ -75,6 +77,7 @@ impl PastKeys {
 
     /// A release that was refused (the session locked while the key was down): its record goes,
     /// so a later press of that key through the keyboard does not send its release past.
+    #[must_use]
     pub fn refused_release(mut self, device: DeviceId, code: KeyCode) -> PastKeys {
         self.0.remove(&(device, code));
         self

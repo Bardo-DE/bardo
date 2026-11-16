@@ -34,6 +34,7 @@ pub struct NoToken;
 
 impl BoundEdge {
     /// A bridge to `socket` speaking with `token`.
+    #[must_use]
     pub fn new(socket: PathBuf, token: EdgeToken) -> Self {
         Self { socket, token }
     }

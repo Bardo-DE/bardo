@@ -1,4 +1,5 @@
 //! `zwlr_gamma_control_manager_v1`: a client (night light) drives an output's colour curve.
+//!
 //! The ramp becomes `Event::GammaSet`, the model answers with `Effect::SetGamma`, and
 //! `compositor_app::exec` hands it to the backend; destroying the control restores the identity
 //! curve.
@@ -71,6 +72,7 @@ impl Mortal for WaitingControl {
 
 impl GammaPart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> GammaPart
     where
         D: GlobalDispatch<ZwlrGammaControlManagerV1, GammaGlobal> + 'static,

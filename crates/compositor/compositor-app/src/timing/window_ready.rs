@@ -24,6 +24,7 @@ pub struct WindowReady {
 
 impl WindowReady {
     /// The line, message first, then `key=value` fields.
+    #[must_use]
     pub fn line(&self) -> String {
         format!(
             "window-ready app_id={} pid={} connected_at={} first_commit_at={} first_frame_at={} settled_at={}",

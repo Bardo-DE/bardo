@@ -84,16 +84,19 @@ impl<'a> At<'a> {
 
 impl At<'_> {
     /// The path of the row `tail` of the account.
+    #[must_use]
     pub fn path(&self, tail: &str) -> String {
         format!("accounts.{}.{tail}", self.account.id)
     }
 
     /// The section of the page the account's rows are in: the account's own label.
+    #[must_use]
     pub fn section(&self) -> &str {
         &self.account.label.0
     }
 
     /// What a person reads for the account's provider: its file's name, else its id.
+    #[must_use]
     pub fn provider_label(&self) -> &str {
         self.directory
             .provider_label(&self.account.provider)
@@ -101,6 +104,7 @@ impl At<'_> {
     }
 
     /// The group of the page the account is listed under.
+    #[must_use]
     pub fn group(&self) -> ProviderGroup {
         self.directory.group_of(self.account)
     }

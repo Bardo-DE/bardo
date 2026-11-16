@@ -9,6 +9,7 @@ use std::collections::BTreeSet;
 /// The apps of `book` that may be allowed, by name (then id): each has a system entry that is
 /// listed, and is not among `grants`. An app is allowed by its entry's id, so an entry anyone
 /// but an administrator can change is never offered. An id in more than one folder is offered once.
+#[must_use]
 pub fn allow_candidates(book: &ProgramBook, grants: &[ScreenGrant]) -> Vec<ProgramSubject> {
     let mut seen: BTreeSet<&str> = grants.iter().map(|grant| grant.app.0.as_str()).collect();
     let mut found: Vec<(String, ProgramSubject)> = book

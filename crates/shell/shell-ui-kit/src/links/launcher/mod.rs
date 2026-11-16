@@ -62,11 +62,13 @@ pub struct LauncherLink {
 
 impl LauncherLink {
     /// A hidden launcher.
+    #[must_use]
     pub fn new() -> LauncherLink {
         LauncherLink::default()
     }
 
     /// The current value.
+    #[must_use]
     pub fn now(&self) -> Reveal<LauncherOpening> {
         self.panel.now()
     }
@@ -113,6 +115,7 @@ impl LauncherLink {
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Reveal<LauncherOpening>> {
         self.panel.subscribe()
     }
@@ -123,11 +126,13 @@ impl LauncherLink {
     }
 
     /// What the panel takes now.
+    #[must_use]
     pub fn hit(&self) -> PanelHit {
         self.hit.now()
     }
 
     /// A receiver for the catcher to follow the panel's part.
+    #[must_use]
     pub fn subscribe_hit(&self) -> watch::Receiver<PanelHit> {
         self.hit.subscribe()
     }
@@ -143,11 +148,13 @@ impl LauncherLink {
     }
 
     /// A receiver for the catcher to follow the panel's placement.
+    #[must_use]
     pub fn subscribe_place(&self) -> watch::Receiver<Option<PanelPlace>> {
         self.place.subscribe()
     }
 
     /// The rows the open panel shows, `None` while no panel is open.
+    #[must_use]
     pub fn rows(&self) -> Option<ShownRows> {
         self.rows.now()
     }

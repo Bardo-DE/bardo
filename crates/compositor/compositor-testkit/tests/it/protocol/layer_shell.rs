@@ -72,7 +72,7 @@ pub(crate) fn map_on(
     layer
 }
 
-/// An Exclusive layer gets wl_keyboard.enter with the current modifiers on the commit that maps it (A16).
+/// An Exclusive layer gets `wl_keyboard.enter` with the current modifiers on the commit that maps it (A16).
 #[test]
 fn an_exclusive_layer_takes_the_keyboard_on_its_mapping_commit() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");

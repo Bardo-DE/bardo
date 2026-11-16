@@ -31,6 +31,7 @@ pub struct FixedClock(pub UnixSeconds);
 
 impl FixedClock {
     /// A clock at `at`.
+    #[must_use]
     pub const fn new(at: UnixSeconds) -> Self {
         Self(at)
     }
@@ -79,6 +80,7 @@ pub struct ManualMonotonic {
 
 impl ManualMonotonic {
     /// A clock standing at the moment it was made.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             start: Instant::now(),
@@ -88,7 +90,10 @@ impl ManualMonotonic {
 
     /// Moves it on by `by`.
     pub fn advance(&self, by: std::time::Duration) {
-        *self.moved.lock().unwrap_or_else(|p| p.into_inner()) += by;
+        *self
+            .moved
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner) += by;
     }
 }
 
@@ -100,7 +105,11 @@ impl Default for ManualMonotonic {
 
 impl Monotonic for ManualMonotonic {
     fn now(&self) -> Instant {
-        self.start + *self.moved.lock().unwrap_or_else(|p| p.into_inner())
+        self.start
+            + *self
+                .moved
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 }
 

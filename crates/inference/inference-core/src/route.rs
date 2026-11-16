@@ -19,6 +19,7 @@ pub struct RouteAsk {
 
 impl RouteAsk {
     /// A request carrying data of `class`.
+    #[must_use]
     pub fn new(class: DataClass) -> Self {
         Self { class }
     }

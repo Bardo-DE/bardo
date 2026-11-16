@@ -107,12 +107,14 @@ pub struct CapabilityRow {
 
 impl CapabilityRow {
     /// Whether this row's access is asked with the sign-in.
+    #[must_use]
     pub fn asked_at_sign_in(&self) -> bool {
         self.ask == Ask::SignIn
     }
 
     /// Whether this row reaches as far as a grant of `reach` goes: a Storage row as far as its
     /// scope, every other row as far as any grant (only Storage has a reach of its own).
+    #[must_use]
     pub fn reaches(&self, reach: StorageScope) -> bool {
         match &self.capability {
             Capability::Storage(storage) => storage.scope >= reach,
@@ -133,6 +135,7 @@ pub struct AiSpec {
 impl ProviderSpec {
     /// The group it is listed under: the file's, else the one decided from its sign-in and
     /// services.
+    #[must_use]
     pub fn group(&self) -> ProviderGroup {
         self.group.unwrap_or_else(|| {
             let kinds: Vec<_> = self
@@ -152,6 +155,7 @@ impl ProviderSpec {
     }
 
     /// The kinds a sign-in asks for, once each, in file order.
+    #[must_use]
     pub fn sign_in_kinds(&self) -> Vec<CapabilityKind> {
         self.sign_in_rows()
             .map(|row| row.capability.kind())
@@ -179,21 +183,24 @@ impl ProviderSpec {
             .capabilities
             .iter()
             .filter(|row| row.capability.kind() == kind && row.reaches(reach));
-        match rows.clone().any(CapabilityRow::asked_at_sign_in) {
-            true => Some(Ask::SignIn),
-            false => rows.next().map(|_| Ask::OnUse),
+        if rows.clone().any(CapabilityRow::asked_at_sign_in) {
+            Some(Ask::SignIn)
+        } else {
+            rows.next().map(|_| Ask::OnUse)
         }
     }
 
     /// The row the sheet's provider list shows for this provider.
+    #[must_use]
     pub fn sheet_row(&self) -> ProviderRow {
         ProviderRow {
             id: self.id.clone(),
             label: self.label.clone(),
             mark: self.mark.clone(),
-            kind: match self.id.as_str().starts_with("generic-") {
-                true => RowKind::Generic,
-                false => RowKind::Provider,
+            kind: if self.id.as_str().starts_with("generic-") {
+                RowKind::Generic
+            } else {
+                RowKind::Provider
             },
             auth: match self.auth.kind {
                 AuthKind::AgentLogin => ProviderKind::AgentLogin,

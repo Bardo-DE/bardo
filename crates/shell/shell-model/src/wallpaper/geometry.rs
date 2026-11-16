@@ -19,6 +19,7 @@ pub struct CoverWindow {
 /// so the geometry is always finite (a zero-sized source or target never occurs for a real
 /// image or output, but this keeps the function total rather than panicking on one). The window
 /// is never empty and never leaves the source.
+#[must_use]
 pub fn cover_window(source: (u32, u32), target: (u32, u32)) -> CoverWindow {
     let (sw, sh) = (u64::from(source.0.max(1)), u64::from(source.1.max(1)));
     let (tw, th) = (u64::from(target.0.max(1)), u64::from(target.1.max(1)));

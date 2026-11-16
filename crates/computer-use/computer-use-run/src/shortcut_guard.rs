@@ -34,6 +34,7 @@ pub struct Control {
 
 impl Control {
     /// The words for the model: which control to click instead.
+    #[must_use]
     pub fn words(&self) -> String {
         format!(
             "that shortcut is not needed here: click {:?} [{}] instead",

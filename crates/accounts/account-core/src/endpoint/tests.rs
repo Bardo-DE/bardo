@@ -339,7 +339,7 @@ fn an_endpoint_url_reads_back_from_its_text_only() {
         serde_json::from_str::<EndpointUrl>(&json).expect("url"),
         parsed
     );
-    assert!(serde_json::from_str::<EndpointUrl>(r#""nope""#).is_err());
+    serde_json::from_str::<EndpointUrl>(r#""nope""#).unwrap_err();
 }
 
 #[test]

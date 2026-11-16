@@ -210,7 +210,7 @@ async fn a_reply_that_breaks_the_schema_is_repaired_once_and_every_attempt_is_co
         "the repair names the field and does not echo the reply: {text}"
     );
     assert!(
-        matches!(&last.parts[..], [Part::Text(t)] if t.contains("not accepted")),
+        matches!(&*last.parts, [Part::Text(t)] if t.contains("not accepted")),
         "{last:?}"
     );
 }

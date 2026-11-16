@@ -84,6 +84,7 @@ pub struct IconResolver {
 }
 
 /// The resolver for this component: it re-renders whenever the cache finishes a raster.
+#[must_use]
 pub fn use_icon_resolver() -> IconResolver {
     let done = use_hook(|| CACHE.done.subscribe());
     IconResolver {
@@ -94,6 +95,7 @@ pub fn use_icon_resolver() -> IconResolver {
 impl IconResolver {
     /// The file `art` shows now: a plain file as it is; a styled one's cached raster when it is
     /// made, else its untinted source, starting the raster when nobody has.
+    #[must_use]
     pub fn path(&self, art: &Art) -> PathBuf {
         match art {
             Art::Plain(path) => path.clone(),

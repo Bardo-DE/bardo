@@ -1,5 +1,5 @@
 //! The origin of a URL: scheme, host and port. A [`UrlScheme`] names the schemes porter dials
-//! (web, mail, ManageSieve), with each one's default port; an [`Origin`] is what "the same server"
+//! (web, mail, `ManageSieve`), with each one's default port; an [`Origin`] is what "the same server"
 //! means, with the two questions about its host a caller asks: is it this computer, is it a
 //! tailnet's.
 
@@ -20,9 +20,9 @@ pub enum UrlScheme {
     Smtp,
     /// `smtps`.
     Smtps,
-    /// `sieve` (ManageSieve, STARTTLS).
+    /// `sieve` (`ManageSieve`, STARTTLS).
     Sieve,
-    /// `sieves` (ManageSieve over TLS from the first byte).
+    /// `sieves` (`ManageSieve` over TLS from the first byte).
     Sieves,
     /// `pop3` (POP3, STARTTLS as `STLS`).
     Pop3,
@@ -47,6 +47,7 @@ const SCHEMES: [(UrlScheme, &str, u16); 10] = [
 
 impl UrlScheme {
     /// The scheme `text` names, if it is one of these.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         SCHEMES
             .iter()
@@ -62,11 +63,13 @@ impl UrlScheme {
     }
 
     /// The scheme's text (`https`).
+    #[must_use]
     pub fn text(self) -> &'static str {
         self.row().1
     }
 
     /// The port used when the URL names none.
+    #[must_use]
     pub fn default_port(self) -> u16 {
         self.row().2
     }
@@ -84,6 +87,7 @@ pub struct Origin {
 }
 
 /// `host[:port]` or `[v6][:port]`; the host is never empty.
+#[must_use]
 pub fn split_authority(authority: &str) -> Option<(&str, Option<&str>)> {
     let (host, port) = match authority.strip_prefix('[') {
         Some(bracketed) => {
@@ -104,6 +108,7 @@ pub fn split_authority(authority: &str) -> Option<(&str, Option<&str>)> {
 
 impl Origin {
     /// Whether the host is this computer (`localhost`, `127.0.0.0/8`, `::1`).
+    #[must_use]
     pub fn is_loopback(&self) -> bool {
         self.host == "localhost"
             || self
@@ -113,8 +118,9 @@ impl Origin {
     }
 
     /// Whether the host is an address only a tailnet hands out: one in Tailscale's ranges
-    /// (100.64.0.0/10, fd7a:115c:a1e0::/48), a MagicDNS name under `.ts.net`, or a MagicDNS
+    /// (100.64.0.0/10, `fd7a:115c:a1e0::/48`), a `MagicDNS` name under `.ts.net`, or a `MagicDNS`
     /// short name (one label, no dot), which only a tailnet's resolver answers for.
+    #[must_use]
     pub fn is_tailnet(&self) -> bool {
         match self.host.parse::<std::net::IpAddr>() {
             Ok(std::net::IpAddr::V4(ip)) => {

@@ -29,6 +29,7 @@ pub struct Asks {
 
 impl Asks {
     /// All of them.
+    #[must_use]
     pub fn total(&self) -> u32 {
         self.gate + self.model
     }
@@ -66,6 +67,7 @@ pub enum Verdict {
 
 impl Verdict {
     /// Whether this is the one good word.
+    #[must_use]
     pub fn is_pass(self) -> bool {
         self == Verdict::Pass
     }
@@ -87,6 +89,7 @@ pub struct Evidence {
 }
 
 /// The verdict on a run of `task`.
+#[must_use]
 pub fn verdict(task: &TaskDef, e: Evidence) -> Verdict {
     if e.forbidden {
         return Verdict::Violation;

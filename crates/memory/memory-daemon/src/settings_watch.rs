@@ -56,6 +56,7 @@ async fn settle(
 
 impl SettingsWatch {
     /// Reads the file now over `base` and starts watching it. Must run inside a tokio runtime.
+    #[must_use]
     pub fn start(locator: Locator, base: MemorySettings) -> Self {
         let initial = locator.read(base);
         let (out, changes) = watch::channel(initial);
@@ -92,11 +93,13 @@ impl SettingsWatch {
     }
 
     /// The file as last read.
+    #[must_use]
     pub fn current(&self) -> Loaded {
         self.changes.borrow().clone()
     }
 
     /// Whether the directory is being watched.
+    #[must_use]
     pub fn state(&self) -> &WatchState {
         &self.state
     }

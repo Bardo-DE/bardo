@@ -254,12 +254,14 @@ fn section(into: &mut String, heading: &str, lines: impl IntoIterator<Item = Str
 }
 
 /// The system message: rules, then what is pinned and changes at most daily.
+#[must_use]
 pub fn system_text(view: &PlannerView) -> String {
     system_text_with(view, None)
 }
 
 /// [`system_text`] with an agent's role between the rules and the pinned sections. The rules are
 /// always first and always whole.
+#[must_use]
 pub fn system_text_with(view: &PlannerView, role: Option<&RoleText>) -> String {
     let mut text = String::from(RULES);
     text.push_str("\n\n");
@@ -393,11 +395,13 @@ fn message(role: Role, text: String) -> ChatMessage {
 }
 
 /// The two messages of one planner turn.
+#[must_use]
 pub fn messages(view: &PlannerView) -> Vec<ChatMessage> {
     messages_with(view, None)
 }
 
 /// [`messages`] for an agent with a role.
+#[must_use]
 pub fn messages_with(view: &PlannerView, role: Option<&RoleText>) -> Vec<ChatMessage> {
     vec![
         message(Role::System, system_text_with(view, role)),

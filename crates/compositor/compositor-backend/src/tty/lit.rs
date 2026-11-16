@@ -35,6 +35,7 @@ pub struct LitOutput {
 
 impl LitOutput {
     /// Whether it is lit.
+    #[must_use]
     pub fn power(&self) -> bool {
         self.config.power
     }
@@ -203,7 +204,7 @@ impl TtyBackend {
             .get_mut(path)
             .ok_or_else(|| KmsError::DeviceGone(path.0.clone()))?;
         device.kms.commit(commit)?;
-        let was_dark = was.as_ref().map(LitOutput::power) == Some(false);
+        let was_dark = was.as_ref().is_some_and(|x| !LitOutput::power(x));
         if was_dark {
             device.kms.set_power(connector.id, true)?;
         }
@@ -226,9 +227,10 @@ impl TtyBackend {
                 config: *config,
             },
         );
-        Ok(match was_dark {
-            true => Lighting::Relit,
-            false => Lighting::Lit,
+        Ok(if was_dark {
+            Lighting::Relit
+        } else {
+            Lighting::Lit
         })
     }
 
@@ -258,6 +260,7 @@ impl TtyBackend {
 
     /// How many gamma steps the CRTC of `name` has per channel: the one it is lit on, else the
     /// first the connector can use. None for an output no device drives.
+    #[must_use]
     pub fn gamma_size(&self, name: &OutputName) -> Option<u32> {
         let (path, connector) = self.driver_of(name).ok()?;
         let crtc = match self.lit.get(name) {

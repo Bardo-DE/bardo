@@ -14,6 +14,7 @@ impl AccountKey {
     }
 
     /// The key as accountd spells it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -71,6 +72,7 @@ pub enum AccountStanding {
 
 impl AccountStanding {
     /// Whether only the person can put it right.
+    #[must_use]
     pub fn needs_sign_in(self) -> bool {
         matches!(
             self,
@@ -79,6 +81,7 @@ impl AccountStanding {
     }
 
     /// Which sign-in it asks for, when it asks for one.
+    #[must_use]
     pub fn ask(self) -> Option<SignInAsk> {
         match self {
             AccountStanding::NeedsReauth => Some(SignInAsk::Again),

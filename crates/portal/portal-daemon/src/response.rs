@@ -22,11 +22,13 @@ impl Response {
     pub const FAILED: u32 = 2;
 
     /// A success with no results.
+    #[must_use]
     pub fn granted() -> Self {
         Self::Granted(Dict::new())
     }
 
     /// The portal's response code and results: 0 granted, 1 cancelled, 2 failed.
+    #[must_use]
     pub fn into_wire(self) -> (u32, Dict) {
         match self {
             Self::Granted(results) => (Self::GRANTED, results),

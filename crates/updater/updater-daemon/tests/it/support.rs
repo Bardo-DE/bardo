@@ -100,7 +100,7 @@ fn pack(items: &[(&str, &str)]) -> Vec<u8> {
         tar.append_data(&mut header, path, content.as_bytes())
             .expect("file");
     }
-    zstd::encode_all(&tar.into_inner().expect("tar")[..], 3).expect("zstd")
+    zstd::encode_all((&*tar.into_inner().expect("tar")), 3).expect("zstd")
 }
 
 /// The release.toml for a bundle.

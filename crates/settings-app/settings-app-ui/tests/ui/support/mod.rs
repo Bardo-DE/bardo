@@ -178,7 +178,7 @@ impl Sandbox {
         Sandbox { wifi, ..self }
     }
 
-    /// This world with BlueZ in this standing.
+    /// This world with `BlueZ` in this standing.
     pub fn with_bluetooth(self, bluetooth: FakeBluetooth) -> Sandbox {
         Sandbox { bluetooth, ..self }
     }

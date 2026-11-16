@@ -64,6 +64,7 @@ impl Radius {
     /// assert_eq!(Radius::Window.px(), 10);
     /// assert_eq!(Radius::Window.value(), "10px");
     /// ```
+    #[must_use]
     pub fn px(self) -> u16 {
         match self {
             Radius::Window | Radius::WindowPlain => 10,
@@ -80,6 +81,7 @@ impl Radius {
     }
 
     /// The radius as CSS: [`Radius::px`] and `px`.
+    #[must_use]
     pub fn value(self) -> String {
         format!("{}px", self.px())
     }
@@ -92,6 +94,7 @@ pub const CONCENTRIC_FLOOR: ui_core::geometry::units::Px = ui_core::geometry::un
 /// shape inset `inset` inside an outer corner of radius `outer` is the outer radius less the
 /// inset, never below [`CONCENTRIC_FLOOR`]. A capsule's radius is half its height and never goes
 /// through here.
+#[must_use]
 pub fn concentric(
     outer: ui_core::geometry::units::Px,
     inset: ui_core::geometry::units::Px,
@@ -122,6 +125,7 @@ pub enum Corner {
 
 impl Corner {
     /// The CSS radius: `var(--r-panel)`, `22px`; for a squircle, the circle its shadows follow.
+    #[must_use]
     pub fn css(self) -> String {
         match self {
             Corner::Token(radius) => radius.var().reference(),
@@ -131,6 +135,7 @@ impl Corner {
     }
 
     /// The `data-corner` word, for a corner the stylesheet draws itself: `squircle`.
+    #[must_use]
     pub fn attribute(self) -> Option<&'static str> {
         match self {
             Corner::Squircle(_) => Some("squircle"),
@@ -140,6 +145,7 @@ impl Corner {
 
     /// The inline declarations a squircle corner needs besides `--m-radius`: its extent,
     /// `--sq-k:44px;`, and the radius its shadows follow, `--r-squircle:19.45px;`.
+    #[must_use]
     pub fn squircle_style(self) -> String {
         match self {
             Corner::Squircle(length) => {

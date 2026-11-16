@@ -91,7 +91,7 @@ pub(crate) fn context_text(view: &ContextView) -> String {
             things(items, Kind::Implied)
         )),
         SelectionView::Text(text) => {
-            parts.push(format!("\"selection\":{{\"text\":{}}}", words(text)))
+            parts.push(format!("\"selection\":{{\"text\":{}}}", words(text)));
         }
         SelectionView::Files(files) => {
             parts.push(format!("\"selection\":{{\"files\":{}}}", files.len()));

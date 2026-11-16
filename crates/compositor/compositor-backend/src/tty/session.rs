@@ -137,6 +137,7 @@ impl SeatCauses {
 
     /// Whether this session holds the seat: only when no cause lends it, and gone once either
     /// lost it.
+    #[must_use]
     pub fn seat(self) -> SeatState {
         match (self.session, self.sleep) {
             (SeatState::Gone, _) | (_, SeatState::Gone) => SeatState::Gone,

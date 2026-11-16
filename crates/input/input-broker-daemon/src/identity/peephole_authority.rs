@@ -23,6 +23,7 @@ pub struct PeepholeAuthority<P = RealProc> {
 
 impl PeepholeAuthority<RealProc> {
     /// The authority of this machine: the real `/proc` and the shipped table.
+    #[must_use]
     pub fn system() -> Self {
         Self::new(Prober::system(), TableFiles::desktop())
     }

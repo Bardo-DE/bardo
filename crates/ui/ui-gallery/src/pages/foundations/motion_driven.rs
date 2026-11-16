@@ -135,7 +135,7 @@ fn SheetCell() -> Element {
             Stage { material: Material::Sheet,
                 Sheet {
                     label: "Rename",
-                    onclose: move |_| shown.set(false),
+                    onclose: move |()| shown.set(false),
                     shown: Some(shown()),
                     attach: Attach::Centre,
                     div { class: "g-panel", p { class: "g-note", "Hide it and show it again mid-way." } }

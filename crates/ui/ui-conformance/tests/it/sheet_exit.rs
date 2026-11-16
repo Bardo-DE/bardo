@@ -27,7 +27,7 @@ fn fading(motion: Motion) -> Harness {
         let motion = MOTION.with(std::cell::Cell::get);
         rsx! {
             Ds { appearance: Appearance { motion, ..Appearance::default() }, material: Material::Sheet, extent: RootExtent::Viewport,
-                Sheet { label: "Power", onclose: move |_| {}, attach: Attach::Centre, p { "Shut down?" } }
+                Sheet { label: "Power", onclose: move |()| {}, attach: Attach::Centre, p { "Shut down?" } }
             }
         }
     }
@@ -43,9 +43,9 @@ fn Page() -> Element {
         Ds { appearance: Appearance::default(), material: Material::Sheet, extent: RootExtent::Viewport,
             Sheet {
                 label: "Power",
-                onclose: move |_| {},
+                onclose: move |()| {},
                 shown: shown(),
-                on_hidden: move |_| log.with_mut(|log| log.push("hidden")),
+                on_hidden: move |()| log.with_mut(|log| log.push("hidden")),
                 attach: Attach::Centre,
                 p { "Shut down?" }
             }
@@ -57,7 +57,7 @@ fn Page() -> Element {
 fn set(harness: &mut Harness, to: bool) {
     harness.within(|| {
         dioxus::core::Runtime::current()
-            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to))
+            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to));
     });
 }
 
@@ -87,7 +87,7 @@ fn a_hidden_sheet_leaves_then_reports_at_its_settle() {
     );
     // On the virtual clock a boundary is exact: one millisecond short of the settle, nothing
     // has been reported; the settle itself is the exit's own length from the hide.
-    harness.advance(exit() - Duration::from_millis(21));
+    harness.advance(exit().checked_sub(Duration::from_millis(21)).unwrap());
     assert_eq!(
         harness.text_of(".log").as_deref(),
         Some(""),

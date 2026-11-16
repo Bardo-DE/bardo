@@ -7,6 +7,7 @@ use crate::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
 /// `bardo.settings.toml`: the keys of `appearance.toml`, the `appearance`, `icons` and `region`
 /// domains in one schema. quire has no program of its own, so `examples/write_schema.rs` writes it
 /// (`cargo run -p ui-settings --example write_schema -- --write-schema <dir>`).
+#[must_use]
 pub fn quire_schema() -> Schema {
     Schema {
         footnotes: Vec::new(),

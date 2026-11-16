@@ -900,7 +900,7 @@ async fn a_file_removed_while_open_stays_usable_until_it_is_closed() {
     assert_eq!(rig.sink.took(), [Took::Trash("r".into())]);
     let local = rig.dir.join("cache").join("local");
     eventually("its bytes go", || {
-        std::fs::read_dir(&local).map_or(0, |dir| dir.count()) == 0
+        std::fs::read_dir(&local).map_or(0, std::iter::Iterator::count) == 0
     })
     .await;
 }

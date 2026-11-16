@@ -47,7 +47,7 @@ pub enum HashKind {
     Sha1,
     /// SHA-256.
     Sha256,
-    /// OneDrive's QuickXorHash.
+    /// `OneDrive`'s `QuickXorHash`.
     QuickXor,
     /// Dropbox's content hash.
     Dropbox,

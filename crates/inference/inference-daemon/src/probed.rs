@@ -22,6 +22,7 @@ pub enum Standing {
 
 impl Standing {
     /// How ready a model of a runtime in this standing is.
+    #[must_use]
     pub fn readiness(self) -> Readiness {
         match self {
             Standing::Online => Readiness::Ready,
@@ -83,11 +84,13 @@ impl ProbedBook {
     }
 
     /// Every runtime seen so far.
+    #[must_use]
     pub fn runtimes(&self) -> Vec<ProbedRuntime> {
         self.read()
     }
 
     /// Every probed model, whatever its runtime is doing, with the runtime's standing.
+    #[must_use]
     pub fn models(&self) -> Vec<(Arc<LocalModel>, Standing)> {
         self.read()
             .into_iter()
@@ -99,6 +102,7 @@ impl ProbedBook {
     }
 
     /// The probed model `model` names.
+    #[must_use]
     pub fn find(&self, model: &ModelRef) -> Option<Arc<LocalModel>> {
         self.models()
             .into_iter()
@@ -107,6 +111,7 @@ impl ProbedBook {
     }
 
     /// How the runtime behind `account` stands; none when `account` is not a probed runtime's.
+    #[must_use]
     pub fn standing_of(&self, account: &AccountId) -> Option<Standing> {
         self.read()
             .into_iter()
@@ -115,6 +120,7 @@ impl ProbedBook {
     }
 
     /// Woken each time `set` records a look.
+    #[must_use]
     pub fn changed(&self) -> Arc<Notify> {
         Arc::clone(&self.changed)
     }

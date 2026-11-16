@@ -12,6 +12,7 @@ pub struct FakeShare {
 
 impl FakeShare {
     /// Every share, oldest first.
+    #[must_use]
     pub fn shared(&self) -> Vec<(FilePath, ShareTarget)> {
         locked(&self.shared).clone()
     }

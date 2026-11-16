@@ -37,11 +37,13 @@ pub struct LogicalRect {
 
 impl LogicalRect {
     /// The rectangle at `origin` with `size`.
+    #[must_use]
     pub fn new(origin: LogicalPoint, size: LogicalSize) -> LogicalRect {
         LogicalRect { origin, size }
     }
 
     /// Whether `p` lies inside (the right and bottom edges are outside).
+    #[must_use]
     pub fn contains(&self, p: LogicalPoint) -> bool {
         let (x, y) = (i64::from(p.x), i64::from(p.y));
         let (left, top) = (i64::from(self.origin.x), i64::from(self.origin.y));
@@ -52,6 +54,7 @@ impl LogicalRect {
     }
 
     /// The part both rectangles cover, or `None` when they share no pixel.
+    #[must_use]
     pub fn intersection(&self, other: &LogicalRect) -> Option<LogicalRect> {
         let left = self.left().max(other.left());
         let top = self.top().max(other.top());
@@ -70,6 +73,7 @@ impl LogicalRect {
     }
 
     /// The centre, rounded toward the origin on an odd size.
+    #[must_use]
     pub fn centre(&self) -> LogicalPoint {
         LogicalPoint {
             x: clamp_i32(self.left() + i64::from(self.size.w / 2)),
@@ -78,6 +82,7 @@ impl LogicalRect {
     }
 
     /// The number of logical pixels covered.
+    #[must_use]
     pub fn area(&self) -> u64 {
         u64::from(self.size.w) * u64::from(self.size.h)
     }

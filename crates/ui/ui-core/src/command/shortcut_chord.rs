@@ -10,6 +10,7 @@ use keymap::{Chord, DefaultChord, Key};
 impl Shortcut {
     /// The portable chord this shortcut is: Command is `Primary`. `None` for no key at all, or
     /// a key chordkit has no name for (the Menu key).
+    #[must_use]
     pub fn default_chord(&self) -> Option<DefaultChord> {
         let keys = self.keys();
         let primary = keys.contains(&ShortcutKey::Super);
@@ -26,6 +27,7 @@ impl Shortcut {
 
     /// The shortcut a portable chord is, written in Mac terms; `None` for a key the shortcut
     /// vocabulary has no cap for (`F13` and up, print screen, a tap).
+    #[must_use]
     pub fn from_default_chord(chord: DefaultChord) -> Option<Shortcut> {
         let base = chord.base();
         let held = if chord.primary() {

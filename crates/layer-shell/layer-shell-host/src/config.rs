@@ -31,7 +31,7 @@ pub struct HostConfig {
     /// The faces a shell's design system bundles, registered into the shared `FontContext` once
     /// at startup (`Host::connect`) so every surface, popup and toplevel document resolves them —
     /// otherwise a `font-family` naming one falls back past every real face to `system-ui`
-    /// (FINDINGS, "HostConfig::fonts"). A shell passes its own faces, e.g. quire's
+    /// (FINDINGS, "`HostConfig::fonts`"). A shell passes its own faces, e.g. quire's
     /// `ui_components::FACES` bytes; layer-shell-host bundles none of its own, so the default is empty. Code, not
     /// settings — a face is compiled into the shell binary, not read from a settings file — so
     /// it is never serialized, exactly like `prepaint`.
@@ -68,6 +68,7 @@ impl Default for HostConfig {
 /// connection, so a shell can assert its own faces survive registration (e.g. that `"Inter"` is
 /// still present after a dependency bump) without connecting a host. Mirrors exactly what
 /// `Host::connect` does with `HostConfig::fonts` at startup, on a throwaway `SharedFonts::system`.
+#[must_use]
 pub fn registered_families(config: &HostConfig) -> Vec<String> {
     let mut fonts = SharedFonts::system();
     config
@@ -84,11 +85,13 @@ pub struct Ms(pub u32);
 
 impl Ms {
     /// `menus.first_mouse_window_ms`'s default (design/22-SETTINGS.md).
+    #[must_use]
     pub const fn first_mouse_window() -> Ms {
         Ms(100)
     }
 
     /// As a `Duration`.
+    #[must_use]
     pub fn duration(self) -> std::time::Duration {
         std::time::Duration::from_millis(u64::from(self.0))
     }

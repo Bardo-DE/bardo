@@ -59,7 +59,10 @@ impl Pdp {
         if result.validation_passed() {
             Ok(Pdp { policies, schema })
         } else {
-            let faults: Vec<String> = result.validation_errors().map(|e| e.to_string()).collect();
+            let faults: Vec<String> = result
+                .validation_errors()
+                .map(std::string::ToString::to_string)
+                .collect();
             Err(PolicyError::Invalid(faults.join("; ")))
         }
     }

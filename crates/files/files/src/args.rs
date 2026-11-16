@@ -106,15 +106,12 @@ fn decoded(text: &str) -> OsString {
             .flatten()
             .and_then(|pair| std::str::from_utf8(pair).ok())
             .and_then(|pair| u8::from_str_radix(pair, 16).ok());
-        match escaped {
-            Some(value) => {
-                out.push(value);
-                at += 3;
-            }
-            None => {
-                out.push(byte);
-                at += 1;
-            }
+        if let Some(value) = escaped {
+            out.push(value);
+            at += 3;
+        } else {
+            out.push(byte);
+            at += 1;
         }
     }
     OsString::from_vec(out)

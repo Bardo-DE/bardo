@@ -36,6 +36,7 @@ impl MenuSource {
     }
 
     /// No global menu.
+    #[must_use]
     pub fn none() -> Self {
         Self::new(MenuSourceKind::None, "", "", "")
     }
@@ -71,6 +72,7 @@ pub struct QuireApp {
 
 impl QuireApp {
     /// An app that has just appeared: nothing known yet.
+    #[must_use]
     pub fn new(key: AppKey) -> Self {
         Self {
             key,

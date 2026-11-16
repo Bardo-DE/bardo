@@ -43,11 +43,13 @@ impl PendingToken {
     }
 
     /// When the operation started.
+    #[must_use]
     pub fn started(self) -> Instant {
         self.started
     }
 
     /// How long it has been running.
+    #[must_use]
     pub fn elapsed(self) -> Duration {
         ui_core::time::clock::since(self.started)
     }

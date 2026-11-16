@@ -70,6 +70,7 @@ pub struct NotFound {
 
 impl NotFound {
     /// Nothing answered at all: most likely this computer is offline.
+    #[must_use]
     pub fn offline(&self) -> bool {
         !self.tried.is_empty() && self.tried.iter().all(|t| t.miss == Miss::Unreachable)
     }
@@ -77,9 +78,10 @@ impl NotFound {
 
 impl fmt::Display for NotFound {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.offline() {
-            true => f.write_str("could not reach anything to ask; is this computer offline?")?,
-            false => f.write_str("no usable configuration was found")?,
+        if self.offline() {
+            f.write_str("could not reach anything to ask; is this computer offline?")?
+        } else {
+            f.write_str("no usable configuration was found")?
         }
         self.tried.iter().try_for_each(|tried| {
             let why = match tried.miss {

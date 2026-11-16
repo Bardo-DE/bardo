@@ -104,7 +104,7 @@ pub fn sentences(text: &str) -> Vec<Sentence> {
     for piece in pieces {
         match out.last_mut() {
             Some(last) if (short(last) || short(&piece)) && fits(last, &piece) => {
-                *last = joined(last, &piece)
+                *last = joined(last, &piece);
             }
             _ => out.push(piece),
         }

@@ -106,7 +106,7 @@ fn a_shell_that_cannot_answer_is_a_cancel_and_other_failures_stay_failures() {
         assert!(matches!(unavailable_is_cancel(Err(refusal)), Ok(None)));
     }
     for failure in [ShellError::BadAnswer, ShellError::Call("x".into())] {
-        assert!(unavailable_is_cancel(Err(failure)).is_err());
+        unavailable_is_cancel(Err(failure)).unwrap_err();
     }
     assert!(matches!(unavailable_is_cancel(Ok(None)), Ok(None)));
 }

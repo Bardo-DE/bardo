@@ -33,6 +33,7 @@ pub struct FakeDesktop {
 
 impl FakeDesktop {
     /// A fake whose compositor offers `protocols`.
+    #[must_use]
     pub fn new(protocols: ProtocolSet) -> Self {
         Self::with_config(protocols, DesktopConfig::default())
     }
@@ -55,6 +56,7 @@ impl FakeDesktop {
     /// let mut shell = FakeDesktop::with_config(offered, DesktopConfig::holding_shell());
     /// assert!(shell.send(command).is_ok());
     /// ```
+    #[must_use]
     pub fn with_config(protocols: ProtocolSet, config: DesktopConfig) -> Self {
         Self {
             state: DesktopState::new(protocols),
@@ -90,6 +92,7 @@ impl FakeDesktop {
     }
 
     /// The commands accepted so far, oldest first.
+    #[must_use]
     pub fn sent(&self) -> &[DesktopCommand] {
         &self.sent
     }

@@ -5,7 +5,7 @@ use base_time::UnixSeconds;
 use base_url::WebUrl;
 use serde::{Deserialize, Serialize};
 
-/// A replica's own id for an item (a Drive file id, a WebDAV href).
+/// A replica's own id for an item (a Drive file id, a `WebDAV` href).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct RemoteId(pub String);
@@ -58,6 +58,7 @@ pub enum ItemKind {
 
 impl ItemKind {
     /// Whether it is a file with bytes.
+    #[must_use]
     pub fn is_file(&self) -> bool {
         matches!(self, ItemKind::File)
     }

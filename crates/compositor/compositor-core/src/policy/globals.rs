@@ -329,6 +329,7 @@ const _: () = {
 ///
 /// The table `GLOBALS` has one row per global: a new global fails to compile until it has a
 /// row that decides whether a sandbox sees it, its tier and its power (I7).
+#[must_use]
 pub fn advertised(global: GlobalKind, role: &ConnectionRole) -> bool {
     advertised_to(global, role, &PowerSet::default())
 }
@@ -341,6 +342,7 @@ pub fn advertised(global: GlobalKind, role: &ConnectionRole) -> bool {
 ///
 /// A global that needs consent but was not refused is advertised and gated where it is used
 /// (I7: there is no ungated privileged global).
+#[must_use]
 pub fn advertised_to(global: GlobalKind, role: &ConnectionRole, hidden: &PowerSet) -> bool {
     match (by_role(global, role), role, power_of(global)) {
         (true, ConnectionRole::Public, Some(power)) if hidden.contains(power) => false,

@@ -16,7 +16,7 @@
 //! **Mechanism: a Blitz custom widget and a registered texture.** `TextureLayer` renders an
 //! `<object data=...>` whose attribute is a `blitz_dom::Widget`. When the renderer paints, Blitz
 //! asks the widget for a scene; the widget registers the app's `wgpu::Texture` with the renderer
-//! (`RenderContext::try_register_custom_resource`, which anyrender_vello_hybrid keeps as a
+//! (`RenderContext::try_register_custom_resource`, which `anyrender_vello_hybrid` keeps as a
 //! `ResourceId -> TextureView` binding) and records a fill whose paint is that resource. The
 //! renderer binds the view and samples it in the same pass as the rest of the document, so the
 //! texture takes part in layers, clips, opacity and paint order, and nothing is copied. No change

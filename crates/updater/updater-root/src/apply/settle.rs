@@ -94,6 +94,7 @@ const START_TOUCHPAD_SERVICE: Command = Command {
 /// What to run after `changes`, in order: units are read again before the socket is started, rules are
 /// read again before they are applied, and the input socket is started before the keyboard map, which asks
 /// it for its virtual keyboards, and the touchpad daemon last.
+#[must_use]
 pub fn commands(changes: &[Change]) -> Vec<Command> {
     let touches = |folder: &str| changes.iter().any(|c| c.path().starts_with(folder));
     let mut out = Vec::new();

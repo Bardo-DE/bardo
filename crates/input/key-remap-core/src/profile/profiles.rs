@@ -21,16 +21,19 @@ impl Profiles {
     }
 
     /// The profile called `name`, or `default` when there is none.
+    #[must_use]
     pub fn resolve(&self, name: &ProfileName) -> &Profile {
         self.named.get(name).unwrap_or(&self.default)
     }
 
     /// The profile every other one inherits from.
+    #[must_use]
     pub fn default_profile(&self) -> &Profile {
         &self.default
     }
 
     /// Whether `name` is a profile the config defines (`default` included).
+    #[must_use]
     pub fn defines(&self, name: &ProfileName) -> bool {
         *name == ProfileName::default_profile() || self.named.contains_key(name)
     }

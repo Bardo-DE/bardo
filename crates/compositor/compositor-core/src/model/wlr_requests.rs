@@ -69,9 +69,10 @@ impl Model {
             .windows
             .get(&window)
             .is_some_and(|held| matches!(held.state, WindowState::Minimised { .. }));
-        match minimised {
-            true => self.request(window, ToplevelRequest::Activate(TokenCheck::Valid)),
-            false => Moved::of(self),
+        if minimised {
+            self.request(window, ToplevelRequest::Activate(TokenCheck::Valid))
+        } else {
+            Moved::of(self)
         }
     }
 

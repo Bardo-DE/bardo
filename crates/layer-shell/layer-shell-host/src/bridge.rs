@@ -10,6 +10,7 @@ use tokio::sync::watch;
 /// A signal holding the latest value of `rx`, updated (and the component re-rendered) whenever
 /// the sender changes it to a different value. The host holds `rt.enter()` on the main thread,
 /// so the task that awaits `rx.changed()` runs on the surface's own Dioxus scheduler.
+#[must_use]
 pub fn use_watch<T: Clone + PartialEq + 'static>(rx: watch::Receiver<T>) -> ReadSignal<T> {
     let mut initial = rx.clone();
     let mut signal = use_signal(move || initial.borrow_and_update().clone());

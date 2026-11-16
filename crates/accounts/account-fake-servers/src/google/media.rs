@@ -22,11 +22,13 @@ pub struct MediaOrigin {
 
 impl MediaOrigin {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.base
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn hits(&self) -> Vec<Hit> {
         self.hits.all()
     }

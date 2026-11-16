@@ -113,6 +113,7 @@ pub enum EventBody {
 
 impl EventBody {
     /// The header's kind tag. The one match.
+    #[must_use]
     pub fn kind(&self) -> KindTag {
         match self {
             EventBody::Thing { verb, .. } => KindTag::of("thing", verb.slug()),
@@ -126,6 +127,7 @@ impl EventBody {
     }
 
     /// The things the event is about or came from: the rows of the log's `things` table.
+    #[must_use]
     pub fn things(&self) -> Vec<(&ThingView, ThingRole)> {
         match self {
             EventBody::Thing { thing, sources, .. } => std::iter::once((thing, ThingRole::Subject))
@@ -148,6 +150,7 @@ impl EventBody {
     /// Every thing the body names, with or without a view: [`EventBody::things`] plus the
     /// entities a message's parts reference (as sources). The service writes the log's `things`
     /// rows from this, so forgetting a thing also forgets the messages that name it.
+    #[must_use]
     pub fn thing_refs(&self) -> Vec<(ThingRef, ThingRole)> {
         let viewed = self.things().into_iter().map(|(v, r)| (v.thing.clone(), r));
         let named = match self {
@@ -165,6 +168,7 @@ impl EventBody {
     }
 
     /// Whether the event names `thing`, in either role.
+    #[must_use]
     pub fn names(&self, thing: &ThingRef) -> bool {
         self.thing_refs().iter().any(|(named, _)| named == thing)
     }

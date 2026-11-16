@@ -1,4 +1,4 @@
-//! MorphGlyph: a glyph that cross-fades into the next one it is given, as two stacked layers,
+//! `MorphGlyph`: a glyph that cross-fades into the next one it is given, as two stacked layers,
 //! each its own `svg` in an HTML wrapper the stylesheet can fade (design/26-DETAILS.md section
 //! 3.2, design/30 section 1.3).
 

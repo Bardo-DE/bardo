@@ -18,7 +18,7 @@ pub trait AgentManager1 {
     fn unregister_agent(&self, agent: &ObjectPath<'_>) -> zbus::Result<()>;
 }
 
-/// What an agent can do for a pairing, which decides how BlueZ pairs.
+/// What an agent can do for a pairing, which decides how `BlueZ` pairs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Capability {
     /// Show a number only.
@@ -35,6 +35,7 @@ pub enum Capability {
 
 impl Capability {
     /// The string `RegisterAgent` takes.
+    #[must_use]
     pub fn to_wire(self) -> &'static str {
         match self {
             Self::DisplayOnly => "DisplayOnly",
@@ -46,7 +47,7 @@ impl Capability {
     }
 }
 
-/// The errors an agent answers BlueZ with. BlueZ reads `Rejected` as the person saying no and
+/// The errors an agent answers `BlueZ` with. `BlueZ` reads `Rejected` as the person saying no and
 /// `Canceled` as the question going away.
 #[derive(Debug, zbus::DBusError)]
 #[zbus(prefix = "org.bluez.Error")]

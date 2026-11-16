@@ -21,27 +21,32 @@ pub struct AgentsDir(PathBuf);
 
 impl AgentsDir {
     /// The directory at `root` (made when something is installed).
+    #[must_use]
     pub fn at(root: &Path) -> Self {
         Self(root.to_owned())
     }
 
     /// The directory with one directory per installed agent.
+    #[must_use]
     pub fn all_installed(&self) -> PathBuf {
         self.0.join("installed")
     }
 
     /// The directory with one directory per installed version of `id`.
+    #[must_use]
     pub fn installed_of(&self, id: &Slug) -> PathBuf {
         self.all_installed().join(id.as_str())
     }
 
     /// Where version `version` of `id` is installed.
+    #[must_use]
     pub fn installed(&self, id: &Slug, version: &Slug) -> PathBuf {
         self.installed_of(id).join(version.as_str())
     }
 
     /// The file that keeps the digest first seen for version `version` of `id`, when the registry
     /// declared none. It outlives the install, so a later install is compared with it.
+    #[must_use]
     pub fn pin(&self, id: &Slug, version: &Slug) -> PathBuf {
         self.0
             .join("pins")
@@ -50,11 +55,13 @@ impl AgentsDir {
     }
 
     /// The agent's home inside its sandbox.
+    #[must_use]
     pub fn home(&self, id: &Slug) -> PathBuf {
         self.0.join("state").join(id.as_str()).join("home")
     }
 
     /// The file with the record of what `id` last offered.
+    #[must_use]
     pub fn offered(&self, id: &Slug) -> PathBuf {
         self.0
             .join("state")

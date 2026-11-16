@@ -10,6 +10,7 @@ pub struct SpaceKey([u8; 32]);
 
 impl SpaceKey {
     /// A key from 32 bytes (the key store's, or a test's).
+    #[must_use]
     pub fn from_bytes(bytes: [u8; 32]) -> Self {
         Self(bytes)
     }
@@ -22,6 +23,7 @@ impl SpaceKey {
     }
 
     /// The raw bytes, for the key store only.
+    #[must_use]
     pub fn expose(&self) -> &[u8; 32] {
         &self.0
     }
@@ -43,9 +45,9 @@ impl fmt::Debug for SpaceKey {
 /// never valid for another.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Purpose {
-    /// The event log's SQLCipher key.
+    /// The event log's `SQLCipher` key.
     Eventlog,
-    /// The recall index's SQLCipher key.
+    /// The recall index's `SQLCipher` key.
     Index,
     /// Sealing memory files.
     Files,
@@ -55,6 +57,7 @@ pub enum Purpose {
 
 impl Purpose {
     /// The `blake3::derive_key` context string. Pinned by `derive_is_stable_golden`.
+    #[must_use]
     pub const fn context(self) -> &'static str {
         match self {
             Purpose::Eventlog => "quire-memory 1 eventlog",
@@ -71,6 +74,7 @@ pub struct SubKey([u8; 32]);
 
 impl SubKey {
     /// The raw bytes, for the primitives that take a key.
+    #[must_use]
     pub fn expose(&self) -> &[u8; 32] {
         &self.0
     }
@@ -90,6 +94,7 @@ impl fmt::Debug for SubKey {
 
 /// The subkey of `key` for `purpose` in `space`: `blake3::derive_key` over the purpose's
 /// context, with the key and the length-prefixed Space id as the key material.
+#[must_use]
 pub fn derive(key: &SpaceKey, space: &SpaceId, purpose: Purpose) -> SubKey {
     let mut hasher = blake3::Hasher::new_derive_key(purpose.context());
     hasher.update(key.expose());
@@ -102,18 +107,20 @@ pub fn derive(key: &SpaceKey, space: &SpaceId, purpose: Purpose) -> SubKey {
     SubKey(*hasher.finalize().as_bytes())
 }
 
-/// A SQLCipher raw key, as the pragma wants it.
+/// A `SQLCipher` raw key, as the pragma wants it.
 #[derive(Clone, PartialEq, Eq)]
 pub struct DbKey(String);
 
 impl DbKey {
     /// The database key for a subkey (derive it with [`Purpose::Eventlog`] or
     /// [`Purpose::Index`]).
+    #[must_use]
     pub fn of(sub: &SubKey) -> Self {
         Self(const_hex::encode(sub.expose()))
     }
 
-    /// The value of `PRAGMA key`: `x'<64 hex digits>'`, SQLCipher's raw-key form.
+    /// The value of `PRAGMA key`: `x'<64 hex digits>'`, `SQLCipher`'s raw-key form.
+    #[must_use]
     pub fn pragma(&self) -> String {
         format!("x'{}'", self.0)
     }

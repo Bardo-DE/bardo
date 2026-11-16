@@ -76,6 +76,7 @@ fn normalise(raw: &str) -> Option<&str> {
 
 impl<'a> Audit<'a> {
     /// Starts checking a bundle against `release`.
+    #[must_use]
     pub fn new(release: &'a Release) -> Self {
         Self {
             listed: release.files.iter().map(|f| (f.path.as_str(), f)).collect(),
@@ -135,6 +136,7 @@ impl<'a> Audit<'a> {
     }
 
     /// An entry of a kind that is never unpacked: always refused.
+    #[must_use]
     pub fn refuse(&self, raw: &str, kind: EntryKind) -> AuditError {
         AuditError::Forbidden {
             path: raw.to_owned(),

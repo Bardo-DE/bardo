@@ -1,6 +1,6 @@
 //! A restarted daemon adopts the index it finds: opening a Space embeds nothing again (the
 //! documents are already in `index.db`), unless the embedder is another one or the file is gone.
-//! The counting embedder is the proof; SQLCipher, the sealed vault and the files are real.
+//! The counting embedder is the proof; `SQLCipher`, the sealed vault and the files are real.
 
 use crate::support::{SharedKeys, dirs_in, listed_spaces, space};
 use memory_core::*;

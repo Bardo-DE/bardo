@@ -42,6 +42,7 @@ impl ExtractLimits {
 }
 
 /// The bytes of the entry `entry` of the archive `src` (a path, or any source a host injects), whose format `format` was sniffed.
+///
 /// Blocking: run it on a worker. A folder or a link is [`ArchiveError::NotAFile`].
 pub fn extract(
     src: impl Into<Input>,
@@ -83,7 +84,7 @@ pub fn extract_until(
             if unpacked.interrupted {
                 return Err(ArchiveError::Interrupted);
             }
-            let mut archive = Archive::new(Cursor::new(&unpacked.bytes[..]));
+            let mut archive = Archive::new(Cursor::new(&*unpacked.bytes));
             match tar_entry(&mut archive, format, entry, limits.entry, interrupt) {
                 Ok(bytes) => Ok(bytes),
                 Err(ArchiveError::NoSuchEntry { .. }) if !unpacked.complete => {

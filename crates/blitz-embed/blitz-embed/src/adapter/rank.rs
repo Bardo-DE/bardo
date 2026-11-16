@@ -5,6 +5,7 @@ use super::{AdapterFacts, AdapterPref, DeviceKind, GpuBackend};
 /// The order to try `candidates` in (indices into it) under `pref`: a `Named` match (case-
 /// insensitive substring) or a `Device` match (PCI ids) first, then by kind as the preference says, Vulkan before GL, and
 /// software rasterizers last. Pure.
+#[must_use]
 pub fn rank(pref: &AdapterPref, candidates: &[AdapterFacts]) -> Vec<usize> {
     let mut order: Vec<usize> = (0..candidates.len()).collect();
     // A stable sort keeps the enumeration order (wgpu's own) among equals.
@@ -30,7 +31,7 @@ fn sort_key(pref: &AdapterPref, facts: &AdapterFacts) -> (u8, u8, u8, u8) {
 }
 
 /// The adapter name contains `wanted`, ignoring case. A substring by definition: this is
-/// `WGPU_ADAPTER_NAME`'s own contract ("NVIDIA" names "NVIDIA GeForce RTX 5070 Ti").
+/// `WGPU_ADAPTER_NAME`'s own contract ("NVIDIA" names "NVIDIA `GeForce` RTX 5070 Ti").
 fn names_match(name: &str, wanted: &str) -> bool {
     name.to_lowercase().contains(&wanted.to_lowercase())
 }

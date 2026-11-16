@@ -8,6 +8,7 @@ pub struct DevicePath(pub PathBuf);
 
 impl DevicePath {
     /// The path as a `Path`.
+    #[must_use]
     pub fn as_path(&self) -> &Path {
         &self.0
     }

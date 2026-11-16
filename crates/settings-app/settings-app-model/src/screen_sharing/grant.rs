@@ -23,6 +23,7 @@ pub enum ShareLength {
 impl ShareLength {
     /// The length for the portal's persist mode: 1 while the app runs, 2 until taken back. Mode 0
     /// remembers nothing, so it is never listed, and any other number is not the portal's.
+    #[must_use]
     pub fn of_wire(mode: u32) -> Option<ShareLength> {
         match mode {
             1 => Some(ShareLength::WhileRunning),
@@ -47,6 +48,7 @@ pub struct ScreenGrant {
 impl ScreenGrant {
     /// The grant a row of the portal's list stands for; none for a row that is not one: an empty
     /// id, one longer than the portal takes back, a mode it does not make, or a date out of range.
+    #[must_use]
     pub fn of_wire(app: &str, mode: u32, granted: u64) -> Option<ScreenGrant> {
         if app.is_empty() || app.len() > APP_ID_MAX {
             return None;

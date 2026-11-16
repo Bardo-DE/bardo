@@ -12,6 +12,7 @@ pub struct Chromaticity {
 
 impl Chromaticity {
     /// The point in thousandths, rounded: the unit the design docs and `edid-decode` quote.
+    #[must_use]
     pub fn thousandths(self) -> (u16, u16) {
         let round = |v: u16| ((u32::from(v) * 1000 + 512) / 1024) as u16;
         (round(self.x), round(self.y))

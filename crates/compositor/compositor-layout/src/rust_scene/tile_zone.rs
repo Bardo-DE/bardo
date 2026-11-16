@@ -53,6 +53,7 @@ fn span(start: i32, len: u32, part: Part, margin: u32) -> (i32, u32) {
 
 /// The rectangle `zone` takes of `area` (the usable area), `margin` logical pixels from the
 /// area's edges and from the other half. The frame of a tiled window is inside it.
+#[must_use]
 pub fn zone_rect(zone: TileZone, area: LogicalRect, margin: u32) -> LogicalRect {
     let (across, down) = parts(zone);
     let (x, w) = span(area.origin.x, area.size.w, across, margin);

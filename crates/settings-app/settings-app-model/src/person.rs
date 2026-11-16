@@ -13,6 +13,7 @@ pub struct Person {
 
 impl Person {
     /// The first letter of the name, upper case, for a card that has no picture.
+    #[must_use]
     pub fn initial(&self) -> char {
         self.name
             .chars()
@@ -23,6 +24,7 @@ impl Person {
 
 /// The person `uid` is in the text of a passwd file: the first part of the comment field, else the
 /// login name. None when no line is for `uid`.
+#[must_use]
 pub fn passwd_name(passwd: &str, uid: u32) -> Option<String> {
     passwd.lines().find_map(|line| {
         let mut fields = line.split(':');

@@ -27,6 +27,7 @@ pub struct AccountKey(pub String);
 
 impl AccountKey {
     /// The key of the account `id` of `module`.
+    #[must_use]
     pub fn of(module: ModuleId, id: &str) -> AccountKey {
         match module {
             ModuleId::Syncd => AccountKey(format!("{SYNC_KEY}{id}")),
@@ -35,6 +36,7 @@ impl AccountKey {
     }
 
     /// The id as the module writes it in its rows' paths.
+    #[must_use]
     pub fn id(&self) -> &str {
         self.0.strip_prefix(SYNC_KEY).unwrap_or(&self.0)
     }
@@ -185,6 +187,7 @@ pub struct Account {
 
 impl Account {
     /// The row at `path` of this account, named with its module.
+    #[must_use]
     pub fn row(&self, path: &KeyPath) -> ModuleRow {
         ModuleRow::new(self.module, path.clone())
     }
@@ -201,6 +204,7 @@ pub struct SyncAdd {
 
 impl SyncAdd {
     /// The row, named with its module.
+    #[must_use]
     pub fn row(&self) -> ModuleRow {
         ModuleRow::new(ModuleId::Syncd, self.path.clone())
     }
@@ -292,6 +296,7 @@ impl AccountsReady {
     }
 
     /// The account the detail screen shows, when it is up and the account still exists.
+    #[must_use]
     pub fn open(&self) -> Option<&Account> {
         self.detail.as_ref().and_then(|key| self.pane.account(key))
     }

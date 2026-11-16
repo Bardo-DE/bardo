@@ -19,6 +19,7 @@ use smithay::utils::Scale;
 /// children before it, later popups before earlier ones), each with where its top-left is in
 /// global logical pixels when `root`'s top-left sits at `origin`. The renderer draws popups
 /// there and the pointer's hit test finds them there.
+#[must_use]
 pub fn popup_surfaces(root: &WlSurface, origin: LogicalPoint) -> Vec<(WlSurface, LogicalPoint)> {
     let root_geometry = geometry_origin(root);
     let popups: Vec<_> = PopupManager::popups_for_surface(root).collect();
@@ -75,6 +76,7 @@ pub struct PopupRide {
 
 impl PopupRide {
     /// Popups stretched by `ratio` about `about` and drawn at `alpha`.
+    #[must_use]
     pub fn new(about: LogicalPoint, ratio: (f64, f64), alpha: f32) -> PopupRide {
         PopupRide {
             about,

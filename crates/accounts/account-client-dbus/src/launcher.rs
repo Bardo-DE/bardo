@@ -144,6 +144,7 @@ pub struct Launcher {
 
 impl Bus {
     /// The agent launcher's calls to accountd over this connection.
+    #[must_use]
     pub fn launcher(&self) -> Launcher {
         Launcher { bus: self.clone() }
     }

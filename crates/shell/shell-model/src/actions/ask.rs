@@ -31,6 +31,7 @@ pub struct Start {
 
 impl Start {
     /// A plain start of `app`: its own `Exec`, nothing handed to it.
+    #[must_use]
     pub fn plain(app: AppId) -> Start {
         Start {
             app,
@@ -55,6 +56,7 @@ pub enum Subject {
 
 impl Subject {
     /// Whether this is what an action that `needs` is given: a place is optional.
+    #[must_use]
     pub fn fits(&self, needs: Needs) -> bool {
         matches!(
             (self, needs),
@@ -75,6 +77,7 @@ pub struct Ask {
 
 impl Ask {
     /// `action` on the desktop itself.
+    #[must_use]
     pub fn of(action: ActionId) -> Ask {
         Ask {
             action,
@@ -83,12 +86,14 @@ impl Ask {
     }
 
     /// `action` done to `subject`.
+    #[must_use]
     pub fn on(action: ActionId, subject: Subject) -> Ask {
         Ask { action, subject }
     }
 
     /// Why the request cannot be done as asked, in words for a person: the action was given the
     /// wrong thing to act on.
+    #[must_use]
     pub fn refusal(&self) -> Option<String> {
         let action = def(self.action);
         let needs = action.needs;

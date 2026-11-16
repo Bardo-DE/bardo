@@ -30,6 +30,7 @@ pub struct MimeApps {
 
 impl MimeApps {
     /// The three groups of one file's text; other groups and bad lines are skipped.
+    #[must_use]
     pub fn parse(text: &str) -> MimeApps {
         let mut apps = MimeApps::default();
         for line in key_lines(text) {
@@ -51,16 +52,19 @@ impl MimeApps {
     }
 
     /// The apps listed under `[Default Applications]` for `mime`, best first.
+    #[must_use]
     pub fn defaults_for(&self, mime: &MimeType) -> &[DesktopId] {
         lookup(&self.default, mime)
     }
 
     /// The apps listed under `[Added Associations]` for `mime`.
+    #[must_use]
     pub fn added_for(&self, mime: &MimeType) -> &[DesktopId] {
         lookup(&self.added, mime)
     }
 
     /// The apps listed under `[Removed Associations]` for `mime`.
+    #[must_use]
     pub fn removed_for(&self, mime: &MimeType) -> &[DesktopId] {
         lookup(&self.removed, mime)
     }
@@ -74,6 +78,7 @@ pub struct MimeCache {
 
 impl MimeCache {
     /// The `[MIME Cache]` group of one file's text.
+    #[must_use]
     pub fn parse(text: &str) -> MimeCache {
         let mut apps = Table::new();
         for line in key_lines(text)
@@ -91,6 +96,7 @@ impl MimeCache {
     }
 
     /// The apps that say they open `mime`, in file order.
+    #[must_use]
     pub fn apps_for(&self, mime: &MimeType) -> &[DesktopId] {
         lookup(&self.apps, mime)
     }

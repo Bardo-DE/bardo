@@ -180,11 +180,13 @@ where
     }
 
     /// The board as it stands.
+    #[must_use]
     pub fn board(&self) -> Board {
         self.with_state(|state| state.board.clone())
     }
 
     /// The sentences told since the one numbered `after`, oldest first.
+    #[must_use]
     pub fn told_since(&self, after: u64) -> Vec<Told> {
         self.with_state(|state| state.told.since(after))
     }
@@ -279,6 +281,7 @@ where
     }
 
     /// The session the person talks with `helper` in, when it has one.
+    #[must_use]
     pub fn conversation_of(&self, helper: &HelperId) -> Option<SessionId> {
         self.with_state(|state| state.conversations.get(helper).map(|c| c.session.clone()))
     }

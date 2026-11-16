@@ -73,6 +73,7 @@ pub struct Sealed {
 
 impl Sealed {
     /// The verified private copy, positioned at its start.
+    #[must_use]
     pub fn bundle(&self) -> &File {
         &self.bundle
     }

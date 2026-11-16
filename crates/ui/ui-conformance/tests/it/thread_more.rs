@@ -1,4 +1,4 @@
-//! ThreadRow's `more` slot on a real Blitz document: the quiet "More actions" button is laid out
+//! `ThreadRow`'s `more` slot on a real Blitz document: the quiet "More actions" button is laid out
 //! in the tail but hidden until the row is hovered, it takes the keyboard and shows, a click
 //! hands its rect to the caller, and while its menu is open it stays up with the pointer away. It
 //! never overlaps the time, and a card row is exactly `thread_card_height` tall.

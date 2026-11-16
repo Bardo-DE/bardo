@@ -29,6 +29,7 @@ pub enum RowKind {
 }
 
 /// `item`'s kind, from its subject.
+#[must_use]
 pub fn row_kind(item: &Item) -> RowKind {
     match item.subject {
         Subject::None
@@ -62,6 +63,7 @@ pub struct RowDetail {
 /// "12 Sep 2025"); clipboard: detail the provider's subtitle, trail its age ("now", "5m",
 /// "2h", "3d", the notification card's `age_label`); web: detail the engine; others: the
 /// subtitle and no trail.
+#[must_use]
 pub fn row_detail(item: &Item, now: UnixTime, hours: ClockHours) -> RowDetail {
     detail_in(item, now, &TimeZone::system(), hours)
 }

@@ -9,6 +9,7 @@ use account_tailscale::TailscaleError;
 use inference_tailnet::{DialError, Refusal};
 
 /// Why a request was refused, as a plain sentence ending in a full stop.
+#[must_use]
 pub fn refusal(refusal: &Refusal) -> &'static str {
     match refusal {
         Refusal::ThisComputer => "That computer won't answer a request that came from itself.",
@@ -53,6 +54,7 @@ fn tailscale(error: &TailscaleError) -> &'static str {
 }
 
 /// Why a computer was not reached, as a plain sentence ending in a full stop.
+#[must_use]
 pub fn fault(fault: &DialError) -> String {
     match fault {
         DialError::Tailscale(error) => tailscale(error).to_owned(),

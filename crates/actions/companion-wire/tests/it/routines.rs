@@ -101,5 +101,5 @@ fn a_proposal_is_written_p_and_a_number_and_pins_its_json() {
     assert_eq!(proposal.form.missed, Missed::Skip);
     assert_eq!(serde_json::to_string(&proposal).expect("json"), text);
     assert_eq!(ProposalId::parse("r-3"), None);
-    assert!(serde_json::from_str::<ProposalId>("\"3\"").is_err());
+    serde_json::from_str::<ProposalId>("\"3\"").unwrap_err();
 }

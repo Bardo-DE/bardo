@@ -58,10 +58,13 @@ pub(crate) fn field_placeholder(role: FieldRole, required: bool) -> &'static str
     match role {
         FieldRole::Address => "name@example.org",
         FieldRole::Server => "mail.example.org",
-        FieldRole::Username => match required {
-            true => "Required",
-            false => "Same as your address",
-        },
+        FieldRole::Username => {
+            if required {
+                "Required"
+            } else {
+                "Same as your address"
+            }
+        }
         FieldRole::Password => "Password or app password",
         FieldRole::AppPassword => "Paste your app password",
         FieldRole::ApiKey => "Paste your key",

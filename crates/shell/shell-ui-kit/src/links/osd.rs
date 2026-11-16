@@ -39,11 +39,13 @@ pub struct OsdChange {
 
 impl OsdChange {
     /// Whether `output`'s indicator shows this change.
+    #[must_use]
     pub fn shows_on(&self, output: OutputId) -> bool {
         self.outputs.contains(&output)
     }
 
     /// Whether `output`'s indicator has this change to show: it is newer than `seen`.
+    #[must_use]
     pub fn is_fresh_for(&self, seen: ChangeSerial, output: OutputId) -> bool {
         self.serial > seen && self.shows_on(output)
     }
@@ -73,6 +75,7 @@ pub struct OsdLink {
 
 impl OsdLink {
     /// No change yet.
+    #[must_use]
     pub fn new() -> OsdLink {
         OsdLink::default()
     }
@@ -87,11 +90,13 @@ impl OsdLink {
     }
 
     /// The latest change, if any has been asked for.
+    #[must_use]
     pub fn now(&self) -> Option<OsdChange> {
         self.latest.now()
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Option<OsdChange>> {
         self.latest.subscribe()
     }

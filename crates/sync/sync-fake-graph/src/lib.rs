@@ -1,4 +1,4 @@
-//! A fake Microsoft Graph drive: the part of `/v1.0/me/drive` a replica of OneDrive's app folder
+//! A fake Microsoft Graph drive: the part of `/v1.0/me/drive` a replica of `OneDrive`'s app folder
 //! or of the whole drive uses (items by id and by path under `special/approot` or `root`, content
 //! with ranges and redirects, simple and session uploads, delta of either, children, quota) and the calendars of `/v1.0/me/calendars`
 //! (events, `events/delta`, see `calendar`), behind `Authorization: Bearer`. Plain
@@ -153,16 +153,19 @@ impl FakeGraph {
 
 impl GraphHandle {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
 
     /// `http://127.0.0.1:port` of the origin the links point at, when it is not the drive's own.
+    #[must_use]
     pub fn link_url(&self) -> Option<&str> {
         self.shared.link.as_deref()
     }
 
     /// Every request the links' origin answered, oldest first.
+    #[must_use]
     pub fn link_hits(&self) -> Vec<Hit> {
         self.shared.link_hits.all()
     }
@@ -214,6 +217,7 @@ impl GraphHandle {
 
     /// Moves or renames the item at `from` below the drive's root to `to` (the folders on the
     /// way are made); `false` when there is nothing at `from` or `to` is inside it.
+    #[must_use]
     pub fn move_root_item(&self, from: &str, to: &str) -> bool {
         let target = names_of(to);
         let mut state = lock(&self.shared.state);
@@ -244,6 +248,7 @@ impl GraphHandle {
     }
 
     /// The id and `eTag` of the live item at `path` below the drive's root.
+    #[must_use]
     pub fn root_item(&self, path: &str) -> Option<(String, String)> {
         lock(&self.shared.state)
             .drive
@@ -252,6 +257,7 @@ impl GraphHandle {
     }
 
     /// The bytes of the live file at `path` below the drive's root.
+    #[must_use]
     pub fn root_file(&self, path: &str) -> Option<Vec<u8>> {
         let state = lock(&self.shared.state);
         match &state.drive.at_from(drive::ROOT, &names_of(path))?.body {
@@ -261,6 +267,7 @@ impl GraphHandle {
     }
 
     /// The names of what was deleted through the API, oldest first: the recycle bin.
+    #[must_use]
     pub fn recycle_bin(&self) -> Vec<String> {
         lock(&self.shared.state)
             .drive
@@ -285,6 +292,7 @@ impl GraphHandle {
     }
 
     /// The bytes of the file at `path` below the app folder.
+    #[must_use]
     pub fn file(&self, path: &str) -> Option<Vec<u8>> {
         let state = lock(&self.shared.state);
         match &state.drive.at(&names_of(path))?.body {
@@ -302,6 +310,7 @@ impl GraphHandle {
     }
 
     /// Every file below the app folder: its path and size, in path order.
+    #[must_use]
     pub fn files(&self) -> Vec<(String, u64)> {
         let state = lock(&self.shared.state);
         let approot = state.drive.approot().to_owned();
@@ -358,6 +367,7 @@ impl GraphHandle {
     }
 
     /// The live events of a calendar: id and Graph JSON.
+    #[must_use]
     pub fn events(&self, calendar: &str) -> Vec<(String, serde_json::Value)> {
         lock(&self.shared.state).calendars.events(calendar)
     }
@@ -383,6 +393,7 @@ impl GraphHandle {
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn hits(&self) -> Vec<Hit> {
         self.shared.hits.all()
     }

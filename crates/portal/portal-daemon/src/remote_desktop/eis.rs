@@ -28,39 +28,36 @@ pub enum EisError {
 /// The seam: a socket the app speaks EIS on, for one session, and the end of it.
 pub trait EisHandout: Send + Sync + fmt::Debug {
     /// The client end of an EIS socket for portal session `session` offering `kinds`.
-    fn connect<'a>(
-        &'a self,
-        session: u64,
-        kinds: DeviceKinds,
-    ) -> BoxFuture<'a, Result<OwnedFd, EisError>>;
+    fn connect(&self, session: u64, kinds: DeviceKinds)
+    -> BoxFuture<'_, Result<OwnedFd, EisError>>;
 
     /// Take back every socket handed out for `session`: the compositor stops its input and closes
     /// its end. Best effort (a compositor that is gone has nothing left to stop); failures are
     /// logged here.
-    fn end<'a>(&'a self, session: u64) -> BoxFuture<'a, ()>;
+    fn end(&self, session: u64) -> BoxFuture<'_, ()>;
 
     /// Take back every socket an earlier run of this portal handed out: this portal has just
     /// started and holds no session, so the compositor must hold no input of its. Best effort,
     /// like [`EisHandout::end`]. The default does nothing.
-    fn end_all<'a>(&'a self) -> BoxFuture<'a, ()> {
+    fn end_all(&self) -> BoxFuture<'_, ()> {
         Box::pin(std::future::ready(()))
     }
 }
 
 impl<T: EisHandout + ?Sized> EisHandout for Arc<T> {
-    fn connect<'a>(
-        &'a self,
+    fn connect(
+        &self,
         session: u64,
         kinds: DeviceKinds,
-    ) -> BoxFuture<'a, Result<OwnedFd, EisError>> {
+    ) -> BoxFuture<'_, Result<OwnedFd, EisError>> {
         (**self).connect(session, kinds)
     }
 
-    fn end<'a>(&'a self, session: u64) -> BoxFuture<'a, ()> {
+    fn end(&self, session: u64) -> BoxFuture<'_, ()> {
         (**self).end(session)
     }
 
-    fn end_all<'a>(&'a self) -> BoxFuture<'a, ()> {
+    fn end_all(&self) -> BoxFuture<'_, ()> {
         (**self).end_all()
     }
 }
@@ -106,6 +103,7 @@ pub struct CasementEis {
 
 impl CasementEis {
     /// A hand-out that asks through `link`.
+    #[must_use]
     pub fn new(link: BusLink) -> Self {
         Self { link }
     }
@@ -123,11 +121,11 @@ impl CasementEis {
 }
 
 impl EisHandout for CasementEis {
-    fn connect<'a>(
-        &'a self,
+    fn connect(
+        &self,
         session: u64,
         kinds: DeviceKinds,
-    ) -> BoxFuture<'a, Result<OwnedFd, EisError>> {
+    ) -> BoxFuture<'_, Result<OwnedFd, EisError>> {
         Box::pin(async move {
             let asked = async {
                 let proxy = self.proxy().await?;
@@ -148,7 +146,7 @@ impl EisHandout for CasementEis {
         })
     }
 
-    fn end<'a>(&'a self, session: u64) -> BoxFuture<'a, ()> {
+    fn end(&self, session: u64) -> BoxFuture<'_, ()> {
         Box::pin(async move {
             let asked = async {
                 let proxy = self.proxy().await?;
@@ -161,18 +159,18 @@ impl EisHandout for CasementEis {
                 Ok(Ok(())) => {}
                 Ok(Err(error)) => tracing::warn!(%error, "an input socket could not be taken back"),
                 Err(_) => {
-                    tracing::warn!("the compositor did not take an input socket back in time")
+                    tracing::warn!("the compositor did not take an input socket back in time");
                 }
             }
         })
     }
 
-    fn end_all<'a>(&'a self) -> BoxFuture<'a, ()> {
+    fn end_all(&self) -> BoxFuture<'_, ()> {
         Box::pin(async move {
             match tokio::time::timeout(EIS_DEADLINE, self.end_all_now()).await {
                 Ok(Ok(())) => {}
                 Ok(Err(error)) => {
-                    tracing::warn!(%error, "input sockets of an earlier run could not be taken back")
+                    tracing::warn!(%error, "input sockets of an earlier run could not be taken back");
                 }
                 Err(_) => tracing::warn!(
                     "the compositor did not take back the input sockets of an earlier run in time"
@@ -213,6 +211,7 @@ pub struct FakeEis {
 
 impl FakeEis {
     /// A hand-out with nothing asked yet.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -252,11 +251,11 @@ impl FakeEis {
 }
 
 impl EisHandout for FakeEis {
-    fn connect<'a>(
-        &'a self,
+    fn connect(
+        &self,
         session: u64,
         kinds: DeviceKinds,
-    ) -> BoxFuture<'a, Result<OwnedFd, EisError>> {
+    ) -> BoxFuture<'_, Result<OwnedFd, EisError>> {
         self.asked
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
@@ -274,7 +273,7 @@ impl EisHandout for FakeEis {
 
     /// Records the end and closes the server ends of the session's sockets that were not taken, so
     /// the client end reads end-of-file, as it would from a compositor that stopped.
-    fn end<'a>(&'a self, session: u64) -> BoxFuture<'a, ()> {
+    fn end(&self, session: u64) -> BoxFuture<'_, ()> {
         self.ended
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
@@ -287,7 +286,7 @@ impl EisHandout for FakeEis {
     }
 
     /// Records that every earlier socket was taken back and closes all the server ends.
-    fn end_all<'a>(&'a self) -> BoxFuture<'a, ()> {
+    fn end_all(&self) -> BoxFuture<'_, ()> {
         *self
             .ended_all
             .lock()

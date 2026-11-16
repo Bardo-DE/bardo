@@ -17,6 +17,7 @@ const PLAUSIBLE_PPI: std::ops::RangeInclusive<u32> = 40..=600;
 
 /// The physical density of `pixels` spread over `size`, along the diagonal; `None` when the
 /// size is missing or implausible.
+#[must_use]
 pub fn density(pixels: Pixels, size: Option<Millimetres>) -> Option<Ppi> {
     let size = size?;
     let diagonal_px = f64::from(pixels.width).hypot(f64::from(pixels.height));

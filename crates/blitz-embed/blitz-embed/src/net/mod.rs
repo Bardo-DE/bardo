@@ -14,6 +14,7 @@ pub use roots::FileRoots;
 pub use source::{LocalSource, MAX_RESOURCE_BYTES};
 
 /// The local loader: `data:` decoded, and `file:` read from disk when its roots hold the file.
+///
 /// Anything else is left unanswered. Meant for documents the consumer wrote or trusts: it
 /// refuses a file outside its roots and one over [`MAX_RESOURCE_BYTES`], but a document it
 /// serves can still ask for any file inside them.
@@ -24,6 +25,7 @@ pub struct LocalNet {
 
 impl LocalNet {
     /// A loader that reads files from `roots` only.
+    #[must_use]
     pub fn new(roots: FileRoots) -> LocalNet {
         LocalNet { roots }
     }

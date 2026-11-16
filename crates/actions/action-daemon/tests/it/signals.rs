@@ -63,7 +63,7 @@ fn a_manifest_installed_replaced_or_removed_is_a_manifest_change() {
     let router = router();
     let installed = marks_of(&router);
     let registry = |f: &dyn Fn(&mut action_context::state::RouterState)| {
-        f(&mut router.state.lock().expect("lock"))
+        f(&mut router.state.lock().expect("lock"));
     };
 
     registry(&|st| {
@@ -77,7 +77,7 @@ fn a_manifest_installed_replaced_or_removed_is_a_manifest_change() {
 
     registry(&|st| {
         st.registry
-            .insert(action_fake::files_manifest().expect("manifest"))
+            .insert(action_fake::files_manifest().expect("manifest"));
     });
     let again = marks_of(&router);
     assert_eq!(changes(&removed, &again), vec![Changed::Manifest(files())]);
@@ -91,7 +91,7 @@ fn a_manifest_installed_replaced_or_removed_is_a_manifest_change() {
     let edited = action_fake::FILES_MANIFEST.replace("Read", "Look at");
     registry(&|st| {
         st.registry
-            .insert(action_manifest::parse(&edited).expect("manifest"))
+            .insert(action_manifest::parse(&edited).expect("manifest"));
     });
     assert_eq!(
         changes(&again, &marks_of(&router)),

@@ -1,4 +1,4 @@
-//! `compositor-x11probe`: an X11 client for the XWayland suite (P1-X1). It sets `WM_CLASS`, maps
+//! `compositor-x11probe`: an X11 client for the `XWayland` suite (P1-X1). It sets `WM_CLASS`, maps
 //! windows, reads input and selections, reports override-redirect facts, geometry, the screen's
 //! size and the `RESOURCE_MANAGER` (the DPI satellite publishes), and asks for activation, so
 //! `dev/accept/xwayland-*.sh` assert what an X11 client sees through xwayland-satellite.

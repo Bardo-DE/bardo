@@ -28,6 +28,7 @@ impl<T: Clone> Seen<T> {
     }
 
     /// Everything so far, oldest first.
+    #[must_use]
     pub fn all(&self) -> Vec<T> {
         lock(&self.0).clone()
     }
@@ -42,7 +43,7 @@ impl<T: Clone> Seen<T> {
 pub fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
     mutex
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner())
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// A fake serving on a task; dropping it stops the server. It derefs to the fake's handle,

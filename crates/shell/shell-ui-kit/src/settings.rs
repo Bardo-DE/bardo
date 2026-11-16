@@ -36,6 +36,7 @@ pub struct SettingsFeed {
 
 impl SettingsFeed {
     /// A feed that never changes, for a headless render or a test: `file`, no styles, no guard.
+    #[must_use]
     pub fn fixed(file: ShellFile) -> SettingsFeed {
         let (_tx, settings) = watch::channel(file);
         let (_tx, styles) = watch::channel(Styles::default());

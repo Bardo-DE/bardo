@@ -50,6 +50,7 @@ pub struct Journal {
 
 impl Journal {
     /// An empty journal.
+    #[must_use]
     pub fn new() -> Journal {
         Journal::default()
     }
@@ -70,16 +71,19 @@ impl Journal {
     }
 
     /// What [`Journal::undo`] would take back next.
+    #[must_use]
     pub fn last(&self) -> Option<&Summary> {
         self.entries.last().map(|entry| &entry.summary)
     }
 
     /// How many pieces of work can be taken back.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.entries.len()
     }
 
     /// Whether there is nothing to take back.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }

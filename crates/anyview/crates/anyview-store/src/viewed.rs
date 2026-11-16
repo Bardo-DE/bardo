@@ -6,6 +6,7 @@
 pub type Clock = std::sync::Arc<dyn Fn() -> u64 + Send + Sync>;
 
 /// The wall clock in whole seconds since the epoch; a clock set before it reads as the epoch itself.
+#[must_use]
 pub fn system_clock() -> Clock {
     use base_time::Clock as _;
     std::sync::Arc::new(|| u64::try_from(base_time::SystemClock.now().0).unwrap_or(0))

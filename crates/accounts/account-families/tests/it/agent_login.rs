@@ -1,4 +1,4 @@
-//! The AgentLogin family: adding an agent asks nothing and keeps no credential, a session
+//! The `AgentLogin` family: adding an agent asks nothing and keeps no credential, a session
 //! mints no token, and revoking has nothing to do at a provider.
 #![cfg(feature = "agent_login")]
 
@@ -19,8 +19,7 @@ fn provider(id: &str) -> AgentLoginProvider {
     let text = account_provider::SHIPPED_FILES
         .iter()
         .find(|(file, _)| *file == id)
-        .map(|(_, text)| *text)
-        .unwrap_or_else(|| panic!("{id} ships"));
+        .map_or_else(|| panic!("{id} ships"), |(_, text)| *text);
     AgentLoginProvider::new(parse_provider(text).expect("parses"))
 }
 

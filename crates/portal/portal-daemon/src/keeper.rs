@@ -39,6 +39,7 @@ pub struct Keeper {
 
 impl Keeper {
     /// A keeper over `store`.
+    #[must_use]
     pub fn new(store: Box<dyn RestoreStore>) -> Self {
         Self {
             store,
@@ -226,6 +227,7 @@ impl Keeper {
 }
 
 /// Seconds since the Unix epoch, the clock grants are dated by.
+#[must_use]
 pub fn unix_now() -> u64 {
     u64::try_from(SystemClock.now().0).unwrap_or(0)
 }

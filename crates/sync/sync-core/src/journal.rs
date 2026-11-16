@@ -46,6 +46,7 @@ impl ItemState {
     ];
 
     /// The state's name in the journal file.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             ItemState::Synced => "synced",
@@ -58,11 +59,13 @@ impl ItemState {
     }
 
     /// The state a slug names.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<Self> {
         Self::ALL.into_iter().find(|state| state.slug() == slug)
     }
 
     /// Whether the item still has work to do (what `Status` counts as pending).
+    #[must_use]
     pub fn is_pending(self) -> bool {
         !matches!(self, ItemState::Synced | ItemState::Conflicted)
     }

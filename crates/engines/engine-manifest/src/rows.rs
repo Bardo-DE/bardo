@@ -69,7 +69,7 @@ const fn llama(
     }
 }
 
-/// vLLM 0.31.0 from PyPI (CUDA 13 wheels, so an NVIDIA driver of 580 or newer), in an
+/// vLLM 0.31.0 from `PyPI` (CUDA 13 wheels, so an NVIDIA driver of 580 or newer), in an
 /// environment of its own: `uv` 0.13.1 and Python 3.12.15 from their projects' releases, and the
 /// lock `locks/vllm-0.31.0-x86_64.lock` (made with `uv pip compile --generate-hashes
 /// --python-platform x86_64-manylinux_2_31 --python-version 3.12 --no-build`), whose hashes are
@@ -173,7 +173,7 @@ mod tests {
                 assert!(hex64(file.sha256), "{}", file.url);
                 assert!(file.size > 0);
             }
-            assert!(row.tree_seal.is_some_and(hex64) || row.tree_seal.is_none());
+            assert!(row.tree_seal.is_none_or(hex64));
             if let Delivery::Python(env) = row.delivery {
                 assert!(hex64(env.python_seal));
                 assert!(row.tree_seal.is_none());

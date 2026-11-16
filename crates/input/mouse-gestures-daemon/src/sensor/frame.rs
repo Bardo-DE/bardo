@@ -16,6 +16,7 @@ impl Buttons {
     pub const RIGHT: Buttons = Buttons(2);
 
     /// Whether any physical button is held in this frame.
+    #[must_use]
     pub fn any(self) -> bool {
         self.0 & 0x03 != 0
     }
@@ -55,7 +56,7 @@ pub struct FrameContact {
     /// Stable for the life of the contact.
     pub id: TouchId,
     pub at: MmPoint,
-    /// The Magic Mouse's MTTouch state; `Touching` for sensors that only report contacts.
+    /// The Magic Mouse's `MTTouch` state; `Touching` for sensors that only report contacts.
     pub state: TouchState,
     /// `None`: nothing usable, and the contact is treated as a firm, finger-sized touch, so P1
     /// and P3 do not apply to it.

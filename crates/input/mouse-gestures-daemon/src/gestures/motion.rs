@@ -16,6 +16,7 @@ pub struct MotionWindow {
 
 impl MotionWindow {
     /// Adds this report's motion and drops samples older than `window`.
+    #[must_use]
     pub fn step(mut self, m: Motion, now: Mono, window: Duration) -> Self {
         let counts = f64::from(m.dx).hypot(f64::from(m.dy));
         if counts > 0.0 {
@@ -32,6 +33,7 @@ impl MotionWindow {
     }
 
     /// Whether the counts in the window exceed `threshold` counts per second.
+    #[must_use]
     pub fn moving(&self, threshold: f64, window: Duration) -> bool {
         let total: f64 = self.samples.iter().map(|&(_, c)| c).sum();
         let secs = window.as_secs_f64();

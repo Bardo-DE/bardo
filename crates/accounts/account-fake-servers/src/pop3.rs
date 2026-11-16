@@ -199,7 +199,7 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
             }
             ("STLS", _) => lines.send("-ERR STLS not available").await?,
             ("USER" | "PASS" | "AUTH", Stage::Authorization(_)) if !login_ok => {
-                lines.send("-ERR [AUTH] Plaintext login disabled").await?
+                lines.send("-ERR [AUTH] Plaintext login disabled").await?;
             }
             ("USER", Stage::Authorization(_)) => {
                 stage = Stage::Authorization(Some(rest.to_owned()));
@@ -208,22 +208,20 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
             ("PASS", Stage::Authorization(Some(user))) => {
                 let secret = Secret::Password(rest.to_owned());
                 let admitted = ctx.attempt(n, peer, Mechanism::Login, user.clone(), secret);
-                match admitted {
-                    true => {
-                        stage = Stage::Transaction;
-                        lines.send("+OK maildrop locked and ready").await?;
-                    }
-                    false => {
-                        stage = Stage::Authorization(None);
-                        lines.send("-ERR [AUTH] invalid credentials").await?;
-                    }
+                if admitted {
+                    stage = Stage::Transaction;
+                    lines.send("+OK maildrop locked and ready").await?;
+                } else {
+                    stage = Stage::Authorization(None);
+                    lines.send("-ERR [AUTH] invalid credentials").await?;
                 }
             }
             ("PASS", _) => lines.send("-ERR USER first").await?,
             ("AUTH", Stage::Authorization(_)) => {
-                match auth(&mut lines, ctx, (n, peer), rest).await? {
-                    true => stage = Stage::Transaction,
-                    false => lines.send("-ERR [AUTH] invalid credentials").await?,
+                if auth(&mut lines, ctx, (n, peer), rest).await? {
+                    stage = Stage::Transaction
+                } else {
+                    lines.send("-ERR [AUTH] invalid credentials").await?
                 }
                 if stage == Stage::Transaction {
                     lines.send("+OK maildrop locked and ready").await?;
@@ -257,9 +255,10 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
                         lines.send(&format!("+OK {} octets", m.raw.len())).await?;
                         for text in m.raw.split("\r\n") {
                             // Dot-stuffing: a line starting with a dot gets another.
-                            match text.starts_with('.') {
-                                true => lines.send(&format!(".{text}")).await?,
-                                false => lines.send(text).await?,
+                            if text.starts_with('.') {
+                                lines.send(&format!(".{text}")).await?
+                            } else {
+                                lines.send(text).await?
                             }
                         }
                         lines.send(".").await?;
@@ -267,15 +266,13 @@ async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
                     None => lines.send("-ERR no such message").await?,
                 }
             }
-            ("DELE", Stage::Transaction) => {
-                match rest.trim().parse::<u32>() {
-                    Ok(uid) if shared.maildrop.iter().any(|m| m.uid == uid) => {
-                        deleted.push(uid);
-                        lines.send("+OK message deleted").await?;
-                    }
-                    _ => lines.send("-ERR no such message").await?,
-                };
-            }
+            ("DELE", Stage::Transaction) => match rest.trim().parse::<u32>() {
+                Ok(uid) if shared.maildrop.iter().any(|m| m.uid == uid) => {
+                    deleted.push(uid);
+                    lines.send("+OK message deleted").await?;
+                }
+                _ => lines.send("-ERR no such message").await?,
+            },
             _ => lines.send("-ERR unrecognized command").await?,
         }
     }
@@ -297,12 +294,11 @@ async fn auth<S: AsyncRead + AsyncWrite + Unpin>(
         "XOAUTH2" => (Mechanism::Xoauth2, decode_xoauth2),
         _ => return Ok(false),
     };
-    let response = match initial {
-        Some(r) => r,
-        None => {
-            lines.send("+ ").await?;
-            lines.read_line().await?.unwrap_or_default()
-        }
+    let response = if let Some(r) = initial {
+        r
+    } else {
+        lines.send("+ ").await?;
+        lines.read_line().await?.unwrap_or_default()
     };
     Ok(decode(&response).is_some_and(|(user, secret)| ctx.attempt(n, peer, mech, user, secret)))
 }

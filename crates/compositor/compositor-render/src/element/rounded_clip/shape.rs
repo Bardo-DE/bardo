@@ -57,6 +57,7 @@ impl ClipShape {
     /// assert_eq!(shape.coverage(100.0, 50.0), 1.0);
     /// assert_eq!(shape.coverage(199.5, 99.5), 0.0);
     /// ```
+    #[must_use]
     pub fn new(rect: PhysicalRect, logical_radius: u32, scale: Scale) -> ClipShape {
         let wanted = (f64::from(logical_radius) * scale.as_f64()).round() as u32;
         let radius = wanted.min(rect.w / 2).min(rect.h);
@@ -69,6 +70,7 @@ impl ClipShape {
 
     /// This shape with `rounding`. All four corners need room for two radii, so the radius is
     /// held to half the height too.
+    #[must_use]
     pub fn rounded(self, rounding: Rounding) -> ClipShape {
         let radius = match rounding {
             Rounding::Bottom => self.radius,
@@ -82,11 +84,13 @@ impl ClipShape {
     }
 
     /// Which corners are round.
+    #[must_use]
     pub fn rounding(&self) -> Rounding {
         self.rounding
     }
 
     /// The shape of the window whose content is at `content` (global logical pixels) on `view`.
+    #[must_use]
     pub fn of_content(content: LogicalRect, logical_radius: u32, view: &OutputView) -> ClipShape {
         let start = on_output(sub_of(content.origin), view);
         let end = on_output(
@@ -113,11 +117,13 @@ impl ClipShape {
     }
 
     /// The corner radius in physical pixels.
+    #[must_use]
     pub fn radius(&self) -> u32 {
         self.radius
     }
 
     /// The content rectangle in output pixels.
+    #[must_use]
     pub fn rect(&self) -> PhysicalRect {
         self.rect
     }
@@ -126,6 +132,7 @@ impl ClipShape {
     /// inside, 0 outside, a ramp about one pixel wide across the edge. The corners [`Rounding`]
     /// names are round; the others are square. A frameless shape covers everything outside its
     /// rectangle and changes only the pixels of its corner squares.
+    #[must_use]
     pub fn coverage(&self, px: f32, py: f32) -> f32 {
         let (x, y) = (self.rect.x as f32, self.rect.y as f32);
         let (w, h) = (self.rect.w as f32, self.rect.h as f32);
@@ -148,6 +155,7 @@ impl ClipShape {
 
     /// Whether the rows `rows` (top, bottom; output pixels) reach a corner's band, the only rows
     /// the clip changes. A pixel of slack either side keeps the anti-aliased edge.
+    #[must_use]
     pub fn touches(&self, rows: (f64, f64)) -> bool {
         let (top, bottom) = (
             f64::from(self.rect.y),
@@ -165,6 +173,7 @@ impl ClipShape {
 
     /// The squares of `radius` sides at the round corners, the only places the shape is not
     /// opaque over an opaque surface (so they leave the opaque regions).
+    #[must_use]
     pub fn corner_squares(&self) -> Vec<Rectangle<i32, Physical>> {
         let r = i32::try_from(self.radius).unwrap_or(0);
         let w = i32::try_from(self.rect.w).unwrap_or(0);

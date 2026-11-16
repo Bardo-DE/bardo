@@ -122,7 +122,7 @@ fn a_work_path_refuses_what_could_leave_the_workspace() {
         assert_eq!(WorkPath::parse(text).map(|_| ()), want, "{text:?}");
     }
     // The wire checks the same rules.
-    assert!(serde_json::from_str::<WorkPath>(r#""../x""#).is_err());
+    serde_json::from_str::<WorkPath>(r#""../x""#).unwrap_err();
 }
 
 #[test]

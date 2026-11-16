@@ -13,17 +13,20 @@ pub struct Mono(pub Duration);
 
 impl Mono {
     /// `d` later (saturating at the end of time).
+    #[must_use]
     pub fn after(self, d: Duration) -> Mono {
         Mono(self.0.saturating_add(d))
     }
 
     /// How long after `earlier` this is (zero if `earlier` is later).
+    #[must_use]
     pub fn since(self, earlier: Mono) -> Duration {
         self.0.saturating_sub(earlier.0)
     }
 
     /// This instant in ui-core's whole milliseconds, truncated: the one conversion, made when
     /// casement feeds a ui-behaviour machine (C56).
+    #[must_use]
     pub fn stamp(self) -> Stamp {
         Stamp(u64::try_from(self.0.as_millis()).unwrap_or(u64::MAX))
     }

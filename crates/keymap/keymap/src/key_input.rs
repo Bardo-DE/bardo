@@ -12,7 +12,7 @@ use crate::platform::{Context, Platform};
 /// `Z`; `=`, not `+`) as most toolkits' "key without modifiers" gives.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct KeyInput {
-    /// The modifiers held. When AltGr is held, leave Ctrl and Alt as the toolkit has them.
+    /// The modifiers held. When `AltGr` is held, leave Ctrl and Alt as the toolkit has them.
     pub modifiers: Modifiers,
     /// The key pressed.
     pub key: Key,
@@ -20,26 +20,30 @@ pub struct KeyInput {
 
 impl KeyInput {
     /// A key press.
+    #[must_use]
     pub fn new(modifiers: Modifiers, key: Key) -> KeyInput {
         KeyInput { modifiers, key }
     }
 
     /// The key press a toolkit reported as `modifiers` and the logical `key`; `None` when the
     /// key is composed text of more than one character, which is never a chord.
+    #[must_use]
     pub fn from_logical(modifiers: Modifiers, key: &keyboard_types::Key) -> Option<KeyInput> {
         Key::from_logical(key).map(|key| KeyInput::new(modifiers, key))
     }
 
-    /// Whether the press types a character rather than triggering a shortcut: AltGr is held.
+    /// Whether the press types a character rather than triggering a shortcut: `AltGr` is held.
     /// Such a press never resolves and is never in the Primary form.
+    #[must_use]
     pub fn types_text(&self) -> bool {
         self.modifiers.contains(Modifiers::ALT_GRAPH)
     }
 
     /// The canonical chord: the Meta flag folds into Super (on every platform, so `platform` is
     /// kept only for callers that pass one), letters are lower-cased, and a symbol Shift makes is written without Shift.
-    /// With AltGr held, Ctrl and Alt are dropped (Windows adds them to AltGr), so the chord can
+    /// With `AltGr` held, Ctrl and Alt are dropped (Windows adds them to `AltGr`), so the chord can
     /// never match a Ctrl or Alt binding. This is the one place toolkit differences are absorbed.
+    #[must_use]
     pub fn normalise(&self, _platform: Platform) -> Chord {
         self.chord(None)
     }
@@ -47,6 +51,7 @@ impl KeyInput {
     /// Like `normalise`, and where `context` has an alias for Primary on `platform`
     /// (`Platform::primary_alias`), the alias modifiers are written as the Primary form: on our
     /// desktop in a terminal, Ctrl+Shift+D is Super+D.
+    #[must_use]
     pub fn normalise_in(&self, platform: Platform, context: Context) -> Chord {
         self.chord(platform.primary_alias(context))
     }

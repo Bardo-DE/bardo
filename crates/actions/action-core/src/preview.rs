@@ -145,6 +145,7 @@ pub enum Preview {
 }
 
 /// How much of a text a reviewer or a log is told: a length, never the text.
+#[must_use]
 pub fn size_of(text: &str) -> CharCount {
     CharCount(u32::try_from(text.chars().count()).unwrap_or(u32::MAX))
 }

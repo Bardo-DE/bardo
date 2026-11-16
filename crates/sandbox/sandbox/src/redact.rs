@@ -178,6 +178,7 @@ fn line(text: &str) -> String {
 }
 
 /// `text` with secrets masked. Private-key blocks are dropped to one masked line.
+#[must_use]
 pub fn redact(text: &str) -> String {
     let mut out = Vec::new();
     let mut in_key = false;

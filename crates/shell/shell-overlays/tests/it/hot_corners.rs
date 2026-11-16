@@ -78,7 +78,7 @@ fn a_dwell_fires_once_and_not_before() {
     harness.advance(Duration::from_millis(10));
     assert_eq!(link.last(), None);
     harness.send(Input::pointer_move(inside(&harness)));
-    harness.advance(dwell() - MS);
+    harness.advance(dwell().checked_sub(MS).unwrap());
     assert_eq!(link.last(), None, "not a millisecond before the dwell");
     harness.advance(MS);
     let first = link.last().expect("fired at the dwell");
@@ -150,7 +150,11 @@ fn back_after(after: Duration) -> u64 {
 
 #[test]
 fn the_rearm_ends_exactly_rearm_ms_after_the_firing() {
-    assert_eq!(back_after(rearm() - MS), 1, "a millisecond short");
+    assert_eq!(
+        back_after(rearm().checked_sub(MS).unwrap()),
+        1,
+        "a millisecond short"
+    );
     assert_eq!(back_after(rearm()), 2, "re-armed at the re-arm's end");
 }
 

@@ -108,10 +108,7 @@ impl SceneStore {
         cursor: bool,
     ) -> Result<(PhysicalSize, &Layer), BackendError> {
         let scenes = self.scenes.get(output).ok_or(BackendError::NoFrame)?;
-        let layer = match cursor {
-            false => &scenes.bare,
-            true => &scenes.shown,
-        };
+        let layer = if cursor { &scenes.shown } else { &scenes.bare };
         Ok((scenes.picture.size, layer))
     }
 }

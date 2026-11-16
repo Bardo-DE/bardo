@@ -168,6 +168,7 @@ impl std::fmt::Debug for ProcessHost {
 
 impl ProcessHost {
     /// A host with nothing running.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -190,16 +191,19 @@ impl ProcessHost {
     }
 
     /// The same, giving a stopped engine `grace` to go before its group is killed.
+    #[must_use]
     pub fn with_grace(self, grace: Duration) -> Self {
         Self { grace, ..self }
     }
 
     /// What this host learns about starts: give it to [`crate::supervise::Supervised::start_with`].
+    #[must_use]
     pub fn diagnostics(&self) -> Diagnostics {
         self.diagnostics.clone()
     }
 
     /// The handle that ends every engine of this host at shutdown.
+    #[must_use]
     pub fn closer(&self) -> HostCloser {
         HostCloser {
             running: Arc::clone(&self.running),
@@ -295,15 +299,12 @@ impl EngineHost for ProcessHost {
                     if let Some(group) = leads {
                         group::terminate(group);
                     }
-                    let status = match tokio::time::timeout(grace, child.wait()).await {
-                        Ok(status) => status.ok(),
-                        Err(_) => {
-                            if let Some(group) = leads {
-                                group::sweep(group);
-                            }
-                            let _ = child.kill().await;
-                            child.wait().await.ok()
+                    let status = if let Ok(status) = tokio::time::timeout(grace, child.wait()).await { status.ok() } else {
+                        if let Some(group) = leads {
+                            group::sweep(group);
                         }
+                        let _ = child.kill().await;
+                        child.wait().await.ok()
                     };
                     if let Some(group) = leads {
                         group::end(group, grace).await;
@@ -471,6 +472,7 @@ pub struct NvidiaSmi {
 
 impl NvidiaSmi {
     /// Runs this `nvidia-smi`.
+    #[must_use]
     pub fn new(program: PathBuf) -> Self {
         Self { program }
     }

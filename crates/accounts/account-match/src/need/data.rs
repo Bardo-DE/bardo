@@ -23,6 +23,7 @@ pub struct IdentityNeed {
 
 impl IdentityNeed {
     /// An identity with no part asked for.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             profile: false,
@@ -31,12 +32,14 @@ impl IdentityNeed {
     }
 
     /// The same need, also asking for a display name and avatar.
+    #[must_use]
     pub fn with_profile(mut self) -> Self {
         self.profile = true;
         self
     }
 
     /// The same need, also asking for a verified address.
+    #[must_use]
     pub fn with_verified_address(mut self) -> Self {
         self.verified_address = true;
         self
@@ -63,6 +66,7 @@ pub struct MailNeed {
 
 impl MailNeed {
     /// A mailbox with at least this access, sending if `send` is set, and this change feed.
+    #[must_use]
     pub fn new(access: Access, send: bool, delta: Delta) -> Self {
         Self {
             access,
@@ -83,6 +87,7 @@ pub struct PimNeed {
 
 impl PimNeed {
     /// A calendar, address book or task store with at least this access and change feed.
+    #[must_use]
     pub fn new(access: Access, delta: Delta) -> Self {
         Self { access, delta }
     }
@@ -99,6 +104,7 @@ pub struct NotesNeed {
 
 impl NotesNeed {
     /// A notes store with at least this access and change feed.
+    #[must_use]
     pub fn new(access: Access, delta: Delta) -> Self {
         Self { access, delta }
     }
@@ -121,6 +127,7 @@ pub struct StorageNeed {
 impl StorageNeed {
     /// A file store with at least this access, change feed and reach, and a quota report if
     /// `quota` is set.
+    #[must_use]
     pub fn new(access: Access, delta: Delta, scope: StorageScope, quota: bool) -> Self {
         Self {
             access,
@@ -151,6 +158,7 @@ pub struct PhotosNeed {
 impl PhotosNeed {
     /// A photo library with at least this much read, albums and change feed, and upload and
     /// video where those are set.
+    #[must_use]
     pub fn new(
         library_read: LibraryRead,
         upload: bool,
@@ -179,6 +187,7 @@ pub struct KeyValueNeed {
 
 impl KeyValueNeed {
     /// Small synced items with at least this change feed, up to this large.
+    #[must_use]
     pub fn new(delta: Delta, max_item: Bytes) -> Self {
         Self { delta, max_item }
     }
@@ -190,6 +199,7 @@ pub struct PushNeed {}
 
 impl PushNeed {
     /// Any push channel.
+    #[must_use]
     pub fn new() -> Self {
         Self {}
     }

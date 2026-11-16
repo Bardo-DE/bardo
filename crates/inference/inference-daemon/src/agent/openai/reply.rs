@@ -1,4 +1,4 @@
-//! An OpenAI Chat Completions reply from inferd's: a JSON completion, or the `data:` chunks of a
+//! An `OpenAI` Chat Completions reply from inferd's: a JSON completion, or the `data:` chunks of a
 //! stream ending in `[DONE]`, and the model list.
 
 use crate::agent::fail::{Failure, Shape};
@@ -7,7 +7,7 @@ use base_ids::Permille;
 use inference_core::{ChatReply, StopReason, ToolCallPart};
 use serde_json::{Value, json};
 
-/// OpenAI's word for why a reply ended.
+/// `OpenAI`'s word for why a reply ended.
 fn finish_word(stop: StopReason) -> &'static str {
     match stop {
         StopReason::EndTurn | StopReason::StopSequence => "stop",
@@ -38,8 +38,8 @@ fn call_json(index: usize, call: &ToolCallPart) -> Value {
     })
 }
 
-/// One option as OpenAI lists a token: the text, its log-probability and its bytes. A share of
-/// nothing is OpenAI's own `-9999.0` ("not among the likely"), as JSON has no `-inf`.
+/// One option as `OpenAI` lists a token: the text, its log-probability and its bytes. A share of
+/// nothing is `OpenAI`'s own `-9999.0` ("not among the likely"), as JSON has no `-inf`.
 fn token_json(option: &str, share: Permille) -> Value {
     let logprob = if share.0 == 0 {
         -9999.0
@@ -79,12 +79,14 @@ fn logprobs_json(reply: &ChatReply, top: u32) -> Value {
 }
 
 /// The whole completion for a non-streaming request.
+#[must_use]
 pub fn completion_json(model: &str, id: &str, created: i64, reply: &ChatReply) -> Value {
     completion_json_with(model, id, created, reply, None)
 }
 
 /// As [`completion_json`], and with `logprobs` on the choice when the request asked for them of
 /// a `Choice` (`top_logprobs` is how many options to list beside the chosen one).
+#[must_use]
 pub fn completion_json_with(
     model: &str,
     id: &str,
@@ -138,6 +140,7 @@ pub fn completion_json_with(
 }
 
 /// `GET /v1/models`: the ids the route serves.
+#[must_use]
 pub fn models_json(ids: &[String], created: i64) -> Value {
     json!({
         "object": "list",
@@ -163,6 +166,7 @@ pub struct Stream {
 impl Stream {
     /// A stream for the completion `id`. `include_usage` is the request's
     /// `stream_options.include_usage`.
+    #[must_use]
     pub fn new(model: &str, id: &str, created: i64, include_usage: bool) -> Self {
         Self {
             model: model.to_owned(),
@@ -176,6 +180,7 @@ impl Stream {
 
     /// This stream with the `logprobs` of a `Choice` reply (one chunk before the last, because
     /// the checked reply arrives whole), listing `top` options beside the chosen one.
+    #[must_use]
     pub fn with_logprobs(mut self, top: Option<u32>) -> Self {
         self.top_logprobs = top;
         self

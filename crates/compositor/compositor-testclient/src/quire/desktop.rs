@@ -1,4 +1,4 @@
-//! bardo_desktop_v1 as a client (P2-Q1): the apps, windows and Spaces the compositor announced,
+//! `bardo_desktop_v1` as a client (P2-Q1): the apps, windows and Spaces the compositor announced,
 //! and the requests a shell makes of them.
 //!
 //! Self-contained like `manage::workspace`: it reads its own events on a side queue of the
@@ -148,6 +148,7 @@ impl DesktopWatch {
     }
 
     /// Every app announced, in order, as of the events read.
+    #[must_use]
     pub fn apps(&self) -> Vec<AppView> {
         self.roster
             .apps
@@ -157,16 +158,19 @@ impl DesktopWatch {
     }
 
     /// Every window the manager announced, in order, names resolved.
+    #[must_use]
     pub fn windows(&self) -> Vec<WindowView> {
         self.roster.window_views(Origin::Announced)
     }
 
     /// Every window object made with [`get_window_for`](Self::get_window_for), in order.
+    #[must_use]
     pub fn asked_windows(&self) -> Vec<WindowView> {
         self.roster.window_views(Origin::Asked)
     }
 
     /// Every Space announced, in order.
+    #[must_use]
     pub fn spaces(&self) -> Vec<SpaceView> {
         self.roster
             .spaces
@@ -176,21 +180,25 @@ impl DesktopWatch {
     }
 
     /// The active app and key window as last announced.
+    #[must_use]
     pub fn active(&self) -> ActiveView {
         self.roster.active_view()
     }
 
     /// How many `done` events the manager sent.
+    #[must_use]
     pub fn dones(&self) -> usize {
         self.roster.dones
     }
 
     /// Whether the compositor sent `finished`.
+    #[must_use]
     pub fn finished(&self) -> bool {
         self.roster.finished
     }
 
     /// The identifiers of the windows the list announced, in order.
+    #[must_use]
     pub fn listed(&self) -> Vec<String> {
         self.roster
             .handles

@@ -21,6 +21,7 @@ pub struct FakeCapture {
 
 impl FakeCapture {
     /// A capture over these frames and damage events.
+    #[must_use]
     pub fn scripted(frames: Vec<Frame>, damage: Vec<DamageAt>) -> Self {
         Self {
             frames,
@@ -57,6 +58,7 @@ pub struct FakeCaptureSession {
 
 impl FakeCaptureSession {
     /// The mask hints each `frame` call was given, in order.
+    #[must_use]
     pub fn hints_seen(&self) -> &[Vec<MaskRegion>] {
         &self.hints
     }

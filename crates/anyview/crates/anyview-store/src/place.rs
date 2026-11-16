@@ -21,12 +21,14 @@ const COPY_STEP: usize = 64 * 1024;
 
 /// Whether nothing at all is called `path`: not a file, not a folder, and not a symlink, even one
 /// that points nowhere (creating a file there would create the link's target).
+#[must_use]
 pub fn is_free(path: &Path) -> bool {
     matches!(fs::symlink_metadata(path), Err(error) if error.kind() == ErrorKind::NotFound)
 }
 
 /// `<stem><suffix>.<extension>` beside `file`, or with ` 2`, ` 3`, ... before the extension: the
 /// first that is free. An empty `extension` names a file with none.
+#[must_use]
 pub fn free_beside(file: &Path, suffix: &str, extension: &str) -> Option<PathBuf> {
     let folder = file.parent()?;
     let stem = file.file_stem()?.to_string_lossy().into_owned();
@@ -45,6 +47,7 @@ pub fn free_beside(file: &Path, suffix: &str, extension: &str) -> Option<PathBuf
 }
 
 /// `from` renamed to `to`, which must not exist: a file made there a moment ago is never replaced.
+///
 /// The kernel decides (`renameat2` with `RENAME_NOREPLACE`; `RENAME_EXCL` on macOS). Where a file
 /// system or a platform cannot (Windows), a hard link claims the name and the old one is removed;
 /// a folder, which cannot be linked, is looked for first (the one case with a window left).
@@ -76,6 +79,7 @@ fn rename_by_link(from: &Path, to: &Path) -> Result<(), StoreError> {
 }
 
 /// Gives the file `from` the new name `to` and leaves `from` where it is (the caller removes it).
+///
 /// A hard link claims `to` only if nothing has it, in one step; a file system without hard links
 /// falls back to a no-replace rename, which moves `from` instead.
 pub fn link_new(from: &Path, to: &Path) -> Result<(), StoreError> {
@@ -141,6 +145,7 @@ fn unique() -> String {
 
 /// The hidden name bytes are written under before `to` has them: `.<name>.<pid>-<n>.part` beside
 /// it. No two calls, in this process or another, return the same name.
+#[must_use]
 pub fn partial_beside(to: &Path) -> PathBuf {
     hidden_beside(to, "", "part")
 }
@@ -162,6 +167,7 @@ fn exists(path: &Path) -> StoreError {
 }
 
 /// Whether `error` says the name was taken.
+#[must_use]
 pub fn is_taken(error: &StoreError) -> bool {
     matches!(
         error,

@@ -50,6 +50,7 @@ pub enum ChoiceGap {
 
 impl Choice {
     /// The menu word to mark as chosen; `None` when nothing is chosen, so no item is marked.
+    #[must_use]
     pub fn selected(&self) -> Option<String> {
         match self {
             Choice::Nothing => None,
@@ -98,6 +99,7 @@ pub(super) fn gate_of(reason: Option<&str>) -> Gate {
 impl ModelRow {
     /// What the row has chosen now. Local picked and not yet answered counts as chosen: the
     /// stored word changes only when its model is.
+    #[must_use]
     pub fn choice(&self) -> Choice {
         if let LocalAsk::Open { engine } = &self.local {
             return Choice::Local {
@@ -119,6 +121,7 @@ impl ModelRow {
     }
 
     /// What the row would have chosen if `word` were stored.
+    #[must_use]
     pub fn choice_when(&self, word: &str) -> Choice {
         ModelRow {
             value: word.to_owned(),
@@ -140,6 +143,7 @@ impl ModelRow {
 
     /// What is missing when what the row has chosen cannot be used yet; none when nothing is
     /// chosen (the button already asks) or the choice is ready.
+    #[must_use]
     pub fn unready_gap(&self) -> Option<ChoiceGap> {
         match (self.choice(), self.readiness()) {
             (Choice::Nothing, _) | (_, Ok(())) => None,
@@ -149,6 +153,7 @@ impl ModelRow {
 
     /// The module's note, as the plain line under the row. Automatic's list and Local's missing
     /// engine say it in their own place, so the row does not repeat it.
+    #[must_use]
     pub fn row_note(&self) -> Option<&str> {
         let said_below = match self.choice() {
             Choice::Automatic { .. } => true,
@@ -159,6 +164,7 @@ impl ModelRow {
     }
 
     /// Whether `word` can be picked.
+    #[must_use]
     pub fn gate(&self, word: &str) -> Gate {
         gate_of(self.unavailable_reason(word))
     }

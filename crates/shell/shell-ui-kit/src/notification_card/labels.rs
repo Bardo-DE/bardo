@@ -19,6 +19,7 @@ pub enum Age {
 }
 
 /// `arrived`'s age at `now` (a clock that went backwards reads as now).
+#[must_use]
 pub fn age(arrived: UnixMs, now: UnixMs) -> Age {
     const MINUTE: u64 = 60_000;
     const HOUR: u64 = 60 * MINUTE;
@@ -33,6 +34,7 @@ pub fn age(arrived: UnixMs, now: UnixMs) -> Age {
 }
 
 /// `age` as the card writes it: `now`, `5m`, `2h`, `3d` (macOS's compact form).
+#[must_use]
 pub fn age_label(age: Age) -> String {
     match age {
         Age::Now => "now".to_owned(),
@@ -47,6 +49,7 @@ const GROUP_LAYERS: usize = 2;
 
 /// A card standing for `count` notifications: nothing alone; else the count and one layer per
 /// notification behind the newest, at most [`GROUP_LAYERS`].
+#[must_use]
 pub fn group_count(count: usize) -> Option<GroupCount> {
     let layers = u8::try_from(count.saturating_sub(1).min(GROUP_LAYERS)).unwrap_or(0);
     (count > 1).then(|| GroupCount {

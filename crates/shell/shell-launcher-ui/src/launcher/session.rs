@@ -8,6 +8,7 @@ use shell_ui_kit::links::{LauncherOpening, OpenSerial};
 
 /// The filter a panel starts in: the scope asked for when searching (every provider, or one
 /// alone), the companion's own rows to talk.
+#[must_use]
 pub fn filter_for(mode: LauncherMode, scope: Scope) -> Filter {
     match (mode, scope) {
         (LauncherMode::Companion, _) => Filter::Only(ProviderKind::Companion),
@@ -31,6 +32,7 @@ pub struct Session {
 
 impl Session {
     /// A fresh session for `opening`, over results of generation `since`.
+    #[must_use]
     pub fn opened(opening: &LauncherOpening, since: Generation) -> Session {
         Session {
             serial: opening.serial,
@@ -46,6 +48,7 @@ impl Session {
 
     /// This session when it is `opening`'s, else a fresh one. A render can run before the
     /// opening's effect stores its session; until then every generation counts as fresh.
+    #[must_use]
     pub fn for_opening(&self, opening: &LauncherOpening) -> Session {
         if self.serial == opening.serial {
             self.clone()
@@ -55,6 +58,7 @@ impl Session {
     }
 
     /// The query changed: the palette puts its selection on the first row.
+    #[must_use]
     pub fn typed(self, query: String) -> Session {
         Session {
             query,

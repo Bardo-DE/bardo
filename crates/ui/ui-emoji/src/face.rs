@@ -9,7 +9,7 @@
 //! list still map the letters, digits and spaces (Noto Color Emoji maps digits to empty glyphs).
 //! The face is detected, not named, and nothing here asks which platform it is on: the one
 //! `BARDO_EMOJI_FAMILY` names, else the first family of the `emoji` generic that carries a COLR
-//! table, else the COLRv1 file the installer or a distro package left on disk (`emoji_file`),
+//! table, else the `COLRv1` file the installer or a distro package left on disk (`emoji_file`),
 //! registered here, else the first family of the `emoji` generic with bitmap colour glyphs
 //! (`sbix`: Apple Color Emoji on every Mac; `CBDT`: Ubuntu's Noto Color Emoji). Vector comes first
 //! because it stays sharp at any size; a bitmap glyph is a PNG at the nearest strike.
@@ -50,7 +50,7 @@ const GENERICS: [GenericFamily; 10] = [
 /// Which family paints colour emoji.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub enum EmojiChoice {
-    /// The first COLR family the system lists for `emoji`, else a COLRv1 font file on disk, else
+    /// The first COLR family the system lists for `emoji`, else a `COLRv1` font file on disk, else
     /// the first family the system lists for `emoji` with bitmap colour glyphs.
     #[default]
     Detect,
@@ -60,6 +60,7 @@ pub enum EmojiChoice {
 
 impl EmojiChoice {
     /// [`EMOJI_FAMILY_ENV`] if set and not empty, else [`EmojiChoice::Detect`].
+    #[must_use]
     pub fn from_env() -> EmojiChoice {
         match std::env::var(EMOJI_FAMILY_ENV) {
             Ok(name) if !name.is_empty() => EmojiChoice::Named(name),
@@ -123,7 +124,7 @@ const VECTOR: [[u8; 4]; 1] = [*b"COLR"];
 const BITMAP: [[u8; 4]; 2] = [*b"sbix", *b"CBDT"];
 
 /// The family to paint colour emoji with: the one `choice` names, else the first COLR family of
-/// the `emoji` generic, else the COLRv1 file [`colrv1_emoji_file`] finds, registered, else the
+/// the `emoji` generic, else the `COLRv1` file [`colrv1_emoji_file`] finds, registered, else the
 /// first bitmap colour family of the `emoji` generic.
 fn colour_face(fonts: &mut Fonts, choice: &EmojiChoice) -> Option<FamilyId> {
     match choice {
@@ -147,7 +148,7 @@ fn system_colour_face(fonts: &mut Fonts, tables: &[[u8; 4]]) -> Option<FamilyId>
     })
 }
 
-/// The COLRv1 file's bytes, found and read once per process: a program that builds a collection
+/// The `COLRv1` file's bytes, found and read once per process: a program that builds a collection
 /// per pane or per window (temor, mailo) registers the same shared blob each time instead of
 /// walking the font folders and reading ~10 MB again. A machine with no file is remembered too.
 static COLRV1_BLOB: OnceLock<Option<Blob<u8>>> = OnceLock::new();
@@ -161,7 +162,7 @@ fn colrv1_blob() -> Option<Blob<u8>> {
         .clone()
 }
 
-/// The family of the COLRv1 file on this machine, registered with the collection. The
+/// The family of the `COLRv1` file on this machine, registered with the collection. The
 /// registered family shadows a system family of the same name (the bitmap build's), so a stack
 /// that names `Noto Color Emoji` reaches the colour face too.
 fn register_colrv1_file(fonts: &mut Fonts) -> Option<FamilyId> {

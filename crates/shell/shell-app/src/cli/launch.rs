@@ -52,6 +52,7 @@ impl PrintTiming {
 
 /// The request `bardo-shell launch APP` sends: the desktop id without its `.desktop` ending, as the
 /// shell's app index names apps.
+#[must_use]
 pub fn launch_request(args: &LaunchArgs) -> Request {
     let id = args.app.strip_suffix(".desktop").unwrap_or(&args.app);
     Request::Launch(AppId(id.to_owned()))
@@ -67,6 +68,7 @@ pub enum Ending {
 }
 
 /// What the shell's answer (or the lack of one) means.
+#[must_use]
 pub fn ending(reply: Result<Response, ClientError>) -> Ending {
     let failed = |code, sentence: String| Ending::Failed { code, sentence };
     match reply {
@@ -83,6 +85,7 @@ pub fn ending(reply: Result<Response, ClientError>) -> Ending {
 
 /// What is printed for `ending`, with the timing line asked for or not (`print`): the line for stdout, or the sentence for
 /// stderr, and the exit code.
+#[must_use]
 pub fn report(ending: &Ending, print: PrintTiming) -> (Output, u8) {
     match (ending, print) {
         (Ending::Launched(timing), PrintTiming::Print) => {
@@ -104,6 +107,7 @@ pub enum Output {
 }
 
 /// Run `bardo-shell launch`.
+#[must_use]
 pub fn main(args: &LaunchArgs) -> ExitCode {
     let (output, code) = report(&ending(send(&launch_request(args))), args.timing);
     match output {

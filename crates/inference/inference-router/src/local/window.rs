@@ -38,6 +38,7 @@ pub struct Lengths {
 ///
 /// The memory of a window is the entry's own `VramEstimate::need` (a thousand tokens to the
 /// figure), so a window chosen here is one the supervisor's budget agrees fits.
+#[must_use]
 pub fn choose_window(
     text: &TextOut,
     vram: &VramEstimate,
@@ -75,6 +76,7 @@ pub fn choose_window(
 /// `max_output` when the catalogue states none), or the person's own length when it is less.
 /// Never more than half the window, so a prompt still has room. A window of zero (not known)
 /// bounds nothing.
+#[must_use]
 pub fn reply_ceiling(text: &TextOut, lengths: Lengths, window: Option<Tokens>) -> Tokens {
     let supported = text
         .max_output_max
@@ -91,6 +93,7 @@ pub fn reply_ceiling(text: &TextOut, lengths: Lengths, window: Option<Tokens>) -
 /// (`--gpu-memory-utilization 0.75`, or `=0.75`): vLLM takes that share of the whole card and
 /// fits its weights and window inside it, so a window past it does not start. None when the
 /// line says nothing, or says a share that is not one.
+#[must_use]
 pub fn share_of(args: &[EngineArg], total: MiB) -> Option<MiB> {
     let said = args.iter().enumerate().find_map(|(at, arg)| {
         match arg.0.strip_prefix("--gpu-memory-utilization") {
@@ -112,6 +115,7 @@ impl LocalModel {
     /// chat engine that takes its window as a launch flag. An engine that takes its window on
     /// each request (`ContextArg::PerRequest`, Ollama's `num_ctx`) is one the person runs and
     /// inferd does not launch, so it is not sized here and no request carries a window yet.
+    #[must_use]
     pub fn sizable(&self) -> bool {
         self.attached.is_none()
             && self.loopback.is_none()
@@ -127,6 +131,7 @@ impl LocalModel {
 
     /// The window to start this model's engine with when `free` of a card of `total` is left
     /// for it; none for a model whose window is not chosen ([`Self::sizable`]).
+    #[must_use]
     pub fn window(
         &self,
         lengths: Lengths,
@@ -144,18 +149,21 @@ impl LocalModel {
 
     /// The memory this model's engine line gives itself out of a card of `total`: see
     /// [`share_of`].
+    #[must_use]
     pub fn share_of(&self, total: MiB) -> Option<MiB> {
         share_of(&self.profile.args, total)
     }
 
     /// The memory this model's engine takes with `window` (the served window's, in
     /// `spec.need`, when it has none).
+    #[must_use]
     pub fn need_with(&self, window: Option<Tokens>) -> MiB {
         window.map_or(self.spec.need, |window| self.entry.vram.need(window))
     }
 
     /// The unit that starts this model's engine with `window`; the same as the one in `spec`
     /// for `Window::Serve`. `None` when `engines` lists no program for its kind.
+    #[must_use]
     pub fn unit_with(&self, engines: &EngineConfig, window: Window) -> Option<UnitSpec> {
         let unit = command_with_window(
             &self.entry,
@@ -170,6 +178,7 @@ impl LocalModel {
 
     /// The most a reply of this model may write when its engine runs with `window`: see
     /// [`reply_ceiling`]. A model with no text to write has no ceiling.
+    #[must_use]
     pub fn reply_ceiling(&self, lengths: Lengths, window: Option<Tokens>) -> Tokens {
         match &self.entry.capabilities.text_out {
             Some(text) => reply_ceiling(text, lengths, window),

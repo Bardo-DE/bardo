@@ -28,7 +28,7 @@ async fn no_socket_but_the_program_is_there_is_not_running() {
 #[tokio::test]
 async fn a_socket_nobody_listens_on_is_not_running() {
     let (fake, api) = start("errors-stopped", Daemon::Running(network())).await;
-    assert!(api.status().await.is_ok());
+    api.status().await.unwrap();
     fake.stop();
     // Wait until the aborted server has gone, then ask over its leftover socket.
     let deadline = base_testkit::Deadline::generous();
@@ -42,7 +42,7 @@ async fn a_socket_nobody_listens_on_is_not_running() {
     assert_eq!(api.start_login().await, Err(TailscaleError::NotRunning));
     // And it comes back where it was.
     fake.restart().await.expect("restart");
-    assert!(api.status().await.is_ok());
+    api.status().await.unwrap();
 }
 
 #[tokio::test]
@@ -69,7 +69,7 @@ async fn a_user_who_may_read_but_not_sign_in_is_refused_the_sign_in_only() {
     )
     .await;
     fake.set_read_only(true);
-    assert!(api.status().await.is_ok());
+    api.status().await.unwrap();
     assert_eq!(api.start_login().await, Err(TailscaleError::Refused));
     assert_eq!(fake.logins(), 0);
 }

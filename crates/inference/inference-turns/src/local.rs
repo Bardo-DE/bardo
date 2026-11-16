@@ -80,6 +80,7 @@ fn client(model: &LocalModel) -> HttpClient {
 
 /// The provider of a chat engine on this computer, retried as the daemon retries; none for a model
 /// whose engine speaks no chat wire (a speech host).
+#[must_use]
 pub fn chat_provider(model: &LocalModel) -> Option<Retrying<OpenAiCompat, TokioSleep>> {
     let flavor: Flavor = model.flavor?;
     Some(Retrying::new(
@@ -97,6 +98,7 @@ pub struct ToSession {
 
 impl ToSession {
     /// A sink that sends each event down `steps` as a [`TurnStep::Event`].
+    #[must_use]
     pub fn new(steps: mpsc::UnboundedSender<TurnStep>) -> Self {
         Self { steps }
     }

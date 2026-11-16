@@ -24,6 +24,7 @@ pub struct Job {
 
 impl Job {
     /// A job on `display`. Nothing is asked of the compositor until the first step.
+    #[must_use]
     pub fn new(display: &DisplayName) -> Self {
         Self {
             display: display.clone(),

@@ -162,7 +162,7 @@ impl Dispatch<WlCompositor, ()> for State {
         _: &Client,
         _: &WlCompositor,
         request: wl_compositor::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -178,7 +178,7 @@ impl Dispatch<WlSurface, ()> for State {
         _: &Client,
         _: &WlSurface,
         _: wl_surface::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         _: &mut DataInit<'_, Self>,
     ) {
@@ -191,7 +191,7 @@ impl Dispatch<XdgWmBase, ()> for State {
         _: &Client,
         _: &XdgWmBase,
         request: xdg_wm_base::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -207,7 +207,7 @@ impl Dispatch<XdgSurface, ()> for State {
         _: &Client,
         _: &XdgSurface,
         request: xdg_surface::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -223,7 +223,7 @@ impl Dispatch<XdgToplevel, ()> for State {
         _: &Client,
         _: &XdgToplevel,
         _: xdg_toplevel::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         _: &mut DataInit<'_, Self>,
     ) {
@@ -236,7 +236,7 @@ impl Dispatch<BardoWindowManagerV1, ()> for State {
         _: &Client,
         _: &BardoWindowManagerV1,
         request: bardo_window_manager_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -253,7 +253,7 @@ impl Dispatch<BardoWindowV1, ()> for State {
         _: &Client,
         _: &BardoWindowV1,
         request: bardo_window_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         _: &mut DataInit<'_, Self>,
     ) {

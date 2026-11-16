@@ -68,6 +68,7 @@ pub enum HostError {
 
 impl HostError {
     /// The decision this error carries.
+    #[must_use]
     pub fn recovery(&self) -> Recovery {
         match self {
             HostError::Connect(_)

@@ -37,6 +37,7 @@ const TERMINAL: &str = "TerminalEmulator";
 
 /// The installed apps of [`ORDER`], in that order: a listed entry with that id, the first
 /// listed terminal by id for the terminal's place. A place nothing fills is skipped.
+#[must_use]
 pub fn first_apps(installed: &AppIndex) -> Vec<AppId> {
     ORDER
         .iter()
@@ -59,6 +60,7 @@ fn listed(app: &App) -> bool {
 
 /// The pins a fresh account's dock starts with: [`first_apps`] when the dock's file was never
 /// written and at least one of them is installed. `None` leaves the dock alone.
+#[must_use]
 pub fn first_dock(store: Store, installed: &AppIndex) -> Option<DockPins> {
     match store {
         Store::Present => None,
@@ -72,6 +74,7 @@ pub fn first_dock(store: Store, installed: &AppIndex) -> Option<DockPins> {
 /// The history a fresh account's launcher starts with, so its Recent row is not empty:
 /// [`first_apps`] as if used at `now`, the first most (an empty query ranks by frecency alone,
 /// and a larger count ranks higher). `None` leaves the history alone.
+#[must_use]
 pub fn first_frecency(store: Store, installed: &AppIndex, now: UnixTime) -> Option<Frecency> {
     match store {
         Store::Present => None,

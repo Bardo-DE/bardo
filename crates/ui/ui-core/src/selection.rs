@@ -32,6 +32,7 @@ impl PickHow {
     /// How a press with `modifiers` held reaches a row on `platform`: Shift extends (and wins
     /// over the primary modifier), the platform's primary modifier toggles, anything else
     /// replaces.
+    #[must_use]
     pub fn of_press(platform: Platform, modifiers: Modifiers) -> PickHow {
         if modifiers.contains(Modifiers::SHIFT) {
             PickHow::Extend
@@ -63,11 +64,13 @@ pub struct RowSelection {
 
 impl RowSelection {
     /// Nothing selected.
+    #[must_use]
     pub fn none() -> Self {
         Self::default()
     }
 
     /// Just `row`, which is both anchor and cursor.
+    #[must_use]
     pub fn single(row: usize) -> Self {
         RowSelection {
             anchor: Some(row),
@@ -184,12 +187,14 @@ impl RowSelection {
     }
 
     /// Whether `row` is selected.
+    #[must_use]
     pub fn contains(&self, row: usize) -> bool {
         let at = self.ranges.partition_point(|range| range.end <= row);
         self.ranges.get(at).is_some_and(|range| range.start <= row)
     }
 
     /// How many rows are selected.
+    #[must_use]
     pub fn count(&self) -> usize {
         self.ranges
             .iter()
@@ -198,6 +203,7 @@ impl RowSelection {
     }
 
     /// Whether no row is selected.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.ranges.is_empty()
     }
@@ -208,16 +214,19 @@ impl RowSelection {
     }
 
     /// The selected ranges, ascending, disjoint, and never touching.
+    #[must_use]
     pub fn ranges(&self) -> &[Range<usize>] {
         &self.ranges
     }
 
     /// The row a shift-click or shift-arrow measures from.
+    #[must_use]
     pub fn anchor(&self) -> Option<usize> {
         self.anchor
     }
 
     /// The row the keys rest on.
+    #[must_use]
     pub fn cursor(&self) -> Option<usize> {
         self.cursor
     }
@@ -230,33 +239,30 @@ impl RowSelection {
             .get(at)
             .filter(|range| range.start <= row)
             .cloned();
-        match inside {
-            Some(range) => {
-                self.ranges.remove(at);
-                let after = row + 1..range.end;
-                if !after.is_empty() {
-                    self.ranges.insert(at, after);
-                }
-                let before = range.start..row;
-                if !before.is_empty() {
-                    self.ranges.insert(at, before);
-                }
+        if let Some(range) = inside {
+            self.ranges.remove(at);
+            let after = row + 1..range.end;
+            if !after.is_empty() {
+                self.ranges.insert(at, after);
             }
-            None => {
-                let joins_before = at > 0 && self.ranges[at - 1].end == row;
-                let joins_after = self
-                    .ranges
-                    .get(at)
-                    .is_some_and(|next| next.start == row + 1);
-                match (joins_before, joins_after) {
-                    (true, true) => {
-                        let end = self.ranges.remove(at).end;
-                        self.ranges[at - 1].end = end;
-                    }
-                    (true, false) => self.ranges[at - 1].end = row + 1,
-                    (false, true) => self.ranges[at].start = row,
-                    (false, false) => self.ranges.insert(at, row..row + 1),
+            let before = range.start..row;
+            if !before.is_empty() {
+                self.ranges.insert(at, before);
+            }
+        } else {
+            let joins_before = at > 0 && self.ranges[at - 1].end == row;
+            let joins_after = self
+                .ranges
+                .get(at)
+                .is_some_and(|next| next.start == row + 1);
+            match (joins_before, joins_after) {
+                (true, true) => {
+                    let end = self.ranges.remove(at).end;
+                    self.ranges[at - 1].end = end;
                 }
+                (true, false) => self.ranges[at - 1].end = row + 1,
+                (false, true) => self.ranges[at].start = row,
+                (false, false) => self.ranges.insert(at, row..row + 1),
             }
         }
         self.anchor = Some(row);

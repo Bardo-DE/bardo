@@ -42,6 +42,7 @@ type Stepped = (Tabs, Vec<Tabbed>);
 
 impl Tabs {
     /// One tab on `location`, and the effects that load it.
+    #[must_use]
     pub fn new(location: Location) -> (Tabs, Vec<Tabbed>) {
         let (browser, effects) = Browser::new(location);
         let tabs = Tabs {
@@ -57,6 +58,7 @@ impl Tabs {
     }
 
     /// The same tabs, each knowing the person's home folder, which `~` means in Go to Folder.
+    #[must_use]
     pub fn with_home(self, home: FolderPath) -> Tabs {
         let Tabs {
             front,
@@ -78,6 +80,7 @@ impl Tabs {
 
     /// The same tabs, each behaving as `behaviour` says; a tab opened later behaves like the one it
     /// is opened from.
+    #[must_use]
     pub fn with_behaviour(self, behaviour: Behaviour) -> Tabs {
         let Tabs {
             front,
@@ -98,26 +101,31 @@ impl Tabs {
     }
 
     /// The tab in front.
+    #[must_use]
     pub fn front_tab(&self) -> &Tab {
         &self.front
     }
 
     /// The browser of the tab in front.
+    #[must_use]
     pub fn front(&self) -> &Browser {
         &self.front.browser
     }
 
     /// The id of the tab in front.
+    #[must_use]
     pub fn front_id(&self) -> TabId {
         self.front.id
     }
 
     /// How many tabs there are; at least one.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.others.len() + 1
     }
 
     /// Always `false`: a window keeps at least one tab.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         false
     }
@@ -132,12 +140,14 @@ impl Tabs {
     }
 
     /// The tab called `id`, if it is still open.
+    #[must_use]
     pub fn get(&self, id: TabId) -> Option<&Tab> {
         self.iter().find(|tab| tab.id == id)
     }
 
     /// The same tabs with `browser` in front in place of the front one, nothing asked for: a
     /// click made in one event is taken back.
+    #[must_use]
     pub fn with_front(self, browser: Browser) -> Tabs {
         Tabs {
             front: Tab {
@@ -150,6 +160,7 @@ impl Tabs {
 
     /// The tabs after `input` for the front tab (or, for the tab inputs, for the window), and
     /// what the caller should do about it.
+    #[must_use]
     pub fn step(self, input: Input, now: Now) -> (Tabs, Vec<Tabbed>) {
         if matches!(input, Input::NewTab) {
             return self.new_tab();
@@ -181,6 +192,7 @@ impl Tabs {
 
     /// The answer `input` to something tab `tab` asked for. It goes to that tab, in front or not;
     /// if the tab was closed since, it is dropped.
+    #[must_use]
     pub fn heard(self, tab: TabId, input: Input, now: Now) -> (Tabs, Vec<Tabbed>) {
         let Tabs {
             mut front,

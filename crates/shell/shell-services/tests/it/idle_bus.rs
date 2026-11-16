@@ -69,9 +69,10 @@ async fn until(idle: &mut watch::Receiver<Idle>, want: impl Fn(&Idle) -> bool) -
             return now;
         }
         let left = give_up.saturating_duration_since(Instant::now());
-        if tokio::time::timeout(left, idle.changed()).await.is_err() {
-            panic!("gave up at {now:?}");
-        }
+        assert!(
+            tokio::time::timeout(left, idle.changed()).await.is_ok(),
+            "gave up at {now:?}"
+        );
     }
 }
 

@@ -22,6 +22,7 @@ fn json<T: serde::Serialize>(value: &T) -> String {
 }
 
 /// The delivery of `change`; `None` for a change this build has no signal for.
+#[must_use]
 pub fn delivery_of(change: Change) -> Option<Delivery> {
     match change {
         Change::Recorded { event, kind } => Some(Delivery::Emit(Signal::Recorded {

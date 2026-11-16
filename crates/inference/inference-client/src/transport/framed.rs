@@ -1,6 +1,6 @@
 //! A Unix stream socket whose frames are `account_wire` envelopes (a 4-byte length, then
 //! JSON): the fd `Inference1.Open` returns. A session writes `ClientFrame`s and reads
-//! `InferEvent`s, a memfd riding on the frame that names it as SCM_RIGHTS.
+//! `InferEvent`s, a memfd riding on the frame that names it as `SCM_RIGHTS`.
 
 use crate::error::TransportError;
 use account_wire::{decode_frame, encode_frame};
@@ -72,7 +72,7 @@ fn session_error(error: TransportError) -> SessionError {
 }
 
 impl FramedSession {
-    /// Writes `frame` with `attachments` (memfds) riding on it as SCM_RIGHTS. A frame names
+    /// Writes `frame` with `attachments` (memfds) riding on it as `SCM_RIGHTS`. A frame names
     /// one by its index in `attachments` (`ImageSource::Attached`), and exactly as many must be
     /// given as the frame names (`ClientFrame::attachments`): the daemon takes that many from
     /// the descriptors it received, in order. Not cancel safe: a dropped call may leave half a

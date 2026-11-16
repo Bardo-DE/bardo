@@ -256,7 +256,7 @@ fn replies_without_an_action_or_with_a_broken_one() {
         Err(ParseError::Unterminated)
     );
     // Trailing end-of-turn text after a good call is ignored.
-    assert!(ui_tars("Action: wait()<|im_end|>").is_ok());
+    ui_tars("Action: wait()<|im_end|>").unwrap();
 }
 
 #[test]
@@ -264,5 +264,5 @@ fn multibyte_text_is_safe() {
     let p = ui_tars("Thought: 点击保存按钮 ✓\nAction: type(content='日本語 ✓')").unwrap();
     assert_eq!(p.thought.as_deref(), Some("点击保存按钮 ✓"));
     assert_eq!(image_actions(&p).len(), 1);
-    assert!(ui_tars("Action: clïck(start_box='(1,2)')").is_err());
+    ui_tars("Action: clïck(start_box='(1,2)')").unwrap_err();
 }

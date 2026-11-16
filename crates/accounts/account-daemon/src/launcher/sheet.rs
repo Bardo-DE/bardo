@@ -47,18 +47,17 @@ impl<H: Host, C: Callers> Core<H, C> {
         let owner = self.launcher_of(header).await?;
         let program = AgentProgram::parse(program).map_err(RefusedError::invalid)?;
         let class: DataClass = slug(class)?;
-        let session = match session.is_empty() {
-            true => None,
-            false => {
-                let session = SessionToken::parse(session).map_err(RefusedError::invalid)?;
-                if !self.launchers.session_open(&owner, &session) {
-                    return Err(RefusedError::launcher(
-                        LauncherFault::UnknownSession,
-                        "this connection holds no such session open",
-                    ));
-                }
-                Some(session)
+        let session = if session.is_empty() {
+            None
+        } else {
+            let session = SessionToken::parse(session).map_err(RefusedError::invalid)?;
+            if !self.launchers.session_open(&owner, &session) {
+                return Err(RefusedError::launcher(
+                    LauncherFault::UnknownSession,
+                    "this connection holds no such session open",
+                ));
             }
+            Some(session)
         };
         if !self.launchers.holds(&owner, &program) {
             return Err(RefusedError::launcher(
@@ -117,9 +116,10 @@ impl<H: Host, C: Callers> Core<H, C> {
                 if !self.launchers.session_open(owner, session) =>
             {
                 let removed = self.host.end_session_grants(Some(session)).await;
-                match removed.contains(&chosen.grant) {
-                    true => AccountsReply::Refused(Refusal::Dismissed),
-                    false => reply,
+                if removed.contains(&chosen.grant) {
+                    AccountsReply::Refused(Refusal::Dismissed)
+                } else {
+                    reply
                 }
             }
             _ => reply,

@@ -12,6 +12,7 @@ pub fn parse_status_euid(status: &str) -> Option<Uid> {
 
 /// The process a pidfd refers to, from the text of `/proc/self/fdinfo/<fd>` (`Pid:`). A process
 /// that has exited reads `-1`, which is `None`.
+#[must_use]
 pub fn parse_fdinfo_pid(fdinfo: &str) -> Option<Pid> {
     let line = fdinfo.lines().find_map(|l| l.strip_prefix("Pid:"))?;
     Pid::new(line.trim().parse().ok()?)
@@ -39,9 +40,10 @@ pub fn parse_flatpak_info(info: &str) -> Option<SandboxFacts> {
     })
 }
 
-/// The snap a kernel security label names: the AppArmor label of a snap starts `snap.` (for
+/// The snap a kernel security label names: the `AppArmor` label of a snap starts `snap.` (for
 /// example `snap.firefox.firefox (enforce)`). The bus hands the label as bytes with a final NUL.
-/// Other labels (SELinux contexts, `unconfined`) state no sandbox of ours.
+/// Other labels (`SELinux` contexts, `unconfined`) state no sandbox of ours.
+#[must_use]
 pub fn parse_security_label(label: &[u8]) -> Option<SandboxFacts> {
     let end = label.iter().position(|b| *b == 0).unwrap_or(label.len());
     let text = std::str::from_utf8(&label[..end]).ok()?;

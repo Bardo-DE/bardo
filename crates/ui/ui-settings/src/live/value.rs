@@ -100,8 +100,8 @@ mod tests {
 
     #[test]
     fn a_variant_without_a_live_type_is_bad_value() {
-        assert!(from_wire(&zbus::zvariant::Value::F64(1.0)).is_err());
-        assert!(from_wire(&zbus::zvariant::Value::from(vec![1_i64])).is_err());
+        from_wire(&zbus::zvariant::Value::F64(1.0)).unwrap_err();
+        from_wire(&zbus::zvariant::Value::from(vec![1_i64])).unwrap_err();
     }
 
     #[test]

@@ -10,6 +10,7 @@ use dioxus::prelude::*;
 
 /// Provide `look` to the subtree, updating the provided value when it changes. Nothing here
 /// reads the signal, so the write does not re-render the caller.
+#[must_use]
 pub fn use_space_look_provider(look: &SpaceLook) -> Signal<SpaceLook> {
     let mut provided = use_context_provider(|| Signal::new(look.clone()));
     if *provided.peek() != *look {
@@ -26,6 +27,7 @@ pub fn use_space_look() -> SpaceLook {
 
 /// The frame variables that look paints in the enclosing root's scheme, redrawn when either
 /// changes; the light scheme's outside a `Ds`.
+#[must_use]
 pub fn use_space_frame() -> FrameVars {
     let scheme = try_use_context::<Signal<Scope>>().map_or(Scheme::Light, |scope| scope().scheme);
     FrameVars::of(&use_space_look(), scheme)

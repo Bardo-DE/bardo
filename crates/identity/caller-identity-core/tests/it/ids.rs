@@ -89,9 +89,9 @@ fn image_paths_are_absolute_plain_and_never_deleted() {
 
 #[test]
 fn small_ids_check_their_alphabets() {
-    assert!(UnitName::new("bardo-shell.service").is_ok());
-    assert!(UnitName::new("app-org.x.Y-123.scope").is_ok());
-    assert!(UnitName::new("user@1000.service").is_ok());
+    UnitName::new("bardo-shell.service").unwrap();
+    UnitName::new("app-org.x.Y-123.scope").unwrap();
+    UnitName::new("user@1000.service").unwrap();
     for bad in [
         "sill",
         "sill.timer",
@@ -101,16 +101,16 @@ fn small_ids_check_their_alphabets() {
     ] {
         assert!(UnitName::new(bad).is_err(), "{bad:?}");
     }
-    assert!(AppKey::new("org.bardo.Shell").is_ok());
+    AppKey::new("org.bardo.Shell").unwrap();
     for bad in ["", "a b", "a/b"] {
         assert!(AppKey::new(bad).is_err(), "{bad:?}");
     }
-    assert!(AppKey::new(&"x".repeat(256)).is_err());
-    assert!(RoleName::new("pad_daemon").is_ok());
+    AppKey::new(&"x".repeat(256)).unwrap_err();
+    RoleName::new("pad_daemon").unwrap();
     for bad in ["", "Shell", "a-b"] {
         assert!(RoleName::new(bad).is_err(), "{bad:?}");
     }
-    assert!(RoleName::new(&"x".repeat(65)).is_err());
+    RoleName::new(&"x".repeat(65)).unwrap_err();
     assert_eq!(
         RoleName::from_static("shell"),
         RoleName::new("shell").expect("a role")

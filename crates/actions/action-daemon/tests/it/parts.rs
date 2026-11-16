@@ -194,20 +194,21 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
         // and run a JIT (Node), and bubblewrap needs namespace syscalls. It carries every line that
         // breaks none of that, and the agent is confined by the sandbox the host starts it in.
         let host = path.file_name().is_some_and(|n| n == "bardo-agent.service");
-        let lines: &[&str] = match host {
-            true => &[
+        let lines: &[&str] = if host {
+            &[
                 "NoNewPrivileges=yes",
                 "RestrictSUIDSGID=yes",
                 "LockPersonality=yes",
                 "RestrictRealtime=yes",
-            ],
-            false => &[
+            ]
+        } else {
+            &[
                 "RestrictAddressFamilies=AF_UNIX",
                 "NoNewPrivileges=yes",
                 "MemoryDenyWriteExecute=yes",
                 "SystemCallFilter=@system-service",
                 "CapabilityBoundingSet=",
-            ],
+            ]
         };
         for line in lines.iter().copied() {
             assert!(
@@ -220,9 +221,10 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
         // a system that refuses one for user units.
         let dropin = std::fs::read_to_string(format!("{}.d/sandbox.conf", path.display()))
             .expect("sandbox drop-in");
-        let dropin_lines: &[&str] = match host {
-            true => &["ProtectSystem=full", "PrivateTmp=yes", "PrivateDevices=yes"],
-            false => &["PrivateNetwork=yes", "ProtectSystem=strict"],
+        let dropin_lines: &[&str] = if host {
+            &["ProtectSystem=full", "PrivateTmp=yes", "PrivateDevices=yes"]
+        } else {
+            &["PrivateNetwork=yes", "ProtectSystem=strict"]
         };
         for line in dropin_lines.iter().copied() {
             assert!(

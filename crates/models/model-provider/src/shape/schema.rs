@@ -103,6 +103,7 @@ fn text_of(value: &Value) -> SchemaText {
 
 /// Rewrites a schema for a provider: see [`SchemaDialect`]. Text that is not JSON comes back
 /// unchanged. The input is parsed, never evaluated.
+#[must_use]
 pub fn sanitize_schema(schema: &SchemaText, dialect: SchemaDialect) -> SchemaText {
     match serde_json::from_str::<Value>(schema.0.as_str()) {
         Ok(value) => text_of(&sanitize_value(value, dialect)),

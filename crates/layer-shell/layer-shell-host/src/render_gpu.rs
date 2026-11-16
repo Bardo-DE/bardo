@@ -44,7 +44,7 @@ impl DeviceNumber {
 }
 
 /// The PCI ids of the function `number` sits on, read under `sysfs_root`. `None` when the
-/// device has no PCI function (a virtual or SoC GPU), or a file is missing or unparsable.
+/// device has no PCI function (a virtual or `SoC` GPU), or a file is missing or unparsable.
 pub(crate) fn pci_ids(sysfs_root: &Path, number: DeviceNumber) -> Option<PciIds> {
     let id = |file: &str| {
         std::fs::read_to_string(number.attribute(sysfs_root, file))

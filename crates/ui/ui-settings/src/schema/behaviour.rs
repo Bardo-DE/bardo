@@ -37,6 +37,7 @@ pub enum CornerAction {
 }
 
 /// `hot_corners.*`: what each screen corner does when the pointer rests in it.
+///
 /// A corner is a list of bindings (an empty list leaves it inactive); a file that still holds the
 /// older one word per corner (`top_left = "lock"`, with `top_left_command`) is read, and saving
 /// writes the list form only.

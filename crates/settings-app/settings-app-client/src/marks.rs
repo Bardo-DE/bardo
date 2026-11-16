@@ -24,6 +24,7 @@ pub struct ProviderMarkFacts {
 }
 
 /// The marks of the provider files porter ships.
+#[must_use]
 pub fn shipped_marks() -> Vec<ProviderMarkFacts> {
     shipped_specs()
         .into_iter()

@@ -22,15 +22,18 @@ pub struct Terminals {
 
 impl Terminals {
     /// Where the helper's conversation is running.
+    #[must_use]
     pub fn runs_in(&self, helper: &HelperId) -> RunsIn {
-        match self.away.contains_key(helper) {
-            true => RunsIn::Terminal,
-            false => RunsIn::Desktop,
+        if self.away.contains_key(helper) {
+            RunsIn::Terminal
+        } else {
+            RunsIn::Desktop
         }
     }
 
     /// What the person can do about where the helper's conversation is: take it to the terminal
     /// when the app said it can be picked up and no job runs, or bring it back.
+    #[must_use]
     pub fn handover_of(&self, card: &HelperCard, board: &Board) -> Handover {
         let idle = card.state == HelperState::Idle && board.running(&card.id).is_none();
         let ready = self.can_hand.contains(&card.id) && idle;
@@ -69,12 +72,14 @@ impl Terminals {
     }
 
     /// The sessions of the conversations that are in a terminal.
+    #[must_use]
     pub fn sessions_away(&self) -> Vec<SessionId> {
         self.away.values().cloned().collect()
     }
 }
 
 /// Why a helper's conversation cannot go to the terminal now.
+#[must_use]
 pub fn why_not_to_terminal(card: &HelperCard, board: &Board) -> HandFault {
     let running = board.running(&card.id).is_some();
     match (&card.state, running) {
@@ -86,6 +91,7 @@ pub fn why_not_to_terminal(card: &HelperCard, board: &Board) -> HandFault {
 
 /// The conversations a terminal started with an agent app that the person can bring in: the open
 /// watch sessions that name their app, except the ones in `away` (a helper's own conversation).
+#[must_use]
 pub fn terminal_sessions(
     watched: Vec<WatchedLine>,
     away: &[SessionId],

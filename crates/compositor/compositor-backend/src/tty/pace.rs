@@ -39,6 +39,7 @@ impl Default for Pace {
 
 impl Pace {
     /// A count with nothing queued, starting at vblank 0.
+    #[must_use]
     pub fn new() -> Pace {
         Pace {
             next: VblankSeq(0),
@@ -48,6 +49,7 @@ impl Pace {
 
     /// The vblank a frame queued now is for; none while a flip is in flight (try at the next
     /// vblank).
+    #[must_use]
     pub fn turn(&self) -> Option<VblankSeq> {
         match self.pending {
             Some(_) => None,
@@ -56,6 +58,7 @@ impl Pace {
     }
 
     /// The vblank of the frame in flight, if one is.
+    #[must_use]
     pub fn pending(&self) -> Option<VblankSeq> {
         self.pending
     }

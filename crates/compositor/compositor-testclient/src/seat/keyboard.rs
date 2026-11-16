@@ -1,4 +1,4 @@
-//! wl_keyboard: keymap, enter with modifiers, keys, repeat info. Filled by P0-H4.
+//! `wl_keyboard`: keymap, enter with modifiers, keys, repeat info. Filled by P0-H4.
 //!
 //! Every event reaches the transcript through the connection's tap, so the helper only binds
 //! the seat and its keyboard.
@@ -29,11 +29,13 @@ impl Keyboard {
     }
 
     /// The `wl_seat`.
+    #[must_use]
     pub fn seat(&self) -> &WlSeat {
         &self.seat
     }
 
     /// The `wl_keyboard`.
+    #[must_use]
     pub fn keyboard(&self) -> &WlKeyboard {
         &self.keyboard
     }

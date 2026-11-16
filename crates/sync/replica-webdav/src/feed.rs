@@ -176,9 +176,10 @@ impl<H: Http> WebDavReplica<H> {
             .filter(|p| p.batch == batch && offset <= p.changes.len())
             .ok_or(ReplicaError::AnchorExpired)?;
         let stop = offset.saturating_add(self.page).min(pending.changes.len());
-        let (next, more) = match stop == pending.changes.len() {
-            true => (pending.end.clone(), last(pending.truncated)),
-            false => (self.more_anchor(batch, stop), More::More),
+        let (next, more) = if stop == pending.changes.len() {
+            (pending.end.clone(), last(pending.truncated))
+        } else {
+            (self.more_anchor(batch, stop), More::More)
         };
         Ok(ChangePage {
             changes: pending.changes[offset..stop].to_vec(),
@@ -419,10 +420,7 @@ impl<H: Http> WebDavReplica<H> {
 
 /// How the last page of a batch ends: at once again when the server cut the report short.
 fn last(truncated: bool) -> More {
-    match truncated {
-        true => More::More,
-        false => More::Done,
-    }
+    if truncated { More::More } else { More::Done }
 }
 
 fn meta_of(entry: &Entry) -> Meta {

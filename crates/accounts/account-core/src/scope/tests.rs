@@ -83,10 +83,10 @@ fn only_an_app_scope_is_read() {
 
 #[test]
 fn a_launcher_or_run_that_would_not_read_back_is_refused() {
-    assert!(ScopeName::new(Some("my-launcher"), "org.bardo.Mail", "1").is_err());
-    assert!(ScopeName::new(None, "org.bardo.Mail", "1-2").is_err());
-    assert!(ScopeName::new(None, "org.bardo.Mail", "").is_err());
-    assert!(ScopeName::new(None, "", "1").is_err());
+    ScopeName::new(Some("my-launcher"), "org.bardo.Mail", "1").unwrap_err();
+    ScopeName::new(None, "org.bardo.Mail", "1-2").unwrap_err();
+    ScopeName::new(None, "org.bardo.Mail", "").unwrap_err();
+    ScopeName::new(None, "", "1").unwrap_err();
 }
 
 #[test]

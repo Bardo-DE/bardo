@@ -16,6 +16,7 @@ pub struct FakePrefs {
 
 impl FakePrefs {
     /// A store that remembers nothing yet.
+    #[must_use]
     pub fn new() -> FakePrefs {
         FakePrefs::default()
     }

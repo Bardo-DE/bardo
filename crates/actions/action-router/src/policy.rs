@@ -250,12 +250,11 @@ impl<S: Seams> Router<S> {
         };
         let derived = self.note_corrections(derived);
         // Never more than the session's own policy: with none, the parent's bound applies.
-        let narrowed = match old {
-            Some(old) => Some(intersection(&old, &derived)),
-            None => {
-                let st = self.locked();
-                self.bound_policy(&st, id, derived)
-            }
+        let narrowed = if let Some(old) = old {
+            Some(intersection(&old, &derived))
+        } else {
+            let st = self.locked();
+            self.bound_policy(&st, id, derived)
         };
         if let Some(policy) = narrowed {
             self.apply_policy(id, policy, Baseline::Anything).await;

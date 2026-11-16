@@ -85,6 +85,7 @@ fn roles(member: Member) -> &'static [CallerRole] {
 }
 
 /// Whether a caller in `role` may call `member`.
+#[must_use]
 pub fn permits(role: CallerRole, member: Member) -> bool {
     roles(member).contains(&role)
 }
@@ -92,6 +93,7 @@ pub fn permits(role: CallerRole, member: Member) -> bool {
 /// The role `roles` acts in when it calls `member`: the first of its roles that may make the
 /// call, or `App` for a name with no role of its own that may use the app-level members. None
 /// when no role of the caller may make the call.
+#[must_use]
 pub fn acting_role(
     roles: &std::collections::BTreeSet<CallerRole>,
     member: Member,

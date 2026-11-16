@@ -23,18 +23,21 @@ const ALL: [Refusal; 10] = [
 
 /// The error name accountd replies with for `refusal`. The same as [`refusal_error_name_in`] with
 /// [`ServiceRoot::Accounts`].
+#[must_use]
 pub fn refusal_error_name(refusal: Refusal) -> String {
     refusal_error_name_in(ServiceRoot::Accounts, &refusal)
 }
 
 /// The error name the daemon `service` replies with for `refusal`: the service's error prefix,
 /// then the refusal's slug in Pascal case.
+#[must_use]
 pub fn refusal_error_name_in(service: ServiceRoot, refusal: &Refusal) -> String {
     format!("{}.{}", service.error_prefix(), pascal(&slug_of(*refusal)))
 }
 
 /// The refusal an error name stands for, if it is one of ours, from any service that shows a
 /// sheet.
+#[must_use]
 pub fn refusal_from_error_name(name: &str) -> Option<Refusal> {
     ALL.into_iter().find(|refusal| {
         ServiceRoot::ALL
@@ -63,6 +66,7 @@ fn pascal(slug: &str) -> String {
 }
 
 /// The refusal a daemon's error reply stands for (`org.bardo.Accounts1.Error.*`), if it is one.
+#[must_use]
 pub fn refusal_of(error: &zbus::Error) -> Option<account_wire::Refusal> {
     let name = match error {
         zbus::Error::MethodError(name, _, _) => name.as_str().to_owned(),

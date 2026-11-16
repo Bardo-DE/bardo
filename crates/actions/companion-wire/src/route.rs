@@ -79,6 +79,7 @@ pub enum WhySays {
 }
 
 /// Reads one inferd `Why`.
+#[must_use]
 pub fn why_says(why: &Why) -> WhySays {
     match why {
         Why::Named => WhySays::Word(WhyWord::Named),
@@ -104,6 +105,7 @@ pub fn why_says(why: &Why) -> WhySays {
 
 /// "Claude Haiku 4.5" from `claude-haiku-4-5`: dashes become spaces, words are capitalised and
 /// runs of digits join with dots. A path prefix (`anthropic/`) is dropped.
+#[must_use]
 pub fn model_name(id: &str) -> String {
     let id = id.rsplit('/').next().unwrap_or(id);
     let mut out = String::new();
@@ -148,7 +150,8 @@ fn is_size(part: &str) -> bool {
         && count.starts_with(|c: char| c.is_ascii_digit())
 }
 
-/// "OpenRouter" from `openrouter`: the known names, else the id capitalised.
+/// "`OpenRouter`" from `openrouter`: the known names, else the id capitalised.
+#[must_use]
 pub fn provider_name(provider: &ProviderId) -> String {
     match provider.0.as_str() {
         "openrouter" => "OpenRouter".to_owned(),
@@ -202,13 +205,14 @@ fn stage_text(note: &RouteNote) -> String {
     text
 }
 
-/// The footer line of an answer: "Heard by Whisper · Answered by Kimi K2.6 via OpenRouter
+/// The footer line of an answer: "Heard by Whisper · Answered by Kimi K2.6 via `OpenRouter`
 /// (already loaded)". Empty when no stage was announced.
 pub fn footer_line(notes: &[RouteNote]) -> String {
     notes.iter().map(stage_text).collect::<Vec<_>>().join(" · ")
 }
 
 /// What a refusal says when the person named a model that cannot serve: the model and why.
+#[must_use]
 pub fn declined_text(declined: &Declined) -> String {
     let name = model_name(declined.model.model.as_str());
     let reason = match &declined.because {

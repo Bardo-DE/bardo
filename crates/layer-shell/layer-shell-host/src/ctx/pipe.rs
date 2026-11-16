@@ -69,7 +69,7 @@ fn remove_after<M: 'static>(
     after: Duration,
 ) {
     let remover = handle.clone();
-    let armed = handle.insert_source(Timer::from_duration(after), move |_, _, _| {
+    let armed = handle.insert_source(Timer::from_duration(after), move |_, (), _| {
         remover.remove(token);
         TimeoutAction::Drop
     });

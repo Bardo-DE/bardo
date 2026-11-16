@@ -28,6 +28,7 @@ pub enum Bucket {
 
 impl Bucket {
     /// The pool for `caller` while `seat`'s user is active.
+    #[must_use]
     pub fn of(caller: &Caller, seat: ActiveUid) -> Self {
         if authorise(Kind::PalmrestWheel, caller, seat).is_ok() {
             Self::Reserved(Maker::PadDaemon)
@@ -39,6 +40,7 @@ impl Bucket {
     }
 
     /// How long a connection of this pool may stay without making a device.
+    #[must_use]
     pub fn handshake_ms(self) -> u64 {
         match self {
             Self::Reserved(_) => HANDSHAKE_TIMEOUT_MS,
@@ -64,6 +66,7 @@ pub struct Slots(Arc<Mutex<Counts>>);
 
 impl Slots {
     /// No connection yet.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -95,6 +98,7 @@ impl Slots {
     }
 
     /// Connections held now, in every pool.
+    #[must_use]
     pub fn open(&self) -> usize {
         let counts = self.counts();
         counts.reserved.total() + counts.strangers.total()
@@ -122,6 +126,7 @@ pub struct Slot {
 
 impl Slot {
     /// The pool this slot belongs to.
+    #[must_use]
     pub fn bucket(&self) -> Bucket {
         self.bucket
     }

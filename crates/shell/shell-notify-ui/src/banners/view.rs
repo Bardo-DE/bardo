@@ -162,9 +162,10 @@ fn use_follow_stack(
 ) {
     use_effect(use_reactive!(|max| {
         let banners = live.read().banners.clone();
-        let cards = match shows.read().shows_on(output) {
-            true => stack(&banners, max),
-            false => Vec::new(),
+        let cards = if shows.read().shows_on(output) {
+            stack(&banners, max)
+        } else {
+            Vec::new()
         };
         column.keep(&banners);
         column.input(DeckIn::Cards(cards));

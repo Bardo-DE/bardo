@@ -23,6 +23,7 @@ use std::collections::BTreeSet;
 /// `companion.episode` for the two typed bodies, `companion.session.<slug>` for a record of
 /// the companion's own sessions and `helpers.card`, `helpers.job` or `helpers.post` for the
 /// helpers' own.
+#[must_use]
 pub fn kind_tag_of(record: &AuditRecord) -> Option<KindTag> {
     let text = match record {
         AuditRecord::Call { .. } => "docket.call".to_owned(),
@@ -79,6 +80,7 @@ fn occurred(record: &AuditRecord) -> UnixSeconds {
 
 /// The Space the record itself names, if it does: a call, a started task, a message (the
 /// sender's end) and an episode carry one. The rest are placed by the caller.
+#[must_use]
 pub fn space_named_by(record: &AuditRecord) -> Option<&SpaceId> {
     match record {
         AuditRecord::Call { space, .. }
@@ -218,6 +220,7 @@ fn who_and_how(record: &AuditRecord, space: &SpaceId) -> (Actor, Effect, Label) 
 /// `space` is where the caller says the record belongs; the Space a call, a started task, a
 /// message or an episode names itself wins over it. A message and an episode are almanac's own
 /// bodies; everything else is an `Area { Docket }` payload carrying the record's serde form.
+#[must_use]
 pub fn record_of(record: &AuditRecord, space: &SpaceId) -> Record {
     let space = space_named_by(record).unwrap_or(space).clone();
     let (actor, effect, label) = who_and_how(record, &space);

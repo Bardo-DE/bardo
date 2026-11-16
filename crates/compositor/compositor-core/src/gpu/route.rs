@@ -22,6 +22,7 @@ pub enum OutputRoute {
 
 impl OutputRoute {
     /// The GPU whose renderer draws this output's frames.
+    #[must_use]
     pub fn renders_on(&self) -> DrmNodeId {
         match *self {
             OutputRoute::Direct { gpu } => gpu,
@@ -30,6 +31,7 @@ impl OutputRoute {
     }
 
     /// The GPU that scans this output out.
+    #[must_use]
     pub fn scans_out_on(&self) -> DrmNodeId {
         match *self {
             OutputRoute::Direct { gpu } => gpu,
@@ -54,6 +56,7 @@ impl RenderPlan {
     ///     Some(OutputRoute::Copy { render, scanout: other })
     /// );
     /// ```
+    #[must_use]
     pub fn route_of(&self, output: &OutputName) -> Option<OutputRoute> {
         let scanout = *self.scanout.get(output)?;
         Some(if scanout == self.render {
@@ -84,6 +87,7 @@ impl RenderPlan {
     /// assert_eq!(plan.route_for_gpu(&render), Some(OutputRoute::Direct { gpu: render }));
     /// assert_eq!(plan.route_for_gpu(&DrmNodeId::new(226, 130)), None);
     /// ```
+    #[must_use]
     pub fn route_for_gpu(&self, scanout: &DrmNodeId) -> Option<OutputRoute> {
         if *scanout == self.render {
             return Some(OutputRoute::Direct { gpu: *scanout });
@@ -98,6 +102,7 @@ impl RenderPlan {
     }
 
     /// The route of every placed output, in connector order.
+    #[must_use]
     pub fn routes(&self) -> Vec<(OutputName, OutputRoute)> {
         self.scanout
             .keys()

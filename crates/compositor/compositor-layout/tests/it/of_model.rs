@@ -1,4 +1,4 @@
-//! spec_of reads the model: a Model built by Model::step is laid out as the spec says.
+//! `spec_of` reads the model: a Model built by `Model::step` is laid out as the spec says.
 
 use account_core::ClaimedId;
 use compositor_core::app::AppKey;

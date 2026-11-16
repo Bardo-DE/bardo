@@ -48,6 +48,7 @@ pub(crate) fn positioner_params(
 }
 
 /// `rect` moved by `offset`; its size is unchanged.
+#[must_use]
 pub fn offset_rect(rect: Rect, offset: PopupOffset) -> Rect {
     Rect {
         x: rect.x + offset.dx,

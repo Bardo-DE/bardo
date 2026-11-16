@@ -82,6 +82,7 @@ pub enum SideEffect {
 }
 
 /// One transition. A subagent has one open conversation; a turn to it extends that one.
+#[must_use]
 pub fn side_step(
     table: SideTable,
     input: SideInput,
@@ -146,6 +147,7 @@ fn side_id(conv: &SideConv) -> String {
 /// The side episode of a finished conversation: the person's turns verbatim and the subagent's
 /// typed steps since, as a trusted skeleton with no narrative. `None` when the id would not be
 /// a valid episode id.
+#[must_use]
 pub fn side_episode(
     conv: &SideConv,
     steps: Vec<LedgerStep>,

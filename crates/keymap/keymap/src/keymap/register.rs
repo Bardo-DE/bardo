@@ -57,12 +57,11 @@ impl Keymap {
             }
         }
         for (row, conflict) in collided {
-            match self.fall_back(row, &staged) {
-                Some(binding) => stage(&mut staged, row, binding),
-                None => {
-                    refused.push(row.action.clone());
-                    first.get_or_insert(conflict);
-                }
+            if let Some(binding) = self.fall_back(row, &staged) {
+                stage(&mut staged, row, binding)
+            } else {
+                refused.push(row.action.clone());
+                first.get_or_insert(conflict);
             }
         }
         if let Some(conflict) = first {

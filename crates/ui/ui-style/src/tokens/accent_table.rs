@@ -23,11 +23,13 @@ const GRAPHITE: HueShades = HueShades {
 
 /// The roles `accent` paints in `scheme` at ordinary contrast: `--accent` (the fill),
 /// `--accent-ink`, `--accent-text`, `--accent-soft` (the wash), `--accent-ring`, `--seal` (the fill).
+#[must_use]
 pub fn accent_of(accent: Accent, scheme: Scheme) -> AccentRoles {
     accent_in(accent, scheme, Contrast::Normal)
 }
 
 /// The roles `accent` paints in `scheme` at `contrast`.
+#[must_use]
 pub fn accent_in(accent: Accent, scheme: Scheme, contrast: Contrast) -> AccentRoles {
     let shades = shades_of(accent);
     let lead = shades.pick(scheme, Contrast::High);

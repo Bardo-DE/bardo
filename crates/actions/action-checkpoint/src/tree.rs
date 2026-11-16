@@ -21,6 +21,7 @@ pub struct TreeListing(pub BTreeMap<WorkPath, EntryId>);
 /// hold then. It stands in for the point's tree id (a listing carries none), and it binds a
 /// confirmation to exactly what the person saw, down to the content: a file edited since the
 /// plan was shown makes the plan stale.
+#[must_use]
 pub fn plan_restore(now: &TreeListing, then: &TreeListing) -> RestorePlan {
     let mut changed = Vec::new();
     let mut added = Vec::new();
@@ -52,7 +53,7 @@ fn digest_of(now: &TreeListing, then: &TreeListing, lists: &[&Vec<WorkPath>; 3])
     for list in lists {
         hash.update(b"\x00list");
         feed(&mut hash, list.len().to_string().as_bytes());
-        for path in list.iter() {
+        for path in *list {
             feed(&mut hash, path.as_str().as_bytes());
             feed(&mut hash, id_of(now, path));
             feed(&mut hash, id_of(then, path));

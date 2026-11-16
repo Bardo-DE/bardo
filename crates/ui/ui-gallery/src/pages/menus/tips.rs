@@ -26,7 +26,7 @@ pub fn KeptItemsAndTips() -> Element {
                         dim_unavailable: true,
                         flow: Flow::Inline,
                         onpick: |_| {},
-                        onclose: |_| {},
+                        onclose: |()| {},
                     }
                 }
             }

@@ -41,6 +41,7 @@ struct Inner {
 
 impl SharedClock {
     /// A clock standing at `epoch`.
+    #[must_use]
     pub fn new(epoch: Mono) -> SharedClock {
         SharedClock(Rc::new(RefCell::new(Inner {
             clock: VirtualClock::new(epoch),
@@ -53,6 +54,7 @@ impl SharedClock {
     }
 
     /// Now.
+    #[must_use]
     pub fn now(&self) -> Mono {
         self.0.borrow().clock.now()
     }
@@ -63,6 +65,7 @@ impl SharedClock {
     }
 
     /// Where the next advance stops, at most `limit`.
+    #[must_use]
     pub fn next_stop(&self, limit: Mono) -> (Mono, Stop) {
         self.0.borrow().clock.next_stop(limit)
     }
@@ -103,16 +106,19 @@ impl SharedClock {
     }
 
     /// How many outputs' vblanks the clock follows.
+    #[must_use]
     pub fn output_count(&self) -> usize {
         self.0.borrow().outputs.len()
     }
 
     /// How many stops the source has handed out (a fixture reads it to know a round moved).
+    #[must_use]
     pub fn delivered(&self) -> u64 {
         self.0.borrow().delivered
     }
 
     /// The timers handed out since the last call, in firing order.
+    #[must_use]
     pub fn take_fired(&self) -> Vec<TimerKey> {
         std::mem::take(&mut self.0.borrow_mut().fired)
     }
@@ -185,6 +191,7 @@ pub struct VirtualTimerSource {
 
 impl VirtualTimerSource {
     /// A source over `clock`.
+    #[must_use]
     pub fn new(clock: SharedClock) -> VirtualTimerSource {
         VirtualTimerSource { clock, token: None }
     }

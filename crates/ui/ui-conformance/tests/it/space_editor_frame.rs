@@ -1,4 +1,4 @@
-//! SpaceEditor without its own card (`frame: EditorFrame::Frameless`): a host that is a surface
+//! `SpaceEditor` without its own card (`frame: EditorFrame::Frameless`): a host that is a surface
 //! already (a Sheet) draws it with no border, ground, shadow or padding, so its first row starts
 //! at the editor's own edge; the default is still the card, whose rows sit inside its padding.
 

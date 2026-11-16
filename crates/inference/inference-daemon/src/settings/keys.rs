@@ -40,11 +40,13 @@ pub fn slug_of<T: Serialize>(value: &T) -> String {
 }
 
 /// The value a slug names.
+#[must_use]
 pub fn from_slug<T: DeserializeOwned>(text: &str) -> Option<T> {
     serde_json::from_value(serde_json::Value::String(text.to_owned())).ok()
 }
 
 /// `ai.model.<slot>.<tier>`.
+#[must_use]
 pub fn model_path(slot: Slot, tier: Tier) -> String {
     format!("ai.model.{}.{}", slot.slug(), slug_of(&tier))
 }

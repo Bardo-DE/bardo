@@ -80,6 +80,7 @@ pub struct PrintHash(pub String);
 
 impl RequestPrint {
     /// The fingerprint of `request`: images become digest and size.
+    #[must_use]
     pub fn of(request: &TurnRequest) -> RequestPrint {
         RequestPrint {
             model: request.model.clone(),
@@ -103,6 +104,7 @@ impl RequestPrint {
     }
 
     /// The hash of this print's canonical JSON.
+    #[must_use]
     pub fn hash(&self) -> PrintHash {
         // Serialising these types cannot fail: no map has non-string keys.
         let value = serde_json::to_value(self).unwrap_or(serde_json::Value::Null);

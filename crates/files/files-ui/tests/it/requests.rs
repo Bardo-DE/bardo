@@ -118,5 +118,5 @@ fn the_window_says_there_is_nothing_to_undo_before_it_has_changed_anything() {
 fn a_question_to_a_closed_window_is_an_error() {
     let (sender, requests) = channel();
     drop(requests);
-    assert!(sender.ask(Query::Selection).is_err());
+    sender.ask(Query::Selection).unwrap_err();
 }

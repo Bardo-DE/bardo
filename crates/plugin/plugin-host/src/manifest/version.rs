@@ -47,13 +47,15 @@ impl Version {
             .collect::<Option<_>>()
             .ok_or_else(invalid)?;
         let pre: Vec<PreRelease> = pre
-            .map(|pre| pre.split('.').map(PreRelease::parse).collect::<Option<_>>())
-            .unwrap_or(Some(Vec::new()))
+            .map_or(Some(Vec::new()), |pre| {
+                pre.split('.').map(PreRelease::parse).collect::<Option<_>>()
+            })
             .ok_or_else(invalid)?;
         Ok(Version { numbers, pre })
     }
 
     /// The numbers, as written.
+    #[must_use]
     pub fn parts(&self) -> &[u32] {
         &self.numbers
     }

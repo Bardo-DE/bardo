@@ -1,6 +1,6 @@
 //! Servers of the person's own: accounts of the provider `openai-compatible`, each a server at an
 //! address the person typed (a gateway, a llama.cpp or vLLM on their network) that speaks the
-//! OpenAI chat protocol. Each such account is its own provider here: its models are the ones the
+//! `OpenAI` chat protocol. Each such account is its own provider here: its models are the ones the
 //! server lists (`GET <address>/models`), at add time and on `Rescan`, and its address is where a
 //! turn goes, instead of the fixed table of [`Doors`](super::wire::Doors).
 //!
@@ -80,6 +80,7 @@ pub struct Place {
 
 impl Place {
     /// A provider at a fixed `door`, over TLS.
+    #[must_use]
     pub fn tls(door: Door) -> Self {
         Self {
             door,
@@ -88,6 +89,7 @@ impl Place {
     }
 
     /// The place the account's endpoint names; none for a scheme that is not `http` or `https`.
+    #[must_use]
     pub fn of(endpoint: &ServiceEndpoint) -> Option<Self> {
         let origin = endpoint.url.origin();
         let link = match origin.scheme {
@@ -107,17 +109,20 @@ impl Place {
     }
 
     /// How it is reached.
+    #[must_use]
     pub fn link(&self) -> Link {
         self.link
     }
 
     /// Where it is.
+    #[must_use]
     pub fn door(&self) -> &Door {
         &self.door
     }
 
     /// The endpoint of one request here, presenting `key` as a bearer token; an empty key is no
     /// header at all (a server of the person's own may need none).
+    #[must_use]
     pub fn endpoint(&self, key: &SecretText, timeouts: Timeouts) -> HttpEndpoint {
         let host = HostName(self.door.host.clone());
         let port = Port(self.door.port);
@@ -155,6 +160,7 @@ pub struct OwnServer {
 
 impl OwnServer {
     /// The server the account `account` keeps at `endpoints`; none when it keeps no address.
+    #[must_use]
     pub fn of(account: AccountId, label: String, endpoints: &[ServiceEndpoint]) -> Option<Self> {
         let endpoint = endpoints
             .iter()
@@ -181,6 +187,7 @@ impl Listed {
     /// The model `name` of the server that is account `account`: its entry, which routing and
     /// the turn code read, and its one reach. None when the name makes no id or the entry does
     /// not parse.
+    #[must_use]
     pub fn new(account: &AccountId, name: &str) -> Option<Self> {
         let id = id_of(name)?;
         let quoted = |text: &str| serde_json::to_string(text).unwrap_or_else(|_| "\"\"".into());
@@ -216,6 +223,7 @@ text_out = {{ tools = "native", structured = [], reasoning = "absent", streaming
     }
 
     /// The model's id here.
+    #[must_use]
     pub fn id(&self) -> &ModelId {
         &self.id
     }
@@ -250,6 +258,7 @@ impl OwnBook {
     }
 
     /// Where the server of `account` is.
+    #[must_use]
     pub fn place_of(&self, account: &AccountId) -> Option<Place> {
         self.read()
             .get(account)
@@ -257,6 +266,7 @@ impl OwnBook {
     }
 
     /// Whether `account` lists a model called `model`.
+    #[must_use]
     pub fn holds(&self, account: &AccountId, model: &ModelId) -> bool {
         match self.read().get(account).map(|listing| &listing.outcome) {
             Some(Outcome::Listed(models)) => models.iter().any(|one| one.id() == model),
@@ -267,6 +277,7 @@ impl OwnBook {
     /// Whether what is kept of `server` still stands at `now`: it was listed from the same place
     /// (a list is asked for again when the address changes), or it failed less than
     /// [`FAILED_RETRY`] seconds ago.
+    #[must_use]
     pub fn is_current(&self, server: &OwnServer, now: UnixSeconds) -> bool {
         match self.read().get(&server.account) {
             Some(listing) if listing.place == server.place => match listing.outcome {
@@ -311,6 +322,7 @@ impl OwnBook {
 
     /// The listed models of the accounts in `verdicts`, as hosted models: each account's models
     /// carry the verdict the app holds on that account.
+    #[must_use]
     pub fn models(&self, verdicts: &[AccountVerdict]) -> Vec<RemoteModel> {
         let book = self.read();
         verdicts
@@ -338,6 +350,7 @@ impl OwnBook {
 
     /// The listed models of the accounts in `verdicts`, as the model picker lists them:
     /// "<model> on <account>", under one group.
+    #[must_use]
     pub fn choices(&self, verdicts: &[AccountVerdict]) -> Vec<Choice> {
         let book = self.read();
         verdicts
@@ -381,15 +394,17 @@ impl BodySink for Reply {
     fn chunk(&mut self, bytes: &[u8]) -> ControlFlow<()> {
         let room = MOST_BODY.saturating_sub(self.body.len());
         self.body.extend_from_slice(&bytes[..bytes.len().min(room)]);
-        match self.body.len() < MOST_BODY {
-            true => ControlFlow::Continue(()),
-            false => ControlFlow::Break(()),
+        if self.body.len() < MOST_BODY {
+            ControlFlow::Continue(())
+        } else {
+            ControlFlow::Break(())
         }
     }
 }
 
 /// The model names a `GET /models` body lists (`{"data": [{"id": "..."}]}`), in its order, each
 /// once; none when the body is not such a list.
+#[must_use]
 pub fn names_in(body: &[u8]) -> Option<Vec<String>> {
     let value: serde_json::Value = serde_json::from_slice(body).ok()?;
     let listed = value.get("data")?.as_array()?;

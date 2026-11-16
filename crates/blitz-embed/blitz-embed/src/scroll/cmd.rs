@@ -38,6 +38,7 @@ pub enum ScrollCmd {
 /// The offset that brings a child spanning `child_start..child_end` into a view spanning
 /// `view_start..view_end` (both in the same coordinates, the view scrolled to `offset`) with
 /// `margin` to spare; `None` if it is already fully in view. Clamped to `0..=max`.
+#[must_use]
 pub fn into_view(
     view: (f64, f64),
     child: (f64, f64),

@@ -1,6 +1,6 @@
 //! The app-facing memory API: `Memory` over a `Transport` (`Absent`; `DbusTransport` behind the
 //! `dbus` feature; `InProcess` behind the default-off `in_process` feature, the only one that
-//! links `memory-service`, SQLCipher and OpenSSL). Apps record what happened; the shell UI reads
+//! links `memory-service`, `SQLCipher` and OpenSSL). Apps record what happened; the shell UI reads
 //! the timeline and controls.
 
 mod memory;

@@ -3,6 +3,7 @@
 use super::{AppMenuEvent, AppMenus};
 
 /// `menus` after `event`.
+#[must_use]
 pub fn step(menus: AppMenus, event: AppMenuEvent) -> AppMenus {
     let AppMenus { mut served } = menus;
     match event {

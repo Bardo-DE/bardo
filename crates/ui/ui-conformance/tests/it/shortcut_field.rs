@@ -1,4 +1,4 @@
-//! ShortcutField on a real Blitz document: a click makes it listen, a combination is offered, Escape
+//! `ShortcutField` on a real Blitz document: a click makes it listen, a combination is offered, Escape
 //! cancels, Backspace clears, and while it listens no key reaches the window's actions.
 
 use dioxus::prelude::*;

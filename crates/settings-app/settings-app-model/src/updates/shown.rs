@@ -25,6 +25,7 @@ pub enum UpdateAction {
 
 impl UpdateAction {
     /// What taking the action tells the page.
+    #[must_use]
     pub fn input(self) -> UpdatesInput {
         match self {
             UpdateAction::Check { .. } => UpdatesInput::Check,
@@ -121,6 +122,7 @@ pub struct UpdatesPage {
 pub type UpdatesShown = Live<UpdatesPage>;
 
 /// What the page draws for `state`, `now` being the time the last check counts from.
+#[must_use]
 pub fn updates_shown(state: &UpdatesState, now: UnixSeconds) -> UpdatesShown {
     state.map(|ready| page(ready, now))
 }

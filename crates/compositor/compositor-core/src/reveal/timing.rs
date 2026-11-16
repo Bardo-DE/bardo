@@ -51,6 +51,7 @@ impl RevealTiming {
     /// let timing = RevealTiming::of(RevealEdge::Top, false);
     /// assert_eq!((timing.dwell, timing.look), (BAR_DWELL, Look::Slide));
     /// ```
+    #[must_use]
     pub fn of(edge: RevealEdge, reduced: bool) -> RevealTiming {
         let (dwell, slide) = match edge {
             RevealEdge::Top => (BAR_DWELL, BAR_SLIDE),

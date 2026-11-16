@@ -40,9 +40,10 @@ impl Model {
             return Moved::of(self);
         }
         let last = self.spaces.row(&space.output).last().map(|s| s.id.clone()) == Some(id.clone());
-        let step = match last {
-            true => SpaceStep::Previous,
-            false => SpaceStep::Next,
+        let step = if last {
+            SpaceStep::Previous
+        } else {
+            SpaceStep::Next
         };
         self.switch(&space.output, step)
     }
@@ -50,9 +51,10 @@ impl Model {
     /// A new desktop at the end of `output`'s row.
     fn created(self, output: &OutputKey) -> Moved {
         let room = self.outputs.0.contains_key(output) && self.has_room_for_desktop(output);
-        match room {
-            true => Moved::of(self.with_space(output, SpaceContent::Desktop).0),
-            false => Moved::of(self),
+        if room {
+            Moved::of(self.with_space(output, SpaceContent::Desktop).0)
+        } else {
+            Moved::of(self)
         }
     }
 

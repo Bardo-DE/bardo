@@ -118,6 +118,7 @@ pub enum PressPhase {
 
 impl PressPhase {
     /// `data-pressed`: present while a press is under way.
+    #[must_use]
     pub fn attr(self) -> Option<&'static str> {
         match self {
             PressPhase::Idle => None,
@@ -160,6 +161,7 @@ pub struct Percent(pub u8);
 
 impl Percent {
     /// `value`, clamped to 100.
+    #[must_use]
     pub fn new(value: u8) -> Self {
         Percent(value.min(100))
     }
@@ -242,6 +244,7 @@ impl Shortcut {
 
     /// The keys in the order they are drawn: modifiers first in the Mac's order (⌃⌥⇧⌘),
     /// deduplicated, then the rest as given.
+    #[must_use]
     pub fn keys(&self) -> Vec<ShortcutKey> {
         crate::standard_action::normalized(self.0.iter().copied())
     }
@@ -267,8 +270,9 @@ impl ShortcutKey {
 
     /// The text one key cap shows. Only `⌃ ⇧ ⌥ ⌘`, upper-case characters and `↵` are the
     /// doc's; the rest are not specified in design/04-COMPONENTS.md (O-2 names only the
-    /// modifiers). TODO(O-2): Space, Escape, Tab, Backspace, the arrows and Home, End, Delete, PageUp,
-    /// PageDown, Insert and ContextMenu need sign-off.
+    /// modifiers). TODO(O-2): Space, Escape, Tab, Backspace, the arrows and Home, End, Delete, `PageUp`,
+    /// `PageDown`, Insert and `ContextMenu` need sign-off.
+    #[must_use]
     pub fn glyph(self) -> String {
         match self {
             ShortcutKey::Ctrl => "⌃".to_string(),
@@ -297,6 +301,7 @@ impl ShortcutKey {
     }
 
     /// The function key `F<n>`, or `None` outside `F1` to `F12`.
+    #[must_use]
     pub fn function(n: u8) -> Option<ShortcutKey> {
         (1..=12).contains(&n).then_some(ShortcutKey::F(n))
     }
@@ -304,6 +309,7 @@ impl ShortcutKey {
     /// Whether this is an arrow key: `KeyEquivalent` writes `data-glyph="arrow"` for it, so the
     /// cap draws Up, Down, Left and Right larger than the rest of the small face (at 9.5 px an
     /// arrow's stroke reads as a dash).
+    #[must_use]
     pub fn is_arrow(self) -> bool {
         matches!(
             self,
@@ -314,6 +320,7 @@ impl ShortcutKey {
 
 impl Availability {
     /// `aria-disabled`: present only when disabled.
+    #[must_use]
     pub fn aria_disabled(self) -> Option<&'static str> {
         match self {
             Availability::Enabled | Availability::Busy => None,
@@ -322,6 +329,7 @@ impl Availability {
     }
 
     /// `aria-busy`: present only while busy.
+    #[must_use]
     pub fn aria_busy(self) -> Option<&'static str> {
         match self {
             Availability::Enabled | Availability::Disabled => None,
@@ -332,6 +340,7 @@ impl Availability {
 
 impl DropState {
     /// The `data-drop` value: `target`, `accepts`, or nothing.
+    #[must_use]
     pub fn drop_attr(self) -> Option<&'static str> {
         match self {
             DropState::Target => Some("target"),
@@ -341,6 +350,7 @@ impl DropState {
     }
 
     /// The `data-drag` value: `source`, or nothing.
+    #[must_use]
     pub fn drag_attr(self) -> Option<&'static str> {
         match self {
             DropState::Source => Some("source"),
@@ -351,6 +361,7 @@ impl DropState {
 
 impl Check {
     /// The `aria-pressed` / `aria-checked` word.
+    #[must_use]
     pub fn aria(self) -> &'static str {
         match self {
             Check::On => "true",
@@ -360,6 +371,7 @@ impl Check {
     }
 
     /// The other state: `Mixed` resolves to `On`, as a mixed checkbox does when clicked.
+    #[must_use]
     pub fn flipped(self) -> Self {
         match self {
             Check::On => Check::Off,
@@ -369,26 +381,31 @@ impl Check {
 }
 
 /// The `aria-expanded`, `aria-selected`, `aria-current` or `aria-pressed` word for a fact.
+#[must_use]
 pub fn aria_word(on: bool) -> &'static str {
     if on { "true" } else { "false" }
 }
 
 /// `data-shown`: `visible` while a thing is up, `hidden` while it is down.
+#[must_use]
 pub fn shown_word(shown: bool) -> &'static str {
     if shown { "visible" } else { "hidden" }
 }
 
 /// `data-selected`: `selected` for the selected option, `unselected` for any other.
+#[must_use]
 pub fn selected_word(selected: bool) -> &'static str {
     if selected { "selected" } else { "unselected" }
 }
 
 /// `data-activity`: `active` while a thing takes part, `inactive` at rest.
+#[must_use]
 pub fn activity_word(active: bool) -> &'static str {
     if active { "active" } else { "inactive" }
 }
 
 /// `data-emphasis`: `strong` for unread weight, `plain` for read weight.
+#[must_use]
 pub fn emphasis_word(strong: bool) -> &'static str {
     if strong { "strong" } else { "plain" }
 }
@@ -398,6 +415,7 @@ pub fn emphasis_word(strong: bool) -> &'static str {
 /// blitz-dom hard-codes `:focus-visible` and `:focus-within` to false and a click does not focus
 /// a button (spike S12), so the focus ring is `.ds[*|data-modality=keyboard] :focus` and the host
 /// says which modality is current.
+#[must_use]
 pub fn modality_word(keyboard: bool) -> &'static str {
     if keyboard { "keyboard" } else { "pointer" }
 }
@@ -407,17 +425,20 @@ impl Fraction {
     pub(crate) const ONE: Fraction = Fraction(1000);
 
     /// The value a component draws: clamped to 0..=1000.
+    #[must_use]
     pub fn clamped(self) -> Self {
         Fraction(self.0.min(Self::ONE.0))
     }
 
     /// The value in whole percent, rounded: what a battery's figure prints and its
     /// `aria-valuenow` reads.
+    #[must_use]
     pub fn whole_percent(self) -> u16 {
         (self.clamped().0 + 5) / 10
     }
 
     /// The clamped value as a CSS number for `--f`: `0.35`, `0`, `1`.
+    #[must_use]
     pub fn css(self) -> String {
         let permille = self.clamped().0;
         let text = format!("{}.{:03}", permille / 1000, permille % 1000);

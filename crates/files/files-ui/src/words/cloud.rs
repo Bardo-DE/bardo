@@ -5,6 +5,7 @@ use files_core::{CloudDrive, CloudItem, CloudKind, CloudState, DriveState, Usage
 use super::{InfoRow, size_words};
 
 /// A drive's state as Get Info says it.
+#[must_use]
 pub fn drive_state_words(state: DriveState) -> &'static str {
     match state {
         DriveState::Starting => "Starting up",
@@ -25,6 +26,7 @@ fn percent(item: &CloudItem) -> String {
 }
 
 /// Where an item stands, as Get Info says it.
+#[must_use]
 pub fn item_state_words(item: &CloudItem) -> String {
     if item.kind == CloudKind::Online {
         return "Opens in your browser".to_owned();
@@ -37,7 +39,7 @@ pub fn item_state_words(item: &CloudItem) -> String {
         CloudState::Waiting => "Waiting to upload".to_owned(),
         CloudState::Error => item.words.as_ref().map_or_else(
             || "Couldn\u{2019}t sync".to_owned(),
-            |words| words.to_string(),
+            std::string::ToString::to_string,
         ),
         CloudState::Conflict => "Two versions of this file are kept".to_owned(),
     }
@@ -59,6 +61,7 @@ fn room_words(usage: &Usage) -> Option<String> {
 
 /// What the status line says while a drive's folder is shown: the count, what is on this
 /// computer, and the room when the provider says.
+#[must_use]
 pub fn status_words(drive: &CloudDrive, items: usize) -> String {
     let noun = if items == 1 { "item" } else { "items" };
     let mut parts = vec![
@@ -70,6 +73,7 @@ pub fn status_words(drive: &CloudDrive, items: usize) -> String {
 }
 
 /// The rows Get Info adds for the drive's own folder.
+#[must_use]
 pub fn drive_rows(drive: &CloudDrive) -> Vec<InfoRow> {
     let mut rows = vec![InfoRow::new(
         "Status",
@@ -90,6 +94,7 @@ pub fn drive_rows(drive: &CloudDrive) -> Vec<InfoRow> {
 }
 
 /// The rows Get Info adds for an item of a drive.
+#[must_use]
 pub fn item_rows(item: &CloudItem) -> Vec<InfoRow> {
     let mut rows = vec![InfoRow::new("Status", item_state_words(item))];
     if item.kept && item.kind != CloudKind::Online {
@@ -99,6 +104,7 @@ pub fn item_rows(item: &CloudItem) -> Vec<InfoRow> {
 }
 
 /// The title of a drive that cannot show its files, and what the person can do about it.
+#[must_use]
 pub fn trouble_title(drive: &CloudDrive) -> String {
     match (&drive.words, drive.state) {
         (Some(words), _) => words.to_string(),

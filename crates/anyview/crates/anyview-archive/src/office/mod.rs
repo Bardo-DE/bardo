@@ -69,6 +69,7 @@ pub struct OfficeLook {
 
 impl OfficeLook {
     /// The rows a pane lists: title, author and the count, each when the document has it.
+    #[must_use]
     pub fn facts(&self) -> Facts {
         let facts = Facts::empty();
         let facts = match &self.title {
@@ -110,7 +111,7 @@ fn part(src: &Input, name: &str, allowed: ByteLen, interrupt: &dyn Interrupt) ->
 }
 
 /// What the office document `src` (a path, or any source a host injects), whose format sniffing named, says about itself. A format
-/// that is not a zip package (the binary Word, Excel and PowerPoint) says nothing. Parts that are
+/// that is not a zip package (the binary Word, Excel and `PowerPoint`) says nothing. Parts that are
 /// missing or do not parse leave their fields empty: the facts the file does have still stand.
 pub fn office_look(
     src: impl Into<Input>,

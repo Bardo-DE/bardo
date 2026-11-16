@@ -25,6 +25,7 @@ pub enum Gate {
 /// The stages to run for a ruling. Only `AllowJudged` runs any: a low-impact call gets the
 /// quick judge; a high-impact one (outbound or destructive, a count above half the mass
 /// threshold, lasting memory) gets all three, the last from another model family.
+#[must_use]
 pub fn plan(ruling: &Ruling, impact: Impact) -> Vec<Stage> {
     match (ruling, impact) {
         (Ruling::AllowJudged(_), Impact::Low) => vec![Stage::Quick],
@@ -37,6 +38,7 @@ pub fn plan(ruling: &Ruling, impact: Impact) -> Vec<Stage> {
 
 /// The plan after the quick judge flagged a low-impact call: the larger model looks too. The
 /// planned stages still all have to allow, so a flag can ask or refuse but never run.
+#[must_use]
 pub fn escalate(planned: &[Stage], quick: &Result<ReviewVerdict, ReviewError>) -> Vec<Stage> {
     match (planned, quick) {
         ([Stage::Quick], Ok(ReviewVerdict::Ask { .. })) => vec![Stage::Quick, Stage::Deliberate],
@@ -50,6 +52,7 @@ pub fn escalate(planned: &[Stage], quick: &Result<ReviewVerdict, ReviewError>) -
 /// `AllowJudged`: any `Deny` refuses; every planned stage must have a verdict, and every one
 /// must be `Ok(Allow)`, to run; a missing verdict, an error or an `Ask` confirms. An empty plan
 /// never runs.
+#[must_use]
 pub fn tighten(
     ruling: &Ruling,
     planned: &[Stage],
@@ -114,6 +117,7 @@ pub struct ReviewerSet {
 impl ReviewerSet {
     /// Whether the second opinion is a different family from the deliberate model. Without
     /// one, high-impact allows fall back to asking.
+    #[must_use]
     pub fn second_is_other_family(&self) -> bool {
         self.second.family != self.deliberate.family
     }

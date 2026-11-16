@@ -26,6 +26,7 @@ pub struct Workspace {
 
 impl Workspace {
     /// A workspace that has just appeared.
+    #[must_use]
     pub fn new(key: WorkspaceKey) -> Self {
         Self {
             key,
@@ -52,6 +53,7 @@ pub struct Group {
 
 impl Group {
     /// A group that has just appeared.
+    #[must_use]
     pub fn new(key: GroupKey) -> Self {
         Self {
             key,

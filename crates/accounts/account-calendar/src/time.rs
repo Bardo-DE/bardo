@@ -51,16 +51,19 @@ impl Date {
     }
 
     /// The day after.
+    #[must_use]
     pub fn next(self) -> Self {
         Date::of(self.naive().succ_opt().unwrap_or(NaiveDate::MAX))
     }
 
     /// How many days from `self` to `other`: 1 for the next day.
+    #[must_use]
     pub fn days_until(self, other: Date) -> i64 {
         (other.naive() - self.naive()).num_days()
     }
 
     /// Midnight UTC at the start of the day.
+    #[must_use]
     pub fn midnight(self) -> Instant {
         Instant(self.naive().and_time(NaiveTime::MIN).and_utc().timestamp())
     }
@@ -75,6 +78,7 @@ impl fmt::Display for Date {
 impl Instant {
     /// The date and time of day in UTC, written `YYYY-MM-DDTHH:MM:SS` with no zone: what Graph
     /// takes beside `"timeZone": "UTC"` and JMAP beside `Etc/UTC`.
+    #[must_use]
     pub fn local_utc(self) -> String {
         let at = DateTime::from_timestamp(self.0, 0).unwrap_or(DateTime::<Utc>::MIN_UTC);
         format!(
@@ -87,6 +91,7 @@ impl Instant {
     }
 
     /// RFC 3339 in UTC: `YYYY-MM-DDTHH:MM:SSZ`.
+    #[must_use]
     pub fn rfc3339(self) -> String {
         format!("{}Z", self.local_utc())
     }

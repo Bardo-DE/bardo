@@ -62,10 +62,9 @@ impl Found {
 
 impl Takes {
     /// What a model with these capabilities takes in.
+    #[must_use]
     pub fn of(capabilities: &[Capability]) -> Self {
-        let found = capabilities
-            .iter()
-            .fold(Found::default(), |found, one| found.with(one));
+        let found = capabilities.iter().fold(Found::default(), Found::with);
         match (found.text, found.images, found.audio) {
             (false, _, _) => Takes::Unknown,
             (true, false, false) => Takes::TextOnly,
@@ -76,6 +75,7 @@ impl Takes {
     }
 
     /// Whether it can look at a screenshot.
+    #[must_use]
     pub fn sight(self) -> Sight {
         match self {
             Takes::Unknown => Sight::Unknown,
@@ -85,6 +85,7 @@ impl Takes {
     }
 
     /// The name on the bus (the serde form).
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Takes::Unknown => "unknown",
@@ -96,6 +97,7 @@ impl Takes {
     }
 
     /// The value a bus name stands for; a name this version does not know reads as unknown.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Self {
         [
             Takes::TextOnly,
@@ -109,12 +111,14 @@ impl Takes {
     }
 
     /// Whether nothing is known (the wire leaves the field out then).
+    #[must_use]
     pub fn is_unknown(&self) -> bool {
         *self == Takes::Unknown
     }
 }
 
 /// Said when a person's model cannot look at the screen but the work needs it.
+#[must_use]
 pub fn cannot_see_screen(model: &str) -> String {
     format!(
         "{model} can't see the screen, so it can't use apps for you. Choose a model that reads images."

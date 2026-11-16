@@ -47,6 +47,7 @@ pub(crate) fn insert(key: ThumbKey, page: PdfPage) {
 
 /// The request's page if it is cached for the file as it is now (reads its modification time,
 /// no more), else `None`.
+#[must_use]
 pub fn pdf_thumb_cached(request: &ThumbRequest) -> Option<PdfPage> {
     lookup(&request.key().ok()?)
 }

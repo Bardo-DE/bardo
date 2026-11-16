@@ -66,6 +66,7 @@ pub struct ClientBuilder(Client);
 
 impl ClientBuilder {
     /// A client over the real services, looked for on `bus`, with its files under `homes`.
+    #[must_use]
     pub fn over(bus: BusSource, homes: ClientHomes) -> ClientBuilder {
         let ClientHomes {
             config,
@@ -116,6 +117,7 @@ impl ClientBuilder {
     }
 
     /// The client built.
+    #[must_use]
     pub fn build(self) -> Client {
         self.0
     }

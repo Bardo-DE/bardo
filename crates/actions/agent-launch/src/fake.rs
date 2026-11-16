@@ -12,7 +12,7 @@ use std::collections::VecDeque;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
-    m.lock().unwrap_or_else(|e| e.into_inner())
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// One call made to the fake porter, in order.
@@ -87,11 +87,13 @@ pub struct FakeAccounts {
 
 impl FakeAccounts {
     /// A porter that works and hands out the default values.
+    #[must_use]
     pub fn new() -> Self {
         Self::with(Mood::Working, Secrets::default())
     }
 
     /// A porter in `mood` handing out `secrets`.
+    #[must_use]
     pub fn with(mood: Mood, secrets: Secrets) -> Self {
         Self {
             state: Arc::new(Mutex::new(State::default())),
@@ -101,6 +103,7 @@ impl FakeAccounts {
     }
 
     /// What it was asked, in order.
+    #[must_use]
     pub fn calls(&self) -> Vec<Call> {
         locked(&self.state).calls.clone()
     }
@@ -213,11 +216,13 @@ pub struct ProcsSeen(Arc<Mutex<Ran>>);
 
 impl ProcsSeen {
     /// Every run it was asked to start.
+    #[must_use]
     pub fn runs(&self) -> Vec<AgentRun> {
         locked(&self.0).runs.clone()
     }
 
     /// Whether the nth process was killed.
+    #[must_use]
     pub fn killed(&self, n: usize) -> bool {
         locked(&self.0).killed.get(n).copied().unwrap_or(false)
     }
@@ -253,6 +258,7 @@ pub struct FakeProcs {
 
 impl FakeProcs {
     /// Starts return `wires` in order; the view shows what was asked.
+    #[must_use]
     pub fn new(wires: Vec<ChannelWire>) -> (Self, ProcsSeen) {
         let seen = ProcsSeen::default();
         (

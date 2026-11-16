@@ -28,7 +28,7 @@ pub fn use_styles() -> StyleSource {
     let styles = use_watch(styles);
     let guard = use_watch(guard);
     let appearance = use_appearance();
-    let withheld = guard().as_ref().map(StylesGuard::load) == Some(false);
+    let withheld = guard().as_ref().is_some_and(|x| !StylesGuard::load(x));
     let custom_styles = !withheld && appearance().settings.appearance.custom_styles;
     StyleSource {
         styles,

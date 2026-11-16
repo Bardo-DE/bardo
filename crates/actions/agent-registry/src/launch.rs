@@ -44,6 +44,7 @@ pub enum LaunchFault {
 impl Launch {
     /// How to start the agent whose record is `record`, installed at `dir` (the version's
     /// directory) with `home` as its home.
+    #[must_use]
     pub fn of(record: &Record, dir: &Path, home: PathBuf) -> Self {
         Self {
             command: record.command_in(dir),

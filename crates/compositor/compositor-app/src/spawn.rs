@@ -83,11 +83,13 @@ impl ChildEnv {
     }
 
     /// `spec` with these variables added; one the spec already sets keeps its own value.
+    #[must_use]
     pub fn apply(&self, spec: SpawnSpec) -> SpawnSpec {
         self.0.iter().fold(spec, |spec, var| {
-            match spec.env.iter().any(|set| set.name == var.name) {
-                true => spec,
-                false => spec.with_env(&var.name, &var.value),
+            if spec.env.iter().any(|set| set.name == var.name) {
+                spec
+            } else {
+                spec.with_env(&var.name, &var.value)
             }
         })
     }
@@ -108,6 +110,7 @@ pub struct SpawnSpec {
 
 impl SpawnSpec {
     /// A program with no extra environment and no descriptors, running with the compositor.
+    #[must_use]
     pub fn new(argv: Argv) -> SpawnSpec {
         SpawnSpec {
             argv,
@@ -155,6 +158,7 @@ pub struct Spawned {
 
 impl Spawned {
     /// A started program.
+    #[must_use]
     pub fn new(pid: Pid) -> Spawned {
         Spawned { pid }
     }

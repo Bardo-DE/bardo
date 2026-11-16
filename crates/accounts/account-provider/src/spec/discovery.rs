@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 pub enum Discovery {
     /// Mozilla-style autoconfig from the address's domain.
     Autoconfig,
-    /// `.well-known` URLs (CalDAV, CardDAV, JMAP) and SRV records.
+    /// `.well-known` URLs (`CalDAV`, `CardDAV`, JMAP) and SRV records.
     WellKnown,
     /// The JMAP session resource.
     JmapSession,

@@ -21,7 +21,7 @@ fn limits_hold_for_text() {
         " ".repeat(32 * 1024 - "Action: wait()".len())
     );
     assert_eq!(at_limit.len(), 32 * 1024);
-    assert!(ui_tars(&at_limit).is_ok());
+    ui_tars(&at_limit).unwrap();
 }
 
 #[test]

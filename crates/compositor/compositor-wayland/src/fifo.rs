@@ -37,6 +37,7 @@ struct Waiting {
 
 impl FifoPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> FifoPart
     where
         D: GlobalDispatch<WpFifoManagerV1, FifoManagerData>

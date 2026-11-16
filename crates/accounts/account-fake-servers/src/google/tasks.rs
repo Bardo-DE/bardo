@@ -31,6 +31,7 @@ pub struct Tasks {
 
 impl Tasks {
     /// Whether any list is set (until one is, the probe's one list answers).
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.lists.is_empty()
     }
@@ -90,6 +91,7 @@ impl Tasks {
     }
 
     /// The live tasks of a list: id and JSON.
+    #[must_use]
     pub fn tasks(&self, list: &str) -> Vec<(String, Value)> {
         self.rows
             .iter()
@@ -200,6 +202,7 @@ impl Tasks {
     }
 
     /// Answers `rest` (what follows `/tasks/v1`), or `None` when it is not a tasks route.
+    #[must_use]
     pub fn answer(&self, rest: &str, request: &Request) -> Option<Response> {
         let parts: Vec<&str> = rest.trim_matches('/').split('/').collect();
         let response = match parts.as_slice() {
@@ -217,9 +220,10 @@ impl Tasks {
             }
             _ => return None,
         };
-        Some(match request.method == "GET" {
-            true => response,
-            false => error(405, "methodNotAllowed"),
+        Some(if request.method == "GET" {
+            response
+        } else {
+            error(405, "methodNotAllowed")
         })
     }
 }

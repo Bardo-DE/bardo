@@ -15,6 +15,7 @@ pub struct Wall {
 
 impl Wall {
     /// The clock of a scheduler that runs `scale` seconds to the real second.
+    #[must_use]
     pub fn scaled(scale: u32) -> Self {
         Self {
             scale: scale.max(1),
@@ -41,6 +42,7 @@ pub struct ManualClock(std::sync::atomic::AtomicI64);
 
 impl ManualClock {
     /// A clock at `at`.
+    #[must_use]
     pub fn at(at: i64) -> Self {
         Self(std::sync::atomic::AtomicI64::new(at))
     }

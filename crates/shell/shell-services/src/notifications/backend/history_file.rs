@@ -11,8 +11,8 @@ use std::path::{Path, PathBuf};
 use shell_model::notifications::{STORED_VERSION, StoredHistory};
 
 use crate::durable;
-use base_fs::NewFileMode;
 use crate::error::ServiceError;
+use base_fs::NewFileMode;
 
 /// The file's name inside `$XDG_STATE_HOME/bardo/shell`.
 pub const FILE_NAME: &str = "notifications.json";

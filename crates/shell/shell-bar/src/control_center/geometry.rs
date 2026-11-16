@@ -35,6 +35,7 @@ struct Cursor {
 /// `modules` laid out in order, `columns` wide: a `One` module takes the next free column of
 /// the current row; a `Row` module starts a new row (leaving any free column of the current row
 /// empty) and fills it.
+#[must_use]
 pub fn place(modules: &[ControlCenterModule], columns: u16) -> Vec<Placed> {
     let columns = columns.max(1);
     let start = Cursor { row: 0, column: 0 };
@@ -72,6 +73,7 @@ pub fn place(modules: &[ControlCenterModule], columns: u16) -> Vec<Placed> {
 }
 
 /// The panel's greatest height on an output `output_height` tall.
+#[must_use]
 pub fn height_cap(output_height: i32, bar: &BarTokens) -> i32 {
     (output_height - i32::from(bar.height) - i32::from(BOTTOM_MARGIN)).max(0)
 }

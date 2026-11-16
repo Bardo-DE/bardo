@@ -23,6 +23,7 @@ impl Pixels {
     /// assert_eq!(&*one.rgba, &[100, 50, 0, 128]);
     /// assert!(Pixels::from_straight(2, &[0; 4]).is_none());
     /// ```
+    #[must_use]
     pub fn from_straight(edge: u32, straight: &[u8]) -> Option<Pixels> {
         let wanted = usize::try_from(u64::from(edge) * u64::from(edge) * 4).ok()?;
         (straight.len() == wanted).then(|| Pixels {

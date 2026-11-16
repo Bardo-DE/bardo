@@ -24,6 +24,7 @@ pub struct XdgDecorationPart {
 
 impl XdgDecorationPart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> XdgDecorationPart
     where
         D: GlobalDispatch<ZxdgDecorationManagerV1, XdgDecorationManagerGlobalData>
@@ -56,6 +57,7 @@ impl XdgDecorationPart {
     ///
     /// assert_eq!(mode_for(DecorationWish::Unset), DecorationMode::ServerSide);
     /// ```
+    #[must_use]
     pub fn mode_of(&self, window: WindowId) -> DecorationMode {
         self.modes
             .get(&window)
@@ -86,6 +88,7 @@ pub enum DecorationMode {
 
 /// What the compositor answers a wish with: it draws the frame unless the client said it
 /// draws its own. A client that withdrew its wish, or never had one, gets the compositor's.
+#[must_use]
 pub fn mode_for(wish: DecorationWish) -> DecorationMode {
     match wish {
         DecorationWish::ClientSide => DecorationMode::ClientSide,

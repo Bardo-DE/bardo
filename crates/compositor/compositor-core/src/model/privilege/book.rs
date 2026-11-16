@@ -43,11 +43,13 @@ pub struct Book {
 
 impl Book {
     /// A book with no answers.
+    #[must_use]
     pub fn empty() -> Book {
         Book::default()
     }
 
     /// What the person said about `subject` using `power`, if they did.
+    #[must_use]
     pub fn get(&self, subject: &Subject, power: Power) -> Option<Verdict> {
         self.grants
             .get(&(power, subject.clone()))
@@ -56,6 +58,7 @@ impl Book {
 
     /// The book with `grant` in it, replacing any answer for the same program and power. A
     /// full book drops its oldest other answer first.
+    #[must_use]
     pub fn with(self, grant: Grant) -> Book {
         let key = (grant.power, grant.subject);
         let mut grants = self.grants;
@@ -74,6 +77,7 @@ impl Book {
     }
 
     /// The book without the answer for `subject` and `power`.
+    #[must_use]
     pub fn without(self, subject: &Subject, power: Power) -> Book {
         let mut grants = self.grants;
         grants.remove(&(power, subject.clone()));
@@ -99,6 +103,7 @@ impl Book {
     }
 
     /// Every answer, in power then program order.
+    #[must_use]
     pub fn grants(&self) -> Vec<Grant> {
         self.grants
             .iter()
@@ -112,11 +117,13 @@ impl Book {
     }
 
     /// How many answers the book holds.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.grants.len()
     }
 
     /// Whether the book holds no answer.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.grants.is_empty()
     }

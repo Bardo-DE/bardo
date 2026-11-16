@@ -109,16 +109,13 @@ pub(super) fn released(state: &mut State) {
             tell(state, over.as_ref(), None);
             // Off every target but over another output: the window goes to the Space that
             // output shows, as a window dragged to another display does on a Mac.
-            match shown_space_at(state, window, at) {
-                Some(space) => {
-                    finish(state, window, DragOutcome::DroppedOnSpace);
-                    land(state, window, WindowAsk::ToSpace(space));
-                }
-                None => {
-                    finish(state, window, DragOutcome::Cancelled);
-                    state.render.overview_hover = None;
-                    super::relayout(state, &Cause::Overview);
-                }
+            if let Some(space) = shown_space_at(state, window, at) {
+                finish(state, window, DragOutcome::DroppedOnSpace);
+                land(state, window, WindowAsk::ToSpace(space));
+            } else {
+                finish(state, window, DragOutcome::Cancelled);
+                state.render.overview_hover = None;
+                super::relayout(state, &Cause::Overview);
             }
         }
     }

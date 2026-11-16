@@ -25,6 +25,7 @@ pub enum PopupGeom {
 }
 
 /// A one-pixel anchor at `(x, y)`, for [`PopupGeom::AtPoint`].
+#[must_use]
 pub fn point_anchor(x: i32, y: i32) -> Rect {
     Rect {
         x,
@@ -36,6 +37,7 @@ pub fn point_anchor(x: i32, y: i32) -> Rect {
 
 impl PopupGeom {
     /// The popup's configuration.
+    #[must_use]
     pub fn config(self) -> PopupConfig {
         let room = PopupRoom::CONTEXT;
         let (edge, gravity, adjust, offset) = match self {
@@ -74,6 +76,7 @@ impl PopupGeom {
 
     /// The placement at `anchor`. The size is only where the popup starts, before its document
     /// is measured: room for the menu and a submenu.
+    #[must_use]
     pub fn placement(self, anchor: Rect) -> PopupPlacement {
         PopupPlacement {
             anchor_rect: anchor,

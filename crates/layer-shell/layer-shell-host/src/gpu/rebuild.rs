@@ -45,7 +45,7 @@ mod tests {
         let start = Instant::now();
         let mut rebuilds = Rebuilds::default();
         let step = REBUILD_WINDOW / 10;
-        let verdicts: Vec<bool> = (0..MAX_REBUILDS + 1)
+        let verdicts: Vec<bool> = (0..=MAX_REBUILDS)
             .map(|n| rebuilds.record(start + step * u32::try_from(n).expect("small")))
             .collect();
         let mut want = vec![true; MAX_REBUILDS];

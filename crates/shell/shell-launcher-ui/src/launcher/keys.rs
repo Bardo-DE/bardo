@@ -67,6 +67,7 @@ pub enum LauncherOut {
 }
 
 /// `state` after `key`, with `rows` results visible and `actions` actions on the selected row.
+#[must_use]
 pub fn step(
     state: LauncherState,
     key: LauncherKey,
@@ -150,6 +151,7 @@ fn in_actions(
 /// Whether a plain pick of a row (a click that reached it) is one the open actions menu keeps
 /// from the row: the menu is in front, so the press belongs to it. A pick of one of the row's
 /// actions comes from the menu itself and goes through.
+#[must_use]
 pub fn behind_menu(state: &LauncherState, choice: &Choice) -> bool {
     state.actions != ActionsMenu::Closed && *choice == Choice::Primary
 }
@@ -186,6 +188,7 @@ fn filtered(filter: Filter) -> LauncherState {
 }
 
 /// Tab: every provider, then each one in [`ProviderKind::ALL`]'s order, then every one again.
+#[must_use]
 pub fn next_filter(filter: Filter) -> Filter {
     let all = ProviderKind::ALL;
     match filter {
@@ -198,6 +201,7 @@ pub fn next_filter(filter: Filter) -> Filter {
 }
 
 /// Shift+Tab: [`next_filter`] backwards.
+#[must_use]
 pub fn previous_filter(filter: Filter) -> Filter {
     let all = ProviderKind::ALL;
     match filter {

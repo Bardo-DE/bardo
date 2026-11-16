@@ -1,4 +1,4 @@
-//! PresetSwatches' Custom swatch on a real Blitz document: it opens the colour's field, stops and
+//! `PresetSwatches`' Custom swatch on a real Blitz document: it opens the colour's field, stops and
 //! grain in a small popover under it; a drag in the field changes the look as the hand moves and
 //! is settled once, when the popover closes; a preset's press is settled at once.
 

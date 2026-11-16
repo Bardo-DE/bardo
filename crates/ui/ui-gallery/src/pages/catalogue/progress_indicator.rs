@@ -1,4 +1,4 @@
-//! ProgressIndicator: the bar, the spoke spinner and the ring, determinate and running, at each
+//! `ProgressIndicator`: the bar, the spoke spinner and the ring, determinate and running, at each
 //! size.
 
 use crate::pages::{Section, Specimen};
@@ -10,7 +10,7 @@ use ui_components::motion::detail::operation::PendingToken;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The ProgressIndicator section.
+/// The `ProgressIndicator` section.
 #[component]
 pub fn ProgressSection() -> Element {
     let mut share = use_signal(|| Fraction(350));

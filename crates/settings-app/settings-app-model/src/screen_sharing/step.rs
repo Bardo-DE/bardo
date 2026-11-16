@@ -19,6 +19,7 @@ pub struct ScreenSharingReady {
 
 impl ScreenSharingReady {
     /// Whether a change is under way, so no other is started.
+    #[must_use]
     pub fn is_changing(&self) -> bool {
         self.removing.is_some() || self.allowing.is_some()
     }
@@ -62,6 +63,7 @@ fn newest_first(mut grants: Vec<ScreenGrant>) -> Vec<ScreenGrant> {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn screen_sharing_step(
     state: ScreenSharingState,
     input: ScreenSharingInput,

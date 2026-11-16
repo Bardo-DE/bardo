@@ -21,10 +21,10 @@ pub struct PimCap {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PimTransport {
-    /// CalDAV (calendars and VTODO tasks).
+    /// `CalDAV` (calendars and VTODO tasks).
     #[serde(rename = "caldav")]
     CalDav,
-    /// CardDAV (contacts).
+    /// `CardDAV` (contacts).
     #[serde(rename = "carddav")]
     CardDav,
     /// JMAP.
@@ -40,7 +40,7 @@ pub enum PimTransport {
 pub struct NotesCap {
     /// Reading and changing notes.
     pub access: Access,
-    /// How changes become known (OneNote has none, C11).
+    /// How changes become known (`OneNote` has none, C11).
     pub delta: Delta,
     /// The protocol family that reaches it.
     pub transport: NotesTransport,
@@ -52,7 +52,7 @@ pub struct NotesCap {
 pub enum NotesTransport {
     /// The Nextcloud Notes API.
     NextcloudNotes,
-    /// Microsoft OneNote through Graph.
+    /// Microsoft `OneNote` through Graph.
     OneNote,
     /// Notes kept as messages in an IMAP folder.
     ImapNotes,

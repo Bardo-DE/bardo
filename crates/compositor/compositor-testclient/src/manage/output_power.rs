@@ -165,6 +165,7 @@ impl OutputPowers {
     }
 
     /// What a control has said last.
+    #[must_use]
     pub fn state(&self, id: ControlId) -> Option<ControlState> {
         self.seen
             .controls
@@ -174,6 +175,7 @@ impl OutputPowers {
     }
 
     /// Every mode a control reported, in order.
+    #[must_use]
     pub fn reported(&self, id: ControlId) -> Vec<bool> {
         self.seen
             .controls

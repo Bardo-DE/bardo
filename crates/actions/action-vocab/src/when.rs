@@ -72,6 +72,7 @@ pub fn instant(text: &str) -> Result<UnixSeconds, NotRfc3339> {
 }
 
 /// `at` as an RFC 3339 UTC time, `2026-10-03T09:30:00Z`; none when it is beyond the calendar.
+#[must_use]
 pub fn utc_instant(at: UnixSeconds) -> Option<String> {
     DateTime::from_timestamp(at.0, 0).map(|t| t.to_rfc3339_opts(SecondsFormat::Secs, true))
 }

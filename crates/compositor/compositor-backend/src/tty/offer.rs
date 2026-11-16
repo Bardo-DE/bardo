@@ -20,6 +20,7 @@ use std::collections::{BTreeMap, BTreeSet};
 /// let plan = RenderPlan::new(DrmNodeId::new(226, 128), BTreeMap::new());
 /// assert!(scanout_formats(&plan, &TtyDevices::empty()).is_empty());
 /// ```
+#[must_use]
 pub fn scanout_formats(
     plan: &RenderPlan,
     devices: &TtyDevices,

@@ -144,12 +144,10 @@ async fn transom_asks_the_person_picks_and_the_answer_comes_back() {
         "the sheet was not opened"
     );
     // One at a time: the second call is refused at once.
-    assert!(
-        proxy
-            .pick_capture_source("Other", 1, 0, vec![1], 0)
-            .await
-            .is_err()
-    );
+    proxy
+        .pick_capture_source("Other", 1, 0, vec![1], 0)
+        .await
+        .unwrap_err();
 
     let (id, ask, candidates) = {
         let state = service.state.borrow();
@@ -294,20 +292,17 @@ async fn a_colour_is_asked_one_at_a_time_and_the_click_comes_back_as_floats() {
         "the eyedropper was not opened"
     );
     // One at a time, of either kind: both second calls are refused at once.
-    assert!(proxy.pick_color("Other").await.is_err());
-    assert!(
-        proxy
-            .pick_capture_source("Other", 1, 0, vec![1], 0)
-            .await
-            .is_err()
-    );
+    proxy.pick_color("Other").await.unwrap_err();
+    proxy
+        .pick_capture_source("Other", 1, 0, vec![1], 0)
+        .await
+        .unwrap_err();
     let id = service
         .state
         .borrow()
         .color
         .as_ref()
-        .map(|asking| asking.id)
-        .unwrap_or_else(|| panic!("open"));
+        .map_or_else(|| panic!("open"), |asking| asking.id);
     let _ = service.control.send(CaptureCommand::ColorAnswer(
         id,
         Some(Rgb8 {
@@ -341,6 +336,6 @@ async fn a_colour_request_from_anyone_but_the_portal_backend_is_refused() {
     let proxy = Shell1Proxy::new(&forger)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    assert!(proxy.pick_color("Evil").await.is_err());
+    proxy.pick_color("Evil").await.unwrap_err();
     assert!(service.state.borrow().color.is_none());
 }

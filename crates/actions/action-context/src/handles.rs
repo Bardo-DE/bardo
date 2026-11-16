@@ -99,6 +99,7 @@ fn text_key(text: &str) -> u64 {
 
 impl HandleTable {
     /// An empty table.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -117,6 +118,7 @@ impl HandleTable {
     }
 
     /// Whether the table holds [`MAX_HANDLES`] already.
+    #[must_use]
     pub fn is_full(&self) -> bool {
         self.entries.len() >= MAX_HANDLES
     }
@@ -169,16 +171,19 @@ impl HandleTable {
     }
 
     /// Whether `take_fresh` has anything.
+    #[must_use]
     pub fn has_fresh(&self) -> bool {
         !self.fresh.is_empty()
     }
 
     /// Where the next handle will be numbered from: a mark for `untrusted_since`.
+    #[must_use]
     pub fn mark(&self) -> u64 {
         self.next
     }
 
     /// Whether a handle numbered after `mark` holds untrusted text or things.
+    #[must_use]
     pub fn untrusted_since(&self, mark: u64) -> bool {
         self.entries
             .iter()
@@ -186,6 +191,7 @@ impl HandleTable {
     }
 
     /// The handles a restart left as labels, in order.
+    #[must_use]
     pub fn forgotten(&self) -> Vec<(Handle, &Label)> {
         self.entries
             .iter()
@@ -207,18 +213,17 @@ impl HandleTable {
     /// with the same label, so the same search twice names the same `#n` and a planner can see
     /// it got nothing new.
     pub fn mint_entity(&mut self, thing: EntityId, label: Label) -> Handle {
-        match self.handle_of(&thing, &label) {
-            Some(known) => known,
-            None => {
-                let from = Source::App(thing.app.clone());
-                self.mint(
-                    Labelled {
-                        value: HandleValue::Entity(thing),
-                        label,
-                    },
-                    from,
-                )
-            }
+        if let Some(known) = self.handle_of(&thing, &label) {
+            known
+        } else {
+            let from = Source::App(thing.app.clone());
+            self.mint(
+                Labelled {
+                    value: HandleValue::Entity(thing),
+                    label,
+                },
+                from,
+            )
         }
     }
 
@@ -310,12 +315,11 @@ impl HandleTable {
         match text.label.integrity {
             Integrity::Trusted => Reveal::Plain(text.value),
             Integrity::Untrusted => {
-                let handle = match self.text_handle(&text, &from) {
-                    Some(known) => known,
-                    None => {
-                        self.forget_oldest_unused_view_text();
-                        self.mint_text(text, from)
-                    }
+                let handle = if let Some(known) = self.text_handle(&text, &from) {
+                    known
+                } else {
+                    self.forget_oldest_unused_view_text();
+                    self.mint_text(text, from)
                 };
                 self.view_seen.insert(handle, self.epoch);
                 Reveal::Handle(handle)
@@ -325,6 +329,7 @@ impl HandleTable {
 
     /// What a planner is told about a handle: its shape, source and size, never its content.
     /// A handle a restart left as a label is no one's to use: no card.
+    #[must_use]
     pub fn card(&self, handle: Handle) -> Option<HandleCard> {
         let entry = self.entries.get(&handle)?;
         let (shape, size) = match &entry.value.value {
@@ -345,22 +350,26 @@ impl HandleTable {
     }
 
     /// Cards for every handle a planner may use, in order (a restart's labels have none).
+    #[must_use]
     pub fn cards(&self) -> Vec<HandleCard> {
         self.entries.keys().filter_map(|h| self.card(*h)).collect()
     }
 
     /// What a handle holds, with its label, for the router to put back in an argument.
+    #[must_use]
     pub fn value(&self, handle: Handle) -> Option<&Labelled<HandleValue>> {
         self.entries.get(&handle).map(|e| &e.value)
     }
 
     /// A handle's label.
+    #[must_use]
     pub fn label(&self, handle: Handle) -> Option<&Label> {
         self.entries.get(&handle).map(|e| &e.value.label)
     }
 
     /// A text handle's content for the reader (`Session.Resolve`, the reader role only), still
     /// quarantined: only the reader's host holds the key that opens it.
+    #[must_use]
     pub fn resolve_text(&self, handle: Handle) -> Option<Quarantined<String>> {
         let entry = self.entries.get(&handle)?;
         match &entry.value.value {
@@ -373,6 +382,7 @@ impl HandleTable {
     }
 
     /// A text handle's content for the screen (`Session.Display`, never for a model).
+    #[must_use]
     pub fn display(&self, handle: Handle) -> Option<&str> {
         match &self.entries.get(&handle)?.value.value {
             HandleValue::Text(t) => Some(t),

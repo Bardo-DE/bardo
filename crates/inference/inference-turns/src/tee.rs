@@ -51,6 +51,7 @@ impl<'a, F: FnMut(InferEvent) -> ControlFlow<()> + Send> Tee<'a, F> {
     }
 
     /// The finished turn.
+    #[must_use]
     pub fn finish(self, end: TurnEnd) -> computer_use_session::TurnTranscript {
         self.transcript.finish(end)
     }

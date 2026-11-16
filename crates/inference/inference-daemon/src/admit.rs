@@ -44,6 +44,7 @@ pub struct Seats(u32);
 
 impl Seats {
     /// `count` seats, or one when `count` is none.
+    #[must_use]
     pub fn of(count: u32) -> Self {
         Self(count.max(1))
     }
@@ -207,11 +208,13 @@ impl Admission {
     }
 
     /// The lane `ticket` is in; `None` when it is not in one.
+    #[must_use]
     pub fn lane_of(&self, ticket: Ticket) -> Option<Lane> {
         self.at.get(&ticket).map(|(lane, _)| *lane)
     }
 
     /// How many requests stand ahead of `ticket`; `None` when it is seated or unknown.
+    #[must_use]
     pub fn ahead(&self, ticket: Ticket) -> Option<Count> {
         let (lane, _) = self.at.get(&ticket)?;
         self.waiting(*lane)
@@ -232,6 +235,7 @@ impl Admission {
     }
 
     /// How many requests are seated or waiting in `lane`.
+    #[must_use]
     pub fn load(&self, lane: Lane) -> Count {
         count_of(
             self.lanes

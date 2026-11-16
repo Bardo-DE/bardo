@@ -33,16 +33,19 @@ impl PinnedUrl {
     }
 
     /// The host, as a name or an address (an IPv6 one in brackets).
+    #[must_use]
     pub fn host(&self) -> &str {
         self.0.host_str().unwrap_or_default()
     }
 
     /// The port: the one written, or 443.
+    #[must_use]
     pub fn port(&self) -> u16 {
         self.0.port_or_known_default().unwrap_or(443)
     }
 
     /// The path and the query, as they go in the request line.
+    #[must_use]
     pub fn path_and_query(&self) -> String {
         match self.0.query() {
             Some(query) => format!("{}?{query}", self.0.path()),

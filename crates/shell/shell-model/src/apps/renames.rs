@@ -13,11 +13,13 @@ pub struct Renames(BTreeMap<AppId, AppId>);
 
 impl Renames {
     /// The id `id` stands for now: the app that lists it in `RenamedFrom`, else `id` itself.
+    #[must_use]
     pub fn of(&self, id: &AppId) -> AppId {
         self.0.get(id).unwrap_or(id).clone()
     }
 
     /// Whether no installed app was renamed.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
@@ -26,6 +28,7 @@ impl Renames {
 impl AppIndex {
     /// The renames of the installed apps. An id an installed app has itself is never renamed
     /// away from it, and two apps claiming one old id leave it to the first by id.
+    #[must_use]
     pub fn renames(&self) -> Renames {
         let mut renames = BTreeMap::new();
         for app in &self.apps {
@@ -39,6 +42,7 @@ impl AppIndex {
     }
 
     /// The id `id` stands for now (see [`Renames::of`]).
+    #[must_use]
     pub fn current(&self, id: &AppId) -> AppId {
         self.renames().of(id)
     }

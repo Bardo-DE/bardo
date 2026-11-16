@@ -1,4 +1,4 @@
-//! Form, FormSection, IconTile and PaneStack in every state rendered through dioxus-ssr and compared with
+//! Form, `FormSection`, `IconTile` and `PaneStack` in every state rendered through dioxus-ssr and compared with
 //! a golden in `tests/snapshots/forms/<component>/<state>.html`; every class in a golden is
 //! styled by the components' sheets. `golden_lints` lints every golden as markup.
 //!

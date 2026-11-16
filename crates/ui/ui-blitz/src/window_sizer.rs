@@ -75,6 +75,7 @@ impl WindowSizer {
     }
 
     /// The window's size now, in logical pixels.
+    #[must_use]
     pub fn size(&self) -> Extent {
         let size = self.window.surface_size();
         size.logical_at(self.window.scale_factor()).unwrap_or(size)
@@ -83,6 +84,7 @@ impl WindowSizer {
     /// The output the window is on, with the area a window may use and its scale; `None` where
     /// the platform lists no output. See [`ScreenArea`] for what a client can know. A window
     /// that has not been mapped yet has no output of its own, so this is the output it is likeliest to open on.
+    #[must_use]
     pub fn screen(&self) -> Option<ScreenArea> {
         self.window.screen()
     }
@@ -92,6 +94,7 @@ impl WindowSizer {
     /// [`SizeOrigin::Person`] for any other. Reading it in a component subscribes the component
     /// to the next resize. A request that expires changes nothing here: the origin is what it was
     /// before the request, and [`request`](WindowSizer::request) says the request lapsed.
+    #[must_use]
     pub fn origin(&self) -> Option<SizeOrigin> {
         (self.origin)()
     }
@@ -100,6 +103,7 @@ impl WindowSizer {
     /// settled it, [`SizeRequest::Pending`] while it waits for an answer, and
     /// [`SizeRequest::Expired`] when none came in half a second. Reading it in a component
     /// subscribes the component to the change.
+    #[must_use]
     pub fn request(&self) -> SizeRequest {
         (self.request)()
     }

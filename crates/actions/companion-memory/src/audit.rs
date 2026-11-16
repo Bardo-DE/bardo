@@ -108,6 +108,7 @@ impl Default for AuditState {
 
 impl AuditState {
     /// The Spaces memory refused records for, each reported once.
+    #[must_use]
     pub fn refused_spaces(&self) -> &BTreeSet<SpaceId> {
         &self.told
     }
@@ -262,7 +263,7 @@ impl AuditState {
                     waiting.extend(records.by_ref().map(|(i, _, r)| (i, r)));
                 }
                 Ok(MemoryReply::Refused(why)) => {
-                    self.tell_refused(space, &format!("{:?}", why));
+                    self.tell_refused(space, &format!("{why:?}"));
                     lost += 1;
                 }
                 Err(why) => {
@@ -272,13 +273,14 @@ impl AuditState {
                 Ok(_) => written += 1,
             }
         }
-        match waiting.is_empty() {
-            false => Done::Waiting {
+        if waiting.is_empty() {
+            Done::Settled { written, lost }
+        } else {
+            Done::Waiting {
                 back: waiting,
                 written,
                 lost,
-            },
-            true => Done::Settled { written, lost },
+            }
         }
     }
 

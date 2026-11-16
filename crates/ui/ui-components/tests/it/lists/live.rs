@@ -1,5 +1,5 @@
 //! A `List` driven by its own settle timers: its roster inside a `Ds` environment at the Reduced
-//! level (every settle 94 ms), drawn with `ThreadRow`s, the VirtualDom polled on a small
+//! level (every settle 94 ms), drawn with `ThreadRow`s, the `VirtualDom` polled on a small
 //! `block_on` until each state has settled.
 
 use super::dom_time::TimedDom;
@@ -37,7 +37,7 @@ const SETTLED: Duration = Duration::from_millis(400);
 fn set_keys(dom: &mut TimedDom, keys: &[&'static str]) -> String {
     let keys = keys.to_vec();
     dom.in_scope(ScopeId::APP, || {
-        consume_context::<Signal<Vec<&'static str>>>().set(keys)
+        consume_context::<Signal<Vec<&'static str>>>().set(keys);
     });
     dom.render_immediate_to_vec();
     dioxus_ssr::render(dom)

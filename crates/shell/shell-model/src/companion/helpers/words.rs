@@ -53,16 +53,19 @@ pub const AUTOMATIC_HELP: &str = "Automatic chooses among the models you tick, f
 only. It prefers a model another helper is already using, so fewer have to be loaded.";
 
 /// The question before a helper goes.
+#[must_use]
 pub fn remove_question(name: &str) -> String {
     format!("Remove {name}? Its finished jobs stay in your history.")
 }
 
 /// The placeholder of the field that gives a helper a job.
+#[must_use]
 pub fn job_prompt(name: &str) -> String {
     format!("Give {name} a job\u{2026}")
 }
 
 /// A helper's model as the card names it.
+#[must_use]
 pub fn model_line(model: &HelperModel) -> String {
     match model {
         HelperModel::Unset => "Not chosen yet".to_owned(),
@@ -71,6 +74,7 @@ pub fn model_line(model: &HelperModel) -> String {
 }
 
 /// What the card says under a helper's model, when there is something to say.
+#[must_use]
 pub fn model_hint(model: &HelperModel) -> Option<&'static str> {
     match model {
         HelperModel::Unset => Some(CHOOSE_MODEL),
@@ -79,11 +83,13 @@ pub fn model_hint(model: &HelperModel) -> Option<&'static str> {
 }
 
 /// The badge a helper's row wears, when it needs the person.
+#[must_use]
 pub fn badge_of(line: &HelperLine) -> Option<&'static str> {
     line.needs_you.map(|_| WAITING_BADGE)
 }
 
 /// How far a helper may go, as a choice reads.
+#[must_use]
 pub fn ceiling_label(ceiling: Ceiling) -> &'static str {
     match ceiling {
         Ceiling::Look => "Look at things",
@@ -108,6 +114,7 @@ pub fn job_state_label(state: JobShown) -> &'static str {
 
 /// A job as a line of the card: what it is to do, then where it stands and why a try did not
 /// finish.
+#[must_use]
 pub fn job_words(job: &JobLine) -> (String, String) {
     let state = job_state_label(job.state);
     let detail = match &job.note {
@@ -118,6 +125,7 @@ pub fn job_words(job: &JobLine) -> (String, String) {
 }
 
 /// What the person can do to a helper in this state, in the order a menu lists them.
+#[must_use]
 pub fn controls_of(phase: HelperPhase) -> Vec<HelperControl> {
     match phase {
         HelperPhase::Paused => vec![HelperControl::Resume, HelperControl::Remove],
@@ -128,6 +136,7 @@ pub fn controls_of(phase: HelperPhase) -> Vec<HelperControl> {
 }
 
 /// An app as the card names it: the last word of its name (`Notes` for `org.bardo.Notes`).
+#[must_use]
 pub fn app_label(app: &AppName) -> String {
     let name = app.as_str();
     name.rsplit('.').next().unwrap_or(name).to_owned()
@@ -138,6 +147,7 @@ pub const ANSWER_IN_HISTORY: &str = "Its answer is in your history.";
 
 /// What a finished job answered: its words while the companion keeps them, else where to find
 /// them. Nothing for a job that is not done.
+#[must_use]
 pub fn job_answer(job: &JobLine) -> Option<String> {
     match job.state {
         JobShown::Done => Some(

@@ -19,6 +19,7 @@ pub enum WifiSecurity {
 }
 
 /// The security `flags`, `wpa` and `rsn` of an access point describe.
+#[must_use]
 pub fn wifi_security_of(flags: u32, wpa: u32, rsn: u32) -> WifiSecurity {
     const PRIVACY: u32 = 0x1;
     const PSK: u32 = 0x100;
@@ -40,6 +41,7 @@ pub fn wifi_security_of(flags: u32, wpa: u32, rsn: u32) -> WifiSecurity {
 
 /// What the device's state says of the access point it is on: `NM_DEVICE_STATE_ACTIVATED` is
 /// joined, the states from preparing to the last check are joining.
+#[must_use]
 pub fn wifi_link_of(state: u32) -> NetworkLink {
     match state {
         ACTIVATED => NetworkLink::Joined,
@@ -77,6 +79,7 @@ const REFUSED_REASONS: std::ops::RangeInclusive<u32> = 7..=11;
 
 /// The meaning of the device entering `state` for `reason`, given whether it had `started` on the
 /// join.
+#[must_use]
 pub fn join_verdict(state: u32, reason: u32, started: bool, security: WifiSecurity) -> JoinVerdict {
     let refused = security != WifiSecurity::Open && REFUSED_REASONS.contains(&reason);
     match state {

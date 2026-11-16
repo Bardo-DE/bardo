@@ -35,7 +35,7 @@ fn each_format_is_read_from_its_own_parts() {
                 ("docProps/core.xml", CORE),
                 (
                     "docProps/app.xml",
-                    br#"<Properties><Pages>12</Pages><Words>9</Words></Properties>"#,
+                    br"<Properties><Pages>12</Pages><Words>9</Words></Properties>",
                 ),
                 ("docProps/thumbnail.jpeg", b"\xFF\xD8jpeg"),
             ],
@@ -54,7 +54,7 @@ fn each_format_is_read_from_its_own_parts() {
             OfficeFormat::Pptx,
             vec![
                 ("docProps/core.xml", CORE),
-                ("docProps/app.xml", br#"<Properties><Slides>7</Slides></Properties>"#),
+                ("docProps/app.xml", br"<Properties><Slides>7</Slides></Properties>"),
             ],
             OfficeLook {
                 title: Some("Q3 & plans".into()),

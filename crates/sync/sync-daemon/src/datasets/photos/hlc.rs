@@ -12,6 +12,7 @@ pub struct DeviceId(String);
 
 impl DeviceId {
     /// The name, if it is one.
+    #[must_use]
     pub fn parse(name: &str) -> Option<Self> {
         let ok = !name.is_empty()
             && name.len() <= 16
@@ -22,6 +23,7 @@ impl DeviceId {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -43,6 +45,7 @@ pub struct Hlc {
 
 impl Hlc {
     /// A stamp from its parts.
+    #[must_use]
     pub fn new(wall: u64, counter: u32, device: DeviceId) -> Self {
         Self {
             wall,
@@ -53,21 +56,25 @@ impl Hlc {
 
     /// Milliseconds since the epoch, as the writing device read its clock (or a later one it
     /// had seen).
+    #[must_use]
     pub fn wall(&self) -> u64 {
         self.wall
     }
 
     /// The device that made it.
+    #[must_use]
     pub fn device(&self) -> &DeviceId {
         &self.device
     }
 
     /// `<wall hex 16>-<counter hex 8>-<device>`: sorts as the stamp does.
+    #[must_use]
     pub fn text(&self) -> String {
         format!("{:016x}-{:08x}-{}", self.wall, self.counter, self.device)
     }
 
     /// The stamp `text` names, if it names one.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         let (wall, rest) = text.split_once('-')?;
         let (counter, device) = rest.split_once('-')?;
@@ -105,6 +112,7 @@ pub struct ManualMillis(AtomicU64);
 
 impl ManualMillis {
     /// A clock at `ms`.
+    #[must_use]
     pub fn at(ms: u64) -> Self {
         Self(AtomicU64::new(ms))
     }
@@ -130,6 +138,7 @@ pub struct HlcClock {
 
 impl HlcClock {
     /// A clock for `device` that has made and seen nothing.
+    #[must_use]
     pub fn new(device: DeviceId) -> Self {
         Self {
             last: Hlc::new(0, 0, device),

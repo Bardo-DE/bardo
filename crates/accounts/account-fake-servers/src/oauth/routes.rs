@@ -1,6 +1,9 @@
 //! The issuer's endpoints: authorize, token and revoke.
 
-use super::*;
+use super::{
+    Code, Consent, Digest, Duration, Engine, Grant, Instant, IssuerEvent, Request, Response,
+    Sha256, Shared, State, Style, TokenResult, URL_SAFE_NO_PAD, json, lock,
+};
 
 pub(super) fn next(state: &mut State, prefix: &str) -> String {
     state.counter += 1;
@@ -125,13 +128,14 @@ fn authorize(shared: &Shared, request: &Request) -> Response {
 /// (granular consent), and with `keep` what the client was granted before (incremental
 /// authorization). The fake serves one person, so "before" is the client's earlier codes.
 fn consented(state: &State, client_id: &str, asked: &str, keep: bool) -> String {
-    let mut scopes: Vec<&str> = match keep {
-        true => state
+    let mut scopes: Vec<&str> = if keep {
+        state
             .consented
             .get(client_id)
             .map(|held| held.iter().map(String::as_str).collect())
-            .unwrap_or_default(),
-        false => Vec::new(),
+            .unwrap_or_default()
+    } else {
+        Vec::new()
     };
     for scope in asked.split_whitespace() {
         if !state.unticked.iter().any(|u| u == scope) && !scopes.contains(&scope) {
@@ -291,9 +295,10 @@ fn refresh(state: &mut State, presented: &str, client_id: &str, asked: &str) -> 
             },
         });
     }
-    let carried = match asked.trim().is_empty() {
-        true => scope.clone(),
-        false => asked.to_owned(),
+    let carried = if asked.trim().is_empty() {
+        scope.clone()
+    } else {
+        asked.to_owned()
     };
     if state.style == Style::Google {
         return issue_access(state, client_id, &carried, presented);

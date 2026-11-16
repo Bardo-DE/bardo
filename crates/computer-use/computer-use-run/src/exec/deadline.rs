@@ -41,6 +41,7 @@ fn timed_out() -> String {
 }
 
 /// The deadline of `effect`; none for an effect that finishes at once or waits on the person.
+#[must_use]
 pub fn deadline_of(effect: &RunEffect) -> Option<Deadline> {
     let (after, failure) = match effect {
         RunEffect::Grant { .. } => (CONSENT, Some(RunInput::GrantUnanswered)),

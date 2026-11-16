@@ -207,7 +207,7 @@ async fn concurrent_writers_are_serialised_and_none_loses_an_update() {
             "writer {n}"
         );
     }
-    assert!(store.get(&key("shared")).await.is_ok());
+    store.get(&key("shared")).await.unwrap();
 }
 
 /// Two namespaces in one file: each reads and wipes its own items, the other's stay in the file

@@ -18,6 +18,7 @@ pub enum Modifier {
 
 impl Modifier {
     /// The evdev code of the left-hand key.
+    #[must_use]
     pub fn code(self) -> u16 {
         match self {
             Self::Ctrl => 29,
@@ -73,6 +74,7 @@ impl Key {
     pub const RIGHT: Key = Key(106);
 
     /// The evdev code.
+    #[must_use]
     pub fn code(self) -> u16 {
         self.0
     }
@@ -85,6 +87,7 @@ impl Key {
     /// punctuation, Enter, Space, Tab, Backspace, Delete or Escape. The input service refuses
     /// them on their own so that palmrest cannot type text. Navigation, function keys, Insert,
     /// Back and Forward go out freely. The service keeps the same table.
+    #[must_use]
     pub fn needs_a_shortcut_modifier(self) -> bool {
         !matches!(self.0, 59..=68 | 87 | 88 | 102..=110 | 158 | 159)
     }
@@ -107,6 +110,7 @@ pub struct KeyCombo {
 
 impl KeyCombo {
     /// Alt+Left: Back in every browser and file manager.
+    #[must_use]
     pub fn alt(key: Key) -> Self {
         Self {
             mods: vec![Modifier::Alt],
@@ -116,6 +120,7 @@ impl KeyCombo {
 
     /// Whether the input service will send this combo: a key that types text must come with
     /// ctrl, alt or super.
+    #[must_use]
     pub fn is_sendable(&self) -> bool {
         !self.key.needs_a_shortcut_modifier() || self.mods.iter().any(|m| m.makes_a_shortcut())
     }

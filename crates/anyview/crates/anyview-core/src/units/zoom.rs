@@ -24,6 +24,7 @@ impl Zoom {
     pub const MAX_SCALE: Permille = Permille(64_000);
 
     /// A fixed scale, with `scale` clamped into [`Zoom::MIN_SCALE`] to [`Zoom::MAX_SCALE`].
+    #[must_use]
     pub fn scaled(scale: Permille) -> Zoom {
         Zoom::Scale(Permille(
             scale.0.clamp(Self::MIN_SCALE.0, Self::MAX_SCALE.0),

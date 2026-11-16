@@ -36,7 +36,7 @@ fn spec(need: Need, class: DataClass) -> SessionSpec {
 fn start(scratch: &Scratch, host: Recorder) -> Engines {
     let pool = models(scratch)
         .iter()
-        .map(|model| model.model_ref())
+        .map(inference_router::LocalModel::model_ref)
         .collect();
     start_with(scratch, host, TierMap::automatic(Slot::Text, pool))
 }

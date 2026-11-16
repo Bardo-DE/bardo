@@ -1,4 +1,4 @@
-//! wl_data_device: selection offers, drag and drop. Filled by P0-H5.
+//! `wl_data_device`: selection offers, drag and drop. Filled by P0-H5.
 //!
 //! The wire events reach the transcript through the connection's tap. A device built to
 //! receive drops accepts the one mime type it was given on every `enter`, which is what makes

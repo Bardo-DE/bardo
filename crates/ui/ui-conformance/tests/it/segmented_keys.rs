@@ -1,4 +1,4 @@
-//! SegmentedControl's roving keys (design/30 section 1.4) on a real Blitz document: with a segment
+//! `SegmentedControl`'s roving keys (design/30 section 1.4) on a real Blitz document: with a segment
 //! focused, Right and Left move the choice one segment and stop at the ends, Home and End jump
 //! to them.
 

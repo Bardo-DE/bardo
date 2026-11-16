@@ -131,7 +131,7 @@ mod tests {
         ];
         for text in OTHERS {
             assert!(
-                !parse_uevent(text).is_some_and(|i| known_device(&i).is_some()),
+                parse_uevent(text).is_none_or(|i| known_device(&i).is_none()),
                 "{text:?}"
             );
         }

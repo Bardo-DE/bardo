@@ -101,7 +101,7 @@ fn read_all_groups_by_namespace_and_honours_patterns() {
     for (patterns, keys) in table {
         let patterns: Vec<String> = patterns.iter().map(|p| (*p).to_owned()).collect();
         let got = read_namespaces(&a, &patterns);
-        let count: usize = got.values().map(|m| m.len()).sum();
+        let count: usize = got.values().map(std::collections::HashMap::len).sum();
         assert_eq!(count, keys, "{patterns:?}");
     }
 }

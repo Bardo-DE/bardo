@@ -25,6 +25,7 @@ pub struct DbusInstance {
 
 impl DbusInstance {
     /// An instance claim on `env`'s session bus.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         DbusInstance {
             env,
@@ -37,6 +38,7 @@ impl DbusInstance {
     /// holds the router's pid. How a test on a private bus stands in for `bardo-actiond.service`; docket
     /// reads the tree only in a build with action-dbus's `fixture-callers` (a test build's), and
     /// any other build answers nobody, so a shipped viewer cannot be pointed at a fake `/proc`.
+    #[must_use]
     pub fn with_proc_root(self, root: PathBuf) -> Self {
         DbusInstance {
             proc_root: Some(root),

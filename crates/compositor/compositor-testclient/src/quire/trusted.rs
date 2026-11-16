@@ -1,1 +1,1 @@
-//! bardo_trusted_surface_v1. Filled by P4-Z.
+//! `bardo_trusted_surface_v1`. Filled by P4-Z.

@@ -62,11 +62,11 @@ impl ZipEntries {
     }
 }
 
-/// What a zip is: an Office Open XML, OpenDocument or iWork document, an EPUB, a comic book, an
+/// What a zip is: an Office Open XML, `OpenDocument` or iWork document, an EPUB, a comic book, an
 /// Android package or a Java archive, else a plain archive.
 ///
-/// The `mimetype` entry decides first (EPUB, OpenDocument). `[Content_Types].xml` with a `word/`,
-/// `xl/` or `ppt/` directory is Word, Excel or PowerPoint. An `Index` directory is an iWork
+/// The `mimetype` entry decides first (EPUB, `OpenDocument`). `[Content_Types].xml` with a `word/`,
+/// `xl/` or `ppt/` directory is Word, Excel or `PowerPoint`. An `Index` directory is an iWork
 /// package, and its application comes from the file's extension, since the layout is the same.
 /// `AndroidManifest.xml` with `classes.dex` is an APK; `META-INF/MANIFEST.MF` a JAR. A `.cbz` name
 /// holding an image is a comic. Everything else is `Archive`.

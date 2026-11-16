@@ -138,7 +138,7 @@ fn staging_downloads_checks_and_reports_progress() {
     let target = dir.path().join("0.2.0");
     let mut readings: Vec<(u64, u64)> = Vec::new();
     stage(&memory, &source, &fetched, &target, &mut |done, total| {
-        readings.push((done, total))
+        readings.push((done, total));
     })
     .expect("stage");
     let last = readings.last().copied().expect("some progress");

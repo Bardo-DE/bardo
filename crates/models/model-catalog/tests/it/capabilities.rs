@@ -276,7 +276,7 @@ fn an_engine_narrows_what_its_model_passes_through() {
 
 #[test]
 fn narrowing_outputs_drops_their_tables() {
-    let narrowed = narrowed_engine("llama_server", r#"outputs = []"#);
+    let narrowed = narrowed_engine("llama_server", r"outputs = []");
     let entry = parse_entry(&multimodal("mm", &narrowed)).unwrap();
     let narrow = entry.capabilities.on_engine(&entry.engines[0]);
     assert!(narrow.outputs.is_empty() && narrow.text_out.is_none());

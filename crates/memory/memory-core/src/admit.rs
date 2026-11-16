@@ -15,6 +15,7 @@ use provenance::{Actor, ActorKind, SystemPart};
 /// audited like an agent's), the router's, every other area's payloads, and every message and
 /// episode (so a pause keeps headers only). Such records are never dropped for policy reasons
 /// (pause, `Never` rules, marks); at worst they keep their header.
+#[must_use]
 pub fn is_audit_class(record: &Record) -> bool {
     let by_actor = matches!(
         record.actor.kind(),
@@ -38,6 +39,7 @@ pub fn is_audit_class(record: &Record) -> bool {
 /// availability limits, which the service handles by buffering before it asks. Otherwise
 /// pause, marks and rules apply; the most specific scope wins (`Thing > Path > Kind > App >
 /// Actor > Space`) and at equal specificity the strictest mode (`Never > HeaderOnly > Full`).
+#[must_use]
 pub fn admit(record: &Record, rules: &RuleSet, state: &SpaceState, marks: &Marks) -> Admission {
     let audit = is_audit_class(record);
     let retention = default_retention(record, rules);
@@ -83,6 +85,7 @@ pub fn admit(record: &Record, rules: &RuleSet, state: &SpaceState, marks: &Marks
 /// `None` means [`admit`] answers `Keep`. A durable append (`RecordDurable`) refuses on any
 /// `Some`, because an acknowledgement promises the body is stored, and an audit-class record
 /// under a pause or a `Never` rule keeps only its header. Pure.
+#[must_use]
 pub fn withheld(
     record: &Record,
     rules: &RuleSet,
@@ -112,6 +115,7 @@ pub fn withheld(
 
 /// How long the record's body is kept when no rule says: unexplained file changes 7 days,
 /// otherwise the narrowest matching default, otherwise 30 days.
+#[must_use]
 pub fn default_retention(record: &Record, rules: &RuleSet) -> Retention {
     if matches!(
         record.body,
@@ -165,13 +169,15 @@ fn applies(scope: &RuleScope, record: &Record) -> bool {
 }
 
 /// `*` matches within one path element, `**` across elements; everything else is literal.
+#[must_use]
 pub fn glob_matches(pattern: &str, text: &str) -> bool {
     fn go(p: &[u8], t: &[u8]) -> bool {
         match p.split_first() {
             None => t.is_empty(),
-            Some((b'*', rest)) => match rest.split_first() {
-                Some((b'*', deep)) => (0..=t.len()).any(|i| go(deep, &t[i..])),
-                _ => {
+            Some((b'*', rest)) => {
+                if let Some((b'*', deep)) = rest.split_first() {
+                    (0..=t.len()).any(|i| go(deep, &t[i..]))
+                } else {
                     for i in 0..=t.len() {
                         if go(rest, &t[i..]) {
                             return true;
@@ -182,7 +188,7 @@ pub fn glob_matches(pattern: &str, text: &str) -> bool {
                     }
                     false
                 }
-            },
+            }
             Some((c, rest)) => t.first() == Some(c) && go(rest, &t[1..]),
         }
     }

@@ -41,6 +41,7 @@ impl JpegQuality {
         }
     }
 
+    #[must_use]
     pub fn value(&self) -> u8 {
         self.0
     }
@@ -99,7 +100,7 @@ pub enum PrepError {
 /// Resizes once and encodes once, from the frame's pixel format to `enc`.
 ///
 /// The frame is read as opaque RGB (the alpha byte of `Argb8888` and `Abgr8888` is dropped: a
-/// window capture has no backdrop to blend with), resized with fast_image_resize's default
+/// window capture has no backdrop to blend with), resized with `fast_image_resize`'s default
 /// Lanczos3 filter when the map's image size differs from the frame, and encoded by `image`.
 #[cfg(feature = "pixels")]
 pub fn prepare(

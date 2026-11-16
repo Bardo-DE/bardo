@@ -98,6 +98,7 @@ impl std::fmt::Debug for Provided {
 
 impl Provided {
     /// The host and clipboard `wiring` describes.
+    #[must_use]
     pub fn of(wiring: Wiring) -> Self {
         let clipboard = Rc::clone(&wiring.clipboard);
         Provided {
@@ -111,6 +112,7 @@ impl Provided {
     /// that started it) reads its contexts from the root scope; with the host provided only
     /// below it, that task got no host, measured nothing, and a tooltip stayed hidden for want
     /// of its anchor in every real window (the harness wires its host on the root).
+    #[must_use]
     pub fn provide(self) -> Rc<dyn DocumentHost> {
         dioxus::core::provide_root_context(Rc::clone(&self.clipboard));
         dioxus::core::provide_root_context(Rc::clone(&self.host));
@@ -170,6 +172,7 @@ impl BlitzHost {
 /// [`clipboard::write_text`](crate::clipboard::write_text) answers
 /// [`ClipboardError::NoShell`](crate::clipboard::ClipboardError::NoShell) there, never a
 /// success that wrote nothing.
+#[must_use]
 pub fn provide_host() -> Rc<dyn DocumentHost> {
     use_hook(|| {
         try_consume_context::<Rc<dyn DocumentHost>>()

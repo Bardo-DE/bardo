@@ -469,16 +469,14 @@ async fn the_setting_off_refuses_and_the_default_is_off() {
     let mut settings = (*world.served.settings()).clone();
     settings.agent_endpoint = true;
     world.served.apply(settings);
-    assert!(
-        open_with(
-            &world,
-            &account_route("anthropic", &["claude-opus-5-5"]),
-            "files",
-            &["anthropic_messages"],
-        )
-        .await
-        .is_ok()
-    );
+    open_with(
+        &world,
+        &account_route("anthropic", &["claude-opus-5-5"]),
+        "files",
+        &["anthropic_messages"],
+    )
+    .await
+    .unwrap();
 }
 
 #[tokio::test(flavor = "multi_thread")]

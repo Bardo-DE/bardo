@@ -18,6 +18,7 @@ use model_provider::ModelName;
 use std::path::{Path, PathBuf};
 
 /// The engine id of an attached model: it names no process.
+#[must_use]
 pub fn engine_id(id: &str) -> EngineId {
     EngineId(format!("attached:{id}"))
 }

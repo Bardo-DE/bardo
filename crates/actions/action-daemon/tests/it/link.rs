@@ -146,11 +146,9 @@ async fn an_app_that_is_away_is_unavailable_and_never_a_panic() {
         .perform(&gone, invocation("gone.do", "x"), Latency::Instant)
         .await;
     assert!(performed == Err(AppFault::Unavailable), "{performed:?}");
-    assert!(
-        link.dry_run(&gone, invocation("gone.do", "x"))
-            .await
-            .is_err()
-    );
+    link.dry_run(&gone, invocation("gone.do", "x"))
+        .await
+        .unwrap_err();
     let token: UndoToken = serde_json::from_str("\"u-1\"").expect("a token");
     assert_eq!(
         link.undo(&gone, &token, &Actor::Cli).await,

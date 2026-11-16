@@ -26,6 +26,7 @@ pub enum AccountTarget {
 
 impl AccountTarget {
     /// The target an object path names: an account's path is its detail, anything else the list.
+    #[must_use]
     pub fn of_path(path: &str) -> AccountTarget {
         match path.strip_prefix(ACCOUNT_PREFIX) {
             Some(segment)
@@ -43,6 +44,7 @@ impl AccountTarget {
 
 impl AccountsPane {
     /// The account whose object-path segment is `segment`, if the pane lists one.
+    #[must_use]
     pub fn key_of(&self, segment: &AccountSegment) -> Option<AccountKey> {
         self.accounts
             .iter()

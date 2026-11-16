@@ -63,6 +63,7 @@ pub enum ResponseCode {
 
 impl ResponseCode {
     /// The `u` on the wire.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         match self {
             ResponseCode::Done => 0,
@@ -72,6 +73,7 @@ impl ResponseCode {
     }
 
     /// The code a `u` stands for, or `None` for a number the portal shape does not define.
+    #[must_use]
     pub fn from_wire(code: u32) -> Option<Self> {
         match code {
             0 => Some(ResponseCode::Done),
@@ -127,6 +129,7 @@ fn other(refusal: Refusal) -> Response {
 /// The response that stands for `reply`, the answer to a `kind` sheet. A reply that does not
 /// answer that kind of sheet is `Other` with `unavailable`: the daemon could not do what was
 /// asked.
+#[must_use]
 pub fn response_of(kind: SheetKind, reply: &AccountsReply) -> Response {
     match (kind, reply) {
         (_, AccountsReply::Refused(Refusal::Dismissed)) => Response {
@@ -232,6 +235,7 @@ pub fn reply_of(kind: SheetKind, code: u32, results: Details) -> Result<Accounts
 }
 
 /// The path segment of a bus connection's unique name: `:1.42` is `1_42`.
+#[must_use]
 pub fn sender_segment(unique_name: &str) -> String {
     unique_name
         .trim_start_matches(':')
@@ -242,28 +246,33 @@ pub fn sender_segment(unique_name: &str) -> String {
 
 /// Whether `token` may be the last segment of a request path: one or more of `[A-Za-z0-9_]`,
 /// at most 64.
+#[must_use]
 pub fn is_handle_token(token: &str) -> bool {
     (1..=64).contains(&token.len()) && token.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
 /// The path under which every Request object of `sender` lives: a caller subscribes to
 /// `Response` here before it calls.
+#[must_use]
 pub fn request_namespace(sender: &str) -> String {
     request_namespace_in(super::ServiceRoot::Accounts, sender)
 }
 
 /// The Request object of `sender`'s call that carried `token`, or `None` for a token that is
 /// not one.
+#[must_use]
 pub fn request_path(sender: &str, token: &str) -> Option<String> {
     request_path_in(super::ServiceRoot::Accounts, sender, token)
 }
 
 /// [`request_namespace`] under `service`'s root.
+#[must_use]
 pub fn request_namespace_in(service: super::ServiceRoot, sender: &str) -> String {
     format!("{}/{}", service.request_root(), sender_segment(sender))
 }
 
 /// [`request_path`] under `service`'s root.
+#[must_use]
 pub fn request_path_in(service: super::ServiceRoot, sender: &str, token: &str) -> Option<String> {
     is_handle_token(token).then(|| format!("{}/{token}", request_namespace_in(service, sender)))
 }

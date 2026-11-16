@@ -15,11 +15,13 @@ pub struct Runtime {
 
 impl Runtime {
     /// Whether it can be picked now.
+    #[must_use]
     pub fn is_running(&self) -> bool {
         self.status == AccountStatus::Ok
     }
 
     /// The runtimes `pane` lists, in its order.
+    #[must_use]
     pub fn all_of(pane: &AccountsPane) -> Vec<Runtime> {
         pane.local_runtimes()
             .map(|account| Runtime {

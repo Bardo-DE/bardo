@@ -81,9 +81,10 @@ impl<H: Http> GdriveReplica<H> {
                     return Err(Self::conflict(&target, &base, Some(found)));
                 }
                 let meta = serde_json::json!({"name": name, "parents": [parent]}).to_string();
-                let response = match small {
-                    true => self.create_small(&meta, bytes).await?,
-                    false => self.put_session(None, &meta, bytes).await?,
+                let response = if small {
+                    self.create_small(&meta, bytes).await?
+                } else {
+                    self.put_session(None, &meta, bytes).await?
                 };
                 (target, response)
             }
@@ -101,9 +102,10 @@ impl<H: Http> GdriveReplica<H> {
                     }
                     _ => return Err(Self::conflict(&target, &base, now.as_ref())),
                 }
-                let response = match small {
-                    true => self.update_small(&id.0, bytes).await?,
-                    false => self.put_session(Some(&id.0), "{}", bytes).await?,
+                let response = if small {
+                    self.update_small(&id.0, bytes).await?
+                } else {
+                    self.put_session(Some(&id.0), "{}", bytes).await?
                 };
                 (target, response)
             }

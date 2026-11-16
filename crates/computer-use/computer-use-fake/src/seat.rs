@@ -36,6 +36,7 @@ pub struct FakeSeat {
 
 impl FakeSeat {
     /// A seat of this isolation whose receipts are stamped `at`.
+    #[must_use]
     pub fn new(isolation: SeatIsolation, at: Stamp) -> Self {
         Self {
             caps: SeatCaps::for_isolation(isolation),
@@ -206,7 +207,7 @@ mod tests {
             ready(seat.perform(LeaseId(1), &ops())),
             Err(SeatError::TargetGone)
         );
-        assert!(ready(seat.perform(LeaseId(1), &ops())).is_ok());
+        ready(seat.perform(LeaseId(1), &ops())).unwrap();
         let delivered = seat
             .events()
             .into_iter()

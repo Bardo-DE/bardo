@@ -60,6 +60,7 @@ pub struct IconPx(pub u8);
 
 impl IconSize {
     /// The logical size in pixels, written as `data-size`.
+    #[must_use]
     pub fn px(self) -> u8 {
         match self {
             IconSize::Micro => 11,

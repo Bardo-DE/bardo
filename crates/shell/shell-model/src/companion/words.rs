@@ -16,6 +16,7 @@ use super::progress::row_progress;
 use crate::untrusted::for_display;
 
 /// The answer's row: what was asked, and where the answer stands.
+#[must_use]
 pub fn answer_line(answer: &AnswerFacts) -> (String, String) {
     let title = match answer.prompt.trim() {
         "" => "Assistant".to_owned(),
@@ -111,6 +112,7 @@ fn refusal_words(body: &AnswerBody) -> String {
 
 /// A journal row: what was done in the app's own words, who did it and whether it can still be
 /// undone.
+#[must_use]
 pub fn activity_line(entry: &UndoEntry) -> (String, String) {
     let who = match &entry.actor {
         Actor::User { .. } => "You",
@@ -137,6 +139,7 @@ pub fn activity_line(entry: &UndoEntry) -> (String, String) {
 }
 
 /// A timeline row: who did what to which thing, and in which app.
+#[must_use]
 pub fn memory_line(entry: &TimelineEntry, programs: &ProgramLabels) -> (String, String) {
     let who = who_words(&entry.actor, programs);
     let verb = entry
@@ -189,6 +192,7 @@ const WAITING_TEXT_MAX_CHARS: usize = 200;
 /// A helper's proposal names the helper as the person calls it (`helpers` is the list bardo-shell
 /// holds), or "A helper" when it is not in the list. The router, which memory recorded as the
 /// author of an assistant's proposal before it carried the helper, reads as "The assistant".
+#[must_use]
 pub fn waiting_line(
     view: &FactView,
     programs: &ProgramLabels,

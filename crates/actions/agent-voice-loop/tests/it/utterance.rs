@@ -326,7 +326,7 @@ fn alphabet() -> Vec<UtteranceEvent> {
     ]
 }
 
-/// The mic as the effects leave it: the last of OpenMic and CloseMic wins.
+/// The mic as the effects leave it: the last of `OpenMic` and `CloseMic` wins.
 fn mic_after(mic: bool, effects: &[UtteranceEffect]) -> bool {
     effects.iter().fold(mic, |m, e| match e {
         E::OpenMic => true,

@@ -22,6 +22,7 @@ pub struct FakeProvider {
 
 impl FakeProvider {
     /// The provider the file text declares. Panics on a bad file: the files are this crate's.
+    #[must_use]
     pub fn from_file(text: &str) -> Self {
         let spec = parse_provider(text).unwrap_or_else(|e| panic!("fake provider file: {e}"));
         Self {
@@ -40,16 +41,19 @@ impl FakeProvider {
 }
 
 /// The self-hosted cloud (Storage + Calendar, app password).
+#[must_use]
 pub fn cloud_provider() -> FakeProvider {
     FakeProvider::from_file(include_str!("../providers/fake-cloud.toml"))
 }
 
 /// The mail host (Mail, OAuth).
+#[must_use]
 pub fn mail_provider() -> FakeProvider {
     FakeProvider::from_file(include_str!("../providers/fake-mail.toml"))
 }
 
 /// The local runtime (Llm, on device).
+#[must_use]
 pub fn llm_provider() -> FakeProvider {
     FakeProvider::from_file(include_str!("../providers/fake-llm.toml"))
 }

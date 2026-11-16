@@ -26,6 +26,7 @@ pub enum SpaceAccess {
 }
 
 /// What `app` may do with `scope`: porter's `open_to`, with the reason when it is no.
+#[must_use]
 pub fn space_access(scope: &SpaceScope, app: &AppName) -> SpaceAccess {
     match scope {
         SpaceScope::Only(space) if !scope.open_to(app) => match space.owner() {
@@ -43,6 +44,7 @@ impl GrantCaller {
     /// The app behind the caller, when it is one acting on its own. The other callers are the
     /// person's agents and tools, which act where the person is: the call's own connection is
     /// checked when it is made.
+    #[must_use]
     pub fn as_app(&self) -> Option<&AppName> {
         match self {
             GrantCaller::App(app) => Some(app),
@@ -60,6 +62,7 @@ impl GrantCaller {
 
 impl ActionGrantKey {
     /// Whether the app this grant is for may hold a grant over its Space.
+    #[must_use]
     pub fn space_access(&self) -> SpaceAccess {
         match self.caller.as_app() {
             Some(app) => space_access(&self.space, app),

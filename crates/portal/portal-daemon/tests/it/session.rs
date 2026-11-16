@@ -15,10 +15,8 @@ fn key(n: u32) -> SessionKey {
 fn a_session_runs_to_its_end_and_leaves_the_book() {
     let mut book = SessionBook::new();
     let now = Instant::now();
-    assert!(
-        book.create(key(1), "org.example.Meet", Tether::default(), now)
-            .is_ok()
-    );
+    book.create(key(1), "org.example.Meet", Tether::default(), now)
+        .unwrap();
     assert_eq!(
         book.create(key(1), "org.example.Meet", Tether::default(), now),
         Err(Refusal::AlreadyOpen),
@@ -89,7 +87,7 @@ fn one_caller_and_the_whole_book_are_capped() {
     let mut many = SessionBook::new();
     for n in 0..SESSION_LIMITS.total {
         let n = u32::try_from(n).expect("small");
-        assert!(many.create(key(n), "a", caller(100 + n), now).is_ok());
+        many.create(key(n), "a", caller(100 + n), now).unwrap();
     }
     assert_eq!(
         many.create(key(5000), "a", caller(5000), now),

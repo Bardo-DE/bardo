@@ -39,7 +39,7 @@ fn Page() -> Element {
                 items: items(),
                 dim_unavailable: MODE.with(Cell::get),
                 onpick: move |_: u8| {},
-                onclose: move |_| {},
+                onclose: move |()| {},
             }
         }
     }

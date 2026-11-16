@@ -22,6 +22,7 @@ names!(OutMod {
 
 impl OutMod {
     /// The left-hand key written for this modifier.
+    #[must_use]
     pub const fn key(self) -> Key {
         match self {
             OutMod::Ctrl => Key::LEFTCTRL,

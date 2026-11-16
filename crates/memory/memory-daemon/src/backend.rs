@@ -1,4 +1,4 @@
-//! `SystemBackend`: the real seams. The key store is the Secret Service, the log is SQLCipher,
+//! `SystemBackend`: the real seams. The key store is the Secret Service, the log is `SQLCipher`,
 //! the vault is sealed or plain per Space, the models are inferd's.
 
 use crate::registry::SpaceRegistry;
@@ -19,7 +19,7 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 
-/// memoryd's seams over the real system: SQLCipher files under `dirs`, sealed or plain vaults,
+/// memoryd's seams over the real system: `SQLCipher` files under `dirs`, sealed or plain vaults,
 /// the OS's randomness and clock. The key store, the embedder and the consolidator are
 /// parameters whose defaults are the real ones (the Secret Service, inferd); a test names its own
 /// and keeps everything else real.
@@ -39,6 +39,7 @@ pub struct SystemBackend<
 
 impl SystemBackend {
     /// Over `dirs` and one inferd connection shared by the embedder and the consolidator.
+    #[must_use]
     pub fn new(dirs: Dirs, inferd: Arc<DbusTransport>, card: memory_store::EmbedderCard) -> Self {
         Self::with(
             dirs,
@@ -75,7 +76,7 @@ impl<K, E, C> SystemBackend<K, E, C> {
     }
 }
 
-/// A SQLCipher file opened with `key` (`PRAGMA key`, then `secure_delete` so removed rows do not
+/// A `SQLCipher` file opened with `key` (`PRAGMA key`, then `secure_delete` so removed rows do not
 /// linger in free pages). A wrong key shows at the first query, which the caller makes.
 fn open_keyed(path: &Path, key: &DbKey) -> Result<Connection, IndexError> {
     let conn = Connection::open(path)?;

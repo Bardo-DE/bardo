@@ -1,4 +1,4 @@
-//! PipeWire's default source, as the `default` metadata object states it. Two keys name it:
+//! `PipeWire`'s default source, as the `default` metadata object states it. Two keys name it:
 //! `default.configured.audio.source` (what the person picked in their sound settings) and
 //! `default.audio.source` (what the session manager resolved). Both carry the JSON
 //! `{"name": "<node.name>"}`; the configured one wins when present.
@@ -17,6 +17,7 @@ struct NameValue {
 
 /// The node name in one metadata value. A value that is not `{"name": "..."}`, or names nothing,
 /// is no name; a bare string is taken as the name too, since older session managers wrote that.
+#[must_use]
 pub fn name_in(value: &str) -> Option<String> {
     let name = match serde_json::from_str::<NameValue>(value) {
         Ok(parsed) => parsed.name,
@@ -47,6 +48,7 @@ impl DefaultSources {
     }
 
     /// The default source's node name: the configured one if present, else the resolved one.
+    #[must_use]
     pub fn name(&self) -> Option<&str> {
         self.configured.as_deref().or(self.resolved.as_deref())
     }
@@ -68,7 +70,7 @@ mod tests {
             (r#"{"name":""}"#, None),
             (r#"{"name":null}"#, None),
             (r#"{"id":4}"#, None),
-            (r#"[]"#, None),
+            (r"[]", None),
             ("not json", None),
             ("", None),
         ];

@@ -38,6 +38,7 @@ pub struct NewComputerModel {
 
 impl NewComputerModel {
     /// A model reached by `reach`, with no key.
+    #[must_use]
     pub fn new(model: ModelId, reach: ComputerReach) -> Self {
         Self {
             model,
@@ -47,6 +48,7 @@ impl NewComputerModel {
     }
 
     /// The same model with the key it asks for.
+    #[must_use]
     pub fn with_key(mut self, key: SecretText) -> Self {
         self.key = Some(key);
         self
@@ -64,6 +66,7 @@ pub struct NewComputer {
 
 impl NewComputer {
     /// A computer called `name` serving `models`.
+    #[must_use]
     pub fn new(name: String, models: Vec<NewComputerModel>) -> Self {
         Self { name, models }
     }

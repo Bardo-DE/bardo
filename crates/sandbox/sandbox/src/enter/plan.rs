@@ -31,6 +31,7 @@ const REPORT: &str = "bardo-sandbox-enter: landlock=";
 
 impl LandlockLevel {
     /// The word for the level.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             LandlockLevel::Full => "full",
@@ -41,11 +42,13 @@ impl LandlockLevel {
 
     /// The one fixed-format line the exec stage writes to standard error before it starts the
     /// agent: `bardo-sandbox-enter: landlock=<word>`.
+    #[must_use]
     pub fn report_line(self) -> String {
         format!("{REPORT}{}", self.word())
     }
 
     /// The level in `line`, if it is exactly a report line (trailing newline allowed).
+    #[must_use]
     pub fn from_report_line(line: &str) -> Option<Self> {
         let word = line.trim_end_matches(['\r', '\n']).strip_prefix(REPORT)?;
         [Self::Full, Self::FilesOnly, Self::None]
@@ -112,6 +115,7 @@ pub enum EnterFault {
 
 impl EnterPlan {
     /// A plan with these parts.
+    #[must_use]
     pub fn new(
         read: Vec<AbsPath>,
         write: Vec<AbsPath>,
@@ -127,6 +131,7 @@ impl EnterPlan {
     }
 
     /// The words, ending with `--`: put the program and its arguments after them.
+    #[must_use]
     pub fn words(&self) -> Vec<String> {
         let mut out = Vec::new();
         let lists = [
@@ -194,9 +199,10 @@ impl EnterPlan {
 
 fn path(text: &str) -> Result<AbsPath, EnterFault> {
     let path = AbsPath::parse(text).map_err(EnterFault::BadPath)?;
-    match path.is_root() {
-        true => Err(EnterFault::Root),
-        false => Ok(path),
+    if path.is_root() {
+        Err(EnterFault::Root)
+    } else {
+        Ok(path)
     }
 }
 

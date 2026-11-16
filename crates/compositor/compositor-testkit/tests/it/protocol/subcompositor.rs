@@ -58,7 +58,7 @@ fn check(name: &str, client: &TestClient, skip: &[&str]) {
 
 const SIZE: PhysicalSize = PhysicalSize { w: 32, h: 32 };
 
-/// Place_above/place_below order and synchronised commits reach the frame together.
+/// `Place_above/place_below` order and synchronised commits reach the frame together.
 #[test]
 fn subsurfaces_stack_and_sync() {
     let (mut fixture, id) = boot();
@@ -92,7 +92,7 @@ fn subsurfaces_stack_and_sync() {
     );
 }
 
-/// Making a surface its own subsurface is the bad_surface error and disconnects only that client.
+/// Making a surface its own subsurface is the `bad_surface` error and disconnects only that client.
 #[test]
 fn a_subsurface_of_itself_is_a_protocol_error() {
     let (mut fixture, bad) = boot();
@@ -109,7 +109,7 @@ fn a_subsurface_of_itself_is_a_protocol_error() {
     assert!(fixture.client(good).is_connected());
 }
 
-/// A sibling that is not one is wl_subsurface.bad_surface.
+/// A sibling that is not one is `wl_subsurface.bad_surface`.
 #[test]
 fn restacking_against_a_stranger_is_a_protocol_error() {
     let (mut fixture, id) = boot();
@@ -125,7 +125,7 @@ fn restacking_against_a_stranger_is_a_protocol_error() {
     assert_eq!(fault(&mut fixture, id), ("wl_subsurface".to_owned(), 0));
 }
 
-/// A second subsurface role on the same surface is bad_surface.
+/// A second subsurface role on the same surface is `bad_surface`.
 #[test]
 fn a_surface_cannot_be_a_subsurface_twice() {
     let (mut fixture, id) = boot();

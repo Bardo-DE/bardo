@@ -20,6 +20,7 @@ fn choice(model: &str, family: &str) -> Option<ModelChoice> {
 /// The set used when nothing names one: three placeholder local models of three families. The
 /// daemon answers a model it does not have with an error, which asks the person, so the
 /// placeholder set can never allow anything; it only keeps the cascade built.
+#[must_use]
 pub fn placeholder_set() -> Option<ReviewerSet> {
     Some(ReviewerSet {
         quick: choice("bardo-quick", "quick")?,
@@ -29,6 +30,7 @@ pub fn placeholder_set() -> Option<ReviewerSet> {
 }
 
 /// The card of a chosen model: on this computer, free.
+#[must_use]
 pub fn card_of(choice: &ModelChoice) -> ModelCard {
     ModelCard {
         account: choice.account.clone(),

@@ -79,13 +79,11 @@ fn SheetCard(view: SheetView, shown: bool, stage: Signal<SheetStage<SheetView>>)
     };
     let holding = matches!(*state.read(), AnswerGate::Holding { .. });
     let landing = |button: Landing| {
-        if view.gesture == landing_of(button) {
-            Some(EventHandler::new(move |event: MountedEvent| {
+        (view.gesture == landing_of(button)).then(|| {
+            EventHandler::new(move |event: MountedEvent| {
                 focus_target.set(Some(event.data()));
-            }))
-        } else {
-            None
-        }
+            })
+        })
     };
     let facts: Vec<Fact> = view.facts.iter().map(fact).collect();
     let (title, byline) = (view.title.clone(), view.byline.clone());

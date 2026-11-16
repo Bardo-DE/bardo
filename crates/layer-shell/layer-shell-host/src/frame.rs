@@ -15,7 +15,7 @@
 //!   no commit.
 //! - A watchdog runs only while a frame is in flight *and* more work is wanted (dirty or
 //!   animating). It covers compositors that stop sending callbacks to a surface (some stop
-//!   them for an occluded surface; KWin keeps them flowing). It starts at
+//!   them for an occluded surface; `KWin` keeps them flowing). It starts at
 //!   [`WATCHDOG_MIN`], doubles on every expiry up to [`WATCHDOG_MAX`], and resets on a real
 //!   callback.
 //! - A present that could not happen (no texture, render error) is treated as a frame in flight

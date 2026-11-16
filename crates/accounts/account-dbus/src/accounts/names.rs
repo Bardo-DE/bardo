@@ -13,6 +13,7 @@ pub const SPACE_KEY_LOOK: &str = "look";
 pub const SPACE_KEY_CREATED: &str = "created";
 
 /// The object path of one account (`org.bardo.Accounts1.Account`).
+#[must_use]
 pub fn account_path(id: &AccountId) -> String {
     format!("{ACCOUNTS_PATH}/account/{}", object_segment(id.as_str()))
 }
@@ -26,6 +27,6 @@ mod tests {
         let id = AccountId::parse("67e55044-10b1.x").expect("id");
         let path = account_path(&id);
         assert_eq!(path, "/org/bardo/Accounts1/account/67e55044_10b1_x");
-        assert!(zbus::zvariant::ObjectPath::try_from(path.as_str()).is_ok());
+        zbus::zvariant::ObjectPath::try_from(path.as_str()).unwrap();
     }
 }

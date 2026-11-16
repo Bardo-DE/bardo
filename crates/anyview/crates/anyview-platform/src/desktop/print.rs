@@ -24,6 +24,7 @@ pub struct PortalPrinter {
 
 impl PortalPrinter {
     /// A printer on `env`'s session bus.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         PortalPrinter { env }
     }

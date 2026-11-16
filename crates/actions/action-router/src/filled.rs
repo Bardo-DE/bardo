@@ -126,7 +126,7 @@ impl<S: Seams> Router<S> {
         let bodies: Vec<&str> = entries
             .iter()
             .skip(surplus)
-            .filter_map(|e| e.body.as_ref().map(|b| b.as_str()))
+            .filter_map(|e| e.body.as_ref().map(memory_core::JsonText::as_str))
             .collect();
         let label = fold_labels(
             entries

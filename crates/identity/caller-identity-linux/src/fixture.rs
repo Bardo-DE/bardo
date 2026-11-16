@@ -68,11 +68,13 @@ pub struct FixtureProcess<'a> {
 
 impl FixtureProc {
     /// An empty tree.
+    #[must_use]
     pub fn new() -> FixtureProc {
         FixtureProc::default()
     }
 
     /// A directory with the given trust.
+    #[must_use]
     pub fn dir(mut self, abs: &str, trust: FileTrust) -> FixtureProc {
         self.nodes.insert(PathBuf::from(abs), Node::Dir { trust });
         self
@@ -93,6 +95,7 @@ impl FixtureProc {
     }
 
     /// A link at `abs` pointing at `target`.
+    #[must_use]
     pub fn link(mut self, abs: &str, target: &str) -> FixtureProc {
         self = self.ensure_dirs(abs);
         self.nodes.insert(
@@ -106,6 +109,7 @@ impl FixtureProc {
     }
 
     /// Adds the process `process`.
+    #[must_use]
     pub fn process(mut self, process: FixtureProcess<'_>) -> FixtureProc {
         let base = format!("{PROC}/{}", process.pid);
         self = self.file(

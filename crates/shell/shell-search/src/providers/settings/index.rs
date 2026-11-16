@@ -72,10 +72,12 @@ impl SettingsIndex {
         }
     }
 
+    #[must_use]
     pub fn len(&self) -> usize {
         self.keys.len()
     }
 
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.keys.is_empty()
     }
@@ -122,6 +124,7 @@ impl SettingsIndex {
     ///
     /// The rule of `ui_settings::schema::deep_link` over the flattened keys, with the query
     /// trimmed and an empty query resolving to nothing.
+    #[must_use]
     pub fn deep_link(&self, query: &str) -> Option<&IndexedKey> {
         let query = query.trim().to_lowercase();
         if query.is_empty() {
@@ -315,6 +318,6 @@ kind = "power"
 
     #[test]
     fn a_malformed_schema_file_does_not_parse() {
-        assert!(Schema::from_toml("not = [valid").is_err());
+        Schema::from_toml("not = [valid").unwrap_err();
     }
 }

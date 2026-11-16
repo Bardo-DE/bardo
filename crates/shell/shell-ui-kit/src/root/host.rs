@@ -14,6 +14,7 @@ pub fn prepaint() -> layer_shell_host::Prepaint {
 /// quire's bundled faces (Inter, Inter Display, Space Mono), for `HostConfig::fonts`. Without
 /// them every document under layer-shell-host falls back to the system face, since none of them is
 /// installed on the system.
+#[must_use]
 pub fn faces() -> layer_shell_host::FontFaces {
     layer_shell_host::FontFaces(FACES.iter().map(|face| face.bytes).collect())
 }
@@ -21,6 +22,7 @@ pub fn faces() -> layer_shell_host::FontFaces {
 /// The host configuration every bardo-shell process starts from: quire's faces, the pre-paint pass and
 /// the folders pictures may be read from ([`file_roots`], under `dirs`). The daemon adds its
 /// settings on top; the demos use it as it is.
+#[must_use]
 pub fn host_config(dirs: &Dirs) -> layer_shell_host::HostConfig {
     layer_shell_host::HostConfig {
         fonts: faces(),

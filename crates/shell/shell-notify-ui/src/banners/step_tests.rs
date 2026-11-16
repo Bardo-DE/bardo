@@ -102,7 +102,7 @@ fn a_swipe_leaves_from_any_live_phase() {
         ),
     ];
     for (name, before) in cases {
-        let inputs = [&before[..], &[(500, BannerIn::Swiped)]].concat();
+        let inputs = [(&*before), &[(500, BannerIn::Swiped)]].concat();
         let (b, out) = run(BannerLife::Expires, &inputs);
         assert_eq!(left(&b), Some(Leave::Swiped), "{name}");
         assert_eq!(out.last(), Some(&BannerOut::Leave(Leave::Swiped)), "{name}");

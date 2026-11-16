@@ -290,11 +290,17 @@ fn an_agent_row_parses_to_its_typed_fields() {
         AgentProgram::parse("claude-code").expect("program")
     );
     assert_eq!(
-        agent.key_env.as_ref().map(|n| n.as_str()),
+        agent
+            .key_env
+            .as_ref()
+            .map(account_capability::EnvName::as_str),
         Some("ANTHROPIC_API_KEY")
     );
     assert_eq!(
-        agent.base_url_env.as_ref().map(|n| n.as_str()),
+        agent
+            .base_url_env
+            .as_ref()
+            .map(account_capability::EnvName::as_str),
         Some("ANTHROPIC_BASE_URL")
     );
     assert_eq!(agent.protocols, [AgentProtocol::AnthropicMessages].into());
@@ -357,7 +363,7 @@ fn unknown_words_are_syntax_errors() {
 fn an_unknown_key_does_not_stop_a_load() {
     let text = file(r#"kind = "password""#, r#"kind = "fixed""#, &[STORAGE_ROW])
         .replace("mark =", "homepage = \"x\"\nmark =");
-    assert!(parse_provider(&text).is_ok());
+    parse_provider(&text).unwrap();
 }
 
 fn with_face(face: &str) -> String {

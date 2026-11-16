@@ -22,7 +22,7 @@ pub const HOVER_CARD_HOOK_CASES: &[Case] = &[
     Case {
         component: "menu",
         state: "inline",
-        make: || rsx! { div { Menu { placement: MenuPlacement::Popup, anchor: at(), items: sender_actions(), onpick: |_: u8| {}, onclose: |_| {}, flow: Flow::Inline } } },
+        make: || rsx! { div { Menu { placement: MenuPlacement::Popup, anchor: at(), items: sender_actions(), onpick: |_: u8| {}, onclose: |()| {}, flow: Flow::Inline } } },
         wait: NOW,
     },
     Case {

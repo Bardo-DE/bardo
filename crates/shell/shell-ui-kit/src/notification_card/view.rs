@@ -30,6 +30,7 @@ use crate::hooks::{use_service, use_services};
 use shell_services::AppsService;
 
 /// Now, as the cards' ages count it.
+#[must_use]
 pub fn wall_now() -> UnixMs {
     let ms = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
@@ -84,6 +85,7 @@ pub(super) fn card(
 
 /// Which app sent a notification, as quire names it: the icon (at `size`) and the name the card
 /// and the center's group header show.
+#[must_use]
 pub fn use_app_mark(app: &AppRef, size: IconSize) -> AppMark {
     let apps = use_service::<AppsService>()();
     let dirs = use_services().dirs;

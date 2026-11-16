@@ -107,6 +107,7 @@ fn dropped(reason: &str) -> InvalidKey {
 /// The typed overrides `settings` holds, and a line for every row that did not become one: a
 /// row whose `profile` is not a profile name or whose `app` is empty is dropped, and when two
 /// rows name one app the last wins. The keycap service never sees a string.
+#[must_use]
 pub fn overrides(settings: &KeyboardSettings) -> (UserOverrides, Vec<InvalidKey>) {
     let mut found = BTreeMap::new();
     let mut lines: Vec<InvalidKey> = settings

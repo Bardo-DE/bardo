@@ -199,6 +199,7 @@ fn profile_of(kind: FormatKind) -> KindProfile {
 
 /// The actions a file of `kind` offers, in menu order. The launcher shows those whose `reach`
 /// includes it, and the viewer those that include the viewer.
+#[must_use]
 pub fn actions_for(kind: FormatKind) -> &'static [FileAction] {
     profile_of(kind).actions
 }
@@ -212,6 +213,7 @@ pub fn mime_for(kind: FormatKind) -> Mime {
 }
 
 /// The sorts of edit a file of `kind` can be saved with in place.
+#[must_use]
 pub fn edits_for(kind: FormatKind) -> &'static [EditKind] {
     profile_of(kind).edits
 }

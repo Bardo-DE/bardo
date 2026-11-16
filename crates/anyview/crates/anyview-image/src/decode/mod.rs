@@ -21,11 +21,11 @@ mod svg_limits;
 
 pub use colour::{ColourInfo, ColourModel};
 pub(crate) use look::{Looked, look};
-#[cfg(feature = "encode")]
-pub(crate) use stills::guarded;
 pub use natural::natural_size;
 pub use plays::Plays;
 pub(crate) use plays::plays_of;
+#[cfg(feature = "encode")]
+pub(crate) use stills::guarded;
 #[cfg(feature = "encode")]
 pub(crate) use svg::Svg;
 

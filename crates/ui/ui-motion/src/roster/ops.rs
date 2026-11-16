@@ -101,6 +101,7 @@ impl<K: Clone + PartialEq> RosterState<K> {
     }
 
     /// The keys whose exit has settled by `at`: leaving, with a deadline that has come.
+    #[must_use]
     pub fn due_keys(&self, at: Stamp) -> Vec<K> {
         self.entries
             .iter()
@@ -136,6 +137,7 @@ impl<K: Clone + PartialEq> RosterState<K> {
     }
 
     /// Every entering and healing row has settled: mark them present.
+    #[must_use]
     pub fn rest(self) -> Self {
         let entries = self
             .entries
@@ -158,6 +160,7 @@ impl<K: Clone + PartialEq> RosterState<K> {
 
     /// The animations that must settle before [`Self::rest`]: `heal` when a row heals and
     /// `row-in` when one enters. Empty when nothing is entering or healing.
+    #[must_use]
     pub fn running(&self) -> Vec<Anim> {
         let heal = self.entries.iter().any(|entry| entry.heal.is_some());
         let enter = self

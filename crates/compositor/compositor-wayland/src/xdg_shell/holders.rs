@@ -10,19 +10,24 @@ use std::collections::BTreeMap;
 /// The client to cut: the one of `held` (windows per client) holding the most. When `asker` holds
 /// as many as the largest other client, it is `asker` (a tie is the asker's to lose), so an
 /// asker is never spared for holding no less than the rest.
+#[must_use]
 pub fn heaviest_holder(held: &BTreeMap<ClientKey, usize>, asker: ClientKey) -> ClientKey {
     let start = (asker, held.get(&asker).copied().unwrap_or(0));
     held.iter()
         .filter(|(client, _)| **client != asker)
-        .fold(start, |best, (client, count)| match *count > best.1 {
-            true => (*client, *count),
-            false => best,
+        .fold(start, |best, (client, count)| {
+            if *count > best.1 {
+                (*client, *count)
+            } else {
+                best
+            }
         })
         .0
 }
 
 impl XdgShellPart {
     /// How many toplevels each client holds, mapped or not.
+    #[must_use]
     pub fn toplevels_by_client(&self) -> BTreeMap<ClientKey, usize> {
         self.records
             .values()
@@ -34,6 +39,7 @@ impl XdgShellPart {
 
     /// The connection of `client`, found through one of its toplevels (this part keeps shell
     /// clients by key, but not the connection a cut needs).
+    #[must_use]
     pub fn connection_of(&self, client: ClientKey) -> Option<Client> {
         self.records
             .iter()

@@ -47,6 +47,7 @@ impl WorkPath {
     }
 
     /// The path, `/`-separated.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

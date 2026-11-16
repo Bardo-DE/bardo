@@ -22,21 +22,25 @@ pub struct Cancel(Arc<AtomicU64>);
 
 impl Cancel {
     /// A fresh counter at generation 0.
+    #[must_use]
     pub fn new() -> Cancel {
         Cancel::default()
     }
 
     /// Start a new generation and return it; every query of an earlier one is now stale.
+    #[must_use]
     pub fn begin(&self) -> Generation {
         Generation(self.0.fetch_add(1, Ordering::AcqRel) + 1)
     }
 
     /// The newest generation begun.
+    #[must_use]
     pub fn current(&self) -> Generation {
         Generation(self.0.load(Ordering::Acquire))
     }
 
     /// Whether `generation` has been overtaken by a newer one.
+    #[must_use]
     pub fn is_stale(&self, generation: Generation) -> bool {
         generation < self.current()
     }
@@ -85,6 +89,7 @@ impl Query {
     }
 
     /// Whether a newer keystroke has made this query pointless.
+    #[must_use]
     pub fn is_cancelled(&self) -> bool {
         self.cancel.is_stale(self.generation)
     }

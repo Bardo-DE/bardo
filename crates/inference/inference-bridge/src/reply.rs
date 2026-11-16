@@ -20,6 +20,7 @@ pub struct Gathered {
 
 /// The event a stoker event is, if the client sees it: deltas, finished tool calls and usage
 /// (usage is metering that rides on `Finished`, so the client sees it only there).
+#[must_use]
 pub fn event(event: &sp::TurnEvent) -> Option<pi::InferEvent> {
     match event {
         sp::TurnEvent::TextDelta(text) => Some(pi::InferEvent::TextDelta(text.clone())),
@@ -55,6 +56,7 @@ impl Gathered {
 
     /// What gathers the reply to `turn`: the same as `default()`, and it remembers the options
     /// of a `Choice` whose shares the turn asked for, so the reply can carry them.
+    #[must_use]
     pub fn for_turn(turn: &sp::TurnRequest) -> Self {
         Self {
             options: crate::scores::asked_options(turn),
@@ -64,12 +66,14 @@ impl Gathered {
 
     /// The reply the turn ended with. A turn that asked for option shares gets them when the
     /// engine's first-token probabilities allow, and `scores: None` otherwise, never an error.
+    #[must_use]
     pub fn chat_reply(self, end: &sp::TurnEnd, served: pi::ServedBy) -> pi::ChatReply {
         self.chat_reply_noted(end, served).0
     }
 
     /// As [`Gathered::chat_reply`], and why there are no scores when the turn asked for them
     /// (for the caller to note; the reply is the same reply either way).
+    #[must_use]
     pub fn chat_reply_noted(
         self,
         end: &sp::TurnEnd,
@@ -96,6 +100,7 @@ impl Gathered {
 
 /// What a turn used, in the units the wire has, with the charge the provider reported for it
 /// (none when it reported none).
+#[must_use]
 pub fn usage(usage: sp::TurnUsage) -> pi::TokenUsage {
     pi::TokenUsage {
         input: Tokens(usage.input.0),
@@ -109,6 +114,7 @@ pub fn usage(usage: sp::TurnUsage) -> pi::TokenUsage {
 /// (ARCHITECTURE section 2); a timeout has no variant of its own and is the same; a request the
 /// engine rejected is told as a refusal (the model could not be asked), which the app cannot
 /// fix by retrying.
+#[must_use]
 pub fn model_error(error: &sp::ProviderError) -> pi::ModelError {
     match error {
         sp::ProviderError::Unreachable

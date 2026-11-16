@@ -58,6 +58,7 @@ impl Mounter {
 }
 
 /// Whether `path` is a mount point now, as `/proc/self/mountinfo` says.
+#[must_use]
 pub fn is_mount_point(path: &Path) -> bool {
     drive_mount_daemon::mountinfo::at(&drive_mount_daemon::mountinfo::read(), path).is_some()
 }
@@ -78,9 +79,10 @@ impl Mounter {
             .stderr(Stdio::null())
             .status()
             .is_ok();
-        match runs {
-            true => Ok(()),
-            false => Err(MountError::NoHelper(self.helper.clone())),
+        if runs {
+            Ok(())
+        } else {
+            Err(MountError::NoHelper(self.helper.clone()))
         }
     }
 
@@ -101,9 +103,10 @@ impl Mounter {
     /// bardo-drive-mount refused; or, mounting directly, no device or helper, the folder could not
     /// be made, or the mount failed.
     pub fn mount(&self, fs: DriveFs, path: &Path) -> Result<Mounted, MountError> {
-        let access = match fs.writable() {
-            true => Access::ReadWrite,
-            false => Access::ReadOnly,
+        let access = if fs.writable() {
+            Access::ReadWrite
+        } else {
+            Access::ReadOnly
         };
         if let Some(socket) = &self.mountd {
             match helped(socket, path) {
@@ -122,9 +125,10 @@ impl Mounter {
         self.check()?;
         self.clean(path);
         if let Some(entry) = mountinfo::at(&mountinfo::read(), path) {
-            return Err(MountError::Refused(match entry.fstype == FSTYPE {
-                true => Code::AlreadyShown,
-                false => Code::FolderInUse,
+            return Err(MountError::Refused(if entry.fstype == FSTYPE {
+                Code::AlreadyShown
+            } else {
+                Code::FolderInUse
             }));
         }
         std::fs::create_dir_all(path).map_err(MountError::Folder)?;
@@ -261,6 +265,7 @@ pub struct Mounted {
 
 impl Mounted {
     /// Where it is mounted.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.path
     }

@@ -181,7 +181,7 @@ fn tiff_pages(white_is_zero: bool) -> Vec<u8> {
             image.y_resolution(Rational { n: 150, d: 1 });
             image
                 .encoder()
-                .write_tag(Tag::ImageDescription, &format!("page {n}")[..])
+                .write_tag(Tag::ImageDescription, (&*format!("page {n}")))
                 .unwrap();
             let data: Vec<u16> = (0..w * h * 3)
                 .map(|i| (i * 1021 + n as u32 * 7) as u16)
@@ -375,13 +375,13 @@ fn a_lossy_webp_is_written_without_asking_and_an_animated_one_asks() {
         fidelity(&lossy, &sniffed(&lossy, "a.webp")),
         Fidelity::Intact
     );
-    assert!(edited(&lossy, &sniffed(&lossy, "a.webp"), TURN).is_ok());
+    edited(&lossy, &sniffed(&lossy, "a.webp"), TURN).unwrap();
     let moving = bytes("anim.webp");
     assert_eq!(
         fidelity(&moving, &sniffed(&moving, "a.webp")),
         Fidelity::Loses(Loss::Animation)
     );
-    assert!(edited(&moving, &sniffed(&moving, "a.webp"), TURN).is_ok());
+    edited(&moving, &sniffed(&moving, "a.webp"), TURN).unwrap();
 }
 
 #[test]

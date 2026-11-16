@@ -4,12 +4,13 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Srgb(pub [u8; 3]);
 
-/// A colour in linear-light sRGB. Unclamped: a colour converted from OKLab may lie outside
+/// A colour in linear-light sRGB. Unclamped: a colour converted from `OKLab` may lie outside
 /// `0..=1`, and a gamut fit reads how far.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LinearRgb(pub [f64; 3]);
 
 /// The sRGB transfer, decoding one 8-bit channel to linear light.
+#[must_use]
 pub fn decode(channel: u8) -> f64 {
     let c = f64::from(channel) / 255.0;
     if c <= 0.040_45 {
@@ -20,6 +21,7 @@ pub fn decode(channel: u8) -> f64 {
 }
 
 /// The sRGB transfer, encoding one linear channel, clamped into `0..=1` first.
+#[must_use]
 pub fn encode(linear: f64) -> f64 {
     let c = linear.clamp(0.0, 1.0);
     if c <= 0.003_130_8 {

@@ -163,7 +163,7 @@ async fn arguments_from_the_terminal_are_untrusted_and_named_for_the_terminal() 
         ),
     )
     .await;
-    assert!(end.is_err());
+    end.unwrap_err();
     let sheet = &shown(&router)[0];
     let line = sheet.lines.first().expect("a line for the body");
     assert!(
@@ -182,12 +182,10 @@ async fn arguments_from_the_terminal_are_untrusted_and_named_for_the_terminal() 
 async fn allowing_once_runs_it_and_the_next_call_asks_again() {
     let mut router = router();
     answering(&mut router, vec![once(), once()]);
-    assert!(run(&router, archive()).await.is_ok());
-    assert!(
-        run(&router, from_cli("mail.thread.archive", &["t1"], vec![]))
-            .await
-            .is_ok()
-    );
+    run(&router, archive()).await.unwrap();
+    run(&router, from_cli("mail.thread.archive", &["t1"], vec![]))
+        .await
+        .unwrap();
     assert_eq!(shown(&router).len(), 2);
     assert!(router.terminal_grants().is_empty());
 }
@@ -222,26 +220,22 @@ async fn a_standing_grant_skips_the_ask_until_it_is_revoked() {
     assert!(run(&router, archive()).await.is_ok(), "the person said yes");
     assert_eq!(router.terminal_grants(), [action("mail.thread.archive")]);
     // The same action again, and on another thread: no sheet.
-    assert!(
-        run(&router, from_cli("mail.thread.archive", &["t1"], vec![]))
-            .await
-            .is_ok()
-    );
+    run(&router, from_cli("mail.thread.archive", &["t1"], vec![]))
+        .await
+        .unwrap();
     assert_eq!(shown(&router).len(), 1, "the grant skipped the ask");
     assert!(router.seams.reviewer.calls().is_empty());
     // Another action is not covered.
-    assert!(
-        run(
-            &router,
-            from_cli(
-                "mail.draft.create",
-                &[],
-                vec![("body", Value::Text("x".into()))]
-            )
-        )
-        .await
-        .is_ok()
-    );
+    run(
+        &router,
+        from_cli(
+            "mail.draft.create",
+            &[],
+            vec![("body", Value::Text("x".into()))],
+        ),
+    )
+    .await
+    .unwrap();
     assert_eq!(shown(&router).len(), 2, "another action still asks");
     // Revoked: asks again.
     assert!(router.revoke_terminal_grant(&action("mail.thread.archive")));
@@ -256,12 +250,10 @@ async fn a_standing_grant_skips_the_ask_until_it_is_revoked() {
 async fn a_standing_grant_ends_with_the_session() {
     let mut router = router();
     answering(&mut router, vec![from_terminal()]);
-    assert!(run(&router, archive()).await.is_ok());
-    assert!(
-        run(&router, from_cli("mail.thread.archive", &["t1"], vec![]))
-            .await
-            .is_ok()
-    );
+    run(&router, archive()).await.unwrap();
+    run(&router, from_cli("mail.thread.archive", &["t1"], vec![]))
+        .await
+        .unwrap();
     assert_eq!(shown(&router).len(), 1);
     router.end_terminal_sessions();
     assert!(
@@ -278,7 +270,7 @@ async fn a_standing_grant_never_covers_a_destructive_act_or_one_that_asks_every_
     let mut router = router();
     answering(&mut router, vec![from_terminal()]);
     let delete = || from_cli("mail.thread.delete", &["t2"], vec![]);
-    assert!(run(&router, delete()).await.is_ok());
+    run(&router, delete()).await.unwrap();
     assert_eq!(
         shown(&router)[0].offer,
         ConfirmOffer::OnceOnly,
@@ -412,11 +404,9 @@ async fn a_terminal_the_breaker_paused_goes_on_only_when_the_control_centre_resu
         run(&router, forget("f4")).await,
         Err(CallRefusal::Denied(DenyCode::NotAllowed))
     );
-    assert!(
-        run(&router, from_cli("mail.thread.read", &["t2"], vec![]))
-            .await
-            .is_ok()
-    );
+    run(&router, from_cli("mail.thread.read", &["t2"], vec![]))
+        .await
+        .unwrap();
 }
 
 #[tokio::test]
@@ -448,9 +438,7 @@ async fn resuming_one_space_leaves_a_terminal_paused_in_another() {
     )
     .await;
     assert_eq!(own, IntentsReply::Done);
-    assert!(
-        run(&router, from_cli("mail.thread.read", &["t2"], vec![]))
-            .await
-            .is_ok()
-    );
+    run(&router, from_cli("mail.thread.read", &["t2"], vec![]))
+        .await
+        .unwrap();
 }

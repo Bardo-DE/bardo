@@ -22,6 +22,7 @@ fn file() -> Result<ConfigFile, FilesError> {
 }
 
 /// Whether coding agents are switched on; off when there is no file, or it cannot be read.
+#[must_use]
 pub fn agents_switch(home: &ConfigHome) -> bool {
     let text = file()
         .ok()

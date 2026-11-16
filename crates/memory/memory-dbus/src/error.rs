@@ -108,6 +108,7 @@ pub enum Failure {
 
 impl MemoryError {
     /// What this error is, in terms a transport can act on.
+    #[must_use]
     pub fn failure(&self) -> Failure {
         if let Some(refusal) = self.refusal() {
             return Failure::Refused(refusal);

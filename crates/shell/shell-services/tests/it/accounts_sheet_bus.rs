@@ -193,8 +193,7 @@ async fn inputs_of(connection: &Connection) -> zbus::MessageStream {
         .msg_type(zbus::message::Type::Signal)
         .interface("org.bardo.AccountsSheet1")
         .and_then(|b| b.member("Input"))
-        .map(|b| b.build())
-        .unwrap_or_else(|e| panic!("{e}"));
+        .map_or_else(|e| panic!("{e}"), zbus::match_rule::Builder::build);
     zbus::MessageStream::for_match_rule(rule, connection, None)
         .await
         .unwrap_or_else(|e| panic!("{e}"))

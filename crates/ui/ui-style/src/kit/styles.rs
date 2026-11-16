@@ -15,6 +15,7 @@ pub struct LookStyle(pub String);
 
 impl LookStyle {
     /// Whether there is no text worth drawing.
+    #[must_use]
     pub fn is_blank(&self) -> bool {
         self.0.trim().is_empty()
     }
@@ -36,6 +37,7 @@ impl Slot {
     pub const ALL: [Slot; 3] = [Slot::Look, Slot::Desktop, Slot::App];
 
     /// The value of the `data-ds-style` attribute of the sheet's `<style>` element.
+    #[must_use]
     pub const fn attribute(self) -> &'static str {
         match self {
             Slot::Look => "look",
@@ -82,6 +84,7 @@ pub struct Fingerprint(pub u64);
 
 impl Fingerprint {
     /// Sixteen lower-case hex digits.
+    #[must_use]
     pub fn hex(self) -> String {
         format!("{:016x}", self.0)
     }
@@ -119,6 +122,7 @@ impl Styles {
     }
 
     /// Whether all three are blank.
+    #[must_use]
     pub fn is_blank(&self) -> bool {
         Slot::ALL
             .iter()
@@ -127,6 +131,7 @@ impl Styles {
 
     /// The sheets to draw, lowest first: none when `custom_styles` (`appearance.custom_styles`)
     /// is off, and none that is blank. Each has gone through the reach rule.
+    #[must_use]
     pub fn drawn(&self, custom_styles: bool) -> Vec<Drawn> {
         if !custom_styles {
             return Vec::new();
@@ -146,6 +151,7 @@ impl Styles {
     }
 
     /// What the reach rule cut from the three sheets, in cascade order.
+    #[must_use]
     pub fn dropped(&self) -> Vec<Dropped> {
         Slot::ALL
             .into_iter()
@@ -157,6 +163,7 @@ impl Styles {
     }
 
     /// FNV-1a over the three texts, each followed by a byte no text holds.
+    #[must_use]
     pub fn fingerprint(&self) -> Fingerprint {
         let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
         for slot in Slot::ALL {

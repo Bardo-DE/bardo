@@ -5,14 +5,14 @@ use serde::{Deserialize, Serialize};
 use crate::attempt::Attempts;
 use crate::units::{Percent, Presence};
 
-/// The first BlueZ adapter and its devices, as the control center draws them.
+/// The first `BlueZ` adapter and its devices, as the control center draws them.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Bluetooth {
-    /// Whether BlueZ answered with an adapter at all.
+    /// Whether `BlueZ` answered with an adapter at all.
     pub presence: Presence,
     /// `Adapter1.Powered`.
     pub power: BtPower,
-    /// Every device BlueZ knows under the adapter, in the order BlueZ reported them.
+    /// Every device `BlueZ` knows under the adapter, in the order `BlueZ` reported them.
     pub devices: Vec<BtDevice>,
     /// The connect attempts: one stamp per device entering `Connecting`, a new one per connect
     /// that falls back to `Disconnected` (the bar's Bluetooth glyph, quire design/26 R4, R6).
@@ -38,7 +38,7 @@ pub struct BtAddress(pub String);
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BtDevice {
     pub address: BtAddress,
-    /// `Alias`: the user's name for it, which BlueZ falls back to the device's own `Name` and
+    /// `Alias`: the user's name for it, which `BlueZ` falls back to the device's own `Name` and
     /// then its address for.
     pub name: String,
     /// From `Device1.Icon` ([`super::device_kind`]).
@@ -97,6 +97,7 @@ pub enum BtBattery {
 /// The devices the control center lists, in order: connected first, then the other paired
 /// devices, then the rest; by name within each group. Unpaired devices are listed only while
 /// the radio is on.
+#[must_use]
 pub fn listed_devices(bluetooth: &Bluetooth) -> Vec<&BtDevice> {
     let mut devices: Vec<&BtDevice> = bluetooth
         .devices

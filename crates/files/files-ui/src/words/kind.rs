@@ -7,6 +7,7 @@ use files_core::{Entry, EntryKind, LinkTo, Special};
 
 /// The Kind column's words for `entry`: `Folder`, `Alias`, `PDF file`, or `Document` for a file
 /// with no extension.
+#[must_use]
 pub fn kind_words(entry: &Entry) -> String {
     match &entry.kind {
         EntryKind::Folder => "Folder".to_owned(),

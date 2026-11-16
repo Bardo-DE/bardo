@@ -287,7 +287,7 @@ fn modes_pick_exchanges() {
 
     let strict = replay(both(), ReplayMode::Strict, ChunkPlan::Whole);
     assert_eq!(run(&strict, &b).0, Err(HttpError::ReplayMiss));
-    let [WireMiss::Mismatch { index, want, got }] = &strict.misses()[..] else {
+    let [WireMiss::Mismatch { index, want, got }] = &*strict.misses() else {
         panic!("one mismatch");
     };
     assert_eq!(*index, InteractionId(0));
@@ -304,7 +304,7 @@ fn the_model_path_in_a_request_matches_its_scrubbed_recording() {
         Some(r#"{"model":"holo","stream":true}"#),
         Framing::Sse,
     );
-    assert!(block_on(t.exchange(&scrubbed_from, &mut seen)).is_ok());
+    block_on(t.exchange(&scrubbed_from, &mut seen)).unwrap();
 }
 
 /// Answers each call with the next canned reply, in the given chunks.

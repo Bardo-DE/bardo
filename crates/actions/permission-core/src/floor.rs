@@ -86,6 +86,7 @@ pub struct Floor {
 
 impl Floor {
     /// No floor.
+    #[must_use]
     pub fn none() -> Self {
         Self::default()
     }
@@ -120,6 +121,7 @@ impl Floor {
     }
 
     /// `wanted`, or the loosest the floor allows when that is stricter.
+    #[must_use]
     pub fn clamp(&self, wanted: Strictness) -> Strictness {
         match self.loosest {
             Some(loosest) => wanted.min(loosest),
@@ -129,16 +131,19 @@ impl Floor {
 
     /// `wanted`, or `Manual` when the floor's loosest strictness is `ask_more`: a floor that asks
     /// for more asking holds every conversation in the mode that asks before every change.
+    #[must_use]
     pub fn clamp_mode(&self, wanted: Mode) -> Mode {
         Mode::from(self.clamp(wanted.strictness()))
     }
 
     /// Whether the floor holds every conversation in Manual, so none can be switched.
+    #[must_use]
     pub fn holds_manual(&self) -> bool {
         self.clamp_mode(Mode::Auto) == Mode::Manual
     }
 
     /// `rows` with every row the floor locks set to "asks".
+    #[must_use]
     pub fn clamp_rows(&self, rows: ModeRows) -> ModeRows {
         self.rows.iter().fold(rows, |mut rows, locked| {
             match locked {
@@ -153,11 +158,13 @@ impl Floor {
     }
 
     /// The rows the floor holds at "asks", for Settings to show as locked.
+    #[must_use]
     pub fn locked_rows(&self) -> &[LockedRow] {
         &self.rows
     }
 
     /// The locked entries.
+    #[must_use]
     pub fn locked(&self) -> &[Limit] {
         &self.locked
     }

@@ -11,6 +11,7 @@ pub const EMPTY: &str = "No Notifications";
 
 /// The footer, when bardo-shell is not receiving notifications: another daemon holds the name, or
 /// the service has not been configured yet (passive).
+#[must_use]
 pub fn server_line(server: &ServerStatus) -> Option<String> {
     match (&server.holder, server.mode) {
         (NameHolder::Other(owner), _) => Some(format!(

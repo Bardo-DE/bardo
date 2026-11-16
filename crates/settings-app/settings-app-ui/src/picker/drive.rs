@@ -24,7 +24,7 @@ pub(crate) fn use_picker() -> Picker {
     // finds them by context.
     let board = use_board();
     use_context_provider(|| board);
-    let picker = use_live(|client| client.picker());
+    let picker = use_live(settings_app_client::Client::picker);
     let state = picker.state;
     let ask = EventHandler::new(move |input: PickerInput| {
         spawn(picker.pane.send(input));

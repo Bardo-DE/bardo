@@ -21,6 +21,7 @@ pub enum Leasable {
 
 impl Model {
     /// Whether `window` may be leased: it is there and it is not the shell's.
+    #[must_use]
     pub fn leasable(&self, window: WindowId) -> Leasable {
         match self.windows.get(&window) {
             None => Leasable::NoSuchWindow,

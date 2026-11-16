@@ -76,6 +76,7 @@ fn without_case(needle: &Needle) -> Needle {
 }
 
 /// `folder` as a row shows it: under `home` as `~/…`, else as it is.
+#[must_use]
 pub fn tilde(folder: &Path, home: &Path) -> String {
     match folder.strip_prefix(home) {
         Ok(rest) if rest.as_os_str().is_empty() => "~".to_owned(),

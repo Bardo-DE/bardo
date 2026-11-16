@@ -20,6 +20,7 @@ pub struct ShapedSession {
 }
 
 impl ShapedSession {
+    #[must_use]
     pub fn new(shape: Shape, mode: ExtractMode, budget: RepairBudget) -> Self {
         Self {
             shape,
@@ -37,19 +38,23 @@ impl ShapedSession {
         Shape::from_json_schema(schema, limits).map(|shape| Self::new(shape, mode, budget))
     }
 
+    #[must_use]
     pub fn shape(&self) -> &Shape {
         &self.shape
     }
 
+    #[must_use]
     pub fn mode(&self) -> &ExtractMode {
         &self.machine.mode
     }
 
+    #[must_use]
     pub fn left(&self) -> RepairsLeft {
         self.machine.left
     }
 
     /// As [`ExtractSession::request`](crate::ExtractSession::request).
+    #[must_use]
     pub fn request(&self, base: &TurnRequest) -> TurnRequest {
         self.machine.request(base, &self.shape)
     }

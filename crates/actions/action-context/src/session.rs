@@ -64,6 +64,7 @@ pub enum SessionEffect {
 }
 
 /// One transition. Total and pure.
+#[must_use]
 pub fn session_step(
     state: SessionState,
     event: SessionEvent,
@@ -91,6 +92,7 @@ pub fn session_step(
 }
 
 /// How recently a session was opened: ids are minted in order.
+#[must_use]
 pub fn age(id: &SessionId) -> u64 {
     id.as_str()
         .rsplit('-')

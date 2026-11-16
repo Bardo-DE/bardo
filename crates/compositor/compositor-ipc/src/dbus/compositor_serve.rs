@@ -42,6 +42,7 @@ impl CallerSetup {
     /// The real identifier: the system's `/proc` and the unit manager on the bus, judging against
     /// `table` (the shipped caller table). The unit manager's own answers are believed only when
     /// its image is the one the table names for the `manager` role.
+    #[must_use]
     pub fn desktop(table: Table) -> CallerSetup {
         CallerSetup::with(move |connection| {
             let manager = ManagerCheck::Verified(Requirement::new(roles::MANAGER, Proof::Exe));
@@ -65,6 +66,7 @@ impl CallerSetup {
 
     /// The same, also serving the Privacy list for Settings (`org.bardo.SettingsModule1` at
     /// `PRIVACY_PATH`) over `link`, whose callers are told apart by the same check.
+    #[must_use]
     pub fn with_privacy(self, link: PrivacyLink) -> CallerSetup {
         CallerSetup {
             privacy: Some(link),
@@ -74,6 +76,7 @@ impl CallerSetup {
 
     /// The same, counting calls per `window` instead of per second (a test makes it long so
     /// the count is exact).
+    #[must_use]
     pub fn window(self, window: Duration) -> CallerSetup {
         CallerSetup { window, ..self }
     }
@@ -81,6 +84,7 @@ impl CallerSetup {
     /// The same, taking peers that match `table` to run in the units it names (test builds only:
     /// a jailed desktop has no unit manager to say so).
     #[cfg(feature = "debug-inject")]
+    #[must_use]
     pub fn with_test_units(self, table: super::debug_units::PeerUnitTable) -> CallerSetup {
         use super::debug_units::DebugPeerUnits;
         let build = self.build;

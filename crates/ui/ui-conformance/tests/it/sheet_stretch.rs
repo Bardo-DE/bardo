@@ -25,7 +25,7 @@ fn Page() -> Element {
     let height = CONTENT.with(Cell::get);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
-            Sheet { label: "Sheet", onclose: |_| {},
+            Sheet { label: "Sheet", onclose: |()| {},
                 div { class: "content", style: "flex:none;height:{height}px", "content" }
             }
         }

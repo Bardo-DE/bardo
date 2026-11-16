@@ -20,6 +20,7 @@ pub enum Floor {
 
 impl Floor {
     /// Whether a model at `locality` may receive data with this floor.
+    #[must_use]
     pub fn admits(self, locality: &Locality) -> bool {
         match locality {
             Locality::OnDevice => true,
@@ -52,6 +53,7 @@ impl Policy {
     /// The design's proposed defaults: local-only on; personal classes on this computer (voice
     /// and the person's prompts included, settings `ai.floor.voice` and `ai.floor.prompt`);
     /// `Public` and `AppOwn` anywhere.
+    #[must_use]
     pub fn proposed() -> Self {
         let on_device = [
             DataClass::Mail,
@@ -78,6 +80,7 @@ impl Policy {
     }
 
     /// The floor for `class`.
+    #[must_use]
     pub fn floor(&self, class: DataClass) -> Floor {
         self.floors
             .iter()

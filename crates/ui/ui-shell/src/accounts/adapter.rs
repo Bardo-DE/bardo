@@ -117,7 +117,7 @@ pub(crate) fn Entry(
             focus,
             onkey,
             oninput: move |next: String| {
-                oninput.call(if hidden { FieldText::Secret(Hidden::new(next)) } else { FieldText::Plain(next) })
+                oninput.call(if hidden { FieldText::Secret(Hidden::new(next)) } else { FieldText::Plain(next) });
             },
         }
     }

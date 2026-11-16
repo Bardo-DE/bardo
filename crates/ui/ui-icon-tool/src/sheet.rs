@@ -59,6 +59,7 @@ fn paste(canvas: &mut Rgba32FImage, img: &Rgba32FImage, (x, y): (u32, u32)) {
 
 /// Lays the sheet out: title, then one row per subject with its name on the left and its
 /// cells to the right, each captioned underneath.
+#[must_use]
 pub fn build_sheet(sheet: &Sheet, style: &SheetStyle) -> Rgba32FImage {
     let text_h = DOT_ROWS * style.text_scale;
     let label_w = sheet

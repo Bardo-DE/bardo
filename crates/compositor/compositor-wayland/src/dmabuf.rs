@@ -37,6 +37,7 @@ pub struct DmabufPart {
 
 impl DmabufPart {
     /// The part without a global.
+    #[must_use]
     pub fn new(role_filter: GlobalFilter) -> DmabufPart {
         DmabufPart {
             state: DmabufState::new(),
@@ -47,6 +48,7 @@ impl DmabufPart {
     }
 
     /// The offered main device.
+    #[must_use]
     pub fn main_device(&self) -> Option<MainDevice> {
         self.offered.as_ref().map(|offer| offer.main_device)
     }
@@ -70,6 +72,7 @@ impl DmabufPart {
 
     /// The device a buffer of `format` is tagged with (A5): the target of the tranche that
     /// offers it, or the main device for a format no tranche names.
+    #[must_use]
     pub fn source_device(&self, format: Format) -> Option<MainDevice> {
         let offer = self.offered.as_ref()?;
         let tranche = offer
@@ -86,6 +89,7 @@ pub struct MainDevice(pub u64);
 
 impl MainDevice {
     /// The device with this major and minor, as glibc's `makedev` encodes them.
+    #[must_use]
     pub const fn of(major: u32, minor: u32) -> MainDevice {
         let (major, minor) = (major as u64, minor as u64);
         MainDevice(
@@ -139,6 +143,7 @@ impl DmabufOffer {
     /// let offer = DmabufOffer::from_feedback(&feedback_for(&plan, &FormatTable::default()));
     /// assert_eq!(offer.main_device, MainDevice::of(226, 128));
     /// ```
+    #[must_use]
     pub fn from_feedback(feedback: &FeedbackPlan) -> DmabufOffer {
         let main_device = MainDevice::of(feedback.main_device.major, feedback.main_device.minor);
         let tranches: Vec<OfferTranche> = feedback
@@ -186,6 +191,7 @@ impl DmabufOffer {
 
     /// `--dmabuf soft`: the fake main device over `/dev/udmabuf`, linear ARGB8888 and XRGB8888
     /// (the topology's `FormatSet::LinearOnly`).
+    #[must_use]
     pub fn soft() -> DmabufOffer {
         DmabufOffer {
             main_device: SOFT_MAIN_DEVICE,

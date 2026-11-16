@@ -191,21 +191,21 @@ mod tests {
                 "action {text:?}"
             );
         }
-        assert!(EntityKey::parse("a/b c").is_ok());
-        assert!(EntityKey::parse("").is_err());
-        assert!(EntityKey::parse(&"k".repeat(513)).is_err());
-        assert!(EntityKey::parse("a\nb").is_err());
-        assert!(RunId::parse("r-17").is_ok());
-        assert!(RunId::parse("R 17").is_err());
-        assert!(ClientName::parse("Claude Desktop").is_ok());
-        assert!(ClientName::parse("").is_err());
+        EntityKey::parse("a/b c").unwrap();
+        EntityKey::parse("").unwrap_err();
+        EntityKey::parse(&"k".repeat(513)).unwrap_err();
+        EntityKey::parse("a\nb").unwrap_err();
+        RunId::parse("r-17").unwrap();
+        RunId::parse("R 17").unwrap_err();
+        ClientName::parse("Claude Desktop").unwrap();
+        ClientName::parse("").unwrap_err();
         assert!(TaskId::parse("t-3").is_ok() && TaskId::parse("T 3").is_err());
         assert!(MessageId::parse("m-1").is_ok() && MessageId::parse("").is_err());
         assert!(ThreadId::parse("m-1").is_ok() && ThreadId::parse("a b").is_err());
-        assert!(OutcomeRef::parse("out:41/a").is_ok());
-        assert!(OutcomeRef::parse("").is_err());
-        assert!(OutcomeRef::parse(&"o".repeat(129)).is_err());
-        assert!(UndoHandle::parse("u\n1").is_err());
+        OutcomeRef::parse("out:41/a").unwrap();
+        OutcomeRef::parse("").unwrap_err();
+        OutcomeRef::parse(&"o".repeat(129)).unwrap_err();
+        UndoHandle::parse("u\n1").unwrap_err();
         assert!(HelperId::parse("01J9ZK").is_ok() && HelperId::parse("").is_err());
     }
 }

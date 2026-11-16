@@ -54,6 +54,7 @@ pub struct Warmed {
 
 impl Warmed {
     /// The line a run prints for it.
+    #[must_use]
     pub fn line(&self) -> String {
         format!(
             "agent-live: warm {:?} {} ready in {:.1}s",

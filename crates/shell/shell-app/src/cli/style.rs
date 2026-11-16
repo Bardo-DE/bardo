@@ -43,6 +43,7 @@ pub struct StyleCheck {
 }
 
 /// The notes on `css` against the shell's own kits.
+#[must_use]
 pub fn check(css: &str) -> StyleCheck {
     StyleCheck {
         notes: user_stylesheet(css, &shell_kit::kits()),
@@ -51,11 +52,13 @@ pub fn check(css: &str) -> StyleCheck {
 
 impl StyleCheck {
     /// How many notes are text that is not well-formed CSS.
+    #[must_use]
     pub fn parse_errors(&self) -> usize {
         self.notes.iter().filter(|n| n.is_parse_error()).count()
     }
 
     /// The report: `name:line:column: ...` per note, then a summary line.
+    #[must_use]
     pub fn lines(&self, name: &str) -> Vec<String> {
         let errors = self.parse_errors();
         let summary = match (self.notes.len(), errors) {
@@ -71,6 +74,7 @@ impl StyleCheck {
     }
 
     /// Non-zero only when some text is not well-formed CSS.
+    #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self.parse_errors() {
             0 => ExitCode::SUCCESS,
@@ -80,17 +84,19 @@ impl StyleCheck {
 }
 
 /// Run `action`: read the file and print its report.
+#[must_use]
 pub fn main(action: &StyleAction) -> ExitCode {
     let StyleAction::Check { file } = action;
     let source = match file {
         Some(path) => Source::Given(path.clone()),
-        None => match Store::new(ConfigRoot::Xdg, APP).path::<UserStyle>() {
-            Some(path) => Source::Own(path),
-            None => {
+        None => {
+            if let Some(path) = Store::new(ConfigRoot::Xdg, APP).path::<UserStyle>() {
+                Source::Own(path)
+            } else {
                 eprintln!("bardo-shell: no config directory to find style.css in");
                 return ExitCode::from(2);
             }
-        },
+        }
     };
     let (Source::Given(path) | Source::Own(path)) = &source;
     let name = path.display().to_string();

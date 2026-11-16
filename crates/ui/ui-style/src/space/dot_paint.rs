@@ -33,6 +33,7 @@ impl DotPaint {
     /// The gradient over `stops`, one colour per Space dot. A Space holds at most three dots
     /// (the editor's limit); a longer list, which only a hand-edited file could hold, keeps its
     /// first, middle and last stop.
+    #[must_use]
     pub fn gradient(stops: &[String]) -> Self {
         let stop = |at: usize| stops.get(at).cloned().unwrap_or_default();
         DotPaint(match stops.len() {
@@ -43,11 +44,13 @@ impl DotPaint {
     }
 
     /// One flat colour.
+    #[must_use]
     pub fn solid(colour: &str) -> Self {
         DotPaint(Stops::One(colour.to_owned()))
     }
 
     /// `data-stops`: `1`, `2` or `3`.
+    #[must_use]
     pub fn count(&self) -> &'static str {
         match self.0 {
             Stops::One(_) => "1",
@@ -57,6 +60,7 @@ impl DotPaint {
     }
 
     /// The custom properties, `--dot-c1:#…;…`, one per stop.
+    #[must_use]
     pub fn style_attr(&self) -> String {
         let colours: Vec<&str> = match &self.0 {
             Stops::One(one) => vec![one],

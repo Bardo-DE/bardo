@@ -45,12 +45,14 @@ pub struct ConfigLayer {
 impl ConfigLayer {
     /// What this layer, taken as the system file, lets the seat owner's settings do about
     /// rules that type several keys or none. Unset means `false`.
+    #[must_use]
     pub fn sequences(&self) -> bool {
         self.sequences.unwrap_or_default()
     }
 
     /// Like [`ConfigLayer::sequences`] for this layer taken as the machine file laid over the
     /// vendor file `vendor`: this layer's choice if it has one, else the vendor's.
+    #[must_use]
     pub fn sequences_over(&self, vendor: &ConfigLayer) -> bool {
         self.sequences.or(vendor.sequences).unwrap_or_default()
     }

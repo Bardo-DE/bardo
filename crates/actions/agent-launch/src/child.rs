@@ -14,7 +14,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
-    m.lock().unwrap_or_else(|e| e.into_inner())
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// The live processes that hold a credential, by credential: what a revocation looks up.
@@ -49,17 +49,20 @@ impl<P: Proc> Registry<P> {
     }
 
     /// Ends the process that holds `id`. True if there was one.
+    #[must_use]
     pub fn kill(&self, id: &ProcessCredentialId) -> bool {
         let proc = locked(&self.map).get(id).cloned();
         proc.map(|p| locked(&p).kill()).is_some()
     }
 
     /// How many processes hold a credential.
+    #[must_use]
     pub fn len(&self) -> usize {
         locked(&self.map).len()
     }
 
     /// Whether none do.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
@@ -107,6 +110,7 @@ pub struct Child<A: Accounts + 'static, P: Proc + 'static> {
 impl<A: Accounts + 'static, P: Proc + 'static> Child<A, P> {
     /// How far this agent is held, as a person reads it: what the kernel limits (known once the
     /// exec stage has reported, so ask after the session opens) and which network it has.
+    #[must_use]
     pub fn confinement(&self) -> Confinement {
         Confinement::new(locked(&self.proc).landlock(), self.net, self.sites.clone())
     }

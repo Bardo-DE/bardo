@@ -79,6 +79,7 @@ pub struct Caller {
 
 impl Caller {
     /// The launcher (sill), acting as the person.
+    #[must_use]
     pub fn launcher() -> Self {
         Self {
             role: CallerRole::Launcher,
@@ -87,6 +88,7 @@ impl Caller {
     }
 
     /// A terminal (`bardo-do ask`): the person at a keyboard, or whatever is typing in it.
+    #[must_use]
     pub fn terminal() -> Self {
         Self {
             role: CallerRole::Cli,
@@ -95,6 +97,7 @@ impl Caller {
     }
 
     /// A prompt field inside `app`.
+    #[must_use]
     pub fn field(app: AppName) -> Self {
         Self {
             role: CallerRole::Field,
@@ -103,6 +106,7 @@ impl Caller {
     }
 
     /// A code editor, as `app`.
+    #[must_use]
     pub fn editor(app: AppName) -> Self {
         Self {
             role: CallerRole::Editor,
@@ -111,6 +115,7 @@ impl Caller {
     }
 
     /// The host of an external coding agent, as `app`.
+    #[must_use]
     pub fn agent(app: AppName) -> Self {
         Self {
             role: CallerRole::AcpAgent,
@@ -121,6 +126,7 @@ impl Caller {
     /// The caller a turn is recorded from when a connection in `role`, as `app`, records it.
     /// The roles that may record a turn are the field, editor, agent host and terminal; any
     /// other is the launcher (the router refuses the rest before it records anything).
+    #[must_use]
     pub fn of(role: CallerRole, app: &AppName) -> Self {
         match role {
             CallerRole::Field => Self::field(app.clone()),
@@ -132,11 +138,13 @@ impl Caller {
     }
 
     /// The role.
+    #[must_use]
     pub fn role(&self) -> CallerRole {
         self.role
     }
 
     /// The app behind the caller: set for a field, an editor and an agent host.
+    #[must_use]
     pub fn app(&self) -> Option<&AppName> {
         self.app.as_ref()
     }

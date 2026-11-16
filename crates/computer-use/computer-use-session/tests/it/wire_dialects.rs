@@ -24,7 +24,7 @@ fn the_history_is_real_messages_and_the_results_lead_the_next_turn() {
     let m = map(ModelSpace::Image);
     let s = session(ANTHROPIC, ModelSpace::Image, 1, 1);
     let first = s.request(&obs(0), &m, frame("f0"));
-    assert!(matches!(&first.tools[..], [ToolSpec::Native(_)]));
+    assert!(matches!(&*first.tools, [ToolSpec::Native(_)]));
     assert_eq!(first.messages.len(), 1);
     assert_eq!(first.messages[0].role, Role::User);
     assert_eq!(
@@ -38,14 +38,14 @@ fn the_history_is_real_messages_and_the_results_lead_the_next_turn() {
     let StepOutcome::Actions { actions, .. } = outcome else {
         panic!("actions")
     };
-    assert!(matches!(&actions[..], [CuaAction::Click { .. }]));
+    assert!(matches!(&*actions, [CuaAction::Click { .. }]));
 
     let mut o = obs(1);
     o.prev = vec![StepResult::Done(ToolCallId("toolu_1".into()))];
     let second = s.request(&o, &m, frame("f1"));
     let roles: Vec<Role> = second.messages.iter().map(|m| m.role).collect();
     assert_eq!(roles, [Role::User, Role::Assistant, Role::User]);
-    assert!(matches!(&second.messages[1].parts[..], [Part::ToolCall(c)] if c.id.0 == "toolu_1"));
+    assert!(matches!(&*second.messages[1].parts, [Part::ToolCall(c)] if c.id.0 == "toolu_1"));
     // The results come first, and carry the new frame; the goal is not said again.
     let user = &second.messages[2].parts;
     assert!(matches!(&user[0], Part::ToolResult(r) if r.id.0 == "toolu_1"));
@@ -87,7 +87,7 @@ fn a_reply_of_text_alone_finishes_the_run() {
         CuaAction::Finish {
             outcome, summary, ..
         },
-    ] = &actions[..]
+    ] = &*actions
     else {
         panic!("a finish")
     };
@@ -118,5 +118,5 @@ fn gemini_needs_a_grid_map_and_decodes_into_it() {
         panic!("actions")
     };
     assert!(dropped.is_empty());
-    assert!(matches!(&actions[..], [CuaAction::Click { .. }]));
+    assert!(matches!(&*actions, [CuaAction::Click { .. }]));
 }

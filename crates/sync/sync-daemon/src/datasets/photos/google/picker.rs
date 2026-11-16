@@ -27,6 +27,7 @@ pub struct SessionId(String);
 
 impl SessionId {
     /// The id, if it is one.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         let ok = !text.is_empty()
             && text.len() <= 128
@@ -37,6 +38,7 @@ impl SessionId {
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -173,9 +175,10 @@ fn safe_name(name: &str) -> String {
     let last = name.rsplit(['/', '\\']).next().unwrap_or(name);
     let last = last.trim_start_matches('.');
     let cleaned: String = last.chars().filter(|c| !c.is_control()).collect();
-    match cleaned.is_empty() || cleaned.len() > 200 {
-        true => "item".to_owned(),
-        false => cleaned,
+    if cleaned.is_empty() || cleaned.len() > 200 {
+        "item".to_owned()
+    } else {
+        cleaned
     }
 }
 
@@ -276,9 +279,10 @@ impl<H: Http> PhotosPicker<H> {
         let response = self.send(request, Vec::new()).await?;
         let wire: SessionWire =
             serde_json::from_slice(response.body()).map_err(|_| PickerError::Unreadable)?;
-        Ok(match wire.set {
-            true => PickerState::Picked,
-            false => PickerState::Waiting,
+        Ok(if wire.set {
+            PickerState::Picked
+        } else {
+            PickerState::Waiting
         })
     }
 

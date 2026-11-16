@@ -79,6 +79,7 @@ fn along(lock: AxisLock, dx: f64, dy: f64) -> f64 {
 
 impl Pad {
     /// Feed one classified event.
+    #[must_use]
     pub fn feed(self, input: PointerScroll) -> (Pad, Option<PadEvent>) {
         match (self, input) {
             (Pad::Idle, PointerScroll::Pan { dx, dy, kinetic }) => Pad::Moving {
@@ -145,6 +146,7 @@ impl Pad {
 
 /// A finger-direction delta as an offset delta: with `Natural` the content follows the finger,
 /// so a finger moving toward the maximum's side moves the offset the other way.
+#[must_use]
 pub fn natural(finger: f64, setting: NaturalScroll) -> f64 {
     match setting {
         NaturalScroll::Natural => -finger,

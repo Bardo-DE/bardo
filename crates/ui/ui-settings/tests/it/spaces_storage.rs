@@ -114,7 +114,7 @@ fn nowhere_to_write_keeps_the_spaces_for_the_session() {
     let disk = SpacesStorage::at(None, None);
     let (spaces, origin) = disk.boot_spaces(|_| {}, first, untouched);
     assert_eq!((spaces.count(), origin), (2, Origin::FirstRun));
-    assert!(disk.save_spaces(&spaces).is_err());
+    disk.save_spaces(&spaces).unwrap_err();
 }
 
 #[test]

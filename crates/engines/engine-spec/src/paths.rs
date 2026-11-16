@@ -22,6 +22,7 @@ pub struct EnginePaths {
 
 impl EnginePaths {
     /// Paths with a weights cache and no programs yet.
+    #[must_use]
     pub fn new(hf_cache: PathBuf) -> Self {
         Self {
             programs: BTreeMap::new(),
@@ -37,6 +38,7 @@ impl EnginePaths {
     }
 
     /// The program that runs an engine of this kind, when settings list one.
+    #[must_use]
     pub fn program(&self, kind: EngineKind) -> Option<&ProgramPath> {
         self.programs.get(&kind)
     }

@@ -116,7 +116,7 @@ impl GlobalDispatch<WlCompositor, ()> for State {
         _: &DisplayHandle,
         _: &Client,
         resource: New<WlCompositor>,
-        _: &(),
+        (): &(),
         init: &mut DataInit<'_, Self>,
     ) {
         init.init(resource, ());
@@ -129,7 +129,7 @@ impl Dispatch<WlCompositor, ()> for State {
         _: &Client,
         _: &WlCompositor,
         request: wl_compositor::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -145,7 +145,7 @@ impl Dispatch<WlSurface, ()> for State {
         _: &Client,
         _: &WlSurface,
         _: wl_surface::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         _: &mut DataInit<'_, Self>,
     ) {
@@ -158,7 +158,7 @@ impl GlobalDispatch<XdgActivationV1, ()> for State {
         _: &DisplayHandle,
         _: &Client,
         resource: New<XdgActivationV1>,
-        _: &(),
+        (): &(),
         init: &mut DataInit<'_, Self>,
     ) {
         init.init(resource, ());
@@ -171,7 +171,7 @@ impl Dispatch<XdgActivationV1, ()> for State {
         _: &Client,
         _: &XdgActivationV1,
         request: xdg_activation_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -200,7 +200,7 @@ impl Dispatch<XdgActivationTokenV1, ()> for State {
         _: &Client,
         _: &XdgActivationTokenV1,
         _: xdg_activation_token_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         _: &mut DataInit<'_, Self>,
     ) {

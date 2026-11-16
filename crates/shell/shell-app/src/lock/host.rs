@@ -70,6 +70,7 @@ impl SessionLockHost for HostCtx<ShellMsg> {
 }
 
 /// layer-shell-host's error as bardo-shell's refusal.
+#[must_use]
 pub fn refusal_of(error: LockError) -> LockRefusal {
     match error {
         LockError::Unsupported => LockRefusal::Unsupported,
@@ -78,6 +79,7 @@ pub fn refusal_of(error: LockError) -> LockRefusal {
 }
 
 /// `event` as a lock event, when it is one.
+#[must_use]
 pub fn lock_event(event: &HostEvent<ShellMsg>) -> Option<(LockId, LockState)> {
     match event {
         HostEvent::Lock { id, state } => Some((*id, *state)),

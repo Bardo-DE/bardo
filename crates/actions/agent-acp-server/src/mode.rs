@@ -34,6 +34,7 @@ impl Mode {
     pub const ALL: [Mode; 3] = [Mode::Ask, Mode::ReadOnly, Mode::AutoJudged];
 
     /// The mode's id on the wire.
+    #[must_use]
     pub fn id(self) -> &'static str {
         match self {
             Mode::Ask => "ask",
@@ -43,6 +44,7 @@ impl Mode {
     }
 
     /// The mode named `id`.
+    #[must_use]
     pub fn parse(id: &str) -> Option<Mode> {
         Mode::ALL.into_iter().find(|m| m.id() == id)
     }
@@ -59,6 +61,7 @@ impl Mode {
     }
 
     /// What this mode says about `call`.
+    #[must_use]
     pub fn says(self, call: &CallOpen) -> Say {
         match (self, call.effect) {
             (Mode::AutoJudged, _) | (_, Effect::Read) => Say::Proceed,
@@ -68,6 +71,7 @@ impl Mode {
     }
 
     /// The modes as the protocol lists them, this one current.
+    #[must_use]
     pub fn state(self) -> SessionModeState {
         let all = Mode::ALL
             .into_iter()

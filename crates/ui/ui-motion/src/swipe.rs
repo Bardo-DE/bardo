@@ -132,11 +132,13 @@ pub enum SwipeLook {
 
 impl SwipeState {
     /// How far right of its place the card is drawn (negative: left).
+    #[must_use]
     pub fn offset(&self) -> Px {
         self.offset
     }
 
     /// How the offset is drawn.
+    #[must_use]
     pub fn look(&self) -> SwipeLook {
         match self.source {
             Source::Idle => SwipeLook::Rest,
@@ -146,6 +148,7 @@ impl SwipeState {
     }
 
     /// Whether the next click ends a drag and is not a press.
+    #[must_use]
     pub fn swallows_click(&self) -> bool {
         self.swallows_click
     }
@@ -162,7 +165,7 @@ impl Machine for SwipeState {
         input: SwipeInput,
         at: Stamp,
         metrics: &SwipeMetrics,
-        _: &(),
+        (): &(),
     ) -> (Self, Vec<SwipeEffect>) {
         let none = |state| (state, Vec::new());
         match (self.source, input) {

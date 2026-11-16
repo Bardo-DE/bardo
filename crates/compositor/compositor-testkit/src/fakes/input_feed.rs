@@ -53,6 +53,7 @@ pub struct FakeInputFeed {
 
 impl FakeInputFeed {
     /// A feed with no device.
+    #[must_use]
     pub fn new() -> FakeInputFeed {
         FakeInputFeed::default()
     }
@@ -89,16 +90,19 @@ impl FakeInputFeed {
     }
 
     /// The settings applied to devices so far, in order.
+    #[must_use]
     pub fn applied(&self) -> Vec<(DeviceId, DeviceSettings)> {
         self.configured.applied()
     }
 
     /// How many times reading was suspended.
+    #[must_use]
     pub fn suspends(&self) -> u32 {
         self.world().suspends
     }
 
     /// How many times reading resumed.
+    #[must_use]
     pub fn resumes(&self) -> u32 {
         self.world().resumes
     }
@@ -107,9 +111,10 @@ impl FakeInputFeed {
 impl InputFeed for FakeInputFeed {
     fn apply(&mut self, device: DeviceId, settings: &DeviceSettings) -> Applied {
         let present = self.world().devices.contains_key(&device);
-        match present {
-            true => self.configured.apply(device, settings),
-            false => Applied::Refused,
+        if present {
+            self.configured.apply(device, settings)
+        } else {
+            Applied::Refused
         }
     }
 

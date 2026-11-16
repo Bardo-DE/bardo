@@ -402,9 +402,10 @@ impl SwitchToggleEvent<VirtualInput> for VirtualSwitch {
 
     fn state(&self) -> SwitchState {
         let (SwitchStep::Lid { closed: on } | SwitchStep::TabletMode { tablet: on }) = self.step;
-        match on {
-            true => SwitchState::On,
-            false => SwitchState::Off,
+        if on {
+            SwitchState::On
+        } else {
+            SwitchState::Off
         }
     }
 }

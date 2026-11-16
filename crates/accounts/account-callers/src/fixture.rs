@@ -153,6 +153,7 @@ impl UnitSource for DirUnits {
 impl ProcCallers {
     /// As [`ProcCallers::new`], reading the fixture tree `proc_root` instead of `/proc` and the
     /// user manager (module doc). Only in a test build (feature `test-proc-root`).
+    #[must_use]
     pub fn with_proc_root(
         connection: BusConnection,
         table: CallerTable,
@@ -173,6 +174,7 @@ impl ProcCallers {
     /// The caller that is process `pid` of the fixture tree at `proc_root`, as
     /// [`ProcCallers::with_proc_root`] judges it once the bus has named the pid (the process is
     /// taken as alive and held at connect time). Only in a test build.
+    #[must_use]
     pub fn caller_of_pid(proc_root: &Path, pid: u32, table: &CallerTable) -> Option<Caller> {
         let fs = DirProc::new(proc_root.to_owned(), table);
         let units = DirUnits::new(proc_root.to_owned(), fs.clone());

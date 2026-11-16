@@ -34,6 +34,7 @@ pub enum Cause {
 
 impl Cause {
     /// The slug, as the error's name and tests read it.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Cause::AccessDenied => "access_denied",
@@ -62,6 +63,7 @@ impl Cause {
     }
 
     /// The D-Bus error name of this cause.
+    #[must_use]
     pub fn error_name(self) -> String {
         match self {
             Cause::AccessDenied => "org.freedesktop.DBus.Error.AccessDenied".to_owned(),
@@ -93,6 +95,7 @@ impl Refusal {
     }
 
     /// The cause.
+    #[must_use]
     pub fn cause(&self) -> Cause {
         self.cause
     }
@@ -103,6 +106,7 @@ impl Refusal {
     }
 
     /// The bus's own error for a failed call into the daemon.
+    #[must_use]
     pub fn from_bus(error: &fdo::Error) -> Self {
         Self::new(Cause::Unavailable, error.to_string())
     }

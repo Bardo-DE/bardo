@@ -72,6 +72,7 @@ impl Default for ConversationMode {
 
 impl ConversationMode {
     /// The mode a turn from the box carries: none until the router has told one.
+    #[must_use]
     pub fn turn_mode(&self) -> Option<Mode> {
         self.known.then_some(self.mode)
     }
@@ -118,6 +119,7 @@ pub struct ModeView {
 }
 
 /// What the box shows of `conversation`.
+#[must_use]
 pub fn mode_view(conversation: &ConversationMode) -> ModeView {
     ModeView {
         mode: conversation.mode,
@@ -131,6 +133,7 @@ pub fn mode_view(conversation: &ConversationMode) -> ModeView {
 }
 
 /// The word for a mode on the switch.
+#[must_use]
 pub fn mode_label(mode: Mode) -> &'static str {
     match mode {
         Mode::Auto => "Auto",
@@ -139,6 +142,7 @@ pub fn mode_label(mode: Mode) -> &'static str {
 }
 
 /// The other mode.
+#[must_use]
 pub fn other_mode(mode: Mode) -> Mode {
     match mode {
         Mode::Auto => Mode::Manual,
@@ -147,14 +151,12 @@ pub fn other_mode(mode: Mode) -> Mode {
 }
 
 /// `state` after `msg`, and the switch it asks the router for.
+#[must_use]
 pub fn update(state: Companion, msg: ModeMsg) -> (Companion, Vec<CompanionEffect>) {
     let current = state.mode.clone();
     match msg {
         ModeMsg::Opened { session, mode } => {
-            let mode = match current.known {
-                false => mode,
-                true => current.mode,
-            };
+            let mode = if current.known { current.mode } else { mode };
             let next = ConversationMode {
                 mode,
                 known: true,
@@ -163,17 +165,18 @@ pub fn update(state: Companion, msg: ModeMsg) -> (Companion, Vec<CompanionEffect
             };
             (moded(state, next), Vec::new())
         }
-        ModeMsg::Changed { session, mode } => match current.session.as_ref() == Some(&session) {
-            true => {
+        ModeMsg::Changed { session, mode } => {
+            if current.session.as_ref() == Some(&session) {
                 let next = ConversationMode {
                     mode,
                     known: true,
                     ..current
                 };
                 (moded(state, next), Vec::new())
+            } else {
+                (state, Vec::new())
             }
-            false => (state, Vec::new()),
-        },
+        }
         ModeMsg::Switch(mode) => switch(state, mode),
         ModeMsg::Flip => {
             let to = other_mode(current.mode);

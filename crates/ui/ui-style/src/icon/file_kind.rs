@@ -61,6 +61,7 @@ pub enum FileKind {
 impl FileKind {
     /// The mark drawn on the page, from the glyph set; `None` for [`FileKind::Other`], whose
     /// only mark is its extension label.
+    #[must_use]
     pub fn mark(self) -> Option<Icon> {
         match self {
             FileKind::Document => Some(Icon::Lines),
@@ -80,6 +81,7 @@ impl FileKind {
     }
 
     /// The tag colour the mark is drawn in (`--tag-*`, so it follows the scheme). `Other` is gray.
+    #[must_use]
     pub fn colour(self) -> SystemHue {
         match self {
             FileKind::Document => SystemHue::Blue,
@@ -98,12 +100,14 @@ impl FileKind {
     }
 
     /// The colour of the mark: the kind's tag hue in the light scheme.
+    #[must_use]
     pub fn hex(self) -> Hex {
         self.colour().value(Scheme::Light, Contrast::Normal)
     }
 
     /// The per-file glyph a list row draws for this kind (the page-shaped glyphs of the actions
     /// set), for a consumer that wants a glyph and not the full icon.
+    #[must_use]
     pub fn file_glyph(self) -> Icon {
         match self {
             FileKind::Document | FileKind::Spreadsheet | FileKind::Presentation => Icon::FileText,
@@ -150,6 +154,7 @@ pub enum FolderKind {
 
 impl FolderKind {
     /// The glyph embossed on the folder; `None` for a plain one.
+    #[must_use]
     pub fn emboss(self) -> Option<Icon> {
         match self {
             FolderKind::Plain => None,
@@ -176,6 +181,7 @@ impl ExtLabel {
     /// The label of `extension` (with or without its dot, any case): `pdf` is `PDF`. `None` when
     /// it is empty, longer than [`EXT_LABEL_MAX`] or not letters and digits, since a label that
     /// had to be cut would name another type.
+    #[must_use]
     pub fn from_extension(extension: &str) -> Option<ExtLabel> {
         let bare = extension.trim().trim_start_matches('.');
         let fits = !bare.is_empty()
@@ -185,6 +191,7 @@ impl ExtLabel {
     }
 
     /// The label text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

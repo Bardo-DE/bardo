@@ -14,6 +14,7 @@ pub struct SpaceBook {
 
 impl SpaceBook {
     /// No Spaces.
+    #[must_use]
     pub fn empty() -> SpaceBook {
         SpaceBook {
             spaces: BTreeMap::new(),
@@ -22,6 +23,7 @@ impl SpaceBook {
     }
 
     /// The book with `space` added (or replaced, by id).
+    #[must_use]
     pub fn with_space(self, space: Space) -> SpaceBook {
         let SpaceBook { mut spaces, shown } = self;
         spaces.insert(space.id.clone(), space);
@@ -29,6 +31,7 @@ impl SpaceBook {
     }
 
     /// The book with `output` showing `space`.
+    #[must_use]
     pub fn with_shown(self, output: OutputKey, space: SpaceId) -> SpaceBook {
         let SpaceBook { spaces, mut shown } = self;
         shown.insert(output, space);
@@ -36,6 +39,7 @@ impl SpaceBook {
     }
 
     /// The book without the Space `id`, and without any output showing it.
+    #[must_use]
     pub fn without_space(self, id: &SpaceId) -> SpaceBook {
         let SpaceBook { mut spaces, shown } = self;
         spaces.remove(id);
@@ -44,6 +48,7 @@ impl SpaceBook {
     }
 
     /// The book with `output` showing nothing.
+    #[must_use]
     pub fn without_shown(self, output: &OutputKey) -> SpaceBook {
         let SpaceBook { spaces, mut shown } = self;
         shown.remove(output);
@@ -61,12 +66,14 @@ impl SpaceBook {
     }
 
     /// The Space `output` shows.
+    #[must_use]
     pub fn shown_on(&self, output: &OutputKey) -> Option<&Space> {
         self.shown.get(output).and_then(|id| self.get(id))
     }
 
     /// `output`'s Spaces in row order (by position; equal positions by id, so the order is
     /// total).
+    #[must_use]
     pub fn row(&self, output: &OutputKey) -> Vec<&Space> {
         let mut row: Vec<&Space> = self
             .spaces
@@ -78,6 +85,7 @@ impl SpaceBook {
     }
 
     /// The Space with this id.
+    #[must_use]
     pub fn get(&self, id: &SpaceId) -> Option<&Space> {
         self.spaces.get(id)
     }

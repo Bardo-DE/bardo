@@ -58,6 +58,7 @@ pub enum Allow {
 
 impl Allow {
     /// Whether `id` may be returned.
+    #[must_use]
     pub fn permits(&self, id: &DocId) -> bool {
         match self {
             Allow::Everything => true,
@@ -100,6 +101,7 @@ pub struct StoredDoc {
 
 impl Doc {
     /// This document as the lexical half would store it.
+    #[must_use]
     pub fn stored(&self) -> StoredDoc {
         StoredDoc {
             id: self.id.clone(),

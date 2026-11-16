@@ -56,11 +56,13 @@ pub const KEY_TABLE: &[KeyEntry] = &[
 ];
 
 /// The table row for `code`.
+#[must_use]
 pub fn entry(code: u16) -> Option<&'static KeyEntry> {
     KEY_TABLE.iter().find(|e| e.code == code)
 }
 
 /// How `code` may be pressed, if it is in the table.
+#[must_use]
 pub fn class_of(code: u16) -> Option<KeyClass> {
     entry(code).map(|e| e.class)
 }

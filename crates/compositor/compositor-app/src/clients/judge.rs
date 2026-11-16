@@ -26,6 +26,7 @@ pub struct Arrival {
 
 impl Arrival {
     /// A program nothing could be learned of: asked about every power, every time.
+    #[must_use]
     pub fn unknown() -> Arrival {
         Arrival {
             peer: PeerIdentity::Unproven,
@@ -45,6 +46,7 @@ impl Arrival {
 /// by the administrator alone) is an empty one, where no program is one of the desktop's
 /// services: it is logged once and the compositor runs, with nobody privileged and the shell
 /// unable to connect.
+#[must_use]
 pub fn desktop_table(system: &SystemDir) -> Table {
     with_test_rows(system_table(), system)
 }
@@ -88,6 +90,7 @@ pub struct Judge {
 
 impl Judge {
     /// A judge over `table`, reading the system's `/proc`, for a run whose floor is in `system`.
+    #[must_use]
     pub fn new(table: Table, system: SystemDir) -> Judge {
         Judge {
             prober: Prober::system(),
@@ -97,12 +100,14 @@ impl Judge {
     }
 
     /// A judge over the desktop's own table ([`desktop_table`]).
+    #[must_use]
     pub fn desktop(system: SystemDir) -> Judge {
         Judge::new(desktop_table(&system), system)
     }
 
     /// Who the program on the other end of `stream` is, under the administrator's `floor` as the
     /// model holds it.
+    #[must_use]
     pub fn arrival(&self, stream: &UnixStream, floor: &Floor) -> Arrival {
         let Ok(pinned) = Pinned::of_stream(stream) else {
             return Arrival::unknown();

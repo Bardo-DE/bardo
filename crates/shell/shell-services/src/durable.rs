@@ -17,7 +17,10 @@ use crate::error::ServiceError;
 
 /// Replace the file at `path` (its folder created) with `bytes`, durably and atomically.
 pub fn write(path: &Path, bytes: &[u8], new_file: NewFileMode) -> io::Result<()> {
-    if let Some(folder) = path.parent().filter(|folder| !folder.as_os_str().is_empty()) {
+    if let Some(folder) = path
+        .parent()
+        .filter(|folder| !folder.as_os_str().is_empty())
+    {
         std::fs::create_dir_all(folder)?;
     }
     write_atomic(path, bytes, new_file).map_err(|error| error.source)

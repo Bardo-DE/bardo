@@ -14,6 +14,7 @@ pub const EXTENT_PER_RADIUS: f64 = 2.0;
 /// nominal radius: `2 (1 - 2^(-1/5)) / (1 - 1/sqrt 2)`, about .884. The squircle lies inside this
 /// circle everywhere and at most .03 r from it, so a squircle element's shadows and hairlines
 /// are drawn from it (Blitz draws a `box-shadow` from the `border-radius`, never the mask).
+#[must_use]
 pub fn shadow_radius_share() -> f64 {
     let diagonal = EXTENT_PER_RADIUS * (1.0 - 2f64.powf(-1.0 / EXPONENT));
     diagonal / (1.0 - std::f64::consts::FRAC_1_SQRT_2)

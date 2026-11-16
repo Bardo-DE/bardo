@@ -28,6 +28,7 @@ pub struct ProcessSpawner {
 impl ProcessSpawner {
     /// A spawner that puts the programs a binding starts in scopes of their own in the service
     /// manager that listens under `runtime`, when there is one.
+    #[must_use]
     pub fn new(runtime: Option<PathBuf>) -> ProcessSpawner {
         ProcessSpawner {
             runtime,

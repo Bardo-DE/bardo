@@ -46,6 +46,7 @@ pub enum EndWhy {
 impl EndWhy {
     /// The reason from a run's `outcome` (`{"kind": .., "v": ..}`), when it names one: a finished
     /// or cancelled run has none, and a name this code does not know has none either.
+    #[must_use]
     pub fn of_outcome(outcome: &serde_json::Value) -> Option<Self> {
         let detail = &outcome["v"];
         let name = |value: &serde_json::Value| value.as_str().map(str::to_owned);
@@ -86,6 +87,7 @@ impl EndWhy {
     }
 
     /// The reason in fixed plain words, after the state it explains.
+    #[must_use]
     pub fn words(self) -> &'static str {
         match self {
             Self::WindowGone => "the window closed",

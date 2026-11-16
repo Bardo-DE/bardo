@@ -21,6 +21,7 @@ pub struct Viewporter {
 
 impl Viewporter {
     /// Binds the global (version 1).
+    #[must_use]
     pub fn bind(client: &TestClient) -> Viewporter {
         Viewporter {
             manager: client
@@ -30,6 +31,7 @@ impl Viewporter {
     }
 
     /// A viewport on `surface`.
+    #[must_use]
     pub fn viewport(&self, client: &TestClient, surface: &Surface) -> Viewport {
         Viewport {
             viewport: self
@@ -71,6 +73,7 @@ pub struct SinglePixel {
 
 impl SinglePixel {
     /// Binds the global (version 1).
+    #[must_use]
     pub fn bind(client: &TestClient) -> SinglePixel {
         SinglePixel {
             manager: client
@@ -80,6 +83,7 @@ impl SinglePixel {
     }
 
     /// A one-pixel buffer of this colour (premultiplied 32-bit components, 0 to `u32::MAX`).
+    #[must_use]
     pub fn buffer(&self, client: &TestClient, rgba: [u32; 4]) -> WlBuffer {
         self.manager.create_u32_rgba_buffer(
             rgba[0],
@@ -100,6 +104,7 @@ pub struct AlphaModifier {
 
 impl AlphaModifier {
     /// Binds the global (version 1).
+    #[must_use]
     pub fn bind(client: &TestClient) -> AlphaModifier {
         AlphaModifier {
             manager: client
@@ -109,6 +114,7 @@ impl AlphaModifier {
     }
 
     /// The alpha object of `surface`.
+    #[must_use]
     pub fn for_surface(&self, client: &TestClient, surface: &Surface) -> WpAlphaModifierSurfaceV1 {
         self.manager
             .get_surface(&surface.surface, &client.qh(), H1Data)

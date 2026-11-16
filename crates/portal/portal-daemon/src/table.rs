@@ -99,6 +99,7 @@ impl<E: Slot> Table<E> {
     }
 
     /// The handles of the sessions hung on `peer` (a unique name).
+    #[must_use]
     pub fn held_by(&self, peer: &str) -> Vec<SessionKey> {
         self.entries
             .iter()

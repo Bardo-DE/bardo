@@ -60,6 +60,7 @@ struct Step {
 }
 
 /// Text being edited: its original bytes, what was typed over them, and the history of edits.
+///
 /// Offsets are UTF-8 bytes into the whole text; lines are cut at `\n`, and a final `\n` starts an
 /// empty last line, as an editor shows it.
 #[derive(Debug)]
@@ -108,16 +109,19 @@ impl Buffer {
     }
 
     /// How many bytes the text has now.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.len
     }
 
     /// Whether there is no text.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len == 0
     }
 
     /// The stamp of the text as it is now.
+    #[must_use]
     pub fn revision(&self) -> Revision {
         self.now
     }
@@ -140,6 +144,7 @@ impl Buffer {
     }
 
     /// The text in `range` (cut to the text, and to character boundaries).
+    #[must_use]
     pub fn slice(&self, range: Range<usize>) -> String {
         let end = self.floor(range.end.min(self.len));
         let start = self.floor(range.start.min(end));
@@ -147,21 +152,25 @@ impl Buffer {
     }
 
     /// All of the text.
+    #[must_use]
     pub fn text(&self) -> String {
         self.slice(0..self.len)
     }
 
     /// All of the text as bytes.
+    #[must_use]
     pub fn to_bytes(&self) -> Vec<u8> {
         self.bytes(0..self.len)
     }
 
     /// How many lines there are: at least one.
+    #[must_use]
     pub fn line_count(&self) -> usize {
         self.pieces.iter().map(|p| p.breaks).sum::<usize>() + 1
     }
 
     /// The offset `line` starts at; the end of the text for a line past the last.
+    #[must_use]
     pub fn line_start(&self, line: usize) -> usize {
         if line == 0 {
             return 0;
@@ -188,6 +197,7 @@ impl Buffer {
     }
 
     /// Where `line`'s text lies, without its break (`\n` or `\r\n`).
+    #[must_use]
     pub fn line_range(&self, line: usize) -> Range<usize> {
         let start = self.line_start(line);
         let mut end = if line + 1 < self.line_count() {
@@ -202,12 +212,14 @@ impl Buffer {
     }
 
     /// `line`'s text without its break.
+    #[must_use]
     pub fn line_text(&self, line: usize) -> String {
         self.slice(self.line_range(line))
     }
 
     /// `count` lines from `first`, each without its break, cut to the lines there are. One walk
     /// over the pieces, however many lines.
+    #[must_use]
     pub fn lines(&self, first: usize, count: usize) -> Vec<String> {
         if count == 0 {
             return Vec::new();
@@ -233,6 +245,7 @@ impl Buffer {
     }
 
     /// The line `offset` is on.
+    #[must_use]
     pub fn line_of(&self, offset: usize) -> usize {
         let offset = offset.min(self.len);
         let mut before = 0;

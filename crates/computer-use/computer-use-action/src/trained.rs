@@ -28,6 +28,7 @@ pub enum CallFormat {
 impl CallFormat {
     /// Whether the session reads the calls itself: the request then declares no tools to the
     /// server, which would otherwise run its parser and strip the text this format is read from.
+    #[must_use]
     pub const fn is_read_by_us(self) -> bool {
         !matches!(self, CallFormat::Engine)
     }

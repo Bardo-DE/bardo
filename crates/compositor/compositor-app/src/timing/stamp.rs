@@ -18,12 +18,14 @@ impl Stamp {
     /// `monotonic_epoch_ns`). The session's `Mono` counts from a monotonic epoch, so the two
     /// differ by a constant and this is a sum, not a second clock read. A virtual clock has
     /// epoch 0.
+    #[must_use]
     pub fn of(epoch: Stamp, at: Mono) -> Stamp {
         let nanos = u64::try_from(at.0.as_nanos()).unwrap_or(u64::MAX);
         Stamp(epoch.0.saturating_add(nanos))
     }
 
     /// Whether this moment is at most `window` after `earlier` (and not before it).
+    #[must_use]
     pub fn within(self, earlier: Stamp, window: Duration) -> bool {
         self.0 >= earlier.0 && u128::from(self.0 - earlier.0) <= window.as_nanos()
     }

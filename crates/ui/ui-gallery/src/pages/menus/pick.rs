@@ -1,4 +1,4 @@
-//! Menu hints and toggles, and PickList (design/30 section 2.4): a trailing hint in place of a
+//! Menu hints and toggles, and `PickList` (design/30 section 2.4): a trailing hint in place of a
 //! second line, items that keep their menu open, and a filterable list in a popover.
 
 use crate::axes::{Axes, Showcase};
@@ -120,7 +120,7 @@ pub fn HintsAndPickList() -> Element {
                             flow: Flow::Inline,
                             active: MenuCursor::Controlled(Some(1)),
                             onpick: |_| {},
-                            onclose: |_| {},
+                            onclose: |()| {},
                         }
                     }
                 }
@@ -136,7 +136,7 @@ pub fn HintsAndPickList() -> Element {
                                     flip(on, value);
                                 }
                             },
-                            onclose: |_| {},
+                            onclose: |()| {},
                         }
                     }
                 }

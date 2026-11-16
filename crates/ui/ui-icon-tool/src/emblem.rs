@@ -22,6 +22,7 @@ pub struct Look {
 
 impl Look {
     /// The look the spec recommends.
+    #[must_use]
     pub fn of(spec: &Spec) -> Look {
         Look {
             dialect: spec.dialect,
@@ -122,11 +123,13 @@ fn paint_layer(
 }
 
 /// The layers alone on transparent, at one canvas size, in the given roles' colours.
+#[must_use]
 pub fn emblem_object(spec: &Spec, r: &Roles, grid: PlateGrid) -> Rgba32FImage {
     let k = grid.side as f32 / 24.0;
-    let emboss = match grid.canvas >= EMBOSS_FROM {
-        true => Emboss::On,
-        false => Emboss::Off,
+    let emboss = if grid.canvas >= EMBOSS_FROM {
+        Emboss::On
+    } else {
+        Emboss::Off
     };
     Rgba32FImage::from_fn(grid.canvas, grid.canvas, |x, y| {
         let p = Pt(
@@ -144,13 +147,15 @@ pub fn emblem_object(spec: &Spec, r: &Roles, grid: PlateGrid) -> Rgba32FImage {
 /// The shadowless icon (08 2.6 `flat`) at one canvas size in one look: the dialect's plate with
 /// its tonal shift, grain (from 48 px), the pressed layers, then the bevel finish, clipped to
 /// the squircle.
+#[must_use]
 pub fn emblem(spec: &Spec, look: Look, canvas: u32, t: &Template, tile: &Plane) -> Rgba32FImage {
     let grid = PlateGrid::for_canvas(canvas, t);
     let r = roles(look.dialect, look.tint, look.cap);
     let face = plate_face(grid, r.plate, r.shift);
-    let face = match canvas >= GRAIN_FROM {
-        true => apply_grain(&face, spec.grain, tile),
-        false => face,
+    let face = if canvas >= GRAIN_FROM {
+        apply_grain(&face, spec.grain, tile)
+    } else {
+        face
     };
     let object = emblem_object(spec, &r, grid);
     let face = Rgba32FImage::from_fn(canvas, canvas, |x, y| {

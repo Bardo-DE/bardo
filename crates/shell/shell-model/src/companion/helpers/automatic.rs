@@ -24,6 +24,7 @@ pub enum Automatic {
 
 impl Automatic {
     /// Whether `offer` is ticked.
+    #[must_use]
     pub fn includes(&self, offer: &ModelOffer) -> bool {
         match (self, offer.model()) {
             (Automatic::Choosing(pool), Some(model)) => pool.contains(model),
@@ -92,9 +93,10 @@ pub(super) fn confirm(model: HelpersModel) -> (HelpersModel, Vec<HelpersCommand>
 /// The pool was sent: Automatic closes with a sentence about how it came out (`saved`: the pool
 /// is kept).
 pub(super) fn written(model: HelpersModel, saved: bool) -> HelpersModel {
-    let sentence = match saved {
-        true => words::AUTOMATIC_ON,
-        false => words::AUTOMATIC_NOT_SAVED,
+    let sentence = if saved {
+        words::AUTOMATIC_ON
+    } else {
+        words::AUTOMATIC_NOT_SAVED
     };
     HelpersModel {
         automatic: Automatic::Off,

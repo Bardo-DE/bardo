@@ -34,6 +34,7 @@ impl Thumbnailer {
     /// or date differ) is no thumbnail, so a changed file is made again and the new one replaces
     /// the old. A file nothing pictures keeps its icon. A cache that can't be read or written is
     /// no more than a cache that has nothing.
+    #[must_use]
     pub fn thumbnail(&self, file: &FilePath) -> Thumbed {
         let stamp = file.on_disk().stamp();
         let kept = self.cache.lookup(file, &stamp, SIZE).ok().flatten();

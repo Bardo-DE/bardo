@@ -111,7 +111,7 @@ pub enum Anim {
     /// `slide-r` at `--t-move --e-out`: a preview pane shown by something other than the
     /// person's contact (design/26 R5), where `PaneInR` springs.
     PaneInROut,
-    /// `morph-in` at `--t-quick --e-spring`: the incoming glyph of a DownUp or OffUp morph the
+    /// `morph-in` at `--t-quick --e-spring`: the incoming glyph of a `DownUp` or `OffUp` morph the
     /// person's own press caused (design/26 R5, play/pause, the Focus disc); `MorphIn` is the
     /// same growth at `--e-out` for a change from elsewhere.
     MorphInSpring,
@@ -197,6 +197,7 @@ impl Anim {
     ];
 
     /// The utility class a pulse renders: `a-gulp`.
+    #[must_use]
     pub fn class(self) -> &'static str {
         match self {
             Anim::RowIn => "a-row-in",

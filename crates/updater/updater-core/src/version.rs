@@ -16,6 +16,7 @@ pub enum Standing {
 
 /// Compares `offered` with `installed` by semver precedence. Build metadata is ignored, so two
 /// versions that differ only there are the same.
+#[must_use]
 pub fn standing(installed: &Version, offered: &Version) -> Standing {
     match offered.cmp_precedence(installed) {
         Ordering::Greater => Standing::Newer,
@@ -38,6 +39,7 @@ pub enum Offer {
 /// Decides whether `found` is offered, given the version installed and the newest version that was
 /// rolled back. A refused version stays refused, and so does everything older than it, until a
 /// newer one is published.
+#[must_use]
 pub fn offer(installed: &Version, found: &Version, refused: Option<&Version>) -> Offer {
     if standing(installed, found) != Standing::Newer {
         return Offer::NotNewer;

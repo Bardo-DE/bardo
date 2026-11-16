@@ -89,8 +89,8 @@ mod tests {
 
     #[test]
     fn modifiers_without_a_key_or_two_keys_are_refused() {
-        assert!(parse_key_equivalent("@$").is_err());
-        assert!(parse_key_equivalent("@zz").is_err());
-        assert!(parse_key_equivalent("").is_err());
+        parse_key_equivalent("@$").unwrap_err();
+        parse_key_equivalent("@zz").unwrap_err();
+        parse_key_equivalent("").unwrap_err();
     }
 }

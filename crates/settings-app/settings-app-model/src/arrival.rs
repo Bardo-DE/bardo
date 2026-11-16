@@ -58,6 +58,7 @@ fn page_slug(catalogue: &Catalogue, text: &str) -> Option<PageSlug> {
 }
 
 /// Where `target` lands, or none when no page of the window is what it names.
+#[must_use]
 pub fn arrival(catalogue: &Catalogue, target: &SettingsTarget) -> Option<Arrival> {
     match target {
         SettingsTarget::Page(id) => page_slug(catalogue, id.as_str()).map(|slug| Arrival::Page {

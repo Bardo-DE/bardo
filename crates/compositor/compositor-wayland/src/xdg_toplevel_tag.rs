@@ -20,6 +20,7 @@ pub struct XdgToplevelTagPart {
 
 impl XdgToplevelTagPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> XdgToplevelTagPart
     where
         D: XdgToplevelTagHandler + GlobalDispatch<XdgToplevelTagManagerV1, GlobalData>,

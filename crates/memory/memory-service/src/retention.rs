@@ -27,6 +27,7 @@ fn older_than(days: DayCount, occurred: UnixSeconds, now: UnixSeconds) -> bool {
 }
 
 /// What to do with a body recorded under `retention`.
+#[must_use]
 pub fn sweep_body(
     retention: Retention,
     occurred: UnixSeconds,
@@ -46,6 +47,7 @@ pub fn sweep_body(
 }
 
 /// Whether a header (of an audit event whose body is gone) may now be pruned: a year on.
+#[must_use]
 pub fn header_expired(occurred: UnixSeconds, now: UnixSeconds) -> bool {
     older_than(HEADER_DAYS, occurred, now)
 }

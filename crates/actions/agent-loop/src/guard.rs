@@ -134,6 +134,7 @@ pub enum Stuck {
 impl Stuck {
     /// What the person is asked when the turn stops: what could not be found, or that the
     /// assistant is going round in circles, and what it needs from them.
+    #[must_use]
     pub fn question(&self) -> String {
         // The person's words: never an action's id, which is a developer word.
         match self {
@@ -266,6 +267,7 @@ fn remember(seen: &mut Vec<Seen>, entry: Seen) {
 impl Guard {
     /// Whether `call`, wanted as position `id` of a batch, is made, held back or stops the turn.
     /// `effect` is what the call's action does, when it is known.
+    #[must_use]
     pub fn admit(self, id: CallId, call: &CallRequest, effect: Option<Effect>) -> (Guard, Verdict) {
         let key = key_of(call);
         let mut guard = self;
@@ -302,6 +304,7 @@ impl Guard {
     }
 
     /// Whether the reader ask is made, held back (it was answered already) or stops the turn.
+    #[must_use]
     pub fn admit_read(self, ask: &ReaderAsk) -> (Guard, Verdict) {
         let key = read_key_of(ask);
         let mut guard = self;
@@ -332,6 +335,7 @@ impl Guard {
     }
 
     /// The reader answered the ask in flight.
+    #[must_use]
     pub fn read_answered(self) -> Guard {
         let Guard {
             seen,
@@ -383,6 +387,7 @@ impl Guard {
 
     /// The call at position `id` ended. A call that wrote something makes the answers held from
     /// earlier reads of the world stale: they are asked again, once.
+    #[must_use]
     pub fn ended(self, id: CallId, end: &StepEnd) -> Guard {
         let wrote = matches!(end, StepEnd::Done { .. })
             && self
@@ -420,12 +425,14 @@ impl Guard {
     }
 
     /// Whether a call of this turn was not made because the task's own run is still going.
+    #[must_use]
     pub fn parked(&self) -> bool {
         self.seen.iter().any(|s| s.answer == Answer::Parked)
     }
 
     /// The call the app refused [`MOST_DECLINED`] times in a row, if any: the turn stops on it,
     /// with what the app said.
+    #[must_use]
     pub fn declined(&self) -> Option<Stuck> {
         self.seen
             .iter()
@@ -435,6 +442,7 @@ impl Guard {
 
     /// The planner's reply could not be read as a call: tells it so, or, when it has done so
     /// [`MOST_UNREADABLE`] times running, ends the turn by asking the person.
+    #[must_use]
     pub fn unreadable(self) -> (Guard, Option<Stuck>) {
         let unread = self.unread.saturating_add(1);
         let stuck = (unread >= MOST_UNREADABLE).then_some(Stuck::Unreadable);
@@ -443,6 +451,7 @@ impl Guard {
 
     /// A new batch is about to go out: calls of an older batch that never ended are forgotten as
     /// answers, so their positions cannot be taken for the new ones.
+    #[must_use]
     pub fn settled(self) -> Guard {
         let seen = self
             .seen

@@ -1,6 +1,6 @@
 //! `agent-eval --attacks <eval dir> [--summary-dir <dir>] [--commit <sha>] [--date <day>]`: plays
 //! the attack suite on the scripted, hostile fake model (no network, no model) and prints
-//! AgentDojo's three rates. With `--summary-dir` it also writes the per-commit JSON summary
+//! `AgentDojo`'s three rates. With `--summary-dir` it also writes the per-commit JSON summary
 //! there (`<date>-<commit>.json`); the commit and the day are the checkout's and today's unless
 //! given. Exit 0 when no attack reaches its goal beyond the known holes, 1 when one does, 2 when
 //! the command line or a file is wrong.
@@ -65,15 +65,14 @@ pub(crate) fn attacks(args: &AttackArgs, today: &str) -> ExitCode {
             Err(why) => return fail(why),
         }
     }
-    match metrics.surprises().is_empty() {
-        true => ExitCode::SUCCESS,
-        false => {
-            eprintln!(
-                "agent-eval: attacks reached their goal: {:?}",
-                metrics.surprises()
-            );
-            ExitCode::from(1)
-        }
+    if metrics.surprises().is_empty() {
+        ExitCode::SUCCESS
+    } else {
+        eprintln!(
+            "agent-eval: attacks reached their goal: {:?}",
+            metrics.surprises()
+        );
+        ExitCode::from(1)
     }
 }
 

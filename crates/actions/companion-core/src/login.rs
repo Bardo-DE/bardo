@@ -16,16 +16,19 @@ pub struct Logins {
 
 impl Logins {
     /// The ways the app listed for `helper`, none when it listed none.
+    #[must_use]
     pub fn ways_of(&self, helper: &HelperId) -> Vec<SignInWay> {
         self.ways.get(helper).cloned().unwrap_or_default()
     }
 
     /// The way `helper`'s app listed under the id `way`.
+    #[must_use]
     pub fn way(&self, helper: &HelperId, way: &str) -> Option<SignInWay> {
         self.ways.get(helper)?.iter().find(|w| w.id == way).cloned()
     }
 
     /// Whether `helper`'s app is known to be signed in.
+    #[must_use]
     pub fn is_signed(&self, helper: &HelperId) -> bool {
         self.signed.contains(helper)
     }
@@ -68,6 +71,7 @@ pub struct SameApp {
 }
 
 /// The helpers on `board` that run `program`.
+#[must_use]
 pub fn same_app(board: &Board, program: &AgentProgram) -> SameApp {
     let same: Vec<_> = board
         .cards()

@@ -17,6 +17,7 @@ pub enum SystemDir {
 impl SystemDir {
     /// The floor's files. A floor in an injected folder is owned by `injected` (the user, in a
     /// build for the jail; the administrator anywhere else).
+    #[must_use]
     pub fn floor(&self, injected: Owner) -> FloorFiles {
         match self {
             SystemDir::Etc => FloorFiles::system(),

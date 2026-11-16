@@ -31,6 +31,7 @@ pub enum Verb {
 
 impl Verb {
     /// The verb of `action`; none for the ones that touch nothing (look, zoom, finish, ask).
+    #[must_use]
     pub fn of(action: &CuaAction<WindowSpace>) -> Option<Verb> {
         match action {
             CuaAction::Click { .. } => Some(Verb::Click),
@@ -45,6 +46,7 @@ impl Verb {
     }
 
     /// The word.
+    #[must_use]
     pub fn words(self) -> &'static str {
         match self {
             Verb::Click => "click",
@@ -99,6 +101,7 @@ pub struct Tried {
 impl Tried {
     /// `action` and how it ended. `unchanged` is whether the window looked the same after it (a
     /// stored step's comes from the `cua.step.seen` that follows it).
+    #[must_use]
     pub fn of(
         action: &CuaAction<WindowSpace>,
         result: &ActionResult,
@@ -124,6 +127,7 @@ const MAX_GROUPS: usize = 8;
 
 /// The steps in short words: "click, drag ×3 (no visible change)". Neighbours that match are
 /// one group; a long run keeps the newest groups.
+#[must_use]
 pub fn steps_words(tried: &[Tried]) -> String {
     let mut groups: Vec<(Tried, usize)> = Vec::new();
     for step in tried {
@@ -154,6 +158,7 @@ pub fn steps_words(tried: &[Tried]) -> String {
 }
 
 /// What a stalled run tells its planner: the screen stopped changing, and what was tried.
+#[must_use]
 pub fn stall_words(tried: &[Tried]) -> String {
     let base = said_of(CuaOutcome::BudgetOut(
         computer_use_bus::RunBudgetKind::Stall,
@@ -243,6 +248,7 @@ impl Attempt {
 
 /// The briefing's lines about earlier runs in `app`, oldest first, from the conversation's
 /// records; `current` is left out. See [`digest_within`].
+#[must_use]
 pub fn digest(records: &[CuaRecord], app: &AppName, current: Option<&RunId>) -> Vec<String> {
     digest_within(records, app, current, Limits::BRIEFING)
 }

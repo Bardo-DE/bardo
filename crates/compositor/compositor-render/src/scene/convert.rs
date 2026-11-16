@@ -53,9 +53,10 @@ fn axis(at: SubPx, origin: i32, scale: Scale) -> i32 {
 fn rounded(value: i64) -> i32 {
     let denominator = SUB * i64::from(Scale::DENOMINATOR);
     let half = denominator / 2;
-    let quotient = match value >= 0 {
-        true => (value + half) / denominator,
-        false => (value - half) / denominator,
+    let quotient = if value >= 0 {
+        (value + half) / denominator
+    } else {
+        (value - half) / denominator
     };
     i32::try_from(quotient).unwrap_or(if quotient < 0 { i32::MIN } else { i32::MAX })
 }

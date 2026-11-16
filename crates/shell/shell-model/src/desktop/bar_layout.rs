@@ -47,6 +47,7 @@ pub struct BarLayouts(pub BTreeMap<String, BarLayout>);
 
 /// The card size in device pixels at `scale` (a hundred and twentieth of a unit, as the host
 /// states it: 120 is 1x).
+#[must_use]
 pub fn thumb_size(scale: u32) -> (u32, u32) {
     let at = |logical: u32| (logical * scale).div_ceil(120).max(1);
     (at(THUMB_W), at(THUMB_H))
@@ -56,6 +57,7 @@ pub fn thumb_size(scale: u32) -> (u32, u32) {
 /// they are new or moved (an empty set, which clears, once the output has none), then the plus's
 /// rectangle when that changed (`None`, which removes it, once it is gone). Outputs in order of
 /// name; equal inputs give none.
+#[must_use]
 pub fn target_commands(sent: &BarLayouts, now: &BarLayouts) -> Vec<DesktopCommand> {
     let layout =
         |layouts: &BarLayouts, output: &str| layouts.0.get(output).cloned().unwrap_or_default();

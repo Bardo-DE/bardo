@@ -59,11 +59,13 @@ pub struct DesktopAppearance {
 
 impl DesktopAppearance {
     /// A source with no document: nothing is chosen.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// A source that reads the document at `path` each time it is asked.
+    #[must_use]
     pub fn at(path: PathBuf) -> Self {
         Self { path: Some(path) }
     }
@@ -99,6 +101,7 @@ const ACCENTS: [(&str, [u8; 3]); 8] = [
 /// The appearance a document's `[appearance]` table holds: `theme` (`light`, `dark`, anything
 /// else follows the desktop's default) and `accent` (one of the eight accent words). Every other
 /// line, table and bad value is ignored, so a half-written file never fails a read.
+#[must_use]
 pub fn parse_appearance(text: &str) -> Appearance {
     let mut found = UNCHOSEN;
     let mut in_table = false;
@@ -189,6 +192,7 @@ pub fn read_setting(
 }
 
 /// Every setting the namespace patterns select, grouped by namespace.
+#[must_use]
 pub fn read_namespaces(appearance: &Appearance, patterns: &[String]) -> Namespaces {
     let mut out = Namespaces::new();
     for (key, value) in portal_core::read_all(appearance, patterns) {
@@ -216,6 +220,7 @@ pub struct SettingsService {
 
 impl SettingsService {
     /// A service reading from `appearance`.
+    #[must_use]
     pub fn new(appearance: Box<dyn AppearanceSource>) -> Self {
         Self {
             source: Arc::from(appearance),
@@ -297,7 +302,11 @@ pub fn spawn_watch(connection: zbus::Connection) {
 // The D-Bus interface lives in a private module: zbus's macro generates undocumented
 // property-change methods, which the crate's `missing_docs` would flag on a public impl.
 mod interface {
-    use super::*;
+    use super::{
+        AppearanceSource, Duration, Namespaces, OwnedValue, PORTAL_PATH, PortalError,
+        SettingsService, SignalEmitter, TransomError, read_namespaces, read_setting, refused,
+        wire_value,
+    };
 
     /// The watcher loop behind [`spawn_watch`].
     pub(super) async fn watch(

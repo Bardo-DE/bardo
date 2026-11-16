@@ -1,5 +1,5 @@
 //! A stand-in password manager for the clipboard history's tests: it makes a made-up text the
-//! selection of a nested compositor, marked the way KeePassXC and KWallet
+//! selection of a nested compositor, marked the way `KeePassXC` and `KWallet`
 //! mark a copied password (`x-kde-passwordManagerHint`, value `secret`), through
 //! `ext_data_control_v1` (no window or focus needed). The history must skip it unread.
 //!
@@ -103,7 +103,7 @@ impl Dispatch<ExtDataControlSourceV1, ()> for State {
         state: &mut Self,
         _: &ExtDataControlSourceV1,
         event: ext_data_control_source_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -127,7 +127,7 @@ impl Dispatch<ExtDataControlDeviceV1, ()> for State {
         _: &mut Self,
         _: &ExtDataControlDeviceV1,
         event: ext_data_control_device_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -135,7 +135,7 @@ impl Dispatch<ExtDataControlDeviceV1, ()> for State {
         match event {
             ext_data_control_device_v1::Event::Selection { id: Some(offer) }
             | ext_data_control_device_v1::Event::PrimarySelection { id: Some(offer) } => {
-                offer.destroy()
+                offer.destroy();
             }
             _ => {}
         }

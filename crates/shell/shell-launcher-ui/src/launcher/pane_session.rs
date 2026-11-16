@@ -28,6 +28,7 @@ pub enum Ring {
 
 impl PaneSession {
     /// This state when it is `serial`'s, else a fresh one.
+    #[must_use]
     pub fn for_serial(&self, serial: OpenSerial) -> PaneSession {
         if self.serial == serial {
             self.clone()
@@ -57,6 +58,7 @@ pub fn next_in_ring(filter: Filter, ring: &Ring, next: impl Fn(Filter) -> Filter
 }
 
 /// Tab's ring for an opening with `query` typed whose rows come from `showing` providers.
+#[must_use]
 pub fn ring_for(query: &str, showing: Vec<ProviderKind>) -> Ring {
     match query.trim() {
         "" => Ring::Every,

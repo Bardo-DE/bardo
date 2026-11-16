@@ -76,6 +76,6 @@ mod tests {
 
     #[test]
     fn a_malformed_configuration_is_an_error() {
-        assert!(CuadConfig::from_toml("settings = 3").is_err());
+        CuadConfig::from_toml("settings = 3").unwrap_err();
     }
 }

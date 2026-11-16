@@ -1,7 +1,7 @@
 //! The serial a drag starts from.
 //!
 //! `wl_data_device.start_drag` takes the serial of the implicit grab it continues: a pointer
-//! press that is still down, on the drag's origin surface. A compositor ignores (KWin) or
+//! press that is still down, on the drag's origin surface. A compositor ignores (`KWin`) or
 //! cancels (smithay) a drag with any other serial, so the host refuses it up front. The press
 //! is the one the grab record keeps (`grab::PointerFacts::press`, set on every press, cleared
 //! when the last button comes up or the pointer leaves); unlike a move, the pointer need not

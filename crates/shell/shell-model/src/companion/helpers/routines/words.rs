@@ -12,11 +12,13 @@ pub const MISSED_SKIPPED: &str = "If your computer is off at that time, the run 
 pub const NO_ROUTINES: &str = "Nothing runs by itself yet.";
 
 /// The question before a routine goes.
+#[must_use]
 pub fn remove_routine_question(goal: &str) -> String {
     format!("Remove \u{201c}{goal}\u{201d}? Runs it already did stay in your history.")
 }
 
 /// How often, as a choice reads.
+#[must_use]
 pub fn repeat_label(repeat: Repeat) -> &'static str {
     match repeat {
         Repeat::Daily => "Every day",
@@ -26,6 +28,7 @@ pub fn repeat_label(repeat: Repeat) -> &'static str {
 }
 
 /// Whether a routine runs, in a few words.
+#[must_use]
 pub fn state_label(state: RoutineShown) -> &'static str {
     match state {
         RoutineShown::On => "On",
@@ -35,6 +38,7 @@ pub fn state_label(state: RoutineShown) -> &'static str {
 }
 
 /// How the last run came out, when there was one.
+#[must_use]
 pub fn last_run_line(line: &RoutineLine) -> Option<String> {
     let run = line.last.as_ref()?;
     let state = match run.state {

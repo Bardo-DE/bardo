@@ -32,6 +32,7 @@ pub struct Round {
 /// assert_eq!(silent(true), Some(Round { radius: 10, casement_shadow: false }));
 /// assert_eq!(round_of(FrameChoice::Own, false, 10), None);
 /// ```
+#[must_use]
 pub fn round_of(choice: FrameChoice, margin: bool, desktop: u32) -> Option<Round> {
     match (choice, margin) {
         (FrameChoice::Own, _) => None,

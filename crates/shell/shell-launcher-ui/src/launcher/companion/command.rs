@@ -5,6 +5,7 @@ use shell_model::companion::{CompanionCommand, HelpersMsg, TerminalsMsg};
 
 /// The command that does `act`. An ask is built from the panel's own context (`ask_input`), and
 /// switching the panel's mode is the panel's, so neither is a command here.
+#[must_use]
 pub fn command_of(act: CompanionAct) -> Option<CompanionCommand> {
     match act {
         CompanionAct::Ask { .. } | CompanionAct::Mode(_) => None,

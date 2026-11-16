@@ -82,9 +82,10 @@ pub(super) fn gate(
     at: Option<LogicalPoint>,
 ) -> Gate {
     if let Some((what, PressEdge::Release)) = pressed_of(&event.kind) {
-        return match state.wl.seat.agent_down.holds(lease, what) {
-            true => Gate::Open,
-            false => Gate::Shut(Rule::NoPress),
+        return if state.wl.seat.agent_down.holds(lease, what) {
+            Gate::Open
+        } else {
+            Gate::Shut(Rule::NoPress)
         };
     }
     let Some(window) = state.core.model.leases().window_of(lease) else {

@@ -4,6 +4,7 @@
 use super::model::{PlaceKind, PlaceName};
 
 /// The heading of a kind of place.
+#[must_use]
 pub fn kind_label(kind: PlaceKind) -> &'static str {
     match kind {
         PlaceKind::ThisComputer => "On this computer",
@@ -13,6 +14,7 @@ pub fn kind_label(kind: PlaceKind) -> &'static str {
 }
 
 /// The confirmation before a cloud account is turned on.
+#[must_use]
 pub fn confirm_turn_on(account: &PlaceName, provider: &str) -> String {
     format!(
         "Turn on {}? Requests the assistant can't do on your computers may be sent to {provider}.",
@@ -21,6 +23,7 @@ pub fn confirm_turn_on(account: &PlaceName, provider: &str) -> String {
 }
 
 /// What the assistant says when no allowed place can do a task, offering to allow one.
+#[must_use]
 pub fn no_place_says(would_need: PlaceKind) -> &'static str {
     match would_need {
         PlaceKind::ThisComputer => "This computer can't do that. Want to look at the options?",

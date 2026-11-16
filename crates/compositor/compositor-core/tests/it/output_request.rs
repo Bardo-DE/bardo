@@ -158,13 +158,14 @@ fn a_position_far_outside_any_arrangement_is_refused() {
         let mut want = OutputChangeSet::none();
         want.position = Some(at);
         let resolved = resolve_change(&facts, &config, &want);
-        match fine {
-            true => assert!(resolved.is_ok(), "{name}"),
-            false => assert_eq!(
+        if fine {
+            assert!(resolved.is_ok(), "{name}")
+        } else {
+            assert_eq!(
                 resolved,
                 Err(OutputRefusal::PositionOutOfRange(at)),
                 "{name}"
-            ),
+            )
         }
     }
 }

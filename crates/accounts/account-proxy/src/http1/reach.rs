@@ -52,9 +52,10 @@ pub(super) fn check(
         .paths()
         .iter()
         .any(|r| under(&path, r.prefix()) && allowed(r.methods()));
-    match reached {
-        true => Ok(()),
-        false => Err(RelayFault::ForeignOrigin),
+    if reached {
+        Ok(())
+    } else {
+        Err(RelayFault::ForeignOrigin)
     }
 }
 

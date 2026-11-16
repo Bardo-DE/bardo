@@ -194,7 +194,7 @@ fn an_export_must_point_at_a_listed_file_not_a_folder() {
 fn path_errors_carry_through() {
     let e = updater_core::BundlePath::parse("a//b").unwrap_err();
     assert!(matches!(e, PathError::Climbing(_)));
-    assert!(Sha256Hex::parse(&"0".repeat(64)).is_ok());
+    Sha256Hex::parse(&"0".repeat(64)).unwrap();
 }
 
 #[test]

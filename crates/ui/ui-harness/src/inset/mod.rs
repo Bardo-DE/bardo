@@ -35,6 +35,7 @@ pub use scene::{Content, ContentKind, Edges, Paint, Scene, VisibleBox};
 use crate::harness::Harness;
 
 /// Check every visible box of the document against `policy`.
+#[must_use]
 pub fn insets(harness: &Harness, policy: &Policy) -> Findings {
     harness.with_doc(|doc| measure(&read(doc), policy))
 }

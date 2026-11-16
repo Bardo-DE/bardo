@@ -79,6 +79,7 @@ const SWIPE_DISMISS_VELOCITY_PX_S: f32 = 600.0;
 const SWIPE_DAMPING: Fraction = Fraction(250);
 
 /// quire's swipe thresholds for a card.
+#[must_use]
 pub fn swipe_metrics() -> SwipeMetrics {
     SwipeMetrics {
         dismiss: Px(SWIPE_DISMISS_PX),
@@ -88,6 +89,7 @@ pub fn swipe_metrics() -> SwipeMetrics {
 }
 
 /// The app icon's side (`--notifications-icon`, 28), held to what an `IconPx` holds.
+#[must_use]
 pub fn icon_size(tokens: &NotificationTokens) -> IconPx {
     IconPx(u8::try_from(tokens.icon).unwrap_or(u8::MAX))
 }

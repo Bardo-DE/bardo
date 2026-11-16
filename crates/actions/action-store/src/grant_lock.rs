@@ -9,6 +9,7 @@ pub struct WriteLock(Arc<Mutex<()>>);
 
 impl WriteLock {
     /// A lock of its own.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

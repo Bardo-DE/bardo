@@ -1,4 +1,4 @@
-//! Form, FormSection, IconTile and PaneStack in every state, as data: the table the golden test walks.
+//! Form, `FormSection`, `IconTile` and `PaneStack` in every state, as data: the table the golden test walks.
 //! Goldens live in `tests/snapshots/forms/<component>/<state>.html`.
 
 use super::scoped::Scoped;

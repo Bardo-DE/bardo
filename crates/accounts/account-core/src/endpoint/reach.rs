@@ -21,16 +21,19 @@ pub struct PathReach {
 
 impl PathReach {
     /// `methods` under `prefix` (decoded bytes, no trailing `/`).
+    #[must_use]
     pub fn new(prefix: Vec<u8>, methods: ReachMethods) -> Self {
         Self { prefix, methods }
     }
 
     /// The decoded path prefix.
+    #[must_use]
     pub fn prefix(&self) -> &[u8] {
         &self.prefix
     }
 
     /// What it lets through.
+    #[must_use]
     pub fn methods(&self) -> ReachMethods {
         self.methods
     }
@@ -44,16 +47,19 @@ pub struct Reach {
 
 impl Reach {
     /// The whole origin, with every method.
+    #[must_use]
     pub fn origin() -> Self {
         Self::under(vec![PathReach::new(Vec::new(), ReachMethods::Any)])
     }
 
     /// Only these paths.
+    #[must_use]
     pub fn under(paths: Vec<PathReach>) -> Self {
         Self { paths }
     }
 
     /// Whether the whole origin is reachable, with every method.
+    #[must_use]
     pub fn is_origin(&self) -> bool {
         self.paths
             .iter()
@@ -61,6 +67,7 @@ impl Reach {
     }
 
     /// The reachable paths.
+    #[must_use]
     pub fn paths(&self) -> &[PathReach] {
         &self.paths
     }

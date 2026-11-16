@@ -8,6 +8,7 @@ use ui_settings::schema::{
 };
 
 /// A key on the Accounts page at `path`, in `section`, hands off to agents.
+#[must_use]
 pub fn spec(
     path: String,
     section: &str,
@@ -38,6 +39,7 @@ pub fn spec(
 }
 
 /// The kind of a row that is a button.
+#[must_use]
 pub fn action(name: &str, weight: ActionWeight) -> KeyKind {
     KeyKind::Live {
         action: LiveAction {
@@ -48,11 +50,13 @@ pub fn action(name: &str, weight: ActionWeight) -> KeyKind {
 }
 
 /// The value of a button.
+#[must_use]
 pub fn off() -> toml::Value {
     toml::Value::Boolean(false)
 }
 
 /// `spec` with the words of its enum key labelled for a person.
+#[must_use]
 pub fn labelled(mut spec: KeySpec, words: &[(&str, &str)]) -> KeySpec {
     spec.labels = WordLabels(
         words
@@ -64,6 +68,7 @@ pub fn labelled(mut spec: KeySpec, words: &[(&str, &str)]) -> KeySpec {
 }
 
 /// A read-out row whose one value is `word`, as a person reads it by `labels`.
+#[must_use]
 pub fn readout(
     path: String,
     section: &str,

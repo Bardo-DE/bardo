@@ -91,7 +91,7 @@ fn a_pending_loop_spins_at_once_steps_until_it_ends_and_goes_quiet() {
     harness.advance(Duration::from_millis(83));
     assert_eq!(frame(&harness), "Step(1)");
     // It goes round a turn a second, and keeps going: there is no cap.
-    harness.advance(Duration::from_millis(30_000));
+    harness.advance(Duration::from_secs(30));
     assert!(frame(&harness).starts_with("Step"), "{}", frame(&harness));
     harness.within(|| *OP.write() = Operation::Idle);
     harness.advance(Duration::from_millis(20));

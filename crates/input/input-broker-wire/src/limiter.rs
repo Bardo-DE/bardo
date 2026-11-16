@@ -8,6 +8,7 @@ pub struct Millis(pub u64);
 
 impl Millis {
     /// Milliseconds from `earlier` to `self`, zero if `earlier` is later.
+    #[must_use]
     pub const fn since(self, earlier: Millis) -> u64 {
         self.0.saturating_sub(earlier.0)
     }
@@ -39,6 +40,7 @@ const MILLI: u64 = 1_000;
 
 impl Limiter {
     /// A full bucket at `now`.
+    #[must_use]
     pub const fn new(now: Millis) -> Self {
         Self {
             tokens: EVENT_BURST * MILLI,

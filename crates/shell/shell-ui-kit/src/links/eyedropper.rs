@@ -25,12 +25,14 @@ pub struct EyedropperLink {
 
 impl EyedropperLink {
     /// No question, no surface.
+    #[must_use]
     pub fn new() -> EyedropperLink {
         EyedropperLink::default()
     }
 
     /// Take `input` into the pictures held and return what that asks the daemon to do. The
     /// surfaces are woken only when the pictures changed.
+    #[must_use]
     pub fn take(&self, input: EyedropIn) -> Vec<EyedropOut> {
         let mut out = Vec::new();
         self.feed.modify_if(|feed| {
@@ -56,11 +58,13 @@ impl EyedropperLink {
     }
 
     /// What is held now.
+    #[must_use]
     pub fn latest(&self) -> EyedropFeed {
         self.feed.now()
     }
 
     /// A receiver for the surfaces and the daemon to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<EyedropFeed> {
         self.feed.subscribe()
     }

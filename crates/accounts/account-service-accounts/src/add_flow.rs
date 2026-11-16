@@ -49,6 +49,7 @@ pub struct SignInAs {
 
 impl SignInAs {
     /// A sign-in with `provider` as the person at `hint`, `signed_in_before` or not.
+    #[must_use]
     pub fn new(provider: ProviderId, hint: LoginHint, signed_in_before: bool) -> Self {
         Self {
             provider,
@@ -548,9 +549,10 @@ impl<E: Ports> Accounts<'_, E> {
                 .collect(),
         );
         let purpose = job.purpose(self, caller, &rows)?;
-        let rows = match job.lists_providers() {
-            true => rows,
-            false => Vec::new(),
+        let rows = if job.lists_providers() {
+            rows
+        } else {
+            Vec::new()
         };
         let own = match self.state.own_machines.get() {
             Some(machines) => machines.read().await,

@@ -15,6 +15,7 @@ pub struct Srgba(pub [f32; 4]);
 
 impl Srgba {
     /// This colour painted over `ground`, which is taken as opaque: what the eye sees.
+    #[must_use]
     pub fn over(self, ground: Srgba) -> Srgba {
         let [r, g, b, a] = self.0;
         let [gr, gg, gb, _] = ground.0;
@@ -27,6 +28,7 @@ impl Srgba {
     }
 
     /// WCAG relative luminance (alpha ignored).
+    #[must_use]
     pub fn luminance(self) -> f32 {
         let linear = |c: f32| {
             if c <= 0.039_28 {
@@ -40,6 +42,7 @@ impl Srgba {
     }
 
     /// The WCAG contrast ratio between two opaque colours, 1 to 21.
+    #[must_use]
     pub fn contrast(self, other: Srgba) -> f32 {
         let (a, b) = (self.luminance(), other.luminance());
         (a.max(b) + 0.05) / (a.min(b) + 0.05)
@@ -51,6 +54,7 @@ impl Harness {
     /// (or of its `::before`) carried through the part's own `transform` and every transformed
     /// ancestor's (`blitz_embed::paint_rect`): a box that slides by `translateX` is read where it
     /// appears. [`Harness::rect`](crate::Harness::rect) reads the layout box with transforms left out.
+    #[must_use]
     pub fn painted_rect(&self, selector: &str, part: Part) -> Option<Rect> {
         self.with_doc(|doc| {
             let node = part.node(doc, first(doc, selector)?)?;

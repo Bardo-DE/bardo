@@ -43,6 +43,7 @@ pub struct FrameVars {
 
 impl FrameVars {
     /// The frame variables `look` paints in `scheme`.
+    #[must_use]
     pub fn of(look: &SpaceLook, scheme: Scheme) -> Self {
         let palette = derive(&look.dots, scheme);
         let gradient = gradient(&palette);
@@ -66,6 +67,7 @@ impl FrameVars {
     }
 
     /// The inline `style` attribute value: `--f-ink:#…;--f-ink-soft:#…;…`.
+    #[must_use]
     pub fn style_attr(&self) -> String {
         self.pairs()
             .iter()

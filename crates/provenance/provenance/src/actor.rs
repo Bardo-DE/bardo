@@ -154,6 +154,7 @@ slug_enum! {
 
 impl Actor {
     /// The kind of this actor; a computer-use run is its own kind.
+    #[must_use]
     pub fn kind(&self) -> ActorKind {
         match self {
             Actor::User { .. } => ActorKind::User,

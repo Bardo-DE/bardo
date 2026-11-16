@@ -61,6 +61,7 @@ fn app(id: &str, name: &str, actions: &[(&str, &str)]) -> App {
 }
 
 /// Four apps, sorted by id as the index keeps them.
+#[must_use]
 pub fn index() -> AppIndex {
     let mut apps = vec![
         app(FILES, "Example Files", &[]),
@@ -73,6 +74,7 @@ pub fn index() -> AppIndex {
 }
 
 /// Files and Terminal pinned.
+#[must_use]
 pub fn pins() -> DockPins {
     DockPins {
         pinned: vec![AppId(FILES.to_owned()), AppId(TERM.to_owned())],
@@ -80,6 +82,7 @@ pub fn pins() -> DockPins {
 }
 
 /// Terminal (pinned) active with two windows, Firefox (not pinned) with one, on `output`.
+#[must_use]
 pub fn toplevels_on(output: &str) -> Toplevels {
     let window = |key: u64, app: &str, active| Toplevel {
         identifier: String::new(),
@@ -102,6 +105,7 @@ pub fn toplevels_on(output: &str) -> Toplevels {
 }
 
 /// Firefox shows a count of 7 and 40 % progress.
+#[must_use]
 pub fn badges() -> Badges {
     let mut badges = Badges::default();
     badges.apps.insert(

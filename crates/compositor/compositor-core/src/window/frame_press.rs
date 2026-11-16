@@ -39,6 +39,7 @@ impl ClickTracker {
     /// let (_, second) = tracker.press(WindowId(1), Mono(Duration::from_millis(100)), at);
     /// assert_eq!((first, second), (false, true));
     /// ```
+    #[must_use]
     pub fn press(self, window: WindowId, now: Mono, point: LogicalPoint) -> (ClickTracker, bool) {
         let double = self.last.is_some_and(|(held, at, was)| {
             held == window
@@ -80,6 +81,7 @@ pub enum ChromeAction {
 /// `double_click` setting and the `mods` held say. The green light goes full screen, and zooms
 /// (fills, or goes back) with Option held, as on the Mac; a double click on the title follows
 /// the setting. None for a press that is not on the frame.
+#[must_use]
 pub fn chrome_action(
     hit: FrameHit,
     double: bool,

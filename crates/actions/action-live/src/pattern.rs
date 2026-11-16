@@ -1,4 +1,5 @@
 //! The flows that test a pattern of the harness, played on an app that is only a test app.
+//!
 //! A pattern is something every app of the desktop will meet: finding things and acting on them,
 //! the first use of an app in a Space (a read never asks), and a thing whose words are somebody else's. The app
 //! under test is a [`Kit`] (its manifest's action names, what the flow should find, its
@@ -34,6 +35,7 @@ impl Pattern {
     ];
 
     /// The pattern's name, which ends a flow's slug.
+    #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
             Pattern::SearchAct => "search-act",
@@ -44,6 +46,7 @@ impl Pattern {
     }
 
     /// Whether the flow ends with the answer done: the first use of an app may end on a question.
+    #[must_use]
     pub const fn expects_done(self) -> bool {
         !matches!(self, Pattern::FirstUse)
     }
@@ -108,6 +111,7 @@ pub const FILES: Kit = Kit {
 
 impl Kit {
     /// What the person says in `pattern`.
+    #[must_use]
     pub const fn says(&self, pattern: Pattern) -> &'static str {
         match pattern {
             Pattern::SearchAct | Pattern::SearchActRefused => self.says_act,
@@ -127,6 +131,7 @@ pub struct Checked {
 }
 
 /// Judges one pattern over the app `kit`. `planner` is whether the companion's planner played.
+#[must_use]
 pub fn judge(kit: &Kit, pattern: Pattern, planner: bool, e: &Evidence) -> Checked {
     let mut out = Checked::default();
     match pattern {

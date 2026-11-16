@@ -27,8 +27,8 @@ async fn a_call_made_as_soon_as_the_name_is_owned_is_answered() {
     let connection = bus.connect().await;
     {
         let _on = held.handle().enter();
-        connection.object_server();
-    }
+        connection.object_server()
+    };
     held.start(serve(&connection, Hub::default(), Known::default()), PAUSE)
         .await
         .expect("syncd serves");

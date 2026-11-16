@@ -1,4 +1,4 @@
-//! zwp_pointer_gestures_v1: swipe, pinch, hold. Filled by P0-H4.
+//! `zwp_pointer_gestures_v1`: swipe, pinch, hold. Filled by P0-H4.
 //!
 //! The helper asks for the swipe, pinch and hold objects of a pointer; their events reach the
 //! transcript through the connection's tap.
@@ -42,16 +42,19 @@ impl Gestures {
     }
 
     /// The swipe object.
+    #[must_use]
     pub fn swipe(&self) -> &ZwpPointerGestureSwipeV1 {
         &self.swipe
     }
 
     /// The pinch object.
+    #[must_use]
     pub fn pinch(&self) -> &ZwpPointerGesturePinchV1 {
         &self.pinch
     }
 
     /// The hold object.
+    #[must_use]
     pub fn hold(&self) -> &ZwpPointerGestureHoldV1 {
         &self.hold
     }

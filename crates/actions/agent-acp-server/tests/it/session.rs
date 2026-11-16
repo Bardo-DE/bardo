@@ -94,7 +94,7 @@ async fn a_whole_session_in_order_and_golden() {
         ed.transcript()
     };
     let (ran, transcript) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     golden("session.jsonl", &transcript);
 }
 
@@ -197,7 +197,7 @@ async fn each_refusal_reaches_the_editor_as_failed_with_a_sentence_and_an_app_wi
         );
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -242,7 +242,7 @@ async fn allow_always_is_never_offered_at_the_gate_and_choosing_it_anyway_is_a_r
         assert_eq!(kinds, ["allow_once", "reject_once"]);
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -270,7 +270,7 @@ async fn a_cancel_while_the_editor_is_asked_ends_the_turn_cancelled() {
         assert_eq!(reply["result"]["stopReason"], "cancelled");
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     // (the host heard the cancel)
 }
 
@@ -309,7 +309,7 @@ async fn read_only_mode_stops_a_write_without_asking() {
         assert_eq!(bad["error"]["code"], -32602);
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }
 
 #[tokio::test]
@@ -333,7 +333,7 @@ async fn the_prompt_text_is_the_turn_and_attachments_are_not() {
         assert_eq!(reply["error"]["code"], -32602);
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
     let host = server.into_host();
     assert_eq!(host.turns.len(), 1);
     let turn = &host.turns[0].1;
@@ -393,5 +393,5 @@ async fn editor_mcp_servers_are_ignored_and_unknown_methods_refused() {
         assert_eq!(relative["error"]["code"], -32602);
     };
     let (ran, ()) = tokio::join!(server.run(), script);
-    assert!(ran.is_ok());
+    ran.unwrap();
 }

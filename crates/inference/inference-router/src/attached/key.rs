@@ -1,4 +1,5 @@
 //! The bearer token of an attached engine (vLLM's `--api-key`), read from a file at each connect.
+//!
 //! The file is the person's own and private to them: a file any other user could read is refused,
 //! and so is one another user owns. The token is held in [`SecretText`] (whose `Debug` says nothing)
 //! and goes nowhere but the `Authorization` header: no log line, error or `Debug` output of this
@@ -44,11 +45,13 @@ pub struct KeyFile(PathBuf);
 
 impl KeyFile {
     /// The key file at `path`.
+    #[must_use]
     pub fn at(path: PathBuf) -> Self {
         Self(path)
     }
 
     /// Where it is.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.0
     }
@@ -84,9 +87,10 @@ impl KeyFile {
         let fits = !token.is_empty()
             && u64::try_from(token.len()).is_ok_and(|len| len <= LONGEST)
             && token.chars().all(|c| c.is_ascii_graphic());
-        match fits {
-            true => Ok(SecretText::new(token)),
-            false => Err(KeyFileProblem::Unusable),
+        if fits {
+            Ok(SecretText::new(token))
+        } else {
+            Err(KeyFileProblem::Unusable)
         }
     }
 }

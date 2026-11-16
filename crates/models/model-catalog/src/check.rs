@@ -107,10 +107,10 @@ pub fn attached_parser(c: &Capabilities, serving: &Serving) -> Result<(), Catalo
         .text_out
         .as_ref()
         .is_some_and(|text| text.tools == ToolSupport::ClientParsed);
-    if attached.tool_parser.is_some() != client {
-        Ok(())
-    } else {
+    if attached.tool_parser.is_some() == client {
         Err(CatalogError::AttachedToolParser)
+    } else {
+        Ok(())
     }
 }
 

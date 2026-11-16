@@ -16,6 +16,7 @@ pub struct LayerBook {
 
 impl LayerBook {
     /// No layer surfaces.
+    #[must_use]
     pub fn empty() -> LayerBook {
         LayerBook {
             layers: BTreeMap::new(),
@@ -24,6 +25,7 @@ impl LayerBook {
     }
 
     /// The book with `layer` mapped as `spec` (or changed to it).
+    #[must_use]
     pub fn with_layer(self, layer: LayerKey, spec: LayerSpec) -> LayerBook {
         let mut layers = self.layers;
         layers.insert(layer, spec);
@@ -32,6 +34,7 @@ impl LayerBook {
 
     /// The book with `layer` put with its top-left at `at`, wherever its anchors would have
     /// put it.
+    #[must_use]
     pub fn with_pin(self, layer: LayerKey, at: LogicalPoint) -> LayerBook {
         let mut pins = self.pins;
         pins.insert(layer, at);
@@ -39,6 +42,7 @@ impl LayerBook {
     }
 
     /// The book without `layer`.
+    #[must_use]
     pub fn without_layer(self, layer: &LayerKey) -> LayerBook {
         let mut layers = self.layers;
         layers.remove(layer);
@@ -49,6 +53,7 @@ impl LayerBook {
 
     /// A surface that holds the shell role `role`, if one does: the lowest key when a bar or a
     /// dock is held on several outputs (use [`LayerBook::role_holder_on`] to name the output).
+    #[must_use]
     pub fn role_holder(&self, role: ShellRole) -> Option<LayerKey> {
         self.layers
             .iter()
@@ -58,6 +63,7 @@ impl LayerBook {
 
     /// The surface that holds `role` for `output`: on that output for a bar or a dock (each
     /// output has its own), the one holder of any other role.
+    #[must_use]
     pub fn role_holder_on(&self, role: ShellRole, output: &OutputKey) -> Option<LayerKey> {
         self.layers
             .iter()
@@ -67,6 +73,7 @@ impl LayerBook {
 
     /// The surface that serves `output` as `role`: the one on `output`, else (a bar or a dock on
     /// no such output) any other holder.
+    #[must_use]
     pub fn role_holder_near(&self, role: ShellRole, output: &OutputKey) -> Option<LayerKey> {
         self.role_holder_on(role, output)
             .or_else(|| self.role_holder(role))
@@ -74,6 +81,7 @@ impl LayerBook {
 
     /// Whether a surface other than `layer` already holds `role` where `layer` (on `output`)
     /// would take it: on the same output for a bar or a dock, anywhere for any other role.
+    #[must_use]
     pub fn role_taken(&self, role: ShellRole, layer: LayerKey, output: &OutputKey) -> bool {
         self.layers
             .iter()
@@ -83,6 +91,7 @@ impl LayerBook {
     /// The rectangle a full-screen window covers on `output` (whose whole rectangle is `full`)
     /// under `mode`: all of it with `Reveal`, less the exclusive zone of the output's bar with
     /// `Keep` (the dock's zone is not taken: the dock still reveals over the window).
+    #[must_use]
     pub fn full_screen_area(
         &self,
         mode: FullScreenBar,
@@ -110,11 +119,13 @@ impl LayerBook {
     }
 
     /// Where `layer` was put by hand, if it was.
+    #[must_use]
     pub fn pin(&self, layer: &LayerKey) -> Option<LogicalPoint> {
         self.pins.get(layer).copied()
     }
 
     /// What the surface `layer` asked for.
+    #[must_use]
     pub fn get(&self, layer: &LayerKey) -> Option<&LayerSpec> {
         self.layers.get(layer)
     }
@@ -127,6 +138,7 @@ impl LayerBook {
     /// What `full` (an output's whole logical rectangle) leaves for windows once every layer
     /// surface on `output` that reserves an exclusive zone has taken it ([`LayerBook::arrange`]).
     /// Maximised windows take this rectangle too (A16), so a bar and a dock are never covered.
+    #[must_use]
     pub fn usable_area(&self, output: &OutputKey, full: LogicalRect) -> LogicalRect {
         self.arrange(output, full).usable()
     }

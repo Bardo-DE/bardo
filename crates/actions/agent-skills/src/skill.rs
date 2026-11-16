@@ -80,6 +80,7 @@ pub struct Skill {
 
 impl Skill {
     /// The catalogue line.
+    #[must_use]
     pub fn card(&self) -> SkillCard {
         SkillCard {
             id: self.id.clone(),
@@ -88,6 +89,7 @@ impl Skill {
     }
 
     /// The body as trusted text from its source.
+    #[must_use]
     pub fn text(&self) -> SkillText {
         let source = match self.origin {
             Origin::Shipped => Source::App(self.owner.clone()),

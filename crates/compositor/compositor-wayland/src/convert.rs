@@ -6,26 +6,31 @@ use desktop_protocols::vocab::Toggle;
 use smithay::utils::{Logical, Point, Rectangle, Serial, Size};
 
 /// A smithay serial as the model's input serial.
+#[must_use]
 pub fn serial_of(serial: Serial) -> InputSerial {
     InputSerial(u32::from(serial))
 }
 
 /// The model's input serial as smithay's.
+#[must_use]
 pub fn serial_to(serial: InputSerial) -> Serial {
     Serial::from(serial.0)
 }
 
 /// A smithay logical rectangle as ours (a negative extent becomes empty).
+#[must_use]
 pub fn rect_of(rect: Rectangle<i32, Logical>) -> LogicalRect {
     LogicalRect::new(point_of(rect.loc), size_of(rect.size))
 }
 
 /// Our logical rectangle as smithay's.
+#[must_use]
 pub fn rect_to(rect: LogicalRect) -> Rectangle<i32, Logical> {
     Rectangle::new(point_to(rect.origin), size_to(rect.size))
 }
 
 /// A smithay logical point as ours.
+#[must_use]
 pub fn point_of(point: Point<i32, Logical>) -> LogicalPoint {
     LogicalPoint {
         x: point.x,
@@ -34,11 +39,13 @@ pub fn point_of(point: Point<i32, Logical>) -> LogicalPoint {
 }
 
 /// Our logical point as smithay's.
+#[must_use]
 pub fn point_to(point: LogicalPoint) -> Point<i32, Logical> {
     Point::from((point.x, point.y))
 }
 
 /// A smithay logical size as ours (negative extents become zero).
+#[must_use]
 pub fn size_of(size: Size<i32, Logical>) -> LogicalSize {
     LogicalSize {
         w: u32::try_from(size.w).unwrap_or(0),
@@ -47,6 +54,7 @@ pub fn size_of(size: Size<i32, Logical>) -> LogicalSize {
 }
 
 /// Our logical size as smithay's (extents beyond `i32::MAX` saturate).
+#[must_use]
 pub fn size_to(size: LogicalSize) -> Size<i32, Logical> {
     Size::from((
         i32::try_from(size.w).unwrap_or(i32::MAX),
@@ -55,6 +63,7 @@ pub fn size_to(size: LogicalSize) -> Size<i32, Logical> {
 }
 
 /// The only place a smithay `bool` becomes ours.
+#[must_use]
 pub fn toggle_of(on: bool) -> Toggle {
     if on { Toggle::On } else { Toggle::Off }
 }

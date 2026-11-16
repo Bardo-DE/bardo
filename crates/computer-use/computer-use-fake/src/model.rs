@@ -36,6 +36,7 @@ pub struct ScriptedModel {
 
 impl ScriptedModel {
     /// A model that plays `script` in order; past its end every step fails `Fatal`.
+    #[must_use]
     pub fn new(script: Vec<Result<CuaStepReply, CuaModelError>>) -> Self {
         Self {
             script: script.into(),
@@ -48,18 +49,21 @@ impl ScriptedModel {
     }
 
     /// Says no model can serve a run (what inferd answers when the chosen model has no engine).
+    #[must_use]
     pub fn missing(mut self) -> Self {
         self.reach = ModelReach::Missing;
         self
     }
 
     /// Says no model that could serve reads images.
+    #[must_use]
     pub fn blind(mut self) -> Self {
         self.sight = ModelSight::Blind;
         self
     }
 
     /// Says it is served by `served`.
+    #[must_use]
     pub fn served_by(mut self, served: ServedBy) -> Self {
         self.served = Some(served);
         self
@@ -86,11 +90,13 @@ impl ScriptedModel {
     }
 
     /// The goals it was begun with.
+    #[must_use]
     pub fn begun(&self) -> &[CuaBegin] {
         &self.began
     }
 
     /// The step requests it received.
+    #[must_use]
     pub fn requests(&self) -> &[CuaStepRequest] {
         &self.requests
     }

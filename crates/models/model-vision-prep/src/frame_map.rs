@@ -106,6 +106,7 @@ impl FrameMap {
 
     /// For "cursor at" hints and replay. A total function: a window point maps to the nearest
     /// image pixel, never past the last one.
+    #[must_use]
     pub fn window_to_image(&self, p: Point<WindowSpace>) -> Point<ImageSpace> {
         let axis = |v: Coord, image: Coord, window: Coord| {
             let mapped = scaled(v.0, image.0, window.0)

@@ -48,8 +48,7 @@ impl VoicedCallers {
     pub fn new(voiced: &Connection, is: VoicedIs) -> Arc<VoicedCallers> {
         let voiced = voiced
             .unique_name()
-            .map(ToString::to_string)
-            .unwrap_or_else(|| panic!("a connection with no name")); // test-only
+            .map_or_else(|| panic!("a connection with no name"), ToString::to_string); // test-only
         Arc::new(VoicedCallers {
             voiced,
             peers: Mutex::new(Vec::new()),

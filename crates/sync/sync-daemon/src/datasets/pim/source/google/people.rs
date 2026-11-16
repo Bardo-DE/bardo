@@ -98,9 +98,10 @@ impl<T: GrantsLink + 'static> PimSource for GooglePeopleSource<T> {
 /// The file name of a contact: its resource name with the slash made safe.
 fn file_of(person: &Person) -> sync_core::ItemPath {
     let stem = person.resource_name.replace('/', "_");
-    match stem.is_empty() {
-        true => name_of(&person.resource_name),
-        false => sync_core::ItemPath(format!("{stem}.vcf")),
+    if stem.is_empty() {
+        name_of(&person.resource_name)
+    } else {
+        sync_core::ItemPath(format!("{stem}.vcf"))
     }
 }
 
@@ -167,13 +168,16 @@ impl<T: GrantsLink + 'static> Feed for GooglePeopleFeed<T> {
         let changes = listing
             .connections
             .iter()
-            .map(|person| match person.is_deleted() {
-                true => FeedChange::Delete(Tombstone {
-                    id: RemoteId(person.resource_name.clone()),
-                    version: RemoteVersion(DELETED.to_owned()),
-                    deleted_at: self.clock.now(),
-                }),
-                false => Self::upsert(person),
+            .map(|person| {
+                if person.is_deleted() {
+                    FeedChange::Delete(Tombstone {
+                        id: RemoteId(person.resource_name.clone()),
+                        version: RemoteVersion(DELETED.to_owned()),
+                        deleted_at: self.clock.now(),
+                    })
+                } else {
+                    Self::upsert(person)
+                }
             })
             .collect();
         Ok(Page {
@@ -198,9 +202,10 @@ impl<T: GrantsLink + 'static> Feed for GooglePeopleFeed<T> {
         }
         let person: Person = serde_json::from_slice(response.body())
             .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
-        match person.is_deleted() {
-            true => Err(ReplicaError::Gone),
-            false => Ok(person::to_vcf(&person).into_bytes()),
+        if person.is_deleted() {
+            Err(ReplicaError::Gone)
+        } else {
+            Ok(person::to_vcf(&person).into_bytes())
         }
     }
 }

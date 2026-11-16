@@ -45,6 +45,7 @@ impl AtomicWrite {
     };
 
     /// The same writer, but it never makes a directory (a write into a missing one fails with `NotFound`).
+    #[must_use]
     pub const fn in_existing_dir(self) -> Self {
         Self {
             create_parents: false,
@@ -129,17 +130,20 @@ impl AtomicFile {
 
     /// The file at `path` (its directory is created on the first save). `None` for a path with no
     /// file name.
+    #[must_use]
     pub fn at(path: &Path) -> Option<Self> {
         let name = path.file_name()?.to_string_lossy().into_owned();
         Some(Self::new(directory_of(path).to_path_buf(), name))
     }
 
     /// The file.
+    #[must_use]
     pub fn path(&self) -> PathBuf {
         self.dir.join(&self.name)
     }
 
     /// The copy of the file from before its last change.
+    #[must_use]
     pub fn backup_path(&self) -> PathBuf {
         self.dir.join(format!("{}.bak", self.name))
     }
@@ -165,6 +169,7 @@ impl AtomicFile {
     }
 
     /// A staging name no other save, in this process or another, is using.
+    #[must_use]
     pub fn staging(&self) -> PathBuf {
         staging_beside(&self.path())
     }

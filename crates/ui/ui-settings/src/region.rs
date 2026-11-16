@@ -43,6 +43,7 @@ impl HourCycle {
     /// `H12` and `H24` are the person's choice and ignore the locale; `Auto` reads it: the
     /// countries in a short table and a bare `en` use 12 hours, `fr_CA` and every other locale,
     /// `C` included, use 24.
+    #[must_use]
     pub fn resolve(self, locale: &str) -> ResolvedHours {
         match self {
             HourCycle::H12 => ResolvedHours::H12,
@@ -72,6 +73,7 @@ fn locale_hours(locale: &str) -> ResolvedHours {
 /// The locale name the session uses for times, by POSIX precedence: `LC_ALL`, then `LC_TIME`,
 /// then `LANG`, each ignored when empty; `C` when none is set. The caller reads the environment
 /// and hands the three values in.
+#[must_use]
 pub fn time_locale<'a>(
     lc_all: Option<&'a str>,
     lc_time: Option<&'a str>,

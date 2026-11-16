@@ -9,22 +9,26 @@ impl ScaleMilli {
     pub const ONE: ScaleMilli = ScaleMilli(1000);
 
     /// The scale `milli` thousandths.
+    #[must_use]
     pub const fn new(milli: u32) -> Self {
         Self(milli)
     }
 
     /// The thousandths.
+    #[must_use]
     pub const fn get(self) -> u32 {
         self.0
     }
 
     /// The scale nearest `value`, a `wl_fixed` already read as a float; negative and NaN
     /// become 0.
+    #[must_use]
     pub fn from_f64(value: f64) -> Self {
         Self((value * 1000.0).round().max(0.0) as u32)
     }
 
     /// The scale as the float `wl_fixed` carries.
+    #[must_use]
     pub fn to_f64(self) -> f64 {
         f64::from(self.0) / 1000.0
     }
@@ -36,11 +40,13 @@ pub struct RefreshMilliHz(u32);
 
 impl RefreshMilliHz {
     /// The rate `milli_hz`.
+    #[must_use]
     pub const fn new(milli_hz: u32) -> Self {
         Self(milli_hz)
     }
 
     /// The millihertz.
+    #[must_use]
     pub const fn get(self) -> u32 {
         self.0
     }

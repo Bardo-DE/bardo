@@ -177,7 +177,7 @@ fn SendApp() -> Element {
     rsx! {
         Root {
             div { style: "position:relative; height:340px",
-                SendPill { text: "Sending in 3 s", progress: Fraction(400), operation: Operation::Running(PendingToken::start()), onundo: |_| {} }
+                SendPill { text: "Sending in 3 s", progress: Fraction(400), operation: Operation::Running(PendingToken::start()), onundo: |()| {} }
             }
         }
     }

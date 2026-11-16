@@ -44,16 +44,19 @@ impl Default for ScrollDriver {
 
 impl ScrollDriver {
     /// The engine, for a host that reads its phase.
+    #[must_use]
     pub fn engine(&self) -> &Engine {
         &self.engine
     }
 
     /// The scroller the engine is on.
+    #[must_use]
     pub fn latch(&self) -> Option<Latch> {
         self.engine.latch()
     }
 
     /// Whether the engine needs a frame per callback.
+    #[must_use]
     pub fn motion(&self) -> Motion {
         self.engine.motion()
     }

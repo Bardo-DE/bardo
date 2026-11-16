@@ -5,6 +5,7 @@ use rustix::time::{ClockId, clock_gettime};
 
 /// What `CLOCK_MONOTONIC` reads now, in nanoseconds: the clock `Instant` is, and the one
 /// `time.clock_gettime_ns(time.CLOCK_MONOTONIC)` reads in a script.
+#[must_use]
 pub fn monotonic_ns() -> u64 {
     let now = clock_gettime(ClockId::Monotonic);
     let seconds = u64::try_from(now.tv_sec).unwrap_or(0);

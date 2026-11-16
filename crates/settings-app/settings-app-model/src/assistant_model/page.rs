@@ -15,6 +15,7 @@ pub const ASSISTANT_MODEL_SLUG: &str = "assistant-model";
 pub const ASSISTANT_SETUP_SLUG: &str = "assistant-model-setup";
 
 /// The Assistant Model page as the catalogue holds it.
+#[must_use]
 pub fn assistant_model_page() -> Page {
     Page::App(ASSISTANT_MODEL_NAME.to_owned())
 }

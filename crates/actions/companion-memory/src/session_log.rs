@@ -202,21 +202,21 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
         entry: &SessionEntry,
     ) -> Result<Appended, LogFault> {
         let encoded = encode(seq, entry).map_err(|_| LogFault::Encode)?;
-        let (next, last) = match self.cached(session) {
-            Some(next) => (next, None),
-            None => {
-                let tail = self.tail(session).await?;
-                self.remember(session, tail.next);
-                (tail.next, tail.last)
-            }
+        let (next, last) = if let Some(next) = self.cached(session) {
+            (next, None)
+        } else {
+            let tail = self.tail(session).await?;
+            self.remember(session, tail.next);
+            (tail.next, tail.last)
         };
         if seq != next {
             // An earlier try that was not acknowledged may have landed: the same entry at the
             // position just written is that try, acknowledged now.
             let landed = seq.next() == next && last.as_deref() == Some(encoded.json.as_str());
-            return match landed {
-                true => Ok(Appended { seq }),
-                false => Err(LogFault::OutOfOrder { expected: next }),
+            return if landed {
+                Ok(Appended { seq })
+            } else {
+                Err(LogFault::OutOfOrder { expected: next })
             };
         }
         let record = self.record(session, &encoded.kind, &encoded.json)?;

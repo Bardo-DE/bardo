@@ -89,6 +89,7 @@ pub enum ProtectFault {
 
 impl Bind {
     /// `path`, visible at the same path inside, with `access`.
+    #[must_use]
     pub fn new(path: AbsPath, access: Access) -> Self {
         Self { path, access }
     }
@@ -96,6 +97,7 @@ impl Bind {
 
 impl Overlay {
     /// The host file `from`, shown inside at `to`, read-only.
+    #[must_use]
     pub fn new(from: AbsPath, to: AbsPath) -> Self {
         Self { from, to }
     }
@@ -105,6 +107,7 @@ impl AgentRun {
     /// A run of `argv` in `cwd`, with `env` and `net`, and no extra binds or overlays. In the
     /// allow-list mode the proxy variables (`AgentNet::proxy_env`) are put into `env`, over any
     /// of the same names the caller gave, so the agent cannot be started without them.
+    #[must_use]
     pub fn new(argv: Argv, cwd: AbsPath, mut env: Vec<EnvVar>, net: AgentNet) -> Self {
         let proxy = net.proxy_env();
         env.retain(|v| !proxy.iter().any(|p| p.name == v.name));

@@ -65,7 +65,7 @@ pub fn ShakeView(net: Net) -> Element {
     }
 }
 
-/// A speaker whose slash draws on and off (MorphGlyph Slash).
+/// A speaker whose slash draws on and off (`MorphGlyph` Slash).
 #[component]
 pub fn SlashView(slashed: bool) -> Element {
     rsx! {

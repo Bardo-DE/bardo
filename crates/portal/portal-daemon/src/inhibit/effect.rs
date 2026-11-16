@@ -28,6 +28,7 @@ pub trait InhibitEffect: Send + std::fmt::Debug {
 
 /// The words logind uses for what to hold off, from the portal's flags. Logging out maps to
 /// `shutdown`; switching users has no logind counterpart and is not held.
+#[must_use]
 pub fn logind_what(active: InhibitFlags) -> String {
     [
         (InhibitFlags::LOGOUT, "shutdown"),
@@ -51,6 +52,7 @@ pub struct LogindInhibitor {
 
 impl LogindInhibitor {
     /// An inhibitor that connects to the system bus on first use.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -114,12 +116,14 @@ pub struct FakeEffect {
 
 impl FakeEffect {
     /// An effect that has applied nothing.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// The log of applied unions, shared with the effect, so a test can keep it after the effect
     /// moved into a hub.
+    #[must_use]
     pub fn log(&self) -> Arc<Mutex<Vec<InhibitFlags>>> {
         Arc::clone(&self.applied)
     }

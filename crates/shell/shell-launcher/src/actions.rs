@@ -77,6 +77,7 @@ pub enum ActionId {
 
 impl ActionId {
     /// The action that carries out the power action `action`.
+    #[must_use]
     pub fn of_session(action: SessionAction) -> ActionId {
         match action {
             SessionAction::Lock => ActionId::Lock,

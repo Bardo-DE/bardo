@@ -43,11 +43,13 @@ fn weight(entry: &Entry) -> u64 {
 
 impl Browser {
     /// Whether the preview pane is up.
+    #[must_use]
     pub fn pane_shown(&self) -> bool {
         self.show_pane
     }
 
     /// What the pane is about now.
+    #[must_use]
     pub fn preview(&self) -> Preview {
         if !self.show_pane {
             return Preview::Hidden;
@@ -65,6 +67,7 @@ impl Browser {
 
     /// The item the pane shows while it is up and exactly one item is selected: the one whose
     /// preview and facts are asked for.
+    #[must_use]
     pub fn previewed_item(&self) -> Option<ItemRef> {
         match self.preview() {
             Preview::One(item) => Some(item),
@@ -73,6 +76,7 @@ impl Browser {
     }
 
     /// The row of the item the pane shows (see [`Browser::previewed_item`]).
+    #[must_use]
     pub fn previewed_entry(&self) -> Option<&Entry> {
         match self.selected_rows().as_slice() {
             [(row, _)] if self.show_pane => Some(*row),
@@ -81,6 +85,7 @@ impl Browser {
     }
 
     /// The facts read for the item the pane shows, once they have arrived.
+    #[must_use]
     pub fn details(&self) -> Option<&Info> {
         self.details.as_ref()
     }

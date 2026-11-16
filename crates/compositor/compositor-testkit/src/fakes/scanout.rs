@@ -58,6 +58,7 @@ pub struct FakeScanout {
 
 impl FakeScanout {
     /// A surface that will report `script`.
+    #[must_use]
     pub fn scripted(script: Vec<Presented>) -> FakeScanout {
         FakeScanout {
             script: script.into(),
@@ -73,6 +74,7 @@ impl FakeScanout {
 
     /// A surface that reports each frame at the next look, at the vblank it was queued for; the
     /// vblank after that is the next one.
+    #[must_use]
     pub fn following() -> FakeScanout {
         FakeScanout {
             pacing: Pacing::Following,
@@ -90,11 +92,13 @@ impl FakeScanout {
     }
 
     /// Where a cursor of `size` (logical) at `scale` would be drawn on this surface.
+    #[must_use]
     pub fn cursor_choice(&self, size: PhysicalSize, scale: Scale) -> CursorPlaneChoice {
         cursor_plane_for(&self.cursor, size, scale)
     }
 
     /// Whether a flip is in flight.
+    #[must_use]
     pub fn flying(&self) -> Option<VblankSeq> {
         self.flying
     }
@@ -146,6 +150,7 @@ pub struct GlassHandle(Arc<Mutex<FakeScanout>>);
 
 impl GlassHandle {
     /// Shares `surface`.
+    #[must_use]
     pub fn new(surface: FakeScanout) -> GlassHandle {
         GlassHandle(Arc::new(Mutex::new(surface)))
     }
@@ -156,16 +161,19 @@ impl GlassHandle {
     }
 
     /// How many frames were queued.
+    #[must_use]
     pub fn queued(&self) -> usize {
         self.surface().queued
     }
 
     /// How many times the output was told to go dark.
+    #[must_use]
     pub fn blanks(&self) -> usize {
         self.surface().blanks
     }
 
     /// How many times the surface was told the seat came back.
+    #[must_use]
     pub fn resets(&self) -> usize {
         self.surface().resets
     }

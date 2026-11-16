@@ -24,6 +24,7 @@ pub struct ProviderLead {
 
 /// The MX hosts in preference order, ties by name. RFC 7505's null MX (`.`), which says the
 /// domain takes no mail, is not a host and is left out.
+#[must_use]
 pub fn mx_hosts(records: &[MxRecord]) -> Vec<DomainName> {
     let mut ordered: Vec<&MxRecord> = records.iter().collect();
     ordered.sort_by(|a, b| a.preference.cmp(&b.preference).then(a.host.cmp(&b.host)));
@@ -31,6 +32,7 @@ pub fn mx_hosts(records: &[MxRecord]) -> Vec<DomainName> {
 }
 
 /// The providers that claim `domain`, a listed domain before an MX hint, in file order.
+#[must_use]
 pub fn provider_leads(
     set: &ProviderSet,
     domain: &DomainName,
@@ -55,6 +57,7 @@ pub fn provider_leads(
 
 /// The domains whose ISPDB document may describe `host`'s operator: its parents, nearest first,
 /// down to two labels, and never `domain` itself (its own document was already asked for).
+#[must_use]
 pub fn ispdb_candidates(host: &DomainName, domain: &DomainName) -> Vec<DomainName> {
     let labels: Vec<&str> = host.as_str().split('.').collect();
     (1..labels.len().saturating_sub(1))

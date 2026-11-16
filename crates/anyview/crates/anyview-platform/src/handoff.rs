@@ -142,7 +142,7 @@ mod tests {
             results: 1,
             entries: vec!["/a.png".to_owned(), "/b.png".to_owned()],
         };
-        assert!(decode(&good).is_ok());
+        decode(&good).unwrap();
         let cases = [
             (
                 "a relative file",

@@ -2,7 +2,7 @@
 //! judgement of `inference_tailnet` (who it is, and that it is theirs): its hello, the list of the
 //! models lent, and chat.
 //!
-//! The protocol is the one inferd already speaks to its own agents' endpoint (OpenAI Chat
+//! The protocol is the one inferd already speaks to its own agents' endpoint (`OpenAI` Chat
 //! Completions over HTTP, `agent::http` and `agent::openai`), and the one it speaks to an engine
 //! the person attached: so the computer that asks needs nothing new to call this one, only
 //! the catalogue id as the model's name. The turn runs through the same path an agent's request
@@ -68,7 +68,7 @@ enum Wanted {
     Nothing,
 }
 
-/// The path without the `/v1` an OpenAI base URL carries.
+/// The path without the `/v1` an `OpenAI` base URL carries.
 fn bare(request: &Request) -> &str {
     let path = request.path();
     path.strip_prefix("/v1").unwrap_or(path)

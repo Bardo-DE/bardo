@@ -41,6 +41,7 @@ pub enum Holder {
 
 impl Holder {
     /// The holder of a connection whose proven identity is `peer` and whose process is `process`.
+    #[must_use]
     pub fn of(peer: &PeerIdentity, process: Option<RawPid>) -> Holder {
         match (peer, process) {
             (PeerIdentity::Proven(app), _) => Holder::App(app.clone()),
@@ -51,6 +52,7 @@ impl Holder {
     }
 
     /// The holder of `stream`, read from its peer credentials.
+    #[must_use]
     pub fn of_stream(peer: &PeerIdentity, stream: &UnixStream) -> Holder {
         let process = rustix::net::sockopt::socket_peercred(stream)
             .ok()
@@ -80,15 +82,18 @@ pub struct Roster {
 
 impl Roster {
     /// Whether the session takes one more connection from anyone.
+    #[must_use]
     pub fn room(&self) -> Room {
-        match self.held.len() < MAX_CONNECTIONS {
-            true => Room::Free,
-            false => Room::SessionFull,
+        if self.held.len() < MAX_CONNECTIONS {
+            Room::Free
+        } else {
+            Room::SessionFull
         }
     }
 
     /// Whether the session takes one more connection from `holder`: the connections a program
     /// nothing proves a name for may hold stop short of the reserve ([`RESERVED_FOR_PROVEN`]).
+    #[must_use]
     pub fn room_for(&self, holder: &Holder) -> Room {
         let ceiling = match holder {
             Holder::App(_) => MAX_CONNECTIONS,
@@ -96,9 +101,10 @@ impl Roster {
         };
         match (self.room(), self.held.len() < ceiling) {
             (Room::Free, true) => {
-                match self.per_holder.get(holder).copied().unwrap_or(0) < MAX_PER_HOLDER {
-                    true => Room::Free,
-                    false => Room::HolderFull,
+                if self.per_holder.get(holder).copied().unwrap_or(0) < MAX_PER_HOLDER {
+                    Room::Free
+                } else {
+                    Room::HolderFull
                 }
             }
             (Room::Free, false) => Room::SessionFull,
@@ -132,11 +138,13 @@ impl Roster {
     }
 
     /// How many connections are live.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.held.len()
     }
 
     /// Whether no connection is live.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.held.is_empty()
     }

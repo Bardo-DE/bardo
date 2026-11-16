@@ -77,6 +77,7 @@ pub struct XdgShellPart {
 impl XdgShellPart {
     /// Creates the `xdg_wm_base` global (version 7, every capability). Every connection sees
     /// it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> XdgShellPart
     where
         D: GlobalDispatch<XdgWmBase, GlobalData> + 'static,
@@ -101,6 +102,7 @@ impl XdgShellPart {
     }
 
     /// How many toplevels `client` holds, mapped or not.
+    #[must_use]
     pub fn toplevels_of(&self, client: ClientKey) -> usize {
         self.records
             .values()
@@ -109,6 +111,7 @@ impl XdgShellPart {
     }
 
     /// How many popups `client` holds.
+    #[must_use]
     pub fn popups_held_by(&self, client: ClientKey) -> usize {
         self.popup_surfaces
             .values()
@@ -117,6 +120,7 @@ impl XdgShellPart {
     }
 
     /// The window whose root surface is `surface`.
+    #[must_use]
     pub fn window_of_surface(&self, surface: &WlSurface) -> Option<WindowId> {
         self.toplevels
             .iter()
@@ -125,6 +129,7 @@ impl XdgShellPart {
     }
 
     /// The window an `xdg_toplevel` resource is.
+    #[must_use]
     pub fn window_of_toplevel(&self, toplevel: &XdgToplevel) -> Option<WindowId> {
         self.toplevels
             .iter()
@@ -133,6 +138,7 @@ impl XdgShellPart {
     }
 
     /// Whether `window` has mapped (and not unmapped since).
+    #[must_use]
     pub fn is_mapped(&self, window: WindowId) -> bool {
         self.records
             .get(&window)

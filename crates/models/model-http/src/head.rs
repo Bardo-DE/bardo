@@ -30,6 +30,7 @@ impl RequestId {
         }
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -55,6 +56,7 @@ pub struct WaitSeconds(pub u32);
 
 impl WaitSeconds {
     /// A `Retry-After` header value in its seconds form; the HTTP-date form is not read (`None`).
+    #[must_use]
     pub fn from_header(value: &str) -> Option<WaitSeconds> {
         let value = value.trim();
         let digits = !value.is_empty() && value.bytes().all(|b| b.is_ascii_digit());
@@ -77,6 +79,7 @@ pub enum BodyKind {
 
 impl BodyKind {
     /// The kind a `Content-Type` value names, parameters and case ignored.
+    #[must_use]
     pub fn of(content_type: &str) -> BodyKind {
         let essence = content_type
             .split(';')

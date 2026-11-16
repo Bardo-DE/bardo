@@ -1,9 +1,9 @@
-//! IBus's address file: where its own bus is.
+//! `IBus`'s address file: where its own bus is.
 
-/// The line IBus writes its bus address on.
+/// The line `IBus` writes its bus address on.
 const ADDRESS_KEY: &str = "IBUS_ADDRESS=";
 
-/// The bus address in the text of one of IBus's address files (`IBUS_ADDRESS=unix:...`), when it
+/// The bus address in the text of one of `IBus`'s address files (`IBUS_ADDRESS=unix:...`), when it
 /// has one.
 pub fn address_in(text: &str) -> Option<&str> {
     text.lines()

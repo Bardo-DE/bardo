@@ -263,31 +263,30 @@ impl<B: Backend> Open<B> {
             .read(&memory_store::VaultPath::primer())
             .ok()
             .and_then(|bytes| String::from_utf8(bytes).ok());
-        let text = match written {
-            Some(text) => text,
-            None => {
-                let stored = self.stored()?;
-                let entries = self
-                    .rt
-                    .store
-                    .topics()
-                    .map_err(crate::open::files_refusal)?
-                    .into_iter()
-                    .map(|topic| {
-                        let summary = stored
-                            .iter()
-                            .find(|s| s.topic == topic && s.state == memory_core::FactState::Active)
-                            .map(|s| s.fact.text.as_str().to_owned())
-                            .unwrap_or_default();
-                        memory_files_format::PrimerEntry {
-                            title: UserText::new(topic.to_string()),
-                            summary: UserText::new(summary),
-                            topic,
-                        }
-                    })
-                    .collect();
-                memory_files_format::Primer { entries }.render()
-            }
+        let text = if let Some(text) = written {
+            text
+        } else {
+            let stored = self.stored()?;
+            let entries = self
+                .rt
+                .store
+                .topics()
+                .map_err(crate::open::files_refusal)?
+                .into_iter()
+                .map(|topic| {
+                    let summary = stored
+                        .iter()
+                        .find(|s| s.topic == topic && s.state == memory_core::FactState::Active)
+                        .map(|s| s.fact.text.as_str().to_owned())
+                        .unwrap_or_default();
+                    memory_files_format::PrimerEntry {
+                        title: UserText::new(topic.to_string()),
+                        summary: UserText::new(summary),
+                        topic,
+                    }
+                })
+                .collect();
+            memory_files_format::Primer { entries }.render()
         };
         self.audit_by(cx, ReadScope::Primer, Vec::new(), 0)?;
         Ok(text)

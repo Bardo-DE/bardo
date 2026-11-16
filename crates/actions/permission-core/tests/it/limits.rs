@@ -203,7 +203,7 @@ fn a_file_with_no_level_still_reads_as_always_allow() {
     );
     let text = encode_limits(std::slice::from_ref(&l)).expect("text");
     assert_eq!(decode_limits(&text).expect("back"), vec![l]);
-    assert!(decode_limits("[{\"level\":\"always_allow\"}]").is_err());
+    decode_limits("[{\"level\":\"always_allow\"}]").unwrap_err();
 }
 
 #[test]

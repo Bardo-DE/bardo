@@ -56,9 +56,10 @@ impl MemoryListing {
     }
 
     fn readable(&self) -> Result<(), ListingError> {
-        match self.unreadable.load(Ordering::SeqCst) {
-            true => Err(ListingError("the test listing is unreadable".to_owned())),
-            false => Ok(()),
+        if self.unreadable.load(Ordering::SeqCst) {
+            Err(ListingError("the test listing is unreadable".to_owned()))
+        } else {
+            Ok(())
         }
     }
 
@@ -80,6 +81,7 @@ impl MemoryListing {
 }
 
 /// An entry of a test listing.
+#[must_use]
 pub fn entry(
     id: &str,
     parent: Option<&str>,
@@ -381,9 +383,10 @@ impl MemorySink {
 
     /// The answer of a change taken: lost when [`MemorySink::lose_next`] asked.
     fn answer<T>(&self, taken: T) -> Result<T, PutRefused> {
-        match std::mem::take(&mut held(&self.state).lose) {
-            true => Err(PutRefused::Transient(RetryAfter(0))),
-            false => Ok(taken),
+        if std::mem::take(&mut held(&self.state).lose) {
+            Err(PutRefused::Transient(RetryAfter(0)))
+        } else {
+            Ok(taken)
         }
     }
 
@@ -444,23 +447,21 @@ impl MemorySink {
 
     fn show(&self, entry: Entry) {
         let mut state = held(&self.state);
-        match state.lagging.as_mut() {
-            Some(lag) => lag.push(Some(entry)),
-            None => {
-                drop(state);
-                self.listing.put(entry);
-            }
+        if let Some(lag) = state.lagging.as_mut() {
+            lag.push(Some(entry))
+        } else {
+            drop(state);
+            self.listing.put(entry);
         }
     }
 
     fn hide(&self, id: &RemoteId) {
         let mut state = held(&self.state);
-        match state.lagging.is_some() {
-            true => state.lag_removed.push(id.clone()),
-            false => {
-                drop(state);
-                self.listing.remove(&id.0);
-            }
+        if state.lagging.is_some() {
+            state.lag_removed.push(id.clone())
+        } else {
+            drop(state);
+            self.listing.remove(&id.0);
         }
     }
 
@@ -567,9 +568,10 @@ impl Sink for MemorySink {
     fn reserve_ids(&self, count: usize) -> Sending<'_, Vec<RemoteId>> {
         Box::pin(async move {
             let reserving = held(&self.state).reserving;
-            match reserving {
-                true => Ok((0..count).map(|_| self.new_id()).collect()),
-                false => Ok(Vec::new()),
+            if reserving {
+                Ok((0..count).map(|_| self.new_id()).collect())
+            } else {
+                Ok(Vec::new())
             }
         })
     }
@@ -615,17 +617,14 @@ impl Sink for MemorySink {
                     let had = held(&self.state).sessions.get(old.address()).cloned()?;
                     Some((old.address().to_owned(), had))
                 });
-                let key = match resumed {
-                    Some((key, had)) => {
-                        bytes = had;
-                        key
-                    }
-                    None => {
-                        let key = format!("mem://session/{}", self.new_id().0);
-                        held(&self.state).sessions.insert(key.clone(), Vec::new());
-                        upload.progress.session(Some(&Session::new(key.clone())));
-                        key
-                    }
+                let key = if let Some((key, had)) = resumed {
+                    bytes = had;
+                    key
+                } else {
+                    let key = format!("mem://session/{}", self.new_id().0);
+                    held(&self.state).sessions.insert(key.clone(), Vec::new());
+                    upload.progress.session(Some(&Session::new(key.clone())));
+                    key
                 };
                 session = Some(key);
             }
@@ -656,7 +655,7 @@ impl Sink for MemorySink {
                     let mut state = held(&self.state);
                     state.largest = state.largest.max(chunk.len() as u64);
                     state.read += chunk.len() as u64;
-                }
+                };
                 at += chunk.len() as u64;
                 bytes.extend_from_slice(&chunk);
                 chunks += 1;

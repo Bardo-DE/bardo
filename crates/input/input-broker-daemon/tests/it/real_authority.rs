@@ -364,7 +364,7 @@ fn a_peer_the_probe_cannot_find_is_a_failure_not_a_guess() {
         Prober::new(tree()),
         TableFiles::new(PathBuf::from(MAIN), PathBuf::from(DIR)),
     );
-    assert!(authority.identify(&socket()).is_err());
+    authority.identify(&socket()).unwrap_err();
     // And the fixed authority used by the other tests fails the same way when told to.
-    assert!(FixedAuthority::failing().identify(&socket()).is_err());
+    FixedAuthority::failing().identify(&socket()).unwrap_err();
 }

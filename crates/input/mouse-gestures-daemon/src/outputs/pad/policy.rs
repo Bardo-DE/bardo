@@ -19,6 +19,7 @@ pub struct Policy {
 
 impl Policy {
     /// Whether a stroke of `intent` may have fingers down now.
+    #[must_use]
     pub fn allows(self, intent: Intent) -> bool {
         match intent {
             Intent::Scroll(_) => !self.claimed,

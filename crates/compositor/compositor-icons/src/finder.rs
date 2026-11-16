@@ -46,9 +46,10 @@ impl<T: ThemeLookup> Finder<T> {
     fn by_entry(&self, app_id: &str, edge: u32) -> Option<Pixels> {
         let DesktopEntry { icon, .. } = entry_for(&self.applications, app_id)?;
         let icon = icon?;
-        match Path::new(&icon).is_absolute() {
-            true => decode::load(Path::new(&icon), edge).ok(),
-            false => self.in_theme(&icon, edge),
+        if Path::new(&icon).is_absolute() {
+            decode::load(Path::new(&icon), edge).ok()
+        } else {
+            self.in_theme(&icon, edge)
         }
     }
 }

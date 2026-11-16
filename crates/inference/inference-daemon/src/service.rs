@@ -1102,6 +1102,7 @@ fn place_row(row: PlaceRow) -> (String, Details) {
 }
 
 /// The slug of a refusal (`requires_cloud`, `unavailable`, ...).
+#[must_use]
 pub fn refusal_slug(refusal: &InferRefusal) -> String {
     slug(refusal, "kind")
 }

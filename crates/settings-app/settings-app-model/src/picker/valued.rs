@@ -4,6 +4,7 @@ use ui_settings::schema::KeyKind;
 
 /// The rows whose value the picker reads: its menus, and the lists of choices from a menu (the
 /// models Automatic chooses among).
+#[must_use]
 pub fn picker_row_is_choice(kind: &KeyKind) -> bool {
     match kind {
         KeyKind::Menu { .. } => true,

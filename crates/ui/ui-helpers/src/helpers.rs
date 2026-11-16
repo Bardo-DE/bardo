@@ -44,16 +44,19 @@ impl Helpers {
     }
 
     /// What the file says about `capability`: the tool's name and purpose, for the sheet.
+    #[must_use]
     pub fn entry(&self, capability: &CapabilityName) -> Option<&Entry> {
         self.0.catalog.get(capability)
     }
 
     /// The distro family of this machine, `None` when unknown.
+    #[must_use]
     pub fn family(&self) -> Option<Family> {
         self.0.family
     }
 
     /// Is the tool there now? An undeclared capability is not.
+    #[must_use]
     pub fn available(&self, capability: &CapabilityName) -> bool {
         self.entry(capability)
             .is_some_and(|entry| presence(&self.0.environment.path, entry))
@@ -61,6 +64,7 @@ impl Helpers {
 
     /// Probe again and announce the result to subscribers if it changed (a tool the person
     /// installed some other way, or removed).
+    #[must_use]
     pub fn refresh(&self, capability: &CapabilityName) -> bool {
         let now = self.available(capability);
         self.0.log.record(capability, now);
@@ -68,6 +72,7 @@ impl Helpers {
     }
 
     /// Changes in availability from now on.
+    #[must_use]
     pub fn subscribe(&self) -> Subscription {
         self.0.log.subscribe()
     }

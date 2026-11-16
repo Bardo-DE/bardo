@@ -68,7 +68,7 @@ impl Links {
 }
 
 /// Runs `steps`. `sealed` is the release being installed, or `None` for a rollback. A new release
-/// is relabelled (where the computer uses SELinux) as soon as it is in place, before it becomes current.
+/// is relabelled (where the computer uses `SELinux`) as soon as it is in place, before it becomes current.
 ///
 /// A step that fails after `current` moved (the links or the system files could not be updated) puts
 /// the earlier release back, so a failed update never leaves the desktop running a release whose

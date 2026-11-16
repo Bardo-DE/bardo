@@ -1,7 +1,7 @@
 //! The size ladder as custom properties (design/29-SIZING.md section 10): each
 //! [`ControlSize`]'s [`SizeScale`] written as `--ctl-*`, `--knob-*`, `--switch-*`, `--slider-*`
 //! `--check-*`, `--spinner-*`, `--progress-*` and `--seg-*` tokens with an `-xs`, `-s`, `-m`, `-l` or `-xl`
-//! suffix (Mini, Small, Regular, Large, ExtraLarge), so the sheets read the ladder and never
+//! suffix (Mini, Small, Regular, Large, `ExtraLarge`), so the sheets read the ladder and never
 //! restate a number. The values come from `SizeScale`, so the rules hold in CSS as in Rust.
 
 use super::control_size::ControlSize;

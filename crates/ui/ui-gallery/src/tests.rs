@@ -14,7 +14,7 @@ use ui_lint::{Exception, LintConfig, Profile, markup};
 /// Offences in quire's own markup the gallery lives with: none. Every one would be drawn by a
 /// quire component, not by the gallery, and a gap reported to quire (the Gaps page lists them).
 /// The computed custom properties quire writes inline on its own elements (the `--f-*` frame,
-/// `--f-grad`, `--av-bg`, `--pc`, a Space dot's `--dot-c*`) and the SendPill's marked ring are
+/// `--f-grad`, `--av-bg`, `--pc`, a Space dot's `--dot-c*`) and the `SendPill`'s marked ring are
 /// not offences. The Space editor's five inline gradients and fills were the last.
 const EXCEPTIONS: &[Exception] = &[];
 

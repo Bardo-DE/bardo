@@ -226,9 +226,9 @@ mod tests {
                 timeout: DEFAULT_WAIT
             }
         );
-        assert!(planned("wait", "").is_err());
-        assert!(planned("wait", "settled --timeout").is_err());
-        assert!(planned("wait", "settled --timeout soon").is_err());
+        planned("wait", "").unwrap_err();
+        planned("wait", "settled --timeout").unwrap_err();
+        planned("wait", "settled --timeout soon").unwrap_err();
     }
 
     #[test]
@@ -315,6 +315,6 @@ mod tests {
         );
         assert_eq!(planned("windows", "").expect("windows"), Call::Windows);
         assert_eq!(planned("scene", "--json").expect("scene"), Call::Scene);
-        assert!(planned("scene", "extra").is_err());
+        planned("scene", "extra").unwrap_err();
     }
 }

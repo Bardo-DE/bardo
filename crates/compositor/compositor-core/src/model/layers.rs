@@ -42,6 +42,7 @@ impl Model {
     /// A press landed on a layer surface: one that takes the keyboard on demand holds it from
     /// now (a window is pressed or keyed to take it back). Pressing any other layer changes
     /// nothing.
+    #[must_use]
     pub fn press_layer(self, layer: LayerKey, now: Mono) -> (Model, Vec<Effect>) {
         self.run(now, |model| {
             let on_demand = model
@@ -165,9 +166,10 @@ impl Model {
             .collect();
         outputs.sort();
         outputs.dedup();
-        match outputs.is_empty() {
-            true => Moved::of(self),
-            false => self.redrawn(Cause::Configure, outputs),
+        if outputs.is_empty() {
+            Moved::of(self)
+        } else {
+            self.redrawn(Cause::Configure, outputs)
         }
     }
 }

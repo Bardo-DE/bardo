@@ -1,5 +1,5 @@
-//! The Bluetooth pane: following BlueZ, looking for devices and hearing pairing questions while
-//! the pane is followed, and asking BlueZ. The steps are `settings-app-model`'s `bluetooth_step`.
+//! The Bluetooth pane: following `BlueZ`, looking for devices and hearing pairing questions while
+//! the pane is followed, and asking `BlueZ`. The steps are `settings-app-model`'s `bluetooth_step`.
 
 use crate::live::Live;
 use crate::notice::Notice;
@@ -37,11 +37,12 @@ impl Bluetooth {
     }
 
     /// Gives the pane `input` now; the returned work carries out what it asks for.
+    #[must_use]
     pub fn send(&self, input: BtInput) -> Pending {
         self.dispatch(input)
     }
 
-    /// Reads BlueZ now and each time it may have changed. While this runs the pane is followed, so
+    /// Reads `BlueZ` now and each time it may have changed. While this runs the pane is followed, so
     /// devices are looked for and their questions heard; dropping it ends the session.
     async fn follow(&self) {
         match self.link.changes().await {
@@ -88,7 +89,7 @@ impl Bluetooth {
         }
     }
 
-    /// BlueZ took a request (read what it says now) or refused it (say why).
+    /// `BlueZ` took a request (read what it says now) or refused it (say why).
     async fn read_or_refused(&self, done: Result<(), String>) -> Vec<BtInput> {
         match done {
             Ok(()) => vec![BtInput::Heard(self.link.read().await)],

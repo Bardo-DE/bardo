@@ -28,6 +28,7 @@ pub enum Art {
 
 impl Art {
     /// The file to show while nothing better is cached.
+    #[must_use]
     pub fn untinted(&self) -> &Path {
         match self {
             Art::Plain(path) => path,
@@ -37,6 +38,7 @@ impl Art {
 }
 
 /// A theme (or an entry's own) raster or SVG icon at `px` in `look`.
+#[must_use]
 pub fn theme_art(path: &Path, px: AssetPx, look: IconLook) -> Art {
     match look.style {
         IconStyle::Colour => Art::Plain(path.to_owned()),

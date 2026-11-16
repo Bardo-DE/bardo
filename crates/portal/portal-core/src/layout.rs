@@ -35,6 +35,7 @@ pub enum Turn {
 impl Turn {
     /// The turn a `wl_output` transform value stands for: the values 1, 3, 5 and 7 are quarter
     /// turns (with or without a flip).
+    #[must_use]
     pub fn from_wire(transform: u32) -> Self {
         match transform & 1 {
             1 => Self::Sideways,
@@ -60,6 +61,7 @@ pub struct OutputFacts {
 
 impl OutputFacts {
     /// Its size in logical units: the mode, turned as shown, over the scale (rounded to nearest).
+    #[must_use]
     pub fn logical_size(&self) -> Extent {
         let (width, height) = match self.turn {
             Turn::Upright => (self.mode.width, self.mode.height),
@@ -95,6 +97,7 @@ pub struct Tile {
 /// The canvas scale is the finest scale among the outputs. An output with no mode yet is left
 /// out, and so is one that shows exactly what an earlier one shows (a mirror), so its pixels are
 /// not captured twice.
+#[must_use]
 pub fn arrange(outputs: &[OutputFacts]) -> Vec<Tile> {
     let shown: Vec<&OutputFacts> = outputs
         .iter()

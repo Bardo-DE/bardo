@@ -87,6 +87,7 @@ fn from_row<T: DeserializeOwned>(row: RowArg, id_field: &str, what: &str) -> Res
 }
 
 /// A permit verdict as the account's id and the rest by name.
+#[must_use]
 pub fn verdict_to_dbus(verdict: &LlmVerdict) -> RowArg {
     to_row(verdict, "account")
 }
@@ -100,6 +101,7 @@ pub fn verdict_from_dbus(row: RowArg) -> Result<LlmVerdict, CoreError> {
 }
 
 /// An AI account as its id and the rest by name.
+#[must_use]
 pub fn ai_account_to_dbus(account: &AiAccountRow) -> RowArg {
     to_row(account, "account")
 }
@@ -113,6 +115,7 @@ pub fn ai_account_from_dbus(row: RowArg) -> Result<AiAccountRow, CoreError> {
 }
 
 /// An own server as its account's id and the rest by name.
+#[must_use]
 pub fn own_server_to_dbus(server: &OwnServerRow) -> RowArg {
     to_row(server, "account")
 }
@@ -207,8 +210,8 @@ mod tests {
 
     #[test]
     fn a_value_that_is_not_a_row_is_refused() {
-        assert!(verdict_from_dbus(("x".into(), Details::new())).is_err());
-        assert!(ai_account_from_dbus(("x".into(), Details::new())).is_err());
-        assert!(own_server_from_dbus(("x".into(), Details::new())).is_err());
+        verdict_from_dbus(("x".into(), Details::new())).unwrap_err();
+        ai_account_from_dbus(("x".into(), Details::new())).unwrap_err();
+        own_server_from_dbus(("x".into(), Details::new())).unwrap_err();
     }
 }

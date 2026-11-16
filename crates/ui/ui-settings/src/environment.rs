@@ -51,6 +51,7 @@ pub struct Environment {
 impl Environment {
     /// The clock to draw in `locale` (a POSIX locale name, see
     /// [`time_locale`](crate::time_locale)): `region.hours`, with Automatic settled by the locale.
+    #[must_use]
     pub fn hours(&self, locale: &str) -> ResolvedHours {
         self.settings.region.hours.resolve(locale)
     }

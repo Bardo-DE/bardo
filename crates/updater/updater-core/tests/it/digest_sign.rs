@@ -18,7 +18,7 @@ fn digests_match_known_vectors_and_streaming() {
 
 #[test]
 fn digest_text_has_one_spelling() {
-    assert!(Sha256Hex::parse(&"a".repeat(64)).is_ok());
+    Sha256Hex::parse(&"a".repeat(64)).unwrap();
     let (upper, odd, long) = ("A".repeat(64), "g".repeat(64), "a".repeat(65));
     for bad in ["", "abc", upper.as_str(), odd.as_str(), long.as_str()] {
         assert!(Sha256Hex::parse(bad).is_err(), "{bad}");

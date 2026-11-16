@@ -102,21 +102,21 @@ where
 
     fn enter(&self, seat: &Seat<D>, data: &mut D, event: &MotionEvent) {
         if self.reachable() {
-            PointerTarget::enter(&self.surface, seat, data, event)
+            PointerTarget::enter(&self.surface, seat, data, event);
         }
     }
 
     fn axis(&self, seat: &Seat<D>, data: &mut D, frame: AxisFrame) {
-        PointerTarget::axis(&self.surface, seat, data, frame)
+        PointerTarget::axis(&self.surface, seat, data, frame);
     }
 
     fn frame(&self, seat: &Seat<D>, data: &mut D) {
-        PointerTarget::frame(&self.surface, seat, data)
+        PointerTarget::frame(&self.surface, seat, data);
     }
 
     fn leave(&self, seat: &Seat<D>, data: &mut D, serial: Serial, time: InputTime) {
         if self.reachable() {
-            PointerTarget::leave(&self.surface, seat, data, serial, time)
+            PointerTarget::leave(&self.surface, seat, data, serial, time);
         }
     }
 }
@@ -127,31 +127,31 @@ where
     WlSurface: TouchTarget<D>,
 {
     fn down(&self, seat: &Seat<D>, data: &mut D, event: &DownEvent) {
-        TouchTarget::down(&self.surface, seat, data, event)
+        TouchTarget::down(&self.surface, seat, data, event);
     }
 
     fn up(&self, seat: &Seat<D>, data: &mut D, event: &UpEvent) {
-        TouchTarget::up(&self.surface, seat, data, event)
+        TouchTarget::up(&self.surface, seat, data, event);
     }
 
     fn motion(&self, seat: &Seat<D>, data: &mut D, event: &touch::MotionEvent) {
-        TouchTarget::motion(&self.surface, seat, data, event)
+        TouchTarget::motion(&self.surface, seat, data, event);
     }
 
     fn frame(&self, seat: &Seat<D>, data: &mut D, marker: touch::FrameMarker) {
-        TouchTarget::frame(&self.surface, seat, data, marker)
+        TouchTarget::frame(&self.surface, seat, data, marker);
     }
 
     fn cancel(&self, seat: &Seat<D>, data: &mut D, marker: touch::FrameMarker) {
-        TouchTarget::cancel(&self.surface, seat, data, marker)
+        TouchTarget::cancel(&self.surface, seat, data, marker);
     }
 
     fn shape(&self, seat: &Seat<D>, data: &mut D, event: &ShapeEvent) {
-        TouchTarget::shape(&self.surface, seat, data, event)
+        TouchTarget::shape(&self.surface, seat, data, event);
     }
 
     fn orientation(&self, seat: &Seat<D>, data: &mut D, event: &OrientationEvent) {
-        TouchTarget::orientation(&self.surface, seat, data, event)
+        TouchTarget::orientation(&self.surface, seat, data, event);
     }
 
     fn last_frame(&self, seat: &Seat<D>, data: &mut D) -> Option<touch::FrameMarker> {
@@ -190,7 +190,7 @@ where
         location: Point<f64, Logical>,
         time: InputTime,
     ) {
-        DndFocus::motion(&self.surface, data, offer, seat, location, time)
+        DndFocus::motion(&self.surface, data, offer, seat, location, time);
     }
 
     fn leave<S: Source>(
@@ -201,7 +201,7 @@ where
     ) {
         let ended = self.dropped.load(Ordering::Acquire);
         if self.reachable() && !ended {
-            DndFocus::leave(&self.surface, data, offer, seat)
+            DndFocus::leave(&self.surface, data, offer, seat);
         }
     }
 
@@ -213,6 +213,6 @@ where
     ) {
         let taken = offer.as_deref().is_some_and(OfferData::validated);
         self.dropped.store(taken, Ordering::Release);
-        DndFocus::drop(&self.surface, data, offer, seat)
+        DndFocus::drop(&self.surface, data, offer, seat);
     }
 }

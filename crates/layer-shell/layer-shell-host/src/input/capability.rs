@@ -1,7 +1,7 @@
 //! What a seat capability announcement means for the device object the host holds: the pure
 //! decision behind `handlers::seat`'s `new_capability` and `remove_capability`.
 //!
-//! A compositor re-announces a capability whenever its set of devices changes: KWin drops and
+//! A compositor re-announces a capability whenever its set of devices changes: `KWin` drops and
 //! re-adds `pointer` for every `org_kde_kwin_fake_input` client, and a real seat does the same
 //! when a mouse is unplugged and plugged back. Every `wl_pointer` a client has not
 //! released keeps receiving events, so an object created per announcement, with the old one
@@ -39,7 +39,7 @@ pub(crate) fn capability_change(added: bool, held: bool) -> CapabilityChange {
 mod tests {
     use super::*;
 
-    /// KWin's sequence for one fake-input client connecting and leaving, replayed against one
+    /// `KWin`'s sequence for one fake-input client connecting and leaving, replayed against one
     /// held object: each step's decision, and the object count after it, never above one.
     #[test]
     fn a_reannounce_cycle_never_holds_two_objects() {

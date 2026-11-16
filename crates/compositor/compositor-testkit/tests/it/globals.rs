@@ -232,7 +232,7 @@ fn every_power_gates_a_global_the_public_socket_is_shown() {
 }
 
 /// The default fixture advertises exactly the golden's globals at its versions to a public
-/// client (one wl_output for its one output).
+/// client (one `wl_output` for its one output).
 #[test]
 fn the_default_fixture_advertises_the_golden_globals() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");

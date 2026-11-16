@@ -11,16 +11,19 @@ pub struct Mono(pub u64);
 
 impl Mono {
     /// An instant `ms` milliseconds after the clock's origin; for fixtures.
+    #[must_use]
     pub const fn from_millis(ms: u64) -> Self {
         Self(ms.saturating_mul(1_000_000))
     }
 
     /// The time from `earlier` to `self`, zero if `earlier` is later.
+    #[must_use]
     pub fn since(self, earlier: Mono) -> Duration {
         Duration::from_nanos(self.0.saturating_sub(earlier.0))
     }
 
     /// The instant `d` after `self`, saturating at the end of the clock.
+    #[must_use]
     pub fn after(self, d: Duration) -> Mono {
         let ns = u64::try_from(d.as_nanos()).unwrap_or(u64::MAX);
         Mono(self.0.saturating_add(ns))

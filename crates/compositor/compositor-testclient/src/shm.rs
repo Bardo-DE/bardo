@@ -79,16 +79,19 @@ fn memfd_sized(len: usize) -> OwnedFd {
 
 impl ShmBuffer {
     /// The buffer's size in pixels.
+    #[must_use]
     pub fn size(&self) -> PhysicalSize {
         self.size
     }
 
     /// The `wl_buffer`, to attach.
+    #[must_use]
     pub fn buffer(&self) -> &WlBuffer {
         &self.buffer
     }
 
     /// Whether the compositor has sent `release` since the last [`ShmBuffer::fill`].
+    #[must_use]
     pub fn is_released(&self) -> bool {
         self.released.load(Ordering::SeqCst)
     }

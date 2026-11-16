@@ -30,6 +30,7 @@ pub use types::{
 use ui_components::base::time::stamp::Stamp;
 
 /// `dock` after `event` at `now`, and what the component must do about it.
+#[must_use]
 pub fn step(
     dock: DockState,
     event: DockEvent,

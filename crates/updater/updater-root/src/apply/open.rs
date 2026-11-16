@@ -12,11 +12,13 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 
 /// The `open` flags that refuse a link in the last place and never block on a pipe.
+#[must_use]
 pub fn untrusted_flags() -> i32 {
     (OFlags::NOFOLLOW | OFlags::NONBLOCK).bits() as i32
 }
 
 /// The `open` flag that refuses a link in the last place.
+#[must_use]
 pub fn no_follow() -> i32 {
     OFlags::NOFOLLOW.bits() as i32
 }

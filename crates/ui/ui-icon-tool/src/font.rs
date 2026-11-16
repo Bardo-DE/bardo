@@ -286,6 +286,7 @@ fn glyph(c: char) -> Option<&'static [u8; 7]> {
 }
 
 /// Width in px of `text` at `scale` dots per font dot.
+#[must_use]
 pub fn text_width(text: &str, scale: u32) -> u32 {
     (text.chars().count() as u32 * ADVANCE).saturating_sub(1) * scale
 }

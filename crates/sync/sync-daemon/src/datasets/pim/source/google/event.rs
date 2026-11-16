@@ -127,6 +127,7 @@ pub struct Event {
 
 impl Event {
     /// Whether this is a deletion's stub (or a cancelled event): the item is gone.
+    #[must_use]
     pub fn is_cancelled(&self) -> bool {
         self.status.as_deref() == Some("cancelled")
     }
@@ -137,6 +138,7 @@ impl Event {
     }
 
     /// The UID the event is known by.
+    #[must_use]
     pub fn uid(&self) -> &str {
         self.ical_uid
             .as_deref()

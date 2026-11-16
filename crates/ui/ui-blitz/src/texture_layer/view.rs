@@ -22,6 +22,7 @@ use ui_components::root::common::Common;
 /// render, and the component calling this re-renders once it is there (and again if the renderer
 /// ever gives the window another). An app that makes textures does it in a render that sees
 /// `Some`, or on a thread it hands the `Gpu` to.
+#[must_use]
 pub fn use_gpu() -> Gpu {
     let gpu =
         use_hook(|| try_consume_context::<Gpu>().unwrap_or_else(|| provide_context(Gpu::empty())));

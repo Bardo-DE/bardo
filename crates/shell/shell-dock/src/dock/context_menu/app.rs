@@ -7,6 +7,7 @@ use super::{Checked, DockMenuRow, OptionHeld, menu_windows, sections};
 use crate::dock::items::{DockItem, ItemKind};
 
 /// The rows for the app tile `item`. `login` is what the autostart folder says about the app.
+#[must_use]
 pub fn rows(
     item: &DockItem,
     app: Option<&App>,

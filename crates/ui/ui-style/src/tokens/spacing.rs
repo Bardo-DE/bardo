@@ -100,6 +100,7 @@ pub enum SpacingToken {
 
 impl SpacingToken {
     /// The step in tenths of a pixel: `15` is `1.5px`, read from the token's own value.
+    #[must_use]
     pub fn tenths(self) -> u16 {
         let value = self.css_value(TokenScope::BASE);
         let pixels: f32 = value.as_str().trim_end_matches("px").parse().unwrap_or(0.0);

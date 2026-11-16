@@ -88,9 +88,10 @@ impl Arena {
     /// model's prompt says that a finish carries words, so a model that is not told does not give
     /// them.
     fn goal_text(&self) -> String {
-        match self.task.answer.is_empty() {
-            true => self.task.goal.clone(),
-            false => format!("{} Say the answer in your final summary.", self.task.goal),
+        if self.task.answer.is_empty() {
+            self.task.goal.clone()
+        } else {
+            format!("{} Say the answer in your final summary.", self.task.goal)
         }
     }
 

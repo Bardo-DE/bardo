@@ -39,12 +39,13 @@ pub fn step(
         GuestAsksEvent::Chosen(node, verdict) => {
             let before = asks.len();
             asks.retain(|known| known.node != node);
-            match asks.len() < before {
-                true => vec![
+            if asks.len() < before {
+                vec![
                     GuestAsksEffect::Withdraw(node.clone()),
                     GuestAsksEffect::Answer(node, verdict),
-                ],
-                false => Vec::new(),
+                ]
+            } else {
+                Vec::new()
             }
         }
     };

@@ -61,6 +61,7 @@ fn is_test_row(_proof: Proof) -> bool {
 /// per-app consent applies to it; a service known by its control group alone, which a same-user
 /// process can move itself into, is nobody in particular. Anything the library could not vouch
 /// for is unverified, and unverified programs are asked every time.
+#[must_use]
 pub fn client_standing(standing: &Standing, exe: &Exe) -> ClientStanding {
     match standing {
         Standing::Service { role, proof, .. } if trusted(*proof) => {
@@ -135,6 +136,7 @@ pub fn peer_of(standing: &Standing) -> PeerIdentity {
 /// row (`/usr/bin/flatpak`), which has no unit, so the most a public-socket peer shows is its
 /// root-owned image (`Proof::Exe`). A same-user process that runs that image under a preloaded
 /// library looks the same; the library cannot see that at this proof.
+#[must_use]
 pub fn maker_of(standing: &Standing) -> Maker {
     match standing {
         Standing::Service { role, proof, .. }

@@ -61,9 +61,10 @@ pub(crate) fn fresh_id(
         .join("-");
     let taken =
         |id: &AccountId| reserved.contains(id) || registry.accounts.iter().any(|a| a.id == *id);
-    let stem = match slug.is_empty() {
-        true => provider.to_string(),
-        false => format!("{provider}-{slug}"),
+    let stem = if slug.is_empty() {
+        provider.to_string()
+    } else {
+        format!("{provider}-{slug}")
     };
     let suffixes = std::iter::once(String::new()).chain((2..).map(|n| format!("-{n}")));
     suffixes
@@ -134,7 +135,7 @@ impl Drop for Reservation<'_> {
         // A plain set update that cannot panic midway.
         self.held
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .remove(&self.id);
     }
 }
@@ -144,7 +145,7 @@ impl<E: Ports> Accounts<'_, E> {
         self.state
             .reserved
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// The account `provider` already has that the sign-in's `step` shows again, if any: the same
@@ -254,13 +255,12 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((lines, account.id))
             })
             .await;
-        match stored {
-            Ok(written) => Ok(written.value),
-            Err(_) => {
-                // Nothing more can be done for a secret that cannot be deleted.
-                let _ = self.ctx.secrets().delete_account(&reservation.id).await;
-                Err(())
-            }
+        if let Ok(written) = stored {
+            Ok(written.value)
+        } else {
+            // Nothing more can be done for a secret that cannot be deleted.
+            let _ = self.ctx.secrets().delete_account(&reservation.id).await;
+            Err(())
         }
     }
 

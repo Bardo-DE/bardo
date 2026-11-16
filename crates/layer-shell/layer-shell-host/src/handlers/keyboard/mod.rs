@@ -178,15 +178,12 @@ impl KeyboardHandler for HostState {
         _keyboard: &wl_keyboard::WlKeyboard,
         info: RepeatInfo,
     ) {
-        match repeat_rate(info) {
-            Some(RepeatRate { delay, interval }) => {
-                self.input.repeat_delay = delay;
-                self.input.repeat_interval = interval;
-            }
-            None => {
-                self.input.repeating = None;
-                self.timers.push(TimerRequest::RepeatStop);
-            }
+        if let Some(RepeatRate { delay, interval }) = repeat_rate(info) {
+            self.input.repeat_delay = delay;
+            self.input.repeat_interval = interval;
+        } else {
+            self.input.repeating = None;
+            self.timers.push(TimerRequest::RepeatStop);
         }
     }
 }

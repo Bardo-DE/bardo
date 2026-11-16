@@ -34,12 +34,14 @@ impl Scale {
 
     /// A scale given in hundredths (`ui_harness::Viewport::scale_percent`): 150 is `Scale(180)`.
     /// Exact for every multiple of 5 %, which covers every scale a desktop offers.
+    #[must_use]
     pub fn from_percent(percent: u16) -> Scale {
         Scale(u32::from(percent) * Scale::DENOMINATOR / 100)
     }
 
     /// A scale given as the factor a platform reports (winit's `scale_factor`, 1.5 for 150 %),
     /// rounded to the nearest 120th; `None` for a factor that is not a positive number.
+    #[must_use]
     pub fn from_factor(factor: f64) -> Option<Scale> {
         let valid = factor.is_finite() && factor > 0.0;
         // Bounded by the validity check and `max(1.0)`, so the cast cannot truncate or wrap.
@@ -47,17 +49,20 @@ impl Scale {
     }
 
     /// The numerator, never zero: a zero scale would make one device pixel infinitely wide.
+    #[must_use]
     pub fn numerator(self) -> u32 {
         self.0.max(1)
     }
 
     /// The scale as a multiplier, for the one place arithmetic needs it (a renderer's scale
     /// factor). Never stored.
+    #[must_use]
     pub fn as_f64(self) -> f64 {
         f64::from(self.numerator()) / f64::from(Scale::DENOMINATOR)
     }
 
     /// Whether this scale's device grid coincides with the logical one.
+    #[must_use]
     pub fn grid(self) -> Grid {
         match self.numerator() % Scale::DENOMINATOR {
             0 => Grid::Whole,

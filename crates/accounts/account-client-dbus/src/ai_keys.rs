@@ -58,6 +58,7 @@ pub struct AiKeys {
 
 impl Bus {
     /// The handle on ai keys.
+    #[must_use]
     pub fn ai_keys(&self) -> AiKeys {
         AiKeys { bus: self.clone() }
     }

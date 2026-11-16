@@ -12,18 +12,21 @@ const GAMUT_STEP: f64 = 0.002;
 
 /// `Math.round`: halves go up, including for negatives. Rust's `round` sends halves away from
 /// zero, which disagrees at -1.5.
+#[must_use]
 pub fn js_round(value: f64) -> f64 {
     (value + 0.5).floor()
 }
 
 /// `oklch(lightness chroma hue)`, hue in degrees, as 8-bit sRGB channels, its chroma reduced
 /// until it fits sRGB.
+#[must_use]
 pub fn oklch_bytes(lightness: f64, chroma: f64, hue: f64) -> [u8; 3] {
     let LinearRgb(channels) = linear(lightness, fit(lightness, chroma, hue), hue);
     channels.map(|channel| channel_byte(encode(channel)))
 }
 
 /// The same colour as `#rrggbb`.
+#[must_use]
 pub fn oklch_hex(lightness: f64, chroma: f64, hue: f64) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut out = String::with_capacity(7);

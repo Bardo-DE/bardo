@@ -55,6 +55,7 @@ pub const PRIMER_MAX_LINES: usize = 200;
 impl Primer {
     /// The markdown: a heading, a blank line, then `- [title](topic.md): summary` per entry,
     /// cut so the whole file is at most [`PRIMER_MAX_LINES`] lines.
+    #[must_use]
     pub fn render(&self) -> String {
         let mut out = String::from("# Memory\n\n");
         for entry in self.entries.iter().take(PRIMER_MAX_LINES - 2) {

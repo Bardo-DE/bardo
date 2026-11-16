@@ -33,12 +33,14 @@ pub const READER_BUS: &str = "org.bardo.Reader1";
 pub const READER_PATH: &str = "/org/bardo/Reader1";
 
 /// The object path of one request in flight (`/org/bardo/Intents1/request/<n>`).
+#[must_use]
 pub fn request_path(call: CallId) -> String {
     format!("{INTENTS_PATH}/request/{}", call.0)
 }
 
 /// The object path of one answer (`/org/bardo/Companion1/answer/<task>`). A task id is a slug
 /// with `.` and `-`, which an object path does not allow, so they become `_`.
+#[must_use]
 pub fn answer_path(task: &TaskId) -> String {
     let segment: String = task
         .as_str()
@@ -75,9 +77,9 @@ mod tests {
     fn paths_are_valid_object_paths() {
         let request = request_path(CallId(17));
         assert_eq!(request, "/org/bardo/Intents1/request/17");
-        assert!(zbus::zvariant::ObjectPath::try_from(request.as_str()).is_ok());
+        zbus::zvariant::ObjectPath::try_from(request.as_str()).unwrap();
         let answer = answer_path(&TaskId::parse("t-3.a").expect("task"));
         assert_eq!(answer, "/org/bardo/Companion1/answer/t_3_a");
-        assert!(zbus::zvariant::ObjectPath::try_from(answer.as_str()).is_ok());
+        zbus::zvariant::ObjectPath::try_from(answer.as_str()).unwrap();
     }
 }

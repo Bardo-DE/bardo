@@ -24,6 +24,7 @@ pub struct FirstRunMark {
 
 impl FirstRunMark {
     /// The mark under `home`: `<home>/bardo/settings/first-run`.
+    #[must_use]
     pub fn under(home: &StateHome) -> FirstRunMark {
         FirstRunMark {
             path: ui_settings::app_folder(&home.0, "settings").join(FILE),
@@ -32,6 +33,7 @@ impl FirstRunMark {
 
     /// Whether the first run has happened: `--first-run` exits at once when it has, and opens the
     /// window when it has not.
+    #[must_use]
     pub fn done(&self) -> bool {
         self.path.is_file()
     }

@@ -9,6 +9,7 @@ use action_settings::{Known, KnownPlace, PlaceName};
 /// that is not a program on this computer, and does not need signing in again. Each carries its
 /// provider's name, which the confirmation says. The person's other computers are the ones the
 /// assistant's service lists (`computers`); the ones only the setting holds are not shown.
+#[must_use]
 pub fn known_of(pane: &AccountsPane, computers: &[ComputerRow]) -> Known {
     let own = computers
         .iter()

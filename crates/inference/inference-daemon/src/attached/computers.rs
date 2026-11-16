@@ -63,6 +63,7 @@ pub struct AddedModel {
 
 impl AddedModel {
     /// The attached-engine entry this is, for a computer called `computer`.
+    #[must_use]
     pub fn entry(&self, computer: &str) -> AttachedEntry {
         AttachedEntry {
             socket: self.socket.clone(),
@@ -91,6 +92,7 @@ pub struct AddedComputer {
 
 /// The socket of the relay that leads to the computer `node`, in `sockets`: the one place a
 /// computer on the network is reached from. None when the path would be too long to connect to.
+#[must_use]
 pub fn relay_socket(sockets: &Path, node: &NodeId) -> Option<PathBuf> {
     let path = sockets.join(format!("tailnet-{node}.sock"));
     (path.as_os_str().as_bytes().len() < SUN_PATH).then_some(path)
@@ -141,23 +143,23 @@ impl AddedFile {
                 });
             }
         };
-        match toml::from_str(&text) {
-            Ok(file) => Ok(file),
-            Err(_) => {
-                let mut aside = path.as_os_str().to_owned();
-                aside.push(".unusable");
-                let aside = PathBuf::from(aside);
-                let _ = std::fs::rename(path, &aside);
-                Err(AddedProblem::Unusable {
-                    path: path.to_owned(),
-                    aside,
-                })
-            }
+        if let Ok(file) = toml::from_str(&text) {
+            Ok(file)
+        } else {
+            let mut aside = path.as_os_str().to_owned();
+            aside.push(".unusable");
+            let aside = PathBuf::from(aside);
+            let _ = std::fs::rename(path, &aside);
+            Err(AddedProblem::Unusable {
+                path: path.to_owned(),
+                aside,
+            })
         }
     }
 
     /// The attached engines the file names, each past the checks the file alone allows, and a
     /// line for each that is refused (never the key).
+    #[must_use]
     pub fn attached(&self, sockets: &Path) -> (Vec<Attached>, Vec<String>) {
         let mut engines = Vec::new();
         let mut refused = Vec::new();
@@ -184,6 +186,7 @@ impl AddedFile {
     }
 
     /// The names the person gave, by computer name.
+    #[must_use]
     pub fn labels(&self) -> BTreeMap<ComputerName, String> {
         self.computers
             .iter()
@@ -223,6 +226,7 @@ fn tailnet_engines(
 
 /// The computers of the hand-written file: the names their engines carry (`other-computer` for an
 /// engine on another machine that names none).
+#[must_use]
 pub fn hand_written(engines: &[Attached]) -> BTreeSet<ComputerName> {
     engines
         .iter()
@@ -234,6 +238,7 @@ pub fn hand_written(engines: &[Attached]) -> BTreeSet<ComputerName> {
 /// What the file of added computers contributes next to the hand-written engines: its engines
 /// without those whose computer or model the hand-written file already has (the hand-written
 /// file wins, and each one left out is said).
+#[must_use]
 pub fn merged(
     hand: &[Attached],
     added: &AddedFile,
@@ -378,6 +383,7 @@ impl From<inference_tailnet::GuestError> for ComputerError {
 
 impl ComputerError {
     /// The name of the error on the bus, after `org.bardo.Inference1.Error.Computer.`.
+    #[must_use]
     pub fn name(&self) -> &'static str {
         match self {
             ComputerError::BadName => "BadName",
@@ -552,6 +558,7 @@ impl Computers {
     /// The computers kept in `file`, with their keys under `keys`, over the daemon's `book`.
     /// `loaded` is what the file held at start and `hand` the hand-written engines (their
     /// computers and models cannot be added again).
+    #[must_use]
     pub fn new(
         file: PathBuf,
         keys: PathBuf,

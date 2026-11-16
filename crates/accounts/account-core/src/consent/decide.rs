@@ -57,6 +57,7 @@ pub enum Availability {
 /// The availability for one app, from the verdicts of the accounts whose offer fits.
 /// `offered` is whether any installed provider declares a capability that meets the need, so
 /// adding an account helps.
+#[must_use]
 pub fn availability(fitting: &[Verdict], offered: bool) -> Availability {
     let any = |want: fn(&Verdict) -> bool| fitting.iter().any(want);
     if any(|v| matches!(v, Verdict::Granted { .. })) {

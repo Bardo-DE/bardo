@@ -207,23 +207,20 @@ impl<'a, S: Rig> Player<'a, S> {
             None => (Value::Text(text.clone()), HandleValue::Text(text)),
         };
         // A terminal has no handles: whatever the words once were, they were typed.
-        match label.filter(|_| self.case.driver == Driver::Companion) {
-            Some(label) => {
-                let source = label.sources.iter().next().cloned().unwrap_or(Source::User);
-                hold(self.router, &self.scene.front, held, label, source)
-                    .map(Value::Handle)
-                    .ok_or(Fault("a handle the front session could not hold"))
+        if let Some(label) = label.filter(|_| self.case.driver == Driver::Companion) {
+            let source = label.sources.iter().next().cloned().unwrap_or(Source::User);
+            hold(self.router, &self.scene.front, held, label, source)
+                .map(Value::Handle)
+                .ok_or(Fault("a handle the front session could not hold"))
+        } else {
+            // The person's own words that name a thing: the person chose it.
+            if self.case.driver == Driver::Companion
+                && let (ArgFrom::UserTurn { .. }, Value::Entity(e)) = (from, &plain)
+                && let Some(r) = state_of(self.router).sessions.get_mut(&self.scene.front)
+            {
+                r.known.insert(e.clone());
             }
-            None => {
-                // The person's own words that name a thing: the person chose it.
-                if self.case.driver == Driver::Companion
-                    && let (ArgFrom::UserTurn { .. }, Value::Entity(e)) = (from, &plain)
-                    && let Some(r) = state_of(self.router).sessions.get_mut(&self.scene.front)
-                {
-                    r.known.insert(e.clone());
-                }
-                Ok(plain)
-            }
+            Ok(plain)
         }
     }
 

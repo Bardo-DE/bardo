@@ -1,4 +1,4 @@
-//! TabView: four tabs, each with its own body, at two sizes.
+//! `TabView`: four tabs, each with its own body, at two sizes.
 
 use crate::pages::Section;
 use dioxus::prelude::*;
@@ -7,7 +7,7 @@ use ui_components::components::controls::checkbox::Checkbox;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The TabView section.
+/// The `TabView` section.
 #[component]
 pub fn TabViewSection() -> Element {
     let mut tab = use_signal(|| 0u8);

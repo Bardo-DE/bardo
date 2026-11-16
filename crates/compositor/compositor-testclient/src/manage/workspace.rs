@@ -35,7 +35,7 @@ pub struct WorkspaceSeen {
 /// One workspace group as announced.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct GroupSeen {
-    /// The `capabilities` event's bits (1 create_workspace).
+    /// The `capabilities` event's bits (1 `create_workspace`).
     pub capabilities: u32,
     /// How many `wl_output`s it has.
     pub outputs: usize,
@@ -105,6 +105,7 @@ impl WorkspaceWatch {
     }
 
     /// Every group announced and not removed, in order.
+    #[must_use]
     pub fn groups(&self) -> Vec<GroupSeen> {
         self.roster
             .groups
@@ -117,6 +118,7 @@ impl WorkspaceWatch {
     }
 
     /// Every workspace announced and not removed, in order.
+    #[must_use]
     pub fn workspaces(&self) -> Vec<WorkspaceSeen> {
         self.roster
             .spaces
@@ -134,11 +136,13 @@ impl WorkspaceWatch {
     }
 
     /// How many `done` events arrived.
+    #[must_use]
     pub fn dones(&self) -> usize {
         self.roster.dones
     }
 
     /// Whether the compositor sent `finished`.
+    #[must_use]
     pub fn finished(&self) -> bool {
         self.roster.finished
     }

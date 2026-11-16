@@ -11,11 +11,11 @@ pub enum MediaContainer {
     Mp4,
     /// M4V video.
     M4v,
-    /// QuickTime movie.
+    /// `QuickTime` movie.
     Mov,
     /// Matroska video.
     Mkv,
-    /// WebM video.
+    /// `WebM` video.
     WebM,
     /// AVI video.
     Avi,
@@ -99,11 +99,13 @@ impl Family for MediaContainer {
 
 impl MediaContainer {
     /// The extension the container's files are named with, without the dot: its first.
+    #[must_use]
     pub fn extension(self) -> &'static str {
         self.extensions()[0]
     }
 
     /// Whether the container is shown as video or played as audio.
+    #[must_use]
     pub fn kind(self) -> FormatKind {
         match self {
             MediaContainer::Mp4

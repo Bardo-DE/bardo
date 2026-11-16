@@ -33,9 +33,10 @@ fn rows() -> Vec<ProviderRow> {
             id: provider(id),
             label: id.into(),
             mark: id.into(),
-            kind: match id.starts_with("generic-") {
-                true => RowKind::Generic,
-                false => RowKind::Provider,
+            kind: if id.starts_with("generic-") {
+                RowKind::Generic
+            } else {
+                RowKind::Provider
             },
             auth: ProviderKind::Service,
             mark_face: None,
@@ -523,7 +524,7 @@ fn add_and_allow_stores_the_same_way_and_the_view_names_the_app() {
     };
     let sheet = at(purpose, Stage::Working(nc()));
     let (sheet, effects) = step(sheet, SheetEvent::SignIn(Progress::Review(review())));
-    match &effects[..] {
+    match (&*effects) {
         [SheetEffect::Show(SheetView::Review(view))] => assert_eq!(view.allow, Some(app)),
         other => panic!("not the review: {other:?}"),
     }

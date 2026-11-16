@@ -1,8 +1,8 @@
 //! What the service says about itself: the properties of the bus object.
 
 use crate::problem::Problem;
-use semver::Version;
 use base_time::UnixSeconds;
+use semver::Version;
 
 /// Where the update flow is.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

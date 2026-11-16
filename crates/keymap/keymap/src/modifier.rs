@@ -1,6 +1,6 @@
 //! The modifiers a chord holds, as keyboard-types' [`Modifiers`] flags.
 //!
-//! A toolkit's flags may hold anything (locks, AltGr, Fn); a chord holds only Ctrl, Alt, Shift
+//! A toolkit's flags may hold anything (locks, `AltGr`, Fn); a chord holds only Ctrl, Alt, Shift
 //! and the OS key, which keyboard-types calls `META` (Command, the Windows key, Super).
 //! [`chord_modifiers`] is that narrowing.
 

@@ -36,6 +36,7 @@ pub fn group_of(child: &tokio::process::Child) -> Option<Pid> {
 
 /// Whether anything is still in the group (a process that has exited and not been waited for
 /// still counts).
+#[must_use]
 pub fn alive(group: Pid) -> bool {
     test_kill_process_group(group).is_ok()
 }

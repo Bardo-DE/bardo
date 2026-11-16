@@ -7,6 +7,7 @@ use std::path::Path;
 /// The words for a registry file refused at start: the file by name, why, that nothing was
 /// changed and that `service` (as the person knows it: "accounts service") did not start, and
 /// the copy from before the last change when there is one.
+#[must_use]
 pub fn registry_words(file: &Path, backup: Option<&Path>, cause: &str, service: &str) -> String {
     let spare = match backup {
         Some(backup) => format!(

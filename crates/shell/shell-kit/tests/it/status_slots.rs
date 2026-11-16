@@ -133,7 +133,7 @@ fn the_status_item_plays_the_glyphs_own_moments() {
         *ITEM.write() = StatusState::Wifi(WifiState::Joined {
             bars: WifiBars::Three,
             reach: WifiReach::Internet,
-        })
+        });
     });
     settle_until(&mut harness, |h| arc(h).as_deref() == Some("lit"));
     assert_settles_to_zero_frames(&mut harness);

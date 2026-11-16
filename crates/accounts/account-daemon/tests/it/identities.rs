@@ -116,12 +116,11 @@ async fn apps_and_porter_daemons_use_identities_and_everything_else_is_refused()
         let (picked, ..) = proxy.offer("", "").await.expect("offer");
         assert_eq!(picked, id, "{role:?} offers");
         proxy.register_use(id).await.expect("register");
-        match reads_uses {
-            true => assert!(proxy.uses(id).await.is_ok(), "{role:?} reads uses"),
-            false => {
-                let refused = proxy.uses(id).await.expect_err("uses");
-                assert_eq!(error_name(&refused), ACCESS_DENIED, "{role:?}");
-            }
+        if reads_uses {
+            assert!(proxy.uses(id).await.is_ok(), "{role:?} reads uses")
+        } else {
+            let refused = proxy.uses(id).await.expect_err("uses");
+            assert_eq!(error_name(&refused), ACCESS_DENIED, "{role:?}");
         }
     }
     // Refused whatever they ask, and an unknown sender too (its `_` arm fails closed): nothing is

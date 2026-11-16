@@ -32,6 +32,7 @@ pub struct Armed {
 }
 
 /// A place to keep a press for the change it causes.
+#[must_use]
 pub fn use_armed() -> Armed {
     Armed {
         press: use_hook(|| CopyValue::new(None)),
@@ -51,6 +52,7 @@ impl Armed {
     }
 
     /// Who is causing a change made now: the kept press while it holds.
+    #[must_use]
     pub fn touch(self) -> Touch {
         match *self.press.peek() {
             Some((contact, Hold::Operation)) => Touch::Contact(contact),

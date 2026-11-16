@@ -246,7 +246,7 @@ fn set_head(wire: &Wire, target: &ZwlrOutputConfigurationHeadV1, settings: &Head
     }
     if let Some(transform) = settings
         .transform
-        .and_then(|t| t.to_wire::<wl_output::Transform>())
+        .and_then(desktop_protocols::vocab::WireCode::to_wire::<wl_output::Transform>)
     {
         target.set_transform(transform);
     }

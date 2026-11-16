@@ -78,7 +78,7 @@ fn an_ask_between_advances_runs_at_the_instant_it_was_asked() {
     harness.advance(ms(100));
     let asked = harness.now();
     tell.send(1).expect("the page listens");
-    harness.advance(ANSWER_AFTER - ms(1));
+    harness.advance(ANSWER_AFTER.checked_sub(ms(1)).unwrap());
     assert!(
         harness.count("#heard") == 1,
         "the ask was heard during the advance after it"

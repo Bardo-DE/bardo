@@ -17,6 +17,7 @@ pub struct Pid(NonZeroU32);
 
 impl Pid {
     /// The pid `raw`, or `None` for zero or a number the kernel cannot hold.
+    #[must_use]
     pub const fn new(raw: u32) -> Option<Pid> {
         if raw > i32::MAX as u32 {
             return None;
@@ -28,6 +29,7 @@ impl Pid {
     }
 
     /// The number.
+    #[must_use]
     pub const fn get(self) -> u32 {
         self.0.get()
     }
@@ -48,11 +50,13 @@ impl Uid {
     pub const ROOT: Uid = Uid(0);
 
     /// The user `raw`.
+    #[must_use]
     pub const fn new(raw: u32) -> Uid {
         Uid(raw)
     }
 
     /// The number.
+    #[must_use]
     pub const fn get(self) -> u32 {
         self.0
     }
@@ -93,6 +97,7 @@ impl UnitName {
     }
 
     /// The name's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -136,6 +141,7 @@ impl AppKey {
     }
 
     /// The key's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -187,6 +193,7 @@ impl RoleName {
 
     /// A role written in code. Checked at compile time when used in a `const`, so a typo in a
     /// role constant is a build error.
+    #[must_use]
     pub const fn from_static(text: &'static str) -> RoleName {
         let bytes = text.as_bytes();
         assert!(
@@ -202,6 +209,7 @@ impl RoleName {
     }
 
     /// The role's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -255,16 +263,19 @@ impl ExePath {
     }
 
     /// The path.
+    #[must_use]
     pub fn as_path(&self) -> &Path {
         &self.0
     }
 
     /// The file's name.
+    #[must_use]
     pub fn file_name(&self) -> Option<&str> {
         self.0.file_name().and_then(|n| n.to_str())
     }
 
     /// The path's text (always UTF-8: it was made from a `str`).
+    #[must_use]
     pub fn to_text(&self) -> String {
         self.0.to_string_lossy().into_owned()
     }
@@ -304,12 +315,14 @@ impl ExePattern {
     }
 
     /// The pattern's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// Whether `path` is one of the paths the pattern describes: the same number of segments,
     /// each equal, or equal around its one `*`.
+    #[must_use]
     pub fn matches(&self, path: &ExePath) -> bool {
         let text = path.to_text();
         let (Some(pat), Some(real)) = (plain_segments(&self.0), plain_segments(&text)) else {

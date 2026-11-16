@@ -49,6 +49,7 @@ pub enum TextInputEvent {
 
 impl TextInputEvent {
     /// The event's wire name.
+    #[must_use]
     pub fn name(&self) -> &'static str {
         match self {
             TextInputEvent::Enter => "enter",
@@ -61,6 +62,7 @@ impl TextInputEvent {
     }
 
     /// The event's arguments as transcript text.
+    #[must_use]
     pub fn args(&self) -> Vec<String> {
         let text = |text: &Option<String>| format!("{:?}", text.as_deref().unwrap_or(""));
         match self {
@@ -82,6 +84,7 @@ impl TextInputEvent {
 }
 
 /// The event the compositor sent the text field, if it is one this client records.
+#[must_use]
 pub fn field_event(event: zwp_text_input_v3::Event) -> Option<TextInputEvent> {
     Some(match event {
         zwp_text_input_v3::Event::Enter { .. } => TextInputEvent::Enter,

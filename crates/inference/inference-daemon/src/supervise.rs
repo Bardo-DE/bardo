@@ -39,6 +39,7 @@ pub struct Failed {
 
 impl Failed {
     /// A failure nothing more is known about.
+    #[must_use]
     pub fn unknown() -> Self {
         Self {
             cause: Cause::Unknown,
@@ -125,6 +126,7 @@ impl inference_turns::local::EngineUse for Supervised {
 
 impl Supervised {
     /// A supervisor of no engines: every `want` fails. For daemons with nothing to run.
+    #[must_use]
     pub fn idle() -> Self {
         let (commands, _) = mpsc::unbounded_channel();
         let (_, state) = watch::channel(Snapshot::default());
@@ -246,23 +248,27 @@ impl Supervised {
 
     /// The date a time of the driver's clock (a `MonoMs` of a snapshot) was; none until the host
     /// has said when the driver started ([`Supervised::dated`]).
+    #[must_use]
     pub fn wall_clock(&self, at: MonoMs) -> Option<SystemTime> {
         Some(self.began? + Duration::from_millis(at.0))
     }
 
     /// The memory the engine takes: `served` (what its spec asks) unless it was started with a
     /// window of its own.
+    #[must_use]
     pub fn memory_of(&self, id: &EngineId, served: MiB) -> MiB {
         self.sizing.need_of(id, served)
     }
 
     /// The window the engine was last started with, when it is one whose window is chosen at
     /// start.
+    #[must_use]
     pub fn window_of(&self, id: &EngineId) -> Option<model_provider::Tokens> {
         self.sizing.window_of(id)
     }
 
     /// What the person set for the length of a conversation and a reply.
+    #[must_use]
     pub fn lengths(&self) -> inference_router::local::Lengths {
         self.sizing.lengths()
     }
@@ -343,16 +349,19 @@ impl Supervised {
     }
 
     /// What every engine is doing now.
+    #[must_use]
     pub fn snapshot(&self) -> Snapshot {
         self.state.borrow().clone()
     }
 
     /// How recently an engine must have been used to count as in a turn.
+    #[must_use]
     pub fn probe_every(&self) -> Duration {
         self.probe_every
     }
 
     /// The memory kept free beside an engine (what `budget` is asked with).
+    #[must_use]
     pub fn headroom(&self) -> MiB {
         self.headroom
     }
@@ -361,6 +370,7 @@ impl Supervised {
     /// as it is made: each [`Changes::next`] resolves once for the changes since the last one it
     /// gave. A receiver cloned for each wait would start from this handle's view, which never
     /// moves, and so resolve at once for ever after the first change.
+    #[must_use]
     pub fn changes(&self) -> Changes {
         let mut state = self.state.clone();
         state.borrow_and_update();
@@ -644,27 +654,24 @@ where
         let ports = Arc::clone(&self.ports);
         match effect {
             SupervisorOut::Spawn(id, unit) => {
-                match ports.host.spawn(&id, &self.sized(&id, unit)).await {
-                    Ok(()) => {
-                        let diagnostics = self.diagnostics.clone();
-                        self.tasks.spawn(async move {
-                            let code = ports.host.exited(&id).await;
-                            let tail = Some(diagnostics.tail(&id));
-                            Joined {
-                                input: SupervisorIn::Exited { id, code },
-                                tail,
-                            }
-                        });
-                        None
-                    }
-                    Err(_) => {
-                        let cause = self.diagnostics.refusal(&id).unwrap_or(Cause::Refused);
-                        self.pending.insert(id.clone(), cause);
-                        Some(SupervisorIn::Exited {
-                            id,
-                            code: ExitCode(-1),
-                        })
-                    }
+                if let Ok(()) = ports.host.spawn(&id, &self.sized(&id, unit)).await {
+                    let diagnostics = self.diagnostics.clone();
+                    self.tasks.spawn(async move {
+                        let code = ports.host.exited(&id).await;
+                        let tail = Some(diagnostics.tail(&id));
+                        Joined {
+                            input: SupervisorIn::Exited { id, code },
+                            tail,
+                        }
+                    });
+                    None
+                } else {
+                    let cause = self.diagnostics.refusal(&id).unwrap_or(Cause::Refused);
+                    self.pending.insert(id.clone(), cause);
+                    Some(SupervisorIn::Exited {
+                        id,
+                        code: ExitCode(-1),
+                    })
                 }
             }
             SupervisorOut::Stop(id) => {

@@ -17,11 +17,13 @@ use std::collections::{BTreeMap, BTreeSet};
 use ui_style::appearance::motion::MotionLevel;
 
 /// The book after the arrangement changed from `from` to `to` at `now` because of `cause`.
+///
 /// A leg whose target changed starts a new leg from its state at `now` (position and velocity
 /// kept); a window that appears fades and grows in from its target, one that leaves fades out
 /// (a minimising one toward its dock tile); the spring comes from `cause`
 /// (`SpringSpec::for_touch`), and under [`MotionLevel::Reduced`] nothing travels: positions and
 /// sizes are at their targets at once and only arrivals and departures cross-fade.
+#[must_use]
 pub fn retarget(
     book: MotionBook,
     from: &Arrangement,
@@ -37,6 +39,7 @@ pub fn retarget(
 /// draws those rows at the swipe's own position (its rubber band and its ease-out finish), so
 /// their strip legs go to the new target at once instead of sliding as well, and a commit does
 /// not slide twice. Windows and the other outputs' strips travel as `retarget` has them.
+#[must_use]
 pub fn retarget_driven(
     book: MotionBook,
     from: &Arrangement,
@@ -80,9 +83,10 @@ pub fn retarget_driven(
         let known = tracked_strips.remove(output).unwrap_or_else(|| {
             SlideLeg::still(before.strips.get(output).copied().unwrap_or(*target), now)
         });
-        let slide = match driven.contains(output) {
-            true => Travel::Snap,
-            false => travel,
+        let slide = if driven.contains(output) {
+            Travel::Snap
+        } else {
+            travel
         };
         let thrown = slide
             .spring()
@@ -111,9 +115,10 @@ impl Step<'_> {
             (Some(legs), _) => legs.leaving,
             (None, was) => was.is_none(),
         };
-        let flight = match returning {
-            true => self.flight(goal.rect),
-            false => None,
+        let flight = if returning {
+            self.flight(goal.rect)
+        } else {
+            None
         };
         let legs = match known.or_else(|| was.map(|was| self.standing(was))) {
             Some(legs) => legs

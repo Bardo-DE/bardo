@@ -26,13 +26,14 @@ pub struct Candidate {
     /// The grant the app holds for it; tokens are asked for by this.
     pub grant: GrantId,
     /// The account's servers for the kind that fits (an IMAP and an SMTP host for mail, the
-    /// WebDAV root for files), so a granted app learns where to connect. Empty for an account
+    /// `WebDAV` root for files), so a granted app learns where to connect. Empty for an account
     /// with none (a local runtime). On the bus this is the vardict key `endpoints`.
     pub endpoints: Vec<ServiceEndpoint>,
 }
 
 impl Candidate {
     /// An account that meets a need, with the grant the app holds for it and no servers named.
+    #[must_use]
     pub fn new(
         account: AccountId,
         label: AccountLabel,
@@ -55,6 +56,7 @@ impl Candidate {
     }
 
     /// The same candidate, naming the account's servers for the kind that fits.
+    #[must_use]
     pub fn with_endpoints(mut self, endpoints: Vec<ServiceEndpoint>) -> Self {
         self.endpoints = endpoints;
         self

@@ -22,6 +22,7 @@ fn position(rows: &[Entry], name: &FileName) -> Option<usize> {
 
 impl Selection {
     /// Just `name`, which is also the anchor and the cursor.
+    #[must_use]
     pub fn only(name: &FileName) -> Selection {
         Selection {
             names: BTreeSet::from([name.clone()]),
@@ -42,6 +43,7 @@ impl Selection {
     }
 
     /// Whether `name` is selected.
+    #[must_use]
     pub fn contains(&self, name: &FileName) -> bool {
         self.names.contains(name)
     }
@@ -52,16 +54,19 @@ impl Selection {
     }
 
     /// How many are selected.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.names.len()
     }
 
     /// Whether nothing is selected.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.names.is_empty()
     }
 
     /// The selected name, when exactly one is.
+    #[must_use]
     pub fn single(&self) -> Option<&FileName> {
         let mut names = self.names.iter();
         match (names.next(), names.next()) {
@@ -71,16 +76,19 @@ impl Selection {
     }
 
     /// The row the keyboard is on.
+    #[must_use]
     pub fn cursor(&self) -> Option<&FileName> {
         self.cursor.as_ref()
     }
 
     /// The row a Shift-extend grows from.
+    #[must_use]
     pub fn anchor(&self) -> Option<&FileName> {
         self.anchor.as_ref()
     }
 
     /// The selection after a click on `name` in `rows`. A name that isn't shown changes nothing.
+    #[must_use]
     pub fn click(self, rows: &[Entry], name: &FileName, modifier: Modifier) -> Selection {
         let Some(at) = position(rows, name) else {
             return self;
@@ -93,6 +101,7 @@ impl Selection {
     }
 
     /// Every row selected; the anchor and cursor stay where they were.
+    #[must_use]
     pub fn select_all(self, rows: &[Entry]) -> Selection {
         Selection {
             names: rows.iter().map(|e| e.name.clone()).collect(),
@@ -102,6 +111,7 @@ impl Selection {
 
     /// The selection after an arrow or jump key. Plain moves the selection with the cursor, Shift
     /// grows it, and the primary key moves only the cursor.
+    #[must_use]
     pub fn moved(self, rows: &[Entry], direction: Direction, modifier: Modifier) -> Selection {
         let Some(last) = rows.len().checked_sub(1) else {
             return self;
@@ -128,6 +138,7 @@ impl Selection {
     }
 
     /// The selection with the names that are no longer in `rows` dropped.
+    #[must_use]
     pub fn kept_in(self, rows: &[Entry]) -> Selection {
         let present = |name: &FileName| position(rows, name).is_some();
         Selection {

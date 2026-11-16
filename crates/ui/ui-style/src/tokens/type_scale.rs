@@ -34,6 +34,7 @@ pub enum Family {
 
 impl Family {
     /// The family name the stack leads with: the name its face registers as.
+    #[must_use]
     pub fn face_name(self) -> String {
         let value = self.css_value(TokenScope::BASE);
         let stack = value.as_str();
@@ -150,11 +151,13 @@ impl FontSize {
     pub const MIN_PX: f32 = 10.0;
 
     /// The size as CSS: `13px`.
+    #[must_use]
     pub fn css(self) -> String {
         self.css_value(TokenScope::BASE).to_string()
     }
 
     /// The size in px, for a check against [`Self::MIN_PX`].
+    #[must_use]
     pub fn px(self) -> f32 {
         self.css()
             .trim_end_matches("px")

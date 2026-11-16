@@ -54,12 +54,11 @@ impl Hearing {
         sink: &mut impl ChatSink,
     ) -> InferReply {
         let spec = &self.spec;
-        let offered = match &self.app {
-            Some(app) => self.engines.offer(app, spec.class, spec.usage).await,
-            None => {
-                self.engines.look_at_attached().await;
-                Offered::default()
-            }
+        let offered = if let Some(app) = &self.app {
+            self.engines.offer(app, spec.class, spec.usage).await
+        } else {
+            self.engines.look_at_attached().await;
+            Offered::default()
         };
         let settings = self.engines.settings();
         let shape = RequestShape {
@@ -68,21 +67,20 @@ impl Hearing {
             answer: Answer::Text,
         };
         let listed = self.engines.listed_with(&offered);
-        let listed = match &self.allowed {
-            None => listed,
-            Some(_) => {
-                let Some(pinned) = turns.pinned_to_now() else {
-                    return InferReply::Refused(inference_core::InferRefusal::Unavailable);
-                };
-                let served = &pinned.served;
-                let place =
-                    self.engines
-                        .place_for(&served.locality, &served.account, &served.model);
-                listed
-                    .into_iter()
-                    .filter(|one| self.engines.place_of(&one.card) == place)
-                    .collect()
-            }
+        let listed = if self.allowed.is_none() {
+            listed
+        } else {
+            let Some(pinned) = turns.pinned_to_now() else {
+                return InferReply::Refused(inference_core::InferRefusal::Unavailable);
+            };
+            let served = &pinned.served;
+            let place = self
+                .engines
+                .place_for(&served.locality, &served.account, &served.model);
+            listed
+                .into_iter()
+                .filter(|one| self.engines.place_of(&one.card) == place)
+                .collect()
         };
         let planned = match plan(
             &shape,

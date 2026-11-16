@@ -1,4 +1,4 @@
-//! SplitView's last pane keeps its least (design/30 section 2.7, `least_rest`): when the view is
+//! `SplitView`'s last pane keeps its least (design/30 section 2.7, `least_rest`): when the view is
 //! too narrow for every pane's width, the pane before it gives up width down to its own least,
 //! its body follows it, and the last pane is never drawn under its least. With room, nothing
 //! changes; with no `least_rest`, the pane keeps its width as before.

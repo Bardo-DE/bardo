@@ -50,6 +50,7 @@ pub struct XdgToplevelIconPart {
 
 impl XdgToplevelIconPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> XdgToplevelIconPart
     where
         D: GlobalDispatch<XdgToplevelIconManagerV1, IconGlobal> + 'static,
@@ -75,6 +76,7 @@ pub fn on_buffer_destroyed(part: &XdgToplevelIconPart, buffer: &WlBuffer) {
 }
 
 /// The icon `surface`'s toplevel has applied (committed), if it has one.
+#[must_use]
 pub fn icon_of(surface: &WlSurface) -> Option<IconParts> {
     with_states(surface, |states| {
         states

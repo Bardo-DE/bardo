@@ -53,11 +53,13 @@ pub struct Welcome {
 
 impl Welcome {
     /// The computer.
+    #[must_use]
     pub fn peer(&self) -> &Peer {
         &self.peer
     }
 
     /// Where it stands.
+    #[must_use]
     pub fn footing(&self) -> Footing {
         self.footing
     }

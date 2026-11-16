@@ -15,6 +15,7 @@ use crate::outputs::{OutputSurfaces, Outputs};
 
 /// The strip `config` keeps clear, if it keeps one: it reserves pixels along exactly one edge
 /// (the compositor ignores a zone on a surface anchored to a corner, or to two opposite edges).
+#[must_use]
 pub fn zone_of(config: &LayerConfig) -> Option<Zone> {
     let ExclusiveZone::Reserve(px) = config.exclusive else {
         return None;
@@ -56,6 +57,7 @@ fn zones(info: &OutputInfo, surfaces: &OutputSurfaces, settings: &ShellFile) -> 
 }
 
 /// Every output's work area, in the host's order.
+#[must_use]
 pub fn areas(outputs: &Outputs, settings: &ShellFile) -> Vec<WorkArea> {
     outputs
         .outputs

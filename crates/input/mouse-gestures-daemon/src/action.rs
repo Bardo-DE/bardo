@@ -35,6 +35,7 @@ impl Gesture {
     ];
 
     /// The one-finger swipe the fingers made.
+    #[must_use]
     pub fn one_finger_swipe(dir: FingerDirection) -> Self {
         match dir {
             FingerDirection::Right => Self::OneFingerSwipeRight,
@@ -43,6 +44,7 @@ impl Gesture {
     }
 
     /// The two-finger swipe the fingers made.
+    #[must_use]
     pub fn two_finger_swipe(dir: FingerDirection) -> Self {
         match dir {
             FingerDirection::Right => Self::TwoFingerSwipeRight,
@@ -51,6 +53,7 @@ impl Gesture {
     }
 
     /// The double-tap that fired.
+    #[must_use]
     pub fn tap(kind: TapKind) -> Self {
         match kind {
             TapKind::One => Self::OneFingerDoubleTap,
@@ -228,11 +231,13 @@ impl ActionMap {
     }
 
     /// The action configured for `g`.
+    #[must_use]
     pub fn action_for(&self, g: Gesture) -> &Action {
         &self.actions[g as usize]
     }
 
     /// This map with `action` for `g`.
+    #[must_use]
     pub fn with(mut self, g: Gesture, action: Action) -> Self {
         self.actions[g as usize] = action;
         self
@@ -241,6 +246,7 @@ impl ActionMap {
     /// Whether both two-finger swipes are the workspace defaults. Then the swipe is live: the
     /// pad carries the fingers to the compositor, which follows them and decides on the lift.
     /// Any other mapping is a one-shot action that fires on travel (`SwipeFire`).
+    #[must_use]
     pub fn two_finger_swipe_is_live(&self) -> bool {
         self.action_for(Gesture::TwoFingerSwipeLeft) == &Action::Workspace(Workspace::Next)
             && self.action_for(Gesture::TwoFingerSwipeRight) == &Action::Workspace(Workspace::Prev)
@@ -253,6 +259,7 @@ impl ActionMap {
 }
 
 /// The key an action presses, if it is a key action.
+#[must_use]
 pub fn key_of(a: &Action) -> Option<KeyCombo> {
     match a {
         Action::Back => Some(KeyCombo::alt(Key::LEFT)),
@@ -265,6 +272,7 @@ pub fn key_of(a: &Action) -> Option<KeyCombo> {
 impl Action {
     /// Whether this action asks something of the person's session: everything that is not a key
     /// and not nothing, which the daemon cannot do alone.
+    #[must_use]
     pub fn asks_session(&self) -> bool {
         matches!(
             self,

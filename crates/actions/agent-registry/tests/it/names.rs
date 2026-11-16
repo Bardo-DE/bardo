@@ -11,7 +11,7 @@ fn names_that_could_climb_out_are_refused() {
     for bad in ["", ".", "..", "../x", ".hidden", "a/b", "a b"] {
         assert!(Slug::parse(bad).is_err(), "{bad:?}");
     }
-    assert!(Slug::parse(&"x".repeat(65)).is_err());
+    Slug::parse(&"x".repeat(65)).unwrap_err();
     assert_eq!(
         Slug::parse("agy-acp_1.0+b").expect("slug").as_str(),
         "agy-acp_1.0+b"
@@ -27,7 +27,7 @@ fn a_digest_is_64_hex_digits_in_lower_case() {
     );
     let upper = of.as_str().to_ascii_uppercase();
     assert_eq!(Sha256Hex::parse(&format!(" {upper}\n")), Ok(of));
-    assert!(Sha256Hex::parse("abc").is_err());
+    Sha256Hex::parse("abc").unwrap_err();
 }
 
 #[test]

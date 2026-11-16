@@ -17,7 +17,7 @@ use std::rc::Rc;
 /// One device the fake session can open: its bytes, served from a memfd.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SessionFixture {
-    /// The device path it answers (`/dev/dri/card0` in a FakeKms fixture).
+    /// The device path it answers (`/dev/dri/card0` in a `FakeKms` fixture).
     pub path: PathBuf,
     /// The bytes the memfd holds.
     pub bytes: Vec<u8>,
@@ -55,6 +55,7 @@ pub struct FakeSession {
 
 impl FakeSession {
     /// A session with `fixtures`.
+    #[must_use]
     pub fn with(fixtures: Vec<SessionFixture>) -> FakeSession {
         FakeSession {
             fixtures: fixtures.into_iter().map(|f| (f.path.clone(), f)).collect(),
@@ -75,11 +76,13 @@ impl FakeSession {
     }
 
     /// The notes the backend reported having acted on.
+    #[must_use]
     pub fn settled_notes(&self) -> &[SessionNote] {
         &self.settled
     }
 
     /// The VT the session was last asked to switch to, if any.
+    #[must_use]
     pub fn switched_to(&self) -> Option<i32> {
         self.switched_to
     }
@@ -128,6 +131,7 @@ pub struct SharedSession(Rc<RefCell<FakeSession>>);
 
 impl SharedSession {
     /// Shares `session`.
+    #[must_use]
     pub fn new(session: FakeSession) -> SharedSession {
         SharedSession(Rc::new(RefCell::new(session)))
     }
@@ -143,11 +147,13 @@ impl SharedSession {
     }
 
     /// The VT the session was last asked to switch to, if any.
+    #[must_use]
     pub fn switched_to(&self) -> Option<i32> {
         self.0.borrow().switched_to()
     }
 
     /// The notes the backend reported having acted on.
+    #[must_use]
     pub fn settled_notes(&self) -> Vec<SessionNote> {
         self.0.borrow().settled_notes().to_vec()
     }

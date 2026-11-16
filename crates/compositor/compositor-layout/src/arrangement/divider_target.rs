@@ -52,6 +52,7 @@ impl DividerTarget {
     /// assert!(divider.hit(LogicalPoint { x: 960, y: 500 }));
     /// assert!(!divider.hit(LogicalPoint { x: 955, y: 500 }));
     /// ```
+    #[must_use]
     pub fn hit(&self, at: LogicalPoint) -> bool {
         self.strip.contains(at)
     }
@@ -59,6 +60,7 @@ impl DividerTarget {
     /// The leading window's share, in thousandths of the row without the strip, when the
     /// strip's centre is at pointer column `x`. It is kept within [`SplitPair::NEAREST`] and,
     /// when both minimum widths fit inside that, within what leaves each window its minimum.
+    #[must_use]
     pub fn share_at(&self, x: i32) -> Fraction {
         let room = i64::from(self.span.size.w.saturating_sub(self.strip.size.w));
         if room == 0 {

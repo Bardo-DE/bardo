@@ -77,6 +77,7 @@ const VENDOR_FOLDERS: [(&str, &str); 5] = [
 
 /// The vendor files a file placed at `path` would hide: the same name in the distribution's own
 /// folder. Empty for a path that has no vendor folder (our own unit folder, the desktop's tables).
+#[must_use]
 pub fn vendor_copies(path: &str) -> Vec<String> {
     VENDOR_FOLDERS
         .iter()
@@ -109,6 +110,7 @@ pub fn placements(release: &Release) -> Result<Vec<Placement>, ReleaseError> {
 
 /// Plans the system files for the release `new`, coming from the release whose files were `old`.
 /// `found` says what is at each destination of either list (a missing key counts as nothing there).
+#[must_use]
 pub fn plan_system(
     new: &[Placement],
     old: &[Placement],

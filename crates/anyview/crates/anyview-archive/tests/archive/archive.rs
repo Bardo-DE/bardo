@@ -219,11 +219,15 @@ fn the_peek_words_what_the_archive_is_and_holds() {
     let peeked = ArchivePeek::peek(&src.on_disk(), &sniffed, &budget).unwrap();
     let facts = ArchivePeek::facts(&peeked);
     assert_eq!(
-        facts.value(FactLabel::Kind).map(|v| v.as_str()),
+        facts
+            .value(FactLabel::Kind)
+            .map(anyview_core::FactValue::as_str),
         Some("Tar archive (gzip)")
     );
     assert_eq!(
-        facts.value(FactLabel::Entries).map(|v| v.as_str()),
+        facts
+            .value(FactLabel::Entries)
+            .map(anyview_core::FactValue::as_str),
         Some("4, 23 B unpacked")
     );
     // A peek of a file that is not an archive's kind refuses.

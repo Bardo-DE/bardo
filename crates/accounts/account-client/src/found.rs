@@ -43,6 +43,7 @@ pub enum NoAccount {
 }
 
 /// The answer from a query's granted candidates and, when there are none, the availability.
+#[must_use]
 pub fn found(candidates: Vec<Candidate>, availability: Availability, offer: ConsentOffer) -> Found {
     match (candidates.len(), availability) {
         (1, _) => Found::One(

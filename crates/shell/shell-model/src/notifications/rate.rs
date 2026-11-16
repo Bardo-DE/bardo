@@ -37,6 +37,7 @@ pub struct Allowance {
 
 impl Allowance {
     /// A caller that has not posted before: the whole burst of `rate`.
+    #[must_use]
     pub fn full(rate: Rate, at: UnixMs) -> Allowance {
         Allowance {
             rate,
@@ -77,11 +78,13 @@ impl Allowance {
     }
 
     /// Whether the caller has its whole burst back at `now`, so nothing need be remembered of it.
+    #[must_use]
     pub fn is_idle(self, now: UnixMs) -> bool {
         self.refilled(now).tokens == self.rate.burst
     }
 
     /// When the allowance was last counted.
+    #[must_use]
     pub fn counted_at(self) -> UnixMs {
         self.at
     }
@@ -119,13 +122,13 @@ mod tests {
                 a.take(start).unwrap_or(a)
             })
         };
-        assert!(drain(Rate::ONE_CALLER, SENDER_BURST).take(start).is_err());
-        assert!(drain(Rate::ALL_CALLERS, SENDER_BURST).take(start).is_ok());
-        assert!(
-            drain(Rate::ALL_CALLERS, ALL_SENDERS_BURST)
-                .take(start)
-                .is_err()
-        );
+        drain(Rate::ONE_CALLER, SENDER_BURST)
+            .take(start)
+            .unwrap_err();
+        drain(Rate::ALL_CALLERS, SENDER_BURST).take(start).unwrap();
+        drain(Rate::ALL_CALLERS, ALL_SENDERS_BURST)
+            .take(start)
+            .unwrap_err();
     }
 
     #[test]

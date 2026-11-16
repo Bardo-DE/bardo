@@ -27,6 +27,7 @@ pub enum PlateFamily {
 
 impl PlateFamily {
     /// The light stop and the deep stop.
+    #[must_use]
     pub fn stops(self) -> (Hex, Hex) {
         match self {
             PlateFamily::Red => (Hex([0xE8, 0x48, 0x3C]), Hex([0xB7, 0x35, 0x2B])),
@@ -39,6 +40,7 @@ impl PlateFamily {
     }
 
     /// The glyph colour on the plate (section 2.3's WCAG-driven column).
+    #[must_use]
     pub fn glyph(self) -> Hex {
         match self {
             PlateFamily::Red | PlateFamily::Blue | PlateFamily::Violet => Hex([255, 255, 255]),

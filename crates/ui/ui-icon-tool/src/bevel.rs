@@ -6,7 +6,7 @@ use image::{Rgba, Rgba32FImage};
 
 use crate::{Oklab, Plane, PlateGrid, Shift, Template, compose::over, plate::superellipse, srgb};
 
-/// The face's matte diffusion: the top of the plate is this much lighter (OKLab L) than the
+/// The face's matte diffusion: the top of the plate is this much lighter (`OKLab` L) than the
 /// middle and the bottom this much darker (a gentle light from above, never a hot spot).
 const DIFFUSION: f32 = 0.03;
 /// The only gradient left (08 2.10): an almost invisible tonal shift within the plate's one hue,
@@ -22,6 +22,7 @@ const DETAIL_FROM: u32 = 48;
 
 /// The plate's face over the whole canvas: one colour, the tonal shift across the plate at
 /// 135deg and the matte diffusion from above. Opaque; [`finish`] masks it.
+#[must_use]
 pub fn plate_face(grid: PlateGrid, colour: Oklab, shift: Shift) -> Rgba32FImage {
     let side = grid.side as f32;
     let tonal = match shift {
@@ -56,6 +57,7 @@ fn tint(coverage: &Plane, colour: [f32; 3], alpha: f32) -> impl Fn(u32, u32) -> 
 
 /// The finished `flat` icon: `face` (ground plus symbol) with the bevel and rim, clipped to the
 /// squircle.
+#[must_use]
 pub fn finish(grid: PlateGrid, face: &Rgba32FImage, t: &Template) -> Rgba32FImage {
     let (c, a) = (grid.centre(), grid.half());
     let mask = superellipse(grid.canvas, (c, c), a, t.exponent);
@@ -67,9 +69,10 @@ pub fn finish(grid: PlateGrid, face: &Rgba32FImage, t: &Template) -> Rgba32FImag
             let (x, y) = (i64::from(x), i64::from(y));
             mask.at(x, y) * (1.0 - mask.at(x, y + dy))
         });
-        match detail {
-            true => band.blurred(0.5 * w as f32),
-            false => band,
+        if detail {
+            band.blurred(0.5 * w as f32)
+        } else {
+            band
         }
     };
     // The arc: the top band, strongest in the middle, fading towards both sides.
@@ -90,9 +93,10 @@ pub fn finish(grid: PlateGrid, face: &Rgba32FImage, t: &Template) -> Rgba32FImag
     let r = 1.1 * s;
     let point = Plane::from_fn(grid.canvas, grid.canvas, |x, y| {
         let d2 = (x as f32 + 0.5 - px).powi(2) + (y as f32 + 0.5 - py).powi(2);
-        match detail {
-            true => (-d2 / (2.0 * r * r)).exp(),
-            false => 0.0,
+        if detail {
+            (-d2 / (2.0 * r * r)).exp()
+        } else {
+            0.0
         }
     });
     let white = [1.0; 3];

@@ -21,7 +21,7 @@ fn facts() -> EngineFacts {
     }
 }
 
-/// A client of a security-context listener connects as ConnectionRole::Sandboxed with the
+/// A client of a security-context listener connects as `ConnectionRole::Sandboxed` with the
 /// context's facts (H8 exit): it sees the sandbox's globals (I7) and not the privileged ones,
 /// and not the security-context manager itself.
 #[test]

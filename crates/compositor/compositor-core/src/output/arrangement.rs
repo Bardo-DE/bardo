@@ -14,6 +14,7 @@ use ui_core::geometry::scale::Scale;
 ///
 /// Saved displays are placed first, wherever they were; new ones follow in `present`'s order,
 /// each to the right of the rightmost edge so far, at the top of the topmost output so far.
+#[must_use]
 pub fn place_outputs(
     present: &[OutputFacts],
     saved: &SavedOutputs,

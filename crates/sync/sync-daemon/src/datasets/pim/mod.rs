@@ -1,5 +1,5 @@
 //! `PimMirror`: calendars and address books mirrored from a CalDAV/CardDAV server into a local
-//! vdir, read-only (design/31 §6.2 "PimMirror", PLAN §2 rows Calendar and Contacts, D9).
+//! vdir, read-only (design/31 §6.2 "`PimMirror`", PLAN §2 rows Calendar and Contacts, D9).
 //!
 //! The vdir is `$XDG_DATA_HOME/bardo/sync/vdir/<account>/<collection>/`, `<account>` being
 //! `base_ids::object_segment(account)`: the segment `AccountRemoved` wipes. A collection holds
@@ -56,6 +56,7 @@ impl PimKind {
     pub const ALL: [PimKind; 3] = [PimKind::Calendar, PimKind::Contacts, PimKind::Tasks];
 
     /// The file extension of an item, with its dot.
+    #[must_use]
     pub fn extension(self) -> &'static str {
         match self {
             PimKind::Calendar | PimKind::Tasks => ".ics",
@@ -64,6 +65,7 @@ impl PimKind {
     }
 
     /// The `BEGIN` and `END` lines a whole item opens and closes with.
+    #[must_use]
     pub fn envelope(self) -> (&'static str, &'static str) {
         match self {
             PimKind::Calendar | PimKind::Tasks => ("BEGIN:VCALENDAR", "END:VCALENDAR"),
@@ -71,8 +73,9 @@ impl PimKind {
         }
     }
 
-    /// The protocol family that reaches it over DAV (a task list is a CalDAV collection of
+    /// The protocol family that reaches it over DAV (a task list is a `CalDAV` collection of
     /// `VTODO`s).
+    #[must_use]
     pub fn family(self) -> Family {
         match self {
             PimKind::Calendar | PimKind::Tasks => Family::CalDav,
@@ -81,6 +84,7 @@ impl PimKind {
     }
 
     /// The data class a grant for it covers.
+    #[must_use]
     pub fn class(self) -> DataClass {
         match self {
             PimKind::Calendar => DataClass::Calendar,
@@ -91,6 +95,7 @@ impl PimKind {
 
     /// What its directories end in: nothing for a calendar, `-contacts` for an address book,
     /// `-tasks` for a task list (so the three never share a directory).
+    #[must_use]
     pub fn dir_suffix(self) -> &'static str {
         match self {
             PimKind::Calendar => "",
@@ -100,6 +105,7 @@ impl PimKind {
     }
 
     /// The prefix of its datasets' names (`pim_cal_personal`, `pim_card_contacts_contacts`).
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             PimKind::Calendar => "pim_cal",

@@ -29,17 +29,20 @@ fn quoted(text: &str) -> String {
 /// What the probe read of a model's chat side, as the catalog's tables.
 fn chat_tables(cap: &LlmCap) -> String {
     let has = |feature| cap.features.contains(&feature);
-    let tools = match has(LlmFeature::Tools) {
-        true => "server_parsed",
-        false => "absent",
+    let tools = if has(LlmFeature::Tools) {
+        "server_parsed"
+    } else {
+        "absent"
     };
-    let structured = match has(LlmFeature::StructuredOutput) {
-        true => r#"["json_schema"]"#,
-        false => "[]",
+    let structured = if has(LlmFeature::StructuredOutput) {
+        r#"["json_schema"]"#
+    } else {
+        "[]"
     };
-    let reasoning = match has(LlmFeature::Reasoning) {
-        true => "present",
-        false => "absent",
+    let reasoning = if has(LlmFeature::Reasoning) {
+        "present"
+    } else {
+        "absent"
     };
     let mut tables = format!(
         r#"text_out = {{ tools = "{tools}", structured = {structured}, reasoning = "{reasoning}", streaming = "present", context = {}, max_output = {}, {SAMPLING} }}
@@ -123,6 +126,7 @@ fn capabilities_of(model: &Probed) -> Vec<Capability> {
 /// The local model of one probed model of `runtime`, on `port`. `sockets` is where an engine's
 /// socket would go (the field is required of every model and unused here). `None` when the model
 /// is neither a language nor an embedding model, or its entry does not parse.
+#[must_use]
 pub fn local_model(
     runtime: Runtime,
     port: account_provider::Port,

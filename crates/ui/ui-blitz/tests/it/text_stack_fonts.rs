@@ -9,7 +9,7 @@
 //! not installed on the system and `SharedFonts::register` has no caller), so the stack's first
 //! family that exists is Noto Color Emoji, which maps U+0020 and 0-9 (the keycap sequences' bases):
 //! the space and the digits come from it, wide, and every other character from system-ui.
-//! Skipped, with a note, where the COLRv1 emoji font is not installed or Inter is a system font.
+//! Skipped, with a note, where the `COLRv1` emoji font is not installed or Inter is a system font.
 
 use blitz_dom::{DocumentConfig, FontContext};
 use dioxus::prelude::*;
@@ -81,7 +81,7 @@ fn width(fonts: FontContext, stack: &str, text: &str) -> f64 {
         .width
 }
 
-/// Whether the COLRv1 emoji face maps `c` in its cmap.
+/// Whether the `COLRv1` emoji face maps `c` in its cmap.
 fn emoji_maps(c: char) -> bool {
     let path = ui_blitz::colrv1_emoji_file().expect("the emoji font is installed");
     let bytes = std::fs::read(path).expect("the emoji font reads");

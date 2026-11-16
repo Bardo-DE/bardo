@@ -99,6 +99,7 @@ impl WindowCapture {
     }
 
     /// The windows the list announced, in order.
+    #[must_use]
     pub fn windows(&self) -> Vec<Listed> {
         self.list.listed()
     }
@@ -125,6 +126,7 @@ impl WindowCapture {
     }
 
     /// The buffer size the session announced last, in pixels.
+    #[must_use]
     pub fn size(&self) -> Option<(u32, u32)> {
         self.wire.size
     }
@@ -191,6 +193,7 @@ impl WindowCapture {
     }
 
     /// Whether the compositor ended the session (`stopped`: its window closed).
+    #[must_use]
     pub fn is_stopped(&self) -> bool {
         self.wire.stopped
     }

@@ -32,7 +32,7 @@ impl HotOpenKind {
 pub struct HotOpenForm {
     /// Which kind is chosen.
     pub kind: HotOpenKind,
-    /// The app corner_picked, by its desktop entry's id.
+    /// The app `corner_picked`, by its desktop entry's id.
     pub app: String,
     /// The file or folder the file chooser gave.
     pub path: String,
@@ -63,6 +63,7 @@ pub fn web_address(typed: &str) -> Option<String> {
 
 impl HotOpenForm {
     /// The form that shows `item`, for a corner that already opens it.
+    #[must_use]
     pub fn of_item(item: &HotItem) -> HotOpenForm {
         let blank = HotOpenForm::default();
         match item {
@@ -100,6 +101,7 @@ impl HotOpenForm {
 }
 
 /// The binding a command typed as `typed` makes, `None` while it is blank.
+#[must_use]
 pub fn command_binding(typed: &str) -> Option<HotDo> {
     let command = typed.trim();
     (!command.is_empty()).then(|| HotDo::Command(command.to_owned()))

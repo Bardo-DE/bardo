@@ -13,6 +13,7 @@ pub struct PlateGrid {
 impl PlateGrid {
     /// 08 2.2: at 48 px and up the plate is `plate` of the canvas, rounded; 32 and 24 keep a
     /// 1 px margin; 16 has a 15 px plate at the origin.
+    #[must_use]
     pub fn for_canvas(canvas: u32, t: &Template) -> Self {
         match canvas {
             16 => Self {
@@ -37,11 +38,13 @@ impl PlateGrid {
     }
 
     /// Half the plate side: the superellipse's `a`.
+    #[must_use]
     pub fn half(self) -> f32 {
         self.side as f32 / 2.0
     }
 
     /// The plate centre on both axes.
+    #[must_use]
     pub fn centre(self) -> f32 {
         self.origin as f32 + self.half()
     }
@@ -64,6 +67,7 @@ pub fn superellipse(canvas: u32, (cx, cy): (f32, f32), a: f32, n: f32) -> Plane 
 }
 
 /// The plate silhouette at one export size: the only function that draws the plate shape.
+#[must_use]
 pub fn plate_mask(grid: PlateGrid, t: &Template) -> Plane {
     superellipse(
         grid.canvas,

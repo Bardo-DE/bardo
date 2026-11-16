@@ -20,16 +20,19 @@ impl Sniffed {
     }
 
     /// What the file is.
+    #[must_use]
     pub fn kind(&self) -> FormatKind {
         self.kind
     }
 
     /// Its media type.
+    #[must_use]
     pub fn mime(&self) -> &Mime {
         &self.mime
     }
 
     /// The format inside the kind.
+    #[must_use]
     pub fn detail(&self) -> &FormatDetail {
         &self.detail
     }

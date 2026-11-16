@@ -178,6 +178,7 @@ impl Served {
     }
 
     /// The object path the module is served at.
+    #[must_use]
     pub fn path(&self) -> &ObjectPath<'static> {
         &self.path
     }

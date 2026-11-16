@@ -19,12 +19,13 @@ impl GammaTable {
     /// A table from its channels, which must be the same non-zero length.
     pub fn new(red: Vec<u16>, green: Vec<u16>, blue: Vec<u16>) -> Result<GammaTable, CoreError> {
         let size = red.len();
-        match size != 0 && green.len() == size && blue.len() == size {
-            true => Ok(GammaTable { red, green, blue }),
-            false => Err(CoreError::Malformed {
+        if size != 0 && green.len() == size && blue.len() == size {
+            Ok(GammaTable { red, green, blue })
+        } else {
+            Err(CoreError::Malformed {
                 what: "gamma table",
                 text: format!("{}/{}/{} steps", red.len(), green.len(), blue.len()),
-            }),
+            })
         }
     }
 
@@ -78,21 +79,25 @@ impl GammaTable {
     }
 
     /// How many steps each channel has.
+    #[must_use]
     pub fn size(&self) -> usize {
         self.red.len()
     }
 
     /// The red channel.
+    #[must_use]
     pub fn red(&self) -> &[u16] {
         &self.red
     }
 
     /// The green channel.
+    #[must_use]
     pub fn green(&self) -> &[u16] {
         &self.green
     }
 
     /// The blue channel.
+    #[must_use]
     pub fn blue(&self) -> &[u16] {
         &self.blue
     }

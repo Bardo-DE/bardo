@@ -16,6 +16,7 @@ pub enum Install {
 const ROOTS: [&str; 3] = ["/usr", "/usr/local", "/opt/bardo/releases/*"];
 
 /// The images of the program `name` installed as `install` under each of the roots.
+#[must_use]
 pub fn installed(install: Install, name: &str) -> Vec<String> {
     let folder = match install {
         Install::Libexec => "libexec/bardo",

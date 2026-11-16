@@ -87,11 +87,13 @@ pub fn render(source: &Path, px: AssetPx, recolour: Recolour) -> Result<Vec<u8>,
 fn read_bounded(path: &Path, ceiling: u64) -> Result<Vec<u8>, RenderError> {
     match read_capped(path, ReadCap::bytes(ceiling)) {
         Ok(bytes) => Ok(bytes),
-        Err(ReadError::NotFound { .. }) => Err(RenderError::Io(std::io::ErrorKind::NotFound.into())),
-        Err(ReadError::Io { source, .. }) => Err(RenderError::Io(source)),
-        Err(ReadError::NotRegular { .. } | ReadError::TooBig { .. } | ReadError::NotText { .. }) => {
-            Err(RenderError::Unfit)
+        Err(ReadError::NotFound { .. }) => {
+            Err(RenderError::Io(std::io::ErrorKind::NotFound.into()))
         }
+        Err(ReadError::Io { source, .. }) => Err(RenderError::Io(source)),
+        Err(
+            ReadError::NotRegular { .. } | ReadError::TooBig { .. } | ReadError::NotText { .. },
+        ) => Err(RenderError::Unfit),
     }
 }
 
@@ -185,6 +187,7 @@ pub fn prune(dir: &Path, keep: usize) {
 }
 
 /// Whether `target` was written after `source` last changed (a theme update re-renders).
+#[must_use]
 pub fn fresh(target: &Path, source: &Path) -> bool {
     let modified = |path: &Path| std::fs::metadata(path).and_then(|m| m.modified()).ok();
     match (modified(target), modified(source)) {
@@ -314,7 +317,7 @@ mod tests {
         super::prune(&dir, 4);
         let mut left: Vec<String> = std::fs::read_dir(&dir)
             .unwrap_or_else(|e| panic!("{e}"))
-            .filter_map(|entry| entry.ok())
+            .filter_map(std::result::Result::ok)
             .map(|entry| entry.file_name().to_string_lossy().into_owned())
             .collect();
         left.sort();
@@ -332,7 +335,7 @@ mod tests {
         assert_eq!(std::fs::read(&path).ok(), Some(b"png".to_vec()));
         let names: Vec<String> = std::fs::read_dir(&out)
             .unwrap_or_else(|e| panic!("{e}"))
-            .filter_map(|entry| entry.ok())
+            .filter_map(std::result::Result::ok)
             .map(|entry| entry.file_name().to_string_lossy().into_owned())
             .collect();
         assert_eq!(names, vec!["k.png".to_owned()]);
@@ -349,7 +352,7 @@ mod tests {
             tint: Tint::NEUTRAL,
             scheme: Scheme::Light,
         };
-        assert!(render(missing, AssetPx(48), recolour).is_err());
+        render(missing, AssetPx(48), recolour).unwrap_err();
     }
 
     fn recolour() -> Recolour {
@@ -374,7 +377,7 @@ mod tests {
         let refused = render(&over, AssetPx(16), recolour());
         assert!(matches!(refused, Err(RenderError::Image(_))), "{refused:?}");
         let at = save("at.png", ICON_MAX_SIDE);
-        assert!(render(&at, AssetPx(16), recolour()).is_ok());
+        render(&at, AssetPx(16), recolour()).unwrap();
         let _ = std::fs::remove_dir_all(&dir);
     }
 

@@ -27,6 +27,7 @@ pub struct DbusTransport {
 
 impl DbusTransport {
     /// Over an open session-bus connection the app owns.
+    #[must_use]
     pub fn over(connection: BusConnection) -> Self {
         Self {
             connection,
@@ -36,6 +37,7 @@ impl DbusTransport {
 
     /// The same, with inferd's calls (sessions, places, computers, guests and the guests watch)
     /// sent to `owner`, the unique name the caller checked owns `org.bardo.Inference1`.
+    #[must_use]
     pub fn inference_at(self, owner: UniqueName<'static>) -> Self {
         Self {
             inference: Destination::Owner(owner),
@@ -64,6 +66,7 @@ impl DbusTransport {
 }
 
 /// The rows of a list the daemon sent that could be read, and why each of the others could not.
+///
 /// One row that does not say what the interface promises is left out; it never fails the list.
 /// Only a reply that is not a list at all is an error.
 #[derive(Debug, Clone, PartialEq, Eq)]

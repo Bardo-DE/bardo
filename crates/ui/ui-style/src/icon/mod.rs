@@ -60,7 +60,11 @@ pub(crate) mod tone_band;
 mod tone_band_tests;
 pub mod url;
 
-use geometry::*;
+use geometry::{
+    ARCHIVE, CHECK, CLOCK, COLUMNS, COMMAND, CORNER, FILE_PEN, FORWARD, GROUP, INBOX, KEY, MAIL,
+    MAIL_OPEN, MAXIMIZE, MINUS, OCTAGON_ALERT, PANEL, PANEL_LEFT, PAPERCLIP, PEN, PIN, PLUS,
+    REFRESH, REPLY, REPLY_ALL, SEARCH, SEND, SETTINGS, SQUARE, STAR, TAG, TRASH, UNDO, X_MARK,
+};
 
 /// One glyph: the mailo set, named for its key in the design's `ICON` table, then the shell
 /// set, named for its Lucide glyph.
@@ -382,6 +386,7 @@ pub enum Icon {
 impl Icon {
     /// The children of this glyph's outline, in the design's order. `solid_shapes` is its
     /// solid form and `shapes_in` picks by style.
+    #[must_use]
     pub fn shapes(self) -> &'static [Shape] {
         match self {
             Icon::Inbox => INBOX,

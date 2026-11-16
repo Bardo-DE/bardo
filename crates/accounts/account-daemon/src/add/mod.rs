@@ -107,15 +107,15 @@ impl AddArgs {
     }
 
     fn allowed_classes(&self) -> Vec<DataClass> {
-        match self.classes.is_empty() {
-            true => ALL_CLASSES.to_vec(),
-            false => self
-                .classes
+        if self.classes.is_empty() {
+            ALL_CLASSES.to_vec()
+        } else {
+            self.classes
                 .iter()
                 .copied()
                 .collect::<BTreeSet<_>>()
                 .into_iter()
-                .collect(),
+                .collect()
         }
     }
 }

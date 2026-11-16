@@ -47,6 +47,7 @@ pub struct RawCapture {
 
 impl RawCapture {
     /// A frame of `size` whose rows are `pitch` bytes, in `format`.
+    #[must_use]
     pub fn new(size: PhysicalSize, pitch: u32, format: Fourcc, bytes: Vec<u8>) -> RawCapture {
         RawCapture {
             size,
@@ -57,6 +58,7 @@ impl RawCapture {
     }
 
     /// `WIDTH HEIGHT PITCH FOURCC`, the fourcc spelled as its four letters (`XR24`).
+    #[must_use]
     pub fn meta_line(&self) -> String {
         let letters = self.format.0.to_le_bytes().map(|byte| match byte {
             0x20..=0x7e => char::from(byte),

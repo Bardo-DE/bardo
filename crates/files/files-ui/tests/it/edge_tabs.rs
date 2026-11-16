@@ -93,7 +93,7 @@ fn reports(rig: &mut super::edge::Rig, ends: usize) -> Vec<(TabId, String)> {
     while finished < ends {
         match until(&mut rig.inbox, |h| matches!(h, Heard::Tab(_, Input::Op(_)))) {
             Heard::Tab(tab, Input::Op(OpEvent::Started(_))) => {
-                said.push((tab, "started".to_owned()))
+                said.push((tab, "started".to_owned()));
             }
             Heard::Tab(tab, Input::Op(OpEvent::Asking(conflict))) => {
                 said.push((tab, format!("asks about {}", conflict.item.display())));

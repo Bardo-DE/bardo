@@ -6,6 +6,7 @@
 use std::path::{Path, PathBuf};
 
 /// The file's place in a root.
+#[must_use]
 pub fn file(root: &Path) -> PathBuf {
     root.join("procs")
 }
@@ -32,6 +33,7 @@ pub enum State {
 
 impl State {
     /// The word `status` prints.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             State::Running => "running",
@@ -43,6 +45,7 @@ impl State {
 /// The state letter and start time out of the text of a `/proc/<pid>/stat`. The command name is
 /// in parentheses and may hold spaces and parentheses, so the fields are counted after the LAST
 /// closing parenthesis: the state is field 3, the start time field 22.
+#[must_use]
 pub fn parse_stat(text: &str) -> Option<(char, u64)> {
     let after = text.rsplit_once(')')?.1;
     let mut fields = after.split_whitespace();
@@ -72,6 +75,7 @@ impl Record {
     }
 
     /// The state now.
+    #[must_use]
     pub fn state(&self) -> State {
         self.state_in(stat_text(self.pid).as_deref())
     }
@@ -89,6 +93,7 @@ pub enum ProcsFault {
 }
 
 /// The text of the file for `records`.
+#[must_use]
 pub fn render(records: &[Record]) -> String {
     records
         .iter()

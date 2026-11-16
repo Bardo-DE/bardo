@@ -44,6 +44,7 @@ pub struct SyncReply {
 
 impl SyncReply {
     /// The token to ask from next, if the reply gave one.
+    #[must_use]
     pub fn token(&self) -> Option<&str> {
         match &self.end {
             SyncEnd::Complete(token) | SyncEnd::Truncated(token) => Some(token),
@@ -57,6 +58,7 @@ impl SyncReply {
 /// A 404 response is a removal. A 507 response is the server saying the report was cut short;
 /// it is not a change, and the reply ends [`SyncEnd::Truncated`]. Any other non-2xx response is
 /// not a change and is skipped. An empty token counts as none.
+#[must_use]
 pub fn parse_sync_collection(status: &Multistatus) -> SyncReply {
     let mut changes = Vec::new();
     let mut truncated = false;
@@ -86,6 +88,7 @@ pub fn parse_sync_collection(status: &Multistatus) -> SyncReply {
 ///
 /// A whole-request 507 is not one: a cut-short report is a 207 with a 507 response inside it
 /// ([`SyncEnd::Truncated`]), and a 507 for the request is the server's own storage failing.
+#[must_use]
 pub fn token_expired(http_status: u16, body: &str) -> bool {
     matches!(http_status, 403 | 409 | 412) && body.contains("valid-sync-token")
 }

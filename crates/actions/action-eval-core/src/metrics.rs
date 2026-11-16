@@ -74,6 +74,7 @@ pub struct Observed {
 impl Observed {
     /// What the deterministic layers can say: the review stages' own marks, no case time, no
     /// cost.
+    #[must_use]
     pub fn from_marks(records: &[AuditRecord]) -> Self {
         Self {
             stage_ms: records
@@ -194,6 +195,7 @@ impl Tallies {
     }
 
     /// The metrics per corpus.
+    #[must_use]
     pub fn finish(self) -> Vec<(Corpus, Metrics)> {
         self.0
             .into_iter()

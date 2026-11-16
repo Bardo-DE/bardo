@@ -24,6 +24,7 @@ impl Margins {
     /// let margins = Margins { left: 73, right: 13 };
     /// assert_eq!(margins.in_device(Scale(240)), (146, 26));
     /// ```
+    #[must_use]
     pub fn in_device(self, scale: Scale) -> (u32, u32) {
         (device(self.left, scale), device(self.right, scale))
     }
@@ -38,6 +39,7 @@ impl Margins {
 ///
 /// assert_eq!(device(13, Scale(180)), 20);
 /// ```
+#[must_use]
 pub fn device(logical: u32, scale: Scale) -> u32 {
     let half = u64::from(Scale::DENOMINATOR / 2);
     let scaled =
@@ -53,6 +55,7 @@ pub fn device(logical: u32, scale: Scale) -> u32 {
 /// assert_eq!(room(800, 73, 13), 714);
 /// assert_eq!(room(60, 73, 13), 0);
 /// ```
+#[must_use]
 pub fn room(bar: u32, left: u32, right: u32) -> u32 {
     bar.saturating_sub(left.saturating_add(right))
 }
@@ -67,6 +70,7 @@ pub fn room(bar: u32, left: u32, right: u32) -> u32 {
 /// assert_eq!(left_edge(100, 800, 73, 13), 350);
 /// assert_eq!(left_edge(100, 200, 73, 13), 73);
 /// ```
+#[must_use]
 pub fn left_edge(text: u32, bar: u32, left: u32, right: u32) -> u32 {
     let centred = bar.saturating_sub(text) / 2;
     let latest = bar.saturating_sub(right).saturating_sub(text);

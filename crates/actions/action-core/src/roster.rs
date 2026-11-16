@@ -26,11 +26,13 @@ pub struct LeadText(String);
 
 impl LeadText {
     /// The lead of `text`: its first 80 characters, cut on a character boundary.
+    #[must_use]
     pub fn of(text: &str) -> Self {
         Self(text.chars().take(TOLD_LEAD_CHARS).collect())
     }
 
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -132,6 +134,7 @@ pub struct Roster {
 impl Roster {
     /// The roster as an agent working in `active` may see it: a line from another Space keeps
     /// its agent, Space and state and loses its goal, last step and told line.
+    #[must_use]
     pub fn seen_from(&self, active: &SpaceId) -> Roster {
         let entries = self
             .entries

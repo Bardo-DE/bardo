@@ -185,13 +185,16 @@ impl<T: GrantsLink + 'static> Feed for GoogleTasksFeed<T> {
         let changes = listing
             .items
             .iter()
-            .map(|task| match task.is_deleted() {
-                true => FeedChange::Delete(Tombstone {
-                    id: RemoteId(task.id.clone()),
-                    version: RemoteVersion(DELETED.to_owned()),
-                    deleted_at: self.clock.now(),
-                }),
-                false => Self::upsert(task),
+            .map(|task| {
+                if task.is_deleted() {
+                    FeedChange::Delete(Tombstone {
+                        id: RemoteId(task.id.clone()),
+                        version: RemoteVersion(DELETED.to_owned()),
+                        deleted_at: self.clock.now(),
+                    })
+                } else {
+                    Self::upsert(task)
+                }
             })
             .collect();
         Ok(Page {
@@ -212,9 +215,10 @@ impl<T: GrantsLink + 'static> Feed for GoogleTasksFeed<T> {
         }
         let task: Task = serde_json::from_slice(response.body())
             .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
-        match task.is_deleted() {
-            true => Err(ReplicaError::Gone),
-            false => Ok(task::to_ics(&task).into_bytes()),
+        if task.is_deleted() {
+            Err(ReplicaError::Gone)
+        } else {
+            Ok(task::to_ics(&task).into_bytes())
         }
     }
 }

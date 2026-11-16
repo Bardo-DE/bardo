@@ -28,11 +28,13 @@ impl Updates {
     }
 
     /// Gives the pane `input` now; the returned work carries out what it asks for.
+    #[must_use]
     pub fn send(&self, input: UpdatesInput) -> Pending {
         self.dispatch(input)
     }
 
     /// The time "last checked" counts from.
+    #[must_use]
     pub fn now(&self) -> UnixSeconds {
         self.link.now()
     }

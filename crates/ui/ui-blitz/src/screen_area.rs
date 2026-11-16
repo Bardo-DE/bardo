@@ -64,6 +64,7 @@ impl ScreenArea {
     /// An output of `physical` pixels at `scale`: its logical size is the pixels over the
     /// scale, and with no reserve known its work area is all of it. `None` for a scale that is
     /// not a positive number.
+    #[must_use]
     pub fn new(physical: Extent, scale: Scale, of: ScreenOf) -> Option<ScreenArea> {
         let output = physical.logical_at(scale.as_f64())?;
         Some(ScreenArea {
@@ -77,6 +78,7 @@ impl ScreenArea {
 
     /// The same output with `reserve` kept free: the work area is what is left, never below
     /// zero.
+    #[must_use]
     pub fn less(self, reserve: Reserve) -> ScreenArea {
         let left = |all: u32, a: u32, b: u32| all.saturating_sub(a.saturating_add(b));
         ScreenArea {
@@ -92,6 +94,7 @@ impl ScreenArea {
     /// The same output as the shell reports it: its frame, work area and fractional scale in
     /// place of what the window system knew (`WorkBasis::Desktop`). With no `area` (no shell,
     /// or no output that matches) it is `self`, the portable fallback.
+    #[must_use]
     pub fn on_desktop(self, area: Option<&OutputArea>) -> ScreenArea {
         let Some(area) = area else { return self };
         let scale = match self.of {
@@ -110,6 +113,7 @@ impl ScreenArea {
 
     /// The logical size of a window that shows `pixels` device pixels one to one on this
     /// output: an image of 1200 x 800 pixels on a 2x output is a 600 x 400 window.
+    #[must_use]
     pub fn logical_for_pixels(&self, pixels: Extent) -> Extent {
         pixels.logical_at(self.scale.as_f64()).unwrap_or(pixels)
     }

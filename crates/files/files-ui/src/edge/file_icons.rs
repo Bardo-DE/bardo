@@ -19,12 +19,14 @@ pub struct IconSources {
 
 impl IconSources {
     /// Icons from the Extensions `search` finds, for the types of `db`.
+    #[must_use]
     pub fn new(search: Search, db: Arc<MimeDb>) -> IconSources {
         IconSources { search, db }
     }
 
     /// No Extensions and no file types: every file gets the standard icon of the kind it looks
     /// like (a folder, or an unknown file).
+    #[must_use]
     pub fn standard() -> IconSources {
         IconSources::new(
             Search::new(Path::new("/nonexistent/data"), &[]),
@@ -33,6 +35,7 @@ impl IconSources {
     }
 
     /// The file type database.
+    #[must_use]
     pub fn db(&self) -> &Arc<MimeDb> {
         &self.db
     }
@@ -40,6 +43,7 @@ impl IconSources {
     /// The resolver for the pack `provided` (`appearance.file_icons`) names, with the person's own
     /// changes on top. Reads the Extensions folders and the on/off file (in `store`), so it is
     /// called when the choice changes, not per file.
+    #[must_use]
     pub fn build(&self, store: &Store, provided: &Provided) -> Built {
         let off = store.load::<ExtensionsFile>().value.off_ids();
         let found = self.search.scan(&off);

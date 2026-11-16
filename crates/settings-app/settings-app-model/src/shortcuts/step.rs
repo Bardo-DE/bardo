@@ -232,6 +232,7 @@ fn replace(state: ShortcutsState) -> Step {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn shortcuts_step(state: ShortcutsState, input: ShortcutsInput) -> Step {
     match input {
         ShortcutsInput::Read(texts) => (read(state, texts), vec![]),

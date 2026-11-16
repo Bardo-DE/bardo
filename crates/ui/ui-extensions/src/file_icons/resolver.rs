@@ -90,6 +90,7 @@ pub struct Built {
 
 impl FileIcons {
     /// A resolver with only the standard set.
+    #[must_use]
     pub fn standard(db: Arc<MimeDb>) -> FileIcons {
         FileIcons::layered(db, Vec::new())
     }
@@ -97,6 +98,7 @@ impl FileIcons {
     /// The resolver for what is installed: Your changes on top, then the pack `stored`
     /// (`appearance.file_icons`) names, then the standard set. A stored id that is not installed
     /// or is off reads as `standard` ([`Built::stale`], and [`Built::off`] for an off one).
+    #[must_use]
     pub fn build(db: Arc<MimeDb>, found: &Found, stored: &Provided) -> Built {
         let resolved = found.resolve(Capability::FileIcons);
         let installed = resolved.registry.installed();
@@ -130,6 +132,7 @@ impl FileIcons {
     }
 
     /// The icon for a file. Reads no file: the pictures were listed when the resolver was built.
+    #[must_use]
     pub fn of(&self, facts: &FileFacts<'_>) -> IconPick {
         let (names, standard) = match facts.folder {
             FolderFacts::Folder(kind) => (folder_names(kind), IconPick::Folder(kind)),

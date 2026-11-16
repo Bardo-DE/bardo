@@ -17,6 +17,7 @@ pub struct AppIconName(String);
 
 impl AppIconName {
     /// `None` for an empty name or one with any other character (`/`, `.`, a capital).
+    #[must_use]
     pub fn parse(name: &str) -> Option<AppIconName> {
         let allowed =
             |c: char| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-' || c == '_';
@@ -24,6 +25,7 @@ impl AppIconName {
     }
 
     /// The name as written.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -32,6 +34,7 @@ impl AppIconName {
 /// The sizes to try for a `size` px icon, in order: the shipped sizes at or above it,
 /// smallest first (a larger file scales down cleanly), then the ones below it, largest first
 /// (a request above 512 still gets the 512).
+#[must_use]
 pub fn sizes_to_try(size: Px) -> Vec<u16> {
     let larger = APP_ICON_PX.into_iter().filter(|px| *px >= size.0);
     let smaller = APP_ICON_PX.into_iter().rev().filter(|px| *px < size.0);
@@ -111,9 +114,12 @@ mod tests {
             "/icons/mail/monochrome/48.png",
             "/icons/mail/monochrome/32.png",
         ];
-        let probe = |path: &Path| match present.iter().any(|p| Path::new(p) == path) {
-            true => Presence::Present,
-            false => Presence::Absent,
+        let probe = |path: &Path| {
+            if present.iter().any(|p| Path::new(p) == path) {
+                Presence::Present
+            } else {
+                Presence::Absent
+            }
         };
         let mail = AppIconName::parse("mail").expect("a name");
         let cases: &[(u16, IconStyle, Option<&str>)] = &[

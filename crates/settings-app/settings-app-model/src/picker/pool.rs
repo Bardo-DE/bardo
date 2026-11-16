@@ -59,6 +59,7 @@ pub struct PoolEntry {
 impl PoolEntry {
     /// Whether the line can be turned: a model that is blocked cannot be added, and one that is
     /// gone can only be removed.
+    #[must_use]
     pub fn can_toggle(&self) -> bool {
         let addable = matches!(
             self.standing,
@@ -150,6 +151,7 @@ impl AutoPool {
     }
 
     /// The editor's lines: what the module offers, then what the pool holds that it does not.
+    #[must_use]
     pub fn groups(&self) -> Vec<PoolGroup> {
         let offered = self.sections.iter().map(|section| PoolGroup {
             heading: section.group.clone().map_or(PoolHeading::Unnamed, |name| {
@@ -179,6 +181,7 @@ impl AutoPool {
     }
 
     /// The models after `word` is turned: added at the end, or taken out.
+    #[must_use]
     pub fn toggled(&self, word: &str) -> Vec<String> {
         if self.chosen.iter().any(|held| held == word) {
             self.chosen

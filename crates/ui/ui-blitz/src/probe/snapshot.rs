@@ -60,8 +60,9 @@ fn state_of(element: &ElementData) -> String {
     .filter(|(name, _)| attr(element, name) == Some("true"))
     .map(|(_, word)| word)
     .collect();
-    match words.is_empty() {
-        true => "-".to_owned(),
-        false => words.join(" "),
+    if words.is_empty() {
+        "-".to_owned()
+    } else {
+        words.join(" ")
     }
 }

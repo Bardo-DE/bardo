@@ -53,6 +53,7 @@ pub struct LatchkeyInstance {
 
 impl LatchkeyInstance {
     /// The viewer's agent where the platform puts one.
+    #[must_use]
     pub fn new() -> Self {
         LatchkeyInstance {
             place: Place::Process,
@@ -61,6 +62,7 @@ impl LatchkeyInstance {
 
     /// The viewer's agent with its socket and lock inside `runtime`, and nothing outside it: for
     /// tests, which must never touch the person's runtime directory.
+    #[must_use]
     pub fn under(runtime: PathBuf) -> Self {
         LatchkeyInstance {
             place: Place::Under(runtime),

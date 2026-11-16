@@ -16,14 +16,14 @@ pub struct Template {
     pub fill: Fraction,
     /// Upward shift of the object's centroid, over plate side (2.4).
     pub lift: Fraction,
-    /// Background key: largest OKLab chroma distance (a, b) from the local background a ground
+    /// Background key: largest `OKLab` chroma distance (a, b) from the local background a ground
     /// or shadow pixel may have; shadows darken, they do not tint.
     pub key_chroma: f32,
-    /// Background key: how much lighter (OKLab L) than the local background ground may be.
+    /// Background key: how much lighter (`OKLab` L) than the local background ground may be.
     pub key_lighter: f32,
-    /// Background key: how much darker (OKLab L) a shadow on the ground may be.
+    /// Background key: how much darker (`OKLab` L) a shadow on the ground may be.
     pub key_darker: f32,
-    /// Background key: largest ΔE_OK between neighbours inside the ground (a drawn edge is more).
+    /// Background key: largest `ΔE_OK` between neighbours inside the ground (a drawn edge is more).
     pub key_step: f32,
     /// Background key: blur sigma of the object's edge in render px (3.7's 2 px feather).
     pub key_feather: f32,

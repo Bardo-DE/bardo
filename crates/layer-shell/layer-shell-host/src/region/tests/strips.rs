@@ -22,21 +22,21 @@ fn pixel_inside(rr: RoundedRect, px: Px, py: Px) -> bool {
         return true;
     }
     let (lx, ly) = (px - x, py - y); // local coords, 0-based
-    let cx = (lx + lx + 1) as f64 / 2.0; // pixel centre
-    let cy = (ly + ly + 1) as f64 / 2.0;
+    let cx = f64::from(lx + lx + 1) / 2.0; // pixel centre
+    let cy = f64::from(ly + ly + 1) / 2.0;
 
     // Which corner's circle (if any) governs this pixel.
     let (corner_cx, in_corner_x) = if lx < r {
-        (r as f64, true)
+        (f64::from(r), true)
     } else if lx >= width - r {
-        ((width - r) as f64, true)
+        (f64::from(width - r), true)
     } else {
         (0.0, false)
     };
     let (corner_cy, in_corner_y) = if ly < r {
-        (r as f64, true)
+        (f64::from(r), true)
     } else if ly >= height - r {
-        ((height - r) as f64, true)
+        (f64::from(height - r), true)
     } else {
         (0.0, false)
     };
@@ -45,7 +45,7 @@ fn pixel_inside(rr: RoundedRect, px: Px, py: Px) -> bool {
     }
     let dx = cx - corner_cx;
     let dy = cy - corner_cy;
-    dx * dx + dy * dy <= (r as f64) * (r as f64)
+    dx * dx + dy * dy <= f64::from(r) * f64::from(r)
 }
 
 fn strip_pixels(rect: Rect) -> impl Iterator<Item = (Px, Px)> {

@@ -90,8 +90,8 @@ fn an_answer_is_written_to_the_book_and_a_restart_remembers_it() {
         assert!(book.contains("power = \"keys\""), "{book}");
         assert!(book.contains("answer = \"allow\""), "{book}");
         assert!(book.contains(&format!("at = {TODAY}")), "{book}");
-        assert!(book.contains(ASKED_PROGRAM), "{book}");
-    }
+        assert!(book.contains(ASKED_PROGRAM), "{book}")
+    };
     let (mut fixture, shell) = home.start();
     assert_eq!(
         fixture
@@ -239,8 +239,8 @@ fn an_interpreter_or_a_user_writable_program_is_never_written_to_the_book() {
             assert_eq!(asked[0].memory, Memory::ThisTimeOnly, "{case}");
             shell.answer(&mut fixture, asked[0].ask, Answer::Allow);
             assert!(fixture.model().privilege().book().is_empty(), "{case}");
-            assert!(!home.book().exists(), "{case}: nothing was written");
-        }
+            assert!(!home.book().exists(), "{case}: nothing was written")
+        };
         let (mut fixture, shell) = home.start();
         let client = fixture.connect_standing(standing);
         let _board = use_keys(&mut fixture, client);

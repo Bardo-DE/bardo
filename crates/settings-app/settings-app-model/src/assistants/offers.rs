@@ -31,6 +31,7 @@ fn accounts_of(place: &PlaceRef, pane: &AccountsPane) -> Vec<AccountKey> {
 }
 
 /// The models `place` offers among the rows of `picker`, each once, in the picker's order.
+#[must_use]
 pub fn offers_for(place: &PlaceRef, pane: &AccountsPane, picker: &Ready) -> Vec<ModelOffer> {
     let keys = accounts_of(place, pane);
     let mut offers: Vec<ModelOffer> = Vec::new();

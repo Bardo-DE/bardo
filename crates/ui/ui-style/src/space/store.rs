@@ -78,6 +78,7 @@ impl Default for SpaceStore {
 
 impl SpaceStore {
     /// The look stored for position `index`, else its preset (`PRESETS[index % 8]`).
+    #[must_use]
     pub fn look_for(&self, index: WorkspaceIndex, defaults: SpaceDefaults) -> SpaceLook {
         self.stored_at(index)
             .cloned()
@@ -86,6 +87,7 @@ impl SpaceStore {
 
     /// The look for `workspace`: by its id, else by its position, else its preset
     /// (design/21 section 10's lookup).
+    #[must_use]
     pub fn look_for_workspace(&self, workspace: &Workspace, defaults: SpaceDefaults) -> SpaceLook {
         workspace
             .id
@@ -97,6 +99,7 @@ impl SpaceStore {
 
     /// The store with `look` recorded for `workspace`: under its id when it has one, and
     /// always under its position, so a restart that renumbers ids still finds it.
+    #[must_use]
     pub fn with_look(mut self, workspace: &Workspace, look: SpaceLook) -> SpaceStore {
         if let Some(id) = &workspace.id {
             self.by_id.insert(id.clone(), look.clone());

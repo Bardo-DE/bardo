@@ -22,6 +22,7 @@ impl From<Srgb> for Hex {
 
 impl Hex {
     /// `self` at `alpha` over the opaque `back`, blended per 8-bit channel as a browser does.
+    #[must_use]
     pub fn over(self, alpha: Alpha, back: Hex) -> Hex {
         let weight = f64::from(alpha.0.min(1000)) / 1000.0;
         let mut out = [0u8; 3];
@@ -34,6 +35,7 @@ impl Hex {
     }
 
     /// Parse `#rgb` or `#rrggbb`, any case; `None` for anything else.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Hex> {
         let digits = text.strip_prefix('#')?;
         if !digits.bytes().all(|byte| byte.is_ascii_hexdigit()) {
@@ -55,6 +57,7 @@ impl Hex {
     }
 
     /// Lower-case `#rrggbb`.
+    #[must_use]
     pub fn css(self) -> String {
         let [r, g, b] = self.0;
         format!("#{r:02x}{g:02x}{b:02x}")
@@ -67,6 +70,7 @@ pub struct Alpha(pub u16);
 
 impl Alpha {
     /// The alpha as CSS writes it: `.22`, `.8`, `1`, `0`.
+    #[must_use]
     pub fn css(self) -> String {
         thousandths(i64::from(self.0))
     }
@@ -84,6 +88,7 @@ pub enum Colour {
 
 impl Colour {
     /// The CSS text: `#rrggbb` or `rgba(r,g,b,.a)`.
+    #[must_use]
     pub fn css(self) -> String {
         match self {
             Colour::Solid(hex) => hex.css(),

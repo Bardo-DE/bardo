@@ -39,7 +39,9 @@ struct Systemd {
 type Shared = Arc<Mutex<Systemd>>;
 
 fn lock(shared: &Shared) -> std::sync::MutexGuard<'_, Systemd> {
-    shared.lock().unwrap_or_else(|e| e.into_inner())
+    shared
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 #[derive(Debug, zbus::DBusError)]
@@ -226,7 +228,7 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
     tokio::time::sleep(SHORT).await;
     assert_eq!(*handle.state.borrow(), KeycapState::Unknown);
     assert!(lock(&shared).calls.is_empty());
-    assert!(notices.try_recv().is_err());
+    notices.try_recv().unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -266,7 +268,7 @@ async fn the_unit_is_read_again_and_a_later_failure_is_seen() {
     };
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
     until(&mut rig.state, KeycapState::Restarting).await;
-    assert!(rig.notices.try_recv().is_err());
+    rig.notices.try_recv().unwrap_err();
     lock(&shared).active_state = "failed".to_owned();
     until(&mut rig.state, KeycapState::Failed).await;
     assert!(
@@ -319,6 +321,6 @@ async fn without_a_system_bus_nothing_is_asked_and_the_state_stays_unknown() {
         .unwrap_or_else(|e| panic!("{e}"));
     tokio::time::sleep(SHORT * 2).await;
     assert_eq!(*rig.state.borrow(), KeycapState::Unknown);
-    assert!(rig.notices.try_recv().is_err());
+    rig.notices.try_recv().unwrap_err();
     assert!(lock(&shared).calls.is_empty());
 }

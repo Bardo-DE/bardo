@@ -7,6 +7,7 @@ use ui_components::components::companion::run_row::model::{RunPlace, RunState as
 use ui_core::vocab::EffectMark;
 
 /// How much a call can change, for drawing.
+#[must_use]
 pub fn effect_mark(effect: Effect) -> EffectMark {
     match effect {
         Effect::Read => EffectMark::Read,
@@ -18,6 +19,7 @@ pub fn effect_mark(effect: Effect) -> EffectMark {
 }
 
 /// A run's state, for its row.
+#[must_use]
 pub fn run_state(state: RunState) -> RunStateView {
     match state {
         RunState::Starting => RunStateView::Starting,
@@ -33,6 +35,7 @@ pub fn run_state(state: RunState) -> RunStateView {
 }
 
 /// Where a run acts, for its row.
+#[must_use]
 pub fn run_place(mode: RunMode) -> RunPlace {
     match mode {
         RunMode::InPlace => RunPlace::InPlace,

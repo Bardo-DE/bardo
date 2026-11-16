@@ -22,6 +22,7 @@ pub fn read_record(dir: &Path) -> Result<Record, RecordFault> {
 }
 
 /// The agents with at least one version installed, by id. Reads only this directory.
+#[must_use]
 pub fn agents(dir: &AgentsDir) -> Vec<Slug> {
     let Ok(read) = std::fs::read_dir(dir.all_installed()) else {
         return Vec::new();
@@ -38,6 +39,7 @@ pub fn agents(dir: &AgentsDir) -> Vec<Slug> {
 }
 
 /// The versions of `id` that are installed.
+#[must_use]
 pub fn versions(dir: &AgentsDir, id: &Slug) -> Vec<Slug> {
     let of = dir.installed_of(id);
     let Ok(read) = std::fs::read_dir(&of) else {

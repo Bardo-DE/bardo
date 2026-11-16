@@ -15,12 +15,14 @@ pub struct ContentId(String);
 
 impl ContentId {
     /// The id, if `text` is one.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         let ok = text.len() == 64 && text.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'));
         ok.then(|| Self(text.to_owned()))
     }
 
     /// The id of `bytes`.
+    #[must_use]
     pub fn of(bytes: &[u8]) -> Self {
         Self::from_digest(Sha256::digest(bytes).as_slice())
     }
@@ -30,17 +32,20 @@ impl ContentId {
     }
 
     /// The 64 hex digits.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// Where the original is under the library's `originals` directory and under the replica's
     /// folder: `ab/abcdef...` (two digits of fan-out keep a directory small).
+    #[must_use]
     pub fn rel(&self) -> String {
         format!("{}/{}", &self.0[..2], self.0)
     }
 
     /// The id a relative path `ab/<id>` names, if it names one (the shard must be the id's own).
+    #[must_use]
     pub fn of_rel(rel: &str) -> Option<Self> {
         let (shard, name) = rel.split_once('/')?;
         let id = Self::parse(name)?;
@@ -142,7 +147,7 @@ mod tests {
             hash_file(&dir.join("big")).expect("hash"),
             (ContentId::of(&bytes), 200_000)
         );
-        assert!(hash_file(&dir.join("missing")).is_err());
+        hash_file(&dir.join("missing")).unwrap_err();
     }
 
     #[test]

@@ -33,6 +33,7 @@ pub struct AccountdBroker {
 
 impl AccountdBroker {
     /// The accounts of accountd, asked through `accounts`.
+    #[must_use]
     pub fn new(accounts: AiAccounts) -> Self {
         Self { accounts }
     }

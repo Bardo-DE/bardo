@@ -24,6 +24,7 @@ pub struct Candidate {
 /// that has a surface, a subsurface or a popup with input there, and where that surface's
 /// top-left is. A surface whose input region excludes the point is skipped, so a transparent
 /// bar does not swallow the pointer.
+#[must_use]
 pub fn surface_under(candidates: &[Candidate], at: LogicalPoint) -> Option<SurfaceAt> {
     let point: Point<f64, Logical> = Point::from((f64::from(at.x), f64::from(at.y)));
     candidates.iter().find_map(|candidate| {

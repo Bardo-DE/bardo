@@ -10,6 +10,7 @@ pub struct Argv(Vec<String>);
 
 impl Argv {
     /// The program and its arguments; none without a program.
+    #[must_use]
     pub fn new(program: &str, args: &[String]) -> Option<Self> {
         if program.is_empty() || program.contains('\0') || args.iter().any(|a| a.contains('\0')) {
             return None;
@@ -20,11 +21,13 @@ impl Argv {
     }
 
     /// Every word, program first.
+    #[must_use]
     pub fn words(&self) -> &[String] {
         &self.0
     }
 
     /// The words joined by single spaces: what a command prefix is compared with.
+    #[must_use]
     pub fn line(&self) -> String {
         self.0.join(" ")
     }
@@ -59,6 +62,7 @@ pub enum Network {
 
 impl RunSpec {
     /// A command to run in `cwd` with `env`, on `network`, keeping `keep` bytes of output.
+    #[must_use]
     pub fn new(argv: Argv, cwd: AbsPath, env: Vec<EnvVar>, network: Network, keep: usize) -> Self {
         Self {
             argv,

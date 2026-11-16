@@ -17,6 +17,7 @@ pub struct BackgroundPrivacyStore {
 
 impl BackgroundPrivacyStore {
     /// The store over `files`.
+    #[must_use]
     pub fn new(files: PrivacyFiles) -> BackgroundPrivacyStore {
         let files = FilePrivacyStore::new(files);
         let sink = files.book_sink();

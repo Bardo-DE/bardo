@@ -27,6 +27,7 @@ pub struct ComputerRow {
 
 impl ComputerRow {
     /// The row of `place`, when it is one of the person's own computers.
+    #[must_use]
     pub fn of(place: &PlaceRow) -> Option<ComputerRow> {
         match (place.kind, place.id.target()) {
             (PlaceKind::OwnComputer, PlaceTarget::OwnComputer(computer)) => Some(ComputerRow {
@@ -140,6 +141,7 @@ pub enum ComputersEffect {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn computers_step(
     state: ComputersState,
     input: ComputersInput,

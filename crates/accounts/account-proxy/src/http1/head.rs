@@ -65,13 +65,15 @@ fn is_origin(parsed: &(String, Option<u16>), default: u16, origin: &Origin) -> b
 
 /// The `Host` value for the origin: the port only when it is not the scheme's default.
 fn canonical_host(origin: &Origin) -> String {
-    let host = match origin.host.contains(':') {
-        true => format!("[{}]", origin.host),
-        false => origin.host.clone(),
+    let host = if origin.host.contains(':') {
+        format!("[{}]", origin.host)
+    } else {
+        origin.host.clone()
     };
-    match origin.port == origin.scheme.default_port() {
-        true => host,
-        false => format!("{host}:{}", origin.port),
+    if origin.port == origin.scheme.default_port() {
+        host
+    } else {
+        format!("{host}:{}", origin.port)
     }
 }
 
@@ -148,9 +150,10 @@ pub fn rewrite(head: &[u8], plan: &RelayPlan) -> Result<Rewritten, RelayFault> {
     for header in request.headers.iter() {
         let value = std::str::from_utf8(header.value).map_err(|_| RelayFault::Protocol)?;
         let value = value.trim_matches([' ', '\t']);
-        let line = match value.is_empty() {
-            true => format!("{}:", header.name),
-            false => format!("{}: {value}", header.name),
+        let line = if value.is_empty() {
+            format!("{}:", header.name)
+        } else {
+            format!("{}: {value}", header.name)
         };
         match header.name.to_ascii_lowercase().as_str() {
             "authorization" | "proxy-authorization" => {}

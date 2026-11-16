@@ -29,6 +29,7 @@ pub struct SourceRect {
 
 impl SourceRect {
     /// A rectangle.
+    #[must_use]
     pub fn new(x: f64, y: f64, w: f64, h: f64) -> SourceRect {
         SourceRect { x, y, w, h }
     }
@@ -47,6 +48,7 @@ pub struct DrawnView {
 
 impl DrawnView {
     /// A view.
+    #[must_use]
     pub fn new(buffer_scale: i32, buffer_transform: Transform, src: SourceRect) -> DrawnView {
         DrawnView {
             buffer_scale,
@@ -79,6 +81,7 @@ fn inverse(transform: Transform) -> Transform {
 /// let part = crop_pixels(PhysicalSize { w: 8, h: 8 }, &view);
 /// assert_eq!((part.x, part.y, part.w, part.h), (2, 0, 4, 8));
 /// ```
+#[must_use]
 pub fn crop_pixels(upright: PhysicalSize, view: &DrawnView) -> PhysicalRect {
     let scale = f64::from(view.buffer_scale.max(1));
     let edge = |near: f64, extent: f64, limit: u32| -> (u32, u32) {
@@ -113,6 +116,7 @@ impl ArgbImage {
     /// let view = DrawnView::new(1, Transform::Normal, SourceRect::new(1.0, 0.0, 1.0, 1.0));
     /// assert_eq!(buffer.drawn(&view).argb, [2, 2, 2, 255]);
     /// ```
+    #[must_use]
     pub fn drawn(&self, view: &DrawnView) -> ArgbImage {
         let upright = self.turned(inverse(view.buffer_transform));
         upright.cut(crop_pixels(upright.size, view))

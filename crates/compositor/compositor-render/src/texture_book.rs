@@ -34,6 +34,7 @@ impl TextureBook {
     }
 
     /// No surfaces.
+    #[must_use]
     pub fn empty() -> TextureBook {
         TextureBook::default()
     }

@@ -257,6 +257,7 @@ pub fn fake_service(consolidator: ScriptedConsolidator) -> MemoryService<FakeBac
 }
 
 /// `spaces.toml` entries for [`FAKE_SPACES`], created at the fixed instant, sealed.
+#[must_use]
 pub fn fake_space_metas(created: UnixSeconds) -> Vec<SpaceMeta> {
     FAKE_SPACES
         .iter()

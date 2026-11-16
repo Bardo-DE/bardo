@@ -1,4 +1,4 @@
-//! ProviderList: the first step of adding an account: a search field over the providers the
+//! `ProviderList`: the first step of adding an account: a search field over the providers the
 //! person may pick, and a generic "Other" row for any server that speaks the open protocols
 //! (design/31 section 5.6). The query and the row under the cursor are the host's.
 

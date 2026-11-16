@@ -321,8 +321,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// kind `companion.task`, in the app's own trusted words, without the session it runs in.
     pub(crate) fn outcome_text(&self, started: Outcome) -> Outcome {
         let label = AppName::parse("org.bardo.Companion")
-            .map(app_label)
-            .unwrap_or_else(|_| agent_planner::planner_label());
+            .map_or_else(|_| agent_planner::planner_label(), app_label);
         let value = started_of(&started).map(|s| Value::Handle(s.handle));
         Outcome {
             value: value.map(|value| Labelled { value, label }),

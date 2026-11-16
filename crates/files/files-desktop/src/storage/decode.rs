@@ -46,7 +46,7 @@ fn wire_state(word: Option<String>) -> DriveState {
         Some(sync_bus::DriveState::Offline) => DriveState::Offline,
         Some(sync_bus::DriveState::Paused) => DriveState::Paused,
         Some(sync_bus::DriveState::NeedsSignIn) => DriveState::NeedsSignIn,
-        Some(sync_bus::DriveState::Error) | Some(_) | None => DriveState::Error,
+        Some(sync_bus::DriveState::Error | _) | None => DriveState::Error,
     }
 }
 

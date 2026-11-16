@@ -14,8 +14,8 @@ fn the_unified_line_is_picked_out_of_a_hybrid_file() {
     let path = CgroupPath::from_proc(text).expect("a path");
     assert_eq!(path.as_str(), "/user.slice/bardo-shell.service");
     assert_eq!(path.leaf(), "bardo-shell.service");
-    assert!(CgroupPath::from_proc("1:name=systemd:/y\n").is_err());
-    assert!(CgroupPath::from_proc("0::relative\n").is_err());
+    CgroupPath::from_proc("1:name=systemd:/y\n").unwrap_err();
+    CgroupPath::from_proc("0::relative\n").unwrap_err();
 }
 
 #[test]

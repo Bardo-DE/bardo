@@ -36,7 +36,9 @@ struct Held {
 type Shared = Arc<Mutex<Held>>;
 
 fn lock(shared: &Shared) -> MutexGuard<'_, Held> {
-    shared.lock().unwrap_or_else(|e| e.into_inner())
+    shared
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 fn path(text: &str) -> OwnedObjectPath {
@@ -309,7 +311,7 @@ fn wifi_reads_the_device_and_carries_out_commands() {
             handle
                 .control
                 .send(command)
-                .unwrap_or_else(|e| panic!("{e}"))
+                .unwrap_or_else(|e| panic!("{e}"));
         };
         send(WifiCommand::Scan);
         calls_include(&shared, "RequestScan").await;

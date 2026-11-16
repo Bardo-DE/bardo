@@ -18,7 +18,7 @@ fn plan(url: &str, tls: Tls, auth: RelayAuth) -> RelayPlan {
     )
 }
 
-/// A WebDAV server at the origin's root, so every path is the endpoint's: these tests are about
+/// A `WebDAV` server at the origin's root, so every path is the endpoint's: these tests are about
 /// the head; where a narrower endpoint reaches is `reach`'s, and the last test here.
 fn cloud() -> RelayPlan {
     plan(

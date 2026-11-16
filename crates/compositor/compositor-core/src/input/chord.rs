@@ -56,6 +56,7 @@ impl Chord {
     /// The chord's text: modifiers in the Mac's order (ctrl, option, shift, cmd, fn), then the
     /// keysym's XKB name. `Chord::parse(&chord.text()) == Ok(chord)` for every chord without
     /// Caps Lock, which is a lock and not part of a chord (it is left out).
+    #[must_use]
     pub fn text(&self) -> String {
         MODIFIER_WORDS
             .iter()

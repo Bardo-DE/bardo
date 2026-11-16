@@ -40,7 +40,7 @@ pub enum FieldKind {
     /// A JMAP session URL (`https://...`).
     SessionUrl,
     /// The web address of an AI server the person names (`https://llm.example.test/v1`): the
-    /// base address of a server that speaks the OpenAI chat protocol. The UI words it "Server
+    /// base address of a server that speaks the `OpenAI` chat protocol. The UI words it "Server
     /// address". What it may be is `endpoint::server_address` (https for any host, plain http
     /// only for this computer or one of the person's own computers).
     ServerUrl,
@@ -54,6 +54,7 @@ impl FieldKind {
     /// The values a choice field takes, as the answer's text; empty for a field that is typed.
     /// A host words each value and draws the choice (a segmented control, a pop-up); what it
     /// sends back is one of these.
+    #[must_use]
     pub fn choices(self) -> &'static [&'static str] {
         match self {
             FieldKind::Protocol => super::manual::PROTOCOL_CHOICES,
@@ -95,6 +96,7 @@ pub(super) fn is_empty(value: &FieldValue) -> bool {
 }
 
 /// The first required field with no answer, in the form's order.
+#[must_use]
 pub fn first_missing(fields: &[FieldSpec], answers: &[FieldAnswer]) -> Option<FieldKind> {
     fields
         .iter()

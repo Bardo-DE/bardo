@@ -1,8 +1,8 @@
-//! Gives files placed by the helper their SELinux labels, on computers that use SELinux.
+//! Gives files placed by the helper their `SELinux` labels, on computers that use `SELinux`.
 //!
 //! A tree unpacked under `/opt/bardo` gets the generic label of its parent, which an enforcing policy
 //! may refuse to run (a system service starting a program from there). `restorecon` sets each file's
-//! label from the policy. Where SELinux is not in use, or the tool is not installed, nothing is done and
+//! label from the policy. Where `SELinux` is not in use, or the tool is not installed, nothing is done and
 //! that is not a problem: labels are best effort and never fail an install.
 
 use super::settle::{Change, settle};
@@ -11,7 +11,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
-/// Whether the SELinux status file the kernel exposes is there: the sign that SELinux is in use.
+/// Whether the `SELinux` status file the kernel exposes is there: the sign that `SELinux` is in use.
 pub const SELINUX_ENFORCE_FILE: &str = "/sys/fs/selinux/enforce";
 /// Where the label tool is looked for. A fixed list, so a root helper never depends on `PATH`.
 pub const RESTORECON_PATHS: [&str; 3] = [
@@ -23,7 +23,7 @@ pub const RESTORECON_PATHS: [&str; 3] = [
 /// What a relabel came to.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Relabeled {
-    /// SELinux is not in use, or has no tool here: nothing to do.
+    /// `SELinux` is not in use, or has no tool here: nothing to do.
     NotNeeded,
     /// The labels were set from the policy.
     Done,
@@ -53,7 +53,7 @@ pub trait Relabel {
     }
 }
 
-/// Does nothing: for tests, and for a helper used on a computer without SELinux.
+/// Does nothing: for tests, and for a helper used on a computer without `SELinux`.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct NoRelabel;
 
@@ -107,7 +107,7 @@ impl RunProgram for SystemRunner {
     }
 }
 
-/// Relabels with `restorecon -F` (and `-R` for a tree) when SELinux is in use, and tells the system about
+/// Relabels with `restorecon -F` (and `-R` for a tree) when `SELinux` is in use, and tells the system about
 /// system files with the programs the same runner runs.
 #[derive(Debug)]
 pub struct Selinux<R> {

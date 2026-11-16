@@ -67,6 +67,7 @@ impl McpConfig {
     }
 
     /// The same configuration under another client name.
+    #[must_use]
     pub fn named(self, client: ClientName) -> Self {
         Self { client, ..self }
     }

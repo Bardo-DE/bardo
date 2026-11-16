@@ -41,6 +41,7 @@ pub enum ScalePolicy {
 }
 
 /// The scale for a display seen for the first time.
+#[must_use]
 pub fn first_sight_scale(facts: &OutputFacts, policy: &ScalePolicy) -> Scale {
     match policy {
         ScalePolicy::Fixed(scale) => *scale,

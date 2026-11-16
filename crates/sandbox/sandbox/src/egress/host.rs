@@ -155,6 +155,7 @@ impl HostPattern {
     }
 
     /// Whether this entry names `host`.
+    #[must_use]
     pub fn matches(&self, host: &Host) -> bool {
         match (self, host) {
             (HostPattern::Exact(want), Host::Name(got)) => want == got,
@@ -168,6 +169,7 @@ impl HostPattern {
     }
 
     /// Whether this entry is exactly the address `addr`.
+    #[must_use]
     pub fn is_addr(&self, addr: IpAddr) -> bool {
         matches!(self, HostPattern::Addr(a) if *a == addr.to_canonical())
     }

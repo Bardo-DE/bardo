@@ -149,9 +149,7 @@ pub(crate) fn owner_form(text: &str) -> std::borrow::Cow<'_, str> {
 /// `agent_session`'s form) rather than one of the legacy notes: the two share the kind, and the
 /// router's entries are read through `Session.Stored`, never here.
 fn is_session_log_entry(text: &str) -> bool {
-    serde_json::from_str::<serde_json::Value>(text)
-        .ok()
-        .is_some_and(|body| body.get("version").is_some())
+    serde_json::from_str::<serde_json::Value>(text).is_ok_and(|body| body.get("version").is_some())
 }
 
 fn what_of(entry: &RecentEntry) -> Result<Option<ReplayWhat>, ReplayFault> {
@@ -293,6 +291,7 @@ pub async fn recover<S: RecentSource>(
 /// stores no sessions; otherwise the stored sessions are the truth, and an editor's session
 /// (left out of them) is not brought back by an older note. A session's events come first among
 /// equals: its own records are older than the episode that ends it.
+#[must_use]
 pub fn rebuild_from(stored: Option<Vec<ReplayEvent>>, recent: Vec<ReplayEvent>) -> Rebuilt {
     let mut events = match stored {
         Some(stored) => {

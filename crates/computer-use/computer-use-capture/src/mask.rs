@@ -26,6 +26,7 @@ pub enum MaskReason {
 
 impl MaskReason {
     /// The `mask_reason` value of `quire-agent-v1`.
+    #[must_use]
     pub fn code(self) -> u32 {
         match self {
             MaskReason::PasswordField => 0,
@@ -83,6 +84,7 @@ fn device_edge(logical: u32, scale: Scale120) -> u64 {
 /// per edge, so a 2-lpx region at 1.5 becomes exactly 3 device pixels) and returns a new buffer
 /// and the regions as applied, clamped to the buffer's logical size. A region wholly outside the
 /// buffer is not applied and not reported. Pure.
+#[must_use]
 pub fn apply_masks(
     buf: PixelBuf,
     scale: Scale120,

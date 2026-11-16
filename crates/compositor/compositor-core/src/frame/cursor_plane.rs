@@ -12,6 +12,7 @@ pub struct CursorPlaneCaps {
 
 impl CursorPlaneCaps {
     /// Caps.
+    #[must_use]
     pub fn new(max_size: Option<PhysicalSize>) -> CursorPlaneCaps {
         CursorPlaneCaps { max_size }
     }
@@ -42,6 +43,7 @@ pub enum CursorPlaneChoice {
 /// let choice = cursor_plane_for(&caps, PhysicalSize { w: 24, h: 24 }, Scale::ONE);
 /// assert_eq!(choice, CursorPlaneChoice::Hardware);
 /// ```
+#[must_use]
 pub fn cursor_plane_for(
     caps: &CursorPlaneCaps,
     size: PhysicalSize,
@@ -51,9 +53,10 @@ pub fn cursor_plane_for(
         return CursorPlaneChoice::Composited;
     };
     let on_plane = scaled(size.w, scale) <= max.w && scaled(size.h, scale) <= max.h;
-    match on_plane {
-        true => CursorPlaneChoice::Hardware,
-        false => CursorPlaneChoice::Composited,
+    if on_plane {
+        CursorPlaneChoice::Hardware
+    } else {
+        CursorPlaneChoice::Composited
     }
 }
 

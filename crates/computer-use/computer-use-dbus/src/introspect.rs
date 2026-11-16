@@ -9,6 +9,7 @@ use zbus::object_server::Interface;
 pub const FILE_NAME: &str = "org.bardo.ComputerUse1.xml";
 
 /// The introspection document: both interfaces, in one `<node>`.
+#[must_use]
 pub fn introspection() -> String {
     let interfaces: [&dyn Interface; 2] = [&ManagerSkeleton, &RunSkeleton];
     let mut xml = String::from(

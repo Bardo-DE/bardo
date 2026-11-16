@@ -35,6 +35,7 @@ pub fn word<T: Serialize + ?Sized>(value: &T) -> &'static str {
 }
 
 /// The value the word `text` names; `None` for any other text.
+#[must_use]
 pub fn from_word<T: DeserializeOwned>(text: &str) -> Option<T> {
     let word: StrDeserializer<'_, WordError> = text.into_deserializer();
     T::deserialize(word).ok()

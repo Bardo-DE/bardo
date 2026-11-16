@@ -96,7 +96,7 @@ fn a_failed_write_rebuilds_the_devices_and_is_reported_once() {
     assert_eq!(built.get(), 1, "not before the backoff");
     let mut d = d.poll(Mono::from_millis(1010));
     assert_eq!(built.get(), 2, "rebuilt once the delay has passed");
-    assert!(d.pad(&land()).is_ok());
+    d.pad(&land()).unwrap();
 }
 
 /// Devices whose emitter talks to `source`, as the daemon's do to the real service.
@@ -128,7 +128,7 @@ fn a_closed_connection_is_rebuilt_after_the_pause() {
     assert_eq!(source.state().opened, 1, "not before the pause");
     let mut d = d.poll(Mono::from_millis(1010));
     assert_eq!(source.state().opened, 2, "a new connection");
-    assert!(d.pad(&land()).is_ok());
+    d.pad(&land()).unwrap();
     assert_eq!(source.state().sent.len(), 1, "and frames flow again");
 }
 
@@ -137,7 +137,7 @@ fn frames_the_service_drops_cost_no_rebuild() {
     let source = FakeSource::new();
     let mut d = service_devices(&source, &Config::default());
     source.state().send_mode = SendMode::Drop;
-    assert!(d.pad(&land()).is_ok());
+    d.pad(&land()).unwrap();
     assert_eq!(source.state().opened, 1);
 }
 
@@ -165,7 +165,7 @@ fn a_refusal_ends_the_devices_after_three_more_tries_until_the_settings_change()
         6,
         "a change of settings tries again: the touchpad and the keys of the default gestures"
     );
-    assert!(d.pad(&land()).is_ok());
+    d.pad(&land()).unwrap();
     assert_eq!(source.state().sent.len(), 1);
 }
 
@@ -191,7 +191,7 @@ fn a_frame_that_goes_through_clears_the_count() {
     let mut d = service_devices(&source, &Config::default());
     for round in 1..=6 {
         source.state().send_mode = SendMode::Accept;
-        assert!(d.pad(&land()).is_ok());
+        d.pad(&land()).unwrap();
         source.state().send_mode = SendMode::Close;
         assert!(d.pad(&land()).is_err());
         d = settle(d, round);

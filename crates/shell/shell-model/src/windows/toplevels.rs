@@ -15,12 +15,14 @@ pub struct Toplevels {
 impl Toplevels {
     /// The first output of the active window: where a key press acts when the pointer's output is
     /// not known. `None` without an active window or when it names no output.
+    #[must_use]
     pub fn focused_output(&self) -> Option<OutputName> {
         self.active()?.outputs.first().cloned()
     }
 
     /// The window that has focus: the first that is active. `None` while nothing is
     /// focused; callers that act on focus (keys, profiles, the companion) use this.
+    #[must_use]
     pub fn active(&self) -> Option<&Toplevel> {
         self.windows.iter().find(|w| w.active)
     }
@@ -28,6 +30,7 @@ impl Toplevels {
     /// The window a person would call frontmost on `output` (any output for `None`): the
     /// active window when it is there, else the most recently activated one there. For
     /// showing "the front app"; use [`Self::active`] to act on focus.
+    #[must_use]
     pub fn front(&self, output: Option<&OutputName>) -> Option<&Toplevel> {
         let there = |w: &&Toplevel| output.is_none_or(|o| w.outputs.contains(o));
         self.windows
@@ -45,7 +48,7 @@ pub struct Toplevel {
     /// The compositor's stable name for the window: the one `DesktopView` quotes it by, so a
     /// window can be named in either model. Made up from the key where the compositor gives none.
     pub identifier: String,
-    /// The Wayland app id (or X11 `WM_CLASS` through XWayland); `match_app` maps it to an entry.
+    /// The Wayland app id (or X11 `WM_CLASS` through `XWayland`); `match_app` maps it to an entry.
     pub app_id: String,
     pub title: String,
     pub active: bool,
@@ -78,6 +81,7 @@ pub enum ToplevelEvent {
 /// `toplevels` after `event`. A toplevel that is (or becomes) active moves to the front; one
 /// that opens inactive goes to the back. A change for an unknown key is treated as an open (the
 /// thread may coalesce an open and a change into one `done`).
+#[must_use]
 pub fn step(toplevels: Toplevels, event: ToplevelEvent) -> Toplevels {
     let Toplevels { mut windows } = toplevels;
     match event {

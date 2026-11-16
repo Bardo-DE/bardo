@@ -67,6 +67,7 @@ pub struct Pairing {
 /// assert_eq!(pairs.len(), 1);
 /// assert_eq!(pairs[0].managed, ToplevelKey::new(2));
 /// ```
+#[must_use]
 pub fn pair(listed: &[Listed], managed: &[&Toplevel]) -> Vec<Pairing> {
     let mut taken: BTreeSet<ToplevelKey> = BTreeSet::new();
     let mut pairs = Vec::new();

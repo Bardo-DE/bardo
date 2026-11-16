@@ -10,7 +10,7 @@ use serde_json::{Value, json};
 pub enum Shape {
     /// Anthropic Messages (`/v1/messages`).
     Anthropic,
-    /// OpenAI Chat Completions (`/v1/chat/completions`, `/v1/models`).
+    /// `OpenAI` Chat Completions (`/v1/chat/completions`, `/v1/models`).
     OpenAi,
 }
 
@@ -63,6 +63,7 @@ impl Failure {
     }
 
     /// What a failed model call is told to the agent as.
+    #[must_use]
     pub fn of_model(error: ModelError) -> Self {
         match error {
             ModelError::Unreachable => Self::new(Cause::Upstream, "the model could not be reached"),
@@ -106,6 +107,7 @@ impl Failure {
     }
 
     /// The HTTP status.
+    #[must_use]
     pub fn status(&self, shape: Shape) -> u16 {
         match self.cause {
             Cause::Unauthenticated => 401,
@@ -155,6 +157,7 @@ impl Failure {
     }
 
     /// The body, in the protocol's error shape.
+    #[must_use]
     pub fn body(&self, shape: Shape) -> Value {
         let (kind, code) = self.words(shape);
         match shape {
@@ -176,6 +179,7 @@ impl Failure {
 
     /// Headers beyond the content type. A spend cap says not to retry (Anthropic's SDKs read
     /// `x-should-retry`), so the agent stops instead of backing off and asking again.
+    #[must_use]
     pub fn headers(&self) -> Vec<(&'static str, String)> {
         match self.cause {
             Cause::SpendCap => vec![("x-should-retry", "false".to_owned())],

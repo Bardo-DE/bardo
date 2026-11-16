@@ -23,6 +23,7 @@ pub struct RefusedError {
 
 impl RefusedError {
     /// The error for `refusal`.
+    #[must_use]
     pub fn of(refusal: Refusal) -> Self {
         let name = ErrorName::try_from(refusal_error_name(refusal)).unwrap_or_else(|_| {
             ErrorName::from_static_str_unchecked("org.freedesktop.DBus.Error.Failed")
@@ -47,6 +48,7 @@ impl RefusedError {
 
     /// A conflict that is not there (unknown, or already settled):
     /// `org.bardo.Sync1.Error.NoSuchConflict`.
+    #[must_use]
     pub fn no_such_conflict() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(SYNC_ERROR_NO_SUCH_CONFLICT),
@@ -55,6 +57,7 @@ impl RefusedError {
     }
 
     /// `ConfirmDiscard` on a dataset that is not held: `org.bardo.Sync1.Error.NothingHeld`.
+    #[must_use]
     pub fn nothing_held() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(SYNC_ERROR_NOTHING_HELD),
@@ -63,6 +66,7 @@ impl RefusedError {
     }
 
     /// `SyncNow` on a dataset the person paused: `org.bardo.Sync1.Error.Paused`.
+    #[must_use]
     pub fn paused() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(SYNC_ERROR_PAUSED),
@@ -72,6 +76,7 @@ impl RefusedError {
 
     /// `Import` before the person has finished picking: `org.bardo.Photos1.Error.NotYet`.
     #[cfg(feature = "photos-picker")]
+    #[must_use]
     pub fn picker_not_yet() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(PICKER_ERROR_NOT_YET),
@@ -81,6 +86,7 @@ impl RefusedError {
 
     /// A session Google no longer has: `org.bardo.Photos1.Error.NoSuchSession`.
     #[cfg(feature = "photos-picker")]
+    #[must_use]
     pub fn picker_no_such_session() -> Self {
         Self {
             name: ErrorName::from_static_str_unchecked(PICKER_ERROR_NO_SUCH_SESSION),
@@ -99,6 +105,7 @@ impl RefusedError {
     }
 
     /// The error's D-Bus name.
+    #[must_use]
     pub fn error_name(&self) -> &str {
         self.name.as_str()
     }

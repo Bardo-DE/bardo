@@ -14,6 +14,7 @@ pub struct Deadline {
 
 impl Deadline {
     /// A deadline.
+    #[must_use]
     pub fn new(render_at: Mono, vblank: Mono) -> Deadline {
         Deadline { render_at, vblank }
     }
@@ -25,6 +26,7 @@ const MAX_SKIPPED: usize = 600;
 
 /// The deadline for the first vblank after `now` that a frame costing `predicted` plus `slack`
 /// can still make; a frame that cannot make the next vblank is for the one after.
+#[must_use]
 pub fn next_deadline(
     clock: &VblankClock,
     predicted: Duration,

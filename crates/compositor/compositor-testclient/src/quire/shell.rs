@@ -61,6 +61,7 @@ pub struct BoundOutput {
 
 impl BoundOutput {
     /// The connector name, if it has arrived.
+    #[must_use]
     pub fn connector(&self) -> Option<String> {
         self.name.with(|name| name.clone())
     }
@@ -112,6 +113,7 @@ impl ShellHandle {
 
     /// Binds every `wl_output` (the events that name an output reach this client only for the
     /// ones it has bound). The names arrive at the fixture's next pump.
+    #[must_use]
     pub fn bind_outputs(client: &TestClient) -> Vec<BoundOutput> {
         let globals = client.globals();
         let qh = client.qh();
@@ -156,12 +158,14 @@ impl ShellHandle {
     }
 
     /// The `reveal` events, in order: the edge and whether its surface was shown or hidden.
+    #[must_use]
     pub fn reveals(&self) -> Vec<(Option<ScreenEdge>, Option<Shown>)> {
         self.log.with(|seen| seen.reveals.clone())
     }
 
     /// The `reveal_on_output` events, in order: the output, the edge and whether its surface was
     /// shown or hidden.
+    #[must_use]
     pub fn reveals_on_outputs(&self) -> Vec<(WlOutput, Option<ScreenEdge>, Option<Shown>)> {
         self.log.with(|seen| seen.reveals_on_outputs.clone())
     }
@@ -177,26 +181,31 @@ impl ShellHandle {
     }
 
     /// The `window_drag_begin` events, in order.
+    #[must_use]
     pub fn drag_begins(&self) -> Vec<(WlOutput, String)> {
         self.log.with(|seen| seen.drag_begins.clone())
     }
 
     /// The `window_drag_end` events, in order.
+    #[must_use]
     pub fn drag_ends(&self) -> Vec<(WlOutput, String, Option<DragOutcome>)> {
         self.log.with(|seen| seen.drag_ends.clone())
     }
 
     /// The `drop_target_new` events, in order.
+    #[must_use]
     pub fn drop_targets_new(&self) -> Vec<(WlOutput, Option<Shown>)> {
         self.log.with(|seen| seen.drop_targets_new.clone())
     }
 
     /// The `overview_output` events, in order.
+    #[must_use]
     pub fn overview_outputs(&self) -> Vec<(WlOutput, Option<Shown>)> {
         self.log.with(|seen| seen.overview_outputs.clone())
     }
 
     /// The `drop_target` events, in order.
+    #[must_use]
     pub fn drop_targets(&self) -> Vec<(WlOutput, Option<String>)> {
         self.log.with(|seen| seen.drop_targets.clone())
     }
@@ -234,6 +243,7 @@ impl ShellHandle {
     }
 
     /// The overview states the compositor sent, in order, with their progress.
+    #[must_use]
     pub fn overview_states(&self) -> Vec<(Option<OverviewState>, u32)> {
         self.log.with(|seen| seen.overview_states.clone())
     }
@@ -255,21 +265,25 @@ impl ShellHandle {
     }
 
     /// The Split View offers the compositor made, in order.
+    #[must_use]
     pub fn split_choices(&self) -> Vec<SplitChoiceSeen> {
         self.log.with(|seen| seen.split_choices.clone())
     }
 
     /// The first windows of the offers the compositor took away, in order.
+    #[must_use]
     pub fn split_ends(&self) -> Vec<String> {
         self.log.with(|seen| seen.split_ends.clone())
     }
 
     /// The window menus the compositor asked for, in order.
+    #[must_use]
     pub fn window_menus(&self) -> Vec<WindowMenuSeen> {
         self.log.with(|seen| seen.window_menus.clone())
     }
 
     /// The key sets sent to `surface`, in order.
+    #[must_use]
     pub fn modifiers_of(&self, surface: &WlSurface) -> Vec<u32> {
         self.log.with(|seen| {
             seen.modifiers

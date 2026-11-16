@@ -33,16 +33,19 @@ impl SectionCount {
     }
 
     /// The number of sections.
+    #[must_use]
     pub fn get(self) -> u32 {
         self.0.get()
     }
 
     /// The last section.
+    #[must_use]
     pub fn last(self) -> SectionIndex {
         SectionIndex(self.0.get() - 1) // a NonZeroU32 is at least 1
     }
 
     /// `section`, or the last section when it is past the end.
+    #[must_use]
     pub fn clamp(self, section: SectionIndex) -> SectionIndex {
         section.min(self.last())
     }

@@ -12,6 +12,7 @@ pub struct SubcompositorPart;
 
 impl SubcompositorPart {
     /// The part: its global is created with `wl_compositor`'s.
+    #[must_use]
     pub fn new() -> SubcompositorPart {
         SubcompositorPart
     }

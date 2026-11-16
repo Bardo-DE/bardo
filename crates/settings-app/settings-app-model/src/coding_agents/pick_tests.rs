@@ -106,7 +106,7 @@ fn picking_a_turned_off_agent_asks_and_a_yes_turns_them_on_and_sets_it() {
         state,
         PickerInput::Chose {
             path: key.clone(),
-            word: "".to_owned(),
+            word: String::new(),
         },
     );
     assert!(effects.is_empty());

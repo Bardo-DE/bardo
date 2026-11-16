@@ -123,7 +123,7 @@ fn main() -> ExitCode {
             match standing(&dir, &snap, id) {
                 Standing::Unknown => println!("the list has no {id}"),
                 Standing::Current(v) => {
-                    println!("{id} {v} is installed and is the version on offer")
+                    println!("{id} {v} is installed and is the version on offer");
                 }
                 Standing::Offered { offered, installed } => println!(
                     "{id} {offered} is on offer; installed: {}. To take it: bardo-agents install {id} {offered}",

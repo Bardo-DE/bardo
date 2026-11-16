@@ -31,6 +31,7 @@ impl Parts {
     }
 
     /// Whether `part` is drawn.
+    #[must_use]
     pub fn contains(self, part: Part) -> bool {
         self.0 & bit(part) != 0
     }

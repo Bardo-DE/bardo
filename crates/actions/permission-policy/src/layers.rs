@@ -26,6 +26,7 @@ pub enum Layer {
 
 impl Layer {
     /// Whether a rule of this layer may only forbid: a permit there is refused.
+    #[must_use]
     pub fn forbids_only(self) -> bool {
         matches!(self, Layer::Assistant | Layer::Admin)
     }
@@ -93,16 +94,19 @@ pub struct PolicySource {
 
 impl PolicySource {
     /// The compiled-in core.
+    #[must_use]
     pub fn core() -> Self {
         Self::built_in(Layer::Core, "core", CORE_POLICIES)
     }
 
     /// The compiled-in preset: what stands in for a preset that is missing or bad.
+    #[must_use]
     pub fn preset() -> Self {
         Self::built_in(Layer::Preset, "preset", PRESET)
     }
 
     /// A file's text.
+    #[must_use]
     pub fn file(layer: Layer, path: PathBuf, text: String) -> Self {
         Self {
             layer,
@@ -112,6 +116,7 @@ impl PolicySource {
     }
 
     /// A file that could not be read, and why.
+    #[must_use]
     pub fn unreadable(layer: Layer, path: PathBuf, why: ReadFault) -> Self {
         Self {
             layer,

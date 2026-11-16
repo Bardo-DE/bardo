@@ -45,6 +45,7 @@ pub enum Claim {
 impl Origin {
     /// The claim as of now: a shell whose process has since exited (and whose socket a child
     /// kept open) claims nothing.
+    #[must_use]
     pub fn claim(&self) -> Claim {
         match self {
             Origin::Shell(held) if held.process.alive() == Alive::Yes => {
@@ -73,6 +74,7 @@ pub struct ShellCheck<P: ProcFs = RealProc> {
 impl ShellCheck {
     /// The check of this machine against `table`. A table that nobody could parse is an empty
     /// one, which believes nobody: the safe way to fail.
+    #[must_use]
     pub fn system(table: Table, accepted: Vec<RoleName>) -> Self {
         Self::new(Prober::new(RealProc::system()), table, accepted)
     }
@@ -130,8 +132,9 @@ fn manager_user(cgroup: &CgroupPath) -> Option<u32> {
     let (slice, user_slice, manager) = (segments.next()?, segments.next()?, segments.next()?);
     let from_slice = user_slice.strip_prefix("user-")?.strip_suffix(".slice")?;
     let from_manager = manager.strip_prefix("user@")?.strip_suffix(".service")?;
-    match slice == "user.slice" && from_slice == from_manager {
-        true => from_manager.parse().ok(),
-        false => None,
+    if slice == "user.slice" && from_slice == from_manager {
+        from_manager.parse().ok()
+    } else {
+        None
     }
 }

@@ -1,6 +1,6 @@
 //! Validating an adapter by a first present: the ranking is `blitz_embed::adapter::rank`, but a
 //! cross-GPU adapter can report the surface as supported and still have its first dmabuf
-//! rejected with a fatal protocol error (RADV under KWin on this machine, `zwp_linux_dmabuf`
+//! rejected with a fatal protocol error (RADV under `KWin` on this machine, `zwp_linux_dmabuf`
 //! error 7, "importing the supplied dmabufs failed"). The probe runs on a throwaway Wayland
 //! connection so the error kills the probe, not the host.
 //!

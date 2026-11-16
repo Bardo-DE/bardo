@@ -70,7 +70,7 @@ pub enum InjectLine {
 pub enum InjectOrigin {
     /// As if from a kernel device.
     Physical,
-    /// As if from a RemoteDesktop session.
+    /// As if from a `RemoteDesktop` session.
     Remote,
     /// A test.
     Test,
@@ -296,8 +296,8 @@ mod tests {
                 "{name}"
             );
         }
-        assert!(parse_inject("key a sideways").is_err());
-        assert!(parse_inject("key a").is_err());
+        parse_inject("key a sideways").unwrap_err();
+        parse_inject("key a").unwrap_err();
     }
 
     #[test]
@@ -309,7 +309,7 @@ mod tests {
             (r#"type "two  spaces""#, "two  spaces"),
             ("type two words", "two words"),
             (r#"type "open"#, r#""open"#),
-            (r#"type a\nb"#, r#"a\nb"#),
+            (r"type a\nb", r"a\nb"),
             ("type \"\"", ""),
         ] {
             assert_eq!(
@@ -318,8 +318,8 @@ mod tests {
                 "{line}"
             );
         }
-        assert!(parse_inject("type").is_err());
-        assert!(parse_inject("type   ").is_err());
+        parse_inject("type").unwrap_err();
+        parse_inject("type   ").unwrap_err();
     }
 
     #[test]
@@ -375,8 +375,8 @@ mod tests {
             parse_inject("scroll finger 4 -8").expect("scroll"),
             InjectLine::ScrollFinger(sub(4, -8))
         );
-        assert!(parse_inject("axis wheel 1").is_err());
-        assert!(parse_inject("axis spinner 0 120").is_err());
+        parse_inject("axis wheel 1").unwrap_err();
+        parse_inject("axis spinner 0 120").unwrap_err();
     }
 
     #[test]
@@ -438,8 +438,8 @@ mod tests {
             parse_inject("touch cancel").expect("touch"),
             InjectLine::Touch(TouchStep::Cancel)
         );
-        assert!(parse_inject("touch down 1 30").is_err());
-        assert!(parse_inject("touch up").is_err());
+        parse_inject("touch down 1 30").unwrap_err();
+        parse_inject("touch up").unwrap_err();
     }
 
     #[test]
@@ -448,13 +448,13 @@ mod tests {
             parse_inject("  sleep   3600000 ").expect("sleep"),
             InjectLine::Sleep(Duration::from_secs(3600))
         );
-        assert!(parse_inject("sleep 3600001").is_err());
-        assert!(parse_inject("sleep 1.5").is_err());
+        parse_inject("sleep 3600001").unwrap_err();
+        parse_inject("sleep 1.5").unwrap_err();
         assert_eq!(
             parse_inject("device unplug switch").expect("device"),
             InjectLine::Device(DeviceVerb::Unplug(DeviceClass::Switch))
         );
-        assert!(parse_inject("device plug mouse").is_err());
+        parse_inject("device plug mouse").unwrap_err();
     }
 
     #[test]

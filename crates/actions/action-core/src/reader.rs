@@ -47,6 +47,7 @@ impl ReaderTask {
     ];
 
     /// The task as one word, as the planner writes it and as the history names the reader's step.
+    #[must_use]
     pub const fn word(self) -> &'static str {
         match self {
             Self::Classify => "classify",
@@ -57,6 +58,7 @@ impl ReaderTask {
     }
 
     /// The tier a task asks for: picking a label is quick, reading closely is not.
+    #[must_use]
     pub const fn tier(self) -> Tier {
         match self {
             Self::Classify => Tier::Fast,
@@ -66,6 +68,7 @@ impl ReaderTask {
 
     /// The name of the history step the reader's answer to this task is recorded under:
     /// `companion.read.<word>`, a step of the companion's own app ([`READER_STEP_APP`]).
+    #[must_use]
     pub fn step_name(self) -> String {
         format!("{READER_STEP}.{}", self.word())
     }
@@ -80,6 +83,7 @@ const READER_STEP: &str = "companion.read";
 impl StepLine {
     /// The task of the reader, when this step is the reader's answer (`quire_read`): the history
     /// names such a step `companion.read.<word>`.
+    #[must_use]
     pub fn reader_task(&self) -> Option<ReaderTask> {
         if self.action.app.as_str() != READER_STEP_APP {
             return None;
@@ -205,6 +209,7 @@ pub fn conforms(value: &Value, schema: &ValueSchema) -> Result<(), SchemaFault> 
 }
 
 /// How an entity is named inside a choice shape: `app/kind/key`.
+#[must_use]
 pub fn entity_choice_text(id: &EntityId) -> String {
     format!("{}/{}/{}", id.app, id.kind, id.key)
 }

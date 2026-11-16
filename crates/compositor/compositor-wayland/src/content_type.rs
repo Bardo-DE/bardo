@@ -21,6 +21,7 @@ pub struct ContentTypePart {
 
 impl ContentTypePart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ContentTypePart
     where
         D: GlobalDispatch<WpContentTypeManagerV1, GlobalData> + 'static,
@@ -49,6 +50,7 @@ pub enum ContentKind {
 impl ContentKind {
     /// The wire value as a kind (the edge's conversion; a value this protocol version does not
     /// define reads as no hint).
+    #[must_use]
     pub fn of_wire(wire: Type) -> ContentKind {
         match wire {
             Type::Photo => ContentKind::Photo,
@@ -65,6 +67,7 @@ struct Stored(Mutex<ContentKind>);
 
 /// The kind `surface` committed with, from smithay's double-buffered state (the handler reads
 /// it at every commit and passes it to [`on_content_type`]).
+#[must_use]
 pub fn committed_kind(surface: &WlSurface) -> ContentKind {
     with_states(surface, |states| {
         ContentKind::of_wire(
@@ -78,6 +81,7 @@ pub fn committed_kind(surface: &WlSurface) -> ContentKind {
 }
 
 /// The kind `surface` was last stored with ([`ContentKind::None`] before any commit).
+#[must_use]
 pub fn stored_kind(surface: &WlSurface) -> ContentKind {
     with_states(surface, |states| {
         states

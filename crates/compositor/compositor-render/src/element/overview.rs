@@ -34,6 +34,7 @@ impl OverviewLook {
     /// let look = OverviewLook::new(black, blue);
     /// assert_eq!((look.dim, look.ring), (black, blue));
     /// ```
+    #[must_use]
     pub fn new(dim: Rgba8, ring: Rgba8) -> OverviewLook {
         OverviewLook { dim, ring }
     }
@@ -52,6 +53,7 @@ impl OverviewLook {
     /// assert_eq!(look.opened(Fraction(0)).dim.a, 0);
     /// assert_eq!(look.opened(Fraction(1000)), look);
     /// ```
+    #[must_use]
     pub fn opened(self, openness: Fraction) -> OverviewLook {
         let t = u32::from(openness.0.min(1000));
         let scale = |n: u8| u8::try_from((u32::from(n) * t + 500) / 1000).unwrap_or(u8::MAX);

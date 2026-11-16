@@ -47,7 +47,7 @@ impl Look {
     /// (`Entry::resolve`): an absolute path or a `..` is refused.
     pub(crate) fn from_entry(entry: Entry) -> Result<Look, Refusal<Fault>> {
         let wire: Wire = entry.clone().read::<Wire, Fault>()?;
-        if !wire.stylesheet.extension().is_some_and(|ext| ext == "css") {
+        if wire.stylesheet.extension().is_none_or(|ext| ext != "css") {
             return Err(Refusal::Fault(Fault::NotCss {
                 path: wire.stylesheet,
             }));
@@ -63,16 +63,19 @@ impl Look {
     }
 
     /// The stylesheet, inside the Extension's folder.
+    #[must_use]
     pub fn stylesheet(&self) -> &Path {
         &self.stylesheet
     }
 
     /// The Extension's folder: where the sheet's own `url()` files may be.
+    #[must_use]
     pub fn folder(&self) -> &Path {
         &self.folder
     }
 
     /// The `ui_components::selectors::SURFACE` revision the sheet was made against.
+    #[must_use]
     pub fn styles_for(&self) -> u32 {
         self.styles_for
     }

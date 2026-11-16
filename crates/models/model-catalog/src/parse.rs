@@ -92,6 +92,7 @@ pub fn parse_entry(text: &str) -> Result<ModelEntry, CatalogError> {
 
 /// The system entries with the user's applied: a user entry replaces the system entry of the
 /// same id, and a user entry with a new id is added. Order: system first, then new user ids.
+#[must_use]
 pub fn merge_catalogs(system: Vec<ModelEntry>, user: Vec<ModelEntry>) -> Vec<ModelEntry> {
     let mut merged: Vec<ModelEntry> = system
         .into_iter()

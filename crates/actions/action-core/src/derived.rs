@@ -30,6 +30,7 @@ pub struct Derived {
 
 impl Derived {
     /// A policy nothing was corrected in.
+    #[must_use]
     pub fn plain(policy: TaskPolicy) -> Self {
         Self {
             policy,

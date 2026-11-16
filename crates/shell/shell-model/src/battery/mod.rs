@@ -1,4 +1,4 @@
-//! The battery: UPower's display device, as the bar draws it.
+//! The battery: `UPower`'s display device, as the bar draws it.
 
 mod command;
 mod model;

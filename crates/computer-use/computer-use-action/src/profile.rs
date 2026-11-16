@@ -60,6 +60,7 @@ impl VerbAlias {
     ];
 
     /// The verb the model writes; the same as the alias's slug.
+    #[must_use]
     pub const fn model_verb(self) -> &'static str {
         match self {
             VerbAlias::Drag => "drag",
@@ -72,6 +73,7 @@ impl VerbAlias {
 
     /// The verb of the common convention it stands for. `ask` is no verb of that convention: a
     /// model that writes `call_user` is shown it as an extra verb, and it reads as an ask.
+    #[must_use]
     pub const fn canonical(self) -> &'static str {
         match self {
             VerbAlias::Drag => "left_click_drag",
@@ -112,12 +114,13 @@ impl VerbAliases {
     }
 
     /// The alias a model's verb is, if the set has it.
+    #[must_use]
     pub fn resolve(self, verb: &str) -> Option<VerbAlias> {
         self.iter().find(|alias| alias.model_verb() == verb)
     }
 
     /// The aliases standing for one verb of the common convention.
-    pub fn of<'a>(self, canonical: &'a str) -> impl Iterator<Item = VerbAlias> + 'a {
+    pub fn of(self, canonical: &str) -> impl Iterator<Item = VerbAlias> + '_ {
         self.iter()
             .filter(move |alias| alias.canonical() == canonical)
     }
@@ -155,6 +158,7 @@ fn is_default<T: Default + PartialEq>(value: &T) -> bool {
 
 impl ActionProfile {
     /// Whether this is the common convention, stating no difference.
+    #[must_use]
     pub fn is_plain(&self) -> bool {
         *self == ActionProfile::default()
     }
@@ -162,6 +166,7 @@ impl ActionProfile {
     /// Whether the verbs, the drag and the scroll are the common convention: the tool schema a
     /// model is shown is then the shipped file itself. The other options of the profile (how the
     /// calls are read, the shape of the answer) leave the schema alone.
+    #[must_use]
     pub fn verbs_plain(&self) -> bool {
         self.aliases == VerbAliases::default()
             && self.drag == DragStyle::default()

@@ -253,12 +253,9 @@ fn value_fn(name: &Ident, tokens: &EnumTokens, members: &[Member]) -> TokenStrea
         let ident = m.ident;
         let pick = resolve(&m.values, ident).ok()?;
         let value = value_expr(&pick);
-        Some(match &m.input {
-            None => quote! { #name::#ident => #style::tokens::token::CssValue::fixed(#value), },
-            Some(_) => quote! {
-                #name::#ident => #style::tokens::token::CssValue::tuned(#name::input(self), #name::fallback(self, scope)),
-            },
-        })
+        Some(if m.input.is_none() { quote! { #name::#ident => #style::tokens::token::CssValue::fixed(#value), } } else { quote! {
+            #name::#ident => #style::tokens::token::CssValue::tuned(#name::input(self), #name::fallback(self, scope)),
+        } })
     });
     quote! {
         fn css_value(self, scope: #style::tokens::token::TokenScope) -> #style::tokens::token::CssValue {

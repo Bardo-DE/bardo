@@ -69,6 +69,7 @@ fn samples(ms: AudioMs) -> u64 {
 /// - `Ended` stays ended.
 ///
 /// `lead` is the caller's: it keeps that much audio before `InSpeech`'s `since`.
+#[must_use]
 pub fn endpoint(
     state: Endpoint,
     voiced: Voiced,

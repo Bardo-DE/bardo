@@ -64,7 +64,7 @@ fn a_share_is_thousandths_kept_in_range() {
 
 #[test]
 fn only_web_addresses_without_stray_characters_open_online() {
-    assert!(OnlineUrl::new("https://docs.example.test/d/1").is_ok());
+    OnlineUrl::new("https://docs.example.test/d/1").unwrap();
     assert_eq!(OnlineUrl::new("file:///etc/passwd"), Err(UrlError::NotWeb));
     assert_eq!(OnlineUrl::new("javascript:alert(1)"), Err(UrlError::NotWeb));
     assert_eq!(OnlineUrl::new("https://a b"), Err(UrlError::Stray));

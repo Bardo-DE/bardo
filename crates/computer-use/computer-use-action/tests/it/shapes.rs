@@ -130,23 +130,23 @@ fn text_limits_refuse() {
         TypedText::new("a\u{7}b"),
         Err(TextError::ControlChar { at: 1 })
     );
-    assert!(TypedText::new("tab\there\nnewline").is_ok());
-    assert!(TypedText::new("a".repeat(2048)).is_ok());
+    TypedText::new("tab\there\nnewline").unwrap();
+    TypedText::new("a".repeat(2048)).unwrap();
     assert_eq!(Choice::new("a\nb"), Err(TextError::ControlChar { at: 1 }));
     assert_eq!(FieldName::new(""), Err(TextError::Empty));
-    assert!(serde_json::from_str::<TypedText>("\"a\\u0007\"").is_err());
+    serde_json::from_str::<TypedText>("\"a\\u0007\"").unwrap_err();
 }
 
 #[test]
 fn number_limits_refuse() {
-    assert!(Repeat::new(0).is_err());
-    assert!(Repeat::new(1).is_ok());
-    assert!(Repeat::new(20).is_ok());
-    assert!(Repeat::new(21).is_err());
-    assert!(WaitMs::new(60_000).is_ok());
-    assert!(WaitMs::new(60_001).is_err());
-    assert!(serde_json::from_str::<Repeat>("0").is_err());
-    assert!(serde_json::from_str::<WaitMs>("60001").is_err());
+    Repeat::new(0).unwrap_err();
+    Repeat::new(1).unwrap();
+    Repeat::new(20).unwrap();
+    Repeat::new(21).unwrap_err();
+    WaitMs::new(60_000).unwrap();
+    WaitMs::new(60_001).unwrap_err();
+    serde_json::from_str::<Repeat>("0").unwrap_err();
+    serde_json::from_str::<WaitMs>("60001").unwrap_err();
 }
 
 #[test]

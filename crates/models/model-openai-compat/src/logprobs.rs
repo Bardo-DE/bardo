@@ -1,6 +1,6 @@
 //! First-token log-probabilities on the chat-completions stream: `logprobs: true` and
 //! `top_logprobs: k` on the request, `choices[0].logprobs.content[].top_logprobs` on the chunks
-//! (the same shape on vLLM and on llama-server's OpenAI endpoint).
+//! (the same shape on vLLM and on llama-server's `OpenAI` endpoint).
 //!
 //! The first token belongs to the answer only when it is the token that opened the answer text:
 //! thinking (`reasoning_content`) arrives in earlier chunks, and a chunk that mixes thinking and

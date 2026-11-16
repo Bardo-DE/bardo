@@ -1,19 +1,22 @@
-//! WebDAV's methods, which the `http` crate has no constant for: `PROPFIND` and `MKCOL` (RFC
-//! 4918) and `REPORT` (RFC 3253, which CalDAV, CardDAV and sync-collection use).
+//! `WebDAV`'s methods, which the `http` crate has no constant for: `PROPFIND` and `MKCOL` (RFC
+//! 4918) and `REPORT` (RFC 3253, which `CalDAV`, `CardDAV` and sync-collection use).
 
 use http::Method;
 
 /// `PROPFIND`.
+#[must_use]
 pub fn propfind() -> Method {
     extension(b"PROPFIND")
 }
 
 /// `REPORT`.
+#[must_use]
 pub fn report() -> Method {
     extension(b"REPORT")
 }
 
 /// `MKCOL`.
+#[must_use]
 pub fn mkcol() -> Method {
     extension(b"MKCOL")
 }

@@ -35,6 +35,7 @@ pub enum Engine {
 impl Engine {
     /// The scroller whose geometry `step` needs for `input`: the one the input names, else the one
     /// the engine is on.
+    #[must_use]
     pub fn target(&self, input: &ScrollIn) -> Option<Latch> {
         match input {
             ScrollIn::Began { latched, .. } => Some(latched.latch),
@@ -47,6 +48,7 @@ impl Engine {
     }
 
     /// The scroller the engine is on.
+    #[must_use]
     pub fn latch(&self) -> Option<Latch> {
         match self {
             Engine::Idle => None,
@@ -61,11 +63,13 @@ impl Engine {
     }
 
     /// Whether the fingers lifted and the engine waits for the system's momentum.
+    #[must_use]
     pub fn is_lifted(&self) -> bool {
         matches!(self, Engine::Tracking(t) if t.lift.is_some())
     }
 
     /// Whether the engine animates (and so needs a frame per callback).
+    #[must_use]
     pub fn motion(&self) -> Motion {
         match self {
             Engine::Tracking(t) if t.lift.is_some() => Motion::Animating,
@@ -81,6 +85,7 @@ impl Engine {
 
 /// Advance the engine by `input` at `now`. `geom` is [`Engine::target`]'s geometry, `None` when it is
 /// gone (the node was removed): the engine then stops.
+#[must_use]
 pub fn step(
     engine: Engine,
     input: ScrollIn,
@@ -148,6 +153,7 @@ pub fn step(
 }
 
 /// `SetOffset` for `latch`.
+#[must_use]
 pub fn set(latch: Latch, raw: f64) -> ScrollOut {
     ScrollOut::SetOffset {
         latch,
@@ -156,6 +162,7 @@ pub fn set(latch: Latch, raw: f64) -> ScrollOut {
 }
 
 /// `Notify` for `latch`.
+#[must_use]
 pub fn notify(latch: Latch, phase: NotifyPhase) -> ScrollOut {
     ScrollOut::Notify { latch, phase }
 }

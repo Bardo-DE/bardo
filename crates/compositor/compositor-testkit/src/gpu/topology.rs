@@ -30,6 +30,7 @@ pub struct GpuTopology {
 
 impl GpuTopology {
     /// One pixman GPU (an AMD-like display GPU), linear formats, direct imports.
+    #[must_use]
     pub fn single() -> GpuTopology {
         GpuTopology {
             gpus: vec![SoftGpu::new(
@@ -144,6 +145,7 @@ pub struct SoftGpu {
 
 impl SoftGpu {
     /// A soft GPU that drives no connector.
+    #[must_use]
     pub fn new(
         id: GpuId,
         engine: SoftRenderer,
@@ -162,6 +164,7 @@ impl SoftGpu {
     }
 
     /// This GPU's render node, `226:(128 + id)`.
+    #[must_use]
     pub fn node(&self) -> DrmNodeId {
         DrmNodeId::new(DRM_MAJOR, FIRST_RENDER_MINOR + self.id.0)
     }

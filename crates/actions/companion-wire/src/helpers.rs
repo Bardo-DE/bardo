@@ -158,6 +158,7 @@ pub struct HelperCardView {
 }
 
 /// What the person calls a coding agent program we know ("claude-code" is "Claude Code").
+#[must_use]
 pub fn app_name_of(kind: &HelperKind) -> Option<String> {
     let name = match kind.program()?.as_str() {
         "claude-code" => "Claude Code",
@@ -263,6 +264,7 @@ fn paused_text(why: PauseWhy) -> &'static str {
 
 /// A helper as one line of the list. `answer` says whether the job it runs waits for the person
 /// (a question or a sheet): only the host knows, from the task's answer.
+#[must_use]
 pub fn line_of(card: &HelperCard, board: &Board, answer: Option<HelperNeeds>) -> HelperLine {
     let (state, doing, needs_you, agent) = match &card.state {
         // A job it has taken whose session is still opening: it is working on it already.

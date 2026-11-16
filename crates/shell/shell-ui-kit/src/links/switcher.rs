@@ -46,6 +46,7 @@ pub struct Asks {
 
 impl Asks {
     /// The asks after `seen` (all of them for `None`), oldest first.
+    #[must_use]
     pub fn since(&self, seen: Option<AskSerial>) -> Vec<SwitcherAsked> {
         self.recent
             .iter()
@@ -55,6 +56,7 @@ impl Asks {
     }
 
     /// The latest ask.
+    #[must_use]
     pub fn latest(&self) -> Option<&SwitcherAsked> {
         self.recent.last()
     }
@@ -75,6 +77,7 @@ pub struct SwitcherLink {
 }
 
 impl SwitcherLink {
+    #[must_use]
     pub fn new() -> SwitcherLink {
         SwitcherLink::default()
     }
@@ -116,6 +119,7 @@ impl SwitcherLink {
     }
 
     /// Ask the switcher on `output`; every ask is new, even one equal to the last.
+    #[must_use]
     pub fn ask(&self, output: OutputId, ask: SwitcherAsk) -> AskSerial {
         let mut serial = AskSerial::default();
         self.asked.modify(|asks| {
@@ -130,10 +134,12 @@ impl SwitcherLink {
     }
 
     /// The latest ask.
+    #[must_use]
     pub fn latest(&self) -> Option<SwitcherAsked> {
         self.asked.read().latest().cloned()
     }
 
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Asks> {
         self.asked.subscribe()
     }
@@ -168,8 +174,8 @@ mod tests {
         let link = SwitcherLink::new();
         let cancels = |link: &SwitcherLink| {
             link.latest()
-                .filter(|asked| asked.ask == SwitcherAsk::Cancel)
-                .is_some()
+                .as_ref()
+                .is_some_and(|asked| asked.ask == SwitcherAsk::Cancel)
         };
         link.focus(one, KeyboardFocus::Lost);
         assert!(!cancels(&link), "a loss before any gain");

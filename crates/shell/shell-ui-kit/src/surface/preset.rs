@@ -20,6 +20,7 @@ pub struct PanelBlur {
 
 impl PanelBlur {
     /// A sheet's panel: rounded as quire's `.ds-sheet` (`--r-panel`).
+    #[must_use]
     pub const fn sheet(id: &'static str) -> PanelBlur {
         PanelBlur {
             id,
@@ -28,6 +29,7 @@ impl PanelBlur {
     }
 
     /// The region that follows the element.
+    #[must_use]
     pub fn region(self) -> RegionSpec {
         RegionSpec::Element {
             id: ElementId::new(self.id),
@@ -73,6 +75,7 @@ pub enum LayerPreset {
 
 impl LayerPreset {
     /// Where the surface takes the pointer: its configuration's `input`.
+    #[must_use]
     pub fn input(self) -> RegionSpec {
         match self {
             LayerPreset::FullOutputSheet { .. } => RegionSpec::Whole,
@@ -87,6 +90,7 @@ impl LayerPreset {
     }
 
     /// The configuration of the surface called `name` on `output`.
+    #[must_use]
     pub fn config(self, name: &str, output: &OutputInfo) -> LayerConfig {
         let full = LayerSize {
             width: LayerExtent::Fill,

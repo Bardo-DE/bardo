@@ -25,6 +25,7 @@ pub struct SettingsApp {
 
 impl SettingsApp {
     /// Settings opened on `env`'s session bus.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         SettingsApp { env }
     }

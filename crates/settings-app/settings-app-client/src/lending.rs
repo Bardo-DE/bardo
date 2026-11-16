@@ -26,12 +26,14 @@ impl Lending {
     }
 
     /// What is set up now.
+    #[must_use]
     pub fn existing(&self) -> Existing {
         self.lender.existing()
     }
 
     /// Gives the switch `input` now; the returned work carries out what it asks for. A
     /// [`Notice::Recorded`] says when the setting may be written.
+    #[must_use]
     pub fn send(&self, input: SharingInput) -> Pending {
         self.dispatch(input)
     }

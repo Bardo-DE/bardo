@@ -111,7 +111,7 @@ fn candidates() -> impl Strategy<Value = Vec<PickCandidate>> {
 
 fn policy() -> impl Strategy<Value = Policy> {
     (any::<bool>(), 0u8..3).prop_map(|(local, floor)| Policy {
-        local_only: if local { true } else { false },
+        local_only: local,
         floors: match floor {
             0 => vec![],
             1 => vec![ClassFloor {
@@ -134,7 +134,7 @@ fn auto_policy() -> impl Strategy<Value = AutoPolicy> {
         } else {
             AutoEvict::IdleOnly
         },
-        show_reason: if off { false } else { true },
+        show_reason: !off,
     })
 }
 
@@ -199,7 +199,7 @@ proptest! {
                 .iter()
                 .find(|c| c.route.account == got.chosen.account && c.route.model == got.chosen.model)
                 .expect("a candidate");
-            prop_assert!(admitted.iter().any(|a| std::ptr::eq(*a, &found.route)));
+            prop_assert!(admitted.iter().any(|a| std::ptr::eq(*a, &raw const found.route)));
             prop_assert!(found.licence != LicenceClass::NonCommercial);
             prop_assert!(matches!(found.readiness, Readiness::Ready | Readiness::Loading | Readiness::Loadable));
             match &found.swap {

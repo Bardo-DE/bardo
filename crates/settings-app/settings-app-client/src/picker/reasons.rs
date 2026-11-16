@@ -19,6 +19,7 @@ impl fmt::Debug for ReasonFeed {
 
 impl ReasonFeed {
     /// A feed and the sender that fills it.
+    #[must_use]
     pub fn channel() -> (UnboundedSender<InferEvent>, ReasonFeed) {
         let (sender, receiver) = unbounded_channel();
         (sender, ReasonFeed(Arc::new(Mutex::new(Some(receiver)))))

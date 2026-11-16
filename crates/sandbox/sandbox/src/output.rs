@@ -15,6 +15,7 @@ pub struct Tail {
 
 impl Tail {
     /// An empty buffer that keeps `cap` bytes.
+    #[must_use]
     pub fn new(cap: usize) -> Self {
         Self {
             cap: cap.max(1),
@@ -40,6 +41,7 @@ impl Tail {
     }
 
     /// What is kept.
+    #[must_use]
     pub fn captured(&self) -> Captured {
         let over = self.bytes.len().saturating_sub(self.cap);
         Captured {
@@ -59,6 +61,7 @@ pub struct Shown {
 }
 
 /// `captured` as text within `limit` bytes.
+#[must_use]
 pub fn shown(captured: &Captured, limit: usize) -> Shown {
     let text = redact(&String::from_utf8_lossy(&captured.bytes));
     let mut start = text.len().saturating_sub(limit);

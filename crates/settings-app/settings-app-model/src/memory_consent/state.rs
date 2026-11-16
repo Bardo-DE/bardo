@@ -15,6 +15,7 @@ use std::path::Path;
 const MEMORY_FILE: &str = "memory/settings.toml";
 
 /// Whether `entry` is a memory setting, one that can wait for the person's confirmation.
+#[must_use]
 pub fn is_memory_setting(entry: &KeyEntry) -> bool {
     entry.file.relative() == Path::new(MEMORY_FILE)
 }
@@ -40,6 +41,7 @@ pub enum KeptValue {
 }
 
 /// The value memory keeps while `setting` waits, the way the row of `entry` reads it.
+#[must_use]
 pub fn kept_value(entry: &KeyEntry, setting: &WaitingSetting) -> KeptValue {
     let wire = setting.shipped.as_str();
     let value = entry.control.from_text(wire).ok();
@@ -64,6 +66,7 @@ pub struct SettingPair {
 
 impl SettingPair {
     /// The pair the person made by setting `entry` to `value`.
+    #[must_use]
     pub fn of(entry: &KeyEntry, value: &toml::Value) -> SettingPair {
         SettingPair {
             key: entry.spec.path.0.clone(),
@@ -86,6 +89,7 @@ pub enum Trouble {
 /// The pairs of `set` that memory reports as waiting with exactly that value: the ones the person
 /// just set that were looser than the shipped value, so saving them is the confirmation. A pair
 /// memory does not report waiting is not looser (or is already confirmed) and is left out.
+#[must_use]
 pub fn to_confirm(waiting: &[WaitingSetting], set: &[SettingPair]) -> Vec<SettingPair> {
     set.iter()
         .filter(|pair| {
@@ -148,16 +152,19 @@ impl ConsentState {
     }
 
     /// How far memory confines itself, as of the last read; unknown before one.
+    #[must_use]
     pub fn confinement(&self) -> Confinement {
         self.confinement
     }
 
     /// The value of `key` that waits, if one does.
+    #[must_use]
     pub fn waiting_for(&self, key: &str) -> Option<&WaitingSetting> {
         self.waiting.iter().find(|held| held.key == key)
     }
 
     /// Why the last confirmation of `key` failed, if it did.
+    #[must_use]
     pub fn trouble_for(&self, key: &str) -> Option<Trouble> {
         self.troubles.get(key).copied()
     }

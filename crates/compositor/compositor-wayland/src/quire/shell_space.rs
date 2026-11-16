@@ -79,21 +79,23 @@ pub fn on_space_target_new(
 }
 
 /// The rectangle of a `space_target_new`; none when it is empty (the request removes the tile).
+#[must_use]
 pub fn new_target_rect(x: i32, y: i32, width: u32, height: u32) -> Option<LogicalRect> {
     target_rect(x, y, width, height).ok()
 }
 
 /// The rectangle of a `space_target`, or why it is refused.
 pub fn target_rect(x: i32, y: i32, width: u32, height: u32) -> Result<LogicalRect, EmptyTarget> {
-    match width == 0 || height == 0 {
-        true => Err(EmptyTarget),
-        false => Ok(LogicalRect::new(
+    if width == 0 || height == 0 {
+        Err(EmptyTarget)
+    } else {
+        Ok(LogicalRect::new(
             LogicalPoint { x, y },
             LogicalSize {
                 w: width,
                 h: height,
             },
-        )),
+        ))
     }
 }
 

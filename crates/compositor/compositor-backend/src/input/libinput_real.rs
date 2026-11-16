@@ -87,7 +87,7 @@ impl RealInputFeed {
         handle
             .insert_source(
                 LibinputInputBackend::new(context.clone()),
-                move |event, _, _| into.borrow_mut().push_back(event),
+                move |event, (), _| into.borrow_mut().push_back(event),
             )
             .map_err(|error| InputError::Io(std::io::Error::other(error.error)))?;
         Ok(RealInputFeed {

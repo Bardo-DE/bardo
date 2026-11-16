@@ -26,6 +26,7 @@ pub struct FakeSpawner {
 
 impl FakeSpawner {
     /// A spawner with nothing started.
+    #[must_use]
     pub fn new() -> FakeSpawner {
         FakeSpawner::default()
     }

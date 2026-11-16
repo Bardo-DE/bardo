@@ -30,6 +30,7 @@ pub struct Budget {
 impl Budget {
     /// The budget at supervisor time `now`: `gpu` as last observed, `headroom` kept free beside
     /// an engine, and an engine used within `probe_every` counting as in a turn.
+    #[must_use]
     pub fn new(gpu: Option<GpuMemory>, headroom: MiB, now: MonoMs, probe_every: Duration) -> Self {
         Self {
             gpu,

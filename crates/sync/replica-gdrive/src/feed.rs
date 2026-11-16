@@ -409,10 +409,7 @@ impl<H: Http> GdriveReplica<H> {
         // The page's folders were remembered before its items, so a folder that moved out is
         // still in the tree, now under its new parent; one never seen is nothing to remove.
         let known = self.state().folders.folder(id).is_some();
-        match known {
-            true => self.gone(&id.0),
-            false => Vec::new(),
-        }
+        if known { self.gone(&id.0) } else { Vec::new() }
     }
 
     /// The path of the file `name` in the folder `parent`, below the dataset's folder; `None`

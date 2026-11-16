@@ -70,6 +70,7 @@ pub struct Rebuilt {
 impl Rebuilt {
     /// The roster: only agents still working or waiting, goals unknown after a restart (the
     /// goal text is not in the digest) and so shown as presence only.
+    #[must_use]
     pub fn roster(&self) -> Roster {
         let live = |s: RosterState| {
             matches!(

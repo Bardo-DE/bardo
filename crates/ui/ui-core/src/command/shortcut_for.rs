@@ -7,23 +7,27 @@ use super::shortcut_text::{KeyCap, arrow, split_caps};
 use keymap::{Action, Chord, Keymap, Platform};
 
 /// `chord` as `platform` shows it: `⇧⌘Z` on a Mac or our desktop, `Ctrl+Shift+Z` elsewhere.
+#[must_use]
 pub fn chord_text(platform: Platform, chord: &Chord) -> String {
     chord.display(platform)
 }
 
 /// The caps `chord` is drawn on for `platform`: the modifiers, then the key.
+#[must_use]
 pub fn chord_caps(platform: Platform, chord: &Chord) -> Vec<KeyCap> {
     caps_of(&chord_text(platform, chord))
 }
 
 /// `action` as `keymap`'s platform shows its first (best) chord in window content; `None` when
 /// the keymap binds it to nothing.
+#[must_use]
 pub fn shortcut_text_for(keymap: &Keymap, action: &Action) -> Option<String> {
     let chord = keymap.chords_of(action).into_iter().next()?;
     Some(chord_text(keymap.platform(), &chord))
 }
 
 /// The caps of [`shortcut_text_for`]; empty when the keymap binds `action` to nothing.
+#[must_use]
 pub fn shortcut_caps_for(keymap: &Keymap, action: &Action) -> Vec<KeyCap> {
     shortcut_text_for(keymap, action)
         .map(|text| caps_of(&text))

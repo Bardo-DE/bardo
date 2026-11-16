@@ -1,4 +1,4 @@
-//! The keyboard backlight: UPower's KbdBacklight level, as the control center draws it.
+//! The keyboard backlight: `UPower`'s `KbdBacklight` level, as the control center draws it.
 
 mod command;
 mod model;

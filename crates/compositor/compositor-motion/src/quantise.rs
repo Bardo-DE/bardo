@@ -4,6 +4,7 @@ use compositor_core::geometry::SubPx;
 
 /// `x` logical pixels in whole sub-pixels, rounded half away from zero; saturating at `i32`'s
 /// range, and 0 for NaN.
+#[must_use]
 pub fn quantise(x: f64) -> SubPx {
     SubPx((x * 120.0).round() as i32)
 }

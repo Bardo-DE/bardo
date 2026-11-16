@@ -88,7 +88,7 @@ fn finish<M: 'static>(ctx: &mut HostCtx<M>, generation: Generation, text: Option
 fn arm_timeout<M: 'static>(ctx: &mut HostCtx<M>, generation: Generation) {
     let armed = ctx
         .handle
-        .insert_source(Timer::from_duration(PASTE_TIMEOUT), move |_, _, ctx| {
+        .insert_source(Timer::from_duration(PASTE_TIMEOUT), move |_, (), ctx| {
             let running = ctx
                 .reading
                 .is_some_and(|reading| reading.generation == generation);

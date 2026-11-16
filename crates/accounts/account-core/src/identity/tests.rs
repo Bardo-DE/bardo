@@ -271,8 +271,8 @@ fn claimed_ids_are_printable_text_without_a_slash() {
     for (case, text, ok) in CLAIMS {
         assert_eq!(ClaimedId::parse(text).is_ok(), *ok, "{case}");
     }
-    assert!(ClaimedId::parse(&"a".repeat(255)).is_ok());
-    assert!(ClaimedId::parse(&"a".repeat(256)).is_err());
+    ClaimedId::parse(&"a".repeat(255)).unwrap();
+    ClaimedId::parse(&"a".repeat(256)).unwrap_err();
 }
 
 #[test]
@@ -284,7 +284,7 @@ fn claimed_ids_round_trip() {
         assert_eq!(json, serde_json::to_string(text).expect("json"));
         assert_eq!(serde_json::from_str::<ClaimedId>(&json).expect("id"), id);
     }
-    assert!(serde_json::from_str::<ClaimedId>(r#""usr/bin/foot""#).is_err());
+    serde_json::from_str::<ClaimedId>(r#""usr/bin/foot""#).unwrap_err();
 }
 
 #[test]

@@ -28,6 +28,7 @@ pub struct ColorManagement {
 
 impl ColorManagement {
     /// Binds the global at exactly `version` (1 or 2).
+    #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> ColorManagement {
         ColorManagement {
             manager: client
@@ -37,27 +38,32 @@ impl ColorManagement {
     }
 
     /// A parametric creator.
+    #[must_use]
     pub fn creator(&self, client: &TestClient) -> WpImageDescriptionCreatorParamsV1 {
         self.manager.create_parametric_creator(&client.qh(), H1Data)
     }
 
     /// An ICC creator (not served: the compositor answers with a protocol error).
+    #[must_use]
     pub fn icc_creator(&self, client: &TestClient) -> WpImageDescriptionCreatorIccV1 {
         self.manager.create_icc_creator(&client.qh(), H1Data)
     }
 
     /// The colour object of `output`.
+    #[must_use]
     pub fn output(&self, client: &TestClient, output: &WlOutput) -> WpColorManagementOutputV1 {
         self.manager.get_output(output, &client.qh(), H1Data)
     }
 
     /// The colour object of `surface`.
+    #[must_use]
     pub fn surface(&self, client: &TestClient, surface: &Surface) -> WpColorManagementSurfaceV1 {
         self.manager
             .get_surface(&surface.surface, &client.qh(), H1Data)
     }
 
     /// The feedback object of `surface`.
+    #[must_use]
     pub fn feedback(
         &self,
         client: &TestClient,
@@ -69,6 +75,7 @@ impl ColorManagement {
 }
 
 /// A description made from sRGB primaries and `transfer`, made ready (or not) by the compositor.
+#[must_use]
 pub fn describe(
     client: &TestClient,
     creator: WpImageDescriptionCreatorParamsV1,
@@ -81,6 +88,7 @@ pub fn describe(
 }
 
 /// The information object of `description`.
+#[must_use]
 pub fn information(
     client: &TestClient,
     description: &WpImageDescriptionV1,

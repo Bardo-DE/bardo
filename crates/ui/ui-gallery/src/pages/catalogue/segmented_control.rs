@@ -1,4 +1,4 @@
-//! SegmentedControl: SelectOne (the sliding thumb), SelectAny and Momentary at each size, with
+//! `SegmentedControl`: `SelectOne` (the sliding thumb), `SelectAny` and Momentary at each size, with
 //! image segments and a disabled segment.
 
 use crate::pages::{Section, Specimen};
@@ -7,7 +7,7 @@ use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The SegmentedControl section.
+/// The `SegmentedControl` section.
 #[component]
 pub fn SegmentedSection() -> Element {
     let mut one = use_signal(|| 1u8);

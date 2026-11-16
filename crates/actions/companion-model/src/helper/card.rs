@@ -56,6 +56,7 @@ impl HelperName {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -86,6 +87,7 @@ impl Role {
     }
 
     /// The role.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -120,6 +122,7 @@ pub enum HelperKind {
 
 impl HelperKind {
     /// The agent app this helper runs, when it is one.
+    #[must_use]
     pub fn program(&self) -> Option<&AgentProgram> {
         match self {
             HelperKind::Native => None,
@@ -206,6 +209,7 @@ pub enum HelperPhase {
 
 impl HelperState {
     /// Where the helper stands, without the detail.
+    #[must_use]
     pub fn phase(&self) -> HelperPhase {
         match self {
             HelperState::Idle => HelperPhase::Idle,
@@ -217,6 +221,7 @@ impl HelperState {
 
     /// Whether the helper may be given a job now. A helper waiting for a model is asked again
     /// each time: the person may have chosen one.
+    #[must_use]
     pub fn takes_jobs(&self) -> bool {
         matches!(self, HelperState::Idle | HelperState::Waiting(_))
     }
@@ -267,6 +272,7 @@ pub struct HelperCard {
 
 impl HelperCard {
     /// The card of a helper just confirmed: idle.
+    #[must_use]
     pub fn new(id: HelperId, draft: CardDraft) -> Self {
         Self {
             id,
@@ -282,6 +288,7 @@ impl HelperCard {
     }
 
     /// The job it is working on, if it is.
+    #[must_use]
     pub fn working_on(&self) -> Option<&TaskRef> {
         match &self.state {
             HelperState::Working(at) => Some(at),

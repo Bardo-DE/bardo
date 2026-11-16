@@ -3,7 +3,7 @@
 //! plain click does not; a double-click zooms; the green light zooms; a long press on it opens the
 //! tiling menu, whose Fill maximizes and whose placements the host cannot make are unavailable; a
 //! press on a light never starts a move; an edge resizes; a maximized window neither moves nor
-//! resizes and its green light restores; the lights are reached by Tab, ArrowDown opens the menu
+//! resizes and its green light restores; the lights are reached by Tab, `ArrowDown` opens the menu
 //! and Escape closes it.
 
 use dioxus::prelude::*;

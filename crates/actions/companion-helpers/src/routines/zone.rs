@@ -11,6 +11,7 @@ pub struct SystemZone;
 
 impl SystemZone {
     /// The zone at `at`, daylight saving included: UTC when `at` is beyond the calendar.
+    #[must_use]
     pub fn at(&self, at: UnixSeconds) -> Zone {
         DateTime::from_timestamp(at.0, 0).map_or(Zone::UTC, |utc| {
             Zone(

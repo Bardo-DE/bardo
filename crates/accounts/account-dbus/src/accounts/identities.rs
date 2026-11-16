@@ -29,6 +29,7 @@ pub const IDENTITY_KEY_NAME: &str = "name";
 pub const IDENTITY_KEY_KIND: &str = "kind";
 
 /// An identity as its id and a vardict of the rest (`(sa{sv})`).
+#[must_use]
 pub fn identity_to_dbus(identity: &Identity) -> (String, Details) {
     let fields = [
         (
@@ -163,7 +164,7 @@ mod tests {
             cut.remove(key);
             assert!(identity_from_dbus(&(id.clone(), cut)).is_err(), "{key}");
         }
-        assert!(identity_from_dbus(&("Not An Id".to_owned(), details.clone())).is_err());
+        identity_from_dbus(&("Not An Id".to_owned(), details.clone())).unwrap_err();
         let mut unnamed = details;
         unnamed.remove(IDENTITY_KEY_NAME);
         let read = identity_from_dbus(&(id, unnamed)).expect("identity");

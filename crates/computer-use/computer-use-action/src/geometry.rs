@@ -29,6 +29,7 @@ pub struct Point<S: CoordSpace> {
 }
 
 impl<S: CoordSpace> Point<S> {
+    #[must_use]
     pub fn new(x: Coord, y: Coord) -> Self {
         Self {
             x,
@@ -49,6 +50,7 @@ pub struct Size<S: CoordSpace> {
 }
 
 impl<S: CoordSpace> Size<S> {
+    #[must_use]
     pub fn new(w: Coord, h: Coord) -> Self {
         Self {
             w,
@@ -75,6 +77,7 @@ pub struct Length<S: CoordSpace> {
 }
 
 impl<S: CoordSpace> Length<S> {
+    #[must_use]
     pub fn new(coord: Coord) -> Self {
         Self {
             coord,
@@ -82,6 +85,7 @@ impl<S: CoordSpace> Length<S> {
         }
     }
 
+    #[must_use]
     pub fn coord(&self) -> Coord {
         self.coord
     }

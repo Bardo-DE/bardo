@@ -55,6 +55,7 @@ impl DesktopGroup {
     }
 
     /// The group's name: `Desktop Entry`, `Desktop Action new-window`.
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -67,6 +68,7 @@ impl DesktopGroup {
 
     /// The default value of `key`, its escapes taken (`\s`, `\n`, `\t`, `\r`, `\\`); none when the
     /// group has no default for it.
+    #[must_use]
     pub fn string(&self, key: &str) -> Option<Cow<'_, str>> {
         let raw = self.keys.get(key)?.default.as_deref()?;
         Some(unescape(raw))
@@ -74,6 +76,7 @@ impl DesktopGroup {
 
     /// The value of `key` for the first of `locales` it is translated into, else its default,
     /// escapes taken. `locales` run best first.
+    #[must_use]
     pub fn localized(&self, key: &str, locales: &[EntryLocale]) -> Option<Cow<'_, str>> {
         let raw = self.keys.get(key)?.pick(locales)?;
         Some(unescape(raw))
@@ -81,12 +84,14 @@ impl DesktopGroup {
 
     /// The items of the `;` list `key` holds, escapes taken (`\;` is a semicolon inside an item);
     /// empty items are dropped, and the list is empty when the key is missing.
+    #[must_use]
     pub fn list(&self, key: &str) -> Vec<String> {
         self.string_list(key, &[])
     }
 
     /// The `;` list `key` holds in the first of `locales` it is translated into, else its
     /// default (`Keywords[de]=...`).
+    #[must_use]
     pub fn localized_list(&self, key: &str, locales: &[EntryLocale]) -> Vec<String> {
         self.string_list(key, locales)
     }
@@ -101,6 +106,7 @@ impl DesktopGroup {
 
     /// `key` as a boolean: `true` and `false` are the only values the specification has. None
     /// when the key is missing or holds anything else.
+    #[must_use]
     pub fn boolean(&self, key: &str) -> Option<bool> {
         match self.keys.get(key)?.default.as_deref()? {
             "true" => Some(true),
@@ -111,6 +117,7 @@ impl DesktopGroup {
 
     /// Whether `key` is `true`; a missing or malformed boolean is false, which is the
     /// specification's default for every boolean key.
+    #[must_use]
     pub fn is_true(&self, key: &str) -> bool {
         self.boolean(key) == Some(true)
     }

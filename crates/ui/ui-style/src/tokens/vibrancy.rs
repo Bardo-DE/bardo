@@ -2,7 +2,7 @@
 //!
 //! macOS vibrancy saturates and brightens what shows through a material. Blitz can neither
 //! saturate nor filter what is behind a surface (spike S15, S16: no `backdrop-filter`, no
-//! `saturate()`), so the boost is precomputed into the tint colour instead: in OKLab, chroma is
+//! `saturate()`), so the boost is precomputed into the tint colour instead: in `OKLab`, chroma is
 //! raised by [`CHROMA_GAIN`] and, in the light scheme, lightness by [`LIGHT_LIFT`]. The dark
 //! scheme keeps its lightness so the light ink keeps its contrast. The boost is scaled at render
 //! time by the `--m-vibrancy` token (default 1) a look or the person's own sheet may set: 0 is the flat section 17.2 tint.
@@ -13,7 +13,7 @@ use ui_core::colour::{oklab::Oklab, srgb::Srgb};
 
 /// Chroma multiplier at full vibrancy: 1.4.
 pub const CHROMA_GAIN: f64 = 1.4;
-/// OKLab lightness added at full vibrancy in the light scheme: .012.
+/// `OKLab` lightness added at full vibrancy in the light scheme: .012.
 pub const LIGHT_LIFT: f64 = 0.012;
 
 /// `hex` with the vibrancy boost for `scheme` baked in.

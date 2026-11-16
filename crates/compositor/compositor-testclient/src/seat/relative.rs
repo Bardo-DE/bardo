@@ -1,4 +1,4 @@
-//! zwp_relative_pointer_v1: relative motion. Filled by P0-H4.
+//! `zwp_relative_pointer_v1`: relative motion. Filled by P0-H4.
 //!
 //! The relative pointer's events reach the transcript through the connection's tap.
 
@@ -30,6 +30,7 @@ impl Relative {
     }
 
     /// The relative pointer.
+    #[must_use]
     pub fn relative(&self) -> &ZwpRelativePointerV1 {
         &self.relative
     }

@@ -50,7 +50,7 @@ pub const SHELL_WAIT: Duration = Duration::from_secs(30);
 
 /// How long a program that was dismissed, or did not get an answer in time, is not asked
 /// again: a tool that retries in a loop must not nag.
-pub const REASK_AFTER: Duration = Duration::from_secs(10 * 60);
+pub const REASK_AFTER: Duration = Duration::from_mins(10);
 
 /// The most "not asked again" entries kept.
 pub const MAX_COOLDOWNS: usize = 64;

@@ -108,7 +108,7 @@ impl PointerGrab<State> for MenuPointerGrab {
                 let outside = event.state == ButtonState::Pressed
                     && !handle
                         .current_focus()
-                        .and_then(|(focus, _)| focus.wl_surface().map(|s| s.into_owned()))
+                        .and_then(|(focus, _)| focus.wl_surface().map(std::borrow::Cow::into_owned))
                         .is_some_and(|surface| {
                             in_menu(&data.wl.xdg_shell.popups, &self.root, &surface)
                         });

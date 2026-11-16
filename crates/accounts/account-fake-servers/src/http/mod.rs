@@ -40,6 +40,7 @@ pub struct Response {
 
 impl Request {
     /// A request with no headers or body.
+    #[must_use]
     pub fn new(method: &str, target: &str) -> Self {
         Self {
             method: method.to_owned(),
@@ -50,6 +51,7 @@ impl Request {
     }
 
     /// With a header.
+    #[must_use]
     pub fn with_header(mut self, name: &str, value: &str) -> Self {
         self.headers.push((name.to_owned(), value.to_owned()));
         self
@@ -62,6 +64,7 @@ impl Request {
     }
 
     /// With HTTP Basic credentials.
+    #[must_use]
     pub fn with_basic(self, user: &str, password: &str) -> Self {
         use base64::Engine;
         let token = base64::engine::general_purpose::STANDARD.encode(format!("{user}:{password}"));
@@ -69,6 +72,7 @@ impl Request {
     }
 
     /// The path without the query.
+    #[must_use]
     pub fn path(&self) -> &str {
         self.target.split_once('?').map_or(&self.target, |(p, _)| p)
     }
@@ -81,31 +85,37 @@ impl Request {
     }
 
     /// One query value.
+    #[must_use]
     pub fn query_value(&self, name: &str) -> Option<String> {
         pair(&self.query(), name)
     }
 
     /// The body as form-urlencoded pairs.
+    #[must_use]
     pub fn form(&self) -> Vec<(String, String)> {
         form_pairs(&self.body_text())
     }
 
     /// One form value.
+    #[must_use]
     pub fn form_value(&self, name: &str) -> Option<String> {
         pair(&self.form(), name)
     }
 
     /// The body as text.
+    #[must_use]
     pub fn body_text(&self) -> String {
         String::from_utf8_lossy(&self.body).into_owned()
     }
 
     /// A header by case-insensitive name.
+    #[must_use]
     pub fn header(&self, name: &str) -> Option<&str> {
         header_of(&self.headers, name)
     }
 
     /// The user and password of a Basic `Authorization`.
+    #[must_use]
     pub fn basic(&self) -> Option<(String, String)> {
         use base64::Engine;
         let value = self.header("authorization")?.strip_prefix("Basic ")?;
@@ -118,6 +128,7 @@ impl Request {
     }
 
     /// The token of a Bearer `Authorization`.
+    #[must_use]
     pub fn bearer(&self) -> Option<&str> {
         self.header("authorization")?.strip_prefix("Bearer ")
     }
@@ -125,6 +136,7 @@ impl Request {
 
 impl Response {
     /// An empty response.
+    #[must_use]
     pub fn new(status: u16) -> Self {
         Self {
             status,
@@ -134,6 +146,7 @@ impl Response {
     }
 
     /// A JSON response.
+    #[must_use]
     pub fn json(status: u16, value: &serde_json::Value) -> Self {
         Self::new(status).typed("application/json", value.to_string())
     }
@@ -147,27 +160,32 @@ impl Response {
     }
 
     /// A `302` to `location`.
+    #[must_use]
     pub fn redirect(location: &str) -> Self {
         Self::new(302).with_header("Location", location)
     }
 
     /// With a header.
+    #[must_use]
     pub fn with_header(mut self, name: &str, value: &str) -> Self {
         self.headers.push((name.to_owned(), value.to_owned()));
         self
     }
 
     /// A header by case-insensitive name.
+    #[must_use]
     pub fn header(&self, name: &str) -> Option<&str> {
         header_of(&self.headers, name)
     }
 
     /// The body as text.
+    #[must_use]
     pub fn text(&self) -> String {
         String::from_utf8_lossy(&self.body).into_owned()
     }
 
     /// The body as JSON.
+    #[must_use]
     pub fn json_body(&self) -> Option<serde_json::Value> {
         serde_json::from_slice(&self.body).ok()
     }
@@ -188,6 +206,7 @@ fn pair(pairs: &[(String, String)], name: &str) -> Option<String> {
 }
 
 /// `a=1&b=two%20words` as decoded pairs (`+` is a space, as in any form).
+#[must_use]
 pub fn form_pairs(text: &str) -> Vec<(String, String)> {
     form_urlencoded::parse(text.as_bytes())
         .map(|(k, v)| (k.into_owned(), v.into_owned()))
@@ -304,6 +323,7 @@ where
 }
 
 /// Accepts connections and answers each request with `handler`, over TLS when `tls` is given.
+///
 /// Runs until the future is dropped, which also ends every connection it is serving (a stopped
 /// fake does not go on answering a client that kept its connection open).
 pub async fn serve<H>(listener: Listener, tls: Option<TlsAcceptor>, handler: Arc<H>)

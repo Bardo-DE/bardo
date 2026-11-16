@@ -21,16 +21,19 @@ pub struct MediaTime(pub u64);
 
 impl MediaTime {
     /// A position `millis` milliseconds in, saturating at the largest representable time.
+    #[must_use]
     pub const fn from_millis(millis: u64) -> Self {
         MediaTime(millis.saturating_mul(1_000))
     }
 
     /// A position `secs` seconds in, saturating at the largest representable time.
+    #[must_use]
     pub const fn from_secs(secs: u64) -> Self {
         MediaTime(secs.saturating_mul(1_000_000))
     }
 
     /// The position in whole milliseconds, rounded down.
+    #[must_use]
     pub fn as_millis(self) -> u64 {
         self.0 / 1_000
     }
@@ -55,6 +58,7 @@ pub struct MediaLength(pub MediaTime);
 
 impl MediaLength {
     /// `at`, or the end of the recording when it is past it.
+    #[must_use]
     pub fn clamp(self, at: MediaTime) -> MediaTime {
         at.min(self.0)
     }
@@ -77,11 +81,13 @@ impl Volume {
     pub const FULL: Volume = Volume(Percent(100));
 
     /// `percent` clamped to at most 150. A stored volume above that loads as 150.
+    #[must_use]
     pub fn clamped(percent: Percent) -> Self {
         Volume(Percent(percent.0.min(Self::MAX.0.0)))
     }
 
     /// The volume as a percentage, always 0 to 150.
+    #[must_use]
     pub fn percent(self) -> Percent {
         self.0
     }
@@ -122,6 +128,7 @@ impl Speed {
     ];
 
     /// `thousandths` clamped into the range of speeds.
+    #[must_use]
     pub const fn from_thousandths(thousandths: u32) -> Self {
         if thousandths < Self::MIN.0 {
             Self::MIN
@@ -133,6 +140,7 @@ impl Speed {
     }
 
     /// The speed in thousandths of the recording's own.
+    #[must_use]
     pub const fn thousandths(self) -> u32 {
         self.0
     }
@@ -187,11 +195,13 @@ impl TimeRange {
     }
 
     /// Where the stretch begins.
+    #[must_use]
     pub fn start(self) -> MediaTime {
         self.start
     }
 
     /// Where it ends, or `None` for the end of the recording.
+    #[must_use]
     pub fn end(self) -> Option<MediaTime> {
         self.end
     }
@@ -214,16 +224,19 @@ impl Bitrate {
     pub const MAX: Bitrate = Bitrate(512);
 
     /// `kbps` clamped into 32 to 512.
+    #[must_use]
     pub fn from_kbps(kbps: u32) -> Self {
         Bitrate(kbps.clamp(Self::MIN.0, Self::MAX.0))
     }
 
     /// The rate in kilobits a second.
+    #[must_use]
     pub fn kbps(self) -> u32 {
         self.0
     }
 
     /// The rate in bits a second, which is what an encoder is told.
+    #[must_use]
     pub fn bits_per_second(self) -> u64 {
         u64::from(self.0) * 1000
     }

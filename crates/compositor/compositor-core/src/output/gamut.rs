@@ -78,13 +78,15 @@ impl Gamut {
     /// assert_eq!(Gamut::of(SRGB), Gamut::Srgb);
     /// assert_eq!(Gamut::of(DISPLAY_P3), Gamut::Wide(DISPLAY_P3));
     /// ```
+    #[must_use]
     pub fn of(primaries: Primaries) -> Gamut {
         let near = primaries.red.near(SRGB.red, SRGB_TOLERANCE)
             && primaries.green.near(SRGB.green, SRGB_TOLERANCE)
             && primaries.blue.near(SRGB.blue, SRGB_TOLERANCE);
-        match near {
-            true => Gamut::Srgb,
-            false => Gamut::Wide(primaries),
+        if near {
+            Gamut::Srgb
+        } else {
+            Gamut::Wide(primaries)
         }
     }
 }
@@ -97,6 +99,7 @@ impl Primaries {
     ///
     /// assert!(SRGB.is_usable() && DISPLAY_P3.is_usable());
     /// ```
+    #[must_use]
     pub fn is_usable(self) -> bool {
         let [r, g, b] = [self.red, self.green, self.blue].map(|p| (i64::from(p.x), i64::from(p.y)));
         (g.0 - r.0) * (b.1 - r.1) - (g.1 - r.1) * (b.0 - r.0) != 0
@@ -110,6 +113,7 @@ impl Primaries {
     ///
     /// assert_eq!(Primaries::from_edid(&[]), None);
     /// ```
+    #[must_use]
     pub fn from_edid(bytes: &[u8]) -> Option<Primaries> {
         let block = bytes.get(..BASE_BLOCK)?;
         if block[..8] != HEADER {

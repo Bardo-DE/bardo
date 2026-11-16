@@ -36,6 +36,7 @@ pub struct SyncStatus {
 
 impl SyncStatus {
     /// Whether data is moving now: a paused dataset moves nothing.
+    #[must_use]
     pub fn working(&self) -> bool {
         !self.paused && self.pending > 0
     }
@@ -52,6 +53,7 @@ impl SyncBook {
     }
 
     /// What the service said of `dataset`.
+    #[must_use]
     pub fn status_of(&self, dataset: &DatasetName) -> Option<&SyncStatus> {
         self.0.get(dataset)
     }
@@ -69,6 +71,7 @@ impl SyncBook {
 impl AccountService {
     /// The dataset the sync service keeps for this service of `account`; none for a service the
     /// sync service does not mirror.
+    #[must_use]
     pub fn dataset(&self, account: &AccountKey) -> Option<DatasetName> {
         SYNCED_KINDS
             .contains(&self.kind.as_str())
@@ -79,6 +82,7 @@ impl AccountService {
 impl Account {
     /// The datasets the sync service runs for the account: one per sync switch that is on, and
     /// one per mirrored service that is on.
+    #[must_use]
     pub fn datasets(&self) -> Vec<DatasetName> {
         let switches = self
             .sync

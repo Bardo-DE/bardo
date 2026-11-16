@@ -178,7 +178,7 @@ fn apply_sets_the_whole_configuration_at_once() {
 fn the_dummy_renderer_needs_the_testing_feature_and_the_others_start() {
     let mut pixman = config(&[]);
     pixman.renderer = SoftRenderer::Pixman;
-    assert!(HeadlessBackend::start(pixman).is_ok());
+    HeadlessBackend::start(pixman).unwrap();
     let mut dummy = config(&[]);
     dummy.renderer = SoftRenderer::Dummy;
     assert_eq!(

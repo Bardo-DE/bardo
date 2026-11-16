@@ -99,6 +99,7 @@ pub enum Manual {
 
 impl Manual {
     /// How the server speaks.
+    #[must_use]
     pub fn protocol(&self) -> Protocol {
         match self {
             Manual::Imap(_) => Protocol::Imap,
@@ -108,6 +109,7 @@ impl Manual {
     }
 
     /// The login name typed, when the person gave one.
+    #[must_use]
     pub fn login(&self) -> Option<&str> {
         match self {
             Manual::Imap(m) | Manual::Pop3(m) => m.login.as_deref(),
@@ -154,6 +156,7 @@ fn spec(kind: FieldKind, required: bool, prefill: Option<String>) -> FieldSpec {
 
 /// The form for `protocol`, its servers guessed from `domain` (the address's, when known) and
 /// every port the usual one for TLS.
+#[must_use]
 pub fn manual_form(protocol: Protocol, domain: Option<&str>) -> Vec<FieldSpec> {
     let guess = |label: &str| domain.map(|d| format!("{label}.{d}"));
     let mut fields = vec![spec(
@@ -214,6 +217,7 @@ const MANUAL_KINDS: [FieldKind; 10] = [
 /// password for an account that signs in by one). Nothing secret is prefilled: an empty password
 /// or token keeps the one the account has. The protocol stays the account's own
 /// ([`parse_as`]).
+#[must_use]
 pub fn edit_form(auth: AuthKind, current: &Manual, name: Option<&str>) -> Vec<FieldSpec> {
     let mut fields = Vec::new();
     if let Some(name) = name {
@@ -335,6 +339,7 @@ fn domain_hint(fields: &[FieldSpec]) -> Option<String> {
 /// port that is empty or one of the usual ones follows protocol and security (one the person
 /// typed otherwise stays). Everything else typed stays as the prefill. A form that is not the
 /// server form is returned as it is.
+#[must_use]
 pub fn refit(fields: &[FieldSpec], answers: &[FieldAnswer]) -> Vec<FieldSpec> {
     refit_in(fields, answers, PROTOCOL_CHOICES)
 }
@@ -385,9 +390,10 @@ fn refit_in(fields: &[FieldSpec], answers: &[FieldAnswer], choices: &[&str]) -> 
                     Some(security(field.kind).word().to_owned())
                 }
                 FieldKind::Port | FieldKind::OutgoingPort => {
-                    let direction = match field.kind == FieldKind::OutgoingPort {
-                        true => Direction::Outgoing,
-                        false => Direction::Incoming,
+                    let direction = if field.kind == FieldKind::OutgoingPort {
+                        Direction::Outgoing
+                    } else {
+                        Direction::Incoming
                     };
                     let kind = match direction {
                         Direction::Outgoing => FieldKind::OutgoingSecurity,
@@ -545,31 +551,28 @@ pub(crate) fn display_name(answers: &[FieldAnswer]) -> Result<Option<String>, Fi
 fn parse_in(answers: &[FieldAnswer], choices: &[&str]) -> Result<Manual, FieldProblem> {
     let typed = text(answers, FieldKind::Protocol).ok_or(missing(FieldKind::Protocol))?;
     let protocol = Protocol::offered(&typed, choices).ok_or(invalid(FieldKind::Protocol))?;
-    match protocol {
-        Protocol::Jmap => {
-            let session = session_url(answers)?;
-            let login = login(answers)?;
-            let token = secret(answers, FieldKind::Token);
-            Ok(Manual::Jmap(JmapServer {
-                session,
-                login,
-                token,
-            }))
-        }
-        _ => {
-            let incoming = hop(answers, protocol, Direction::Incoming)?;
-            let outgoing = hop(answers, protocol, Direction::Outgoing)?;
-            let login = login(answers)?;
-            let servers = MailServers {
-                incoming,
-                outgoing,
-                login,
-            };
-            Ok(match protocol {
-                Protocol::Pop3 => Manual::Pop3(servers),
-                _ => Manual::Imap(servers),
-            })
-        }
+    if protocol == Protocol::Jmap {
+        let session = session_url(answers)?;
+        let login = login(answers)?;
+        let token = secret(answers, FieldKind::Token);
+        Ok(Manual::Jmap(JmapServer {
+            session,
+            login,
+            token,
+        }))
+    } else {
+        let incoming = hop(answers, protocol, Direction::Incoming)?;
+        let outgoing = hop(answers, protocol, Direction::Outgoing)?;
+        let login = login(answers)?;
+        let servers = MailServers {
+            incoming,
+            outgoing,
+            login,
+        };
+        Ok(match protocol {
+            Protocol::Pop3 => Manual::Pop3(servers),
+            _ => Manual::Imap(servers),
+        })
     }
 }
 
@@ -580,6 +583,7 @@ fn parse_in(answers: &[FieldAnswer], choices: &[&str]) -> Result<Manual, FieldPr
 /// A form that asks for an AI server's address (`FieldKind::ServerUrl`) is checked for the
 /// address's shape only (a web address); whether plain `http` is for one of the person's own
 /// computers needs their list of computers, which this does not read: see [`form_problem_among`].
+#[must_use]
 pub fn form_problem(fields: &[FieldSpec], answers: &[FieldAnswer]) -> Option<FieldProblem> {
     problem_of(fields, answers, None)
 }
@@ -587,6 +591,7 @@ pub fn form_problem(fields: &[FieldSpec], answers: &[FieldAnswer]) -> Option<Fie
 /// [`form_problem`] with the person's computers on their tailnet known, so that an AI server's
 /// address is checked by the whole rule (`server_address`): `https`, or `http` for this computer
 /// or one of `own`. The sheet's machine asks this when the person sends the form.
+#[must_use]
 pub fn form_problem_among(
     fields: &[FieldSpec],
     answers: &[FieldAnswer],
@@ -611,9 +616,10 @@ fn problem_of(
     if let Some(problem) = server_problem(fields, answers, own) {
         return Some(problem);
     }
-    match is_manual(fields) {
-        true => parse_manual(answers).err(),
-        false => None,
+    if is_manual(fields) {
+        parse_manual(answers).err()
+    } else {
+        None
     }
 }
 

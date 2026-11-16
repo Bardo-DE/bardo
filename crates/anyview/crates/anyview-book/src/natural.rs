@@ -33,6 +33,7 @@ fn number_order(a: &str, b: &str) -> Ordering {
 
 /// How two entry names sort for reading: runs of digits by value, other text without regard to
 /// case, and the names themselves last so the order is total.
+#[must_use]
 pub fn natural_order(a: &str, b: &str) -> Ordering {
     let mut left = runs(a);
     let mut right = runs(b);

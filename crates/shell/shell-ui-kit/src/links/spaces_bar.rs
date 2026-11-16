@@ -51,6 +51,7 @@ impl Default for SpacesBarLink {
 
 impl SpacesBarLink {
     /// Down, following the Spaces of `desktop`, no click.
+    #[must_use]
     pub fn following(desktop: watch::Receiver<DesktopView>) -> SpacesBarLink {
         SpacesBarLink {
             feed: Shared::default(),
@@ -60,6 +61,7 @@ impl SpacesBarLink {
     }
 
     /// Down, with no Spaces (a desktop nobody writes) and no click.
+    #[must_use]
     pub fn new() -> SpacesBarLink {
         SpacesBarLink::following(watch::Sender::new(DesktopView::default()).subscribe())
     }
@@ -74,6 +76,7 @@ impl SpacesBarLink {
     }
 
     /// A receiver for the desktop whose Spaces the bar shows.
+    #[must_use]
     pub fn subscribe_desktop(&self) -> watch::Receiver<DesktopView> {
         self.desktop.clone()
     }
@@ -143,11 +146,13 @@ impl SpacesBarLink {
     }
 
     /// What the surfaces draw now.
+    #[must_use]
     pub fn latest(&self) -> SpacesBarFeed {
         self.feed.now()
     }
 
     /// A receiver for the surfaces to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<SpacesBarFeed> {
         self.feed.subscribe()
     }
@@ -158,11 +163,13 @@ impl SpacesBarLink {
     }
 
     /// The latest click.
+    #[must_use]
     pub fn last_pick(&self) -> Option<SpacesBarPicked> {
         self.picked.latest()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe_picks(&self) -> watch::Receiver<Option<SpacesBarPicked>> {
         self.picked.subscribe()
     }

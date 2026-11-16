@@ -1,5 +1,5 @@
 //! The connections of a mirror: every one is a relay accountd opens (`Tokens.OpenAuthenticated`)
-//! to the account's CalDAV or CardDAV endpoint, so syncd never holds the credential. The same
+//! to the account's `CalDAV` or `CardDAV` endpoint, so syncd never holds the credential. The same
 //! dial serves discovery's PROPFINDs and the collection replicas' sync-collection reports.
 //!
 //! The collection's URL is not under the endpoint's path in general (the endpoint is
@@ -17,6 +17,7 @@ use std::sync::Arc;
 use sync_core::Clock;
 
 /// The HTTP seam over relays to `endpoint`.
+#[must_use]
 pub fn pim_http<T: GrantsLink>(
     accounts: Arc<Grants<T>>,
     grant: GrantId,
@@ -29,6 +30,7 @@ pub fn pim_http<T: GrantsLink>(
 }
 
 /// The replica of the collection at `collection`, over relays to `endpoint`.
+#[must_use]
 pub fn pim_replica<T: GrantsLink>(
     accounts: Arc<Grants<T>>,
     grant: GrantId,

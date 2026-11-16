@@ -10,6 +10,7 @@ use crate::Absence;
 use crate::picker::Described;
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn accounts_step(
     state: AccountsState,
     input: AccountsInput,

@@ -350,7 +350,7 @@ async fn a_plan_that_is_not_the_one_the_person_saw_is_refused_and_nothing_is_wri
         Ok(Count(1))
     );
     let gone = restore_call(&session, 1, &plan.digest.0);
-    assert!(router.checkpoints_perform(gone).await.is_err());
+    router.checkpoints_perform(gone).await.unwrap_err();
 }
 
 #[tokio::test]

@@ -86,9 +86,10 @@ impl<H: Http> Ask<'_, H> {
             .body(body)
             .ok()?;
         let response = self.http.send(asked).await.ok()?;
-        match response.status().is_success() {
-            true => serde_json::from_slice(response.body()).ok(),
-            false => None,
+        if response.status().is_success() {
+            serde_json::from_slice(response.body()).ok()
+        } else {
+            None
         }
     }
 }
@@ -228,12 +229,13 @@ fn model_id(name: &str) -> Option<ModelId> {
     let slug: String = name
         .to_ascii_lowercase()
         .chars()
-        .map(
-            |c| match c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-') {
-                true => c,
-                false => '-',
-            },
-        )
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-') {
+                c
+            } else {
+                '-'
+            }
+        })
         .take(64)
         .collect();
     ModelId::parse(&slug).ok()

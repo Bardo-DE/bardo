@@ -46,6 +46,7 @@ pub struct MenuClient {
 
 impl MenuClient {
     /// The client of a window of `app`, with no subject reported.
+    #[must_use]
     pub fn unreported(app: &MenuApp) -> MenuClient {
         MenuClient::new(app, None)
     }
@@ -63,6 +64,7 @@ impl MenuClient {
 /// Whether `owner` is the program of `client`: when it is, the owner's menu is read and shown;
 /// when it is not, or cannot be shown to be, the app has no menu in the bar and an agent is
 /// refused it.
+#[must_use]
 pub fn menu_trust(owner: &MenuOwner, client: &MenuClient) -> bool {
     match (&client.reported, owner) {
         (_, MenuOwner::Unknown) => false,

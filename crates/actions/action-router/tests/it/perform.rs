@@ -556,8 +556,8 @@ async fn an_exhausted_budget_overrides_an_allow() {
     {
         let mut st = router.state.lock().expect("lock");
         let record = st.sessions.get_mut(&s.session).expect("session");
-        record.ledger.calls = router.config.budget.calls;
-    }
+        record.ledger.calls = router.config.budget.calls
+    };
     let refused = perform(&router, call("mail.thread.read", &["t1"], vec![]))
         .await
         .expect_err("budget");

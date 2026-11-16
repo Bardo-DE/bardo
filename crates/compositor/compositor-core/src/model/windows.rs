@@ -166,9 +166,12 @@ impl Model {
                 None => Moved::of(model),
             })
             .then(|model| model.redrawn(Cause::Close, outputs.clone()))
-            .then(move |model| match was_seen {
-                true => model.leave_when_bare(&outputs),
-                false => Moved::of(model),
+            .then(move |model| {
+                if was_seen {
+                    model.leave_when_bare(&outputs)
+                } else {
+                    Moved::of(model)
+                }
             })
     }
 
@@ -244,15 +247,17 @@ impl Model {
                 changed
             }
         };
-        let moved = match relayout {
-            true => model.redrawn(Cause::Configure, outputs),
-            false => Moved::of(model),
+        let moved = if relayout {
+            model.redrawn(Cause::Configure, outputs)
+        } else {
+            Moved::of(model)
         };
-        match announces {
-            true => moved
+        if announces {
+            moved
                 .then(|model| model.listed(id))
-                .then(|model| model.pip_joined(id)),
-            false => moved,
+                .then(|model| model.pip_joined(id))
+        } else {
+            moved
         }
     }
 

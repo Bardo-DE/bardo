@@ -6,6 +6,7 @@ use crate::search::Search;
 
 /// The pages the sidebar lists: all of them while the search box is empty, otherwise the ones
 /// with a hit or a name the query spells.
+#[must_use]
 pub fn visible_pages<'a>(catalogue: &'a Catalogue, search: &Search) -> Vec<&'a PageModel> {
     match search {
         Search::Idle => catalogue.pages.iter().collect(),
@@ -22,6 +23,7 @@ pub fn visible_pages<'a>(catalogue: &'a Catalogue, search: &Search) -> Vec<&'a P
 
 /// The page to show when `wanted` is asked for: `wanted` if it is listed, else
 /// the first page the query names, else the best hit's, else the first listed page.
+#[must_use]
 pub fn landing<'a>(
     visible: &[&'a PageModel],
     search: &Search,
@@ -35,6 +37,7 @@ pub fn landing<'a>(
 
 /// The page the window opens on when nothing asks for another: Appearance, the first page of how
 /// the desktop looks, else the first page listed.
+#[must_use]
 pub fn opening_page(catalogue: &Catalogue) -> Option<PageSlug> {
     let appearance = PageSlug::of(&ui_settings::schema::Page::Appearance);
     catalogue

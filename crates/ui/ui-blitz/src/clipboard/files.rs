@@ -49,16 +49,19 @@ impl ClipboardFiles {
     }
 
     /// Each path as a `file://` URI.
+    #[must_use]
     pub fn uris(&self) -> Vec<String> {
         self.paths.iter().map(|path| file_uri(path)).collect()
     }
 
     /// The `text/uri-list` form: one URI per line.
+    #[must_use]
     pub fn to_uri_list(&self) -> String {
         self.uris().join("\r\n")
     }
 
     /// The `x-special/gnome-copied-files` form: `copy` or `cut`, then one URI per line.
+    #[must_use]
     pub fn to_gnome_copied(&self) -> String {
         let op = match self.op {
             FileOp::Copy => "copy",
@@ -71,6 +74,7 @@ impl ClipboardFiles {
     }
 
     /// The `text/plain` form: one path per line.
+    #[must_use]
     pub fn to_text(&self) -> String {
         self.paths
             .iter()
@@ -81,12 +85,14 @@ impl ClipboardFiles {
 
     /// Read `text/uri-list` as a copy. `None` when it names no local file. Comment lines (`#`)
     /// and URIs that are not local `file://` ones are skipped.
+    #[must_use]
     pub fn from_uri_list(list: &str) -> Option<ClipboardFiles> {
         Self::collect(FileOp::Copy, list.lines())
     }
 
     /// Read `x-special/gnome-copied-files`: its first line is the operation. `None` when the
     /// first line is neither `copy` nor `cut`, or no local file follows.
+    #[must_use]
     pub fn from_gnome_copied(data: &str) -> Option<ClipboardFiles> {
         let mut lines = data.lines();
         let op = match lines.next()?.trim() {
@@ -167,15 +173,12 @@ fn decode(text: &str) -> Vec<u8> {
             .flatten()
             .and_then(|pair| std::str::from_utf8(pair).ok())
             .and_then(|pair| u8::from_str_radix(pair, 16).ok());
-        match escaped {
-            Some(decoded) => {
-                out.push(decoded);
-                at += 3;
-            }
-            None => {
-                out.push(byte);
-                at += 1;
-            }
+        if let Some(decoded) = escaped {
+            out.push(decoded);
+            at += 3;
+        } else {
+            out.push(byte);
+            at += 1;
         }
     }
     out

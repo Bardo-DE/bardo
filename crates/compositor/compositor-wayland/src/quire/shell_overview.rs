@@ -21,6 +21,7 @@ const OPEN: u32 = 1000;
 /// assert!(on_overview(Some(9), Some(1)).is_empty());
 /// assert!(on_overview(None, Some(1)).is_empty());
 /// ```
+#[must_use]
 pub fn on_overview(mode: Option<u32>, toggle: Option<u32>) -> Vec<Event> {
     mode.and_then(|code| OverviewMode::from_code(code).ok())
         .zip(toggle.and_then(|code| Toggle::from_code(code).ok()))

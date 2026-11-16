@@ -115,6 +115,7 @@ impl SpendRows {
     }
 
     /// Every row, for the schema: a pair for each account reached over the network.
+    #[must_use]
     pub fn schema(&self) -> Vec<KeySpec> {
         self.accounts
             .now()
@@ -134,11 +135,13 @@ impl SpendRows {
     }
 
     /// Whether `path` is one of these rows.
+    #[must_use]
     pub fn handles(&self, path: &str) -> bool {
         self.row_of(path).is_some()
     }
 
     /// The value of a row.
+    #[must_use]
     pub fn get<'a>(&'a self, path: &'a str) -> Boxed<'a, Result<toml::Value, LiveError>> {
         Box::pin(async move {
             let (id, row) = self
@@ -150,15 +153,17 @@ impl SpendRows {
     }
 
     /// A row is a read-out.
+    #[must_use]
     pub fn set<'a>(
         &'a self,
         path: &'a str,
         _value: toml::Value,
     ) -> Boxed<'a, Result<(), LiveError>> {
         Box::pin(async move {
-            match self.handles(path) {
-                true => Err(LiveError::NotPermitted("this row is a read-out".into())),
-                false => Err(LiveError::UnknownKey(path.to_owned())),
+            if self.handles(path) {
+                Err(LiveError::NotPermitted("this row is a read-out".into()))
+            } else {
+                Err(LiveError::UnknownKey(path.to_owned()))
             }
         })
     }

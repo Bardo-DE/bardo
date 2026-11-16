@@ -30,6 +30,7 @@ pub struct RowRef {
 
 impl RowRef {
     /// The reference to `item`.
+    #[must_use]
     pub fn of(item: &Item) -> RowRef {
         RowRef {
             provider: item.provider,
@@ -38,6 +39,7 @@ impl RowRef {
     }
 
     /// The row this refers to among `items`.
+    #[must_use]
     pub fn find<'a>(&self, items: &'a [Item]) -> Option<&'a Item> {
         items
             .iter()
@@ -46,6 +48,7 @@ impl RowRef {
 }
 
 /// The actions menu's entries for a row, each trailing its chord when it has one (H5).
+#[must_use]
 pub fn action_entries(actions: &[Action]) -> Vec<MenuItem<ActionId>> {
     actions
         .iter()
@@ -144,6 +147,7 @@ fn file_icon(path: &Path) -> Option<IconSource> {
 }
 
 /// The row's glyph: the quire icon it names, else its provider's.
+#[must_use]
 pub fn glyph(item: &Item) -> Icon {
     match &item.icon {
         IconRef::Glyph(name) => named(name).unwrap_or_else(|| face(item.provider).glyph),
@@ -153,6 +157,7 @@ pub fn glyph(item: &Item) -> Icon {
 
 /// The quire icon whose kebab-case name is `name` (`power`, `wifi-low`), as `IconRef::Glyph`
 /// carries it. quire has no name lookup, so the variant's own name is kebab-cased.
+#[must_use]
 pub fn named(name: &str) -> Option<Icon> {
     Icon::ALL
         .iter()

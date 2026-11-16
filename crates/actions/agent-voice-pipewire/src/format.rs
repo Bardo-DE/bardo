@@ -1,4 +1,4 @@
-//! The stream format PipeWire is asked for: mono S16LE at one rate.
+//! The stream format `PipeWire` is asked for: mono S16LE at one rate.
 
 use pipewire as pw;
 use pw::spa;

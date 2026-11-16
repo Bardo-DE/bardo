@@ -36,6 +36,7 @@ pub struct EnergyGate {
 }
 
 impl EnergyGate {
+    #[must_use]
     pub fn new(params: EnergyGateParams) -> Self {
         Self {
             params,
@@ -43,6 +44,7 @@ impl EnergyGate {
         }
     }
 
+    #[must_use]
     pub fn params(&self) -> &EnergyGateParams {
         &self.params
     }

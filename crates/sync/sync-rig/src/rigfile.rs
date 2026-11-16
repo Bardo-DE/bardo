@@ -27,6 +27,7 @@ pub struct RigFile {
 
 impl RigFile {
     /// The path of the file under `dir`.
+    #[must_use]
     pub fn path(dir: &Path) -> PathBuf {
         dir.join(FILE)
     }

@@ -122,11 +122,12 @@ fn trusted_value(turns: &[UserTurn], text: &str) -> Option<TrustedPattern> {
     if !addressed_by_person(turns, text) {
         return None;
     }
-    match text.contains('@') && !text.starts_with('@') {
-        true => Some(TrustedPattern::Exact(Value::Text(text.to_owned()))),
-        false => Some(TrustedPattern::Domain(
+    if text.contains('@') && !text.starts_with('@') {
+        Some(TrustedPattern::Exact(Value::Text(text.to_owned())))
+    } else {
+        Some(TrustedPattern::Domain(
             text.trim_start_matches('@').to_owned(),
-        )),
+        ))
     }
 }
 

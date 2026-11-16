@@ -66,6 +66,7 @@ impl LeaseBook {
 
     /// The book after the holder's input is stopped or restarted. A run that holds nothing
     /// changes nothing.
+    #[must_use]
     pub fn set_state(&self, run: &RunId, state: SlotState) -> LeaseBook {
         let slots = self
             .slots
@@ -86,6 +87,7 @@ impl LeaseBook {
     }
 
     /// The book after `run` lets go of its window.
+    #[must_use]
     pub fn release(&self, run: &RunId) -> LeaseBook {
         LeaseBook {
             slots: self
@@ -98,6 +100,7 @@ impl LeaseBook {
     }
 
     /// The run holding `window`, if any.
+    #[must_use]
     pub fn holder(&self, window: &ToplevelIdent) -> Option<&RunId> {
         self.slots.get(window).map(|slot| &slot.run)
     }

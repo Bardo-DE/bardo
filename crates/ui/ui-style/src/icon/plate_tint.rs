@@ -4,7 +4,7 @@
 //! plate is drawn by the stylesheet from the family's stops: in dark mode a Monochrome dock
 //! showed a tinted glyph on the untinted `#2A2E28` paper. A consumer cannot restyle `.ds-plate`
 //! (`Rule::DsInternals`) or write the colours inline (`Rule::HexColour`), so the plate takes
-//! the style itself: its two stops and its ink go through the same OKLCh rule as the raster
+//! the style itself: its two stops and its ink go through the same `OKLCh` rule as the raster
 //! ([`super::retint::recolour`], one implementation), for both schemes, and are handed to the
 //! stylesheet as custom properties on the plate (`--plate-base-l` ... `--plate-ink-d`), which the
 //! sheet reads under the root's `data-theme`, as a Space dot's `--dot-c*` are.
@@ -28,6 +28,7 @@ pub enum PlateTint {
 impl PlateTint {
     /// The plate's re-colouring for `style` and `tint`, the pair bardo-shell already hands `retint`:
     /// `None` for Colour, which draws the family as designed.
+    #[must_use]
     pub fn of(style: IconStyle, tint: Tint) -> Option<PlateTint> {
         match style {
             IconStyle::Colour => None,
@@ -37,6 +38,7 @@ impl PlateTint {
     }
 
     /// The `data-icon-style` word the stylesheet selects the tinted stops by.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             PlateTint::Muted => "muted",
@@ -69,6 +71,7 @@ pub struct PlateStops {
 impl PlateStops {
     /// The family as the stylesheet draws it in `scheme`: only the neutral plate changes in the
     /// dark (design/08 section 4.1).
+    #[must_use]
     pub fn of(family: PlateFamily, scheme: Scheme) -> PlateStops {
         if let (PlateFamily::Neutral, Scheme::Dark) = (family, scheme) {
             let (base, deep, ink) = NEUTRAL_DARK;
@@ -84,6 +87,7 @@ impl PlateStops {
 
     /// These stops and ink re-coloured by `tint` for `scheme`: in the dark the stops are lifted
     /// into the plate's tone band and the ink into the art's (design/29-SIZING.md fix F3).
+    #[must_use]
     pub fn tinted_in(self, tint: PlateTint, scheme: Scheme) -> PlateStops {
         PlateStops {
             base: tint.recolour(self.base, scheme, Tone::Plate),
@@ -109,6 +113,7 @@ pub(crate) const PLATE_TINT_VARS: [[VarName; 3]; 2] = [
 
 /// The inline declarations of `family` tinted by `tint`, both schemes:
 /// `--plate-base-l:#…;…;--plate-ink-d:#…;`.
+#[must_use]
 pub fn tint_style(family: PlateFamily, tint: PlateTint) -> String {
     Scheme::ALL
         .iter()

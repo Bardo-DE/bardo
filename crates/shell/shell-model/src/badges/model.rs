@@ -1,4 +1,4 @@
-//! Badges' state and the LauncherEntry app URI.
+//! Badges' state and the `LauncherEntry` app URI.
 
 use std::collections::BTreeMap;
 
@@ -13,7 +13,7 @@ pub struct Badges {
     pub apps: BTreeMap<AppId, Badge>,
 }
 
-/// One app's LauncherEntry properties. The count and progress are kept even while hidden, as
+/// One app's `LauncherEntry` properties. The count and progress are kept even while hidden, as
 /// the protocol sends value and visibility separately.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Badge {
@@ -28,11 +28,13 @@ pub struct Badge {
 
 impl Badge {
     /// The count to draw: visible and above zero.
+    #[must_use]
     pub fn shown_count(&self) -> Option<u64> {
         (self.count_visibility == Visibility::Shown && self.count > 0).then_some(self.count)
     }
 
     /// The progress to draw, when visible.
+    #[must_use]
     pub fn shown_progress(&self) -> Option<Permille> {
         (self.progress_visibility == Visibility::Shown).then_some(self.progress)
     }
@@ -47,6 +49,7 @@ pub const APP_ID_MAX_BYTES: usize = 128;
 
 /// The desktop id an `app_uri` names: `application://org.gnome.Nautilus.desktop` is
 /// `org.gnome.Nautilus`. Another scheme, an empty id, or one longer than [`APP_ID_MAX_BYTES`] is `None`.
+#[must_use]
 pub fn parse_app_uri(uri: &str) -> Option<AppId> {
     let rest = uri.strip_prefix("application://")?;
     let id = rest.strip_suffix(".desktop").unwrap_or(rest);

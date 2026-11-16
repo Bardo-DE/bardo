@@ -43,6 +43,7 @@ pub struct CallFacts {
 impl StandingScope {
     /// Whether this scope covers the call: the same action, and every argument inside the scope.
     /// A call with no path, command or recipient is never covered by a scope that names one.
+    #[must_use]
     pub fn covers(&self, call: &CallFacts) -> bool {
         if self.action() != &call.action {
             return false;
@@ -77,6 +78,7 @@ fn all_cover(items: impl IntoIterator<Item = bool>) -> bool {
 
 impl StandingGrant {
     /// Whether this grant covers the call made by `caller`. A grant belongs to one caller only.
+    #[must_use]
     pub fn covers(&self, caller: &GrantCaller, call: &CallFacts) -> bool {
         if &self.caller == caller {
             self.scope.covers(call)
@@ -88,6 +90,7 @@ impl StandingGrant {
 
 /// The first of `grants` that covers the call made by `caller` to an action of this `effect`. A
 /// reads grant stands only for a read: if the action ever declares more, it covers nothing.
+#[must_use]
 pub fn find_standing_for<'a>(
     grants: &'a [StandingGrant],
     caller: &GrantCaller,

@@ -19,6 +19,7 @@ pub struct Notice {
 }
 
 /// What the person is told about `needing`.
+#[must_use]
 pub fn notice_text(needing: &NeedsSignIn) -> Notice {
     match needing.ask {
         SignInAsk::Again => Notice {
@@ -41,12 +42,14 @@ pub fn notice_text(needing: &NeedsSignIn) -> Notice {
 
 /// What the person is told when an agent account's sign-in has no app to run it: the app that runs
 /// the agent is the one to open.
+#[must_use]
 pub fn no_launcher_text(label: &str) -> String {
     format!("Open the app that runs {label} to sign in")
 }
 
 /// The action key of the button that signs `account` in again: it carries the account, so the
 /// answer to the button needs no memory of what was posted.
+#[must_use]
 pub fn sign_in_key(account: &AccountKey) -> ActionKey {
     ActionKey(format!("{KEY_PREFIX}{}", account.as_str()))
 }
@@ -60,6 +63,7 @@ pub fn account_of(key: &ActionKey) -> Option<AccountKey> {
 }
 
 /// The sign-in notice for `account` already held, banner or history.
+#[must_use]
 pub fn shown_for(notes: &NotesState, account: &AccountKey) -> Option<NotificationId> {
     shown_with_action(notes, NOTICE_ENTRY, &sign_in_key(account))
 }

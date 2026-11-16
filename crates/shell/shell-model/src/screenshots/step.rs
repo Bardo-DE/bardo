@@ -10,6 +10,7 @@ use super::{Shot, ShotEffect, ShotEvent, ShotId, ShotLeave, ShotPreview, Shots, 
 /// current is ignored (a watch sees both the create and the close). A preview answer for a shot
 /// no longer current is dropped. `Left` of the current shot clears it and asks for `Open` or
 /// `Trash` as the reason says; of any other id, nothing. `Take` while `Running` is ignored.
+#[must_use]
 pub fn step(shots: Shots, event: ShotEvent) -> (Shots, Vec<ShotEffect>) {
     match event {
         ShotEvent::Appeared(path) => appeared(shots, path),

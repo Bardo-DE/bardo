@@ -66,6 +66,7 @@ fn missing_with_ancestors(
 /// its ancestors, so the kept nodes are still a tree. The kept nodes keep their order, the
 /// dropped ones are counted in `truncated` (added to what an earlier pruning dropped). A budget
 /// that already fits changes nothing; a budget of zero keeps the root alone.
+#[must_use]
 pub fn prune(snapshot: &A11ySnapshot, budget: NodeBudget) -> A11ySnapshot {
     let limit = usize::try_from(budget.0).unwrap_or(usize::MAX).max(1);
     if snapshot.nodes.len() <= limit {
@@ -106,6 +107,7 @@ pub fn prune(snapshot: &A11ySnapshot, budget: NodeBudget) -> A11ySnapshot {
 
 /// What changed from `before` to `after`, by node id, each list in the order of the snapshot it
 /// comes from.
+#[must_use]
 pub fn diff(before: &A11ySnapshot, after: &A11ySnapshot) -> TreeDiff {
     let old: BTreeMap<NodeId, &A11yNode> = before.nodes.iter().map(|n| (n.id, n)).collect();
     let new: BTreeMap<NodeId, &A11yNode> = after.nodes.iter().map(|n| (n.id, n)).collect();
@@ -133,6 +135,7 @@ pub fn diff(before: &A11ySnapshot, after: &A11ySnapshot) -> TreeDiff {
 
 /// The regions of secret nodes (marked secret, or a password entry), window-local, as mask
 /// hints for `maskcap`, in tree order.
+#[must_use]
 pub fn secret_rects(snapshot: &A11ySnapshot) -> Vec<Rect<WindowSpace>> {
     secret_rects_of(&snapshot.nodes)
 }
@@ -162,6 +165,7 @@ fn step_matches(step: &SelectorStep, node: &A11yNode) -> bool {
 /// Which nodes `selector` names: the first step must match the window root, each later step a
 /// child of what the one before matched. An empty path names nothing. Slots name nothing here
 /// (their values arrive at replay).
+#[must_use]
 pub fn resolve(snapshot: &A11ySnapshot, selector: &NodeSelector) -> Resolution {
     let Some((first, rest)) = selector.path.split_first() else {
         return Resolution::None;

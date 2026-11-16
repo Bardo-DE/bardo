@@ -74,6 +74,7 @@ pub enum AppVisibility {
 
 impl AppLife {
     /// The life as the wire names it.
+    #[must_use]
     pub fn kind(&self) -> AppLifeKind {
         match self {
             AppLife::Launching { .. } => AppLifeKind::Launching,

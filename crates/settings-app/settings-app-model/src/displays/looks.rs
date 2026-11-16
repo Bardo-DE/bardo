@@ -50,6 +50,7 @@ fn density(pixels: PixelSize, size: Option<Millimetres>) -> Option<u32> {
 
 /// The scale the display looks right at: the one that brings its density nearest
 /// [`COMFORTABLE_PPI`], and 1 for a display that does not say how big it is.
+#[must_use]
 pub fn default_scale(display: &Monitor) -> ScaleMilli {
     let Some(mode) = display.current else {
         return ScaleMilli(SCALES[0]);
@@ -67,6 +68,7 @@ pub fn default_scale(display: &Monitor) -> ScaleMilli {
 }
 
 /// The resolutions the display can look like, the widest first. The default is among them.
+#[must_use]
 pub fn looks_like(display: &Monitor) -> Vec<LooksLike> {
     let Some(mode) = display.current else {
         return Vec::new();

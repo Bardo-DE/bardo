@@ -84,11 +84,13 @@ impl<K: Clone + PartialEq + 'static> Copy for Roster<K> {}
 
 impl<K: Clone + PartialEq + 'static> Roster<K> {
     /// The rows to draw, leaving and healing ones included.
+    #[must_use]
     pub fn entries(&self) -> Vec<RosterEntry<K>> {
         self.machine.state().read().entries().to_vec()
     }
 
     /// The book rows record their measured heights in, for the rows below to heal by.
+    #[must_use]
     pub fn pitches(&self) -> Pitches<K> {
         self.pitches
     }
@@ -136,6 +138,7 @@ impl<K: Clone + PartialEq + 'static> Roster<K> {
 /// goes missing leaves as `spec.leave` says (keys missing at once are one batch). The reconcile
 /// happens in the render, so the rows to draw are right in the render that lists them; the
 /// settle timers are the machine's wake, started after the render.
+#[must_use]
 pub fn use_roster<K: Clone + PartialEq + 'static>(keys: Vec<K>, spec: RosterSpec<K>) -> Roster<K> {
     let roster = use_roster_from(&keys, spec);
     roster.list_from_render(keys);

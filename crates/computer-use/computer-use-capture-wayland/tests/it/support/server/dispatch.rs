@@ -8,7 +8,7 @@ impl GlobalDispatch<ExtForeignToplevelListV1, ()> for Compositor {
         dh: &DisplayHandle,
         client: &Client,
         resource: New<ExtForeignToplevelListV1>,
-        _: &(),
+        (): &(),
         init: &mut DataInit<'_, Self>,
     ) {
         let list = init.init(resource, ());
@@ -37,7 +37,7 @@ impl Dispatch<ExtForeignToplevelListV1, ()> for Compositor {
         _: &Client,
         _: &ExtForeignToplevelListV1,
         _: ext_foreign_toplevel_list_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         _: &mut DataInit<'_, Self>,
     ) {
@@ -63,7 +63,7 @@ impl GlobalDispatch<ExtForeignToplevelImageCaptureSourceManagerV1, ()> for Compo
         _: &DisplayHandle,
         _: &Client,
         resource: New<ExtForeignToplevelImageCaptureSourceManagerV1>,
-        _: &(),
+        (): &(),
         init: &mut DataInit<'_, Self>,
     ) {
         init.init(resource, ());
@@ -76,7 +76,7 @@ impl Dispatch<ExtForeignToplevelImageCaptureSourceManagerV1, ()> for Compositor 
         _: &Client,
         _: &ExtForeignToplevelImageCaptureSourceManagerV1,
         request: ext_foreign_toplevel_image_capture_source_manager_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -113,7 +113,7 @@ impl GlobalDispatch<ExtImageCopyCaptureManagerV1, ()> for Compositor {
         _: &DisplayHandle,
         _: &Client,
         resource: New<ExtImageCopyCaptureManagerV1>,
-        _: &(),
+        (): &(),
         init: &mut DataInit<'_, Self>,
     ) {
         init.init(resource, ());
@@ -126,7 +126,7 @@ impl Dispatch<ExtImageCopyCaptureManagerV1, ()> for Compositor {
         _: &Client,
         _: &ExtImageCopyCaptureManagerV1,
         request: ext_image_copy_capture_manager_v1::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {
@@ -184,7 +184,7 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, FrameData> for Compositor {
         use ext_image_copy_capture_frame_v1::Request;
         match request {
             Request::AttachBuffer { buffer } => {
-                *data.buffer.lock().expect("frame lock") = Some(buffer)
+                *data.buffer.lock().expect("frame lock") = Some(buffer);
             }
             Request::Capture => state.capture(frame, data),
             _ => {}
@@ -198,7 +198,7 @@ impl GlobalDispatch<WlShm, ()> for Compositor {
         _: &DisplayHandle,
         _: &Client,
         resource: New<WlShm>,
-        _: &(),
+        (): &(),
         init: &mut DataInit<'_, Self>,
     ) {
         init.init(resource, ());
@@ -211,7 +211,7 @@ impl Dispatch<WlShm, ()> for Compositor {
         _: &Client,
         _: &WlShm,
         request: wl_shm::Request,
-        _: &(),
+        (): &(),
         _: &DisplayHandle,
         init: &mut DataInit<'_, Self>,
     ) {

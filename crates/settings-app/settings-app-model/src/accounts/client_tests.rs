@@ -1,9 +1,9 @@
 //! The sign-in keys and secrets: a secret waits for its key, is never kept, and is written only
 //! when something was typed.
 
-use base_secret::SecretText;
 use super::flow_tests::{ready_with, spec, state_of};
 use super::*;
+use base_secret::SecretText;
 use ui_settings::schema::{KeyKind, KeyPath, KeySpec};
 
 fn google_keys() -> Vec<KeySpec> {
@@ -166,7 +166,7 @@ fn a_secret_never_prints_in_a_debug_line() {
         format!("{:?}", ClientText::Secret(SecretText::new(TEXT))),
         format!("{input:?}"),
         format!("{effects:?}"),
-        format!("{:#?}", effects),
+        format!("{effects:#?}"),
     ] {
         assert!(!line.contains("hunter2"), "{line}");
         assert!(line.contains("<redacted>"), "{line}");

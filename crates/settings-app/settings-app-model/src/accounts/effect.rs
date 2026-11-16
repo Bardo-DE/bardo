@@ -4,8 +4,8 @@ use super::add_account::AddEnd;
 use super::model::AccountKey;
 use super::module::{ModuleId, ModuleRow};
 use super::reauth_end::ReauthEnd;
-use base_secret::SecretText;
 use super::sign_out::SignOutEnd;
+use base_secret::SecretText;
 
 /// What the caller must do.
 #[derive(Debug, Clone, PartialEq)]

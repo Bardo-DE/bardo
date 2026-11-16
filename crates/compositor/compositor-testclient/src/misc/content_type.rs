@@ -16,6 +16,7 @@ pub struct ContentTypes {
 
 impl ContentTypes {
     /// Binds the global (version 1).
+    #[must_use]
     pub fn bind(client: &TestClient) -> ContentTypes {
         ContentTypes {
             manager: client
@@ -25,6 +26,7 @@ impl ContentTypes {
     }
 
     /// The content-type object of `surface`.
+    #[must_use]
     pub fn for_surface(&self, client: &TestClient, surface: &Surface) -> WpContentTypeV1 {
         self.manager
             .get_surface_content_type(&surface.surface, &client.qh(), H1Data)

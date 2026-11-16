@@ -6,6 +6,7 @@ use shell_model::units::{Minutes, Presence};
 use shell_model::volume::Volume;
 
 /// The volume menu's heading: the sink, or that there is none.
+#[must_use]
 pub fn volume_heading(volume: &Volume) -> String {
     match volume.presence {
         Presence::Present if volume.sink.is_empty() => "Output".to_owned(),
@@ -15,6 +16,7 @@ pub fn volume_heading(volume: &Volume) -> String {
 }
 
 /// The network menu's two lines: the connection and the connectivity.
+#[must_use]
 pub fn network_lines(network: &Network) -> [String; 2] {
     let link = match &network.link {
         Link::Disconnected => "Not connected".to_owned(),
@@ -34,6 +36,7 @@ pub fn network_lines(network: &Network) -> [String; 2] {
 }
 
 /// The battery menu's two lines: the level and state, and the time left.
+#[must_use]
 pub fn battery_lines(battery: &Battery) -> [String; 2] {
     let state = match battery.charge {
         Charge::Charging => "charging",

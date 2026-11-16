@@ -1,4 +1,4 @@
-//! ReviewServices: what the sign-in found, before anything is stored (design/31 section 5.6): each
+//! `ReviewServices`: what the sign-in found, before anything is stored (design/31 section 5.6): each
 //! service with a switch, or why the provider has none, and the last button. When an app's chooser
 //! sent the person here the button reads "Add, and allow Mail to use it": one grant, not a second
 //! prompt (design/31 section 4.5). The switches are the host's.
@@ -38,7 +38,7 @@ pub fn ReviewServices(
                     Accessory::Toggle {
                         value,
                         on_toggle: EventHandler::new(move |next| {
-                            on_toggle.call((key.clone(), next))
+                            on_toggle.call((key.clone(), next));
                         }),
                     },
                     line.limit.map(limitation),

@@ -29,6 +29,7 @@ pub use apply::apply;
 /// Exits 2 on words it refuses, 3 when Landlock fails in a way that is not "not available", and
 /// 127 when the program cannot be started.
 #[cfg(all(target_os = "linux", feature = "landlock"))]
+#[must_use]
 pub fn enter_main(name: &str) -> std::process::ExitCode {
     use std::os::unix::process::CommandExt;
     use std::process::{Command, ExitCode};

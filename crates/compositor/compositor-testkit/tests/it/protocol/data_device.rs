@@ -147,7 +147,7 @@ fn drag_and_drop_into_a_layer_surface() {
     assert!(saw(fixture.client(target), "wl_data_device#", "drop"));
 }
 
-/// wl_data_device.drop: the offer introduced at enter stays the client's to read until it
+/// `wl_data_device.drop`: the offer introduced at enter stays the client's to read until it
 /// finishes it, so the drop is not followed by `leave` (which tells a client to destroy it).
 #[test]
 fn a_drop_is_not_followed_by_leave() {

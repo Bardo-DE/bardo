@@ -26,6 +26,7 @@ pub struct ModelRef {
 impl ModelRef {
     /// The model written `account/model`, the form a settings row uses; `None` when it is not
     /// two ids joined by one slash.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         let (account, model) = text.split_once('/')?;
         Some(Self {
@@ -48,6 +49,7 @@ pub const AGENT_ACCOUNT: &str = "agent";
 
 impl ModelRef {
     /// The choice of the coding agent listed as `program`; `None` when the name is not an id.
+    #[must_use]
     pub fn agent(program: &str) -> Option<Self> {
         Some(Self {
             account: AccountId::parse(AGENT_ACCOUNT).ok()?,
@@ -56,11 +58,13 @@ impl ModelRef {
     }
 
     /// The agent's program name, when this names a coding agent rather than a model.
+    #[must_use]
     pub fn agent_program(&self) -> Option<&str> {
         (self.account.as_str() == AGENT_ACCOUNT).then(|| self.model.as_str())
     }
 
     /// Whether this names a coding agent.
+    #[must_use]
     pub fn is_agent(&self) -> bool {
         self.agent_program().is_some()
     }
@@ -68,6 +72,7 @@ impl ModelRef {
 
 /// The label a settings page draws for a tier. The key segment stays `best` (a name for a slot,
 /// kept for compatibility), but the label says what the slot is for and ranks nothing.
+#[must_use]
 pub fn tier_label(tier: Tier) -> &'static str {
     match tier {
         Tier::Fast => "Fast",
@@ -128,6 +133,7 @@ pub struct TierMap {
 
 impl TierMap {
     /// Automatic for `kind` at every tier, choosing among `pool`, and nothing else chosen.
+    #[must_use]
     pub fn automatic(kind: Slot, pool: Vec<ModelRef>) -> Self {
         Self {
             rows: Vec::new(),
@@ -150,6 +156,7 @@ impl TierMap {
     /// This map with `model` named for `kind` at every tier: the rows and Automatic rows the
     /// map had for `kind` give way, so a session's own model is a named choice like the
     /// person's, never overridden and never replaced by a fallback.
+    #[must_use]
     pub fn naming(&self, kind: Slot, model: ModelRef) -> Self {
         let named = [Tier::Fast, Tier::Balanced, Tier::Best]
             .into_iter()
@@ -177,12 +184,14 @@ impl TierMap {
     }
 
     /// The assistant's pool Automatic chooses among for `kind`; empty when the person listed none.
+    #[must_use]
     pub fn pool(&self, kind: Slot) -> &[ModelRef] {
         self.pool_of(&Chooser::Assistant, kind)
     }
 
     /// The pool `chooser` has for `kind`; empty when it has none. A helper's empty pool is not
     /// filled from the assistant's.
+    #[must_use]
     pub fn pool_of(&self, chooser: &Chooser, kind: Slot) -> &[ModelRef] {
         self.pools
             .iter()
@@ -193,6 +202,7 @@ impl TierMap {
     /// This map as `chooser` reads it: the pools are its own, presented as the pools a pick reads
     /// (so `pick` and the routing built on it need not know who asks). Rows and Automatic rows
     /// are the person's and stay as they are.
+    #[must_use]
     pub fn for_chooser(&self, chooser: &Chooser) -> Self {
         Self {
             rows: self.rows.clone(),
@@ -216,6 +226,7 @@ impl TierMap {
     ///
     /// This reads the row and nothing else: it is what a settings page shows. Routing asks
     /// [`TierMap::pick_serving`], which also looks at the person's other tiers.
+    #[must_use]
     pub fn pick(&self, kind: Slot, tier: Tier) -> Option<Pick> {
         // A coding agent is a choice of the text slot only: on any other slot the row is not
         // read, whatever a file says.
@@ -245,6 +256,7 @@ impl TierMap {
     /// The pick a request at `tier` is served by: the person's pick for that tier, else for
     /// Balanced, else for the remaining tier. Only a pick the person made is used: a slot with
     /// no row at any tier is `None`, and nothing is invented for it.
+    #[must_use]
     pub fn pick_serving(&self, kind: Slot, tier: Tier) -> Option<Pick> {
         let others = match tier {
             Tier::Fast => [Tier::Balanced, Tier::Best],
@@ -293,6 +305,7 @@ impl TierMap {
 }
 
 /// Whether `model` is the user's choice for `kind` at `tier`. Feeds `route` unchanged.
+#[must_use]
 pub fn tier_choice(map: &TierMap, kind: Slot, tier: Tier, model: &ModelRef) -> TierChoice {
     let chosen = map
         .rows
@@ -378,6 +391,7 @@ pub struct PickerRow {
 /// The plain list for `kind`: models of that kind only, this computer first, then ready before
 /// loadable before downloadable, then the order the cards came in (the catalog's order). No
 /// ranking by quality; a non-commercial row is listed and never mapped to a tier by itself.
+#[must_use]
 pub fn picker_rows(kind: Slot, cards: &[PickerInput], map: &TierMap) -> Vec<PickerRow> {
     let mut rows: Vec<PickerRow> = cards
         .iter()

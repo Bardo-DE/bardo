@@ -38,6 +38,7 @@ pub struct Terminal {
 
 /// A grant in words: the action's name, then the app it is of (`thread.archive`, `org.bardo.Mail`
 /// is "Thread archive" in "Mail"). The name is the manifest's, never the terminal's text.
+#[must_use]
 pub fn grant_words(grant: &ActionRef) -> (String, String) {
     let app = grant.app.as_str();
     let slug = app.rsplit('.').next().unwrap_or(app).to_lowercase();
@@ -80,6 +81,7 @@ pub enum GrantError {
 }
 
 /// A grant as [`parse_grant`] reads it.
+#[must_use]
 pub fn grant_name(grant: &ActionRef) -> String {
     format!("{}:{}", grant.app, grant.name)
 }

@@ -35,6 +35,7 @@ pub enum LineFault {
 }
 
 /// The next line of `reader`, without its newline (or CR), holding at most `cap` bytes.
+///
 /// `buf` keeps what has been read of an unfinished line between calls, so a dropped read loses
 /// no input and a retry carries on. `None` is the end of the stream. A line over the cap is an
 /// error; the stream is then in the middle of it and is to be closed, not read on.
@@ -46,9 +47,10 @@ pub async fn read_capped<R: AsyncBufRead + Unpin>(
     loop {
         let chunk = reader.fill_buf().await?;
         if chunk.is_empty() {
-            return match buf.is_empty() {
-                true => Ok(None),
-                false => text_of(std::mem::take(buf)).map(Some),
+            return if buf.is_empty() {
+                Ok(None)
+            } else {
+                text_of(std::mem::take(buf)).map(Some)
             };
         }
         let newline = chunk.iter().position(|b| *b == b'\n');

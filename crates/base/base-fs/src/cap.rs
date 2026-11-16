@@ -10,21 +10,25 @@ pub struct ReadCap(u64);
 
 impl ReadCap {
     /// A cap of `count` bytes.
+    #[must_use]
     pub const fn bytes(count: u64) -> Self {
         ReadCap(count)
     }
 
     /// A cap of `count` KiB.
+    #[must_use]
     pub const fn kib(count: u64) -> Self {
         ReadCap(count.saturating_mul(1024))
     }
 
     /// A cap of `count` MiB.
+    #[must_use]
     pub const fn mib(count: u64) -> Self {
         ReadCap(count.saturating_mul(1024 * 1024))
     }
 
     /// The cap in bytes.
+    #[must_use]
     pub const fn limit(self) -> u64 {
         self.0
     }

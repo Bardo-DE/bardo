@@ -136,5 +136,5 @@ async fn properties_are_asked_for_and_a_call_with_nothing_to_show_is_silent() {
         show.request,
         ShowRequest::Properties(vec![reveal("/tmp", "x.txt")])
     );
-    assert!(heard.try_recv().is_err());
+    heard.try_recv().unwrap_err();
 }

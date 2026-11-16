@@ -24,7 +24,7 @@ pub enum Network {
     Offline,
     /// A connection without a data cap.
     Unmetered,
-    /// A connection the user pays for by the byte (the NetworkManager `metered` flag).
+    /// A connection the user pays for by the byte (the `NetworkManager` `metered` flag).
     Metered,
 }
 
@@ -83,6 +83,7 @@ impl Default for Settings {
 impl Settings {
     /// What every test rig polls with: every second, never batched, and the scheduler's clock
     /// ten times the real one, so a poll takes a tenth of a second.
+    #[must_use]
     pub fn quick() -> Self {
         Self {
             poll_base: 1,

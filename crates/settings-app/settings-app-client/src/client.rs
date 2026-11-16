@@ -83,16 +83,19 @@ pub struct Client {
 
 impl Client {
     /// Where the services are looked for.
+    #[must_use]
     pub fn bus(&self) -> &BusSource {
         &self.bus
     }
 
     /// The program that lists and downloads coding assistants, where the launcher found it.
+    #[must_use]
     pub fn agents_program(&self) -> Option<&Path> {
         self.agents_program.as_deref()
     }
 
     /// The settings home and the data home the client reads docket's files from.
+    #[must_use]
     pub fn homes(&self) -> (&ConfigHome, &DataHome) {
         (&self.search.config_home, &self.search.data_home)
     }
@@ -104,6 +107,7 @@ impl Client {
     }
 
     /// The accounts the modules list now, read once; never starts a daemon.
+    #[must_use]
     pub fn read_accounts(&self) -> Work<'_, Result<AccountsPane, Absence>> {
         self.accounts.read()
     }
@@ -114,36 +118,43 @@ impl Client {
     }
 
     /// The time "last checked" and "allowed at" count from.
+    #[must_use]
     pub fn now(&self) -> UnixSeconds {
         self.updates.now()
     }
 
     /// The desktop's file chooser.
+    #[must_use]
     pub fn chooser(&self) -> Chooser {
         Chooser::over(Arc::clone(&self.chooser))
     }
 
     /// The Wi-Fi pane.
+    #[must_use]
     pub fn wifi(&self) -> Wifi {
         Wifi::over(Arc::clone(&self.wifi))
     }
 
     /// The Bluetooth pane.
+    #[must_use]
     pub fn bluetooth(&self) -> Bluetooth {
         Bluetooth::over(Arc::clone(&self.bluetooth))
     }
 
     /// The Displays pane.
+    #[must_use]
     pub fn displays(&self) -> Displays {
         Displays::over(Arc::clone(&self.displays))
     }
 
     /// The Software Update pane.
+    #[must_use]
     pub fn updates(&self) -> Updates {
         Updates::over(Arc::clone(&self.updates), Arc::clone(&self.log_out))
     }
 
     /// The Accounts pane, with the held deletions and the datasets of its accounts.
+    #[must_use]
     pub fn accounts(&self) -> Accounts {
         Accounts::over(
             self.bus.clone(),
@@ -154,11 +165,13 @@ impl Client {
     }
 
     /// The accounts the modules list, for a page outside the Accounts pane.
+    #[must_use]
     pub fn listing(&self) -> Listing {
         Listing::over(Arc::clone(&self.modules))
     }
 
     /// The model picker.
+    #[must_use]
     pub fn picker(&self) -> Picker {
         Picker::over(
             Arc::clone(&self.modules),
@@ -169,76 +182,91 @@ impl Client {
     }
 
     /// The models inferd lists, where a place offers them to choose from.
+    #[must_use]
     pub fn models(&self) -> Models {
         Models::over(Arc::clone(&self.modules))
     }
 
     /// The reasons the picker's footer says; handed over once, to the first caller.
+    #[must_use]
     pub fn reasons(&self) -> Reasons {
         self.reasons.take()
     }
 
     /// The engines Local can run models with, and the download of one.
+    #[must_use]
     pub fn engine_install(&self) -> EngineInstall {
         EngineInstall::over(Arc::clone(&self.desk))
     }
 
     /// The llama.cpp note under "Models on this computer".
+    #[must_use]
     pub fn engines(&self) -> Engines {
         Engines::over(self.bus.clone(), Arc::clone(&self.engines))
     }
 
     /// The rows that name the program of an engine.
+    #[must_use]
     pub fn engine_programs(&self) -> EnginePrograms {
         EnginePrograms::over(Arc::clone(&self.modules), Arc::clone(&self.picker))
     }
 
     /// The models inferd runs itself.
+    #[must_use]
     pub fn running(&self) -> Running {
         Running::over(self.bus.clone(), Arc::clone(&self.running))
     }
 
     /// Your computers.
+    #[must_use]
     pub fn computers(&self) -> Computers {
         Computers::over(self.bus.clone(), Arc::clone(&self.computers))
     }
 
     /// The Privacy pane.
+    #[must_use]
     pub fn privacy(&self) -> Privacy {
         Privacy::over(Arc::clone(&self.modules), Arc::clone(&self.privacy))
     }
 
     /// The apps that may share the screen without asking again.
+    #[must_use]
     pub fn screen_sharing(&self) -> ScreenSharing {
         ScreenSharing::over(Arc::clone(&self.screen_sharing))
     }
 
     /// The desktop-wide Spaces.
+    #[must_use]
     pub fn spaces(&self) -> Spaces {
         Spaces::over(Arc::clone(&self.spaces))
     }
 
     /// The looser memory settings.
+    #[must_use]
     pub fn memory_consent(&self) -> MemoryConsent {
         MemoryConsent::over(Arc::clone(&self.memory))
     }
 
     /// The switch that lends this computer's models to the person's other computers.
+    #[must_use]
     pub fn lending(&self) -> Lending {
         Lending::over(self.lender.clone())
     }
 
     /// The pictures behind the Wallpaper page.
+    #[must_use]
     pub fn wallpaper(&self) -> Wallpaper {
         Wallpaper::over(Arc::clone(&self.pictures))
     }
 
     /// The person at the top of the sidebar.
+    #[must_use]
     pub fn whoami(&self) -> Whoami {
         Whoami::over(Arc::clone(&self.person))
     }
 
     /// The Hot Corners sheet's desk.
+    #[must_use]
     pub fn corners(&self) -> Corners {
         Corners::over(Arc::clone(&self.corners))
     }

@@ -234,6 +234,7 @@ pub struct PolicyRequest {
 impl PolicyContext {
     /// Whether the session has seen both private data and untrusted input: two legs of the Rule
     /// of Two.
+    #[must_use]
     pub fn two_legs(&self) -> bool {
         self.saw.private && self.saw.untrusted
     }

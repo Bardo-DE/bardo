@@ -18,7 +18,7 @@ pub(crate) struct Route {
 }
 
 /// `message`'s effects: `Touches{Down}` is touch to stop, a scroll phase moves the engine, and
-/// every scroll phase also says where the fingers are. Tap (SmartZoom) and Swipe (the
+/// every scroll phase also says where the fingers are. Tap (`SmartZoom`) and Swipe (the
 /// host-decided page swipe, 12 §12.3.6) have no consumer in the host yet.
 pub(crate) fn route(message: &ToHost) -> Route {
     match *message {

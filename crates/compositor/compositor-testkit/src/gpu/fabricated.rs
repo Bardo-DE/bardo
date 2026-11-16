@@ -19,6 +19,7 @@ pub struct FabricatedNode {
 
 /// The render-range DRM nodes under `sys_dev_char` (`/sys/dev/char` in the jail), by minor.
 /// Entries outside 226:128..191 are ignored.
+#[must_use]
 pub fn fabricated_nodes(sys_dev_char: &Path) -> Vec<FabricatedNode> {
     let mut nodes: Vec<FabricatedNode> = std::fs::read_dir(sys_dev_char)
         .into_iter()

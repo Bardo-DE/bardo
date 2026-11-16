@@ -14,6 +14,7 @@ use ui_settings::schema::{ActionWeight, KeySpec};
 /// Where an account lives, as the `place` row says it: a program on this computer (a probed
 /// runtime, which signs in with nothing) or anywhere else. Settings lists the first kind under
 /// "On this computer".
+#[must_use]
 pub fn place_slug(account: &Account) -> &'static str {
     match account.auth {
         AuthKind::LocalRuntime => "this_computer",

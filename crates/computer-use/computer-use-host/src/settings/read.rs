@@ -82,6 +82,7 @@ pub struct Loaded {
 
 impl Loaded {
     /// A read of nothing: the base values, nothing to report.
+    #[must_use]
     pub fn of(value: CuaSettings) -> Self {
         Self {
             value,
@@ -91,6 +92,7 @@ impl Loaded {
     }
 
     /// One line per fallback and per unknown key, for the daemon's log.
+    #[must_use]
     pub fn lines(&self, daemon: &str) -> Vec<String> {
         let fell = self.fallbacks.iter().map(|f| {
             format!(
@@ -197,6 +199,7 @@ fn apps(value: &toml::Value) -> (Option<Apps>, Vec<Fallback>) {
 /// Reads `text` over `base`: each key the file sets and the table accepts replaces its base
 /// value; every other key keeps it. The daemon's `base` lists no app, so until the file names
 /// some, none is on (design/22 section 3.29).
+#[must_use]
 pub fn read(text: &str, base: &CuaSettings) -> Loaded {
     let doc = match text.parse::<toml::Table>() {
         Ok(doc) => doc,

@@ -15,29 +15,34 @@ pub struct Taken {
 
 impl Taken {
     /// Nothing taken.
+    #[must_use]
     pub fn none() -> Taken {
         Taken::default()
     }
 
     /// `button`'s press was taken.
+    #[must_use]
     pub fn take_button(mut self, button: ButtonCode) -> Taken {
         self.buttons.insert(button);
         self
     }
 
     /// `key`'s press was taken.
+    #[must_use]
     pub fn take_key(mut self, key: KeyCode) -> Taken {
         self.keys.insert(key);
         self
     }
 
     /// `button` was released: what became of its press. The press stops being remembered.
+    #[must_use]
     pub fn release_button(mut self, button: ButtonCode) -> (Taken, bool) {
         let fate = fate_of(self.buttons.take(&button));
         (self, fate)
     }
 
     /// `key` was released: what became of its press. The press stops being remembered.
+    #[must_use]
     pub fn release_key(mut self, key: KeyCode) -> (Taken, bool) {
         let fate = fate_of(self.keys.take(&key));
         (self, fate)

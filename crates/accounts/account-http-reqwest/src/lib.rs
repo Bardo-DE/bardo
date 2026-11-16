@@ -52,12 +52,14 @@ impl Default for ReqwestHttp {
 
 impl ReqwestHttp {
     /// A client trusting the platform's roots.
+    #[must_use]
     pub fn new() -> Self {
         Self::with_extra_roots(Vec::new())
     }
 
     /// A client trusting the platform's roots and these DER certificates (a private CA).
     /// A certificate that is not one is skipped.
+    #[must_use]
     pub fn with_extra_roots(extra: Vec<Vec<u8>>) -> Self {
         // reqwest's rustls takes the process's provider: ring, installed once (a second install, or one
         // another crate made first, is refused and harmless).
@@ -69,7 +71,7 @@ impl ReqwestHttp {
                 Client::builder()
                     .redirect(Policy::none())
                     .pool_idle_timeout(Duration::from_secs(30)),
-                |builder, root| builder.add_root_certificate(root),
+                reqwest::ClientBuilder::add_root_certificate,
             );
         Self {
             client: builder
@@ -181,9 +183,10 @@ fn in_the_clear_only_here(uri: &Uri) -> Result<(), HttpError> {
                 host: host.trim_matches(['[', ']']).to_ascii_lowercase(),
                 port: uri.port_u16().unwrap_or(UrlScheme::Http.default_port()),
             };
-            match origin.is_loopback() {
-                true => Ok(()),
-                false => Err(HttpError::Tls),
+            if origin.is_loopback() {
+                Ok(())
+            } else {
+                Err(HttpError::Tls)
             }
         }
         _ => Err(HttpError::Malformed),

@@ -12,6 +12,7 @@ pub struct SequencePosition(usize);
 
 impl SequencePosition {
     /// The entry's index, counting from zero.
+    #[must_use]
     pub fn index(self) -> usize {
         self.0
     }
@@ -72,27 +73,32 @@ impl Sequence {
     }
 
     /// Every entry, in order.
+    #[must_use]
     pub fn entries(&self) -> &NonEmpty<FilePath> {
         &self.entries
     }
 
     /// Where the sequence points now.
+    #[must_use]
     pub fn at(&self) -> SequencePosition {
         self.at
     }
 
     /// Where the sequence came from.
+    #[must_use]
     pub fn origin(&self) -> &SequenceOrigin {
         &self.origin
     }
 
     /// The file the sequence points at.
+    #[must_use]
     pub fn current(&self) -> &FilePath {
         self.entry(self.at)
     }
 
     /// The entry at `position`, which is in range because only a sequence makes positions and
     /// `position_at` clamps; a position from a longer sequence is read as its clamped self.
+    #[must_use]
     pub fn entry(&self, position: SequencePosition) -> &FilePath {
         self.entries
             .get(position.0)
@@ -100,6 +106,7 @@ impl Sequence {
     }
 
     /// The position of the entry at `index`, or of the last entry when `index` is past the end.
+    #[must_use]
     pub fn position_at(&self, index: usize) -> SequencePosition {
         SequencePosition(index.min(self.entries.count().get() - 1)) // a count is at least 1
     }

@@ -34,9 +34,10 @@ impl<S: Seams> Router<S> {
             .session
             .as_ref()
             .ok_or_else(|| failed("there is no task to keep it in"))?;
-        let edit = match text_of(p, "brief").as_deref() == Some(words.as_str()) {
-            true => BriefEdit::Kept,
-            false => BriefEdit::Changed,
+        let edit = if text_of(p, "brief").as_deref() == Some(words.as_str()) {
+            BriefEdit::Kept
+        } else {
+            BriefEdit::Changed
         };
         let at = self.seams.clock().now();
         {
@@ -59,8 +60,8 @@ impl<S: Seams> Router<S> {
                     label: user_label(),
                 },
                 Source::User,
-            );
-        }
+            )
+        };
         self.seams.sink().append(AuditRecord::BriefConfirmed {
             at,
             call: p.id,

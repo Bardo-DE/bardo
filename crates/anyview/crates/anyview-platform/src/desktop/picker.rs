@@ -24,6 +24,7 @@ pub struct PortalPicker {
 
 impl PortalPicker {
     /// A file dialog on `env`'s session bus.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         PortalPicker { env }
     }

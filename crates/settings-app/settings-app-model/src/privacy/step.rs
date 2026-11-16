@@ -58,6 +58,7 @@ pub enum PrivacyEffect {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn privacy_step(
     state: PrivacyState,
     input: PrivacyInput,

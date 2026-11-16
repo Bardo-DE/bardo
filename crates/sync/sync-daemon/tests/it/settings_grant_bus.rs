@@ -375,8 +375,8 @@ async fn the_photos_row_alone_turns_the_photos_datasets_on_and_off_and_keeps_the
 #[tokio::test(flavor = "multi_thread")]
 async fn only_the_settings_role_may_read_or_change_the_rows() {
     let rig = rig().await;
-    assert!(rig.stranger.describe().await.is_err());
-    assert!(rig.stranger.get(&row(FILES_ROW)).await.is_err());
+    rig.stranger.describe().await.unwrap_err();
+    rig.stranger.get(&row(FILES_ROW)).await.unwrap_err();
     assert!(
         rig.stranger
             .set(&row(FILES_ROW), &word(true))

@@ -104,7 +104,7 @@ pub(crate) fn extract(
     });
     match (found, walked) {
         (Some(result), _) => result,
-        (None, Ok(_)) => Err(ArchiveError::NoSuchEntry {
+        (None, Ok(())) => Err(ArchiveError::NoSuchEntry {
             path: name.to_owned(),
         }),
         (None, Err(error)) => Err(error_of(&error)),

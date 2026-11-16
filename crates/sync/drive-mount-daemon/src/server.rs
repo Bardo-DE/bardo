@@ -1,6 +1,6 @@
 //! The helper's side: one request per connection, answered in turn.
 //!
-//! [`Helper::answer`] checks the caller (its uid, SO_PEERCRED, must be the helper's own), reads
+//! [`Helper::answer`] checks the caller (its uid, `SO_PEERCRED`, must be the helper's own), reads
 //! the request and does it through a [`Mounts`]: [`Fusermount`] on a real computer, a fake in the
 //! tests. Only a folder directly in `~/Cloud` is ever touched: the request names it, never a
 //! path. A mount is refused when the folder is a link or not a folder, holds files of its own, is
@@ -192,6 +192,7 @@ pub enum Refusal {
 
 impl Refusal {
     /// What the caller is answered.
+    #[must_use]
     pub fn code(&self) -> Code {
         match self {
             Refusal::NotEmpty(_) | Refusal::OtherMount(..) => Code::FolderInUse,
@@ -233,6 +234,7 @@ impl std::fmt::Display for Refusal {
 impl std::error::Error for Refusal {}
 
 /// Whether a caller of uid `peer` may ask a helper running as `owner`: only the same user.
+#[must_use]
 pub fn peer_allowed(peer: Uid, owner: Uid) -> bool {
     peer == owner
 }

@@ -51,6 +51,7 @@ pub struct Listed {
 
 impl Listed {
     /// A model with the permit its locality carries (`permit_of`) and no spend against it.
+    #[must_use]
     pub fn new(
         card: ModelCard,
         readiness: Readiness,
@@ -83,6 +84,7 @@ pub struct Decided {
 }
 
 /// The slot a need is served from, for the user's picks.
+#[must_use]
 pub fn slot_of_need(need: &Need) -> Option<Slot> {
     match need {
         Need::Llm(_) => Some(Slot::Text),
@@ -97,6 +99,7 @@ pub fn slot_of_need(need: &Need) -> Option<Slot> {
 /// The slots a model serves, from its capabilities: a language model is in `text`, and in
 /// `image_in` when it takes images and `voice_in` when it takes audio; a computer-use model reads
 /// images too.
+#[must_use]
 pub fn slots_of(card: &ModelCard) -> Vec<Slot> {
     let mut slots: Vec<Slot> = card
         .capabilities
@@ -147,6 +150,7 @@ pub(crate) fn permit_of(card: &ModelCard) -> Permit {
 }
 
 /// Whether any capability of `card` meets `need`.
+#[must_use]
 pub fn fits(need: &Need, card: &ModelCard) -> bool {
     card.capabilities
         .iter()
@@ -245,15 +249,16 @@ fn refuse_blind_pick(tiers: &TierMap, tier: Tier, listed: &[Listed]) -> Result<(
             && one.card.model == model.model
             && Takes::of(&one.card.capabilities).sight() == Sight::Blind
     });
-    match blind {
-        true => Err(PickRefusal {
+    if blind {
+        Err(PickRefusal {
             refusal: InferRefusal::Unavailable,
             declined: Some(Declined {
                 model,
                 because: DeclinedBecause::CannotSeeScreen,
             }),
-        }),
-        false => Ok(()),
+        })
+    } else {
+        Ok(())
     }
 }
 

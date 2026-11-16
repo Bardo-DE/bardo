@@ -48,11 +48,13 @@ impl Asking {
     }
 
     /// Whether any question of the daemon's sources is up now.
+    #[must_use]
     pub fn now(services: &Services, links: &Links) -> Asking {
         let capture = services.capture.state.borrow();
-        let consent = match services.voice.state.borrow().sheet {
-            true => Asking::Something,
-            false => Asking::Nothing,
+        let consent = if services.voice.state.borrow().sheet {
+            Asking::Something
+        } else {
+            Asking::Nothing
         };
         let intents = Asking::of(sheet_view(&services.intents.state.borrow().sheets));
         let polkit = Asking::of(services.polkit_agent.state.borrow().current.as_ref());
@@ -81,6 +83,7 @@ pub enum SheetLatch {
 impl SheetLatch {
     /// The latch after the sources changed: `focused` is the focused window's output now, taken
     /// only when a burst starts.
+    #[must_use]
     pub fn next(self, asking: Asking, focused: Option<OutputName>) -> SheetLatch {
         match (self, asking) {
             (_, Asking::Nothing) => SheetLatch::Idle,
@@ -101,6 +104,7 @@ impl SheetLatch {
     }
 
     /// The latch after a nudge, with its output written to the link.
+    #[must_use]
     pub fn follow(self, services: &Services, links: &Links, outputs: &Outputs) -> SheetLatch {
         let focused = services.windows.state.borrow().toplevels.focused_output();
         let next = self.next(Asking::now(services, links), focused);

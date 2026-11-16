@@ -1,6 +1,6 @@
 //! Markdown to HTML for Blitz's sealed `iframe srcdoc`, with an outline for the side panel.
 //!
-//! CommonMark with GFM tables, task lists and strikethrough. Raw HTML in the document is shown as
+//! `CommonMark` with GFM tables, task lists and strikethrough. Raw HTML in the document is shown as
 //! text, never passed through. Links keep only web, mail and relative targets. Local images are
 //! read through an injected [`LocalFiles`] and written as `data:` URLs, the only kind a sealed
 //! frame loads; an image that cannot be inlined is shown as its alt text. Fenced code is

@@ -39,7 +39,7 @@ pub(crate) async fn build(
         for made in [&uv, &python] {
             std::fs::create_dir_all(made).map_err(|e| InstallError::Disk(e.kind()))?;
         }
-        let [uv_archive, python_archive] = &files[..] else {
+        let [uv_archive, python_archive] = &*files else {
             return Err(InstallError::Environment);
         };
         unpack(uv_archive, &uv)?;

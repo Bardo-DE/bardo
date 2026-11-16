@@ -56,6 +56,7 @@ pub struct Pending {
 
 impl Pending {
     /// Nothing waiting yet.
+    #[must_use]
     pub fn new(caps: Caps) -> Self {
         Self {
             caps,
@@ -81,6 +82,7 @@ impl Pending {
     }
 
     /// Identifications waiting now, from every user.
+    #[must_use]
     pub fn count(&self) -> usize {
         self.counts().0.total()
     }

@@ -16,6 +16,7 @@ pub struct Environment {
 
 impl Environment {
     /// This process's `PATH` and `/etc/os-release`.
+    #[must_use]
     pub fn system() -> Environment {
         Environment {
             path: std::env::var_os("PATH").unwrap_or_default(),

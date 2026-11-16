@@ -6,6 +6,7 @@ use ui_settings::schema::Page;
 pub const BLUETOOTH_SLUG: &str = "bluetooth";
 
 /// The Bluetooth page as the catalogue holds it.
+#[must_use]
 pub fn bluetooth_page() -> Page {
     Page::declared(BLUETOOTH_SLUG)
 }

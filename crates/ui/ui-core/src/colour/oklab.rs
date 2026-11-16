@@ -1,9 +1,9 @@
-//! OKLab and OKLCh (Björn Ottosson, 2020, with his published matrices), and how far apart two
+//! `OKLab` and `OKLCh` (Björn Ottosson, 2020, with his published matrices), and how far apart two
 //! colours look.
 
 use super::srgb::{LinearRgb, Srgb};
 
-/// A colour in OKLab: lightness `l` (0..=1) and the opponent axes `a` (green-red) and `b`
+/// A colour in `OKLab`: lightness `l` (0..=1) and the opponent axes `a` (green-red) and `b`
 /// (blue-yellow).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Oklab {
@@ -12,7 +12,7 @@ pub struct Oklab {
     pub b: f64,
 }
 
-/// A colour in OKLCh: OKLab's lightness, its chroma and its hue in radians.
+/// A colour in `OKLCh`: `OKLab`'s lightness, its chroma and its hue in radians.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Oklch {
     pub l: f64,
@@ -24,6 +24,7 @@ pub struct Oklch {
 impl Oklch {
     /// `oklch(l c hue)` with the hue in degrees, turned to radians as the CSS prototype does
     /// (`hue * PI / 180`).
+    #[must_use]
     pub fn from_degrees(l: f64, c: f64, degrees: f64) -> Oklch {
         Oklch {
             l,
@@ -36,6 +37,7 @@ impl Oklch {
 impl Oklab {
     /// The Euclidean distance between two colours (0 is identical; about 0.02 is a
     /// just-noticeable step).
+    #[must_use]
     pub fn distance(self, other: Oklab) -> f64 {
         ((self.l - other.l).powi(2) + (self.a - other.a).powi(2) + (self.b - other.b).powi(2))
             .sqrt()

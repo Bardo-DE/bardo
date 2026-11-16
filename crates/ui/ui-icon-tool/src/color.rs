@@ -8,6 +8,7 @@ pub struct Srgb8 {
 
 impl Srgb8 {
     /// `0xRRGGBB` as in the docs' `#RRGGBB`.
+    #[must_use]
     pub const fn hex(rgb: u32) -> Self {
         Self {
             r: (rgb >> 16) as u8,
@@ -17,12 +18,13 @@ impl Srgb8 {
     }
 
     /// The channels as 0..=1 sRGB-encoded floats.
+    #[must_use]
     pub fn unit(self) -> [f32; 3] {
         [self.r, self.g, self.b].map(|c| f32::from(c) / 255.0)
     }
 }
 
-/// A colour in OKLab (Ottosson 2020): perceptual distance is the Euclidean one.
+/// A colour in `OKLab` (Ottosson 2020): perceptual distance is the Euclidean one.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Oklab {
     pub l: f32,
@@ -31,6 +33,7 @@ pub struct Oklab {
 }
 
 /// sRGB transfer, encoded 0..=1 to linear 0..=1.
+#[must_use]
 pub fn srgb_to_linear(c: f32) -> f32 {
     if c <= 0.04045 {
         c / 12.92
@@ -40,6 +43,7 @@ pub fn srgb_to_linear(c: f32) -> f32 {
 }
 
 /// sRGB transfer, linear 0..=1 to encoded 0..=1.
+#[must_use]
 pub fn linear_to_srgb(c: f32) -> f32 {
     let c = c.clamp(0.0, 1.0);
     if c <= 0.003_130_8 {
@@ -49,7 +53,7 @@ pub fn linear_to_srgb(c: f32) -> f32 {
     }
 }
 
-/// OKLab of an sRGB-encoded 0..=1 triple.
+/// `OKLab` of an sRGB-encoded 0..=1 triple.
 pub fn oklab(rgb: [f32; 3]) -> Oklab {
     let [r, g, b] = rgb.map(srgb_to_linear);
     let l = 0.412_221_46 * r + 0.536_332_55 * g + 0.051_445_995 * b;
@@ -75,7 +79,7 @@ fn linear_rgb(c: Oklab) -> [f32; 3] {
     ]
 }
 
-/// The sRGB-encoded 0..=1 triple of an OKLab colour (clamped to the gamut).
+/// The sRGB-encoded 0..=1 triple of an `OKLab` colour (clamped to the gamut).
 pub fn srgb(c: Oklab) -> [f32; 3] {
     linear_rgb(c).map(linear_to_srgb)
 }

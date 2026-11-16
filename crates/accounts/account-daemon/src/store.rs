@@ -3,6 +3,6 @@
 //! accountd resolves its directory once (the binary reads `$XDG_STATE_HOME/bardo/accounts`; the store
 //! reads no environment).
 
-/// The exit status of a daemon that refused the registry file (EX_CONFIG). `bardo-accountd.service`
+/// The exit status of a daemon that refused the registry file (`EX_CONFIG`). `bardo-accountd.service`
 /// names it in `RestartPreventExitStatus=`, so the unit stops instead of restarting.
 pub const EXIT_REGISTRY_REFUSED: u8 = 78;

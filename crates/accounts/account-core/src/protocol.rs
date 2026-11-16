@@ -12,9 +12,9 @@ pub enum EndpointProtocol {
     Imap,
     /// SMTP submission: the relay does EHLO, STARTTLS and AUTH.
     Smtp,
-    /// HTTP/1.1 (WebDAV, CalDAV, CardDAV, OCS, JMAP): the relay adds `Authorization`.
+    /// HTTP/1.1 (`WebDAV`, `CalDAV`, `CardDAV`, OCS, JMAP): the relay adds `Authorization`.
     Http,
-    /// ManageSieve (RFC 5804): the relay does STARTTLS and AUTHENTICATE.
+    /// `ManageSieve` (RFC 5804): the relay does STARTTLS and AUTHENTICATE.
     Sieve,
     /// POP3 (RFC 1939): the relay does `STLS` and `USER`/`PASS` (or `AUTH`); the app sees a
     /// session that is already in the transaction state.
@@ -23,6 +23,7 @@ pub enum EndpointProtocol {
 
 impl EndpointProtocol {
     /// The protocol a URL scheme names; none for a scheme this build does not know.
+    #[must_use]
     pub fn of_scheme(scheme: UrlScheme) -> Option<Self> {
         match scheme {
             UrlScheme::Http | UrlScheme::Https => Some(EndpointProtocol::Http),

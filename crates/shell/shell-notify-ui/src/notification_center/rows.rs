@@ -18,6 +18,7 @@ pub enum Stack {
 
 impl Stack {
     /// How many the card's count chip says.
+    #[must_use]
     pub fn count(self) -> usize {
         match self {
             Stack::Alone => 1,
@@ -49,6 +50,7 @@ pub enum RowKey {
 
 impl CenterRow {
     /// The row's key in the list.
+    #[must_use]
     pub fn key(&self) -> RowKey {
         match self {
             CenterRow::Head { group } => RowKey::Head(group.clone()),
@@ -57,6 +59,7 @@ impl CenterRow {
     }
 
     /// The group the row belongs to.
+    #[must_use]
     pub fn group(&self) -> &AppKey {
         match self {
             CenterRow::Head { group } | CenterRow::Note { group, .. } => group,
@@ -64,6 +67,7 @@ impl CenterRow {
     }
 
     /// How many a card's count chip says; a header counts one.
+    #[must_use]
     pub fn stack_count(&self) -> usize {
         match self {
             CenterRow::Note { stack, .. } => stack.count(),
@@ -108,6 +112,7 @@ fn group_rows(view: &GroupView) -> Vec<CenterRow> {
 
 /// Return, or a press on the row's body: a lone card's `default`; a stack or a header opens or
 /// closes its group.
+#[must_use]
 pub fn activate(row: &CenterRow) -> RowAct {
     match row {
         CenterRow::Note {
@@ -120,6 +125,7 @@ pub fn activate(row: &CenterRow) -> RowAct {
 }
 
 /// Delete, or a card's close: a lone card is dismissed; a stack or a header clears its group.
+#[must_use]
 pub fn dismiss(row: &CenterRow) -> RowAct {
     match row {
         CenterRow::Note {
@@ -132,6 +138,7 @@ pub fn dismiss(row: &CenterRow) -> RowAct {
 }
 
 /// What a press on a card asks; a link in the body asks nothing of the center.
+#[must_use]
 pub fn press(row: &CenterRow, press: CardPress) -> Option<RowAct> {
     match (row, press) {
         (_, CardPress::Body) => Some(activate(row)),

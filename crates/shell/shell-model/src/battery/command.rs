@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::Charge;
 use crate::units::{Percent, Presence, Seconds};
 
-/// One change UPower reported.
+/// One change `UPower` reported.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BatteryEvent {
@@ -14,7 +14,7 @@ pub enum BatteryEvent {
     Charge(Charge),
     TimeToEmpty(Seconds),
     TimeToFull(Seconds),
-    /// UPower left the bus: back to the default, absent.
+    /// `UPower` left the bus: back to the default, absent.
     Gone,
 }
 

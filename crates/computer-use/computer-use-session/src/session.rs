@@ -31,6 +31,7 @@ pub struct CuaSession {
 }
 
 impl CuaSession {
+    #[must_use]
     pub fn begin(profile: CuaProfile, task: CuaTaskText, model: ModelName) -> CuaSession {
         let repairs_left = profile.repair;
         CuaSession {
@@ -46,6 +47,7 @@ impl CuaSession {
 
     /// The same session with these request settings (sampling, output limit, reasoning, how many
     /// earlier steps are listed). The daemon takes them from the model's catalog entry.
+    #[must_use]
     pub fn with_settings(self, settings: TurnSettings) -> CuaSession {
         CuaSession { settings, ..self }
     }
@@ -57,11 +59,13 @@ impl CuaSession {
         self.repairs_left = self.profile.repair;
     }
 
+    #[must_use]
     pub fn repairs_left(&self) -> RepairBudget {
         self.repairs_left
     }
 
     /// How many earlier steps the session remembers.
+    #[must_use]
     pub fn remembered(&self) -> usize {
         self.history.len()
     }
@@ -69,6 +73,7 @@ impl CuaSession {
     /// Pure prompt assembly for one step: the system prompt and tool declaration of the dialect,
     /// the last few frames, the lines about earlier steps and the last results, and this frame.
     /// Points are read in the map's model space.
+    #[must_use]
     pub fn request(&self, obs: &ObservationIn, map: &FrameMap, image: ImageInput) -> TurnRequest {
         self.build(obs, map, Some(image))
     }

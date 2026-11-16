@@ -11,6 +11,7 @@ impl AccountsInput {
     /// when it is on an account's `sign_out` row and says one of the seven words, a sign-in's end
     /// when it is on a `reauth` row and says one of the five, else a change to read again (which
     /// also covers a state change: the rows an account has depend on its state).
+    #[must_use]
     pub fn heard(module: ModuleId, path: KeyPath, value: &toml::Value) -> Self {
         let word = value.as_str();
         let sign_out = path

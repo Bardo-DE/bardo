@@ -67,6 +67,7 @@ pub struct Scanout {
 
 impl Scanout {
     /// A scanout over `surface`, whose vblanks follow `clock`.
+    #[must_use]
     pub fn new(surface: Box<dyn ScanoutSurface>, clock: VblankClock) -> Scanout {
         Scanout {
             surface,
@@ -87,11 +88,13 @@ impl Scanout {
     }
 
     /// How long this output has been waiting for a frame to land.
+    #[must_use]
     pub fn watch(&self) -> FlipWatch {
         self.watch
     }
 
     /// Whether this output has shown nothing for too long at `now`.
+    #[must_use]
     pub fn starved(&self, now: Mono) -> bool {
         self.watch.starved(now)
     }
@@ -122,12 +125,11 @@ impl Scanout {
     ) -> Result<PresentOutcome, BackendError> {
         let _ = self.settle(now);
         if self.flip.wanted.is_some() {
-            return Ok(match self.watch.flip_lost(now) {
-                false => PresentOutcome::Waiting,
-                true => {
-                    tracing::warn!("a page flip never landed; the output draws its picture again");
-                    self.recover(now)
-                }
+            return Ok(if self.watch.flip_lost(now) {
+                tracing::warn!("a page flip never landed; the output draws its picture again");
+                self.recover(now)
+            } else {
+                PresentOutcome::Waiting
             });
         }
         match self.surface.queue(QueuedFrame::Draw(source)) {
@@ -198,11 +200,13 @@ impl Scanout {
     }
 
     /// When to start the next frame, given `now` and `slack`.
+    #[must_use]
     pub fn deadline(&self, now: Mono, slack: Duration) -> Deadline {
         next_deadline(&self.clock, predict(&self.history), now, slack)
     }
 
     /// The frames shown and missed so far.
+    #[must_use]
     pub fn tally(&self) -> FrameTally {
         self.tally
     }
@@ -226,6 +230,7 @@ pub struct ScanoutSet {
 
 impl ScanoutSet {
     /// No output lit.
+    #[must_use]
     pub fn empty() -> ScanoutSet {
         ScanoutSet::default()
     }
@@ -263,6 +268,7 @@ impl ScanoutSet {
     }
 
     /// The scanout of `name`.
+    #[must_use]
     pub fn get(&self, name: &OutputName) -> Option<&Scanout> {
         self.outputs.get(name)
     }
@@ -293,6 +299,7 @@ impl ScanoutSet {
 
     /// Whether the display shows the session at `now`, over the outputs that scan out: see
     /// [`ScanoutSet::health_of`].
+    #[must_use]
     pub fn health(&self, now: Mono) -> Health {
         self.health_of(now, &self.names())
     }
@@ -301,19 +308,22 @@ impl ScanoutSet {
     /// (`enabled`): frozen when there is one and every one of them has either asked for frames
     /// for too long and shown none, or has no scanout at all (a re-light that failed left it
     /// without; nothing will ever show on it, CASB-05).
+    #[must_use]
     pub fn health_of(&self, now: Mono, enabled: &[OutputName]) -> Health {
         let starved = |name: &OutputName| {
             self.outputs
                 .get(name)
                 .is_none_or(|scanout| scanout.starved(now))
         };
-        match !enabled.is_empty() && enabled.iter().all(starved) {
-            true => Health::Frozen,
-            false => Health::Alive,
+        if !enabled.is_empty() && enabled.iter().all(starved) {
+            Health::Frozen
+        } else {
+            Health::Alive
         }
     }
 
     /// The outputs that scan out now.
+    #[must_use]
     pub fn names(&self) -> Vec<OutputName> {
         self.outputs.keys().cloned().collect()
     }

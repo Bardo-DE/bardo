@@ -15,6 +15,7 @@ impl OAuthState {
     /// Whether `presented` is this state. The bytes are compared in constant time (`subtle`):
     /// the value is a secret and a timing oracle on it costs an attacker nothing. A different
     /// length is refused first, as `ct_eq` of slices does.
+    #[must_use]
     pub fn accepts(&self, presented: &str) -> bool {
         let (ours, theirs) = (self.0.as_bytes(), presented.as_bytes());
         ours.len() == theirs.len() && bool::from(ours.ct_eq(theirs))
@@ -32,6 +33,7 @@ pub struct Pkce {
 
 impl Pkce {
     /// A verifier of 43 characters from 32 random bytes, and a state from 16.
+    #[must_use]
     pub fn from_random(verifier: [u8; 32], state: [u8; 16]) -> Self {
         Self {
             verifier: SecretText::new(URL_SAFE_NO_PAD.encode(verifier)),
@@ -41,6 +43,7 @@ impl Pkce {
 
     /// The `S256` challenge for the verifier, sent with the authorize request: its SHA-256,
     /// base64url.
+    #[must_use]
     pub fn challenge(&self) -> String {
         URL_SAFE_NO_PAD.encode(Sha256::digest(self.verifier.expose().as_bytes()))
     }

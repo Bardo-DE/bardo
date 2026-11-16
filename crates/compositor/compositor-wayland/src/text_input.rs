@@ -30,6 +30,7 @@ pub struct TextInputPart {
 
 impl TextInputPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> TextInputPart
     where
         D: GlobalDispatch<ZwpTextInputManagerV3, GlobalData>
@@ -62,6 +63,7 @@ pub fn on_commit_state(part: &mut TextInputPart, surface: &WlSurface) -> Vec<Eve
 }
 
 /// What the seat's input method and text field say right now (the gate's facts).
+#[must_use]
 pub fn facts_of<D: SeatHandler + 'static>(seat: &Seat<D>) -> ImeFacts {
     let method = seat.input_method();
     let mut field_active = false;

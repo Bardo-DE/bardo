@@ -112,7 +112,7 @@ fn the_entry_is_an_agents_toml_entry_under_the_scratch_home() {
     assert_eq!(entry.network, sandbox::NetworkMode::Host);
     assert_eq!(entry.state[0].as_str(), "/scratch/world-1/.claude");
     assert_eq!(
-        entry.home.as_ref().map(|h| h.as_str()),
+        entry.home.as_ref().map(base_path::AbsPath::as_str),
         Some("/scratch/world-1")
     );
     assert!(entry.tools);
@@ -132,15 +132,15 @@ fn acp_spec(line: &str) -> Result<AcpSpec, UsageError> {
 #[test]
 fn a_registry_agent_needs_its_pin_and_directory_and_takes_no_login_of_its_own() {
     let base = "smoke --engine scripted --agent acp --acp-agent agy-acp";
-    assert!(acp_spec(base).is_err());
-    assert!(acp_spec(&format!("{base} --acp-version 1.3.0")).is_err());
+    acp_spec(base).unwrap_err();
+    acp_spec(&format!("{base} --acp-version 1.3.0")).unwrap_err();
     let line = format!("{base} --acp-version 1.3.0 --acp-agents-dir /scratch/agents");
     let spec = acp_spec(&format!("{line} --acp-model gemini-pro-agent")).expect("spec");
     assert_eq!(spec.program, "agy-acp");
     assert_eq!(spec.model.as_deref(), Some("gemini-pro-agent"));
     assert_eq!(spec.task, Task::Flows);
-    assert!(acp_spec(&format!("{line} --acp-credentials /x")).is_err());
-    assert!(acp_spec(&format!("{line} --acp-command /x")).is_err());
+    acp_spec(&format!("{line} --acp-credentials /x")).unwrap_err();
+    acp_spec(&format!("{line} --acp-command /x")).unwrap_err();
     let list = acp_spec(&format!("{line} --acp-list-models")).expect("list");
     assert_eq!(list.task, Task::ListModels);
 }

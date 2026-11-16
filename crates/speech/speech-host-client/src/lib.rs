@@ -52,10 +52,12 @@ pub struct SpeechHostClient {
 }
 
 impl SpeechHostClient {
+    #[must_use]
     pub fn new(socket: HostSocket) -> Self {
         Self { socket }
     }
 
+    #[must_use]
     pub fn socket(&self) -> &HostSocket {
         &self.socket
     }

@@ -35,6 +35,7 @@ impl Feature {
     ];
 
     /// The MCCS VCP code.
+    #[must_use]
     pub fn code(self) -> u8 {
         match self {
             Feature::Brightness => 0x10,
@@ -65,6 +66,7 @@ pub struct InputSource(pub u16);
 
 impl InputSource {
     /// The name MCCS gives the input, `None` for a vendor-specific one.
+    #[must_use]
     pub fn name(self) -> Option<&'static str> {
         Some(match self.0 & 0xFF {
             0x01 => "VGA 1",
@@ -112,6 +114,7 @@ const MUTED: u16 = 1;
 const AUDIBLE: u16 = 2;
 
 /// The value to write to VCP 0x8D for `mute`.
+#[must_use]
 pub fn mute_value(mute: Mute) -> u16 {
     match mute {
         Mute::Muted => MUTED,
@@ -122,6 +125,7 @@ pub fn mute_value(mute: Mute) -> u16 {
 impl Controls {
     /// The controls from one reading per feature (`None` where the read failed). The RGB gain is
     /// only a control when all three channels answered.
+    #[must_use]
     pub fn from_readings(readings: &[(Feature, Option<Level>)]) -> Controls {
         readings
             .iter()
@@ -137,6 +141,7 @@ impl Controls {
 
     /// `self` after `feature` was read again as `level` (a change made on the monitor). One
     /// channel read again never makes up an RGB gain the display did not have.
+    #[must_use]
     pub fn reread(self, feature: Feature, level: Level) -> Controls {
         let before = self;
         let next = self.read(feature, level);
@@ -213,6 +218,7 @@ impl Controls {
 
     /// `self` after `value` was written to `feature`: the value changes, the maximum stays. A
     /// write to a feature the display never answered for changes nothing.
+    #[must_use]
     pub fn written(self, feature: Feature, value: u16) -> Controls {
         let level = |old: Option<Level>| old.map(|l| Level { value, ..l });
         let gain = |set: fn(RgbGain, u16) -> RgbGain| self.gain.map(|g| set(g, value));
@@ -269,6 +275,7 @@ impl Controls {
     }
 
     /// Whether the display answered for anything at all.
+    #[must_use]
     pub fn any(&self) -> bool {
         *self != Controls::default()
     }

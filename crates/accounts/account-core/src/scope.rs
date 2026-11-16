@@ -59,6 +59,7 @@ impl ScopeName {
     /// Read a unit name back, or `None` for one that is not an app scope's: no `app-` or
     /// `.scope`, too many or too few parts, a launcher or run that is not one word, or a broken
     /// escape in the id.
+    #[must_use]
     pub fn parse(unit: &str) -> Option<ScopeName> {
         let body = unit.strip_prefix("app-")?.strip_suffix(".scope")?;
         let (launcher, id, run) = match body.split('-').collect::<Vec<_>>().as_slice() {
@@ -71,22 +72,26 @@ impl ScopeName {
     }
 
     /// The tag of the launcher that wrote it (`sill`, `flatpak`), if it wrote one.
+    #[must_use]
     pub fn launcher(&self) -> Option<&str> {
         self.launcher.as_deref()
     }
 
     /// The app's id, unescaped.
+    #[must_use]
     pub fn app(&self) -> &str {
         &self.app
     }
 
     /// Which run of the app: the launcher's nonce, or Flatpak's instance number.
+    #[must_use]
     pub fn run(&self) -> &str {
         &self.run
     }
 
     /// Whether Flatpak wrote it: its tag, and a decimal instance number, which is what Flatpak
     /// writes for each run.
+    #[must_use]
     pub fn is_flatpak(&self) -> bool {
         self.launcher() == Some(FLATPAK_LAUNCHER) && self.run.bytes().all(|b| b.is_ascii_digit())
     }

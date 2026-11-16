@@ -141,27 +141,24 @@ impl<H: Http> CalendarStore for Google<H> {
 
     async fn put(&self, calendar: &str, event: &Event) -> Result<Stored, CalendarError> {
         let written = google_event(event);
-        let response = match self.find(calendar, &event.uid).await? {
-            Some(held) => {
-                let mut asked = request(
-                    Method::PUT,
-                    &self.events(calendar, &format!("/{}", encode(&held.id)))?,
-                    &written,
-                )?;
-                if let Some(etag) = &held.version {
-                    asked = if_match(asked, etag)?;
-                }
-                exchange(&self.http, asked, "the update of an event").await?
+        let response = if let Some(held) = self.find(calendar, &event.uid).await? {
+            let mut asked = request(
+                Method::PUT,
+                &self.events(calendar, &format!("/{}", encode(&held.id)))?,
+                &written,
+            )?;
+            if let Some(etag) = &held.version {
+                asked = if_match(asked, etag)?;
             }
-            None => {
-                let at = self.events(calendar, "/import")?;
-                exchange(
-                    &self.http,
-                    request(Method::POST, &at, &written)?,
-                    "the import of an event",
-                )
-                .await?
-            }
+            exchange(&self.http, asked, "the update of an event").await?
+        } else {
+            let at = self.events(calendar, "/import")?;
+            exchange(
+                &self.http,
+                request(Method::POST, &at, &written)?,
+                "the import of an event",
+            )
+            .await?
         };
         stored(calendar, &event.uid, &body(&response)?)
     }

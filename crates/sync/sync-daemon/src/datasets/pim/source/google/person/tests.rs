@@ -119,7 +119,7 @@ fn a_birthday_without_a_year_or_with_a_bad_date_is_handled() {
         ),
         (r#"{"date": {"year": 1990, "month": 13, "day": 1}}"#, None),
         (r#"{"date": {"year": 1990, "month": 5}}"#, None),
-        (r#"{}"#, None),
+        (r"{}", None),
     ];
     for (birthday, want) in CASES {
         let got = lines(&format!(

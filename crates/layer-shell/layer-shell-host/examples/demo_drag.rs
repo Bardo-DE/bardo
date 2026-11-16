@@ -262,7 +262,7 @@ fn run() -> Result<(), String> {
             ));
         }
         HostEvent::App(Command::Quit) | HostEvent::SurfaceClosed { .. } | HostEvent::QuitAsked => {
-            ctx.exit()
+            ctx.exit();
         }
         _ => {}
     });

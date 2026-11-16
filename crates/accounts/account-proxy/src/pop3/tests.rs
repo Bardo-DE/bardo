@@ -214,9 +214,10 @@ fn a_refusal_is_the_credentials_and_a_locked_maildrop_is_not() {
     ];
     for (name, first, second, fault) in CASES {
         let (relay, effects) = whole(at_user(), Side::Server, first.as_bytes());
-        let effects = match second.is_empty() {
-            true => effects,
-            false => whole(relay, Side::Server, second.as_bytes()).1,
+        let effects = if second.is_empty() {
+            effects
+        } else {
+            whole(relay, Side::Server, second.as_bytes()).1
         };
         assert_eq!(
             effects.last(),

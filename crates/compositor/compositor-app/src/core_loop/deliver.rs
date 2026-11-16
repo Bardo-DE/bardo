@@ -334,13 +334,12 @@ fn deliver_key(state: &mut State, seat: &Seat<State>, key: KeyDelivery) {
         return;
     }
     // A lease's keys are never the person's taken ones (`agent_gate`): its release delivers.
-    let fate = match key.origin {
-        Origin::Agent(_) => false,
-        _ => {
-            let (taken, fate) = std::mem::take(&mut state.wl.seat.taken).release_key(key.code);
-            state.wl.seat.taken = taken;
-            fate
-        }
+    let fate = if let Origin::Agent(_) = key.origin {
+        false
+    } else {
+        let (taken, fate) = std::mem::take(&mut state.wl.seat.taken).release_key(key.code);
+        state.wl.seat.taken = taken;
+        fate
     };
     let live = matches!(state.core.model.lock(), LockState::Unlocked)
         && !shortcuts_inhibit::bindings_suspended(seat)
@@ -358,15 +357,16 @@ fn deliver_key(state: &mut State, seat: &Seat<State>, key: KeyDelivery) {
         // A VT chord is the seat's, not a binding's: it works under a lock and a shortcut
         // inhibitor (P1-T), and only a kernel keyboard can make it (CASW-13): a virtual
         // keyboard's chord is an ordinary key.
-        let vt = match origin.switches_vt() {
-            true => super::tty::vt_chord(
+        let vt = if origin.switches_vt() {
+            super::tty::vt_chord(
                 state,
                 mods,
                 &handle.modified_syms(),
                 &handle.raw_syms(),
                 key.edge,
-            ),
-            false => None,
+            )
+        } else {
+            None
         };
         if vt.is_some() {
             if key.edge == PressEdge::Press {
@@ -918,9 +918,10 @@ pub(super) fn refocus(state: &mut State) {
         return;
     };
     // Mission Control has the pointer: no window is under it.
-    let under = match overview::takes_input(state) {
-        true => None,
-        false => frames::pick(
+    let under = if overview::takes_input(state) {
+        None
+    } else {
+        frames::pick(
             state,
             LogicalPoint {
                 x: here.0,
@@ -928,7 +929,7 @@ pub(super) fn refocus(state: &mut State) {
             },
         )
         .1
-        .map(|(_, at)| at),
+        .map(|(_, at)| at)
     };
     let now = state.clock.now();
     log(seat::apply_refocus(&seat, state, under, now));

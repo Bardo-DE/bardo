@@ -12,7 +12,7 @@ const DRIVE: &str = "/v1.0/me/drive";
 /// Where a replica's paths start.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 pub enum Root {
-    /// OneDrive's app folder (`special/approot`): what `Files.ReadWrite.AppFolder` reaches.
+    /// `OneDrive`'s app folder (`special/approot`): what `Files.ReadWrite.AppFolder` reaches.
     #[default]
     AppFolder,
     /// The drive's own root (`root`): the whole drive, which `Files.ReadWrite` reaches. Its

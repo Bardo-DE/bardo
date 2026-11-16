@@ -34,6 +34,7 @@ pub struct PointerProfile {
 
 impl PointerProfile {
     /// A profile.
+    #[must_use]
     pub fn new(
         accel: AccelProfile,
         natural_scroll: bool,
@@ -62,6 +63,7 @@ pub struct PointerSettings {
 
 impl PointerSettings {
     /// Settings with `mouse` for mice and trackballs and `touchpad` for touchpads.
+    #[must_use]
     pub fn new(mouse: PointerProfile, touchpad: PointerProfile) -> PointerSettings {
         PointerSettings { mouse, touchpad }
     }
@@ -69,6 +71,7 @@ impl PointerSettings {
     /// The Mac's defaults: adaptive acceleration and natural scrolling on every pointer,
     /// tap-to-click and disable-while-typing on the touchpad only, scroll at the device's own
     /// step.
+    #[must_use]
     pub fn defaults() -> PointerSettings {
         let step = Fraction(1000);
         PointerSettings {

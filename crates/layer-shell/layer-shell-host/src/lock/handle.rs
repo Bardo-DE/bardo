@@ -33,11 +33,13 @@ impl LockHandle {
     }
 
     /// The lock this document belongs to.
+    #[must_use]
     pub fn id(&self) -> LockId {
         self.id
     }
 
     /// Where the lock is right now, without subscribing: for an event handler or a task.
+    #[must_use]
     pub fn phase(&self) -> LockPhase {
         self.phase.get()
     }
@@ -53,12 +55,14 @@ impl LockHandle {
 
 /// The lock handle of the lock surface this component renders into. Panics outside a lock
 /// surface's document, like `use_context`.
+#[must_use]
 pub fn use_lock() -> LockHandle {
     dioxus::prelude::use_context::<LockHandle>()
 }
 
 /// The lock's phase as a signal: re-renders the component when it changes (`Locked` once the
 /// compositor has locked, `Unlocking` just before the surfaces go).
+#[must_use]
 pub fn use_lock_phase() -> ReadSignal<LockPhase> {
     let live = use_lock().phase;
     let mut latest = use_signal(|| live.get());

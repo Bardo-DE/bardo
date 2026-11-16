@@ -45,7 +45,7 @@ fn Dots() -> Element {
                         frame: frame(index),
                         selection: false,
                         shortcut: Shortcut(vec![ShortcutKey::Ctrl, ShortcutKey::Char('1')]),
-                        onclick: |_| {},
+                        onclick: |()| {},
                     }
                 }
                 div {

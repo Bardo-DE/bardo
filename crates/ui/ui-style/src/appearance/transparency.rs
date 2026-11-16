@@ -22,6 +22,7 @@ pub enum Transparency {
 impl Transparency {
     /// The `data-transparency` value a root carries: only `Reduced` writes one, so a root that
     /// keeps translucency is marked as it always was.
+    #[must_use]
     pub const fn attribute(self) -> Option<&'static str> {
         match self {
             Transparency::System => None,

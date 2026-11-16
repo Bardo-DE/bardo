@@ -64,6 +64,7 @@ impl Engine {
     }
 
     /// The flag's value, for a report.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Self::Scripted => "scripted",
@@ -73,6 +74,7 @@ impl Engine {
     }
 
     /// What this engine reaches.
+    #[must_use]
     pub fn reach(self) -> Reach {
         match self {
             Self::Scripted | Self::Local => Reach::Nothing,
@@ -147,6 +149,7 @@ fn catalogue() -> Vec<String> {
 /// action up to destructive, the quick judge passes, and both larger stages allow. The
 /// structural guarantees (what policy and the router decide before any judge) must hold at 100%
 /// through it.
+#[must_use]
 pub fn hijacked_judge_cassette() -> String {
     scripted_cassette(&[])
 }

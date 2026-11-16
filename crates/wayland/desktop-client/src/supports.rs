@@ -15,6 +15,7 @@ const WLR_TOPLEVEL: &[Protocol] = &[Protocol::WlrForeignToplevelManagement];
 
 /// The protocols `command` needs on the wlr arm, all of them. For a Quire-only command, the
 /// Quire protocols it needs. See [`requires_on`] for the arm an offer chooses.
+#[must_use]
 pub fn requires(command: &DesktopCommand) -> &'static [Protocol] {
     requires_on(Some(DesktopBackend::Wlr), command)
 }
@@ -36,11 +37,15 @@ pub fn requires(command: &DesktopCommand) -> &'static [Protocol] {
 /// );
 /// assert!(requires_on(Some(DesktopBackend::Quire), &close).contains(&Protocol::QuireDesktop));
 /// ```
+#[must_use]
 pub fn requires_on(
     backend: Option<DesktopBackend>,
     command: &DesktopCommand,
 ) -> &'static [Protocol] {
-    use Protocol::*;
+    use Protocol::{
+        ExtImageCopyCapture, ExtOutputImageCaptureSource, ExtWorkspace, QuireShell,
+        WlrOutputManagement,
+    };
     let quire = backend == Some(DesktopBackend::Quire);
     let by_arm = |on_quire: &'static [Protocol]| if quire { on_quire } else { WLR_TOPLEVEL };
     match command.route() {
@@ -61,6 +66,7 @@ pub fn requires_on(
 }
 
 /// The first protocol `command` needs that `offered` lacks, on the arm `offered` chooses.
+#[must_use]
 pub fn missing(offered: &ProtocolSet, command: &DesktopCommand) -> Option<Protocol> {
     requires_on(backend_for(offered), command)
         .iter()
@@ -72,6 +78,7 @@ pub fn missing(offered: &ProtocolSet, command: &DesktopCommand) -> Option<Protoc
 /// workspace that lacks the ability, a closed toplevel); this answers the protocol question.
 /// Whether this client bound `bardo_shell_v1` is the caller's choice, not the offer's; see
 /// `admit`.
+#[must_use]
 pub fn supports(offered: &ProtocolSet, command: &DesktopCommand) -> bool {
     missing(offered, command).is_none()
 }

@@ -29,6 +29,7 @@ pub enum PinNeed {
 
 impl PinNeed {
     /// Whether `pin` is firm enough.
+    #[must_use]
     pub fn satisfied_by(self, pin: Pin) -> bool {
         match self {
             PinNeed::Any => true,
@@ -61,6 +62,7 @@ pub enum FileTrust {
 
 impl FileTrust {
     /// The weaker of two trusts: `self` if it is writable, else `other`.
+    #[must_use]
     pub fn weaker(self, other: FileTrust) -> FileTrust {
         match self {
             FileTrust::RootOnly => other,
@@ -148,7 +150,7 @@ pub enum Transient {
 }
 
 /// The variables that make a process load code the image does not name: the dynamic loader's,
-/// and the search paths of the libraries a desktop program opens (GLib, GTK, GStreamer, Mesa,
+/// and the search paths of the libraries a desktop program opens (`GLib`, GTK, `GStreamer`, Mesa,
 /// EGL, GBM, VA-API, Vulkan). `systemctl --user set-environment` and
 /// `~/.config/environment.d` put them in the environment of every user unit, so a root-owned
 /// image is fixed but the code it loads is not. A unit proves `Full` only when its
@@ -196,6 +198,7 @@ pub enum Loader {
 impl Loader {
     /// What a unit whose `UnsetEnvironment` is `unset` does about the loader variables. An entry
     /// of the form `NAME=value` unsets only that exact assignment, so it does not count.
+    #[must_use]
     pub fn from_unset(unset: &[String]) -> Loader {
         let missing: Vec<String> = LOADER_VARIABLES
             .iter()
@@ -210,11 +213,13 @@ impl Loader {
     }
 
     /// What a failed read of `UnsetEnvironment` counts as: nothing is unset.
+    #[must_use]
     pub fn unknown() -> Loader {
         Loader::from_unset(&[])
     }
 
     /// The variables not unset, as one line for a log or a message; `None` when cleared.
+    #[must_use]
     pub fn reason(&self) -> Option<String> {
         match self {
             Loader::Cleared => None,

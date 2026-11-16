@@ -19,8 +19,8 @@
 //!   at open a row whose file is missing or of another size is dropped, as is a content file no
 //!   row names.
 //! - **A whole file is checked.** When every byte of a version is here, it is hashed and
-//!   compared with the hash the listing has for it (MD5 for Google Drive, QuickXorHash for
-//!   OneDrive, SHA-256 where a drive reports that); only then is it downloaded. With no hash
+//!   compared with the hash the listing has for it (MD5 for Google Drive, `QuickXorHash` for
+//!   `OneDrive`, SHA-256 where a drive reports that); only then is it downloaded. With no hash
 //!   (or a kind this crate does not compute) the listing's version is read again instead, which
 //!   finds a change only once the listing has it. A mismatch drops the bytes: the item is stale,
 //!   and is fetched again from the start when next asked.
@@ -197,6 +197,7 @@ impl DriveConfig {
     /// A cache in `dir`, with chunks of a mebibyte, the automatic limit, four downloads at once,
     /// two minutes for a chunk, two seconds for the lock and [`QUIET`] before a change is sent;
     /// the free space is measured.
+    #[must_use]
     pub fn new(dir: PathBuf) -> Self {
         Self {
             cache: dir,
@@ -628,17 +629,20 @@ impl Drive {
     }
 
     /// The cache directory.
+    #[must_use]
     pub fn cache_dir(&self) -> &Path {
         &self.inner.dir
     }
 
     /// Whether what is changed here is sent to the drive ([`Drive::open_writable`]); a drive
     /// opened read-only refuses every change.
+    #[must_use]
     pub fn writable(&self) -> bool {
         self.inner.sink.is_some()
     }
 
     /// Hears which nodes' details change from now on.
+    #[must_use]
     pub fn subscribe(&self) -> broadcast::Receiver<Changed> {
         self.inner.events.subscribe()
     }
@@ -652,6 +656,7 @@ impl Drive {
     }
 
     /// The limit eviction keeps the cache under.
+    #[must_use]
     pub fn limit(&self) -> CacheLimit {
         *held(&self.inner.limit)
     }
@@ -663,6 +668,7 @@ impl Drive {
     }
 
     /// The account's quota as the drive last said: bytes used and, when limited, the total.
+    #[must_use]
     pub fn quota(&self) -> Option<(u64, Option<u64>)> {
         *held(&self.inner.quota)
     }
@@ -673,6 +679,7 @@ impl Drive {
     }
 
     /// Whether the drive could not be reached the last time it was asked.
+    #[must_use]
     pub fn offline(&self) -> bool {
         self.inner.offline.load(Ordering::SeqCst)
     }
@@ -710,11 +717,13 @@ impl Drive {
     }
 
     /// The inode number of `id`. An item made here keeps its number once the drive has it.
+    #[must_use]
     pub fn ino(&self, id: &NodeId) -> u64 {
         self.inner.ino(id)
     }
 
     /// The node an inode number this drive gave out names.
+    #[must_use]
     pub fn by_ino(&self, ino: u64) -> Option<NodeId> {
         let id = held(&self.inner.inodes).get(&ino).cloned()?;
         Some(self.inner.canonical(&id))
@@ -722,12 +731,14 @@ impl Drive {
 
     /// The node `id` names now: an item made here that the drive has since given an id (or
     /// that was saved over another file) is named by that.
+    #[must_use]
     pub fn canonical(&self, id: &NodeId) -> NodeId {
         self.inner.canonical(id)
     }
 
     /// Whether `id` stays on this computer and is never sent (see [`crate::local_only`]): a
     /// list of the drive's items leaves it out.
+    #[must_use]
     pub fn local_only(&self, id: &NodeId) -> bool {
         self.inner.local_only(id)
     }

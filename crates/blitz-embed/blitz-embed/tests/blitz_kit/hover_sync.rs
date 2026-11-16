@@ -46,7 +46,7 @@ impl EventHandler for Logger {
         let id = inner
             .get_node(event.target)
             .and_then(|node| node.element_data())
-            .and_then(|data| data.id.as_ref().map(|id| id.to_string()));
+            .and_then(|data| data.id.as_ref().map(std::string::ToString::to_string));
         if let Some(id) = id {
             self.0.borrow_mut().push(format!("{id} {verb}"));
         }

@@ -28,6 +28,7 @@ pub struct ControlCenterLink {
 
 impl ControlCenterLink {
     /// No ask yet.
+    #[must_use]
     pub fn new() -> ControlCenterLink {
         ControlCenterLink::default()
     }
@@ -44,6 +45,7 @@ impl ControlCenterLink {
 
     /// A receiver for a bar to follow; a bar acts on asks for its own output that arrive after
     /// it subscribed.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<ControlCenterAsk> {
         self.ask.subscribe()
     }

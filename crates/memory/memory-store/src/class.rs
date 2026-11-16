@@ -44,6 +44,7 @@ pub fn class_of<'a>(labels: impl IntoIterator<Item = &'a Label>) -> DataClass {
 }
 
 /// The tag of `class`: its serde slug (`mail`, `app_own`).
+#[must_use]
 pub fn class_tag(class: DataClass) -> ClassTag {
     let slug = serde_json::to_value(class)
         .ok()
@@ -54,6 +55,7 @@ pub fn class_tag(class: DataClass) -> ClassTag {
 
 /// The class a tag spells; `None` for the empty tag and for one this build does not know (an
 /// index written by a newer build), which an embedder treats as its own strictest pin.
+#[must_use]
 pub fn class_from_tag(tag: &ClassTag) -> Option<DataClass> {
     serde_json::from_value(serde_json::Value::String(tag.0.clone())).ok()
 }

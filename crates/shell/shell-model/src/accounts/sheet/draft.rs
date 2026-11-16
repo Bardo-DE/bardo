@@ -69,6 +69,7 @@ impl FieldDraft {
     }
 
     /// Whether it holds nothing but blanks.
+    #[must_use]
     pub fn is_blank(&self) -> bool {
         match &self.value {
             FieldValue::Plain(text) => text.trim().is_empty(),
@@ -79,6 +80,7 @@ impl FieldDraft {
 
 impl Draft {
     /// What the form holds as answers: plain text trimmed, secrets as they are.
+    #[must_use]
     pub fn answers(&self) -> Vec<FieldAnswer> {
         self.fields
             .iter()
@@ -94,6 +96,7 @@ impl Draft {
 
     /// What is wrong with the form as typed, if anything (porter's `form_problem` over the form
     /// the view asked for, reshaped by the answers). The form stays unsent while this is `Some`.
+    #[must_use]
     pub fn problem(&self, specs: &[FieldSpec]) -> Option<FieldProblem> {
         let answers = self.answers();
         form_problem(&refit(specs, &answers), &answers)
@@ -205,9 +208,12 @@ pub(super) fn toggled(
 ) -> Vec<KindToggle> {
     choices
         .iter()
-        .map(|choice| match choice.kind == kind {
-            true => KindToggle { kind, toggle },
-            false => *choice,
+        .map(|choice| {
+            if choice.kind == kind {
+                KindToggle { kind, toggle }
+            } else {
+                *choice
+            }
         })
         .collect()
 }

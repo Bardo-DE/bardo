@@ -265,7 +265,7 @@ fn surface_failed<M: 'static>(ctx: &mut HostCtx<M>, output: OutputId) {
 fn remake_after<M: 'static>(ctx: &mut HostCtx<M>, lock: LockId, output: OutputId, pause: Duration) {
     let armed = ctx
         .handle
-        .insert_source(Timer::from_duration(pause), move |_, _, ctx| {
+        .insert_source(Timer::from_duration(pause), move |_, (), ctx| {
             remake_surface(ctx, lock, output);
             TimeoutAction::Drop
         });

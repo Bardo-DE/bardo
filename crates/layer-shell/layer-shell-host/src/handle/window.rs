@@ -49,6 +49,7 @@ impl SurfaceHandle {
 
     /// Whether the compositor takes [`SurfaceHandle::request_placement`]. A menu offers Left,
     /// Right and Centre only when this is `Offered` (FINDINGS F50).
+    #[must_use]
     pub fn placement_support(&self) -> PlacementSupport {
         self.placement
     }
@@ -63,6 +64,7 @@ impl SurfaceHandle {
     /// This toplevel's state as of its last configure, without subscribing: for an event
     /// handler (the zoom button toggles on `maximized`). A component that draws the state reads
     /// [`use_toplevel_state`]. The default for any other surface.
+    #[must_use]
     pub fn current_toplevel_state(&self) -> ToplevelState {
         self.toplevel.get()
     }

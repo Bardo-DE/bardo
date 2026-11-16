@@ -30,6 +30,7 @@ pub struct FileDetails {
 impl Facts {
     /// The General section of the file `sniffed` is, as the file system describes it: kind, size
     /// with its exact bytes, created, modified, where, where from and permissions, in that order.
+    #[must_use]
     pub fn general(sniffed: &Sniffed, details: &FileDetails) -> Facts {
         Facts::general_in(sniffed, details, &LocalZone::system())
     }

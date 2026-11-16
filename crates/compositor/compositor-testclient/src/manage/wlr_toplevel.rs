@@ -107,6 +107,7 @@ impl ToplevelWatch {
     }
 
     /// Every window announced so far, in order, as of its last `done`.
+    #[must_use]
     pub fn listed(&self) -> Vec<WlrListed> {
         self.roster
             .entries
@@ -122,6 +123,7 @@ impl ToplevelWatch {
     }
 
     /// Whether the compositor sent `finished`.
+    #[must_use]
     pub fn finished(&self) -> bool {
         self.roster.finished
     }
@@ -174,7 +176,7 @@ impl ToplevelWatch {
         rect: (i32, i32, i32, i32),
     ) -> Result<(), ClientError> {
         self.on(index, |handle, _| {
-            handle.set_rectangle(surface, rect.0, rect.1, rect.2, rect.3)
+            handle.set_rectangle(surface, rect.0, rect.1, rect.2, rect.3);
         })
     }
 

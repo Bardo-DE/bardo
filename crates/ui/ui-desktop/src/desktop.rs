@@ -12,6 +12,7 @@ pub struct Desktop {
 impl Desktop {
     /// Whether `capability` is here: the service owns its name, or the bus can activate it on
     /// demand. The gate an extra's entry point renders under.
+    #[must_use]
     pub fn here(&self, capability: Capability) -> bool {
         self.presence.get(&capability).copied().unwrap_or(false)
     }

@@ -23,21 +23,25 @@ impl InhibitFlags {
     pub const IDLE: Self = Self(8);
 
     /// The flags for a portal value; unknown bits are dropped.
+    #[must_use]
     pub fn from_wire(value: u32) -> Self {
         Self(value & 15)
     }
 
     /// The portal's value.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         self.0
     }
 
     /// Both sets together.
+    #[must_use]
     pub fn union(self, other: Self) -> Self {
         Self(self.0 | other.0)
     }
 
     /// Whether every flag of `other` is in `self`.
+    #[must_use]
     pub fn contains(self, other: Self) -> bool {
         self.0 & other.0 == other.0
     }
@@ -58,6 +62,7 @@ pub struct BookChange {
 
 impl BookChange {
     /// Whether the union is different.
+    #[must_use]
     pub fn is_change(&self) -> bool {
         self.before != self.after
     }
@@ -71,11 +76,13 @@ pub struct InhibitBook {
 
 impl InhibitBook {
     /// An empty book.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// The union of everything held.
+    #[must_use]
     pub fn active(&self) -> InhibitFlags {
         self.held
             .values()
@@ -103,11 +110,13 @@ impl InhibitBook {
     }
 
     /// How many requests are held.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.held.len()
     }
 
     /// Whether nothing is held.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.held.is_empty()
     }

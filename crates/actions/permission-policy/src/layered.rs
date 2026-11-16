@@ -69,7 +69,10 @@ impl Book {
         }
         let result = Validator::new(self.schema.clone()).validate(&set, ValidationMode::Strict);
         if !result.validation_passed() {
-            let faults: Vec<String> = result.validation_errors().map(|e| e.to_string()).collect();
+            let faults: Vec<String> = result
+                .validation_errors()
+                .map(std::string::ToString::to_string)
+                .collect();
             return Err(refuse(faults.join("; ")));
         }
         let mut mine: BTreeMap<String, PolicyOrigin> = BTreeMap::new();

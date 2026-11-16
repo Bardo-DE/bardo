@@ -60,6 +60,7 @@ pub struct FrameDraw<'a> {
 }
 
 /// The frame `style` makes round the window `window` whose content is at `content`, on `view`.
+///
 /// Nothing for the part that is off this output. The first list goes in front of the window's
 /// surfaces (the title, then the titlebar and the lights), the second behind them (the shadow).
 /// `title`, when there is one, is laid over the titlebar. Both are drawn at the window's `opacity`,
@@ -184,6 +185,7 @@ pub fn client_shadow_elements<R: Compositor>(
 /// // The titlebar is 14 px at half size: the outline starts 14 px above the content.
 /// assert_eq!(outline, LogicalRect::new(LogicalPoint { x: 100, y: 186 }, LogicalSize { w: 400, h: 314 }));
 /// ```
+#[must_use]
 pub fn shown_outline(
     metrics: FrameMetrics,
     content: LogicalRect,
@@ -205,6 +207,7 @@ pub fn shown_outline(
 /// assert_eq!(shown_length(10, LogicalSize { w: 400, h: 300 }, full), 5);
 /// assert_eq!(shown_length(10, full, full), 10);
 /// ```
+#[must_use]
 pub fn shown_length(length: u32, drawn: LogicalSize, full: LogicalSize) -> u32 {
     u32::try_from(Shrink::of(full, drawn).length(i64::from(length))).unwrap_or(0)
 }

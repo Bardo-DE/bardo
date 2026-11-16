@@ -67,11 +67,13 @@ impl Overrides {
     }
 
     /// The changes, one per action.
+    #[must_use]
     pub fn entries(&self) -> &[OverrideEntry] {
         &self.entries
     }
 
     /// Reads the line format. Bad lines are reported and skipped, never fatal.
+    #[must_use]
     pub fn parse(text: &str) -> (Overrides, Vec<OverrideProblem>) {
         let mut entries: Vec<OverrideEntry> = Vec::new();
         let mut problems = Vec::new();
@@ -93,6 +95,7 @@ impl Overrides {
     }
 
     /// Writes the line format; `parse` reads it back.
+    #[must_use]
     pub fn render(&self) -> String {
         let lines = self.entries.iter().flat_map(|entry| {
             let id = entry.action.id();

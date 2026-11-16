@@ -34,6 +34,7 @@ pub enum Ruling {
 }
 
 /// The ruling on `ask`.
+#[must_use]
 pub fn rule(ask: &CuaAsk) -> Ruling {
     match ask.effect {
         Effect::Outbound | Effect::Destructive | Effect::Execute => {

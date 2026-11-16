@@ -41,6 +41,7 @@ impl Debounce {
     /// `self` with `write` replacing any pending write of the same feature on the same display,
     /// due [`QUIET`] ms after `now`, but no later than [`HOLD_MAX`] ms after the first value
     /// still waiting there arrived.
+    #[must_use]
     pub fn push(self, now: Stamp, write: Write) -> Debounce {
         let key = (write.id, write.feature);
         let since = self
@@ -62,6 +63,7 @@ impl Debounce {
     }
 
     /// The write waiting for `feature` on display `id`, if one is.
+    #[must_use]
     pub fn waiting(&self, id: DdcId, feature: Feature) -> Option<Write> {
         self.pending
             .iter()
@@ -70,6 +72,7 @@ impl Debounce {
     }
 
     /// The writes due at `now`, in the order they were pushed, and what is left.
+    #[must_use]
     pub fn take_due(self, now: Stamp) -> (Debounce, Vec<Write>) {
         let (due, waiting): (Vec<Pending>, Vec<Pending>) =
             self.pending.into_iter().partition(|p| p.due <= now);
@@ -80,6 +83,7 @@ impl Debounce {
     }
 
     /// When the next write falls due, if any is waiting.
+    #[must_use]
     pub fn next_due(&self) -> Option<Stamp> {
         self.pending.iter().map(|p| p.due).min()
     }

@@ -7,7 +7,7 @@ use crate::units::{Percent, Presence};
 /// The keyboard backlight, as the control center draws it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub struct KbdBacklight {
-    /// Whether the machine has one (UPower answered with a range above 0).
+    /// Whether the machine has one (`UPower` answered with a range above 0).
     pub presence: Presence,
     pub level: KbdLevel,
 }
@@ -21,6 +21,7 @@ pub struct KbdLevel {
 
 impl KbdLevel {
     /// The step as the nearest whole percentage of the range (0 with no range).
+    #[must_use]
     pub fn percent(self) -> Percent {
         match self.max {
             0 => Percent(0),

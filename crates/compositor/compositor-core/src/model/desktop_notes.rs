@@ -58,6 +58,7 @@ impl Model {
     /// Where the global menu of `app` lives: the key window's when it declared one, else the
     /// first window of the app (in the app's own order) that did, else none. The shell reads
     /// it when the app becomes active.
+    #[must_use]
     pub fn app_menu(&self, app: &AppKey) -> MenuSource {
         let key = self.focus().key;
         let held = self.apps().get(app).map(|held| held.windows.as_slice());

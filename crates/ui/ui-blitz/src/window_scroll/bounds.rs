@@ -16,6 +16,7 @@ pub struct ScrollBounds {
 
 impl ScrollBounds {
     /// The range `min..=max`; given the ends the wrong way round, they are swapped.
+    #[must_use]
     pub fn new(min: f64, max: f64) -> ScrollBounds {
         if min <= max {
             ScrollBounds { min, max }
@@ -26,17 +27,20 @@ impl ScrollBounds {
 
     /// The range of a scroller whose content is `content` px long in a viewport of `viewport` px:
     /// `0` to the overflow, and just `0` when the content fits.
+    #[must_use]
     pub fn of_content(content: f64, viewport: f64) -> ScrollBounds {
         ScrollBounds::new(0.0, (content - viewport).max(0.0))
     }
 
     /// `offset` held inside the range.
+    #[must_use]
     pub fn clamp(self, offset: f64) -> f64 {
         offset.clamp(self.min, self.max)
     }
 
     /// How far `offset` is past the range: negative before the start, positive after the end, zero
     /// inside it.
+    #[must_use]
     pub fn overshoot(self, offset: f64) -> f64 {
         if offset < self.min {
             offset - self.min
@@ -50,6 +54,7 @@ impl ScrollBounds {
     /// The offset to show for a raw `offset`: unchanged inside the range, and past an end the end
     /// plus `band`'s stretch of the overshoot on a viewport of `viewport` px, in the direction of
     /// the overshoot. The stretch never reaches `viewport`.
+    #[must_use]
     pub fn stretch(self, band: &Band, offset: f64, viewport: f64) -> f64 {
         let over = self.overshoot(offset);
         if over == 0.0 {

@@ -38,6 +38,7 @@ pub struct Share(u16);
 
 impl Share {
     /// The share `ratio` (0 to 1) stands for; out of range is clamped, not a number is nothing.
+    #[must_use]
     pub fn from_ratio(ratio: f64) -> Share {
         if ratio.is_nan() {
             return Share(0);
@@ -46,6 +47,7 @@ impl Share {
     }
 
     /// The share in thousandths, 0 to 1000.
+    #[must_use]
     pub fn permille(self) -> u16 {
         self.0
     }
@@ -72,6 +74,7 @@ pub struct CloudItem {
 
 impl CloudItem {
     /// An item of `kind` in `state`, not kept, with nothing else known.
+    #[must_use]
     pub fn new(kind: CloudKind, state: CloudState) -> CloudItem {
         CloudItem {
             state,
@@ -85,11 +88,13 @@ impl CloudItem {
     }
 
     /// The same item, kept downloaded.
+    #[must_use]
     pub fn kept(self) -> CloudItem {
         CloudItem { kept: true, ..self }
     }
 
     /// The same item, `share` of the way through its transfer.
+    #[must_use]
     pub fn moving(self, share: Share) -> CloudItem {
         CloudItem {
             share: Some(share),
@@ -98,6 +103,7 @@ impl CloudItem {
     }
 
     /// The same item, failed for the reason `words`.
+    #[must_use]
     pub fn failed(self, words: CloudWords) -> CloudItem {
         CloudItem {
             words: Some(words),
@@ -106,6 +112,7 @@ impl CloudItem {
     }
 
     /// The same item, opening at `url`.
+    #[must_use]
     pub fn opening_at(self, url: OnlineUrl) -> CloudItem {
         CloudItem {
             url: Some(url),
@@ -114,6 +121,7 @@ impl CloudItem {
     }
 
     /// The same item, in conflict with the version at `other`.
+    #[must_use]
     pub fn beside(self, other: ItemRef) -> CloudItem {
         CloudItem {
             other: Some(other),

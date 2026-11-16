@@ -11,7 +11,7 @@
 //!   Specification, through [`DesktopLauncher`];
 //! - [`intents`]: the app's actions for the assistant and the command line (docket's
 //!   `IntentProvider1`), answered through the [`Window`] trait the caller implements;
-//! - [`disks`]: the computer's disks from UDisks2 on the system bus ([`Disks`]): list, open, eject
+//! - [`disks`]: the computer's disks from `UDisks2` on the system bus ([`Disks`]): list, open, eject
 //!   and a stream of changes, with the programs holding a disk open found by [`DiskUsers`].
 //!
 //! - [`storage`]: the cloud drives from porter's `org.bardo.Storage1` ([`Storage`], and

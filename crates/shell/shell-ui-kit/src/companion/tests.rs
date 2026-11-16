@@ -280,7 +280,11 @@ fn a_handle_reads_as_what_the_router_resolved_it_to_or_an_ellipsis() {
     let AnswerView::Text(text) = answer_view(&answer(AnswerPhase::Done, body), "ask", &cx) else {
         panic!("a text answer");
     };
-    let words: Vec<String> = text.body.iter().map(|line| line.plain_text()).collect();
+    let words: Vec<String> = text
+        .body
+        .iter()
+        .map(ui_components::prelude::TextLine::plain_text)
+        .collect();
     assert_eq!(words, ["the receipts", "…"]);
 }
 

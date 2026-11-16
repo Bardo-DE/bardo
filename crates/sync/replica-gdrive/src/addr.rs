@@ -54,16 +54,17 @@ impl Root {
 
 /// `?k=v&k=v` (nothing for no pairs).
 pub fn query(pairs: &[(&str, &str)]) -> String {
-    match pairs.is_empty() {
-        true => String::new(),
-        false => format!(
+    if pairs.is_empty() {
+        String::new()
+    } else {
+        format!(
             "?{}",
             pairs
                 .iter()
                 .map(|(k, v)| format!("{}={}", encode_unreserved(k), encode_unreserved(v)))
                 .collect::<Vec<_>>()
                 .join("&")
-        ),
+        )
     }
 }
 

@@ -130,6 +130,7 @@ pub struct Manifest {
 
 impl Manifest {
     /// Both manifests' writes, the later of each field.
+    #[must_use]
     pub fn merged(&self, other: &Self) -> Self {
         let mut photos = self.photos.clone();
         for (id, theirs) in &other.photos {

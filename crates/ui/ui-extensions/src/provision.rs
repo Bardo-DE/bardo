@@ -28,6 +28,7 @@ struct Head {
 
 impl Provision {
     /// The look, if this entry is one.
+    #[must_use]
     pub fn look(&self) -> Option<&Look> {
         match self {
             Provision::Look(look) => Some(look),
@@ -36,6 +37,7 @@ impl Provision {
     }
 
     /// The file icons, if this entry is that.
+    #[must_use]
     pub fn file_icons(&self) -> Option<&IconFolder> {
         match self {
             Provision::FileIcons(icons) => Some(icons),

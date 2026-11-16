@@ -13,13 +13,13 @@ pub type Package = plugin_host::Package<Helper>;
 
 /// Playback, through the user's own mpv.
 const MPV: Package = Package::new("anyview-mpv", Helper::VideoPlayback, Some("mpv"));
-/// Facts, pictures and conversions, through the user's own FFmpeg.
+/// Facts, pictures and conversions, through the user's own `FFmpeg`.
 const FFMPEG: Package = Package::new("anyview-ffmpeg", Helper::MediaProbe, None);
 
 /// HEIC and HEIF pictures (and AVIF when the viewer has no decoder of its own), through the
 /// person's own libheif tools.
 const HEIF: Package = Package::new("anyview-heif", Helper::HeicDecode, None);
-/// Camera raw files developed in full, through the person's own LibRaw tools.
+/// Camera raw files developed in full, through the person's own `LibRaw` tools.
 const RAW: Package = Package::new("anyview-raw", Helper::RawDecode, None);
 
 /// What a row of [`SUGGESTIONS`] matches: a kind and, when it names a media type, that type.
@@ -97,6 +97,7 @@ const SUGGESTIONS: &[Suggestion<Capability, Wants, Helper>] = &[
 ];
 
 /// The package to suggest for `capability` on `subject`, or `None` when no package is known.
+#[must_use]
 pub fn suggested_package(capability: Capability, subject: &Subject<'_>) -> Option<Package> {
     suggest(SUGGESTIONS, capability, |wants| {
         wants.kind == subject.kind

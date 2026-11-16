@@ -57,6 +57,7 @@ pub struct Space {
 }
 
 /// The errno a failed read answers.
+#[must_use]
 pub fn errno_of(error: ReadError) -> Errno {
     match error {
         ReadError::Offline => Errno::ENETDOWN,
@@ -67,6 +68,7 @@ pub fn errno_of(error: ReadError) -> Errno {
 }
 
 /// The errno a refused change answers.
+#[must_use]
 pub fn write_errno(error: WriteError) -> Errno {
     match error {
         WriteError::ReadOnly => Errno::EROFS,
@@ -132,6 +134,7 @@ pub struct DriveFs {
 impl DriveFs {
     /// The file system over `drive`, its waiting reads on `runtime`, its files owned by this
     /// process's user, a `touch` with no time taking it from `now`.
+    #[must_use]
     pub fn new(drive: Drive, runtime: tokio::runtime::Handle, now: Now) -> Self {
         Self {
             drive,
@@ -267,17 +270,16 @@ impl DriveFs {
     /// `EISDIR` for a folder, `ENOENT` when it is not there.
     pub async fn open(&self, ino: u64, write: bool, truncate: bool) -> Result<u64, Errno> {
         let id = self.node_of(ino)?;
-        let write = match write {
-            true => Some(
+        let write = if write {
+            Some(
                 self.drive
                     .open_write(&id, truncate)
                     .await
                     .map_err(write_errno)?,
-            ),
-            false => {
-                self.drive.open_file(&id).map_err(errno_of)?;
-                None
-            }
+            )
+        } else {
+            self.drive.open_file(&id).map_err(errno_of)?;
+            None
         };
         Ok(self.handle(id, write))
     }
@@ -509,9 +511,10 @@ impl DriveFs {
 }
 
 fn kind_of(folder: bool) -> FileType {
-    match folder {
-        true => FileType::Directory,
-        false => FileType::RegularFile,
+    if folder {
+        FileType::Directory
+    } else {
+        FileType::RegularFile
     }
 }
 

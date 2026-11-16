@@ -19,6 +19,7 @@ impl<R> Default for Recall<R> {
 
 impl<R: Clone + Default> Recall<R> {
     /// Where `id` was left, or the default place.
+    #[must_use]
     pub fn of(&self, id: SpaceId) -> R {
         self.0.get(&id).cloned().unwrap_or_default()
     }
@@ -44,11 +45,13 @@ impl<R> Recall<R> {
     }
 
     /// How many Spaces have a place.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
     /// Whether no Space has one.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }

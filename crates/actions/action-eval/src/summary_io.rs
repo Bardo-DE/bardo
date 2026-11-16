@@ -16,11 +16,12 @@ fn git(repo: &Path, args: &[&str]) -> Result<String, SummaryError> {
         .args(args)
         .output()
         .map_err(|e| fault(e.to_string()))?;
-    match out.status.success() {
-        true => Ok(String::from_utf8_lossy(&out.stdout).trim().to_owned()),
-        false => Err(fault(
+    if out.status.success() {
+        Ok(String::from_utf8_lossy(&out.stdout).trim().to_owned())
+    } else {
+        Err(fault(
             String::from_utf8_lossy(&out.stderr).trim().to_owned(),
-        )),
+        ))
     }
 }
 
@@ -28,9 +29,10 @@ fn git(repo: &Path, args: &[&str]) -> Result<String, SummaryError> {
 pub fn short_commit(repo: &Path) -> Result<String, SummaryError> {
     let sha = git(repo, &["rev-parse", "--short", "HEAD"])?;
     let changes = git(repo, &["status", "--porcelain", "--untracked-files=no"])?;
-    Ok(match changes.is_empty() {
-        true => sha,
-        false => format!("{sha}-dirty"),
+    Ok(if changes.is_empty() {
+        sha
+    } else {
+        format!("{sha}-dirty")
     })
 }
 

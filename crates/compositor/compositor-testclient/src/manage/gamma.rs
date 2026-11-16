@@ -103,6 +103,7 @@ impl GammaControls {
     }
 
     /// What a control has said last.
+    #[must_use]
     pub fn state(&self, id: ControlId) -> Option<ControlState> {
         self.seen
             .controls

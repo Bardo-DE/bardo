@@ -27,6 +27,7 @@ pub struct ProfileName(String);
 
 impl ProfileName {
     /// The name of the profile every other one inherits from.
+    #[must_use]
     pub fn default_profile() -> Self {
         Self("default".to_owned())
     }
@@ -41,6 +42,7 @@ impl ProfileName {
         }
     }
 
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

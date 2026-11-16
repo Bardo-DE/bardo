@@ -14,16 +14,19 @@ impl Harness {
     }
 
     /// The border-box rect of the first element matching `selector`, if any.
+    #[must_use]
     pub fn rect(&self, selector: &str) -> Option<Rect> {
         self.with_doc(|doc| rect_of(doc, first(doc, selector)?))
     }
 
     /// The text inside the first element matching `selector`, if any.
+    #[must_use]
     pub fn text_of(&self, selector: &str) -> Option<String> {
         self.with_doc(|doc| Some(doc.get_node(first(doc, selector)?)?.text_content()))
     }
 
     /// Attribute `name` of the first element matching `selector`, if both exist.
+    #[must_use]
     pub fn attr(&self, selector: &str, name: &str) -> Option<String> {
         self.with_doc(|doc| {
             let node = doc.get_node(first(doc, selector)?)?;
@@ -32,6 +35,7 @@ impl Harness {
     }
 
     /// How many elements match `selector`.
+    #[must_use]
     pub fn count(&self, selector: &str) -> usize {
         self.with_doc(|doc| {
             doc.query_selector_all(selector)
@@ -40,12 +44,14 @@ impl Harness {
     }
 
     /// Whether the first element matching `selector` carries `class` as a whole class token.
+    #[must_use]
     pub fn has_class(&self, selector: &str, class: &str) -> bool {
         self.attr(selector, "class")
             .is_some_and(|classes| classes.split_ascii_whitespace().any(|token| token == class))
     }
 
     /// The computed `color` of the first element matching `selector`.
+    #[must_use]
     pub fn ink_of(&self, selector: &str) -> Option<Srgba> {
         self.with_doc(|doc| {
             let styles = doc.get_node(first(doc, selector)?)?.primary_styles()?;
@@ -55,6 +61,7 @@ impl Harness {
 
     /// The computed `opacity` of the first element matching `selector`, itself only: an
     /// ancestor's opacity is not folded in.
+    #[must_use]
     pub fn opacity_of(&self, selector: &str) -> Option<f32> {
         self.with_doc(|doc| {
             let styles = doc.get_node(first(doc, selector)?)?.primary_styles()?;
@@ -64,6 +71,7 @@ impl Harness {
 
     /// The computed `background-color` of the first element matching `selector`, or of its
     /// `::before` when `part` says so.
+    #[must_use]
     pub fn fill_of(&self, selector: &str, part: Part) -> Option<Srgba> {
         self.with_doc(|doc| {
             let node = doc.get_node(part.node(doc, first(doc, selector)?)?)?;
@@ -78,6 +86,7 @@ impl Harness {
 
     /// Whether the first element matching `selector` has the keyboard focus. `false` too when no
     /// element matched.
+    #[must_use]
     pub fn focus_of(&self, selector: &str) -> bool {
         self.with_doc(|doc| {
             first(doc, selector).is_some_and(|node| doc.get_focussed_node_id() == Some(node))

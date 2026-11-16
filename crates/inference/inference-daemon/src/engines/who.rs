@@ -19,6 +19,7 @@ pub struct Who {
 impl Who {
     /// `asker` as the gate sees the machine now: a model is shared when another helper has a
     /// request on an engine instance running it.
+    #[must_use]
     pub fn of(asker: &Asker, gate: &Gate, engines: &Engines) -> Self {
         Self {
             chooser: asker.chooser(),
@@ -27,11 +28,13 @@ impl Who {
     }
 
     /// `listed` with each model another helper uses marked as shared.
+    #[must_use]
     pub fn mark(&self, listed: Vec<Listed>) -> Vec<Listed> {
         listed.into_iter().map(|one| self.mark_one(one)).collect()
     }
 
     /// `placed` with each model another helper uses marked as shared.
+    #[must_use]
     pub fn mark_placed(&self, placed: Vec<Placed>) -> Vec<Placed> {
         placed
             .into_iter()
@@ -47,12 +50,13 @@ impl Who {
             account: listed.card.account.clone(),
             model: listed.card.model.clone(),
         };
-        match self.shared.contains(&model) {
-            true => Listed {
+        if self.shared.contains(&model) {
+            Listed {
                 sharing: Sharing::HeldByHelper,
                 ..listed
-            },
-            false => listed,
+            }
+        } else {
+            listed
         }
     }
 }

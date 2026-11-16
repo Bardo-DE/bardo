@@ -1,7 +1,7 @@
-//! SegmentedControl's thumb and labels under real clicks (bardo-shell's control center, 2026-09-28), on
+//! `SegmentedControl`'s thumb and labels under real clicks (bardo-shell's control center, 2026-09-28), on
 //! `Clock::Virtual` so every frame falls at an exact instant, at scale 1 and 2, light and dark,
 //! every accent, in the three places the desktop draws one: the control center's compact
-//! AppearancePicker, the full picker, and the small power-profile control (unequal words).
+//! `AppearancePicker`, the full picker, and the small power-profile control (unequal words).
 //!
 //! 1. At rest the thumb, where it is painted (its slide applied), is exactly the selected
 //!    segment's laid-out box; while it slides it is a segment wide and inside the track. The

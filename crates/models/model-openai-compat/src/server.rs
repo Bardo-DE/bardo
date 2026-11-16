@@ -16,6 +16,7 @@ use crate::Flavor;
 
 impl Flavor {
     /// How a requested output shape combines with tools on this server.
+    #[must_use]
     pub fn shape_with_tools(self) -> ShapeWithTools {
         self.server().shape_with_tools()
     }
@@ -33,7 +34,7 @@ impl Flavor {
 
 /// One server's differences on the shared wire. The defaults are the common case.
 pub(crate) trait Server {
-    /// Whether the request asks for a usage chunk (`stream_options.include_usage`). OpenRouter
+    /// Whether the request asks for a usage chunk (`stream_options.include_usage`). `OpenRouter`
     /// always sends usage and rejects the option.
     fn asks_usage(&self) -> bool {
         true

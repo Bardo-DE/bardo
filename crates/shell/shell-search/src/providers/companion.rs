@@ -49,9 +49,10 @@ impl Provider for CompanionProvider {
         }
         let state = self.companion.borrow().clone();
         let alone = query.scope == Scope::Only(ProviderKind::Companion);
-        let items = match state.reached {
-            false => Vec::new(),
-            true => rows(&state, query.text.trim(), alone),
+        let items = if state.reached {
+            rows(&state, query.text.trim(), alone)
+        } else {
+            Vec::new()
         };
         sink.push(items);
     }

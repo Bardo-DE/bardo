@@ -109,9 +109,10 @@ impl Peek for FolderPeek {
         }
         counts.sort_by_key(|found| (std::cmp::Reverse(found.count), rank(found.kind)));
         let total = u32::try_from(entries.len()).unwrap_or(u32::MAX);
-        let items = match capped {
-            true => Tally::AtLeast(total),
-            false => Tally::Exact(total),
+        let items = if capped {
+            Tally::AtLeast(total)
+        } else {
+            Tally::Exact(total)
         };
         Ok(FolderSummary {
             items,
@@ -226,8 +227,9 @@ fn entries_text(summary: &FolderSummary) -> String {
         })
         .collect();
     let head = summary.items.text();
-    match kinds.is_empty() {
-        true => head,
-        false => format!("{head} ({})", kinds.join(", ")),
+    if kinds.is_empty() {
+        head
+    } else {
+        format!("{head} ({})", kinds.join(", "))
     }
 }

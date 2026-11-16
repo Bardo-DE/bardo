@@ -11,6 +11,7 @@ use provenance::Actor;
 impl EventBody {
     /// Whether the event involves `app`: the owner of one of its things, the app searched in,
     /// or the acting app. A terminal, a companion or an external agent is no app.
+    #[must_use]
     pub fn involves_app(&self, actor: &Actor, app: &AppName) -> bool {
         let acting = match actor {
             Actor::User { via: a } | Actor::App { app: a } | Actor::ThirdParty { app: a, .. } => {
@@ -30,6 +31,7 @@ impl EventBody {
 
 impl KindPattern {
     /// Whether the pattern covers the event's kind or the kind of any thing it names.
+    #[must_use]
     pub fn covers_event(&self, body: &EventBody) -> bool {
         self.covers(body.kind().as_str())
             || body

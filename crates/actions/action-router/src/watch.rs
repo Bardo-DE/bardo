@@ -34,6 +34,7 @@ impl std::fmt::Debug for Watch {
 
 impl Watch {
     /// Nobody watches: progress goes nowhere, `proceeded` is ready at once, `withdrawn` never is.
+    #[must_use]
     pub fn none() -> Self {
         Self::default()
     }
@@ -90,7 +91,7 @@ impl Watch {
 }
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
-    m.lock().unwrap_or_else(|p| p.into_inner())
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 #[derive(Debug, Default)]
@@ -105,6 +106,7 @@ pub struct Flag(Mutex<FlagState>);
 
 impl Flag {
     /// A flag that is down.
+    #[must_use]
     pub fn new() -> Arc<Self> {
         Arc::new(Self::default())
     }
@@ -157,6 +159,7 @@ impl<T> Default for Queue<T> {
 
 impl<T: Send> Queue<T> {
     /// An empty queue.
+    #[must_use]
     pub fn new() -> Arc<Self> {
         Arc::new(Self::default())
     }
@@ -178,12 +181,11 @@ impl<T: Send> Queue<T> {
         let queue = self.clone();
         std::future::poll_fn(move |cx| {
             let mut state = locked(&queue.0);
-            match state.items.pop_front() {
-                Some(item) => Poll::Ready(item),
-                None => {
-                    state.wakers.push(cx.waker().clone());
-                    Poll::Pending
-                }
+            if let Some(item) = state.items.pop_front() {
+                Poll::Ready(item)
+            } else {
+                state.wakers.push(cx.waker().clone());
+                Poll::Pending
             }
         })
     }

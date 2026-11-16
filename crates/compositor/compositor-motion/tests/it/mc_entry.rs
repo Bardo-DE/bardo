@@ -1,4 +1,4 @@
-//! S-L8: the Mission Control entry (FrameScene text at 0, 50, 100, 200 and 400 ms): its ends are
+//! S-L8: the Mission Control entry (`FrameScene` text at 0, 50, 100, 200 and 400 ms): its ends are
 //! the table's own numbers, sampling is independent of how often it is sampled and stable run to
 //! run, and a microsecond of timing moves no value by more than one sub-pixel.
 

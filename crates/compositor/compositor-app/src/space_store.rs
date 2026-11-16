@@ -39,6 +39,7 @@ pub struct StateDirs {
 
 impl StateDirs {
     /// State kept in `dir`.
+    #[must_use]
     pub fn at(dir: PathBuf) -> StateDirs {
         StateDirs {
             casement: dir,
@@ -56,21 +57,25 @@ impl StateDirs {
     }
 
     /// Where the session lock's marker is kept, if it is.
+    #[must_use]
     pub fn runtime_dir(&self) -> Option<&Path> {
         self.runtime.as_deref()
     }
 
     /// The directory.
+    #[must_use]
     pub fn dir(&self) -> &Path {
         &self.casement
     }
 
     /// The Space ids file (C52).
+    #[must_use]
     pub fn spaces_file(&self) -> PathBuf {
         self.casement.join("spaces.toml")
     }
 
     /// The person's privacy book: which program may use which power (`compositor_app::privacy`).
+    #[must_use]
     pub fn privacy_file(&self) -> PathBuf {
         compositor_privacy::book_in(&self.casement)
     }
@@ -111,6 +116,7 @@ pub struct FileSpaceStore {
 
 impl FileSpaceStore {
     /// The store for `dirs`' Spaces file.
+    #[must_use]
     pub fn new(dirs: &StateDirs) -> FileSpaceStore {
         FileSpaceStore {
             path: dirs.spaces_file(),

@@ -290,9 +290,10 @@ impl<C: Callers, D: PickerDesk> PhotosPickerServer for PickerObject<C, D> {
     ) -> Result<(), RefusedError> {
         let (account, session) = self.0.admit(&header, &account, Some(&session)).await?;
         let session = session.ok_or_else(none_here)?;
-        match self.0.desk.cancel(&account, &session).await {
-            true => Ok(()),
-            false => Err(none_here()),
+        if self.0.desk.cancel(&account, &session).await {
+            Ok(())
+        } else {
+            Err(none_here())
         }
     }
 }

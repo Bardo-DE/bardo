@@ -35,17 +35,20 @@ pub struct ServerAddress {
 
 impl ServerAddress {
     /// The address as typed (surrounding blanks removed).
+    #[must_use]
     pub fn url(&self) -> &EndpointUrl {
         &self.url
     }
 
     /// `Implicit` for `https`, `Plain` for `http`.
+    #[must_use]
     pub fn tls(&self) -> Tls {
         self.tls
     }
 
     /// The path every request goes under: the address's own path without a closing `/`, empty
     /// for the root (`https://llm.example.test/v1/` is `/v1`).
+    #[must_use]
     pub fn base(&self) -> String {
         self.url.path().trim_end_matches('/').to_owned()
     }

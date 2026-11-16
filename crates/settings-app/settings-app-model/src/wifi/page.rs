@@ -6,6 +6,7 @@ use ui_settings::schema::Page;
 pub const WIFI_SLUG: &str = "wifi";
 
 /// The Wi-Fi page as the catalogue holds it.
+#[must_use]
 pub fn wifi_page() -> Page {
     Page::declared(WIFI_SLUG)
 }

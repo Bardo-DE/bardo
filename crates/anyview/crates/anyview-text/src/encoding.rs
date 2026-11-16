@@ -16,7 +16,7 @@ pub enum TextCodec {
     /// Windows-1252, the web's default for bytes that are not UTF-8 and the guess when the bytes
     /// say nothing else. Every byte maps to a character, so decoding never fails.
     Windows1252,
-    /// Another legacy encoding the bytes look like: Shift_JIS, GBK, Big5, EUC-JP, EUC-KR, KOI8-R,
+    /// Another legacy encoding the bytes look like: `Shift_JIS`, GBK, Big5, EUC-JP, EUC-KR, KOI8-R,
     /// Windows-1251 and the rest of the web's labels. A byte that is not valid in it decodes to a
     /// replacement character.
     Legacy(LegacyEncoding),
@@ -47,6 +47,7 @@ pub struct Detected {
 impl TextCodec {
     /// `UTF-8`, `UTF-16 LE`, `UTF-16 BE`, `Windows-1252` or the guessed encoding's name (`Shift_JIS`,
     /// `KOI8-R`), as a pane lists it.
+    #[must_use]
     pub fn label(self) -> &'static str {
         match self {
             TextCodec::Unicode(TextEncoding::Utf8) => "UTF-8",

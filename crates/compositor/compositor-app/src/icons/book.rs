@@ -55,6 +55,7 @@ pub struct IconBook {
 
 impl IconBook {
     /// A book that looks for icons as `search` says.
+    #[must_use]
     pub fn new(search: Option<IconSearch>) -> IconBook {
         let (finder, config) = match search {
             None => (None, None),
@@ -89,11 +90,13 @@ impl IconBook {
     }
 
     /// The icons last drawn.
+    #[must_use]
     pub fn remembered(&self) -> &BTreeMap<WindowId, OverviewIcon> {
         &self.shown
     }
 
     /// The icon theme lookups use now.
+    #[must_use]
     pub fn theme(&self) -> Option<&SystemTheme> {
         self.finder.as_ref().map(|finder| &finder.theme)
     }
@@ -173,14 +176,13 @@ impl IconBook {
         if let Some(kept) = self.drawn.get(&at) {
             return Some(kept.clone());
         }
-        let key = match self.waiting.get(&at) {
-            Some(waiting) => waiting.key.clone(),
-            None => {
-                let want = want();
-                let key = want.key();
-                self.ask(want, &key, edge);
-                key
-            }
+        let key = if let Some(waiting) = self.waiting.get(&at) {
+            waiting.key.clone()
+        } else {
+            let want = want();
+            let key = want.key();
+            self.ask(want, &key, edge);
+            key
         };
         match self.cache.get(&key, edge) {
             Some(slot) => {

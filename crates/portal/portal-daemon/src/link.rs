@@ -22,6 +22,7 @@ pub struct BusLink {
 
 impl BusLink {
     /// A link nothing is attached to yet.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -46,6 +47,7 @@ impl BusLink {
 
     /// The means of identifying callers, or `None` before [`crate::serve`] has attached them. A
     /// caller that finds none refuses: nobody can be told apart yet.
+    #[must_use]
     pub fn peers(&self) -> Option<Arc<Peers>> {
         self.peers.get().cloned()
     }

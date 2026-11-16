@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 /// `[bindings]`: each key is a chord in its text form (`"cmd+space"`), each value what it does, as a list of words (`action.rs`).
+///
 /// Not in the schema: a chord table has no fixed keys for the Settings app to draw. A chord
 /// or an action that does not parse is left out of the model and logged when the document is converted.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -11,12 +11,13 @@ use std::process::{Child, Command, Stdio};
 /// Panics (the test is ignored unless asked for) when it is not absolute, is the session's
 /// `wayland-0`, or does not answer a connection.
 pub fn nested_socket() -> PathBuf {
-    let socket = std::env::var_os("BARDO_SHELL_NESTED_SOCKET")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| {
+    let socket = std::env::var_os("BARDO_SHELL_NESTED_SOCKET").map_or_else(
+        || {
             let runtime = std::env::var_os("XDG_RUNTIME_DIR").expect("XDG_RUNTIME_DIR is set");
             PathBuf::from(runtime).join("wayland-1")
-        });
+        },
+        PathBuf::from,
+    );
     assert!(
         socket.is_absolute(),
         "the nested socket is named by absolute path"

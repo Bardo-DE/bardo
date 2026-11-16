@@ -14,6 +14,7 @@ const ENTRY_CAP: u16 = 50;
 const IMAGE_MAX_BYTES: u64 = 8 << 20;
 
 /// The clipboard service's policy `l` makes.
+#[must_use]
 pub fn clip_policy_of(l: &LauncherSettings) -> ClipPolicy {
     ClipPolicy {
         mode: l.clipboard_history,

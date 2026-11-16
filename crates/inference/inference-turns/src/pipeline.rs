@@ -50,6 +50,7 @@ pub struct PipelineInput {
 }
 
 /// Why a plan cannot run here yet, as a typed refusal (none for a plan this build runs).
+#[must_use]
 pub fn unsupported(pipeline: &Pipeline) -> Option<Refusal> {
     pipeline.stages.iter().find_map(|stage| match stage.role {
         StageRole::Describe => Some(Refusal::NotYet("describing images with the image_in slot")),

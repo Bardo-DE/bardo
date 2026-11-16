@@ -270,7 +270,10 @@ fn an_introduced_standing_stands_for_its_sender_and_for_nobody_else() {
             .expect("valid");
         peers.introduce(&name_of(&service), standing);
         let need = [Requirement::new(shell(), Proof::Full)];
-        assert!(peers.require(Some(&name_of(&service)), &need).await.is_ok());
+        peers
+            .require(Some(&name_of(&service)), &need)
+            .await
+            .unwrap();
         // The other connection is looked at for real, in an empty tree: nobody.
         assert_eq!(
             peers.require(Some(&name_of(&other)), &need).await,

@@ -23,11 +23,13 @@ pub struct MinuteOfDay(u16);
 
 impl MinuteOfDay {
     /// `minutes` after midnight, wrapped round the day.
+    #[must_use]
     pub fn wrapping(minutes: u32) -> MinuteOfDay {
         MinuteOfDay(u16::try_from(minutes % 1440).unwrap_or(0))
     }
 
     /// The minutes after midnight.
+    #[must_use]
     pub fn minutes(self) -> u16 {
         self.0
     }
@@ -46,12 +48,14 @@ impl Warmth {
     pub const NIGHT: Warmth = Warmth(3400);
 
     /// `kelvin`, kept between the warmest and neutral.
+    #[must_use]
     pub fn clamped(kelvin: u32) -> Warmth {
         let kept = kelvin.clamp(u32::from(Warmth::WARMEST), u32::from(Warmth::NEUTRAL));
         Warmth(u16::try_from(kept).unwrap_or(Warmth::NEUTRAL))
     }
 
     /// The temperature in kelvin.
+    #[must_use]
     pub fn kelvin(self) -> u16 {
         self.0
     }

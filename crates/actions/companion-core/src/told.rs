@@ -40,6 +40,7 @@ impl ToldLog {
     }
 
     /// The sentences told since the one numbered `after`, oldest first.
+    #[must_use]
     pub fn since(&self, after: u64) -> Vec<Told> {
         self.told.iter().filter(|t| t.n > after).cloned().collect()
     }

@@ -128,7 +128,7 @@ fn work_queued_behind_runs_after_and_a_stale_answer_is_ignored() {
         let (asker, event) = next_tagged(&events);
         match event {
             OpEvent::Started(summary) => {
-                assert_eq!(asker, if summary.kind == OpKind::Move { 1 } else { 2 })
+                assert_eq!(asker, if summary.kind == OpKind::Move { 1 } else { 2 });
             }
             OpEvent::Finished(done) => {
                 assert_eq!(

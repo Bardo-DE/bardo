@@ -45,9 +45,10 @@ impl OwnerCheck for Roster {
         self.asked.lock().expect("asked").push(owner.0.clone());
         let known = self.allowed.lock().expect("allowed").contains(&owner.0);
         Box::pin(async move {
-            match known {
-                true => Verdict::Allow,
-                false => Verdict::Refuse,
+            if known {
+                Verdict::Allow
+            } else {
+                Verdict::Refuse
             }
         })
     }
@@ -244,13 +245,14 @@ async fn a_schema_over_a_cap_is_refused_and_one_at_the_cap_is_read() {
         daemon.request_name(name.as_str()).await.expect("name");
         let client = LiveClient::new(&settings, &name, PATH, AnyOwner).expect("client");
         let (described, snapshot) = (client.describe().await, client.snapshot().await);
-        match case.starts_with("at the") {
-            true => assert!(described.is_ok() && snapshot.is_ok(), "{case}"),
-            false => assert!(
+        if case.starts_with("at the") {
+            assert!(described.is_ok() && snapshot.is_ok(), "{case}")
+        } else {
+            assert!(
                 matches!(described, Err(LiveError::Failed(_)))
                     && matches!(snapshot, Err(LiveError::Failed(_))),
                 "{case}: {described:?} {snapshot:?}"
-            ),
+            )
         }
     }
 }

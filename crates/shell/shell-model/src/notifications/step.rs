@@ -12,24 +12,24 @@
 //! - **A replacement** (a posting whose id is already held, from `replaces_id`) is the old one
 //!   removed without a signal, then the new one posted as above: it moves to the front and shows
 //!   again.
-//! - **ClosedByApp** (`CloseNotification`), **Dismissed** (the close button, a history row's
+//! - **`ClosedByApp`** (`CloseNotification`), **Dismissed** (the close button, a history row's
 //!   clear): removed from the banners and the history, `Closed` with `ClosedByCall` or
 //!   `Dismissed`. An id not held changes nothing.
-//! - **SwipedAway** (a banner swiped or dragged off): under `notifications.swipe =
+//! - **`SwipedAway`** (a banner swiped or dragged off): under `notifications.swipe =
 //!   "keep_in_center"` (the default, as macOS) the banner leaves, the notification stays in the
 //!   history, and `Closed` says `Dismissed` (the spec's "dismissed by the user": the banner is
 //!   gone); a transient one, which the history never held, is gone entirely. Under `"dismiss"`
 //!   it is **Dismissed**. An id with no banner changes nothing.
-//! - **DismissedAll** (`bardo-shell notifications dismiss-all`): every live banner dismissed, in banner
+//! - **`DismissedAll`** (`bardo-shell notifications dismiss-all`): every live banner dismissed, in banner
 //!   order. The history keeps what is not on screen.
-//! - **BannerTimedOut**: the banner leaves; the notification stays in the history. One the
+//! - **`BannerTimedOut`**: the banner leaves; the notification stays in the history. One the
 //!   history does not hold (transient) is `Closed` with `Expired`. A persisting banner never
 //!   times out: the event is ignored.
 //! - **Invoked**: an action the notification offers is `Invoked` (the live loop emits
 //!   `ActivationToken` first when it has one, then `ActionInvoked`); unless `resident`, the
 //!   notification is then removed everywhere and `Closed` with `Dismissed`. An action it does
 //!   not offer, or an id not held, changes nothing.
-//! - **HistoryCleared**: every notification in the cleared groups is dismissed (its banner too).
+//! - **`HistoryCleared`**: every notification in the cleared groups is dismissed (its banner too).
 //! - **Banner limits.** After a banner is added, the oldest past `BANNERS_PER_APP_MAX` for its app
 //!   (the shell's own notices not counted) and then past `LIVE_BANNERS_MAX` in all leave, an app's
 //!   before the shell's; one the history does not hold is `Closed` with `Expired`.
@@ -46,6 +46,7 @@ use super::{CloseReason, NotesState, NotificationsEffect, NotificationsEvent, ru
 
 /// The id a posting gets: the one it replaces when that one is still held (a live banner or
 /// in the history), else one past `last_id`, skipping 0 when it wraps.
+#[must_use]
 pub fn assign_id(state: &NotesState, replaces: Option<NotificationId>) -> NotificationId {
     match replaces {
         Some(id) if rules::holds(state, id) => id,
@@ -65,6 +66,7 @@ pub fn assign_id(state: &NotesState, replaces: Option<NotificationId>) -> Notifi
 }
 
 /// `state` after `event` under `policy`, and what must happen because of it (module doc).
+#[must_use]
 pub fn step(
     state: NotesState,
     event: NotificationsEvent,

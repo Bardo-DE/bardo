@@ -32,7 +32,7 @@ pub trait Provider: Send + Sync {
 pub struct ModelInfo {
     pub name: ModelName,
     /// The context the engine actually loaded (llama.cpp `n_ctx`, vLLM `max_model_len`); the
-    /// planner packs against this one. `Tokens(0)` when the server does not say (a LiteLLM
+    /// planner packs against this one. `Tokens(0)` when the server does not say (a `LiteLLM`
     /// model list): the caller then uses the catalog entry's context.
     pub loaded_context: Tokens,
     /// The context the model was trained for; the loaded one when the server reports only one
@@ -50,6 +50,7 @@ fn slug_of(text: &str) -> &str {
 impl ProviderError {
     /// A rejected request that carries the provider's (already redacted) message, kept out of
     /// `Display`.
+    #[must_use]
     pub fn bad_request_with_message(slug: &str, message: &str) -> Self {
         if message.is_empty() {
             ProviderError::BadRequest(slug.to_owned())
@@ -60,6 +61,7 @@ impl ProviderError {
 
     /// The provider's own words behind a refusal, for a log or a debug view: never for a person
     /// or a model, because they can quote the prompt. `None` when the provider gave none.
+    #[must_use]
     pub fn provider_message(&self) -> Option<&str> {
         let message = match self {
             ProviderError::AuthRejected(detail) | ProviderError::PaymentRequired(detail) => {

@@ -199,12 +199,13 @@ impl<L: Lookup> Flow for GenericFlow<L> {
             ..
         } = &self.mode
         {
-            return match L::EDITS_SERVERS {
-                true => Move::Next(
+            return if L::EDITS_SERVERS {
+                Move::Next(
                     SignInStep::AskFields(edit_form(*auth, current, name.as_deref())),
                     Mid::Editing,
-                ),
-                false => Move::Fail(SignInFault::Unreadable),
+                )
+            } else {
+                Move::Fail(SignInFault::Unreadable)
             };
         }
         Move::Next(SignInStep::AskFields(L::form(&self.spec)), Mid::Asked)

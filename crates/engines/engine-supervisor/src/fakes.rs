@@ -22,6 +22,7 @@ pub struct FakeEngineHost {
 }
 
 impl FakeEngineHost {
+    #[must_use]
     pub fn new(exit: ExitCode) -> Self {
         Self {
             exit,

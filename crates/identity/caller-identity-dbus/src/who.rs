@@ -53,6 +53,7 @@ pub struct BusPeers<P = RealProc, U = ManagerLink<P>> {
 impl BusPeers {
     /// Identifies senders on `connection` by reading the system's `/proc` and asking the unit
     /// manager on the same bus, judging against `table`.
+    #[must_use]
     pub fn new(connection: Connection, table: Table, manager: ManagerCheck) -> BusPeers {
         BusPeers::with_proc(connection, table, manager, RealProc::system())
     }
@@ -294,18 +295,17 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .map(|fd| fd.as_fd().try_clone_to_owned())
             .transpose()
             .map_err(|_| WhoError::NoCredentials)?;
-        let held = match offered {
-            Some(fd) => Pinned::from_fd(fd, pid, uid)?,
-            None => {
-                let held = Pinned::from_pid_with_uid(pid, uid)?;
-                let again = self.credentials(&bus, &name).await?;
-                let same = again.process_id() == creds.process_id()
-                    && again.unix_user_id() == creds.unix_user_id();
-                if !same {
-                    return Err(WhoError::Changed);
-                }
-                held
+        let held = if let Some(fd) = offered {
+            Pinned::from_fd(fd, pid, uid)?
+        } else {
+            let held = Pinned::from_pid_with_uid(pid, uid)?;
+            let again = self.credentials(&bus, &name).await?;
+            let same = again.process_id() == creds.process_id()
+                && again.unix_user_id() == creds.unix_user_id();
+            if !same {
+                return Err(WhoError::Changed);
             }
+            held
         };
         Ok((held, label))
     }

@@ -54,6 +54,7 @@ const SIGN_IN_KEY: &str = "agents:sign-in:";
 
 impl AgentWord {
     /// The key this fact is stored under in the picker's schema.
+    #[must_use]
     pub fn key(&self) -> String {
         match self {
             AgentWord::Group => GROUP_KEY.to_owned(),
@@ -68,6 +69,7 @@ impl AgentWord {
     }
 
     /// The fact a stored key stands for; none for a word the module wrote itself.
+    #[must_use]
     pub fn of_key(key: &str) -> Option<AgentWord> {
         match key {
             GROUP_KEY => Some(AgentWord::Group),
@@ -158,6 +160,7 @@ fn lay(spec: &mut KeySpec, place: ChoiceKind, offers: &[AgentOffer]) {
 
 /// `described` with the agents of `offers` laid over the text slot's rows and its Automatic
 /// list, each fact as a key for the window to word. The other slots' rows are as the module described them.
+#[must_use]
 pub fn with_agents(mut described: Described, offers: &[AgentOffer]) -> Described {
     if offers.is_empty() {
         return described;

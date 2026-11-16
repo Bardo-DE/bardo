@@ -120,6 +120,7 @@ fn runtime_dir_by_uid() -> Option<OsString> {
 /// path is silently truncated by some libcs and refused by others, and a truncated one binds
 /// somewhere nobody asked for. It bites on macOS, where `TMPDIR` is already something like
 /// `/var/folders/qw/8p3n1x_d4tz9g7v0_0000gn/T/` before a name is appended.
+#[must_use]
 pub const fn sun_path_limit(host: Host) -> usize {
     match host {
         Host::Mac => 104,
@@ -128,6 +129,7 @@ pub const fn sun_path_limit(host: Host) -> usize {
 }
 
 /// Which platform this build is for.
+#[must_use]
 pub const fn here() -> Host {
     #[cfg(target_os = "macos")]
     {

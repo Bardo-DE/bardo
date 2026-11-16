@@ -25,6 +25,7 @@ pub struct PointerConstraintsPart {
 
 impl PointerConstraintsPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> PointerConstraintsPart
     where
         D: GlobalDispatch<ZwpPointerConstraintsV1, GlobalData>

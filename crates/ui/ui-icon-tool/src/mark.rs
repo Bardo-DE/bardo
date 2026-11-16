@@ -148,6 +148,7 @@ fn fold_points(at: Pt, size: f32, corner: Corner) -> [Pt; 3] {
 }
 
 /// The shape's signed distance at `p` in grid units, negative inside.
+#[must_use]
 pub fn distance(shape: &Shape, p: Pt) -> f32 {
     match shape {
         Shape::Rect { at, size, corners } => rect(p, *at, *size, *corners),

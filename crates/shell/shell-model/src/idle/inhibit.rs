@@ -100,6 +100,7 @@ pub enum LogindIdle {
 /// `UnInhibit` only releases a cookie its own peer holds; an `Inhibit` from a peer holding
 /// [`INHIBITORS_PER_PEER_MAX`] changes nothing and is refused. The texts are cut to
 /// [`INHIBIT_TEXT_MAX_BYTES`].
+#[must_use]
 pub fn inhibit_step(inhibitors: Inhibitors, msg: InhibitMsg) -> (Inhibitors, InhibitReply) {
     let Inhibitors { mut held, last } = inhibitors;
     match msg {
@@ -154,6 +155,7 @@ fn next_cookie(last: u32, held: &[Inhibitor]) -> InhibitCookie {
 }
 
 /// `BlockInhibited`'s text (`"handle-power-key:idle:sleep"`) read as [`LogindIdle`].
+#[must_use]
 pub fn logind_idle(block_inhibited: &str) -> LogindIdle {
     if block_inhibited.split(':').any(|what| what == "idle") {
         LogindIdle::Blocked
@@ -163,6 +165,7 @@ pub fn logind_idle(block_inhibited: &str) -> LogindIdle {
 }
 
 /// Held when any `ScreenSaver` inhibit is held or logind blocks idle.
+#[must_use]
 pub fn inhibition(inhibitors: &Inhibitors, logind: LogindIdle) -> Inhibition {
     match (inhibitors.held.is_empty(), logind) {
         (true, LogindIdle::Free) => Inhibition::Free,

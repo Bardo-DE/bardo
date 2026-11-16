@@ -89,7 +89,7 @@ fn drive(row: &Row) -> Vec<(u64, String)> {
                 row.name
             ),
             Stop::Timer(first) => {
-                assert_eq!(labels.first(), Some(&label_timer(first)), "{}", row.name)
+                assert_eq!(labels.first(), Some(&label_timer(first)), "{}", row.name);
             }
             Stop::Vblank(first, seq) => assert_eq!(
                 labels.first(),

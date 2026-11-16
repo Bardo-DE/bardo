@@ -39,6 +39,7 @@ pub struct StandingCtx {
 
 impl StandingCtx {
     /// The context for `request` made by `caller`.
+    #[must_use]
     pub fn new(
         caller: GrantCaller,
         decl: &ActionDecl,
@@ -72,6 +73,7 @@ impl StandingCtx {
     }
 
     /// The same context under `limited`.
+    #[must_use]
     pub fn limited(self, limited: Limited) -> Self {
         Self { limited, ..self }
     }
@@ -92,6 +94,7 @@ impl StandingCtx {
     /// The pending step after standing grants: an ask that a held grant may replace becomes a
     /// review at the plan the call's impact calls for; everything else is untouched. The
     /// reviewers' own ask still reaches the person.
+    #[must_use]
     pub fn lifted(
         mut self,
         grants: &[StandingGrant],
@@ -127,6 +130,7 @@ impl StandingCtx {
     }
 
     /// Whether the sheet for `why` offers "allow always", and for what.
+    #[must_use]
     pub fn offer(&self, decl: &ActionDecl, why: &[AskReason]) -> AlwaysOffer {
         match &self.applied {
             Some(_) => AlwaysOffer::Withheld(Withheld::AlreadyHeld),
@@ -135,6 +139,7 @@ impl StandingCtx {
     }
 
     /// Whether this caller's "always" is a standing grant rather than the broad class grant.
+    #[must_use]
     pub fn holds(&self) -> bool {
         holds_standing(&self.caller)
     }

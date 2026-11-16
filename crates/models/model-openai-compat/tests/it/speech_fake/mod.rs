@@ -211,7 +211,7 @@ pub const S16_16K: AudioFormat = AudioFormat {
 };
 
 pub fn chunk(at: u64, samples: u16) -> AudioChunk {
-    let pcm = (0..samples).flat_map(|i| i.to_le_bytes()).collect();
+    let pcm = (0..samples).flat_map(u16::to_le_bytes).collect();
     AudioChunk {
         format: S16_16K,
         at: SampleIndex(at),

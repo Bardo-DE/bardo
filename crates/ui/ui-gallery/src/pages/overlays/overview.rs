@@ -59,7 +59,7 @@ pub fn OverlaysPage() -> Element {
         (Showcase::Live, Some(mounted)) => Anchor::Mounted(mounted),
         _ => Anchor::Point(POSED_AT),
     };
-    let close = move |_| opened.set(None);
+    let close = move |()| opened.set(None);
     let button = move |what: Opened, label: &'static str| {
         rsx! {
             Button {

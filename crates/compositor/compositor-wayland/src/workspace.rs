@@ -96,6 +96,7 @@ struct SpaceHold {
 
 impl WorkspacePart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> WorkspacePart
     where
         D: GlobalDispatch<ExtWorkspaceManagerV1, WorkspaceGlobal>
@@ -142,6 +143,7 @@ impl WorkspacePart {
     }
 
     /// The global, when it was created.
+    #[must_use]
     pub fn global(&self) -> Option<&GlobalId> {
         self.global.as_ref()
     }
@@ -383,6 +385,7 @@ pub struct Layout {
 
 impl Layout {
     /// The layout of `book`.
+    #[must_use]
     pub fn of(book: &SpaceBook) -> Layout {
         let mut layout = Layout::default();
         for space in book.iter() {
@@ -416,9 +419,10 @@ impl Layout {
 
 /// The workspace `state` event of a Space.
 fn state_of(placed: &Placed) -> State {
-    match placed.active {
-        true => State::Active,
-        false => State::empty(),
+    if placed.active {
+        State::Active
+    } else {
+        State::empty()
     }
 }
 
@@ -514,7 +518,7 @@ fn sync(bound: &mut Bound, layout: &Layout, outputs: &BTreeMap<OutputKey, Output
         }
     }
     // Each group says which `wl_output`s the client has for its output.
-    for (output, hold) in bound.groups.iter_mut() {
+    for (output, hold) in &mut bound.groups {
         sent += enter_outputs(&bound.manager, hold, outputs.get(output));
     }
     if sent > 0 {
@@ -656,7 +660,7 @@ mod tests {
         let ids = |o: &str| -> Vec<&str> {
             layout.groups[&output(o)]
                 .iter()
-                .map(|id| id.as_str())
+                .map(account_core::SpaceId::as_str)
                 .collect()
         };
         assert_eq!(ids("DP-1"), ["s-a", "s-b"], "in row order");

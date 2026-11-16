@@ -23,6 +23,7 @@ pub struct Focus {
 
 impl Focus {
     /// Nothing active, nothing key.
+    #[must_use]
     pub fn none() -> Focus {
         Focus {
             active: None,

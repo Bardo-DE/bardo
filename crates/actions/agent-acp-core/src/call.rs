@@ -1,4 +1,5 @@
 //! One call the agent asked of its host, formed and confined, and the router call it becomes.
+//!
 //! Pure: no seam is touched. The agent's own title for a request is never carried (the sheet
 //! draws the manifest's words and the typed arguments, not an agent's prose), and the text of a
 //! write or a command's argument vector stays with the host behind a `StageId`.
@@ -21,11 +22,13 @@ pub struct StageId(String);
 
 impl StageId {
     /// The stage numbered `n`.
+    #[must_use]
     pub fn numbered(n: u64) -> Self {
         Self(format!("stage-{n}"))
     }
 
     /// The name the router carries.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -78,6 +81,7 @@ impl PermissionAsk {
     /// file, an execute with no command, a fetch with no address) or that touches a place that
     /// later runs code is `other`, destructive until classified, which asks every time and never
     /// offers "always".
+    #[must_use]
     pub fn ruled_as(&self) -> PermissionKind {
         match self.kind {
             PermissionKind::Edit | PermissionKind::Move | PermissionKind::Delete
@@ -182,6 +186,7 @@ fn number(n: u32) -> Value {
 
 impl AgentCall {
     /// The router call this is. `None` only for a path or name the router's grammar refuses.
+    #[must_use]
     pub fn request(&self) -> Option<CallRequest> {
         let (name, target, args) = match self {
             AgentCall::Read { path, stage } => (
@@ -284,7 +289,11 @@ mod tests {
             request.target,
             TargetValue::Files(vec![FileRef::parse("/work/app/a.rs").expect("file")])
         );
-        let names: Vec<&str> = request.args.keys().map(|k| k.as_str()).collect();
+        let names: Vec<&str> = request
+            .args
+            .keys()
+            .map(action_vocab::ParamName::as_str)
+            .collect();
         assert_eq!(names, ["lines", "stage"]);
         assert_eq!(StageId::parse("stage-7"), Some(StageId::numbered(7)));
         assert_eq!(StageId::parse("7"), None);
@@ -372,7 +381,11 @@ mod tests {
         };
         let request = run.request().expect("request");
         assert_eq!(request.target, TargetValue::Nothing);
-        let names: Vec<&str> = request.args.keys().map(|k| k.as_str()).collect();
+        let names: Vec<&str> = request
+            .args
+            .keys()
+            .map(action_vocab::ParamName::as_str)
+            .collect();
         assert_eq!(names, ["command", "cwd", "derives", "network", "stage"]);
     }
 }

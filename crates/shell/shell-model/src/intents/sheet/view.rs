@@ -77,6 +77,7 @@ pub struct SheetView {
 }
 
 /// The question on screen, if there is one.
+#[must_use]
 pub fn sheet_view(sheets: &Sheets) -> Option<SheetView> {
     sheets
         .current()

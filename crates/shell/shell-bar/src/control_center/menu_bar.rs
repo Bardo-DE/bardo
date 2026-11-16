@@ -20,11 +20,13 @@ pub const MENU_BAR_ORDER: [ControlCenterModule; 6] = [
 
 /// `kind`'s `control_center.menu_bar_*` key; `false` for a module that cannot be a bar item
 /// (Focus, Appearance).
+#[must_use]
 pub fn in_menu_bar(cc: &ControlCenterSettings, kind: ControlCenterModule) -> bool {
     module(kind).menu_bar(cc)
 }
 
 /// The modules shown as bar items, in [`MENU_BAR_ORDER`].
+#[must_use]
 pub fn menu_bar_modules(cc: &ControlCenterSettings) -> Vec<ControlCenterModule> {
     MENU_BAR_ORDER
         .into_iter()

@@ -640,7 +640,7 @@ impl Dispatch<ExtForeignToplevelListV1, ()> for Wl {
         state: &mut Self,
         _: &ExtForeignToplevelListV1,
         event: ext_foreign_toplevel_list_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -663,7 +663,7 @@ impl Dispatch<ExtForeignToplevelHandleV1, ()> for Wl {
         state: &mut Self,
         handle: &ExtForeignToplevelHandleV1,
         event: ext_foreign_toplevel_handle_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -689,7 +689,7 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for Wl {
         state: &mut Self,
         _: &ExtImageCopyCaptureSessionV1,
         event: ext_image_copy_capture_session_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -716,7 +716,7 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, ()> for Wl {
         state: &mut Self,
         _: &ExtImageCopyCaptureFrameV1,
         event: ext_image_copy_capture_frame_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

@@ -1,7 +1,7 @@
 //! The engines that run models on this computer, as data.
 //!
 //! llama.cpp, vLLM and Strata each come in builds for a processor and a backend (the processor
-//! alone, Vulkan, CUDA, ROCm). This crate holds what is known about them and does nothing to the
+//! alone, Vulkan, CUDA, `ROCm`). This crate holds what is known about them and does nothing to the
 //! system: no disk, no network, no runtime. Reading the machine and its install directories is
 //! `engine-probe`; fetching is `engine-install`.
 //!

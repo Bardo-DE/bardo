@@ -74,7 +74,7 @@ fn a_sealed_chapter_inlines_what_the_package_holds_and_nothing_remote() {
         chapter.body.contains("remote"),
         "the remote image keeps its alt text"
     );
-    assert!(epub.chapter(SectionIndex(2)).is_err());
+    epub.chapter(SectionIndex(2)).unwrap_err();
 }
 
 #[test]
@@ -91,7 +91,7 @@ fn a_comic_lists_its_images_in_natural_order_and_skips_the_rest() {
     assert_eq!(comic.sections().get(), 3);
     let (page, bytes) = comic.page(SectionIndex(2)).unwrap();
     assert_eq!((page.mime, bytes.as_slice()), ("image/png", support::PNG));
-    assert!(comic.page(SectionIndex(3)).is_err());
+    comic.page(SectionIndex(3)).unwrap_err();
     assert_eq!(comic_cover(&path).unwrap().name, "1.png");
     assert_eq!(
         natural_order("pages/2.png", "pages/10.png"),
@@ -103,7 +103,7 @@ fn a_comic_lists_its_images_in_natural_order_and_skips_the_rest() {
 fn a_zip_without_chapters_or_pages_is_empty() {
     let dir = tempfile::tempdir().unwrap();
     let path = support::write_zip(dir.path(), "none.cbz", &[("a.txt", b"x")]);
-    assert!(Comic::open(&path).is_err());
+    Comic::open(&path).unwrap_err();
 }
 
 #[test]

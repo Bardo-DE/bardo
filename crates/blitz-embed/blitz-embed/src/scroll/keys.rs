@@ -34,6 +34,7 @@ pub enum ScrollKey {
 
 impl ScrollKey {
     /// The axis the key moves along.
+    #[must_use]
     pub fn axis(self) -> ScrollAxis {
         match self {
             ScrollKey::Line(axis, _) => axis,
@@ -44,6 +45,7 @@ impl ScrollKey {
 
 /// The scroll key `key` with `mods` is, if any. Alt and Super combinations are shortcuts, never
 /// scrolls; Ctrl only turns Up/Down into Home/End.
+#[must_use]
 pub fn scroll_key(key: &Key, mods: Modifiers) -> Option<ScrollKey> {
     if mods.intersects(Modifiers::ALT | Modifiers::META | Modifiers::SUPER | Modifiers::HYPER) {
         return None;
@@ -59,25 +61,27 @@ pub fn scroll_key(key: &Key, mods: Modifiers) -> Option<ScrollKey> {
         (Key::ArrowRight, false, false) => Some(ScrollKey::Line(ScrollAxis::X, Dir::Pos)),
         (Key::PageUp, false, false) => Some(ScrollKey::Page(Dir::Neg)),
         (Key::PageDown, false, false) => Some(ScrollKey::Page(Dir::Pos)),
-        (Key::Character(c), false, shifted) if c == " " => Some(ScrollKey::Page(match shifted {
-            true => Dir::Neg,
-            false => Dir::Pos,
-        })),
+        (Key::Character(c), false, shifted) if c == " " => {
+            Some(ScrollKey::Page(if shifted { Dir::Neg } else { Dir::Pos }))
+        }
         _ => None,
     }
 }
 
 /// The page step for a view `viewport` px long: `max(0.8 v, v - 40)`.
+#[must_use]
 pub fn page(viewport: f64) -> f64 {
     (PAGE_MIN_RATIO * viewport).max(viewport - PAGE_OVERLAP_PX)
 }
 
 /// A held arrow's speed `t` s after the ramp started, for a signed `step` (px per press).
+#[must_use]
 pub fn held_speed(step: f64, t: f64) -> f64 {
     (t / HELD_RAMP_S).clamp(0.0, 1.0) * HELD_STEPS_PER_S * step
 }
 
 /// How far a held arrow has moved `t` s after the ramp started (the integral of its speed).
+#[must_use]
 pub fn held_travel(step: f64, t: f64) -> f64 {
     let top = HELD_STEPS_PER_S * step;
     let t = t.max(0.0);
@@ -89,12 +93,14 @@ pub fn held_travel(step: f64, t: f64) -> f64 {
 }
 
 /// Where the release spring aims: the offset carried on at the release speed for 100 ms.
+#[must_use]
 pub fn release_target(x: f64, v: f64) -> f64 {
     x + v * RELEASE_LEAD_S
 }
 
 /// The spring's displacement from its target and its velocity `t` s after starting at
 /// displacement `e0` with velocity `v0` (`x'' = -175 e - 20 x'`, under-damped).
+#[must_use]
 pub fn spring(e0: f64, v0: f64, t: f64) -> (f64, f64) {
     let decay = DAMPING / 2.0;
     let wd = (STIFFNESS - decay * decay).sqrt();

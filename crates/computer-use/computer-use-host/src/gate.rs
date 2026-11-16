@@ -31,6 +31,7 @@ impl<T: Transport> IntentsGate<T> {
     }
 
     /// The transport.
+    #[must_use]
     pub fn transport(&self) -> &T {
         &self.transport
     }

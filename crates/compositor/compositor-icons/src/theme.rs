@@ -19,6 +19,7 @@ pub struct SystemTheme {
 
 impl SystemTheme {
     /// The lookup in `theme`, or in `hicolor` for none.
+    #[must_use]
     pub fn new(theme: Option<String>) -> SystemTheme {
         SystemTheme { theme }
     }
@@ -31,6 +32,7 @@ const THEME_FILE_LIMIT: u64 = 64 * 1024;
 
 /// The file the desktop's icon theme is named in, under the config folder `config`: the GTK
 /// settings file, which sill reads too, so both follow one choice.
+#[must_use]
 pub fn theme_file(config: &Path) -> PathBuf {
     config.join("gtk-3.0").join("settings.ini")
 }
@@ -45,6 +47,7 @@ pub fn theme_file(config: &Path) -> PathBuf {
 /// assert_eq!(theme_named(text), Some("Papirus".to_owned()));
 /// assert_eq!(theme_named("[Settings]\n"), None);
 /// ```
+#[must_use]
 pub fn theme_named(settings: &str) -> Option<String> {
     settings.lines().find_map(|line| {
         let (key, value) = line.split_once('=')?;
@@ -56,6 +59,7 @@ pub fn theme_named(settings: &str) -> Option<String> {
 impl SystemTheme {
     /// The lookup in the theme the desktop is set to (read from the settings file under the
     /// config folder `config`), or in `hicolor` when the file is missing or names none.
+    #[must_use]
     pub fn of_desktop(config: &Path) -> SystemTheme {
         let named = crate::read::plain_file(&theme_file(config), THEME_FILE_LIMIT)
             .ok()

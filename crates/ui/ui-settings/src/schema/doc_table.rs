@@ -82,6 +82,7 @@ fn table_for(domain: &str, schemas: &[Schema]) -> Result<String, DocTableError> 
 }
 
 /// A Markdown table of `keys`: path, shape, default, range, page, exposure and who may set it.
+#[must_use]
 pub fn key_table(keys: &[&KeySpec]) -> String {
     let mut text = String::from(
         "\n| Key | Type | Default | Range | Page | Shown | Agent |\n| --- | --- | --- | --- | --- | --- | --- |\n",

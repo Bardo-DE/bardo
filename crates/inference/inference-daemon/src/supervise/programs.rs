@@ -59,6 +59,7 @@ impl Programs {
     /// The programs `made` was made with (what the units name), and what inferd finds for each
     /// when the file names none (`vllm_python`, `llama_server`). Nothing is named yet: see
     /// [`Self::follow`].
+    #[must_use]
     pub fn new(
         made: &EngineConfig,
         vllm_python: Option<PathBuf>,
@@ -85,6 +86,7 @@ impl Programs {
     }
 
     /// `unit` with the program now in force in place of the one it was made with.
+    #[must_use]
     pub fn apply(&self, mut unit: UnitSpec) -> UnitSpec {
         let inner = held(&self.shared);
         inner.vllm.apply(&mut unit);
@@ -93,6 +95,7 @@ impl Programs {
     }
 
     /// `base` with the programs now in force.
+    #[must_use]
     pub fn over(&self, base: &EngineConfig) -> EngineConfig {
         let inner = held(&self.shared);
         EngineConfig {

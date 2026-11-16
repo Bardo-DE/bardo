@@ -20,7 +20,7 @@ pub(crate) struct Suppress {
 
 impl Suppress {
     /// palmrest reported its fingers `down` or up at `now` (`Touches`, or a scroll phase:
-    /// MayBegin / Began / Changed are down, Ended / Cancelled are up).
+    /// `MayBegin` / Began / Changed are down, Ended / Cancelled are up).
     pub(crate) fn fingers(self, down: bool, now: Elapsed) -> Suppress {
         Suppress {
             fingers_down: Some(down),

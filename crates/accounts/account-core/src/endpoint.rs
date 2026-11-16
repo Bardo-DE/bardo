@@ -48,6 +48,7 @@ pub enum Tls {
 
 impl Tls {
     /// The word a person types for it: `tls`, `starttls` or `plain`.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             Tls::Implicit => "tls",
@@ -57,6 +58,7 @@ impl Tls {
     }
 
     /// The security a typed word names.
+    #[must_use]
     pub fn from_word(text: &str) -> Option<Tls> {
         [Tls::Implicit, Tls::StartTls, Tls::Plain]
             .into_iter()
@@ -99,14 +101,16 @@ impl EndpointUrl {
             return Err(bad());
         }
         let candidate = Self(text.to_owned());
-        match candidate.split().is_some() {
-            true => Ok(candidate),
-            false => Err(bad()),
+        if candidate.split().is_some() {
+            Ok(candidate)
+        } else {
+            Err(bad())
         }
     }
 
     /// `path` under this URL: `https://example.org/nextcloud` joined with `/index.php` is
     /// `https://example.org/nextcloud/index.php`.
+    #[must_use]
     pub fn join(&self, path: &str) -> Option<Self> {
         let base = self.0.trim_end_matches('/');
         Self::parse(&format!("{base}/{}", path.trim_start_matches('/'))).ok()
@@ -115,14 +119,16 @@ impl EndpointUrl {
     /// The server a person typed: a host (`cloud.example.org`), or an address with a scheme, a
     /// port and a path (`https://example.org/nextcloud`). A bare host is `https`; plain `http`
     /// is for this computer only.
+    #[must_use]
     pub fn typed_server(text: &str) -> Option<Self> {
         let text = text.trim().trim_end_matches('/');
         if text.is_empty() {
             return None;
         }
-        let with_scheme = match text.contains("://") {
-            true => text.to_owned(),
-            false => format!("https://{text}"),
+        let with_scheme = if text.contains("://") {
+            text.to_owned()
+        } else {
+            format!("https://{text}")
         };
         let url = Self::parse(&with_scheme).ok()?;
         let origin = url.origin();
@@ -134,6 +140,7 @@ impl EndpointUrl {
     }
 
     /// The scheme, host and port.
+    #[must_use]
     pub fn origin(&self) -> Origin {
         // `parse` checked the split, and no other constructor exists.
         let (scheme, host, port, _) = self.split().unwrap_or_else(|| {
@@ -143,6 +150,7 @@ impl EndpointUrl {
     }
 
     /// The path after the authority, `/` when there is none.
+    #[must_use]
     pub fn path(&self) -> &str {
         self.split().map_or("/", |(_, _, _, path)| path)
     }
@@ -207,6 +215,7 @@ pub enum EndpointFault {
 impl ServiceEndpoint {
     /// The endpoint of `family` at `url` for `login`, with the TLS mode its scheme means, when
     /// that is coherent ([`Self::check`]).
+    #[must_use]
     pub fn coherent(family: Family, url: EndpointUrl, login: &LoginName) -> Option<Self> {
         let tls = match url.origin().scheme {
             UrlScheme::Https | UrlScheme::Imaps | UrlScheme::Smtps | UrlScheme::Pop3s => {
@@ -224,6 +233,7 @@ impl ServiceEndpoint {
     }
 
     /// The protocol a relay speaks to it, if the relay carries its family.
+    #[must_use]
     pub fn protocol(&self) -> Option<EndpointProtocol> {
         self.family.relay_protocol()
     }
@@ -251,9 +261,10 @@ impl ServiceEndpoint {
             return Err(EndpointFault::TlsMismatch);
         }
         let own_server = self.family == Family::ChatCompletions && origin.is_tailnet();
-        match self.tls == Tls::Plain && !origin.is_loopback() && !own_server {
-            true => Err(EndpointFault::PlainOffLoopback),
-            false => Ok(()),
+        if self.tls == Tls::Plain && !origin.is_loopback() && !own_server {
+            Err(EndpointFault::PlainOffLoopback)
+        } else {
+            Ok(())
         }
     }
 }
@@ -289,6 +300,7 @@ pub struct RelayPlan {
 impl RelayPlan {
     /// A plan to dial `endpoint` for a grant of `kind`, presenting `auth` there and going no
     /// further than `reach`.
+    #[must_use]
     pub fn new(
         endpoint: ServiceEndpoint,
         kind: CapabilityKind,

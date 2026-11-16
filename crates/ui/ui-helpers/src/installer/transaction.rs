@@ -1,10 +1,10 @@
-//! One PackageKit transaction on the system bus: create it, subscribe to its signals before the
+//! One `PackageKit` transaction on the system bus: create it, subscribe to its signals before the
 //! method is called (so none is missed), then read until `Finished`.
 //!
 //! Every wait has a deadline ([`Timeouts`](super::Timeouts)), and the transaction is believed
-//! only when the signals come from the PackageKit that created it: the match rule names its
+//! only when the signals come from the `PackageKit` that created it: the match rule names its
 //! unique name and `apply` checks the sender again, so another process on the bus cannot forge a
-//! `Package` or a `Finished`. A PackageKit that vanishes mid-transaction ends the wait at once,
+//! `Package` or a `Finished`. A `PackageKit` that vanishes mid-transaction ends the wait at once,
 //! and one that goes quiet is asked to cancel.
 
 use std::future::{Future, poll_fn};
@@ -58,7 +58,7 @@ pub(super) enum Step {
     Done,
 }
 
-/// A call to PackageKit under `deadline`.
+/// A call to `PackageKit` under `deadline`.
 async fn call<T>(
     deadline: Deadline,
     work: impl Future<Output = zbus::Result<T>>,
@@ -141,7 +141,7 @@ where
         .await
 }
 
-/// Ask PackageKit to drop a transaction that went quiet. It may be gone, so the answer does not
+/// Ask `PackageKit` to drop a transaction that went quiet. It may be gone, so the answer does not
 /// matter.
 async fn cancel(connection: &Connection, path: &str, deadline: Deadline) {
     let _ = within(
@@ -202,7 +202,7 @@ async fn read_until_finished(
     }
 }
 
-/// Fold one signal into `report`; a signal from anyone but `owner` is not PackageKit's and
+/// Fold one signal into `report`; a signal from anyone but `owner` is not `PackageKit`'s and
 /// changes nothing.
 pub(super) fn apply(
     report: &mut Report,

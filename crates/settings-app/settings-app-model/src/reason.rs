@@ -15,6 +15,7 @@ pub enum Reason {
 
 impl Reason {
     /// The reason an `event` carries, if it carries one: only `Why` and `Declined` do.
+    #[must_use]
     pub fn of(event: &InferEvent) -> Option<Reason> {
         match event {
             InferEvent::Why(why) => Some(Reason::Why(why.clone())),

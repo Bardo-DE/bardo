@@ -63,12 +63,12 @@ fn embedding_types_round_trip_and_the_inputs_do_not_print() {
 
 #[test]
 fn field_and_variant_names_are_checked_where_they_enter() {
-    assert!(FieldName::new("verdict_2").is_ok());
-    assert!(FieldName::new("_x").is_ok());
-    assert!(FieldName::new("").is_err());
-    assert!(FieldName::new("2nd").is_err());
-    assert!(FieldName::new("has space").is_err());
-    assert!(FieldName::new("quote\"").is_err());
-    assert!(FieldName::new("x".repeat(65)).is_err());
-    assert!(serde_json::from_str::<VariantName>(r#""a-b""#).is_err());
+    FieldName::new("verdict_2").unwrap();
+    FieldName::new("_x").unwrap();
+    FieldName::new("").unwrap_err();
+    FieldName::new("2nd").unwrap_err();
+    FieldName::new("has space").unwrap_err();
+    FieldName::new("quote\"").unwrap_err();
+    FieldName::new("x".repeat(65)).unwrap_err();
+    serde_json::from_str::<VariantName>(r#""a-b""#).unwrap_err();
 }

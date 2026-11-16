@@ -76,6 +76,7 @@ pub fn sleep_channel(wake: impl Fn() + Send + Sync + 'static) -> (SleepLink, Sle
 impl SleepLink {
     /// The machine is about to sleep: sends `Paused`, then waits at most `wait` for the backend
     /// to act on it.
+    #[must_use]
     pub fn paused(&self, wait: Duration) -> SleepSettled {
         // An acknowledgement left over from an earlier pause must not count for this one.
         while self.settled.try_recv().is_ok() {}
@@ -101,11 +102,13 @@ impl SleepLink {
 
 impl SleepInbox {
     /// The notes sent since the last call, oldest first.
+    #[must_use]
     pub fn take(&self) -> Vec<SessionNote> {
         self.notes.try_iter().collect()
     }
 
     /// The next note, waiting at most `wait` (a test thread standing in for the loop).
+    #[must_use]
     pub fn take_blocking(&self, wait: Duration) -> Vec<SessionNote> {
         self.notes
             .recv_timeout(wait)

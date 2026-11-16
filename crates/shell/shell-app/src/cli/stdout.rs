@@ -19,6 +19,7 @@ pub enum Emitted {
 
 impl Emitted {
     /// What the command exits with when this was all it had to do: only a real error fails.
+    #[must_use]
     pub fn exit_code(&self) -> ExitCode {
         match self {
             Emitted::Done | Emitted::ReaderGone => ExitCode::SUCCESS,
@@ -37,6 +38,7 @@ pub fn emit(out: &mut impl Write, text: &str) -> Emitted {
 }
 
 /// Write `text` to the process's stdout; a real failure is reported on stderr.
+#[must_use]
 pub fn print(text: &str) -> Emitted {
     let emitted = emit(&mut io::stdout().lock(), text);
     if let Emitted::Failed(error) = &emitted {

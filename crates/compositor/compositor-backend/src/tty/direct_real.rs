@@ -76,18 +76,17 @@ pub fn direct_seams<D: 'static>(
         .and_then(|device| device.get_driver())
         .map_err(named)?;
     require_vkms(driver.name()).map_err(|refusal| unavailable(refusal.to_string()))?;
-    let writeback = match writeback {
-        true => {
-            let device = device_on(&fd).map_err(named)?;
-            let seam = RealWriteback::open(device)
-                .map_err(|error| unavailable(format!("{}: {error}", node.display())))?;
-            Some(seam)
-        }
-        false => None,
+    let writeback = if writeback {
+        let device = device_on(&fd).map_err(named)?;
+        let seam = RealWriteback::open(device)
+            .map_err(|error| unavailable(format!("{}: {error}", node.display())))?;
+        Some(seam)
+    } else {
+        None
     };
     let (ping, wake) = make_ping().map_err(|error| unavailable(error.to_string()))?;
     handle
-        .insert_source(wake, |(), _, _| {})
+        .insert_source(wake, |(), (), _| {})
         .map_err(|error| unavailable(error.error.to_string()))?;
     let path = DevicePath(node.to_path_buf());
     let fds = DirectFds {

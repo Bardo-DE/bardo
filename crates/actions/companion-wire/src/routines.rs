@@ -128,6 +128,7 @@ pub struct RoutineForm {
 }
 
 /// One routine the assistant (or a helper, for its own card) proposes, waiting for the person.
+///
 /// Nothing runs until they accept it on a sheet. Proposals are kept in memory only: a restart of
 /// the assistant forgets them.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

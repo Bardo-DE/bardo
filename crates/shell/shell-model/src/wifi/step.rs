@@ -2,8 +2,9 @@
 
 use super::{Radio, Wifi, WifiEvent};
 
-/// `wifi` after `event`. Radio `Off` or `Blocked` empties the access points (NetworkManager
+/// `wifi` after `event`. Radio `Off` or `Blocked` empties the access points (`NetworkManager`
 /// keeps stale ones for a while).
+#[must_use]
 pub fn step(wifi: Wifi, event: WifiEvent) -> Wifi {
     match event {
         WifiEvent::Device(device) => Wifi { device, ..wifi },

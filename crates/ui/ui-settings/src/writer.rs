@@ -32,6 +32,7 @@ pub struct SettingsWriter {
 
 impl SettingsWriter {
     /// A writer for the file at `path`. The file need not exist yet.
+    #[must_use]
     pub fn new(path: PathBuf) -> SettingsWriter {
         SettingsWriter { path }
     }
@@ -45,6 +46,7 @@ impl SettingsWriter {
     }
 
     /// The file this writes.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.path
     }

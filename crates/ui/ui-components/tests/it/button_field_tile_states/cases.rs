@@ -92,11 +92,11 @@ pub const CASES: &[Case] = &[
     // SendPill: Cancel for a held send, and a fatal refusal on two lines.
     Case {
         golden: "overlays/send_pill/cancel.html",
-        make: || rsx! { SendPill { text: "Scheduled for 9:00", progress: Fraction(0), operation: Operation::Running(PendingToken::start()), action: PillAction::Cancel, onundo: |_| {} } },
+        make: || rsx! { SendPill { text: "Scheduled for 9:00", progress: Fraction(0), operation: Operation::Running(PendingToken::start()), action: PillAction::Cancel, onundo: |()| {} } },
     },
     Case {
         golden: "overlays/send_pill/fatal-refused.html",
-        make: || rsx! { SendPill { text: "Not sent", progress: Fraction(700), operation: Operation::Running(PendingToken::start()), mood: SendMood::Fatal, refusal: "No recipients", onundo: |_| {} } },
+        make: || rsx! { SendPill { text: "Not sent", progress: Fraction(700), operation: Operation::Running(PendingToken::start()), mood: SendMood::Fatal, refusal: "No recipients", onundo: |()| {} } },
     },
     // Row: a scheduled Today row with its time and cancel.
     Case {

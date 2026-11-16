@@ -7,6 +7,7 @@ use ui_components::prelude::Motion;
 use ui_settings::Environment;
 
 /// The motion of `environment`, in the compositor's words.
+#[must_use]
 pub fn shell_motion(environment: &Environment) -> ShellMotion {
     match (
         environment.settings.appearance.motion_level,

@@ -78,6 +78,7 @@ pub fn now() -> Instant {
 
 /// How long since `then`, on this thread's clock (zero if `then` is later): what
 /// `then.elapsed()` would say, read from the clock [`now`] reads.
+#[must_use]
 pub fn since(then: Instant) -> Duration {
     now().saturating_duration_since(then)
 }
@@ -129,6 +130,7 @@ pub struct VirtualClock {
 
 impl VirtualClock {
     /// A clock standing at the wall clock's now.
+    #[must_use]
     pub fn new() -> Self {
         VirtualClock {
             queue: Rc::new(VirtualQueue::new(Instant::now())),
@@ -143,28 +145,33 @@ impl VirtualClock {
     }
 
     /// Now on this clock.
+    #[must_use]
     pub fn now(&self) -> Instant {
         self.queue.now()
     }
 
     /// How far the clock has been advanced since it was made.
+    #[must_use]
     pub fn elapsed(&self) -> Duration {
         self.queue.elapsed()
     }
 
     /// When the next sleep on this clock is due, as time since it was made; `None` when
     /// nothing is waiting.
+    #[must_use]
     pub fn next_due(&self) -> Option<Duration> {
         self.queue.next_due()
     }
 
     /// How many sleeps on this clock have not finished.
+    #[must_use]
     pub fn waiting(&self) -> usize {
         self.queue.waiting()
     }
 
     /// The due instant of every sleep still waiting, earliest first: for a diagnostic when a
     /// settle check gives up on this clock (`ui_blitz::assert_settles_to_zero_frames`).
+    #[must_use]
     pub fn due_times(&self) -> Vec<Duration> {
         self.queue.due_times()
     }

@@ -48,7 +48,7 @@ fn shown(actions: ActionProfile) -> (String, String, serde_json::Value) {
             parameters,
             ..
         },
-    ] = &request.tools[..]
+    ] = &*request.tools
     else {
         panic!("one function")
     };
@@ -135,10 +135,7 @@ fn a_drag_from_the_cursor_uses_the_cursor_of_the_step() {
         panic!("actions")
     };
     assert!(dropped.is_empty(), "{dropped:?}");
-    assert!(
-        matches!(&actions[..], [CuaAction::Drag { .. }]),
-        "{actions:?}"
-    );
+    assert!(matches!(&*actions, [CuaAction::Drag { .. }]), "{actions:?}");
     // Without a cursor the drag has no start and is dropped, whatever the call says.
     let StepOutcome::Actions {
         actions, dropped, ..
@@ -218,7 +215,7 @@ fn a_call_in_the_reply_text_becomes_an_action_as_a_server_parsed_one_does() {
     };
     assert!(dropped.is_empty(), "{dropped:?}");
     assert!(
-        matches!(&actions[..], [CuaAction::Click { .. }]),
+        matches!(&*actions, [CuaAction::Click { .. }]),
         "{actions:?}"
     );
     // The same call as the engine would hand it over gives the same action.
@@ -335,7 +332,7 @@ fn on_grid_999(actions: ActionProfile) -> (String, String) {
     let Part::Text(system) = &request.messages[0].parts[0] else {
         panic!("a system text")
     };
-    let description = match &request.tools[..] {
+    let description = match (&*request.tools) {
         [ToolSpec::Function { description, .. }] => description.clone(),
         _ => String::new(),
     };
@@ -406,7 +403,7 @@ fn the_step_is_worded_by_the_action_sentence_and_a_missing_wrapper_still_acts() 
         };
         assert_eq!(thought.as_deref(), Some(words), "{what}");
         assert!(
-            matches!(&actions[..], [CuaAction::Click { .. }]),
+            matches!(&*actions, [CuaAction::Click { .. }]),
             "{what}: {actions:?}"
         );
     }
@@ -453,7 +450,7 @@ fn the_resolution_is_worded_as_the_profile_says() {
     assert!(system.contains("a grid of 0 to 999"), "{system}");
     // A 0-1000 grid (Holo) with the default wording is unchanged.
     let holo = session(HOLO, grid(), 0, 0).request(&obs(0), &map(grid()), frame("f"));
-    let [ToolSpec::Function { description, .. }] = &holo.tools[..] else {
+    let [ToolSpec::Function { description, .. }] = &*holo.tools else {
         panic!("one function")
     };
     assert!(

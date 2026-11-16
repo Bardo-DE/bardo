@@ -41,6 +41,7 @@ fn path_bytes(path: &Path) -> Cow<'_, [u8]> {
 }
 
 /// `path` as an absolute `file:///...` URI with its bytes percent-encoded.
+#[must_use]
 pub fn file_uri(path: &FilePath) -> String {
     let bytes = path_bytes(path.as_path());
     let encoded = percent_encode(&bytes, ESCAPED_HERE);

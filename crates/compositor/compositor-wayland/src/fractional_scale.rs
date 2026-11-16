@@ -28,6 +28,7 @@ pub struct FractionalScalePart {
 
 impl FractionalScalePart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> FractionalScalePart
     where
         D: GlobalDispatch<WpFractionalScaleManagerV1, GlobalData>
@@ -47,6 +48,7 @@ impl FractionalScalePart {
 /// can say which output it will appear on: the primary output's, which is where every new
 /// window opens (the output at the top-left of the global space, ties by key). `None` while no
 /// output is plugged: the client then assumes 1x until [`apply_scale`] says otherwise.
+#[must_use]
 pub fn home_scale(outputs: &OutputBook) -> Option<Scale> {
     outputs
         .0

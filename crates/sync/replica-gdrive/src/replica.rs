@@ -45,6 +45,7 @@ pub struct Uploads {
 
 impl Uploads {
     /// These limits, the chunk rounded down to a whole number of units (at least one).
+    #[must_use]
     pub fn new(simple_max: usize, chunk: usize) -> Self {
         Self {
             simple_max,

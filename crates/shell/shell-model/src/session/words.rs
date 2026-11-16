@@ -7,12 +7,14 @@ use shell_launcher::{Confirm, SessionAction};
 use crate::actions::def;
 
 /// The action's name: a launcher row's title and a power-menu button's label.
+#[must_use]
 pub fn title(action: SessionAction) -> &'static str {
     def(ActionId::of_session(action)).label
 }
 
 /// The action as a menu row: its name, with an ellipsis when choosing it asks first (the Mac's
 /// rule for a command that opens a dialog).
+#[must_use]
 pub fn menu_title(action: SessionAction) -> String {
     match action.confirm() {
         Confirm::Ask => format!("{}…", title(action)),
@@ -22,6 +24,7 @@ pub fn menu_title(action: SessionAction) -> String {
 
 /// Other words a person may type for the action: the names other systems give it, in one
 /// word and in two.
+#[must_use]
 pub fn aliases(action: SessionAction) -> &'static [&'static str] {
     match action {
         SessionAction::Lock => &["Lock"],
@@ -33,6 +36,7 @@ pub fn aliases(action: SessionAction) -> &'static [&'static str] {
 }
 
 /// The power menu's question about the action, in macOS's words.
+#[must_use]
 pub fn prompt(action: SessionAction) -> &'static str {
     match action {
         SessionAction::Lock => "Are you sure you want to lock the screen now?",
@@ -45,6 +49,7 @@ pub fn prompt(action: SessionAction) -> &'static str {
 
 /// What the notice says when `app` kept the session from ending: the action's name, said as
 /// cancelled, and why.
+#[must_use]
 pub fn held(action: SessionAction, app: &str) -> (String, String) {
     (
         format!("{} Cancelled", title(action)),
@@ -59,6 +64,7 @@ pub const COUNTDOWN_SECONDS: u32 = 60;
 /// The line under the question while the power menu counts down to an action that asks first:
 /// what happens if the person does nothing, and in how long. `None` for an action that never
 /// asks (Lock, Sleep), whose line is its [`consequence`].
+#[must_use]
 pub fn countdown(action: SessionAction, seconds: u32) -> Option<String> {
     let unit = if seconds == 1 { "second" } else { "seconds" };
     let what = match action.confirm() {
@@ -78,6 +84,7 @@ pub fn countdown(action: SessionAction, seconds: u32) -> Option<String> {
 
 /// The line under the question: what the action does to the running apps. Each is short
 /// enough for one line in the alert's 292 pt text column at 13 pt.
+#[must_use]
 pub fn consequence(action: SessionAction) -> &'static str {
     match action {
         SessionAction::Lock => "Apps keep running behind the lock screen.",

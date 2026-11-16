@@ -164,7 +164,7 @@ fn listing_checks_before_anything_is_written() {
     doc.files.push(f("bin/other", "o"));
     let release = Release::parse(doc.render().as_bytes()).expect("release");
     let mut audit = Audit::new(&release);
-    assert!(audit.listing("bin/other").is_ok());
+    audit.listing("bin/other").unwrap();
     assert!(matches!(
         audit.listing("bin/nope"),
         Err(AuditError::Unlisted(_))

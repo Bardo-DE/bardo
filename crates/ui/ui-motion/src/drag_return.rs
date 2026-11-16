@@ -42,17 +42,20 @@ impl DragReturn {
     }
 
     /// Where it is drawn from its place now, subscribing the caller's render to the springs.
+    #[must_use]
     pub fn offset(self) -> Point {
         self.spring.frame().at
     }
 
     /// Moving while either axis moves.
+    #[must_use]
     pub fn phase(self) -> SpringPhase {
         self.spring.peek().phase
     }
 }
 
 /// A drag's way home, standing at its place.
+#[must_use]
 pub fn use_drag_return() -> DragReturn {
     DragReturn {
         spring: use_spring_point_motion(HOME),

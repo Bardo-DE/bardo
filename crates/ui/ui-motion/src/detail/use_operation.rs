@@ -10,6 +10,7 @@ use dioxus::prelude::*;
 /// `Operation::Running` for as long as `cue` is a Pending moment, under a token started when that
 /// moment arrived; `Operation::Idle` otherwise. A later Pending moment (a new change into a busy
 /// state) is a new operation.
+#[must_use]
 pub fn use_operation(cue: Cue) -> Operation {
     let mut minted = use_hook(|| CopyValue::new(None::<(u32, PendingToken)>));
     if cue.moment() != Moment::Pending {

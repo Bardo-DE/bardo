@@ -30,12 +30,14 @@ impl std::fmt::Debug for ScreenText {
 
 impl ScreenText {
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The text of `view`: the title, then each node's name and text value, one per line, cut at
     /// [`READER_CHARS`]. Secret nodes are left out. `None` when there is too little to ask about.
+    #[must_use]
     pub fn of(view: &ScreenView<'_>) -> Option<ScreenText> {
         let nodes = view.nodes.iter().filter(|n| !is_secret(n)).flat_map(|n| {
             let value = match &n.value {

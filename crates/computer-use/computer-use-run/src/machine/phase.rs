@@ -42,6 +42,7 @@ pub enum RunPhase {
 
 impl RunPhase {
     /// The slug the bus and the log use.
+    #[must_use]
     pub fn slug(&self) -> RunStateSlug {
         match self {
             RunPhase::Granting => RunStateSlug::Granting,
@@ -61,6 +62,7 @@ impl RunPhase {
     }
 
     /// The step the phase belongs to; none before the first observation and after the end.
+    #[must_use]
     pub fn step(&self) -> Option<StepIndex> {
         match self {
             RunPhase::Granting | RunPhase::Leasing | RunPhase::Finished(_) => None,
@@ -80,6 +82,7 @@ impl RunPhase {
     /// Whether wall time in this phase counts against the active budget: observing through
     /// settling, and verifying. Time spent granting, confirming, waiting for the person, paused
     /// or taken over is theirs, not the run's.
+    #[must_use]
     pub fn is_active(&self) -> bool {
         matches!(
             self,
@@ -93,11 +96,13 @@ impl RunPhase {
     }
 
     /// Whether the run is over.
+    #[must_use]
     pub fn is_finished(&self) -> bool {
         matches!(self, RunPhase::Finished(_))
     }
 
     /// How the run ended; none while it goes on.
+    #[must_use]
     pub fn outcome(&self) -> Option<CuaOutcome> {
         match self {
             RunPhase::Finished(outcome) => Some(*outcome),

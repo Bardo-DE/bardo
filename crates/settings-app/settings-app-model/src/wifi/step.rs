@@ -144,6 +144,7 @@ fn ready(state: WifiState) -> Option<WifiReady> {
 }
 
 /// The next state, and what to ask of the service.
+#[must_use]
 pub fn wifi_step(state: WifiState, input: WifiInput) -> (WifiState, Vec<WifiEffect>) {
     if let WifiInput::Heard(heard) = input {
         return (heard_step(state, heard), Vec::new());

@@ -58,6 +58,7 @@ pub enum Change {
 }
 
 /// What `now` (the runtimes that answered) changes of `installed`.
+#[must_use]
 pub fn plan(installed: &BTreeMap<Runtime, Installed>, now: &[Found]) -> Vec<Change> {
     Runtime::ALL
         .into_iter()
@@ -135,10 +136,12 @@ impl<H: Http> Http for Noting<'_, H> {
 }
 
 /// The wait after a look: `base` when something changed, else double `current`, up to `longest`.
+#[must_use]
 pub fn next_wait(current: Duration, changed: bool, base: Duration, longest: Duration) -> Duration {
-    match changed {
-        true => base,
-        false => current.saturating_mul(2).clamp(base, longest),
+    if changed {
+        base
+    } else {
+        current.saturating_mul(2).clamp(base, longest)
     }
 }
 

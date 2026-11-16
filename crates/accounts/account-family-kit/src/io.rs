@@ -21,13 +21,14 @@ impl Default for Pacing {
         Self {
             first: Duration::from_secs(2),
             step: Duration::from_secs(10),
-            limit: Duration::from_secs(20 * 60),
+            limit: Duration::from_mins(20),
         }
     }
 }
 
 impl Pacing {
     /// The wait before poll number `attempt` (counting from 0).
+    #[must_use]
     pub fn wait(&self, attempt: u32) -> Duration {
         self.first
             .saturating_mul(attempt.saturating_add(1))

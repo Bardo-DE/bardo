@@ -18,6 +18,7 @@ pub enum Edit {
 
 impl Edit {
     /// The program or app and the power the edit is about.
+    #[must_use]
     pub fn target(&self) -> (&Subject, Power) {
         match self {
             Edit::Allow(subject, power)
@@ -27,6 +28,7 @@ impl Edit {
     }
 
     /// The answer the edit leaves, none when it forgets one.
+    #[must_use]
     pub fn verdict(&self) -> Option<Verdict> {
         match self {
             Edit::Allow(..) => Some(Verdict::Allow),

@@ -32,6 +32,7 @@ pub struct DesktopId(String);
 impl DesktopId {
     /// The id of the entry at `relative`, its path below an `applications` folder. None when it
     /// is not a `*.desktop` file or its name is empty.
+    #[must_use]
     pub fn from_relative(relative: &Path) -> Option<DesktopId> {
         if relative.extension().is_none_or(|ext| ext != EXTENSION) {
             return None;
@@ -46,6 +47,7 @@ impl DesktopId {
     }
 
     /// The id written as text, `foo.desktop` or `foo`; none when nothing is left of the name.
+    #[must_use]
     pub fn parse(text: &str) -> Option<DesktopId> {
         let stem = text.strip_suffix(".desktop").unwrap_or(text);
         (!stem.is_empty()).then(|| DesktopId(format!("{stem}.{EXTENSION}")))
@@ -68,11 +70,13 @@ impl DesktopId {
     }
 
     /// The id with its `.desktop` suffix.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The id without the suffix: `kde-foo`.
+    #[must_use]
     pub fn stem(&self) -> &str {
         self.0.strip_suffix(".desktop").unwrap_or(&self.0)
     }

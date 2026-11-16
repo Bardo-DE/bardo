@@ -81,7 +81,7 @@ mod tests {
         type Params = u64;
         type Ctx = ();
 
-        fn step(self, input: In, at: Stamp, hold: &u64, _: &()) -> (Lamp, Vec<Out>) {
+        fn step(self, input: In, at: Stamp, hold: &u64, (): &()) -> (Lamp, Vec<Out>) {
             match (self, input) {
                 (_, In::Press) => (
                     Lamp::On {

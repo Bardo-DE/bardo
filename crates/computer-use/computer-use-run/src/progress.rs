@@ -16,6 +16,7 @@ pub struct Look {
 
 impl Look {
     /// The look with this frame digest and this tree.
+    #[must_use]
     pub fn of(frame: FrameDigest, tree: &TreeObs) -> Look {
         let tree = match tree {
             TreeObs::Present(snapshot) => Some(Digest32(
@@ -27,6 +28,7 @@ impl Look {
     }
 
     /// Whether this look is the same as `before`: the input between them changed nothing.
+    #[must_use]
     pub fn unchanged_since(&self, before: &Look) -> bool {
         self == before
     }

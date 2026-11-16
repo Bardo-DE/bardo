@@ -73,11 +73,13 @@ pub struct Connection {
 impl Connection {
     /// A connection over `fd`, a non-blocking `SOCK_SEQPACKET` socket already connected to the
     /// service (or to a test's stand-in for it).
+    #[must_use]
     pub fn over(fd: OwnedFd) -> Self {
         Self::over_with_timeout(fd, CREATE_TIMEOUT)
     }
 
     /// As [`Connection::over`], with `create_timeout` as the longest a `Create` waits for its answer.
+    #[must_use]
     pub fn over_with_timeout(fd: OwnedFd, create_timeout: Duration) -> Self {
         Self {
             link: Link::new(fd),

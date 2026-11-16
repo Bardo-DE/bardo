@@ -29,6 +29,7 @@ use ui_style::appearance::theme::Scheme;
 mod bus;
 
 /// `color-scheme`: 0 no preference, 1 prefer dark, 2 prefer light. No preference is light.
+#[must_use]
 pub fn scheme_from_portal(value: u32) -> Scheme {
     match value {
         1 => Scheme::Dark,
@@ -37,11 +38,13 @@ pub fn scheme_from_portal(value: u32) -> Scheme {
 }
 
 /// `reduced-motion`: 0 no preference, 1 reduce.
+#[must_use]
 pub fn reduced_motion_from_portal(value: u32) -> bool {
     value == 1
 }
 
 /// `contrast`: 0 no preference, 1 higher contrast.
+#[must_use]
 pub fn contrast_from_portal(value: u32) -> Contrast {
     match value {
         1 => Contrast::High,
@@ -92,6 +95,7 @@ impl SystemPrefsWatch {
     }
 
     /// The preferences as last read.
+    #[must_use]
     pub fn current(&self) -> SystemPrefs {
         self.changes.latest()
     }

@@ -24,9 +24,10 @@ pub(super) fn overlay(listed: Option<Entry>, id: &RemoteId, edit: &Edit) -> Opti
         id: id.clone(),
         parent: base.parent.clone().map(RemoteId),
         name: base.name.clone(),
-        kind: match edit.folder {
-            true => ItemKind::Folder,
-            false => ItemKind::File,
+        kind: if edit.folder {
+            ItemKind::Folder
+        } else {
+            ItemKind::File
         },
         size: Bytes(base.size),
         version: RemoteVersion(base.version.clone()),
@@ -92,9 +93,10 @@ impl Inner {
     /// drive's: it stays usable until it is closed.
     pub(super) fn entry_open(&self, id: &RemoteId) -> Result<Option<Entry>, DriveError> {
         let node = NodeId::Remote(id.clone());
-        match self.edit(&node).is_some_and(|edit| edit.removed) && self.is_open(&node) {
-            true => Ok(self.listing.entry(id)?),
-            false => self.entry(id),
+        if self.edit(&node).is_some_and(|edit| edit.removed) && self.is_open(&node) {
+            Ok(self.listing.entry(id)?)
+        } else {
+            self.entry(id)
         }
     }
 
@@ -125,9 +127,10 @@ impl Inner {
 
     fn attrs_of_made(edit: &Edit) -> Attrs {
         Attrs {
-            kind: match edit.folder {
-                true => NodeKind::Folder,
-                false => NodeKind::File,
+            kind: if edit.folder {
+                NodeKind::Folder
+            } else {
+                NodeKind::File
             },
             size: edit.dirty.as_ref().map_or(0, |dirty| dirty.size),
             modified: Some(UnixSeconds(

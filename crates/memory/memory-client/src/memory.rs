@@ -68,7 +68,7 @@ impl<T: Transport> Memory<T> {
 
     async fn write(&self, request: MemoryRequest) -> Result<Recorded, ClientError> {
         match self.ask(request).await {
-            Ok(MemoryReply::Recorded(event)) | Ok(MemoryReply::RecordedBatch(event, _)) => {
+            Ok(MemoryReply::Recorded(event) | MemoryReply::RecordedBatch(event, _)) => {
                 Ok(Recorded::Stored(event))
             }
             Ok(MemoryReply::Ok) | Err(ClientError::Transport(TransportError::Absent)) => {

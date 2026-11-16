@@ -26,7 +26,7 @@ impl<T> Shared<T> {
     fn slot(&self) -> MutexGuard<'_, Slot<T>> {
         self.0
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     fn settle(&self, now: Slot<T>) {
@@ -110,7 +110,7 @@ mod tests {
         let here = std::thread::current().id();
         let there = block_on(off_thread(|| std::thread::current().id()));
         assert_ne!(there, Ok(here));
-        assert!(there.is_ok());
+        there.unwrap();
     }
 
     #[test]

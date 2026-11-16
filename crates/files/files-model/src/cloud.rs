@@ -52,22 +52,26 @@ pub struct CloudMenu {
 
 impl Browser {
     /// The cloud drives the sidebar lists, in the order the caller gave them.
+    #[must_use]
     pub fn clouds(&self) -> &[CloudDrive] {
         &self.clouds
     }
 
     /// The drive the folder shown is in (or is).
+    #[must_use]
     pub fn drive_here(&self) -> Option<&CloudDrive> {
         let here = self.folder()?;
         self.clouds.iter().find(|drive| drive.holds(here))
     }
 
     /// The drive whose own folder is `folder`.
+    #[must_use]
     pub fn drive_at(&self, folder: &FolderPath) -> Option<&CloudDrive> {
         self.clouds.iter().find(|drive| drive.folder == *folder)
     }
 
     /// Where the row called `name` stands, when it has been read.
+    #[must_use]
     pub fn cloud_of(&self, name: &FileName) -> Option<&CloudItem> {
         self.cloud.get(name)
     }

@@ -49,21 +49,25 @@ impl SpringFrame {
     }
 
     /// The position, in the spring's units (past the target on the way when it overshoots).
+    #[must_use]
     pub fn position(self) -> f32 {
         self.position
     }
 
     /// The velocity, units per second.
+    #[must_use]
     pub fn velocity(self) -> f32 {
         self.velocity
     }
 
     /// Moving or at rest.
+    #[must_use]
     pub fn phase(self) -> SpringPhase {
         self.phase
     }
 
     /// The position for a stylesheet: three decimals, `0.125`.
+    #[must_use]
     pub fn css(self) -> String {
         format!("{:.3}", self.position)
     }
@@ -78,21 +82,25 @@ pub struct Spring {
 
 impl Spring {
     /// The spring that runs `leg`.
+    #[must_use]
     pub fn new(leg: Leg, scale: PxPerUnit) -> Spring {
         Spring { leg, scale }
     }
 
     /// A spring standing at `at`, on `tuning`.
+    #[must_use]
     pub fn still(at: f64, tuning: SpringTuning, scale: PxPerUnit) -> Spring {
         Spring::new(Leg::still(at, tuning), scale)
     }
 
     /// The leg it runs.
+    #[must_use]
     pub fn leg(&self) -> Leg {
         self.leg
     }
 
     /// The exact state `elapsed` into the leg, between frames too.
+    #[must_use]
     pub fn state(&self, elapsed: Duration) -> State {
         self.leg.at(elapsed)
     }

@@ -25,6 +25,7 @@ pub struct SecurityContextPart {
 
 impl SecurityContextPart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> SecurityContextPart
     where
         D: GlobalDispatch<
@@ -83,6 +84,7 @@ pub enum Maker {
 /// (a root-owned image in a scope it named itself is proven), leaves every client of its
 /// socket with no app, an unknown one (CASW-04, owner decision 2026-10-17). The clients' powers
 /// do not depend on this: they are sandboxed whoever made the context.
+#[must_use]
 pub fn identity_for_clients(
     creator: &PeerIdentity,
     maker: Maker,

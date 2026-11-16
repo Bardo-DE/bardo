@@ -19,6 +19,7 @@ pub struct Entry {
 impl Entry {
     /// Its FUSE connection's number, which names it under [`FUSE_CONNECTIONS`]: the kernel's
     /// device number (a FUSE mount's major is 0, so it is the minor).
+    #[must_use]
     pub fn connection(&self) -> u64 {
         let (major, minor) = self.device;
         (u64::from(major) << 20) | u64::from(minor)
@@ -37,6 +38,7 @@ pub fn abort(connections: &Path, connection: u64) -> std::io::Result<()> {
 
 /// The entries of a mountinfo table, in its order (a later mount at a point is above an
 /// earlier one).
+#[must_use]
 pub fn parse(table: &str) -> Vec<Entry> {
     table
         .lines()
@@ -58,6 +60,7 @@ pub fn parse(table: &str) -> Vec<Entry> {
 }
 
 /// This process's table now (empty when it cannot be read).
+#[must_use]
 pub fn read() -> Vec<Entry> {
     std::fs::read_to_string("/proc/self/mountinfo")
         .map(|table| parse(&table))
@@ -65,11 +68,13 @@ pub fn read() -> Vec<Entry> {
 }
 
 /// The topmost mount at `path` in `entries`, if any.
+#[must_use]
 pub fn at<'a>(entries: &'a [Entry], path: &Path) -> Option<&'a Entry> {
     entries.iter().rev().find(|entry| entry.point == path)
 }
 
 /// A mountinfo field with its octal escapes (`\040` for a space) read back.
+#[must_use]
 pub fn unescape(field: &str) -> String {
     let bytes = field.as_bytes();
     let mut out = Vec::with_capacity(bytes.len());

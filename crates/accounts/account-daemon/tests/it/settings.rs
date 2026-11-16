@@ -63,7 +63,7 @@ async fn only_the_settings_role_may_read_or_set_anything() {
 async fn describe_lists_every_account_with_its_actions_and_an_ai_account_its_switches() {
     let rig = Rig::start().await;
     let schema = settings(&rig).await.describe().await.expect("schema");
-    assert!(schema.check().is_ok());
+    schema.check().unwrap();
     let paths: Vec<&str> = schema.key.iter().map(|k| k.path.0.as_str()).collect();
     for want in [
         "accounts.fake-storage.remove",
@@ -278,7 +278,7 @@ async fn removing_an_account_wipes_secrets_and_audits() {
         account: storage_account().id,
         purpose: SecretPurpose::Password,
     };
-    assert!(rig.secrets.get(&password).await.is_ok());
+    rig.secrets.get(&password).await.unwrap();
 
     settings
         .invoke(&key("accounts.fake-storage.remove"))

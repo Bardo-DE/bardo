@@ -57,6 +57,7 @@ pub struct SessionBook {
 
 impl SessionBook {
     /// An empty book.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -88,11 +89,13 @@ impl SessionBook {
     }
 
     /// The sessions hung on `peer` (a unique name).
+    #[must_use]
     pub fn held_by(&self, peer: &str) -> Vec<SessionKey> {
         self.table.held_by(peer)
     }
 
     /// The session under `key`.
+    #[must_use]
     pub fn get(&self, key: &SessionKey) -> Option<&Entry> {
         self.table.entries.get(key)
     }
@@ -119,11 +122,13 @@ impl SessionBook {
     }
 
     /// How many sessions are open.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.table.entries.len()
     }
 
     /// Whether none are open.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.table.entries.is_empty()
     }

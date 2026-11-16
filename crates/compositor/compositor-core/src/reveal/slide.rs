@@ -28,6 +28,7 @@ pub struct Slid {
 /// let half = slid(RevealEdge::Top, Look::Slide, output, bar, Fraction(500));
 /// assert_eq!(half.area.origin.y, -10);
 /// ```
+#[must_use]
 pub fn slid(
     edge: RevealEdge,
     look: Look,

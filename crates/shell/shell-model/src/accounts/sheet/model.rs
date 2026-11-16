@@ -22,6 +22,7 @@ pub struct SheetHandle(String);
 impl SheetHandle {
     /// The handle written as `text`: one to 64 characters of `[A-Za-z0-9_.-]`, so it is safe in a
     /// log line and a test's name for it. `None` for anything else.
+    #[must_use]
     pub fn parse(text: &str) -> Option<SheetHandle> {
         let fits = (1..=MAX_HANDLE).contains(&text.len())
             && text
@@ -31,6 +32,7 @@ impl SheetHandle {
     }
 
     /// The handle's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -62,6 +64,7 @@ pub struct Draft {
 
 impl Draft {
     /// The review's switch for `kind`, when the provider offers it.
+    #[must_use]
     pub fn toggle_of(&self, kind: account_capability::CapabilityKind) -> Option<bool> {
         self.choices
             .iter()
@@ -97,6 +100,7 @@ pub enum Awaiting {
 
 impl OpenSheet {
     /// Whether there is anything to draw: a finished add shows nothing while accountd closes it.
+    #[must_use]
     pub fn visible(&self) -> bool {
         !matches!(self.view, SheetView::Done)
     }
@@ -113,6 +117,7 @@ pub struct AccountsSheets {
 
 impl AccountsSheets {
     /// The sheet on screen.
+    #[must_use]
     pub fn current(&self) -> Option<&OpenSheet> {
         self.open.first().filter(|sheet| sheet.visible())
     }

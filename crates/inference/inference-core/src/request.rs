@@ -55,6 +55,7 @@ pub enum RequestKind {
 
 impl InferRequest {
     /// Which kind this is.
+    #[must_use]
     pub fn kind(&self) -> RequestKind {
         match self {
             InferRequest::Chat(_) => RequestKind::Chat,
@@ -127,6 +128,7 @@ pub struct ChatRequest {
 impl ChatRequest {
     /// A chat turn over `messages` at `tier`, for data of `class`: a plain text reply, no
     /// functions, and the default controls ([`ChatControl::new`]).
+    #[must_use]
     pub fn new(messages: Vec<ChatMessage>, tier: Tier, class: DataClass, usage: Usage) -> Self {
         Self {
             messages,
@@ -140,18 +142,21 @@ impl ChatRequest {
     }
 
     /// The same turn asking for this form of reply.
+    #[must_use]
     pub fn with_shape(mut self, shape: ReplyShape) -> Self {
         self.shape = shape;
         self
     }
 
     /// The same turn offering these functions.
+    #[must_use]
     pub fn with_tools(mut self, tools: Vec<ToolDecl>) -> Self {
         self.tools = tools;
         self
     }
 
     /// The same turn with these controls.
+    #[must_use]
     pub fn with_control(mut self, control: ChatControl) -> Self {
         self.control = control;
         self
@@ -253,7 +258,7 @@ pub struct ImagePart {
 pub enum ImageSource {
     /// In the frame, as base64 text (small images; about a third larger than raw).
     Inline(Base64Bytes),
-    /// In a memfd received with SCM_RIGHTS on the `Open` fd, never copied through JSON.
+    /// In a memfd received with `SCM_RIGHTS` on the `Open` fd, never copied through JSON.
     Attached(AttachIndex),
 }
 
@@ -288,6 +293,7 @@ pub struct EmbedRequest {
 impl EmbedRequest {
     /// Embeddings for `inputs`, as queries or passages (`role`), of this vector length, for data
     /// of `class`.
+    #[must_use]
     pub fn new(
         inputs: Vec<String>,
         role: EmbedRole,
@@ -339,6 +345,7 @@ pub struct TaskRequest {
 
 impl TaskRequest {
     /// `task` over `input`, which carries data of `class`.
+    #[must_use]
     pub fn new(task: Task, input: String, class: DataClass, usage: Usage) -> Self {
         Self {
             task,

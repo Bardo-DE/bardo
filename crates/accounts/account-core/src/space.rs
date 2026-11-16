@@ -69,12 +69,13 @@ pub struct DesktopSpace(String);
 impl DesktopSpace {
     /// The id written as `text`, or why it is not one.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
-        match is_id(text) && text != SpaceId::DESKTOP {
-            true => Ok(Self(text.to_owned())),
-            false => Err(CoreError::MalformedId {
+        if is_id(text) && text != SpaceId::DESKTOP {
+            Ok(Self(text.to_owned()))
+        } else {
+            Err(CoreError::MalformedId {
                 what: "desktop space id",
                 text: text.to_owned(),
-            }),
+            })
         }
     }
 }
@@ -95,6 +96,7 @@ impl SpaceId {
     pub const DESKTOP: &'static str = "desktop";
 
     /// The reserved `desktop` Space.
+    #[must_use]
     pub fn desktop() -> Self {
         Self(Self::DESKTOP.to_owned())
     }
@@ -102,21 +104,24 @@ impl SpaceId {
     /// The id written as `text`, or why it is not one: `desktop`, a slug, or
     /// `app:<app name>:<n>`.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
-        match is_id(text) || app_parts(text).is_some() {
-            true => Ok(Self(text.to_owned())),
-            false => Err(CoreError::MalformedId {
+        if is_id(text) || app_parts(text).is_some() {
+            Ok(Self(text.to_owned()))
+        } else {
+            Err(CoreError::MalformedId {
                 what: "space id",
                 text: text.to_owned(),
-            }),
+            })
         }
     }
 
     /// The id of a desktop-wide Space.
+    #[must_use]
     pub fn linked(space: &DesktopSpace) -> Self {
         Self(space.0.clone())
     }
 
     /// The id of `app`'s own Space `local`, linked to nothing.
+    #[must_use]
     pub fn app(app: &AppName, local: LocalSpace) -> Self {
         Self(format!("{APP_PREFIX}{app}:{}", local.0))
     }
@@ -136,6 +141,7 @@ impl SpaceId {
     }
 
     /// What the id names.
+    #[must_use]
     pub fn kind(&self) -> SpaceKind {
         if self.0 == Self::DESKTOP {
             return SpaceKind::Outside;
@@ -148,6 +154,7 @@ impl SpaceId {
     }
 
     /// The app whose own Space this is; none for `desktop` and desktop-wide Spaces.
+    #[must_use]
     pub fn owner(&self) -> Option<AppName> {
         match self.kind() {
             SpaceKind::App { app, .. } => Some(app),
@@ -172,6 +179,7 @@ impl SpaceScope {
     /// Whether `app` may hold a decision over this scope: any app for `Any`, `desktop` and a
     /// desktop-wide Space; only its owner for an app's own Space. `app` is the caller's verified
     /// name (the bus's, the socket's), never one read from the id's text or a request.
+    #[must_use]
     pub fn open_to(&self, app: &AppName) -> bool {
         match self {
             SpaceScope::Any => true,

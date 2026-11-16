@@ -82,6 +82,6 @@ fn a_fixed_column_is_as_tall_as_a_control_of_its_size() {
     let column = harness.rect(".ds-column").expect("column");
     assert_eq!(
         column.size.height.0,
-        ControlSize::Large.scale().height.0 as f32
+        f32::from(ControlSize::Large.scale().height.0)
     );
 }

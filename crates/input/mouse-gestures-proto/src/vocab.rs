@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-/// One gesture from MayBegin to Ended or Cancelled; every message of it carries the same id.
+/// One gesture from `MayBegin` to Ended or Cancelled; every message of it carries the same id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct GestureId(pub u32);
@@ -68,6 +68,7 @@ impl HostAction {
     /// Whether the words fit the bounds (at most [`ACTION_WORDS_MAX`] words of at most
     /// [`ACTION_WORD_MAX_BYTES`] bytes, and a program or a line is not empty). A side that gets an
     /// action that does not fit drops it.
+    #[must_use]
     pub fn fits(&self) -> bool {
         match self {
             Self::Workspace(_) => true,

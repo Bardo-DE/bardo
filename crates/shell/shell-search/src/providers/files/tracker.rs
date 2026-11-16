@@ -82,6 +82,7 @@ pub(super) fn tracker_state(session: &Bus) -> IndexState {
 const STATE_DEADLINE: std::time::Duration = std::time::Duration::from_secs(2);
 
 /// The SPARQL for `ask`, with the text and the folder as escaped string literals.
+#[must_use]
 pub fn sparql_for(ask: &FileAsk) -> String {
     let prefix = format!("{}/", file_uri(&ask.under).trim_end_matches('/'));
     format!(
@@ -100,6 +101,7 @@ pub fn sparql_for(ask: &FileAsk) -> String {
 
 /// `text` as the inside of a SPARQL `"…"` literal: backslash, both quotes, newline, carriage
 /// return and tab escaped (SPARQL 1.1 §19.7 ECHAR), so a typed query cannot close the literal.
+#[must_use]
 pub fn escape_literal(text: &str) -> String {
     text.chars()
         .fold(String::with_capacity(text.len()), |mut out, c| {

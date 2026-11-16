@@ -14,6 +14,7 @@ use smithay::backend::allocator::{Format, Fourcc, Modifier};
 /// let offer = dma_offer(&[linear(Fourcc::Argb8888)], &[linear(Fourcc::Argb8888), linear(Fourcc::Xrgb8888)]);
 /// assert_eq!(offer, [(Fourcc::Argb8888, vec![Modifier::Linear])]);
 /// ```
+#[must_use]
 pub fn dma_offer(renderable: &[Format], accepted: &[Format]) -> Vec<(Fourcc, Vec<Modifier>)> {
     let mut offer: Vec<(Fourcc, Vec<Modifier>)> = Vec::new();
     for format in renderable.iter().filter(|f| accepted.contains(f)) {

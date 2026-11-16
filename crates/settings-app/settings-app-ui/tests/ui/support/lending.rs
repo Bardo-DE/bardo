@@ -38,7 +38,7 @@ impl UnitManager for Units {
     }
 
     async fn restart(&self, unit: &'static str) -> Result<(), UnitFailure> {
-        self.note(format!("restart {}", unit));
+        self.note(format!("restart {unit}"));
         if self.refuse_restart.load(Ordering::SeqCst) {
             Err(UnitFailure("refused by the test".to_owned()))
         } else {

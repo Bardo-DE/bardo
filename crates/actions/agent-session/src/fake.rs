@@ -36,6 +36,7 @@ pub struct FakeBackend {
 
 impl FakeBackend {
     /// A backend with one script per turn it will be given.
+    #[must_use]
     pub fn new(script: Vec<Vec<BackendEvent>>) -> Self {
         Self {
             running: Running::Stopped,
@@ -126,6 +127,7 @@ pub struct MemoryLog {
 
 impl MemoryLog {
     /// An empty log that stores.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             bodies: Mutex::new(BTreeMap::new()),

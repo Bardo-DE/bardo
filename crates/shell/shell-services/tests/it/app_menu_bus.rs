@@ -257,13 +257,13 @@ async fn a_followed_apps_titles_clicks_and_changes_reach_the_bar_and_back() {
         app: test_app.clone(),
         id: 20,
     });
-    assert!(sent.is_ok());
+    sent.unwrap();
     app.logged("AboutToShow 20").await;
     let sent = handle.control.send(AppMenuCommand::Pick {
         app: test_app.clone(),
         id: 21,
     });
-    assert!(sent.is_ok());
+    sent.unwrap();
     app.logged("Event 21 clicked").await;
 
     // Refresh changes the Edit menu under the open popup: LayoutUpdated is followed.
@@ -271,7 +271,7 @@ async fn a_followed_apps_titles_clicks_and_changes_reach_the_bar_and_back() {
         app: test_app.clone(),
         id: 23,
     });
-    assert!(sent.is_ok());
+    sent.unwrap();
     let menus = menus_where(&handle, "Redo in Edit", |m| {
         m.served
             .get(&test_app)
@@ -376,7 +376,7 @@ impl Transport for RecordingIntentd {
             IntentsRequest::Perform { call, .. } => {
                 self.seen
                     .lock()
-                    .unwrap_or_else(|e| e.into_inner())
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
                     .performed
                     .push(call);
                 Ok(IntentsReply::Performed(Box::new(Ok(Outcome {
@@ -487,7 +487,7 @@ impl Agent {
         self.intentd
             .seen
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .performed
             .clone()
     }
@@ -769,7 +769,7 @@ async fn perform_refuses_an_item_that_changed_since_it_was_gated_and_always_take
         "nothing was clicked: {:?}",
         app.lines()
     );
-    assert!(agent.wl.try_recv().is_err());
+    agent.wl.try_recv().unwrap_err();
 
     // The same item as gated is carried out: the delegation is handed back.
     let ok = agent
@@ -1001,7 +1001,7 @@ mod routed {
             }
             self.notes_done
                 .lock()
-                .unwrap_or_else(|e| e.into_inner())
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
                 .push(inv.action.as_str().to_owned());
             Ok(Outcome {
                 value: None,
@@ -1244,7 +1244,10 @@ mod routed {
             Presets::built_in().unwrap_or_else(|e| panic!("{e:?}")),
         );
         {
-            let mut state = router.state.lock().unwrap_or_else(|e| e.into_inner());
+            let mut state = router
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             for manifest in manifests() {
                 state.registry.insert(manifest);
             }
@@ -1281,7 +1284,7 @@ mod routed {
             .link
             .notes_done
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .clone()
     }
 

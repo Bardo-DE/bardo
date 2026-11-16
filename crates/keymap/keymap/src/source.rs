@@ -67,6 +67,7 @@ pub struct Watch {
 
 impl Watch {
     /// A watch that never fires, for sources whose settings do not change while running.
+    #[must_use]
     pub fn inert() -> Watch {
         Watch {
             _guard: Box::new(()),
@@ -123,7 +124,7 @@ mod tests {
         let keymap = keymap.unwrap_or_else(|e| panic!("{e}"));
         let copy = Action::Standard(StandardAction::Copy);
         assert_eq!(keymap.chords_in(&copy, Context::Normal).len(), 1);
-        assert!(ConventionSource.watch(Box::new(|| {})).is_ok());
+        ConventionSource.watch(Box::new(|| {})).unwrap();
     }
 
     #[test]

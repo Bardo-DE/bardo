@@ -965,7 +965,7 @@ fn a_picture_of_a_whole_output_comes_back_as_pixels_and_a_png() {
         panic!("a shot: {picture:?}");
     };
     assert_eq!(shot.size, (2, 1));
-    assert_eq!(&shot.rgba[..], &[255, 0, 0, 255, 0, 0, 255, 255]);
+    assert_eq!(&*shot.rgba, &[255, 0, 0, 255, 0, 0, 255, 255]);
     let decoded = image::load_from_memory(&shot.png)
         .unwrap_or_else(|e| panic!("{e}"))
         .to_rgba8();

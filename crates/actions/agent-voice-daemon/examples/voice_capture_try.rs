@@ -1,4 +1,4 @@
-//! The owner's by-hand check of voiced's PipeWire device (spike V-A; run it through
+//! The owner's by-hand check of voiced's `PipeWire` device (spike V-A; run it through
 //! `dev/voice-capture-try.sh`). It uses the same `PipeWireDevice` the daemon does.
 //!
 //! - `list`: prints the audio nodes and which one voiced would capture. Read-only: it opens no

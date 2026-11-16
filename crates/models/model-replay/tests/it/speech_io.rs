@@ -241,9 +241,7 @@ fn transcribe_refuses_other_audio_in_strict_and_by_request() {
     }
     let r = replay(vec![stt_line()], ReplayMode::InOrder);
     let mut audio = Pulls(vec![chunk(0, vec![7; 100])].into());
-    assert!(
-        block_on(r.transcribe(&stt_request(), &mut audio, &mut Events(vec![], usize::MAX))).is_ok()
-    );
+    block_on(r.transcribe(&stt_request(), &mut audio, &mut Events(vec![], usize::MAX))).unwrap();
     let mut audio = Pulls(VecDeque::new());
     assert_eq!(
         block_on(r.transcribe(&stt_request(), &mut audio, &mut Events(vec![], usize::MAX))),

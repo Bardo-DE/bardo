@@ -183,18 +183,20 @@ impl Inferd {
     /// the slots layout sends section `Models / Text`, label `Fast` and the groups.
     fn spec(&self, kind: &str, slot: &str, tier: &str) -> KeySpec {
         let slots = matches!(self.layout, Layout::Slots);
-        let words = match slots {
-            true => WORDS.to_vec(),
-            false => WORDS[..2]
+        let words = if slots {
+            WORDS.to_vec()
+        } else {
+            WORDS[..2]
                 .iter()
                 .chain(&WORDS[2..3])
                 .chain(&WORDS[5..])
                 .copied()
-                .collect(),
+                .collect()
         };
-        let (label, section) = match slots {
-            true => (tier_word(tier).to_owned(), format!("Models / {slot}")),
-            false => (format!("{slot}: {}", tier_word(tier)), "Models".to_owned()),
+        let (label, section) = if slots {
+            (tier_word(tier).to_owned(), format!("Models / {slot}"))
+        } else {
+            (format!("{slot}: {}", tier_word(tier)), "Models".to_owned())
         };
         KeySpec {
             ends: None,
@@ -226,8 +228,8 @@ impl Inferd {
                 .iter()
                 .map(|(word, why)| (ChoiceWord(word.clone()), UnavailableReason(why.clone())))
                 .collect(),
-            groups: match slots {
-                true => words
+            groups: if slots {
+                words
                     .iter()
                     .filter_map(|(word, _, group)| {
                         group.map(|group| {
@@ -237,12 +239,14 @@ impl Inferd {
                             )
                         })
                     })
-                    .collect(),
-                false => BTreeMap::new(),
+                    .collect()
+            } else {
+                BTreeMap::new()
             },
-            places: match slots {
-                true => places_of(&words),
-                false => BTreeMap::new(),
+            places: if slots {
+                places_of(&words)
+            } else {
+                BTreeMap::new()
             },
             note: self.note.clone().filter(|_| slots).map(Note),
         }

@@ -1,5 +1,5 @@
-//! FieldRow and FieldGroup: System Settings rows in a group, a grid form (one control and several
-//! that wrap) and a FactList.
+//! `FieldRow` and `FieldGroup`: System Settings rows in a group, a grid form (one control and several
+//! that wrap) and a `FactList`.
 
 use crate::pages::Section;
 use dioxus::prelude::*;
@@ -12,7 +12,7 @@ use ui_components::components::menus::pop_up_button::{PopUpButton, PopUpKind};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The FieldRow section.
+/// The `FieldRow` section.
 #[component]
 pub fn FieldRowSection() -> Element {
     let mut wifi = use_signal(|| Check::On);

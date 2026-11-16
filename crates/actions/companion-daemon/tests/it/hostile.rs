@@ -213,7 +213,7 @@ async fn a_question_past_what_its_tool_allows_is_unreadable() {
 fn a_tool_name_with_a_homoglyph_is_not_a_name_at_all() {
     // The wire type refuses it before the planner could compare it: a Cyrillic letter is not in
     // the grammar of a tool name.
-    assert!(inference_core::ToolName::new("org_bardo_Mail-mail_thr\u{0435}ad.read").is_err());
+    inference_core::ToolName::new("org_bardo_Mail-mail_thr\u{0435}ad.read").unwrap_err();
 }
 
 #[tokio::test]

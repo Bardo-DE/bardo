@@ -17,6 +17,7 @@ pub struct Turn {
 
 impl Turn {
     /// A turn that is the task `task`, whose steps arrive on `steps`; it takes no audio.
+    #[must_use]
     pub fn running(steps: mpsc::UnboundedReceiver<TurnStep>, task: JoinHandle<()>) -> Self {
         Self {
             steps,
@@ -27,6 +28,7 @@ impl Turn {
 
     /// A turn that is the task `task`, whose steps arrive on `steps` and which reads the audio
     /// frames sent to `audio` (a `Transcribe` turn); the turn's `end_audio` closes that channel.
+    #[must_use]
     pub fn listening(
         steps: mpsc::UnboundedReceiver<TurnStep>,
         task: JoinHandle<()>,

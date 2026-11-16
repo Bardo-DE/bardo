@@ -89,6 +89,7 @@ struct Held {
 
 impl WlrToplevelPart {
     /// Creates the global (version 3), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> WlrToplevelPart
     where
         D: GlobalDispatch<ZwlrForeignToplevelManagerV1, WlrToplevelGlobal>
@@ -125,6 +126,7 @@ impl WlrToplevelPart {
     }
 
     /// How many managers `client` has bound.
+    #[must_use]
     pub fn managers_of(&self, client: &ClientId) -> usize {
         self.managers
             .iter()
@@ -133,11 +135,13 @@ impl WlrToplevelPart {
     }
 
     /// The global, when it was created.
+    #[must_use]
     pub fn global(&self) -> Option<&GlobalId> {
         self.global.as_ref()
     }
 
     /// Whether `window` is listed.
+    #[must_use]
     pub fn is_listed(&self, window: WindowId) -> bool {
         self.facts.contains_key(&window)
     }
@@ -273,16 +277,19 @@ where
                 y,
                 width,
                 height,
-            } => match rectangle_of(state.surface_origin(&surface), (x, y, width, height)) {
-                Some(rect) => Some(WlrToplevelRequest::MinimiseRect(rect)),
-                None => {
+            } => {
+                if let Some(rect) =
+                    rectangle_of(state.surface_origin(&surface), (x, y, width, height))
+                {
+                    Some(WlrToplevelRequest::MinimiseRect(rect))
+                } else {
                     resource.post_error(
                         zwlr_foreign_toplevel_handle_v1::Error::InvalidRectangle,
                         "a rectangle has no negative size",
                     );
                     None
                 }
-            },
+            }
             Asked::SetFullscreen { output } => Some(WlrToplevelRequest::FullScreen {
                 toggle: Toggle::On,
                 output: output.and_then(|output| state.output_key_of(&output)),
@@ -309,6 +316,7 @@ where
 /// The rectangle a `set_rectangle` names, in global logical coordinates: `rect` is in the
 /// surface's own, `origin` is where the surface sits (the origin when casement does not know).
 /// `None` for a negative size, which the protocol makes an error.
+#[must_use]
 pub fn rectangle_of(
     origin: Option<LogicalPoint>,
     rect: (i32, i32, i32, i32),
@@ -347,6 +355,7 @@ pub fn on_request(
 
 /// The states `window` is in, as the protocol numbers them (`maximized` 0, `minimized` 1,
 /// `activated` 2, `fullscreen` 3), in ascending order.
+#[must_use]
 pub fn states_of(window: &Window) -> Vec<u32> {
     let maximised = matches!(window.state, WindowState::Filled { .. });
     let minimised = matches!(window.state, WindowState::Minimised { .. });

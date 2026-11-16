@@ -34,6 +34,7 @@ pub struct Registration {
 
 impl Registration {
     /// An empty registration for `app`.
+    #[must_use]
     pub fn new(app: &AppId) -> Registration {
         Registration {
             app: app.clone(),
@@ -45,6 +46,7 @@ impl Registration {
     /// The app does not offer `action`, so the action no longer holds its chord in this app.
     /// Only actions with [`Reach::IfOffered`](crate::Reach::IfOffered) can be forgone; the
     /// registration is refused for a universal one.
+    #[must_use]
     pub fn forgo(mut self, action: StandardAction) -> Registration {
         self.forgone.push(action);
         self
@@ -57,6 +59,7 @@ impl Registration {
     }
 
     /// Declares `action` with its portable default chord. A repeated action gets both chords.
+    #[must_use]
     pub fn action(mut self, action: AppAction, chord: DefaultChord) -> Registration {
         self.rows.push(Row {
             action,
@@ -71,6 +74,7 @@ impl Registration {
     /// wherever the default was and free there; otherwise the row is refused. Defaults settle
     /// before fallbacks, so declaration order only matters between two fallbacks wanting one
     /// chord: the first declared wins and the other is refused.
+    #[must_use]
     pub fn action_with_fallback(
         mut self,
         action: AppAction,

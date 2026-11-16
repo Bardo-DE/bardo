@@ -27,6 +27,7 @@ const NOT_FOR_RECALL: [&str; 1] = ["companion.session.*"];
 
 impl Recallable {
     /// The class of a kind.
+    #[must_use]
     pub fn of_kind(kind: &KindTag) -> Recallable {
         let covered = NOT_FOR_RECALL
             .iter()
@@ -40,6 +41,7 @@ impl Recallable {
     }
 
     /// The class of a body, by its kind.
+    #[must_use]
     pub fn of_body(body: &EventBody) -> Recallable {
         Recallable::of_kind(&body.kind())
     }

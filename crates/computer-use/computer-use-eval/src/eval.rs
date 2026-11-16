@@ -41,6 +41,7 @@ pub struct Cassette {
 
 impl Cassette {
     /// The takes of `records`.
+    #[must_use]
     pub fn of(records: &[RunRecord]) -> Cassette {
         Cassette {
             takes: records

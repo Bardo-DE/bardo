@@ -116,6 +116,7 @@ pub struct AcpSpec {
 
 impl AcpSpec {
     /// A spec that runs `command` as `program` with the network of a login agent.
+    #[must_use]
     pub fn new(program: &str, command: PathBuf) -> Self {
         Self {
             program: program.to_owned(),
@@ -199,6 +200,7 @@ impl AcpSpec {
     }
 
     /// The `agents.toml` text for this agent working with `home` as its HOME.
+    #[must_use]
     pub fn entry_toml(&self, home: &Path) -> String {
         let quote = |text: &str| toml::Value::String(text.to_owned()).to_string();
         let list = |items: Vec<String>| format!("[{}]", items.join(", "));
@@ -263,6 +265,7 @@ fn stays_inside(text: &str) -> bool {
 }
 
 /// The word `agents.toml` and the flag use for a network.
+#[must_use]
 pub fn network_word(mode: NetworkMode) -> &'static str {
     match mode {
         NetworkMode::None => "none",

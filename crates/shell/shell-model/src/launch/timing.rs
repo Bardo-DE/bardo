@@ -13,6 +13,7 @@ pub struct Stamp(pub u64);
 
 impl Stamp {
     /// The stamp of a clock reading in whole seconds and the nanoseconds past them.
+    #[must_use]
     pub fn of_reading(seconds: u64, nanos: u64) -> Stamp {
         Stamp(seconds.saturating_mul(1_000_000_000).saturating_add(nanos))
     }
@@ -52,6 +53,7 @@ pub enum LaunchDone {
 
 impl LaunchDone {
     /// The app the request was for.
+    #[must_use]
     pub fn app(&self) -> &AppId {
         match self {
             LaunchDone::Spawned(timing) => &timing.app,
@@ -60,6 +62,7 @@ impl LaunchDone {
     }
 
     /// When the request reached the launch code.
+    #[must_use]
     pub fn requested_at(&self) -> Stamp {
         match self {
             LaunchDone::Spawned(timing) => timing.requested_at,
@@ -69,6 +72,7 @@ impl LaunchDone {
 }
 
 /// The first of `done` that answers a request for `app` made at or after `asked_at`.
+#[must_use]
 pub fn answer_to<'a>(
     done: &'a [LaunchDone],
     app: &AppId,
@@ -81,6 +85,7 @@ pub fn answer_to<'a>(
 /// The timing line, `launch desktop_id=<id> unit=<unit> requested_at=<ns> spawned_at=<ns>
 /// pid=<pid>`: fields are `key=value` with no spaces in a value (whitespace becomes `_`); no unit
 /// reads `-` and no process reads `0`.
+#[must_use]
 pub fn launch_line(timing: &LaunchTiming) -> String {
     let unit = timing.unit.as_ref().map_or("-", |unit| unit.0.as_str());
     let pid = timing.pid.map_or(0, |pid| pid.0);

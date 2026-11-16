@@ -27,6 +27,7 @@ pub enum ChromeToken {
 
 impl ChromeToken {
     /// The length in logical pixels.
+    #[must_use]
     pub fn length(self) -> WholePx {
         match self {
             ChromeToken::TitlebarHeight => CHROME_SCALE.titlebar_height,

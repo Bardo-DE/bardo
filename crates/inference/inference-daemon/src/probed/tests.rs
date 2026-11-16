@@ -51,7 +51,7 @@ fn pool() -> Vec<ModelRef> {
     ]
     .iter()
     .flatten()
-    .map(|model| model.model_ref())
+    .map(inference_router::LocalModel::model_ref)
     .chain([crate::testkit::cloud_card()].iter().map(|card| ModelRef {
         account: card.account.clone(),
         model: card.model.clone(),
@@ -281,7 +281,7 @@ async fn a_session_may_start_on_a_runtime_that_is_up_and_not_on_one_that_is_not(
     let model = models_of(Runtime::Ollama, 11_434, &["llama3.2-3b"]);
     let wanted = model[0].model_ref();
     book.set(Runtime::Ollama, Standing::Online, Some(model));
-    assert!(engines.want(wanted.clone()).await.is_ok());
+    engines.want(wanted.clone()).await.unwrap();
     book.set(Runtime::Ollama, Standing::Offline, None);
     assert!(engines.want(wanted).await.is_err());
 }

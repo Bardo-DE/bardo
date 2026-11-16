@@ -23,6 +23,7 @@ pub enum RuleFile {
 impl RuleFile {
     /// The file a limit made by `by` goes to. The administrator's limits are not written: they
     /// come from the floor.
+    #[must_use]
     pub fn of(by: LimitMaker) -> Option<RuleFile> {
         match by {
             LimitMaker::Person => Some(RuleFile::Never),
@@ -32,6 +33,7 @@ impl RuleFile {
     }
 
     /// The file's name.
+    #[must_use]
     pub fn name(self) -> &'static str {
         match self {
             RuleFile::Never => "never.cedar",
@@ -118,6 +120,7 @@ fn terms(key: &LimitKey) -> String {
 
 /// The generated rule for `limit`: a forbid named by the limit's id, with the plain sentence
 /// the sheet shows. "Never" refuses the call; "ask first" makes it ask, whatever is granted.
+#[must_use]
 pub fn rule_text(limit: &Limit) -> String {
     let action = match limit.key.level {
         LimitLevel::Never => "action == Quire::Action::\"perform\"",
@@ -150,6 +153,7 @@ fn joined<'a>(blocks: impl Iterator<Item = &'a str>) -> String {
 }
 
 /// `file` without the rule `id`, and whether it held one. Everything else in the file stays.
+#[must_use]
 pub fn without_rule(file: &str, id: &StandingGrantId) -> (String, bool) {
     let held = blocks(file).any(|b| is_rule(b, id));
     let done = held;
@@ -158,6 +162,7 @@ pub fn without_rule(file: &str, id: &StandingGrantId) -> (String, bool) {
 
 /// `file` with the rule for `limit`; the same id replaces the earlier rule. An empty file
 /// starts with a short note on what the file is.
+#[must_use]
 pub fn with_rule(file: &str, limit: &Limit) -> String {
     let (rest, _) = without_rule(file, &limit.id);
     let head = if rest.trim().is_empty() {
@@ -192,6 +197,7 @@ const RULE_LINES: usize = 4;
 /// The generated rules `file` holds, each cut out of the file on its own, however the rest of the
 /// file reads. A rules file the loader rejects (a hand edit that does not parse) must not take
 /// the person's "never" with it: the loader keeps each of these that is good by itself.
+#[must_use]
 pub fn generated_rules(file: &str) -> Vec<String> {
     let lines: Vec<&str> = file.lines().collect();
     lines

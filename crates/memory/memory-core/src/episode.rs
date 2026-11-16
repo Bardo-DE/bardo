@@ -181,6 +181,7 @@ pub enum Succession {
 
 impl Episode {
     /// Whether `self` is the narrated successor of `earlier`.
+    #[must_use]
     pub fn narrates(&self, earlier: &Episode) -> Succession {
         let same = self.id == earlier.id && self.skeleton == earlier.skeleton;
         if same && earlier.narrative.is_none() && self.narrative.is_some() {
@@ -194,6 +195,7 @@ impl Episode {
 impl Skeleton {
     /// The skeleton as lines of text, for the index and for the planner's recent-episodes
     /// section: what was asked, each step, what was touched, each result.
+    #[must_use]
     pub fn text(&self) -> String {
         let asked = self.asked.iter().map(|a| format!("asked: {}", a.as_str()));
         let steps = self.steps.iter().map(|s| {

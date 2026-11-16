@@ -12,6 +12,7 @@ pub struct CalendarDay {
 
 impl CalendarDay {
     /// The day `YYYY-MM-DD` names; none for text of another shape.
+    #[must_use]
     pub fn parse(day: &str) -> Option<CalendarDay> {
         let mut parts = day.split('-');
         let (_year, month, date) = (parts.next()?, parts.next()?, parts.next()?);

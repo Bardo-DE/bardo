@@ -225,8 +225,8 @@ fn the_user_file_wins_a_missing_one_is_empty_and_a_bad_one_is_an_error() {
         CallerTable::default()
     );
     std::fs::write(&user, "[[caller]]\napp = \"org.x.A\"\nrole = \"root\"\n").expect("bad");
-    assert!(load_callers(&system, &user).is_err());
-    assert!(table_from_toml("[[caller]]\napp = \"Not An App!\"\nrole = \"app\"\n").is_err());
+    load_callers(&system, &user).unwrap_err();
+    table_from_toml("[[caller]]\napp = \"Not An App!\"\nrole = \"app\"\n").unwrap_err();
 }
 
 async fn world(
@@ -277,7 +277,7 @@ async fn a_connection_is_resolved_through_its_process_to_its_cgroup() {
     let proc = proc_with_me_in("bardo-actiond.service");
     let (_scratch, _bus, _daemon, address) = world(table.clone(), proc.path()).await;
     let router = Memory::over(DbusTransport::new(connect(&address).await));
-    assert!(router.search(search()).await.is_ok());
+    router.search(search()).await.unwrap();
     // And the router may not do what only the shell may.
     assert_eq!(
         router

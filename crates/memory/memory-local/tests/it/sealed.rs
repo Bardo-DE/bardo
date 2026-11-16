@@ -63,7 +63,7 @@ async fn each_seam_gives_a_typed_error_for_the_wrong_key() {
         wrong.open_log(&work(), meta.replica, &key),
         Err(BackendError::Log(LogError::Locked))
     ));
-    assert!(wrong.open_index(&work(), &key).is_err());
+    wrong.open_index(&work(), &key).unwrap_err();
     let SpaceVault::Sealed(_) = wrong.open_files(&meta, &key).expect("files") else {
         panic!("a sealed Space opens a sealed vault");
     };

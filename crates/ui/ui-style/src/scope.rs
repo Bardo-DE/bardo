@@ -24,18 +24,21 @@ pub struct Scope {
 }
 
 /// The enclosing scope. Panics outside a `Ds`: every quire component is drawn inside one.
+#[must_use]
 pub fn use_scope() -> Scope {
     use_scope_signal()()
 }
 
 /// The enclosing scope as the signal `Ds` and `Surface` provide, for hooks that read the
 /// motion level when a timer starts rather than when they were created.
+#[must_use]
 pub fn use_scope_signal() -> Signal<Scope> {
     use_context::<Signal<Scope>>()
 }
 
 /// Provide `env` to the subtree, updating the provided value when it changes. Nothing here
 /// reads the signal, so the write does not re-render the caller.
+#[must_use]
 pub fn use_scope_provider(env: Scope) -> Signal<Scope> {
     let mut provided = use_context_provider(|| Signal::new(env));
     if *provided.peek() != env {

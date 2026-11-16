@@ -186,7 +186,7 @@ async fn only_the_router_may_call_the_provider() {
     let file = scratch.path().join("a.png");
     std::fs::write(&file, b"a").unwrap();
 
-    assert!(perform(&intruder, invocation(&[&file])).await.is_err());
+    perform(&intruder, invocation(&[&file])).await.unwrap_err();
     let heard = primary.next_within(Duration::from_millis(300));
     assert!(
         heard.is_none(),

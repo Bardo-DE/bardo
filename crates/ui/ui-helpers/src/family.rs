@@ -20,6 +20,7 @@ impl Family {
     pub const ALL: [Family; 4] = [Family::Dnf, Family::Apt, Family::Pacman, Family::Zypper];
 
     /// The key the helpers file uses for this family.
+    #[must_use]
     pub const fn key(self) -> &'static str {
         match self {
             Family::Dnf => "dnf",
@@ -31,6 +32,7 @@ impl Family {
 
     /// The command that installs packages on this family, up to the package names, as typed in a
     /// terminal.
+    #[must_use]
     pub const fn install_command(self) -> &'static str {
         match self {
             Family::Dnf => "sudo dnf install",

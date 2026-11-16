@@ -42,6 +42,7 @@ pub struct MenuItem {
 
 impl MenuItem {
     /// An item classified as `effect` that stays so.
+    #[must_use]
     pub fn effect(effect: Effect) -> Self {
         Self {
             classify: Ok(CallClass::Effect(effect)),
@@ -51,6 +52,7 @@ impl MenuItem {
     }
 
     /// An item that delegates to `action` of the app.
+    #[must_use]
     pub fn delegating(action: &str) -> Self {
         Self {
             classify: Ok(CallClass::Delegates(ActionRef {
@@ -83,6 +85,7 @@ pub struct FakeMenu {
 
 impl FakeMenu {
     /// A menu app with this manifest and no items.
+    #[must_use]
     pub fn new(manifest: ValidManifest) -> Self {
         Self {
             manifest,

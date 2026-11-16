@@ -137,7 +137,7 @@ fn a_transcription_upload_is_a_wav_file_in_a_multipart_body() {
     assert_eq!((u16_at(&wav, 32), u16_at(&wav, 34)), (2, 16));
     assert_eq!(&wav[36..40], b"data");
     assert_eq!(u32_at(&wav, 40), 200);
-    assert_eq!(&wav[44..], &samples[..]);
+    assert_eq!(&wav[44..], &*samples);
     // `Auto` leaves the language out, and the audio never prints.
     let auto = encode_transcription(&stt(LangChoice::Auto), &audio).unwrap();
     assert!(parts(&auto).0.iter().all(|(name, _)| name != "language"));
@@ -186,7 +186,7 @@ fn the_boundary_never_appears_in_the_audio() {
     let boundary = body.content_type.split("boundary=").nth(1).unwrap();
     assert_ne!(boundary, "----stoker0f3c9a1e");
     let (_, wav) = parts(&body);
-    assert_eq!(&wav[44..], &hostile[..]);
+    assert_eq!(&wav[44..], &*hostile);
 }
 
 #[test]

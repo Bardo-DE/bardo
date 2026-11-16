@@ -12,16 +12,19 @@ pub struct Passphrase(SecretText);
 
 impl Passphrase {
     /// The password `text` is.
+    #[must_use]
     pub fn new(text: &str) -> Passphrase {
         Passphrase(SecretText::new(text))
     }
 
     /// Whether it is long enough to be a WPA password; the sheet's Join waits for this.
+    #[must_use]
     pub fn is_long_enough(&self) -> bool {
         self.0.expose().chars().count() >= SHORTEST
     }
 
     /// The text, for the one place that sends it to the network service.
+    #[must_use]
     pub fn into_text(self) -> String {
         self.0.expose().to_owned()
     }

@@ -31,6 +31,7 @@ pub struct StdinSlot(Option<Stdin>);
 
 impl StdinSlot {
     /// A slot holding `stdin`.
+    #[must_use]
     pub fn new(stdin: Stdin) -> Self {
         Self(Some(stdin))
     }

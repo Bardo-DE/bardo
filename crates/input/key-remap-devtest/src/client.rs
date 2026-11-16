@@ -126,6 +126,7 @@ impl Client {
     }
 
     /// The last status heard.
+    #[must_use]
     pub fn status(&self) -> &Status {
         &self.status
     }
@@ -184,6 +185,7 @@ impl Client {
 pub const FOCUS_SETTLE: Duration = Duration::from_millis(300);
 
 /// A status on one line: `Running [name Active, other Conflict]`.
+#[must_use]
 pub fn summary(status: &Status) -> String {
     let keyboards: Vec<String> = status
         .keyboards

@@ -72,6 +72,7 @@ pub struct Breaker {
 
 impl Breaker {
     /// A session that has decided nothing. A resume after a trip starts here too.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             consecutive: Count(0),
@@ -109,6 +110,7 @@ fn probing(breaker: &Breaker, probing: Count) -> bool {
 /// Notes a decision and says whether the breaker trips. An allow resets the consecutive count
 /// but not the recent window. When several limits hold, probing is reported first (the most
 /// specific signal), then consecutive, then recent.
+#[must_use]
 pub fn note(
     breaker: Breaker,
     decision: DecisionMark,
@@ -145,6 +147,7 @@ pub fn note(
 ///
 /// A call that exactly repeats a denied one (the same goal with the same arguments) is refused
 /// without review.
+#[must_use]
 pub fn repeated(breaker: &Breaker, goal: &GoalKey, args: ArgDigest) -> bool {
     breaker.denials().any(|m| &m.goal == goal && m.args == args)
 }

@@ -18,15 +18,12 @@ pub(crate) fn without_ids(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut at = 0;
     while at < chars.len() {
-        match id_at(&chars, at) {
-            Some((len, noun)) => {
-                out.push_str(noun);
-                at += len;
-            }
-            None => {
-                out.push(chars[at]);
-                at += 1;
-            }
+        if let Some((len, noun)) = id_at(&chars, at) {
+            out.push_str(noun);
+            at += len;
+        } else {
+            out.push(chars[at]);
+            at += 1;
         }
     }
     out

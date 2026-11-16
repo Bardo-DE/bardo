@@ -32,6 +32,7 @@ pub struct Resolved {
 }
 
 /// The model `account/model` names.
+#[must_use]
 pub fn parse_model(text: &str) -> Option<ModelRef> {
     let (account, model) = text.split_once('/')?;
     Some(ModelRef {
@@ -41,6 +42,7 @@ pub fn parse_model(text: &str) -> Option<ModelRef> {
 }
 
 /// `account/model`: what a model row says for a model.
+#[must_use]
 pub fn model_text(model: &ModelRef) -> String {
     format!("{}/{}", model.account, model.model)
 }
@@ -240,6 +242,7 @@ fn lengths_of(ai: &AiConfig, rejected: &mut Vec<String>) -> Lengths {
 }
 
 /// The settings a configuration says.
+#[must_use]
 pub fn resolve(config: &InferdConfig) -> Resolved {
     let mut rejected = Vec::new();
     let auto = config.ai.auto.resolve();
@@ -259,6 +262,7 @@ pub fn resolve(config: &InferdConfig) -> Resolved {
 }
 
 /// What the file says for one slot, as the picker's value: `""`, `auto` or `account/model`.
+#[must_use]
 pub fn slot_value(tiers: &TierMap, kind: Slot, tier: Tier) -> String {
     match tiers.pick(kind, tier) {
         None => String::new(),
@@ -268,6 +272,7 @@ pub fn slot_value(tiers: &TierMap, kind: Slot, tier: Tier) -> String {
 }
 
 /// A floor as the row's value.
+#[must_use]
 pub fn floor_value(policy: &Policy, class: DataClass) -> String {
     slug_of(&policy.floor(class))
 }

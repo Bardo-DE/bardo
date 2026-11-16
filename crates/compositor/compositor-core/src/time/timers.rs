@@ -93,6 +93,7 @@ impl Eq for TimerBook {}
 
 impl TimerBook {
     /// No timers.
+    #[must_use]
     pub fn empty() -> TimerBook {
         TimerBook {
             armed: BTreeMap::new(),
@@ -102,6 +103,7 @@ impl TimerBook {
 
     /// The book with `due` armed (replacing any timer with the same key, which then counts as
     /// armed last).
+    #[must_use]
     pub fn arm(self, due: Due) -> TimerBook {
         let TimerBook { mut armed, issued } = self;
         armed.insert(
@@ -118,11 +120,13 @@ impl TimerBook {
     }
 
     /// Whether a timer for `key` is armed.
+    #[must_use]
     pub fn is_armed(&self, key: &TimerKey) -> bool {
         self.armed.contains_key(key)
     }
 
     /// The book without the timer for `key`.
+    #[must_use]
     pub fn cancel(self, key: &TimerKey) -> TimerBook {
         let TimerBook { mut armed, issued } = self;
         armed.remove(key);
@@ -130,11 +134,13 @@ impl TimerBook {
     }
 
     /// The timer that fires first (earliest instant, then earliest armed).
+    #[must_use]
     pub fn next(&self) -> Option<Due> {
         self.in_order().into_iter().next()
     }
 
     /// The earliest instant a timer is due strictly after `t`.
+    #[must_use]
     pub fn next_after(&self, t: Mono) -> Option<Mono> {
         self.armed
             .values()

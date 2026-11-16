@@ -30,6 +30,7 @@ impl GlyphStyle {
     /// The paint `icon` draws with when it is asked for `asked`: solid or outline, never
     /// `Native`. An explicit ask wins; `Native` reads the icon's pick, and a pair, with no state
     /// given, is its off half.
+    #[must_use]
     pub fn resolve(icon: Icon, asked: GlyphStyle) -> GlyphStyle {
         match (asked, icon.native()) {
             (GlyphStyle::Native, Native::Solid | Native::Drawn(_)) => GlyphStyle::Solid,
@@ -41,6 +42,7 @@ impl GlyphStyle {
 
     /// The style `icon` asks for when the control that holds it is in `state`: a pair's half for
     /// a pair, else its own pick.
+    #[must_use]
     pub fn for_state(icon: Icon, state: Check) -> GlyphStyle {
         match icon.native() {
             Native::Pair => GlyphStyle::of(state),
@@ -50,6 +52,7 @@ impl GlyphStyle {
 
     /// The style of a pair's half: [`PAIR_ON`] when it is on (outline today), outline when it is
     /// off or mixed.
+    #[must_use]
     pub fn of(state: Check) -> GlyphStyle {
         match state {
             Check::On => PAIR_ON,
@@ -60,6 +63,7 @@ impl GlyphStyle {
 
 impl Icon {
     /// The children of this glyph when asked for `style`.
+    #[must_use]
     pub fn shapes_in(self, style: GlyphStyle) -> &'static [Shape] {
         match (style, self.native()) {
             (GlyphStyle::Native, Native::Drawn(shapes)) => shapes,
@@ -71,6 +75,7 @@ impl Icon {
     }
 
     /// The solid form: filled paths on the 24 grid, never empty.
+    #[must_use]
     pub fn solid_shapes(self) -> &'static [Shape] {
         [
             super::solid_fan::shapes,

@@ -1,4 +1,4 @@
-//! A computer on a fake Tailscale network: the fake LocalAPI it asks, the fake `Tailnet1` accountd
+//! A computer on a fake Tailscale network: the fake `LocalAPI` it asks, the fake `Tailnet1` accountd
 //! lists its computers on, and the addresses of its own. Every address is a loopback address of
 //! the test (`127.x.y.z`, from the process id), so a socket bound to one is reached from a socket
 //! bound to another, inside the jail, and nothing leaves the computer. Nothing here touches the

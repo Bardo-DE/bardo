@@ -50,6 +50,7 @@ pub struct TranscribeBegin {
 
 impl TranscribeBegin {
     /// A speech-to-text turn in this mode, listening for `lang`, over audio at `rate`.
+    #[must_use]
     pub fn new(mode: TranscribeMode, lang: LangPick, rate: AudioRate, usage: Usage) -> Self {
         Self {
             mode,
@@ -83,6 +84,7 @@ pub struct SpeakRequest {
 
 impl SpeakRequest {
     /// `text` in `lang`, spoken in the engine's default voice; `class` is the text's class.
+    #[must_use]
     pub fn new(text: String, lang: LanguageTag, class: DataClass, usage: Usage) -> Self {
         Self {
             text,
@@ -94,6 +96,7 @@ impl SpeakRequest {
     }
 
     /// The same request spoken in this voice.
+    #[must_use]
     pub fn with_voice(mut self, voice: VoiceName) -> Self {
         self.voice = Some(voice);
         self

@@ -30,7 +30,7 @@ use base_path::AbsPath;
 use serde::{Deserialize, Serialize};
 
 /// Where a host keeps the resolver file `/etc/resolv.conf` points at, when it is a link into a
-/// directory the sandbox empties (`/run`): systemd-resolved, NetworkManager, resolvconf, connman.
+/// directory the sandbox empties (`/run`): systemd-resolved, `NetworkManager`, resolvconf, connman.
 /// With the host's network, each that exists is bound back read-only so names resolve; the rest
 /// of `/run` (the session bus, other sockets) stays hidden.
 pub const RESOLVER_FILES: &[&str] = &[
@@ -79,6 +79,7 @@ pub struct EndpointBind {
 
 impl EndpointBind {
     /// The forwarder program, its host socket, and the loopback port the agent connects to.
+    #[must_use]
     pub fn new(forwarder: AbsPath, socket: AbsPath, port: u16) -> Self {
         Self {
             forwarder,
@@ -122,6 +123,7 @@ impl AgentNet {
     }
 
     /// The mode this plan carries out.
+    #[must_use]
     pub fn mode(&self) -> NetworkMode {
         match self {
             AgentNet::None => NetworkMode::None,
@@ -132,6 +134,7 @@ impl AgentNet {
     }
 
     /// The forwarder bind, for the two modes that have one.
+    #[must_use]
     pub fn bind(&self) -> Option<&EndpointBind> {
         match self {
             AgentNet::Endpoint(bind) | AgentNet::Allowlist(bind) => Some(bind),
@@ -140,6 +143,7 @@ impl AgentNet {
     }
 
     /// The loopback port the agent connects to inside, when there is a forwarder.
+    #[must_use]
     pub fn port(&self) -> Option<u16> {
         self.bind().map(|bind| bind.port)
     }
@@ -156,6 +160,7 @@ impl AgentNet {
     /// The variables that make the agent use the proxy: only the allow-list mode has any.
     /// `NO_PROXY` is empty, so nothing is exempt. `AgentRun::new` puts these into the
     /// environment over whatever the caller gave under the same names.
+    #[must_use]
     pub fn proxy_env(&self) -> Vec<EnvVar> {
         let AgentNet::Allowlist(bind) = self else {
             return Vec::new();

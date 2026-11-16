@@ -9,6 +9,7 @@ use crate::{
 use base_ids::Tokens;
 
 /// A storage capability with the given access, change feed and reach.
+#[must_use]
 pub fn storage(access: Access, delta: Delta, scope: StorageScope) -> Capability {
     Capability::Storage(StorageCap {
         access,
@@ -22,6 +23,7 @@ pub fn storage(access: Access, delta: Delta, scope: StorageScope) -> Capability 
 }
 
 /// A mail capability that offers `send` as given.
+#[must_use]
 pub fn mail(send: bool) -> Capability {
     Capability::Mail(MailCap {
         access: Access::ReadWrite,
@@ -33,6 +35,7 @@ pub fn mail(send: bool) -> Capability {
 }
 
 /// A language model with the given features and context window.
+#[must_use]
 pub fn llm(features: &[LlmFeature], context: u32) -> Capability {
     Capability::Llm(LlmCap {
         features: features.iter().copied().collect(),
@@ -43,6 +46,7 @@ pub fn llm(features: &[LlmFeature], context: u32) -> Capability {
 }
 
 /// A claim of `capability` made by the account itself, at `provenance`.
+#[must_use]
 pub fn claim(capability: Capability, provenance: Provenance) -> Claim {
     Claim {
         subject: Subject::Account,

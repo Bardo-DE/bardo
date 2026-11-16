@@ -1,4 +1,4 @@
-//! PaneSwitcher's specimens: at rest on each pane, a grid of tiles and a list of networks.
+//! `PaneSwitcher`'s specimens: at rest on each pane, a grid of tiles and a list of networks.
 
 use dioxus::prelude::*;
 use shell_kit::control_center::module_tile_kind::TileSpan;

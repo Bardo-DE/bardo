@@ -28,6 +28,7 @@ pub enum Material {
 impl Material {
     /// Whether the surface asks the compositor to blur behind it (design/03-COLOR.md section
     /// 17.2's Blur column: the window paints its own gradient, everything else is "behind").
+    #[must_use]
     pub fn blur(self) -> bool {
         match self {
             Material::Window => false,

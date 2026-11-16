@@ -50,6 +50,7 @@ pub struct DesktopLine<'a>(pub &'a dyn Fn(DesktopCommand) -> Carried);
 
 impl DesktopLine<'_> {
     /// Send `command`.
+    #[must_use]
     pub fn send(&self, command: DesktopCommand) -> Carried {
         (self.0)(command)
     }

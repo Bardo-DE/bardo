@@ -67,6 +67,7 @@ fn single_program(line: &str) -> bool {
 /// (`sh -c`, `env`, `xargs`) or a line with a shell operator is searched word by word, so a
 /// network tool anywhere in it counts. These false positives are on purpose: a word that only
 /// looks like a network tool asks, which is the safe side.
+#[must_use]
 pub fn net_reach(line: &str, network_open: bool, programs: &NetPrograms) -> bool {
     if network_open {
         return true;

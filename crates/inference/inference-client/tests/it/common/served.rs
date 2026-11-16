@@ -75,14 +75,14 @@ impl TurnRunner for Scripted {
             .push((request.clone(), attachments.len()));
         let mut scripts = self.scripts.lock().expect("lock");
         let at = scripts.iter().position(|s| s.kind == request.kind());
-        let steps = at
-            .and_then(|i| scripts.remove(i))
-            .map(|s| s.steps)
-            .unwrap_or_else(|| {
+        let steps = at.and_then(|i| scripts.remove(i)).map_or_else(
+            || {
                 vec![ScriptStep::Emit(InferEvent::Finished(InferReply::Refused(
                     InferRefusal::Unsupported,
                 )))]
-            });
+            },
+            |s| s.steps,
+        );
         let (now, later): (Vec<_>, Vec<_>) = steps
             .into_iter()
             .partition(|step| matches!(step, ScriptStep::Emit(_)));

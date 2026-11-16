@@ -1,4 +1,4 @@
-//! The LocalAPI over tailscaled's unix socket (feature `io`).
+//! The `LocalAPI` over tailscaled's unix socket (feature `io`).
 //!
 //! The requests are HTTP/1.1 on the socket, made with hyper's own client; the `Host` is the
 //! `local-tailscaled.sock` Tailscale's server expects (`apitype.LocalAPIHost`), and the user is
@@ -25,10 +25,10 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tokio::net::UnixStream;
 
-/// Where tailscaled serves its LocalAPI on Linux.
+/// Where tailscaled serves its `LocalAPI` on Linux.
 pub const DEFAULT_SOCKET: &str = "/var/run/tailscale/tailscaled.sock";
 
-/// The `Host` header tailscaled's LocalAPI accepts (`apitype.LocalAPIHost`).
+/// The `Host` header tailscaled's `LocalAPI` accepts (`apitype.LocalAPIHost`).
 const LOCALAPI_HOST: &str = "local-tailscaled.sock";
 
 /// The most of an answer that is read. A status of a few thousand computers is a few megabytes.
@@ -53,10 +53,10 @@ const PROGRAM_DIRS: [&str; 5] = [
     "/opt/tailscale",
 ];
 
-/// The name of the program that serves the LocalAPI.
+/// The name of the program that serves the `LocalAPI`.
 const PROGRAM: &str = "tailscaled";
 
-/// A client of one tailscaled's LocalAPI.
+/// A client of one tailscaled's `LocalAPI`.
 #[derive(Debug, Clone)]
 pub struct LocalApi {
     socket: PathBuf,
@@ -65,7 +65,7 @@ pub struct LocalApi {
 }
 
 impl LocalApi {
-    /// A client of the LocalAPI at `socket`. Tailscale's program is looked for in the usual
+    /// A client of the `LocalAPI` at `socket`. Tailscale's program is looked for in the usual
     /// system directories only: a host that wants its `PATH` searched too says so with
     /// [`LocalApi::with_path`]; the client reads no environment.
     pub fn new(socket: impl Into<PathBuf>) -> Self {
@@ -77,12 +77,14 @@ impl LocalApi {
     }
 
     /// A client of this computer's own Tailscale, at the path it uses.
+    #[must_use]
     pub fn system() -> Self {
         Self::new(DEFAULT_SOCKET)
     }
 
     /// The same client also looking for Tailscale's program in the directories of `path` (the
     /// text of a `PATH`, read by the host), before the usual ones.
+    #[must_use]
     pub fn with_path(self, path: &std::ffi::OsStr) -> Self {
         let mut dirs: Vec<PathBuf> = std::env::split_paths(path).collect();
         dirs.extend(self.program_dirs);
@@ -94,6 +96,7 @@ impl LocalApi {
 
     /// The same client looking for Tailscale's program only in `dirs` (to tell "not installed"
     /// from "not running" when the socket is missing).
+    #[must_use]
     pub fn with_program_dirs(self, dirs: Vec<PathBuf>) -> Self {
         Self {
             program_dirs: dirs,
@@ -102,11 +105,13 @@ impl LocalApi {
     }
 
     /// The same client giving up on a request after `timeout`.
+    #[must_use]
     pub fn with_timeout(self, timeout: Duration) -> Self {
         Self { timeout, ..self }
     }
 
     /// The socket this client dials.
+    #[must_use]
     pub fn socket(&self) -> &Path {
         &self.socket
     }
@@ -120,10 +125,13 @@ impl LocalApi {
     /// What a failed dial of the socket comes to.
     fn refused_by(&self, kind: ErrorKind) -> TailscaleError {
         match kind {
-            ErrorKind::NotFound => match self.installed() {
-                true => TailscaleError::NotRunning,
-                false => TailscaleError::NotInstalled,
-            },
+            ErrorKind::NotFound => {
+                if self.installed() {
+                    TailscaleError::NotRunning
+                } else {
+                    TailscaleError::NotInstalled
+                }
+            }
             ErrorKind::PermissionDenied => TailscaleError::Refused,
             _ => TailscaleError::NotRunning,
         }
@@ -216,9 +224,10 @@ impl LocalApi {
         let answer = self
             .exchange(Method::POST, "/localapi/v0/login-interactive")
             .await?;
-        match answer.status.is_success() {
-            true => Ok(()),
-            false => Err(TailscaleError::Malformed),
+        if answer.status.is_success() {
+            Ok(())
+        } else {
+            Err(TailscaleError::Malformed)
         }
     }
 

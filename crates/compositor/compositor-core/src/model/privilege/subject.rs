@@ -34,11 +34,13 @@ impl ProgramPath {
     }
 
     /// The path's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The last part of the path: the program's file name.
+    #[must_use]
     pub fn file_name(&self) -> &str {
         self.0.rsplit('/').next().unwrap_or_default()
     }
@@ -82,6 +84,7 @@ impl SandboxAppId {
     }
 
     /// The id's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -126,6 +129,7 @@ pub enum Subject {
 
 impl Subject {
     /// How the question names this subject on the wire.
+    #[must_use]
     pub fn kind(&self) -> SubjectKind {
         match self {
             Subject::Program(_) => SubjectKind::Program,
@@ -134,6 +138,7 @@ impl Subject {
     }
 
     /// The text the question carries: the path, or the app id.
+    #[must_use]
     pub fn text(&self) -> &str {
         match self {
             Subject::Program(path) => path.as_str(),

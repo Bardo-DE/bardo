@@ -1,4 +1,4 @@
-//! BrowserWait: the person finishes signing in in their browser (design/31 section 5.6): the
+//! `BrowserWait`: the person finishes signing in in their browser (design/31 section 5.6): the
 //! address that was opened, "Copy Link" for a browser the desktop did not pick, "Open Again" and
 //! Cancel. Return opens the page again.
 

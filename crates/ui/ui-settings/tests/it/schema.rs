@@ -107,9 +107,10 @@ fn icons_keys_exposure() {
     let icons = IconsSettings::schema();
     assert_eq!(icons.key.len(), 1);
     for key in &icons.key {
-        let want = match BASIC.contains(&key.path.0.as_str()) {
-            true => ui_settings::schema::Exposure::Basic,
-            false => ui_settings::schema::Exposure::Advanced,
+        let want = if BASIC.contains(&key.path.0.as_str()) {
+            ui_settings::schema::Exposure::Basic
+        } else {
+            ui_settings::schema::Exposure::Advanced
         };
         assert_eq!(
             key.exposure, want,
@@ -385,11 +386,9 @@ mod unavailable {
             .expect_err("b is gated");
         assert_eq!(refused.reason.0, "Add an account to use");
         assert_eq!(refused.choice.0, "b");
-        assert!(
-            key.check_available(&toml::Value::String("a".to_owned()))
-                .is_ok()
-        );
-        assert!(key.check_available(&toml::Value::Boolean(true)).is_ok());
+        key.check_available(&toml::Value::String("a".to_owned()))
+            .unwrap();
+        key.check_available(&toml::Value::Boolean(true)).unwrap();
     }
 }
 

@@ -1,7 +1,7 @@
 //! The pure part of bardo-portal, the Bardo desktop's portal backend.
 //!
 //! Everything here is a value or a function of values, so it can be used (and tested) without a
-//! bus, a PipeWire daemon or a compositor:
+//! bus, a `PipeWire` daemon or a compositor:
 //!
 //! - [`screencast`]: the state machine of one screen-sharing session, [`step`].
 //! - [`restore`]: restore tokens and the book that remembers what they stand for, for shared

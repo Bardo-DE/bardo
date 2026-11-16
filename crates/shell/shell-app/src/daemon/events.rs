@@ -117,7 +117,7 @@ pub fn handle(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, event: HostEvent<S
         }
         HostEvent::App(ShellMsg::Dim(dim)) => crate::idle_dim::apply(ctx, &shell.outputs, dim),
         HostEvent::App(ShellMsg::Summon(out)) => {
-            crate::companion::apply(&shell.outputs, &shell.services, &shell.links.launcher, out)
+            crate::companion::apply(&shell.outputs, &shell.services, &shell.links.launcher, out);
         }
         HostEvent::App(ShellMsg::Note(note)) => super::compositor::apply(shell, note),
         HostEvent::App(ShellMsg::DockRects(rects)) => shell.seat.set_rects(rects),

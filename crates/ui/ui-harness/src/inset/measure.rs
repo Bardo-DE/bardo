@@ -17,6 +17,7 @@ use ui_components::prelude::Px;
 const CENTRED: f32 = 1.0;
 
 /// Measure every box of `scene` against `policy`.
+#[must_use]
 pub fn measure(scene: &Scene, policy: &Policy) -> Findings {
     let mut findings = Findings::default();
     for (index, visible) in scene.boxes.iter().enumerate() {

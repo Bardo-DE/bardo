@@ -62,6 +62,7 @@ fn modalities(listed: &Listed) -> (BTreeSet<Modality>, BTreeSet<Modality>) {
 /// The planner's catalogue: every listed model, in the slots its capabilities put it in. A model
 /// is in the `text` slot only when it meets the session's language `need` (its features and
 /// context), as routing has always required.
+#[must_use]
 pub fn catalogue_of(listed: &[Listed], need: &Need) -> Vec<CatalogueModel> {
     listed
         .iter()
@@ -101,6 +102,7 @@ pub fn catalogue_of(listed: &[Listed], need: &Need) -> Vec<CatalogueModel> {
 /// The providers the person's accounts reach: what accountd's `Verdicts` listed for the app. A
 /// hosted model whose account says `ask` or `denied` is still listed, and `admit` refuses it by
 /// its verdict (`NeedsGrant`, `Denied`), so the planner can say why instead of "nothing".
+#[must_use]
 pub fn granted_of(listed: &[Listed]) -> Vec<ProviderId> {
     let mut providers: Vec<ProviderId> = listed
         .iter()

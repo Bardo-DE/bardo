@@ -45,6 +45,7 @@ impl NativeSpell {
     }
 
     /// `config`'s dictionaries on a worker of their own, in `languages` by default.
+    #[must_use]
     pub fn with_config(config: SpellConfig, languages: Vec<Lang>) -> NativeSpell {
         NativeSpell {
             jobs: start(config),
@@ -61,9 +62,10 @@ impl NativeSpell {
         let (reply, answer) = oneshot::channel();
         let sent = self.jobs.send(job(reply)).is_ok();
         Box::pin(async move {
-            match sent {
-                true => answer.await.unwrap_or(fallback),
-                false => fallback,
+            if sent {
+                answer.await.unwrap_or(fallback)
+            } else {
+                fallback
             }
         })
     }

@@ -85,9 +85,10 @@ pub fn axis_frame_of(frame: AxisFrame, time: Mono) -> WireAxisFrame {
         .source(source_of(frame.source))
         .value(Axis::Horizontal, px_of(frame.px.x))
         .value(Axis::Vertical, px_of(frame.px.y));
-    match frame.stopped {
-        false => moved,
-        true => moved.stop(Axis::Horizontal).stop(Axis::Vertical),
+    if frame.stopped {
+        moved.stop(Axis::Horizontal).stop(Axis::Vertical)
+    } else {
+        moved
     }
 }
 

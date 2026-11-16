@@ -32,6 +32,7 @@ pub enum ToolProof {
 
 /// The canned request: one tool, and a user message that asks for exactly one call to it.
 /// `None` only if the fixed tool name or schema stopped parsing, which a test pins.
+#[must_use]
 pub fn probe_request() -> Option<ChatRequest> {
     let schema = format!(
         r#"{{"type":"object","properties":{{"{PROBE_ARG}":{{"type":"string"}}}},"required":["{PROBE_ARG}"],"additionalProperties":false}}"#
@@ -60,6 +61,7 @@ pub fn probe_request() -> Option<ChatRequest> {
 
 /// What `reply` to [`probe_request`] shows: `Passed` for exactly one call to the tool whose
 /// arguments are an object with the one string and nothing else.
+#[must_use]
 pub fn judge(reply: &ChatReply) -> ToolProof {
     let [call] = reply.tool_calls.as_slice() else {
         return ToolProof::Failed;
@@ -70,7 +72,9 @@ pub fn judge(reply: &ChatReply) -> ToolProof {
     let args: Result<serde_json::Map<String, serde_json::Value>, _> =
         serde_json::from_str(call.args.as_str());
     match args {
-        Ok(map) if map.len() == 1 && map.get(PROBE_ARG).is_some_and(|word| word.is_string()) => {
+        Ok(map)
+            if map.len() == 1 && map.get(PROBE_ARG).is_some_and(serde_json::Value::is_string) =>
+        {
             ToolProof::Passed
         }
         _ => ToolProof::Failed,

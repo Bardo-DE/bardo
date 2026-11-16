@@ -19,6 +19,7 @@ const AGENTS_FILE: &str = "bardo/actions/agents.toml";
 pub(crate) const AGENTS_DIR: &str = "bardo/actions/agents";
 
 /// The agents `bardo/actions/agents.toml` lists, none when there is no file.
+#[must_use]
 pub fn load_agents(config: &ConfigHome, data: &DataHome) -> Agents {
     // A file that cannot be read lists no agents; docket's own writer refuses to write over it.
     let text = text_of(&config.0.join(AGENTS_FILE))
@@ -49,6 +50,7 @@ pub fn save_agent_choice(
 /// The coding assistants installed in docket's folder, whether `agents.toml` lists them or not:
 /// each id with its last installed version, in name order. Only files are read; nothing is
 /// started and no network is used.
+#[must_use]
 pub fn installed_agents(data: &DataHome) -> Vec<FoundAgent> {
     let dir = AgentsDir::at(&data.0.join(AGENTS_DIR));
     agents(&dir)

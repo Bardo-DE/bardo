@@ -59,7 +59,7 @@ fn check(name: &str, client: &TestClient, skip: &[&str]) {
 
 const SIZE: PhysicalSize = PhysicalSize { w: 64, h: 32 };
 
-/// Wl_compositor binds at versions 1 to 6; a surface with a buffer commits; the transcript matches tests/golden/transcripts/compositor-commit.txt.
+/// `Wl_compositor` binds at versions 1 to 6; a surface with a buffer commits; the transcript matches tests/golden/transcripts/compositor-commit.txt.
 #[test]
 fn every_version_binds_and_a_surface_commits() {
     let (mut fixture, _) = boot();
@@ -133,8 +133,8 @@ fn destroying_a_surface_before_its_buffer_is_clean() {
         surface.attach(&buffer);
         surface.commit();
         surface.destroy();
-        drop(buffer);
-    }
+        drop(buffer)
+    };
     {
         let client = fixture.client(second);
         let surface = Compositor::bind(client, 5).surface(client);
@@ -142,8 +142,8 @@ fn destroying_a_surface_before_its_buffer_is_clean() {
         surface.attach(&buffer);
         surface.commit();
         drop(buffer);
-        surface.destroy();
-    }
+        surface.destroy()
+    };
     fixture.pump();
     for id in [first, second] {
         assert!(fixture.client(id).protocol_error().is_none());
@@ -152,7 +152,7 @@ fn destroying_a_surface_before_its_buffer_is_clean() {
     assert_eq!(*fixture.model(), before);
 }
 
-/// A buffer scale below one is wl_surface.invalid_scale (0) and disconnects only that client.
+/// A buffer scale below one is `wl_surface.invalid_scale` (0) and disconnects only that client.
 #[test]
 fn a_zero_buffer_scale_is_a_protocol_error() {
     let (mut fixture, bad) = boot();
@@ -167,7 +167,7 @@ fn a_zero_buffer_scale_is_a_protocol_error() {
     assert!(fixture.client(good).is_connected());
 }
 
-/// A non-zero attach offset on a version 5 surface is wl_surface.invalid_offset (3).
+/// A non-zero attach offset on a version 5 surface is `wl_surface.invalid_offset` (3).
 #[test]
 fn an_attach_offset_at_version_five_is_a_protocol_error() {
     let (mut fixture, id) = boot();

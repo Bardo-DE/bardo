@@ -44,6 +44,7 @@ weights = {{ kind = "gguf", v = {{ model = "replay.gguf" }} }}
 
 /// The local model of replay engine `name`, listening on `sockets/replay-<name>.sock`, playing
 /// the cassette at `cassette`. `None` when `name` is not a model id.
+#[must_use]
 pub fn model(name: &str, cassette: &Path, context: Tokens, sockets: &Path) -> Option<LocalModel> {
     let id = ModelId::parse(name).ok()?;
     let entry = parse_entry_text(&entry_text(name, context)).ok()?;

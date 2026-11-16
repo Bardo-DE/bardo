@@ -86,6 +86,7 @@ impl Route {
     }
 
     /// Whether the agent may name `id`.
+    #[must_use]
     pub fn serves(&self, id: &str) -> bool {
         match &self.models {
             Models::Any => true,
@@ -97,6 +98,7 @@ impl Route {
 /// The app a program's grants and spend are held under: `org.bardo.Agent.<program>`. The person
 /// grants an account to the program with `accountd add <provider> --allow
 /// org.bardo.Agent.claude-code`; the launcher is the one that may ask inferd to act for it.
+#[must_use]
 pub fn agent_app(program: &AgentProgram) -> AppId {
     // A program is a lowercase letter then lowercase letters, digits and `-`: always one element.
     AppId {
@@ -109,6 +111,7 @@ pub fn agent_app(program: &AgentProgram) -> AppId {
 /// Whether data of `class` may go to `locality` under the settings in force: a cloud account
 /// only when `ai.local_only` is off and the class's floor says anywhere; another machine of the
 /// person's only as the floor (and `ai.attached.my_network`) allow; this computer always.
+#[must_use]
 pub fn admits(settings: &Settings, class: DataClass, locality: &Locality) -> bool {
     let cloud_ok = !matches!(locality, Locality::Cloud { .. }) || !settings.policy.local_only;
     cloud_ok && settings.routing_policy().floor(class).admits(locality)

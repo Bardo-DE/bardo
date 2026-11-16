@@ -54,6 +54,7 @@ pub type DesktopCallers = BusPeers<RealProc, ManagerLink<RealProc>>;
 /// assert_eq!(role_for_connection(&ConnectionRole::Portal), Some(roles::PORTAL));
 /// assert!(role_for_connection(&ConnectionRole::Public).is_none());
 /// ```
+#[must_use]
 pub fn role_for_connection(role: &ConnectionRole) -> Option<RoleName> {
     match role {
         ConnectionRole::Shell => Some(roles::SHELL),
@@ -104,9 +105,10 @@ fn admitted(standing: &Standing, roles: &[RoleName]) -> Result<(), Refused> {
     let Err(refused) = standing.holds(&need) else {
         return Ok(());
     };
-    match dev_row_of(standing, roles) {
-        true => Ok(()),
-        false => Err(refused),
+    if dev_row_of(standing, roles) {
+        Ok(())
+    } else {
+        Err(refused)
     }
 }
 
@@ -159,7 +161,7 @@ mod tests {
     #[test]
     fn a_role_is_held_all_the_way_or_not_at_all() {
         let asked = [roles::SHELL];
-        assert!(admitted(&shell_at(Proof::Full), &asked).is_ok());
+        admitted(&shell_at(Proof::Full), &asked).unwrap();
         assert!(admitted(&shell_at(Proof::Exe), &asked).is_err());
         assert!(admitted(&shell_at(Proof::Cgroup), &asked).is_err());
         assert!(admitted(&shell_at(Proof::Full), &[roles::PORTAL]).is_err());
@@ -170,8 +172,8 @@ mod tests {
     #[cfg(feature = "dev-rows")]
     #[test]
     fn a_developer_row_is_let_in_for_its_own_role_only() {
-        assert!(admitted(&shell_at(Proof::Dev), &[roles::SHELL]).is_ok());
-        assert!(admitted(&shell_at(Proof::Dev), &[roles::AGENT_TIER, roles::SHELL]).is_ok());
+        admitted(&shell_at(Proof::Dev), &[roles::SHELL]).unwrap();
+        admitted(&shell_at(Proof::Dev), &[roles::AGENT_TIER, roles::SHELL]).unwrap();
         assert!(admitted(&shell_at(Proof::Dev), &[roles::PORTAL]).is_err());
         assert!(admitted(&shell_at(Proof::Exe), &[roles::SHELL]).is_err());
         assert!(admitted(&shell_at(Proof::Cgroup), &[roles::SHELL]).is_err());

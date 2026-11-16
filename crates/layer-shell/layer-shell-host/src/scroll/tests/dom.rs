@@ -143,8 +143,8 @@ impl Bench {
             self.now = Elapsed(self.now.0 + FRAME);
             {
                 let mut base = self.doc.base_mut();
-                self.scroll.frame(&mut base, self.now);
-            }
+                self.scroll.frame(&mut base, self.now)
+            };
             self.doc.resolve(self.now.0.as_secs_f64());
             trace.push(watch.iter().map(|s| self.offset(*s)).collect());
         }
@@ -385,8 +385,8 @@ fn a_wheel_detent_over_the_list_moves_it_60_px() {
     };
     {
         let mut base = bench.doc.base_mut();
-        bench.scroll.axis(&mut base, &frame, OVER_LIST, bench.now);
-    }
+        bench.scroll.axis(&mut base, &frame, OVER_LIST, bench.now)
+    };
     assert!(matches!(bench.scroll.engine(), Engine::Smooth(_)));
     bench.settle(&[list]);
     assert_eq!(bench.offset(list), 60.0);

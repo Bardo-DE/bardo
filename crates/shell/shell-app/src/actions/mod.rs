@@ -59,10 +59,7 @@ pub fn perform(ctx: &mut HostCtx<ShellMsg>, reach: &Reach, ask: Ask, origin: Ori
 
 /// How a panel action changes its panel, in the words of the wire: `opens` when it only opens it.
 fn reveal_of(opens: bool) -> Reveal {
-    match opens {
-        false => Reveal::Toggle,
-        true => Reveal::Open,
-    }
+    if opens { Reveal::Open } else { Reveal::Toggle }
 }
 
 /// A power action: asked about in the power menu, or at once. Lock is the locker's, which the

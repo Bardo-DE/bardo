@@ -14,6 +14,7 @@ const TERMINAL_SCOPES: [&str; 3] = ["vte-spawn-", "tmux-spawn-", "session-"];
 /// Whether the cgroup path (the unified line of `/proc/<pid>/cgroup`) ends in a terminal child's
 /// scope. The one place the desktop says what a terminal is: intentd derives the cli role from it
 /// and companiond lets the same processes open, ask and close.
+#[must_use]
 pub fn is_terminal_scope(cgroup: &str) -> bool {
     let leaf = cgroup.rsplit('/').next().unwrap_or_default();
     leaf.ends_with(".scope") && TERMINAL_SCOPES.iter().any(|p| leaf.starts_with(p))

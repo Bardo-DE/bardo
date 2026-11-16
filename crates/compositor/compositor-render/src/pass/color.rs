@@ -30,9 +30,10 @@ fn decode(curve: TransferCurve, value: f64) -> f64 {
 /// The sRGB encoding of light.
 fn encode(light: f64) -> f64 {
     let light = light.clamp(0.0, 1.0);
-    match light <= 0.003_130_8 {
-        true => light * 12.92,
-        false => 1.055 * light.powf(1.0 / 2.4) - 0.055,
+    if light <= 0.003_130_8 {
+        light * 12.92
+    } else {
+        1.055 * light.powf(1.0 / 2.4) - 0.055
     }
 }
 
@@ -55,6 +56,7 @@ impl ColorTransform {
     /// assert!(ColorTransform::for_gamut(Gamut::Srgb).is_none());
     /// assert!(ColorTransform::for_gamut(Gamut::Wide(DISPLAY_P3)).is_some());
     /// ```
+    #[must_use]
     pub fn for_gamut(gamut: Gamut) -> Option<ColorTransform> {
         match gamut {
             Gamut::Srgb => None,
@@ -66,6 +68,7 @@ impl ColorTransform {
     }
 
     /// The same conversion for a surface tagged with another transfer function.
+    #[must_use]
     pub fn with_source(self, source: TransferCurve) -> ColorTransform {
         ColorTransform { source, ..self }
     }

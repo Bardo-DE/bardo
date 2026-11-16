@@ -24,11 +24,13 @@ pub struct TrialId(u32);
 
 impl TrialId {
     /// The id the wire carries as `value`.
+    #[must_use]
     pub const fn new(value: u32) -> Self {
         Self(value)
     }
 
     /// The number on the wire.
+    #[must_use]
     pub const fn get(self) -> u32 {
         self.0
     }

@@ -62,6 +62,7 @@ impl SettingsProvider {
 
     /// As [`SettingsProvider::new`], but discovering schemas under `dirs` instead of the real
     /// XDG directories — for tests and for a fixture install.
+    #[must_use]
     pub fn with_dirs(dirs: Vec<PathBuf>) -> SettingsProvider {
         SettingsProvider {
             dirs,

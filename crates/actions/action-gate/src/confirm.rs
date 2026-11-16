@@ -19,6 +19,7 @@ use std::collections::BTreeSet;
 /// thing that asks is the terminal rule itself (no Rule of Two, untrusted sink, mass or
 /// memory rule would ask on top, which a grant could not lift), and the action is neither
 /// destructive nor one that asks every time.
+#[must_use]
 pub fn offers_grant(p: &Prepared, why: &[AskReason]) -> bool {
     p.who.actor == Actor::Cli
         && p.decl.effect != Effect::Destructive
@@ -130,7 +131,8 @@ pub fn confirm_request(
     let offer = if crate::brief_sheet::is_brief_confirm(&p.request.action) {
         // A brief is checked every time and a "yes" for one is no grant for the next.
         ConfirmOffer::OnceOnly
-    } else if limits.held.is_some() || standing.is_some_and(|s| s.holds()) {
+    } else if limits.held.is_some() || standing.is_some_and(super::standing_ctx::StandingCtx::holds)
+    {
         ConfirmOffer::OnceOnly
     } else if offers_grant(p, why) {
         ConfirmOffer::OnceOrFromTerminal

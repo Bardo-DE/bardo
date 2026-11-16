@@ -27,6 +27,7 @@ impl Origin {
 }
 
 /// An app's `desktop-entry` hint, `None` when it is in the shell's own namespace.
+#[must_use]
 pub fn app_entry(entry: String) -> Option<String> {
     (!entry.starts_with(SYSTEM_ENTRY_PREFIX)).then_some(entry)
 }

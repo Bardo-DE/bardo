@@ -34,6 +34,7 @@ pub fn launcher_key(
 /// `key` with `modifiers` held, when it is one companion mode reads before the palette does:
 /// Escape, and the actions that send on (`sill.promote`, ⌘↵), cancel (Cancel, ⌘.) and switch the
 /// permissions mode (`sill.switch-mode`, ⇧⌘M).
+#[must_use]
 pub fn companion_key(
     key: &Key,
     modifiers: Modifiers,

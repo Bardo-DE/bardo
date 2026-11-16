@@ -1,4 +1,4 @@
-//! The ApiKey sign-in flow: one hidden field, the models listing as the check, a review. A provider
+//! The `ApiKey` sign-in flow: one hidden field, the models listing as the check, a review. A provider
 //! file that names no server (`openai-compatible`) also asks for the server's address, and its
 //! key may be left empty.
 
@@ -14,7 +14,7 @@ use account_sheet::{
 use base_url::UrlScheme;
 use std::sync::Arc;
 
-/// The ApiKey sign-in flow.
+/// The `ApiKey` sign-in flow.
 pub struct ApiKeyFlow<H = ReqwestHttp> {
     spec: ProviderSpec,
     http: Arc<H>,
@@ -146,9 +146,10 @@ async fn server_signed<H: Http>(
 
 impl<H: Http + 'static> ApiKeyFlow<H> {
     async fn submitted(&self, answers: Vec<FieldAnswer>) -> Move<()> {
-        let signed = match asks_server(&self.spec) {
-            true => server_signed(&*self.http, &self.spec, self.held_server(), &answers).await,
-            false => company_signed(&*self.http, &self.spec, &answers).await,
+        let signed = if asks_server(&self.spec) {
+            server_signed(&*self.http, &self.spec, self.held_server(), &answers).await
+        } else {
+            company_signed(&*self.http, &self.spec, &answers).await
         };
         match signed {
             Ok(signed) => self.finished(signed),

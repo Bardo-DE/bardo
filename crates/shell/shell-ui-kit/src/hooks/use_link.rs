@@ -5,6 +5,7 @@ use dioxus::prelude::{CopyValue, ReadableExt, WritableExt, try_use_context, use_
 /// The link of type `T`, or `None` when the root does not provide it. A missing link is a wire
 /// the daemon was meant to give, so it is said once per hook instance on stderr; the caller
 /// keeps its fallback.
+#[must_use]
 pub fn use_link<T: Clone + 'static>() -> Option<T> {
     let link = try_use_context::<T>();
     tell_if_missing(&link);

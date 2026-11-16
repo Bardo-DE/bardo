@@ -48,11 +48,13 @@ pub struct Found {
 
 impl Search {
     /// The best hit, if any.
+    #[must_use]
     pub fn first(&self) -> Option<&Hit> {
         self.hits().first()
     }
 
     /// The hits, none while idle.
+    #[must_use]
     pub fn hits(&self) -> &[Hit] {
         match self {
             Search::Idle => &[],
@@ -61,6 +63,7 @@ impl Search {
     }
 
     /// The pages the query names, none while idle.
+    #[must_use]
     pub fn named_pages(&self) -> &[PageSlug] {
         match self {
             Search::Idle => &[],
@@ -69,6 +72,7 @@ impl Search {
     }
 
     /// The page to show for the query: the first page it names, else the best hit's.
+    #[must_use]
     pub fn first_page(&self) -> Option<&PageSlug> {
         self.named_pages()
             .first()
@@ -104,6 +108,7 @@ fn spells(name: &str, words: &[&str]) -> bool {
 }
 
 /// The keys of `catalogue` that `query` finds, best rank first, then in page and schema order.
+#[must_use]
 pub fn search(catalogue: &Catalogue, query: &str) -> Search {
     let phrase = query.trim().to_lowercase();
     if phrase.is_empty() {

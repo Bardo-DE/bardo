@@ -18,6 +18,7 @@ pub enum Listing {
 
 impl Listing {
     /// The entries known so far; none while loading or after a failure.
+    #[must_use]
     pub fn entries(&self) -> &[Entry] {
         match self {
             Listing::Loaded(entries) => entries,

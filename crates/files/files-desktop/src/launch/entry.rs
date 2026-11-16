@@ -44,11 +44,11 @@ impl AppEntry {
         file: &DesktopFile,
     ) -> Result<AppEntry, EntryError> {
         let group = file.entry().ok_or(EntryError::NoEntry)?;
-        let kind = group.string("Type").map(|kind| kind.into_owned());
+        let kind = group.string("Type").map(std::borrow::Cow::into_owned);
         if kind.as_deref() != Some("Application") {
             return Err(EntryError::NotAnApp(id.to_string()));
         }
-        let exec = group.string("Exec").map(|exec| exec.into_owned());
+        let exec = group.string("Exec").map(std::borrow::Cow::into_owned);
         let bus_activatable = group.is_true("DBusActivatable");
         if !bus_activatable && exec.is_none() {
             return Err(EntryError::NoCommand(id.to_string()));
@@ -72,12 +72,14 @@ impl AppEntry {
     }
 
     /// The app of an entry that `ui-helpers` found on disk; `None` when it is not an app.
+    #[must_use]
     pub fn from_installed(entry: &ApplicationEntry) -> Option<AppEntry> {
         let id = DesktopId::new(entry.id.as_str()).ok()?;
         AppEntry::from_file(id, &entry.path, &entry.file).ok()
     }
 
     /// The bus name of a `DBusActivatable` app: its id without `.desktop`.
+    #[must_use]
     pub fn bus_name(&self) -> &str {
         let id = self.id.as_str();
         id.strip_suffix(".desktop").unwrap_or(id)

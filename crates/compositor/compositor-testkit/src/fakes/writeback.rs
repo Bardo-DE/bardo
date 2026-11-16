@@ -44,6 +44,7 @@ impl FakeWriteback {
     }
 
     /// The bytes of a frame of `size`: 4 bytes a pixel, the byte at `n` being `n % 251`.
+    #[must_use]
     pub fn pattern(size: PhysicalSize) -> Vec<u8> {
         let len = (size.w as usize) * (size.h as usize) * 4;
         (0..len).map(|n| (n % 251) as u8).collect()

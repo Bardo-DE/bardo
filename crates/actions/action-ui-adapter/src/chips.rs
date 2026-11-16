@@ -7,6 +7,7 @@ use ui_intents::{ChipKind, ContextChip, Tally};
 /// The chips for a context taken at the moment of the summon (before the field turned into a
 /// prompt): the query, the results with their count, the selection, the window and the app. A
 /// private window shows the app alone.
+#[must_use]
 pub fn chips_of(ctx: &ContextSnapshot) -> Vec<ContextChip> {
     let chip = |kind, label: String, count: Option<u32>, removable| ContextChip {
         kind,
@@ -57,6 +58,7 @@ pub fn chips_of(ctx: &ContextSnapshot) -> Vec<ContextChip> {
 }
 
 /// What the person kept: a context is kept when its chip is still there.
+#[must_use]
 pub fn keep_of(chips: &[ContextChip]) -> ContextKeep {
     let kept = |kind| {
         if chips.iter().any(|c| c.kind == kind) {

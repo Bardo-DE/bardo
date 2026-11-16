@@ -23,6 +23,7 @@ impl IssuerSays {
     /// grant lacks), and Microsoft's `AADSTS65001` ("the user or administrator has not
     /// consented"), which it sends as `invalid_grant`. Signing in again as before would not
     /// help; asking for that access would.
+    #[must_use]
     pub fn wants_consent(&self) -> bool {
         self.error.as_deref() == Some("invalid_scope")
             || self

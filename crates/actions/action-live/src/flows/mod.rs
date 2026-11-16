@@ -74,6 +74,7 @@ impl Flow {
     ];
 
     /// The flow's name, which is its cassette's.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Flow::ForwardAllowed => "flow-a",
@@ -93,6 +94,7 @@ impl Flow {
     }
 
     /// The kit and pattern of a flow that tests a pattern on an app, if it is one.
+    #[must_use]
     pub fn pattern(self) -> Option<(&'static pattern::Kit, Pattern)> {
         match self {
             Flow::Notes(p) => Some((&pattern::NOTES, p)),
@@ -102,16 +104,19 @@ impl Flow {
     }
 
     /// The flow named `text`.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Flow> {
         Flow::ALL.into_iter().find(|f| f.slug() == text)
     }
 
     /// The app the flow is played on.
+    #[must_use]
     pub fn app(self) -> App {
         self.pattern().map_or(App::Mail, |(kit, _)| kit.app)
     }
 
     /// What consent the world starts with.
+    #[must_use]
     pub fn consent(self) -> Consent {
         match self {
             Flow::FirstUse | Flow::Notes(Pattern::FirstUse) | Flow::Files(Pattern::FirstUse) => {
@@ -122,6 +127,7 @@ impl Flow {
     }
 
     /// What the person says.
+    #[must_use]
     pub fn prompt(self) -> &'static str {
         match self {
             Flow::ForwardAllowed | Flow::ForwardRefused => {
@@ -136,6 +142,7 @@ impl Flow {
     }
 
     /// What the person does with the sheet.
+    #[must_use]
     pub fn verdict(self) -> SheetChoice {
         match self {
             Flow::ForwardAllowed => SheetChoice::Once,
@@ -151,6 +158,7 @@ impl Flow {
     }
 
     /// The thread the person has open when they speak: "this thread" of the injected-thread flow.
+    #[must_use]
     pub fn focus(self) -> Focus {
         match self {
             Flow::InjectedThread => Focus::Thread(INJECTED_THREAD),
@@ -160,6 +168,7 @@ impl Flow {
 
     /// What the person does with sheets by what they are for, for a flow that tells reads from
     /// the rest: the injected-thread flow lets everything be read and refuses everything else.
+    #[must_use]
     pub fn by_effect(self) -> Option<ByEffect> {
         match self {
             Flow::InjectedThread => Some(ByEffect {
@@ -177,6 +186,7 @@ impl Flow {
     }
 
     /// The cassette of the gate's run of this flow.
+    #[must_use]
     pub fn cassette(self) -> &'static str {
         match self {
             Flow::ForwardAllowed => include_str!("../../../dev/accept/cassettes/flow-a.jsonl"),

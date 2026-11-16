@@ -16,6 +16,7 @@ pub struct FractionalScale {
 
 impl FractionalScale {
     /// Binds the global (version 1).
+    #[must_use]
     pub fn bind(client: &TestClient) -> FractionalScale {
         FractionalScale {
             manager: client
@@ -25,6 +26,7 @@ impl FractionalScale {
     }
 
     /// The scale object of `surface`.
+    #[must_use]
     pub fn for_surface(&self, client: &TestClient, surface: &Surface) -> WpFractionalScaleV1 {
         self.manager
             .get_fractional_scale(&surface.surface, &client.qh(), H1Data)
@@ -32,6 +34,7 @@ impl FractionalScale {
 }
 
 /// The `preferred_scale` values `object` received (120ths), in order.
+#[must_use]
 pub fn preferred(client: &TestClient, object: &WpFractionalScaleV1) -> Vec<u32> {
     crate::surface::subsurface::seen(client, object)
         .into_iter()

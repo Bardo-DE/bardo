@@ -1,4 +1,4 @@
-//! Prints the QuickXorHash of a file in hex. Graph sends the same 20 bytes in base64.
+//! Prints the `QuickXorHash` of a file in hex. Graph sends the same 20 bytes in base64.
 //!
 //! `cargo run -p quickxorhash --example hash_a_file -- <path>`
 

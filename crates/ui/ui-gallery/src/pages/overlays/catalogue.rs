@@ -112,7 +112,7 @@ pub fn OverlaysCataloguePage() -> Element {
                             form: EmptyForm::Failure,
                             title: "Couldn’t load your mail",
                             description: "The server didn’t answer.",
-                            onretry: |_| {},
+                            onretry: |()| {},
                         }
                     }
                 }
@@ -126,7 +126,7 @@ pub fn OverlaysCataloguePage() -> Element {
                             text: "Remote images are blocked.",
                             detail: "Loading them tells the sender you opened this.",
                             actions: rsx! { Button { label: "Load images", size: ControlSize::Small, onclick: |_| {} } },
-                            onclose: |_| {},
+                            onclose: |()| {},
                         }
                     }
                 }
@@ -157,7 +157,7 @@ pub fn OverlaysCataloguePage() -> Element {
             div { class: "g-row g-row-top",
                 Specimen { name: "Styles turned off".to_string(),
                     div { style: "width:520px",
-                        StylesOffNotice { program: "Mail", onturnon: |_| {} }
+                        StylesOffNotice { program: "Mail", onturnon: |()| {} }
                     }
                 }
             }

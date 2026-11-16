@@ -27,6 +27,6 @@ mod tests {
         assert!(parse(None).expect("unset").rules().is_empty());
         let table = parse(Some("bardo-shell=bardo-shell.service")).expect("set");
         assert_eq!(table.rules().len(), 1);
-        assert!(parse(Some("nonsense")).is_err());
+        parse(Some("nonsense")).unwrap_err();
     }
 }

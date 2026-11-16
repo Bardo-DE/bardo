@@ -52,6 +52,7 @@ pub struct ReplayProvider {
 }
 
 impl ReplayProvider {
+    #[must_use]
     pub fn new(cassette: Cassette, mode: ReplayMode) -> Self {
         Self {
             cassette,
@@ -198,7 +199,10 @@ impl<P: Provider, C: CassetteSink> RecordingProvider<P, C> {
     }
 
     fn take_id(&self) -> InteractionId {
-        let mut next = self.next.lock().unwrap_or_else(|e| e.into_inner());
+        let mut next = self
+            .next
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let id = InteractionId(*next);
         *next += 1;
         id

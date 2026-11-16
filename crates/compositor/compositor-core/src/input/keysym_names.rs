@@ -88,6 +88,7 @@ impl Keysym {
 
     /// The keysym's name as `named` reads it back: its own character, its table name, `F<n>`,
     /// `U<hex>`, else `0x<hex>`.
+    #[must_use]
     pub fn name(&self) -> String {
         let code = self.0;
         char_name(code)

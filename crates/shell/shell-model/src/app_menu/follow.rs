@@ -21,12 +21,14 @@ pub struct Following {
 
 impl Followers {
     /// The apps some follower names.
+    #[must_use]
     pub fn apps(&self) -> BTreeSet<&MenuApp> {
         self.wants.values().collect()
     }
 
     /// `by` now wants `app` (nothing, for `None`): the new wants, and which apps start and stop
     /// being followed.
+    #[must_use]
     pub fn set(self, by: Follower, app: Option<MenuApp>) -> (Followers, Following) {
         let before: BTreeSet<MenuApp> = self.wants.values().cloned().collect();
         let mut wants = self.wants;

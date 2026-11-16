@@ -1,12 +1,12 @@
 //! The lock surface's content inside its `Ds` root: quire's stage, the clock, the prompt on the
 //! prompt's output, and the unlock fade (the module doc of `screen.rs` has the rules).
 
+use base_secret::SecretText;
 use dioxus::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
 use shell_model::auth::{Auth, AuthCommand, AuthFault, AuthPhase, PamNote};
-use base_secret::SecretText;
 use shell_model::ids::OutputName;
 use ui_components::prelude::*;
 

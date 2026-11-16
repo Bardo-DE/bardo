@@ -1,4 +1,4 @@
-//! The Bluetooth page over a BlueZ that answers from memory: the switch, My Devices and Nearby
+//! The Bluetooth page over a `BlueZ` that answers from memory: the switch, My Devices and Nearby
 //! Devices, connecting, pairing with a number to compare, forgetting after a question, and looking
 //! for devices only while the page is open.
 

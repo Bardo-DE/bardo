@@ -9,6 +9,7 @@ const ELLIPSIS: char = '…';
 ///
 /// Counts Unicode scalar values and cuts only on their boundaries, so no character is ever
 /// split. Text that already fits comes back unchanged; `chars == 0` leaves nothing.
+#[must_use]
 pub fn clip_chars(text: &str, chars: usize) -> String {
     if text.chars().nth(chars).is_none() {
         return text.to_string();
@@ -32,6 +33,7 @@ pub enum Truncate {
 
 impl Truncate {
     /// `text` cut to at most `chars` characters where this mode cuts.
+    #[must_use]
     pub fn clip(self, text: &str, chars: usize) -> String {
         match self {
             Truncate::End => clip_chars(text, chars),
@@ -51,6 +53,7 @@ const LONGEST_EXTENSION: usize = 8;
 /// back unchanged; `chars == 0` leaves nothing and `chars == 1` only the mark. With an extension
 /// the end keeps a third of what is left after it, the start the rest; without one the two
 /// halves are even, the start the larger.
+#[must_use]
 pub fn clip_middle(text: &str, chars: usize) -> String {
     let all: Vec<char> = text.chars().collect();
     if all.len() <= chars {

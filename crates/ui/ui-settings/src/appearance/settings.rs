@@ -104,6 +104,7 @@ impl Default for AppearanceSettings {
 
 impl AppearanceSettings {
     /// The choices a `ui_components::prelude::Ds` root resolves.
+    #[must_use]
     pub fn appearance(&self) -> Appearance {
         Appearance {
             theme: self.theme,

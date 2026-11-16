@@ -13,6 +13,7 @@ use shell_model::windows::{Toplevels, intents_app_for};
 
 /// The ask for `prompt` in the summon `summon` found the panel in, over `toplevels` (their apps
 /// named through `apps`), made in `space`.
+#[must_use]
 pub fn ask_input(
     prompt: String,
     summon: &Summon,

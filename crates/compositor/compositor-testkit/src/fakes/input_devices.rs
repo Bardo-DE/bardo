@@ -13,6 +13,7 @@ pub struct FakeInputDevices {
 
 impl FakeInputDevices {
     /// A recorder with nothing applied.
+    #[must_use]
     pub fn new() -> FakeInputDevices {
         FakeInputDevices::default()
     }

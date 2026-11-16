@@ -74,14 +74,14 @@ pub enum StartError {
 }
 
 /// The retention sweep runs this often (and once a minute after the daemon starts).
-const SWEEP_EVERY: Duration = Duration::from_secs(24 * 60 * 60);
+const SWEEP_EVERY: Duration = Duration::from_hours(24);
 const FIRST_SWEEP: Duration = Duration::from_secs(60);
 
 /// Nightly consolidation (`memory.consolidation.when = "nightly"`) runs this often, the first time
 /// an hour after the daemon starts. The desktop's idle and power state are not asked yet
 /// (FINDINGS), so it is a daily timer, like the sweep.
-const CONSOLIDATE_EVERY: Duration = Duration::from_secs(24 * 60 * 60);
-const FIRST_CONSOLIDATION: Duration = Duration::from_secs(60 * 60);
+const CONSOLIDATE_EVERY: Duration = Duration::from_hours(24);
+const FIRST_CONSOLIDATION: Duration = Duration::from_hours(1);
 
 /// The system's callers file; the user's is next to `memory.toml` and wins.
 const SYSTEM_CALLERS: &str = "/etc/bardo/memoryd-callers.toml";
@@ -173,7 +173,7 @@ async fn run(
     let table = read_callers(&system, &dirs)?;
     let peers = match proc_root.honoured() {
         #[cfg(feature = "test-proc-root")]
-        Some(dir) => ProcPeers::with_proc_root(connection.clone(), table, dir.to_path_buf()),
+        Some(dir) => ProcPeers::with_proc_root(connection.clone(), table, dir.clone()),
         _ => ProcPeers::new(connection.clone(), table),
     };
     if let Ok(shell) = memory_core::AppName::parse(SHELL_APP) {
@@ -254,7 +254,7 @@ pub fn start(env: Env<'_>) -> Result<(), StartError> {
     let mut policy = policy_for(&dirs, bus.as_deref());
     // A fixture /proc is read like /proc is: files only.
     if let Some(dir) = proc_root.honoured() {
-        policy.read_files.push(dir.to_path_buf());
+        policy.read_files.push(dir.clone());
     }
     let system = system_callers(HONOURS_PROC_ROOT, env);
     if system != Path::new(SYSTEM_CALLERS) {

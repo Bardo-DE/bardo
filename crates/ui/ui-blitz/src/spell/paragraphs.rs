@@ -22,7 +22,7 @@ fn collect(doc: &BaseDocument, parent: NodeId, found: &mut Vec<Paragraph>) {
     let Some(node) = doc.get_node(parent) else {
         return;
     };
-    for &child in node.children.iter() {
+    for &child in &node.children {
         let Some(child_node) = doc.get_node(child) else {
             continue;
         };
@@ -47,7 +47,7 @@ fn own(doc: &BaseDocument, parent: NodeId, code: bool, paragraph: &mut Paragraph
     let Some(node) = doc.get_node(parent) else {
         return;
     };
-    for &child in node.children.iter() {
+    for &child in &node.children {
         let Some(child_node) = doc.get_node(child) else {
             continue;
         };

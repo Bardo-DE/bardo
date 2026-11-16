@@ -18,7 +18,7 @@ fn version_of(client: &mut TestClient, interface: &str) -> Option<u32> {
         .map(|global| global.version)
 }
 
-/// Zwp_tablet_manager_v2 gives a tablet seat for wl_seat.
+/// `Zwp_tablet_manager_v2` gives a tablet seat for `wl_seat`.
 ///
 /// The global is advertised at version 1 to every connection (the I7 table: a tablet is input
 /// for the client's own windows, nothing a sandbox must not see). The tablet seat of a

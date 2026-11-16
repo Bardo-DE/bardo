@@ -18,9 +18,10 @@ pub struct LoginRequestId(Box<str>);
 impl LoginRequestId {
     /// The request id written as `text`.
     pub fn parse(text: &str) -> Result<Self, IdError> {
-        match is_id(text) {
-            true => Ok(Self(text.into())),
-            false => Err(IdError::malformed("login request id", text)),
+        if is_id(text) {
+            Ok(Self(text.into()))
+        } else {
+            Err(IdError::malformed("login request id", text))
         }
     }
 }
@@ -59,6 +60,7 @@ pub enum LoginOutcome {
 
 impl LoginOutcome {
     /// The two words the bus carries: the outcome and its reason (empty unless `failed`).
+    #[must_use]
     pub fn to_wire(self) -> (&'static str, &'static str) {
         match self {
             LoginOutcome::Ready => ("ready", ""),
@@ -140,7 +142,7 @@ mod tests {
 
     #[test]
     fn request_ids_are_ids() {
-        assert!(LoginRequestId::parse("login-12").is_ok());
+        LoginRequestId::parse("login-12").unwrap();
         for bad in ["", "Login", "a b", "-x", &"a".repeat(65)] {
             assert!(LoginRequestId::parse(bad).is_err(), "{bad}");
         }

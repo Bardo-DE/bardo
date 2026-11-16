@@ -27,6 +27,7 @@ pub enum Place {
 
 impl Place {
     /// Where routing counts the engine to be.
+    #[must_use]
     pub fn locality(self) -> Locality {
         match self {
             Place::ThisDevice => Locality::OnDevice,
@@ -86,6 +87,7 @@ pub enum Reach {
 
 impl Reach {
     /// Whether the engine is a computer on the Tailscale network.
+    #[must_use]
     pub fn is_tailnet(&self) -> bool {
         matches!(self, Reach::Tailnet { .. })
     }

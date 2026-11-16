@@ -27,6 +27,7 @@ pub struct FakeA11y {
 
 impl FakeA11y {
     /// Answers with the fixture's snapshot.
+    #[must_use]
     pub fn fixture(which: Fixture) -> Self {
         let text = match which {
             Fixture::Gtk4Dialog => GTK4_DIALOG,
@@ -41,6 +42,7 @@ impl FakeA11y {
     }
 
     /// Answers with this snapshot.
+    #[must_use]
     pub fn with(snapshot: A11ySnapshot) -> Self {
         Self {
             answer: Ok(snapshot),
@@ -48,6 +50,7 @@ impl FakeA11y {
     }
 
     /// Answers with this error: the app exposes no tree, say.
+    #[must_use]
     pub fn failing(error: A11yError) -> Self {
         Self { answer: Err(error) }
     }

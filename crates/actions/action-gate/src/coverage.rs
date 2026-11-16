@@ -9,6 +9,7 @@ use permission_core::{ArgLabels, Coverage, TaskPolicy, Widening, covers};
 use provenance::UnixSeconds;
 
 /// The coverage of `call` under `policy` at `now`. No policy covers nothing.
+#[must_use]
 pub fn coverage(
     policy: Option<&TaskPolicy>,
     decl: &ActionDecl,

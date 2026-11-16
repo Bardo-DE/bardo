@@ -23,6 +23,7 @@ pub enum RegionMap {
 
 impl RegionMap {
     /// The EI point for a window-local point. Coordinates beyond `i32` saturate.
+    #[must_use]
     pub fn region_of(self, p: Point<WindowSpace>) -> GlobalPoint {
         let to_i32 = |c: Coord| i32::try_from(c.0).unwrap_or(i32::MAX);
         let (x, y) = (to_i32(p.x), to_i32(p.y));
@@ -36,6 +37,7 @@ impl RegionMap {
 
     /// Whether an EI point lies inside the window. On the fork the region is the window; on
     /// stock it is the window's frame, not the whole output the region spans.
+    #[must_use]
     pub fn contains(self, p: GlobalPoint) -> bool {
         match self {
             RegionMap::Identity => true,
@@ -52,6 +54,7 @@ impl RegionMap {
 
     /// The same map with the window at `frame` now. The fork's region follows the window itself,
     /// so it stays as it is.
+    #[must_use]
     pub fn moved_to(self, frame: GlobalRect) -> RegionMap {
         match self {
             RegionMap::Identity => RegionMap::Identity,
@@ -61,6 +64,7 @@ impl RegionMap {
 
     /// The window-local point for an EI point, or `None` when it falls left of or above the
     /// window.
+    #[must_use]
     pub fn window_of(self, p: GlobalPoint) -> Option<Point<WindowSpace>> {
         let (dx, dy) = match self {
             RegionMap::Identity => (p.0, p.1),

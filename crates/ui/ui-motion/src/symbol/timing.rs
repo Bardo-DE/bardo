@@ -30,6 +30,7 @@ fn easing(gesture: PartGesture, run: PartRun) -> EasingToken {
 
 /// The cycle that plays `gesture` for `run` at `level`: once at `--t-big`, or forever at
 /// `--t-turn`.
+#[must_use]
 pub fn cycle(gesture: PartGesture, run: PartRun, level: MotionLevel) -> Cycle {
     let (token, repeat) = match run {
         PartRun::Once(_) => (DurationToken::Big, Repeat::Once),

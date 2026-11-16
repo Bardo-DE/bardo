@@ -69,6 +69,7 @@ pub struct LendingConfig {
 impl LendingConfig {
     /// The shipped file at `shipped`, the drop-in under `systemd_user_dir`
     /// (`$XDG_CONFIG_HOME/systemd/user`).
+    #[must_use]
     pub fn new(shipped: PathBuf, systemd_user_dir: PathBuf) -> Self {
         Self {
             shipped,
@@ -77,6 +78,7 @@ impl LendingConfig {
     }
 
     /// The shipped file under `prefix` (`<prefix>/share/bardo/inference/tailnet.conf`).
+    #[must_use]
     pub fn under_prefix(prefix: &Path, systemd_user_dir: PathBuf) -> Self {
         Self::new(
             prefix.join("share/bardo/inference").join(SHIPPED_NAME),
@@ -106,11 +108,13 @@ impl LendingConfig {
     }
 
     /// Where the shipped file is.
+    #[must_use]
     pub fn shipped(&self) -> &Path {
         &self.shipped
     }
 
     /// Where the drop-in goes.
+    #[must_use]
     pub fn drop_in(&self) -> PathBuf {
         self.systemd_user_dir.join(DROP_IN_DIR).join(DROP_IN_FILE)
     }
@@ -270,6 +274,7 @@ mod session {
 
     impl SessionUnits {
         /// The manager on `connection`, which must be the session bus.
+        #[must_use]
         pub fn new(connection: BusConnection) -> Self {
             Self { connection }
         }
@@ -320,8 +325,7 @@ mod session {
                         return match args.result {
                             "done" => Ok(()),
                             other => Err(UnitFailure(format!(
-                                "the restart of {} ended as '{other}'",
-                                unit
+                                "the restart of {unit} ended as '{other}'"
                             ))),
                         };
                     }

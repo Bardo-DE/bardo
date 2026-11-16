@@ -10,6 +10,7 @@ use account_sheet::{Hop, MailServers};
 use base_url::UrlScheme;
 
 /// The domain of an address, when it is one.
+#[must_use]
 pub fn domain_of(address: &str) -> Option<DomainName> {
     let (local, domain) = address.rsplit_once('@')?;
     (!local.is_empty()).then(|| DomainName::parse(domain).ok())?

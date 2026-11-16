@@ -96,16 +96,19 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
 
     /// True until a device is made: the peer has a short while to ask for one, and may then be
     /// silent for as long as it likes.
+    #[must_use]
     pub fn in_handshake(&self) -> bool {
         self.created == 0
     }
 
     /// What the connection has cost so far.
+    #[must_use]
     pub fn stats(&self) -> Stats {
         self.stats
     }
 
     /// Devices the service still holds (handed ones are the client's now).
+    #[must_use]
     pub fn held(&self) -> usize {
         self.slots.len()
     }

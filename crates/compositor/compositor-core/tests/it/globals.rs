@@ -149,5 +149,5 @@ fn a_role_is_a_small_lowercase_word() {
     for bad in ["", "Shell", "has space", "dash-ed", long.as_str()] {
         assert!(ServiceRole::parse(bad).is_err(), "{bad:?}");
     }
-    assert!(ServiceRole::parse("portal_frontend").is_ok());
+    ServiceRole::parse("portal_frontend").unwrap();
 }

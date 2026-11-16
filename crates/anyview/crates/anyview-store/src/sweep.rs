@@ -16,6 +16,7 @@ pub fn sweep_leftovers(dir: &Path) -> usize {
 /// Deletes the scratch files in `dir` called `<prefix>-<pid>-<n>.<extension>` whose process is gone:
 /// the files a trim or a frame export of a viewer that was killed left in its cache folder. A
 /// file of a process that is still running is not touched. Returns how many went.
+#[must_use]
 pub fn sweep_scratch(dir: &Path, prefix: &str) -> usize {
     sweep_where(dir, |name| scratch_of(name, prefix))
 }

@@ -55,6 +55,7 @@ impl Pop3Auth {
 }
 
 /// What the app is greeted with once the relay has authenticated.
+#[must_use]
 pub fn app_greeting() -> Vec<u8> {
     b"+OK porter relay ready\r\n".to_vec()
 }
@@ -101,16 +102,19 @@ pub struct Pop3Relay {
 
 impl Pop3Relay {
     /// What the relay presents and where.
+    #[must_use]
     pub fn plan(&self) -> &account_core::RelayPlan {
         &self.plan
     }
 
     /// Where the relay stands.
+    #[must_use]
     pub fn phase(&self) -> &Pop3Phase {
         &self.phase
     }
 
     /// A relay at the start of a connection.
+    #[must_use]
     pub fn new(plan: account_core::RelayPlan) -> Self {
         Self {
             plan,

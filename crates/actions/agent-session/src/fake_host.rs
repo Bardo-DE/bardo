@@ -52,6 +52,7 @@ impl FakeHost {
 
     /// The same host numbering the sessions it opens from `n`, so two hosts over one log do not
     /// mint the same id.
+    #[must_use]
     pub fn numbered_from(mut self, n: u32) -> Self {
         self.minted = n.saturating_sub(1);
         self

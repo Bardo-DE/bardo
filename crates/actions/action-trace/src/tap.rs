@@ -54,11 +54,13 @@ fn process_label() -> String {
     std::env::current_exe()
         .ok()
         .and_then(|p| p.file_stem().map(|s| s.to_string_lossy().into_owned()))
-        .map(|name| {
-            name.strip_prefix("accept-")
-                .map_or(name.clone(), str::to_owned)
-        })
-        .unwrap_or_else(|| "unknown".to_owned())
+        .map_or_else(
+            || "unknown".to_owned(),
+            |name| {
+                name.strip_prefix("accept-")
+                    .map_or(name.clone(), str::to_owned)
+            },
+        )
 }
 
 impl Tap {
@@ -71,26 +73,31 @@ impl Tap {
     }
 
     /// A tap that keeps nothing.
+    #[must_use]
     pub fn off() -> Self {
         Self::with(Sink::Off, "")
     }
 
     /// A tap that appends to `path`, as `by`.
+    #[must_use]
     pub fn file(path: PathBuf, by: &str) -> Self {
         Self::with(Sink::File(Arc::new(path)), by)
     }
 
     /// A tap that keeps exchanges in `memory`, as `by`.
+    #[must_use]
     pub fn memory(memory: MemoryTap, by: &str) -> Self {
         Self::with(Sink::Memory(memory), by)
     }
 
     /// A tap that appends to `path`, labelled with this process's executable name.
+    #[must_use]
     pub fn trace_file(path: PathBuf) -> Self {
         Self::file(path, &process_label())
     }
 
     /// The watch to hand a daemon's inferd link: this tap, or none when it keeps nothing.
+    #[must_use]
     pub fn watch(&self) -> InferWatch {
         if self.is_off() {
             InferWatch::off()

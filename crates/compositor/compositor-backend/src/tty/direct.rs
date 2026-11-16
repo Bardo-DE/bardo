@@ -57,11 +57,12 @@ pub struct DriverRefusal {
 /// assert!(require_vkms(OsStr::new("amdgpu")).is_err());
 /// ```
 pub fn require_vkms(driver: &OsStr) -> Result<(), DriverRefusal> {
-    match driver == OsStr::new(VKMS_DRIVER) {
-        true => Ok(()),
-        false => Err(DriverRefusal {
+    if driver == OsStr::new(VKMS_DRIVER) {
+        Ok(())
+    } else {
+        Err(DriverRefusal {
             driver: driver.to_string_lossy().into_owned(),
-        }),
+        })
     }
 }
 
@@ -138,6 +139,7 @@ pub struct FixedNode {
 
 impl FixedNode {
     /// The node at `path` is the only display device.
+    #[must_use]
     pub fn new(path: DevicePath) -> FixedNode {
         FixedNode {
             node: path,

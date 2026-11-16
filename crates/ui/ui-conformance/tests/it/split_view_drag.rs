@@ -1,4 +1,4 @@
-//! SplitView on a real Blitz document (design/30 section 2.7): dragging the divider sizes the
+//! `SplitView` on a real Blitz document (design/30 section 2.7): dragging the divider sizes the
 //! pane 1:1 within its widths, a drag past half its least folds it and reports it, and a
 //! double-click returns it to its preferred width.
 

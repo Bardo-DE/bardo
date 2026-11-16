@@ -41,6 +41,7 @@ pub fn use_map_when_shown(visibility: impl Fn() -> Visibility + 'static) {
 
 /// The handler for a card's `on_hidden`: its exit has settled, so unmap the surface. Nothing to
 /// unmap without a host (a test, an SSR render).
+#[must_use]
 pub fn use_unmap_on_hidden() -> EventHandler<()> {
     let surface = try_use_context::<SurfaceHandle>();
     use_hook(|| {

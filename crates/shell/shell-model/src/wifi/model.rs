@@ -9,10 +9,10 @@ use crate::units::{Percent, Presence};
 /// The wireless radio and what it can see.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Wifi {
-    /// Whether NetworkManager has a wireless device at all.
+    /// Whether `NetworkManager` has a wireless device at all.
     pub device: Presence,
     pub radio: Radio,
-    /// One entry per access point NetworkManager reports (a network with several access points
+    /// One entry per access point `NetworkManager` reports (a network with several access points
     /// appears several times; [`listed_networks`] folds them).
     pub access_points: Vec<AccessPoint>,
     /// The SSIDs with a saved connection, which [`WifiCommand::Connect`] can join.
@@ -83,6 +83,7 @@ pub enum Saved {
 /// `Connected` or `Connecting` if any of its points is), hidden (empty) SSIDs left out, ordered
 /// connected first, then saved networks, then the rest, by strength (strongest first) and then
 /// name within each group; each with whether it is saved.
+#[must_use]
 pub fn listed_networks(wifi: &Wifi) -> Vec<(AccessPoint, Saved)> {
     let mut groups: HashMap<&Ssid, (AccessPoint, bool)> = HashMap::new();
     for ap in &wifi.access_points {

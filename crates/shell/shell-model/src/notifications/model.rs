@@ -21,6 +21,7 @@ pub struct Notifications {
 
 impl Notifications {
     /// The live banner for `id`.
+    #[must_use]
     pub fn banner(&self, id: NotificationId) -> Option<&LiveBanner> {
         self.banners.iter().find(|banner| banner.note.id == id)
     }
@@ -54,16 +55,19 @@ pub struct History {
 
 impl History {
     /// How many notifications the history holds.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.groups.iter().map(|group| group.notes.len()).sum()
     }
 
     /// Whether the history holds nothing.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.groups.is_empty()
     }
 
     /// The kept notification `id`.
+    #[must_use]
     pub fn find(&self, id: NotificationId) -> Option<&Notification> {
         self.groups
             .iter()
@@ -72,6 +76,7 @@ impl History {
     }
 
     /// `key`'s group.
+    #[must_use]
     pub fn group(&self, key: &AppKey) -> Option<&AppGroup> {
         self.groups.iter().find(|group| group.key == *key)
     }

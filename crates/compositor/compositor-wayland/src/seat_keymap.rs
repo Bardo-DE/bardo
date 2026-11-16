@@ -14,6 +14,7 @@ use smithay::input::keyboard::{KeyboardHandle, XkbConfig};
 use xkbcommon::xkb;
 
 /// The `XkbConfig` that compiles `names`. An empty name is libxkbcommon's default for it.
+#[must_use]
 pub fn xkb_config(names: &XkbNames) -> XkbConfig<'_> {
     XkbConfig {
         rules: &names.rules,
@@ -26,6 +27,7 @@ pub fn xkb_config(names: &XkbNames) -> XkbConfig<'_> {
 
 /// The keymap `names` compile to, as XKB text v1: what `wl_keyboard` clients are sent for the
 /// seat, so a remote keyboard's keycodes mean the same. `None` when the names do not compile.
+#[must_use]
 pub fn keymap_text(names: &XkbNames) -> Option<String> {
     let context = xkb::Context::new(xkb::CONTEXT_NO_FLAGS);
     let options = Some(names.options.clone()).filter(|options| !options.is_empty());
@@ -69,6 +71,7 @@ impl KeymapBook {
     /// let names = CasementSettings::defaults().keyboard.layout;
     /// assert_eq!(KeymapBook::new(names.clone()).plan(&names), KeymapStep::Unchanged);
     /// ```
+    #[must_use]
     pub fn new(running: XkbNames) -> KeymapBook {
         KeymapBook {
             running,
@@ -77,11 +80,13 @@ impl KeymapBook {
     }
 
     /// The names the seat's keymap is compiled from.
+    #[must_use]
     pub fn running(&self) -> &XkbNames {
         &self.running
     }
 
     /// What a settings change that asks for `wanted` needs.
+    #[must_use]
     pub fn plan(&self, wanted: &XkbNames) -> KeymapStep {
         if *wanted == self.running {
             KeymapStep::Unchanged

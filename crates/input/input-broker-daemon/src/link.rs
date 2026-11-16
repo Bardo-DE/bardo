@@ -34,6 +34,7 @@ pub struct Inbox {
 
 impl Inbox {
     /// An empty buffer.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             buf: vec![0; MAX_DATAGRAM + 1],
@@ -41,6 +42,7 @@ impl Inbox {
     }
 
     /// The first `len` bytes of the last datagram.
+    #[must_use]
     pub fn datagram(&self, len: usize) -> &[u8] {
         self.buf.get(..len).unwrap_or_default()
     }
@@ -48,7 +50,7 @@ impl Inbox {
     /// Waits for the next datagram (up to the connection's receive timeout).
     pub fn receive(&mut self, conn: &OwnedFd) -> Incoming {
         loop {
-            return match recv(conn, &mut self.buf[..], RecvFlags::TRUNC) {
+            return match recv(conn, &mut *self.buf, RecvFlags::TRUNC) {
                 Ok((0, 0)) => Incoming::Closed,
                 Ok((_, real)) if real > MAX_DATAGRAM => Incoming::Oversize,
                 Ok((len, _)) => Incoming::Datagram(len),

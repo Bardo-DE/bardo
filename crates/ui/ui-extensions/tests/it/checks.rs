@@ -173,7 +173,7 @@ fn an_extension_is_never_half_used() {
     let both = format!("{LOOK}\n{ICONS}");
     let folder = install(&person, ID, &manifest(ID, "Paper", "1.0.0", &both));
     write(&folder.join("look.css"), ".ds {}\n");
-    assert!(fs::metadata(folder.join("file-icons")).is_err());
+    fs::metadata(folder.join("file-icons")).unwrap_err();
 
     let found = Search::new(&person, &[]).scan(&[]);
 

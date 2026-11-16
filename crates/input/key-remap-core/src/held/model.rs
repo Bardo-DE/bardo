@@ -39,26 +39,31 @@ pub struct Held {
 
 impl Held {
     /// Nothing held.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Whether the written stream has `key` down: some record holds it and nobody lifted it.
+    #[must_use]
     pub fn is_down(&self, key: Logical) -> bool {
         self.holds(key) && !self.is_lifted(key)
     }
 
     /// Whether some record holds `key`, down on the wire or lifted off it.
+    #[must_use]
     pub fn holds(&self, key: Logical) -> bool {
         self.records.values().any(|r| r.down.contains(&key))
     }
 
     /// Whether some owner has lifted `key` off the wire.
+    #[must_use]
     pub fn is_lifted(&self, key: Logical) -> bool {
         self.lifts.values().any(|keys| keys.contains(&key))
     }
 
     /// Whether the physical key `at` is held.
+    #[must_use]
     pub fn is_held(&self, at: At) -> bool {
         self.records.contains_key(&at)
     }
@@ -77,6 +82,7 @@ impl Held {
     }
 
     /// Whether nothing is held and nothing lifted.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.records.is_empty() && self.lifts.is_empty()
     }

@@ -16,6 +16,7 @@ impl VolumeId {
     }
 
     /// The id as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -32,6 +33,7 @@ impl VolumeName {
     }
 
     /// The name as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -72,6 +74,7 @@ pub struct Volume {
 
 impl Volume {
     /// A volume that is not mounted and cannot be ejected.
+    #[must_use]
     pub fn new(id: VolumeId, name: VolumeName, kind: VolumeKind) -> Volume {
         Volume {
             id,
@@ -83,6 +86,7 @@ impl Volume {
     }
 
     /// The same volume mounted at `folder`.
+    #[must_use]
     pub fn mounted_at(self, folder: FolderPath) -> Volume {
         Volume {
             mount: Some(folder),
@@ -91,6 +95,7 @@ impl Volume {
     }
 
     /// The same volume with an eject button.
+    #[must_use]
     pub fn ejectable(self) -> Volume {
         Volume {
             can_eject: true,
@@ -99,11 +104,13 @@ impl Volume {
     }
 
     /// The folder it is mounted at, when it is.
+    #[must_use]
     pub fn folder(&self) -> Option<&FolderPath> {
         self.mount.as_ref()
     }
 
     /// Whether `folder` is the volume's own folder or inside it.
+    #[must_use]
     pub fn holds(&self, folder: &FolderPath) -> bool {
         self.folder()
             .is_some_and(|mount| folder.as_path().starts_with(mount.as_path()))
@@ -121,6 +128,7 @@ impl ProgramName {
     }
 
     /// The name as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

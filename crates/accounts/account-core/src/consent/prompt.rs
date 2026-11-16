@@ -55,6 +55,7 @@ pub enum AskPurpose {
 
 impl AskPurpose {
     /// Whether this is the ordinary consent (so the JSON leaves it out).
+    #[must_use]
     pub fn is_use(&self) -> bool {
         matches!(self, AskPurpose::Use)
     }
@@ -63,6 +64,7 @@ impl AskPurpose {
 impl ConsentAsk {
     /// A question from `app` for this kind and data class, with the accounts that fit; it asks
     /// outside any launcher session and names the app by its id until accountd fills the label.
+    #[must_use]
     pub fn new(
         app: AppId,
         kind: CapabilityKind,
@@ -90,12 +92,14 @@ impl ConsentAsk {
     }
 
     /// The same question, asked inside this session.
+    #[must_use]
     pub fn with_session(mut self, session: SessionToken) -> Self {
         self.session = Some(session);
         self
     }
 
     /// The same question, with what a person calls the app.
+    #[must_use]
     pub fn with_app_label(mut self, label: AppLabel) -> Self {
         self.app_label = Some(label);
         self
@@ -115,6 +119,7 @@ pub struct AccountChoice {
 
 impl AccountChoice {
     /// A row for this account, with its label and provider.
+    #[must_use]
     pub fn new(account: AccountId, label: AccountLabel, provider: ProviderId) -> Self {
         Self {
             account,

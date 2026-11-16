@@ -1,4 +1,4 @@
-//! The network: NetworkManager's primary connection and connectivity, as the bar draws them.
+//! The network: `NetworkManager`'s primary connection and connectivity, as the bar draws them.
 
 mod command;
 mod model;

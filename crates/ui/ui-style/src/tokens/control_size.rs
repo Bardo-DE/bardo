@@ -1,5 +1,5 @@
 //! A control's size on the ladder (design/30-CATALOGUE.md section 1.6, macOS's
-//! `NSControl.ControlSize`): Mini 20, Small 24, Regular 28, Large 32, ExtraLarge 40 (design/34-MODERN-LOOK.md section 2.2,
+//! `NSControl.ControlSize`): Mini 20, Small 24, Regular 28, Large 32, `ExtraLarge` 40 (design/34-MODERN-LOOK.md section 2.2,
 //! step 2, Tahoe; the heights are an M-low estimate, section 6 decision 1). Each size's whole geometry
 //! comes from [`SizeScale`], computed from its height by the design/29-SIZING.md section 6 rules.
 
@@ -37,6 +37,7 @@ pub enum SidebarSize {
 
 impl SidebarSize {
     /// A row's height at this size.
+    #[must_use]
     pub fn row_height(self) -> WholePx {
         WholePx(match self {
             SidebarSize::Small => 28,
@@ -46,6 +47,7 @@ impl SidebarSize {
     }
 
     /// The icon tile's side in a row of this size: the row less 4 px above and below.
+    #[must_use]
     pub fn tile_size(self) -> WholePx {
         WholePx(self.row_height().0.saturating_sub(8))
     }
@@ -53,6 +55,7 @@ impl SidebarSize {
 
 impl ControlSize {
     /// This size's geometry.
+    #[must_use]
     pub fn scale(self) -> SizeScale {
         match self {
             ControlSize::Mini => SizeScale {

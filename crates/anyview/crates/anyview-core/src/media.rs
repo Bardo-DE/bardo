@@ -35,6 +35,7 @@ pub struct MediaTrack {
 
 impl MediaTrack {
     /// How a list shows the track: its title, else its language, else "Track N".
+    #[must_use]
     pub fn name(&self) -> String {
         match (&self.title, &self.language) {
             (Some(title), Some(language)) => format!("{title} ({language})"),

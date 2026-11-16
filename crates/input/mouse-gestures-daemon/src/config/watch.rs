@@ -13,6 +13,7 @@ use std::time::Duration;
 pub const DEBOUNCE: Duration = Duration::from_millis(30);
 
 /// Whether a changed path is our file.
+#[must_use]
 pub fn concerns_us(p: &Path) -> bool {
     p.file_name().is_some_and(|n| n == FILE_NAME)
 }

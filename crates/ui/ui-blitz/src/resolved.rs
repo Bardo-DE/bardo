@@ -72,6 +72,7 @@ impl std::fmt::Debug for Tokens {
 }
 
 /// The reader for the calling component's element.
+#[must_use]
 pub fn use_tokens() -> Tokens {
     Tokens {
         element: use_signal(|| None),
@@ -85,11 +86,13 @@ impl Tokens {
     }
 
     /// `name` as a length on the element ([`Resolved::length`]).
+    #[must_use]
     pub fn length(&self, name: &str) -> Option<Px> {
         self.read(|doc, node| Resolved::length(doc, node, name))
     }
 
     /// `name` as a plain number on the element ([`Resolved::number`]).
+    #[must_use]
     pub fn number(&self, name: &str) -> Option<f32> {
         self.read(|doc, node| Resolved::number(doc, node, name))
     }
@@ -111,11 +114,13 @@ pub struct Lookup<'a> {
 
 impl Lookup<'_> {
     /// `name` as a length on the element ([`Resolved::length`]).
+    #[must_use]
     pub fn length(&self, name: &str) -> Option<Px> {
         Resolved::length(self.doc, self.node, name)
     }
 
     /// `name` as a plain number on the element ([`Resolved::number`]).
+    #[must_use]
     pub fn number(&self, name: &str) -> Option<f32> {
         Resolved::number(self.doc, self.node, name)
     }
@@ -175,6 +180,7 @@ impl<T: PartialEq + Clone + 'static> ResolvedTokens<T> {
     /// The value as last read; `None` before the first frame after mount, and without a
     /// host that provides an `AfterResolve` (a ui-blitz window, the harness or a layer-shell-host
     /// surface).
+    #[must_use]
     pub fn value(&self) -> ReadSignal<Option<T>> {
         self.value.into()
     }

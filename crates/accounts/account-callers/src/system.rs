@@ -96,11 +96,13 @@ impl SystemCallers {
     }
 
     /// What the variable did.
+    #[must_use]
     pub fn choice(&self) -> &Override<PathBuf> {
         &self.choice
     }
 
     /// The file to read.
+    #[must_use]
     pub fn path(&self) -> &Path {
         match &self.choice {
             Override::Honoured(path) => path,
@@ -111,6 +113,7 @@ impl SystemCallers {
     /// The line for standard error at start, when the variable was set: that a test's table is
     /// being read, or that the variable was ignored. `daemon` is the program's name, which
     /// begins the line.
+    #[must_use]
     pub fn notice(&self, daemon: &str) -> Option<String> {
         let SystemFile { path, var } = self.file;
         match &self.choice {
@@ -151,6 +154,7 @@ fn search(file: SystemFile, held: impl Fn(&Path) -> bool) -> PathBuf {
 
 /// Whether `path` is a file only root can have written: it, and every directory on its real
 /// path, belongs to root and is writable by nobody else.
+#[must_use]
 pub fn root_held(path: &Path) -> bool {
     held_by(path, 0)
 }
@@ -158,6 +162,7 @@ pub fn root_held(path: &Path) -> bool {
 /// Whether `path` is a file only `uid` or root can have written: it, and every directory on its
 /// real path, belongs to `uid` or to root, and none is writable by its group or by anyone else.
 /// With `uid` 0 this is [`root_held`].
+#[must_use]
 pub fn held_by(path: &Path, uid: u32) -> bool {
     held_under(path, uid, Path::new("/"))
 }
@@ -165,6 +170,7 @@ pub fn held_by(path: &Path, uid: u32) -> bool {
 /// [`held_by`], looking at the directories from `below` down only: a program kept under a folder
 /// the caller vouches for (a test's own folder, whose parents are not the test's to say anything
 /// about). [`held_by`] is this from `/`.
+#[must_use]
 pub fn held_under(path: &Path, uid: u32, below: &Path) -> bool {
     let Ok(real) = std::fs::canonicalize(path) else {
         return false;

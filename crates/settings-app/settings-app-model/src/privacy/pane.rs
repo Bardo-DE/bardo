@@ -39,6 +39,7 @@ pub enum SubjectKind {
 
 impl ProgramSubject {
     /// A path names a program; anything else is a sandboxed app's id.
+    #[must_use]
     pub fn kind(&self) -> SubjectKind {
         if self.0.starts_with('/') {
             SubjectKind::PrivacyProgram
@@ -100,11 +101,13 @@ pub struct PowerCell {
 
 impl PowerCell {
     /// Whether an administrator set it, so it cannot be changed here.
+    #[must_use]
     pub fn locked(&self) -> bool {
         self.kind == CellKind::Fixed
     }
 
     /// Whether the person can pick another standing: only their own remembered answer.
+    #[must_use]
     pub fn editable(&self) -> bool {
         matches!(self.kind, CellKind::Remembered { .. })
     }
@@ -121,6 +124,7 @@ pub struct PrivacyProgram {
 
 impl PrivacyProgram {
     /// The cell of `power`.
+    #[must_use]
     pub fn cell(&self, power: PrivacyPower) -> Option<&PowerCell> {
         self.cells.iter().find(|cell| cell.power == power)
     }
@@ -171,6 +175,7 @@ fn standing_of(word: &str) -> Option<PowerStanding> {
 
 impl PrivacyPane {
     /// The programs the rows of `described` list.
+    #[must_use]
     pub fn of(described: &Described) -> PrivacyPane {
         let forgets: BTreeMap<(PrivacyPower, &str), &KeyPath> = described
             .keys

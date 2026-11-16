@@ -117,7 +117,7 @@ fn a_changed_signal_redraws_the_text_and_emptying_it_removes_the_element() {
             style.set(Styles {
                 desktop: UserStyle(text.to_owned()),
                 ..Styles::default()
-            })
+            });
         });
         vdom.render_immediate(&mut dioxus::core::NoOpMutations);
         let html = dioxus_ssr::render(&vdom);
@@ -199,7 +199,7 @@ fn use_my_styles_off_draws_none_of_the_three() {
 fn Notice() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, stylesheet: Inject::Host,
-            StylesOffNotice { program: "Mail", onturnon: |_| {} }
+            StylesOffNotice { program: "Mail", onturnon: |()| {} }
         }
     }
 }

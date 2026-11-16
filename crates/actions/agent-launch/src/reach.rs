@@ -70,11 +70,13 @@ impl Reach {
     }
 
     /// The policy the filter enforces.
+    #[must_use]
     pub fn policy(&self) -> &EgressPolicy {
         &self.policy
     }
 
     /// The allowed sites, as written (lower-cased), for showing the person.
+    #[must_use]
     pub fn sites(&self) -> &[String] {
         &self.sites
     }

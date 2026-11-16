@@ -71,6 +71,7 @@ pub struct Linker {
 
 impl Linker {
     /// The toplevel a window object is linked to.
+    #[must_use]
     pub fn key_of(&self, object: WindowObject) -> Option<ToplevelKey> {
         match self.objects.get(&object)? {
             Standing::Linked(key) => Some(*key),
@@ -79,6 +80,7 @@ impl Linker {
     }
 
     /// The window object linked to a toplevel.
+    #[must_use]
     pub fn object_of(&self, key: ToplevelKey) -> Option<WindowObject> {
         self.objects
             .iter()

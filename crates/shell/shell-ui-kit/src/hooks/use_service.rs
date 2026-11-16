@@ -9,6 +9,7 @@ use shell_services::Control;
 use super::use_services;
 
 /// Service `S`'s state, live.
+#[must_use]
 pub fn use_service<S: Member>() -> ReadSignal<S::State> {
     use_watch(S::of(&use_services()).state.clone())
 }
@@ -24,6 +25,7 @@ pub fn use_service_part<S: Member, T: Clone + PartialEq + 'static>(
 }
 
 /// Where service `S`'s commands go.
+#[must_use]
 pub fn use_control<S: Member>() -> Control<S::Command> {
     S::of(&use_services()).control.clone()
 }

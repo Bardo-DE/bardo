@@ -185,9 +185,10 @@ async fn next_read<A: ByteStream, S: ByteStream>(
     app_first: bool,
 ) -> Got {
     let mut app = pin!(async {
-        match open.app {
-            true => ends.app.read(app_buf).await,
-            false => std::future::pending().await,
+        if open.app {
+            ends.app.read(app_buf).await
+        } else {
+            std::future::pending().await
         }
     });
     let mut server = pin!(async {
@@ -197,9 +198,10 @@ async fn next_read<A: ByteStream, S: ByteStream>(
         }
     });
     poll_fn(|cx| {
-        let polls: [Side; 2] = match app_first {
-            true => [Side::App, Side::Server],
-            false => [Side::Server, Side::App],
+        let polls: [Side; 2] = if app_first {
+            [Side::App, Side::Server]
+        } else {
+            [Side::Server, Side::App]
         };
         for side in polls {
             let ready = match side {

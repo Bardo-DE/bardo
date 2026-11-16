@@ -60,6 +60,7 @@ impl ProviderKind {
 
     /// The provider's word in `frecency.json` keys (`apps:org.mozilla.firefox`): the serde name,
     /// kept for good, since the file outlives the build.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             ProviderKind::Apps => "apps",
@@ -83,6 +84,7 @@ impl ProviderKind {
     /// counted under its fixed id (never the query, which is not a row's identity); a clipboard
     /// entry's key means nothing after the session, and the history must leave no trace of its
     /// use.
+    #[must_use]
     pub fn counted(self) -> bool {
         match self {
             // An answer, a helper, a run and a memory row name something that ends or is
@@ -109,6 +111,7 @@ impl ProviderKind {
     /// Whether the provider's rows are never Recent: System rows are Actions already, clipboard
     /// use is never counted, an answer, a helper, a run and a memory row are not habits, and the
     /// web row says nothing about what was searched.
+    #[must_use]
     pub fn never_recent(self) -> bool {
         matches!(
             self,

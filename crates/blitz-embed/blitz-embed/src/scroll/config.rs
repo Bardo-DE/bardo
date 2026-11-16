@@ -34,6 +34,7 @@ pub struct ScrollScalar(pub f32);
 
 impl ScrollPx {
     /// As an `f64` for the formulas.
+    #[must_use]
     pub fn get(self) -> f64 {
         f64::from(self.0)
     }
@@ -41,16 +42,19 @@ impl ScrollPx {
 
 impl ScrollMs {
     /// As a `Duration`.
+    #[must_use]
     pub fn duration(self) -> Duration {
         Duration::from_millis(u64::from(self.0))
     }
 
     /// Whole milliseconds.
+    #[must_use]
     pub fn get_ms(self) -> u16 {
         self.0
     }
 
     /// In seconds, for the formulas.
+    #[must_use]
     pub fn secs(self) -> f64 {
         f64::from(self.0) / 1000.0
     }
@@ -58,6 +62,7 @@ impl ScrollMs {
 
 impl ScrollFraction {
     /// As a ratio.
+    #[must_use]
     pub fn get(self) -> f64 {
         f64::from(self.0) / 1000.0
     }
@@ -65,6 +70,7 @@ impl ScrollFraction {
 
 impl ScrollScalar {
     /// As an `f64` for the formulas.
+    #[must_use]
     pub fn get(self) -> f64 {
         f64::from(self.0)
     }
@@ -167,8 +173,9 @@ impl ScrollSettings {
     /// The macOS feel. The system has already accelerated a notched wheel's clicks, so none is
     /// added (`wheel_accel_max` 1), and a click is 40 px: Chromium's `kScrollbarPixelsPerCocoaTick`
     /// (`ui/events/cocoa/cocoa_event_utils.h`, applied to `NSEvent.deltaY` when the device is not
-    /// continuous) and WebKit's `Scrollbar::pixelsPerLineStep` agree. The ease stays under 60 ms,
+    /// continuous) and `WebKit`'s `Scrollbar::pixelsPerLineStep` agree. The ease stays under 60 ms,
     /// so a click lands as the system placed it.
+    #[must_use]
     pub fn macos() -> ScrollSettings {
         ScrollSettings {
             wheel_detent_px: ScrollPx(40),

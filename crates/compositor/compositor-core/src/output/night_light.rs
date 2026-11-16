@@ -56,6 +56,7 @@ impl Kelvin {
     /// assert_eq!(Kelvin::NEUTRAL.tint(), Tint::NONE);
     /// assert_eq!(Kelvin(3000).tint(), Tint([1000, 697, 440]));
     /// ```
+    #[must_use]
     pub fn tint(self) -> Tint {
         let clamped = self.0.clamp(Kelvin::WARMEST.0, Kelvin::NEUTRAL.0);
         let offset = clamped - Kelvin::WARMEST.0;
@@ -72,6 +73,7 @@ impl Kelvin {
 
 impl Tint {
     /// This tint `strength` thousandths of the way from none (0) to itself (1000).
+    #[must_use]
     pub fn eased(self, strength: u16) -> Tint {
         let strength = u32::from(strength.min(1000));
         let channel = |value: u16| -> u16 {
@@ -88,11 +90,13 @@ pub struct MinuteOfDay(u16);
 
 impl MinuteOfDay {
     /// The minute `minutes` names, wrapped into the day.
+    #[must_use]
     pub fn wrapping(minutes: u16) -> MinuteOfDay {
         MinuteOfDay(minutes % DAY)
     }
 
     /// Minutes since midnight.
+    #[must_use]
     pub fn get(self) -> u16 {
         self.0
     }
@@ -147,18 +151,19 @@ impl NightLight {
     /// assert_eq!(light.strength(at(1275)), 500);
     /// assert_eq!(light.strength(at(0)), 1000);
     /// ```
+    #[must_use]
     pub fn strength(&self, now: MinuteOfDay) -> u16 {
         match self.schedule {
             Schedule::Off => 0,
             Schedule::Always => 1000,
             Schedule::Between { from, to } => {
                 let (length, elapsed) = (from.until(to), from.until(now));
-                match elapsed < length {
-                    false => 0,
-                    true => self
-                        .ramp(elapsed)
+                if elapsed >= length {
+                    0
+                } else {
+                    self.ramp(elapsed)
                         .min(self.ramp(length - elapsed))
-                        .min(1000),
+                        .min(1000)
                 }
             }
         }
@@ -173,6 +178,7 @@ impl NightLight {
     }
 
     /// The tint at `now`.
+    #[must_use]
     pub fn tint(&self, now: MinuteOfDay) -> Tint {
         self.warmth.tint().eased(self.strength(now))
     }
@@ -194,6 +200,7 @@ impl NightLight {
     }
 
     /// A light that never comes on.
+    #[must_use]
     pub fn off() -> NightLight {
         NightLight {
             schedule: Schedule::Off,

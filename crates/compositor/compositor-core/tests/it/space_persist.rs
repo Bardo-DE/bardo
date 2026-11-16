@@ -122,9 +122,9 @@ fn a_damaged_file_is_trimmed_to_what_casement_would_have_written() {
 
 #[test]
 fn bad_text_is_a_typed_error() {
-    assert!(SpaceFile::parse("spaces = 3").is_err());
-    assert!(SpaceFile::import_sill_json("{").is_err());
-    assert!(SpaceFile::import_sill_json(r#"{"by_id": {"NOT AN ID": {}}}"#).is_err());
+    SpaceFile::parse("spaces = 3").unwrap_err();
+    SpaceFile::import_sill_json("{").unwrap_err();
+    SpaceFile::import_sill_json(r#"{"by_id": {"NOT AN ID": {}}}"#).unwrap_err();
 }
 
 #[test]

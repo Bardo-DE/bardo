@@ -5,6 +5,7 @@ use agent_voice_wire::{VoiceFault, VoiceRefusal};
 use super::model::{Notice, Phase};
 
 /// The plain sentence for `notice`; empty for none.
+#[must_use]
 pub fn notice_line(notice: Notice) -> &'static str {
     match notice {
         Notice::None => "",
@@ -30,6 +31,7 @@ pub fn notice_line(notice: Notice) -> &'static str {
 
 /// What the prompt's field says while voice is on it: the words so far, "Listening" before any,
 /// the notice after a hold that failed; `None` when voice has nothing to say.
+#[must_use]
 pub fn listening_line(phase: &Phase, notice: Notice) -> Option<String> {
     match phase {
         Phase::Opening(_) => Some("Listening…".to_owned()),

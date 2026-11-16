@@ -1,11 +1,11 @@
 //! Namespaces and property names, namespace-qualified as [`crate::propfind`] takes them and
 //! [`crate::Prop::name`] gives them back.
 
-/// `DAV:`, the WebDAV namespace.
+/// `DAV:`, the `WebDAV` namespace.
 pub const DAV: &str = "DAV:";
-/// The CalDAV namespace (RFC 4791 section 5.1).
+/// The `CalDAV` namespace (RFC 4791 section 5.1).
 pub const CALDAV: &str = "urn:ietf:params:xml:ns:caldav";
-/// The CardDAV namespace (RFC 6352 section 10.1).
+/// The `CardDAV` namespace (RFC 6352 section 10.1).
 pub const CARDDAV: &str = "urn:ietf:params:xml:ns:carddav";
 
 /// `DAV:getetag`.
@@ -40,7 +40,7 @@ pub(crate) fn split(name: &str) -> (&str, &str) {
     match name.rfind([':', '/']) {
         None => ("", name),
         Some(at) => {
-            let (ns, local) = (&name[..at + 1], &name[at + 1..]);
+            let (ns, local) = (&name[..=at], &name[at + 1..]);
             match ns {
                 DAV => (ns, local),
                 _ => (ns.strip_suffix(':').unwrap_or(ns), local),

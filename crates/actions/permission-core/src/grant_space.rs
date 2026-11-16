@@ -72,6 +72,7 @@ impl Reconciled {
     }
 
     /// Whether anything ended.
+    #[must_use]
     pub fn changed(&self) -> bool {
         !self.ended.is_empty()
     }
@@ -89,6 +90,7 @@ fn fate(key: &ActionGrantKey, known: Option<&KnownSpaces>) -> Option<GrantEnd> {
 
 /// `grants` less those over another app's Space, and (when the registry is known) those over a
 /// desktop-wide Space it does not hold.
+#[must_use]
 pub fn reconcile(grants: Vec<ActionGrant>, known: Option<&KnownSpaces>) -> Reconciled {
     grants
         .into_iter()
@@ -102,13 +104,14 @@ pub fn reconcile(grants: Vec<ActionGrant>, known: Option<&KnownSpaces>) -> Recon
 }
 
 /// `grants` less those scoped to exactly `gone`. A grant for every Space stays.
+#[must_use]
 pub fn without_space(grants: Vec<ActionGrant>, gone: &SpaceId) -> Reconciled {
     grants
         .into_iter()
         .fold(Reconciled::default(), |mut out, grant| {
             match &grant.key.space {
                 SpaceScope::Only(space) if space == gone => {
-                    out.end(GrantEnd::SpaceGone(gone.clone()))
+                    out.end(GrantEnd::SpaceGone(gone.clone()));
                 }
                 SpaceScope::Only(_) | SpaceScope::Any => out.kept.push(grant),
             }

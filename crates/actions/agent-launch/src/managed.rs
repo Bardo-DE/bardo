@@ -22,6 +22,7 @@ use agent_acp_host::{SERVER_NAME, SessionMeta};
 use serde_json::{Value, json};
 
 /// The variables that go with the Claude Code preset. They are applied after the entry's `set`.
+#[must_use]
 pub fn claude_code_env() -> [(&'static str, &'static str); 4] {
     [
         ("CLAUDE_CODE_DISABLE_CLAUDE_MDS", "1"),
@@ -32,11 +33,13 @@ pub fn claude_code_env() -> [(&'static str, &'static str); 4] {
 }
 
 /// The allow rule for every tool of the desktop's server and no other server.
+#[must_use]
 pub fn allow_rule() -> String {
     format!("mcp__{SERVER_NAME}")
 }
 
 /// The `_meta` of `session/new` the Claude Code preset adds.
+#[must_use]
 pub fn claude_code_meta() -> SessionMeta {
     let settings = json!({
         "disableClaudeAiConnectors": true,

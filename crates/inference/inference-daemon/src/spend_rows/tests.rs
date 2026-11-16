@@ -117,7 +117,7 @@ fn spend_is_whole_cents_and_a_part_of_a_cent_counts_as_one() {
 }
 
 /// Before any request runs, the limit row of an account whose provider reports no charges says
-/// the limit cannot apply; OpenRouter, which reports each reply's charge, says nothing of the sort.
+/// the limit cannot apply; `OpenRouter`, which reports each reply's charge, says nothing of the sort.
 #[test]
 fn the_limit_row_says_when_the_provider_reports_no_charges() {
     let rows = rows(vec![

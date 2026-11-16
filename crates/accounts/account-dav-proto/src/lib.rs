@@ -1,4 +1,4 @@
-//! WebDAV (RFC 4918), CalDAV (RFC 4791) and CardDAV (RFC 6352) as text, with no IO. Request
+//! `WebDAV` (RFC 4918), `CalDAV` (RFC 4791) and `CardDAV` (RFC 6352) as text, with no IO. Request
 //! bodies are built as `String`s and replies are read from `&str`, so the caller sends them with
 //! whatever HTTP client it has, and recorded bodies drive every test.
 //!
@@ -11,7 +11,7 @@
 //!   `valid-sync-token` precondition of a failed report.
 //! - [`propfind`], [`sync_collection`] and [`multiget`] build the request bodies; the `Depth`
 //!   header and the method are the caller's ([`Depth::as_str`]).
-//! - [`carddav::Props`] is a typed view of one response's CardDAV properties.
+//! - [`carddav::Props`] is a typed view of one response's `CardDAV` properties.
 //! - [`quota()`] reads RFC 4331 quota from a multistatus.
 //! - With the `http` feature, the `http` module builds the same requests as
 //!   `http::Request<String>`, and `http::bytes` as `http::Request<Vec<u8>>`.

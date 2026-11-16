@@ -54,17 +54,20 @@ impl Rig {
     }
 
     /// The issuer's handle.
+    #[must_use]
     pub fn issuer(&self) -> IssuerHandle {
         (*self.issuer).clone()
     }
 
     /// The Graph fake's handle.
+    #[must_use]
     pub fn graph(&self) -> GraphHandle {
         (*self.graph).clone()
     }
 
     /// What `rig.json` says of this rig, for the scratch directory `dir` and the control
     /// endpoint at `control`.
+    #[must_use]
     pub fn describe(&self, dir: &Path, control: &str) -> RigFile {
         let url = self.issuer.base_url().to_owned();
         let graph = self.graph.base_url();

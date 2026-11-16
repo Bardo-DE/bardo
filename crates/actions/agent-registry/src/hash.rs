@@ -13,6 +13,7 @@ pub struct DigestRefused;
 
 impl Sha256Hex {
     /// The digest of `bytes`.
+    #[must_use]
     pub fn of(bytes: &[u8]) -> Self {
         let sum = Sha256::digest(bytes);
         Self(const_hex::encode(sum))
@@ -29,6 +30,7 @@ impl Sha256Hex {
     }
 
     /// The hex.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

@@ -55,6 +55,7 @@ impl Listening {
     }
 
     /// The display these sockets serve.
+    #[must_use]
     pub fn display(&self) -> &DisplayName {
         &self.display
     }
@@ -65,11 +66,13 @@ impl Listening {
     }
 
     /// The sockets, for registering with the event loop.
+    #[must_use]
     pub fn sockets(&self) -> &[OwnedFd] {
         &self.sockets
     }
 
     /// Whether a client is waiting to be accepted on any of the sockets.
+    #[must_use]
     pub fn connection_waiting(&self) -> bool {
         let mut fds: Vec<PollFd<'_>> = self
             .sockets
@@ -111,12 +114,13 @@ fn check_dir(dir: &Path) -> Result<(), XwaylandError> {
     let owner_ok = meta.uid() == 0 || meta.uid() == rustix::process::getuid().as_raw();
     let others_write = meta.mode() & 0o022 != 0;
     let sticky = meta.mode() & 0o1000 != 0;
-    match meta.is_dir() && owner_ok && (!others_write || sticky) {
-        true => Ok(()),
-        false => Err(XwaylandError::Socket(std::io::Error::new(
+    if meta.is_dir() && owner_ok && (!others_write || sticky) {
+        Ok(())
+    } else {
+        Err(XwaylandError::Socket(std::io::Error::new(
             std::io::ErrorKind::PermissionDenied,
             format!("{} is not a safe place for sockets", dir.display()),
-        ))),
+        )))
     }
 }
 

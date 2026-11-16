@@ -25,7 +25,7 @@ pub const SCHEMES: [Scheme; 2] = [Scheme::Light, Scheme::Dark];
 pub const ACCENTS: [Accent; 2] = [Accent::Blue, Accent::Pink];
 
 /// When each picture is taken: long after every CSS entrance and transition has ended. Rust
-/// timers do not run in a snapshot (ui_harness::snapshot), so a picture is CSS time only.
+/// timers do not run in a snapshot (`ui_harness::snapshot`), so a picture is CSS time only.
 const AT: Duration = Duration::from_secs(10);
 
 /// One picture on the sheet.

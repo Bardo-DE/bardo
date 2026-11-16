@@ -35,11 +35,13 @@ pub struct Physics {
 impl Physics {
     /// The speed a glide starts at for a lift at `speed` px/s (signed): faster lifts carry
     /// further (`scroll::accel::fling_gain`), and no glide is faster than the cap.
+    #[must_use]
     pub fn fling(&self, speed: f64) -> f64 {
         (speed * fling_gain(speed.abs(), self.fling_max)).clamp(-self.cap, self.cap)
     }
 
     /// The physics `s` tunes.
+    #[must_use]
     pub fn from_settings(s: &ScrollSettings) -> Physics {
         Physics {
             glide: Glide::from_settings(s),

@@ -18,6 +18,7 @@ pub struct SystemBellPart {
 
 impl SystemBellPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> SystemBellPart
     where
         D: XdgSystemBellHandler + GlobalDispatch<XdgSystemBellV1, GlobalData>,
@@ -39,6 +40,7 @@ pub fn on_bell(part: &mut SystemBellPart, surface: Option<&WlSurface>) -> Vec<Ev
 /// The app a bell is for: the app of `window` when the client named a surface of one of its
 /// windows, else the active app (a bell with no surface is the app the person is in), else
 /// nobody (a bell for no one is not rung).
+#[must_use]
 pub fn app_to_ring(model: &Model, window: Option<WindowId>) -> Option<AppKey> {
     window
         .and_then(|id| model.windows().get(&id))

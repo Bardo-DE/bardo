@@ -37,6 +37,7 @@ pub struct Readback {
 
 impl Readback {
     /// Nothing watched.
+    #[must_use]
     pub fn new() -> Readback {
         Readback::default()
     }
@@ -50,17 +51,16 @@ impl Readback {
         config: &OutputConfig,
         watch: bool,
     ) -> Result<(), BackendError> {
-        match watch {
-            false => {
-                self.resident.remove(output);
-                if self.watched.remove(output).is_some()
-                    && let Some(shadow) = &mut self.shadow
-                {
-                    let _ = shadow.unplug(output);
-                }
-                Ok(())
+        if watch {
+            self.follow(output, config)
+        } else {
+            self.resident.remove(output);
+            if self.watched.remove(output).is_some()
+                && let Some(shadow) = &mut self.shadow
+            {
+                let _ = shadow.unplug(output);
             }
-            true => self.follow(output, config),
+            Ok(())
         }
     }
 
@@ -102,6 +102,7 @@ impl Readback {
 
     /// The dma-buf formats a capture can be drawn into: the shadow's renderer is pixman, which
     /// binds linear buffers only.
+    #[must_use]
     pub fn capture_formats(&self) -> Vec<smithay::backend::allocator::Format> {
         match &self.shadow {
             Some(shadow) => shadow.capture_formats(),
@@ -160,6 +161,7 @@ impl Readback {
 
     /// The frame last drawn for `output`: the one kept on the GPU when there is one, else the
     /// shadow's.
+    #[must_use]
     pub fn last_frame(&self, output: &OutputName) -> Option<&PresentedFrame> {
         self.resident
             .get(output)
@@ -167,6 +169,7 @@ impl Readback {
     }
 
     /// The configuration `output` is watched with; none when it is not watched.
+    #[must_use]
     pub fn config_of(&self, output: &OutputName) -> Option<OutputConfig> {
         self.watched.get(output).copied()
     }
@@ -184,11 +187,13 @@ impl Readback {
 
     /// Whether the frame last drawn for `output` is on the display GPU, where a capture draws it
     /// into a dma-buf (`false`: read back by the software shadow, or not drawn at all).
+    #[must_use]
     pub fn on_gpu(&self, output: &OutputName) -> bool {
         self.resident.contains_key(output)
     }
 
     /// Whether `output` is watched.
+    #[must_use]
     pub fn watching(&self, output: &OutputName) -> bool {
         self.watched.contains_key(output)
     }

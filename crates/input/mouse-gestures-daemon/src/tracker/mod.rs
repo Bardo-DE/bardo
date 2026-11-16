@@ -56,11 +56,13 @@ pub struct Tracker {
 
 impl Tracker {
     /// A tracker for the Magic Mouse 2's surface.
+    #[must_use]
     pub fn new(cfg: Config) -> Self {
         Self::on(cfg, magic_mouse::surface())
     }
 
     /// A tracker for the frames of a sensor with this surface.
+    #[must_use]
     pub fn on(cfg: Config, surface: Surface) -> Self {
         Self::idle(cfg, surface, false, false)
     }
@@ -86,21 +88,25 @@ impl Tracker {
     }
 
     /// Frames now come from a sensor with this surface (a new device was opened).
+    #[must_use]
     pub fn with_surface(self, surface: Surface) -> Self {
         Self { surface, ..self }
     }
 
     /// Applies a reloaded configuration; running gestures continue under it.
+    #[must_use]
     pub fn with_config(self, cfg: Config) -> Self {
         Self { cfg, ..self }
     }
 
     /// What the stroke recogniser has decided after the last report (for parity comparison).
+    #[must_use]
     pub fn intent(&self) -> Option<Intent> {
         self.stroke.intent()
     }
 
     /// When `tick` next has work to do, if ever: a delayed touchpad lift.
+    #[must_use]
     pub fn deadline(&self) -> Option<Mono> {
         self.pad.deadline()
     }
@@ -108,6 +114,7 @@ impl Tracker {
     /// The lock screen's state, as the shell last said it. While the session is locked no
     /// gesture runs a key or a desktop action and no Spaces swipe starts; a swipe that was
     /// running lifts at once. Scrolling and the socket stream go on.
+    #[must_use]
     pub fn with_session_lock(self, session: bool, now: Mono) -> (Self, Vec<Out>) {
         Self { session, ..self }.enforce(now)
     }
@@ -116,6 +123,7 @@ impl Tracker {
     /// virtual touchpad lifts when a host takes over, so nothing is left pressed under our own
     /// surfaces: at once, or still at `MIN_DOWN` if it is younger, so it is no tap. A Spaces
     /// swipe is the compositor's and goes on.
+    #[must_use]
     pub fn claim(self, over: bool, now: Mono) -> (Self, Vec<Out>) {
         Self {
             claimed: over,
@@ -126,6 +134,7 @@ impl Tracker {
 
     /// The virtual devices were lost and rebuilt: nothing is down on them any more, so the pad
     /// is forgotten without writing anything.
+    #[must_use]
     pub fn devices_lost(self) -> Self {
         Self {
             pad: Pad::Up,
@@ -134,6 +143,7 @@ impl Tracker {
     }
 
     /// Time passed with no report: a delayed touchpad lift that has come due.
+    #[must_use]
     pub fn tick(self, now: Mono) -> (Self, Vec<Out>) {
         let (pad, frames) = self.pad.tick(now);
         (Self { pad, ..self }, pad_outs(frames))
@@ -141,6 +151,7 @@ impl Tracker {
 
     /// The mouse went away: cancel what is running, lift everything, say so, and start over
     /// with only what outlives the mouse.
+    #[must_use]
     pub fn disconnect(self, now: Mono) -> (Self, Vec<Out>) {
         let (stroke, events) = self.stroke.disconnect();
         let (s, mut outs) = Self { stroke, ..self }.apply(&events, now);
@@ -154,6 +165,7 @@ impl Tracker {
     }
 
     /// Consumes one frame.
+    #[must_use]
     pub fn step(self, r: &Frame, now: Mono) -> (Self, Vec<Out>) {
         let (click, press) = self.click.step(r.buttons, now, CLICK_GUARD.duration());
         let window = MOUSE_MOVING_WINDOW.duration();

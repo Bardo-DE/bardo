@@ -12,6 +12,7 @@ pub struct EntryLocale {
 impl EntryLocale {
     /// The locale `text` names; none for an empty text, `C` and `POSIX`, which no translation
     /// answers.
+    #[must_use]
     pub fn parse(text: &str) -> Option<EntryLocale> {
         let (rest, modifier) = match text.split_once('@') {
             Some((rest, modifier)) => (rest, Some(modifier)),
@@ -32,6 +33,7 @@ impl EntryLocale {
 
     /// The locales a key may carry for this one, best first: `lang_COUNTRY@MODIFIER`,
     /// `lang_COUNTRY`, `lang@MODIFIER`, `lang`, each only when its parts are there.
+    #[must_use]
     pub fn variants(&self) -> Vec<String> {
         let lang = &self.lang;
         let both = self

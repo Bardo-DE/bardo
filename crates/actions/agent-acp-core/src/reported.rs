@@ -129,7 +129,7 @@ impl Reported {
                 .events
                 .extend(text(&chunk).map(|t| BackendEvent::Words(Reveal::Plain(t)))),
             SessionUpdate::AgentThoughtChunk(chunk) => {
-                heard.events.extend(text(&chunk).map(BackendEvent::Thought))
+                heard.events.extend(text(&chunk).map(BackendEvent::Thought));
             }
             SessionUpdate::UsageUpdate(u) => heard.events.push(BackendEvent::Usage(usage(&u))),
             SessionUpdate::ToolCall(call) => {

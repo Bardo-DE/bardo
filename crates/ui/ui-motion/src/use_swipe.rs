@@ -17,6 +17,7 @@ pub struct Swiper {
 
 impl Swiper {
     /// Where the swipe is.
+    #[must_use]
     pub fn state(&self) -> SwipeState {
         *self.machine.state().read()
     }
@@ -37,6 +38,7 @@ impl Swiper {
     }
 
     /// A click was heard: whether it is a press on the card (not the end of a drag).
+    #[must_use]
     pub fn take_click(&self) -> bool {
         let swallowed = self.machine.state().peek().swallows_click();
         self.feed(SwipeInput::Clicked);
@@ -44,12 +46,14 @@ impl Swiper {
     }
 
     /// Now, as the machine's stamp.
+    #[must_use]
     pub fn now(&self) -> Stamp {
         self.machine.now()
     }
 }
 
 /// A swipe with `metrics`, calling `on_dismiss` the moment a gesture ends past a threshold.
+#[must_use]
 pub fn use_swipe(metrics: SwipeMetrics, on_dismiss: EventHandler<()>) -> Swiper {
     Swiper {
         machine: use_machine(

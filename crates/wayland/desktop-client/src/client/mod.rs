@@ -102,6 +102,7 @@ impl DesktopClient {
     }
 
     /// The connection the client was given, for polling its file descriptor.
+    #[must_use]
     pub fn connection(&self) -> &Connection {
         &self.connection
     }

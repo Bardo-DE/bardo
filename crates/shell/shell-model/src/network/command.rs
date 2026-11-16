@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::{Activating, Connectivity, Link};
 use crate::units::Percent;
 
-/// One change NetworkManager reported.
+/// One change `NetworkManager` reported.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum NetworkEvent {
@@ -16,7 +16,7 @@ pub enum NetworkEvent {
     Connectivity(Connectivity),
     /// `ActivatingConnection` changed.
     Activating(Activating),
-    /// NetworkManager left the bus.
+    /// `NetworkManager` left the bus.
     Gone,
 }
 

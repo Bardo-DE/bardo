@@ -27,6 +27,7 @@ pub struct ShadowLayer {
 
 impl ShadowLayer {
     /// A layer; `alpha` in thousandths.
+    #[must_use]
     pub const fn new(
         (dx, dy): (i16, i16),
         blur: u16,
@@ -45,6 +46,7 @@ impl ShadowLayer {
     }
 
     /// The colour as 8-bit `[r, g, b, a]`, the alpha rounded from thousandths.
+    #[must_use]
     pub fn rgba(self) -> [u8; 4] {
         let [r, g, b] = self.rgb.0;
         let alpha = (u32::from(self.alpha.0.min(1000)) * 255 + 500) / 1000;
@@ -52,6 +54,7 @@ impl ShadowLayer {
     }
 
     /// The layer as CSS: `0 24px 64px -16px rgba(0,0,0,.4)`; a zero spread is left out.
+    #[must_use]
     pub fn css(self) -> String {
         let length = |n: i32| {
             if n == 0 {
@@ -76,6 +79,7 @@ impl ShadowLayer {
 }
 
 /// Layers as one `box-shadow` value, joined by commas.
+#[must_use]
 pub fn layers_css(layers: &[ShadowLayer]) -> String {
     layers
         .iter()
@@ -108,6 +112,7 @@ impl Shadow {
     /// assert_eq!(layers.len(), 2);
     /// assert_eq!(layers[1].blur, 64);
     /// ```
+    #[must_use]
     pub fn layers(self, scheme: Scheme) -> &'static [ShadowLayer] {
         match (self, scheme) {
             (Shadow::Window, Scheme::Light) => WINDOW_LIGHT,

@@ -13,6 +13,7 @@ pub struct FrameDecoder {
 
 impl FrameDecoder {
     /// A decoder with nothing buffered.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -58,6 +59,7 @@ impl FrameDecoder {
     }
 
     /// Whether bytes of an unfinished frame are held: a stream that ends now was cut off.
+    #[must_use]
     pub fn is_mid_frame(&self) -> bool {
         !self.buffer.is_empty()
     }

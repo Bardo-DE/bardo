@@ -36,7 +36,7 @@ fn Bar() -> Element {
             exit: Exit::LiftOut,
         },
         Some(EventHandler::new(move |()| {
-            log.with_mut(|log| log.push("hidden"))
+            log.with_mut(|log| log.push("hidden"));
         })),
     );
     rsx! {
@@ -66,7 +66,7 @@ fn ReducedPage() -> Element {
 fn set(harness: &mut Harness, to: bool) {
     harness.within(|| {
         dioxus::core::Runtime::current()
-            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to))
+            .in_scope(ScopeId::APP, || consume_context::<Signal<bool>>().set(to));
     });
 }
 
@@ -85,7 +85,7 @@ fn the_bar_arrives_over_the_overview_flight_and_is_present_at_its_settle() {
     assert_eq!(phase(&harness).as_deref(), Some("entering"));
     let flight = settle(Anim::DropIn, MotionLevel::Standard);
     assert_eq!(flight, ms(384), "350 ms and a frame's slack");
-    harness.advance(flight - ms(20));
+    harness.advance(flight.checked_sub(ms(20)).unwrap());
     assert_eq!(phase(&harness).as_deref(), Some("present"));
 }
 
@@ -98,7 +98,7 @@ fn the_bar_leaves_upward_and_reports_exactly_at_its_settle() {
     harness.advance(ms(20));
     assert_eq!(phase(&harness).as_deref(), Some("leaving"));
     let exit = settle(Anim::LiftOut, MotionLevel::Standard);
-    harness.advance(exit - ms(21));
+    harness.advance(exit.checked_sub(ms(21)).unwrap());
     assert_eq!(harness.text_of(".log").as_deref(), Some(""), "not before");
     assert_eq!(harness.count(".bar"), 1, "still drawn while it lifts out");
     let reported = settle_until(&mut harness, |h| {

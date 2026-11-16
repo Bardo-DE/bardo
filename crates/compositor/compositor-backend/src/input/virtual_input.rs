@@ -37,11 +37,13 @@ pub struct VirtualInput {
 
 impl VirtualInput {
     /// No devices, nothing queued.
+    #[must_use]
     pub fn empty() -> VirtualInput {
         VirtualInput::default()
     }
 
     /// The plugged devices.
+    #[must_use]
     pub fn devices(&self) -> &BTreeMap<DeviceId, VirtualDevice> {
         &self.devices
     }

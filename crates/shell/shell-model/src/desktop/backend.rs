@@ -31,6 +31,7 @@ impl GlobalOffer {
     }
 
     /// Whether the compositor lists `interface`.
+    #[must_use]
     pub fn offers(&self, interface: &str) -> bool {
         self.0.contains_key(interface)
     }
@@ -41,6 +42,7 @@ impl GlobalOffer {
     }
 
     /// The version it lists `interface` at.
+    #[must_use]
     pub fn version(&self, interface: &str) -> Option<u32> {
         self.0.get(interface).copied()
     }

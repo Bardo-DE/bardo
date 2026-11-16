@@ -41,8 +41,8 @@ fn sheet(phase: HelperPhase) -> Element {
             tool: "mpv",
             purpose: "play videos",
             phase,
-            on_install: |_| {},
-            on_dismiss: |_| {},
+            on_install: |()| {},
+            on_dismiss: |()| {},
         }
     }
 }
@@ -84,8 +84,8 @@ const SPECIMENS: &[Specimen] = &[
                     program: "mpv".into(),
                     command: Some("sudo pacman -S mpv".into()),
                 },
-                on_install: |_| {},
-                on_dismiss: |_| {},
+                on_install: |()| {},
+                on_dismiss: |()| {},
                 copy: true,
             }
         }

@@ -9,6 +9,7 @@ use crate::{Grain, Plane};
 pub const GRAIN_TILE: u32 = 128;
 
 /// The grey tile, 0..=1, exactly the prototype's sequence (`v = floor(rnd * 255)`).
+#[must_use]
 pub fn grain_tile() -> Plane {
     let mut seed: u64 = 7;
     let values = (0..GRAIN_TILE * GRAIN_TILE)
@@ -26,13 +27,15 @@ pub fn grain_tile() -> Plane {
 }
 
 fn overlay(b: f32, s: f32) -> f32 {
-    match b < 0.5 {
-        true => 2.0 * b * s,
-        false => 1.0 - 2.0 * (1.0 - b) * (1.0 - s),
+    if b < 0.5 {
+        2.0 * b * s
+    } else {
+        1.0 - 2.0 * (1.0 - b) * (1.0 - s)
     }
 }
 
 /// `img` with the grain tile overlaid at the light-theme opacity for `grain`.
+#[must_use]
 pub fn apply_grain(img: &Rgba32FImage, grain: Grain, tile: &Plane) -> Rgba32FImage {
     let opacity = f32::from(grain.0.min(100)) / 100.0 * 0.20;
     Rgba32FImage::from_fn(img.width(), img.height(), |x, y| {

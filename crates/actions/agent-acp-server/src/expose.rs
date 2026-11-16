@@ -5,6 +5,7 @@
 use action_settings::{AgentSettings, Locator, read};
 
 /// Whether the text of a settings file says `agent.acp.expose` is on; anything but `true` is off.
+#[must_use]
 pub fn exposed(text: &str) -> bool {
     read(text, AgentSettings::default()).value.acp
 }

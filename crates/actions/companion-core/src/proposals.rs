@@ -31,6 +31,7 @@ impl Proposals {
     }
 
     /// Everything that waits.
+    #[must_use]
     pub fn list(&self) -> Vec<RoutineProposal> {
         self.waiting.clone()
     }

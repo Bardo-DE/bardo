@@ -11,6 +11,7 @@ pub struct Point {
 
 impl Point {
     /// A point at `x`, `y`.
+    #[must_use]
     pub const fn new(x: i32, y: i32) -> Self {
         Self { x, y }
     }
@@ -27,6 +28,7 @@ pub struct Size {
 
 impl Size {
     /// A size of `w` by `h`.
+    #[must_use]
     pub const fn new(w: u32, h: u32) -> Self {
         Self { w, h }
     }
@@ -47,16 +49,19 @@ pub struct Rect {
 
 impl Rect {
     /// A rectangle at `x`, `y` of `w` by `h`.
+    #[must_use]
     pub const fn new(x: i32, y: i32, w: u32, h: u32) -> Self {
         Self { x, y, w, h }
     }
 
     /// Its top-left corner.
+    #[must_use]
     pub const fn origin(self) -> Point {
         Point::new(self.x, self.y)
     }
 
     /// Its extent.
+    #[must_use]
     pub const fn size(self) -> Size {
         Size::new(self.w, self.h)
     }

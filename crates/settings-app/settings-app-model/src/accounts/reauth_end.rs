@@ -20,6 +20,7 @@ pub enum ReauthEnd {
 
 impl ReauthEnd {
     /// The end the module's word names, if it is one of the five.
+    #[must_use]
     pub fn parse(word: &str) -> Option<Self> {
         Some(match word {
             "done" => Self::Done,

@@ -15,6 +15,7 @@ pub struct Quota {
 
 impl Quota {
     /// The room left, or `None` when there is no limit. Zero when over it.
+    #[must_use]
     pub fn free(&self) -> Option<Bytes> {
         self.total
             .map(|Bytes(total)| Bytes(total.saturating_sub(self.used.0)))

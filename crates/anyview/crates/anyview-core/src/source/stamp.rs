@@ -41,6 +41,7 @@ pub struct ModTime(pub i64);
 impl ModTime {
     /// The instant `time` names, in nanoseconds since the epoch, clamped to the `i64` span. A
     /// pure conversion: nothing here reads the clock.
+    #[must_use]
     pub fn from_system_time(time: SystemTime) -> ModTime {
         let nanos = |span: Duration| i64::try_from(span.as_nanos()).unwrap_or(i64::MAX);
         match time.duration_since(UNIX_EPOCH) {

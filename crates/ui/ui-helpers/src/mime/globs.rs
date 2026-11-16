@@ -60,6 +60,7 @@ pub struct GlobEntry {
 
 impl GlobEntry {
     /// A pattern claiming `mime` with `weight`.
+    #[must_use]
     pub fn new(weight: Weight, mime: MimeType, pattern: &str, case: Case) -> GlobEntry {
         let pattern = match case {
             Case::Sensitive => pattern.to_owned(),
@@ -76,11 +77,13 @@ impl GlobEntry {
     }
 
     /// The type the pattern names.
+    #[must_use]
     pub fn mime(&self) -> &MimeType {
         &self.mime
     }
 
     /// The pattern as matched (lower case for a case-insensitive entry).
+    #[must_use]
     pub fn pattern(&self) -> &str {
         &self.pattern
     }
@@ -123,6 +126,7 @@ pub struct Globs {
 
 impl Globs {
     /// The patterns of one `globs2` text. Lines that do not parse are skipped.
+    #[must_use]
     pub fn parse(text: &str) -> Globs {
         let mut globs = Globs::default();
         for line in data_lines(text) {
@@ -171,17 +175,20 @@ impl Globs {
     }
 
     /// How many patterns there are.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.entries.len()
     }
 
     /// Whether there is no pattern.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }
 
     /// The type a file name names: literal patterns first, then `*.ext` ones, then the rest; within
     /// the first group that matches, the longest pattern, then the highest weight.
+    #[must_use]
     pub fn guess(&self, name: &str) -> NameGuess {
         let folded = name.to_lowercase();
         for shape in [Shape::Literal, Shape::Suffix, Shape::Other] {

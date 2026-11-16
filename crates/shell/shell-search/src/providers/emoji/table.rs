@@ -4,7 +4,7 @@
 //! `data/emoji-keywords.tsv` (Unicode-3.0, `scripts/gen-emoji-keywords.sh`).
 //!
 //! The data model says nothing about painting: a row carries the emoji as text and the system's
-//! colour font draws it (Noto Color Emoji, COLRv1, here). quire's `AnimatedEmoji` catalogue is
+//! colour font draws it (Noto Color Emoji, `COLRv1`, here). quire's `AnimatedEmoji` catalogue is
 //! a separate, animated subset for the user's picture and is not used here.
 
 use std::collections::HashMap;
@@ -36,6 +36,7 @@ pub struct EmojiEntry {
 
 /// `KEYWORDS_TSV` as a map from emoji to its keywords: `#` lines and blank lines skipped, each
 /// line `<emoji>\t<kw>|<kw>|…`.
+#[must_use]
 pub fn parse_keywords(tsv: &'static str) -> HashMap<&'static str, Vec<&'static str>> {
     tsv.lines()
         .filter(|line| !line.is_empty() && !line.starts_with('#'))

@@ -15,6 +15,7 @@ pub struct Fifo {
 
 impl Fifo {
     /// Binds the global (version 1).
+    #[must_use]
     pub fn bind(client: &TestClient) -> Fifo {
         Fifo {
             manager: client
@@ -24,6 +25,7 @@ impl Fifo {
     }
 
     /// The fifo object of `surface`.
+    #[must_use]
     pub fn for_surface(&self, client: &TestClient, surface: &Surface) -> WpFifoV1 {
         self.manager
             .get_fifo(&surface.surface, &client.qh(), H1Data)

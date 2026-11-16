@@ -375,7 +375,7 @@ async fn picked_bytes_on_an_origin_the_provider_file_does_not_list_are_refused_a
         .paths
         .photos_picked_dir(&rig.account)
         .join(session.id.as_str());
-    let kept = std::fs::read_dir(&dir).map_or(0, |entries| entries.count());
+    let kept = std::fs::read_dir(&dir).map_or(0, std::iter::Iterator::count);
     assert_eq!(kept, 0);
 }
 

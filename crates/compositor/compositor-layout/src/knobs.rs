@@ -40,6 +40,7 @@ impl LayoutKnobs {
     /// keep their margin only while `windows.tile_margins` is on, the spread uses the Mac's
     /// gap and floor, and a floating window keeps a strip one titlebar tall and four wide on
     /// screen.
+    #[must_use]
     pub fn of(settings: &CasementSettings) -> LayoutKnobs {
         let step = i32::from(ChromeToken::TitlebarHeight.length().0);
         LayoutKnobs {

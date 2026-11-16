@@ -89,7 +89,7 @@ impl<C: Callers> BusSheets<C> {
             .sender(owner.clone())
             .and_then(|b| b.interface("org.bardo.AccountsSheet1"))
             .and_then(|b| b.member("Input"))
-            .map(|b| b.build())
+            .map(zbus::match_rule::Builder::build)
             .map_err(|_| SheetFault::Unavailable)?;
         let inputs = zbus::MessageStream::for_match_rule(rule, &self.connection, None)
             .await
@@ -187,8 +187,7 @@ async fn departed(owners: &mut NameOwnerChangedStream) {
     while let Some(signal) = next(owners).await {
         if signal
             .args()
-            .map(|args| args.new_owner().is_none())
-            .unwrap_or(true)
+            .map_or(true, |args| args.new_owner().is_none())
         {
             return;
         }

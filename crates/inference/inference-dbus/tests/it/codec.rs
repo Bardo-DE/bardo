@@ -144,7 +144,7 @@ fn a_malformed_need_is_refused_not_guessed() {
         "context".to_owned(),
         OwnedValue::try_from(Value::from("lots")).expect("value"),
     );
-    assert!(need_from_dbus((kind.clone(), details.clone())).is_err());
+    need_from_dbus((kind.clone(), details.clone())).unwrap_err();
     details.remove("context");
     assert!(need_from_dbus((kind, details)).is_err(), "a missing field");
 }

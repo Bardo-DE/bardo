@@ -23,6 +23,7 @@ pub struct RefusedError {
 
 impl RefusedError {
     /// The error for `refusal`.
+    #[must_use]
     pub fn of(refusal: Refusal) -> Self {
         let name = ErrorName::try_from(refusal_error_name(refusal)).unwrap_or_else(|_| {
             ErrorName::from_static_str_unchecked("org.freedesktop.DBus.Error.Failed")
@@ -85,6 +86,7 @@ impl RefusedError {
     }
 
     /// The error's D-Bus name.
+    #[must_use]
     pub fn error_name(&self) -> &str {
         self.name.as_str()
     }

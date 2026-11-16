@@ -28,6 +28,7 @@ pub struct Availability {
 
 /// The first tier that is there, in order; none when nothing reaches the app (the answer is
 /// `RefusalWire::NoWay`).
+#[must_use]
 pub fn choose_tier(available: &Availability) -> Option<Tier> {
     [
         (Tier::Typed, available.typed),

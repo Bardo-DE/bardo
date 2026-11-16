@@ -49,6 +49,7 @@ pub fn forward_main(name: &str) -> ExitCode {
 /// The forwarder's `main`, reading this process's arguments; `name` is how it calls itself in
 /// messages.
 #[cfg(unix)]
+#[must_use]
 pub fn forward_main(name: &str) -> ExitCode {
     use std::net::TcpListener;
     let Some(args) = parse(std::env::args().skip(1)) else {

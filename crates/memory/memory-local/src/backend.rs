@@ -13,7 +13,7 @@ use memory_service::{Backend, BackendError, Listing, RegistryError};
 use memory_tidy::Consolidator;
 use std::sync::atomic::{AtomicU64, Ordering};
 
-/// An app's own memory on disk: SQLCipher log and index, sealed or plain files, keys derived from
+/// An app's own memory on disk: `SQLCipher` log and index, sealed or plain files, keys derived from
 /// the master key the app provides. The embedder, consolidator and clock are the app's.
 ///
 /// ```

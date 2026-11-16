@@ -80,15 +80,14 @@ pub fn chosen_look(extensions: &Store, appearance: &Store, search: &LookSearch) 
     for problem in resolved.problems().iter().filter(|p| p.id.0 == id) {
         eprintln!("bardo-shell: the look {id}: {}", problem.words());
     }
-    match look::stylesheet_for(&choice, &resolved.registry) {
-        Some(sheet) => ChosenLook {
+    if let Some(sheet) = look::stylesheet_for(&choice, &resolved.registry) {
+        ChosenLook {
             style: LookStyle(sheet.text),
             home: Some(sheet.folder),
-        },
-        None => {
-            eprintln!("bardo-shell: the look {id} is not available; using the standard look");
-            ChosenLook::default()
         }
+    } else {
+        eprintln!("bardo-shell: the look {id} is not available; using the standard look");
+        ChosenLook::default()
     }
 }
 

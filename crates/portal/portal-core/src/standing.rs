@@ -21,6 +21,7 @@ pub enum Screens {
 impl Screens {
     /// The sources this rule stands for among the `live` ones: outputs only, never a window.
     /// Empty when there is no display to share.
+    #[must_use]
     pub fn pick(&self, live: &[CastSource]) -> Vec<CastSource> {
         let outputs: Vec<&CastSource> = live
             .iter()
@@ -54,6 +55,7 @@ pub struct StandingGrant {
 impl StandingGrant {
     /// The grant for `app_id`, or `None` when none may be kept: the app has no identity (an empty
     /// id is shared by every app that has none), or nothing is allowed.
+    #[must_use]
     pub fn issue(
         app_id: &str,
         screens: Option<Screens>,

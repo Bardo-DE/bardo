@@ -40,6 +40,7 @@ fn set_of<T: Copy + Ord>(table: &[(u32, T)], bits: u32) -> Set<T> {
 
 impl WorkspaceFlag {
     /// The states set in a `state` bitfield; unknown bits are skipped.
+    #[must_use]
     pub fn set_from_bits(bits: u32) -> Set<Self> {
         set_of(
             &[(1, Self::Active), (2, Self::Urgent), (4, Self::Hidden)],
@@ -50,6 +51,7 @@ impl WorkspaceFlag {
 
 impl WorkspaceAbility {
     /// The abilities set in a `workspace_capabilities` bitfield; unknown bits are skipped.
+    #[must_use]
     pub fn set_from_bits(bits: u32) -> Set<Self> {
         set_of(
             &[
@@ -65,12 +67,14 @@ impl WorkspaceAbility {
 
 /// Whether a `group_capabilities` bitfield lets the client create a workspace; unknown bits are
 /// skipped.
+#[must_use]
 pub fn can_create_workspace(bits: u32) -> bool {
     bits & 1 != 0
 }
 
 /// The coordinates in a wire `coordinates` array (native-endian `u32`s); a trailing partial
 /// word is skipped.
+#[must_use]
 pub fn coordinates_from_array(bytes: &[u8]) -> Vec<u32> {
     bytes
         .as_chunks::<4>()

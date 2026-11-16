@@ -9,6 +9,7 @@ use std::collections::BTreeMap;
 impl Model {
     /// The column (the Space's place in `output`'s row, from 0) of each window that lives on one
     /// of its Spaces. A window on every Space has none: it stays where it is when the row moves.
+    #[must_use]
     pub fn row_columns(&self, output: &OutputKey) -> BTreeMap<WindowId, u32> {
         let row = self.spaces.row(output);
         self.windows

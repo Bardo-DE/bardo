@@ -588,7 +588,7 @@ mod removed {
         click(&mut harness, ".log");
         settle_until(&mut harness, |harness| harness.focus_of(".app"));
         open_and_escape(&mut harness, |harness| {
-            harness.send(Input::key(ShortcutKey::Char('m')))
+            harness.send(Input::key(ShortcutKey::Char('m')));
         });
         settle_until(&mut harness, |harness| harness.focus_of(".bar .ds-button"));
         harness.send(Input::key(ShortcutKey::Char('j')));

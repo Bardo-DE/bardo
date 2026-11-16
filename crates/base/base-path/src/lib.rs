@@ -46,16 +46,19 @@ impl AbsPath {
     }
 
     /// The path as text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// Whether this is `/`.
+    #[must_use]
     pub fn is_root(&self) -> bool {
         self.0 == "/"
     }
 
     /// Whether `other` is this path or lies below it, by whole components.
+    #[must_use]
     pub fn covers(&self, other: &AbsPath) -> bool {
         self.is_root()
             || other
@@ -65,6 +68,7 @@ impl AbsPath {
     }
 
     /// The directory above, none for `/`.
+    #[must_use]
     pub fn parent(&self) -> Option<AbsPath> {
         let cut = self.0.rfind('/')?;
         (!self.is_root()).then(|| {
@@ -77,6 +81,7 @@ impl AbsPath {
     }
 
     /// The deepest path that covers both.
+    #[must_use]
     pub fn common(&self, other: &AbsPath) -> AbsPath {
         let mut here = Some(self.clone());
         while let Some(path) = here {

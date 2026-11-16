@@ -10,6 +10,7 @@ pub struct IdError {
 
 impl IdError {
     /// The refusal of `text` as a `what` (`"account id"`, `"web url"`).
+    #[must_use]
     pub fn malformed(what: &'static str, text: &str) -> Self {
         Self {
             what,
@@ -18,11 +19,13 @@ impl IdError {
     }
 
     /// The kind of value that was expected.
+    #[must_use]
     pub fn what(&self) -> &'static str {
         self.what
     }
 
     /// The text refused.
+    #[must_use]
     pub fn text(&self) -> &str {
         &self.text
     }

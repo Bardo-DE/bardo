@@ -26,6 +26,7 @@ pub struct Tailnet {
 
 impl Bus {
     /// The handle on tailnet.
+    #[must_use]
     pub fn tailnet(&self) -> Tailnet {
         Tailnet { bus: self.clone() }
     }

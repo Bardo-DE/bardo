@@ -1,4 +1,4 @@
-//! The CalDAV and CardDAV source: today's behaviour behind the seam. Collections come from the
+//! The `CalDAV` and `CardDAV` source: today's behaviour behind the seam. Collections come from the
 //! principal and home sets ([`super::super::discover`]), each collection's feed is account-dav-proto's
 //! sync-collection (or the etag walk) through a [`WebDavReplica`] over the account's relay; its
 //! upserts carry no content, so the engine fetches each item, as before.
@@ -17,7 +17,7 @@ use std::sync::Arc;
 use sync_core::Clock;
 use sync_core::{Anchor, ByteRange, Change, Cursor, RemoteId, Replica, ReplicaError};
 
-/// A WebDAV sync token or etag-walk position: the replica's own anchor text.
+/// A `WebDAV` sync token or etag-walk position: the replica's own anchor text.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DavCursor(pub String);
 
@@ -31,7 +31,7 @@ impl FeedCursor for DavCursor {
     }
 }
 
-/// The collections of one account's CalDAV or CardDAV endpoint.
+/// The collections of one account's `CalDAV` or `CardDAV` endpoint.
 #[derive(Debug)]
 pub struct DavSource<T> {
     accounts: Arc<Grants<T>>,
@@ -44,6 +44,7 @@ pub struct DavSource<T> {
 impl<T> DavSource<T> {
     /// The source at `endpoint`, as `grant` allows, dating tombstones with `clock`; `nonce` is
     /// the run's, which tells its feed anchors from an earlier run's.
+    #[must_use]
     pub fn new(
         accounts: Arc<Grants<T>>,
         grant: GrantId,

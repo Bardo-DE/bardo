@@ -106,6 +106,7 @@ fn need_word(need: &ParamNeed) -> &'static str {
 }
 
 /// One parameter as a row: its flag, type, need and label.
+#[must_use]
 pub fn param_row(param: &ParamDecl) -> Value {
     json!({
         "flag": format!("--{}", param.name.as_str().replace('_', "-")),

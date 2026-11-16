@@ -179,7 +179,7 @@ fn Review() -> Element {
             allow: Some("Mail".to_owned()),
             on_toggle: move |(key, value): (ServiceKey, Check)| {
                 LOG.write().push(format!("toggle {} {value:?}", key.0));
-                let index = if key.0 == "Mail" { 0 } else { 1 };
+                let index = usize::from(key.0 != "Mail");
                 SERVICES.write()[index] = value;
             },
             on_done: move |()| LOG.write().push("done".to_owned()),

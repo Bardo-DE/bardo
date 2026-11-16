@@ -102,7 +102,7 @@ fn plain_http_to_another_computer_builds_no_request() {
     let server = EndpointUrl::parse("http://cloud.example.org").unwrap();
     assert_eq!(start_request(&server).unwrap_err(), Error::Insecure);
     let local = EndpointUrl::parse("http://127.0.0.1:8080").unwrap();
-    assert!(start_request(&local).is_ok());
+    start_request(&local).unwrap();
 }
 
 #[test]

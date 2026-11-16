@@ -69,7 +69,7 @@ mod tests {
             let got = caller_cause(&seal(&cause).expect("seal"));
             assert_eq!(got.is_ok(), allowed, "{cause:?}");
         }
-        assert!(caller_cause("").is_err());
+        caller_cause("").unwrap_err();
     }
 
     #[test]

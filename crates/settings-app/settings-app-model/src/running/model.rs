@@ -19,6 +19,7 @@ pub enum RunStanding {
 
 impl RunStanding {
     /// A stable word for a test or a style to find the state by.
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             RunStanding::Stopped => "stopped",
@@ -31,6 +32,7 @@ impl RunStanding {
     }
 
     /// Why it failed, when the engine said.
+    #[must_use]
     pub fn reason(&self) -> Option<&str> {
         match self {
             RunStanding::Failed(reason) => reason.as_deref(),
@@ -40,6 +42,7 @@ impl RunStanding {
 
     /// What can be done to the model: start one that is not running, stop one that is or is about
     /// to be (which also ends the trying again).
+    #[must_use]
     pub fn action(&self) -> RunAction {
         match self {
             RunStanding::Stopped | RunStanding::Failed(_) => RunAction::Start,

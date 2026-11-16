@@ -1,12 +1,13 @@
 //! A seeded random source and the delays built on it: exponential backoff with jitter. No
 //! system randomness is read, so a test names the seed and gets the same delays.
 
-/// SplitMix64: a small, well-mixed generator. Not for secrets; for spreading wake-ups.
+/// `SplitMix64`: a small, well-mixed generator. Not for secrets; for spreading wake-ups.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Jitter(u64);
 
 impl Jitter {
     /// A source starting from `seed`.
+    #[must_use]
     pub fn seeded(seed: u64) -> Self {
         Self(seed)
     }
@@ -30,6 +31,7 @@ impl Jitter {
 }
 
 /// `base * 2^steps`, never more than `cap` (all seconds, saturating).
+#[must_use]
 pub fn exponential(base: u32, steps: u32, cap: u32) -> u32 {
     let factor = 1u64.checked_shl(steps.min(32)).unwrap_or(u64::MAX);
     let delay = u64::from(base).saturating_mul(factor);
@@ -41,6 +43,7 @@ pub fn exponential(base: u32, steps: u32, cap: u32) -> u32 {
 /// never passes `rescan`. A grant that could not be mirrored for a passing reason (a slow
 /// machine, a full disk for a moment, accountd not yet up) is tried again in seconds, not at
 /// the next ten-minute rescan.
+#[must_use]
 pub fn next_look(rescan: std::time::Duration, failures: u32) -> std::time::Duration {
     if failures == 0 {
         return rescan;

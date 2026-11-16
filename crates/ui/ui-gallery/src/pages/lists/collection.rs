@@ -1,4 +1,4 @@
-//! CollectionView: a dozen tiles of Finder's icon view. A badge (tag dots) sits under some
+//! `CollectionView`: a dozen tiles of Finder's icon view. A badge (tag dots) sits under some
 //! captions, a right click selects the tile and names the one a menu would open for, and a drag
 //! from empty space draws a rubber band that selects the tiles it touches.
 

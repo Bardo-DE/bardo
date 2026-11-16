@@ -149,6 +149,7 @@ pub struct TaskLedger {
 }
 
 /// How a call's end reads in an episode.
+#[must_use]
 pub fn step_outcome(end: &CallEnd) -> StepOutcome {
     use action_core::CallRefusal as R;
     match end {
@@ -165,6 +166,7 @@ pub fn step_outcome(end: &CallEnd) -> StepOutcome {
 
 /// The skeleton of a task: trusted, built without a model. Its label is `Trusted` and private
 /// to the task's Space; text enters it only as the person's own words.
+#[must_use]
 pub fn skeleton_of(ledger: &TaskLedger) -> Skeleton {
     Skeleton {
         label: Label {
@@ -199,6 +201,7 @@ pub fn skeleton_of(ledger: &TaskLedger) -> Skeleton {
 /// The episode a task leaves when it ends: the deterministic skeleton and no narrative (the
 /// idle pass writes a second event with the narrative). `None` when the task id is not a valid
 /// episode id.
+#[must_use]
 pub fn close(
     ledger: &TaskLedger,
     kind: EpisodeKind,

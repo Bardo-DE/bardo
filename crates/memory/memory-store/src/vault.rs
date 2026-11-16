@@ -11,6 +11,7 @@ pub struct VaultPath(String);
 
 impl VaultPath {
     /// `text` as a vault path, or `None` if it is not one.
+    #[must_use]
     pub fn parse(text: &str) -> Option<VaultPath> {
         let ok = !text.is_empty()
             && text.len() <= 512
@@ -22,16 +23,19 @@ impl VaultPath {
     }
 
     /// The path's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The directory part, if the path has one.
+    #[must_use]
     pub fn parent(&self) -> Option<&str> {
         self.0.rsplit_once('/').map(|(dir, _)| dir)
     }
 
     /// Whether the path lies under the directory `dir` (at any depth).
+    #[must_use]
     pub fn is_under(&self, dir: &VaultPath) -> bool {
         self.0
             .strip_prefix(dir.as_str())
@@ -39,31 +43,37 @@ impl VaultPath {
     }
 
     /// `facts/<topic>.md`.
+    #[must_use]
     pub fn topic(topic: &TopicPath) -> VaultPath {
         VaultPath(format!("{FACTS_DIR}/{topic}.md"))
     }
 
     /// `pending/<fact-id>.md`.
+    #[must_use]
     pub fn pending(id: &FactId) -> VaultPath {
         VaultPath(format!("{PENDING_DIR}/{id}.md"))
     }
 
     /// `facts/INDEX.md`.
+    #[must_use]
     pub fn primer() -> VaultPath {
         VaultPath(format!("{FACTS_DIR}/INDEX.md"))
     }
 
     /// The `facts` directory.
+    #[must_use]
     pub fn facts_dir() -> VaultPath {
         VaultPath(FACTS_DIR.to_owned())
     }
 
     /// The `pending` directory.
+    #[must_use]
     pub fn pending_dir() -> VaultPath {
         VaultPath(PENDING_DIR.to_owned())
     }
 
     /// The `procedures` directory.
+    #[must_use]
     pub fn procedures_dir() -> VaultPath {
         VaultPath(PROCEDURES_DIR.to_owned())
     }

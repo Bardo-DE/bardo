@@ -329,10 +329,8 @@ fn the_keyboard_table() {
     for (name, inputs, want_held, want_out) in cases {
         let setup = if inputs.iter().any(|(_, i)| matches!(i, DeckIn::Risen(B))) {
             2
-        } else if inputs.iter().any(|(_, i)| matches!(i, DeckIn::Risen(A))) {
-            1
         } else {
-            0
+            usize::from(inputs.iter().any(|(_, i)| matches!(i, DeckIn::Risen(A))))
         };
         let (deck, out) = run(inputs);
         assert_eq!(holder(&deck), want_held, "{name}: holder");

@@ -3,7 +3,7 @@
 //! of theirs on a loopback port, is not inferd's to start or stop: both are refused in plain
 //! words, and neither is listed.
 
-use super::*;
+use super::{Arc, Cause, EngineHost, EngineState, Engines, LocalModel, ModelRef, Weights};
 use engine_spec::engine;
 use engine_supervisor::EngineFailure;
 use inference_dbus::inference::{RunState, RunningModel};
@@ -144,6 +144,7 @@ impl Engines {
     }
 
     /// Every model inferd runs itself and what its engine is doing, in the order of the book.
+    #[must_use]
     pub fn running(&self) -> Vec<RunningModel> {
         let snapshot = self.supervised.snapshot();
         self.book

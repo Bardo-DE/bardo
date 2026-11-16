@@ -332,18 +332,15 @@ fn every_row_of_the_schema_is_read_by_inferd_at_its_path_and_changes_what_it_doe
             said_default.0, nothing.0,
             "{path}: the schema default is the code's"
         );
-        match other_than_default(&key) {
-            Some(value) => {
-                let changed = effect(&file_with(path, value.clone()));
-                assert_eq!(changed.1, Vec::<String>::new(), "{path} = {value}");
-                assert_ne!(changed.0, nothing.0, "{path} = {value} changes nothing");
-            }
-            None => {
-                // A row with one value (`ai.auto.mode`): inferd still reads it at its path, and
-                // names it when it holds anything else.
-                let refused = effect(&file_with(path, toml::Value::String("bogus".into())));
-                assert_eq!(refused.1, vec![path.to_owned()], "{path}");
-            }
+        if let Some(value) = other_than_default(&key) {
+            let changed = effect(&file_with(path, value.clone()));
+            assert_eq!(changed.1, Vec::<String>::new(), "{path} = {value}");
+            assert_ne!(changed.0, nothing.0, "{path} = {value} changes nothing");
+        } else {
+            // A row with one value (`ai.auto.mode`): inferd still reads it at its path, and
+            // names it when it holds anything else.
+            let refused = effect(&file_with(path, toml::Value::String("bogus".into())));
+            assert_eq!(refused.1, vec![path.to_owned()], "{path}");
         }
     }
 }

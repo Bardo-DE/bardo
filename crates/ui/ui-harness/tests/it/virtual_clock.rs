@@ -263,13 +263,17 @@ fn a_stalled_first_frame_cannot_end_the_entrance_early() {
                 "the wall-clock stall did not move the timer"
             );
             let mut trace = vec![sample(&mut h, ms(1), Paint::Frame)];
-            h.advance(entrance - ms(2));
+            h.advance(entrance.checked_sub(ms(2)).unwrap());
             assert_eq!(
                 h.attr(".ds-side-panel", "data-presence").as_deref(),
                 Some("entering"),
                 "not a millisecond before settle(PanelIn)"
             );
-            trace.push(sample(&mut h, entrance - ms(1), Paint::Frame));
+            trace.push(sample(
+                &mut h,
+                entrance.checked_sub(ms(1)).unwrap(),
+                Paint::Frame,
+            ));
             h.advance(ms(1));
             assert_eq!(
                 h.attr(".ds-side-panel", "data-presence").as_deref(),
@@ -278,7 +282,7 @@ fn a_stalled_first_frame_cannot_end_the_entrance_early() {
             );
             trace.push(sample(&mut h, entrance, Paint::Frame));
             let rested = settle_until(&mut h, |h| !h.is_animating());
-            assert!(rested >= h.now() - ms(1));
+            assert!(rested >= h.now().checked_sub(ms(1)).unwrap());
             let rest = h.rect(".ds-side-panel").expect("the panel");
             assert!(h.hits(inside(rest), ".ds-side-panel"), "hit where it rests");
             trace.push(sample(&mut h, entrance, Paint::Frame));

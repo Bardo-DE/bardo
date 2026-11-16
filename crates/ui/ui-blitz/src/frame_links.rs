@@ -6,7 +6,7 @@
 //!
 //! A click is delivered through a channel, not called from the provider: Blitz calls it while
 //! the document is held, and the app's handler must be free to touch the document (focus,
-//! measure) without a "RefCell already borrowed". The link's text and title
+//! measure) without a "`RefCell` already borrowed". The link's text and title
 //! are read as it is delivered, from the frame's document, then free: the provider hears only the
 //! URL.
 
@@ -100,16 +100,19 @@ impl FrameLinks {
     }
 
     /// The handler for a click on an image, if the app set one.
+    #[must_use]
     pub fn images(&self) -> Option<FrameHandler<FrameImageClick>> {
         self.image.clone()
     }
 
     /// The handler for a context menu asked over a link, if the app set one.
+    #[must_use]
     pub fn menu(&self) -> Option<FrameHandler<FrameLinkMenu>> {
         self.menu.clone()
     }
 
     /// The handler for the pointer crossing a link, if the app set one.
+    #[must_use]
     pub fn hover(&self) -> Option<FrameHandler<FrameLinkHover>> {
         self.hover.clone()
     }
@@ -204,6 +207,7 @@ impl LinkInbox {
 
 /// The frame documents' navigation provider for `links`, and the inbox its clicks arrive in,
 /// tagged from `book`.
+#[must_use]
 pub fn frame_links(
     links: &FrameLinks,
     book: FrameBook,

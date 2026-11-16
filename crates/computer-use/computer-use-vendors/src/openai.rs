@@ -1,7 +1,7 @@
-//! OpenAI's computer tool (`{"type": "computer"}`): a `computer_call` item holds an ordered
+//! `OpenAI`'s computer tool (`{"type": "computer"}`): a `computer_call` item holds an ordered
 //! `actions` array, each action an object with a `type`.
 //!
-//! Written from OpenAI's computer-use guide (2026-10-03). A call is a [`ToolCall`] named
+//! Written from `OpenAI`'s computer-use guide (2026-10-03). A call is a [`ToolCall`] named
 //! `computer` (or `computer_call`) whose id is the `call_id` and whose input is
 //! `{"actions": [...]}` (the older single `{"action": {...}}` reads too). Coordinates are pixels
 //! of the screenshot (`ImageSpace`). The result of the whole call is one `computer_call_output`.

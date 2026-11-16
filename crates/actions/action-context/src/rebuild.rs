@@ -50,6 +50,7 @@ fn needs_repair(plan: &ResumePlan) -> bool {
 }
 
 /// The number in an id of the form `<letter>-<number>`.
+#[must_use]
 pub fn number_of(id: &str) -> u64 {
     id.rsplit('-')
         .next()
@@ -127,6 +128,7 @@ fn queued(plan: &ResumePlan, lines: &[StepLine]) -> Vec<SessionEntry> {
 }
 
 /// The session `plan` describes, as of `now`.
+#[must_use]
 pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
     let opening = &plan.opening;
     let agent = opening.agent.clone().unwrap_or(AgentRef::Companion);

@@ -25,6 +25,7 @@ pub enum BannerOutput {
 
 impl BannerOutput {
     /// Whether `output`'s banner surface is the one that shows.
+    #[must_use]
     pub fn shows_on(self, output: OutputId) -> bool {
         self == BannerOutput::On(output)
     }
@@ -68,6 +69,7 @@ pub struct BannerLink {
 
 impl BannerLink {
     /// Nowhere yet.
+    #[must_use]
     pub fn new() -> BannerLink {
         BannerLink::default()
     }
@@ -78,11 +80,13 @@ impl BannerLink {
     }
 
     /// Where they show now.
+    #[must_use]
     pub fn now(&self) -> BannerOutput {
         self.output.now()
     }
 
     /// A receiver for a surface to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<BannerOutput> {
         self.output.subscribe()
     }
@@ -125,6 +129,7 @@ impl BannerLink {
     }
 
     /// A receiver for the keyboard's asks.
+    #[must_use]
     pub fn subscribe_keys(&self) -> watch::Receiver<KeyEvent> {
         self.keys.subscribe()
     }

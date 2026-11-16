@@ -1,4 +1,5 @@
 //! The pure mapping from what policy ruled to what the router does next (call lifecycle §4.1).
+//!
 //! Cedar decides everything: the halt, the budgets, an exact repeat, a limit and a recorded
 //! denial reach it as facts (`facts.rs`) and come back as a ruling. This file only words a
 //! refusal and picks the next step; it never overrides a ruling.
@@ -68,6 +69,7 @@ fn refusal(ids: &[PolicyId], facts: &RunFacts) -> CallRefusal {
 /// `Deny` refuses; `Ask` confirms; `AllowJudged` goes to review (unless the reviews budget is
 /// spent); `AllowFinal` runs. The ledger is not charged here; the router charges when it
 /// dispatches.
+#[must_use]
 pub fn gate(i: &GateInputs<'_>) -> Pending {
     match (i.ruling, i.charged) {
         (Ruling::Deny(ids), _) => Pending::Refuse(refusal(ids, i.facts)),

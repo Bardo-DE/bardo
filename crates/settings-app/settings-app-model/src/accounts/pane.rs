@@ -30,6 +30,7 @@ impl Account {
     }
 
     /// Whether this is a language-model runtime on this computer.
+    #[must_use]
     pub fn is_local_runtime(&self) -> bool {
         self.place == Place::ThisComputer && self.services.iter().any(|s| s.kind == LLM)
     }
@@ -107,6 +108,7 @@ fn account_of<'a>(
 
 impl AccountsPane {
     /// The pane the rows of one module make.
+    #[must_use]
     pub fn of(module: ModuleId, described: &Described) -> AccountsPane {
         AccountsPane::of_modules([(module, described)])
     }
@@ -257,11 +259,13 @@ impl AccountsPane {
     }
 
     /// The account with `key`.
+    #[must_use]
     pub fn account(&self, key: &AccountKey) -> Option<&Account> {
         self.accounts.iter().find(|account| &account.key == key)
     }
 
     /// The row `row`: the account that holds it, for the pane to say what it is changing.
+    #[must_use]
     pub fn owner(&self, row: &ModuleRow) -> Option<&Account> {
         self.accounts
             .iter()
@@ -269,6 +273,7 @@ impl AccountsPane {
     }
 
     /// Whether `module` answered, so its part of the pane is there.
+    #[must_use]
     pub fn has(&self, module: ModuleId) -> bool {
         self.modules.contains(&module)
     }

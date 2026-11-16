@@ -50,11 +50,13 @@ impl<T: Clone> Outbox<T> {
     }
 
     /// The latest send.
+    #[must_use]
     pub fn latest(&self) -> Option<Sent<T>> {
         self.0.now()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Option<Sent<T>>> {
         self.0.subscribe()
     }

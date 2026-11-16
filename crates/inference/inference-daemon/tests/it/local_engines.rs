@@ -51,7 +51,7 @@ fn dirs(home: &Path) -> Dirs {
 async fn asked(role: Role, file: &str, fixed: Vec<PathBuf>) -> zbus::Result<Vec<LocalEngine>> {
     let bus = PrivateBus::start();
     let config = InferdConfig::from_toml(file).expect("config");
-    let programs = ProgramSearch::in_paths(fixed, |path| path.exists());
+    let programs = ProgramSearch::in_paths(fixed, std::path::Path::exists);
     let found = config.engines_with(&dirs(bus.scratch()), &programs);
     let peers = Arc::new(TablePeers::new());
     let engines = Engines::new(

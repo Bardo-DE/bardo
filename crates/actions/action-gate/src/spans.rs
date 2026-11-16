@@ -1,4 +1,4 @@
-//! The router's trace spans, named by the OpenTelemetry GenAI conventions (`model-genai-names`): one
+//! The router's trace spans, named by the OpenTelemetry `GenAI` conventions (`model-genai-names`): one
 //! `execute_tool` span for each action call and one `invoke_agent` span for each model turn.
 //!
 //! A span carries ids, action names, the effect class, the ruling, token counts and the reported charge, and

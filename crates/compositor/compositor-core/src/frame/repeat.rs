@@ -49,6 +49,7 @@ pub struct RepeatGate<K: Ord> {
 
 impl<K: Ord> RepeatGate<K> {
     /// A gate that lets one report per key through every `every`.
+    #[must_use]
     pub fn new(every: Duration) -> RepeatGate<K> {
         RepeatGate {
             every,

@@ -7,6 +7,7 @@ use std::path::PathBuf;
 pub const SEAT_FILE: &str = "/run/systemd/seats/seat0";
 
 /// The `ACTIVE_UID=` line of a `seat0` state file; `None` when there is no active session.
+#[must_use]
 pub fn active_uid(text: &str) -> Option<u32> {
     text.lines()
         .find_map(|line| line.strip_prefix("ACTIVE_UID="))
@@ -19,6 +20,7 @@ pub struct SeatFile(pub PathBuf);
 
 impl SeatFile {
     /// The active uid now; a missing or unreadable file means nobody has the seat.
+    #[must_use]
     pub fn active_uid(&self) -> Option<u32> {
         std::fs::read_to_string(&self.0)
             .ok()

@@ -1,4 +1,4 @@
-//! The computer's disks from UDisks2 on the system bus: which are attached, opening one, ejecting
+//! The computer's disks from `UDisks2` on the system bus: which are attached, opening one, ejecting
 //! one, and a stream that says when the set changes.
 //!
 //! Nothing here reads the environment. The caller passes the connection (the system bus, or a

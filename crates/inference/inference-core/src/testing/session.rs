@@ -52,11 +52,13 @@ impl FakeInferSession {
     }
 
     /// Every frame the client sent, in order.
+    #[must_use]
     pub fn sent(&self) -> &[ClientFrame] {
         &self.sent
     }
 
     /// How many descriptors rode on each frame sent with `send_attached`, in order.
+    #[must_use]
     pub fn attachment_counts(&self) -> &[usize] {
         &self.attachments
     }

@@ -22,7 +22,7 @@ pub trait Tailnet {
     /// The other computers on the person's network, one row per computer and none for this one:
     /// the row's first part is the computer's Tailscale node id (kept across renames and address
     /// changes), then a vardict of `node` (`s`, the same id), `name` (`s`, what people call it),
-    /// `dns` (`s`, its MagicDNS name without the dot at the end: what to connect to),
+    /// `dns` (`s`, its `MagicDNS` name without the dot at the end: what to connect to),
     /// `addresses` (`as`, its Tailscale addresses), `os` (`s`), `online` (`b`), `last_seen`
     /// (`x`, Unix seconds; absent while it is online and when unknown), `ssh` (`b`, Tailscale's
     /// SSH is on) and `ssh_host_keys` (`as`), and `owner` (`s`: `mine`, `shared` or `tagged`).

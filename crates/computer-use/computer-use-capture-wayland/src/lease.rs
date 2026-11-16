@@ -133,7 +133,7 @@ impl Dispatch<BardoAgentLeaseV1, ()> for CapState {
         state: &mut Self,
         lease: &BardoAgentLeaseV1,
         event: bardo_agent_lease_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

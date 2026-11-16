@@ -180,6 +180,6 @@ mod tests {
         assert_eq!(stroke.key, keyboard_types::Key::Tab);
         assert_eq!(stroke.mods, keyboard_types::Modifiers::SHIFT);
         assert_eq!(action, layer_shell_host::inject::KeyAction::Press);
-        assert!(key("Tabb", KeyAction::Tap).is_err());
+        key("Tabb", KeyAction::Tap).unwrap_err();
     }
 }

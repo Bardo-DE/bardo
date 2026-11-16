@@ -25,6 +25,7 @@ const SECOND: &str = "You are an independent second opinion";
 const REVIEWING: &str = "You review one action";
 
 /// Who asked, from the request.
+#[must_use]
 pub fn asker(exchange: &ModelExchange) -> Asker {
     let text = exchange.sent_text();
     match () {

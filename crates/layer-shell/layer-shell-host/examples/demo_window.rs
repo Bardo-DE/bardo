@@ -186,7 +186,7 @@ fn run() -> Result<(), String> {
             }
         }
         HostEvent::App(Command::Quit) | HostEvent::SurfaceClosed { .. } | HostEvent::QuitAsked => {
-            ctx.exit()
+            ctx.exit();
         }
         HostEvent::App(Command::Stats) => {
             if let Some(stats) = id.and_then(|id| ctx.take_stats(id)) {

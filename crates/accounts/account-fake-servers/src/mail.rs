@@ -95,6 +95,7 @@ pub struct Accounts {
 
 impl Accounts {
     /// One account with a password and no bearer tokens.
+    #[must_use]
     pub fn password(user: &str, password: &str) -> Self {
         Self {
             user: user.to_owned(),
@@ -104,12 +105,14 @@ impl Accounts {
     }
 
     /// Also accepts this bearer token for `XOAUTH2`.
+    #[must_use]
     pub fn with_bearer(mut self, token: &str) -> Self {
         self.bearer.push(token.to_owned());
         self
     }
 
     /// Whether `user` with `secret` is let in.
+    #[must_use]
     pub fn admits(&self, user: &str, secret: &Secret) -> bool {
         user == self.user
             && match secret {
@@ -120,6 +123,7 @@ impl Accounts {
 }
 
 /// The base64 `PLAIN` initial response, read through `account_core::token`.
+#[must_use]
 pub fn decode_plain(b64: &str) -> Option<(String, Secret)> {
     let raw = String::from_utf8(STANDARD.decode(b64.trim()).ok()?).ok()?;
     let (user, password) = account_core::token::parse_plain(&raw)?;
@@ -127,6 +131,7 @@ pub fn decode_plain(b64: &str) -> Option<(String, Secret)> {
 }
 
 /// The base64 `XOAUTH2` initial response, read through `account_core::token`.
+#[must_use]
 pub fn decode_xoauth2(b64: &str) -> Option<(String, Secret)> {
     let raw = String::from_utf8(STANDARD.decode(b64.trim()).ok()?).ok()?;
     let (user, bearer) = account_core::token::parse_xoauth2(&raw)?;
@@ -134,16 +139,19 @@ pub fn decode_xoauth2(b64: &str) -> Option<(String, Secret)> {
 }
 
 /// Base64 of text, for the `334` prompts and for tests building a `PLAIN` response.
+#[must_use]
 pub fn b64(text: &str) -> String {
     STANDARD.encode(text)
 }
 
 /// The decoded text of a base64 line (an `AUTH LOGIN` answer).
+#[must_use]
 pub fn unb64(text: &str) -> Option<String> {
     String::from_utf8(STANDARD.decode(text.trim()).ok()?).ok()
 }
 
 /// Whether credentials may be sent now: never in the clear when the server wants STARTTLS first.
+#[must_use]
 pub fn secure_enough(tls: Tls, active: bool) -> bool {
     !(tls == Tls::StartTls && !active)
 }
@@ -192,10 +200,10 @@ impl<S: AsyncRead + AsyncWrite + Unpin> Lines<S> {
     /// The stream back, for a TLS upgrade; `None` when the client already sent bytes past the
     /// STARTTLS line (a command injection the upgrade must not swallow).
     pub fn into_stream(self) -> Option<S> {
-        match self.inner.buffer().is_empty() {
-            true => Some(self.inner.into_inner()),
-            false => None,
-        }
+        self.inner
+            .buffer()
+            .is_empty()
+            .then(|| self.inner.into_inner())
     }
 }
 
@@ -208,6 +216,7 @@ pub struct MailHandle {
 
 impl MailHandle {
     /// Where the server listens.
+    #[must_use]
     pub fn address(&self) -> &account_fake::FakeAddress {
         self.address
             .as_ref()
@@ -215,11 +224,13 @@ impl MailHandle {
     }
 
     /// Everything received, oldest first.
+    #[must_use]
     pub fn events(&self) -> Vec<MailEvent> {
         self.events.all()
     }
 
     /// Every login attempt, accepted or not.
+    #[must_use]
     pub fn attempts(&self) -> Vec<Attempt> {
         self.events
             .all()
@@ -232,12 +243,14 @@ impl MailHandle {
     }
 
     /// Every message submitted (SMTP).
+    #[must_use]
     pub fn submissions(&self) -> Vec<MailEvent> {
         self.events
             .matching(|e| matches!(e, MailEvent::Submitted { .. }))
     }
 
     /// The peers that connected, in order.
+    #[must_use]
     pub fn peers(&self) -> Vec<Peer> {
         self.events
             .all()

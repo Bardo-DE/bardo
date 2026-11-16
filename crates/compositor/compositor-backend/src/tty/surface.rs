@@ -15,6 +15,7 @@ pub struct DirectCandidate {
 
 impl DirectCandidate {
     /// A candidate.
+    #[must_use]
     pub fn new(window: WindowId) -> DirectCandidate {
         DirectCandidate { window }
     }
@@ -64,6 +65,7 @@ pub struct Presented {
 
 impl Presented {
     /// A presented frame.
+    #[must_use]
     pub fn new(seq: VblankSeq, at: Mono) -> Presented {
         Presented { seq, at }
     }

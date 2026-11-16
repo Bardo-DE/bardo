@@ -22,6 +22,7 @@ pub struct ProvidedKeys {
 
 impl ProvidedKeys {
     /// A store whose Space keys derive from `master`.
+    #[must_use]
     pub fn new(master: SpaceKey) -> Self {
         Self {
             master,

@@ -18,6 +18,7 @@ pub enum Contrast {
 impl Contrast {
     /// The `data-contrast` value a root carries: only increased contrast writes one, so a
     /// root at ordinary contrast is marked as it always was.
+    #[must_use]
     pub const fn attribute(self) -> Option<&'static str> {
         match self {
             Contrast::Normal => None,

@@ -19,6 +19,7 @@ const ROW_ICON: LogicalPx = LogicalPx(48);
 
 /// The icon file `item`'s tile draws; `None` shows the row's glyph (its own, else its
 /// provider's).
+#[must_use]
 pub fn row_art(item: &Item) -> Option<IconFile> {
     match &item.icon {
         IconRef::File(path) => IconFile::of(path),
@@ -27,6 +28,7 @@ pub fn row_art(item: &Item) -> Option<IconFile> {
 }
 
 /// `item`'s tile for `art` in `cx`.
+#[must_use]
 pub fn row_tile(item: &Item, art: Option<IconFile>, cx: &IconContext) -> RowLeading {
     let fallback = || RowLeading::Icon(glyph(item));
     let px = pick(ROW_ICON, cx.scale);

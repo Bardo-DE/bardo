@@ -16,7 +16,7 @@ use std::time::Duration;
 use tokio::task::JoinHandle;
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
-    m.lock().unwrap_or_else(|e| e.into_inner())
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// Listens for what porter says to this launcher.

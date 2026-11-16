@@ -128,9 +128,10 @@ impl Dns for Records {
             .lock()
             .expect("asked")
             .push(format!("SRV {name}"));
-        match self.down {
-            true => Err(DnsFault::Unreachable),
-            false => self.srv.get(name).cloned().ok_or(DnsFault::NoRecords),
+        if self.down {
+            Err(DnsFault::Unreachable)
+        } else {
+            self.srv.get(name).cloned().ok_or(DnsFault::NoRecords)
         }
     }
 
@@ -139,13 +140,13 @@ impl Dns for Records {
             .lock()
             .expect("asked")
             .push(format!("MX {domain}"));
-        match self.down {
-            true => Err(DnsFault::Unreachable),
-            false => self
-                .mx
+        if self.down {
+            Err(DnsFault::Unreachable)
+        } else {
+            self.mx
                 .get(domain.as_str())
                 .cloned()
-                .ok_or(DnsFault::NoRecords),
+                .ok_or(DnsFault::NoRecords)
         }
     }
 }

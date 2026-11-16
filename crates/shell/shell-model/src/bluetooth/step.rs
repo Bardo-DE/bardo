@@ -6,6 +6,7 @@ use crate::units::Presence;
 
 /// `bluetooth` after `event`. A change for an address that is not listed is dropped: the
 /// `Device` event that introduces a device always comes first.
+#[must_use]
 pub fn step(bluetooth: Bluetooth, event: BluetoothEvent) -> Bluetooth {
     let connecting = connect_step(&bluetooth, &event);
     let bluetooth = Bluetooth {

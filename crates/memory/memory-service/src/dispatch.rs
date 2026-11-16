@@ -22,10 +22,7 @@ fn count(n: usize) -> Count {
 /// A search over the Spaces that found nothing: `Busy` when a Space was out on another request
 /// (it may hold the answer, so the caller should retry), else the not-found refusal.
 fn not_found_or_busy(busy: bool, not_found: Refusal) -> Refusal {
-    match busy {
-        true => Refusal::Busy,
-        false => not_found,
-    }
+    if busy { Refusal::Busy } else { not_found }
 }
 
 /// One Space's share of an export, collected while the Space is out.

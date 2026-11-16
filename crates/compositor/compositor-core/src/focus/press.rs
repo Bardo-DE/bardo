@@ -64,6 +64,7 @@ pub enum PressRoute {
 /// them is a first-mouse region (03 §1.2). A press on a window the view does not hold is
 /// delivered untouched. A press on a layer surface never reaches this function (it names a
 /// window): layer surfaces always deliver and never take the keyboard.
+#[must_use]
 pub fn route_press(press: &Press, focus: &Focus, view: &FocusView) -> PressRoute {
     if view.window(press.window).is_none() {
         return PressRoute::Deliver;

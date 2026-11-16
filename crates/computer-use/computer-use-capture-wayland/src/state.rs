@@ -230,7 +230,7 @@ impl Dispatch<WlRegistry, ()> for CapState {
         state: &mut Self,
         registry: &WlRegistry,
         event: wl_registry::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         qh: &QueueHandle<Self>,
     ) {
@@ -246,7 +246,7 @@ impl Dispatch<WlRegistry, ()> for CapState {
                 state.sources = Some(registry.bind(name, 1, qh, ()));
             }
             "ext_image_copy_capture_manager_v1" => {
-                state.copy = Some(registry.bind(name, 1, qh, ()))
+                state.copy = Some(registry.bind(name, 1, qh, ()));
             }
             "bardo_agent_manager_v1" => state.agent = Some(registry.bind(name, 1, qh, ())),
             "wl_shm" => state.shm = Some(registry.bind(name, 1, qh, ())),
@@ -276,7 +276,7 @@ impl Dispatch<ExtForeignToplevelListV1, ()> for CapState {
         state: &mut Self,
         _: &ExtForeignToplevelListV1,
         event: ext_foreign_toplevel_list_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -302,7 +302,7 @@ impl Dispatch<ExtForeignToplevelHandleV1, ()> for CapState {
         state: &mut Self,
         handle: &ExtForeignToplevelHandleV1,
         event: ext_foreign_toplevel_handle_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -346,7 +346,7 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for CapState {
         state: &mut Self,
         session: &ExtImageCopyCaptureSessionV1,
         event: ext_image_copy_capture_session_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

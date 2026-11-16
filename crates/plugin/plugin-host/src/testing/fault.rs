@@ -47,6 +47,7 @@ impl Fault {
     };
 
     /// The name the command line spells the fault with.
+    #[must_use]
     pub const fn name(self) -> &'static str {
         // The table lists every variant in order, so the discriminant is the row.
         NAMED[self as usize].1
@@ -54,6 +55,7 @@ impl Fault {
 
     /// The fault called `name`, or `None` for a name that is not one of these (a host's own fault,
     /// for instance).
+    #[must_use]
     pub fn from_name(name: &str) -> Option<Fault> {
         NAMED
             .into_iter()

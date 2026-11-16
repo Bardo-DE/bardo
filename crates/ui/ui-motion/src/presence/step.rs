@@ -10,6 +10,7 @@ use ui_core::time::stamp::Stamp;
 
 /// The input a render's `shown` makes, from `last` (`None` before the first render). A surface
 /// mounted shown plays its entrance; one mounted hidden stays hidden and says nothing.
+#[must_use]
 pub fn change(last: Option<bool>, now: bool) -> Option<PresenceIn> {
     match (last, now) {
         (None | Some(false), true) => Some(PresenceIn::Show),
@@ -33,7 +34,7 @@ impl Machine for Life {
         input: PresenceIn,
         at: Stamp,
         params: &PresenceParams,
-        _: &(),
+        (): &(),
     ) -> (Life, Vec<PresenceOut>) {
         use Presence as P;
         use PresenceIn as I;

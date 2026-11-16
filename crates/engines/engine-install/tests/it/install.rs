@@ -66,7 +66,7 @@ async fn an_archive_installs_into_the_persons_directory_and_is_found_and_verifie
     let again = installer
         .install(Scope::JustMe, row, &Meter::new(1), &CancelToken::new())
         .await;
-    assert!(again.is_ok());
+    again.unwrap();
     assert_eq!(host.hits().len(), asked);
 }
 
@@ -91,12 +91,7 @@ async fn files_that_are_not_the_pinned_tree_are_not_installed_and_leave_nothing(
     assert_eq!(error, InstallError::SealMismatch);
     assert_eq!(error.failure(), Failure::Corrupt);
     let leftovers = roots.engine_dir(Scope::JustMe, EngineKind::LlamaServer);
-    assert_eq!(
-        std::fs::read_dir(leftovers)
-            .map(Iterator::count)
-            .unwrap_or(0),
-        0
-    );
+    assert_eq!(std::fs::read_dir(leftovers).map_or(0, Iterator::count), 0);
 }
 
 #[tokio::test]

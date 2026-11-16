@@ -119,6 +119,7 @@ impl std::fmt::Debug for EngineInstalls {
 
 impl EngineInstalls {
     /// Installs made of `parts`.
+    #[must_use]
     pub fn new(parts: Parts) -> Self {
         let finder = Finder::new(parts.roots.clone(), parts.held).with_manifest(parts.manifest);
         Self {
@@ -136,6 +137,7 @@ impl EngineInstalls {
     }
 
     /// Woken each time an install starts, ends or fails.
+    #[must_use]
     pub fn news(&self) -> Arc<Notify> {
         Arc::clone(&self.inner.news)
     }
@@ -149,6 +151,7 @@ impl EngineInstalls {
 
     /// The engine's program, if it is here now: a package's, an install of ours, or (Strata) the
     /// folder the person pointed at.
+    #[must_use]
     pub fn find(&self, engine: EngineKind) -> Option<Found> {
         let in_folder = engine_spec::engine(engine)
             .pointed()
@@ -158,6 +161,7 @@ impl EngineInstalls {
     }
 
     /// Where `engine` stands now.
+    #[must_use]
     pub fn standing(&self, engine: EngineKind) -> Standing {
         let job = self.jobs().get(&engine).cloned();
         match (job, self.find(engine)) {
@@ -171,6 +175,7 @@ impl EngineInstalls {
     /// What could be installed for `engine` on this computer, or `None` when nothing can: the
     /// ways (for everyone needs the helper and either a package or a pinned build; for the
     /// person needs a pinned build) and the size of the download when a build is the way.
+    #[must_use]
     pub fn choice(&self, engine: EngineKind) -> Option<InstallChoice> {
         let offer = self.inner.manifest.offer(engine, &self.inner.host);
         let package = offer
@@ -213,18 +218,15 @@ impl EngineInstalls {
             if matches!(jobs.get(&engine), Some(Job::Running(_))) {
                 return Err(StartError::Busy);
             }
-            jobs.insert(engine, Job::Running(running.clone()));
-        }
+            jobs.insert(engine, Job::Running(running.clone()))
+        };
         self.inner.news.notify_waiters();
         let this = self.clone();
-        match (scope, offer.row) {
-            (Scope::JustMe, Some(row)) => {
-                tokio::spawn(async move { this.person(engine, row, running).await });
-            }
-            _ => {
-                let backend = offer.row.map_or(Backend::Cpu, |row| row.backend);
-                tokio::spawn(async move { this.everyone(engine, backend, running).await });
-            }
+        if let (Scope::JustMe, Some(row)) = (scope, offer.row) {
+            tokio::spawn(async move { this.person(engine, row, running).await });
+        } else {
+            let backend = offer.row.map_or(Backend::Cpu, |row| row.backend);
+            tokio::spawn(async move { this.everyone(engine, backend, running).await });
         }
         Ok(())
     }

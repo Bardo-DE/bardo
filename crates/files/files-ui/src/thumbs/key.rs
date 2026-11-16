@@ -27,6 +27,7 @@ pub struct ThumbKey {
 impl ThumbKey {
     /// The key of `entry`, which stands for `item`; `None` for anything that is not a file (a
     /// folder keeps its icon, and so do the things that are neither).
+    #[must_use]
     pub fn of(item: ItemRef, entry: &Entry) -> Option<ThumbKey> {
         let len = match &entry.kind {
             EntryKind::File(size) | EntryKind::Link(LinkTo::File(size)) => size.0,

@@ -5,7 +5,7 @@ use crate::time::{Date, Instant};
 /// One calendar of a store.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CalendarRef {
-    /// What the store knows it by, and what [`crate::CalendarStore`]'s methods take: a CalDAV
+    /// What the store knows it by, and what [`crate::CalendarStore`]'s methods take: a `CalDAV`
     /// collection's URL, a Graph, Google or JMAP calendar id, an EDS source's UID.
     pub id: String,
     /// The name a person gave it.
@@ -19,7 +19,7 @@ pub struct CalendarRef {
 /// An event to put into a store.
 ///
 /// `ics` is the whole iCalendar object (a `VCALENDAR` with the event and any `VTIMEZONE` it
-/// names), as the caller wrote or received it: what CalDAV and Evolution Data Server store. The
+/// names), as the caller wrote or received it: what `CalDAV` and Evolution Data Server store. The
 /// other fields are the same event read by the caller's own parser, for the stores that take
 /// JSON (Graph, Google, JMAP), which keep only these.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -54,7 +54,7 @@ pub struct Stored {
     pub calendar: String,
     /// Its `UID`.
     pub uid: String,
-    /// What the store knows it by: a CalDAV resource's URL, a Graph, Google or JMAP event id, the
+    /// What the store knows it by: a `CalDAV` resource's URL, a Graph, Google or JMAP event id, the
     /// UID again for EDS.
     pub id: String,
     /// Its version as the store last said it (an etag), when the store says one.

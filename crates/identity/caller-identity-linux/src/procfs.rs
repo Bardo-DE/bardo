@@ -48,6 +48,7 @@ pub trait ProcFs: Send + Sync {
 
 /// The trust of a file owned by `uid` with permission bits `mode`: root-only when root owns it
 /// and neither group nor others can write.
+#[must_use]
 pub fn trust_of_mode(uid: u32, mode: u32) -> FileTrust {
     const GROUP_WRITE: u32 = 0o020;
     const OTHER_WRITE: u32 = 0o002;
@@ -87,12 +88,14 @@ pub struct RealProc {
 
 impl RealProc {
     /// The system's `/proc`: the one fixed path of the crate, named here and nowhere else.
+    #[must_use]
     pub fn system() -> RealProc {
         RealProc::at(PathBuf::from("/proc"))
     }
 
     /// A `/proc` mounted at `root`; the namespace is read from its `self/uid_map` and
     /// `sys/kernel/overflowuid`.
+    #[must_use]
     pub fn at(root: PathBuf) -> RealProc {
         let read = |path: PathBuf| {
             capped(&path, 4096)
@@ -108,6 +111,7 @@ impl RealProc {
     }
 
     /// How this process's namespace shows file owners.
+    #[must_use]
     pub fn owners(&self) -> OwnerView {
         self.owners
     }

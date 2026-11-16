@@ -37,6 +37,7 @@ use crate::outputs::Outputs;
 const BLOCKING_THREADS: usize = 48;
 
 /// Run the daemon until `quit` or a fatal host error, on the seams `args` make.
+#[must_use]
 pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
     super::hardening::forbid_core_files();
     let (agent, door) = match take_door() {
@@ -114,14 +115,15 @@ pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
             });
         }
     }
-    let seat = match handed_by_compositor {
-        true => super::compositor::ShellSeat::linked(
+    let seat = if handed_by_compositor {
+        super::compositor::ShellSeat::linked(
             runtime.handle().clone(),
             host_handle.clone(),
             services.dock_rects.subscribe(),
             services.desktop.clone(),
-        ),
-        false => super::compositor::ShellSeat::absent(services.desktop.clone()),
+        )
+    } else {
+        super::compositor::ShellSeat::absent(services.desktop.clone())
     };
     // It accepts connections until it is stopped after the host ends, or the process exits.
     let ipc = server::spawn(door.clone(), host_handle.clone());

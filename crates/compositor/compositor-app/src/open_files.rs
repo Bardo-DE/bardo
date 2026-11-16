@@ -13,6 +13,7 @@ pub const WANTED_SOFT_LIMIT: u64 = 8192;
 
 /// What the limit should become, or `None` when it already is enough (or has no limit): the
 /// soft limit raised to `wanted`, or to the hard limit when that is lower.
+#[must_use]
 pub fn raised(now: Rlimit, wanted: u64) -> Option<Rlimit> {
     let target = now.maximum.map_or(wanted, |hard| hard.min(wanted));
     match now.current {

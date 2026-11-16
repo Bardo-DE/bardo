@@ -23,6 +23,7 @@ pub struct Rgba8 {
 
 impl Rgba8 {
     /// smithay's float colour, each channel exactly `n / 255`.
+    #[must_use]
     pub fn color32f(self) -> Color32F {
         let unit = |n: u8| f32::from(n) / 255.0;
         Color32F::new(unit(self.r), unit(self.g), unit(self.b), unit(self.a))
@@ -61,6 +62,7 @@ impl Rgba8 {
     /// let white = Rgba8 { r: 255, g: 255, b: 255, a: 255 };
     /// assert_eq!(white.faded(0.5), Rgba8 { r: 255, g: 255, b: 255, a: 255 }.color32f() * 0.5);
     /// ```
+    #[must_use]
     pub fn faded(self, alpha: f32) -> Color32F {
         let unit = |n: u8| f32::from(n) / 255.0 * alpha;
         Color32F::new(unit(self.r), unit(self.g), unit(self.b), unit(self.a))
@@ -69,6 +71,7 @@ impl Rgba8 {
 
 /// A solid element covering `rect` (output-local physical pixels) in `colour`; `id` and
 /// `commit` keep its damage stable across frames.
+#[must_use]
 pub fn solid_rect(
     id: Id,
     rect: PhysicalRect,

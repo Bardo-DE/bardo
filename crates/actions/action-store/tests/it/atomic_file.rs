@@ -42,5 +42,5 @@ fn a_missing_file_is_none_and_an_unreadable_one_is_an_error() {
         Ok(Some(text)) if text == "text"
     ));
     // A directory is there but cannot be read as text: an error, not "nothing".
-    assert!(read_optional(dir.path()).is_err());
+    read_optional(dir.path()).unwrap_err();
 }

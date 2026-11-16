@@ -127,7 +127,7 @@ fn values_and_typed_hints_follow_the_bounds_and_a_range_shows_its_limits() {
         "{text}"
     );
     assert!(
-        text.contains(r#"@0,20 50x10 -> mail.thread.archive"#),
+        text.contains(r"@0,20 50x10 -> mail.thread.archive"),
         "{text}"
     );
 }

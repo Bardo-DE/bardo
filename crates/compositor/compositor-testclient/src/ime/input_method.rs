@@ -89,6 +89,7 @@ pub enum InputMethodEvent {
 
 impl InputMethodEvent {
     /// The event's wire name.
+    #[must_use]
     pub fn name(&self) -> &'static str {
         match self {
             InputMethodEvent::Activate => "activate",
@@ -106,6 +107,7 @@ impl InputMethodEvent {
 }
 
 /// The event the compositor sent the method object, if it is one this client records.
+#[must_use]
 pub fn method_event(event: zwp_input_method_v2::Event) -> Option<InputMethodEvent> {
     Some(match event {
         zwp_input_method_v2::Event::Activate => InputMethodEvent::Activate,
@@ -132,6 +134,7 @@ pub fn method_event(event: zwp_input_method_v2::Event) -> Option<InputMethodEven
 }
 
 /// The event the grabbed keyboard sent, if it is one this client records.
+#[must_use]
 pub fn grab_event(event: zwp_input_method_keyboard_grab_v2::Event) -> Option<InputMethodEvent> {
     Some(match event {
         zwp_input_method_keyboard_grab_v2::Event::Keymap { size, .. } => {
@@ -158,6 +161,7 @@ pub fn grab_event(event: zwp_input_method_keyboard_grab_v2::Event) -> Option<Inp
 }
 
 /// The event the popup surface got, if it is one this client records.
+#[must_use]
 pub fn popup_event(event: zwp_input_popup_surface_v2::Event) -> Option<InputMethodEvent> {
     let zwp_input_popup_surface_v2::Event::TextInputRectangle {
         x,

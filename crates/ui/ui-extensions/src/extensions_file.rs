@@ -44,11 +44,13 @@ pub struct ExtensionsSettings {
 
 impl ExtensionsSettings {
     /// Whether `id` is turned off.
+    #[must_use]
     pub fn is_off(&self, id: &ExtensionId) -> bool {
         self.off.iter().any(|row| row.id == id.0)
     }
 
     /// These settings with `id` turned `power`: an id appears once, and turning on removes it.
+    #[must_use]
     pub fn with(&self, id: &ExtensionId, power: Power) -> ExtensionsSettings {
         let mut off: Vec<OffRow> = self
             .off
@@ -85,6 +87,7 @@ impl Default for ExtensionsFile {
 impl ExtensionsFile {
     /// The ids turned off, as [`Search::scan`](crate::Search::scan) takes them. Blank ids are
     /// left out.
+    #[must_use]
     pub fn off_ids(&self) -> Vec<ExtensionId> {
         self.extensions
             .off
@@ -102,6 +105,7 @@ impl SettingsDoc for ExtensionsFile {
 }
 
 /// The schema of `bardo/extensions.toml`: one `Rows` key, `extensions.off`.
+#[must_use]
 pub fn extensions_schema() -> Schema {
     ExtensionsSettings::schema()
 }

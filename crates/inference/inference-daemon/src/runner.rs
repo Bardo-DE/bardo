@@ -54,6 +54,7 @@ pub struct Pin(Arc<OnceLock<Pinned>>);
 
 impl Pin {
     /// An empty cell.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -93,6 +94,7 @@ struct Seating {
 
 impl Turns {
     /// Turns for a session of this tier, over the cell its router writes.
+    #[must_use]
     pub fn new(pin: Pin, engines: Supervised, tier: Tier) -> Self {
         Self {
             pin,
@@ -110,6 +112,7 @@ impl Turns {
     /// `asker`: the person's turn goes ahead of a helper's when the engine is busy, a request
     /// goes to a running instance of its model with a free seat, and one that lost its engine
     /// is told so in plain words.
+    #[must_use]
     pub fn admitted(self, gate: Gate, asker: Asker, engines: Engines) -> Self {
         Self {
             seating: Some(Seating {
@@ -122,6 +125,7 @@ impl Turns {
     }
 
     /// The same turns, able to answer a voice chat (`start_heard`).
+    #[must_use]
     pub fn hearing(self, hearing: Hearing) -> Self {
         Self {
             hearing: Some(hearing),
@@ -147,6 +151,7 @@ impl Turns {
     }
 
     /// The same turns, able to run a session that was routed to a hosted model.
+    #[must_use]
     pub fn hosted(self, cloud: Cloud) -> Self {
         Self {
             cloud: Some(cloud),
@@ -155,6 +160,7 @@ impl Turns {
     }
 
     /// The same turns under the configured structured-output limits.
+    #[must_use]
     pub fn limited(self, limits: Limits) -> Self {
         Self { limits, ..self }
     }

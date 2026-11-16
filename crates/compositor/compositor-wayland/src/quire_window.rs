@@ -78,6 +78,7 @@ pub struct QuireWindowPart {
 
 impl QuireWindowPart {
     /// Creates the global (version 2), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> QuireWindowPart
     where
         D: GlobalDispatch<BardoWindowManagerV1, QuireWindowGlobal> + 'static,
@@ -297,16 +298,17 @@ where
             }
             bardo_window_v1::Request::SetRole { role } => {
                 match code_of(role).and_then(|code| WindowRole::from_code(code).ok()) {
-                    Some(role) => match role_request(role) {
-                        Ok(role) => on_set_role(state.quire_window_part(), window, role),
-                        Err(BadRole) => {
+                    Some(role) => {
+                        if let Ok(role) = role_request(role) {
+                            on_set_role(state.quire_window_part(), window, role)
+                        } else {
                             resource.post_error(
                                 bardo_window_v1::Error::BadRole,
                                 "dialog and shell are not roles a client may ask for",
                             );
                             return;
                         }
-                    },
+                    }
                     None => Vec::new(),
                 }
             }
@@ -382,12 +384,13 @@ pub fn on_quit_manager_bound(
 ) -> Vec<Event> {
     let first = !part.quit_managers.iter().any(|(held, _)| *held == client);
     part.quit_managers.push((client, manager));
-    match first {
-        true => vec![Event::QuitListener {
+    if first {
+        vec![Event::QuitListener {
             client,
             toggle: Toggle::On,
-        }],
-        false => Vec::new(),
+        }]
+    } else {
+        Vec::new()
     }
 }
 
@@ -405,12 +408,13 @@ pub fn on_quit_manager_gone(
         return Vec::new();
     };
     let (client, _) = part.quit_managers.remove(at);
-    match part.quit_managers.iter().any(|(held, _)| *held == client) {
-        true => Vec::new(),
-        false => vec![Event::QuitListener {
+    if part.quit_managers.iter().any(|(held, _)| *held == client) {
+        Vec::new()
+    } else {
+        vec![Event::QuitListener {
             client,
             toggle: Toggle::Off,
-        }],
+        }]
     }
 }
 

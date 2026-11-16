@@ -49,17 +49,20 @@ pub enum Control {
 impl Control {
     /// The control called `name`, `None` for one this build does not have. A reader then draws
     /// the key's default control.
+    #[must_use]
     pub fn named(name: &ControlName) -> Option<Control> {
         Control::parse(&name.0)
     }
 
     /// This control's id as a schema writes it.
+    #[must_use]
     pub fn name(self) -> ControlName {
         ControlName(self.slug().to_owned())
     }
 
     /// Whether this control can draw a key of `kind`. A control that cannot is ignored, so a
     /// schema never makes a slider of a word.
+    #[must_use]
     pub fn fits(self, kind: &KeyKind) -> bool {
         match self {
             Control::Picture | Control::Corners => matches!(kind, KeyKind::Text),
@@ -75,6 +78,7 @@ impl Control {
 impl KeyKind {
     /// The control a key of this kind gets when its schema names none. Total: every kind is
     /// written, so a new [`KeyKind`] is a compile error here until it picks one.
+    #[must_use]
     pub fn default_control(&self) -> Control {
         match self {
             KeyKind::Fixed { .. } => Control::Readout,

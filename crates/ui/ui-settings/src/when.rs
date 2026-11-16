@@ -83,6 +83,7 @@ fn time_of_day(minute: i64, hours: ResolvedHours) -> String {
 /// `modified` as a list cell words it at `now`: "Today at 14:05" for the same local day,
 /// "Yesterday" for the day before, otherwise a short date with its year ("Oct 5, 2026"). A time
 /// in the future is a date too. Month names are English until the desktop has a locale seam.
+#[must_use]
 pub fn list_date(
     modified: UnixSecs,
     now: UnixSecs,

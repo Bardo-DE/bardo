@@ -22,6 +22,7 @@ pub struct LlmNeed {
 
 impl LlmNeed {
     /// A language model with these features and at least this context window.
+    #[must_use]
     pub fn new(features: BTreeSet<LlmFeature>, context: Tokens) -> Self {
         Self { features, context }
     }
@@ -29,6 +30,7 @@ impl LlmNeed {
 
 /// What an app asks when it wants "AI access", never one key: a language model that can chat, with
 /// any context window.
+#[must_use]
 pub fn llm_need() -> crate::Need {
     crate::Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(0)))
 }
@@ -44,6 +46,7 @@ pub struct EmbedNeed {
 
 impl EmbedNeed {
     /// An embedding model with this vector length that embeds these inputs.
+    #[must_use]
     pub fn new(dims: DimsNeed, modalities: BTreeSet<Modality>) -> Self {
         Self { dims, modalities }
     }
@@ -68,6 +71,7 @@ pub struct SpeechNeed {
 
 impl SpeechNeed {
     /// A speech model with these modes.
+    #[must_use]
     pub fn new(modes: BTreeSet<SpeechMode>) -> Self {
         Self { modes }
     }
@@ -84,6 +88,7 @@ pub struct ImageGenNeed {
 
 impl ImageGenNeed {
     /// An image generator with these modes and images at least this large.
+    #[must_use]
     pub fn new(modes: BTreeSet<ImageMode>, max_side: Px) -> Self {
         Self { modes, max_side }
     }
@@ -98,6 +103,7 @@ pub struct RerankNeed {
 
 impl RerankNeed {
     /// A reranker that takes at least this many documents per call.
+    #[must_use]
     pub fn new(max_docs: Count) -> Self {
         Self { max_docs }
     }
@@ -113,6 +119,7 @@ pub struct CuaNeed {
 
 impl CuaNeed {
     /// A computer-use model that operates these environments.
+    #[must_use]
     pub fn new(environments: BTreeSet<CuaEnv>) -> Self {
         Self { environments }
     }

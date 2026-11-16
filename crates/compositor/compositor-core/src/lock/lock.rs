@@ -52,6 +52,7 @@ pub enum LockHolder {
 
 impl LockHolder {
     /// The client that asked for the lock, if it is known.
+    #[must_use]
     pub fn client(self) -> Option<ClientKey> {
         match self {
             LockHolder::Shell(None) => None,

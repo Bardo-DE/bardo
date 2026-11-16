@@ -50,7 +50,7 @@ fn count(client: &TestClient, prefix: &str, event: &str) -> usize {
         .count()
 }
 
-/// Relative_motion carries the device's raw delta.
+/// `Relative_motion` carries the device's raw delta.
 #[test]
 fn relative_motion_is_unaccelerated() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");

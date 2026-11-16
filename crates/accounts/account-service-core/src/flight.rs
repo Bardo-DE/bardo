@@ -55,7 +55,7 @@ impl Flight {
         // Every critical section is a plain data update that cannot panic midway.
         self.issuing
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// How many refreshes have been made so far, noted before taking the gate.
@@ -126,7 +126,7 @@ impl Flights {
     pub fn of(&self, account: &AccountId) -> Arc<Flight> {
         self.accounts
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .entry(account.clone())
             .or_default()
             .clone()

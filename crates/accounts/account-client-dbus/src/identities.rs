@@ -37,6 +37,7 @@ pub struct Identities {
 
 impl Bus {
     /// The handle on identities.
+    #[must_use]
     pub fn identities(&self) -> Identities {
         Identities { bus: self.clone() }
     }

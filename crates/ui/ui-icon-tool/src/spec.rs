@@ -110,10 +110,10 @@ relief = "recessed"
 
     #[test]
     fn rejects_unknown_names() {
-        assert!(parse_spec(&TEXT.replace("\"plum\"", "\"cyan\"")).is_err());
-        assert!(parse_spec(&TEXT.replace("graphite", "neon")).is_err());
-        assert!(parse_spec(&TEXT.replace("chevron", "star")).is_err());
-        assert!(parse_spec(&TEXT.replace("fill = \"symbol\"", "fill = \"ink\"")).is_err());
+        parse_spec(&TEXT.replace("\"plum\"", "\"cyan\"")).unwrap_err();
+        parse_spec(&TEXT.replace("graphite", "neon")).unwrap_err();
+        parse_spec(&TEXT.replace("chevron", "star")).unwrap_err();
+        parse_spec(&TEXT.replace("fill = \"symbol\"", "fill = \"ink\"")).unwrap_err();
     }
 
     /// The bundled specs parse and use their subject's name.

@@ -19,6 +19,7 @@ impl Endpoint {
     /// assert_eq!(Endpoint::of(Some("")), Endpoint::Unset);
     /// assert_eq!(Endpoint::of(Some("/run/n")), Endpoint::At("/run/n".to_owned()));
     /// ```
+    #[must_use]
     pub fn of(value: Option<&str>) -> Endpoint {
         match value {
             Some(text) if !text.is_empty() => Endpoint::At(text.to_owned()),

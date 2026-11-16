@@ -43,7 +43,7 @@ fn need() -> Need {
     ))
 }
 
-/// `fake-storage` with one WebDAV server: the fake DAV server on this computer.
+/// `fake-storage` with one `WebDAV` server: the fake DAV server on this computer.
 fn dav_account(dav: &Running<DavHandle>) -> Account {
     let url = EndpointUrl::parse(&format!("{}/dav/files/", dav.base_url())).expect("url");
     let endpoint = ServiceEndpoint::coherent(Family::WebDav, url, &LoginName("alice".into()))

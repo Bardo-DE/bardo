@@ -26,6 +26,7 @@ pub struct Carried {
 }
 
 /// What the launcher does for `action` on `file`, or `None` when it does not do it (yet).
+#[must_use]
 pub fn carried(action: FileAction, file: &FileFacts) -> Option<Carried> {
     let path = file.path.clone();
     let (label, activation) = match action {
@@ -84,12 +85,14 @@ fn open(file: &FileFacts) -> Activation {
 
 /// What kind of file `file` is, as far as its media type says (`Other` for a type that is not
 /// one).
+#[must_use]
 pub fn kind_of(file: &FileFacts) -> FormatKind {
     CoreMime::parse(&file.mime.0).map_or(FormatKind::Other, |mime| kind_of_mime(&mime))
 }
 
 /// The actions on `file`'s row, in the shared list's order: those the launcher shows
 /// (`Reach::Launcher` or `Reach::Both`) and carries out.
+#[must_use]
 pub fn row_actions(file: &FileFacts) -> Vec<Action> {
     actions_for(kind_of(file))
         .iter()
@@ -116,6 +119,7 @@ fn shows_in_launcher(reach: Reach) -> bool {
 
 /// What choosing the action `id` on `file` does, or nothing for an id that is not one of its
 /// carried actions.
+#[must_use]
 pub fn activation_of(id: &ActionId, file: &FileFacts) -> Activation {
     FileAction::parse(&id.0)
         .and_then(|action| carried(action, file))

@@ -93,6 +93,7 @@ impl Parts {
     /// The real seams: the shell's chooser, a restore file and the desktop's settings. Every seam
     /// that asks the shell or the compositor asks through one [`link::BusLink`], which [`serve`]
     /// attaches to the connection that owns the portal's name.
+    #[must_use]
     pub fn real(
         restore: screencast::restore::FileStore,
         appearance: settings::DesktopAppearance,
@@ -116,6 +117,7 @@ impl Parts {
     }
 
     /// These parts recognising the programs `callers` names.
+    #[must_use]
     pub fn with_callers(
         mut self,
         callers: caller_identity_dbus::caller_identity_core::Table,
@@ -125,12 +127,14 @@ impl Parts {
     }
 
     /// These parts remembering apps as `prover` says.
+    #[must_use]
     pub fn with_prover(mut self, prover: Box<dyn app_proof::AppProver>) -> Self {
         self.prover = Some(prover);
         self
     }
 
     /// These parts showing apps by the names `names` finds.
+    #[must_use]
     pub fn with_names(mut self, names: names::AppNames) -> Self {
         self.names = names;
         self
@@ -138,16 +142,19 @@ impl Parts {
 
     /// The link the real seams ask through, for a seam built outside [`Parts::real`] (the colour
     /// picker of the screenshot setup).
+    #[must_use]
     pub fn link(&self) -> link::BusLink {
         self.link.clone()
     }
 
     /// Where captures connect, for a seam built outside [`Parts::real`] (the screenshots' setup).
+    #[must_use]
     pub fn display(&self) -> capture::DisplayName {
         self.display.clone()
     }
 
     /// These parts with screenshots set up as `screenshots` says.
+    #[must_use]
     pub fn with_screenshots(mut self, screenshots: screenshot::ScreenshotSetup) -> Self {
         self.screenshots = screenshots;
         self

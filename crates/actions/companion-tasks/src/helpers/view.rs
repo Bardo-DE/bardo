@@ -10,6 +10,7 @@ use provenance::HelperId;
 /// The options a helper's inference sessions open with: the helper is the one asking, and when
 /// the card names a model, that model and no other. A card with none opens with none; its jobs do
 /// not run until the person chooses (the board holds them), so nothing stands in for it.
+#[must_use]
 pub fn open_options(card: &HelperCard) -> OpenOptions {
     options_of(&card.id, &card.model)
 }

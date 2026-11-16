@@ -9,6 +9,7 @@ use zbus::object_server::Interface;
 pub const INTROSPECTION_FILE: &str = "org.bardo.Memory1.xml";
 
 /// The introspection document: every interface memoryd serves, in one `<node>`.
+#[must_use]
 pub fn introspection() -> String {
     document([&RecordSkeleton, &RecallSkeleton, &ControlSkeleton])
 }

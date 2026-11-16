@@ -13,6 +13,7 @@ pub struct FakePrinter {
 
 impl FakePrinter {
     /// A printer that ends every job in `outcome`.
+    #[must_use]
     pub fn answering(outcome: PrintOutcome) -> Self {
         FakePrinter {
             outcome,
@@ -22,11 +23,13 @@ impl FakePrinter {
     }
 
     /// Each job's title and the length of its PDF, oldest first.
+    #[must_use]
     pub fn jobs(&self) -> Vec<(String, usize)> {
         locked(&self.jobs).clone()
     }
 
     /// The PDF of each job, oldest first.
+    #[must_use]
     pub fn pdfs(&self) -> Vec<Vec<u8>> {
         locked(&self.pdfs).clone()
     }

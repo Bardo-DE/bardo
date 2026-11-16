@@ -25,13 +25,12 @@ fn tagged<'a>(line: &'a str, tag: &str) -> Option<&'a str> {
 /// response code anywhere in a line.
 fn capabilities_of(line: &str) -> Option<Vec<String>> {
     let upper = line.to_ascii_uppercase();
-    let atoms = match upper.strip_prefix("* CAPABILITY ") {
-        Some(_) => &line["* CAPABILITY ".len()..],
-        None => {
-            let at = upper.find("[CAPABILITY ")? + "[CAPABILITY ".len();
-            let end = line[at..].find(']')?;
-            &line[at..at + end]
-        }
+    let atoms = if upper.strip_prefix("* CAPABILITY ").is_some() {
+        &line["* CAPABILITY ".len()..]
+    } else {
+        let at = upper.find("[CAPABILITY ")? + "[CAPABILITY ".len();
+        let end = line[at..].find(']')?;
+        &line[at..at + end]
     };
     Some(atoms.split_whitespace().map(str::to_owned).collect())
 }
@@ -128,15 +127,12 @@ impl ImapRelay {
                     // `* PREAUTH` has nothing for the relay to do, and anything else is not IMAP.
                     return fail(RelayFault::Protocol);
                 }
-                match capabilities_of(line) {
-                    Some(caps) => {
-                        self.capabilities = caps;
-                        self.proceed()
-                    }
-                    None => {
-                        self.phase = ImapPhase::Capability;
-                        vec![send_line(Side::Server, &format!("{CAPABILITY} CAPABILITY"))]
-                    }
+                if let Some(caps) = capabilities_of(line) {
+                    self.capabilities = caps;
+                    self.proceed()
+                } else {
+                    self.phase = ImapPhase::Capability;
+                    vec![send_line(Side::Server, &format!("{CAPABILITY} CAPABILITY"))]
                 }
             }
             ImapPhase::Capability => {
@@ -153,9 +149,10 @@ impl ImapRelay {
             ImapPhase::StartTls => match tagged(line, STARTTLS) {
                 Some(status) if status.eq_ignore_ascii_case("OK") => {
                     // Bytes after the `OK` and before the handshake would be read as TLS.
-                    match self.buffer.is_empty() {
-                        true => vec![Effect::StartTls],
-                        false => fail(RelayFault::Protocol),
+                    if self.buffer.is_empty() {
+                        vec![Effect::StartTls]
+                    } else {
+                        fail(RelayFault::Protocol)
                     }
                 }
                 Some(_) => fail(RelayFault::Protocol),
@@ -191,19 +188,18 @@ impl ImapRelay {
             };
         }
         match tagged(line, AUTH) {
-            Some(status) if status.eq_ignore_ascii_case("OK") => match capabilities_of(line) {
-                Some(caps) => {
+            Some(status) if status.eq_ignore_ascii_case("OK") => {
+                if let Some(caps) = capabilities_of(line) {
                     self.capabilities = caps;
                     self.start_relaying()
-                }
-                None => {
+                } else {
                     self.phase = ImapPhase::PostAuthCapability;
                     vec![send_line(
                         Side::Server,
                         &format!("{CAPABILITY_AUTHED} CAPABILITY"),
                     )]
                 }
-            },
+            }
             Some(status) if status.eq_ignore_ascii_case("NO") => fail(RelayFault::Refused),
             Some(_) => fail(RelayFault::Protocol),
             None => Vec::new(),
@@ -236,9 +232,10 @@ impl ImapRelay {
             return vec![send(Side::Server, data)];
         }
         self.early.extend_from_slice(data);
-        match self.early.len() > MAX_EARLY {
-            true => fail(RelayFault::Protocol),
-            false => Vec::new(),
+        if self.early.len() > MAX_EARLY {
+            fail(RelayFault::Protocol)
+        } else {
+            Vec::new()
         }
     }
 }

@@ -16,6 +16,7 @@ impl CapturedFrame {
     /// let right = PhysicalRect { x: 1, y: 0, w: 1, h: 1 };
     /// assert_eq!(frame.cropped(right).expect("inside").bytes, [7, 6, 5, 8]);
     /// ```
+    #[must_use]
     pub fn cropped(&self, rect: PhysicalRect) -> Option<CapturedFrame> {
         let from_i32 = |n: i32| usize::try_from(n).ok();
         let from_u32 = |n: u32| usize::try_from(n).ok();

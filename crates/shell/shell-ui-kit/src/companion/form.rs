@@ -12,6 +12,7 @@ use ui_components::components::fields::text_field_model::Validity;
 use ui_core::vocab::{Availability, EffectMark};
 
 /// The form for `form`, titled `title`; its one button submits it as `submit`.
+#[must_use]
 pub fn form_view(form: &FormWire, title: &str, submit: &str, footer: CardFooter) -> CompactForm {
     CompactForm {
         title: title.to_owned(),

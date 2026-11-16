@@ -114,7 +114,7 @@ fn the_preset_reads_from_agents_toml_and_an_unknown_one_is_refused() {
     assert!(entry.claude_code);
     let bad = confined("/home/me/.claude", "")
         .replace("profile = \"claude-code\"", "profile = \"other\"");
-    assert!(AgentsFile::parse(&bad).is_err());
+    AgentsFile::parse(&bad).unwrap_err();
 }
 
 #[tokio::test]
@@ -127,7 +127,7 @@ async fn the_sign_in_the_entry_names_is_handed_to_the_client_and_none_otherwise(
         .await
         .expect("spawned");
     assert_eq!(
-        spawned.sign_in.as_ref().map(|s| s.as_str()),
+        spawned.sign_in.as_ref().map(agent_acp_host::SignIn::as_str),
         Some("oauth-personal")
     );
     let mut bare = rig(LOGIN, Mood::Working, true);

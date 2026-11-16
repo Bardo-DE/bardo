@@ -139,6 +139,7 @@ pub fn on_answer(
 /// A shell object bound: it is shown the questions still open, and when it is the first that
 /// can carry them the model hears the shell can be asked (it then sends the question the
 /// shell lost, if one was waiting).
+#[must_use]
 pub fn on_bind(part: &QuireShellPart, shell: &BardoShellV1) -> Vec<Event> {
     if shell.version() < SINCE {
         return Vec::new();

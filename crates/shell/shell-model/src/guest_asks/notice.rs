@@ -22,6 +22,7 @@ pub struct Notice {
 }
 
 /// What the person is asked about `ask`.
+#[must_use]
 pub fn notice_text(ask: &Ask) -> Notice {
     Notice {
         summary: format!("Let {} use this computer's models?", ask.name),
@@ -32,6 +33,7 @@ pub fn notice_text(ask: &Ask) -> Notice {
 }
 
 /// The action key of the button that gives `node` the `verdict`.
+#[must_use]
 pub fn choice_key(node: &Computer, verdict: Verdict) -> ActionKey {
     let prefix = match verdict {
         Verdict::Allow => ALLOW_PREFIX,
@@ -41,6 +43,7 @@ pub fn choice_key(node: &Computer, verdict: Verdict) -> ActionKey {
 }
 
 /// The computer and verdict a button's action key stands for; `None` for any other key.
+#[must_use]
 pub fn choice_of(key: &ActionKey) -> Option<(Computer, Verdict)> {
     [(ALLOW_PREFIX, Verdict::Allow), (DENY_PREFIX, Verdict::Deny)]
         .into_iter()
@@ -53,6 +56,7 @@ pub fn choice_of(key: &ActionKey) -> Option<(Computer, Verdict)> {
 }
 
 /// The notification for `node` already held, banner or history.
+#[must_use]
 pub fn shown_for(notes: &NotesState, node: &Computer) -> Option<NotificationId> {
     shown_with_action(notes, NOTICE_ENTRY, &choice_key(node, Verdict::Allow))
 }

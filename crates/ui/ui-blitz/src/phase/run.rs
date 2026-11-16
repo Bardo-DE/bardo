@@ -28,6 +28,7 @@ pub struct Ran {
 
 impl Ran {
     /// Whether the run changed the document or a signal, so the frame must be drawn again.
+    #[must_use]
     pub fn changed(self) -> bool {
         self.applied + self.published > 0
     }
@@ -98,6 +99,7 @@ impl Phase {
 
     /// The readings run after every resolved frame, which the host provides as a root context
     /// so `use_resolved` can register with it.
+    #[must_use]
     pub fn after_resolve(&self) -> AfterResolve {
         self.shared.after.clone()
     }
@@ -130,6 +132,7 @@ impl Phase {
     /// are kept to run again once layout has caught up. The document is borrowed only while it is read or
     /// written, and not at all while signals are set. A document that is borrowed elsewhere is
     /// left for the next run.
+    #[must_use]
     pub fn run(&self, resolved: bool) -> Ran {
         let Some(drive) = self.shared.drive.borrow().clone() else {
             return Ran::default();
@@ -147,6 +150,7 @@ impl Phase {
     /// that windows over the offset (`VirtualList`) renders for the offset the frame draws, not
     /// the last one. The size of the viewport and the content are the last layout's; the run
     /// after the layout publishes them when they changed. Returns how many signals changed.
+    #[must_use]
     pub fn publish_scrolls(&self) -> usize {
         let Some(drive) = self.shared.drive.borrow().clone() else {
             return 0;
@@ -198,20 +202,19 @@ impl Phase {
                 .map(|waiting| apply(doc, waiting.node, waiting.write))
                 .collect();
         });
-        match written {
-            Ok(()) => moved.iter().filter(|moved| **moved).count(),
-            Err(_) => {
-                if resolved {
-                    // Put back what was taken, behind anything queued since.
-                    let mut book = self.shared.book.borrow_mut();
-                    for waiting in writes {
-                        if !book.writes.iter().any(|held| held.node == waiting.node) {
-                            book.writes.push(waiting);
-                        }
+        if let Ok(()) = written {
+            moved.iter().filter(|moved| **moved).count()
+        } else {
+            if resolved {
+                // Put back what was taken, behind anything queued since.
+                let mut book = self.shared.book.borrow_mut();
+                for waiting in writes {
+                    if !book.writes.iter().any(|held| held.node == waiting.node) {
+                        book.writes.push(waiting);
                     }
                 }
-                0
             }
+            0
         }
     }
 

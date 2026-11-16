@@ -37,6 +37,7 @@ impl PhotoMetadata {
     pub const SLUG: &'static str = "photos_metadata";
 
     /// The manifests of `library`.
+    #[must_use]
     pub fn new(library: PhotoLibrary) -> Self {
         Self { library }
     }

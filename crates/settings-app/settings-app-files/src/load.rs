@@ -16,6 +16,7 @@ use ui_settings::{InvalidKey, Loaded};
 /// not text, not an ordinary file, over a megabyte) is not a missing one: it shows the
 /// defaults and is reported as the one invalid key of the whole file, and [`crate::save`]
 /// refuses to write over it. Reading never fails.
+#[must_use]
 pub fn load(home: &ConfigHome, spec: &FileSpec) -> Loaded<FileValues> {
     let path = home.path_of(&spec.file);
     let text = match text_of(&path) {

@@ -1,4 +1,4 @@
-//! Popups: xdg_popup surfaces are the client's own (menus, tooltips, combo lists), not windows
+//! Popups: `xdg_popup` surfaces are the client's own (menus, tooltips, combo lists), not windows
 //! of the model, so none of these functions report events. The module keeps smithay's popup
 //! tree, places each popup by its positioner inside the room its output leaves, and answers
 //! `reposition`. The explicit grab itself is a seat grab, taken by the handler.
@@ -30,6 +30,7 @@ impl PopupBounds {
     /// The room of an output (global logical) seen from a parent surface whose geometry
     /// origin sits at `parent_origin` (global logical): the same rectangle in the parent's
     /// coordinates.
+    #[must_use]
     pub fn relative_to(output: LogicalRect, parent_origin: LogicalPoint) -> PopupBounds {
         PopupBounds::Within(LogicalRect::new(
             LogicalPoint {
@@ -132,13 +133,14 @@ pub fn on_reposition(
 }
 
 /// Every live popup, for the ones that follow their parent.
+#[must_use]
 pub fn popups_of(part: &XdgShellPart) -> Vec<PopupSurface> {
     part.popup_surfaces.values().cloned().collect()
 }
 
 /// The room a reactive popup is constrained by changed (its parent moved): a mapped popup whose
 /// positioner is `reactive` is placed again and configured with the new position
-/// (xdg_positioner.set_reactive). Any other popup stays where it is.
+/// (`xdg_positioner.set_reactive`). Any other popup stays where it is.
 pub fn on_room_changed(popup: &PopupSurface, bounds: PopupBounds) {
     if !popup.is_initial_configure_sent() {
         return;
@@ -162,7 +164,7 @@ pub fn on_room_changed(popup: &PopupSurface, bounds: PopupBounds) {
 
 /// A mapped popup's acked configure takes effect at once, not at the next commit: "the client
 /// must acknowledge the new popup configuration for the new position to take effect"
-/// (xdg_popup.repositioned). Before the first commit the ack waits for it as ever.
+/// (`xdg_popup.repositioned`). Before the first commit the ack waits for it as ever.
 pub fn on_popup_acked(surface: &WlSurface, configure: PopupConfigure) {
     with_states(surface, |states| {
         let mut cached = states.cached_state.get::<PopupCachedState>();

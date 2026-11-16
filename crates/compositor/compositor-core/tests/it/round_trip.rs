@@ -164,5 +164,5 @@ fn chords_and_bindings_store_as_text() {
         &bindings,
         r#"[{"chord":"cmd+space","action":{"kind":"desktop","v":{"kind":"hide_active"}}}]"#,
     );
-    assert!(serde_json::from_str::<Chord>(r#""cmd+""#).is_err());
+    serde_json::from_str::<Chord>(r#""cmd+""#).unwrap_err();
 }

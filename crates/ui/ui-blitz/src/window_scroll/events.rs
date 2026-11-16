@@ -17,6 +17,7 @@ impl WindowScroll {
     /// modifiers, takes the wheel, acts on scroll keys (which the document hears as well). The
     /// step before each frame is not here: the window runs [`WindowScroll::frame`] itself, ahead
     /// of the frame's renders.
+    #[must_use]
     pub fn event(&self, event: &WindowEvent, scale: f64, now: Instant) -> Handled {
         let scale = scale.max(f64::EPSILON);
         match event {
@@ -58,9 +59,10 @@ impl WindowScroll {
 
 /// A key press the system repeats, or the first.
 fn repeat_of(repeat: bool) -> KeyRepeat {
-    match repeat {
-        true => KeyRepeat::Repeated,
-        false => KeyRepeat::First,
+    if repeat {
+        KeyRepeat::Repeated
+    } else {
+        KeyRepeat::First
     }
 }
 

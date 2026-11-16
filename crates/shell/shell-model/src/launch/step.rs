@@ -4,6 +4,7 @@ use super::model::DONE_KEPT;
 use super::{LaunchOutcome, Launches};
 
 /// `launches` after `outcome`.
+#[must_use]
 pub fn step(launches: Launches, outcome: LaunchOutcome) -> Launches {
     let Launches {
         mut scopes,

@@ -70,6 +70,7 @@ pub struct ScriptedConfirmer {
 
 impl ScriptedConfirmer {
     /// A confirmer that gives these answers in order, then dismisses.
+    #[must_use]
     pub fn answering(answers: Vec<ConfirmAnswer>) -> Self {
         Self {
             answers: Mutex::new(answers.into()),
@@ -78,6 +79,7 @@ impl ScriptedConfirmer {
     }
 
     /// As `answering`, but the answer comes only after other work has had a turn.
+    #[must_use]
     pub fn yielding(answers: Vec<ConfirmAnswer>) -> Self {
         Self {
             pace: Pace::Yielding,
@@ -167,26 +169,31 @@ impl ScriptedReviewer {
     }
 
     /// Allows every stage.
+    #[must_use]
     pub fn always_allow() -> Self {
         Self::new(vec![], ReviewMode::AlwaysAllow)
     }
 
     /// Asks at every stage.
+    #[must_use]
     pub fn always_ask() -> Self {
         Self::new(vec![], ReviewMode::AlwaysAsk)
     }
 
     /// Never answers: the router's deadline is what ends each stage.
+    #[must_use]
     pub fn hanging() -> Self {
         Self::new(vec![], ReviewMode::Hang)
     }
 
     /// Times out at every stage.
+    #[must_use]
     pub fn timing_out() -> Self {
         Self::new(vec![], ReviewMode::Timeout)
     }
 
     /// Gives these verdicts in order, then falls back to `mode`.
+    #[must_use]
     pub fn queued(queue: Vec<Result<ReviewVerdict, ReviewError>>, mode: ReviewMode) -> Self {
         Self::new(queue, mode)
     }
@@ -240,6 +247,7 @@ pub struct FakeMemory {
 
 impl FakeMemory {
     /// Memory that answers with these replies in order, then `Ok`.
+    #[must_use]
     pub fn answering(replies: Vec<MemoryReply>) -> Self {
         Self {
             replies: Mutex::new(replies.into()),
@@ -269,6 +277,7 @@ pub struct ScriptedWriter {
 
 impl ScriptedWriter {
     /// A writer that always returns `result`.
+    #[must_use]
     pub fn returning(result: Result<TaskPolicy, ReviewError>) -> Self {
         Self {
             result,
@@ -277,6 +286,7 @@ impl ScriptedWriter {
     }
 
     /// A writer that always fails: no policy, every non-read call is outside.
+    #[must_use]
     pub fn failing() -> Self {
         Self::returning(Err(ReviewError::Unavailable))
     }
@@ -310,6 +320,7 @@ pub struct ScriptedReader {
 
 impl ScriptedReader {
     /// A reader that gives these answers in order, then refuses.
+    #[must_use]
     pub fn answering(answers: Vec<Result<Value, ReaderError>>) -> Self {
         Self {
             answers: Mutex::new(answers.into()),

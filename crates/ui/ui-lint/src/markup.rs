@@ -29,6 +29,7 @@ const CONTROLS: &[&str] = &["button", "input", "select", "textarea"];
 
 /// Every offence in `html`, given the consumer's own stylesheet, that none of
 /// `config.exceptions` covers.
+#[must_use]
 pub fn markup(html: &str, consumer_css: &str, config: &LintConfig) -> Vec<Offence> {
     config.partition(every_offence(html, consumer_css)).0
 }
@@ -36,6 +37,7 @@ pub fn markup(html: &str, consumer_css: &str, config: &LintConfig) -> Vec<Offenc
 /// Every warning in `html` that none of `config.exceptions` covers: [`Rule::UnnamedControl`]
 /// and [`Rule::ThreeDots`] (design/27 section 7, H0). [`markup`] never returns these, so a
 /// consumer asserting `markup(..).is_empty()` is unmoved until a rule turns Strict.
+#[must_use]
 pub fn markup_warnings(html: &str, config: &LintConfig) -> Vec<Offence> {
     config.partition(markup_hig::offences(html)).0
 }
@@ -124,7 +126,7 @@ fn is_quire_class(class: &str) -> bool {
 
 /// Why `name` with `classes` is hand-written markup quire should have drawn, if it is. An
 /// `<svg>` is quire's when it is a `Glyph` (`.ds-ic`) or carries the `data-ds-svg` marker a
-/// component that draws its own vector (the SendPill's ring) writes.
+/// component that draws its own vector (the `SendPill`'s ring) writes.
 fn raw_element(name: &str, classes: &[&str], marked: bool) -> Option<&'static str> {
     if name.eq_ignore_ascii_case("svg") {
         return (!classes.contains(&"ds-ic") && !marked)

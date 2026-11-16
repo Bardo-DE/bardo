@@ -1,6 +1,6 @@
 //! Whole-drive writes ([`DriveWrite`]): folders made with `conflictBehavior=fail`, uploads into a
 //! parent by id (`items/{parent}:/{name}:/content`) or over an item by id, renames and moves as
-//! a `PATCH`, and the recycle bin as a `DELETE` (OneDrive keeps a deleted item there). Every
+//! a `PATCH`, and the recycle bin as a `DELETE` (`OneDrive` keeps a deleted item there). Every
 //! change of an existing item carries `If-Match` with the eTag it was made against, so a stale
 //! one is a `Conflict` read back from the server.
 //!
@@ -9,8 +9,8 @@
 //! upload given one asks it what it has (`GET`: `nextExpectedRanges`) and sends the rest; a
 //! session the server has dropped is begun again.
 //!
-//! The names OneDrive refuses ([`accepts_name`]) are those of Microsoft's "Restrictions and
-//! limitations in OneDrive and SharePoint" (support.microsoft.com, article
+//! The names `OneDrive` refuses ([`accepts_name`]) are those of Microsoft's "Restrictions and
+//! limitations in `OneDrive` and `SharePoint`" (support.microsoft.com, article
 //! 64883a5d-228e-48f5-b3d2-eb39e07630fa, read 2026-10): the characters `" * : < > ? / \ |`, a
 //! leading or trailing space, the names `.lock`, `CON`, `PRN`, `AUX`, `NUL`, `COM0`-`COM9`,
 //! `LPT0`-`LPT9`, `desktop.ini`, a name starting with `~$`, and `_vti_` anywhere. A trailing dot
@@ -22,7 +22,7 @@
 //! resumed, and gives itself up (`DELETE`) when the file changed meanwhile.
 //!
 //! A write that seemed to fail may have landed (its answer lost): [`DriveWrite::look`] reads what
-//! the drive has (size, QuickXorHash), for the caller to take an item that holds what it sent as
+//! the drive has (size, `QuickXorHash`), for the caller to take an item that holds what it sent as
 //! its own.
 
 use crate::feed::{folder_of, json_string};
@@ -41,10 +41,10 @@ use sync_core::{
     RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
 };
 
-/// The characters OneDrive refuses in a name.
+/// The characters `OneDrive` refuses in a name.
 const REFUSED_CHARS: &[char] = &['"', '*', ':', '<', '>', '?', '/', '\\', '|'];
 
-/// The names OneDrive refuses, in any case.
+/// The names `OneDrive` refuses, in any case.
 const REFUSED_NAMES: &[&str] = &[".lock", "con", "prn", "aux", "nul", "desktop.ini"];
 
 /// The longest name taken.
@@ -53,7 +53,8 @@ const NAME_MAX: usize = 255;
 /// The longest path taken, from the top of the drive, the item's name with it.
 pub const PATH_MAX: usize = 400;
 
-/// Whether OneDrive takes `name` for a file or folder (see the module's list).
+/// Whether `OneDrive` takes `name` for a file or folder (see the module's list).
+#[must_use]
 pub fn accepts_name(name: &str) -> bool {
     let lower = name.to_lowercase();
     let device = |prefix: &str| {
@@ -220,33 +221,32 @@ impl<H: Http> GraphReplica<H> {
             return Err(self.changed_conflict(id, &upload.base).await);
         }
         let size = upload.content.size();
-        let response = match size <= self.uploads.simple_max as u64 {
-            true => {
-                let bytes = upload.content.read(0, size).map_err(|_| again())?;
-                let url = match &upload.to {
-                    UploadTo::New(place) => {
-                        let parent = self.parent_id(place).await?;
-                        self.addr.child(
-                            Some(&parent),
-                            &place.name,
-                            Some("content"),
-                            "?@microsoft.graph.conflictBehavior=fail",
-                        )
-                    }
-                    UploadTo::Replace(id) => self.addr.item(&id.0, Some("content"), ""),
-                };
-                let put = request(Method::PUT, &url.ok_or(PutRefused::Forbidden)?)
-                    .header(CONTENT_TYPE, "application/octet-stream");
-                let put = match guard_of(&upload.base) {
-                    Some(tag) => put.header("If-Match", tag),
-                    None => put,
-                };
-                let put = put.body(bytes).map_err(|e| write_unreached(e.into()))?;
-                let response = self.write_send(put).await?;
-                upload.progress.sent(size);
-                response
-            }
-            false => self.in_session(&upload).await?,
+        let response = if size <= self.uploads.simple_max as u64 {
+            let bytes = upload.content.read(0, size).map_err(|_| again())?;
+            let url = match &upload.to {
+                UploadTo::New(place) => {
+                    let parent = self.parent_id(place).await?;
+                    self.addr.child(
+                        Some(&parent),
+                        &place.name,
+                        Some("content"),
+                        "?@microsoft.graph.conflictBehavior=fail",
+                    )
+                }
+                UploadTo::Replace(id) => self.addr.item(&id.0, Some("content"), ""),
+            };
+            let put = request(Method::PUT, &url.ok_or(PutRefused::Forbidden)?)
+                .header(CONTENT_TYPE, "application/octet-stream");
+            let put = match guard_of(&upload.base) {
+                Some(tag) => put.header("If-Match", tag),
+                None => put,
+            };
+            let put = put.body(bytes).map_err(|e| write_unreached(e.into()))?;
+            let response = self.write_send(put).await?;
+            upload.progress.sent(size);
+            response
+        } else {
+            self.in_session(&upload).await?
         };
         self.settle_upload(response, &upload.to, &upload.base).await
     }
@@ -320,16 +320,15 @@ impl<H: Http> GraphReplica<H> {
             None => None,
         };
         let from_before = resumed.is_some();
-        let (url, mut sent) = match resumed {
-            Some(found) => found,
-            None => {
-                if upload.resume.is_some() {
-                    upload.progress.session(None);
-                }
-                match self.open_session(upload).await? {
-                    Ok(url) => (url, 0),
-                    Err(refusal) => return Ok(refusal),
-                }
+        let (url, mut sent) = if let Some(found) = resumed {
+            found
+        } else {
+            if upload.resume.is_some() {
+                upload.progress.session(None);
+            }
+            match self.open_session(upload).await? {
+                Ok(url) => (url, 0),
+                Err(refusal) => return Ok(refusal),
             }
         };
         let total = upload.content.size();

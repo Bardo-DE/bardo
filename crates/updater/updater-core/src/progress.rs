@@ -25,6 +25,7 @@ pub struct ProgressGate {
 
 impl ProgressGate {
     /// A gate that has announced nothing yet.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

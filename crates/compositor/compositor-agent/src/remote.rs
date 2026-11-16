@@ -27,7 +27,7 @@ pub const MAX_REMOTE_SLOTS: u32 = 1 << 28;
 /// dropped instead of growing the set without end.
 pub const MAX_HELD: usize = 256;
 
-/// Whom a remote connection's input belongs to: a RemoteDesktop portal session (it reaches
+/// Whom a remote connection's input belongs to: a `RemoteDesktop` portal session (it reaches
 /// windows like the person's hand, never the lock or a trusted surface) or an agent lease (it
 /// reaches only the window the lease holds). Fixed when the connection opens.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -40,6 +40,7 @@ pub enum RemoteFor {
 
 impl RemoteFor {
     /// The origin every event of the connection carries.
+    #[must_use]
     pub fn origin(self) -> Origin {
         match self {
             RemoteFor::Portal(session) => Origin::Remote(session),
@@ -54,6 +55,7 @@ pub struct RemoteSlot(u32);
 
 impl RemoteSlot {
     /// The slot's number.
+    #[must_use]
     pub fn number(self) -> u32 {
         self.0
     }
@@ -67,6 +69,7 @@ pub struct RemoteSlots {
 
 impl RemoteSlots {
     /// The next slot and the mint after it; none once [`MAX_REMOTE_SLOTS`] are used.
+    #[must_use]
     pub fn next(self) -> Option<(RemoteSlots, RemoteSlot)> {
         (self.next < MAX_REMOTE_SLOTS).then_some((
             RemoteSlots {
@@ -141,15 +144,19 @@ fn note(set: &mut BTreeSet<u32>, code: u32, edge: PressEdge) -> Fit {
             set.insert(code);
             Fit::Held
         }
-        PressEdge::Release => match set.remove(&code) {
-            true => Fit::Held,
-            false => Fit::Unheld,
-        },
+        PressEdge::Release => {
+            if set.remove(&code) {
+                Fit::Held
+            } else {
+                Fit::Unheld
+            }
+        }
     }
 }
 
 /// The id of the virtual device of `class` on connection `slot`. The high bit keeps these
 /// clear of the ids the real input backends count up from.
+#[must_use]
 pub fn device_id(slot: RemoteSlot, class: DeviceClass) -> DeviceId {
     let kind = match class {
         DeviceClass::Keyboard => 0,
@@ -188,17 +195,20 @@ impl RemoteHandle {
     }
 
     /// Whom the connection is for.
+    #[must_use]
     pub fn owner(&self) -> RemoteFor {
         self.owner
     }
 
     /// The connection's slot.
+    #[must_use]
     pub fn slot(&self) -> RemoteSlot {
         self.slot
     }
 
     /// The releases of every key and button the app still holds, once: a second call (or the
     /// source ending afterwards) finds nothing held.
+    #[must_use]
     pub fn release(&self) -> Vec<RemoteInput> {
         releases(self.owner, self.slot, &self.held)
     }

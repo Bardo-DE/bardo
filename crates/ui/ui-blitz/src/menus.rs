@@ -129,6 +129,7 @@ impl MenuExport {
     }
 
     /// Where the menu is served: the bus name (when owned) and the object path.
+    #[must_use]
     pub fn address(&self) -> &AppMenuAddress {
         &self.address
     }
@@ -142,6 +143,7 @@ impl MenuExport {
     }
 
     /// The revision being served.
+    #[must_use]
     pub fn revision(&self) -> Revision {
         self.shared.revision()
     }

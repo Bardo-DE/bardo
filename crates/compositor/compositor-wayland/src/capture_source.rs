@@ -94,11 +94,13 @@ impl ToplevelCaptureBook {
     }
 
     /// The content `window` shows now.
+    #[must_use]
     pub fn content_of(&self, window: WindowId) -> ContentStamp {
         self.stamps.get(&window).copied().unwrap_or_default()
     }
 
     /// The sessions that capture `window`.
+    #[must_use]
     pub fn sessions_of(&self, window: WindowId) -> Vec<ToplevelSessionId> {
         self.sessions
             .iter()
@@ -137,6 +139,7 @@ pub struct ToplevelCapturePart {
 
 impl ToplevelCapturePart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ToplevelCapturePart
     where
         D: ToplevelCaptureSourceHandler + 'static,
@@ -157,6 +160,7 @@ impl ToplevelCapturePart {
     }
 
     /// The session `id`, if it is still held.
+    #[must_use]
     pub fn session(&self, id: ToplevelSessionId) -> Option<&Session> {
         self.held.get(&id)
     }
@@ -217,6 +221,7 @@ impl ToplevelCapturePart {
 /// let size = capture_size(LogicalSize { w: 801, h: 601 }, Scale(150));
 /// assert_eq!((size.w, size.h), (1_001, 751));
 /// ```
+#[must_use]
 pub fn capture_size(logical: LogicalSize, scale: Scale) -> PhysicalSize {
     buffer_size(logical, scale)
 }
@@ -271,17 +276,16 @@ pub fn on_frame_request(
         .copied()
         .ok_or(WaylandFault::UnknownCapture(session.0))?;
     let seen = book.delivered.get(&session).map(|(stamp, _)| *stamp);
-    match seen == Some(content) {
-        true => {
-            book.waiting.insert(session, buffer);
-            Ok(FrameVerdict::Hold)
-        }
-        false => Ok(FrameVerdict::Capture(ToplevelCaptureRequest {
+    if seen == Some(content) {
+        book.waiting.insert(session, buffer);
+        Ok(FrameVerdict::Hold)
+    } else {
+        Ok(FrameVerdict::Capture(ToplevelCaptureRequest {
             session,
             window,
             size: buffer,
             content,
-        })),
+        }))
     }
 }
 
@@ -447,7 +451,7 @@ mod tests {
         let gone = apply_window_gone(&mut book, WindowId(1));
         assert_eq!(gone, vec![session]);
         assert!(book.sources.is_empty() && book.sessions.is_empty());
-        assert!(on_frame_request(&mut book, session, SIZE, ContentStamp(0)).is_err());
+        on_frame_request(&mut book, session, SIZE, ContentStamp(0)).unwrap_err();
     }
 
     #[test]
@@ -456,7 +460,7 @@ mod tests {
         let source = on_toplevel_source(&mut book, WindowId(2));
         let session = on_session(&mut book, source).expect("a session");
         on_source_destroyed(&mut book, source);
-        assert!(on_session(&mut book, source).is_err());
+        on_session(&mut book, source).unwrap_err();
         assert!(book.sessions.contains_key(&session));
     }
 

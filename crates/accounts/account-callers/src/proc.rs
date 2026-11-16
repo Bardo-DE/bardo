@@ -46,6 +46,7 @@ impl ProcCallers {
     /// Resolves senders on `connection` through `table`, reading the system's `/proc` and asking
     /// the user manager on the same bus for a service's unit. The manager is believed only while
     /// its own process is the system's `systemd`.
+    #[must_use]
     pub fn new(connection: BusConnection, table: CallerTable) -> Self {
         let rows = peephole_table(&table);
         let peers = BusPeers::new(connection, rows, ManagerCheck::Verified(manager_need()));

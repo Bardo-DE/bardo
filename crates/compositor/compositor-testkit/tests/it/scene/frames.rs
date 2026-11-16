@@ -277,7 +277,7 @@ fn the_frame_follows_the_scheme_with_a_centred_title_lit_lights_and_round_corner
         let centre =
             bar.titlebar().origin.x + i32::try_from(bar.titlebar().size.w / 2).expect("small");
         assert!(
-            ((first_col + last_col) / 2 - centre).abs() <= 6,
+            (i32::midpoint(first_col, last_col) - centre).abs() <= 6,
             "{word}: the title spans {first_col}..{last_col}, the bar's centre is {centre}"
         );
 

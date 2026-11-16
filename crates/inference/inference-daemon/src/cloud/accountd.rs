@@ -29,6 +29,7 @@ use std::pin::Pin;
 pub type Boxed<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
 /// What a language need is, for the verdicts: chat, any context.
+#[must_use]
 pub fn llm_need() -> Need {
     Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(0)))
 }

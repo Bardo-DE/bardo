@@ -7,6 +7,7 @@ use shell_settings::ShellFile;
 use crate::settings::SettingsFeed;
 
 /// Every settled `settings.toml`; a surface reads the domains it draws.
+#[must_use]
 pub fn use_settings() -> ReadSignal<ShellFile> {
     use_watch(use_context::<SettingsFeed>().settings)
 }

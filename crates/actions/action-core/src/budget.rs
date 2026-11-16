@@ -88,6 +88,7 @@ pub struct Ledger {
 
 impl Ledger {
     /// A session that starts at `now` and has used nothing.
+    #[must_use]
     pub fn new(now: UnixSeconds) -> Self {
         Self {
             started: now,
@@ -224,6 +225,7 @@ fn no_records() -> Count {
 }
 
 /// The cause the Space is halted for, if it is: the global halt first.
+#[must_use]
 pub fn halted(switch: &KillSwitch, space: &SpaceId) -> Option<HaltCause> {
     let cause = |h: &Halt| match h {
         Halt::Running => None,

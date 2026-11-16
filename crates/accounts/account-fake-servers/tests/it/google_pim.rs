@@ -205,7 +205,7 @@ async fn task_lists_list_and_tasks_filter_by_updated_min_and_show_deleted() {
         .as_str()
         .expect("updated")
         .to_owned();
-    assert!(newest.ends_with("Z") && all["items"][1]["parent"] == "t-milk");
+    assert!(newest.ends_with('Z') && all["items"][1]["parent"] == "t-milk");
 
     // `updatedMin` is inclusive: the newest comes again, nothing older does.
     let since = format!(

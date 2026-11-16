@@ -15,6 +15,7 @@ pub const BRIEF_MAX: usize = 4_000;
 pub const FROM_CHECKED_BRIEF: &str = "from_checked_brief";
 
 /// Whether the router marked this answer as a job given from a brief the person checked.
+#[must_use]
 pub fn from_checked_brief(outcome: &Outcome) -> bool {
     matches!(
         outcome.value.as_ref().map(|held| &held.value),
@@ -52,6 +53,7 @@ impl BriefText {
     }
 
     /// The words.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -95,6 +97,7 @@ pub enum BriefWhy {
 
 impl BriefWhy {
     /// The sentence the sheet lists beside the stretch.
+    #[must_use]
     pub fn plain(self) -> &'static str {
         match self {
             BriefWhy::Link => "This is a link to somewhere outside.",
@@ -132,6 +135,7 @@ pub struct BriefSheet {
 
 impl BriefSheet {
     /// The sheet for a draft: its flags are found by [`flag_brief`].
+    #[must_use]
     pub fn of(title: LabelText, text: BriefText, pieces: Vec<LabelText>) -> Self {
         let flags = flag_brief(text.as_str());
         Self {
@@ -328,6 +332,7 @@ fn flag_line(line: &str, base: usize, out: &mut Vec<BriefFlag>) {
 /// open with an order, and lines about files, accounts or keys. A plain word list, no model, so
 /// nothing in the text can talk it out of showing. It is advice: text it does not flag is not
 /// claimed safe.
+#[must_use]
 pub fn flag_brief(text: &str) -> Vec<BriefFlag> {
     let mut flags = Vec::new();
     let mut base = 0usize;
@@ -405,6 +410,6 @@ mod tests {
             BriefText::parse(&"x".repeat(BRIEF_MAX + 1)),
             Err(BriefFault::TooLong)
         );
-        assert!(BriefText::parse(&big).is_ok());
+        BriefText::parse(&big).unwrap();
     }
 }

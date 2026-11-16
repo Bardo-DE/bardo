@@ -82,6 +82,7 @@ pub struct Heard {
 
 impl Heard {
     /// Everything heard, committed first.
+    #[must_use]
     pub fn text(&self) -> String {
         [self.committed.0.as_str(), self.tail.0.as_str()]
             .iter()

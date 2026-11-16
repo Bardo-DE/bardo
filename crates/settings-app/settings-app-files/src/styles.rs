@@ -51,6 +51,7 @@ fn folders_in(parent: &Path, skip: Option<&str>) -> Vec<String> {
 /// program of the desktop (a folder inside `bardo`), then each program outside it (a folder of
 /// `home`), each in the order of their names. A file that is missing or cannot be read is left
 /// out, as is a folder that cannot be listed.
+#[must_use]
 pub fn read_style_sheets(home: &ConfigHome) -> Vec<StyleSheet> {
     let level = home.0.join(DESKTOP_FOLDER);
     let desktop = sheet_in(&level, StyleOwner::Desktop);
@@ -71,6 +72,7 @@ pub fn read_style_sheets(home: &ConfigHome) -> Vec<StyleSheet> {
 /// apps installed under `system` data directories and under `data` (the person's) put in their
 /// `bardo/selectors` folders. A style that uses one of these is not using an internal selector.
 /// The directories are named by the caller, so a test reads only its own.
+#[must_use]
 pub fn published_classes(data: &DataHome, system: &[PathBuf]) -> Vec<Vec<String>> {
     let dirs: Vec<PathBuf> = system
         .iter()

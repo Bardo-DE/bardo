@@ -31,6 +31,7 @@ pub struct ReportedOutput {
 
 impl ReportedOutput {
     /// An output of the report.
+    #[must_use]
     pub fn new(name: OutputName, mode: Mode, power: bool) -> ReportedOutput {
         ReportedOutput { name, mode, power }
     }
@@ -51,6 +52,7 @@ pub struct KmsReport {
 
 impl KmsReport {
     /// A report.
+    #[must_use]
     pub fn new(
         flips: u64,
         missed: u64,
@@ -129,6 +131,7 @@ pub struct ReportPacer {
 
 impl ReportPacer {
     /// A pacer whose first report is due at once.
+    #[must_use]
     pub fn new() -> ReportPacer {
         ReportPacer::default()
     }
@@ -159,6 +162,7 @@ impl ReportPacer {
 
 impl TtyBackend {
     /// The backend's state as a report.
+    #[must_use]
     pub fn report(&self) -> KmsReport {
         let total = self.scanouts.total();
         let outputs = self

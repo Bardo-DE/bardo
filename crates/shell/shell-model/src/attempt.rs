@@ -49,6 +49,7 @@ pub struct Attempts {
 impl Attempts {
     /// The attempts after `step`: a start while one runs keeps its stamp; a start otherwise, and
     /// every failure, mints a new one.
+    #[must_use]
     pub fn next(self, step: AttemptStep) -> Attempts {
         let fresh = OpStamp(self.minted.0.wrapping_add(1));
         match (self.now, step) {

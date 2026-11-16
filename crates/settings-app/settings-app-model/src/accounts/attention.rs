@@ -24,6 +24,7 @@ fn expiry_day(text: &str) -> Option<CalendarDay> {
 
 impl Attention {
     /// What `account` needs, or none when it needs nothing or has no row to sign in again with.
+    #[must_use]
     pub fn of(account: &Account) -> Option<Attention> {
         account.reauth.as_ref()?;
         if account.status == AccountStatus::NeedsReauth {

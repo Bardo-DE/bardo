@@ -6,6 +6,7 @@ use account_sheet::SignInFault;
 use account_wire::Refusal;
 
 /// What the app is told when the provider fails.
+#[must_use]
 pub fn provider_refusal(error: ProviderError) -> Refusal {
     match error {
         ProviderError::Unauthorized => Refusal::NeedsReauth,
@@ -17,6 +18,7 @@ pub fn provider_refusal(error: ProviderError) -> Refusal {
 }
 
 /// What the app is told when the secret store fails: a missing secret means signing in again.
+#[must_use]
 pub fn secrets_refusal(error: SecretsError) -> Refusal {
     match error {
         SecretsError::Missing | SecretsError::Unreadable => Refusal::NeedsReauth,
@@ -26,6 +28,7 @@ pub fn secrets_refusal(error: SecretsError) -> Refusal {
 }
 
 /// What an app is told when the sheet ends without an account.
+#[must_use]
 pub fn refusal_of(fault: SignInFault) -> Refusal {
     match fault {
         SignInFault::Cancelled => Refusal::Dismissed,

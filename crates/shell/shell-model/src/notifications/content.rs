@@ -43,6 +43,7 @@ pub struct Notification {
 
 impl Notification {
     /// `posting` held as `id`, arrived at `arrived`.
+    #[must_use]
     pub fn posted(id: NotificationId, arrived: UnixMs, posting: Posting) -> Notification {
         let Posting {
             replaces: _,
@@ -73,6 +74,7 @@ impl Notification {
     }
 
     /// Whether a click on the body invokes something: the sender offered `default`.
+    #[must_use]
     pub fn default_action(&self) -> Option<&Action> {
         self.actions.iter().find(|action| action.key.is_default())
     }
@@ -91,6 +93,7 @@ pub struct AppRef {
 
 impl AppRef {
     /// The key it groups under: the desktop entry when there is one, else the name.
+    #[must_use]
     pub fn key(&self) -> AppKey {
         match &self.desktop_entry {
             Some(entry) if !entry.is_empty() => AppKey(entry.clone()),
@@ -115,6 +118,7 @@ pub enum IconRef {
 impl IconRef {
     /// `app_icon` or `image-path` as sent: empty is none, a `file://` URI or an absolute path
     /// is a file, anything else a theme name.
+    #[must_use]
     pub fn from_wire(wire: &str) -> IconRef {
         match wire {
             "" => IconRef::None,
@@ -136,6 +140,7 @@ pub struct Action {
 
 /// `Notify`'s `actions`, a flat list of key, label, key, label: paired in order. A trailing key
 /// with no label is dropped.
+#[must_use]
 pub fn pair_actions(flat: &[String]) -> Vec<Action> {
     flat.as_chunks::<2>()
         .0
@@ -177,6 +182,7 @@ pub enum NotifyUrgency {
 
 impl NotifyUrgency {
     /// The hint's byte: 0 low, 2 critical, anything else normal.
+    #[must_use]
     pub fn from_wire(byte: u8) -> NotifyUrgency {
         match byte {
             0 => NotifyUrgency::Low,
@@ -273,6 +279,7 @@ pub enum Expiry {
 
 impl Expiry {
     /// The wire's `i32`.
+    #[must_use]
     pub fn from_wire(ms: i32) -> Expiry {
         match ms {
             0 => Expiry::Never,

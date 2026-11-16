@@ -72,6 +72,7 @@ pub struct ImageCapturePart {
 
 impl ImageCapturePart {
     /// Creates the globals (version 1 each), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ImageCapturePart
     where
         D: ImageCopyCaptureHandler + OutputCaptureSourceHandler + 'static,
@@ -143,6 +144,7 @@ pub enum CaptureFailure {
 
 impl CaptureFailure {
     /// The reason the `failed` event carries.
+    #[must_use]
     pub fn reason(self) -> CaptureFailureReason {
         match self {
             CaptureFailure::OutputGone => CaptureFailureReason::Stopped,

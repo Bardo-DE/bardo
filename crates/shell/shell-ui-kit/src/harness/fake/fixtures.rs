@@ -23,6 +23,7 @@ use shell_model::windows::{
 };
 
 /// A 1920 x 1080 output named `DP-1`.
+#[must_use]
 pub fn output() -> OutputInfo {
     OutputInfo {
         id: OutputId(1),
@@ -57,11 +58,13 @@ pub fn output_named(name: Option<&str>) -> OutputInfo {
 }
 
 /// Three workspaces on `DP-1`, the second active.
+#[must_use]
 pub fn workspaces() -> Workspaces {
     workspaces_on("DP-1")
 }
 
 /// Three workspaces on `output`, the second active.
+#[must_use]
 pub fn workspaces_on(output: &str) -> Workspaces {
     let workspace = |key: u64, active| Workspace {
         key: WorkspaceKey(key),
@@ -84,11 +87,13 @@ pub fn workspaces_on(output: &str) -> Workspaces {
 }
 
 /// Two terminal windows on `DP-1`.
+#[must_use]
 pub fn toplevels() -> Toplevels {
     toplevels_on("DP-1")
 }
 
 /// Two terminal windows on `output`.
+#[must_use]
 pub fn toplevels_on(output: &str) -> Toplevels {
     let window = |key: u64, title: &str, active| Toplevel {
         identifier: String::new(),
@@ -107,10 +112,12 @@ pub fn toplevels_on(output: &str) -> Toplevels {
 }
 
 /// The fixed values every test and the demo start from.
+#[must_use]
 pub fn clock() -> ClockMinute {
     ClockMinute(jiff::civil::date(2026, 9, 24).at(14, 5, 0, 0))
 }
 
+#[must_use]
 pub fn battery() -> Battery {
     Battery {
         presence: Presence::Present,
@@ -121,6 +128,7 @@ pub fn battery() -> Battery {
     }
 }
 
+#[must_use]
 pub fn network() -> Network {
     Network {
         link: Link::Wifi {
@@ -132,6 +140,7 @@ pub fn network() -> Network {
     }
 }
 
+#[must_use]
 pub fn volume() -> Volume {
     Volume {
         presence: Presence::Present,
@@ -142,6 +151,7 @@ pub fn volume() -> Volume {
 }
 
 /// Wi-Fi on, joined to `home`, two more networks in range.
+#[must_use]
 pub fn wifi() -> Wifi {
     let ap = |ssid: &str, strength, security, association| AccessPoint {
         ssid: Ssid(ssid.to_owned()),
@@ -162,6 +172,7 @@ pub fn wifi() -> Wifi {
 }
 
 /// Bluetooth on, headphones connected, a keyboard paired.
+#[must_use]
 pub fn bluetooth() -> Bluetooth {
     let device = |address: &str, name: &str, kind, connection, battery| BtDevice {
         address: BtAddress(address.to_owned()),
@@ -195,6 +206,7 @@ pub fn bluetooth() -> Bluetooth {
 }
 
 /// A keyboard backlight with three steps, on the second.
+#[must_use]
 pub fn kbd_backlight() -> shell_model::kbd_backlight::KbdBacklight {
     shell_model::kbd_backlight::KbdBacklight {
         presence: Presence::Present,
@@ -203,6 +215,7 @@ pub fn kbd_backlight() -> shell_model::kbd_backlight::KbdBacklight {
 }
 
 /// power-profiles-daemon on Balanced, all three offered.
+#[must_use]
 pub fn power_profiles() -> PowerProfiles {
     PowerProfiles {
         presence: Presence::Present,
@@ -213,6 +226,7 @@ pub fn power_profiles() -> PowerProfiles {
 }
 
 /// One player, playing "So What" (no art file), every button live.
+#[must_use]
 pub fn media() -> Media {
     use shell_model::now_playing::{Abilities, MediaPlayer, Playback, PlayerId, Timeline, Track};
     use ui_components::base::time::stamp::Stamp;
@@ -240,6 +254,7 @@ pub fn media() -> Media {
 
 /// A desktop whose Force Quit panel lists `rows`, in the order given: one app each, running or not
 /// responding as its row says.
+#[must_use]
 pub fn desktop_listing(rows: &[ForceQuitRow]) -> DesktopView {
     let apps = rows
         .iter()

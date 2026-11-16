@@ -22,6 +22,7 @@ pub struct Check {
 
 impl Check {
     /// Whether the eval said what the script was written to make it say.
+    #[must_use]
     pub fn met(&self) -> bool {
         self.expect == self.got
     }
@@ -95,6 +96,7 @@ fn summary_row(name: &str, t: &Tally) -> String {
 }
 
 /// The report as markdown.
+#[must_use]
 pub fn render(report: &Report<'_>) -> String {
     let all = pairs(report);
     let mut out = String::new();
@@ -262,6 +264,7 @@ fn per_task(out: &mut String, report: &Report<'_>, all: &[(&TaskDef, &RunRecord)
 }
 
 /// A verdict as a word of the report.
+#[must_use]
 pub fn verdict_word(verdict: Verdict) -> String {
     serde_json::to_value(verdict)
         .ok()

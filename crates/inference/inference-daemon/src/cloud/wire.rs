@@ -30,6 +30,7 @@ pub struct Doors(BTreeMap<ProviderId, Door>);
 
 impl Doors {
     /// The providers' own addresses (the base URLs their documents give).
+    #[must_use]
     pub fn real() -> Self {
         let at = |id: &str, host: &str, base: &str| {
             (
@@ -55,19 +56,22 @@ impl Doors {
     }
 
     /// The same, with `provider` at `door` (a test's loopback fake).
+    #[must_use]
     pub fn with(mut self, provider: &str, door: Door) -> Self {
         self.0.insert(ProviderId(provider.to_owned()), door);
         self
     }
 
     /// Where `provider` is, if this build can speak to it.
+    #[must_use]
     pub fn of(&self, provider: &ProviderId) -> Option<&Door> {
         self.0.get(provider)
     }
 }
 
-/// The dialect of the chat-completions wire a provider takes: OpenRouter's own, and OpenAI's
+/// The dialect of the chat-completions wire a provider takes: `OpenRouter`'s own, and `OpenAI`'s
 /// standard one (a usage chunk asked for, `reasoning_effort`) for the companies' endpoints.
+#[must_use]
 pub fn flavor_of(provider: &ProviderId) -> Flavor {
     match provider.0.as_str() {
         "openrouter" => Flavor::OpenRouter,
@@ -78,6 +82,7 @@ pub fn flavor_of(provider: &ProviderId) -> Flavor {
 /// Whether replies from `provider` carry what they cost: the codec of its dialect says. The
 /// providers that report none show tokens and no dollars, so a spending limit cannot apply to
 /// them.
+#[must_use]
 pub fn charges_of(provider: &ProviderId) -> Charges {
     OpenAiCodec::new(flavor_of(provider)).charges()
 }
@@ -96,9 +101,9 @@ pub enum Temperature {
 pub enum NoReasoning {
     /// Leave the body as the codec wrote it.
     Untouched,
-    /// `"reasoning_effort": "none"` (OpenAI's chat completions).
+    /// `"reasoning_effort": "none"` (`OpenAI`'s chat completions).
     EffortField,
-    /// `"reasoning": {"effort": "none"}` (OpenRouter).
+    /// `"reasoning": {"effort": "none"}` (`OpenRouter`).
     ReasoningObject,
 }
 
@@ -115,6 +120,7 @@ impl BodyShape {
     /// The shape for `model` (the entry's id) on `provider`, for a request whose app did or did
     /// not choose a sampling. gpt-6-luna on chat completions takes tools only with reasoning off
     /// (its entry says so).
+    #[must_use]
     pub fn of(provider: &ProviderId, model: &str, temperature: Temperature) -> Self {
         let no_reasoning = match (model, provider.0.as_str()) {
             ("gpt-6-luna", "openrouter") => NoReasoning::ReasoningObject,

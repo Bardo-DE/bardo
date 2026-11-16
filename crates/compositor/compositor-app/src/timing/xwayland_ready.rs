@@ -13,6 +13,7 @@ pub struct XwaylandReady {
 
 impl XwaylandReady {
     /// The line, message first, then `key=value` fields.
+    #[must_use]
     pub fn line(&self) -> String {
         format!(
             "xwayland-ready requested_at={} ready_at={}",

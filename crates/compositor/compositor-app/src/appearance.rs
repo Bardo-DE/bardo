@@ -49,6 +49,7 @@ fn store_for(home: Option<&Path>) -> Store {
 /// let nowhere = Path::new("/nonexistent/casement-doc-home");
 /// assert_eq!(scheme_in(Some(nowhere)), Scheme::Light);
 /// ```
+#[must_use]
 pub fn scheme_in(home: Option<&Path>) -> Scheme {
     scheme_of(stored_in(home).theme)
 }
@@ -86,6 +87,7 @@ fn stored_in(home: Option<&Path>) -> Stored {
 ///     BlurFinish::Solid(_)
 /// ));
 /// ```
+#[must_use]
 pub fn blur_finish(transparency: Transparency, scheme: Scheme) -> BlurFinish {
     match transparency {
         Transparency::Reduced => BlurFinish::Solid(Rgba8::from(reduced_stand_in(scheme))),
@@ -102,6 +104,7 @@ pub fn blur_finish(transparency: Transparency, scheme: Scheme) -> BlurFinish {
 ///
 /// assert_eq!(system_source(None), SystemPrefsSource::Portal);
 /// ```
+#[must_use]
 pub fn system_source(home: Option<&Path>) -> SystemPrefsSource {
     match home {
         None => SystemPrefsSource::Portal,
@@ -118,6 +121,7 @@ pub fn system_source(home: Option<&Path>) -> SystemPrefsSource {
 /// assert_eq!(resolve(Theme::System, Scheme::Dark), Scheme::Dark);
 /// assert_eq!(resolve(Theme::Light, Scheme::Dark), Scheme::Light);
 /// ```
+#[must_use]
 pub fn resolve(theme: Theme, system: Scheme) -> Scheme {
     match theme {
         Theme::System => system,

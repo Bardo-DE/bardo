@@ -30,6 +30,7 @@ pub enum BookError {
 
 impl BookError {
     /// What the disk said, when the file could not be read at all.
+    #[must_use]
     pub fn read_error(&self) -> Option<ErrorKind> {
         match self {
             BookError::Archive(ArchiveError::Read { kind, .. }) => Some(*kind),
@@ -42,6 +43,7 @@ impl BookError {
     }
 
     /// Whether the book is encrypted, which nothing here asks a password for.
+    #[must_use]
     pub fn is_locked(&self) -> bool {
         matches!(self, BookError::Archive(ArchiveError::Encrypted))
     }

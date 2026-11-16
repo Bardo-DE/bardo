@@ -93,12 +93,11 @@ impl Future for NextWheel<'_> {
         let Some(listener) = listeners.entries.iter_mut().find(|l| l.id == id) else {
             return Poll::Pending;
         };
-        match listener.pending.pop_front() {
-            Some(event) => Poll::Ready(event),
-            None => {
-                listener.waker = Some(cx.waker().clone());
-                Poll::Pending
-            }
+        if let Some(event) = listener.pending.pop_front() {
+            Poll::Ready(event)
+        } else {
+            listener.waker = Some(cx.waker().clone());
+            Poll::Pending
         }
     }
 }

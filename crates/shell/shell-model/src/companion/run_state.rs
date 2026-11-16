@@ -35,6 +35,7 @@ pub enum RunState {
 
 impl RunState {
     /// Whether the run still holds a window or a question: not over.
+    #[must_use]
     pub fn is_live(self) -> bool {
         match self {
             RunState::Starting
@@ -50,6 +51,7 @@ impl RunState {
 /// The state a run is in, from cuad's phase and, for a finished run, how it ended. A finished
 /// run whose outcome has not arrived yet reads `Stopped`: it is over, and nothing says it
 /// succeeded.
+#[must_use]
 pub fn run_state_of(slug: RunStateSlug, outcome: Option<CuaOutcome>) -> RunState {
     match slug {
         RunStateSlug::Granting | RunStateSlug::Leasing => RunState::Starting,
@@ -74,6 +76,7 @@ pub fn run_state_of(slug: RunStateSlug, outcome: Option<CuaOutcome>) -> RunState
 /// The controls a run's row offers, in the order they are drawn. A window the person cannot see
 /// (an agent workspace or a nested session) can be watched; an ended run offers to undo what it
 /// did, when something it did can be undone.
+#[must_use]
 pub fn run_controls(state: RunState, place: RunMode, undoable: u32) -> Vec<RunControl> {
     use RunControl as C;
     let hidden = match place {
@@ -103,6 +106,7 @@ pub fn run_controls(state: RunState, place: RunMode, undoable: u32) -> Vec<RunCo
 
 /// The runs that are going now (not paused, not over), which "stop everything" pauses. A run
 /// waiting on the person, or already taken over, is going too: pausing it holds it where it is.
+#[must_use]
 pub fn going_runs(companion: &Companion) -> Vec<RunId> {
     companion
         .runs

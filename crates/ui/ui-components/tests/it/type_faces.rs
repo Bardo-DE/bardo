@@ -46,8 +46,10 @@ fn the_editorial_look_sets_only_declared_tokens_and_names_every_interface_face()
         let stack = set
             .iter()
             .find(|(set, _)| format!("--{set}") == name.as_str())
-            .map(|(_, stack)| *stack)
-            .unwrap_or_else(|| panic!("the Editorial look leaves {} alone", name.as_str()));
+            .map_or_else(
+                || panic!("the Editorial look leaves {} alone", name.as_str()),
+                |(_, stack)| *stack,
+            );
         let faces: Vec<&str> = stack
             .split(',')
             .map(|face| face.trim().trim_matches('"'))

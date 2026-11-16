@@ -1,4 +1,4 @@
-//! A fake Tailscale LocalAPI: the HTTP tailscaled serves on its unix socket, in a scratch
+//! A fake Tailscale `LocalAPI`: the HTTP tailscaled serves on its unix socket, in a scratch
 //! directory. It answers `status`, `whois`, `login-interactive` and the `watch-ipn-bus` stream
 //! from a table the test sets, with the checks the real one makes (the `Host` it expects, no
 //! `Origin`, the stream without private keys), and it can be stopped (the socket stays, nobody
@@ -59,6 +59,7 @@ pub struct FakePeer {
 
 impl FakePeer {
     /// An online Linux computer of user `user`.
+    #[must_use]
     pub fn new(id: &str, name: &str, user: i64, address: &str) -> Self {
         Self {
             id: id.to_owned(),
@@ -75,6 +76,7 @@ impl FakePeer {
     }
 
     /// Offline since `last_seen`.
+    #[must_use]
     pub fn offline(mut self, last_seen: &str) -> Self {
         self.online = false;
         self.last_seen = Some(last_seen.to_owned());
@@ -82,18 +84,21 @@ impl FakePeer {
     }
 
     /// With this tag.
+    #[must_use]
     pub fn tagged(mut self, tag: &str) -> Self {
         self.tags.push(tag.to_owned());
         self
     }
 
     /// Shared in from another person.
+    #[must_use]
     pub fn shared_in(mut self) -> Self {
         self.shared = true;
         self
     }
 
     /// With Tailscale SSH on (one host key).
+    #[must_use]
     pub fn with_ssh(mut self) -> Self {
         self.ssh_host_keys
             .push(format!("ssh-ed25519 AAAA{}", self.name));
@@ -155,6 +160,7 @@ pub struct Network {
 
 impl Network {
     /// A network `name` with this computer, signed in as `login` (user 1).
+    #[must_use]
     pub fn new(name: &str, login: &str, me: FakePeer) -> Self {
         Self {
             name: name.to_owned(),
@@ -169,12 +175,14 @@ impl Network {
     }
 
     /// With these other computers.
+    #[must_use]
     pub fn with_peers(mut self, peers: Vec<FakePeer>) -> Self {
         self.peers = peers;
         self
     }
 
     /// With one more user.
+    #[must_use]
     pub fn with_user(mut self, id: i64, login: &str) -> Self {
         self.users.push(FakeUser {
             id,
@@ -315,14 +323,14 @@ impl Shared {
     }
 }
 
-/// The test's side of a fake LocalAPI.
+/// The test's side of a fake `LocalAPI`.
 #[derive(Debug, Clone)]
 pub struct LocalApiHandle {
     shared: Arc<Shared>,
     socket: PathBuf,
 }
 
-/// A fake Tailscale LocalAPI, serving until it is stopped or dropped.
+/// A fake Tailscale `LocalAPI`, serving until it is stopped or dropped.
 #[derive(Debug)]
 pub struct FakeLocalApi {
     handle: LocalApiHandle,
@@ -395,6 +403,7 @@ impl Drop for FakeLocalApi {
 
 impl LocalApiHandle {
     /// The socket path to give the code under test.
+    #[must_use]
     pub fn socket(&self) -> &Path {
         &self.socket
     }
@@ -409,7 +418,7 @@ impl LocalApiHandle {
                 inner.login_asked = false;
             }
             inner.daemon = daemon;
-        }
+        };
         self.shared.say(line);
         if running {
             self.shared.say(json!({"NetMap": {}}));
@@ -445,16 +454,19 @@ impl LocalApiHandle {
     }
 
     /// Every request received, `METHOD target`, oldest first.
+    #[must_use]
     pub fn requests(&self) -> Vec<String> {
         self.shared.seen.all()
     }
 
     /// How many watch streams are open now.
+    #[must_use]
     pub fn watchers(&self) -> usize {
         self.shared.watchers.load(Ordering::SeqCst)
     }
 
     /// How many sign-ins were asked for.
+    #[must_use]
     pub fn logins(&self) -> usize {
         self.shared.logins.load(Ordering::SeqCst)
     }
@@ -524,9 +536,10 @@ fn answer(shared: &Shared, request: &Request) -> Answer {
             Some(addr) => plain(shared.whois(&addr)),
             None => plain(Response::new(400).typed("text/plain", "missing 'addr' parameter")),
         },
-        ("POST", "/localapi/v0/login-interactive") => match read_only {
-            true => plain(Response::new(403).typed("text/plain", "login access denied")),
-            false => {
+        ("POST", "/localapi/v0/login-interactive") => {
+            if read_only {
+                plain(Response::new(403).typed("text/plain", "login access denied"))
+            } else {
                 shared.logins.fetch_add(1, Ordering::SeqCst);
                 let url = {
                     let mut inner = lock(&shared.inner);
@@ -541,16 +554,17 @@ fn answer(shared: &Shared, request: &Request) -> Answer {
                 }
                 plain(Response::new(204))
             }
-        },
+        }
         ("GET", "/localapi/v0/watch-ipn-bus") => {
             // Without NotifyNoPrivateKeys (16) the real stream wants write access.
             let mask: u32 = request
                 .query_value("mask")
                 .and_then(|m| m.parse().ok())
                 .unwrap_or(0);
-            match mask & 16 != 0 || !read_only {
-                true => Answer::Watch,
-                false => plain(Response::new(403).typed("text/plain", "watch access denied")),
+            if mask & 16 != 0 || !read_only {
+                Answer::Watch
+            } else {
+                plain(Response::new(403).typed("text/plain", "watch access denied"))
             }
         }
         ("GET" | "POST", _) => plain(Response::new(404).typed("text/plain", "404 page not found")),

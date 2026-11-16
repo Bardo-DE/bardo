@@ -76,12 +76,14 @@ impl FlipWatch {
 
     /// Whether the queued flip was queued longer ago than [`FLIP_DEADLINE`] at `now`. Nothing
     /// queued is never overdue.
+    #[must_use]
     pub fn flip_lost(self, now: Mono) -> bool {
         self.queued.is_some_and(|at| now.since(at) > FLIP_DEADLINE)
     }
 
     /// Whether the output has shown nothing for too long at `now`: frames were asked for for
     /// [`STARVED_AFTER`] and none landed.
+    #[must_use]
     pub fn starved(self, now: Mono) -> bool {
         self.unanswered_since
             .is_some_and(|at| now.since(at) > STARVED_AFTER)

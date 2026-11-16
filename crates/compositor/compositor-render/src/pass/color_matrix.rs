@@ -13,6 +13,7 @@ impl ColorMatrix {
         ColorMatrix([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]);
 
     /// `self` applied after `first`.
+    #[must_use]
     pub fn after(self, first: ColorMatrix) -> ColorMatrix {
         let (a, b) = (self.0, first.0);
         ColorMatrix(std::array::from_fn(|row| {
@@ -21,12 +22,14 @@ impl ColorMatrix {
     }
 
     /// The matrix applied to a colour.
+    #[must_use]
     pub fn apply(self, rgb: [f64; 3]) -> [f64; 3] {
         self.0
             .map(|row| row.iter().zip(rgb).map(|(m, c)| m * c).sum())
     }
 
     /// The inverse; none for a matrix with no inverse (primaries on one line).
+    #[must_use]
     pub fn inverse(self) -> Option<ColorMatrix> {
         let m = self.0;
         let cofactor = |r: usize, c: usize| -> f64 {
@@ -43,6 +46,7 @@ impl ColorMatrix {
     }
 
     /// Column-major `f32`s, as a GLSL `mat3` uniform takes them.
+    #[must_use]
     pub fn column_major(self) -> [f32; 9] {
         std::array::from_fn(|i| self.0[i % 3][i / 3] as f32)
     }

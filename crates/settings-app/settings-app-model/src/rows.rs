@@ -32,6 +32,7 @@ fn whole(pattern: &str) -> Option<Regex> {
 
 impl Columns {
     /// The columns `columns`, their patterns compiled.
+    #[must_use]
     pub fn new(columns: Vec<Column>) -> Columns {
         let patterns = columns
             .iter()
@@ -46,6 +47,7 @@ impl Columns {
     }
 
     /// The columns, in order.
+    #[must_use]
     pub fn all(&self) -> &[Column] {
         &self.columns
     }
@@ -72,6 +74,7 @@ impl Columns {
     /// `value`'s rows as text, one string per column, when every row is a table of exactly these
     /// columns holding values that fit; else `None` (the value is shown as written and no edit
     /// could keep what the editor cannot hold).
+    #[must_use]
     pub fn cells(&self, value: &toml::Value) -> Option<Vec<Vec<String>>> {
         value
             .as_array()?
@@ -113,6 +116,7 @@ impl Columns {
     }
 
     /// A new row's starting cells: empty text, and a choice's first word.
+    #[must_use]
     pub fn blank(&self) -> Vec<String> {
         self.columns
             .iter()

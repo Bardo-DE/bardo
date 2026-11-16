@@ -45,6 +45,7 @@ pub struct CloudPin {
 
 /// The turn target of a hosted model on the reach chosen: the provider's own name for it, the
 /// provider's defaults for sampling, a bounded reply.
+#[must_use]
 pub fn remote_target(model: &RemoteModel) -> Target {
     // A longest reply of 0 is one nobody stated (a server of the person's own): the default.
     let limit = model

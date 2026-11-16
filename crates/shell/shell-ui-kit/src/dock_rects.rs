@@ -35,6 +35,7 @@ impl DockRects {
     }
 
     /// A reader of every dock's rectangles.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<OutputRects> {
         self.0.subscribe()
     }

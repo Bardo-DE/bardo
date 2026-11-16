@@ -350,10 +350,7 @@ pub fn output_elements<R: Compositor>(
                 // The frame goes round the content as it is drawn: shrunk, for a window
                 // that flies scaled.
                 let content = drawn_content(placed, at_rest, effect);
-                let full = match shrunk {
-                    true => at_rest.size,
-                    false => content.size,
-                };
+                let full = if shrunk { at_rest.size } else { content.size };
                 let clip = clip_ask.map(|ask| {
                     let radius = shown_length(ask.radius, content.size, full);
                     ClipShape::of_content(content, radius, view).rounded(ask.rounding)

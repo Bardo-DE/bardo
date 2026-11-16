@@ -74,6 +74,7 @@ impl PeerUnitTable {
     }
 
     /// The rules, in the order they were written.
+    #[must_use]
     pub fn rules(&self) -> &[PeerUnitRule] {
         &self.rules
     }
@@ -126,6 +127,7 @@ pub struct ProcComm;
 
 impl ProcComm {
     /// The program name of process `pid`, `None` if it cannot be read.
+    #[must_use]
     pub fn name_of(&self, pid: u32) -> Option<String> {
         let text = std::fs::read_to_string(format!("/proc/{pid}/comm")).ok()?;
         Some(text.trim_end_matches('\n').to_owned())

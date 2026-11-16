@@ -24,6 +24,7 @@ pub struct CacheLimits {
 /// The files to remove so the rest fit `limits`: the newest are kept, then each older one while
 /// it still fits. A file larger than the byte limit alone never fits. Newest first, a tie broken
 /// by the path, so the same folder always gives the same answer.
+#[must_use]
 pub fn evictions(mut covers: Vec<CachedCover>, limits: CacheLimits) -> Vec<PathBuf> {
     covers.sort_by(|a, b| {
         b.modified

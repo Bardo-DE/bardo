@@ -207,6 +207,7 @@ fn chord_of(text: &str) -> Result<Chord, MoveError> {
 }
 
 /// The line that says `action`, with every point as a pixel: how a live run is kept.
+#[must_use]
 pub fn line_of(action: &CuaAction<WindowSpace>) -> String {
     let at = |t: &Target<WindowSpace>| match t {
         Target::Point(p) => format!("{} {}", p.x.0, p.y.0),
@@ -281,6 +282,7 @@ impl ScriptModel {
     }
 
     /// Says it is served by `served` (a cloud model, for the spend cap).
+    #[must_use]
     pub fn served_by(self, served: ServedBy) -> ScriptModel {
         ScriptModel {
             served: Some(served),

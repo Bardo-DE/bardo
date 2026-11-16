@@ -9,6 +9,7 @@ use std::path::Path;
 
 /// The terminal scope that process `pid`'s cgroup (`<root>/<pid>/cgroup`) ends in, if it is a
 /// terminal's child. A process whose cgroup cannot be read is in none.
+#[must_use]
 pub fn terminal_scope(root: &Path, pid: u32) -> Option<TerminalScope> {
     let text =
         std::fs::read_to_string(root.join(pid.to_string()).join("cgroup")).unwrap_or_default();
@@ -18,6 +19,7 @@ pub fn terminal_scope(root: &Path, pid: u32) -> Option<TerminalScope> {
 
 /// The user this process runs as, read from the system's `/proc/self` (never from a fixture
 /// tree: it is the daemon itself that is asked about).
+#[must_use]
 pub fn own_uid() -> Option<u32> {
     std::fs::metadata("/proc/self").ok().map(|m| m.uid())
 }

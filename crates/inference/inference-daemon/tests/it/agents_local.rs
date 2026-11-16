@@ -1,5 +1,5 @@
 //! inferd as an external coding agent's model endpoint over a model on this computer (a supervised
-//! engine, an attached one), end to end on a private bus: the translation of Anthropic and OpenAI
+//! engine, an attached one), end to end on a private bus: the translation of Anthropic and `OpenAI`
 //! requests to the engine's chat and back, with no key and no spend.
 
 use crate::hosting;

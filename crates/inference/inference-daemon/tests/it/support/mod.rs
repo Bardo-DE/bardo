@@ -94,9 +94,10 @@ impl EngineHost for Engines {
         if let Some(go) = &self.go {
             go.notified().await;
         }
-        match self.fail {
-            true => Err(EngineFailed::unknown()),
-            false => Ok(()),
+        if self.fail {
+            Err(EngineFailed::unknown())
+        } else {
+            Ok(())
         }
     }
 

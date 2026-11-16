@@ -192,7 +192,7 @@ impl Args {
                     parsed.client = Some(
                         provenance::ClientName::parse(&value()?)
                             .map_err(|_| CommandLineFault::NotAClient)?,
-                    )
+                    );
                 }
                 other => return Err(CommandLineFault::Unknown(other.to_owned())),
             }

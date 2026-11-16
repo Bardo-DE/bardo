@@ -5,6 +5,7 @@ use shell_kit::battery::device_glyph::Device;
 use shell_model::bluetooth::BtKind;
 
 /// The glyph for a device of `kind`.
+#[must_use]
 pub fn device_of(kind: BtKind) -> Device {
     match kind {
         BtKind::Headphones | BtKind::Headset => Device::Headphones,

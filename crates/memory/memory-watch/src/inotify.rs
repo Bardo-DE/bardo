@@ -76,6 +76,7 @@ impl InotifyWatch {
     }
 
     /// The underlying watcher.
+    #[must_use]
     pub fn inner(&self) -> &notify::RecommendedWatcher {
         &self.watcher
     }
@@ -97,12 +98,11 @@ impl FileWatch for InotifyWatch {
     async fn next(&mut self) -> Option<Observed> {
         poll_fn(|cx| {
             let mut inbox = locked(&self.inbox);
-            match inbox.queue.pop_front() {
-                Some(observed) => Poll::Ready(Some(observed)),
-                None => {
-                    inbox.waker = Some(cx.waker().clone());
-                    Poll::Pending
-                }
+            if let Some(observed) = inbox.queue.pop_front() {
+                Poll::Ready(Some(observed))
+            } else {
+                inbox.waker = Some(cx.waker().clone());
+                Poll::Pending
             }
         })
         .await

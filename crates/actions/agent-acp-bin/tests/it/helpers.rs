@@ -227,7 +227,7 @@ async fn a_sentence_the_board_tells_arrives_once_the_daemon_says_something_chang
 async fn an_editor_goes_without_helpers_when_the_daemon_is_not_there() {
     let mut none = LiveHelpers::over(None).await;
     assert!(none.rows().is_empty());
-    assert!(none.open_job(&helper(1)).await.is_err());
+    none.open_job(&helper(1)).await.unwrap_err();
 }
 
 #[tokio::test]

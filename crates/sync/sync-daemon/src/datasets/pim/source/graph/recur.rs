@@ -51,9 +51,10 @@ fn end_of(range: Option<&Range>, all_day: bool) -> Option<String> {
     match range.kind.as_deref() {
         Some("endDate") => {
             let date = compact_date(range.end_date.as_deref()?)?;
-            Some(match all_day {
-                true => format!("UNTIL={date}"),
-                false => format!("UNTIL={date}T235959Z"),
+            Some(if all_day {
+                format!("UNTIL={date}")
+            } else {
+                format!("UNTIL={date}T235959Z")
             })
         }
         Some("numbered") => Some(format!("COUNT={}", range.occurrences.filter(|n| *n > 0)?)),
@@ -97,19 +98,16 @@ pub fn rule(recurrence: &Recurrence, all_day: bool) -> Rule {
             else {
                 return unsupported();
             };
-            match kind {
-                "relativeMonthly" => {
-                    parts.push("FREQ=MONTHLY".into());
-                    parts.push(format!("INTERVAL={interval}"));
-                }
-                _ => {
-                    let Some(month) = pattern.month else {
-                        return unsupported();
-                    };
-                    parts.push("FREQ=YEARLY".into());
-                    parts.push(format!("INTERVAL={interval}"));
-                    parts.push(format!("BYMONTH={month}"));
-                }
+            if kind == "relativeMonthly" {
+                parts.push("FREQ=MONTHLY".into());
+                parts.push(format!("INTERVAL={interval}"));
+            } else {
+                let Some(month) = pattern.month else {
+                    return unsupported();
+                };
+                parts.push("FREQ=YEARLY".into());
+                parts.push(format!("INTERVAL={interval}"));
+                parts.push(format!("BYMONTH={month}"));
             }
             match days.as_slice() {
                 [one] => parts.push(format!("BYDAY={at}{one}")),
@@ -225,7 +223,7 @@ mod tests {
                 "relative without an index",
                 r#"{"pattern":{"type":"relativeMonthly","daysOfWeek":["monday"]}}"#,
             ),
-            ("no pattern", r#"{}"#),
+            ("no pattern", r"{}"),
         ];
         for (name, json) in CASES {
             assert!(

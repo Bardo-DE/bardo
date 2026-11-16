@@ -78,7 +78,7 @@ impl Dispatch<ExtImageCopyCaptureCursorSessionV1, ()> for Capturing {
         state: &mut Self,
         _: &ExtImageCopyCaptureCursorSessionV1,
         event: ext_image_copy_capture_cursor_session_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -98,7 +98,7 @@ impl Dispatch<WlSeat, ()> for Capturing {
         _: &mut Self,
         _: &WlSeat,
         _: wl_seat::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -110,7 +110,7 @@ impl Dispatch<WlPointer, ()> for Capturing {
         _: &mut Self,
         _: &WlPointer,
         _: wl_pointer::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

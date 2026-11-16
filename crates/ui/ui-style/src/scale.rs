@@ -13,6 +13,7 @@ use ui_core::geometry::scale::Scale;
 struct DeviceScale(Scale);
 
 /// The scale a root draws for: `given`, else `host`'s, else [`Scale::ONE`].
+#[must_use]
 pub fn use_root_scale(given: Option<Scale>, host: Option<Scale>) -> Scale {
     let scale = given.or(host).unwrap_or(Scale::ONE);
     let mut provided = use_context_provider(|| Signal::new(DeviceScale(scale)));
@@ -24,6 +25,7 @@ pub fn use_root_scale(given: Option<Scale>, host: Option<Scale>) -> Scale {
 
 /// The device scale of the enclosing root; [`Scale::ONE`] outside one (a glyph rendered on its
 /// own, in a test).
+#[must_use]
 pub fn use_scale() -> Scale {
     try_use_context::<Signal<DeviceScale>>().map_or(Scale::ONE, |provided| provided().0)
 }

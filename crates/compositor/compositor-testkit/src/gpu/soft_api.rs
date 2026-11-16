@@ -25,6 +25,7 @@ pub struct SoftGraphicsApi {
 
 impl SoftGraphicsApi {
     /// An API over `topology` with every GPU present.
+    #[must_use]
     pub fn new(topology: GpuTopology) -> SoftGraphicsApi {
         SoftGraphicsApi {
             topology,
@@ -85,11 +86,13 @@ impl SoftDevice {
     }
 
     /// Which topology GPU this is.
+    #[must_use]
     pub fn id(&self) -> GpuId {
         self.id
     }
 
     /// A handle on this GPU's copy-path counters (A5: tests assert which path ran).
+    #[must_use]
     pub fn counters(&self) -> CounterHandle {
         self.renderer.counter_handle()
     }

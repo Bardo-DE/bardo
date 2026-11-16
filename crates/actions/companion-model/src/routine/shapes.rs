@@ -66,6 +66,7 @@ pub enum RoutineRecord {
 
 impl RoutineRecord {
     /// The helper whose Space the record belongs to.
+    #[must_use]
     pub fn helper(&self) -> &HelperId {
         match self {
             RoutineRecord::Kept(routine) => &routine.helper,
@@ -87,6 +88,7 @@ pub enum RoutineNotice {
 
 impl RoutineNotice {
     /// The sentence, for a routine of the helper `name`.
+    #[must_use]
     pub fn plain(&self, name: &HelperName) -> String {
         match self {
             RoutineNotice::Paused { when } => format!(

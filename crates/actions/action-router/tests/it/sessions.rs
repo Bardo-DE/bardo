@@ -485,8 +485,8 @@ async fn the_reader_answers_a_closed_set_plainly_and_any_text_as_a_handle() {
             record.handles.label(held),
             Some(&mail_label("work")),
             "the join of the inputs"
-        );
-    }
+        )
+    };
     let wrong = ask(
         &router,
         &companion(),

@@ -31,6 +31,7 @@ pub struct ShortcutsInhibitPart {
 
 impl ShortcutsInhibitPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ShortcutsInhibitPart
     where
         D: GlobalDispatch<ZwpKeyboardShortcutsInhibitManagerV1, GlobalData>
@@ -81,6 +82,7 @@ pub fn sync_focus(part: &ShortcutsInhibitPart, focused: Option<&WlSurface>) {
 /// Whether `seat`'s bindings are suspended by an active inhibitor: the focused client asked for
 /// every key, so nothing resolves and every key is forwarded. The key path asks before it
 /// resolves a chord.
+#[must_use]
 pub fn bindings_suspended<D: SeatHandler + 'static>(seat: &Seat<D>) -> bool {
     seat.keyboard_shortcuts_inhibited()
 }

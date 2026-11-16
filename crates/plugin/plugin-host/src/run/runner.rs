@@ -20,6 +20,7 @@ pub struct Runner {
 impl Runner {
     /// A runner for the host called `app`, which waits as `timeouts` say. The plugin's stderr
     /// lines go to standard error as `<app>: plugin <id>: <line>`.
+    #[must_use]
     pub fn new(app: &'static str, timeouts: Timeouts) -> Runner {
         Runner {
             log: Log {

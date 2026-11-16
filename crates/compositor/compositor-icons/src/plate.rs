@@ -17,6 +17,7 @@ const RADIUS: f32 = 225.0;
 /// assert_eq!(&got.rgba[(8 * 16 + 8) * 4..][..4], &[128, 128, 128, 255]);
 /// assert_eq!(got.rgba[3], 0); // the corner is clear
 /// ```
+#[must_use]
 pub fn plate(edge: u32, ink: [u8; 4]) -> Option<Pixels> {
     (edge > 0).then(|| {
         let side = edge as f32;

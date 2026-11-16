@@ -18,6 +18,7 @@ impl Chord {
     /// A chord, made canonical: flags other than Ctrl, Alt, Shift and Meta (the OS key) are
     /// dropped; a tapped modifier key carries no other modifier; and the symbols Shift makes on a US layout (`Shift+=` is `+`, `Shift+/` is
     /// `?`, `Shift+-` is `_`) are written as the symbol with no Shift, as menus write them.
+    #[must_use]
     pub fn new(modifiers: Modifiers, key: Key) -> Chord {
         let modifiers = chord_modifiers(modifiers);
         let shifted = modifiers.contains(Modifiers::SHIFT);
@@ -47,23 +48,27 @@ impl Chord {
     }
 
     /// The modifiers held.
+    #[must_use]
     pub fn modifiers(self) -> Modifiers {
         self.modifiers
     }
 
     /// The key.
+    #[must_use]
     pub fn key(self) -> Key {
         self.key
     }
 
     /// Whether a text field wants this chord: a typing or editing key with no Ctrl, Alt or
     /// Super (Shift alone still types).
+    #[must_use]
     pub fn belongs_to_text_field(self) -> bool {
         let command = Modifiers::CONTROL | Modifiers::ALT | Modifiers::META;
         self.key.belongs_to_text_field() && !self.modifiers.intersects(command)
     }
 
     /// Whether a program in a terminal keeps this chord: Ctrl without Shift or Super.
+    #[must_use]
     pub fn is_plain_ctrl(self) -> bool {
         self.modifiers.contains(Modifiers::CONTROL)
             && !self.modifiers.contains(Modifiers::SHIFT)
@@ -72,6 +77,7 @@ impl Chord {
 
     /// Whether this is Ctrl alone with `+`, `=`, `-` or `0`: the window's text size even in a
     /// terminal, as GNOME Terminal, Konsole and Windows Terminal take them.
+    #[must_use]
     pub fn is_text_size(self) -> bool {
         self.modifiers == Modifiers::CONTROL && matches!(self.key, Key::Char('+' | '=' | '-' | '0'))
     }
@@ -94,16 +100,19 @@ pub struct DefaultChord {
 impl DefaultChord {
     /// A default chord: `base` plus, when `primary`, the platform's primary modifier (Command on
     /// a Mac, Ctrl elsewhere); otherwise it is exactly its physical modifiers.
+    #[must_use]
     pub fn new(primary: bool, base: Chord) -> DefaultChord {
         DefaultChord { primary, base }
     }
 
     /// Whether the primary modifier is part of it.
+    #[must_use]
     pub fn primary(self) -> bool {
         self.primary
     }
 
     /// The physical part.
+    #[must_use]
     pub fn base(self) -> Chord {
         self.base
     }
@@ -111,6 +120,7 @@ impl DefaultChord {
     /// The concrete chord on `platform` in `context`. In a terminal where Primary is Ctrl+Shift,
     /// a chord that already uses Shift cannot add it, so it takes Alt as well (Primary+Shift+Z
     /// is Ctrl+Shift+Alt+Z); `None` when it uses Alt too, which leaves no stand-in.
+    #[must_use]
     pub fn resolve(self, platform: Platform, context: Context) -> Option<Chord> {
         if !self.primary {
             return Some(self.base);

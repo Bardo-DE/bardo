@@ -17,12 +17,12 @@ pub enum Page {
     Catalogue,
     /// Rows, lists, section headers, disclosures, the roster.
     Lists,
-    /// Form and FormSection over a grouped list, field rows and the icon tile (design/34).
+    /// Form and `FormSection` over a grouped list, field rows and the icon tile (design/34).
     Forms,
     /// Menus, menu items and pop-up buttons.
     Menus,
-    /// Stepper, Table, Toolbar, SplitView, Sidebar, TabView, DocumentTabs, FieldRow and FieldGroup,
-    /// the MenuBar model, the drag image and the window titlebar, in every state (design/30
+    /// Stepper, Table, Toolbar, `SplitView`, Sidebar, `TabView`, `DocumentTabs`, `FieldRow` and `FieldGroup`,
+    /// the `MenuBar` model, the drag image and the window titlebar, in every state (design/30
     /// sections 2.1 to 2.7).
     Structure,
     /// A System-Settings-like window built from those parts, with real controls.

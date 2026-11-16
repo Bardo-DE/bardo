@@ -50,7 +50,7 @@ pub trait FeedCursor: Sized + Send + Sync {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FeedChange {
     /// Created or changed. `content` is the item's bytes when the source already holds them
-    /// (Graph's delta carries whole events); `None` when they are fetched afterwards (CalDAV's
+    /// (Graph's delta carries whole events); `None` when they are fetched afterwards (`CalDAV`'s
     /// sync-collection reports names and etags only).
     Upsert {
         /// The item as the journal records it: id, version, name, size, hash.
@@ -136,7 +136,7 @@ pub trait PimSource: Send + Sync + 'static {
 /// Which source an account's grant for a kind is read through.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Chosen {
-    /// CalDAV or CardDAV.
+    /// `CalDAV` or `CardDAV`.
     Dav,
     /// Microsoft Graph calendars.
     GraphCalendar,

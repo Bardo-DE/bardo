@@ -51,6 +51,7 @@ pub enum Settle {
 /// timed out when `timeout` has passed since `since`, and else it is waiting, with `wake` at
 /// the earlier of the end of the quiet period and the timeout. Events before `since` are not
 /// the action's and are ignored. Pure.
+#[must_use]
 pub fn settle(events: &[DamageAt], quiet: Ms, timeout: Ms, since: Stamp, now: Stamp) -> Settle {
     let last = events
         .iter()
@@ -82,6 +83,7 @@ fn row_of(buf: &PixelBuf, y: usize, row_bytes: usize) -> Option<&[u8]> {
 /// there), so these are window-local logical pixels; a caller with another scale divides by it.
 /// Two buffers that do not have the same format and size differ everywhere: the whole of `next`.
 /// Stride padding is not compared. Pure.
+#[must_use]
 pub fn pixel_diff(prev: &PixelBuf, next: &PixelBuf) -> Option<Rect<WindowSpace>> {
     let (w, h) = (next.size.w, next.size.h);
     let whole = Rect {

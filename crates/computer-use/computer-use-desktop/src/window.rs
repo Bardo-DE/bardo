@@ -29,6 +29,7 @@ impl ToplevelIdent {
     }
 
     /// The identifier as the compositor spelled it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

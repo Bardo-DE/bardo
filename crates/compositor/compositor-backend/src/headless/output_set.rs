@@ -95,21 +95,25 @@ pub struct OutputSet {
 
 impl OutputSet {
     /// No outputs.
+    #[must_use]
     pub fn empty() -> OutputSet {
         OutputSet::default()
     }
 
     /// How many are plugged.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.outputs.len()
     }
 
     /// Whether none is plugged.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.outputs.is_empty()
     }
 
     /// The output on `name`.
+    #[must_use]
     pub fn get(&self, name: &OutputName) -> Option<&VirtualOutput> {
         self.outputs.get(name)
     }

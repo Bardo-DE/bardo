@@ -84,6 +84,7 @@ impl Default for LoginTiming {
 
 impl LoginTiming {
     /// The default timing: the system clock, ten minutes, one second, nothing recorded.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -176,6 +177,7 @@ fn held(state: &Mutex<State>) -> std::sync::MutexGuard<'_, State> {
 
 impl Launchers {
     /// An empty roster whose requests go out on `connection`, timed and recorded by `timing`.
+    #[must_use]
     pub fn new(connection: Connection, timing: LoginTiming) -> Self {
         Self {
             state: Arc::default(),
@@ -257,6 +259,7 @@ impl Launchers {
 
     /// Which programs have a launcher now, for the add sheet to ask. A connection that left is
     /// not one (`left` frees its programs).
+    #[must_use]
     pub fn roster(&self) -> Roster {
         let state = Arc::clone(&self.state);
         Roster::new(move |program| held(&state).programs.contains_key(program))
@@ -540,6 +543,7 @@ pub enum SignOutNews {
 
 impl SignOutNews {
     /// The word the pane hears.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             SignOutNews::Asked => "asked",
@@ -553,6 +557,7 @@ impl SignOutNews {
     }
 
     /// What an end of a logout request is to the pane.
+    #[must_use]
     pub fn of(end: LoginEnd) -> Self {
         use account_capability::LoginOutcome;
         match end {

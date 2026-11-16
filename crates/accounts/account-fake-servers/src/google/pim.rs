@@ -95,14 +95,12 @@ pub(super) fn answer(shared: &Shared, request: &Request) -> Option<Response> {
         }
         (
             fixed,
-            presented
-                .filter(|t| {
-                    shared
-                        .issuer
-                        .as_ref()
-                        .is_some_and(|issuer| issuer.access_is_live(t))
-                })
-                .is_some(),
+            presented.as_ref().is_some_and(|t| {
+                shared
+                    .issuer
+                    .as_ref()
+                    .is_some_and(|issuer| issuer.access_is_live(t))
+            }),
         )
     };
     if !token_ok && !issued {
@@ -175,6 +173,7 @@ impl GoogleHandle {
     }
 
     /// The live events of a calendar: id and Google JSON.
+    #[must_use]
     pub fn events(&self, calendar: &str) -> Vec<(String, Value)> {
         self.pim(|pim| pim.calendars.events(calendar))
     }
@@ -195,6 +194,7 @@ impl GoogleHandle {
     }
 
     /// The live contacts: resource name and Person JSON.
+    #[must_use]
     pub fn people(&self) -> Vec<(String, Value)> {
         self.pim(|pim| pim.people.all())
     }
@@ -226,6 +226,7 @@ impl GoogleHandle {
     }
 
     /// The live tasks of a list: id and Task JSON.
+    #[must_use]
     pub fn tasks(&self, list: &str) -> Vec<(String, Value)> {
         self.pim(|pim| pim.tasks.tasks(list))
     }

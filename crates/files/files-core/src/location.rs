@@ -31,16 +31,19 @@ impl FolderPath {
     }
 
     /// The path.
+    #[must_use]
     pub fn as_path(&self) -> &Path {
         &self.0
     }
 
     /// The folder above, unless this is `/`.
+    #[must_use]
     pub fn parent(&self) -> Option<FolderPath> {
         self.0.parent().map(|p| FolderPath(p.to_path_buf()))
     }
 
     /// The child folder `name` inside this one.
+    #[must_use]
     pub fn join(&self, name: &crate::FileName) -> FolderPath {
         FolderPath(self.0.join(name.as_os_str()))
     }

@@ -34,6 +34,7 @@ impl Rect {
     };
 
     /// `true` for a rectangle with positive width and height.
+    #[must_use]
     pub fn has_area(self) -> bool {
         self.width > 0 && self.height > 0
     }
@@ -49,6 +50,7 @@ pub struct RoundedRect {
 impl RoundedRect {
     /// The radius actually used: clamped to be non-negative and to at most half of each side,
     /// so that the four corner arcs never overlap.
+    #[must_use]
     pub fn effective_radius(self) -> Px {
         self.radius
             .max(0)

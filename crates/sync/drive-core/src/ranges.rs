@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn an_index_file_written_before_reads_and_writes_back_the_same_shape() {
-        let text = r#"[[0,20],[30,40]]"#;
+        let text = r"[[0,20],[30,40]]";
         let ranges: Ranges = serde_json::from_str(text).expect("an index's ranges");
         assert_eq!(ranges.bytes(), 30);
         assert!(ranges.covers(0, 20) && !ranges.covers(19, 31));

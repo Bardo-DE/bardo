@@ -86,6 +86,7 @@ impl OwnerView {
 
     /// The owner `uid` as a file's trust should name it: root for the overflow uid where root is
     /// not mapped, else `uid`.
+    #[must_use]
     pub fn owner(self, uid: u32) -> u32 {
         match self {
             OwnerView::RootUnmapped { overflow } if uid == overflow => 0,

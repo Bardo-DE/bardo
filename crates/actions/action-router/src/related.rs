@@ -54,7 +54,11 @@ impl<S: Seams> Router<S> {
         mut outcome: Outcome,
     ) -> Result<Outcome, AppRefusal> {
         let st = self.locked();
-        let Some(manifest) = st.registry.get(&p.request.action.app).map(|m| m.manifest()) else {
+        let Some(manifest) = st
+            .registry
+            .get(&p.request.action.app)
+            .map(action_manifest::ValidManifest::manifest)
+        else {
             return Ok(outcome);
         };
         let Some((_, relation)) = asked(manifest, p) else {

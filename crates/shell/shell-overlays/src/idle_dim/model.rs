@@ -36,6 +36,7 @@ pub fn scene_of(dim: DimShown, last: Percent) -> DimScene {
 }
 
 /// Whether the daemon maps the surface: only while the service dims.
+#[must_use]
 pub fn visibility_of(dim: DimShown) -> Visibility {
     match dim {
         DimShown::Clear => Visibility::Hidden,

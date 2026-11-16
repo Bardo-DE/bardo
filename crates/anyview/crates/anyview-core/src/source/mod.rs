@@ -28,11 +28,13 @@ impl Source {
     }
 
     /// Where the file is.
+    #[must_use]
     pub fn path(&self) -> &FilePath {
         &self.path
     }
 
     /// Which version of it was read.
+    #[must_use]
     pub fn stamp(&self) -> FileStamp {
         self.stamp
     }

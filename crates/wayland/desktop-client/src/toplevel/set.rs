@@ -13,6 +13,7 @@ pub struct Toplevels(pub(crate) BTreeMap<ToplevelKey, Toplevel>);
 
 impl Toplevels {
     /// One toplevel.
+    #[must_use]
     pub fn get(&self, key: ToplevelKey) -> Option<&Toplevel> {
         self.0.get(&key)
     }
@@ -25,12 +26,14 @@ impl Toplevels {
     }
 
     /// The one with this identifier.
+    #[must_use]
     pub fn by_identifier(&self, identifier: &ToplevelIdentifier) -> Option<&Toplevel> {
         self.announced()
             .find(|t| t.identifier.as_ref() == Some(identifier))
     }
 
     /// The activated toplevel, if any.
+    #[must_use]
     pub fn activated(&self) -> Option<&Toplevel> {
         self.announced()
             .find(|t| t.flags.contains(ToplevelFlag::Activated))

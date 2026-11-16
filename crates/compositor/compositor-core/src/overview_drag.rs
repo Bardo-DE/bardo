@@ -27,6 +27,7 @@ pub struct SpaceTarget {
 
 impl SpaceTarget {
     /// A target of `rect` for `space`.
+    #[must_use]
     pub fn new(space: SpaceId, rect: LogicalRect) -> SpaceTarget {
         SpaceTarget { space, rect }
     }
@@ -49,6 +50,7 @@ impl Landing {
     /// use compositor_core::overview_drag::Landing;
     /// assert!(Landing::NewSpace.space().is_none());
     /// ```
+    #[must_use]
     pub fn space(&self) -> Option<&SpaceId> {
         match self {
             Landing::Space(space) => Some(space),
@@ -156,6 +158,7 @@ impl SpaceTargets {
     }
 
     /// Whether no output has a target.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.spaces.is_empty() && self.new_spaces.is_empty()
     }
@@ -241,6 +244,7 @@ pub enum Released {
 
 impl Drag {
     /// A press on `window`'s slot (whose top left is `slot`) at `start`.
+    #[must_use]
     pub fn press(
         window: WindowId,
         origin: Origin,
@@ -256,6 +260,7 @@ impl Drag {
     }
 
     /// The window being pressed or dragged.
+    #[must_use]
     pub fn window(&self) -> Option<WindowId> {
         match self {
             Drag::Idle => None,
@@ -275,11 +280,13 @@ impl Drag {
     /// assert!(!Drag::press(WindowId(3), Origin::Test, at, at).is_dragging());
     /// assert!(!Drag::Idle.is_dragging());
     /// ```
+    #[must_use]
     pub fn is_dragging(&self) -> bool {
         matches!(self, Drag::Dragging { .. })
     }
 
     /// The target under the pointer while dragging.
+    #[must_use]
     pub fn over(&self) -> Option<&Over> {
         match self {
             Drag::Dragging { over, .. } => over.as_ref(),
@@ -316,17 +323,8 @@ impl Drag {
                 origin,
                 start,
                 slot,
-            } => match travelled(start, at) {
-                false => (
-                    Drag::Pressed {
-                        window,
-                        origin,
-                        start,
-                        slot,
-                    },
-                    Moved::Nothing,
-                ),
-                true => {
+            } => {
+                if travelled(start, at) {
                     let over = targets.hit(at, live);
                     let moved = Moved::Follows {
                         window,
@@ -342,8 +340,18 @@ impl Drag {
                         over,
                     };
                     (drag, moved)
+                } else {
+                    (
+                        Drag::Pressed {
+                            window,
+                            origin,
+                            start,
+                            slot,
+                        },
+                        Moved::Nothing,
+                    )
                 }
-            },
+            }
             Drag::Dragging {
                 window,
                 origin,
@@ -385,6 +393,7 @@ impl Drag {
     /// assert!(matches!(pressed.released(), Released::Pick { window: WindowId(3), .. }));
     /// assert_eq!(Drag::Idle.released(), Released::Nothing);
     /// ```
+    #[must_use]
     pub fn released(self) -> Released {
         match self {
             Drag::Idle => Released::Nothing,

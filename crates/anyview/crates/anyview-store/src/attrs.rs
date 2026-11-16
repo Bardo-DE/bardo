@@ -13,6 +13,7 @@ pub(crate) use crate::sys::copy_attributes;
 /// process may not write it (another owner's file, a read-only mount). A person unlocks a file
 /// with its permissions, as in any editor; a window hides or disables edits of one that is.
 /// A file that cannot be looked at is not read-only: opening it fails with its own error.
+#[must_use]
 pub fn is_read_only(path: &Path) -> bool {
     let Ok(meta) = fs::metadata(path) else {
         return false;

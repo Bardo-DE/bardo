@@ -24,6 +24,7 @@ pub enum Exit {
 
 impl Exit {
     /// The animation this exit plays.
+    #[must_use]
     pub fn anim(self) -> Anim {
         match self {
             Exit::Row => Anim::RowOut,

@@ -35,6 +35,7 @@ pub struct PointThrow {
 
 impl PointThrow {
     /// Where the throw would come to rest, each axis projected at `r = 0.998` per ms.
+    #[must_use]
     pub fn projected(self) -> Point {
         let along = |from, velocity| Throw { from, velocity }.projected();
         Point {
@@ -44,6 +45,7 @@ impl PointThrow {
     }
 
     /// The point of `ends` nearest the projection (a snap cell); `None` when there are none.
+    #[must_use]
     pub fn landing(self, ends: &[Point]) -> Option<Point> {
         let p = self.projected();
         let distance = |q: &Point| (q.x.0 - p.x.0).powi(2) + (q.y.0 - p.y.0).powi(2);
@@ -98,6 +100,7 @@ impl SpringPointMotion {
     }
 
     /// Where it is, subscribing the caller's render to its frames.
+    #[must_use]
     pub fn frame(self) -> PointFrame {
         let (x, y) = (self.x.frame(), self.y.frame());
         PointFrame {
@@ -110,6 +113,7 @@ impl SpringPointMotion {
     }
 
     /// Where it is, without subscribing.
+    #[must_use]
     pub fn peek(self) -> PointFrame {
         let (x, y) = (self.x.peek(), self.y.peek());
         PointFrame {
@@ -130,6 +134,7 @@ fn both(x: SpringPhase, y: SpringPhase) -> SpringPhase {
 }
 
 /// A two-dimensional spring standing at `at`, in pixels.
+#[must_use]
 pub fn use_spring_point_motion(at: Point) -> SpringPointMotion {
     SpringPointMotion {
         x: use_spring_motion(at.x.0, PxPerUnit(1.0)),
@@ -140,6 +145,7 @@ pub fn use_spring_point_motion(at: Point) -> SpringPointMotion {
 /// A two-dimensional spring that follows `target` (a widget's cell): it stands there on mount
 /// and glides to each new target from where it is, at the speed it has, on the spring `spec`
 /// chooses. For a throw into a cell, use [`use_spring_point_motion`] and `go` with the release.
+#[must_use]
 pub fn use_spring_point(target: Point, spec: SpringSpec) -> PointFrame {
     let motion = use_spring_point_motion(target);
     let mut seen = use_hook(|| CopyValue::new(target));

@@ -25,6 +25,7 @@ pub enum Pointer {
 
 impl Pointer {
     /// The portal's value.
+    #[must_use]
     pub fn wire(self) -> u32 {
         match self {
             Pointer::Hidden => 1,
@@ -34,6 +35,7 @@ impl Pointer {
     }
 
     /// The mode for a portal value; `None` for anything but exactly 1, 2 or 4.
+    #[must_use]
     pub fn from_wire(value: u32) -> Option<Pointer> {
         match value {
             1 => Some(Pointer::Hidden),
@@ -58,6 +60,7 @@ pub enum Remembered {
 
 impl Remembered {
     /// The mode for a call's number; anything unknown is asked every time.
+    #[must_use]
     pub fn from_wire(value: u32) -> Remembered {
         match value {
             1 => Remembered::WhileRunning,
@@ -120,6 +123,7 @@ impl Ask {
     }
 
     /// The same ask, with how long the choice is kept.
+    #[must_use]
     pub fn remembering(self, remembered: Remembered) -> Ask {
         Ask { remembered, ..self }
     }

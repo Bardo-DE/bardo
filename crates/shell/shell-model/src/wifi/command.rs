@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::{AccessPoint, Radio, Ssid};
 use crate::units::Presence;
 
-/// One change NetworkManager reported.
+/// One change `NetworkManager` reported.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum WifiEvent {
@@ -16,7 +16,7 @@ pub enum WifiEvent {
     AccessPoints(Vec<AccessPoint>),
     /// The saved connections' SSIDs.
     Saved(Vec<Ssid>),
-    /// NetworkManager left the bus.
+    /// `NetworkManager` left the bus.
     Gone,
 }
 

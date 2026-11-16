@@ -11,6 +11,7 @@ pub const LOG_TEXT_MAX_CHARS: usize = 120;
 const ELLIPSIS: char = '\u{2026}';
 
 /// `text` cut to at most `max` bytes at a character boundary.
+#[must_use]
 pub fn cut_bytes(text: &str, max: usize) -> &str {
     if text.len() <= max {
         return text;
@@ -23,6 +24,7 @@ pub fn cut_bytes(text: &str, max: usize) -> &str {
 }
 
 /// `text` cut to at most `max` bytes at a character boundary, with an ellipsis where it was cut.
+#[must_use]
 pub fn clip_bytes(text: &str, max: usize) -> String {
     let kept = cut_bytes(text, max);
     let mut clipped = kept.to_owned();
@@ -33,6 +35,7 @@ pub fn clip_bytes(text: &str, max: usize) -> String {
 }
 
 /// `text` cut to at most `max` characters, with an ellipsis where it was cut.
+#[must_use]
 pub fn clip_chars(text: &str, max: usize) -> String {
     match text.char_indices().nth(max) {
         None => text.to_owned(),
@@ -55,6 +58,7 @@ fn is_bidi_control(c: char) -> bool {
 
 /// `text` as one line the person reads: control and bidirectional marks dropped, cut to `max`
 /// characters.
+#[must_use]
 pub fn for_display(text: &str, max: usize) -> String {
     let plain: String = text
         .chars()

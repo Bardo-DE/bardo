@@ -37,7 +37,7 @@ impl Dispatch<WlCompositor, ()> for Windowless {
         _: &mut Self,
         _: &WlCompositor,
         _: <WlCompositor as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -49,7 +49,7 @@ impl Dispatch<WlSurface, ()> for Windowless {
         _: &mut Self,
         _: &WlSurface,
         _: <WlSurface as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

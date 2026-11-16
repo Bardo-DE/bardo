@@ -127,7 +127,7 @@ pub(super) fn send(wire: &Wire, command: DesktopCommand) -> Result<(), CommandEr
             window(wire, toplevel)?.full_screen(generated(Toggle::On)?);
         }
         DesktopCommand::Unfullscreen(key) => {
-            window(wire, key)?.full_screen(generated(Toggle::Off)?)
+            window(wire, key)?.full_screen(generated(Toggle::Off)?);
         }
         DesktopCommand::SetMinimiseTarget {
             toplevel,
@@ -183,7 +183,7 @@ pub(super) fn send(wire: &Wire, command: DesktopCommand) -> Result<(), CommandEr
             shell(wire, route)?.window_menu_pick(window.as_str().to_owned(), generated(entry)?);
         }
         DesktopCommand::PickSplit(window) => {
-            shell(wire, route)?.split_pick(window.as_str().to_owned())
+            shell(wire, route)?.split_pick(window.as_str().to_owned());
         }
         DesktopCommand::CancelSplit => shell(wire, route)?.split_cancel(),
         DesktopCommand::DivideSplit { window, share } => {

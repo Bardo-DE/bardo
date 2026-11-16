@@ -15,12 +15,14 @@ pub struct IconKey {
 
 impl Want {
     /// The key of this question.
+    #[must_use]
     pub fn key(&self) -> IconKey {
-        let pixels = match self.buffers.is_empty() {
-            true => 0,
-            false => self.buffers.iter().fold(FNV_BASIS, |hash, buffer| {
+        let pixels = if self.buffers.is_empty() {
+            0
+        } else {
+            self.buffers.iter().fold(FNV_BASIS, |hash, buffer| {
                 fnv(fnv(hash, &buffer.edge.to_le_bytes()), &buffer.rgba)
-            }),
+            })
         };
         IconKey {
             app_id: self.app_id.clone(),
@@ -60,11 +62,13 @@ pub struct IconCache {
 
 impl IconCache {
     /// An empty cache.
+    #[must_use]
     pub fn new() -> IconCache {
         IconCache::default()
     }
 
     /// The answer kept for `key` at `edge`, if there is one.
+    #[must_use]
     pub fn get(&self, key: &IconKey, edge: u32) -> Option<&Slot> {
         self.slots.get(&(key.clone(), edge))
     }
@@ -112,11 +116,13 @@ impl IconCache {
     }
 
     /// How many answers are kept.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.slots.len()
     }
 
     /// Whether none is.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.slots.is_empty()
     }

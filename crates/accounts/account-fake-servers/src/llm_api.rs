@@ -1,4 +1,4 @@
-//! A fake AI company's key check: `GET <prefix>/models` (OpenRouter: `<prefix>/key`), answered `200` with a small list only
+//! A fake AI company's key check: `GET <prefix>/models` (`OpenRouter`: `<prefix>/key`), answered `200` with a small list only
 //! when the request presents a live key the way that company documents, and `401` otherwise (a
 //! right key in the wrong header is as refused as a wrong key). Plain HTTP on loopback, built
 //! from the shipped provider file of the company (`rewrite`).
@@ -24,10 +24,10 @@ pub enum Auth {
     XApiKey,
     /// Gemini: `x-goog-api-key`; the list is `{"models": [...]}` at `/v1beta/models`.
     XGoogApiKey,
-    /// OpenAI and Moonshot: `Authorization: Bearer`; the list is `{"data": [...]}` at
+    /// `OpenAI` and Moonshot: `Authorization: Bearer`; the list is `{"data": [...]}` at
     /// `/v1/models`.
     Bearer,
-    /// OpenRouter: `Authorization: Bearer` at `/v1/key` (its models list is public); the answer
+    /// `OpenRouter`: `Authorization: Bearer` at `/v1/key` (its models list is public); the answer
     /// is `{"data": {...}}`.
     BearerKey,
 }
@@ -120,16 +120,19 @@ impl FakeLlmApi {
 
 impl LlmApiHandle {
     /// `http://127.0.0.1:port`.
+    #[must_use]
     pub fn base_url(&self) -> &str {
         &self.shared.base
     }
 
     /// The API root a provider file names, with the company's version prefix.
+    #[must_use]
     pub fn api_url(&self) -> String {
         format!("{}{}", self.shared.base, self.shared.auth.prefix())
     }
 
     /// `spec` with its chat endpoint pointed at this fake.
+    #[must_use]
     pub fn point(&self, spec: &ProviderSpec) -> ProviderSpec {
         point(spec, self.shared.auth.family(), &self.api_url())
     }
@@ -145,6 +148,7 @@ impl LlmApiHandle {
     }
 
     /// Every request answered, oldest first.
+    #[must_use]
     pub fn calls(&self) -> Vec<Call> {
         self.shared.calls.all()
     }

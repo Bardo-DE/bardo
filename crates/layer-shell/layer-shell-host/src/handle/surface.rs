@@ -67,10 +67,11 @@ impl SurfaceHandle {
     /// Open a popup whose parent is this surface, rendering `root` as its own `VirtualDom`.
     /// Returns the popup's id at once; the popup appears after the next flush. Opening a
     /// grabbing popup from a `KeyboardMode::None` layer switches the layer to `OnDemand` until
-    /// the popup closes, except on KWin, which focuses the popup itself and gives the keyboard
+    /// the popup closes, except on `KWin`, which focuses the popup itself and gives the keyboard
     /// back to the app on close (`popup_keyboard`). A click on the parent layer
-    /// (another item of the same bar) is the shell's to dismiss by: KWin sends no `popup_done`
+    /// (another item of the same bar) is the shell's to dismiss by: `KWin` sends no `popup_done`
     /// for a press on the popup's own client.
+    #[must_use]
     pub fn open_popup(
         &self,
         config: PopupConfig,

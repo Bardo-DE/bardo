@@ -112,6 +112,7 @@ pub enum CloseReason {
 
 impl CloseReason {
     /// The spec's number.
+    #[must_use]
     pub fn wire(self) -> u32 {
         match self {
             CloseReason::Expired => 1,

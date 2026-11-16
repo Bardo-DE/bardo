@@ -76,6 +76,7 @@ pub fn parse_entry_text(text: &str) -> Result<ModelEntry, EntryError> {
 
 /// Reads the system and user directories and merges them (a user file replaces the system file
 /// of the same id). A missing directory is empty; a file that does not parse is skipped.
+#[must_use]
 pub fn read_catalog(dirs: &CatalogDirs) -> Catalog {
     let (system, mut skipped) = read_dir(&dirs.system);
     let (user, more) = read_dir(&dirs.user);
@@ -129,6 +130,7 @@ pub fn local_claims(dirs: &CatalogDirs) -> Vec<Claim> {
 
 /// The claims of one entry: a language model, a computer-use model, a speech model, an
 /// embedding model with an `embed` table. An entry whose id is not a model id makes none.
+#[must_use]
 pub fn claims_of(entry: &ModelEntry) -> Vec<Claim> {
     let Ok(model) = ModelId::parse(&entry.id.0) else {
         return Vec::new();

@@ -148,7 +148,11 @@ async fn the_request_carries_this_distros_alternatives() {
     let asked = fake.asked();
     assert_eq!(asked.len(), 1);
     assert_eq!(asked[0].family, Family::Dnf);
-    let names: Vec<_> = asked[0].candidates.iter().map(|p| p.as_str()).collect();
+    let names: Vec<_> = asked[0]
+        .candidates
+        .iter()
+        .map(ui_helpers::PackageName::as_str)
+        .collect();
     assert_eq!(names, ["ffmpeg", "ffmpeg-free"]);
     assert_eq!(helpers.family(), Some(Family::Dnf));
 }

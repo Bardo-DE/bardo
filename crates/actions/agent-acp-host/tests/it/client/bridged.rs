@@ -69,9 +69,9 @@ async fn an_always_from_the_sheet_is_a_grant_in_dockets_store_used_audited_liste
     run_turn(&mut rig, "go").await;
     // The first write asked and the person said always; the second, in the same directory, ran on
     // the grant; the third, in a sibling directory, asked again (and was refused).
-    assert!(rig.agent.reply("w0").is_ok());
-    assert!(rig.agent.reply("w1").is_ok());
-    assert!(rig.agent.reply("w2").is_err());
+    rig.agent.reply("w0").unwrap();
+    rig.agent.reply("w1").unwrap();
+    rig.agent.reply("w2").unwrap_err();
     assert_eq!(rig.sheets().len(), 2);
     assert_eq!(used(&rig), 1);
     let held = rig.grants();
@@ -143,7 +143,7 @@ async fn a_reviewers_no_refuses_a_write_a_grant_let_through() {
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
     run_turn(&mut rig, "go").await;
-    assert!(rig.agent.reply("w0").is_ok());
+    rig.agent.reply("w0").unwrap();
     assert!(rig.agent.reply("w1").is_err(), "the reviewer said no");
     assert_eq!(files.text(&abs("/work/app/src/b.rs")), None);
     assert_eq!(rig.sheets().len(), 1);
@@ -159,8 +159,8 @@ async fn the_sheet_goes_to_the_desktops_confirmer_and_its_answer_comes_back() {
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
     let events = run_turn(&mut rig, "go").await;
-    assert!(rig.agent.reply("w0").is_ok());
-    assert!(rig.agent.reply("w1").is_err());
+    rig.agent.reply("w0").unwrap();
+    rig.agent.reply("w1").unwrap_err();
     let sheets = rig.sheets();
     assert_eq!(sheets.len(), 2);
     assert_eq!(sheets[0].app.as_str(), "org.bardo.AcpAgent");
@@ -201,8 +201,8 @@ async fn the_hosts_own_sheet_exists_only_with_the_development_flag() {
         "the router was told to route it to the host"
     );
     assert!(rig.sheets().is_empty(), "the desktop was not asked");
-    assert!(rig.agent.reply("w0").is_ok());
-    assert!(rig.agent.reply("w1").is_err());
+    rig.agent.reply("w0").unwrap();
+    rig.agent.reply("w1").unwrap_err();
     assert_eq!(
         events
             .iter()
@@ -222,7 +222,7 @@ async fn a_sheet_the_person_refuses_on_the_host_refuses_the_call() {
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
     run_turn_answering(&mut rig, 1, "go", &mut |_| SheetChoice::Refused).await;
-    assert!(rig.agent.reply("w0").is_err());
+    rig.agent.reply("w0").unwrap_err();
     assert_eq!(files.text(&abs("/work/app/a.rs")), None);
 }
 
@@ -289,6 +289,6 @@ async fn the_host_runs_one_agent_session_of_an_agent_program() {
     let again = host.open(super::rig::opening("/work/app")).await;
     assert!(matches!(again, Err(HostFault::Backend(_))), "{again:?}");
     // Fork, export and resume are not served.
-    assert!(host.resume(&session).await.is_err());
-    assert!(host.export(&session).await.is_err());
+    host.resume(&session).await.unwrap_err();
+    host.export(&session).await.unwrap_err();
 }

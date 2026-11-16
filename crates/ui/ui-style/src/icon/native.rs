@@ -21,6 +21,7 @@ pub enum Native {
 
 impl Icon {
     /// How this icon is drawn when nothing asks for a style.
+    #[must_use]
     pub fn native(self) -> Native {
         TABLE
             .iter()

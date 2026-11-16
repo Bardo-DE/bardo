@@ -32,6 +32,7 @@ pub type PickerHttp<T> = Routed<RelayHttp<RelayDial<T>>, RelayHttp<RelayDial<T>>
 pub type GooglePicker<T> = PhotosPicker<PickerHttp<T>>;
 
 /// The client for the Photos upload API at `endpoint`, under `grant`.
+#[must_use]
 pub fn library_http<T: GrantsLink>(
     accounts: Arc<Grants<T>>,
     grant: GrantId,

@@ -23,6 +23,7 @@ pub enum Failure {
 
 impl Failure {
     /// The word on the bus and on the helper's report line.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Self::NoSpace => "no_space",
@@ -37,6 +38,7 @@ impl Failure {
     }
 
     /// The failure a word names; `None` for any other text.
+    #[must_use]
     pub fn from_slug(text: &str) -> Option<Self> {
         [
             Self::NoSpace,

@@ -37,6 +37,7 @@ pub const SHADOW_BELOW: u32 = 66;
 const TOP_VERTICAL_FRACTION: i64 = 400;
 
 /// The panel's top edge on an output `output_height` tall.
+#[must_use]
 pub fn panel_top(output_height: i32, tokens: &LauncherTokens) -> i32 {
     let below_bar = i32::from(tokens.bar_height) + i32::from(tokens.top_bar_gap);
     // round(fraction/1000 x H) in integers: add half the divisor before dividing.
@@ -90,6 +91,7 @@ pub fn layer(output: &OutputInfo, tokens: &LauncherTokens) -> LayerConfig {
 
 /// The panel's rectangle in its output's coordinates (its room, the card and the pane's; the
 /// surface is wider and taller by the shadow's room): centred, [`panel_top`] down.
+#[must_use]
 pub fn panel_rect(output: &OutputInfo, tokens: &LauncherTokens) -> Rect {
     let width = i32::try_from(PANEL_ROOM_WIDTH).unwrap_or(i32::MAX);
     Rect {

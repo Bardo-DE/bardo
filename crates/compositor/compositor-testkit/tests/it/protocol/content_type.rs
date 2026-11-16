@@ -55,7 +55,7 @@ fn check(name: &str, client: &TestClient, skip: &[&str]) {
     );
 }
 
-/// Set_content_type(video) is read at commit.
+/// `Set_content_type(video)` is read at commit.
 ///
 /// What the compositor stores is not visible through the fixture (it holds the model and the
 /// frame, not the protocol parts), so this checks the protocol side: every value is accepted
@@ -83,7 +83,7 @@ fn the_content_type_is_stored() {
 }
 
 /// A second content-type object on one surface is
-/// wp_content_type_manager_v1.already_constructed (0).
+/// `wp_content_type_manager_v1.already_constructed` (0).
 #[test]
 fn a_second_content_type_object_is_a_protocol_error() {
     let (mut fixture, id) = boot();

@@ -64,11 +64,13 @@ pub struct ActivationToken(#[serde(serialize_with = "base_secret::write_secret")
 
 impl ActivationToken {
     /// A token, unless it is empty.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         (!text.is_empty()).then(|| Self(SecretText::new(text)))
     }
 
     /// The token's text, for handing to the compositor.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         self.0.expose()
     }

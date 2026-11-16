@@ -73,6 +73,7 @@ pub struct HelpersModel {
 
 impl HelpersModel {
     /// The helper whose card is open or on its way.
+    #[must_use]
     pub fn open_id(&self) -> Option<&HelperId> {
         match &self.open {
             Open::Reading(id) => Some(id),
@@ -82,6 +83,7 @@ impl HelpersModel {
     }
 
     /// The draft the person is editing: a new card's, or the open card's.
+    #[must_use]
     pub fn draft(&self) -> Option<&Draft> {
         match &self.open {
             Open::Card(card) => Some(&card.draft),
@@ -92,11 +94,13 @@ impl HelpersModel {
 
     /// What the person calls the helper `id`; `None` for one that is not in the list (removed, or
     /// the list not read yet).
+    #[must_use]
     pub fn name_of(&self, id: &HelperId) -> Option<&str> {
         self.line(id).map(|line| line.name.as_str())
     }
 
     /// The line of the helper `id`.
+    #[must_use]
     pub fn line(&self, id: &HelperId) -> Option<&HelperLine> {
         self.lines.iter().find(|line| line.id == *id)
     }

@@ -391,7 +391,7 @@ fn raw_entries_become_the_owners_type_and_other_words_are_skipped() {
         results.push((id, reparse::<Icons>(candidate)));
     }
     // org.example.Bad, Both, LookOnly, Missing: by name.
-    let [bad, both_result, look_only, missing] = &results[..] else {
+    let [bad, both_result, look_only, missing] = &*results else {
         panic!("four extensions: {results:?}");
     };
     assert!(

@@ -188,8 +188,8 @@ async fn an_append_failure_at_the_taint_write_means_the_reveal_never_happens() {
     );
     {
         let st = router.state.lock().expect("lock");
-        assert!(st.sessions[&opened.session].handles.cards().is_empty());
-    }
+        assert!(st.sessions[&opened.session].handles.cards().is_empty())
+    };
     let written = entries(&log, &opened.session).await;
     assert!(!slugs(&written).contains(&"taint") && !slugs(&written).contains(&"handle"));
     // The store comes back: the next read writes the taint first.
@@ -275,8 +275,8 @@ async fn handles_after_restore_are_labels_and_cannot_be_read() {
         assert_eq!(labels[0].1.integrity, Integrity::Untrusted);
         assert!(table.cards().is_empty(), "the planner is not offered it");
         assert_eq!(table.display(handle), None);
-        assert!(table.resolve_text(handle).is_none());
-    }
+        assert!(table.resolve_text(handle).is_none())
+    };
     let shown = ask(
         &again,
         &launcher(),

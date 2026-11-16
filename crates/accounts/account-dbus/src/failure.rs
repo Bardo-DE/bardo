@@ -30,6 +30,7 @@ const REFUSED: [&str; 2] = [
 ];
 
 /// Whether the daemon refused an argument as not what the interface says (`InvalidArgs`).
+#[must_use]
 pub fn is_invalid_args(error: &zbus::Error) -> bool {
     match error {
         zbus::Error::MethodError(name, _, _) => {
@@ -42,6 +43,7 @@ pub fn is_invalid_args(error: &zbus::Error) -> bool {
 
 /// Whether the object the call named is not there (`UnknownObject`): an account, a Space or
 /// identity the daemon does not serve at that path.
+#[must_use]
 pub fn is_unknown_object(error: &zbus::Error) -> bool {
     match error {
         zbus::Error::MethodError(name, _, _) => {
@@ -53,6 +55,7 @@ pub fn is_unknown_object(error: &zbus::Error) -> bool {
 }
 
 /// Whether the daemon held the caller back for asking too often (`LimitsExceeded`).
+#[must_use]
 pub fn is_limits_exceeded(error: &zbus::Error) -> bool {
     match error {
         zbus::Error::MethodError(name, _, _) => {
@@ -64,6 +67,7 @@ pub fn is_limits_exceeded(error: &zbus::Error) -> bool {
 }
 
 /// A bus error as a [`BusFailure`].
+#[must_use]
 pub fn classify(error: &zbus::Error) -> BusFailure {
     let text = error.to_string();
     match error {

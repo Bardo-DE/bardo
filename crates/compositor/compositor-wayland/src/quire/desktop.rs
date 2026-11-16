@@ -89,6 +89,7 @@ pub struct QuireDesktopPart {
 
 impl QuireDesktopPart {
     /// The part; creates the global (at [`VERSION`]) behind the I7 filter.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> QuireDesktopPart
     where
         D: GlobalDispatch<BardoDesktopManagerV1, DesktopGlobal>
@@ -173,6 +174,7 @@ impl Makers {
 
     /// Creates an app object on `manager` and announces it (`app`); its state burst is the
     /// caller's. `None` when the client is gone.
+    #[must_use]
     pub fn make_app(
         &self,
         manager: &BardoDesktopManagerV1,
@@ -182,6 +184,7 @@ impl Makers {
     }
 
     /// Creates a window object on `manager` and announces it (`window`).
+    #[must_use]
     pub fn make_window(
         &self,
         manager: &BardoDesktopManagerV1,
@@ -191,6 +194,7 @@ impl Makers {
     }
 
     /// Creates a Space object on `manager` and announces it (`space`).
+    #[must_use]
     pub fn make_space(
         &self,
         manager: &BardoDesktopManagerV1,

@@ -1,6 +1,6 @@
 //! Speech as traits, below every engine and account, local or cloud.
 //!
-//! Audio is mono only (PipeWire converts at the edge). [`SpeechToText`] pulls audio from an
+//! Audio is mono only (`PipeWire` converts at the edge). [`SpeechToText`] pulls audio from an
 //! [`AudioSource`] and pushes [`TranscriptEvent`]s into a [`TranscriptSink`]; [`TextToSpeech`]
 //! pushes [`AudioChunk`]s into an [`AudioSink`]. Cancellation is dropping the future, as in
 //! `model-provider`. [`VoiceActivity`] is synchronous: CPU only, one 32 ms frame at a time.

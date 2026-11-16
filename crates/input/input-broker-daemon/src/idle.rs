@@ -11,6 +11,7 @@ pub struct Idle {
 
 impl Idle {
     /// Exit after `limit_ms` with no connection.
+    #[must_use]
     pub const fn new(limit_ms: u64) -> Self {
         Self {
             limit_ms,

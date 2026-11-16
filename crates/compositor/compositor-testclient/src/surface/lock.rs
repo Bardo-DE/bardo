@@ -130,6 +130,7 @@ impl LockSurface {
     }
 
     /// Acknowledges the latest configure; false when there is none yet.
+    #[must_use]
     pub fn ack(&self, client: &TestClient) -> bool {
         let Some((serial, _, _)) = self.configure() else {
             return false;

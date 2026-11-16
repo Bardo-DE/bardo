@@ -235,12 +235,14 @@ pub struct SpaceTarget {
 
 impl SpaceTarget {
     /// A target of `rect` for `space`.
+    #[must_use]
     pub fn new(space: SpaceId, rect: Rect) -> Self {
         Self { space, rect }
     }
 }
 
 /// Which protocol family carries a [`DesktopCommand`]: the one place the commands are sorted.
+///
 /// [`requires_on`](crate::requires_on) and the wire client read it, and [`CommandError`](
 /// crate::CommandError) names it instead of the command.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -267,6 +269,7 @@ pub enum CommandRoute {
 impl DesktopCommand {
     /// Which family carries this command. Every command is named here, with no wildcard, so a
     /// new command cannot be added without choosing its route.
+    #[must_use]
     pub fn route(&self) -> CommandRoute {
         match self {
             Self::Activate(_)

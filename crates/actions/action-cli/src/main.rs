@@ -21,9 +21,10 @@ fn main() -> ExitCode {
     std::panic::set_hook(Box::new(|_| {}));
     let process = Process {
         words: std::env::args().skip(1).collect(),
-        stdout: match std::io::stdout().is_terminal() {
-            true => Stdout::Tty,
-            false => Stdout::Pipe,
+        stdout: if std::io::stdout().is_terminal() {
+            Stdout::Tty
+        } else {
+            Stdout::Pipe
         },
         stdin: read_stdin,
         env,

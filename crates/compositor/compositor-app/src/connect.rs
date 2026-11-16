@@ -109,9 +109,10 @@ fn refusal_of(why: RefuseWhy) -> ConnectRefusal {
 /// Whether the caller holds the portal's role: the one caller that may open or end a remote EIS
 /// socket (the bus thread proved the role; this is the second line).
 fn portal_only(caller: &RoleName) -> Result<(), ConnectRefusal> {
-    match portal_may_connect(caller) {
-        true => Ok(()),
-        false => Err(ConnectRefusal::RoleNotAllowed),
+    if portal_may_connect(caller) {
+        Ok(())
+    } else {
+        Err(ConnectRefusal::RoleNotAllowed)
     }
 }
 
@@ -196,13 +197,15 @@ const POINTER: u32 = 2;
 /// Whether the caller holds the agent tier's role: the one caller that may lease a window
 /// (the bus thread proved the role; this is the second line).
 fn agent_only(caller: &RoleName) -> Result<(), ConnectRefusal> {
-    match agent_may_lease(caller) {
-        true => Ok(()),
-        false => Err(ConnectRefusal::RoleNotAllowed),
+    if agent_may_lease(caller) {
+        Ok(())
+    } else {
+        Err(ConnectRefusal::RoleNotAllowed)
     }
 }
 
 /// Decides one `LeaseWindow`: only the agent tier may lease, and only a window that is there.
+///
 /// The model hears `LeaseGranted` first, so the lease's first event already reaches the
 /// window; then the lease's input socket is opened. A socket that could not be made ends the
 /// lease again.

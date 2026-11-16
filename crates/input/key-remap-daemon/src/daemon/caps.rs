@@ -17,9 +17,7 @@ use crate::{Edge, Key, Layout, Logical, OutEvent, Physical, Profile, RemapInput,
 /// Whether a rule of `profile` takes the Caps Lock key pressed alone, so pressing it no longer
 /// toggles the lock. Without one it reaches the desktop as Caps Lock.
 pub(crate) fn remaps_caps(profile: &Profile) -> bool {
-    Trigger::parse("capslock")
-        .ok()
-        .is_some_and(|trigger| profile.rules.contains_key(&trigger))
+    Trigger::parse("capslock").is_ok_and(|trigger| profile.rules.contains_key(&trigger))
 }
 
 /// What keycap knows of the Caps Lock lock and what the user asked of it.

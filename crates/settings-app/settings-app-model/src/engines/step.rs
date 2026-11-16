@@ -39,6 +39,7 @@ pub enum LlamaCpp {
 }
 
 /// llama.cpp's standing in what the assistant listed.
+#[must_use]
 pub fn llama_cpp_of(listed: &[ListedEngine]) -> LlamaCpp {
     listed
         .iter()
@@ -106,6 +107,7 @@ pub enum EnginesEffect {
 }
 
 /// The next state, and what to do about it.
+#[must_use]
 pub fn engines_step(
     state: EnginesState,
     input: EnginesInput,
@@ -152,6 +154,7 @@ pub struct SetupNote {
 }
 
 /// The note, when llama.cpp's program is missing; nothing in any other state.
+#[must_use]
 pub fn setup_note(state: &EnginesState, advice: &InstallAdvice) -> Option<SetupNote> {
     (state.llama_cpp == LlamaCpp::Missing).then(|| SetupNote {
         install: advice.clone(),

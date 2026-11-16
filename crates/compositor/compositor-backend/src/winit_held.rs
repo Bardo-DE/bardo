@@ -15,6 +15,7 @@ pub struct HeldInput {
 
 impl HeldInput {
     /// Nothing held.
+    #[must_use]
     pub fn new() -> HeldInput {
         HeldInput::default()
     }

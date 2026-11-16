@@ -39,6 +39,7 @@ pub struct TokenSet {
 
 impl TokenSet {
     /// Every member of `T`, placed with the scale.
+    #[must_use]
     pub const fn of<T: Token>() -> TokenSet {
         TokenSet {
             place: Place::Scale,
@@ -48,22 +49,26 @@ impl TokenSet {
     }
 
     /// `self` placed at `place`.
+    #[must_use]
     pub const fn at(self, place: Place) -> TokenSet {
         TokenSet { place, ..self }
     }
 
     /// Where the set's declarations sit in the `.ds` block.
+    #[must_use]
     pub const fn place(&self) -> Place {
         self.place
     }
 
     /// Every custom property the family declares or reads: each member's, and each tuned
     /// member's input. The linter's vocabulary.
+    #[must_use]
     pub fn vars(&self) -> Vec<VarName> {
         (self.vars)()
     }
 
     /// The declarations the set writes in `scope`, `(property, value)`.
+    #[must_use]
     pub fn declarations(&self, scope: TokenScope) -> Vec<(VarName, String)> {
         (self.declared)(scope)
     }

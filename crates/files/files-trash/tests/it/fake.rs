@@ -154,5 +154,5 @@ fn only_items_older_than_the_time_kept_are_old_and_a_sweep_erases_just_those() {
 
 #[test]
 fn thirty_days_is_thirty_days() {
-    assert_eq!(THIRTY_DAYS, Duration::from_secs(2_592_000));
+    assert_eq!(THIRTY_DAYS, Duration::from_hours(720));
 }

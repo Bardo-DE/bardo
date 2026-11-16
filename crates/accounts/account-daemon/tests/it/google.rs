@@ -497,14 +497,12 @@ async fn removing_the_account_revokes_it_at_google_and_forgets_its_secrets() {
         e,
         account_fake_servers::IssuerEvent::Revoke { token, known: true } if *token == refresh
     )));
-    assert!(
-        world
-            .secrets
-            .get(&SecretKey {
-                account: id,
-                purpose: SecretPurpose::OAuthRefresh
-            })
-            .await
-            .is_err()
-    );
+    world
+        .secrets
+        .get(&SecretKey {
+            account: id,
+            purpose: SecretPurpose::OAuthRefresh,
+        })
+        .await
+        .unwrap_err();
 }

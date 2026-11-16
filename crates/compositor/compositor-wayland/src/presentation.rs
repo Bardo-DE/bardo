@@ -45,6 +45,7 @@ struct Waiting {
 
 impl PresentationPart {
     /// Creates the global (version 2). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> PresentationPart
     where
         D: GlobalDispatch<WpPresentation, PresentationData>

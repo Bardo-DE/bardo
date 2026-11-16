@@ -1,5 +1,5 @@
 //! bardo-shell's Bluetooth service against `dev/fake-bluez.py` on a private bus, never the system bus:
-//! bardo-shell starts first, BlueZ appears late, is killed, and comes back. The test needs a
+//! bardo-shell starts first, `BlueZ` appears late, is killed, and comes back. The test needs a
 //! `dbus-daemon` and python's `dbus` and `gi`, and skips, saying so, without them.
 
 use std::path::{Path, PathBuf};

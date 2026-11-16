@@ -78,8 +78,8 @@ fn toplevel_commands_need_the_wlr_manager_only() {
     let wlr = ProtocolSet::empty().with(Protocol::WlrForeignToplevelManagement);
     let list_only = ProtocolSet::empty().with(Protocol::ExtForeignToplevelList);
     for command in toplevel_commands() {
-        assert!(supports(&wlr, &command), "{:?}", command);
-        assert!(!supports(&list_only, &command), "{:?}", command);
+        assert!(supports(&wlr, &command), "{command:?}");
+        assert!(!supports(&list_only, &command), "{command:?}");
         assert_eq!(
             missing(&list_only, &command),
             Some(Protocol::WlrForeignToplevelManagement)
@@ -91,7 +91,7 @@ fn toplevel_commands_need_the_wlr_manager_only() {
 fn workspace_commands_need_ext_workspace() {
     let offered = ProtocolSet::empty().with(Protocol::ExtWorkspace);
     for command in workspace_commands() {
-        assert!(supports(&offered, &command), "{:?}", command);
+        assert!(supports(&offered, &command), "{command:?}");
         assert!(!supports(&ProtocolSet::empty(), &command));
     }
 }
@@ -268,11 +268,11 @@ fn quire_only() -> Vec<(DesktopCommand, Vec<Protocol>)> {
 #[test]
 fn quire_commands_need_exactly_their_quire_protocols() {
     for (command, needs) in quire_only() {
-        assert_eq!(requires(&command), needs.as_slice(), "{:?}", command);
+        assert_eq!(requires(&command), needs.as_slice(), "{command:?}");
         let offered = needs
             .iter()
             .fold(ProtocolSet::empty(), |set, p| set.with(*p));
-        assert!(supports(&offered, &command), "{:?}", command);
+        assert!(supports(&offered, &command), "{command:?}");
         assert_eq!(missing(&offered, &command), None);
         for dropped in &needs {
             let partial = needs
@@ -292,7 +292,7 @@ fn wlr_alone_cannot_do_what_only_quire_can() {
         Protocol::ExtForeignToplevelList,
     ]);
     for (command, _) in quire_only() {
-        assert!(!supports(&wlr, &command), "{:?}", command);
+        assert!(!supports(&wlr, &command), "{command:?}");
     }
 }
 
@@ -349,11 +349,10 @@ fn every_command_is_listed_once_and_needs_something() {
     commands.extend(quire_only().into_iter().map(|(c, _)| c));
     let mut kinds = Vec::new();
     for command in &commands {
-        assert!(!requires(command).is_empty(), "{:?}", command);
+        assert!(!requires(command).is_empty(), "{command:?}");
         assert!(
             !kinds.contains(&std::mem::discriminant(command)),
-            "{:?} twice",
-            command
+            "{command:?} twice"
         );
         kinds.push(std::mem::discriminant(command));
     }

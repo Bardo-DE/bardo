@@ -163,7 +163,7 @@ fn gpu() -> MutexGuard<'static, GpuContext> {
         Mutex::new(gpu)
     })
     .lock()
-    .unwrap_or_else(|poisoned| poisoned.into_inner())
+    .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 fn document(app: fn() -> Element, buffer: Size, scale: Scale120) -> DioxusDocument {
@@ -374,7 +374,7 @@ static WIDGET_TESTS: Mutex<()> = Mutex::new(());
 fn a_closed_documents_widget_textures_leave_the_shared_map() {
     let _turn = WIDGET_TESTS
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let buffer = Size {
         width: 32,
         height: 16,
@@ -399,7 +399,7 @@ fn a_closed_documents_widget_textures_leave_the_shared_map() {
 fn a_widget_texture_is_registered_once_and_drawn_every_frame() {
     let _turn = WIDGET_TESTS
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let buffer = Size {
         width: 32,
         height: 16,
@@ -546,8 +546,8 @@ fn an_image_the_full_atlas_refused_is_drawn_on_the_next_frame() {
     {
         let mut gpu = gpu();
         gpu.resources = resources;
-        gpu.images = images;
-    }
+        gpu.images = images
+    };
     assert!(
         close(first_red, [255, 0, 0, 255]),
         "red drawn: {first_red:?}"

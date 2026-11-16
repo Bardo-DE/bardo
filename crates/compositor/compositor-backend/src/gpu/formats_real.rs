@@ -17,6 +17,7 @@ pub struct RealFormats {
 
 impl RealFormats {
     /// Formats of the nodes under `root`'s `/dev`.
+    #[must_use]
     pub fn new(root: SysRoot) -> RealFormats {
         RealFormats { root }
     }

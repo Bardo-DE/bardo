@@ -1,6 +1,7 @@
 //! The path a `file://` address names, as the file chooser portal answers with one.
 
 /// The path a `file://` address names, with its `%XX` escapes read; `None` for any other address.
+#[must_use]
 pub fn path_of_file_uri(uri: &str) -> Option<String> {
     let escaped = uri.strip_prefix("file://")?;
     let bytes = escaped.as_bytes();

@@ -21,6 +21,7 @@ use std::time::Duration;
 /// The cassette an agent run plays when the engine is `scripted`: the policy writer allows Mail
 /// up to outbound (what the flows ask) and the host's own actions up to reads, and the judges
 /// pass. The agent chooses its own calls, so nothing else of a flow's cassette applies.
+#[must_use]
 pub fn agent_cassette() -> String {
     let policy = json!({
         "actions": [

@@ -85,6 +85,7 @@ pub struct DeviceHealth(Arc<AtomicU8>);
 
 impl DeviceHealth {
     /// Whether the device still works.
+    #[must_use]
     pub fn state(&self) -> Health {
         match self.0.load(Ordering::Acquire) {
             WORKING => Health::Working,

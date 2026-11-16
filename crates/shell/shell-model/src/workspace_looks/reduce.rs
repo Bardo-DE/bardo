@@ -24,9 +24,10 @@ pub fn published(
                 .iter()
                 .enumerate()
                 .map(move |(index, workspace)| PublishedWorkspace {
-                    id: match workspace.stable_id.is_empty() {
-                        true => workspace.key.0.to_string(),
-                        false => workspace.stable_id.clone(),
+                    id: if workspace.stable_id.is_empty() {
+                        workspace.key.0.to_string()
+                    } else {
+                        workspace.stable_id.clone()
                     },
                     name: workspace.name.clone(),
                     output: output.clone(),

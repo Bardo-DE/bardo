@@ -46,6 +46,7 @@ pub fn send_choice_end(part: &QuireShellPart, first: WindowId) {
 /// assert_eq!(on_split_pick(Some(WindowId(2))).len(), 1);
 /// assert!(on_split_pick(None).is_empty());
 /// ```
+#[must_use]
 pub fn on_split_pick(window: Option<WindowId>) -> Vec<Event> {
     window
         .map(|window| Event::Shell(ShellRequest::SplitPick { window }))
@@ -59,6 +60,7 @@ pub fn on_split_pick(window: Option<WindowId>) -> Vec<Event> {
 /// use compositor_wayland::quire::shell_split::on_split_cancel;
 /// assert_eq!(on_split_cancel().len(), 1);
 /// ```
+#[must_use]
 pub fn on_split_cancel() -> Vec<Event> {
     vec![Event::Shell(ShellRequest::SplitCancel)]
 }
@@ -73,6 +75,7 @@ pub fn on_split_cancel() -> Vec<Event> {
 /// assert_eq!(on_split_divide(Some(WindowId(1)), 400).len(), 1);
 /// assert!(on_split_divide(None, 400).is_empty());
 /// ```
+#[must_use]
 pub fn on_split_divide(window: Option<WindowId>, share: u32) -> Vec<Event> {
     window
         .map(|window| {

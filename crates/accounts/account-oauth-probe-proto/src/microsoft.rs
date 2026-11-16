@@ -20,6 +20,7 @@ const PERSONAL_DOMAINS: [&str; 4] = ["outlook.com", "hotmail.com", "live.com", "
 /// Whether `address` names a personal (consumer) Microsoft account rather than a work or school
 /// account in an organisation's tenant. The rule is mailo's (`is_personal_microsoft` in its
 /// `presets.rs`): the four consumer domains are personal, anything else is a tenant's.
+#[must_use]
 pub fn is_personal(address: &str) -> bool {
     let domain = address.rsplit_once('@').map_or("", |(_, d)| d);
     PERSONAL_DOMAINS.contains(&domain.trim().to_ascii_lowercase().as_str())
@@ -66,6 +67,7 @@ fn claim(offer: Offer, provenance: Provenance) -> Claim {
 
 /// The claim for the `declared` capability that needs no read, when it has none: Mail is IMAP,
 /// not Graph, so the token's grant is what shows it.
+#[must_use]
 pub fn settled(declared: &Capability, has_read: bool) -> Option<Claim> {
     (!has_read).then(|| claim(Offer::Present(declared.clone()), Provenance::Discovered))
 }
@@ -86,9 +88,10 @@ pub fn verdict(
         ),
         // A personal account has no tenant to refuse: a 403 there is the service itself.
         403 => claim(
-            absent(match personal {
-                false => AbsentReason::TenantConsent,
-                true => AbsentReason::ProviderOffersNone,
+            absent(if personal {
+                AbsentReason::ProviderOffersNone
+            } else {
+                AbsentReason::TenantConsent
             }),
             Provenance::Probed,
         ),
@@ -98,6 +101,7 @@ pub fn verdict(
 }
 
 /// Whether a tenant refused any permission.
+#[must_use]
 pub fn tenant_refused(claims: &[Claim]) -> bool {
     claims.iter().any(|c| {
         matches!(
@@ -110,7 +114,7 @@ pub fn tenant_refused(claims: &[Claim]) -> bool {
     })
 }
 
-/// OneDrive says whether it reports a quota; the declared row assumed it does.
+/// `OneDrive` says whether it reports a quota; the declared row assumed it does.
 fn with_quota(declared: &Capability, answer: &Response<Vec<u8>>) -> Capability {
     match declared {
         Capability::Storage(storage) => {
@@ -167,7 +171,7 @@ mod tests {
             got(r#"{"mail":"","userPrincipalName":"u@x.test"}"#).as_deref(),
             Some("u@x.test")
         );
-        assert_eq!(got(r#"{}"#), None);
+        assert_eq!(got(r"{}"), None);
         assert_eq!(address(&answer(401, "")).unwrap_err(), Failure::Status(401));
     }
 

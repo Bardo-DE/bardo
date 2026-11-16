@@ -1,4 +1,4 @@
-//! Signing an agent in and out through its launcher (from accountd's agent_login tests): the
+//! Signing an agent in and out through its launcher (from accountd's `agent_login` tests): the
 //! launcher registers the programs it runs, accountd asks it in a signal sent to it alone, and it
 //! answers with a coarse outcome. Only the agent can log itself in, so nothing of the login
 //! reaches accountd.
@@ -85,7 +85,7 @@ async fn a_login_goes_to_the_registrant_alone_and_ready_sets_the_account_ok() {
         (args.account.as_str(), args.program.as_str()),
         (AGENT, PROGRAM)
     );
-    let request = args.request.to_owned();
+    let request = args.request.clone();
 
     // Another launcher cannot answer it: to that connection there is no such request.
     assert_eq!(
@@ -163,7 +163,7 @@ async fn a_failure_and_a_cancel_leave_the_state_and_a_logout_done_needs_a_login(
             .args()
             .expect("args")
             .request
-            .to_owned();
+            .clone();
         launcher
             .proxy
             .report_agent_login(&request, word, reason)
@@ -187,7 +187,7 @@ async fn a_failure_and_a_cancel_leave_the_state_and_a_logout_done_needs_a_login(
         .args()
         .expect("args")
         .request
-        .to_owned();
+        .clone();
     // A logout request is not answered as a login.
     assert!(
         launcher

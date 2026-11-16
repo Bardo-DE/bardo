@@ -64,7 +64,7 @@ fn a_parametric_description_becomes_ready() {
     assert_eq!(names(&mut fixture, id, &description), ["ready2"]);
 }
 
-/// A creator with no curve cannot create: wp_image_description_creator_params_v1.incomplete_set (0).
+/// A creator with no curve cannot create: `wp_image_description_creator_params_v1.incomplete_set` (0).
 #[test]
 fn creating_without_a_curve_is_a_protocol_error() {
     let (mut fixture, id) = boot();
@@ -82,7 +82,7 @@ fn creating_without_a_curve_is_a_protocol_error() {
     );
 }
 
-/// ICC profiles are not served: wp_color_manager_v1.unsupported_feature (0).
+/// ICC profiles are not served: `wp_color_manager_v1.unsupported_feature` (0).
 #[test]
 fn an_icc_creator_is_unsupported() {
     let (mut fixture, id) = boot();
@@ -119,7 +119,7 @@ fn an_output_describes_its_colours() {
 }
 
 /// A description a client made does not allow `get_information`:
-/// wp_image_description_v1.no_information (1).
+/// `wp_image_description_v1.no_information` (1).
 #[test]
 fn a_clients_own_description_has_no_information() {
     let (mut fixture, id) = boot();
@@ -140,7 +140,7 @@ fn a_clients_own_description_has_no_information() {
 }
 
 /// A surface takes a ready description at commit and gives it up again; a second object for
-/// the surface is wp_color_manager_v1.surface_exists (1).
+/// the surface is `wp_color_manager_v1.surface_exists` (1).
 #[test]
 fn a_surface_is_tagged_and_untagged() {
     let (mut fixture, id) = boot();
@@ -171,7 +171,7 @@ fn a_surface_is_tagged_and_untagged() {
     );
 }
 
-/// Only the perceptual intent is served: wp_color_management_surface_v1.render_intent (0).
+/// Only the perceptual intent is served: `wp_color_management_surface_v1.render_intent` (0).
 #[test]
 fn another_intent_is_a_protocol_error() {
     let (mut fixture, id) = boot();

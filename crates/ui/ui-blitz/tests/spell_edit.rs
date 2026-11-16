@@ -70,7 +70,7 @@ impl Model {
                 }
                 dioxus::prelude::Key::ArrowLeft => self.caret = self.caret.saturating_sub(1),
                 dioxus::prelude::Key::ArrowRight => {
-                    self.caret = (self.caret + 1).min(self.text.len())
+                    self.caret = (self.caret + 1).min(self.text.len());
                 }
                 _ => {}
             },
@@ -178,7 +178,7 @@ fn a_misspelling_is_marked_after_the_debounce_under_its_word() {
     type_text(&mut harness, "the teh ");
     let typed = harness.now();
     type_text(&mut harness, "cat");
-    harness.advance(DEBOUNCE - Duration::from_millis(1));
+    harness.advance(DEBOUNCE.checked_sub(Duration::from_millis(1)).unwrap());
     quiet_for(&mut harness, Duration::ZERO);
     assert_eq!(marks(&harness), 0, "nothing is checked before the debounce");
     harness.advance(Duration::from_millis(1));

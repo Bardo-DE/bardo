@@ -285,8 +285,8 @@ impl WindowHandler for Probe {
         _: u32,
     ) {
         self.size = (
-            cfg.new_size.0.map_or(400, |v| v.get()),
-            cfg.new_size.1.map_or(300, |v| v.get()),
+            cfg.new_size.0.map_or(400, std::num::NonZero::get),
+            cfg.new_size.1.map_or(300, std::num::NonZero::get),
         );
         println!("configure {}x{}", self.size.0, self.size.1);
         self.draw(qh);
@@ -363,7 +363,7 @@ impl Dispatch<ExtBackgroundEffectManagerV1, ()> for Probe {
         _: &mut Probe,
         _: &ExtBackgroundEffectManagerV1,
         event: ext_background_effect_manager_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Probe>,
     ) {
@@ -378,7 +378,7 @@ impl Dispatch<ExtBackgroundEffectSurfaceV1, ()> for Probe {
         _: &mut Probe,
         _: &ExtBackgroundEffectSurfaceV1,
         _: ext_background_effect_surface_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Probe>,
     ) {

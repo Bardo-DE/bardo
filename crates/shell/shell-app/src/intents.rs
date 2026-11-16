@@ -25,6 +25,7 @@ use crate::daemon::msg::ShellMsg;
 use crate::ipc::server::REPLY_TIMEOUT;
 
 /// The request that does `action`: the same one its command-line verb sends.
+#[must_use]
 pub fn request_of(action: ShellAction) -> Request {
     let on_app = |id, app| Request::Do(Ask::on(id, Subject::App(app)));
     match action {

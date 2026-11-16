@@ -72,6 +72,7 @@ pub struct Caller {
 impl Caller {
     /// Whether it may list the places: Settings, the shell, the companion, and cuad, which reads
     /// what the ready models take in to say plainly when none of them can see the screen.
+    #[must_use]
     pub fn may_list_places(&self) -> bool {
         match self.role {
             Role::Cua => true,
@@ -80,6 +81,7 @@ impl Caller {
     }
 
     /// Whether it may list the local engine kinds: Settings, the shell and the companion.
+    #[must_use]
     pub fn may_list_engines(&self) -> bool {
         match self.role {
             Role::Settings | Role::Shell => true,
@@ -89,18 +91,21 @@ impl Caller {
     }
 
     /// Whether it may choose where the assistant runs.
+    #[must_use]
     pub fn may_choose_places(&self) -> bool {
         self.role == Role::Placer
     }
 
     /// Whether it may set the models Automatic chooses among for a helper: Settings and the
     /// shell, where the Helpers window lives. No other inferd setting is the shell's.
+    #[must_use]
     pub fn may_write_helper_pools(&self) -> bool {
         matches!(self.role, Role::Settings | Role::Shell)
     }
 
     /// Whether it may list the computers that ask to use this one and answer one that is
     /// asking: Settings and the shell.
+    #[must_use]
     pub fn may_answer_guests(&self) -> bool {
         matches!(self.role, Role::Settings | Role::Shell)
     }
@@ -160,6 +165,7 @@ fn settings_unit(entry: &str) -> Option<(String, AppName)> {
 
 impl CallerTable {
     /// A table naming cuad's units and each app's.
+    #[must_use]
     pub fn new(cua: BTreeSet<String>, apps: BTreeMap<AppName, BTreeSet<String>>) -> Self {
         Self {
             cua,
@@ -175,6 +181,7 @@ impl CallerTable {
     }
 
     /// The same table, naming `units` as the shell's.
+    #[must_use]
     pub fn with_shell(self, units: BTreeSet<String>) -> Self {
         Self {
             shell: units,
@@ -184,6 +191,7 @@ impl CallerTable {
 
     /// The same table, naming `units` (each also an app's unit under `apps`) as callers that
     /// may choose where the assistant runs.
+    #[must_use]
     pub fn with_places(self, units: BTreeSet<String>) -> Self {
         Self {
             places: units,
@@ -201,6 +209,7 @@ impl CallerTable {
 
     /// The same table, naming `units` (or app names, each standing for `<app>.service`) as the
     /// Settings app's, the only callers of the settings module.
+    #[must_use]
     pub fn with_settings(self, units: BTreeSet<String>) -> Self {
         Self {
             settings: units,
@@ -232,6 +241,7 @@ impl CallerTable {
 
     /// The rows of the shared table this table is: cuad's first, so an app entry cannot claim its
     /// unit (the shared table answers with the first row that names one).
+    #[must_use]
     pub fn rows(&self) -> account_callers::CallerTable {
         let cua_app = AppName::parse(CUA_APP).ok();
         let cua = cua_app.into_iter().flat_map(|app| {
@@ -327,6 +337,7 @@ const SHELL_PROGRAM: &str = "bardo-shell";
 
 impl Caller {
     /// A shared caller as inferd knows roles: `Cua` and `Settings`, and `App` for every other.
+    #[must_use]
     pub fn from_shared(caller: account_callers::Caller) -> Self {
         Self {
             app: caller.app,
@@ -363,16 +374,18 @@ pub struct ProcPeers {
 
 impl ProcPeers {
     /// Resolves senders on `connection` through `table`.
+    #[must_use]
     pub fn new(connection: BusConnection, table: CallerTable) -> Self {
         Self::with_root(connection, table, &ProcRoot::Unset)
     }
 
     /// As [`ProcPeers::new`], reading the process tree `root` names.
+    #[must_use]
     pub fn with_root(connection: BusConnection, table: CallerTable, root: &ProcRoot) -> Self {
         let rows = table.rows();
         let callers = match root.honoured() {
             #[cfg(feature = "test-proc-root")]
-            Some(dir) => ProcCallers::with_proc_root(connection, rows, dir.to_path_buf()),
+            Some(dir) => ProcCallers::with_proc_root(connection, rows, dir.clone()),
             _ => ProcCallers::new(connection, rows),
         };
         Self {
@@ -382,6 +395,7 @@ impl ProcPeers {
 
     /// The same lookup in the shared caller type (`account_callers::Callers`), for the sheet link
     /// and the Keys object, which check the shell and the app by the shared roles.
+    #[must_use]
     pub fn shared(&self) -> std::sync::Arc<ProcCallers> {
         std::sync::Arc::clone(&self.callers)
     }
@@ -404,6 +418,7 @@ pub struct TablePeers(Mutex<BTreeMap<String, Caller>>);
 
 impl TablePeers {
     /// Nobody is known.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }

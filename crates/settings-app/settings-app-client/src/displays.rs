@@ -32,17 +32,20 @@ impl Displays {
     }
 
     /// Gives the pane `input` now; the returned work carries out what it asks for.
+    #[must_use]
     pub fn send(&self, input: DisplaysInput) -> Pending {
         self.dispatch(input)
     }
 
     /// The brightness of each display that has one, as a live value of its own.
+    #[must_use]
     pub fn brightness(&self) -> &Live<BrightnessList> {
         &self.brightness
     }
 
     /// Moves `output`'s slider to `level` now and asks the shell to set it; the shell's word on
     /// the next change decides where the slider rests.
+    #[must_use]
     pub fn set_brightness(&self, output: OutputId, level: Brightness) -> Pending {
         self.brightness.update(|list| list.with(&output, level));
         let me = self.clone();

@@ -21,6 +21,7 @@ pub struct Looks {
 
 impl Looks {
     /// The preview of `item`, if one has arrived and is still kept.
+    #[must_use]
     pub fn of(&self, item: &ItemRef) -> Option<Arc<AnyPeeked>> {
         self.held
             .iter()

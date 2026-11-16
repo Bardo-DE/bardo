@@ -54,6 +54,7 @@ pub enum RuleScope {
 
 impl RuleScope {
     /// How specific the scope is; the higher wins.
+    #[must_use]
     pub fn specificity(&self) -> u8 {
         match self {
             RuleScope::Thing(_) => 5,
@@ -132,6 +133,7 @@ impl RuleSet {
     /// These rules with the default body retention of the classes `days` names set to `days`:
     /// each kind pattern of the class is replaced, or added when the rules have none. Every other
     /// default, and every rule, is untouched.
+    #[must_use]
     pub fn with_retention(mut self, days: &RetentionDays) -> RuleSet {
         let classes = [
             (&["search.*"][..], days.search),
@@ -154,6 +156,7 @@ impl RuleSet {
     }
 
     /// The shipped defaults (design/22 `memory.retention.*`), with no rules.
+    #[must_use]
     pub fn standard() -> RuleSet {
         let days = |kind: &str, n: u32| KindRetention {
             kind: KindPattern::parse(kind).unwrap_or_else(|_| KindPattern::any()),

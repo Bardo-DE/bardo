@@ -108,7 +108,9 @@ fn a_jpeg_xl_and_a_webp_report_their_formats() {
         let peeked = RasterPeek::peek(&src, &sniffed, &budget(1_000_000)).unwrap();
         let facts = RasterPeek::facts(&peeked);
         assert_eq!(
-            facts.value(FactLabel::Kind).map(|v| v.as_str()),
+            facts
+                .value(FactLabel::Kind)
+                .map(anyview_core::FactValue::as_str),
             Some(kind),
             "{name}"
         );

@@ -47,6 +47,7 @@ pub enum Root {
 
 /// Where `service` is on `server`: the address itself when it names a path, else wherever its
 /// `.well-known` points.
+#[must_use]
 pub fn root(server: &EndpointUrl, service: &Service) -> Root {
     if server.path() != "/" {
         return Root::Is(server.join("/"));
@@ -86,6 +87,7 @@ pub fn accepted(walk: &mut Walk, response: &Response<Vec<u8>>) -> Result<bool, E
 }
 
 /// The spec's row for `kind` as found, or the kind missing on this server.
+#[must_use]
 pub fn claim(spec: &ProviderSpec, kind: CapabilityKind, present: bool) -> Claim {
     let row = spec
         .capabilities

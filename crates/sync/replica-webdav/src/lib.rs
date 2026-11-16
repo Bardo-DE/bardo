@@ -1,5 +1,5 @@
-//! The WebDAV replica (design/31 §6.1, porter PLAN W6b): [`WebDavReplica`] implements
-//! sync-core's `Replica` over one folder of a WebDAV server (Nextcloud, ownCloud, a plain DAV
+//! The `WebDAV` replica (design/31 §6.1, porter PLAN W6b): [`WebDavReplica`] implements
+//! sync-core's `Replica` over one folder of a `WebDAV` server (Nextcloud, ownCloud, a plain DAV
 //! share) through account-dav-proto's parsers and account-http's seam.
 //!
 //! - **Changes** are a sync-collection report (RFC 6578) with the sync-token as the anchor, or,

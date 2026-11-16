@@ -40,6 +40,7 @@ use std::path::{Path, PathBuf};
 pub const BOOK_FILE: &str = "privacy.toml";
 
 /// The person's book in casement's state folder `dir` (`$XDG_STATE_HOME/bardo/compositor`).
+#[must_use]
 pub fn book_in(dir: &Path) -> PathBuf {
     dir.join(BOOK_FILE)
 }

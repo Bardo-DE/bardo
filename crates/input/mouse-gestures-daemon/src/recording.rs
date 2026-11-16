@@ -38,6 +38,7 @@ pub enum RecordedSource {
 
 impl RecordedSource {
     /// A fresh sensor to replay the reads through.
+    #[must_use]
     pub fn sensor(&self) -> Sensor {
         match self {
             RecordedSource::MagicMouseHid => Sensor::MagicMouse(MagicMouseHid::default()),
@@ -74,6 +75,7 @@ pub fn to_bytes(records: &[Record]) -> Vec<u8> {
 }
 
 /// The bytes a recording starts with: v1 for hidraw (readable by every palmrest), v2 else.
+#[must_use]
 pub fn header(source: &RecordedSource) -> Vec<u8> {
     match source {
         RecordedSource::MagicMouseHid => MAGIC.to_vec(),
@@ -96,6 +98,7 @@ pub fn recording_to_bytes(r: &Recording) -> Vec<u8> {
 }
 
 /// One record's bytes, for appending while recording.
+#[must_use]
 pub fn encode_record(r: &Record) -> Vec<u8> {
     let len = u16::try_from(r.bytes.len()).unwrap_or(u16::MAX);
     let mut out = Vec::with_capacity(10 + usize::from(len));

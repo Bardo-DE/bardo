@@ -12,6 +12,7 @@ type Stepped = (Browser, Vec<Effect>);
 
 impl Browser {
     /// The disks the sidebar lists, in the order the caller gave them.
+    #[must_use]
     pub fn volumes(&self) -> &[Volume] {
         &self.volumes
     }

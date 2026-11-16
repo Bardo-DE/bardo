@@ -145,26 +145,23 @@ fn scan(words: &[String]) -> Result<Scan, Failure> {
             None => (flag, None),
         };
         let name = name.replace('_', "-");
-        match SWITCHES.iter().find(|s| **s == name) {
-            Some(switch) => {
-                out.switches.insert(switch);
-            }
-            None => {
-                let other = name.as_str();
-                let value = match inline {
-                    Some(value) => value,
-                    None => iter
-                        .next()
-                        .cloned()
-                        .ok_or_else(|| Failure::usage(format!("--{other} needs a value")))?,
-                };
-                if other == "session" {
-                    out.session = Some(value);
-                } else if other == "space" {
-                    out.space = Some(value);
-                } else {
-                    out.params.push((other.replace('-', "_"), value));
-                }
+        if let Some(switch) = SWITCHES.iter().find(|s| **s == name) {
+            out.switches.insert(switch);
+        } else {
+            let other = name.as_str();
+            let value = match inline {
+                Some(value) => value,
+                None => iter
+                    .next()
+                    .cloned()
+                    .ok_or_else(|| Failure::usage(format!("--{other} needs a value")))?,
+            };
+            if other == "session" {
+                out.session = Some(value);
+            } else if other == "space" {
+                out.space = Some(value);
+            } else {
+                out.params.push((other.replace('-', "_"), value));
             }
         }
     }

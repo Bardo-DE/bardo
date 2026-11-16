@@ -250,37 +250,44 @@ impl Rig {
     }
 
     /// The issuer's handle, when it runs.
+    #[must_use]
     pub fn issuer(&self) -> Option<IssuerHandle> {
         self.issuer.as_ref().map(|running| (**running).clone())
     }
 
     /// The IMAP server's handle, when it runs.
+    #[must_use]
     pub fn imap(&self) -> Option<MailHandle> {
         self.imap.as_ref().map(|running| (**running).clone())
     }
 
     /// The SMTP server's handle, when it runs.
+    #[must_use]
     pub fn smtp(&self) -> Option<MailHandle> {
         self.smtp.as_ref().map(|running| (**running).clone())
     }
 
     /// The POP3 server's handle, when it runs.
+    #[must_use]
     pub fn pop3(&self) -> Option<MailHandle> {
         self.pop3.as_ref().map(|running| (**running).clone())
     }
 
     /// The fake Google's issuer and APIs, when they run.
+    #[must_use]
     pub fn google(&self) -> Option<&Google> {
         self.google.as_ref()
     }
 
     /// The fake Ollama, when it runs.
+    #[must_use]
     pub fn ollama(&self) -> Option<Arc<Ollama>> {
         self.ollama.clone()
     }
 
     /// What `rig.json` says of this rig, for the scratch directory `dir` and the control
     /// endpoint at `control`.
+    #[must_use]
     pub fn describe(&self, dir: &Path, control: &str) -> RigFile {
         let tls = self.tls.unwrap_or(Tls::Implicit);
         RigFile {

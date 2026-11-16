@@ -28,6 +28,7 @@ pub struct Bands {
 impl Bands {
     /// The bands of `surface`: fixed widths from its side edges, a share of its length at
     /// the rear.
+    #[must_use]
     pub fn resolve(surface: &Surface) -> Self {
         let g = GridExtent::of(surface);
         Self {
@@ -38,6 +39,7 @@ impl Bands {
     }
 
     /// Whether `at` is in a band.
+    #[must_use]
     pub fn contains(&self, at: Point) -> bool {
         at.x < self.left_below || at.x > self.right_above || f64::from(at.y) > self.rear_from
     }

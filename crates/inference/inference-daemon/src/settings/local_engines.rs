@@ -23,6 +23,7 @@ pub struct LocalEngines {
 
 impl LocalEngines {
     /// The engines of `config`: found when a program is named and there, else missing.
+    #[must_use]
     pub fn of(config: &EngineConfig) -> Self {
         Self {
             config: config.clone(),
@@ -51,6 +52,7 @@ impl LocalEngines {
     }
 
     /// One row per engine kind, in the picker's order.
+    #[must_use]
     pub fn rows(&self) -> Vec<LocalEngine> {
         let config = match &self.programs {
             Some(programs) => programs.over(&self.config),

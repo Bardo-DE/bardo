@@ -122,7 +122,7 @@ fn a_viewport_is_accepted_and_removed() {
     );
 }
 
-/// A second viewport on one surface is wp_viewporter.viewport_exists (0), posted on the manager.
+/// A second viewport on one surface is `wp_viewporter.viewport_exists` (0), posted on the manager.
 #[test]
 fn a_second_viewport_is_a_protocol_error() {
     let (mut fixture, id) = boot();
@@ -135,7 +135,7 @@ fn a_second_viewport_is_a_protocol_error() {
     assert_eq!(fault(&mut fixture, id), ("wp_viewporter".to_owned(), 0));
 }
 
-/// A destination of zero, or a negative source origin, is wp_viewport.bad_value (0).
+/// A destination of zero, or a negative source origin, is `wp_viewport.bad_value` (0).
 #[test]
 fn bad_values_are_protocol_errors() {
     for (destination, source) in [(Some((0, 10)), None), (None, Some((-1.0, 0.0, 10.0, 10.0)))] {
@@ -154,7 +154,7 @@ fn bad_values_are_protocol_errors() {
     }
 }
 
-/// A source outside the buffer is wp_viewport.out_of_buffer (2), raised at commit.
+/// A source outside the buffer is `wp_viewport.out_of_buffer` (2), raised at commit.
 #[test]
 fn a_source_outside_the_buffer_is_a_protocol_error() {
     let (mut fixture, id) = boot();
@@ -169,7 +169,7 @@ fn a_source_outside_the_buffer_is_a_protocol_error() {
     assert_eq!(fault(&mut fixture, id), ("wp_viewport".to_owned(), 2));
 }
 
-/// A fractional source without a destination is wp_viewport.bad_size (1).
+/// A fractional source without a destination is `wp_viewport.bad_size` (1).
 #[test]
 fn a_fractional_size_without_a_destination_is_a_protocol_error() {
     let (mut fixture, id) = boot();
@@ -204,7 +204,7 @@ fn a_viewport_made_after_the_first_commit_is_checked_for_bad_size() {
 }
 
 /// A commit that sets only the buffer scale changes the surface size, and a source that no longer
-/// fits is wp_viewport.out_of_buffer (2): the check runs at every commit, not only with a buffer.
+/// fits is `wp_viewport.out_of_buffer` (2): the check runs at every commit, not only with a buffer.
 #[test]
 fn a_scale_change_without_a_new_buffer_is_checked_for_out_of_buffer() {
     let (mut fixture, id) = boot();
@@ -226,7 +226,7 @@ fn a_scale_change_without_a_new_buffer_is_checked_for_out_of_buffer() {
     assert_eq!(fault(&mut fixture, id), ("wp_viewport".to_owned(), 2));
 }
 
-/// Requests on a viewport whose surface is gone are wp_viewport.no_surface (3).
+/// Requests on a viewport whose surface is gone are `wp_viewport.no_surface` (3).
 #[test]
 fn a_viewport_outliving_its_surface_is_a_protocol_error() {
     let (mut fixture, id) = boot();

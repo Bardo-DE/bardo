@@ -43,6 +43,7 @@ impl Desktop {
 #[cfg(feature = "dbus")]
 impl Watch {
     /// The capabilities as of the last change (or the first probe).
+    #[must_use]
     pub fn current(&self) -> &Desktop {
         &self.inner.desktop
     }

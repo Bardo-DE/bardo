@@ -54,6 +54,7 @@ pub struct FolderPrefs {
 
 impl ViewMode {
     /// The word a stored preference writes for this view.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             ViewMode::List => "list",
@@ -62,6 +63,7 @@ impl ViewMode {
     }
 
     /// The view a stored word names; `None` for a word this version does not know.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<ViewMode> {
         [ViewMode::List, ViewMode::Icons]
             .into_iter()
@@ -71,6 +73,7 @@ impl ViewMode {
 
 impl SortKey {
     /// The word a stored preference writes for this key.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             SortKey::Name => "name",
@@ -81,6 +84,7 @@ impl SortKey {
     }
 
     /// The key a stored word names; `None` for a word this version does not know.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<SortKey> {
         [
             SortKey::Name,
@@ -95,6 +99,7 @@ impl SortKey {
 
 impl SortOrder {
     /// The word a stored preference writes for this order.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             SortOrder::Ascending => "ascending",
@@ -103,6 +108,7 @@ impl SortOrder {
     }
 
     /// The order a stored word names; `None` for a word this version does not know.
+    #[must_use]
     pub fn from_slug(slug: &str) -> Option<SortOrder> {
         [SortOrder::Ascending, SortOrder::Descending]
             .into_iter()

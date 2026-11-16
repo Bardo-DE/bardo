@@ -24,6 +24,7 @@ pub enum HandoverShown {
 }
 
 /// Where the card says the helper's work is, and what it offers.
+#[must_use]
 pub fn handover_of(view: &HelperCardView) -> HandoverShown {
     match (&view.runs_in, &view.handover) {
         (RunsIn::Terminal, _) => HandoverShown::InTerminal,

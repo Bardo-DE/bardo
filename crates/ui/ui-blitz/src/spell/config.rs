@@ -59,6 +59,7 @@ impl SpellConfig {
     }
 
     /// The `.aff` and `.dic` files of an installed `lang`, from the first directory with both.
+    #[must_use]
     pub fn files(&self, lang: &Lang) -> Option<(PathBuf, PathBuf)> {
         self.dictionaries.iter().find_map(|dir| {
             let aff = dir.join(format!("{}.aff", lang.name()));

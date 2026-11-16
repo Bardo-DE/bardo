@@ -1,5 +1,5 @@
-//! The harness's vello_hybrid backend: the same document painted on the GPU reads
-//! back as vello_cpu paints it, and the on-demand benchmark times a 300-cell COLRv1 emoji grid
+//! The harness's `vello_hybrid` backend: the same document painted on the GPU reads
+//! back as `vello_cpu` paints it, and the on-demand benchmark times a 300-cell `COLRv1` emoji grid
 //! scrolling for 180 frames on both backends (FINDINGS "Hybrid harness backend"). Every GPU case
 //! skips, with a note, where no adapter opens (CI).
 //!
@@ -73,7 +73,7 @@ fn a_hybrid_frame_times_the_gpu_finishing_it() {
     };
     let time = gpu.paint_timed().expect("paints");
     assert!(time.total >= time.scene);
-    assert_eq!(time.render(), time.total - time.scene);
+    assert_eq!(time.render(), time.total.checked_sub(time.scene).unwrap());
 }
 
 // The benchmark: the emoji picker's worst case, 300 COLRv1 cells in one scroll container.
@@ -88,7 +88,7 @@ const FRAMES: usize = 180;
 /// Pixels per frame: 180 frames scroll 1,260 of the grid's 1,344 px of travel.
 const STEP: f32 = 7.0;
 
-/// 300 consecutive pictographs from U+1F300, every one a distinct COLRv1 glyph.
+/// 300 consecutive pictographs from U+1F300, every one a distinct `COLRv1` glyph.
 fn emoji(count: u32) -> Vec<String> {
     (0..count)
         .filter_map(|i| char::from_u32(0x1F300 + i))
@@ -117,7 +117,7 @@ fn emoji_grid() -> Element {
     grid(emoji(CELLS), "ds-emoji-text")
 }
 
-/// Control: the same 300 cells holding two Inter letters, to price the COLRv1 glyphs.
+/// Control: the same 300 cells holding two Inter letters, to price the `COLRv1` glyphs.
 fn text_grid() -> Element {
     grid(vec!["Ab".to_owned(); CELLS as usize], "")
 }

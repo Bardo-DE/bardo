@@ -29,6 +29,7 @@ impl BlurStrength {
     ///
     /// assert_eq!(BlurStrength::of(ShellRoleTag::Unassigned), BlurStrength::Regular);
     /// ```
+    #[must_use]
     pub fn of(role: ShellRoleTag) -> BlurStrength {
         match role {
             ShellRoleTag::Unassigned => BlurStrength::Regular,
@@ -38,6 +39,7 @@ impl BlurStrength {
 
     /// The strength for a shell surface with this role. UNMEASURED: design/23 fixes only the
     /// widget's look (the Regular one); the others are a judgement, one table row each.
+    #[must_use]
     pub fn of_role(role: ShellRole) -> BlurStrength {
         match role {
             ShellRole::Osd => BlurStrength::Light,

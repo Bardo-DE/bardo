@@ -36,6 +36,7 @@ pub fn use_edge_reveal(edge: RevealEdge, output: OutputId, reveal: Callback<Show
 
 /// Whether `output` shows a full-screen Space, following the daemon's word; `Hidden` without the
 /// link (a session without the desktop's compositor).
+#[must_use]
 pub fn use_full_screen(output: OutputId) -> ReadSignal<Shown> {
     let link = try_use_context::<EdgeLink>();
     let mut full = use_signal(|| Shown::Hidden);

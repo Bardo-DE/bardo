@@ -76,6 +76,7 @@ impl Platform {
     ];
 
     /// Whether the Command key is the primary modifier here (a Mac, or our desktop).
+    #[must_use]
     pub const fn is_mac_style(self) -> bool {
         matches!(
             self,
@@ -88,6 +89,7 @@ impl Platform {
 
     /// The modifiers that `Primary` stands for in `context`: Command on Mac-style platforms,
     /// Ctrl elsewhere; in a terminal off the Mac style, Ctrl+Shift so Ctrl stays the program's.
+    #[must_use]
     pub const fn primary(self, context: Context) -> Modifiers {
         match (self.is_mac_style(), context) {
             (true, _) => Modifiers::META,
@@ -99,6 +101,7 @@ impl Platform {
     /// Another modifier set a toolkit may send for Primary in `context`, which input treats as
     /// Primary too. On our desktop the compositor remaps Command to Ctrl+Shift for terminal
     /// windows, so a keymap-aware terminal accepts either form; elsewhere there is none.
+    #[must_use]
     pub const fn primary_alias(self, context: Context) -> Option<Modifiers> {
         match (self, context) {
             (
@@ -112,6 +115,7 @@ impl Platform {
     }
 
     /// A short stable name, the form `FromStr` reads back.
+    #[must_use]
     pub const fn slug(self) -> &'static str {
         match self {
             Platform::MacOs => "macos",
@@ -204,6 +208,6 @@ mod tests {
         for platform in Platform::ALL {
             assert_eq!(platform.slug().parse::<Platform>(), Ok(platform));
         }
-        assert!("amiga".parse::<Platform>().is_err());
+        "amiga".parse::<Platform>().unwrap_err();
     }
 }

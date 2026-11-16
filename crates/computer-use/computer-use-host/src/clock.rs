@@ -14,6 +14,7 @@ pub struct SystemClock {
 
 impl SystemClock {
     /// A clock whose `Stamp`s count from now.
+    #[must_use]
     pub fn start() -> Self {
         Self {
             origin: Instant::now(),

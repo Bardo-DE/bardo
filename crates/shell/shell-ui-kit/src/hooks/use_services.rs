@@ -8,6 +8,7 @@ use dioxus::prelude::use_context;
 /// # Panics
 /// When the surface's `Root` was built without `.context(services)`: a daemon wiring bug,
 /// Never a runtime condition.
+#[must_use]
 pub fn use_services() -> Services {
     use_context::<Services>()
 }

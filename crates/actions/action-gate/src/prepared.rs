@@ -62,6 +62,7 @@ pub struct Prepared {
 }
 
 /// The things a target names, if it names things.
+#[must_use]
 pub fn entities(target: &TargetValue) -> Vec<EntityId> {
     match target {
         TargetValue::Entities(ids) => ids.clone(),
@@ -74,6 +75,7 @@ pub fn entities(target: &TargetValue) -> Vec<EntityId> {
 
 /// A stable hash of what a call is about: the same action, target (things or files) and argument
 /// values.
+#[must_use]
 pub fn digest(target: &TargetValue, args: &Args) -> ArgDigest {
     let values: std::collections::BTreeMap<&ParamName, &Value> =
         args.iter().map(|(k, v)| (k, &v.value)).collect();
@@ -85,6 +87,7 @@ pub fn digest(target: &TargetValue, args: &Args) -> ArgDigest {
 }
 
 /// What a consent verdict says of the grant behind it, as the policy reads it.
+#[must_use]
 pub fn grant_state(v: &Verdict) -> GrantState {
     match v {
         Verdict::Granted {
@@ -102,6 +105,7 @@ pub fn grant_state(v: &Verdict) -> GrantState {
 }
 
 /// How the actor uses the app: an agent working in the background, or the person's own acts.
+#[must_use]
 pub fn usage_of(actor: &Actor) -> Usage {
     match actor {
         Actor::Companion {
@@ -113,6 +117,7 @@ pub fn usage_of(actor: &Actor) -> Usage {
 }
 
 /// The steps of a session as the reviewer is told them: codes only.
+#[must_use]
 pub fn typed_history(record: &SessionRecord) -> Vec<TypedStep> {
     record
         .history
@@ -136,6 +141,7 @@ pub fn typed_history(record: &SessionRecord) -> Vec<TypedStep> {
 }
 
 /// The action as the reviewer is shown it: the arguments, trusted or untrusted, and the targets.
+#[must_use]
 pub fn proposed(decl: &ActionDecl, call: &CallRequest, targets: &[EntityId]) -> ProposedAction {
     let view = |name: &ParamName| {
         call.args.get(name).map(|a| match a.label.integrity {
@@ -167,6 +173,7 @@ pub fn proposed(decl: &ActionDecl, call: &CallRequest, targets: &[EntityId]) -> 
 
 /// What a grant the person gives with "always" is keyed by: one per data class, for the whole
 /// app in this Space.
+#[must_use]
 pub fn grants_for(
     prepared: &Prepared,
     id: GrantId,

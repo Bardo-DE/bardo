@@ -69,6 +69,6 @@ mod tests {
         assert_eq!(cut.iter().map(|p| p.len()).collect::<Vec<_>>(), [16, 16, 8]);
         assert_eq!(cut.concat(), value);
         assert_eq!(bytes(&[], EIGHT), [&[] as &[u8]]);
-        assert_eq!(bytes(&value, Limit::None), [&value[..]]);
+        assert_eq!(bytes(&value, Limit::None), [(&*value)]);
     }
 }

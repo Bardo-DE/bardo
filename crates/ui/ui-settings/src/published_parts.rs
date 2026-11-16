@@ -29,6 +29,7 @@ pub struct PublishedParts {
 
 impl PublishedParts {
     /// `app`'s parts: the classes of its `AppSelectors::classes()`, keeping only its own prefix.
+    #[must_use]
     pub fn new(app: &str, classes: Vec<String>) -> PublishedParts {
         PublishedParts {
             app: app.to_owned(),
@@ -37,6 +38,7 @@ impl PublishedParts {
     }
 
     /// The TOML text this writes as `<app>.toml`.
+    #[must_use]
     pub fn to_toml(&self) -> String {
         toml::to_string(self).expect("two strings and a list of strings are TOML")
     }
@@ -112,6 +114,7 @@ fn admit(path: &Path, found: &[PublishedParts]) -> Result<PublishedParts, String
 
 /// The directories [`discover_parts`] scans: each `$XDG_DATA_DIRS` entry's `bardo/selectors`,
 /// then `$XDG_DATA_HOME/bardo/selectors` last, with the environment handed in.
+#[must_use]
 pub fn parts_dirs_from(
     xdg_data_home: Option<std::ffi::OsString>,
     xdg_data_dirs: Option<std::ffi::OsString>,
@@ -129,6 +132,7 @@ pub fn parts_dirs_from(
 }
 
 /// [`parts_dirs_from`] read from the environment.
+#[must_use]
 pub fn parts_dirs() -> Vec<PathBuf> {
     parts_dirs_from(
         std::env::var_os("XDG_DATA_HOME"),

@@ -17,6 +17,7 @@ pub struct XdgDialogPart {
 
 impl XdgDialogPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> XdgDialogPart
     where
         D: GlobalDispatch<XdgWmDialogV1, GlobalData>

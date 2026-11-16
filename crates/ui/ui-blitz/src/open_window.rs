@@ -1,6 +1,6 @@
 //! A second window from a running app (a message in its own window).
 //!
-//! [`open_window`] asks the event loop `launch` runs for a new window with its own VirtualDom.
+//! [`open_window`] asks the event loop `launch` runs for a new window with its own `VirtualDom`.
 //! The new document gets exactly what `launch` gives the first one: the same `Host` around the
 //! root (input modality, focus seams, caret, click focus, the edit surface's IME, the window
 //! frame's `WindowHost`, the scale, file drops), the app's `AppConfig` setup (its root contexts,
@@ -8,7 +8,7 @@
 //! contexts (the document, `use_window`, `use_window_event`). Its root renders its own `Ds`, as
 //! the first window's does, with the appearance it reads from the shared contexts.
 //!
-//! A `Signal` belongs to one VirtualDom and cannot cross into another: pass data by props
+//! A `Signal` belongs to one `VirtualDom` and cannot cross into another: pass data by props
 //! ([`open_window_with`]) or through shared state both windows read (an `Arc<Mutex<_>>`, a
 //! `tokio::sync::watch` channel, or the app's own store provided with `AppConfig::with_context`).
 
@@ -48,12 +48,14 @@ impl WindowSpec {
     }
 
     /// A desktop application id of its own, instead of the first window's.
+    #[must_use]
     pub fn with_app_id(mut self, id: AppId) -> Self {
         self.app_id = Some(id);
         self
     }
 
     /// Who draws its frame, instead of the first window's choice.
+    #[must_use]
     pub fn with_decorations(mut self, decorations: Decorations) -> Self {
         self.decorations = Some(decorations);
         self
@@ -61,17 +63,20 @@ impl WindowSpec {
 
     /// An icon of its own, instead of the first window's. X11 and Windows show it; Wayland
     /// takes the icon from the app's `.desktop` file, matched by the application id.
+    #[must_use]
     pub fn with_icon(mut self, icon: WindowIcon) -> Self {
         self.icon = Some(icon);
         self
     }
 
     /// The window's title.
+    #[must_use]
     pub fn title(&self) -> &str {
         &self.title
     }
 
     /// What it opens at, and the least it may be resized to.
+    #[must_use]
     pub fn size(&self) -> WindowSize {
         self.size
     }
@@ -114,7 +119,7 @@ impl WindowHandle {
         WindowHandle { key, requests }
     }
 
-    /// Close the window: it leaves the screen and its VirtualDom is dropped. Closing one already
+    /// Close the window: it leaves the screen and its `VirtualDom` is dropped. Closing one already
     /// closed does nothing.
     pub fn close(&self) {
         self.requests.close(self.key);
@@ -138,6 +143,7 @@ impl WindowHandle {
     }
 
     /// Where the window is in its life.
+    #[must_use]
     pub fn life(&self) -> WindowLife {
         self.requests.life(self.key)
     }
@@ -150,7 +156,7 @@ pub fn use_window_handle() -> Option<WindowHandle> {
     use_hook(try_consume_context::<WindowHandle>)
 }
 
-/// Open another window of this app, rendering `root` in a VirtualDom of its own. Call it from a
+/// Open another window of this app, rendering `root` in a `VirtualDom` of its own. Call it from a
 /// component or a handler inside a window `launch` opened (or one this opened); anywhere else
 /// (the harness, a snapshot) there is no event loop to ask and it answers
 /// `None`.

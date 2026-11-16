@@ -39,9 +39,10 @@ fn leaves(value: &Value) -> Vec<&Value> {
 /// no host, or carries user information.
 fn host_of(url: &str) -> Option<Domain> {
     let url = Url::parse(url).ok()?;
-    match url.username().is_empty() && url.password().is_none() {
-        true => Domain::parse(url.host_str()?).ok(),
-        false => None,
+    if url.username().is_empty() && url.password().is_none() {
+        Domain::parse(url.host_str()?).ok()
+    } else {
+        None
     }
 }
 
@@ -186,7 +187,11 @@ mod tests {
         ];
         for (url, want) in rows {
             let got = host_of(url);
-            assert_eq!(got.as_ref().map(|d| d.as_str()), want, "{url}");
+            assert_eq!(
+                got.as_ref().map(permission_core::Domain::as_str),
+                want,
+                "{url}"
+            );
         }
     }
 }

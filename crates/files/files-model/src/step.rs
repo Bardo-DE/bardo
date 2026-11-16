@@ -17,6 +17,7 @@ impl Browser {
     ///
     /// Answers for a place the browser has since left are ignored. While a name is being edited,
     /// the keys that would move the selection do nothing.
+    #[must_use]
     pub fn step(self, input: Input, now: Now) -> (Browser, Vec<Effect>) {
         let showing = self.quick_item();
         let previewing = self.previewed_item();
@@ -76,7 +77,7 @@ impl Browser {
             Input::GetInfoFolder => self.get_info_folder(),
             Input::CopyAsPathname => self.copy_as_pathname(),
             Input::Click(name, modifier) => self.select(|s, rows| s.click(rows, &name, modifier)),
-            Input::SelectAll => self.select(|s, rows| s.select_all(rows)),
+            Input::SelectAll => self.select(super::selection::Selection::select_all),
             Input::SelectNone => self.select(|_, _| Selection::default()),
             Input::MoveCursor(direction, modifier) => {
                 self.select(|s, rows| s.moved(rows, direction, modifier))

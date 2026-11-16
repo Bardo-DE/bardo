@@ -15,7 +15,7 @@ const STAGING: &str = "bardo-print";
 /// How long a staged PDF is kept. The viewer may still be reading it after `xdg-open` returns,
 /// so the file cannot be removed at once; one day is far past any print, and the next print
 /// sweeps what is older.
-const KEEP: Duration = Duration::from_secs(24 * 60 * 60);
+const KEEP: Duration = Duration::from_hours(24);
 
 /// Write `pdf` to a private file named after `title` and open it.
 ///
@@ -56,8 +56,8 @@ fn private_dir(dir: &Path) -> std::io::Result<()> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::DirBuilderExt;
-        builder.mode(0o700);
-    }
+        builder.mode(0o700)
+    };
     builder.create(dir)
 }
 
@@ -68,8 +68,8 @@ fn create_private(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
+        options.mode(0o600)
+    };
     let mut file: File = options.open(path)?;
     file.write_all(bytes)?;
     file.sync_all()

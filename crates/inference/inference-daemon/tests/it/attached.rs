@@ -470,7 +470,7 @@ async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_th
     assert_eq!(lab.chats().len(), 2);
 
     // It never counts as cloud: local-only stays on throughout, and no cloud spend is recorded.
-    assert_eq!(world.served.settings().policy.local_only, true);
+    assert!(world.served.settings().policy.local_only);
     assert!(world.served.usage_of(&hosting::rig::test_app()).is_empty());
 }
 

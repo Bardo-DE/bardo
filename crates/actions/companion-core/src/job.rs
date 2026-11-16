@@ -68,6 +68,7 @@ pub struct JobReport {
 
 impl JobReport {
     /// A job that did not run at all.
+    #[must_use]
     pub fn failed(fault: JobFault) -> Self {
         Self {
             ending: JobEnding::Failed(fault),

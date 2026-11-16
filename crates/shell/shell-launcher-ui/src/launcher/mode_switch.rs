@@ -21,9 +21,10 @@ const MODES: [Mode; 2] = [Mode::Auto, Mode::Manual];
 /// The switch for the conversation's mode, with its note or help beside it.
 #[component]
 pub(crate) fn ModeSwitch(view: ModeView, onswitch: EventHandler<Mode>) -> Element {
-    let availability = match view.locked {
-        false => Availability::Enabled,
-        true => Availability::Disabled,
+    let availability = if view.locked {
+        Availability::Disabled
+    } else {
+        Availability::Enabled
     };
     let shortcut = action_shortcut(&ActionKeys::own(OwnAction::SwitchMode));
     let line = view.note.or(view.help);

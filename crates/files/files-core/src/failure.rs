@@ -39,6 +39,7 @@ pub enum OpFailure {
 
 impl OpFailure {
     /// The failure an I/O error stands for.
+    #[must_use]
     pub fn from_io(err: &io::Error) -> OpFailure {
         match err.kind() {
             io::ErrorKind::NotFound => OpFailure::NotFound,

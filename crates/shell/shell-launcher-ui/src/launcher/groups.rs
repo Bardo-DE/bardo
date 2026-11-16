@@ -13,6 +13,7 @@ pub enum Mix {
 /// The rows of `results` that belong to this opening: a generation later than the one the
 /// launcher opened over. Anything older is a stale keystroke's, including the previous
 /// opening's last query.
+#[must_use]
 pub fn fresh(results: &Results, opened_over: Generation) -> &[Item] {
     if results.generation > opened_over {
         &results.items

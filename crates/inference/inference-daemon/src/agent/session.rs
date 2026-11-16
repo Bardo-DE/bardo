@@ -92,16 +92,19 @@ impl Agents {
     }
 
     /// The engines.
+    #[must_use]
     pub fn engines(&self) -> &Engines {
         &self.0.engines
     }
 
     /// The audit destination.
+    #[must_use]
     pub fn audit(&self) -> Arc<dyn AuditOut> {
         Arc::clone(&self.0.audit)
     }
 
     /// The clock.
+    #[must_use]
     pub fn clock(&self) -> Arc<dyn Clock> {
         Arc::clone(&self.0.clock)
     }

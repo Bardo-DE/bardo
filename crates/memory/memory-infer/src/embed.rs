@@ -64,6 +64,7 @@ impl<T: Transport> InferdEmbedder<T> {
     }
 
     /// The same embedder with these deadlines instead of [`Deadlines::EMBED`].
+    #[must_use]
     pub fn with_deadlines(mut self, deadlines: Deadlines) -> Self {
         self.deadlines = deadlines;
         self

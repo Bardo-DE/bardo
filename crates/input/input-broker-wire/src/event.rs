@@ -24,16 +24,19 @@ impl Event {
     pub const SYNC: Event = Event::new(EV_SYN, SYN_REPORT, 0);
 
     /// An event of `kind` with `code` and `value`.
+    #[must_use]
     pub const fn new(kind: u16, code: u16, value: i32) -> Self {
         Self { kind, code, value }
     }
 
     /// Whether this is the end-of-frame event.
+    #[must_use]
     pub const fn is_sync(self) -> bool {
         self.kind == EV_SYN && self.code == SYN_REPORT
     }
 
     /// The 24 bytes of `struct input_event` with a zero time.
+    #[must_use]
     pub fn to_bytes(self) -> [u8; EVENT_BYTES] {
         let mut out = [0u8; EVENT_BYTES];
         out[TIME_BYTES..TIME_BYTES + 2].copy_from_slice(&self.kind.to_le_bytes());
@@ -43,6 +46,7 @@ impl Event {
     }
 
     /// Reads the fields of `bytes`, ignoring the time.
+    #[must_use]
     pub fn from_bytes(bytes: &[u8; EVENT_BYTES]) -> Self {
         let (_, tail) = bytes.split_at(TIME_BYTES);
         let kind = u16::from_le_bytes([tail[0], tail[1]]);

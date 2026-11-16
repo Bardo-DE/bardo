@@ -83,6 +83,7 @@ pub const PORT: u16 = 26434;
 /// Whether `ip` is an address Tailscale gives a computer: `100.64.0.0/10` for IPv4, the
 /// `fd7a:115c:a1e0::/48` block for IPv6. What is listened on in a product is never anything
 /// else, whatever Tailscale reports.
+#[must_use]
 pub fn is_network_address(ip: IpAddr) -> bool {
     match ip {
         IpAddr::V4(v4) => in_v4(v4),

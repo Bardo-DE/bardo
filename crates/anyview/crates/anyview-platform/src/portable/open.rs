@@ -2,7 +2,7 @@
 //! it: `xdg-open` on Linux and the other Unixes, `open` on macOS, `explorer` on Windows. Each is
 //! started through [`Env`]'s [`Spawn`](crate::Spawn) as a program and its arguments, never as a
 //! shell string, so a path or an address with spaces or quotes in it is one argument. Inside a
-//! sandbox `xdg-open` itself goes through the OpenURI portal.
+//! sandbox `xdg-open` itself goes through the `OpenURI` portal.
 
 use crate::env::Env;
 use crate::error::PlatformError;
@@ -67,6 +67,7 @@ pub struct SystemOpen {
 
 impl SystemOpen {
     /// Links opened by starting programs through `env`.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         SystemOpen { env }
     }
@@ -104,6 +105,7 @@ pub struct SystemReveal {
 
 impl SystemReveal {
     /// A reveal that starts programs through `env`.
+    #[must_use]
     pub fn new(env: Env) -> Self {
         SystemReveal { env }
     }

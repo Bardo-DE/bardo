@@ -167,9 +167,10 @@ impl Sub {
         };
         let at = self.started.elapsed().as_secs_f64();
         let _ = doc.write(|doc| doc.resolve(at));
-        match self.phase.run(true).changed() {
-            true => self.hand_over(event_loop),
-            false => Vec::new(),
+        if self.phase.run(true).changed() {
+            self.hand_over(event_loop)
+        } else {
+            Vec::new()
         }
     }
 
@@ -253,7 +254,7 @@ impl Windows {
         self.subs.iter_mut().map(|(_, sub)| sub)
     }
 
-    /// Drop the window `key`: it leaves the screen, and its document and VirtualDom go with it.
+    /// Drop the window `key`: it leaves the screen, and its document and `VirtualDom` go with it.
     fn drop_window(&mut self, event_loop: &dyn ActiveEventLoop, key: WindowKey) {
         if let Some(at) = self.subs.iter().position(|(held, _)| *held == key) {
             let (_, sub) = self.subs.remove(at);
@@ -450,7 +451,7 @@ impl Windows {
     }
 }
 
-/// AppKit's standard key bindings (Backspace, ⌥⌫, ⌃A …), which Blitz's text input leaves to the
+/// `AppKit`'s standard key bindings (Backspace, ⌥⌫, ⌃A …), which Blitz's text input leaves to the
 /// platform on macOS. Each reaches the window it was typed in: every window is its own
 /// application, and one handed another window's binding finds no such window and drops it, which
 /// is how the first window's handler alone left every later window unable to delete.

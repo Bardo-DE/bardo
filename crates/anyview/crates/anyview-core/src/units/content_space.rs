@@ -23,11 +23,13 @@ impl DocUnit {
     pub const PER_PIXEL: i32 = 64;
 
     /// `pixels` whole content pixels, saturating at the largest representable length.
+    #[must_use]
     pub fn from_pixels(pixels: i32) -> DocUnit {
         DocUnit(pixels.saturating_mul(Self::PER_PIXEL))
     }
 
     /// The length in whole content pixels, rounded toward negative infinity.
+    #[must_use]
     pub fn whole_pixels(self) -> i32 {
         self.0.div_euclid(Self::PER_PIXEL)
     }

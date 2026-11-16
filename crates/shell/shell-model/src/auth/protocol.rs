@@ -5,7 +5,7 @@
 //! followed by one NUL byte (a secret may hold any byte but NUL; `unix_chkpwd` reads the same
 //! way). The child answers on stdout, one line each: `info TEXT` and `error TEXT` for a PAM
 //! module's messages (newlines in TEXT become spaces), then exactly one of `accepted`,
-//! `refused` or `fault WORD` (`WORD` is [`AuthFault`]'s snake_case name), then it exits.
+//! `refused` or `fault WORD` (`WORD` is [`AuthFault`]'s `snake_case` name), then it exits.
 
 use thiserror::Error;
 
@@ -38,6 +38,7 @@ pub enum ProtocolError {
 }
 
 /// The bytes of `request` for the child's stdin.
+#[must_use]
 pub fn encode_request(request: &HelperRequest) -> Vec<u8> {
     let fields: [&[u8]; 3] = [
         request.service.0.as_bytes(),
@@ -76,6 +77,7 @@ pub fn decode_request(bytes: &[u8]) -> Result<HelperRequest, ProtocolError> {
 }
 
 /// `line` as the child writes it, without the newline.
+#[must_use]
 pub fn render_line(line: &HelperLine) -> String {
     match line {
         HelperLine::Note(PamNote::Info(text)) => format!("info {}", one_line(text)),
@@ -113,6 +115,7 @@ pub fn parse_line(line: &str) -> Result<HelperLine, ProtocolError> {
 
 /// The child's whole answer as one verdict: its notes in order, and its `Done`; no `Done` (or a
 /// line that is not the protocol) is `Unavailable(HelperFailed)`.
+#[must_use]
 pub fn verdict_of(lines: Vec<Result<HelperLine, ProtocolError>>) -> Verdict {
     let failed = || Verdict::plain(Outcome::Unavailable(AuthFault::HelperFailed));
     let folded = lines.into_iter().try_fold(
@@ -147,6 +150,7 @@ fn fault_of(word: &str) -> Option<AuthFault> {
 }
 
 /// The fault's word on the wire.
+#[must_use]
 pub fn fault_word(fault: AuthFault) -> &'static str {
     match fault {
         AuthFault::NoHelper => "no_helper",
@@ -223,7 +227,7 @@ mod tests {
             render_line(&HelperLine::Note(PamNote::Info("two\nlines".to_owned()))),
             "info two lines"
         );
-        assert!(parse_line("maybe").is_err());
+        parse_line("maybe").unwrap_err();
     }
 
     #[test]

@@ -27,6 +27,7 @@ pub struct FramePool {
 
 impl FramePool {
     /// An empty pool.
+    #[must_use]
     pub fn new() -> Arc<Self> {
         Arc::default()
     }

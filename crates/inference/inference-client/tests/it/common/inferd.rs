@@ -201,16 +201,13 @@ fn parse_slug<T: serde::de::DeserializeOwned>(text: &str) -> fdo::Result<T> {
 
 async fn write_event(stream: &mut UnixStream, event: &InferEvent, dribble: bool) {
     let bytes = encode_frame(event).expect("encode");
-    match dribble {
-        false => {
-            let _ = stream.write_all(&bytes).await;
-        }
-        true => {
-            for byte in bytes {
-                let _ = stream.write_all(&[byte]).await;
-                let _ = stream.flush().await;
-                tokio::task::yield_now().await;
-            }
+    if !dribble {
+        let _ = stream.write_all(&bytes).await;
+    } else {
+        for byte in bytes {
+            let _ = stream.write_all(&[byte]).await;
+            let _ = stream.flush().await;
+            tokio::task::yield_now().await;
         }
     }
 }

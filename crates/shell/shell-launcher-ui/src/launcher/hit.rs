@@ -14,6 +14,7 @@ use shell_ui_kit::links::PanelHit;
 
 /// The panel's input region for `hit`: the card element itself (the host resolves it after
 /// every layout), or the whole panel (never the shadow's room around it).
+#[must_use]
 pub fn panel_input(hit: PanelHit) -> RegionSpec {
     match hit {
         PanelHit::Whole => {
@@ -33,6 +34,7 @@ pub fn panel_input(hit: PanelHit) -> RegionSpec {
 }
 
 /// The card element, with the radius its squircle's shadows follow: the panel's blur region.
+#[must_use]
 pub fn card_region() -> RegionSpec {
     RegionSpec::Element {
         id: ElementId::new(CARD_ID),
@@ -45,6 +47,7 @@ pub fn card_region() -> RegionSpec {
 /// the card, so without this quire paints its see-through tint over unblurred rows). The host
 /// skips an element that is not in the document, so the menu's frame before it mounts blurs
 /// only the card.
+#[must_use]
 pub fn blur_region(actions: ActionsShown) -> RegionSpec {
     match actions {
         ActionsShown::Closed => card_region(),
@@ -65,6 +68,7 @@ pub fn blur_region(actions: ActionsShown) -> RegionSpec {
 
 /// What the panel takes, from the card's bottom edge in panel coordinates (`foot`) and whether
 /// the actions menu is open. A foot at or above the top (read before layout) measures nothing.
+#[must_use]
 pub fn hit_for(foot: f32, actions: ActionsShown) -> PanelHit {
     match actions {
         ActionsShown::Open => PanelHit::Whole,

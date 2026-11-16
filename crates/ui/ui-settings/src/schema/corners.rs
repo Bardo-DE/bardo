@@ -35,11 +35,13 @@ impl CornerKeys {
     }
 
     /// Whether `key` is in the set.
+    #[must_use]
     pub fn contains(self, key: CornerKey) -> bool {
         self.0 & Self::bit(key) != 0
     }
 
     /// Whether no key is in the set.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0 == 0
     }
@@ -122,6 +124,7 @@ pub struct CornerBindings(pub Vec<CornerBinding>);
 
 impl CornerBindings {
     /// A corner with one binding and no keys held.
+    #[must_use]
     pub fn single(action: CornerDo) -> CornerBindings {
         CornerBindings(vec![CornerBinding {
             keys: CornerKeys::default(),

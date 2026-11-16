@@ -54,7 +54,7 @@ fn a_taken_name_gets_the_next_free_number() {
 #[test]
 fn a_number_that_makes_the_name_too_long_is_refused() {
     let long = name(&"a".repeat(255));
-    assert!(keep_both(&long, Split::Whole, |n| *n == long).is_err());
+    keep_both(&long, Split::Whole, |n| *n == long).unwrap_err();
 }
 
 #[test]

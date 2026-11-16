@@ -9,9 +9,10 @@ use crate::scroll::geom::{Area, ScrollAxis, Scroller};
 /// The scroller the element with `id` names, if it exists.
 pub fn scroller_by_id(doc: &BaseDocument, id: &ElementId) -> Option<Scroller> {
     let node = doc.get_element_by_id(id.as_str())?;
-    Some(match is_root(doc, node) {
-        true => Scroller::Viewport,
-        false => Scroller::Node(node.as_u64()),
+    Some(if is_root(doc, node) {
+        Scroller::Viewport
+    } else {
+        Scroller::Node(node.as_u64())
     })
 }
 
@@ -32,6 +33,7 @@ pub fn container_of(
 }
 
 /// `scroller`'s border box in surface-local coordinates (the viewport: the whole surface).
+///
 /// Blitz's client rect of an element subtracts the element's own scroll offset along with its
 /// ancestors' (`unrounded_absolute_position`), which moves a scrolled container's box by its
 /// own scroll; that is added back here.

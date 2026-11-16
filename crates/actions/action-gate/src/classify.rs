@@ -59,6 +59,7 @@ pub fn classify_step(
 
 /// The classification of a retry: `Perform` said the call changed, so the call is gated again
 /// at the ceiling, which a provider must accept.
+#[must_use]
 pub fn at_ceiling(ceiling: Effect) -> Classification {
     Classification {
         ceiling,
@@ -70,6 +71,7 @@ pub fn at_ceiling(ceiling: Effect) -> Classification {
 
 /// How a delegation ended, from the outer call's outcome: the inner call must be the follow-up
 /// the provider answered, for the action it said. (A different one is gated normally anyway.)
+#[must_use]
 pub fn delegation_end(to: &ActionRef, outcome: &Outcome) -> DelegationEnd {
     match &outcome.follow {
         Follow::Next(call) if call.action == *to => DelegationEnd::Followed,

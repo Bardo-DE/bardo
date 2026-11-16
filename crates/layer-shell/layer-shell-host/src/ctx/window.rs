@@ -11,7 +11,7 @@ use crate::msg::WindowOp;
 use crate::state::HostState;
 use crate::toplevel::{Fullscreen, Maximize, ResizeEdge, to_wire_edge};
 
-/// The xdg_toplevel request for `op` on toplevel `id`'s `window`. A move or resize the compositor would ignore is refused here with a log line (a
+/// The `xdg_toplevel` request for `op` on toplevel `id`'s `window`. A move or resize the compositor would ignore is refused here with a log line (a
 /// `SurfaceHandle` caller already got the refusal as a value).
 pub(super) fn send(state: &HostState, id: SurfaceId, window: &Window, op: &WindowOp) {
     let started = match op {

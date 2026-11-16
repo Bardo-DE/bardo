@@ -1,10 +1,10 @@
-//! BlueZ's objects as plain values, and what they say: which devices the page lists, and which of
-//! BlueZ's signals are worth reading it again for. The system reads the wire into these values;
+//! `BlueZ`'s objects as plain values, and what they say: which devices the page lists, and which of
+//! `BlueZ`'s signals are worth reading it again for. The system reads the wire into these values;
 //! nothing here knows the bus.
 
 use super::model::{BatteryLevel, BtAddress, BtDevice, BtKind, BtLink};
 
-/// What BlueZ's `Device1` (and `Battery1`) properties say of one device, as the system read them.
+/// What `BlueZ`'s `Device1` (and `Battery1`) properties say of one device, as the system read them.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BtDeviceWire {
     /// `Address`, when the object has one.
@@ -17,14 +17,14 @@ pub struct BtDeviceWire {
     pub paired: bool,
     /// `Connected`.
     pub link: BtLink,
-    /// Whether BlueZ hears the device now (`RSSI` is there).
+    /// Whether `BlueZ` hears the device now (`RSSI` is there).
     pub heard: bool,
     /// The battery `Percentage`, when `Battery1` reports one.
     pub battery: Option<u8>,
 }
 
 /// The device `wire` describes. A device this computer is not paired with is listed only while
-/// BlueZ hears it: BlueZ remembers the ones it saw for a while. A device with no address is none.
+/// `BlueZ` hears it: `BlueZ` remembers the ones it saw for a while. A device with no address is none.
 pub fn bt_device_of(wire: BtDeviceWire) -> Option<BtDevice> {
     let address = wire.address?;
     if !wire.paired && !wire.heard {
@@ -46,17 +46,19 @@ pub fn bt_device_of(wire: BtDeviceWire) -> Option<BtDevice> {
 
 /// Whether the object at `path` sits under the adapter at `adapter` (`/org/bluez/hci0/dev_..`
 /// under `/org/bluez/hci0`).
+#[must_use]
 pub fn is_under_adapter(path: &str, adapter: &str) -> bool {
     path.strip_prefix(adapter)
         .is_some_and(|rest| rest.starts_with('/'))
 }
 
-/// What BlueZ says about a device it hears all the time: its signal, and what it broadcasts.
+/// What `BlueZ` says about a device it hears all the time: its signal, and what it broadcasts.
 const NOISE: [&str; 4] = ["RSSI", "TxPower", "ManufacturerData", "ServiceData"];
 
-/// Whether a `PropertiesChanged` of `interface` that changed `names` is worth reading BlueZ again
+/// Whether a `PropertiesChanged` of `interface` that changed `names` is worth reading `BlueZ` again
 /// for: not a device's constantly changing signal strength, which would have the page reading all
 /// the time while devices are nearby.
+#[must_use]
 pub fn bt_change_matters(interface: &str, names: &[&str]) -> bool {
     !(interface == "org.bluez.Device1" && names.iter().all(|name| NOISE.contains(name)))
 }

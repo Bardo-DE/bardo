@@ -109,6 +109,7 @@ impl Cloud {
 
     /// The same, with the providers somewhere else (a test's loopback fake) and `roots` trusted.
     /// Called right after `new`, before the value is shared.
+    #[must_use]
     pub fn at(mut self, doors: Doors, roots: TlsRoots) -> Self {
         if let Some(inner) = Arc::get_mut(&mut self.0) {
             inner.doors = doors;
@@ -118,16 +119,19 @@ impl Cloud {
     }
 
     /// The hosted entries, in catalogue order.
+    #[must_use]
     pub fn entries(&self) -> &[ModelEntry] {
         &self.0.entries
     }
 
     /// Now.
+    #[must_use]
     pub fn now(&self) -> UnixSeconds {
         self.0.clock.now()
     }
 
     /// The meter.
+    #[must_use]
     pub fn ledger(&self) -> &Ledger {
         &self.0.ledger
     }
@@ -170,6 +174,7 @@ impl Cloud {
     }
 
     /// Whether `model` is one a server of the person's own lists: a model with no engine to start.
+    #[must_use]
     pub fn lists(&self, model: &inference_core::ModelRef) -> bool {
         self.0.own.holds(&model.account, &model.model)
     }
@@ -199,6 +204,7 @@ impl Cloud {
 
     /// What the caps say about one more turn of `app` on `model`: they compare what providers have
     /// reported so far.
+    #[must_use]
     pub fn spend(&self, line: SpendLine, app: &AppId, model: &RemoteModel) -> SpendVerdict {
         self.0
             .ledger
@@ -212,6 +218,7 @@ impl Cloud {
 
     /// The transport of one turn on `model`'s reach, authenticated with `key`; `None` when this
     /// build has no address for the provider.
+    #[must_use]
     pub fn transport(
         &self,
         model: &RemoteModel,
@@ -237,6 +244,7 @@ impl Cloud {
     /// asks (`x-api-key` for Anthropic's Messages, a bearer for chat completions) and sending
     /// `extra` headers beside it; `None` when this build has no address for the provider. Built
     /// for one request and dropped with it, like a turn's transport.
+    #[must_use]
     pub fn agent_client(
         &self,
         provider: &ProviderId,

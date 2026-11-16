@@ -79,8 +79,8 @@ impl Drive {
                 dirty.generation = index.take_generation();
             }
             edit.seq = index.take_seq();
-            index.edits.insert(edit.id.clone(), edit);
-        }
+            index.edits.insert(edit.id.clone(), edit)
+        };
         inner.touched();
         // On the disk before it is answered: a copy said made is never lost.
         if inner.flush_now().is_err() {

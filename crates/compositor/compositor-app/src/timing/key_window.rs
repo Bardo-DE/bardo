@@ -18,6 +18,7 @@ pub enum KeyCause {
 
 impl KeyCause {
     /// The word the line prints.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             KeyCause::Keyboard => "keyboard",
@@ -43,6 +44,7 @@ pub struct KeyChange {
 
 impl KeyChange {
     /// The change as shown by a frame presented at `at` (never before the change itself).
+    #[must_use]
     pub fn presented(self, at: Stamp) -> KeyWindow {
         KeyWindow {
             presented_at: at.or_later(self.focused_at),
@@ -62,6 +64,7 @@ pub struct KeyWindow {
 
 impl KeyWindow {
     /// The line, message first, then `key=value` fields.
+    #[must_use]
     pub fn line(&self) -> String {
         format!(
             "key-window app_id={} cause={} input_at={} focused_at={} presented_at={}",

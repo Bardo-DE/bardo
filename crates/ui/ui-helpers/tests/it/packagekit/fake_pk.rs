@@ -1,4 +1,4 @@
-//! A stand-in for PackageKit's system service, claimed on the private bus under the real name.
+//! A stand-in for `PackageKit`'s system service, claimed on the private bus under the real name.
 
 use std::sync::{Arc, Mutex};
 use zbus::message::Header;
@@ -42,7 +42,7 @@ impl Behaviour {
         self.installed = names.iter().map(|n| (*n).to_owned()).collect();
         self
     }
-    /// Polkit says no: the InstallPackages call fails with RefusedByPolicy.
+    /// Polkit says no: the `InstallPackages` call fails with `RefusedByPolicy`.
     pub fn refuse_policy(mut self) -> Self {
         self.refuse_policy = true;
         self
@@ -70,7 +70,7 @@ impl Behaviour {
     pub fn fail_install(self, text: &str) -> Self {
         self.install_errors(2, text)
     }
-    /// InstallPackages reports `ErrorCode(code, text)` and finishes `failed`.
+    /// `InstallPackages` reports `ErrorCode(code, text)` and finishes `failed`.
     pub fn install_errors(mut self, code: u32, text: &str) -> Self {
         self.install_error = Some((code, text.to_owned()));
         self
@@ -252,7 +252,7 @@ async fn forge(forger: &Connection, path: zbus::zvariant::ObjectPath<'_>) -> zbu
     Ok(())
 }
 
-/// Claim PackageKit's name on `connection` and serve `behaviour`.
+/// Claim `PackageKit`'s name on `connection` and serve `behaviour`.
 pub async fn serve(connection: &Connection, behaviour: Behaviour) -> Calls {
     let calls = Calls::default();
     let root = Root {

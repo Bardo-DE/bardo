@@ -79,6 +79,7 @@ impl LiveClient {
     }
 
     /// This client with `timeouts` for each call to the module.
+    #[must_use]
     pub fn with_timeouts(mut self, timeouts: Timeouts) -> LiveClient {
         self.timeouts = timeouts;
         self

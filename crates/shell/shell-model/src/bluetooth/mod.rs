@@ -1,4 +1,4 @@
-//! Bluetooth: BlueZ's adapter and devices, as the control center lists them.
+//! Bluetooth: `BlueZ`'s adapter and devices, as the control center lists them.
 
 mod command;
 mod kind;

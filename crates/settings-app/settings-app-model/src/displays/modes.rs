@@ -3,6 +3,7 @@
 use super::model::{DisplayMode, PixelSize};
 
 /// The distinct pixel sizes `modes` list, the largest first.
+#[must_use]
 pub fn mode_sizes(modes: &[DisplayMode]) -> Vec<PixelSize> {
     let mut sizes: Vec<PixelSize> = modes.iter().map(|mode| mode.size).collect();
     sizes.sort_by_key(|size| {
@@ -13,6 +14,7 @@ pub fn mode_sizes(modes: &[DisplayMode]) -> Vec<PixelSize> {
 }
 
 /// The size of the mode the display prefers, its native one.
+#[must_use]
 pub fn native_size(modes: &[DisplayMode]) -> Option<PixelSize> {
     modes
         .iter()
@@ -22,6 +24,7 @@ pub fn native_size(modes: &[DisplayMode]) -> Option<PixelSize> {
 
 /// The mode a change to `size` runs: the one at `size` with the refresh rate the display runs now,
 /// else the fastest at `size`. None when the display lists no mode of that size.
+#[must_use]
 pub fn mode_at(
     modes: &[DisplayMode],
     current: Option<DisplayMode>,

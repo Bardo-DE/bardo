@@ -23,6 +23,7 @@ pub struct IconName<'a>(&'a str);
 
 impl<'a> IconName<'a> {
     /// `text` as a name, or nothing when it is not a plain one.
+    #[must_use]
     pub fn parse(text: &'a str) -> Option<IconName<'a>> {
         let plain = !text.is_empty()
             && text.len() <= NAME_LIMIT
@@ -34,6 +35,7 @@ impl<'a> IconName<'a> {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &'a str {
         self.0
     }

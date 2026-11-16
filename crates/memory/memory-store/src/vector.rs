@@ -52,6 +52,7 @@ pub struct PromptPrefixes {
 
 impl PromptPrefixes {
     /// The prefix for `role`.
+    #[must_use]
     pub fn of(&self, role: EmbedRole) -> &str {
         match role {
             EmbedRole::Query => &self.query,
@@ -89,6 +90,7 @@ pub struct EmbedderCard {
 impl EmbedderCard {
     /// Whether `other` produces the same vectors: the model, length, metric and prompt prefixes
     /// decide (a different prefix is a different space); `max_tokens` and `max_batch` do not.
+    #[must_use]
     pub fn space_vs(&self, other: &EmbedderCard) -> SpaceCheck {
         let same = self.model == other.model
             && self.dims == other.dims
@@ -104,6 +106,7 @@ impl EmbedderCard {
     /// A string that is equal for two cards exactly when [`EmbedderCard::space_vs`] says `Same`:
     /// what an index records about the vectors it holds, so a later start can tell whether they
     /// are still the embedder's.
+    #[must_use]
     pub fn space_key(&self) -> String {
         format!(
             "{}\u{1f}{}\u{1f}{:?}\u{1f}{}\u{1f}{}",
@@ -112,12 +115,14 @@ impl EmbedderCard {
     }
 
     /// `text` as the embedder wants it for `role`: the model's prefix, then the text.
+    #[must_use]
     pub fn prefixed(&self, role: EmbedRole, text: &str) -> String {
         format!("{}{text}", self.prompts.of(role))
     }
 
     /// The batch sizes that cover `total` texts: full batches of `max_batch`, then the rest. A
     /// card with `max_batch` 0 is treated as 1.
+    #[must_use]
     pub fn batch_sizes(&self, total: usize) -> Vec<usize> {
         let step = usize::try_from(self.max_batch.0.max(1)).unwrap_or(1);
         (0..total.div_ceil(step))
@@ -128,12 +133,14 @@ impl EmbedderCard {
 
 impl Vector {
     /// The little-endian `f32` bytes stored in the index's BLOB column.
+    #[must_use]
     pub fn to_blob(&self) -> Vec<u8> {
         self.0.iter().flat_map(|x| x.to_le_bytes()).collect()
     }
 
     /// The vector stored by [`Vector::to_blob`], or `None` if the length is not a whole number
     /// of floats.
+    #[must_use]
     pub fn from_blob(blob: &[u8]) -> Option<Vector> {
         if !blob.len().is_multiple_of(4) {
             return None;
@@ -147,6 +154,7 @@ impl Vector {
 
 impl Metric {
     /// How alike `a` and `b` are; larger is closer. Vectors of different length score 0.
+    #[must_use]
     pub fn score(self, a: &Vector, b: &Vector) -> f32 {
         if a.0.len() != b.0.len() {
             return 0.0;
@@ -165,6 +173,7 @@ impl Metric {
 
 /// The `k` items nearest to `query` by `metric`, best first, ties by id. This is what
 /// `ExactScan::nearest` does over its rows.
+#[must_use]
 pub fn nearest_exact(
     query: &Vector,
     items: &[(DocId, Vector)],

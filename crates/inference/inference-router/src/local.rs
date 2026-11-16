@@ -91,6 +91,7 @@ impl EngineConfig {
 
     /// What the file names for an engine kind: its program, or for an engine run from a folder
     /// the person pointed at (Strata) that folder.
+    #[must_use]
     pub fn named_path(&self, kind: EngineKind) -> Option<&Path> {
         let by_kind = [
             (EngineKind::Vllm, &self.vllm_python),
@@ -108,6 +109,7 @@ impl EngineConfig {
     /// The program that runs an engine of `kind`: the one the file names, or, for an engine
     /// run from a folder the person pointed at, the program of that folder once it holds the
     /// engine's server.
+    #[must_use]
     pub fn program(&self, kind: EngineKind) -> Option<PathBuf> {
         let named = self.named_path(kind)?;
         match engine(kind).pointed() {
@@ -167,6 +169,7 @@ pub struct LocalModel {
 
 impl LocalModel {
     /// The key of the model in the session machine and the picker.
+    #[must_use]
     pub fn model_ref(&self) -> ModelRef {
         ModelRef {
             account: self.card.account.clone(),
@@ -177,6 +180,7 @@ impl LocalModel {
     /// Whether the weights are in the cache now: the repository's directory is the one the
     /// engine's sandbox binds, so it is looked for live (a download that finishes makes the
     /// model loadable without a restart).
+    #[must_use]
     pub fn weights(&self) -> Weights {
         if self.cassette.is_some() || self.loopback.is_some() || self.attached.is_some() {
             return Weights::Present;
@@ -188,22 +192,26 @@ impl LocalModel {
     }
 
     /// The chat capabilities of the entry (context, images, dialect).
+    #[must_use]
     pub fn caps(&self) -> Option<Caps> {
         self.entry.capabilities.chat_caps()
     }
 
     /// The entry's default sampling, when it is a chat model.
+    #[must_use]
     pub fn sampling(&self) -> Option<SamplingDefaults> {
         self.entry.capabilities.sampling()
     }
 
     /// The embedding capabilities of the entry (width, limits, prefixes), when it embeds.
+    #[must_use]
     pub fn embed(&self) -> Option<&EmbedCaps> {
         self.entry.capabilities.vector_out.as_ref()
     }
 }
 
 /// An endpoint on a Unix socket with no auth, under the path `base` (`/v1` for a chat engine).
+#[must_use]
 pub fn unix_endpoint(socket: PathBuf, base: &str, timeouts: Timeouts) -> HttpEndpoint {
     HttpEndpoint {
         target: HttpTarget::Unix(socket),
@@ -216,6 +224,7 @@ pub fn unix_endpoint(socket: PathBuf, base: &str, timeouts: Timeouts) -> HttpEnd
 }
 
 /// An endpoint on `127.0.0.1` at `port` over plain HTTP, with no auth: a runtime the person runs.
+#[must_use]
 pub fn loopback_endpoint(port: Port, base: &str, timeouts: Timeouts) -> HttpEndpoint {
     HttpEndpoint {
         target: HttpTarget::Tcp {
@@ -234,6 +243,7 @@ impl LocalModel {
     /// Where this model's engine is reached, under the path `base`: the target the person
     /// attached (with its token read now, or none when the key file is refused, so the engine
     /// answers 401), the loopback port of a runtime they run, or the engine's own socket.
+    #[must_use]
     pub fn endpoint(&self, base: &str, timeouts: Timeouts) -> HttpEndpoint {
         if let Some(target) = &self.attached {
             return target
@@ -272,6 +282,7 @@ pub(crate) fn flavor_of(kind: EngineKind) -> Option<Flavor> {
 /// The models `entries` make on this computer: those with a capability, and an engine profile
 /// whose program is configured. The first such profile of an entry is the one used.
 /// `sockets` is the directory the engines' sockets go in (`$XDG_RUNTIME_DIR/bardo/inference`).
+#[must_use]
 pub fn build(entries: &[ModelEntry], engines: &EngineConfig, sockets: &Path) -> Vec<LocalModel> {
     entries
         .iter()

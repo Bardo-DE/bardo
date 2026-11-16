@@ -202,7 +202,7 @@ fn malformed_outputs_are_shape_or_json_errors() {
         "a void member returns nothing"
     );
     assert_eq!(
-        decode_reply(&call_of("RecordBatch"), &["".into()]),
+        decode_reply(&call_of("RecordBatch"), &[String::new()]),
         Err(CodecError::Shape)
     );
     assert!(matches!(

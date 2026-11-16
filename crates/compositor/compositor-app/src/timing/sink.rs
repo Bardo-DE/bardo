@@ -21,6 +21,7 @@ impl Sink {
     }
 
     /// The lines kept so far; none for the journal.
+    #[must_use]
     pub fn lines(&self) -> &[String] {
         match self {
             Sink::Journal => &[],

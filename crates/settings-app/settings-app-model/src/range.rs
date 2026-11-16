@@ -29,6 +29,7 @@ const FULL: f64 = 1000.0;
 
 impl Range {
     /// The range of a `Bounded` kind whose default is `default`.
+    #[must_use]
     pub fn of(kind: &KeyKind, default: &toml::Value) -> Option<Range> {
         let KeyKind::Bounded { min, max, unit } = kind else {
             return None;
@@ -46,6 +47,7 @@ impl Range {
     }
 
     /// `value` as this range's number, when it is one and lies inside the range.
+    #[must_use]
     pub fn admit(&self, value: &toml::Value) -> Option<toml::Value> {
         let inside = |n: f64| n >= self.min as f64 && n <= self.max as f64;
         match (value, self.number) {
@@ -69,11 +71,13 @@ impl Range {
     /// The distance from the floor to the ceiling. Worked out in floating point: the bounds come
     /// from a schema, and `max - min` of two `i64`s overflows for bounds far apart (a panic in a
     /// debug build, a wrong number in a release one).
+    #[must_use]
     pub fn span(&self) -> f64 {
         self.max as f64 - self.min as f64
     }
 
     /// Where `value` stands on the slider, in thousandths (0 at the floor).
+    #[must_use]
     pub fn position(&self, value: &toml::Value) -> u16 {
         let span = self.span();
         if span <= 0.0 {
@@ -84,6 +88,7 @@ impl Range {
     }
 
     /// The value at `position` thousandths of the travel.
+    #[must_use]
     pub fn value_at(&self, position: u16) -> toml::Value {
         let span = self.span();
         let raw = self.min as f64 + span * f64::from(position.min(1000)) / FULL;
@@ -94,6 +99,7 @@ impl Range {
     }
 
     /// `value` as a person reads it: `48 px`, `0.55`.
+    #[must_use]
     pub fn display(&self, value: &toml::Value) -> String {
         let number = match value {
             toml::Value::Integer(n) => n.to_string(),

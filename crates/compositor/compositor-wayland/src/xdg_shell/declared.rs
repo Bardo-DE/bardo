@@ -11,6 +11,7 @@ use smithay::wayland::shell::xdg::dialog::ToplevelDialogHint;
 /// The id a client declared with `set_app_id`, or one of its own making when it declared none
 /// (or one that is not a well-formed id): a client with no name is its own app, so two such
 /// clients never share a Dock tile.
+#[must_use]
 pub fn claimed_of(app_id: Option<&str>, client: ClientKey) -> ClaimedId {
     app_id
         .and_then(|text| ClaimedId::parse(text).ok())
@@ -22,6 +23,7 @@ pub fn claimed_of(app_id: Option<&str>, client: ClientKey) -> ClaimedId {
 
 /// The window role the dialog hint implies: a dialog or a modal one is a `Dialog`; a toplevel
 /// with no `xdg_dialog` object is a `Document` until `bardo_window_v1.set_role` says otherwise.
+#[must_use]
 pub fn role_of(hint: ToplevelDialogHint) -> WindowRole {
     match hint {
         ToplevelDialogHint::Unknown => WindowRole::Document,
@@ -31,6 +33,7 @@ pub fn role_of(hint: ToplevelDialogHint) -> WindowRole {
 
 /// What the dialog hint says the window blocks: a modal dialog blocks its parent (a sheet), a
 /// plain dialog blocks nothing but is known to be one, anything else is not a dialog.
+#[must_use]
 pub fn modality_of(hint: ToplevelDialogHint) -> Modality {
     match hint {
         ToplevelDialogHint::Unknown => Modality::None,
@@ -42,6 +45,7 @@ pub fn modality_of(hint: ToplevelDialogHint) -> Modality {
 /// The limits `set_min_size` and `set_max_size` describe: zero on the minimum's axis is no
 /// minimum; zero on the maximum's axis is no maximum on that axis, and none on both is
 /// unbounded. Negative sizes (which smithay lets through to us as written) count as zero.
+#[must_use]
 pub fn limits_of(min: (i32, i32), max: (i32, i32)) -> SizeLimits {
     let side = |value: i32| u32::try_from(value).unwrap_or(0);
     let (max_w, max_h) = (side(max.0), side(max.1));

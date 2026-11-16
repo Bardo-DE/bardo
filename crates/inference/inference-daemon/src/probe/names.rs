@@ -39,11 +39,12 @@ impl Listing {
         let Ok(response) = http.send(asked).await else {
             return Self::default();
         };
-        match response.status().is_success() {
-            true => serde_json::from_slice(response.body())
+        if response.status().is_success() {
+            serde_json::from_slice(response.body())
                 .map(|body| Self::of(runtime, &body))
-                .unwrap_or_default(),
-            false => Self::default(),
+                .unwrap_or_default()
+        } else {
+            Self::default()
         }
     }
 
@@ -67,16 +68,18 @@ impl Listing {
 }
 
 /// A runtime's model name as an id: the rule `inference_probe`'s probe applies.
+#[must_use]
 pub fn id_of(name: &str) -> Option<ModelId> {
     let slug: String = name
         .to_ascii_lowercase()
         .chars()
-        .map(
-            |c| match c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-') {
-                true => c,
-                false => '-',
-            },
-        )
+        .map(|c| {
+            if c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-') {
+                c
+            } else {
+                '-'
+            }
+        })
         .take(64)
         .collect();
     ModelId::parse(&slug).ok()

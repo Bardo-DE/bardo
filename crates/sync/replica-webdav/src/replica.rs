@@ -1,4 +1,4 @@
-//! [`WebDavReplica`]: sync-core's [`Replica`] over one folder of a WebDAV server.
+//! [`WebDavReplica`]: sync-core's [`Replica`] over one folder of a `WebDAV` server.
 
 use crate::feed::{Known, Pending};
 use crate::path::Root;
@@ -36,7 +36,7 @@ pub(crate) struct State {
     pub folders: std::collections::BTreeSet<RemoteId>,
 }
 
-/// The replica of one WebDAV folder, over any [`Http`]: in syncd a `account_http_relay::RelayHttp` on
+/// The replica of one `WebDAV` folder, over any [`Http`]: in syncd a `account_http_relay::RelayHttp` on
 /// the relay `OpenAuthenticated` opens, in a test the fake server.
 #[derive(Debug)]
 pub struct WebDavReplica<H> {

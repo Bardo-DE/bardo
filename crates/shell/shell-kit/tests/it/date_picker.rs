@@ -1,4 +1,4 @@
-//! DatePicker on a real Blitz document (design/30 section 2.3): a press selects a segment, Up
+//! `DatePicker` on a real Blitz document (design/30 section 2.3): a press selects a segment, Up
 //! steps it and December wraps to January; in the graphical style a press on a day picks it and
 //! the header steps months.
 

@@ -22,6 +22,7 @@ pub struct Event {
 
 impl Event {
     /// A key press (`value` 1) or release (0).
+    #[must_use]
     pub const fn key(code: u16, value: i32) -> Self {
         Self {
             kind: EV_KEY,

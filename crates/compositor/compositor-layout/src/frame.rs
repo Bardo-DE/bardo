@@ -17,6 +17,7 @@ use ui_style::tokens::hex::{Colour, Hex};
 use ui_style::tokens::shape::Radius;
 
 /// The frame's lengths from the chrome tokens.
+#[must_use]
 pub fn metrics() -> FrameMetrics {
     let of = |token: ChromeToken| u32::from(token.length().0);
     FrameMetrics::new(
@@ -31,6 +32,7 @@ pub fn metrics() -> FrameMetrics {
 
 /// The frame as it looks in `scheme` for a window in `activity` with the pointer as `hover`
 /// says.
+#[must_use]
 pub fn frame_style(scheme: Scheme, activity: bool, hover: GroupHover) -> FrameStyle {
     let state = light_state(activity, hover);
     let token = |token: ColourToken| colour(token.value(scheme));
@@ -62,6 +64,7 @@ pub fn frame_style(scheme: Scheme, activity: bool, hover: GroupHover) -> FrameSt
 /// assert_eq!(scheme_of(Theme::Dark), Scheme::Dark);
 /// assert_eq!(scheme_of(Theme::System), Scheme::Light);
 /// ```
+#[must_use]
 pub fn scheme_of(theme: Theme) -> Scheme {
     match theme {
         Theme::Dark => Scheme::Dark,
@@ -81,6 +84,7 @@ pub fn scheme_of(theme: Theme) -> Scheme {
 /// assert!(down.look.light(Light::Close).mark.is_some());
 /// assert_eq!(down.look.light(Light::Zoom), rest.look.light(Light::Zoom));
 /// ```
+#[must_use]
 pub fn pressed(style: FrameStyle, light: Light, scheme: Scheme) -> FrameStyle {
     let (hue, ink) = light_hue(hue_light(light), scheme);
     let mut look = style.look;

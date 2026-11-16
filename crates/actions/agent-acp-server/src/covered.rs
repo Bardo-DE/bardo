@@ -12,6 +12,7 @@ pub struct Covered(BTreeSet<ActionRef>);
 
 impl Covered {
     /// Whether the person already said "always" to `action`.
+    #[must_use]
     pub fn holds(&self, action: &ActionRef) -> bool {
         self.0.contains(action)
     }

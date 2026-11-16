@@ -228,7 +228,7 @@ fn erf(x: f32) -> f32 {
 
 /// The share of a blurred half-plane (sigma `sigma`) that starts at `low` which lies on `at`.
 fn half(at: f32, low: f32, sigma: f32) -> f32 {
-    0.5 * (1.0 + erf((at - low) / (sigma * std::f32::consts::SQRT_2)))
+    f32::midpoint(1.0, erf((at - low) / (sigma * std::f32::consts::SQRT_2)))
 }
 
 /// How far a layer falls towards `side`'s inside, in logical pixels.

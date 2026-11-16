@@ -11,6 +11,7 @@ pub struct FakeLinks {
 
 impl FakeLinks {
     /// Every address opened, oldest first.
+    #[must_use]
     pub fn opened(&self) -> Vec<String> {
         locked(&self.opened).clone()
     }

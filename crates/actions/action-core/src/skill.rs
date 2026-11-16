@@ -34,6 +34,7 @@ impl SkillId {
     }
 
     /// The id.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -82,6 +83,7 @@ pub struct SkillText {
 impl SkillText {
     /// A body from `source`, labelled Trusted. Neither source is ever an instruction to the
     /// reader: this is text for the planner's view only.
+    #[must_use]
     pub fn new(id: SkillId, source: Source, body: String) -> Self {
         Self {
             id,

@@ -319,14 +319,14 @@ fn an_alternative_that_is_a_handle_reads_as_or_handle() {
         Ok(Shape::OrHandle(Box::new(Shape::Text { max: CharCount(9) })))
     );
     // Two handles, or an object that is nearly a handle, are not it.
-    assert!(read(&json!({"anyOf": [handle, handle]})).is_err());
+    read(&json!({"anyOf": [handle, handle]})).unwrap_err();
     let nearly = json!({
         "type": "object",
         "properties": {"handle": {"type": "integer", "minimum": 1}},
         "required": ["handle"],
         "additionalProperties": false,
     });
-    assert!(read(&json!({"anyOf": [{"type": "string", "maxLength": 9}, nearly]})).is_err());
+    read(&json!({"anyOf": [{"type": "string", "maxLength": 9}, nearly]})).unwrap_err();
 }
 
 #[test]
@@ -335,7 +335,7 @@ fn nesting_is_bounded_by_the_limit() {
     for _ in 0..5 {
         schema = json!({"type": "array", "items": schema, "maxItems": 1});
     }
-    assert!(read(&schema).is_ok());
+    read(&schema).unwrap();
     schema = json!({"type": "array", "items": schema, "maxItems": 1});
     let (at, why) = refused(&schema);
     assert_eq!(why, Refused::TooDeep);

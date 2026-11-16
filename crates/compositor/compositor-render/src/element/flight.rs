@@ -20,6 +20,7 @@ pub enum FlightDraw {
 
 /// How a window with `flight` is drawn under `effect`: a window not in flight is
 /// [`FlightDraw::Still`].
+#[must_use]
 pub fn choose(effect: MinimiseEffect, flight: Option<Flight>) -> FlightDraw {
     match (flight, effect) {
         (None, _) => FlightDraw::Still,
@@ -39,6 +40,7 @@ pub fn choose(effect: MinimiseEffect, flight: Option<Flight>) -> FlightDraw {
 /// let half = SubSize { w: SubPx(48_000), h: SubPx(36_000) };
 /// assert_eq!(scale_ratio(content, half), (0.5, 0.5));
 /// ```
+#[must_use]
 pub fn scale_ratio(content: LogicalSize, size: SubSize) -> (f64, f64) {
     let axis = |drawn: SubPx, committed: u32| match committed {
         0 => 1.0,
@@ -50,6 +52,7 @@ pub fn scale_ratio(content: LogicalSize, size: SubSize) -> (f64, f64) {
 /// Where `placed`'s content is drawn under `effect`, given where it is at its real size
 /// (`content`): the same place at the sampled size when it is [`FlightDraw::Scaled`], else
 /// `content`. The frame is drawn round this, and the title is made for its titlebar.
+#[must_use]
 pub fn drawn_content(
     placed: &PlacedWindow,
     content: LogicalRect,
@@ -59,6 +62,7 @@ pub fn drawn_content(
 }
 
 /// `content` for a window drawn as `draw`: at the sampled `size` when it is scaled.
+#[must_use]
 pub fn scaled_content(draw: FlightDraw, content: LogicalRect, size: SubSize) -> LogicalRect {
     let side = |px: SubPx| u32::try_from(SubPx(px.0.max(0)).round_logical()).unwrap_or(0);
     match draw {
@@ -75,6 +79,7 @@ pub fn scaled_content(draw: FlightDraw, content: LogicalRect, size: SubSize) -> 
 
 /// `placed` standing where its flight began (or ends): the genie cuts the window as it is at
 /// rest, so its surfaces and frame are placed there, at their own size.
+#[must_use]
 pub fn at_rest(placed: &PlacedWindow, flight: &Flight) -> PlacedWindow {
     let (at, size) = rest_place(flight);
     PlacedWindow {
@@ -86,6 +91,7 @@ pub fn at_rest(placed: &PlacedWindow, flight: &Flight) -> PlacedWindow {
 }
 
 /// Where the window of `flight` stands at rest, and its size, in sub-pixels.
+#[must_use]
 pub fn rest_place(flight: &Flight) -> (SubPoint, SubSize) {
     let side = |n: u32| SubPx::of_logical(i32::try_from(n).unwrap_or(i32::MAX));
     let at = SubPoint {

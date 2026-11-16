@@ -153,12 +153,11 @@ impl Shared {
 
     fn make_collection(&self, label: &str, alias: &str) -> String {
         let mut store = self.store();
-        let name = match alias.is_empty() {
-            false if !store.collections.contains_key(alias) => alias.to_owned(),
-            _ => {
-                store.next += 1;
-                format!("c{}", store.next)
-            }
+        let name = if !alias.is_empty() && !store.collections.contains_key(alias) {
+            alias.to_owned()
+        } else {
+            store.next += 1;
+            format!("c{}", store.next)
         };
         store
             .collections
@@ -398,9 +397,10 @@ impl Collection {
             return Err(SecretError::NoSession(session.to_string()));
         }
         let wanted: HashMap<String, String> = attributes.clone().into_iter().collect();
-        let existing = match replace {
-            true => self.shared.matching(&self.name, &wanted).into_iter().next(),
-            false => None,
+        let existing = if replace {
+            self.shared.matching(&self.name, &wanted).into_iter().next()
+        } else {
+            None
         };
         let at = now();
         let created = {
@@ -411,31 +411,28 @@ impl Collection {
                 .collections
                 .get_mut(&self.name)
                 .ok_or_else(|| SecretError::NoSuchObject(self.name.clone()))?;
-            match &existing {
-                Some(old) => {
-                    let (_, old_id) = split_item(old.as_str()).unwrap_or_default();
-                    if let Some(item) = row.items.get_mut(&old_id) {
-                        item.label = label;
-                        item.value = value;
-                        item.content_type = content_type;
-                        item.modified = at;
-                    }
-                    None
+            if let Some(old) = &existing {
+                let (_, old_id) = split_item(old.as_str()).unwrap_or_default();
+                if let Some(item) = row.items.get_mut(&old_id) {
+                    item.label = label;
+                    item.value = value;
+                    item.content_type = content_type;
+                    item.modified = at;
                 }
-                None => {
-                    row.items.insert(
-                        id,
-                        ItemRow {
-                            label,
-                            attributes,
-                            value,
-                            content_type,
-                            created: at,
-                            modified: at,
-                        },
-                    );
-                    Some(id)
-                }
+                None
+            } else {
+                row.items.insert(
+                    id,
+                    ItemRow {
+                        label,
+                        attributes,
+                        value,
+                        content_type,
+                        created: at,
+                        modified: at,
+                    },
+                );
+                Some(id)
             }
         };
         let item = match (existing, created) {

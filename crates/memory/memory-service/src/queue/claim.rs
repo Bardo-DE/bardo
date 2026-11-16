@@ -61,6 +61,7 @@ pub fn claim_of(request: &MemoryRequest) -> Claim {
 
 /// What `request` from `caller` must hold: nothing when the service will refuse it anyway, so a
 /// refused call never waits for, or stalls, the queue (ALM-20). Pure, so it is a table.
+#[must_use]
 pub fn claim_for(caller: &Caller, request: &MemoryRequest) -> Claim {
     claim_under(&allowed(caller, request), request)
 }

@@ -164,13 +164,13 @@ fn a_vendor_wire_reads_the_safety_signals_and_the_other_dialects_do_not() {
     // A confirmation request is an ask ahead of the click.
     let asked = wire(SafetySignal::RequireConfirmation("a purchase".into()));
     assert!(matches!(
-        &asked[..],
+        &*asked,
         [CuaAction::Ask { .. }, CuaAction::Click { .. }]
     ));
     // A block replaces the click with an infeasible finish.
     let blocked = wire(SafetySignal::Blocked("not allowed".into()));
     assert!(matches!(
-        &blocked[..],
+        &*blocked,
         [CuaAction::Finish {
             outcome: FinishOutcome::Infeasible,
             ..
@@ -185,7 +185,7 @@ fn a_vendor_wire_reads_the_safety_signals_and_the_other_dialects_do_not() {
     else {
         panic!("actions")
     };
-    assert!(matches!(&actions[..], [CuaAction::Click { .. }]));
+    assert!(matches!(&*actions, [CuaAction::Click { .. }]));
 }
 
 #[test]

@@ -23,6 +23,7 @@ pub struct Script {
 
 impl Script {
     /// A job that wrote `output` and exited with `code`.
+    #[must_use]
     pub fn done(output: &str, code: u32) -> Self {
         Self {
             output: output.as_bytes().to_vec(),
@@ -32,6 +33,7 @@ impl Script {
     }
 
     /// A job that wrote `output` and keeps running.
+    #[must_use]
     pub fn hangs(output: &str) -> Self {
         Self {
             output: output.as_bytes().to_vec(),
@@ -57,11 +59,13 @@ pub struct Seen(Arc<Mutex<Log>>);
 
 impl Seen {
     /// Every command the sandbox was asked to run.
+    #[must_use]
     pub fn started(&self) -> Vec<RunSpec> {
         locked(&self.0).started.clone()
     }
 
     /// Whether each job was killed.
+    #[must_use]
     pub fn killed(&self) -> Vec<bool> {
         locked(&self.0).killed.clone()
     }
@@ -77,11 +81,13 @@ pub struct FakeSandbox {
 
 impl FakeSandbox {
     /// A sandbox that can run commands, answering from `scripts` in order.
+    #[must_use]
     pub fn ready(scripts: Vec<Script>) -> (Self, Seen) {
         Self::with(SandboxState::Ready, scripts)
     }
 
     /// A sandbox that cannot confine anything, for this reason.
+    #[must_use]
     pub fn withheld(why: CannotSandbox) -> (Self, Seen) {
         Self::with(SandboxState::Cannot(why), Vec::new())
     }

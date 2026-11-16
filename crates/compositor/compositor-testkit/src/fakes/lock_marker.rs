@@ -35,11 +35,13 @@ impl Default for MemoryLockMarker {
 
 impl MemoryLockMarker {
     /// A marker that does not exist.
+    #[must_use]
     pub fn absent() -> MemoryLockMarker {
         MemoryLockMarker::holding(false)
     }
 
     /// A marker as `marked` says.
+    #[must_use]
     pub fn holding(marked: bool) -> MemoryLockMarker {
         MemoryLockMarker {
             inner: Arc::new(Mutex::new(Inner { marked, writes: 0 })),
@@ -47,11 +49,13 @@ impl MemoryLockMarker {
     }
 
     /// Whether the marker exists now.
+    #[must_use]
     pub fn is_marked(&self) -> bool {
         self.lock().marked
     }
 
     /// How many times the marker was written or removed.
+    #[must_use]
     pub fn writes(&self) -> usize {
         self.lock().writes
     }

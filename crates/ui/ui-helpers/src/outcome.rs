@@ -31,7 +31,7 @@ pub enum Outcome {
     /// No candidate package exists in the distro's repositories.
     NotFound(Missing),
     /// Nothing here can install it: an unknown distro, no entry for the distro, or no
-    /// PackageKit (as on a stock Arch). The [`Missing::install_lines`] inside are what to show
+    /// `PackageKit` (as on a stock Arch). The [`Missing::install_lines`] inside are what to show
     /// the person to run themselves.
     Unsupported(Missing),
     /// Something went wrong; the reason is the package manager's own words.

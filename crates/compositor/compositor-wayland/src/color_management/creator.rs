@@ -30,6 +30,7 @@ pub struct DescriptionData {
 
 impl DescriptionData {
     /// The tag of a ready description.
+    #[must_use]
     pub fn tag(&self) -> Option<ColorTag> {
         self.tag
     }
@@ -146,7 +147,7 @@ where
         match request {
             Request::SetTfNamed { tf } => match named::curve_of_name(tf) {
                 None => {
-                    resource.post_error(Error::InvalidTf, "that transfer function is not served")
+                    resource.post_error(Error::InvalidTf, "that transfer function is not served");
                 }
                 Some(curve) => {
                     if self.given().transfer.replace(curve).is_some() {
@@ -184,7 +185,7 @@ where
             | Request::SetLuminances { .. }
             | Request::SetMasteringDisplayPrimaries { .. }
             | Request::SetMasteringLuminance { .. } => {
-                resource.post_error(Error::UnsupportedFeature, "this feature is not served")
+                resource.post_error(Error::UnsupportedFeature, "this feature is not served");
             }
             Request::SetMaxCll { .. } | Request::SetMaxFall { .. } => {}
             Request::Create { image_description } => {

@@ -20,11 +20,13 @@ pub enum QuarterTurn {
 
 impl QuarterTurn {
     /// The turn in degrees clockwise: 0, 90, 180 or 270.
+    #[must_use]
     pub fn degrees(self) -> u16 {
         u16::from(self.quarters()) * 90
     }
 
     /// The turn as a count of quarter turns, 0 to 3.
+    #[must_use]
     pub fn quarters(self) -> u8 {
         match self {
             QuarterTurn::None => 0,
@@ -35,6 +37,7 @@ impl QuarterTurn {
     }
 
     /// The turn of `quarters` quarter turns, wrapping every four.
+    #[must_use]
     pub fn from_quarters(quarters: u8) -> QuarterTurn {
         match quarters % 4 {
             0 => QuarterTurn::None,
@@ -45,11 +48,13 @@ impl QuarterTurn {
     }
 
     /// This turn followed by `other`.
+    #[must_use]
     pub fn then(self, other: QuarterTurn) -> QuarterTurn {
         QuarterTurn::from_quarters(self.quarters() + other.quarters())
     }
 
     /// The turn that undoes this one.
+    #[must_use]
     pub fn reversed(self) -> QuarterTurn {
         QuarterTurn::from_quarters(4 - self.quarters())
     }

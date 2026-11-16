@@ -6,7 +6,7 @@ use files_core::Entry;
 
 use crate::input::Now;
 
-/// How long a pause ends the word being typed (design/30, TypeaheadReset).
+/// How long a pause ends the word being typed (design/30, `TypeaheadReset`).
 pub const RESET: Duration = Duration::from_millis(1000);
 
 /// The letters typed so far and when the last one came.
@@ -19,6 +19,7 @@ pub struct TypeSelect {
 impl TypeSelect {
     /// After `c` at `now`: it extends the word when the last key came within [`RESET`], else it
     /// starts a new one.
+    #[must_use]
     pub fn pushed(self, c: char, now: Now) -> TypeSelect {
         let continues = self
             .last
@@ -32,11 +33,13 @@ impl TypeSelect {
     }
 
     /// The word typed so far, lower-cased.
+    #[must_use]
     pub fn prefix(&self) -> &str {
         &self.typed
     }
 
     /// The index of the first row whose name starts with the word, ignoring case.
+    #[must_use]
     pub fn find(&self, rows: &[Entry]) -> Option<usize> {
         rows.iter()
             .position(|e| e.name.display().to_lowercase().starts_with(&self.typed))

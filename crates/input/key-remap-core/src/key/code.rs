@@ -27,16 +27,19 @@ impl Key {
     pub const RIGHTMETA: Key = Key(126);
 
     /// The key a device reported as `code`; any code is a key.
+    #[must_use]
     pub const fn from_code(code: u16) -> Key {
         Key(code)
     }
 
     /// The key called `name` (lowercase, as in `KEY_<NAME>`), if the table has it.
+    #[must_use]
     pub fn named(name: &str) -> Option<Key> {
         NAMES.iter().find(|(n, _)| *n == name).map(|&(_, c)| Key(c))
     }
 
     /// The table name of this key, or `"unknown"` for a code the table does not list.
+    #[must_use]
     pub fn name(self) -> &'static str {
         NAMES
             .iter()
@@ -45,6 +48,7 @@ impl Key {
     }
 
     /// The evdev code.
+    #[must_use]
     pub const fn code(self) -> u16 {
         self.0
     }

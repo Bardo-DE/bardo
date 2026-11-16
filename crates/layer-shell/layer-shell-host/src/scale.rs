@@ -42,6 +42,7 @@ pub(crate) fn wire_extent(value: u32) -> Px {
 /// The buffer size to allocate for a surface of `logical` size at `scale`, rounded half away
 /// from zero (`fractional-scale-v1`: "For toplevel surfaces, the size is rounded halfway away
 /// from zero"), and at most [`MAX_SURFACE_EXTENT`] on a side.
+#[must_use]
 pub fn buffer_size(logical: Size, scale: Scale120) -> Size {
     Size {
         width: logical_to_physical(logical.width, scale),

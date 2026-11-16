@@ -5,7 +5,7 @@
 //! A surface stops having a focus in two ways. The compositor says so with `wl_pointer.leave`
 //! or `wl_keyboard.leave`, or the host takes the surface away itself: an unmap rebuilds the
 //! `wl_surface` and a close destroys it, and the compositor's leave that follows names an
-//! object the host no longer knows (KWin sends `leave(serial, nil)` for the pointer; the
+//! object the host no longer knows (`KWin` sends `leave(serial, nil)` for the pointer; the
 //! keyboard's leave names the destroyed or superseded `wl_surface`), so it cannot be matched to
 //! anything. The host therefore ends the stay itself at the unmap or close, while the surface is
 //! still known, and ignores the late leave, for the pointer and the keyboard alike.

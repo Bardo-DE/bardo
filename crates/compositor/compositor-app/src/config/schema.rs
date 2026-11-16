@@ -13,6 +13,7 @@ const VERSION: u16 = 1;
 
 /// Every key the document reads, as `<app-id>.settings.toml` ships it. `[bindings]` is not in
 /// it: a chord table has no fixed keys to draw.
+#[must_use]
 pub fn schema() -> Schema {
     Schema {
         app: AppId("compositor".to_owned()),

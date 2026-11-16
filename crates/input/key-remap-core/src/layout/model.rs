@@ -16,6 +16,7 @@ const APPLE_VENDORS: [u16; 2] = [0x05ac, 0x004c];
 
 impl Layout {
     /// The layout a config name stands for.
+    #[must_use]
     pub fn named(name: &str) -> Option<Layout> {
         match name {
             "apple" => Some(Layout::Apple),
@@ -25,6 +26,7 @@ impl Layout {
     }
 
     /// The layout of a keyboard from its USB or Bluetooth vendor id.
+    #[must_use]
     pub fn of_vendor(vendor: u16) -> Layout {
         if APPLE_VENDORS.contains(&vendor) {
             Layout::Apple

@@ -2,7 +2,7 @@
 //!
 //! The table is adapted from winit 0.30.13, `src/platform_impl/linux/common/xkb/keymap.rs`
 //! (`keysym_to_key`, `keysym_location`), Copyright the winit contributors, licensed under the
-//! Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0). Changes from the original:
+//! Apache License 2.0 (<https://www.apache.org/licenses/LICENSE-2.0>). Changes from the original:
 //! it targets keyboard-types 0.7's `Key`/`Location` instead of winit's `NamedKey`/`KeyLocation`;
 //! the Super keys map to `Key::Super` (as in winit), which our desktop treats as the Command
 //! key and which pairs with `Modifiers::SUPER`; `space` is `Key::Character(" ")`,

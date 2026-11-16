@@ -1,4 +1,4 @@
-//! LevelIndicator: the continuous capsule and the sixteen steps, with a glyph and the warning and
+//! `LevelIndicator`: the continuous capsule and the sixteen steps, with a glyph and the warning and
 //! critical bands, at each size.
 
 use crate::pages::{Section, Specimen};
@@ -8,7 +8,7 @@ use ui_components::components::controls::level_indicator::{Bands, LevelIndicator
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The LevelIndicator section.
+/// The `LevelIndicator` section.
 #[component]
 pub fn LevelIndicatorSection() -> Element {
     let bands = Bands {

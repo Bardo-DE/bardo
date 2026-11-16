@@ -145,7 +145,7 @@ mod tests {
                 path: "/run/work/d.png".to_owned()
             })
         );
-        assert!(planned(ShotTarget::Default, true, "e.png").is_err());
+        planned(ShotTarget::Default, true, "e.png").unwrap_err();
     }
 
     fn shot(text: &str) -> Result<ShotArgs, CommandError> {

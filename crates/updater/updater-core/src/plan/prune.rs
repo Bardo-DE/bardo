@@ -4,6 +4,7 @@ use semver::Version;
 
 /// Releases to delete: everything except the current one, the previous one and the newest
 /// release that is newer than current (a published release that was never switched to).
+#[must_use]
 pub fn prune(releases: &[Version], current: &Version, previous: Option<&Version>) -> Vec<Version> {
     let staged = releases
         .iter()

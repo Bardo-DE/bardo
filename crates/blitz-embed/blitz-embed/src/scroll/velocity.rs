@@ -20,6 +20,7 @@ pub struct SampleTime(pub Duration);
 
 impl SampleTime {
     /// Seconds from `earlier` to `self` (negative if `earlier` is later).
+    #[must_use]
     pub fn secs_since(self, earlier: SampleTime) -> f64 {
         self.0.as_secs_f64() - earlier.0.as_secs_f64()
     }
@@ -51,6 +52,7 @@ impl Samples {
 
     /// The release velocity (px/s, signed) for fingers lifted at `end`: 0 with fewer than three
     /// samples in the window, or when the newest is older than the held-still limit.
+    #[must_use]
     pub fn velocity(&self, end: SampleTime, rule: Release) -> f64 {
         let Some(&(newest, _)) = self.0.back() else {
             return 0.0;

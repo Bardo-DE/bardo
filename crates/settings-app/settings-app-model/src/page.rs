@@ -10,6 +10,7 @@ pub struct PageSlug(pub String);
 impl PageSlug {
     /// The slug of `page`: the fixed pages by their snake-case name, a third-party page by
     /// `app:<id>`.
+    #[must_use]
     pub fn of(page: &Page) -> PageSlug {
         PageSlug(match PageKind::of(page).traits().slug {
             Some(slug) => slug.to_owned(),

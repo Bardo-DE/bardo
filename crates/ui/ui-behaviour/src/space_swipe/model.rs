@@ -10,6 +10,7 @@ pub struct PageMilli(pub i32);
 
 impl PageMilli {
     /// Where Space `k` sits on the row: `k × 1000`.
+    #[must_use]
     pub fn of_space(k: u32) -> PageMilli {
         PageMilli(i32::try_from(k).unwrap_or(i32::MAX).saturating_mul(1000))
     }
@@ -78,6 +79,7 @@ pub enum SwipeSource {
 
 impl SwipeSource {
     /// How many of the device's units make one page.
+    #[must_use]
     pub fn units_per_page(self) -> i32 {
         match self {
             SwipeSource::MagicMouse => 1000,

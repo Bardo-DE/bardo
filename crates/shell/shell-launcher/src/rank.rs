@@ -25,7 +25,7 @@ pub enum Prefix {
     /// The letters are all there but spread along the title, or the title has them out of order
     /// for the matcher to find (`term` in "Capture Current Monitor").
     Scattered,
-    /// The title contains the whole query inside a word: `mail` in "KMail".
+    /// The title contains the whole query inside a word: `mail` in "`KMail`".
     Elsewhere,
     /// Every typed word begins a word of the title: `mail` in "Check Mail".
     WordStarts,
@@ -38,6 +38,7 @@ pub enum Prefix {
 impl Prefix {
     /// Where `query` sits in `title`, both lower-cased, the query trimmed. An empty query is
     /// [`Prefix::Elsewhere`]: nothing was typed, so no title is placed above another by it.
+    #[must_use]
     pub fn of(query: &str, title: &str) -> Prefix {
         let query = query.trim().to_lowercase();
         let title = title.to_lowercase();
@@ -93,6 +94,7 @@ impl Default for RankWeights {
 
 /// `matched x weight + frecency x weight`, plus the boost of where the query sits in the title
 /// (a scattered hit's blend scaled down instead).
+#[must_use]
 pub fn rank(
     matched: MatchScore,
     frecency: FrecencyScore,

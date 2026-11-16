@@ -83,7 +83,7 @@ pub fn install_menu(router: &Router<FakeSeams>) -> Result<(), ManifestFileError>
     match router.state.lock() {
         Ok(mut state) => state.registry.insert(menu),
         Err(poisoned) => poisoned.into_inner().registry.insert(menu),
-    };
+    }
     Ok(())
 }
 

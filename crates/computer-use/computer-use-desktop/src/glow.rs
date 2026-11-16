@@ -30,6 +30,7 @@ pub struct WireCode(pub u32);
 
 impl GlowState {
     /// The protocol's `glow_state` value.
+    #[must_use]
     pub fn code(&self) -> WireCode {
         WireCode(match self {
             GlowState::Off => 0,
@@ -42,6 +43,7 @@ impl GlowState {
 
 impl RevokeReason {
     /// The protocol's `revoke_reason` value.
+    #[must_use]
     pub fn code(self) -> WireCode {
         WireCode(match self {
             RevokeReason::KillChord => 0,
@@ -52,6 +54,7 @@ impl RevokeReason {
     }
 
     /// The reason a protocol value names, if it names one.
+    #[must_use]
     pub fn from_code(code: WireCode) -> Option<Self> {
         [
             RevokeReason::KillChord,
@@ -66,6 +69,7 @@ impl RevokeReason {
 
 impl Suspend {
     /// The protocol's `suspend_reason` value.
+    #[must_use]
     pub fn code(self) -> WireCode {
         WireCode(match self {
             Suspend::TakeOver => 0,
@@ -76,6 +80,7 @@ impl Suspend {
 }
 
 /// The protocol's `lease_mode` value for a run mode.
+#[must_use]
 pub fn mode_code(mode: RunMode) -> WireCode {
     WireCode(match mode {
         RunMode::InPlace => 0,

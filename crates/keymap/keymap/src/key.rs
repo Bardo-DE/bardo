@@ -51,6 +51,7 @@ impl Key {
     pub const SPACE: Key = Key::Char(' ');
 
     /// A character key; letters are lower-cased so `Z` and `z` are one key.
+    #[must_use]
     pub fn character(c: char) -> Key {
         Key::Char(c.to_lowercase().next().unwrap_or(c))
     }
@@ -64,6 +65,7 @@ impl Key {
     /// The key a toolkit reported as `key` (the logical key with Shift not applied): a named
     /// key, or a character key when its text is one character. `None` for longer text, which
     /// is a composed string and never a chord key.
+    #[must_use]
     pub fn from_logical(key: &keyboard_types::Key) -> Option<Key> {
         match key {
             keyboard_types::Key::Named(named) => Some(Key::Named(*named)),

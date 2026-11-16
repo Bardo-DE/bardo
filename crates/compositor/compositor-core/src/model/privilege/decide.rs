@@ -56,6 +56,7 @@ fn memory_of(floor: &Floor, subject: Option<&Subject>) -> Memory {
 
 /// What `subject` gets for `power`; a program that cannot be named (`None`) is asked about for
 /// its connection only.
+#[must_use]
 pub fn decide(floor: &Floor, book: &Book, subject: Option<&Subject>, power: Power) -> Decision {
     match says(floor, book, subject, power) {
         Says {
@@ -89,6 +90,7 @@ pub fn decide(floor: &Floor, book: &Book, subject: Option<&Subject>, power: Powe
 
 /// What a program the desktop trusts for `power` gets: in unless the floor or the book
 /// refuses it by name.
+#[must_use]
 pub fn decide_trusted(
     floor: &Floor,
     book: &Book,

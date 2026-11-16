@@ -23,6 +23,7 @@ pub struct ExtDataControlPart {
 impl ExtDataControlPart {
     /// Creates the global (version 1) over the clipboard and `primary`, filtered by the I7
     /// table.
+    #[must_use]
     pub fn new<D>(
         display: &DisplayHandle,
         role_filter: GlobalFilter,

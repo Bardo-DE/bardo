@@ -1,4 +1,4 @@
-//! Menu titles to standard actions. NSUserKeyEquivalents is keyed by the menu item's title,
+//! Menu titles to standard actions. `NSUserKeyEquivalents` is keyed by the menu item's title,
 //! which is localised, so a table is per language.
 
 use keymap::{StandardAction, SystemImport};
@@ -70,6 +70,7 @@ pub const ENGLISH: MenuTitles = MenuTitles {
 
 impl MenuTitles {
     /// A language's titles.
+    #[must_use]
     pub const fn new(titles: &'static [Title]) -> MenuTitles {
         MenuTitles { titles }
     }
@@ -84,7 +85,7 @@ impl MenuTitles {
 }
 
 /// The system bindings in `pairs`, the (menu title, key equivalent) entries of an
-/// NSUserKeyEquivalents dictionary. Titles that are not standard are ignored; a value that
+/// `NSUserKeyEquivalents` dictionary. Titles that are not standard are ignored; a value that
 /// cannot be read is reported in `problems`. The person's shortcut replaces the convention.
 pub fn import_user_key_equivalents<'a>(
     titles: &MenuTitles,

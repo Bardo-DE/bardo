@@ -30,8 +30,9 @@ pub enum Source {
 
 /// The outputs of `action` fired by a gesture, given who holds the pointer.
 ///
-/// SmartZoom is realised as the `Tap{One}` the host receives, so it produces nothing here. G4
+/// `SmartZoom` is realised as the `Tap{One}` the host receives, so it produces nothing here. G4
 /// produces nothing while a host holds the pointer (the host runs its own page swipe).
+#[must_use]
 pub fn action_outs(action: &Action, source: Source, claimed: bool) -> Vec<Out> {
     if source == Source::OneFingerSwipe && claimed {
         return vec![];
@@ -44,6 +45,7 @@ pub fn action_outs(action: &Action, source: Source, claimed: bool) -> Vec<Out> {
 }
 
 /// The outputs of a completed double-tap.
+#[must_use]
 pub fn tap_outs(kind: TapKind, action: &Action, claimed: bool, t_ns: u64) -> Vec<Out> {
     let host = claimed.then_some(Out::Host(ToHost::Tap { kind, t_ns }));
     host.into_iter()

@@ -40,11 +40,13 @@ pub struct FakePdp {
 
 impl FakePdp {
     /// A gate that grants everything and runs every action.
+    #[must_use]
     pub fn allow_all() -> Self {
         Self::default()
     }
 
     /// A gate that answers `grants` and `verdicts` in order, then grants and runs.
+    #[must_use]
     pub fn scripted(grants: Vec<GrantAnswer>, verdicts: Vec<Verdict>) -> Self {
         Self {
             grants: Mutex::new(grants.into()),
@@ -61,6 +63,7 @@ impl FakePdp {
     }
 
     /// A gate whose consent question nobody answers: `Gate.Grant` never returns.
+    #[must_use]
     pub fn grant_unanswered() -> Self {
         Self {
             grant_hangs: true,

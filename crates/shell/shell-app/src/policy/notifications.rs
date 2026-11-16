@@ -14,6 +14,7 @@ use super::Policy;
 const HISTORY_CAP: HistoryCap = HistoryCap(100);
 
 /// The policy `n` and Do Not Disturb `focus` make: the service owns the bus name.
+#[must_use]
 pub fn policy_of(n: &NotificationsSettings, focus: bool) -> NotificationsPolicy {
     NotificationsPolicy {
         server: ServerMode::Own,

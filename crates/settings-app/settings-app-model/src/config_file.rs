@@ -26,6 +26,7 @@ impl ConfigFile {
     }
 
     /// The path under the config home.
+    #[must_use]
     pub fn relative(&self) -> &Path {
         &self.0
     }

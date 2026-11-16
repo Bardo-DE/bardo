@@ -18,6 +18,7 @@ use ui_components::style::space::presets::default_look;
 use crate::hooks::use_service_part;
 
 /// The group this output shows: the one naming it, or the first when the output has no name.
+#[must_use]
 pub fn group_for(groups: &[WorkspaceGroup], output: Option<&OutputName>) -> Option<WorkspaceGroup> {
     match output {
         Some(name) => groups.iter().find(|g| g.outputs.contains(name)),
@@ -27,6 +28,7 @@ pub fn group_for(groups: &[WorkspaceGroup], output: Option<&OutputName>) -> Opti
 }
 
 /// The active workspace of `output`'s group: its key and its position in the group.
+#[must_use]
 pub fn active_workspace(
     workspaces: &Workspaces,
     output: Option<&OutputName>,
@@ -37,7 +39,8 @@ pub fn active_workspace(
 }
 
 /// The look of the active workspace on `output` (design/21 §5 rule 6); the first preset while
-/// there is none (KWin).
+/// there is none (`KWin`).
+#[must_use]
 pub fn active_look(workspaces: &Workspaces, output: Option<&OutputName>) -> SpaceLook {
     let (_, index) = active_workspace(workspaces, output).unwrap_or((WorkspaceKey(0), 0));
     use_space_look(index)
@@ -55,6 +58,7 @@ const DEFAULT_GRAIN: Grain = Grain(0);
 
 /// The look of the workspace at position `index` in its group. With no store every workspace
 /// gets the look of its index.
+#[must_use]
 pub fn use_space_look(index: usize) -> SpaceLook {
     default_look(index, DEFAULT_GRAIN)
 }

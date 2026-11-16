@@ -18,6 +18,7 @@ pub struct ViewporterPart {
 
 impl ViewporterPart {
     /// Creates the `wp_viewporter` global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> ViewporterPart
     where
         D: GlobalDispatch<WpViewporter, GlobalData>

@@ -7,7 +7,7 @@ use crate::protocol::xdg_shell::{boot, map_toplevel};
 use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testclient::surface::toplevel::extras::SystemBell;
 
-/// Ring with a surface yields Effect::Bell for that window's app.
+/// Ring with a surface yields `Effect::Bell` for that window's app.
 #[test]
 fn the_bell_rings_for_the_surfaces_app() {
     let (mut fixture, id) = boot();

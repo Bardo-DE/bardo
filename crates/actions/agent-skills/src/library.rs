@@ -65,6 +65,7 @@ pub struct Library {
 
 impl Library {
     /// Keeps the skills whose actions are all registered in `manifests`; reports the others.
+    #[must_use]
     pub fn check(skills: Vec<Skill>, manifests: &[ValidManifest]) -> Self {
         let mut library = Self::default();
         for skill in skills {
@@ -80,16 +81,19 @@ impl Library {
     }
 
     /// Every kept skill, by id.
+    #[must_use]
     pub fn all(&self) -> &[Skill] {
         &self.skills
     }
 
     /// The skill `id`.
+    #[must_use]
     pub fn get(&self, id: &SkillId) -> Option<&Skill> {
         self.skills.iter().find(|s| &s.id == id)
     }
 
     /// The skills this session may load: every action is offered (not Hidden for the companion).
+    #[must_use]
     pub fn offered(&self, manifests: &[ValidManifest]) -> Vec<&Skill> {
         self.skills
             .iter()
@@ -128,6 +132,7 @@ fn matches(skill: &Skill, at: &Situation) -> bool {
 /// app, or a kind in the context), `always` ones first, then by id, at most two, and stopping at
 /// the first whose body does not fit in `room` bytes (what is left of [`BODY_BUDGET_BYTES`] after
 /// the loaded skills).
+#[must_use]
 pub fn preselect<'a>(offered: &[&'a Skill], at: &Situation, room: usize) -> Vec<&'a Skill> {
     let mut hits: Vec<&Skill> = offered.iter().copied().filter(|s| matches(s, at)).collect();
     hits.sort_by_key(|s| (!s.when.always, s.id.clone()));
@@ -176,11 +181,13 @@ impl Loaded {
     }
 
     /// The loaded ids, oldest first.
+    #[must_use]
     pub fn ids(&self) -> Vec<&SkillId> {
         self.0.iter().map(|(i, _)| i).collect()
     }
 
     /// The bytes of loaded bodies.
+    #[must_use]
     pub fn bytes(&self) -> usize {
         self.0.iter().map(|(_, b)| b).sum()
     }

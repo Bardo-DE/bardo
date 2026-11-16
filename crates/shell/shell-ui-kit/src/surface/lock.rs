@@ -30,6 +30,7 @@ pub struct MountLockProps {
 
 impl MountLockProps {
     /// The props for `surface` on `output`.
+    #[must_use]
     pub fn new(surface: LockSurface, output: OutputInfo) -> MountLockProps {
         MountLockProps { surface, output }
     }

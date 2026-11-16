@@ -17,6 +17,7 @@ pub struct KeyCap {
 }
 
 /// `shortcut` as `keymap`'s platform shows it.
+#[must_use]
 pub fn shortcut_text(keymap: &Keymap, shortcut: &Shortcut) -> String {
     if !is_chord(shortcut) {
         return shortcut.glyphs();
@@ -37,6 +38,7 @@ pub fn shortcut_text(keymap: &Keymap, shortcut: &Shortcut) -> String {
 }
 
 /// The caps `shortcut` is drawn on: the modifiers, then the key.
+#[must_use]
 pub fn shortcut_caps(keymap: &Keymap, shortcut: &Shortcut) -> Vec<KeyCap> {
     if !is_chord(shortcut) {
         return shortcut

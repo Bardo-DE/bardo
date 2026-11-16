@@ -233,7 +233,7 @@ fn SenderCard(kind: HoverKind) -> Element {
             hub.feed(HoverEvent::Over(
                 (key, HoverProfile::Card),
                 HoverProfile::Card,
-            ))
+            ));
         }
     });
     let open = hub.open().or(hub.leaving());
@@ -279,7 +279,7 @@ pub fn PartsCard(parts: Vec<HoverCardPart>) -> Element {
             hub.feed(HoverEvent::Over(
                 (key, HoverProfile::Card),
                 HoverProfile::Card,
-            ))
+            ));
         }
     });
     let open = hub.open().or(hub.leaving());
@@ -368,7 +368,7 @@ fn PushedAction() -> Element {
             "Sent to Travel".to_string(),
             ToastAction::new("View").with_icon(Icon::ArrowRight),
             EventHandler::new(|()| {}),
-        )
+        );
     });
     rsx! {}
 }
@@ -385,7 +385,7 @@ fn HookedTip() -> Element {
             hub.feed(HoverEvent::Over(
                 (key, HoverProfile::Tip),
                 HoverProfile::Tip,
-            ))
+            ));
         }
     });
     rsx! {
@@ -425,81 +425,81 @@ pub const CASES: &[Case] = &[
     Case {
         component: "menu",
         state: "popup",
-        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: snooze(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: snooze(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "menu",
         state: "popup-present",
-        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: snooze(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: snooze(), onpick: |_| {}, onclose: |()| {} } },
         wait: SETTLED,
     },
     Case {
         component: "menu",
         state: "bar",
-        make: || rsx! { Menu { placement: MenuPlacement::Bar, anchor: Anchor::Rect(button_rect()), items: group_by(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Bar, anchor: Anchor::Rect(button_rect()), items: group_by(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "menu",
         state: "context",
-        make: || rsx! { Menu { placement: MenuPlacement::Context, anchor: Anchor::Point(Point { x: Px(420.0), y: Px(310.0) }), items: vec![item(1, "Archive"), item(2, "Snooze…")], onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Context, anchor: Anchor::Point(Point { x: Px(420.0), y: Px(310.0) }), items: vec![item(1, "Archive"), item(2, "Snooze…")], onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     // A context menu draws its items' key equivalents, as a pop-up's do.
     Case {
         component: "menu",
         state: "context-keys",
-        make: || rsx! { Menu { placement: MenuPlacement::Context, anchor: Anchor::Point(Point { x: Px(420.0), y: Px(310.0) }), items: snooze(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Context, anchor: Anchor::Point(Point { x: Px(420.0), y: Px(310.0) }), items: snooze(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "menu",
         state: "context-hides-the-unavailable",
-        make: || rsx! { Menu { placement: MenuPlacement::Context, anchor: Anchor::Point(Point { x: Px(40.0), y: Px(40.0) }), items: nested(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Context, anchor: Anchor::Point(Point { x: Px(40.0), y: Px(40.0) }), items: nested(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "menu",
         state: "empty",
-        make: || rsx! { Menu::<u8> { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: Vec::new(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu::<u8> { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: Vec::new(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "menu",
         state: "disabled-and-submenu",
-        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: nested(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: nested(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "menu",
         state: "bar-status-lines",
-        make: || rsx! { Menu { placement: MenuPlacement::Bar, anchor: Anchor::Rect(button_rect()), items: status_lines(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Bar, anchor: Anchor::Rect(button_rect()), items: status_lines(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     // Popover: each dismiss policy, and the arrow.
     Case {
         component: "popover",
         state: "transient",
-        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Bottom, Align::Start), gap: Px(6.0), onclose: |_| {}, "Anything" } },
+        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Bottom, Align::Start), gap: Px(6.0), onclose: |()| {}, "Anything" } },
         wait: NOW,
     },
     Case {
         component: "popover",
         state: "semitransient-esc-only",
-        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Top, Align::Center), gap: Px(8.0), dismiss: Dismiss::Semitransient, onclose: |_| {}, "Anything" } },
+        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Top, Align::Center), gap: Px(8.0), dismiss: Dismiss::Semitransient, onclose: |()| {}, "Anything" } },
         wait: NOW,
     },
     Case {
         component: "popover",
         state: "manual-owner-closes",
-        make: || rsx! { Popover { anchor: Anchor::Point(Point { x: Px(40.0), y: Px(40.0) }), placement: Placement::new(Side::Right, Align::End), gap: Px(0.0), dismiss: Dismiss::Manual, onclose: |_| {}, "Anything" } },
+        make: || rsx! { Popover { anchor: Anchor::Point(Point { x: Px(40.0), y: Px(40.0) }), placement: Placement::new(Side::Right, Align::End), gap: Px(0.0), dismiss: Dismiss::Manual, onclose: |()| {}, "Anything" } },
         wait: NOW,
     },
     Case {
         component: "popover",
         state: "arrow",
-        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Bottom, Align::Center), gap: Px(2.0), arrow: true, onclose: |_| {}, "Anything" } },
+        make: || rsx! { Popover { anchor: Anchor::Rect(button_rect()), placement: Placement::new(Side::Bottom, Align::Center), gap: Px(2.0), arrow: true, onclose: |()| {}, "Anything" } },
         wait: NOW,
     },
     // HoverCard: the target at rest, then each kind of card open after the intent.
@@ -593,20 +593,20 @@ pub const CASES: &[Case] = &[
     Case {
         component: "menu",
         state: "hints",
-        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: snooze_hints(), onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { Menu { placement: MenuPlacement::Popup, anchor: Anchor::Rect(button_rect()), items: snooze_hints(), onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     // Pick list: a filterable list in a popover, toggle rows, a Create row; and nothing matching.
     Case {
         component: "pick_list",
         state: "results",
-        make: || rsx! { PickList { anchor: Anchor::Rect(button_rect()), label: "Labels", placeholder: "Filter labels", query: "tra", groups: label_groups(), empty: "No label matches.", oninput: |_| {}, onpick: |_: u8| {}, onclose: |_| {} } },
+        make: || rsx! { PickList { anchor: Anchor::Rect(button_rect()), label: "Labels", placeholder: "Filter labels", query: "tra", groups: label_groups(), empty: "No label matches.", oninput: |_| {}, onpick: |_: u8| {}, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "pick_list",
         state: "empty",
-        make: || rsx! { PickList::<u8> { anchor: Anchor::Rect(button_rect()), label: "Move to", placeholder: "Filter folders", query: "zz", groups: PaletteGroups::default(), empty: "No folder matches.", oninput: |_| {}, onpick: |_| {}, onclose: |_| {} } },
+        make: || rsx! { PickList::<u8> { anchor: Anchor::Rect(button_rect()), label: "Move to", placeholder: "Filter folders", query: "zz", groups: PaletteGroups::default(), empty: "No folder matches.", oninput: |_| {}, onpick: |_| {}, onclose: |()| {} } },
         wait: NOW,
     },
     // Tooltip: at rest under the pointer's wait, and caller-driven up and down.
@@ -665,56 +665,56 @@ pub const CASES: &[Case] = &[
     Case {
         component: "peek",
         state: "center",
-        make: || rsx! { Peek { mode: PeekMode::Center, label: "Re: UIDL stability", onclose: |_| {}, p { "The reader." } } },
+        make: || rsx! { Peek { mode: PeekMode::Center, label: "Re: UIDL stability", onclose: |()| {}, p { "The reader." } } },
         wait: NOW,
     },
     Case {
         component: "peek",
         state: "full-present",
-        make: || rsx! { Peek { mode: PeekMode::Full, label: "Re: UIDL stability", onclose: |_| {}, p { "The reader." } } },
+        make: || rsx! { Peek { mode: PeekMode::Full, label: "Re: UIDL stability", onclose: |()| {}, p { "The reader." } } },
         wait: SETTLED,
     },
     Case {
         component: "sheet",
         state: "window",
-        make: || rsx! { Sheet { label: "Accounts", onclose: |_| {}, p { "Settings." } } },
+        make: || rsx! { Sheet { label: "Accounts", onclose: |()| {}, p { "Settings." } } },
         wait: NOW,
     },
     // Sheet and modal parts: centred, shown by its host, and mounted hidden.
     Case {
         component: "sheet",
         state: "centre",
-        make: || rsx! { Sheet { label: "Power", onclose: |_| {}, attach: Attach::Centre, p { "Shut down?" } } },
+        make: || rsx! { Sheet { label: "Power", onclose: |()| {}, attach: Attach::Centre, p { "Shut down?" } } },
         wait: SETTLED,
     },
     Case {
         component: "sheet",
         state: "shown",
-        make: || rsx! { Sheet { label: "Power", onclose: |_| {}, shown: true, on_hidden: |_| {}, p { "Shut down?" } } },
+        make: || rsx! { Sheet { label: "Power", onclose: |()| {}, shown: true, on_hidden: |()| {}, p { "Shut down?" } } },
         wait: NOW,
     },
     Case {
         component: "sheet",
         state: "mounted-hidden",
-        make: || rsx! { Sheet { label: "Power", onclose: |_| {}, shown: false, on_hidden: |_| {}, p { "Shut down?" } } },
+        make: || rsx! { Sheet { label: "Power", onclose: |()| {}, shown: false, on_hidden: |()| {}, p { "Shut down?" } } },
         wait: NOW,
     },
     Case {
         component: "sheet",
         state: "within-a-pane",
-        make: || rsx! { Sheet { label: "Rules", onclose: |_| {}, attach: Attach::Within(Anchor::Rect(button_rect())), p { "Rules." } } },
+        make: || rsx! { Sheet { label: "Rules", onclose: |()| {}, attach: Attach::Within(Anchor::Rect(button_rect())), p { "Rules." } } },
         wait: SETTLED,
     },
     Case {
         component: "sheet",
         state: "bottom-wide",
-        make: || rsx! { Sheet { label: "Edit Widgets", onclose: |_| {}, attach: Attach::Bottom, width: SheetWidth::Wide, p { "Gallery." } } },
+        make: || rsx! { Sheet { label: "Edit Widgets", onclose: |()| {}, attach: Attach::Bottom, width: SheetWidth::Wide, p { "Gallery." } } },
         wait: SETTLED,
     },
     Case {
         component: "sheet",
         state: "narrow",
-        make: || rsx! { Sheet { label: "Alert", onclose: |_| {}, attach: Attach::Centre, width: SheetWidth::Narrow, p { "Password?" } } },
+        make: || rsx! { Sheet { label: "Alert", onclose: |()| {}, attach: Attach::Centre, width: SheetWidth::Narrow, p { "Password?" } } },
         wait: SETTLED,
     },
     // CommandPalette: results with a query and tokens, and nothing found.
@@ -761,19 +761,19 @@ pub const CASES: &[Case] = &[
     Case {
         component: "send_pill",
         state: "mounted",
-        make: || rsx! { SendPill { text: "Sending in 3 s", progress: Fraction(400), operation: Operation::Running(PendingToken::start()), onundo: |_| {} } },
+        make: || rsx! { SendPill { text: "Sending in 3 s", progress: Fraction(400), operation: Operation::Running(PendingToken::start()), onundo: |()| {} } },
         wait: NOW,
     },
     Case {
         component: "send_pill",
         state: "counting",
-        make: || rsx! { SendPill { text: "Sending in 3 s", progress: Fraction(400), operation: Operation::Running(PendingToken::start()), onundo: |_| {} } },
+        make: || rsx! { SendPill { text: "Sending in 3 s", progress: Fraction(400), operation: Operation::Running(PendingToken::start()), onundo: |()| {} } },
         wait: FRAME,
     },
     Case {
         component: "send_pill",
         state: "done",
-        make: || rsx! { SendPill { text: "Sent", progress: Fraction(1000), operation: Operation::Idle, onundo: |_| {} } },
+        make: || rsx! { SendPill { text: "Sent", progress: Fraction(1000), operation: Operation::Idle, onundo: |()| {} } },
         wait: FRAME,
     },
     // EmptyState: each form, with an action and with Retry.
@@ -792,7 +792,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "empty_state",
         state: "failure-retry",
-        make: || rsx! { EmptyState { form: EmptyForm::Failure, title: "Couldn’t load your mail", description: "The server didn’t answer.", onretry: |_| {} } },
+        make: || rsx! { EmptyState { form: EmptyForm::Failure, title: "Couldn’t load your mail", description: "The server didn’t answer.", onretry: |()| {} } },
         wait: NOW,
     },
     // InlineBanner: each severity, with actions, detail and a close button.
@@ -805,7 +805,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "inline_banner",
         state: "info-action-close",
-        make: || rsx! { InlineBanner { text: "Remote images are blocked.", detail: "Loading them tells the sender you opened this.", actions: rsx! { Button { label: "Load images", size: ControlSize::Small, onclick: |_| {} } }, onclose: |_| {} } },
+        make: || rsx! { InlineBanner { text: "Remote images are blocked.", detail: "Loading them tells the sender you opened this.", actions: rsx! { Button { label: "Load images", size: ControlSize::Small, onclick: |_| {} } }, onclose: |()| {} } },
         wait: NOW,
     },
     Case {
@@ -841,7 +841,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "empty_state",
         state: "retry-only-on-failure",
-        make: || rsx! { EmptyState { title: "No messages", onretry: |_| {} } },
+        make: || rsx! { EmptyState { title: "No messages", onretry: |()| {} } },
         wait: NOW,
     },
     // Skeleton: each shape, sized, and hidden.
@@ -916,7 +916,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "loadable",
         state: "failed-retry",
-        make: || rsx! { Loadable { phase: Phase::Failed { title: "Couldn’t load".to_owned(), description: Some("The server didn’t answer.".into()) }, onretry: |_| {}, p { "Content" } } },
+        make: || rsx! { Loadable { phase: Phase::Failed { title: "Couldn’t load".to_owned(), description: Some("The server didn’t answer.".into()) }, onretry: |()| {}, p { "Content" } } },
         wait: NOW,
     },
     Case {
@@ -962,7 +962,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "spaces_bar",
         state: "plus-lit",
-        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expanded: Some(true), add_drop: DropState::Target, on_add: |_| {}, on_pick: |_| {} } },
+        make: || rsx! { SpacesBar { label: "Spaces", spaces: bar_backdrops(), shown: true, expanded: Some(true), add_drop: DropState::Target, on_add: |()| {}, on_pick: |_| {} } },
         wait: NOW,
     },
     Case {

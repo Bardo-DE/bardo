@@ -1,5 +1,5 @@
-//! The ApiKey family (lane AI2a): an AI company whose key the person pastes (Anthropic, Google
-//! Gemini, Moonshot, OpenAI; any file with `kind = "api_key"` and an Llm row). Sign-in asks for the key in a hidden
+//! The `ApiKey` family (lane AI2a): an AI company whose key the person pastes (Anthropic, Google
+//! Gemini, Moonshot, `OpenAI`; any file with `kind = "api_key"` and an Llm row). Sign-in asks for the key in a hidden
 //! field, lists the provider's models with it as the check, and files the key as the account's
 //! one secret. The key never leaves accountd: a session mints no token, and `Peer.ResolveKey`
 //! gives it to a porter daemon on a sealed memfd.
@@ -36,7 +36,7 @@ const KEY_PAGES: &[(&str, &str)] = &[
     ("openrouter", "https://openrouter.ai/settings/keys"),
 ];
 
-/// The ApiKey family's provider, over the HTTP seam `H` (hyper's client in a daemon).
+/// The `ApiKey` family's provider, over the HTTP seam `H` (hyper's client in a daemon).
 pub struct ApiKeyProvider<H = ReqwestHttp> {
     spec: ProviderSpec,
     http: Arc<H>,
@@ -61,6 +61,7 @@ impl<H> std::fmt::Debug for ApiKeyProvider<H> {
 
 impl<H: Http + Default> ApiKeyProvider<H> {
     /// The provider serving the accounts of `spec`, dialling with the default client.
+    #[must_use]
     pub fn new(spec: ProviderSpec) -> Self {
         Self::with_http(spec, H::default())
     }
@@ -90,12 +91,11 @@ impl<H: Http + 'static> Provider for ApiKeyProvider<H> {
         presented: &Presented,
     ) -> Result<Vec<Claim>, ProviderError> {
         let key = key_of(presented)?;
-        match asks_server(&self.spec) {
-            true => {
-                let server = own_server(&account.endpoints).ok_or(ProviderError::Unreadable)?;
-                check_server(&*self.http, &server.url, key).await?;
-            }
-            false => check(&*self.http, &self.spec, key).await?,
+        if asks_server(&self.spec) {
+            let server = own_server(&account.endpoints).ok_or(ProviderError::Unreadable)?;
+            check_server(&*self.http, &server.url, key).await?;
+        } else {
+            check(&*self.http, &self.spec, key).await?
         }
         Ok(crate::key::claims(&self.spec))
     }

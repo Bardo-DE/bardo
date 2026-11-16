@@ -19,6 +19,7 @@ const GRID: u64 = 24;
 
 /// The `stroke-width` attribute a `size` glyph writes at `scale`: `2`, or the snapped width in
 /// grid units to four decimals (`2.4` for a 16 px glyph at 1.25).
+#[must_use]
 pub fn stroke_width(size: IconSize, scale: Scale) -> String {
     match scale.grid() {
         Grid::Whole => DESIGN.to_string(),
@@ -28,6 +29,7 @@ pub fn stroke_width(size: IconSize, scale: Scale) -> String {
 
 /// How many whole device pixels a snapped stroke covers at `scale`: the design width
 /// (`2 * side / 24 * n / 120`) rounded to the nearest even count, halves up, never below one.
+#[must_use]
 pub fn stroke_device_pixels(size: IconSize, scale: Scale) -> u64 {
     let side = u64::from(size.px());
     let per = GRID * u64::from(Scale::DENOMINATOR);

@@ -14,6 +14,7 @@ impl ConfigLayer {
     /// its own rule), reported under its dotted path such as `profile.terminal.rules[2].when`;
     /// text that is not TOML is an empty layer and one warning. Where one file gives a trigger
     /// twice, the later rule wins.
+    #[must_use]
     pub fn parse(text: &str, source: ConfigSource) -> (ConfigLayer, Vec<Warning>) {
         let (layer, warnings) = match text.parse::<Table>() {
             Ok(root) => read_layer(&root),

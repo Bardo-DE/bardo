@@ -20,6 +20,7 @@ pub struct Ink {
 
 impl Ink {
     /// A token's value as ink.
+    #[must_use]
     pub fn of(value: Colour) -> Ink {
         match value {
             Colour::Solid(hex) => Ink {
@@ -50,6 +51,7 @@ impl Ink {
 ///     ink(Scheme::Light, false)
 /// );
 /// ```
+#[must_use]
 pub fn ink(scheme: Scheme, activity: bool) -> Ink {
     let token = if activity {
         ColourToken::Ink

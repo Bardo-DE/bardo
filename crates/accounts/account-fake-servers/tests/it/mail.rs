@@ -409,7 +409,7 @@ async fn a_client_that_does_not_trust_the_scratch_ca_fails_the_handshake() {
     let attempt = tokio_rustls::TlsConnector::from(empty)
         .connect(tls::server_name(), conn)
         .await;
-    assert!(attempt.is_err());
+    attempt.unwrap_err();
 }
 
 #[tokio::test]

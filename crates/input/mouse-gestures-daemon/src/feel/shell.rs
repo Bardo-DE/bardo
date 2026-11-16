@@ -27,6 +27,7 @@ fn raw_per_hi_res(speed: Count, gain: f64) -> f64 {
 
 /// The px, in finger direction, for `mm` of finger travel along `axis`, `dt_s` seconds after
 /// the previous motion: the speed's base ratio times the curve's gain at the finger's speed.
+#[must_use]
 pub fn px(mm: Mm, axis: Axis, speed: Count, dt_s: f64) -> f64 {
     let raw = grid(mm, axis);
     let per_hi_res = raw_per_hi_res(speed, sample_gain(raw, dt_s));

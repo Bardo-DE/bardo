@@ -403,7 +403,7 @@ fn a_long_task_compacts_once_and_the_summary_stands_in_for_what_it_covers() {
     assert_eq!(view.summary, s.summary);
     assert_eq!(
         view.history.first().map(|h| h.call.0),
-        Some(covers.steps.0 as u64 + 1)
+        Some(u64::from(covers.steps.0) + 1)
     );
     assert_eq!(view.history.last().map(|h| h.call), Some(CallId(40)));
     assert_eq!(s.history.len(), 40, "the sources keep every step");

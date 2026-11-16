@@ -5,7 +5,7 @@ use agent_voice_audio::{AudioNode, NodeId, NodeKind};
 use pipewire as pw;
 use std::time::Duration;
 
-/// The node kind PipeWire's `media.class` and name say.
+/// The node kind `PipeWire`'s `media.class` and name say.
 fn kind_of(class: &str, name: &str) -> Option<NodeKind> {
     match class {
         "Audio/Source" if name.ends_with(".monitor") => Some(NodeKind::Monitor),

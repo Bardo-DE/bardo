@@ -43,6 +43,7 @@ pub struct AccountSpend {
 impl AccountSpend {
     /// The bar, when both rows are there and the cap is more than nothing: without a cap there is
     /// nothing to measure against.
+    #[must_use]
     pub fn bar(&self) -> Option<SpendBar> {
         let (spent, cap) = (self.spent?, self.cap?);
         (cap.0 > 0).then(|| {

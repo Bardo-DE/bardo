@@ -62,7 +62,7 @@ fn boot_at(outputs: &[&str]) -> (Fixture, ClientId) {
     (fixture, id)
 }
 
-/// At scale 1.5 the surface receives preferred_scale(180) before its first xdg configure (layer-shell-host FINDINGS 167).
+/// At scale 1.5 the surface receives `preferred_scale(180)` before its first xdg configure (layer-shell-host FINDINGS 167).
 #[test]
 fn preferred_scale_comes_before_the_first_configure() {
     let (mut fixture, id) = boot_at(&[SCALE_1_5]);
@@ -163,7 +163,7 @@ fn the_primary_output_decides() {
     assert_eq!(preferred(fixture.client(id), &object), vec![150]);
 }
 
-/// A second scale object on one surface is wp_fractional_scale_manager_v1.fractional_scale_exists
+/// A second scale object on one surface is `wp_fractional_scale_manager_v1.fractional_scale_exists`
 /// (0), posted on the manager.
 #[test]
 fn a_second_scale_object_is_a_protocol_error() {

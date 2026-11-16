@@ -62,6 +62,7 @@ impl LinkedOrigin {
 
     /// Whether `origin` is one this pattern names: the host, and the port (the scheme's default
     /// when the pattern has none). The scheme is the caller's to check.
+    #[must_use]
     pub fn allows(&self, origin: &Origin) -> bool {
         let port = self.port.unwrap_or(origin.scheme.default_port());
         let host = match DomainName::parse(&origin.host) {
@@ -124,6 +125,7 @@ impl AuthOrigin {
     }
 
     /// Whether `origin` is exactly this one (the scheme is the caller's to check).
+    #[must_use]
     pub fn allows(&self, origin: &Origin) -> bool {
         self.0.allows(origin)
     }

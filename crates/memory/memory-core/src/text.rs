@@ -148,6 +148,7 @@ digest!(
 
 /// The `N` bytes written as exactly `2 * N` lowercase hex digits, or `None`. const-hex also takes
 /// uppercase digits and a `0x` prefix; the wire and the key files do not, so both are refused here.
+#[must_use]
 pub fn decode_lower_hex<const N: usize>(text: &str) -> Option<[u8; N]> {
     if text.len() != 2 * N || text.bytes().any(|b| b.is_ascii_uppercase()) {
         return None;
@@ -168,6 +169,7 @@ impl UserText {
     }
 
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -206,6 +208,7 @@ impl JsonText {
     }
 
     /// The JSON text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

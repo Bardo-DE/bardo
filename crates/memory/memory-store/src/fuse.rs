@@ -22,6 +22,7 @@ pub struct Fused {
 
 /// Fuses a lexical list (`lists[0]`) and a semantic list (`lists[1]`); lists beyond the second
 /// are ignored. Best first; ties by id.
+#[must_use]
 pub fn fuse_rrf(lists: &[Vec<Ranked>], k: RrfK) -> Vec<Fused> {
     let mut by_id: BTreeMap<&DocId, (u32, RecallWhy)> = BTreeMap::new();
     for (position, list) in lists.iter().take(2).enumerate() {
@@ -68,6 +69,7 @@ pub const CHARS_PER_TOKEN: u32 = 4;
 /// Splits `text` into chunks of at most `max_tokens` (estimated at four characters a token),
 /// on whitespace, never inside a word; a word longer than the limit is a chunk of its own.
 /// Whitespace between words is normalised to single spaces.
+#[must_use]
 pub fn chunk(text: &str, max_tokens: u32) -> Vec<Chunk> {
     let limit =
         usize::try_from(max_tokens.max(1).saturating_mul(CHARS_PER_TOKEN)).unwrap_or(usize::MAX);

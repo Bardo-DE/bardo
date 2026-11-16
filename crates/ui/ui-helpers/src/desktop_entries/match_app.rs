@@ -16,7 +16,7 @@ pub struct AppKeys {
     pub flatpak: Option<String>,
 }
 
-/// The position in `apps` of the entry a toplevel with Wayland `app_id` (and, through XWayland,
+/// The position in `apps` of the entry a toplevel with Wayland `app_id` (and, through `XWayland`,
 /// `wm_class`) belongs to. The first rule that matches any entry wins; within a rule, the first
 /// entry. The rules, in order:
 ///

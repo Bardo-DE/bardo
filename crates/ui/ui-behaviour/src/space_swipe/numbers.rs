@@ -24,6 +24,7 @@ const BAND_CAP: i32 = 250;
 /// half a page (`|p| >= 500`) it commits in `p`'s direction unless a reverse flick
 /// (`v × sign(p) <= -1500`); under half a page only on a forward flick (`v × sign(p) >= 1500`).
 /// No movement commits nothing, and it never commits more than one Space.
+#[must_use]
 pub fn commit(p: PageMilli, v: PagesPerSecMilli) -> i32 {
     let direction = p.0.signum();
     let toward = v.0.saturating_mul(direction);
@@ -40,6 +41,7 @@ pub fn commit(p: PageMilli, v: PagesPerSecMilli) -> i32 {
 /// How long the finish takes to cover `dp` starting at speed `v`:
 /// `clamp(|dp| / max(|v|, 2 pages/s) × 3, 100 ms, 400 ms)`, so an ease-out-cubic finish starts
 /// at the lift's speed. Whole milliseconds.
+#[must_use]
 pub fn finish_duration(dp: PageMilli, v: PagesPerSecMilli) -> Duration {
     let speed = u64::from(v.0.unsigned_abs()).max(SLOWEST);
     let ms = u64::from(dp.0.unsigned_abs()) * 3000 / speed;
@@ -49,6 +51,7 @@ pub fn finish_duration(dp: PageMilli, v: PagesPerSecMilli) -> Duration {
 /// Where the row is drawn for a raw position `p` on a row whose Spaces run from `first` to
 /// `last`: inside the row, `p` itself; past an end, `bound + 0.25 (p − bound)`, at most a quarter
 /// page past it (half a page past shows an eighth).
+#[must_use]
 pub fn rubber(p: PageMilli, first: u32, last: u32) -> PageMilli {
     let (low, high) = (PageMilli::of_space(first), PageMilli::of_space(last));
     if p < low {

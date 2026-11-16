@@ -8,7 +8,7 @@
 //! [`Daemon::build_over`].
 //!
 //! No other function in the library reads the environment. The network comes from the caller as
-//! a `watch::Receiver<Network>`: NetworkManager is not read yet, so the binary hands in a
+//! a `watch::Receiver<Network>`: `NetworkManager` is not read yet, so the binary hands in a
 //! receiver that says "unmetered and up" for good.
 
 use crate::datasets::photos::Millis;
@@ -82,6 +82,7 @@ pub struct Config {
 impl Config {
     /// A configuration over `paths` on `bus`: callers read from `/proc`, every supervisor at its
     /// shipped settings (grants read again every ten minutes).
+    #[must_use]
     pub fn new(paths: Paths, bus: BusTarget) -> Self {
         Self {
             paths,

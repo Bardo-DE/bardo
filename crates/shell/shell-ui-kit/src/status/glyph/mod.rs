@@ -51,6 +51,7 @@ fn thousandths(percent: u16) -> Fraction {
 /// The network item's glyph. Joining carries the service's join stamp (one per attempt);
 /// connectivity None, Portal or Limited is the "!" badge; disconnected is Off with the radio off,
 /// the last failure while it stands, else Idle.
+#[must_use]
 pub fn network_glyph(network: &Network, radio: Radio) -> NetworkGlyph {
     match (&network.link, network.join.now, radio) {
         // Moving to another Wi-Fi network while joined: joining, as the reference's menu bar
@@ -88,6 +89,7 @@ fn reach(connectivity: Connectivity) -> WifiReach {
 
 /// The battery item's state, `None` without a battery (the item hides). `low` is
 /// `bar.battery_low_percent`.
+#[must_use]
 pub fn battery_glyph(battery: &Battery, low: KeyPercent) -> Option<BatteryState> {
     let power = match battery.charge {
         Charge::Charging => BatteryPower::Charging,
@@ -105,6 +107,7 @@ pub fn battery_glyph(battery: &Battery, low: KeyPercent) -> Option<BatteryState>
 }
 
 /// The volume item's state. Level 0 is Muted, so the slash stays (as the reference draws it).
+#[must_use]
 pub fn volume_glyph(volume: &Volume) -> VolumeState {
     match (volume.presence, volume.mute, volume.level.0) {
         (Presence::Absent, _, _) => VolumeState::NoDevice,
@@ -119,6 +122,7 @@ pub fn volume_glyph(volume: &Volume) -> VolumeState {
 
 /// The Bluetooth item's state: off without an adapter or with the radio off, then a connect
 /// under way, then any device connected, then the last failed connect, else on.
+#[must_use]
 pub fn bluetooth_glyph_state(bluetooth: &Bluetooth) -> BluetoothState {
     let connected = bluetooth
         .devices

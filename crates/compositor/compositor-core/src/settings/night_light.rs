@@ -18,6 +18,7 @@ pub struct NightLightSettings {
 
 impl NightLightSettings {
     /// These settings, leaving no output alone.
+    #[must_use]
     pub fn new(light: NightLight) -> NightLightSettings {
         NightLightSettings {
             light,
@@ -42,6 +43,7 @@ impl NightLightSettings {
     ///
     /// assert_eq!(NightLightSettings::defaults().light.schedule, Schedule::Off);
     /// ```
+    #[must_use]
     pub fn defaults() -> NightLightSettings {
         NightLightSettings::new(NightLight {
             schedule: Schedule::Off,
@@ -70,6 +72,7 @@ impl NightLightSettings {
     /// let warming = NightLightSettings::defaults();
     /// assert!(!warming.skips(&name, &key));
     /// ```
+    #[must_use]
     pub fn skips(&self, name: &OutputName, key: &OutputKey) -> bool {
         self.skip_outputs
             .iter()
@@ -80,6 +83,7 @@ impl NightLightSettings {
     /// The ramp to drive the output on `name` (key `key`) with at `now`, `size` steps long: the
     /// light's, or the identity for an output that is left alone. The one place the skip list
     /// is honoured.
+    #[must_use]
     pub fn ramp_for(
         &self,
         name: &OutputName,
@@ -87,9 +91,10 @@ impl NightLightSettings {
         now: MinuteOfDay,
         size: u32,
     ) -> GammaRamp {
-        match self.skips(name, key) {
-            true => GammaRamp::Identity,
-            false => self.light.ramp_at(now, size),
+        if self.skips(name, key) {
+            GammaRamp::Identity
+        } else {
+            self.light.ramp_at(now, size)
         }
     }
 }

@@ -77,6 +77,7 @@ macro_rules! serde_settings {
 }
 
 /// The dotted name of `key` inside the table at `path`.
+#[must_use]
 pub fn dotted(path: &str, key: &str) -> String {
     if path.is_empty() {
         key.to_owned()

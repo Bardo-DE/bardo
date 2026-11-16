@@ -226,9 +226,9 @@ mod tests {
         .typed()
         .unwrap_err();
         assert_eq!(err.kind(), io::ErrorKind::InvalidInput);
-        assert!(Key::from_code(0x2ff).is_ok());
-        assert!(Key::from_code(0x300).is_err());
-        assert!(LedKind::from_code(0x0f).is_ok());
-        assert!(LedKind::from_code(0x10).is_err());
+        Key::from_code(0x2ff).unwrap();
+        Key::from_code(0x300).unwrap_err();
+        LedKind::from_code(0x0f).unwrap();
+        LedKind::from_code(0x10).unwrap_err();
     }
 }

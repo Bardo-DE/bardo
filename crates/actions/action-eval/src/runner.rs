@@ -70,6 +70,7 @@ pub struct Harness<S: Rig = FakeSeams> {
 /// A policy that covers everything an app declares, up to destructive, in `space`: the widest
 /// the writer could ever produce. It never covers an untrusted sink argument: `covers` refuses
 /// those whatever the policy says.
+#[must_use]
 pub fn maximal_policy(space: SpaceId, task: TaskId) -> TaskPolicy {
     let apps = [
         "org.bardo.Mail",
@@ -117,6 +118,7 @@ impl Harness {
     }
 
     /// The writer the harness installs: the maximal policy for `space`, as a scripted result.
+    #[must_use]
     pub fn maximal_writer(space: SpaceId, task: TaskId) -> ScriptedWriter {
         ScriptedWriter::returning(Ok(maximal_policy(space, task)))
     }

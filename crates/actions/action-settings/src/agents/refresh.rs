@@ -17,6 +17,7 @@ pub struct RefreshRequest {
 
 impl RefreshRequest {
     /// The request for the agent in `row`.
+    #[must_use]
     pub fn of(row: &AgentRow) -> Self {
         Self {
             program: row.program.clone(),
@@ -24,11 +25,13 @@ impl RefreshRequest {
     }
 
     /// The agent's name in `agents.toml`.
+    #[must_use]
     pub fn program(&self) -> &str {
         &self.program
     }
 
     /// The arguments [`REFRESH_PROGRAM`] is run with.
+    #[must_use]
     pub fn arguments(&self) -> Vec<String> {
         vec![self.program.clone(), "--refresh".to_owned()]
     }

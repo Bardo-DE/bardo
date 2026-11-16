@@ -25,6 +25,7 @@ pub struct Moves {
 
 impl Moves {
     /// Nothing written, the input left alone.
+    #[must_use]
     pub fn none() -> Moves {
         Moves {
             written: Vec::new(),
@@ -41,19 +42,23 @@ impl Moves {
     }
 
     /// The scrollers whose offsets were written, once per write.
+    #[must_use]
     pub fn written(&self) -> &[Latch] {
         &self.written
     }
 
     /// Whether any offset was written.
+    #[must_use]
     pub fn moved(&self) -> Moved {
-        match self.written.is_empty() {
-            true => Moved::Still,
-            false => Moved::Moved,
+        if self.written.is_empty() {
+            Moved::Still
+        } else {
+            Moved::Moved
         }
     }
 
     /// Whether the engine took the input.
+    #[must_use]
     pub fn claim(&self) -> Claim {
         self.claim
     }
@@ -67,6 +72,7 @@ impl Moves {
     }
 
     /// These moves followed by `next`'s; the engine took the input if either did.
+    #[must_use]
     pub fn then(mut self, next: Moves) -> Moves {
         self.written.extend(next.written);
         Moves {

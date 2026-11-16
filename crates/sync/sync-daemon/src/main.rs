@@ -12,7 +12,7 @@
 //! of class Photos (the account's Photos row in Settings). A test build (`test-proc-root`) reads
 //! `BARDO_SYNCD_RESCAN_S` as how often both supervisors read grants again; the default is ten minutes.
 //!
-//! What stays here is the network: NetworkManager is not read yet, so the network is taken as
+//! What stays here is the network: `NetworkManager` is not read yet, so the network is taken as
 //! unmetered and up.
 // peephole's caller types (account-dbus ProcCallers) take the daemon's futures past the default
 // depth of 128.

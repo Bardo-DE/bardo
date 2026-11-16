@@ -5,6 +5,7 @@ use account_capability::CapabilityKind;
 use account_core::{Credential, EndpointProtocol, Reach, RelayAuth, RelayPlan, ServiceEndpoint};
 
 /// The endpoint the account reads mail from.
+#[must_use]
 pub fn incoming(endpoints: &[ServiceEndpoint]) -> Option<&ServiceEndpoint> {
     endpoints.iter().find(|e| {
         matches!(
@@ -17,6 +18,7 @@ pub fn incoming(endpoints: &[ServiceEndpoint]) -> Option<&ServiceEndpoint> {
 /// The relay plan that tries `credential` at the first incoming mail server of `endpoints`.
 /// `None` when there is nothing to try (a token, a JMAP-only account): the token's own call
 /// already proved it.
+#[must_use]
 pub fn plan(credential: &Credential, endpoints: &[ServiceEndpoint]) -> Option<RelayPlan> {
     plan_at(credential, incoming(endpoints)?)
 }
@@ -24,6 +26,7 @@ pub fn plan(credential: &Credential, endpoints: &[ServiceEndpoint]) -> Option<Re
 /// The relay plan that tries `credential` at `endpoint`, a mail server (IMAP, POP3 or SMTP: the
 /// relay says `EHLO` or `CAPABILITY` and authenticates before its first write). `None` when
 /// there is nothing to try (a token).
+#[must_use]
 pub fn plan_at(credential: &Credential, endpoint: &ServiceEndpoint) -> Option<RelayPlan> {
     let Credential::Password(password) = credential else {
         return None;

@@ -115,7 +115,7 @@ fn a_pick_blinks_its_item_twice_then_yields_and_closes() {
     assert_eq!(seen, [false, true, false, true], "out, back, out, back");
     let closed = settle_until(&mut harness, |h| log(h).ends_with("close"));
     assert_eq!(log(&harness), "pick:1,close");
-    assert!(closed > harness.now() - ms(1000));
+    assert!(closed > harness.now().checked_sub(ms(1000)).unwrap());
     assert_eq!(harness.count(".ds-menu"), 0);
 }
 

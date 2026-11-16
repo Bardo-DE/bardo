@@ -10,6 +10,7 @@ use ui_components::prelude::*;
 use super::CardPress;
 
 /// `note`'s buttons, each telling `on_press` its key.
+#[must_use]
 pub fn card_actions(note: &Notification, on_press: EventHandler<CardPress>) -> Vec<CardAction> {
     note.buttons()
         .cloned()

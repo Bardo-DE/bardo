@@ -45,9 +45,9 @@ pub enum LlmFeature {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LlmWire {
-    /// OpenAI-compatible Chat Completions (also Ollama, llama.cpp, vLLM, OpenRouter).
+    /// OpenAI-compatible Chat Completions (also Ollama, llama.cpp, vLLM, `OpenRouter`).
     ChatCompletions,
-    /// OpenAI Responses.
+    /// `OpenAI` Responses.
     Responses,
     /// Anthropic Messages.
     Messages,
@@ -146,7 +146,7 @@ impl LanguageTag {
 
 base_ids::string_newtype!(LanguageTag, IdError);
 
-/// An image generator (a hosted model or a ComfyUI workflow).
+/// An image generator (a hosted model or a `ComfyUI` workflow).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ImageGenCap {
     /// What it does.

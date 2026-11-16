@@ -29,6 +29,7 @@ pub enum Light {
 /// let (disc, _ink) = light_hue(Light::Close, Scheme::Light);
 /// assert_eq!(disc.css(), "#ff5f57");
 /// ```
+#[must_use]
 pub fn light_hue(light: Light, scheme: Scheme) -> (Hex, Hex) {
     let colours = light_colours(light, scheme);
     (colours.disc, colours.mark)
@@ -41,6 +42,7 @@ pub fn light_hue(light: Light, scheme: Scheme) -> (Hex, Hex) {
 /// use ui_style::tokens::chrome::light_hue::{Light, light_rim};
 /// assert_eq!(light_rim(Light::Zoom, Scheme::Dark).css(), "#12ac28");
 /// ```
+#[must_use]
 pub fn light_rim(light: Light, scheme: Scheme) -> Hex {
     light_colours(light, scheme).rim
 }

@@ -168,6 +168,7 @@ impl Keymap {
     }
 
     /// The key that types `c`, and whether Shift is needed.
+    #[must_use]
     pub fn stroke_for(&self, c: char) -> Option<(Keycode, ShiftLevel)> {
         self.entries
             .iter()
@@ -176,6 +177,7 @@ impl Keymap {
     }
 
     /// The key code of a named key or a character key by its W3C `key` value.
+    #[must_use]
     pub fn code_of(&self, key: &keyboard_types::Key) -> Option<Keycode> {
         use keyboard_types::Key;
         let wanted = match key {

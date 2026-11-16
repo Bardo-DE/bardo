@@ -49,6 +49,7 @@ pub fn apply(link: &SplitPickerLink, view: &DesktopView, note: ShellNote) {
 /// let answered = link.last_answer().expect("answered");
 /// assert_eq!(command_of(&answered), DesktopCommand::PickSplit("w2".to_owned()));
 /// ```
+#[must_use]
 pub fn command_of(answered: &SplitAnswered) -> DesktopCommand {
     match &answered.answer {
         SplitAnswer::Picked(window) => DesktopCommand::PickSplit(window.clone()),

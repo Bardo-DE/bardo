@@ -76,6 +76,7 @@ pub struct FactTime {
 
 impl FactTime {
     /// A date with no time of day; `None` when `month` and `day` are not a day of that year.
+    #[must_use]
     pub fn date(year: i32, month: u8, day: u8) -> Option<Self> {
         let valid = (1..=12).contains(&month) && day >= 1 && day <= days_in(year, month);
         valid.then_some(FactTime {
@@ -88,6 +89,7 @@ impl FactTime {
     }
 
     /// This date at `hour`:`minute` in `zone`; `None` when that is not a time of day.
+    #[must_use]
     pub fn at(self, hour: u8, minute: u8, zone: FactZone) -> Option<Self> {
         (hour < 24 && minute < 60).then_some(FactTime {
             clock: Some((hour, minute)),
@@ -97,12 +99,14 @@ impl FactTime {
     }
 
     /// This moment read in `zone` instead of the one it was built with.
+    #[must_use]
     pub fn in_zone(self, zone: FactZone) -> Self {
         FactTime { zone, ..self }
     }
 
     /// The moment `modified` names, as a UTC reading; [`FactValue::date`] shows it in the person's
     /// own zone.
+    #[must_use]
     pub fn from_mod_time(modified: ModTime) -> Self {
         let seconds = modified.0.div_euclid(NANOS_PER_SECOND);
         let (days, in_day) = (
@@ -124,6 +128,7 @@ impl FactTime {
 
     /// `2024:05:01 12:30:45` as EXIF writes a capture time; `None` for anything else. The zone is
     /// unstated.
+    #[must_use]
     pub fn parse_exif(raw: &str) -> Option<Self> {
         let (date, time) = raw.trim().split_once(' ')?;
         let mut date = date.split(':');
@@ -194,11 +199,13 @@ impl FactZone {
 impl FactValue {
     /// `9 Oct 2026 at 14:05` in the person's own time zone, or `9 Oct 2026` for a date with no
     /// time of day.
+    #[must_use]
     pub fn date(when: FactTime) -> Self {
         FactValue::date_in(when, &LocalZone::system())
     }
 
     /// [`FactValue::date`] in a named zone.
+    #[must_use]
     pub fn date_in(when: FactTime, zone: &LocalZone) -> Self {
         FactValue::text(when.localised(zone).text())
     }

@@ -1,5 +1,5 @@
 //! What the daemon's tests share: a private session bus, scratch directories, seams that are
-//! real where the test is about the real thing (SQLCipher, sealed files) and in memory where it
+//! real where the test is about the real thing (`SQLCipher`, sealed files) and in memory where it
 //! is about the system around it (keys, the embedder, the callers).
 
 #![allow(dead_code)]

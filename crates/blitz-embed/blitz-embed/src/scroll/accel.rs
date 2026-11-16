@@ -26,6 +26,7 @@ const FLING_PER_SPEED: f64 = 1.0 / 3000.0;
 
 /// How much further a lift at `speed` px/s (a magnitude) glides than its own speed says: 1 up to
 /// 1000 px/s, then one more for each 3000 px/s above, never over `max` (`max <= 1` is off).
+#[must_use]
 pub fn fling_gain(speed: f64, max: f64) -> f64 {
     (1.0 + (speed - FLING_FLOOR) * FLING_PER_SPEED).clamp(1.0, max.max(1.0))
 }
@@ -41,6 +42,7 @@ impl Accel {
     /// A turn of `steps` detents (a magnitude; a high-resolution wheel reports fractions) at
     /// `now`, and the factor to scale it by: 1 at a reading pace, a quarter more for each
     /// detent a second above 5, never over `max` (`max <= 1` is off).
+    #[must_use]
     pub fn feed(self, steps: f64, now: Elapsed, max: f64) -> (Accel, f64) {
         let rate = match self.last {
             Some(last) => {

@@ -21,6 +21,7 @@ pub struct FakeSpaceRegistry {
 
 impl FakeSpaceRegistry {
     /// A registry that accepts everything.
+    #[must_use]
     pub fn new() -> FakeSpaceRegistry {
         FakeSpaceRegistry::default()
     }
@@ -31,11 +32,13 @@ impl FakeSpaceRegistry {
     }
 
     /// The batches registered so far, in order.
+    #[must_use]
     pub fn batches(&self) -> Vec<Vec<SpaceRegistration>> {
         self.lock().batches.clone()
     }
 
     /// The ids registered so far, in order, across batches.
+    #[must_use]
     pub fn ids(&self) -> Vec<String> {
         self.lock()
             .batches

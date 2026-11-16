@@ -440,7 +440,7 @@ fn clicking_outside_a_bar_popup_returns_the_keyboard_to_the_app() {
     );
 }
 
-/// A layer surface that asked for no keyboard is never given wl_keyboard.enter, not while a
+/// A layer surface that asked for no keyboard is never given `wl_keyboard.enter`, not while a
 /// menu hangs from it and not when the menu's grab ends, by a press outside or by the client.
 #[test]
 fn a_layer_without_keyboard_interactivity_is_never_keyed() {
@@ -522,7 +522,7 @@ fn closing_a_submenu_leaves_the_keyboard_with_its_menu() {
     );
 }
 
-/// A zero-size anchor rectangle is a point anchor, not an error: xdg_positioner.set_anchor_rect
+/// A zero-size anchor rectangle is a point anchor, not an error: `xdg_positioner.set_anchor_rect`
 /// refuses only a negative size. The popup is configured at the point.
 #[test]
 fn a_popup_may_anchor_to_a_point() {

@@ -42,6 +42,7 @@ impl AppName {
 
     /// A program of the desktop (`shell`, `settings`, `files`): its folders are
     /// `<base>/bardo/<name>`.
+    #[must_use]
     pub const fn desktop(name: &'static str) -> AppName {
         AppName {
             name,
@@ -50,6 +51,7 @@ impl AppName {
     }
 
     /// A program that is not part of the desktop: its folders are `<base>/<name>`.
+    #[must_use]
     pub const fn foreign(name: &'static str) -> AppName {
         AppName {
             name,
@@ -58,11 +60,13 @@ impl AppName {
     }
 
     /// The program's own name (`bardo` for the desktop-wide one).
+    #[must_use]
     pub const fn name(self) -> &'static str {
         self.name
     }
 
     /// This program's folder inside `base`, one of the XDG bases (config, state, data, cache).
+    #[must_use]
     pub fn under(self, base: &Path) -> PathBuf {
         match self.owner {
             Owner::Desktop => base.join(DESKTOP_LEVEL).join(self.name),
@@ -83,6 +87,7 @@ const FOREIGN_PROGRAMS: &[&str] = &["mailo"];
 /// `shell/settings.toml`) inside `base`: the same place [`AppName::under`] gives, for a name only
 /// known at run time. `bardo` is the desktop-wide level; a program of [`FOREIGN_PROGRAMS`] sits
 /// directly in `base`; every other one is a program of the desktop.
+#[must_use]
 pub fn app_folder(base: &Path, app: &str) -> PathBuf {
     if app == DESKTOP_LEVEL {
         base.join(DESKTOP_LEVEL)
@@ -108,6 +113,7 @@ pub enum ConfigRoot {
 impl ConfigRoot {
     /// `app`'s config directory in this tree, or `None` when [`ConfigRoot::Xdg`] has neither
     /// variable to start from.
+    #[must_use]
     pub fn dir(&self, app: AppName) -> Option<PathBuf> {
         match self {
             ConfigRoot::Xdg => xdg_dir(
@@ -124,6 +130,7 @@ impl ConfigRoot {
     /// `app`'s state directory in this tree: what changes as the program is used and is not a
     /// choice (`$XDG_STATE_HOME`, else `$HOME/.local/state`). A scratch root keeps it beside the
     /// config directory, in `.state`.
+    #[must_use]
     pub fn state_dir(&self, app: AppName) -> Option<PathBuf> {
         match self {
             ConfigRoot::Xdg => xdg::base_dir(

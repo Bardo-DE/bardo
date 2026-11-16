@@ -157,6 +157,7 @@ pub struct Lending {
 
 impl Lending {
     /// Where listening stands; the receiver changes when it does.
+    #[must_use]
     pub fn listening(&self) -> watch::Receiver<Listening> {
         self.listening.clone()
     }
@@ -283,27 +284,24 @@ async fn run<V: Visits>(
             if live.contains_key(ip) || failing.get(ip).is_some_and(|retry| retry.at > now) {
                 continue;
             }
-            match TcpListener::bind(SocketAddr::new(*ip, config.port)).await {
-                Ok(listener) => {
-                    failing.remove(ip);
-                    live.insert(
-                        *ip,
-                        Guard(tokio::spawn(accept(listener, Arc::clone(&shared)))),
-                    );
-                }
-                Err(_) => {
-                    let pause = match failing.get(ip) {
-                        Some(retry) => (retry.pause * 2).min(config.longest_pause),
-                        None => config.first_pause,
-                    };
-                    failing.insert(
-                        *ip,
-                        Retry {
-                            at: now + pause,
-                            pause,
-                        },
-                    );
-                }
+            if let Ok(listener) = TcpListener::bind(SocketAddr::new(*ip, config.port)).await {
+                failing.remove(ip);
+                live.insert(
+                    *ip,
+                    Guard(tokio::spawn(accept(listener, Arc::clone(&shared)))),
+                );
+            } else {
+                let pause = match failing.get(ip) {
+                    Some(retry) => (retry.pause * 2).min(config.longest_pause),
+                    None => config.first_pause,
+                };
+                failing.insert(
+                    *ip,
+                    Retry {
+                        at: now + pause,
+                        pause,
+                    },
+                );
             }
         }
         let listening = Listening {

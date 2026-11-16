@@ -77,6 +77,7 @@ impl Default for DisplayPolicy {
 
 impl DisplayPolicy {
     /// The strength to warm the DDC displays to, or `None` when bardo-shell leaves them alone.
+    #[must_use]
     pub fn warmth(&self) -> Option<Percent> {
         match self.night_warmth {
             NightWarmthMode::Hardware => Some(self.night_warmth_strength),

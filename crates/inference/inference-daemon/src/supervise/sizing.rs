@@ -43,6 +43,7 @@ fn held<T>(lock: &Mutex<T>) -> MutexGuard<'_, T> {
 impl Sizing {
     /// Sizing for the models among `models` whose window is chosen at start, made with
     /// `engines` (the same configuration their units were first made with), under `lengths`.
+    #[must_use]
     pub fn for_models(engines: EngineConfig, models: &[LocalModel], lengths: Lengths) -> Self {
         let plans = models
             .iter()
@@ -77,12 +78,14 @@ impl Sizing {
     }
 
     /// What the person set now.
+    #[must_use]
     pub fn lengths(&self) -> Lengths {
         *held(&self.shared.lengths)
     }
 
     /// The window the engine was last started with; none for an engine whose window is not
     /// chosen, or one not started yet.
+    #[must_use]
     pub fn window_of(&self, id: &EngineId) -> Option<Tokens> {
         held(&self.shared.chosen).get(id).copied()
     }

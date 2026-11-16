@@ -1,4 +1,4 @@
-//! CalDAV against the fake DAV server: the calendar listed, an event put, found, replaced and
+//! `CalDAV` against the fake DAV server: the calendar listed, an event put, found, replaced and
 //! removed by its UID, and one stored under another name found by a calendar-query.
 
 use crate::common::{Client, Server};

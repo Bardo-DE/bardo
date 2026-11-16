@@ -6,6 +6,7 @@ use super::model::{RefusedBringBack, TerminalsModel};
 use super::msg::{TerminalsCommand, TerminalsMsg};
 
 /// `model` after `msg`, and what the panel asks the companion.
+#[must_use]
 pub fn update(model: TerminalsModel, msg: TerminalsMsg) -> (TerminalsModel, Vec<TerminalsCommand>) {
     match msg {
         TerminalsMsg::Changed => (model, vec![TerminalsCommand::List]),

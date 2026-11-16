@@ -18,11 +18,13 @@ fn tag_of(label: &Label) -> ClassTag {
 }
 
 /// The document id of a fact.
+#[must_use]
 pub fn fact_doc_id(id: &FactId) -> String {
     format!("f:{id}")
 }
 
 /// The document id of an event's body documents (`e:<replica>:<seq>`).
+#[must_use]
 pub fn event_doc_id(event: &EventRef) -> String {
     IndexPart::Message.doc_id(event)
 }
@@ -75,6 +77,7 @@ pub struct EventDoc {
 }
 
 impl EventDoc {
+    #[must_use]
     pub fn into_doc(self, at: UnixSeconds) -> Doc {
         Doc {
             id: DocId(self.id),
@@ -94,6 +97,7 @@ impl EventDoc {
 /// with its own label), things by their title and subtitle, searches by their text, under the
 /// header's label. Other bodies are not searched, and a body that is not for recall
 /// ([`Recallable::No`]) contributes nothing whatever its shape.
+#[must_use]
 pub fn event_docs(event: &EventRef, header_label: &Label, body: &EventBody) -> Vec<EventDoc> {
     if Recallable::of_body(body) == Recallable::No {
         return Vec::new();
@@ -137,6 +141,7 @@ pub fn event_docs(event: &EventRef, header_label: &Label, body: &EventBody) -> V
 
 /// The sequence numbers of the newest event of each episode id (an episode narrated later is a
 /// second event with the same id; only the newest is indexed).
+#[must_use]
 pub fn newest_episodes(entries: &[Entry]) -> BTreeSet<Seq> {
     let mut newest: BTreeMap<String, Seq> = BTreeMap::new();
     for entry in entries {
@@ -149,6 +154,7 @@ pub fn newest_episodes(entries: &[Entry]) -> BTreeSet<Seq> {
 }
 
 /// The reference of an entry in `space`.
+#[must_use]
 pub fn event_ref(space: &memory_core::SpaceId, entry: &Entry) -> EventRef {
     EventRef {
         space: space.clone(),
@@ -159,6 +165,7 @@ pub fn event_ref(space: &memory_core::SpaceId, entry: &Entry) -> EventRef {
 
 /// The documents the index holds for `entry`: none for an erased body or for an episode that a
 /// newer event narrates.
+#[must_use]
 pub fn indexed_docs(
     space: &memory_core::SpaceId,
     entry: &Entry,
@@ -174,6 +181,7 @@ pub fn indexed_docs(
 }
 
 /// The document of an active fact.
+#[must_use]
 pub fn fact_doc(fact: &Fact) -> Doc {
     Doc {
         id: DocId(fact_doc_id(&fact.id)),
@@ -189,6 +197,7 @@ pub fn fact_doc(fact: &Fact) -> Doc {
 }
 
 /// Whether the body of `entry` is still there.
+#[must_use]
 pub fn present(entry: &Entry) -> Option<&EventBody> {
     match &entry.body {
         BodyState::Present(body) => Some(body),

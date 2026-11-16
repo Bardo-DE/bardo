@@ -110,6 +110,7 @@ pub enum PickerEffect {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn step(state: PickerState, input: PickerInput) -> (PickerState, Vec<PickerEffect>) {
     match input {
         PickerInput::Found(read) => (

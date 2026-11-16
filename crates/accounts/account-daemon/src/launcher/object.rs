@@ -33,9 +33,10 @@ impl<H, C> LauncherObject<H, C> {
 
 /// The `parent_window` argument: empty is no parent.
 fn window(text: &str) -> ParentWindow {
-    match text.is_empty() {
-        true => ParentWindow::Unparented,
-        false => ParentWindow::Handle(text.to_owned()),
+    if text.is_empty() {
+        ParentWindow::Unparented
+    } else {
+        ParentWindow::Handle(text.to_owned())
     }
 }
 

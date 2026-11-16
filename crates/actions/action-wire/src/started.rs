@@ -28,6 +28,7 @@ impl TerminalScope {
     }
 
     /// The scope's name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -83,9 +84,9 @@ mod tests {
     fn a_scope_read_from_a_log_is_checked() {
         let good: Result<StartedFrom, _> =
             serde_json::from_str(r#"{"kind":"terminal","v":"vte-spawn-1.scope"}"#);
-        assert!(good.is_ok());
+        good.unwrap();
         let bad: Result<StartedFrom, _> =
             serde_json::from_str(r#"{"kind":"terminal","v":"../../etc"}"#);
-        assert!(bad.is_err());
+        bad.unwrap_err();
     }
 }

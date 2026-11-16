@@ -56,6 +56,7 @@ impl Primary {
 
     /// Give the name up, then return the requests that had arrived and were not read. A launch
     /// that knocks after this is told the viewer is closing, so none is answered and then lost.
+    #[must_use]
     pub fn close(self) -> Vec<Request> {
         let Primary { requests, _held } = self;
         drop(_held);

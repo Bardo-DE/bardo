@@ -16,12 +16,14 @@ pub struct Apps(Vec<ValidManifest>);
 
 impl Apps {
     /// The apps `manifests` declare, in a stable order.
+    #[must_use]
     pub fn new(mut manifests: Vec<ValidManifest>) -> Self {
         manifests.sort_by(|a, b| a.manifest().app.cmp(&b.manifest().app));
         Self(manifests)
     }
 
     /// Every app.
+    #[must_use]
     pub fn all(&self) -> &[ValidManifest] {
         &self.0
     }
@@ -84,11 +86,13 @@ impl Apps {
 }
 
 /// An app's slug: what `bardo-do` calls it.
+#[must_use]
 pub fn slug(app: &AppName) -> String {
     action_prefix(app)
 }
 
 /// The action's name as typed after the app: without the app's prefix.
+#[must_use]
 pub fn short_name(app: &Manifest, action: &ActionDecl) -> String {
     let prefix = format!("{}.", slug(&app.app));
     action

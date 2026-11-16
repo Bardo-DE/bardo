@@ -39,7 +39,7 @@ impl Dispatch<ExtOutputImageCaptureSourceManagerV1, ()> for Capturing {
         _: &mut Self,
         _: &ExtOutputImageCaptureSourceManagerV1,
         _: ext_output_image_capture_source_manager_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -51,7 +51,7 @@ impl Dispatch<ExtImageCaptureSourceV1, ()> for Capturing {
         _: &mut Self,
         _: &ExtImageCaptureSourceV1,
         _: ext_image_capture_source_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

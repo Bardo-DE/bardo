@@ -45,6 +45,7 @@ pub enum Decoded {
 }
 
 /// The keymap of the fake seat.
+#[must_use]
 pub fn keymap() -> Keymap {
     let named = NAMED.iter().map(|(key, code)| KeymapEntry {
         produces: Produces::Named(key.to_string()),

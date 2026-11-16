@@ -22,6 +22,7 @@ pub fn check_stamped(message: &Message, actor: &Actor) -> Result<(), SendRefusal
 
 /// The label a receiver holds after taking a message in: the join of its own and the message's.
 /// It never gets lower.
+#[must_use]
 pub fn intake_label(receiver: &Label, message: &Message) -> Label {
     receiver.join(&message.label)
 }
@@ -100,6 +101,7 @@ pub fn inbound_line(
 }
 
 /// The report status a final message carries, if it is a report.
+#[must_use]
 pub fn report_status(message: &Message) -> Option<ReportStatus> {
     match message.kind {
         provenance::MessageKind::Report { status } => Some(status),

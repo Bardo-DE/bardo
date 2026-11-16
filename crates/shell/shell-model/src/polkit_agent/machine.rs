@@ -110,6 +110,7 @@ pub enum PolkitEffect {
 }
 
 /// `state` after `event`.
+#[must_use]
 pub fn step(state: PolkitState, event: PolkitEvent) -> (PolkitState, Vec<PolkitEffect>) {
     match event {
         PolkitEvent::Policy(own) => on_policy(state, own),
@@ -143,6 +144,7 @@ pub fn step(state: PolkitState, event: PolkitEvent) -> (PolkitState, Vec<PolkitE
 }
 
 /// What the prompt follows: the registration, the first request as a view, how many wait.
+#[must_use]
 pub fn polkit_of(state: &PolkitState) -> Polkit {
     Polkit {
         registration: state.registration.clone(),
@@ -185,10 +187,10 @@ fn on_registered(state: PolkitState) -> (PolkitState, Vec<PolkitEffect>) {
         registration: Registration::Registered,
         ..state
     };
-    match state.own_agent {
-        true => (state, Vec::new()),
-        // Turned off while the registration was on its way.
-        false => unregister(state),
+    if state.own_agent {
+        (state, Vec::new())
+    } else {
+        unregister(state)
     }
 }
 

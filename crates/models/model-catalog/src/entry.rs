@@ -65,7 +65,7 @@ pub enum WeightSource {
 #[serde(transparent)]
 pub struct ProviderId(pub String);
 
-/// A model's id at one provider (`anthropic/claude-opus-5.5` at OpenRouter, `claude-opus-5-5` at
+/// A model's id at one provider (`anthropic/claude-opus-5.5` at `OpenRouter`, `claude-opus-5-5` at
 /// Anthropic).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -75,7 +75,7 @@ pub struct RemoteModelId(pub String);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Wire {
-    /// Chat completions as OpenAI wrote them (OpenRouter, OpenAI, Moonshot, Gemini's
+    /// Chat completions as `OpenAI` wrote them (`OpenRouter`, `OpenAI`, Moonshot, Gemini's
     /// compatibility endpoint).
     OpenAiCompat,
     /// Anthropic's Messages API.
@@ -129,6 +129,7 @@ pub enum GpuNeed {
 }
 
 impl Locality {
+    #[must_use]
     pub fn is_on_device(&self) -> bool {
         matches!(self, Locality::OnDevice)
     }
@@ -136,6 +137,7 @@ impl Locality {
 
 impl VramEstimate {
     /// `Absent` exactly when weights, KV and overhead are all zero.
+    #[must_use]
     pub fn gpu_need(&self) -> GpuNeed {
         match (self.weights, self.kv_per_1k_ctx, self.overhead) {
             (MiB(0), MiB(0), MiB(0)) => GpuNeed::Absent,
@@ -144,6 +146,7 @@ impl VramEstimate {
     }
 
     /// `weights + kv(context) + overhead`; the KV share rounds up to whole mebibytes.
+    #[must_use]
     pub fn need(&self, context: Tokens) -> MiB {
         let kv = (u64::from(self.kv_per_1k_ctx.0) * u64::from(context.0)).div_ceil(1000);
         let total = u64::from(self.weights.0) + kv + u64::from(self.overhead.0);
@@ -176,6 +179,7 @@ pub enum ReasoningDefault {
 impl SamplingDefaults {
     /// The sampling for a request's reasoning setting: `On(_)` takes `reasoning_on`, `Off` takes
     /// `reasoning_off`, and `EngineDefault` takes whichever the model's `reasoning_default` names.
+    #[must_use]
     pub fn for_reasoning(&self, reasoning: Reasoning) -> &Sampling {
         match reasoning {
             Reasoning::On(_) => &self.reasoning_on,

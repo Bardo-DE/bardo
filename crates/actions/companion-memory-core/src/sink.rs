@@ -33,11 +33,13 @@ impl Default for QueuedSink {
 
 impl QueuedSink {
     /// An empty queue of the usual size.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// An empty queue that keeps at most `limit` records.
+    #[must_use]
     pub fn bounded(limit: usize) -> Self {
         Self {
             queue: Arc::default(),
@@ -50,11 +52,13 @@ impl QueuedSink {
     }
 
     /// Takes everything queued so far, oldest first.
+    #[must_use]
     pub fn drain(&self) -> Vec<AuditRecord> {
         std::mem::take(&mut self.locked().records).into()
     }
 
     /// A copy of what is queued, oldest first, leaving it queued.
+    #[must_use]
     pub fn snapshot(&self) -> Vec<AuditRecord> {
         self.locked().records.iter().cloned().collect()
     }
@@ -72,16 +76,19 @@ impl QueuedSink {
     }
 
     /// How many records wait.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.locked().records.len()
     }
 
     /// Whether nothing waits.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.locked().records.is_empty()
     }
 
     /// How many records were dropped for want of room since the last call.
+    #[must_use]
     pub fn dropped(&self) -> u64 {
         std::mem::take(&mut self.locked().dropped)
     }

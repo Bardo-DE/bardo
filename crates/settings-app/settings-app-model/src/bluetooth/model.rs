@@ -1,7 +1,7 @@
-//! What the Bluetooth page knows: the switch and the devices BlueZ reports, and a question a
+//! What the Bluetooth page knows: the switch and the devices `BlueZ` reports, and a question a
 //! device asks while pairing. Parsed once where it enters.
 
-/// A device's address, as BlueZ writes it (`AA:BB:CC:DD:EE:FF`): what names a device.
+/// A device's address, as `BlueZ` writes it (`AA:BB:CC:DD:EE:FF`): what names a device.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct BtAddress(pub String);
 
@@ -34,7 +34,8 @@ pub enum BtKind {
 }
 
 impl BtKind {
-    /// The kind BlueZ's icon name describes.
+    /// The kind `BlueZ`'s icon name describes.
+    #[must_use]
     pub fn of_icon(icon: &str) -> BtKind {
         match icon {
             "audio-headset" | "audio-headphones" | "audio-card" | "audio-speakers" => BtKind::Audio,
@@ -79,6 +80,7 @@ pub struct BtStatus {
 
 impl BtStatus {
     /// The status of `devices` with the switch `powered` or not, sorted.
+    #[must_use]
     pub fn new(powered: bool, mut devices: Vec<BtDevice>) -> BtStatus {
         devices.sort_by(|a, b| {
             let rank = |d: &BtDevice| d.link == BtLink::Disconnected;
@@ -101,6 +103,7 @@ impl BtStatus {
     }
 
     /// The device at `address`.
+    #[must_use]
     pub fn device(&self, address: &BtAddress) -> Option<&BtDevice> {
         self.devices.iter().find(|d| &d.address == address)
     }
@@ -125,19 +128,21 @@ pub enum PairingAsk {
     Passkey,
 }
 
-/// The most characters a PIN has: BlueZ takes sixteen.
+/// The most characters a PIN has: `BlueZ` takes sixteen.
 const PIN_LONGEST: usize = 16;
 /// The most digits a passkey has.
 const PASSKEY_LONGEST: usize = 6;
 
 impl PairingAsk {
     /// Whether the person types the answer: a PIN or a passkey.
+    #[must_use]
     pub fn takes_text(self) -> bool {
         matches!(self, PairingAsk::PinCode | PairingAsk::Passkey)
     }
 
     /// Whether `text` is a PIN or a passkey this question takes; a question that wants no typing
     /// takes nothing.
+    #[must_use]
     pub fn accepts(self, text: &str) -> bool {
         let length = text.chars().count();
         match self {

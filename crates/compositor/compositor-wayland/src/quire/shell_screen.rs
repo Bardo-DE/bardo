@@ -24,6 +24,7 @@ const NAMES_OUTPUT: u32 = 7;
 /// assert!(on_set_full_screen_bar(Some(9)).is_empty());
 /// assert!(on_set_full_screen_bar(None).is_empty());
 /// ```
+#[must_use]
 pub fn on_set_full_screen_bar(mode: Option<u32>) -> Vec<Event> {
     mode.and_then(|code| FullScreenBar::from_code(code).ok())
         .map(|mode| Event::Shell(ShellRequest::FullScreenBar(mode)))
@@ -39,6 +40,7 @@ pub fn on_set_full_screen_bar(mode: Option<u32>) -> Vec<Event> {
 /// assert_eq!(on_set_motion(Some(1)).len(), 1);
 /// assert!(on_set_motion(Some(9)).is_empty());
 /// ```
+#[must_use]
 pub fn on_set_motion(motion: Option<u32>) -> Vec<Event> {
     motion
         .and_then(|code| Motion::from_code(code).ok())

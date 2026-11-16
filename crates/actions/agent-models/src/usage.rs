@@ -7,6 +7,7 @@ use inference_core::TokenUsage;
 /// The ledger's report for a turn that used `usage`. The charge is whatever the provider
 /// reported, passed through as it came: never worked out from a price, and `None` when the
 /// provider said nothing.
+#[must_use]
 pub fn report_of(usage: TokenUsage) -> TurnReport {
     TurnReport {
         tokens: TokenTotals {

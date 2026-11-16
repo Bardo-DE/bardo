@@ -67,21 +67,18 @@ fn imported_buffers_are_tagged_with_their_node() {
     // untagged: smithay then skips its cross-GPU copy rather than guessing. On a host with a
     // real GPU the same read succeeds and the buffer carries the real render node; what must
     // never happen is an untyped or non-render node.
-    match fabricated_gpus() {
-        0 => {
-            if let Some(node) = imported.node() {
-                assert_eq!(node.ty(), NodeType::Render, "a real node is a render node");
-            }
+    if fabricated_gpus() == 0 {
+        if let Some(node) = imported.node() {
+            assert_eq!(node.ty(), NodeType::Render, "a real node is a render node");
         }
-        _ => {
-            let node = imported.node().expect("the import is tagged with a node");
-            assert_eq!(node.ty(), NodeType::Render, "the main device's render node");
-            assert_eq!(
-                node.dev_id(),
-                0xE280,
-                "226:128, the node the default feedback names"
-            );
-        }
+    } else {
+        let node = imported.node().expect("the import is tagged with a node");
+        assert_eq!(node.ty(), NodeType::Render, "the main device's render node");
+        assert_eq!(
+            node.dev_id(),
+            0xE280,
+            "226:128, the node the default feedback names"
+        );
     }
 }
 

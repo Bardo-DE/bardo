@@ -17,11 +17,13 @@ slug_id!(
 
 impl IdentityId {
     /// The identity that `account` is.
+    #[must_use]
     pub fn of(account: &AccountId) -> Self {
         Self(account.as_str().to_owned())
     }
 
     /// Whether this is the identity that `account` is.
+    #[must_use]
     pub fn is(&self, account: &AccountId) -> bool {
         self.0 == account.as_str()
     }
@@ -66,6 +68,7 @@ pub struct Identity {
 
 impl Identity {
     /// An identity with these parts.
+    #[must_use]
     pub fn new(
         id: IdentityId,
         address: IdentityAddress,
@@ -85,6 +88,7 @@ impl Identity {
     /// The identity `account` is, or `None` when it is not one (see [`crate::AuthKind::facts`]).
     /// `provider_name` is what the provider file labels the provider; without it the provider's
     /// id stands in.
+    #[must_use]
     pub fn of(account: &Account, provider_name: Option<&str>) -> Option<Self> {
         let kind = account.auth.facts().identity?;
         let name = provider_name.unwrap_or(account.provider.as_str());

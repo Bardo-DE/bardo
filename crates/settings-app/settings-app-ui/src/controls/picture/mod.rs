@@ -74,7 +74,7 @@ pub fn PictureControl(
     });
     let sections = picture_sections(&found.read(), &stored);
     let pick = move |path: String| onchange.call(toml::Value::String(path));
-    let onadd = move |_: ()| {
+    let onadd = move |(): ()| {
         let pictures = pictures.clone();
         spawn(async move {
             let outcome = pictures.add().await;

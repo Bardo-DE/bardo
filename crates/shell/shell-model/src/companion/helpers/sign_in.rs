@@ -44,11 +44,13 @@ pub fn app_of(view: &HelperCardView) -> Option<String> {
 
 /// What the card says about how the helper works: "Uses Claude Code" for a helper that runs an
 /// app, nothing for one that plans for itself.
+#[must_use]
 pub fn kind_line(view: &HelperCardView) -> Option<String> {
     app_of(view).map(|app| format!("Uses {app}"))
 }
 
 /// Where the sign-in to the app stands, for a helper that runs one.
+#[must_use]
 pub fn login_line(view: &HelperCardView) -> Option<&'static str> {
     view.kind.program()?;
     match view.login {
@@ -59,6 +61,7 @@ pub fn login_line(view: &HelperCardView) -> Option<&'static str> {
 }
 
 /// The sentence under a job that waits for the person to sign in.
+#[must_use]
 pub fn needs_sign_in_line(view: &HelperCardView) -> String {
     let app = app_of(view).unwrap_or_else(|| THE_APP.to_owned());
     format!("Sign in to {app} so this job can start.")
@@ -66,6 +69,7 @@ pub fn needs_sign_in_line(view: &HelperCardView) -> String {
 
 /// The buttons that sign in, for a helper that runs an app the person is not signed in to: one
 /// "Sign In" when the app has one way, else one button per way by the app's own name.
+#[must_use]
 pub fn sign_in_buttons(view: &HelperCardView) -> Vec<SignInButton> {
     if view.kind.program().is_none() || view.login == LoginShown::SignedIn {
         return Vec::new();
@@ -86,6 +90,7 @@ pub fn sign_in_buttons(view: &HelperCardView) -> Vec<SignInButton> {
 }
 
 /// Whether the card offers Sign Out: the person is signed in to the app the helper runs.
+#[must_use]
 pub fn offers_sign_out(view: &HelperCardView) -> bool {
     view.kind.program().is_some() && view.login == LoginShown::SignedIn
 }

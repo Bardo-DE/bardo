@@ -46,6 +46,7 @@ impl AppIndex {
     }
 
     /// The entry with `id`.
+    #[must_use]
     pub fn get(&self, id: &AppId) -> Option<&App> {
         self.apps
             .binary_search_by(|app| app.id.cmp(id))
@@ -53,8 +54,9 @@ impl AppIndex {
             .and_then(|i| self.apps.get(i))
     }
 
-    /// The entry a toplevel with Wayland `app_id` (and, through XWayland, `wm_class`) belongs to,
+    /// The entry a toplevel with Wayland `app_id` (and, through `XWayland`, `wm_class`) belongs to,
     /// by the five rules of [`ui_helpers::match_app`], the one matcher every shell part shares.
+    #[must_use]
     pub fn matching(&self, app_id: &str, wm_class: Option<&str>) -> Option<&App> {
         self.apps.get(match_app(app_id, wm_class, &self.keys)?)
     }
@@ -62,6 +64,7 @@ impl AppIndex {
     /// The file manager the Trash opens in: the desktop's own Files when it is installed, else
     /// the first listed entry, by id, that is a `FileManager` and opens folders; none when no
     /// such app is installed.
+    #[must_use]
     pub fn file_manager(&self) -> Option<&AppId> {
         let managers = || {
             self.apps.iter().filter(|app| {
@@ -125,6 +128,7 @@ pub struct App {
 
 impl App {
     /// What window matching reads from this entry.
+    #[must_use]
     pub fn keys(&self) -> AppKeys {
         AppKeys {
             id: self.id.0.clone(),
@@ -202,6 +206,7 @@ pub enum AppsEvent {
 }
 
 /// `index` after `event`; the result is always sorted by id with no duplicate ids.
+#[must_use]
 pub fn step(index: AppIndex, event: AppsEvent) -> AppIndex {
     let AppIndex { mut apps, .. } = index;
     match event {

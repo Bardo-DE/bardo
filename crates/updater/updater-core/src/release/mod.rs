@@ -126,6 +126,7 @@ impl Release {
     }
 
     /// The entry for `path`, if the release lists it.
+    #[must_use]
     pub fn file(&self, path: &str) -> Option<&FileEntry> {
         self.files.iter().find(|f| f.path.as_str() == path)
     }

@@ -125,7 +125,7 @@ fn outputs_json(state: &State) -> String {
     format!("[{}]", rows.join(","))
 }
 
-/// Every window in the shape KWin's window list gave the consumer scripts: `class` (the app
+/// Every window in the shape `KWin`'s window list gave the consumer scripts: `class` (the app
 /// id), `caption`, `frame` and `buffer` as `[x, y, w, h]`, `maximize`, `fullscreen`, `active`, plus `identifier` (`w<id>`, the name the
 /// shell protocol takes) and `minimise_target` (`[x, y, w, h]` global, or `null` when none is set).
 pub(super) fn windows(state: &State) -> String {

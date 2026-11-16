@@ -67,6 +67,7 @@ pub enum HandReply {
 
 impl HandRefusal {
     /// What the assistant tells the person.
+    #[must_use]
     pub fn sentence(&self) -> String {
         match self {
             HandRefusal::TurnedOff => {

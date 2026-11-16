@@ -55,6 +55,7 @@ pub fn append_line(path: &Path, line: &str) -> io::Result<()> {
 }
 
 /// `path` with `.meta` added to its file name.
+#[must_use]
 pub fn meta_path(path: &Path) -> PathBuf {
     let mut name = OsString::from(path.as_os_str());
     name.push(".meta");
@@ -79,6 +80,7 @@ pub struct Hooks {
 
 impl Hooks {
     /// The hooks for `direct`, and the sender a `SIGHUP` is told through.
+    #[must_use]
     pub fn new(direct: &DirectTty) -> (Hooks, Sender<()>) {
         let (asks, captures) = channel();
         let hooks = Hooks {
@@ -108,10 +110,10 @@ impl Hooks {
             match done {
                 Ok(frame) => match write_capture(path, &frame) {
                     Ok(()) => {
-                        tracing::info!(path = %path.display(), "a writeback frame was written")
+                        tracing::info!(path = %path.display(), "a writeback frame was written");
                     }
                     Err(error) => {
-                        tracing::warn!(path = %path.display(), %error, "the writeback frame was not written")
+                        tracing::warn!(path = %path.display(), %error, "the writeback frame was not written");
                     }
                 },
                 Err(error) => tracing::warn!(%error, "the writeback frame was not read"),
@@ -124,7 +126,7 @@ impl Hooks {
         match tty.request_writeback() {
             Ok(()) => {}
             Err(error @ (WritebackError::Busy | WritebackError::SeatLent)) => {
-                tracing::info!(%error, "SIGHUP: no writeback now")
+                tracing::info!(%error, "SIGHUP: no writeback now");
             }
             Err(error) => tracing::warn!(%error, "SIGHUP: the writeback job was not queued"),
         }
@@ -199,6 +201,7 @@ impl TestHooks {
     }
 
     /// How long the loop may sleep: [`TURN`] in this mode, forever otherwise.
+    #[must_use]
     pub fn wake(&self) -> Option<Duration> {
         self.running.as_ref().map(|_| TURN)
     }
@@ -233,7 +236,7 @@ mod tests {
         assert_eq!(session.notes(), [SessionNote::Activated]);
         assert!(asked.try_recv().is_err());
         edge.capture();
-        assert!(asked.try_recv().is_ok());
+        asked.try_recv().unwrap();
     }
 
     #[test]

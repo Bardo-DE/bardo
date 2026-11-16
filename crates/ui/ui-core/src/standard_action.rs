@@ -18,6 +18,7 @@ pub(crate) const DESIGN_PLATFORM: Platform = Platform::Linux {
 impl Shortcut {
     /// The keys of a standard action on this desktop: the only way to bind one. Empty for an
     /// action this desktop's conventions leave unbound.
+    #[must_use]
     pub fn standard(action: StandardAction) -> Shortcut {
         match ConventionTable::for_platform(DESIGN_PLATFORM).lookup(action) {
             Some(Convention::Bound(chord)) => {

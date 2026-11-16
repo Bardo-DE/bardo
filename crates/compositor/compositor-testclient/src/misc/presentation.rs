@@ -38,6 +38,7 @@ pub struct Presentation {
 
 impl Presentation {
     /// Binds the global at exactly `version`.
+    #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> Presentation {
         Presentation {
             presentation: client
@@ -47,12 +48,14 @@ impl Presentation {
     }
 
     /// Asks for feedback on the content update of `surface`'s next commit.
+    #[must_use]
     pub fn feedback(&self, client: &TestClient, surface: &Surface) -> WpPresentationFeedback {
         self.presentation
             .feedback(&surface.surface, &client.qh(), H1Data)
     }
 
     /// The clock id the compositor announced, once the client was pumped.
+    #[must_use]
     pub fn clock(&self, client: &TestClient) -> Option<u32> {
         seen(client, &self.presentation)
             .into_iter()
@@ -62,6 +65,7 @@ impl Presentation {
 }
 
 /// What `feedback` was told, in order.
+#[must_use]
 pub fn feedback_events(
     client: &TestClient,
     feedback: &WpPresentationFeedback,

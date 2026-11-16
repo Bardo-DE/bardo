@@ -11,6 +11,7 @@ const MAX_LEN: usize = 64;
 
 /// Whether `text` is a well-formed id (the one grammar every id of ours shares; crates that
 /// mint ids of their own, such as `prov`, check with this).
+#[must_use]
 pub fn is_id(text: &str) -> bool {
     let mut bytes = text.bytes();
     let first_ok = bytes
@@ -88,6 +89,7 @@ macro_rules! slug_id {
 ///
 /// Two ids differing only in those characters share a segment; accountd refuses the second
 /// (it never mints such ids itself).
+#[must_use]
 pub fn object_segment(id: &str) -> String {
     id.chars()
         .map(|c| if c.is_ascii_alphanumeric() { c } else { '_' })
@@ -130,7 +132,7 @@ mod tests {
     #[test]
     fn a_malformed_id_does_not_deserialize() {
         let parsed: Result<TestId, _> = serde_json::from_str("\"Not An Id\"");
-        assert!(parsed.is_err());
+        parsed.unwrap_err();
     }
 
     #[test]

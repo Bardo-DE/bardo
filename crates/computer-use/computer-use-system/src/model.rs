@@ -227,9 +227,10 @@ fn sight_of(places: &[PlaceRow]) -> ModelSight {
         .filter(|place| place.state == PlaceState::Ready)
         .flat_map(|place| place.models.iter().map(|model| model.takes.sight()))
         .collect();
-    match sights.is_empty() || sights.iter().any(|sight| *sight != Sight::Blind) {
-        true => ModelSight::MaySee,
-        false => ModelSight::Blind,
+    if sights.is_empty() || sights.iter().any(|sight| *sight != Sight::Blind) {
+        ModelSight::MaySee
+    } else {
+        ModelSight::Blind
     }
 }
 

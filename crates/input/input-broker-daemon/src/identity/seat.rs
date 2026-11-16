@@ -27,6 +27,7 @@ pub struct SeatFile {
 
 impl SeatFile {
     /// The seat file of this machine.
+    #[must_use]
     pub fn system() -> Self {
         Self::at(SEAT_FILE)
     }

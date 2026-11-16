@@ -108,6 +108,7 @@ pub enum Failure {
 }
 
 /// A keep that sent everything: what an answer's footer says until the turn says otherwise.
+#[must_use]
 pub fn kept_all() -> ContextKeep {
     ContextKeep {
         query: Keep::Kept,
@@ -119,6 +120,7 @@ pub fn kept_all() -> ContextKeep {
 
 impl TaskRuntime {
     /// A task that has just opened.
+    #[must_use]
     pub fn new(
         session: SessionId,
         space: SpaceId,
@@ -175,6 +177,7 @@ impl TaskRuntime {
     }
 
     /// The card of the proposal named `id`.
+    #[must_use]
     pub fn card(&self, id: &action_vocab::CardActionId) -> Option<&companion_wire::CardWire> {
         match self.proposal.as_ref()? {
             AnswerBody::DraftReply { actions, .. } | AnswerBody::ProposedEvent { actions, .. } => {
@@ -186,6 +189,7 @@ impl TaskRuntime {
 
     /// The integrity the planner works at: untrusted once it holds a handle or a message it
     /// cannot read (the router's own taint is the one that gates; this only labels the view).
+    #[must_use]
     pub fn taint(&self) -> Integrity {
         let unread = self.inbox.iter().any(|m| {
             m.parts

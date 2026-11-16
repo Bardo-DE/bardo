@@ -125,7 +125,7 @@ impl Dispatch<BardoWindowManagerV1, ()> for Quiet {
         _: &mut Self,
         _: &BardoWindowManagerV1,
         _: <BardoWindowManagerV1 as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -137,7 +137,7 @@ impl Dispatch<BardoWindowV1, ()> for Quiet {
         _: &mut Self,
         _: &BardoWindowV1,
         _: <BardoWindowV1 as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

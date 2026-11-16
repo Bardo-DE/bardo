@@ -1,4 +1,4 @@
-//! Reading the options of a ScreenCast call and writing its results.
+//! Reading the options of a `ScreenCast` call and writing its results.
 //!
 //! These are the wire shapes: dictionaries of variants in, dictionaries of variants out. The
 //! functions are pure so a table of cases covers them.
@@ -49,6 +49,7 @@ pub fn selection(options: &Dict) -> Selection {
 }
 
 /// The modes in a portal bit set, hidden first. An empty set means hidden.
+#[must_use]
 pub fn cursor_modes(bits: u32) -> Vec<CursorMode> {
     let modes: Vec<CursorMode> = [
         CursorMode::Hidden,
@@ -66,6 +67,7 @@ pub fn cursor_modes(bits: u32) -> Vec<CursorMode> {
 }
 
 /// The restore token in an app's `restore_data` `(suv)`, if it is one this portal wrote.
+#[must_use]
 pub fn restore_token(options: &Dict) -> Option<RestoreToken> {
     let structure = <&Structure>::try_from(options.get("restore_data")?).ok()?;
     let [vendor, version, data] = structure.fields() else {
@@ -103,6 +105,7 @@ pub struct StreamInfo {
 }
 
 /// The portal's `source_type` of a source: 1 for a display, 2 for a window.
+#[must_use]
 pub fn source_type(source: &CastSource) -> u32 {
     match source {
         CastSource::Window(_) => 2,

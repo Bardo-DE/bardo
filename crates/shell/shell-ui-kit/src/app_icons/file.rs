@@ -14,6 +14,7 @@ pub enum IconFile {
 
 impl IconFile {
     /// `path` classified; `None` for a relative one, which is a name and not a file.
+    #[must_use]
     pub fn of(path: &Path) -> Option<IconFile> {
         if !path.is_absolute() {
             return None;

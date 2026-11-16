@@ -54,6 +54,7 @@ pub enum UnitError {
 
 /// The refusal a method returns for `refused`: `AccessDenied` with the fixed text of the refusal
 /// and nothing about which check failed. (A `From` impl cannot live here: both types are foreign.)
+#[must_use]
 pub fn access_denied(refused: Refused) -> fdo::Error {
     fdo::Error::AccessDenied(refused.to_string())
 }

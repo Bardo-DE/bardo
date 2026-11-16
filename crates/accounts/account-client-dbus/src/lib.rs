@@ -45,6 +45,7 @@ pub struct Bus {
 
 impl Bus {
     /// Over an open session-bus connection the app owns.
+    #[must_use]
     pub fn over(connection: Connection) -> Self {
         Self {
             connection,

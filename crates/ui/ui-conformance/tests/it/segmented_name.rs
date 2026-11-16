@@ -1,4 +1,4 @@
-//! An image-only SegmentedControl segment has an accessible name (design/30 section 1.4,
+//! An image-only `SegmentedControl` segment has an accessible name (design/30 section 1.4,
 //! `Choice::with_name`): the segment's `aria-label`, where a labelled one is named by its words.
 
 use dioxus::prelude::*;

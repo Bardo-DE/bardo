@@ -1,4 +1,4 @@
-//! IconButtonGroup: small icon buttons on one rounded plate.
+//! `IconButtonGroup`: small icon buttons on one rounded plate.
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
@@ -6,7 +6,7 @@ use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 
-/// The IconButtonGroup section.
+/// The `IconButtonGroup` section.
 #[component]
 pub fn IconGroups() -> Element {
     let icons = [

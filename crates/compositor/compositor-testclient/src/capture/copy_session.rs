@@ -213,6 +213,7 @@ impl OutputCapture {
     }
 
     /// The connector names of the outputs, once they have arrived.
+    #[must_use]
     pub fn output_names(&self) -> Vec<String> {
         self.state
             .outputs
@@ -278,16 +279,19 @@ impl OutputCapture {
     }
 
     /// The dma-buf formats the session offered in its last complete round of constraints.
+    #[must_use]
     pub fn dmabuf_formats(&self) -> &[DmabufFormat] {
         &self.state.announced.dmabuf
     }
 
     /// The device the session said dma-bufs are allocated on (`dev_t`), if it offered any.
+    #[must_use]
     pub fn dmabuf_device(&self) -> Option<u64> {
         self.state.announced.device
     }
 
     /// The session, as the reducer has it: its size, formats and phase.
+    #[must_use]
     pub fn session(&self) -> Option<&CaptureSession> {
         self.state.desktop.captures.get(ID)
     }
@@ -349,7 +353,7 @@ impl OutputCapture {
             ));
         };
         let format = Format::try_from(code)
-            .map_err(|_| ClientError::Dispatch(format!("shm format {code}")))?;
+            .map_err(|()| ClientError::Dispatch(format!("shm format {code}")))?;
         let stride = size.w.saturating_mul(4);
         let length = u64::from(stride) * u64::from(size.h);
         let file = File::from(
@@ -386,6 +390,7 @@ impl OutputCapture {
     }
 
     /// Whether the compositor ended the session (`stopped`: its output went away).
+    #[must_use]
     pub fn is_stopped(&self) -> bool {
         self.state.stopped
     }
@@ -430,7 +435,7 @@ impl Dispatch<ExtImageCopyCaptureManagerV1, ()> for Capturing {
         _: &mut Self,
         _: &ExtImageCopyCaptureManagerV1,
         _: ext_image_copy_capture_manager_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -442,7 +447,7 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for Capturing {
         state: &mut Self,
         _: &ExtImageCopyCaptureSessionV1,
         event: ext_image_copy_capture_session_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -498,7 +503,7 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, ()> for Capturing {
         state: &mut Self,
         _: &ExtImageCopyCaptureFrameV1,
         event: ext_image_copy_capture_frame_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -566,7 +571,7 @@ impl Dispatch<WlShm, ()> for Capturing {
         _: &mut Self,
         _: &WlShm,
         _: wl_shm::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -578,7 +583,7 @@ impl Dispatch<WlShmPool, ()> for Capturing {
         _: &mut Self,
         _: &WlShmPool,
         _: wl_shm_pool::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -590,7 +595,7 @@ impl Dispatch<WlBuffer, ()> for Capturing {
         _: &mut Self,
         _: &WlBuffer,
         _: wl_buffer::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

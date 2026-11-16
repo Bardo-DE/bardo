@@ -1,6 +1,7 @@
 //! Sample bytes.
 
 /// S16LE bytes as samples (a trailing odd byte is dropped).
+#[must_use]
 pub fn samples_of(bytes: &[u8]) -> Vec<i16> {
     bytes
         .as_chunks::<2>()

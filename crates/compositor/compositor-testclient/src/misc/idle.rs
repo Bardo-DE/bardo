@@ -140,11 +140,13 @@ impl IdleWatch {
     }
 
     /// Every signal read so far, in order.
+    #[must_use]
     pub fn lines(&self) -> &[IdleLine] {
         &self.seen.lines
     }
 
     /// The signals, without their instants.
+    #[must_use]
     pub fn signals(&self) -> Vec<IdleSignal> {
         self.seen.lines.iter().map(|line| line.signal).collect()
     }

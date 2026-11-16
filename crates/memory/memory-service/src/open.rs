@@ -179,9 +179,10 @@ impl<B: Backend> Open<B> {
         }
         let fresh = crate::quota::Usage::of(&self.entries()?);
         self.usage = Some(fresh);
-        match fresh.fits(quota, cost) {
-            true => Ok(()),
-            false => Err(Refusal::SpaceFull),
+        if fresh.fits(quota, cost) {
+            Ok(())
+        } else {
+            Err(Refusal::SpaceFull)
         }
     }
 

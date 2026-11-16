@@ -151,14 +151,15 @@ fn added_line(alias: VerbAlias) -> String {
 /// A property's description, with each verb of the convention that it names (`terminate`, `key`)
 /// written as the verbs the model is shown.
 fn mentions(profile: ActionProfile, text: &str) -> String {
-    profile.aliases.iter().map(|alias| alias.canonical()).fold(
-        text.to_owned(),
-        |text, canonical| {
+    profile
+        .aliases
+        .iter()
+        .map(computer_use_action::VerbAlias::canonical)
+        .fold(text.to_owned(), |text, canonical| {
             let shown: Vec<String> = shown_names(profile, canonical)
                 .iter()
                 .map(|name| format!("`{name}`"))
                 .collect();
             text.replace(&format!("`{canonical}`"), &shown.join(" or "))
-        },
-    )
+        })
 }

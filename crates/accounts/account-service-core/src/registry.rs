@@ -28,6 +28,7 @@ pub struct Registry {
 
 impl Registry {
     /// What a store holds, as the registry the service runs on.
+    #[must_use]
     pub fn from_persisted(stored: Persisted) -> Self {
         Self {
             accounts: stored.accounts,
@@ -37,6 +38,7 @@ impl Registry {
     }
 
     /// The registry as the document a store keeps.
+    #[must_use]
     pub fn persisted(&self) -> Persisted {
         Persisted {
             vocab: VocabVersion::CURRENT,
@@ -66,6 +68,7 @@ pub struct Asker<'a> {
 }
 
 impl Asker<'_> {
+    #[must_use]
     pub fn key(&self, fit: &Fit<'_>) -> GrantKey {
         GrantKey {
             app: self.app.clone(),
@@ -81,6 +84,7 @@ impl Asker<'_> {
 
 impl Registry {
     /// Whether `app` holds a grant that allows it `account`.
+    #[must_use]
     pub fn holds(&self, app: &AppId, account: &AccountId) -> bool {
         self.grants.iter().any(|g| {
             g.key.app == *app && g.key.account == *account && g.decision == Decision::Allow
@@ -102,6 +106,7 @@ impl Registry {
 
     /// The capabilities `account` holds for `claims`: the claims with the account's toggles
     /// applied, the one place that reads them.
+    #[must_use]
     pub fn effective_for(&self, account: &AccountId, claims: &[Claim]) -> Vec<Claim> {
         let off: Vec<KindToggle> = self
             .toggles
@@ -116,6 +121,7 @@ impl Registry {
     }
 
     /// Each account's first effective capability that meets `need`, in registry order.
+    #[must_use]
     pub fn fitting(&self, need: &Need) -> Vec<Fit<'_>> {
         self.accounts
             .iter()
@@ -141,12 +147,14 @@ impl Registry {
     }
 
     /// The consent store's verdict on each fitting account for `asker`.
+    #[must_use]
     pub fn verdicts(&self, need: &Need, asker: Asker<'_>) -> Vec<Verdict> {
         self.verdicts_of(need, asker, None)
     }
 
     /// The consent store's verdict on each fitting account for `asker`; with `only` set, on that
     /// account alone (none when it does not fit).
+    #[must_use]
     pub fn verdicts_of(
         &self,
         need: &Need,
@@ -160,6 +168,7 @@ impl Registry {
     }
 
     /// [`Registry::fitting`], narrowed to the account `only` names when it is set.
+    #[must_use]
     pub fn fitting_only(&self, need: &Need, only: Option<&AccountId>) -> Vec<Fit<'_>> {
         let mut fits = self.fitting(need);
         fits.retain(|fit| only.is_none_or(|account| fit.account.id == *account));
@@ -167,6 +176,7 @@ impl Registry {
     }
 
     /// The fitting accounts `asker` holds a grant for, as candidates.
+    #[must_use]
     pub fn candidates(&self, need: &Need, asker: Asker<'_>) -> Vec<Candidate> {
         self.fitting(need)
             .iter()
@@ -196,6 +206,7 @@ impl Registry {
     }
 
     /// The grant `id`, if it is `app`'s.
+    #[must_use]
     pub fn grant_of(&self, app: &AppId, id: &GrantId) -> Option<&Grant> {
         self.grants
             .iter()
@@ -259,11 +270,13 @@ pub struct RelayTarget<'a> {
 }
 
 /// Whether `endpoint` is one a grant for `kind` may reach, and one a relay can carry.
+#[must_use]
 pub fn serves(endpoint: &ServiceEndpoint, kind: CapabilityKind) -> bool {
     endpoint.protocol().is_some() && endpoint.family.serves(kind)
 }
 
 /// The candidate for one fitting account under `grant`.
+#[must_use]
 pub fn candidate(fit: &Fit<'_>, grant: GrantId) -> Candidate {
     let kind = fit.capability.kind();
     Candidate::new(

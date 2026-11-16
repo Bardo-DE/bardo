@@ -44,6 +44,7 @@ fn keys(
 /// What standing consent says about `decl` for `caller` in `space`: denied if any class is, to
 /// ask if any is not yet granted, else granted. An action that touches no class needs none. A
 /// tainted session's `Always` stays an `Always` here: the policy asks once more.
+#[must_use]
 pub fn consent_for(
     grants: &[ActionGrant],
     caller: &GrantCaller,
@@ -115,6 +116,7 @@ pub fn consent_for(
 /// grant for it, so a first-use question is already answered. As with every standing grant, a
 /// session that read untrusted content asks once more before it writes (`taint`: the question
 /// stays a question). A denial, a grant, or a call outside the reach is left as it is.
+#[must_use]
 pub fn within_reach(consent: Verdict, inside: bool, taint: bool) -> Verdict {
     match (consent, inside, taint) {
         (Verdict::Ask, true, false) => Verdict::Granted {

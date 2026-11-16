@@ -50,7 +50,8 @@ pub struct Endpoint {
 
 impl Endpoint {
     /// The base URL to give the agent: for Anthropic's SDK the origin (it appends `/v1/messages`);
-    /// for an OpenAI client the origin and `/v1`.
+    /// for an `OpenAI` client the origin and `/v1`.
+    #[must_use]
     pub fn base_url(&self) -> String {
         let origin = format!("{}://{}:{}", self.scheme, self.host, self.port);
         match self.protocol {
@@ -60,6 +61,7 @@ impl Endpoint {
     }
 
     /// The bus reply: this is the one place the token goes on the bus.
+    #[must_use]
     pub fn arg(&self) -> EndpointArg {
         (
             self.session.clone(),
@@ -90,6 +92,7 @@ impl Speaks {
 }
 
 /// The wire a provider's catalogue reaches speak.
+#[must_use]
 pub fn provider_wire(entries: &[ModelEntry], provider: &ProviderId) -> Option<Wire> {
     entries.iter().find_map(|entry| match &entry.locality {
         model_catalog::Locality::Remote { reach } => reach
@@ -101,6 +104,7 @@ pub fn provider_wire(entries: &[ModelEntry], provider: &ProviderId) -> Option<Wi
 }
 
 /// The reach of `provider` for the model id `named` there, with its entry.
+#[must_use]
 pub fn priced<'a>(
     entries: &'a [ModelEntry],
     provider: &ProviderId,
@@ -116,6 +120,7 @@ pub fn priced<'a>(
 }
 
 /// The card of the model on this computer (or attached) whose catalogue id is `id`.
+#[must_use]
 pub fn local_card(engines: &Engines, id: &str) -> Option<inference_core::ModelCard> {
     engines
         .listed()
@@ -277,6 +282,7 @@ pub async fn granted_provider(
 }
 
 /// The local model a route names, as the router keys it.
+#[must_use]
 pub fn model_ref_of(card: &inference_core::ModelCard) -> ModelRef {
     ModelRef {
         account: card.account.clone(),

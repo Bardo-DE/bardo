@@ -8,7 +8,7 @@
 //! network, keyring or account data.
 //!
 //! - [`wire`]: the format both sides speak, the folder name check and the fd passing
-//!   (SCM_RIGHTS).
+//!   (`SCM_RIGHTS`).
 //! - [`client`]: syncd's side ([`client::mount`], [`client::unmount`]).
 //! - [`server`]: the helper's side ([`server::Helper`] over a [`server::Mounts`]; on a real
 //!   computer [`server::Fusermount`]), and its socket ([`server::listener`]).

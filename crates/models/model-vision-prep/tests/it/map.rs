@@ -126,7 +126,7 @@ fn the_grid_edge_is_outside_the_frame() {
             y: Coord(0)
         })
     );
-    assert!(m.grid_to_window(grid(5000, 5000)).is_err());
+    m.grid_to_window(grid(5000, 5000)).unwrap_err();
 }
 
 #[test]
@@ -172,11 +172,9 @@ fn lengths_scale_by_the_width_ratio() {
 #[test]
 fn a_map_with_an_empty_image_refuses_instead_of_dividing() {
     let m = map((100, 100), (0, 0), ModelSpace::Image);
-    assert!(m.image_to_window(img(0, 0)).is_err());
-    assert!(
-        m.length_to_window(Length::<ImageSpace>::new(Coord(1)))
-            .is_err()
-    );
+    m.image_to_window(img(0, 0)).unwrap_err();
+    m.length_to_window(Length::<ImageSpace>::new(Coord(1)))
+        .unwrap_err();
     assert_eq!(m.window_to_image(win(5, 5)), img(0, 0));
 }
 

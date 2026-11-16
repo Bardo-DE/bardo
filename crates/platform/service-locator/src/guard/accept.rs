@@ -22,6 +22,7 @@ pub enum AcceptFailure {
 }
 
 /// What the failed `accept` that reported `e` means.
+#[must_use]
 pub fn accept_failure(e: Errno) -> AcceptFailure {
     match e {
         Errno::AGAIN => AcceptFailure::NothingPending,

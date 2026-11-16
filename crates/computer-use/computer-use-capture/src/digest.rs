@@ -8,6 +8,7 @@ pub use computer_use_types::FrameDigest;
 /// give equal digests and one changed pixel gives another. A buffer whose data is shorter than
 /// its size says is hashed as far as the data goes, with the shortfall marked, so it never
 /// collides with a full one. Pure.
+#[must_use]
 pub fn digest(buf: &PixelBuf) -> FrameDigest {
     let mut hasher = blake3::Hasher::new();
     hasher.update(format!("{:?}", buf.format).as_bytes());
@@ -20,12 +21,11 @@ pub fn digest(buf: &PixelBuf) -> FrameDigest {
     for row in 0..usize::try_from(buf.size.h).unwrap_or(usize::MAX) {
         let start = row.saturating_mul(stride);
         let end = start.saturating_add(row_bytes);
-        match buf.data.get(start..end) {
-            Some(bytes) => hasher.update(bytes),
-            None => {
-                hasher.update(b"short");
-                break;
-            }
+        if let Some(bytes) = buf.data.get(start..end) {
+            hasher.update(bytes)
+        } else {
+            hasher.update(b"short");
+            break;
         };
     }
     FrameDigest(Digest32(*hasher.finalize().as_bytes()))

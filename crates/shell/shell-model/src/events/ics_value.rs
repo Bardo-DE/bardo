@@ -142,9 +142,10 @@ pub(super) fn parse_duration(value: &str) -> Result<i64, ValueError> {
         total = total.saturating_add(count.saturating_mul(unit));
         number.clear();
     }
-    match number.is_empty() {
-        true => Ok(sign * total),
-        false => Err(bad()),
+    if number.is_empty() {
+        Ok(sign * total)
+    } else {
+        Err(bad())
     }
 }
 
@@ -202,8 +203,8 @@ mod tests {
             parse_date_time("20260927T093060"),
             Ok(date(2026, 9, 27).at(9, 30, 59, 0))
         );
-        assert!(parse_date_time("20260927T0930").is_err());
-        assert!(parse_date_time("20261327T093000").is_err());
+        parse_date_time("20260927T0930").unwrap_err();
+        parse_date_time("20261327T093000").unwrap_err();
         assert_eq!(unescape(r"a\, b\; c\\d\ne"), "a, b; c\\d\ne");
     }
 }

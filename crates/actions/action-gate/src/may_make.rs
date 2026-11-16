@@ -9,6 +9,7 @@ use permission_core::is_agent_action;
 /// an external agent alone; that host makes it no call of another app but the ones the agent's
 /// edge offers (`AgentReach::Offered` of an app that is not host-only), so a hostile agent cannot
 /// reach an action nobody offered it by naming it.
+#[must_use]
 pub fn may_make(
     registry: &Registry,
     role: CallerRole,

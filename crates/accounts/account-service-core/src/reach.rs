@@ -12,7 +12,7 @@
 //!   `/remote.php/dav/files/` or `/ocs/`.
 //!
 //! The reach of each family, from the endpoint's path:
-//! - CalDAV, CardDAV, WebDAV, Nextcloud Notes: the endpoint's path. CalDAV and CardDAV also
+//! - `CalDAV`, `CardDAV`, `WebDAV`, Nextcloud Notes: the endpoint's path. `CalDAV` and `CardDAV` also
 //!   read the account's principal (where a client finds its calendar or address book home): a
 //!   `PROPFIND` with `Depth: 0` under the `principals` collection beside the `calendars` or
 //!   `addressbooks` tree the endpoint is in (`/remote.php/dav/principals/`).
@@ -49,9 +49,12 @@ pub fn declared_endpoint(
         spec.capabilities
             .iter()
             .filter(|row| row.family == endpoint.family && row.capability.kind() == kind)
-            .any(|row| match linked {
-                false => row.auth_origins.iter().any(|o| o.allows(&dialled)),
-                true => row.linked_origins.iter().any(|o| o.allows(&dialled)),
+            .any(|row| {
+                if linked {
+                    row.linked_origins.iter().any(|o| o.allows(&dialled))
+                } else {
+                    row.auth_origins.iter().any(|o| o.allows(&dialled))
+                }
             })
     };
     let home = account

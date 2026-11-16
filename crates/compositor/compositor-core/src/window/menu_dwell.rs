@@ -89,6 +89,7 @@ impl Dwell {
     /// assert_eq!(out, DwellOutcome::Arm(due));
     /// assert_eq!(dwell.step(DwellTiming::MAC, DwellInput::Tick(due)).1, DwellOutcome::Show(on));
     /// ```
+    #[must_use]
     pub fn step(self, timing: DwellTiming, input: DwellInput) -> (Dwell, DwellOutcome) {
         match (self, input) {
             (_, DwellInput::Lost) => (Dwell::Idle, cancel_if_waiting(self)),

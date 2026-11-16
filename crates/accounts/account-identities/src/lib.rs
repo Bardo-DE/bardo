@@ -113,6 +113,7 @@ impl UseBook {
 
 impl UseBook {
     /// The apps that use `identity`, in name order.
+    #[must_use]
     pub fn apps(&self, identity: &IdentityId) -> Vec<AppName> {
         self.doc
             .uses

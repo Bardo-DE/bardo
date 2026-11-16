@@ -3,6 +3,7 @@
 use std::path::{Path, PathBuf};
 
 /// `fixtures/schemas` of this repo.
+#[must_use]
 pub fn fixture_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../fixtures/schemas")
 }

@@ -79,6 +79,7 @@ impl AppConfig {
 
     /// What the app does when its last window closes (default [`LastWindowClosed::Exit`]).
     /// Windows are independent: closing any of them, the first included, closes only that one.
+    #[must_use]
     pub fn with_last_window(mut self, policy: LastWindowClosed) -> Self {
         self.last_window = policy;
         self
@@ -87,6 +88,7 @@ impl AppConfig {
     /// Bind `handle` to this app's event loop, so threads that hold a clone can open windows,
     /// redraw them or end the app (default: a handle of the app's own, reached from a window
     /// with [`use_app_handle`](crate::use_app_handle)).
+    #[must_use]
     pub fn with_handle(mut self, handle: AppHandle) -> Self {
         self.handle = handle;
         self
@@ -95,6 +97,7 @@ impl AppConfig {
     /// The wgpu features and limits every window's device is requested with (default: the
     /// renderer's own, no extra features). A GPU that lacks one cannot make the device, so ask
     /// only for what the app cannot do without.
+    #[must_use]
     pub fn with_gpu(mut self, gpu: GpuRequest) -> Self {
         self.gpu = gpu;
         self
@@ -103,6 +106,7 @@ impl AppConfig {
     /// Run the app's `tokio::spawn` calls on the runtime `handle` belongs to, the caller's own
     /// (default: `launch` builds a runtime of two worker threads and drops it when the loop ends).
     /// `launch` enters it on the calling thread for the whole run.
+    #[must_use]
     pub fn with_runtime(mut self, handle: Handle) -> Self {
         self.runtime = Some(handle);
         self
@@ -113,6 +117,7 @@ impl AppConfig {
     /// dconf dump on GNOME, else the platform's conventions). Our desktop's launcher passes
     /// keycap's source here. The source is called from any thread when its settings change
     /// (`KeymapSource::watch`), so it is `Send + Sync`.
+    #[must_use]
     pub fn with_keymap_source(mut self, source: Box<dyn KeymapSource + Send + Sync>) -> Self {
         self.keymap = KeymapChoice::Given(Arc::from(source));
         self
@@ -120,6 +125,7 @@ impl AppConfig {
 
     /// [`with_keymap_source`](AppConfig::with_keymap_source) for a platform the app names itself
     /// instead of the one detected.
+    #[must_use]
     pub fn with_keymap(
         mut self,
         platform: Platform,
@@ -133,18 +139,21 @@ impl AppConfig {
     /// `Overrides`), laid on top of the keymap source, detected or given, so the shared keymap
     /// holds them and the detection stays. Kept across a reload; those it cannot apply are in
     /// `Keys::problems`. A second call replaces the first.
+    #[must_use]
     pub fn with_keymap_overrides(mut self, overrides: Overrides) -> Self {
         self.keymap_overrides = Some(overrides);
         self
     }
 
     /// The GPU request windows are opened with.
+    #[must_use]
     pub fn gpu(&self) -> &GpuRequest {
         &self.gpu
     }
 
     /// The window's desktop application id (the Wayland `app_id`, the X11 `WM_CLASS`), so the
     /// desktop matches it to the app's `.desktop` file for its icon and name.
+    #[must_use]
     pub fn with_app_id(mut self, id: AppId) -> Self {
         self.first = self.first.with_app_id(id);
         self
@@ -155,6 +164,7 @@ impl AppConfig {
     /// [`with_app_id`](AppConfig::with_app_id), so set that too. A window opened with its own
     /// [`WindowSpec::with_icon`] shows that one. The running window's icon changes with
     /// `ui_components::prelude::WindowHost::set_icon`.
+    #[must_use]
     pub fn with_icon(mut self, icon: WindowIcon) -> Self {
         self.first = self.first.with_icon(icon);
         self
@@ -163,6 +173,7 @@ impl AppConfig {
     /// Who draws the window's frame (default [`Decorations::Server`]). An app whose root draws
     /// `ui_components::prelude::WindowFrame::Titlebar` passes [`Decorations::Client`], so the window has no second
     /// frame around it.
+    #[must_use]
     pub fn with_decorations(mut self, decorations: Decorations) -> Self {
         self.first = self.first.with_decorations(decorations);
         self
@@ -177,6 +188,7 @@ impl AppConfig {
 
     /// Who answers the document's requests beyond `data:`, and its frames' (default
     /// [`NetPolicy::Local`]).
+    #[must_use]
     pub fn with_net(mut self, policy: NetPolicy) -> Self {
         self.setup.net = policy;
         self
@@ -187,6 +199,7 @@ impl AppConfig {
     /// request anywhere else, one that only reaches a root through a symlink or `..`, and one for
     /// anything but a regular file of at most 32 MiB is refused. An app that sets no roots reads
     /// no `file:` URLs at all; `data:` is not affected, and a frame is never served `file:`.
+    #[must_use]
     pub fn with_file_roots(mut self, roots: FileRoots) -> Self {
         self.setup.file_roots = roots;
         self
@@ -194,6 +207,7 @@ impl AppConfig {
 
     /// What a link clicked inside a frame does (default [`FrameLinks::default`]): a frame never
     /// navigates, so the app opens the link itself or nothing happens.
+    #[must_use]
     pub fn with_frame_links(mut self, links: FrameLinks) -> Self {
         self.setup.frame_links = links;
         self
@@ -201,6 +215,7 @@ impl AppConfig {
 
     /// What happens when a clicked `http`, `https` or `mailto` link cannot be opened (default: a
     /// line on stderr). The handler runs on a worker thread, not the UI thread.
+    #[must_use]
     pub fn with_link_failure(mut self, handler: LinkFailureHandler) -> Self {
         self.setup.link_failed = handler;
         self
@@ -208,6 +223,7 @@ impl AppConfig {
 
     /// Where the keyboard goes after a click on nothing focusable (default
     /// [`FocusFallback::Ancestor`]: the nearest focusable ancestor, as in a browser).
+    #[must_use]
     pub fn with_focus_fallback(mut self, fallback: FocusFallback) -> Self {
         self.setup.focus_fallback = fallback;
         self
@@ -216,12 +232,14 @@ impl AppConfig {
     /// Who answers the keys blitz-shell has its own meaning for (default [`ShellKeys::Blitz`]):
     /// with [`ShellKeys::App`] every key is the document's, and the app zooms the page through
     /// `WindowHost::page_zoom`.
+    #[must_use]
     pub fn with_shell_keys(mut self, keys: ShellKeys) -> Self {
         self.setup.shell_keys = keys;
         self
     }
 
     /// Provide every value in `contexts` at the root, after any already given.
+    #[must_use]
     pub fn with_contexts(mut self, contexts: RootContexts) -> Self {
         self.setup.contexts = self.setup.contexts.and(contexts);
         self

@@ -32,6 +32,7 @@ impl Default for Phase {
 
 impl Phase {
     /// The opening drawn, while mapped.
+    #[must_use]
     pub fn drawn(self) -> Option<Opening> {
         match self {
             Phase::Hidden(_) => None,
@@ -61,6 +62,7 @@ pub enum PhaseOut {
 
 /// `phase` after `input`. Wanted again while leaving, the column comes back without a new
 /// opening (no second entrance); a settle that finds the column up is a stale timer.
+#[must_use]
 pub fn step_phase(phase: Phase, input: PhaseInput) -> (Phase, Option<PhaseOut>) {
     use PhaseInput::{ExitSettled, NotWanted, Wanted};
     match (phase, input) {

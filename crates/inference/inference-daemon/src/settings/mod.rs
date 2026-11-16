@@ -240,6 +240,7 @@ impl Default for SpendLine {
 }
 
 /// A cap row's value as an amount of US dollars; `None` for no cap (`0`).
+#[must_use]
 pub fn cents_to_limit(cents: u32) -> Option<Money> {
     (cents > 0).then(|| Money::usd(Decimal::new(i64::from(cents), 2)))
 }
@@ -247,6 +248,7 @@ pub fn cents_to_limit(cents: u32) -> Option<Money> {
 impl SpendLine {
     /// A cap on `scope` over `period` with this line as its warning: the one place inferd makes a
     /// [`SpendCap`], so `SpendCap.warn_at` is always the row's value.
+    #[must_use]
     pub fn cap(self, scope: SpendScope, period: Period, limit: Money) -> SpendCap {
         SpendCap {
             scope,
@@ -257,6 +259,7 @@ impl SpendLine {
     }
 
     /// The caps that bear on one more request by `app` through `account`.
+    #[must_use]
     pub fn caps_for(self, app: &AppId, account: &AccountId) -> Vec<SpendCap> {
         let SpendLimits {
             account: on_account,
@@ -313,6 +316,7 @@ impl Settings {
     /// The policy routing runs under: `policy`, with every floor that says "this computer" let
     /// reach the person's other machines when `ai.attached.my_network` is on. `local_only` and the
     /// floors that already allow more are as the person set them.
+    #[must_use]
     pub fn routing_policy(&self) -> Policy {
         if !self.my_network {
             return self.policy.clone();
@@ -361,11 +365,13 @@ impl Default for Live {
 
 impl Live {
     /// A holder of `settings`.
+    #[must_use]
     pub fn new(settings: Settings) -> Self {
         Self(Arc::new(watch::Sender::new(Arc::new(settings))))
     }
 
     /// What is in force.
+    #[must_use]
     pub fn get(&self) -> Arc<Settings> {
         Arc::clone(&self.0.borrow())
     }
@@ -377,6 +383,7 @@ impl Live {
 
     /// Follows the settings: the receiver changes whenever they are put in force again (also
     /// when nothing differs).
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Arc<Settings>> {
         self.0.subscribe()
     }

@@ -86,14 +86,14 @@ impl<R: BrowserIssuer, H> OAuthSession<R, H> {
             state.extra = self.rules.open_state(&credential);
             state.credential = credential.clone();
             state.renewed = Some(credential);
-        }
+        };
         self
     }
 
     pub(crate) fn state(&self) -> MutexGuard<'_, Core<R::State>> {
         self.state
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// The provider file.

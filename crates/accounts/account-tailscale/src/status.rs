@@ -40,6 +40,7 @@ pub enum Backend {
 
 impl Backend {
     /// The state a status names by its word (`"Running"`).
+    #[must_use]
     pub fn from_word(word: &str) -> Self {
         match word {
             "NoState" => Backend::NoState,
@@ -54,6 +55,7 @@ impl Backend {
     }
 
     /// The state a watch notice names by its number (`ipn.State` as an integer).
+    #[must_use]
     pub fn from_number(number: i64) -> Self {
         match number {
             0 => Backend::NoState,
@@ -68,6 +70,7 @@ impl Backend {
     }
 
     /// What this state means for a porter account.
+    #[must_use]
     pub fn standing(self) -> Standing {
         match self {
             Backend::Running => Standing::Ready,
@@ -112,7 +115,7 @@ pub struct Node {
     pub id: NodeId,
     /// The name of the machine as the operating system calls it.
     pub host_name: String,
-    /// Its MagicDNS name without the dot at the end; empty when the network has no names.
+    /// Its `MagicDNS` name without the dot at the end; empty when the network has no names.
     pub dns: String,
     /// Its operating system.
     pub os: String,
@@ -134,16 +137,19 @@ pub struct Node {
 
 impl Node {
     /// The name people call it by: the first part of its network name, else its host name.
+    #[must_use]
     pub fn name(&self) -> &str {
         let first = self.dns.split('.').next().unwrap_or_default();
-        match first.is_empty() {
-            true => &self.host_name,
-            false => first,
+        if first.is_empty() {
+            &self.host_name
+        } else {
+            first
         }
     }
 
     /// Whose it is, as seen by the user `me`: tagged when it has a tag, shared when another
     /// person shared it in or another user owns it, else mine.
+    #[must_use]
     pub fn owner(&self, me: UserId) -> MachineOwner {
         match (!self.tags.is_empty(), self.shared || self.user != me) {
             (true, _) => MachineOwner::Tagged,
@@ -153,6 +159,7 @@ impl Node {
     }
 
     /// The row `Tailnet1.Machines` lists for it, as seen by the user `me`.
+    #[must_use]
     pub fn machine(&self, me: UserId) -> Machine {
         let mut machine = Machine::new(
             self.id.clone(),
@@ -312,16 +319,19 @@ impl Status {
     }
 
     /// What the state means for the account.
+    #[must_use]
     pub fn standing(&self) -> Standing {
         self.backend.standing()
     }
 
     /// The user with this id.
+    #[must_use]
     pub fn user(&self, id: UserId) -> Option<&User> {
         self.users.iter().find(|user| user.id == id)
     }
 
     /// The signed-in user of this computer.
+    #[must_use]
     pub fn me_user(&self) -> Option<&User> {
         self.me.as_ref().and_then(|me| self.user(me.user))
     }
@@ -329,6 +339,7 @@ impl Status {
     /// The name an account of this network is shown by: the login and the network
     /// (`ada@example.org on example.org`), or the login alone when the network is named after
     /// it (a personal one) or has no name. None while nobody is signed in.
+    #[must_use]
     pub fn label(&self) -> Option<String> {
         let login = self.me_user()?.login.clone();
         Some(match self.tailnet.as_ref().map(|t| t.name.as_str()) {
@@ -339,6 +350,7 @@ impl Status {
 
     /// The other computers, as `Tailnet1.Machines` lists them; none while this computer is not
     /// known (nobody signed in), since whose a computer is depends on who is asking.
+    #[must_use]
     pub fn machines(&self) -> Vec<Machine> {
         match &self.me {
             Some(me) => self

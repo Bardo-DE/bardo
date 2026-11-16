@@ -18,12 +18,14 @@ pub struct VblankClock {
 
 impl VblankClock {
     /// A clock whose vblank 0 is at `phase`.
+    #[must_use]
     pub fn new(refresh: Millihertz, phase: Mono) -> VblankClock {
         VblankClock { refresh, phase }
     }
 
     /// The first vblank strictly after `t`, and its number. Before the phase, that is the
     /// phase itself.
+    #[must_use]
     pub fn next_after(&self, t: Mono) -> (Mono, VblankSeq) {
         if t < self.phase {
             return (self.phase, VblankSeq(0));

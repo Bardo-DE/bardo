@@ -347,12 +347,11 @@ impl Http for Slowed {
         &self,
         request: account_http::http::Request<Vec<u8>>,
     ) -> Result<account_http::http::Response<Vec<u8>>, account_http::HttpError> {
-        match self.slow.load(std::sync::atomic::Ordering::Relaxed) {
-            true => {
-                tokio::time::sleep(Duration::from_millis(20)).await;
-                Err(account_http::HttpError::TimedOut)
-            }
-            false => self.inner.send(request).await,
+        if self.slow.load(std::sync::atomic::Ordering::Relaxed) {
+            tokio::time::sleep(Duration::from_millis(20)).await;
+            Err(account_http::HttpError::TimedOut)
+        } else {
+            self.inner.send(request).await
         }
     }
 }

@@ -28,6 +28,7 @@ impl Origin {
     }
 
     /// An ask from nowhere in particular: the command line, an agent.
+    #[must_use]
     pub fn anywhere() -> Origin {
         Origin::default()
     }
@@ -51,6 +52,7 @@ pub struct ActionLink {
 
 impl ActionLink {
     /// Nothing asked yet.
+    #[must_use]
     pub fn new() -> ActionLink {
         ActionLink::default()
     }
@@ -71,11 +73,13 @@ impl ActionLink {
     }
 
     /// The latest ask.
+    #[must_use]
     pub fn last(&self) -> Option<ActionSent> {
         self.asked.latest()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Option<ActionSent>> {
         self.asked.subscribe()
     }

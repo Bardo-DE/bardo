@@ -32,6 +32,7 @@ fn refusal_of(error: ConfirmError) -> Refusal {
 
 impl Consent {
     /// Confirmations kept where `locator` says (it must have a store: `Locator::confirming`).
+    #[must_use]
     pub fn new(locator: Locator) -> Self {
         Self {
             locator,

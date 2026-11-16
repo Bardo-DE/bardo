@@ -37,6 +37,7 @@ impl Ports {
     }
 
     /// Whether `port` is one of them.
+    #[must_use]
     pub fn allows(&self, port: u16) -> bool {
         self.0.contains(&port)
     }
@@ -116,6 +117,7 @@ impl EgressPolicy {
 
 /// Whether `addr` is in a range a name must not lead to. An IPv4 address inside an IPv6 one is
 /// judged as the IPv4 address.
+#[must_use]
 pub fn special(addr: IpAddr) -> bool {
     match addr.to_canonical() {
         IpAddr::V4(a) => special_v4(a),

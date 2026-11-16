@@ -29,6 +29,7 @@ impl RootStyle {
     /// its own and holds no [`SurfaceName`]. `source` is [`use_styles`], called before
     /// the popup's first early return; the opener gives the popup the
     /// [`crate::settings::SettingsFeed`] as a root context.
+    #[must_use]
     pub fn popup(surface: &'static str, source: StyleSource) -> RootStyle {
         RootStyle {
             surface: Some(surface),

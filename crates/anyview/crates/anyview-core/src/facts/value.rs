@@ -15,17 +15,20 @@ impl FactValue {
     }
 
     /// `1920 × 1080`.
+    #[must_use]
     pub fn dimensions(size: PixelSize) -> Self {
         FactValue(format!("{} × {}", size.width.0, size.height.0))
     }
 
     /// `1 page` or `12 pages`.
+    #[must_use]
     pub fn pages(count: PageCount) -> Self {
         let n = count.get();
         FactValue(format!("{n} {}", if n == 1 { "page" } else { "pages" }))
     }
 
     /// `3:07`, or `1:02:03` from one hour; seconds are rounded down.
+    #[must_use]
     pub fn duration(length: MediaLength) -> Self {
         let secs = length.0.0 / 1_000_000;
         let (hours, minutes, seconds) = (secs / 3600, secs / 60 % 60, secs % 60);
@@ -37,11 +40,13 @@ impl FactValue {
     }
 
     /// `192 kbit/s`.
+    #[must_use]
     pub fn bitrate(rate: Bitrate) -> Self {
         FactValue(format!("{} kbit/s", rate.kbps()))
     }
 
     /// `44.1 kHz`, or `48 kHz`: samples a second in kilohertz, trailing zeros dropped.
+    #[must_use]
     pub fn sample_rate(hertz: u32) -> Self {
         let tenths = (u64::from(hertz) + 50) / 100;
         let (whole, tenth) = (tenths / 10, tenths % 10);
@@ -53,6 +58,7 @@ impl FactValue {
     }
 
     /// `mono`, `stereo`, or `6 channels`.
+    #[must_use]
     pub fn channels(count: u16) -> Self {
         FactValue(match count {
             1 => "mono".to_owned(),
@@ -63,6 +69,7 @@ impl FactValue {
 
     /// A size in decimal units with one digit after the point, rounded down: `412 B`, `1.5 KB`,
     /// `12.3 MB`.
+    #[must_use]
     pub fn size(len: ByteLen) -> Self {
         const UNITS: &[(&str, u128)] = &[
             ("TB", 1_000_000_000_000),
@@ -71,19 +78,19 @@ impl FactValue {
             ("KB", 1_000),
         ];
         let bytes = u128::from(len.0);
-        let text = UNITS
-            .iter()
-            .find(|(_, unit)| bytes >= *unit)
-            .map(|(name, unit)| {
+        let text = UNITS.iter().find(|(_, unit)| bytes >= *unit).map_or_else(
+            || format!("{bytes} B"),
+            |(name, unit)| {
                 let tenths = bytes * 10 / unit;
                 format!("{}.{} {name}", tenths / 10, tenths % 10)
-            })
-            .unwrap_or_else(|| format!("{bytes} B"));
+            },
+        );
         FactValue(text)
     }
 
     /// A size and its exact bytes: `3.2 MB (3,214,880 bytes)`; a size under a kilobyte is just
     /// `412 B`.
+    #[must_use]
     pub fn size_exact(len: ByteLen) -> Self {
         let short = FactValue::size(len);
         if len.0 < 1_000 {
@@ -112,6 +119,7 @@ impl FactValue {
     }
 
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

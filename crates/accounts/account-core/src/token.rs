@@ -74,6 +74,7 @@ pub const RENEW_MARGIN_SECONDS: i64 = 60;
 
 /// Whether a token that expires at `expires` needs renewing at `now`: it is expired or about to
 /// be, within [`RENEW_MARGIN_SECONDS`]. The one rule for renewing and for reusing a token.
+#[must_use]
 pub fn is_due(expires: UnixSeconds, now: UnixSeconds) -> bool {
     expires.0 - now.0 <= RENEW_MARGIN_SECONDS
 }
@@ -92,6 +93,7 @@ pub struct IssuedToken {
 
 impl IssuedToken {
     /// A token of this form that stops working at `expires`.
+    #[must_use]
     pub fn new(kind: TokenKind, value: SecretText, expires: UnixSeconds) -> Self {
         Self {
             kind,

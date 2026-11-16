@@ -29,6 +29,7 @@ pub struct Logprob(pub i32);
 
 impl Logprob {
     /// `None` for NaN. A `-inf` and anything below `i32::MIN` millionths become [`Logprob::NEVER`].
+    #[must_use]
     pub fn from_nats(nats: f64) -> Option<Self> {
         if nats.is_nan() {
             return None;
@@ -40,6 +41,7 @@ impl Logprob {
     pub const NEVER: Self = Self(i32::MIN);
 
     /// The probability, 0.0 to 1.0.
+    #[must_use]
     pub fn probability(self) -> f64 {
         if self == Self::NEVER {
             0.0
@@ -71,6 +73,7 @@ impl FirstTokenLogprobs {
     /// when: there are fewer than two options; a token with probability mass starts two options
     /// (first-token scores cannot tell them apart); or no option has any mass in the top-k. An
     /// option absent from the top-k has mass 0.
+    #[must_use]
     pub fn option_permille(&self, options: &[&str]) -> Option<Vec<Permille>> {
         if options.len() < 2 {
             return None;

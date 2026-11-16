@@ -29,6 +29,7 @@ pub struct Drag {
 
 impl Drag {
     /// A grab of `spec` that began with the pointer at `start`, holding `button`.
+    #[must_use]
     pub fn begin(spec: GrabSpec, start: LogicalPoint, button: Option<ButtonCode>) -> Drag {
         Drag {
             spec,
@@ -40,11 +41,13 @@ impl Drag {
 
     /// Whether releasing `released` ends the grab: its own button does, and any button does
     /// when the grab does not know which one began it.
+    #[must_use]
     pub fn ends_with(&self, released: ButtonCode) -> bool {
         self.button.is_none_or(|held| held == released)
     }
 
     /// The serial of the press that began it.
+    #[must_use]
     pub fn serial(&self) -> compositor_core::InputSerial {
         match self.spec {
             GrabSpec::Move { serial, .. } | GrabSpec::Resize { serial, .. } => serial,
@@ -52,6 +55,7 @@ impl Drag {
     }
 
     /// The window it moves.
+    #[must_use]
     pub fn window(&self) -> WindowId {
         match self.spec {
             GrabSpec::Move { window, .. } | GrabSpec::Resize { window, .. } => window,
@@ -59,6 +63,7 @@ impl Drag {
     }
 
     /// The same grab, knowing the rectangle the window had.
+    #[must_use]
     pub fn from_rect(self, origin: LogicalRect) -> Drag {
         Drag {
             origin: Some(origin),
@@ -69,6 +74,7 @@ impl Drag {
     /// The window's rectangle with the pointer at `at`: moved by how far the pointer went, or
     /// resized from the edges it grabbed, within `limits` (the side opposite the one grabbed
     /// stays where it is when a limit holds the size).
+    #[must_use]
     pub fn rect_at(
         &self,
         origin: LogicalRect,

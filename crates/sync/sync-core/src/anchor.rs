@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 /// An opaque change-feed position: a Drive page token, a Graph delta link, a Dropbox cursor, a
-/// WebDAV sync-token, or the head of our own manifest for S3. Only the replica reads it.
+/// `WebDAV` sync-token, or the head of our own manifest for S3. Only the replica reads it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Anchor(pub String);

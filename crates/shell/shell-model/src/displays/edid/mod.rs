@@ -1,6 +1,6 @@
 //! A small EDID base-block parser: who made the display, what it calls itself, how big it is,
 //! its native mode and its primaries. Pure: bytes in, [`Edid`] out. Extension blocks (CTA-861,
-//! DisplayID) are not read; everything the shell needs is in the first 128 bytes.
+//! `DisplayID`) are not read; everything the shell needs is in the first 128 bytes.
 //!
 //! Hand-written rather than a crate: the base block is a fixed layout of a few dozen bytes, and
 //! the maintained parsers either pull in a parser-combinator stack for it or bind libdisplay-info

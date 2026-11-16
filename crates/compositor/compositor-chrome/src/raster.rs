@@ -1,4 +1,4 @@
-//! The engine: shape with parley, truncate, rasterise with vello_cpu.
+//! The engine: shape with parley, truncate, rasterise with `vello_cpu`.
 //!
 //! One [`FontContext`] lives as long as the [`TitleRaster`], so the system fonts are scanned once
 //! (fontique reads them lazily, on the first title), never per frame. A raster is cached per
@@ -66,11 +66,13 @@ impl TitleRaster {
     /// assert_eq!((pixels.width, pixels.height), (800, 56));
     /// assert_eq!(pixels.rgba.len(), 800 * 56 * 4);
     /// ```
+    #[must_use]
     pub fn system(margins: Margins) -> TitleRaster {
         TitleRaster::with_font(title_font(), margins)
     }
 
     /// A rasteriser for `font` (a family, a size in logical pixels and a weight).
+    #[must_use]
     pub fn with_font(font: TitleFont, margins: Margins) -> TitleRaster {
         TitleRaster {
             fonts: FontContext::new(),
@@ -150,8 +152,8 @@ impl TitleRaster {
         let scale = key.scale.as_f64() as f32;
         let layout = self.fitted(&key.title, scale, avail as f32);
         // Whole device pixels, so a given scale always rasters the same.
-        let x = left_edge(layout.width().ceil() as u32, w, left, right) as f64;
-        let y = ((f32::from(ph) - layout.height()) / 2.0).round() as f64;
+        let x = f64::from(left_edge(layout.width().ceil() as u32, w, left, right));
+        let y = f64::from(((f32::from(ph) - layout.height()) / 2.0).round());
         let Ink { r, g, b, a } = ink(key.scheme, key.activity);
         let mut ctx = RenderContext::new_with(
             pw,

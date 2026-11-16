@@ -150,11 +150,13 @@ impl Connection {
     }
 
     /// The protocol version the daemon said in its `Hello`.
+    #[must_use]
     pub fn version(&self) -> u16 {
         self.version
     }
 
     /// The status in the `Hello`.
+    #[must_use]
     pub fn status(&self) -> &Status {
         &self.status
     }

@@ -18,7 +18,7 @@ fn the_client_reaches_a_helper_at_its_socket_and_gets_its_code() {
     assert_eq!(mode(&socket), 0o600);
     assert_eq!(mode(socket.parent().expect("dir")), 0o700);
     // A second helper does not take the socket over.
-    assert!(server::bind_at(&socket).is_err());
+    server::bind_at(&socket).unwrap_err();
     let helper = Helper::new(dir.join("home/Cloud"), FakeMounts::default());
     let name = FolderName::parse("OneDrive").expect("name");
     std::thread::scope(|scope| {

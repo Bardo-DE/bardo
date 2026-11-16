@@ -9,6 +9,7 @@ pub struct Brightness(pub u8);
 
 impl Brightness {
     /// `percent` from the bus, held to 100.
+    #[must_use]
     pub fn of_wire(percent: u32) -> Brightness {
         Brightness(u8::try_from(percent.min(100)).unwrap_or(100))
     }
@@ -19,11 +20,13 @@ const TRAVEL: u16 = 1000;
 
 impl Brightness {
     /// Where a slider sits for this brightness, in thousandths of its travel.
+    #[must_use]
     pub fn fraction(self) -> u16 {
         u16::from(self.0.min(100)) * (TRAVEL / 100)
     }
 
     /// The brightness a slider at `fraction` thousandths of its travel stands for, rounded.
+    #[must_use]
     pub fn of_fraction(fraction: u16) -> Brightness {
         let travel = u32::from(TRAVEL);
         Brightness::of_wire((u32::from(fraction.min(TRAVEL)) * 100 + travel / 2) / travel)
@@ -36,6 +39,7 @@ pub struct BrightnessList(Vec<(OutputId, Brightness)>);
 
 impl BrightnessList {
     /// The list as the bus answers it (`a(su)`). A display named twice keeps its first level.
+    #[must_use]
     pub fn of_wire(rows: &[(String, u32)]) -> BrightnessList {
         let mut listed: Vec<(OutputId, Brightness)> = Vec::new();
         for (name, percent) in rows {
@@ -48,6 +52,7 @@ impl BrightnessList {
     }
 
     /// The brightness of `output`; none when bardo-shell does not list it.
+    #[must_use]
     pub fn level_of(&self, output: &OutputId) -> Option<Brightness> {
         self.0
             .iter()
@@ -57,6 +62,7 @@ impl BrightnessList {
 
     /// The list with `output` at `level`, so a slider stays where it was dragged until bardo-shell says
     /// otherwise; an output bardo-shell does not list stays unlisted.
+    #[must_use]
     pub fn with(mut self, output: &OutputId, level: Brightness) -> BrightnessList {
         if let Some((_, at)) = self.0.iter_mut().find(|(id, _)| id == output) {
             *at = level;

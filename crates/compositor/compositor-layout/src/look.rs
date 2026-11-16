@@ -15,6 +15,7 @@ use ui_style::tokens::colour::ColourToken;
 ///
 /// assert_eq!(overview_ring(Scheme::Light).a, 255);
 /// ```
+#[must_use]
 pub fn overview_ring(scheme: Scheme) -> FrameColour {
     colour(ColourToken::Accent.value(scheme))
 }
@@ -29,6 +30,7 @@ pub fn overview_ring(scheme: Scheme) -> FrameColour {
 /// assert_eq!((dim.r, dim.g, dim.b), (0, 0, 0));
 /// assert!(dim.a > 0 && dim.a < 128);
 /// ```
+#[must_use]
 pub fn overview_dim(scheme: Scheme) -> FrameColour {
     colour(ColourToken::Scrim.value(scheme))
 }
@@ -41,6 +43,7 @@ pub fn overview_dim(scheme: Scheme) -> FrameColour {
 ///
 /// assert!(overview_plate(Scheme::Dark).a > 0);
 /// ```
+#[must_use]
 pub fn overview_plate(scheme: Scheme) -> FrameColour {
     colour(ColourToken::Raise.value(scheme))
 }
@@ -57,6 +60,7 @@ const TILE_PREVIEW_ALPHA: u8 = 72;
 /// let plate = tile_preview_fill(Scheme::Light);
 /// assert!(plate.a > 0 && plate.a < 128);
 /// ```
+#[must_use]
 pub fn tile_preview_fill(scheme: Scheme) -> FrameColour {
     FrameColour {
         a: TILE_PREVIEW_ALPHA,
@@ -72,6 +76,7 @@ pub fn tile_preview_fill(scheme: Scheme) -> FrameColour {
 ///
 /// assert_eq!(split_backdrop().a, 255);
 /// ```
+#[must_use]
 pub fn split_backdrop() -> FrameColour {
     colour(ColourToken::Paper.value(Scheme::Dark))
 }
@@ -91,6 +96,7 @@ const REDUCED_ALPHA: u8 = 245;
 /// assert_eq!(reduced_stand_in(Scheme::Dark).a, 245);
 /// assert!(reduced_stand_in(Scheme::Light).r > reduced_stand_in(Scheme::Dark).r);
 /// ```
+#[must_use]
 pub fn reduced_stand_in(scheme: Scheme) -> FrameColour {
     FrameColour {
         a: REDUCED_ALPHA,

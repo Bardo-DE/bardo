@@ -28,6 +28,7 @@ wire_enum! {
 
 impl Power {
     /// The section title in Settings, under Privacy.
+    #[must_use]
     pub const fn title(self) -> &'static str {
         match self {
             Self::Screen => "Screen",
@@ -42,6 +43,7 @@ impl Power {
 
     /// Plain words on what the power lets a program do, for the question and for the
     /// section in Settings.
+    #[must_use]
     pub const fn blurb(self) -> &'static str {
         match self {
             Self::Screen => {
@@ -111,11 +113,13 @@ pub struct AskId(u32);
 
 impl AskId {
     /// The id the wire carries as `value`.
+    #[must_use]
     pub const fn new(value: u32) -> Self {
         Self(value)
     }
 
     /// The number on the wire.
+    #[must_use]
     pub const fn get(self) -> u32 {
         self.0
     }

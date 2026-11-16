@@ -164,12 +164,11 @@ fn read_key(c: &mut Cursor<'_>, form: Form) -> Result<Option<Range<u64>>, Fault>
 fn begin_child(c: &mut Cursor<'_>, form: Form) -> Result<Option<Form>, Fault> {
     read_key(c, form)?;
     let shape = shape_at(c)?;
-    match container_form(shape) {
-        Some(inner) => Ok(Some(inner)),
-        None => {
-            skip_scalar(c, shape)?;
-            Ok(None)
-        }
+    if let Some(inner) = container_form(shape) {
+        Ok(Some(inner))
+    } else {
+        skip_scalar(c, shape)?;
+        Ok(None)
     }
 }
 

@@ -1,4 +1,4 @@
-//! MonthGrid as markup (design/04-COMPONENTS.md section 39): each specimen (plain, week numbers,
+//! `MonthGrid` as markup (design/04-COMPONENTS.md section 39): each specimen (plain, week numbers,
 //! pressable) is linted and every `ds-` class in it styled by the stylesheet; and the markup says
 //! what the data says.
 

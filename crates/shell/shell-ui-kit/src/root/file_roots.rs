@@ -8,7 +8,7 @@ use std::path::PathBuf;
 
 use shell_services::env::Dirs;
 
-/// Where AccountsService keeps the pictures people chose for their accounts.
+/// Where `AccountsService` keeps the pictures people chose for their accounts.
 const ACCOUNT_PICTURES: &str = "/var/lib/AccountsService/icons";
 
 /// The folders and files the shell draws from, in the order of the table in ARCHITECTURE.md:
@@ -29,6 +29,7 @@ fn file_root_paths(dirs: &Dirs) -> Vec<PathBuf> {
 }
 
 /// [`file_root_paths`] as the host takes them.
+#[must_use]
 pub fn file_roots(dirs: &Dirs) -> layer_shell_host::FileRoots {
     layer_shell_host::FileRoots::new(file_root_paths(dirs))
 }

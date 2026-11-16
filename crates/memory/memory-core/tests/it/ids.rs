@@ -46,7 +46,7 @@ fn ids_parse_only_their_grammar() {
         };
         assert_eq!(parsed, ok, "{what} {text:?}");
     }
-    assert!(FactText::parse(&"x".repeat(2049)).is_err());
+    FactText::parse(&"x".repeat(2049)).unwrap_err();
 }
 
 #[test]

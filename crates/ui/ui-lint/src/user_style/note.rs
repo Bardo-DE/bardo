@@ -84,6 +84,7 @@ pub enum UserStyleNoteKind {
 
 impl UserStyleNoteKind {
     /// What Settings says about this note (DESIGN.md section 7.5): short, no developer words.
+    #[must_use]
     pub fn plain_words(&self) -> &'static str {
         match self {
             UserStyleNoteKind::Parse(_) => "Could not be read",
@@ -113,6 +114,7 @@ pub struct UserStyleNote {
 
 impl UserStyleNote {
     /// Whether the text is not well-formed CSS here, the one kind a command exits non-zero on.
+    #[must_use]
     pub fn is_parse_error(&self) -> bool {
         matches!(self.kind, UserStyleNoteKind::Parse(_))
     }

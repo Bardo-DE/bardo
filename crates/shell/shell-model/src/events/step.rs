@@ -10,6 +10,7 @@ use super::{Agenda, AgendaEvent, CalEvent, EventTime, SourceStatus};
 ///
 /// The order is zone-free (the agenda is published to every surface): an all-day event sorts as
 /// its first day's UTC midnight; the widgets order by their own day ([`super::up_next`]).
+#[must_use]
 pub fn step(agenda: Agenda, event: AgendaEvent) -> Agenda {
     match event {
         AgendaEvent::Day(today) => Agenda { today, ..agenda },

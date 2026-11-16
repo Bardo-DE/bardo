@@ -9,6 +9,7 @@ use shell_settings::ShellFile;
 use super::Policy;
 
 /// The service's policy `file` makes (`parse_folders` against `home`).
+#[must_use]
 pub fn policy_of(file: &ShellFile, home: &Path) -> ShotPolicy {
     ShotPolicy {
         folders: parse_folders(&file.screenshot.folders, home),

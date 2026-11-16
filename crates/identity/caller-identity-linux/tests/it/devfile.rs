@@ -29,7 +29,7 @@ fn the_persons_own_plain_file_loads_as_dev_rows_and_merges_after_the_shipped_tab
     assert_eq!(origins, [RowOrigin::Shipped, RowOrigin::Dev]);
     // A root-owned file is fine too.
     let root = FixtureProc::new().file(FILE, ROWS, FileTrust::RootOnly);
-    assert!(load(&root).is_ok());
+    load(&root).unwrap();
 }
 
 #[test]

@@ -73,7 +73,7 @@ fn in_order(names: &[String], wanted: &[&str]) -> bool {
 const KEY_LEFTSHIFT: KeyCode = KeyCode(42);
 const KEY_A: KeyCode = KeyCode(30);
 
-/// A wheel detent arrives as axis_source(wheel), axis_value120(120), axis, frame (SP1 B1).
+/// A wheel detent arrives as `axis_source(wheel)`, `axis_value120(120)`, axis, frame (SP1 B1).
 #[test]
 fn axis_source_and_value120_are_sent() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");
@@ -113,7 +113,7 @@ fn axis_source_and_value120_are_sent() {
     assert_eq!(value120.2.last().map(String::as_str), Some("120"));
 }
 
-/// Repeat_info carries the keyboard settings' rate and delay.
+/// `Repeat_info` carries the keyboard settings' rate and delay.
 #[test]
 fn repeat_info_comes_from_settings() {
     let mut spec = FixtureSpec::desktop();

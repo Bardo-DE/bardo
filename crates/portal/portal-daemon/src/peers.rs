@@ -38,6 +38,7 @@ pub type Peers = BusPeers<RealProc, ManagerLink<RealProc>>;
 
 /// [`Peers`] on `connection`, judging against `table`. The unit manager's answers are believed
 /// only when the manager's own image is the system's (role `manager`, proved by its image).
+#[must_use]
 pub fn peers_on(connection: Connection, table: Table) -> Peers {
     let manager = ManagerCheck::Verified(Requirement::new(roles::MANAGER, Proof::Exe));
     BusPeers::new(connection, table, manager).with_offload(Offload::Tokio)
@@ -80,7 +81,7 @@ pub const HOLD_LIMITS: Limits = Limits {
 };
 
 /// How long a session that never began may sit before a full book makes room by dropping it.
-pub const UNSTARTED_TTL: Duration = Duration::from_secs(15 * 60);
+pub const UNSTARTED_TTL: Duration = Duration::from_mins(15);
 
 /// How many may be open.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -109,6 +110,7 @@ pub struct Tether {
 
 impl Tether {
     /// A tether to a caller and a frontend, by unique name.
+    #[must_use]
     pub fn new(caller: Option<String>, frontend: Option<String>) -> Self {
         Self { caller, frontend }
     }
@@ -124,16 +126,19 @@ impl Tether {
     }
 
     /// The peer that made the call this tether is for.
+    #[must_use]
     pub fn creator(&self) -> Creator {
         Creator(self.caller.clone())
     }
 
     /// Whether `peer` (a unique name) is one of the two.
+    #[must_use]
     pub fn holds(&self, peer: &str) -> bool {
         self.caller.as_deref() == Some(peer) || self.frontend.as_deref() == Some(peer)
     }
 
     /// Whether both were made by the same known caller.
+    #[must_use]
     pub fn same_caller(&self, other: &Self) -> bool {
         self.caller.is_some() && self.caller == other.caller
     }
@@ -182,6 +187,7 @@ impl Default for RoleGuard {
 
 impl RoleGuard {
     /// A guard that lets the portal frontend through, identifying callers through `link`.
+    #[must_use]
     pub fn frontend(link: BusLink) -> Self {
         Self {
             link,
@@ -190,6 +196,7 @@ impl RoleGuard {
     }
 
     /// A guard that lets the Settings app through, identifying callers through `link`.
+    #[must_use]
     pub fn settings(link: BusLink) -> Self {
         Self {
             link,

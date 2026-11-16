@@ -46,31 +46,37 @@ pub enum Create {
 
 impl Create {
     /// palmrest's touchpad.
+    #[must_use]
     pub const fn touchpad() -> Self {
         Self::Touchpad
     }
 
     /// palmrest's wheel.
+    #[must_use]
     pub const fn wheel() -> Self {
         Self::Wheel
     }
 
     /// palmrest's keyboard with the keys `codes`.
+    #[must_use]
     pub fn keys(codes: Vec<u16>) -> Self {
         Self::Keys(codes)
     }
 
     /// keycap's keyboard.
+    #[must_use]
     pub const fn keyboard() -> Self {
         Self::Keyboard
     }
 
     /// keycap's pointer with `caps`.
+    #[must_use]
     pub fn pointer(caps: PointerCaps) -> Self {
         Self::Pointer(caps)
     }
 
     /// The kind of device asked for.
+    #[must_use]
     pub const fn kind(&self) -> Kind {
         match self {
             Self::Touchpad => Kind::PalmrestTouchpad,
@@ -118,6 +124,7 @@ pub enum Reason {
 
 impl Reason {
     /// The byte on the wire.
+    #[must_use]
     pub const fn code(self) -> u8 {
         match self {
             Self::Unknown => 1,
@@ -129,6 +136,7 @@ impl Reason {
     }
 
     /// The reason with wire byte `code`; a code from a newer service reads as `Unknown`.
+    #[must_use]
     pub const fn from_code(code: u8) -> Self {
         match code {
             2 => Self::NotAllowed,

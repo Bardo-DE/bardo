@@ -43,11 +43,13 @@ pub struct DmabufBuffer {
 
 impl DmabufBuffer {
     /// The `wl_buffer`, to attach.
+    #[must_use]
     pub fn buffer(&self) -> &WlBuffer {
         &self.buffer
     }
 
     /// The buffer's object id on the wire, which names it on the compositor's side.
+    #[must_use]
     pub fn protocol_id(&self) -> u32 {
         self.buffer.id().protocol_id()
     }

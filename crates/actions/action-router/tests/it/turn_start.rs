@@ -85,19 +85,16 @@ async fn memory_reads_run_unasked_with_or_without_a_turn_the_person_typed() {
         }
         let end = perform(&router, recall(origin, action)).await;
         let sheets = router.seams.confirmer.requests().len();
-        match want {
-            "runs" => {
-                assert!(end.is_ok(), "{end:?}");
-                assert_eq!(sheets, 0, "no sheet");
-            }
-            _ => {
-                assert_eq!(
-                    end,
-                    Err(CallRefusal::Denied(DenyCode::NotAllowed)),
-                    "{action}"
-                );
-                assert_eq!(sheets, 0, "refused, not asked");
-            }
+        if want == "runs" {
+            assert!(end.is_ok(), "{end:?}");
+            assert_eq!(sheets, 0, "no sheet");
+        } else {
+            assert_eq!(
+                end,
+                Err(CallRefusal::Denied(DenyCode::NotAllowed)),
+                "{action}"
+            );
+            assert_eq!(sheets, 0, "refused, not asked");
         }
     }
 }

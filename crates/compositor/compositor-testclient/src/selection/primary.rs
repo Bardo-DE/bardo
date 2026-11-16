@@ -1,4 +1,4 @@
-//! zwp_primary_selection_device_v1: the middle-click selection. Filled by P0-H5.
+//! `zwp_primary_selection_device_v1`: the middle-click selection. Filled by P0-H5.
 //!
 //! The wire events reach the transcript through the connection's tap.
 

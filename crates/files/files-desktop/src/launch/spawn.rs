@@ -67,11 +67,13 @@ pub struct FakeSpawn {
 #[cfg(feature = "testing")]
 impl FakeSpawn {
     /// A fake that accepts everything.
+    #[must_use]
     pub fn new() -> FakeSpawn {
         FakeSpawn::default()
     }
 
     /// A fake that refuses everything with `reason`.
+    #[must_use]
     pub fn refusing(reason: &str) -> FakeSpawn {
         FakeSpawn {
             spawned: std::sync::Mutex::default(),

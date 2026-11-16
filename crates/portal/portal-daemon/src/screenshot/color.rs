@@ -25,6 +25,7 @@ pub struct ShellColorPicker {
 
 impl ShellColorPicker {
     /// A picker that asks through `link`, the connection that owns the portal's name.
+    #[must_use]
     pub fn new(link: BusLink) -> Self {
         Self { link }
     }
@@ -74,6 +75,7 @@ pub struct FakeColorPicker {
 
 impl FakeColorPicker {
     /// A picker that will give these answers in order (`None` is a cancel).
+    #[must_use]
     pub fn new(answers: Vec<Option<Rgb>>) -> Self {
         let mut answers = answers;
         answers.reverse();

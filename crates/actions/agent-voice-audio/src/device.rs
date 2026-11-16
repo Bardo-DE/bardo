@@ -4,7 +4,7 @@ use crate::node::AudioNode;
 use serde::{Deserialize, Serialize};
 use std::future::Future;
 
-/// The capture format: 16 kHz mono S16, converted by PipeWire's adapter.
+/// The capture format: 16 kHz mono S16, converted by `PipeWire`'s adapter.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CaptureFormat {
     /// Samples per second.
@@ -58,7 +58,7 @@ pub trait PlaybackStream: Send {
     fn fade_out(&mut self, ms: u32) -> impl Future<Output = ()> + Send;
 }
 
-/// The device: PipeWire in the shipped build, a fake in tests.
+/// The device: `PipeWire` in the shipped build, a fake in tests.
 pub trait AudioDevice: Send + Sync {
     /// The capture stream type.
     type Capture: CaptureStream;

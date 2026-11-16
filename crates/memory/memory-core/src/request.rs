@@ -143,6 +143,7 @@ pub enum MemoryRequest {
 
 impl MemoryRequest {
     /// The Space the request is about, when it names exactly one up front.
+    #[must_use]
     pub fn space(&self) -> Option<&SpaceId> {
         match self {
             MemoryRequest::Record(r) | MemoryRequest::RecordDurable(r) => Some(&r.space),

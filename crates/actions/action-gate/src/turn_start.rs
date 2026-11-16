@@ -45,6 +45,7 @@ fn person_typed(turns: &[UserTurn]) -> bool {
 const OWN_READS: [&str; 2] = [RECALL_ACTION, "memory.facts"];
 
 /// Rules on a call's claim to be a turn start, and on the planner's own reads of memory.
+#[must_use]
 pub fn rule(who: &Who, request: &CallRequest, turns: &[UserTurn]) -> TurnStart {
     let memory = request.action.app.as_str() == RECALL_APP;
     let main_planner = who.role == CallerRole::Companion
@@ -72,6 +73,7 @@ pub fn rule(who: &Who, request: &CallRequest, turns: &[UserTurn]) -> TurnStart {
 
 /// The consent of a pre-approved turn start: what standing consent said, except that a question
 /// becomes a pass. A denial the person recorded is kept.
+#[must_use]
 pub fn pass(verdict: Verdict) -> Verdict {
     match (verdict, GrantId::parse("g-none")) {
         (Verdict::Ask, Ok(grant)) => Verdict::Granted {

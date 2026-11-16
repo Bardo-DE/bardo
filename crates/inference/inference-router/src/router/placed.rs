@@ -27,6 +27,7 @@ pub struct Allowed {
 
 impl Allowed {
     /// The places in this order (a place named twice stays where it first was) with these pins.
+    #[must_use]
     pub fn new(places: Vec<PlaceId>, pins: BTreeMap<PlaceId, ModelId>) -> Self {
         let mut order: Vec<PlaceId> = Vec::new();
         for place in places {
@@ -38,16 +39,19 @@ impl Allowed {
     }
 
     /// The places, in order of preference.
+    #[must_use]
     pub fn places(&self) -> &[PlaceId] {
         &self.order
     }
 
     /// The model pinned for `place`, if any.
+    #[must_use]
     pub fn pin(&self, place: &PlaceId) -> Option<&ModelId> {
         self.pins.get(place)
     }
 
     /// Whether `place` is in the set.
+    #[must_use]
     pub fn contains(&self, place: &PlaceId) -> bool {
         self.order.contains(place)
     }
@@ -85,6 +89,7 @@ pub enum Unplaced {
 
 impl Unplaced {
     /// The refusal a caller that knows nothing of places is told.
+    #[must_use]
     pub fn into_pick(self) -> PickRefusal {
         match self {
             Unplaced::Other(refusal) => refusal,

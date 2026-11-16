@@ -72,10 +72,10 @@ pub(crate) fn table() -> Vec<Key> {
             },
         },
         num("memory.retention.search_days", 1..=3650, |s, v| {
-            s.retention.search = days(v)
+            s.retention.search = days(v);
         }),
         num("memory.retention.session_days", 1..=3650, |s, v| {
-            s.retention.session = days(v)
+            s.retention.session = days(v);
         }),
     ]
 }

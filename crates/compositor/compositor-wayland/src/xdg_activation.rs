@@ -67,6 +67,7 @@ pub struct IssuedToken {
 
 impl IssuedToken {
     /// How long this token stays good once issued.
+    #[must_use]
     pub fn lifetime(&self) -> Duration {
         if self.launch {
             LAUNCH_LIFETIME
@@ -87,6 +88,7 @@ pub struct TokenAsk {
 
 impl XdgActivationPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> XdgActivationPart
     where
         D: GlobalDispatch<XdgActivationV1, GlobalData>
@@ -105,6 +107,7 @@ impl XdgActivationPart {
 /// Whether the press `record` (what the seat remembers of the serial the token carried, for the
 /// asking client) earns a token requested at `now`. An agent lease's press earns none: the
 /// agent drives one window, and a token would let that app bring another to the front.
+#[must_use]
 pub fn earned_by_press(record: Option<&PressRecord>, now: Mono) -> bool {
     match record {
         Some(press) if matches!(press.origin, Origin::Agent(_)) => false,
@@ -116,6 +119,7 @@ pub fn earned_by_press(record: Option<&PressRecord>, now: Mono) -> bool {
 /// The verdict on a token `issued` (if the compositor issued it) used at `now`: `Valid` only
 /// for a token earned by a press and still within its reach's lifetime; everything else is
 /// `Stale` (an unknown token is a bad one, not a missing one).
+#[must_use]
 pub fn judge(issued: Option<&IssuedToken>, now: Mono) -> TokenCheck {
     match issued {
         Some(token) if token.pressed && now.since(token.at) <= token.lifetime() => {
@@ -187,6 +191,7 @@ pub fn use_token(
 
 /// `window` asked to be activated, and its token checked out as `check`: the model gets the
 /// request (`Valid` activates, anything else marks attention, A7).
+#[must_use]
 pub fn on_activate(window: WindowId, check: TokenCheck) -> Vec<Event> {
     vec![Event::ToplevelRequest {
         window,

@@ -33,11 +33,13 @@ pub struct SysDeviceKinds {
 
 impl SysDeviceKinds {
     /// Kinds read under `root`.
+    #[must_use]
     pub fn new(root: SysRoot) -> SysDeviceKinds {
         SysDeviceKinds { root }
     }
 
     /// The kind of the device at `path`.
+    #[must_use]
     pub fn kind(&self, path: &DevicePath) -> DisplayKind {
         let Some(card) = path.as_path().file_name() else {
             return DisplayKind::Gpu;

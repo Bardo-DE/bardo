@@ -33,6 +33,7 @@ impl CubicBezier {
 
 impl Easing {
     /// The curve this easing is: `linear` is the identity Bézier `(0, 0, 1, 1)`.
+    #[must_use]
     pub fn curve(self) -> CubicBezier {
         match self {
             Easing::Linear => CubicBezier([0, 0, 1000, 1000]),
@@ -41,6 +42,7 @@ impl Easing {
     }
 
     /// The easing's progress at time `t`, both in thousandths ([`CubicBezier::at`]).
+    #[must_use]
     pub fn at(self, t: Fraction) -> Fraction {
         self.curve().at(t)
     }
@@ -58,7 +60,7 @@ fn solve_x(x1: i128, x2: i128, t: i128) -> i128 {
     let target = t * SCALE * SCALE * SCALE;
     let (mut lo, mut hi) = (0, SCALE);
     while hi - lo > 1 {
-        let mid = (lo + hi) / 2;
+        let mid = i128::midpoint(lo, hi);
         if coordinate(x1, x2, mid) < target {
             lo = mid;
         } else {

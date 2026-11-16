@@ -19,6 +19,7 @@ use super::session::lock_request;
 use super::verbs::{action_of, do_request, screenshot_action, switcher_action, workspace_action};
 
 /// The request `command` sends; `None` for `run`, `style` and `auth-check`, which are not requests.
+#[must_use]
 pub fn request(command: &Command) -> Option<Request> {
     Some(match command {
         Command::Run(_) | Command::AuthCheck | Command::Style { .. } => return None,

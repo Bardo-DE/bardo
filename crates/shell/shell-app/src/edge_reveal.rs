@@ -30,6 +30,7 @@ pub enum Landing {
 
 /// Where a note lands: the output it names, `named` (`None` when not connected); else for a reveal
 /// the `focused` window's output and for a hide every output.
+#[must_use]
 pub fn landing(
     named: Option<Option<OutputId>>,
     shown: Shown,
@@ -84,6 +85,7 @@ impl FullScreenPrefs {
     /// The prefs of the bar's `hiding` mode and the `motion` allowed
     /// (`shell_ui_kit::shell_motion`): the modes that keep the bar in full screen
     /// (`desktop_only`, `never`) keep it there.
+    #[must_use]
     pub fn of(hiding: MenuBarHiding, motion: WireMotion) -> FullScreenPrefs {
         FullScreenPrefs {
             bar: match hiding {
@@ -95,6 +97,7 @@ impl FullScreenPrefs {
     }
 
     /// The commands that bring the compositor from `sent` (nothing yet: `None`) to these prefs.
+    #[must_use]
     pub fn since(self, sent: Option<FullScreenPrefs>) -> Vec<DesktopCommand> {
         let bar = (sent.map(|sent| sent.bar) != Some(self.bar))
             .then_some(DesktopCommand::SetFullScreenBar(self.bar));

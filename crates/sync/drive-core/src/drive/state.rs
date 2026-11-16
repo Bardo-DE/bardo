@@ -135,9 +135,10 @@ impl Inner {
                 ..Part::plain(ItemState::Error)
             };
         }
-        Part::plain(match self.here(file) {
-            true => ItemState::Downloaded,
-            false => ItemState::Cloud,
+        Part::plain(if self.here(file) {
+            ItemState::Downloaded
+        } else {
+            ItemState::Cloud
         })
     }
 
@@ -217,6 +218,7 @@ fn aggregate(parts: &[Part]) -> (ItemState, Option<f64>) {
 
 impl Drive {
     /// Where `id` stands; `None` for the top of the drive and for what is not there.
+    #[must_use]
     pub fn status(&self, id: &NodeId) -> Option<Status> {
         let inner = &self.inner;
         let id = inner.canonical(id);

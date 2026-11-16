@@ -1,5 +1,5 @@
 //! The install command for a package, as text a person can copy into a terminal: what to show
-//! where nothing can install it for them (no PackageKit, as on a stock Arch).
+//! where nothing can install it for them (no `PackageKit`, as on a stock Arch).
 
 use crate::capability::PackageName;
 use crate::catalog::Entry;
@@ -17,6 +17,7 @@ pub struct InstallLine {
 
 impl InstallLine {
     /// The command, ready to paste: `sudo pacman -S mpv`.
+    #[must_use]
     pub fn text(&self) -> String {
         self.to_string()
     }
@@ -76,7 +77,7 @@ pacman = ["libheif"]
             .expect("declared");
         install_lines(entry, family)
             .iter()
-            .map(|line| line.text())
+            .map(super::InstallLine::text)
             .collect()
     }
 

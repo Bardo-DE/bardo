@@ -20,12 +20,14 @@ pub use note::{ParseFault, UserStyleNote, UserStyleNoteKind};
 /// The notes on `css`, in source order: parse errors first among equals, then the rest. `kits`
 /// say which tokens, classes and attributes are the design system's public surface. Report only:
 /// the caller loads the text whatever this returns.
+#[must_use]
 pub fn user_stylesheet(css: &str, kits: &Kits) -> Vec<UserStyleNote> {
     user_stylesheet_with(css, kits, &[])
 }
 
 /// [`user_stylesheet`] with the parts apps publish: each table is one app's class names (from
 /// `ui_components::selectors::AppSelectors::classes`), and a class in one is not an internal selector.
+#[must_use]
 pub fn user_stylesheet_with(
     css: &str,
     kits: &Kits,

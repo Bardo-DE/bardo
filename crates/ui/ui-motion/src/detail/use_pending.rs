@@ -15,6 +15,7 @@ use dioxus::prelude::*;
 ///
 /// Each run is one frame long: it ends at the instant the next frame is due, and the render that
 /// frame causes starts the run from there, at the operation's own age.
+#[must_use]
 pub fn use_pending(op: Operation, spec: PendingSpec) -> PendingFrame {
     let _ = spec;
     let playback = use_playback(Pending::Idle);

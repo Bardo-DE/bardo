@@ -1,7 +1,7 @@
-//! The search options and what a document offers beyond IMAP and SMTP: the OAuth2 offer, POP3
+//! The search options and what a document offers beyond IMAP and SMTP: the `OAuth2` offer, POP3
 //! servers, the `STARTTLS` rule. Table tests over documents shaped like those in mailo's
-//! `crates/mail-proto/tests/discover.rs` (MIT OR Apache-2.0, same author): the OAuth2 issuer
-//! named only in `<oAuth2>`, OAuth2 on a host nobody maps, POP3 beside and without IMAP.
+//! `crates/mail-proto/tests/discover.rs` (MIT OR Apache-2.0, same author): the `OAuth2` issuer
+//! named only in `<oAuth2>`, `OAuth2` on a host nobody maps, POP3 beside and without IMAP.
 
 use crate::found::*;
 use crate::search::{Outcome, discover_mail, discover_mail_with};

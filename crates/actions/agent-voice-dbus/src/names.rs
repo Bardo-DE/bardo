@@ -10,11 +10,13 @@ pub const UTTERANCE_PREFIX: &str = "/org/bardo/Voice1/utterance";
 pub const SPEECH_PREFIX: &str = "/org/bardo/Voice1/speech";
 
 /// The object path of utterance `n`.
+#[must_use]
 pub fn utterance_path(n: u64) -> String {
     format!("{UTTERANCE_PREFIX}/{n}")
 }
 
 /// The object path of speech `n`.
+#[must_use]
 pub fn speech_path(n: u64) -> String {
     format!("{SPEECH_PREFIX}/{n}")
 }

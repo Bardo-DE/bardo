@@ -17,11 +17,13 @@ pub struct NotAnswering {
 
 impl NotAnswering {
     /// Who did not answer, as a screen names it ("The installer").
+    #[must_use]
     pub fn peer(&self) -> &'static str {
         self.peer
     }
 
     /// How long it was given.
+    #[must_use]
     pub fn after(&self) -> Duration {
         self.after
     }

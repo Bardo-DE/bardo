@@ -15,6 +15,7 @@ use account_sheet::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SignIn
 use base64::Engine;
 
 /// A form field.
+#[must_use]
 pub fn field(kind: FieldKind, entry: Entry, required: bool) -> FieldSpec {
     FieldSpec {
         kind,
@@ -25,11 +26,13 @@ pub fn field(kind: FieldKind, entry: Entry, required: bool) -> FieldSpec {
 }
 
 /// The required, shown field of this kind.
+#[must_use]
 pub fn plain(kind: FieldKind) -> FieldSpec {
     field(kind, Entry::Plain, true)
 }
 
 /// The required, hidden password field.
+#[must_use]
 pub fn password() -> FieldSpec {
     field(FieldKind::Password, Entry::Secret, true)
 }
@@ -37,6 +40,7 @@ pub fn password() -> FieldSpec {
 /// The password field a provider asks for: an app password when its sign-in is `app_password`
 /// (iCloud, Fastmail, Yahoo: the service takes no account password from a mail app), else a
 /// password.
+#[must_use]
 pub fn password_for(spec: &ProviderSpec) -> FieldSpec {
     match spec.auth.kind {
         account_core::AuthKind::AppPassword => field(FieldKind::AppPassword, Entry::Secret, true),
@@ -46,11 +50,13 @@ pub fn password_for(spec: &ProviderSpec) -> FieldSpec {
 
 /// The password typed, in either field: an app password, else a password (a host may send
 /// either kind for the field it was shown).
+#[must_use]
 pub fn typed_password(answers: &[FieldAnswer]) -> Option<SecretText> {
     secret_of(answers, FieldKind::AppPassword).or_else(|| secret_of(answers, FieldKind::Password))
 }
 
 /// What a request that went nowhere says about the sign-in.
+#[must_use]
 pub fn fault_of(error: HttpError) -> SignInFault {
     match error {
         HttpError::Unreachable | HttpError::Tls | HttpError::TimedOut | HttpError::NotGranted => {
@@ -62,6 +68,7 @@ pub fn fault_of(error: HttpError) -> SignInFault {
 }
 
 /// The plain text typed for `kind`, trimmed, when it is not empty.
+#[must_use]
 pub fn text_of(answers: &[FieldAnswer], kind: FieldKind) -> Option<String> {
     answers
         .iter()
@@ -74,6 +81,7 @@ pub fn text_of(answers: &[FieldAnswer], kind: FieldKind) -> Option<String> {
 }
 
 /// The secret typed for `kind`, exactly as typed (a password may start or end with a space).
+#[must_use]
 pub fn secret_of(answers: &[FieldAnswer], kind: FieldKind) -> Option<SecretText> {
     answers
         .iter()
@@ -86,6 +94,7 @@ pub fn secret_of(answers: &[FieldAnswer], kind: FieldKind) -> Option<SecretText>
 }
 
 /// The `Authorization` value of HTTP Basic.
+#[must_use]
 pub fn basic(login: &str, password: &SecretText) -> String {
     let token =
         base64::engine::general_purpose::STANDARD.encode(format!("{login}:{}", password.expose()));

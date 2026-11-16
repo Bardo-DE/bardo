@@ -17,6 +17,7 @@
 const SPACING_GRID: [u16; 10] = [2, 4, 6, 8, 10, 12, 16, 20, 24, 32];
 
 /// Whether `px` is a step of the spacing grid (R7).
+#[must_use]
 pub fn on_grid(px: u16) -> bool {
     SPACING_GRID.contains(&px)
 }
@@ -27,6 +28,7 @@ pub struct WholePx(pub u16);
 
 impl WholePx {
     /// As CSS: `22px`.
+    #[must_use]
     pub fn css(self) -> String {
         format!("{}px", self.0)
     }
@@ -38,6 +40,7 @@ pub struct HalfPx(pub u16);
 
 impl HalfPx {
     /// As CSS: `11px`, `7.5px`.
+    #[must_use]
     pub fn css(self) -> String {
         match self.0 % 2 {
             0 => format!("{}px", self.0 / 2),
@@ -86,47 +89,56 @@ pub struct SizeScale {
 
 impl SizeScale {
     /// A capsule of this height's radius (R2).
+    #[must_use]
     pub fn capsule_radius(self) -> HalfPx {
         HalfPx(self.height.0)
     }
 
     /// A knob riding a track of this height (R3): the level capsule's knob.
+    #[must_use]
     pub fn knob(self) -> WholePx {
         inside(self.height)
     }
 
     /// The switch's track width (R4).
+    #[must_use]
     pub fn switch_width(self) -> WholePx {
         round_even(self.switch_height.0 * SWITCH_RATIO, 100)
     }
 
     /// The switch's knob (R3).
+    #[must_use]
     pub fn switch_knob(self) -> WholePx {
         inside(self.switch_height)
     }
 
     /// How far the switch's knob travels from off to on: the track less its two insets and
     /// the knob.
+    #[must_use]
     pub fn switch_travel(self) -> WholePx {
         WholePx(self.switch_width().0 - 2 * KNOB_INSET.0 - self.switch_knob().0)
     }
 
     /// The switch track's radius (R2).
+    #[must_use]
     pub fn switch_radius(self) -> HalfPx {
         HalfPx(self.switch_height.0)
     }
 
     /// A selected segment's height inside the well (R3).
+    #[must_use]
     pub fn segment(self) -> WholePx {
         inside(self.height)
     }
 
     /// A selected segment's radius, concentric in the well (R6).
+    #[must_use]
     pub fn segment_radius(self) -> WholePx {
         WholePx(self.well_radius.0 - KNOB_INSET.0)
     }
 
     /// The radius of anything inset `inset` inside a rounded rectangle of this size (R6).
+    #[must_use]
     pub fn inner_radius(self, inset: WholePx) -> WholePx {
         WholePx(self.radius.0.saturating_sub(inset.0))
     }

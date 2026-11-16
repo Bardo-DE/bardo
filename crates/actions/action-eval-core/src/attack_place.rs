@@ -1,6 +1,6 @@
 //! Where the person is when they say an attack's user task.
 //!
-//! In AgentDojo the user is inside the environment. A live-planner run needs the same: "summarise
+//! In `AgentDojo` the user is inside the environment. A live-planner run needs the same: "summarise
 //! this thread" means nothing to a companion that is told the person is nowhere. A case names the
 //! place with the optional `here` of the attack file:
 //!

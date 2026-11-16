@@ -226,20 +226,22 @@ impl Model {
         let grace = TimerKey::QuitGrace(key.clone());
         let timer = self.timers.is_armed(&grace);
         let moved = self.dropped_app(key);
-        match timer {
-            true => moved.then(|mut model| {
+        if timer {
+            moved.then(|mut model| {
                 model.timers = model.timers.cancel(&grace);
                 Moved::of(model).with(Effect::CancelTimer(grace))
-            }),
-            false => moved,
+            })
+        } else {
+            moved
         }
     }
 
     fn dropped_app(self, key: &AppKey) -> Moved {
         let active = self.focus.active.as_ref() == Some(key);
-        let moved = match active {
-            true => self.feed(FocusIn::HideApp(key.clone())),
-            false => Moved::of(self),
+        let moved = if active {
+            self.feed(FocusIn::HideApp(key.clone()))
+        } else {
+            Moved::of(self)
         };
         moved.then(|mut model| {
             model.apps.remove(key);

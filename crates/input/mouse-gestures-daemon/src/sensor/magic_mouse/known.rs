@@ -13,6 +13,7 @@ pub enum Bus {
 
 impl Bus {
     /// The bus number in `HID_ID` (linux/input.h `BUS_*`).
+    #[must_use]
     pub fn number(self) -> u32 {
         match self {
             Bus::Usb => 0x03,
@@ -33,6 +34,7 @@ pub enum Model {
 impl Model {
     /// Whether `decode` reads the model's touch report: report 0x12 (and 0xF7 doubles). The
     /// Magic Mouse 1 sends report 0x29, with a different header and touch blocks.
+    #[must_use]
     pub fn decodable(self) -> bool {
         self != Model::MagicMouse1
     }
@@ -104,6 +106,7 @@ pub const KNOWN: &[KnownDevice] = &[
 ];
 
 /// The known device with these ids, if any.
+#[must_use]
 pub fn known(bus: u32, vendor: u32, product: u32) -> Option<&'static KnownDevice> {
     KNOWN
         .iter()

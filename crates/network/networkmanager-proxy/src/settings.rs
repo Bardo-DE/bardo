@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use zbus::proxy;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
 
-/// A saved connection's settings as NetworkManager answers them, by group (`connection`,
+/// A saved connection's settings as `NetworkManager` answers them, by group (`connection`,
 /// `802-11-wireless`, `ipv4`, ...) and key.
 pub type ConnectionMap = HashMap<String, HashMap<String, OwnedValue>>;
 

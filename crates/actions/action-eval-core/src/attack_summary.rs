@@ -65,13 +65,15 @@ fn plain(part: &str) -> Result<(), SummaryError> {
         && part
             .chars()
             .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-'));
-    match ok {
-        true => Ok(()),
-        false => Err(SummaryError::Name(part.to_owned())),
+    if ok {
+        Ok(())
+    } else {
+        Err(SummaryError::Name(part.to_owned()))
     }
 }
 
 /// The UTC calendar day of a Unix time, as `YYYY-MM-DD`.
+#[must_use]
 pub fn utc_date(unix_secs: u64) -> String {
     i64::try_from(unix_secs)
         .ok()
@@ -85,9 +87,10 @@ impl AttackSummary {
         [&self.date, &self.commit, &self.engine]
             .into_iter()
             .try_for_each(|part| plain(part))?;
-        Ok(match self.engine == FAKE_ENGINE {
-            true => format!("{}-{}.json", self.date, self.commit),
-            false => format!("{}-{}-{}.json", self.date, self.commit, self.engine),
+        Ok(if self.engine == FAKE_ENGINE {
+            format!("{}-{}.json", self.date, self.commit)
+        } else {
+            format!("{}-{}-{}.json", self.date, self.commit, self.engine)
         })
     }
 
@@ -156,6 +159,7 @@ fn only_in(this: &[String], other: &[String]) -> Vec<String> {
 
 impl Comparison {
     /// Compares `before` with `after`.
+    #[must_use]
     pub fn of(before: AttackSummary, after: AttackSummary) -> Self {
         Self {
             newly_reached: only_in(&after.metrics.reached, &before.metrics.reached),
@@ -166,23 +170,28 @@ impl Comparison {
     }
 
     /// Whether the attack success rate rose.
+    #[must_use]
     pub fn verdict(&self) -> Verdict {
         let rose = self.after.metrics.asr.point > self.before.metrics.asr.point;
-        match rose || !self.newly_reached.is_empty() {
-            true => Verdict::Rose,
-            false => Verdict::Held,
+        if rose || !self.newly_reached.is_empty() {
+            Verdict::Rose
+        } else {
+            Verdict::Held
         }
     }
 
     /// Whether a rise stands out from the noise.
+    #[must_use]
     pub fn significance(&self) -> Significance {
-        match self.after.metrics.asr.low > self.before.metrics.asr.high {
-            true => Significance::Clear,
-            false => Significance::WithinNoise,
+        if self.after.metrics.asr.low > self.before.metrics.asr.high {
+            Significance::Clear
+        } else {
+            Significance::WithinNoise
         }
     }
 
     /// The comparison as lines for a terminal.
+    #[must_use]
     pub fn render(&self) -> String {
         let pct = |p: u32| format!("{}.{}%", p / 10, p % 10);
         let rate =

@@ -31,6 +31,7 @@ pub enum Level {
 
 impl Level {
     /// The stronger of two levels.
+    #[must_use]
     pub fn over(self, other: Level) -> Level {
         self.max(other)
     }
@@ -128,6 +129,7 @@ pub struct LimitCall<'a> {
 
 impl LimitKey {
     /// Whether the key covers `call`.
+    #[must_use]
     pub fn covers(&self, call: &LimitCall<'_>) -> bool {
         let who = match &self.caller {
             LimitCaller::AnyAgent => true,
@@ -173,6 +175,7 @@ impl Said {
     }
 
     /// The words.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -236,6 +239,7 @@ pub struct LimitNote {
 
 impl Limit {
     /// The limit with `key`, made by `by` at `at`.
+    #[must_use]
     pub fn new(key: LimitKey, by: LimitMaker, said: Option<Said>, at: UnixSeconds) -> Self {
         Self {
             id: StandingGrantId::of_limit(&key),
@@ -248,6 +252,7 @@ impl Limit {
 
     /// The reason a call meets this limit: the person's words when they are kept, else a plain
     /// phrase made from the level and the maker.
+    #[must_use]
     pub fn note(&self) -> LimitNote {
         let why = match (&self.said, self.by, self.key.level) {
             (Some(said), _, _) => format!("You said: \u{201c}{}\u{201d}", said.as_str()),
@@ -284,6 +289,7 @@ pub enum Limited {
 /// What `held` (the person's and the assistant's limits) and `locked` (the administrator's) say
 /// about `call`: the strongest covering limit wins, and the administrator's wins a tie, so its
 /// reason is the one shown. The person's own grants never enter: no always-allow outranks a limit.
+#[must_use]
 pub fn limited(held: &[Limit], locked: &[Limit], call: &LimitCall<'_>) -> Limited {
     // `max_by_key` keeps the last of equal keys, so the locked entries go last.
     held.iter()
@@ -325,6 +331,7 @@ pub struct Tighten {
 
 impl Tighten {
     /// The limit this makes, at `at`. It binds every agent.
+    #[must_use]
     pub fn limit(self, at: UnixSeconds) -> Limit {
         let key = LimitKey {
             caller: LimitCaller::AnyAgent,
@@ -338,6 +345,7 @@ impl Tighten {
 }
 
 /// `limits` with `limit` held: the same id replaces the earlier one.
+#[must_use]
 pub fn limits_with(mut limits: Vec<Limit>, limit: Limit) -> Vec<Limit> {
     limits.retain(|l| l.id != limit.id);
     limits.push(limit);
@@ -345,6 +353,7 @@ pub fn limits_with(mut limits: Vec<Limit>, limit: Limit) -> Vec<Limit> {
 }
 
 /// `limits` without the limit `id`, and whether there was one.
+#[must_use]
 pub fn limits_without(mut limits: Vec<Limit>, id: &StandingGrantId) -> (Vec<Limit>, bool) {
     let before = limits.len();
     limits.retain(|l| l.id != *id);

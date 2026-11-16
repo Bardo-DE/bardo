@@ -7,6 +7,7 @@ impl Held {
     /// `owner` takes `keys` off the wire. Each key some record holds is remembered as lifted by
     /// `owner`, and released if it was down; keys nobody holds are ignored. The records keep the
     /// keys, so the written stream differs from them only while the lift lasts.
+    #[must_use]
     pub fn lift(mut self, owner: At, keys: Vec<Logical>) -> (Self, Vec<OutEvent>) {
         let mut events = Vec::new();
         for key in keys {
@@ -24,6 +25,7 @@ impl Held {
 
     /// End every lift `owner` holds: a key still held by some record and lifted by nobody else
     /// is pressed back, in the order it was lifted.
+    #[must_use]
     pub fn unlift(mut self, owner: At) -> (Self, Vec<OutEvent>) {
         let keys = self.lifts.remove(&owner).unwrap_or_default();
         let mut events = Vec::new();
@@ -38,6 +40,7 @@ impl Held {
     /// Add to `at`'s record the keys of `wants` that are not already down, pressing them. A key
     /// another record keeps down is left to that record, so it comes up when that one is
     /// released and not with `at`. An absent record starts empty.
+    #[must_use]
     pub fn extend(mut self, at: At, wants: Vec<Logical>) -> (Self, Vec<OutEvent>) {
         let mut record = self.records.remove(&at).unwrap_or_default();
         let mut events = Vec::new();

@@ -156,7 +156,7 @@ mod tests {
             assert_eq!(
                 facts
                     .value(anyview_core::FactLabel::Kind)
-                    .map(|v| v.as_str()),
+                    .map(anyview_core::FactValue::as_str),
                 Some(*words),
                 "{name}"
             );

@@ -36,6 +36,7 @@ pub struct ForeignTables(pub Vec<String>);
 
 impl ForeignTables {
     /// Whether `path` (a dotted key path: `engines.local.cmd`) sits under one of these tables.
+    #[must_use]
     pub fn holds(&self, path: &str) -> bool {
         let first = path.split('.').next().unwrap_or(path);
         self.0.iter().any(|table| table == first)
@@ -70,6 +71,7 @@ pub struct Schema {
 
 impl Schema {
     /// The TOML text this schema writes as `<app-id>.settings.toml`.
+    #[must_use]
     pub fn to_toml(&self) -> String {
         toml::to_string(self)
             .expect("Schema fields are all TOML-representable: strings, numbers, enums and Vec")
@@ -138,6 +140,7 @@ const SCHEMA_SUFFIX: &str = ".settings.toml";
 ///
 /// The `agent = "settable"` marks of the keys it returns are therefore those of a schema this
 /// function admitted, read through [`KeySpec::agent`].
+#[must_use]
 pub fn discover(dirs: &[PathBuf]) -> Vec<Schema> {
     let mut found: Vec<Schema> = Vec::new();
     for dir in dirs {
@@ -216,6 +219,7 @@ fn admit(path: &Path, found: &[Schema]) -> Result<Schema, String> {
 /// agent may set). Falls back to the XDG defaults
 /// (`~/.local/share`, `/usr/local/share:/usr/share`) when the variable is unset, per the XDG
 /// base directory specification.
+#[must_use]
 pub fn data_dirs() -> Vec<PathBuf> {
     data_dirs_from(
         std::env::var_os("XDG_DATA_HOME"),
@@ -228,6 +232,7 @@ pub fn data_dirs() -> Vec<PathBuf> {
 /// and `xdg_data_dirs` (else `/usr/local/share:/usr/share`), so a caller that owns its
 /// directories, or a test, names them itself. The XDG rules (`crate::xdg`) apply: an empty or
 /// relative value is ignored.
+#[must_use]
 pub fn data_dirs_from(
     xdg_data_home: Option<std::ffi::OsString>,
     xdg_data_dirs: Option<std::ffi::OsString>,
@@ -507,7 +512,7 @@ mod tests {
 
         // The flag without a directory is an error.
         let args = vec!["bardo".to_owned(), "--write-schema".to_owned()];
-        assert!(maybe_write_schema(&schema, &args).is_err());
+        maybe_write_schema(&schema, &args).unwrap_err();
     }
 }
 

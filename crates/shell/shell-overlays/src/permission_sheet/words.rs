@@ -23,13 +23,15 @@ pub(super) struct Words {
 /// `asking`'s texts as the sheet shows them.
 pub(super) fn words(asking: &PermissionAsking) -> Words {
     let ask = &asking.ask;
-    let app = match ask.app_label.is_empty() {
-        true => UNNAMED_APP.to_owned(),
-        false => ask.app_label.clone(),
+    let app = if ask.app_label.is_empty() {
+        UNNAMED_APP.to_owned()
+    } else {
+        ask.app_label.clone()
     };
-    let title = match ask.title.is_empty() {
-        true => format!("{app} is asking for permission"),
-        false => ask.title.clone(),
+    let title = if ask.title.is_empty() {
+        format!("{app} is asking for permission")
+    } else {
+        ask.title.clone()
     };
     let detail = [ask.subtitle.as_str(), ask.body.as_str()]
         .into_iter()

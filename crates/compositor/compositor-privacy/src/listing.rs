@@ -24,16 +24,19 @@ pub struct Listing {
 
 impl Listing {
     /// The answers, by power, then program, with the person's before the administrator's.
+    #[must_use]
     pub fn rows(&self) -> &[PrivacyRow] {
         &self.rows
     }
 
     /// What could not be read, one sentence each.
+    #[must_use]
     pub fn notes(&self) -> &[String] {
         &self.notes
     }
 
     /// The list as text: a heading per power and a line per program.
+    #[must_use]
     pub fn render(&self) -> String {
         <Power as WireCode>::ALL
             .iter()

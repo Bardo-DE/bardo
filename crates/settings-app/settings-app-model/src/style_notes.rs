@@ -13,6 +13,7 @@ pub enum StyleOwner {
 
 impl StyleOwner {
     /// The file as the person finds it under their settings folder: `bardo/style.css`.
+    #[must_use]
     pub fn file_name(&self) -> String {
         match self {
             StyleOwner::Desktop => "bardo/style.css".to_owned(),
@@ -59,6 +60,7 @@ pub struct StyleNotes {
 
 impl StyleNotes {
     /// The notes of `files`, leaving out the files with none.
+    #[must_use]
     pub fn new(files: Vec<StyleFile>) -> StyleNotes {
         StyleNotes {
             files: files
@@ -69,11 +71,13 @@ impl StyleNotes {
     }
 
     /// How many notes there are in all.
+    #[must_use]
     pub fn total(&self) -> usize {
         self.files.iter().map(|file| file.notes.len()).sum()
     }
 
     /// The sheet's lines: each file's notes in turn, each with its file and line.
+    #[must_use]
     pub fn rows(&self) -> Vec<NoteRow> {
         self.files
             .iter()

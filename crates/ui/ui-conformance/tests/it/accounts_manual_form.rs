@@ -51,9 +51,9 @@ fn Form() -> Element {
                         protocol.set(slug);
                     }
                 },
-                on_submit: |_| {},
-                on_back: |_| {},
-                on_cancel: |_| {},
+                on_submit: |()| {},
+                on_back: |()| {},
+                on_cancel: |()| {},
             }
             span { id: "heard", "{heard().join(\",\")}" }
         }

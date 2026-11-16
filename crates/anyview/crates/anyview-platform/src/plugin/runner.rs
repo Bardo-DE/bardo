@@ -42,7 +42,7 @@ impl PluginRunner {
 
     /// What `plugin` says of itself when started: the requests it answers on this machine and
     /// the export targets it can write. The manifest names every request and target the plugin
-    /// knows; a distribution's FFmpeg may encode fewer, and one that is missing answers none.
+    /// knows; a distribution's `FFmpeg` may encode fewer, and one that is missing answers none.
     /// Blocking: it starts the plugin and kills it.
     pub fn hello(&self, plugin: &Installed) -> Result<Hello, PlatformError> {
         let frame = self.runner.hello::<Wire>(plugin)?;

@@ -23,6 +23,7 @@ pub struct Selection {
 
 impl Selection {
     /// A caret at `at`.
+    #[must_use]
     pub fn caret(at: usize) -> Self {
         Selection {
             anchor: at,
@@ -31,11 +32,13 @@ impl Selection {
     }
 
     /// Whether nothing is selected.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.anchor == self.focus
     }
 
     /// The selected bytes, from the earlier end to the later.
+    #[must_use]
     pub fn range(&self) -> Range<usize> {
         self.anchor.min(self.focus)..self.anchor.max(self.focus)
     }
@@ -89,6 +92,7 @@ pub struct Session {
 
 impl Session {
     /// A session over `text` as it was read, the caret at the start.
+    #[must_use]
     pub fn open(text: EditText) -> Self {
         let (bytes, bom) = text.into_parts();
         Session::over(Buffer::new(bytes), bom)
@@ -106,11 +110,13 @@ impl Session {
     }
 
     /// The text being edited.
+    #[must_use]
     pub fn buffer(&self) -> &Buffer {
         &self.buffer
     }
 
     /// The text as the file holds it: its byte-order mark, if it had one, then the text.
+    #[must_use]
     pub fn file_bytes(&self) -> Vec<u8> {
         let mut out = bom_mark(self.bom).to_vec();
         out.extend(self.buffer.to_bytes());
@@ -118,11 +124,13 @@ impl Session {
     }
 
     /// The stamp of the text now.
+    #[must_use]
     pub fn revision(&self) -> Revision {
         self.buffer.revision()
     }
 
     /// Whether the text has changes that are not saved.
+    #[must_use]
     pub fn is_modified(&self) -> bool {
         self.buffer.is_modified()
     }
@@ -133,21 +141,25 @@ impl Session {
     }
 
     /// The caret or selection.
+    #[must_use]
     pub fn selection(&self) -> Selection {
         self.selection
     }
 
     /// The caret: where the selection ends.
+    #[must_use]
     pub fn caret(&self) -> usize {
         self.selection.focus
     }
 
     /// The composition under way, if any.
+    #[must_use]
     pub fn preedit(&self) -> Option<&Preedit> {
         self.preedit.as_ref()
     }
 
     /// The line and the column in it (bytes) of `offset`.
+    #[must_use]
     pub fn place(&self, offset: usize) -> (usize, usize) {
         let line = self.buffer.line_of(offset);
         let range = self.buffer.line_range(line);
@@ -155,6 +167,7 @@ impl Session {
     }
 
     /// The offset one grapheme before `offset` on its line; `offset` itself at a line's start.
+    #[must_use]
     pub fn grapheme_before(&self, offset: usize) -> usize {
         let (line, col) = self.place(offset);
         let before = motion::grapheme_before(&self.buffer.line_text(line), col).unwrap_or(col);
@@ -162,6 +175,7 @@ impl Session {
     }
 
     /// The offset of column `col` in `line`, clamped to the line's text.
+    #[must_use]
     pub fn offset_of(&self, line: usize, col: usize) -> usize {
         let range = self
             .buffer
@@ -175,6 +189,7 @@ impl Session {
     }
 
     /// Every place `needle` occurs in the text, in order, at most [`MAX_HITS`].
+    #[must_use]
     pub fn find(&self, needle: &Needle) -> Vec<FindHit> {
         let total = self.buffer.line_count();
         let mut hits = Vec::new();
@@ -323,6 +338,7 @@ impl Session {
     }
 
     /// The selected text, or `None` with nothing selected.
+    #[must_use]
     pub fn selected_text(&self) -> Option<String> {
         let range = self.selection.range();
         (!range.is_empty()).then(|| self.buffer.slice(range))

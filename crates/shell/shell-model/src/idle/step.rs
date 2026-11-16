@@ -150,6 +150,7 @@ pub enum IdleEffect {
 }
 
 /// `state` after `event`, and the effects to perform (module doc).
+#[must_use]
 pub fn step(state: IdleState, event: IdleEvent) -> (IdleState, Vec<IdleEffect>) {
     rules::step(state, event)
 }

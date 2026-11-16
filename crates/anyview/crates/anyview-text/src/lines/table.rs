@@ -157,12 +157,7 @@ fn scan(
             }
             seen += 1;
             let after = (i + unit).min(chunk.len());
-            if !taking {
-                if seen == skip {
-                    taking = true;
-                    from = Some(after);
-                }
-            } else {
+            if taking {
                 current.push_text(&chunk[from.unwrap_or(0)..i]);
                 current.bytes.extend_from_slice(&chunk[i..after]);
                 done.push(std::mem::take(&mut current));
@@ -170,6 +165,9 @@ fn scan(
                     // a usize fits a u64
                     return Ok(done);
                 }
+                from = Some(after);
+            } else if seen == skip {
+                taking = true;
                 from = Some(after);
             }
         }

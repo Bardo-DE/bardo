@@ -3,6 +3,7 @@ use image::{Rgba, Rgba32FImage};
 use crate::{Plane, PlateGrid, Srgb8, Template, plate::superellipse};
 
 /// Straight-alpha "over" in encoded sRGB (how CSS composites).
+#[must_use]
 pub fn over(top: [f32; 4], under: [f32; 4]) -> [f32; 4] {
     let a = top[3] + under[3] * (1.0 - top[3]);
     if a <= 0.0 {
@@ -39,6 +40,7 @@ fn unit(grid: PlateGrid) -> f32 {
 /// `flat` over the `--shadow-2` drop shadow (08 2.5: `0 6px 16px -6px rgba(26,30,26,.30)` at
 /// 48 px, scaled). The shadow is a squircle shrunk by the spread, moved down by the offset
 /// and blurred with sigma = blur / 2; whatever falls past the canvas edge is lost.
+#[must_use]
 pub fn drop_shadow(flat: &Rgba32FImage, grid: PlateGrid, t: &Template) -> Rgba32FImage {
     let s = unit(grid);
     let shape = superellipse(

@@ -11,6 +11,7 @@ pub const RUBBER_SHARE: f32 = 0.55;
 /// How far the content is drawn past a limit when the pointer is `past` beyond it. Not past the
 /// limit (zero or negative) it draws nothing extra. Under Reduced motion there is no band:
 /// the limit is a hard stop.
+#[must_use]
 pub fn resist(past: Px, level: MotionLevel) -> Px {
     match level {
         MotionLevel::Reduced => Px(0.0),

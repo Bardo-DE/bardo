@@ -12,6 +12,7 @@ pub const SESSION_KIND: &str = "companion.session";
 
 /// The thing `session` is in memory (every entry of its log names it as its `Subject`, and what
 /// else records about the conversation may name it too); none when an id does not fit a key.
+#[must_use]
 pub fn session_thing(session: &SessionId) -> Option<EntityId> {
     Some(EntityId {
         app: AppName::parse(SESSION_APP).ok()?,

@@ -114,6 +114,7 @@ text_id!(
 impl FactId {
     /// The id for a fact learned at `unix_ms` with 80 injected random bits: a ULID with the clock and
     /// the entropy given, written in lowercase. Time beyond 48 bits is dropped.
+    #[must_use]
     pub fn mint(unix_ms: u64, random: [u8; 10]) -> FactId {
         let random_bits = random
             .iter()
@@ -128,11 +129,13 @@ impl FactId {
 
 impl KindPattern {
     /// The pattern covering every kind.
+    #[must_use]
     pub fn any() -> KindPattern {
         KindPattern("*".to_owned())
     }
 
     /// Whether a dotted kind name (a [`KindTag`] or a thing kind) is covered.
+    #[must_use]
     pub fn covers(&self, kind: &str) -> bool {
         match self.0.strip_suffix(".*") {
             Some(prefix) => kind
@@ -143,6 +146,7 @@ impl KindPattern {
     }
 
     /// How narrow the pattern is: more elements and no star rank higher.
+    #[must_use]
     pub fn specificity(&self) -> u32 {
         let elements = u32::try_from(self.0.split('.').count()).unwrap_or(u32::MAX);
         match self.0.as_str() {

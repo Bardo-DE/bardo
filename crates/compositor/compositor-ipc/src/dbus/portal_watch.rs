@@ -65,9 +65,10 @@ impl PortalWatch {
     }
 
     fn table_of(&self, caller: &Proven) -> &Mutex<BTreeMap<String, Proven>> {
-        match caller.role == roles::AGENT_TIER {
-            true => &self.agent,
-            false => &self.portal,
+        if caller.role == roles::AGENT_TIER {
+            &self.agent
+        } else {
+            &self.portal
         }
     }
 }

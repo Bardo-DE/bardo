@@ -8,6 +8,7 @@ use std::collections::BTreeMap;
 
 /// The report a `Cua1.Run.Finished` signal names and why the run ended, when the signal says both
 /// in its enumerated fields (`{"body": {"outcome": .., "report": {"kind": "sent", "v": {"message": ..}}}}`).
+#[must_use]
 pub fn report_end(signal: &str) -> Option<(MessageId, EndWhy)> {
     let body: serde_json::Value = serde_json::from_str(signal).ok()?;
     let why = EndWhy::of_outcome(&body["body"]["outcome"])?;

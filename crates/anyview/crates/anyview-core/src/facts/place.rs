@@ -15,6 +15,7 @@ pub struct Coordinate {
 impl Coordinate {
     /// The place at these millionths of a degree, north and east positive; `None` when the
     /// latitude is beyond a pole or the longitude beyond the date line.
+    #[must_use]
     pub fn new(latitude_micro: i32, longitude_micro: i32) -> Option<Self> {
         let valid = latitude_micro.abs() <= 90 * MICRO && longitude_micro.abs() <= 180 * MICRO;
         valid.then_some(Coordinate {
@@ -44,11 +45,13 @@ impl Coordinate {
 
 impl FactValue {
     /// `37.7749° N, 122.4194° W`.
+    #[must_use]
     pub fn coordinate(place: Coordinate) -> Self {
         FactValue::text(place.text())
     }
 
     /// `12 m`, or `3 m below sea level`.
+    #[must_use]
     pub fn altitude(metres: i32) -> Self {
         FactValue::text(if metres < 0 {
             format!("{} m below sea level", metres.unsigned_abs())

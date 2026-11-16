@@ -129,9 +129,10 @@ impl<P: ProcFs> UnitSource for ManagerLink<P> {
                 "the unit's Id is not the name asked for",
             ));
         }
-        let service = match name.as_str().ends_with(".service") {
-            true => self.properties(&path, SERVICE_INTERFACE).await?,
-            false => Props::empty(),
+        let service = if name.as_str().ends_with(".service") {
+            self.properties(&path, SERVICE_INTERFACE).await?
+        } else {
+            Props::empty()
         };
         Ok(UnitFacts {
             name: name.clone(),

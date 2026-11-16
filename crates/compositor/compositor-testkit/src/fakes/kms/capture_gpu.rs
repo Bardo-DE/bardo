@@ -60,6 +60,7 @@ pub struct FakeCaptureGpu {
 
 impl FakeCaptureGpu {
     /// A GPU that lists `formats` and draws.
+    #[must_use]
     pub fn listing(formats: Vec<Format>) -> FakeCaptureGpu {
         FakeCaptureGpu {
             world: Arc::new(Mutex::new(CaptureGpuWorld {

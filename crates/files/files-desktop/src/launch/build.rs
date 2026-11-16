@@ -62,6 +62,7 @@ impl LauncherBuilder {
     }
 
     /// The launcher.
+    #[must_use]
     pub fn build(self) -> DesktopLauncher {
         let Catalog {
             db,

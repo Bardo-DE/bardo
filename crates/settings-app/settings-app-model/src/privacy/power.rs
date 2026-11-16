@@ -39,6 +39,7 @@ impl PrivacyPower {
     ];
 
     /// The word the compositor writes for it in a row's path (`screen`, `keys`, `typing_help`…).
+    #[must_use]
     pub fn word(self) -> &'static str {
         WORDS[self as usize].1
     }

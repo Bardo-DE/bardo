@@ -21,7 +21,7 @@ fn the_manager_announces_blur() {
     assert!(ask.blur_announced());
 }
 
-/// set_blur_region is stored for the surface and cleared by an empty region; the client is
+/// `set_blur_region` is stored for the surface and cleared by an empty region; the client is
 /// never disconnected for it. (What the compositor stored is read through
 /// `background_effect::blur_region_of`, which the scene tests of P0-R-scene draw from; this
 /// file checks the protocol exchange stays clean through set, commit, unset, commit, destroy.)

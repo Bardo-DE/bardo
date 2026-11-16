@@ -63,6 +63,7 @@ impl PresentDevices {
     /// What each pointing device (a mouse, a trackball or a touchpad) must be configured with to
     /// match `pointer`: the devices whose last configuration differs from the one `pointer`
     /// gives their class, or that took none. A keyboard, a touchscreen or a switch has none.
+    #[must_use]
     pub fn changes(&self, pointer: &PointerSettings) -> Vec<(DeviceId, DeviceSettings)> {
         self.devices
             .iter()

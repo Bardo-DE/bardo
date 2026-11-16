@@ -66,6 +66,7 @@ impl Attached {
 /// assert_eq!(surface_tag(surface), None);
 /// # }
 /// ```
+#[must_use]
 pub fn surface_tag(surface: &WlSurface) -> Option<ColorTag> {
     with_states(surface, |states| {
         states.cached_state.get::<SurfaceColor>().current().tag

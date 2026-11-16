@@ -48,6 +48,7 @@ pub enum Sensor {
 
 impl Sensor {
     /// The touch surface: its size, resolution, buttons and clock.
+    #[must_use]
     pub fn surface(&self) -> Surface {
         match self {
             Sensor::MagicMouse(sensor) => sensor.surface(),

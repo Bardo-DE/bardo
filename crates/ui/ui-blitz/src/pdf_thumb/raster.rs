@@ -1,4 +1,4 @@
-//! A PDF's first page as PNG pixels, through pdfrum's CPU rasteriser (vello_cpu).
+//! A PDF's first page as PNG pixels, through pdfrum's CPU rasteriser (`vello_cpu`).
 
 use super::request::DeviceBox;
 use image::ImageEncoder;
@@ -13,6 +13,7 @@ use ui_components::prelude::*;
 /// pages, is [`PdfPage::Empty`]; a file that is not a PDF or will not draw is
 /// [`PdfTrouble::Unreadable`]; one that needs a password is [`PdfTrouble::Locked`]. A panic in
 /// the reader on hostile bytes is caught and reads as unreadable.
+#[must_use]
 pub fn pdf_thumb_bytes(bytes: Vec<u8>, fit: DeviceBox) -> PdfPage {
     rasterise(bytes, fit)
 }

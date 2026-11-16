@@ -11,6 +11,7 @@ impl AppHandle {
     /// [`set_desktop_outputs`](AppHandle::set_desktop_outputs), on a thread of its own. The thread
     /// ends when the app has ended (found at the next change) or the bus goes away. Call it before
     /// `launch`; it is a no-op where there is no session bus.
+    #[must_use]
     pub fn follow_desktop_outputs(&self) -> std::thread::JoinHandle<()> {
         let handle = self.clone();
         std::thread::spawn(move || {

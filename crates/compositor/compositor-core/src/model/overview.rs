@@ -56,12 +56,14 @@ impl Model {
     /// assert_eq!(model.overview(), Overview::Closed);
     /// assert!(effects.is_empty());
     /// ```
+    #[must_use]
     pub fn overview(&self) -> Overview {
         self.overview
     }
 
     /// Mission Control opens, or closes when it is open (the command's meaning). While the
     /// session is locked it does nothing.
+    #[must_use]
     pub fn toggle_overview(self, now: Mono) -> (Model, Vec<Effect>) {
         self.run(now, |model| match model.lock {
             LockState::Unlocked => model.toggled_overview(),
@@ -77,6 +79,7 @@ impl Model {
     }
 
     /// Mission Control opens (already entering or open: nothing).
+    #[must_use]
     pub fn open_overview(self, now: Mono) -> (Model, Vec<Effect>) {
         self.run(now, |model| match model.lock {
             LockState::Unlocked => match model.overview {
@@ -89,6 +92,7 @@ impl Model {
 
     /// Mission Control closes, with `picked` raised and keyed when there is one (already
     /// leaving or closed: nothing).
+    #[must_use]
     pub fn close_overview(self, picked: Option<OverviewPick>, now: Mono) -> (Model, Vec<Effect>) {
         self.run(now, |model| model.leave_overview(picked))
     }
@@ -130,9 +134,10 @@ impl Model {
     /// up.
     pub(super) fn leave_when_bare(self, outputs: &[OutputKey]) -> Moved {
         let bare = outputs.iter().any(|output| self.is_bare(output));
-        match bare {
-            true => self.leave_overview(None),
-            false => Moved::of(self),
+        if bare {
+            self.leave_overview(None)
+        } else {
+            Moved::of(self)
         }
     }
 

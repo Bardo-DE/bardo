@@ -30,6 +30,7 @@ pub struct SysRoot {
 
 impl SysRoot {
     /// The host's `/sys` and `/dev`.
+    #[must_use]
     pub fn host() -> SysRoot {
         SysRoot {
             sys: PathBuf::from("/sys"),
@@ -38,6 +39,7 @@ impl SysRoot {
     }
 
     /// A tree at `root` with `sys/` and `dev/` under it.
+    #[must_use]
     pub fn under(root: &Path) -> SysRoot {
         SysRoot {
             sys: root.join("sys"),
@@ -46,11 +48,13 @@ impl SysRoot {
     }
 
     /// The `/sys` directory.
+    #[must_use]
     pub fn sys(&self) -> &Path {
         &self.sys
     }
 
     /// The `/dev` directory.
+    #[must_use]
     pub fn dev(&self) -> &Path {
         &self.dev
     }
@@ -67,6 +71,7 @@ pub struct GpuHandle {
 
 impl GpuHandle {
     /// A handle on `node` over `fd`.
+    #[must_use]
     pub fn new(node: DrmNodeId, fd: OwnedFd) -> GpuHandle {
         GpuHandle {
             node,

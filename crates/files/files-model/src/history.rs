@@ -12,6 +12,7 @@ pub struct History {
 impl History {
     /// The history after leaving `from` for somewhere new: `from` can be gone back to, and
     /// whatever lay ahead is forgotten.
+    #[must_use]
     pub fn visited(&self, from: Location) -> History {
         let mut back = self.back.clone();
         back.push(from);
@@ -22,6 +23,7 @@ impl History {
     }
 
     /// The history and the place after going back from `current`, if there is a place behind.
+    #[must_use]
     pub fn went_back(&self, current: &Location) -> Option<(History, Location)> {
         let mut back = self.back.clone();
         let to = back.pop()?;
@@ -31,6 +33,7 @@ impl History {
     }
 
     /// The history and the place after going forward from `current`, if there is a place ahead.
+    #[must_use]
     pub fn went_forward(&self, current: &Location) -> Option<(History, Location)> {
         let mut forward = self.forward.clone();
         let to = forward.pop()?;
@@ -40,11 +43,13 @@ impl History {
     }
 
     /// Whether going back works.
+    #[must_use]
     pub fn has_back(&self) -> bool {
         !self.back.is_empty()
     }
 
     /// Whether going forward works.
+    #[must_use]
     pub fn has_forward(&self) -> bool {
         !self.forward.is_empty()
     }

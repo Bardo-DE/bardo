@@ -38,6 +38,7 @@ pub(crate) fn animating(reveal: &Reveal) -> bool {
 }
 
 /// How far below its rest position the dock is drawn at `now` (design/10 §10.5.5).
+#[must_use]
 pub fn slide_offset(reveal: &Reveal, now: Stamp, p: &DockParams) -> Cpx {
     autohide::slide_offset(reveal, now, &p.timing(), p.slide_distance)
 }
@@ -135,6 +136,7 @@ pub(crate) fn strip_region() -> RegionSpec {
 }
 
 /// Auto-hide on reserves nothing; off reserves `gut + H_p` (design/10 §10.3.1).
+#[must_use]
 pub fn exclusive_zone(reveal: &Reveal, reserve_px: u32) -> ExclusiveZone {
     match reveal {
         Reveal::Fixed => ExclusiveZone::Reserve(reserve_px),

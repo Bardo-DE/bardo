@@ -29,6 +29,7 @@ impl JoinSecret {
     }
 
     /// Whether the person gave something.
+    #[must_use]
     pub fn is_given(&self) -> bool {
         !matches!(self, JoinSecret::Kept)
     }
@@ -81,7 +82,7 @@ fn personal(management: &str, passphrase: &Passphrase) -> WifiSettingGroup {
     ])
 }
 
-/// The 802.1X group of a network that signs in: PEAP with MSCHAPv2, the server's certificate
+/// The 802.1X group of a network that signs in: PEAP with `MSCHAPv2`, the server's certificate
 /// checked against the computer's own authorities.
 fn sign_in(account: &WifiLogin) -> WifiSettingGroup {
     group([
@@ -94,6 +95,7 @@ fn sign_in(account: &WifiLogin) -> WifiSettingGroup {
 }
 
 /// What a new connection to `ssid` is made of.
+#[must_use]
 pub fn connection_for(
     ssid: &Ssid,
     security: WifiSecurity,

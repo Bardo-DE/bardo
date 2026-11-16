@@ -50,13 +50,10 @@ impl MailWorld {
         let mut ports = Vec::new();
         for imap in [true, false] {
             for tls in [Tls::Implicit, Tls::StartTls, Tls::Plain] {
-                let running = match imap {
-                    true => {
-                        FakeImap::start(&Bind::Port(0), tls, accounts.clone(), mailbox(1)).await
-                    }
-                    false => {
-                        FakePop3::start(&Bind::Port(0), tls, accounts.clone(), mailbox(1)).await
-                    }
+                let running = if imap {
+                    FakeImap::start(&Bind::Port(0), tls, accounts.clone(), mailbox(1)).await
+                } else {
+                    FakePop3::start(&Bind::Port(0), tls, accounts.clone(), mailbox(1)).await
                 }
                 .expect("fake mail server");
                 ports.push(port_of(running.address()));

@@ -61,6 +61,7 @@ pub struct AgentsTool {
 
 impl AgentsTool {
     /// The program at `program`, working in the agents folder under `data`.
+    #[must_use]
     pub fn new(program: PathBuf, data: &DataHome) -> Self {
         Self {
             program,

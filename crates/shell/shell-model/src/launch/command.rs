@@ -49,6 +49,7 @@ pub struct LaunchRequest {
 impl LaunchRequest {
     /// A plain start of `app`: its own `Exec`, no files, no addresses, no token. The one place
     /// a request is spelled out; every launch builds on it.
+    #[must_use]
     pub fn app(app: AppId) -> LaunchRequest {
         LaunchRequest {
             app,
@@ -60,16 +61,19 @@ impl LaunchRequest {
     }
 
     /// This request starting the desktop action `action` instead of the entry's own `Exec`.
+    #[must_use]
     pub fn action(self, action: DesktopAction) -> LaunchRequest {
         LaunchRequest { action, ..self }
     }
 
     /// This request handing over `uris` (`%u`/`%U`).
+    #[must_use]
     pub fn uris(self, uris: Vec<String>) -> LaunchRequest {
         LaunchRequest { uris, ..self }
     }
 
     /// This request carrying `token`.
+    #[must_use]
     pub fn token(self, token: Option<String>) -> LaunchRequest {
         LaunchRequest { token, ..self }
     }

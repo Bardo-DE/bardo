@@ -24,6 +24,7 @@ pub enum PaletteState {
 
 impl PaletteState {
     /// Open on `query` with `selection` highlighted.
+    #[must_use]
     pub const fn open(query: TypedText, selection: PaletteIndex) -> Self {
         PaletteState::Open { query, selection }
     }
@@ -74,6 +75,7 @@ impl From<crate::machine::Elapsed> for PaletteIn {
 impl PaletteIn {
     /// What a key means to an open palette: arrows move, Enter runs, Esc and ⌘K close. Anything
     /// else is typed into the field, which reports it as `Typed`.
+    #[must_use]
     pub fn from_key(keys: &[ShortcutKey]) -> Option<PaletteIn> {
         match keys {
             [ShortcutKey::Up] => Some(PaletteIn::Move(PaletteMove::Up)),

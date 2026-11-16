@@ -25,6 +25,7 @@ pub enum Typed {
 
 impl Typed {
     /// What `text` counts as.
+    #[must_use]
     pub fn of(text: &str) -> Typed {
         if Needle::parse(text).is_empty() {
             Typed::Nothing
@@ -57,6 +58,7 @@ impl Asked {
 }
 
 /// `merged` (best first) as published under `asked`.
+#[must_use]
 pub fn arranged(
     merged: &[Item],
     plan: &SectionPlan,

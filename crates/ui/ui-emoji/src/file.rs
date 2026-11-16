@@ -1,7 +1,7 @@
-//! Finding a COLRv1 colour emoji font file (`Noto-COLRv1.ttf`) across distros and our install dir
+//! Finding a `COLRv1` colour emoji font file (`Noto-COLRv1.ttf`) across distros and our install dir
 //! (FINDINGS "Colour emoji").
 //!
-//! Our renderers draw colour emoji only from the COLRv1 build of Noto Color Emoji. Fedora ships
+//! Our renderers draw colour emoji only from the `COLRv1` build of Noto Color Emoji. Fedora ships
 //! it; Ubuntu and Arch ship the bitmap (CBDT) build, which draws nothing, so the desktop installer
 //! puts `Noto-COLRv1.ttf` in `<prefix>/share/fonts/bardo/`. The search is a pure function of the
 //! environment values ([`EmojiDirs`]) and a [`FontFiles`] view of the disk; [`Disk`] is the one
@@ -13,7 +13,7 @@ use base_xdg::Xdg;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
-/// The file name the installer and the COLRv1 packages use.
+/// The file name the installer and the `COLRv1` packages use.
 const COLRV1_FILE: &str = "Noto-COLRv1.ttf";
 
 /// The directory under a data dir's `fonts` that the desktop installer fills.
@@ -81,7 +81,7 @@ impl EmojiDirs {
         }
     }
 
-    /// The files that are named for the COLRv1 build, best first: our install dir under each data
+    /// The files that are named for the `COLRv1` build, best first: our install dir under each data
     /// dir, the user's, then the distro packages' places.
     pub(crate) fn candidates(&self) -> Vec<PathBuf> {
         let ours = |base: &PathBuf| base.join("fonts").join(QUIRE_DIR).join(COLRV1_FILE);
@@ -110,8 +110,8 @@ impl EmojiDirs {
         dedup(dirs)
     }
 
-    /// The first usable COLRv1 colour emoji file: a candidate that lists `COLR`, else any file
-    /// named for COLRv1 under the font directories that does.
+    /// The first usable `COLRv1` colour emoji file: a candidate that lists `COLR`, else any file
+    /// named for `COLRv1` under the font directories that does.
     pub(crate) fn find(&self, files: &impl FontFiles) -> Option<PathBuf> {
         let named = || {
             self.font_dirs()
@@ -155,7 +155,7 @@ impl FontFiles for Disk {
     }
 }
 
-/// Add to `found` the font files below `dir` (to `depth` levels) named for COLRv1.
+/// Add to `found` the font files below `dir` (to `depth` levels) named for `COLRv1`.
 fn walk(dir: &Path, depth: usize, found: &mut Vec<PathBuf>) {
     let Ok(entries) = std::fs::read_dir(dir) else {
         return;
@@ -181,8 +181,9 @@ fn named_for_colrv1(path: &Path) -> bool {
     name.contains("colrv1") && (name.ends_with(".ttf") || name.ends_with(".otf"))
 }
 
-/// The COLRv1 colour emoji font file on this machine, found as [`EmojiDirs::find`] does with the
+/// The `COLRv1` colour emoji font file on this machine, found as [`EmojiDirs::find`] does with the
 /// process environment and the real disk. `None` where the machine has none.
+#[must_use]
 pub fn colrv1_emoji_file() -> Option<PathBuf> {
     EmojiDirs::from_env().find(&Disk)
 }

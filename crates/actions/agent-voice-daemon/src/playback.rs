@@ -135,6 +135,7 @@ async fn run<D: AudioDevice>(
 
 /// A short two-note blip: rising for begin, falling for end. A triangle wave in integers, with a
 /// linear fade so it does not click.
+#[must_use]
 pub fn earcon_samples(earcon: Earcon) -> Vec<i16> {
     let (first, second) = match earcon {
         Earcon::Begin => (30_u32, 24_u32),

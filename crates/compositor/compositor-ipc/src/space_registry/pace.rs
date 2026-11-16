@@ -47,7 +47,7 @@ mod tests {
     #[test]
     fn a_wait_comes_before_every_batch_after_the_first() {
         let mut pace = Pace::default();
-        let waits: Vec<bool> = (0..(PACE * 2 + 1))
+        let waits: Vec<bool> = (0..=(PACE * 2))
             .map(|_| pace.before_send().is_some())
             .collect();
         let at: Vec<usize> = waits

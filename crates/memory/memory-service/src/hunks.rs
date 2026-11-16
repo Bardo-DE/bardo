@@ -1,5 +1,5 @@
 //! The topic-file hunks a consolidation run applies by itself (Me4): Tidy and Stamp rewrite a
-//! topic file, ExternalEdit refreshes what the index knows of one, Flag records a note for the
+//! topic file, `ExternalEdit` refreshes what the index knows of one, Flag records a note for the
 //! person. The pure checks are free functions; the effects take a pre-image first so a revert can
 //! put every file back.
 
@@ -156,7 +156,7 @@ impl<B: Backend> Open<B> {
         Ok(Some((pre, fact)))
     }
 
-    /// ExternalEdit: the person already changed the file; the index learns it. Facts the file
+    /// `ExternalEdit`: the person already changed the file; the index learns it. Facts the file
     /// still holds are indexed again with their present text, and facts the earlier text had that
     /// are gone leave the index.
     pub(crate) async fn apply_external_edit(

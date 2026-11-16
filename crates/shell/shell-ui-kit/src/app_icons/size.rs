@@ -25,6 +25,7 @@ pub const ASSET_SIZES: [u16; 13] = [16, 22, 24, 32, 36, 44, 48, 64, 72, 96, 128,
 
 /// The smallest drawn size covering `logical` at `scale` (so the raster is never stretched up),
 /// the largest when none does.
+#[must_use]
 pub fn pick(logical: LogicalPx, scale: Scale) -> AssetPx {
     // Device pixels, rounded up: 48 at 1.75 is 84 exactly, 49 at 1.5 is 73.5 -> 74.
     let device = (u32::from(logical.0) * scale.0).div_ceil(Scale::ONE.0);

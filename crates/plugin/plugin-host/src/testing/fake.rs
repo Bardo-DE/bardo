@@ -69,6 +69,7 @@ impl<C, M, Q> Fake<C, M, Q> {
     }
 
     /// The same fake, misbehaving as `fault` says; `None` for a well-behaved one.
+    #[must_use]
     pub fn with_fault(self, fault: Option<Fault>) -> Fake<C, M, Q> {
         Fake { fault, ..self }
     }
@@ -149,9 +150,9 @@ impl<C, M: Serialize, Q: DeserializeOwned + Send + 'static> Fake<C, M, Q> {
 
     fn greet<W: Write>(&self, out: &mut W) -> Result<(), WireError> {
         let (protocol, provides) = match self.fault {
-            Some(Fault::OtherVersion) => (self.protocol.wrapping_add(1), &self.provides[..]),
+            Some(Fault::OtherVersion) => (self.protocol.wrapping_add(1), (&*self.provides)),
             Some(Fault::ProvidesNothing) => (self.protocol, &self.provides[..0]),
-            _ => (self.protocol, &self.provides[..]),
+            _ => (self.protocol, (&*self.provides)),
         };
         crate::wire::write_frame(out, &(self.hello)(protocol, provides), &[])
     }

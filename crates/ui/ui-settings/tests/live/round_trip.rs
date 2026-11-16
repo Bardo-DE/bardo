@@ -147,7 +147,7 @@ async fn set_from_a_caller_without_the_role_is_refused_by_name() {
 
     let client = LiveClient::new(&agent, NAME, PATH, AnyOwner).expect("proxy");
     // Reading is allowed to anyone; writing is not.
-    assert!(client.describe().await.is_ok());
+    client.describe().await.unwrap();
     for refused in [
         client.set(&key(TOGGLE), &toml::Value::Boolean(false)).await,
         client.invoke(&key(REMOVE)).await,

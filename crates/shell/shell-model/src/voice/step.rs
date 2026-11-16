@@ -10,6 +10,7 @@ use super::model::{AskScope, Heard, HoldToTalk, Notice, Phase, Then, Voice, Voic
 use crate::companion::AskInput;
 
 /// `state` after `event`, and what the outside must do.
+#[must_use]
 pub fn step(state: Voice, event: VoiceEvent) -> (Voice, Vec<VoiceEffect>) {
     match event {
         VoiceEvent::Told(command) => told(state, command),
@@ -60,16 +61,19 @@ fn told(state: Voice, command: VoiceCommand) -> (Voice, Vec<VoiceEffect>) {
         VoiceCommand::Start { scope, trigger } => start(state, scope, trigger),
         VoiceCommand::Stop => stop(state),
         VoiceCommand::Cancel(cause) => cancel(state, cause),
-        VoiceCommand::Answer(answer) => match state.sheet {
-            true => (
-                Voice {
-                    sheet: false,
-                    ..state
-                },
-                vec![VoiceEffect::Record(answer)],
-            ),
-            false => (state, Vec::new()),
-        },
+        VoiceCommand::Answer(answer) => {
+            if state.sheet {
+                (
+                    Voice {
+                        sheet: false,
+                        ..state
+                    },
+                    vec![VoiceEffect::Record(answer)],
+                )
+            } else {
+                (state, Vec::new())
+            }
+        }
         VoiceCommand::Dismiss => (
             Voice {
                 notice: Notice::None,

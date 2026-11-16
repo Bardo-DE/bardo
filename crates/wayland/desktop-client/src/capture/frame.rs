@@ -20,6 +20,7 @@ impl ShmFormat {
     pub const XBGR8888: ShmFormat = ShmFormat(0x3432_4258);
 
     /// Whether [`Frame::to_rgba8`] reads this format.
+    #[must_use]
     pub const fn is_supported(self) -> bool {
         matches!(
             self,
@@ -29,16 +30,19 @@ impl ShmFormat {
 
     /// The first of `offered` that [`Frame::to_rgba8`] reads. The wire layer and the capture
     /// reducer both choose with this, so they agree.
+    #[must_use]
     pub fn pick(offered: &[ShmFormat]) -> Option<ShmFormat> {
         offered.iter().copied().find(|f| f.is_supported())
     }
 
     /// The format with this `wl_shm.format` code.
+    #[must_use]
     pub const fn from_code(code: u32) -> Self {
         Self(code)
     }
 
     /// The `wl_shm.format` code.
+    #[must_use]
     pub const fn code(self) -> u32 {
         self.0
     }
@@ -66,6 +70,7 @@ pub struct Frame {
 impl Frame {
     /// A frame of `size` whose rows are `stride` bytes apart; no damage, no presentation time,
     /// the upright transform.
+    #[must_use]
     pub fn new(size: Size, stride: u32, format: ShmFormat, pixels: Vec<u8>) -> Self {
         Self {
             size,

@@ -61,6 +61,7 @@ pub struct GitStore {
 impl GitStore {
     /// A store that runs the `git` on `PATH` and keeps its private indexes in `index_dir`, a folder
     /// of docket's own (never inside a repository's `.git`).
+    #[must_use]
     pub fn new(index_dir: AbsPath) -> Self {
         Self {
             index_dir,
@@ -71,6 +72,7 @@ impl GitStore {
     }
 
     /// The deadline and the output limit of every command (the defaults are generous).
+    #[must_use]
     pub fn with_limits(mut self, limits: Limits) -> Self {
         self.limits = limits;
         self
@@ -84,6 +86,7 @@ impl GitStore {
     }
 
     /// Variables every command runs with, such as a `HOME` that is not the person's (tests).
+    #[must_use]
     pub fn with_env(mut self, env: Vec<(String, String)>) -> Self {
         self.env = env;
         self

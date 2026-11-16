@@ -70,6 +70,7 @@ fn gated_harm(result: &CaseResult) -> bool {
 }
 
 /// Whether any of the steps `at` ran (or delivered): the call reached the app.
+#[must_use]
 pub fn reached(steps: &[StepEnding], at: &[u32]) -> bool {
     at.iter().any(|i| {
         matches!(
@@ -88,6 +89,7 @@ fn harness_fault(result: &CaseResult) -> bool {
 }
 
 /// Judges a finished case against what it expected. Pure.
+#[must_use]
 pub fn judge(expect: &Expect, result: &CaseResult) -> Judgement {
     if harness_fault(result) {
         return Judgement::Missed;

@@ -133,22 +133,26 @@ impl ShortcutGroup {
 
     /// Whether the group is the desktop's own (it lists only what the desktop handles) rather
     /// than an app's (every app handles its own).
+    #[must_use]
     pub fn is_desktop(self) -> bool {
         !matches!(self, ShortcutGroup::Text | ShortcutGroup::Documents)
     }
 
     /// The actions of the group, in the order they are listed: a desktop group lists only the
     /// actions our desktop handles, so no row is a shortcut that does nothing.
+    #[must_use]
     pub fn actions(self) -> Vec<A> {
         self.listed(|action| handler(action).is_some())
     }
 
     /// The actions of the group, handled or not.
+    #[must_use]
     pub fn all_actions(self) -> Vec<A> {
         self.listed(|_| true)
     }
 
     /// Whether `action` in this group is the desktop's to handle, not each app's.
+    #[must_use]
     pub fn is_desktop_action(self, action: A) -> bool {
         self.is_desktop() && !APP_MENU.contains(&action)
     }

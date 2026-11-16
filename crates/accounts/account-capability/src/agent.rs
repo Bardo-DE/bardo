@@ -89,6 +89,7 @@ pub struct AgentCap {
 
 impl AgentCap {
     /// Whether the program can be pointed at another model endpoint.
+    #[must_use]
     pub fn base_url(&self) -> bool {
         self.base_url_env.is_some()
     }

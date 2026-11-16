@@ -18,6 +18,7 @@ pub struct AlphaModifierPart {
 
 impl AlphaModifierPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> AlphaModifierPart
     where
         D: GlobalDispatch<WpAlphaModifierV1, GlobalData>

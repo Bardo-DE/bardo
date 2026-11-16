@@ -19,6 +19,7 @@ pub enum ShotKind {
 
 impl ShotKind {
     /// The word a command gets as `$1`.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             ShotKind::Area => "area",
@@ -37,6 +38,7 @@ pub struct CommandLine {
 
 /// The command `bardo-shell screenshot KIND` runs: `gdbus call` of the portal's `Screenshot`,
 /// interactive (the picker) for `area` and `window` and not for `screen`.
+#[must_use]
 pub fn portal_command(kind: ShotKind) -> CommandLine {
     match kind {
         ShotKind::Screen => portal("false"),

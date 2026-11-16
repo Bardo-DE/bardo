@@ -15,6 +15,7 @@ pub struct UserStyle(pub String);
 
 impl UserStyle {
     /// Whether there is no text worth drawing: nothing or only whitespace.
+    #[must_use]
     pub fn is_blank(&self) -> bool {
         self.0.trim().is_empty()
     }

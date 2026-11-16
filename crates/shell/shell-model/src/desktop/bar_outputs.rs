@@ -15,6 +15,7 @@ pub struct BarOutputs(BTreeMap<String, Shown>);
 
 impl BarOutputs {
     /// The same reports with `output` now `shown`.
+    #[must_use]
     pub fn with(mut self, output: &str, shown: Shown) -> BarOutputs {
         self.0.insert(output.to_owned(), shown);
         self
@@ -23,6 +24,7 @@ impl BarOutputs {
     /// The bar on the output called `output` (`None` for an unnamed one), given the overview as a
     /// whole is `overall`: up only when both say so. With no report at all the overview as a
     /// whole decides; once there are reports, an output they do not name has no bar.
+    #[must_use]
     pub fn bar_on(&self, overall: BarShow, output: Option<&str>) -> BarShow {
         let here = match (self.0.is_empty(), output.and_then(|name| self.0.get(name))) {
             (true, _) | (false, Some(Shown::Shown)) => BarShow::Show,

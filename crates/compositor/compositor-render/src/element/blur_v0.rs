@@ -130,6 +130,7 @@ pub struct BlurV0Element {
 impl BlurV0Element {
     /// A blur under `region` (output-local physical pixels), drawn as `stand_in` without
     /// shaders.
+    #[must_use]
     pub fn new(id: Id, region: Vec<PhysicalRect>, stand_in: Rgba8) -> BlurV0Element {
         BlurV0Element {
             id,
@@ -154,16 +155,19 @@ impl BlurV0Element {
     /// let grey = Rgba8 { r: 122, g: 122, b: 122, a: 245 };
     /// assert!(!blur.with_finish(BlurFinish::Solid(grey)).is_framebuffer_effect());
     /// ```
+    #[must_use]
     pub fn with_finish(self, finish: BlurFinish) -> BlurV0Element {
         BlurV0Element { finish, ..self }
     }
 
     /// Whether the blur is drawn or replaced by a solid colour.
+    #[must_use]
     pub fn finish(&self) -> BlurFinish {
         self.finish
     }
 
     /// The colour the stand-in is drawn in: the one it was made with, or the solid one.
+    #[must_use]
     pub fn stand_in(&self) -> Rgba8 {
         match self.finish {
             BlurFinish::Frosted => self.stand_in,
@@ -183,6 +187,7 @@ impl BlurV0Element {
     ///     .with_look(BlurLook::MATERIAL, 2.0);
     /// assert_eq!(blur.plan().passes, 5);
     /// ```
+    #[must_use]
     pub fn with_look(self, look: BlurLook, scale: f64) -> BlurV0Element {
         BlurV0Element {
             plan: look.plan(scale),
@@ -191,6 +196,7 @@ impl BlurV0Element {
     }
 
     /// The passes this blur runs.
+    #[must_use]
     pub fn plan(&self) -> &KawasePlan {
         &self.plan
     }
@@ -205,6 +211,7 @@ impl BlurV0Element {
     /// let blur = BlurV0Element::new(Id::new(), Vec::new(), black).with_alpha(0.5);
     /// assert_eq!(blur.alpha_of(), 0.5);
     /// ```
+    #[must_use]
     pub fn with_alpha(self, alpha: f32) -> BlurV0Element {
         BlurV0Element {
             alpha: alpha.clamp(0.0, 1.0),
@@ -213,6 +220,7 @@ impl BlurV0Element {
     }
 
     /// How opaque the blur is drawn.
+    #[must_use]
     pub fn alpha_of(&self) -> f32 {
         self.alpha
     }
@@ -234,6 +242,7 @@ impl BlurV0Element {
     }
 
     /// The rectangles it blurs under (output pixels).
+    #[must_use]
     pub fn region(&self) -> &[PhysicalRect] {
         &self.region
     }
@@ -252,9 +261,10 @@ impl BlurV0Element {
     /// that far beyond the region), so damage within reach captures the blur again.
     fn area(&self) -> Rectangle<i32, Physical> {
         let bounds = self.bounds();
-        match bounds.is_empty() {
-            true => bounds,
-            false => self.plan.expand(bounds),
+        if bounds.is_empty() {
+            bounds
+        } else {
+            self.plan.expand(bounds)
         }
     }
 
@@ -310,9 +320,10 @@ impl BlurV0Element {
         damage: &[Rectangle<i32, Physical>],
     ) -> Result<(), F::Error> {
         let clipped = self.clip(damage);
-        match clipped.is_empty() {
-            true => Ok(()),
-            false => frame.draw_solid(dst, &clipped, self.stand_in().faded(self.alpha)),
+        if clipped.is_empty() {
+            Ok(())
+        } else {
+            frame.draw_solid(dst, &clipped, self.stand_in().faded(self.alpha))
         }
     }
 }
@@ -371,9 +382,10 @@ impl Element for BlurV0Element {
         commit: Option<CommitCounter>,
     ) -> DamageSet<i32, Physical> {
         let _ = scale;
-        match commit == Some(self.current_commit()) {
-            true => DamageSet::default(),
-            false => DamageSet::from_slice(&[Rectangle::from_size(self.area().size)]),
+        if commit == Some(self.current_commit()) {
+            DamageSet::default()
+        } else {
+            DamageSet::from_slice(&[Rectangle::from_size(self.area().size)])
         }
     }
 
@@ -381,9 +393,10 @@ impl Element for BlurV0Element {
     /// opaque too.
     fn opaque_regions(&self, scale: Scale<f64>) -> OpaqueRegions<i32, Physical> {
         let _ = scale;
-        match self.stand_in().is_opaque() && self.alpha >= 1.0 {
-            true => OpaqueRegions::from_slice(&self.local_region()),
-            false => OpaqueRegions::default(),
+        if self.stand_in().is_opaque() && self.alpha >= 1.0 {
+            OpaqueRegions::from_slice(&self.local_region())
+        } else {
+            OpaqueRegions::default()
         }
     }
 

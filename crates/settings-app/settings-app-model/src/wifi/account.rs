@@ -14,6 +14,7 @@ pub struct WifiLogin {
 impl WifiLogin {
     /// The account `username` and `password` make; none while either is empty. The username is
     /// trimmed, the password is not.
+    #[must_use]
     pub fn new(username: &str, password: &str) -> Option<WifiLogin> {
         let username = username.trim();
         (!username.is_empty() && !password.is_empty()).then(|| WifiLogin {

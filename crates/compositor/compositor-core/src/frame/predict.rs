@@ -17,6 +17,7 @@ pub struct RenderHistory {
 
 impl RenderHistory {
     /// No frames yet.
+    #[must_use]
     pub fn empty() -> RenderHistory {
         RenderHistory { costs: Vec::new() }
     }
@@ -33,6 +34,7 @@ impl RenderHistory {
     }
 
     /// The costs, oldest first.
+    #[must_use]
     pub fn costs(&self) -> &[Duration] {
         &self.costs
     }
@@ -48,6 +50,7 @@ impl RenderHistory {
 /// let history = RenderHistory::empty().with(Duration::from_millis(3));
 /// assert_eq!(predict(&history), Duration::from_millis(3));
 /// ```
+#[must_use]
 pub fn predict(history: &RenderHistory) -> Duration {
     history.costs.iter().copied().max().unwrap_or(DEFAULT_COST)
 }

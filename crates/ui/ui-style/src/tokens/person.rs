@@ -40,11 +40,13 @@ pub enum PersonSwatch {
 impl PersonSwatch {
     /// The swatch at `index`, wrapping: the first account takes the first swatch, the ninth
     /// the first again.
+    #[must_use]
     pub fn nth(index: usize) -> Self {
         Self::ALL[index % Self::ALL.len()]
     }
 
     /// The colour (design/03-COLOR.md section 13's accounts and pins).
+    #[must_use]
     pub fn hex(self) -> Hex {
         Hex(match self {
             PersonSwatch::Indigo => [0x5B, 0x4F, 0xC4],
@@ -59,6 +61,7 @@ impl PersonSwatch {
     }
 
     /// The colour as a [`Colour`], for `AvatarTone::Account`.
+    #[must_use]
     pub fn colour(self) -> Colour {
         Colour::Solid(self.hex())
     }

@@ -42,6 +42,7 @@ pub struct Placement {
 
 impl Placement {
     /// `side` and `align`, flipping allowed.
+    #[must_use]
     pub const fn new(side: Side, align: Align) -> Self {
         Placement {
             side,
@@ -51,6 +52,7 @@ impl Placement {
     }
 
     /// The same placement, never flipping.
+    #[must_use]
     pub const fn no_flip(self) -> Self {
         Placement {
             flip: false,
@@ -76,6 +78,7 @@ pub struct Placed {
 /// bounds' top-left corner. When the wanted side overflows, the opposite side is taken if it
 /// fits, or if it has more room than the wanted one; the clamp then keeps the surface 8 px
 /// inside the bounds, its top-left edge winning when the surface is larger than the bounds.
+#[must_use]
 pub fn place(anchor: Rect, content: Size, bounds: Rect, want: Placement, gap: Px) -> Placed {
     let side = if want.flip {
         choose_side(anchor, content, bounds, want.side, gap)
@@ -98,6 +101,7 @@ pub fn place(anchor: Rect, content: Size, bounds: Rect, want: Placement, gap: Px
 /// away from the anchor: the room between the anchor and the bounds' edge it opens toward, less
 /// the margin. A surface on the left or right of its anchor has the bounds' whole height less the
 /// margins. Never negative.
+#[must_use]
 pub fn room_on_side(anchor: Rect, bounds: Rect, side: Side, gap: Px) -> Px {
     let room = match side {
         Side::Bottom => bounds.bottom().0 - (anchor.bottom().0 + gap.0) - MARGIN.0,
@@ -138,6 +142,7 @@ fn overflow(side: Side, anchor: Rect, content: Size, bounds: Rect, gap: Px) -> f
 }
 
 /// The side across the anchor from `side`.
+#[must_use]
 pub fn opposite(side: Side) -> Side {
     match side {
         Side::Top => Side::Bottom,

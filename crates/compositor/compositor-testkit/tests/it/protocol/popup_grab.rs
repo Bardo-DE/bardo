@@ -1,4 +1,4 @@
-//! Which input serial an explicit popup grab may answer (xdg_popup.grab: "the serial of the
+//! Which input serial an explicit popup grab may answer (`xdg_popup.grab`: "the serial of the
 //! input event that triggered the request"), and what the pointer is told when a popup goes
 //! (P0-popups, W8). Qt opens a context menu on the release and grabs with the release's serial.
 
@@ -141,7 +141,7 @@ fn a_stale_forged_or_foreign_serial_does_not_grab() {
     assert!(popup.log.with(|seen| seen.done) > 0, "another client's");
 }
 
-/// A grabbed popup is dismissed when its client maps a new toplevel (xdg_popup.grab: a popup
+/// A grabbed popup is dismissed when its client maps a new toplevel (`xdg_popup.grab`: a popup
 /// of the grabbing client is dismissed when the keyboard focus moves to another toplevel).
 #[test]
 fn a_grabbed_popup_is_done_when_the_client_maps_another_toplevel() {
@@ -287,9 +287,10 @@ fn a_reactive_popup_follows_its_parent_and_another_does_not() {
             .create_surface()
             .expect("a surface");
         let client = desk.fixture.client(desk.id);
-        let popup = match reactive {
-            true => Popup::reactive_of(client, &desk.base, &desk.parent, surface, spec),
-            false => Popup::of(client, &desk.base, &desk.parent, surface, spec),
+        let popup = if reactive {
+            Popup::reactive_of(client, &desk.base, &desk.parent, surface, spec)
+        } else {
+            Popup::of(client, &desk.base, &desk.parent, surface, spec)
         };
         popup.surface.commit();
         desk.fixture.pump();
@@ -326,7 +327,7 @@ fn a_reactive_popup_follows_its_parent_and_another_does_not() {
 }
 
 /// The new position of a repositioned popup takes effect when the client acks the configure,
-/// with no commit after it (xdg_popup.repositioned).
+/// with no commit after it (`xdg_popup.repositioned`).
 #[test]
 fn a_repositioned_popup_is_where_the_ack_put_it_without_a_commit() {
     let mut desk = desk();
@@ -390,7 +391,7 @@ fn a_repositioned_popup_is_where_the_ack_put_it_without_a_commit() {
     );
 }
 
-/// A window that is being moved by the person loses the pointer's focus (xdg_toplevel.move: "the
+/// A window that is being moved by the person loses the pointer's focus (`xdg_toplevel.move`: "the
 /// surface will lose the focus of the device used for the move") and has it back when the
 /// button is let go.
 #[test]

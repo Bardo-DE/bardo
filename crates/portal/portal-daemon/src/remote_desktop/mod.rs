@@ -69,6 +69,7 @@ impl RemoteDesktopService {
     /// A service with no sessions, asking the person through `asker` and getting sockets from
     /// `eis`. Apps are shown by their ids until [`RemoteDesktopService::with_names`] says where
     /// their names are.
+    #[must_use]
     pub fn new(asker: Box<dyn Asker>, eis: Box<dyn EisHandout>) -> Self {
         Self {
             core: Arc::new(Core::new(eis)),
@@ -89,6 +90,7 @@ impl RemoteDesktopService {
     }
 
     /// This service letting through the callers `guard` admits. Without it, no wire call passes.
+    #[must_use]
     pub fn with_guard(mut self, guard: RoleGuard) -> Self {
         self.guard = guard;
         self
@@ -104,6 +106,7 @@ impl RemoteDesktopService {
     }
 
     /// This service showing apps by the names `names` finds.
+    #[must_use]
     pub fn with_names(mut self, names: AppNames) -> Self {
         self.names = names;
         self
@@ -111,6 +114,7 @@ impl RemoteDesktopService {
 
     /// Opens the session `key` for `app_id`, hung on no peer. A handle that is already open
     /// fails, and so does a full book.
+    #[must_use]
     pub fn create(&self, key: SessionKey, app_id: &str) -> Reply {
         match self.create_for(key, app_id, Tether::default()) {
             Ok(_) => Response::granted().into_wire(),
@@ -298,11 +302,13 @@ impl RemoteDesktopService {
     }
 
     /// How many sessions are open.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.core.len()
     }
 
     /// Whether none are open.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }

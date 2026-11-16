@@ -2,20 +2,20 @@
 //!
 //! | State | Event | Next | Out |
 //! |---|---|---|---|
-//! | Rest | CommandDown at t | Down { until: t + hold } | none |
-//! | Down { until } | CommandUp at t < until | Rest | Tap |
-//! | Down { until } | CommandUp at t >= until (its Elapsed not fed yet) | Rest | none |
-//! | Down | OtherKey, Escape or Pointer | Chorded | none (Command-C or Command-click; the mic never opened) |
+//! | Rest | `CommandDown` at t | Down { until: t + hold } | none |
+//! | Down { until } | `CommandUp` at t < until | Rest | Tap |
+//! | Down { until } | `CommandUp` at t >= until (its Elapsed not fed yet) | Rest | none |
+//! | Down | `OtherKey`, Escape or Pointer | Chorded | none (Command-C or Command-click; the mic never opened) |
 //! | Down { until } | Elapsed at t >= until | Talking { until: t + max } | Start |
-//! | Talking | CommandUp | Rest | End |
-//! | Talking | OtherKey | Chorded | Cancel(OtherInput) |
+//! | Talking | `CommandUp` | Rest | End |
+//! | Talking | `OtherKey` | Chorded | Cancel(OtherInput) |
 //! | Talking | Escape | Chorded | Cancel(Escape) |
 //! | Talking | Pointer | Chorded | Cancel(OtherInput) (a slow Command-click; the words are dropped) |
 //! | Talking { until } | Elapsed at t >= until | Chorded | End (what was heard is sent) |
-//! | Chorded | CommandUp | Rest | none |
+//! | Chorded | `CommandUp` | Rest | none |
 //!
-//! Every other pair leaves the state as it is and wants nothing: a repeated CommandDown (key
-//! repeat), an early Elapsed, any edge but CommandDown at rest. The machine is idle in `Rest` and
+//! Every other pair leaves the state as it is and wants nothing: a repeated `CommandDown` (key
+//! repeat), an early Elapsed, any edge but `CommandDown` at rest. The machine is idle in `Rest` and
 //! `Chorded` with no timer. `Down` and `Talking` keep their deadline rather than their start
 //! because [`Machine::wake`] reads the state alone.
 
@@ -116,7 +116,7 @@ impl Machine for HoldKey {
         input: HoldIn,
         at: Stamp,
         params: &HoldParams,
-        _: &(),
+        (): &(),
     ) -> (HoldKey, Vec<HoldOut>) {
         match (self, input) {
             (HoldKey::Rest, HoldIn::Edge(KeyEdge::CommandDown)) => silent(down(at, params)),

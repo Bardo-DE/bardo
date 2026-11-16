@@ -31,6 +31,7 @@ pub struct CatalogueTool {
 
 impl CatalogueTool {
     /// The action.
+    #[must_use]
     pub fn action(&self) -> ActionRef {
         ActionRef {
             app: self.app.clone(),
@@ -39,6 +40,7 @@ impl CatalogueTool {
     }
 
     /// The card the assembler budgets: label, effect, reach and the argument schema.
+    #[must_use]
     pub fn card(&self) -> ActionCard {
         ActionCard {
             action: self.action(),
@@ -55,6 +57,7 @@ impl CatalogueTool {
     /// The function declaration the model sees: the parameters as one object, and a `target`
     /// beside them when the action acts on things. It holds no handles, so a target may be a
     /// handle or a thing in full.
+    #[must_use]
     pub fn declaration(&self) -> Option<ToolDecl> {
         self.declaration_for(&[], &[])
     }
@@ -64,6 +67,7 @@ impl CatalogueTool {
     /// for that kind when they are few, so a handle of the wrong kind cannot be written. A
     /// parameter in `known` lists the values this turn allows, so a name outside them cannot be
     /// written either.
+    #[must_use]
     pub fn declaration_for(&self, held: &[HandleCard], known: &[OneOf]) -> Option<ToolDecl> {
         let mut schema = tool_schema(&self.decl).0;
         for one_of in known {
@@ -215,21 +219,25 @@ impl Catalogue {
     }
 
     /// A catalogue of exactly these tools, in this order: a narrowed copy of another.
+    #[must_use]
     pub fn from_tools(tools: Vec<CatalogueTool>) -> Self {
         Self { tools }
     }
 
     /// Every tool, in order.
+    #[must_use]
     pub fn tools(&self) -> &[CatalogueTool] {
         &self.tools
     }
 
     /// The tool the model named.
+    #[must_use]
     pub fn named(&self, name: &str) -> Option<&CatalogueTool> {
         self.tools.iter().find(|t| t.name.as_str() == name)
     }
 
     /// The tool of an action.
+    #[must_use]
     pub fn of(&self, action: &ActionRef) -> Option<&CatalogueTool> {
         self.tools.iter().find(|t| &t.action() == action)
     }
@@ -240,13 +248,14 @@ impl Catalogue {
     }
 
     /// The schema of one action's parameters.
+    #[must_use]
     pub fn schema_of(&self, action: &ActionRef) -> Option<ToolSchema> {
         self.of(action).map(|t| tool_schema(&t.decl))
     }
 }
 
 /// A name for the model: the app and the action, their dots made `_`, since Anthropic's and
-/// OpenAI's tool names allow only `[A-Za-z0-9_-]` and refuse the whole request otherwise. One
+/// `OpenAI`'s tool names allow only `[A-Za-z0-9_-]` and refuse the whole request otherwise. One
 /// that is too long, or taken, is `a<n>` by its place in the catalogue, which is stable while
 /// the manifests are.
 fn unique_name(tools: &[CatalogueTool], app: &AppName, decl: &ActionDecl) -> Option<ToolName> {

@@ -13,6 +13,7 @@ pub struct NotificationId(pub u32);
 
 impl NotificationId {
     /// The id a `Notify` with `replaces_id` names: `None` for the spec's 0.
+    #[must_use]
     pub fn replacing(wire: u32) -> Option<NotificationId> {
         (wire != 0).then_some(NotificationId(wire))
     }
@@ -34,11 +35,13 @@ impl ActionKey {
     pub const DEFAULT: &'static str = "default";
 
     /// The body's click.
+    #[must_use]
     pub fn default_action() -> ActionKey {
         ActionKey(ActionKey::DEFAULT.to_owned())
     }
 
     /// Whether this is the spec's `default` action, compared whole.
+    #[must_use]
     pub fn is_default(&self) -> bool {
         self.0 == ActionKey::DEFAULT
     }
@@ -71,6 +74,7 @@ pub struct UnixMs(pub i64);
 
 impl UnixMs {
     /// Milliseconds from `earlier` to `self`, zero if `earlier` is later.
+    #[must_use]
     pub fn since(self, earlier: UnixMs) -> u64 {
         u64::try_from(self.0.saturating_sub(earlier.0)).unwrap_or(0)
     }

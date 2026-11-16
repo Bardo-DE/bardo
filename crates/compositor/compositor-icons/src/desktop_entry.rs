@@ -24,6 +24,7 @@ pub struct DesktopEntry {
 /// let got = parse_desktop_entry("[Desktop Entry]\nIcon=firefox\n[Desktop Action x]\nIcon=no\n");
 /// assert_eq!(got.icon.as_deref(), Some("firefox"));
 /// ```
+#[must_use]
 pub fn parse(text: &str) -> DesktopEntry {
     let Ok(file) = DesktopFile::parse(text, DESKTOP_ENTRY_CAP) else {
         return DesktopEntry::default();
@@ -42,6 +43,7 @@ pub fn parse(text: &str) -> DesktopEntry {
 /// folders, subfolders too, most important first) by `ui_helpers::match_app`'s five rules: the
 /// file's id, the id in any case, `StartupWMClass`, the id's last labels, the Flatpak id. Nothing
 /// when no file does.
+#[must_use]
 pub fn entry_for(dirs: &[PathBuf], app_id: &str) -> Option<DesktopEntry> {
     let entries = load_entries(dirs);
     let found = entry_for_window(&entries, app_id, None)?;

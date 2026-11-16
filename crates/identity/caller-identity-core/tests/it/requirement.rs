@@ -38,16 +38,12 @@ fn proofs_are_ordered_and_any_one_requirement_is_enough() {
         Requirement::new(role("shell"), Proof::Full),
         Requirement::new(role("settings"), Proof::Exe),
     ];
-    assert!(
-        service("settings", Proof::Full, Pin::Reopened)
-            .holds(&need)
-            .is_ok()
-    );
-    assert!(
-        service("settings", Proof::Cgroup, Pin::Reopened)
-            .holds(&need)
-            .is_err()
-    );
+    service("settings", Proof::Full, Pin::Reopened)
+        .holds(&need)
+        .unwrap();
+    service("settings", Proof::Cgroup, Pin::Reopened)
+        .holds(&need)
+        .unwrap_err();
 }
 
 #[test]

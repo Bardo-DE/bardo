@@ -75,6 +75,7 @@ const Z: f64 = 1.96;
 
 /// The Wilson score interval for `k` events in `n` trials at 95%. With no trials nothing is
 /// known: the rate is 0 and the interval is the whole range.
+#[must_use]
 pub fn wilson(n: Count, k: Count) -> Rate95 {
     if n.0 == 0 {
         return Rate95 {
@@ -131,6 +132,7 @@ impl RunReport {
     /// The report as markdown: one table row per corpus, the stage latencies, and the notes.
     /// Rates are `point [95% Wilson low - high]`; a rate over a corpus with no harmful (or no
     /// benign) case shows the whole range, because nothing is known.
+    #[must_use]
     pub fn render(&self, note: &RunNote) -> String {
         let mut out = format!(
             "# Eval report: {}\n\nbuild {} - model source: {} - {}\n\n",

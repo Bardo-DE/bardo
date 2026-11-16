@@ -57,6 +57,7 @@ impl std::fmt::Display for NotReady {
 
 impl NotReady {
     /// Whether the person set this up wrong (their file), rather than the engine being away.
+    #[must_use]
     pub fn is_setup(&self) -> bool {
         matches!(
             self,

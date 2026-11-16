@@ -146,7 +146,7 @@ fn only_ollama(port: u16) -> ProbeConfig {
     }
 }
 
-/// A world whose app is Mail, with OpenRouter granted to it (a cloud reach that would answer),
+/// A world whose app is Mail, with `OpenRouter` granted to it (a cloud reach that would answer),
 /// and a probe of one port for Ollama.
 async fn world(port: u16, local_only: bool) -> World {
     World::start(Plan {

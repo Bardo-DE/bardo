@@ -30,6 +30,7 @@ pub struct Choices {
 /// The choices for `capability` among `installed`, the usable Extensions in serving order
 /// ([`Resolved::registry`](crate::Resolved)`.installed()`). Pure: nothing is read. "Your changes"
 /// ([`YOUR_CHANGES_ID`]) is never on offer: it is always applied, on top of the choice.
+#[must_use]
 pub fn choices_for(capability: Capability, installed: &[Installed<Provision>]) -> Choices {
     let mut words = vec![STANDARD.to_owned()];
     let mut labels = vec![(STANDARD.to_owned(), STANDARD_LABEL.to_owned())];
@@ -56,21 +57,25 @@ pub fn choices_for(capability: Capability, installed: &[Installed<Provision>]) -
 
 impl Choices {
     /// The stored words, `standard` first.
+    #[must_use]
     pub fn words(&self) -> &[String] {
         &self.words
     }
 
     /// The label of each word: "Standard", and each Extension's name.
+    #[must_use]
     pub fn labels(&self) -> &WordLabels {
         &self.labels
     }
 
     /// Whether `id` is one of the Extensions on offer.
+    #[must_use]
     pub fn offers(&self, id: &str) -> bool {
         self.words.iter().skip(1).any(|word| word == id)
     }
 
     /// `key` with these choices in it, drawn by the `menu` control (`KeySpec::offering`).
+    #[must_use]
     pub fn fill(&self, key: &KeySpec) -> KeySpec {
         key.offering(self.words.clone(), self.labels.clone())
     }
@@ -85,6 +90,7 @@ pub struct Stale {
 
 impl Stale {
     /// The report for `Loaded`'s diagnostics: the key, and that Standard is used instead.
+    #[must_use]
     pub fn invalid_key(&self, key: &KeyPath) -> InvalidKey {
         InvalidKey {
             path: key.0.clone(),
@@ -108,6 +114,7 @@ pub struct Chosen {
 
 /// The choice `stored` means among `choices`: an id that is on offer is used; `standard` is the
 /// standard one; any other id reads as `standard` and is returned as [`Stale`].
+#[must_use]
 pub fn chosen(stored: &Provided, choices: &Choices) -> Chosen {
     match stored.chosen() {
         None => Chosen {

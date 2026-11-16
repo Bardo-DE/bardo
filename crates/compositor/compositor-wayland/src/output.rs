@@ -42,6 +42,7 @@ impl std::fmt::Debug for Remover {
 impl OutputPart {
     /// Creates the `zxdg_output_manager_v1` global (version 3); `wl_output` globals come with
     /// [`apply_plug`]. Every connection sees them.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> OutputPart
     where
         D: GlobalDispatch<WlOutput, WlOutputData>
@@ -176,7 +177,7 @@ pub fn apply_change(part: &mut OutputPart, wire: &OutputWire) -> Result<(), Wayl
     match part.outputs.get(&wire.key) {
         Some(output) => apply_state(output, wire),
         None => {
-            tracing::warn!(output = %wire.name.as_str(), "change for an output that is not advertised")
+            tracing::warn!(output = %wire.name.as_str(), "change for an output that is not advertised");
         }
     }
     Ok(())

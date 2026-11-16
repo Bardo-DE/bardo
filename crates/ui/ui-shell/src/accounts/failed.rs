@@ -1,4 +1,4 @@
-//! SignInFailed: the sign-in ended without an account, and why. The person tries again (when a
+//! `SignInFailed`: the sign-in ended without an account, and why. The person tries again (when a
 //! retry could help), goes back a step, or is done. A fault may carry one more action of its own.
 
 use super::adapter::{Action, Intent, Landing};
@@ -24,6 +24,7 @@ impl SignInFault {
     /// Whether a retry can help after this fault: only `AlreadyAdded` says no, since the
     /// account stays added however often the person tries. `SignInFailed` uses it when its
     /// `recovery` is left out.
+    #[must_use]
     pub fn recovery(self) -> Recovery {
         match self {
             SignInFault::AlreadyAdded => Recovery::NoRetry,

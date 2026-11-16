@@ -18,6 +18,7 @@ pub fn retry_after(response: &Response<Vec<u8>>, now: UnixSeconds) -> RetryAfter
 }
 
 /// A read answered with `response`, which was not what it needed.
+#[must_use]
 pub fn read_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> ReplicaError {
     match response.status().as_u16() {
         401 | 403 => ReplicaError::Unauthorized,
@@ -29,6 +30,7 @@ pub fn read_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> ReplicaErro
 /// A request that produced no response: nothing here is the account's fault, so try again,
 /// except access it has not given yet, which the host that opens connections says before any
 /// request is sent.
+#[must_use]
 pub fn unreached(error: HttpError) -> ReplicaError {
     match error {
         HttpError::NotGranted => ReplicaError::NeedsConsent,
@@ -37,6 +39,7 @@ pub fn unreached(error: HttpError) -> ReplicaError {
 }
 
 /// The same for a write: access not given yet is a write the account may not make.
+#[must_use]
 pub fn write_unreached(error: HttpError) -> PutRefused {
     match error {
         HttpError::NotGranted => PutRefused::Forbidden,
@@ -46,6 +49,7 @@ pub fn write_unreached(error: HttpError) -> PutRefused {
 
 /// A read that failed while a write was being settled: nothing the account did wrong, except a
 /// token the server refused.
+#[must_use]
 pub fn refused(error: ReplicaError) -> PutRefused {
     match error {
         ReplicaError::Unauthorized => PutRefused::Unauthorized,

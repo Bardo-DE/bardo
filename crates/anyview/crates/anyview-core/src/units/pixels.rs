@@ -47,6 +47,7 @@ pub struct PixelSize {
 
 impl PixelSize {
     /// The pixels the size covers.
+    #[must_use]
     pub fn area(self) -> PixelArea {
         PixelArea(u64::from(self.width.0) * u64::from(self.height.0)) // two u32s cannot overflow a u64
     }

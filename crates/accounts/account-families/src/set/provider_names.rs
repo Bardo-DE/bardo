@@ -18,6 +18,7 @@ pub struct ProviderNames {
 
 impl ProviderNames {
     /// The names of `specs`, one per provider id.
+    #[must_use]
     pub fn from_specs(specs: &[ProviderSpec]) -> Self {
         Self {
             known: specs
@@ -28,23 +29,24 @@ impl ProviderNames {
     }
 
     /// What a person reads for `provider`, if its file is loaded.
+    #[must_use]
     pub fn label_of(&self, provider: &ProviderId) -> Option<&str> {
         self.known.get(provider).map(|(label, _)| label.as_str())
     }
 
     /// The group `account` is listed under: its provider's, else the one decided from the
     /// account itself.
+    #[must_use]
     pub fn group_of(&self, account: &Account) -> ProviderGroup {
-        match self.known.get(&account.provider) {
-            Some((_, group)) => *group,
-            None => {
-                let kinds: Vec<_> = account
-                    .capabilities
-                    .iter()
-                    .map(|c| c.offer.kind())
-                    .collect();
-                ProviderGroup::fallback(account.auth, &kinds)
-            }
+        if let Some((_, group)) = self.known.get(&account.provider) {
+            *group
+        } else {
+            let kinds: Vec<_> = account
+                .capabilities
+                .iter()
+                .map(|c| c.offer.kind())
+                .collect();
+            ProviderGroup::fallback(account.auth, &kinds)
         }
     }
 }

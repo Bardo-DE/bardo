@@ -16,7 +16,7 @@ use mouse_gestures_proto::{Axis, Phase, ToHost};
 
 /// The scroll message of `e` for the shell, if it has one. A Spaces swipe is not a scroll: the
 /// shell sees it as a gesture that opens and closes without ever beginning, as it always has,
-/// so its Began and Changed have no message while its MayBegin and Ended do.
+/// so its Began and Changed have no message while its `MayBegin` and Ended do.
 pub fn host_scroll(e: &StrokeEvent, speed: Count, now: Mono) -> Option<Out> {
     let (phase, axis, (dx_px, dy_px)) = match e.moment {
         Moment::Announced => (Phase::MayBegin, None, (0.0, 0.0)),

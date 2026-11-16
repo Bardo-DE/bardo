@@ -18,6 +18,7 @@ use std::sync::Arc;
 use tokio::sync::{broadcast, mpsc};
 
 /// The id of the `n`th run cuad starts: `r-<n>`.
+#[must_use]
 pub fn mint_run_id(n: u64) -> RunId {
     RunId::parse(&format!("r-{n}")).expect("`r-` and digits are an id")
 }
@@ -126,6 +127,7 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// The configuration cuad started with.
+    #[must_use]
     pub fn config(&self) -> &CuadConfig {
         &self.shared.config
     }
@@ -140,11 +142,13 @@ impl<S: Seams> Supervisor<S> {
     /// The `cua.*` values in force now: the person's latest settings, else the configuration's.
     /// Every new run and every guard reads them afresh, so a change applies to the next one (a
     /// run already going keeps the values it started with).
+    #[must_use]
     pub fn settings(&self) -> CuaConfig {
         self.live().config
     }
 
     /// The apps computer use may drive now.
+    #[must_use]
     pub fn apps(&self) -> Apps {
         self.live().apps
     }
@@ -166,56 +170,67 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// The desktop.
+    #[must_use]
     pub fn desktop(&self) -> &S::Desktop {
         &self.shared.desktop
     }
 
     /// The seat.
+    #[must_use]
     pub fn seat(&self) -> &S::Seat {
         &self.shared.seat
     }
 
     /// Capture.
+    #[must_use]
     pub fn capture(&self) -> &S::Capture {
         &self.shared.capture
     }
 
     /// The accessibility source.
+    #[must_use]
     pub fn a11y(&self) -> &S::A11y {
         &self.shared.a11y
     }
 
     /// The router's gate.
+    #[must_use]
     pub fn gate(&self) -> &S::Gate {
         &self.shared.gate
     }
 
     /// The event log and the message path.
+    #[must_use]
     pub fn events(&self) -> &S::Events {
         &self.shared.events
     }
 
     /// The clock.
+    #[must_use]
     pub fn clock(&self) -> &S::Time {
         &self.shared.clock
     }
 
     /// Which run holds which window now.
+    #[must_use]
     pub fn lease_book(&self) -> LeaseBook {
         self.shared.state().leases.clone()
     }
 
     /// How many runs have been started (the next id is `r-<this + 1>`).
+    #[must_use]
     pub fn started(&self) -> u64 {
         self.shared.state().next
     }
 
     /// The ids of the runs now.
+    #[must_use]
     pub fn runs(&self) -> Vec<RunId> {
         self.shared.state().live.keys().cloned().collect()
     }
 
     /// What the bus shows of one live run.
+    #[must_use]
     pub fn view(&self, run: &RunId) -> Option<RunView> {
         self.shared
             .state()
@@ -226,6 +241,7 @@ impl<S: Seams> Supervisor<S> {
 
     /// Everything that happens from now on, in order. A listener that falls too far behind
     /// misses the oldest events and is told so.
+    #[must_use]
     pub fn subscribe(&self) -> broadcast::Receiver<SupervisorEvent> {
         self.shared.bus.subscribe()
     }
@@ -321,18 +337,17 @@ impl<S: Seams> Supervisor<S> {
         // The run follows the mode of the conversation that started it, which the task names until
         // the run's own session replaces it.
         let conversation = task.conversation.clone();
-        match self
+        if let Ok(session) = self
             .shared
             .gate
             .open_session(&id, &task.space, &conversation)
             .await
         {
-            Ok(session) => task.session = session,
-            Err(_) => {
-                let mut state = self.shared.state();
-                state.leases = state.leases.release(&id);
-                return Err(ControlRefusal::NotPermitted);
-            }
+            task.session = session
+        } else {
+            let mut state = self.shared.state();
+            state.leases = state.leases.release(&id);
+            return Err(ControlRefusal::NotPermitted);
         }
         let (run, effects) = {
             let mut state = self.shared.state();

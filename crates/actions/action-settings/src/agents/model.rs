@@ -111,6 +111,7 @@ pub struct Agents {
 
 impl Agents {
     /// The row of `program`.
+    #[must_use]
     pub fn get(&self, program: &str) -> Option<&AgentRow> {
         self.rows.iter().find(|r| r.program == program)
     }

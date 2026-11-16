@@ -62,6 +62,7 @@ pub struct ExtensionChange {
 
 impl ExtensionChange {
     /// A rename of `from` to `to` in `folder`; `kept` is the name that keeps the old extension.
+    #[must_use]
     pub fn new(
         folder: FolderPath,
         from: FileName,
@@ -77,6 +78,7 @@ impl ExtensionChange {
     }
 
     /// The extension the file has now, without its dot; `None` when it has none.
+    #[must_use]
     pub fn old_extension(&self) -> Option<String> {
         self.from
             .extension()
@@ -84,6 +86,7 @@ impl ExtensionChange {
     }
 
     /// The extension the typed name has, without its dot; `None` when it has none.
+    #[must_use]
     pub fn new_extension(&self) -> Option<String> {
         self.to
             .extension()
@@ -104,6 +107,7 @@ pub struct BusyDisk {
 
 impl BusyDisk {
     /// The disk `id`, shown as `name`, with the `programs` found using it.
+    #[must_use]
     pub fn new(id: VolumeId, name: VolumeName, programs: Vec<ProgramName>) -> BusyDisk {
         BusyDisk { id, name, programs }
     }

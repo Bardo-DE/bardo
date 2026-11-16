@@ -45,6 +45,7 @@ impl RowDraw {
     /// assert_eq!(row.shift_of(WindowId(2)), SubPx(0), "the shown Space sits in place");
     /// assert_eq!(row.shift_of(WindowId(3)), SubPx(0), "on every Space: not moved");
     /// ```
+    #[must_use]
     pub fn shift_of(&self, window: WindowId) -> SubPx {
         let Some(column) = self.columns.get(&window) else {
             return SubPx(0);
@@ -55,12 +56,14 @@ impl RowDraw {
 
     /// `windows` moved to their columns, those left out of sight of `area` (the output's
     /// rectangle) dropped; a window whose shadow only reaches in is kept. Their order is kept.
+    #[must_use]
     pub fn shifted(&self, windows: &[PlacedWindow], area: LogicalRect) -> Vec<PlacedWindow> {
         self.placed_in(windows, area, REACH)
     }
 
     /// `windows` moved to their columns, those whose body is not on `area` dropped: what the
     /// pointer can reach.
+    #[must_use]
     pub fn touching(&self, windows: &[PlacedWindow], area: LogicalRect) -> Vec<PlacedWindow> {
         self.placed_in(windows, area, 0)
     }

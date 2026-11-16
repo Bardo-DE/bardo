@@ -108,6 +108,7 @@ const MIGRATIONS: &[(VocabVersion, Migration)] = &[];
 
 impl Persisted {
     /// A registry with nothing in it, at this build's vocabulary.
+    #[must_use]
     pub fn empty() -> Self {
         Self {
             vocab: VocabVersion::CURRENT,

@@ -183,9 +183,12 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             })
             .flat_map(|step| step.targets.iter().cloned())
             .collect();
-        let words = || match rt.said.is_empty() {
-            true => rt.progress.last().cloned().unwrap_or_default(),
-            false => rt.said.join("\n"),
+        let words = || {
+            if rt.said.is_empty() {
+                rt.progress.last().cloned().unwrap_or_default()
+            } else {
+                rt.said.join("\n")
+            }
         };
         let (ending, why) = match (ran, state.phase) {
             (Err(_), _) => (JobEnding::Failed(JobFault::Crashed), None),

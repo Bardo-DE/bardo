@@ -21,6 +21,7 @@ pub enum GooglePrompt {
 impl GooglePrompt {
     /// The prompt for a sign-in: consent on a client's first sign-in for the identity; after
     /// that none when the address is known (one click), and the account chooser when it is not.
+    #[must_use]
     pub fn choose(signed_in_before: bool, hint: Option<&LoginHint>) -> Self {
         match (signed_in_before, hint) {
             (true, Some(_)) => Self::Unspecified,
@@ -49,6 +50,7 @@ pub struct AuthorizeAsk {
 
 impl AuthorizeAsk {
     /// What `start` says: its address and its consent history.
+    #[must_use]
     pub fn of(start: &SignInStart) -> Self {
         Self {
             login_hint: start.login_hint.clone(),
@@ -59,6 +61,7 @@ impl AuthorizeAsk {
 
 /// The authorize URL for `client` at `endpoints`, redirecting to `redirect`, for a first sign-in
 /// with no address named. [`authorize_url_for`] is the same with an [`AuthorizeAsk`].
+#[must_use]
 pub fn authorize_url(
     endpoints: &IssuerEndpoints,
     client: &ClientEntry,
@@ -84,6 +87,7 @@ pub fn authorize_url(
 /// It also gets `include_granted_scopes=true`, so asking for one more service later
 /// (incremental authorization) keeps what was granted before. Any issuer gets `login_hint=` when
 /// `ask` has an address.
+#[must_use]
 pub fn authorize_url_for(
     endpoints: &IssuerEndpoints,
     client: &ClientEntry,

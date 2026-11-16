@@ -125,7 +125,7 @@ fn a_region_falls_back_to_the_installed_dictionary() {
     );
 }
 
-/// The system's en_US, where it is installed (Fedora's `hunspell-en-US`); skipped otherwise.
+/// The system's `en_US`, where it is installed (Fedora's `hunspell-en-US`); skipped otherwise.
 #[test]
 fn the_system_dictionary_checks_english_where_installed() {
     let system = SpellConfig::system();

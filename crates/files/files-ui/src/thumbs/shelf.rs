@@ -16,6 +16,7 @@ pub struct Thumbs {
 
 impl Thumbs {
     /// The answer for `key`, if one has come.
+    #[must_use]
     pub fn get(&self, key: &ThumbKey) -> Option<&Thumbed> {
         self.held.get(key)
     }
@@ -33,11 +34,13 @@ impl Thumbs {
     }
 
     /// How many answers are held.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.held.len()
     }
 
     /// Whether none is held.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.held.is_empty()
     }

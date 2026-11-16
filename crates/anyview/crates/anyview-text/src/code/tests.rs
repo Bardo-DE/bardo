@@ -113,7 +113,7 @@ fn a_window_inside_a_block_comment_is_a_comment_whichever_window_asked_first() {
     // The same window after highlighting the file from the top.
     let (h, mut c) = code(&commented_file(), "rust");
     let whole = highlight(&h, &mut c, 0, 200);
-    assert_eq!(&whole[129..131], &direct[..]);
+    assert_eq!(&whole[129..131], &*direct);
     let again = highlight(&h, &mut c, 129, 131);
     assert_eq!(again, direct, "a window after the save points exist");
     // After the comment closes the code is code again.

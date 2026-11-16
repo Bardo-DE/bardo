@@ -70,6 +70,7 @@ pub enum SharingEffect {
 }
 
 /// The next state and what to do.
+#[must_use]
 pub fn sharing_step(state: Sharing, input: SharingInput) -> (Sharing, Vec<SharingEffect>) {
     match (state, input) {
         (Sharing::Idle, SharingInput::Switched(true, existing)) => {

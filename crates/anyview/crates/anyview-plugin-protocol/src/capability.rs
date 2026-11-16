@@ -37,6 +37,7 @@ impl Capability {
     ];
 
     /// The name a manifest and a message spell it with.
+    #[must_use]
     pub fn name(self) -> &'static str {
         match self {
             Capability::Probe => "probe",

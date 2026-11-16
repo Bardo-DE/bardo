@@ -28,6 +28,7 @@ pub struct Decoration {
 
 impl Decoration {
     /// The newest mode the compositor chose.
+    #[must_use]
     pub fn newest(&self) -> Option<Mode> {
         self.modes.with(|seen| seen.last().copied())
     }
@@ -69,7 +70,7 @@ impl Dispatch<ZxdgDecorationManagerV1, ()> for Host {
         _: &mut Self,
         _: &ZxdgDecorationManagerV1,
         _: <ZxdgDecorationManagerV1 as Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {

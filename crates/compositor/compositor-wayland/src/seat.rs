@@ -271,6 +271,7 @@ where
 
 /// The `repeat_info` arguments the settings say: keys per second, then milliseconds before
 /// the first repeat.
+#[must_use]
 pub fn repeat_wire(keyboard: &KeyboardSettings) -> (i32, i32) {
     (
         i32::try_from(keyboard.repeat_rate.0).unwrap_or(i32::MAX),

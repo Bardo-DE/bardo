@@ -43,7 +43,7 @@ fn dotted(path: &str, key: &str) -> String {
 /// `fresh`'s keys laid over `table`, whose own path is `path`.
 fn lay(table: &mut Table, fresh: &Table, unknown: &HashSet<&str>, path: &str) {
     drop_owned_but_absent(table, fresh, unknown, path);
-    for (key, item) in fresh.iter() {
+    for (key, item) in fresh {
         match table.get_mut(key) {
             Some(old) => {
                 let opens = old.is_inline_table() && item.is_table();

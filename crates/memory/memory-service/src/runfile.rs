@@ -4,7 +4,7 @@
 //! became of the run. Pure apart from `load_all` and `save`, which take the vault.
 //!
 //! The file holds the run's hunks as the person reviews them (each hunk carries its own
-//! pre-image: Tidy and ExternalEdit their `before` text, Promote and Supersede the facts they
+//! pre-image: Tidy and `ExternalEdit` their `before` text, Promote and Supersede the facts they
 //! cite, which `Grounds` checks again at apply time), the skipped hunks with their reasons, and
 //! the log cut the run was drafted from. The pre-images of files an *applied* run rewrote stay in
 //! memory (see FINDINGS "proposal-file"): the file would otherwise keep text the person may

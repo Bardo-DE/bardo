@@ -19,11 +19,13 @@ pub struct OpenTarget {
 
 impl OpenTarget {
     /// The file called `name` in `folder`.
+    #[must_use]
     pub fn new(folder: FolderPath, name: FileName) -> OpenTarget {
         OpenTarget { folder, name }
     }
 
     /// The full path of the file.
+    #[must_use]
     pub fn path(&self) -> PathBuf {
         self.folder.as_path().join(self.name.as_os_str())
     }

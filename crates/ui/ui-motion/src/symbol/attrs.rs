@@ -47,6 +47,7 @@ fn key(effect: SymbolEffect) -> u32 {
 }
 
 /// The memory after rendering `effect`, and what the wrapper wears.
+#[must_use]
 pub fn advance(memory: Memory, effect: SymbolEffect) -> (Memory, SymbolAttrs) {
     let now = key(effect);
     let changed = memory.seen.is_some_and(|seen| seen != now);

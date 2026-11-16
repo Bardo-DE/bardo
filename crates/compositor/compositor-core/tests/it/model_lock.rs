@@ -601,22 +601,19 @@ fn only_the_shell_or_the_same_client_takes_a_lock_over() {
     ];
     for (name, client, taken) in cases {
         let run = run_from(orphaned.model.clone(), vec![requested_by(client)]);
-        match taken {
-            Some((holder, effects)) => {
-                assert_eq!(
-                    run.model.lock(),
-                    &LockState::Locked {
-                        holder,
-                        surfaces: LockSurfaces::Pending
-                    },
-                    "{name}"
-                );
-                assert_eq!(last(&run), effects, "{name}");
-            }
-            None => {
-                assert_same_world(&run.model, &orphaned.model, name);
-                assert_eq!(last(&run), [Effect::Lock(LockReply::Finished)], "{name}");
-            }
+        if let Some((holder, effects)) = taken {
+            assert_eq!(
+                run.model.lock(),
+                &LockState::Locked {
+                    holder,
+                    surfaces: LockSurfaces::Pending
+                },
+                "{name}"
+            );
+            assert_eq!(last(&run), effects, "{name}");
+        } else {
+            assert_same_world(&run.model, &orphaned.model, name);
+            assert_eq!(last(&run), [Effect::Lock(LockReply::Finished)], "{name}");
         }
     }
 }

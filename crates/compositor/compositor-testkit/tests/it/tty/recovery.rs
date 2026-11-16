@@ -88,9 +88,10 @@ impl Kms for Picky {
                 .iter()
                 .any(|mode| mode.size == output.mode.size && mode.refresh == output.mode.refresh)
         });
-        match refused {
-            true => Err(KmsError::Refused(KmsRefusal::Bandwidth)),
-            false => self.inner.commit(commit),
+        if refused {
+            Err(KmsError::Refused(KmsRefusal::Bandwidth))
+        } else {
+            self.inner.commit(commit)
         }
     }
 
@@ -256,7 +257,7 @@ fn a_refused_first_mode_falls_back_to_the_preferred_then_the_smallest() {
 fn an_output_no_mode_lights_is_an_error_and_not_a_panic() {
     let mut rig = rig(&[0, 1, 2]);
     let asked = config(rig.modes[0]);
-    assert!(rig.backend.apply(&rig.name, &asked, at(0)).is_err());
+    rig.backend.apply(&rig.name, &asked, at(0)).unwrap_err();
     assert!(rig.backend.lit.is_empty());
 }
 
@@ -471,8 +472,8 @@ fn a_display_that_shows_nothing_for_ten_seconds_is_frozen_and_a_landing_flip_cle
 #[test]
 fn three_failed_frames_in_a_row_recover_the_output() {
     let mut set = set_over(Box::new(Refusing(std::io::ErrorKind::Other)));
-    assert!(present(&mut set, 0).is_err());
-    assert!(present(&mut set, 1).is_err());
+    present(&mut set, 0).unwrap_err();
+    present(&mut set, 1).unwrap_err();
     assert_eq!(
         present(&mut set, 2).expect("recovered"),
         PresentOutcome::Recovered

@@ -21,6 +21,7 @@ use crate::tokens::{
 use ui_core::word::Word;
 
 /// The accent quads, light and dark.
+#[must_use]
 pub fn accents_css() -> String {
     let mut css = String::new();
     for scheme in Scheme::ALL.iter().copied() {
@@ -67,6 +68,7 @@ fn swatches(scheme: Scheme) -> Vec<String> {
 }
 
 /// `--swatch-<accent>`: that accent's own `--accent`, whatever the root selects.
+#[must_use]
 pub fn swatch_var(accent: Accent) -> String {
     format!("--swatch-{}", accent.slug())
 }

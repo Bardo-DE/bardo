@@ -39,18 +39,21 @@ impl Locator {
 
     /// This locator with the confirmations kept in `file`. Without one, nothing is confirmed and a
     /// value looser than the shipped default never takes effect.
+    #[must_use]
     pub fn confirming(mut self, file: PathBuf) -> Self {
         self.confirmations = Some(file);
         self
     }
 
     /// The `bardo` folders of the configuration directories, the person's first.
+    #[must_use]
     pub fn dirs(&self) -> &[PathBuf] {
         &self.dirs
     }
 
     /// The directory a live watch looks at: the person's own `bardo/memory` directory, where the
     /// Settings app writes.
+    #[must_use]
     pub fn watch_dir(&self) -> Option<PathBuf> {
         let person = self.dirs.first()?;
         Path::new(SETTINGS_FILE)
@@ -89,6 +92,7 @@ impl Locator {
 
     /// The file as it is now over `base`, with every value looser than the shipped default that
     /// the person has not confirmed put back; no file is `base`, nothing to report.
+    #[must_use]
     pub fn read(&self, base: MemorySettings) -> Loaded {
         let loaded = match self.text() {
             Some(text) => read(&text, base),
@@ -102,6 +106,7 @@ impl Locator {
 
     /// The loose values the file holds now that the person has not confirmed, each with the
     /// shipped value in force, in key order: exactly the keys [`Locator::read`] puts back.
+    #[must_use]
     pub fn waiting(&self) -> Vec<WaitingSetting> {
         waiting(&self.read(MemorySettings::default()))
     }

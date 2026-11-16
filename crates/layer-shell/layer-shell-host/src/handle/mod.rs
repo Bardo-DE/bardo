@@ -107,12 +107,14 @@ impl SurfaceHandle {
     }
 
     /// This surface's id.
+    #[must_use]
     pub fn id(&self) -> SurfaceId {
         self.id
     }
 
     /// This surface's scale right now, without subscribing to changes: for an event handler
     /// or a task. A component that draws for the scale reads [`use_surface_scale`] instead.
+    #[must_use]
     pub fn current_scale(&self) -> Scale120 {
         self.scale.get()
     }
@@ -121,6 +123,7 @@ impl SurfaceHandle {
     /// the app's own code creates on the shell's connection). It is replaced when the surface
     /// is hidden and shown again, so read it again after `HostEvent::SurfaceMapped`. `None` for
     /// a handle that has no surface behind it (one built without a connection).
+    #[must_use]
     pub fn wl_surface(&self) -> Option<WlSurface> {
         self.wl.get()
     }
@@ -135,6 +138,7 @@ impl SurfaceHandle {
 
     /// The seat's input modality right now, without subscribing: for an event handler. A
     /// component that draws from it reads [`use_input_modality`].
+    #[must_use]
     pub fn current_input_modality(&self) -> InputModality {
         self.modality.get()
     }

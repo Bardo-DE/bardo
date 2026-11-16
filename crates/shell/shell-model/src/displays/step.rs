@@ -3,6 +3,7 @@
 use super::{Displays, DisplaysEvent};
 
 /// `displays` after `event`: each source replaces its own part.
+#[must_use]
 pub fn step(displays: Displays, event: DisplaysEvent) -> Displays {
     match event {
         DisplaysEvent::Outputs(outputs) => Displays {

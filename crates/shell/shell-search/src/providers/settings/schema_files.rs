@@ -34,6 +34,7 @@ pub fn schema_paths(dirs: &[PathBuf]) -> Vec<PathBuf> {
 /// A cheap stand-in for a schema directory's contents: file paths with their size and
 /// modification time, so a cache can tell "nothing changed" from "reparse" without reading and
 /// parsing every file on every query.
+#[must_use]
 pub fn fingerprint(paths: &[PathBuf]) -> Vec<(PathBuf, u64, u64)> {
     paths
         .iter()

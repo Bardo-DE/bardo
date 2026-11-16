@@ -34,7 +34,7 @@ fn output_globals(client: &TestClient) -> Vec<u32> {
         .collect()
 }
 
-/// Three outputs at scales 1, 1.5 and 2 each advertise wl_output with name, mode and the integer scale ceiling; xdg-output gives logical size.
+/// Three outputs at scales 1, 1.5 and 2 each advertise `wl_output` with name, mode and the integer scale ceiling; xdg-output gives logical size.
 #[test]
 fn each_plugged_output_is_advertised_with_its_name_and_scale() {
     let (mut fixture, id) = boot_with(&THREE);

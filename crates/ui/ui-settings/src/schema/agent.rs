@@ -74,6 +74,7 @@ pub const AGENT_NEVER_SETTABLE: &[&str] = &[
 ///     enabled: String,
 /// }
 /// ```
+#[must_use]
 pub const fn is_never_settable(path: &str) -> bool {
     let mut at = 0;
     while at < AGENT_NEVER_SETTABLE.len() {
@@ -91,6 +92,7 @@ pub const fn is_never_settable(path: &str) -> bool {
 /// D-Bus-served one are refused for the same reason.
 ///
 /// [`Schema::from_toml`]: super::Schema::from_toml
+#[must_use]
 pub fn never_settable_violation(keys: &[KeySpec]) -> Option<&KeySpec> {
     keys.iter()
         .find(|key| key.agent == AgentSetting::Settable && is_never_settable(&key.path.0))

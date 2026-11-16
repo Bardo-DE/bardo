@@ -142,6 +142,7 @@ pub enum FactLabel {
 
 impl FactLabel {
     /// The section a row with this label is listed in when its producer does not say.
+    #[must_use]
     pub fn group(self) -> FactGroup {
         match self {
             FactLabel::Kind
@@ -205,6 +206,7 @@ impl FactLabel {
 
     /// Whether a row with this label is part of a file's summary line when its producer does not
     /// say.
+    #[must_use]
     pub fn headline(self) -> bool {
         match self {
             FactLabel::Kind

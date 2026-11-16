@@ -16,6 +16,7 @@ pub struct ToolName(String);
 
 impl ToolName {
     /// The name's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -43,6 +44,7 @@ pub enum ToolHints {
 }
 
 /// The hint for an effect.
+#[must_use]
 pub fn hints_of(effect: Effect) -> ToolHints {
     match effect {
         Effect::Read => ToolHints::ReadOnly,
@@ -81,6 +83,7 @@ pub fn tool_name(app: &account_core::AppName, action: &ActionDecl) -> Result<Too
 /// The actions offered to outside agents ([`is_offered`]): only `AgentReach::Offered`, of apps
 /// that are not host-only. Hidden ones are dropped, and so are the ones that ask every time (a
 /// client cannot answer a sheet).
+#[must_use]
 pub fn offered(registry: &[ValidManifest]) -> Vec<(&ValidManifest, &ActionDecl)> {
     registry
         .iter()
@@ -128,6 +131,7 @@ fn schema_of(action: &ActionDecl) -> ToolSchema {
 
 /// The tool of one offered action, with the action's label as its description. An action whose
 /// name would be too long gets none.
+#[must_use]
 pub fn tool_of(manifest: &ValidManifest, action: &ActionDecl) -> Option<(ToolSpec, String)> {
     let name = tool_name(&manifest.manifest().app, action).ok()?;
     let tool = ToolSpec {
@@ -140,6 +144,7 @@ pub fn tool_of(manifest: &ValidManifest, action: &ActionDecl) -> Option<(ToolSpe
 
 /// The tools of a registry, in registry order. An action whose name would be too long gets no
 /// tool. The `target` key is part of each schema where the action acts on something.
+#[must_use]
 pub fn tools(registry: &[ValidManifest]) -> Vec<ToolSpec> {
     offered(registry)
         .into_iter()
@@ -148,6 +153,7 @@ pub fn tools(registry: &[ValidManifest]) -> Vec<ToolSpec> {
 }
 
 /// The offered action a tool name stands for, if there is one.
+#[must_use]
 pub fn find<'a>(
     registry: &'a [ValidManifest],
     tool: &str,

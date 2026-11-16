@@ -64,6 +64,7 @@ pub fn describe(head: &Head, connector: Option<&Connector>) -> DisplayOutput {
 }
 
 /// The densest output's density: what the font-rendering default follows.
+#[must_use]
 pub fn max_density(outputs: &[DisplayOutput]) -> Option<Ppi> {
     outputs.iter().filter_map(|o| o.density).max()
 }

@@ -53,6 +53,7 @@ pub enum ApiError {
 /// The media type Google Photos should treat `name`'s bytes as, by extension (`mime_guess`'s
 /// table; its HEIC, HEIF and AVIF entries are what Photos takes). Only an image or a video type is
 /// sent as such: any other extension, and none, is `application/octet-stream`.
+#[must_use]
 pub fn mime_of(name: &str) -> &'static str {
     mime_guess::from_path(name)
         .first_raw()
@@ -154,9 +155,10 @@ impl<H: Http> PhotosApi<H> {
         let response = self.send(request, bytes).await?;
         let token = String::from_utf8(response.into_body()).map_err(|_| ApiError::Unreadable)?;
         let token = token.trim();
-        match token.is_empty() {
-            true => Err(ApiError::Unreadable),
-            false => Ok(UploadToken(token.to_owned())),
+        if token.is_empty() {
+            Err(ApiError::Unreadable)
+        } else {
+            Ok(UploadToken(token.to_owned()))
         }
     }
 

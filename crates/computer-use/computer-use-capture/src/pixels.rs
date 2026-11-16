@@ -49,7 +49,7 @@ impl fmt::Debug for PixelBuf {
 }
 
 mod base64_bytes {
-    use super::*;
+    use super::{Arc, Deserialize, Deserializer, Engine, STANDARD, Serializer};
 
     pub fn serialize<S: Serializer>(data: &Arc<[u8]>, s: S) -> Result<S::Ok, S::Error> {
         s.serialize_str(&STANDARD.encode(data))
@@ -96,6 +96,6 @@ mod tests {
     #[test]
     fn bad_base64_is_an_error_not_a_panic() {
         let json = r#"{"format":"xbgr8888","size":{"w":1,"h":1},"stride":4,"data":"!!"}"#;
-        assert!(serde_json::from_str::<PixelBuf>(json).is_err());
+        serde_json::from_str::<PixelBuf>(json).unwrap_err();
     }
 }

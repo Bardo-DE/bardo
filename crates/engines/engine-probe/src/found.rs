@@ -82,6 +82,7 @@ impl Finder {
 
     /// The program of `engine` that is here: a package's first, then an install for everyone,
     /// then one for this person.
+    #[must_use]
     pub fn find(&self, engine: EngineKind) -> Option<Found> {
         self.package(engine)
             .or_else(|| self.installed(engine, Scope::AllUsers))
@@ -146,6 +147,7 @@ fn is_program(path: &Path) -> bool {
 /// the engine's marker file and its own program (`Engine::pointed` says where). The engine's
 /// release is read from the folder's build record when there is one. `None` for an engine that
 /// is not run from a folder.
+#[must_use]
 pub fn pointed(engine: EngineKind, folder: &Path) -> Option<Found> {
     let layout = engine_spec::engine(engine).pointed()?;
     let program = folder.join(layout.program);

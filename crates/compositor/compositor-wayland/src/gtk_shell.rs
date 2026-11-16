@@ -15,7 +15,7 @@ use compositor_core::{Event, WindowHintChange, WindowId};
 pub struct DbusProperties {
     /// `application_id`, ignored (the app's key is proven by its process, never by this).
     pub application_id: Option<String>,
-    /// `app_menu_path`, the GMenu of the application menu, ignored (macOS has no app menu in
+    /// `app_menu_path`, the `GMenu` of the application menu, ignored (macOS has no app menu in
     /// the window).
     pub app_menu_path: Option<String>,
     /// `menubar_path`.
@@ -46,16 +46,18 @@ pub fn on_properties(
             part.declared.insert(window, declared.clone());
         }
     }
-    match mapped {
-        true => vec![Event::WindowHint {
+    if mapped {
+        vec![Event::WindowHint {
             window,
             hint: WindowHintChange::Menu(source),
-        }],
-        false => Vec::new(),
+        }]
+    } else {
+        Vec::new()
     }
 }
 
 /// The source the properties describe.
+#[must_use]
 pub fn source_of(props: &DbusProperties) -> MenuSource {
     let optional = |value: &Option<String>| match value.as_deref() {
         None | Some("") => Some(String::new()),

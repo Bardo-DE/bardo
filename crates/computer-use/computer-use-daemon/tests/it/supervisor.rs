@@ -70,7 +70,12 @@ async fn end_to_end_scripted_run_done() {
             .any(|s| matches!(s, CuaSignal::ActionDone(..)))
     );
 
-    let kinds: Vec<String> = sup.events().records().iter().map(|r| r.kind()).collect();
+    let kinds: Vec<String> = sup
+        .events()
+        .records()
+        .iter()
+        .map(computer_use_bus::CuaRecord::kind)
+        .collect();
     assert_eq!(
         kinds,
         [
@@ -327,7 +332,12 @@ async fn pause_resume_take_over_and_hand_back_move_a_run_through_its_phases() {
         .unwrap();
     let end = ended(&mut events, &id).await;
     assert_eq!(end.outcome, CuaOutcome::Done, "the third reply finishes it");
-    let kinds: Vec<String> = sup.events().records().iter().map(|r| r.kind()).collect();
+    let kinds: Vec<String> = sup
+        .events()
+        .records()
+        .iter()
+        .map(computer_use_bus::CuaRecord::kind)
+        .collect();
     assert!(kinds.contains(&"cua.taken_over".to_owned()), "{kinds:?}");
     assert!(kinds.contains(&"cua.handed_back".to_owned()), "{kinds:?}");
 }

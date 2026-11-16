@@ -32,6 +32,7 @@ impl ParamChoices {
     /// The choices for `param` of `action`, each key once in the order given. `None` when there
     /// are none to offer, or more than a model should be handed as a list (the parameter then
     /// stays free text). A key that is not plain is left out.
+    #[must_use]
     pub fn new(action: ActionRef, param: ParamName, keys: Vec<String>) -> Option<Self> {
         let mut kept: Vec<String> = Vec::new();
         for key in keys.into_iter().filter(|k| plain(k)) {

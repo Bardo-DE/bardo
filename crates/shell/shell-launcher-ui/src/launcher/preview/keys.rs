@@ -79,6 +79,7 @@ pub enum PreviewOut {
 
 /// `state` after `key`, the selected row being `previewable`, the pane having `controls`
 /// controls in its Tab order.
+#[must_use]
 pub fn step_preview(
     state: PreviewState,
     key: PreviewKey,

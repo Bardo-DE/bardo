@@ -1,4 +1,4 @@
-//! zwp_linux_dmabuf_v1 default feedback (P0-H6): a probe that binds the global, asks for the
+//! `zwp_linux_dmabuf_v1` default feedback (P0-H6): a probe that binds the global, asks for the
 //! default feedback and collects what the compositor says, so a test can assert the main
 //! device and the tranches. A self-contained helper over a [`Connection`] and the registry's
 //! [`GlobalList`] with its own event queue: P0-T-client's `TestClient` core was not there
@@ -17,6 +17,7 @@ use wayland_protocols::wp::linux_dmabuf::zv1::client::{
 };
 
 /// The version of `zwp_linux_dmabuf_v1` the global is advertised at, if it is advertised.
+#[must_use]
 pub fn advertised_version(globals: &GlobalList) -> Option<u32> {
     globals.contents().with_list(|list| {
         list.iter()
@@ -57,6 +58,7 @@ pub struct FeedbackReport {
 impl FeedbackReport {
     /// The device the compositor names: `main_device` (sent up to version 5), else the first
     /// tranche's target (version 6 dropped the event).
+    #[must_use]
     pub fn device(&self) -> Option<u64> {
         self.main_device.or_else(|| {
             self.tranches
@@ -121,7 +123,7 @@ impl Dispatch<ZwpLinuxDmabufV1, ()> for Collected {
         _: &mut Collected,
         _: &ZwpLinuxDmabufV1,
         _: zwp_linux_dmabuf_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Collected>,
     ) {
@@ -133,7 +135,7 @@ impl Dispatch<ZwpLinuxDmabufFeedbackV1, ()> for Collected {
         state: &mut Collected,
         _: &ZwpLinuxDmabufFeedbackV1,
         event: zwp_linux_dmabuf_feedback_v1::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Collected>,
     ) {

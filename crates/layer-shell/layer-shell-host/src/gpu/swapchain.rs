@@ -1,5 +1,5 @@
-//! A wgpu surface configured on the shared device: Mailbox, else Fifo; PreMultiplied alpha,
-//! else PostMultiplied, else opaque (and then blur off).
+//! A wgpu surface configured on the shared device: Mailbox, else Fifo; `PreMultiplied` alpha,
+//! else `PostMultiplied`, else opaque (and then blur off).
 
 use blitz_embed::adapter::block_on;
 
@@ -41,14 +41,13 @@ impl Swapchain {
         let device = &gpu.device.device;
         let scope = device.push_error_scope(wgpu::ErrorFilter::Validation);
         self.surface.configure(device, &config);
-        match block_on(scope.pop()) {
-            Some(error) => Err(HostError::Render(format!(
+        if let Some(error) = block_on(scope.pop()) {
+            Err(HostError::Render(format!(
                 "configuring {width}x{height}: {error}"
-            ))),
-            None => {
-                self.config = Some(config);
-                Ok(())
-            }
+            )))
+        } else {
+            self.config = Some(config);
+            Ok(())
         }
     }
 
@@ -126,7 +125,7 @@ pub(crate) fn choose_present(offered: &[wgpu::PresentMode]) -> wgpu::PresentMode
     }
 }
 
-/// PreMultiplied (what vello_hybrid emits), else PostMultiplied, else `Opaque`.
+/// `PreMultiplied` (what `vello_hybrid` emits), else `PostMultiplied`, else `Opaque`.
 ///
 /// `Opaque` is taken even when the surface does not list it, only when nothing else is
 /// listed at all; a surface that lists only an unusual mode (`Inherit`) gets that mode, which

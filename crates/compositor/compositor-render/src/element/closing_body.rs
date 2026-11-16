@@ -73,6 +73,7 @@ impl ClosingBody {
     /// assert_eq!(body.map(|body| body.bytes()), Some(16));
     /// assert!(ClosingBody::from_rgba(1, size, &[0; 3], (0, Scale(120))).is_none());
     /// ```
+    #[must_use]
     pub fn from_rgba(
         id: u64,
         size: PhysicalSize,
@@ -105,6 +106,7 @@ impl ClosingBody {
 
     /// The body made of `texture`, which the display GPU drew at `size` with the bottom corners
     /// already cut (`pass::render_window_texture`).
+    #[must_use]
     pub fn from_texture(id: u64, size: PhysicalSize, texture: GlesTexture) -> ClosingBody {
         let pixels = Pixels::Gpu {
             texture,
@@ -114,11 +116,13 @@ impl ClosingBody {
     }
 
     /// Where the image lives.
+    #[must_use]
     pub fn pixels(&self) -> &Pixels {
         &self.pixels
     }
 
     /// What the pixels weigh, in bytes (the loop caps the total it keeps).
+    #[must_use]
     pub fn bytes(&self) -> usize {
         let side = |n: u32| usize::try_from(n).unwrap_or(usize::MAX);
         side(self.size.w)
@@ -192,9 +196,10 @@ fn bake(rgba: &[u8], size: PhysicalSize, shape: ClipShape) -> Option<Vec<u8>> {
     for (at, pixel) in pixels.iter().enumerate() {
         let (x, y) = (at % width, at / width);
         let in_corner = y + reach >= height && (x < reach || x + reach >= width);
-        let cover = match in_corner {
-            true => shape.coverage(x as f32 + 0.5, y as f32 + 0.5),
-            false => 1.0,
+        let cover = if in_corner {
+            shape.coverage(x as f32 + 0.5, y as f32 + 0.5)
+        } else {
+            1.0
         };
         let weigh = |channel: u8| (f32::from(channel) * cover).round() as u8;
         out.extend_from_slice(&[

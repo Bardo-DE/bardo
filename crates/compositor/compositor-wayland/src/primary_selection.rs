@@ -18,6 +18,7 @@ pub struct PrimarySelectionPart {
 
 impl PrimarySelectionPart {
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> PrimarySelectionPart
     where
         D: GlobalDispatch<ZwpPrimarySelectionDeviceManagerV1, PrimaryDeviceManagerGlobalData>

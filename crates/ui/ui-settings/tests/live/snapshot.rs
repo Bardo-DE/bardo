@@ -36,9 +36,10 @@ impl LiveModule for Vanishing {
         self.inner.describe().await
     }
     async fn get(&self, path: &KeyPath) -> Result<toml::Value, LiveError> {
-        match path.0 == self.gone {
-            true => Err(LiveError::UnknownKey(path.0.clone())),
-            false => self.inner.get(path).await,
+        if path.0 == self.gone {
+            Err(LiveError::UnknownKey(path.0.clone()))
+        } else {
+            self.inner.get(path).await
         }
     }
     async fn set(&self, path: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
@@ -207,7 +208,7 @@ async fn a_module_without_snapshot_is_read_by_the_client() {
     let raw = zbus::Proxy::new(&settings, NAME, PATH, INTERFACE)
         .await
         .unwrap();
-    assert!(raw.call_method("Snapshot", &()).await.is_err());
+    raw.call_method("Snapshot", &()).await.unwrap_err();
 
     let client = LiveClient::new(&settings, NAME, PATH, AnyOwner).expect("proxy");
     let snapshot = client.snapshot().await.expect("falls back");

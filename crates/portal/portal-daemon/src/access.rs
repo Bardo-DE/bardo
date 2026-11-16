@@ -38,6 +38,7 @@ pub enum Answer {
 impl Answer {
     /// The shell's number for an answer: 0 yes, 1 no, 2 dismissed. Any other number is not an
     /// answer.
+    #[must_use]
     pub fn from_wire(value: u32) -> Option<Self> {
         match value {
             0 => Some(Self::Granted),
@@ -49,6 +50,7 @@ impl Answer {
 
     /// The portal's response code: 0 for a yes, 1 for a no or a question the person closed
     /// (xdg-desktop-portal reads 1 as cancelled by the user; 2 is any other end).
+    #[must_use]
     pub fn response(self) -> u32 {
         match self {
             Self::Granted => Response::GRANTED,
@@ -102,6 +104,7 @@ const MAX_BUTTON: usize = 32;
 
 impl Question {
     /// A plain yes-or-no question with the default buttons and no subtitle.
+    #[must_use]
     pub fn yes_no(app_label: &str, title: &str, body: String) -> Self {
         Self {
             app_label: app_label.to_owned(),
@@ -116,6 +119,7 @@ impl Question {
     /// The question a call carries: the texts as given but cleaned and cut (an app wrote them), the
     /// app by `app_label` (already its own name, see [`AppNames::label`]), and the buttons the
     /// request names (or "Allow" and "Don't Allow").
+    #[must_use]
     pub fn from_call(
         app_label: &str,
         title: &str,
@@ -163,6 +167,7 @@ pub struct ShellAsker {
 
 impl ShellAsker {
     /// An asker that asks through `link`.
+    #[must_use]
     pub fn new(link: BusLink) -> Self {
         Self { link }
     }
@@ -210,6 +215,7 @@ pub struct FakeAsker {
 
 impl FakeAsker {
     /// An asker that will give these answers in order.
+    #[must_use]
     pub fn new(answers: Vec<Answer>) -> Self {
         let mut answers = answers;
         answers.reverse();
@@ -255,6 +261,7 @@ pub struct AccessService {
 impl AccessService {
     /// A service whose questions go to `asker`; apps are shown by their ids until
     /// [`AccessService::with_names`] says where their names are.
+    #[must_use]
     pub fn new(asker: Box<dyn Asker>) -> Self {
         Self {
             asker,
@@ -264,12 +271,14 @@ impl AccessService {
     }
 
     /// This service letting through the callers `guard` admits. Without it, no wire call passes.
+    #[must_use]
     pub fn with_guard(mut self, guard: RoleGuard) -> Self {
         self.guard = guard;
         self
     }
 
     /// This service showing apps by the names `names` finds.
+    #[must_use]
     pub fn with_names(mut self, names: AppNames) -> Self {
         self.names = names;
         self

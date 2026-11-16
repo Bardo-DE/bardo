@@ -100,7 +100,7 @@ fn pack(items: &[(&str, &str)]) -> Vec<u8> {
         tar.append_data(&mut header, path, content.as_bytes())
             .expect("file");
     }
-    zstd::encode_all(&tar.into_inner().expect("tar")[..], 3).expect("zstd")
+    zstd::encode_all((&*tar.into_inner().expect("tar")), 3).expect("zstd")
 }
 
 /// A tar.zst whose only entry is `path` of the given type (for hostile entries).
@@ -122,7 +122,7 @@ pub fn pack_special(honest: &[(&str, &str)], path: &str, kind: tar::EntryType) -
         .expect("link name");
     tar.append_data(&mut header, path, std::io::empty())
         .expect("special");
-    zstd::encode_all(&tar.into_inner().expect("tar")[..], 3).expect("zstd")
+    zstd::encode_all((&*tar.into_inner().expect("tar")), 3).expect("zstd")
 }
 
 /// The release.toml for a bundle.

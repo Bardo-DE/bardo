@@ -180,7 +180,7 @@ fn profile_names_are_validated() {
         );
     }
     let focus = r#"{"kind":"steer","v":{"kind":"focus","v":{"profile":"No Good"}}}"#;
-    assert!(decode::<ToDaemon>(focus.as_bytes()).is_err());
+    decode::<ToDaemon>(focus.as_bytes()).unwrap_err();
     // The default profile is named "default"; a name displays bare.
     assert_eq!(ProfileName::default_profile(), name("default"));
     assert_eq!(name("term").to_string(), "term");
@@ -196,7 +196,7 @@ fn oversized_packet_is_too_long_before_parsing() {
 fn junk_is_malformed_not_a_panic() {
     let err = decode::<ToDaemon>(b"{").expect_err("malformed");
     assert!(matches!(err, ProtocolError::Malformed(_)));
-    assert!(decode::<ToDaemon>(br#"{"kind":"nope"}"#).is_err());
+    decode::<ToDaemon>(br#"{"kind":"nope"}"#).unwrap_err();
 }
 
 #[test]
@@ -262,7 +262,7 @@ fn keymap_messages_have_a_stable_wire_form() {
 #[test]
 fn a_keymap_state_with_no_problems_field_is_refused_not_guessed() {
     let text = r#"{"kind":"keymap","v":{"overrides":""}}"#;
-    assert!(decode::<ToClient>(text.as_bytes()).is_err());
+    decode::<ToClient>(text.as_bytes()).unwrap_err();
 }
 
 #[test]

@@ -1,4 +1,4 @@
-//! MenuBar: the model's six menus, two of them drawn open as rows.
+//! `MenuBar`: the model's six menus, two of them drawn open as rows.
 
 use crate::pages::Section;
 use dioxus::prelude::*;
@@ -19,14 +19,14 @@ fn Open(menu: BarMenu<BarCommand>) -> Element {
                     items: menu.items,
                     flow: Flow::Inline,
                     onpick: |_| {},
-                    onclose: |_| {},
+                    onclose: |()| {},
                 }
             }
         }
     }
 }
 
-/// The MenuBar section.
+/// The `MenuBar` section.
 #[component]
 pub fn MenuBarSection() -> Element {
     let model = MenuBarModel::standard("Notes", |command| command);

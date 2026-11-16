@@ -22,9 +22,10 @@ pub fn candidate_to_dbus(candidate: &Candidate) -> CandidateArg {
         .remove("label")
         .and_then(into_string)
         .unwrap_or_default();
-    let path = ObjectPath::try_from(account_path(&candidate.account))
-        .map(OwnedObjectPath::from)
-        .unwrap_or_else(|_| OwnedObjectPath::from(ObjectPath::from_static_str_unchecked("/")));
+    let path = ObjectPath::try_from(account_path(&candidate.account)).map_or_else(
+        |_| OwnedObjectPath::from(ObjectPath::from_static_str_unchecked("/")),
+        OwnedObjectPath::from,
+    );
     (path, label, to_vardict(&fields))
 }
 
@@ -35,8 +36,9 @@ pub fn candidate_from_dbus(arg: CandidateArg) -> Result<Candidate, CoreError> {
     fields.insert("label".to_owned(), Json::String(label));
     let candidate: Candidate = serde_json::from_value(Json::Object(fields))
         .map_err(|e| bad(&format!("candidate: {e}")))?;
-    match account_path(&candidate.account) == path.as_str() {
-        true => Ok(candidate),
-        false => Err(bad("candidate: the path is not the account's")),
+    if account_path(&candidate.account) == path.as_str() {
+        Ok(candidate)
+    } else {
+        Err(bad("candidate: the path is not the account's"))
     }
 }

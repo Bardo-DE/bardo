@@ -48,6 +48,7 @@ pub enum Shared {
 
 impl AskKey {
     /// The sheet's key, or `Own` when no grant is on offer.
+    #[must_use]
     pub fn of(request: &ConfirmRequest, session: Option<&SessionId>) -> Shared {
         let grant_on_offer = request.offer != ConfirmOffer::OnceOnly
             || matches!(request.always, AlwaysOffer::Offered(_));
@@ -114,25 +115,26 @@ impl Asks {
 }
 
 fn locked(state: &Mutex<RouterState>) -> MutexGuard<'_, RouterState> {
-    state.lock().unwrap_or_else(|p| p.into_inner())
+    state
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// Takes a seat for the sheet `shared`.
-pub fn seat<'a>(state: &'a Mutex<RouterState>, shared: Shared) -> Seat<'a> {
+pub fn seat(state: &Mutex<RouterState>, shared: Shared) -> Seat<'_> {
     let Shared::Key(key) = shared else {
         return Seat::Alone;
     };
     let mut st = locked(state);
-    match st.asks.join(&key) {
-        Some(rx) => Seat::Waiter(rx),
-        None => {
-            st.asks.open.push(((*key).clone(), Vec::new()));
-            Seat::Asker(Opened {
-                state,
-                key,
-                answer: None,
-            })
-        }
+    if let Some(rx) = st.asks.join(&key) {
+        Seat::Waiter(rx)
+    } else {
+        st.asks.open.push(((*key).clone(), Vec::new()));
+        Seat::Asker(Opened {
+            state,
+            key,
+            answer: None,
+        })
     }
 }
 

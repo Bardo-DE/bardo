@@ -32,6 +32,7 @@ pub struct RenderHub {
 
 impl RenderHub {
     /// A hub for `plan`, opening render nodes under `root`'s `/dev`.
+    #[must_use]
     pub fn new(root: SysRoot, plan: RenderPlan) -> Rc<RenderHub> {
         Rc::new(RenderHub {
             root,

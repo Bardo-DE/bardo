@@ -59,6 +59,7 @@ pub enum CompanionOut {
 }
 
 /// What `key` asks for in `pane` with `selected` under the selection.
+#[must_use]
 pub fn companion_step(key: CompanionKey, pane: &Pane, selected: &Selected) -> Vec<CompanionOut> {
     match (key, pane) {
         (
@@ -108,12 +109,14 @@ const RING: [ProviderKind; 4] = [
 /// state itself (the ask is published as it goes out), so following it would ask again at once,
 /// without end. It is asked again only when an answer to a waiting memory comes back
 /// (`PanelCtx::memory_refresh`).
+#[must_use]
 pub fn follows_state(filter: Filter) -> bool {
     filter != Filter::Only(ProviderKind::Memory)
 }
 
 /// The filter after `filter` going Tab's way (`Next`) or Shift+Tab's, wrapping within [`RING`]; a
 /// filter outside it starts the ring over.
+#[must_use]
 pub fn companion_filter(filter: Filter, dir: Dir) -> Filter {
     let at = match filter {
         Filter::Only(kind) => RING.iter().position(|k| *k == kind),

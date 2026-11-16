@@ -17,6 +17,7 @@ pub use action_settings::{SCHEMA, SETTINGS_FILE};
 pub const SETTINGS_KEY: &str = "agent.mcp.expose";
 
 /// Whether the settings text says on; anything else is off.
+#[must_use]
 pub fn exposed(text: &str) -> bool {
     read(text, AgentSettings::default()).value.expose
 }

@@ -124,7 +124,7 @@ fn sampling(body: &mut Map<String, Value>, sampling: &Sampling, flavor: Flavor) 
 }
 
 /// Reasoning on or off, where the flavor has a switch: the chat template's `enable_thinking`
-/// (llama-server, vLLM), `reasoning_effort` (vLLM, LiteLLM) or OpenRouter's `reasoning` object.
+/// (llama-server, vLLM), `reasoning_effort` (vLLM, `LiteLLM`) or `OpenRouter`'s `reasoning` object.
 /// `EngineDefault` sends none of them.
 fn reasoning(body: &mut Map<String, Value>, reasoning: Reasoning, flavor: Flavor) {
     let effort = match reasoning {
@@ -170,6 +170,7 @@ fn shape(
 
 /// The constraint kinds a flavor can enforce on a request: what `Caps.output` of a model behind
 /// it may hold.
+#[must_use]
 pub fn enforceable(flavor: Flavor) -> Vec<Constraint> {
     flavor.server().enforceable().to_vec()
 }

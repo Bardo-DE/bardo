@@ -25,6 +25,7 @@ pub struct FreedesktopThumbnails {
 
 impl FreedesktopThumbnails {
     /// The cache at `<cache>/thumbnails`.
+    #[must_use]
     pub fn new(env: &Env) -> Self {
         FreedesktopThumbnails {
             root: env.dirs.cache.join("thumbnails"),
@@ -185,8 +186,8 @@ fn create_private_dir(directory: &Path) -> std::io::Result<()> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::DirBuilderExt;
-        builder.mode(0o700);
-    }
+        builder.mode(0o700)
+    };
     builder.create(directory)
 }
 

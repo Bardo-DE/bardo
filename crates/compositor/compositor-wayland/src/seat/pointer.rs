@@ -284,7 +284,7 @@ where
             },
         ),
         GestureDelivery::Pinch(GestureStep::Update(update)) => {
-            pointer.gesture_pinch_update(state, &pinch_update(update, time))
+            pointer.gesture_pinch_update(state, &pinch_update(update, time));
         }
         GestureDelivery::Pinch(GestureStep::End(end)) => pointer.gesture_pinch_end(
             state,

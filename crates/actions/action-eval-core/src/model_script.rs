@@ -31,11 +31,13 @@ pub struct ModelScript {
 
 impl ModelScript {
     /// Whether no stage is spoiled.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self == &Self::default()
     }
 
     /// What the reviewer of `stage` says, if the case spoils it.
+    #[must_use]
     pub fn reviewer(&self, stage: Stage) -> Option<&str> {
         match stage {
             Stage::Quick => self.quick.as_deref(),

@@ -109,7 +109,7 @@ fn the_environment_says_where_everything_is() {
     );
     // A file that is not a configuration stops the daemon: it is not guessed at.
     std::fs::write(folder.join("actiond.toml"), "roles = 3").expect("write");
-    assert!(Setup::from_env(&env).is_err());
+    Setup::from_env(&env).unwrap_err();
 }
 
 #[test]

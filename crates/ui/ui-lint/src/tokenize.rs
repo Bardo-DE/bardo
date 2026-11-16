@@ -23,6 +23,7 @@ pub struct Located {
 }
 
 /// Every token in `css`, in order.
+#[must_use]
 pub fn tokens(css: &str) -> Vec<Located> {
     let mut input = ParserInput::new(css);
     let mut parser = Parser::new(&mut input);

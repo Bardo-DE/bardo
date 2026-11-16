@@ -128,6 +128,7 @@ impl Routine {
     }
 
     /// How many runs are not finished.
+    #[must_use]
     pub fn running(&self) -> usize {
         self.runs
             .iter()

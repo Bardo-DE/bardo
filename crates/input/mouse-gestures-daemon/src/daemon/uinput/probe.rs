@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn the_check_makes_one_device_and_reports_a_refusal() {
         let source = FakeSource::new();
-        assert!(probe(&source).is_ok());
+        probe(&source).unwrap();
         assert_eq!(source.state().created.len(), 1);
 
         source.state().refuse_next = Some(Reason::NotAllowed);

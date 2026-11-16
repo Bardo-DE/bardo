@@ -34,7 +34,7 @@ pub enum RasterFormat {
     Psd,
     /// Apple icon.
     Icns,
-    /// OpenEXR, tone mapped.
+    /// `OpenEXR`, tone mapped.
     Exr,
     /// Radiance HDR, tone mapped.
     Hdr,

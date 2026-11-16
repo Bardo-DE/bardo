@@ -52,7 +52,7 @@ fn Page(start: Option<usize>, expanded: Option<usize>) -> Element {
                 start,
                 expanded,
                 onpick: |_| {},
-                onclose: |_| {},
+                onclose: |()| {},
             }
         }
     }

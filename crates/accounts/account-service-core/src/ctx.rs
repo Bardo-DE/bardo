@@ -95,6 +95,7 @@ pub struct Audited {
 
 impl Audited {
     /// A line for `event`, caused by `app` and concerning `account` where there are any.
+    #[must_use]
     pub fn new(app: Option<AppId>, account: Option<AccountId>, event: AuditEvent) -> Self {
         Self {
             app,
@@ -278,7 +279,7 @@ impl<E: Ports> Ctx<E> {
     pub fn follow(&self, told: impl Fn(Committed) + Send + Sync + 'static) {
         self.committed
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .push(Arc::new(told));
     }
 
@@ -286,7 +287,7 @@ impl<E: Ports> Ctx<E> {
         // Every critical section is a plain data update that cannot panic midway.
         self.registry
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// The registry, to read. Hold it only while reading, never across an `.await`.
@@ -334,7 +335,7 @@ impl<E: Ports> Ctx<E> {
         let listeners: Vec<Told> = self
             .committed
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .clone();
         let announced = (!listeners.is_empty()).then(|| after.clone());
         *self.registry() = after;

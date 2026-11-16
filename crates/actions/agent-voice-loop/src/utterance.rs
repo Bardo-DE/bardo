@@ -30,12 +30,14 @@ pub enum UtteranceState {
 
 impl UtteranceState {
     /// Whether the mic is open: exactly in `Opening`, `Listening` and `Tail`.
+    #[must_use]
     pub fn mic_open(self) -> bool {
         matches!(self, Self::Opening | Self::Listening | Self::Tail)
     }
 }
 
 /// Why a `Begin` is refused whatever the state, or `None` when voice is on.
+#[must_use]
 pub fn refusal_for(enabled: VoiceUse) -> Option<VoiceRefusal> {
     match enabled {
         VoiceUse::On => None,
@@ -184,6 +186,7 @@ fn stop(cause: UtteranceEnd) -> (UtteranceState, Vec<UtteranceEffect>) {
 }
 
 /// One transition. Total and pure.
+#[must_use]
 pub fn utterance_step(
     state: UtteranceState,
     event: UtteranceEvent,

@@ -141,7 +141,7 @@ fn handle_requests_move_the_window_like_its_own_requests() {
     let (mut fixture, _id, top, _buffer, mut watch, window) = listed_window();
     let state = |fixture: &Fixture| fixture.model().windows()[&window].state.clone();
     ask(&mut fixture, &mut watch, |watch| {
-        watch.maximize(0).expect("request")
+        watch.maximize(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::Filled { .. }),
@@ -149,7 +149,7 @@ fn handle_requests_move_the_window_like_its_own_requests() {
     );
     assert!(watch.listed()[0].states.contains(&WlrState::Maximized));
     ask(&mut fixture, &mut watch, |watch| {
-        watch.unmaximize(0).expect("request")
+        watch.unmaximize(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::Floating(_)),
@@ -157,7 +157,7 @@ fn handle_requests_move_the_window_like_its_own_requests() {
     );
 
     ask(&mut fixture, &mut watch, |watch| {
-        watch.minimize(0).expect("request")
+        watch.minimize(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::Minimised { .. }),
@@ -165,7 +165,7 @@ fn handle_requests_move_the_window_like_its_own_requests() {
     );
     assert!(watch.listed()[0].states.contains(&WlrState::Minimized));
     ask(&mut fixture, &mut watch, |watch| {
-        watch.unminimize(0).expect("request")
+        watch.unminimize(0).expect("request");
     });
     assert!(
         !matches!(state(&fixture), WindowState::Minimised { .. }),
@@ -173,13 +173,13 @@ fn handle_requests_move_the_window_like_its_own_requests() {
     );
 
     ask(&mut fixture, &mut watch, |watch| {
-        watch.activate(0).expect("request")
+        watch.activate(0).expect("request");
     });
     assert_eq!(fixture.model().focus().key, Some(window), "activated");
     assert!(watch.listed()[0].states.contains(&WlrState::Activated));
 
     ask(&mut fixture, &mut watch, |watch| {
-        watch.fullscreen(0).expect("request")
+        watch.fullscreen(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::FullScreen { .. }),
@@ -187,7 +187,7 @@ fn handle_requests_move_the_window_like_its_own_requests() {
     );
     assert!(watch.listed()[0].states.contains(&WlrState::Fullscreen));
     ask(&mut fixture, &mut watch, |watch| {
-        watch.unfullscreen(0).expect("request")
+        watch.unfullscreen(0).expect("request");
     });
     assert!(
         !matches!(state(&fixture), WindowState::FullScreen { .. }),
@@ -196,7 +196,7 @@ fn handle_requests_move_the_window_like_its_own_requests() {
 
     let closes = top.log.with(|seen| seen.closes);
     ask(&mut fixture, &mut watch, |watch| {
-        watch.close(0).expect("request")
+        watch.close(0).expect("request");
     });
     assert_eq!(
         top.log.with(|seen| seen.closes),
@@ -213,10 +213,10 @@ fn a_state_asked_of_a_minimised_window_brings_it_back_and_a_fill_waits_out_full_
     let state = |fixture: &Fixture| fixture.model().windows()[&window].state.clone();
 
     ask(&mut fixture, &mut watch, |watch| {
-        watch.minimize(0).expect("request")
+        watch.minimize(0).expect("request");
     });
     ask(&mut fixture, &mut watch, |watch| {
-        watch.maximize(0).expect("request")
+        watch.maximize(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::Filled { .. }),
@@ -224,10 +224,10 @@ fn a_state_asked_of_a_minimised_window_brings_it_back_and_a_fill_waits_out_full_
     );
 
     ask(&mut fixture, &mut watch, |watch| {
-        watch.minimize(0).expect("request")
+        watch.minimize(0).expect("request");
     });
     ask(&mut fixture, &mut watch, |watch| {
-        watch.fullscreen(0).expect("request")
+        watch.fullscreen(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::FullScreen { .. }),
@@ -235,23 +235,23 @@ fn a_state_asked_of_a_minimised_window_brings_it_back_and_a_fill_waits_out_full_
     );
 
     ask(&mut fixture, &mut watch, |watch| {
-        watch.unmaximize(0).expect("request")
+        watch.unmaximize(0).expect("request");
     });
     ask(&mut fixture, &mut watch, |watch| {
-        watch.unfullscreen(0).expect("request")
+        watch.unfullscreen(0).expect("request");
     });
     ask(&mut fixture, &mut watch, |watch| {
-        watch.fullscreen(0).expect("request")
+        watch.fullscreen(0).expect("request");
     });
     ask(&mut fixture, &mut watch, |watch| {
-        watch.maximize(0).expect("request")
+        watch.maximize(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::FullScreen { .. }),
         "still full screen"
     );
     ask(&mut fixture, &mut watch, |watch| {
-        watch.unfullscreen(0).expect("request")
+        watch.unfullscreen(0).expect("request");
     });
     assert!(
         matches!(state(&fixture), WindowState::Filled { .. }),
@@ -313,16 +313,15 @@ pub(crate) fn normalised(text: &str) -> String {
             continue;
         }
         let mut digits = String::new();
-        while let Some(digit) = chars.peek().copied().filter(|d| d.is_ascii_digit()) {
+        while let Some(digit) = chars.peek().copied().filter(char::is_ascii_digit) {
             digits.push(digit);
             chars.next();
         }
-        let at = match seen.iter().position(|held| *held == digits) {
-            Some(at) => at,
-            None => {
-                seen.push(digits);
-                seen.len() - 1
-            }
+        let at = if let Some(at) = seen.iter().position(|held| *held == digits) {
+            at
+        } else {
+            seen.push(digits);
+            seen.len() - 1
         };
         out.push_str(&(at + 1).to_string());
     }
@@ -349,9 +348,10 @@ pub(crate) fn flow(
                 .any(|prefix| line.object.starts_with(prefix))
         })
         .map(|line| {
-            let args = match masked.contains(&line.event.as_str()) {
-                true => format!("<{}>", line.event),
-                false => line.args.join(", "),
+            let args = if masked.contains(&line.event.as_str()) {
+                format!("<{}>", line.event)
+            } else {
+                line.args.join(", ")
             };
             format!("{}.{}({args})\n", line.object, line.event)
         })
@@ -480,7 +480,7 @@ fn a_power_taken_back_finishes_the_window_list_and_silences_its_handles() {
 
     let before = states_of(&fixture, window);
     ask(&mut fixture, &mut watch, |watch| {
-        watch.maximize(0).expect("request")
+        watch.maximize(0).expect("request");
     });
     assert_eq!(
         states_of(&fixture, window),

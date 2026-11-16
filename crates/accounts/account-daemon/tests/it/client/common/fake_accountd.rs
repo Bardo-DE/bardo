@@ -325,7 +325,7 @@ impl Launcher {
         programs: Vec<String>,
     ) -> zbus::fdo::Result<()> {
         *self.shared.launcher.lock().expect("lock") =
-            header.sender().map(|sender| sender.to_string());
+            header.sender().map(std::string::ToString::to_string);
         self.shared
             .seen
             .lock()

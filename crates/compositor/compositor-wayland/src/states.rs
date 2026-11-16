@@ -150,6 +150,7 @@ pub struct GlobalFilter;
 impl GlobalFilter {
     /// The filter the compositor runs with: the model's I7 table, with the powers a public
     /// client was refused at accept hidden from it.
+    #[must_use]
     pub fn policy() -> GlobalFilter {
         GlobalFilter
     }
@@ -157,6 +158,7 @@ impl GlobalFilter {
     /// Whether `client` sees `global`. A client casement did not insert (no [`ClientState`])
     /// is treated as arriving through the public socket, refused nothing: it cannot use a
     /// power anyway ([`crate::consent::admit`] refuses it).
+    #[must_use]
     pub fn sees(self, global: GlobalKind, client: &Client) -> bool {
         match ClientState::of(client) {
             Some(state) => advertised_to(global, &state.role, &state.hidden),

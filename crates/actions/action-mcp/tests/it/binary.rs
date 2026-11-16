@@ -180,7 +180,7 @@ async fn over_stdio_a_switched_on_edge_serves_the_registry_as_the_mcp_role() {
     let stdin = other.child.stdin.take().expect("stdin");
     let stdout = other.child.stdout.take().expect("stdout");
     // Its bus name is the first edge's, so it never serves: it stops and the handshake fails.
-    assert!(().serve((stdout, stdin)).await.is_err());
+    ().serve((stdout, stdin)).await.unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -242,10 +242,10 @@ async fn over_a_unix_socket_many_clients_share_one_edge() {
 fn the_shipped_configuration_is_off_and_a_bad_file_is_refused() {
     assert_eq!(McpConfig::shipped().expect("shipped"), McpConfig::default());
     assert!(!McpConfig::default().expose);
-    assert!(McpConfig::parse("client = 5").is_err());
-    assert!(McpConfig::parse("acess = \"on\"").is_err());
+    McpConfig::parse("client = 5").unwrap_err();
+    McpConfig::parse("acess = \"on\"").unwrap_err();
     // The switch is not a key of this file any more.
-    assert!(McpConfig::parse("access = \"on\"").is_err());
+    McpConfig::parse("access = \"on\"").unwrap_err();
 }
 
 #[test]
@@ -253,8 +253,8 @@ fn the_command_line_reads_socket_and_client_and_refuses_the_rest() {
     use action_mcp::Args;
     let parsed = Args::parse(["--socket".into(), "/run/x.sock".into()]).expect("socket");
     assert_eq!(parsed.socket, Some("/run/x.sock".into()));
-    assert!(Args::parse(["--bogus".into()]).is_err());
-    assert!(Args::parse(["--client".into()]).is_err());
+    Args::parse(["--bogus".into()]).unwrap_err();
+    Args::parse(["--client".into()]).unwrap_err();
 }
 
 #[test]

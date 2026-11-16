@@ -29,6 +29,7 @@ pub struct FixedClock {
 
 impl FixedClock {
     /// A clock at `start`.
+    #[must_use]
     pub fn at(start: UnixSeconds) -> Self {
         Self {
             start,
@@ -38,7 +39,9 @@ impl FixedClock {
     }
 
     fn sky(&self) -> std::sync::MutexGuard<'_, Sky> {
-        self.sky.lock().unwrap_or_else(|p| p.into_inner())
+        self.sky
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// Moves virtual time forward and completes every timer that is now due.
@@ -64,6 +67,7 @@ impl FixedClock {
     }
 
     /// Every wait the router has asked for so far, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<Millis> {
         self.sky().asked.clone()
     }

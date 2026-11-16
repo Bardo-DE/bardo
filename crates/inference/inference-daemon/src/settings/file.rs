@@ -28,11 +28,13 @@ pub struct ConfigFile {
 
 impl ConfigFile {
     /// The file at `path`; it need not exist yet.
+    #[must_use]
     pub fn new(path: PathBuf) -> Self {
         Self { path }
     }
 
     /// Where it is.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.path
     }
@@ -162,6 +164,7 @@ pub struct Reload {
 
 impl Reload {
     /// Reloads `engines` from `file`.
+    #[must_use]
     pub fn new(file: ConfigFile, engines: Engines) -> Self {
         Self {
             file,
@@ -182,16 +185,19 @@ impl Reload {
     }
 
     /// The file.
+    #[must_use]
     pub fn file(&self) -> &ConfigFile {
         &self.file
     }
 
     /// The lock of the one writer at a time, shared by every clone.
+    #[must_use]
     pub fn writing(&self) -> &tokio::sync::Mutex<()> {
         &self.writing
     }
 
     /// The engines it reloads.
+    #[must_use]
     pub fn engines(&self) -> &Engines {
         &self.engines
     }
@@ -211,6 +217,7 @@ impl Reload {
 
     /// Watches the file: every `every`, when its modification time or length is not what it was,
     /// reloads and says on standard error what it did.
+    #[must_use]
     pub fn watch(self, every: Duration) -> tokio::task::JoinHandle<()> {
         let mut seen = self.file.stamp();
         tokio::spawn(async move {

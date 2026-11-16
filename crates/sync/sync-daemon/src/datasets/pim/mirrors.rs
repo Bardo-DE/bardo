@@ -118,6 +118,7 @@ pub struct AccountMirrors {
 
 impl AccountMirrors {
     /// Nothing running yet for `account`.
+    #[must_use]
     pub fn new(account: AccountDir, kind: PimKind) -> Self {
         Self {
             account,
@@ -127,6 +128,7 @@ impl AccountMirrors {
     }
 
     /// The datasets running now.
+    #[must_use]
     pub fn datasets(&self) -> Vec<DatasetId> {
         self.running.keys().cloned().collect()
     }
@@ -238,7 +240,7 @@ impl AccountMirrors {
     ) -> Result<(), OpenError> {
         let journal = Journal::open(&wiring.paths.journal(&self.account, next.dataset.as_str()))
             .map_err(|source| OpenError::Journal {
-                dir: next.dir.to_string(),
+                dir: next.dir.clone(),
                 source,
             })?;
         let root = wiring
@@ -247,7 +249,7 @@ impl AccountMirrors {
             .join(self.account.as_str())
             .join(&next.dir);
         let opened = |source| OpenError::Mirror {
-            dir: next.dir.to_string(),
+            dir: next.dir.clone(),
             source,
         };
         let mirror =

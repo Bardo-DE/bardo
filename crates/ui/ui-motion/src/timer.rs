@@ -82,6 +82,7 @@ impl MotionTimer {
     }
 
     /// Where the timer is.
+    #[must_use]
     pub fn phase(&self) -> TimerPhase {
         self.phase
             .try_read()

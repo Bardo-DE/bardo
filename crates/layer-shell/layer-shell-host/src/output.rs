@@ -8,7 +8,7 @@ use crate::scale::Scale120;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OutputInfo {
     pub id: OutputId,
-    /// The connector name (`HDMI-A-2`), when the compositor sends one (wl_output v4).
+    /// The connector name (`HDMI-A-2`), when the compositor sends one (`wl_output` v4).
     pub name: Option<String>,
     /// The human-readable description, when the compositor sends one.
     pub description: Option<String>,

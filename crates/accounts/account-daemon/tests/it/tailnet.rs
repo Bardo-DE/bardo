@@ -1,5 +1,5 @@
 //! Tailscale through accountd on a private bus: the real Tailnet family and accountd's watch of
-//! Tailscale over a fake LocalAPI on a scratch socket (never the real tailscaled), a sheet host
+//! Tailscale over a fake `LocalAPI` on a scratch socket (never the real tailscaled), a sheet host
 //! written by hand that does what a person would, and clients introduced by role. Adding the
 //! account (running, signed out, every refusal), the account's state following Tailscale, and
 //! `org.bardo.Tailnet1`: the rows for every kind of computer, `Changed` once for a burst, an
@@ -82,7 +82,7 @@ fn tailscale_account(state: AccountState) -> Account {
 
 /// How the fake's world looks to a test.
 struct Scene {
-    /// The fake LocalAPI, when there is one.
+    /// The fake `LocalAPI`, when there is one.
     fake: Option<FakeLocalApi>,
     /// The client of its socket.
     api: LocalApi,

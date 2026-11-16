@@ -41,6 +41,7 @@ pub struct JsonLines {
 
 impl JsonLines {
     /// Appends to `path`.
+    #[must_use]
     pub fn new(path: PathBuf) -> Self {
         Self { path }
     }
@@ -96,6 +97,7 @@ impl<T: AuditOut> AuditOut for Arc<T> {
 }
 
 /// The tokens a reply spent (none for a refusal, a failure or a cancel).
+#[must_use]
 pub fn usage_of(reply: &InferReply) -> TokenUsage {
     match reply {
         InferReply::Chat(chat) => chat.usage,

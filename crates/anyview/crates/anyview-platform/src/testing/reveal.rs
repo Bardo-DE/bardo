@@ -12,6 +12,7 @@ pub struct FakeReveal {
 
 impl FakeReveal {
     /// Every file revealed, oldest first.
+    #[must_use]
     pub fn revealed(&self) -> Vec<FilePath> {
         locked(&self.revealed).clone()
     }

@@ -27,16 +27,19 @@ impl Default for Timeouts {
 
 impl Timeouts {
     /// The same with `hello` as the wait for the greeting.
+    #[must_use]
     pub fn with_hello(self, hello: Duration) -> Timeouts {
         Timeouts { hello, ..self }
     }
 
     /// The same with `silence` as the longest a plugin may say nothing.
+    #[must_use]
     pub fn with_silence(self, silence: Duration) -> Timeouts {
         Timeouts { silence, ..self }
     }
 
     /// The same with `cancel_grace` as the time a plugin has to stop after a cancel.
+    #[must_use]
     pub fn with_cancel_grace(self, cancel_grace: Duration) -> Timeouts {
         Timeouts {
             cancel_grace,

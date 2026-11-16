@@ -65,6 +65,7 @@ pub struct MemoryFacts {
 }
 
 /// The notes these facts call for, most important first. None is a refusal.
+#[must_use]
 pub fn hardware_notes(facts: &HardwareFacts) -> Vec<HardwareNote> {
     let shared = (facts.helpers.0 >= 2).then_some(HardwareNote::ModelShared {
         helpers: facts.helpers,

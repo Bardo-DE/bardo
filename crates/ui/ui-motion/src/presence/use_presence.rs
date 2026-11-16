@@ -27,6 +27,7 @@ pub struct Presented {
 /// A surface's presence and entrance alias for this render, driven by `shown`: a change of
 /// `shown` steps the machine at once (so the render draws the new phase), and its settle timer
 /// is the machine's wake. `on_hidden` runs when the exit has settled.
+#[must_use]
 pub fn use_presence(
     shown: bool,
     spec: PresenceSpec,

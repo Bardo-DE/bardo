@@ -173,7 +173,7 @@ fn route(drive: &Drive, path: &str) -> Option<(Address, String)> {
     Some((Address::Item(base_url::percent::decode(id)), op.to_owned()))
 }
 
-/// Whether OneDrive takes `name`: here, the characters it refuses and a leading or trailing
+/// Whether `OneDrive` takes `name`: here, the characters it refuses and a leading or trailing
 /// space (`400 invalidRequest` otherwise).
 fn name_ok(name: &str) -> bool {
     !name.is_empty()
@@ -264,16 +264,17 @@ fn store(
 fn aim_of(drive: &Drive, address: &Address) -> Aim {
     match address {
         Address::Item(id) => Aim::Item(id.clone()),
-        Address::Below(from, names) => match drive.at_from(from, names) {
-            Some(node) => Aim::Item(node.id.clone()),
-            None => {
+        Address::Below(from, names) => {
+            if let Some(node) = drive.at_from(from, names) {
+                Aim::Item(node.id.clone())
+            } else {
                 let (name, folders) = names
                     .split_last()
                     .map(|(name, folders)| (name.clone(), folders.to_vec()))
                     .unwrap_or_default();
                 Aim::New(from.clone(), folders, name)
             }
-        },
+        }
     }
 }
 
@@ -507,9 +508,10 @@ fn relocate(drive: &mut Drive, id: Option<String>, request: &Request) -> Respons
     {
         return error(409, "nameAlreadyExists");
     }
-    match drive.relocate(&id, &parent, &name) {
-        true => written(drive, &id, 200),
-        false => error(400, "invalidRequest"),
+    if drive.relocate(&id, &parent, &name) {
+        written(drive, &id, 200)
+    } else {
+        error(400, "invalidRequest")
     }
 }
 
@@ -524,7 +526,7 @@ pub struct Origins<'a> {
 
 /// Answers a request to the origin of the links: downloads and upload sessions, pre-authenticated,
 /// so they carry no bearer. With `strict`, a request that carries any `Authorization` is refused
-/// (`401`): OneDrive refuses a bearer sent to such a host.
+/// (`401`): `OneDrive` refuses a bearer sent to such a host.
 pub fn answer_link(state: &mut State, strict: bool, request: &Request) -> Response {
     let path = request.path().to_owned();
     if strict && request.header("authorization").is_some() {

@@ -64,6 +64,7 @@ impl fmt::Debug for LockSetup {
 
 impl LockHarness {
     /// The setup of `surface` on `link`.
+    #[must_use]
     pub fn setup(surface: LockSurface, link: LockLink) -> LockSetup {
         LockSetup {
             surface,
@@ -78,12 +79,14 @@ impl LockHarness {
 
 impl LockSetup {
     /// The settings file the surface reads.
+    #[must_use]
     pub fn settings(mut self, settings: ShellFile) -> Self {
         self.settings = settings;
         self
     }
 
     /// An appearance other than the default one.
+    #[must_use]
     pub fn appearance(mut self, appearance: PinnedAppearance) -> Self {
         self.appearance = appearance;
         self

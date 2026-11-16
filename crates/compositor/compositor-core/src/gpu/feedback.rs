@@ -35,6 +35,7 @@ pub struct FormatTable {
 
 impl FormatTable {
     /// A table of what each node renders to and imports, with no scanout formats.
+    #[must_use]
     pub fn new(per_node: BTreeMap<DrmNodeId, Vec<FormatEntry>>) -> FormatTable {
         FormatTable {
             per_node,
@@ -101,6 +102,7 @@ pub struct FeedbackPlan {
 /// assert_eq!(feedback.main_device, render);
 /// assert!(feedback.tranches.is_empty());
 /// ```
+#[must_use]
 pub fn feedback_for(plan: &RenderPlan, formats: &FormatTable) -> FeedbackPlan {
     let mut offered: BTreeSet<FormatEntry> = BTreeSet::new();
     let mut tranches = Vec::new();

@@ -24,6 +24,7 @@ pub struct AbsAxis {
 
 impl AbsAxis {
     /// An axis from `minimum` to `maximum` with no fuzz, flat or resolution.
+    #[must_use]
     pub const fn range(code: u16, minimum: i32, maximum: i32) -> Self {
         Self {
             code,
@@ -36,6 +37,7 @@ impl AbsAxis {
     }
 
     /// The same axis with `resolution` units per millimetre.
+    #[must_use]
     pub const fn with_resolution(self, resolution: i32) -> Self {
         Self { resolution, ..self }
     }
@@ -66,6 +68,7 @@ pub struct DeviceSpec {
 
 impl DeviceSpec {
     /// The event types besides `EV_SYN` the device declares, from what it has.
+    #[must_use]
     pub fn event_types(&self) -> Vec<u16> {
         [
             (EV_KEY, !self.keys.is_empty()),

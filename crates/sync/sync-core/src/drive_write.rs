@@ -64,6 +64,7 @@ impl Session {
     }
 
     /// Its address, for the replica that sends to it.
+    #[must_use]
     pub fn address(&self) -> &str {
         &self.0
     }
@@ -84,11 +85,13 @@ pub struct Content {
 
 impl Content {
     /// The first `size` bytes of the file at `path`.
+    #[must_use]
     pub fn new(path: PathBuf, size: u64) -> Self {
         Self { path, size }
     }
 
     /// How many bytes it is.
+    #[must_use]
     pub fn size(&self) -> u64 {
         self.size
     }

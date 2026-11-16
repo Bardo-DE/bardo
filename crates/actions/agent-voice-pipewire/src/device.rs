@@ -15,7 +15,7 @@ use tokio::sync::oneshot;
 /// How long a stream may take to start before the device is called absent.
 const START_TIMEOUT: Duration = Duration::from_secs(2);
 
-/// PipeWire, reached through its socket (`$XDG_RUNTIME_DIR/pipewire-0`).
+/// `PipeWire`, reached through its socket (`$XDG_RUNTIME_DIR/pipewire-0`).
 #[derive(Debug, Clone, Copy, Default)]
 pub struct PipeWireDevice;
 

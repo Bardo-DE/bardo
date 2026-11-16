@@ -107,6 +107,7 @@ pub enum CallEffect {
 /// The step holds no data about the call beyond its state. The sheet arrives built in
 /// `Previewed`, and the step emits it as `Confirm`; the router writes the audit record when the
 /// state becomes `Done`. Everything else the step decides is here.
+#[must_use]
 pub fn call_step(state: CallState, event: CallEvent) -> (CallState, Vec<CallEffect>) {
     use CallEvent as V;
     use CallState as S;

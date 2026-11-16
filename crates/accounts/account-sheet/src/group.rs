@@ -33,6 +33,7 @@ impl ProviderGroup {
     /// runtime on this computer, and a provider whose services are all AI (an API key, a minted
     /// key, a plan; the coding agent a key provider also names counts as AI), is
     /// `Intelligence`; everything else is `Internet`.
+    #[must_use]
     pub fn fallback(auth: AuthKind, kinds: &[CapabilityKind]) -> Self {
         let ai = |kind: &CapabilityKind| kind.is_ai() || *kind == CapabilityKind::Agent;
         let only_ai = !kinds.is_empty() && kinds.iter().all(ai);
@@ -71,7 +72,7 @@ mod tests {
             assert_eq!(back, group);
         }
         assert_eq!(ProviderGroup::ALL.len(), 3);
-        assert!(serde_json::from_str::<ProviderGroup>("\"other\"").is_err());
+        serde_json::from_str::<ProviderGroup>("\"other\"").unwrap_err();
     }
 
     #[test]

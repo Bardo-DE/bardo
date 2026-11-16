@@ -286,6 +286,7 @@ pub enum CompanionEffect {
 
 impl SummonOut {
     /// The mode a launcher opens or switches into, if this opens one: what warms the model.
+    #[must_use]
     pub fn opens_prompt(&self) -> bool {
         match self {
             SummonOut::AskApp { .. }

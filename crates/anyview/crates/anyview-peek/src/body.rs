@@ -117,6 +117,7 @@ impl<P> Light for P where P: Peek<Peeked: Into<Body>, Error: Into<PeekError>> {}
 
 impl Body {
     /// The word for this body: what the pane stamps as `data-body`.
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             Body::Picture(_) => "picture",

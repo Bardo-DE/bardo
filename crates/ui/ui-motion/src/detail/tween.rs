@@ -18,6 +18,7 @@ pub struct TweenSpec {
 /// changes it moves there from wherever it is now, over `spec`. Under Reduced it jumps (R7). Asks
 /// for frames only while it moves (R3).
 #[cfg(feature = "dioxus")]
+#[must_use]
 pub fn use_tween(target: ui_core::vocab::Fraction, spec: TweenSpec) -> ui_core::vocab::Fraction {
     use super::level::use_level;
     use crate::timeline::glide::Glide;

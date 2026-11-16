@@ -69,9 +69,10 @@ pub fn render_output<R: Compositor>(
         .damage
         .map(|rects| rects.iter().copied().map(ours).collect())
         .unwrap_or_default();
-    let sync = match result.sync.is_reached() {
-        true => RenderSync::Done,
-        false => RenderSync::Fence,
+    let sync = if result.sync.is_reached() {
+        RenderSync::Done
+    } else {
+        RenderSync::Fence
     };
     Ok(Rendered { damage, sync })
 }

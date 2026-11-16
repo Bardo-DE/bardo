@@ -60,6 +60,7 @@ pub struct AgentSettings {
 
 impl AgentSettings {
     /// The settings of a machine with no file: `agent`'s values, the edge off.
+    #[must_use]
     pub fn over(agent: AgentConfig) -> Self {
         Self {
             agent,

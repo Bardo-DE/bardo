@@ -1,5 +1,5 @@
 //! A whole drive, listed: every file, folder and online document of a Storage account's drive
-//! (OneDrive's, or My Drive), kept by id in a journal of its own (`storage_drive`) for Files to
+//! (`OneDrive`'s, or My Drive), kept by id in a journal of its own (`storage_drive`) for Files to
 //! show and, in S2, for the file system to serve. Only listed: no byte is downloaded here, and
 //! it does not go through the eager [`crate::engine::Engine`], which downloads every file whole.
 //!
@@ -33,6 +33,7 @@ use crate::paths::{AccountDir, Paths};
 pub const DRIVE_DATASET: &str = "storage_drive";
 
 /// Where the drive journal of `account` is.
+#[must_use]
 pub fn journal_path(paths: &Paths, account: &AccountDir) -> std::path::PathBuf {
     paths.journal(account, DRIVE_DATASET)
 }
@@ -58,6 +59,7 @@ pub fn note_folder(paths: &Paths, account: &AccountDir, folder: &str) -> std::io
 
 /// The folder the drive of `account` was last shown at: the noted one, else one named after
 /// the account.
+#[must_use]
 pub fn shown_at(paths: &Paths, account: &AccountDir) -> std::path::PathBuf {
     let noted = std::fs::read_to_string(folder_note(paths, account)).ok();
     let plain = noted.filter(|name| {

@@ -256,7 +256,7 @@ impl StandInUtterance {
         self.script.push("release");
     }
 
-    /// Takes a sealed `CancelCause` and records it as its snake_case name; superseded, too long,
+    /// Takes a sealed `CancelCause` and records it as its `snake_case` name; superseded, too long,
     /// anything that does not parse and a scripted refusal are `Malformed`.
     async fn cancel(&self, cause: String) -> Result<(), Refused> {
         let parsed = serde_json::from_str::<Envelope<CancelCause>>(&cause)

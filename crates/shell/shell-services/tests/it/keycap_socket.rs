@@ -187,7 +187,7 @@ impl Peer {
             return None;
         }
         let mut buffer = vec![0u8; key_remap_proto::MAX_PACKET];
-        let (len, _) = recv(&self.0, &mut buffer[..], RecvFlags::empty()).ok()?;
+        let (len, _) = recv(&self.0, &mut *buffer, RecvFlags::empty()).ok()?;
         (len > 0).then(|| decode(&buffer[..len]).unwrap_or_else(|e| panic!("{e}")))
     }
 }
@@ -256,9 +256,10 @@ async fn until(state: &mut watch::Receiver<KeycapState>, want: impl Fn(&KeycapSt
             return;
         }
         let left = give_up.saturating_duration_since(Instant::now());
-        if tokio::time::timeout(left, state.changed()).await.is_err() {
-            panic!("gave up at {now:?}");
-        }
+        assert!(
+            tokio::time::timeout(left, state.changed()).await.is_ok(),
+            "gave up at {now:?}"
+        );
     }
 }
 
@@ -312,7 +313,7 @@ async fn the_shell_holding_the_keyboard_is_told_as_keymap_aware_and_let_go_back(
     let send = |command| {
         rig.control
             .send(command)
-            .unwrap_or_else(|_| panic!("the service is gone"))
+            .unwrap_or_else(|_| panic!("the service is gone"));
     };
     send(KeycapCommand::ShellFocus(ShellFocus::Held));
     assert_eq!(peer.next(LONG), Some(focus("keymap-aware")), "the launcher");
@@ -353,7 +354,7 @@ async fn an_override_for_the_focused_app_is_told_and_each_change_is_told_again()
     let send = |command| {
         rig.control
             .send(command)
-            .unwrap_or_else(|_| panic!("the service is gone"))
+            .unwrap_or_else(|_| panic!("the service is gone"));
     };
     send(overriding(&[("foot", "writing")]));
     assert_eq!(
@@ -542,5 +543,5 @@ async fn an_isolated_env_never_connects_and_stays_unknown() {
     }
     tokio::time::sleep(SHORT).await;
     assert_eq!(*handle.state.borrow(), KeycapState::Unknown);
-    assert!(notices.try_recv().is_err());
+    notices.try_recv().unwrap_err();
 }

@@ -1,10 +1,10 @@
 //! Colour emoji on the headless path (FINDINGS "Colour emoji"): with `'Noto Color Emoji'` named
-//! in the stack, the installed COLRv1 build paints 😀 in colour through Blitz, parley, skrifa and
-//! vello_cpu, and a flag (two regional indicators) shapes to one coloured glyph. The system's
+//! in the stack, the installed `COLRv1` build paints 😀 in colour through Blitz, parley, skrifa and
+//! `vello_cpu`, and a flag (two regional indicators) shapes to one coloured glyph. The system's
 //! own fallback does not reach it on this machine (it picks Symbola, monochrome), which is why
 //! an emoji grid names the family. `.ds-emoji-text` (the `--font-emoji` stack, emoji face first)
 //! paints colour too, while its letters, digits and `#` stay Inter's pixel for pixel. Skipped,
-//! with a note, where no COLRv1 emoji font is installed (`ui_blitz::colrv1_emoji_file`). A stack naming no emoji family (`Inter`,
+//! with a note, where no `COLRv1` emoji font is installed (`ui_blitz::colrv1_emoji_file`). A stack naming no emoji family (`Inter`,
 //! `system-ui`, `sans-serif`) reaches the colour face too (`ui_blitz::EmojiChoice`).
 
 use dioxus::prelude::*;

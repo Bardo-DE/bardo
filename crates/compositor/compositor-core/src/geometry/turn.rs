@@ -17,6 +17,7 @@ use desktop_protocols::vocab::Transform;
 /// assert_eq!(turn_point(Transform::R90, (5, 3), (24, 24)), (21, 5));
 /// assert_eq!(turn_point(Transform::Normal, (5, 3), (24, 24)), (5, 3));
 /// ```
+#[must_use]
 pub fn turn_point(transform: Transform, (x, y): (i32, i32), (w, h): (i32, i32)) -> (i32, i32) {
     match transform {
         Transform::Normal => (x, y),
@@ -40,6 +41,7 @@ pub fn turn_point(transform: Transform, (x, y): (i32, i32), (w, h): (i32, i32)) 
 /// assert_eq!(turn_size(size, Transform::R270), PhysicalSize { w: 32, h: 48 });
 /// assert_eq!(turn_size(size, Transform::Flipped), size);
 /// ```
+#[must_use]
 pub fn turn_size(size: PhysicalSize, transform: Transform) -> PhysicalSize {
     match transform {
         Transform::R90 | Transform::R270 | Transform::Flipped90 | Transform::Flipped270 => {

@@ -56,6 +56,7 @@ impl HotDesk {
     ];
 
     /// The word the file writes.
+    #[must_use]
     pub fn word(self) -> &'static str {
         match self {
             HotDesk::Workspaces => "workspaces",
@@ -71,6 +72,7 @@ impl HotDesk {
     }
 
     /// The action a file's word names.
+    #[must_use]
     pub fn of_word(word: &str) -> Option<HotDesk> {
         HotDesk::ALL.into_iter().find(|desk| desk.word() == word)
     }
@@ -186,6 +188,7 @@ impl HotBinding {
     }
 
     /// The table the file holds for it: the keys only when some are held.
+    #[must_use]
     pub fn to_value(&self) -> Value {
         let mut table = Table::new();
         if !self.keys.is_empty() {
@@ -243,6 +246,7 @@ pub fn corner_value(bindings: &[HotBinding]) -> Value {
 /// Whether a corner's key can hold `value`: a word of the old form this build knows, or a list in
 /// which every row is a binding it can carry out. Anything else is kept as written and shown
 /// read-only, as every control does with a value it cannot hold.
+#[must_use]
 pub fn corner_admits(value: &Value) -> bool {
     match value {
         Value::String(word) => {

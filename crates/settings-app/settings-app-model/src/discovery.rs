@@ -36,6 +36,7 @@ pub struct Discovery {
 }
 
 /// Every schema under `dirs`, judged by who owns the folders ([`OriginRule::Ownership`]).
+#[must_use]
 pub fn discover(dirs: &[PathBuf]) -> Discovery {
     discover_under(dirs, &OriginRule::Ownership)
 }
@@ -52,6 +53,7 @@ pub fn discover(dirs: &[PathBuf]) -> Discovery {
 /// program, but none of its keys is agent-settable. `ui_settings` does not say which folder a
 /// schema came from, so each folder is scanned on its own and a program already found in an
 /// earlier folder is not taken again.
+#[must_use]
 pub fn discover_under(dirs: &[PathBuf], rule: &OriginRule) -> Discovery {
     let mut seen: Vec<AppId> = Vec::new();
     let mut found = Discovery::default();

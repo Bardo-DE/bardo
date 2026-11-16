@@ -265,18 +265,21 @@ pub fn say_outcome(card: &HelperCard, report: JobReport) -> Result<String, Refus
 }
 
 /// The event that resumes a paused helper, or asks another to try again.
+#[must_use]
 pub fn resume_event(board: &Board, helper: HelperId) -> BoardEvent {
     let paused = matches!(
         board.card(&helper).map(|c| &c.state),
         Some(HelperState::Paused(_))
     );
-    match paused {
-        true => BoardEvent::Resume(helper),
-        false => BoardEvent::Retry(helper),
+    if paused {
+        BoardEvent::Resume(helper)
+    } else {
+        BoardEvent::Retry(helper)
     }
 }
 
 /// The helpers a planner is told of, except `except` (the helper whose job it is, if it is one).
+#[must_use]
 pub fn roster_lines(board: &Board, except: Option<&HelperId>) -> Vec<HelperRosterLine> {
     board
         .cards()
@@ -293,6 +296,7 @@ pub fn roster_lines(board: &Board, except: Option<&HelperId>) -> Vec<HelperRoste
 
 /// The job as a run needs it: its card, the job, and the answers it is handed that are still
 /// held.
+#[must_use]
 pub fn job_spec(board: &Board, answers: &Answers, launch: &Launch) -> Option<JobSpec> {
     let card = board.card(&launch.helper)?.clone();
     let job = board.job(launch.job)?.clone();
@@ -302,6 +306,7 @@ pub fn job_spec(board: &Board, answers: &Answers, launch: &Launch) -> Option<Job
 
 /// How a job ended, once it has: done, or open again after a failure. A job the board no longer
 /// holds did not finish.
+#[must_use]
 pub fn job_end(board: &Board, job: JobId) -> Option<JobEnd> {
     let Some(found) = board.job(job) else {
         return Some(JobEnd::Failed(JobFault::Crashed));

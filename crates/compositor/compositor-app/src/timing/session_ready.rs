@@ -14,6 +14,7 @@ pub enum ShellSurface {
 
 impl ShellSurface {
     /// The surface a shell role names, when it is one of these.
+    #[must_use]
     pub fn of(role: ShellRole) -> Option<ShellSurface> {
         match role {
             ShellRole::Bar => Some(ShellSurface::Bar),
@@ -36,6 +37,7 @@ pub struct SessionReady {
 
 impl SessionReady {
     /// The line, message first, then `key=value` fields.
+    #[must_use]
     pub fn line(&self) -> String {
         format!(
             "session-ready started_at={} shell_connected_at={} shell_ready_at={}",
@@ -64,6 +66,7 @@ pub enum SessionStage {
 
 impl SessionStage {
     /// A session that started at `started_at`.
+    #[must_use]
     pub fn starting(started_at: Stamp) -> SessionStage {
         SessionStage::Waiting {
             started_at,
@@ -75,6 +78,7 @@ impl SessionStage {
 
     /// Whether frames are worth looking at for the shell's surfaces: the shell connected and the
     /// start is not over.
+    #[must_use]
     pub fn watches_surfaces(&self) -> bool {
         matches!(
             self,

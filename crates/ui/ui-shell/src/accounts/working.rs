@@ -1,4 +1,4 @@
-//! SignInWorking: something is running (a lookup, the sign-in, the store) and nothing but Cancel
+//! `SignInWorking`: something is running (a lookup, the sign-in, the store) and nothing but Cancel
 //! can be pressed.
 
 use super::adapter::{Action, Intent, Landing};

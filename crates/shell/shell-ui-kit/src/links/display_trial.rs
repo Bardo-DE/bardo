@@ -51,6 +51,7 @@ pub struct DisplayTrialLink {
 
 impl DisplayTrialLink {
     /// No trial, no answer; the question shows on the output `sheets` names.
+    #[must_use]
     pub fn new(sheets: SheetLink) -> DisplayTrialLink {
         DisplayTrialLink {
             open: Shared::default(),
@@ -80,16 +81,19 @@ impl DisplayTrialLink {
     }
 
     /// The open trial, if any.
+    #[must_use]
     pub fn latest(&self) -> Option<TrialRun> {
         self.open.now()
     }
 
     /// A receiver for the surfaces to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Option<TrialRun>> {
         self.open.subscribe()
     }
 
     /// The output the question shows on: the sheets'.
+    #[must_use]
     pub fn sheets(&self) -> &SheetLink {
         &self.sheets
     }
@@ -102,11 +106,13 @@ impl DisplayTrialLink {
     }
 
     /// The latest answer.
+    #[must_use]
     pub fn last_answer(&self) -> Option<TrialAnswered> {
         self.answered.latest()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe_answers(&self) -> watch::Receiver<Option<TrialAnswered>> {
         self.answered.subscribe()
     }

@@ -88,6 +88,7 @@ pub struct Compositor {
 
 impl Compositor {
     /// Binds `wl_compositor` at exactly `version`.
+    #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> Compositor {
         Compositor {
             compositor: client
@@ -97,6 +98,7 @@ impl Compositor {
     }
 
     /// A new surface.
+    #[must_use]
     pub fn surface(&self, client: &TestClient) -> Surface {
         Surface {
             surface: self.compositor.create_surface(&client.qh(), H1Data),
@@ -151,6 +153,7 @@ pub struct Subcompositor {
 
 impl Subcompositor {
     /// Binds `wl_subcompositor` at exactly `version`.
+    #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> Subcompositor {
         Subcompositor {
             subcompositor: client
@@ -160,6 +163,7 @@ impl Subcompositor {
     }
 
     /// Makes `surface` a subsurface of `parent`.
+    #[must_use]
     pub fn subsurface(
         &self,
         client: &TestClient,
@@ -182,6 +186,7 @@ pub struct RawPool {
 
 impl RawPool {
     /// A pool of `bytes` bytes on a `wl_shm` bound at `version` (1 or 2).
+    #[must_use]
     pub fn new(client: &TestClient, version: u32, bytes: usize) -> RawPool {
         let shm: WlShm = client
             .bind(version..=version, H1Data)
@@ -209,6 +214,7 @@ impl RawPool {
     }
 
     /// A buffer on the pool.
+    #[must_use]
     pub fn buffer(
         &self,
         client: &TestClient,
@@ -250,6 +256,7 @@ pub struct OutputFacts {
 
 impl BoundOutput {
     /// What this output and its xdg-output were told so far.
+    #[must_use]
     pub fn facts(&self, client: &TestClient) -> OutputFacts {
         let number = |text: &str| text.parse::<i32>().unwrap_or(i32::MIN);
         let mut facts = OutputFacts::default();

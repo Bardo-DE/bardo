@@ -14,11 +14,13 @@ pub struct Bytes(pub u64);
 
 impl Bytes {
     /// `n` mebibytes.
+    #[must_use]
     pub const fn mib(n: u64) -> Self {
         Self(n * 1024 * 1024)
     }
 
     /// `n` gibibytes.
+    #[must_use]
     pub const fn gib(n: u64) -> Self {
         Self(n * 1024 * 1024 * 1024)
     }
@@ -92,6 +94,7 @@ impl Default for LimitPolicy {
 
 impl LimitPolicy {
     /// The limits, where the policy has any.
+    #[must_use]
     pub fn limits(&self) -> Option<&Limits> {
         match self {
             LimitPolicy::Cgroup(l) | LimitPolicy::Rlimit(l) => Some(l),

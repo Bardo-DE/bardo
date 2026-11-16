@@ -136,8 +136,7 @@ impl Introduced {
     fn introduce(&self, who: &Connection, standing: Standing) {
         let name = who
             .unique_name()
-            .map(ToString::to_string)
-            .unwrap_or_else(|| panic!("a connection with no name")); // test-only
+            .map_or_else(|| panic!("a connection with no name"), ToString::to_string); // test-only
         self.introduce_name(&name, standing);
     }
 }

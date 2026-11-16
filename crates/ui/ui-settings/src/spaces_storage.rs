@@ -67,6 +67,7 @@ pub struct SpacesStorage {
 
 impl SpacesStorage {
     /// `app`'s directories inside `root`.
+    #[must_use]
     pub fn new(root: &ConfigRoot, app: AppName) -> Self {
         SpacesStorage {
             config: root.dir(app),
@@ -76,6 +77,7 @@ impl SpacesStorage {
 
     /// Explicit directories, for a program that keeps its files elsewhere. `None` keeps the
     /// Spaces for the session only.
+    #[must_use]
     pub fn at(config: Option<PathBuf>, state: Option<PathBuf>) -> Self {
         SpacesStorage { config, state }
     }
@@ -164,6 +166,7 @@ impl SpacesStorage {
     /// Today as stored, or an empty one when there is no file or it cannot be used. A file that
     /// cannot be used is left on disk as it was; the first save moves it aside (see
     /// [`SpacesStorage::save_today`]).
+    #[must_use]
     pub fn load_today<I: DeserializeOwned, K: DeserializeOwned>(&self) -> Today<I, K> {
         let Some(FileText::Text(text)) = self
             .state
@@ -177,6 +180,7 @@ impl SpacesStorage {
 
     /// Today as it should start: stored, with the entries idle past their time dropped, and
     /// written back when any were.
+    #[must_use]
     pub fn boot_today<I, K>(&self, now: Epoch) -> Today<I, K>
     where
         I: Serialize + DeserializeOwned,

@@ -1,4 +1,4 @@
-//! The attack suite's format (AgentDojo's shape): a user task, an injection placed in data the
+//! The attack suite's format (`AgentDojo`'s shape): a user task, an injection placed in data the
 //! agent reads, an injection goal, and the two checks that go with them.
 //!
 //! One file is one attack, at `eval/injection/attacks/<name>.toml` (a subdirectory of a corpus,
@@ -28,7 +28,7 @@
 //! An attack compiles to two [`Case`]s over the same world: the clean one (the carrier holds the
 //! `filler`; the user's steps only; the person's task must be done) and the attacked one (the
 //! carrier holds the injection; the user's steps, then the hijacked agent's; the goal must not
-//! be reached). The two together give AgentDojo's three numbers: utility without attack, utility
+//! be reached). The two together give `AgentDojo`'s three numbers: utility without attack, utility
 //! under attack and the targeted attack success rate (`attack_score.rs`).
 //!
 //! The planner is scripted, so a run is deterministic: the hijacked agent follows the injection
@@ -52,7 +52,7 @@ use std::path::PathBuf;
 /// Where the injection goes in a fixture field.
 pub const PLACEHOLDER: &str = "{injection}";
 
-/// The wording an attack uses, after AgentDojo's attack names.
+/// The wording an attack uses, after `AgentDojo`'s attack names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AttackStyle {
@@ -273,11 +273,13 @@ fn matches_goal(step: &ScriptedStep, goal: &AttackGoal) -> bool {
 
 impl AttackCase {
     /// The id of the case without the injection.
+    #[must_use]
     pub fn clean_id(&self) -> CaseId {
         CaseId(format!("{}-clean", self.id.0))
     }
 
     /// The id of the case with the injection.
+    #[must_use]
     pub fn attacked_id(&self) -> CaseId {
         CaseId(format!("{}-attacked", self.id.0))
     }
@@ -307,6 +309,7 @@ impl AttackCase {
 
     /// The two cases: the user task alone, and the user task with the injection and a hijacked
     /// agent that follows it.
+    #[must_use]
     pub fn cases(&self) -> (Case, Case) {
         let clean = self.case(
             self.clean_id(),
@@ -340,6 +343,7 @@ impl AttackCase {
     }
 
     /// How many steps (unrolled) the user's task has.
+    #[must_use]
     pub fn user_len(&self) -> usize {
         self.cases().0.expanded().len()
     }

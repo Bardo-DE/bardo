@@ -112,6 +112,7 @@ pub struct CheckedDraft {
 /// Checks a draft against its input: every `Promote` cites links inside the input; its label is
 /// the join of the cited sources' labels (so untrusted content cannot be laundered); no hunk
 /// removes a fact; none reaches outside the Space. Invalid hunks are dropped, not repaired.
+#[must_use]
 pub fn check_draft(input: &ConsolidationInput, draft: Draft) -> CheckedDraft {
     let mut kept = Vec::new();
     let mut dropped = Vec::new();
@@ -162,6 +163,7 @@ fn fact_fault(input: &ConsolidationInput, fact: &Fact) -> Option<HunkFault> {
 /// The label a fact citing `links` must carry: the join of the labels of everything they cite,
 /// or `None` when there is no link or one cites something the input does not hold. The check
 /// ([`check_draft`]) holds every promotion to this; a consolidator builds its facts with it.
+#[must_use]
 pub fn cited_label(input: &ConsolidationInput, links: &[Link]) -> Option<Label> {
     let labels: Option<Vec<Label>> = links
         .iter()
@@ -279,6 +281,7 @@ pub enum RunEffect {
 }
 
 /// The next state and effects.
+#[must_use]
 pub fn step(state: RunState, event: RunEvent) -> (RunState, Vec<RunEffect>) {
     use RunEffect as E;
     use RunEvent as V;

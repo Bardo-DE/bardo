@@ -12,6 +12,7 @@ use smithay::wayland::shell::wlr_layer::{
 };
 
 /// The model's level for a wire layer.
+#[must_use]
 pub fn level_of(layer: WireLayer) -> LayerLevel {
     match layer {
         WireLayer::Background => LayerLevel::Background,
@@ -26,6 +27,7 @@ fn held(anchor: WireAnchor, edge: WireAnchor) -> bool {
 }
 
 /// The edges a surface is held to.
+#[must_use]
 pub fn anchors_of(anchor: WireAnchor) -> Anchors {
     Anchors {
         top: held(anchor, WireAnchor::TOP),
@@ -36,6 +38,7 @@ pub fn anchors_of(anchor: WireAnchor) -> Anchors {
 }
 
 /// How the surface treats the space beside its edge.
+#[must_use]
 pub fn exclusive_of(zone: WireZone) -> ExclusiveZone {
     match zone {
         WireZone::Exclusive(depth) => ExclusiveZone::Reserve(depth),
@@ -45,6 +48,7 @@ pub fn exclusive_of(zone: WireZone) -> ExclusiveZone {
 }
 
 /// The surface's distance from each anchored edge.
+#[must_use]
 pub fn margins_of(margin: WireMargins) -> Margins {
     Margins {
         top: margin.top,
@@ -55,6 +59,7 @@ pub fn margins_of(margin: WireMargins) -> Margins {
 }
 
 /// Whether the surface takes the keyboard.
+#[must_use]
 pub fn keyboard_of(keyboard: WireKeyboard) -> KeyboardInteractivity {
     match keyboard {
         WireKeyboard::None => KeyboardInteractivity::None,
@@ -64,6 +69,7 @@ pub fn keyboard_of(keyboard: WireKeyboard) -> KeyboardInteractivity {
 }
 
 /// The spec a surface's committed state describes, on `output`, for a surface of the shell or an app, per `from_shell`.
+#[must_use]
 pub fn spec_of(
     output: &OutputKey,
     cached: &LayerSurfaceCachedState,

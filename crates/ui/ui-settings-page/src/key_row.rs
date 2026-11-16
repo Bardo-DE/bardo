@@ -29,7 +29,7 @@ pub(crate) fn KeyRow(
         onedit.call(SettingEdit {
             path: path.clone(),
             value: toml::Value::String(word),
-        })
+        });
     };
     let control = match control_of(&spec.kind) {
         Control::Switch => {

@@ -20,6 +20,7 @@ pub struct EventMatch {
 
 impl EventMatch {
     /// Whether an event of `kind` in `space` is one this match names.
+    #[must_use]
     pub fn covers(&self, kind: &str, space: &SpaceId) -> bool {
         self.kind.covers(kind) && self.space.as_ref().is_none_or(|own| own == space)
     }
@@ -39,6 +40,7 @@ pub enum Trigger {
 
 impl Trigger {
     /// As a person says it.
+    #[must_use]
     pub fn plain(&self) -> String {
         match self {
             Trigger::At(schedule) => schedule.plain(),

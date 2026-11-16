@@ -7,6 +7,7 @@ use super::model::{AgentRow, Availability, ModelState, Offers, SignInState, Sour
 
 impl AgentRow {
     /// Whether it is signed in: "Signed in", "Needs signing in", "Not started yet".
+    #[must_use]
     pub fn sign_in_line(&self) -> &'static str {
         match self.sign_in {
             SignInState::SignedIn => "Signed in",
@@ -17,6 +18,7 @@ impl AgentRow {
     }
 
     /// The ways of signing in the agent listed, when it needs one.
+    #[must_use]
     pub fn ways_line(&self) -> Option<String> {
         match &self.sign_in {
             SignInState::NeedsSignIn { ways } if !ways.is_empty() => {
@@ -28,6 +30,7 @@ impl AgentRow {
     }
 
     /// The model: "Model: Sonnet 5.5", "Model: sonnet-5-5 (no longer offered)".
+    #[must_use]
     pub fn model_line(&self) -> String {
         match &self.model {
             ModelState::AgentsOwn => "Model: the agent's own choice".to_owned(),
@@ -40,6 +43,7 @@ impl AgentRow {
     }
 
     /// Who keeps the history of the files it changes: "Restore points: kept by docket".
+    #[must_use]
     pub fn rewind_line(&self) -> &'static str {
         match self.rewind {
             Rewind::Docket => "Restore points: kept by docket",
@@ -48,6 +52,7 @@ impl AgentRow {
     }
 
     /// What it offers: "Not started yet", "No choice of model", "3 models to choose from".
+    #[must_use]
     pub fn offers_line(&self) -> String {
         match &self.offers {
             Offers::NotSeenYet => "Not started yet".to_owned(),
@@ -60,6 +65,7 @@ impl AgentRow {
     }
 
     /// Whether its program is there: "Installed", "Not installed yet (version 1.3.0)".
+    #[must_use]
     pub fn install_line(&self) -> String {
         match &self.source {
             Source::Own { installed: true }

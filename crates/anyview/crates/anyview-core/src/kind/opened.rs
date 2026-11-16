@@ -105,6 +105,7 @@ pub fn claimed_mimes() -> Vec<Mime> {
 }
 
 /// The file name patterns of the opened formats the registry has no media type for.
+#[must_use]
 pub fn opened_globs() -> &'static [&'static str] {
     UNREGISTERED_GLOBS
 }

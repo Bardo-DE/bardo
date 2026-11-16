@@ -44,7 +44,7 @@ fn emphasis_follows_focus() {
     assert_eq!(second_ext.emphasis(), Some(Emphasis::Key));
 }
 
-/// A second get_window on one toplevel raises already_constructed.
+/// A second `get_window` on one toplevel raises `already_constructed`.
 #[test]
 fn a_second_get_window_is_already_constructed() {
     let (mut fixture, id) = boot();

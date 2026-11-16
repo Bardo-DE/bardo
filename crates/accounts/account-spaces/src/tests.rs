@@ -105,18 +105,14 @@ async fn creates_are_limited_per_app_within_the_window() {
         Err(SpaceFault::TooMany)
     );
     // Another app is not held back by it.
-    assert!(
-        book.create(&calm, name("y"), SpaceLook::default(), (late, NOW))
-            .await
-            .is_ok()
-    );
+    book.create(&calm, name("y"), SpaceLook::default(), (late, NOW))
+        .await
+        .unwrap();
     // Once the window has passed the app may make Spaces again.
     let later = start + CREATE_WINDOW;
-    assert!(
-        book.create(&flood, name("x"), SpaceLook::default(), (later, NOW))
-            .await
-            .is_ok()
-    );
+    book.create(&flood, name("x"), SpaceLook::default(), (later, NOW))
+        .await
+        .unwrap();
     assert_eq!(book.list().len(), CREATES_PER_WINDOW + 2);
 }
 

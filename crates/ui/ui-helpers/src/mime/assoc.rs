@@ -98,6 +98,7 @@ impl Associations {
 
     /// The app that opens `mime` by default: the first installed default in precedence order,
     /// else the first installed added or cached app; the same again for each parent type.
+    #[must_use]
     pub fn default_for(&self, mime: &MimeType, db: &MimeDb) -> Option<DesktopId> {
         Self::chain(mime, db)
             .iter()
@@ -105,6 +106,7 @@ impl Associations {
     }
 
     /// The apps that open `mime`, default first, with no repeats; the parent types' apps follow.
+    #[must_use]
     pub fn apps_for(&self, mime: &MimeType, db: &MimeDb) -> Vec<DesktopId> {
         let mut apps: Vec<DesktopId> = Vec::new();
         for kind in Self::chain(mime, db) {
@@ -118,6 +120,7 @@ impl Associations {
     }
 
     /// The default app for folders: the file manager.
+    #[must_use]
     pub fn file_manager_default(&self) -> Option<DesktopId> {
         let folder = MimeType::new(MimeType::FOLDER).ok()?;
         self.direct_apps(&folder).into_iter().next()

@@ -10,6 +10,7 @@ use super::summon::Summon;
 
 /// The presence of `state`, by priority: waiting on the person, then acting in a window, then
 /// working, then taking a prompt, then idle.
+#[must_use]
 pub fn presence_of(state: &Companion) -> CompanionPresence {
     let run_states = || {
         state

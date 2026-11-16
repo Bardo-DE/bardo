@@ -24,9 +24,10 @@ impl StandIn {
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .push((id, name, look));
-        match self.refuse {
-            true => Err(fdo::Error::AccessDenied("not the compositor".to_owned())),
-            false => Ok(()),
+        if self.refuse {
+            Err(fdo::Error::AccessDenied("not the compositor".to_owned()))
+        } else {
+            Ok(())
         }
     }
 }

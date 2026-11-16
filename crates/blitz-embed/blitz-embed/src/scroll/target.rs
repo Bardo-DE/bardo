@@ -33,12 +33,14 @@ fn since(t0: Elapsed, now: Elapsed) -> f64 {
 impl Target {
     /// Add a step of `by` px (signed) at `now`: the undelivered rest of the last step plus `by`,
     /// eased from here.
+    #[must_use]
     pub fn push(self, by: f64, now: Elapsed) -> Target {
         self.push_capped(by, now, f64::INFINITY)
     }
 
     /// [`Target::push`] with the ease taking no longer than `cap` seconds (a wheel's, from
     /// `wheel_smooth_ms`).
+    #[must_use]
     pub fn push_capped(self, by: f64, now: Elapsed, cap: f64) -> Target {
         let rest = self.step.map_or(0.0, |s| s.total - s.delivered);
         let total = rest + by;
@@ -57,6 +59,7 @@ impl Target {
     }
 
     /// The distance to move at `now` since the last call, and the target after it.
+    #[must_use]
     pub fn advance(self, now: Elapsed) -> (Target, f64) {
         let Some(step) = self.step else {
             return (self, 0.0);
@@ -74,6 +77,7 @@ impl Target {
     }
 
     /// Whether a frame is wanted.
+    #[must_use]
     pub fn motion(&self) -> Motion {
         match self.step {
             Some(_) => Motion::Animating,

@@ -54,6 +54,7 @@ pub struct ReachServer {
 
 impl ReachServer {
     /// A server that says nothing about any action (every action keeps its manifest's reach).
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -65,7 +66,7 @@ impl ReachServer {
         let mut held = self
             .now
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if *held == next {
             return false;
         }
@@ -74,11 +75,12 @@ impl ReachServer {
     }
 
     /// The answer of `Reach` as it stands.
+    #[must_use]
     pub fn json(&self) -> String {
         let held = self
             .now
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         serde_json::to_string(&*held).unwrap_or_else(|_| "{}".to_owned())
     }
 

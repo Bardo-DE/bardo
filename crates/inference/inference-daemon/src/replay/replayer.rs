@@ -40,6 +40,7 @@ pub enum ReplayError {
 
 impl ReplayError {
     /// The slug the engine's error body carries as its `type`.
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             ReplayError::Unreadable { .. } => "replay_unreadable",
@@ -58,6 +59,7 @@ pub struct Replayer {
 
 impl Replayer {
     /// Replays `cassette`.
+    #[must_use]
     pub fn new(cassette: Cassette) -> Self {
         Self {
             cassette,

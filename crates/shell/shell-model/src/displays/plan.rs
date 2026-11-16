@@ -23,6 +23,7 @@ pub enum BrightnessAction {
 /// The actions for `change` on the outputs `keys` picks (`at` being the pointer's or the
 /// focused output). Each target moves from its own level, and two outputs sharing a target (a
 /// mirrored pair) move it once.
+#[must_use]
 pub fn brightness_actions(
     displays: &Displays,
     keys: KeysTarget,
@@ -47,6 +48,7 @@ pub fn brightness_actions(
 
 /// The action for the control center's capsule on `output`: its own target (the one the capsule
 /// shows) set to `level`. Nothing when `output` has no target.
+#[must_use]
 pub fn set_brightness_action(
     displays: &Displays,
     output: &OutputName,
@@ -91,6 +93,7 @@ fn action(
 /// has no DDC display (it did not answer the last probe, which a monitor busy with the
 /// compositor's own DDC traffic can miss), or no output is known and no DDC display either.
 /// When every external output has its DDC display, re-reading is enough.
+#[must_use]
 pub fn probe_needed(displays: &Displays) -> bool {
     let unanswered = displays.outputs.iter().any(|output| {
         output.placement == super::drm::Placement::External
@@ -105,6 +108,7 @@ pub type Originals = BTreeMap<DdcId, RgbGain>;
 /// The writes that bring every DDC display with RGB gains to `warmth`, and the originals to
 /// keep: `Some` scales each display's own gains (remembered the first time) by the warmth
 /// multipliers; `None` puts back every gain bardo-shell changed and forgets them.
+#[must_use]
 pub fn warmth_writes(
     displays: &Displays,
     originals: &Originals,

@@ -31,22 +31,26 @@ impl FileName {
     }
 
     /// The name as the filesystem holds it.
+    #[must_use]
     pub fn as_os_str(&self) -> &OsStr {
         &self.0
     }
 
     /// The name for a person to read; bytes that are not UTF-8 become U+FFFD.
+    #[must_use]
     pub fn display(&self) -> std::borrow::Cow<'_, str> {
         self.0.to_string_lossy()
     }
 
     /// The name without its extension: `Report.final` of `Report.final.pdf`. A name that starts
     /// with its only dot (`.bashrc`) has no extension, so its stem is the whole name.
+    #[must_use]
     pub fn stem(&self) -> &OsStr {
         self.split().0
     }
 
     /// The bytes after the last dot, when the name has an extension: `pdf` of `Report.pdf`.
+    #[must_use]
     pub fn extension(&self) -> Option<&OsStr> {
         self.split().1
     }

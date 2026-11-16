@@ -101,6 +101,7 @@ pub struct IdleBook {
 
 impl IdleBook {
     /// A client asked to be told after `timeout` of quiet at `now`. The id is minted here.
+    #[must_use]
     pub fn watch(
         self,
         client: ClientKey,
@@ -140,6 +141,7 @@ impl IdleBook {
     /// Input of any origin arrived at `now`: every quiet watch counts from here (one instant
     /// moves, no watch is visited), every idle one is told `resumed` and counts again (its
     /// timer was spent, so it is re-armed).
+    #[must_use]
     pub fn activity(self, now: Mono) -> (IdleBook, Moved) {
         let IdleBook {
             mut watches,
@@ -175,6 +177,7 @@ impl IdleBook {
     /// whole timeout it is told `idled`; if activity moved its mark since the timer was armed,
     /// it is re-armed for what is left. A timer for a watch that is gone, held or already idle
     /// does nothing.
+    #[must_use]
     pub fn fire(self, client: ClientKey, id: IdleNotifierId, now: Mono) -> (IdleBook, Moved) {
         let Some(watch) = self
             .watches
@@ -216,6 +219,7 @@ impl IdleBook {
 
     /// An inhibitor appeared or the last one went at `now`. Raised: watches that obey it are
     /// told `resumed` if idle, and stop counting. Lowered: they count again from `now`.
+    #[must_use]
     pub fn inhibit(self, inhibited: bool, now: Mono) -> (IdleBook, Moved) {
         if inhibited == self.inhibited {
             return (self, Moved::default());
@@ -292,21 +296,25 @@ impl IdleBook {
     }
 
     /// Whether an inhibitor holds idleness off.
+    #[must_use]
     pub fn inhibited(&self) -> bool {
         self.inhibited
     }
 
     /// How many watches `client` holds (the per-client cap counts these).
+    #[must_use]
     pub fn held_by(&self, client: ClientKey) -> usize {
         self.held.get(&client).copied().unwrap_or(0)
     }
 
     /// How many watches there are.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.watches.len()
     }
 
     /// Whether there are none.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.watches.is_empty()
     }

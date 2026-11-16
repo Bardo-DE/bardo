@@ -16,6 +16,7 @@ pub struct Identity {
 
 impl Identity {
     /// An identity of these parts.
+    #[must_use]
     pub fn new(node: NodeId, user: UserId, name: String, addresses: Vec<IpAddr>) -> Self {
         Self {
             node,
@@ -26,6 +27,7 @@ impl Identity {
     }
 
     /// This computer as `status` says, when Tailscale is running and signed in; none otherwise.
+    #[must_use]
     pub fn of(status: &Status) -> Option<Self> {
         if status.standing() != Standing::Ready {
             return None;
@@ -40,26 +42,31 @@ impl Identity {
     }
 
     /// Its stable id.
+    #[must_use]
     pub fn node(&self) -> &NodeId {
         &self.node
     }
 
     /// The user it belongs to.
+    #[must_use]
     pub fn user(&self) -> UserId {
         self.user
     }
 
     /// The name people call it by.
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
 
     /// The addresses the network gave it.
+    #[must_use]
     pub fn addresses(&self) -> &[IpAddr] {
         &self.addresses
     }
 
     /// Whether `ip` is one of its own addresses.
+    #[must_use]
     pub fn owns(&self, ip: IpAddr) -> bool {
         self.addresses.contains(&ip)
     }

@@ -37,13 +37,14 @@ impl<E: Ports> Accounts<'_, E> {
                     return Ok((Vec::new(), Err(AgentFault::NotAnAgent)));
                 }
                 let changed = std::mem::replace(&mut row.state, state) != state;
-                let lines = match changed {
-                    true => vec![Audited::new(
+                let lines = if changed {
+                    vec![Audited::new(
                         None,
                         Some(account.clone()),
                         AuditEvent::AgentStateSet { state },
-                    )],
-                    false => Vec::new(),
+                    )]
+                } else {
+                    Vec::new()
                 };
                 Ok((lines, Ok(changed)))
             })

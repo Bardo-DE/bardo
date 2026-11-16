@@ -43,6 +43,7 @@ impl ChatSink for Discard {
 
 /// What a chat needs of the model that answers: chat, structured output when the reply has a
 /// shape, tools when it has any, and room for the prompt and the reply.
+#[must_use]
 pub fn chat_need(request: &ChatRequest) -> Need {
     let mut features = BTreeSet::from([LlmFeature::Chat]);
     if request.shape != ReplyShape::Text {
@@ -108,6 +109,7 @@ pub async fn turn<S: InferSession>(
 /// What a reply that is not the one asked for is as a `Model` error: a refusal of inferd is the
 /// model refusing (the reviewer's cascade turns every one into asking the person), a failed call
 /// is its error, and an answer of another kind is unreadable.
+#[must_use]
 pub fn unwanted(reply: InferReply) -> ModelError {
     match reply {
         InferReply::Refused(_) => ModelError::Refused,

@@ -102,6 +102,7 @@ pub const ENGINES: [EngineKind; 5] = [
 ];
 
 /// The implementation of `kind`. The only `match` on `EngineKind` that picks behaviour.
+#[must_use]
 pub fn engine(kind: EngineKind) -> &'static dyn Engine {
     match kind {
         EngineKind::LlamaServer => &crate::llama::Llama,
@@ -143,6 +144,7 @@ pub struct Pointed {
 }
 
 /// The engine whose disk word is `word`; `None` for any other text.
+#[must_use]
 pub fn engine_from_disk_word(word: &str) -> Option<EngineKind> {
     ENGINES
         .into_iter()

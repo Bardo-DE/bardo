@@ -17,6 +17,7 @@ use std::collections::BTreeMap;
 /// stacking order (the model's stack ranks, A28). A window on every Space is arranged on the
 /// shown Space of its home output. An output with no Space has nothing to arrange and is left
 /// out.
+#[must_use]
 pub fn spec_of(model: &Model) -> SceneSpec {
     spec_of_framed(model, &BTreeMap::new())
 }
@@ -41,6 +42,7 @@ pub fn spec_of(model: &Model) -> SceneSpec {
 /// );
 /// assert!(spec_of_framed(&model, &BTreeMap::new()).outputs.is_empty());
 /// ```
+#[must_use]
 pub fn spec_of_framed(model: &Model, frames: &BTreeMap<WindowId, u32>) -> SceneSpec {
     SceneSpec {
         outputs: model

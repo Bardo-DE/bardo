@@ -71,10 +71,7 @@ pub fn emoji_items(
 /// Whether each of `needle`'s words begins a word of the fields a search reads: the name, the
 /// keywords (not after `:`) and the shortcodes (no scattered letters).
 fn searched_words(entry: &EmojiEntry, needle: &Needle, shortcode_only: bool) -> Words {
-    let keywords: &[&str] = match shortcode_only {
-        true => &[],
-        false => &entry.keywords,
-    };
+    let keywords: &[&str] = if shortcode_only { &[] } else { &entry.keywords };
     let fields = std::iter::once(entry.name)
         .chain(keywords.iter().copied())
         .chain(entry.shortcodes.iter().copied());
@@ -178,6 +175,7 @@ fn to_item(entry: &EmojiEntry, tone: SkinTone, score: Score) -> Item {
 
 /// `glyph` with `tone` applied (Unicode's modifier after the base, inside a ZWJ sequence where
 /// Unicode puts it), or as it is when it takes none or `tone` is the default.
+#[must_use]
 pub fn toned(glyph: &str, tone: SkinTone) -> String {
     if tone == SkinTone::Default {
         return glyph.to_owned();

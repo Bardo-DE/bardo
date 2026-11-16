@@ -44,6 +44,7 @@ pub struct SysRenderNodes {
 
 impl SysRenderNodes {
     /// Detection under `root`.
+    #[must_use]
     pub fn new(root: SysRoot) -> SysRenderNodes {
         SysRenderNodes { root }
     }

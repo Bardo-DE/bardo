@@ -87,6 +87,7 @@ pub struct QuireShellPart {
 
 impl QuireShellPart {
     /// The part; creates the global (version 1) behind the I7 filter.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> QuireShellPart
     where
         D: GlobalDispatch<BardoShellV1, ShellGlobal> + 'static,
@@ -390,6 +391,7 @@ pub fn on_clear_minimise_target(
 /// assert!(on_window_menu_pick(None, Some(WindowEntry::Left)).is_empty());
 /// assert!(on_window_menu_pick(Some(WindowId(1)), None).is_empty());
 /// ```
+#[must_use]
 pub fn on_window_menu_pick(window: Option<WindowId>, entry: Option<WindowEntry>) -> Vec<Event> {
     window
         .zip(entry)
@@ -472,6 +474,7 @@ fn send_modifiers(part: &QuireShellPart, mods: HeldMods) {
 /// let rect = minimise_rect(10, 5, 64, 48);
 /// assert_eq!((rect.origin.x, rect.size.w), (10, 64));
 /// ```
+#[must_use]
 pub fn minimise_rect(x: i32, y: i32, width: u32, height: u32) -> LogicalRect {
     LogicalRect::new(
         LogicalPoint { x, y },

@@ -16,9 +16,10 @@ pub enum Modifier {
 /// The wire form: sctk reports a held modifier as a bare `bool`.
 impl From<bool> for Modifier {
     fn from(wire: bool) -> Modifier {
-        match wire {
-            true => Modifier::Held,
-            false => Modifier::Released,
+        if wire {
+            Modifier::Held
+        } else {
+            Modifier::Released
         }
     }
 }
@@ -36,9 +37,10 @@ pub enum LockKey {
 /// The wire form: sctk reports an engaged lock as a bare `bool`.
 impl From<bool> for LockKey {
     fn from(wire: bool) -> LockKey {
-        match wire {
-            true => LockKey::Locked,
-            false => LockKey::Unlocked,
+        if wire {
+            LockKey::Locked
+        } else {
+            LockKey::Unlocked
         }
     }
 }
@@ -61,6 +63,7 @@ impl Modifiers {
     /// From sctk's decoded modifier state: already resolved against the keymap, so `shift`,
     /// `ctrl`, `alt` and `logo` are the currently-held (depressed or latched) modifiers, and
     /// `caps_lock`/`num_lock` are the currently-locked ones.
+    #[must_use]
     pub fn from_sctk(state: SctkModifiers) -> Modifiers {
         Modifiers {
             shift: Modifier::from(state.shift),

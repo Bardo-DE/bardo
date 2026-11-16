@@ -1,4 +1,4 @@
-//! PickList on a real Blitz document (design/30 section 2.4): a search field over rows in a
+//! `PickList` on a real Blitz document (design/30 section 2.4): a search field over rows in a
 //! popover under its control. The caller narrows the rows by the query it hears; Up, Down and
 //! Return move and pick; a row that keeps the list open (a label toggle) yields and stays, a row
 //! that closes it (Move to, Create) yields and closes; Escape and an outside press close it.
@@ -238,7 +238,7 @@ fn Nothing() -> Element {
                 empty: "No folder matches.",
                 oninput: |_| {},
                 onpick: |_| {},
-                onclose: |_| {},
+                onclose: |()| {},
             }
         }
     }

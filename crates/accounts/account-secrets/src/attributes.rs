@@ -18,11 +18,13 @@ pub struct SecretAttributes {
 }
 
 /// The attributes `key` is filed under in porter's own namespace.
+#[must_use]
 pub fn attributes(key: &SecretKey) -> SecretAttributes {
     attributes_in(&Namespace::PORTER, key)
 }
 
 /// The attributes `key` is filed under in `namespace`.
+#[must_use]
 pub fn attributes_in(namespace: &Namespace, key: &SecretKey) -> SecretAttributes {
     SecretAttributes {
         service: namespace.as_str().to_owned(),

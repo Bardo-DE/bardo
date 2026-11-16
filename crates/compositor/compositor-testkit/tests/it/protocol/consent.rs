@@ -328,7 +328,11 @@ fn an_answer_that_comes_too_soon_cuts_the_shell_only() {
     let (mut fixture, shell, client) = asked_world();
     let _board = use_keys(&mut fixture, client);
     let ask = shell.only_ask();
-    fixture.advance(ANSWER_NOT_BEFORE - Duration::from_millis(1));
+    fixture.advance(
+        ANSWER_NOT_BEFORE
+            .checked_sub(Duration::from_millis(1))
+            .unwrap(),
+    );
     shell.answer_at_once(&mut fixture, ask, Answer::Allow);
     let error = fixture.client(shell.id).protocol_error().expect("too soon");
     assert_eq!(error.interface, "bardo_shell_v1");

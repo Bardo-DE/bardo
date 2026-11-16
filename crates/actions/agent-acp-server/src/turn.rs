@@ -104,6 +104,7 @@ fn needs(of: &NeedsYou) -> String {
 
 impl Turn {
     /// A turn in `mode`, for a person who already said "always" to `covered`.
+    #[must_use]
     pub fn new(mode: Mode, covered: Covered) -> Self {
         Self {
             mode,
@@ -113,6 +114,7 @@ impl Turn {
     }
 
     /// What the loop does next.
+    #[must_use]
     pub fn wants(&self) -> Wants {
         match &self.state {
             State::Running | State::Stopping { .. } => Wants::Event,
@@ -165,6 +167,7 @@ impl Turn {
     }
 
     /// What the person has said "always" to, this turn included.
+    #[must_use]
     pub fn covered(&self) -> Covered {
         self.covered.clone()
     }

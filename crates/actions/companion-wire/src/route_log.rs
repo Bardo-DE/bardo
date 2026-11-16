@@ -52,6 +52,7 @@ impl RouteLog {
 
     /// The notes, oldest stage first. A turn whose inferd sent no `Stage` (one older than the
     /// every-answer note) is one unnamed `Answer` note made from `Routed` and the reasons before it.
+    #[must_use]
     pub fn notes(mut self) -> Vec<RouteNote> {
         if let Some(served) = self.routed.take() {
             self.note(StageRole::Answer, served, None);
@@ -60,6 +61,7 @@ impl RouteLog {
     }
 
     /// The named model that could not serve, if the turn said so.
+    #[must_use]
     pub fn declined(&self) -> Option<&Declined> {
         self.declined.as_ref()
     }

@@ -13,6 +13,7 @@ pub struct Transfer {
 
 impl Transfer {
     /// `sources` to `destination`.
+    #[must_use]
     pub fn new(sources: Vec<ItemRef>, destination: FolderPath) -> Transfer {
         Transfer {
             sources,
@@ -96,6 +97,7 @@ pub struct Summary {
 
 impl Summary {
     /// A summary of `count` items of `kind`, the first called `first`.
+    #[must_use]
     pub fn new(kind: OpKind, count: usize, first: Option<FileName>) -> Summary {
         Summary { kind, count, first }
     }
@@ -103,6 +105,7 @@ impl Summary {
 
 impl OpPlan {
     /// What the plan is about.
+    #[must_use]
     pub fn summary(&self) -> Summary {
         let of_refs = |kind, items: &[ItemRef]| {
             Summary::new(kind, items.len(), items.first().map(|i| i.name.clone()))

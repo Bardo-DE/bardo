@@ -83,6 +83,7 @@ impl SymbolEffect {
     pub const NONE: SymbolEffect = SymbolEffect::Transition(TransitionEffect::Replace, true);
 
     /// The effect's name, `data-symbol`.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             SymbolEffect::Once(effect, _) => effect.slug(),
@@ -92,6 +93,7 @@ impl SymbolEffect {
     }
 
     /// How it runs, `data-run`.
+    #[must_use]
     pub fn run(self) -> &'static str {
         match self {
             SymbolEffect::Once(..) => "once",

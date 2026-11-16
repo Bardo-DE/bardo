@@ -8,11 +8,13 @@ pub struct SpaceNumber(u8);
 
 impl SpaceNumber {
     /// Space `n`, when `n` is 1 to 9.
+    #[must_use]
     pub fn new(n: u8) -> Option<SpaceNumber> {
         (1..=9).contains(&n).then_some(SpaceNumber(n))
     }
 
     /// The number, 1 to 9.
+    #[must_use]
     pub fn get(self) -> u8 {
         self.0
     }
@@ -267,6 +269,7 @@ impl StandardAction {
     }
 
     /// The stable id used in override files: "copy", "switch-to-space-3".
+    #[must_use]
     pub fn slug(self) -> String {
         match self {
             StandardAction::SwitchToSpace(n) => format!("{SPACE_SLUG}{}", n.get()),
@@ -294,6 +297,7 @@ impl StandardAction {
     }
 
     /// Plain words for the action ("select all"), for messages.
+    #[must_use]
     pub fn label(self) -> String {
         self.slug().replace('-', " ")
     }

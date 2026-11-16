@@ -11,6 +11,7 @@ pub const FAILED_STARTS: usize = 2;
 /// [`FAILED_STARTS`] records is a start with `now` that never got `good` (two crashes, or no
 /// first frame within ten seconds), and the program starts without them and says so. A record of
 /// other sheets, or a good one, breaks the run: a changed sheet gets a fresh try.
+#[must_use]
 pub fn decide(records: &[Record], now: Fingerprint) -> bool {
     let tail = records.len().saturating_sub(FAILED_STARTS);
     let last = &records[tail..];

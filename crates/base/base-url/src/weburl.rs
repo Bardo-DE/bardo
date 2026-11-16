@@ -35,27 +35,32 @@ impl WebUrl {
             return Err(bad());
         }
         // A query with no path gets the root path, so the text is a valid request target.
-        let normal = match tail.starts_with('?') {
-            true => format!("{}/{tail}", &text[..text.len() - tail.len()]),
-            false => text.to_owned(),
+        let normal = if tail.starts_with('?') {
+            format!("{}/{tail}", &text[..text.len() - tail.len()])
+        } else {
+            text.to_owned()
         };
         Ok(Self(normal))
     }
 
     /// The URL's text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// The scheme, host and port.
+    #[must_use]
     pub fn origin(&self) -> Origin {
         // `parse` checked the split, and no other constructor builds one from text.
-        split(&self.0)
-            .map(|(origin, _)| origin)
-            .unwrap_or_else(|| unreachable!("a WebUrl was split successfully when it was parsed"))
+        split(&self.0).map_or_else(
+            || unreachable!("a WebUrl was split successfully when it was parsed"),
+            |(origin, _)| origin,
+        )
     }
 
     /// The path, `/` when the URL has none.
+    #[must_use]
     pub fn path(&self) -> &str {
         let rest = self.0.split_once("://").map_or("", |(_, rest)| rest);
         let rest = rest.split('?').next().unwrap_or("");
@@ -63,6 +68,7 @@ impl WebUrl {
     }
 
     /// The query, without its `?`; `None` when there is none.
+    #[must_use]
     pub fn query(&self) -> Option<&str> {
         self.0.split_once('?').map(|(_, query)| query)
     }

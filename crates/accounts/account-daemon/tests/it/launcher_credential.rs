@@ -1,4 +1,4 @@
-//! `IssueProcessCredential` and `RevokeProcessCredential` (from accountd's process_credential
+//! `IssueProcessCredential` and `RevokeProcessCredential` (from accountd's `process_credential`
 //! tests): the agent launcher is handed an API key for a process it spawns, on a sealed memfd and
 //! in no file, under the person's permit of the account to `org.bardo.Agent.<program>`.
 //! Nobody else may ask; the key is in no audit line; and it ends with the launcher, the permit or

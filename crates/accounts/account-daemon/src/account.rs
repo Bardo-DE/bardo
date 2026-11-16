@@ -59,7 +59,10 @@ async fn visible<H: Host, C: Callers>(
         .await
         .map_err(|_| fdo::Error::AccessDenied("accountd does not know this caller".into()))?;
     let registry = core.host.registry();
-    let path = header.path().map(|p| p.as_str()).unwrap_or_default();
+    let path = header
+        .path()
+        .map(zbus::zvariant::ObjectPath::as_str)
+        .unwrap_or_default();
     account_at(&registry.accounts, path)
         .filter(|_| sees(&caller))
         .cloned()
@@ -138,7 +141,10 @@ impl<H: Host, C: Callers> AccountServer for AccountObject<H, C> {
     ) -> Result<OwnedObjectPath, RefusedError> {
         let caller = self.0.identify(&header, Standing::Acting).await?;
         let registry = self.0.host.registry();
-        let path = header.path().map(|p| p.as_str()).unwrap_or_default();
+        let path = header
+            .path()
+            .map(zbus::zvariant::ObjectPath::as_str)
+            .unwrap_or_default();
         let account = account_at(&registry.accounts, path)
             .filter(|_| sees(&caller))
             .map(|account| account.id.clone())

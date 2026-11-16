@@ -10,11 +10,13 @@ pub struct Leases(BTreeMap<LeaseId, WindowId>);
 
 impl Leases {
     /// No lease.
+    #[must_use]
     pub fn none() -> Leases {
         Leases(BTreeMap::new())
     }
 
     /// The window `lease` holds; `None` for a lease that ended or was never granted.
+    #[must_use]
     pub fn window_of(&self, lease: LeaseId) -> Option<WindowId> {
         self.0.get(&lease).copied()
     }

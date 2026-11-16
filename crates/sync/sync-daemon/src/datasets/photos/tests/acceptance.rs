@@ -1,4 +1,4 @@
-//! Acceptance 5 (PLAN §6 W6f): two machines against one fake WebDAV.
+//! Acceptance 5 (PLAN §6 W6f): two machines against one fake `WebDAV`.
 
 use super::rig::{Machine, Server};
 use crate::datasets::photos::{ContentId, Edit, Mark, Stored};

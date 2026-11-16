@@ -35,6 +35,7 @@ pub enum HeaderAction {
 
 impl HeaderAction {
     /// The action for a section's `more`.
+    #[must_use]
     pub fn of(more: More) -> HeaderAction {
         match more {
             More::Nothing => HeaderAction::None,
@@ -44,6 +45,7 @@ impl HeaderAction {
     }
 
     /// Its words.
+    #[must_use]
     pub fn label(self) -> Option<&'static str> {
         match self {
             HeaderAction::None => None,
@@ -133,9 +135,10 @@ impl Draw<'_> {
     /// mixed section's kind) and its chord, which quire shows while it is the selection.
     fn plain(&self, item: &Item, mix: Mix) -> PaletteRow<RowRef> {
         let words = row_detail(item, self.now, self.hours);
-        let trail = match words.trail.is_empty() {
-            false => Accessory::Text(words.trail.clone()),
-            true => kind_trail(item, mix),
+        let trail = if words.trail.is_empty() {
+            kind_trail(item, mix)
+        } else {
+            Accessory::Text(words.trail.clone())
         };
         let (title, detail, leading) = match &item.subject {
             // An emoji's row is its name, led by the glyph in the icon slot: the provider's

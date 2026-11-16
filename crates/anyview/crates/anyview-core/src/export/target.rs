@@ -22,16 +22,19 @@ pub enum RasterTarget {
 
 impl RasterTarget {
     /// The quality a new JPEG export starts at.
+    #[must_use]
     pub fn default_jpeg() -> RasterTarget {
         RasterTarget::Jpeg(Quality::clamped(Percent(90)))
     }
 
     /// The quality a new AVIF export starts at; AVIF stays sharp at lower numbers than JPEG.
+    #[must_use]
     pub fn default_avif() -> RasterTarget {
         RasterTarget::Avif(Quality::clamped(Percent(65)))
     }
 
     /// The extension of the file this encoding writes.
+    #[must_use]
     pub fn extension(self) -> ExportExtension {
         match self {
             RasterTarget::Png => ExportExtension::Png,
@@ -74,12 +77,14 @@ pub enum AudioTarget {
 
 impl AudioTarget {
     /// The bitrate a new lossy export starts at.
+    #[must_use]
     pub fn default_bitrate() -> Bitrate {
         Bitrate::from_kbps(192)
     }
 
     /// The extension of the file this writes: fixed for a re-encode, and left to the back end
     /// for a copy, which takes the extension of the codec it carries.
+    #[must_use]
     pub fn extension(self) -> ExportExtension {
         match self {
             AudioTarget::Copy => ExportExtension::Matching,

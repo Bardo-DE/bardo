@@ -11,6 +11,7 @@ use drive_fuse::mountd::wire::Code;
 pub const NO_FILES_HERE: &str = "Files can't show this drive on this computer.";
 
 /// Why an action or a change did not go through, as a plain sentence.
+#[must_use]
 pub fn reason(reason: Reason) -> &'static str {
     match reason {
         Reason::NotOnADrive => "This item isn't in a cloud drive.",
@@ -36,6 +37,7 @@ pub fn reason(reason: Reason) -> &'static str {
 }
 
 /// What bardo-drive-mount's refusal says.
+#[must_use]
 pub fn refusal(code: Code) -> &'static str {
     match code {
         Code::NotHere => NO_FILES_HERE,
@@ -49,6 +51,7 @@ pub fn refusal(code: Code) -> &'static str {
 
 /// What Files shows for a drive that was not mounted: the helper's word when it refused, else
 /// [`NO_FILES_HERE`].
+#[must_use]
 pub fn unshown(error: &MountError) -> &'static str {
     match error {
         MountError::Refused(code) => refusal(*code),
@@ -59,6 +62,7 @@ pub fn unshown(error: &MountError) -> &'static str {
 /// What removing an account kept: `count` files made or changed here that were not uploaded,
 /// written out as plain files in the drive's folder (`folder`, as people see it:
 /// `~/Cloud/OneDrive`).
+#[must_use]
 pub fn kept_unsent(count: usize, folder: &str) -> String {
     match count {
         1 => format!("1 file that wasn't uploaded was kept in {folder}."),

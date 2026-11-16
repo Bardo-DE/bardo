@@ -14,6 +14,7 @@ use base_time::UnixSeconds;
 /// The sheet to show for `need`, or `None` when no account fits. `only` narrows the sheet to that
 /// one account (no chooser). `session` is the open launcher session the request was made in,
 /// which lets the sheet offer "This session only".
+#[must_use]
 pub fn ask_for(
     registry: &Registry,
     need: &Need,
@@ -127,6 +128,7 @@ fn allow(
 }
 
 /// A grant id unused in `registry`.
+#[must_use]
 pub fn next_grant_id(registry: &Registry) -> GrantId {
     let held = registry.grants.len();
     let first = held.saturating_add(1);

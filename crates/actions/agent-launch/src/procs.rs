@@ -70,6 +70,7 @@ impl BwrapProcs {
     /// Runs agents under `sandbox` (from `Detected::probe`). The syscall filter is written to a
     /// new private file in `filter_dir` for each start (a directory only the user can enter, such
     /// as `$XDG_RUNTIME_DIR`) and removed when the process ends.
+    #[must_use]
     pub fn new(sandbox: BwrapSandbox, filter_dir: PathBuf) -> Self {
         Self {
             sandbox,

@@ -1,4 +1,4 @@
-//! SearchField on a real Blitz document: its suggestions panel is owned by the field. A press on
+//! `SearchField` on a real Blitz document: its suggestions panel is owned by the field. A press on
 //! the field is inside the panel, the keyboard never leaves the field, Up and Down move the
 //! highlight, Enter picks, Escape closes the panel first and clears the field second, a press
 //! elsewhere closes it, and the panel is placed under the field at its width, flipping above when

@@ -321,11 +321,13 @@ impl Tree {
     }
 
     /// Which format it was read as.
+    #[must_use]
     pub fn format(&self) -> TreeFormat {
         self.format
     }
 
     /// Whether the tree holds all the document or only its start.
+    #[must_use]
     pub fn coverage(&self) -> Coverage {
         self.store.coverage
     }
@@ -529,6 +531,7 @@ impl Tree {
 
     /// The keys of the root object in file order, at most `limit` of them; empty when the root is
     /// not an object.
+    #[must_use]
     pub fn top_level_keys(&self, limit: usize) -> Vec<String> {
         let Some(level) = self
             .store

@@ -30,6 +30,7 @@ pub struct DesktopConfig {
 
 impl DesktopConfig {
     /// A client on a Shell connection: it binds `bardo_shell_v1` as well.
+    #[must_use]
     pub const fn holding_shell() -> Self {
         Self {
             shell: ShellBinding::Bind,

@@ -6,6 +6,7 @@ use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
 
 /// The call a server method answers: who sent it and where, and the connection to answer over.
+///
 /// zbus gives these to a method by attribute; the interface macro gathers them so that a daemon's
 /// method names the ones it uses (`Call { header, .. }: Call<'_>`).
 #[derive(Debug)]
@@ -39,6 +40,7 @@ pub struct Document {
 
 impl Document {
     /// The document as the daemon's object introspects.
+    #[must_use]
     pub fn introspection(&self) -> String {
         let mut xml = String::from(
             "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n<node>\n",

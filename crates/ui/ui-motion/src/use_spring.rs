@@ -23,11 +23,13 @@ pub struct SpringMotion {
 
 impl SpringMotion {
     /// The frame now, subscribing the caller's render to the spring's frames.
+    #[must_use]
     pub fn frame(self) -> SpringFrame {
         self.playback.frame()
     }
 
     /// The frame now, without subscribing.
+    #[must_use]
     pub fn peek(self) -> SpringFrame {
         self.playback
             .peek()
@@ -87,6 +89,7 @@ impl SpringMotion {
 
 /// A spring standing at `at`, in units of which one draws `scale` pixels. Move it with
 /// [`SpringMotion::go`] and [`SpringMotion::track`].
+#[must_use]
 pub fn use_spring_motion(at: f32, scale: PxPerUnit) -> SpringMotion {
     let resting = SpringSpec::for_touch(crate::detail::touch::Touch::Remote)
         .spring(0.0, MotionLevel::Standard);
@@ -101,6 +104,7 @@ pub fn use_spring_motion(at: f32, scale: PxPerUnit) -> SpringMotion {
 /// springs there from where it is, at the speed it has, on the spring `spec` chooses (critical
 /// for a remote change or a tap, 0.8 for a throw toward it; critical under Reduced). Asks for
 /// frames only while it moves.
+#[must_use]
 pub fn use_spring(target: f32, spec: SpringSpec, scale: PxPerUnit) -> SpringFrame {
     let motion = use_spring_motion(target, scale);
     let mut seen = use_hook(|| CopyValue::new(target));

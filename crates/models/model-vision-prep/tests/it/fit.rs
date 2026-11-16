@@ -1,4 +1,4 @@
-//! `fit` against the reference `smart_resize` (fixtures/smart_resize.csv, made by
+//! `fit` against the reference `smart_resize` (`fixtures/smart_resize.csv`, made by
 //! dev/smart-resize-vectors.py from qwen-vl-utils) and tables for the other rules.
 
 use computer_use_action::{Coord, DeviceSize, ImageSpace, Size};

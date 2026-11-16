@@ -69,7 +69,7 @@ fn engine_addresses_parse_to_scheme_host_port_and_base() {
 
 #[test]
 fn engine_ids_follow_the_id_grammar() {
-    assert!(EngineId::parse("ollama-1").is_ok());
+    EngineId::parse("ollama-1").unwrap();
     for bad in ["", "Ollama", "-x", "a b"] {
         assert_eq!(
             EngineId::parse(bad),
@@ -111,13 +111,11 @@ fn a_table_is_refused_for_what_would_go_wrong_later() {
     let loopback_key = || engine("keyed", "http://localhost:1/v1", Locality::OnDevice).with_key();
     let id = |text: &str| EngineId::parse(text).expect("id");
 
-    assert!(
-        Table::new(
-            vec![local(), secure(), loopback_key()],
-            vec![row(&["local", "hosted"])]
-        )
-        .is_ok()
-    );
+    Table::new(
+        vec![local(), secure(), loopback_key()],
+        vec![row(&["local", "hosted"])],
+    )
+    .unwrap();
     assert_eq!(
         Table::new(vec![local(), local()], vec![]).err(),
         Some(EngineError::Duplicate(id("local")))

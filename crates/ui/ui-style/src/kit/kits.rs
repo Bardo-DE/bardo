@@ -31,6 +31,7 @@ pub struct KnownNames {
 
 impl Kits {
     /// `kits` in cascade order: fixed by each kit's rank, not by the order given.
+    #[must_use]
     pub fn of(kits: &[&'static Kit]) -> Kits {
         let mut kits = kits.to_vec();
         kits.sort_by_key(|kit| kit.rank);
@@ -39,6 +40,7 @@ impl Kits {
 
     /// The whole stylesheet: every kit's sections in cascade order, each under its marker, the
     /// design system's inside `@layer ds` and a user kit's after it, unlayered.
+    #[must_use]
     pub fn stylesheet(&self) -> String {
         let section =
             |section: &super::model::Section| (section.name, (section.css)(self).into_owned());
@@ -54,6 +56,7 @@ impl Kits {
     }
 
     /// The component sheets the kits add to the `components` section, in kit order.
+    #[must_use]
     pub fn sheets(&self) -> Vec<Sheet> {
         self.kits
             .iter()
@@ -63,6 +66,7 @@ impl Kits {
 
     /// The `.ds` token blocks of every kit's families: the base declarations, then what the dark
     /// scheme and each motion level change.
+    #[must_use]
     pub fn token_blocks(&self) -> String {
         token_blocks(&self.token_sets())
     }

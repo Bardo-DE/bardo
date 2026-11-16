@@ -31,6 +31,7 @@ pub struct FileKinds {
 
 impl FileKinds {
     /// Whether the set names nothing, so the dialog lists everything.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.mimes.is_empty() && self.globs.is_empty()
     }

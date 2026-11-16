@@ -117,16 +117,19 @@ impl LayerSurface {
     }
 
     /// The latest configure the compositor sent, if any.
+    #[must_use]
     pub fn configure(&self) -> Option<LayerConfigure> {
         self.log.with(|state| state.configure)
     }
 
     /// Whether the compositor closed the surface.
+    #[must_use]
     pub fn is_closed(&self) -> bool {
         self.log.with(|state| state.closed)
     }
 
     /// Acknowledges the latest configure; false when there is none yet.
+    #[must_use]
     pub fn ack(&self, client: &TestClient) -> bool {
         let Some(configure) = self.configure() else {
             return false;
@@ -171,6 +174,7 @@ impl LayerSurface {
     }
 
     /// The `wl_surface`, for requests of other protocols (a drag from it, a cursor).
+    #[must_use]
     pub fn surface(&self) -> &WlSurface {
         &self.surface
     }
@@ -246,7 +250,7 @@ impl Dispatch<ZwlrLayerSurfaceV1, LayerLog> for ClientState {
                     serial,
                     width,
                     height,
-                })
+                });
             }),
             zwlr_layer_surface_v1::Event::Closed => log.with(|state| state.closed = true),
             _ => {}

@@ -3,7 +3,7 @@
 //! replayed in strict mode under every chunking, so the request the session builds must be the
 //! same bytes every time and the outcomes must not depend on how the stream is cut.
 //!
-//! The streams are hand-written from the OpenAI chat-completions chunk format vLLM answers in
+//! The streams are hand-written from the `OpenAI` chat-completions chunk format vLLM answers in
 //! (they are not recordings of a model); a recorded run replaces them when
 //! `dev/record-engine.sh` is run against Holo-3.1-4B.
 
@@ -253,9 +253,9 @@ fn holo_runs_three_steps_through_the_wire_and_replays_identically() {
     let Step::Acted(first) = &steps[0] else {
         panic!("acted")
     };
-    assert!(matches!(&first[..], [CuaAction::Click { .. }]));
-    assert!(matches!(&steps[1], Step::Acted(a) if matches!(&a[..], [CuaAction::Type { .. }])));
-    assert!(matches!(&steps[2], Step::Acted(a) if matches!(&a[..], [CuaAction::Finish { .. }])));
+    assert!(matches!(&**first, [CuaAction::Click { .. }]));
+    assert!(matches!(&steps[1], Step::Acted(a) if matches!(&**a, [CuaAction::Type { .. }])));
+    assert!(matches!(&steps[2], Step::Acted(a) if matches!(&**a, [CuaAction::Finish { .. }])));
 
     // What went on the wire: the system prompt, the function, no reasoning switch left to the
     // engine but off, and the frames of the last two steps ahead of the current one.
@@ -307,7 +307,7 @@ fn qwen_in_pixel_space_repairs_once_over_the_wire() {
             at: computer_use_action::Target::Point(p),
             ..
         },
-    ] = &actions[..]
+    ] = &**actions
     else {
         panic!("a click")
     };
@@ -321,7 +321,7 @@ fn qwen_in_pixel_space_repairs_once_over_the_wire() {
         first["messages"].as_array().unwrap(),
         repair["messages"].as_array().unwrap(),
     );
-    assert_eq!(&b[..a.len()], &a[..]);
+    assert_eq!(&b[..a.len()], &**a);
     assert_eq!(b.len(), a.len() + 1);
     assert!(
         b[a.len()]["content"]

@@ -55,6 +55,7 @@ impl StripPlan {
     /// own scale): a shadow's halo is outside the window's rectangle, so the strips that carry
     /// it are wider than the rows they cut, and the top and bottom strips reach past the
     /// window. The band moves with the shift, so the halo lands round the strip.
+    #[must_use]
     pub fn widened(self, by: Margins) -> StripPlan {
         let grow = |n: i32, scale: f64| (f64::from(n) * scale).round() as i32;
         let side = grow(by.side, self.scale.0);
@@ -72,6 +73,7 @@ impl StripPlan {
     /// Where the rows of `rect` (a rectangle of the window at rest, output pixels) that this
     /// strip shows are drawn; `None` when it shows none of them. The rows are held to the
     /// strip's own drawn band, so two strips never claim the same pixel.
+    #[must_use]
     pub fn mapped(&self, rect: PhysicalRect) -> Option<PhysicalRect> {
         let top = f64::from(rect.y).max(self.source.0);
         let bottom = (f64::from(rect.y) + f64::from(rect.h)).min(self.source.1);

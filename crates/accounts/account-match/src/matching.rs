@@ -21,6 +21,7 @@ pub enum Match {
 }
 
 /// How `offer` answers `need`.
+#[must_use]
 pub fn matches(need: &Need, offer: &Offer) -> Match {
     match offer {
         Offer::Absent { kind, reason } if *kind == need.kind() => Match::Absent(*reason),

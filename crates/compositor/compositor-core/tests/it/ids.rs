@@ -20,8 +20,8 @@ fn output_names_parse_once() {
     for (text, ok) in CASES {
         assert_eq!(OutputName::parse(text).is_ok(), *ok, "{text:?}");
     }
-    assert!(OutputName::parse(&"D".repeat(63)).is_ok());
-    assert!(OutputName::parse(&"D".repeat(64)).is_err());
+    OutputName::parse(&"D".repeat(63)).unwrap();
+    OutputName::parse(&"D".repeat(64)).unwrap_err();
     assert_eq!(OutputName::parse("DP-1").expect("valid").as_str(), "DP-1");
 }
 
@@ -115,5 +115,5 @@ fn ids_serialise_as_bare_values() {
     assert_eq!(serde_json::to_string(&WindowId(9)).expect("json"), "9");
     let name: OutputName = serde_json::from_str("\"DP-3\"").expect("valid");
     assert_eq!(name.as_str(), "DP-3");
-    assert!(serde_json::from_str::<OutputName>("\"no spaces\"").is_err());
+    serde_json::from_str::<OutputName>("\"no spaces\"").unwrap_err();
 }

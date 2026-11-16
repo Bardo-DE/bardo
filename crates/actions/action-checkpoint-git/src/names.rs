@@ -27,6 +27,7 @@ pub(crate) fn segment(session: &SessionId) -> String {
 }
 
 /// The ref of point `id` of `session`: `refs/docket/checkpoints/<session>/<n>`.
+#[must_use]
 pub fn ref_name(session: &SessionId, id: CheckpointId) -> String {
     format!("{FAMILY}/{}/{}", segment(session), id.0)
 }

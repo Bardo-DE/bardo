@@ -29,6 +29,7 @@ pub struct Entry {
 /// Checks `entries` (ascending, the first following `from`): sequence numbers gapless, every
 /// header's link recomputed and `prev` pointing at the entry before, every present body
 /// matching its keyed digest. Erased bodies are counted, not checked.
+#[must_use]
 pub fn verify_chain(from: &Checkpoint, entries: &[Entry], digest_key: &SubKey) -> ChainReport {
     let mut expected = Seq(from.cut.0 + 1);
     let mut prev = from.link;

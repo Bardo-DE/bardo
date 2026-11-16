@@ -169,8 +169,7 @@ async fn the_portals_question_and_the_compositors_wait_in_one_line_one_sheet_at_
         .borrow()
         .permission
         .as_ref()
-        .map(|a| a.id)
-        .unwrap_or(AskId(0));
+        .map_or(AskId(0), |a| a.id);
     let _ = rig.service.control.send(CaptureCommand::PermissionAnswer(
         id,
         PermissionOutcome::Deny,
@@ -226,8 +225,7 @@ async fn a_withdrawn_question_comes_down_unanswered_and_a_dismissal_is_told_as_o
         .borrow()
         .permission
         .as_ref()
-        .map(|a| a.id)
-        .unwrap_or(AskId(0));
+        .map_or(AskId(0), |a| a.id);
     let _ = rig.service.control.send(CaptureCommand::PermissionAnswer(
         id,
         PermissionOutcome::Closed,

@@ -21,6 +21,7 @@ pub struct Mode {
 
 impl Mode {
     /// A mode that has just appeared.
+    #[must_use]
     pub fn new(key: ModeKey) -> Self {
         Self {
             key,
@@ -66,6 +67,7 @@ pub struct Head {
 
 impl Head {
     /// A head that has just appeared.
+    #[must_use]
     pub fn new(key: HeadKey) -> Self {
         Self {
             key,
@@ -86,6 +88,7 @@ impl Head {
     }
 
     /// The mode in use.
+    #[must_use]
     pub fn current(&self) -> Option<&Mode> {
         let key = self.current_mode?;
         self.modes.iter().find(|m| m.key == key)

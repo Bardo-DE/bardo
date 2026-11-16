@@ -15,6 +15,7 @@ impl Backoff {
     pub const DEVICE: Backoff = Backoff::new(Duration::from_secs(1), Duration::from_secs(30));
 
     /// A backoff starting at `first` and doubling up to `cap`.
+    #[must_use]
     pub const fn new(first: Duration, cap: Duration) -> Self {
         Self {
             first,
@@ -24,12 +25,14 @@ impl Backoff {
     }
 
     /// The delay to wait now, and the backoff after it.
+    #[must_use]
     pub fn step(self) -> (Duration, Backoff) {
         let next = self.next.saturating_mul(2).min(self.cap);
         (self.next, Backoff { next, ..self })
     }
 
     /// Back to the first delay, after a success.
+    #[must_use]
     pub fn reset(self) -> Backoff {
         Backoff {
             next: self.first,

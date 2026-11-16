@@ -29,6 +29,7 @@ pub struct ForceQuitRow {
 /// use shell_model::desktop::{DesktopView, force_quit_rows};
 /// assert!(force_quit_rows(&DesktopView::default()).is_empty());
 /// ```
+#[must_use]
 pub fn force_quit_rows(view: &DesktopView) -> Vec<ForceQuitRow> {
     let mut apps: Vec<&AppView> = view.apps.iter().filter(|app| listed(app)).collect();
     apps.sort_by_key(|app| app.mru);
@@ -61,6 +62,7 @@ fn standing(view: &DesktopView, app: &AppView) -> Standing {
 
 /// The app the panel starts with selected: the first that does not answer, as the Mac selects a
 /// hung app for you; none when every app answers.
+#[must_use]
 pub fn hung_first(rows: &[ForceQuitRow]) -> Option<&str> {
     rows.iter()
         .find(|row| row.standing == Standing::NotResponding)

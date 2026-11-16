@@ -6,6 +6,7 @@ use ui_settings::schema::Page;
 pub const DISPLAYS_SLUG: &str = "displays";
 
 /// The Displays page as the catalogue holds it.
+#[must_use]
 pub fn displays_page() -> Page {
     Page::declared(DISPLAYS_SLUG)
 }

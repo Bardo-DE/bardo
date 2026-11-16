@@ -46,6 +46,7 @@ pub struct ParamKinds(BTreeMap<String, Kind>);
 
 impl ParamKinds {
     /// The kinds of `schema`'s `properties`; a schema that is not JSON names none.
+    #[must_use]
     pub fn from_schema(schema: &str) -> ParamKinds {
         let kinds = serde_json::from_str::<Value>(schema)
             .ok()

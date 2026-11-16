@@ -47,7 +47,7 @@ fn app() -> Element {
             oninput: move |event: FormEvent| {
                 let value = event.value();
                 say(&format!("value {value}"));
-                *VALUE.lock().unwrap_or_else(|e| e.into_inner()) = value;
+                *VALUE.lock().unwrap_or_else(std::sync::PoisonError::into_inner) = value;
             },
             onkeydown: move |event: KeyboardEvent| say(&format!("key {}", event.key())),
         }
@@ -116,11 +116,14 @@ fn run() -> Result<(), String> {
             }
         }
         HostEvent::App(Command::Value) => {
-            let value = VALUE.lock().unwrap_or_else(|e| e.into_inner()).clone();
+            let value = VALUE
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .clone();
             say(&format!("value {value}"));
         }
         HostEvent::App(Command::Quit) | HostEvent::SurfaceClosed { .. } | HostEvent::QuitAsked => {
-            ctx.exit()
+            ctx.exit();
         }
         _ => {}
     })

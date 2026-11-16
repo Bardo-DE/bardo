@@ -106,6 +106,7 @@ fn handles_only(value: &Reveal<Value>) -> Option<Reveal<Value>> {
 /// handles is dropped, and the line keeps what the app said, the undo row, the handles the call
 /// named and the handles it returned, so the model can still tell which result came from which
 /// call and the cached prefix stays stable until the task ends.
+#[must_use]
 pub fn mask_history(history: &[StepLine], keep_full: Count) -> Vec<StepLine> {
     let cut = history.len().saturating_sub(keep_full.0 as usize);
     history
@@ -147,6 +148,7 @@ pub(crate) fn task_cost(view: &PlannerView) -> u32 {
 
 /// Whether the task section of `view` is within the budget. When it is not, even with everything
 /// old dropped, the loop splits the task.
+#[must_use]
 pub fn task_fits(budget: &AssemblerBudget, view: &PlannerView) -> bool {
     task_cost(view) <= budget.task.0
 }
@@ -207,6 +209,7 @@ pub(crate) fn view_of(
 /// Builds the planner's view inside the budget. What the summary covers is left out and the
 /// summary shown in its place. The person's turns are never cut; the oldest masked steps go first
 /// when the current task is over its budget.
+#[must_use]
 pub fn assemble(budget: &AssemblerBudget, sources: &Sources) -> PlannerView {
     let covers = sources.summary.as_ref().map_or(Covers::NONE, |s| s.covers);
     let mut view = view_of(budget, sources, covers, sources.summary.clone());

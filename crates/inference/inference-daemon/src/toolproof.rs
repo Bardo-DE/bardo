@@ -24,6 +24,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex, PoisonError};
 
 /// Whether a request of `need` offers tools.
+#[must_use]
 pub fn asks_for_tools(need: &Need) -> bool {
     matches!(need, Need::Llm(llm) if llm.features.contains(&LlmFeature::Tools))
 }
@@ -53,11 +54,13 @@ pub struct ToolProofs {
 
 impl ToolProofs {
     /// Nothing known, and nothing kept across a restart.
+    #[must_use]
     pub fn in_memory() -> Self {
         Self::default()
     }
 
     /// What `file` holds, and every record written back to it.
+    #[must_use]
     pub fn open(file: PathBuf) -> Self {
         let document = std::fs::read_to_string(&file)
             .ok()
@@ -80,11 +83,13 @@ impl ToolProofs {
     }
 
     /// What is known of `model`.
+    #[must_use]
     pub fn get(&self, model: &ModelRef) -> Option<ToolProof> {
         self.held().proofs.get(model).copied()
     }
 
     /// The models known to fail.
+    #[must_use]
     pub fn failed(&self) -> BTreeSet<ModelRef> {
         self.held()
             .proofs

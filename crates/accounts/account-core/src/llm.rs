@@ -30,6 +30,7 @@ pub struct LlmVerdict {
 
 impl LlmVerdict {
     /// The verdict `verdict` for `account`.
+    #[must_use]
     pub fn new(
         account: AccountId,
         provider: String,
@@ -62,6 +63,7 @@ pub struct OwnServerRow {
 
 impl OwnServerRow {
     /// The server `account` keeps at `endpoint`.
+    #[must_use]
     pub fn new(account: AccountId, label: String, endpoint: ServiceEndpoint) -> Self {
         Self {
             account,
@@ -89,6 +91,7 @@ pub struct AiAccountRow {
 
 impl AiAccountRow {
     /// The row of `account`.
+    #[must_use]
     pub fn new(
         account: AccountId,
         provider: String,

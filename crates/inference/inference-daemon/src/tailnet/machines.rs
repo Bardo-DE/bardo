@@ -25,6 +25,7 @@ pub struct BusMachines {
 
 impl BusMachines {
     /// accountd as `connection` reaches it.
+    #[must_use]
     pub fn new(connection: zbus::Connection) -> Self {
         Self { connection }
     }

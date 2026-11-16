@@ -18,7 +18,7 @@ route = "login"
     let entry = file.by_program(&"plain".parse_program()).expect("entry");
     assert_eq!(entry.network, NetworkMode::None);
     assert_eq!(AgentsFile::parse(LOGIN).expect("login").programs().len(), 1);
-    assert!(AgentsFile::parse(HANDOFF).is_ok());
+    AgentsFile::parse(HANDOFF).unwrap();
 }
 
 trait Program {
@@ -143,7 +143,7 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
         let fault = refused(text);
         assert_eq!(kind_of(&fault), *expected, "{name}: {fault:?}");
     }
-    assert!(AgentsFile::parse(&login("model = \"flash\"")).is_ok());
+    AgentsFile::parse(&login("model = \"flash\"")).unwrap();
     // A label or a sign-in method that is empty, long or odd is refused naming the program.
     let labels = [
         "\"   \"".to_owned(),
@@ -169,7 +169,7 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
         }
     }
     let longest = "x".repeat(64);
-    assert!(AgentsFile::parse(&plain(&format!("label = \"{longest}\""))).is_ok());
+    AgentsFile::parse(&plain(&format!("label = \"{longest}\""))).unwrap();
 }
 
 #[test]
@@ -215,7 +215,7 @@ fn the_desktops_actions_are_offered_unless_the_entry_says_off() {
     };
     assert_eq!(tools_of(text("")), Ok(true));
     assert_eq!(tools_of(text("tools = false\n")), Ok(false));
-    assert!(tools_of(text("tools = \"yes\"\n")).is_err());
+    tools_of(text("tools = \"yes\"\n")).unwrap_err();
 }
 
 fn labelled(label: &str) -> String {
@@ -251,7 +251,7 @@ fn a_sign_in_method_is_a_short_id_and_is_optional() {
     let file = AgentsFile::parse(&signed_in(r#""oauth-personal""#)).expect("file");
     let entry = file.by_program(&"plain".parse_program()).expect("entry");
     assert_eq!(
-        entry.sign_in.as_ref().map(|s| s.as_str()),
+        entry.sign_in.as_ref().map(agent_acp_host::SignIn::as_str),
         Some("oauth-personal")
     );
     let bare = "[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/true\"\nroute = \"login\"\n";
@@ -308,14 +308,20 @@ fn a_registry_agent_runs_from_its_install_with_a_home_of_its_own() {
         format!("{root}/installed/agy-acp/1.3.0/files/agy")
     );
     let home = format!("{root}/state/agy-acp/home");
-    assert_eq!(entry.home.as_ref().map(|h| h.as_str()), Some(home.as_str()));
+    assert_eq!(
+        entry.home.as_ref().map(base_path::AbsPath::as_str),
+        Some(home.as_str())
+    );
     assert_eq!(entry.state[0].as_str(), home);
     assert_eq!(entry.reads.len(), 1);
     assert_eq!(
-        entry.model.as_ref().map(|m| m.as_str()),
+        entry.model.as_ref().map(agent_acp_host::ModelId::as_str),
         Some("gemini-pro-agent")
     );
-    assert_eq!(entry.sign_in.as_ref().map(|m| m.as_str()), Some("google"));
+    assert_eq!(
+        entry.sign_in.as_ref().map(agent_acp_host::SignIn::as_str),
+        Some("google")
+    );
 }
 
 #[test]
@@ -344,11 +350,11 @@ fn a_registry_agent_that_is_not_installed_or_not_pinned_is_refused() {
     let fault = AgentsFile::parse_in(REGISTRY_ENTRY, Some(&dir)).expect_err("not installed");
     assert!(matches!(fault, ConfigFault::Registry { .. }));
     let unpinned = REGISTRY_ENTRY.replace("version = \"1.3.0\"\n", "");
-    assert!(AgentsFile::parse_in(&unpinned, Some(&dir)).is_err());
+    AgentsFile::parse_in(&unpinned, Some(&dir)).unwrap_err();
     // Without the agents directory a registry entry cannot be placed at all.
-    assert!(AgentsFile::parse(REGISTRY_ENTRY).is_err());
+    AgentsFile::parse(REGISTRY_ENTRY).unwrap_err();
     let both = REGISTRY_ENTRY.replace("registry =", "command = \"/usr/bin/x\"\nregistry =");
-    assert!(AgentsFile::parse_in(&both, Some(&dir)).is_err());
+    AgentsFile::parse_in(&both, Some(&dir)).unwrap_err();
 }
 
 #[test]
@@ -594,5 +600,5 @@ fn a_handed_off_key_may_reach_only_the_sites_it_names() {
     let text = entry(
         "route = \"handoff\"\nnetwork = \"allowlist\"\nkey_env = \"K\"\nallow = [\"api.example.com\"]",
     );
-    assert!(AgentsFile::parse(&text).is_ok());
+    AgentsFile::parse(&text).unwrap();
 }

@@ -10,11 +10,11 @@
 //! (`shell_ui_kit::sheet_stage`). Nothing is styled under `.ds-polkit*`; the only markup of bardo-shell's own is the
 //! wrapper that hears the keys' modifiers, since quire's sheet floats in the root's overlay host.
 
+use base_secret::SecretText;
 use dioxus::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
-use base_secret::SecretText;
 use shell_model::polkit_agent::{Cookie, PolkitCommand};
 use shell_services::{Control, PolkitAgentService};
 use ui_components::prelude::*;

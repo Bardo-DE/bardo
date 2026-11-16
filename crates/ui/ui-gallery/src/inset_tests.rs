@@ -1,5 +1,5 @@
 //! Every gallery page, in light and dark, holds the content inset rule: no text, glyph or image
-//! sits closer to the painted edge of its box than the policy allows (ui_harness::inset;
+//! sits closer to the painted edge of its box than the policy allows (`ui_harness::inset`;
 //! ARCHITECTURE.md "Content inset check").
 //!
 //! `BARDO_INSET_REPORT=<file>` writes every offence of every page to `<file>` and does not fail:

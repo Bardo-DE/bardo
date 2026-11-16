@@ -20,6 +20,7 @@ pub struct DatasetId(String);
 
 impl DatasetId {
     /// The slug, if it is one: `[a-z0-9_]+`.
+    #[must_use]
     pub fn parse(slug: &str) -> Option<Self> {
         let ok = !slug.is_empty()
             && slug.len() <= 48
@@ -30,6 +31,7 @@ impl DatasetId {
     }
 
     /// The slug.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -129,6 +131,7 @@ impl<T: Dataset + ?Sized> Dataset for std::sync::Arc<T> {
 
 /// SHA-256 of `bytes`, in hex: the fingerprint datasets report in [`Scanned`] and the hash the
 /// engine sends and compares for a replica that reports `HashKind::Sha256`.
+#[must_use]
 pub fn fingerprint(bytes: &[u8]) -> ContentHash {
     let digest = Sha256::digest(bytes);
     ContentHash(hex::encode(digest))
@@ -136,6 +139,7 @@ pub fn fingerprint(bytes: &[u8]) -> ContentHash {
 
 /// The hash of `bytes` in the form a replica reports, when this build can compute it (SHA-256
 /// only); otherwise the engine compares bytes.
+#[must_use]
 pub fn replica_hash(kind: HashKind, bytes: &[u8]) -> Option<ContentHash> {
     match kind {
         HashKind::Sha256 => Some(fingerprint(bytes)),

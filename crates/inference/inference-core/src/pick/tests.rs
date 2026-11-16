@@ -322,7 +322,7 @@ fn a_mid_turn_engine_is_never_chosen_for_eviction_even_when_unloading_is_allowed
             model: mref("idle")
         }
     );
-    assert!(auto_of(&cands[..1]).is_err());
+    auto_of(&cands[..1]).unwrap_err();
 }
 
 fn named_pick(name: &str, cands: &[PickCandidate], policy: &Policy) -> Result<Picked, PickRefusal> {
@@ -438,7 +438,7 @@ fn a_named_model_the_floor_forbids_is_blocked_by_the_floor() {
 fn a_named_non_commercial_model_is_served_because_the_person_named_it() {
     let mut c = warm("a", 0);
     c.licence = LicenceClass::NonCommercial;
-    assert!(named_pick("a", &[c], &open()).is_ok());
+    named_pick("a", &[c], &open()).unwrap();
 }
 
 #[test]

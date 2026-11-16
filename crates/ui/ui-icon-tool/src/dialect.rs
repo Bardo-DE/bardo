@@ -8,7 +8,7 @@ use serde::{Deserialize, Deserializer};
 
 use crate::{IconsError, Oklab, Srgb8, oklab};
 
-/// The chroma cap: no colour in an app icon, plate or symbol, exceeds this OKLCh chroma. Round
+/// The chroma cap: no colour in an app icon, plate or symbol, exceeds this `OKLCh` chroma. Round
 /// three's plates ran to about 0.15-0.20; Klein's soft grounds sit near 0.06-0.09.
 pub const CHROMA_CAP: f32 = 0.07;
 
@@ -31,7 +31,7 @@ impl Default for ChromaCap {
     }
 }
 
-/// A colour in OKLCh: lightness 0..=1, chroma, hue in degrees.
+/// A colour in `OKLCh`: lightness 0..=1, chroma, hue in degrees.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Lch {
     pub l: f32,
@@ -40,7 +40,8 @@ pub struct Lch {
 }
 
 impl Lch {
-    /// The OKLab form.
+    /// The `OKLab` form.
+    #[must_use]
     pub fn lab(self) -> Oklab {
         let c = self.c;
         let h = self.h.to_radians();
@@ -59,7 +60,7 @@ pub struct Tint {
     pub strength: f32,
 }
 
-/// The palette: eight named hues, evenly spread every 45 degrees around the OKLCh wheel (round
+/// The palette: eight named hues, evenly spread every 45 degrees around the `OKLCh` wheel (round
 /// five; round four had six, unevenly spaced: slate 255, teal 200, sage 150, ochre 85, clay 40,
 /// plum 320). Every icon's colour comes from one of them.
 pub const PALETTE: [(&str, f32); 8] = [
@@ -118,6 +119,7 @@ impl Dialect {
         Dialect::Solid,
     ];
 
+    #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
             Dialect::Monochrome => "monochrome",
@@ -159,6 +161,7 @@ fn hex(c: u32) -> Oklab {
 }
 
 /// The roles of a dialect under a tint and a chroma cap. Values are proposed (08 2.10).
+#[must_use]
 pub fn roles(dialect: Dialect, tint: Tint, cap: ChromaCap) -> Roles {
     let (h, k) = (tint.hue, tint.strength.clamp(0.0, 1.0));
     let cap = cap.0 * k;

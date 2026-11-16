@@ -15,6 +15,7 @@ pub struct FileAudit {
 
 impl FileAudit {
     /// Appends to `path` (`$XDG_STATE_HOME/bardo/accounts/audit.jsonl`, resolved by the caller).
+    #[must_use]
     pub fn new(path: PathBuf) -> Self {
         Self { path }
     }
@@ -28,8 +29,8 @@ impl FileAudit {
         #[cfg(unix)]
         {
             use std::os::unix::fs::OpenOptionsExt;
-            options.mode(0o600);
-        }
+            options.mode(0o600)
+        };
         let mut line = serde_json::to_string(entry).map_err(std::io::Error::other)?;
         line.push('\n');
         // One write call per line, so lines never interleave under O_APPEND.

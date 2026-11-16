@@ -168,6 +168,7 @@ pub struct TtySeams {
 
 impl TtySeams {
     /// The seams, with no format source and no input.
+    #[must_use]
     pub fn new(
         session: Box<dyn TtySession>,
         udev: Box<dyn DeviceSource>,
@@ -658,6 +659,7 @@ impl TtyBackend {
     /// Whether the display shows the session at `now`. Every output that asked for frames
     /// having shown none for long means the display is frozen whatever the loop does: the
     /// caller then stops telling the service manager the compositor is alive.
+    #[must_use]
     pub fn health(&self, now: Mono) -> Health {
         match self.seat {
             SeatState::Held => {
@@ -677,11 +679,13 @@ impl TtyBackend {
     /// The route `output`'s frames take between GPUs; none without a plan or for a connector it
     /// does not place. An output is drawn with the renderer of `route.renders_on()` and copied to
     /// `route.scans_out_on()` when they differ (`surface_real.rs`, `bridge_real.rs`).
+    #[must_use]
     pub fn route_of(&self, output: &OutputName) -> Option<OutputRoute> {
         self.plan.as_ref()?.route_of(output)
     }
 
     /// How many frames were queued over the run, on every output.
+    #[must_use]
     pub fn frames_queued(&self) -> u64 {
         self.queued
     }
@@ -702,12 +706,14 @@ impl TtyBackend {
 
     /// The frame `output` last showed, read back; none unless the output is watched and has
     /// shown a frame since.
+    #[must_use]
     pub fn last_frame(&self, output: &OutputName) -> Option<&PresentedFrame> {
         self.readback.last_frame(output)
     }
 
     /// The dma-buf formats a capture can be drawn into: the display GPU's (with its modifiers)
     /// and, after them, the software renderer's linear ones.
+    #[must_use]
     pub fn capture_formats(&self) -> Vec<smithay::backend::allocator::Format> {
         let gpu = self
             .devices

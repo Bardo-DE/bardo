@@ -30,6 +30,7 @@ pub struct BackgroundEffectPart {
 
 impl BackgroundEffectPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> BackgroundEffectPart
     where
         D: ExtBackgroundEffectHandler + GlobalDispatch<ExtBackgroundEffectManagerV1, GlobalData>,
@@ -86,6 +87,7 @@ fn has_area(rect: &LogicalRect) -> bool {
 }
 
 /// The blur region `surface` has committed, `None` when it has none (never asked, or unset).
+#[must_use]
 pub fn blur_region_of(surface: &WlSurface) -> Option<Vec<LogicalRect>> {
     with_states(surface, |states| {
         let mut cached = states
@@ -96,6 +98,7 @@ pub fn blur_region_of(surface: &WlSurface) -> Option<Vec<LogicalRect>> {
 }
 
 /// A region made of these rectangles, for tests and for blur v0's own scenes.
+#[must_use]
 pub fn region_of(rects: &[LogicalRect]) -> RegionAttributes {
     RegionAttributes {
         rects: rects

@@ -44,8 +44,8 @@ async fn only_secrets_the_registry_does_not_name_are_swept_and_each_is_audited()
     let clock = FixedClock::new(UnixSeconds(7));
     let swept = sweep_orphan_secrets(&secrets, &registry_of(&[&kept]), &audit, &clock).await;
     assert_eq!(swept, vec![orphan.clone()]);
-    assert!(secrets.get(&key(&kept)).await.is_ok());
-    assert!(secrets.get(&key(&orphan)).await.is_err());
+    secrets.get(&key(&kept)).await.unwrap();
+    secrets.get(&key(&orphan)).await.unwrap_err();
     let entries = audit.entries();
     let [entry] = entries.as_slice() else {
         panic!("one line: {entries:?}")
@@ -64,6 +64,6 @@ async fn an_empty_registry_sweeps_nothing() {
     let clock = FixedClock::new(UnixSeconds(7));
     let swept = sweep_orphan_secrets(&secrets, &Registry::default(), &audit, &clock).await;
     assert!(swept.is_empty());
-    assert!(secrets.get(&key(&id)).await.is_ok());
+    secrets.get(&key(&id)).await.unwrap();
     assert!(audit.entries().is_empty());
 }

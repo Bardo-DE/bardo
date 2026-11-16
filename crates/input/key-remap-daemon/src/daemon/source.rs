@@ -28,9 +28,10 @@ pub(crate) enum Source {
 impl Source {
     /// The service when its socket is at `socket`, else `/dev/uinput`.
     pub(crate) fn detect(socket: &Path) -> Self {
-        match socket.exists() {
-            true => Source::Service(Broker::at(socket)),
-            false => Source::Direct,
+        if socket.exists() {
+            Source::Service(Broker::at(socket))
+        } else {
+            Source::Direct
         }
     }
 
@@ -186,8 +187,8 @@ mod tests {
         {
             let state = fake.state();
             assert_eq!(state.created, [Create::keyboard()]);
-            assert_eq!((state.opened, state.handed_peers.len()), (1, 1));
-        }
+            assert_eq!((state.opened, state.handed_peers.len()), (1, 1))
+        };
         device.write(&[press(30)]).unwrap();
         assert_eq!(arrived(&fake, 0), Some(press(30).to_bytes().to_vec()));
     }

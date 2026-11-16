@@ -36,6 +36,7 @@ impl Mime {
     }
 
     /// The `type/subtype` text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -97,7 +98,7 @@ mod tests {
         let json = serde_json::to_string(&mime).unwrap();
         assert_eq!(json, "\"image/webp\"");
         assert_eq!(serde_json::from_str::<Mime>(&json).unwrap(), mime);
-        assert!(serde_json::from_str::<Mime>("\"nonsense\"").is_err());
+        serde_json::from_str::<Mime>("\"nonsense\"").unwrap_err();
         assert_eq!(
             Mime::parse("application/octet-stream"),
             Ok(Mime::OCTET_STREAM)

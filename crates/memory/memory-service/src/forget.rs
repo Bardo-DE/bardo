@@ -168,6 +168,7 @@ fn scope_matches(space: &SpaceId, scope: &ForgetScope, entry: &Entry) -> bool {
 
 impl Plan {
     /// What apply will remove, as the preview shows it.
+    #[must_use]
     pub fn counts(&self) -> ForgetCounts {
         let n = |len: usize| Count(u32::try_from(len).unwrap_or(u32::MAX));
         ForgetCounts {
@@ -281,6 +282,7 @@ pub enum PlanEffect {
 
 impl PlanState {
     /// A fresh plan with digest `digest`, made at `now`.
+    #[must_use]
     pub fn planned(digest: PlanDigest, now: UnixSeconds) -> PlanState {
         PlanState::Planned {
             digest,
@@ -290,6 +292,7 @@ impl PlanState {
 }
 
 /// The next state and effects.
+#[must_use]
 pub fn plan_step(state: PlanState, event: PlanEvent) -> (PlanState, Vec<PlanEffect>) {
     match (state, event) {
         (PlanState::Planned { expires, .. }, PlanEvent::Forget { now, .. }) if now > expires => (
@@ -325,6 +328,7 @@ pub fn plan_step(state: PlanState, event: PlanEvent) -> (PlanState, Vec<PlanEffe
 
 /// The token a plan is addressed by: `p-` and the digest's first 16 hex digits (an id in
 /// porter's grammar).
+#[must_use]
 pub fn token_for(digest: &PlanDigest) -> Option<PlanToken> {
     let hex = digest.to_string();
     PlanToken::parse(&format!("p-{}", &hex[..16])).ok()

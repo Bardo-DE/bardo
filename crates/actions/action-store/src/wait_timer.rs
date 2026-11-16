@@ -31,6 +31,7 @@ impl Slot {
 }
 
 /// Sleeps `span` on a thread of its own, started at the first poll.
+#[must_use]
 pub fn thread_sleep(span: Duration) -> ThreadSleep {
     ThreadSleep { span, slot: None }
 }
@@ -65,20 +66,19 @@ impl Future for ThreadSleep {
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<()> {
         let span = self.span;
-        let slot = match &self.slot {
-            Some(slot) => slot.clone(),
-            None => {
-                let slot = Arc::new(Slot::default());
-                slot.waker.register(cx.waker());
-                // No thread to wait on: the deadline never comes. A host that cannot make a
-                // thread must not see every wait on a peer end at once; the work it waits for
-                // still wakes it.
-                if !start(slot.clone(), span) {
-                    return Poll::Pending;
-                }
-                self.slot = Some(slot.clone());
-                slot
+        let slot = if let Some(slot) = &self.slot {
+            slot.clone()
+        } else {
+            let slot = Arc::new(Slot::default());
+            slot.waker.register(cx.waker());
+            // No thread to wait on: the deadline never comes. A host that cannot make a
+            // thread must not see every wait on a peer end at once; the work it waits for
+            // still wakes it.
+            if !start(slot.clone(), span) {
+                return Poll::Pending;
             }
+            self.slot = Some(slot.clone());
+            slot
         };
         if slot.elapsed() {
             return Poll::Ready(());

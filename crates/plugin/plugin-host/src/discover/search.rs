@@ -44,6 +44,7 @@ impl<'a> Search<'a> {
     /// A search for the host called `app`, in the person's directory `user` and the system's
     /// `system`, for plugins that speak up to `protocol`, in the flat layout
     /// (`<app>/plugins/*.toml`).
+    #[must_use]
     pub fn new(app: &'a str, user: &'a Path, system: &'a [PathBuf], protocol: u32) -> Search<'a> {
         Search {
             app,
@@ -55,6 +56,7 @@ impl<'a> Search<'a> {
     }
 
     /// The same search in another layout.
+    #[must_use]
     pub fn with_layout(self, layout: Layout<'a>) -> Search<'a> {
         Search { layout, ..self }
     }
@@ -98,6 +100,7 @@ impl<P: Provides> Rejected<P> {
 /// Reads every manifest the search's layout names, in the person's directory and in each system
 /// directory, and ranks them. A file that is not a usable manifest is listed in `rejected` and
 /// skipped; nothing here fails.
+#[must_use]
 pub fn discover<P: Provides>(search: &Search<'_>) -> Discovery<P> {
     let Scan {
         candidates,
@@ -113,6 +116,7 @@ pub fn discover<P: Provides>(search: &Search<'_>) -> Discovery<P> {
 /// ranked, so a host can make its own checks first and call [`Registry::resolve`] after.
 /// Read with [`Raw`](crate::manifest::Raw) as `P` when the host owns no vocabulary of its own
 /// and hands the entries on to [`reparse`](crate::reparse).
+#[must_use]
 pub fn scan<P: Provides>(search: &Search<'_>) -> Scan<P> {
     let dirs = std::iter::once((Origin::User, search.user)).chain(
         search

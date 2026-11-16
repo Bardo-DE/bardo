@@ -39,11 +39,13 @@ impl TokenScope {
     };
 
     /// `self` in `scheme`.
+    #[must_use]
     pub const fn in_scheme(self, scheme: Scheme) -> TokenScope {
         TokenScope { scheme, ..self }
     }
 
     /// `self` at `motion`.
+    #[must_use]
     pub const fn at(self, motion: MotionLevel) -> TokenScope {
         TokenScope { motion, ..self }
     }
@@ -55,21 +57,25 @@ pub struct CssValue(Cow<'static, str>);
 
 impl CssValue {
     /// A value that is one literal in the scope.
+    #[must_use]
     pub const fn fixed(text: &'static str) -> CssValue {
         CssValue(Cow::Borrowed(text))
     }
 
     /// A value computed for the scope.
+    #[must_use]
     pub fn computed(text: String) -> CssValue {
         CssValue(Cow::Owned(text))
     }
 
     /// A tuned token: its consumer-written `input`, with `default` behind it.
+    #[must_use]
     pub fn tuned(input: VarName, default: &str) -> CssValue {
         CssValue::computed(format!("var({},{default})", input.as_str()))
     }
 
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

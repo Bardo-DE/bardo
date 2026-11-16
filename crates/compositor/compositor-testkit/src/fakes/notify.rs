@@ -12,6 +12,7 @@ pub struct FakeNotify {
 
 impl FakeNotify {
     /// A recorder with no notices.
+    #[must_use]
     pub fn new() -> FakeNotify {
         FakeNotify::default()
     }

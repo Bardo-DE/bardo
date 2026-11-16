@@ -41,7 +41,11 @@ fn id_in<'a>(template: &[String], window: &'a [String]) -> Option<&'a str> {
 /// name (a wrapper that found it on the `PATH`).
 fn names_command(entry: &Entry, word: &str) -> bool {
     let command = entry.command.as_str();
-    let file_name = |path: &str| Path::new(path).file_name().map(|name| name.to_owned());
+    let file_name = |path: &str| {
+        Path::new(path)
+            .file_name()
+            .map(std::borrow::ToOwned::to_owned)
+    };
     word == command || file_name(word).is_some_and(|name| Some(name) == file_name(command))
 }
 
@@ -68,6 +72,7 @@ impl AgentsFile {
     /// The app and the conversation `seen` is the app's own program picking up, from the first
     /// listed app that has resume arguments and whose command and arguments the line holds; none
     /// when it is no listed app, has no such arguments, or the id is not a plain word.
+    #[must_use]
     pub fn recognise(&self, seen: &SeenCommand) -> Option<WatchedAgent> {
         self.entries()
             .find_map(|entry| recognise_entry(entry, seen.tokens()))

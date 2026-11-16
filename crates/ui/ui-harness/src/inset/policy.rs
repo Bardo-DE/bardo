@@ -6,6 +6,7 @@ use ui_components::style::tokens::spacing::SpacingToken;
 /// The text inset of a menu item, a row, a card: `--s-8`, the least any content sits from the
 /// painted edge of its box unless an [`Allow`] says why not (design/34-MODERN-LOOK.md,
 /// 04-COMPONENTS.md sections 3 and 5).
+#[must_use]
 pub fn text_inset() -> Px {
     Px(f32::from(SpacingToken::S8.tenths()) / 10.0)
 }
@@ -37,6 +38,7 @@ pub struct Policy {
 impl Policy {
     /// The default inset and no allowances: what an app starts from, adding its own
     /// [`Policy::allowing`].
+    #[must_use]
     pub fn new() -> Self {
         Policy {
             min: text_inset(),
@@ -46,17 +48,20 @@ impl Policy {
     }
 
     /// quire's own policy: the default inset, with [`QUIRE_ALLOW`].
+    #[must_use]
     pub fn quire() -> Self {
         Policy::new().allowing(QUIRE_ALLOW)
     }
 
     /// This policy with `entries` allowed.
+    #[must_use]
     pub fn allowing(mut self, entries: &[Allow]) -> Self {
         self.allow.extend_from_slice(entries);
         self
     }
 
     /// The least inset a box with these classes is held to, and the allowance that lowered it.
+    #[must_use]
     pub fn min_for(&self, tokens: &[String]) -> (Px, Option<&Allow>) {
         let lowest = self
             .allow

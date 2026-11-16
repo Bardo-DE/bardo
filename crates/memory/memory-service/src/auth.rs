@@ -1,15 +1,15 @@
 //! Who may ask what: the authorisation matrix as a pure function.
 //!
-//! | Request | App | Router | Cuad | ShellUi | Settings |
+//! | Request | App | Router | Cuad | `ShellUi` | Settings |
 //! |---|---|---|---|---|---|
-//! | Record, RecordBatch | own things; actor `User{via: self}` or `App{self}` | any actor, never `Memory` bodies | `Area(Cua)` bodies with a `Cua` run actor; `Message` bodies sent by that same run | no | no |
-//! | ExplainFile, Mark | own | yes | no | yes | no |
+//! | Record, `RecordBatch` | own things; actor `User{via: self}` or `App{self}` | any actor, never `Memory` bodies | `Area(Cua)` bodies with a `Cua` run actor; `Message` bodies sent by that same run | no | no |
+//! | `ExplainFile`, Mark | own | yes | no | yes | no |
 //! | Search, Facts, Related, Provenance, Primer, Inject, Recent, Entries, Spaces | no | yes (audited as `Memory.Read`) | no | yes | no |
-//! | Propose, PlanForget | no | yes | no | yes | no |
+//! | Propose, `PlanForget` | no | yes | no | yes | no |
 //! | Propose `on_behalf` a helper | no | yes | no | no | no |
 //! | everything else (with `RemoveSpace`) | no | no | no | yes | no |
-//! | ConfirmSettings | no | no | no | no | yes |
-//! | PendingSettings | no | no | no | yes | yes |
+//! | `ConfirmSettings` | no | no | no | no | yes |
+//! | `PendingSettings` | no | no | no | yes | yes |
 //!
 //! `Settings` is the System Settings app, not an app with memory: it reaches the two settings
 //! members and nothing else.

@@ -17,16 +17,19 @@ impl TypedText {
     }
 
     /// A literal, held without a copy.
+    #[must_use]
     pub const fn from_static(text: &'static str) -> Self {
         TypedText(Cow::Borrowed(text))
     }
 
     /// The text.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
 
     /// Whether nothing was typed.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }

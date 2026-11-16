@@ -24,11 +24,13 @@ pub struct Store {
 
 impl Store {
     /// The settings directory of `app` inside `root`.
+    #[must_use]
     pub fn new(root: ConfigRoot, app: AppName) -> Store {
         Store { root, app }
     }
 
     /// The program's config directory, `None` when the root has no directory for it.
+    #[must_use]
     pub fn dir(&self) -> Option<PathBuf> {
         self.root.dir(self.app)
     }
@@ -46,6 +48,7 @@ impl Store {
     }
 
     /// The path `D` is stored at.
+    #[must_use]
     pub fn path<D: SettingsDoc>(&self) -> Option<PathBuf> {
         self.dir().map(|dir| dir.join(D::FILE.0))
     }
@@ -56,6 +59,7 @@ impl Store {
     /// by the system) is left alone on disk: the defaults are for this run only, and the file is
     /// reported in [`Loaded::invalid`] as wholly invalid. What was refused or dropped is in the
     /// result, for the caller to report.
+    #[must_use]
     pub fn load<D: SettingsDoc>(&self) -> Loaded<D> {
         let Some(path) = self.path::<D>() else {
             return Loaded::default();

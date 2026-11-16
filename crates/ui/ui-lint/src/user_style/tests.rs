@@ -147,7 +147,10 @@ fn only_parse_errors_are_errors() {
         ".x { color: var(--nope) !important }\n}",
         &ui_components::kits(),
     );
-    let errors: Vec<bool> = notes.iter().map(|note| note.is_parse_error()).collect();
+    let errors: Vec<bool> = notes
+        .iter()
+        .map(super::note::UserStyleNote::is_parse_error)
+        .collect();
     assert_eq!(errors, [false, false, false, true], "{notes:?}");
 }
 

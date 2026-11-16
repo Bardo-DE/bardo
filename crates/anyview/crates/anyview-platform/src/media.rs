@@ -58,6 +58,7 @@ pub struct MediaState {
 
 impl MediaState {
     /// Nothing playing: stopped, no recording, no controls.
+    #[must_use]
     pub fn stopped() -> MediaState {
         MediaState {
             status: PlaybackStatus::Stopped,

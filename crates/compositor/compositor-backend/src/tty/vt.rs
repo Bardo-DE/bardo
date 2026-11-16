@@ -16,6 +16,7 @@ pub struct VtNumber(pub u32);
 /// assert_eq!(vt_of_keysym(Keysym(0x1008fe01)), Some(VtNumber(1)));
 /// assert_eq!(vt_of_keysym(Keysym(0x20)), None);
 /// ```
+#[must_use]
 pub fn vt_of_keysym(sym: Keysym) -> Option<VtNumber> {
     match sym.0 {
         raw @ FIRST_SWITCH_SYM..=LAST_SWITCH_SYM => Some(VtNumber(raw - FIRST_SWITCH_SYM + 1)),
@@ -45,16 +46,18 @@ const LAST_SWITCH_SYM: u32 = 0x1008_fe0c;
 /// assert_eq!(vt_of_chord(true, &[], &f2), Some(VtNumber(2)));
 /// assert_eq!(vt_of_chord(false, &f2, &f2), None);
 /// ```
+#[must_use]
 pub fn vt_of_chord(ctrl_alt: bool, modified: &[Keysym], raw: &[Keysym]) -> Option<VtNumber> {
     let named = modified.iter().find_map(|sym| vt_of_keysym(*sym));
-    match ctrl_alt {
-        true => named.or_else(|| {
+    if ctrl_alt {
+        named.or_else(|| {
             modified
                 .iter()
                 .chain(raw)
                 .find_map(|sym| vt_of_function_key(*sym))
-        }),
-        false => named,
+        })
+    } else {
+        named
     }
 }
 

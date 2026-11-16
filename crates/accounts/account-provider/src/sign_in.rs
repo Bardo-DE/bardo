@@ -97,13 +97,15 @@ impl LoginHint {
         let at = address
             .find('@')
             .is_some_and(|i| i > 0 && i + 1 < address.len());
-        match plain && at && address.chars().count() <= Self::MAX_CHARS {
-            true => Ok(Self(address.to_owned())),
-            false => Err(LoginHintFault::NotAnAddress),
+        if plain && at && address.chars().count() <= Self::MAX_CHARS {
+            Ok(Self(address.to_owned()))
+        } else {
+            Err(LoginHintFault::NotAnAddress)
         }
     }
 
     /// The address.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -126,6 +128,7 @@ pub struct SignInStart {
 
 impl SignInStart {
     /// A sign-in begun for this reason, with no address named and a first consent.
+    #[must_use]
     pub fn new(mode: SignInMode) -> Self {
         Self {
             mode,
@@ -168,6 +171,7 @@ pub struct Signed {
 impl Signed {
     /// A signed-in account called `label`, with the secrets to file, what it can do, its servers
     /// and what limits it.
+    #[must_use]
     pub fn new(
         label: AccountLabel,
         credentials: Vec<(SecretPurpose, Credential)>,
@@ -223,6 +227,7 @@ pub enum SignInStep {
 
 impl SignInStep {
     /// What the sheet is told of this step: everything but the credential.
+    #[must_use]
     pub fn progress(&self) -> Progress {
         match self {
             SignInStep::AskFields(fields) => Progress::Ask(fields.clone()),

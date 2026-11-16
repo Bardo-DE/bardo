@@ -40,6 +40,7 @@ pub struct Verifier {
 
 impl Verifier {
     /// A verifier of installs under `roots`, pinned by `manifest`.
+    #[must_use]
     pub fn new(roots: Roots, manifest: Manifest) -> Self {
         Self { roots, manifest }
     }
@@ -64,6 +65,7 @@ impl Verifier {
     }
 
     /// The check before a start.
+    #[must_use]
     pub fn check(&self, program: &Path) -> Verdict {
         let (row, dir, record) = match self.install(program) {
             Ok(found) => found,
@@ -82,6 +84,7 @@ impl Verifier {
 
     /// The slow check of what [`Self::check`] left: a Python environment's whole `venv/`
     /// against the record. Every other install is whole after `check`.
+    #[must_use]
     pub fn full(&self, program: &Path) -> Verdict {
         let (row, dir, record) = match self.install(program) {
             Ok(found) => found,

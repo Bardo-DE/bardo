@@ -238,9 +238,10 @@ struct OnlyFrom(String);
 
 impl MenuPermit for OnlyFrom {
     async fn permit(&self, caller: &Caller) -> Verdict {
-        match caller.sender.0 == self.0 {
-            true => Verdict::Allow,
-            false => Verdict::Refuse,
+        if caller.sender.0 == self.0 {
+            Verdict::Allow
+        } else {
+            Verdict::Refuse
         }
     }
 }

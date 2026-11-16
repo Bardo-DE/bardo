@@ -187,7 +187,7 @@ fn stamped_facts_keep_every_field() {
 fn the_parser_is_strict_where_the_format_is_a_contract() {
     let head = "---\nformat: quire-memory 1\ntopic: a\ntitle: A\n---\n\n";
     let good = "- x\n  <!-- fact: 01j9zk3m0q8h2v6x4c1b7n5t2a; at: 2026-10-01T09:12:44Z; by: {\"kind\":\"unknown\"}; label: {\"integrity\":\"trusted\",\"confidentiality\":{\"kind\":\"public\"},\"classes\":[],\"sources\":[]} -->\n";
-    assert!(parse_topic(&format!("{head}{good}")).is_ok());
+    parse_topic(&format!("{head}{good}")).unwrap();
     let cases: Vec<(&str, String, &str)> = vec![
         ("no front matter", good.to_string(), "MissingFrontMatter"),
         (

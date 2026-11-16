@@ -47,8 +47,9 @@ impl SpaceRegistry {
 }
 
 fn listing_of(found: bool) -> Listing {
-    match found {
-        true => Listing::Listed,
-        false => Listing::Unlisted,
+    if found {
+        Listing::Listed
+    } else {
+        Listing::Unlisted
     }
 }

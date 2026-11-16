@@ -157,11 +157,7 @@ proptest! {
             chord,
             action: BindingAction::Desktop(DesktopCommand::QuitActive),
         }]);
-        let want = if origin.fires_bindings() {
-            Some(BindingAction::Desktop(DesktopCommand::QuitActive))
-        } else {
-            None
-        };
+        let want = origin.fires_bindings().then(|| BindingAction::Desktop(DesktopCommand::QuitActive));
         prop_assert_eq!(resolve(&bindings, &chord, &origin), want);
     }
 

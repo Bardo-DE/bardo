@@ -12,6 +12,7 @@ impl Held {
     /// once, and pressing a key an owner had lifted brings it back and ends that lift. Duplicates
     /// in `wants` collapse. If `at` is already held (a release was missed) the old record is
     /// released first, and its events come before the new press. The lifts `at` owns stay.
+    #[must_use]
     pub fn press(self, at: At, wants: Vec<Logical>) -> (Self, Vec<OutEvent>) {
         let (mut held, mut events) = self.release_record(at);
         let mut down = Vec::with_capacity(wants.len());
@@ -28,6 +29,7 @@ impl Held {
 
     /// Forget `at`'s record and release its keys in reverse press order, except keys another
     /// record still holds or that are lifted off the wire. Lifts `at` owns stay.
+    #[must_use]
     pub fn release_record(mut self, at: At) -> (Self, Vec<OutEvent>) {
         let Some(record) = self.records.remove(&at) else {
             return (self, Vec::new());
@@ -44,6 +46,7 @@ impl Held {
 
     /// A physical release: drop `at`'s record, then end the lifts `at` owns, pressing back
     /// every key that is still held and no other owner keeps lifted.
+    #[must_use]
     pub fn release(self, at: At) -> (Self, Vec<OutEvent>) {
         let (held, mut events) = self.release_record(at);
         let (held, more) = held.unlift(at);
@@ -53,6 +56,7 @@ impl Held {
 
     /// Release every record of `device`, in key order, then end the lifts its keys owned. A key
     /// the device's records held is not pressed back; one another device's record holds is.
+    #[must_use]
     pub fn device_gone(self, device: DeviceId) -> (Self, Vec<OutEvent>) {
         let ats: Vec<At> = self.owners().filter(|(d, _)| *d == device).collect();
         let (held, mut events) = ats
@@ -75,6 +79,7 @@ impl Held {
 
     /// Release everything held; the returned `Held` is empty. Lifted keys are already up and
     /// nothing is pressed back on the way out.
+    #[must_use]
     pub fn drain(self) -> (Self, Vec<OutEvent>) {
         let ats: Vec<At> = self.records.keys().copied().collect();
         let (mut held, events) =

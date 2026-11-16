@@ -14,6 +14,7 @@ pub struct IpcHandles {
 
 impl IpcHandles {
     /// No connection yet.
+    #[must_use]
     pub fn none() -> IpcHandles {
         IpcHandles::default()
     }

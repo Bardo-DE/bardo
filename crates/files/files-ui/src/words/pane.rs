@@ -7,6 +7,7 @@ use files_core::{Entry, EntryKind, Info, LinkTo};
 use super::{InfoRow, items_words, kind_words, size_words};
 
 /// The title of the pane when several items are selected: `3 items`.
+#[must_use]
 pub fn many_words(count: usize) -> String {
     format!("{count} items")
 }

@@ -32,6 +32,7 @@ impl<T> Porter<T> {
 
 impl<T: AccountsLink> Porter<T> {
     /// Signing an account in.
+    #[must_use]
     pub fn accounts(&self) -> Accounts<T> {
         Accounts {
             link: Arc::clone(&self.link),
@@ -41,6 +42,7 @@ impl<T: AccountsLink> Porter<T> {
 
 impl<T: GrantsLink> Porter<T> {
     /// Who may use which account, and the relays a grant opens.
+    #[must_use]
     pub fn grants(&self) -> Grants<T> {
         Grants {
             link: Arc::clone(&self.link),

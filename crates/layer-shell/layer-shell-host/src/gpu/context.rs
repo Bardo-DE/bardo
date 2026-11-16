@@ -21,7 +21,7 @@ use crate::gpu::adapter;
 use crate::gpu::context_proxy::ContextProxy;
 use crate::gpu::raw_handle::WaylandDisplay;
 
-/// Every surface renders in this format (what vello_hybrid's own window renderer uses).
+/// Every surface renders in this format (what `vello_hybrid`'s own window renderer uses).
 pub(crate) const SURFACE_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
 
 /// How long the driver may take to open the device before the adapter counts as refusing: a

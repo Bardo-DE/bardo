@@ -100,6 +100,7 @@ fn hex(byte: u8) -> Option<u8> {
 }
 
 /// The `file:` address of `path`: every byte but letters, digits, `/` and `-._~` is `%XX`.
+#[must_use]
 pub fn file_uri(path: &Path) -> String {
     let mut out = String::from("file://");
     for &byte in path.as_os_str().as_bytes() {

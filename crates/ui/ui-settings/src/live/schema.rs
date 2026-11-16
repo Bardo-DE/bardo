@@ -28,6 +28,7 @@ pub enum LiveSchemaError {
 
 impl LiveSchema {
     /// The JSON `Describe` returns.
+    #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(self)
             .expect("LiveSchema fields are all JSON-representable: strings, numbers, enums, Vec")

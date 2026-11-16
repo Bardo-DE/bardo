@@ -1,5 +1,5 @@
 //! Output policy (what P0-F1-output makes pass): the first-sight scale, mode choice and
-//! placement. The scale rows are sill's PreferWhole table (`shell-model` `displays/scale.rs`),
+//! placement. The scale rows are sill's `PreferWhole` table (`shell-model` `displays/scale.rs`),
 //! in 120ths.
 
 use crate::support;

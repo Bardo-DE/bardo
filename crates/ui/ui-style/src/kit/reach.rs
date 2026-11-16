@@ -31,6 +31,7 @@ enum Emit {
 
 /// `css` with every reference outside `home` cut, and the cuts. With no `home`, only `data:` and
 /// in-document (`#id`) references stay.
+#[must_use]
 pub fn within(css: &str, home: Option<&Path>) -> (String, Vec<Cut>) {
     let mut out = String::with_capacity(css.len());
     let mut cuts = Vec::new();

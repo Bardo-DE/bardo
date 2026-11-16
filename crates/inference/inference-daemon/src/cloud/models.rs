@@ -19,7 +19,7 @@ use model_catalog::{Locality, ModelEntry, ProviderId, Reach, Wire, reachable};
 use std::collections::BTreeSet;
 
 /// The wires this build speaks to a hosted model. Anthropic's Messages API waits for a stoker
-/// adapter; Claude goes through OpenRouter until then.
+/// adapter; Claude goes through `OpenRouter` until then.
 pub const WIRES: [Wire; 1] = [Wire::OpenAiCompat];
 
 /// A hosted model as routing sees it, and the reach behind it.
@@ -39,6 +39,7 @@ pub struct RemoteModel {
 
 impl RemoteModel {
     /// The key of the model in routing and the picker.
+    #[must_use]
     pub fn model_ref(&self) -> ModelRef {
         ModelRef {
             account: self.card.account.clone(),
@@ -47,6 +48,7 @@ impl RemoteModel {
     }
 
     /// The grant that lets the app use the account, when it holds one.
+    #[must_use]
     pub fn grant(&self) -> Option<&GrantId> {
         match &self.verdict {
             Verdict::Granted { grant, .. } => Some(grant),
@@ -56,6 +58,7 @@ impl RemoteModel {
 
     /// What routing makes of the app's grant: consent stays here, and routing reads only whether
     /// the app may use the model, may be asked, or may not.
+    #[must_use]
     pub fn permit(&self) -> Permit {
         match self.verdict {
             Verdict::Granted { .. } => Permit::Granted,
@@ -66,6 +69,7 @@ impl RemoteModel {
 }
 
 /// The entries that are hosted models.
+#[must_use]
 pub fn remote_entries(entries: &[ModelEntry]) -> Vec<ModelEntry> {
     entries
         .iter()
@@ -75,6 +79,7 @@ pub fn remote_entries(entries: &[ModelEntry]) -> Vec<ModelEntry> {
 }
 
 /// Every provider a remote entry names a reach through.
+#[must_use]
 pub fn known_providers(entries: &[ModelEntry]) -> BTreeSet<ProviderId> {
     entries
         .iter()
@@ -89,6 +94,7 @@ pub fn known_providers(entries: &[ModelEntry]) -> BTreeSet<ProviderId> {
 
 /// The provider an account is of: what accountd says, else the longest known provider id that is
 /// the account id or its stem (`anthropic-2` is `anthropic`; `google-ai` is not `google`).
+#[must_use]
 pub fn provider_of(account: &AccountVerdict, known: &BTreeSet<ProviderId>) -> Option<ProviderId> {
     if let Some(said) = &account.provider {
         return Some(ProviderId(said.clone()));

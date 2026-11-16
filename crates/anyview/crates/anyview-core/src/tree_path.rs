@@ -9,11 +9,13 @@ pub struct TreePath(Vec<u32>);
 
 impl TreePath {
     /// The root.
+    #[must_use]
     pub fn root() -> Self {
         TreePath(Vec::new())
     }
 
     /// The path to this node's child at `position`.
+    #[must_use]
     pub fn child(&self, position: u32) -> Self {
         let mut steps = self.0.clone();
         steps.push(position);
@@ -21,17 +23,20 @@ impl TreePath {
     }
 
     /// The position of each step, from the root.
+    #[must_use]
     pub fn steps(&self) -> &[u32] {
         &self.0
     }
 
     /// How many steps below the root the node is.
+    #[must_use]
     pub fn depth(&self) -> usize {
         self.0.len()
     }
 
     /// The position of this node among its parent's children, and the parent's path; `None` for
     /// the root.
+    #[must_use]
     pub fn split_last(&self) -> Option<(u32, TreePath)> {
         let (last, parent) = self.0.split_last()?;
         Some((*last, TreePath(parent.to_vec())))
@@ -45,16 +50,19 @@ pub struct OpenNodes(BTreeSet<TreePath>);
 
 impl OpenNodes {
     /// Only the root open: the top level of a document shows and nothing below it.
+    #[must_use]
     pub fn top_level() -> Self {
         OpenNodes(BTreeSet::from([TreePath::root()]))
     }
 
     /// Whether `path` is open.
+    #[must_use]
     pub fn is_open(&self, path: &TreePath) -> bool {
         self.0.contains(path)
     }
 
     /// The same set with `path` closed when it was open and open when it was closed.
+    #[must_use]
     pub fn toggled(mut self, path: &TreePath) -> Self {
         if !self.0.remove(path) {
             self.0.insert(path.clone());
@@ -63,12 +71,14 @@ impl OpenNodes {
     }
 
     /// The same set with `path` open.
+    #[must_use]
     pub fn opened(mut self, path: TreePath) -> Self {
         self.0.insert(path);
         self
     }
 
     /// The same set with `path` closed.
+    #[must_use]
     pub fn closed(mut self, path: &TreePath) -> Self {
         self.0.remove(path);
         self
@@ -76,6 +86,7 @@ impl OpenNodes {
 
     /// The same set after a node was added at position `at` among `parent`'s children: the nodes
     /// open under the children from there on are one place later.
+    #[must_use]
     pub fn after_insert(self, parent: &TreePath, at: u32) -> Self {
         self.moved(parent, |position| {
             Some(if position >= at {
@@ -88,6 +99,7 @@ impl OpenNodes {
 
     /// The same set after the child at position `at` of `parent` was taken away: the nodes open
     /// under it are gone, and those under the children after it are one place earlier.
+    #[must_use]
     pub fn after_removal(self, parent: &TreePath, at: u32) -> Self {
         self.moved(parent, |position| match position.cmp(&at) {
             std::cmp::Ordering::Less => Some(position),
@@ -117,6 +129,7 @@ impl OpenNodes {
     }
 
     /// The positions, ascending, of `parent`'s children that are open.
+    #[must_use]
     pub fn open_children(&self, parent: &TreePath) -> Vec<u32> {
         let depth = parent.depth();
         self.0
@@ -128,11 +141,13 @@ impl OpenNodes {
     }
 
     /// How many nodes are open.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
     /// Whether no node is open.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
@@ -215,7 +230,7 @@ mod tests {
             path(&[10]),
         ]
         .into_iter()
-        .fold(OpenNodes::default(), |set, node| set.opened(node));
+        .fold(OpenNodes::default(), super::OpenNodes::opened);
         // name, parent, wanted
         const CASES: &[(&str, &[u32], &[u32])] = &[
             ("root", &[], &[1, 5, 10]),

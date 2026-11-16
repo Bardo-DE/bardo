@@ -54,6 +54,7 @@ impl Mime {
     }
 
     /// The mime type as offered on the wire.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -78,6 +79,7 @@ pub enum DragActions {
 
 impl DragActions {
     /// The wire action set.
+    #[must_use]
     pub fn to_wire(self) -> DndAction {
         match self {
             DragActions::Copy => DndAction::Copy,

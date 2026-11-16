@@ -53,6 +53,7 @@ pub struct Problem {
 
 impl Problem {
     /// The line Settings shows under the Extension, in plain words.
+    #[must_use]
     pub fn words(&self) -> &'static str {
         match (self.trouble, self.capability) {
             (Trouble::NeedsNewer, _) => "This Extension needs a newer version of the desktop",
@@ -70,6 +71,7 @@ impl Found {
     /// The Extensions that are on and have an entry for `capability`, checked and ranked. An
     /// Extension with an entry of the capability that cannot be used is in the result's
     /// problems, never half-used. Entries of words other owners have are left alone.
+    #[must_use]
     pub fn resolve(&self, capability: Capability) -> Resolved {
         let mut candidates = Vec::new();
         let mut unreadable = Vec::new();
@@ -120,12 +122,14 @@ fn checked(mut candidate: Candidate<Provision>) -> Candidate<Provision> {
 
 impl Resolved {
     /// The capability these were resolved for.
+    #[must_use]
     pub fn capability(&self) -> Capability {
         self.capability
     }
 
     /// Every Extension that is installed for the capability and not usable, with the reason in
     /// plain words ([`Problem::words`]), by id.
+    #[must_use]
     pub fn problems(&self) -> Vec<Problem> {
         let mut problems: Vec<Problem> = self
             .registry

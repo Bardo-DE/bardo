@@ -387,7 +387,7 @@ mod tests {
             let attrs = struct_attrs(source);
             let span = attrs
                 .first()
-                .map_or_else(Span::call_site, |attr| attr.span());
+                .map_or_else(Span::call_site, syn::spanned::Spanned::span);
             let err = container_attrs(span, &attrs).unwrap_err();
             assert!(err.to_string().contains(fault), "{source}: {err}");
         }
@@ -528,7 +528,7 @@ mod tests {
             let attrs = first_field_attrs(source);
             let span = attrs
                 .first()
-                .map_or_else(Span::call_site, |attr| attr.span());
+                .map_or_else(Span::call_site, syn::spanned::Spanned::span);
             let err = field_attrs(span, &attrs).unwrap_err();
             assert!(err.to_string().contains(fault), "{source}: {err}");
         }

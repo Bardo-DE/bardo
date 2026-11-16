@@ -28,7 +28,7 @@ fn an_app_conversation_id_is_one_plain_word_and_a_seen_command_line_is_bounded()
     }
     // The wire form is the plain string, and a bad one does not read.
     assert_eq!(round(&AppSessionId::parse("ab-1").expect("id")), "\"ab-1\"");
-    assert!(serde_json::from_str::<AppSessionId>("\"-x\"").is_err());
+    serde_json::from_str::<AppSessionId>("\"-x\"").unwrap_err();
 
     let words = |n: usize, each: usize| vec!["w".repeat(each); n];
     let line_cases: &[(Vec<String>, Result<(), SeenCommandFault>)] = &[

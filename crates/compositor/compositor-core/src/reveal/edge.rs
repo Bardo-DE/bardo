@@ -22,6 +22,7 @@ impl RevealEdge {
     pub const ALL: [RevealEdge; 2] = [RevealEdge::Top, RevealEdge::Bottom];
 
     /// The edge as `reveal` names it on the wire.
+    #[must_use]
     pub fn screen_edge(self) -> ScreenEdge {
         match self {
             RevealEdge::Top => ScreenEdge::Top,
@@ -30,6 +31,7 @@ impl RevealEdge {
     }
 
     /// The role of the surface this edge reveals.
+    #[must_use]
     pub fn role(self) -> ShellRole {
         match self {
             RevealEdge::Top => ShellRole::Bar,
@@ -50,6 +52,7 @@ impl RevealEdge {
     /// assert!(top.covered(FullScreenBar::Reveal, true));
     /// assert!(RevealEdge::Bottom.covered(FullScreenBar::Keep, true));
     /// ```
+    #[must_use]
     pub fn covered(self, mode: FullScreenBar, shown: bool) -> bool {
         match (self, mode) {
             (RevealEdge::Top, FullScreenBar::Keep) => false,
@@ -67,6 +70,7 @@ impl RevealEdge {
     /// let strip = RevealEdge::Bottom.strip(output);
     /// assert_eq!((strip.origin.y, strip.size.h), (46, 4));
     /// ```
+    #[must_use]
     pub fn strip(self, output: LogicalRect) -> LogicalRect {
         let thick = STRIP.min(output.size.h);
         let size = LogicalSize {
@@ -114,6 +118,7 @@ impl Place {
     /// assert_eq!(Place::of(RevealEdge::Top, output, at(20), true), Place::OnSurface);
     /// assert_eq!(Place::of(RevealEdge::Top, output, at(20), false), Place::Away);
     /// ```
+    #[must_use]
     pub fn of(
         edge: RevealEdge,
         output: LogicalRect,

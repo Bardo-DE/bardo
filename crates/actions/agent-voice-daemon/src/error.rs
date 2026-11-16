@@ -54,6 +54,7 @@ impl From<fdo::Error> for VoiceError {
 
 impl VoiceError {
     /// The refusal this error carries, or `None` for anything else.
+    #[must_use]
     pub fn refusal(&self) -> Option<VoiceRefusal> {
         match self {
             VoiceError::Disabled(_) => Some(VoiceRefusal::Disabled),
@@ -68,6 +69,7 @@ impl VoiceError {
 }
 
 /// The refusal a bus error name stands for (a client's side of the table).
+#[must_use]
 pub fn refusal_of_name(name: &str) -> Option<VoiceRefusal> {
     name.strip_prefix(ERROR_PREFIX)
         .and_then(|_| VoiceRefusal::from_error_name(name))

@@ -9,6 +9,7 @@ use permission_core::{PermissionKind, acp_agent_action};
 use provenance::Effect;
 
 /// The permission kind an ACP tool kind is. Anything the protocol adds later is `other`.
+#[must_use]
 pub fn permission(kind: ToolKind) -> PermissionKind {
     match kind {
         ToolKind::Read => PermissionKind::Read,
@@ -25,12 +26,14 @@ pub fn permission(kind: ToolKind) -> PermissionKind {
 }
 
 /// The effect a kind is gated as (`PermissionKind::effect`).
+#[must_use]
 pub fn effect(kind: ToolKind) -> Effect {
     permission(kind).effect()
 }
 
 /// The action a call the agent only reported is shown as: `acpagent.reported.<kind>`. Not a
 /// declared action: nothing is dispatched under it.
+#[must_use]
 pub fn reported_action(kind: ToolKind) -> Option<ActionRef> {
     acp_agent_action(&format!(
         "{}.{}",

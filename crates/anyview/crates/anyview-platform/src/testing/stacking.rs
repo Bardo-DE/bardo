@@ -11,6 +11,7 @@ pub struct FakeStacking {
 
 impl FakeStacking {
     /// A desktop that can keep a window above when `supported`.
+    #[must_use]
     pub fn with(supported: bool) -> Self {
         FakeStacking {
             supported,
@@ -19,6 +20,7 @@ impl FakeStacking {
     }
 
     /// Every request (`keep_above`), oldest first.
+    #[must_use]
     pub fn requested(&self) -> Vec<bool> {
         locked(&self.requested).clone()
     }

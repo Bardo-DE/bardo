@@ -109,12 +109,14 @@ pub enum CaptureOut {
 }
 
 /// Whether `Opened` or `ColorOpened` is taken now: one sheet of any kind at a time.
+#[must_use]
 pub fn admits(state: &CapturePicker) -> bool {
     state.asking.is_none() && state.color.is_none() && state.permission.is_none()
 }
 
 /// Whether a permission question is taken now: on screen when the sheet is free, else it waits
 /// behind the others, up to [`WAITING_MAX`].
+#[must_use]
 pub fn permission_admits(state: &CapturePicker) -> bool {
     state.waiting.len() < WAITING_MAX
 }
@@ -134,6 +136,7 @@ fn promote(state: CapturePicker) -> CapturePicker {
 }
 
 /// Whether the compositor's question `ask` is on screen or waiting.
+#[must_use]
 pub fn holds_consent(state: &CapturePicker, ask: ConsentId) -> bool {
     let by = AskedBy::Compositor(ask);
     state
@@ -196,6 +199,7 @@ fn reply_of(asking: &PermissionAsking, outcome: PermissionOutcome) -> CaptureOut
 }
 
 /// `state` after `event`, and what to do.
+#[must_use]
 pub fn step(state: CapturePicker, event: CaptureEvent) -> (CapturePicker, Vec<CaptureOut>) {
     match event {
         CaptureEvent::Link(link) => (CapturePicker { link, ..state }, Vec::new()),

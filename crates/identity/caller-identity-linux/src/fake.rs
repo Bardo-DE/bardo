@@ -8,6 +8,7 @@ impl Pinned {
     /// A process that is only a claim: no pidfd stands behind it, it is alive until the test says
     /// otherwise. For tests of code that takes a [`Pinned`]; the probe still reads whatever
     /// file-system view it is given for that pid.
+    #[must_use]
     pub fn introduced(pid: Pid, uid: Uid, pin: Pin) -> Pinned {
         Pinned {
             pid,
@@ -18,6 +19,7 @@ impl Pinned {
     }
 
     /// As [`Pinned::introduced`], for a process that has already exited.
+    #[must_use]
     pub fn introduced_gone(pid: Pid, uid: Uid, pin: Pin) -> Pinned {
         Pinned {
             pid,
@@ -29,6 +31,7 @@ impl Pinned {
 }
 
 /// A service standing, as if a table row had matched. `None` when `app` or `role` is not valid.
+#[must_use]
 pub fn introduced_service(app: &str, role: &str, proof: Proof, pin: Pin) -> Option<Standing> {
     Some(Standing::Service {
         app: AppKey::new(app).ok()?,
@@ -39,6 +42,7 @@ pub fn introduced_service(app: &str, role: &str, proof: Proof, pin: Pin) -> Opti
 }
 
 /// A program standing for the image `path`. `None` when `path` is not a valid image path.
+#[must_use]
 pub fn introduced_program(path: &str) -> Option<Standing> {
     Some(Standing::Program {
         exe: ExePath::new(path).ok()?,
@@ -47,6 +51,7 @@ pub fn introduced_program(path: &str) -> Option<Standing> {
 }
 
 /// An unverified standing.
+#[must_use]
 pub fn introduced_unverified(why: WhyNot) -> Standing {
     Standing::unverified(why)
 }

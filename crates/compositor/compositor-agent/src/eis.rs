@@ -1,4 +1,4 @@
-//! Remote input over EIS (P2-T3): the socket the desktop portal's RemoteDesktop session
+//! Remote input over EIS (P2-T3): the socket the desktop portal's `RemoteDesktop` session
 //! gets, and what comes down it.
 //!
 //! `org.bardo.Compositor1.ConnectEis` asks [`open`] for a socket pair. The client end goes
@@ -37,6 +37,7 @@ use std::os::unix::net::UnixStream;
 /// that may ask for a remote EIS socket. The proof is made on the bus thread
 /// (`compositor_ipc::dbus`); this is the second line, so an ask that reaches the event loop with
 /// another role is refused there too.
+#[must_use]
 pub fn portal_may_connect(held: &RoleName) -> bool {
     *held == roles::PORTAL
 }
@@ -44,6 +45,7 @@ pub fn portal_may_connect(held: &RoleName) -> bool {
 /// Whether `held`, the role the caller proved, is the agent tier: the one caller that may lease
 /// a window for its input (`LeaseWindow`). The bus thread proves the role; this is the second
 /// line.
+#[must_use]
 pub fn agent_may_lease(held: &RoleName) -> bool {
     *held == roles::AGENT_TIER
 }
@@ -59,23 +61,26 @@ pub enum RemoteKind {
     Touch,
 }
 
-/// The device kinds the person allowed for a session. The wire form is the RemoteDesktop
+/// The device kinds the person allowed for a session. The wire form is the `RemoteDesktop`
 /// portal's `types` bit set: 1 keyboard, 2 pointer, 4 touchscreen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct RemoteKinds(u32);
 
 impl RemoteKinds {
     /// The kinds named by a portal value; other bits are dropped.
+    #[must_use]
     pub fn from_wire(value: u32) -> RemoteKinds {
         RemoteKinds(value & 7)
     }
 
     /// The portal value.
+    #[must_use]
     pub fn to_wire(self) -> u32 {
         self.0
     }
 
     /// Whether `kind` is allowed.
+    #[must_use]
     pub fn allows(self, kind: RemoteKind) -> bool {
         let bit = match kind {
             RemoteKind::Keyboard => 1,
@@ -99,6 +104,7 @@ pub struct RemoteInput {
 
 impl RemoteInput {
     /// The model's input event, happening at `at`.
+    #[must_use]
     pub fn at(self, at: Mono) -> InputEvent {
         InputEvent {
             origin: self.origin,

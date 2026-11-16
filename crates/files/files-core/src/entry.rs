@@ -23,6 +23,7 @@ pub struct Entry {
 
 impl Entry {
     /// An entry named `name` of `kind`, with nothing else known yet.
+    #[must_use]
     pub fn new(name: FileName, kind: EntryKind) -> Entry {
         Entry {
             name,
@@ -34,6 +35,7 @@ impl Entry {
     }
 
     /// The same entry, standing for the trashed `item`.
+    #[must_use]
     pub fn in_trash(self, item: TrashedItem) -> Entry {
         Entry {
             trashed: Some(item),
@@ -42,6 +44,7 @@ impl Entry {
     }
 
     /// The name a person reads: the original name of a trashed item, else the entry's own.
+    #[must_use]
     pub fn shown_name(&self) -> &FileName {
         match &self.trashed {
             Some(item) => &item.original.name,
@@ -50,6 +53,7 @@ impl Entry {
     }
 
     /// The same entry, modified at `at`.
+    #[must_use]
     pub fn modified_at(self, at: SystemTime) -> Entry {
         Entry {
             modified: Some(at),
@@ -58,6 +62,7 @@ impl Entry {
     }
 
     /// The same entry, of type `mime`.
+    #[must_use]
     pub fn with_mime(self, mime: MimeType) -> Entry {
         Entry {
             mime: Some(mime),
@@ -66,6 +71,7 @@ impl Entry {
     }
 
     /// Whether a person sees it by default: a name that starts with a dot is hidden.
+    #[must_use]
     pub fn is_hidden(&self) -> bool {
         matches!(self.name.as_os_str().as_bytes(), [b'.', ..])
     }

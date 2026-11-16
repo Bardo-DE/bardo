@@ -44,6 +44,7 @@ fn default_expires_in() -> u32 {
 
 impl TokenResponse {
     /// The scopes the issuer says it granted, one each; empty when it did not say.
+    #[must_use]
     pub fn granted_scopes(&self) -> Vec<String> {
         self.scope
             .as_deref()
@@ -52,6 +53,7 @@ impl TokenResponse {
     }
 
     /// When the access token expires, given the time of the request.
+    #[must_use]
     pub fn expires_at(&self, now: UnixSeconds) -> UnixSeconds {
         UnixSeconds(now.0 + i64::from(self.expires_in))
     }

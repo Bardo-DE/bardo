@@ -22,11 +22,12 @@ pub const MAX_STORED_SCALE: u32 = 960;
 /// [`MAX_STORED_SCALE`] is refused, as a file that is not ours.
 pub(crate) fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Scale, D::Error> {
     let numerator = u32::deserialize(deserializer)?;
-    match (MIN_STORED_SCALE..=MAX_STORED_SCALE).contains(&numerator) {
-        true => Ok(Scale(numerator)),
-        false => Err(D::Error::custom(format!(
+    if (MIN_STORED_SCALE..=MAX_STORED_SCALE).contains(&numerator) {
+        Ok(Scale(numerator))
+    } else {
+        Err(D::Error::custom(format!(
             "a scale of {numerator}/120 is outside {MIN_STORED_SCALE} to {MAX_STORED_SCALE}"
-        ))),
+        )))
     }
 }
 

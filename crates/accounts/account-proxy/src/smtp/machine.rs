@@ -176,9 +176,10 @@ impl SmtpRelay {
                 return effects;
             }
         }
-        match overlong(&self.buffer) || overlong(&self.reply) {
-            true => fail(RelayFault::Protocol),
-            false => effects,
+        if overlong(&self.buffer) || overlong(&self.reply) {
+            fail(RelayFault::Protocol)
+        } else {
+            effects
         }
     }
 
@@ -190,9 +191,10 @@ impl SmtpRelay {
             | SmtpPhase::EhloAgain
             | SmtpPhase::Authenticating(_) => {
                 self.early.extend_from_slice(data);
-                match self.early.len() > MAX_EARLY {
-                    true => fail(RelayFault::Protocol),
-                    false => Vec::new(),
+                if self.early.len() > MAX_EARLY {
+                    fail(RelayFault::Protocol)
+                } else {
+                    Vec::new()
                 }
             }
             SmtpPhase::Data => self.body(data),
@@ -208,21 +210,18 @@ impl SmtpRelay {
     fn body(&mut self, data: &[u8]) -> Vec<Effect> {
         let mut seen = self.tail.clone();
         seen.extend_from_slice(data);
-        match find(&seen, END_OF_DATA) {
-            Some(at) => {
-                let end = at + END_OF_DATA.len() - self.tail.len();
-                self.phase = SmtpPhase::Relaying;
-                self.tail.clear();
-                let mut effects = vec![send(Side::Server, &data[..end])];
-                self.early.extend_from_slice(&data[end..]);
-                effects.extend(self.commands());
-                effects
-            }
-            None => {
-                let keep = seen.len().saturating_sub(END_OF_DATA.len() - 1);
-                self.tail = seen[keep..].to_vec();
-                vec![send(Side::Server, data)]
-            }
+        if let Some(at) = find(&seen, END_OF_DATA) {
+            let end = at + END_OF_DATA.len() - self.tail.len();
+            self.phase = SmtpPhase::Relaying;
+            self.tail.clear();
+            let mut effects = vec![send(Side::Server, &data[..end])];
+            self.early.extend_from_slice(&data[end..]);
+            effects.extend(self.commands());
+            effects
+        } else {
+            let keep = seen.len().saturating_sub(END_OF_DATA.len() - 1);
+            self.tail = seen[keep..].to_vec();
+            vec![send(Side::Server, data)]
         }
     }
 
@@ -259,9 +258,10 @@ impl SmtpRelay {
                 effects.extend(self.on_app_bytes(&rest));
             }
         }
-        match overlong(&self.early) {
-            true => fail(RelayFault::Protocol),
-            false => effects,
+        if overlong(&self.early) {
+            fail(RelayFault::Protocol)
+        } else {
+            effects
         }
     }
 

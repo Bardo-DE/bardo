@@ -31,6 +31,7 @@ fn state(skill: &Skill, apps: &Apps) -> (&'static str, Option<String>) {
 }
 
 /// The skills under `roots`, as lines and as JSON.
+#[must_use]
 pub fn list(apps: &Apps, roots: &Roots) -> Printed {
     let found = discover(roots, &DiskFolder);
     let mut lines = Vec::new();

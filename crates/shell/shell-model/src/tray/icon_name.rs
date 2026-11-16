@@ -9,6 +9,7 @@ use super::limits::TRAY_ICON_NAME_MAX_BYTES;
 /// `raw` when it is a plain theme icon name, else `None`: not empty, at most
 /// [`TRAY_ICON_NAME_MAX_BYTES`] bytes, no path separator, no `..`, no leading `.` and no control
 /// character.
+#[must_use]
 pub fn theme_icon_name(raw: &str) -> Option<&str> {
     let plain = !raw.is_empty()
         && raw.len() <= TRAY_ICON_NAME_MAX_BYTES

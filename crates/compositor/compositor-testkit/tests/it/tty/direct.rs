@@ -176,7 +176,7 @@ fn the_fixed_node_reports_itself_changed_once_in_a_while_for_hotplug() {
 fn the_direct_session_opens_no_device_and_switches_no_vt() {
     let mut session = DirectSession::new(|| {});
     let node = DevicePath(PathBuf::from("/dev/dri/card1"));
-    assert!(session.open_device(&node).is_err());
+    session.open_device(&node).unwrap_err();
     assert!(
         session
             .switch_vt(compositor_backend::tty::VtNumber(3))

@@ -13,6 +13,7 @@ pub struct Picks {
 
 impl Picks {
     /// Nothing picked, on the plan's first tab, with its first pointer mode.
+    #[must_use]
     pub fn start(plan: &Plan) -> Picks {
         Picks {
             tab: plan.tabs.first().copied().unwrap_or(Tab::Screens),
@@ -25,6 +26,7 @@ impl Picks {
 /// `picks` after the person pressed `source`: with one source allowed it replaces the pick (a
 /// second press of the picked one keeps it); with several it adds or removes it. A source the
 /// plan does not offer changes nothing.
+#[must_use]
 pub fn toggle(plan: &Plan, plurality: Plurality, picks: Picks, source: Source) -> Picks {
     if !plan.offers(&source) {
         return picks;
@@ -42,6 +44,7 @@ pub fn toggle(plan: &Plan, plurality: Plurality, picks: Picks, source: Source) -
 }
 
 /// Whether Allow can be pressed: something offered is picked.
+#[must_use]
 pub fn can_allow(plan: &Plan, picks: &Picks) -> bool {
     picks.chosen.iter().any(|source| plan.offers(source))
 }
@@ -56,6 +59,7 @@ pub struct Reply {
 
 impl Reply {
     /// Cancelled.
+    #[must_use]
     pub fn cancelled() -> Reply {
         Reply {
             sources: Vec::new(),
@@ -67,6 +71,7 @@ impl Reply {
 /// The answer to Allow: the picked sources that are still offered, in the plan's order (screens
 /// first), and the pointer mode when the plan offers it, else its first. Nothing offered and
 /// picked is a cancel.
+#[must_use]
 pub fn reply(plan: &Plan, picks: &Picks) -> Reply {
     let sources: Vec<(String, String)> = plan
         .screens

@@ -11,6 +11,7 @@ pub const TOKEN_CLASS_PREFIX: &str = "tok-";
 
 /// The lines as HTML text, joined by line feeds. Plain spans are bare text; every other span is a
 /// `<span class="tok-…">`.
+#[must_use]
 pub fn tokens_html(lines: &[TokenLine]) -> String {
     let mut out = String::new();
     for (i, line) in lines.iter().enumerate() {

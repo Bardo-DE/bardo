@@ -29,6 +29,7 @@ pub struct FrameLinkMenu {
 }
 
 /// The menu asked at `at`, over `under`: nothing when the press was not on a link in a frame.
+#[must_use]
 pub fn ask(under: Option<LinkUnder>, at: Point, book: &FrameBook) -> Option<FrameLinkMenu> {
     under.map(|under| FrameLinkMenu {
         tag: book.tag(under.frame),

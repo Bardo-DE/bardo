@@ -64,12 +64,14 @@ pub struct Floor {
 
 impl Floor {
     /// No floor: everything unlisted is asked.
+    #[must_use]
     pub fn empty() -> Floor {
         Floor::default()
     }
 
     /// The floor refusing (`deny`) or asking about a program nobody has answered for, for
     /// `power`. (There is no "allow": a floor cannot let in a program nobody named.)
+    #[must_use]
     pub fn with_fallback(self, power: Power, deny: bool) -> Floor {
         let mut fallbacks = self.fallbacks;
         fallbacks.insert(power, deny);
@@ -77,6 +79,7 @@ impl Floor {
     }
 
     /// The floor with `rule` (ignored when the floor already holds [`MAX_FLOOR_RULES`]).
+    #[must_use]
     pub fn with_rule(self, rule: FloorRule) -> Floor {
         if self.rules.len() >= MAX_FLOOR_RULES || self.rules.contains(&rule) {
             return self;
@@ -87,6 +90,7 @@ impl Floor {
 
     /// The floor that never remembers answers about `program` (ignored when it already names
     /// [`MAX_NEVER_REMEMBER`]).
+    #[must_use]
     pub fn with_never_remembered(self, program: ProgramPath) -> Floor {
         if self.never.len() >= MAX_NEVER_REMEMBER {
             return self;
@@ -98,12 +102,14 @@ impl Floor {
 
     /// Whether an unlisted program is refused without being asked for `power` (otherwise it is
     /// asked).
+    #[must_use]
     pub fn denies(&self, power: Power) -> bool {
         self.fallbacks.get(&power).copied().unwrap_or(false)
     }
 
     /// What the administrator decided about `subject` and `power`: a refusal wins over a
     /// pre-approval when the floor holds both.
+    #[must_use]
     pub fn rule(&self, subject: &Subject, power: Power) -> Option<Verdict> {
         self.rules
             .iter()
@@ -118,6 +124,7 @@ impl Floor {
     /// Whether an answer about `subject` is kept ([`Memory::Remembered`]) or lasts for one
     /// connection ([`Memory::ThisTimeOnly`]): never for an interpreter or a program the floor
     /// names.
+    #[must_use]
     pub fn remembers(&self, subject: &Subject) -> Memory {
         match subject {
             Subject::Program(path) if is_interpreter(path) || self.never.contains(path) => {
@@ -128,6 +135,7 @@ impl Floor {
     }
 
     /// Every pre-approval and refusal.
+    #[must_use]
     pub fn rules(&self) -> &[FloorRule] {
         &self.rules
     }

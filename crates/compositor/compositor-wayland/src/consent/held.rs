@@ -44,12 +44,11 @@ impl<T: Mortal> Held<T> {
             !items.is_empty()
         });
         let items = self.by_client.entry(client).or_default();
-        match items.len() < HELD_REQUESTS {
-            true => {
-                items.push(item);
-                Pushed::Kept
-            }
-            false => Pushed::Full(item),
+        if items.len() < HELD_REQUESTS {
+            items.push(item);
+            Pushed::Kept
+        } else {
+            Pushed::Full(item)
         }
     }
 }
@@ -71,6 +70,7 @@ impl<T> Held<T> {
     }
 
     /// Whether nothing is held.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.by_client.is_empty()
     }

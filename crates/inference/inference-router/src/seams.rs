@@ -45,11 +45,13 @@ pub struct EngineFailed {
 
 impl EngineFailed {
     /// A failure with this cause.
+    #[must_use]
     pub fn new(cause: crate::startup::Cause) -> Self {
         Self { cause }
     }
 
     /// A failure nothing more is known about.
+    #[must_use]
     pub fn unknown() -> Self {
         Self {
             cause: crate::startup::Cause::Unknown,

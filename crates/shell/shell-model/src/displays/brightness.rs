@@ -27,6 +27,7 @@ pub enum BacklightKind {
 
 impl BacklightKind {
     /// The sysfs `type` word; `None` for one the kernel does not define.
+    #[must_use]
     pub fn parse(word: &str) -> Option<BacklightKind> {
         match word.trim() {
             "firmware" => Some(BacklightKind::Firmware),
@@ -61,6 +62,7 @@ pub enum BrightnessTarget {
 /// The target for the output `name`: a built-in panel's backlight (the preferred kind when
 /// there are several), an external monitor's DDC display when one answers on its connector,
 /// otherwise nothing.
+#[must_use]
 pub fn route(
     name: &OutputName,
     placement: Placement,
@@ -83,6 +85,7 @@ pub fn route(
 
 /// The outputs a key press acts on: every one, or the one the pointer (else focus) is on,
 /// else the first. `outputs` in the compositor's order.
+#[must_use]
 pub fn targets<'a>(
     keys: KeysTarget,
     pointer_or_focus: Option<&OutputName>,
@@ -133,6 +136,7 @@ pub fn stepped(level: Percent, change: LevelChange) -> Percent {
 }
 
 /// A percentage of a device range `0..=max`, rounded; and back.
+#[must_use]
 pub fn percent_of(value: u32, max: u32) -> Percent {
     match max {
         0 => Percent(0),
@@ -144,6 +148,7 @@ pub fn percent_of(value: u32, max: u32) -> Percent {
 }
 
 /// The device value for `percent` of `0..=max`, rounded.
+#[must_use]
 pub fn value_of(percent: Percent, max: u32) -> u32 {
     let v = (u64::from(percent.0.min(100)) * u64::from(max) + 50) / 100;
     u32::try_from(v).unwrap_or(max)
@@ -151,6 +156,7 @@ pub fn value_of(percent: Percent, max: u32) -> u32 {
 
 /// A backlight never goes fully dark from a key press or slider: 0% is its lowest non-zero
 /// value, since several panels switch off at 0 and a black laptop screen reads as broken.
+#[must_use]
 pub fn backlight_value(percent: Percent, max: u32) -> u32 {
     value_of(percent, max).max(u32::from(max > 0))
 }

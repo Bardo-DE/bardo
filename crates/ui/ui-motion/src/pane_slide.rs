@@ -18,6 +18,7 @@ pub enum Pane {
 
 impl Pane {
     /// The other pane.
+    #[must_use]
     pub fn other(self) -> Pane {
         match self {
             Pane::Root => Pane::Detail,
@@ -27,6 +28,7 @@ impl Pane {
 
     /// What this pane plays arriving: the detail comes in from the right, the root from the
     /// left, as a push and its return.
+    #[must_use]
     pub fn arrival(self) -> Anim {
         match self {
             Pane::Detail => Anim::PaneInR,
@@ -35,6 +37,7 @@ impl Pane {
     }
 
     /// What this pane plays leaving: the other way from the pane replacing it.
+    #[must_use]
     pub fn departure(self) -> Anim {
         match self {
             Pane::Root => Anim::PaneOutL,
@@ -77,11 +80,13 @@ pub enum PaneRole {
 
 impl PaneSlide {
     /// At rest on `pane`.
+    #[must_use]
     pub fn rest(pane: Pane) -> Self {
         PaneSlide::Rest(pane)
     }
 
     /// The pane shown, or arriving.
+    #[must_use]
     pub fn target(self) -> Pane {
         match self {
             PaneSlide::Rest(pane) | PaneSlide::Moving { to: pane, .. } => pane,
@@ -89,6 +94,7 @@ impl PaneSlide {
     }
 
     /// What `pane` is doing now.
+    #[must_use]
     pub fn role(self, pane: Pane) -> PaneRole {
         match self {
             PaneSlide::Rest(shown) if shown == pane => PaneRole::Shown,

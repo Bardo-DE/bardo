@@ -40,15 +40,18 @@ pub struct OpenAiCodec {
 }
 
 impl OpenAiCodec {
+    #[must_use]
     pub fn new(flavor: Flavor) -> Self {
         Self { flavor }
     }
 
+    #[must_use]
     pub fn flavor(&self) -> Flavor {
         self.flavor
     }
 
     /// This codec over a client: the provider an engine is spoken to through.
+    #[must_use]
     pub fn provider(self, client: model_http::HttpClient) -> crate::OpenAiCompat {
         model_wire::Driver::new(self, client)
     }

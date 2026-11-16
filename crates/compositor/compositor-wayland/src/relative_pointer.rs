@@ -19,6 +19,7 @@ pub struct RelativePointerPart {
 
 impl RelativePointerPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> RelativePointerPart
     where
         D: GlobalDispatch<ZwpRelativePointerManagerV1, GlobalData>

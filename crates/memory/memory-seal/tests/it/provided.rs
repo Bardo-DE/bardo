@@ -51,7 +51,7 @@ async fn destroy_bars_the_space_in_this_store() {
         keys.create(&space("work")).await,
         Err(KeyError::Destroyed)
     ));
-    assert!(keys.get(&space("home")).await.is_ok());
+    keys.get(&space("home")).await.unwrap();
 }
 
 #[tokio::test]
@@ -65,5 +65,5 @@ async fn a_provided_key_seals_and_unseals() {
     assert_eq!(unseal(&sub, &aad, &sealed).expect("unseal"), b"plain");
     let other = keys.get(&space("home")).await.expect("get");
     let wrong = memory_seal::derive(&other, &space("work"), memory_seal::Purpose::Files);
-    assert!(unseal(&wrong, &aad, &sealed).is_err());
+    unseal(&wrong, &aad, &sealed).unwrap_err();
 }

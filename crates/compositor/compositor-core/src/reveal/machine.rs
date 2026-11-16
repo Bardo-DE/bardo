@@ -61,27 +61,32 @@ pub struct Reveal {
 
 impl Reveal {
     /// Behind the window, in no full screen.
+    #[must_use]
     pub fn new() -> Reveal {
         Reveal::default()
     }
 
     /// Whether the full-screen Space has been told to this machine.
+    #[must_use]
     pub fn cover(&self) -> bool {
         self.cover
     }
 
     /// Where the pointer has been told to be.
+    #[must_use]
     pub fn place(&self) -> Place {
         self.place
     }
 
     /// Whether a pop-up has been told to this machine.
+    #[must_use]
     pub fn popup(&self) -> bool {
         self.popup
     }
 
     /// Whether the surface is drawn and hit above the full-screen window now (sliding in, shown, or
     /// sliding away); behind it, where a bar or a dock normally is in full screen, otherwise.
+    #[must_use]
     pub fn raised(&self) -> bool {
         match self.phase {
             Phase::Hidden | Phase::Pending { .. } => false,
@@ -91,6 +96,7 @@ impl Reveal {
 
     /// How far in the surface is at `now`, in thousandths: the slide along the timing table's
     /// easing (out when it comes, exit when it goes), or the fade's opacity.
+    #[must_use]
     pub fn visible(&self, timing: RevealTiming, now: Mono) -> Fraction {
         match self.phase {
             Phase::Hidden | Phase::Pending { .. } => Fraction(0),
@@ -112,6 +118,7 @@ impl Reveal {
     }
 
     /// The machine after `input` at `now`, and what the edge does about it.
+    #[must_use]
     pub fn step(
         self,
         timing: RevealTiming,
@@ -154,10 +161,13 @@ impl Reveal {
                 Place::Away | Place::OnSurface => (self, Vec::new()),
             },
             (true, Phase::Pending { since }) => self.waiting(timing, since, now),
-            (true, Phase::Showing { since, .. }) => match now.since(since) >= timing.travel {
-                true => self.at(Phase::Shown).settled(timing, now),
-                false => self.leaving(timing, now),
-            },
+            (true, Phase::Showing { since, .. }) => {
+                if now.since(since) >= timing.travel {
+                    self.at(Phase::Shown).settled(timing, now)
+                } else {
+                    self.leaving(timing, now)
+                }
+            }
             (true, Phase::Shown) => self.leaving(timing, now),
             (true, Phase::Hiding { since, .. }) => self.returning(timing, since, now),
         }
@@ -187,15 +197,16 @@ impl Reveal {
     /// In (or coming in): it goes when nothing holds it. The shell hears `hidden` only when the
     /// slide-away ends, so what it shows does not vanish while the surface is still going.
     fn leaving(self, timing: RevealTiming, now: Mono) -> (Reveal, Vec<RevealOut>) {
-        match self.held() {
-            true => (self, Vec::new()),
-            false => (
+        if self.held() {
+            (self, Vec::new())
+        } else {
+            (
                 self.at(Phase::Hiding {
                     since: now,
                     from: self.visible(timing, now),
                 }),
                 vec![RevealOut::Arm(now.after(timing.travel))],
-            ),
+            )
         }
     }
 
@@ -219,12 +230,11 @@ impl Reveal {
 
 /// How far `now` is through a move of `length` begun at `since`, in thousandths.
 fn through(now: Mono, since: Mono, length: Duration) -> Fraction {
-    match length.is_zero() {
-        true => Fraction(1000),
-        false => {
-            let part = now.since(since).as_micros() * 1000 / length.as_micros();
-            Fraction(u16::try_from(part.min(1000)).unwrap_or(1000))
-        }
+    if length.is_zero() {
+        Fraction(1000)
+    } else {
+        let part = now.since(since).as_micros() * 1000 / length.as_micros();
+        Fraction(u16::try_from(part.min(1000)).unwrap_or(1000))
     }
 }
 

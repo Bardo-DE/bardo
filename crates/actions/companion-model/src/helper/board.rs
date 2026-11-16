@@ -222,6 +222,7 @@ fn save_job(job: &Job) -> BoardEffect {
 
 impl Board {
     /// An empty board.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -291,6 +292,7 @@ impl Board {
 
     /// Every card, job and post as a record, cards first: the board written again from scratch,
     /// so what a restart reads has the newest of each at its head.
+    #[must_use]
     pub fn records(&self) -> Vec<HelperRecord> {
         let cards = self
             .cards
@@ -308,16 +310,19 @@ impl Board {
     }
 
     /// Every card, oldest first.
+    #[must_use]
     pub fn cards(&self) -> &[HelperCard] {
         &self.cards
     }
 
     /// One card.
+    #[must_use]
     pub fn card(&self, id: &HelperId) -> Option<&HelperCard> {
         self.cards.iter().find(|c| &c.id == id)
     }
 
     /// The card the person calls `name` (letter case does not matter).
+    #[must_use]
     pub fn by_name(&self, name: &str) -> Option<&HelperCard> {
         self.cards
             .iter()
@@ -325,22 +330,26 @@ impl Board {
     }
 
     /// Every job, oldest first.
+    #[must_use]
     pub fn jobs(&self) -> &[Job] {
         &self.jobs
     }
 
     /// One job.
+    #[must_use]
     pub fn job(&self, id: JobId) -> Option<&Job> {
         self.jobs.iter().find(|j| j.id == id)
     }
 
     /// Every post, oldest first.
+    #[must_use]
     pub fn posts(&self) -> &[Post] {
         &self.posts
     }
 
     /// The live job that owns `thing`, and its helper, not counting the job `except`. Only one
     /// job writes a thing at a time.
+    #[must_use]
     pub fn owner_of(&self, thing: &EntityId, except: Option<JobId>) -> Option<(&HelperCard, &Job)> {
         self.jobs
             .iter()
@@ -349,11 +358,13 @@ impl Board {
     }
 
     /// The posts `helper` should be handed at the start of a job.
+    #[must_use]
     pub fn pending_posts(&self, helper: &HelperId) -> Vec<&Post> {
         self.posts.iter().filter(|p| p.waits_for(helper)).collect()
     }
 
     /// The job a helper is working on now.
+    #[must_use]
     pub fn running(&self, helper: &HelperId) -> Option<&Job> {
         self.jobs
             .iter()
@@ -362,6 +373,7 @@ impl Board {
 }
 
 /// The board after `event`, and what the host does about it.
+#[must_use]
 pub fn step(mut board: Board, event: BoardEvent) -> (Board, Vec<BoardEffect>) {
     let mut fx = Vec::new();
     match event {

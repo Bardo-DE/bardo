@@ -20,6 +20,7 @@ impl Argv {
     }
 
     /// `words` as a command, or `None` when there is no program in it.
+    #[must_use]
     pub fn from_words(words: Vec<String>) -> Option<Argv> {
         let mut words = words.into_iter();
         let program = words.next().filter(|program| !program.is_empty())?;
@@ -27,11 +28,13 @@ impl Argv {
     }
 
     /// The program to run.
+    #[must_use]
     pub fn program(&self) -> &str {
         &self.program
     }
 
     /// Its arguments.
+    #[must_use]
     pub fn args(&self) -> &[String] {
         &self.args
     }

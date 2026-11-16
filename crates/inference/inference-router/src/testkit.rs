@@ -13,6 +13,7 @@ static NEXT: AtomicU32 = AtomicU32::new(0);
 
 /// The three test models (`tiny-chat`, `tiny-embed`, `tiny-cua`), with engine programs
 /// configured and the weights directories created under `scratch`.
+#[must_use]
 pub fn models(scratch: &Path) -> Vec<LocalModel> {
     let entries: Vec<_> = [entries::chat(), entries::embed(), entries::cua()]
         .iter()
@@ -35,6 +36,7 @@ pub fn models(scratch: &Path) -> Vec<LocalModel> {
 }
 
 /// A model of an account that is not on this computer, for routing tests that must not reach it.
+#[must_use]
 pub fn cloud_card() -> inference_core::ModelCard {
     use account_capability::ModelId;
     use account_capability::{Billing, Locality};

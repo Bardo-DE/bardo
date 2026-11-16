@@ -56,11 +56,13 @@ impl Anchor {
     pub const ALL: Anchor = Anchor(15);
 
     /// Both sets of edges.
+    #[must_use]
     pub const fn union(self, other: Anchor) -> Anchor {
         Anchor(self.0 | other.0)
     }
 
     /// Whether every edge of `other` is in `self`.
+    #[must_use]
     pub const fn contains(self, other: Anchor) -> bool {
         self.0 & other.0 == other.0
     }
@@ -106,7 +108,7 @@ pub enum ExclusiveZone {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum KeyboardMode {
     /// Never (bar, dock). A grabbing popup opened from such a surface switches it to `OnDemand`
-    /// until the popup closes (plan: layer-shell-host input rule; design/13 §13.3.8), except on KWin,
+    /// until the popup closes (plan: layer-shell-host input rule; design/13 §13.3.8), except on `KWin`,
     /// which focuses the popup itself (`popup_keyboard`).
     None,
     /// Takes all keyboard input while mapped (launcher, switcher).

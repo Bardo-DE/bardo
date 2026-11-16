@@ -36,7 +36,7 @@ impl Waits {
     pub const DEFAULT: Waits = Waits {
         prompt: Duration::from_secs(60),
         model: Duration::from_secs(180),
-        person: Duration::from_secs(15 * 60),
+        person: Duration::from_mins(15),
         handshake: Duration::from_secs(60),
         startup: Duration::from_secs(30),
     };
@@ -79,6 +79,7 @@ impl Cancel {
     }
 
     /// Whether it was stopped.
+    #[must_use]
     pub fn is_set(&self) -> bool {
         self.flag.set.load(Ordering::SeqCst)
     }
@@ -96,7 +97,7 @@ impl Cancel {
                 Poll::Pending
             }
         })
-        .await
+        .await;
     }
 }
 

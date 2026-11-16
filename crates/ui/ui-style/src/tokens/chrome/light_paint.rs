@@ -26,6 +26,7 @@ pub struct LightColours {
 
 /// The disc, rim and mark ink of `light` in `scheme`. The dark scheme keeps the light one's
 /// numbers: macOS draws the same discs on a dark titlebar.
+#[must_use]
 pub const fn light_colours(light: Light, _scheme: Scheme) -> LightColours {
     match light {
         Light::Close => LightColours {
@@ -86,6 +87,7 @@ pub enum LightPart {
 
 impl LightPaint {
     /// The token for `part` of `light`.
+    #[must_use]
     pub const fn of(light: Light, part: LightPart) -> LightPaint {
         match (light, part) {
             (Light::Close, LightPart::Disc) => LightPaint::Close,
@@ -116,6 +118,7 @@ impl LightPaint {
     }
 
     /// The colour in `scheme`.
+    #[must_use]
     pub const fn hex(self, scheme: Scheme) -> Hex {
         let (light, part) = self.parts();
         let colours = light_colours(light, scheme);

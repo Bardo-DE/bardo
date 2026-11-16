@@ -355,7 +355,7 @@ pub const CASES: &[Case] = &[
     Case {
         component: "chip",
         state: "person-removable",
-        make: || rsx! { Chip { variant: ChipVariant::Person(DANA), text: "Dana Okafor", onremove: |_| {} } },
+        make: || rsx! { Chip { variant: ChipVariant::Person(DANA), text: "Dana Okafor", onremove: |()| {} } },
     },
     // Avatar: every tone, both shapes, the sizes with special rules.
     Case {
@@ -402,12 +402,12 @@ pub const CASES: &[Case] = &[
     Case {
         component: "section_header",
         state: "action",
-        make: || rsx! { SectionHeader { title: "Today", actions: vec![HeaderAction::new("Clear", EventHandler::new(|_| {}))] } },
+        make: || rsx! { SectionHeader { title: "Today", actions: vec![HeaderAction::new("Clear", EventHandler::new(|()| {}))] } },
     },
     Case {
         component: "section_header",
         state: "action-selected",
-        make: || rsx! { SectionHeader { title: "Files", actions: vec![HeaderAction { selection: true, ..HeaderAction::new("Show More", EventHandler::new(|_| {})) }] } },
+        make: || rsx! { SectionHeader { title: "Files", actions: vec![HeaderAction { selection: true, ..HeaderAction::new("Show More", EventHandler::new(|()| {})) }] } },
     },
     Case {
         component: "section_header",

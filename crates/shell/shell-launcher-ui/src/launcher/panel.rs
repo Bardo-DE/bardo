@@ -402,7 +402,7 @@ fn palette(
                 // The first action starts highlighted, so Return runs it at once.
                 start: Some(0),
                 onpick: move |action: ActionId| {
-                    action_pick.pick(row.clone(), shell_launcher::Choice::Action(action))
+                    action_pick.pick(row.clone(), shell_launcher::Choice::Action(action));
                 },
                 onclose: move |()| action_close.actions_closed(),
             }

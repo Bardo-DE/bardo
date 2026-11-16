@@ -10,6 +10,7 @@ use ui_components::prelude::*;
 impl Harness {
     /// Whether a press at `at` would target the first element matching `selector` or something
     /// inside it: `document.elementFromPoint` and its ancestors.
+    #[must_use]
     pub fn hits(&self, at: Point, selector: &str) -> bool {
         self.with_doc(|doc| {
             let Some(wanted) = first(doc, selector) else {

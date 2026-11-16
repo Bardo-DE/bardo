@@ -180,6 +180,7 @@ impl Output {
     }
 
     /// The keys the stream read so far leaves down, by name; a stuck key shows here.
+    #[must_use]
     pub fn held(&self) -> Vec<String> {
         self.down.iter().map(|&c| name_of(c)).collect()
     }

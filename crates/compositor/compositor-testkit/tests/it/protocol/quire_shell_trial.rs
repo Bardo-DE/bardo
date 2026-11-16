@@ -66,7 +66,11 @@ fn a_change_nobody_keeps_is_reverted_when_the_time_runs_out() {
         shell.trials()[0].1,
         u32::try_from(DISPLAY_CONFIRM_WITHIN.as_secs()).expect("seconds")
     );
-    fixture.advance(DISPLAY_CONFIRM_WITHIN - Duration::from_secs(1));
+    fixture.advance(
+        DISPLAY_CONFIRM_WITHIN
+            .checked_sub(Duration::from_secs(1))
+            .unwrap(),
+    );
     assert_eq!(scale_of(&fixture), Scale(240), "still on trial");
     fixture.advance(Duration::from_secs(2));
     fixture.pump();

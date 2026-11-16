@@ -25,6 +25,7 @@ pub struct FakeInstance {
 
 impl FakeInstance {
     /// A fake in `role`.
+    #[must_use]
     pub fn new(role: FakeRole) -> Self {
         let (sender, receiver) = channel();
         FakeInstance {
@@ -37,6 +38,7 @@ impl FakeInstance {
 
     /// Every request given to `claim`, oldest first: what a second launch forwarded, or what the
     /// first launch asked for itself.
+    #[must_use]
     pub fn claimed(&self) -> Vec<Request> {
         locked(&self.claimed).clone()
     }

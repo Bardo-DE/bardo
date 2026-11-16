@@ -89,12 +89,12 @@ fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
             "--repeat" => {
                 args.repeat = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--repeat"))?
+                    .map_err(|_| FlagError::NotANumber("--repeat"))?;
             }
             "--max-steps" => {
                 args.max_steps = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--max-steps"))?
+                    .map_err(|_| FlagError::NotANumber("--max-steps"))?;
             }
             "--thinking" => {
                 args.thinking = match value()?.as_str() {

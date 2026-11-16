@@ -35,6 +35,7 @@ pub struct Consent {
 
 impl Consent {
     /// The question the wire carries, with the subject's text made safe to show.
+    #[must_use]
     pub fn from_wire(
         ask: ConsentId,
         power: Power,

@@ -109,6 +109,7 @@ impl Calendars {
     }
 
     /// The live events of a calendar: id and JSON.
+    #[must_use]
     pub fn events(&self, calendar: &str) -> Vec<(String, Value)> {
         self.rows
             .iter()

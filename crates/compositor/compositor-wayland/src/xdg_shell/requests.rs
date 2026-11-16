@@ -28,6 +28,7 @@ use smithay::wayland::shell::xdg::ToplevelSurface;
 /// An agent lease's press is never proof of a drag: an interactive move or resize is the
 /// compositor's own interaction, which the agent never drives (a popup grab inside its window is
 /// still allowed: a menu it opened).
+#[must_use]
 pub fn grab_proven(record: Option<&PressRecord>, any_press: bool) -> bool {
     match (record.map(|press| (press.kind, press.origin)), any_press) {
         (None, _) => false,
@@ -38,6 +39,7 @@ pub fn grab_proven(record: Option<&PressRecord>, any_press: bool) -> bool {
 }
 
 /// The edges a resize names (`None` for the protocol's `none`, and for a value we do not know).
+#[must_use]
 pub fn edges_of(edge: ResizeEdge) -> Option<ResizeEdges> {
     match edge {
         ResizeEdge::Top => Some(ResizeEdges::Top),
@@ -89,12 +91,11 @@ fn request_or_open(
                 ..
             }
     );
-    surface.with_pending_state(|pending| match on {
-        true => {
+    surface.with_pending_state(|pending| {
+        if on {
             pending.states.set(state);
             pending.size = size.map(size_to);
-        }
-        false => {
+        } else {
             pending.states.unset(state);
             pending.size = None;
         }

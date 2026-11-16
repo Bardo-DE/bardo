@@ -72,6 +72,7 @@ pub struct EventLine {
 
 impl EventLine {
     /// The line of `entry`.
+    #[must_use]
     pub fn of(entry: &Entry) -> EventLine {
         let h = &entry.header;
         EventLine {
@@ -95,6 +96,7 @@ impl EventLine {
     }
 
     /// The JSON text of the line (no newline).
+    #[must_use]
     pub fn to_json(&self) -> String {
         // Plain derives with string keys: serialisation cannot fail.
         serde_json::to_string(self).unwrap_or_default()
@@ -102,21 +104,25 @@ impl EventLine {
 }
 
 /// `quire-memory-export-1/manifest.json`.
+#[must_use]
 pub fn manifest_path() -> String {
     format!("{EXPORT_ROOT}/manifest.json")
 }
 
 /// `quire-memory-export-1/rules.toml`.
+#[must_use]
 pub fn rules_path() -> String {
     format!("{EXPORT_ROOT}/rules.toml")
 }
 
 /// `quire-memory-export-1/<space>/events.jsonl`.
+#[must_use]
 pub fn events_path(space: &SpaceId) -> String {
     format!("{EXPORT_ROOT}/{space}/events.jsonl")
 }
 
 /// `quire-memory-export-1/<space>/<vault path>` (facts, procedures, pending).
+#[must_use]
 pub fn file_path(space: &SpaceId, rel: &VaultPath) -> String {
     format!("{EXPORT_ROOT}/{space}/{rel}")
 }

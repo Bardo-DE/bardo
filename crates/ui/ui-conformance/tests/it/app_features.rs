@@ -99,10 +99,10 @@ fn Today() -> Element {
             ..Common::default()
         },
         onpointerenter: Some(EventHandler::new(move |_: PointerEvent| {
-            hovered.with_mut(|log| log.push(format!("enter:{key}")))
+            hovered.with_mut(|log| log.push(format!("enter:{key}")));
         })),
         onpointerleave: Some(EventHandler::new(move |_: PointerEvent| {
-            hovered.with_mut(|log| log.push(format!("leave:{key}")))
+            hovered.with_mut(|log| log.push(format!("leave:{key}")));
         })),
     };
     let mut tabs = use_signal(move || vec![tab(1, "Keeps", 3 * 3600), tab(2, "Goes", 3)]);

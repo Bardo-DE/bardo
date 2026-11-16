@@ -34,6 +34,7 @@ pub struct MagnifyParams {
 impl MagnifyParams {
     /// design/10 §10.3.1 at rest: `T` 48, `S` 72, `R` 72, `g` 8, `pad` 6, clamp 8 (the macOS
     /// polish pass moved `g` and `pad` from 4 and 8).
+    #[must_use]
     pub fn design_defaults(output_width: Cpx) -> MagnifyParams {
         MagnifyParams {
             tile: Cpx::px(48),

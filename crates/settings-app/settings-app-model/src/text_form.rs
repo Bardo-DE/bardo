@@ -65,6 +65,7 @@ impl Control {
 }
 
 /// `value` as text: a string as it is, anything else as TOML writes it.
+#[must_use]
 pub fn show_value(value: &toml::Value) -> String {
     match value {
         toml::Value::String(text) => text.clone(),

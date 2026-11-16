@@ -68,7 +68,7 @@ impl<S: Seams> Router<S> {
             let st = self.locked();
             spaces.extend(st.sessions.values().map(|r| r.space.clone()));
             spaces.extend(st.tasks.all().map(|t| t.space.clone()));
-        }
+        };
         IntentsReply::Recalled(RecallView::Spaces(spaces.into_iter().collect()))
     }
 

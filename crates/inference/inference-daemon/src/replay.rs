@@ -53,6 +53,7 @@ pub struct Replays {
 impl Replays {
     /// Reads every named cassette (a failure is kept in the engine, which then refuses to
     /// start) and makes the models, with sockets under `sockets`.
+    #[must_use]
     pub fn read(named: &BTreeMap<String, NamedEngine>, sockets: &Path) -> Self {
         named
             .iter()
@@ -80,6 +81,7 @@ impl Replays {
     }
 
     /// The problems of the cassettes that did not read, for the log.
+    #[must_use]
     pub fn unread(&self) -> Vec<String> {
         self.engines
             .iter()
@@ -97,14 +99,16 @@ impl Replays {
     /// engine nothing takes GPU memory, so the headroom kept free for a real engine's growth is
     /// zero and a computer with no GPU (no `nvidia-smi`) can still start them. With any real
     /// engine among the models the default stands. The GPU is reported as it is either way.
+    #[must_use]
     pub fn supervisor_config(&self, total: usize) -> SupervisorConfig {
         let only_replay = total == self.models.len();
-        match only_replay && !self.models.is_empty() {
-            true => SupervisorConfig {
+        if only_replay && !self.models.is_empty() {
+            SupervisorConfig {
                 headroom: MiB(0),
                 ..SupervisorConfig::default()
-            },
-            false => SupervisorConfig::default(),
+            }
+        } else {
+            SupervisorConfig::default()
         }
     }
 

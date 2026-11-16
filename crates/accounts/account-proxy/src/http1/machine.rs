@@ -78,9 +78,10 @@ impl HttpRelay {
         let before = self.head.len().saturating_sub(BLANK.len() - 1);
         self.head.append(rest);
         let Some(at) = find(&self.head[before..], BLANK).map(|at| at + before) else {
-            return match self.head.len() > MAX_HEAD {
-                true => refusal(RelayFault::Protocol),
-                false => Vec::new(),
+            return if self.head.len() > MAX_HEAD {
+                refusal(RelayFault::Protocol)
+            } else {
+                Vec::new()
             };
         };
         let end = at + BLANK.len();

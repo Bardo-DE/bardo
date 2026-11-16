@@ -21,6 +21,7 @@ impl Arrangement {
     /// let none = Arrangement::default();
     /// assert_eq!(none.spread_at(Fraction(500)), Arrangement::default());
     /// ```
+    #[must_use]
     pub fn spread_at(&self, openness: Fraction) -> Arrangement {
         let windows = self
             .windows

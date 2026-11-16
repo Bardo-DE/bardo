@@ -86,6 +86,7 @@ impl RemoteSessions {
     }
 
     /// How many leases the bus connection `owner` holds open.
+    #[must_use]
     pub fn leases_of(&self, owner: Option<&str>) -> usize {
         self.open
             .values()
@@ -96,6 +97,7 @@ impl RemoteSessions {
 
     /// Who asked for the open connection of `owner_of`, if it is open: the bus connection
     /// (its unique name), when known.
+    #[must_use]
     pub fn asked_by(&self, owner_of: RemoteFor) -> Option<Option<&str>> {
         self.open
             .values()
@@ -104,11 +106,13 @@ impl RemoteSessions {
     }
 
     /// How many connections are open.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.open.len()
     }
 
     /// Whether none is open.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.open.is_empty()
     }

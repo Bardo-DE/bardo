@@ -18,11 +18,13 @@ pub struct Stop {
 
 impl Stop {
     /// A stop that ends only when `request` is called.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// A stop that also ends at `deadline`.
+    #[must_use]
     pub fn with_deadline(deadline: Instant) -> Self {
         Self {
             flag: Arc::default(),
@@ -36,22 +38,26 @@ impl Stop {
     }
 
     /// Whether `request` was called on this or any clone; ignores the deadline.
+    #[must_use]
     pub fn stopped(&self) -> bool {
         self.flag.load(Ordering::Acquire)
     }
 
     /// Whether the work should end at `now`: asked to, or `now` is at or past the deadline.
+    #[must_use]
     pub fn stopped_at(&self, now: Instant) -> bool {
         self.stopped() || self.deadline.is_some_and(|deadline| now >= deadline)
     }
 
     /// The flag itself, shared with every clone: for back ends whose own stop polls a flag.
     /// Raising it is `request`; it is never lowered.
+    #[must_use]
     pub fn flag(&self) -> Arc<AtomicBool> {
         Arc::clone(&self.flag)
     }
 
     /// When the work must end, if it has a deadline.
+    #[must_use]
     pub fn deadline(&self) -> Option<Instant> {
         self.deadline
     }

@@ -15,6 +15,7 @@ pub struct FakeUdev {
 
 impl FakeUdev {
     /// A udev that will report `script` in order.
+    #[must_use]
     pub fn scripted(script: Vec<DeviceEvent>) -> FakeUdev {
         FakeUdev {
             present: Vec::new(),
@@ -63,6 +64,7 @@ pub struct SharedUdev(Rc<RefCell<FakeUdev>>);
 
 impl SharedUdev {
     /// Shares `udev`.
+    #[must_use]
     pub fn new(udev: FakeUdev) -> SharedUdev {
         SharedUdev(Rc::new(RefCell::new(udev)))
     }

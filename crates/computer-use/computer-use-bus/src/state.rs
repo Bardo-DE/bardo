@@ -119,6 +119,7 @@ pub enum CuaOutcome {
 impl CuaOutcome {
     /// The status of the report a run with this outcome sends: `Done` is done, a cancel is
     /// cancelled, everything else is failed.
+    #[must_use]
     pub fn status(&self) -> ReportStatus {
         match self {
             CuaOutcome::Done => ReportStatus::Done,
@@ -160,6 +161,7 @@ pub enum ModeSupport {
 
 impl ModeSupport {
     /// The `Modes` property's value for a mode: `full`, `hands_off` or `unsupported:<gap>`.
+    #[must_use]
     pub fn wire(&self) -> String {
         match self {
             ModeSupport::Full => "full".to_owned(),
@@ -186,6 +188,7 @@ impl ModeSupport {
 }
 
 /// The `Modes` property: mode slug to support string, for the modes given.
+#[must_use]
 pub fn modes_wire(support: &[(RunMode, ModeSupport)]) -> BTreeMap<String, String> {
     support
         .iter()
@@ -194,6 +197,7 @@ pub fn modes_wire(support: &[(RunMode, ModeSupport)]) -> BTreeMap<String, String
 }
 
 /// The `Backend` property: the backend's slug, or `none` when cuad has no desktop.
+#[must_use]
 pub fn backend_wire(kind: Option<BackendKind>) -> String {
     kind.and_then(|k| crate::slug_of(&k))
         .unwrap_or_else(|| "none".to_owned())

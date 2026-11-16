@@ -23,6 +23,7 @@ pub(super) fn do_request(action: ActionId) -> Request {
 }
 
 /// The action `verb` does: one row per verb, no wildcard, so a new verb is a compile error here.
+#[must_use]
 pub fn action_of(verb: ShellVerb) -> ActionId {
     match verb {
         ShellVerb::Lock => ActionId::Lock,

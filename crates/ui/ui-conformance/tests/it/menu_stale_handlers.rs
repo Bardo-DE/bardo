@@ -56,7 +56,7 @@ fn Unmounting() -> Element {
                     anchor: Anchor::Point(Point { x: Px(100.0), y: Px(60.0) }),
                     items: items(),
                     onpick: move |_: u8| {},
-                    onclose: move |_| {},
+                    onclose: move |()| {},
                 }
             }
         }

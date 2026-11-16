@@ -12,13 +12,13 @@ use ui_shell::prelude::*;
 
 fn sheet(phase: HelperPhase) -> Element {
     rsx! {
-        HelperSheet { app: "Anyview", tool: "mpv", purpose: "play videos", phase, on_install: |_| {}, on_dismiss: |_| {} }
+        HelperSheet { app: "Anyview", tool: "mpv", purpose: "play videos", phase, on_install: |()| {}, on_dismiss: |()| {} }
     }
 }
 
 fn copied(phase: HelperPhase) -> Element {
     rsx! {
-        HelperSheet { app: "Anyview", tool: "mpv", purpose: "play videos", phase, on_install: |_| {}, on_dismiss: |_| {}, copy: true }
+        HelperSheet { app: "Anyview", tool: "mpv", purpose: "play videos", phase, on_install: |()| {}, on_dismiss: |()| {}, copy: true }
     }
 }
 

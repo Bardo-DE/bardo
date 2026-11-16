@@ -131,6 +131,7 @@ pub struct RawKeyInput {
 
 impl RawKeyInput {
     /// `key` on the physical key `code`, going down, with nothing held.
+    #[must_use]
     pub fn down(key: DomKey, code: Code) -> Self {
         RawKeyInput {
             key,
@@ -143,21 +144,25 @@ impl RawKeyInput {
     }
 
     /// The same key, in `phase`.
+    #[must_use]
     pub fn in_phase(self, phase: RawKeyPhase) -> Self {
         RawKeyInput { phase, ..self }
     }
 
     /// The same key, held with `mods`.
+    #[must_use]
     pub fn with_mods(self, mods: Modifiers) -> Self {
         RawKeyInput { mods, ..self }
     }
 
     /// The same key, on `location`.
+    #[must_use]
     pub fn at_location(self, location: Location) -> Self {
         RawKeyInput { location, ..self }
     }
 
     /// The same key, typing `text`.
+    #[must_use]
     pub fn typing(self, text: &str) -> Self {
         RawKeyInput {
             text: Some(text.to_owned()),
@@ -232,6 +237,7 @@ pub enum ImeInput {
 
 impl PointerInput {
     /// `action` at `at` with no modifiers held.
+    #[must_use]
     pub fn new(at: Point, action: PointerAction) -> Self {
         PointerInput {
             at,
@@ -241,6 +247,7 @@ impl PointerInput {
     }
 
     /// This input with `mods` held (Shift+click is `Modifiers::SHIFT`).
+    #[must_use]
     pub fn with_mods(self, mods: Modifiers) -> Self {
         PointerInput { mods, ..self }
     }
@@ -248,46 +255,55 @@ impl PointerInput {
 
 impl Input {
     /// Move the pointer to `at`.
+    #[must_use]
     pub fn pointer_move(at: Point) -> Self {
         Input::pointer(at, PointerAction::Move)
     }
 
     /// Press the primary button at `at`.
+    #[must_use]
     pub fn pointer_down(at: Point) -> Self {
         Input::button_down(at, PointerButton::Primary)
     }
 
     /// Release the primary button at `at`.
+    #[must_use]
     pub fn pointer_up(at: Point) -> Self {
         Input::button_up(at, PointerButton::Primary)
     }
 
     /// Press `button` at `at`.
+    #[must_use]
     pub fn button_down(at: Point, button: PointerButton) -> Self {
         Input::pointer(at, PointerAction::Down(button))
     }
 
     /// Release `button` at `at`.
+    #[must_use]
     pub fn button_up(at: Point, button: PointerButton) -> Self {
         Input::pointer(at, PointerAction::Up(button))
     }
 
     /// Click the primary button at `at`.
+    #[must_use]
     pub fn click(at: Point) -> Self {
         Input::press(at, PointerButton::Primary)
     }
 
     /// Click `button` at `at`.
+    #[must_use]
     pub fn press(at: Point, button: PointerButton) -> Self {
         Input::pointer(at, PointerAction::Click(button))
     }
 
     /// Drag the primary button from `from` to `to` in `steps` moves.
+    #[must_use]
     pub fn drag(from: Point, to: Point, steps: u16) -> Self {
         Input::pointer(from, PointerAction::Drag { to, steps })
     }
 
     /// Press and release `key`.
+    #[must_use]
     pub fn key(key: ShortcutKey) -> Self {
         Input::chord(&[], key)
     }
@@ -305,37 +321,44 @@ impl Input {
     }
 
     /// Scroll by `dx`, `dy` with the pointer at `at`.
+    #[must_use]
     pub fn wheel(at: Point, dx: Px, dy: Px) -> Self {
         Input::Wheel { at, dx, dy }
     }
 
     /// `x`, `y` wheel clicks with the pointer at `at`, scrolled by the engine.
+    #[must_use]
     pub fn detents(at: Point, x: f64, y: f64) -> Self {
         Input::detents_held(at, x, y, Modifiers::empty())
     }
 
     /// `x`, `y` wheel clicks with the pointer at `at` and `held` modifiers down (Control is a
     /// zoom to a viewer).
+    #[must_use]
     pub fn detents_held(at: Point, x: f64, y: f64, held: Modifiers) -> Self {
         Input::Detents { at, x, y, held }
     }
 
     /// Fingers moving `dx`, `dy` with the pointer at `at`, in `phase` of their run.
+    #[must_use]
     pub fn fingers(at: Point, dx: Px, dy: Px, phase: GesturePhase) -> Self {
         Input::Fingers { at, dx, dy, phase }
     }
 
     /// `gesture` published to the window's listeners.
+    #[must_use]
     pub fn gesture(gesture: Gesture) -> Self {
         Input::Gesture(gesture)
     }
 
     /// The IME attaches.
+    #[must_use]
     pub fn ime_start() -> Self {
         Input::Ime(ImeInput::Start)
     }
 
     /// The IME shows `text` as its preedit, cursor at byte `cursor`.
+    #[must_use]
     pub fn ime_update(text: &str, cursor: usize) -> Self {
         Input::Ime(ImeInput::Update {
             text: text.to_owned(),
@@ -344,21 +367,25 @@ impl Input {
     }
 
     /// The IME commits `text`.
+    #[must_use]
     pub fn ime_commit(text: &str) -> Self {
         Input::Ime(ImeInput::Commit(text.to_owned()))
     }
 
     /// The IME detaches.
+    #[must_use]
     pub fn ime_end() -> Self {
         Input::Ime(ImeInput::End)
     }
 
     /// Paste `html` with its plain `text`, with the platform's paste chord.
+    #[must_use]
     pub fn paste(html: &str, text: &str) -> Self {
         Input::paste_with(PasteChord::Primary, html, text)
     }
 
     /// Paste `html` with its plain `text`, pressing `chord`.
+    #[must_use]
     pub fn paste_with(chord: PasteChord, html: &str, text: &str) -> Self {
         Input::Paste {
             html: html.to_owned(),
@@ -368,6 +395,7 @@ impl Input {
     }
 
     /// One key event as given.
+    #[must_use]
     pub fn raw_key(key: RawKeyInput) -> Self {
         Input::RawKey(key)
     }

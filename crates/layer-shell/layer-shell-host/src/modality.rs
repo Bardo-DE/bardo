@@ -31,6 +31,7 @@ pub enum InputModality {
 
 impl InputModality {
     /// The conventional attribute value: quire's `data-modality`.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             InputModality::Pointer => "pointer",

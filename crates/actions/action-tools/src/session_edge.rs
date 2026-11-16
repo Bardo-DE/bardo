@@ -27,12 +27,14 @@ pub struct EdgeToken(#[serde(serialize_with = "base_secret::write_secret")] Secr
 
 impl EdgeToken {
     /// A token from its text; `None` unless it is 64 lowercase hex characters.
+    #[must_use]
     pub fn parse(text: &str) -> Option<Self> {
         let hex = text.len() == 64 && text.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'));
         hex.then(|| Self(SecretText::new(text)))
     }
 
     /// The text, for the environment of the process that is to use it.
+    #[must_use]
     pub fn reveal(&self) -> &str {
         self.0.expose()
     }
@@ -121,11 +123,11 @@ mod tests {
             "op": {"call": {"tool": "t", "arguments": null}},
             "session": "s-9",
         });
-        assert!(serde_json::from_value::<EdgeRequest>(line).is_err());
+        serde_json::from_value::<EdgeRequest>(line).unwrap_err();
         let line = serde_json::json!({
             "token": token().reveal(),
             "op": {"call": {"tool": "t", "arguments": null, "app": "x"}},
         });
-        assert!(serde_json::from_value::<EdgeRequest>(line).is_err());
+        serde_json::from_value::<EdgeRequest>(line).unwrap_err();
     }
 }

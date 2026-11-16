@@ -10,6 +10,7 @@ pub(crate) const WALLPAPER_SLUG: &str = "wallpaper";
 const PICTURE_ENDINGS: &[&str] = &["png", "jpg", "jpeg", "webp"];
 
 /// Whether `path` names a picture the desktop can draw.
+#[must_use]
 pub fn is_picture(path: &Path) -> bool {
     path.extension()
         .and_then(|ending| ending.to_str())
@@ -54,6 +55,7 @@ pub struct Picture {
 
 impl Picture {
     /// A plain picture file: named by its file, drawn from itself.
+    #[must_use]
     pub fn file(path: PathBuf) -> Picture {
         Picture {
             from: PictureFrom::System,
@@ -64,11 +66,13 @@ impl Picture {
     }
 
     /// This picture, listed from `from`'s folder (a new one is the system's until placed).
+    #[must_use]
     pub fn placed(self, from: PictureFrom) -> Picture {
         Picture { from, ..self }
     }
 
     /// This picture under `title`, drawn small from `preview`.
+    #[must_use]
     pub fn packaged(path: PathBuf, title: String, preview: Option<PathBuf>) -> Picture {
         Picture {
             from: PictureFrom::System,
@@ -134,6 +138,7 @@ pub struct PictureSections {
 }
 
 /// The place of the current tile among `tiles`, or `None` when it is not one of them.
+#[must_use]
 pub fn current_place(tiles: &[PictureTile]) -> Option<usize> {
     tiles
         .iter()
@@ -144,6 +149,7 @@ pub fn current_place(tiles: &[PictureTile]) -> Option<usize> {
 /// the section's `current`, even when it lies outside every folder looked in, so the person sees
 /// what is on the desktop; an empty `current` marks none. A picture the person added is not
 /// offered twice among the system's.
+#[must_use]
 pub fn picture_sections(found: &[Picture], current: &str) -> PictureSections {
     let current_path = (!current.is_empty()).then(|| PathBuf::from(current));
     let pictures: Vec<Picture> = found

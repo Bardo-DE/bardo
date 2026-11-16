@@ -105,6 +105,7 @@ pub fn gate<D: ConsentHandler>(state: &mut D, client: &Client, power: Power) -> 
 
 /// What smithay does with the objects it held for a client once the model answered `outcome`:
 /// an allowed use opens them; a refusal, or a power taken back, refuses them.
+#[must_use]
 pub fn release_gate(outcome: PowerOutcome) -> Gate {
     match outcome {
         PowerOutcome::Allowed => Gate::Open,
@@ -122,12 +123,14 @@ pub fn allowed<D: ConsentHandler>(state: &D, client: &Client, power: Power) -> A
 }
 
 /// The key of `client`, when casement inserted it.
+#[must_use]
 pub fn key_of(client: &Client) -> Option<ClientKey> {
     ClientState::of(client).map(|data| data.key)
 }
 
 /// Who a request from `client` is from: the shell's own connection, or a program. A client
 /// casement did not insert is a program.
+#[must_use]
 pub fn requester_of(client: &Client) -> Requester {
     ClientState::of(client).map_or(Requester::Program, |data| Requester::of(&data.role))
 }

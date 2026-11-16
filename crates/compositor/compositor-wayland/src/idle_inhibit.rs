@@ -24,6 +24,7 @@ pub struct IdleInhibitPart {
 
 impl IdleInhibitPart {
     /// Creates the global (version 1). Every connection sees it.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> IdleInhibitPart
     where
         D: GlobalDispatch<ZwpIdleInhibitManagerV1, GlobalData> + IdleInhibitHandler + 'static,
@@ -36,6 +37,7 @@ impl IdleInhibitPart {
     }
 
     /// How many inhibitors `client` holds.
+    #[must_use]
     pub fn held_by(&self, client: &Client) -> usize {
         self.inhibitors
             .iter()
@@ -48,11 +50,13 @@ impl IdleInhibitPart {
     }
 
     /// How many inhibitors are held.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.inhibitors.len()
     }
 
     /// Whether none is held (a loop turn with none has nothing to look at).
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.inhibitors.is_empty()
     }
@@ -68,9 +72,10 @@ impl IdleInhibitPart {
     /// client left, so a dead surface stops counting here.
     ///
     /// Limit: a protocol says an inhibitor counts only while its surface is visible, which
-    /// needs the surface's window and the shown Spaces; neither lookup exists yet (xdg_shell
+    /// needs the surface's window and the shown Spaces; neither lookup exists yet (`xdg_shell`
     /// keeps the window of each toplevel), so a live surface counts whether shown or not.
     /// [`IdleInhibitPart::inhibited_where`] takes the visibility test once there is one.
+    #[must_use]
     pub fn inhibited(&self) -> bool {
         self.inhibited_where(|_| true)
     }

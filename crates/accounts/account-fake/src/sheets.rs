@@ -44,16 +44,19 @@ pub struct AskLog {
 
 impl AskLog {
     /// Every ask so far, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<ConsentAsk> {
         lock(&self.asked).clone()
     }
 
     /// Every view a conversation opened with or was updated to, in order.
+    #[must_use]
     pub fn shown(&self) -> Vec<SheetView> {
         lock(&self.shown).clone()
     }
 
     /// How many asks were dropped while they waited (a `Hang` that was taken down).
+    #[must_use]
     pub fn abandoned(&self) -> usize {
         self.abandoned.load(Ordering::SeqCst)
     }
@@ -114,7 +117,7 @@ fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
     // A panic while the lock is held already failed the test that caused it.
     mutex
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner())
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 impl Sheets for ScriptedSheets {

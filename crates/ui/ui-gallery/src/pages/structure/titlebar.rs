@@ -1,4 +1,4 @@
-//! WindowTitlebar: with a subtitle, a proxy icon and the edited dot, active and inactive.
+//! `WindowTitlebar`: with a subtitle, a proxy icon and the edited dot, active and inactive.
 
 use crate::pages::Section;
 use dioxus::prelude::*;
@@ -7,7 +7,7 @@ use ui_components::components::chrome::window_frame::{TitleRoom, WindowTitlebar}
 use ui_components::prelude::*;
 use ui_components::style::icon::render::Glyph;
 
-/// The WindowTitlebar section.
+/// The `WindowTitlebar` section.
 #[component]
 pub fn TitlebarSection() -> Element {
     let bar = |title: &'static str, parts: TitleParts| {

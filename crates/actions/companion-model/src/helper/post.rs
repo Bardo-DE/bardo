@@ -52,6 +52,7 @@ pub struct Post {
 impl Post {
     /// Whether `helper` should be handed it: it is for them (or for all), they did not send it
     /// and have not had it.
+    #[must_use]
     pub fn waits_for(&self, helper: &HelperId) -> bool {
         let for_them = match &self.to {
             PostTo::Helper(to) => to == helper,

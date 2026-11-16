@@ -46,6 +46,7 @@ const BROWSER_TITLES: [&str; 2] = ["picture-in-picture", "picture in picture"];
 /// assert_eq!(pip_source_of(desktop_protocols::vocab::WindowRole::Pip, "", ""), Some(true));
 /// assert_eq!(pip_source_of(desktop_protocols::vocab::WindowRole::Document, "Mail", "org.bardo.Mail"), None);
 /// ```
+#[must_use]
 pub fn pip_source_of(role: WindowRole, title: &str, app_id: &str) -> Option<bool> {
     match role {
         WindowRole::Pip => Some(true),
@@ -63,6 +64,7 @@ fn browser_pip(title: &str, app_id: &str) -> bool {
 /// client, or guessed from a browser's title and app id, which counts only when the app is
 /// proven (a title and an app id are text any client can write). And it must be small enough
 /// ([`PIP_MAX_AREA`]) and loose (floating, not maximised or full screen).
+#[must_use]
 pub fn floats_above(window: &Window) -> bool {
     let source = pip_source_of(
         window.role,
@@ -83,16 +85,19 @@ pub fn floats_above(window: &Window) -> bool {
 }
 
 /// `rect` moved to the corner of `area` it is nearest to, [`PIP_MARGIN`] in from both edges.
+///
 /// The nearest corner is the one whose quadrant holds the rectangle's centre. A rectangle too
 /// big for the margin sits flush with the corner instead.
+#[must_use]
 pub fn snap_corner(rect: LogicalRect, area: LogicalRect) -> LogicalRect {
     let centre = rect.centre();
     let middle = area.centre();
     let at = |near_start: bool, start: i32, len: u32, extent: u32| -> i32 {
         let margin = i64::from(PIP_MARGIN.min(len.saturating_sub(extent) / 2));
-        let value = match near_start {
-            true => i64::from(start) + margin,
-            false => i64::from(start) + i64::from(len) - i64::from(extent) - margin,
+        let value = if near_start {
+            i64::from(start) + margin
+        } else {
+            i64::from(start) + i64::from(len) - i64::from(extent) - margin
         };
         i32::try_from(value).unwrap_or(start)
     };
@@ -110,6 +115,7 @@ pub fn snap_corner(rect: LogicalRect, area: LogicalRect) -> LogicalRect {
 /// dragged by its right edge keeps its left, one dragged by its bottom keeps its top, one
 /// dragged by a corner keeps the opposite corner. A move (same size) is returned as it is, and
 /// so is a resize of a window with no extent to take a ratio from.
+#[must_use]
 pub fn fit_aspect(held: LogicalRect, wanted: LogicalRect) -> LogicalRect {
     if held.size == wanted.size || held.size.w == 0 || held.size.h == 0 {
         return wanted;
@@ -118,9 +124,10 @@ pub fn fit_aspect(held: LogicalRect, wanted: LogicalRect) -> LogicalRect {
     let (ww, wh) = (i64::from(wanted.size.w), i64::from(wanted.size.h));
     // Which side changed more, compared without division: |ww - hw| / hw against |wh - hh| / hh.
     let width_leads = (ww - hw).abs() * hh >= (wh - hh).abs() * hw;
-    let (w, h) = match width_leads {
-        true => (ww, ((ww * hh) + hw / 2) / hw),
-        false => (((wh * hw) + hh / 2) / hh, wh),
+    let (w, h) = if width_leads {
+        (ww, ((ww * hh) + hw / 2) / hw)
+    } else {
+        (((wh * hw) + hh / 2) / hh, wh)
     };
     let (w, h) = (w.max(1), h.max(1));
     let size = LogicalSize {
@@ -128,13 +135,15 @@ pub fn fit_aspect(held: LogicalRect, wanted: LogicalRect) -> LogicalRect {
         h: u32::try_from(h).unwrap_or(u32::MAX),
     };
     // The left edge stays when it did not move, else the right one; the same for the top.
-    let x = match wanted.origin.x == held.origin.x {
-        true => i64::from(wanted.origin.x),
-        false => i64::from(wanted.origin.x) + ww - w,
+    let x = if wanted.origin.x == held.origin.x {
+        i64::from(wanted.origin.x)
+    } else {
+        i64::from(wanted.origin.x) + ww - w
     };
-    let y = match wanted.origin.y == held.origin.y {
-        true => i64::from(wanted.origin.y),
-        false => i64::from(wanted.origin.y) + wh - h,
+    let y = if wanted.origin.y == held.origin.y {
+        i64::from(wanted.origin.y)
+    } else {
+        i64::from(wanted.origin.y) + wh - h
     };
     LogicalRect::new(
         LogicalPoint {

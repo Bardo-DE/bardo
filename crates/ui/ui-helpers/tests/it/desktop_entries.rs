@@ -283,7 +283,8 @@ fn a_window_finds_its_entry_on_disk_by_the_same_rules() {
         ("none", "nothing", None),
     ];
     for (name, app_id, icon) in cases {
-        let got = entry_for_window(&entries, app_id, None).and_then(|entry| entry.icon());
+        let got =
+            entry_for_window(&entries, app_id, None).and_then(ui_helpers::ApplicationEntry::icon);
         assert_eq!(got.as_deref(), icon, "{name}");
     }
 }

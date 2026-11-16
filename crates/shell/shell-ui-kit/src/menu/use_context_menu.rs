@@ -51,6 +51,7 @@ impl<Model: MenuModel> std::fmt::Debug for ContextMenu<Model> {
 
 impl<Model: MenuModel> ContextMenu<Model> {
     /// Whether no popup of this menu is up, so a request to open one would be shown.
+    #[must_use]
     pub fn is_free(&self) -> bool {
         *self.popup.peek() == Popup::Down
     }

@@ -50,6 +50,7 @@ pub struct AiConfig {
 
 impl AiConfig {
     /// The structured-output limits for this configuration.
+    #[must_use]
     pub fn resolve(&self) -> Resolved {
         self.structured.resolve()
     }

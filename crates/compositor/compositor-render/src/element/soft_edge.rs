@@ -25,6 +25,7 @@ impl Weight {
     pub const FULL: Weight = Weight(STEPS);
 
     /// The step nearest `coverage` (0 to 1); none when that is nothing.
+    #[must_use]
     pub fn of(coverage: f64) -> Option<Weight> {
         let steps = (coverage * f64::from(STEPS))
             .round()
@@ -38,12 +39,14 @@ impl Weight {
     }
 
     /// The window's `opacity` at this strength.
+    #[must_use]
     pub fn of_opacity(self, opacity: Fraction) -> Fraction {
         let scaled = u32::from(opacity.0) * u32::from(self.0) / u32::from(STEPS);
         Fraction(u16::try_from(scaled).unwrap_or(opacity.0))
     }
 
     /// Whether this is full strength.
+    #[must_use]
     pub fn is_full(self) -> bool {
         self == Weight::FULL
     }
@@ -98,9 +101,10 @@ impl StripPlan {
 
 /// The id of a piece: 0 for the body (full strength), else its side and strength.
 fn code(weight: Weight, side: usize) -> usize {
-    match weight.is_full() {
-        true => 0,
-        false => side * usize::from(STEPS - 1) + usize::from(weight.0),
+    if weight.is_full() {
+        0
+    } else {
+        side * usize::from(STEPS - 1) + usize::from(weight.0)
     }
 }
 

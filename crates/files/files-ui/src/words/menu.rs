@@ -8,6 +8,7 @@ use crate::menu::Command;
 pub const OTHER_APP: &str = "Other\u{2026}";
 
 /// The menu item's words for `command`.
+#[must_use]
 pub fn command_title(command: Command) -> &'static str {
     match command {
         Command::Open => "Open",
@@ -34,11 +35,13 @@ pub fn command_title(command: Command) -> &'static str {
 }
 
 /// The Open With line of the default app called `name`.
+#[must_use]
 pub fn default_app_title(name: &str) -> String {
     format!("{name} (default)")
 }
 
 /// The view switcher's words for `mode`.
+#[must_use]
 pub fn view_title(mode: ViewMode) -> &'static str {
     match mode {
         ViewMode::Icons => "Icons",

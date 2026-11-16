@@ -1,4 +1,4 @@
-//! The names of the OpenTelemetry GenAI semantic conventions, and nothing else.
+//! The names of the OpenTelemetry `GenAI` semantic conventions, and nothing else.
 //!
 //! `tracing` field names must be literals, so a daemon spells them in its own `macro_rules!` span
 //! constructors and a test there asserts the macro's field set equals [`attr::ALL`]. These
@@ -97,6 +97,7 @@ impl Operation {
         Operation::GenerateContent,
     ];
 
+    #[must_use]
     pub const fn as_str(self) -> &'static str {
         match self {
             Operation::Chat => "chat",
@@ -128,6 +129,7 @@ impl Finish {
         Finish::Error,
     ];
 
+    #[must_use]
     pub const fn as_str(self) -> &'static str {
         match self {
             Finish::Stop => "stop",

@@ -155,7 +155,9 @@ fn a_collection_reports_its_faces_and_opens_the_first() {
     assert_eq!(font.face.as_ref().unwrap().family, "Anyview Blocks");
     let facts = FontPeek::facts(&font);
     assert_eq!(
-        facts.value(FactLabel::Kind).map(|v| v.as_str()),
+        facts
+            .value(FactLabel::Kind)
+            .map(anyview_core::FactValue::as_str),
         Some("Font collection, 2 faces")
     );
 }
@@ -185,7 +187,7 @@ fn a_font_needing_more_than_the_budget_is_refused_and_a_web_font_is_named_not_op
     assert_eq!(
         FontPeek::facts(&font)
             .value(FactLabel::Kind)
-            .map(|v| v.as_str()),
+            .map(anyview_core::FactValue::as_str),
         Some("WOFF2 web font")
     );
 }

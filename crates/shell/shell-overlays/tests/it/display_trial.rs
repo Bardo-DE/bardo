@@ -120,7 +120,7 @@ fn the_line_counts_down_each_second_and_says_one_second_in_the_singular() {
         "{}",
         running.harness.html()
     );
-    running.harness.advance(Duration::from_millis(11_000));
+    running.harness.advance(Duration::from_secs(11));
     assert!(
         says(&running, "Reverting in 2 seconds"),
         "{}",

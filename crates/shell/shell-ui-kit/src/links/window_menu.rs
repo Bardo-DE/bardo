@@ -48,6 +48,7 @@ pub struct WindowMenuLink {
 
 impl WindowMenuLink {
     /// No menu asked for, nothing picked.
+    #[must_use]
     pub fn new() -> WindowMenuLink {
         WindowMenuLink::default()
     }
@@ -67,11 +68,13 @@ impl WindowMenuLink {
     }
 
     /// The latest opening.
+    #[must_use]
     pub fn latest(&self) -> Option<WindowMenuOpening> {
         self.opening.now()
     }
 
     /// A receiver for the surfaces to follow.
+    #[must_use]
     pub fn subscribe(&self) -> watch::Receiver<Option<WindowMenuOpening>> {
         self.opening.subscribe()
     }
@@ -85,11 +88,13 @@ impl WindowMenuLink {
     }
 
     /// The latest pick.
+    #[must_use]
     pub fn last_pick(&self) -> Option<WindowMenuPicked> {
         self.picked.latest()
     }
 
     /// A receiver for the daemon to follow.
+    #[must_use]
     pub fn subscribe_picks(&self) -> watch::Receiver<Option<WindowMenuPicked>> {
         self.picked.subscribe()
     }

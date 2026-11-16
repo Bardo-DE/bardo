@@ -236,11 +236,11 @@ mod tests {
             (&["tokens"], Err("unknown argument")),
         ];
         for (line, want) in cases {
-            let got = parse(line.iter().map(|word| word.to_string()));
+            let got = parse(line.iter().map(std::string::ToString::to_string));
             match (&got, &want) {
                 (Ok(got), Ok(want)) => assert_eq!(got, want, "{line:?}"),
                 (Err(got), Err(start)) => {
-                    assert!(got.0.starts_with(start), "{line:?}: {:?}", got.0)
+                    assert!(got.0.starts_with(start), "{line:?}: {:?}", got.0);
                 }
                 _ => panic!("{line:?}: got {got:?}, want {want:?}"),
             }

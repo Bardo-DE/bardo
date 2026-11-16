@@ -15,6 +15,7 @@ pub struct Quota {
 }
 
 /// The quota the first response reports.
+#[must_use]
 pub fn quota(status: &Multistatus) -> Quota {
     let number = |name| status.first_found(name).and_then(|v| v.trim().parse().ok());
     Quota {

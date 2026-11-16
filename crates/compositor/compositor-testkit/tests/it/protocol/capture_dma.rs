@@ -43,23 +43,20 @@ fn settle_copy(fixture: &mut Fixture, copy: &mut ScreenCopy) {
 fn a_session_offers_dma_buf_where_the_renderer_draws_into_it() {
     let (_fixture, _client, capture) = opened(FixtureSpec::small().with_dmabuf(true), "HEADLESS-1");
     let formats = capture.dmabuf_formats();
-    match fabricated_gpus() {
-        0 => {
-            if !formats.is_empty() {
-                // A host with a real GPU types the device itself.
-                assert_eq!(capture.dmabuf_device(), Some(0xE280));
-            }
+    if fabricated_gpus() == 0 {
+        if !formats.is_empty() {
+            // A host with a real GPU types the device itself.
+            assert_eq!(capture.dmabuf_device(), Some(0xE280));
         }
-        _ => {
-            assert_eq!(capture.dmabuf_device(), Some(0xE280), "the main device");
-            let linear = |code: u32| {
-                formats
-                    .iter()
-                    .any(|f| f.format == code && f.modifiers == [0])
-            };
-            assert!(linear(ARGB), "linear ARGB8888 in {formats:?}");
-            assert!(linear(XRGB), "linear XRGB8888 in {formats:?}");
-        }
+    } else {
+        assert_eq!(capture.dmabuf_device(), Some(0xE280), "the main device");
+        let linear = |code: u32| {
+            formats
+                .iter()
+                .any(|f| f.format == code && f.modifiers == [0])
+        };
+        assert!(linear(ARGB), "linear ARGB8888 in {formats:?}");
+        assert!(linear(XRGB), "linear XRGB8888 in {formats:?}");
     }
     let session = capture.session().expect("a session");
     assert!(

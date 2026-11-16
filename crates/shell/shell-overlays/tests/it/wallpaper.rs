@@ -19,7 +19,7 @@ use ui_harness::Backdrop;
 /// The colour the fixture PNG is filled with.
 const IMAGE: [u8; 3] = [220, 40, 20];
 
-/// The surface under test: small, so vello_cpu paints it quickly.
+/// The surface under test: small, so `vello_cpu` paints it quickly.
 const VIEWPORT: ui_harness::Viewport = ui_harness::Viewport {
     width: 320,
     height: 200,

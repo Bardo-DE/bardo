@@ -1,4 +1,4 @@
-//! Reading an account from its issuer's API with a bearer token: who it is (OpenID Connect's
+//! Reading an account from its issuer's API with a bearer token: who it is (`OpenID` Connect's
 //! userinfo), and what a non-success status means for the account.
 
 use account_core::EndpointUrl;

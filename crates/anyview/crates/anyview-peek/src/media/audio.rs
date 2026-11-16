@@ -158,7 +158,7 @@ fn track_micros(track: &Track, rate: Option<u32>) -> Option<u64> {
 }
 
 /// Fills what `recording` lacks from one revision of metadata: the first revision to name a tag
-/// wins, so a file's own tags come before an ID3v1 footer's.
+/// wins, so a file's own tags come before an `ID3v1` footer's.
 fn take_from(recording: &mut Recording, revision: &MetadataRevision, visual_limit: usize) {
     let tags = revision.media.tags.iter().chain(
         revision

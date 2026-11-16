@@ -72,7 +72,7 @@ fn only_the_events_inside_the_ceiling_reach_the_kernel() {
     let typed = Event::new(EV_KEY, 30, 1);
     let ctrl = Event::new(EV_KEY, 29, 1);
     let handled = s.handle(T0, events(0, vec![typed, ctrl, typed, Event::SYNC]));
-    assert!(handled.is_ok());
+    handled.unwrap();
     // The letter before control is held is dropped; the same letter after it goes through.
     assert_eq!(backend.log().writes, [(0, vec![ctrl, typed, Event::SYNC])]);
     assert_eq!(s.stats().denied_events, 1);
@@ -208,7 +208,7 @@ fn events_above_the_rate_are_dropped_counted_and_a_sustained_flood_is_cut() {
     let one = || events(0, vec![wheel(1), Event::SYNC]);
     // A burst at one instant: the first EVENT_BURST pass, the rest are dropped without ending the connection.
     for _ in 0..100 {
-        assert!(s.handle(T0, one()).is_ok());
+        s.handle(T0, one()).unwrap();
     }
     assert_eq!(backend.log().writes.len() as u64, EVENT_BURST);
     assert_eq!(s.stats().dropped_datagrams, 100 - EVENT_BURST);
@@ -275,7 +275,7 @@ fn devices_of_one_connection_are_independent() {
         .expect("the set-up step is accepted");
     // A wheel event sent to the touchpad is outside the touchpad's ceiling.
     let wrong = s.handle(T0, events(0, vec![wheel(1)]));
-    assert!(wrong.is_ok());
+    wrong.unwrap();
     assert!(backend.log().writes.is_empty());
     s.handle(T0, events(1, vec![wheel(1)]))
         .expect("the set-up step is accepted");

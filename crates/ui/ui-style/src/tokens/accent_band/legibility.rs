@@ -20,7 +20,7 @@ pub struct Legibility {
     /// The material's text accent on the worst card ground or wash over one (gate 4.5).
     pub material_text_on_card: f64,
     /// The material's text accent on the worst text-carrying material over a black or white
-    /// backdrop: PolkitPrompt's "Details" on its Sheet (gate 4.5).
+    /// backdrop: `PolkitPrompt`'s "Details" on its Sheet (gate 4.5).
     pub text_on_material: f64,
     /// The material's text accent on the wash over such a material: the launcher's match
     /// highlight on its selected row (gate 4.5).

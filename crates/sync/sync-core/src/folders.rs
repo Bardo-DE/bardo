@@ -42,11 +42,13 @@ pub struct Folders {
 
 impl Folders {
     /// An empty tree.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// The folder `id`, if seen.
+    #[must_use]
     pub fn folder(&self, id: &RemoteId) -> Option<&Folder> {
         self.folders.get(id)
     }
@@ -67,12 +69,14 @@ impl Folders {
     }
 
     /// Whether the file `id` is known.
+    #[must_use]
     pub fn has_file(&self, id: &RemoteId) -> bool {
         self.files.contains_key(id)
     }
 
     /// The id of the folder `id` is in, a folder's or a file's, as far as the tree knows; none
     /// for a drive's root or an id never seen.
+    #[must_use]
     pub fn parent_of(&self, id: &RemoteId) -> Option<&RemoteId> {
         match self.folders.get(id) {
             Some(folder) => folder.parent.as_ref(),
@@ -109,11 +113,13 @@ impl Folders {
     }
 
     /// How many folders and files are known.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.folders.len() + self.files.len()
     }
 
     /// Whether nothing is known.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.folders.is_empty() && self.files.is_empty()
     }

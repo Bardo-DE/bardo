@@ -169,6 +169,7 @@ fn followed(offer: EngineOffer, rows: &[EngineRow]) -> EngineOffer {
 }
 
 /// The next state, and what to do about it.
+#[must_use]
 pub fn engine_offer_step(
     state: EngineOfferState,
     input: EngineOfferInput,

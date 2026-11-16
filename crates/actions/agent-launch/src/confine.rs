@@ -16,12 +16,14 @@ impl Confinement {
     /// `level` is what the exec stage reported, `None` when it did not (not installed, or not
     /// yet heard from); that is shown as not limited, never left out. `sites` are the allowed
     /// sites of an allowlist network.
+    #[must_use]
     pub fn new(level: Option<LandlockLevel>, net: NetworkMode, sites: Vec<String>) -> Self {
         Self { level, net, sites }
     }
 
     /// The one-line summary. The network counts as limited by the kernel only when the exec
     /// stage reached its full level and the network is not the host's.
+    #[must_use]
     pub fn summary(&self) -> &'static str {
         match (self.level, self.net) {
             (
@@ -36,6 +38,7 @@ impl Confinement {
     }
 
     /// What the agent can reach.
+    #[must_use]
     pub fn network(&self) -> String {
         match self.net {
             NetworkMode::None => "Cannot reach the network".to_owned(),

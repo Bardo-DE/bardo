@@ -74,6 +74,7 @@ impl Installed {
     }
 
     /// Where `kind` stands now: the folder of a Strata the person pointed at counts first.
+    #[must_use]
     pub fn standing(&self, kind: EngineKind) -> Standing {
         let folder_found = engine(kind)
             .pointed()
@@ -88,6 +89,7 @@ impl Installed {
 
     /// The check that goes before every start of an engine program: a person-owned install must
     /// still be the pinned tree. Hand it to the host that starts the engines.
+    #[must_use]
     pub fn guard(&self) -> Arc<dyn LaunchGuard> {
         Arc::new(PinnedPrograms {
             verifier: Verifier::new(self.roots.clone(), self.manifest),

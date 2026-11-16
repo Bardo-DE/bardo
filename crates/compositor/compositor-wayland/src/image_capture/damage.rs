@@ -38,6 +38,7 @@ impl Since {
     /// assert_eq!(inside, vec![PhysicalRect { x: 0, y: 0, w: 10, h: 10 }]);
     /// assert_eq!(Since::Whole.within(area).len(), 1);
     /// ```
+    #[must_use]
     pub fn within(&self, area: PhysicalRect) -> Vec<PhysicalRect> {
         match self {
             Since::Whole => vec![PhysicalRect {
@@ -89,6 +90,7 @@ impl DamageLog {
 
     /// What changed in the frames after the one presented at `last` (none: the client has no
     /// frame yet).
+    #[must_use]
     pub fn since(&self, last: Option<Mono>) -> Since {
         let Some(last) = last else {
             return Since::Whole;
@@ -122,6 +124,7 @@ impl DamageLogs {
     }
 
     /// What changed on `output` since `last`; everything for an output with no log.
+    #[must_use]
     pub fn since(&self, output: &OutputKey, last: Option<Mono>) -> Since {
         match self.logs.get(output) {
             Some(log) => log.since(last),

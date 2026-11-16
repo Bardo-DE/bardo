@@ -41,7 +41,7 @@ pub(crate) async fn undo_held(launcher: &Launcher, world: &World) -> UndoCheck {
         return UndoCheck::Failed("the journal has no row for the held message".to_owned());
     };
     match action_accept::world::within("intentd's undo", launcher.intents.undo(entry.id)).await {
-        Ok(Ok(_))
+        Ok(Ok(()))
             if world
                 .app
                 .messages()

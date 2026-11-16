@@ -45,36 +45,43 @@ pub struct Spaces<P, R = ()> {
 
 impl<P, R> Spaces<P, R> {
     /// The Spaces in order.
+    #[must_use]
     pub fn list(&self) -> &[Space<P>] {
         &self.list
     }
 
     /// The Space on screen.
+    #[must_use]
     pub fn current(&self) -> &Space<P> {
         self.get(self.current).unwrap_or(&self.list[0])
     }
 
     /// The Space with `id`.
+    #[must_use]
     pub fn get(&self, id: SpaceId) -> Option<&Space<P>> {
         self.list.iter().find(|space| space.id == id)
     }
 
     /// Where `id` stands in the list.
+    #[must_use]
     pub fn index_of(&self, id: SpaceId) -> Option<usize> {
         self.list.iter().position(|space| space.id == id)
     }
 
     /// The Space at `index`, as ⌘1-9 count them from zero.
+    #[must_use]
     pub fn at(&self, index: usize) -> Option<&Space<P>> {
         self.list.get(index)
     }
 
     /// How many there are. At least one.
+    #[must_use]
     pub fn count(&self) -> usize {
         self.list.len()
     }
 
     /// Where each Space was left.
+    #[must_use]
     pub fn recall(&self) -> &Recall<R> {
         &self.recall
     }

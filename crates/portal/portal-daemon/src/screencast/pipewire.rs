@@ -1,6 +1,6 @@
-//! The PipeWire side: a video source stream apps connect to, fed by a [`FrameSink`].
+//! The `PipeWire` side: a video source stream apps connect to, fed by a [`FrameSink`].
 //!
-//! The stream is a `Video/Source` node run by a PipeWire loop on its own thread. Frames are
+//! The stream is a `Video/Source` node run by a `PipeWire` loop on its own thread. Frames are
 //! offered as shared memory in one of four 32-bit layouts (the consumer picks; [`pixels`] converts
 //! from whatever the capture produced). The pointer is drawn into the picture or left out by the
 //! capture according to the session's [`CursorMode`]; a stream does not carry the pointer as
@@ -35,7 +35,7 @@ use super::pixels::{self, Layout};
 use super::stream::{FrameSink, SinkError};
 use crate::capture::{CapturedFrame, FrameData, PixelFormat};
 
-/// How long `open` waits for PipeWire to give the stream a node.
+/// How long `open` waits for `PipeWire` to give the stream a node.
 const READY_WITHIN: Duration = Duration::from_secs(5);
 
 /// The newest picture and when it last went out. A newer picture replaces it.
@@ -80,7 +80,7 @@ enum Command {
     Quit,
 }
 
-/// A live PipeWire stream.
+/// A live `PipeWire` stream.
 pub struct PipewireSink {
     node: PwNode,
     cursor: CursorMode,
@@ -99,7 +99,7 @@ impl std::fmt::Debug for PipewireSink {
 }
 
 impl PipewireSink {
-    /// Create the stream at `size` and wait until PipeWire has given it a node id.
+    /// Create the stream at `size` and wait until `PipeWire` has given it a node id.
     pub fn open(size: Extent, cursor: CursorMode) -> Result<Self, SinkError> {
         let (ready_tx, ready_rx) = mpsc::channel();
         let (commands, inbox) = pw::channel::channel::<Command>();
@@ -131,6 +131,7 @@ impl PipewireSink {
     }
 
     /// How the pointer appears in this stream.
+    #[must_use]
     pub fn cursor(&self) -> CursorMode {
         self.cursor
     }

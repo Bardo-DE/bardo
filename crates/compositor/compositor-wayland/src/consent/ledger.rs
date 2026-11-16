@@ -90,6 +90,7 @@ impl Ledger {
     }
 
     /// The connection of `client`, while it is connected.
+    #[must_use]
     pub fn connection(&self, client: ClientKey) -> Option<ClientId> {
         self.connection_ids().get(&client).cloned()
     }
@@ -100,21 +101,25 @@ impl Ledger {
     }
 
     /// How many clients have a connection parked.
+    #[must_use]
     pub fn parked_count(&self) -> usize {
         self.parked_ids().len()
     }
 
     /// The connection of `client`, when it has had objects on hold since it connected.
+    #[must_use]
     pub fn parked(&self, client: ClientKey) -> Option<ClientId> {
         self.parked_ids().get(&client).cloned()
     }
 
     /// The latest word on `client` and `power`, if any.
+    #[must_use]
     pub fn word(&self, client: ClientKey, power: Power) -> Option<Word> {
         self.rows().get(&(client, power)).copied()
     }
 
     /// What a request of `client` for `power` does now.
+    #[must_use]
     pub fn admission(&self, client: ClientKey, power: Power) -> Admission {
         match self.word(client, power) {
             Some(Word::Allowed) => Admission::Go,
@@ -139,6 +144,7 @@ impl Ledger {
     }
 
     /// The model's answer: the word it makes, which is also returned.
+    #[must_use]
     pub fn resolve(&self, client: ClientKey, power: Power, outcome: PowerOutcome) -> Word {
         let word = match outcome {
             PowerOutcome::Allowed => Word::Allowed,
@@ -156,11 +162,13 @@ impl Ledger {
     }
 
     /// How many rows there are (a client has at most one per power).
+    #[must_use]
     pub fn len(&self) -> usize {
         self.rows().len()
     }
 
     /// Whether there are no rows.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.rows().is_empty()
     }

@@ -29,6 +29,7 @@ const STEM_LIMIT: usize = 32;
 /// assert_eq!(unit_for("/usr/bin/foot", 41, 3), "app-bardo-foot-41-3.scope");
 /// assert_eq!(unit_for("my term!", 1, 1), "app-bardo-my_term_-1-1.scope");
 /// ```
+#[must_use]
 pub fn unit_for(program: &str, pid: u32, nonce: u32) -> String {
     let base = Path::new(program)
         .file_name()
@@ -37,10 +38,7 @@ pub fn unit_for(program: &str, pid: u32, nonce: u32) -> String {
     let stem: String = base
         .chars()
         .take(STEM_LIMIT)
-        .map(|c| match c.is_ascii_alphanumeric() {
-            true => c,
-            false => '_',
-        })
+        .map(|c| if c.is_ascii_alphanumeric() { c } else { '_' })
         .collect();
     format!("app-bardo-{stem}-{pid}-{nonce}.scope")
 }
@@ -54,6 +52,7 @@ pub fn unit_for(program: &str, pid: u32, nonce: u32) -> String {
 /// assert_eq!(got[0], "systemd-run");
 /// assert_eq!(got.last().map(String::as_str), Some("foot"));
 /// ```
+#[must_use]
 pub fn scope_argv(argv: &[String], unit: &str) -> Vec<String> {
     ["systemd-run", "--user", "--scope", "--collect", "--quiet"]
         .iter()

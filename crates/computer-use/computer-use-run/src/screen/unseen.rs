@@ -97,6 +97,7 @@ pub struct Withheld(pub Vec<(UnseenWhy, A11yNode)>);
 
 impl Withheld {
     /// How many nodes were taken out.
+    #[must_use]
     pub fn count(&self) -> usize {
         self.0.len()
     }
@@ -105,6 +106,7 @@ impl Withheld {
 /// The rectangles to mask for the secret nodes of a tree, the ones the model reads and the ones
 /// withheld from it alike. Withholding a node never takes its mask away: a toolkit can drop
 /// SHOWING on a password field that is on screen, or a field can stand partly off the window.
+#[must_use]
 pub fn secret_masks(seen: &A11ySnapshot, withheld: &Withheld) -> Vec<Rect<WindowSpace>> {
     secret_rects_of(
         seen.nodes
@@ -119,6 +121,7 @@ pub fn secret_masks(seen: &A11ySnapshot, withheld: &Withheld) -> Vec<Rect<Window
 /// pruned tree. Node ids are not renumbered, so every id left is the one the source gave; the
 /// children of a dropped node move up to its nearest kept ancestor. The dropped nodes are
 /// counted in `truncated`. The window root (`nodes[0]`) stays.
+#[must_use]
 pub fn split_unseen(snapshot: A11ySnapshot, window: Size<WindowSpace>) -> (A11ySnapshot, Withheld) {
     let geometry = Geometry::of(&snapshot.nodes, window);
     let why: BTreeMap<NodeId, UnseenWhy> = snapshot

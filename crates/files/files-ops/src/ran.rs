@@ -19,6 +19,7 @@ pub struct Ran {
 
 impl Ran {
     /// Whether anything was done that [`Journal::undo`](crate::Journal::undo) can take back.
+    #[must_use]
     pub fn is_undoable(&self) -> bool {
         !self.steps.is_empty()
     }

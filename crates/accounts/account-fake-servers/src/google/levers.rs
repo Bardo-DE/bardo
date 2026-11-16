@@ -122,6 +122,7 @@ impl GoogleHandle {
 
     /// Plants a Google document of `mime` (`application/vnd.google-apps.document`, `.spreadsheet`,
     /// `.form`, ...) at `path` below My Drive; its id.
+    #[must_use]
     pub fn my_drive_document(&self, path: &str, mime: &str) -> String {
         self.plant(path, mime, None)
     }
@@ -132,6 +133,7 @@ impl GoogleHandle {
     }
 
     /// Plants a shortcut at `path` below My Drive to the file `target` (an id); the shortcut's id.
+    #[must_use]
     pub fn my_drive_shortcut(&self, path: &str, target: &str) -> String {
         self.plant(path, SHORTCUT, Some(target))
     }
@@ -151,6 +153,7 @@ impl GoogleHandle {
 
     /// Plants a file someone shared with the person, in the `drive` space with no parent in My
     /// Drive; its id.
+    #[must_use]
     pub fn drive_shared_file(&self, name: &str, bytes: &[u8]) -> String {
         lock(&self.shared.state)
             .drive
@@ -199,6 +202,7 @@ impl GoogleHandle {
     }
 
     /// The id of the item at `path` below My Drive.
+    #[must_use]
     pub fn my_drive_id(&self, path: &str) -> Option<String> {
         lock(&self.shared.state)
             .drive
@@ -207,6 +211,7 @@ impl GoogleHandle {
     }
 
     /// The bytes of the file at `path` below My Drive.
+    #[must_use]
     pub fn my_drive_file(&self, path: &str) -> Option<Vec<u8>> {
         lock(&self.shared.state)
             .drive
@@ -215,6 +220,7 @@ impl GoogleHandle {
     }
 
     /// The `version` of the item at `path` below My Drive.
+    #[must_use]
     pub fn my_drive_version(&self, path: &str) -> Option<String> {
         lock(&self.shared.state)
             .drive
@@ -223,6 +229,7 @@ impl GoogleHandle {
     }
 
     /// The names of what is in the trash, in id order.
+    #[must_use]
     pub fn drive_trashed(&self) -> Vec<String> {
         lock(&self.shared.state)
             .drive
@@ -239,6 +246,7 @@ impl GoogleHandle {
     }
 
     /// The bytes of the file at `path`.
+    #[must_use]
     pub fn drive_file(&self, path: &str) -> Option<Vec<u8>> {
         lock(&self.shared.state)
             .drive
@@ -247,6 +255,7 @@ impl GoogleHandle {
     }
 
     /// The `version` of the item at `path`.
+    #[must_use]
     pub fn drive_version(&self, path: &str) -> Option<String> {
         lock(&self.shared.state)
             .drive
@@ -255,6 +264,7 @@ impl GoogleHandle {
     }
 
     /// Every live file: its path and size, in path order.
+    #[must_use]
     pub fn drive_files(&self) -> Vec<(String, u64)> {
         let state = lock(&self.shared.state);
         let mut found: Vec<(String, u64)> = state
@@ -284,22 +294,26 @@ impl GoogleHandle {
     }
 
     /// What uploads to Photos made, oldest first.
+    #[must_use]
     pub fn photos_items(&self) -> Vec<MediaItem> {
         lock(&self.shared.state).photos.items.clone()
     }
 
     /// The albums created, oldest first.
+    #[must_use]
     pub fn photos_albums(&self) -> Vec<Album> {
         lock(&self.shared.state).photos.albums.clone()
     }
 
     /// The Picker sessions, oldest first (a deleted one stays, marked).
+    #[must_use]
     pub fn picker_sessions(&self) -> Vec<Session> {
         lock(&self.shared.state).photos.sessions.clone()
     }
 
     /// The person finishes picking in `session`: these are what they picked. `false` when the
     /// session is unknown or deleted.
+    #[must_use]
     pub fn picker_pick(&self, session: &str, picks: Vec<Pick>) -> bool {
         lock(&self.shared.state).photos.pick(session, picks)
     }

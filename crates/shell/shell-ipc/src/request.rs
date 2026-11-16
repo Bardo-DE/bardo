@@ -42,7 +42,7 @@ pub enum Request {
     /// Read a state: answered with `Response::Status`.
     Status(StatusRequest),
     /// The brightness and volume keys (`bardo-shell display {brightness,volume} ...`), bound to
-    /// XF86MonBrightness*/XF86Audio* in the compositor's shortcuts.
+    /// `XF86MonBrightness`*/`XF86Audio`* in the compositor's shortcuts.
     Display(DisplayRequest),
     /// Forget every clipboard entry now (`bardo-shell clipboard clear`).
     ClearClipboard,

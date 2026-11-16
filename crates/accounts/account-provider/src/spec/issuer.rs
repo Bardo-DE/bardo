@@ -89,7 +89,7 @@ pub struct IssuerData {
     token: EndpointUrl,
     #[serde(default)]
     revoke: Option<EndpointUrl>,
-    /// OpenID Connect's userinfo endpoint, where the account's address is read, if the issuer
+    /// `OpenID` Connect's userinfo endpoint, where the account's address is read, if the issuer
     /// publishes one.
     #[serde(default)]
     pub userinfo: Option<EndpointUrl>,
@@ -111,6 +111,7 @@ pub struct IssuerData {
 
 impl IssuerData {
     /// Where the issuer's pages and token endpoint are, and its revoke endpoint if it has one.
+    #[must_use]
     pub fn endpoints(&self) -> IssuerEndpoints {
         IssuerEndpoints {
             authorize: self.authorize.clone(),
@@ -120,6 +121,7 @@ impl IssuerData {
     }
 
     /// Whether the issuer has a revoke endpoint (RFC 7009).
+    #[must_use]
     pub fn has_revoke(&self) -> bool {
         self.revoke.is_some()
     }
@@ -127,6 +129,7 @@ impl IssuerData {
     /// The scopes a sign-in asks for the capability `kinds`, in the order the issuer's data lists
     /// them: the rows asked every time, and each kind's own. A row for a person's own client
     /// (`byo`) only when the client is.
+    #[must_use]
     pub fn sign_in_scopes(&self, kinds: &[CapabilityKind], byo: bool) -> Vec<String> {
         self.scope
             .iter()
@@ -148,6 +151,7 @@ impl IssuerData {
     }
 
     /// The scopes of the on-use rows of `kinds`.
+    #[must_use]
     pub fn on_use_scopes(&self, kinds: &[CapabilityKind]) -> Vec<&str> {
         self.scope
             .iter()
@@ -165,6 +169,7 @@ impl IssuerData {
     }
 
     /// The scopes a sign-in asks for `kind`, none for a kind the issuer has no service for.
+    #[must_use]
     pub fn kind_scopes(&self, kind: CapabilityKind) -> Vec<&str> {
         self.rows_of(kind, Ask::SignIn)
             .flat_map(|row| row.scopes.iter().map(String::as_str))
@@ -175,6 +180,7 @@ impl IssuerData {
     /// with: the rows of the kind that are asked as `ask` says, and are for that API or for every
     /// one. Never the rows asked of everyone (who the person is). Empty for a kind the issuer has
     /// no service for.
+    #[must_use]
     pub fn grant_scopes(&self, kind: CapabilityKind, family: Family, ask: Ask) -> Vec<&str> {
         self.rows_of(kind, ask)
             .filter(|row| row.family.is_none_or(|f| f == family))
@@ -183,6 +189,7 @@ impl IssuerData {
     }
 
     /// The scopes only the API of `family` needs: the rows that name it.
+    #[must_use]
     pub fn family_scopes(&self, family: Family) -> Vec<&str> {
         self.scope
             .iter()
@@ -201,6 +208,7 @@ impl IssuerData {
     }
 
     /// Where the API of `family` is when the provider file names none.
+    #[must_use]
     pub fn api(&self, family: Family) -> Option<EndpointUrl> {
         self.api
             .iter()
@@ -209,12 +217,14 @@ impl IssuerData {
     }
 
     /// The read that shows the account has the service `kind`, for a kind with a cheap one.
+    #[must_use]
     pub fn probe(&self, kind: CapabilityKind) -> Option<&ProbeRow> {
         self.probe.iter().find(|row| row.kind == kind)
     }
 
     /// How the issuer classes `scope`; a scope its data does not name is taken as the most
     /// demanding.
+    #[must_use]
     pub fn class_of(&self, scope: &str) -> ScopeClass {
         let named = |list: &[String]| list.iter().any(|s| s == scope);
         if named(&self.class.non_sensitive) {

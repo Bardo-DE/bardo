@@ -26,6 +26,7 @@ pub struct SizeMm {
 
 impl Surface {
     /// Width and height, edge to edge.
+    #[must_use]
     pub fn size(&self) -> SizeMm {
         SizeMm {
             width: self.extent.x.length(),

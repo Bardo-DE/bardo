@@ -93,11 +93,13 @@ impl InferdWorld {
     }
 
     /// The scratch root.
+    #[must_use]
     pub fn root(&self) -> &Path {
         self.dir.path()
     }
 
     /// inferd's standard error, for a failing run to print.
+    #[must_use]
     pub fn log(&self) -> String {
         std::fs::read_to_string(self.root().join("logs/inferd.log")).unwrap_or_default()
     }
@@ -106,6 +108,7 @@ impl InferdWorld {
     /// token counts, never content): the largest daily total of any scope, which is the whole
     /// reported spend because every request is counted once on its account and once on its app.
     /// Zero US dollars when nothing is reported or the ledger cannot be read.
+    #[must_use]
     pub fn reported_charge(&self) -> Money {
         let none = Money::usd(Decimal::ZERO);
         let file: PathBuf = self.root().join(".local/state/bardo/inference/spend.json");
@@ -129,17 +132,20 @@ impl InferdWorld {
     }
 
     /// How long a wait may take before a run fails instead of hanging.
+    #[must_use]
     pub fn give_up() -> std::time::Duration {
         GIVE_UP
     }
 
     /// The inferd process id (for the owner's `ps`).
+    #[must_use]
     pub fn inferd_pid(&self) -> u32 {
         self.inferd.pid()
     }
 
     /// `env` for a command that should talk to this world's bus as the owner's own shell
     /// would: scratch HOME and XDG directories and the private bus address.
+    #[must_use]
     pub fn env(&self) -> Vec<(String, String)> {
         let mut env: Vec<(String, String)> = env_of(self.root())
             .into_iter()

@@ -90,7 +90,7 @@ where
                     serial: serial_to(serial),
                     time,
                 },
-            )
+            );
         }
         TouchStep::Motion { slot, at } => touch.motion(
             state,
@@ -110,12 +110,12 @@ where
                     serial: serial_to(serial),
                     time,
                 },
-            )
+            );
         }
         TouchStep::Frame => touch.frame(state),
         TouchStep::Cancel => {
             points.with(BTreeMap::clear);
-            touch.cancel(state)
+            touch.cancel(state);
         }
     }
     Ok(())

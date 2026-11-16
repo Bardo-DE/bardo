@@ -41,6 +41,7 @@ impl StylesGuard {
     /// The start of `program` (its short name, which is also the record's file name) with
     /// `styles`: decide from the earlier starts, and write this one as `starting` unless the
     /// answer is to start without them. Call it before the first window loads the styles.
+    #[must_use]
     pub fn begin(state_dir: &Path, program: &str, styles: &Styles) -> StylesGuard {
         let guard = StylesGuard {
             state: state_dir.to_owned(),
@@ -71,11 +72,13 @@ impl StylesGuard {
     }
 
     /// Whether to load the styles.
+    #[must_use]
     pub fn load(&self) -> bool {
         self.load
     }
 
     /// The fingerprint of the sheets this guard covers.
+    #[must_use]
     pub fn fingerprint(&self) -> Fingerprint {
         self.hash
     }
@@ -96,6 +99,7 @@ impl StylesGuard {
     }
 
     /// The button **Turn On Again**: forget the failed starts and begin again with `styles`.
+    #[must_use]
     pub fn turn_on_again(&self, styles: &Styles) -> StylesGuard {
         let _ = std::fs::remove_file(self.file());
         StylesGuard::begin(&self.state, &self.program, styles)
@@ -103,6 +107,7 @@ impl StylesGuard {
 
     /// A sheet changed: if `styles` are not the ones this guard covers, clear it and begin again
     /// with them (a fix gets a fresh try); otherwise this guard stands.
+    #[must_use]
     pub fn changed(&self, styles: &Styles) -> StylesGuard {
         if styles.fingerprint() == self.hash {
             return self.clone();

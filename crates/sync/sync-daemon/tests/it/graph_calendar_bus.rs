@@ -505,5 +505,5 @@ async fn an_account_with_no_calendars_mirrors_nothing_and_says_nothing_is_wrong(
             .read_dir()
             .map_or(true, |mut d| d.next().is_none())
     );
-    assert!(rig.delta_requests() == 0);
+    assert_eq!(rig.delta_requests(), 0);
 }

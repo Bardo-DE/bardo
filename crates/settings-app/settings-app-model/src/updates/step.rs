@@ -69,6 +69,7 @@ pub enum UpdatesEffect {
 }
 
 /// The state after `input`, and what to do about it.
+#[must_use]
 pub fn updates_step(
     state: UpdatesState,
     input: UpdatesInput,

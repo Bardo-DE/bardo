@@ -356,7 +356,7 @@ mod tests {
         let given = Arc::clone(&answer);
         let dconf = Dconf::new(
             &dir,
-            Arc::new(move || given.lock().map(|a| a.clone()).unwrap_or(Dumped::Failed)),
+            Arc::new(move || given.lock().map_or(Dumped::Failed, |a| a.clone())),
         );
         let source = KeySource::new(GNOME, Box::new(dconf));
         let chord = |text: &str| text.parse::<Chord>().map(Chord::canonical).ok();
@@ -406,7 +406,7 @@ mod tests {
         let given = Arc::clone(&answer);
         let dconf = Dconf::new(
             &dir,
-            Arc::new(move || given.lock().map(|a| a.clone()).unwrap_or(Dumped::Failed)),
+            Arc::new(move || given.lock().map_or(Dumped::Failed, |a| a.clone())),
         );
         let held = Arc::clone(&dconf.held);
         let (told, heard) = std::sync::mpsc::channel::<Dumped>();
@@ -414,7 +414,7 @@ mod tests {
             let (dump, held) = (Arc::clone(&dconf.dump), Arc::clone(&held));
             Box::new(move || {
                 take(&held, dump());
-                let _ = told.send(held.lock().map(|h| h.clone()).unwrap_or(Dumped::Failed));
+                let _ = told.send(held.lock().map_or(Dumped::Failed, |h| h.clone()));
             })
         });
         assert!(watch.is_ok());
@@ -438,7 +438,7 @@ mod tests {
     fn a_changed_file_calls_back_and_a_dropped_watch_stops() {
         let dir = scratch("watch");
         let path = dir.join("kdeglobals");
-        assert!(std::fs::write(&path, "[Shortcuts]\n").is_ok());
+        std::fs::write(&path, "[Shortcuts]\n").unwrap();
         let (told, heard) = std::sync::mpsc::channel::<()>();
         let watch = watch_file(
             &path,

@@ -91,6 +91,7 @@ pub struct WireCassette {
 
 impl WireCassette {
     /// The file's text: the header, then one line per exchange.
+    #[must_use]
     pub fn to_jsonl(&self) -> String {
         write_jsonl(&self.header, &self.exchanges)
     }

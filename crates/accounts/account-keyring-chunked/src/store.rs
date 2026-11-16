@@ -56,16 +56,19 @@ impl<S: CredentialStoreApi + Send + Sync + ?Sized + 'static> ChunkedStore<S> {
     }
 
     /// The store this one wraps.
+    #[must_use]
     pub fn inner(&self) -> &Arc<S> {
         &self.inner
     }
 
     /// What a head entry holds before the part count.
+    #[must_use]
     pub fn marker(&self) -> &str {
         &self.marker
     }
 
     /// How long one entry's value may be.
+    #[must_use]
     pub fn limit(&self) -> Limit {
         self.limit
     }

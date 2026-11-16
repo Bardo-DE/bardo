@@ -10,6 +10,7 @@ use super::program::Schema;
 /// (case-insensitive), or [`None`] if no key matches or more than one does — a query that
 /// resolves to two keys is not a deep link, it is a search result list, which is a different
 /// feature.
+#[must_use]
 pub fn deep_link<'a>(schemas: &'a [Schema], query: &str) -> Option<&'a KeySpec> {
     let query = query.to_lowercase();
     let mut matches = schemas.iter().flat_map(|schema| &schema.key).filter(|key| {
@@ -24,6 +25,7 @@ pub fn deep_link<'a>(schemas: &'a [Schema], query: &str) -> Option<&'a KeySpec> 
 
 /// The path a query resolves to, or [`None`]; a thin convenience over [`deep_link`] for a
 /// caller that only wants to compare against a known [`KeyPath`].
+#[must_use]
 pub fn deep_link_path(schemas: &[Schema], query: &str) -> Option<KeyPath> {
     deep_link(schemas, query).map(|key| key.path.clone())
 }

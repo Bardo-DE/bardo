@@ -94,6 +94,7 @@ impl RunBoard {
     }
 
     /// What each row draws.
+    #[must_use]
     pub fn rows(&self) -> Vec<RunRowView> {
         self.rows
             .iter()

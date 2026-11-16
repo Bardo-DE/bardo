@@ -51,9 +51,10 @@ pub fn parse_sources(text: &str, home: &Path) -> EventSources {
                 .filter(|entry| !entry.is_empty())
                 .map(|entry| place_of(expand_home(entry, home)))
                 .collect();
-            match places.is_empty() {
-                true => EventSources::Off,
-                false => EventSources::Places(places),
+            if places.is_empty() {
+                EventSources::Off
+            } else {
+                EventSources::Places(places)
             }
         }
     }
@@ -73,9 +74,10 @@ fn place_of(path: PathBuf) -> IcsPlace {
     let is_ics = path
         .extension()
         .is_some_and(|ext| ext.eq_ignore_ascii_case("ics"));
-    match is_ics {
-        true => IcsPlace::File(path),
-        false => IcsPlace::Dir(path),
+    if is_ics {
+        IcsPlace::File(path)
+    } else {
+        IcsPlace::Dir(path)
     }
 }
 
@@ -83,6 +85,7 @@ fn place_of(path: PathBuf) -> IcsPlace {
 /// files into), `$XDG_DATA_HOME/bardo/sync/vdir` (what porter's syncd mirrors from the accounts
 /// the person granted it: `<account>/<collection>/*.ics`) and `~/.calendars` (vdirsyncer and
 /// khal's convention). Candidates only: the caller keeps those that exist (`provider_for`).
+#[must_use]
 pub fn auto_places(env: &AutoEnv) -> Vec<IcsPlace> {
     vec![
         IcsPlace::Dir(env.data_home.join("bardo").join("shell").join("calendars")),
@@ -93,6 +96,7 @@ pub fn auto_places(env: &AutoEnv) -> Vec<IcsPlace> {
 
 /// Whether a vdir collection directory is a task list (VTODO), not a calendar: porter names it
 /// `<collection>-tasks`. The calendar view skips it.
+#[must_use]
 pub fn is_task_list(dir: &Path) -> bool {
     dir.file_name()
         .is_some_and(|name| name.to_string_lossy().ends_with("-tasks"))

@@ -37,6 +37,7 @@ pub struct SessionGrants(Mutex<Vec<ActionGrant>>, Mutex<Vec<StandingGrant>>);
 
 impl SessionGrants {
     /// A store that starts with these grants.
+    #[must_use]
     pub fn with(grants: Vec<ActionGrant>) -> Self {
         Self(Mutex::new(grants), Mutex::default())
     }
@@ -71,16 +72,19 @@ pub struct AuditBuffer(QueuedSink);
 
 impl AuditBuffer {
     /// Takes every record appended so far.
+    #[must_use]
     pub fn drain(&self) -> Vec<AuditRecord> {
         self.0.drain()
     }
 
     /// A copy of every record appended and not yet drained or written.
+    #[must_use]
     pub fn records(&self) -> Vec<AuditRecord> {
         self.0.snapshot()
     }
 
     /// The bounded queue underneath, which `companion_memory::AuditState` drains into memory.
+    #[must_use]
     pub fn queue(&self) -> &QueuedSink {
         &self.0
     }
@@ -136,6 +140,7 @@ impl PolicyWriter for NoWriter {
 }
 
 /// Every seam of an in-app router. Public so an app reads what its sheet, store and buffer hold.
+///
 /// The last four parameters default to the stubs; an app that chooses a real one names it through
 /// [`InAppKit`](crate::InAppKit).
 #[derive(Debug)]

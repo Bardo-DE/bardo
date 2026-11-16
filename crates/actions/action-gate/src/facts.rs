@@ -42,6 +42,7 @@ fn limit_fact(limited: &Limited) -> LimitFact {
 
 /// The kill switch, the budget and the limits for `cost` in `space`. The cost is the one before
 /// any review is added: a review's own budget is checked when a reviewer would be asked.
+#[must_use]
 pub fn run_facts(
     kill: &KillSwitch,
     space: &SpaceId,
@@ -60,6 +61,7 @@ pub fn run_facts(
 }
 
 /// A session that read untrusted content is tainted for any call that changes something.
+#[must_use]
 pub fn taint_fact(untrusted: bool, effect: Effect) -> bool {
     untrusted && effect > Effect::Read
 }

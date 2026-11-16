@@ -99,6 +99,7 @@ impl VirtualKeyboardPart {
     }
 
     /// Creates the global (version 1), filtered by the I7 table.
+    #[must_use]
     pub fn new<D>(display: &DisplayHandle, role_filter: GlobalFilter) -> VirtualKeyboardPart
     where
         D: GlobalDispatch<ZwpVirtualKeyboardManagerV1, VirtualKeyboardGlobal> + 'static,
@@ -166,6 +167,7 @@ fn successor(device: DeviceId) -> DeviceId {
 
 /// A virtual keyboard sent a key: an `Event::Input` with `Origin::Virtual(Keyboard)`, from
 /// that keyboard's own `device`.
+#[must_use]
 pub fn on_vk_key(device: DeviceId, code: KeyCode, edge: PressEdge, at: Mono) -> Vec<Event> {
     vec![key_event(device, code, edge, at)]
 }

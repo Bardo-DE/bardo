@@ -9,6 +9,7 @@ use crate::role::Role;
 ///
 /// By position: the key beside the space bar is Command on both layouts (Apple: Meta, PC: Alt)
 /// and the next one out is Option (Apple: Alt, PC: Meta).
+#[must_use]
 pub fn role(layout: Layout, key: Physical) -> Option<Role> {
     let (beside_space, next_out) = match layout {
         Layout::Apple => (

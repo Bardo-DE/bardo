@@ -23,6 +23,7 @@ pub(crate) fn geometry_origin(surface: &WlSurface) -> Point<i32, Logical> {
 }
 
 /// The size of `surface`'s committed window geometry, if it declared one.
+#[must_use]
 pub fn geometry_size(surface: &WlSurface) -> Option<Size<i32, Logical>> {
     with_states(surface, |states| {
         states
@@ -36,6 +37,7 @@ pub fn geometry_size(surface: &WlSurface) -> Option<Size<i32, Logical>> {
 
 /// Where `root`'s top-left is when its window geometry's top-left is at `at`: the buffer is
 /// drawn offset so the geometry origin lands on the window's place.
+#[must_use]
 pub fn surface_origin(root: &WlSurface, at: SubPoint) -> SubPoint {
     let loc = geometry_origin(root);
     SubPoint {
@@ -45,6 +47,7 @@ pub fn surface_origin(root: &WlSurface, at: SubPoint) -> SubPoint {
 }
 
 /// [`surface_origin`] for whole logical pixels (the hit test's).
+#[must_use]
 pub fn surface_origin_logical(root: &WlSurface, at: LogicalPoint) -> LogicalPoint {
     let loc = geometry_origin(root);
     LogicalPoint {
@@ -55,6 +58,7 @@ pub fn surface_origin_logical(root: &WlSurface, at: LogicalPoint) -> LogicalPoin
 
 /// Whether `root`'s buffer reaches past its window geometry: a client that drew a shadow, or
 /// anything else, round the window. A window with no geometry, or none committed yet, has none.
+#[must_use]
 pub fn margin_of(root: &WlSurface) -> bool {
     let buffer = with_renderer_surface_state(root, |state| state.surface_size()).flatten();
     matches!(

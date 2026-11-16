@@ -29,7 +29,7 @@ pub enum SurfaceOp {
     Layer(LayerOp),
     /// Toplevels only.
     Window(WindowOp),
-    /// Popups only: move an open popup (`xdg_popup.reposition`, xdg_wm_base v3), which is how a
+    /// Popups only: move an open popup (`xdg_popup.reposition`, `xdg_wm_base` v3), which is how a
     /// menu bar switches menus on hover without a new grab (design/13 §13.7).
     Reposition(PopupPlacement),
 }
@@ -107,6 +107,7 @@ pub enum Repaint {
 
 impl SurfaceOp {
     /// Whether applying this op repaints the surface.
+    #[must_use]
     pub fn repaint(&self) -> Repaint {
         match self {
             SurfaceOp::Window(_) => Repaint::NotNeeded,

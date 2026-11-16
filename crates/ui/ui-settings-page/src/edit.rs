@@ -13,6 +13,7 @@ pub struct SettingEdit {
 impl SettingEdit {
     /// `values` with this edit applied, the tables on the way made where missing. Values that are
     /// not a table are returned unchanged.
+    #[must_use]
     pub fn applied_to(&self, mut values: toml::Value) -> toml::Value {
         let parts: Vec<&str> = self.path.0.split('.').collect();
         let mut at = &mut values;

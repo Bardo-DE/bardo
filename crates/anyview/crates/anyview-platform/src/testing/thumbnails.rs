@@ -15,11 +15,13 @@ pub struct FakeThumbnails {
 
 impl FakeThumbnails {
     /// How many thumbnails are held.
+    #[must_use]
     pub fn len(&self) -> usize {
         locked(&self.stored).len()
     }
 
     /// Whether none is held.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }

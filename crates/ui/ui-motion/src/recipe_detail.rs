@@ -5,7 +5,7 @@
 use super::recipe::{Fill, Iteration, Recipe, recipe};
 use ui_style::tokens::{easing::EasingToken, timing::DurationToken};
 
-/// `morph-in` at `--t-quick --e-out`: the incoming glyph of a DownUp or OffUp morph.
+/// `morph-in` at `--t-quick --e-out`: the incoming glyph of a `DownUp` or `OffUp` morph.
 pub(super) const MORPH_IN: Recipe = recipe(
     "morph-in",
     DurationToken::Quick,
@@ -24,7 +24,7 @@ pub(super) const MORPH_IN_SPRING: Recipe = recipe(
     Iteration::Once,
 );
 
-/// `morph-out` at `--t-quick --e-out`: the outgoing glyph of a DownUp morph, held gone until
+/// `morph-out` at `--t-quick --e-out`: the outgoing glyph of a `DownUp` morph, held gone until
 /// its layer is removed.
 pub(super) const MORPH_OUT: Recipe = recipe(
     "morph-out",

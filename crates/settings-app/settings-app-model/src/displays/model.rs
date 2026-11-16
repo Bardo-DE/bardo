@@ -63,6 +63,7 @@ impl DisplayRotation {
     ];
 
     /// Whether width and height trade places.
+    #[must_use]
     pub fn is_sideways(self) -> bool {
         matches!(
             self,
@@ -112,6 +113,7 @@ pub struct DisplaysStatus {
 
 impl DisplaysStatus {
     /// The display called `id`.
+    #[must_use]
     pub fn display(&self, id: &OutputId) -> Option<&Monitor> {
         self.displays.iter().find(|d| &d.id == id)
     }
@@ -119,6 +121,7 @@ impl DisplaysStatus {
 
 impl Monitor {
     /// The size the display fills in logical pixels now: its mode over its scale, turned.
+    #[must_use]
     pub fn logical_size(&self) -> Option<PixelSize> {
         let mode = self.current?;
         let scaled = |pixels: u32| {

@@ -107,7 +107,7 @@ async fn the_agents_text_never_becomes_policy() {
     })
     .await;
     run_turn(&mut rig, "fix the failing test").await;
-    assert!(rig.agent.reply("w").is_err());
+    rig.agent.reply("w").unwrap_err();
     let sheets = rig.sheets();
     assert_eq!(sheets.len(), 1);
     assert_eq!(

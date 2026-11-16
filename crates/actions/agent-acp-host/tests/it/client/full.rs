@@ -109,16 +109,16 @@ async fn a_full_session_goes_through_the_router_call_by_call() {
         rig.agent.reply("read_in").unwrap()["content"],
         json!("# readme\n")
     );
-    assert!(rig.agent.reply("read_out").is_err());
+    rig.agent.reply("read_out").unwrap_err();
     assert_eq!(files.reads(), 1, "the file outside was never opened");
 
     // The writes: inside only, and the person was asked.
-    assert!(rig.agent.reply("write_in").is_ok());
+    rig.agent.reply("write_in").unwrap();
     assert_eq!(
         files.text(&abs("/work/app/out.txt")).as_deref(),
         Some("hello")
     );
-    assert!(rig.agent.reply("write_out").is_err());
+    rig.agent.reply("write_out").unwrap_err();
     assert!(files.text(&abs("/work/other/x.txt")).is_none());
     assert_eq!(rig.performer.undo_notes().len(), 1);
     assert_eq!(rig.performer.undo_notes()[0].before, None);
@@ -150,7 +150,7 @@ async fn a_full_session_goes_through_the_router_call_by_call() {
     assert_eq!(ran[0].cwd.as_str(), CWD);
     assert_eq!(rig.agent.reply("out").unwrap()["output"], json!("hi\n"));
     assert_eq!(rig.agent.reply("exit").unwrap()["exitCode"], json!(0));
-    assert!(rig.agent.reply("release").is_ok());
+    rig.agent.reply("release").unwrap();
 
     // What the host sees: each call announced, then ended, words, and the end.
     let shapes: Vec<&str> = events
@@ -290,7 +290,7 @@ async fn a_wait_for_exit_ends_when_the_command_is_killed() {
     })
     .await;
     run_turn(&mut rig, "go").await;
-    assert!(rig.agent.reply("kill").is_ok());
+    rig.agent.reply("kill").unwrap();
     assert_eq!(rig.agent.reply("wait").unwrap()["signal"], json!("KILL"));
 }
 
@@ -317,8 +317,8 @@ async fn a_yes_to_a_permission_request_covers_the_one_matching_write_and_no_more
     .await;
     files.put(&abs("/work/app/README.md"), "# readme\n");
     run_turn(&mut rig, "go").await;
-    assert!(rig.agent.reply("w1").is_ok());
-    assert!(rig.agent.reply("w2").is_err());
+    rig.agent.reply("w1").unwrap();
+    rig.agent.reply("w2").unwrap_err();
     assert_eq!(files.text(&abs("/work/app/a.rs")).as_deref(), Some("one"));
     assert_eq!(rig.sheets().len(), 2);
     assert!(

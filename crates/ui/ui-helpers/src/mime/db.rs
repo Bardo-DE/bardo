@@ -47,16 +47,19 @@ pub struct IconName {
 
 impl IconName {
     /// The type's own icon: `application-pdf`.
+    #[must_use]
     pub fn specific(&self) -> &str {
         &self.specific
     }
 
     /// The icon of the type's kind: `x-office-document`, or `image-x-generic`.
+    #[must_use]
     pub fn generic(&self) -> &str {
         &self.generic
     }
 
     /// Both names, the one to try first first.
+    #[must_use]
     pub fn in_order(&self) -> [&str; 2] {
         [&self.specific, &self.generic]
     }
@@ -74,6 +77,7 @@ pub struct MimeDb {
 
 impl MimeDb {
     /// The database of the folders' texts, in precedence order: earlier layers win.
+    #[must_use]
     pub fn from_layers(layers: &[MimeLayer<'_>]) -> MimeDb {
         MimeDb {
             globs: Globs::merged(layers.iter().map(|l| Globs::parse(l.globs2))),
@@ -87,11 +91,13 @@ impl MimeDb {
     }
 
     /// What a file's name says about its type. Content is not read; see the crate docs.
+    #[must_use]
     pub fn by_name(&self, name: &FileName) -> NameGuess {
         self.globs.guess(&name.display())
     }
 
     /// `mime` with an alias resolved to the type it stands for.
+    #[must_use]
     pub fn canonical(&self, mime: &MimeType) -> MimeType {
         self.aliases.canonical(mime)
     }
@@ -99,6 +105,7 @@ impl MimeDb {
     /// Every type `mime` is a special case of, nearest first: its subclass parents breadth first
     /// (aliases resolved), `text/plain` for a text type, and `application/octet-stream` last for
     /// any type that is not `inode/*`.
+    #[must_use]
     pub fn ancestors(&self, mime: &MimeType) -> Vec<MimeType> {
         let start = self.canonical(mime);
         let mut found: Vec<MimeType> = Vec::new();
@@ -140,6 +147,7 @@ impl MimeDb {
 
     /// Whether `child` is `parent` or a special case of it, through subclasses and the implicit
     /// rules (every `text/*` is `text/plain`; every type but `inode/*` is `application/octet-stream`).
+    #[must_use]
     pub fn is_a(&self, child: &MimeType, parent: &MimeType) -> Relation {
         let parent = self.canonical(parent);
         if self.canonical(child) == parent || self.ancestors(child).contains(&parent) {

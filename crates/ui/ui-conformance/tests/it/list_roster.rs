@@ -128,7 +128,7 @@ fn one_row_leaves_and_the_rows_below_heal_by_its_height() {
     assert_eq!(presence(&harness, 2).as_deref(), Some("leaving"));
     assert_eq!(harness.attr(&nth(2), "data-exit").as_deref(), Some("row"));
     let out = fold(MotionLevel::Standard);
-    harness.advance(out - removed - ms(1));
+    harness.advance(out.checked_sub(removed).unwrap() - ms(1));
     assert_eq!(harness.count(".ds-list-item"), 4, "drawn until it settles");
     harness.advance(ms(1));
     assert_eq!(harness.count(".ds-list-item"), 3, "dropped at its settle");
@@ -178,7 +178,7 @@ fn under_reduced_a_clear_settles_at_reduceds_length_and_rows_snap_into_place() {
     let before3 = top(&harness, 3);
     show(&mut harness, &[3]);
     let batch = fold(MotionLevel::Reduced);
-    harness.advance(batch - ms(2));
+    harness.advance(batch.checked_sub(ms(2)).unwrap());
     assert_eq!(harness.count(".ds-list-item"), 3);
     harness.advance(ms(1));
     assert_eq!(harness.count(".ds-list-item"), 1);

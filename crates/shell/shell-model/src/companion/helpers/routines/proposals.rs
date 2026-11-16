@@ -17,11 +17,13 @@ pub const PROPOSAL_ACCEPT: &str = "Accept";
 pub const PROPOSAL_DECLINE: &str = "Not Now";
 
 /// What the routine would do, as the suggestion states it.
+#[must_use]
 pub fn proposal_what(proposal: &RoutineProposal) -> &str {
     proposal.form.goal.as_str()
 }
 
 /// When it would run, in plain words.
+#[must_use]
 pub fn proposal_when(proposal: &RoutineProposal) -> String {
     match &proposal.form.when {
         WhenForm::At(text) => at_words(text),
@@ -32,6 +34,7 @@ pub fn proposal_when(proposal: &RoutineProposal) -> String {
 
 /// The suggester's reason, in quotation marks: it is data, not something bardo-shell says. Nothing for
 /// an empty reason.
+#[must_use]
 pub fn proposal_why(proposal: &RoutineProposal) -> Option<String> {
     let why = proposal.why.trim();
     (!why.is_empty()).then(|| format!("\u{201c}{why}\u{201d}"))

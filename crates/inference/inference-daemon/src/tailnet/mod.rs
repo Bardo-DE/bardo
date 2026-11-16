@@ -148,21 +148,25 @@ impl Tailnet {
     }
 
     /// The answers and the questions waiting.
+    #[must_use]
     pub fn guests(&self) -> &Arc<Guests> {
         &self.0.guests
     }
 
     /// News of the computers that ask: a question raised, or the answers changed.
+    #[must_use]
     pub fn subscribe(&self) -> broadcast::Receiver<GuestEvent> {
         self.0.events.subscribe()
     }
 
     /// Where listening stands (nothing while lending is off).
+    #[must_use]
     pub fn listening(&self) -> watch::Receiver<Listening> {
         self.0.listening.subscribe()
     }
 
     /// The person's other computers, as accountd lists them.
+    #[must_use]
     pub fn machines(&self) -> &Arc<dyn Machines> {
         &self.0.machines
     }
@@ -204,6 +208,7 @@ impl Tailnet {
     }
 
     /// This computer's Tailscale.
+    #[must_use]
     pub fn api(&self) -> &LocalApi {
         &self.0.api
     }

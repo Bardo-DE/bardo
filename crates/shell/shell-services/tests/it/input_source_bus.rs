@@ -1,6 +1,6 @@
 //! Next Input Source against a stand-in for fcitx5's controller on a private bus playing the
-//! session bus, and a stand-in for IBus on a second private bus playing IBus's own, never a real
-//! fcitx5 or IBus. The tests need a `dbus-daemon` and skip without one.
+//! session bus, and a stand-in for `IBus` on a second private bus playing `IBus`'s own, never a real
+//! fcitx5 or `IBus`. The tests need a `dbus-daemon` and skip without one.
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -19,7 +19,9 @@ use zbus::zvariant::{StructureBuilder, Value};
 type Heard = Arc<Mutex<Vec<String>>>;
 
 fn lock(heard: &Heard) -> MutexGuard<'_, Vec<String>> {
-    heard.lock().unwrap_or_else(|e| e.into_inner())
+    heard
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 struct Controller(Heard);
@@ -50,7 +52,7 @@ impl Controller {
 
 struct Ibus(Heard);
 
-/// IBus's global engine description is a long structure; what is read of it is the third field,
+/// `IBus`'s global engine description is a long structure; what is read of it is the third field,
 /// the engine's name.
 fn engine(name: &str) -> Value<'static> {
     let structure = StructureBuilder::new()

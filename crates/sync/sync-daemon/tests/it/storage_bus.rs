@@ -82,9 +82,10 @@ struct Gate {
 
 impl StorageGrants for Gate {
     async fn granted(&self, kind: StorageKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
-        match self.shown.load(Ordering::SeqCst) {
-            true => self.real.granted(kind).await,
-            false => Ok(Vec::new()),
+        if self.shown.load(Ordering::SeqCst) {
+            self.real.granted(kind).await
+        } else {
+            Ok(Vec::new())
         }
     }
 }

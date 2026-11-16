@@ -43,6 +43,7 @@ impl OsRelease {
 
 impl OsRelease {
     /// Whether `source` is known to exist on this release.
+    #[must_use]
     pub fn ships(&self, source: &PackageSource) -> bool {
         match source.releases {
             Releases::Rolling { id } => self.id == id || self.like.iter().any(|l| l == id),

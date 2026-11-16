@@ -3,7 +3,7 @@
 //!
 //! - `AppFolder` (`DataClass::Files`): the account's app folder as a two-way [`FolderDataset`]
 //!   at `$XDG_DATA_HOME/bardo/sync/storage/<account>/`, one dataset `<account>/storage_app_folder`
-//!   (owner `org.bardo.Files`), over a [`graph_replica`] relay of the grant for a OneDrive
+//!   (owner `org.bardo.Files`), over a [`graph_replica`] relay of the grant for a `OneDrive`
 //!   account or a [`gdrive_replica`] relay for a Google one. Which one is read from the
 //!   endpoint the account's candidate lists ([`app_folder_store`]), never from the provider.
 //! - `Photos` (`DataClass::Photos`): the two Photos datasets over `Photos/Originals` and
@@ -396,7 +396,7 @@ where
         }
     }
 
-    /// The whole drive of `account`, over OneDrive's root or My Drive by the endpoint: its
+    /// The whole drive of `account`, over `OneDrive`'s root or My Drive by the endpoint: its
     /// listing from the tree its journal kept, its files on demand over the journal and a
     /// replica of its own for fetching, and its folder `~/Cloud/<folder>`.
     async fn start_drive(
@@ -852,7 +852,7 @@ fn may_run(drives: &DriveSet, kind: StorageKind, account: &AccountDir) -> bool {
     kind != StorageKind::Drive || !drives.is_held(account.as_str())
 }
 
-/// Each drive's folder name in `~/Cloud`, by account: its provider's ("OneDrive", "Google
+/// Each drive's folder name in `~/Cloud`, by account: its provider's ("`OneDrive`", "Google
 /// Drive"), with the account's label when one provider has two.
 fn drive_folders(candidates: &[Candidate]) -> BTreeMap<account_core::AccountId, String> {
     let provider = |c: &Candidate| match app_folder_store(c) {
@@ -868,8 +868,8 @@ fn drive_folders(candidates: &[Candidate]) -> BTreeMap<account_core::AccountId, 
 
 /// The folder name of each `(account, provider, label)`: the provider's name, with the label
 /// after it when a provider has two, a `/` shown as drive-core shows it, and two that would
-/// still be one name told apart as drive-core tells a folder's items apart ("OneDrive (Work)",
-/// "OneDrive (Work) 2"), the account first by id keeping it, so a folder is never shared and
+/// still be one name told apart as drive-core tells a folder's items apart ("`OneDrive` (Work)",
+/// "`OneDrive` (Work) 2"), the account first by id keeping it, so a folder is never shared and
 /// keeps its name across restarts.
 fn folder_names<'a>(
     drives: impl IntoIterator<Item = (account_core::AccountId, &'a str, &'a str)>,

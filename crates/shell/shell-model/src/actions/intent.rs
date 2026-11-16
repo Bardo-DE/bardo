@@ -7,6 +7,7 @@ use shell_launcher::actions::ActionId;
 
 /// The manifest action that asks for `id`, where the manifest declares one. Several actions
 /// can share one (a screenshot's kind, a workspace's direction are parameters there).
+#[must_use]
 pub fn intent_of(id: ActionId) -> Option<&'static str> {
     use ActionId as A;
     match id {

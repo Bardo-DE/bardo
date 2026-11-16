@@ -33,7 +33,7 @@ impl Default for LockConfig {
 /// Why `HostCtx::lock_session` could not ask for a lock.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
 pub enum LockError {
-    /// The compositor has no `ext_session_lock_manager_v1` (KWin 6.7, for one).
+    /// The compositor has no `ext_session_lock_manager_v1` (`KWin` 6.7, for one).
     #[error("the compositor does not provide ext_session_lock_manager_v1")]
     Unsupported,
     /// A lock of this host's is still in force (requested, locked or unlocking).

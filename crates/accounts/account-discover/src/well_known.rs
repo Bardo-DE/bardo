@@ -1,4 +1,4 @@
-//! `.well-known` URLs for CalDAV, CardDAV and JMAP, and the JMAP session resource.
+//! `.well-known` URLs for `CalDAV`, `CardDAV` and JMAP, and the JMAP session resource.
 
 use crate::found::{DiscoverFault, Found, Source};
 use crate::mail::mail_claim;
@@ -33,6 +33,7 @@ fn well_known_of(kind: CapabilityKind) -> Option<(&'static str, Family)> {
 /// The `.well-known` URLs to try for `kind` at `domain`: `/.well-known/caldav` for calendars and
 /// tasks, `/.well-known/carddav` for contacts, `/.well-known/jmap` for mail. Empty for a kind
 /// with none. Always HTTPS.
+#[must_use]
 pub fn well_known_urls(domain: &DomainName, kind: CapabilityKind) -> Vec<EndpointUrl> {
     well_known_of(kind)
         .and_then(|(path, _)| EndpointUrl::parse(&format!("https://{domain}{path}")).ok())
@@ -108,14 +109,16 @@ fn redirect_target(
         443 => String::new(),
         other => format!(":{other}"),
     };
-    let text = match location.starts_with('/') {
-        true => format!("https://{}{port}{location}", origin.host),
-        false => location.to_owned(),
+    let text = if location.starts_with('/') {
+        format!("https://{}{port}{location}", origin.host)
+    } else {
+        location.to_owned()
     };
     let url = EndpointUrl::parse(&text).map_err(|_| DiscoverFault::Unreadable)?;
-    match url.origin().scheme == base_url::UrlScheme::Https {
-        true => Ok(url),
-        false => Err(DiscoverFault::Unreadable),
+    if url.origin().scheme == base_url::UrlScheme::Https {
+        Ok(url)
+    } else {
+        Err(DiscoverFault::Unreadable)
     }
 }
 
@@ -161,9 +164,10 @@ pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
         return Err(DiscoverFault::Unreadable);
     }
     let url = EndpointUrl::parse(&session.api_url).map_err(|_| DiscoverFault::Unreadable)?;
-    let tls = match url.origin().scheme == base_url::UrlScheme::Https {
-        true => Tls::Implicit,
-        false => Tls::Plain,
+    let tls = if url.origin().scheme == base_url::UrlScheme::Https {
+        Tls::Implicit
+    } else {
+        Tls::Plain
     };
     let endpoint = ServiceEndpoint {
         family: Family::Jmap,

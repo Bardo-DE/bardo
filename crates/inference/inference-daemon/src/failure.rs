@@ -29,6 +29,7 @@ pub struct Moment {
 /// is told as the engine having stopped when it is not running now, and as running out of
 /// graphics memory when it is running and the card has less free than one more request needs.
 /// Any other error stands as it is: a refused prompt stays refused, a timeout stays a timeout.
+#[must_use]
 pub fn explain(error: ModelError, moment: &Moment) -> ModelError {
     match (error, moment.engine, moment.memory) {
         (ModelError::Unreachable, EngineView::NotRunning, _) => ModelError::EngineStopped,
@@ -71,6 +72,7 @@ pub enum Retry {
 /// The person's own request that was on an engine that stopped, before it sent anything, is run
 /// once more on another healthy instance of the same model (`others` of them). Nothing else is
 /// retried, and never on a different model: there is no quiet fallback.
+#[must_use]
 pub fn retry(who: Priority, error: ModelError, spoke: Spoke, tried: Tried, others: usize) -> Retry {
     match (who, error, spoke, tried, others) {
         (Priority::Person, ModelError::EngineStopped, Spoke::Nothing, Tried::Never, 1..) => {
@@ -85,6 +87,7 @@ fn mebibytes(bytes: Bytes) -> u64 {
 }
 
 /// The one line the log gets for a failure, with the hardware numbers of the moment.
+#[must_use]
 pub fn log_line(what: &str, engine: Option<&EngineId>, facts: &HardwareFacts) -> String {
     let memory = facts.memory.map_or_else(
         || "graphics memory not read".to_owned(),

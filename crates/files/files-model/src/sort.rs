@@ -12,6 +12,7 @@ use crate::open::{Opens, opens};
 ///
 /// Name sorting is natural and case-insensitive (`file2` before `file10`) and does not put
 /// folders first; Kind sorting does. Descending reverses the whole order.
+#[must_use]
 pub fn compare(a: &Entry, b: &Entry, sort: Sort) -> Ordering {
     let ordered = match sort.key {
         SortKey::Name => by_name(a, b),
@@ -48,7 +49,11 @@ fn kind_key(entry: &Entry) -> (u8, Option<&str>, Option<Vec<u8>>) {
         .name
         .extension()
         .map(|e| e.as_bytes().to_ascii_lowercase());
-    (rank, entry.mime.as_ref().map(|m| m.as_str()), extension)
+    (
+        rank,
+        entry.mime.as_ref().map(files_core::MimeType::as_str),
+        extension,
+    )
 }
 
 /// Letters compare ignoring ASCII case, runs of digits compare as numbers.

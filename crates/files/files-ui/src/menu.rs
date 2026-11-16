@@ -9,6 +9,7 @@ use crate::edge::AppChoiceView;
 use crate::words;
 
 /// quire's availability for a yes/no.
+#[must_use]
 pub fn enabled(can: bool) -> ui_components::prelude::Availability {
     if can {
         ui_components::prelude::Availability::Enabled
@@ -66,11 +67,13 @@ pub enum Command {
 
 impl Command {
     /// The menu item's words.
+    #[must_use]
     pub fn title(self) -> &'static str {
         words::command_title(self)
     }
 
     /// What picking it asks of the browser; `None` for a parent of a submenu, which is not picked.
+    #[must_use]
     pub fn input(self) -> Option<Input> {
         Some(match self {
             Command::OpenWith => return None,
@@ -110,6 +113,7 @@ pub enum Pick {
 
 impl Pick {
     /// What picking it asks of the browser; `None` for a parent of a submenu.
+    #[must_use]
     pub fn input(&self) -> Option<Input> {
         match self {
             Pick::Command(command) => command.input(),
@@ -134,6 +138,7 @@ pub struct AppLine {
 
 /// The Open With lines for `apps`: the default first with "(default)" after its name, the others
 /// sorted by name (ignoring case).
+#[must_use]
 pub fn app_lines(apps: Vec<AppChoiceView>) -> Vec<AppLine> {
     let (mut defaults, mut others): (Vec<_>, Vec<_>) =
         apps.into_iter().partition(|app| app.is_default);
@@ -155,6 +160,7 @@ pub fn app_lines(apps: Vec<AppChoiceView>) -> Vec<AppLine> {
 }
 
 /// Every app for the sheet behind "Other…", sorted by name (ignoring case), with no default mark.
+#[must_use]
 pub fn app_names(apps: Vec<AppChoiceView>) -> Vec<AppLine> {
     let mut lines: Vec<AppLine> = apps
         .into_iter()
@@ -179,6 +185,7 @@ pub enum Over {
 
 /// The menu for a press `over` something in `browser`: groups of commands, each with whether it
 /// can be picked now.
+#[must_use]
 pub fn groups_for(browser: &Browser, over: Over) -> Vec<Vec<(Command, bool)>> {
     let selected = browser.selection().len();
     let some = selected > 0;

@@ -25,6 +25,7 @@ impl UnitDir {
     }
 
     /// The directory.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.dir
     }

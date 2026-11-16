@@ -36,6 +36,7 @@ pub struct Timing {
 impl Timing {
     /// Timing lines for a clock whose zero read `epoch` on `CLOCK_MONOTONIC`
     /// (`ClockSource::monotonic_epoch_ns`). The session starts at that epoch.
+    #[must_use]
     pub fn new(epoch: Stamp) -> Timing {
         Timing {
             epoch,
@@ -62,11 +63,13 @@ impl Timing {
     }
 
     /// The lines kept so far (a test's timing); none otherwise.
+    #[must_use]
     pub fn lines(&self) -> &[String] {
         self.sink.lines()
     }
 
     /// The moment `at` on the session clock, on `CLOCK_MONOTONIC`.
+    #[must_use]
     pub fn stamp(&self, at: Mono) -> Stamp {
         Stamp::of(self.epoch, at)
     }
@@ -74,11 +77,13 @@ impl Timing {
     /// Whether no frame has anything to tell: no window waits for its first show, no key change
     /// waits for a frame and the shell has no surface to show yet (none connected, or its start
     /// is over).
+    #[must_use]
     pub fn is_idle(&self) -> bool {
         self.shows.is_empty() && self.pending.is_empty() && !self.session.watches_surfaces()
     }
 
     /// Whether frames should be looked at for the shell's bar and dock.
+    #[must_use]
     pub fn watches_shell(&self) -> bool {
         self.session.watches_surfaces()
     }
@@ -89,6 +94,7 @@ impl Timing {
     }
 
     /// When `client` connected, if it is still connected.
+    #[must_use]
     pub fn connected_at(&self, client: ClientKey) -> Option<Stamp> {
         self.connected.get(&client).copied()
     }
@@ -118,11 +124,13 @@ impl Timing {
     }
 
     /// The windows whose first show waits for the first frame that shows them, in id order.
+    #[must_use]
     pub fn awaiting_frame(&self) -> Vec<WindowId> {
         self.awaiting(false)
     }
 
     /// The windows whose first show waits for the end of their open animation, in id order.
+    #[must_use]
     pub fn awaiting_rest(&self) -> Vec<WindowId> {
         self.awaiting(true)
     }

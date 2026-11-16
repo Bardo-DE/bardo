@@ -78,6 +78,7 @@ impl AfterResolve {
     }
 
     /// Whether nothing is registered (a host may skip the read then).
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.borrow().readings.is_empty()
     }
@@ -101,6 +102,7 @@ impl Drop for Registration {
 }
 
 /// Run `publishes` and count the ones whose owner was still there (a host redraws when any was).
+#[must_use]
 pub fn publish(publishes: Vec<Publish>) -> usize {
     publishes
         .into_iter()

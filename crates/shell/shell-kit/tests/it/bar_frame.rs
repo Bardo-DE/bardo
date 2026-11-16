@@ -239,7 +239,7 @@ fn popup(chrome: Option<RootChrome>) -> Element {
                 anchor: Anchor::Point(Point { x: Px(80.0), y: Px(60.0) }),
                 items: entries(),
                 onpick: |_| {},
-                onclose: |_| {},
+                onclose: |()| {},
             }
         }
     }
@@ -299,7 +299,7 @@ fn GroundedBar() -> Element {
                 anchor: Anchor::Point(Point { x: Px(20.0), y: Px(60.0) }),
                 placement: Placement::new(Side::Bottom, Align::Start),
                 gap: Px(0.0),
-                onclose: |_| {},
+                onclose: |()| {},
                 div { style: "padding:12px", span { class: "ink-probe on-paper" } }
             }
         }

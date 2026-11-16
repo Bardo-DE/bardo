@@ -3,6 +3,7 @@
 use super::{DockPins, PinAt, PinEvent};
 
 /// `pins` after `event`.
+#[must_use]
 pub fn step(pins: DockPins, event: PinEvent) -> DockPins {
     let DockPins { mut pinned } = pins;
     match event {

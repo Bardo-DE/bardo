@@ -25,6 +25,7 @@ pub struct SpaceSync {
 
 impl SpaceSync {
     /// Registers through `registry`.
+    #[must_use]
     pub fn new(registry: Box<dyn SpaceRegistry>) -> SpaceSync {
         SpaceSync {
             registry,
@@ -34,6 +35,7 @@ impl SpaceSync {
     }
 
     /// Registers nothing.
+    #[must_use]
     pub fn none() -> SpaceSync {
         SpaceSync::new(Box::new(NoSpaceRegistry))
     }
