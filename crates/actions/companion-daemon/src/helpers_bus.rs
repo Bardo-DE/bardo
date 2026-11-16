@@ -411,8 +411,7 @@ impl Helpers2Object {
     ) -> fdo::Result<String> {
         let speaker = self.speakers.require(&header, Call::Converse).await?;
         let session = SessionId::parse(&session)
-            .ok()
-            .ok_or_else(|| fdo::Error::InvalidArgs("there is no such conversation".into()))?;
+            .map_err(|e| fdo::Error::InvalidArgs(format!("there is no such conversation: {e}")))?;
         json(
             &self
                 .desk
@@ -451,8 +450,7 @@ impl TerminalsObject {
     ) -> fdo::Result<String> {
         self.speakers.require(&header, Call::Helpers).await?;
         let session = SessionId::parse(&session)
-            .ok()
-            .ok_or_else(|| fdo::Error::InvalidArgs("there is no such conversation".into()))?;
+            .map_err(|e| fdo::Error::InvalidArgs(format!("there is no such conversation: {e}")))?;
         json(&self.desk.bring_back_terminal(session).await)
     }
 
@@ -463,8 +461,7 @@ impl TerminalsObject {
     ) -> fdo::Result<String> {
         self.speakers.require(&header, Call::Recognise).await?;
         let seen: SeenCommand = serde_json::from_str(&seen)
-            .ok()
-            .ok_or_else(|| fdo::Error::InvalidArgs("that is not a command line".into()))?;
+            .map_err(|e| fdo::Error::InvalidArgs(format!("that is not a command line: {e}")))?;
         json(&self.desk.recognise(seen).await)
     }
 

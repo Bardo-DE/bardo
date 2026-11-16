@@ -42,8 +42,8 @@ pub enum FakeError {
     #[error("policy: {0}")]
     Policy(PolicyError),
     /// The fixture Space id is malformed.
-    #[error("space")]
-    Space,
+    #[error("the fixture space id is malformed")]
+    Space(#[source] account_core::CoreError),
 }
 
 /// The fixture mail manifest, validated.
@@ -223,7 +223,7 @@ pub fn fake_router_reading<
     log: L,
     reader: Rd,
 ) -> Result<Reading<R, W, K, L, C, Rd>, FakeError> {
-    let space = SpaceId::parse("work").ok().ok_or(FakeError::Space)?;
+    let space = SpaceId::parse("work").map_err(FakeError::Space)?;
     let mail = mail_manifest().map_err(FakeError::Manifest)?;
     let files = files_manifest().map_err(FakeError::Manifest)?;
     let menu = menu_manifest().map_err(FakeError::Manifest)?;

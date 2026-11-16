@@ -65,8 +65,8 @@ const SENSITIVE: &[&str] = &[
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum Refusal {
     /// Not an absolute path, or it steps up.
-    #[error("not an absolute path without ..")]
-    BadPath,
+    #[error("the requested path is not usable")]
+    BadPath(#[source] base_path::AbsPathError),
     /// Outside the session's directory.
     #[error("outside the session's directory")]
     Outside,
@@ -131,7 +131,7 @@ fn care(path: &AbsPath) -> Care {
 ///
 /// [`Refusal`] when `requested` is not an absolute path or is outside `scope`.
 pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, Refusal> {
-    let path = AbsPath::parse(requested).ok().ok_or(Refusal::BadPath)?;
+    let path = AbsPath::parse(requested).map_err(Refusal::BadPath)?;
     if !scope.covers(&path) {
         return Err(Refusal::Outside);
     }
@@ -163,6 +163,7 @@ pub fn confine(real_scope: &AbsPath, path: AbsPath, real: AbsPath) -> Result<Con
 #[cfg(test)]
 mod tests {
     use super::*;
+    use base_path::AbsPathError;
 
     fn abs(t: &str) -> AbsPath {
         AbsPath::parse(t).expect("abs")
@@ -172,18 +173,24 @@ mod tests {
     fn names_are_checked_before_the_file_system_is_asked() {
         let scope = abs("/work/app");
         named(&scope, "/work/app/src/a.rs").unwrap();
-        assert_eq!(named(&scope, "src/a.rs"), Err(Refusal::BadPath));
+        assert_eq!(
+            named(&scope, "src/a.rs"),
+            Err(Refusal::BadPath(AbsPathError::NotAbsolute))
+        );
         assert_eq!(
             named(&scope, "/work/app/../etc/passwd"),
-            Err(Refusal::BadPath)
+            Err(Refusal::BadPath(AbsPathError::ParentStep))
         );
         assert_eq!(
             named(&scope, "/work/app/src/../../x"),
-            Err(Refusal::BadPath)
+            Err(Refusal::BadPath(AbsPathError::ParentStep))
         );
         assert_eq!(named(&scope, "/work/application/a"), Err(Refusal::Outside));
         assert_eq!(named(&scope, "/etc/passwd"), Err(Refusal::Outside));
-        assert_eq!(named(&scope, "/work/app/a\nb"), Err(Refusal::BadPath));
+        assert_eq!(
+            named(&scope, "/work/app/a\nb"),
+            Err(Refusal::BadPath(AbsPathError::Control))
+        );
     }
 
     #[test]

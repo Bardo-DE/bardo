@@ -179,8 +179,8 @@ pub enum ConfigFault {
     Entry {
         /// The program as written.
         program: String,
-        /// What is wrong.
-        why: &'static str,
+        /// What is wrong, and what the value failed on when it did.
+        why: String,
     },
     /// An `allow` or `deny` entry that is not a host or a `*.domain` pattern.
     #[error("agent `{program}`: `{entry}` in {list} is not a usable site: {why}")]

@@ -40,11 +40,16 @@ fn shown(pattern: &HostPattern) -> String {
     }
 }
 
-fn fault(program: &str, why: &'static str) -> ConfigFault {
+fn fault(program: &str, why: &str) -> ConfigFault {
     ConfigFault::Entry {
         program: program.to_owned(),
-        why,
+        why: why.to_owned(),
     }
+}
+
+/// [`fault`] for a value that was refused: `why`, then what refused it.
+fn fault_value(program: &str, why: &str, cause: &impl std::fmt::Display) -> ConfigFault {
+    fault(program, &format!("{why}: {cause}"))
 }
 
 impl Reach {
@@ -64,16 +69,14 @@ impl Reach {
         let denied = patterns(program, "deny", deny)?;
         let sites = allowed.iter().map(shown).collect();
         let ports = Ports::new(DEFAULT_PORTS.iter().chain(extra_ports).copied().collect())
-            .ok()
-            .ok_or_else(|| fault(program, "a port is 1 to 65535"))?;
-        let policy = EgressPolicy::new(allowed, denied, ports)
-            .ok()
-            .ok_or_else(|| {
-                fault(
-                    program,
-                    "network allowlist needs at least one entry in allow",
-                )
-            })?;
+            .map_err(|e| fault_value(program, "a port is 1 to 65535", &e))?;
+        let policy = EgressPolicy::new(allowed, denied, ports).map_err(|e| {
+            fault_value(
+                program,
+                "network allowlist needs at least one entry in allow",
+                &e,
+            )
+        })?;
         Ok(Self { policy, sites })
     }
 

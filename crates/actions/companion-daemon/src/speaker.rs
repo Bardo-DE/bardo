@@ -38,6 +38,13 @@ fn denied() -> fdo::Error {
     fdo::Error::AccessDenied("only the shell or a terminal speaks for the person".into())
 }
 
+/// [`denied`], with why the sender could not be vouched for.
+fn denied_because(cause: &impl std::fmt::Display) -> fdo::Error {
+    fdo::Error::AccessDenied(format!(
+        "only the shell or a terminal speaks for the person: {cause}"
+    ))
+}
+
 async fn owns_a_name(dbus: &DBusProxy<'_>, unique: &str) -> fdo::Result<bool> {
     for name in dbus.list_names().await? {
         let text = name.as_str();
@@ -110,12 +117,11 @@ impl Speakers {
     /// terminal's child.
     async fn terminal(&self, sender: &str) -> fdo::Result<Option<TerminalScope>> {
         let dbus = DBusProxy::new(&self.connection).await?;
-        let who = BusName::try_from(sender).ok().ok_or_else(denied)?;
+        let who = BusName::try_from(sender).map_err(|e| denied_because(&e))?;
         let credentials = dbus
             .get_connection_credentials(who)
             .await
-            .ok()
-            .ok_or_else(denied)?;
+            .map_err(|e| denied_because(&e))?;
         let same_user = own_uid().is_some_and(|ours| credentials.unix_user_id() == Some(ours));
         let scope = credentials
             .process_id()

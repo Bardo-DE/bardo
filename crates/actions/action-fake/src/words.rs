@@ -39,11 +39,8 @@ impl WordsModel {
             },
             ServedBy {
                 account: AccountId::parse("local")
-                    .ok()
-                    .ok_or_else(|| malformed("account"))?,
-                model: ModelId::parse("words")
-                    .ok()
-                    .ok_or_else(|| malformed("model"))?,
+                    .map_err(|e| malformed(&format!("account: {e}")))?,
+                model: ModelId::parse("words").map_err(|e| malformed(&format!("model: {e}")))?,
                 locality: Locality::OnDevice,
             },
         ))))

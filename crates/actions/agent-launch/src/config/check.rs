@@ -34,11 +34,16 @@ fn label(program: &str, text: Option<String>) -> Result<Option<String>, ConfigFa
     Ok(Some(trimmed.to_owned()))
 }
 
-fn bad(program: &str, why: &'static str) -> ConfigFault {
+fn bad(program: &str, why: &str) -> ConfigFault {
     ConfigFault::Entry {
         program: program.to_owned(),
-        why,
+        why: why.to_owned(),
     }
+}
+
+/// [`bad`] for a value that failed to parse: `why`, then what the parser said.
+fn bad_value(program: &str, why: &str, cause: &impl std::fmt::Display) -> ConfigFault {
+    bad(program, &format!("{why}: {cause}"))
 }
 
 /// The arguments that pick a conversation up, as written, or the well-known flag of the
@@ -67,9 +72,8 @@ fn resume_of(
 }
 
 fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigFault> {
-    let path = AbsPath::parse(text)
-        .ok()
-        .ok_or_else(|| bad(program, "a path must be absolute"))?;
+    let path =
+        AbsPath::parse(text).map_err(|e| bad_value(program, "a path must be absolute", &e))?;
     if path.is_root() {
         Err(bad(program, "a path must not be /"))
     } else {
@@ -79,9 +83,7 @@ fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigFault> {
 
 fn env(program: &str, name: Option<&String>) -> Result<Option<EnvName>, ConfigFault> {
     name.map(|n| {
-        EnvName::parse(n)
-            .ok()
-            .ok_or_else(|| bad(program, "not an environment variable name"))
+        EnvName::parse(n).map_err(|e| bad_value(program, "not an environment variable name", &e))
     })
     .transpose()
 }
@@ -171,8 +173,7 @@ fn plain_variables(
     set.iter()
         .map(|(k, v)| {
             let name = EnvName::parse(k)
-                .ok()
-                .ok_or_else(|| bad(at, "not an environment variable name"))?;
+                .map_err(|e| bad_value(at, "not an environment variable name", &e))?;
             let fine = !forbidden(k)
                 && Some(&name) != key_env
                 && Some(&name) != base_url_env
@@ -237,13 +238,13 @@ fn check_route_needs(at: &str, route: Route, raw: &Raw) -> Result<(), ConfigFaul
 
 pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFault> {
     let at = raw.program.clone();
-    let name = ProgramName::parse(&raw.program)
-        .ok()
-        .ok_or_else(|| bad(&at, "not a program name"))?;
-    let program = AgentProgram::parse(&raw.program).ok().ok_or_else(|| {
-        bad(
+    let name =
+        ProgramName::parse(&raw.program).map_err(|e| bad_value(&at, "not a program name", &e))?;
+    let program = AgentProgram::parse(&raw.program).map_err(|e| {
+        bad_value(
             &at,
             "a program is lower-case letters, digits and - (porter's grammar)",
+            &e,
         )
     })?;
     let claude_code = match raw.profile.as_deref() {
@@ -297,15 +298,13 @@ pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFa
             .as_deref()
             .map(SignIn::parse)
             .transpose()
-            .ok()
-            .ok_or_else(|| bad(&at, "sign_in is 1 to 64 letters, digits, - _ or ."))?,
+            .map_err(|e| bad_value(&at, "sign_in is 1 to 64 letters, digits, - _ or .", &e))?,
         model: raw
             .model
             .as_deref()
             .map(ModelId::parse)
             .transpose()
-            .ok()
-            .ok_or_else(|| bad(&at, "a model id has no spaces or control characters"))?,
+            .map_err(|e| bad_value(&at, "a model id has no spaces or control characters", &e))?,
         registry: raw.registry.clone(),
         rewind: raw.checkpoints.unwrap_or(if claude_code {
             Rewind::Agent

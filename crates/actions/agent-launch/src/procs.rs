@@ -15,7 +15,7 @@ use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
 use tokio::process::{Child, ChildStderr, ChildStdin, ChildStdout, Command};
 
 /// Why a process did not start.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum ProcFault {
     /// The sandbox program is missing or the kernel refuses it: nothing runs unconfined.
     #[error("no sandbox: the agent is not started unconfined")]
@@ -23,6 +23,15 @@ pub enum ProcFault {
     /// The process did not start.
     #[error("the process did not start")]
     Spawn,
+    /// The sandbox program did not start.
+    #[error("the sandbox program did not start")]
+    Sandbox(#[source] StartFault),
+    /// The process could not be spawned.
+    #[error("the agent process could not be spawned")]
+    Exec(#[source] std::io::Error),
+    /// The syscall filter file could not be written.
+    #[error("the syscall filter file could not be written")]
+    Filter(#[source] std::io::Error),
     /// A file descriptor of ours would leak into the sandbox, or its syscall filter could not be
     /// handed over: nothing runs.
     #[error("the sandbox refused to start the agent")]
@@ -163,7 +172,7 @@ fn refused(fault: &StartFault) -> ProcFault {
     match fault {
         StartFault::Cannot(_) => ProcFault::NoSandbox,
         StartFault::InheritedFds | StartFault::FilterFile => ProcFault::Refused,
-        StartFault::Spawn(_) => ProcFault::Spawn,
+        StartFault::Spawn(_) => ProcFault::Sandbox(fault.clone()),
     }
 }
 
@@ -181,8 +190,7 @@ impl Procs for BwrapProcs {
         let mut filter = ChildFilter(Some(PathBuf::from(file.as_str())));
         self.sandbox
             .write_filter(&file)
-            .ok()
-            .ok_or(ProcFault::Spawn)?;
+            .map_err(ProcFault::Filter)?;
         // Limits, the syscall filter, exactly the environment of `run` (and none of ours, none of
         // it on a command line) all come with the command. It fails closed.
         let mut command = Command::from(
@@ -200,7 +208,7 @@ impl Procs for BwrapProcs {
                 None => Stdio::null(),
             })
             .kill_on_drop(true);
-        let mut child = command.spawn().ok().ok_or(ProcFault::Spawn)?;
+        let mut child = command.spawn().map_err(ProcFault::Exec)?;
         let stdin = child.stdin.take().ok_or(ProcFault::Spawn)?;
         let stdout = child.stdout.take().ok_or(ProcFault::Spawn)?;
         let level = Arc::new(OnceLock::new());
@@ -247,8 +255,7 @@ impl BwrapProcs {
         let file = self.filter_path().ok_or(ProcFault::Spawn)?;
         self.sandbox
             .write_filter(&file)
-            .ok()
-            .ok_or(ProcFault::Spawn)?;
+            .map_err(ProcFault::Filter)?;
         let command = self
             .sandbox
             .agent_command(run, Some(&file))

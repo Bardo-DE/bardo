@@ -194,8 +194,7 @@ impl IntentProvider for FakeFiles {
                 }
                 s.next += 1;
                 let token = UndoToken::parse(&format!("files-undo-{}", s.next))
-                    .ok()
-                    .ok_or(AppRefusal::Busy)?;
+                    .expect("the fake's own counter makes a valid undo token");
                 s.undo.insert(token.as_str().to_owned(), undo);
                 Ok(outcome(
                     Some(format!("Moved {} files", keys.len())),
