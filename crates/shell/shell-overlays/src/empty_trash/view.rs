@@ -13,7 +13,6 @@ use shell_ui_kit::root::SurfaceRoot;
 use shell_ui_kit::sheet_stage::{SheetStage, settle};
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::io::use_stage;
 use super::surface::PANEL_ID;

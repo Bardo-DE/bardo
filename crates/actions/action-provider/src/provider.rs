@@ -7,7 +7,6 @@ use action_manifest::ValidManifest;
 use action_vocab::{EntityRef, UndoToken};
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
 use provenance::{Actor, EntityId};
-use std::future::Future;
 
 /// What an app implements to take part. `context` and `summon` have no method here: ds answers
 /// them through [`ContextSource`] and [`SummonTarget`], which `action-ui-adapter` implements.

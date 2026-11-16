@@ -10,7 +10,6 @@ use crate::codec::Logged;
 use crate::entry::{Seq, SessionEntry};
 use base_ids::Count;
 use provenance::SessionId;
-use std::future::Future;
 
 /// Why an append or a page failed. A taint entry that is refused for any of these refuses the
 /// reveal it guards (fail closed).

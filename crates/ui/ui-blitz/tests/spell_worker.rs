@@ -6,7 +6,6 @@
 #[path = "support/spell_dict.rs"]
 mod spell_dict;
 
-use std::future::Future;
 use std::path::Path;
 use ui_blitz::spell::{NativeSpell, SpellConfig};
 use ui_components::prelude::*;

@@ -789,7 +789,6 @@ mod phase {
     use std::rc::Rc;
     use std::time::Duration;
     use ui_components::base::geometry::scroll::Scroll;
-    use ui_components::host::document::{DocumentHost, use_document_host};
     use ui_components::host::measure::MountedRef;
     use ui_components::host::phase::{Observe, Observed, PhaseWrite, Watch};
     use ui_components::prelude::*;

@@ -62,7 +62,6 @@ pub(in crate::wallpaper) fn secondary_press(
     open: Callback<DesktopPoint>,
 ) {
     use dioxus::html::input_data::MouseButton;
-    use dioxus::html::point_interaction::{InteractionLocation, PointerInteraction};
     if event.trigger_button() == Some(MouseButton::Secondary) {
         let at = event.client_coordinates();
         open.call(DesktopPoint {

@@ -14,7 +14,6 @@ mod keep {
     use std::time::Duration;
     use ui_blitz::FocusFallback;
     use ui_components::prelude::*;
-    use ui_components::root::common::Common;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
     const VIEW: Viewport = Viewport {
@@ -370,7 +369,6 @@ mod removed {
     use ui_components::base::press::Press;
     use ui_components::host::measure::{Anchor, MountedRef};
     use ui_components::prelude::*;
-    use ui_components::root::common::Common;
     use ui_harness::harness::settle_until;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 

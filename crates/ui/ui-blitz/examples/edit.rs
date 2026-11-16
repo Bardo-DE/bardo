@@ -15,7 +15,6 @@ use ui_components::edit::pointer::EditPointer;
 use ui_components::host::captured::PointerPhase;
 use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(

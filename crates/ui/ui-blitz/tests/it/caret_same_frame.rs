@@ -12,7 +12,6 @@ use ui_components::edit::input::EditInput;
 use ui_components::host::position::TextPosition;
 use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, PhaseOrder, Viewport};
 
 const VIEW: Viewport = Viewport {

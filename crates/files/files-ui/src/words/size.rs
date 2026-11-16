@@ -66,7 +66,7 @@ fn written(unit: usize, shown: f64) -> String {
 
 #[cfg(test)]
 mod tests {
-    use files_core::{ByteSize, Entry, EntryKind, FileName, LinkTo, Special};
+    use files_core::{FileName, Special};
 
     use super::*;
 

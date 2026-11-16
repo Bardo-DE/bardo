@@ -18,7 +18,6 @@ use ui_components::base::press::PointerButton;
 use ui_components::edit::input::{EditInput, KeyInput};
 use ui_components::host::position::TextPosition;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::spell::lang::{Lang, Spell};
 use ui_components::spell::marks::SpellReplace;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};

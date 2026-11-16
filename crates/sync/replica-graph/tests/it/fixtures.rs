@@ -9,7 +9,6 @@ use base_time::UnixSeconds;
 use base_url::WebUrl;
 use replica_graph::{CHUNK_UNIT, GraphReplica, Uploads};
 use std::collections::BTreeMap;
-use std::future::Future;
 use std::sync::{Arc, Mutex};
 use sync_core::{
     Anchor, BaseVersion, Blob, Change, ContentHash, Cursor, ItemKind, ItemPath, More, PutItem,

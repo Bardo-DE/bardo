@@ -6,7 +6,6 @@
 
 use dioxus::prelude::*;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::ExtraClass;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 

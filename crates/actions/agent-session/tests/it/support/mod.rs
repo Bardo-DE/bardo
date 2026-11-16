@@ -13,7 +13,6 @@ use provenance::{
     UnixSeconds,
 };
 use std::collections::BTreeSet;
-use std::future::Future;
 use std::pin::pin;
 use std::task::{Context, Poll, Waker};
 

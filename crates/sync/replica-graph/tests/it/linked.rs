@@ -14,7 +14,6 @@ use base_ids::Bytes;
 use base_url::{Origin, WebUrl};
 use common::{TOKEN, TcpDial, client};
 use replica_graph::{GraphReplica, Uploads};
-use std::future::Future;
 use sync_core::Clock;
 use sync_core::{
     BaseVersion, Blob, ByteRange, Change, Cursor, ItemPath, PutItem, PutRefused, PutTarget,

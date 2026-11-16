@@ -15,7 +15,6 @@
 //! any order (Tokio's own guards panic unless they drop newest first).
 
 use std::cell::RefCell;
-use std::future::Future;
 use std::marker::PhantomData;
 use std::pin::Pin;
 use tokio::runtime::{EnterGuard, Handle, Runtime};

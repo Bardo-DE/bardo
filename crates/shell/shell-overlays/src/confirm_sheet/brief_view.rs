@@ -15,12 +15,10 @@ use shell_model::intents::sheet::{
     removed, span_text,
 };
 use shell_model::untrusted::for_display;
-use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::text_field_model::FieldRows;
 use ui_components::machine::MachineRef;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::gate::{AnswerGate, GateIn};
 

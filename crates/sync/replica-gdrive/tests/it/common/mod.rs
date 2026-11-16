@@ -10,7 +10,6 @@ use account_http_relay::{Dial, RelayHttp, RelayLimits};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use replica_gdrive::{GdriveReplica, Root, Uploads};
-use std::future::Future;
 use sync_core::Clock;
 use tokio::net::TcpStream;
 

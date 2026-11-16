@@ -14,7 +14,6 @@ use ui_components::host::captured::PointerPhase;
 use ui_components::host::position::TextPosition;
 use ui_components::host::probe::Probe;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName, ExtraClass};
 use ui_harness::{Clock, Harness, HarnessConfig, Input, PointerAction, PointerInput, Viewport};
 

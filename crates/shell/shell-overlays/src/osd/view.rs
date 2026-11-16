@@ -10,7 +10,6 @@ use shell_kit::prelude::*;
 use shell_model::ids::OutputName;
 use ui_components::components::controls::level_indicator::LevelStyle;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::io::{times, use_osd};
 use super::layer::{CARD_ID, layer};

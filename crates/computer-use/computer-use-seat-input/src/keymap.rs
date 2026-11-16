@@ -179,7 +179,6 @@ impl Keymap {
     /// The key code of a named key or a character key by its W3C `key` value.
     #[must_use]
     pub fn code_of(&self, key: &keyboard_types::Key) -> Option<Keycode> {
-        use keyboard_types::Key;
         let wanted = match key {
             Key::Character(text) => {
                 let mut chars = text.chars();

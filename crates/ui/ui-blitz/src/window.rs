@@ -21,7 +21,6 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 use ui_components::prelude::*;
-use ui_components::window::icon::WindowIcon;
 use ui_components::window::vocab::{PageZoom, TileError, WindowTile, Zoom};
 
 /// The winit window, as the frame's host.

@@ -30,7 +30,7 @@ fn file_words(entry: &Entry) -> String {
 
 #[cfg(test)]
 mod tests {
-    use files_core::{ByteSize, Entry, EntryKind, FileName, LinkTo, Special};
+    use files_core::{ByteSize, FileName};
 
     use super::*;
 

@@ -15,7 +15,6 @@ use inference_core::{
 use permission_core::{ArgLabels, SessionSaw, Strictness};
 use provenance::{ActionName, Effect, Integrity, SpaceId};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
-use std::future::Future;
 use std::pin::pin;
 use std::sync::{Arc, Mutex};
 use std::task::{Context, Poll, Waker};

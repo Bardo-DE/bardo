@@ -9,11 +9,10 @@ use crate::daemon::route::Routed;
 use crate::daemon::socket::client::{connect, recv};
 use crate::daemon::socket::{SeatFile, bind, socket_path, spawn, vouch};
 use crate::daemon::uinput::RecordingEmitter;
-use crate::{DeviceId, Edge, Key, Layout, Mono, Physical, RemapInput};
+use crate::{Edge, Key, Layout, Mono, Physical, RemapInput};
 use key_remap_devtest::Scratch;
 use key_remap_proto::{ProfileName, ToClient};
 use rustix::fd::OwnedFd;
-use std::time::Duration;
 
 pub(super) struct Rig {
     _dir: Scratch,

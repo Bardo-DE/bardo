@@ -7,7 +7,6 @@ use crate::receipt::InputReceipt;
 use computer_use_desktop::{EiSocket, GlobalRect, LeaseGrant, LeaseId};
 pub use computer_use_types::SeatError;
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 use std::sync::Arc;
 
 /// Whether the seat is delivering input.

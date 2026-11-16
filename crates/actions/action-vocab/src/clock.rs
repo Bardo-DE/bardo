@@ -2,7 +2,6 @@
 //! test's in `action-fake`; nothing else in the repo reads the time or sleeps for a deadline.
 
 use crate::Millis;
-use std::future::Future;
 
 /// The one clock: [`base_time::Clock`] (now, as Unix seconds) plus the deadline a host races a
 /// peer against.

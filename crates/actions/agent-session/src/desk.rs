@@ -6,7 +6,6 @@
 use crate::backend::SheetChoice;
 use action_core::{ConfirmId, ConfirmRequest};
 use provenance::SessionId;
-use std::future::Future;
 
 /// Why a sheet could not be answered.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

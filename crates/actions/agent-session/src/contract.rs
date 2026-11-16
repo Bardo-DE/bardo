@@ -9,7 +9,6 @@
 use crate::backend::{BackendEvent, BackendFault, CallEvent, SessionBackend, TurnEnd};
 use action_core::{Reveal, UserTurn};
 use action_vocab::CallId;
-use std::future::Future;
 use std::pin::pin;
 use std::task::{Context, Poll, Waker};
 

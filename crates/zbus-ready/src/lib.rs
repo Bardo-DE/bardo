@@ -13,7 +13,6 @@
 //! This crate is a workaround. When zbus waits for its own object server task, delete the crate
 //! and its calls (`grep -rn zbus_ready::`).
 
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::Poll;

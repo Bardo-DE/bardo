@@ -18,7 +18,6 @@ use shell_kit::prelude::*;
 use shell_model::polkit_agent::{Cookie, PolkitCommand};
 use shell_services::{Control, PolkitAgentService};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::model::{PolkitPromptView, prompt_view};
 use super::surface::PANEL_ID;

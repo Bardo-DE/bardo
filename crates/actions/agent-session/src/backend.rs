@@ -12,7 +12,6 @@ use companion_wire::NeedsYou;
 use model_provider::Money;
 use permission_core::BreakerTrip;
 use provenance::SessionId;
-use std::future::Future;
 
 /// One thing the person can choose: its id as it is written in settings, and its name.
 #[derive(Debug, Clone, PartialEq, Eq)]

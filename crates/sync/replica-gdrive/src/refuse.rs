@@ -73,7 +73,6 @@ pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutRefused
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_http::http::Response;
     use sync_core::status::RETRY;
 
     fn answer(status: u16, retry: Option<&str>, reason: Option<&str>) -> Response<Vec<u8>> {

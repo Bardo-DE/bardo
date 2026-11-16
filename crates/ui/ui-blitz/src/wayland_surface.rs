@@ -113,7 +113,6 @@ impl Foreign {
     /// without the system libwayland.
     pub(crate) fn of(connection: &Connection, window: &impl Proxy) -> Option<Foreign> {
         use raw_window_handle::{WaylandDisplayHandle, WaylandWindowHandle};
-        use std::ptr::NonNull;
         let display = NonNull::new(connection.backend().display_ptr().cast())?;
         let window = NonNull::new(window.id().as_ptr().cast())?;
         Some(Foreign {

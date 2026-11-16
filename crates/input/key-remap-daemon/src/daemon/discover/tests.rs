@@ -1,4 +1,4 @@
-use super::caps::{Bits, Caps};
+use super::caps::Caps;
 use super::classify::{Eligibility, classify, is_virtual};
 use super::hotplug::{concerns_us, hotplug_of, hotplugs_of};
 use super::*;

@@ -10,7 +10,6 @@ use account_http_relay::{Dial, RelayHttp, RelayLimits};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use replica_graph::{GraphReplica, Root, Uploads};
-use std::future::Future;
 use sync_core::Clock;
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::net::TcpStream;

@@ -11,7 +11,6 @@ use layer_shell_host::OutputInfo;
 use shell_model::session::Session;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::choice::answers;
 use super::io::{MenuCtx, use_menu};

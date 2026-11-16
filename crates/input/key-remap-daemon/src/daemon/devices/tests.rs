@@ -1,4 +1,3 @@
-use super::model::DeviceEffect;
 use super::*;
 use crate::daemon::discover::Identity;
 use crate::daemon::grabber::FakeGrabber;

@@ -7,13 +7,11 @@ use dioxus::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_model::voice::{ConsentAnswer, VoiceCommand};
 use shell_services::VoiceService;
-use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::sheet_attach::Attach;
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::focus::soon::focus_soon;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::VOICE_CONSENT_CSS;
 use super::surface::PANEL_ID;
