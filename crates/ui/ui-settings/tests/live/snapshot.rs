@@ -51,6 +51,10 @@ impl LiveModule for Vanishing {
 struct Closed(Accounts);
 
 impl LiveModule for Closed {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _: &Caller, _: Access) -> Verdict {
         Verdict::Refuse
     }

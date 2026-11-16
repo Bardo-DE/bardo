@@ -113,6 +113,10 @@ impl<L: Lookup> Provider for GenericProvider<L> {
         &self.spec
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn discover(
         &self,
         _account: &Account,
@@ -121,6 +125,10 @@ impl<L: Lookup> Provider for GenericProvider<L> {
         Ok(declared(&self.spec))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(
         &self,
         account: &AccountId,
@@ -143,6 +151,10 @@ impl<L: Lookup> Provider for GenericProvider<L> {
         )))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn revoke(
         &self,
         _account: &Account,
@@ -154,6 +166,10 @@ impl<L: Lookup> Provider for GenericProvider<L> {
 }
 
 impl ProviderSession for GenericSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn access_token(&self, _audience: &Audience) -> Result<IssuedToken, ProviderError> {
         // A password is never handed to an app; the relay presents it.
         Err(ProviderError::Forbidden)

@@ -230,18 +230,34 @@ mod tests {
 
     struct Nothing;
     impl LiveModule for Nothing {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn permit(&self, _: &Caller, _: Access) -> Verdict {
             Verdict::Refuse
         }
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn describe(&self) -> LiveSchema {
             LiveSchema {
                 version: 1,
                 key: Vec::new(),
             }
         }
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
             Err(LiveError::UnknownKey(key.0.clone()))
         }
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn set(&self, key: &KeyPath, _: toml::Value) -> Result<(), LiveError> {
             Err(LiveError::UnknownKey(key.0.clone()))
         }

@@ -91,9 +91,17 @@ async fn changed_reaches_the_peers_that_may_read_and_not_one_that_was_refused() 
 struct Hanging;
 
 impl LiveModule for Hanging {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _: &Caller, _: Access) -> Verdict {
         Verdict::Allow
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         // One key, so a snapshot has a value to wait for.
         crate::module::schema()

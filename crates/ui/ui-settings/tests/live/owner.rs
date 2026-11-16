@@ -62,19 +62,35 @@ struct Witness {
 }
 
 impl LiveModule for Witness {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _: &Caller, _: Access) -> Verdict {
         self.asked.fetch_add(1, Ordering::SeqCst);
         Verdict::Allow
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         schema()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, _: &KeyPath) -> Result<toml::Value, LiveError> {
         Ok(toml::Value::String(String::new()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn set(&self, _: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
         let text = value.as_str().unwrap_or_default().to_owned();
         self.set.lock().expect("set").push(text);
@@ -261,10 +277,18 @@ async fn a_schema_over_a_cap_is_refused_and_one_at_the_cap_is_read() {
 struct Bulky;
 
 impl LiveModule for Bulky {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, _: &Caller, _: Access) -> Verdict {
         Verdict::Allow
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         LiveSchema {
             version: 1,
@@ -272,10 +296,18 @@ impl LiveModule for Bulky {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, _: &KeyPath) -> Result<toml::Value, LiveError> {
         Ok(toml::Value::String("x".repeat(VALUE_TEXT_MAX + 1)))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn set(&self, _: &KeyPath, _: toml::Value) -> Result<(), LiveError> {
         Ok(())
     }

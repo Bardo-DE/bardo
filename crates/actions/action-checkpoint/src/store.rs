@@ -112,22 +112,42 @@ pub trait CheckpointStore: Send + Sync {
 pub struct NoStore;
 
 impl CheckpointStore for NoStore {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn take(&self, _ask: TakeAsk) -> Result<Saved, StoreFault> {
         Err(StoreFault::NoHistory)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn held(&self, _root: &WorkRoot, _session: &SessionId) -> Result<Vec<Saved>, StoreFault> {
         Err(StoreFault::NoHistory)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn plan(&self, _ask: PlanAsk) -> Result<RestorePlan, StoreFault> {
         Err(StoreFault::NoHistory)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn apply(&self, _ask: ApplyAsk) -> Result<RestorePlan, StoreFault> {
         Err(StoreFault::NoHistory)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn drop_points(&self, _ask: DropAsk) -> Result<Count, StoreFault> {
         Err(StoreFault::NoHistory)
     }

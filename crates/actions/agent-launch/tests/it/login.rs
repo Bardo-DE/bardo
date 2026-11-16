@@ -31,6 +31,10 @@ impl Scripted {
 }
 
 impl LoginRunner for Scripted {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn run(&self, entry: &Entry, kind: AskKind) -> LoginOutcome {
         self.ran
             .lock()

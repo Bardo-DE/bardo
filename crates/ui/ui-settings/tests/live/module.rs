@@ -93,6 +93,10 @@ impl Accounts {
 }
 
 impl LiveModule for Accounts {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn permit(&self, caller: &Caller, access: Access) -> Verdict {
         match (access, &self.settings_role) {
             (Access::Read, _) if self.reads_refused.as_deref() == Some(&caller.sender.0) => {
@@ -104,10 +108,18 @@ impl LiveModule for Accounts {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> LiveSchema {
         self.schema.clone()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         self.values
             .lock()
@@ -117,6 +129,10 @@ impl LiveModule for Accounts {
             .ok_or_else(|| LiveError::UnknownKey(key.0.clone()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
         if key.0 == REMOVE {
             *self.removed.lock().expect("removed") += 1;

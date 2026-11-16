@@ -14,18 +14,34 @@ use account_core::{DataClass, GrantId, ProcessCredentialId, SessionToken};
 pub struct LoginOnly;
 
 impl Accounts for LoginOnly {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn register(&self, _programs: &[AgentProgram]) -> Result<(), AccountFault> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn begin_session(&self, _session: &SessionToken) -> Result<(), AccountFault> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn end_session(&self, _session: &SessionToken) -> Result<(), AccountFault> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_endpoint(
         &self,
         _program: &AgentProgram,
@@ -36,10 +52,18 @@ impl Accounts for LoginOnly {
         Err(AccountFault::Unreachable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn close_endpoint(&self, _session: &str) -> Result<(), AccountFault> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn request_key(
         &self,
         _program: &AgentProgram,
@@ -49,6 +73,10 @@ impl Accounts for LoginOnly {
         Err(AccountFault::Unreachable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn issue(
         &self,
         _permit: &GrantId,
@@ -58,14 +86,26 @@ impl Accounts for LoginOnly {
         Err(AccountFault::Unreachable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn revoke(&self, _id: &ProcessCredentialId) -> Result<(), AccountFault> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn hear(&self) -> Option<Heard> {
         None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn report(&self, _ask: &LoginAsk, _outcome: LoginOutcome) -> Result<(), AccountFault> {
         Ok(())
     }

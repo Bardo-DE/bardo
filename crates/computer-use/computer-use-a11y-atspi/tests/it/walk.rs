@@ -68,6 +68,10 @@ impl FakeTree {
 impl AtspiTree for FakeTree {
     type Key = u32;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn applications(&self) -> Result<Vec<u32>, A11yError> {
         match &self.bus {
             Some(error) => Err(error.clone()),
@@ -75,11 +79,19 @@ impl AtspiTree for FakeTree {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn process_of(&self, app: &u32) -> Result<Pid, A11yError> {
         let found = self.apps.iter().find(|(key, _)| key == app);
         found.map(|(_, pid)| Pid(*pid)).ok_or(A11yError::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn read(&self, node: &u32) -> Result<RawNode<u32>, A11yError> {
         self.objects.get(node).cloned().ok_or(A11yError::Gone)
     }

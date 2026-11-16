@@ -233,6 +233,10 @@ impl Lookup for FixedLookup {
         address_form(spec)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn submitted(&self, seams: &Seams<'_>, answers: Vec<FieldAnswer>) -> Outcome<()> {
         let Some((address, password)) = address_and_password(&answers) else {
             return Outcome::Fail(SignInFault::Unreadable);

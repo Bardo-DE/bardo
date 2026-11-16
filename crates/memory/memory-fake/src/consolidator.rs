@@ -40,6 +40,10 @@ impl ScriptedConsolidator {
 }
 
 impl Consolidator for ScriptedConsolidator {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn draft(&self, input: ConsolidationInput) -> Result<Draft, ConsolidateError> {
         self.seen
             .lock()

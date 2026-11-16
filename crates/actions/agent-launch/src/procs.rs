@@ -169,6 +169,10 @@ impl Procs for BwrapProcs {
     type Transport = StdioWire;
     type Proc = ChildProc;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn start(&mut self, run: &AgentRun) -> Result<(StdioWire, ChildProc), ProcFault> {
         let file = self.filter_path().ok_or(ProcFault::Spawn)?;
         // Held from here, so the file goes whichever way this returns.

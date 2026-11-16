@@ -129,20 +129,36 @@ impl Default for FakeAccounts {
 }
 
 impl Accounts for FakeAccounts {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn register(&self, programs: &[AgentProgram]) -> Result<(), AccountFault> {
         self.note(Call::Register(
             programs.iter().map(|p| p.as_str().to_owned()).collect(),
         ))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn begin_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
         self.note(Call::Begin(session.as_str().to_owned()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn end_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
         self.note(Call::End(session.as_str().to_owned()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_endpoint(
         &self,
         program: &AgentProgram,
@@ -163,10 +179,18 @@ impl Accounts for FakeAccounts {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn close_endpoint(&self, session: &str) -> Result<(), AccountFault> {
         self.note(Call::Close(session.to_owned()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn request_key(
         &self,
         program: &AgentProgram,
@@ -177,6 +201,10 @@ impl Accounts for FakeAccounts {
         GrantId::parse("permit-1").map_err(|_| AccountFault::Other)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn issue(
         &self,
         _permit: &GrantId,
@@ -190,14 +218,26 @@ impl Accounts for FakeAccounts {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn revoke(&self, id: &ProcessCredentialId) -> Result<(), AccountFault> {
         self.note(Call::Revoke(id.as_str().to_owned()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn hear(&self) -> Option<Heard> {
         locked(&self.state).heard.pop_front()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn report(&self, ask: &LoginAsk, outcome: LoginOutcome) -> Result<(), AccountFault> {
         self.note(Call::Report(ask.request.as_str().to_owned(), outcome))
     }
@@ -283,6 +323,10 @@ impl Procs for FakeProcs {
     type Transport = ChannelWire;
     type Proc = FakeProc;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn start(&mut self, run: &AgentRun) -> Result<(ChannelWire, FakeProc), ProcFault> {
         let wire = self.wires.pop_front().ok_or(ProcFault::Spawn)?;
         let index = {

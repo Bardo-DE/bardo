@@ -28,10 +28,18 @@ use std::sync::Arc;
 struct Nobody;
 
 impl Court for Nobody {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtFault> {
         Err(CourtFault::Unavailable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn turn(
         &mut self,
         _session: &SessionId,
@@ -40,10 +48,18 @@ impl Court for Nobody {
         Err(CourtFault::Unavailable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn call(&mut self, _session: &SessionId, _n: u64, _call: &AgentCall) -> Ruled {
         Ruled::Lost
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn registry(&mut self) -> Option<Vec<action_manifest::ValidManifest>> {
         None
     }

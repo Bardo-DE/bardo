@@ -141,11 +141,19 @@ impl ByteStream for Probe {
         std::future::pending().await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn write_all(&mut self, _bytes: &[u8]) -> io::Result<()> {
         self.0.store(true, Ordering::Release);
         Err(io::ErrorKind::BrokenPipe.into())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn shutdown(&mut self) -> io::Result<()> {
         Ok(())
     }

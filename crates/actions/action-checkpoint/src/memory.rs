@@ -134,6 +134,10 @@ impl MemoryStore {
 }
 
 impl CheckpointStore for MemoryStore {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn take(&self, ask: TakeAsk) -> Result<Saved, StoreFault> {
         let mut state = self.lock();
         Self::history(&state, &ask.root)?;
@@ -163,6 +167,10 @@ impl CheckpointStore for MemoryStore {
         Ok(saved)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn held(&self, root: &WorkRoot, session: &SessionId) -> Result<Vec<Saved>, StoreFault> {
         let state = self.lock();
         Self::history(&state, root)?;
@@ -174,11 +182,19 @@ impl CheckpointStore for MemoryStore {
             .collect())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn plan(&self, ask: PlanAsk) -> Result<RestorePlan, StoreFault> {
         let state = self.lock();
         Self::plan_for(&state, &ask.root, &ask.session, ask.id).map(|(plan, _)| plan)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn apply(&self, ask: ApplyAsk) -> Result<RestorePlan, StoreFault> {
         let mut state = self.lock();
         let (plan, then) = Self::plan_for(&state, &ask.root, &ask.session, ask.id)?;
@@ -203,6 +219,10 @@ impl CheckpointStore for MemoryStore {
         Ok(plan)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn drop_points(&self, ask: DropAsk) -> Result<Count, StoreFault> {
         let mut state = self.lock();
         Self::history(&state, &ask.root)?;

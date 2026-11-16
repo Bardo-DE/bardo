@@ -190,6 +190,10 @@ impl<L: Lookup> GenericFlow<L> {
 impl<L: Lookup> Flow for GenericFlow<L> {
     type Mid = Mid<L::Mid>;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn start(&mut self) -> Move<Self::Mid> {
         self.untried = false;
         if let SignInMode::EditServers {
