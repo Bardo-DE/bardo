@@ -60,7 +60,7 @@ impl Bench {
         assert!(errors.is_empty(), "{def}: {errors:?} in {value}");
     }
 
-    async fn call(
+    fn call(
         &mut self,
         method: &str,
         params: Value,
@@ -87,23 +87,21 @@ impl Bench {
         }
     }
 
-    async fn create(&mut self, command: &str, args: &[&str], cwd: &str) -> Result<String, Value> {
+    fn create(&mut self, command: &str, args: &[&str], cwd: &str) -> Result<String, Value> {
         let params = json!({
             "sessionId": "s1", "command": command, "args": args, "cwd": cwd,
             "env": [{"name": "API_TOKEN", "value": "hunter2"}, {"name": "LANG", "value": "C"}],
         });
-        let made = self
-            .call(
-                "terminal/create",
-                params,
-                "CreateTerminalRequest",
-                "CreateTerminalResponse",
-            )
-            .await?;
+        let made = self.call(
+            "terminal/create",
+            params,
+            "CreateTerminalRequest",
+            "CreateTerminalResponse",
+        )?;
         Ok(made["terminalId"].as_str().expect("id").to_owned())
     }
 
-    async fn on(
+    fn on(
         &mut self,
         method: &str,
         id: &str,
@@ -111,29 +109,25 @@ impl Bench {
         response: &str,
     ) -> Result<Value, Value> {
         let params = json!({"sessionId": "s1", "terminalId": id});
-        self.call(method, params, request, response).await
+        self.call(method, params, request, response)
     }
 
-    async fn output(&mut self, id: &str) -> Value {
+    fn output(&mut self, id: &str) -> Value {
         self.on(
             "terminal/output",
             id,
             "TerminalOutputRequest",
             "TerminalOutputResponse",
         )
-        .await
         .expect("output")
     }
 }
 
-#[tokio::test]
-async fn create_output_wait_kill_release_through_the_sandbox() {
+#[test]
+fn create_output_wait_kill_release_through_the_sandbox() {
     let mut b = bench(vec![Script::done("built\n", 0), Script::hangs("tick\n")]);
-    let quick = b
-        .create("cargo", &["build"], "/work/app")
-        .await
-        .expect("created");
-    let out = b.output(&quick).await;
+    let quick = b.create("cargo", &["build"], "/work/app").expect("created");
+    let out = b.output(&quick);
     assert_eq!(out["output"], "built\n");
     assert_eq!(out["truncated"], false);
     assert_eq!(out["exitStatus"]["exitCode"], 0);
@@ -144,27 +138,19 @@ async fn create_output_wait_kill_release_through_the_sandbox() {
             "WaitForTerminalExitRequest",
             "WaitForTerminalExitResponse",
         )
-        .await
         .expect("wait");
     assert_eq!(waited["exitCode"], 0);
 
-    let slow = b
-        .create("sleep", &["99"], "/work/app")
-        .await
-        .expect("created");
-    assert!(
-        b.output(&slow).await["exitStatus"].is_null(),
-        "still running"
-    );
+    let slow = b.create("sleep", &["99"], "/work/app").expect("created");
+    assert!(b.output(&slow)["exitStatus"].is_null(), "still running");
     b.on(
         "terminal/kill",
         &slow,
         "KillTerminalRequest",
         "KillTerminalResponse",
     )
-    .await
     .expect("kill");
-    let after = b.output(&slow).await;
+    let after = b.output(&slow);
     assert_eq!(
         after["output"], "tick\n",
         "the terminal stays valid after kill"
@@ -176,7 +162,6 @@ async fn create_output_wait_kill_release_through_the_sandbox() {
         "ReleaseTerminalRequest",
         "ReleaseTerminalResponse",
     )
-    .await
     .expect("release");
     assert_eq!(b.seen.killed(), [false, true]);
     assert!(
@@ -186,18 +171,15 @@ async fn create_output_wait_kill_release_through_the_sandbox() {
             "TerminalOutputRequest",
             "TerminalOutputResponse"
         )
-        .await
         .is_err(),
         "a released terminal is gone"
     );
 }
 
-#[tokio::test]
-async fn the_command_runs_with_the_cwd_a_cleared_env_and_no_network() {
+#[test]
+fn the_command_runs_with_the_cwd_a_cleared_env_and_no_network() {
     let mut b = bench(vec![Script::done("", 0)]);
-    b.create("ls", &["-la"], "/work/app/src")
-        .await
-        .expect("created");
+    b.create("ls", &["-la"], "/work/app/src").expect("created");
     let started = b.seen.started();
     assert_eq!(started[0].argv.line(), "ls -la");
     assert_eq!(started[0].cwd.as_str(), "/work/app/src");
@@ -205,14 +187,14 @@ async fn the_command_runs_with_the_cwd_a_cleared_env_and_no_network() {
     assert!(started[0].env.iter().all(|v| v.name != "API_TOKEN"));
 }
 
-#[tokio::test]
-async fn a_withheld_sandbox_is_not_advertised_and_runs_nothing() {
+#[test]
+fn a_withheld_sandbox_is_not_advertised_and_runs_nothing() {
     let (sandbox, seen) = FakeSandbox::withheld(CannotSandbox::NamespacesDenied);
     let mut b = with(sandbox, seen);
     let base = agent_client_protocol::schema::v1::ClientCapabilities::new();
     let caps = serde_json::to_value(b.terminals.capabilities(base)).expect("caps");
     assert_eq!(caps["terminal"], false);
-    let refused = b.create("ls", &[], "/work/app").await.expect_err("refused");
+    let refused = b.create("ls", &[], "/work/app").expect_err("refused");
     assert!(
         refused["message"]
             .as_str()
@@ -234,16 +216,16 @@ fn a_security_policy_refusal_keeps_its_own_reason() {
     );
 }
 
-#[tokio::test]
-async fn a_ready_sandbox_is_advertised() {
+#[test]
+fn a_ready_sandbox_is_advertised() {
     let b = bench(Vec::new());
     let base = agent_client_protocol::schema::v1::ClientCapabilities::new();
     let caps = serde_json::to_value(b.terminals.capabilities(base)).expect("caps");
     assert_eq!(caps["terminal"], true);
 }
 
-#[tokio::test]
-async fn output_is_capped_and_redacted() {
+#[test]
+fn output_is_capped_and_redacted() {
     let mut b = bench(vec![Script::done("old old old\nAPI_KEY=abc123\nend\n", 0)]);
     let params =
         json!({"sessionId": "s1", "command": "env", "cwd": "/work/app", "outputByteLimit": 30});
@@ -254,9 +236,8 @@ async fn output_is_capped_and_redacted() {
             "CreateTerminalRequest",
             "CreateTerminalResponse",
         )
-        .await
         .expect("created");
-    let out = b.output(made["terminalId"].as_str().expect("id")).await;
+    let out = b.output(made["terminalId"].as_str().expect("id"));
     let text = out["output"].as_str().expect("text");
     assert!(text.len() <= 30, "{text:?}");
     assert!(!text.contains("abc123"), "{text:?}");
@@ -264,36 +245,31 @@ async fn output_is_capped_and_redacted() {
     assert_eq!(out["truncated"], true);
 }
 
-#[tokio::test]
-async fn a_cwd_outside_the_session_and_a_foreign_session_are_refused() {
+#[test]
+fn a_cwd_outside_the_session_and_a_foreign_session_are_refused() {
     let mut b = bench(vec![Script::done("", 0)]);
-    b.create("ls", &[], "/etc").await.unwrap_err();
-    b.create("ls", &[], "/work/app/../other").await.unwrap_err();
-    let id = b.create("ls", &[], "/work/app").await.expect("created");
+    b.create("ls", &[], "/etc").unwrap_err();
+    b.create("ls", &[], "/work/app/../other").unwrap_err();
+    let id = b.create("ls", &[], "/work/app").expect("created");
     let params = json!({"sessionId": "someone-else", "terminalId": id});
-    let foreign = b
-        .call(
-            "terminal/output",
-            params,
-            "TerminalOutputRequest",
-            "TerminalOutputResponse",
-        )
-        .await;
+    let foreign = b.call(
+        "terminal/output",
+        params,
+        "TerminalOutputRequest",
+        "TerminalOutputResponse",
+    );
     assert!(
         foreign.is_err(),
         "another session cannot read this terminal"
     );
 }
 
-#[tokio::test]
-async fn a_command_past_its_deadline_is_killed_and_its_terminal_stays_readable() {
+#[test]
+fn a_command_past_its_deadline_is_killed_and_its_terminal_stays_readable() {
     let mut b = bench(vec![Script::hangs("tick\n")]);
     b.terminals
         .set_deadline(CommandDeadline::new(std::time::Duration::ZERO));
-    let id = b
-        .create("sleep", &["99"], "/work/app")
-        .await
-        .expect("created");
+    let id = b.create("sleep", &["99"], "/work/app").expect("created");
     let waited = b
         .on(
             "terminal/wait_for_exit",
@@ -301,9 +277,8 @@ async fn a_command_past_its_deadline_is_killed_and_its_terminal_stays_readable()
             "WaitForTerminalExitRequest",
             "WaitForTerminalExitResponse",
         )
-        .await
         .expect("wait");
     assert_eq!(waited["signal"], "KILL");
     assert_eq!(b.seen.killed(), [true]);
-    assert_eq!(b.output(&id).await["output"], "tick\n");
+    assert_eq!(b.output(&id)["output"], "tick\n");
 }

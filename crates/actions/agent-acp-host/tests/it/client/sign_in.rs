@@ -8,8 +8,8 @@ use agent_acp_host::{AgentHost, SignIn};
 use agent_session::{BackendFault, HostFault, SessionHost};
 use serde_json::json;
 
-fn method(id: &str) -> Option<SignIn> {
-    Some(SignIn::parse(id).expect("a sign-in id"))
+fn method(id: &str) -> SignIn {
+    SignIn::parse(id).expect("a sign-in id")
 }
 
 async fn open_with(
@@ -36,7 +36,7 @@ async fn open_with(
 
 #[tokio::test]
 async fn with_the_method_named_the_session_opens_after_authenticate() {
-    let (opened, agent) = Box::pin(open_with(Auth::Needed, method("oauth-personal"))).await;
+    let (opened, agent) = Box::pin(open_with(Auth::Needed, Some(method("oauth-personal")))).await;
     assert_eq!(opened, Ok(()));
     assert_eq!(
         agent.authenticated(),
@@ -52,7 +52,7 @@ async fn with_the_method_named_the_session_opens_after_authenticate() {
 
 #[tokio::test]
 async fn the_authenticate_reply_is_awaited_before_session_new_goes_out() {
-    let (opened, agent) = Box::pin(open_with(Auth::Needed, method("oauth-personal"))).await;
+    let (opened, agent) = Box::pin(open_with(Auth::Needed, Some(method("oauth-personal")))).await;
     assert_eq!(opened, Ok(()));
     // The fake refuses a `session/new` that was already in the pipe when it answered.
     assert_eq!(agent.raced(), 0);
@@ -73,7 +73,7 @@ async fn without_a_method_an_agent_that_wants_signing_in_is_sign_in_needed_not_u
 #[tokio::test]
 async fn a_method_the_agent_did_not_advertise_is_refused_before_anything_is_sent() {
     for id in ["oauth-business", "login-terminal"] {
-        let (opened, agent) = Box::pin(open_with(Auth::Needed, method(id))).await;
+        let (opened, agent) = Box::pin(open_with(Auth::Needed, Some(method(id)))).await;
         assert_eq!(
             opened,
             Err(HostFault::Backend(BackendFault::SignInUnsupported)),
@@ -85,7 +85,7 @@ async fn a_method_the_agent_did_not_advertise_is_refused_before_anything_is_sent
 
 #[tokio::test]
 async fn an_agent_that_advertises_nothing_refuses_a_configured_method() {
-    let (opened, _agent) = Box::pin(open_with(Auth::Open, method("oauth-personal"))).await;
+    let (opened, _agent) = Box::pin(open_with(Auth::Open, Some(method("oauth-personal")))).await;
     assert_eq!(
         opened,
         Err(HostFault::Backend(BackendFault::SignInUnsupported))

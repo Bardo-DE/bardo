@@ -1,7 +1,7 @@
 //! The requests the scripted agent makes, as JSON: a permission request, a write, a read.
 
 /// The tool-call fields a permission request carries.
-pub fn tool(kind: &str, title: &str, paths: &[&str], raw: serde_json::Value) -> serde_json::Value {
+pub fn tool(kind: &str, title: &str, paths: &[&str], raw: &serde_json::Value) -> serde_json::Value {
     let locations: Vec<_> = paths
         .iter()
         .map(|p| serde_json::json!({"path": p}))
@@ -36,8 +36,8 @@ pub fn selected(reply: &Result<serde_json::Value, serde_json::Value>) -> Option<
 pub fn mcp_request(
     kind: &str,
     meta: Option<serde_json::Value>,
-    raw: serde_json::Value,
-    options: serde_json::Value,
+    raw: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> serde_json::Value {
     let mut call = serde_json::json!({
         "toolCallId": "tc-1", "kind": kind, "status": "pending",

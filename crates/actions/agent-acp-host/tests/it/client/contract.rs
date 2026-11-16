@@ -43,7 +43,7 @@ impl Harness for Acp {
             sheets: SheetSurface::Desktop,
             space: opened.space.clone(),
             label: opened.label.clone(),
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
             helper: None,
         }))
         .await

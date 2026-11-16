@@ -21,7 +21,7 @@ async fn an_agent_that_edits_the_entry_it_was_given_gains_nothing() {
             Act::Bridge {
                 tag: "path",
                 make: Box::new(|o| {
-                    let (_, line) = o.line(json!("list"));
+                    let (_, line) = o.line(&json!("list"));
                     (format!("{}x", o.socket()), line)
                 }),
             },
@@ -86,7 +86,7 @@ async fn garbage_and_oversized_lines_are_refused_without_effect() {
                 tag: "big",
                 make: Box::new(|o| {
                     o.line(
-                        json!({"call": {"tool": "t", "arguments": {"x": "a".repeat(5_000_000)}}}),
+                        &json!({"call": {"tool": "t", "arguments": {"x": "a".repeat(5_000_000)}}}),
                     )
                 }),
             },

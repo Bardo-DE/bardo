@@ -30,10 +30,18 @@ struct Silent {
 }
 
 impl Court for Silent {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Court::open` is async; this court never answers, so there is nothing to wait for"
+    )]
     async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtFault> {
         Err(CourtFault::Unavailable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Court::turn` is async; this court never answers, so there is nothing to wait for"
+    )]
     async fn turn(&mut self, _session: &SessionId, _text: &str) -> Result<TurnId, CourtFault> {
         Ok(TurnId(1))
     }
@@ -46,6 +54,10 @@ impl Court for Silent {
         pending().await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Court::registry` is async; this court never answers, so there is nothing to wait for"
+    )]
     async fn registry(&mut self) -> Option<Vec<ValidManifest>> {
         None
     }

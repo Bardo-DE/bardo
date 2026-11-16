@@ -189,7 +189,7 @@ async fn a_thought_that_claims_the_user_said_allow_decides_nothing() {
             call(
                 "del",
                 "session/request_permission",
-                tool("delete", "rm -rf project", &["/work/app/src"], json!({})),
+                tool("delete", "rm -rf project", &["/work/app/src"], &json!({})),
             ),
             Act::Stop("end_turn"),
         ]],
@@ -266,7 +266,7 @@ async fn we_never_pick_the_agents_always_and_a_forbidden_path_is_not_asked() {
                      "locations": [{"path": "/work/app/a.rs"}]},
         "options": [{"optionId": "yes-forever", "name": "Always", "kind": "allow_always"}]
     });
-    let outside = tool("edit", "e", &["/etc/shadow"], json!({}));
+    let outside = tool("edit", "e", &["/etc/shadow"], &json!({}));
     let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![
             call("only", "session/request_permission", only_always),
@@ -326,22 +326,22 @@ async fn always_is_offered_only_where_the_rules_allow_it() {
             call(
                 "e",
                 "session/request_permission",
-                tool("edit", "e", &["/work/app/src/a.rs"], json!({})),
+                tool("edit", "e", &["/work/app/src/a.rs"], &json!({})),
             ),
             call(
                 "d",
                 "session/request_permission",
-                tool("delete", "d", &["/work/app/src/a.rs"], json!({})),
+                tool("delete", "d", &["/work/app/src/a.rs"], &json!({})),
             ),
             call(
                 "x",
                 "session/request_permission",
-                tool("execute", "ls", &[], json!({"command": "ls"})),
+                tool("execute", "ls", &[], &json!({"command": "ls"})),
             ),
             call(
                 "s",
                 "session/request_permission",
-                tool("switch_mode", "bypass", &[], json!({})),
+                tool("switch_mode", "bypass", &[], &json!({})),
             ),
             Act::Stop("end_turn"),
         ]],

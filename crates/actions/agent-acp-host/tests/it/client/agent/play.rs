@@ -6,14 +6,14 @@ use agent_acp_host::fake::ChannelWire;
 use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
-async fn put(wire: &mut ChannelWire, view: &View, line: String) {
+fn put(wire: &mut ChannelWire, view: &View, line: String) {
     if let Ok(value) = serde_json::from_str::<Value>(&line) {
         locked(&view.0).sent.push(value);
     }
-    let _ = wire.write_line(line).await;
+    let _ = wire.write_line(line);
 }
 
-fn reply(id: &Value, result: Value) -> String {
+fn reply(id: &Value, result: &Value) -> String {
     json!({"jsonrpc": "2.0", "id": id, "result": result}).to_string()
 }
 
@@ -53,7 +53,7 @@ async fn play(
     view: &View,
     prompt_id: &Value,
     acts: Vec<Act>,
-    offered: &Option<Offered>,
+    offered: Option<&Offered>,
 ) -> bool {
     let mut n = 0_u64;
     let mut fired: BTreeMap<&str, Value> = BTreeMap::new();
@@ -64,7 +64,7 @@ async fn play(
                     "jsonrpc": "2.0", "method": "session/update",
                     "params": {"sessionId": AGENT_SESSION, "update": update}
                 });
-                put(wire, view, note.to_string()).await;
+                put(wire, view, note.to_string());
             }
             Act::Call {
                 tag,
@@ -75,7 +75,7 @@ async fn play(
                 let id = json!(format!("a{n}"));
                 let params = params(&locked(&view.0).replies);
                 let line = json!({"jsonrpc": "2.0", "id": id, "method": method, "params": params});
-                put(wire, view, line.to_string()).await;
+                put(wire, view, line.to_string());
                 if !collect(wire, view, &id, tag).await {
                     return true;
                 }
@@ -89,7 +89,7 @@ async fn play(
                 let id = json!(format!("a{n}"));
                 let params = params(&locked(&view.0).replies);
                 let line = json!({"jsonrpc": "2.0", "id": id, "method": method, "params": params});
-                put(wire, view, line.to_string()).await;
+                put(wire, view, line.to_string());
                 fired.insert(tag, id);
             }
             Act::Collect(tag) => {
@@ -99,7 +99,7 @@ async fn play(
                 }
             }
             Act::Stop(reason) => {
-                put(wire, view, reply(prompt_id, json!({"stopReason": reason}))).await;
+                put(wire, view, reply(prompt_id, &json!({"stopReason": reason})));
             }
             Act::Exit => return true,
             Act::Bridge { tag, make } => {
@@ -196,14 +196,14 @@ pub(super) async fn run(
                     "authMethods": advertised(auth),
                     "agentInfo": {"name": "grand", "title": "The Desktop Itself", "version": "1"},
                 });
-                put(&mut wire, &view, reply(&id, result)).await;
+                put(&mut wire, &view, reply(&id, &result));
             }
             Some("authenticate") => {
                 locked(&view.0).authenticated.push(msg["params"].clone());
                 if msg["params"]["methodId"] != METHODS {
                     let error = json!({"code": -32602, "message": "unknown method"});
                     let line = json!({"jsonrpc": "2.0", "id": id, "error": error});
-                    put(&mut wire, &view, line.to_string()).await;
+                    put(&mut wire, &view, line.to_string());
                     continue;
                 }
                 signed_in = true;
@@ -213,24 +213,24 @@ pub(super) async fn run(
                     let early: Value = serde_json::from_str(&early).expect("JSON");
                     locked(&view.0).lines.push(early.clone());
                     locked(&view.0).raced += 1;
-                    put(&mut wire, &view, refused_sign_in(&early["id"])).await;
+                    put(&mut wire, &view, refused_sign_in(&early["id"]));
                 }
-                put(&mut wire, &view, reply(&id, json!({}))).await;
+                put(&mut wire, &view, reply(&id, &json!({})));
             }
             Some("session/new") if !signed_in => {
-                put(&mut wire, &view, refused_sign_in(&id)).await;
+                put(&mut wire, &view, refused_sign_in(&id));
             }
             Some("session/new") => {
                 locked(&view.0).new_session = Some(msg["params"].clone());
                 offered = Offered::from_params(&msg["params"]);
                 let mut result = models_part(offer);
                 result["sessionId"] = json!(AGENT_SESSION);
-                put(&mut wire, &view, reply(&id, result)).await;
+                put(&mut wire, &view, reply(&id, &result));
             }
             Some("session/resume") => {
                 locked(&view.0).resumed.push(msg["params"].clone());
                 offered = Offered::from_params(&msg["params"]);
-                put(&mut wire, &view, reply(&id, json!({}))).await;
+                put(&mut wire, &view, reply(&id, &json!({})));
             }
             Some(method @ ("session/set_config_option" | "session/set_model")) => {
                 locked(&view.0)
@@ -239,9 +239,9 @@ pub(super) async fn run(
                 if offer == Offer::Stubborn {
                     let error = json!({"code": -32602, "message": "no"});
                     let line = json!({"jsonrpc": "2.0", "id": id, "error": error});
-                    put(&mut wire, &view, line.to_string()).await;
+                    put(&mut wire, &view, line.to_string());
                 } else {
-                    put(&mut wire, &view, reply(&id, json!({"configOptions": []}))).await;
+                    put(&mut wire, &view, reply(&id, &json!({"configOptions": []})));
                 }
             }
             Some("session/prompt") => {
@@ -249,7 +249,7 @@ pub(super) async fn run(
                 let acts = turns
                     .pop_front()
                     .unwrap_or_else(|| vec![Act::Stop("end_turn")]);
-                if play(&mut wire, &view, &id, acts, &offered).await {
+                if play(&mut wire, &view, &id, acts, offered.as_ref()).await {
                     return;
                 }
             }

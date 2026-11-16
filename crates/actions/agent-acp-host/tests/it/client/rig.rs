@@ -62,7 +62,7 @@ pub fn opening(cwd: &str) -> Opening {
         started_from: None,
         cwd: Some(Workspace::parse(cwd).expect("cwd")),
         label: None,
-        rewind: Default::default(),
+        rewind: action_core::Rewind::default(),
     }
 }
 
@@ -170,13 +170,13 @@ impl Default for Setup {
             agent_network: NetworkMode::None,
             tools: None,
             label: None,
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
             session_meta: None,
             auth: Auth::Open,
             sign_in: None,
             offer: Offer::None,
             model: None,
-            resumes: Default::default(),
+            resumes: super::agent::Resumes::default(),
         }
     }
 }

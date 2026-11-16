@@ -19,7 +19,7 @@ async fn a_flood_of_permission_requests_trips_the_breaker() {
             call(
                 tag,
                 "session/request_permission",
-                tool("other", "do a thing", &[], json!({})),
+                tool("other", "do a thing", &[], &json!({})),
             )
         })
         .collect();
@@ -62,7 +62,7 @@ async fn a_flood_the_person_keeps_allowing_runs_into_the_budget() {
             call(
                 tag,
                 "session/request_permission",
-                tool("other", "do a thing", &[], json!({})),
+                tool("other", "do a thing", &[], &json!({})),
             )
         })
         .collect();

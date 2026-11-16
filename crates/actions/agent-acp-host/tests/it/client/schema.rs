@@ -93,7 +93,7 @@ fn script() -> Vec<Act> {
         call(
             "p",
             "session/request_permission",
-            tool("edit", "e", &["/work/app/c.txt"], json!({})),
+            tool("edit", "e", &["/work/app/c.txt"], &json!({})),
         ),
         call(
             "t",

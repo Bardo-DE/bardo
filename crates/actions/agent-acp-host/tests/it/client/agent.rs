@@ -135,7 +135,7 @@ impl Offered {
     }
 
     /// A request line as the bridge would send it: the right token, this operation.
-    pub fn line(&self, op: Value) -> (String, Value) {
+    pub fn line(&self, op: &Value) -> (String, Value) {
         (self.socket(), json!({"token": self.token(), "op": op}))
     }
 }
@@ -144,7 +144,7 @@ impl Offered {
 pub fn bridge_list(tag: &'static str) -> Act {
     Act::Bridge {
         tag,
-        make: Box::new(|o| o.line(json!("list"))),
+        make: Box::new(|o| o.line(&json!("list"))),
     }
 }
 
@@ -153,7 +153,7 @@ pub fn bridge_call(tag: &'static str, tool: &'static str, arguments: Value) -> A
     Act::Bridge {
         tag,
         make: Box::new(move |o| {
-            o.line(json!({"call": {"tool": tool, "arguments": arguments.clone()}}))
+            o.line(&json!({"call": {"tool": tool, "arguments": arguments.clone()}}))
         }),
     }
 }
@@ -306,7 +306,9 @@ pub async fn over_socket(path: &str, line: &Value) -> Result<Value, Value> {
         .read_line(&mut back)
         .await
         .map_err(unreachable)?;
-    serde_json::from_str(back.trim()).map_err(|_| json!("unreachable"))
+    serde_json::from_str(back.trim())
+        .ok()
+        .ok_or_else(|| json!("unreachable"))
 }
 
 /// An agent playing `turns`, one script per prompt, and the client's end of the pipe.

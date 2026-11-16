@@ -35,12 +35,12 @@ fn script() -> Vec<Act> {
         call(
             "perm1",
             "session/request_permission",
-            tool("edit", "Edit notes", &["/work/app/notes.md"], json!({})),
+            tool("edit", "Edit notes", &["/work/app/notes.md"], &json!({})),
         ),
         call(
             "perm2",
             "session/request_permission",
-            tool("edit", "Edit more", &["/work/app/more.md"], json!({})),
+            tool("edit", "Edit more", &["/work/app/more.md"], &json!({})),
         ),
         call(
             "term",
@@ -67,6 +67,10 @@ fn script() -> Vec<Act> {
     ]
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario that follows a whole session call by call; split, it would lose the order"
+)]
 #[tokio::test]
 async fn a_full_session_goes_through_the_router_call_by_call() {
     let (mut rig, files) = Box::pin(started(Setup {
@@ -302,7 +306,7 @@ async fn a_yes_to_a_permission_request_covers_the_one_matching_write_and_no_more
             call(
                 "perm",
                 "session/request_permission",
-                tool("edit", "Edit a", &["/work/app/a.rs"], json!({})),
+                tool("edit", "Edit a", &["/work/app/a.rs"], &json!({})),
             ),
             call("w1", "fs/write_text_file", write("/work/app/a.rs", "one")),
             call("w2", "fs/write_text_file", write("/work/app/a.rs", "two")),

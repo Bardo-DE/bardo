@@ -287,7 +287,7 @@ async fn a_call_cannot_name_another_session_program_or_app() {
             Act::Bridge {
                 tag: "session",
                 make: Box::new(|o| {
-                    let (socket, mut line) = o.line(json!({"call": {"tool": "mail__mail_thread_read", "arguments": {"target": thread()}}}));
+                    let (socket, mut line) = o.line(&json!({"call": {"tool": "mail__mail_thread_read", "arguments": {"target": thread()}}}));
                     line["session"] = json!("s-9");
                     (socket, line)
                 }),
@@ -295,7 +295,7 @@ async fn a_call_cannot_name_another_session_program_or_app() {
             Act::Bridge {
                 tag: "program",
                 make: Box::new(|o| {
-                    o.line(json!({"call": {"tool": "mail__mail_thread_read", "program": "gemini-cli", "arguments": {"target": thread()}}}))
+                    o.line(&json!({"call": {"tool": "mail__mail_thread_read", "program": "gemini-cli", "arguments": {"target": thread()}}}))
                 }),
             },
             bridge_call("arg", "mail__mail_thread_read", json!({"target": thread(), "session": "s-9", "program": "gemini-cli"})),
@@ -384,7 +384,7 @@ async fn an_edge_cannot_act_in_a_session_the_host_did_not_open_and_tokens_are_no
         );
     }
     // The other edge's own token is good for its own socket, and the router refuses the session.
-    let (socket, line) = theirs.line(read);
+    let (socket, line) = theirs.line(&read);
     let reply = super::agent::over_socket(&socket, &line)
         .await
         .expect("reply");
@@ -417,7 +417,7 @@ async fn after_the_session_is_closed_the_edge_is_gone() {
         .await
         .expect("close");
     let (socket, line) = server.line(
-        json!({"call": {"tool": "mail__mail_thread_read", "arguments": {"target": thread()}}}),
+        &json!({"call": {"tool": "mail__mail_thread_read", "arguments": {"target": thread()}}}),
     );
     assert_eq!(
         super::agent::over_socket(&socket, &line).await,

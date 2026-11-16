@@ -13,8 +13,8 @@ const ASK: &str = "session/request_permission";
 const READ: &str = "mail__mail_thread_read";
 const ARCHIVE: &str = "mail__mail_thread_archive";
 
-fn ours(tool: &str) -> Option<Value> {
-    Some(json!({"tool": tool, "server": "bardo"}))
+fn ours(tool: &str) -> Value {
+    json!({"tool": tool, "server": "bardo"})
 }
 
 /// One turn: the agent asks `request`, then ends. The person refuses any sheet.
@@ -35,7 +35,12 @@ fn once_option(rig: &Rig<super::rig::Fakes>) -> Option<String> {
 
 #[tokio::test]
 async fn a_request_for_our_own_tool_is_answered_once_with_no_sheet_and_no_ruling() {
-    let request = mcp_request("other", ours(READ), json!({"arguments": {}}), agy_options());
+    let request = mcp_request(
+        "other",
+        Some(ours(READ)),
+        &json!({"arguments": {}}),
+        &agy_options(),
+    );
     let (rig, events) = Box::pin(ask(request, 0)).await;
     assert_eq!(once_option(&rig).as_deref(), Some("a-once"));
     assert!(rig.sheets().is_empty());
@@ -48,7 +53,7 @@ async fn a_request_for_our_own_tool_is_answered_once_with_no_sheet_and_no_ruling
 
 #[tokio::test]
 async fn a_fetch_kind_for_our_tool_is_answered_the_same_way() {
-    let request = mcp_request("fetch", ours(READ), json!({}), agy_options());
+    let request = mcp_request("fetch", Some(ours(READ)), &json!({}), &agy_options());
     let (rig, _) = Box::pin(ask(request, 0)).await;
     assert_eq!(once_option(&rig).as_deref(), Some("a-once"));
     assert!(rig.sheets().is_empty());
@@ -60,7 +65,7 @@ async fn always_is_never_chosen_even_when_it_is_the_only_way_to_allow() {
         {"optionId": "a-always", "name": "Always", "kind": "allow_always"},
         {"optionId": "r-once", "name": "No", "kind": "reject_once"}
     ]);
-    let request = mcp_request("other", ours(READ), json!({}), only_always);
+    let request = mcp_request("other", Some(ours(READ)), &json!({}), &only_always);
     let (rig, _) = Box::pin(ask(request, 1)).await;
     assert_ne!(once_option(&rig).as_deref(), Some("a-always"));
     assert_eq!(rig.sheets().len(), 1, "no once option: the usual path");
@@ -70,7 +75,7 @@ async fn always_is_never_chosen_even_when_it_is_the_only_way_to_allow() {
 async fn a_tool_the_edge_did_not_offer_still_gets_a_sheet() {
     // Hidden from the edge's list, so not offered.
     for tool in ["mail__mail_thread_open", "not_a_tool", ""] {
-        let request = mcp_request("other", ours(tool), json!({}), agy_options());
+        let request = mcp_request("other", Some(ours(tool)), &json!({}), &agy_options());
         let (rig, _) = Box::pin(ask(request, 1)).await;
         assert_eq!(rig.sheets().len(), 1, "{tool:?}");
         assert_eq!(once_option(&rig).as_deref(), Some("r-once"), "{tool:?}");
@@ -81,10 +86,10 @@ async fn a_tool_the_edge_did_not_offer_still_gets_a_sheet() {
 async fn another_server_a_missing_meta_or_another_kind_still_gets_a_sheet() {
     let foreign = json!({"tool": READ, "server": "elsewhere"});
     let cases = [
-        mcp_request("other", Some(foreign), json!({}), agy_options()),
-        mcp_request("other", None, json!({"arguments": {}}), agy_options()),
-        mcp_request("execute", ours(READ), json!({}), agy_options()),
-        mcp_request("edit", ours(READ), json!({}), agy_options()),
+        mcp_request("other", Some(foreign), &json!({}), &agy_options()),
+        mcp_request("other", None, &json!({"arguments": {}}), &agy_options()),
+        mcp_request("execute", Some(ours(READ)), &json!({}), &agy_options()),
+        mcp_request("edit", Some(ours(READ)), &json!({}), &agy_options()),
     ];
     for request in cases {
         let (rig, _) = Box::pin(ask(request.clone(), 1)).await;
@@ -95,7 +100,12 @@ async fn another_server_a_missing_meta_or_another_kind_still_gets_a_sheet() {
 
 #[tokio::test]
 async fn listing_our_own_servers_resources_is_answered_once_and_nothing_wider_is() {
-    let list = mcp_request("other", None, json!({"ServerName": "bardo"}), agy_options());
+    let list = mcp_request(
+        "other",
+        None,
+        &json!({"ServerName": "bardo"}),
+        &agy_options(),
+    );
     let (rig, _) = Box::pin(ask(list, 0)).await;
     assert_eq!(once_option(&rig).as_deref(), Some("a-once"));
     assert!(rig.sheets().is_empty());
@@ -103,7 +113,7 @@ async fn listing_our_own_servers_resources_is_answered_once_and_nothing_wider_is
         json!({"ServerName": "elsewhere"}),
         json!({"ServerName": "bardo", "Uri": "file:///x"}),
     ] {
-        let request = mcp_request("other", None, raw.clone(), agy_options());
+        let request = mcp_request("other", None, &raw, &agy_options());
         let (rig, _) = Box::pin(ask(request, 1)).await;
         assert_eq!(rig.sheets().len(), 1, "{raw}");
     }
@@ -111,7 +121,7 @@ async fn listing_our_own_servers_resources_is_answered_once_and_nothing_wider_is
 
 #[tokio::test]
 async fn the_edge_still_gates_the_call_that_follows_the_door() {
-    let request = mcp_request("other", ours(ARCHIVE), json!({}), agy_options());
+    let request = mcp_request("other", Some(ours(ARCHIVE)), &json!({}), &agy_options());
     let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             call("perm", ASK, request),

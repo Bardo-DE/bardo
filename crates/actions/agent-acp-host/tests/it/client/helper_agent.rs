@@ -38,6 +38,10 @@ impl Hosts for Worlds {
     type Seams = Fakes;
     type Desk = EditorDesk;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Hosts::host` is async; the test hands out a world it prepared earlier"
+    )]
     async fn host(&mut self, start: Start) -> AgentHost<Fakes, EditorDesk> {
         self.starts.lock().expect("starts").push(start.clone());
         let world = self.queue.pop_front().expect("a world was prepared");
@@ -300,7 +304,7 @@ async fn a_standing_grant_belongs_to_the_helper_that_made_it() {
         call(
             "perm1",
             "session/request_permission",
-            tool("edit", "Edit notes", &["/work/app/notes.md"], json!({})),
+            tool("edit", "Edit notes", &["/work/app/notes.md"], &json!({})),
         ),
         Act::Stop("end_turn"),
     ];

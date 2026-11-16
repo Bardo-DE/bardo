@@ -33,6 +33,10 @@ impl Hosts for OneRouter {
     type Seams = Fakes;
     type Desk = EditorDesk;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Hosts::host` is async; the test hands out an agent it prepared earlier"
+    )]
     async fn host(&mut self, start: Start) -> AgentHost<Fakes, EditorDesk> {
         let mut backend = self.queue.pop_front().expect("an agent was prepared");
         if let Some(id) = &start.resume {
@@ -104,14 +108,14 @@ fn helper_over(
     (HelperAgent::new(hosts), views, watching)
 }
 
-fn resume_flag() -> Option<Vec<String>> {
-    Some(vec!["--resume".to_owned(), "{session}".to_owned()])
+fn resume_flag() -> Vec<String> {
+    vec!["--resume".to_owned(), "{session}".to_owned()]
 }
 
 #[tokio::test]
 async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session() {
     let (mut helper, views, watching) =
-        helper_over(Resumes::Yes, vec![Resumes::Yes], resume_flag());
+        helper_over(Resumes::Yes, vec![Resumes::Yes], Some(resume_flag()));
     let done = Box::pin(helper.run("Compare the offers", AT)).await;
     assert!(matches!(done, AgentEnd::Done(_)), "{done:?}");
     assert_eq!(
@@ -160,7 +164,7 @@ async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session(
 #[tokio::test]
 async fn a_conversation_that_cannot_be_picked_up_again_or_has_not_begun_stays_where_it_is() {
     // No conversation of the agent's own yet.
-    let (mut idle, _, _) = helper_over(Resumes::Yes, vec![], resume_flag());
+    let (mut idle, _, _) = helper_over(Resumes::Yes, vec![], Some(resume_flag()));
     assert_eq!(
         Box::pin(idle.to_terminal()).await,
         Err(HandFault::NoConversation)
@@ -176,7 +180,7 @@ async fn a_conversation_that_cannot_be_picked_up_again_or_has_not_begun_stays_wh
     assert!(flagless.is_open(), "nothing was closed");
 
     // The agent cannot pick a session up (no resume, no load).
-    let (mut unable, _, _) = helper_over(Resumes::No, vec![], resume_flag());
+    let (mut unable, _, _) = helper_over(Resumes::No, vec![], Some(resume_flag()));
     Box::pin(unable.run("Job", AT)).await;
     assert_eq!(
         Box::pin(unable.to_terminal()).await,
@@ -188,7 +192,8 @@ async fn a_conversation_that_cannot_be_picked_up_again_or_has_not_begun_stays_wh
 #[tokio::test]
 async fn an_app_that_begins_another_conversation_leaves_this_one_in_the_terminal() {
     // The second process cannot pick the conversation up: it opens a new one instead.
-    let (mut helper, _, watching) = helper_over(Resumes::Yes, vec![Resumes::No], resume_flag());
+    let (mut helper, _, watching) =
+        helper_over(Resumes::Yes, vec![Resumes::No], Some(resume_flag()));
     Box::pin(helper.run("Job", AT)).await;
     Box::pin(helper.to_terminal())
         .await
