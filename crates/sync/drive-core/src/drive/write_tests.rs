@@ -1475,3 +1475,12 @@ async fn a_drive_reopened_on_a_one_thread_runtime_gets_the_lock_when_the_old_one
     assert!(again.is_ok(), "the reopen got the lock: {:?}", again.err());
     assert!(began.elapsed() < wait, "within the lock wait");
 }
+
+#[test]
+fn a_cache_failure_carries_its_cause() {
+    let io = std::io::Error::other("the disk is full");
+    let WriteError::Cache(cause) = WriteError::from(io) else {
+        panic!("an io error is a cache failure");
+    };
+    assert!(cause.contains("the disk is full"), "{cause}");
+}

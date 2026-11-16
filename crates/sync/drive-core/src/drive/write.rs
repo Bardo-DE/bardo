@@ -44,7 +44,7 @@ use sync_core::{ItemKind, RemoteId};
 const TRIES: usize = 8;
 
 /// Why a change was not made.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum WriteError {
     /// The drive is shown read-only here.
     #[error("the drive is shown read-only")]
@@ -77,26 +77,26 @@ pub enum WriteError {
     /// Its bytes were needed and could not be read.
     #[error("its bytes could not be read: {0}")]
     Read(ReadError),
-    /// The cache could not be written.
-    #[error("the cache could not be written")]
-    Cache,
+    /// The cache could not be written; the text is what went wrong.
+    #[error("the cache could not be written: {0}")]
+    Cache(String),
 }
 
 impl From<DriveError> for WriteError {
-    fn from(_: DriveError) -> Self {
-        WriteError::Cache
+    fn from(why: DriveError) -> Self {
+        WriteError::Cache(why.to_string())
     }
 }
 
 impl From<crate::listing::ListingError> for WriteError {
-    fn from(_: crate::listing::ListingError) -> Self {
-        WriteError::Cache
+    fn from(why: crate::listing::ListingError) -> Self {
+        WriteError::Cache(why.to_string())
     }
 }
 
 impl From<std::io::Error> for WriteError {
-    fn from(_: std::io::Error) -> Self {
-        WriteError::Cache
+    fn from(why: std::io::Error) -> Self {
+        WriteError::Cache(why.to_string())
     }
 }
 
@@ -435,14 +435,17 @@ impl Inner {
             .items
             .get(&remote.0)
             .is_some_and(|row| row.version == entry.version.0 && row.present.covers(0, size));
-        let copied = if cached {
-            let (from, to) = (self.content(remote, &entry.version.0), path.clone());
-            // A whole file's copy waits on the disk: off the runtime's threads.
-            tokio::task::spawn_blocking(move || copy_span(&from, &to, size))
-                .await
-                .unwrap_or(Err(WriteError::Cache))
-        } else {
-            self.download_into(drive, &id, &path, size).await
+        let copied = match cached {
+            true => {
+                let (from, to) = (self.content(remote, &entry.version.0), path.clone());
+                // A whole file's copy waits on the disk: off the runtime's threads.
+                tokio::task::spawn_blocking(move || copy_span(&from, &to, size))
+                    .await
+                    .unwrap_or_else(|why| {
+                        Err(WriteError::Cache(format!("a cache task failed: {why}")))
+                    })
+            }
+            false => self.download_into(drive, &id, &path, size).await,
         };
         if let Err(why) = copied {
             self.drop_file(n);
@@ -521,7 +524,7 @@ impl Inner {
                 }
             })
             .await
-            .unwrap_or(Err(WriteError::Cache))?;
+            .unwrap_or_else(|why| Err(WriteError::Cache(format!("a cache task failed: {why}"))))?;
             if kept {
                 return Ok(Some(dirty.size));
             }
