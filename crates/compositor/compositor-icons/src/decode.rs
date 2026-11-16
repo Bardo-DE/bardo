@@ -17,6 +17,11 @@ const EDGE_LIMIT: u32 = 4096;
 
 /// The picture at `path` (SVG by its extension, else PNG or JPEG by its bytes) as `edge` by
 /// `edge` premultiplied pixels, kept in proportion and centred.
+///
+/// # Errors
+///
+/// Returns an [`IconError`] when `edge` is not a usable size, the file cannot be read as a plain
+/// file within the size limit, or its bytes do not decode as a picture.
 pub fn load(path: &Path, edge: u32) -> Result<Pixels, IconError> {
     checked(edge)?;
     let bytes = crate::read::plain_file(path, FILE_LIMIT)?;
@@ -31,6 +36,10 @@ pub fn load(path: &Path, edge: u32) -> Result<Pixels, IconError> {
 }
 
 /// `buffer` (a toplevel's own pixels) as `edge` by `edge` premultiplied pixels.
+///
+/// # Errors
+///
+/// Returns an [`IconError`] when `edge` is not a usable size, or the buffer is not square RGBA.
 pub fn scale_straight(buffer: &RgbaBuffer, edge: u32) -> Result<Pixels, IconError> {
     checked(edge)?;
     let image = RgbaImage::from_raw(buffer.edge, buffer.edge, buffer.rgba.clone())

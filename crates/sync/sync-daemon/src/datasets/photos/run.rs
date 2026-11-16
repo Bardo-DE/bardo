@@ -107,6 +107,11 @@ fn run_one<R: Replica + 'static, D: Dataset + 'static>(
 
 /// Starts the Photos dataset of `account` over `library` and the two replicas (originals,
 /// then metadata), registering both in the hub.
+///
+/// # Errors
+///
+/// Returns a [`StartError`] when a journal cannot be opened or a dataset cannot be registered in
+/// the hub.
 pub fn start<O, M>(
     wiring: &PhotosWiring,
     account: &AccountDir,

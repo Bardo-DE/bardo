@@ -54,6 +54,10 @@ impl Ledger {
     }
 
     /// The ledger at `path`; none there is an empty one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LedgerError::Unreadable`] when the file exists and cannot be read or parsed.
     pub fn load(path: &Path) -> Result<Self, LedgerError> {
         match std::fs::read(path) {
             Ok(bytes) => {
@@ -65,6 +69,10 @@ impl Ledger {
     }
 
     /// Keeps the ledger at `path`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LedgerError::Unsaved`] when the ledger cannot be written to `path`.
     pub fn save(&self, path: &Path) -> Result<(), LedgerError> {
         let bytes =
             serde_json::to_vec_pretty(self).map_err(|e| LedgerError::Unsaved(e.to_string()))?;

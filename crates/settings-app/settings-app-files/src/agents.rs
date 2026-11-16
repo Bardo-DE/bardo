@@ -30,6 +30,11 @@ pub fn load_agents(config: &ConfigHome, data: &DataHome) -> Agents {
 }
 
 /// Sets the person's `choice` in the entry of `program`; nothing else in the file changes.
+///
+/// # Errors
+///
+/// Returns a [`FilesError`] when `agents.toml` cannot be read, is not valid TOML, has no entry for
+/// `program`, or cannot be written.
 pub fn save_agent_choice(
     config: &ConfigHome,
     program: &str,
@@ -66,12 +71,22 @@ pub fn installed_agents(data: &DataHome) -> Vec<FoundAgent> {
 }
 
 /// Lists `agent` in `agents.toml`, creating the file when there is none.
+///
+/// # Errors
+///
+/// Returns an [`AddFault`] when the entry is not valid, or is already listed, or the file cannot be
+/// read or written.
 pub fn add_agent(config: &ConfigHome, agent: &NewAgent) -> Result<(), AddFault> {
     write_agent_add(&config.0.join(AGENTS_FILE), agent)
 }
 
 /// Takes the entry of `program` out of `agents.toml`. Nothing else changes: the files installed
 /// and the sign-in the assistant holds stay where they are.
+///
+/// # Errors
+///
+/// Returns a [`ChoiceFault`] when there is no entry for `program`, or the file cannot be read or
+/// written.
 pub fn remove_agent(config: &ConfigHome, program: &str) -> Result<(), ChoiceFault> {
     write_agent_remove(&config.0.join(AGENTS_FILE), program)
 }

@@ -198,6 +198,11 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
 
     /// "Add Account": accountd's add-account sheet. An account the person signs in to that
     /// accountd already had is [`Continued::AlreadyHere`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ContinueError`] when the person cancels the sheet, accountd is busy or
+    /// unreachable, or adding the account fails.
     pub async fn add_account(&self, window: &ParentWindow) -> Result<Continued, ContinueError> {
         match self.accounts.add(ProviderHint::Any, window).await {
             Ok(id) => Ok(Continued::SignedIn(id)),
@@ -212,6 +217,11 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// "Add Account", then the first thing the account offers for syncd to keep (the files, else
     /// the photos): the person asked to sync this account. The switch turns on only once the
     /// account was added.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`ContinueError`] of [`Self::add_account`]; a failure to switch syncing on is
+    /// logged and does not fail the call.
     pub async fn add_and_keep(&self, window: &ParentWindow) -> Result<Continued, ContinueError> {
         let continued = self.add_account(window).await?;
         let account = continued.account().clone();
@@ -232,6 +242,11 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     }
 
     /// Turns syncd's keeping of `class` of `account` on or off.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SwitchError`] when accountd is unreachable, the account is unknown, the account
+    /// offers nothing of `class` to keep, or the grant cannot be changed.
     pub async fn set_sync(
         &self,
         account: &AccountId,
@@ -280,6 +295,12 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// drive yet, asks the person for it in a sign-in of its own (the browser asks that alone),
     /// then asks for syncd's grant of it; a refusal there is [`SwitchError::NotGiven`] and nothing
     /// is recorded. Off takes the grant back; the listing's journal and the access given stay.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SwitchError`] when accountd is unreachable, the account is unknown or offers no
+    /// drive, the person does not give the drive ([`SwitchError::NotGiven`]), or the grant cannot
+    /// be changed.
     pub async fn show_in_files(&self, account: &AccountId, on: bool) -> Result<(), SwitchError> {
         let snapshot = self
             .snapshot()
@@ -323,6 +344,11 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// "Keep Everything Downloaded" on or off for the drive of `account`, which must be shown in
     /// Files. It is kept in syncd's settings, so the drive keeps everything again after a restart
     /// (and after Show in Files is turned off and on again); the drive shown now follows at once.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SwitchError`] when accountd is unreachable, the account is unknown or has no
+    /// drive to keep, or the setting cannot be saved.
     pub async fn keep_everything(&self, account: &AccountId, on: bool) -> Result<(), SwitchError> {
         let snapshot = self
             .snapshot()
@@ -398,6 +424,11 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
     /// stop, its journals, mirrors and cache are deleted, and syncd's grants of it are taken
     /// back. What was kept is returned. A removal that fails leaves the account and starts its
     /// drive again; what was kept stays where it is, so trying again keeps nothing twice.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`RemoveError`] when accountd is unreachable, the account is unknown, or its files
+    /// or grants cannot be dealt with; the account is then left and its drive starts again.
     pub async fn remove(&self, account: &AccountId) -> Result<Vec<Kept>, RemoveError> {
         let snapshot = self
             .snapshot()

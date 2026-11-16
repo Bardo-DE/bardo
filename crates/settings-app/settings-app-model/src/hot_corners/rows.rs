@@ -27,6 +27,11 @@ pub fn shown_rows(bindings: &[HotBinding], added: &[HotKeys]) -> Vec<HotKeys> {
 }
 
 /// `added` with a row for `keys`, or why there cannot be one.
+///
+/// # Errors
+///
+/// Returns [`HotAddFault::NoKeys`] when `keys` is empty, and [`HotAddFault::Already`] when a row or
+/// binding holds them already.
 pub fn add_row(
     bindings: &[HotBinding],
     added: &[HotKeys],

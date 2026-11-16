@@ -32,6 +32,11 @@ pub struct Paths {
 
 impl Paths {
     /// The paths for the environment `var` reads.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PathError`] when a state, config, data or cache folder, or the home folder,
+    /// cannot be found from the environment.
     pub fn resolve(var: impl Fn(&str) -> Option<String>) -> Result<Self, PathError> {
         let xdg = Xdg::new(var);
         let state = xdg.dir("XDG_STATE_HOME", ".local/state")?;

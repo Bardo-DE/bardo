@@ -82,6 +82,11 @@ impl KeymapFiles {
     /// started from: when the file holds something else now (another program wrote it since),
     /// nothing is written and the answer is [`FilesError::Changed`], so a stale whole-file write
     /// never puts the other program's change back.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`FilesError::Changed`] when the file no longer holds `base`, and another
+    /// [`FilesError`] when the folder cannot be made or the file cannot be written.
     pub fn save_person(&self, base: &str, text: &str) -> Result<(), FilesError> {
         let person = self.source.person_file();
         if let Some(dir) = person.parent() {

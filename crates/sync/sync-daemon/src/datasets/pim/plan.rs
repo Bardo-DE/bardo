@@ -68,6 +68,11 @@ fn slug(kind: PimKind, dir: &str) -> String {
 /// found in. Two of one kind that would share a directory (or a slug, which is only lowercasing of
 /// it) all get the same name plus a short hash of their URL, so the names depend on the set and
 /// never on the order the server lists it in.
+///
+/// # Panics
+///
+/// Panics only if the slug it derives from a directory name is not a dataset slug, which cannot
+/// happen: the slug is made of `[a-z0-9_]` only.
 #[must_use]
 pub fn plan(kind: PimKind, found: Vec<Found>) -> Vec<Planned> {
     let names: Vec<(String, String)> = found

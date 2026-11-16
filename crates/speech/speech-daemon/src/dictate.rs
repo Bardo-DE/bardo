@@ -39,6 +39,11 @@ fn engine_gone<E>(_: E) -> VoiceFault {
 }
 
 /// Listens on `input` (a source name; `None` is the device default) and returns the transcript.
+///
+/// # Errors
+///
+/// Returns a [`VoiceFault`] when the microphone is unavailable, the speech engine cannot be reached
+/// or ends the session, or listening fails.
 pub async fn dictate<D: AudioDevice, T: Transport>(
     device: &D,
     transport: &T,

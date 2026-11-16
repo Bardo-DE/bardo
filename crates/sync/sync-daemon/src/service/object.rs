@@ -259,6 +259,10 @@ impl<C: Callers> SyncServer for SyncObject<C> {
 /// Serves `org.bardo.Sync1` on `connection` over `hub`, with `callers` saying who calls, and claims `org.bardo.Sync1` once the connection takes calls ([`zbus_ready::serving`]).
 ///
 /// Any other object on `connection` (the Photos picker) is registered before this is called.
+///
+/// # Errors
+///
+/// Returns the [`zbus::Error`] when the object cannot be registered or the name cannot be claimed.
 pub async fn serve<C: Callers>(connection: &Connection, hub: Hub, callers: C) -> zbus::Result<()> {
     let core = Arc::new(Core {
         hub,

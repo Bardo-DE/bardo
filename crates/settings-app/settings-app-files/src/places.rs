@@ -34,6 +34,11 @@ pub fn load_places(home: &ConfigHome) -> PlacesLoaded {
 ///
 /// Each key of the `assistant` table in one edit and one rename (docket's directory watch never
 /// sees some of the keys changed and not the others), and nothing else in the file.
+///
+/// # Errors
+///
+/// Returns a [`FilesError`] when the settings file cannot be read, is not valid TOML, or cannot be
+/// written.
 pub fn save_places(home: &ConfigHome, places: &Places) -> Result<(), FilesError> {
     let file = file()?;
     let table: toml::Table =

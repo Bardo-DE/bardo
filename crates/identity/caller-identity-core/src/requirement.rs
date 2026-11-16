@@ -57,6 +57,11 @@ impl Requirement {
 impl Standing {
     /// `Ok` with this standing when it meets at least one of `need`; otherwise the refusal: an
     /// unverified process is `Unknown`, any other is `NotAllowed`. An empty `need` refuses all.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Refused::Unknown` for an unverified process, and `Refused::NotAllowed` for any
+    /// other that meets none of `need`.
     pub fn holds(&self, need: &[Requirement]) -> Result<&Standing, Refused> {
         if need.iter().any(|r| r.met_by(self)) {
             return Ok(self);

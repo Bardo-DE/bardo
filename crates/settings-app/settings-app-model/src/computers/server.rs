@@ -215,6 +215,11 @@ impl ServerForm {
     }
 
     /// What the form asks for, or the first thing wrong with it.
+    ///
+    /// # Errors
+    ///
+    /// Returns the first [`ServerFault`] found: no or too long a name, no model, no or both ways to
+    /// reach it, or a bad port.
     pub fn check(&self) -> Result<ServerDraft, ServerFault> {
         let name = self.name.trim();
         let letters = name.chars().count();
@@ -246,6 +251,11 @@ impl ServerForm {
 impl ServerDraft {
     /// The key to send: typed text as it is, a file's text read now by `read` and trimmed; `None`
     /// when no key was given. The key is never logged or shown.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ServerFault::KeyFileUnreadable`] when `read` fails, and
+    /// [`ServerFault::KeyFileEmpty`] when the file holds no key.
     pub fn secret(
         &self,
         read: impl FnOnce(&Path) -> io::Result<String>,

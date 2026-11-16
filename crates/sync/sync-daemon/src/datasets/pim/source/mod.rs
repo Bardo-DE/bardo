@@ -169,6 +169,11 @@ fn transport_of(kind: PimKind, candidate: &Candidate) -> Option<PimTransport> {
 }
 
 /// The source for the account's capability: by its transport, never by provider name.
+///
+/// # Errors
+///
+/// Returns [`NoSource`] when no source speaks the capability's transport for this kind of
+/// collection.
 pub fn choose(kind: PimKind, candidate: &Candidate) -> Result<Chosen, NoSource> {
     // A candidate whose capability is not the kind's (or an older bus peer) is the kind's
     // protocol family, which is what the mirror did before sources existed.

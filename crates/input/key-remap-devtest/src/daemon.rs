@@ -35,6 +35,11 @@ impl Daemon {
     /// Spawns the daemon. The seat file names the uid this process runs as, and the daemon is
     /// told to steer for the seat's user, so the harness's own client is the seat owner. The
     /// stderr log is appended to, so a restart keeps the first run's lines.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when a directory, the seat file, the notify socket or the log cannot
+    /// be made, or the process cannot be spawned.
     pub fn start(spec: &DaemonSpec<'_>) -> Result<Self, Failure> {
         let dir = |name: &str| -> Result<PathBuf, Failure> {
             let path = spec.scratch.join(name);
@@ -123,6 +128,11 @@ impl Daemon {
     }
 
     /// Fails if the process has exited, naming its status.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] naming the exit status when the process has exited, or when its state
+    /// cannot be read.
     pub fn assert_alive(&mut self) -> Result<(), Failure> {
         match self.child.try_wait() {
             Ok(None) => Ok(()),
@@ -132,6 +142,10 @@ impl Daemon {
     }
 
     /// Waits for `READY=1`; it must arrive within `within` of the spawn.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when `READY=1` does not arrive within `within`.
     pub fn wait_ready(&mut self, within: Duration) -> Result<Duration, Failure> {
         let deadline = self.started + within;
         loop {
@@ -155,6 +169,10 @@ impl Daemon {
     }
 
     /// `kill -9`: the daemon gets no chance to clean up, as in a crash.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the process cannot be killed or reaped.
     pub fn kill(&mut self) -> Result<(), Failure> {
         self.child.kill().map_err(io("killing the daemon"))?;
         self.child

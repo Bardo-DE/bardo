@@ -114,6 +114,11 @@ pub struct FolderDataset {
 impl FolderDataset {
     /// The files under `root` (made when it is first written to), as the dataset
     /// `storage_app_folder`.
+    ///
+    /// # Panics
+    ///
+    /// Never in practice: it panics only if the constant slug of the app folder is not a dataset
+    /// slug.
     #[must_use]
     pub fn new(root: PathBuf) -> Self {
         Self::named(root, SLUG).expect("the app folder's slug is one")

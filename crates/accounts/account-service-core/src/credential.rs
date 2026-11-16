@@ -26,6 +26,11 @@ impl<E: Ports> Ctx<E> {
     /// audience, kind and reach, refreshes from what the first stored. A credential the provider
     /// rotated is written back before the token is returned. Other credentials are not rotated,
     /// so they are not queued.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`Refusal`] for a secret that cannot be read, or for a credential the provider
+    /// or issuer refuses.
     pub async fn issue_for(
         &self,
         account: &Account,

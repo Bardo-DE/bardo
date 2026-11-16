@@ -239,6 +239,10 @@ impl AddForm {
     }
 
     /// What Add does, checked the way docket checks the entry; the refusal when it cannot.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AddRefusal`] when nothing new is picked, or docket would refuse the entry.
     pub fn request(&self) -> Result<Request, AddRefusal> {
         let found = self.picked().ok_or(AddRefusal::NothingNew)?;
         let new = NewAgent {

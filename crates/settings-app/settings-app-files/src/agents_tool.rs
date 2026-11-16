@@ -81,6 +81,11 @@ impl AgentsTool {
 
     /// Every assistant on offer, in the registry's order. Reaches the network and waits for it.
     /// An error is what the program said (empty when it said nothing or did not start).
+    ///
+    /// # Errors
+    ///
+    /// Returns what the program said on its error output, or the empty string when it said nothing
+    /// or did not start.
     pub fn list(&self) -> Result<Vec<Candidate>, String> {
         let out = self
             .command(&["list"])
@@ -98,6 +103,11 @@ impl AgentsTool {
 
     /// Downloads `version` of `id` and waits for it. `begun` is called when the program says it has
     /// started, before it reaches the network. An error is the one sentence the program gave.
+    ///
+    /// # Errors
+    ///
+    /// Returns the one sentence the program gave when the download fails, or the empty string when
+    /// it gave none or did not start.
     pub fn install(&self, id: &str, version: &str, begun: impl FnOnce()) -> Result<(), String> {
         let mut child = self
             .command(&["install", id, version])

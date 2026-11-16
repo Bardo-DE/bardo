@@ -200,6 +200,11 @@ impl AutoPool {
 
     /// Whether Automatic has something to choose from: a model in the pool that is offered and
     /// not blocked.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ChoiceGap::PoolEmpty`] when the pool has no model, and [`ChoiceGap::PoolGone`]
+    /// when none of them is offered.
     pub fn readiness(&self) -> Result<(), ChoiceGap> {
         let usable = self
             .chosen

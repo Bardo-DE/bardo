@@ -45,6 +45,11 @@ pub fn library_http<T: GrantsLink>(
 }
 
 /// The client for the Picker API at `endpoint`, under `grant`.
+///
+/// # Errors
+///
+/// Returns [`BuildError::NotWeb`] when `endpoint` is not a web address, or another [`BuildError`]
+/// when the client cannot be built.
 pub fn picker_http<T: GrantsLink + 'static>(
     accounts: Arc<Grants<T>>,
     grant: GrantId,

@@ -216,6 +216,11 @@ impl Registry {
     /// The account and endpoint a relay opened under `app`'s grant `id` may dial, and the
     /// kind of the grant. The endpoint must be one the account holds for the grant's kind,
     /// exactly as a candidate listed it: an app never names an address of its own.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Refusal::EndpointNotGranted` when the account does not hold `endpoint` for the
+    /// grant's kind, or the refusal of [`Self::grant_account`].
     pub fn relay_target(
         &self,
         app: &AppId,
@@ -238,6 +243,11 @@ impl Registry {
     }
 
     /// The account, kind and reach of `app`'s grant `id`, when the grant is an allowing one.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Refusal::UnknownGrant` when there is no allowing grant `id` of `app` (or its
+    /// account is gone), and `Refusal::Denied` for a grant over another app's own Space.
     pub fn grant_account(
         &self,
         app: &AppId,

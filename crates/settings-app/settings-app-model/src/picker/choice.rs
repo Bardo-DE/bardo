@@ -62,6 +62,11 @@ impl Choice {
 
     /// Whether the choice can be used. A model is as soon as it is chosen; Automatic needs a
     /// model to choose from, and Local the way to run it and the model.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`ChoiceGap`] that says what is missing: a choice, a local engine or a local
+    /// model.
     pub fn readiness(&self) -> Result<(), ChoiceGap> {
         match self {
             Choice::Nothing => Err(ChoiceGap::Choice),
@@ -132,6 +137,10 @@ impl ModelRow {
     }
 
     /// Whether the row's choice can be used.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ChoiceGap::NoLocalEngine`] when a local choice has no engine to run on, and otherwise the gap of the choice itself.
     pub fn readiness(&self) -> Result<(), ChoiceGap> {
         match self.choice() {
             Choice::Local { engine: None, .. } if self.engines().is_empty() => {

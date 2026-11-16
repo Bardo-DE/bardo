@@ -93,6 +93,11 @@ impl PhotoLibrary {
     /// Opens the library at `root` (made when missing). Its device name is the one stored
     /// there, else `device`, which is then stored; the clock starts after every stamp already
     /// in the manifests, so a restart never writes into the past.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PhotosError`] when the library folder or the device name cannot be written, or
+    /// the manifests cannot be read.
     pub fn open(
         root: PathBuf,
         device: DeviceId,
@@ -153,6 +158,10 @@ impl PhotoLibrary {
     }
 
     /// Every original held.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PhotosError`] when the originals folder cannot be listed.
     pub fn held(&self) -> Result<Vec<ContentId>, PhotosError> {
         Ok(super::originals::list(&originals_dir(self.root()))
             .map_err(|e| io_error("cannot list the originals", &e))?
@@ -163,6 +172,11 @@ impl PhotoLibrary {
 
     /// Imports the file at `path`: stored under its content id unless the library has those
     /// bytes already, and its name recorded in the manifest.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PhotosError`] when the file cannot be read or stored, or the manifest cannot be
+    /// written.
     pub fn import(&self, path: &Path) -> Result<Imported, PhotosError> {
         let mut done = self.import_many(&[path.to_path_buf()])?;
         done.pop().ok_or_else(|| PhotosError::Io {
@@ -172,6 +186,11 @@ impl PhotoLibrary {
     }
 
     /// Imports several files with one manifest write (a card of photos is one import).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PhotosError`] when a file cannot be read or stored, or the manifest cannot be
+    /// written.
     pub fn import_many(&self, paths: &[PathBuf]) -> Result<Vec<Imported>, PhotosError> {
         let mut imported = Vec::with_capacity(paths.len());
         let mut names = Vec::new();
@@ -197,6 +216,11 @@ impl PhotoLibrary {
     }
 
     /// Copies the original of `id` to `dest`; its size.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PhotosError::Missing`] when the library holds no original of `id`, and another
+    /// [`PhotosError`] when the copy fails.
     pub fn export(&self, id: &ContentId, dest: &Path) -> Result<u64, PhotosError> {
         let source = self
             .original(id)
@@ -208,11 +232,20 @@ impl PhotoLibrary {
     }
 
     /// The manifest as every device has told it: the merge of every manifest file here.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PhotosError`] when the manifest files cannot be read.
     pub fn manifest(&self) -> Result<Manifest, PhotosError> {
         read_all(&manifest_dir(self.root())).map_err(|e| io_error("cannot read the manifests", &e))
     }
 
     /// Writes `edits`, each stamped by this device's clock, into this device's manifest.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PhotosError`] when the manifests cannot be read or this device's manifest cannot
+    /// be written.
     pub fn edit(&self, edits: Vec<Edit>) -> Result<(), PhotosError> {
         if edits.is_empty() {
             return Ok(());

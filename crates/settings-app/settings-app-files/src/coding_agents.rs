@@ -32,6 +32,11 @@ pub fn agents_switch(home: &ConfigHome) -> bool {
 }
 
 /// Switches coding agents on, leaving every other key of the file as it was.
+///
+/// # Errors
+///
+/// Returns a [`FilesError`] when the settings file cannot be read, is not valid TOML, or cannot be
+/// written.
 pub fn turn_on_agents(home: &ConfigHome) -> Result<(), FilesError> {
     save(
         home,

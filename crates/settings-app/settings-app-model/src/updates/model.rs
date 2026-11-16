@@ -180,6 +180,11 @@ fn some_text(text: String) -> Option<String> {
 impl UpdateStatus {
     /// The status the service's properties describe; the service did not make sense when one of
     /// them is a state this window has no word for.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Absence::Failed`] when the properties hold a state or version this window has no
+    /// word for.
     pub fn of_wire(wire: UpdateWire) -> Result<UpdateStatus, Absence> {
         let phase = UpdatePhase::of_word(&wire.state).ok_or(Absence::Failed)?;
         let current = match some_text(wire.current) {

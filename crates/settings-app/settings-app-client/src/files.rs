@@ -26,6 +26,11 @@ pub struct StyleInputs {
 
 impl Client {
     /// The coding assistants on offer to download; the empty sentence when none could be asked.
+    ///
+    /// # Errors
+    ///
+    /// Returns the empty sentence when the program could not be asked, or its sentence when it
+    /// failed.
     pub async fn list_agents(&self, data: &DataHome) -> Result<Vec<Candidate>, String> {
         let Some(program) = self.agents_program.clone() else {
             return Err(String::new());
@@ -38,6 +43,11 @@ impl Client {
 
     /// Downloads the coding assistant `id` at `version`, calling `begun` once the program has
     /// started; the program's sentence when it fails, empty when there is none.
+    ///
+    /// # Errors
+    ///
+    /// Returns the program's sentence when the download fails, and the empty sentence when there is
+    /// none.
     pub async fn download_agent(
         &self,
         data: &DataHome,

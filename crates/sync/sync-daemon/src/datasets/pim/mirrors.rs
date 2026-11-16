@@ -135,6 +135,11 @@ impl AccountMirrors {
 
     /// Reads the account's collections and brings the running ones to match, through the source
     /// the grant's transport names.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`RefreshError`] when the grant's transport names no source, the account has no
+    /// endpoint for it, or a source cannot be built.
     pub async fn refresh<T: GrantsLink + 'static>(
         &mut self,
         wiring: &Wiring<T>,

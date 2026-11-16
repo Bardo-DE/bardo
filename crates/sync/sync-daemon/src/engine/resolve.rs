@@ -14,6 +14,10 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
     /// discard the local copy when the replica deleted it). `KeepLocal` has it upload the local
     /// content based on the replica's current version (or create it again when the replica
     /// deleted it); a local deletion is found again by the scan and removed.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SyncError`] when the journal cannot be read or written.
     pub fn resolve(&self, number: i64, how: Resolution) -> Result<bool, SyncError> {
         let Some(stored) = self
             .journal

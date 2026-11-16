@@ -9,6 +9,10 @@ pub struct CgroupPath(String);
 
 impl CgroupPath {
     /// The path `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `text` is not an absolute path on one line.
     pub fn new(text: &str) -> Result<CgroupPath, IdError> {
         if text.starts_with('/') && !text.contains(['\n', '\0']) {
             Ok(CgroupPath(text.to_owned()))
@@ -19,6 +23,11 @@ impl CgroupPath {
 
     /// The unified-hierarchy path in `contents`, the text of `/proc/<pid>/cgroup`. A system with
     /// only version 1 hierarchies has no such line, and the contents are refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `contents` has no unified-hierarchy line, or its path is not a
+    /// valid cgroup path.
     pub fn from_proc(contents: &str) -> Result<CgroupPath, IdError> {
         contents
             .lines()

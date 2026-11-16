@@ -100,6 +100,10 @@ impl Outbox {
     /// Tells the window `notice`; fails only when the window has gone. When [`NOTICE_INBOX`]
     /// notices are already waiting the new one is dropped and this still succeeds; the first one
     /// dropped after the window caught up is said in the log, the rest of that flood are not.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WindowGone`] when the window has gone.
     pub fn send(&self, notice: Notice) -> Result<(), WindowGone> {
         let mut queue = locked(&self.queue);
         if queue.receiver_gone {

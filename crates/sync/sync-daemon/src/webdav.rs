@@ -25,6 +25,11 @@ pub enum BuildError {
 
 /// The replica of `folder` (a path under the endpoint, `Photos/Originals`) of the account the
 /// grant covers, over relays accountd opens to `endpoint`.
+///
+/// # Errors
+///
+/// Returns [`BuildError::NotWeb`] when `endpoint` is not a web address, or another [`BuildError`]
+/// when the client or `folder` cannot be used.
 pub fn webdav_replica<T: GrantsLink>(
     accounts: Arc<Grants<T>>,
     grant: GrantId,

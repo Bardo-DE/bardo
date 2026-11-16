@@ -72,6 +72,11 @@ impl PictureDirs {
 
     /// `source` among the pictures: where it is when it already lies in one of the folders, else a
     /// copy of it in the added folder, under a name no other picture there has.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when `source` has no file name, or the added folder cannot be made or
+    /// the copy fails.
     pub fn add(&self, source: &Path) -> io::Result<PathBuf> {
         if self
             .system

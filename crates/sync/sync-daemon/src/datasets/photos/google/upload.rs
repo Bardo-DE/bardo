@@ -75,6 +75,10 @@ fn name_of(path: &str) -> &str {
 impl<H: Http> UploadReplica<H> {
     /// The replica sending through `api`, keeping its ledger at `ledger`, and putting uploads in
     /// the album titled `title`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LedgerError`] when the ledger cannot be read.
     pub fn open(api: PhotosApi<H>, ledger: PathBuf, title: &str) -> Result<Self, LedgerError> {
         Ok(Self {
             api,

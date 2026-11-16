@@ -123,6 +123,11 @@ impl Table {
     /// without `exe`, a relative or `..` path, a `**` or two `*` in a segment, a malformed id,
     /// or two rows naming one unit. Only with feature `toml` (on by default): a crate that names the
     /// rows but never parses a file turns it off and reaches no TOML parser.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TableError`] when `text` is too long, has too many rows, does not parse as TOML,
+    /// has a row that is not valid, or names one unit in two rows.
     #[cfg(feature = "toml")]
     pub fn from_toml(text: &str) -> Result<Table, TableError> {
         if text.len() > TABLE_BYTES_MAX {
@@ -156,6 +161,10 @@ impl Table {
     /// Only with feature `dev-rows`: the table written as `text`, every row marked
     /// [`RowOrigin::Dev`](crate::RowOrigin::Dev). Same format and same refusals as
     /// [`Table::from_toml`]. Merge it after the shipped table ([`Table::merge`]).
+    ///
+    /// # Errors
+    ///
+    /// Returns the same [`TableError`]s as [`Table::from_toml`].
     #[cfg(feature = "dev-rows")]
     pub fn from_toml_dev(text: &str) -> Result<Table, TableError> {
         let mut table = Table::from_toml(text)?;

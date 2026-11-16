@@ -11,6 +11,10 @@ pub struct ConfigFile(PathBuf);
 
 impl ConfigFile {
     /// `file` as a config file, or why it is refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StaleReason`] when `file` is not a safe path for a config file.
     pub fn parse(file: &FilePath) -> Result<ConfigFile, StaleReason> {
         let path = Path::new(&file.0);
         let plain = path

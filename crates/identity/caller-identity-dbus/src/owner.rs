@@ -31,6 +31,11 @@ impl OwnerWatch {
 impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     /// The unique name that owns the well-known `name`, once its process meets one of `need`. A
     /// name nobody owns is a refusal, so a squatter that is absent cannot pass.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Refused::Unknown` when the name has no owner or the owner cannot be looked up, and
+    /// the refusal of [`BusPeers::require`] when the owner's process meets none of `need`.
     pub async fn owner_of(
         &self,
         name: &str,
@@ -42,6 +47,10 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     }
 
     /// Subscribes to changes of the owner of `name`. Call it before [`BusPeers::owner_of`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`WhoError`] when the bus refuses the subscription or does not answer in time.
     pub async fn watch_owner(&self, name: &str) -> Result<OwnerWatch, WhoError> {
         let bus = DBusProxy::new(&self.connection)
             .await

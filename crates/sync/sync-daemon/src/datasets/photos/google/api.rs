@@ -146,6 +146,11 @@ impl<H: Http> PhotosApi<H> {
 
     /// Sends the bytes of a file (step one of an upload) and gets the token that makes them a
     /// media item.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`ApiError`] when the request cannot be made or sent, Google refuses it, or the
+    /// answer is not an upload token.
     pub async fn upload(&self, name: &str, bytes: Vec<u8>) -> Result<UploadToken, ApiError> {
         let request = self
             .request("uploads")?
@@ -164,6 +169,11 @@ impl<H: Http> PhotosApi<H> {
     }
 
     /// Makes an album titled `title` that the app owns.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`ApiError`] when the request cannot be made or sent, Google refuses it, or the
+    /// answer is not an album.
     pub async fn create_album(&self, title: &str) -> Result<AlbumId, ApiError> {
         let body = serde_json::json!({"album": {"title": title}}).to_string();
         let request = self
@@ -176,6 +186,11 @@ impl<H: Http> PhotosApi<H> {
     }
 
     /// Makes the uploaded bytes behind `token` a media item named `name`, in `album`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`ApiError`] when the request cannot be made or sent, Google refuses it, the
+    /// answer is unreadable, or Google reports that the item failed.
     pub async fn add_item(
         &self,
         album: Option<&AlbumId>,

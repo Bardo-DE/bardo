@@ -39,6 +39,10 @@ impl FirstRunMark {
     }
 
     /// Records that the first run happened.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the folder or the marker file cannot be created.
     pub fn record(&self) -> io::Result<()> {
         if let Some(parent) = self.path.parent() {
             std::fs::create_dir_all(parent)?;

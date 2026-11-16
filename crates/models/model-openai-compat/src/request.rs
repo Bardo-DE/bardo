@@ -16,6 +16,11 @@ use crate::{Flavor, RequestJson};
 use crate::{logprobs, messages};
 
 /// The JSON body of `POST /chat/completions` for `request`, streaming on.
+///
+/// # Errors
+///
+/// Returns a [`CodecError`] when the turn cannot be written for the server: a message, the tools or
+/// the output shape that `flavor` cannot carry.
 pub fn encode_request(request: &TurnRequest, flavor: Flavor) -> Result<RequestJson, CodecError> {
     let server = flavor.server();
     let mut body = Map::new();

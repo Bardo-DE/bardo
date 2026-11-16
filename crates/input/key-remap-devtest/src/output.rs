@@ -35,6 +35,11 @@ pub struct Output {
 impl Output {
     /// Waits for "key-remap keyboard" to register and opens its node. Every event read is
     /// appended to `trace`, a file the failure report includes.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the output keyboard does not register in time, or its node cannot
+    /// be opened.
     pub fn find(trace: Option<&Path>) -> Result<Self, Failure> {
         let node = wait_for(FIND_WAIT, || find_node(OUTPUT_NAME)).ok_or_else(|| {
             Failure::new(format!(
@@ -104,11 +109,21 @@ impl Output {
     /// Listens for `want` (tokens like `+leftctrl +c SYN`; empty for silence). It fails as
     /// soon as what arrived stops being a prefix of `want`, when `WAIT` passes without all of
     /// it, or when anything follows it within `SETTLE`. The failure shows both streams.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] showing both streams when what arrived is not a prefix of `want`, not
+    /// all of `want` arrives before `WAIT` passes, or anything follows it within `SETTLE`.
     pub fn expect(&mut self, want: &str) -> Result<(), Failure> {
         self.expect_within(want, WAIT)
     }
 
     /// `expect` with the wait given.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] under the same conditions as [`Self::expect`], with `wait` as the
+    /// limit.
     pub fn expect_within(&mut self, want: &str, wait: Duration) -> Result<(), Failure> {
         let want: Vec<String> = want.split_whitespace().map(str::to_owned).collect();
         let shown = |tokens: &[String]| format!("[{}]", tokens.join(" "));
@@ -151,6 +166,10 @@ impl Output {
     }
 
     /// Reads for `quiet` and fails if anything at all arrives.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when anything arrives within `quiet`.
     pub fn expect_silence(&mut self, quiet: Duration) -> Result<(), Failure> {
         self.log("expect silence");
         let end = Instant::now() + quiet;
@@ -186,6 +205,10 @@ impl Output {
     }
 
     /// Waits until the device is no longer registered, which is what a dead daemon leaves.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the device is still registered after `wait`.
     pub fn expect_gone(&mut self, wait: Duration) -> Result<(), Failure> {
         let gone = wait_for(wait, || {
             self.read();
@@ -199,6 +222,10 @@ impl Output {
     }
 
     /// Writes a LED event to the node, as a compositor does when Caps Lock turns on.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the event cannot be written to the node.
     pub fn write_led(&self, led: u16, value: i32) -> Result<(), Failure> {
         let fd = rustix::fs::open(
             &self.node,

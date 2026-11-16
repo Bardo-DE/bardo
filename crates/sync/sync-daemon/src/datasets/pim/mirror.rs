@@ -55,6 +55,11 @@ impl PimMirror {
     /// one whose file is missing or whose bytes differ (an edit, a crash that left a short file,
     /// a conflict stored for it) loses its journal row, and the anchor is forgotten once, so the
     /// first cycle lists the collection again and fetches exactly those items.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DatasetError`] when the folder cannot be made or the journal cannot be read or
+    /// repaired.
     pub fn open(
         id: DatasetId,
         kind: PimKind,
@@ -134,6 +139,10 @@ impl PimMirror {
     }
 
     /// Writes the collection's `displayname` and `color` files.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DatasetError`] when the files cannot be written.
     pub fn write_meta(&self, meta: &Meta) -> Result<(), DatasetError> {
         vdir::write_meta(&self.inner.root, meta).map_err(|e| fail("cannot write the metadata", e))
     }

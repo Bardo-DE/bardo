@@ -17,6 +17,10 @@ pub struct MemoryDataset {
 
 impl MemoryDataset {
     /// An empty dataset named `id` (a slug) settling conflicts by `rule`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `id` is not a dataset slug.
     #[must_use]
     pub fn new(id: &str, rule: ConflictRule) -> Self {
         Self {

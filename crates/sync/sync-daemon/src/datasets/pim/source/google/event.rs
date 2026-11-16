@@ -217,6 +217,11 @@ fn rule_lines(event: &Event) -> impl Iterator<Item = String> + '_ {
 }
 
 /// The iCalendar of `event`.
+///
+/// # Errors
+///
+/// Returns a [`ConvertError`] when the event has no start, or a time or recurrence in it cannot be
+/// written as iCalendar.
 pub fn to_ics(event: &Event) -> Result<String, ConvertError> {
     let series = event.in_series();
     let start = event.start.as_ref().ok_or(ConvertError::NoStart)?;

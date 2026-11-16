@@ -443,6 +443,10 @@ pub fn read_paused(file: &Path) -> BTreeSet<String> {
 }
 
 /// Writes to `file` that the drive `id` is paused, or not, keeping the rest of it.
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be read, parsed or written.
 pub fn write_paused(file: &Path, id: &str, paused: bool) -> std::io::Result<()> {
     write_drives(file, "paused", id, paused)
 }
@@ -455,6 +459,10 @@ pub fn read_keep_all(file: &Path) -> BTreeSet<String> {
 
 /// Writes to `file` that the drive `id` is kept downloaded whole, or not, keeping the rest of
 /// it.
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be read, parsed or written.
 pub fn write_keep_all(file: &Path, id: &str, on: bool) -> std::io::Result<()> {
     write_drives(file, "keep_all", id, on)
 }
@@ -825,6 +833,10 @@ impl<T: GrantsLink + AccountsLink, C> SyncSettings<T, C> {
 /// From then on, each time a drive comes to need more room than there is to keep everything
 /// downloaded, or no longer does, its account's "Keep Everything Downloaded" row is told of, so the
 /// pane draws its line again; nothing is told while that stands still.
+///
+/// # Errors
+///
+/// Returns the [`zbus::Error`] when the module cannot be registered.
 pub async fn serve_settings<T: GrantsLink + AccountsLink, C: Callers>(
     connection: &Connection,
     module: SyncSettings<T, C>,

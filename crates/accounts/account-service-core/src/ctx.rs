@@ -312,6 +312,11 @@ impl<E: Ports> Ctx<E> {
     ///
     /// The last save to finish therefore carries the last state. A caller dropped while it waits
     /// for the gate or the store leaves nothing behind.
+    ///
+    /// # Errors
+    ///
+    /// Returns the `Refusal` that `decide` returns, with nothing changed, or `Refusal::Unavailable`
+    /// when the store cannot save the new registry.
     pub async fn transact<T>(
         &self,
         decide: impl FnOnce(&mut Registry) -> Result<(Vec<Audited>, T), Refusal> + Send,
@@ -365,6 +370,10 @@ impl<E: Ports> Ctx<E> {
     /// Sets an account's state (`NeedsReauth` when its credential was refused, `Ok` again once
     /// it is signed in). Whether it changed; `Unavailable` when the change could not be saved,
     /// and then the state is as it was.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Refusal::Unavailable` when the change could not be saved.
     pub async fn set_state(&self, id: &AccountId, state: AccountState) -> Result<bool, Refusal> {
         let written = self
             .transact(|registry| {

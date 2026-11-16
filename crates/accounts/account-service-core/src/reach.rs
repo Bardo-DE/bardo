@@ -36,6 +36,12 @@ use account_wire::Refusal;
 /// with nothing added), or `auth_origins` (relayed with the bearer). `EndpointNotGranted` for any
 /// origin the file does not declare, one with a path, or one on another scheme than the endpoint it
 /// belongs to.
+///
+/// # Errors
+///
+/// Returns `Refusal::EndpointNotGranted` when the file does not declare the origin for `kind`, the
+/// origin has a path or another scheme than the endpoint it belongs to, or the resulting endpoint
+/// fails its own check.
 pub fn declared_endpoint(
     account: &Account,
     spec: &ProviderSpec,

@@ -51,6 +51,10 @@ fn backend_error(err: notify::Error) -> WatchError {
 
 impl InotifyWatch {
     /// A watcher with no roots.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`WatchError`] when the operating system's watch backend cannot be started.
     pub fn new() -> Result<Self, WatchError> {
         let inbox = Arc::new(Mutex::new(Inbox::default()));
         let sink = Arc::clone(&inbox);

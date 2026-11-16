@@ -249,6 +249,11 @@ impl<H: Http> PhotosPicker<H> {
     }
 
     /// Opens a session for the person to pick in.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PickerError`] when the request cannot be sent, Google refuses it, or the answer
+    /// is not a usable session.
     pub async fn start(&self) -> Result<PickerSession, PickerError> {
         let request = request(Method::POST, &self.url("sessions")?)
             .header("Content-Type", "application/json");
@@ -274,6 +279,11 @@ impl<H: Http> PhotosPicker<H> {
     }
 
     /// Whether the person has finished picking in `session`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PickerError`] when the request cannot be sent, Google refuses it, or the answer
+    /// is unreadable.
     pub async fn poll(&self, session: &SessionId) -> Result<PickerState, PickerError> {
         let request = request(Method::GET, &self.url(&format!("sessions/{session}"))?);
         let response = self.send(request, Vec::new()).await?;
@@ -288,6 +298,12 @@ impl<H: Http> PhotosPicker<H> {
 
     /// Downloads what was picked in `session` into `<picked>/<session>/` and deletes the
     /// session. A person who has not finished is `NotYet` and nothing is touched.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PickerError::NotYet`] when the person has not finished picking, and another
+    /// [`PickerError`] when a request fails, an answer is unreadable, or a file cannot be written
+    /// to disk.
     pub async fn import(&self, session: &SessionId) -> Result<Imported, PickerError> {
         if self.poll(session).await? != PickerState::Picked {
             return Err(PickerError::NotYet);

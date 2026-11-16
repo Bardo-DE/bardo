@@ -39,6 +39,11 @@ pub type GraphHttp<T> = Routed<RelayHttp<RelayDial<T>>, RelayHttp<RelayDial<T>>,
 /// `folder` is a path in the app folder, `Photos/Originals`; empty for the app folder itself.
 /// It runs over relays the account service opens to
 /// `endpoint` and, for the links Graph hands out, to the origins of those links.
+///
+/// # Errors
+///
+/// Returns [`BuildError::NotWeb`] when `endpoint` is not a web address, or another [`BuildError`]
+/// when the client or `folder` cannot be used.
 pub fn graph_replica<T: GrantsLink + 'static>(
     accounts: Arc<Grants<T>>,
     grant: GrantId,

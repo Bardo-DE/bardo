@@ -28,6 +28,11 @@ pub struct Client {
 impl Client {
     /// Connects, waits for `Hello` and checks its version. What the client hears is appended to
     /// `log`, a file the failure report includes.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the socket cannot be made or reached before the deadline, `Hello`
+    /// does not arrive, or its version is not the one this harness speaks.
     pub fn connect(socket: &Path, log: Option<&Path>) -> Result<Self, Failure> {
         let deadline = Instant::now() + CONNECT_WAIT;
         let fd = loop {
@@ -87,6 +92,11 @@ impl Client {
     }
 
     /// The next message within `wait`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the receive timeout cannot be set, the socket fails, or a packet
+    /// does not decode.
     pub fn recv(&mut self, wait: Duration) -> Result<Heard, Failure> {
         set_socket_timeout(
             &self.fd,
@@ -106,6 +116,10 @@ impl Client {
     }
 
     /// Sends one message.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the socket cannot send the message.
     pub fn send(&self, message: &ToDaemon) -> Result<(), Failure> {
         rustix::net::send(&self.fd, &protocol::encode(message), SendFlags::NOSIGNAL)
             .map(drop)
@@ -114,6 +128,11 @@ impl Client {
 
     /// Tells keycap which profile the focused window wants. The daemon does not answer, so a
     /// test that types next waits `FOCUS_SETTLE` first.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when `profile` is not a valid profile name, or the message cannot be
+    /// sent.
     pub fn focus(&self, profile: &str) -> Result<(), Failure> {
         let profile = protocol::ProfileName::parse(profile)
             .map_err(|e| Failure::new(format!("profile name {profile:?}: {e}")))?;
@@ -121,6 +140,10 @@ impl Client {
     }
 
     /// Ends a pause.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the message cannot be sent.
     pub fn resume(&self) -> Result<(), Failure> {
         self.send(&ToDaemon::Steer(Steer::Resume))
     }
@@ -133,6 +156,11 @@ impl Client {
 
     /// Reads until `matches` holds for a status, or `wait` passes; the failure lists every
     /// status heard on the way, so a wrong state is visible.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when `wait` passes without a matching status, or the socket fails; the
+    /// message lists the statuses heard.
     pub fn wait_status(
         &mut self,
         what: &str,
@@ -171,6 +199,10 @@ impl Client {
     }
 
     /// Waits until the keyboard called `name` is held in the way `grab` says.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] under the same conditions as [`Self::wait_status`].
     pub fn wait_grab(&mut self, name: &str, grab: Grab, wait: Duration) -> Result<Status, Failure> {
         self.wait_status(&format!("{name} {grab:?}"), wait, |s| {
             s.keyboards

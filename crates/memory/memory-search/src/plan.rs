@@ -136,6 +136,10 @@ fn merged<R: SpaceReader>(r: &R, facts: Vec<Fused>, events: Vec<Fused>) -> Vec<F
 }
 
 /// The hits for `q`, best first, from `vector` (the query as [`embed_query`] returned it).
+///
+/// # Errors
+///
+/// Returns the [`Refusal`] of the reader when the stored facts or events cannot be read.
 pub fn search<R: SpaceReader>(
     r: &R,
     vector: Option<&Vector>,
@@ -156,6 +160,10 @@ pub fn search<R: SpaceReader>(
 ///
 /// Over `Both`, facts and event documents are ranked apart and merged by reciprocal rank, so
 /// neither drowns the other; then `fit_budget` takes hits in order while they fit.
+///
+/// # Errors
+///
+/// Returns the [`Refusal`] of the reader when the stored facts or events cannot be read.
 pub fn inject<R: SpaceReader>(
     r: &R,
     vector: Option<&Vector>,

@@ -19,5 +19,9 @@ pub trait SpaceReader {
     fn event_ref(&self, entry: &Entry) -> EventRef;
 
     /// Every fact the files hold: active, superseded and pending.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the fact files cannot be read.
     fn stored_facts(&self) -> Result<Vec<Fact>, Refusal>;
 }

@@ -21,6 +21,11 @@ pub enum TextFault {
 
 impl Control {
     /// `text` as a value this control holds.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextFault`] when `text` is not a word this control offers, not a number, out of
+    /// range, or the control only takes a file.
     pub fn from_text(&self, text: &str) -> Result<toml::Value, TextFault> {
         let word = |words: Vec<String>| {
             if words.iter().any(|w| w == text) {

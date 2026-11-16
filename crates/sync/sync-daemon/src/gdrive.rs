@@ -21,6 +21,11 @@ use sync_core::Clock;
 /// `folder` is a path in the app data folder, `Photos/Originals`; empty for the folder itself.
 /// It runs over relays accountd opens to `endpoint`
 /// (the `google_drive` row's, `https://www.googleapis.com/drive/v3`).
+///
+/// # Errors
+///
+/// Returns [`BuildError::NotWeb`] when `endpoint` is not a web address, or another [`BuildError`]
+/// when the client or `folder` cannot be used.
 pub fn gdrive_replica<T: GrantsLink>(
     accounts: Arc<Grants<T>>,
     grant: GrantId,

@@ -53,6 +53,11 @@ impl Running {
 
     /// Serves until the bus closes. A loop that panics or ends first is an error: the name would
     /// otherwise stay owned by a daemon that answers every call with `Gone`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ServeError::LoopPanicked`] or [`ServeError::LoopEnded`] when the loop stops before
+    /// the bus closes.
     pub async fn wait(self) -> Result<(), ServeError> {
         let mut messages = zbus::MessageStream::from(&self.connection);
         let closed = async { while messages.next().await.is_some() {} };
@@ -81,6 +86,11 @@ pub enum ServeError {
 
 /// Waits for `closed` (the bus going away) while watching the loop's `task`: the task ending
 /// first, by panic or not, is the error; `closed` first stops the task and is `Ok`.
+///
+/// # Errors
+///
+/// Returns [`ServeError::LoopPanicked`] when the task panics before `closed`, and
+/// [`ServeError::LoopEnded`] when it ends without panicking.
 pub async fn supervise(
     mut task: tokio::task::JoinHandle<()>,
     closed: impl std::future::Future<Output = ()>,
@@ -101,6 +111,11 @@ pub async fn supervise(
 /// Registers `org.bardo.Voice1` on `connection` over `seams` and starts the loop. Returns when
 /// the name is owned, so a caller may use the interface at once; a second daemon on the same bus
 /// is an error.
+///
+/// # Errors
+///
+/// Returns a [`zbus::Error`] when the interfaces cannot be registered or the name cannot be
+/// requested, or when the name is already taken by another daemon on the bus.
 pub async fn start<D, T, W, U>(
     connection: zbus::Connection,
     config: VoicedConfig,
@@ -171,6 +186,11 @@ where
 /// Registers the three interfaces, derives each caller's role from the connection, runs `speech-
 /// loop` and talks to inferd through inference-client. `usage` is where the person's voice settings
 /// are read. Returns when the bus closes, or with an error if the loop dies first.
+///
+/// # Errors
+///
+/// Returns a [`ServeError`] when the session bus cannot be reached or the interfaces cannot be
+/// served, or when the loop ends before the bus closes.
 pub async fn serve<D: AudioDevice + 'static>(
     config: VoicedConfig,
     callers: CallerTable,

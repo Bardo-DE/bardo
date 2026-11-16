@@ -49,6 +49,10 @@ fn default_max_hold_ms() -> u64 {
 
 impl VoicedConfig {
     /// Reads `voiced.toml`; a file with no shell is refused, since nothing could then begin.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigError`] when `text` is not valid TOML, or names no shell.
     pub fn parse(text: &str) -> Result<Self, ConfigError> {
         let config: VoicedConfig =
             toml::from_str(text).map_err(|e| ConfigError::Parse(e.to_string()))?;

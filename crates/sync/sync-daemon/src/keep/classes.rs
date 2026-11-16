@@ -55,6 +55,10 @@ impl SyncClass {
 }
 
 /// syncd as an app of consent: a native daemon, as the caller table names it.
+///
+/// # Panics
+///
+/// Never in practice: it panics only if the constant app name is not a valid app name.
 #[must_use]
 pub fn sync_app() -> AppId {
     AppId {

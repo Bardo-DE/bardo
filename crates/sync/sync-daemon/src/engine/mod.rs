@@ -164,6 +164,10 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
 
     /// Runs one cycle. A stop the replica asked for is the report's `outcome`; only a journal or
     /// local failure is an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SyncError`] when the journal or the local files fail.
     pub async fn sync_once(&self) -> Result<Report, SyncError> {
         let mut report = Report::default();
         match self.cycle(&mut report).await {

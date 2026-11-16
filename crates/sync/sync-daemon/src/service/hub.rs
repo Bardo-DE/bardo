@@ -287,6 +287,11 @@ impl Hub {
     /// taken, not when the cycle ends (see [`Hub::cycles`]). A dataset waiting for the network
     /// starts when the network allows. A paused dataset does not cycle: [`SyncNowError::Paused`].
     /// Who may ask is the caller's to check (the `Sync1` object does, as for a pause).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SyncNowError::NoSuchDataset`] when there is no dataset `name`, and
+    /// [`SyncNowError::Paused`] when it is paused.
     pub fn sync_now(&self, name: &DatasetName) -> Result<(), SyncNowError> {
         let datasets = self.datasets();
         let entry = datasets.get(name).ok_or(SyncNowError::NoSuchDataset)?;
@@ -314,6 +319,11 @@ impl Hub {
     /// [`Hub::set_pausing`]): the dataset's driver takes the request between cycles. A dataset
     /// the caller may not see is [`ConfirmError::NoSuchDataset`], as a missing one is; one not
     /// held is [`ConfirmError::NothingHeld`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ConfirmError::NoSuchDataset`] when `caller` may not see the dataset or it is gone,
+    /// and [`ConfirmError::NothingHeld`] when no discard is held.
     pub async fn confirm_discard(
         &self,
         caller: &Caller,
@@ -341,6 +351,12 @@ impl Hub {
     /// Settles conflict `number` of `name` for `caller`, as the dataset's driver does between
     /// cycles: the owning app only. A dataset the caller may not see is [`SettleError::NoSuchDataset`],
     /// as a missing one is.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SettleError::NoSuchDataset`] when `caller` may not see the dataset or it is gone,
+    /// [`SettleError::NotOwner`] when the caller is not its owning app, and the driver's error when
+    /// the conflict cannot be settled.
     pub async fn settle(
         &self,
         caller: &Caller,

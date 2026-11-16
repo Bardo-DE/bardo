@@ -100,6 +100,11 @@ pub struct DriveJournal {
 impl DriveJournal {
     /// Opens the file at `path` (`Paths::journal(account, "storage_drive")`), creating it and its
     /// directory; a file of another schema version is emptied.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the directory or the database cannot be created, opened or
+    /// set up, or the stored tree cannot be written.
     pub fn open(path: &Path) -> Result<Self, JournalError> {
         if let Some(dir) = path.parent() {
             std::fs::create_dir_all(dir)?;
@@ -124,6 +129,10 @@ impl DriveJournal {
     }
 
     /// Where the next page is read from: the stored anchor, else the start (a first listing).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn cursor(&self) -> Result<Cursor, JournalError> {
         let anchor: Option<String> =
             self.connection()
@@ -133,6 +142,10 @@ impl DriveJournal {
 
     /// The tree the replica had learnt when the last page was applied, for the next replica to
     /// start from (`with_folders`).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read, or the stored tree is corrupt.
     pub fn folders(&self) -> Result<Folders, JournalError> {
         let text: String =
             self.connection()
@@ -144,6 +157,10 @@ impl DriveJournal {
 
     /// Whether a full listing is under way (a first one, or one after the anchor expired):
     /// its pages are noted, and what it never lists is removed when it ends.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn listing(&self) -> Result<bool, JournalError> {
         let listing: i64 =
             self.connection()
@@ -155,6 +172,10 @@ impl DriveJournal {
 
     /// Begins a full listing: the anchor is forgotten (it expired, or there was none), and so
     /// is the tree, which the listing learns again. The entries stay until it ends.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be written.
     pub fn begin_listing(&self) -> Result<(), JournalError> {
         let mut connection = self.connection();
         let tx = connection.transaction()?;
@@ -170,6 +191,11 @@ impl DriveJournal {
     /// Applies one page, in one transaction with the anchor it ends in and the tree the replica
     /// holds after it (`folders`). A page of a full listing notes what it lists; its last page
     /// removes every entry the listing did not list and ends it.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be written; the transaction is then not
+    /// committed and nothing of the page is kept.
     pub fn apply(&self, page: &ChangePage, folders: &Folders) -> Result<Applied, JournalError> {
         let mut connection = self.connection();
         let tx = connection.transaction()?;
@@ -217,6 +243,10 @@ impl DriveJournal {
     }
 
     /// The entry the drive knows as `id`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn entry(&self, id: &RemoteId) -> Result<Option<DriveEntry>, JournalError> {
         let connection = self.connection();
         let Some(row) = row_where(&connection, "id = ?1", params![id.0])? else {
@@ -228,6 +258,10 @@ impl DriveJournal {
 
     /// The entry at `path` below the top of the drive; none for the top itself (`""`), which is
     /// no entry. Where a folder holds two of the same name (Drive allows it), the first by id.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn entry_at(&self, path: &ItemPath) -> Result<Option<DriveEntry>, JournalError> {
         let connection = self.connection();
         let names: Vec<&str> = path.0.split('/').filter(|n| !n.is_empty()).collect();
@@ -250,6 +284,10 @@ impl DriveJournal {
 
     /// The entries directly inside the folder at `path` (`""` for the top of the drive), by
     /// name; none when nothing is there or it is not a folder.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn children(&self, path: &ItemPath) -> Result<Vec<DriveEntry>, JournalError> {
         let top = path.0.trim_matches('/').is_empty();
         let rows = if top {
@@ -276,6 +314,10 @@ impl DriveJournal {
     }
 
     /// How many entries the drive has.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn len(&self) -> Result<usize, JournalError> {
         let count: i64 =
             self.connection()
@@ -284,6 +326,10 @@ impl DriveJournal {
     }
 
     /// Whether the drive has no entries (nothing listed yet, or an empty drive).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn is_empty(&self) -> Result<bool, JournalError> {
         Ok(self.len()? == 0)
     }

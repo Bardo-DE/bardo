@@ -136,6 +136,11 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     /// Who the sender is: its pin, the manager's facts about its unit when a row names one, and
     /// the judgement. Every bus call is bounded; any failure to identify is an error, and a caller
     /// treats an error as an unknown peer.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`WhoError`] when the sender cannot be identified: a bus call fails or times out,
+    /// or the process or its unit cannot be read.
     pub async fn who(&self, sender: &str) -> Result<Standing, WhoError> {
         self.standing(sender, true).await
     }
@@ -143,6 +148,12 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     /// The check a method makes: `Ok` with the sender's standing when it meets one of `need`.
     /// A message with no sender, an unidentifiable sender and a sender that holds nothing asked
     /// for are all refusals; the unit manager is asked only if a requirement wants `Unit` or `Full`.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Refused::NoSender` for a message with no sender, `Refused::Unknown` when the sender
+    /// cannot be identified, and the refusal of [`Standing::holds`] when it holds nothing in
+    /// `need`.
     pub async fn require(
         &self,
         sender: Option<&str>,
@@ -158,6 +169,10 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     }
 
     /// As [`BusPeers::require`], for the refusal a method returns directly.
+    ///
+    /// # Errors
+    ///
+    /// Returns the D-Bus access-denied error for each refusal of [`BusPeers::require`].
     pub async fn require_or_deny(
         &self,
         sender: Option<&str>,

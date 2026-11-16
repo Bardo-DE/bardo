@@ -64,6 +64,11 @@ impl ExtensionHome {
     }
 
     /// Turns the Extension `id` on or off. Every other line of the file stays as it was.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`FilesError`] when the file cannot be read, is not valid TOML, or cannot be
+    /// written.
     pub fn set_power(&self, id: &str, on: bool) -> Result<(), FilesError> {
         let file =
             ConfigFile::parse(&FilePath(FILE.to_owned())).map_err(|reason| FilesError::Io {

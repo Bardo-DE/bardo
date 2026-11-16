@@ -239,6 +239,11 @@ pub fn uid(event: &Event) -> &str {
 }
 
 /// The iCalendar of `event`.
+///
+/// # Errors
+///
+/// Returns [`ConvertError::Removed`] for a removed event, [`ConvertError::NoStart`] for one with no
+/// start, and another [`ConvertError`] when a time cannot be written as iCalendar.
 pub fn to_ics(event: &Event) -> Result<String, ConvertError> {
     if event.removed.is_some() {
         return Err(ConvertError::Removed);

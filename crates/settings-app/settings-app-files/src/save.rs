@@ -86,6 +86,11 @@ fn edited(path: &Path, text: &str, edits: &Edits<'_>) -> Result<String, FilesErr
 /// other key, known or not, keeps the text it had (bardo-settings is not the program that owns the
 /// file, so it never removes anything). A file that exists and cannot be read, or is not valid
 /// TOML, is left alone.
+///
+/// # Errors
+///
+/// Returns a [`FilesError`] when the file exists and cannot be read, is not valid TOML, or the
+/// result cannot be written.
 pub fn save(
     home: &ConfigHome,
     file: &ConfigFile,

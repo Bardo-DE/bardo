@@ -14,6 +14,10 @@ pub struct ExternalGrab {
 
 impl ExternalGrab {
     /// Opens `node` and grabs it.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when `node` cannot be opened or grabbed.
     pub fn take(node: &Path) -> Result<Self, Failure> {
         let fd = rustix::fs::open(
             node,
@@ -26,6 +30,10 @@ impl ExternalGrab {
     }
 
     /// Gives the device back.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the grab cannot be released.
     pub fn release(self) -> Result<(), Failure> {
         sys::release(&self.fd).map_err(io("releasing the harness's grab"))
     }

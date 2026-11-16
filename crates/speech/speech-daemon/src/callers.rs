@@ -18,6 +18,10 @@ pub fn shipped() -> CallerTable {
 }
 
 /// The table of this machine: `/etc/bardo/voiced-callers.toml` with the person's file over it.
+///
+/// # Errors
+///
+/// Returns a [`CallerFileError`] when a caller file exists and cannot be read or is not valid.
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     read_table(FILE, env)
 }

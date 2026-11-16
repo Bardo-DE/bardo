@@ -28,6 +28,10 @@ pub struct Notifications {
 
 impl Notifications {
     /// Binds `path` (replacing a stale file) and starts recording.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the socket cannot be bound or its read timeout set.
     pub fn listen(path: &Path) -> std::io::Result<Self> {
         let _ = std::fs::remove_file(path);
         let socket = UnixDatagram::bind(path)?;

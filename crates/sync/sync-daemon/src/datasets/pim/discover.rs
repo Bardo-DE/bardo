@@ -58,6 +58,11 @@ fn segment_of(url: &WebUrl) -> String {
 }
 
 /// Every calendar (or address book) the account has, in the server's order.
+///
+/// # Errors
+///
+/// Returns a [`DiscoverError`] when the request cannot be sent, the server refuses the account or
+/// answers with another status, or the answer cannot be read.
 pub async fn discover<H: Http>(
     http: &H,
     endpoint: &WebUrl,

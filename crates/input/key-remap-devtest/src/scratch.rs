@@ -13,6 +13,11 @@ pub struct Scratch(PathBuf);
 
 impl Scratch {
     /// A fresh directory named for `label` and this process.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the directory cannot be created or opened up: a harness that cannot make its
+    /// scratch space cannot run.
     pub fn new(label: &str) -> Self {
         let n = NEXT.fetch_add(1, Ordering::Relaxed);
         let dir = std::env::temp_dir().join(format!(
@@ -33,6 +38,10 @@ impl Scratch {
     }
 
     /// A subdirectory, created readable and searchable by everyone.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the directory cannot be created or opened up.
     #[must_use]
     pub fn dir(&self, name: &str) -> PathBuf {
         let dir = self.0.join(name);

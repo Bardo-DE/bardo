@@ -22,8 +22,16 @@ pub enum WatchError {
 /// A source of file observations.
 pub trait FileWatch: Send {
     /// Starts watching a root, recursively.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`WatchError`] when the root cannot be watched.
     fn watch(&mut self, root: &SpacePath) -> Result<(), WatchError>;
     /// Stops watching a root.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`WatchError`] when the root cannot be unwatched.
     fn unwatch(&mut self, root: &SpacePath) -> Result<(), WatchError>;
     /// The next change, with rename halves already paired; `None` when the watcher is closed.
     fn next(&mut self) -> impl Future<Output = Option<Observed>> + Send;

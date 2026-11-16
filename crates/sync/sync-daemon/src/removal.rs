@@ -18,6 +18,11 @@ use std::io::ErrorKind;
 
 /// Stops the account's datasets, waits until none is in a cycle, and deletes its journals and
 /// mirrors; how many directories existed. A directory already gone is not an error.
+///
+/// # Errors
+///
+/// Returns the I/O error when a directory cannot be deleted, or the stopped datasets cannot be
+/// waited for.
 pub async fn wipe(paths: &Paths, hub: &Hub, account: &AccountDir) -> std::io::Result<usize> {
     hub.stop_account(account).await;
     let dirs: Vec<_> = paths

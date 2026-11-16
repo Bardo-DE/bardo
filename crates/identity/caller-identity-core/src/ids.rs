@@ -82,6 +82,11 @@ impl UnitName {
     pub const MAX_LEN: usize = 255;
 
     /// The unit named `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `text` is not a `.service` or `.scope` name, or is empty, too
+    /// long or not plain.
     pub fn new(text: &str) -> Result<UnitName, IdError> {
         let stem = text
             .strip_suffix(".service")
@@ -132,6 +137,10 @@ impl AppKey {
     pub const MAX_LEN: usize = 255;
 
     /// The key `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `text` is empty, too long or not plain.
     pub fn new(text: &str) -> Result<AppKey, IdError> {
         let plain = |b: u8| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'_' | b'-');
         if text.is_empty() || text.len() > Self::MAX_LEN || !all_bytes(text, plain) {
@@ -181,6 +190,10 @@ impl RoleName {
     }
 
     /// The role `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `text` is not a valid role name.
     pub fn new(text: &str) -> Result<RoleName, IdError> {
         if text.is_empty() || text.len() > Self::MAX_LEN || !all_bytes(text, Self::plain) {
             return Err(IdError::new(
@@ -193,6 +206,11 @@ impl RoleName {
 
     /// A role written in code. Checked at compile time when used in a `const`, so a typo in a
     /// role constant is a build error.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `text` is empty, longer than 64 bytes or not `[a-z0-9_]`; in a `const` that is a
+    /// build error.
     #[must_use]
     pub const fn from_static(text: &'static str) -> RoleName {
         let bytes = text.as_bytes();
@@ -255,6 +273,10 @@ pub struct ExePath(PathBuf);
 
 impl ExePath {
     /// The path `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `text` is not an absolute, plain path.
     pub fn new(text: &str) -> Result<ExePath, IdError> {
         if plain_segments(text).is_none() || text.ends_with(" (deleted)") {
             return Err(IdError::new("image path", "not absolute and plain"));
@@ -302,6 +324,10 @@ pub struct ExePattern(String);
 
 impl ExePattern {
     /// The pattern `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `text` is not an absolute, plain pattern.
     pub fn new(text: &str) -> Result<ExePattern, IdError> {
         let segments =
             plain_segments(text).ok_or(IdError::new("image pattern", "not absolute and plain"))?;

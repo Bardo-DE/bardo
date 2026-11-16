@@ -61,6 +61,10 @@ pub struct GoogleCalendarSource<T: GrantsLink> {
 
 impl<T: GrantsLink> GoogleCalendarSource<T> {
     /// The source at `endpoint` (`https://www.googleapis.com/calendar/v3`), as `grant` allows.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DiscoverError`] when `endpoint` cannot be used to build the client.
     pub fn new(
         accounts: Arc<Grants<T>>,
         grant: GrantId,

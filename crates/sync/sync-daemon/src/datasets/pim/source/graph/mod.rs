@@ -69,6 +69,11 @@ pub struct GraphCalendarSource<T: GrantsLink> {
 
 impl<T: GrantsLink> GraphCalendarSource<T> {
     /// The source at `endpoint` (`https://graph.microsoft.com`), as `grant` allows.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DiscoverError::Unreadable`] when `endpoint` is not a web address, or another
+    /// [`DiscoverError`] when the client cannot be built.
     pub fn new(
         accounts: Arc<Grants<T>>,
         grant: GrantId,

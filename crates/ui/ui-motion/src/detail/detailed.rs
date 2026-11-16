@@ -77,6 +77,10 @@ pub trait Detailed: Clone + PartialEq + 'static {
 
 /// Assert `S`'s moment table as data: each `(from, to, moment)` row is what `S::moment` says.
 /// Panics naming every row that differs; for a component's own tests.
+///
+/// # Panics
+///
+/// Panics naming every row whose moment differs from `S::moment`.
 pub fn moment_table<S: Detailed + Debug>(cases: &[(S, S, Moment)]) {
     let wrong: Vec<String> = cases
         .iter()
@@ -93,6 +97,10 @@ pub fn moment_table<S: Detailed + Debug>(cases: &[(S, S, Moment)]) {
 }
 
 /// Assert `S`'s first-frame table as data: each `(state, moment)` row is what `S::first` says.
+///
+/// # Panics
+///
+/// Panics naming every row whose moment differs from `S::first`.
 pub fn first_table<S: Detailed + Debug>(cases: &[(S, Moment)]) {
     let wrong: Vec<String> = cases
         .iter()

@@ -53,6 +53,10 @@ pub struct GooglePeopleSource<T: GrantsLink> {
 
 impl<T: GrantsLink> GooglePeopleSource<T> {
     /// The source at `endpoint` (`https://people.googleapis.com/v1`), as `grant` allows.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DiscoverError`] when `endpoint` cannot be used to build the client.
     pub fn new(
         accounts: Arc<Grants<T>>,
         grant: GrantId,

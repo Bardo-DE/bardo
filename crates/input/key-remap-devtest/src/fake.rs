@@ -97,6 +97,11 @@ pub struct FakeKeyboard {
 
 impl FakeKeyboard {
     /// Creates the device and waits for its node.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when `/dev/uinput` cannot be opened, the device cannot be set up or
+    /// created, or its node does not appear in time.
     pub fn create(spec: &FakeSpec) -> Result<Self, Failure> {
         let fd = rustix::fs::open(
             UINPUT,
@@ -137,6 +142,10 @@ impl FakeKeyboard {
     }
 
     /// Writes `events` as one batch, then a `SYN_REPORT`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when the batch cannot be written in full.
     pub fn emit(&self, events: &[Event]) -> Result<(), Failure> {
         let mut frame = events.to_vec();
         frame.push(Event::SYNC);
@@ -159,22 +168,38 @@ impl FakeKeyboard {
     }
 
     /// Presses `name`, in its own frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when `name` is not a known key or the event cannot be written.
     pub fn press(&self, name: &str) -> Result<(), Failure> {
         self.key(name, 1)
     }
 
     /// Releases `name`, in its own frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when `name` is not a known key or the event cannot be written.
     pub fn release(&self, name: &str) -> Result<(), Failure> {
         self.key(name, 0)
     }
 
     /// Presses and releases `name`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when either event fails, as [`Self::press`] and [`Self::release`].
     pub fn tap(&self, name: &str) -> Result<(), Failure> {
         self.press(name)?;
         self.release(name)
     }
 
     /// Presses each of `names` in order, then releases them in reverse.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] when any key of `names` fails to press or release.
     pub fn chord(&self, names: &[&str]) -> Result<(), Failure> {
         names.iter().try_for_each(|n| self.press(n))?;
         names.iter().rev().try_for_each(|n| self.release(n))
@@ -193,6 +218,11 @@ impl FakeKeyboard {
 
     /// Waits until the LED `code` is written as `value`; the events seen on the way are in the
     /// failure.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Failure`] listing the events seen when the LED is not written as `value` within
+    /// `wait`.
     pub fn expect_led(&self, code: u16, value: i32, wait: Duration) -> Result<(), Failure> {
         let mut seen = Vec::new();
         let hit = wait_for(wait, || {

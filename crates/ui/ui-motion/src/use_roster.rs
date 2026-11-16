@@ -121,6 +121,11 @@ impl<K: Clone + PartialEq + 'static> Roster<K> {
     /// dropped). The consumer lists the key again in the same handler, so the next reconcile
     /// keeps the row. `true` when the row was leaving and is present again; a row that is not leaving is unchanged (`false`); a key the roster no longer holds
     /// is [`StayError::UnknownKey`] (its exit settled: list it again and it enters).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StayError::UnknownKey`] when the roster no longer holds `key` (its exit settled),
+    /// and [`StayError::Unmounted`] when the roster's state is gone.
     pub fn stay(&self, key: K) -> Result<bool, StayError> {
         let held = self
             .machine

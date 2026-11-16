@@ -70,6 +70,11 @@ pub struct Journal {
 
 impl Journal {
     /// Opens the journal at `path`, creating it (and its directory); a file of another schema version is emptied.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the directory or the database cannot be created, opened or
+    /// set up.
     pub fn open(path: &Path) -> Result<Self, JournalError> {
         Self::open_synchronous(path, "FULL")
     }
@@ -117,6 +122,11 @@ impl Journal {
     }
 
     /// Commits `ops` together.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`JournalError::Cut`] when the journal's connection was cut, and another
+    /// [`JournalError`] when the transaction cannot be written; then none of `ops` is kept.
     pub fn apply(&self, ops: &[Op]) -> Result<(), JournalError> {
         #[cfg(test)]
         {
@@ -136,16 +146,28 @@ impl Journal {
     }
 
     /// Every item, by local id.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn items(&self) -> Result<Vec<JournalItem>, JournalError> {
         rows::items(&self.connection())
     }
 
     /// The item the replica knows as `id`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn item_by_remote(&self, id: &RemoteId) -> Result<Option<JournalItem>, JournalError> {
         rows::item_where(&self.connection(), "remote_id = ?1", &id.0)
     }
 
     /// The item waiting to be uploaded for the first time at `path` (no remote id yet).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn new_item_at(&self, path: &ItemPath) -> Result<Option<JournalItem>, JournalError> {
         rows::item_where(
             &self.connection(),
@@ -155,6 +177,10 @@ impl Journal {
     }
 
     /// The tombstone kept for `id`, if any.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn tombstone_of(&self, id: &RemoteId) -> Result<Option<StoredTombstone>, JournalError> {
         Ok(self
             .tombstones()?
@@ -163,16 +189,28 @@ impl Journal {
     }
 
     /// The anchor, if one is stored.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn anchor(&self) -> Result<Option<StoredAnchor>, JournalError> {
         rows::anchor(&self.connection())
     }
 
     /// Every tombstone, by remote id.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn tombstones(&self) -> Result<Vec<StoredTombstone>, JournalError> {
         rows::tombstones(&self.connection())
     }
 
     /// Every stored conflict, oldest first.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JournalError`] when the database cannot be read.
     pub fn conflicts(&self) -> Result<Vec<StoredConflict>, JournalError> {
         rows::conflicts(&self.connection())
     }

@@ -41,6 +41,11 @@ impl core::fmt::Debug for MultipartBody {
 
 /// The JSON body of `POST /audio/speech` for `request`: model, input, voice, `pcm`, stream on.
 /// Kokoro-FastAPI streams one format, and the format the request asks for must be it.
+///
+/// # Errors
+///
+/// Returns [`AudioCodecError::UnsupportedFormat`] when the request asks for an audio format other
+/// than the one the server streams.
 pub fn encode_speech_request(request: &TtsRequest) -> Result<RequestJson, AudioCodecError> {
     if request.format != KOKORO_FORMAT {
         return Err(AudioCodecError::UnsupportedFormat);
@@ -57,6 +62,11 @@ pub fn encode_speech_request(request: &TtsRequest) -> Result<RequestJson, AudioC
 
 /// The multipart body of `POST /audio/transcriptions`: the chunks as one WAV file, the model and
 /// the language (`Prefer`'s first tag; `Auto` leaves it out), `response_format = json`.
+///
+/// # Errors
+///
+/// Returns an [`AudioCodecError`] when the chunks are not all in one format, or cannot be written
+/// as a WAV file.
 pub fn encode_transcription(
     request: &SttRequest,
     audio: &[AudioChunk],
@@ -110,6 +120,10 @@ pub fn encode_transcription(
 }
 
 /// The text of a transcription response.
+///
+/// # Errors
+///
+/// Returns [`AudioCodecError::Unreadable`] when `body` is not a JSON object with a text field.
 pub fn decode_transcription(body: &[u8]) -> Result<HeardText, AudioCodecError> {
     match serde_json::from_slice::<Value>(body) {
         Ok(Value::Object(map)) => match map.get("text") {
