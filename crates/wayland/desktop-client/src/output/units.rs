@@ -23,8 +23,13 @@ impl ScaleMilli {
     /// The scale nearest `value`, a `wl_fixed` already read as a float; negative and NaN
     /// become 0.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "clamped to u32's range before the cast, and NaN casts to 0"
+    )]
     pub fn from_f64(value: f64) -> Self {
-        Self((value * 1000.0).round().max(0.0) as u32)
+        Self((value * 1000.0).round().clamp(0.0, f64::from(u32::MAX)) as u32)
     }
 
     /// The scale as the float `wl_fixed` carries.

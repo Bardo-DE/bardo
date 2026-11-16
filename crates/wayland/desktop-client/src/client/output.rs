@@ -123,9 +123,9 @@ pub(super) fn on_head(wire: &mut Wire, key: HeadKey, event: zwlr_output_head_v1:
 }
 
 /// A mode's event.
-pub(super) fn on_mode(wire: &mut Wire, key: ModeKey, event: zwlr_output_mode_v1::Event) {
+pub(super) fn on_mode(wire: &mut Wire, key: ModeKey, event: &zwlr_output_mode_v1::Event) {
     use zwlr_output_mode_v1::Event;
-    match event {
+    match *event {
         Event::Size { width, height } => {
             mode_change(
                 wire,
@@ -159,7 +159,7 @@ pub(super) fn on_configuration(
     id: ConfigId,
     purpose: ConfigPurpose,
     configuration: &ZwlrOutputConfigurationV1,
-    event: zwlr_output_configuration_v1::Event,
+    event: &zwlr_output_configuration_v1::Event,
 ) {
     use zwlr_output_configuration_v1::Event;
     let outcome = match event {
@@ -304,7 +304,7 @@ impl Dispatch<ZwlrOutputModeV1, ()> for Wire {
         _conn: &Connection,
         _qh: &QueueHandle<Self>,
     ) {
-        on_mode(state, ModeKey::new(number_of(proxy)), event);
+        on_mode(state, ModeKey::new(number_of(proxy)), &event);
     }
 }
 
@@ -317,7 +317,7 @@ impl Dispatch<ZwlrOutputConfigurationV1, (ConfigId, ConfigPurpose)> for Wire {
         _conn: &Connection,
         _qh: &QueueHandle<Self>,
     ) {
-        on_configuration(state, data.0, data.1, proxy, event);
+        on_configuration(state, data.0, data.1, proxy, &event);
     }
 }
 

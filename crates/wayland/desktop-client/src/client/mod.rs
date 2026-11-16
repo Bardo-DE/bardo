@@ -70,6 +70,11 @@ impl DesktopClient {
     /// Binds every global of the protocols the compositor offers (each is optional), takes the
     /// first seat for activation, and runs round trips until the first descriptions are in.
     /// The state's [`crate::DesktopState::protocols`] says what was found.
+    ///
+    /// # Errors
+    ///
+    /// A [`WireError`] when the registry cannot be read, a global cannot be bound, or a round
+    /// trip fails.
     pub fn new(connection: &Connection) -> Result<Self, WireError> {
         Self::with_config(connection, DesktopConfig::default())
     }
@@ -79,6 +84,10 @@ impl DesktopClient {
     ///
     /// On the Quire arm (`bardo_desktop_v1` and the ext list offered) the toplevels come from
     /// those and the wlr manager is left unbound.
+    ///
+    /// # Errors
+    ///
+    /// As [`DesktopClient::new`].
     pub fn with_config(connection: &Connection, config: DesktopConfig) -> Result<Self, WireError> {
         let (globals, mut queue) = registry_queue_init::<Wire>(connection)?;
         let qh = queue.handle();
@@ -97,6 +106,10 @@ impl DesktopClient {
 
     /// Opens the connection `route` names (the environment, or a descriptor handed over by
     /// `Compositor1.Connect("shell")`) and binds on it as [`DesktopClient::with_config`] does.
+    ///
+    /// # Errors
+    ///
+    /// A [`WireError`] when the connection cannot be opened, and as [`DesktopClient::new`].
     pub fn connect(route: WaylandRoute, config: DesktopConfig) -> Result<Self, WireError> {
         Self::with_config(&route.open()?, config)
     }
@@ -108,6 +121,10 @@ impl DesktopClient {
     }
 
     /// Processes the events already read, without blocking. Returns how many were dispatched.
+    ///
+    /// # Errors
+    ///
+    /// A [`WireError`] when dispatching fails (the connection is likely gone).
     pub fn dispatch_pending(&mut self) -> Result<usize, WireError> {
         Ok(self.queue.dispatch_pending(&mut self.wire)?)
     }
@@ -121,6 +138,10 @@ impl DesktopClient {
     /// socket's descriptor and libwayland's queue never learns of them. Calling this when the
     /// socket is readable, and again whenever the waker fires, dispatches those events on the
     /// caller's thread. The waker must be one the caller's loop can be woken by from any thread.
+    ///
+    /// # Errors
+    ///
+    /// A [`WireError`] when dispatching fails (the connection is likely gone).
     pub fn poll_dispatch_pending(&mut self, cx: &mut Context<'_>) -> Result<usize, WireError> {
         let before = self.wire.events.len();
         match self.queue.poll_dispatch_pending(cx, &mut self.wire) {
@@ -132,11 +153,19 @@ impl DesktopClient {
     }
 
     /// Reads from the socket and dispatches, blocking until something arrives.
+    ///
+    /// # Errors
+    ///
+    /// A [`WireError`] when reading or dispatching fails (the connection is likely gone).
     pub fn blocking_dispatch(&mut self) -> Result<usize, WireError> {
         Ok(self.queue.blocking_dispatch(&mut self.wire)?)
     }
 
     /// Waits until the compositor has answered everything sent so far.
+    ///
+    /// # Errors
+    ///
+    /// A [`WireError`] when sending or dispatching fails (the connection is likely gone).
     pub fn roundtrip(&mut self) -> Result<usize, WireError> {
         Ok(self.queue.roundtrip(&mut self.wire)?)
     }

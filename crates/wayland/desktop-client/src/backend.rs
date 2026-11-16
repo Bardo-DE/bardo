@@ -14,8 +14,9 @@ pub enum DesktopBackend {
     Ext,
 }
 
-/// The arm for `offered`, from the globals alone (never from a compositor's name or the
-/// environment): Quire when `bardo_desktop_v1` and the ext list are offered, else wlr when its
+/// The arm for `offered`, from the globals alone.
+///
+/// Never from a compositor's name or the environment: Quire when `bardo_desktop_v1` and the ext list are offered, else wlr when its
 /// manager is, else the ext list alone; `None` when no toplevel protocol is offered.
 ///
 /// ```

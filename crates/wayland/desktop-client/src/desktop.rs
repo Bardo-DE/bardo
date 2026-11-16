@@ -16,6 +16,11 @@ pub trait Desktop {
     fn state(&self) -> &DesktopState;
 
     /// Send a command.
+    ///
+    /// # Errors
+    ///
+    /// `Self::Error` when the command cannot be sent: the compositor does not offer what it
+    /// needs, it names something that is not there, or the connection fails.
     fn send(&mut self, command: DesktopCommand) -> Result<Ticket, Self::Error>;
 
     /// The events reduced into the state since the last call, oldest first.

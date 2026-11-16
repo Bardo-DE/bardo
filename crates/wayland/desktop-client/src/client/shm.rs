@@ -47,7 +47,8 @@ impl ShmFile {
     /// Reads the whole buffer back.
     pub(super) fn read_pixels(&self) -> Result<Vec<u8>, WireError> {
         let length = usize::try_from(u64::from(self.stride) * u64::from(self.size.h))
-            .map_err(|_| too_big())?;
+            .ok()
+            .ok_or_else(too_big)?;
         let mut pixels = vec![0u8; length];
         self.file.read_exact_at(&mut pixels, 0)?;
         Ok(pixels)

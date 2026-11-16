@@ -86,6 +86,12 @@ impl Frame {
     /// The frame as tightly packed RGBA8, rows top to bottom, ready for a PNG encoder.
     /// `xrgb`/`xbgr` get an opaque alpha. The transform is not applied.
     ///
+    /// # Errors
+    ///
+    /// [`FrameError::UnsupportedFormat`] for a format this crate cannot read,
+    /// [`FrameError::Stride`] when a row does not fit the stride, [`FrameError::Short`] when the
+    /// pixels are fewer than the size and stride need.
+    ///
     /// ```
     /// use desktop_client::capture::ShmFormat;
     /// use desktop_client::{Frame, Size};

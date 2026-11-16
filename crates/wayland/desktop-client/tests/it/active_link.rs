@@ -36,13 +36,13 @@ fn handle(n: u64) -> Vec<DesktopEvent> {
 #[test]
 fn a_linked_key_window_is_named_at_once() {
     let mut linker = Linker::default();
-    linker.listed(tk(1), id("a"));
+    linker.listed(tk(1), &id("a"));
     linker.identified(obj(9), id("a"));
     assert_eq!(
         linker.active(Some(ak(1)), Some(obj(9)), ActorKind::User),
         vec![active(1, Some(1))]
     );
-    assert!(linker.listed(tk(2), id("b")).is_empty(), "nothing waits");
+    assert!(linker.listed(tk(2), &id("b")).is_empty(), "nothing waits");
 }
 
 #[test]
@@ -55,7 +55,7 @@ fn a_key_window_that_links_later_is_named_when_it_links() {
         "no key window yet"
     );
     assert_eq!(
-        linker.listed(tk(1), id("a")),
+        linker.listed(tk(1), &id("a")),
         vec![
             DesktopEvent::Window(WindowEvent::Opened(tk(1))),
             active(1, Some(1)),
@@ -70,7 +70,7 @@ fn a_later_active_replaces_the_one_that_waits() {
     linker.active(Some(ak(1)), Some(obj(9)), ActorKind::User);
     linker.active(Some(ak(2)), None, ActorKind::User);
     assert_eq!(
-        linker.listed(tk(1), id("a")),
+        linker.listed(tk(1), &id("a")),
         vec![DesktopEvent::Window(WindowEvent::Opened(tk(1)))]
     );
 }
@@ -83,7 +83,7 @@ fn a_waiting_key_window_that_closes_is_forgotten() {
     linker.closed(obj(9));
     linker.identified(obj(9), id("a"));
     assert_eq!(
-        linker.listed(tk(1), id("a")),
+        linker.listed(tk(1), &id("a")),
         vec![DesktopEvent::Window(WindowEvent::Opened(tk(1)))]
     );
 }
@@ -96,7 +96,7 @@ fn the_late_key_window_is_activated_on_its_toplevel() {
     events.extend(linker.done(obj(9)));
     events.extend(linker.active(Some(ak(1)), Some(obj(9)), ActorKind::User));
     events.extend(handle(1));
-    events.extend(linker.listed(tk(1), id("a")));
+    events.extend(linker.listed(tk(1), &id("a")));
     let state = run(events);
     assert_eq!(state.toplevels.activated().map(|t| t.key), Some(tk(1)));
 }

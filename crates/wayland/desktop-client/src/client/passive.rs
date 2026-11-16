@@ -74,11 +74,11 @@ impl Dispatch<WlOutput, ()> for Wire {
 impl Dispatch<WlRegistry, GlobalListContents> for Wire {
     fn event(
         _state: &mut Self,
-        registry: &WlRegistry,
+        proxy: &WlRegistry,
         event: wl_registry::Event,
         _data: &GlobalListContents,
         _conn: &Connection,
-        qh: &QueueHandle<Self>,
+        qhandle: &QueueHandle<Self>,
     ) {
         if let wl_registry::Event::Global {
             name,
@@ -89,7 +89,7 @@ impl Dispatch<WlRegistry, GlobalListContents> for Wire {
             && version >= OUTPUT_VERSION
         {
             // The output announces its name; the handler above records it.
-            let _: WlOutput = registry.bind(name, OUTPUT_VERSION, qh, ());
+            let _: WlOutput = proxy.bind(name, OUTPUT_VERSION, qhandle, ());
         }
     }
 }

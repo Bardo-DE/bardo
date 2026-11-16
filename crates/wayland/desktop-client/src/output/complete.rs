@@ -4,9 +4,11 @@ use super::config::{HeadChangeRequest, HeadConfig, HeadSettings, ModeChoice, Out
 use super::model::Head;
 use super::set::Outputs;
 
-/// The parts to send for `config`: each mentioned head with every setting it leaves open filled
-/// from the head's current state, then every enabled head the configuration does not mention,
-/// kept as it is (the protocol wants every enabled head in a configuration).
+/// The parts to send for `config`, completed from the heads' current state.
+///
+/// Each mentioned head has every setting it leaves open filled from the head's current state,
+/// then every enabled head the configuration does not mention is kept as it is (the protocol
+/// wants every enabled head in a configuration).
 ///
 /// The mode of a head with no current mode falls back to its preferred mode, then its first;
 /// a head with no modes has no mode set. Adaptive sync is set only for a head that reports it.

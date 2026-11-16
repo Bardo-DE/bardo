@@ -135,10 +135,10 @@ pub(super) fn start(wire: &mut Wire, request: &CaptureRequest) -> Result<Capture
 pub(super) fn on_session(
     wire: &mut Wire,
     id: CaptureId,
-    event: ext_image_copy_capture_session_v1::Event,
+    event: &ext_image_copy_capture_session_v1::Event,
 ) {
     use ext_image_copy_capture_session_v1::Event;
-    match event {
+    match *event {
         Event::BufferSize { width, height } => {
             capture_event(wire, id, CaptureEvent::BufferSize(Size::new(width, height)));
         }
@@ -217,10 +217,10 @@ fn make_frame(wire: &mut Wire, id: CaptureId) -> Option<()> {
 pub(super) fn on_frame(
     wire: &mut Wire,
     id: CaptureId,
-    event: ext_image_copy_capture_frame_v1::Event,
+    event: &ext_image_copy_capture_frame_v1::Event,
 ) {
     use ext_image_copy_capture_frame_v1::Event;
-    match event {
+    match *event {
         Event::Transform { transform } => {
             if let Ok(transform) = Transform::from_code(raw(transform)) {
                 capture_event(wire, id, CaptureEvent::Transform(transform));
@@ -290,7 +290,7 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, CaptureId> for Wire {
         _conn: &Connection,
         _qh: &QueueHandle<Self>,
     ) {
-        on_session(state, *data, event);
+        on_session(state, *data, &event);
     }
 }
 
@@ -303,6 +303,6 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, CaptureId> for Wire {
         _conn: &Connection,
         _qh: &QueueHandle<Self>,
     ) {
-        on_frame(state, *data, event);
+        on_frame(state, *data, &event);
     }
 }

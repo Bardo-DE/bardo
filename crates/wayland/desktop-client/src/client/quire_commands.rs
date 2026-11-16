@@ -31,7 +31,9 @@ pub(super) fn carries(command: &DesktopCommand, quire_arm: bool) -> bool {
 
 /// The generated enum with the vocab value's code (the two are tested to agree).
 fn generated<V: WireCode, G: TryFrom<u32>>(value: V) -> Result<G, CommandError> {
-    G::try_from(value.code()).map_err(|_| CommandError::Code(value.code()))
+    G::try_from(value.code())
+        .ok()
+        .ok_or_else(|| CommandError::Code(value.code()))
 }
 
 fn window(wire: &Wire, key: ToplevelKey) -> Result<&BardoDesktopWindowV1, CommandError> {
@@ -129,21 +131,6 @@ pub(super) fn send(wire: &Wire, command: DesktopCommand) -> Result<(), CommandEr
         DesktopCommand::Unfullscreen(key) => {
             window(wire, key)?.full_screen(generated(Toggle::Off)?);
         }
-        DesktopCommand::SetMinimiseTarget {
-            toplevel,
-            surface: key,
-            rect,
-        } => shell(wire, route)?.set_minimise_target(
-            surface(wire, key)?,
-            identifier(wire, toplevel)?,
-            rect.x,
-            rect.y,
-            rect.w,
-            rect.h,
-        ),
-        DesktopCommand::ClearMinimiseTarget(key) => {
-            shell(wire, route)?.clear_minimise_target(identifier(wire, key)?);
-        }
         DesktopCommand::Place { toplevel, target } => {
             window(wire, toplevel)?.place(generated(target)?);
         }
@@ -170,6 +157,46 @@ pub(super) fn send(wire: &Wire, command: DesktopCommand) -> Result<(), CommandEr
         DesktopCommand::QuitApp(key) => app(wire, key)?.quit(),
         DesktopCommand::ForceQuitApp(key) => app(wire, key)?.force_quit(),
         DesktopCommand::ReopenApp(key) => app(wire, key)?.reopen(),
+        shell_command => return send_shell(wire, shell_command),
+    }
+    Ok(())
+}
+
+/// The shell object, when it is bound at `version` or later.
+fn shell_since(
+    wire: &Wire,
+    route: CommandRoute,
+    version: u32,
+) -> Result<&BardoShellV1, CommandError> {
+    let shell = shell(wire, route)?;
+    if shell.version() < version {
+        return Err(CommandError::NotBound {
+            route,
+            needs: Protocol::QuireShell,
+        });
+    }
+    Ok(shell)
+}
+
+/// The commands that go to `bardo_shell_v1`.
+fn send_shell(wire: &Wire, command: DesktopCommand) -> Result<(), CommandError> {
+    let route = command.route();
+    match command {
+        DesktopCommand::SetMinimiseTarget {
+            toplevel,
+            surface: key,
+            rect,
+        } => shell(wire, route)?.set_minimise_target(
+            surface(wire, key)?,
+            identifier(wire, toplevel)?,
+            rect.x,
+            rect.y,
+            rect.w,
+            rect.h,
+        ),
+        DesktopCommand::ClearMinimiseTarget(key) => {
+            shell(wire, route)?.clear_minimise_target(identifier(wire, key)?);
+        }
         DesktopCommand::SetShellRole { surface: key, role } => {
             shell(wire, route)?.set_role(surface(wire, key)?, generated(role)?);
         }
@@ -193,13 +220,7 @@ pub(super) fn send(wire: &Wire, command: DesktopCommand) -> Result<(), CommandEr
             output: name,
             targets,
         } => {
-            let shell = shell(wire, route)?;
-            if shell.version() < 2 {
-                return Err(CommandError::NotBound {
-                    route,
-                    needs: Protocol::QuireShell,
-                });
-            }
+            let shell = shell_since(wire, route, 2)?;
             let output = output(wire, &name)?;
             shell.space_target_clear(output);
             for target in targets {
@@ -215,60 +236,49 @@ pub(super) fn send(wire: &Wire, command: DesktopCommand) -> Result<(), CommandEr
             }
         }
         DesktopCommand::SetNewSpaceTarget { output: name, rect } => {
-            let shell = shell(wire, route)?;
-            if shell.version() < 3 {
-                return Err(CommandError::NotBound {
-                    route,
-                    needs: Protocol::QuireShell,
-                });
-            }
+            let shell = shell_since(wire, route, 3)?;
             let output = output(wire, &name)?;
             // An empty rectangle removes the target.
             let rect = rect.unwrap_or_default();
             shell.space_target_new(output, rect.x, rect.y, rect.w, rect.h);
         }
         DesktopCommand::AnswerPermission { ask, answer } => {
-            let shell = shell(wire, route)?;
-            if shell.version() < 5 {
-                return Err(CommandError::NotBound {
-                    route,
-                    needs: Protocol::QuireShell,
-                });
-            }
-            shell.permission_answer(ask.get(), generated(answer)?);
+            shell_since(wire, route, 5)?.permission_answer(ask.get(), generated(answer)?);
         }
         DesktopCommand::AnswerTrial { trial, answer } => {
-            let shell = shell(wire, route)?;
-            if shell.version() < 6 {
-                return Err(CommandError::NotBound {
-                    route,
-                    needs: Protocol::QuireShell,
-                });
-            }
-            shell.displays_trial_answer(trial.get(), generated(answer)?);
+            shell_since(wire, route, 6)?.displays_trial_answer(trial.get(), generated(answer)?);
         }
         DesktopCommand::SetFullScreenBar(mode) => {
-            let shell = shell(wire, route)?;
-            if shell.version() < 7 {
-                return Err(CommandError::NotBound {
-                    route,
-                    needs: Protocol::QuireShell,
-                });
-            }
-            shell.set_full_screen_bar(generated(mode)?);
+            shell_since(wire, route, 7)?.set_full_screen_bar(generated(mode)?);
         }
         DesktopCommand::SetMotion(motion) => {
-            let shell = shell(wire, route)?;
-            if shell.version() < 7 {
-                return Err(CommandError::NotBound {
-                    route,
-                    needs: Protocol::QuireShell,
-                });
-            }
-            shell.set_motion(generated(motion)?);
+            shell_since(wire, route, 7)?.set_motion(generated(motion)?);
         }
-        // Another family's: `carries` keeps these out of here.
-        DesktopCommand::ActivateWorkspace(_)
+        // The window, Space and app commands are `send`'s; the others are another family's
+        // (`carries` keeps these out of here).
+        DesktopCommand::Activate(_)
+        | DesktopCommand::Close(_)
+        | DesktopCommand::Minimise(_)
+        | DesktopCommand::Unminimise(_)
+        | DesktopCommand::Maximise(_)
+        | DesktopCommand::Unmaximise(_)
+        | DesktopCommand::Fullscreen { .. }
+        | DesktopCommand::Unfullscreen(_)
+        | DesktopCommand::Place { .. }
+        | DesktopCommand::MoveToSpace { .. }
+        | DesktopCommand::AssignSpaces { .. }
+        | DesktopCommand::ActivateSpace(_)
+        | DesktopCommand::RemoveSpace(_)
+        | DesktopCommand::MoveSpace { .. }
+        | DesktopCommand::CreateSpace { .. }
+        | DesktopCommand::ActivateApp(_)
+        | DesktopCommand::HideApp(_)
+        | DesktopCommand::UnhideApp(_)
+        | DesktopCommand::HideOtherApps(_)
+        | DesktopCommand::QuitApp(_)
+        | DesktopCommand::ForceQuitApp(_)
+        | DesktopCommand::ReopenApp(_)
+        | DesktopCommand::ActivateWorkspace(_)
         | DesktopCommand::DeactivateWorkspace(_)
         | DesktopCommand::AssignWorkspace { .. }
         | DesktopCommand::RemoveWorkspace(_)

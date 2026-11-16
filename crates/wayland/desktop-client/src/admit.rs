@@ -14,6 +14,11 @@ use crate::supports::{missing, requires_on};
 /// (the caller did not say it holds the shell role) is [`CommandError::NotBound`]. The wire
 /// client and the fake both call it, so they agree.
 ///
+/// # Errors
+///
+/// [`CommandError::Unsupported`] when a protocol the command needs is not offered,
+/// [`CommandError::NotBound`] when the shell protocol is needed but not bound.
+///
 /// ```
 /// use desktop_client::{
 ///     CommandError, DesktopCommand, DesktopConfig, Protocol, ProtocolSet, admit,

@@ -74,9 +74,10 @@ pub fn missing(offered: &ProtocolSet, command: &DesktopCommand) -> Option<Protoc
         .find(|p| !offered.contains(*p))
 }
 
-/// Whether `offered` carries `command`. The compositor may still refuse at run time (a
-/// workspace that lacks the ability, a closed toplevel); this answers the protocol question.
-/// Whether this client bound `bardo_shell_v1` is the caller's choice, not the offer's; see
+/// Whether `offered` carries `command`.
+///
+/// The compositor may still refuse at run time (a workspace that lacks the ability, a closed
+/// toplevel); this answers the protocol question. Whether this client bound `bardo_shell_v1` is the caller's choice, not the offer's; see
 /// `admit`.
 #[must_use]
 pub fn supports(offered: &ProtocolSet, command: &DesktopCommand) -> bool {

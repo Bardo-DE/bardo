@@ -34,6 +34,11 @@ pub enum WaylandRoute {
 
 impl WaylandRoute {
     /// Opens the connection this route names.
+    ///
+    /// # Errors
+    ///
+    /// A [`WireError`] when the connection cannot be made (no socket in the environment, or the
+    /// handed descriptor is not a connected socket).
     pub fn open(self) -> Result<Connection, WireError> {
         Ok(match self {
             Self::Environment => Connection::connect_to_env()?,

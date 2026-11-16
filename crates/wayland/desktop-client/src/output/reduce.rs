@@ -29,7 +29,7 @@ pub(crate) fn reduce_outputs(mut outputs: Outputs, event: OutputEvent) -> Output
                 head.modes.push(Mode::new(mode));
             }
         }
-        OutputEvent::Mode { mode, change } => apply_mode(&mut outputs, mode, change),
+        OutputEvent::Mode { mode, change } => apply_mode(&mut outputs, mode, &change),
         OutputEvent::Done { serial } => outputs.serial = Some(serial),
         OutputEvent::Finished => {
             outputs.heads.clear();
@@ -62,12 +62,12 @@ fn apply_head(head: &mut Head, change: HeadChange) {
     }
 }
 
-fn apply_mode(outputs: &mut Outputs, key: crate::keys::ModeKey, change: ModeChange) {
+fn apply_mode(outputs: &mut Outputs, key: crate::keys::ModeKey, change: &ModeChange) {
     for head in outputs.heads.values_mut() {
         let Some(index) = head.modes.iter().position(|m| m.key == key) else {
             continue;
         };
-        match change {
+        match *change {
             ModeChange::Size(size) => head.modes[index].size = size,
             ModeChange::Refresh(refresh) => head.modes[index].refresh = refresh,
             ModeChange::Preferred(preferred) => head.modes[index].preferred = preferred,

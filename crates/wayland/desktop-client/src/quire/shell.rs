@@ -529,6 +529,27 @@ pub(super) fn reduce_shell(mut shell: Shell, event: ShellEvent) -> Shell {
         } => {
             shell.reveals.0.insert((output, edge), shown);
         }
+        split @ (ShellEvent::SplitChoose { .. }
+        | ShellEvent::SplitCandidate(_)
+        | ShellEvent::SplitChoiceEnd(_)) => reduce_split(&mut shell, split),
+        ShellEvent::KeyGesture(_)
+        | ShellEvent::HotCorner(_)
+        | ShellEvent::MenuFlash { .. }
+        | ShellEvent::Bell(_)
+        | ShellEvent::Reopen(_)
+        | ShellEvent::WindowMenu { .. }
+        | ShellEvent::PermissionAsk(_)
+        | ShellEvent::PermissionWithdraw(_)
+        | ShellEvent::DisplaysTrial(_)
+        | ShellEvent::DisplaysTrialEnd(_)
+        | ShellEvent::Killed => {}
+    }
+    shell
+}
+
+/// The split chooser after a split event; any other event changes nothing.
+fn reduce_split(shell: &mut Shell, event: ShellEvent) {
+    match event {
         ShellEvent::SplitChoose { first, side } => {
             shell.split_choice = Some(SplitChoice {
                 first,
@@ -550,17 +571,6 @@ pub(super) fn reduce_shell(mut shell: Shell, event: ShellEvent) -> Shell {
                 shell.split_choice = None;
             }
         }
-        ShellEvent::KeyGesture(_)
-        | ShellEvent::HotCorner(_)
-        | ShellEvent::MenuFlash { .. }
-        | ShellEvent::Bell(_)
-        | ShellEvent::Reopen(_)
-        | ShellEvent::WindowMenu { .. }
-        | ShellEvent::PermissionAsk(_)
-        | ShellEvent::PermissionWithdraw(_)
-        | ShellEvent::DisplaysTrial(_)
-        | ShellEvent::DisplaysTrialEnd(_)
-        | ShellEvent::Killed => {}
+        _ => {}
     }
-    shell
 }

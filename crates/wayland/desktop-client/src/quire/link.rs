@@ -58,7 +58,7 @@ struct PendingActive {
 /// let object = WindowObject::new(9);
 /// let id = ToplevelIdentifier::new("abc");
 /// assert!(linker.identified(object, id.clone()).is_empty()); // no handle yet
-/// let events = linker.listed(ToplevelKey::new(1), id); // the handle arrives
+/// let events = linker.listed(ToplevelKey::new(1), &id); // the handle arrives
 /// assert_eq!(events.len(), 1); // Opened
 /// assert_eq!(linker.key_of(object), Some(ToplevelKey::new(1)));
 /// ```
@@ -95,7 +95,7 @@ impl Linker {
     pub fn listed(
         &mut self,
         key: ToplevelKey,
-        identifier: ToplevelIdentifier,
+        identifier: &ToplevelIdentifier,
     ) -> Vec<DesktopEvent> {
         self.listed.insert(identifier.clone(), key);
         let waiting = self
@@ -105,7 +105,7 @@ impl Linker {
                 Standing::Waiting {
                     identifier: Some(id),
                     ..
-                } if *id == identifier => Some(*object),
+                } if id == identifier => Some(*object),
                 _ => None,
             });
         match waiting {

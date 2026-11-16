@@ -143,6 +143,10 @@ fn offering(protocols: &[Protocol]) -> ProtocolSet {
 }
 
 /// The commands only the Quire arm carries, each with the protocols it needs.
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table with one row per Quire-only command"
+)]
 fn quire_only() -> Vec<(DesktopCommand, Vec<Protocol>)> {
     let t = ToplevelKey::new(1);
     let s = SpaceKey::new(1);

@@ -106,7 +106,7 @@ pub(super) fn on_listed(
             let identifier = ToplevelIdentifier::new(identifier);
             change(wire, key, ToplevelChange::Identifier(identifier.clone()));
             // On the Quire arm the window object of the same identifier may be waiting.
-            for event in wire.linker.listed(key, identifier) {
+            for event in wire.linker.listed(key, &identifier) {
                 wire.emit(event);
             }
         }

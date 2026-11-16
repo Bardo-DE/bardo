@@ -9,9 +9,10 @@ use crate::geometry::{Point, Size};
 use crate::keys::{HeadKey, ModeKey};
 use desktop_protocols::vocab::Transform;
 
-/// A full configuration: every head the client mentions. A head left out keeps its state
-/// (the protocol's rule is that a configuration must mention every enabled head; the wire
-/// layer fills in the unmentioned ones from the state).
+/// A full configuration: every head the client mentions.
+///
+/// A head left out keeps its state (the protocol's rule is that a configuration must mention
+/// every enabled head; the wire layer fills in the unmentioned ones from the state).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OutputConfig {
     /// The heads, each once.
@@ -28,6 +29,10 @@ impl OutputConfig {
     /// Checks it against `outputs`: every head and mode exists, a mode belongs to its head, no
     /// head is named twice, a custom mode has a non-zero size and refresh, and the
     /// configuration is not empty.
+    ///
+    /// # Errors
+    ///
+    /// The [`ConfigError`] that names the first thing that does not fit.
     pub fn validate(&self, outputs: &Outputs) -> Result<(), ConfigError> {
         if self.heads.is_empty() {
             return Err(ConfigError::Empty);

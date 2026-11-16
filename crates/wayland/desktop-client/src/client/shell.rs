@@ -88,6 +88,14 @@ fn translate(wire: &Wire, event: bardo_shell_v1::Event) -> Option<ShellEvent> {
         },
         Event::Bell { app_key } => ShellEvent::Bell(AppId::new(app_key)),
         Event::Reopen { app_key } => ShellEvent::Reopen(AppId::new(app_key)),
+        other => return translate_windows(wire, other),
+    })
+}
+
+/// The state-event for a shell event about windows, splits, drags and permissions.
+fn translate_windows(wire: &Wire, event: bardo_shell_v1::Event) -> Option<ShellEvent> {
+    use bardo_shell_v1::Event;
+    Some(match event {
         Event::WindowMenu {
             toplevel,
             x,

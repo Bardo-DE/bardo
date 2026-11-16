@@ -12,6 +12,10 @@ use crate::state::DesktopState;
 /// Commands that predate the Quire arm are checked only when the offer chose the Quire arm and
 /// the command needs a window's identifier (`SetMinimiseTarget`).
 ///
+/// # Errors
+///
+/// The [`CommandError`] that names the first object the command names and `state` lacks.
+///
 /// ```
 /// use desktop_client::quire::check_targets;
 /// use desktop_client::{AppKey, CommandError, DesktopCommand, DesktopState};
