@@ -40,7 +40,8 @@ pub enum TargetFault {
     Malformed,
 }
 
-/// What is wrong with one argument.
+/// What is wrong with one argument. It carries no cause on purpose: the parse errors underneath
+/// quote the text the client sent, and a refusal does not echo it into logs.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "snake_case")]
 pub enum Why {
@@ -88,12 +89,16 @@ fn handle(json: &Json) -> Option<Handle> {
     }
 }
 
+#[expect(
+    clippy::map_err_ignore,
+    reason = "`Why` carries no cause: the parse error underneath quotes the client's text"
+)]
 fn entity(kind: &EntityKind, json: &Json) -> Read<EntityId> {
     let object = json.as_object().filter(|o| o.len() == 3).ok_or(Why::Type)?;
     let text = |name: &str| object.get(name).and_then(Json::as_str).ok_or(Why::Type);
-    let app = AppName::parse(text("app")?).ok().ok_or(Why::Range)?;
-    let named = EntityKind::parse(text("kind")?).ok().ok_or(Why::Range)?;
-    let key = EntityKey::parse(text("key")?).ok().ok_or(Why::Range)?;
+    let app = AppName::parse(text("app")?).map_err(|_| Why::Range)?;
+    let named = EntityKind::parse(text("kind")?).map_err(|_| Why::Range)?;
+    let key = EntityKey::parse(text("key")?).map_err(|_| Why::Range)?;
     if &named == kind {
         Ok(EntityId {
             app,
@@ -124,8 +129,12 @@ fn integer(json: &Json) -> Read<i64> {
     json.as_i64().ok_or(Why::Type)
 }
 
+#[expect(
+    clippy::map_err_ignore,
+    reason = "TryFromIntError carries nothing beyond the failure"
+)]
 fn small<T: TryFrom<i64>>(n: i64) -> Read<T> {
-    T::try_from(n).ok().ok_or(Why::Range)
+    T::try_from(n).map_err(|_| Why::Range)
 }
 
 fn field(object: &Map<String, Json>, name: &str) -> Read<i64> {
@@ -157,14 +166,21 @@ fn date(json: &Json) -> Read<CivilDate> {
     }
 }
 
+#[expect(
+    clippy::map_err_ignore,
+    reason = "`Why` carries no cause: the parse error underneath quotes the client's text"
+)]
 fn url(raw: &str) -> Read<String> {
     Url::parse(raw)
         .map(|_| raw.to_owned())
-        .ok()
-        .ok_or(Why::Range)
+        .map_err(|_| Why::Range)
 }
 
 /// One JSON value as a `ty`.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "`Why` carries no cause: the parse error underneath quotes the client's text"
+)]
 fn value(ty: &ParamType, json: &Json) -> Read<Value> {
     if let Some(held) = handle(json) {
         return match ty {
@@ -203,7 +219,7 @@ fn value(ty: &ParamType, json: &Json) -> Read<Value> {
         ParamType::File => json
             .as_str()
             .ok_or(Why::Type)
-            .and_then(|p| FileRef::parse(p).ok().ok_or(Why::Range))
+            .and_then(|p| FileRef::parse(p).map_err(|_| Why::Range))
             .map(Value::File),
         ParamType::Url => json.as_str().ok_or(Why::Type).and_then(url).map(Value::Url),
     }
@@ -237,6 +253,10 @@ fn argument(param: &ParamDecl, json: &Json) -> Result<Value, ArgsFault> {
     })
 }
 
+#[expect(
+    clippy::map_err_ignore,
+    reason = "`Why` carries no cause: the parse error underneath quotes the client's text"
+)]
 fn files(json: &Json) -> Read<Vec<FileRef>> {
     json.as_array()
         .ok_or(Why::Type)?
@@ -244,7 +264,7 @@ fn files(json: &Json) -> Read<Vec<FileRef>> {
         .map(|item| {
             item.as_str()
                 .ok_or(Why::Type)
-                .and_then(|p| FileRef::parse(p).ok().ok_or(Why::Range))
+                .and_then(|p| FileRef::parse(p).map_err(|_| Why::Range))
         })
         .collect()
 }
@@ -286,11 +306,14 @@ pub fn target_from_json(
                     .map_err(bad),
             }
         }
-        (TargetKind::Files, Some(json)) => files(json)
-            .ok()
-            .filter(|f| !f.is_empty())
-            .map(TargetValue::Files)
-            .ok_or(TargetFault::Malformed),
+        (TargetKind::Files, Some(json)) => {
+            let held = files(json).map_err(bad)?;
+            if held.is_empty() {
+                Err(TargetFault::Malformed)
+            } else {
+                Ok(TargetValue::Files(held))
+            }
+        }
     }
 }
 

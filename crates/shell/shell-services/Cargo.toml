@@ -103,6 +103,7 @@ action-router = {path = "../../actions/action-router"}
 action-fake = {path = "../../actions/action-fake"}
 action-checkpoint = {path = "../../actions/action-checkpoint"}
 permission-policy = {path = "../../actions/permission-policy"}
+tracing = { workspace = true }
 
 [lints]
 workspace = true

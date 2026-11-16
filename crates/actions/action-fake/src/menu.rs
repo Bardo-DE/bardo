@@ -185,9 +185,11 @@ impl IntentProvider for FakeMenu {
                 out.follow = Follow::Next(CallRequest {
                     action: ActionRef {
                         app: app_name(),
-                        name: provenance::ActionName::parse(&action)
-                            .ok()
-                            .ok_or(AppRefusal::Unsupported)?,
+                        name: provenance::ActionName::parse(&action).map_err(|error| {
+                            AppRefusal::Failed(FailText(format!(
+                                "the scripted follow-up {action} is not an action name: {error}"
+                            )))
+                        })?,
                     },
                     target: TargetValue::Nothing,
                     args: BTreeMap::default(),
@@ -208,7 +210,11 @@ impl IntentProvider for FakeMenu {
             seen.push(item.clone());
         }
         let how = self.script_of(&item).ok_or(AppRefusal::Unsupported)?;
-        how.classify.ok().ok_or(AppRefusal::Unsupported)
+        how.classify.map_err(|fault| {
+            AppRefusal::Failed(FailText(format!(
+                "classification scripted to fail: {fault:?}"
+            )))
+        })
     }
 
     #[expect(

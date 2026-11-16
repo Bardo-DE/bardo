@@ -31,6 +31,7 @@ inference-core = {path = "../../inference/inference-core"}
 provenance = {path = "../../provenance/provenance"}
 memory-core = {path = "../../memory/memory-core"}
 thiserror = { workspace = true }
+tracing = { workspace = true }
 
 [dev-dependencies]
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}

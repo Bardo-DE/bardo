@@ -201,11 +201,10 @@ impl AppLink for FakeLink {
         if !self.is_menu(app) {
             return Err(action_vocab::ClassifyFault::Unsupported);
         }
-        self.menu
-            .classify(inv)
-            .await
-            .ok()
-            .ok_or(action_vocab::ClassifyFault::Refused)
+        self.menu.classify(inv).await.map_err(|refusal| {
+            tracing::warn!(refusal = ?refusal, "the menu provider refused to classify");
+            action_vocab::ClassifyFault::Refused
+        })
     }
 
     async fn perform_classified(

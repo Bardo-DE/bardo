@@ -1027,8 +1027,10 @@ mod routed {
                 .ok_or(ClassifyFault::Unsupported)?;
             menus::classify(&self.shell.menu, ask)
                 .await
-                .ok()
-                .ok_or(ClassifyFault::Refused)
+                .map_err(|refusal| {
+                    tracing::warn!(refusal = ?refusal, "the menu refused to classify");
+                    ClassifyFault::Refused
+                })
         }
 
         #[expect(

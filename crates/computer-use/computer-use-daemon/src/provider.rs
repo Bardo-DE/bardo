@@ -209,11 +209,10 @@ fn start_of(
         Some(Labelled {
             value: Value::Entity(entity),
             ..
-        }) => Some(
-            ToplevelIdent::parse(entity.key.as_str())
-                .ok()
-                .ok_or_else(|| needs("window"))?,
-        ),
+        }) => Some(ToplevelIdent::parse(entity.key.as_str()).map_err(|error| {
+            tracing::warn!(error = %error, "the window argument is not a window ident");
+            needs("window")
+        })?),
         _ => None,
     };
     let app = match param(inv, "app").map(|p| &p.value) {
@@ -221,7 +220,12 @@ fn start_of(
         Some(Value::Entity(entity)) => Some(entity.key.as_str()),
         _ => None,
     }
-    .map(|id| AppName::parse(id).ok().ok_or_else(|| needs("app")))
+    .map(|id| {
+        AppName::parse(id).map_err(|error| {
+            tracing::warn!(error = %error, "the app argument is not an app name");
+            needs("app")
+        })
+    })
     .transpose()?;
     let mode = match param(inv, "mode").map(|p| &p.value) {
         Some(Value::Choice(choice)) => {
@@ -303,10 +307,13 @@ impl IntentProvider for CuaProvider {
         if starts.send(start).is_err() {
             return Err(AppRefusal::Busy);
         }
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "RecvError carries nothing beyond the failure: the run loop is gone"
+        )]
         let id = answer
             .await
-            .ok()
-            .ok_or(AppRefusal::Busy)?
+            .map_err(|_| AppRefusal::Busy)?
             .map_err(refusal_of)?;
         // The run's id is cuad's own word; its report arrives as a message.
         Ok(Outcome {
