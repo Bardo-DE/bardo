@@ -221,7 +221,7 @@ impl<B: Backend> Open<B> {
                 FactEffect::StageInPending => self
                     .rt
                     .store
-                    .stage(fact.clone(), draft.topic.clone())
+                    .stage(fact.clone(), &draft.topic)
                     .map_err(files_refusal)?,
                 FactEffect::LogAdded => {
                     self.audit(

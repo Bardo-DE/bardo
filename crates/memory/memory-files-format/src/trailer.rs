@@ -87,6 +87,10 @@ pub fn render_trailer(fact: &Fact) -> String {
 }
 
 /// The fact whose bullet text is `text` and whose trailer is `line`.
+///
+/// # Errors
+///
+/// Returns a [`TrailerFault`] when a key is missing or a value is not valid.
 pub fn parse_trailer(line: &str, text: FactText) -> Result<Fact, TrailerFault> {
     let inner = line
         .strip_prefix(OPEN)
@@ -131,11 +135,13 @@ impl Fields {
 
     fn into_fact(self, text: FactText) -> Result<Fact, TrailerFault> {
         let need = |v: Option<String>, k| v.ok_or(TrailerFault::MissingKey(k));
-        let id =
-            FactId::parse(&need(self.id, "fact")?).map_err(|_| TrailerFault::BadValue("fact"))?;
+        let id = FactId::parse(&need(self.id, "fact")?)
+            .ok()
+            .ok_or(TrailerFault::BadValue("fact"))?;
         let at = need(self.at, "at")?;
         let parsed = DateTime::parse_from_rfc3339(&at)
-            .map_err(|_| TrailerFault::BadValue("at"))?
+            .ok()
+            .ok_or(TrailerFault::BadValue("at"))?
             .with_timezone(&Utc);
         if render_at(parsed) != at {
             return Err(TrailerFault::BadValue("at"));
@@ -165,7 +171,9 @@ fn from_json<T: serde::de::DeserializeOwned>(
     text: &str,
     key: &'static str,
 ) -> Result<T, TrailerFault> {
-    serde_json::from_str(text).map_err(|_| TrailerFault::BadValue(key))
+    serde_json::from_str(text)
+        .ok()
+        .ok_or(TrailerFault::BadValue(key))
 }
 
 fn escaped_json<T: serde::Serialize>(value: &T) -> String {

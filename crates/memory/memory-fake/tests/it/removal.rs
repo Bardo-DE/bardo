@@ -82,7 +82,7 @@ fn service_with_work() -> Service {
         .expect("append");
     held.stage(
         fact(2, Actor::App { app: app(FILES) }, private_to_work()),
-        topic("files/notes"),
+        &topic("files/notes"),
     )
     .expect("stage");
     held.append(&topic("people/bo"), fact(3, planner(), trusted_label()))

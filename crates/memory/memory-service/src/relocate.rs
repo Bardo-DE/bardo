@@ -59,7 +59,7 @@ impl<B: Backend> Open<B> {
         {
             let fact = rehomed(fact, from, &here, moved);
             match state {
-                FactState::Pending => self.rt.store.stage(fact, topic).map_err(files_refusal)?,
+                FactState::Pending => self.rt.store.stage(fact, &topic).map_err(files_refusal)?,
                 FactState::Active | FactState::Superseded { .. } => {
                     self.rt
                         .store

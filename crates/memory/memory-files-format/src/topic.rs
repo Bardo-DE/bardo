@@ -22,13 +22,17 @@
 use crate::trailer::{TrailerFault, parse_trailer, render_trailer, timestamp};
 use chrono::FixedOffset;
 use memory_core::{Fact, FactText, TopicPath};
+use std::fmt::Write as _;
 
 /// What the first front matter line must say.
 pub const FORMAT_LINE: &str = "quire-memory 1";
 
 /// One block of a topic file.
 // A stamped fact is the large case and the common one; boxing it would complicate every match.
-#[allow(clippy::large_enum_variant)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "a stamped fact is the large case and the common one; boxing it would complicate every match"
+)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Block {
     /// A stamped fact.
@@ -102,6 +106,10 @@ fn is_date_heading(line: &str) -> bool {
 }
 
 /// Parses a topic file. Strict on the front matter and on trailers, lenient everywhere else.
+///
+/// # Errors
+///
+/// Returns a [`ParseError`] when the front matter or a trailer is not valid.
 pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
     let lines: Vec<&str> = text.split('\n').collect();
     if lines.first() != Some(&"---") {
@@ -128,8 +136,9 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
         return Err(ParseError::UnknownFormat(format.to_owned()));
     }
     let topic_text = topic.ok_or(ParseError::MissingKey("topic"))?;
-    let topic =
-        TopicPath::parse(topic_text).map_err(|_| ParseError::BadTopic(topic_text.to_owned()))?;
+    let topic = TopicPath::parse(topic_text)
+        .ok()
+        .ok_or_else(|| ParseError::BadTopic(topic_text.to_owned()))?;
     let title = title.ok_or(ParseError::MissingKey("title"))?.to_owned();
     let mut blocks = Vec::new();
     let mut i = close + 1;
@@ -145,8 +154,9 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
         };
         match lines.get(i).filter(|next| next.starts_with("  <!-- fact:")) {
             Some(trailer) => {
-                let fact_text =
-                    FactText::parse(bullet).map_err(|_| ParseError::BadFactText { line: i })?;
+                let fact_text = FactText::parse(bullet)
+                    .ok()
+                    .ok_or(ParseError::BadFactText { line: i })?;
                 let fact = parse_trailer(trailer, fact_text)
                     .map_err(|fault| ParseError::BadTrailer { line: i + 1, fault })?;
                 blocks.push(Block::Fact(fact));
@@ -181,13 +191,17 @@ pub fn render_topic(file: &TopicFile, tz: &FixedOffset) -> String {
                     if index > 0 {
                         out.push('\n');
                     }
-                    out.push_str(&format!("## {date}\n\n"));
+                    let _ = writeln!(out, "## {date}\n");
                     heading = Some(date);
                 }
-                out.push_str(&format!("- {}\n{}\n", fact.text, render_trailer(fact)));
+                let _ = writeln!(out, "- {}\n{}", fact.text, render_trailer(fact));
             }
-            Block::Unstamped(text) => out.push_str(&format!("- {text}\n")),
-            Block::Verbatim(line) => out.push_str(&format!("{line}\n")),
+            Block::Unstamped(text) => {
+                let _ = writeln!(out, "- {text}");
+            }
+            Block::Verbatim(line) => {
+                let _ = writeln!(out, "{line}");
+            }
         }
     }
     out

@@ -8,6 +8,7 @@ use memory_core::{
 };
 use memory_store::{FACTS_DIR, Vault, VaultError, VaultPath};
 use std::collections::BTreeSet;
+use std::fmt::Write as _;
 
 /// Why a store operation failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -59,12 +60,13 @@ impl Primer {
     pub fn render(&self) -> String {
         let mut out = String::from("# Memory\n\n");
         for entry in self.entries.iter().take(PRIMER_MAX_LINES - 2) {
-            out.push_str(&format!(
-                "- [{}]({}.md): {}\n",
+            let _ = writeln!(
+                out,
+                "- [{}]({}.md): {}",
                 entry.title.as_str(),
                 entry.topic,
                 entry.summary.as_str()
-            ));
+            );
         }
         out
     }
@@ -100,6 +102,10 @@ impl<V: Vault> Store<V> {
     }
 
     /// Every topic that has a file.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MemfilesError`] when the directory cannot be read or a file name is not a topic.
     pub fn topics(&self) -> Result<Vec<TopicPath>, MemfilesError> {
         let primer = VaultPath::primer();
         let files = self.vault.list(&VaultPath::facts_dir())?;
@@ -117,12 +123,20 @@ impl<V: Vault> Store<V> {
     }
 
     /// One topic file, parsed.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MemfilesError`] when the file cannot be read or does not parse.
     pub fn read(&self, t: &TopicPath) -> Result<TopicFile, MemfilesError> {
         self.load(&VaultPath::topic(t))?
             .ok_or_else(|| MemfilesError::NoSuchTopic(t.clone()))
     }
 
     /// Appends a fact to a topic (creating the file): add-only, existing blocks unchanged.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MemfilesError`] when the file cannot be read, parsed or written.
     pub fn append(&self, t: &TopicPath, fact: Fact) -> Result<(), MemfilesError> {
         let mut file = match self.read(t) {
             Err(MemfilesError::NoSuchTopic(_)) => new_file(t),
@@ -133,14 +147,22 @@ impl<V: Vault> Store<V> {
     }
 
     /// Puts a fact derived from untrusted text in `pending/` until the person keeps it.
-    pub fn stage(&self, fact: Fact, topic: TopicPath) -> Result<(), MemfilesError> {
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MemfilesError`] when the pending file cannot be written.
+    pub fn stage(&self, fact: Fact, topic: &TopicPath) -> Result<(), MemfilesError> {
         let path = VaultPath::pending(&fact.id);
-        let mut file = new_file(&topic);
+        let mut file = new_file(topic);
         file.blocks.push(Block::Fact(fact));
         self.save(&path, &file)
     }
 
     /// The facts waiting for the person.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MemfilesError`] when a pending file cannot be read or does not parse.
     pub fn pending(&self) -> Result<Vec<(TopicPath, Fact)>, MemfilesError> {
         let mut out = Vec::new();
         for (_, file) in self.load_all(&VaultPath::pending_dir())? {
@@ -154,6 +176,10 @@ impl<V: Vault> Store<V> {
 
     /// Keeps or discards a pending fact. `Keep` carries the confirmation receipt, which only
     /// the shell's own UI path can mint.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MemfilesError`] when the fact is not pending or a file cannot be read or written.
     pub fn settle(&self, id: &FactId, settlement: Settlement) -> Result<(), MemfilesError> {
         let path = VaultPath::pending(id);
         let file = self
@@ -185,6 +211,10 @@ impl<V: Vault> Store<V> {
     }
 
     /// Removes facts. The caller (the forget machine) has already checked the plan's digest.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MemfilesError`] when a file cannot be read or written.
     pub fn remove(&self, ids: &[FactId]) -> Result<Count, MemfilesError> {
         let doomed: BTreeSet<&FactId> = ids.iter().collect();
         let mut removed = 0u32;
@@ -217,8 +247,9 @@ impl<V: Vault> Store<V> {
             path: path.clone(),
             err,
         };
-        let text =
-            String::from_utf8(bytes).map_err(|_| parse_err(ParseError::MissingFrontMatter))?;
+        let text = String::from_utf8(bytes)
+            .ok()
+            .ok_or_else(|| parse_err(ParseError::MissingFrontMatter))?;
         parse_topic(&text).map(Some).map_err(parse_err)
     }
 

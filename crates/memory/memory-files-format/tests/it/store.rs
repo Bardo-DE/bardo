@@ -137,9 +137,7 @@ fn a_persons_edits_survive_an_append() {
 fn untrusted_fact_lands_in_pending() {
     on_every_vault(|store| {
         let t = topic("people/sam-lee");
-        store
-            .stage(fact(3, vec![thread("a")]), t.clone())
-            .expect("stage");
+        store.stage(fact(3, vec![thread("a")]), &t).expect("stage");
         assert_eq!(store.topics().expect("topics"), []);
         assert_eq!(store.read(&t), Err(MemfilesError::NoSuchTopic(t.clone())));
         let waiting = store.pending().expect("pending");
@@ -154,12 +152,8 @@ fn untrusted_fact_lands_in_pending() {
 fn confirm_requires_witness() {
     on_every_vault(|store| {
         let t = topic("people/sam-lee");
-        store
-            .stage(fact(3, vec![thread("a")]), t.clone())
-            .expect("stage");
-        store
-            .stage(fact(4, vec![thread("a")]), t.clone())
-            .expect("stage");
+        store.stage(fact(3, vec![thread("a")]), &t).expect("stage");
+        store.stage(fact(4, vec![thread("a")]), &t).expect("stage");
         store
             .settle(&id(3), Settlement::Keep(receipt()))
             .expect("keep");
@@ -196,7 +190,7 @@ fn remove_cascades_through_topics_and_pending() {
         store.append(&t, fact(1, vec![thread("a")])).expect("1");
         store.append(&t, fact(2, vec![thread("c")])).expect("2");
         store
-            .stage(fact(3, vec![Link::Fact(id(1))]), topic("prefs"))
+            .stage(fact(3, vec![Link::Fact(id(1))]), &topic("prefs"))
             .expect("3");
         let doomed = [id(1), id(3)];
         assert_eq!(store.remove(&doomed), Ok(Count(2)));

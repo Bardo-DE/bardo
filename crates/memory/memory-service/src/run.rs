@@ -293,7 +293,7 @@ impl<B: Backend> Open<B> {
             _ => self
                 .rt
                 .store
-                .stage(fact.clone(), topic)
+                .stage(fact.clone(), &topic)
                 .map_err(files_refusal)?,
         }
         applied.added.push(fact.id.clone());
