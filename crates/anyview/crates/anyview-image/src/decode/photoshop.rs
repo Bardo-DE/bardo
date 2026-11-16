@@ -223,11 +223,11 @@ pub(super) fn composite(bytes: &[u8]) -> Result<(u32, u32, Vec<u8>), Gap> {
         };
         out.extend_from_slice(&[rgb[0], rgb[1], rgb[2], alpha]);
     }
-    let to = |number: usize| {
-        u32::try_from(number)
-            .ok()
-            .ok_or_else(|| damaged("the picture is too large"))
-    };
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "TryFromIntError carries nothing beyond the failure"
+    )]
+    let to = |number: usize| u32::try_from(number).map_err(|_| damaged("the picture is too large"));
     Ok((to(width)?, to(height)?, out))
 }
 

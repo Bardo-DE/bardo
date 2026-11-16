@@ -518,27 +518,29 @@ mod editing {
     #[test]
     fn text_that_does_not_fit_the_type_of_the_node_is_refused_and_changes_nothing() {
         let mut doc = session(COMPACT, TreeFormat::Json);
-        assert_eq!(
+        assert!(matches!(
             doc.set_value(&p(&[1]), "two"),
-            Err(TreeEditError::NotANumber)
-        );
-        assert_eq!(
+            Err(TreeEditError::NotANumber(_))
+        ));
+        assert!(matches!(
             doc.set_value(&p(&[2, 0]), "maybe"),
             Err(TreeEditError::NotTrueOrFalse)
-        );
-        assert_eq!(
+        ));
+        assert!(matches!(
             doc.set_value(&p(&[2]), "x"),
             Err(TreeEditError::NotEditable)
-        );
-        assert_eq!(
-            doc.rename_key(&p(&[2, 0]), "x"),
-            Err(TreeEditError::NotEditable),
+        ));
+        assert!(
+            matches!(
+                doc.rename_key(&p(&[2, 0]), "x"),
+                Err(TreeEditError::NotEditable)
+            ),
             "an item has no key"
         );
-        assert_eq!(
+        assert!(matches!(
             doc.delete(&TreePath::root()),
             Err(TreeEditError::NotEditable)
-        );
+        ));
         assert_eq!(doc.file_bytes(), COMPACT.as_bytes());
         assert!(!doc.is_modified());
     }

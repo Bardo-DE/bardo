@@ -15,11 +15,11 @@ use std::ops::Range;
 use std::sync::Arc;
 
 /// Why an edit to the document was not made.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum TreeEditError {
     /// The text is not a number, and the node is one.
     #[error("that is not a number")]
-    NotANumber,
+    NotANumber(#[source] serde_json::Error),
     /// The text is neither `true` nor `false`, and the node is one of them.
     #[error("that is neither true nor false")]
     NotTrueOrFalse,
@@ -132,8 +132,7 @@ fn literal(shape: Shape, typed: &str) -> Result<String, TreeEditError> {
         Shape::String => Ok(quoted(typed)),
         Shape::Number => serde_json::from_str::<serde_json::Number>(trimmed)
             .map(|_| trimmed.to_owned())
-            .ok()
-            .ok_or(TreeEditError::NotANumber),
+            .map_err(TreeEditError::NotANumber),
         Shape::True | Shape::False => match trimmed {
             "true" | "false" => Ok(trimmed.to_owned()),
             _ => Err(TreeEditError::NotTrueOrFalse),
