@@ -112,7 +112,9 @@ impl<D> GestureStep<D> {
     }
 }
 
-/// One swipe update: the centre's movement twice. The clients get it as the pointer would move
+/// One swipe update: the centre's movement twice.
+///
+/// The clients get it as the pointer would move
 /// (with the touchpad's acceleration, as the gesture protocol expects); the desktop's own swipes
 /// (the Spaces, Mission Control) follow the fingers themselves, so the row stays under them as on
 /// the Mac and acceleration cannot enlarge a device's uneven reports into a stutter.

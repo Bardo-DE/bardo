@@ -1,4 +1,6 @@
-//! The frame scheduler's maths (P1-Z; filled by P1-D3): pure functions of a vblank clock, a
+//! The frame scheduler's maths (P1-Z; filled by P1-D3).
+//!
+//! Pure functions of a vblank clock, a
 //! render-cost history and a margin. The backend's `ScanoutSurface` and the headless vblank
 //! source feed it the same numbers, so 36,000 virtual idle frames and a real tty run the same
 //! decisions.

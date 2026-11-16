@@ -44,6 +44,11 @@ pub struct Stroke {
 
 impl Trigger {
     /// Parses `"command+shift+z"`: role names, then one key name last.
+    ///
+    /// # Errors
+    ///
+    /// A [`ChordError`] when the text is empty, has an empty name, an unknown, repeated or
+    /// wrong-kind modifier, or no valid key name.
     pub fn parse(text: &str) -> Result<Trigger, ChordError> {
         let (roles, key) = parse_chord(text, trigger_modifier)?;
         Ok(Trigger { roles, key })
@@ -52,6 +57,11 @@ impl Trigger {
 
 impl Stroke {
     /// Parses `"ctrl+shift+c"`: output modifier names, then one key name last.
+    ///
+    /// # Errors
+    ///
+    /// A [`ChordError`] when the text is empty, has an empty name, an unknown, repeated or
+    /// wrong-kind modifier, or no valid key name.
     pub fn parse(text: &str) -> Result<Stroke, ChordError> {
         let (mods, key) = parse_chord(text, stroke_modifier)?;
         Ok(Stroke { mods, key })

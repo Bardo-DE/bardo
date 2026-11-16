@@ -17,7 +17,9 @@ use desktop_protocols::vocab::WindowRole;
 pub const PIP_MARGIN: u32 = 16;
 
 /// The most area a window may have and still float above the rest, in logical pixels squared
-/// (about 1140 x 560): a picture in picture window is a corner thumbnail, and one that fills
+/// (about 1140 x 560).
+///
+/// A picture in picture window is a corner thumbnail, and one that fills
 /// the screen is not one (CASC-11).
 pub const PIP_MAX_AREA: u64 = 640_000;
 
@@ -60,7 +62,9 @@ fn browser_pip(title: &str, app_id: &str) -> bool {
     BROWSER_TITLES.contains(&title.as_str()) && BROWSER_IDS.iter().any(|id| app_id.starts_with(id))
 }
 
-/// Whether `window` floats above the rest. It must be picture in picture: declared by its
+/// Whether `window` floats above the rest.
+///
+/// It must be picture in picture: declared by its
 /// client, or guessed from a browser's title and app id, which counts only when the app is
 /// proven (a title and an app id are text any client can write). And it must be small enough
 /// ([`PIP_MAX_AREA`]) and loose (floating, not maximised or full screen).
@@ -110,7 +114,9 @@ pub fn snap_corner(rect: LogicalRect, area: LogicalRect) -> LogicalRect {
     )
 }
 
-/// `wanted`, a resize of `held`, brought back to `held`'s aspect ratio. The side that changed
+/// `wanted`, a resize of `held`, brought back to `held`'s aspect ratio.
+///
+/// The side that changed
 /// more (relatively) leads; the other follows. The edge that did not move stays: a window
 /// dragged by its right edge keeps its left, one dragged by its bottom keeps its top, one
 /// dragged by a corner keeps the opposite corner. A move (same size) is returned as it is, and

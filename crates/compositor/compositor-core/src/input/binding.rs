@@ -92,7 +92,9 @@ pub struct Binding {
 #[serde(transparent)]
 pub struct Bindings(pub Vec<Binding>);
 
-/// The action `chord` from `origin` resolves to. Agent and remote origins never fire a binding, and
+/// The action `chord` from `origin` resolves to.
+///
+/// Agent and remote origins never fire a binding, and
 /// neither does a feed (I1, I8: only the person's hands, a virtual keyboard they use, or the
 /// tests, drive the desktop's own shortcuts).
 #[must_use]

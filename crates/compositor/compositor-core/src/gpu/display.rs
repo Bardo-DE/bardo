@@ -64,7 +64,9 @@ impl DisplayKind {
     }
 }
 
-/// The devices of `found` to drive, in order: never a virtual display; every other one when
+/// The devices of `found` to drive, in order.
+///
+/// Never a virtual display; every other one when
 /// none is a firmware framebuffer, the real GPUs when any is, and the firmware ones only when
 /// nothing else is there.
 pub fn keep_displays<P: Clone>(found: &[(P, DisplayKind)]) -> Vec<P> {

@@ -1,4 +1,6 @@
-//! Dragging a window to a Space in Mission Control: the shell's Space targets, and the small
+//! Dragging a window to a Space in Mission Control.
+//!
+//! The shell's Space targets, and the small
 //! machine from a press on a slot to its release. A press that never moves past the threshold
 //! is the pick it always was; past it the window follows the pointer and a release over a
 //! target moves the window to that Space, a release elsewhere sends it back to its slot.

@@ -10,7 +10,9 @@ use super::lenient::{dotted, warning};
 use crate::profile::{ModMap, Profile, Profiles};
 
 /// Folds `layers` (earliest first, later overriding earlier per profile, per modmap field and
-/// per trigger), then flattens inheritance: a child's modmap fields and rules lie over its
+/// per trigger), then flattens inheritance.
+///
+/// A child's modmap fields and rules lie over its
 /// parent's, transitively. `default` inherits nothing; a profile naming an unknown parent, or
 /// one that leads back to itself, inherits `default` instead and is reported.
 pub fn resolve(layers: &[ConfigLayer]) -> (Profiles, Vec<Warning>) {

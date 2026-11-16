@@ -17,6 +17,10 @@ pub struct GammaTable {
 
 impl GammaTable {
     /// A table from its channels, which must be the same non-zero length.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when the channels differ in length or are empty.
     pub fn new(red: Vec<u16>, green: Vec<u16>, blue: Vec<u16>) -> Result<GammaTable, CoreError> {
         let size = red.len();
         if size != 0 && green.len() == size && blue.len() == size {
@@ -31,6 +35,10 @@ impl GammaTable {
 
     /// A linear ramp of `size` steps with each channel scaled by `tint` (thousandths): the
     /// identity curve, warmed. A size under two cannot hold a ramp.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when `size` is under two.
     pub fn tinted(size: u32, tint: Tint) -> Result<GammaTable, CoreError> {
         let last = size
             .checked_sub(1)

@@ -58,6 +58,10 @@ pub struct OutputName(String);
 
 impl OutputName {
     /// The name written as `text`: 1 to 63 ASCII letters, digits, `-` or `_`.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when `text` is empty, longer than 63 bytes or has another character.
     pub fn parse(text: &str) -> Result<OutputName, CoreError> {
         let well_formed = !text.is_empty()
             && text.len() <= MAX_OUTPUT_NAME
@@ -94,7 +98,9 @@ impl From<OutputName> for String {
     }
 }
 
-/// A display, stable across replugging and across connectors: its EDID make, model and serial
+/// A display, stable across replugging and across connectors.
+///
+/// Its EDID make, model and serial
 /// when it reports a serial, else its connector (03 §1.15 M5). The key every stored output
 /// setting and every Space's home is filed under.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

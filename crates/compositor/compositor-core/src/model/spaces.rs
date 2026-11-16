@@ -12,8 +12,9 @@ use crate::space::{Space, SpaceContent, SpaceIndex};
 use crate::window::SpacePlace;
 use account_core::SpaceId;
 
-/// The most desktop Spaces a request from a client or the shell may leave one output with (the
-/// Mac's own limit): a client that asks for Spaces in a loop cannot grow the model, the Spaces
+/// The most desktop Spaces a request from a client or the shell may leave one output with.
+///
+/// This is the Mac's own limit: a client that asks for Spaces in a loop cannot grow the model, the Spaces
 /// file or Mission Control without bound.
 pub const MAX_DESKTOPS_PER_OUTPUT: usize = 16;
 

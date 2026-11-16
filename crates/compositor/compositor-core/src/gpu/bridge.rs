@@ -9,7 +9,9 @@ impl Modifier {
 }
 
 /// The format of the buffer a copy route draws into: the render GPU draws it and the scanout
-/// GPU samples it. The first of `wanted` (best first) that both lists carry, in the linear
+/// GPU samples it.
+///
+/// The first of `wanted` (best first) that both lists carry, in the linear
 /// layout when both can, else in the lowest layout both name (two GPUs of one vendor share
 /// tiled layouts). None when no wanted format is common to both: the route cannot be built.
 ///

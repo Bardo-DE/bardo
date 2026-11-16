@@ -11,7 +11,9 @@ mod outcome;
 use super::{Focus, FocusIn, FocusOut, FocusView};
 use outcome::Outcome;
 
-/// The focus after `input`, and what it asks for. Effects come in one order: raise, the press
+/// The focus after `input`, and what it asks for.
+///
+/// Effects come in one order: raise, the press
 /// route, the keyboard, emphasis, the active app, then attention and the bell. The keyboard,
 /// emphasis and active-app effects appear only when they changed.
 #[must_use]
@@ -22,7 +24,7 @@ pub fn step(focus: Focus, input: FocusIn, view: &FocusView) -> (Focus, Vec<Focus
         FocusIn::Token { window, token } => handlers::token(focus, window, token, view),
         FocusIn::Mapped(window) => handlers::mapped(focus, window, view),
         FocusIn::Unmapped(window) => handlers::unmapped(focus, window, view),
-        FocusIn::ActivateApp { app, by } => handlers::activate_app(focus, app, by, view),
+        FocusIn::ActivateApp { app, by } => handlers::activate_app(focus, &app, by, view),
         FocusIn::LeaseFocus { window } => handlers::lease_focus(focus, window, view),
         FocusIn::HideApp(app) => handlers::hide_app(focus, &app, view),
         FocusIn::UnhideApp(_) => Outcome::of(focus),

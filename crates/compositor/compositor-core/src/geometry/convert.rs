@@ -3,7 +3,9 @@
 use super::{LogicalRect, LogicalSize, PhysicalRect, PhysicalSize};
 use ui_core::geometry::scale::Scale;
 
-/// `rect` in device pixels at `scale`. Edges are scaled and rounded (halves away from zero),
+/// `rect` in device pixels at `scale`.
+///
+/// Edges are scaled and rounded (halves away from zero),
 /// then the size is the distance between them, so rectangles that touch in logical space touch
 /// in device space with no gap or overlap.
 #[must_use]

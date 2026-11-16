@@ -23,6 +23,11 @@ pub enum LeaseFocusRefusal {
 impl Model {
     /// The window `lease` may key now, or why it may not. A lease exists only for a window of
     /// an app the agent tier was allowed to drive, so a live lease is the grant.
+    ///
+    /// # Errors
+    ///
+    /// A [`LeaseFocusRefusal`] when the lease is not open, the screen is locked or the window is
+    /// in the dock.
     pub fn lease_focus(&self, lease: LeaseId) -> Result<WindowId, LeaseFocusRefusal> {
         if !matches!(self.lock, LockState::Unlocked) {
             return Err(LeaseFocusRefusal::Locked);

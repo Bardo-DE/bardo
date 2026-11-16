@@ -7,7 +7,9 @@ use crate::window::{SpacePlace, Window, WindowState};
 use desktop_protocols::vocab::Modality;
 use std::collections::BTreeMap;
 
-/// The model's windows, apps and Spaces, borrowed for one focus step. A step reads the tables
+/// The model's windows, apps and Spaces, borrowed for one focus step.
+///
+/// A step reads the tables
 /// as they stand after the event's own change: a mapped window is in `windows`, an unmapped
 /// one is gone, an output already shows the Space it was just given.
 ///

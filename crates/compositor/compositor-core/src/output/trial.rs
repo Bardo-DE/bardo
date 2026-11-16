@@ -7,7 +7,9 @@
 use crate::policy::ConnectionRole;
 use std::time::Duration;
 
-/// How long the person has to keep a display change a program made: long enough to read the
+/// How long the person has to keep a display change a program made.
+///
+/// It is long enough to read the
 /// sheet and press a key, short enough that someone staring at a black screen (a bad mode can
 /// blank it) is back in a quarter of a minute.
 pub const DISPLAY_CONFIRM_WITHIN: Duration = Duration::from_secs(15);

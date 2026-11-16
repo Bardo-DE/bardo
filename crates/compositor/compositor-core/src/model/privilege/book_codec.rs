@@ -95,6 +95,11 @@ impl Book {
     /// The book `text` holds: an empty text is an error (the file always has its version),
     /// keys it does not know are dropped, at most [`MAX_GRANTS`] rows are read, and a later
     /// row for the same program and power replaces an earlier one.
+    ///
+    /// # Errors
+    ///
+    /// [`BookError::TooLarge`] for a text over the size cap, [`BookError::Parse`] when it is not
+    /// this shape, and [`BookError::Version`] for a file of another version.
     pub fn from_toml(text: &str) -> Result<Loaded<Book>, BookError> {
         if text.len() > MAX_FILE_BYTES {
             return Err(BookError::TooLarge);
@@ -121,6 +126,10 @@ impl Book {
 
     /// The book as text: one `[[grant]]` per answer, in power then program order, so the same
     /// answers always render the same bytes.
+    ///
+    /// # Errors
+    ///
+    /// [`BookError::Render`] when the book cannot be written as TOML.
     pub fn to_toml(&self) -> Result<String, BookError> {
         let file = OutFile {
             version: VERSION,

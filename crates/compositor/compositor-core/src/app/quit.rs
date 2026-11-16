@@ -62,7 +62,9 @@ pub enum StopSignal {
     Kill,
 }
 
-/// An app's processes are to be stopped. `clients` are the connections that serve this app
+/// An app's processes are to be stopped.
+///
+/// `clients` are the connections that serve this app
 /// and no other; the edge reads their processes from their socket credentials, never by name.
 /// An X11 app's windows share the satellite's one connection, which is never in `clients`:
 /// `x11` names the app's windows on it, and the edge asks the X server who owns them.

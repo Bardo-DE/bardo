@@ -30,6 +30,10 @@ impl Chord {
     /// and an XKB keysym name, joined by `+`, in any order (`"cmd+shift+4"`, `"cmd+Tab"`).
     /// The key is the last word; a modifier named twice, an unknown word or a missing key is
     /// an error.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when `text` is not a chord of that form.
     pub fn parse(text: &str) -> Result<Chord, CoreError> {
         let malformed = || CoreError::Malformed {
             what: "chord",

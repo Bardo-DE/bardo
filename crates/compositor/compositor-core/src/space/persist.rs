@@ -120,11 +120,19 @@ impl SpaceFile {
 
     /// The file `text` holds (empty text is an empty file; keys it does not know are ignored),
     /// trimmed: see [`SpaceFile::trimmed`].
+    ///
+    /// # Errors
+    ///
+    /// [`SpaceFileError::Parse`] when the text is not TOML of this shape.
     pub fn parse(text: &str) -> Result<SpaceFile, SpaceFileError> {
         Ok(SpaceFile::parse_counting(text)?.value)
     }
 
     /// As [`SpaceFile::parse`], and how many entries the trimming dropped (for the log).
+    ///
+    /// # Errors
+    ///
+    /// [`SpaceFileError::Parse`] when the text is not TOML of this shape.
     pub fn parse_counting(text: &str) -> Result<Loaded<SpaceFile>, SpaceFileError> {
         Ok(toml::from_str::<SpaceFile>(text)?.trimmed())
     }
@@ -159,6 +167,10 @@ impl SpaceFile {
 
     /// The file as text: one `[[spaces]]` table per Space, in id order, so the same Spaces
     /// always render the same bytes.
+    ///
+    /// # Errors
+    ///
+    /// [`SpaceFileError::Render`] when the file cannot be written as TOML.
     pub fn render(&self) -> Result<String, SpaceFileError> {
         let mut sorted = self.clone();
         sorted.spaces.sort_by(|a, b| a.id.cmp(&b.id));
@@ -174,6 +186,11 @@ impl SpaceFile {
     /// sill writes no such file yet (its `look.rs` says quire has no store), so the shape is
     /// the minimal one the codec pins: `{"by_id": {"<space id>": {"output": "<output key>",
     /// "index": 0}}}`, both record fields optional, unknown keys ignored.
+    ///
+    /// # Errors
+    ///
+    /// [`SpaceFileError::SillJson`] when the text is not JSON of that shape or a key is not a
+    /// valid Space id.
     pub fn import_sill_json(text: &str) -> Result<SpaceFile, SpaceFileError> {
         let parsed: SillFile = serde_json::from_str(text)?;
         let mut spaces = Vec::with_capacity(parsed.by_id.len());

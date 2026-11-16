@@ -23,7 +23,9 @@ pub enum ConnectionRole {
     Sandboxed(SandboxFacts),
 }
 
-/// Every global casement advertises, one variant per `delegates.rs` global (each delta
+/// Every global casement advertises, one variant per `delegates.rs` global.
+///
+/// Each delta
 /// freeze adds its own; P0-Z2 checks this list against the delegates). P1-Z declared the last
 /// six without advertising them: each fill lane creates its global in `Part::new`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -319,8 +321,9 @@ const _: () = {
     assert!(GLOBALS.len() == GlobalKind::QuireShell as usize + 1);
 };
 
-/// Whether a connection of `role` sees `global` when nothing is hidden from it by consent:
-/// [`advertised_to`] with no refused powers. A sandboxed client sees none of the clipboard
+/// Whether a connection of `role` sees `global` when nothing is hidden from it by consent.
+///
+/// This is [`advertised_to`] with no refused powers. A sandboxed client sees none of the clipboard
 /// managers, the toplevel list, the input-method and virtual-keyboard managers, the
 /// security-context manager, layer shell, the session lock, output and window management,
 /// workspaces, capture and the desktop and shell protocols. The shell connection sees
@@ -335,7 +338,9 @@ pub fn advertised(global: GlobalKind, role: &ConnectionRole) -> bool {
 }
 
 /// Whether a connection of `role` sees `global`, given the powers its program was refused at
-/// connect time (`hidden`: the person's or the administrator's no). A public client is not
+/// connect time (`hidden`: the person's or the administrator's no).
+///
+/// A public client is not
 /// shown a global of a refused power, so a tool says "not supported" instead of waiting for an
 /// answer that will not come. Every other connection ignores `hidden`: the shell and the agent
 /// are trusted, and a sandbox already sees only what its table says.

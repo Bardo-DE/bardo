@@ -78,6 +78,7 @@ const MAX_SCALE: u32 = 960;
 const MAX_POSITION: i32 = 100_000;
 
 /// The configuration `change` makes of `current` on the display `facts` describes, or why not.
+///
 /// A part the change leaves out keeps `current`'s value; a new mode must be one the display
 /// offers.
 ///
@@ -90,6 +91,11 @@ const MAX_POSITION: i32 = 100_000;
 /// assert!(!resolved.power);
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// The [`OutputRefusal`] for a mode the display does not offer, a scale or a position out of
+/// range.
 pub fn resolve_change(
     facts: &OutputFacts,
     current: &OutputConfig,
@@ -120,7 +126,9 @@ pub fn resolve_change(
     })
 }
 
-/// Whether some display is still lit once `changes` are made to `outputs`. A change set that
+/// Whether some display is still lit once `changes` are made to `outputs`.
+///
+/// A change set that
 /// turns a lit display dark and leaves none lit is refused; a state that is already dark is not
 /// made worse by a change that keeps it so (CASC-09).
 ///
@@ -130,6 +138,10 @@ pub fn resolve_change(
 ///
 /// assert!(keeps_one_lit(&OutputBook::default(), &[]).is_ok());
 /// ```
+///
+/// # Errors
+///
+/// [`OutputRefusal::NoneLeftLit`] when the changes turn the last lit display dark.
 pub fn keeps_one_lit(
     outputs: &OutputBook,
     changes: &[(OutputKey, OutputChangeSet)],

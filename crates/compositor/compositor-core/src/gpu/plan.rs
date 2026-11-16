@@ -36,6 +36,11 @@ pub enum PlanRefusal {
 
 /// The plan for `facts` under `choice`. The GPU driving the outputs wins; among several, the one
 /// driving the most, then the firmware's display GPU; the setting overrides all of it.
+///
+/// # Errors
+///
+/// [`PlanRefusal::NoGpu`] when `Auto` finds no GPU, [`PlanRefusal::UnknownGpu`] when the setting
+/// names a GPU that is not in `facts`.
 pub fn plan_for(facts: &[GpuFacts], choice: &GpuChoice) -> Result<RenderPlan, PlanRefusal> {
     let render = match choice {
         GpuChoice::Auto => automatic(facts).ok_or(PlanRefusal::NoGpu)?,

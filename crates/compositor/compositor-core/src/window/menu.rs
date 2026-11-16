@@ -109,7 +109,9 @@ fn entry_zone(entry: WindowEntry) -> Option<TileZone> {
     }
 }
 
-/// The menu for a window in `state`: Enter Full Screen (Exit Full Screen when it is full
+/// The menu for a window in `state`.
+///
+/// Enter Full Screen (Exit Full Screen when it is full
 /// screen) first, then the rest in order. A window in full screen or in the dock can only leave
 /// full screen; a tile zone it already fills, Fill when it is zoomed, and Return to Previous
 /// Size when it is in no place to return from, are dimmed.

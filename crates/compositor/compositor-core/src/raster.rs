@@ -1,4 +1,6 @@
-//! A raster made outside the renderer and laid over a frame: a window title, an icon. Chrome
+//! A raster made outside the renderer and laid over a frame: a window title, an icon.
+//!
+//! Chrome
 //! makes it (`compositor-chrome`, the only crate that reaches the text stack), the renderer takes
 //! it (`compositor-render`, which names no text crate), and this is the one type between them.
 
@@ -10,7 +12,9 @@ use std::sync::Arc;
 pub struct RasterId(pub u64);
 
 /// An image: premultiplied RGBA8, rows top to bottom, in device pixels, transparent where there
-/// is no ink. Two images are equal when they have the same id and size: the renderer's cache and
+/// is no ink.
+///
+/// Two images are equal when they have the same id and size: the renderer's cache and
 /// the damage tracker go by that.
 #[derive(Debug, Clone)]
 pub struct RasterImage {

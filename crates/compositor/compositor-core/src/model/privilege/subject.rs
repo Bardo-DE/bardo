@@ -14,6 +14,10 @@ pub struct ProgramPath(String);
 
 impl ProgramPath {
     /// The path written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when `text` is not a clean absolute path.
     pub fn parse(text: &str) -> Result<ProgramPath, CoreError> {
         let well_formed = text.starts_with('/')
             && text.len() <= MAX_SUBJECT_BYTES
@@ -67,6 +71,10 @@ pub struct SandboxAppId(String);
 
 impl SandboxAppId {
     /// The id written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when `text` is not a sandbox app id.
     pub fn parse(text: &str) -> Result<SandboxAppId, CoreError> {
         let well_formed = !text.is_empty()
             && text.len() <= MAX_APP_BYTES

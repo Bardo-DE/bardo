@@ -24,7 +24,9 @@ const NO_MODE: Mode = Mode {
     preferred: false,
 };
 
-/// The mode `wish` picks from `facts.modes`, falling back to the preferred mode when the wish
+/// The mode `wish` picks from `facts.modes`.
+///
+/// It falls back to the preferred mode when the wish
 /// cannot be met, and to the largest, fastest mode when none is marked preferred. An exact
 /// wish matches on resolution and refresh rate and returns the mode as the display lists it.
 /// Ties go to the mode listed first. A display with no modes yields a mode of size 0 x 0.

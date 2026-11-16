@@ -23,7 +23,9 @@ pub fn sheet_parent(window: &Window) -> Option<WindowId> {
     }
 }
 
-/// Where a sheet of `size` sits on a window whose content rectangle is `parent` (the title
+/// Where a sheet of `size` sits on a window whose content rectangle is `parent`.
+///
+/// The title
 /// bar is the strip just above it, so the sheet's top edge is the content's): centred
 /// horizontally, its size held to the window's. A sheet never reaches past its window.
 #[must_use]
@@ -44,7 +46,9 @@ pub fn attach_rect(parent: LogicalRect, size: LogicalSize) -> LogicalRect {
 }
 
 /// Where the opening slide starts: the sheet raised by its own height, wholly behind the title
-/// bar. The slide ends at `rect`; the renderer clips the sheet to [`slide_clip`] while it
+/// bar.
+///
+/// The slide ends at `rect`; the renderer clips the sheet to [`slide_clip`] while it
 /// moves, so it comes out of the title bar rather than over it.
 #[must_use]
 pub fn slide_start(rect: LogicalRect) -> LogicalRect {

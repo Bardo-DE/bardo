@@ -8,13 +8,19 @@ use crate::error::CoreError;
 use desktop_protocols::vocab::SubjectKind;
 
 /// The role the desktop's table gives one of its own services (`shell`, `portal`): 1 to 64
-/// lowercase letters, digits or `_`. The model only compares it, through
+/// lowercase letters, digits or `_`.
+///
+/// The model only compares it, through
 /// [`trusted_powers`](crate::policy::trusted_powers).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ServiceRole(String);
 
 impl ServiceRole {
     /// The role written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when `text` is empty, too long or has a character outside the set.
     pub fn parse(text: &str) -> Result<ServiceRole, CoreError> {
         let well_formed = !text.is_empty()
             && text.len() <= MAX_ROLE_BYTES

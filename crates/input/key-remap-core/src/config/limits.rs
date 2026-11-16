@@ -72,6 +72,10 @@ impl Oversize {
 
 /// `Ok` when the layers fold into a configuration within the limits. Cheap: it folds the layers
 /// and counts, and follows no chain until the number of profiles is known to be small.
+///
+/// # Errors
+///
+/// The [`Oversize`] limit the merged layers go past: profiles, inheritance steps or rules.
 pub fn within_limits(layers: &[ConfigLayer]) -> Result<(), Oversize> {
     let merged = layers.iter().fold(BTreeMap::new(), merge);
     if merged.len() > MAX_PROFILES {

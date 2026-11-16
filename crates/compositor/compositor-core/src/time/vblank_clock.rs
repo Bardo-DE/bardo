@@ -7,7 +7,9 @@ use std::time::Duration;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct VblankSeq(pub u64);
 
-/// When an output's vblanks fall: `phase`, then every refresh period after it. Instants are
+/// When an output's vblanks fall: `phase`, then every refresh period after it.
+///
+/// Instants are
 /// computed from the phase each time (`phase + k × period`), never accumulated, so they do not
 /// drift over a long run.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

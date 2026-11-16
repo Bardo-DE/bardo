@@ -1,4 +1,6 @@
-//! The vertical swipe's machine: Mission Control follows the fingers and, on lift, opens (or
+//! The vertical swipe's machine for Mission Control.
+//!
+//! It follows the fingers and, on lift, opens (or
 //! closes) when the distance or the speed says so (03 section 4.2: the same shape as the Space
 //! swipe, committing at half the distance).
 //!

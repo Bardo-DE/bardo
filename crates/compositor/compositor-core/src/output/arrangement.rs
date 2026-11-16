@@ -7,7 +7,9 @@ use crate::ids::OutputKey;
 use desktop_protocols::vocab::Transform;
 use ui_core::geometry::scale::Scale;
 
-/// The configuration of every present output: a saved display keeps its saved configuration;
+/// The configuration of every present output.
+///
+/// A saved display keeps its saved configuration;
 /// a new one gets its preferred mode, its first-sight scale under `policy`, no transform,
 /// power on, and a place to the right of everything already placed, top-aligned. In
 /// `present`'s order.

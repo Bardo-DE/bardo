@@ -81,6 +81,10 @@ pub enum Refusal {
 ///
 /// Everything else is allowed: a remote session or a virtual keyboard types into windows like
 /// the person would.
+///
+/// # Errors
+///
+/// The first [`Refusal`] in the order above that applies.
 pub fn reach(
     origin: &Origin,
     target: &InputTarget,

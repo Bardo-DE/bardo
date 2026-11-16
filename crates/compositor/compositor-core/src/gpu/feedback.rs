@@ -81,7 +81,9 @@ pub struct FeedbackPlan {
     pub tranches: Vec<Tranche>,
 }
 
-/// The feedback for `plan`, from each node's `formats`: first, when the render GPU also scans an
+/// The feedback for `plan`, from each node's `formats`.
+///
+/// First, when the render GPU also scans an
 /// output out, the formats its primary planes accept that it also draws into (a client that
 /// allocates there is put on the screen without a copy: the `Scanout` tranche); then what the
 /// render GPU draws into (a client that allocates there is composited without a copy); then,

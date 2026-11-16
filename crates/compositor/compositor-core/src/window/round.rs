@@ -13,7 +13,9 @@ pub struct Round {
     pub casement_shadow: bool,
 }
 
-/// What casement does for a client-framed window, from what the client said (`choice`), whether
+/// What casement does for a client-framed window, from what the client said (`choice`).
+///
+/// It also looks at whether
 /// its buffer holds a margin (`margin`: it reaches past the xdg window geometry, as a toolkit that
 /// draws its own shadow, GTK, leaves it) and the desktop's window radius (`desktop`):
 ///

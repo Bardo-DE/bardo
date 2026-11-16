@@ -57,7 +57,9 @@ impl DrmNodeId {
     }
 }
 
-/// A GPU's stable PCI identity, the tail of `/dev/dri/by-path/pci-0000:01:00.0-render` without
+/// A GPU's stable PCI identity.
+///
+/// It is the tail of `/dev/dri/by-path/pci-0000:01:00.0-render` without
 /// the `pci-` and the suffix (`0000:01:00.0`): what the `gpu.render` setting names, because
 /// card numbers move between boots and PCI addresses do not.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
@@ -66,6 +68,10 @@ pub struct ByPathId(String);
 
 impl ByPathId {
     /// The id written as `text`: a PCI address `dddd:bb:ss.f` in lowercase hex.
+    ///
+    /// # Errors
+    ///
+    /// [`CoreError::Malformed`] when `text` is not a lowercase hex PCI address.
     pub fn parse(text: &str) -> Result<ByPathId, CoreError> {
         let bytes = text.as_bytes();
         let lower_hex = |slice: &[u8]| {
