@@ -61,7 +61,7 @@ mod tests {
         serde_json::from_value(v).expect("update")
     }
 
-    fn tool(server: &str, kind: &str, flag: Value) -> ToolCallUpdate {
+    fn tool(server: &str, kind: &str, flag: bool) -> ToolCallUpdate {
         update(json!({
             "toolCallId": "t", "kind": kind, "rawInput": {"arguments": {}},
             "_meta": { "mcp": {"tool": "mail__x", "server": server}, "is_mcp_tool_call": flag }
@@ -71,11 +71,11 @@ mod tests {
     #[test]
     fn our_server_and_a_plain_kind_is_claimed() {
         let want = Some(OwnEdge::Tool("mail__x".into()));
-        assert_eq!(claim(&tool(SERVER_NAME, "other", json!(true))), want);
-        assert_eq!(claim(&tool(SERVER_NAME, "fetch", json!(true))), want);
-        assert_eq!(claim(&tool("elsewhere", "other", json!(true))), None);
-        assert_eq!(claim(&tool(SERVER_NAME, "execute", json!(true))), None);
-        assert_eq!(claim(&tool(SERVER_NAME, "other", json!(false))), None);
+        assert_eq!(claim(&tool(SERVER_NAME, "other", true)), want);
+        assert_eq!(claim(&tool(SERVER_NAME, "fetch", true)), want);
+        assert_eq!(claim(&tool("elsewhere", "other", true)), None);
+        assert_eq!(claim(&tool(SERVER_NAME, "execute", true)), None);
+        assert_eq!(claim(&tool(SERVER_NAME, "other", false)), None);
     }
 
     #[test]

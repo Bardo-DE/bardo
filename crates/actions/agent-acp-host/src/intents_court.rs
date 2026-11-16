@@ -115,7 +115,8 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
                 acts_for: None,
             })
             .await
-            .map_err(|_| CourtFault::Refused)?;
+            .ok()
+            .ok_or(CourtFault::Refused)?;
         Ok(opened.session)
     }
 
@@ -130,7 +131,8 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
         self.intents
             .session_turn(session.clone(), said)
             .await
-            .map_err(|_| CourtFault::Refused)
+            .ok()
+            .ok_or(CourtFault::Refused)
     }
 
     async fn turn_ended(&mut self, session: &SessionId, turn: TurnId, how: TurnEnd) {
@@ -168,6 +170,7 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
         self.intents
             .checkpoint_handover(session.clone(), to, agent)
             .await
-            .map_err(|_| CourtFault::Refused)
+            .ok()
+            .ok_or(CourtFault::Refused)
     }
 }

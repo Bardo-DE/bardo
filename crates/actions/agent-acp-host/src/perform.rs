@@ -68,12 +68,16 @@ fn done() -> Outcome {
 
 impl<F: Files, S: Sandbox> Performer<F, S> {
     /// Performs a call the router allowed.
+    ///
+    /// # Errors
+    /// Returns [`AppRefusal::Unsupported`] for an action this performer does not run, or the
+    /// refusal the read, write or run itself gives.
     pub fn perform(&self, inv: &Invocation) -> Result<Outcome, AppRefusal> {
         match inv.action.as_str() {
             FILES_READ => self.read(inv),
             FILES_WRITE | FILES_SENSITIVE => self.write(inv),
             TERMINAL_RUN => self.run(inv),
-            REPORTED => Ok(self.reported(inv)),
+            REPORTED => Ok(Self::reported(inv)),
             other if PermissionKind::ALL.iter().any(|k| k.action_name() == other) => Ok(done()),
             _ => Err(AppRefusal::Unsupported),
         }
@@ -157,8 +161,9 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
             .write(&file.real, &scope.real_cwd, &content)
             .map_err(file_failed)?;
         inner.next += 1;
-        let token =
-            UndoToken::parse(&format!("u-{}", inner.next)).map_err(|_| failed("no undo token"))?;
+        let token = UndoToken::parse(&format!("u-{}", inner.next))
+            .ok()
+            .ok_or_else(|| failed("no undo token"))?;
         inner.undo.push((
             token.clone(),
             UndoNote {
@@ -221,7 +226,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
         })
     }
 
-    fn reported(&self, inv: &Invocation) -> Outcome {
+    fn reported(inv: &Invocation) -> Outcome {
         let source = match param(inv, "what") {
             Some(Value::Text(what)) => PermissionKind::from_word(what).and_then(source),
             _ => Some(Source::File),
@@ -234,6 +239,10 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// Takes a write back: the file as it was, or gone if the write made it.
+    ///
+    /// # Errors
+    /// Returns [`UndoFault::Gone`] when the token is unknown, its folder is no longer a session's,
+    /// or the file cannot be restored or removed.
     pub fn undo(&self, token: &UndoToken) -> Result<(), UndoFault> {
         let mut inner = self.lock();
         let at = inner
@@ -252,6 +261,6 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
             Some(text) => inner.files.write(&note.path, &within, text).map(|_| ()),
             None => inner.files.remove(&note.path, &within),
         };
-        done.map_err(|_| UndoFault::Gone)
+        done.ok().ok_or(UndoFault::Gone)
     }
 }

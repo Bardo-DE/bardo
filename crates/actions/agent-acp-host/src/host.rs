@@ -26,7 +26,6 @@ use agent_session::{
 use companion_model::{RunsIn, WatchedAgent};
 use futures_util::future::{Either, select};
 use provenance::SessionId;
-use std::future::Future;
 use std::pin::{Pin, pin};
 
 type Recording =
@@ -82,6 +81,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     /// Says who keeps the history of the agent's file changes (its `checkpoints` in
     /// `agents.toml`); the router is told when the session opens. Without it the default over-saves
     /// rather than under-saves.
+    #[must_use]
     pub fn with_rewind(mut self, rewind: Rewind) -> Self {
         self.rewind = rewind;
         self
@@ -89,6 +89,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
 
     /// Says that the agent is one helper's: the router keeps its grants apart from every other
     /// helper's, even one that runs the same program.
+    #[must_use]
     pub fn for_helper(mut self, helper: provenance::HelperId) -> Self {
         self.helper = Some(helper);
         self
@@ -103,6 +104,9 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
 
     /// Asks the agent to sign out (`logout`), when it advertised the method. `Ok(false)` when it
     /// did not, or would not. The agent clears its own login.
+    ///
+    /// # Errors
+    /// Returns a [`BackendFault`] when no agent is running or the connection to it is gone.
     pub async fn log_out(&mut self) -> Result<bool, BackendFault> {
         self.backend.log_out().await
     }
@@ -110,6 +114,10 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     /// Leaves the open session at the router as a watch session that a terminal marks, and ends
     /// the agent's process: the conversation goes on in the app's own terminal program. `agent` is
     /// the app and its own id for the conversation. The router refuses while a turn is running.
+    ///
+    /// # Errors
+    /// Returns a [`HostFault`] when `session` is not this host's or the router will not hand the
+    /// session to a terminal.
     pub async fn hand_to_terminal(
         &mut self,
         session: &SessionId,
@@ -119,7 +127,8 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
         self.court
             .hand(session, RunsIn::Terminal, Some(agent))
             .await
-            .map_err(|_| BackendFault::Unavailable)?;
+            .ok()
+            .ok_or(BackendFault::Unavailable)?;
         self.pending = None;
         self.running = None;
         self.backend.close().await;
@@ -131,6 +140,10 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     /// (`opening` says where; the backend was made to resume the agent's own session). Answers
     /// the app and its own id for the conversation. A start that fails leaves the session a watch
     /// session, as it was.
+    ///
+    /// # Errors
+    /// Returns a [`HostFault`] when this host already has a session, the router does not hold
+    /// `session` as a watch session, or the agent fails to start on it.
     pub async fn take_back(
         &mut self,
         session: SessionId,
@@ -183,7 +196,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
 
 /// Tells the router the turn ended, if `event` is the end of one (or the backend has nothing
 /// more to say, which ends it too). Any other event leaves the turn running.
-async fn settle<C: Court>(running: &mut Option<RunningTurn<C>>, event: &Option<BackendEvent>) {
+async fn settle<C: Court>(running: &mut Option<RunningTurn<C>>, event: Option<&BackendEvent>) {
     let how = match event {
         Some(BackendEvent::TurnEnd(end)) => Ended::from(*end),
         None => Ended::Failed,
@@ -244,10 +257,18 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
         Ok(session)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`SessionHost::resume` is async; this host has no resume and answers at once"
+    )]
     async fn resume(&mut self, _session: &SessionId) -> Result<ResumePlan, HostFault> {
         Err(HostFault::NoSuchSession)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`SessionHost::turn` is async; this host only stages the turn for `next_event`"
+    )]
     async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), HostFault> {
         self.mine(session)?;
         if self.pending.is_some() {
@@ -296,14 +317,14 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
             }
             if !self.is_terminal() {
                 let event = self.backend.next_event().await;
-                settle(&mut self.running, &event).await;
+                settle(&mut self.running, event.as_ref()).await;
                 return Ok(event);
             }
             let event = pin!(self.backend.next_event());
             let sheet = pin!(self.desk.next_sheet(session));
             return Ok(match select(event, sheet).await {
                 Either::Left((event, _)) => {
-                    settle(&mut self.running, &event).await;
+                    settle(&mut self.running, event.as_ref()).await;
                     event
                 }
                 Either::Right((Some(request), _)) => Some(BackendEvent::Confirm(Box::new(request))),
@@ -314,6 +335,10 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`SessionHost::answer_sheet` is async; the desk takes the answer without waiting"
+    )]
     async fn answer_sheet(
         &mut self,
         session: &SessionId,
@@ -343,6 +368,10 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`SessionHost::fork` is async; this host has no fork and answers at once"
+    )]
     async fn fork(
         &mut self,
         _session: &SessionId,

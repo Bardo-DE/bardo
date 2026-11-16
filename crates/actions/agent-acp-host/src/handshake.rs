@@ -119,16 +119,16 @@ impl<X: Seams> AcpBackend<X> {
         }
         self.session = Some(session);
         // Signing in may be the person's own browser: that handshake gets the long span.
-        let span = match self.live.as_ref().is_some_and(|l| l.sign_in.is_some()) {
-            true => self.waits.person,
-            false => self.waits.handshake,
+        let span = if self.live.as_ref().is_some_and(|l| l.sign_in.is_some()) {
+            self.waits.person
+        } else {
+            self.waits.handshake
         };
-        match tokio::time::timeout(span, self.handshake(&cwd)).await {
-            Ok(done) => done,
-            Err(_) => {
-                self.dead = true;
-                Err(Step::Timeout.unavailable(&"no answer within the handshake span"))
-            }
+        if let Ok(done) = tokio::time::timeout(span, self.handshake(&cwd)).await {
+            done
+        } else {
+            self.dead = true;
+            Err(Step::Timeout.unavailable(&"no answer within the handshake span"))
         }
     }
 
@@ -139,12 +139,11 @@ impl<X: Seams> AcpBackend<X> {
         sent: SentRequest<T>,
     ) -> Result<Result<T, Error>, BackendFault> {
         let live = self.live.as_mut().ok_or(BackendFault::NotRunning)?;
-        match live.link.answer(sent).await {
-            Ok(answer) => Ok(answer),
-            Err(Gone) => {
-                self.dead = true;
-                Err(Step::Reply.unavailable(&Gone))
-            }
+        if let Ok(answer) = live.link.answer(sent).await {
+            Ok(answer)
+        } else {
+            self.dead = true;
+            Err(Step::Reply.unavailable(&Gone))
         }
     }
 
@@ -230,17 +229,14 @@ impl<X: Seams> AcpBackend<X> {
             .map(|e| e.bind().server(e.token()))
             .collect();
         let path = PathBuf::from(cwd.as_str());
-        let picked = match can_resume {
-            true => {
-                let request = ResumeSessionRequest::new(old.clone(), path).mcp_servers(servers);
-                let sent = live.link.ask(request);
-                self.answered(sent).await?.map(|_| ())
-            }
-            false => {
-                let request = LoadSessionRequest::new(old.clone(), path).mcp_servers(servers);
-                let sent = live.link.ask(request);
-                self.answered(sent).await?.map(|_| ())
-            }
+        let picked = if can_resume {
+            let request = ResumeSessionRequest::new(old.clone(), path).mcp_servers(servers);
+            let sent = live.link.ask(request);
+            self.answered(sent).await?.map(|_| ())
+        } else {
+            let request = LoadSessionRequest::new(old.clone(), path).mcp_servers(servers);
+            let sent = live.link.ask(request);
+            self.answered(sent).await?.map(|_| ())
         };
         match picked {
             Ok(()) => {
@@ -257,6 +253,9 @@ impl<X: Seams> AcpBackend<X> {
     /// Asks the agent to forget that it is signed in (`logout`), when it advertised the method.
     /// The agent clears its own login; nothing of it passes through us. A `false` is a signed-in
     /// state the agent would not end, or one it cannot end this way.
+    ///
+    /// # Errors
+    /// Returns a [`BackendFault`] when no agent is running or the connection to it is gone.
     pub async fn log_out(&mut self) -> Result<bool, BackendFault> {
         let live = self.live.as_ref().ok_or(BackendFault::NotRunning)?;
         if !live.can_log_out || self.phase != Phase::Idle {
@@ -283,7 +282,8 @@ impl<X: Seams> AcpBackend<X> {
         }
         let message = offer
             .switch(&agent, &wanted)
-            .map_err(|_| BackendFault::ModelRefused)?;
+            .ok()
+            .ok_or(BackendFault::ModelRefused)?;
         let sent = live.link.ask(message);
         match self.answered(sent).await? {
             Ok(_) => {
@@ -329,9 +329,10 @@ fn refusal_fault(error: &Error, methods: Choices) -> BackendFault {
     if error.code != ErrorCode::AuthRequired {
         return Step::NewSession.unavailable(error);
     }
-    match methods.0.is_empty() {
-        true => BackendFault::SignInNeeded,
-        false => BackendFault::SignInChoose(methods),
+    if methods.0.is_empty() {
+        BackendFault::SignInNeeded
+    } else {
+        BackendFault::SignInChoose(methods)
     }
 }
 

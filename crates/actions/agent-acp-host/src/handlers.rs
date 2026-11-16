@@ -29,6 +29,10 @@ use sandbox::Argv;
 use serde::Serialize;
 use serde_json::Value as Json;
 
+#[expect(
+    clippy::map_err_ignore,
+    reason = "the agent is told a fixed message; the serializer's detail is not for the peer"
+)]
 pub(super) fn ok(value: &impl Serialize) -> Result<Json, Error> {
     serde_json::to_value(value).map_err(|_| fault::internal("could not answer"))
 }
@@ -349,11 +353,15 @@ impl<X: Seams> AcpBackend<X> {
         if let SandboxState::Cannot(why) = self.performer.check(workdir.real()) {
             return self.denied(fault::not_now(&format!("cannot sandbox: {why}")));
         }
-        let line = argv.line();
-        let stage =
-            self.stage_once(|p| p.stage_run(&session, line.clone(), cwd.clone(), request.clone()));
+        let command_line = argv.line();
+        let stage = self.stage_once(|p| {
+            p.stage_run(&session, command_line.clone(), cwd.clone(), request.clone())
+        });
         let (derives, network) = self.performer.exec_facts(&session, argv.words(), &cwd);
-        let command = Command { line, cwd };
+        let command = Command {
+            line: command_line,
+            cwd,
+        };
         let ruled = self
             .ask(
                 n,

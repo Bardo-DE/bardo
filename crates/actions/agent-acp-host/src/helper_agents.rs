@@ -11,7 +11,6 @@ use companion_model::helper::{
 };
 use provenance::{AgentProgram, HelperId, UnixSeconds};
 use std::collections::BTreeMap;
-use std::future::Future;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use tokio::sync::{Mutex as AsyncMutex, Notify};
@@ -148,6 +147,10 @@ where
     /// Closes the helper's agent and turns its session at the router into a watch session, so the
     /// conversation can go on in the app's own terminal program. Refused while a job runs, or when
     /// the agent has no conversation of its own to take along or cannot pick it up again.
+    ///
+    /// # Errors
+    /// Returns a [`HandFault`] when the helper has no conversation, a job is running, the agent
+    /// cannot pick the conversation up again, or the hand-over fails.
     pub async fn to_terminal(&self, card: &HelperCard) -> Result<Away, HandFault> {
         let Some(slot) = self.known(&card.id) else {
             return Err(HandFault::NoConversation);
@@ -164,6 +167,10 @@ where
 
     /// Starts the helper's agent again on the session it left, on the conversation the terminal
     /// went on with.
+    ///
+    /// # Errors
+    /// Returns a [`HandFault`] when nothing was handed to a terminal or the agent could not pick
+    /// the conversation up again.
     pub async fn bring_back(&self, card: &HelperCard) -> Result<(), HandFault> {
         let slot = self.slot(card);
         let work = async {
@@ -277,9 +284,10 @@ where
                     let (Some(logout), Some(program)) = (&self.logout, card.kind.program()) else {
                         return SignOutOutcome::Failed;
                     };
-                    match logout.run(program).await {
-                        true => SignOutOutcome::SignedOut,
-                        false => SignOutOutcome::Failed,
+                    if logout.run(program).await {
+                        SignOutOutcome::SignedOut
+                    } else {
+                        SignOutOutcome::Failed
                     }
                 }
             }

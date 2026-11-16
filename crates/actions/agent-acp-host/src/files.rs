@@ -47,22 +47,38 @@ pub enum FileFault {
 pub trait Files: Send {
     /// Where `path` really leads, links followed. A missing last part is allowed (a new file):
     /// the nearest existing parent is resolved and the rest appended.
+    ///
+    /// # Errors
+    /// Returns a [`FileFault`] when no part of the path can be resolved or the result is not an
+    /// absolute path.
     fn real(&self, path: &AbsPath) -> Result<AbsPath, FileFault>;
 
     /// `asked`, a directory inside `scope`, as a confined directory a sandbox may write. This
     /// default resolves both through `real` and applies the pure rules, which suits a file system
     /// without links to walk; `OsFiles` looks at every part and refuses links and the home folder.
+    ///
+    /// # Errors
+    /// Returns a [`WorkdirFault`] when either path cannot be resolved or `asked` is not a folder
+    /// the rules allow inside `scope`.
     fn workdir(&self, scope: &AbsPath, asked: &AbsPath) -> Result<Workdir, WorkdirFault> {
-        let real_scope = self.real(scope).map_err(|_| WorkdirFault::NotFolder)?;
-        let real = self.real(asked).map_err(|_| WorkdirFault::NotFolder)?;
+        let real_scope = self.real(scope).ok().ok_or(WorkdirFault::NotFolder)?;
+        let real = self.real(asked).ok().ok_or(WorkdirFault::NotFolder)?;
         Workdir::from_resolved(&real_scope, real, None)
     }
 
     /// The text of the file at `real`, which must still lie inside `within`.
+    ///
+    /// # Errors
+    /// Returns a [`FileFault`] when the file is missing, not a regular file, too large, not text,
+    /// moved out of `within`, or the file system refuses.
     fn read(&mut self, real: &AbsPath, within: &AbsPath) -> Result<String, FileFault>;
 
     /// Replaces (or creates) the file at `real`, which must still lie inside `within`. Returns
     /// the text it replaced, `None` for a new file.
+    ///
+    /// # Errors
+    /// Returns a [`FileFault`] when the content is too large, the file cannot be read back or
+    /// written, it moved out of `within`, or the file system refuses.
     fn write(
         &mut self,
         real: &AbsPath,
@@ -72,6 +88,10 @@ pub trait Files: Send {
 
     /// Removes the file at `real`, which must still lie inside `within`: what undoing a write
     /// that created the file does.
+    ///
+    /// # Errors
+    /// Returns a [`FileFault`] when the file is missing, moved out of `within`, or the file
+    /// system refuses.
     fn remove(&mut self, real: &AbsPath, within: &AbsPath) -> Result<(), FileFault>;
 }
 
@@ -97,19 +117,15 @@ fn resolve(path: &Path) -> Result<PathBuf, FileFault> {
     let mut rest = Vec::new();
     let mut here = path.to_path_buf();
     loop {
-        match here.canonicalize() {
-            Ok(real) => {
-                return Ok(rest.iter().rev().fold(real, |acc, part| acc.join(part)));
-            }
-            Err(_) => {
-                let name = here.file_name().map(ToOwned::to_owned);
-                let (Some(name), Some(parent)) = (name, here.parent()) else {
-                    return Err(FileFault::NotFound);
-                };
-                rest.push(name);
-                here = parent.to_path_buf();
-            }
+        if let Ok(real) = here.canonicalize() {
+            return Ok(rest.iter().rev().fold(real, |acc, part| acc.join(part)));
         }
+        let name = here.file_name().map(ToOwned::to_owned);
+        let (Some(name), Some(parent)) = (name, here.parent()) else {
+            return Err(FileFault::NotFound);
+        };
+        rest.push(name);
+        here = parent.to_path_buf();
     }
 }
 
@@ -171,8 +187,9 @@ fn open_for_read(path: &str) -> std::io::Result<File> {
 fn still_inside(file: &File, within: &AbsPath) -> Result<(), FileFault> {
     use std::os::fd::AsRawFd;
     let target = std::fs::read_link(format!("/proc/self/fd/{}", file.as_raw_fd()))
-        .map_err(|_| FileFault::Moved)?;
-    let target = abs(&target).map_err(|_| FileFault::Moved)?;
+        .ok()
+        .ok_or(FileFault::Moved)?;
+    let target = abs(&target).ok().ok_or(FileFault::Moved)?;
     if within.covers(&target) {
         Ok(())
     } else {
@@ -195,7 +212,7 @@ fn read_text(file: &mut File) -> Result<String, FileFault> {
     if bytes.len() > MAX_READ {
         return Err(FileFault::TooBig);
     }
-    String::from_utf8(bytes).map_err(|_| FileFault::NotText)
+    String::from_utf8(bytes).ok().ok_or(FileFault::NotText)
 }
 
 impl Files for OsFiles {

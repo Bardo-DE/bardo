@@ -60,7 +60,7 @@ fn shell_error(fault: &ShellFault) -> Error {
         ShellFault::Start(StartFault::FilterFile) => {
             fault::internal("the sandbox's syscall filter was not given")
         }
-        _ => fault::internal("the sandbox did not start"),
+        ShellFault::Start(_) => fault::internal("the sandbox did not start"),
     }
 }
 
@@ -152,6 +152,10 @@ impl<S: Sandbox> Terminals<S> {
     /// The router has ruled on it; this only refuses what cannot be confined or runs outside the
     /// session. The host that has a file system confines the directory first and calls
     /// [`Terminals::create_in`].
+    ///
+    /// # Errors
+    /// Returns the protocol error when the working directory is not absolute or is outside
+    /// `scope`, the command is empty, it cannot be confined, or too many terminals are open.
     pub fn create(
         &mut self,
         scope: &AbsPath,
@@ -159,7 +163,8 @@ impl<S: Sandbox> Terminals<S> {
     ) -> Result<CreateTerminalResponse, Error> {
         let cwd = match &asked.cwd {
             Some(path) => AbsPath::parse(&path.to_string_lossy())
-                .map_err(|_| fault::invalid("the working directory must be absolute"))?,
+                .ok()
+                .ok_or_else(|| fault::invalid("the working directory must be absolute"))?,
             None => scope.clone(),
         };
         if !scope.covers(&cwd) {
@@ -173,6 +178,10 @@ impl<S: Sandbox> Terminals<S> {
     /// Starts the command a `terminal/create` asked for in `workdir`, a directory already
     /// confined (links resolved, inside the session, not home): the request's own `cwd` is not
     /// used, and the sandbox is given the real path.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the command is empty, it cannot be confined, or too many
+    /// terminals are open.
     pub fn create_in(
         &mut self,
         workdir: &Workdir,
@@ -216,6 +225,9 @@ impl<S: Sandbox> Terminals<S> {
     }
 
     /// `terminal/output`: what the command has written so far, and how it ended if it has.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal is not one this session made.
     pub fn output(
         &mut self,
         asked: &TerminalOutputRequest,
@@ -230,6 +242,9 @@ impl<S: Sandbox> Terminals<S> {
 
     /// `terminal/wait_for_exit`: blocks the thread until the command ends (or is killed at its
     /// deadline). A host that shares a thread with other work uses [`Terminals::poll_wait`].
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal is not one this session made or the wait fails.
     pub fn wait(
         &mut self,
         asked: &WaitForTerminalExitRequest,
@@ -241,6 +256,9 @@ impl<S: Sandbox> Terminals<S> {
 
     /// `terminal/wait_for_exit` without blocking: the answer if the command has ended, `None`
     /// while it runs. A host that cannot block polls this.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal is not one this session made.
     pub fn poll_wait(
         &mut self,
         asked: &WaitForTerminalExitRequest,
@@ -254,6 +272,9 @@ impl<S: Sandbox> Terminals<S> {
     }
 
     /// `terminal/kill`: ends the command; the terminal stays readable.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal is not one this session made or the kill fails.
     pub fn kill(&mut self, asked: &KillTerminalRequest) -> Result<KillTerminalResponse, Error> {
         self.reap();
         let id = self.term(&asked.session_id.0, &asked.terminal_id)?;
@@ -262,6 +283,9 @@ impl<S: Sandbox> Terminals<S> {
     }
 
     /// `terminal/release`: forgets the terminal.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal is not one this session made or the release fails.
     pub fn release(
         &mut self,
         asked: &ReleaseTerminalRequest,

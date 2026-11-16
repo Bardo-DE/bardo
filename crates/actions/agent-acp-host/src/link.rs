@@ -132,6 +132,10 @@ impl Drop for Link {
 
 impl Link {
     /// Connects the client role to the agent at the other end of `transport`.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a closed channel inside the handler is answered to the agent as a plain internal error"
+    )]
     pub(super) async fn connect(transport: impl ConnectTo<Client>) -> Result<Self, Gone> {
         let (tx, rx) = mpsc::channel(DEPTH);
         let (up_tx, up_rx) = oneshot::channel();
@@ -182,7 +186,7 @@ impl Link {
                 tracing::debug!(%error, "the agent connection ended with an error");
             }
         });
-        let cx = up_rx.await.map_err(|_| Gone)?;
+        let cx = up_rx.await.ok().ok_or(Gone)?;
         Ok(Self { cx, rx, tx, task })
     }
 
@@ -211,6 +215,10 @@ impl Link {
 
     /// Sends `session/prompt`. Its answer comes through [`Link::next`] as `FromAgent::Prompt`,
     /// after the updates the agent sent before it.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a closed channel inside the handler is answered to the agent as a plain internal error"
+    )]
     pub(super) fn prompt(&self, request: PromptRequest) -> Result<(), Gone> {
         let mut tx = self.tx.clone();
         self.cx
@@ -220,14 +228,16 @@ impl Link {
                     .await
                     .map_err(|_| Error::internal_error())
             })
-            .map_err(|_| Gone)
+            .ok()
+            .ok_or(Gone)
     }
 
     /// Sends `session/cancel` for the agent's `session`.
     pub(super) fn cancel(&self, session: &SessionId) -> Result<(), Gone> {
         self.cx
             .send_notification(CancelNotification::new(session.clone()))
-            .map_err(|_| Gone)
+            .ok()
+            .ok_or(Gone)
     }
 
     /// Waits for the answer to `sent`, which is either the agent's result or the error it answered

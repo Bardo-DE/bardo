@@ -22,6 +22,10 @@ pub struct ModelIdRefused;
 
 impl ModelId {
     /// A model id: printable, no whitespace.
+    ///
+    /// # Errors
+    /// Returns [`ModelIdRefused`] when `text` is empty, over 128 characters, or has whitespace or
+    /// control characters.
     pub fn parse(text: &str) -> Result<Self, ModelIdRefused> {
         let fine = !text.is_empty()
             && text.chars().count() <= 128
@@ -128,6 +132,9 @@ impl Models {
 
     /// The request that switches the session to `wanted`. It is built untyped: the older
     /// `session/set_model` is not in the schema, and the reply is read for nothing but its success.
+    ///
+    /// # Errors
+    /// Returns the SDK's [`Error`] when the request cannot be encoded.
     pub fn switch(&self, session: &SessionId, wanted: &ModelId) -> Result<UntypedMessage, Error> {
         match &self.way {
             Way::Option(option) => UntypedMessage::new(

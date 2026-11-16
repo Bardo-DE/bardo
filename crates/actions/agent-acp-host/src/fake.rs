@@ -46,7 +46,14 @@ impl ChannelWire {
     }
 
     /// Writes one line.
-    pub async fn write_line(&mut self, line: String) -> Result<(), PipeClosed> {
+    ///
+    /// # Errors
+    /// Returns [`PipeClosed`] when the other end is gone.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "`PipeClosed` says all there is: the send failed because the other end dropped"
+    )]
+    pub fn write_line(&mut self, line: String) -> Result<(), PipeClosed> {
         self.tx.unbounded_send(line).map_err(|_| PipeClosed)
     }
 }
@@ -163,6 +170,10 @@ impl AgentChild for FakeChild {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`AgentChild::close` is async; the fake closes without waiting"
+    )]
     async fn close(&mut self) {
         self.kill();
         if !self.closed {
@@ -176,6 +187,10 @@ impl Spawn for FakeSpawn {
     type Transport = ChannelWire;
     type Child = FakeChild;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Spawn::spawn` is async; the fake hands out a prepared wire without waiting"
+    )]
     async fn spawn(
         &mut self,
         plan: &LaunchPlan,
@@ -252,7 +267,7 @@ impl Files for FakeFiles {
             if at.covers(path) {
                 let rest = &path.as_str()[at.as_str().len()..];
                 let joined = format!("{}{rest}", to.as_str());
-                return AbsPath::parse(&joined).map_err(|_| FileFault::Refused);
+                return AbsPath::parse(&joined).ok().ok_or(FileFault::Refused);
             }
         }
         Ok(path.clone())

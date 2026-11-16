@@ -103,6 +103,9 @@ fn client_of(program: &ProgramName) -> ClientName {
 impl ToolsEdge {
     /// Makes the edge of `session`, for the agent of `program`, whose calls go to the router
     /// through `court`. Must run inside the tokio runtime.
+    ///
+    /// # Errors
+    /// Returns [`EdgeFault::Io`] when the private directory, token or socket cannot be made.
     pub fn start<C: Court>(
         offer: &ToolsOffer,
         session: &SessionId,
@@ -113,6 +116,9 @@ impl ToolsEdge {
     }
 
     /// [`Self::start`], offering only what `menu` allows.
+    ///
+    /// # Errors
+    /// Returns [`EdgeFault::Io`] when the private directory, token or socket cannot be made.
     pub fn start_with<C: Court>(
         offer: &ToolsOffer,
         session: &SessionId,
@@ -128,12 +134,9 @@ impl ToolsEdge {
         let made = std::os::unix::net::UnixListener::bind(&socket)
             .and_then(|l| l.set_nonblocking(true).map(|()| l))
             .and_then(UnixListener::from_std);
-        let listener = match made {
-            Ok(listener) => listener,
-            Err(_) => {
-                let _ = std::fs::remove_dir_all(&dir);
-                return Err(EdgeFault::Io);
-            }
+        let Ok(listener) = made else {
+            let _ = std::fs::remove_dir_all(&dir);
+            return Err(EdgeFault::Io);
         };
         let bind = EdgeBind {
             socket: abs(&socket)?,

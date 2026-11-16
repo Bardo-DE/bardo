@@ -38,7 +38,7 @@ pub enum WorkdirFault {
 pub struct Workdir(AbsPath);
 
 fn abs(path: &Path) -> Result<AbsPath, WorkdirFault> {
-    AbsPath::try_from(path).map_err(|_| WorkdirFault::NotFolder)
+    AbsPath::try_from(path).ok().ok_or(WorkdirFault::NotFolder)
 }
 
 impl Workdir {
@@ -50,6 +50,10 @@ impl Workdir {
 
     /// The pure rules, given `real_scope` and `real` (both links resolved) and the person's
     /// `home` if known.
+    ///
+    /// # Errors
+    /// Returns a [`WorkdirFault`] when `real` is outside `real_scope`, is the home folder or holds
+    /// it, or is a place that holds secrets.
     pub fn from_resolved(
         real_scope: &AbsPath,
         real: AbsPath,
@@ -71,6 +75,10 @@ impl Workdir {
     /// `asked`, which must lie inside `scope`, as a confined directory. Every part below `scope`
     /// is looked at without following links, and any link refuses; `scope` itself is resolved.
     /// The opened directory is compared with the one that was looked at.
+    ///
+    /// # Errors
+    /// Returns a [`WorkdirFault`] when `asked` is outside `scope`, is missing or not a folder,
+    /// has a link on the way, changed while it was opened, or is home or a place with secrets.
     pub fn resolve(
         scope: &AbsPath,
         asked: &AbsPath,
@@ -79,8 +87,9 @@ impl Workdir {
         if !scope.covers(asked) {
             return Err(WorkdirFault::Outside);
         }
-        let real_scope =
-            std::fs::canonicalize(scope.as_str()).map_err(|_| WorkdirFault::NotFolder)?;
+        let real_scope = std::fs::canonicalize(scope.as_str())
+            .ok()
+            .ok_or(WorkdirFault::NotFolder)?;
         let below = asked
             .as_str()
             .strip_prefix(scope.as_str())
@@ -88,18 +97,23 @@ impl Workdir {
         let mut at: PathBuf = real_scope.clone();
         for part in below.split('/').filter(|p| !p.is_empty()) {
             at.push(part);
-            let meta = std::fs::symlink_metadata(&at).map_err(|_| WorkdirFault::NotFolder)?;
+            let meta = std::fs::symlink_metadata(&at)
+                .ok()
+                .ok_or(WorkdirFault::NotFolder)?;
             if meta.file_type().is_symlink() {
                 return Err(WorkdirFault::Link);
             }
         }
-        let looked = std::fs::symlink_metadata(&at).map_err(|_| WorkdirFault::NotFolder)?;
+        let looked = std::fs::symlink_metadata(&at)
+            .ok()
+            .ok_or(WorkdirFault::NotFolder)?;
         if !looked.is_dir() {
             return Err(WorkdirFault::NotFolder);
         }
         let opened = std::fs::File::open(&at)
             .and_then(|f| f.metadata())
-            .map_err(|_| WorkdirFault::NotFolder)?;
+            .ok()
+            .ok_or(WorkdirFault::NotFolder)?;
         if !same_directory(&looked, &opened) {
             return Err(WorkdirFault::Moved);
         }

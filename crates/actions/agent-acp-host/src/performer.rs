@@ -154,11 +154,18 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// Where `path` really leads (links followed).
+    ///
+    /// # Errors
+    /// Returns a [`FileFault`] when the path cannot be resolved.
     pub fn real(&self, path: &AbsPath) -> Result<AbsPath, FileFault> {
         self.lock().files.real(path)
     }
 
     /// `asked` as a directory a sandbox may write, inside the session folder `scope`.
+    ///
+    /// # Errors
+    /// Returns a [`WorkdirFault`] when `asked` is outside `scope`, is not a plain folder, or is
+    /// the home folder or holds secrets.
     pub fn workdir(&self, scope: &AbsPath, asked: &AbsPath) -> Result<Workdir, WorkdirFault> {
         self.lock().files.workdir(scope, asked)
     }
@@ -297,6 +304,9 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// `terminal/output`, which needs no ruling.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal id is not one this session made.
     pub fn terminal_output(
         &self,
         asked: &TerminalOutputRequest,
@@ -305,6 +315,9 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// `terminal/kill`, which needs no ruling.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal id is not one this session made.
     pub fn terminal_kill(
         &self,
         asked: &KillTerminalRequest,
@@ -313,6 +326,9 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// `terminal/release`, which needs no ruling.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal id is not one this session made.
     pub fn terminal_release(
         &self,
         asked: &ReleaseTerminalRequest,
@@ -321,6 +337,9 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// `terminal/wait_for_exit` without blocking: the answer once the command has ended.
+    ///
+    /// # Errors
+    /// Returns the protocol error when the terminal id is not one this session made.
     pub fn poll_wait(
         &self,
         asked: &WaitForTerminalExitRequest,

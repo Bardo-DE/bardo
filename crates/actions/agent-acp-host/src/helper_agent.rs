@@ -24,7 +24,6 @@ use agent_session::{
 use companion_model::helper::{HandFault, SignInHow, SignInWay, TerminalLogin, UntrustedWords};
 use companion_model::{AppSessionId, WatchedAgent};
 use provenance::{SessionId, UnixSeconds};
-use std::future::Future;
 
 /// What a new agent process is started with.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -200,6 +199,10 @@ impl<H: Hosts> HelperAgent<H> {
     /// Closes the agent and turns its session at the router into a watch session, so the
     /// conversation can go on in the app's own terminal program. Needs the agent open (a job
     /// has run), idle, and able to pick the conversation up again later.
+    ///
+    /// # Errors
+    /// Returns a [`HandFault`] when there is no conversation to hand over, it cannot be picked up
+    /// again, or the router will not hand the session to a terminal.
     pub async fn to_terminal(&mut self) -> Result<Away, HandFault> {
         let own = self.terminal_ready().ok_or(match self.link {
             Some(_) => HandFault::NotResumable,
@@ -221,7 +224,8 @@ impl<H: Hosts> HelperAgent<H> {
         link.host
             .hand_to_terminal(&away.session, away.agent.clone())
             .await
-            .map_err(|_| HandFault::Busy)?;
+            .ok()
+            .ok_or(HandFault::Busy)?;
         self.link = None;
         self.resume = Some(away.agent.session.to_string());
         self.away = Some(away.clone());
@@ -231,6 +235,10 @@ impl<H: Hosts> HelperAgent<H> {
     /// Starts the agent again on the session it left, on the conversation of its own that the
     /// terminal went on with. An agent that cannot pick the conversation up, or begins another
     /// instead, leaves it in the terminal.
+    ///
+    /// # Errors
+    /// Returns a [`HandFault`] when nothing was handed to a terminal or the agent could not pick
+    /// the conversation up again.
     pub async fn bring_back(&mut self) -> Result<(), HandFault> {
         let Some(away) = self.away.clone() else {
             return Err(HandFault::NotThere);
@@ -313,6 +321,9 @@ impl<H: Hosts> HelperAgent<H> {
 
     /// Starts the agent if it is not running, to learn whether it is signed in: `Ok` when its
     /// session opened, else why not.
+    ///
+    /// # Errors
+    /// Returns an [`AgentEnd`] saying why the agent did not start or is not signed in.
     pub async fn check(&mut self) -> Result<(), AgentEnd> {
         match self.link {
             Some(_) => Ok(()),

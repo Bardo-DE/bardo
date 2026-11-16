@@ -63,7 +63,10 @@ pub trait Seams {
 }
 
 /// What an `AcpBackend` is built from.
-#[allow(missing_debug_implementations)]
+#[expect(
+    missing_debug_implementations,
+    reason = "holds the seams' process handles and sandbox, which have no `Debug`"
+)]
 pub struct Parts<X: Seams> {
     /// The configured program.
     pub program: ProgramName,
@@ -81,6 +84,10 @@ pub struct Parts<X: Seams> {
 }
 
 /// The connection to one running agent.
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "independent capability flags the agent advertised, each read on its own"
+)]
 pub(super) struct Live<X: Seams> {
     pub link: Link,
     pub child: <X::Spawn as Spawn>::Child,
@@ -145,7 +152,10 @@ pub(super) enum Phase {
 }
 
 /// An external agent as a session backend.
-#[allow(missing_debug_implementations)]
+#[expect(
+    missing_debug_implementations,
+    reason = "holds the seams' process handles and sandbox, which have no `Debug`"
+)]
 pub struct AcpBackend<X: Seams> {
     pub(super) program: ProgramName,
     pub(super) spawn: X::Spawn,
@@ -213,6 +223,7 @@ impl<X: Seams> AcpBackend<X> {
     /// The same backend, signing in with `way` before it opens its session: the person chose it
     /// on the helper's card, from the ways the agent listed. Only a way the agent runs itself;
     /// one that needs a terminal is never passed to `authenticate`.
+    #[must_use]
     pub fn with_sign_in(self, way: SignIn) -> Self {
         Self {
             sign_in_choice: Some(way),
@@ -222,12 +233,14 @@ impl<X: Seams> AcpBackend<X> {
 
     /// The same backend, its tool edge offering only what `menu` allows: a helper's agent gets
     /// its card's menu, not the assistant's.
+    #[must_use]
     pub fn with_menu(self, menu: EdgeMenu) -> Self {
         Self { menu, ..self }
     }
 
     /// The same backend, picking up the agent's own session `session` again when the agent
     /// advertises `session/resume`, and opening a new one when it does not or will not.
+    #[must_use]
     pub fn resuming(self, session: &str) -> Self {
         Self {
             resume_id: Some(SessionId::new(session)),
@@ -236,6 +249,7 @@ impl<X: Seams> AcpBackend<X> {
     }
 
     /// The same backend, waiting on its agent as `waits` says.
+    #[must_use]
     pub fn with_waits(self, waits: Waits) -> Self {
         Self { waits, ..self }
     }
@@ -364,6 +378,10 @@ impl<X: Seams> SessionBackend for AcpBackend<X> {
         Ok(Resumed::Reseeded)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`SessionBackend::turn` is async; this backend only queues the prompt"
+    )]
     async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendFault> {
         match self.phase {
             Phase::Stopped => return Err(BackendFault::NotRunning),

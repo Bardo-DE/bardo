@@ -2,7 +2,6 @@
 //! else's (swarm.md, decision D2). The caller drops what the work held and answers `lost`.
 
 use futures_util::FutureExt;
-use std::future::Future;
 use std::panic::AssertUnwindSafe;
 
 /// How a piece of work ended.

@@ -9,7 +9,6 @@ use base_path::AbsPath;
 use permission_core::ProgramName;
 
 use provenance::SessionId;
-use std::future::Future;
 
 /// What to start.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -108,6 +107,9 @@ pub struct SignInRefused;
 
 impl SignIn {
     /// A short id: letters, digits, `-`, `_` and `.`.
+    ///
+    /// # Errors
+    /// Returns [`SignInRefused`] when `text` is empty, over 64 bytes, or has any other character.
     pub fn parse(text: &str) -> Result<Self, SignInRefused> {
         let fine = !text.is_empty()
             && text.len() <= SIGN_IN_MAX
