@@ -33,6 +33,9 @@ macro_rules! text_id {
 
         impl $name {
             /// The id written as `text`, or why it is not one.
+            ///
+            /// # Errors
+            /// Returns `MalformedId` when `text` does not satisfy the id's form.
             pub fn parse(text: &str) -> Result<Self, ::account_core::CoreError> {
                 let ok: fn(&str) -> bool = $ok;
                 if ok(text) {
@@ -108,14 +111,14 @@ macro_rules! digest {
         }
 
         impl ::serde::Serialize for $name {
-            fn serialize<S: ::serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-                s.serialize_str(&::const_hex::encode(&self.0))
+            fn serialize<S: ::serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+                serializer.serialize_str(&::const_hex::encode(&self.0))
             }
         }
 
         impl<'de> ::serde::Deserialize<'de> for $name {
-            fn deserialize<D: ::serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-                let text = <String as ::serde::Deserialize>::deserialize(d)?;
+            fn deserialize<D: ::serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+                let text = <String as ::serde::Deserialize>::deserialize(deserializer)?;
                 $crate::text::decode_lower_hex::<32>(&text)
                     .map(Self)
                     .ok_or_else(|| ::serde::de::Error::custom("expected 64 lowercase hex digits"))
@@ -133,7 +136,9 @@ digest!(
     Link32
 );
 digest!(
-    /// A file's content digest, as the app or watcher computed it. The convention is plain
+    /// A file's content digest, as the app or watcher computed it.
+    ///
+    /// The convention is plain
     /// `blake3` of the file's bytes (`*blake3::hash(content).as_bytes()`), unkeyed: it must be
     /// the same for the app that says why a file changed and the watcher that saw it, so the
     /// join can compare them. It is not the keyed body digest of the event log (`Digest32`).
@@ -200,6 +205,9 @@ pub struct JsonText(String);
 
 impl JsonText {
     /// `text` if it is one JSON value.
+    ///
+    /// # Errors
+    /// Returns `MalformedValue` when `text` is not valid JSON.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         match serde_json::from_str::<serde::de::IgnoredAny>(text) {
             Ok(_) => Ok(Self(text.to_owned())),

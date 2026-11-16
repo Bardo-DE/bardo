@@ -41,7 +41,9 @@ impl<S: Serve> RecordObject<S> {
         let args = vec![text(space), text(records)];
         let (event, count) =
             two(forward(&*self.0, &h, Iface::Record, "RecordBatch", args, None).await?)?;
-        let count = count.parse().map_err(|_| shape())?;
+        let count = count.parse().map_err(|e| {
+            MemoryError::Invalid(format!("the handler's count is not a number: {e}"))
+        })?;
         Ok((event, count))
     }
 

@@ -6,6 +6,11 @@ use zbus::fdo;
 #[derive(Debug, Default)]
 pub(crate) struct RecallSkeleton;
 
+#[expect(
+    clippy::unused_self,
+    clippy::needless_pass_by_value,
+    reason = "the frozen skeleton only declares the interface: zbus needs `&self` and owned arguments, and no body uses them"
+)]
 #[zbus::interface(name = "org.bardo.Memory1.Recall")]
 impl RecallSkeleton {
     fn search(&self, space: String, query: String) -> fdo::Result<String> {

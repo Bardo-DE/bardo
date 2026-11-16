@@ -64,6 +64,10 @@ pub fn fact_view() -> FactView {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one sample of every variant of the wire type: a flat list, not logic"
+)]
 pub fn requests() -> Vec<MemoryRequest> {
     let w = space("work");
     let topic = TopicPath::parse("prefs/meetings").expect("topic");
@@ -221,6 +225,10 @@ pub fn requests() -> Vec<MemoryRequest> {
     ]
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one sample of every variant of the wire type: a flat list, not logic"
+)]
 pub fn replies() -> Vec<MemoryReply> {
     let hit = RecallHit {
         doc: MemoryItem::Fact(fact().id),

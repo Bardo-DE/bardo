@@ -109,8 +109,9 @@ pub const PENDING_TTL_DAYS: DayCount = DayCount(14);
 /// Used when no default matches.
 pub const FALLBACK_DAYS: DayCount = DayCount(30);
 
-/// How many days each class of record is kept that the person can change: design/22
-/// `memory.retention.search_days` and `session_days`, over the shipped defaults. The other
+/// How many days each class of record is kept that the person can change.
+///
+/// Design/22 `memory.retention.search_days` and `session_days`, over the shipped defaults. The other
 /// classes (unexplained file changes, audit bodies and headers) are the constants above.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct RetentionDays {

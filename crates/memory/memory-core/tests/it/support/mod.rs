@@ -1,9 +1,12 @@
 //! Sample values for the shape tests. Labels are built from fields: `Label`'s constructors are
 //! stubs in porter's `prov` until its fill wave.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different part of the shared samples"
+)]
 
 mod samples;
-#[allow(unused_imports)]
+#[allow(unused_imports, reason = "a test binary may not use every sample")]
 pub use samples::*;
 
 use memory_core::*;

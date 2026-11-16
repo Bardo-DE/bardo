@@ -62,6 +62,9 @@ where
 /// Emits `signal` from `MEMORY_PATH` to the one connection `to` (a unique name): the signals
 /// carry Space ids and what happened in them, so they go to the peers entitled to them, never to
 /// the whole bus.
+///
+/// # Errors
+/// Returns zbus's error when `to` is not a bus name or the signal cannot be sent.
 pub async fn emit_to(connection: &Connection, to: &str, signal: &Signal) -> zbus::Result<()> {
     let to = zbus::names::BusName::try_from(to)?;
     emit_signal(connection, Some(to), signal).await
@@ -69,6 +72,9 @@ pub async fn emit_to(connection: &Connection, to: &str, signal: &Signal) -> zbus
 
 /// Emits `signal` from `MEMORY_PATH` to every connection that listens. Only for a host that has
 /// no peer table (a test); memoryd uses [`emit_to`].
+///
+/// # Errors
+/// Returns zbus's error when the signal cannot be sent.
 pub async fn emit(connection: &Connection, signal: &Signal) -> zbus::Result<()> {
     emit_signal(connection, None, signal).await
 }

@@ -180,14 +180,14 @@ impl fmt::Debug for ReplicaId {
 }
 
 impl Serialize for ReplicaId {
-    fn serialize<S: serde::Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
-        s.serialize_str(&const_hex::encode(self.0))
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&const_hex::encode(self.0))
     }
 }
 
 impl<'de> Deserialize<'de> for ReplicaId {
-    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        let text = String::deserialize(d)?;
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let text = String::deserialize(deserializer)?;
         decode_lower_hex::<16>(&text)
             .map(Self)
             .ok_or_else(|| serde::de::Error::custom("expected 32 lowercase hex digits"))

@@ -16,7 +16,6 @@ pub use record::RecordObject;
 pub use signal::{Signal, emit, emit_to};
 
 use memory_dbus::{Call, CallArg, Iface, MEMORY_BUS, MEMORY_PATH, MemoryError};
-use std::future::Future;
 use std::os::fd::OwnedFd;
 use std::sync::Arc;
 use zbus::Connection;
@@ -94,11 +93,15 @@ fn two(mut outputs: Vec<String>) -> Result<(String, String), MemoryError> {
 }
 
 fn none(outputs: Vec<String>) -> Result<(), MemoryError> {
-    outputs.is_empty().then_some(()).ok_or_else(shape)
+    outputs.into_iter().next().map_or(Ok(()), |_| Err(shape()))
 }
 
 /// Puts the three interfaces at `MEMORY_PATH` over `handler`, then claims `MEMORY_BUS`: nothing
 /// is reachable under the name before every interface is.
+///
+/// # Errors
+/// Returns zbus's error when an interface cannot be put at the path or the bus name cannot be
+/// claimed.
 pub async fn serve_on<S: Serve>(connection: &Connection, handler: Arc<S>) -> zbus::Result<()> {
     let server = connection.object_server();
     server

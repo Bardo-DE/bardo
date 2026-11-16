@@ -49,8 +49,9 @@ pub fn fit_budget<T>(
     taken
 }
 
-/// "What is relevant to this turn": a search whose answer is cut to a token budget, so the
-/// assembler can inject it without a second pass. Answered with `MemoryReply::Hits`, ranked, each
+/// "What is relevant to this turn": a search whose answer is cut to a token budget.
+///
+/// The assembler can inject it without a second pass. Answered with `MemoryReply::Hits`, ranked, each
 /// hit with its label; the whole answer costs at most `budget` by [`estimate_tokens`] over the
 /// hits' text. Audited as one `Memory.Read` (`ReadScope::Inject`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -98,7 +99,9 @@ pub struct RecentQuery {
     pub bodies: BodyMode,
 }
 
-/// One recent event with what the router needs to show or inject it. It carries its label: the
+/// One recent event with what the router needs to show or inject it.
+///
+/// It carries its label: the
 /// planner applies taint from it. The label always travels, and it covers the body too: a body is
 /// only ever returned in the entry whose `label` says where it came from, never alone, so an
 /// untrusted body cannot reach a reader unlabelled.

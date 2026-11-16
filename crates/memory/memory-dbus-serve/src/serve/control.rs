@@ -402,6 +402,7 @@ impl<S: Serve> ControlObject<S> {
     }
 
     #[zbus(property)]
+    #[expect(clippy::unused_self, reason = "a zbus property getter takes `&self`")]
     fn version(&self) -> u32 {
         memory_core::MEMORY_WIRE_VERSION
     }

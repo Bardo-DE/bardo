@@ -9,6 +9,10 @@ use std::sync::Arc;
 struct Nobody;
 
 impl Serve for Nobody {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this stub never awaits"
+    )]
     async fn serve(
         &self,
         _sender: &str,

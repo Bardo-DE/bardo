@@ -10,6 +10,11 @@ use zbus::zvariant::OwnedFd;
 #[derive(Debug, Default)]
 pub(crate) struct ControlSkeleton;
 
+#[expect(
+    clippy::unused_self,
+    clippy::needless_pass_by_value,
+    reason = "the frozen skeleton only declares the interface: zbus needs `&self` and owned arguments, and no body uses them"
+)]
 #[zbus::interface(name = "org.bardo.Memory1.Control")]
 impl ControlSkeleton {
     fn spaces(&self) -> fdo::Result<String> {

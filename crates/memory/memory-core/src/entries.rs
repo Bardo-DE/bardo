@@ -15,7 +15,9 @@ use crate::thing::ThingRef;
 use base_ids::Count;
 use serde::{Deserialize, Serialize};
 
-/// "The next events of one stream": oldest first, strictly after `after`. Answered with
+/// "The next events of one stream": oldest first, strictly after `after`.
+///
+/// Answered with
 /// `MemoryReply::Entries`; allowed for the router and the shell, like `Recent`, and audited as
 /// the same `Memory.Read` scope. It returns every event of the stream whether or not recall may
 /// use it (see `Recallable`).

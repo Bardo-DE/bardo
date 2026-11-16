@@ -10,7 +10,9 @@ use crate::rules::{
 use crate::space::SpaceState;
 use provenance::{Actor, ActorKind, SystemPart};
 
-/// Whether the record is part of the audit trail: the companion's, a computer-use run's, a
+/// Whether the record is part of the audit trail.
+///
+/// That is the companion's, a computer-use run's, a
 /// terminal's (`bardo-do` cannot tell the person from an agent typing in it, so what it does is
 /// audited like an agent's), the router's, every other area's payloads, and every message and
 /// episode (so a pause keeps headers only). Such records are never dropped for policy reasons
@@ -80,7 +82,9 @@ pub fn admit(record: &Record, rules: &RuleSet, state: &SpaceState, marks: &Marks
     }
 }
 
-/// Why `record` would not be kept whole, if it would not: the reason `admit` would give a
+/// Why `record` would not be kept whole, if it would not.
+///
+/// This is the reason `admit` would give a
 /// non-audit record (`Drop`), whether or not this one is audit class and so would keep a header.
 /// `None` means [`admit`] answers `Keep`. A durable append (`RecordDurable`) refuses on any
 /// `Some`, because an acknowledgement promises the body is stored, and an audit-class record

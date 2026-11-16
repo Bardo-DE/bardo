@@ -19,6 +19,10 @@ pub enum DesktopRefusal {
 
 /// May the desktop scope hold a value with this label? Only what the person stated: trusted,
 /// sourced from the person alone, not secret, and not private to a real Space.
+///
+/// # Errors
+/// Returns the [`DesktopRefusal`] naming why the label does not qualify: secret, untrusted, not
+/// stated by the person alone, or private to a real Space.
 pub fn desktop_admits(label: &Label) -> Result<(), DesktopRefusal> {
     let only_user = label.sources.len() == 1 && label.sources.contains(&Source::User);
     if label.confidentiality == Confidentiality::Secret {
