@@ -90,14 +90,12 @@ fn parse(mut flags: impl Iterator<Item = String>) -> Result<Args, ArgError> {
             "--repeat" => {
                 args.repeat = value()?
                     .parse()
-                    .ok()
-                    .ok_or(FlagError::NotANumber("--repeat"))?;
+                    .map_err(|e| FlagError::NotANumber("--repeat", e))?;
             }
             "--max-steps" => {
                 args.max_steps = value()?
                     .parse()
-                    .ok()
-                    .ok_or(FlagError::NotANumber("--max-steps"))?;
+                    .map_err(|e| FlagError::NotANumber("--max-steps", e))?;
             }
             "--thinking" => {
                 args.thinking = match value()?.as_str() {

@@ -93,14 +93,12 @@ fn parse(mut flags: impl Iterator<Item = String>) -> Result<Args, ArgError> {
             "--port" => {
                 args.port = value()?
                     .parse()
-                    .ok()
-                    .ok_or(FlagError::NotANumber("--port"))?;
+                    .map_err(|e| FlagError::NotANumber("--port", e))?;
             }
             "--repeat" => {
                 args.repeat = value()?
                     .parse()
-                    .ok()
-                    .ok_or(FlagError::NotANumber("--repeat"))?;
+                    .map_err(|e| FlagError::NotANumber("--repeat", e))?;
             }
             "--engine" => {
                 args.engine = match value()?.as_str() {

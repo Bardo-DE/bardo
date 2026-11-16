@@ -37,7 +37,11 @@ impl Shared {
 
     /// Sends `event`; refused when nobody is listening any more.
     fn send(&self, event: DesktopEvent) -> Result<(), Gone> {
-        self.events.send(event).ok().ok_or(Gone)
+        // The error gives the event back and says nothing else: nobody is listening.
+        if self.events.send(event).is_err() {
+            return Err(Gone);
+        }
+        Ok(())
     }
 
     /// A window closed: its lease ended with it.

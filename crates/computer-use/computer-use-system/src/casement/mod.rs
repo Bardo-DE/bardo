@@ -62,11 +62,11 @@ impl CasementDesktop {
             .name("cuad-casement".into())
             .spawn(move || watch::run(fd, &shared, ready))
             .map_err(protocol)?;
-        answer
-            .await
-            .ok()
-            .ok_or_else(|| protocol("the desktop client stopped before it was ready"))?
-            .map_err(|error| protocol(watch::chain(&error)))?;
+        // The sender dropping unanswered says nothing more than that the thread is gone.
+        let Ok(started) = answer.await else {
+            return Err(protocol("the desktop client stopped before it was ready"));
+        };
+        started.map_err(|error| protocol(watch::chain(&error)))?;
         Ok(Self {
             door,
             windows,

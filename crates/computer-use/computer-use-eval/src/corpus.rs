@@ -14,11 +14,17 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 /// Why the set could not be read or is wrong.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum CorpusError {
     /// A file could not be read.
-    #[error("cannot read {0}")]
-    Read(PathBuf),
+    #[error("cannot read {path}")]
+    Read {
+        /// The file or directory.
+        path: PathBuf,
+        /// What the system said.
+        #[source]
+        source: std::io::Error,
+    },
     /// A file is not what it should be.
     #[error("{path}: {why}")]
     Parse {
@@ -47,9 +53,10 @@ pub struct Corpus {
 }
 
 fn files(dir: &Path) -> Result<Vec<PathBuf>, CorpusError> {
-    let read = std::fs::read_dir(dir)
-        .ok()
-        .ok_or_else(|| CorpusError::Read(dir.to_owned()))?;
+    let read = std::fs::read_dir(dir).map_err(|source| CorpusError::Read {
+        path: dir.to_owned(),
+        source,
+    })?;
     let mut paths: Vec<PathBuf> = read
         .filter_map(|e| e.ok().map(|e| e.path()))
         .filter(|p| p.extension().is_some_and(|x| x == "toml"))
@@ -59,9 +66,10 @@ fn files(dir: &Path) -> Result<Vec<PathBuf>, CorpusError> {
 }
 
 fn parse<T: serde::de::DeserializeOwned>(path: &Path) -> Result<T, CorpusError> {
-    let text = std::fs::read_to_string(path)
-        .ok()
-        .ok_or_else(|| CorpusError::Read(path.to_owned()))?;
+    let text = std::fs::read_to_string(path).map_err(|source| CorpusError::Read {
+        path: path.to_owned(),
+        source,
+    })?;
     toml::from_str(&text).map_err(|e| CorpusError::Parse {
         path: path.to_owned(),
         why: e.to_string(),

@@ -67,8 +67,7 @@ pub enum Move {
 
 fn number(text: &str, what: &'static str) -> Result<u32, MoveError> {
     text.parse()
-        .ok()
-        .ok_or_else(|| MoveError::Argument(what, text.to_owned()))
+        .map_err(|e| MoveError::Argument(what, format!("{text}: {e}")))
 }
 
 fn place(words: &mut std::slice::Iter<'_, &str>, what: &'static str) -> Result<Where, MoveError> {
@@ -207,9 +206,7 @@ fn chord_of(text: &str) -> Result<Chord, MoveError> {
             _ => Err(MoveError::Argument("key", m.to_owned())),
         })
         .collect::<Result<BTreeSet<_>, _>>()?;
-    let key = Key::from_str(key)
-        .ok()
-        .ok_or_else(|| MoveError::Argument("key", key.to_owned()))?;
+    let key = Key::from_str(key).map_err(|e| MoveError::Argument("key", format!("{key}: {e}")))?;
     Chord::new(mods, key).map_err(|e| MoveError::Argument("key", e.to_string()))
 }
 

@@ -9,7 +9,7 @@ pub enum FlagError {
     NeedsValue(String),
     /// A flag that takes a number was given something else.
     #[error("{0} is a number")]
-    NotANumber(&'static str),
+    NotANumber(&'static str, #[source] std::num::ParseIntError),
     /// A flag that takes one of a few words was given another word.
     #[error("{flag} takes {allowed}, not {given}")]
     NotAllowed {
