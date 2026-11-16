@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 use thiserror::Error;
 
-use keyboard_types::{Modifiers, NamedKey};
+use keyboard_types::{Modifiers, NamedKey, UnrecognizedNamedKeyError};
 
 use crate::chord::{Chord, DefaultChord};
 use crate::key::Key;
@@ -122,11 +122,11 @@ fn parse_key(token: &str) -> Result<Key, ChordError> {
     let mut chars = token.chars();
     match (chars.next(), chars.next()) {
         (Some(c), None) => Ok(Key::character(c)),
-        _ => token
-            .parse::<NamedKey>()
-            .map(Key::Named)
-            .ok()
-            .ok_or_else(|| ChordError::UnknownKey(token.to_owned())),
+        _ => match token.parse::<NamedKey>() {
+            Ok(named) => Ok(Key::Named(named)),
+            // The parse error is a unit that says only "not a named key", as `UnknownKey` does.
+            Err(UnrecognizedNamedKeyError) => Err(ChordError::UnknownKey(token.to_owned())),
+        },
     }
 }
 
