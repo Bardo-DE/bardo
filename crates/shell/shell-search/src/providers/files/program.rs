@@ -149,7 +149,11 @@ fn read_until(
 fn read_on_a_thread(child: &mut Child) -> Result<Receiver<Vec<u8>>, IndexFault> {
     let mut stdout = child.stdout.take().ok_or(IndexFault::Failed)?;
     let (tx, rx) = mpsc::channel();
-    std::thread::Builder::new()
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "an index fault carries no path or query, because it may be logged"
+    )]
+    let started = std::thread::Builder::new()
         .name("shell-files-read".to_owned())
         .spawn(move || {
             let mut buf = [0u8; 8192];
@@ -159,8 +163,8 @@ fn read_on_a_thread(child: &mut Child) -> Result<Receiver<Vec<u8>>, IndexFault> 
                 }
             }
         })
-        .ok()
-        .ok_or(IndexFault::Failed)?;
+        .map_err(|_| IndexFault::Failed);
+    started?;
     Ok(rx)
 }
 

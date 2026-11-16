@@ -60,7 +60,8 @@ pub enum FileAnswer {
     Unavailable(IndexFault),
 }
 
-/// Why an index could not answer. Carries no path or query (it may be logged).
+/// Why an index could not answer. A code with no cause on purpose: it carries no path or query
+/// (it may be logged), which the errors it stands for may name.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum IndexFault {
     NoBus,

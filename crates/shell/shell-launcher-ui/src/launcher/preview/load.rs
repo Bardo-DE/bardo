@@ -39,7 +39,8 @@ use super::frames::ThumbnailFrames;
 /// Constants until quire's settings have `viewer.peek.*` keys (the viewer's FINDINGS).
 pub const PANE_BUDGET: PeekBudget = PeekBudget::DEFAULT;
 
-/// Why a file could not be previewed. Carries no path or content.
+/// Why a file could not be previewed. A code with no cause on purpose: it carries no path or
+/// content, which the errors it stands for may name.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PreviewFault {
     Missing,
@@ -89,7 +90,11 @@ impl ViewerLook {
 
 impl Look for ViewerLook {
     fn at(&self, path: &Path) -> Result<Arc<AnyPeeked>, PreviewFault> {
-        let file = FilePath::new(path).ok().ok_or(PreviewFault::Unreadable)?;
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "a preview fault carries no path or content, and the path error would name the path"
+        )]
+        let file = FilePath::new(path).map_err(|_| PreviewFault::Unreadable)?;
         let peeking = anyview_peek::Peeking::pane()
             .with_budget(PANE_BUDGET)
             .with_stills(Arc::clone(&self.frames));
