@@ -4,7 +4,7 @@
 
 use crate::calls;
 use crate::helpers::Helpers;
-use crate::link::{Gone, Inbound, Link, Settled, answer, settled};
+use crate::link::{Gone, Inbound, Link, Settled, answer, settled, unknown_session};
 use crate::mode::Mode;
 use crate::out;
 use crate::permission;
@@ -106,9 +106,8 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
     /// Reads the prompt, and either hands the person's turn to the host or, for a helper's
     /// conversation, keeps it to be taken to the helper.
     async fn begin(&mut self, asked: PromptRequest) -> Result<Begun, Error> {
-        let session = SessionId::parse(&asked.session_id.0)
-            .ok()
-            .ok_or_else(fault::unknown_session)?;
+        let session =
+            SessionId::parse(&asked.session_id.0).map_err(|error| unknown_session(&error))?;
         let known = self
             .roster
             .get(&session)

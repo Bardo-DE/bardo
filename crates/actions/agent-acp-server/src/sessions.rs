@@ -6,7 +6,7 @@
 use crate::helper_face::{helper_asked, space_of};
 use crate::helpers::Helpers;
 use crate::history;
-use crate::link::{Link, chain};
+use crate::link::{Link, chain, unknown_session};
 use crate::mode::Mode;
 use crate::out;
 use crate::server::{Known, Server, Turns};
@@ -44,7 +44,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
                 chain(&error)
             ))
         })?;
-        let plan = resume_plan(&rows).ok().ok_or_else(fault::unknown_session)?;
+        let plan = resume_plan(&rows).map_err(|error| unknown_session(&error))?;
         let claim = Claimant {
             role: CallerRole::Editor,
             app: &self.editor,
@@ -104,9 +104,8 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         link: &Link,
         asked: LoadSessionRequest,
     ) -> Result<LoadSessionResponse, Error> {
-        let session = SessionId::parse(&asked.session_id.0)
-            .ok()
-            .ok_or_else(fault::unknown_session)?;
+        let session =
+            SessionId::parse(&asked.session_id.0).map_err(|error| unknown_session(&error))?;
         // A helper's conversation is not a stored session of this editor's: it is found by name
         // in the workspace's Space.
         let here = workspace(&asked.cwd).ok();

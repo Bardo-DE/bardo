@@ -25,6 +25,16 @@ use std::pin::pin;
 #[error("the editor closed the connection")]
 pub(crate) struct Gone(#[source] pub(crate) Error);
 
+/// The wire answer for a session that is not there: the same whatever went wrong (an id that is not
+/// one, a log that holds no session of that name), so the editor learns nothing from it. The
+/// cause goes to the log.
+pub(crate) fn unknown_session(
+    error: &dyn std::error::Error,
+) -> agent_client_protocol::schema::v1::Error {
+    tracing::warn!(error = %chain(error), "no such session");
+    agent_acp_core::fault::unknown_session()
+}
+
 /// `error` and its causes as one line, for the text of a wire error.
 pub(crate) fn chain(error: &dyn std::error::Error) -> String {
     let mut text = error.to_string();

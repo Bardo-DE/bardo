@@ -14,7 +14,7 @@
 
 use crate::covered::Covered;
 use crate::helpers::{Helpers, NoHelpers};
-use crate::link::{Gone, Inbound, Link, answer, chain};
+use crate::link::{Gone, Inbound, Link, answer, chain, unknown_session};
 use crate::mode::Mode;
 use account_core::AppName;
 use action_vocab::Clock;
@@ -228,9 +228,8 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
     }
 
     fn set_mode(&mut self, asked: &SetSessionModeRequest) -> Result<SetSessionModeResponse, Error> {
-        let session = SessionId::parse(&asked.session_id.0)
-            .ok()
-            .ok_or_else(fault::unknown_session)?;
+        let session =
+            SessionId::parse(&asked.session_id.0).map_err(|error| unknown_session(&error))?;
         let mode = Mode::parse(&asked.mode_id.0).ok_or_else(|| fault::invalid("no such mode"))?;
         let known = self
             .roster
