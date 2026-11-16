@@ -26,7 +26,7 @@ trait Lend: Debug + Send + Sync {
 
 fn failure_of(error: &LendingError) -> LendFailure {
     match error {
-        LendingError::ShippedFileMissing => LendFailure::NotInstalled,
+        LendingError::ShippedFileMissing(_) => LendFailure::NotInstalled,
         LendingError::CouldNotWrite(_) => LendFailure::CouldNotSave,
         LendingError::ReloadFailed(_) => LendFailure::CouldNotReload,
         LendingError::RestartFailed(_) => LendFailure::CouldNotRestart,

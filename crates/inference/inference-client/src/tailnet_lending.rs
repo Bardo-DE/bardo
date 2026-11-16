@@ -139,8 +139,8 @@ pub enum LendingState {
 #[derive(Debug, thiserror::Error)]
 pub enum LendingError {
     /// The file porter ships is not on this computer.
-    #[error("the shipped drop-in file is not on this computer")]
-    ShippedFileMissing,
+    #[error("the shipped drop-in file could not be read")]
+    ShippedFileMissing(#[source] io::Error),
     /// The setting could not be saved in the person's folder.
     #[error("the drop-in file could not be written")]
     CouldNotWrite(#[source] io::Error),
@@ -190,9 +190,8 @@ impl<M: UnitManager> TailnetLending<M> {
     /// Returns a [`LendingError`] when the drop-in cannot be written or the unit manager fails to
     /// reload or restart inferd.
     pub async fn enable(&self) -> Result<(), LendingError> {
-        let bytes = std::fs::read(self.config.shipped())
-            .ok()
-            .ok_or(LendingError::ShippedFileMissing)?;
+        let bytes =
+            std::fs::read(self.config.shipped()).map_err(LendingError::ShippedFileMissing)?;
         write_world_readable(&self.config.drop_in(), &bytes)
             .map_err(LendingError::CouldNotWrite)?;
         self.apply().await

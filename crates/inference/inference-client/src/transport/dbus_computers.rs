@@ -257,9 +257,9 @@ mod computers {
     }
 
     fn place_of(text: &str) -> Result<PlaceId, TransportError> {
-        PlaceId::parse(text)
-            .ok()
-            .ok_or_else(|| TransportError::Malformed(format!("a place id was expected: {text:?}")))
+        PlaceId::parse(text).map_err(|error| {
+            TransportError::Malformed(format!("a place id was expected: {text:?}: {error}"))
+        })
     }
 }
 
@@ -290,9 +290,7 @@ fn text(details: &Details, key: &str) -> Option<String> {
 fn guest_row((id, details): (String, Details)) -> Result<GuestRow, TransportError> {
     let bad = |what: &str| TransportError::Malformed(format!("Guests row {id:?}: {what}"));
     Ok(GuestRow::new(
-        NodeId::parse(&id)
-            .ok()
-            .ok_or_else(|| bad("not a node id"))?,
+        NodeId::parse(&id).map_err(|error| bad(&format!("not a node id: {error}")))?,
         text(&details, GUEST_KEY_NAME).ok_or_else(|| bad("no name"))?,
         text(&details, GUEST_KEY_STATE)
             .and_then(|slug| RowState::from_slug(&slug))
@@ -318,9 +316,7 @@ fn candidate_row((id, details): (String, Details)) -> Result<ComputerCandidate, 
         .and_then(|value| bool::try_from(value).ok())
         .ok_or_else(|| bad("no needs_approval"))?;
     Ok(ComputerCandidate::new(
-        NodeId::parse(&id)
-            .ok()
-            .ok_or_else(|| bad("not a node id"))?,
+        NodeId::parse(&id).map_err(|error| bad(&format!("not a node id: {error}")))?,
         text(&details, CANDIDATE_KEY_NAME).ok_or_else(|| bad("no name"))?,
         models
             .into_iter()

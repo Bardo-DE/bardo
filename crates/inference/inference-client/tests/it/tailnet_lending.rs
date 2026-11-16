@@ -239,7 +239,7 @@ async fn a_missing_shipped_file_changes_nothing_and_asks_nothing_of_the_manager(
     let error = lending.enable().await.expect_err("missing");
 
     assert!(
-        matches!(error, LendingError::ShippedFileMissing),
+        matches!(error, LendingError::ShippedFileMissing(_)),
         "{error:?}"
     );
     assert!(!s.user_dir().exists());

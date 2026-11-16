@@ -151,9 +151,7 @@ fn place_row((id, details): (String, Details)) -> Result<PlaceRow, TransportErro
     let text = |key: &str| -> Option<String> {
         String::try_from(details.get(key)?.try_clone().ok()?).ok()
     };
-    let place = PlaceId::parse(&id)
-        .ok()
-        .ok_or_else(|| bad("not a place id"))?;
+    let place = PlaceId::parse(&id).map_err(|error| bad(&format!("not a place id: {error}")))?;
     let kind = text(PLACE_KEY_KIND)
         .and_then(|slug| PlaceKind::from_slug(&slug))
         .ok_or_else(|| bad("no kind"))?;
@@ -189,9 +187,7 @@ fn place_row((id, details): (String, Details)) -> Result<PlaceRow, TransportErro
                     name: name.clone(),
                 });
             let placed = PlaceModel::new(
-                ModelId::parse(&model)
-                    .ok()
-                    .ok_or_else(|| bad("a model id"))?,
+                ModelId::parse(&model).map_err(|error| bad(&format!("not a model id: {error}")))?,
                 name,
             )
             .with_takes(takes);

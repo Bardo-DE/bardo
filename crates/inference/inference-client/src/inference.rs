@@ -29,8 +29,7 @@ impl Inference<crate::transport::DbusTransport> {
         crate::transport::DbusTransport::session()
             .await
             .map(|transport| Self { transport })
-            .ok()
-            .ok_or_else(|| TransportError::Unreachable.into())
+            .map_err(ClientError::from)
     }
 
     /// The computers that ask to use this computer's models, from now on: a question the person is
