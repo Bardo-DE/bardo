@@ -36,6 +36,7 @@ pub struct OutlineRow {
 
 impl OutlineRow {
     /// A row with no children, `depth` levels in.
+    #[must_use]
     pub fn leaf(depth: u16) -> Self {
         OutlineRow {
             depth,
@@ -44,6 +45,7 @@ impl OutlineRow {
     }
 
     /// A branch `depth` levels in, `shown` open or closed.
+    #[must_use]
     pub fn branch(depth: u16, shown: bool) -> Self {
         OutlineRow {
             depth,

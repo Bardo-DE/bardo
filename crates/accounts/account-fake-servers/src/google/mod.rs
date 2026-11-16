@@ -222,8 +222,8 @@ impl GoogleHandle {
     /// Sets the address and name userinfo answers with.
     pub fn set_user(&self, address: &str, name: &str) {
         let mut state = lock(&self.shared.state);
-        state.address = address.to_owned();
-        state.name = name.to_owned();
+        address.clone_into(&mut state.address);
+        name.clone_into(&mut state.name);
     }
 
     /// Answers `path` with `status` from now on (`403` is a service the account is refused).

@@ -17,6 +17,7 @@ pub struct SeatPublisher(watch::Sender<Option<Connection>>);
 pub struct SeatView(watch::Receiver<Option<Connection>>);
 
 /// A seat nobody holds yet.
+#[must_use]
 pub fn seat() -> (SeatPublisher, SeatView) {
     let (tx, rx) = watch::channel(None);
     (SeatPublisher(tx), SeatView(rx))
@@ -36,6 +37,7 @@ impl SeatPublisher {
 
 impl SeatView {
     /// The connection now, if the seat is held.
+    #[must_use]
     pub fn current(&self) -> Option<Connection> {
         self.0.borrow().clone()
     }

@@ -40,6 +40,7 @@ pub fn service(exists: impl Fn(&Path) -> bool) -> PamService {
 /// Run `pam_authenticate` then `pam_acct_mgmt` for `attempt` under `service`, answering the
 /// first hidden prompt with the secret and any later prompt with a conversation error.
 /// Blocking, and it may take seconds (`pam_unix` delays a failure by about 2 s).
+#[must_use]
 pub fn check(service: &PamService, attempt: &Attempt) -> Verdict {
     let notes = Rc::new(RefCell::new(Vec::new()));
     let conversation = Answers {

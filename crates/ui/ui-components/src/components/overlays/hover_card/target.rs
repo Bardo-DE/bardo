@@ -1,4 +1,4 @@
-//! HoverTarget: what a card hooks, feeding the hover hub (design/06-INTERACTIONS.md section 3).
+//! `HoverTarget`: what a card hooks, feeding the hover hub (design/06-INTERACTIONS.md section 3).
 //!
 //! The target wraps its children in an element of its own, carrying the hub's handlers. A
 //! `span` cannot hold a list item, so the caller picks the element: a `span`

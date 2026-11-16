@@ -39,7 +39,7 @@ fn a_picture_is_uploaded_to_the_device_and_drawn_from_it() {
     let size = image.picture.size();
     let config = HarnessConfig::new(VIEW)
         .with_backend(Backend::Hybrid)
-        .with_context(peeked.clone());
+        .with_context(Arc::clone(&peeked));
     let mut harness = match Harness::try_new(app, config) {
         Ok(harness) => harness,
         Err(error) => {

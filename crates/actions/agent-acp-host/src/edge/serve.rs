@@ -75,8 +75,8 @@ impl<C: Clone> Clone for Serving<C> {
             token: self.token.clone(),
             client: self.client.clone(),
             owner: self.owner,
-            next: self.next.clone(),
-            tripped: self.tripped.clone(),
+            next: Arc::clone(&self.next),
+            tripped: Arc::clone(&self.tripped),
             menu: self.menu.clone(),
         }
     }
@@ -147,7 +147,7 @@ impl ToolsEdge {
             client: client_of(program),
             owner,
             next: Arc::new(AtomicU64::new(FIRST_CALL)),
-            tripped: tripped.clone(),
+            tripped: Arc::clone(&tripped),
             menu,
         };
         let task = tokio::spawn(accept(listener, serving));
@@ -161,19 +161,22 @@ impl ToolsEdge {
     }
 
     /// What the launcher binds into the sandbox.
+    #[must_use]
     pub fn bind(&self) -> &EdgeBind {
         &self.bind
     }
 
     /// The breaker's trip a call over the edge met, once: the backend ends the turn on it.
+    #[must_use]
     pub fn take_trip(&self) -> Option<BreakerTrip> {
         self.tripped
             .lock()
-            .unwrap_or_else(|e| e.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .take()
     }
 
     /// The token, for the environment of the MCP server entry.
+    #[must_use]
     pub fn token(&self) -> &EdgeToken {
         &self.token
     }
@@ -274,7 +277,10 @@ impl<C: Court> Serving<C> {
             Ruled::Done(outcome) => Ok(outcome_json(&outcome)),
             Ruled::Refused(refusal) => {
                 if let CallRefusal::Paused(trip) = &refusal {
-                    *self.tripped.lock().unwrap_or_else(|e| e.into_inner()) = Some(*trip);
+                    *self
+                        .tripped
+                        .lock()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(*trip);
                 }
                 Err(ToolRefusal::from(&refusal).into())
             }

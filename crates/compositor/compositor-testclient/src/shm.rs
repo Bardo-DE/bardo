@@ -53,7 +53,7 @@ pub fn shm_buffer(client: &mut TestClient, size: PhysicalSize, pattern: Pattern)
         i32::try_from(size.w * 4).expect("shm_buffer: a stride under 2^31"),
         Format::Argb8888,
         &qh,
-        Plain(released.clone()),
+        Plain(Arc::clone(&released)),
     );
     // The buffer keeps its memory alive on the compositor's side; the pool and the global
     // handle are not needed again.

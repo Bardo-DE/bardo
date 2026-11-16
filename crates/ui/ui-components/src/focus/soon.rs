@@ -3,7 +3,7 @@
 //! dioxus-native-dom's `set_focus` borrows its document mutably *when it is called*. A task
 //! woken in the same turn as a dirty scope is polled inside `render_immediate`, while the
 //! mutation writer holds that borrow, so a focus change made from such a task panicked
-//! ("RefCell already borrowed", a palette's field focusing on mount while its
+//! ("`RefCell` already borrowed", a palette's field focusing on mount while its
 //! results re-rendered). Every focus change goes through [`focus_soon`]: the host's
 //! [`FocusHost`](crate::host::parts::FocusHost) answers [`Focused::Busy`] instead, and the change is tried again
 //! once that render has ended (`ui_style::busy`), then a frame later.

@@ -63,6 +63,7 @@ impl HoverHub {
     }
 
     /// The card that is open (or closing), for the consumer to render.
+    #[must_use]
     pub fn open(&self) -> Option<(HoverKey, HoverProfile)> {
         match self.machine.state().read().phase() {
             IntentPhase::Open { key } | IntentPhase::Closing { key, .. } => Some(key.clone()),
@@ -72,17 +73,20 @@ impl HoverHub {
 
     /// The card fading out, until its exit settles and unmounts it; render it with
     /// `data-presence="leaving"`.
+    #[must_use]
     pub fn leaving(&self) -> Option<(HoverKey, HoverProfile)> {
         self.fades.leaving.read().clone()
     }
 
     /// The card Space last turned into a peek (design/06-INTERACTIONS.md section 3); the
     /// consumer opens its peek when this changes.
+    #[must_use]
     pub fn peeked(&self) -> Option<(HoverKey, HoverProfile)> {
         self.fades.peeked.read().clone()
     }
 
     /// Whether cards open at once right now.
+    #[must_use]
     pub fn warmth(&self) -> bool {
         let _expiry = self.fades.warm_tick.read();
         self.machine.state().read().warmth(self.machine.now())
@@ -148,6 +152,7 @@ pub fn use_hover_hub_provider(env: Signal<Scope>, tip: TipDelay) -> HoverHub {
 }
 
 /// The enclosing `Ds`'s hover manager.
+#[must_use]
 pub fn use_hover_hub() -> HoverHub {
     use_context::<HoverHub>()
 }

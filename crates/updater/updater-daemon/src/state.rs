@@ -37,6 +37,7 @@ impl UserState {
     }
 
     /// The last check as the schedule wants it.
+    #[must_use]
     pub fn last_attempt(&self) -> Option<Attempt> {
         Some(Attempt {
             at: self.last_check?,
@@ -53,11 +54,13 @@ pub struct StateStore {
 
 impl StateStore {
     /// A store at `path`.
+    #[must_use]
     pub fn new(path: PathBuf) -> Self {
         Self { path }
     }
 
     /// Reads the state; a missing or unreadable file is an empty state (it is only a memory).
+    #[must_use]
     pub fn load(&self) -> UserState {
         std::fs::read_to_string(&self.path)
             .ok()

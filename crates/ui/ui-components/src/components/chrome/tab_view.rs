@@ -1,4 +1,4 @@
-//! TabView: `NSTabView` (design/30 section 2.7): a strip of at most six tabs, a `SegmentedControl`
+//! `TabView`: `NSTabView` (design/30 section 2.7): a strip of at most six tabs, a `SegmentedControl`
 //! in `SelectOne`, over the body of the tab that is selected. The caller draws that body; the
 //! view frames it.
 //!

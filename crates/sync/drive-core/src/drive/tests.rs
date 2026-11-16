@@ -27,9 +27,13 @@ async fn rig(chunk: u64) -> Rig {
     let dir = Scratch::new("ferry-drive");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
-    let drive = Drive::open(config(&dir, chunk), listing.clone(), source.clone())
-        .await
-        .expect("drive");
+    let drive = Drive::open(
+        config(&dir, chunk),
+        std::sync::Arc::<MemoryListing>::clone(&listing),
+        std::sync::Arc::<MemorySource>::clone(&source),
+    )
+    .await
+    .expect("drive");
     Rig {
         dir,
         listing,
@@ -101,8 +105,8 @@ async fn names_follow_both_rules_and_are_the_same_after_a_restart() {
 
     let again = Drive::open(
         config(&rig.dir, 1 << 20),
-        rig.listing.clone(),
-        rig.source.clone(),
+        std::sync::Arc::<MemoryListing>::clone(&rig.listing),
+        std::sync::Arc::<MemorySource>::clone(&rig.source),
     )
     .await
     .expect("drive");
@@ -327,8 +331,8 @@ async fn keeping_everything_past_the_free_space_fetches_nothing_and_removes_noth
             free_space: FreeSpace::Bytes(10),
             ..DriveConfig::new(dir.join("cache"))
         },
-        listing.clone(),
-        source.clone(),
+        std::sync::Arc::<MemoryListing>::clone(&listing),
+        std::sync::Arc::<MemorySource>::clone(&source),
     )
     .await
     .expect("drive");
@@ -380,8 +384,8 @@ async fn a_free_space_that_is_not_known_is_never_short_and_everything_downloads(
             free_space: FreeSpace::Unknown,
             ..DriveConfig::new(dir.join("cache"))
         },
-        listing.clone(),
-        source.clone(),
+        std::sync::Arc::<MemoryListing>::clone(&listing),
+        std::sync::Arc::<MemorySource>::clone(&source),
     )
     .await
     .expect("drive");
@@ -493,9 +497,13 @@ async fn what_is_here_and_kept_is_remembered_across_a_restart() {
     eventually("here", || rig.state("k") == ItemState::Downloaded).await;
     rig.drive.flush().expect("flush");
     drop(rig.drive);
-    let again = Drive::open(config(&rig.dir, 4), rig.listing.clone(), rig.source.clone())
-        .await
-        .expect("drive");
+    let again = Drive::open(
+        config(&rig.dir, 4),
+        std::sync::Arc::<MemoryListing>::clone(&rig.listing),
+        std::sync::Arc::<MemorySource>::clone(&rig.source),
+    )
+    .await
+    .expect("drive");
     let status = again.status(&remote("k")).expect("status");
     assert_eq!(status.state, ItemState::Downloaded);
     assert!(status.kept);
@@ -545,9 +553,13 @@ async fn a_copy_is_saved_next_to_its_document_named_as_it_is_and_waits_to_upload
 
     // The same names after a restart.
     drop(rig.drive);
-    let reopened = Drive::open(config(&rig.dir, 4), rig.listing.clone(), rig.source.clone())
-        .await
-        .expect("drive");
+    let reopened = Drive::open(
+        config(&rig.dir, 4),
+        std::sync::Arc::<MemoryListing>::clone(&rig.listing),
+        std::sync::Arc::<MemorySource>::clone(&rig.source),
+    )
+    .await
+    .expect("drive");
     let names: Vec<String> = reopened
         .children(&remote("f"))
         .expect("children")
@@ -594,9 +606,13 @@ async fn save_a_copy_refuses_what_has_no_file_and_says_why() {
 }
 
 async fn reopen(dir: &Scratch, listing: &Arc<MemoryListing>, source: &Arc<MemorySource>) -> Drive {
-    Drive::open(config(dir, 4), listing.clone(), source.clone())
-        .await
-        .expect("drive")
+    Drive::open(
+        config(dir, 4),
+        std::sync::Arc::<MemoryListing>::clone(listing),
+        std::sync::Arc::<MemorySource>::clone(source),
+    )
+    .await
+    .expect("drive")
 }
 
 #[tokio::test]
@@ -609,7 +625,12 @@ async fn a_second_drive_over_one_cache_waits_for_the_first_to_go() {
         lock_wait: Duration::from_millis(50),
         ..config(&rig.dir, 4)
     };
-    let refused = Drive::open(soon, rig.listing.clone(), rig.source.clone()).await;
+    let refused = Drive::open(
+        soon,
+        std::sync::Arc::<MemoryListing>::clone(&rig.listing),
+        std::sync::Arc::<MemorySource>::clone(&rig.source),
+    )
+    .await;
     assert!(
         matches!(refused, Err(DriveError::InUse)),
         "the first is still open: {refused:?}"
@@ -630,9 +651,13 @@ async fn a_second_drive_over_one_cache_waits_for_the_first_to_go() {
         drive,
     } = rig;
     drop(drive);
-    let second = Drive::open(config(&dir, 4), listing.clone(), source.clone())
-        .await
-        .expect("opens");
+    let second = Drive::open(
+        config(&dir, 4),
+        std::sync::Arc::<MemoryListing>::clone(&listing),
+        std::sync::Arc::<MemorySource>::clone(&source),
+    )
+    .await
+    .expect("opens");
     gone.join().expect("thread");
     assert!(!second.status(&remote("k")).expect("status").kept);
     second.keep(&remote("k"), true).expect("keep");
@@ -905,8 +930,8 @@ async fn a_stalled_fetch_fails_its_reader_at_its_deadline() {
             deadline: Duration::from_millis(50),
             ..config(&dir, 4)
         },
-        listing.clone(),
-        source.clone(),
+        std::sync::Arc::<MemoryListing>::clone(&listing),
+        std::sync::Arc::<MemorySource>::clone(&source),
     )
     .await
     .expect("drive");

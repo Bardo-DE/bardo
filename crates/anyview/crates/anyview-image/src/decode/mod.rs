@@ -67,6 +67,7 @@ pub(crate) fn admit_rewrite(width: u32, height: u32) -> Result<(), ImageError> {
 
 /// How the file stores its colour (channels and bits each), read from its header alone, for the
 /// formats the `image` crate decodes; `None` for the others, and for a header it cannot read.
+#[must_use]
 pub fn colour_of(bytes: &[u8], sniffed: &Sniffed) -> Option<ColourInfo> {
     match codec_for(sniffed).ok()? {
         Codec::Image(format) => stills::stored_colour(bytes, format),

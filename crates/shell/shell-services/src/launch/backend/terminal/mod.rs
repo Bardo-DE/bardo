@@ -1,7 +1,7 @@
 //! The desktop's one way to open a terminal, the counterpart of opening a link in the default
 //! browser. Which terminal is the person's default follows the Default Terminal Execution
 //! specification (`search.rs`, `choose.rs`): their `xdg-terminals.list` first, then temor (our
-//! terminal), then the terminals found by name, then any desktop entry in the TerminalEmulator
+//! terminal), then the terminals found by name, then any desktop entry in the `TerminalEmulator`
 //! category. A terminal wraps a command as `<its Exec> <X-TerminalArgExec, else -e> <command>`.
 //!
 //! Two things use it: `Terminal=true` apps, whose launch is wrapped with [`Terminal::wrapper`],

@@ -570,8 +570,8 @@ mod tests {
         source.hold();
         let drive = Drive::open(
             DriveConfig::new(dir.join("cache")),
-            listing.clone(),
-            source.clone(),
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
         )
         .await
         .expect("drive");

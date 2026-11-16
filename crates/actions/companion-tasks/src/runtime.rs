@@ -300,7 +300,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     pub(crate) async fn refresh_catalogue(&mut self) {
         if let Ok(manifests) = self.intents.manifests().await {
             self.skills = agent_skills::Library::check(self.skill_files.clone(), &manifests);
-            self.manifests = manifests.clone();
+            self.manifests.clone_from(&manifests);
             self.planner
                 .set_catalogue(Catalogue::from_manifests(&manifests));
         }

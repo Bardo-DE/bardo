@@ -39,6 +39,7 @@ impl Turn {
     pub const FULL: u32 = 1_000_000;
 
     /// The angle in degrees (a float because CSS angles are).
+    #[must_use]
     pub fn degrees(self) -> f32 {
         self.0 as f32 * 360.0 / Self::FULL as f32
     }
@@ -79,6 +80,7 @@ pub struct OrbMetrics {
 impl OrbMetrics {
     /// The values for an orb `size` across: an orb under 50 px takes finer, gentler values
     /// than a larger one, and under 30 px it drops the dot mask and takes the lowest contrast.
+    #[must_use]
     pub fn of(size: Px) -> Self {
         let s = size.0;
         let small = s < 50.0;

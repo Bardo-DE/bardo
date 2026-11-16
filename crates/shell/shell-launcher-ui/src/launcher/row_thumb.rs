@@ -71,7 +71,7 @@ impl RowThumbs {
     pub fn in_dirs(dirs: &Dirs) -> RowThumbs {
         // The platform crate reads only the cache directory of its `Env`; the rest is isolated.
         let mut env = Env::isolated(&dirs.cache);
-        env.dirs.cache = dirs.cache.clone();
+        env.dirs.cache.clone_from(&dirs.cache);
         RowThumbs(Source::Cached(Folders {
             lookup: FreedesktopThumbnails::new(&env),
             thumbnails: dirs.thumbnails(),

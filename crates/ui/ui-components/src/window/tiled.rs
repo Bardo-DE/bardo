@@ -37,16 +37,19 @@ impl Tiled {
     pub const NONE: Tiled = Tiled(0);
 
     /// The same set with `edge` added.
+    #[must_use]
     pub fn with(self, edge: TileEdge) -> Tiled {
         Tiled(self.0 | edge.bit())
     }
 
     /// Whether `edge` is tiled.
+    #[must_use]
     pub fn contains(self, edge: TileEdge) -> bool {
         self.0 & edge.bit() != 0
     }
 
     /// Whether any edge is tiled.
+    #[must_use]
     pub fn any(self) -> bool {
         self.0 != 0
     }

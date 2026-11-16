@@ -79,7 +79,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             opening.parent.clone(),
             self.clock.now(),
         );
-        rt.turns = plan.turns.clone();
+        rt.turns.clone_from(&plan.turns);
         rt.history = history_of(plan);
         rt.next_call = rt.history.iter().map(|l| l.call.0 + 1).max().unwrap_or(0);
         rt.loaded = plan.skills.iter().map(|(id, _)| id.clone()).collect();

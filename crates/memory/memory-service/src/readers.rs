@@ -119,7 +119,7 @@ impl<B: Backend> Open<B> {
         q: RecentQuery,
     ) -> Result<Vec<RecentEntry>, Refusal> {
         let mut filter = crate::open::any_filter();
-        filter.kinds = q.kinds.clone();
+        filter.kinds.clone_from(&q.kinds);
         filter.trust = q.trust;
         filter.range = Some((q.since, memory_core::UnixSeconds(i64::MAX)));
         let page = TimelineQuery {

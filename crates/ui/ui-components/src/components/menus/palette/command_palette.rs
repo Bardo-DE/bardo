@@ -1,4 +1,4 @@
-//! CommandPalette: "the same menu, just bigger and centred" (design/04-COMPONENTS.md section 25).
+//! `CommandPalette`: "the same menu, just bigger and centred" (design/04-COMPONENTS.md section 25).
 //!
 //! A search `TextField` over an embedded Rich menu. Keys come from the search field
 //! (design/06-INTERACTIONS.md section 2.3): Up and Down move the selection CLAMPED, Enter closes
@@ -176,7 +176,10 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
     );
     let all = stops(&shown_groups);
     let grids = grid_spans(&shown_groups);
-    let live: Vec<Availability> = all.iter().map(|stop| stop.availability()).collect();
+    let live: Vec<Availability> = all
+        .iter()
+        .map(super::palette_stops::Stop::availability)
+        .collect();
     let count = all.len();
     let current = selection.current(count);
     let at_line = (count > 0).then_some(SelectedLine {

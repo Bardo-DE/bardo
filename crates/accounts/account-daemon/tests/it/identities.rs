@@ -99,7 +99,7 @@ async fn list_gives_the_sign_in_accounts_and_leaves_out_the_rest_and_every_secre
 
 #[tokio::test(flavor = "multi_thread")]
 async fn apps_and_porter_daemons_use_identities_and_everything_else_is_refused() {
-    let rig = Rig::start_with(Default::default(), picking(storage_identity_account())).await;
+    let rig = Rig::start_with(Options::default(), picking(storage_identity_account())).await;
     let id = "fake-storage";
     // Who may ask: an app, Settings, the shell and a porter daemon. Only Settings and the shell
     // read `Uses`.
@@ -165,7 +165,7 @@ fn storage_identity_account() -> AccountId {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn offer_shows_the_picker_answers_the_pick_and_grants_nothing() {
-    let rig = Rig::start_with(Default::default(), picking(storage_identity_account())).await;
+    let rig = Rig::start_with(Options::default(), picking(storage_identity_account())).await;
     let app = identities(&rig.client("org.bardo.Photos").await).await;
     let (id, address, provider) = app.offer("", "").await.expect("offer");
     assert_eq!(
@@ -199,7 +199,7 @@ async fn offer_shows_the_picker_answers_the_pick_and_grants_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_hint_lists_only_that_providers_identities() {
-    let rig = Rig::start_with(Default::default(), picking(account_fake::mail_account().id)).await;
+    let rig = Rig::start_with(Options::default(), picking(account_fake::mail_account().id)).await;
     let app = identities(&rig.client("org.bardo.Photos").await).await;
     let (id, ..) = app.offer("fake-mail", "").await.expect("offer");
     assert_eq!(id, "fake-mail");
@@ -225,7 +225,7 @@ async fn an_offer_the_person_does_not_answer_with_a_pick_is_dismissed() {
         }),
     ];
     for input in inputs {
-        let rig = Rig::start_with(Default::default(), SheetHost::answering(input.clone())).await;
+        let rig = Rig::start_with(Options::default(), SheetHost::answering(input.clone())).await;
         let app = identities(&rig.client("org.bardo.Photos").await).await;
         let refused = app.offer("", "").await.expect_err("no pick");
         assert_eq!(error_name(&refused), dismissed, "{input:?}");
@@ -260,7 +260,7 @@ async fn a_hint_that_fits_no_identity_or_is_no_provider_shows_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_password_goes_on_a_descriptor_to_the_app_the_person_picked_it_for_once() {
-    let rig = Rig::start_with(Default::default(), picking(storage_identity_account())).await;
+    let rig = Rig::start_with(Options::default(), picking(storage_identity_account())).await;
     let mut tap = Tap::start(&rig.bus).await;
     let client = rig.client("org.bardo.Photos").await;
     let app = identities(&client).await;
@@ -314,7 +314,7 @@ async fn the_password_goes_on_a_descriptor_to_the_app_the_person_picked_it_for_o
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_identity_that_signs_in_with_oauth_has_no_password_to_hand_over() {
-    let rig = Rig::start_with(Default::default(), picking(account_fake::mail_account().id)).await;
+    let rig = Rig::start_with(Options::default(), picking(account_fake::mail_account().id)).await;
     let mut tap = Tap::start(&rig.bus).await;
     let app = identities(&rig.client("org.bardo.Mail").await).await;
     let (id, ..) = app.offer("", "").await.expect("offer");

@@ -1,4 +1,4 @@
-//! StylesOffNotice: the one line shown when the crash guard started a program without the
+//! `StylesOffNotice`: the one line shown when the crash guard started a program without the
 //! person's styles (customization design section 7.4): "Your styles were turned off because
 //! <program> could not start with them." and a **Turn On Again** button. It is an
 //! [`InlineBanner`](super::inline_banner) with a warning and one action, so it has no markup or
@@ -11,6 +11,7 @@ use ui_core::vocab::Severity;
 use ui_style::tokens::control_size::ControlSize;
 
 /// The sentence, with the program's name in it.
+#[must_use]
 pub fn styles_off_text(program: &str) -> String {
     format!("Your styles were turned off because {program} could not start with them.")
 }

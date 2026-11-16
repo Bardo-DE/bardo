@@ -34,7 +34,7 @@ impl Stepped {
         Self {
             server: Server::new(
                 listener,
-                wake.clone(),
+                Arc::clone(&wake),
                 rx,
                 claims_tx,
                 seat_file(&dir, Some(me())),

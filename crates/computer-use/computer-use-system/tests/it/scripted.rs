@@ -60,7 +60,7 @@ impl Scripted {
         let log = Arc::new(Mutex::new(Log::default()));
         let scripted = Self {
             turns: Mutex::new(turns.into()),
-            log: log.clone(),
+            log: Arc::clone(&log),
             down: false,
             denied: None,
             readiness: None,
@@ -180,7 +180,7 @@ impl Transport for Scripted {
         Ok(Session {
             turns: std::mem::take(&mut *self.turns.lock().expect("lock")),
             ready: VecDeque::new(),
-            log: self.log.clone(),
+            log: Arc::clone(&self.log),
         })
     }
 }

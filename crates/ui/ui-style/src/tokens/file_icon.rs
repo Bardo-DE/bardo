@@ -34,13 +34,13 @@ impl FileIconColour {
     #[must_use]
     pub const fn hex(self, scheme: Scheme) -> Hex {
         let (light, dark): (u32, u32) = match self {
-            FileIconColour::Fold => (0xDCDDE1, 0xDCDDE1),
-            FileIconColour::Edge => (0xC2C4CA, 0xC2C4CA),
-            FileIconColour::Label => (0x6C6C70, 0x6C6C70),
-            FileIconColour::FolderTab => (0x3FA3E8, 0x2A78BC),
-            FileIconColour::FolderBody => (0x6CC4F8, 0x4AA6E4),
-            FileIconColour::FolderInk => (0x2C84C2, 0x1D5C92),
-            FileIconColour::FolderLight => (0xA6DEFB, 0x7CC2F0),
+            FileIconColour::Fold => (0x00DC_DDE1, 0x00DC_DDE1),
+            FileIconColour::Edge => (0x00C2_C4CA, 0x00C2_C4CA),
+            FileIconColour::Label => (0x006C_6C70, 0x006C_6C70),
+            FileIconColour::FolderTab => (0x003F_A3E8, 0x002A_78BC),
+            FileIconColour::FolderBody => (0x006C_C4F8, 0x004A_A6E4),
+            FileIconColour::FolderInk => (0x002C_84C2, 0x001D_5C92),
+            FileIconColour::FolderLight => (0x00A6_DEFB, 0x007C_C2F0),
         };
         let value = match scheme {
             Scheme::Light => light,

@@ -331,9 +331,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             }
         };
         if let Some(rt) = self.runtimes.get_mut(task) {
-            rt.served = reply.served.clone();
+            rt.served.clone_from(&reply.served);
             if !reply.route.is_empty() {
-                rt.route = reply.route.clone();
+                rt.route.clone_from(&reply.route);
             }
             if let Some(words) = &reply.said {
                 match words_are(&reply.then) {

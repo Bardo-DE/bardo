@@ -503,7 +503,7 @@ async fn a_locked_space_waits_and_is_tried_again() {
     let scratch = tempfile::tempdir().expect("scratch");
     let bus = PrivateBus::start(scratch.path());
     let locked = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(1));
-    let flag = locked.clone();
+    let flag = std::sync::Arc::clone(&locked);
     let memoryd = FakeMemoryd::with(move |request| match request {
         MemoryRequest::RecordBatch(_) if flag.load(std::sync::atomic::Ordering::SeqCst) == 1 => {
             Some(MemoryReply::Refused(Refusal::SpaceLocked))

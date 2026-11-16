@@ -13,7 +13,7 @@ fn schema(app: &str, file: &str, version: u16) -> Schema {
         app: AppId(app.to_owned()),
         file: FilePath(file.to_owned()),
         version,
-        foreign: Default::default(),
+        foreign: ForeignTables::default(),
         key: Vec::new(),
     }
 }

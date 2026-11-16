@@ -264,7 +264,7 @@ async fn a_child_says_how_far_it_is_held_once_the_exec_stage_reported() {
     let (near, _far) = agent_acp_host::fake::pipe();
     let (procs, seen) = FakeProcs::new(vec![near]);
     rig.spawn = agent_launch::AgentSpawn::new(
-        rig.file.clone(),
+        std::sync::Arc::clone(&rig.file),
         std::sync::Arc::new(rig.accounts.clone()),
         procs.reporting(sandbox::LandlockLevel::Full),
         rig.dir.path().to_owned(),
@@ -365,7 +365,7 @@ async fn a_revocation_ends_the_process_that_holds_the_credential() {
     let accounts = std::sync::Arc::new(rig.accounts.clone());
     let supervisor = Supervisor::new(
         accounts,
-        rig.file.clone(),
+        std::sync::Arc::clone(&rig.file),
         rig.registry.clone(),
         super::login::Scripted::ready(),
     );

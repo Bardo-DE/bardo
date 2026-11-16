@@ -82,7 +82,7 @@ impl<'a> Future for Acquire<'a> {
             ticket
         };
         match state.waiting.iter_mut().find(|(t, _)| *t == ticket) {
-            Some(entry) => entry.1 = cx.waker().clone(),
+            Some(entry) => entry.1.clone_from(cx.waker()),
             None => state.waiting.push_back((ticket, cx.waker().clone())),
         }
         Poll::Pending

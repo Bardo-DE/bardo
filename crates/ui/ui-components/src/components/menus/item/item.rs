@@ -1,4 +1,4 @@
-//! MenuItem: what a `Menu` lists, as data (`NSMenuItem`, design/30 section 2.4): a command with
+//! `MenuItem`: what a `Menu` lists, as data (`NSMenuItem`, design/30 section 2.4): a command with
 //! its image, key equivalent and check state, a parent of a submenu, a section header, a status
 //! line and a separator. `view` draws one item, `lines` the whole panel.
 

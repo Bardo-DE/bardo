@@ -148,7 +148,7 @@ impl World {
     ) -> World {
         let server = connect(&bus.address).await;
         let daemon = Arc::new(daemon);
-        serve_on(&server, daemon.clone()).await.expect("serve");
+        serve_on(&server, Arc::clone(&daemon)).await.expect("serve");
         daemon.attach(server.clone());
         World {
             daemon,

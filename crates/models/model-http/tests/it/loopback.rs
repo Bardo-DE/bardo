@@ -63,7 +63,7 @@ async fn serve(wire: Wire, steps: Vec<Step>) -> Server {
     let request = Arc::new(Mutex::new(String::new()));
     let peer_closed = Arc::new(AtomicBool::new(false));
     let (head_signal, head_seen) = oneshot::channel::<()>();
-    let (req, closed) = (request.clone(), peer_closed.clone());
+    let (req, closed) = (Arc::clone(&request), Arc::clone(&peer_closed));
     let target = match wire {
         Wire::Unix => {
             let path = scratch_socket();

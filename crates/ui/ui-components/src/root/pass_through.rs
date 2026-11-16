@@ -92,6 +92,7 @@ impl DataName {
     }
 
     /// The attribute as written: `data-folder`.
+    #[must_use]
     pub fn attribute(self) -> &'static str {
         self.attribute
     }
@@ -173,6 +174,7 @@ impl ExtraClass {
     }
 
     /// The classes, space-separated.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

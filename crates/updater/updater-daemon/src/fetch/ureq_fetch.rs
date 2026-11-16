@@ -18,6 +18,7 @@ pub struct UreqFetch {
 
 impl UreqFetch {
     /// An agent with a connect time limit and a limit on how long one connection is read.
+    #[must_use]
     pub fn new() -> Self {
         let config = ureq::Agent::config_builder()
             .https_only(true)

@@ -35,6 +35,6 @@ impl Service for GuestAsksService {
         io: ServiceIo<Self>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
         let bus = env.buses.session.clone();
-        async move { backend::run(bus, deps, io).await }
+        async move { Box::pin(backend::run(bus, deps, io)).await }
     }
 }

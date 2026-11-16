@@ -130,7 +130,14 @@ pub fn spawn(
 ) -> std::io::Result<SocketHandle> {
     let wake = Arc::new(eventfd(0, EventfdFlags::CLOEXEC | EventfdFlags::NONBLOCK)?);
     let (tx, rx) = mpsc::sync_channel(QUEUE_MAX);
-    let server = Server::new(listener, wake.clone(), rx, notes, seat, steering.vouch());
+    let server = Server::new(
+        listener,
+        Arc::clone(&wake),
+        rx,
+        notes,
+        seat,
+        steering.vouch(),
+    );
     std::thread::Builder::new()
         .name("palmrest-socket".to_owned())
         .spawn(move || {

@@ -11,6 +11,7 @@ use shell_model::desktop::{OutputPicture, OutputShot, SpacePicture};
 
 /// `frame` as PNG bytes, or [`SpacePicture::Failed`] when its format or size is wrong. A Space
 /// picture comes upright, so the frame's transform is not applied.
+#[must_use]
 pub fn picture_of(frame: &Frame) -> SpacePicture {
     let Ok(rgba) = frame.to_rgba8() else {
         return SpacePicture::Failed;

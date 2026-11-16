@@ -41,7 +41,7 @@ impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
 /// Whether `header` is a message from the process the callers table names as intentd: the only
 /// one that may ask or withdraw a sheet.
 async fn from_intentd(header: &Header<'_>, callers: &Identity) -> fdo::Result<()> {
-    let sender = header.sender().map(|s| s.as_str());
+    let sender = header.sender().map(zbus::names::UniqueName::as_str);
     require(callers, sender, &[INTENTD]).await?;
     Ok(())
 }
@@ -62,8 +62,8 @@ impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
         let object: OwnedObjectPath = ObjectPath::try_from(path.as_str())
             .map_err(|e| fdo::Error::Failed(e.to_string()))?
             .into();
-        let caller = header.sender().map(|s| s.to_owned());
-        let sheets = self.sheets.clone();
+        let caller = header.sender().map(zbus::names::UniqueName::to_owned);
+        let sheets = Arc::clone(&self.sheets);
         let connection = connection.clone();
         // The sheet goes on the desk when the task first runs; the host waits for it if the
         // router's own signal got there first. The answer follows as the Request's `Response`.

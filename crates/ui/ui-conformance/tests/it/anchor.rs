@@ -46,7 +46,7 @@ fn Anchored() -> Element {
             availability: Availability::Enabled,
             hint: None,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         })
         .collect::<Vec<_>>();
     rsx! {

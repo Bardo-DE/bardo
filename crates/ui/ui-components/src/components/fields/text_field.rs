@@ -1,4 +1,4 @@
-//! TextField: `NSTextField`, `NSSecureTextField` and `NSSearchField` in one component (design/30
+//! `TextField`: `NSTextField`, `NSSecureTextField` and `NSSearchField` in one component (design/30
 //! section 2.2), the one field every text input uses.
 //!
 //! Markup: `span.ds-text-field[data-kind][data-variant][data-size]` holding `span.ds-text-field-frame`

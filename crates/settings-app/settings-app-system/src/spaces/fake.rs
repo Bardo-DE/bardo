@@ -12,11 +12,13 @@ pub struct FakeSpaces(Arc<Kit<Vec<SpaceRow>, (SpaceKey, Removal)>>);
 
 impl FakeSpaces {
     /// A registry holding these Spaces.
+    #[must_use]
     pub fn holding(rows: Vec<SpaceRow>) -> FakeSpaces {
         FakeSpaces(Kit::new(Ok(rows)))
     }
 
     /// No registry, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeSpaces {
         FakeSpaces(Kit::new(Err(why)))
     }
@@ -27,6 +29,7 @@ impl FakeSpaces {
     }
 
     /// The removals that were asked, in order.
+    #[must_use]
     pub fn removals(&self) -> Vec<(SpaceKey, Removal)> {
         self.0.asked()
     }

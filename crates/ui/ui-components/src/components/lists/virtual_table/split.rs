@@ -20,7 +20,7 @@
 //! the row's index, so both draw them; the pointer being over either is shared through a
 //! signal, so both take the tint. A selected row is one rounded block across the two panes: the
 //! pinned pane's rows are rounded on the left and the scrolling pane's on the right
-//! (virtual_table.css). Once the columns are scrolled a faint line marks the edge between the
+//! (`virtual_table.css`). Once the columns are scrolled a faint line marks the edge between the
 //! panes (`data-across=yes` on the table, as `data-scrolled` is for the header). Only the
 //! scrolling pane is the list for assistive technology; the pinned pane is `aria-hidden`.
 
@@ -36,6 +36,7 @@ use ui_core::geometry::units::Px;
 /// The id of the box that scrolls sideways in a table whose root has `id`, once it holds columns
 /// in place: the root itself scrolls sideways otherwise. A caller that scrolls the table
 /// sideways (to show a find hit) names this box.
+#[must_use]
 pub fn columns_id(id: &str) -> String {
     format!("{id}-columns")
 }
@@ -237,7 +238,7 @@ fn HeldItem(
             "aria-hidden": hidden,
             "aria-posinset": posinset,
             "aria-setsize": setsize,
-            "aria-level": outline.map(|step| step.level()),
+            "aria-level": outline.map(super::outline::OutlineRow::level),
             "aria-expanded": outline.and_then(OutlineRow::expanded),
             "data-row": row.to_string(),
             "data-selected": selection.then_some("yes"),

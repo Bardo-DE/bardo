@@ -128,7 +128,7 @@ mod tests {
     #[test]
     fn hex_splits_channels() {
         assert_eq!(
-            Srgb8::hex(0xE8483C),
+            Srgb8::hex(0x00E8_483C),
             Srgb8 {
                 r: 0xE8,
                 g: 0x48,

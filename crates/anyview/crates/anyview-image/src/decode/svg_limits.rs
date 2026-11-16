@@ -218,6 +218,6 @@ mod tests {
             "<filter id=\"f\"><feGaussianBlur stdDeviation=\"5\"/></filter><g id=\"g\"><rect width=\"1000\" height=\"1000\" filter=\"url(#f)\"/></g>{uses}"
         );
         assert!(check(&tree(&body), (4.0, 4.0)).is_err());
-        assert!(check(&tree(&body), (0.01, 0.01)).is_ok());
+        check(&tree(&body), (0.01, 0.01)).unwrap();
     }
 }

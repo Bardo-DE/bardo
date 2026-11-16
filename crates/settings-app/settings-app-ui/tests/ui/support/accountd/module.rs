@@ -90,11 +90,17 @@ impl LiveModule for Accountd {
             .push((key.0.clone(), value.clone()));
         let path = key.0.as_str();
         if path == "accounts.clients.microsoft" {
-            *self.client.lock().expect("client") = value.as_str().unwrap_or_default().to_owned();
+            value
+                .as_str()
+                .unwrap_or_default()
+                .clone_into(&mut self.client.lock().expect("client"));
             return Ok(());
         }
         if path == "accounts.clients.microsoft.secret" {
-            *self.secret.lock().expect("secret") = value.as_str().unwrap_or_default().to_owned();
+            value
+                .as_str()
+                .unwrap_or_default()
+                .clone_into(&mut self.secret.lock().expect("secret"));
             return Ok(());
         }
         let mut accounts = self.accounts.lock().expect("accounts");

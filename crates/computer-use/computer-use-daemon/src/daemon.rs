@@ -135,7 +135,7 @@ pub async fn run(
         eprintln!("cuad: settings are read once, not watched: {reason}");
     }
     supervisor.adopt(&watched.current());
-    let following = supervisor.clone();
+    let following = Arc::clone(&supervisor);
     let announcing = connection.clone();
     tokio::spawn(async move { follow_settings(&announcing, &following, &mut watched).await });
     // Who is calling is the process behind the connection, named by the callers table: the

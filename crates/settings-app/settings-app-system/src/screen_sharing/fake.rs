@@ -16,6 +16,7 @@ pub struct FakeScreenSharing {
 
 impl FakeScreenSharing {
     /// A portal that lets these apps share.
+    #[must_use]
     pub fn granting(grants: Vec<ScreenGrant>) -> FakeScreenSharing {
         FakeScreenSharing {
             kit: Kit::new(Ok(grants)),
@@ -24,6 +25,7 @@ impl FakeScreenSharing {
     }
 
     /// No portal, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeScreenSharing {
         FakeScreenSharing {
             kit: Kit::new(Err(why)),
@@ -37,11 +39,13 @@ impl FakeScreenSharing {
     }
 
     /// The apps that were taken back, in order.
+    #[must_use]
     pub fn revoked(&self) -> Vec<ProgramSubject> {
         self.kit.asked()
     }
 
     /// The apps that were let in, in order.
+    #[must_use]
     pub fn allowed(&self) -> Vec<ProgramSubject> {
         locked(&self.allowed).clone()
     }

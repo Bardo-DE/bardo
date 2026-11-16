@@ -69,6 +69,7 @@ impl SwipeGlue {
     }
 
     /// `data-swipe`: `live` while held, `rest`, or `gone`; nothing when the swipe is off.
+    #[must_use]
     pub fn look(&self) -> Option<&'static str> {
         use ui_core::word::Word;
         self.live().map(|swiper| swiper.state().look().slug())
@@ -76,6 +77,7 @@ impl SwipeGlue {
 
     /// The element's inline offset, `--swipe-dx`, while it is off its place (on its way back
     /// too). Call once per render: it moves the return spring.
+    #[must_use]
     pub fn style(&self) -> Option<String> {
         let state = self.live()?.state();
         let drawn = self.drawn(state);
@@ -111,6 +113,7 @@ impl SwipeGlue {
     }
 
     /// Whether a click on the element is a press (not the end of a drag).
+    #[must_use]
     pub fn click_passes(&self) -> bool {
         self.live().is_none_or(|swiper| swiper.take_click())
     }

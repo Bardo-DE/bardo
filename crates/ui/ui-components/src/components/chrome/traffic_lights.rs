@@ -2,7 +2,7 @@
 //! discs 8 px apart at the titlebar's start. Coloured at rest in the active window, grey in an
 //! inactive one, and their marks appear while the pointer is over the group, as on macOS. The
 //! green one zooms on a click, and always with Option held; held for `menu_press` or rested on for `menu_hover` (or
-//! right-clicked, or ArrowDown with the keyboard on it) it opens the tiling menu, whose
+//! right-clicked, or `ArrowDown` with the keyboard on it) it opens the tiling menu, whose
 //! placements the host cannot make are shown unavailable. Each light keeps its press: a press on
 //! a light never starts the titlebar's move, and a double-click on one never zooms.
 

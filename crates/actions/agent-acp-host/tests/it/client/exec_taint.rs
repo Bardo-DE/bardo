@@ -49,7 +49,7 @@ fn used(rig: &super::rig::Rig<super::rig::Fakes>) -> usize {
 
 #[tokio::test]
 async fn a_command_using_a_token_from_the_file_asks_with_no_always_even_with_a_grant() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![read_then(vec![
             run("tok", "echo", &["sk_live_Ab12Cd34"]),
             run("path", "echo", &["/work/app/a.txt"]),
@@ -63,13 +63,13 @@ async fn a_command_using_a_token_from_the_file_asks_with_no_always_even_with_a_g
         ],
         held: vec![grant("echo")],
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(
         &abs("/work/app/a.txt"),
         "fn main() { let key = \"sk_live_Ab12Cd34\"; }",
     );
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     let sheets = rig.sheets();
     assert_eq!(sheets.len(), 3, "the grant stood in for none of them");
     for sheet in sheets {
@@ -84,7 +84,7 @@ async fn a_command_using_a_token_from_the_file_asks_with_no_always_even_with_a_g
 
 #[tokio::test]
 async fn curl_always_asks_with_no_reads_and_a_matching_grant() {
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![
             run("curl", "curl", &["https://a.test/x"]),
             run("push", "git", &["push", "origin", "main"]),
@@ -94,9 +94,9 @@ async fn curl_always_asks_with_no_reads_and_a_matching_grant() {
         scripts: vec![Script::done("", 0), Script::done("", 0)],
         held: vec![grant("curl"), grant("git push")],
         ..Setup::default()
-    })
+    }))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     let sheets = rig.sheets();
     assert_eq!(sheets.len(), 2);
     for sheet in sheets {
@@ -107,16 +107,16 @@ async fn curl_always_asks_with_no_reads_and_a_matching_grant() {
 
 #[tokio::test]
 async fn an_agent_with_a_network_makes_every_command_one_that_can_send_data_out() {
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![run("t", "cargo", &["test"]), Act::Stop("end_turn")]],
         answers: vec![once()],
         scripts: vec![Script::done("", 0)],
         held: vec![grant("cargo test")],
         network: Network::Host,
         ..Setup::default()
-    })
+    }))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     assert_eq!(rig.sheets().len(), 1, "the grant did not stand in");
     assert_eq!(
         rig.sheets()[0].always,
@@ -127,7 +127,7 @@ async fn an_agent_with_a_network_makes_every_command_one_that_can_send_data_out(
 
 #[tokio::test]
 async fn shell_operators_are_still_never_covered_by_a_grant() {
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![
             run("semi", "cargo", &["test;", "echo", "done"]),
             run("and", "cargo", &["test", "&&", "echo", "done"]),
@@ -137,9 +137,9 @@ async fn shell_operators_are_still_never_covered_by_a_grant() {
         scripts: vec![Script::done("", 0), Script::done("", 0)],
         held: vec![grant("cargo test")],
         ..Setup::default()
-    })
+    }))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     assert_eq!(rig.sheets().len(), 2);
     assert_eq!(used(&rig), 0);
 }
@@ -150,7 +150,7 @@ async fn what_the_agents_own_tool_brought_in_makes_every_command_derived() {
         "sessionUpdate": "tool_call", "toolCallId": "t9", "title": "Grep", "kind": "search",
         "status": "completed", "rawInput": {}, "rawOutput": {}
     });
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![
             Act::Update(claim),
             run("t", "cargo", &["test"]),
@@ -160,9 +160,9 @@ async fn what_the_agents_own_tool_brought_in_makes_every_command_derived() {
         scripts: vec![Script::done("", 0)],
         held: vec![grant("cargo test")],
         ..Setup::default()
-    })
+    }))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     assert_eq!(rig.sheets().len(), 1);
     assert_eq!(
         rig.sheets()[0].always,
@@ -173,16 +173,16 @@ async fn what_the_agents_own_tool_brought_in_makes_every_command_derived() {
 #[tokio::test]
 async fn an_agent_process_with_a_network_makes_every_command_one_that_can_send_data_out() {
     for mode in [NetworkMode::EndpointOnly, NetworkMode::Host] {
-        let (mut rig, _files) = started(Setup {
+        let (mut rig, _files) = Box::pin(started(Setup {
             turns: vec![read_then(vec![run("t", "cargo", &["test"])])],
             answers: vec![once()],
             scripts: vec![Script::done("", 0)],
             held: vec![grant("cargo test")],
             agent_network: mode,
             ..Setup::default()
-        })
+        }))
         .await;
-        run_turn(&mut rig, "go").await;
+        Box::pin(run_turn(&mut rig, "go")).await;
         let sheets = rig.sheets();
         assert_eq!(sheets.len(), 1, "{mode:?}: the grant did not stand in");
         assert_eq!(
@@ -201,16 +201,16 @@ async fn an_agent_process_with_a_network_makes_every_command_one_that_can_send_d
 
 #[tokio::test]
 async fn an_agent_process_without_a_network_leaves_the_rule_as_it_was() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![read_then(vec![run("t", "cargo", &["test"])])],
         answers: vec![always()],
         scripts: vec![Script::done("ok\n", 0)],
         agent_network: NetworkMode::None,
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/a.txt"), "plain words only");
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     let sheets = rig.sheets();
     assert_eq!(sheets.len(), 1);
     assert!(matches!(sheets[0].always, AlwaysOffer::Offered(_)));

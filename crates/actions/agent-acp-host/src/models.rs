@@ -30,6 +30,7 @@ impl ModelId {
     }
 
     /// The id as the agent knows it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -56,6 +57,7 @@ pub struct Models {
 
 impl Models {
     /// What the agent offered in its reply to `session/new`; none when it offers no choice.
+    #[must_use]
     pub fn of_reply(reply: &Value, made: &NewSessionResponse) -> Option<Self> {
         Self::from_option(made).or_else(|| Self::from_older(reply))
     }
@@ -113,11 +115,13 @@ impl Models {
     }
 
     /// Whether `wanted` is on offer.
+    #[must_use]
     pub fn offers(&self, wanted: &ModelId) -> bool {
         self.available.iter().any(|c| c.id == wanted.as_str())
     }
 
     /// The offer as a refusal lists it.
+    #[must_use]
     pub fn choices(&self) -> Choices {
         Choices(self.available.clone())
     }

@@ -56,7 +56,7 @@ impl<R: Clone, H> Clone for OAuthProvider<R, H> {
             rules: self.rules.clone(),
             spec: self.spec.clone(),
             env: self.env.clone(),
-            rotations: self.rotations.clone(),
+            rotations: std::sync::Arc::clone(&self.rotations),
         }
     }
 }

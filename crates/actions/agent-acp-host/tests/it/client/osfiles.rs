@@ -16,7 +16,7 @@ async fn a_link_inside_the_directory_cannot_lead_a_read_or_a_write_out() {
     symlink(&outside, app.join("dirlink")).expect("dir link");
     let at = |rel: &str| app.join(rel).to_str().expect("utf8").to_owned();
 
-    let mut rig = started_over::<Real>(
+    let mut rig = Box::pin(started_over::<Real>(
         OsFiles,
         app.to_str().expect("utf8"),
         Setup {
@@ -49,9 +49,9 @@ async fn a_link_inside_the_directory_cannot_lead_a_read_or_a_write_out() {
             answers: vec![once(), once()],
             ..Setup::default()
         },
-    )
+    ))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     let view = &rig.agent;
 
     assert_eq!(view.reply("real").expect("read")["content"], "fine");

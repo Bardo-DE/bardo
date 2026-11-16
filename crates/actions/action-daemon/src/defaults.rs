@@ -19,6 +19,7 @@ use std::path::{Path, PathBuf};
 pub const DEFAULT_GRANTS_FILE: &str = "default-grants.json";
 
 /// Where a data directory keeps the shipped defaults.
+#[must_use]
 pub fn default_grants_file(data: &Path) -> PathBuf {
     crate::manifests::intents_dir(data).join(DEFAULT_GRANTS_FILE)
 }
@@ -76,6 +77,7 @@ pub(crate) fn read_defaults(path: &Path) -> Vec<ActionGrant> {
 
 /// The person's revocation of `default`: a denial for exactly its key, dated `at`, which
 /// outranks the default. Recorded in the person's grants file; the shipped file is never written.
+#[must_use]
 pub fn revoking(default: &ActionGrant, id: GrantId, at: UnixSeconds) -> ActionGrant {
     Grant {
         id,

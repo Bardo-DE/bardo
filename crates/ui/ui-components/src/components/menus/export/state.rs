@@ -81,6 +81,7 @@ fn flat(node: &MenuNode) -> MenuNode {
 
 impl MenuState {
     /// A state serving `tree` at revision 1.
+    #[must_use]
     pub fn new(tree: MenuTree) -> MenuState {
         MenuState {
             tree,
@@ -90,6 +91,7 @@ impl MenuState {
 
     /// The state after `tree` replaces this one, and what changed. A tree that is the same
     /// keeps the revision.
+    #[must_use]
     pub fn replaced(self, tree: MenuTree) -> (MenuState, Change) {
         let changed = change(&self.tree, &tree);
         let revision = match changed {

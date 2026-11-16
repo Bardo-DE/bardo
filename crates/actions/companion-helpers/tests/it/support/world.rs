@@ -113,7 +113,7 @@ fn world_all(
     let clock = FixedClock::at(provenance::UnixSeconds(1_000));
     let companion = Tasks::new(
         Intents::over(InProcess::new(
-            router.clone(),
+            Arc::clone(&router),
             caller("org.bardo.Companion", CallerRole::Companion),
         )),
         PlannerModel::new(infer.clone()),
@@ -122,7 +122,7 @@ fn world_all(
         app("org.bardo.Shell"),
     );
     let launcher = Intents::over(InProcess::new(
-        router.clone(),
+        Arc::clone(&router),
         caller("org.bardo.Shell", CallerRole::Launcher),
     ));
     World {
@@ -210,23 +210,22 @@ impl World {
             .await
             .expect("turn");
         let at = self.clock.now();
-        self.companion
-            .ask(companion_wire::AskWire {
-                session: session.clone(),
-                turn: UserTurn {
-                    id,
-                    text: text.into(),
-                    at,
-                    from: Caller::launcher(),
-                    via: TurnVia::Typed,
-                    mode: None,
-                },
-                keep: keep_nothing(),
-                parent_window: WindowKey::parse("w1").expect("window"),
-                app: None,
-            })
-            .await
-            .expect("ask")
+        Box::pin(self.companion.ask(companion_wire::AskWire {
+            session: session.clone(),
+            turn: UserTurn {
+                id,
+                text: text.into(),
+                at,
+                from: Caller::launcher(),
+                via: TurnVia::Typed,
+                mode: None,
+            },
+            keep: keep_nothing(),
+            parent_window: WindowKey::parse("w1").expect("window"),
+            app: None,
+        }))
+        .await
+        .expect("ask")
     }
 
     /// The companion after a restart: a new one over the same router, which remembers the
@@ -235,7 +234,7 @@ impl World {
         let clock = FixedClock::at(provenance::UnixSeconds(2_000));
         Tasks::new(
             Intents::over(InProcess::new(
-                self.router.clone(),
+                Arc::clone(&self.router),
                 caller("org.bardo.Companion", CallerRole::Companion),
             )),
             PlannerModel::new(self.infer.clone()),
@@ -274,7 +273,7 @@ pub fn companion_for(
     let clock = FixedClock::at(UnixSeconds(3_000));
     Tasks::new(
         Intents::over(InProcess::new(
-            router.clone(),
+            Arc::clone(router),
             caller("org.bardo.Companion", CallerRole::Companion),
         )),
         PlannerModel::new(infer).with_open_options(companion_tasks::open_options(card)),
@@ -287,14 +286,14 @@ pub fn companion_for(
 /// A hub over the world, whose helpers' models are the scripts named (a helper with none has an
 /// empty script, which a model that is asked answers with a closed session).
 pub fn hub_with(w: &World, scripts: &[(&str, &ScriptedInfer)]) -> TestHub {
-    let router = w.router.clone();
+    let router = Arc::clone(&w.router);
     let scripts: BTreeMap<String, ScriptedInfer> = scripts
         .iter()
         .map(|(name, infer)| ((*name).to_owned(), (*infer).clone()))
         .collect();
     Hub::new(
         w.restarted(),
-        w.companion.shared.clone(),
+        Arc::clone(&w.companion.shared),
         Arc::new(TokioSpawn),
         move |card| {
             let infer = scripts.get(card.name.as_str()).cloned().unwrap_or_default();

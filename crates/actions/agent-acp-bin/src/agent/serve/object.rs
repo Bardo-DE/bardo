@@ -21,7 +21,7 @@ impl Object {
         handover: String,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
-        let sender = header.sender().map(|s| s.as_str());
+        let sender = header.sender().map(zbus::names::UniqueName::as_str);
         require(&*self.callers, sender, &[COMPANIOND]).await?;
         let ask: HandOver =
             serde_json::from_str(&handover).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
@@ -29,7 +29,7 @@ impl Object {
     }
 
     async fn wait(&self, turn: String, #[zbus(header)] header: Header<'_>) -> fdo::Result<String> {
-        let sender = header.sender().map(|s| s.as_str());
+        let sender = header.sender().map(zbus::names::UniqueName::as_str);
         require(&*self.callers, sender, &[COMPANIOND]).await?;
         match self.service.wait(&turn).await {
             Ok(Some(reply)) => {
@@ -45,7 +45,7 @@ impl Object {
         ask: String,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
-        let sender = header.sender().map(|s| s.as_str());
+        let sender = header.sender().map(zbus::names::UniqueName::as_str);
         require(&*self.callers, sender, &[COMPANIOND]).await?;
         let ask: AppsAsk =
             serde_json::from_str(&ask).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
@@ -58,7 +58,7 @@ impl Object {
         call: String,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
-        let sender = header.sender().map(|s| s.as_str());
+        let sender = header.sender().map(zbus::names::UniqueName::as_str);
         require(&*self.callers, sender, &[COMPANIOND]).await?;
         match self.service.apps_wait(&call).await {
             Ok(Some(reply)) => {

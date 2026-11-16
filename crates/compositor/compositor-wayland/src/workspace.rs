@@ -219,7 +219,7 @@ where
         let manager = data_init.init(
             resource,
             ManagerData {
-                pending: pending.clone(),
+                pending: Arc::clone(&pending),
             },
         );
         match consent::admit(state, client, Power::Windows) {
@@ -450,7 +450,7 @@ fn sync(bound: &mut Bound, layout: &Layout, outputs: &BTreeMap<OutputKey, Output
         }
         let data = GroupData {
             output: output.clone(),
-            pending: bound.pending.clone(),
+            pending: Arc::clone(&bound.pending),
         };
         if let Some(handle) = (spawn.group)(&spawn.display, &bound.manager, data) {
             handle.capabilities(GroupCapabilities::CreateWorkspace);
@@ -483,7 +483,7 @@ fn sync(bound: &mut Bound, layout: &Layout, outputs: &BTreeMap<OutputKey, Output
         if !bound.workspaces.contains_key(id) {
             let data = WorkspaceData {
                 space: id.clone(),
-                pending: bound.pending.clone(),
+                pending: Arc::clone(&bound.pending),
             };
             if let Some(handle) = (spawn.workspace)(&spawn.display, &bound.manager, data) {
                 handle.id(id.as_str().to_owned());

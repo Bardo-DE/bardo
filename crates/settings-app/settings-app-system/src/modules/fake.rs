@@ -46,6 +46,7 @@ pub struct FakeModules(Arc<Mutex<Vec<Arc<Place>>>>);
 
 impl FakeModules {
     /// No daemon is running until a module is hosted for it.
+    #[must_use]
     pub fn new() -> FakeModules {
         FakeModules::default()
     }

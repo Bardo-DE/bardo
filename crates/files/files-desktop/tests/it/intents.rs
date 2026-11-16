@@ -115,7 +115,7 @@ pub(super) async fn served(window: FakeWindow) -> Option<Served> {
     let window = Arc::new(window);
     let server = bus.connect().await;
     let router = bus.connect().await;
-    intents::offer_for_router(&server, window.clone(), &router)
+    intents::offer_for_router(&server, Arc::clone(&window), &router)
         .await
         .unwrap();
     Some(Served {

@@ -107,7 +107,7 @@ impl Config {
         if let Some(line) = system.notice("accountd") {
             eprintln!("{line}");
         }
-        paths.callers_system = system.path().to_owned();
+        system.path().clone_into(&mut paths.callers_system);
         let keys_var = std::env::var(KEYS_VAR).ok();
         let keys = select(keys_var.as_deref())?;
         let proc = choose_proc_root(HONOURS_PROC_ROOT, PROC_ROOT_VAR, |name| {

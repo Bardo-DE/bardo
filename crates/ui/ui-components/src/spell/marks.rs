@@ -23,6 +23,7 @@ pub struct Misspelt {
 
 impl Misspelt {
     /// The word's range, for the host's selection rects and the app's replacement.
+    #[must_use]
     pub fn range(&self) -> TextRange {
         TextRange {
             anchor: TextPosition::new(self.node.0.clone(), self.span.start),
@@ -31,6 +32,7 @@ impl Misspelt {
     }
 
     /// Whether `position` is in the word or at either end of it.
+    #[must_use]
     pub fn holds(&self, position: &TextPosition) -> bool {
         self.node == position.node && self.span.touches(position.offset.0)
     }
@@ -56,6 +58,7 @@ pub struct Typing {
 }
 
 /// The misspellings of one paragraph: its `words` that are in `wrong`.
+#[must_use]
 pub fn marks_for(
     node: &EditNode,
     text: &str,
@@ -78,6 +81,7 @@ pub fn marks_for(
 /// One paragraph's marks after its text went from `before` to `after`: a mark whose word is
 /// still whole where it was stays; one whose word moved by the text's change in length (an edit
 /// before it) moves with it; any other is dropped until the next check.
+#[must_use]
 pub fn reconcile(marks: Vec<Misspelt>, before: &str, after: &str) -> Vec<Misspelt> {
     let delta = after.len() as isize - before.len() as isize;
     marks
@@ -105,6 +109,7 @@ fn whole_at(text: &str, span: WordSpan, word: &str) -> bool {
 /// The word being typed after a read of the caret's paragraph (`text`; `changed` when it differs
 /// from the last read: the user typed in it): the word at the caret if the paragraph changed; the same word as before while the
 /// caret stays on it; otherwise none.
+#[must_use]
 pub fn typing_after(
     before: Option<Typing>,
     caret: Option<&TextPosition>,

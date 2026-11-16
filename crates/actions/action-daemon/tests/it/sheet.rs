@@ -31,7 +31,7 @@ fn request(id: &str, expires: u32) -> ConfirmRequest {
         taint: TaintNote::Clean,
         offer: ConfirmOffer::OnceOrFromTerminal,
         always: Default::default(),
-        limits: Default::default(),
+        limits: SheetLimits::default(),
         gesture: Gesture::Press,
         anchor: Anchor::Centre,
         expires: Seconds(expires),
@@ -82,7 +82,7 @@ async fn desk() -> Desk {
     let daemon = bus.connect().await;
     let config = IntentdConfig::shipped().expect("the shipped configuration");
     let who = identity(&dir, &daemon);
-    let sheet = SheetConfirmer::trusting(daemon, Arc::new(config.clone()), who.clone())
+    let sheet = SheetConfirmer::trusting(daemon, Arc::new(config.clone()), Arc::clone(&who))
         .waiting(Duration::from_millis(100));
     Desk {
         _dir: dir,
@@ -221,7 +221,7 @@ async fn gated_desk(agents: bool) -> Desk {
     let gate = action_daemon::AcpGate::shut();
     gate.set_agents(agents);
     let who = identity(&dir, &daemon);
-    let sheet = SheetConfirmer::trusting(daemon, Arc::new(config.clone()), who.clone())
+    let sheet = SheetConfirmer::trusting(daemon, Arc::new(config.clone()), Arc::clone(&who))
         .gated(
             gate,
             &action_daemon::ProcRoot::Honoured(dir.path().join("proc")),

@@ -22,7 +22,7 @@ impl Table {
     fn with_cell(&self, row: usize, column: usize, text: &str) -> Vec<Vec<String>> {
         let mut next = self.cells.clone();
         if let Some(cell) = next.get_mut(row).and_then(|cells| cells.get_mut(column)) {
-            *cell = text.to_owned();
+            text.clone_into(cell);
         }
         next
     }

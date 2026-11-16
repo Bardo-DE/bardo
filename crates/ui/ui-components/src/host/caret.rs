@@ -32,6 +32,7 @@ pub enum InitialCaret {
 
 /// Where the stem of the file name `text` ends, in bytes: at its last dot, unless the dot starts
 /// the name (".bashrc" is all stem) or there is none, when it ends with the text.
+#[must_use]
 pub fn stem_end(text: &str) -> usize {
     match text.rfind('.') {
         Some(dot) if dot > 0 => dot,
@@ -59,6 +60,7 @@ pub enum FieldSelection {
 }
 
 /// Where a caret at byte `focus` of `text`, with the selection `collapsed` or not, sits.
+#[must_use]
 pub fn caret_at(text: &str, focus: usize, collapsed: bool) -> Caret {
     if collapsed && focus >= text.len() {
         Caret::AtEnd

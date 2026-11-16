@@ -228,7 +228,7 @@ fn grip<K: Clone + PartialEq + 'static>(
                 rows.peek()
                     .iter()
                     .find(|(held, _)| held == wanted)
-                    .map(|(_, element)| element.clone())
+                    .map(|(_, element)| Rc::clone(element))
             })
             .collect();
         spawn(async move {

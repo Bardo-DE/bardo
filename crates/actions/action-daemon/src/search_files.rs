@@ -10,6 +10,7 @@ use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 /// The directory a data directory keeps search files in.
+#[must_use]
 pub fn search_dir(data: &Path) -> PathBuf {
     data.join("bardo").join("actions").join("search")
 }

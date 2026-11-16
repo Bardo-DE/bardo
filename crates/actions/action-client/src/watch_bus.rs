@@ -47,12 +47,14 @@ impl Events for Signals {
                 match next {
                     Either::Left((Some(Ok(message)), _)) => {
                         let header = message.header();
-                        let ours = header.sender().map(|s| s.as_str()) == Some(self.owner.as_str())
-                            && header.path().map(|p| p.as_str()) == Some(self.path.as_str());
+                        let ours = header.sender().map(zbus::names::UniqueName::as_str)
+                            == Some(self.owner.as_str())
+                            && header.path().map(zbus::zvariant::ObjectPath::as_str)
+                                == Some(self.path.as_str());
                         if !ours {
                             continue;
                         }
-                        match header.member().map(|m| m.as_str()) {
+                        match header.member().map(zbus::names::MemberName::as_str) {
                             Some("Progress") => {
                                 let text: String = message.body().deserialize().map_err(bus)?;
                                 let progress: CallProgress = serde_json::from_str(&text)

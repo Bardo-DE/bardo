@@ -1,4 +1,4 @@
-//! SpacesBar: Mission Control's strip of Spaces along the top edge (design/04-COMPONENTS.md
+//! `SpacesBar`: Mission Control's strip of Spaces along the top edge (design/04-COMPONENTS.md
 //! section 62).
 
 pub mod layout;

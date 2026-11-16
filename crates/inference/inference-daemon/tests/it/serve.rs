@@ -389,13 +389,13 @@ async fn audio_reaches_the_engine_through_the_machine_and_end_of_audio_too() {
     rig.client.send(&pcm(0, 160), &[]).await;
     rig.client.send(&pcm(160, 160), &[]).await;
     // An out-of-order frame would end the turn; these are in order, so both arrive.
-    let audio = rig.runner.audio.clone();
+    let audio = Arc::clone(&rig.runner.audio);
     eventually("both frames reached the engine", || {
         audio.lock().expect("lock").len() == 2
     })
     .await;
     rig.client.send(&ClientFrame::EndOfAudio, &[]).await;
-    let ended = rig.runner.audio_ended.clone();
+    let ended = Arc::clone(&rig.runner.audio_ended);
     eventually("end of audio reached the engine", || {
         *ended.lock().expect("lock") == 1
     })

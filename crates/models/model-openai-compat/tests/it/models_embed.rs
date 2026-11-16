@@ -76,11 +76,11 @@ fn llama_server_props_report_the_loaded_context_per_slot() {
 fn a_models_list_with_a_trained_context_keeps_both() {
     let body = json!({"data": [
         {"id": "m", "meta": {"n_ctx_train": 40960}, "max_model_len": 8192},
-        {"id": "router", "context_length": 128000},
+        {"id": "router", "context_length": 128_000},
     ]});
     assert_eq!(
         models(Flavor::OpenRouter, body).unwrap(),
-        vec![info("m", 8192, 40960), info("router", 128000, 128000)]
+        vec![info("m", 8192, 40960), info("router", 128_000, 128_000)]
     );
 }
 

@@ -1,4 +1,4 @@
-//! MenuItem: what a menu lists, as data, and how it draws.
+//! `MenuItem`: what a menu lists, as data, and how it draws.
 
 pub(crate) mod context;
 #[allow(clippy::module_inception)] // The layout names the file for its one concept.

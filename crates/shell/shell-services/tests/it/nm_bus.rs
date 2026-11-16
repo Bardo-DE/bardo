@@ -221,10 +221,10 @@ async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
     }));
     let connection = zbus::connection::Builder::address(bus.address.as_str())
         .and_then(|b| b.name("org.freedesktop.NetworkManager"))
-        .and_then(|b| b.serve_at(NM, Manager(shared.clone())))
+        .and_then(|b| b.serve_at(NM, Manager(Arc::clone(&shared))))
         .and_then(|b| b.serve_at(ACTIVE, Active))
-        .and_then(|b| b.serve_at(DEVICE, Device(shared.clone())))
-        .and_then(|b| b.serve_at(DEVICE, Wireless(shared.clone())))
+        .and_then(|b| b.serve_at(DEVICE, Device(Arc::clone(&shared))))
+        .and_then(|b| b.serve_at(DEVICE, Wireless(Arc::clone(&shared))))
         .and_then(|b| b.serve_at(AP, AccessPoint))
         .and_then(|b| b.serve_at(SETTINGS, Settings))
         .and_then(|b| b.serve_at(SAVED, Saved));

@@ -1,4 +1,4 @@
-//! ShortcutField: the control that records a keyboard shortcut (System Settings' shortcut
+//! `ShortcutField`: the control that records a keyboard shortcut (System Settings' shortcut
 //! recorder). It shows the chord it was given; a click, or Return or Space with the keyboard on
 //! it, makes it listen ("Type shortcut"); the next combination is offered to the caller, Escape
 //! gives up, Backspace or Delete clears. While it listens it keeps every key it hears from the
@@ -9,7 +9,7 @@
 //! `value`.
 //!
 //! Markup: `span.ds-shortcut-field[data-recording][data-clash]` holding
-//! `button.ds-shortcut-field-well` (with `more`, a `span.ds-shortcut-field-caps` of a `kbd.ds-key-equivalent-key` cap per key, KeyEquivalent's cap style) and, when another action uses the chord, a
+//! `button.ds-shortcut-field-well` (with `more`, a `span.ds-shortcut-field-caps` of a `kbd.ds-key-equivalent-key` cap per key, `KeyEquivalent`'s cap style) and, when another action uses the chord, a
 //! `span.ds-shortcut-field-clash`.
 
 use crate::components::controls::press::{ActivationKeys, activates, disabled};

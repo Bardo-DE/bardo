@@ -30,6 +30,7 @@ pub struct DesktopCallers {
 
 impl DesktopCallers {
     /// Callers judged against `table`.
+    #[must_use]
     pub fn new(table: Table) -> DesktopCallers {
         DesktopCallers { table }
     }
@@ -37,6 +38,7 @@ impl DesktopCallers {
     /// Callers judged against the table the desktop ships (`/etc/bardo/desktop-callers.toml` and
     /// the files beside it). When it cannot be loaded (missing, or writable by someone other than
     /// root) the table is empty: nobody is a service, and every call is refused.
+    #[must_use]
     pub fn from_system() -> DesktopCallers {
         let table = TableFiles::desktop()
             .load(&RealProc::system())

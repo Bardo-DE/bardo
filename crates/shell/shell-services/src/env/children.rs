@@ -69,6 +69,7 @@ pub struct RecordedChildren {
 
 impl RecordedChildren {
     /// A recorder, shared with the `Env` it is put in.
+    #[must_use]
     pub fn shared() -> Arc<RecordedChildren> {
         Arc::new(RecordedChildren::default())
     }
@@ -103,7 +104,7 @@ mod tests {
             token: Some("t".to_owned()),
             group: ProcessGroup::Own,
         };
-        assert!(recorder.detach(&start).is_ok());
+        recorder.detach(&start).unwrap();
         assert_eq!(recorder.started(), [start]);
     }
 }

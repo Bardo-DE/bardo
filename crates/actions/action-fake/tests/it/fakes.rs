@@ -294,7 +294,7 @@ async fn the_scripted_confirmer_pops_in_order_and_records_requests() {
         taint: TaintNote::Clean,
         offer: ConfirmOffer::OnceOnly,
         always: Default::default(),
-        limits: Default::default(),
+        limits: SheetLimits::default(),
         gesture: Gesture::Press,
         anchor: Anchor::Centre,
         expires: Seconds(120),
@@ -369,7 +369,7 @@ async fn a_client_reaches_the_router_in_process_behind_its_feature() {
         },
         roles: BTreeSet::from([CallerRole::Launcher]),
     };
-    let intents = Intents::over(InProcess::new(router.clone(), launcher));
+    let intents = Intents::over(InProcess::new(std::sync::Arc::clone(&router), launcher));
     let end = intents
         .perform(
             CallRequest {
@@ -417,7 +417,7 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
         },
         roles: BTreeSet::from([CallerRole::Cua]),
     };
-    let intents = Intents::over(InProcess::new(router.clone(), cuad));
+    let intents = Intents::over(InProcess::new(std::sync::Arc::clone(&router), cuad));
     let run = RunId::parse("r-1").expect("run");
     intents
         .session_open(SessionOpen {

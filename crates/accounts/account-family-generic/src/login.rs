@@ -119,7 +119,7 @@ impl DynLogin for Platform {
 
 async fn login<C: Connect>(plan: RelayPlan, connect: &C) -> Result<(), SignInFault> {
     let up = Arc::new(AtomicBool::new(false));
-    let app = Probe(up.clone());
+    let app = Probe(Arc::clone(&up));
     let end = tokio::time::timeout(WITHIN, relay(plan, app, connect))
         .await
         .map_err(|_| SignInFault::Unreachable)?;

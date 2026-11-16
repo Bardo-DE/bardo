@@ -18,6 +18,7 @@ pub enum Cgroup<'a> {
 
 impl Cgroup<'_> {
     /// The one line of `/proc/<pid>/cgroup`.
+    #[must_use]
     pub fn line(self) -> String {
         let slice = "0::/user.slice/user-1000.slice/user@1000.service/app.slice";
         match self {
@@ -68,6 +69,7 @@ pub async fn as_app<T>(world: &World, app: &str, work: impl std::future::Future<
 }
 
 /// The pid the fake proc root names as the main process of service unit `name`, if any.
+#[must_use]
 pub fn unit_main(root: &Path, name: &str) -> Option<String> {
     std::fs::read_to_string(root.join(format!("proc/units/{name}.service"))).ok()
 }

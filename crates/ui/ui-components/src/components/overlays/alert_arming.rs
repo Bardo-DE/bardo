@@ -26,6 +26,7 @@ pub enum Arming {
 
 impl Arming {
     /// The state of an alert that appears at `at` with `delay` (none: armed at once).
+    #[must_use]
     pub fn after(at: Stamp, delay: Option<Duration>) -> Arming {
         match delay {
             Some(delay) => Arming::Waiting {
@@ -36,6 +37,7 @@ impl Arming {
     }
 
     /// What the buttons are while this holds: disabled until armed.
+    #[must_use]
     pub fn availability(self) -> Availability {
         match self {
             Arming::Armed => Availability::Enabled,
@@ -78,6 +80,7 @@ pub enum Route {
 /// What `input` comes to for an alert whose buttons have `roles`: nothing until it is armed, then
 /// Return presses the default, Escape reports a dismissal the caller listens for or else presses
 /// Cancel, and a press is that button's.
+#[must_use]
 pub fn route(arming: Arming, input: AlertInput, roles: &[AlertRole], hearing: Hearing) -> Route {
     let press = |index: Option<usize>| index.map_or(Route::Nothing, Route::Press);
     match (arming, input, hearing) {

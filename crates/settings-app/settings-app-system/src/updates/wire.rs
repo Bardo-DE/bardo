@@ -76,10 +76,10 @@ mod tests {
     fn a_property_missing_or_of_another_type_is_a_service_that_makes_no_sense() {
         let mut missing = all();
         missing.remove("Notes");
-        assert!(wire_of(&missing).is_err());
+        wire_of(&missing).unwrap_err();
         let mut odd = all();
         odd.insert("Size".to_owned(), owned("big"));
-        assert!(wire_of(&odd).is_err());
+        wire_of(&odd).unwrap_err();
         // An older service has no kind, and an odd one is no kind: neither is a service that
         // makes no sense, both are a plain failure.
         let mut old = all();

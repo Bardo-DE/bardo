@@ -1,4 +1,4 @@
-//! MenuBar: the model of an app's menu bar (`NSMenu` mainMenu, design/30 section 2.4): the six
+//! `MenuBar`: the model of an app's menu bar (`NSMenu` mainMenu, design/30 section 2.4): the six
 //! menus in the order the Mac draws them (App, File, Edit, View, Window, Help), each with its
 //! standard items and their standard key equivalents, Help led by its search. Data only: the bar
 //! that draws it is the shell's, and a menu's rows are `MenuItem`s the one `Menu` draws.
@@ -155,17 +155,20 @@ impl<T: Clone> MenuBarModel<T> {
     }
 
     /// The menus, in the bar's order.
+    #[must_use]
     pub fn menus(&self) -> &[BarMenu<T>] {
         &self.menus
     }
 
     /// The menu of `section`.
+    #[must_use]
     pub fn menu(&self, section: BarSection) -> Option<&BarMenu<T>> {
         self.menus.iter().find(|menu| menu.section == section)
     }
 
     /// The same bar with the app's own `items` after `section`'s standard ones, a rule between.
     /// The Help menu keeps its search first, so the app's items follow its help.
+    #[must_use]
     pub fn with_items(self, section: BarSection, items: Vec<MenuItem<T>>) -> Self {
         let menus = self
             .menus
@@ -208,6 +211,7 @@ impl<T: Clone> MenuBarModel<T> {
 
 /// The menu a key press opens rather than an item it picks: `⌘?` opens Help, with its search
 /// focused.
+#[must_use]
 pub fn opens(pressed: &Shortcut) -> Option<BarSection> {
     (pressed == &Shortcut::standard(StandardAction::Help)).then_some(BarSection::Help)
 }

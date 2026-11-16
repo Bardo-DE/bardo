@@ -170,7 +170,7 @@ fn system_menu(session: &Session) -> Vec<MenuItem<BarPick>> {
             availability,
             hint: None,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         }
     };
     vec![
@@ -261,7 +261,7 @@ fn item(title: String, value: BarPick, check: Option<Check>) -> MenuItem<BarPick
         availability: Availability::Enabled,
         hint: None,
         keep_open: false,
-        text: Default::default(),
+        text: ItemText::default(),
     }
 }
 

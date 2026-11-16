@@ -1,4 +1,4 @@
-//! SidePanel: a full-height panel at the right edge of its root, for the notification center
+//! `SidePanel`: a full-height panel at the right edge of its root, for the notification center
 //! (design/30 section 2.5, design/20 section 1.6: "center: `Overlay` panel anchored right",
 //! material `Popover`). Shell only; macOS has no counterpart but Notification Center's own side
 //! sheet.

@@ -39,6 +39,7 @@ pub enum Problem {
 
 impl Problem {
     /// The sentence shown to the person.
+    #[must_use]
     pub fn plain(self) -> &'static str {
         match self {
             Self::NoKey => {
@@ -72,6 +73,7 @@ impl Problem {
 
     /// The stable slug programs read (`ProblemKind` on the bus). Never shown to a person; it never
     /// changes once released, so a program can match on it where it must not match on [`Self::plain`].
+    #[must_use]
     pub fn kind(self) -> &'static str {
         match self {
             Self::NoKey => "no-key",
@@ -92,6 +94,7 @@ impl Problem {
     }
 
     /// From the exit status of the privileged helper (see `bardo-updater-apply --help`).
+    #[must_use]
     pub fn from_apply(failure: &ApplyFailure) -> Self {
         match failure.code {
             Some(126 | 127) => Self::NotAllowed,

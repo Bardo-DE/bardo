@@ -89,7 +89,7 @@ pub async fn run_scripted(
     for task in picked(corpus, only) {
         for script in &task.scripts {
             let arena = corpus.arena(task)?;
-            let mut model = ScriptModel::new(arena.stage.clone(), &script.steps)
+            let mut model = ScriptModel::new(Arc::clone(&arena.stage), &script.steps)
                 .map_err(|e| SetupError::Id(e.to_string()))?;
             if let Some(served) = served_by(script.served)? {
                 model = model.served_by(served);
@@ -127,7 +127,7 @@ pub async fn run_cassette(
             continue;
         };
         let arena = corpus.arena(task)?;
-        let model = ScriptModel::new(arena.stage.clone(), &take.steps)
+        let model = ScriptModel::new(Arc::clone(&arena.stage), &take.steps)
             .map_err(|e| SetupError::Id(e.to_string()))?;
         let record = play(&arena, model, &take.player, Stopwatch::Still).await?;
         checks.push(Check {
@@ -204,7 +204,7 @@ pub async fn run_live_until<P: Provider + 'static>(
                 ..task.clone()
             };
             let arena = corpus.arena(&task)?;
-            let model = ProviderModel::new(provider.clone(), plan.clone(), lot.served.clone());
+            let model = ProviderModel::new(Arc::clone(&provider), plan.clone(), lot.served.clone());
             records.push(play(&arena, model, lot.player, Stopwatch::Wall).await?);
         }
     }

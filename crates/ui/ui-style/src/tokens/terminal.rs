@@ -140,25 +140,27 @@ impl TerminalColour {
         match self {
             // The card's ink and surface (`ColourToken::Ink`, `Surface`), the dark ground being
             // the window paper's, which a terminal sits deepest in.
-            TerminalColour::Fg => (rgb(0x202020), rgb(0xE8E8E8)),
-            TerminalColour::Bg => (rgb(0xFFFFFF), rgb(0x1E1E1E)),
-            TerminalColour::Black => (rgb(0x303030), rgb(0x8E8E93)),
-            TerminalColour::Red => (rgb(0xE9152D), rgb(0xFF6165)),
-            TerminalColour::Green => (rgb(0x008932), rgb(0x4AD968)),
-            TerminalColour::Yellow => (rgb(0xA16A00), rgb(0xFEDF43)),
-            TerminalColour::Blue => (rgb(0x1E6EF4), rgb(0x5CB8FF)),
-            TerminalColour::Magenta => (rgb(0xB02FC2), rgb(0xEA8DFF)),
-            TerminalColour::Cyan => (rgb(0x008198), rgb(0x3BDDEC)),
-            TerminalColour::White => (rgb(0x5C5C5C), rgb(0xD1D1D6)),
-            TerminalColour::BrightBlack => (rgb(0x6B6B6B), rgb(0xAEAEB2)),
-            TerminalColour::BrightRed => (rgb(0xC70322), rgb(0xFF9093)),
-            TerminalColour::BrightGreen => (rgb(0x007128), rgb(0x80E495)),
-            TerminalColour::BrightYellow => (rgb(0x865803), rgb(0xFEE97B)),
-            TerminalColour::BrightBlue => (rgb(0x0057DA), rgb(0x8DCDFF)),
-            TerminalColour::BrightMagenta => (rgb(0x9908AB), rgb(0xF0AFFF)),
-            TerminalColour::BrightCyan => (rgb(0x066B7E), rgb(0x76E7F2)),
-            TerminalColour::BrightWhite => (rgb(0x4A4A4A), rgb(0xF5F5F7)),
-            TerminalColour::Cursor | TerminalColour::Selection => (rgb(0x000000), rgb(0x000000)),
+            TerminalColour::Fg => (rgb(0x0020_2020), rgb(0x00E8_E8E8)),
+            TerminalColour::Bg => (rgb(0x00FF_FFFF), rgb(0x001E_1E1E)),
+            TerminalColour::Black => (rgb(0x0030_3030), rgb(0x008E_8E93)),
+            TerminalColour::Red => (rgb(0x00E9_152D), rgb(0x00FF_6165)),
+            TerminalColour::Green => (rgb(0x0000_8932), rgb(0x004A_D968)),
+            TerminalColour::Yellow => (rgb(0x00A1_6A00), rgb(0x00FE_DF43)),
+            TerminalColour::Blue => (rgb(0x001E_6EF4), rgb(0x005C_B8FF)),
+            TerminalColour::Magenta => (rgb(0x00B0_2FC2), rgb(0x00EA_8DFF)),
+            TerminalColour::Cyan => (rgb(0x0000_8198), rgb(0x003B_DDEC)),
+            TerminalColour::White => (rgb(0x005C_5C5C), rgb(0x00D1_D1D6)),
+            TerminalColour::BrightBlack => (rgb(0x006B_6B6B), rgb(0x00AE_AEB2)),
+            TerminalColour::BrightRed => (rgb(0x00C7_0322), rgb(0x00FF_9093)),
+            TerminalColour::BrightGreen => (rgb(0x0000_7128), rgb(0x0080_E495)),
+            TerminalColour::BrightYellow => (rgb(0x0086_5803), rgb(0x00FE_E97B)),
+            TerminalColour::BrightBlue => (rgb(0x0000_57DA), rgb(0x008D_CDFF)),
+            TerminalColour::BrightMagenta => (rgb(0x0099_08AB), rgb(0x00F0_AFFF)),
+            TerminalColour::BrightCyan => (rgb(0x0006_6B7E), rgb(0x0076_E7F2)),
+            TerminalColour::BrightWhite => (rgb(0x004A_4A4A), rgb(0x00F5_F5F7)),
+            TerminalColour::Cursor | TerminalColour::Selection => {
+                (rgb(0x0000_0000), rgb(0x0000_0000))
+            }
         }
     }
 }

@@ -115,7 +115,7 @@ pub fn Chip(
             "data-hue": variant.hue(),
             "data-status": variant.status(),
             "data-pressable": onpress.map(|_| ""),
-            "data-state": onpress.and(pressed).map(|state| state.slug()),
+            "data-state": onpress.and(pressed).map(ui_core::word::Word::slug),
             role,
             "aria-label": aria,
             if let Some(onpress) = onpress {

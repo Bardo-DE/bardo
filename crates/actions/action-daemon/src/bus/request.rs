@@ -72,7 +72,7 @@ impl RequestObject {
         // watched request also ends itself sooner: the router takes its sheet back.
         self.closed.raise();
         if self.steer.is_none() {
-            let path = header.path().map(|p| p.to_owned());
+            let path = header.path().map(zbus::zvariant::ObjectPath::to_owned);
             if let Some(path) = path {
                 let _ = server.remove::<RequestObject, _>(path).await;
             }
@@ -124,7 +124,7 @@ fn response_of(reply: IntentsReply) -> Result<(u32, String), IntentsError> {
 /// The router's end of a watched request: progress is a `Progress` signal to the caller alone,
 /// `Proceed` and `Close` are the flags the Request object raises.
 fn watch_of(connection: zbus::Connection, to: String, at: String, steer: &Steer) -> Watch {
-    let (proceed, closed) = (steer.proceed.clone(), steer.closed.clone());
+    let (proceed, closed) = (Arc::clone(&steer.proceed), Arc::clone(&steer.closed));
     Watch::new(
         progress_to(connection, to, at),
         move || Box::pin(proceed.up()),
@@ -177,11 +177,11 @@ impl Gateway {
         let caller = self.caller(header).await?;
         let sender = header
             .sender()
-            .map(|s| s.to_owned())
+            .map(zbus::names::UniqueName::to_owned)
             .ok_or_else(|| IntentsError::NotAllowed("no sender".into()))?;
         let number = self.requests.fetch_add(1, Ordering::Relaxed) + 1;
         let path = request_path(CallId(number));
-        let handler = self.handler.clone();
+        let handler = Arc::clone(&self.handler);
         let emitting = connection.clone();
         let at = path.clone();
         let to = sender.clone();
@@ -190,7 +190,7 @@ impl Gateway {
         let steer = match watching {
             Watching::Yes => Some(Steer {
                 proceed: Flag::new(),
-                closed: closed.clone(),
+                closed: Arc::clone(&closed),
             }),
             Watching::Listening | Watching::No => None,
         };
@@ -201,7 +201,7 @@ impl Gateway {
             }
             (None, _) => Watch::none(),
         };
-        let withdrawn = closed.clone();
+        let withdrawn = Arc::clone(&closed);
         tokio::spawn(async move {
             // The object is exported before the router is asked, so its removal below always
             // finds it.

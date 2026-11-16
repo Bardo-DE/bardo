@@ -143,15 +143,15 @@ async fn ask(views: Vec<AnswerWire>, down: bool, stdout: Stdout, json: JsonFlag)
     let seen = Arc::new(Mutex::new(Seen::default()));
     let companion = Scripted {
         opener: Intents::over(InProcess::new(
-            desk.router.clone(),
+            Arc::clone(&desk.router),
             caller("org.bardo.Companion1", CallerRole::Companion),
         )),
         views,
-        seen: seen.clone(),
+        seen: Arc::clone(&seen),
         down,
     };
     let terminal = Intents::over(InProcess::new(
-        desk.router.clone(),
+        Arc::clone(&desk.router),
         caller("org.bardo.Do", CallerRole::Cli),
     ));
     let report = ask_companion(

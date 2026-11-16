@@ -787,7 +787,7 @@ mod native {
     fn Page() -> Element {
         let host = use_document_host();
         let handle = use_scroll_handle();
-        HANDLE.with(|slot| *slot.borrow_mut() = handle.clone());
+        HANDLE.with(|slot| (*slot.borrow_mut()).clone_from(&handle));
         let seen = use_signal(|| None::<Scroll>);
         let mut watch = use_signal(|| None::<ui_components::host::phase::Watch>);
         let shown = seen().map_or_else(|| "none".to_owned(), |seen| format!("{}", seen.offset.0));

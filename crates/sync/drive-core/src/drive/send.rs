@@ -894,7 +894,7 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
         inner.emit(vec![op.id().clone()]);
         drop(inner);
         let told = Told {
-            weak: weak.clone(),
+            weak: std::sync::Weak::clone(&weak),
             id: op.id().clone(),
             generation: match &op {
                 Op::Upload { generation, .. } => *generation,

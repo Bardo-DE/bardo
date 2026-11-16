@@ -47,7 +47,7 @@ impl MenuModel for Numbers {
                 availability: Availability::Enabled,
                 hint: None,
                 keep_open: false,
-                text: Default::default(),
+                text: ItemText::default(),
             })
             .collect()
     }

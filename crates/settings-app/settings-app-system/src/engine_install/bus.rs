@@ -57,6 +57,7 @@ impl fmt::Debug for OnEngines {
 impl OnEngines {
     /// The engines installed under `data_home`, the assistant looked for on `bus`, and a folder
     /// chosen through `chooser`.
+    #[must_use]
     pub fn new(bus: BusSource, chooser: Arc<OnPortal>, data_home: &Path) -> Self {
         let installs = read_host(Path::new("/"), BackendChoice::Detect).map(|host| {
             EngineInstalls::new(Parts {

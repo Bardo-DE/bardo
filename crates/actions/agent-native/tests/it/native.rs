@@ -217,7 +217,9 @@ async fn a_closed_session_takes_no_turn_and_a_fork_goes_on_from_a_point() {
     let exported = w.host.export(&child).await.expect("export");
     assert!(matches!(&exported.entries[0], SessionEntry::Opened(o) if o.forked_from.is_some()));
 
-    w.host.close(&s, EndCause::Closed).await.expect("close");
+    Box::pin(w.host.close(&s, EndCause::Closed))
+        .await
+        .expect("close");
     assert!(w.host.turn(&s, said("more")).await.is_err());
 
     w.host.resume(&child).await.expect("resume the fork");

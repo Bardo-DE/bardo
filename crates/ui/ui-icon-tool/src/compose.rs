@@ -49,7 +49,11 @@ pub fn drop_shadow(flat: &Rgba32FImage, grid: PlateGrid, t: &Template) -> Rgba32
         grid.half() - 6.0 * s,
         t.exponent,
     );
-    let shadow = tint(&shape.blurred(8.0 * s), Srgb8::hex(0x1A1E1A).unit(), 0.30);
+    let shadow = tint(
+        &shape.blurred(8.0 * s),
+        Srgb8::hex(0x001A_1E1A).unit(),
+        0.30,
+    );
     over_image(flat, &shadow)
 }
 

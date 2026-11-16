@@ -15,6 +15,7 @@ use super::icons::IconTheme;
 /// `.desktop` file that cannot be read (or is over [`ui_helpers::DESKTOP_ENTRY_CAP`], or is not text), is
 /// skipped rather than failing the scan. The walk, the ids and the shadowing are
 /// [`ui_helpers::load_entries`]'s, the same for every part of the desktop.
+#[must_use]
 pub fn scan(
     dirs: &[PathBuf],
     theme: &IconTheme,

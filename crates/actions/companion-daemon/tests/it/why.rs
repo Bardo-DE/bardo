@@ -61,7 +61,7 @@ const LINE: &str = "Answered by Scripted One via OpenRouter (unloaded Qwen 3, al
 async fn the_answer_keeps_the_turns_route_and_the_line_reads_it() {
     let mut w = world(vec![Say::Routed(hosted(), Box::new(words("Done.")))]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     let notes = w.companion.shared.route_of(&opened.task).expect("notes");
     assert_eq!(footer_line(&notes), LINE);
     assert_eq!(notes.len(), 1);
@@ -83,7 +83,7 @@ async fn the_answer_keeps_the_turns_route_and_the_line_reads_it() {
 async fn a_turn_that_announces_nothing_leaves_no_route() {
     let mut w = world(vec![words("Plain.")]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     // The scripted model sends only `Finished`: no stage, no route.
     assert_eq!(w.companion.shared.route_of(&opened.task), Some(vec![]));
 }
@@ -99,7 +99,7 @@ async fn a_named_model_that_cannot_serve_is_a_refusal_that_says_which_and_why() 
         Box::new(Say::Refuse(InferRefusal::Unavailable)),
     )]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     let view: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(view.phase, AnswerPhase::Failed);
     assert_eq!(
@@ -114,7 +114,7 @@ async fn a_named_model_that_cannot_serve_is_a_refusal_that_says_which_and_why() 
 async fn no_model_chosen_asks_the_person_to_choose_one() {
     let mut w = world(vec![Say::Refuse(InferRefusal::NoModelChosen)]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     let view: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(view.phase, AnswerPhase::Failed);
     assert_eq!(view.body, AnswerBody::Refused(RefusalWire::NoModel));
@@ -124,7 +124,7 @@ async fn no_model_chosen_asks_the_person_to_choose_one() {
 async fn automatic_with_no_model_that_uses_apps_says_so_in_plain_words() {
     let mut w = world(vec![Say::Refuse(InferRefusal::NoModelUsesApps)]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     let view: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(view.phase, AnswerPhase::Failed);
     assert_eq!(
@@ -146,8 +146,8 @@ async fn the_answer_object_serves_the_routing_property() {
     let who = who(&server, scratch.path());
     serve_on_rooted(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
     )
     .await

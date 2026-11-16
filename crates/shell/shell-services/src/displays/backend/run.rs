@@ -185,7 +185,7 @@ impl Service {
     fn start_ddc(&mut self) {
         let (jobs, rx) = std_mpsc::channel();
         let (tx, displays) = watch::channel(Vec::new());
-        let bus = self.paths.ddc.clone();
+        let bus = Arc::clone(&self.paths.ddc);
         tokio::task::spawn_blocking(move || worker::run(bus, rx, tx));
         let _ = jobs.send(DdcJob::Probe);
         self.ddc = Some(Ddc { jobs, displays });

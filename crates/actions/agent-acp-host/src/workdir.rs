@@ -43,6 +43,7 @@ fn abs(path: &Path) -> Result<AbsPath, WorkdirFault> {
 
 impl Workdir {
     /// The real directory.
+    #[must_use]
     pub fn real(&self) -> &AbsPath {
         &self.0
     }

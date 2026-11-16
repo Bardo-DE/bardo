@@ -31,6 +31,7 @@ pub enum Attach {
 
 impl Attach {
     /// The `data-attach` value.
+    #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
             Attach::Window => "window",

@@ -1,4 +1,4 @@
-//! PaneSwitcher: a pane and its detail in one place, switched by a push
+//! `PaneSwitcher`: a pane and its detail in one place, switched by a push
 //! (design/13-BEHAVIOUR-menus-windows.md section 13.3.7: a tile's chevron opens its detail pane
 //! in place).
 //!

@@ -1,4 +1,4 @@
-//! FieldRow and FieldGroup: a form's rows (`NSGridView`, design/30 section 2.2). A row is a
+//! `FieldRow` and `FieldGroup`: a form's rows (`NSGridView`, design/30 section 2.2). A row is a
 //! label column and a control column with a help line under the label; a group is the inset card
 //! rows sit in, a hairline between them, with an optional title above.
 //!

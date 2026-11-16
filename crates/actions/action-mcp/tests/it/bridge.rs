@@ -62,14 +62,14 @@ type Seen = Arc<Mutex<Vec<EdgeRequest>>>;
 fn host(socket: &Path, reply: impl Fn(&EdgeRequest) -> EdgeReply + Send + Sync + 'static) -> Seen {
     let listener = UnixListener::bind(socket).expect("socket");
     let seen = Seen::default();
-    let record = seen.clone();
+    let record = Arc::clone(&seen);
     let reply = Arc::new(reply);
     tokio::spawn(async move {
         loop {
             let Ok((stream, _)) = listener.accept().await else {
                 return;
             };
-            let (record, reply) = (record.clone(), reply.clone());
+            let (record, reply) = (Arc::clone(&record), reply.clone());
             tokio::spawn(async move {
                 let (read, mut write) = stream.into_split();
                 let mut lines = BufReader::new(read).lines();

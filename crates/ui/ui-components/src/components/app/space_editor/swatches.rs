@@ -1,4 +1,4 @@
-//! PresetSwatches: a Space's colour as one row of the eight presets and a ninth, Custom, for a
+//! `PresetSwatches`: a Space's colour as one row of the eight presets and a ninth, Custom, for a
 //! settings page that edits a Space in a form row (a name field above it, a theme below) rather
 //! than in the editor. Custom opens the editor's colour on its own in a small popover: the field,
 //! the stops and the grain ([`super::colour::SpaceColour`] without its presets, which the row

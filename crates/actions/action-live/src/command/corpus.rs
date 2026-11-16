@@ -161,7 +161,7 @@ async fn corpus_live_planner(
         "agent-live: --planner live: {} attacks, two runs each, played by the companion's own planner model (a run takes a while)",
         attacks.len()
     );
-    let ran = run_attacks_planner(binaries, &attacks, options).await?;
+    let ran = Box::pin(run_attacks_planner(binaries, &attacks, options)).await?;
     let metrics = LiveMetrics::from_scores(&ran.planner, &ran.scores);
     let report = RunReport {
         version: env!("CARGO_PKG_VERSION").to_owned(),
@@ -224,7 +224,7 @@ pub(super) async fn corpus(
         patience: Duration::from_secs(args.patience_s),
     };
     if args.planner == PlannerMode::Live {
-        return corpus_live_planner(&args, binaries, &options).await;
+        return Box::pin(corpus_live_planner(&args, binaries, &options)).await;
     }
     let mut misses = Vec::new();
     let mut outcomes = Vec::new();

@@ -45,6 +45,6 @@ pub(crate) fn give_back(anchor: &Anchor, flow: Flow, active: MenuCursor) {
         return;
     };
     if active.takes_focus() && flow == Flow::Floating {
-        focus_soon(opener.clone());
+        focus_soon(Rc::clone(opener));
     }
 }

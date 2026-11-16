@@ -26,7 +26,7 @@ fn recorded() -> (
     impl Fn(&GitProblem) + Send + Sync,
 ) {
     let seen = Arc::new(Mutex::new(Vec::new()));
-    let sink = seen.clone();
+    let sink = Arc::clone(&seen);
     let tell = move |problem: &GitProblem| {
         if let Ok(mut all) = sink.lock() {
             all.push(problem.clone());

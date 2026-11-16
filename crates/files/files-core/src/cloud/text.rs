@@ -34,7 +34,7 @@ text! {
     DriveId
 }
 text! {
-    /// A drive's provider as people say it: "OneDrive", "Google Drive".
+    /// A drive's provider as people say it: "`OneDrive`", "Google Drive".
     ProviderName
 }
 text! {

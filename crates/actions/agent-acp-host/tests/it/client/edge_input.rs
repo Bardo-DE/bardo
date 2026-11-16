@@ -15,7 +15,7 @@ use serde_json::{Value, json};
 /// the program still holds only this session's socket and token.
 #[tokio::test]
 async fn an_agent_that_edits_the_entry_it_was_given_gains_nothing() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             // A different socket path, the token as given.
             Act::Bridge {
@@ -56,9 +56,9 @@ async fn an_agent_that_edits_the_entry_it_was_given_gains_nothing() {
             Act::Stop("end_turn"),
         ]],
         vec![],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     assert_eq!(
         rig.agent.reply("path").expect_err("no such socket"),
         json!("unreachable")
@@ -76,7 +76,7 @@ async fn an_agent_that_edits_the_entry_it_was_given_gains_nothing() {
 /// Why: a line that is not a request, or is far too long, closes nothing else and does nothing.
 #[tokio::test]
 async fn garbage_and_oversized_lines_are_refused_without_effect() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             Act::Bridge {
                 tag: "text",
@@ -94,9 +94,9 @@ async fn garbage_and_oversized_lines_are_refused_without_effect() {
             Act::Stop("end_turn"),
         ]],
         vec![],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     assert_eq!(rig.agent.reply("text").expect("reply"), json!("refused"));
     assert!(rig.agent.reply("big").is_err() || rig.agent.reply("big") == Ok(json!("refused")));
     assert!(
@@ -161,7 +161,7 @@ async fn helper_menu(
 /// Why: a helper's agent app is offered what a native helper is: its card's apps, not the rest.
 #[tokio::test]
 async fn a_helpers_agent_is_offered_its_cards_actions_and_not_another_apps() {
-    let (rig, dir) = with_mail(Vec::new(), Vec::new()).await;
+    let (rig, dir) = Box::pin(with_mail(Vec::new(), Vec::new())).await;
     let (names, _) = helper_menu(&rig, &dir, "org.bardo.Mail").await;
     assert!(
         names.iter().any(|n| n == "mail__mail_thread_read"),

@@ -154,7 +154,7 @@ async fn serve_on(
         )
     });
     let helpers = LiveHelpers::over(talking).await;
-    let host: LiveHost = NativeHost::over(companion, log.clone()).with_desk(desk);
+    let host: LiveHost = NativeHost::over(companion, Arc::clone(&log)).with_desk(desk);
     let lines = capped_lines(BufReader::new(stdin()), stdout());
     let mut server = Server::new(editor, host, log, SystemClock).with_helpers(helpers);
     // The editor closing the pipe is the normal end.

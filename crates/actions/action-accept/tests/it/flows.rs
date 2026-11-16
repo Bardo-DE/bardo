@@ -41,9 +41,8 @@ async fn flow_a_prompt_plan_confirm_perform_journal_undo() {
 
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "forward the Lisbon receipts to accounting")
-        .await;
+    let mut answer =
+        Box::pin(launcher.say(&opened, "forward the Lisbon receipts to accounting")).await;
     let history = answer.history_until(settled).await;
     let last = history.last().expect("a view").clone();
     if last.phase != AnswerPhase::Done {
@@ -153,9 +152,8 @@ async fn flow_a_the_person_refuses_the_sheet_and_nothing_is_sent() {
 
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "forward the Lisbon receipts to accounting")
-        .await;
+    let mut answer =
+        Box::pin(launcher.say(&opened, "forward the Lisbon receipts to accounting")).await;
     let history = answer.history_until(settled).await;
     assert_eq!(
         history.last().map(|v| v.phase.clone()),
@@ -208,9 +206,7 @@ async fn flow_c_an_injected_body_never_reaches_the_planner_and_the_send_still_as
 
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "summarise this thread and reply")
-        .await;
+    let mut answer = Box::pin(launcher.say(&opened, "summarise this thread and reply")).await;
     let history = answer.history_until(settled).await;
     if history.last().map(|v| v.phase.clone()) != Some(AnswerPhase::Done) {
         fail(&world, &format!("{history:#?}"));
@@ -270,9 +266,7 @@ async fn flow_c_a_reply_to_the_related_sender_is_a_handle_and_still_asks_quoted(
 
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "summarise this thread and reply")
-        .await;
+    let mut answer = Box::pin(launcher.say(&opened, "summarise this thread and reply")).await;
     let history = answer.history_until(settled).await;
     if history.last().map(|v| v.phase.clone()) != Some(AnswerPhase::Done) {
         fail(&world, &format!("{history:#?}"));
@@ -324,9 +318,8 @@ async fn flow_a_the_answer_shows_the_sheet_while_it_waits() {
     world.sheet.will_when_released(SheetChoice::Once);
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "forward the Lisbon receipts to accounting")
-        .await;
+    let mut answer =
+        Box::pin(launcher.say(&opened, "forward the Lisbon receipts to accounting")).await;
     let mut history = answer.history_until(waiting_on_sheet).await;
     world.sheet.release().await;
     history.extend(answer.history_until(settled).await);
@@ -346,9 +339,7 @@ async fn first_use_of_mail_in_a_space_asks_nothing_for_a_read() {
     let world = World::start(&binaries(), Consent::FirstUse, FIRST_USE).await;
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "look for Lisbon and Porto mail")
-        .await;
+    let mut answer = Box::pin(launcher.say(&opened, "look for Lisbon and Porto mail")).await;
     let history = answer.history_until(settled).await;
     assert_eq!(
         history.last().map(|v| v.phase.clone()),

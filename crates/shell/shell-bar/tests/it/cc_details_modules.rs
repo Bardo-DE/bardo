@@ -21,7 +21,7 @@ fn playing(playback: Playback, title: &str) -> shell_model::now_playing::Media {
     let mut media = fake::media();
     let player = &mut media.players[0];
     player.playback = playback;
-    player.track.title = title.to_owned();
+    title.clone_into(&mut player.track.title);
     player.timeline = Timeline::Known {
         position: Micros(65_000_000),
         length: Micros(301_000_000),

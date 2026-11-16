@@ -345,7 +345,7 @@ async fn a_screen_run_takes_the_mode_of_the_conversation_that_started_it() {
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
-            level: Default::default(),
+            level: Level::default(),
             run: None,
         }),
     )
@@ -443,7 +443,7 @@ async fn a_run_follows_the_conversation_the_screen_daemon_names_and_nobody_else_
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
-            level: Default::default(),
+            level: Level::default(),
             run: None,
         }),
     )

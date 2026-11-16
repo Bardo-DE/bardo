@@ -123,7 +123,7 @@ impl Desk {
             action_daemon::callers::shipped(),
             dir.path().join("proc"),
         ));
-        setup.identity = Some(who.clone());
+        setup.identity = Some(std::sync::Arc::clone(&who));
         introduce(
             &who,
             &sill_connection,

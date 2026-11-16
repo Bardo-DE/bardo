@@ -141,6 +141,7 @@ impl Env {
     /// The process's own: its buses, its compositor, its directories, the system clock, the
     /// kernel's i2c buses, polkitd on the system bus, logind's session actions, PAM through
     /// `bardo-shell auth-check`, the system's accounts database and keycap's socket under `/run/keycap`.
+    #[must_use]
     pub fn from_process() -> Env {
         let buses = Buses::from_process();
         Env {
@@ -180,6 +181,7 @@ impl Env {
     /// shell object is refused until a test says who its stand-ins are). For tests that start
     /// services and must never reach the person's session or files. `scratch` must exist: the
     /// wallpaper service watches the nearest existing folder above the wallpaper's source file.
+    #[must_use]
     pub fn isolated(scratch: &Path) -> Env {
         Env {
             buses: Buses::absent(),

@@ -1,4 +1,4 @@
-//! ThreadRow: a mail row's content in a `Row` (design/30 section 2.11, mail content inside `Row`):
+//! `ThreadRow`: a mail row's content in a `Row` (design/30 section 2.11, mail content inside `Row`):
 //! a dot, the sender's name and via, subject, snippet, time, tags, star, a trailing `more`
 //! action and a hover-strip slot.
 

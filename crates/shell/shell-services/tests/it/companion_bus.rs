@@ -162,7 +162,7 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
         StandInCompanion {
             session: None,
             log: desk.log.clone(),
-            view: view.clone(),
+            view: Arc::clone(&view),
             acts: ActsAs::Accepts,
             routing: None,
         },
@@ -325,7 +325,7 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
     let intentd = desk.peer(INTENTS_BUS).await;
     intentd
         .object_server()
-        .at("/org/bardo/Intents1", StandInControl(rows.clone()))
+        .at("/org/bardo/Intents1", StandInControl(Arc::clone(&rows)))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     serve(
@@ -378,7 +378,7 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
         "/org/bardo/ComputerUse1",
         StandInManager {
             runs: vec![run_path("r_1")],
-            sight: sight.clone(),
+            sight: Arc::clone(&sight),
         },
     )
     .await;

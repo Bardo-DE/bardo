@@ -1,4 +1,4 @@
-//! TextLine: a line a caller hands a component either whole or as runs in several tones, so a
+//! `TextLine`: a line a caller hands a component either whole or as runs in several tones, so a
 //! search hit can mark the words it matched and a palette row can set a name in a stronger
 //! tone than its path. The caller computes the runs; quire only draws them, as
 //! `<mark class="ds-mark">` for a hit and `span.ds-run[data-tone]` for a weight, never as markup
@@ -77,6 +77,7 @@ pub enum TextLine {
 
 impl TextLine {
     /// The characters with the tones dropped: what a filter matches and a label reads.
+    #[must_use]
     pub fn plain_text(&self) -> String {
         match self {
             TextLine::Plain(text) => text.clone(),

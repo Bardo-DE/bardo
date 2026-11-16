@@ -18,6 +18,7 @@ pub enum PictureSize {
 
 impl PictureSize {
     /// The side in logical pixels.
+    #[must_use]
     pub fn px(self) -> u16 {
         match self {
             PictureSize::Small => 28,

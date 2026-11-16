@@ -27,6 +27,7 @@ pub struct FakeSync(Arc<Mutex<Book>>);
 
 impl FakeSync {
     /// A service that knows these datasets; "Sync now" starts.
+    #[must_use]
     pub fn knowing(statuses: Vec<(DatasetName, SyncStatus)>) -> FakeSync {
         FakeSync(Arc::new(Mutex::new(Book {
             statuses,
@@ -41,6 +42,7 @@ impl FakeSync {
     }
 
     /// What was asked of it, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<SyncAsked> {
         locked(&self.0).asked.clone()
     }

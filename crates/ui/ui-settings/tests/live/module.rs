@@ -27,9 +27,9 @@ pub fn spec(path: &str, kind: KeyKind, default: toml::Value) -> KeySpec {
         exposure: Exposure::Basic,
         labels: Default::default(),
         agent: AgentSetting::HandsOff,
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        unavailable: BTreeMap::default(),
+        groups: BTreeMap::default(),
+        places: BTreeMap::default(),
         note: None,
         control: None,
     }

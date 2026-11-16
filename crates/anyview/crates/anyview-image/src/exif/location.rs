@@ -17,6 +17,7 @@ pub struct Location {
 
 impl Location {
     /// The location in the EXIF block of an image file, or `None` when it has no usable one.
+    #[must_use]
     pub fn of_file(file: &[u8]) -> Option<Self> {
         let exif = Reader::new()
             .read_from_container(&mut Cursor::new(file))
@@ -26,6 +27,7 @@ impl Location {
 
     /// The latitude and longitude as text, and the altitude: the Location rows of the Info panel.
     /// Nothing here looks the place up.
+    #[must_use]
     pub fn facts(self) -> Facts {
         let facts = Facts::empty().with(FactLabel::Coordinates, FactValue::coordinate(self.place));
         match self.altitude {

@@ -25,7 +25,7 @@ use zbus::fdo::RequestNameFlags;
 /// engine warmer, the person's consent, and who the callers are.
 #[derive(Debug)]
 pub struct Seams<D, T, W, U> {
-    /// `PipeWire` in the shipped build.
+    /// PipeWire in the shipped build.
     pub device: D,
     /// inferd.
     pub transport: T,
@@ -125,7 +125,7 @@ where
         conn: connection.clone(),
         handle: handle.clone(),
         peers,
-        device: device.clone(),
+        device: Arc::clone(&device),
         transport: Arc::new(seams.transport),
         warm: Arc::new(seams.warm),
         usage: seams.usage,

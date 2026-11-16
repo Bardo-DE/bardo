@@ -258,7 +258,7 @@ async fn old_items_leave_the_trash_only_when_the_person_asked() {
         doc.advanced.remove_old_trash = switch;
         settings::store(root.clone()).save(&doc).unwrap();
 
-        let _feed = settings::follow(root, &Handle::current(), trash.clone());
+        let _feed = settings::follow(root, &Handle::current(), Arc::<FakeTrash>::clone(&trash));
         if !switch {
             // Give a sweep that should not happen the time to show itself.
             tokio::time::sleep(Duration::from_millis(300)).await;

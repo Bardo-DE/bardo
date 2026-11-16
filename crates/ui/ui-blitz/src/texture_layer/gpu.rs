@@ -202,7 +202,7 @@ impl Gpu {
             state
                 .subscribers
                 .iter()
-                .map(|(_, wake)| wake.clone())
+                .map(|(_, wake)| Arc::clone(wake))
                 .collect()
         };
         for wake in wakes {

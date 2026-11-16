@@ -63,8 +63,11 @@ pub async fn requested(
         match next {
             Either::Left((Some(Ok(message)), _)) => {
                 let header = message.header();
-                let from_owner = header.sender().map(|s| s.as_str()) == Some(owner.as_str());
-                if from_owner && header.path().map(|p| p.as_str()) == Some(path.as_str()) {
+                let from_owner = header.sender().map(zbus::names::UniqueName::as_str)
+                    == Some(owner.as_str());
+                if from_owner
+                    && header.path().map(zbus::zvariant::ObjectPath::as_str) == Some(path.as_str())
+                {
                     return message.body().deserialize().map(Ok).map_err(bus);
                 }
             }

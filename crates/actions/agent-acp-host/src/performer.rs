@@ -91,7 +91,7 @@ pub struct Performer<F: Files, S: Sandbox> {
 impl<F: Files, S: Sandbox> Clone for Performer<F, S> {
     fn clone(&self) -> Self {
         Self {
-            inner: self.inner.clone(),
+            inner: Arc::clone(&self.inner),
         }
     }
 }
@@ -142,10 +142,13 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     pub(super) fn lock(&self) -> MutexGuard<'_, Inner<F, S>> {
-        self.inner.lock().unwrap_or_else(|e| e.into_inner())
+        self.inner
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// `base` with the terminal capability on exactly when the sandbox is there.
+    #[must_use]
     pub fn capabilities(&self, base: ClientCapabilities) -> ClientCapabilities {
         self.lock().terminals.capabilities(base)
     }
@@ -161,6 +164,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// Whether a command can be confined in `cwd`.
+    #[must_use]
     pub fn check(&self, cwd: &AbsPath) -> permission_core::SandboxState {
         self.lock().terminals.check(cwd)
     }
@@ -232,6 +236,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// Holds a read for `session`.
+    #[must_use]
     pub fn stage_read(
         &self,
         session: &SessionId,
@@ -250,6 +255,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// Holds a write for `session`; the text stays here.
+    #[must_use]
     pub fn stage_write(&self, session: &SessionId, file: Confined, content: String) -> StageId {
         let mut inner = self.lock();
         let held = Held::Write {
@@ -261,6 +267,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// Holds a command for `session`: its literal line, where it runs, and the whole request.
+    #[must_use]
     pub fn stage_run(
         &self,
         session: &SessionId,
@@ -279,6 +286,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// Whether `stage` is still held (for a test: a spent or dropped one is not).
+    #[must_use]
     pub fn holds(&self, stage: &StageId) -> bool {
         self.lock().held.contains_key(stage)
     }
@@ -321,6 +329,7 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     }
 
     /// The writes that can still be taken back, newest last (for a test).
+    #[must_use]
     pub fn undo_notes(&self) -> Vec<UndoNote> {
         self.lock().undo.iter().map(|(_, n)| n.clone()).collect()
     }

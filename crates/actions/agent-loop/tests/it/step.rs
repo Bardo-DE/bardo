@@ -17,7 +17,7 @@ fn state(phase: LoopPhase, pending: &[u64]) -> LoopState {
         turn: Some(TurnId(1)),
         steps: 1,
         pending: pending.iter().copied().map(CallId).collect(),
-        guard: Default::default(),
+        guard: Guard::default(),
     }
 }
 
@@ -485,7 +485,7 @@ fn a_request_that_lands_while_idle_starts_planning_and_never_touches_another_pha
         turn: None,
         steps: 0,
         pending: vec![],
-        guard: Default::default(),
+        guard: Guard::default(),
     };
     let (next, effects) = agent_step(idle, LoopInput::Messaged);
     assert_eq!(next.phase, LoopPhase::Planning);

@@ -80,8 +80,8 @@ pub enum CommandFault {
 /// exits with code 2.
 pub async fn run(command: Command, binaries: &Binaries) -> Result<ExitCode, CommandFault> {
     match command {
-        Command::Corpus(args) => corpus::corpus(args, binaries).await,
-        Command::Smoke(args) => smoke::smoke(args, binaries).await,
+        Command::Corpus(args) => Box::pin(corpus::corpus(args, binaries)).await,
+        Command::Smoke(args) => Box::pin(smoke::smoke(args, binaries)).await,
     }
 }
 

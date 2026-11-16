@@ -1,4 +1,4 @@
-//! DockTile: one Dock tile (design/30 section 2.10, design/08-ICONS.md section 2.2,
+//! `DockTile`: one Dock tile (design/30 section 2.10, design/08-ICONS.md section 2.2,
 //! design/10-BEHAVIOUR-dock.md section 10.3.2): the app's plated icon, its `Badge`, a
 //! `ProgressIndicator { Bar }` while it works, the running dot under it, and the `DockLabel` with
 //! its name. Magnification and the bounce are the shell's: it hands the tile its current `side`
@@ -39,6 +39,7 @@ const PLATE_SHARE: f32 = 1.0;
 const REST_SIDE: Px = Px(48.0);
 
 /// The plate's side for a tile of `side`: whole pixels, at least one.
+#[must_use]
 pub fn plate_side(side: Px) -> IconPx {
     IconPx((side.0 * PLATE_SHARE).round().clamp(1.0, 255.0) as u8)
 }

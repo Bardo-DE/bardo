@@ -297,7 +297,11 @@ mod tests {
         let body = parse_body(&raw);
         assert!(body.runs.len() <= 128, "{} runs", body.runs.len());
         assert!(body.runs.len() > 100, "the cap is reached, not lower");
-        let first = body.runs.first().and_then(link_of).map(|h| h.0.clone());
+        let first = body
+            .runs
+            .first()
+            .and_then(link_of)
+            .map(|h| std::sync::Arc::clone(&h.0));
         let first = first.unwrap_or_else(|| panic!("the first run links"));
         assert!(
             body.runs

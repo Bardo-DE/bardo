@@ -13,6 +13,7 @@ pub struct WindowResized(Signal<u64>);
 
 impl WindowResized {
     /// A counter at zero, in the calling component's scope.
+    #[must_use]
     pub fn new() -> Self {
         WindowResized(Signal::new(0))
     }
@@ -25,6 +26,7 @@ impl WindowResized {
     }
 
     /// How many changes there have been; reading it subscribes the caller.
+    #[must_use]
     pub fn count(&self) -> u64 {
         (self.0)()
     }

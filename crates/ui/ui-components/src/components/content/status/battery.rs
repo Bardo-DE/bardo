@@ -1,4 +1,4 @@
-//! BatteryGlyph: a battery outline with a continuous fill layer, a bolt and a plug as their own
+//! `BatteryGlyph`: a battery outline with a continuous fill layer, a bolt and a plug as their own
 //! layers (design/26-DETAILS.md 5.1.3). The fill follows its level linearly over `--t-move`
 //! (design/30 section 1.3), and stands at its level on mount; plugging in shows the bolt (the plug
 //! when the charger holds it), the fill dimming under the mark; crossing the low threshold

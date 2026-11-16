@@ -156,13 +156,14 @@ pub fn fake(handler: impl Fn(&Seen) -> Reply + Send + Sync + 'static) -> Fake {
     let seen = Arc::new(Mutex::new(Vec::new()));
     let peer_closed = Arc::new(AtomicBool::new(false));
     let handler: Handler = Arc::new(handler);
-    let (log, closed) = (seen.clone(), peer_closed.clone());
+    let (log, closed) = (Arc::clone(&seen), Arc::clone(&peer_closed));
     tokio::spawn(async move {
         loop {
             let Ok((mut stream, _)) = listener.accept().await else {
                 return;
             };
-            let (log, closed, handler) = (log.clone(), closed.clone(), handler.clone());
+            let (log, closed, handler) =
+                (Arc::clone(&log), Arc::clone(&closed), Arc::clone(&handler));
             tokio::spawn(async move {
                 let Some(request) = read_request(&mut stream).await else {
                     return;

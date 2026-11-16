@@ -42,7 +42,7 @@ fn serve(reply: Vec<u8>) -> (HttpTarget, Arc<Mutex<Request>>) {
     let path = scratch();
     let listener = UnixListener::bind(&path).unwrap();
     let seen = Arc::new(Mutex::new(Request::default()));
-    let (kept, cleanup) = (seen.clone(), path.clone());
+    let (kept, cleanup) = (Arc::clone(&seen), path.clone());
     tokio::spawn(async move {
         let (mut stream, _) = listener.accept().await.unwrap();
         if let Some(dir) = cleanup.parent() {

@@ -15,6 +15,7 @@ pub fn stylesheet() -> &'static str {
 }
 
 /// Every component sheet, `(name, css)`, in the order the stylesheet appends them.
+#[must_use]
 pub fn component_sheets() -> Vec<(&'static str, &'static str)> {
     placed(&SHEETS, &kits().sheets())
 }

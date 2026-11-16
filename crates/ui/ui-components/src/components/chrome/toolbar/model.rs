@@ -107,6 +107,7 @@ pub struct Kept {
 impl Kept {
     /// How many of `leading` and `trailing` items fit in `room`. Items go behind the chevron from
     /// the last trailing one backwards, and the chevron takes an item's place once anything has.
+    #[must_use]
     pub fn fitting(leading: usize, trailing: usize, room: Px) -> Kept {
         let available = room.0 - TITLE_ROOM.0 - 2.0 * BAND_PADDING.0;
         let total = leading + trailing;
@@ -122,6 +123,7 @@ impl Kept {
     }
 
     /// Whether every item is on the band.
+    #[must_use]
     pub fn all(self, leading: usize, trailing: usize) -> bool {
         self.leading == leading && self.trailing == trailing
     }
@@ -139,6 +141,7 @@ pub enum SearchFit {
 /// Whether a search field of at least `min_width` and every item fit in `room`. The field gives
 /// way before any item goes behind the chevron, so it collapses as soon as keeping it would push
 /// one off.
+#[must_use]
 pub fn search_fit(leading: usize, trailing: usize, room: Px, min_width: Px) -> SearchFit {
     let field = Px(min_width.0 + ITEM_GAP.0);
     if Kept::fitting(leading, trailing, Px(room.0 - field.0)).all(leading, trailing) {

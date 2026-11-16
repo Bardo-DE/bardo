@@ -109,23 +109,23 @@ mod tests {
             let (reader, writer) = pipe();
             readers.push(reader);
             assert!(
-                writes.push(PipeUse::Selection, writer, payload.clone()),
+                writes.push(PipeUse::Selection, writer, Arc::clone(&payload)),
                 "pipe {n}"
             );
         }
         let (_extra, writer) = pipe();
-        assert!(!writes.push(PipeUse::Selection, writer, payload.clone()));
+        assert!(!writes.push(PipeUse::Selection, writer, Arc::clone(&payload)));
         // A client that holds every selection place leaves the drag its own.
         for n in 0..MAX_DRAG_WRITES {
             let (reader, writer) = pipe();
             readers.push(reader);
             assert!(
-                writes.push(PipeUse::Drag, writer, payload.clone()),
+                writes.push(PipeUse::Drag, writer, Arc::clone(&payload)),
                 "drag pipe {n}"
             );
         }
         let (_over, writer) = pipe();
-        assert!(!writes.push(PipeUse::Drag, writer, payload.clone()));
+        assert!(!writes.push(PipeUse::Drag, writer, Arc::clone(&payload)));
         drop(writes.take());
         let (_again, writer) = pipe();
         assert!(

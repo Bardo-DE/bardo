@@ -1,5 +1,5 @@
 //! A durable, test-only home for the cloud AI key: one directory outside every repository that
-//! holds what accountd needs to know the OpenRouter account across worlds, so the owner types the
+//! holds what accountd needs to know the `OpenRouter` account across worlds, so the owner types the
 //! key once (`dev/live/cloud-key.sh`) and every fresh world reuses it.
 //!
 //! ```text
@@ -111,6 +111,7 @@ impl KeysHome {
     }
 
     /// The value for `BARDO_ACCOUNTD_KEYS`.
+    #[must_use]
     pub fn keys_setting(&self) -> String {
         format!("file:{}", self.0.join(KEYS_FILE).display())
     }

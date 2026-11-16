@@ -5,7 +5,7 @@ use std::path::Path;
 
 use percent_encoding::{AsciiSet, NON_ALPHANUMERIC, percent_encode};
 
-/// What a path keeps unescaped in a `file:` URI: GLib's `g_filename_to_uri` set (unreserved
+/// What a path keeps unescaped in a `file:` URI: `GLib`'s `g_filename_to_uri` set (unreserved
 /// characters, the sub-delimiters, `:`, `@` and `/`), so a prefix compares equal to the
 /// `nie:url` Tracker stored.
 const URI_PATH: &AsciiSet = &NON_ALPHANUMERIC
@@ -29,6 +29,7 @@ const URI_PATH: &AsciiSet = &NON_ALPHANUMERIC
     .remove(b'/');
 
 /// `path` as a `file://` URI, percent-encoded byte by byte.
+#[must_use]
 pub fn file_uri(path: &Path) -> String {
     format!(
         "file://{}",

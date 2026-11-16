@@ -34,6 +34,7 @@ impl ExifOrientation {
     };
 
     /// The orientation a tag value stands for; `None` outside 1 to 8.
+    #[must_use]
     pub fn from_tag(tag: u16) -> Option<Self> {
         TABLE
             .iter()
@@ -42,6 +43,7 @@ impl ExifOrientation {
     }
 
     /// The tag value, 1 to 8.
+    #[must_use]
     pub fn tag(self) -> u16 {
         TABLE
             .iter()
@@ -51,6 +53,7 @@ impl ExifOrientation {
 
     /// The orientation of the picture after it is also turned clockwise on screen by `turn`.
     /// Rotating a displayed picture adds to the stored turn and leaves the mirror alone.
+    #[must_use]
     pub fn turned(self, turn: QuarterTurn) -> Self {
         ExifOrientation {
             mirrored: self.mirrored,
@@ -61,6 +64,7 @@ impl ExifOrientation {
     /// The orientation of the picture after it is also mirrored on screen across `axis`. A
     /// mirror then a turn, mirrored again, is the opposite mirror and the reverse turn; a flip
     /// across the horizontal line is that and a half turn more.
+    #[must_use]
     pub fn flipped(self, axis: Axis) -> Self {
         let across_vertical = ExifOrientation {
             mirrored: !self.mirrored,
@@ -73,6 +77,7 @@ impl ExifOrientation {
     }
 
     /// The pixels placed upright. The size swaps when the turn is a quarter or three quarters.
+    #[must_use]
     pub fn applied(self, picture: &Rgba8) -> Rgba8 {
         let Some(image) = picture.to_image() else {
             return picture.clone(); // a buffer `Rgba8::new` accepted always fits its size

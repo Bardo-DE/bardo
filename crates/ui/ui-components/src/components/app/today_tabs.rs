@@ -1,4 +1,4 @@
-//! TodayTabs: the temporary tabs under the pinned tiles (design/30 section 2.11): pages the
+//! `TodayTabs`: the temporary tabs under the pinned tiles (design/30 section 2.11): pages the
 //! person opened today, each a `Row` of the `SourceList` shape that carries what it has left and
 //! is dropped when that runs out. A tab enters and leaves by the `List`'s roster: it fades and
 //! slides in, and on its close (or its expiry) it fades and slides out while the rows below close
@@ -51,6 +51,7 @@ pub struct TodayTab<K> {
 
 /// What a tab has left, in words: whole hours from an hour on, else minutes rounded up (at least
 /// one). Nothing left reads "0 min".
+#[must_use]
 pub fn left_text(left: Duration) -> String {
     let secs = left.as_secs();
     if secs >= 3600 {
@@ -61,6 +62,7 @@ pub fn left_text(left: Duration) -> String {
 }
 
 /// How near a tab with `left` is to going.
+#[must_use]
 pub fn expiry_of(left: Duration) -> Expiry {
     if left < SOON {
         Expiry::Soon

@@ -5,6 +5,7 @@ use shell_model::desktop::GlobalOffer;
 use wayland_client::globals::GlobalList;
 
 /// The globals the registry listed, with their versions.
+#[must_use]
 pub fn offer_of_registry(globals: &GlobalList) -> GlobalOffer {
     globals.contents().with_list(|list| {
         GlobalOffer::from_globals(list.iter().map(|g| (g.interface.as_str(), g.version)))
@@ -13,6 +14,7 @@ pub fn offer_of_registry(globals: &GlobalList) -> GlobalOffer {
 
 /// The globals the wire client found among the ones it uses (their versions are not kept, so
 /// each is listed at 1).
+#[must_use]
 pub fn offer_of_protocols(protocols: &ProtocolSet) -> GlobalOffer {
     GlobalOffer::from_globals(protocols.iter().map(|p| (p.interface(), 1)))
 }

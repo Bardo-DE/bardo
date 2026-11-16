@@ -35,6 +35,7 @@ pub enum FaceFile {
 /// What to draw for `choice`, given whether a photo was found (`face`) and the letter disc the
 /// user's name gives (`letter`). A choice that needs a photo falls back to the letter when there
 /// is none, so a picture is always drawn.
+#[must_use]
 pub fn resolve_picture(choice: PictureChoice, face: FaceFile, letter: AvatarFace) -> UserPicture {
     match (choice, face) {
         (PictureChoice::Emoji(emoji), _) => UserPicture::Emoji(emoji),

@@ -128,7 +128,7 @@ mod links {
         let requests = Arc::new(Requests::default());
         let config = HarnessConfig::new(VIEW)
             .with_clock(Clock::Virtual)
-            .with_net(NetPolicy::Custom(requests.clone()))
+            .with_net(NetPolicy::Custom(Arc::<Requests>::clone(&requests)))
             .with_frame_links(links);
         let mut harness = Harness::new(Reader, config);
         let frame = harness.frame("iframe.body").expect("a frame document");
@@ -878,7 +878,7 @@ mod phase {
     fn Scrolling() -> Element {
         let host = use_document_host();
         let mut scroller = use_signal(|| None::<MountedRef>);
-        let (one, many, past) = (host.clone(), host.clone(), host);
+        let (one, many, past) = (Rc::clone(&host), Rc::clone(&host), host);
         rsx! {
             div { class: "scroller", style: "height:100px; overflow-y:auto; scrollbar-width:none",
                 onmounted: move |mounted: MountedEvent| scroller.set(Some(MountedRef(mounted.data()))),
@@ -928,7 +928,7 @@ mod phase {
         let mut scroller = use_signal(|| None::<MountedRef>);
         let seen = use_signal(|| None::<Scroll>);
         let mut watch = use_signal(|| None::<Watch>);
-        let (watching, writing) = (host.clone(), host);
+        let (watching, writing) = (Rc::clone(&host), host);
         let shown = seen().map_or_else(
             || "none".to_owned(),
             |seen| format!("{} {} {}", seen.offset.0, seen.viewport.0, seen.content.0),

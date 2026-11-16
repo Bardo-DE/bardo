@@ -18,7 +18,7 @@ fn mock() -> Arc<mock::Store> {
 }
 
 fn chunked(mock: &Arc<mock::Store>, limit: Limit) -> ChunkedStore<mock::Store> {
-    ChunkedStore::new(mock.clone(), MARK, limit).expect("store")
+    ChunkedStore::new(Arc::clone(mock), MARK, limit).expect("store")
 }
 
 fn entry(store: &ChunkedStore<mock::Store>, user: &str) -> Entry {
@@ -285,7 +285,7 @@ fn mailos_entries_read_with_mailos_marker() {
     plant(&mock, "smime:ab", "mailo-parts:2");
     plant(&mock, "smime:ab#1", "{\"smime_key\":");
     plant(&mock, "smime:ab#2", "\"pem\"}");
-    let mailo = ChunkedStore::new(mock.clone(), "mailo-parts:", SIXTEEN).expect("store");
+    let mailo = ChunkedStore::new(Arc::clone(&mock), "mailo-parts:", SIXTEEN).expect("store");
     let got = mailo.build(SERVICE, "smime:ab", None).expect("entry");
     assert_eq!(got.get_password().expect("read"), "{\"smime_key\":\"pem\"}");
     // Under porter's marker the head is just a value: the marker must match the writer's.
@@ -336,7 +336,7 @@ fn a_value_needing_more_than_the_most_parts_is_refused_and_nothing_is_written() 
 #[test]
 fn the_store_wraps_a_store_chosen_at_run_time_and_searches_without_parts() {
     let mock = mock();
-    let any: Arc<CredentialStore> = mock.clone();
+    let any: Arc<CredentialStore> = Arc::<keyring_core::mock::Store>::clone(&mock);
     let store: ChunkedStore = ChunkedStore::new(any, MARK, SIXTEEN).expect("store");
     let k = store.build(SERVICE, "k", None).expect("entry");
     k.set_password(&"x".repeat(40)).expect("set");

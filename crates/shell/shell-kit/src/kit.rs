@@ -32,6 +32,7 @@ pub static KIT: Kit = Kit {
 /// Every kit the shell is drawn with: the design system's (style, motion, the components), the
 /// shell's, and the app-facing parts' (`ui_shell`). The shell's come first among the shell-rank
 /// kits, so the cascade is the one the stylesheet had when it was one kit.
+#[must_use]
 pub fn kits() -> Kits {
     Kits::of(&[
         &ui_components::style::kit::STYLE_KIT,
@@ -50,6 +51,7 @@ pub fn stylesheet() -> &'static str {
 
 /// Every component sheet, the design system's and the shell's, `(name, css)`, in the order the
 /// stylesheet appends them.
+#[must_use]
 pub fn component_sheets() -> Vec<(&'static str, &'static str)> {
     let mut extra = SHEETS.to_vec();
     extra.extend(ui_shell::KIT.sheets.iter().copied());

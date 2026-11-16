@@ -32,10 +32,10 @@ async fn two_changes_at_once_raise_one_sheet_and_both_run_on_an_always() {
     let mut w = world();
     w.router.seams.confirmer = ScriptedConfirmer::yielding(vec![always()]);
     let claude = after_a_read(&w).await;
-    let (a, b) = join(
+    let (a, b) = Box::pin(join(
         w.call(&claude, change("a.rs")),
         w.call(&claude, change("b.rs")),
-    )
+    ))
     .await;
     a.expect("asker runs");
     b.expect("waiter runs on the same yes");
@@ -47,10 +47,10 @@ async fn a_refusal_refuses_the_waiting_call_too() {
     let mut w = world();
     w.router.seams.confirmer = ScriptedConfirmer::yielding(vec![refused()]);
     let claude = after_a_read(&w).await;
-    let (a, b) = join(
+    let (a, b) = Box::pin(join(
         w.call(&claude, change("a.rs")),
         w.call(&claude, change("b.rs")),
-    )
+    ))
     .await;
     let want = CallRefusal::Unconfirmed(ConfirmEnd::Refused);
     assert_eq!(a.expect_err("asker"), want);
@@ -63,10 +63,10 @@ async fn an_allow_once_covers_only_the_asker_and_the_waiter_gets_its_own_sheet()
     let mut w = world();
     w.router.seams.confirmer = ScriptedConfirmer::yielding(vec![once(), refused()]);
     let claude = after_a_read(&w).await;
-    let (a, b) = join(
+    let (a, b) = Box::pin(join(
         w.call(&claude, change("a.rs")),
         w.call(&claude, change("b.rs")),
-    )
+    ))
     .await;
     a.expect("asker runs once");
     assert_eq!(
@@ -82,10 +82,10 @@ async fn different_actions_each_get_their_own_sheet() {
     let mut w = world();
     w.router.seams.confirmer = ScriptedConfirmer::yielding(vec![once(), once()]);
     let claude = after_a_read(&w).await;
-    let (a, b) = join(
+    let (a, b) = Box::pin(join(
         w.call(&claude, change("a.rs")),
         w.call(&claude, run("cargo test")),
-    )
+    ))
     .await;
     a.expect("the write");
     assert!(!matches!(b, Err(CallRefusal::Unconfirmed(_))), "{b:?}");

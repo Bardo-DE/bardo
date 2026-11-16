@@ -87,7 +87,7 @@ pub async fn run(
         .map_err(|e| AgentFault::Directory(format!("{cwd}: {e}; give --cwd a project folder")))?;
     let Hosted {
         mut host, session, ..
-    } = host(wiring, args.program, &cwd, args.space)
+    } = Box::pin(host(wiring, args.program, &cwd, args.space))
         .await
         .map_err(|why| AgentFault::Open(why.to_string()))?;
     if args.mode == Mode::Refresh {
@@ -118,8 +118,7 @@ pub async fn run(
         host.turn(&session, turn)
             .await
             .map_err(|e| AgentFault::Session(e.to_string()))?;
-        while let Some(event) = host
-            .next_event(&session)
+        while let Some(event) = Box::pin(host.next_event(&session))
             .await
             .map_err(|e| AgentFault::Session(e.to_string()))?
         {

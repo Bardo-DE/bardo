@@ -49,11 +49,10 @@ fn refused(shown: Result<String, action_client::ClientError>) -> bool {
 async fn a_handle_still_shows_after_the_task_finished_and_not_after_close() {
     let mut w = world(vec![read_t1(), words("Read it.")]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "read the invoice").await;
+    Box::pin(w.say(&opened.session, "read the invoice")).await;
     assert_eq!(display(&w, &opened.session).await.as_deref(), Ok(BODY));
 
-    w.companion
-        .close(opened.session.clone())
+    Box::pin(w.companion.close(opened.session.clone()))
         .await
         .expect("close");
     assert!(refused(display(&w, &opened.session).await));
@@ -73,7 +72,7 @@ async fn a_finish_shows_a_handle_as_content_in_its_own_session_only() {
     ]);
     let opened = w.open("work").await;
     let other = w.open("work").await;
-    w.say(&opened.session, "find the invoice and show me").await;
+    Box::pin(w.say(&opened.session, "find the invoice and show me")).await;
 
     let answer = w.companion.shared.answer(&opened.task).expect("answer");
     let companion_wire::AnswerBody::Text { lines } = answer.body else {
@@ -119,7 +118,7 @@ async fn progress_words_are_not_the_body_and_quire_answer_is_exactly_the_reply()
     for (script, reply) in scripts {
         let mut w = world(script);
         let opened = w.open("work").await;
-        w.say(&opened.session, "what is in the invoice").await;
+        Box::pin(w.say(&opened.session, "what is in the invoice")).await;
         let answer = w.companion.shared.answer(&opened.task).expect("answer");
         assert_eq!(answer.phase, AnswerPhase::Done);
         assert_eq!(answer.progress, ["I'll read it."]);
@@ -137,7 +136,7 @@ async fn the_ninth_finished_task_closes_the_oldest_and_each_leaves_one_episode()
     let mut sessions = Vec::new();
     for n in 0..9 {
         let opened = w.open("work").await;
-        w.say(&opened.session, &format!("read {n}")).await;
+        Box::pin(w.say(&opened.session, &format!("read {n}"))).await;
         sessions.push(opened);
         if n < 8 {
             // Nothing is closed while eight or fewer wait, and each task left its episode at
@@ -159,8 +158,7 @@ async fn the_ninth_finished_task_closes_the_oldest_and_each_leaves_one_episode()
 
     // Dismissing the rest leaves exactly one skeleton each, none twice.
     for each in &sessions[1..] {
-        w.companion
-            .close(each.session.clone())
+        Box::pin(w.companion.close(each.session.clone()))
             .await
             .expect("close");
     }
@@ -179,7 +177,7 @@ async fn a_workers_report_still_ends_its_task_while_its_session_waits() {
         words("Heard."),
     ]);
     let front = w.open("work").await;
-    w.say(&front.session, "have someone look").await;
+    Box::pin(w.say(&front.session, "have someone look")).await;
     let (wtask, wsession) = w
         .companion
         .runtimes
@@ -197,7 +195,7 @@ async fn a_workers_report_still_ends_its_task_while_its_session_waits() {
     };
     assert_eq!(ended(&w), 1);
     // Closing the session afterwards leaves no second one.
-    w.companion.close(wsession).await.expect("close");
+    Box::pin(w.companion.close(wsession)).await.expect("close");
     assert_eq!(ended(&w), 1);
     assert!(!w.companion.runtimes.contains_key(&wtask));
 }
@@ -213,8 +211,8 @@ async fn the_answer_object_names_its_session_and_close_removes_it() {
     let who = who(&server, scratch.path());
     serve_on_rooted(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
     )
     .await

@@ -135,7 +135,11 @@ impl<A: Accounts + 'static> Live<A> {
             bus.object_server()
                 .at(
                     CONFIRM_PATH,
-                    crate::confirm::ConfirmObject::new(desk.clone(), SystemClock, callers.clone()),
+                    crate::confirm::ConfirmObject::new(
+                        desk.clone(),
+                        SystemClock,
+                        Arc::clone(&callers),
+                    ),
                 )
                 .await?;
         }

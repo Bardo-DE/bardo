@@ -143,7 +143,7 @@ impl Lender {
             },
             Wanted::Hello | Wanted::Nothing => true,
         });
-        let request = match tokio::time::timeout(HEAD_WAIT, read).await {
+        let request = match Box::pin(tokio::time::timeout(HEAD_WAIT, read)).await {
             Ok(Ok(request)) => request,
             Err(_) | Ok(Err(ReadError::Closed)) => return,
             Ok(Err(ReadError::Refused)) => {

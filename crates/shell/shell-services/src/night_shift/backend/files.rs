@@ -319,7 +319,7 @@ mod tests {
     fn a_file_that_is_not_toml_is_not_overwritten() {
         let dir = TempDir::new("night-shift-damaged");
         std::fs::write(dir.path().join(SETTINGS), "this = is = not toml").unwrap_or_default();
-        assert!(read_light(dir.path()).is_err());
+        read_light(dir.path()).unwrap_err();
         assert!(write_light(dir.path(), &warm()).is_err());
         let kept = std::fs::read_to_string(dir.path().join(SETTINGS)).unwrap_or_default();
         assert_eq!(kept, "this = is = not toml");
@@ -478,7 +478,7 @@ mod tests {
     fn a_file_that_is_not_toml_is_not_overwritten_by_the_skip_list() {
         let dir = TempDir::new("night-shift-skip-damaged");
         std::fs::write(dir.path().join(SETTINGS), "this = is = not toml").unwrap_or_default();
-        assert!(write_skip(dir.path(), &outputs(&["DP-1"])).is_err());
+        write_skip(dir.path(), &outputs(&["DP-1"])).unwrap_err();
         let kept = std::fs::read_to_string(dir.path().join(SETTINGS)).unwrap_or_default();
         assert_eq!(kept, "this = is = not toml");
     }

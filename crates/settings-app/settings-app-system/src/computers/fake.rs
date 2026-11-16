@@ -24,6 +24,7 @@ pub struct FakeComputers {
 
 impl FakeComputers {
     /// A service listing these computers and guests.
+    #[must_use]
     pub fn listing(found: ComputersFound) -> FakeComputers {
         FakeComputers {
             kit: Kit::new(Ok(found)),
@@ -32,6 +33,7 @@ impl FakeComputers {
     }
 
     /// No service, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeComputers {
         FakeComputers {
             kit: Kit::new(Err(why)),
@@ -55,6 +57,7 @@ impl FakeComputers {
     }
 
     /// The changes that were asked, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<Change> {
         self.kit.asked()
     }

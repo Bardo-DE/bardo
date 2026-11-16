@@ -29,7 +29,7 @@ fn working() -> LoopState {
         turn: None,
         steps: 1,
         pending: vec![],
-        guard: Default::default(),
+        guard: Guard::default(),
     }
 }
 
@@ -67,7 +67,7 @@ fn nothing_is_added_to_a_finished_or_absent_front_task_or_for_progress() {
         turn: None,
         steps: 3,
         pending: vec![],
-        guard: Default::default(),
+        guard: Guard::default(),
     };
     assert!(
         completion_effects(&note(ReportStatus::Done, Attention::Quiet), Some(&finished)).is_empty()

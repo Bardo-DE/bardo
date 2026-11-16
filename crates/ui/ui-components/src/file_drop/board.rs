@@ -58,6 +58,7 @@ impl FileDropBoard {
     /// One step of the drag: every target's view follows, the target under a release hears its
     /// `ondrop`, and the answer is what the host tells the platform. Call it inside the app's
     /// runtime (the host's window hook, the harness's `within`).
+    #[must_use]
     pub fn feed(&self, input: FileDragInput) -> DropAcceptance {
         let turn = match input {
             FileDragInput::Entered { .. } => Turn::NewDrag,

@@ -45,11 +45,13 @@ impl fmt::Debug for Common {
 
 impl Common {
     /// `own` (quire's class list) with the consumer's classes after it.
+    #[must_use]
     pub fn class(&self, own: &str) -> String {
         class_list(own, self.extra_class.as_ref())
     }
 
     /// The consumer's `data-*` attributes, for an element's spread.
+    #[must_use]
     pub fn data_attributes(&self) -> Vec<Attribute> {
         attributes(&self.data)
     }

@@ -108,8 +108,8 @@ async fn only_settings_lists_and_takes_back_what_is_remembered() {
     #[cfg(not(feature = "debug"))]
     {
         as_settings_at(&portal, &weak, Proof::Exe);
-        refused.push((&weak, "settings proved by its image only"));
-    }
+        refused.push((&weak, "settings proved by its image only"))
+    };
     for (who, label) in refused {
         assert!(
             is_refused(&call(who, GRANTS, "ListGrants", &()).await),

@@ -29,6 +29,7 @@ pub fn here(
 }
 
 /// The login of this process on the real system.
+#[must_use]
 pub fn current() -> LoginSession {
     here(
         |name| std::env::var_os(name),

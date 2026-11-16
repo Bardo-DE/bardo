@@ -77,9 +77,9 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
     serve_with_routines(
         &server,
         companion,
-        who.clone(),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
-        Some(routines.clone()),
+        Some(Arc::<RecordingRoutines>::clone(&routines)),
     )
     .await
     .expect("serving");
@@ -202,13 +202,13 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
     let research_model = ScriptedInfer::new(vec![words("Offer B is the cheapest.")]);
     let hub = hub_with(&w, &[("Research", &research_model)]);
     w.companion.set_desk(Arc::new(hub));
-    let router = w.router.clone();
+    let router = Arc::clone(&w.router);
     let companion = Arc::new(Mutex::new(w.companion));
     let who = who(&server, scratch.path());
     serve_with_routines(
         &server,
         companion,
-        who.clone(),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
         Some(Arc::new(EmptyRoutines)),
     )
@@ -246,7 +246,7 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
 
     // The editor records the person's words with the router, as its own surface.
     let recorder = action_client::Intents::over(action_client::InProcess::new(
-        router.clone(),
+        Arc::clone(&router),
         caller("org.bardo.Acp", CallerRole::Editor),
     ));
     let turn = recorder
@@ -304,7 +304,7 @@ async fn router_session(
     in_space: &str,
 ) -> provenance::SessionId {
     let companion = action_client::Intents::over(action_client::InProcess::new(
-        router.clone(),
+        Arc::clone(router),
         caller("org.bardo.Companion", CallerRole::Companion),
     ));
     companion

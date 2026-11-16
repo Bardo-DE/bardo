@@ -37,7 +37,7 @@ fn slugs(w: &World) -> Vec<String> {
 async fn a_conversation_leaves_the_rows_a_restart_rebuilds_the_roster_from() {
     let mut w = world(vec![words("Hello there.")]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     assert_eq!(slugs(&w), ["opened", "asked", "finished"]);
 
     let events = stored(&w).await;
@@ -56,7 +56,7 @@ async fn an_editors_host_writes_no_roster_notes() {
     let mut w = world(vec![words("Hello there.")]);
     w.companion = w.restarted().without_notes();
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     assert_eq!(slugs(&w), Vec::<String>::new());
 }
 
@@ -139,7 +139,7 @@ async fn starting_a_task_is_a_call_the_router_gates_and_audits_and_answers_with_
         words("done"),
     ]);
     let front = w.open("work").await;
-    w.say(&front.session, "get someone to tidy up").await;
+    Box::pin(w.say(&front.session, "get someone to tidy up")).await;
 
     let calls: Vec<_> = w
         .records()

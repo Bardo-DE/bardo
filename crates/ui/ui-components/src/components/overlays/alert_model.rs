@@ -58,6 +58,7 @@ impl AlertButton {
     }
 
     /// This button with `common` (its `id`, `data-*` and class) on its element.
+    #[must_use]
     pub fn with_common(self, common: Common) -> Self {
         AlertButton { common, ..self }
     }
@@ -85,6 +86,7 @@ pub enum FooterLayout {
 
 impl FooterLayout {
     /// The layout for `count` buttons.
+    #[must_use]
     pub fn of(count: usize) -> Self {
         if count > 2 {
             FooterLayout::Stack
@@ -95,6 +97,7 @@ impl FooterLayout {
 }
 
 /// The button Return presses and the keyboard starts on: the first that is not destructive.
+#[must_use]
 pub fn default_button(roles: &[AlertRole]) -> Option<usize> {
     roles
         .iter()
@@ -102,12 +105,14 @@ pub fn default_button(roles: &[AlertRole]) -> Option<usize> {
 }
 
 /// The button Escape presses: the first that cancels.
+#[must_use]
 pub fn escape_button(roles: &[AlertRole]) -> Option<usize> {
     roles.iter().position(|&role| role == AlertRole::Cancel)
 }
 
 /// The button Tab or Shift+Tab lands on from `from`, wrapping: a modal alert keeps the keyboard
 /// among its own buttons.
+#[must_use]
 pub fn tab_target(count: usize, from: usize, backwards: bool) -> usize {
     if backwards {
         (from + count - 1) % count.max(1)

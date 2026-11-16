@@ -65,7 +65,7 @@ pub(crate) async fn run(
                         if let Some(name) = (deps.name_of)(&app) {
                             let task = tokio::spawn(serve::follow(
                                 connection.clone(),
-                                peers.clone(),
+                                Arc::clone(&peers),
                                 deps.windows.clone(),
                                 app.clone(),
                                 name.clone(),

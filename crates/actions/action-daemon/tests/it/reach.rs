@@ -46,7 +46,7 @@ async fn rig() -> Rig {
     // folder's, so what changes after it is the providers' doing alone.
     rescan(&router, std::slice::from_ref(&data));
     let follower = tokio::spawn(follow_reach(
-        router.clone(),
+        Arc::clone(&router),
         daemon,
         vec![data],
         LiveReach::none(),

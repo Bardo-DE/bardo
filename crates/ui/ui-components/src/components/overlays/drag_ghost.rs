@@ -1,4 +1,4 @@
-//! DragGhost and DropLine: moving a thing by dragging, driven by `use_drag`
+//! `DragGhost` and `DropLine`: moving a thing by dragging, driven by `use_drag`
 //! (design/04-COMPONENTS.md section 34; design/30 section 2.5, `NSDraggingItem`).
 
 use crate::components::controls::badge::{Badge, BadgeContent};
@@ -26,6 +26,7 @@ pub struct DragCount(u32);
 
 impl DragCount {
     /// A drag of `items` things; none is one.
+    #[must_use]
     pub fn new(items: u32) -> Self {
         DragCount(items.max(1))
     }

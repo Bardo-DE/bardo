@@ -71,7 +71,7 @@ impl FakeHelpers {
             jobs: Vec::new(),
             job_session: session("s-70"),
             told: VecDeque::new(),
-            seen: seen.clone(),
+            seen: Arc::clone(&seen),
             answer: Ok("Offer B is the best.".to_owned()),
         };
         (fake, seen)

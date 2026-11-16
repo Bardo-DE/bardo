@@ -227,7 +227,7 @@ async fn a_stop_waits_for_a_cycle_that_runs_for_minutes_on_a_starved_machine() {
     // A cycle that takes two minutes: a stop that gave up at 30 s would go on, and its caller
     // delete the files the cycle is still writing.
     let cycling = Cycling::default();
-    let held = cycling.0.clone().lock_owned().await;
+    let held = std::sync::Arc::clone(&cycling.0).lock_owned().await;
     let waiting = tokio::spawn({
         let cycling = cycling.clone();
         async move { cycling.finished().await }
@@ -238,7 +238,7 @@ async fn a_stop_waits_for_a_cycle_that_runs_for_minutes_on_a_starved_machine() {
 
     // One that never ends is given up on, after the long wait.
     let stuck = Cycling::default();
-    let _held = stuck.0.clone().lock_owned().await;
+    let _held = std::sync::Arc::clone(&stuck.0).lock_owned().await;
     assert!(!stuck.finished().await);
 }
 

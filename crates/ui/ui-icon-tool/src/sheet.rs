@@ -32,8 +32,8 @@ impl Default for SheetStyle {
         Self {
             tile: 256,
             gap: 24,
-            ground: Srgb8::hex(0xF1F3EE),
-            ink: Srgb8::hex(0x1A1E1A),
+            ground: Srgb8::hex(0x00F1_F3EE),
+            ink: Srgb8::hex(0x001A_1E1A),
             text_scale: 3,
         }
     }
@@ -133,7 +133,7 @@ pub fn build_sheet(sheet: &Sheet, style: &SheetStyle) -> Rgba32FImage {
 /// (`#1D211B`) ground. `render(size)` returns a `size` x `size` image.
 pub fn strip(sizes: &[u32], render: impl Fn(u32) -> Rgba32FImage) -> Rgba32FImage {
     const PAD: u32 = 8;
-    let grounds = [Srgb8::hex(0xF1F3EE), Srgb8::hex(0x1D211B)];
+    let grounds = [Srgb8::hex(0x00F1_F3EE), Srgb8::hex(0x001D_211B)];
     let tallest = sizes.iter().copied().max().unwrap_or(0);
     let panel_w = PAD + sizes.iter().map(|s| s + PAD).sum::<u32>();
     let h = tallest + 2 * PAD;

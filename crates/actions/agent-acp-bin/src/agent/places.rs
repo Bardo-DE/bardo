@@ -69,48 +69,57 @@ impl Places {
     }
 
     /// The value of the variable `name`, as `main` handed the environment in.
+    #[must_use]
     pub fn var(&self, name: &str) -> Option<String> {
         (*self.env)(name)
     }
 
     /// The settings locator.
+    #[must_use]
     pub fn locator(&self) -> &Locator {
         &self.locator
     }
 
     /// The first configuration directory (the person's own).
+    #[must_use]
     pub fn config_dir(&self) -> PathBuf {
         self.locator.dirs().first().cloned().unwrap_or_default()
     }
 
     /// The actions data directory (`bardo/actions` under `$XDG_DATA_HOME`).
+    #[must_use]
     pub fn data_dir(&self) -> &Path {
         &self.data
     }
 
     /// Where agents from the registry are installed (`bardo-agents --dir`): `agents` in the
     /// data directory.
+    #[must_use]
     pub fn agents_dir(&self) -> AgentsDir {
         AgentsDir::at(&self.data.join("agents"))
     }
 
     /// The home folder, when the environment names one.
+    #[must_use]
     pub fn home(&self) -> Option<&Path> {
         self.home.as_deref()
     }
 
     /// The program search path.
+    #[must_use]
     pub fn path(&self) -> &str {
         &self.path
     }
 
     /// The runtime directory only the person can enter, when the environment names one.
+    #[must_use]
     pub fn runtime_dir(&self) -> Option<&Path> {
         self.runtime.as_deref()
     }
 
     /// What runs an agent's own login or logout command: given the variables it needs to show
     /// itself, chosen here because the launcher crate reads no environment.
+    #[must_use]
     pub fn login_runner(&self) -> VisibleLogin {
         VisibleLogin::new(self.login.clone())
     }

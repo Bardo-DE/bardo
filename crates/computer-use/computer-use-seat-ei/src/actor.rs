@@ -78,7 +78,7 @@ impl Link {
     /// A guard that stops the thread's work if dropped before `finish`.
     pub(super) fn stop_on_drop(&self) -> StopOnDrop {
         StopOnDrop {
-            stop: self.stop.clone(),
+            stop: Arc::clone(&self.stop),
             state: Watching::Running,
         }
     }

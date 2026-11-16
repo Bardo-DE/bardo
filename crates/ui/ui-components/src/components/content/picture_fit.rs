@@ -5,6 +5,7 @@
 use ui_core::geometry::units::{Px, Rect};
 
 /// The picture's inline placement, in whole hundredths of a pixel.
+#[must_use]
 pub fn picture_style(picture: Rect) -> String {
     format!(
         "left:{}px;top:{}px;width:{}px;height:{}px",

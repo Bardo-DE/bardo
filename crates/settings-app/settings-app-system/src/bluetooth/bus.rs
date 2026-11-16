@@ -21,7 +21,7 @@ const NOT_AVAILABLE: &str = "Bluetooth isn\u{2019}t available right now. Try aga
 /// Whether a signal from BlueZ is worth reading it again for.
 fn matters(message: &Message) -> bool {
     let header = message.header();
-    if header.member().map(|member| member.as_str()) != Some("PropertiesChanged") {
+    if header.member().map(zbus::names::MemberName::as_str) != Some("PropertiesChanged") {
         return true;
     }
     let Ok((interface, changed, _)) =
@@ -44,6 +44,7 @@ pub struct OnBluetooth {
 
 impl OnBluetooth {
     /// BlueZ looked for on `bus`.
+    #[must_use]
     pub fn new(bus: BusSource) -> OnBluetooth {
         OnBluetooth {
             bus,

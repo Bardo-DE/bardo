@@ -94,7 +94,7 @@ pub(crate) async fn desk(answers: Vec<ConfirmAnswer>) -> Desk {
         &daemon,
         Arc::new(router),
         Arc::new(config),
-        who.clone(),
+        Arc::clone(&who),
         &ProcRoot::Honoured(proc_root),
         AcpGate::shut(),
         None,

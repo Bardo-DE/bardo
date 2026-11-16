@@ -1,4 +1,4 @@
-//! VirtualTable: `Table`'s header and columns over any number of rows that are never built. The
+//! `VirtualTable`: `Table`'s header and columns over any number of rows that are never built. The
 //! caller says how many rows there are and answers `cell(row, column)` for the ones that show: the
 //! rows in the viewport and `overscan` more on each side are asked for, mounted as `Row`s of one
 //! height (`row_pitch`, the compact row's token), and the rest of the table is two spacers' height
@@ -96,6 +96,7 @@ const OVERSCAN_ROWS: usize = 4;
 /// How tall every row of a `VirtualTable` is: the compact row's token (`--row-compact-h`), in
 /// logical pixels. A row's top is `row * row_pitch()`, which is what a `ScrollerRef` needs to
 /// scroll to it.
+#[must_use]
 pub const fn row_pitch() -> Px {
     Px(ROW_SCALE.compact_height.0 as f32)
 }
@@ -363,7 +364,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
                                     role: "none",
                                     "aria-posinset": (row + 1).to_string(),
                                     "aria-setsize": rows.to_string(),
-                                    "aria-level": step.map(|step| step.level()),
+                                    "aria-level": step.map(super::outline::OutlineRow::level),
                                     "aria-expanded": step.and_then(OutlineRow::expanded),
                                     "data-row": row.to_string(),
                                     "data-selected": selected(row).then_some("yes"),

@@ -46,6 +46,7 @@ static OPENS: AtomicU32 = AtomicU32::new(0);
 
 /// The argument vector that opens `target` with the default handler (`xdg-open`, then the
 /// path, the folder for a reveal, or the address), before the scope wrapper.
+#[must_use]
 pub fn open_argv(target: &OpenTarget) -> Vec<OsString> {
     let what = match target {
         OpenTarget::File(path) | OpenTarget::Play(path) => OsString::from(path),
@@ -58,6 +59,7 @@ pub fn open_argv(target: &OpenTarget) -> Vec<OsString> {
 
 /// The folder a reveal opens: the path's parent, or the path itself when it is the root or has
 /// no parent.
+#[must_use]
 pub fn reveal_folder(path: &Path) -> PathBuf {
     path.parent()
         .filter(|parent| !parent.as_os_str().is_empty())

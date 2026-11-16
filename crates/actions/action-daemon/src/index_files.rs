@@ -42,6 +42,7 @@ pub struct IndexStore {
 
 impl IndexStore {
     /// The store under a data directory: `bardo/intents/index`.
+    #[must_use]
     pub fn under(data: &Path) -> Self {
         Self {
             dir: crate::manifests::intents_dir(data).join("index"),
@@ -75,7 +76,10 @@ impl IndexStore {
 
     /// Writes the entries `app` has pushed to `router` now. Done outside the router's lock.
     pub fn save<S: Seams>(&self, router: &Router<S>, app: &AppName) {
-        let _held = self.writing.lock().unwrap_or_else(|p| p.into_inner());
+        let _held = self
+            .writing
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Err(why) = self.write(app, router.pushed_entries(app)) {
             eprintln!("intentd: the index of {app} was not kept: {why}");
         }

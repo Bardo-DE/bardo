@@ -30,12 +30,14 @@ impl TipText {
     }
 
     /// The same tip with `shortcut`; one with no keys at all adds nothing.
+    #[must_use]
     pub fn with_shortcut(self, shortcut: Shortcut) -> Self {
         let shortcut = Some(shortcut).filter(|shortcut| !shortcut.0.is_empty());
         TipText { shortcut, ..self }
     }
 
     /// The same tip with `shortcut` when there is one.
+    #[must_use]
     pub fn with_shortcut_opt(self, shortcut: Option<Shortcut>) -> Self {
         match shortcut {
             Some(shortcut) => self.with_shortcut(shortcut),
@@ -44,6 +46,7 @@ impl TipText {
     }
 
     /// The name alone.
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.name
     }
@@ -55,6 +58,7 @@ impl TipText {
 
     /// The tip as `keys` draws its key for the platform: `Name  ⌘K` on a Mac-style one,
     /// `Name  Ctrl+K` elsewhere.
+    #[must_use]
     pub fn render_in(&self, keys: &Keys) -> String {
         self.render_with(|shortcut| keys.text_of(shortcut))
     }

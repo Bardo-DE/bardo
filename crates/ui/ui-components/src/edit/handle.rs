@@ -55,6 +55,7 @@ impl PartialEq for EditHandle {
 }
 
 /// A handle owned by the calling component.
+#[must_use]
 pub fn use_edit_handle() -> EditHandle {
     EditHandle {
         element: use_signal(|| None),
@@ -83,6 +84,7 @@ impl EditHandle {
     }
 
     /// The text position under `at`.
+    #[must_use]
     pub fn hit_test(&self, at: Point) -> Probe<TextPosition> {
         self.with(|edit, element| edit.hit_test(element, at))
     }
@@ -91,6 +93,7 @@ impl EditHandle {
     /// height, in the **last laid-out frame**: right after the text changed it still answers for
     /// the old text. For scroll-into-view and popovers; a drawn caret wants
     /// [`use_caret_rect`](crate::edit::caret::use_caret_rect).
+    #[must_use]
     pub fn caret_rect(&self, position: &TextPosition) -> Probe<Rect> {
         self.with(|edit, element| edit.caret_rect(element, position))
     }
@@ -98,12 +101,14 @@ impl EditHandle {
     /// The boxes `range` covers: one per line of text, one per whole atom, in the **last
     /// laid-out frame**; a drawn selection wants
     /// [`use_selection_rects`](crate::edit::selection::use_selection_rects).
+    #[must_use]
     pub fn selection_rects(&self, range: &TextRange) -> Probe<Vec<Rect>> {
         self.with(|edit, element| edit.selection_rects(element, range))
     }
 
     /// The surface's own border box, in the same coordinates as the other reads: an app draws
     /// its caret layer inside the surface's container at `caret_rect - bounds`.
+    #[must_use]
     pub fn bounds(&self) -> Probe<Rect> {
         let host = self.host.0.peek().clone();
         match self

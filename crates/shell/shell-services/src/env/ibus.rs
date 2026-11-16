@@ -18,6 +18,7 @@ pub enum IbusRoute {
 
 impl IbusRoute {
     /// The process's own: `IBUS_ADDRESS` when it is set, else the person's address files.
+    #[must_use]
     pub fn from_process() -> IbusRoute {
         match std::env::var("IBUS_ADDRESS") {
             Ok(address) if !address.is_empty() => IbusRoute::Address(address),

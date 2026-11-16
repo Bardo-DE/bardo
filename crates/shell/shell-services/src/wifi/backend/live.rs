@@ -44,9 +44,7 @@ pub(crate) async fn run(
     let connection = bus.connect_waiting().await?;
     let tx = Published::new(tx, step);
     let owner = owner::Owner::of(&connection, networkmanager_proxy::SERVICE);
-    while owner
-        .session(session(&connection, &tx, &mut commands))
-        .await
+    while Box::pin(owner.session(session(&connection, &tx, &mut commands))).await
         == owner::Next::Again
     {
         tx.feed(WifiEvent::Gone);

@@ -1,4 +1,4 @@
-//! ModuleTile: one control-center module, a glyph disc with its title and status on a tile, and
+//! `ModuleTile`: one control-center module, a glyph disc with its title and status on a tile, and
 //! the chevron that opens the module's detail pane (design/30 section 2.10,
 //! design/20-SURFACES.md section 1.5, design/13-BEHAVIOUR-menus-windows.md section 13.3.7).
 //!

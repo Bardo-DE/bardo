@@ -48,7 +48,7 @@ mod tests {
             };
             let got: Vec<String> = locales_from(var)
                 .iter()
-                .flat_map(|locale| locale.variants())
+                .flat_map(ui_helpers::EntryLocale::variants)
                 .collect();
             assert_eq!(got, want, "{lang:?} {languages:?}");
         }

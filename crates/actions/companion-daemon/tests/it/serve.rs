@@ -73,8 +73,8 @@ async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
     let who = who(&server, scratch.path());
     serve_on_rooted(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
     )
     .await
@@ -205,8 +205,8 @@ async fn the_roster_and_the_front_answer_while_a_planner_turn_is_still_running()
     let who = who(&server, scratch.path());
     serve_on_rooted(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
     )
     .await
@@ -291,8 +291,8 @@ async fn only_the_shell_speaks_for_the_person() {
     let who = who(&server, scratch.path());
     serve_on_rooted(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
     )
     .await

@@ -1,4 +1,4 @@
-//! Starting apps (activation token, DBusActivatable via org.freedesktop.Application.Activate,
+//! Starting apps (activation token, `DBusActivatable` via org.freedesktop.Application.Activate,
 //! Terminal=true wrapper, `systemd-run --user --scope --collect --unit=app-bardo-<id>-<rand>.scope`
 //! (fallback process group)), and the desktop's one terminal opener (`backend/terminal/`).
 //!

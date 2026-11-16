@@ -67,7 +67,7 @@ fn write_if_changed(path: &std::path::Path, text: &str, last: &Mutex<String>) {
         return;
     }
     match AtomicWrite::PRIVATE.write(path, text.as_bytes()) {
-        Ok(()) => *locked(last) = text.to_owned(),
+        Ok(()) => text.clone_into(&mut locked(last)),
         // The daemon's one log path is standard error, prefixed with its name.
         Err(e) => eprintln!("memoryd: could not write {}: {e}", path.display()),
     }

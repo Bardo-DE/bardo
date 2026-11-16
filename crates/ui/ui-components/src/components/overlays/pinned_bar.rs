@@ -1,4 +1,4 @@
-//! PinnedBar: an offer bar that stays at the top or bottom edge of a scroll container over the
+//! `PinnedBar`: an offer bar that stays at the top or bottom edge of a scroll container over the
 //! content ("Suggested: ...", "3 selected"). Blitz has no `position: sticky`, so the bar is not
 //! inside the scroller: the container is a positioned box, `children` (the scroller) fill it and
 //! the bar is laid over its edge. The bar covers the first or last rows at the scroller's rest;

@@ -1,4 +1,4 @@
-//! RowMore: the one quiet "More actions" button a row carries in its tail: an icon-only
+//! `RowMore`: the one quiet "More actions" button a row carries in its tail: an icon-only
 //! button with no pill, border or shadow that opens the row's menu (design/34-MODERN-LOOK.md).
 
 use crate::components::content::tip_text::TipText;

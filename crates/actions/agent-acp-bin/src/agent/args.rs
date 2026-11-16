@@ -161,15 +161,15 @@ mod tests {
             parse(words("--serve"), here.clone()).ok(),
             Some(Request::Serve)
         );
-        assert!(parse(words("--serve --tty"), here.clone()).is_err());
-        assert!(parse(words("--serve claude-code"), here).is_err());
+        parse(words("--serve --tty"), here.clone()).unwrap_err();
+        parse(words("--serve claude-code"), here).unwrap_err();
     }
 
     #[test]
     fn anything_else_is_a_bad_command_line() {
         let here = PathBuf::from("/home/u/p");
-        assert!(parse(Vec::new(), here.clone()).is_err());
-        assert!(parse(words("claude-code --yolo"), here.clone()).is_err());
-        assert!(parse(words("claude-code --cwd"), here).is_err());
+        parse(Vec::new(), here.clone()).unwrap_err();
+        parse(words("claude-code --yolo"), here.clone()).unwrap_err();
+        parse(words("claude-code --cwd"), here).unwrap_err();
     }
 }

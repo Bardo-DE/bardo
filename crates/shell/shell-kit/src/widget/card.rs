@@ -1,4 +1,4 @@
-//! WidgetCard: any widget on quire's card (design/23-WIDGETS.md section 9.3). The card is the
+//! `WidgetCard`: any widget on quire's card (design/23-WIDGETS.md section 9.3). The card is the
 //! only way a widget is drawn: it takes the widget's timeline, picks the entry that shows now
 //! (`use_widget`), and draws it through the widget's own `view` inside a `WidgetFrame`, whose
 //! corner, inset and title row are quire's alone.

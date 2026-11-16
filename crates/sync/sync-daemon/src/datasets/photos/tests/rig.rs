@@ -130,7 +130,7 @@ impl Machine {
         let library = PhotoLibrary::open(
             dir.path().join("data/photos"),
             DeviceId::parse(name).expect("device"),
-            millis.clone(),
+            Arc::<ManualMillis>::clone(&millis),
         )
         .expect("library");
         // Not flushed on each commit: a thousand photos make thousands of them, and these tests

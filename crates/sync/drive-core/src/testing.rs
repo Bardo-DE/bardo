@@ -583,7 +583,7 @@ impl Sink for MemorySink {
             self.free(place, None)?;
             let version = self.version();
             let mut folder = entry(&id.0, None, &place.name, ItemKind::Folder, 0, &version.0);
-            folder.parent = place.parent.clone();
+            folder.parent.clone_from(&place.parent);
             self.show(folder);
             held(&self.state)
                 .took
@@ -604,7 +604,7 @@ impl Sink for MemorySink {
                     let id = self.id_for(place)?;
                     self.free(place, None)?;
                     let mut file = entry("", None, &place.name, ItemKind::File, 0, "");
-                    file.parent = place.parent.clone();
+                    file.parent.clone_from(&place.parent);
                     (Some(id), file)
                 }
                 UploadTo::Replace(id) => (Some(id.clone()), self.at_base(id, &upload.base)?),
@@ -700,8 +700,8 @@ impl Sink for MemorySink {
             let mut moved = self.at_base(item, base)?;
             self.free(to, Some(item))?;
             let version = self.version();
-            moved.parent = to.parent.clone();
-            moved.name = to.name.clone();
+            moved.parent.clone_from(&to.parent);
+            moved.name.clone_from(&to.name);
             moved.version = version.clone();
             self.show(moved);
             held(&self.state).took.push(Took::Relocate(

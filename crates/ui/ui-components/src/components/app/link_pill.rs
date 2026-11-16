@@ -1,4 +1,4 @@
-//! LinkPill: the link under the pointer, as a rounded pill (design/30 section 2.11). It shows the
+//! `LinkPill`: the link under the pointer, as a rounded pill (design/30 section 2.11). It shows the
 //! real destination's registered domain; when the pointer rests on it (`HoverIntent`, the `Label`
 //! profile) it expands to the whole address, and a click hands the address to the caller to copy
 //! and says "Copied" for the toast's hold. The honest or lying decision is mailo's: a lying

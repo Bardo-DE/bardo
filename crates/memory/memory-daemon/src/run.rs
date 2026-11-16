@@ -180,7 +180,7 @@ async fn run(
     let backend = SystemBackend::with(
         dirs.clone(),
         keys,
-        InferdEmbedder::new(inferd.clone(), default_card()),
+        InferdEmbedder::new(Arc::clone(&inferd), default_card()),
         InferdConsolidator::new(inferd),
     )
     .with_registry(registry);
@@ -220,17 +220,17 @@ async fn run(
             .with_consent(Consent::new(locator))
             .with_confinement(confinement),
     );
-    serve_on(&connection, daemon.clone()).await?;
+    serve_on(&connection, Arc::clone(&daemon)).await?;
     // The keyring says when it locks or unlocks; no timer asks.
     let changes = LockChanges::on(&connection).await?;
     daemon.attach(connection);
     let mut duties = Duties::default();
-    let watcher = daemon.clone();
+    let watcher = Arc::clone(&daemon);
     duties.spawn(
         "keyring",
         async move { watcher.follow_keyring(changes).await },
     );
-    let following = daemon.clone();
+    let following = Arc::clone(&daemon);
     let blind = matches!(watched.state(), WatchState::Blind { .. });
     duties.spawn("settings", async move {
         while apply_next(following.service(), &mut watched)
@@ -243,9 +243,9 @@ async fn run(
             std::future::pending::<()>().await;
         }
     });
-    let removed = daemon.clone();
+    let removed = Arc::clone(&daemon);
     duties.spawn("spaces", async move { removed.follow_spaces(spaces).await });
-    let consolidator = daemon.clone();
+    let consolidator = Arc::clone(&daemon);
     duties.spawn("consolidation", async move {
         tokio::time::sleep(FIRST_CONSOLIDATION).await;
         loop {
@@ -260,7 +260,7 @@ async fn run(
             tokio::time::sleep(CONSOLIDATE_EVERY).await;
         }
     });
-    let sweeper = daemon.clone();
+    let sweeper = Arc::clone(&daemon);
     duties.spawn("sweep", async move {
         tokio::time::sleep(FIRST_SWEEP).await;
         loop {

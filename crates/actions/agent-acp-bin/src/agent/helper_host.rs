@@ -95,10 +95,15 @@ impl HelperHost {
 
     /// Ends every helper's agent process, on the way out.
     pub async fn shutdown(&self) {
-        self.agents.shutdown().await;
-        let all = std::mem::take(&mut *self.brought.lock().unwrap_or_else(|e| e.into_inner()));
+        Box::pin(self.agents.shutdown()).await;
+        let all = std::mem::take(
+            &mut *self
+                .brought
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner),
+        );
         for agent in all.into_values() {
-            agent.lock().await.close().await;
+            Box::pin(agent.lock().await.close()).await;
         }
     }
 
@@ -119,7 +124,7 @@ impl HelperHost {
         {
             return refused(HandFault::NotResumable);
         }
-        let away = match self.agents.to_terminal(card).await {
+        let away = match Box::pin(self.agents.to_terminal(card)).await {
             Ok(away) => away,
             Err(why) => return refused(why),
         };
@@ -132,7 +137,7 @@ impl HelperHost {
                 session: away.session,
             })),
             None => {
-                let _ = self.agents.bring_back(card).await;
+                let _ = Box::pin(self.agents.bring_back(card)).await;
                 refused(HandFault::Failed)
             }
         }
@@ -140,7 +145,7 @@ impl HelperHost {
 
     async fn bring_back(&self, card: &HelperCard) -> BackOutcome {
         match self.ready(card) {
-            Ok(()) => match self.agents.bring_back(card).await {
+            Ok(()) => match Box::pin(self.agents.bring_back(card)).await {
                 Ok(()) => BackOutcome::Back,
                 Err(why) => BackOutcome::Refused(why),
             },
@@ -175,7 +180,7 @@ impl HelperHost {
                 let kept = Arc::new(AsyncMutex::new(conversation));
                 self.brought
                     .lock()
-                    .unwrap_or_else(|e| e.into_inner())
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
                     .insert(session.clone(), kept);
                 BroughtOutcome::Brought(session)
             }
@@ -257,13 +262,19 @@ impl HelperHost {
                 self.agents.forget(&helper).await;
                 AppsReply::Forget
             }
-            AppsAsk::ToTerminal { card } => AppsReply::ToTerminal(self.to_terminal(&card).await),
-            AppsAsk::BringBack { card } => AppsReply::BringBack(self.bring_back(&card).await),
+            AppsAsk::ToTerminal { card } => {
+                AppsReply::ToTerminal(Box::pin(self.to_terminal(&card)).await)
+            }
+            AppsAsk::BringBack { card } => {
+                AppsReply::BringBack(Box::pin(self.bring_back(&card)).await)
+            }
             AppsAsk::BringBackWatched {
                 session,
                 agent,
                 folder,
-            } => AppsReply::BringBackWatched(self.bring_back_watched(session, agent, folder).await),
+            } => AppsReply::BringBackWatched(
+                Box::pin(self.bring_back_watched(session, agent, folder)).await,
+            ),
             AppsAsk::Recognise { seen } => AppsReply::Recognise(self.recognise(&seen)),
         }
     }

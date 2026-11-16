@@ -81,7 +81,7 @@ fn render(peeked: &Arc<AnyPeeked>) -> String {
     let mut dom = VirtualDom::new_with_props(
         Root,
         Setup {
-            peeked: peeked.clone(),
+            peeked: Arc::clone(peeked),
         },
     );
     dom.rebuild_in_place();
@@ -117,11 +117,12 @@ fn body(name: &str) -> Arc<AnyPeeked> {
             ("facts", facts_only()),
         ]
     });
-    all.iter()
-        .find(|(known, _)| *known == name)
-        .unwrap_or_else(|| panic!("no body called {name}"))
-        .1
-        .clone()
+    Arc::clone(
+        &all.iter()
+            .find(|(known, _)| *known == name)
+            .unwrap_or_else(|| panic!("no body called {name}"))
+            .1,
+    )
 }
 
 #[test]

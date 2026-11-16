@@ -91,7 +91,10 @@ pub fn spawn_confirmation(rt: &Handle, env: &Env, host: HostHandle<ShellMsg>) {
         }
         Speaks::ForTheRelease => {}
     }
-    let (children, bin_dir) = (env.children.clone(), env.release_bin.clone());
+    let (children, bin_dir) = (
+        std::sync::Arc::clone(&env.children),
+        env.release_bin.clone(),
+    );
     rt.spawn(async move {
         tokio::time::sleep(SETTLE).await;
         let answered = tokio::task::spawn_blocking(move || {

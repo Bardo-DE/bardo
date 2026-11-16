@@ -34,6 +34,7 @@ pub struct FakeAuthenticator {
 
 impl FakeAuthenticator {
     /// Accepts `secret` at once.
+    #[must_use]
     pub fn accepting(secret: &str) -> FakeAuthenticator {
         FakeAuthenticator {
             rule: FakeRule::Accepts(secret.to_owned()),

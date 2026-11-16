@@ -116,7 +116,7 @@ pub async fn serve(bus: &PrivateBus, found: bool) -> Fake {
     let inferd = bus.connect().await;
     inferd
         .object_server()
-        .at(INFERENCE_PATH, Inference(state.clone()))
+        .at(INFERENCE_PATH, Inference(Arc::clone(&state)))
         .await
         .expect("inferd served");
     zbus_ready::serving(&inferd)
@@ -129,7 +129,7 @@ pub async fn serve(bus: &PrivateBus, found: bool) -> Fake {
     let systemd = bus.connect().await;
     systemd
         .object_server()
-        .at(SYSTEMD_PATH, Manager(state.clone()))
+        .at(SYSTEMD_PATH, Manager(Arc::clone(&state)))
         .await
         .expect("the manager served");
     zbus_ready::serving(&systemd)

@@ -124,11 +124,11 @@ pub fn rig_with<S: Helpers>(
     let (server_read, server_write) = split(server_end);
     let (client_read, client_write) = split(client_end);
     let lines = capped_lines(BufReader::new(server_read), server_write);
-    let host = FakeHost::new(log.clone(), scripts);
+    let host = FakeHost::new(Arc::clone(log), scripts);
     let server = Server::new(
         app(editor_app),
         host,
-        log.clone(),
+        Arc::clone(log),
         FixedClock::at(UnixSeconds(1_760_000_000)),
     )
     .with_helpers(helpers);

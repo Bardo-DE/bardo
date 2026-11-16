@@ -12,7 +12,7 @@ use std::io;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
-    m.lock().unwrap_or_else(|e| e.into_inner())
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// One end of an in-memory pipe of lines. The agent's end reads and writes lines by hand, as a
@@ -24,6 +24,7 @@ pub struct ChannelWire {
 }
 
 /// Two ends: what one writes the other reads.
+#[must_use]
 pub fn pipe() -> (ChannelWire, ChannelWire) {
     let (a_tx, b_rx) = unbounded();
     let (b_tx, a_rx) = unbounded();
@@ -77,16 +78,19 @@ pub struct SpawnSeen(Arc<Mutex<SpawnLog>>);
 
 impl SpawnSeen {
     /// The plans it was asked to start.
+    #[must_use]
     pub fn plans(&self) -> Vec<LaunchPlan> {
         locked(&self.0).plans.clone()
     }
 
     /// Children killed.
+    #[must_use]
     pub fn killed(&self) -> usize {
         locked(&self.0).killed
     }
 
     /// Children closed.
+    #[must_use]
     pub fn closed(&self) -> usize {
         locked(&self.0).closed
     }
@@ -104,6 +108,7 @@ pub struct FakeSpawn {
 
 impl FakeSpawn {
     /// A spawner whose starts return `wires` in order, and a view of what it saw.
+    #[must_use]
     pub fn new(wires: Vec<ChannelWire>) -> (Self, SpawnSeen) {
         let seen = SpawnSeen::default();
         (
@@ -119,6 +124,7 @@ impl FakeSpawn {
     }
 
     /// The same spawner, handing back `meta` for `session/new` with every start.
+    #[must_use]
     pub fn with_meta(mut self, meta: SessionMeta) -> Self {
         self.meta = Some(meta);
         self
@@ -127,12 +133,14 @@ impl FakeSpawn {
 
 impl FakeSpawn {
     /// The same spawner, handing back a model to switch to with every start.
+    #[must_use]
     pub fn with_model(mut self, model: super::models::ModelId) -> Self {
         self.model = Some(model);
         self
     }
 
     /// The same spawner, handing back a way to sign in with every start.
+    #[must_use]
     pub fn with_sign_in(mut self, sign_in: SignIn) -> Self {
         self.sign_in = Some(sign_in);
         self
@@ -203,6 +211,7 @@ pub struct FakeFiles(Arc<Mutex<Disk>>);
 
 impl FakeFiles {
     /// An empty disk.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -218,16 +227,19 @@ impl FakeFiles {
     }
 
     /// The text of a file, if there is one.
+    #[must_use]
     pub fn text(&self, path: &AbsPath) -> Option<String> {
         locked(&self.0).files.get(path).cloned()
     }
 
     /// How many reads reached the disk.
+    #[must_use]
     pub fn reads(&self) -> usize {
         locked(&self.0).reads
     }
 
     /// Every write that reached the disk, in order.
+    #[must_use]
     pub fn writes(&self) -> Vec<(AbsPath, String)> {
         locked(&self.0).writes.clone()
     }

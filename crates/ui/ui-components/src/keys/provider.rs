@@ -13,6 +13,7 @@ use keymap::{AppAction, AppId, Conflict, DefaultChord, Platform, Registration};
 /// below the app's `App` yet above `Ds` (a host or shell that draws `Ds` itself), where
 /// `use_keys` would build a keymap of our conventions the launcher's [`KeySource`] never reaches.
 /// Everywhere under `Ds`, `use_keys` is the one to call.
+#[must_use]
 pub fn use_keys_provider() -> Keys {
     let keys = use_hook(|| {
         if let Some(enclosing) = try_consume_context::<Keys>() {
@@ -29,12 +30,14 @@ pub fn use_keys_provider() -> Keys {
 
 /// The keymap of the enclosing `Ds`. Under no root (a component drawn on its own) it is our
 /// desktop's conventions, so a component never needs to ask whether there is one.
+#[must_use]
 pub fn use_keys() -> Keys {
     use_hook(|| try_consume_context::<Keys>().unwrap_or_else(|| Keys::new(KeySource::default())))
 }
 
 /// The platform of the enclosing `Ds`'s keymap: all a view needs to draw a shortcut or read a
 /// wheel zoom.
+#[must_use]
 pub fn use_platform() -> Platform {
     use_hook(|| {
         try_consume_context::<Keys>()

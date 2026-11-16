@@ -1,4 +1,4 @@
-//! HoverCard: a preview that opens after the pointer rests, never marks read, never fetches
+//! `HoverCard`: a preview that opens after the pointer rests, never marks read, never fetches
 //! (design/04-COMPONENTS.md section 22, design/06-INTERACTIONS.md section 3).
 //!
 //! A `HoverTarget` feeds the `HoverHub` (the Card profile: 500 ms to open, 0 when warm; 150 ms to

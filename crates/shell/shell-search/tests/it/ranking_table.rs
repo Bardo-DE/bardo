@@ -94,7 +94,7 @@ fn shown(text: &str) -> Placement {
         Box::new(SystemProvider::new(session)),
         Box::new(AppsProvider {
             apps,
-            frecency: frecency.clone(),
+            frecency: Arc::clone(&frecency),
         }),
         Box::new(EmojiProvider { policy, frecency }),
     ];

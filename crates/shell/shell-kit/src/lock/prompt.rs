@@ -1,4 +1,4 @@
-//! LockPrompt: who is asked, and the password field (design/20-SURFACES.md section 1.9;
+//! `LockPrompt`: who is asked, and the password field (design/20-SURFACES.md section 1.9;
 //! design/04-COMPONENTS.md section 42). The person's picture, the name, a pill field of flat
 //! white glass with an enter arrow inside it, a caps-lock mark, and a hint line under it.
 

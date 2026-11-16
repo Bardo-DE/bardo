@@ -16,6 +16,7 @@ pub enum PromptHost {
 }
 
 /// Where a summon in a field of `kind` puts the prompt. Total.
+#[must_use]
 pub fn prompt_host(kind: FieldKind) -> PromptHost {
     match kind {
         FieldKind::Plain | FieldKind::Search => PromptHost::Field,

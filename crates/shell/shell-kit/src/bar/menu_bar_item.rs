@@ -1,4 +1,4 @@
-//! MenuBarItem: an item of the menu bar, `NSStatusItem`'s button or a menu's title
+//! `MenuBarItem`: an item of the menu bar, `NSStatusItem`'s button or a menu's title
 //! (design/30 section 2.10, design/13 section 13.3.1). One component for the app name and the
 //! clock (a title) and the Wi-Fi, volume and battery items (a glyph).
 //!

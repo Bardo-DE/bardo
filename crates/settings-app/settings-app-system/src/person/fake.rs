@@ -9,6 +9,7 @@ pub struct FakePerson(Person);
 
 impl FakePerson {
     /// This person, with no picture.
+    #[must_use]
     pub fn named(name: &str) -> FakePerson {
         FakePerson(Person {
             name: name.to_owned(),

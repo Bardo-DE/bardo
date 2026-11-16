@@ -196,17 +196,17 @@ pub async fn run_flow_acp(
         }
     };
     world.sheet.will_by_effect(person_for(flow));
-    let played = play(
+    let played = Box::pin(play(
         &world,
         binaries,
         spec,
         guard.as_ref(),
         flow.prompt(),
         patience,
-    )
+    ))
     .await;
     let launcher = Launcher::of(&world).await.patient(patience);
-    let undo = undo_held(&launcher, &world).await;
+    let undo = Box::pin(undo_held(&launcher, &world)).await;
     let found = evidence(&played, &world, undo);
     let mut judged = judge_in(Some(spec.program.as_str()), flow, &found);
     if let AgentEnd::NotStarted(why) = &played.end {
@@ -266,7 +266,7 @@ pub async fn list_models_acp(
         ..Options::default()
     };
     let world = World::start_model(binaries, Flow::ALL[0].consent(), model, &options).await;
-    let offered = offered_models(&world, binaries, spec).await?;
+    let offered = Box::pin(offered_models(&world, binaries, spec)).await?;
     let Some(models) = offered else {
         return Ok("the agent offers no choice of model\n".to_owned());
     };

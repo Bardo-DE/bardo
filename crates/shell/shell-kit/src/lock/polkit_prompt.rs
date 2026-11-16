@@ -1,4 +1,4 @@
-//! PolkitPrompt: a program asks for the person's password (design/20-SURFACES.md section 1.10;
+//! `PolkitPrompt`: a program asks for the person's password (design/20-SURFACES.md section 1.10;
 //! design/04-COMPONENTS.md section 42). A narrow centred `Sheet` (it dims nothing), sliding in
 //! from the top: the person's picture, a bold title, the program's message, "Details" as a
 //! tooltip, the password in a boxed `Secret` field that shakes once when it was wrong, then Cancel

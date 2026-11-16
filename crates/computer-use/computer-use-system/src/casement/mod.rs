@@ -49,8 +49,8 @@ impl CasementDesktop {
         let (events, receiver) = mpsc::unbounded_channel();
         let (ready, answer) = oneshot::channel();
         let shared = Shared {
-            windows: windows.clone(),
-            leases: leases.clone(),
+            windows: Arc::clone(&windows),
+            leases: Arc::clone(&leases),
             events,
         };
         std::thread::Builder::new()

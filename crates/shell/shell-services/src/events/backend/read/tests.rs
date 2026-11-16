@@ -1,4 +1,4 @@
-//! The reader over realistic files: KOrganizer's `std.ics`, a Google Calendar export and a
+//! The reader over realistic files: `KOrganizer`'s `std.ics`, a Google Calendar export and a
 //! vdirsyncer folder (`tests/fixtures/calendars`), in Taipei, September and October 2026.
 
 use std::path::PathBuf;

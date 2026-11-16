@@ -130,7 +130,7 @@ pub async fn serve(bus: &PrivateBus, rows: Vec<RunningModel>) -> Fake {
     let connection = bus.connect().await;
     connection
         .object_server()
-        .at(INFERENCE_PATH, Inference(state.clone()))
+        .at(INFERENCE_PATH, Inference(Arc::clone(&state)))
         .await
         .expect("inferd served");
     zbus_ready::serving(&connection)

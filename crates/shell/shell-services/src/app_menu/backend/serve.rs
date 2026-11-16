@@ -27,12 +27,11 @@ pub(super) async fn follow(
 ) {
     let owner = Owner::of(&connection, &name.0);
     // An app that answered badly leaves nothing to show until its owner changes.
-    while owner
-        .session(async {
-            session(&connection, &peers, &windows, &app, &name, &events).await;
-            Ended::Unreadable
-        })
-        .await
+    while Box::pin(owner.session(async {
+        session(&connection, &peers, &windows, &app, &name, &events).await;
+        Ended::Unreadable
+    }))
+    .await
         == Next::Again
     {
         if events.send(AppMenuEvent::Gone(app.clone())).is_err() {

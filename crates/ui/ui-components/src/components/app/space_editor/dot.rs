@@ -20,6 +20,7 @@ pub enum DotFace {
 
 impl DotFace {
     /// The `data-face` value, set on the foot face only (the swatch keeps its old markup).
+    #[must_use]
     pub fn slug(self) -> Option<&'static str> {
         match self {
             DotFace::Swatch => None,

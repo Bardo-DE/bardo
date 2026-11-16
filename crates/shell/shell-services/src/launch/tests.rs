@@ -116,7 +116,7 @@ async fn opening_with_no_session_records_the_opener_and_starts_nothing() {
     let scratch = shell_testkit::TempDir::new("launch-open-recorded");
     let children = RecordedChildren::shared();
     let mut env = crate::env::Env::isolated(scratch.path());
-    env.children = children.clone();
+    env.children = std::sync::Arc::<RecordedChildren>::clone(&children);
     let rt = tokio::runtime::Handle::current();
     let notifications = spawn::<NotificationsService>(&rt, &env, Default::default()).control;
     let links = LaunchLinks {

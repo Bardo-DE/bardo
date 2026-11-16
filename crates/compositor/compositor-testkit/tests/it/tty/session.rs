@@ -70,7 +70,7 @@ fn a_vt_chord_switches_and_the_backend_pauses_then_resumes() {
     let session = SharedSession::new(FakeSession::default());
     let mut backend = backend(&session, FakeUdev::default());
     // Ctrl+Alt+F3 is XF86Switch_VT_3 after xkb.
-    let asked = backend.request_vt(Keysym(0x1008fe03)).expect("switch");
+    let asked = backend.request_vt(Keysym(0x1008_fe03)).expect("switch");
     assert_eq!(asked, Some(VtNumber(3)));
     assert_eq!(session.switched_to(), Some(3));
     assert_eq!(session_notes(&backend.dispatch()), [SessionNote::Paused]);
@@ -103,10 +103,10 @@ fn prepare_for_sleep_pauses_through_the_fake_logind() {
 
 #[test]
 fn the_vt_chords_map_to_vt_numbers() {
-    assert_eq!(vt_of_keysym(Keysym(0x1008fe01)), Some(VtNumber(1)));
-    assert_eq!(vt_of_keysym(Keysym(0x1008fe0c)), Some(VtNumber(12)));
-    assert_eq!(vt_of_keysym(Keysym(0x1008fe0d)), None);
-    assert_eq!(vt_of_keysym(Keysym(0x1008fe00)), None);
+    assert_eq!(vt_of_keysym(Keysym(0x1008_fe01)), Some(VtNumber(1)));
+    assert_eq!(vt_of_keysym(Keysym(0x1008_fe0c)), Some(VtNumber(12)));
+    assert_eq!(vt_of_keysym(Keysym(0x1008_fe0d)), None);
+    assert_eq!(vt_of_keysym(Keysym(0x1008_fe00)), None);
     assert_eq!(vt_of_keysym(Keysym(0x20)), None);
 }
 
@@ -116,12 +116,12 @@ type ChordRow<'a> = (bool, &'a [Keysym], &'a [Keysym], Option<VtNumber>);
 #[test]
 fn ctrl_alt_and_a_function_key_ask_for_that_vt_when_the_keymap_names_none() {
     let f = |n: u32| [Keysym(0xffbd + n)];
-    let named = [Keysym(0x1008fe05)];
+    let named = [Keysym(0x1008_fe05)];
     let table: [ChordRow; 7] = [
         (true, &named, &f(5), Some(VtNumber(5))),
         (true, &f(1), &f(1), Some(VtNumber(1))),
         (true, &[], &f(12), Some(VtNumber(12))),
-        (true, &[Keysym(0x1008ff11)], &[Keysym(0x1008ff11)], None),
+        (true, &[Keysym(0x1008_ff11)], &[Keysym(0x1008_ff11)], None),
         (false, &f(2), &f(2), None),
         (false, &named, &f(5), Some(VtNumber(5))),
         (true, &[Keysym(0xffca)], &[Keysym(0xffca)], None),

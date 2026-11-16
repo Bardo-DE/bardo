@@ -113,14 +113,14 @@ impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static> Ro
             .at(
                 path.clone(),
                 AnswerObject {
-                    companion: self.companion.clone(),
-                    shared: self.shared.clone(),
+                    companion: Arc::clone(&self.companion),
+                    shared: Arc::clone(&self.shared),
                     task: begun.task.clone(),
                     speakers: self.speakers.clone(),
                 },
             )
             .await?;
-        let companion = self.companion.clone();
+        let companion = Arc::clone(&self.companion);
         tokio::spawn(async move {
             let _ = companion.lock().await.run_begun(begun).await;
         });
@@ -219,7 +219,7 @@ impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static>
                 .map_or_else(|| action_dbus::request_path(acting.id()), str::to_owned),
         )
         .map_err(|e| fdo::Error::Failed(e.to_string()))?;
-        tokio::spawn(crate::follow::follow(self.companion.clone(), acting));
+        tokio::spawn(crate::follow::follow(Arc::clone(&self.companion), acting));
         Ok(path)
     }
 
@@ -284,8 +284,8 @@ async fn forward<P, I, K>(
             Change::AnswerAdded(task) => {
                 let path = answer_path(&task);
                 let object = AnswerObject {
-                    companion: companion.clone(),
-                    shared: shared.clone(),
+                    companion: Arc::clone(&companion),
+                    shared: Arc::clone(&shared),
                     task,
                     speakers: speakers.clone(),
                 };
@@ -378,7 +378,7 @@ where
 {
     let (shared, shell, desk) = {
         let held = companion.lock().await;
-        (held.shared.clone(), held.shell.clone(), held.desk())
+        (Arc::clone(&held.shared), held.shell.clone(), held.desk())
     };
     let speakers = Speakers::new(connection.clone(), who, shell, proc_root);
     connection
@@ -386,8 +386,8 @@ where
         .at(
             COMPANION_PATH,
             Root {
-                companion: companion.clone(),
-                shared: shared.clone(),
+                companion: Arc::clone(&companion),
+                shared: Arc::clone(&shared),
                 speakers: speakers.clone(),
             },
         )
@@ -400,7 +400,7 @@ where
             .at(
                 COMPANION_PATH,
                 HelpersObject {
-                    desk: desk.clone(),
+                    desk: Arc::clone(&desk),
                     speakers: speakers.clone(),
                 },
             )
@@ -411,7 +411,7 @@ where
             .at(
                 COMPANION_PATH,
                 Helpers2Object {
-                    desk: desk.clone(),
+                    desk: Arc::clone(&desk),
                     routines,
                     speakers: speakers.clone(),
                 },
@@ -444,16 +444,16 @@ where
     tokio::spawn(forward(
         connection.clone(),
         shared,
-        companion.clone(),
+        Arc::clone(&companion),
         speakers,
     ));
     tokio::spawn(crate::background::arrivals(
         connection.clone(),
-        companion.clone(),
+        Arc::clone(&companion),
     ));
     tokio::spawn(crate::run_signals::watch(
         connection.clone(),
-        companion.clone(),
+        Arc::clone(&companion),
     ));
     tokio::spawn(crate::background::ticking(companion));
     Ok(())

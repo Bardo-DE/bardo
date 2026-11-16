@@ -41,7 +41,7 @@ impl Harness for Native {
     async fn backend(&mut self) -> Backend {
         let world = World::new(script());
         let companion = companion(&world.router, &world.infer);
-        let shared = companion.shared.clone();
+        let shared = Arc::clone(&companion.shared);
         let core = Arc::new(Mutex::new(companion));
         let opened = core
             .lock()

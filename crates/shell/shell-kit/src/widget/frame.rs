@@ -1,4 +1,4 @@
-//! WidgetFrame: the card a widget is drawn on (design/04-COMPONENTS.md "Widgets"; design/20
+//! `WidgetFrame`: the card a widget is drawn on (design/04-COMPONENTS.md "Widgets"; design/20
 //! section 1.14). The frame owns the corner, the padding, the footprint and the title row, so a
 //! widget draws only its content and writes no CSS for any of them.
 //!

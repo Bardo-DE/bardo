@@ -24,6 +24,7 @@ pub enum OrbSize {
 
 impl OrbSize {
     /// How wide the orb is drawn at this rung.
+    #[must_use]
     pub fn px(self) -> Px {
         match self {
             OrbSize::Inline => Px(14.0),
@@ -48,6 +49,7 @@ pub enum OrbPeriod {
 
 impl OrbPeriod {
     /// The duration token that times one turn.
+    #[must_use]
     pub fn token(self) -> DurationToken {
         match self {
             OrbPeriod::Listen => DurationToken::OrbListen,

@@ -18,6 +18,7 @@ pub struct FakeEngines(Arc<Mutex<Book>>);
 
 impl FakeEngines {
     /// An assistant that lists llama.cpp as `llama`; a restart succeeds.
+    #[must_use]
     pub fn listing(llama: LlamaCpp) -> FakeEngines {
         FakeEngines(Arc::new(Mutex::new(Book {
             llama,
@@ -37,6 +38,7 @@ impl FakeEngines {
     }
 
     /// How many restarts were asked.
+    #[must_use]
     pub fn restarts(&self) -> usize {
         locked(&self.0).restarts
     }

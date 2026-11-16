@@ -80,7 +80,7 @@ pub struct Hub<P: Planner, I: IntentsTransport, K: Clock, S: Surface> {
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Clone for Hub<P, I, K, S> {
     fn clone(&self) -> Self {
         Self {
-            inner: self.inner.clone(),
+            inner: Arc::clone(&self.inner),
         }
     }
 }
@@ -160,10 +160,11 @@ where
     /// planner and transports the daemon gives that helper.
     pub(super) fn talker(&self, card: &HelperCard) -> Talk<P, I, K, S> {
         self.with_talks(|talks| {
-            talks
-                .entry(card.id.clone())
-                .or_insert_with(|| Arc::new(AsyncMutex::new(self.helpers_companion(card))))
-                .clone()
+            Arc::clone(
+                talks
+                    .entry(card.id.clone())
+                    .or_insert_with(|| Arc::new(AsyncMutex::new(self.helpers_companion(card)))),
+            )
         })
     }
 

@@ -16,6 +16,7 @@ pub use crate::writer::InferdWriter;
 
 /// inferd over the session bus: the one link every daemon of this repo makes, on `connection`
 /// (see `action_dbus::inferd_transport`).
+#[must_use]
 pub fn inferd_transport(connection: &action_dbus::BusConnection, tap: InferWatch) -> InferLink {
     action_dbus::inferd_transport(connection, tap)
 }
@@ -33,6 +34,7 @@ impl<T: Transport> InferdModel<T> {
 
 impl InferdModel<InferLink> {
     /// Asks inferd over the session bus; `card` says who answers.
+    #[must_use]
     pub fn on_bus(
         connection: &action_dbus::BusConnection,
         card: ModelCard,

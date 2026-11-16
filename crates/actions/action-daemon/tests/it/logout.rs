@@ -99,7 +99,7 @@ async fn the_persons_session_ending_takes_the_terminals_grants_with_it() {
     let system = bus.connect().await;
     let router = terminal_with_a_grant().await;
     let watching = watch_logind(&system).await.expect("subscribed");
-    tokio::spawn(watching.end_terminals(router.clone(), Some("c1".into())));
+    tokio::spawn(watching.end_terminals(Arc::clone(&router), Some("c1".into())));
 
     // Somebody else's session (an ssh login) ends: the person is still here.
     removed(&logind, "c7", 7).await;
@@ -150,7 +150,7 @@ async fn with_no_session_id_known_any_logout_counts() {
     let system = bus.connect().await;
     let router = terminal_with_a_grant().await;
     let watching = watch_logind(&system).await.expect("subscribed");
-    tokio::spawn(watching.end_terminals(router.clone(), None));
+    tokio::spawn(watching.end_terminals(Arc::clone(&router), None));
     removed(&logind, "c9", 9).await;
     assert!(
         until(|| router.terminal_grants().is_empty()).await,

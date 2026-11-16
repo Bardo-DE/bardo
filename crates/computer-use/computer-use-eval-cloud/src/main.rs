@@ -229,7 +229,7 @@ async fn run(args: Args) -> Result<(), RunError> {
         DbusTransport::over(connection),
         args.tier,
         args.sampling,
-        watch.clone(),
+        Arc::clone(&watch),
     ));
     let player = format!("cloud:{}", entry.id.0);
     let lot = Lot {
@@ -239,7 +239,7 @@ async fn run(args: Args) -> Result<(), RunError> {
         served: served()?,
         spend_microusd: Some(1_000_000),
     };
-    let halting = watch.clone();
+    let halting = Arc::clone(&watch);
     let budget = args.max_steps;
     let (records, halted) = run_live_until(&corpus, provider, &plan, &lot, move |so_far| {
         if halting.spend_refused() {

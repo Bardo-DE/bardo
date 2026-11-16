@@ -90,7 +90,7 @@ impl Account {
             .unwrap_or_else(std::sync::PoisonError::into_inner)
             .reauthenticated
             .push(parent_window);
-        self.state = "ok".to_owned();
+        "ok".clone_into(&mut self.state);
         let _ = self.state_changed(&emitter).await;
         OwnedObjectPath::try_from("/org/bardo/Accounts1/request/1")
             .unwrap_or_else(|e| panic!("{e}"))
@@ -171,7 +171,7 @@ impl FakeAccountd {
             .interface::<_, Account>(ACCOUNT)
             .await
             .unwrap_or_else(|e| panic!("{e}"));
-        object.get_mut().await.reason = "testing_app_expired".to_owned();
+        "testing_app_expired".clone_into(&mut object.get_mut().await.reason);
         self.refuse().await;
     }
 

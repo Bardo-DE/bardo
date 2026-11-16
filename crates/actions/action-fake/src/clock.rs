@@ -95,7 +95,7 @@ impl Clock for FixedClock {
             } else {
                 let flag = Flag::new();
                 let due = sky.elapsed + u64::from(wait.0);
-                sky.timers.push((due, flag.clone()));
+                sky.timers.push((due, Arc::clone(&flag)));
                 Some(flag)
             }
         };

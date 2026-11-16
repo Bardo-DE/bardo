@@ -45,7 +45,7 @@ async fn main() -> ExitCode {
         Ok(config) => config,
         Err(why) => return fail(why),
     };
-    let daemon = match Daemon::build(config).await {
+    let daemon = match Box::pin(Daemon::build(config)).await {
         Ok(daemon) => daemon,
         Err(why) => return fail(why),
     };

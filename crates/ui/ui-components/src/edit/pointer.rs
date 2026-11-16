@@ -27,6 +27,7 @@ impl EditPointer {
     /// A `phase` at `at` the host resolved to no text position: a fresh selection, the first
     /// click of a run. The builders below set the rest, so a consumer's test writes the gesture
     /// it means.
+    #[must_use]
     pub fn new(phase: PointerPhase, at: Point) -> Self {
         EditPointer {
             phase,
@@ -38,6 +39,7 @@ impl EditPointer {
     }
 
     /// The same gesture over `position`.
+    #[must_use]
     pub fn over(self, position: TextPosition) -> Self {
         EditPointer {
             position: Some(position),
@@ -46,6 +48,7 @@ impl EditPointer {
     }
 
     /// The same gesture with Shift held: it extends the selection.
+    #[must_use]
     pub fn extending(self) -> Self {
         EditPointer {
             extend: Extend::FromAnchor,
@@ -54,6 +57,7 @@ impl EditPointer {
     }
 
     /// The same gesture as press number `clicks` of a quick run.
+    #[must_use]
     pub fn clicking(self, clicks: Clicks) -> Self {
         EditPointer { clicks, ..self }
     }

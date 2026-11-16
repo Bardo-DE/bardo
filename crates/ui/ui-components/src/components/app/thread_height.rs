@@ -9,7 +9,7 @@ use ui_style::tokens::type_scale::FontSize;
 
 /// The root's line height (`.ds` in reset.css), which the name and the snippet inherit.
 const ROOT_LINE: f32 = 1.55;
-/// The subject's own line height (`.ds-thread-sub` in thread_row.css).
+/// The subject's own line height (`.ds-thread-sub` in `thread_row.css`).
 const SUBJECT_LINE: f32 = 1.35;
 
 /// How many text lines a card row draws.
@@ -38,6 +38,7 @@ fn px(token: impl Token) -> f32 {
 /// pitch is `thread_card_height(lines) + thread_card_gap()`. The height does not depend on the
 /// row's slots (`more`, `strip`, `star`): none of them makes the row taller. At a fractional
 /// device scale the border rounds to whole device pixels, and the height moves by under a pixel.
+#[must_use]
 pub fn thread_card_height(lines: ThreadLines) -> Px {
     let name = px(FontSize::Body) * ROOT_LINE;
     let subject = px(FontSize::Body) * SUBJECT_LINE;
@@ -55,6 +56,7 @@ pub fn thread_card_height(lines: ThreadLines) -> Px {
 }
 
 /// The gap below every card row (its `margin-bottom`, `--s-5`), for a list's pitch.
+#[must_use]
 pub fn thread_card_gap() -> Px {
     Px(px(SpacingToken::S5))
 }

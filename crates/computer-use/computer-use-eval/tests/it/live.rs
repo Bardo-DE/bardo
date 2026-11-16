@@ -66,7 +66,7 @@ fn a_model_that_reads_the_screen_and_answers_passes_the_task_it_was_given() {
     let only = ["mail-read".to_owned()];
     let runs = block_on(run_live(
         &corpus(),
-        provider.clone(),
+        Arc::clone(&provider),
         &plan,
         "test",
         1,
@@ -113,7 +113,15 @@ fn first_request_text(platform: keymap::Platform) -> String {
     let plan = Plan::of(ENTRY, "holo", Thinking::Off).unwrap();
     let only = ["pad-copy-shortcut".to_owned()];
     let corpus = corpus().on(platform);
-    block_on(run_live(&corpus, provider.clone(), &plan, "test", 1, &only)).unwrap();
+    block_on(run_live(
+        &corpus,
+        Arc::clone(&provider),
+        &plan,
+        "test",
+        1,
+        &only,
+    ))
+    .unwrap();
     let requests = provider.requests();
     requests[0]
         .messages

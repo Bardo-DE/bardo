@@ -29,6 +29,7 @@ fn desktop_table() -> Table {
 }
 
 /// The context for the real system: the configured root, the real key, ureq, pkexec.
+#[must_use]
 pub fn production(config: Config, dirs: &Dirs) -> Context {
     let anchor: Anchor =
         load_key(&config.pubkey_path).map(|k| Arc::new(k) as Arc<dyn Authenticator>);

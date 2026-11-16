@@ -39,7 +39,7 @@ pub(super) fn Picture(image: Arc<ImagePeek>, label: String) -> Element {
         .and_then(|pixels| texture.update(&pixels).ok())
         .is_some();
         if uploaded_now {
-            *uploaded.borrow_mut() = Some(image.clone());
+            *uploaded.borrow_mut() = Some(Arc::clone(&image));
         }
         uploaded_now
     };

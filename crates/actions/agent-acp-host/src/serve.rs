@@ -113,7 +113,11 @@ impl<X: Seams> AcpBackend<X> {
         let Some(live) = self.live.as_ref() else {
             return;
         };
-        if let Some(trip) = live.edge.as_ref().and_then(|e| e.take_trip()) {
+        if let Some(trip) = live
+            .edge
+            .as_ref()
+            .and_then(super::edge::ToolsEdge::take_trip)
+        {
             self.pausing = Some(trip);
             self.tell_cancel();
         }

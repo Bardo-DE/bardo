@@ -113,11 +113,13 @@ impl Sheet {
     }
 
     /// Every request shown so far, oldest first.
+    #[must_use]
     pub fn shown(&self) -> Vec<ConfirmRequest> {
         self.edit(|i| i.shown.clone())
     }
 
     /// The ids intentd withdrew.
+    #[must_use]
     pub fn cancelled(&self) -> Vec<String> {
         self.edit(|i| i.cancelled.clone())
     }
@@ -172,7 +174,7 @@ impl ConfirmObject {
         let object = ObjectPath::try_from(path.as_str())
             .map_err(|e| fdo::Error::Failed(e.to_string()))?
             .into();
-        let caller = header.sender().map(|s| s.to_owned());
+        let caller = header.sender().map(zbus::names::UniqueName::to_owned);
         // No verdict queued: the sheet stays open until intentd withdraws it.
         if let (Some((verdict, held)), Some(caller)) = (verdict, caller) {
             let reply = serde_json::to_string(&answer_of(verdict, &parsed))

@@ -100,7 +100,7 @@ async fn opening_and_trashing_a_shot_are_recorded_never_run() {
     let children = RecordedChildren::shared();
     let env = Env {
         dirs: Dirs::under(&dir.join("dirs")),
-        children: children.clone(),
+        children: std::sync::Arc::<RecordedChildren>::clone(&children),
         ..Env::isolated(&dir)
     };
     let shots = spawn::<ScreenshotsService>(&tokio::runtime::Handle::current(), &env, ());

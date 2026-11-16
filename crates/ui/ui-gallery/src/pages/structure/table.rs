@@ -52,7 +52,7 @@ const FILES: [File; 7] = [
     File {
         name: "backup.tar.zst",
         kind: "Archive",
-        kilobytes: 501000,
+        kilobytes: 501_000,
         modified: "Aug 30",
     },
     File {

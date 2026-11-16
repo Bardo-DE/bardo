@@ -45,6 +45,7 @@ impl fmt::Debug for Ticks {
 
 impl Ticks {
     /// A ticker and the ticks it wakes.
+    #[must_use]
     pub fn channel() -> (Ticker, Ticks) {
         let (sender, receiver) = channel(1);
         (

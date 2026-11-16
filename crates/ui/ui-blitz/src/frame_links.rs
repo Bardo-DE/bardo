@@ -215,7 +215,7 @@ pub fn frame_links(
     let (sender, receiver) = unbounded_channel();
     let (sender, handler) = match &links.click {
         None => (None, None),
-        Some(click) => (Some(sender), Some(click.clone())),
+        Some(click) => (Some(sender), Some(Arc::clone(click))),
     };
     (
         Arc::new(FrameNav { sender }),

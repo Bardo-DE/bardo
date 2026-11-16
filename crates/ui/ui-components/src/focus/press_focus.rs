@@ -2,7 +2,7 @@
 //! every control inside.
 //!
 //! On macOS a control in a formatting bar (an `NSSegmentedControl` that refuses first
-//! responder, the Pages and TextEdit format bars) acts on a press and leaves the keyboard, the
+//! responder, the Pages and `TextEdit` format bars) acts on a press and leaves the keyboard, the
 //! caret and the selection in the text view. A browser button takes the keyboard; Blitz clears it
 //! on any click nothing took. [`FocusOnPressScope`] puts `refuses: true` around a bar,
 //! and each quire control inside (`Button`, `IconButton`, `SegmentedControl`) then prevents its

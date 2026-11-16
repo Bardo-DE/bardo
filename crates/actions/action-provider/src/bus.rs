@@ -41,12 +41,16 @@ struct ProviderObject<P, C, S, K> {
 
 /// Whether the caller is intentd: the process `callers` names as the router.
 async fn from_intentd(callers: &impl Callers, header: &Header<'_>) -> fdo::Result<()> {
-    require(callers, header.sender().map(|s| s.as_str()), &[INTENTD])
-        .await
-        .map(drop)
-        .map_err(|refused| {
-            fdo::Error::AccessDenied(format!("only intentd calls a provider ({refused})"))
-        })
+    require(
+        callers,
+        header.sender().map(zbus::names::UniqueName::as_str),
+        &[INTENTD],
+    )
+    .await
+    .map(drop)
+    .map_err(|refused| {
+        fdo::Error::AccessDenied(format!("only intentd calls a provider ({refused})"))
+    })
 }
 
 #[zbus::interface(name = "org.bardo.IntentProvider1")]

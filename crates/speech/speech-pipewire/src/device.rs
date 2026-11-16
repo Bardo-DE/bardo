@@ -15,7 +15,7 @@ use tokio::sync::oneshot;
 /// How long a stream may take to start before the device is called absent.
 const START_TIMEOUT: Duration = Duration::from_secs(2);
 
-/// `PipeWire`, reached through its socket (`$XDG_RUNTIME_DIR/pipewire-0`).
+/// PipeWire, reached through its socket (`$XDG_RUNTIME_DIR/pipewire-0`).
 #[derive(Debug, Clone, Copy, Default)]
 pub struct PipeWireDevice;
 
@@ -63,7 +63,7 @@ impl AudioDevice for PipeWireDevice {
         let (target, rate) = (node.name.clone(), format.rate);
         let data = CaptureData {
             started: Some(started_tx),
-            frames: frames.clone(),
+            frames: Arc::clone(&frames),
         };
         std::thread::spawn(move || {
             let _ = run_capture(target, rate, data, quit_rx);
@@ -77,7 +77,7 @@ impl AudioDevice for PipeWireDevice {
         let shared = Arc::new(PlayShared::default());
         let (quit, quit_rx) = pw::channel::channel::<()>();
         let (started_tx, started_rx) = oneshot::channel();
-        let (rate, run_shared) = (format.rate, shared.clone());
+        let (rate, run_shared) = (format.rate, Arc::clone(&shared));
         std::thread::spawn(move || {
             let _ = run_playback(rate, run_shared, started_tx, quit_rx);
         });

@@ -64,6 +64,7 @@ pub fn write_system_callers(root: &Path) -> std::io::Result<()> {
 /// A cassette also names the replay engine's model for every tier of the text slot: with no
 /// default planner, a tier with no row is refused as no model chosen. The callers are not here:
 /// they are inferd's system file (`inferd-callers.toml`).
+#[must_use]
 pub fn inferd_toml(root: &Path, model: &ModelSource, record: Option<&Path>) -> String {
     match model {
         ModelSource::Scripted(_) => {

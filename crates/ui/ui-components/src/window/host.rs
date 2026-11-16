@@ -78,16 +78,19 @@ impl WindowHost {
     }
 
     /// The seam.
+    #[must_use]
     pub fn host(&self) -> &dyn HostWindow {
         self.host.as_ref()
     }
 
     /// The last reported state; a component that reads it redraws when it changes.
+    #[must_use]
     pub fn state(&self) -> WindowState {
         (self.state)()
     }
 
     /// The last reported tiled edges; a component that reads it redraws when they change.
+    #[must_use]
     pub fn tiled(&self) -> Tiled {
         (self.tiled)()
     }
@@ -140,6 +143,7 @@ pub fn use_window_host_provider(host: impl FnOnce() -> Rc<dyn HostWindow>) -> Wi
 
 /// The enclosing host's window, if there is one (none in an SSR render or a shell
 /// surface that has not provided one).
+#[must_use]
 pub fn use_window_host() -> Option<WindowHost> {
     try_use_context::<WindowHost>()
 }
@@ -164,6 +168,7 @@ pub fn use_window_title(title: impl Into<String>) {
 
 /// The edges the window is tiled on, redrawn on every change the host reports; none with no
 /// host.
+#[must_use]
 pub fn use_window_tiled() -> Tiled {
     use_window_host().map_or(Tiled::NONE, |host| host.tiled())
 }

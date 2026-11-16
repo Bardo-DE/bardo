@@ -29,6 +29,7 @@ const RENAMED_FROM_KEY: &str = "X-Flatpak-RenamedFrom";
 /// `TryExec` names a binary not found on `PATH` (the Desktop Entry Specification's own words:
 /// such an entry "may be ignored" — it is not really installed, so it should not occupy a dedup
 /// slot or ever be offered to launch). Translated words are picked for `locales`, best first.
+#[must_use]
 pub fn parse_entry(
     loaded: &ApplicationEntry,
     theme: &IconTheme,

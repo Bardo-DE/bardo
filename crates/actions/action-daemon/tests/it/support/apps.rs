@@ -240,7 +240,7 @@ impl ConfirmServer {
         };
         let answer = match &self.0.asker {
             Some(ask) => {
-                let ask = ask.clone();
+                let ask = Arc::clone(ask);
                 tokio::task::spawn_blocking(move || ask(&parsed))
                     .await
                     .unwrap_or(Answer::Never)

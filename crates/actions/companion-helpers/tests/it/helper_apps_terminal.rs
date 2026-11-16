@@ -197,7 +197,7 @@ async fn a_conversation_a_terminal_started_is_listed_and_brought_into_docket() {
     let hub = hub(&w, &apps);
     // A terminal that names its agent app and the app's own id for the conversation.
     let temor = Intents::over(InProcess::new(
-        w.router.clone(),
+        Arc::clone(&w.router),
         caller("org.bardo.Temor", CallerRole::Cli),
     ));
     let named = temor

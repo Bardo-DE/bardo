@@ -122,7 +122,7 @@ impl Desk {
             action_daemon::callers::shipped(),
             dir.path().join("proc"),
         ));
-        setup.identity = Some(who.clone());
+        setup.identity = Some(Arc::clone(&who));
         setup.proc_root = action_daemon::ProcRoot::Honoured(dir.path().join("proc"));
         setup.audit_every = Duration::from_millis(50);
         setup.signals = Cadence {
@@ -247,7 +247,7 @@ async fn a_companion_recalls_through_memory_and_what_it_gets_carries_the_hits_la
         MemoryRequest::Search(_) => Some(MemoryReply::Hits(vec![mail_hit()])),
         _ => None,
     });
-    let desk = Desk::start(memoryd.clone()).await;
+    let desk = Desk::start(Arc::clone(&memoryd)).await;
     let front = desk.front().await;
 
     let outcome = desk
@@ -302,7 +302,7 @@ async fn a_proposal_from_a_companion_asks_the_person_then_goes_to_memory_and_lan
         )),
         _ => None,
     });
-    let desk = Desk::start(memoryd.clone()).await;
+    let desk = Desk::start(Arc::clone(&memoryd)).await;
     let front = desk.front().await;
     let propose = |text: &str| {
         call(

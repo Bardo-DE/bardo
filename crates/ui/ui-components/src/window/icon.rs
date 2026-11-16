@@ -61,16 +61,19 @@ impl WindowIcon {
     }
 
     /// The pixels, four bytes each.
+    #[must_use]
     pub fn rgba(&self) -> &[u8] {
         &self.rgba
     }
 
     /// The width in pixels.
+    #[must_use]
     pub fn width(&self) -> u32 {
         self.width
     }
 
     /// The height in pixels.
+    #[must_use]
     pub fn height(&self) -> u32 {
         self.height
     }

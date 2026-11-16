@@ -298,7 +298,7 @@ async fn a_screenshot_asks_the_person_unless_the_frontend_already_did() {
             dir.path().join("Pictures"),
             "t".into(),
         )
-        .with_asker(Box::new(asker.clone()));
+        .with_asker(Box::new(Arc::clone(&asker)));
         let service = ScreenshotService::with_setup(setup);
         let (code, results) = service
             .shoot("org.example.Grab", &flags(interactive, checked))

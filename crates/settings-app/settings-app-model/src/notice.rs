@@ -80,8 +80,8 @@ impl Clone for Outbox {
     fn clone(&self) -> Outbox {
         locked(&self.queue).senders += 1;
         Outbox {
-            queue: self.queue.clone(),
-            dropped: self.dropped.clone(),
+            queue: Arc::clone(&self.queue),
+            dropped: Arc::clone(&self.dropped),
         }
     }
 }
@@ -185,7 +185,7 @@ fn pair() -> (Outbox, Receiver) {
         receiver_gone: false,
     }));
     let outbox = Outbox {
-        queue: queue.clone(),
+        queue: Arc::clone(&queue),
         dropped: Arc::default(),
     };
     (outbox, Receiver { queue })

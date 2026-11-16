@@ -372,7 +372,7 @@ impl Drive {
         }
         if let Some(node) = self.nodes.get_mut(id) {
             node.parent = Some(parent.to_owned());
-            node.name = name.to_owned();
+            name.clone_into(&mut node.name);
             node.version += 1;
         }
         self.touch(id);

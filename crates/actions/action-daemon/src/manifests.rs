@@ -19,6 +19,7 @@ pub struct Loaded {
 }
 
 /// The directory a data directory keeps manifests in.
+#[must_use]
 pub fn intents_dir(data: &Path) -> PathBuf {
     data.join("bardo").join("intents")
 }

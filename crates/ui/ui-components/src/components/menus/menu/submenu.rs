@@ -107,7 +107,7 @@ pub(crate) fn SubMenu<T: Clone + PartialEq + 'static>(
                 onmounted: move |event| {
                     opened.run(|| {
                         let element = event.data();
-                        tracker.panel_mounted(MountedRef(element.clone()));
+                        tracker.panel_mounted(MountedRef(std::rc::Rc::clone(&element)));
                         probe.on_mounted(event);
                         if via == Via::Keyboard {
                             crate::focus::soon::focus_soon(element);

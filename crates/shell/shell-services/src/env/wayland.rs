@@ -29,6 +29,7 @@ pub struct HandedSocket(Arc<OwnedFd>);
 
 impl HandedSocket {
     /// Hold `fd`, a connected Wayland socket.
+    #[must_use]
     pub fn new(fd: OwnedFd) -> Self {
         Self(Arc::new(fd))
     }

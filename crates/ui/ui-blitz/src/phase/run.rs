@@ -343,7 +343,7 @@ impl Phase {
                 let watch = book.selections.iter_mut().find(|watch| watch.id == id)?;
                 watch.last_range = range;
                 (watch.last != read).then(|| {
-                    watch.last = read.clone();
+                    watch.last.clone_from(&read);
                     (watch.sink, read)
                 })
             })

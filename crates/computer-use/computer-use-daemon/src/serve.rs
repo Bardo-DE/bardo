@@ -109,7 +109,13 @@ pub async fn serve_on_as<S: Seams>(
     who: Identity,
 ) -> Result<Serving, ServeError> {
     let who = Arc::new(who);
-    serve_as(connection, supervisor, who.clone(), Answering::Told(who)).await
+    serve_as(
+        connection,
+        supervisor,
+        Arc::clone(&who),
+        Answering::Told(who),
+    )
+    .await
 }
 
 /// [`serve_on`] with callers named by `who` (a test's fixture proc root and introductions), which
@@ -119,7 +125,13 @@ pub async fn serve_on_with<S: Seams>(
     supervisor: Arc<Supervisor<S>>,
     who: Arc<Identity>,
 ) -> Result<Serving, ServeError> {
-    serve_as(connection, supervisor, who.clone(), Answering::Told(who)).await
+    serve_as(
+        connection,
+        supervisor,
+        Arc::clone(&who),
+        Answering::Told(who),
+    )
+    .await
 }
 
 async fn serve_as<S: Seams>(
@@ -135,8 +147,8 @@ async fn serve_as<S: Seams>(
         .at(
             CUA_PATH,
             ManagerObject {
-                supervisor: supervisor.clone(),
-                who: who.clone(),
+                supervisor: Arc::clone(&supervisor),
+                who: Arc::clone(&who),
             },
         )
         .await
@@ -147,7 +159,7 @@ async fn serve_as<S: Seams>(
         .at(
             PROVIDER_PATH,
             ReachObject {
-                supervisor: supervisor.clone(),
+                supervisor: Arc::clone(&supervisor),
             },
         )
         .await
@@ -177,8 +189,13 @@ async fn serve_as<S: Seams>(
     }
     Ok(Serving {
         tasks: vec![
-            tokio::spawn(relay(connection.clone(), supervisor.clone(), who, events)),
-            tokio::spawn(answer_open_apps(supervisor.clone(), queues.open_apps)),
+            tokio::spawn(relay(
+                connection.clone(),
+                Arc::clone(&supervisor),
+                who,
+                events,
+            )),
+            tokio::spawn(answer_open_apps(Arc::clone(&supervisor), queues.open_apps)),
             tokio::spawn(starts(supervisor, queues.starts)),
         ],
     })

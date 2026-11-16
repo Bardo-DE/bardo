@@ -34,14 +34,14 @@ fn agent(script: &str) -> AcpSpec {
 
 async fn run(flow: Flow, spec: &AcpSpec, scratch: &Path) -> action_live::acp::AcpFlowReport {
     let model = ModelSource::Scripted(agent_cassette());
-    run_flow_acp(
+    Box::pin(run_flow_acp(
         &binaries(),
         flow,
         spec,
         &model,
         (Some(scratch.to_owned()), None),
         Duration::from_secs(120),
-    )
+    ))
     .await
 }
 
@@ -56,7 +56,7 @@ async fn flow_a_with_an_agent_forwards_to_accounting_through_the_edge() {
         return;
     }
     let scratch = tempfile::tempdir().expect("scratch");
-    let report = run(Flow::ForwardAllowed, &agent("flow-a"), scratch.path()).await;
+    let report = Box::pin(run(Flow::ForwardAllowed, &agent("flow-a"), scratch.path())).await;
     assert!(
         report.failures.is_empty(),
         "{:?}\n{}",
@@ -82,7 +82,7 @@ async fn a_refusal_stops_the_forward_and_the_agent_is_told_so() {
         return;
     }
     let scratch = tempfile::tempdir().expect("scratch");
-    let report = run(Flow::ForwardRefused, &agent("flow-a"), scratch.path()).await;
+    let report = Box::pin(run(Flow::ForwardRefused, &agent("flow-a"), scratch.path())).await;
     assert!(
         report.failures.is_empty(),
         "{:?}\n{}",
@@ -101,7 +101,7 @@ async fn the_first_use_of_mail_asks_nothing_for_a_search_and_the_second_search_r
         return;
     }
     let scratch = tempfile::tempdir().expect("scratch");
-    let report = run(Flow::FirstUse, &agent("first-use"), scratch.path()).await;
+    let report = Box::pin(run(Flow::FirstUse, &agent("first-use"), scratch.path())).await;
     assert!(
         report.failures.is_empty(),
         "{:?}\n{}",
@@ -125,7 +125,7 @@ async fn an_agent_that_reads_the_open_thread_and_is_refused_the_reply_passes() {
         return;
     }
     let scratch = tempfile::tempdir().expect("scratch");
-    let report = run(Flow::InjectedThread, &agent("flow-c"), scratch.path()).await;
+    let report = Box::pin(run(Flow::InjectedThread, &agent("flow-c"), scratch.path())).await;
     assert!(
         report.failures.is_empty(),
         "{:?}\n{}",
@@ -157,7 +157,12 @@ async fn an_agent_that_obeys_the_injected_thread_fails_the_flow_though_the_sheet
         return;
     }
     let scratch = tempfile::tempdir().expect("scratch");
-    let report = run(Flow::InjectedThread, &agent("flow-c-obeys"), scratch.path()).await;
+    let report = Box::pin(run(
+        Flow::InjectedThread,
+        &agent("flow-c-obeys"),
+        scratch.path(),
+    ))
+    .await;
     let t = said(&report);
     // The person refused the sheet, so nothing was sent; the flow still fails, because the
     // agent put the injected address in front of the person at all.
@@ -214,7 +219,7 @@ async fn the_login_reaches_the_agents_home_and_is_gone_after_the_run() {
     let mut spec = agent("creds");
     spec.state = vec![".claude".to_owned()];
     spec.credentials = Some(source(scratch.path()));
-    let report = run(Flow::FirstUse, &spec, scratch.path()).await;
+    let report = Box::pin(run(Flow::FirstUse, &spec, scratch.path())).await;
     let t = said(&report);
     // The agent saw a file in its HOME (by length) and the report holds none of it.
     assert!(t.contains("credentials present: Some("), "{t}");
@@ -250,7 +255,7 @@ async fn an_agent_that_says_its_login_aloud_is_scrubbed_from_the_transcript_and_
     let mut spec = agent("leak");
     spec.state = vec![".claude".to_owned()];
     spec.credentials = Some(source(scratch.path()));
-    let report = run(Flow::FirstUse, &spec, scratch.path()).await;
+    let report = Box::pin(run(Flow::FirstUse, &spec, scratch.path())).await;
     let t = said(&report);
     assert!(
         t.contains("my credentials are"),

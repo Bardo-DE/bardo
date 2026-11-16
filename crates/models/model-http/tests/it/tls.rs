@@ -77,7 +77,7 @@ async fn serve(leaf: Option<(CertificateDer<'static>, KeyPair)>, steps: Vec<Step
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let port = listener.local_addr().unwrap().port();
     let seen = Arc::new(Mutex::new(Handshake::default()));
-    let record = seen.clone();
+    let record = Arc::clone(&seen);
     tokio::spawn(async move {
         let (tcp, _) = listener.accept().await.unwrap();
         let Some((cert, key)) = leaf else {

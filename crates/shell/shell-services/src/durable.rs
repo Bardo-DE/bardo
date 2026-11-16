@@ -67,7 +67,7 @@ mod tests {
         let mut names: Vec<String> = std::fs::read_dir(dir)
             .map(|entries| {
                 entries
-                    .filter_map(|e| e.ok())
+                    .filter_map(std::result::Result::ok)
                     .map(|e| e.file_name().to_string_lossy().into_owned())
                     .collect()
             })

@@ -63,6 +63,7 @@ pub struct DateValue {
 
 impl DateValue {
     /// The values `segment` can take here: a day's range is the length of its month.
+    #[must_use]
     pub fn range(self, segment: Segment) -> StepRange {
         match segment {
             Segment::Month => StepRange::new(1, 12, 1),
@@ -78,6 +79,7 @@ impl DateValue {
     }
 
     /// What `segment` reads.
+    #[must_use]
     pub fn value(self, segment: Segment) -> i32 {
         match segment {
             Segment::Month => i32::from(self.day.month),
@@ -90,6 +92,7 @@ impl DateValue {
 
     /// The same moment with `segment` set to `to`, held in its range; a month or year that leaves
     /// the day past the end of its month brings the day back to that month's last.
+    #[must_use]
     pub fn with(self, segment: Segment, to: i32) -> DateValue {
         let to = self.range(segment).clamp(to);
         let (year, month, day) = (
@@ -127,6 +130,7 @@ impl DateValue {
 
     /// One step of `segment`: the month, day, hour and minute wrap round at their ends (December
     /// steps to January), the year stops at its own.
+    #[must_use]
     pub fn stepped(self, segment: Segment, direction: StepDirection) -> DateValue {
         let range = self.range(segment);
         let now = self.value(segment);

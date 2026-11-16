@@ -33,6 +33,7 @@ pub struct PolkitRoute {
 
 impl PolkitRoute {
     /// The daemon's: polkitd on `system`, polkit's helper, this session.
+    #[must_use]
     pub fn system(system: Bus) -> PolkitRoute {
         PolkitRoute {
             bus: system,

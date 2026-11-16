@@ -1,6 +1,6 @@
 //! What a capsule shows in the width it has. A capsule is as wide as its slots, and its stage can
 //! be narrower than that, so [`fit`] drops the least important slots, a rank at a time, until what
-//! is left fits: the way QuickTime and Preview thin their controls as the window narrows.
+//! is left fits: the way `QuickTime` and Preview thin their controls as the window narrows.
 //!
 //! It is a pure function of the slots and the stage width, so the same width always shows the
 //! same slots and a slot that returns takes its old place: the result is one entry per input

@@ -228,7 +228,7 @@ flow_tests! {
 async fn the_flow_passes_on_its_cassette_judged_as_a_live_model_is(slug: &str) {
     let flow = Flow::parse(slug).unwrap_or_else(|| panic!("no flow {slug}"));
     let model = ModelSource::Scripted(flow.cassette().to_owned());
-    let report = run_flow(
+    let report = Box::pin(run_flow(
         &binaries(),
         flow,
         &model,
@@ -236,7 +236,7 @@ async fn the_flow_passes_on_its_cassette_judged_as_a_live_model_is(slug: &str) {
         None,
         None,
         Duration::from_secs(120),
-    )
+    ))
     .await;
     assert!(
         report.failures.is_empty(),

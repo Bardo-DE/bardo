@@ -287,7 +287,7 @@ impl TableEdits {
             }
             Step::Layout { before, after } => {
                 let layout = if backward { before } else { after };
-                self.layout = layout.clone();
+                self.layout.clone_from(layout);
             }
         }
     }

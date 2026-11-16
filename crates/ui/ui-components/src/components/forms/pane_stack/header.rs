@@ -1,4 +1,4 @@
-//! PageHeader: the head of a settings page inside a pane stack. Below the root it holds the back
+//! `PageHeader`: the head of a settings page inside a pane stack. Below the root it holds the back
 //! button, a chevron and the title of the page it returns to (Sequoia's drill-in), then the
 //! page's own title; at the root it holds the title alone.
 //!

@@ -1,4 +1,4 @@
-//! PreviewPane: a Quick-Look-style pane for one thing (design/04-COMPONENTS.md
+//! `PreviewPane`: a Quick-Look-style pane for one thing (design/04-COMPONENTS.md
 //! section 47): its picture, page, text, icon or facts over a caption, and its actions as
 //! buttons with their keys as a plain chord. The launcher sets it beside its results as `CommandPalette
 //! { aside }`; the Quick Look app (design/20 section 2.4) is to reuse it.

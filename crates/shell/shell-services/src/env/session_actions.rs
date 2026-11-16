@@ -77,6 +77,7 @@ impl fmt::Debug for DryRunActions {
 
 impl DryRunActions {
     /// A dry run offering `offers`, recording to `record` when given.
+    #[must_use]
     pub fn new(offers: DryRunOffers, record: Option<PathBuf>) -> DryRunActions {
         DryRunActions {
             offers,
@@ -92,6 +93,7 @@ impl DryRunActions {
 }
 
 /// The dry run's line for `action`.
+#[must_use]
 pub fn dry_run_line(action: SessionAction) -> String {
     format!("session.dry_run would={action:?}")
 }

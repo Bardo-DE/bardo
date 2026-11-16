@@ -72,6 +72,7 @@ pub struct Magnification(pub i32);
 impl Magnification {
     /// The change winit reports (a fraction of the scale, positive growing) in thousandths,
     /// rounded; zero for a value that is not a number.
+    #[must_use]
     pub fn from_fraction(delta: f64) -> Self {
         if delta.is_finite() {
             // Bounded by the clamp, so the cast cannot truncate.
@@ -159,6 +160,7 @@ impl GestureBus {
 
     /// Whether any listener asked for `delivery`: the host eases a wheel's detents only for
     /// listeners that want them.
+    #[must_use]
     pub fn has_listener(&self, delivery: WheelDelivery) -> bool {
         self.0
             .borrow()

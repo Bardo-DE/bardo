@@ -211,7 +211,7 @@ async fn a_failure_and_a_cancel_leave_the_state_and_a_logout_done_needs_a_login(
 #[tokio::test(flavor = "multi_thread")]
 async fn a_request_the_launcher_does_not_answer_expires_on_accountds_clock() {
     let clock = Arc::new(TestClock::default());
-    let timing = quick_timing().with_clock(clock.clone());
+    let timing = quick_timing().with_clock(Arc::<TestClock>::clone(&clock));
     let rig = Rig::start(vec![], vec![], timing).await;
     let launcher = rig.launcher("org.example.Launcher").await;
     launcher

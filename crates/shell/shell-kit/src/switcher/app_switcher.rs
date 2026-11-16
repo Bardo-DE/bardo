@@ -1,4 +1,4 @@
-//! AppSwitcher: the Cmd+Tab panel (design/13-BEHAVIOUR-menus-windows.md section 13.3.5;
+//! `AppSwitcher`: the Cmd+Tab panel (design/13-BEHAVIOUR-menus-windows.md section 13.3.5;
 //! design/20-SURFACES.md section 1.11; design/04-COMPONENTS.md section 43). One row of app
 //! icons on the Osd material with the Space gradient, as the OSD card draws it; the selection a rounded square of `--f-pill` that springs from
 //! cell to cell, the selected app's name under it, inside the panel. The component only draws and reports: the

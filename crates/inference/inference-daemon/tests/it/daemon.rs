@@ -53,7 +53,7 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
         // No program of this computer's own is found.
         .with_programs(ProgramSearch::in_paths(Vec::new(), |_| false));
 
-    let daemon = bus::within("inferd to start", Daemon::build(config))
+    let daemon = Box::pin(bus::within("inferd to start", Daemon::build(config)))
         .await
         .expect("inferd starts");
 

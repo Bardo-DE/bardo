@@ -248,7 +248,7 @@ async fn world(
         peers,
         dirs,
     ));
-    serve_on(&server, daemon.clone()).await.expect("serve");
+    serve_on(&server, Arc::clone(&daemon)).await.expect("serve");
     daemon.attach(server);
     let address = bus.address.clone();
     (scratch, bus, daemon, address)

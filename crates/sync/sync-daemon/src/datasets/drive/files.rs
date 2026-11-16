@@ -535,8 +535,8 @@ mod tests {
         source.hold();
         let drive = Drive::open(
             DriveConfig::new(dir.join("cache")),
-            listing.clone(),
-            source.clone(),
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
         )
         .await
         .expect("drive");
@@ -574,8 +574,8 @@ mod tests {
         source.put("a", b"aaaa".to_vec());
         let drive = Drive::open(
             DriveConfig::new(dir.join("cache")),
-            listing.clone(),
-            source.clone(),
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
         )
         .await
         .expect("drive");
@@ -612,16 +612,16 @@ mod tests {
         let listing = Arc::new(MemoryListing::default());
         let source = Arc::new(MemorySource::default());
         let sink = Arc::new(drive_core::testing::MemorySink::new(
-            listing.clone(),
-            source.clone(),
+            Arc::clone(&listing),
+            Arc::clone(&source),
             4,
         ));
         listing.file("k", None, "kept.txt", 1, "1");
         let drive = Drive::open_writable(
             DriveConfig::new(dir.join("cache")),
-            listing.clone(),
-            source.clone(),
-            sink.clone(),
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
+            Arc::<drive_core::testing::MemorySink>::clone(&sink),
         )
         .await
         .expect("drive");
@@ -715,8 +715,8 @@ mod tests {
         let listing = Arc::new(MemoryListing::default());
         let source = Arc::new(MemorySource::default());
         let sink = Arc::new(drive_core::testing::MemorySink::new(
-            listing.clone(),
-            source.clone(),
+            Arc::clone(&listing),
+            Arc::clone(&source),
             4,
         ));
         let drive =
@@ -777,7 +777,7 @@ mod tests {
         let source = Arc::new(MemorySource::default());
         let sink = Arc::new(drive_core::testing::MemorySink::new(
             Arc::new(MemoryListing::default()),
-            source.clone(),
+            Arc::clone(&source),
             4,
         ));
         {

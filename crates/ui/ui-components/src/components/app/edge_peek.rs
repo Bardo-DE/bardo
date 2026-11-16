@@ -1,4 +1,4 @@
-//! EdgePeek: a sidebar that may be hidden, and reveals itself at the window's edge (design/30
+//! `EdgePeek`: a sidebar that may be hidden, and reveals itself at the window's edge (design/30
 //! section 2.11, design/06-INTERACTIONS.md section 7). Pinned it is the sidebar in its column.
 //! Hidden, a 10 px strip on the left edge waits for the pointer: after the `Label` profile's
 //! intent delay ([`HoverIntent`](ui_motion::hover_intent::HoverIntent)) the sidebar floats

@@ -6,6 +6,7 @@ use permission_core::{CannotSandbox, SandboxState};
 use sandbox::{CannotSandbox as ShellCannot, Network, NetworkMode, SandboxState as ShellState};
 
 /// Why bulkhead cannot confine, as action-core words it.
+#[must_use]
 pub const fn cannot(why: ShellCannot) -> CannotSandbox {
     match why {
         ShellCannot::NotInstalled => CannotSandbox::NotInstalled,
@@ -20,6 +21,7 @@ pub const fn cannot(why: ShellCannot) -> CannotSandbox {
 }
 
 /// bulkhead's sandbox state as action-core's.
+#[must_use]
 pub const fn state(state: ShellState) -> SandboxState {
     match state {
         ShellState::Ready => SandboxState::Ready,
@@ -28,12 +30,14 @@ pub const fn state(state: ShellState) -> SandboxState {
 }
 
 /// Whether a terminal's sandbox has a network.
+#[must_use]
 pub const fn access(network: Network) -> bool {
     matches!(network, Network::Host)
 }
 
 /// Whether an agent process's sandbox has a network: anything but none can reach something. An
 /// allowlist reaches the named hosts: open, as far as a command is concerned.
+#[must_use]
 pub const fn mode_access(mode: NetworkMode) -> bool {
     !matches!(mode, NetworkMode::None)
 }

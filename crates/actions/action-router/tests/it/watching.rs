@@ -154,9 +154,9 @@ fn watched() -> (Watch, Remote) {
         closed: Flag::new(),
     };
     let (progress, proceed, closed) = (
-        remote.progress.clone(),
-        remote.proceed.clone(),
-        remote.closed.clone(),
+        Arc::clone(&remote.progress),
+        Arc::clone(&remote.proceed),
+        Arc::clone(&remote.closed),
     );
     let watch = Watch::new(
         move |p| {

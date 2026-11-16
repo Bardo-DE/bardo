@@ -27,6 +27,7 @@ pub enum Phase {
 
 impl Phase {
     /// The word on the bus.
+    #[must_use]
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Idle => "idle",
@@ -41,6 +42,7 @@ impl Phase {
     }
 
     /// Whether work is in progress, so a new request must wait.
+    #[must_use]
     pub fn is_busy(self) -> bool {
         matches!(
             self,
@@ -72,6 +74,7 @@ pub struct Status {
 
 impl Status {
     /// The status of a service that has just started.
+    #[must_use]
     pub fn starting(current: Option<Version>, last_checked: Option<UnixSeconds>) -> Self {
         Self {
             phase: Phase::Idle,

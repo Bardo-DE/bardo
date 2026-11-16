@@ -97,6 +97,7 @@ impl Default for WindowState {
 impl WindowState {
     /// Whether the frame may start a move or a resize: not while the window fills its output
     /// (a maximized window's place is the compositor's, and a drag would fight it).
+    #[must_use]
     pub fn movable(self) -> bool {
         !self.maximized && !self.fullscreen
     }

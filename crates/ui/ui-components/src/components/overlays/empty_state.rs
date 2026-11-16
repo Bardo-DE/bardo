@@ -1,4 +1,4 @@
-//! EmptyState: what a list, a pane or a page says when there is nothing to show (design/30
+//! `EmptyState`: what a list, a pane or a page says when there is nothing to show (design/30
 //! section 2.9, SwiftUI `ContentUnavailableView`): a title, an optional description and an
 //! optional action, centred, and a glyph above them only when the caller brings one. No form draws
 //! a glyph of its own: the title already says what the glyph would (an empty inbox, a search, a

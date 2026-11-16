@@ -92,7 +92,7 @@ impl FakeInferd {
 
     /// The same fake, answering `Prepare` with `slug`.
     pub fn preparing(self, slug: &str) -> Self {
-        *self.prepare.lock().expect("lock") = slug.to_owned();
+        slug.clone_into(&mut self.prepare.lock().expect("lock"));
         self
     }
 

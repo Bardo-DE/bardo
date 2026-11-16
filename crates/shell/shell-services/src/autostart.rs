@@ -34,12 +34,14 @@ pub enum Login {
 
 impl Login {
     /// Whether the app starts at login.
+    #[must_use]
     pub fn is_on(self) -> bool {
         self != Login::Off
     }
 }
 
 /// `app`'s autostart file under `dirs`' config directory.
+#[must_use]
 pub fn file_of(dirs: &Dirs, app: &AppId) -> PathBuf {
     dirs.config
         .join("autostart")
@@ -47,11 +49,13 @@ pub fn file_of(dirs: &Dirs, app: &AppId) -> PathBuf {
 }
 
 /// Whether `text` carries bardo-shell's mark.
+#[must_use]
 pub fn is_marked(text: &str) -> bool {
     text.lines().any(|line| line.trim() == MARK_LINE)
 }
 
 /// `entry` with the mark under its `[Desktop Entry]` header; none when it has no such header.
+#[must_use]
 pub fn with_mark(entry: &str) -> Option<String> {
     let mut out = String::with_capacity(entry.len() + MARK_LINE.len() + 2);
     let mut placed = false;
@@ -70,6 +74,7 @@ pub fn with_mark(entry: &str) -> Option<String> {
 }
 
 /// What the folder says about `app`.
+#[must_use]
 pub fn login_of(dirs: &Dirs, app: &AppId) -> Login {
     match std::fs::read_to_string(file_of(dirs, app)) {
         Ok(text) if is_marked(&text) => Login::OurEntry,

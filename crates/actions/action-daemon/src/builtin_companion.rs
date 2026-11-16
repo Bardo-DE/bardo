@@ -31,6 +31,7 @@ impl fmt::Debug for CompanionPort {
 
 impl CompanionPort {
     /// A port to no router yet.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -65,6 +66,7 @@ pub struct CompanionProvider {
 
 impl CompanionProvider {
     /// The provider for its shipped manifest, acting through `port`.
+    #[must_use]
     pub fn new(manifest: ValidManifest, port: CompanionPort) -> Self {
         Self { manifest, port }
     }

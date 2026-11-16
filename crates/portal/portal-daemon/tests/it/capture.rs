@@ -101,7 +101,7 @@ fn a_connection_the_compositor_hands_out_is_the_way_in() {
     use std::sync::Arc;
 
     let line = Arc::new(FakeLine::granting());
-    let display = DisplayName::session().with_portal_line(line.clone());
+    let display = DisplayName::session().with_portal_line(Arc::<FakeLine>::clone(&line));
     let Route::Handed(fd) = display.route() else {
         panic!("a granted connection is used");
     };
@@ -128,7 +128,7 @@ fn no_connection_from_the_compositor_falls_back_to_the_sessions_display() {
     ];
     for (case, line) in cases {
         let line = Arc::new(line);
-        let display = DisplayName::session().with_portal_line(line.clone());
+        let display = DisplayName::session().with_portal_line(Arc::<FakeLine>::clone(&line));
         for _ in 0..2 {
             assert!(matches!(display.route(), Route::Env), "{case}");
         }
@@ -144,7 +144,8 @@ fn a_display_named_by_path_is_not_asked_of_the_compositor() {
     use std::sync::Arc;
 
     let line = Arc::new(FakeLine::granting());
-    let display = DisplayName::at("/run/user/1000/wayland-9").with_portal_line(line.clone());
+    let display =
+        DisplayName::at("/run/user/1000/wayland-9").with_portal_line(Arc::<FakeLine>::clone(&line));
     match display.route() {
         Route::Path(path) => assert_eq!(path, "/run/user/1000/wayland-9"),
         other => panic!("{other:?}"),
@@ -202,7 +203,7 @@ fn display_behind_a_line() -> (
             std::thread::sleep(Duration::from_millis(1));
         }
     });
-    let display = DisplayName::session().with_portal_line(line.clone());
+    let display = DisplayName::session().with_portal_line(Arc::<FakeLine>::clone(&line));
     (line, display)
 }
 
@@ -271,7 +272,7 @@ fn a_refused_line_sends_the_whole_job_to_the_public_socket_once() {
         return;
     }
     let line = Arc::new(FakeLine::refusing());
-    let job = Job::new(&DisplayName::session().with_portal_line(line.clone()));
+    let job = Job::new(&DisplayName::session().with_portal_line(Arc::<FakeLine>::clone(&line)));
     for _ in 0..3 {
         assert!(matches!(
             job.output_facts(),

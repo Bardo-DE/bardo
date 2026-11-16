@@ -18,6 +18,7 @@ pub enum Playback {
 
 impl Playback {
     /// The glyph of the action the button offers next (Replace off-up: the next action, A5).
+    #[must_use]
     pub fn next_action(self) -> Icon {
         match self {
             Playback::Paused => Icon::Play,
@@ -26,6 +27,7 @@ impl Playback {
     }
 
     /// The button's name: the action a press takes.
+    #[must_use]
     pub fn label(self) -> &'static str {
         match self {
             Playback::Paused => "Play",

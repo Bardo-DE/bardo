@@ -1,4 +1,4 @@
-//! VirtualList: a list of thousands of rows, of one height or one per key, that mounts only the
+//! `VirtualList`: a list of thousands of rows, of one height or one per key, that mounts only the
 //! rows near the viewport. Its scroll state is a `ScrollerRef`: the rows to mount come from `Scroll::rows`
 //! over it, a cursor the owner moves is kept in view by revealing its row, and the end of the list
 //! coming near is reported for paging. A row the owner removes while it is mounted plays the
@@ -153,7 +153,7 @@ pub fn VirtualList<K: Clone + Eq + Hash + 'static>(
                 .set(gone.key.clone(), RowPitch(gone.height));
         }
         roster.leave_from_render(gone.into_iter().map(|gone| gone.key).collect());
-        state.keys = keys.clone();
+        state.keys.clone_from(&keys);
     }
     roster.list_from_render(keys[start..end].to_vec());
     let entries = roster.entries();

@@ -23,6 +23,7 @@ pub struct PairingReply(oneshot::Sender<PairingAnswer>);
 
 impl PairingReply {
     /// A reply, and the end that hears it.
+    #[must_use]
     pub fn channel() -> (PairingReply, oneshot::Receiver<PairingAnswer>) {
         let (sender, receiver) = oneshot::channel();
         (PairingReply(sender), receiver)

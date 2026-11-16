@@ -1,4 +1,4 @@
-//! RawKeySurface: a focusable block for an app that draws its own region (a terminal grid) and
+//! `RawKeySurface`: a focusable block for an app that draws its own region (a terminal grid) and
 //! wants every key as the keyboard sent it. Where `EditSurface` turns keys into text and
 //! gestures, this hands over each key down, repeat and up with its physical code, its modifiers,
 //! and the text it types ([`RawKey`]).

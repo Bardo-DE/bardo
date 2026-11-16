@@ -1,4 +1,4 @@
-//! DatePicker (design/30 section 2.3, `NSDatePicker`). The textual style is one bezel of
+//! `DatePicker` (design/30 section 2.3, `NSDatePicker`). The textual style is one bezel of
 //! segments (month, day, year, hour, minute) with a stepper after it: a press selects a segment,
 //! Up and Down or the stepper change it, Left and Right move between segments. The graphical
 //! style is the `MonthGrid`, its header stepping months and a press on a day picking it, above

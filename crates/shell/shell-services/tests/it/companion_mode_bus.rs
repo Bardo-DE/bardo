@@ -45,7 +45,7 @@ async fn bench() -> Option<Bench> {
         "/org/bardo/Intents1",
         StandInModeSession {
             log: desk.log.clone(),
-            answer: answer.clone(),
+            answer: Arc::clone(&answer),
         },
     )
     .await;

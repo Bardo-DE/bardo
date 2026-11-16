@@ -1,4 +1,4 @@
-//! EmojiGrid: emoji as a grid of cells, moved through with the arrow keys in two dimensions
+//! `EmojiGrid`: emoji as a grid of cells, moved through with the arrow keys in two dimensions
 //! (design/04-COMPONENTS.md section 46). On its own it takes the keyboard itself; in
 //! a command palette it is one group (`GroupEntries::Grid`) and the
 //! palette's field keeps the keyboard, moving through it with the palette's cursor.
@@ -53,6 +53,7 @@ pub(crate) struct CellEvents {
 }
 
 /// The grid's inline style: its columns and rows at the cell's side.
+#[must_use]
 pub fn grid_style(columns: u8, cell: Px) -> String {
     let side = cell.0;
     format!(

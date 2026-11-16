@@ -125,12 +125,12 @@ where
             return Err(BackendFault::Busy);
         }
         let window = WindowKey::parse(EDITOR_WINDOW).map_err(|_| BackendFault::Unavailable)?;
-        let core = self.core.clone();
+        let core = Arc::clone(&self.core);
         let session = self.session.clone();
         self.flight = Some(Flight::of(|mut tap| {
             async move {
                 // Before the lock, so a drop lets the lock go first (see `ending`).
-                let mut ending = Ending::new(core.clone(), session.clone());
+                let mut ending = Ending::new(Arc::clone(&core), session.clone());
                 if matches!(recording, Recording::Done) {
                     ending.arm(turn.id);
                 }

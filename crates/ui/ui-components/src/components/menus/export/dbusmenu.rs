@@ -34,6 +34,7 @@ pub enum ToggleState {
 
 impl ToggleState {
     /// The `i` the property is written as.
+    #[must_use]
     pub fn wire(self) -> i32 {
         match self {
             ToggleState::Off => 0,
@@ -66,6 +67,7 @@ pub enum Prop {
 
 impl Prop {
     /// The property's name on the wire.
+    #[must_use]
     pub fn name(&self) -> &'static str {
         match self {
             Prop::Type(_) => "type",
@@ -145,6 +147,7 @@ pub enum EventKind {
 
 impl EventKind {
     /// The kind `eventId` names.
+    #[must_use]
     pub fn parse(event_id: &str) -> EventKind {
         match event_id {
             "clicked" => EventKind::Clicked,
@@ -240,6 +243,7 @@ impl MenuTree {
 
     /// `GetLayout(parent, depth, names)`: `parent` and the rows below it, or `None` for an id no
     /// item has. [`NodeId::ROOT`] is the bar, whose rows are the menus.
+    #[must_use]
     pub fn layout(&self, parent: NodeId, depth: Depth, names: &PropNames) -> Option<DbusLayout> {
         let item = self.item(parent, names)?;
         let rows: &[MenuNode] = match parent {
@@ -259,6 +263,7 @@ impl MenuTree {
 
     /// `GetGroupProperties(ids, names)`: the items of those ids that exist; every item when
     /// `ids` is empty.
+    #[must_use]
     pub fn group_properties(&self, ids: &[NodeId], names: &PropNames) -> Vec<DbusItem> {
         let wanted: Vec<NodeId> = match ids {
             [] => self.walk().into_iter().map(|(node, _)| node.id).collect(),
@@ -271,6 +276,7 @@ impl MenuTree {
     }
 
     /// `GetProperty(id, name)`.
+    #[must_use]
     pub fn property(&self, id: NodeId, name: &str) -> Option<Prop> {
         self.item(id, &PropNames(vec![name.to_owned()]))?
             .props

@@ -62,7 +62,7 @@ where
 {
     /// A host over `companion`, reading `log` (the one the router writes).
     pub fn over(companion: Companion<P, I, K, S>, log: L) -> Self {
-        let shared = companion.shared.clone();
+        let shared = Arc::clone(&companion.shared);
         Self::sharing(Arc::new(Mutex::new(companion)), shared, log)
     }
 
@@ -130,7 +130,11 @@ where
     }
 
     fn fresh(&self, session: &SessionId) -> NativeBackend<P, I, K, S> {
-        NativeBackend::new(self.core.clone(), self.shared.clone(), session.clone())
+        NativeBackend::new(
+            Arc::clone(&self.core),
+            Arc::clone(&self.shared),
+            session.clone(),
+        )
     }
 }
 

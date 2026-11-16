@@ -181,7 +181,7 @@ pub fn app_draft(name: &str) -> CardDraft {
 
 pub fn hub(w: &World, apps: &Arc<Apps>) -> TestHub {
     let hub = hub_of(w);
-    hub.set_agents(apps.clone());
+    hub.set_agents(Arc::<Apps>::clone(apps));
     hub
 }
 

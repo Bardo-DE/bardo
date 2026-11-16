@@ -79,6 +79,7 @@ impl Default for DockMetrics {
 
 impl DockMetrics {
     /// Every input, inline: `--dock-tile-px:48px;--dock-floor-on:0;`.
+    #[must_use]
     pub fn style_attr(&self) -> String {
         let tile = format!("{}px", self.tile.0.round().clamp(0.0, 999.0) as u16);
         let floor = if self.floor { "1" } else { "0" };

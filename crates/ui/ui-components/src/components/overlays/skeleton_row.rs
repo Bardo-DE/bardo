@@ -1,4 +1,4 @@
-//! SkeletonRow: the placeholder of one list row while the list is still loading (design/30
+//! `SkeletonRow`: the placeholder of one list row while the list is still loading (design/30
 //! section 2.9): an avatar-sized `Circle` and one or two `Line`s, at the size of a settings row: its height
 //! and avatar are the row tokens `--row-settings-h` and `--row-avatar` that `row.css` reads too,
 //! and the title bar is 62% of the text column, the line under it 38% (the preset's proportions,

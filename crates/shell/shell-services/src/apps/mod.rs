@@ -1,5 +1,5 @@
 //! The application index: desktop entries from every XDG applications directory, their icons
-//! resolved once, rescanned on change, through ui_helpers::DesktopFile and freedesktop-icons; the
+//! resolved once, rescanned on change, through `ui_helpers::DesktopFile` and freedesktop-icons; the
 //! theme from GTK's settings, else hicolor;
 //! `notify` on the applications directories, 500 ms.
 

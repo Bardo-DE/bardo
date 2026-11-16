@@ -37,6 +37,7 @@ pub struct RawKey {
 
 impl RawKey {
     /// The event `phase` of the key `key` (physical `code`).
+    #[must_use]
     pub fn new(
         phase: KeyPhase,
         (key, code): (Key, Code),

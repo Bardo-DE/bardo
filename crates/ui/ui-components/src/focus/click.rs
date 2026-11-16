@@ -45,6 +45,7 @@ impl std::fmt::Debug for ClickRoot {
 
 impl ClickRoot {
     /// The document's host, and the root's element, once mounted.
+    #[must_use]
     pub fn of(element: CopyValue<Option<Rc<MountedData>>>) -> ClickRoot {
         ClickRoot {
             host: use_document_host(),

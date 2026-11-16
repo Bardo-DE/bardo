@@ -80,7 +80,7 @@ pub fn use_environment(
     let mut env = use_signal(Environment::default);
 
     use_future(move || {
-        let (store, system, spawner) = (store.clone(), system.clone(), spawner.clone());
+        let (store, system, spawner) = (store.clone(), system.clone(), Arc::clone(&spawner));
         async move {
             let loaded = store.load::<AppearanceFile>();
             report(&loaded);

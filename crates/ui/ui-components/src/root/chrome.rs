@@ -30,6 +30,7 @@ impl RootChrome {
     /// a panel, a banner), so it is transparent and each card paints itself; every other
     /// material paints its root box. A root that is itself the panel (the launcher's panel,
     /// a Popover root holding content) passes `Painted`.
+    #[must_use]
     pub fn of(material: Material) -> Self {
         match material {
             Material::Popover | Material::Sheet | Material::Toast => RootChrome::Transparent,
@@ -42,6 +43,7 @@ impl RootChrome {
     }
 
     /// The `data-chrome` value, written only for a transparent root.
+    #[must_use]
     pub fn attribute(self) -> Option<&'static str> {
         match self {
             RootChrome::Painted => None,
@@ -69,6 +71,7 @@ impl FrameTint {
     /// launcher, the control center), the OSD and a widget paint it tinted; a sheet and a
     /// toast keep their own tint (design/21 section 3's "no" rows). A transparent root paints
     /// nothing.
+    #[must_use]
     pub fn of(material: Material, chrome: RootChrome) -> Self {
         match (chrome, material) {
             (RootChrome::Transparent, _) => FrameTint::None,
@@ -88,6 +91,7 @@ impl FrameTint {
     /// The `data-frame` value: `opaque` on a window's root, `tinted` on shell chrome, absent
     /// where the root draws no gradient. Both roots that draw one are their own stacking
     /// context, so the layers' negative z-index paints over the root's own background.
+    #[must_use]
     pub fn attribute(self) -> Option<&'static str> {
         match self {
             FrameTint::Opaque => Some("opaque"),
@@ -112,6 +116,7 @@ pub enum Ground {
 impl Ground {
     /// The rule: the bar and the dock are chrome on the frame colour (design/21-SPACES.md
     /// section 3), so their content takes the frame inks; everything else is paper.
+    #[must_use]
     pub fn of(material: Material) -> Self {
         match material {
             Material::Bar | Material::Dock => Ground::Frame,
@@ -125,6 +130,7 @@ impl Ground {
     }
 
     /// The `data-ground` value, written only on the frame.
+    #[must_use]
     pub fn attribute(self) -> Option<&'static str> {
         match self {
             Ground::Paper => None,

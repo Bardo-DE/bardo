@@ -43,6 +43,7 @@ impl RingSpan {
     };
 
     /// The part of this span a `level` fills, from its start.
+    #[must_use]
     pub fn filled(self, level: Fraction) -> RingSpan {
         let share = f32::from(level.clamped().0) / 1000.0;
         RingSpan {
@@ -73,6 +74,7 @@ pub const PIE_RIM: f32 = 46.0;
 
 /// The SVG path of the wedge a `level` fills of the pie, from twelve clockwise, as a closed
 /// shape through the centre; none for an empty level. A whole pie is two half arcs.
+#[must_use]
 pub fn pie_path(level: Fraction) -> Option<String> {
     let sweep = RingSpan::FULL.filled(level).sweep;
     if sweep <= 0.0 {
@@ -95,6 +97,7 @@ pub fn pie_path(level: Fraction) -> Option<String> {
 
 /// The SVG path of `span` on the ring's circle. A whole circle is two half arcs (one arc cannot
 /// end where it starts); an empty span is no path.
+#[must_use]
 pub fn arc_path(span: RingSpan) -> Option<String> {
     if span.sweep <= 0.0 {
         return None;

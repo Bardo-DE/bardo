@@ -55,6 +55,7 @@ impl Flash {
     }
 
     /// `Fired`, `Did not fire`, `Auto, fired`, `Off, did not fire`, `No flash`.
+    #[must_use]
     pub fn text(self) -> String {
         let state = match self.state {
             FlashState::Absent => return "No flash".to_owned(),

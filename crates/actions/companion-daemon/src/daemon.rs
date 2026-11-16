@@ -61,13 +61,13 @@ pub async fn start(
     config: CompaniondConfig,
     callers: CallerTable,
 ) -> Result<Arc<Mutex<Daemon>>, ServeFault> {
-    start_with(
+    Box::pin(start_with(
         connection,
         config,
         &Roots::default(),
         HarnessSeams::default(),
         callers,
-    )
+    ))
     .await
 }
 
@@ -80,7 +80,10 @@ pub async fn start_with(
     seams: HarnessSeams,
     callers: CallerTable,
 ) -> Result<Arc<Mutex<Daemon>>, ServeFault> {
-    start_with_agents(connection, config, skills, seams, callers, None).await
+    Box::pin(start_with_agents(
+        connection, config, skills, seams, callers, None,
+    ))
+    .await
 }
 
 /// [`start_with`] with the host of the agent apps that are helpers: a helper whose kind is an
@@ -143,7 +146,7 @@ pub async fn start_with_agents(
         );
         Hub::new(
             service,
-            companion.shared.clone(),
+            Arc::clone(&companion.shared),
             Arc::new(TokioSpawn),
             make,
         )
@@ -181,7 +184,7 @@ pub async fn start_with_agents(
     {
         tracing::warn!("the routines did not come back in time; starting without them");
     }
-    tokio::spawn(routines.clone().run());
+    tokio::spawn(Arc::clone(&routines).run());
     let companion = Arc::new(Mutex::new(companion));
     let who = Arc::new(Identity::on(
         connection.clone(),
@@ -191,7 +194,7 @@ pub async fn start_with_agents(
     let kept: Arc<dyn RoutineDesk> = routines;
     serve_with_routines(
         connection,
-        companion.clone(),
+        Arc::clone(&companion),
         who,
         seams.proc_root,
         Some(kept),
@@ -203,7 +206,7 @@ pub async fn start_with_agents(
 /// The daemon: its configuration and the session bus from `env` (the process's environment, which
 /// its `main` passes in), served until the bus closes.
 pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeFault> {
-    run_with(HarnessSeams::default(), env).await
+    Box::pin(run_with(HarnessSeams::default(), env)).await
 }
 
 /// [`run`] with the seams the acceptance harness's mains choose.
@@ -223,14 +226,14 @@ pub async fn run_with(
     // The agent apps that are helpers run in the host the bus starts (`bardo-agent --serve`); the
     // tests that start a daemon of their own pass a scripted host or none (`start_with_agents`).
     let agents: Arc<dyn AgentApps> = Arc::new(AppsLink::new(connection.clone()));
-    let _running = start_with_agents(
+    let _running = Box::pin(start_with_agents(
         &connection,
         config,
         &Roots::from_env(env),
         seams,
         callers,
         Some(agents),
-    )
+    ))
     .await?;
     let mut messages = zbus::MessageStream::from(&connection);
     while messages.next().await.is_some() {}

@@ -1,4 +1,4 @@
-//! FactList: a read-only list of labels and their values (design/30 section 2.2): an invitation's
+//! `FactList`: a read-only list of labels and their values (design/30 section 2.2): an invitation's
 //! When, Where and Who; a certificate's issuer and dates. It is a form row without a control, so
 //! it is drawn as `FieldRow`'s `Form` layout is: a fixed label column ending at the value, the
 //! values lining up, and read as a description list by assistive technology.

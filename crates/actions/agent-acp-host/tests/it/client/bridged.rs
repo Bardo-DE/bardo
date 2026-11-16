@@ -52,7 +52,7 @@ fn taint_then_writes(paths: &[&'static str]) -> Vec<Act> {
 
 #[tokio::test]
 async fn an_always_from_the_sheet_is_a_grant_in_dockets_store_used_audited_listed_and_revoked() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![
             taint_then_writes(&[
                 "/work/app/src/a.rs",
@@ -63,10 +63,10 @@ async fn an_always_from_the_sheet_is_a_grant_in_dockets_store_used_audited_liste
         ],
         answers: vec![always(), no()],
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     // The first write asked and the person said always; the second, in the same directory, ran on
     // the grant; the third, in a sibling directory, asked again (and was refused).
     rig.agent.reply("w0").unwrap();
@@ -95,14 +95,14 @@ async fn an_always_from_the_sheet_is_a_grant_in_dockets_store_used_audited_liste
 
 #[tokio::test]
 async fn a_grant_is_the_programs_and_not_another_hosts_or_programs() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![taint_then_writes(&["/work/app/src/a.rs"])],
         answers: vec![always()],
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     let held = rig.grants();
     assert_eq!(held.len(), 1);
     // Another program (or an editor of the same app name) holds none of it.
@@ -129,7 +129,7 @@ async fn a_reviewers_no_refuses_a_write_a_grant_let_through() {
             text: ReasonText("no".into()),
         },
     });
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![taint_then_writes(&[
             "/work/app/src/a.rs",
             "/work/app/src/b.rs",
@@ -139,10 +139,10 @@ async fn a_reviewers_no_refuses_a_write_a_grant_let_through() {
         // meets the reviewer, whose first verdict is no.
         reviewer: ScriptedReviewer::queued(vec![deny], ReviewMode::AlwaysAllow),
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     rig.agent.reply("w0").unwrap();
     assert!(rig.agent.reply("w1").is_err(), "the reviewer said no");
     assert_eq!(files.text(&abs("/work/app/src/b.rs")), None);
@@ -151,14 +151,14 @@ async fn a_reviewers_no_refuses_a_write_a_grant_let_through() {
 
 #[tokio::test]
 async fn the_sheet_goes_to_the_desktops_confirmer_and_its_answer_comes_back() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![taint_then_writes(&["/work/app/a.rs", "/work/app/b.rs"])],
         answers: vec![once(), no()],
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
-    let events = run_turn(&mut rig, "go").await;
+    let events = Box::pin(run_turn(&mut rig, "go")).await;
     rig.agent.reply("w0").unwrap();
     rig.agent.reply("w1").unwrap_err();
     let sheets = rig.sheets();
@@ -178,22 +178,22 @@ async fn the_sheet_goes_to_the_desktops_confirmer_and_its_answer_comes_back() {
 
 #[tokio::test]
 async fn the_hosts_own_sheet_exists_only_with_the_development_flag() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![taint_then_writes(&["/work/app/a.rs", "/work/app/b.rs"])],
         terminal_fallback: true,
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
     let mut shown = Vec::new();
-    let events = run_turn_answering(&mut rig, 1, "go", &mut |request| {
+    let events = Box::pin(run_turn_answering(&mut rig, 1, "go", &mut |request| {
         shown.push(request.clone());
         if shown.len() == 1 {
             SheetChoice::Once
         } else {
             SheetChoice::Refused
         }
-    })
+    }))
     .await;
     assert_eq!(shown.len(), 2, "both sheets came out of the host");
     assert!(
@@ -214,27 +214,30 @@ async fn the_hosts_own_sheet_exists_only_with_the_development_flag() {
 
 #[tokio::test]
 async fn a_sheet_the_person_refuses_on_the_host_refuses_the_call() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![taint_then_writes(&["/work/app/a.rs"])],
         terminal_fallback: true,
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/a.txt"), "a");
-    run_turn_answering(&mut rig, 1, "go", &mut |_| SheetChoice::Refused).await;
+    Box::pin(run_turn_answering(&mut rig, 1, "go", &mut |_| {
+        SheetChoice::Refused
+    }))
+    .await;
     rig.agent.reply("w0").unwrap_err();
     assert_eq!(files.text(&abs("/work/app/a.rs")), None);
 }
 
 #[tokio::test]
 async fn the_persons_prompt_is_what_derives_the_task_and_is_recorded_as_the_hosts() {
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![Act::Stop("end_turn")]],
         policy: Policy::Wide,
         ..Setup::default()
-    })
+    }))
     .await;
-    run_turn(&mut rig, "update the changelog").await;
+    Box::pin(run_turn(&mut rig, "update the changelog")).await;
     let st = rig.router.state.lock().expect("lock");
     let record = &st.sessions[&rig.session];
     assert_eq!(record.turns.len(), 1);
@@ -254,7 +257,7 @@ async fn a_call_dropped_and_asked_again_with_its_number_is_one_call_at_the_route
     use agent_acp_core::call::AgentCall;
     use agent_acp_core::court::Court;
     use futures_util::FutureExt;
-    let (rig, _files) = started(Setup::default()).await;
+    let (rig, _files) = Box::pin(started(Setup::default())).await;
     let mut court = rig.court.clone();
     let call = AgentCall::Reported(permission_core::PermissionKind::Read);
     // The first pull gave up before the router answered; the second asks again.
@@ -281,12 +284,14 @@ async fn the_host_runs_one_agent_session_of_an_agent_program() {
     let mut host = AgentHost::new(wired.backend, wired.court, wired.desk, false);
     let mut native = super::rig::opening("/work/app");
     native.backend = BackendKind::Native;
-    assert!(host.open(native).await.is_err(), "not an agent program");
-    let session = host
-        .open(super::rig::opening("/work/app"))
+    assert!(
+        Box::pin(host.open(native)).await.is_err(),
+        "not an agent program"
+    );
+    let session = Box::pin(host.open(super::rig::opening("/work/app")))
         .await
         .expect("open");
-    let again = host.open(super::rig::opening("/work/app")).await;
+    let again = Box::pin(host.open(super::rig::opening("/work/app"))).await;
     assert!(matches!(again, Err(HostFault::Backend(_))), "{again:?}");
     // Fork, export and resume are not served.
     host.resume(&session).await.unwrap_err();

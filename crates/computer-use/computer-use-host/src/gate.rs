@@ -100,7 +100,7 @@ impl<T: Transport + 'static> GateLink for IntentsGate<T> {
     type Check = IntentsCheck;
 
     async fn grant(&self, ask: GrantAsk) -> Result<GrantAnswer, LinkError> {
-        Intents::over(Shared(self.transport.clone()))
+        Intents::over(Shared(Arc::clone(&self.transport)))
             .gate_grant(ask)
             .await
             .map_err(link_error)
@@ -124,7 +124,7 @@ impl<T: Transport + 'static> GateLink for IntentsGate<T> {
             started_from: None,
             acts_for: Some(conversation.clone()),
         };
-        Intents::over(Shared(self.transport.clone()))
+        Intents::over(Shared(Arc::clone(&self.transport)))
             .session_open(open)
             .await
             .map(|opened| opened.session)
@@ -132,7 +132,7 @@ impl<T: Transport + 'static> GateLink for IntentsGate<T> {
     }
 
     async fn check(&self, ask: CuaAsk) -> Result<IntentsCheck, LinkError> {
-        let watch = Intents::over(Shared(self.transport.clone()))
+        let watch = Intents::over(Shared(Arc::clone(&self.transport)))
             .gate_check_watched(ask)
             .await
             .map_err(link_error)?;
@@ -380,7 +380,7 @@ mod tests {
             let said = self.said.lock().expect("lock").drain(..).collect();
             Ok(Watched {
                 events: Box::new(Told(said)),
-                steering: Arc::new(Noted(self.steered.clone())),
+                steering: Arc::new(Noted(Arc::clone(&self.steered))),
             })
         }
     }

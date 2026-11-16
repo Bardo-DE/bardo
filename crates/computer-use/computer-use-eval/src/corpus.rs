@@ -112,7 +112,7 @@ impl Corpus {
             .surfaces
             .get(&task.surface)
             .ok_or_else(|| SetupError::Id(format!("no surface {}", task.surface)))?;
-        Arena::new(task, surface.clone(), self.keymap.clone())
+        Arena::new(task, Arc::clone(surface), self.keymap.clone())
     }
 
     fn check(&self) -> Result<(), CorpusError> {

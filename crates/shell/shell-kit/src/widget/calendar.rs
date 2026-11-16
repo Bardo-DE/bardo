@@ -51,6 +51,7 @@ pub struct MonthFace {
 
 impl MonthFace {
     /// `grid` with week numbers as `weeks`, no today column and no events.
+    #[must_use]
     pub fn of(grid: MonthGridData, weeks: bool) -> Self {
         MonthFace {
             grid,

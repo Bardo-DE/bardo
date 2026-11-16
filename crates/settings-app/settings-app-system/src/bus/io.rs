@@ -110,6 +110,7 @@ impl ToAbsence for SpacesError {
 
 /// What a live module's refusal says, in the module's own words and without the name of the
 /// error: that name is for a program, and a toast or a pane shows what the person reads.
+#[must_use]
 pub fn plain(error: &LiveError) -> String {
     match error {
         LiveError::NotPermitted(words)

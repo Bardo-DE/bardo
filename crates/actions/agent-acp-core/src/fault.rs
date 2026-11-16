@@ -4,7 +4,7 @@
 use agent_client_protocol::schema::v1::Error;
 
 fn with(mut error: Error, message: &str) -> Error {
-    error.message = message.to_owned();
+    message.clone_into(&mut error.message);
     error
 }
 

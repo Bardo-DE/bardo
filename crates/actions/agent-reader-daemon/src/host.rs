@@ -11,6 +11,7 @@ pub struct ReaderHost {
 
 impl ReaderHost {
     /// Starts the host. Only readerd's `main` does.
+    #[must_use]
     pub fn start() -> Self {
         Self {
             key: ReaderKey::for_reader_host(),
@@ -18,6 +19,7 @@ impl ReaderHost {
     }
 
     /// Opens quarantined text for the reader model, label kept.
+    #[must_use]
     pub fn open(&self, text: Quarantined<String>) -> Labelled<String> {
         text.open(&self.key)
     }

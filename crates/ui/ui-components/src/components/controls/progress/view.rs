@@ -1,4 +1,4 @@
-//! ProgressIndicator (design/30 section 2.9, `NSProgressIndicator`): a bar, a spoke spinner,
+//! `ProgressIndicator` (design/30 section 2.9, `NSProgressIndicator`): a bar, a spoke spinner,
 //! a ring or a pie. Markup: `div.ds-progress[data-style][data-size]` with `role="progressbar"`; a known
 //! share is `--f` on the fill and `aria-valuenow`; an operation without a known share is
 //! `data-pending` (`step` while it runs) and the loop's step as `--step` on the root, so nothing turns without an

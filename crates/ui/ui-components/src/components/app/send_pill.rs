@@ -1,4 +1,4 @@
-//! SendPill: undo send, a countdown ring and an Undo, then "Sent" (design/30 section 2.11,
+//! `SendPill`: undo send, a countdown ring and an Undo, then "Sent" (design/30 section 2.11,
 //! design/06-INTERACTIONS.md section 10).
 //!
 //! The consumer owns the countdown ([`SEND_COUNTDOWN`] in [`SEND_TICK`] steps) and passes the

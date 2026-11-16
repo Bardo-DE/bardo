@@ -17,6 +17,7 @@ pub struct OnCorners {
 impl OnCorners {
     /// The manifests under `intent_dirs` (the folders of trust, first first), files chosen
     /// through `chooser`.
+    #[must_use]
     pub fn new(chooser: Arc<OnPortal>, intent_dirs: Vec<PathBuf>) -> OnCorners {
         OnCorners {
             chooser,

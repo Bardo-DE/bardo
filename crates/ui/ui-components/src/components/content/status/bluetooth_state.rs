@@ -19,6 +19,7 @@ pub enum BluetoothState {
 
 impl BluetoothState {
     /// The state in words (R8).
+    #[must_use]
     pub fn words(self) -> &'static str {
         match self {
             BluetoothState::Off => "Bluetooth off",

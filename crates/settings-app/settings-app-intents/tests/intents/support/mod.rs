@@ -152,7 +152,7 @@ impl World {
             scratch.join("proc"),
         ));
         let peers = Arc::new(private_peers(&app));
-        serve_with(&app, provider, who.clone(), peers.clone())
+        serve_with(&app, provider, Arc::clone(&who), Arc::clone(&peers))
             .await
             .expect("settings serves");
         let intentd = bus.connect().await;

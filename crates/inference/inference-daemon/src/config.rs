@@ -170,7 +170,7 @@ impl InferdConfig {
         engines.llama_server = programs.llama_server(engines.llama_server.as_deref());
         engines.vllm_python = programs.vllm_python(engines.vllm_python.as_deref());
         if engines.hf_cache.as_os_str().is_empty() {
-            engines.hf_cache = dirs.hf_cache.clone();
+            engines.hf_cache.clone_from(&dirs.hf_cache);
         }
         engines
     }

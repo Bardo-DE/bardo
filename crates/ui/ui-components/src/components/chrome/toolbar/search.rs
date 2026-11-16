@@ -63,12 +63,14 @@ impl fmt::Debug for SearchSeat {
 
 impl SearchSeat {
     /// Where the field is drawn.
+    #[must_use]
     pub fn place(self) -> SeatPlace {
         self.place
     }
 
     /// How the field takes the keyboard: at once when it was just opened, never on its own
     /// otherwise.
+    #[must_use]
     pub fn focus(self) -> FieldFocus {
         match self.place {
             SeatPlace::Inline => FieldFocus::Manual,
@@ -77,6 +79,7 @@ impl SearchSeat {
     }
 
     /// What the field tells the toolbar when the caret leaves it.
+    #[must_use]
     pub fn onblur(self) -> EventHandler<()> {
         self.fold
     }

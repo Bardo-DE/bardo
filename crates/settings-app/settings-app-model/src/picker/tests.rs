@@ -36,9 +36,9 @@ pub(super) fn menu(key: &str, label: &str) -> KeySpec {
             .into(),
         ),
         agent: AgentSetting::HandsOff,
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        unavailable: BTreeMap::default(),
+        groups: BTreeMap::default(),
+        places: BTreeMap::default(),
         note: None,
     }
 }

@@ -44,7 +44,7 @@ impl SystemBackend {
         Self::with(
             dirs,
             Oo7Keys,
-            InferdEmbedder::new(inferd.clone(), card),
+            InferdEmbedder::new(Arc::clone(&inferd), card),
             InferdConsolidator::new(inferd),
         )
     }

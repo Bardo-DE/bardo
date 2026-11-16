@@ -159,7 +159,7 @@ mod tests {
             "<g>".repeat(120),
             "</g>".repeat(120)
         );
-        assert!(Svg::parse(fine.as_bytes()).is_ok());
+        Svg::parse(fine.as_bytes()).unwrap();
     }
 
     fn size(width: u32, height: u32) -> PixelSize {

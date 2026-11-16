@@ -11,7 +11,7 @@
 //! Every one-shot read goes through [`client_rect`]. On dioxus-native, `get_client_rect` borrows the
 //! document mutably, and a task woken in the same turn as a dirty scope is polled inside
 //! `render_immediate` while the renderer already holds that borrow: the read would panic
-//! ("RefCell already borrowed"). The host's [`GeometryHost::measure`](crate::host::parts::GeometryHost::measure)
+//! ("`RefCell` already borrowed"). The host's [`GeometryHost::measure`](crate::host::parts::GeometryHost::measure)
 //! answers [`Measured::Busy`] instead, and the read waits a frame.
 
 use crate::host::document::use_document_host;
@@ -86,6 +86,7 @@ pub struct RectProbe {
 
 impl RectProbe {
     /// The last rect the host published, or `None` before the element mounted and was laid out.
+    #[must_use]
     pub fn rect(&self) -> Option<Rect> {
         (self.rect)()
     }
@@ -122,6 +123,7 @@ impl RectProbe {
 
 /// A probe for one element's rect, kept by the host's frame phase: it follows the element through
 /// every layout that moves or resizes it, the window's resize included.
+#[must_use]
 pub fn use_rect() -> RectProbe {
     let probe = RectProbe {
         rect: use_signal(|| None),

@@ -66,7 +66,7 @@ impl ScriptedInfer {
     /// Opens wait until the returned handle is notified (a cold engine).
     pub fn cold(mut self) -> (Self, Arc<Notify>) {
         let gate = Arc::new(Notify::new());
-        self.hold = Some(gate.clone());
+        self.hold = Some(Arc::clone(&gate));
         (self, gate)
     }
 
@@ -158,7 +158,7 @@ impl Transport for ScriptedInfer {
         Ok(ScriptedSession {
             inner: FakeInferSession::scripted(scripts),
             index: frames.len() - 1,
-            seen: self.seen.clone(),
+            seen: Arc::clone(&self.seen),
             wake: Arc::new(Notify::new()),
         })
     }

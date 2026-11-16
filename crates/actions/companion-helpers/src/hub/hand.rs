@@ -33,7 +33,7 @@ where
     /// `line` as the person sees it: a conversation in the terminal says so.
     pub(super) fn line_shown(&self, mut line: HelperLine) -> HelperLine {
         if self.with_state(|state| state.terminals.runs_in(&line.id)) == RunsIn::Terminal {
-            line.doing = "In its own terminal window".to_owned();
+            "In its own terminal window".clone_into(&mut line.doing);
         }
         line
     }

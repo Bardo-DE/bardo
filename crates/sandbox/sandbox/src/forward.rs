@@ -80,7 +80,7 @@ impl Live {
             self.0.fetch_sub(1, Ordering::SeqCst);
             return None;
         }
-        Some(Held(self.0.clone()))
+        Some(Held(Arc::clone(&self.0)))
     }
 }
 
@@ -154,7 +154,7 @@ impl Listening {
     ) -> io::Result<Self> {
         let listener = UnixListener::bind(path)?;
         let stop = Arc::new(AtomicBool::new(false));
-        let flag = stop.clone();
+        let flag = Arc::clone(&stop);
         // Detached: dropping the listening end wakes the thread and does not wait for it, so one
         // dropped after its directory was removed cannot hang the caller.
         std::thread::spawn(move || {

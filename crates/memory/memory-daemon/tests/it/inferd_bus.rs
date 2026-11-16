@@ -51,8 +51,8 @@ async fn rig(draft: Option<&str>) -> Rig {
     let backend = SystemBackend::with(
         dirs_in(&scratch.path().join("home")),
         SharedKeys::default(),
-        InferdEmbedder::new(link.clone(), card),
-        InferdConsolidator::new(link.clone()),
+        InferdEmbedder::new(Arc::clone(&link), card),
+        InferdConsolidator::new(Arc::clone(&link)),
     )
     .with_registry(listed_spaces());
     Rig {
@@ -148,7 +148,7 @@ async fn with_inferd_up_the_documents_are_embedded_each_in_a_session_of_its_clas
 #[tokio::test]
 async fn with_inferd_up_consolidation_drafts_over_the_bus() {
     let rig = rig(Some(r#"{"hunks":[]}"#)).await;
-    let consolidator = InferdConsolidator::new(rig.link.clone());
+    let consolidator = InferdConsolidator::new(Arc::clone(&rig.link));
     let draft = consolidator.draft(input()).await.expect("a draft");
     assert!(draft.hunks.is_empty());
     let seen = rig.seen.lock().expect("lock").clone();
@@ -160,7 +160,7 @@ async fn with_inferd_up_consolidation_drafts_over_the_bus() {
 #[tokio::test]
 async fn a_batch_of_mixed_classes_opens_one_session_per_class_over_the_bus() {
     let rig = rig(Some("{}")).await;
-    let embedder = InferdEmbedder::new(rig.link.clone(), FakeEmbedder::new().card().clone());
+    let embedder = InferdEmbedder::new(Arc::clone(&rig.link), FakeEmbedder::new().card().clone());
     let classed = |class: &str, text: &str| Classed {
         class: ClassTag(class.to_owned()),
         text: text.to_owned(),
@@ -204,14 +204,14 @@ async fn with_inferd_down_recall_is_lexical_only_and_consolidation_is_off() {
     assert_eq!(items.len(), 1, "{items:?}");
 
     // The embedder says so, and the consolidator too.
-    let embedder = InferdEmbedder::new(rig.link.clone(), FakeEmbedder::new().card().clone());
+    let embedder = InferdEmbedder::new(Arc::clone(&rig.link), FakeEmbedder::new().card().clone());
     assert_eq!(
         embedder
             .embed(&["x".to_owned()], EmbedRole::Query, Urgency::Interactive)
             .await,
         Err(EmbedError::Unavailable)
     );
-    let consolidator = InferdConsolidator::new(rig.link.clone());
+    let consolidator = InferdConsolidator::new(Arc::clone(&rig.link));
     assert_eq!(
         consolidator.draft(input()).await.err(),
         Some(ConsolidateError::Unavailable)
@@ -230,7 +230,7 @@ async fn with_inferd_down_recall_is_lexical_only_and_consolidation_is_off() {
 #[tokio::test]
 async fn inferd_that_starts_later_is_found_at_the_next_call() {
     let rig = rig(None).await;
-    let embedder = InferdEmbedder::new(rig.link.clone(), FakeEmbedder::new().card().clone());
+    let embedder = InferdEmbedder::new(Arc::clone(&rig.link), FakeEmbedder::new().card().clone());
     let texts = ["x".to_owned()];
     let ask = || embedder.embed(&texts, EmbedRole::Query, Urgency::Interactive);
     assert_eq!(ask().await, Err(EmbedError::Unavailable));

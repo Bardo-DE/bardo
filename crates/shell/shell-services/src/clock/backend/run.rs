@@ -96,6 +96,6 @@ mod tests {
             *clock.state.borrow(),
             ClockMinute(jiff::civil::date(2026, 9, 24).at(14, 5, 0, 0))
         );
-        assert!(clock.control.send(ClockCommand::Refresh).is_ok());
+        clock.control.send(ClockCommand::Refresh).unwrap();
     }
 }

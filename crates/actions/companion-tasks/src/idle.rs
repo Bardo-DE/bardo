@@ -200,7 +200,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             return;
         };
         let request = request_for(&pending.episode.skeleton.text());
-        let shared = self.shared.clone();
+        let shared = std::sync::Arc::clone(&self.shared);
         let outcome = {
             let chat = std::pin::pin!(async {
                 match self.planner.chat(request).await {

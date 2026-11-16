@@ -18,7 +18,7 @@ use ui_settings::{AppName, ConfigRoot, Store, use_environment};
 #[component]
 pub fn App() -> Element {
     let env = use_context::<Env>();
-    let catalogue = env.catalogue.clone();
+    let catalogue = Arc::clone(&env.catalogue);
     let first = opening_page(&catalogue);
     let opening = env.opening.clone();
     let page = use_signal(|| opening.page.clone().or(first).unwrap_or_default());
@@ -33,7 +33,7 @@ pub fn App() -> Element {
 
     let told = env.clone();
     use_future(move || {
-        let (told, catalogue) = (told.clone(), told.catalogue.clone());
+        let (told, catalogue) = (told.clone(), Arc::clone(&told.catalogue));
         let (mut page, mut query, mut files) = (page, query, files);
         let handle = handle.clone();
         async move {

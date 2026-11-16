@@ -21,6 +21,7 @@ impl<C> Clone for Control<C> {
 
 impl<C> Control<C> {
     /// A control and the receiver its service task drains.
+    #[must_use]
     pub fn channel() -> (Control<C>, mpsc::UnboundedReceiver<C>) {
         let (tx, rx) = mpsc::unbounded_channel();
         (Control { tx }, rx)
@@ -41,8 +42,8 @@ mod tests {
     fn a_command_reaches_the_service_until_it_stops() {
         let (control, mut rx) = Control::<u8>::channel();
         let clone = control.clone();
-        assert!(control.send(1).is_ok());
-        assert!(clone.send(2).is_ok());
+        control.send(1).unwrap();
+        clone.send(2).unwrap();
         assert_eq!(rx.try_recv().ok(), Some(1));
         assert_eq!(rx.try_recv().ok(), Some(2));
         drop(rx);

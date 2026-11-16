@@ -302,7 +302,7 @@ mod tests {
             presence: Presence::Present,
             power: BtPower::On,
             devices: Vec::new(),
-            connect: Default::default(),
+            connect: Attempts::default(),
         };
         assert_eq!(
             empty_title(&Bluetooth::default(), 0).as_deref(),

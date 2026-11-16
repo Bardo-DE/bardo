@@ -40,11 +40,13 @@ pub struct FakeWifi(Arc<Shared>);
 
 impl FakeWifi {
     /// A service in this standing.
+    #[must_use]
     pub fn answering(status: WifiStatus) -> FakeWifi {
         FakeWifi::standing(Ok(status))
     }
 
     /// No service, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeWifi {
         FakeWifi::standing(Err(why))
     }
@@ -64,6 +66,7 @@ impl FakeWifi {
     }
 
     /// What was asked of it, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<WifiAsked> {
         locked(&self.0.asked).clone()
     }

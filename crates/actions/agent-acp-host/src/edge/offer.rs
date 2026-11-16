@@ -34,6 +34,7 @@ impl EdgeBind {
     /// The MCP server entry for `session/new`: the bridge, its socket, and the token in its
     /// environment (a command line is readable by every process of the user, an environment only
     /// by its owner).
+    #[must_use]
     pub fn server(&self, token: &EdgeToken) -> McpServer {
         McpServer::Stdio(
             McpServerStdio::new(SERVER_NAME, self.bridge.as_str())

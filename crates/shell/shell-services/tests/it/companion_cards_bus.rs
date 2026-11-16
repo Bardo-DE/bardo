@@ -100,7 +100,7 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Option<Bench> {
         StandInCompanion {
             session: None,
             log: desk.log.clone(),
-            view: view.clone(),
+            view: Arc::clone(&view),
             acts,
             routing: None,
         },

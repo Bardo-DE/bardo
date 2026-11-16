@@ -32,8 +32,10 @@ async fn main() -> ExitCode {
         }
     };
     let binaries = Binaries::beside(&exe, &|key: &str| std::env::var(key).ok());
-    run(command, &binaries).await.unwrap_or_else(|why| {
-        eprintln!("agent-live: {why}");
-        ExitCode::from(2)
-    })
+    Box::pin(run(command, &binaries))
+        .await
+        .unwrap_or_else(|why| {
+            eprintln!("agent-live: {why}");
+            ExitCode::from(2)
+        })
 }

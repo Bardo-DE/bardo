@@ -243,7 +243,7 @@ impl Fixture for Mock {
 async fn keyring_keeps_the_contract_over_the_mock_store() {
     let mock = keyring_core::mock::Store::new().expect("mock");
     contract(Mock {
-        store: StoreSecrets::chunked(mock.clone(), 256),
+        store: StoreSecrets::chunked(Arc::<keyring_core::mock::Store>::clone(&mock), 256),
         mock,
     })
     .await;
@@ -253,7 +253,7 @@ async fn keyring_keeps_the_contract_over_the_mock_store() {
 async fn keyring_without_chunking_keeps_the_contract_too() {
     let mock = keyring_core::mock::Store::new().expect("mock");
     contract(Mock {
-        store: StoreSecrets::new(mock.clone()),
+        store: StoreSecrets::new(Arc::<keyring_core::mock::Store>::clone(&mock)),
         mock,
     })
     .await;
@@ -264,8 +264,8 @@ async fn keyring_without_chunking_keeps_the_contract_too() {
 #[tokio::test]
 async fn namespaces_keep_their_items_apart() {
     let mock = keyring_core::mock::Store::new().expect("mock");
-    let porter = StoreSecrets::new(mock.clone());
-    let mailo = StoreSecrets::new(mock.clone())
+    let porter = StoreSecrets::new(Arc::<keyring_core::mock::Store>::clone(&mock));
+    let mailo = StoreSecrets::new(Arc::<keyring_core::mock::Store>::clone(&mock))
         .in_namespace(Namespace::parse("mailo/work").expect("a namespace"));
     let filed = key("cloud", SecretPurpose::Password);
     porter.put(&filed, &password("a")).await.expect("put");
@@ -342,7 +342,7 @@ mod oo7_file {
             &self.store
         }
         async fn filed(&self, account: &str, purpose: &str) -> Option<bool> {
-            let look = oo7::Keyring::File(self.shared.clone());
+            let look = oo7::Keyring::File(Arc::clone(&self.shared));
             let wanted = [
                 ("service", "porter"),
                 ("account", account),
@@ -363,7 +363,7 @@ mod oo7_file {
             oo7::file::Keyring::Unlocked(unlocked),
         )));
         File {
-            store: Oo7KeyringSecrets::new(oo7::Keyring::File(shared.clone())),
+            store: Oo7KeyringSecrets::new(oo7::Keyring::File(Arc::clone(&shared))),
             shared,
             _scratch: dir,
         }
@@ -396,7 +396,7 @@ mod oo7_file {
 #[tokio::test]
 async fn a_large_secret_is_filed_in_numbered_parts_and_leaves_none_behind() {
     let mock: Arc<keyring_core::CredentialStore> = keyring_core::mock::Store::new().expect("mock");
-    let store = StoreSecrets::chunked(mock.clone(), 256);
+    let store = StoreSecrets::chunked(Arc::clone(&mock), 256);
     let big = key("big", SecretPurpose::ApiKey);
     let large = Credential::ApiKey(SecretText::new("x".repeat(1000)));
     store.put(&big, &large).await.expect("put");
@@ -433,15 +433,15 @@ async fn a_credential_filed_in_parts_before_keyring_chunked_still_reads() {
     }
     let old = key("old", SecretPurpose::Password);
     for store in [
-        StoreSecrets::new(mock.clone()),
-        StoreSecrets::chunked(mock.clone(), 256),
+        StoreSecrets::new(Arc::clone(&mock)),
+        StoreSecrets::chunked(Arc::clone(&mock), 256),
     ] {
         assert_eq!(
             store.get(&old).await,
             Ok(password("correct horse battery staple"))
         );
     }
-    StoreSecrets::new(mock.clone())
+    StoreSecrets::new(Arc::clone(&mock))
         .delete(&old)
         .await
         .expect("delete");

@@ -1,4 +1,4 @@
-//! DeviceGlyph: a device's filled glyph, for the battery widget's rings (design/23-WIDGETS.md
+//! `DeviceGlyph`: a device's filled glyph, for the battery widget's rings (design/23-WIDGETS.md
 //! section 4.4; the user's pick 2026-09-27, "filled device glyphs"). The reference's Batteries
 //! widget draws each device as a filled symbol (M12); ours are abstract solids on the Lucide 24
 //! grid (`device_forms.rs`), one path in `currentColor`, no stroke, so they sit in the same

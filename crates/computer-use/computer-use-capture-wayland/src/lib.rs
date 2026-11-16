@@ -130,7 +130,13 @@ impl WindowCapture for StockToplevelCapture {
             .drive(|st| Some(st.open_session(ident)))
             .await
             .map_err(lost)??;
-        WaylandSession::start(self.pump.clone(), self.clock.clone(), key, Masking::Cuad).await
+        WaylandSession::start(
+            Arc::clone(&self.pump),
+            Arc::clone(&self.clock),
+            key,
+            Masking::Cuad,
+        )
+        .await
     }
 }
 
@@ -174,8 +180,8 @@ impl QuireMaskedCapture {
             .await
             .map_err(lost)??;
         WaylandSession::start(
-            self.pump.clone(),
-            self.clock.clone(),
+            Arc::clone(&self.pump),
+            Arc::clone(&self.clock),
             key,
             Masking::Compositor(held),
         )

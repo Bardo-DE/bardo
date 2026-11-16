@@ -40,8 +40,8 @@ async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
     let who = who(&server, scratch.path());
     serve_on_rooted(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
     )
     .await
@@ -150,8 +150,8 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
     let who = who(&server, scratch.path());
     serve_with_routines(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
         Some(Arc::new(EmptyRoutines)),
     )
@@ -273,7 +273,7 @@ async fn the_editor_bridge_reads_the_helpers_and_changes_nothing_and_a_stranger_
     serve_with_routines(
         &server,
         companion,
-        who.clone(),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
         Some(Arc::new(EmptyRoutines)),
     )

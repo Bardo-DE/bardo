@@ -36,6 +36,7 @@ pub struct FileDrop {
 impl FileDrop {
     /// The operation the modifiers held at the release force on `platform`, or `None` when they
     /// force none and the app picks (a move within a volume, a copy across volumes).
+    #[must_use]
     pub fn operation(&self, platform: Platform) -> Option<DropOperation> {
         DropOperation::forced_by(platform, self.modifiers)
     }
@@ -56,6 +57,7 @@ impl DropOperation {
     /// The operation `modifiers` force on `platform`: Option copies, the primary modifier
     /// (Command on a Mac or our desktop, Ctrl elsewhere) moves and both make links; `None` for
     /// neither, which leaves the choice to the app.
+    #[must_use]
     pub fn forced_by(platform: Platform, modifiers: Modifiers) -> Option<DropOperation> {
         let option = modifiers.contains(Modifiers::ALT);
         let primary = holds_primary(platform, modifiers);

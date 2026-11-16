@@ -100,8 +100,8 @@ pub async fn build(
     );
     let registry: Registry<ChildProc> = Registry::default();
     let supervisor = Supervisor::new(
-        accounts.clone(),
-        file.clone(),
+        Arc::clone(&accounts),
+        Arc::clone(&file),
         registry.clone(),
         places.login_runner(),
     );
@@ -150,6 +150,7 @@ pub enum SandboxLimits {
 
 impl SandboxLimits {
     /// The sandbox here, bounded this way.
+    #[must_use]
     pub fn probe(self, path: &str) -> Detected {
         match self {
             SandboxLimits::Scope => Detected::probe(path),

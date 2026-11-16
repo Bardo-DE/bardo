@@ -1,4 +1,4 @@
-//! LevelIndicator: `NSLevelIndicator` (design/30 section 2.9): a read-only level, continuous or in
+//! `LevelIndicator`: `NSLevelIndicator` (design/30 section 2.9): a read-only level, continuous or in
 //! sixteen steps, with an optional glyph that follows it and warning and critical bands: the
 //! volume and brightness bar of the OSD, a battery or storage row.
 //! Markup: `div.ds-level-indicator[role=meter][data-style][data-band][data-size]`, the level as

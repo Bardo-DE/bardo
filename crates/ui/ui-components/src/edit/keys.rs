@@ -27,6 +27,7 @@ pub enum KeyAction {
 /// Super types; Alt alone does not make a chord, since it types characters on some layouts
 /// (macOS Option, AltGr reported as Alt). A chord the keymap binds to Paste, Cut or Copy is that
 /// gesture; any other is the app's.
+#[must_use]
 pub fn classify(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> KeyAction {
     if let Some(gesture) = shared_clipboard_key(key, modifiers) {
         return gesture;

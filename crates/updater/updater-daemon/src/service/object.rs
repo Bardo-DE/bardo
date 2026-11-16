@@ -38,7 +38,7 @@ impl Updates {
 
 /// The unique name the call came from, when the message carries one.
 fn sender_of<'h>(header: &'h Header<'_>) -> Option<&'h str> {
-    header.sender().map(|name| name.as_str())
+    header.sender().map(zbus::names::UniqueName::as_str)
 }
 
 /// The refusal for a caller that may not ask: access denied, with the plain sentence.

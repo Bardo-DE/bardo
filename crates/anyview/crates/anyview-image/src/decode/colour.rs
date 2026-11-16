@@ -44,6 +44,7 @@ impl ColourInfo {
     }
 
     /// `RGB, 8-bit`.
+    #[must_use]
     pub fn text(self) -> String {
         let model = match self.model {
             ColourModel::Grey => "Grey",

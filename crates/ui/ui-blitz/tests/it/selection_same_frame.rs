@@ -40,7 +40,7 @@ fn Editor() -> Element {
         anchor: TextPosition::new("p0", anchor()),
         focus: TextPosition::new("p0", focus()),
     });
-    RANGE.with(|slot| *slot.borrow_mut() = range.clone());
+    RANGE.with(|slot| (*slot.borrow_mut()).clone_from(&range));
     let boxes = use_selection_rects(handle, range);
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet,

@@ -23,10 +23,19 @@ async fn rig() -> Rig {
     let dir = Scratch::new("ferry-drive-write");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
-    let sink = Arc::new(MemorySink::new(listing.clone(), source.clone(), 4));
-    let drive = Drive::open_writable(config(&dir), listing.clone(), source.clone(), sink.clone())
-        .await
-        .expect("drive");
+    let sink = Arc::new(MemorySink::new(
+        std::sync::Arc::clone(&listing),
+        std::sync::Arc::clone(&source),
+        4,
+    ));
+    let drive = Drive::open_writable(
+        config(&dir),
+        std::sync::Arc::<MemoryListing>::clone(&listing),
+        std::sync::Arc::<MemorySource>::clone(&source),
+        std::sync::Arc::<MemorySink>::clone(&sink),
+    )
+    .await
+    .expect("drive");
     Rig {
         dir,
         listing,
@@ -54,9 +63,9 @@ async fn restarted(rig: Rig) -> Rig {
             lock_wait: base_testkit::GENEROUS,
             ..config(&dir)
         },
-        listing.clone(),
-        source.clone(),
-        sink.clone(),
+        std::sync::Arc::<MemoryListing>::clone(&listing),
+        std::sync::Arc::<MemorySource>::clone(&source),
+        std::sync::Arc::<MemorySink>::clone(&sink),
     )
     .await
     .expect("drive");

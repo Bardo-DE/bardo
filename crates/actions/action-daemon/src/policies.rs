@@ -79,22 +79,26 @@ impl PolicyDirs {
     }
 
     /// The assistant's directory, inside the person's.
+    #[must_use]
     pub fn assistant(&self) -> PathBuf {
         self.person.join("assistant")
     }
 
     /// The directory the preset is read from, and whose it is: the first that holds a policy file.
+    #[must_use]
     pub fn preset(&self) -> Option<(PathBuf, PresetOrigin)> {
         self.presets().find(|(d, _)| !cedar_files(d).is_empty())
     }
 
     /// The preset directory that exists, for the watch.
+    #[must_use]
     pub fn preset_dirs(&self) -> Vec<PathBuf> {
         self.preset().map(|(dir, _)| dir).into_iter().collect()
     }
 
     /// The `auto` and `manual` folders the person edited under their data directory before the
     /// modes shared one grid. They are no longer read.
+    #[must_use]
     pub fn unused_presets(&self) -> Vec<PathBuf> {
         OLD_FOLDERS
             .iter()
@@ -136,6 +140,7 @@ fn read_layer(layer: Layer, dir: &Path) -> Vec<PolicySource> {
 }
 
 /// Every source on disk, with the built-in core. No preset on disk leaves the built-in one.
+#[must_use]
 pub fn read_sources(dirs: &PolicyDirs) -> Vec<PolicySource> {
     let folder = dirs
         .preset()

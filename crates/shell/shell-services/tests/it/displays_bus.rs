@@ -76,7 +76,7 @@ fn shell(bus: &PrivateBus) -> Shell {
     let callers = Introduced::new();
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
-        callers: callers.clone(),
+        callers: std::sync::Arc::<Introduced>::clone(&callers),
         claims: shell_services::env::NameClaims::Claim,
         ..Env::isolated(scratch.path())
     };

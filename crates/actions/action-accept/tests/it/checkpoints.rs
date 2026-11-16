@@ -239,7 +239,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
     // The harness is one process: it stands in as the terminal's app for these calls.
     let terminal = world.connect().await;
     let temor = Intents::over(DbusTransport::new(terminal));
-    let (watched, marked) = as_app(&world, "org.bardo.Temor", async {
+    let (watched, marked) = Box::pin(as_app(&world, "org.bardo.Temor", async {
         let watched = temor
             .checkpoint_watch(
                 Workspace::parse(&pane.to_string_lossy()).expect("workspace"),
@@ -253,7 +253,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
             .await
             .expect("Checkpoint.Mark");
         (watched, marked)
-    })
+    }))
     .await;
     let list = launcher
         .intents
@@ -276,12 +276,12 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
     assert_eq!(list.turn, TurnState::Running);
 
     std::fs::write(pane.join("code.txt"), "after").expect("write");
-    as_app(&world, "org.bardo.Temor", async {
+    Box::pin(as_app(&world, "org.bardo.Temor", async {
         temor
             .session_turn_ended(watched.clone(), marked, TurnEnd::Answered)
             .await
             .expect("Session.TurnEnded");
-    })
+    }))
     .await;
     let plan = launcher
         .intents
@@ -301,11 +301,11 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
         std::fs::read_to_string(pane.join("code.txt")).expect("read"),
         "before"
     );
-    as_app(&world, "org.bardo.Temor", async {
+    Box::pin(as_app(&world, "org.bardo.Temor", async {
         temor
             .session_close(watched)
             .await
             .expect("Session.Close by the terminal that opened it");
-    })
+    }))
     .await;
 }

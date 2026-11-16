@@ -123,11 +123,13 @@ fn wait_within(child: &mut Child, patience: Duration) -> io::Result<Option<ExitS
 
 impl Pkexec {
     /// Runs `helpers` through `pkexec`.
+    #[must_use]
     pub fn new(helpers: Helpers) -> Self {
         Self::with_program(PathBuf::from("pkexec"), helpers, HELPER_PATIENCE)
     }
 
     /// Runs `helpers` through `program` (`pkexec`; a test passes a shell) and gives up after `patience`.
+    #[must_use]
     pub fn with_program(program: PathBuf, helpers: Helpers, patience: Duration) -> Self {
         Self {
             program,

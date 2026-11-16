@@ -231,7 +231,7 @@ fn parse(raw: Vec<String>) -> Args {
         match flag.as_str() {
             "--home" => args.home = PathBuf::from(&value),
             "--backend" => args.backend = backend(&value),
-            "--query" => args.query = value.clone(),
+            "--query" => args.query.clone_from(&value),
             "--budget-ms" => args.budget = millis(),
             "--retry-ms" => args.retry = millis(),
             "--choose" => args.choose = Some(choice_of(&value)),

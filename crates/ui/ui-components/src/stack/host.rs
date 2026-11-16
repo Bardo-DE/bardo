@@ -40,6 +40,7 @@ impl Overlays {
 
     /// Whether anything is shown on `layer` (a sheet or a peek on [`ZLayer::Peek`]). Reads the
     /// registry, so the caller re-renders when it changes.
+    #[must_use]
     pub fn shown_on(&self, layer: ZLayer) -> bool {
         self.entries.read().iter().any(|(_, at, _)| *at == layer)
     }
@@ -61,6 +62,7 @@ fn stack_order(layer: ZLayer) -> usize {
 }
 
 /// A new, empty registry, owned by the calling scope (`Ds`).
+#[must_use]
 pub fn use_overlays_provider() -> Overlays {
     use_context_provider(|| Overlays {
         entries: Signal::new(Vec::new()),
@@ -68,6 +70,7 @@ pub fn use_overlays_provider() -> Overlays {
 }
 
 /// The enclosing `Ds`'s overlay registry.
+#[must_use]
 pub fn use_overlays() -> Overlays {
     use_context::<Overlays>()
 }

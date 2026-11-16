@@ -473,7 +473,7 @@ impl Drive {
             return false;
         };
         if let Some(name) = name {
-            node.name = name.to_owned();
+            name.clone_into(&mut node.name);
         }
         if let Some(parent) = parent {
             node.parent = Some(parent);

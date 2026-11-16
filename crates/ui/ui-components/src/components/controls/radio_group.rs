@@ -1,4 +1,4 @@
-//! RadioGroup: one choice out of a few, `NSButton` radio buttons in a group (design/30 section
+//! `RadioGroup`: one choice out of a few, `NSButton` radio buttons in a group (design/30 section
 //! 2.3). Markup: `div.ds-radio-group[role=radiogroup]` of
 //! `button.ds-radio-group-item[role=radio][aria-checked]`, each holding
 //! `span.ds-radio-group-indicator`, an optional image and `span.ds-radio-group-label`.
@@ -98,7 +98,7 @@ pub fn RadioGroup<T: Clone + PartialEq + 'static>(
                     if let Some(index) = values.iter().position(|value| *value == to)
                         && let Some(Some(element)) = items.peek().get(index)
                     {
-                        focus_soon(element.clone());
+                        focus_soon(Rc::clone(element));
                     }
                     onchange.call(to);
                 }

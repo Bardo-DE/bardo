@@ -277,7 +277,7 @@ impl Inner {
         if moved_there {
             // Renamed or moved on the drive too: its name and place stand.
             edit.parent = entry.parent.clone().map_or(NodeId::Top, NodeId::Remote);
-            edit.name = entry.name.clone();
+            edit.name.clone_from(&entry.name);
         }
         edit.base = Some(rebased);
         edit.awaiting = None;

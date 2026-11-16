@@ -85,7 +85,10 @@ where
     }
 
     fn slot(&self, card: &HelperCard) -> Slot<H> {
-        let mut slots = self.slots.lock().unwrap_or_else(|e| e.into_inner());
+        let mut slots = self
+            .slots
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         slots
             .entry(card.id.clone())
             .or_insert_with(|| Slot {
@@ -105,7 +108,10 @@ where
             Caught::Lost(lost) => {
                 tracing::warn!("a helper's agent failed unexpectedly; its process is ended");
                 let gone = {
-                    let mut slots = self.slots.lock().unwrap_or_else(|e| e.into_inner());
+                    let mut slots = self
+                        .slots
+                        .lock()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner);
                     slots.remove(helper)
                 };
                 if let Some(slot) = gone {
@@ -123,7 +129,10 @@ where
     /// in progress is stopped first.
     pub async fn shutdown(&self) {
         let all = {
-            let mut slots = self.slots.lock().unwrap_or_else(|e| e.into_inner());
+            let mut slots = self
+                .slots
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             std::mem::take(&mut *slots)
         };
         for slot in all.into_values() {
@@ -165,7 +174,10 @@ where
     }
 
     fn known(&self, helper: &HelperId) -> Option<Slot<H>> {
-        let slots = self.slots.lock().unwrap_or_else(|e| e.into_inner());
+        let slots = self
+            .slots
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         slots.get(helper).cloned()
     }
 }
@@ -277,7 +289,10 @@ where
     fn forget<'a>(&'a self, helper: &'a HelperId) -> AgentPending<'a, ()> {
         Box::pin(async move {
             let gone = {
-                let mut slots = self.slots.lock().unwrap_or_else(|e| e.into_inner());
+                let mut slots = self
+                    .slots
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
                 slots.remove(helper)
             };
             if let Some(slot) = gone {

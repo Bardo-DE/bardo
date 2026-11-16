@@ -24,6 +24,7 @@ impl<T> SuggestionSection<T> {
     }
 
     /// A group of `items` with no header.
+    #[must_use]
     pub fn bare(items: Vec<MenuItem<T>>) -> Self {
         SuggestionSection {
             header: None,

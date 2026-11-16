@@ -124,6 +124,7 @@ impl Config {
     }
 
     /// These settings with the person's display choices applied.
+    #[must_use]
     pub fn with_user(self, user: UserSettings) -> Self {
         let filled = |value: Option<String>| value.filter(|v| !v.trim().is_empty());
         Self {

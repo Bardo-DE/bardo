@@ -265,9 +265,10 @@ fn spoken(text: &str) -> UserTurn {
 #[tokio::test]
 async fn the_persons_words_are_recorded_then_taken_to_the_daemon_and_the_turn_is_ended() {
     let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
-    let mut helpers = BusHelpers::connect_recording(Daemon::new(), WrittenDown(seen.clone()))
-        .await
-        .expect("connected");
+    let mut helpers =
+        BusHelpers::connect_recording(Daemon::new(), WrittenDown(std::sync::Arc::clone(&seen)))
+            .await
+            .expect("connected");
     let talk = SessionId::parse("s-61").expect("session");
     let words = helpers.say(&talk, spoken("hello")).await.expect("said");
     assert_eq!(words, "s-61 heard turn 7: hello");

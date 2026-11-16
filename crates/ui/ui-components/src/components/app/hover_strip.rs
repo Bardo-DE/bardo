@@ -1,4 +1,4 @@
-//! HoverStrip: a pill of icon buttons that appears on a hovered row, each previewing its
+//! `HoverStrip`: a pill of icon buttons that appears on a hovered row, each previewing its
 //! result through a Fly tooltip (design/04-COMPONENTS.md section 17).
 
 use crate::focus::click::kept_click;

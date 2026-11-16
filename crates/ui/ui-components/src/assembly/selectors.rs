@@ -37,11 +37,13 @@ pub struct ComponentSelectors {
 
 impl ComponentSelectors {
     /// The root as a selector: `.ds-chip`.
+    #[must_use]
     pub fn root_selector(&self) -> String {
         format!(".{}", self.root)
     }
 
     /// Each public part as a selector: `.ds-chip-remove`.
+    #[must_use]
     pub fn part_selectors(&self) -> Vec<String> {
         self.parts
             .iter()
@@ -78,11 +80,13 @@ pub struct PartRename {
 
 impl PartRename {
     /// The old class, without its dot: `ds-chip-close`.
+    #[must_use]
     pub fn old_class(&self) -> String {
         format!("{}-{}", self.root, self.renamed_from)
     }
 
     /// The new class, without its dot: `ds-chip-remove`.
+    #[must_use]
     pub fn new_class(&self) -> String {
         format!("{}-{}", self.root, self.part)
     }
@@ -116,6 +120,7 @@ impl AppSelectors {
 
     /// The roots that do not start with `<app>-`: they are not published, and a test in the app
     /// asserts this is empty.
+    #[must_use]
     pub fn misnamed_roots(&self) -> Vec<&'static str> {
         self.components
             .iter()
@@ -395,6 +400,7 @@ pub fn classes() -> Vec<String> {
 }
 
 /// Every attribute a user stylesheet may select on: the surface attribute and each axis.
+#[must_use]
 pub fn attributes() -> Vec<String> {
     std::iter::once(SURFACE_ATTRIBUTE.to_string())
         .chain(AXES.iter().map(|axis| axis.attribute.to_string()))
@@ -402,6 +408,7 @@ pub fn attributes() -> Vec<String> {
 }
 
 /// The page `docs/selectors.md` holds: the table, as markdown.
+#[must_use]
 pub fn markdown() -> String {
     let mut page = String::from(
         "# Public selectors\n\n\

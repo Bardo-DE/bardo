@@ -77,6 +77,7 @@ pub fn use_scroller() -> ScrollerRef {
 
 impl ScrollerRef {
     /// The scroll state: where the content is, what shows, how long it is.
+    #[must_use]
     pub fn scroll(&self) -> ReadSignal<Scroll> {
         self.scroll.into()
     }

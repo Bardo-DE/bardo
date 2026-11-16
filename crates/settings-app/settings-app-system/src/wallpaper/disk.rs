@@ -18,6 +18,7 @@ pub struct OnDisk {
 
 impl OnDisk {
     /// The pictures in `dirs`, made small into `thumbs`, added through `chooser`.
+    #[must_use]
     pub fn new(chooser: Arc<OnPortal>, dirs: PictureDirs, thumbs: Thumbnails) -> OnDisk {
         OnDisk {
             chooser,

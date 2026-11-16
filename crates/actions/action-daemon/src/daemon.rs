@@ -326,7 +326,7 @@ pub async fn start(
         ))
     });
     let confirmer =
-        SheetConfirmer::trusting(session.clone(), Arc::new(config.clone()), who.clone())
+        SheetConfirmer::trusting(session.clone(), Arc::new(config.clone()), Arc::clone(&who))
             .gated(acp.clone(), &proc_root);
     let port = CompanionPort::new();
     let restore_port = CheckpointsPort::new();
@@ -383,7 +383,7 @@ pub async fn start(
         let mut state = router
             .state
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         for manifest in builtin_manifests()
             .map_err(|e| DaemonFault::Policy(e.to_string()))?
             .into_iter()
@@ -424,7 +424,7 @@ pub async fn start(
     acp.set_agents(watched.current().value.agents);
     serve_on_gated(
         session,
-        router.clone(),
+        Arc::clone(&router),
         Arc::new(config),
         who,
         &proc_root,
@@ -434,7 +434,7 @@ pub async fn start(
     .await
     .map_err(DaemonFault::Serve)?;
     let mut tasks = Duties::default();
-    let followed = router.clone();
+    let followed = Arc::clone(&router);
     let blind = matches!(watched.state(), WatchState::Blind { .. });
     tasks.spawn("settings", async move {
         while let Some(loaded) = apply_next(&followed, &mut watched).await {
@@ -451,7 +451,7 @@ pub async fn start(
     tasks.spawn(
         "reach",
         follow_reach(
-            router.clone(),
+            Arc::clone(&router),
             session.clone(),
             data_dirs.clone(),
             live.clone(),
@@ -459,15 +459,24 @@ pub async fn start(
     );
     tasks.spawn(
         "signals",
-        pump(router.clone(), session.clone(), data_dirs, signals, live),
+        pump(
+            Arc::clone(&router),
+            session.clone(),
+            data_dirs,
+            signals,
+            live,
+        ),
     );
     tasks.spawn(
         "spaces",
-        SpaceKeeper::new(router.clone(), false, SPACES_RETRY).run(session.clone()),
+        SpaceKeeper::new(Arc::clone(&router), false, SPACES_RETRY).run(session.clone()),
     );
-    tasks.spawn("checkpoints", prune_checkpoints(router.clone()));
-    tasks.spawn("policies", follow_policies(router.clone(), permissions));
-    let queue = router.clone();
+    tasks.spawn("checkpoints", prune_checkpoints(Arc::clone(&router)));
+    tasks.spawn(
+        "policies",
+        follow_policies(Arc::clone(&router), permissions),
+    );
+    let queue = Arc::clone(&router);
     let mut audit = AuditLog::over(memory_client::DbusTransport::new(session.clone()));
     tasks.spawn("audit", async move {
         loop {
@@ -482,7 +491,7 @@ pub async fn start(
         // Subscribed before `start` returns: a logout after that is never missed.
         match watch_logind(system).await {
             Ok(logouts) => {
-                let router = router.clone();
+                let router = Arc::clone(&router);
                 tasks.spawn("logind", logouts.end_terminals(router, login));
             }
             Err(why) => eprintln!("intentd: not watching logind: {why}"),
@@ -514,7 +523,7 @@ fn count_lost<S: Seams>(router: &Router<S>, lost: usize) {
     let mut state = router
         .state
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let more = u32::try_from(lost).unwrap_or(u32::MAX);
     state.kill.audit_lost = base_ids::Count(state.kill.audit_lost.0.saturating_add(more));
 }
@@ -525,7 +534,7 @@ fn placed_by<S: Seams>(router: &Router<S>, record: &AuditRecord) -> Option<Space
     let state = router
         .state
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     match record {
         AuditRecord::Breaker { session, .. } | AuditRecord::BriefConfirmed { session, .. } => {
             state.sessions.get(session).map(|r| r.space.clone())

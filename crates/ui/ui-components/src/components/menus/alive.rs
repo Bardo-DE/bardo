@@ -47,7 +47,7 @@ mod tests {
     #[test]
     fn a_handler_run_through_a_gone_mark_does_nothing() {
         let mark = Rc::new(Cell::new(true));
-        let alive = Alive(mark.clone());
+        let alive = Alive(Rc::clone(&mark));
         assert_eq!(alive.run(|| 1), Some(1));
         mark.set(false);
         assert_eq!(alive.run(|| 1), None);

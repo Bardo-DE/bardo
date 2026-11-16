@@ -1,4 +1,4 @@
-//! CollectionView: Finder's icon view, a grid of tiles that never builds them all. A tile is a
+//! `CollectionView`: Finder's icon view, a grid of tiles that never builds them all. A tile is a
 //! thumbnail over a caption; the caller lists `items` and the view draws the rows near the
 //! viewport, as `VirtualTable` does for its rows: the rows between are two spacers' height inside
 //! a `Scroller`, so a folder of a hundred thousand files costs a window of tiles.

@@ -73,7 +73,7 @@ fn world(files: &FakeFiles, setup: Setup) -> (Wired<Fakes>, Kept) {
     let kept = Kept {
         agent: wired.agent.clone(),
         spawned: wired.spawned.clone(),
-        router: wired.router.clone(),
+        router: Arc::clone(&wired.router),
     };
     (wired, kept)
 }
@@ -89,7 +89,7 @@ fn worlds_for(
     let worlds = Worlds {
         queue,
         helper: helper(id),
-        starts: starts.clone(),
+        starts: Arc::clone(&starts),
     };
     (worlds, kept, starts)
 }
@@ -135,7 +135,7 @@ async fn a_board_job_is_one_turn_and_the_agents_words_come_back_untrusted() {
     ]);
     let (mut helper, kept, _) = agent_over("h-1", vec![setup], &files);
 
-    let first = helper.run("Compare the offers", AT).await;
+    let first = Box::pin(helper.run("Compare the offers", AT)).await;
     let AgentEnd::Done(words) = first else {
         panic!("expected the agent's answer, got {first:?}");
     };
@@ -147,7 +147,7 @@ async fn a_board_job_is_one_turn_and_the_agents_words_come_back_untrusted() {
     );
 
     // The same process takes the next job; none is started for it.
-    let second = helper.run("Which one?", AT).await;
+    let second = Box::pin(helper.run("Which one?", AT)).await;
     assert!(matches!(second, AgentEnd::Done(w) if w.as_untrusted_str() == "The second is best."));
     assert_eq!(kept[0].agent.prompts().len(), 2);
     assert_eq!(kept[0].spawned.plans().len(), 1, "one process per helper");
@@ -158,7 +158,7 @@ async fn a_missing_sign_in_is_the_helper_waiting_with_the_agents_own_names_not_a
     let files = FakeFiles::new();
     let (mut helper, kept, _) = agent_over("h-1", vec![needing_sign_in()], &files);
 
-    let ended = helper.run("Compare the offers", AT).await;
+    let ended = Box::pin(helper.run("Compare the offers", AT)).await;
     let AgentEnd::NeedsSignIn(ways) = ended else {
         panic!("expected a wait for sign-in, got {ended:?}");
     };
@@ -183,7 +183,7 @@ async fn an_agent_way_calls_authenticate_and_then_the_job_proceeds() {
     let files = FakeFiles::new();
     let (mut helper, kept, starts) = agent_over("h-1", vec![needing_sign_in()], &files);
 
-    let step = helper.sign_in(&agent_way("oauth-personal")).await;
+    let step = Box::pin(helper.sign_in(&agent_way("oauth-personal"))).await;
     assert_eq!(step, SignInStep::SignedIn);
     assert_eq!(
         kept[0].agent.authenticated(),
@@ -197,7 +197,7 @@ async fn an_agent_way_calls_authenticate_and_then_the_job_proceeds() {
         Some("oauth-personal".to_owned())
     );
 
-    let ended = helper.run("Compare the offers", AT).await;
+    let ended = Box::pin(helper.run("Compare the offers", AT)).await;
     assert!(matches!(ended, AgentEnd::Done(w) if w.as_untrusted_str() == "Signed in and done."));
     assert_eq!(
         kept[0].spawned.plans().len(),
@@ -210,7 +210,7 @@ async fn an_agent_way_calls_authenticate_and_then_the_job_proceeds() {
 async fn a_way_the_agent_would_not_take_leaves_the_helper_waiting() {
     let files = FakeFiles::new();
     let (mut helper, kept, _) = agent_over("h-1", vec![needing_sign_in()], &files);
-    let step = helper.sign_in(&agent_way("gemini-api-key")).await;
+    let step = Box::pin(helper.sign_in(&agent_way("gemini-api-key"))).await;
     assert_eq!(step, SignInStep::Refused);
     assert_eq!(kept[0].agent.authenticated().len(), 1);
     assert!(!helper.is_open());
@@ -223,11 +223,11 @@ async fn a_terminal_way_is_handed_to_the_shell_and_the_agent_is_asked_again_afte
     let after = turns(vec![vec![say("Back to it."), Act::Stop("end_turn")]]);
     let (mut helper, kept, starts) = agent_over("h-1", vec![needing_sign_in(), after], &files);
 
-    let ended = helper.run("Compare the offers", AT).await;
+    let ended = Box::pin(helper.run("Compare the offers", AT)).await;
     let AgentEnd::NeedsSignIn(ways) = ended else {
         panic!("expected a wait for sign-in, got {ended:?}");
     };
-    let step = helper.sign_in(&ways[2]).await;
+    let step = Box::pin(helper.sign_in(&ways[2])).await;
     let SignInStep::OpenTerminal(login) = step else {
         panic!("a terminal way is the shell's to run: {step:?}");
     };
@@ -237,9 +237,9 @@ async fn a_terminal_way_is_handed_to_the_shell_and_the_agent_is_asked_again_afte
     assert_eq!(starts.lock().expect("starts").len(), 1);
 
     // The shell says the window closed: the agent is asked again, with no way chosen.
-    helper.check().await.unwrap();
+    Box::pin(helper.check()).await.unwrap();
     assert!(starts.lock().expect("starts")[1].sign_in.is_none());
-    let ended = helper.run("Compare the offers", AT).await;
+    let ended = Box::pin(helper.run("Compare the offers", AT)).await;
     assert!(matches!(ended, AgentEnd::Done(w) if w.as_untrusted_str() == "Back to it."));
 }
 
@@ -248,7 +248,10 @@ async fn signing_out_uses_the_agents_own_logout_only_when_it_advertised_it() {
     let files = FakeFiles::new();
     // The fake agent advertises no `logout`: the caller runs the logout command instead.
     let (mut helper, _kept, _) = agent_over("h-1", vec![turns(Vec::new())], &files);
-    assert_eq!(helper.sign_out().await, SignOutStep::UseLogoutCommand);
+    assert_eq!(
+        Box::pin(helper.sign_out()).await,
+        SignOutStep::UseLogoutCommand
+    );
     assert!(!helper.is_open());
 }
 
@@ -264,18 +267,18 @@ async fn a_crash_ends_that_job_failed_and_the_next_one_starts_a_new_process() {
         &files,
     );
 
-    let ended = helper.run("First", AT).await;
+    let ended = Box::pin(helper.run("First", AT)).await;
     assert_eq!(ended, AgentEnd::Failed(Trouble::StoppedAnswering));
     assert!(!helper.is_open());
     assert_eq!(kept[0].spawned.killed(), 1);
 
     // Another helper's agent is untouched by it.
-    let fine = other.run("Second", AT).await;
+    let fine = Box::pin(other.run("Second", AT)).await;
     assert!(matches!(fine, AgentEnd::Done(w) if w.as_untrusted_str() == "Fine."));
     assert_eq!(other_kept[0].spawned.killed(), 0);
 
     // The crashed helper's next job starts a new process, asking to pick its session up again.
-    let again = helper.run("First again", AT).await;
+    let again = Box::pin(helper.run("First again", AT)).await;
     assert!(matches!(again, AgentEnd::Done(w) if w.as_untrusted_str() == "Again."));
     assert_eq!(
         starts.lock().expect("starts")[1].resume.as_deref(),
@@ -308,7 +311,7 @@ async fn a_standing_grant_belongs_to_the_helper_that_made_it() {
         ..Setup::default()
     };
     let (mut agent, kept, _) = agent_over("h-1", vec![setup], &files);
-    let ended = agent.run("Tidy the notes", AT).await;
+    let ended = Box::pin(agent.run("Tidy the notes", AT)).await;
     assert!(matches!(ended, AgentEnd::Done(_)), "{ended:?}");
 
     let held = kept[0].router.standing_grants();
@@ -416,7 +419,7 @@ async fn a_helpers_agent_ends_when_the_helper_is_removed_or_the_host_stops() {
     assert_eq!(ended(&kept_second[0]), 0);
 
     // Stopping the host ends the rest.
-    apps.shutdown().await;
+    Box::pin(apps.shutdown()).await;
     assert!(ended(&kept_second[0]) > 0);
 }
 

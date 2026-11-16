@@ -58,7 +58,7 @@ impl LeakWatch {
         while !window.is_char_boundary(keep) {
             keep += 1;
         }
-        self.tail = window[keep..].to_owned();
+        window[keep..].clone_into(&mut self.tail);
     }
 
     pub(crate) fn found(&self) -> Option<LeakMarker> {

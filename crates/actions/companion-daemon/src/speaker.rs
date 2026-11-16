@@ -131,7 +131,10 @@ impl Speakers {
     /// Who is on the other end of this call: the shell if the table names the sender so, a
     /// terminal if nothing names it and it is the same user in a terminal's scope, else nobody.
     pub async fn identify(&self, header: &Header<'_>) -> fdo::Result<Speaker> {
-        let sender = header.sender().map(|s| s.as_str()).ok_or_else(denied)?;
+        let sender = header
+            .sender()
+            .map(zbus::names::UniqueName::as_str)
+            .ok_or_else(denied)?;
         let named = self.who.caller_of(sender).await;
         let terminal = match named {
             Some(_) => None,

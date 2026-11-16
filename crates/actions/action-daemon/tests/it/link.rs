@@ -229,7 +229,7 @@ async fn a_provider_answers_nobody_but_intentd() {
     let (dir, bus, daemon, _link) = bus_with_intentd().await;
     let app_connection = bus.connect().await;
     let who = answering_intentd(&app_connection, &daemon, dir.path());
-    serve_mail(&app_connection, who.clone()).await;
+    serve_mail(&app_connection, std::sync::Arc::clone(&who)).await;
     // A terminal, another app, a scope that claims intentd's app, anything that is not the process
     // in intentd's unit calling the app's bus name directly gets no way around the gate.
     let stranger = bus.connect().await;
@@ -343,7 +343,7 @@ async fn the_activation_token_rides_beside_the_invocation_to_the_provider() {
     let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
     serve_on_with(
         &connection,
-        Keeps(manifest, seen.clone()),
+        Keeps(manifest, std::sync::Arc::clone(&seen)),
         Blank(app("org.bardo.Keeps")),
         Blank(app("org.bardo.Keeps")),
         who,

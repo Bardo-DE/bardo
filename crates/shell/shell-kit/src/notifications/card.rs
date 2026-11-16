@@ -1,4 +1,4 @@
-//! NotificationCard: one notification, as a banner or a row of the notification center (design/20
+//! `NotificationCard`: one notification, as a banner or a row of the notification center (design/20
 //! section 1.6, design/13 section 13.3.6).
 //!
 //!

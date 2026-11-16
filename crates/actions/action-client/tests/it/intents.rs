@@ -129,7 +129,7 @@ async fn the_request_the_router_sees_is_the_one_asked_for() {
         )),
         Ok(IntentsReply::TurnRecorded(TurnId(7))),
     ]));
-    let intents = Intents::over(Shared(transport.clone()));
+    let intents = Intents::over(Shared(std::sync::Arc::clone(&transport)));
     let session = SessionId::parse("s-4").expect("session");
     intents
         .session_close(session.clone())

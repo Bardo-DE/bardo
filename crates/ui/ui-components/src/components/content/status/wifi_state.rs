@@ -18,6 +18,7 @@ pub enum WifiBars {
 impl WifiBars {
     /// The bars a strength (thousandths) shows: a third or less one, two thirds or less two,
     /// else three.
+    #[must_use]
     pub fn of(strength: Fraction) -> WifiBars {
         match strength.0 {
             0..=333 => WifiBars::One,
@@ -69,6 +70,7 @@ pub enum WifiState {
 
 impl WifiState {
     /// The state in words, for the item's label and menu (R8: never motion alone).
+    #[must_use]
     pub fn words(self) -> &'static str {
         match self {
             WifiState::Off => "Wi-Fi off",

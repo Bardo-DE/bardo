@@ -126,7 +126,7 @@ impl<S: Seams> Shared<S> {
                 used: run.used,
             };
             if let Some(obs) = &run.working {
-                live.view.title = obs.window.title.value.clone();
+                live.view.title.clone_from(&obs.window.title.value);
             }
         }
         let slot = match run.phase {
@@ -252,7 +252,7 @@ pub(crate) async fn drive<S: Seams>(
 ) {
     let id = run.id.clone();
     let cleanup = Cleanup {
-        shared: shared.clone(),
+        shared: Arc::clone(&shared),
         run: id.clone(),
     };
     let hints = computer_use_run::briefing_hints(&run.task, &id, &shared.hints);
@@ -278,7 +278,7 @@ pub(crate) async fn drive<S: Seams>(
             if Exec::<S>::needs_model(&effect) && guard.is_none() {
                 // Waiting for the model is not the model call: no deadline, but the controls and
                 // the budget still reach the run.
-                let lock = shared.model.clone().lock_owned();
+                let lock = Arc::clone(&shared.model).lock_owned();
                 match race(
                     &shared,
                     &id,

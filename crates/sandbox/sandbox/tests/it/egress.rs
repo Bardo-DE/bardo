@@ -435,7 +435,11 @@ fn rig(port: u16) -> Rig {
         "127.0.0.1",
     ];
     let p = policy(&allow, &[], Ports::new(vec![port]).expect("ports"));
-    let gate = Gate::new(p, table.clone(), journal.clone());
+    let gate = Gate::new(
+        p,
+        Arc::<Table>::clone(&table),
+        Arc::<Recorder>::clone(&journal),
+    );
     Rig {
         gate,
         table,

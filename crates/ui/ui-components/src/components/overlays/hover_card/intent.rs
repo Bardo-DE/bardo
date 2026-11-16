@@ -47,6 +47,7 @@ impl std::fmt::Debug for HoverDriver {
 }
 
 /// The enclosing `Ds`'s hover hub, with the anchor book every card places against.
+#[must_use]
 pub fn use_hover_intent() -> HoverDriver {
     HoverDriver {
         hub: use_hover_hub(),
@@ -93,6 +94,7 @@ impl HoverDriver {
     }
 
     /// The hub itself: which card is open, which is leaving, whether hover is warm.
+    #[must_use]
     pub fn hub(&self) -> HoverHub {
         self.hub
     }

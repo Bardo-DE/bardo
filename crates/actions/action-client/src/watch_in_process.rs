@@ -67,7 +67,11 @@ pub(crate) fn watched<S: Seams + 'static>(
 ) -> Watched {
     let progress = Queue::new();
     let (proceed, closed) = (Flag::new(), Flag::new());
-    let (told, waited, withdrawn) = (progress.clone(), proceed.clone(), closed.clone());
+    let (told, waited, withdrawn) = (
+        Arc::clone(&progress),
+        Arc::clone(&proceed),
+        Arc::clone(&closed),
+    );
     let watch = Watch::new(
         move |p| {
             told.push(p);

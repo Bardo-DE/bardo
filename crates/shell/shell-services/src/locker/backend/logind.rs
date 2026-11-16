@@ -64,7 +64,7 @@ pub(crate) async fn connect(bus: &Bus, session_id: Option<&str>) -> Logind {
         Some(path) => SessionProxy::builder(&connection)
             .path(path)
             .ok()
-            .map(|b| b.build()),
+            .map(zbus::proxy::Builder::build),
         None => None,
     };
     let session = match session {

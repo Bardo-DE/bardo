@@ -34,7 +34,7 @@ async fn a_task_reads_mail_sees_only_a_handle_and_leaves_a_trusted_episode() {
         Some(opened.session.clone())
     );
 
-    let path = w.say(&opened.session, "what is the invoice about").await;
+    let path = Box::pin(w.say(&opened.session, "what is the invoice about")).await;
     assert!(path.starts_with("/org/bardo/Companion1/answer/"), "{path}");
 
     // Two planner turns: the call, then the answer.
@@ -94,13 +94,13 @@ async fn the_next_task_is_shown_what_the_last_one_did_without_asking() {
         words("The other one is the digest."),
     ]);
     let first = w.open("work").await;
-    w.say(&first.session, "what is the invoice about").await;
+    Box::pin(w.say(&first.session, "what is the invoice about")).await;
     w.set_time(1_100);
 
     // An hour later, a new task in the same Space: the recent-episodes section carries the
     // skeleton of the first, in the person's own words.
     let second = w.open("work").await;
-    w.say(&second.session, "and the other one?").await;
+    Box::pin(w.say(&second.session, "and the other one?")).await;
     let view = w.infer.user_text(2);
     assert!(view.contains("What recently ended:"), "{view}");
     assert!(view.contains("asked: what is the invoice about"), "{view}");
@@ -213,7 +213,7 @@ async fn the_working_set_is_rebuilt_from_memory_every_turn_within_its_budget() {
         ],
     );
     let opened = w.open("work").await;
-    w.say(&opened.session, "who is Eve").await;
+    Box::pin(w.say(&opened.session, "who is Eve")).await;
 
     let view = w.infer.user_text(0);
     assert!(view.contains("Eve is the landlord"), "{view}");
@@ -274,7 +274,7 @@ async fn the_working_set_is_rebuilt_from_memory_every_turn_within_its_budget() {
 async fn the_planner_prompt_keeps_its_prefix_while_a_task_grows() {
     let mut w = world(vec![read_t1(), words("Done.")]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "read the invoice").await;
+    Box::pin(w.say(&opened.session, "read the invoice")).await;
     let (a, b) = (w.infer.user_text(0), w.infer.user_text(1));
     assert_eq!(w.infer.system_text(0), w.infer.system_text(1));
     // Everything before the steps section is the same bytes; the second turn only adds to the end.
@@ -291,7 +291,7 @@ async fn a_task_the_person_cancels_between_steps_ends_cancelled() {
     let mut w = world(vec![read_t1(), words("never said")]);
     let opened = w.open("work").await;
     w.companion.shared.cancel(&opened.task);
-    w.say(&opened.session, "read it").await;
+    Box::pin(w.say(&opened.session, "read it")).await;
     let answer = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(answer.phase, AnswerPhase::Cancelled);
     assert_eq!(w.infer.asked().len(), 0, "the planner was never asked");
@@ -302,7 +302,7 @@ async fn a_task_the_person_cancels_between_steps_ends_cancelled() {
 async fn a_model_that_fails_ends_the_task_failed_and_never_guesses() {
     let mut w = world(vec![]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "read it").await;
+    Box::pin(w.say(&opened.session, "read it")).await;
     let answer = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(answer.phase, AnswerPhase::Failed);
 }
@@ -311,7 +311,7 @@ async fn a_model_that_fails_ends_the_task_failed_and_never_guesses() {
 async fn a_finished_task_takes_no_follow_up_and_an_unknown_session_is_refused() {
     let mut w = world(vec![words("Done.")]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     let ask = |session: provenance::SessionId| companion_wire::AskWire {
         session,
         turn: UserTurn {
@@ -326,12 +326,13 @@ async fn a_finished_task_takes_no_follow_up_and_an_unknown_session_is_refused() 
         parent_window: WindowKey::parse("w1").expect("window"),
         app: None,
     };
-    let late = w.companion.ask(ask(opened.session.clone())).await;
+    let late = Box::pin(w.companion.ask(ask(opened.session.clone()))).await;
     assert_eq!(late, Err(companion_daemon::ServeFault::Finished));
-    let strange = w
-        .companion
-        .ask(ask(provenance::SessionId::parse("s-404").expect("session")))
-        .await;
+    let strange = Box::pin(
+        w.companion
+            .ask(ask(provenance::SessionId::parse("s-404").expect("session"))),
+    )
+    .await;
     assert_eq!(strange, Err(companion_daemon::ServeFault::UnknownSession));
 }
 
@@ -357,7 +358,7 @@ async fn a_masked_step_still_says_which_handle_came_from_which_call() {
         words("Done."),
     ]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "read both and draft").await;
+    Box::pin(w.say(&opened.session, "read both and draft")).await;
     let last = w.infer.asked().len() - 1;
     let after = w.infer.user_text(last);
     let line = |text: &str| {
@@ -398,12 +399,15 @@ async fn a_model_that_never_answers_ends_the_task_failed_when_its_span_runs_out(
             }
         }
     };
-    tokio::time::timeout(std::time::Duration::from_secs(10), async {
-        tokio::select! {
-            _ = w.say(&opened.session, "hello") => {}
-            () = run_out => {}
-        }
-    })
+    Box::pin(tokio::time::timeout(
+        std::time::Duration::from_secs(10),
+        async {
+            tokio::select! {
+                _ = w.say(&opened.session, "hello") => {}
+                () = run_out => {}
+            }
+        },
+    ))
     .await
     .expect("the span ended the wait");
     let answer = w.companion.shared.answer(&opened.task).expect("answer");
@@ -415,14 +419,18 @@ async fn a_cancel_ends_the_wait_on_the_model_at_once() {
     use crate::support::infer::Say;
     let mut w = world(vec![Say::Hang]);
     let opened = w.open("work").await;
-    let (shared, task) = (w.companion.shared.clone(), opened.task.clone());
+    let (shared, task) = (
+        std::sync::Arc::clone(&w.companion.shared),
+        opened.task.clone(),
+    );
     let cancels = async move {
         tokio::task::yield_now().await;
         shared.cancel(&task);
     };
-    let (_, ()) = tokio::time::timeout(std::time::Duration::from_secs(10), async {
-        tokio::join!(w.say(&opened.session, "hello"), cancels)
-    })
+    let (_, ()) = Box::pin(tokio::time::timeout(
+        std::time::Duration::from_secs(10),
+        async { tokio::join!(w.say(&opened.session, "hello"), cancels) },
+    ))
     .await
     .expect("the cancel ended the wait, not the model's span");
     let answer = w.companion.shared.answer(&opened.task).expect("answer");
@@ -433,7 +441,7 @@ async fn a_cancel_ends_the_wait_on_the_model_at_once() {
 async fn a_cancel_after_the_answer_is_over_does_not_stop_the_next_question() {
     let mut w = world(vec![words("Done.")]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     w.companion.shared.cancel(&opened.task);
     assert!(!w.companion.shared.take_cancel(&opened.task));
 }

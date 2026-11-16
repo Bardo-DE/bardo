@@ -74,6 +74,7 @@ impl PointerCapture {
 
     /// Ask the host to follow the pointer for this element until the primary button comes up:
     /// call it from the element's `onpointerdown`.
+    #[must_use]
     pub fn begin(&self) -> PointerHold {
         let Some(element) = self.element.peek().clone() else {
             return PointerHold::Local;

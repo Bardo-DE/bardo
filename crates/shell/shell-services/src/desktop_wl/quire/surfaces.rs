@@ -29,6 +29,7 @@ impl ShellSurfaces {
     }
 
     /// The dock's surface on `output`, else any dock's.
+    #[must_use]
     pub fn dock_for(&self, output: Option<&str>) -> Option<SurfaceKey> {
         let docks = || self.rows.iter().filter(|row| row.role == ShellRole::Dock);
         docks()

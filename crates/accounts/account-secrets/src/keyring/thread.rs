@@ -72,7 +72,7 @@ pub(super) async fn off_thread<T: Send + 'static>(
     work: impl FnOnce() -> T + Send + 'static,
 ) -> Result<T, SecretsError> {
     let shared = Arc::new(Shared(Mutex::new(Slot::Waiting(None))));
-    let sender = Sender(shared.clone());
+    let sender = Sender(Arc::clone(&shared));
     std::thread::Builder::new()
         .name("porter-keyring".to_owned())
         .spawn(move || {

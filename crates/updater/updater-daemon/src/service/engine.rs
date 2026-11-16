@@ -51,6 +51,7 @@ fn lock<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
 
 impl Engine {
     /// An engine whose status starts from what is installed and when the last check was.
+    #[must_use]
     pub fn new(ctx: Context) -> Arc<Self> {
         let current = ctx.layout.installed().ok().and_then(|i| i.current);
         let last = ctx.store.load().last_check;
@@ -249,7 +250,7 @@ impl Engine {
         self.change(|s| {
             s.phase = Phase::Available;
             s.available = Some(release.version.clone());
-            s.notes = release.notes.clone();
+            s.notes.clone_from(&release.notes);
             s.size = release.bundle.size;
             s.last_checked = checked;
         })

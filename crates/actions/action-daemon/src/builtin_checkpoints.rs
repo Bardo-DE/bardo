@@ -39,6 +39,7 @@ impl fmt::Debug for CheckpointsPort {
 
 impl CheckpointsPort {
     /// A port to no router yet.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -46,10 +47,10 @@ impl CheckpointsPort {
     /// Points the port at `router`, held weakly. Only the first attachment counts.
     pub fn attach<S: Seams + 'static>(&self, router: &Arc<Router<S>>) {
         let for_perform: Weak<Router<S>> = Arc::downgrade(router);
-        let for_dry_run = for_perform.clone();
+        let for_dry_run = std::sync::Weak::<action_router::Router<S>>::clone(&for_perform);
         let _ = self.0.set(Hooks {
             perform: Box::new(move |inv| {
-                let router = for_perform.clone();
+                let router = std::sync::Weak::<action_router::Router<S>>::clone(&for_perform);
                 Box::pin(async move {
                     match router.upgrade() {
                         Some(router) => router.checkpoints_perform(inv).await,
@@ -58,7 +59,7 @@ impl CheckpointsPort {
                 })
             }),
             dry_run: Box::new(move |inv| {
-                let router = for_dry_run.clone();
+                let router = std::sync::Weak::<action_router::Router<S>>::clone(&for_dry_run);
                 Box::pin(async move {
                     match router.upgrade() {
                         Some(router) => router.checkpoints_dry_run(inv).await,
@@ -97,6 +98,7 @@ pub struct CheckpointsProvider {
 
 impl CheckpointsProvider {
     /// The provider for its shipped manifest, acting through `port`.
+    #[must_use]
     pub fn new(manifest: ValidManifest, port: CheckpointsPort) -> Self {
         Self { manifest, port }
     }

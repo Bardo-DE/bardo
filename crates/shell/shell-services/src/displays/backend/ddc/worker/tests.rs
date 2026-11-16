@@ -14,7 +14,10 @@ use crate::env::ddc::{FakeBus, FakeState};
 fn bus() -> FakeBus {
     let bus = FakeBus::default();
     {
-        let mut state = bus.0.lock().unwrap_or_else(|p| p.into_inner());
+        let mut state = bus
+            .0
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         *state = FakeState {
             endpoints: vec![Endpoint {
                 id: DdcId(5),
@@ -143,7 +146,10 @@ fn a_burst_of_writes_reaches_the_bus_once_with_the_latest_value() {
 fn a_reread_follows_the_monitor_but_never_undoes_a_waiting_write() {
     let fake = bus();
     let set_on_the_monitor = |value| {
-        let mut state = fake.0.lock().unwrap_or_else(|p| p.into_inner());
+        let mut state = fake
+            .0
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(level) = state.values.get_mut(&(DdcId(5), Feature::Brightness)) {
             level.value = value;
         }

@@ -1,4 +1,4 @@
-//! SearchField: a search `TextField` that owns its suggestions panel (`NSSearchField`'s
+//! `SearchField`: a search `TextField` that owns its suggestions panel (`NSSearchField`'s
 //! suggestions menu, Spotlight's results). The keyboard never leaves the field: the panel is a
 //! `Menu` whose cursor the field drives, hung from the field so a press on the field is inside
 //! it, or, as a card, drawn inline under the field in one surface with it. `step` holds what each
@@ -156,7 +156,7 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
     };
     let open = now.is_open(live.len(), manner.panel);
     let moves = Moves {
-        picks: picks.clone(),
+        picks: Rc::clone(&picks),
         from: lit,
         state,
         told: on_highlight,
@@ -170,7 +170,7 @@ pub fn SearchField<T: Clone + PartialEq + 'static>(
     let enter_live = live.clone();
     let typed = value.clone();
     let enter_value = value.clone();
-    let enter_picks = picks.clone();
+    let enter_picks = Rc::clone(&picks);
     let (type_moves, key_moves, enter_moves, focus_moves) =
         (moves.clone(), moves.clone(), moves.clone(), moves.clone());
     let anchor = field().map(Anchor::Mounted);

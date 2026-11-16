@@ -205,7 +205,7 @@ fn apply_session(out: &mut Rebuilt, record: &SessionRecord) {
         } => {
             let t = entry(&mut out.tasks, agent, space);
             t.task = Some(task.clone());
-            t.parent = parent.clone();
+            t.parent.clone_from(parent);
             t.state = RosterState::Working;
             if *agent == AgentRef::Companion {
                 out.front = front_step(out.front.take(), &FrontEvent::Asked(task.clone()));

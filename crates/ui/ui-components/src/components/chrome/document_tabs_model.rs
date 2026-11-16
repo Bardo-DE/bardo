@@ -1,4 +1,4 @@
-//! DocumentTabs' rules, pure so they are tested without a pointer or a key: when a strip is
+//! `DocumentTabs`' rules, pure so they are tested without a pointer or a key: when a strip is
 //! worth showing, what a standard action asks of it, where an arrow lands and what a drop does.
 
 use crate::stack::roving::{Edge, Rove, moved};
@@ -9,6 +9,7 @@ use keymap::{Action, StandardAction};
 pub const SHOWN_FROM: usize = 2;
 
 /// Whether an app with `count` tabs draws the strip.
+#[must_use]
 pub fn strip_shown(count: usize) -> bool {
     count >= SHOWN_FROM
 }
@@ -24,6 +25,7 @@ pub enum TabCommand {
 
 /// The command `action` is for the strip, if any. chordkit has no next or previous tab action,
 /// so the strip moves between its tabs with the arrows, Home and End only.
+#[must_use]
 pub fn command_of(action: &Action) -> Option<TabCommand> {
     match action {
         Action::Standard(StandardAction::New) => Some(TabCommand::New),
@@ -34,6 +36,7 @@ pub fn command_of(action: &Action) -> Option<TabCommand> {
 
 /// The tab `rove` selects from `selected` among `count`: an arrow steps and stops at the ends,
 /// Home and End jump to them.
+#[must_use]
 pub fn rove_to(rove: Rove, selected: usize, count: usize) -> usize {
     match rove {
         Rove::Step(step) => moved(false, selected, count, step),
@@ -44,6 +47,7 @@ pub fn rove_to(rove: Rove, selected: usize, count: usize) -> usize {
 
 /// The reorder a drop of tab `from` on tab `to` asks for: `from` takes `to`'s place and the
 /// tabs between shift toward the gap. Dropping a tab on itself asks for nothing.
+#[must_use]
 pub fn reorder(from: usize, to: usize) -> Option<(usize, usize)> {
     (from != to).then_some((from, to))
 }

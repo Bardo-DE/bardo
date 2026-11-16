@@ -1,4 +1,4 @@
-//! BarPointer: the raw pointer events a bar item hands on to its owner (design/30 section 2.10).
+//! `BarPointer`: the raw pointer events a bar item hands on to its owner (design/30 section 2.10).
 //! A menu bar's session opens a menu on the press, switches on the pointer's entry and
 //! completes on the release, and a workspace strip reorders by a press on one pill released over
 //! another. A click is not enough for either, so the item passes these three events on itself,

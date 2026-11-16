@@ -67,7 +67,7 @@ pub fn marks_of<S: Seams>(router: &Router<S>) -> Marks {
     let st = router
         .state
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let rows = st.journal.entries();
     let waiting = st
         .sessions
@@ -111,6 +111,7 @@ pub fn marks_of<S: Seams>(router: &Router<S>) -> Marks {
 
 /// What changed between two looks, in a fixed order: manifests, the journal, the breaker, modes,
 /// then arrivals. A thing that was there before and is there still says nothing.
+#[must_use]
 pub fn changes(before: &Marks, after: &Marks) -> Vec<Changed> {
     let apps: BTreeSet<&AppName> = before
         .manifests
@@ -229,7 +230,7 @@ pub fn rescan_with<S: Seams>(router: &Router<S>, data_dirs: &[PathBuf], live: &L
     let mut st = router
         .state
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let gone: Vec<AppName> = st
         .registry
         .all()

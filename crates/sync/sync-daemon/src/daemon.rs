@@ -8,7 +8,7 @@
 //! [`Daemon::build_over`].
 //!
 //! No other function in the library reads the environment. The network comes from the caller as
-//! a `watch::Receiver<Network>`: `NetworkManager` is not read yet, so the binary hands in a
+//! a `watch::Receiver<Network>`: NetworkManager is not read yet, so the binary hands in a
 //! receiver that says "unmetered and up" for good.
 
 use crate::datasets::photos::Millis;
@@ -123,7 +123,7 @@ impl Config {
         if let Some(line) = system.notice("syncd") {
             eprintln!("{line}");
         }
-        paths.callers_system = system.path().to_owned();
+        system.path().clone_into(&mut paths.callers_system);
         let proc = choose_proc_root(HONOURS_PROC_ROOT, PROC_ROOT_VAR, |name| {
             std::env::var_os(name)
         })

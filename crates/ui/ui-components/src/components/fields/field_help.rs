@@ -1,4 +1,4 @@
-//! A FieldRow's help behind a small ⓘ button (design/04-COMPONENTS.md, "FieldRow help"): where the
+//! A `FieldRow`'s help behind a small ⓘ button (design/04-COMPONENTS.md, "`FieldRow` help"): where the
 //! help sits, the id the row's `aria-describedby` points at, and the button with its popover.
 //!
 //! The button is a borderless `Bezel::Toolbar` icon button named "About <label>" with the tip

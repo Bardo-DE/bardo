@@ -488,7 +488,7 @@ async fn a_second_voiced_on_the_same_bus_is_refused() {
         transport: ScriptedInfer::new(vec![]),
         warm: speech_daemon::FixedWarm(Readiness::Ready),
         usage: speech_daemon::FixedUse(VoiceUse::On),
-        callers: world.who.clone(),
+        callers: std::sync::Arc::clone(&world.who),
     };
     let second = speech_daemon::start(world.bus.connect().await, config(), seams).await;
     assert!(second.is_err(), "the name is taken");
@@ -558,7 +558,7 @@ async fn a_request_inferd_cannot_serve_ends_the_utterance_refused() {
 async fn dictation_runs_in_process_over_the_device_seam_with_no_bus() {
     let (device, hand) = ScriptedDevice::with_a_microphone();
     let infer = ScriptedInfer::new(vec![transcript("hel", "hello", "hello world")]);
-    let seen = infer.seen.clone();
+    let seen = std::sync::Arc::clone(&infer.seen);
     let task = tokio::spawn(async move { speech_daemon::dictate(&device, &infer, None).await });
     while hand.feed(loud()) == 0 {
         tokio::task::yield_now().await;

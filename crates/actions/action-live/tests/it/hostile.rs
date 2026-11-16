@@ -73,7 +73,7 @@ async fn planner_case_ends_safely_on_its_cassette(stem: &str) {
         .find(|case| case.id == id)
         .unwrap_or_else(|| panic!("no planner case {id}"));
     let model = ModelSource::Scripted(case.cassette.clone());
-    let report = run_planner_case(
+    let report = Box::pin(run_planner_case(
         &binaries(),
         &case,
         &model,
@@ -81,7 +81,7 @@ async fn planner_case_ends_safely_on_its_cassette(stem: &str) {
         None,
         // Four patiences (80 s) in all, under nextest's 2 minute limit: a stuck run fails here with what it saw.
         Duration::from_secs(20),
-    )
+    ))
     .await;
     assert!(
         report.failures.is_empty(),

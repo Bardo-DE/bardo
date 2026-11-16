@@ -1,4 +1,4 @@
-//! UserPicturePicker: the letter and the 42 animated emoji as a grid of discs, the current
+//! `UserPicturePicker`: the letter and the 42 animated emoji as a grid of discs, the current
 //! choice marked, for Settings' Users page and first run (design/25-EMOJI.md section 7).
 //!
 //! Not an [`crate::EmojiGrid`]: that grid draws text glyphs in the colour font and yields a

@@ -90,19 +90,19 @@ impl SystemHue {
     #[must_use]
     pub const fn shades(self) -> HueShades {
         match self {
-            SystemHue::Red => shades(0xFF383C, 0xE9152D, 0xFF4245, 0xFF6165),
-            SystemHue::Orange => shades(0xFF8D28, 0xC55300, 0xFF9230, 0xFFA056),
-            SystemHue::Yellow => shades(0xFFCC00, 0xA16A00, 0xFFD600, 0xFEDF43),
-            SystemHue::Green => shades(0x34C759, 0x008932, 0x30D158, 0x4AD968),
-            SystemHue::Mint => shades(0x00C8B3, 0x008575, 0x00DAC3, 0x54DFCB),
-            SystemHue::Teal => shades(0x00C3D0, 0x008198, 0x00D2E0, 0x3BDDEC),
-            SystemHue::Cyan => shades(0x00C0E8, 0x007EAE, 0x3CD3FE, 0x6DD9FF),
-            SystemHue::Blue => shades(0x0088FF, 0x1E6EF4, 0x0091FF, 0x5CB8FF),
-            SystemHue::Indigo => shades(0x6155F5, 0x564ADE, 0x6D7CFF, 0xA7AAFF),
-            SystemHue::Purple => shades(0xCB30E0, 0xB02FC2, 0xDB34F2, 0xEA8DFF),
-            SystemHue::Pink => shades(0xFF2D55, 0xE7124D, 0xFF375F, 0xFF8AC4),
-            SystemHue::Brown => shades(0xAC7F5E, 0x956D51, 0xB78A66, 0xDBA679),
-            SystemHue::Gray => shades(0x8E8E93, 0x6C6C70, 0x98989D, 0xAEAEB2),
+            SystemHue::Red => shades(0x00FF_383C, 0x00E9_152D, 0x00FF_4245, 0x00FF_6165),
+            SystemHue::Orange => shades(0x00FF_8D28, 0x00C5_5300, 0x00FF_9230, 0x00FF_A056),
+            SystemHue::Yellow => shades(0x00FF_CC00, 0x00A1_6A00, 0x00FF_D600, 0x00FE_DF43),
+            SystemHue::Green => shades(0x0034_C759, 0x0000_8932, 0x0030_D158, 0x004A_D968),
+            SystemHue::Mint => shades(0x0000_C8B3, 0x0000_8575, 0x0000_DAC3, 0x0054_DFCB),
+            SystemHue::Teal => shades(0x0000_C3D0, 0x0000_8198, 0x0000_D2E0, 0x003B_DDEC),
+            SystemHue::Cyan => shades(0x0000_C0E8, 0x0000_7EAE, 0x003C_D3FE, 0x006D_D9FF),
+            SystemHue::Blue => shades(0x0000_88FF, 0x001E_6EF4, 0x0000_91FF, 0x005C_B8FF),
+            SystemHue::Indigo => shades(0x0061_55F5, 0x0056_4ADE, 0x006D_7CFF, 0x00A7_AAFF),
+            SystemHue::Purple => shades(0x00CB_30E0, 0x00B0_2FC2, 0x00DB_34F2, 0x00EA_8DFF),
+            SystemHue::Pink => shades(0x00FF_2D55, 0x00E7_124D, 0x00FF_375F, 0x00FF_8AC4),
+            SystemHue::Brown => shades(0x00AC_7F5E, 0x0095_6D51, 0x00B7_8A66, 0x00DB_A679),
+            SystemHue::Gray => shades(0x008E_8E93, 0x006C_6C70, 0x0098_989D, 0x00AE_AEB2),
         }
     }
 

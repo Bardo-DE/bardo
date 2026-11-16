@@ -17,6 +17,7 @@ use zbus::proxy::CacheProperties;
 use zbus::zvariant::OwnedObjectPath;
 
 /// Nothing of the screen is kept with a prompt.
+#[must_use]
 pub fn keep_nothing() -> ContextKeep {
     ContextKeep {
         query: Keep::Dropped,
@@ -56,6 +57,7 @@ impl Launcher {
 
     /// The same launcher, asking from the window of `app`: the companion reads where the person
     /// is there (the thread they have open) when it resolves "this".
+    #[must_use]
     pub fn summoned_from(self, app: AppName) -> Launcher {
         Launcher {
             summoned: Some(app),
@@ -65,6 +67,7 @@ impl Launcher {
 
     /// The same launcher, waiting this long for each change of an answer instead of
     /// [`GIVE_UP`]: a real model on a cold engine is slower than a cassette.
+    #[must_use]
     pub fn patient(self, patience: Duration) -> Launcher {
         Launcher { patience, ..self }
     }
@@ -94,7 +97,7 @@ impl Launcher {
     /// The person says `text`: intentd records the turn, companiond is asked. Returns the answer
     /// being watched, subscribed before the loop can say anything.
     pub async fn say(&self, opened: &SessionOpened, text: &str) -> Answer {
-        let id = within(
+        let id = Box::pin(within(
             "Session.Turn to answer",
             self.intents.session_turn(
                 opened.session.clone(),
@@ -106,7 +109,7 @@ impl Launcher {
                     mode: None,
                 },
             ),
-        )
+        ))
         .await
         .expect("Session.Turn");
         let ask = AskWire {

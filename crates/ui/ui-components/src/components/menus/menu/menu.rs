@@ -240,7 +240,7 @@ pub fn Menu<T: Clone + PartialEq + 'static>(
             onmounted: move |event| {
                 opened.run(|| {
                     let element = event.data();
-                    tracker.panel_mounted(MountedRef(element.clone()));
+                    tracker.panel_mounted(MountedRef(std::rc::Rc::clone(&element)));
                     probe.on_mounted(event.clone());
                     mounted.mounted(event);
                     // A field beside the menu that drives its cursor keeps the keyboard, and an

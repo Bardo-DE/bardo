@@ -1,4 +1,4 @@
-//! LockScreen: where the lock screen's parts stand (design/20-SURFACES.md section 1.9;
+//! `LockScreen`: where the lock screen's parts stand (design/20-SURFACES.md section 1.9;
 //! design/04-COMPONENTS.md section 42). The wallpaper fills the surface under a light veil, the
 //! clock stands near the top and the prompt near the bottom, centred across: the reference lock
 //! screen's layout, so a shell draws it without layout rules of its own.

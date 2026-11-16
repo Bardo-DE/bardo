@@ -209,7 +209,7 @@ pub async fn hand_over_session(
         let peers = desktop_peers(&connection);
         hand_over(&connection, &peers, token, page).await
     };
-    within(Deadline::READ, BUS_PEER, handed)
+    Box::pin(within(Deadline::READ, BUS_PEER, handed))
         .await
         .map_err(|silent| HandOverFault::Bus(zbus::Error::Failure(silent.to_string())))?
 }

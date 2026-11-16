@@ -49,6 +49,7 @@ pub enum AvatarShape {
 /// section 13): the same as [`PersonHue::of`], so a consumer never keeps its own hash or hex
 /// table. Paint it with `AvatarTone::Person`, or [`PersonHue::colour`] where a component takes
 /// a [`Colour`]; the eight stored-colour swatches are [`ui_style::tokens::person::PersonSwatch`].
+#[must_use]
 pub fn person_hue(name: &str) -> PersonHue {
     PersonHue::of(name)
 }
@@ -60,6 +61,7 @@ pub struct PersonHue(pub u16);
 
 impl PersonHue {
     /// The hue for `address`.
+    #[must_use]
     pub fn of(address: &str) -> Self {
         // UTF-16 code units, as the prototype's `charCodeAt` walks them (`S:1879`).
         let hue = address
@@ -69,11 +71,13 @@ impl PersonHue {
     }
 
     /// The disc colour: `hsl(h, 38%, 42%)` as a hex, so no colour function reaches CSS (O-7).
+    #[must_use]
     pub fn hex(self) -> Hex {
         hsl_to_hex(f64::from(self.0 % 360), 0.38, 0.42)
     }
 
     /// The disc colour as a [`Colour`], for a component that takes one.
+    #[must_use]
     pub fn colour(self) -> Colour {
         Colour::Solid(self.hex())
     }
@@ -164,6 +168,7 @@ impl AvatarTone {
 /// `colour` at the strength `muting` gives: an account that is not the one in view keeps its
 /// hue at .55 of its chroma, so it is still that account but states nothing about the list (S's
 /// `saturate(.55)`, as an unpressed `AccountTile` shows it).
+#[must_use]
 pub fn muting_colour(muting: bool, colour: Colour) -> Colour {
     if muting { muted(colour) } else { colour }
 }

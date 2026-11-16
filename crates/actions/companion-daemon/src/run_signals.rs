@@ -53,7 +53,10 @@ pub(crate) async fn watch<P, I, K>(
         return;
     };
     while let Some(Ok(message)) = signals.next().await {
-        let sender = message.header().sender().map(|s| s.to_string());
+        let sender = message
+            .header()
+            .sender()
+            .map(std::string::ToString::to_string);
         let owner = dbus
             .get_name_owner(name.clone())
             .await

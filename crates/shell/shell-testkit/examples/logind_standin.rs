@@ -151,7 +151,7 @@ async fn serve(address: String) {
                     "handle-power-key"
                 };
                 if let Ok(mut blocked) = manager.blocked.lock() {
-                    *blocked = text.to_owned();
+                    text.clone_into(&mut blocked);
                 }
                 Ok(())
             }

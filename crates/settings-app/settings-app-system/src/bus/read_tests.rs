@@ -76,5 +76,5 @@ async fn a_module_that_keeps_moving_reports_the_error() {
         only_text,
     )
     .await;
-    assert!(read.is_err());
+    read.unwrap_err();
 }

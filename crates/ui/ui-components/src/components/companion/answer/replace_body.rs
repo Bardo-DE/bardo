@@ -24,6 +24,7 @@ fn phase_words(phase: ReplacePhase) -> &'static str {
 }
 
 /// The buttons the phase offers: Apply waits for the person; Undo is there while it can be.
+#[must_use]
 pub fn replace_actions(phase: ReplacePhase) -> Vec<CardAction> {
     match phase {
         ReplacePhase::Proposed => vec![

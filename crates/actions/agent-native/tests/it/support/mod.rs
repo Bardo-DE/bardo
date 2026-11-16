@@ -155,7 +155,7 @@ pub fn companion(router: &Arc<Router<FakeSeams>>, infer: &ScriptedInfer) -> Comp
         roles: BTreeSet::from([CallerRole::Editor, CallerRole::Companion]),
     };
     Companion::new(
-        Intents::over(InProcess::new(router.clone(), caller)),
+        Intents::over(InProcess::new(Arc::clone(router), caller)),
         PlannerModel::new(infer.clone()),
         AgentConfig::default(),
         FixedClock::at(UnixSeconds(1_000)),

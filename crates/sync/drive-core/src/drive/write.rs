@@ -1260,7 +1260,7 @@ impl Drive {
         }
         let place = |edit: &mut Edit, _: &mut Index| {
             edit.parent = folder.clone();
-            edit.name = wanted.clone();
+            edit.name.clone_from(&wanted);
             edit.refused = None;
         };
         match &id {

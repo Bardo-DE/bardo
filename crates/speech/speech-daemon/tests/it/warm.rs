@@ -16,7 +16,7 @@ async fn warm_with(answer: Option<Result<Readiness, TransportError>>) -> (Readin
         Some(answer) => ScriptedInfer::new(vec![]).prepared(answer),
         None => ScriptedInfer::new(vec![]),
     };
-    let seen = infer.seen.clone();
+    let seen = std::sync::Arc::clone(&infer.seen);
     let readiness = TransportWarm::over(infer, Tier::Balanced).warm().await;
     (readiness, seen.opens())
 }

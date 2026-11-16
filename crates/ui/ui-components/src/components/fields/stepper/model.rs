@@ -23,6 +23,7 @@ pub struct StepRange {
 impl StepRange {
     /// The range from `min` to `max` in steps of `step`. A `max` under `min` is `min`, and a
     /// step under 1 is 1, so every range has a value and a way to move.
+    #[must_use]
     pub fn new(min: i32, max: i32, step: i32) -> Self {
         StepRange {
             min,
@@ -32,21 +33,25 @@ impl StepRange {
     }
 
     /// The lowest value.
+    #[must_use]
     pub fn min(self) -> i32 {
         self.min
     }
 
     /// The highest value.
+    #[must_use]
     pub fn max(self) -> i32 {
         self.max
     }
 
     /// `value` brought into the range.
+    #[must_use]
     pub fn clamp(self, value: i32) -> i32 {
         value.clamp(self.min, self.max)
     }
 
     /// The value one step from `value` toward `direction`, held at the ends.
+    #[must_use]
     pub fn step_from(self, value: i32, direction: StepDirection) -> i32 {
         let delta = match direction {
             StepDirection::Up => self.step,
@@ -56,12 +61,14 @@ impl StepRange {
     }
 
     /// Whether `value` can still move toward `direction`.
+    #[must_use]
     pub fn can_step(self, value: i32, direction: StepDirection) -> bool {
         self.step_from(value, direction) != self.clamp(value)
     }
 
     /// The value the text `typed` names, brought into the range; nothing for text that is not a
     /// whole number.
+    #[must_use]
     pub fn parse(self, typed: &str) -> Option<i32> {
         typed
             .trim()

@@ -140,6 +140,7 @@ impl Lender {
 
     /// The person's own session, with porter's file at `<prefix>/share/porter/` and the setting
     /// kept under `config_home`.
+    #[must_use]
     pub fn under_prefix(prefix: &Path, config_home: &ConfigHome) -> Lender {
         Lender::session(LendingConfig::under_prefix(
             prefix,
@@ -148,6 +149,7 @@ impl Lender {
     }
 
     /// The person's own session over `config`.
+    #[must_use]
     pub fn session(config: LendingConfig) -> Lender {
         Lender(Arc::new(Session(config)))
     }
@@ -158,6 +160,7 @@ impl Lender {
     }
 
     /// What is set up now.
+    #[must_use]
     pub fn existing(&self) -> Existing {
         self.0.existing()
     }

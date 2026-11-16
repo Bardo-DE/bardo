@@ -27,6 +27,7 @@ pub struct AcceptMail {
 
 impl AcceptMail {
     /// A mail app with this manifest working in `space`, and the log the test reads.
+    #[must_use]
     pub fn new(manifest: ValidManifest, space: SpaceId) -> (Self, AppLog) {
         let log = AppLog::default();
         let app = manifest.manifest().app.clone();
@@ -43,6 +44,7 @@ impl AcceptMail {
     }
 
     /// The same app with `focus` open in its window.
+    #[must_use]
     pub fn focused(self, focus: Focus) -> Self {
         Self { focus, ..self }
     }

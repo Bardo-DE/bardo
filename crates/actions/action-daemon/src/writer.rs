@@ -22,6 +22,7 @@ impl<T: Transport> InferdWriter<T> {
 
 impl InferdWriter<InferLink> {
     /// Asks inferd over the session bus.
+    #[must_use]
     pub fn on_bus(connection: &action_dbus::BusConnection, tap: action_dbus::InferWatch) -> Self {
         Self::new(crate::infer::inferd_transport(connection, tap))
     }

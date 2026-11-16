@@ -31,6 +31,7 @@ pub static KIT: Kit = Kit {
 
 /// Every kit the design system ships: style, motion and the components. A crate that adds its own
 /// (`ui_shell::kits()`) lists these and its own.
+#[must_use]
 pub fn kits() -> Kits {
     Kits::of(&[&STYLE_KIT, &ui_motion::kit::KIT, &KIT])
 }

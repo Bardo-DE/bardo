@@ -60,7 +60,7 @@ impl CloudDrives {
                 let mut relist = || {
                     let now = clouds.drives().unwrap_or_default();
                     if now != told {
-                        told = now.clone();
+                        told.clone_from(&now);
                         tell(Heard::All(Input::Clouds(now)));
                     }
                 };

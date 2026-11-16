@@ -86,6 +86,7 @@ impl<T> Choice<T> {
 
 impl Choice<Accent> {
     /// `accent`, named by its label and drawn as its own colour circle.
+    #[must_use]
     pub fn accent(accent: Accent) -> Self {
         Choice::new(accent, accent.label()).with_swatch(swatch_var(accent))
     }

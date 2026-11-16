@@ -95,7 +95,7 @@ impl Service {
     pub fn begin(self: &Arc<Self>, ask: HandOver) -> String {
         let service = Arc::clone(self);
         self.turns
-            .begin(async move { service.hand_over(ask).await })
+            .begin(async move { Box::pin(service.hand_over(ask)).await })
     }
 
     /// The reply of the turn `id` once it has ended, waiting up to a minute for it: `None` while
@@ -112,7 +112,8 @@ impl Service {
     /// the reply.
     pub fn apps_begin(self: &Arc<Self>, ask: AppsAsk) -> String {
         let service = Arc::clone(self);
-        self.apps.begin(async move { service.apps(ask).await })
+        self.apps
+            .begin(async move { Box::pin(service.apps(ask)).await })
     }
 
     /// The reply of the call `id` once it has ended: `None` while it is still working.
@@ -125,7 +126,7 @@ impl Service {
     async fn apps(&self, ask: AppsAsk) -> AppsReply {
         self.touch();
         let reply = match self.helper_host().await {
-            Ok(host) => host.ask(ask).await,
+            Ok(host) => Box::pin(host.ask(ask)).await,
             Err(fault) => HelperHost::unavailable(&ask, fault),
         };
         self.touch();
@@ -166,7 +167,7 @@ impl Service {
     /// The turn handed over: the agent's answer, or why it was not given.
     pub async fn hand_over(&self, ask: HandOver) -> HandReply {
         self.touch();
-        let reply = self.take(ask).await;
+        let reply = Box::pin(self.take(ask)).await;
         self.touch();
         match reply {
             Ok(handed) => HandReply::Handed(handed),
@@ -201,7 +202,7 @@ impl Service {
                 message: "The coding agent could not be started.".to_owned(),
             });
         };
-        let answered = active.run(turn).await;
+        let answered = Box::pin(active.run(turn)).await;
         if active.broken {
             Self::finish(&mut held).await;
         }
@@ -219,7 +220,7 @@ impl Service {
         let label = entry
             .label
             .as_ref()
-            .map_or_else(|| program.as_str().to_owned(), |label| label.clone());
+            .map_or_else(|| program.as_str().to_owned(), std::clone::Clone::clone);
         let cwd = folder(program, live.places()).map_err(|why| HandRefusal::Failed {
             message: why.to_string(),
         })?;
@@ -248,7 +249,7 @@ impl Service {
     pub async fn close(&self) {
         Self::finish(&mut *self.assistant.lock().await).await;
         if let Some(helpers) = self.helpers.get() {
-            helpers.shutdown().await;
+            Box::pin(helpers.shutdown()).await;
         }
     }
 }
@@ -267,7 +268,7 @@ impl Active {
         }
         let mut said = Vec::new();
         loop {
-            match host.next_event(session).await {
+            match Box::pin(host.next_event(session)).await {
                 Ok(Some(BackendEvent::Words(Reveal::Plain(text)))) => said.push(text),
                 Ok(Some(BackendEvent::TurnEnd(end))) => return end_of(end, &said, &label),
                 // Calls, thoughts and usage are the router's to rule and record; handles the
@@ -346,7 +347,7 @@ pub async fn run_with(
         .at(
             AGENT_HOST_PATH,
             object::Object {
-                service: service.clone(),
+                service: Arc::clone(&service),
                 callers,
             },
         )
@@ -355,7 +356,7 @@ pub async fn run_with(
     zbus_ready::serving(&bus).await.map_err(bus_fault)?;
     bus.request_name(AGENT_HOST_BUS).await.map_err(bus_fault)?;
     service.until_done().await;
-    service.close().await;
+    Box::pin(service.close()).await;
     service.drain().await;
     Ok(())
 }

@@ -25,7 +25,7 @@ pub fn rig() -> Rig {
     fs::create_dir(dir.path().join("home")).unwrap();
     fs::create_dir(dir.path().join("dest")).unwrap();
     let trash = Arc::new(FakeTrash::new(dir.path().join("bin")));
-    let exec = Executor::new(trash.clone());
+    let exec = Executor::new(Arc::<files_trash::FakeTrash>::clone(&trash));
     Rig {
         dir,
         exec,

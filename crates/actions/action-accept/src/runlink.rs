@@ -9,6 +9,7 @@ use std::hash::Hasher;
 use std::path::{Path, PathBuf};
 
 /// The link's path: `/tmp/dl-<16 hex digits of the scratch root's FNV-1a hash>`.
+#[must_use]
 pub fn short_run(dir: &Path) -> PathBuf {
     let mut hasher = FnvHasher::default();
     hasher.write(dir.as_os_str().as_encoded_bytes());
@@ -66,6 +67,6 @@ mod tests {
         assert!(root.path().join("run/probe").exists());
         link_run(root.path()).expect("a second link replaces the first");
         unlink_run(root.path());
-        assert!(short_run(root.path()).symlink_metadata().is_err());
+        short_run(root.path()).symlink_metadata().unwrap_err();
     }
 }

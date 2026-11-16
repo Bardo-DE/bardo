@@ -15,7 +15,7 @@ pub fn quire_schema() -> Schema {
         file: FilePath("bardo/appearance.toml".to_owned()),
         version: 1,
         foreign: ForeignTables::default(),
-        pages: Default::default(),
+        pages: Vec::default(),
         key: [
             AppearanceSettings::schema(),
             IconsSettings::schema(),

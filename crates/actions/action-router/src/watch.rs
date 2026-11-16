@@ -125,7 +125,7 @@ impl Flag {
 
     /// Resolves once it is up (at once if it already is).
     pub fn up(self: &Arc<Self>) -> impl Future<Output = ()> + Send + use<> {
-        let flag = self.clone();
+        let flag = Arc::clone(self);
         std::future::poll_fn(move |cx| {
             let mut state = locked(&flag.0);
             if state.raised {
@@ -178,7 +178,7 @@ impl<T: Send> Queue<T> {
 
     /// The next value, waiting for one.
     pub fn next(self: &Arc<Self>) -> impl Future<Output = T> + Send + use<T> {
-        let queue = self.clone();
+        let queue = Arc::clone(self);
         std::future::poll_fn(move |cx| {
             let mut state = locked(&queue.0);
             if let Some(item) = state.items.pop_front() {

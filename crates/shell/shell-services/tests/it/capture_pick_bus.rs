@@ -202,7 +202,7 @@ pub(crate) async fn rig(bus: &PrivateBus, scratch: &TempDir) -> Rig {
 pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig {
     let callers = Introduced::new();
     let env = Env {
-        callers: callers.clone(),
+        callers: std::sync::Arc::<Introduced>::clone(&callers),
         ..Env::isolated(scratch.path())
     };
     let transom = connect(bus, Some(PORTAL)).await;

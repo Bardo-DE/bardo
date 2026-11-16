@@ -28,19 +28,24 @@ pub(crate) async fn undo_held(launcher: &Launcher, world: &World) -> UndoCheck {
     if world.app.messages().is_empty() {
         return UndoCheck::NothingHeld;
     }
-    let journal = action_accept::world::within(
+    let journal = Box::pin(action_accept::world::within(
         "intentd's journal",
         launcher.intents.journal(JournalFilter {
             run: None,
             session: None,
             limit: base_ids::Count(10),
         }),
-    )
+    ))
     .await;
     let Some(entry) = journal.ok().and_then(|j| j.into_iter().next()) else {
         return UndoCheck::Failed("the journal has no row for the held message".to_owned());
     };
-    match action_accept::world::within("intentd's undo", launcher.intents.undo(entry.id)).await {
+    match Box::pin(action_accept::world::within(
+        "intentd's undo",
+        launcher.intents.undo(entry.id),
+    ))
+    .await
+    {
         Ok(Ok(()))
             if world
                 .app
@@ -105,9 +110,9 @@ pub(crate) async fn observe(
         ),
     };
     let opened = launcher.open().await;
-    let mut answer = launcher.say(&opened, script.prompt).await;
+    let mut answer = Box::pin(launcher.say(&opened, script.prompt)).await;
     let answered = answer.try_history_until(stop).await;
-    let undo = undo_held(&launcher, &world).await;
+    let undo = Box::pin(undo_held(&launcher, &world)).await;
     let evidence = Evidence {
         answer: answered,
         sheets: world.sheet.shown(),
@@ -142,7 +147,7 @@ pub async fn run_flow(
         app: flow.app(),
         prompt: flow.prompt(),
     };
-    let played = match observe(
+    let played = match Box::pin(observe(
         binaries,
         script,
         model,
@@ -150,7 +155,7 @@ pub async fn run_flow(
         keys_home,
         patience,
         at_rest,
-    )
+    ))
     .await
     {
         Ok(played) => played,

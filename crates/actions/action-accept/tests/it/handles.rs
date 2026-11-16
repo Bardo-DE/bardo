@@ -23,9 +23,8 @@ async fn forwarded_over(cassette: Cassette) {
     world.sheet.will(SheetChoice::Once);
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "forward the Lisbon receipts to accounting")
-        .await;
+    let mut answer =
+        Box::pin(launcher.say(&opened, "forward the Lisbon receipts to accounting")).await;
     let history = answer.history_until(settled).await;
     let last = history.last().expect("a view").clone();
     if last.phase != AnswerPhase::Done {
@@ -43,15 +42,15 @@ async fn forwarded_over(cassette: Cassette) {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn the_planner_forwards_by_the_handles_the_searches_gave_it() {
-    forwarded_over(FLOW_A_HANDLES).await;
+    Box::pin(forwarded_over(FLOW_A_HANDLES)).await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn an_unknown_handle_is_told_with_the_handles_held_and_the_planner_corrects_itself() {
-    forwarded_over(FLOW_A_FAULT_LINE).await;
+    Box::pin(forwarded_over(FLOW_A_FAULT_LINE)).await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn a_reply_that_could_not_be_read_is_told_and_the_planner_corrects_itself() {
-    forwarded_over(FLOW_A_UNREAD).await;
+    Box::pin(forwarded_over(FLOW_A_UNREAD)).await;
 }

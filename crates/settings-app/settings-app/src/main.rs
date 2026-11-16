@@ -163,7 +163,7 @@ fn settings(opening: Opening) -> ExitCode {
     // The runtime `launch` will use: the intents service lives on it for the app's life.
     let _runtime = enter_runtime();
     let provider = SettingsProvider::new(
-        env.catalogue.clone(),
+        Arc::clone(&env.catalogue),
         config_home,
         outbox,
         Arc::new(env.client.clone()),

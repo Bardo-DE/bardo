@@ -337,8 +337,8 @@ pub(crate) fn Host(props: HostProps) -> Element {
             style: "display:none",
             onmounted: move |mounted| {
                 if let Some(handle) = mounted.data().downcast::<NodeHandle>() {
-                    install(handle, &setup, &clipboard, (frame_nav.clone(), book.clone()));
-                    phase.attach(DocRef::Handle(handle.clone()), runtime.clone());
+                    install(handle, &setup, &clipboard, (Arc::clone(&frame_nav), book.clone()));
+                    phase.attach(DocRef::Handle(handle.clone()), Rc::clone(&runtime));
                     document.replace(Some(handle.clone()));
                     installed.set(true);
                 }

@@ -172,7 +172,7 @@ impl Config {
         if let Some(line) = callers.notice("inferd") {
             eprintln!("{line}");
         }
-        config.callers_file = callers.path().to_owned();
+        callers.path().clone_into(&mut config.callers_file);
         Ok(config)
     }
 }

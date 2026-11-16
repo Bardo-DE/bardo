@@ -100,9 +100,9 @@ async fn serve(bus: &PrivateBus, loaded: bool, active_state: &str) -> (zbus::Con
         .unwrap_or_else(|e| panic!("{e}"))
         .name("org.freedesktop.systemd1")
         .unwrap_or_else(|e| panic!("{e}"))
-        .serve_at("/org/freedesktop/systemd1", Manager(shared.clone()))
+        .serve_at("/org/freedesktop/systemd1", Manager(Arc::clone(&shared)))
         .unwrap_or_else(|e| panic!("{e}"))
-        .serve_at(UNIT_PATH, Unit(shared.clone()))
+        .serve_at(UNIT_PATH, Unit(Arc::clone(&shared)))
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await

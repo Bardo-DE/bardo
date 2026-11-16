@@ -119,7 +119,7 @@ async fn an_action_key_runs_through_set() {
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
     let module = std::sync::Arc::new(Accounts::new(Some(role)));
-    serve(&daemon, PATH, Shared(module.clone()))
+    serve(&daemon, PATH, Shared(std::sync::Arc::clone(&module)))
         .await
         .expect("serves");
     zbus_ready::serving(&daemon)
@@ -137,7 +137,7 @@ async fn set_from_a_caller_without_the_role_is_refused_by_name() {
     let daemon = bus.connect().await;
     let agent = bus.connect().await;
     let module = std::sync::Arc::new(Accounts::new(Some(":1.nobody".to_owned())));
-    serve(&daemon, PATH, Shared(module.clone()))
+    serve(&daemon, PATH, Shared(std::sync::Arc::clone(&module)))
         .await
         .expect("serves");
     zbus_ready::serving(&daemon)

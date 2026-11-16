@@ -371,7 +371,7 @@ fn what_the_shell_reads_and_sends_pins_its_json() {
         apps: vec![account_core::AppName::parse("org.bardo.Mail").expect("app")],
         ceiling: Ceiling::Change,
         steps: Count(8),
-        kind: Default::default(),
+        kind: HelperKind::default(),
     };
     let text = serde_json::to_string(&form).expect("json");
     assert!(text.contains(r#""ceiling":"change""#), "{text}");

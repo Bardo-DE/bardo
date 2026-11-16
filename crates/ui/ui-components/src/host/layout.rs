@@ -24,6 +24,7 @@ enum Driven {
 /// `node`'s border box in logical pixels, in the window's coordinates: `None` until the node is
 /// mounted and the host has laid it out, then the rect after each layout that changed it. `node`
 /// is the typed handle an element's `onmounted` gives (`MountedRef(event.data())`).
+#[must_use]
 pub fn use_layout(node: ReadSignal<Option<MountedRef>>) -> ReadSignal<Option<Rect>> {
     let rect = use_signal(|| None::<Rect>);
     use_layout_into(node, rect);

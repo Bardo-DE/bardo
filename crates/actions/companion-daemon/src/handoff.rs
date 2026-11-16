@@ -17,6 +17,7 @@ pub struct HostLink {
 
 impl HostLink {
     /// A link over `connection`.
+    #[must_use]
     pub fn new(connection: BusConnection) -> Self {
         Self { connection }
     }

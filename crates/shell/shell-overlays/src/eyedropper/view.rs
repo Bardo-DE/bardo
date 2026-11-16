@@ -61,7 +61,7 @@ fn Dropper(
 ) -> Element {
     // Encoded once per question: the picture is large and never changes while it is up.
     let source = use_hook({
-        let png = shot.png.clone();
+        let png = std::sync::Arc::clone(&shot.png);
         move || ImageSource::png(&png).0
     });
     let mut pointer = use_signal(|| None::<(f64, f64)>);

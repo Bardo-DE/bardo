@@ -1,4 +1,4 @@
-//! FormSection: a titled group of rows on the `--grp` ground, with a help footer under it
+//! `FormSection`: a titled group of rows on the `--grp` ground, with a help footer under it
 //! (design/34-MODERN-LOOK.md sections 2.3 and 3.5). The group is one rounded card with no outer
 //! line; the rows inside it (`FieldRow`s, or a grouped `List`) are separated by a hairline that
 //! starts at the row's text and none above the first or below the last.

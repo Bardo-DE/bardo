@@ -48,11 +48,13 @@ impl Lang {
     }
 
     /// The name the dictionary's files carry: `en_US`.
+    #[must_use]
     pub fn name(&self) -> &str {
         &self.0
     }
 
     /// The language without its region: `en` for `en_US`.
+    #[must_use]
     pub fn code(&self) -> &str {
         self.0.split('_').next().unwrap_or(&self.0)
     }
@@ -98,7 +100,7 @@ mod tests {
             assert_eq!(got.as_ref().map(Lang::name), want, "{json}");
         }
         let stored = r#"{"kind":"on","v":{"lang":"../../x"}}"#;
-        assert!(serde_json::from_str::<Spell>(stored).is_err());
+        serde_json::from_str::<Spell>(stored).unwrap_err();
     }
 
     const CASES: &[(&str, Option<&str>)] = &[

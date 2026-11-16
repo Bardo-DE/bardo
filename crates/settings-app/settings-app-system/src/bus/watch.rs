@@ -28,6 +28,7 @@ pub async fn relay(mut stream: impl Stream<Item: Send> + Unpin + Send + 'static,
 pub type Matters = fn(&Message) -> bool;
 
 /// Every signal matters.
+#[must_use]
 pub fn every(_: &Message) -> bool {
     true
 }

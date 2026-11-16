@@ -185,7 +185,7 @@ impl IntentProvider for FakeMenu {
                             .map_err(|_| AppRefusal::Unsupported)?,
                     },
                     target: TargetValue::Nothing,
-                    args: Default::default(),
+                    args: BTreeMap::default(),
                     origin: Origin::AppInternal,
                 });
                 Ok(out)

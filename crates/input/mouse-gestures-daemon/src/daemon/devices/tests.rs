@@ -18,7 +18,7 @@ use std::rc::Rc;
 #[test]
 fn waits_then_becomes_ready_and_rebuilds_on_a_shape_change() {
     let calls = Rc::new(Cell::new(0));
-    let c2 = calls.clone();
+    let c2 = Rc::clone(&calls);
     let factory: Factory = Box::new(move |_| {
         c2.set(c2.get() + 1);
         if c2.get() < 2 {
@@ -74,7 +74,7 @@ impl Emitter for Destroyed {
 #[test]
 fn a_failed_write_rebuilds_the_devices_and_is_reported_once() {
     let built = Rc::new(Cell::new(0));
-    let b = built.clone();
+    let b = Rc::clone(&built);
     let factory: Factory = Box::new(move |_| {
         b.set(b.get() + 1);
         if b.get() == 1 {

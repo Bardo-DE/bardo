@@ -49,21 +49,25 @@ impl Rgba8 {
     }
 
     /// The width and height in pixels.
+    #[must_use]
     pub fn size(&self) -> PixelSize {
         self.size
     }
 
     /// The pixels, `R G B A` per pixel.
+    #[must_use]
     pub fn bytes(&self) -> &[u8] {
         &self.bytes
     }
 
     /// The pixels, given up.
+    #[must_use]
     pub fn into_bytes(self) -> Vec<u8> {
         self.bytes
     }
 
     /// The picture with alpha multiplied into the colour, rounded to nearest: what a GPU blends.
+    #[must_use]
     pub fn premultiplied(&self) -> PremultipliedRgba8 {
         let mut bytes = self.bytes.clone();
         for pixel in bytes.as_chunks_mut::<4>().0 {
@@ -117,17 +121,20 @@ impl PremultipliedRgba8 {
     }
 
     /// The width and height in pixels.
+    #[must_use]
     pub fn size(&self) -> PixelSize {
         self.size
     }
 
     /// The pixels, `R G B A` per pixel, colour already multiplied by alpha.
+    #[must_use]
     pub fn bytes(&self) -> &[u8] {
         &self.bytes
     }
 
     /// The picture with alpha divided back out. Fully transparent pixels become transparent
     /// black, since their colour is gone.
+    #[must_use]
     pub fn unpremultiplied(&self) -> Rgba8 {
         let mut bytes = self.bytes.clone();
         for pixel in bytes.as_chunks_mut::<4>().0 {

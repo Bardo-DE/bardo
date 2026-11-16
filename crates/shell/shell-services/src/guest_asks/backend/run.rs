@@ -58,9 +58,7 @@ pub(crate) async fn run(
         board: Board::new(links.notifications, links.notes, shown_for),
     };
     let owner = owner::Owner::of(&connection, wire::INFERD);
-    while owner
-        .session(live.session(&mut commands, &mut answers))
-        .await
+    while Box::pin(owner.session(live.session(&mut commands, &mut answers))).await
         == owner::Next::Again
     {
         live.lost();

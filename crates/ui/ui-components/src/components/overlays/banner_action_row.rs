@@ -1,4 +1,4 @@
-//! BannerActionRow: the row a banner lays out when it asks for something and takes the answer
+//! `BannerActionRow`: the row a banner lays out when it asks for something and takes the answer
 //! in place: a text field that takes the width left, then the buttons that act on it ("Allow",
 //! "Cancel"). It is not the window's toolbar band (`chrome::Toolbar`); it is the banner's own
 //! action line, put in `InlineBanner`'s `actions` or under any banner body.

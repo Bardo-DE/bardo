@@ -20,6 +20,7 @@ fn model(
 
 /// The cascade for `set` (the placeholder one when none is given), with `timeouts` per stage, its
 /// links behind `tap`.
+#[must_use]
 pub fn reviewer(
     connection: &BusConnection,
     set: Option<&ReviewerSet>,

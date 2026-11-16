@@ -17,6 +17,7 @@ use ui_core::geometry::units::Rect;
 /// in the frame being drawn. `None` until the surface has mounted and been laid out, while `at`
 /// is `None` or names nothing in it, and on a host that runs no frame phase (read
 /// [`EditHandle::caret_rect`] there).
+#[must_use]
 pub fn use_caret_rect(handle: EditHandle, at: Option<TextPosition>) -> ReadSignal<Option<Rect>> {
     let position = use_hook(|| CopyValue::new(None::<TextPosition>));
     // Not a signal: the phase reads it as it runs, ahead of any wake-up a signal would queue.

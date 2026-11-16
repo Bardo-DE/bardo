@@ -56,6 +56,7 @@ impl IntentdConfig {
     }
 
     /// A configuration in which no name plays any role.
+    #[must_use]
     pub fn empty() -> Self {
         Self {
             roles: BTreeMap::new(),
@@ -65,6 +66,7 @@ impl IntentdConfig {
     }
 
     /// The roles of a bus name: every role it is listed under; empty for a plain app.
+    #[must_use]
     pub fn roles_of(&self, name: &AppName) -> BTreeSet<CallerRole> {
         self.roles
             .iter()

@@ -52,7 +52,7 @@ fn launcher(
     let children = RecordedChildren::shared();
     let mut env = Env::isolated(scratch.path());
     env.buses = Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone()));
-    env.children = children.clone();
+    env.children = Arc::<RecordedChildren>::clone(&children);
     let (_apps, apps) = watch::channel(AppIndex::default());
     let rt = tokio::runtime::Handle::current();
     let notifications = spawn::<NotificationsService>(&rt, &env, Default::default()).control;

@@ -69,14 +69,14 @@ fn script() -> Vec<Act> {
 
 #[tokio::test]
 async fn a_full_session_goes_through_the_router_call_by_call() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![script()],
         // After the file is served the session is tainted, so the router asks: the write once;
         // the first permission always (a standing grant); the command once.
         answers: vec![once(), always(), once()],
         scripts: vec![Script::done("hi\n", 0)],
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/README.md"), "# readme\n");
     files.put(&abs("/etc/passwd"), "root:x:0:0");
@@ -94,7 +94,7 @@ async fn a_full_session_goes_through_the_router_call_by_call() {
     assert_eq!(new["mcpServers"], json!([]));
     assert_eq!(rig.spawned.plans()[0].cwd, abs(CWD));
 
-    let events = run_turn(&mut rig, "tidy the project").await;
+    let events = Box::pin(run_turn(&mut rig, "tidy the project")).await;
 
     // Only the person's words went in the prompt.
     let prompts = rig.agent.prompts();
@@ -207,28 +207,27 @@ async fn a_full_session_goes_through_the_router_call_by_call() {
 
 #[tokio::test]
 async fn the_host_takes_a_second_turn_and_a_closed_one_takes_none() {
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![
             vec![say("one"), Act::Stop("end_turn")],
             vec![say("two"), Act::Stop("end_turn")],
         ],
         ..Setup::default()
-    })
+    }))
     .await;
-    let first = run_turn(&mut rig, "first").await;
+    let first = Box::pin(run_turn(&mut rig, "first")).await;
     assert!(matches!(
         first.last(),
         Some(BackendEvent::TurnEnd(TurnEnd::Done))
     ));
-    let second = run_turn(&mut rig, "second").await;
+    let second = Box::pin(run_turn(&mut rig, "second")).await;
     assert!(matches!(
         second.last(),
         Some(BackendEvent::TurnEnd(TurnEnd::Done))
     ));
     assert_eq!(rig.agent.prompts().len(), 2);
     let session = rig.session.clone();
-    rig.host
-        .close(&session, EndCause::Closed)
+    Box::pin(rig.host.close(&session, EndCause::Closed))
         .await
         .expect("close");
     assert_eq!(
@@ -247,13 +246,13 @@ async fn the_host_takes_a_second_turn_and_a_closed_one_takes_none() {
 
 #[tokio::test]
 async fn an_agent_that_exits_ends_the_turn_failed() {
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![say("starting"), Act::Exit]],
         ..Setup::default()
-    })
+    }))
     .await;
     // The agent ends without answering the prompt: the pipe closes.
-    let events = run_turn(&mut rig, "go").await;
+    let events = Box::pin(run_turn(&mut rig, "go")).await;
     assert!(
         matches!(events.last(), Some(BackendEvent::TurnEnd(TurnEnd::Failed))),
         "{events:?}"
@@ -263,7 +262,7 @@ async fn an_agent_that_exits_ends_the_turn_failed() {
 #[tokio::test]
 async fn a_wait_for_exit_ends_when_the_command_is_killed() {
     let tid = |r: &super::agent::Replies| r["term"].clone().unwrap()["terminalId"].clone();
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![
             call(
                 "term",
@@ -287,16 +286,16 @@ async fn a_wait_for_exit_ends_when_the_command_is_killed() {
         answers: vec![once()],
         scripts: vec![Script::hangs("")],
         ..Setup::default()
-    })
+    }))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     rig.agent.reply("kill").unwrap();
     assert_eq!(rig.agent.reply("wait").unwrap()["signal"], json!("KILL"));
 }
 
 #[tokio::test]
 async fn a_yes_to_a_permission_request_covers_the_one_matching_write_and_no_more() {
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![vec![
             // Serving a file taints the session, so what follows asks.
             call("r", "fs/read_text_file", read("/work/app/README.md")),
@@ -313,10 +312,10 @@ async fn a_yes_to_a_permission_request_covers_the_one_matching_write_and_no_more
         // second question; the second write is asked and refused.
         answers: vec![once(), no()],
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&abs("/work/app/README.md"), "# readme\n");
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     rig.agent.reply("w1").unwrap();
     rig.agent.reply("w2").unwrap_err();
     assert_eq!(files.text(&abs("/work/app/a.rs")).as_deref(), Some("one"));
@@ -333,10 +332,10 @@ async fn a_resume_starts_a_new_agent_session_and_keeps_the_taint() {
     use agent_acp_host::fake::FakeSpawn;
     use agent_acp_host::{AcpBackend, Parts};
     use agent_session::{ResumePlan, Resumed, SessionBackend, Standing};
-    let (rig, _files) = started(Setup {
+    let (rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![Act::Stop("end_turn")]],
         ..Setup::default()
-    })
+    }))
     .await;
     let (wire, _view) = super::agent::agent(vec![vec![Act::Stop("end_turn")]]);
     // A second spawn for the resume: a fresh backend whose spawner holds one wire.
@@ -386,11 +385,11 @@ fn meta() -> (agent_acp_host::SessionMeta, serde_json::Value) {
 #[tokio::test]
 async fn session_new_carries_the_launchers_meta_and_nothing_else_adds_one() {
     let (map, value) = meta();
-    let (rig, _files) = started(Setup {
+    let (rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![Act::Stop("end_turn")]],
         session_meta: Some(map),
         ..Setup::default()
-    })
+    }))
     .await;
     // The host wrote it into its own request; the agent only receives it.
     assert_eq!(rig.agent.new_session()["_meta"], value);
@@ -398,10 +397,10 @@ async fn session_new_carries_the_launchers_meta_and_nothing_else_adds_one() {
 
 #[tokio::test]
 async fn session_new_has_no_meta_without_one() {
-    let (rig, _files) = started(Setup {
+    let (rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![Act::Stop("end_turn")]],
         ..Setup::default()
-    })
+    }))
     .await;
     assert!(rig.agent.new_session().get("_meta").is_none());
 }
@@ -433,12 +432,12 @@ async fn every_way_a_turn_ends_tells_the_router_it_is_over() {
         ("failed", vec![say("starting"), Act::Exit]),
     ];
     for (name, acts) in rows {
-        let (mut rig, _files) = started(Setup {
+        let (mut rig, _files) = Box::pin(started(Setup {
             turns: vec![acts],
             ..Setup::default()
-        })
+        }))
         .await;
-        let events = run_turn(&mut rig, "go").await;
+        let events = Box::pin(run_turn(&mut rig, "go")).await;
         assert!(
             matches!(events.last(), Some(BackendEvent::TurnEnd(_))),
             "{name}"

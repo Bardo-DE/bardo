@@ -64,9 +64,9 @@ fn handed(text: &str) -> HandReply {
 async fn the_agents_words_are_the_answer_and_the_footer_names_it() {
     let mut w = world(vec![chose_the_agent()]);
     let host = Host::answering(handed("The invoice is from Eve."));
-    w.companion.set_handoff(host.clone());
+    w.companion.set_handoff(Arc::<Host>::clone(&host));
     let opened = w.open("work").await;
-    w.say(&opened.session, "what is the invoice about").await;
+    Box::pin(w.say(&opened.session, "what is the invoice about")).await;
 
     let answer: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(answer.phase, AnswerPhase::Done);
@@ -115,7 +115,7 @@ async fn a_host_that_refuses_ends_the_turn_in_words_the_person_can_act_on() {
         w.companion
             .set_handoff(Host::answering(HandReply::Refused(refusal)));
         let opened = w.open("work").await;
-        w.say(&opened.session, "hello").await;
+        Box::pin(w.say(&opened.session, "hello")).await;
         let answer: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
         assert_eq!(answer.phase, AnswerPhase::Failed, "{name}");
         assert_eq!(answer.body, AnswerBody::Refused(shown), "{name}");
@@ -126,7 +126,7 @@ async fn a_host_that_refuses_ends_the_turn_in_words_the_person_can_act_on() {
 async fn a_companion_with_no_host_cannot_serve_the_choice_and_asks_for_a_model() {
     let mut w = world(vec![chose_the_agent()]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     let answer: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(answer.body, AnswerBody::Refused(RefusalWire::NoModel));
 }
@@ -135,9 +135,9 @@ async fn a_companion_with_no_host_cannot_serve_the_choice_and_asks_for_a_model()
 async fn a_model_the_person_chose_is_planned_with_and_the_host_is_never_asked() {
     let mut w = world(vec![words("Done.")]);
     let host = Host::answering(handed("never said"));
-    w.companion.set_handoff(host.clone());
+    w.companion.set_handoff(Arc::<Host>::clone(&host));
     let opened = w.open("work").await;
-    w.say(&opened.session, "hello").await;
+    Box::pin(w.say(&opened.session, "hello")).await;
     assert!(host.asked().is_empty());
     let answer: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
     assert_eq!(answer.phase, AnswerPhase::Done);

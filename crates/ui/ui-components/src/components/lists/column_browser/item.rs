@@ -58,6 +58,7 @@ pub struct BrowserColumn<K> {
 
 impl<K> BrowserColumn<K> {
     /// A column with nothing selected.
+    #[must_use]
     pub fn new(rows: Vec<BrowserRow<K>>) -> Self {
         BrowserColumn {
             rows,
@@ -66,6 +67,7 @@ impl<K> BrowserColumn<K> {
     }
 
     /// The same column with `selection`.
+    #[must_use]
     pub fn selected(self, selection: RowSelection) -> Self {
         BrowserColumn { selection, ..self }
     }

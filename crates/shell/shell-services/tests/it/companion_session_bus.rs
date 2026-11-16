@@ -69,7 +69,7 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
         StandInCompanion {
             session: session.map(str::to_owned),
             log: desk.log.clone(),
-            view: view.clone(),
+            view: Arc::clone(&view),
             acts: ActsAs::Accepts,
             routing: None,
         },
@@ -124,7 +124,7 @@ impl Bench {
                 StandInAnswer {
                     session: Some(session.to_owned()),
                     log: self.desk.log.clone(),
-                    view: self.view.clone(),
+                    view: Arc::clone(&self.view),
                     acts: ActsAs::Accepts,
                     routing: None,
                 },

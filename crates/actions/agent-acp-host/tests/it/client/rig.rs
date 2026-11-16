@@ -291,7 +291,7 @@ where
         Arc::new(Hosted(performer.clone())),
     );
     let router = Arc::new(router);
-    let court = IntentsCourt::over(InProcess::new(router.clone(), host_caller()));
+    let court = IntentsCourt::over(InProcess::new(Arc::clone(&router), host_caller()));
     let (wire, view) =
         super::agent::agent_resuming(setup.turns, (setup.auth, setup.offer), setup.resumes);
     let (spawn, spawned) = FakeSpawn::new(vec![wire]);
@@ -343,13 +343,12 @@ where
         wired.terminal_fallback,
     )
     .with_rewind(rewind);
-    let session = host
-        .open(Opening {
-            label,
-            ..opening(cwd)
-        })
-        .await
-        .expect("open");
+    let session = Box::pin(host.open(Opening {
+        label,
+        ..opening(cwd)
+    }))
+    .await
+    .expect("open");
     Rig {
         host,
         router: wired.router,
@@ -366,7 +365,7 @@ where
 /// A started host over a file system in a map.
 pub async fn started(setup: Setup) -> (Rig<Fakes>, FakeFiles) {
     let files = FakeFiles::new();
-    let rig = started_over::<Fakes>(files.clone(), CWD, setup).await;
+    let rig = Box::pin(started_over::<Fakes>(files.clone(), CWD, setup)).await;
     (rig, files)
 }
 
@@ -376,7 +375,10 @@ pub async fn run_turn<X>(rig: &mut Rig<X>, text: &str) -> Vec<BackendEvent>
 where
     X: Seams<Court = TheCourt, Sandbox = FakeSandbox, Spawn = FakeSpawn>,
 {
-    run_turn_answering(rig, 1, text, &mut |_| SheetChoice::Refused).await
+    Box::pin(run_turn_answering(rig, 1, text, &mut |_| {
+        SheetChoice::Refused
+    }))
+    .await
 }
 
 /// [`run_turn`] numbering the turn `n` and answering the sheets the host hands out with `choose`.
@@ -392,7 +394,10 @@ where
     let session = rig.session.clone();
     rig.host.turn(&session, turn(n, text)).await.expect("turn");
     let mut events = Vec::new();
-    while let Some(event) = rig.host.next_event(&session).await.expect("event") {
+    while let Some(event) = Box::pin(rig.host.next_event(&session))
+        .await
+        .expect("event")
+    {
         if let BackendEvent::Confirm(request) = &event {
             let choice = choose(request);
             rig.host

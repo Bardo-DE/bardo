@@ -63,6 +63,7 @@ pub(crate) struct Look {
 impl BatteryState {
     /// Whether the fill reads low: draining, at or under `low_at` (a charging battery is never
     /// low).
+    #[must_use]
     pub fn is_low(self) -> bool {
         self.power == BatteryPower::Battery && self.level.clamped().0 <= self.low_at.0.0
     }
@@ -93,6 +94,7 @@ impl BatteryState {
     }
 
     /// The state in words (R8), e.g. `80%, charging`.
+    #[must_use]
     pub fn words(self) -> String {
         let percent = (self.level.clamped().0 + 5) / 10;
         let power = match self.power {

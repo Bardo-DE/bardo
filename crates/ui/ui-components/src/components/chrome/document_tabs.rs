@@ -1,4 +1,4 @@
-//! DocumentTabs: the tab strip of a document window, as Finder and Safari draw it (design/27
+//! `DocumentTabs`: the tab strip of a document window, as Finder and Safari draw it (design/27
 //! section 5, pre-Liquid-Glass): a full-width strip under the toolbar whose tabs share the width
 //! equally, each with a close button that shows under the pointer and on the selected tab, and a
 //! plus at the end. It is not `TabView` (`NSTabView`: a framed body of at most six tabs behind a

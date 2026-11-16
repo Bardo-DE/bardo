@@ -1,4 +1,4 @@
-//! PdfThumb: a PDF's first page as a thumbnail (design/04-COMPONENTS.md section 45; bardo-shell M9's
+//! `PdfThumb`: a PDF's first page as a thumbnail (design/04-COMPONENTS.md section 45; bardo-shell M9's
 //! launcher preview, and design/20 section 2.4's Quick Look later).
 //!
 //! ds draws; it never reads a file or rasterises (it is renderer-free, `scripts/check-boundary.sh`).
@@ -144,6 +144,7 @@ fn plate(trouble: PdfTrouble, room: Size) -> Element {
 }
 
 /// The largest rect of `shape`'s ratio inside `room`, centred. A shape with no area fills it.
+#[must_use]
 pub fn sheet_rect(room: Size, shape: ImageSize) -> Rect {
     let size = match (shape.width, shape.height) {
         (0, _) | (_, 0) => room,

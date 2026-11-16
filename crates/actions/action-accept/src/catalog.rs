@@ -1,17 +1,19 @@
 //! The model catalogue a harness world's inferd reads. inferd looks in `$XDG_DATA_HOME/bardo/models/catalog`
-//! (the user's) and `/usr/share/bardo/models/catalog`; a harness world's XDG_DATA_HOME is scratch, so the
+//! (the user's) and `/usr/share/bardo/models/catalog`; a harness world's `XDG_DATA_HOME` is scratch, so the
 //! entries are copied there from a directory the run names (default: the sibling stoker checkout's
 //! `catalog/`). Copied, never linked: nothing in the real tree can be written through the world.
 
 use std::path::{Path, PathBuf};
 
 /// Where the world's inferd finds its user catalogue, under the scratch root.
+#[must_use]
 pub fn world_dir(scratch: &Path) -> PathBuf {
     scratch.join("data/bardo/models/catalog")
 }
 
 /// The default source: `../stoker/catalog` beside the docket checkout whose `eval/` is
 /// `eval_dir`, made absolute. Pure: it joins and normalises, it opens nothing.
+#[must_use]
 pub fn default_source(eval_dir: &Path) -> PathBuf {
     let docket = eval_dir.parent().unwrap_or(eval_dir);
     let docket = if docket.as_os_str().is_empty() {
@@ -61,6 +63,7 @@ fn git_sha(dir: &Path) -> Option<String> {
 }
 
 /// One line for a header: the directory and, if it is in a git checkout, its commit.
+#[must_use]
 pub fn describe(dir: &Path) -> String {
     match git_sha(dir) {
         Some(sha) => format!("catalogue {} (git {sha})", dir.display()),

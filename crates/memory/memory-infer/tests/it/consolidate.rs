@@ -19,7 +19,7 @@ async fn the_consolidator_sends_the_prompt_as_a_background_extract_task() {
         consolidation_event_link(1)
     );
     let transport = Scripted::finishing(chat(&answer));
-    let consolidator = InferdConsolidator::new(transport.clone());
+    let consolidator = InferdConsolidator::new(std::sync::Arc::clone(&transport));
     let draft = consolidator
         .draft(consolidation_input())
         .await

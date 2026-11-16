@@ -33,7 +33,7 @@ fn bus(error: zbus::Error) -> ServeFault {
 fn handler<S: Seams + 'static>(router: Arc<Router<S>>, store: Option<IndexStore>) -> Handler {
     Arc::new(
         move |caller: CallerId, request: IntentsRequest, watch: Watch| {
-            let (router, store) = (router.clone(), store.clone());
+            let (router, store) = (Arc::clone(&router), store.clone());
             let pushes = matches!(
                 request,
                 IntentsRequest::IndexPush(_) | IntentsRequest::IndexReset { .. }
@@ -41,7 +41,7 @@ fn handler<S: Seams + 'static>(router: Arc<Router<S>>, store: Option<IndexStore>
             let reply: Pin<Box<dyn Future<Output = IntentsReply> + Send>> = Box::pin(async move {
                 let reply = router.handle_watched(&caller, request, watch).await;
                 if let (true, IntentsReply::Done, Some(store)) = (pushes, &reply, store) {
-                    let (router, app) = (router.clone(), caller.app.name.clone());
+                    let (router, app) = (Arc::clone(&router), caller.app.name.clone());
                     // A failed join is a panic in the write; the reply stands either way.
                     let _ = tokio::task::spawn_blocking(move || store.save(&*router, &app)).await;
                 }
@@ -110,7 +110,7 @@ pub async fn serve_on_gated<S: Seams + 'static>(
     index: Option<IndexStore>,
 ) -> Result<(), ServeFault> {
     let gateway = Gateway::new(
-        handler(router.clone(), index),
+        handler(Arc::clone(&router), index),
         search_port(router),
         Peers::gated(connection.clone(), config, who, proc_root, acp),
     );

@@ -8,6 +8,7 @@ use shell_model::windows::Subjects;
 /// The subject of each app id on screen, from the Quire windows that are joined to their
 /// toplevels. An app id whose windows report different subjects, or only some of them one, has
 /// none (`Subjects::collect`).
+#[must_use]
 pub fn project(state: &DesktopState) -> Subjects {
     Subjects::collect(state.quire.windows().filter_map(|window| {
         let toplevel = state.toplevels.get(window.key)?;

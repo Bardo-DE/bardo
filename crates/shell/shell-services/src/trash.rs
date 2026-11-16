@@ -9,11 +9,13 @@ use crate::env::Dirs;
 use crate::error::ServiceError;
 
 /// The Trash folder under `dirs`' data directory.
+#[must_use]
 pub fn root(dirs: &Dirs) -> PathBuf {
     dirs.data.join("Trash")
 }
 
 /// Whether nothing is in the Trash. A Trash that does not exist is empty.
+#[must_use]
 pub fn is_empty(dirs: &Dirs) -> bool {
     match std::fs::read_dir(root(dirs).join("files")) {
         Ok(mut entries) => entries.next().is_none(),

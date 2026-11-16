@@ -180,7 +180,7 @@ impl WireState {
             }
             ClipContent::Image(image) => {
                 source.offer(&image.mime.0);
-                image.bytes.clone()
+                Arc::clone(&image.bytes)
             }
         };
         device.set_selection(&source);
@@ -194,7 +194,7 @@ impl WireState {
         let Some(owned) = self.owned.as_ref().filter(|o| o.source.id() == *source) else {
             return;
         };
-        if let Err(kind) = write_whole(&self.handle, fd, owned.bytes.clone()) {
+        if let Err(kind) = write_whole(&self.handle, fd, Arc::clone(&owned.bytes)) {
             self.fault("could not offer an entry", kind);
         }
     }

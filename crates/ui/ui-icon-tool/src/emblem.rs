@@ -89,8 +89,8 @@ fn paint_layer(
     emboss: Emboss,
     under: [f32; 4],
 ) -> [f32; 4] {
-    let ink = Srgb8::hex(0x1A1E1A);
-    let white = Srgb8::hex(0xFFFFFF);
+    let ink = Srgb8::hex(0x001A_1E1A);
+    let white = Srgb8::hex(0x00FF_FFFF);
     let d = distance(&layer.shape, p);
     let inside = cover(d, k);
     let fill = lab_rgba(role(r, layer.fill), inside);

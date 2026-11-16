@@ -26,6 +26,7 @@ pub type Peers = BusPeers<RealProc>;
 
 /// The identification for `connection`, judging against `table`. The unit manager's answers are
 /// believed only when the manager is the system's own.
+#[must_use]
 pub fn peers_on(connection: zbus::Connection, table: Table) -> Peers {
     BusPeers::new(
         connection,

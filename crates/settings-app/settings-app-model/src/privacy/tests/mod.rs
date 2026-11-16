@@ -29,9 +29,9 @@ fn spec(path: &str, label: &str, kind: KeyKind) -> KeySpec {
         section: Section("Screen".to_owned()),
         exposure: Exposure::Basic,
         labels: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        unavailable: BTreeMap::default(),
+        groups: BTreeMap::default(),
+        places: BTreeMap::default(),
         note: None,
         agent: AgentSetting::HandsOff,
     }

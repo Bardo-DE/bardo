@@ -107,7 +107,7 @@ fn helper() -> HelperId {
 fn start(at: i64) -> (Routines<FakeHost, FixedClock>, Arc<FakeHost>, FixedClock) {
     let hand = FixedClock::at(UnixSeconds(at));
     let host = FakeHost::new();
-    (Routines::new(host.clone(), hand.clone()), host, hand)
+    (Routines::new(Arc::clone(&host), hand.clone()), host, hand)
 }
 
 fn form(when: WhenForm, missed: Missed) -> RoutineForm {

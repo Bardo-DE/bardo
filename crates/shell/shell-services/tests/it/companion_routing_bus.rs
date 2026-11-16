@@ -39,9 +39,9 @@ async fn bench(first: Option<&str>) -> Option<Bench> {
         StandInCompanion {
             session: Some("s-1".to_owned()),
             log: desk.log.clone(),
-            view: view.clone(),
+            view: Arc::clone(&view),
             acts: ActsAs::Accepts,
-            routing: first.map(|_| routing.clone()),
+            routing: first.map(|_| Arc::clone(&routing)),
         },
     )
     .await;

@@ -65,11 +65,12 @@ pub struct Thumbnails {
 
 impl Thumbnails {
     /// The cache under `home`: `<home>/thumbnails`.
+    #[must_use]
     pub fn under(home: &CacheHome) -> Thumbnails {
         // The platform crate reads only the cache directory of its `Env`; the rest is isolated and
         // refuses to reach a bus or start a program.
         let mut env = Env::isolated(&home.0);
-        env.dirs.cache = home.0.clone();
+        env.dirs.cache.clone_from(&home.0);
         Thumbnails {
             cache: FreedesktopThumbnails::new(&env),
             root: home.0.join("thumbnails"),
@@ -77,6 +78,7 @@ impl Thumbnails {
     }
 
     /// The folder the small pictures are drawn from, which the window may read.
+    #[must_use]
     pub fn folder(&self) -> PathBuf {
         self.root.join(SIZE_FOLDER)
     }

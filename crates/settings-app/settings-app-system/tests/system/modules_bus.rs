@@ -77,7 +77,7 @@ impl LiveModule for Words {
     async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
         match (key.0.as_str(), value.as_str()) {
             (ROW, Some(word)) => {
-                *self.value.lock().expect("value") = word.to_owned();
+                word.clone_into(&mut self.value.lock().expect("value"));
                 Ok(())
             }
             _ => Err(LiveError::BadValue("a word for the row".to_owned())),

@@ -81,8 +81,8 @@ impl Programs {
     /// Takes the programs `file` names (none for a program it does not name).
     pub fn follow(&self, file: &EngineConfig) {
         let mut inner = held(&self.shared);
-        inner.vllm.named = file.vllm_python.clone();
-        inner.llama.named = file.llama_server.clone();
+        inner.vllm.named.clone_from(&file.vllm_python);
+        inner.llama.named.clone_from(&file.llama_server);
     }
 
     /// `unit` with the program now in force in place of the one it was made with.

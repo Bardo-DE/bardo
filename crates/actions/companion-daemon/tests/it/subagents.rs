@@ -31,8 +31,7 @@ async fn a_worker_is_asked_in_a_message_runs_in_its_own_session_and_reports_back
         words("The worker found nothing."),
     ]);
     let front = w.open("work").await;
-    w.say(&front.session, "have someone find the invoice from Eve")
-        .await;
+    Box::pin(w.say(&front.session, "have someone find the invoice from Eve")).await;
 
     // Three planner turns, in order: the front asks, the worker works, the front hears.
     assert_eq!(w.infer.asked().len(), 3);
@@ -130,7 +129,7 @@ async fn a_worker_runs_under_a_policy_never_wider_than_its_parents() {
         words("done"),
     ]);
     let front = w.open("work").await;
-    w.say(&front.session, "go").await;
+    Box::pin(w.say(&front.session, "go")).await;
     let state = w.router.state.lock().expect("lock");
     let child = state
         .sessions
@@ -208,7 +207,7 @@ async fn the_persons_own_turn_to_a_subagent_is_a_trusted_event_the_roster_quotes
     assert_eq!(said.text(), long);
 
     // The front agent is told at once, in trusted words, and sees the first 80 characters.
-    w.say(&front.session, "did it skip the newsletters?").await;
+    Box::pin(w.say(&front.session, "did it skip the newsletters?")).await;
     let view = w.infer.user_text(1);
     let quoted: String = long.chars().take(80).collect();
     assert!(
@@ -326,7 +325,7 @@ async fn a_message_across_spaces_carries_its_labels_shows_presence_only_and_gran
     ]);
     let work = w.open("work").await;
     let home = w.open("home").await;
-    w.say(&home.session, "read the secret invoice thread").await;
+    Box::pin(w.say(&home.session, "read the secret invoice thread")).await;
     assert_eq!(
         w.companion.tasks[&home.task].phase,
         LoopPhase::Idle,

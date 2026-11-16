@@ -24,8 +24,8 @@ impl Shared {
     }
 
     pub(super) fn put(&self, browser: &mut Browser) {
-        browser.clipboard = self.clipboard.clone();
-        browser.undo = self.undo.clone();
+        browser.clipboard.clone_from(&self.clipboard);
+        browser.undo.clone_from(&self.undo);
         browser.show_pane = self.show_pane;
     }
 }
@@ -57,7 +57,7 @@ impl Tabs {
     /// Every tab takes on `undo` as what Undo would take back.
     pub(super) fn undoable(mut self, undo: Option<Summary>) -> Tabs {
         for tab in std::iter::once(&mut self.front).chain(self.others.iter_mut()) {
-            tab.browser.undo = undo.clone();
+            tab.browser.undo.clone_from(&undo);
         }
         self
     }

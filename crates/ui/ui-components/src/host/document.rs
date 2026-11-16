@@ -28,6 +28,7 @@ pub trait DocumentHost {
 
 /// The enclosing document's host: [`NoHost`] where none was provided (a server render), whose
 /// every method answers `Unknown` or is absent.
+#[must_use]
 pub fn use_document_host() -> Rc<dyn DocumentHost> {
     try_consume_context::<Rc<dyn DocumentHost>>().unwrap_or_else(|| Rc::new(NoHost::default()))
 }

@@ -150,7 +150,7 @@ fn resolve(namespace: &Namespace) -> Result<StoreSecrets, SecretsError> {
         store
     } else {
         let store = native()?;
-        keyring_core::set_default_store(store.clone());
+        keyring_core::set_default_store(Arc::clone(&store));
         store
     };
     Ok(StoreSecrets::new(store).in_namespace(namespace.clone()))

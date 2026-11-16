@@ -1,4 +1,4 @@
-//! BatteryRing: a battery's charge as a ring (design/30 section 2.10, design/23-WIDGETS.md
+//! `BatteryRing`: a battery's charge as a ring (design/30 section 2.10, design/23-WIDGETS.md
 //! section 4.1), drawn flat and bright as the reference widget measures: a `ProgressIndicator`
 //! ring (one arc geometry: a thick round-capped arc from twelve, clockwise, as far as the
 //! level, over a full track) with the device's glyph centred in it, in `--battery-fill`
@@ -33,6 +33,7 @@ pub enum Readout {
 }
 
 /// The percentage as text: `84%`.
+#[must_use]
 pub fn percent_text(level: Fraction) -> String {
     format!("{}%", level.whole_percent())
 }

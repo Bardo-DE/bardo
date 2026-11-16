@@ -31,12 +31,12 @@ pub(super) async fn with_mail(
     answers: Vec<action_core::ConfirmAnswer>,
 ) -> (Rig<super::rig::Fakes>, tempfile::TempDir) {
     let dir = tempfile::tempdir().expect("scratch");
-    let (rig, _files) = started(Setup {
+    let (rig, _files) = Box::pin(started(Setup {
         turns,
         answers,
         tools: Some(offer(&dir)),
         ..Setup::default()
-    })
+    }))
     .await;
     rig.router.seams.link.mail.add_thread(MailThread {
         key: THREAD.into(),
@@ -71,7 +71,7 @@ fn offered(rig: &Rig<super::rig::Fakes>) -> Offered {
 
 #[tokio::test]
 async fn session_new_offers_one_stdio_server_whose_token_is_not_on_a_command_line() {
-    let (rig, _dir) = with_mail(Vec::new(), Vec::new()).await;
+    let (rig, _dir) = Box::pin(with_mail(Vec::new(), Vec::new())).await;
     let servers = rig.agent.new_session()["mcpServers"].clone();
     assert_eq!(servers.as_array().map(Vec::len), Some(1));
     let server = offered(&rig);
@@ -93,19 +93,19 @@ async fn session_new_offers_one_stdio_server_whose_token_is_not_on_a_command_lin
 
 #[tokio::test]
 async fn a_host_with_no_edge_offers_the_agent_no_server() {
-    let (rig, _files) = started(Setup::default()).await;
+    let (rig, _files) = Box::pin(started(Setup::default())).await;
     assert_eq!(rig.agent.new_session()["mcpServers"], json!([]));
     assert!(rig.spawned.plans()[0].edge.is_none());
 }
 
 #[tokio::test]
 async fn the_tools_are_the_mcp_edges_and_never_the_hosts_own_actions() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![bridge_list("list"), Act::Stop("end_turn")]],
         vec![],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "what can you do").await;
+    Box::pin(run_turn(&mut rig, "what can you do")).await;
     let reply = rig.agent.reply("list").expect("a reply");
     let names: Vec<&str> = reply["tools"]
         .as_array()
@@ -125,7 +125,7 @@ async fn the_tools_are_the_mcp_edges_and_never_the_hosts_own_actions() {
 
 #[tokio::test]
 async fn a_read_is_a_router_call_in_the_agents_session_as_that_program() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             bridge_call(
                 "read",
@@ -136,9 +136,9 @@ async fn a_read_is_a_router_call_in_the_agents_session_as_that_program() {
         ]],
         // The first use of a data class asks, as it does for the planner.
         vec![once()],
-    )
+    ))
     .await;
-    let events = run_turn(&mut rig, "read the lunch mail").await;
+    let events = Box::pin(run_turn(&mut rig, "read the lunch mail")).await;
     assert_eq!(*ended_with(&events), TurnEnd::Done);
     let reply = rig.agent.reply("read").expect("a reply");
     assert!(reply.get("done").is_some(), "{reply}");
@@ -161,7 +161,7 @@ async fn a_read_is_a_router_call_in_the_agents_session_as_that_program() {
 
 #[tokio::test]
 async fn a_write_asks_the_person_and_any_grant_is_the_programs_in_dockets_store() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             bridge_call(
                 "archive",
@@ -171,9 +171,9 @@ async fn a_write_asks_the_person_and_any_grant_is_the_programs_in_dockets_store(
             Act::Stop("end_turn"),
         ]],
         vec![always(), always()],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "archive the lunch mail").await;
+    Box::pin(run_turn(&mut rig, "archive the lunch mail")).await;
     let reply = rig.agent.reply("archive").expect("reply");
     assert!(reply.get("done").is_some(), "{reply}");
     assert!(rig.router.seams.link.mail.is_archived(THREAD));
@@ -190,7 +190,7 @@ async fn a_write_asks_the_person_and_any_grant_is_the_programs_in_dockets_store(
 
 #[tokio::test]
 async fn a_refusal_comes_back_coarse_and_nothing_is_done() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             bridge_call(
                 "archive",
@@ -200,9 +200,9 @@ async fn a_refusal_comes_back_coarse_and_nothing_is_done() {
             Act::Stop("end_turn"),
         ]],
         vec![no()],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "archive the lunch mail").await;
+    Box::pin(run_turn(&mut rig, "archive the lunch mail")).await;
     let reply = rig.agent.reply("archive").expect("reply");
     assert!(reply.get("failed").is_some(), "{reply}");
     assert!(!rig.router.seams.link.mail.is_archived(THREAD));
@@ -221,8 +221,8 @@ async fn five_refusals_in_a_row_pause_the_turn_as_the_routers_breaker_does_for_a
         })
         .chain([Act::Stop("end_turn")])
         .collect();
-    let (mut rig, _dir) = with_mail(vec![acts], vec![no(); 6]).await;
-    let events = run_turn(&mut rig, "archive").await;
+    let (mut rig, _dir) = Box::pin(with_mail(vec![acts], vec![no(); 6])).await;
+    let events = Box::pin(run_turn(&mut rig, "archive")).await;
     assert!(!rig.router.seams.link.mail.is_archived(THREAD));
     let breaker = rig
         .audit()
@@ -248,7 +248,7 @@ pub(super) fn reached(rig: &Rig<super::rig::Fakes>) -> usize {
 /// stranger: it is answered `refused` and the router sees nothing.
 #[tokio::test]
 async fn a_wrong_token_is_refused_and_reaches_nothing() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             Act::Bridge {
                 tag: "wrong",
@@ -265,9 +265,9 @@ async fn a_wrong_token_is_refused_and_reaches_nothing() {
             Act::Stop("end_turn"),
         ]],
         vec![],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     for tag in ["wrong", "short", "none"] {
         assert_eq!(
             rig.agent.reply(tag).expect("reply"),
@@ -282,7 +282,7 @@ async fn a_wrong_token_is_refused_and_reaches_nothing() {
 /// field is not a request; a tool argument of that name is an argument the action does not have.
 #[tokio::test]
 async fn a_call_cannot_name_another_session_program_or_app() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             Act::Bridge {
                 tag: "session",
@@ -302,9 +302,9 @@ async fn a_call_cannot_name_another_session_program_or_app() {
             Act::Stop("end_turn"),
         ]],
         vec![],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     assert_eq!(rig.agent.reply("session").expect("reply"), json!("refused"));
     assert_eq!(rig.agent.reply("program").expect("reply"), json!("refused"));
     let reply = rig.agent.reply("arg").expect("reply");
@@ -319,7 +319,7 @@ async fn a_call_cannot_name_another_session_program_or_app() {
 /// however it is spelled.
 #[tokio::test]
 async fn the_hosts_actions_and_hidden_ones_are_not_tools() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             bridge_call(
                 "write",
@@ -335,9 +335,9 @@ async fn the_hosts_actions_and_hidden_ones_are_not_tools() {
             Act::Stop("end_turn"),
         ]],
         vec![],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     for tag in ["write", "hidden", "dots"] {
         let reply = rig.agent.reply(tag).expect("reply");
         assert!(reply.to_string().contains("unknown_tool"), "{tag}: {reply}");
@@ -349,8 +349,8 @@ async fn the_hosts_actions_and_hidden_ones_are_not_tools() {
 /// answers its own token and still gets nothing from the router.
 #[tokio::test]
 async fn an_edge_cannot_act_in_a_session_the_host_did_not_open_and_tokens_are_not_shared() {
-    let (mut rig, dir) = with_mail(vec![vec![Act::Stop("end_turn")]], vec![]).await;
-    run_turn(&mut rig, "go").await;
+    let (mut rig, dir) = Box::pin(with_mail(vec![vec![Act::Stop("end_turn")]], vec![])).await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     let stranger = SessionId::parse("s-99").expect("session");
     let other =
         ToolsEdge::start(&offer(&dir), &stranger, &program(), rig.court.clone()).expect("edge");
@@ -397,12 +397,12 @@ async fn an_edge_cannot_act_in_a_session_the_host_did_not_open_and_tokens_are_no
 /// finds nothing, and nothing reaches the router.
 #[tokio::test]
 async fn after_the_session_is_closed_the_edge_is_gone() {
-    let (mut rig, _dir) = with_mail(
+    let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![bridge_list("before"), Act::Stop("end_turn")]],
         vec![],
-    )
+    ))
     .await;
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     assert!(
         rig.agent
             .reply("before")
@@ -413,8 +413,7 @@ async fn after_the_session_is_closed_the_edge_is_gone() {
     let server = offered(&rig);
     let before = reached(&rig);
     let session = rig.session.clone();
-    rig.host
-        .close(&session, agent_session::EndCause::Closed)
+    Box::pin(rig.host.close(&session, agent_session::EndCause::Closed))
         .await
         .expect("close");
     let (socket, line) = server.line(

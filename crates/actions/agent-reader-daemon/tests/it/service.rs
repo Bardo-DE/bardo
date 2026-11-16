@@ -119,7 +119,7 @@ async fn world() -> (Arc<Router<action_fake::FakeSeams>>, SessionId, Vec<Handle>
 async fn the_handles_are_resolved_in_the_session_and_read_as_quarantined_data() {
     let (router, session, handles) = world().await;
     let inferd = ScriptedInferd::answering("receipt");
-    let service = service(inferd.clone(), router.clone());
+    let service = service(inferd.clone(), Arc::clone(&router));
 
     let value = service
         .extract_in(&session, classify(&handles))
@@ -256,7 +256,7 @@ async fn what_the_model_says_is_passed_on_only_if_it_fits() {
         ),
     ];
     for (name, inferd, want) in rows {
-        let service = service(inferd, router.clone());
+        let service = service(inferd, Arc::clone(&router));
         let got = action_core::Reader::extract(
             &service,
             &session,

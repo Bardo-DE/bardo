@@ -144,7 +144,7 @@ fn a_stored_word_is_nothing_automatic_or_a_model_and_only_nothing_marks_no_item(
         (
             "auto",
             Choice::Automatic {
-                pool: Default::default(),
+                pool: AutoPool::default(),
             },
             Some("auto"),
         ),

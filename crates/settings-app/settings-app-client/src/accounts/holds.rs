@@ -102,7 +102,7 @@ impl Datasets {
     /// Reads the status of `datasets`, the ones of the accounts now shown, and keeps them for the
     /// next time it is read again.
     pub async fn read(&self, datasets: Vec<DatasetName>) {
-        *self.shown.lock().unwrap_or_else(PoisonError::into_inner) = datasets.clone();
+        (*self.shown.lock().unwrap_or_else(PoisonError::into_inner)).clone_from(&datasets);
         let mut answers = Vec::new();
         for dataset in datasets {
             if let Some(status) = self.sync.status(dataset.clone()).await {

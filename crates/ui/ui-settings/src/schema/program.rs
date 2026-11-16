@@ -280,7 +280,7 @@ mod tests {
             file: FilePath("bardo/appearance.toml".to_owned()),
             version: 1,
             foreign: Default::default(),
-            pages: Default::default(),
+            pages: Vec::default(),
             key: vec![crate::schema::KeySpec {
                 ends: None,
                 path: KeyPath("appearance.theme".to_owned()),

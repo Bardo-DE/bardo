@@ -60,6 +60,7 @@ pub struct Dirs {
 impl Dirs {
     /// This process's, as the `dirs` crate reads them. Without a home at all (no `$HOME` and
     /// no passwd entry) everything hangs off `/`, where writes fail and are logged.
+    #[must_use]
     pub fn from_process() -> Dirs {
         let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("/"));
         let xdg = XdgEnv::from_process();
@@ -81,6 +82,7 @@ impl Dirs {
 
     /// Every directory inside `root` (a test's scratch folder): `root/home`, `root/config`, ...,
     /// `root/run`; no Pictures folder.
+    #[must_use]
     pub fn under(root: &Path) -> Dirs {
         Dirs {
             home: root.join("home"),
@@ -105,6 +107,7 @@ impl Dirs {
     /// directory and of each system data directory, `~/.icons`, and the system pixmaps. The
     /// lookup that finds an icon by name and the shell's host (which reads only inside these)
     /// agree through this one list.
+    #[must_use]
     pub fn icon_dirs(&self) -> Vec<PathBuf> {
         let data = std::iter::once(&self.data).chain(&self.data_dirs);
         let mut dirs: Vec<PathBuf> = data
@@ -118,6 +121,7 @@ impl Dirs {
     /// Every folder an absolute `Icon=` of a desktop entry may name a file in: the icon folders
     /// ([`Dirs::icon_dirs`]) and the app stores' ([`Dirs::app_stores`]). The scan of the apps
     /// and the host's file roots take it from here, so what the scan keeps is what the host serves.
+    #[must_use]
     pub fn icon_file_roots(&self) -> Vec<PathBuf> {
         let mut roots = self.icon_dirs();
         roots.extend(self.app_stores.clone());
@@ -126,6 +130,7 @@ impl Dirs {
 
     /// Every folder a notification's picture may be read from: the icon folders
     /// ([`Dirs::icon_dirs`]) and `notifications` in bardo-shell's cache folder.
+    #[must_use]
     pub fn notification_image_dirs(&self) -> Vec<PathBuf> {
         let mut dirs = self.icon_dirs();
         dirs.push(self.sill_cache().join("notifications"));
@@ -134,32 +139,38 @@ impl Dirs {
 
     /// The freedesktop thumbnail cache, `thumbnails` in the cache directory: the pictures other
     /// programs (a file manager, a thumbnailer) made of files, by the size's folder.
+    #[must_use]
     pub fn thumbnails(&self) -> PathBuf {
         self.cache.join("thumbnails")
     }
 
     /// `bardo-shell`'s own folder under the state directory.
+    #[must_use]
     pub fn sill_state(&self) -> PathBuf {
         self.state.join("bardo").join("shell")
     }
 
     /// The desktop's shared folder under the state directory (`quire`): where quire keeps records
     /// every app shares, such as the styles guard's.
+    #[must_use]
     pub fn quire_state(&self) -> PathBuf {
         self.state.join("bardo")
     }
 
     /// `bardo-shell`'s own folder under the cache directory.
+    #[must_use]
     pub fn sill_cache(&self) -> PathBuf {
         self.cache.join("bardo").join("shell")
     }
 
     /// `bardo-shell`'s own folder under the config directory (the settings file, the dock pins).
+    #[must_use]
     pub fn sill_config(&self) -> PathBuf {
         self.config.join("bardo").join("shell")
     }
 
     /// key-remap's folder under the config directory: the person's `key-remap.toml` is in it.
+    #[must_use]
     pub fn keycap_config(&self) -> PathBuf {
         self.config.join("bardo").join("key-remap")
     }

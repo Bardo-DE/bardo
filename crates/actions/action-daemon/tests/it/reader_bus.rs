@@ -111,7 +111,7 @@ async fn rig(answer: &str) -> Rig {
         agent_reader_daemon::shipped_callers(),
         dir.path().join("proc"),
     ));
-    serve_on(&server, Arc::new(service), who.clone())
+    serve_on(&server, Arc::new(service), Arc::clone(&who))
         .await
         .expect("readerd serves");
     let intentd = bus.connect().await;

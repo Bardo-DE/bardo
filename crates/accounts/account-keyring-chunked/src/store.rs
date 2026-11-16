@@ -22,8 +22,8 @@ pub struct ChunkedStore<S: ?Sized = CredentialStore> {
 impl<S: ?Sized> Clone for ChunkedStore<S> {
     fn clone(&self) -> Self {
         Self {
-            inner: self.inner.clone(),
-            marker: self.marker.clone(),
+            inner: Arc::clone(&self.inner),
+            marker: Arc::clone(&self.marker),
             limit: self.limit,
         }
     }

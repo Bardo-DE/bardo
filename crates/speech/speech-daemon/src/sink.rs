@@ -28,7 +28,7 @@ impl EventSink {
         let (near, far) = UnixStream::pair()?;
         let (tx, mut rx) = mpsc::channel::<Vec<u8>>(QUEUE_FRAMES);
         let overflowed = Arc::new(AtomicBool::new(false));
-        let flag = overflowed.clone();
+        let flag = Arc::clone(&overflowed);
         tokio::spawn(async move {
             let mut near = near;
             while let Some(bytes) = rx.recv().await {

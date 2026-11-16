@@ -1,4 +1,4 @@
-//! RowConfirm: a question a row asks in its own line, in place of its words and accessory, with
+//! `RowConfirm`: a question a row asks in its own line, in place of its words and accessory, with
 //! a Cancel and a confirming button (design/30 section 2.6). It is the row-scoped sibling of an
 //! `Alert`: where the alert interrupts the window, this one sits where the person pressed, so
 //! removing one row of a long list asks about that row only. Cancel takes the keyboard as it

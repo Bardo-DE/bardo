@@ -37,6 +37,7 @@ impl PathSegment {
     }
 
     /// The same segment in `drop`'s place in a drag.
+    #[must_use]
     pub fn with_drop(self, drop: DropState) -> Self {
         PathSegment { drop, ..self }
     }

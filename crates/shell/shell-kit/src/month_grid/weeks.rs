@@ -1,4 +1,4 @@
-//! A MonthGrid's weeks: the rows of day cells, mounted under the month's key so a new month is a
+//! A `MonthGrid`'s weeks: the rows of day cells, mounted under the month's key so a new month is a
 //! new body, which plays its slide once as it mounts and drops the class at the slide's settle
 //! (design/04-COMPONENTS.md section 39; design/05-MOTION.md section 7, timers instead of
 //! `animationend`). A render that keeps the month keeps the body, and plays nothing.

@@ -1,4 +1,4 @@
-//! MarkFace: a provider mark described as data, a letter of one or two characters on a colour
+//! `MarkFace`: a provider mark described as data, a letter of one or two characters on a colour
 //! (`#RRGGBB`), as a host that ships its providers as data supplies it. Quire never names the
 //! host; it validates the pair and picks the letter's ink itself.
 
@@ -62,6 +62,7 @@ impl MarkFace {
     }
 
     /// The ink for the letter on `colour`: white or the dark ink, whichever contrasts more.
+    #[must_use]
     pub fn ink_on(colour: &str) -> &'static str {
         let against = |ink: &str| ratio(ink, colour).unwrap_or_default();
         if against(WHITE_INK) >= against(DARK_INK) {
@@ -74,6 +75,7 @@ impl MarkFace {
     /// The face as a round avatar of `size`, for a row that leads with an avatar: the letter's
     /// first character on the face's colour. `None` when the letter is blank; a bad colour
     /// draws the neutral mark's, as [`MarkFace::drawn`] does.
+    #[must_use]
     pub fn avatar(&self, size: AvatarSize) -> Option<AvatarFace> {
         let drawn = self.drawn()?;
         let colour = Hex::parse(&drawn.colour)?;

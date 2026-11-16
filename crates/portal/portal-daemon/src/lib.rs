@@ -200,10 +200,11 @@ pub async fn serve_on(
         .with_prover(std::sync::Arc::clone(&prover))
         .with_guard(guard.clone());
     // Remote control remembers in the screen-sharing book, so there is one list and one revoke.
-    let remote = remote_desktop::RemoteDesktopService::new(Box::new(asker.clone()), eis)
-        .with_memory(cast.keeper(), prover)
-        .with_names(names.clone())
-        .with_guard(guard.clone());
+    let remote =
+        remote_desktop::RemoteDesktopService::new(Box::new(std::sync::Arc::clone(&asker)), eis)
+            .with_memory(cast.keeper(), prover)
+            .with_names(names.clone())
+            .with_guard(guard.clone());
     let grants = cast.grants(peers::RoleGuard::settings(link.clone()), names.clone());
     let connection = builder
         .serve_at(

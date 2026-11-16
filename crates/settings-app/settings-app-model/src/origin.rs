@@ -96,18 +96,18 @@ mod tests {
 
     /// `(case, owner, mode, origin)`.
     const CASES: &[(&str, u32, u32, SchemaOrigin)] = &[
-        ("root's, closed", 0, 0o040755, System),
-        ("root's, tighter", 0, 0o040700, System),
-        ("root's, group-writable", 0, 0o040775, PersonWritable),
-        ("root's, other-writable", 0, 0o040757, PersonWritable),
+        ("root's, closed", 0, 0o040_755, System),
+        ("root's, tighter", 0, 0o040_700, System),
+        ("root's, group-writable", 0, 0o040_775, PersonWritable),
+        ("root's, other-writable", 0, 0o040_757, PersonWritable),
         (
             "root's, sticky and open (like /tmp)",
             0,
-            0o041777,
+            0o041_777,
             PersonWritable,
         ),
-        ("the person's, closed", 1000, 0o040755, PersonWritable),
-        ("another system account's", 1, 0o040755, PersonWritable),
+        ("the person's, closed", 1000, 0o040_755, PersonWritable),
+        ("another system account's", 1, 0o040_755, PersonWritable),
     ];
 
     #[test]

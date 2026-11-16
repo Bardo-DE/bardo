@@ -840,8 +840,8 @@ mod tests {
                 chunk: 4,
                 ..DriveConfig::new(dir.join("cache"))
             },
-            listing.clone(),
-            source.clone(),
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
         )
         .await
         .expect("drive");
@@ -932,16 +932,20 @@ mod tests {
     async fn writable(dir: &base_testkit::Scratch) -> Writable {
         let listing = Arc::new(MemoryListing::default());
         let source = Arc::new(MemorySource::default());
-        let sink = Arc::new(MemorySink::new(listing.clone(), source.clone(), 4));
+        let sink = Arc::new(MemorySink::new(
+            Arc::clone(&listing),
+            Arc::clone(&source),
+            4,
+        ));
         let drive = Drive::open_writable(
             DriveConfig {
                 chunk: 4,
                 quiet: Duration::from_millis(20),
                 ..DriveConfig::new(dir.join("cache"))
             },
-            listing.clone(),
-            source.clone(),
-            sink.clone(),
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
+            Arc::<MemorySink>::clone(&sink),
         )
         .await
         .expect("drive");

@@ -24,6 +24,7 @@ pub enum SwitchChord {
 impl SwitchChord {
     /// The Space a key press asks for on `platform`: a digit 1 to 9 with this chord's modifier
     /// held and nothing else.
+    #[must_use]
     pub fn pressed(
         self,
         platform: Platform,
@@ -38,6 +39,7 @@ impl SwitchChord {
 
     /// The hint beside the dot at `index` (from zero): `⌘1`, drawn per platform by whoever draws
     /// it. None past the ninth.
+    #[must_use]
     pub fn shortcut(self, index: usize) -> Shortcut {
         let digit = u32::try_from(index + 1)
             .ok()

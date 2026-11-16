@@ -209,73 +209,73 @@ impl ColourToken {
     /// macOS's 85, 55 and 25 %, because the legibility gates (design/03-COLOR.md section 6)
     /// hold them to 4.5:1 over a blurred backdrop and the faint metadata to 3:1.
     fn mac(self) -> (Colour, Colour) {
-        const WHITE: Colour = solid(0xFFFFFF);
+        const WHITE: Colour = solid(0x00FF_FFFF);
         match self {
-            ColourToken::Paper => (solid(0xECECEC), solid(0x1E1E1E)),
-            ColourToken::Surface => (WHITE, solid(0x2A2A2A)),
-            ColourToken::Surface2 => (solid(0xF5F5F5), solid(0x242424)),
-            ColourToken::Raise => (WHITE, solid(0x323232)),
-            ColourToken::Ink => (solid(0x202020), solid(0xE8E8E8)),
-            ColourToken::InkSoft => (solid(0x5C5C5C), solid(0xA3A3A3)),
-            ColourToken::InkFaint => (solid(0x858585), solid(0x858585)),
-            ColourToken::Line => (solid(0xD9D9D9), solid(0x444444)),
-            ColourToken::FillBtn => (alpha(0x000000, 60), alpha(0xFFFFFF, 100)),
-            ColourToken::Fill => (alpha(0x000000, 100), alpha(0xFFFFFF, 140)),
-            ColourToken::SelectionNeutral => (alpha(0x000000, 80), alpha(0xFFFFFF, 80)),
-            ColourToken::HoverWash => (alpha(0x000000, 40), alpha(0xFFFFFF, 50)),
-            ColourToken::Stripe => (alpha(0x000000, 30), alpha(0xFFFFFF, 35)),
-            ColourToken::Grp => (WHITE, solid(0x2C2C2E)),
-            ColourToken::LineSoft => (solid(0xE6E6E6), solid(0x383838)),
-            ColourToken::FillQuaternary => (alpha(0x000000, 60), alpha(0xFFFFFF, 100)),
-            ColourToken::Ok => (solid(0x008932), solid(0x30D158)),
-            ColourToken::Warn => (solid(0xC55300), solid(0xFF9230)),
-            ColourToken::Danger => (solid(0xE9152D), solid(0xFF4245)),
+            ColourToken::Paper => (solid(0x00EC_ECEC), solid(0x001E_1E1E)),
+            ColourToken::Surface => (WHITE, solid(0x002A_2A2A)),
+            ColourToken::Surface2 => (solid(0x00F5_F5F5), solid(0x0024_2424)),
+            ColourToken::Raise => (WHITE, solid(0x0032_3232)),
+            ColourToken::Ink => (solid(0x0020_2020), solid(0x00E8_E8E8)),
+            ColourToken::InkSoft => (solid(0x005C_5C5C), solid(0x00A3_A3A3)),
+            ColourToken::InkFaint => (solid(0x0085_8585), solid(0x0085_8585)),
+            ColourToken::Line => (solid(0x00D9_D9D9), solid(0x0044_4444)),
+            ColourToken::FillBtn => (alpha(0x0000_0000, 60), alpha(0x00FF_FFFF, 100)),
+            ColourToken::Fill => (alpha(0x0000_0000, 100), alpha(0x00FF_FFFF, 140)),
+            ColourToken::SelectionNeutral => (alpha(0x0000_0000, 80), alpha(0x00FF_FFFF, 80)),
+            ColourToken::HoverWash => (alpha(0x0000_0000, 40), alpha(0x00FF_FFFF, 50)),
+            ColourToken::Stripe => (alpha(0x0000_0000, 30), alpha(0x00FF_FFFF, 35)),
+            ColourToken::Grp => (WHITE, solid(0x002C_2C2E)),
+            ColourToken::LineSoft => (solid(0x00E6_E6E6), solid(0x0038_3838)),
+            ColourToken::FillQuaternary => (alpha(0x0000_0000, 60), alpha(0x00FF_FFFF, 100)),
+            ColourToken::Ok => (solid(0x0000_8932), solid(0x0030_D158)),
+            ColourToken::Warn => (solid(0x00C5_5300), solid(0x00FF_9230)),
+            ColourToken::Danger => (solid(0x00E9_152D), solid(0x00FF_4245)),
             // The danger hue, as `--danger` (proposed, design/04-COMPONENTS.md section 50).
-            ColourToken::SpellMark => (solid(0xE9152D), solid(0xFF4245)),
+            ColourToken::SpellMark => (solid(0x00E9_152D), solid(0x00FF_4245)),
             // Not redefined in dark (section 3).
-            ColourToken::Scrim => (alpha(0x000000, 220), alpha(0x000000, 220)),
+            ColourToken::Scrim => (alpha(0x0000_0000, 220), alpha(0x0000_0000, 220)),
             // Opaque black in either scheme: `IdleDim` sets the overlay's own opacity from
             // `idle.dim_level_pct`, so the token itself carries no alpha (design/03-COLOR.md
             // section 17.3.3).
-            ColourToken::ScrimIdle => (solid(0x000000), solid(0x000000)),
+            ColourToken::ScrimIdle => (solid(0x0000_0000), solid(0x0000_0000)),
             ColourToken::Knob => (WHITE, WHITE),
             // The voice orb's four colours, the oklch values of the reference converted to
             // sRGB (`orb_colours_are_the_oklch_values_they_name` proves them); dark is the same
             // hues at a lower lightness so the glows do not dazzle on a dark ground.
-            ColourToken::OrbBg => (solid(0xE8EFFC), solid(0x1B1F29)),
-            ColourToken::OrbC1 => (solid(0xF383BB), solid(0xDF6AA6)),
-            ColourToken::OrbC2 => (solid(0x43D5DC), solid(0x04BBC3)),
-            ColourToken::OrbC3 => (solid(0xA9AFFE), solid(0x8D92F9)),
+            ColourToken::OrbBg => (solid(0x00E8_EFFC), solid(0x001B_1F29)),
+            ColourToken::OrbC1 => (solid(0x00F3_83BB), solid(0x00DF_6AA6)),
+            ColourToken::OrbC2 => (solid(0x0043_D5DC), solid(0x0004_BBC3)),
+            ColourToken::OrbC3 => (solid(0x00A9_AFFE), solid(0x008D_92F9)),
             // The sender's page stays white in a dark window (section 12).
             ColourToken::ForeignGround => (WHITE, WHITE),
-            ColourToken::OkWash => (alpha(0x008932, 160), alpha(0x30D158, 160)),
-            ColourToken::WarnWash => (solid(0xFAE7DF), solid(0x45382F)),
-            ColourToken::DangerWash => (alpha(0xE9152D, 160), alpha(0xFF4245, 160)),
+            ColourToken::OkWash => (alpha(0x0000_8932, 160), alpha(0x0030_D158, 160)),
+            ColourToken::WarnWash => (solid(0x00FA_E7DF), solid(0x0045_382F)),
+            ColourToken::DangerWash => (alpha(0x00E9_152D, 160), alpha(0x00FF_4245, 160)),
             // `#fff` on the lying link pill in light (4.56:1 on `#E9152D`); in dark `--danger` is
             // lifted to `#FF4245`, where white measures 3.43:1, so the ink turns dark (mailo's
             // `#1A0B08`, 5.58:1). The legibility test gates every status pair in both schemes.
-            ColourToken::DangerInk => (WHITE, solid(0x1A0B08)),
+            ColourToken::DangerInk => (WHITE, solid(0x001A_0B08)),
             // White on `--ok` in light (4.54:1); a dark green-black on the lifted dark `--ok`.
-            ColourToken::OkInk => (WHITE, solid(0x0B1A12)),
+            ColourToken::OkInk => (WHITE, solid(0x000B_1A12)),
             // White on light `--warn` `#C55300` is 4.55:1; the lifted dark `--warn` takes a dark ink.
-            ColourToken::WarnInk => (WHITE, solid(0x140D03)),
+            ColourToken::WarnInk => (WHITE, solid(0x0014_0D03)),
             // A modal's dimming: stronger in dark, where the paper is already near black and the
             // sheet stands out by its hairline and shadow; the legibility test gates both.
-            ColourToken::ScrimModal => (alpha(0x000000, 400), alpha(0x000000, 550)),
+            ColourToken::ScrimModal => (alpha(0x0000_0000, 400), alpha(0x0000_0000, 550)),
             // `--ink` at .5 over the layer's .8 opacity in light (effective .4); `--paper`'s
             // equivalent, white at the same effective alpha, in dark (design/11-BEHAVIOUR-scroll.md
             // section 11.3.12).
-            ColourToken::ScrollThumb => (alpha(0x000000, 400), alpha(0xFFFFFF, 400)),
+            ColourToken::ScrollThumb => (alpha(0x0000_0000, 400), alpha(0x00FF_FFFF, 400)),
             ColourToken::MarkGround => (WHITE, WHITE),
             // The lock screen draws on the wallpaper, not on the card, so its type is white in
             // either scheme and its field a flat white glass (design/20-SURFACES.md section 1.9).
             ColourToken::LockInk => (WHITE, WHITE),
-            ColourToken::LockInkSoft => (alpha(0xFFFFFF, 780), alpha(0xFFFFFF, 780)),
-            ColourToken::LockGlass => (alpha(0xFFFFFF, 240), alpha(0xFFFFFF, 180)),
-            ColourToken::LockGlassStrong => (alpha(0xFFFFFF, 380), alpha(0xFFFFFF, 300)),
-            ColourToken::LockVeil => (alpha(0x000000, 120), alpha(0x000000, 280)),
+            ColourToken::LockInkSoft => (alpha(0x00FF_FFFF, 780), alpha(0x00FF_FFFF, 780)),
+            ColourToken::LockGlass => (alpha(0x00FF_FFFF, 240), alpha(0x00FF_FFFF, 180)),
+            ColourToken::LockGlassStrong => (alpha(0x00FF_FFFF, 380), alpha(0x00FF_FFFF, 300)),
+            ColourToken::LockVeil => (alpha(0x0000_0000, 120), alpha(0x0000_0000, 280)),
             // Proposed (O-3): black at .25 on light, white at .25 on dark.
-            ColourToken::HandleRing => (alpha(0x000000, 250), alpha(0xFFFFFF, 250)),
+            ColourToken::HandleRing => (alpha(0x0000_0000, 250), alpha(0x00FF_FFFF, 250)),
             // `#fff`/`#FFFFFF` on the avatar's person and account tones in both schemes (O-3).
             ColourToken::OnHue => (WHITE, WHITE),
             ColourToken::Accent

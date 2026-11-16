@@ -5,6 +5,7 @@ use std::path::Path;
 use shell_model::seed::Store;
 
 /// Whether `file` exists.
+#[must_use]
 pub fn store_of(file: &Path) -> Store {
     if file.exists() {
         Store::Present

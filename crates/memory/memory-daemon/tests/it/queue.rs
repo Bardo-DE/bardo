@@ -58,7 +58,7 @@ async fn a_crowd_of_mixed_requests_never_sees_busy() {
     let queued = Arc::new(service(&dirs_in(scratch.path()), &SharedKeys::default()));
     let mut tasks = Vec::new();
     for n in 0..24 {
-        let queue = queued.clone();
+        let queue = Arc::clone(&queued);
         tasks.push(tokio::spawn(async move {
             let (caller, request) = match n % 6 {
                 0 => (

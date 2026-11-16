@@ -55,6 +55,7 @@ impl Resolution {
     }
 
     /// `300 dpi`, or `300 × 72 dpi` when the two directions differ.
+    #[must_use]
     pub fn text(self) -> String {
         if self.horizontal == self.vertical {
             format!("{} dpi", self.horizontal)

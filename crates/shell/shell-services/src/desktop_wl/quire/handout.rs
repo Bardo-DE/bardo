@@ -48,6 +48,7 @@ pub struct ZbusHandout {
 
 impl ZbusHandout {
     /// Ask over `connection` (the session bus).
+    #[must_use]
     pub fn new(connection: zbus::Connection) -> Self {
         Self { connection }
     }

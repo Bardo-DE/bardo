@@ -177,7 +177,7 @@ pub fn work_form(name: &str, model: HelperModel) -> HelperForm {
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Change,
         steps: Count(8),
-        kind: Default::default(),
+        kind: HelperKind::default(),
     }
 }
 
@@ -190,7 +190,7 @@ pub async fn editor_says(
     text: &str,
 ) -> SayReply {
     let editor = Intents::over(InProcess::new(
-        w.router.clone(),
+        std::sync::Arc::clone(&w.router),
         caller("org.bardo.Acp", CallerRole::Editor),
     ));
     let id = editor

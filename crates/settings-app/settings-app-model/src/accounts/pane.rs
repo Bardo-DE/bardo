@@ -161,7 +161,7 @@ impl AccountsPane {
                 continue;
             };
             match row {
-                Row::Label(label) => account.label = label.to_owned(),
+                Row::Label(label) => label.clone_into(&mut account.label),
                 Row::State(word) => account.status = AccountStatus::of(word),
                 Row::Place(word) => account.place = Place::of(word),
                 Row::SignIn(word) => account.sign_in = sign_in_of(word),

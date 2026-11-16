@@ -96,6 +96,7 @@ pub struct SheetConfirmer {
 impl SheetConfirmer {
     /// Asks over `connection`, trusting the `confirm` role of the shipped configuration, held by
     /// the processes the shipped `actiond-callers.toml` names.
+    #[must_use]
     pub fn new(connection: BusConnection) -> Self {
         let config = IntentdConfig::shipped().unwrap_or_else(|_| IntentdConfig::empty());
         let who = Arc::new(Identity::on_system(connection.clone(), callers::shipped()));
@@ -108,7 +109,7 @@ impl SheetConfirmer {
         config: Arc<IntentdConfig>,
         who: Arc<Identity>,
     ) -> Self {
-        let peers = Peers::new(connection.clone(), config.clone(), who.clone());
+        let peers = Peers::new(connection.clone(), Arc::clone(&config), Arc::clone(&who));
         Self {
             connection,
             config,
@@ -120,11 +121,12 @@ impl SheetConfirmer {
     }
 
     /// Trusts the editor role of the name `org.bardo.Acp` only while `acp` shows the setting on.
+    #[must_use]
     pub fn gated(mut self, acp: AcpGate, proc_root: &ProcRoot) -> Self {
         self.peers = Peers::gated(
             self.connection.clone(),
-            self.config.clone(),
-            self.who.clone(),
+            Arc::clone(&self.config),
+            Arc::clone(&self.who),
             proc_root,
             acp,
         );
@@ -132,6 +134,7 @@ impl SheetConfirmer {
     }
 
     /// Waits `grace` past a sheet's own expiry before ending it as expired.
+    #[must_use]
     pub fn waiting(mut self, grace: Duration) -> Self {
         self.grace = grace;
         self

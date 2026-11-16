@@ -28,13 +28,13 @@ fn query(text: &str) -> RecallQuery {
 async fn a_space_is_written_recalled_and_forgotten_in_process() {
     let service = Arc::new(fake_service(ScriptedConsolidator::default()));
     let app = Memory::over(InProcess::new(
-        service.clone(),
+        Arc::clone(&service),
         Caller::App(AppId {
             name: mail(),
             isolation: Isolation::InProcess,
         }),
     ));
-    let reader = Memory::over(InProcess::new(service.clone(), Caller::Router));
+    let reader = Memory::over(InProcess::new(Arc::clone(&service), Caller::Router));
     let shell = Memory::over(InProcess::new(service, Caller::ShellUi));
 
     assert!(matches!(

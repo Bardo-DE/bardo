@@ -41,7 +41,7 @@ pub(super) fn overlay(listed: Option<Entry>, id: &RemoteId, edit: &Edit) -> Opti
         entry.modified = base.modified.map(UnixSeconds);
         entry.hash = None;
     }
-    entry.name = edit.name.clone();
+    entry.name.clone_from(&edit.name);
     match &edit.parent {
         NodeId::Top => entry.parent = None,
         NodeId::Remote(parent) => entry.parent = Some(parent.clone()),

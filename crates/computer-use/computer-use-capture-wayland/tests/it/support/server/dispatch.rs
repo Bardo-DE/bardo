@@ -243,7 +243,7 @@ impl Dispatch<WlShmPool, Pool> for Compositor {
             init.init(
                 id,
                 Buf {
-                    file: pool.file.clone(),
+                    file: std::sync::Arc::clone(&pool.file),
                     offset,
                     size: (width, height),
                     stride,

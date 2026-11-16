@@ -208,10 +208,8 @@ mod release_tests {
 
     #[test]
     fn run_has_no_dev_callers_flag() {
-        assert!(Cli::try_parse_from(["bardo-shell", "run"]).is_ok());
-        assert!(
-            Cli::try_parse_from(["bardo-shell", "run", "--dev-callers", "/tmp/rows.toml"]).is_err()
-        );
+        Cli::try_parse_from(["bardo-shell", "run"]).unwrap();
+        Cli::try_parse_from(["bardo-shell", "run", "--dev-callers", "/tmp/rows.toml"]).unwrap_err();
     }
 }
 

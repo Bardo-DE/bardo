@@ -19,6 +19,7 @@ pub struct WidgetKind(Cow<'static, str>);
 
 impl WidgetKind {
     /// A kind compiled into the program.
+    #[must_use]
     pub const fn fixed(name: &'static str) -> Self {
         WidgetKind(Cow::Borrowed(name))
     }
@@ -29,6 +30,7 @@ impl WidgetKind {
     }
 
     /// The name.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }
@@ -78,6 +80,7 @@ pub trait Widget: Clone + PartialEq + Default + 'static {
 
     /// The card's title row; none by default (a glanceable widget's content fills the card,
     /// design/23 section 2 rule 4).
+    #[must_use]
     fn title() -> Option<WidgetTitle> {
         None
     }
@@ -85,6 +88,7 @@ pub trait Widget: Clone + PartialEq + Default + 'static {
 
 /// `size` if `W` draws it, else the first size `W` does: a card never asks a widget for a size
 /// it has not drawn.
+#[must_use]
 pub fn fit<W: Widget>(size: WidgetSize) -> WidgetSize {
     let sizes = W::sizes();
     if sizes.contains(&size) {

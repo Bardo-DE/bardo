@@ -135,7 +135,7 @@ pub async fn serve(bus: &PrivateBus, file: PathBuf, confinement: &'static str) -
             Control {
                 file,
                 confinement,
-                state: state.clone(),
+                state: Arc::clone(&state),
             },
         )
         .await

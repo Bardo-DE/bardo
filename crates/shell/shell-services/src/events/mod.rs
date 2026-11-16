@@ -4,7 +4,7 @@
 //! Where events come from:
 //!
 //! - **An `.ics` file or a directory of them** is the cheap, local, dependency-free source, and
-//!   it covers more than it sounds: vdirsyncer syncs any CalDAV server (Nextcloud, Fastmail,
+//!   it covers more than it sounds: vdirsyncer syncs any `CalDAV` server (Nextcloud, Fastmail,
 //!   iCloud, Google) into a directory of one `.ics` per event per collection, the layout khal
 //!   reads (`~/.calendars/<collection>/<uid>.ics` by convention); and every calendar exports
 //!   `.ics`. [`IcsProvider`] reads them: `ics` parses RFC 5545 by hand (unfolding, `VEVENT`,

@@ -1,4 +1,4 @@
-//! TrackPosition: the Now Playing position, a `ProgressIndicator` bar with its elapsed and
+//! `TrackPosition`: the Now Playing position, a `ProgressIndicator` bar with its elapsed and
 //! remaining times (design/26-DETAILS.md 5.2.10, design/30 section 2.10). A clock-paced report
 //! steps: while playing, the bar and the times move once a second, on the second, from the last
 //! position reported, and never between; paused or buffering, the bar holds at 0 frames. Mounted only while the panel is open, so it costs one

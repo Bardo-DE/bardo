@@ -46,7 +46,7 @@ pub fn fresh(root: &Path, master: u8, consolidator: ScriptedConsolidator) -> Arc
 }
 
 pub fn client(service: &Arc<Service>, caller: Caller) -> Client {
-    Memory::over(InProcess::new(service.clone(), caller))
+    Memory::over(InProcess::new(Arc::clone(service), caller))
 }
 
 pub fn shell(service: &Arc<Service>) -> Client {

@@ -40,6 +40,7 @@ pub enum RootExtent {
 impl RootExtent {
     /// The `data-extent` value, written only for a viewport, window or popup root, so a content root's
     /// markup is what it was.
+    #[must_use]
     pub fn attribute(self) -> Option<&'static str> {
         match self {
             RootExtent::Content => None,

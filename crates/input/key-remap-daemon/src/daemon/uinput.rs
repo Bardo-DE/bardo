@@ -285,7 +285,7 @@ impl Emitter for RecordingEmitter {
             destroyed: false,
             failing: 0,
         }));
-        self.twins.push(log.clone());
+        self.twins.push(std::rc::Rc::clone(&log));
         Ok(RecordingTwin(log))
     }
 

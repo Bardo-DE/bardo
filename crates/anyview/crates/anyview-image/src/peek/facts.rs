@@ -32,7 +32,11 @@ pub(super) fn of(peeked: &ImagePeek) -> Facts {
             FactValue::text(peeked.frames.to_string()),
         );
     }
-    facts = text(FactLabel::Colour, peeked.colour.map(|c| c.text()), facts);
+    facts = text(
+        FactLabel::Colour,
+        peeked.colour.map(crate::ColourInfo::text),
+        facts,
+    );
     facts = text(FactLabel::Camera, peeked.exif.camera(), facts);
     facts = text(FactLabel::Lens, peeked.exif.lens.clone(), facts);
     facts = text(FactLabel::Exposure, peeked.exif.exposure_text(), facts);

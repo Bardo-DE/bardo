@@ -54,7 +54,7 @@ pub(crate) fn channel<T>(initial: T) -> (Sender<T>, Receiver<T>) {
         receiver: Link::Open,
         wakers: Vec::new(),
     })));
-    (Sender(shared.clone()), Receiver { shared, seen: 0 })
+    (Sender(Arc::clone(&shared)), Receiver { shared, seen: 0 })
 }
 
 /// The receiver is gone: nobody is left to publish for.

@@ -267,7 +267,7 @@ mod tests {
         let library = PhotoLibrary::open(
             dir.join(device),
             DeviceId::parse(device).expect("device"),
-            millis.clone(),
+            Arc::<ManualMillis>::clone(&millis),
         )
         .expect("library");
         (library, millis)
@@ -384,7 +384,7 @@ mod tests {
         let first = PhotoLibrary::open(
             root.clone(),
             DeviceId::parse("laptop").expect("d"),
-            millis.clone(),
+            Arc::clone(&millis),
         )
         .expect("open");
         let second =

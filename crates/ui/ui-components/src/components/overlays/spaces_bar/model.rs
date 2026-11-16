@@ -42,11 +42,13 @@ impl SpaceTile {
     }
 
     /// The same Space, marked as the one on show or not.
+    #[must_use]
     pub fn current(self, current: bool) -> Self {
         SpaceTile { current, ..self }
     }
 
     /// The same Space with the picture of it to show when the bar expands.
+    #[must_use]
     pub fn thumbnail(self, thumbnail: ImageSource) -> Self {
         SpaceTile {
             thumbnail: Some(thumbnail),
@@ -56,6 +58,7 @@ impl SpaceTile {
 
     /// The same Space with `backdrop` under its thumbnail, as the Mac shows each desktop's
     /// wallpaper with its windows on top.
+    #[must_use]
     pub fn backdrop(self, backdrop: ImageSource) -> Self {
         SpaceTile {
             backdrop: Some(backdrop),
@@ -64,6 +67,7 @@ impl SpaceTile {
     }
 
     /// The same Space with `drop` as its part in a drag.
+    #[must_use]
     pub fn in_drag(self, drop: DropState) -> Self {
         SpaceTile { drop, ..self }
     }

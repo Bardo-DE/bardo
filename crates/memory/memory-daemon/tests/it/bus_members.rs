@@ -42,7 +42,9 @@ async fn every_member_of_the_interface_is_invoked_over_the_bus() {
     let bus = PrivateBus::start(scratch.path());
     let witness = Arc::new(Witness::default());
     let server = connect(&bus.address).await;
-    serve_on(&server, witness.clone()).await.expect("serve");
+    serve_on(&server, Arc::clone(&witness))
+        .await
+        .expect("serve");
     let client = connect(&bus.address).await;
 
     let mut reached = BTreeSet::new();

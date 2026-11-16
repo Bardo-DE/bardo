@@ -63,7 +63,7 @@ impl Document for Recording {
     }
 
     fn handle_ui_event(&mut self, event: UiEvent) {
-        EventDriver::new(&mut self.base, Logger(self.log.clone())).handle_ui_event(event);
+        EventDriver::new(&mut self.base, Logger(Rc::clone(&self.log))).handle_ui_event(event);
     }
 }
 
@@ -104,7 +104,7 @@ fn surface() -> Surface {
     Surface {
         doc: Recording {
             base,
-            log: log.clone(),
+            log: Rc::clone(&log),
         },
         body,
         last: LastMove::Unknown,

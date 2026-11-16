@@ -28,7 +28,7 @@ impl<B: Backend> Open<B> {
             last.view.hunks.clone(),
         )
         .settled_as(state, now);
-        rec.skipped = last.view.skipped.clone();
+        rec.skipped.clone_from(&last.view.skipped);
         rec.erased = erased;
         runfile::save(vault, &rec).map_err(failed)
     }

@@ -1,4 +1,4 @@
-//! FileIcon: the standard file icon, drawn (customization design section 6.1). A page with a
+//! `FileIcon`: the standard file icon, drawn (customization design section 6.1). A page with a
 //! folded corner carries the kind's mark in the kind's colour and, when there is room, the
 //! extension as a small bold label; a folder is the blue Mac folder, a special one with its glyph
 //! embossed; a picture is the file's own thumbnail on a page frame; artwork (a chosen set's icon,

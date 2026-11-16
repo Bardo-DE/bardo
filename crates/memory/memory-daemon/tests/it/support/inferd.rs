@@ -45,7 +45,7 @@ impl FakeInferd {
     pub fn new(draft: &str) -> (Self, Arc<Mutex<Seen>>) {
         let seen = Arc::new(Mutex::new(Seen::default()));
         let fake = Self {
-            seen: seen.clone(),
+            seen: Arc::clone(&seen),
             draft: draft.to_owned(),
         };
         (fake, seen)
@@ -85,7 +85,7 @@ impl FakeInferd {
         tokio::spawn(serve_session(
             stream,
             class,
-            self.seen.clone(),
+            Arc::clone(&self.seen),
             self.draft.clone(),
         ));
         Ok(OwnedFd::from(std::os::fd::OwnedFd::from(theirs)))

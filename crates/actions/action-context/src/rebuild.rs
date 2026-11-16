@@ -205,11 +205,11 @@ pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
         SessionKind::Agent => None,
     };
     record.external = external;
-    record.cwd = opening.cwd.clone();
+    record.cwd.clone_from(&opening.cwd);
     record.state = state;
     record.ledger = ledger_of(plan, now);
-    record.turns = plan.turns.clone();
-    record.policy = plan.policy.clone();
+    record.turns.clone_from(&plan.turns);
+    record.policy.clone_from(&plan.policy);
     record.history = plan.history.iter().chain(&cut_off).cloned().collect();
     record.seen = labels_of(plan);
     record.saw.untrusted = taint;
@@ -302,7 +302,7 @@ mod tests {
                 cwd: None,
                 started_from: None,
                 label: None,
-                rewind: Default::default(),
+                rewind: Rewind::default(),
             },
             seat: None,
             hand: None,

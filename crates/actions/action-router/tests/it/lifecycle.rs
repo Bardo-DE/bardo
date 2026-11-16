@@ -193,10 +193,10 @@ async fn rig(strictness: Strictness) -> (Arc<Router<Rig>>, SessionOpened) {
             performed: AtomicU32::new(0),
         },
         confirmer: HaltingConfirmer {
-            late: late.clone(),
+            late: Arc::clone(&late),
             cancelled: Mutex::new(vec![]),
         },
-        reviewer: HaltingReviewer(late.clone()),
+        reviewer: HaltingReviewer(Arc::clone(&late)),
         grants: MemoryGrants::new(),
         sink: RecordingSink::new(),
         clock: FixedClock::at(UnixSeconds(0)),
@@ -214,7 +214,7 @@ async fn rig(strictness: Strictness) -> (Arc<Router<Rig>>, SessionOpened) {
         Presets::built_in().expect("policies"),
     ));
     router.state.lock().expect("lock").registry = action_fake::registry().expect("registry");
-    late.set(router.clone()).ok().expect("set once");
+    late.set(Arc::clone(&router)).ok().expect("set once");
     let opened = open_in(&router).await;
     (router, opened)
 }

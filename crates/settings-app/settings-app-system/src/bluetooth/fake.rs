@@ -47,11 +47,13 @@ impl Drop for Looking {
 
 impl FakeBluetooth {
     /// A BlueZ in this standing.
+    #[must_use]
     pub fn answering(status: BtStatus) -> FakeBluetooth {
         FakeBluetooth::standing(Ok(status))
     }
 
     /// No BlueZ, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeBluetooth {
         FakeBluetooth::standing(Err(why))
     }
@@ -70,11 +72,13 @@ impl FakeBluetooth {
     }
 
     /// What was asked of it, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<BtAsked> {
         self.kit.asked()
     }
 
     /// How many sessions are looking for devices now.
+    #[must_use]
     pub fn looking(&self) -> usize {
         self.looking.load(Ordering::SeqCst)
     }
@@ -117,7 +121,7 @@ impl BluetoothLink for FakeBluetooth {
         let (sender, asks) = mpsc::unbounded_channel();
         *locked(&self.questions) = Some(sender);
         self.looking.fetch_add(1, Ordering::SeqCst);
-        let session = BtSession::new(asks, Looking(self.looking.clone()));
+        let session = BtSession::new(asks, Looking(Arc::clone(&self.looking)));
         Box::pin(std::future::ready(Ok(session)))
     }
 

@@ -110,7 +110,7 @@ impl CalculatorProvider {
             return None;
         }
         let path = self.rates_file.clone();
-        fetch::refresh_if_due(self.rates.clone(), path.clone(), unix_now());
+        fetch::refresh_if_due(std::sync::Arc::clone(&self.rates), path.clone(), unix_now());
         match fetch::load(&path) {
             Some(loaded) => {
                 if let Ok(mut guard) = self.rates.lock() {

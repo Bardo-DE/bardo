@@ -84,8 +84,8 @@ impl ScriptedDevice {
         let log = Arc::new(Log::default());
         let feed = Arc::new(Mutex::new(None));
         let hand = Hand {
-            log: log.clone(),
-            feed: feed.clone(),
+            log: Arc::clone(&log),
+            feed: Arc::clone(&feed),
         };
         (
             Self {
@@ -176,14 +176,14 @@ impl AudioDevice for ScriptedDevice {
         self.log.formats.lock().expect("formats").push(format.rate);
         Ok(ScriptedCapture {
             rx,
-            log: self.log.clone(),
+            log: Arc::clone(&self.log),
         })
     }
 
     async fn open_playback(&self, format: PlaybackFormat) -> Result<ScriptedPlayback, DeviceError> {
         Ok(ScriptedPlayback {
             rate: format.rate,
-            log: self.log.clone(),
+            log: Arc::clone(&self.log),
         })
     }
 }

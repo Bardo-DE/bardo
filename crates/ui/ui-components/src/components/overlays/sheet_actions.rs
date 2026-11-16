@@ -1,4 +1,4 @@
-//! SheetActions: the row of buttons at the foot of a sheet (design/30 section 2.5), side by side
+//! `SheetActions`: the row of buttons at the foot of a sheet (design/30 section 2.5), side by side
 //! as a Mac sheet draws them.
 //!
 //! Markup: `div.ds-sheet-actions[role=group]` of an optional `span.ds-sheet-actions-leading` and

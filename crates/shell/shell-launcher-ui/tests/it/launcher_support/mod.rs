@@ -206,7 +206,7 @@ pub fn services_with_runner() -> (Services, LauncherFeeds, Runner) {
     let searches = Arc::new(Mutex::new(Vec::new()));
     let answer = Answer {
         results: results_tx.clone(),
-        searches: searches.clone(),
+        searches: Arc::clone(&searches),
         wl: services.windows.control.clone(),
         launch: services.launch.control.clone(),
         providers: providers(),

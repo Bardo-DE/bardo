@@ -9,6 +9,7 @@ impl BarCommand {
     /// The stable id of a standard bar item (`standard.undo`, `bar.about`, `bar.help_search`):
     /// an app whose command type wraps [`BarCommand`] answers
     /// [`AppCommand::id`] with it, so every quire app names its standard items alike.
+    #[must_use]
     pub fn id(&self) -> CommandId {
         CommandId(match self {
             BarCommand::About => "bar.about".to_owned(),
@@ -41,6 +42,7 @@ fn find<'a, T: AppCommand>(items: &'a [MenuItem<T>], id: &CommandId) -> Option<&
 impl<T: AppCommand + Clone> MenuBarModel<T> {
     /// The value of the first item that runs `id`: what the app's own menu yields when that
     /// item is picked, so an activation from outside runs the same handler.
+    #[must_use]
     pub fn command(&self, id: &CommandId) -> Option<&T> {
         self.menus().iter().find_map(|menu| find(&menu.items, id))
     }

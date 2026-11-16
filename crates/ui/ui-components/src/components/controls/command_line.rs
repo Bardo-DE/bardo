@@ -1,4 +1,4 @@
-//! CommandLine: a command to copy, as one selectable line in the data face with a Copy button
+//! `CommandLine`: a command to copy, as one selectable line in the data face with a Copy button
 //! beside it. Markup: `div.ds-command-line` holding `span.ds-command-line-text` and a `Button`.
 
 use crate::components::controls::button::Button;

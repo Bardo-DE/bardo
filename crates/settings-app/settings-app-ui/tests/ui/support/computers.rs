@@ -347,8 +347,8 @@ pub async fn serve_with(
         .at(
             INFERENCE_PATH,
             Inference {
-                state: state.clone(),
-                log: log.clone(),
+                state: Arc::clone(&state),
+                log: Arc::clone(&log),
             },
         )
         .await

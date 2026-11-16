@@ -47,7 +47,7 @@ fn serve(address: &str, refuse: bool) -> Served {
         .expect("runtime");
     let heard = Heard::default();
     let object = StandIn {
-        heard: heard.clone(),
+        heard: Arc::clone(&heard),
         refuse,
     };
     let connection = runtime

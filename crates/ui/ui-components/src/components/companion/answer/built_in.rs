@@ -5,6 +5,7 @@ use super::action::{ActionRole, CardAction, CardActionId};
 use ui_core::vocab::{Availability, EffectMark};
 
 /// A built-in action: enabled, with no key of its own.
+#[must_use]
 pub fn built_in(id: &str, label: &str, role: ActionRole, effect: EffectMark) -> CardAction {
     CardAction {
         id: CardActionId(id.to_owned()),

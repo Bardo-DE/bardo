@@ -68,7 +68,7 @@ impl<S: Seams + 'static> Transport for InProcess<S> {
 
     async fn watch(&self, request: IntentsRequest) -> Result<Watched, TransportError> {
         Ok(crate::watch_in_process::watched(
-            self.router.clone(),
+            Arc::clone(&self.router),
             self.caller.clone(),
             request,
         ))
@@ -85,6 +85,7 @@ pub struct DbusTransport {
 #[cfg(feature = "dbus")]
 impl DbusTransport {
     /// Talks to intentd over `connection`.
+    #[must_use]
     pub fn new(connection: action_dbus::BusConnection) -> Self {
         Self { connection }
     }

@@ -31,6 +31,7 @@ pub struct OpenMenu {
 
 impl<P: Clone + PartialEq + 'static, R: Clone + Default + PartialEq + 'static> SpacesHandle<P, R> {
     /// What is open, if anything.
+    #[must_use]
     pub fn open(&self) -> Option<OpenMenu> {
         *self.menu.read()
     }

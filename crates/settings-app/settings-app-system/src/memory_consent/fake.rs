@@ -20,6 +20,7 @@ pub struct FakeMemory(Arc<Mutex<Book>>);
 
 impl FakeMemory {
     /// A memory where these values wait, confining itself like this.
+    #[must_use]
     pub fn holding(waiting: Vec<WaitingSetting>, confinement: Confinement) -> FakeMemory {
         FakeMemory(Arc::new(Mutex::new(Book {
             waiting,
@@ -35,6 +36,7 @@ impl FakeMemory {
     }
 
     /// The pairs that were confirmed, one entry per call.
+    #[must_use]
     pub fn confirmed(&self) -> Vec<Vec<SettingPair>> {
         locked(&self.0).confirmed.clone()
     }

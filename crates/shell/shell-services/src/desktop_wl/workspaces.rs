@@ -17,6 +17,7 @@ const UNGROUPED: GroupKey = GroupKey(0);
 
 /// Every group with its workspaces. Workspaces in no group share one group of their own, so
 /// the indicator still draws them.
+#[must_use]
 pub fn project(state: &DesktopState) -> Workspaces {
     let grouped = state.workspaces.groups().map(|group| WorkspaceGroup {
         key: group_key(group.key),

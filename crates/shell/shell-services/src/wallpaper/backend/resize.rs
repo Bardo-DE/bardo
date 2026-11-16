@@ -235,7 +235,7 @@ mod tests {
         marked_source()
             .save(&source)
             .unwrap_or_else(|e| panic!("{e}"));
-        assert!(ensure_cached(&source, 20_000, 20_000, &dir.join("cache")).is_err());
+        ensure_cached(&source, 20_000, 20_000, &dir.join("cache")).unwrap_err();
         let _ = std::fs::remove_dir_all(&dir);
     }
 
@@ -244,7 +244,7 @@ mod tests {
         let dir =
             std::env::temp_dir().join(format!("shell-wallpaper-missing-{}", std::process::id()));
         let cache_dir = dir.join("cache");
-        assert!(ensure_cached(&dir.join("nope.png"), 10, 10, &cache_dir).is_err());
+        ensure_cached(&dir.join("nope.png"), 10, 10, &cache_dir).unwrap_err();
     }
 
     #[test]

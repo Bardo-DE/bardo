@@ -389,7 +389,7 @@ mod tests {
         let entries = AuditEntry::read_all(text);
         assert_eq!(
             entries.iter().map(|e| e.at).collect::<Vec<_>>(),
-            [UnixSeconds(1790000001)]
+            [UnixSeconds(1_790_000_001)]
         );
     }
 

@@ -11,6 +11,7 @@ use ui_core::vocab::Shortcut;
 
 /// The Space a key press asks for under `keymap`: the one its Switch-to-Space action names, or
 /// `None` for any other key (and for a platform with no key for a numbered desktop).
+#[must_use]
 pub fn space_pressed(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> Option<SpaceNumber> {
     match resolve(keymap, key, modifiers, Context::Normal)? {
         Action::Standard(StandardAction::SwitchToSpace(space)) => Some(space),
@@ -19,6 +20,7 @@ pub fn space_pressed(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> Option
 }
 
 /// The shortcut that switches to `space`, for a hint beside its dot.
+#[must_use]
 pub fn space_shortcut(space: SpaceNumber) -> Shortcut {
     Shortcut::standard(StandardAction::SwitchToSpace(space))
 }

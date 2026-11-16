@@ -74,18 +74,21 @@ impl FileDropHandle {
     }
 
     /// The drag as this target sees it. Reading it re-renders the caller when it changes.
+    #[must_use]
     pub fn drag(&self) -> FileDrag {
         self.view.read().drag.clone()
     }
 
     /// Where this target stands in the drag: `Target` with files over it, `Accepts` while files
     /// are dragged elsewhere in the window, `Idle` otherwise.
+    #[must_use]
     pub fn place(&self) -> DropState {
         self.view.read().place
     }
 
     /// The target's `data-drop`: `target` with files over it, `accepts` while files are dragged
     /// elsewhere in the window, nothing otherwise (the attribute a quire drop place writes).
+    #[must_use]
     pub fn drop_attr(&self) -> Option<&'static str> {
         self.place().drop_attr()
     }

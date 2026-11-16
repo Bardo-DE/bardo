@@ -1,6 +1,6 @@
 //! Pictures the app supplies: where the pixels come from ([`ImageSource`]) and how big they are
 //! ([`ImageSize`]). quire never fetches: a source is a `data:` URI or a `file:` URL, the two
-//! schemes a quire document's net provider answers. ProviderMark's favicon and the screenshot
+//! schemes a quire document's net provider answers. `ProviderMark`'s favicon and the screenshot
 //! thumbnail both take one.
 
 use std::path::Path;
@@ -22,6 +22,7 @@ impl ImageSource {
     }
 
     /// A PNG's bytes as a `data:image/png;base64,…` URI.
+    #[must_use]
     pub fn png(bytes: &[u8]) -> Self {
         ImageSource(IconUrl::png(bytes).as_str().to_owned())
     }
@@ -46,7 +47,7 @@ mod tests {
     fn a_file_is_an_absolute_file_url_and_bytes_are_a_png_uri() {
         let file = ImageSource::file(Path::new("/tmp/Screenshot 1.png")).expect("absolute");
         assert_eq!(file.0, "file:///tmp/Screenshot%201.png");
-        assert!(ImageSource::file(Path::new("shot.png")).is_err());
+        ImageSource::file(Path::new("shot.png")).unwrap_err();
         assert_eq!(ImageSource::png(b"x").0, "data:image/png;base64,eA==");
     }
 }

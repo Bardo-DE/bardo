@@ -1,6 +1,6 @@
 //! Next Input Source against a stand-in for fcitx5's controller on a private bus playing the
-//! session bus, and a stand-in for `IBus` on a second private bus playing `IBus`'s own, never a real
-//! fcitx5 or `IBus`. The tests need a `dbus-daemon` and skip without one.
+//! session bus, and a stand-in for IBus on a second private bus playing IBus's own, never a real
+//! fcitx5 or IBus. The tests need a `dbus-daemon` and skip without one.
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -52,7 +52,7 @@ impl Controller {
 
 struct Ibus(Heard);
 
-/// `IBus`'s global engine description is a long structure; what is read of it is the third field,
+/// IBus's global engine description is a long structure; what is read of it is the third field,
 /// the engine's name.
 fn engine(name: &str) -> Value<'static> {
     let structure = StructureBuilder::new()
@@ -118,7 +118,7 @@ fn next_input_source_tells_fcitx5_the_entry_after_the_current_one_or_refuses() {
         let heard: Heard = Arc::default();
         let _fcitx = zbus::connection::Builder::address(bus.address.as_str())
             .and_then(|b| b.name("org.fcitx.Fcitx5"))
-            .and_then(|b| b.serve_at("/controller", Controller(heard.clone())))
+            .and_then(|b| b.serve_at("/controller", Controller(Arc::clone(&heard))))
             .unwrap_or_else(|e| panic!("{e}"))
             .build()
             .await
@@ -145,7 +145,7 @@ fn next_input_source_tells_ibus_the_engine_after_the_current_one() {
         let heard: Heard = Arc::default();
         let _ibus = zbus::connection::Builder::address(ibus_bus.address.as_str())
             .and_then(|b| b.name("org.freedesktop.IBus"))
-            .and_then(|b| b.serve_at("/org/freedesktop/IBus", Ibus(heard.clone())))
+            .and_then(|b| b.serve_at("/org/freedesktop/IBus", Ibus(Arc::clone(&heard))))
             .unwrap_or_else(|e| panic!("{e}"))
             .build()
             .await

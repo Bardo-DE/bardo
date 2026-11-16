@@ -166,6 +166,7 @@ impl Peers {
     }
 
     /// The roles `actiond.toml` gives.
+    #[must_use]
     pub fn config(&self) -> &IntentdConfig {
         &self.config
     }

@@ -1,4 +1,4 @@
-//! ProviderMark: a letter in the provider's colour on a white chip, never the provider's logo,
+//! `ProviderMark`: a letter in the provider's colour on a white chip, never the provider's logo,
 //! or the favicon the app supplies (design/04-COMPONENTS.md section 28). A local-folders
 //! account, which has no provider, shows a neutral folder instead of a letter.
 
@@ -73,6 +73,7 @@ impl MarkProvider {
 
     /// The provider as a round avatar of `size`: its letter on its identity colour, the shape
     /// the account screens lead their rows and headers with.
+    #[must_use]
     pub fn avatar(self, size: AvatarSize) -> AvatarFace {
         let colour = self.colour();
         let channel = |from: usize| {

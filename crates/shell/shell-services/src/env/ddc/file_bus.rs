@@ -42,6 +42,7 @@ pub struct FileBus {
 }
 
 impl FileBus {
+    #[must_use]
     pub fn new(path: PathBuf) -> FileBus {
         FileBus { path }
     }
@@ -143,8 +144,8 @@ mod tests {
         assert_eq!(found[0].id, DdcId(7));
         let level = |value| Ok(Level { value, max: 100 });
         assert_eq!(bus.read(DdcId(7), Feature::Brightness), level(40));
-        assert!(bus.read(DdcId(7), Feature::Contrast).is_err());
-        assert!(bus.read(DdcId(8), Feature::Brightness).is_err());
+        bus.read(DdcId(7), Feature::Contrast).unwrap_err();
+        bus.read(DdcId(8), Feature::Brightness).unwrap_err();
         assert_eq!(bus.write(DdcId(7), Feature::Brightness, 63), Ok(()));
         assert_eq!(bus.read(DdcId(7), Feature::Brightness), level(63));
         let writes = std::fs::read_to_string(dir.join("ddc.json.writes"));

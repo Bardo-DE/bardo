@@ -127,16 +127,16 @@ impl LabelHue {
     /// Base, deep and soft as `0xRRGGBB` (design/03-COLOR.md section 15).
     fn family(self, scheme: Scheme) -> [u32; 3] {
         match (self, scheme) {
-            (LabelHue::Red, Scheme::Light) => [0xE8483C, 0xB7352B, 0xFBE3E1],
-            (LabelHue::Amber, Scheme::Light) => [0xF0A81E, 0x8E5A05, 0xFAEBD2],
-            (LabelHue::Green, Scheme::Light) => [0x28B24A, 0x1A7A33, 0xDCF1E1],
-            (LabelHue::Blue, Scheme::Light) => [0x2B7CFF, 0x0B5FE0, 0xE2EBFF],
-            (LabelHue::Violet, Scheme::Light) => [0x8B5CF0, 0x6B3FCC, 0xECE4FB],
-            (LabelHue::Red, Scheme::Dark) => [0xFF6B60, 0xFF8A80, 0x3A1E1C],
-            (LabelHue::Amber, Scheme::Dark) => [0xF5BC4E, 0xF0B84A, 0x3A2C12],
-            (LabelHue::Green, Scheme::Dark) => [0x4FD06A, 0x6EDB86, 0x153520],
-            (LabelHue::Blue, Scheme::Dark) => [0x4C9BFF, 0x6FB0FF, 0x14263F],
-            (LabelHue::Violet, Scheme::Dark) => [0xA98BFF, 0xB69BFF, 0x271C42],
+            (LabelHue::Red, Scheme::Light) => [0x00E8_483C, 0x00B7_352B, 0x00FB_E3E1],
+            (LabelHue::Amber, Scheme::Light) => [0x00F0_A81E, 0x008E_5A05, 0x00FA_EBD2],
+            (LabelHue::Green, Scheme::Light) => [0x0028_B24A, 0x001A_7A33, 0x00DC_F1E1],
+            (LabelHue::Blue, Scheme::Light) => [0x002B_7CFF, 0x000B_5FE0, 0x00E2_EBFF],
+            (LabelHue::Violet, Scheme::Light) => [0x008B_5CF0, 0x006B_3FCC, 0x00EC_E4FB],
+            (LabelHue::Red, Scheme::Dark) => [0x00FF_6B60, 0x00FF_8A80, 0x003A_1E1C],
+            (LabelHue::Amber, Scheme::Dark) => [0x00F5_BC4E, 0x00F0_B84A, 0x003A_2C12],
+            (LabelHue::Green, Scheme::Dark) => [0x004F_D06A, 0x006E_DB86, 0x0015_3520],
+            (LabelHue::Blue, Scheme::Dark) => [0x004C_9BFF, 0x006F_B0FF, 0x0014_263F],
+            (LabelHue::Violet, Scheme::Dark) => [0x00A9_8BFF, 0x00B6_9BFF, 0x0027_1C42],
         }
     }
 }

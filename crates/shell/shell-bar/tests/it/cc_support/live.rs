@@ -59,8 +59,8 @@ fn app() -> Element {
     use_context_provider(PinnedAppearance::default);
     use_context_provider(|| world.settings.clone());
     use_context_provider(|| world.focus.clone());
-    let pages = world.reports.clone();
-    let closes = world.reports.clone();
+    let pages = Arc::clone(&world.reports);
+    let closes = Arc::clone(&world.reports);
     let closed = EventHandler::new(move |()| {
         if let Ok(mut reports) = closes.lock() {
             reports.push(Report::Closed);
@@ -130,7 +130,7 @@ pub fn start_at(services: Services, feeds: fake::Feeds, scale_percent: u16) -> R
             services,
             settings: SettingsFeed::fixed(ShellFile::default()),
             focus: FocusLink::new(mode, set),
-            reports: reports.clone(),
+            reports: Arc::clone(&reports),
         });
     });
     let viewport = Viewport {

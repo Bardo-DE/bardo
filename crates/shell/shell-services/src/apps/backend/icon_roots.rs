@@ -28,6 +28,7 @@ impl IconRoots {
     /// Whether the file at `path` is in one of the folders: its real place (links and `..`
     /// resolved) starts with a root's, whole components compared, so `/opt-evil/i.png` is not in
     /// `/opt`. A path that is not there is in none.
+    #[must_use]
     pub fn holds(&self, path: &Path) -> bool {
         path.canonicalize()
             .is_ok_and(|real| self.0.iter().any(|root| real.starts_with(root)))

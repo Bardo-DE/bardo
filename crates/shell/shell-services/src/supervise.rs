@@ -31,6 +31,7 @@ impl Default for Backoff {
 
 impl Backoff {
     /// Waits that start at `first` instead of [`FIRST_WAIT`].
+    #[must_use]
     pub fn starting_at(first: Duration) -> Backoff {
         Backoff { next: first }
     }

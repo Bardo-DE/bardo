@@ -36,6 +36,7 @@ impl ToastAction {
     }
 
     /// The same button with `icon` before its words.
+    #[must_use]
     pub fn with_icon(self, icon: Icon) -> Self {
         ToastAction {
             icon: Some(icon),
@@ -63,6 +64,7 @@ pub enum Armed {
 
 impl Armed {
     /// The attribute value on the toast: `data-armed`.
+    #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
             Armed::Waiting => "waiting",
@@ -181,6 +183,7 @@ impl ToastHub {
     }
 
     /// Whether the toast answers the pointer yet.
+    #[must_use]
     pub fn armed(&self) -> Armed {
         *self.armed.read()
     }
@@ -206,6 +209,7 @@ impl ToastHub {
     }
 
     /// The toast as it is now.
+    #[must_use]
     pub fn state(&self) -> ToastState {
         self.state.read().clone()
     }
@@ -215,6 +219,7 @@ impl ToastHub {
     ///
     /// `None`, and nothing hidden, when no toast is up. The token is also kept as the last
     /// undo, for a consumer that watches rather than handles the release.
+    #[must_use]
     pub fn undo(&self) -> Option<UndoToken> {
         let ToastState::Shown { undo, .. } = self.state.peek().clone() else {
             return None;
@@ -231,6 +236,7 @@ impl ToastHub {
     }
 
     /// The token the last undo reported.
+    #[must_use]
     pub fn last_undo(&self) -> Option<UndoToken> {
         (self.undone)()
     }
@@ -274,6 +280,7 @@ pub fn use_toast_hub_provider() -> ToastHub {
 }
 
 /// The enclosing `Ds`'s toast manager.
+#[must_use]
 pub fn use_toast_hub() -> ToastHub {
     use_context::<ToastHub>()
 }

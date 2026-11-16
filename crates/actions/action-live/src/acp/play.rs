@@ -153,7 +153,7 @@ async fn open(
         }),
     };
     let space = SpaceId::parse("work").unwrap_or_else(|_| SpaceId::desktop());
-    Ok(host(wiring, program, cwd.as_str(), space).await?)
+    Ok(Box::pin(host(wiring, program, cwd.as_str(), space)).await?)
 }
 
 /// The models the agent offers for a session opened in `world`, and the one in use; none when it
@@ -163,7 +163,7 @@ pub async fn offered_models(
     binaries: &Binaries,
     spec: &AcpSpec,
 ) -> Result<Option<Models>, PlayFault> {
-    let Hosted { mut host, session } = open(world, binaries, spec).await?;
+    let Hosted { mut host, session } = Box::pin(open(world, binaries, spec)).await?;
     let models = host.backend().models().cloned();
     let _ = host.close(&session, EndCause::Closed).await;
     Ok(models)
@@ -179,7 +179,7 @@ pub async fn play(
     prompt: &str,
     patience: Duration,
 ) -> Played {
-    let Hosted { mut host, session } = match open(world, binaries, spec).await {
+    let Hosted { mut host, session } = match Box::pin(open(world, binaries, spec)).await {
         Ok(hosted) => hosted,
         Err(why) => return Played::failed(why.to_string()),
     };
@@ -200,7 +200,7 @@ pub async fn play(
         played.end = AgentEnd::NotStarted("the host refused the turn".to_owned());
     }
     while matches!(played.end, AgentEnd::Silent) {
-        let next = tokio::time::timeout(patience, host.next_event(&session)).await;
+        let next = Box::pin(tokio::time::timeout(patience, host.next_event(&session))).await;
         match next {
             Err(_) | Ok(Ok(None) | Err(_)) => break,
             Ok(Ok(Some(event))) => note(&mut played, event),

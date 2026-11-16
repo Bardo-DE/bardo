@@ -48,7 +48,7 @@ pub struct Toplevel {
     /// The compositor's stable name for the window: the one `DesktopView` quotes it by, so a
     /// window can be named in either model. Made up from the key where the compositor gives none.
     pub identifier: String,
-    /// The Wayland app id (or X11 `WM_CLASS` through `XWayland`); `match_app` maps it to an entry.
+    /// The Wayland app id (or X11 `WM_CLASS` through XWayland); `match_app` maps it to an entry.
     pub app_id: String,
     pub title: String,
     pub active: bool,
@@ -216,7 +216,7 @@ mod tests {
             title: String::new(),
             active,
             minimized: false,
-            sizing: Default::default(),
+            sizing: Sizing::default(),
             workspaces: Vec::new(),
             outputs: outputs
                 .iter()

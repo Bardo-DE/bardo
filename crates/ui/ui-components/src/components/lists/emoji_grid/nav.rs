@@ -39,6 +39,7 @@ pub enum GridEdge {
 
 /// Where `step` goes from cell `selected` in a grid of `count` cells, `columns` wide (a width of
 /// 0 reads as 1). A selection past the end is taken as the last cell.
+#[must_use]
 pub fn grid_step(selected: usize, step: GridStep, count: usize, columns: u8) -> GridMove {
     if count == 0 {
         return GridMove::To(0);

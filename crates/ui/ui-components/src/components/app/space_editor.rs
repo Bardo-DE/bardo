@@ -1,4 +1,4 @@
-//! SpaceEditor: the field, dots, stops, grain, presets and contrast checks, plus the Space dots
+//! `SpaceEditor`: the field, dots, stops, grain, presets and contrast checks, plus the Space dots
 //! that switch Spaces (design/04-COMPONENTS.md section 32, design/21-SPACES.md section 6).
 //! Every colour it shows comes from `space::palette`; it computes none.
 

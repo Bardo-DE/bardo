@@ -23,6 +23,7 @@ pub struct Daemon {
 
 impl Daemon {
     /// inferd, whose module holds the model picker's rows.
+    #[must_use]
     pub fn inferd() -> Daemon {
         Daemon {
             name: INFERENCE_BUS,
@@ -31,6 +32,7 @@ impl Daemon {
     }
 
     /// accountd, whose module holds the accounts and their permissions.
+    #[must_use]
     pub fn accountd() -> Daemon {
         Daemon {
             name: ACCOUNTS_BUS,
@@ -39,6 +41,7 @@ impl Daemon {
     }
 
     /// The compositor, whose module lists which program may use which power.
+    #[must_use]
     pub fn compositor() -> Daemon {
         Daemon {
             name: COMPOSITOR_BUS,
@@ -47,6 +50,7 @@ impl Daemon {
     }
 
     /// The settings module of `module`: the three the Accounts pane reads.
+    #[must_use]
     pub fn of(module: ModuleId) -> Daemon {
         match module {
             ModuleId::Accountd => Daemon::accountd(),
@@ -57,6 +61,7 @@ impl Daemon {
 
     /// syncd's settings module: its accounts and their sync switches. The module is at the
     /// path below the one syncd tells deletions on.
+    #[must_use]
     pub fn syncd_settings() -> Daemon {
         Daemon {
             name: SYNC_BUS,
@@ -65,6 +70,7 @@ impl Daemon {
     }
 
     /// syncd, which holds a deletion for the person's word and tells it (`org.bardo.Sync1`).
+    #[must_use]
     pub fn syncd() -> Daemon {
         Daemon {
             name: SYNC_BUS,

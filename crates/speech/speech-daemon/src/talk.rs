@@ -199,7 +199,10 @@ where
             let _ = reply.send(Err(VoiceRefusal::NotAllowed.into()));
             return;
         }
-        let (warm, ready) = (self.warm.clone(), self.stt_ready.clone());
+        let (warm, ready) = (
+            std::sync::Arc::clone(&self.warm),
+            std::sync::Arc::clone(&self.stt_ready),
+        );
         tokio::spawn(async move {
             let now: Readiness = warm.warm().await;
             if let Ok(mut held) = ready.lock() {
@@ -263,7 +266,7 @@ where
             }
             None => {
                 self.say.link = Some(link::spawn(
-                    self.transport.clone(),
+                    std::sync::Arc::clone(&self.transport),
                     tts_need(),
                     rec.class,
                     Tier::Balanced,

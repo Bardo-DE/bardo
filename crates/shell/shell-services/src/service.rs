@@ -311,7 +311,7 @@ mod tests {
         );
         state_is(&mut handle, 2).await;
         assert_eq!(runs.load(Ordering::SeqCst), 2, "one panic, one restart");
-        assert!(handle.control.send(5).is_ok());
+        handle.control.send(5).unwrap();
         state_is(&mut handle, 105).await;
     }
 
@@ -332,7 +332,7 @@ mod tests {
                 tokio::time::sleep(Duration::from_millis(10)).await;
             }
         };
-        assert!(tokio::time::timeout(WAIT, given_up).await.is_ok());
+        tokio::time::timeout(WAIT, given_up).await.unwrap();
         assert_eq!(
             runs.load(Ordering::SeqCst),
             limit,

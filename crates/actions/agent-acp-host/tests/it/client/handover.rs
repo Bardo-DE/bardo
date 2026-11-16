@@ -91,7 +91,10 @@ fn helper_over(
         },
         roles: BTreeSet::from([CallerRole::Companion]),
     };
-    let watching = Intents::over(InProcess::new(wired.router.clone(), companion));
+    let watching = Intents::over(InProcess::new(
+        std::sync::Arc::clone(&wired.router),
+        companion,
+    ));
     let hosts = OneRouter {
         court: wired.court,
         desk: wired.desk,
@@ -109,7 +112,7 @@ fn resume_flag() -> Option<Vec<String>> {
 async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session() {
     let (mut helper, views, watching) =
         helper_over(Resumes::Yes, vec![Resumes::Yes], resume_flag());
-    let done = helper.run("Compare the offers", AT).await;
+    let done = Box::pin(helper.run("Compare the offers", AT)).await;
     assert!(matches!(done, AgentEnd::Done(_)), "{done:?}");
     assert_eq!(
         helper.terminal_ready().as_ref().map(AppSessionId::as_str),
@@ -119,7 +122,9 @@ async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session(
 
     // Open in Terminal: the app is closed, and the session is a watch session that names the app
     // and its own id for the conversation.
-    let away = helper.to_terminal().await.expect("to the terminal");
+    let away = Box::pin(helper.to_terminal())
+        .await
+        .expect("to the terminal");
     assert_eq!(away.session, router_session);
     assert_eq!(
         away.agent,
@@ -135,7 +140,7 @@ async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session(
     assert_eq!(watched[0].agent, away.agent);
 
     // Bring Back: a new process picks the conversation up and the session is the same one.
-    helper.bring_back().await.expect("back");
+    Box::pin(helper.bring_back()).await.expect("back");
     assert!(helper.is_open() && helper.away().is_none());
     assert_eq!(helper.handle().expect("open").1, router_session);
     assert!(
@@ -148,7 +153,7 @@ async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session(
     let resumed = views[1].resumed();
     assert_eq!(resumed.len(), 1);
     assert_eq!(resumed[0]["sessionId"], AGENT_SESSION);
-    let again = helper.run("And the best one?", AT).await;
+    let again = Box::pin(helper.run("And the best one?", AT)).await;
     assert!(matches!(again, AgentEnd::Done(_)), "{again:?}");
 }
 
@@ -156,18 +161,27 @@ async fn a_conversation_goes_to_the_terminal_and_comes_back_on_the_same_session(
 async fn a_conversation_that_cannot_be_picked_up_again_or_has_not_begun_stays_where_it_is() {
     // No conversation of the agent's own yet.
     let (mut idle, _, _) = helper_over(Resumes::Yes, vec![], resume_flag());
-    assert_eq!(idle.to_terminal().await, Err(HandFault::NoConversation));
+    assert_eq!(
+        Box::pin(idle.to_terminal()).await,
+        Err(HandFault::NoConversation)
+    );
 
     // The app has no flag to pick a conversation up with.
     let (mut flagless, _, _) = helper_over(Resumes::Yes, vec![], None);
-    flagless.run("Job", AT).await;
-    assert_eq!(flagless.to_terminal().await, Err(HandFault::NotResumable));
+    Box::pin(flagless.run("Job", AT)).await;
+    assert_eq!(
+        Box::pin(flagless.to_terminal()).await,
+        Err(HandFault::NotResumable)
+    );
     assert!(flagless.is_open(), "nothing was closed");
 
     // The agent cannot pick a session up (no resume, no load).
     let (mut unable, _, _) = helper_over(Resumes::No, vec![], resume_flag());
-    unable.run("Job", AT).await;
-    assert_eq!(unable.to_terminal().await, Err(HandFault::NotResumable));
+    Box::pin(unable.run("Job", AT)).await;
+    assert_eq!(
+        Box::pin(unable.to_terminal()).await,
+        Err(HandFault::NotResumable)
+    );
     assert!(unable.is_open());
 }
 
@@ -175,9 +189,14 @@ async fn a_conversation_that_cannot_be_picked_up_again_or_has_not_begun_stays_wh
 async fn an_app_that_begins_another_conversation_leaves_this_one_in_the_terminal() {
     // The second process cannot pick the conversation up: it opens a new one instead.
     let (mut helper, _, watching) = helper_over(Resumes::Yes, vec![Resumes::No], resume_flag());
-    helper.run("Job", AT).await;
-    helper.to_terminal().await.expect("to the terminal");
-    assert_eq!(helper.bring_back().await, Err(HandFault::NotResumable));
+    Box::pin(helper.run("Job", AT)).await;
+    Box::pin(helper.to_terminal())
+        .await
+        .expect("to the terminal");
+    assert_eq!(
+        Box::pin(helper.bring_back()).await,
+        Err(HandFault::NotResumable)
+    );
     assert!(helper.away().is_some() && !helper.is_open());
     assert_eq!(
         watching.checkpoint_watched().await.expect("watched").len(),

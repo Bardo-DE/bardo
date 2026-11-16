@@ -65,7 +65,7 @@ pub async fn serve(ctx: Arc<Ctx>, mut stream: TcpStream) {
         );
         head.presented().is_some_and(|given| token.matches(given))
     });
-    let request = match tokio::time::timeout(wait, read).await {
+    let request = match Box::pin(tokio::time::timeout(wait, read)).await {
         Ok(Ok(request)) => request,
         Err(_) | Ok(Err(ReadError::Closed)) => return,
         Ok(Err(ReadError::Refused)) => {

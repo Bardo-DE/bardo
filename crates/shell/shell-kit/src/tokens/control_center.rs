@@ -41,11 +41,13 @@ pub const CONTROL_CENTER: ControlCenterScale = ControlCenterScale {
 
 impl ControlCenterScale {
     /// The panel's radius: a module's plus the padding round it (R6), 18.
+    #[must_use]
     pub fn panel_radius(self) -> WholePx {
         WholePx(self.module_radius.0 + self.padding.0)
     }
 
     /// A level module's height: padding, header, gap, a Regular capsule, padding; 70.
+    #[must_use]
     pub fn level_module(self) -> WholePx {
         WholePx(
             2 * self.padding.0

@@ -1,4 +1,4 @@
-//! SectionHeader: the row that names a group of rows (`NSTableView` group row, a source list's
+//! `SectionHeader`: the row that names a group of rows (`NSTableView` group row, a source list's
 //! header; design/30 section 2.6). One look; collapsible in a source list.
 
 use crate::components::controls::disclosure::indicator;

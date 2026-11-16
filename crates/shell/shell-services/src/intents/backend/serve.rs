@@ -46,7 +46,12 @@ pub(super) async fn take(
         let provider = ShellProvider {
             manifest,
             calls: shell,
-            menus: MenuAgent::over(connection.clone(), menus.clone(), proc_root, peers.clone()),
+            menus: MenuAgent::over(
+                connection.clone(),
+                menus.clone(),
+                proc_root,
+                Arc::clone(&peers),
+            ),
             windows: menus,
             shots,
         };

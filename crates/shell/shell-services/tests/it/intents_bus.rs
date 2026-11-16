@@ -199,7 +199,7 @@ async fn desk_on(
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
         proc_root: procs.path().to_owned(),
-        callers: callers.clone(),
+        callers: Arc::<Introduced>::clone(&callers),
         claims,
         ..Env::isolated(Path::new("/nonexistent/shell-intents-bus"))
     };
@@ -219,7 +219,7 @@ async fn desk_on(
     callers.make(&intentd, who);
     intentd
         .object_server()
-        .at("/org/bardo/Intents1", StandInControl(held.clone()))
+        .at("/org/bardo/Intents1", StandInControl(Arc::clone(&held)))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     zbus_ready::serving(&intentd)
@@ -371,7 +371,7 @@ async fn allow_from_the_terminal_is_answered_and_the_grants_are_read_again() {
     })
     .await;
     assert!(state.borrow().terminal.grants.is_empty());
-    let (control, held) = (desk.seat.control.clone(), desk.held.clone());
+    let (control, held) = (desk.seat.control.clone(), Arc::clone(&desk.held));
     let mut watching = state.clone();
     let answerer = tokio::spawn(async move {
         until(&mut watching, "the sheet", |s| s.sheets.current().is_some()).await;
@@ -566,7 +566,7 @@ async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal(
     })
     .await;
     // The list follows at once; intentd hears the revoke a moment later.
-    let held = desk.held.clone();
+    let held = Arc::clone(&desk.held);
     eventually("intentd told of the revoke", move || {
         held.lock().unwrap_or_else(|e| panic!("{e}")).revoked == vec![grant("mail.thread.archive")]
     })

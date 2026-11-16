@@ -26,6 +26,7 @@ pub struct RowChord {
 
 impl RowChord {
     /// `shortcut`, shown only on the selected row.
+    #[must_use]
     pub fn on_selected(shortcut: Shortcut) -> Self {
         RowChord {
             shortcut,
@@ -34,6 +35,7 @@ impl RowChord {
     }
 
     /// `shortcut`, shown on every row.
+    #[must_use]
     pub fn always(shortcut: Shortcut) -> Self {
         RowChord {
             shortcut,

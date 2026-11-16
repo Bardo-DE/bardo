@@ -346,8 +346,8 @@ async fn an_account_removed_while_its_consent_sheet_is_open_gets_no_grant() {
         registry,
         MemorySecrets::default(),
         Held {
-            asked: asked.clone(),
-            answer: answer.clone(),
+            asked: Arc::clone(&asked),
+            answer: Arc::clone(&answer),
         },
         FixedClock(account_fake::NOW),
     )
@@ -422,7 +422,7 @@ async fn a_change_is_saved_swapped_in_audited_and_announced_in_that_order() {
     let (store, audit) = (MemoryStore::default(), RecordingAudit::default());
     let told = Arc::new(std::sync::Mutex::new(Vec::new()));
     let ctx = {
-        let (told, store, audit) = (told.clone(), store.clone(), audit.clone());
+        let (told, store, audit) = (Arc::clone(&told), store.clone(), audit.clone());
         ctx(&store, &audit).on_committed(move |committed| {
             // By the time it is told, the change is saved and audited.
             let saved = store.stored().expect("saved");
@@ -453,7 +453,7 @@ async fn a_decision_that_refuses_or_changes_nothing_saves_and_announces_nothing(
     let (store, audit) = (MemoryStore::default(), RecordingAudit::default());
     let told = Arc::new(std::sync::Mutex::new(0));
     let ctx = {
-        let told = told.clone();
+        let told = Arc::clone(&told);
         ctx(&store, &audit).on_committed(move |_| *told.lock().expect("told") += 1)
     };
     let refused = ctx
@@ -484,7 +484,7 @@ async fn a_change_that_cannot_be_saved_is_neither_kept_audited_nor_announced() {
     let (store, audit) = (MemoryStore::default(), RecordingAudit::default());
     let told = Arc::new(std::sync::Mutex::new(0));
     let ctx = {
-        let told = told.clone();
+        let told = Arc::clone(&told);
         ctx(&store, &audit).on_committed(move |_| *told.lock().expect("told") += 1)
     };
     store.refusing(true);
@@ -555,7 +555,7 @@ async fn a_listener_that_asks_later_hears_every_change_after_it_in_commit_order(
     let early = Arc::new(std::sync::Mutex::new(Vec::new()));
     let late = Arc::new(std::sync::Mutex::new(Vec::new()));
     {
-        let early = early.clone();
+        let early = Arc::clone(&early);
         ctx.follow(move |c| early.lock().expect("early").push(c.after.toggles.len()));
     };
     for kind in [CapabilityKind::Calendar, CapabilityKind::Contacts] {
@@ -566,7 +566,7 @@ async fn a_listener_that_asks_later_hears_every_change_after_it_in_commit_order(
         .await
         .expect("written");
         if kind == CapabilityKind::Calendar {
-            let late = late.clone();
+            let late = Arc::clone(&late);
             ctx.follow(move |c| late.lock().expect("late").push(c.after.toggles.len()));
         }
     }

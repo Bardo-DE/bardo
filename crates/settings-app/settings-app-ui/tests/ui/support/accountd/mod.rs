@@ -261,7 +261,7 @@ impl Accountd {
     pub fn stop(&self, id: &str, state: &str) {
         for held in self.accounts.lock().expect("accounts").iter_mut() {
             if held.id == id {
-                held.state = state.to_owned();
+                state.clone_into(&mut held.state);
             }
         }
     }

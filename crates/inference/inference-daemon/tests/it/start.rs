@@ -23,15 +23,14 @@ async fn a_call_made_as_soon_as_the_name_is_owned_is_answered() {
     // that claims it first is serving, with nobody listening for its calls.
     let mut held = HeldRuntime::new();
     let dispatcher = held.handle().clone();
-    let world = held
-        .start(
-            World::start(Plan {
-                dispatcher_on: Some(dispatcher),
-                ..Plan::default()
-            }),
-            PAUSE,
-        )
-        .await;
+    let world = Box::pin(held.start(
+        World::start(Plan {
+            dispatcher_on: Some(dispatcher),
+            ..Plan::default()
+        }),
+        PAUSE,
+    ))
+    .await;
     let proxy = InferenceProxy::new(&world.client).await.expect("proxy");
     let call = tokio::spawn(async move { proxy.rescan().await });
     // The call is on its way (or answered) before the object server's runtime runs.

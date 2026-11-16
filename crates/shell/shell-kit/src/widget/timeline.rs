@@ -94,6 +94,7 @@ impl<E> Default for Timeline<E> {
 
 impl<E> Timeline<E> {
     /// `entries` (sorted here by date; the order given for one date is kept) and `refresh`.
+    #[must_use]
     pub fn new(entries: Vec<Dated<E>>, refresh: Refresh) -> Self {
         let mut entries = entries;
         entries.sort_by_key(|dated| dated.date);
@@ -107,17 +108,20 @@ impl<E> Timeline<E> {
     }
 
     /// The entries, in date order.
+    #[must_use]
     pub fn entries(&self) -> &[Dated<E>] {
         &self.entries
     }
 
     /// The refresh policy.
+    #[must_use]
     pub fn refresh(&self) -> Refresh {
         self.refresh
     }
 
     /// The entry showing at `now`: the last whose date has come, or `None` before the first
     /// (the widget then shows its placeholder).
+    #[must_use]
     pub fn current(&self, now: Instant) -> Option<&E> {
         self.entries
             .iter()
@@ -129,6 +133,7 @@ impl<E> Timeline<E> {
     /// The next thing to wake for after `now`, the timeline having arrived at `arrived`: the
     /// next entry's date, or the refresh (never before [`REFRESH_FLOOR`] after arrival),
     /// whichever is first; `None` when nothing more happens.
+    #[must_use]
     pub fn next_wake(&self, now: Instant, arrived: Instant) -> Option<Wake> {
         let entry = self.entries.iter().find_map(|dated| match dated.date {
             EntryDate::At(at) if at > now => Some(Wake::Entry(at)),
@@ -170,6 +175,7 @@ pub enum Wake {
 
 impl Wake {
     /// When.
+    #[must_use]
     pub fn at(self) -> Instant {
         match self {
             Wake::Entry(at) | Wake::Refresh(at, _) => at,

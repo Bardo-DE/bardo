@@ -1,4 +1,4 @@
-//! SegmentedControl: `NSSegmentedControl` (design/30 section 2.3): a few choices side by side
+//! `SegmentedControl`: `NSSegmentedControl` (design/30 section 2.3): a few choices side by side
 //! in one well, text or image segments.
 //!
 //! `SelectOne` selects one segment: the selection is one thumb that slides between equal

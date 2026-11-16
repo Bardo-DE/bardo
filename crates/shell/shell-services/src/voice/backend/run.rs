@@ -150,7 +150,7 @@ impl Live {
         if let Some(task) = self.signals.take() {
             task.abort();
         }
-        self.connection = connection.clone();
+        self.connection.clone_from(&connection);
         self.peers = connection
             .clone()
             .map(|connection| self.callers.peers_on(connection));

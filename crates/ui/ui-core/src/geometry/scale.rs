@@ -102,7 +102,7 @@ mod tests {
         const CASES: &[(&str, f64, Option<Scale>)] = &[
             ("one", 1.0, Some(Scale(120))),
             ("one and a half", 1.5, Some(Scale(180))),
-            ("a third more", 1.3333333, Some(Scale(160))),
+            ("a third more", 1.333_333_3, Some(Scale(160))),
             ("below one", 0.5, Some(Scale(60))),
             ("zero", 0.0, None),
             ("negative", -2.0, None),

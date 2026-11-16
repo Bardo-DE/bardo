@@ -1,4 +1,4 @@
-//! PaneStack: the pages of a settings pane, one shown at a time, the rest under it. The caller
+//! `PaneStack`: the pages of a settings pane, one shown at a time, the rest under it. The caller
 //! owns the path ([`PanePath`]); choosing a row pushes a key onto it, `on_back` pops it. The
 //! stack keeps only the transition's phase (which page is leaving, and in which slot).
 //!

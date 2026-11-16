@@ -12,11 +12,13 @@ pub struct FakeRunning(Arc<Kit<Vec<ModelRun>, (String, RunAction)>>);
 
 impl FakeRunning {
     /// A service running these models.
+    #[must_use]
     pub fn running(rows: Vec<ModelRun>) -> FakeRunning {
         FakeRunning(Kit::new(Ok(rows)))
     }
 
     /// No service, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeRunning {
         FakeRunning(Kit::new(Err(why)))
     }
@@ -27,6 +29,7 @@ impl FakeRunning {
     }
 
     /// What was asked, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<(String, RunAction)> {
         self.0.asked()
     }

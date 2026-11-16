@@ -235,7 +235,7 @@ fn SlimMenu() -> Element {
             availability: Availability::Enabled,
             hint: None,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         },
         MenuItem::Separator,
         MenuItem::Item {
@@ -247,7 +247,7 @@ fn SlimMenu() -> Element {
             availability: Availability::Enabled,
             hint: None,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         },
     ];
     rsx! {

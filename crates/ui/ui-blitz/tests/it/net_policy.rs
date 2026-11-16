@@ -144,7 +144,7 @@ fn a_custom_handler_sees_the_app_documents_request_and_answers_it() {
         let recorder = Recorder::new(decision);
         let config = HarnessConfig::new(VIEW)
             .with_clock(Clock::Virtual)
-            .with_net(NetPolicy::Custom(recorder.clone()));
+            .with_net(NetPolicy::Custom(Arc::<Recorder>::clone(&recorder)));
         let harness = Harness::new(RemoteImage, config);
         assert_eq!(
             recorder.seen(),
@@ -161,7 +161,7 @@ fn a_custom_policy_still_serves_the_app_its_own_files_without_asking() {
     let config = HarnessConfig::new(VIEW)
         .with_clock(Clock::Virtual)
         .with_file_roots(roots())
-        .with_net(NetPolicy::Custom(recorder.clone()));
+        .with_net(NetPolicy::Custom(Arc::<Recorder>::clone(&recorder)));
     let harness = Harness::new(LocalImage, config);
     assert_eq!(width(&harness, ".local"), 7.0);
     assert!(recorder.seen().is_empty(), "{:?}", recorder.seen());
@@ -213,7 +213,7 @@ fn a_custom_handler_sees_the_frames_requests_with_the_frame_as_origin() {
     let config = HarnessConfig::new(VIEW)
         .with_clock(Clock::Virtual)
         .with_file_roots(roots())
-        .with_net(NetPolicy::Custom(recorder.clone()));
+        .with_net(NetPolicy::Custom(Arc::<Recorder>::clone(&recorder)));
     let harness = Harness::new(Framed, config);
     let frame = harness.frame("iframe.body").expect("a frame document").id();
     let file = format!("file://{}", swatch().display());
@@ -238,7 +238,7 @@ fn a_denied_frame_request_never_reaches_the_frame() {
     let config = HarnessConfig::new(VIEW)
         .with_clock(Clock::Virtual)
         .with_file_roots(roots())
-        .with_net(NetPolicy::Custom(recorder.clone()));
+        .with_net(NetPolicy::Custom(Arc::<Recorder>::clone(&recorder)));
     let harness = Harness::new(Framed, config);
     assert_eq!(recorder.seen().len(), 2);
     assert_eq!(frame_width(&harness, ".remote"), 0.0);

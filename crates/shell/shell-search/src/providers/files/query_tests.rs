@@ -81,7 +81,7 @@ fn one_ask_under_home_within_the_budget_and_its_rows_pushed() {
         hit("/home/p/Documents/m9-report.pdf"),
         hit("/home/p/other.pdf"),
     ]));
-    let files = provider(index.clone());
+    let files = provider(Arc::<Scripted>::clone(&index));
     let mut sink = VecSink::default();
     let query = Query::begin("  m9-rep ", &Cancel::new());
     files.query(&query, &mut sink);
@@ -112,7 +112,7 @@ fn nothing_typed_asks_no_index() {
             scope,
             ..Query::begin(text, &Cancel::new())
         };
-        provider(index.clone()).query(&query, &mut sink);
+        provider(Arc::<Scripted>::clone(&index)).query(&query, &mut sink);
         let asked = index.asks.lock().map(|a| a.len()).unwrap_or_default();
         assert_eq!((asked, sink.0.len()), (0, 0), "{text:?} {scope:?}");
     }
@@ -123,7 +123,7 @@ fn a_zero_budget_before_the_first_policy_asks_no_index() {
     let index = scripted(FileAnswer::Hits(vec![hit("/home/p/report.pdf")]));
     let files = FilesProvider {
         policy: watch::channel(LauncherPolicy::default()).1,
-        ..provider(index.clone())
+        ..provider(Arc::<Scripted>::clone(&index))
     };
     let mut sink = VecSink::default();
     files.query(&Query::begin("report", &Cancel::new()), &mut sink);
@@ -251,7 +251,7 @@ fn a_viewed_file_outranks_its_namesake_the_index_brought_with_the_same_age() {
         let files = FilesProvider {
             viewer_store: viewer_store(dir.path(), entries),
             home: dir.path().to_path_buf(),
-            ..provider(index.clone())
+            ..provider(Arc::<FakeIndex>::clone(&index))
         };
         let mut sink = VecSink::default();
         files.query(&Query::begin("notes", &Cancel::new()), &mut sink);

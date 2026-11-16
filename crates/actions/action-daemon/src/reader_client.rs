@@ -13,6 +13,7 @@ pub struct ReaderClient {
 
 impl ReaderClient {
     /// Calls readerd over `connection`.
+    #[must_use]
     pub fn new(connection: BusConnection) -> Self {
         Self { connection }
     }

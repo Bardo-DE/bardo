@@ -32,6 +32,7 @@ use ui_style::icon::render::{Glyph, IconSize};
 use ui_style::tokens::layer::ZLayer;
 
 /// The enclosing `Ds`'s toast manager: `push(text, undo)`, one visible at a time.
+#[must_use]
 pub fn use_toasts() -> ToastHub {
     use_toast_hub()
 }

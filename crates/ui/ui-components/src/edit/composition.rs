@@ -22,6 +22,7 @@ pub enum Composing {
 }
 
 /// The state after `event`, and what the app hears.
+#[must_use]
 pub fn on_ime(state: Composing, event: ImeEvent) -> (Composing, Vec<EditInput>) {
     match (state, event) {
         (Composing::Idle, ImeEvent::Preedit { text, cursor }) if !text.is_empty() => (
@@ -53,6 +54,7 @@ pub fn on_ime(state: Composing, event: ImeEvent) -> (Composing, Vec<EditInput>) 
 
 /// End a composition that is still open, committing nothing: before a key is handled, and as the
 /// surface loses the keyboard.
+#[must_use]
 pub fn settle(state: Composing) -> (Composing, Vec<EditInput>) {
     match state {
         Composing::Idle => (Composing::Idle, Vec::new()),

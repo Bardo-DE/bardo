@@ -305,8 +305,8 @@ async fn only_the_portal_frontend_may_call_any_method() {
     #[cfg(not(feature = "debug"))]
     {
         as_frontend_at(&portal.peers, &weak, Proof::Exe);
-        refused.push(("a weak proof", &weak));
-    }
+        refused.push(("a weak proof", &weak))
+    };
     for (who, caller) in refused {
         for (label, result) in every_method(caller).await {
             assert!(is_refused(&result), "{who} calling {label}: {result:?}");

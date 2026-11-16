@@ -23,7 +23,7 @@ impl Reach {
         Reach {
             session: env.buses.session.clone(),
             runtime: env.dirs.runtime.clone(),
-            children: env.children.clone(),
+            children: Arc::clone(&env.children),
             terminal: TerminalSearch::of(env),
         }
     }

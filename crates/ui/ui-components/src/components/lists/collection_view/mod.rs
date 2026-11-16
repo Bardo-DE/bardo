@@ -1,4 +1,4 @@
-//! CollectionView: Finder's icon view, a grid of tiles (a thumbnail over a caption) of any
+//! `CollectionView`: Finder's icon view, a grid of tiles (a thumbnail over a caption) of any
 //! number that never builds them all.
 
 pub(crate) mod model;

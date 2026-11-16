@@ -6,6 +6,7 @@ use std::path::Path;
 use shell_model::displays::drm::{Connector, connector_name};
 
 /// Every connected connector under `root` (`/sys/class/drm`), in name order.
+#[must_use]
 pub fn connected(root: &Path) -> Vec<Connector> {
     let Ok(entries) = std::fs::read_dir(root) else {
         return Vec::new();

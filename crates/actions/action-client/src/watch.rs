@@ -89,6 +89,7 @@ impl Steering for Settled {
 
 impl Watched {
     /// A request that was answered in one piece.
+    #[must_use]
     pub fn answered(reply: IntentsReply) -> Self {
         Self {
             events: Box::new(Once(Some(reply))),
@@ -163,6 +164,7 @@ impl GateWatch {
     }
 
     /// A hand on the check that another task may hold while this one reads the events.
+    #[must_use]
     pub fn steer(&self) -> GateSteer {
         self.steer.clone()
     }
@@ -219,6 +221,7 @@ impl std::fmt::Debug for PerformWatch {
 impl PerformWatch {
     /// The request's object path on the bus, for a transport that has one (a call over D-Bus);
     /// none for the router in process.
+    #[must_use]
     pub fn request(&self) -> Option<&str> {
         self.request.as_deref()
     }

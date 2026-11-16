@@ -29,6 +29,7 @@ pub enum ScrubPose {
 
 /// `ranges` as the bands to draw: each held to 0..=1000, empty ones dropped, sorted by start,
 /// and overlapping or touching ones joined, so a band is drawn once.
+#[must_use]
 pub fn merged(ranges: &[BufferedRange]) -> Vec<BufferedRange> {
     let mut held: Vec<BufferedRange> = ranges
         .iter()
@@ -51,6 +52,7 @@ pub fn merged(ranges: &[BufferedRange]) -> Vec<BufferedRange> {
 
 /// The time `at` of the way through a recording `length` long: `m:ss`, or `h:mm:ss` from one
 /// hour, seconds rounded down.
+#[must_use]
 pub fn time_text(length: Millis, at: Fraction) -> String {
     let millis = u64::from(length.0) * u64::from(at.clamped().0) / 1000;
     let secs = millis / 1000;

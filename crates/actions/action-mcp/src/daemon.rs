@@ -82,7 +82,7 @@ fn edge(
     config: &McpConfig,
     expose: &ExposeRead,
 ) -> McpEdge<DbusTransport> {
-    let expose = expose.clone();
+    let expose = Arc::clone(expose);
     McpEdge::new(
         Intents::over(DbusTransport::new(connection.clone())),
         config.client.clone(),
@@ -113,7 +113,7 @@ async fn over_socket(
         let (stream, _) = listener.accept().await?;
         let edge = edge(&connection, &config, &expose);
         tokio::spawn(async move {
-            if let Ok(running) = edge.serve(stream).await {
+            if let Ok(running) = Box::pin(edge.serve(stream)).await {
                 let _ = running.waiting().await;
             }
         });
@@ -128,7 +128,13 @@ pub async fn start(
     listen: Listen,
 ) -> Result<(), DaemonFault> {
     let expose = config.expose;
-    start_following(connection, config, listen, Arc::new(move || expose)).await
+    Box::pin(start_following(
+        connection,
+        config,
+        listen,
+        Arc::new(move || expose),
+    ))
+    .await
 }
 
 /// `start`, with the switch asked of `expose` at every request: the daemon hands it the person's
@@ -141,7 +147,7 @@ pub async fn start_following(
 ) -> Result<(), DaemonFault> {
     claim(connection).await?;
     match listen {
-        Listen::Stdio => over_stdio(edge(connection, &config, &expose)).await,
+        Listen::Stdio => Box::pin(over_stdio(edge(connection, &config, &expose))).await,
         Listen::Socket(path) => over_socket(connection.clone(), config, expose, &path).await,
     }
 }
@@ -229,7 +235,7 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
             .value
             .expose
     });
-    start_following(&connection, config, listen, expose).await
+    Box::pin(start_following(&connection, config, listen, expose)).await
 }
 
 /// `--write-schema DIR`: `actions.settings.toml` into `DIR`, for a local install (design/22 section

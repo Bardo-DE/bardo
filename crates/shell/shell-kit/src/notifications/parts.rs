@@ -29,6 +29,7 @@ impl StackLayers {
     pub const MAX: u8 = 3;
 
     /// The layers drawn: 0 to [`Self::MAX`].
+    #[must_use]
     pub fn drawn(self) -> u8 {
         self.0.min(Self::MAX)
     }

@@ -183,7 +183,7 @@ fn mailos_real_today_file_is_read_and_pruned() {
     assert_eq!(loaded.parked.len(), 1);
     assert_eq!(loaded.parked[0].item, "d-1");
     assert_eq!(loaded.parked[0].title, "Re: lunch");
-    let noon = 1791374400;
+    let noon = 1_791_374_400;
     let booted: Today<String, String> = disk.boot_today(Epoch(noon + 3600));
     let items: Vec<&str> = booted.entries.iter().map(|e| e.item.as_str()).collect();
     assert_eq!(

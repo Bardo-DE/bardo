@@ -30,6 +30,7 @@ pub struct OnAccounts {
 impl OnAccounts {
     /// The person of this session, looked for on `bus`, else in the passwd file at `passwd` and
     /// the home folder `home`.
+    #[must_use]
     pub fn new(bus: BusSource, passwd: PathBuf, home: PathBuf) -> OnAccounts {
         OnAccounts { bus, passwd, home }
     }

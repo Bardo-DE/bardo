@@ -22,6 +22,7 @@ pub struct FakePrivacy(Arc<Kit<(), PrivacyAsked>>);
 
 impl FakePrivacy {
     /// A module that takes every change.
+    #[must_use]
     pub fn taking() -> FakePrivacy {
         FakePrivacy(Kit::new(Ok(())))
     }
@@ -32,6 +33,7 @@ impl FakePrivacy {
     }
 
     /// What was asked, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<PrivacyAsked> {
         self.0.asked()
     }

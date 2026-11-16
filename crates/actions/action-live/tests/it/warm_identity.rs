@@ -25,9 +25,8 @@ async fn after_the_warm_up_the_real_intentd_is_still_the_intentd_unit() {
     world.sheet.will(SheetChoice::Once);
     let launcher = Launcher::of(&world).await;
     let opened = launcher.open().await;
-    let mut answer = launcher
-        .say(&opened, "forward the Lisbon receipts to accounting")
-        .await;
+    let mut answer =
+        Box::pin(launcher.say(&opened, "forward the Lisbon receipts to accounting")).await;
     let history = answer
         .history_until(|v| {
             matches!(

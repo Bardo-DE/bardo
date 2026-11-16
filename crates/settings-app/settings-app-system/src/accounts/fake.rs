@@ -22,6 +22,7 @@ pub struct FakeAccounts {
 
 impl FakeAccounts {
     /// Services listing `pane`; every sheet ends as `AddEnd::Closed` until told otherwise.
+    #[must_use]
     pub fn answering(pane: AccountsPane) -> FakeAccounts {
         FakeAccounts {
             kit: Kit::new(Ok(pane)),
@@ -30,6 +31,7 @@ impl FakeAccounts {
     }
 
     /// No services, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeAccounts {
         FakeAccounts {
             kit: Kit::new(Err(why)),
@@ -43,6 +45,7 @@ impl FakeAccounts {
     }
 
     /// Which sheets were opened, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<SheetAsked> {
         self.kit.asked()
     }

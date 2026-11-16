@@ -154,7 +154,7 @@ async fn read_chunked<S: AsyncRead + Unpin>(
                 break at;
             }
             let want = buffer.len() + 1;
-            fill(stream, buffer, want).await?;
+            Box::pin(fill(stream, buffer, want)).await?;
         };
         let size_text = std::str::from_utf8(&buffer[..line_end])
             .map_err(|_| ReadError::Malformed)?
@@ -172,7 +172,7 @@ async fn read_chunked<S: AsyncRead + Unpin>(
         if body.len() + size > MAX_BODY {
             return Err(ReadError::TooLarge);
         }
-        fill(stream, buffer, size + 2).await?;
+        Box::pin(fill(stream, buffer, size + 2)).await?;
         body.extend_from_slice(&buffer[..size]);
         buffer.drain(..size + 2);
     }
@@ -194,7 +194,7 @@ pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
             return Err(ReadError::TooLarge);
         }
         let want = buffer.len() + 1;
-        fill(stream, &mut buffer, want).await?;
+        Box::pin(fill(stream, &mut buffer, want)).await?;
     };
     let head = std::str::from_utf8(&buffer[..head_end]).map_err(|_| ReadError::Malformed)?;
     let Head {
@@ -222,7 +222,7 @@ pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
         let _ = stream.write_all(b"HTTP/1.1 100 Continue\r\n\r\n").await;
     }
     let body = if named("transfer-encoding").is_some_and(|v| v.eq_ignore_ascii_case("chunked")) {
-        read_chunked(stream, &mut buffer).await?
+        Box::pin(read_chunked(stream, &mut buffer)).await?
     } else {
         let length = match named("content-length") {
             None => 0,
@@ -231,7 +231,7 @@ pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
         if length > MAX_BODY {
             return Err(ReadError::TooLarge);
         }
-        fill(stream, &mut buffer, length).await?;
+        Box::pin(fill(stream, &mut buffer, length)).await?;
         buffer.truncate(length);
         buffer
     };
@@ -330,14 +330,14 @@ mod tests {
             let _ = theirs.write_all(&sent).await;
             let _ = theirs.shutdown().await;
         });
-        read_request(&mut ours, |_| true).await
+        Box::pin(read_request(&mut ours, |_| true)).await
     }
 
     #[tokio::test]
     async fn a_content_length_body_is_read_whole() {
-        let request = read(
+        let request = Box::pin(read(
             b"POST /v1/messages?beta=true HTTP/1.1\r\nHost: x\r\nX-Api-Key: tok\r\nContent-Length: 7\r\n\r\n{\"a\":1}",
-        )
+        ))
         .await
         .expect("request");
         assert_eq!(request.method, "POST");
@@ -349,9 +349,9 @@ mod tests {
 
     #[tokio::test]
     async fn a_chunked_body_is_joined_and_a_bearer_is_presented() {
-        let request = read(
+        let request = Box::pin(read(
             b"POST /v1/chat/completions HTTP/1.1\r\nAuthorization: Bearer abc\r\nTransfer-Encoding: chunked\r\n\r\n3\r\n{\"a\r\n4;ext=1\r\n\":1}\r\n0\r\n\r\n",
-        )
+        ))
         .await
         .expect("request");
         assert_eq!(request.presented(), Some("abc"));
@@ -368,7 +368,10 @@ mod tests {
                 .await;
             std::future::pending::<()>().await;
         });
-        let refused = read_request(&mut ours, |head| head.header("x-api-key").is_some()).await;
+        let refused = Box::pin(read_request(&mut ours, |head| {
+            head.header("x-api-key").is_some()
+        }))
+        .await;
         assert_eq!(refused.err(), Some(ReadError::Refused));
     }
 
@@ -388,7 +391,7 @@ mod tests {
             ),
         ];
         for (bytes, want) in cases {
-            assert_eq!(read(bytes).await.err(), Some(want), "{bytes:?}");
+            assert_eq!(Box::pin(read(bytes)).await.err(), Some(want), "{bytes:?}");
         }
     }
 

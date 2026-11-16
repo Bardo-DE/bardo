@@ -151,7 +151,7 @@ async fn the_access_dialog_asks_the_shell_in_the_apps_words_and_replies_with_its
         Answer::Denied,
         Answer::Dismissed,
     ]));
-    let service = AccessService::new(Box::new(asker.clone()));
+    let service = AccessService::new(Box::new(std::sync::Arc::clone(&asker)));
     let mut options = Dict::new();
     options.insert("grant_label".to_owned(), text("Share"));
     options.insert("deny_label".to_owned(), text(" "));

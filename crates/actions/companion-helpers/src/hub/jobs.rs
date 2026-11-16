@@ -159,7 +159,7 @@ where
                 };
             }
         };
-        let shared = companion.shared.clone();
+        let shared = Arc::clone(&companion.shared);
         self.with_state(|state| {
             if let Some(running) = state.running.get_mut(&job) {
                 running.task = Some(opened.task.clone());

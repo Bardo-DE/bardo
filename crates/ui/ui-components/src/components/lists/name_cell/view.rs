@@ -1,4 +1,4 @@
-//! NameCell: the Name cell of a file list as Finder draws it, a glyph and then the name on one
+//! `NameCell`: the Name cell of a file list as Finder draws it, a glyph and then the name on one
 //! line. A name that does not fit loses its middle, so the extension stays (`Truncate::Middle`).
 //! Blitz cannot cut by measure, so the cut is made from a character budget: the caller gives the
 //! room the cell has (`room`, the column's width less the cell's padding) and [`name_chars`] turns

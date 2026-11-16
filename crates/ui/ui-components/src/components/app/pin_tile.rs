@@ -1,4 +1,4 @@
-//! PinTile: one square tile of the pinned grid above a sidebar's list (design/30 section 2.11):
+//! `PinTile`: one square tile of the pinned grid above a sidebar's list (design/30 section 2.11):
 //! an account in this Space, the "All" tile, or the tile that adds one. One component for the
 //! three faces; the account's unread count is a `Badge`, and a drag over it draws the list's drop
 //! line at its leading edge. Grouping, reordering and the Add tile's place are `PinTiles`.

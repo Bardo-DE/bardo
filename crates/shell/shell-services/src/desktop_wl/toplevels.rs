@@ -12,6 +12,7 @@ use super::view::identifier;
 /// `previous` brought up to `state`: windows that are gone close, every other window is
 /// stepped in, so a window that has just become active moves to the front and one that has
 /// just opened goes to the back. `previous` carries the recency the protocol does not.
+#[must_use]
 pub fn project(previous: Toplevels, state: &DesktopState) -> Toplevels {
     let now: Vec<Toplevel> = state
         .toplevels

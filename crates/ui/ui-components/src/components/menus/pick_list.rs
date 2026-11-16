@@ -1,4 +1,4 @@
-//! PickList: a popover with a search field over a list of rows, for choosing one thing or toggling
+//! `PickList`: a popover with a search field over a list of rows, for choosing one thing or toggling
 //! several out of a list too long to scan (a label to add, a folder to move to). It is the
 //! command palette's field, rows, keys and marking hung from a control as an `NSPopover` is,
 //! rather than centred over the window (design/30 section 2.4). The field is the palette's plain
@@ -75,7 +75,10 @@ pub fn PickList<T: Clone + PartialEq + 'static>(
     let revision = use_revision(&groups.key());
     let shown = shown_groups(&groups.0, &query);
     let all = stops(&shown);
-    let live: Vec<Availability> = all.iter().map(|stop| stop.availability()).collect();
+    let live: Vec<Availability> = all
+        .iter()
+        .map(super::palette::palette_stops::Stop::availability)
+        .collect();
     let current = selection.current(all.len());
     in_view.follow((!all.is_empty()).then_some(current), revision);
     let run = {

@@ -33,7 +33,11 @@ pub(crate) fn enveloped<T: Serialize>(body: T) -> fdo::Result<String> {
 
 /// Who is calling: the process behind the header's sender decides.
 async fn caller_of(who: &impl Callers, header: &Header<'_>) -> CuaCaller {
-    callers::caller_of(who, header.sender().map(|sender| sender.as_str())).await
+    callers::caller_of(
+        who,
+        header.sender().map(zbus::names::UniqueName::as_str),
+    )
+    .await
 }
 
 fn object_path(run: &RunId) -> OwnedObjectPath {
@@ -70,9 +74,9 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
             .at(
                 run_path(&id),
                 RunObject {
-                    supervisor: self.supervisor.clone(),
+                    supervisor: Arc::clone(&self.supervisor),
                     id: id.clone(),
-                    who: self.who.clone(),
+                    who: Arc::clone(&self.who),
                 },
             )
             .await?;
@@ -289,7 +293,7 @@ mod tests {
             "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n<node>\n",
         );
         ManagerObject {
-            supervisor: supervisor.clone(),
+            supervisor: Arc::clone(&supervisor),
             who: Arc::new(NoCallers),
         }
         .introspect_to_writer(&mut served, 1);

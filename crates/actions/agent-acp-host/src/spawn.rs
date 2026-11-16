@@ -122,6 +122,7 @@ impl SignIn {
     }
 
     /// The id as the agent knows it.
+    #[must_use]
     pub fn as_str(&self) -> &str {
         &self.0
     }

@@ -49,7 +49,7 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
         let _ = options;
-        let sender = header.sender().map(|s| s.as_str());
+        let sender = header.sender().map(zbus::names::UniqueName::as_str);
         if let Err(refused) = require(&self.callers, sender, &[INTENTD]).await {
             tracing::warn!(%refused, "refused a caller that is not intentd");
             return Err(refused.into());

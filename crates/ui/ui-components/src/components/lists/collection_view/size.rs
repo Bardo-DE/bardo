@@ -21,6 +21,7 @@ pub enum ThumbAspect {
 
 impl ThumbAspect {
     /// The box's height for a `width`.
+    #[must_use]
     pub fn height(self, width: Px) -> Px {
         match self {
             ThumbAspect::Square => width,
@@ -58,6 +59,7 @@ pub enum CollectionSize {
 
 impl CollectionSize {
     /// The thumbnail's side.
+    #[must_use]
     pub fn thumb(self) -> Px {
         match self {
             CollectionSize::Small => Px(48.0),
@@ -68,16 +70,19 @@ impl CollectionSize {
 
     /// The tile's least width: the thumbnail and the room beside it for the caption, so
     /// neighbouring captions do not touch.
+    #[must_use]
     pub fn tile(self) -> Px {
         Px(self.thumb().0 + 36.0)
     }
 
     /// The distance between one row's top and the next: the thumbnail and its caption band.
+    #[must_use]
     pub fn pitch(self) -> Px {
         self.pitch_for(ThumbAspect::Square)
     }
 
     /// The row pitch when the thumbnail's box has the shape `aspect`.
+    #[must_use]
     pub fn pitch_for(self, aspect: ThumbAspect) -> Px {
         Px(aspect.height(self.thumb()).0 + CAPTION_BAND.0)
     }
@@ -86,6 +91,7 @@ impl CollectionSize {
     /// has no text measure for a caption it has not laid out, so this is a budget of the small
     /// type's average advance (about 6.5 px) over the tile's width, not a measurement: a caption
     /// of narrow letters is cut a little early, one of wide letters a little late.
+    #[must_use]
     pub fn caption_chars(self) -> usize {
         (self.tile().0 / 6.5).floor() as usize
     }

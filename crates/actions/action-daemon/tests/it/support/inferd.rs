@@ -104,7 +104,7 @@ impl Transport for ScriptedInferd {
             .ok_or(TransportError::Unreachable)?;
         Ok(LoggedSession {
             inner,
-            log: self.log.clone(),
+            log: Arc::clone(&self.log),
         })
     }
 }

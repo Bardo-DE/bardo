@@ -124,12 +124,13 @@ pub struct Flights {
 impl Flights {
     /// The account's flight.
     pub fn of(&self, account: &AccountId) -> Arc<Flight> {
-        self.accounts
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .entry(account.clone())
-            .or_default()
-            .clone()
+        Arc::clone(
+            self.accounts
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .entry(account.clone())
+                .or_default(),
+        )
     }
 }
 

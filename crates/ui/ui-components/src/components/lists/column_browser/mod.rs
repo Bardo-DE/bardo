@@ -1,4 +1,4 @@
-//! ColumnBrowser: Finder's column view (Miller columns), a row of lists where the selection in
+//! `ColumnBrowser`: Finder's column view (Miller columns), a row of lists where the selection in
 //! one decides the next.
 
 pub(crate) mod model;

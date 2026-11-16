@@ -141,8 +141,8 @@ impl<S: Seams> Router<S> {
             None => self.start_mode(),
         };
         record.parent = parent_session;
-        record.external = open.external.clone();
-        record.cwd = open.cwd.clone();
+        record.external.clone_from(&open.external);
+        record.cwd.clone_from(&open.cwd);
         let parent_episode = open
             .parent
             .as_ref()
@@ -163,7 +163,7 @@ impl<S: Seams> Router<S> {
         if let Some(seat) = &open.helper {
             record.policy = record.policy.take().map(|p| intersection(&p, &seat.reach));
         }
-        record.helper = open.helper.clone();
+        record.helper.clone_from(&open.helper);
         record.wal = Wal::on(false);
         record.wal.note(SessionEntry::Opened(Opening {
             task: task.clone(),

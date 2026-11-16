@@ -30,13 +30,13 @@ async fn open_with(
         wired.desk.clone(),
         wired.terminal_fallback,
     );
-    let opened = host.open(opening(CWD)).await.map(|_| ());
+    let opened = Box::pin(host.open(opening(CWD))).await.map(|_| ());
     (opened, wired.agent)
 }
 
 #[tokio::test]
 async fn with_the_method_named_the_session_opens_after_authenticate() {
-    let (opened, agent) = open_with(Auth::Needed, method("oauth-personal")).await;
+    let (opened, agent) = Box::pin(open_with(Auth::Needed, method("oauth-personal"))).await;
     assert_eq!(opened, Ok(()));
     assert_eq!(
         agent.authenticated(),
@@ -52,7 +52,7 @@ async fn with_the_method_named_the_session_opens_after_authenticate() {
 
 #[tokio::test]
 async fn the_authenticate_reply_is_awaited_before_session_new_goes_out() {
-    let (opened, agent) = open_with(Auth::Needed, method("oauth-personal")).await;
+    let (opened, agent) = Box::pin(open_with(Auth::Needed, method("oauth-personal"))).await;
     assert_eq!(opened, Ok(()));
     // The fake refuses a `session/new` that was already in the pipe when it answered.
     assert_eq!(agent.raced(), 0);
@@ -60,7 +60,7 @@ async fn the_authenticate_reply_is_awaited_before_session_new_goes_out() {
 
 #[tokio::test]
 async fn without_a_method_an_agent_that_wants_signing_in_is_sign_in_needed_not_unavailable() {
-    let (opened, agent) = open_with(Auth::Needed, None).await;
+    let (opened, agent) = Box::pin(open_with(Auth::Needed, None)).await;
     // The agent lists the ways it signs itself in by their names; the terminal one is not offered.
     let Err(HostFault::Backend(BackendFault::SignInChoose(ways))) = opened else {
         panic!("expected the list of ways to sign in, got {opened:?}");
@@ -73,7 +73,7 @@ async fn without_a_method_an_agent_that_wants_signing_in_is_sign_in_needed_not_u
 #[tokio::test]
 async fn a_method_the_agent_did_not_advertise_is_refused_before_anything_is_sent() {
     for id in ["oauth-business", "login-terminal"] {
-        let (opened, agent) = open_with(Auth::Needed, method(id)).await;
+        let (opened, agent) = Box::pin(open_with(Auth::Needed, method(id))).await;
         assert_eq!(
             opened,
             Err(HostFault::Backend(BackendFault::SignInUnsupported)),
@@ -85,7 +85,7 @@ async fn a_method_the_agent_did_not_advertise_is_refused_before_anything_is_sent
 
 #[tokio::test]
 async fn an_agent_that_advertises_nothing_refuses_a_configured_method() {
-    let (opened, _agent) = open_with(Auth::Open, method("oauth-personal")).await;
+    let (opened, _agent) = Box::pin(open_with(Auth::Open, method("oauth-personal"))).await;
     assert_eq!(
         opened,
         Err(HostFault::Backend(BackendFault::SignInUnsupported))
@@ -94,7 +94,7 @@ async fn an_agent_that_advertises_nothing_refuses_a_configured_method() {
 
 #[tokio::test]
 async fn an_agent_that_needs_no_sign_in_is_not_sent_one() {
-    let (rig, _files) = started(Setup::default()).await;
+    let (rig, _files) = Box::pin(started(Setup::default())).await;
     assert!(rig.agent.authenticated().is_empty());
 }
 

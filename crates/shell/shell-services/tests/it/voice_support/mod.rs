@@ -321,7 +321,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
     let callers = VoicedCallers::new(&voiced, is);
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
-        callers: callers.clone(),
+        callers: Arc::<VoicedCallers>::clone(&callers),
         ..Env::isolated(Path::new("/nonexistent/shell-voice-bus"))
     };
     voiced

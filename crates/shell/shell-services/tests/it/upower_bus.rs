@@ -1,4 +1,4 @@
-//! The battery, power profile and keyboard backlight services against stand-ins for `UPower` and
+//! The battery, power profile and keyboard backlight services against stand-ins for UPower and
 //! power-profiles-daemon on a private bus playing the system bus, never the real one. The tests
 //! need a `dbus-daemon` and skip without one.
 
@@ -134,7 +134,7 @@ async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
         .and_then(|b| b.name("org.freedesktop.UPower.PowerProfiles"))
         .and_then(|b| b.serve_at(UPOWER, Manager))
         .and_then(|b| b.serve_at(DISPLAY, Device))
-        .and_then(|b| b.serve_at(KBD, Keyboard(shared.clone())))
+        .and_then(|b| b.serve_at(KBD, Keyboard(Arc::clone(&shared))))
         .and_then(|b| b.serve_at(PROFILES, Profiles));
     let connection = built
         .unwrap_or_else(|e| panic!("{e}"))

@@ -78,7 +78,7 @@ fn built(person: &Path, stored: &str, off: &[ExtensionId]) -> ui_extensions::Bui
 #[test]
 fn the_standard_set_is_the_kind_of_the_type_and_the_extension_label() {
     let db = db();
-    let icons = FileIcons::standard(db.clone());
+    let icons = FileIcons::standard(Arc::clone(&db));
     let want = |kind, label: &str| IconPick::Standard {
         kind,
         label: ExtLabel::from_extension(label),

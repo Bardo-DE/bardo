@@ -173,7 +173,7 @@ impl GateLink for FakePdp {
             events: events.into(),
             hangs,
             proceeded: Mutex::new(0),
-            closed: self.closes.clone(),
+            closed: Arc::clone(&self.closes),
         })
     }
 }

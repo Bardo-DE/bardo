@@ -1,4 +1,4 @@
-//! LockClock: the lock screen's time and date (design/20-SURFACES.md section 1.9;
+//! `LockClock`: the lock screen's time and date (design/20-SURFACES.md section 1.9;
 //! design/04-COMPONENTS.md section 42). The date line, then the time in the display face at
 //! `--fs-lock-clock`, heavy, in white over the wallpaper: the reference lock screen's order,
 //! where the day sits above a very large time.

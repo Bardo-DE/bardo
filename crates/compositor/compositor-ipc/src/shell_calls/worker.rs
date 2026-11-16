@@ -77,7 +77,7 @@ fn run(mut incoming: UnboundedReceiver<DbusCall>, report: mpsc::Sender<FailedCal
                     continue;
                 }
             };
-            let Ok(permit) = permits.clone().try_acquire_owned() else {
+            let Ok(permit) = Arc::clone(&permits).try_acquire_owned() else {
                 let _ = report.send(FailedCall {
                     call,
                     why: ShellCallError::Overloaded {
@@ -182,15 +182,15 @@ mod tests {
     fn calls_waiting_for_a_reply_are_limited() {
         let permits = Arc::new(Semaphore::new(MOST_IN_FLIGHT));
         let mut waiting: Vec<_> = (0..MOST_IN_FLIGHT)
-            .map(|_| permits.clone().try_acquire_owned().expect("a place"))
+            .map(|_| Arc::clone(&permits).try_acquire_owned().expect("a place"))
             .collect();
         assert!(
-            permits.clone().try_acquire_owned().is_err(),
+            Arc::clone(&permits).try_acquire_owned().is_err(),
             "no place left"
         );
         waiting.pop();
         assert!(
-            permits.clone().try_acquire_owned().is_ok(),
+            Arc::clone(&permits).try_acquire_owned().is_ok(),
             "a place is free again"
         );
     }

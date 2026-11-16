@@ -27,6 +27,7 @@ impl LayerStack {
     /// Open `id` on top, dismissed as `dismiss` says.
     ///
     /// A layer already open moves to the top.
+    #[must_use]
     pub fn push(self, id: LayerId, dismiss: Dismiss) -> Self {
         let mut layers = self.remove(id).layers;
         layers.push((id, dismiss));
@@ -34,6 +35,7 @@ impl LayerStack {
     }
 
     /// `id` closed.
+    #[must_use]
     pub fn remove(self, id: LayerId) -> Self {
         LayerStack {
             layers: self
@@ -49,6 +51,7 @@ impl LayerStack {
     /// One Escape, one layer: the topmost closes if it takes Escape. If it does not (its
     /// owner closes it), the key passes through to that owner and nothing below closes
     /// (design/06-INTERACTIONS.md section 18).
+    #[must_use]
     pub fn escape(&self) -> Dismissal {
         self.top_if(|dismiss| matches!(dismiss, Dismiss::Transient | Dismiss::Semitransient))
     }
@@ -57,11 +60,13 @@ impl LayerStack {
     ///
     /// Only the topmost layer is asked; a click outside it that lands on a lower layer is
     /// that layer's own click.
+    #[must_use]
     pub fn outside_click(&self) -> Dismissal {
         self.top_if(|dismiss| dismiss == Dismiss::Transient)
     }
 
     /// The topmost open layer.
+    #[must_use]
     pub fn top(&self) -> Option<LayerId> {
         self.layers.last().map(|&(id, _)| id)
     }

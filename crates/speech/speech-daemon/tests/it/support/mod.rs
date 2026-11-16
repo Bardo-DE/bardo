@@ -187,7 +187,7 @@ pub async fn world_with(options: Options, config: VoicedConfig) -> World {
     // The daemon reads nothing of the person's: HOME and XDG point at the scratch directory.
     let bus = PrivateBus::start(home.path());
     let (device, hand) = options.device;
-    let seen = options.infer.seen.clone();
+    let seen = Arc::clone(&options.infer.seen);
     let daemon = bus.connect().await;
     let who = Arc::new(Identity::on_fixture(
         daemon.clone(),
@@ -199,7 +199,7 @@ pub async fn world_with(options: Options, config: VoicedConfig) -> World {
         transport: options.infer,
         warm: FixedWarm(options.warm),
         usage: FixedUse(options.usage),
-        callers: who.clone(),
+        callers: Arc::clone(&who),
     };
     let running = speech_daemon::start(daemon, config, seams)
         .await

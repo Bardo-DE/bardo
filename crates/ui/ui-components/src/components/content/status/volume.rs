@@ -1,4 +1,4 @@
-//! VolumeGlyph: the bar's volume item on `LevelGlyph`'s layers (design/26-DETAILS.md 5.1.4):
+//! `VolumeGlyph`: the bar's volume item on `LevelGlyph`'s layers (design/26-DETAILS.md 5.1.4):
 //! the waves cross-fade by thirds over `--t-quick` as the level moves, and muting fades the
 //! waves out as the slash comes in. A held volume key moves nothing else (R12): no count, no bump.
 
@@ -24,6 +24,7 @@ pub enum VolumeWaves {
 
 impl VolumeWaves {
     /// The waves a level (thousandths) shows (R2: 50 then 51 % is the same two waves).
+    #[must_use]
     pub fn of(level: Fraction) -> VolumeWaves {
         match waves(level) {
             0 => VolumeWaves::Zero,
@@ -57,6 +58,7 @@ pub enum VolumeState {
 
 impl VolumeState {
     /// The state in words (R8).
+    #[must_use]
     pub fn words(self) -> &'static str {
         match self {
             VolumeState::Heard(VolumeWaves::Zero) => "Silent",

@@ -5,7 +5,7 @@ use pipewire as pw;
 use speech_audio::{AudioNode, NodeId, NodeKind};
 use std::time::Duration;
 
-/// The node kind `PipeWire`'s `media.class` and name say.
+/// The node kind PipeWire's `media.class` and name say.
 fn kind_of(class: &str, name: &str) -> Option<NodeKind> {
     match class {
         "Audio/Source" if name.ends_with(".monitor") => Some(NodeKind::Monitor),
@@ -34,8 +34,8 @@ pub(crate) fn list_nodes(budget: Duration) -> Result<(Vec<AudioNode>, DefaultSou
     let first = core.sync(0)?;
     let second = Rc::new(Cell::new(None));
     let (round_in, second_in, quit, core_in) = (
-        round.clone(),
-        second.clone(),
+        Rc::clone(&round),
+        Rc::clone(&second),
         mainloop.clone(),
         core.clone(),
     );
@@ -54,9 +54,9 @@ pub(crate) fn list_nodes(budget: Duration) -> Result<(Vec<AudioNode>, DefaultSou
         })
         .register();
     let (sink, sink_defaults, sink_bound, bind_from) = (
-        found.clone(),
-        defaults.clone(),
-        bound.clone(),
+        Rc::clone(&found),
+        Rc::clone(&defaults),
+        Rc::clone(&bound),
         registry.clone(),
     );
     let _registry_listener = registry
@@ -84,7 +84,7 @@ pub(crate) fn list_nodes(budget: Duration) -> Result<(Vec<AudioNode>, DefaultSou
                     let Ok(metadata) = bind_from.bind::<pw::metadata::Metadata, _>(global) else {
                         return;
                     };
-                    let seen = sink_defaults.clone();
+                    let seen = Rc::clone(&sink_defaults);
                     let listener = metadata
                         .add_listener_local()
                         .property(move |_subject, key, _type, value| {

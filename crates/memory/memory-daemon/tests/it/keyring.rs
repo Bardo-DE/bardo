@@ -88,7 +88,7 @@ async fn the_keyrings_lock_signal_closes_and_reopens_the_space() {
 
     // The daemon listens (the match rule is in place once this returns).
     let changes = LockChanges::on(&world.server).await.expect("subscribe");
-    let daemon = world.daemon.clone();
+    let daemon = Arc::clone(&world.daemon);
     let task = tokio::spawn(async move { daemon.follow_keyring(changes).await });
 
     // A Space is open with a fact in it.
@@ -172,7 +172,7 @@ async fn an_index_that_changes_state_is_announced_once() {
     let up = Arc::new(AtomicBool::new(true));
     let embedder = Switch {
         inner: FakeEmbedder::new(),
-        up: up.clone(),
+        up: Arc::clone(&up),
     };
     let backend = SystemBackend::with(
         dirs,

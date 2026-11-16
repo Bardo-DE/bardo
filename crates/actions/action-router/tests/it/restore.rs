@@ -478,7 +478,7 @@ async fn untrusted_handles_with_no_taint_before_them_restore_tainted_and_are_rep
         cwd: None,
         started_from: None,
         label: None,
-        rewind: Default::default(),
+        rewind: Rewind::default(),
     };
     let label = HandleLabel {
         handle: Handle(1),

@@ -20,6 +20,7 @@ pub enum SessionMode {
 impl SessionMode {
     /// The mode `value` of [`SESSION_MODE_VAR`] names: `safe` is [`SessionMode::Safe`]; unset,
     /// empty or any other word is [`SessionMode::Normal`].
+    #[must_use]
     pub fn from_value(value: Option<&str>) -> SessionMode {
         match value {
             Some("safe") => SessionMode::Safe,
@@ -28,6 +29,7 @@ impl SessionMode {
     }
 
     /// The mode of this process's environment.
+    #[must_use]
     pub fn from_process() -> SessionMode {
         SessionMode::from_value(std::env::var(SESSION_MODE_VAR).ok().as_deref())
     }

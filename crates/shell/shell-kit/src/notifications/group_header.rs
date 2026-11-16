@@ -1,4 +1,4 @@
-//! GroupHeader: the head of one app's notifications in the notification center (design/20 section
+//! `GroupHeader`: the head of one app's notifications in the notification center (design/20 section
 //! 1.6, design/13 section 13.3.6 "Grouping by app"). The app's icon at 16,
 //! its name and how many it holds in `SectionHeader`'s group type (the data face in capitals at
 //! the caption size, `--ink-faint`), then the trailing pair: the toggle that folds the group to

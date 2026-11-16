@@ -151,15 +151,15 @@ async fn every_message_both_ways_fits_the_protocol_schema() {
         "../../../../agent-acp-server/tests/schema/schema.json"
     ))
     .expect("schema");
-    let (mut rig, files) = started(Setup {
+    let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![script()],
         answers: vec![once(), once(), once(), once()],
         scripts: vec![Script::done("", 0), Script::done("", 0)],
         ..Setup::default()
-    })
+    }))
     .await;
     files.put(&super::rig::abs("/work/app/a.txt"), "a");
-    run_turn(&mut rig, "go").await;
+    Box::pin(run_turn(&mut rig, "go")).await;
     let view: &View = &rig.agent;
     let to_agent = view.lines();
     let from_agent = view.sent();

@@ -115,7 +115,7 @@ impl Line {
             availability: self.availability,
             hint: None,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         }
     }
 }

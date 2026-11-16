@@ -13,11 +13,12 @@ pub(super) fn use_file_icons(launch: &Launch, provided: Provided) -> Signal<Icon
     let sources = launch.file_icons.clone();
     let places = launch.places.clone();
     let store = launch.appearance.store.clone();
-    let mut icons = use_signal(|| Icons::standard(sources.db().clone(), places.clone()));
+    let mut icons =
+        use_signal(|| Icons::standard(std::sync::Arc::clone(sources.db()), places.clone()));
     use_effect(use_reactive!(|provided| {
         let built = sources.build(&store, &provided);
         icons.set(Icons::new(
-            sources.db().clone(),
+            std::sync::Arc::clone(sources.db()),
             built.icons,
             places.clone(),
         ));

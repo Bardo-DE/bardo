@@ -36,7 +36,7 @@ pub fn attach_display(
         .try_clone_to_owned()
         .map_err(|error| StartError::Loop(format!("the display's poll fd: {error}")))?;
     let shared = SharedDisplay(Rc::new(RefCell::new(display)), Rc::new(Cell::new(0)));
-    let (display, dispatched) = (shared.0.clone(), shared.1.clone());
+    let (display, dispatched) = (Rc::clone(&shared.0), Rc::clone(&shared.1));
     event_loop
         .insert_source(
             Generic::new(fd, Interest::READ, Mode::Level),

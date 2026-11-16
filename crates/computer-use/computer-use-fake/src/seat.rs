@@ -91,7 +91,7 @@ impl AgentSeat for FakeSeat {
     }
 
     fn keymap(&self) -> Arc<Keymap> {
-        self.keymap.clone()
+        Arc::clone(&self.keymap)
     }
 
     async fn attach(&self, lease: &LeaseGrant, socket: EiSocket) -> Result<(), SeatError> {

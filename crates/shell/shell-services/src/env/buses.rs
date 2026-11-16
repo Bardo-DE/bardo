@@ -36,6 +36,7 @@ pub struct Bus {
 
 impl Bus {
     /// The system bus, reached by `route`.
+    #[must_use]
     pub fn system(route: BusRoute) -> Bus {
         Bus {
             kind: BusKind::System,
@@ -44,6 +45,7 @@ impl Bus {
     }
 
     /// The session bus, reached by `route`.
+    #[must_use]
     pub fn session(route: BusRoute) -> Bus {
         Bus {
             kind: BusKind::Session,
@@ -52,11 +54,13 @@ impl Bus {
     }
 
     /// Which bus this is.
+    #[must_use]
     pub fn kind(&self) -> BusKind {
         self.kind
     }
 
     /// How it is reached.
+    #[must_use]
     pub fn route(&self) -> &BusRoute {
         &self.route
     }
@@ -142,6 +146,7 @@ pub struct Buses {
 
 impl Buses {
     /// The system bus by `system`, the session bus by `session`.
+    #[must_use]
     pub fn new(system: BusRoute, session: BusRoute) -> Buses {
         Buses {
             system: Bus::system(system),
@@ -150,11 +155,13 @@ impl Buses {
     }
 
     /// The process's own two buses.
+    #[must_use]
     pub fn from_process() -> Buses {
         Buses::new(BusRoute::Usual, BusRoute::Usual)
     }
 
     /// Neither bus: every service that needs one stays at its absent default.
+    #[must_use]
     pub fn absent() -> Buses {
         Buses::new(BusRoute::Absent, BusRoute::Absent)
     }

@@ -21,6 +21,7 @@ const MAX_SIZE: u16 = 256;
 /// The theme GTK's settings name (`gtk-icon-theme-name` in `gtk-3.0/settings.ini` under the
 /// config directory), else `hicolor`. Every lookup falls back to the `hicolor` theme anyway
 /// whenever the chosen theme is not installed (`freedesktop_icons::lookup`'s own step).
+#[must_use]
 pub fn icon_theme(config: &Path) -> IconTheme {
     gtk_icon_theme(config).unwrap_or_else(|| IconTheme(HICOLOR.to_owned()))
 }
@@ -106,6 +107,7 @@ fn raster_lookup(icon: &str, theme: &IconTheme) -> Option<PathBuf> {
 /// The directory a theme lookup falls back to for a pixmap, after every theme
 /// (`freedesktop_icons`'s own hard-coded last resort, mirrored here so a caller can decide
 /// whether an icon came from a theme or this fallback without re-deriving it).
+#[must_use]
 pub fn pixmap_dirs() -> Vec<PathBuf> {
     vec![PathBuf::from("/usr/share/pixmaps")]
 }

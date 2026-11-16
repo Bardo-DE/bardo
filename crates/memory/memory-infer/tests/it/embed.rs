@@ -24,7 +24,7 @@ async fn the_embedder_asks_for_the_cards_model_and_returns_one_vector_per_text()
         InferEvent::Waiting(inference_core::Readiness::Loading),
         InferEvent::Finished(embed_reply(want.clone())),
     ]);
-    let embedder = InferdEmbedder::new(transport.clone(), card());
+    let embedder = InferdEmbedder::new(std::sync::Arc::clone(&transport), card());
     let got = embedder
         .embed(&texts(2), EmbedRole::Document, Urgency::Background)
         .await
@@ -55,7 +55,8 @@ async fn the_embedder_asks_for_the_cards_model_and_returns_one_vector_per_text()
 #[tokio::test]
 async fn a_query_is_interactive_and_the_class_is_the_embedders() {
     let transport = Scripted::finishing(embed_reply(vec![vector_of("q")]));
-    let embedder = InferdEmbedder::for_class(transport.clone(), card(), DataClass::Notes);
+    let embedder =
+        InferdEmbedder::for_class(std::sync::Arc::clone(&transport), card(), DataClass::Notes);
     embedder
         .embed(&texts(1), EmbedRole::Query, Urgency::Interactive)
         .await
@@ -72,7 +73,7 @@ async fn a_query_is_interactive_and_the_class_is_the_embedders() {
 #[tokio::test]
 async fn nothing_to_embed_opens_nothing() {
     let transport = Scripted::playing(vec![]);
-    let embedder = InferdEmbedder::new(transport.clone(), card());
+    let embedder = InferdEmbedder::new(std::sync::Arc::clone(&transport), card());
     let none = embedder
         .embed(&[], EmbedRole::Document, Urgency::Background)
         .await;

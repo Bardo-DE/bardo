@@ -55,6 +55,7 @@ pub struct SwitcherFit {
 
 /// The fit of `count` cells with the one at `selected` selected, on an output `output` wide
 /// (`None`: as wide as the row needs, never shrunk).
+#[must_use]
 pub fn fit(
     count: usize,
     selected: usize,

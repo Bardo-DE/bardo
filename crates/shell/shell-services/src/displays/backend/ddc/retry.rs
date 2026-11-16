@@ -77,7 +77,7 @@ mod tests {
         let want = Ok(Level { value: 20, max: 50 });
         assert_eq!(read(&bus(0, 0), DdcId(5), Feature::SpeakerVolume), want);
         assert_eq!(read(&bus(2, 0), DdcId(5), Feature::SpeakerVolume), want);
-        assert!(read(&bus(3, 0), DdcId(5), Feature::SpeakerVolume).is_err());
+        read(&bus(3, 0), DdcId(5), Feature::SpeakerVolume).unwrap_err();
     }
 
     #[test]

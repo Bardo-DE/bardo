@@ -24,6 +24,7 @@ pub struct Pinned {
 
 impl Pinned {
     /// The owner as a destination for a proxy builder.
+    #[must_use]
     pub fn destination(&self) -> String {
         self.owner.0.clone()
     }

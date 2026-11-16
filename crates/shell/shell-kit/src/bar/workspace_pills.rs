@@ -1,4 +1,4 @@
-//! WorkspacePills: the bar's workspace indicator, Mission Control's Spaces bar as one segmented
+//! `WorkspacePills`: the bar's workspace indicator, Mission Control's Spaces bar as one segmented
 //! group on the frame ground (design/30 section 2.10): a track with the pills inside it, the
 //! selected workspace a raised segment with the current-item shadow, the rest quiet text.
 //! Markup: `div.ds-ws-pills[role=group]` holding `button.ds-ws-pill[data-selected][aria-current]`.

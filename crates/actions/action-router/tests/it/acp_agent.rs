@@ -90,7 +90,7 @@ pub(crate) fn world() -> World {
     let host = Arc::new(Performer::default());
     router.seams.link.host(
         account_core::AppName::parse(HOST).expect("app"),
-        host.clone(),
+        Arc::<Performer>::clone(&host),
     );
     World { router, host }
 }
@@ -128,7 +128,7 @@ impl World {
                     program: program(name),
                     sheets,
                     label,
-                    rewind: Default::default(),
+                    rewind: Rewind::default(),
                     helper: None,
                 }),
                 helper: None,
@@ -381,7 +381,7 @@ async fn a_session_another_role_opened_is_not_an_agents_even_if_it_says_so() {
                     program: program(CLAUDE),
                     sheets: SheetSurface::Desktop,
                     label: None,
-                    rewind: Default::default(),
+                    rewind: Rewind::default(),
                     helper: None,
                 }),
                 helper: None,

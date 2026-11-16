@@ -67,16 +67,26 @@ async fn rig_over(writable: bool) -> Rig {
     listing.folder("k", None, "Kept");
     listing.file("p", Some("k"), "Photo.jpg", 3, "1");
     source.put("p", b"jpg".to_vec());
-    let sink = Arc::new(MemorySink::new(listing.clone(), source.clone(), 2));
+    let sink = Arc::new(MemorySink::new(
+        Arc::clone(&listing),
+        Arc::clone(&source),
+        2,
+    ));
     let config = DriveConfig {
         chunk: 2,
         quiet: Duration::from_millis(30),
         ..DriveConfig::new(bus.scratch().join("cache/one"))
     };
     let files = if writable {
-        Drive::open_writable(config, listing.clone(), source.clone(), sink.clone()).await
+        Drive::open_writable(
+            config,
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
+            Arc::<MemorySink>::clone(&sink),
+        )
+        .await
     } else {
-        Drive::open(config, listing.clone(), source.clone()).await
+        Drive::open(config, Arc::<MemoryListing>::clone(&listing), Arc::<MemorySource>::clone(&source)).await
     }
     .expect("drive");
     let drive = Arc::new(LiveDrive::new(

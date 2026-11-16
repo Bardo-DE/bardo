@@ -1,4 +1,4 @@
-//! ModuleGrid: the control center's grid of modules (design/13 section 13.3.7). Its columns, gap
+//! `ModuleGrid`: the control center's grid of modules (design/13 section 13.3.7). Its columns, gap
 //! and padding are props, so the columns, `--cc-gap` and `--cc-pad`
 //! (design/22-SETTINGS.md section 3.13) reach the grid and not only the popup's size estimate
 //!. A `ModuleTile { span: TileSpan::Full }` or a `ModulePanel` spans every
@@ -34,6 +34,7 @@ pub struct GridMetrics {
 impl GridMetrics {
     /// `--grid-columns:2;--grid-gap:8px;--grid-padding:12px`: lengths rounded to whole pixels
     /// and held at zero or more, as the keys are `Px` (u16).
+    #[must_use]
     pub fn style_attr(&self) -> String {
         let whole = |px: Px| px.0.round().max(0.0) as u32;
         format!(

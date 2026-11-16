@@ -88,6 +88,7 @@ pub struct ExifFacts {
 
 impl ExifFacts {
     /// The facts of an image that has no EXIF: upright, nothing known.
+    #[must_use]
     pub fn none() -> Self {
         ExifFacts {
             orientation: ExifOrientation::UPRIGHT,
@@ -164,11 +165,13 @@ impl ExifFacts {
     }
 
     /// `Canon EOS R5`: the model, with the maker in front unless the model already starts with it.
+    #[must_use]
     pub fn camera(&self) -> Option<String> {
         format::camera(self.make.as_deref(), self.model.as_deref())
     }
 
     /// `1/200 s · f/2.8 · ISO 100 · 35 mm`, the parts that were recorded.
+    #[must_use]
     pub fn exposure_text(&self) -> Option<String> {
         format::exposure(&self.exposure)
     }

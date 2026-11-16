@@ -15,11 +15,13 @@ pub struct FakeDisplays(Arc<Kit<DisplaysStatus, DisplayChange>>);
 
 impl FakeDisplays {
     /// Displays in this standing.
+    #[must_use]
     pub fn answering(status: DisplaysStatus) -> FakeDisplays {
         FakeDisplays(Kit::new(Ok(status)))
     }
 
     /// No compositor, for this reason.
+    #[must_use]
     pub fn missing(why: Absence) -> FakeDisplays {
         FakeDisplays(Kit::new(Err(why)))
     }
@@ -30,6 +32,7 @@ impl FakeDisplays {
     }
 
     /// What was asked of it, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<DisplayChange> {
         self.0.asked()
     }

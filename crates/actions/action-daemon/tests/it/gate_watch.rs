@@ -103,7 +103,7 @@ impl Desk {
             action_daemon::callers::shipped(),
             dir.path().join("proc"),
         ));
-        setup.identity = Some(who.clone());
+        setup.identity = Some(Arc::clone(&who));
         setup.proc_root = action_daemon::ProcRoot::Honoured(dir.path().join("proc"));
         let intentd = start(&daemon, None, setup).await.expect("intentd");
         let sill_connection = bus.connect().await;

@@ -80,7 +80,7 @@ impl Desk {
         });
         let router = Arc::new(router);
         let intents = Intents::over(InProcess::new(
-            router.clone(),
+            Arc::clone(&router),
             caller("org.bardo.Do", CallerRole::Cli),
         ));
         Self { router, intents }

@@ -30,12 +30,14 @@ impl IcsProvider {
     /// Every occurrence overlapping `window`, all-day events as dates and timed ones resolved
     /// against their own `TZID` (a floating time in `zone`); how many calendars were read; and
     /// the calendars that failed. Blocking: the service calls it on the blocking pool.
+    #[must_use]
     pub fn read(&self, window: Window, zone: &TimeZone) -> ProviderRead {
         super::read::read_places(&self.places, window, zone)
     }
 
     /// The files and directories whose change should trigger a re-read (a `notify` watch on
     /// each; a directory's own entries and its collections' too).
+    #[must_use]
     pub fn watched(&self) -> Vec<PathBuf> {
         self.places
             .iter()

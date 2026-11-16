@@ -43,6 +43,7 @@ impl PaneFocus {
     }
 
     /// What pane `this` has when the focus is at `held`.
+    #[must_use]
     pub fn of(this: PaneAt, held: Option<PaneAt>) -> Self {
         match held {
             Some(at) if at == this => PaneFocus::Holds,
@@ -68,6 +69,7 @@ pub enum PaneSize {
 
 impl PaneSize {
     /// The pixels this is in a view `extent` long.
+    #[must_use]
     pub fn resolve(self, extent: Px) -> Px {
         match self {
             PaneSize::Fixed(px) => px,
@@ -77,6 +79,7 @@ impl PaneSize {
 
     /// `px` in the unit `self` is in: a share stays a share, so a pane the person sized keeps
     /// following the view. In a view with no extent a share has nothing to be a part of.
+    #[must_use]
     pub fn like(self, px: Px, extent: Px) -> PaneSize {
         match self {
             PaneSize::Fixed(_) => PaneSize::Fixed(px),
@@ -111,6 +114,7 @@ impl PaneSpec {
 
     /// A pane that is `preferred` of the view, a drag keeping it between a tenth and nine
     /// tenths of it. It never folds.
+    #[must_use]
     pub const fn sharing(preferred: Share) -> PaneSpec {
         PaneSpec {
             preferred: PaneSize::Share(preferred),
@@ -121,11 +125,13 @@ impl PaneSpec {
     }
 
     /// The preferred size in a view `extent` long.
+    #[must_use]
     pub fn preferred_px(self, extent: Px) -> Px {
         self.preferred.resolve(extent)
     }
 
     /// What a drag that would make the pane `raw` long, in a view `extent` long, does.
+    #[must_use]
     pub fn dragged(self, raw: Px, extent: Px) -> DividerDrag {
         let (min, max) = (self.min.resolve(extent), self.max.resolve(extent));
         if self.collapsing && raw.0 < min.0 / 2.0 {

@@ -68,7 +68,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
     let companion = Arc::new(Mutex::new(w.companion));
     serve_on_rooted(
         &server,
-        companion.clone(),
+        Arc::clone(&companion),
         who(&server, &proc_root),
         ProcRoot::Honoured(proc_root),
     )
@@ -225,7 +225,7 @@ async fn a_conversation_a_terminal_opens_records_the_terminal_and_the_shells_doe
     let bus = PrivateBus::start(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![]);
-    let router = w.router.clone();
+    let router = Arc::clone(&w.router);
     let companion = Arc::new(Mutex::new(w.companion));
     serve_on_rooted(
         &server,
@@ -301,7 +301,7 @@ async fn a_process_the_table_names_as_less_than_the_shell_speaks_for_nobody() {
         serve_on_rooted(
             &server,
             companion,
-            identity.clone(),
+            Arc::clone(&identity),
             ProcRoot::Honoured(proc_root),
         )
         .await

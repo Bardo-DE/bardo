@@ -101,7 +101,7 @@ fn only_the_platforms_primary_modifier_and_a_digit_from_one_to_nine_switches() {
     for (chord, platform, pressed, modifiers, want) in cases {
         let got = chord
             .pressed(platform, &pressed, modifiers)
-            .map(|number| number.get());
+            .map(keymap::SpaceNumber::get);
         assert_eq!(
             got, want,
             "{chord:?} {platform:?} {pressed:?} {modifiers:?}"

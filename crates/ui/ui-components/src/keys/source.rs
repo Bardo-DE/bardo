@@ -20,6 +20,7 @@ pub struct KeySource {
 
 impl KeySource {
     /// `source`, loading for `platform`.
+    #[must_use]
     pub fn new(platform: Platform, source: Box<dyn KeymapSource + Send + Sync>) -> Self {
         KeySource {
             platform,
@@ -32,17 +33,20 @@ impl KeySource {
     /// keycap), so an app with its own rebinding file folds into the shared keymap without
     /// reimplementing detection. Applied again after every reload; a change it cannot apply is
     /// kept in `Keys::problems`. A second call replaces the first.
+    #[must_use]
     pub fn with_overrides(mut self, overrides: Overrides) -> Self {
         self.overrides = Some(Arc::new(overrides));
         self
     }
 
     /// `platform`'s conventions and nothing else: the fixed-platform source tests use.
+    #[must_use]
     pub fn conventions(platform: Platform) -> Self {
         KeySource::new(platform, Box::new(ConventionSource))
     }
 
     /// The platform the keymap is for.
+    #[must_use]
     pub fn platform(&self) -> Platform {
         self.platform
     }
@@ -65,6 +69,7 @@ impl KeySource {
     /// The source itself, for an app that builds a keymap of its own on it. Loading it gives the
     /// system's keymap alone: the overrides from [`with_overrides`](KeySource::with_overrides) are
     /// not applied.
+    #[must_use]
     pub fn source(&self) -> &(dyn KeymapSource + Send + Sync) {
         &*self.source
     }

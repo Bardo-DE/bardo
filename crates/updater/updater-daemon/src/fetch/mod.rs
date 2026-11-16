@@ -82,6 +82,7 @@ pub struct Source {
 
 impl Source {
     /// A source under the releases page `index_url` (no trailing slash needed).
+    #[must_use]
     pub fn new(index_url: &str) -> Self {
         Self {
             base: index_url.trim_end_matches('/').to_owned(),
@@ -89,11 +90,13 @@ impl Source {
     }
 
     /// The asset `name` of the newest release.
+    #[must_use]
     pub fn latest(&self, name: &str) -> String {
         format!("{}/latest/download/{name}", self.base)
     }
 
     /// The asset `name` of one version's release (tagged `v<version>`).
+    #[must_use]
     pub fn versioned(&self, version: &Version, name: &str) -> String {
         format!("{}/download/v{version}/{name}", self.base)
     }

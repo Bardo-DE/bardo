@@ -157,7 +157,7 @@ fn service_seeing(
 ) -> Handle<AppMenuService> {
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
-        callers: callers.clone(),
+        callers: Arc::<Introduced>::clone(callers),
         ..Env::isolated(scratch)
     };
     spawn::<AppMenuService>(

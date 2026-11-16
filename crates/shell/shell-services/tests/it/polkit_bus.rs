@@ -181,7 +181,7 @@ fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
         let agent = Arc::new(Mutex::new(None));
         let stand_in = StandIn {
             heard: heard_tx,
-            agent: agent.clone(),
+            agent: Arc::clone(&agent),
         };
         let authority = zbus::connection::Builder::address(bus.address.as_str())
             .and_then(|b| b.name("org.freedesktop.PolicyKit1"))

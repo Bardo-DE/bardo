@@ -83,7 +83,7 @@ fn entry(pick: RowPick, row: &TrayMenuEntry, icon: RowIcon) -> Option<MenuItem<B
         check: to_ds_check(*check),
         availability,
         keep_open: false,
-        text: Default::default(),
+        text: ItemText::default(),
     })
 }
 

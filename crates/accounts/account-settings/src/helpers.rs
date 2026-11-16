@@ -28,7 +28,7 @@ pub fn spec(
         page: Page::Accounts,
         section: Section(section.to_owned()),
         exposure,
-        labels: Default::default(),
+        labels: WordLabels::default(),
         unavailable: Default::default(),
         groups: Default::default(),
         places: Default::default(),

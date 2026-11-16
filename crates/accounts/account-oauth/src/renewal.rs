@@ -100,7 +100,7 @@ mod tests {
             access: SecretText::new("old-access"),
             refresh: SecretText::new("old-refresh"),
             expires_at: UnixSeconds(expires_at),
-            granted: Default::default(),
+            granted: GrantedScopes::default(),
         }
     }
 
@@ -127,7 +127,7 @@ mod tests {
                 access: SecretText::new("new"),
                 refresh: SecretText::new("old-refresh"),
                 expires_at: UnixSeconds(3_700),
-                granted: Default::default(),
+                granted: GrantedScopes::default(),
             })
         );
     }

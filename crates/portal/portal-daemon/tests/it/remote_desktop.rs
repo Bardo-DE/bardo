@@ -29,7 +29,8 @@ fn key(n: u32) -> SessionKey {
 fn service(answers: Vec<Answer>) -> (RemoteDesktopService, Arc<FakeAsker>, Arc<FakeEis>) {
     let asker = Arc::new(FakeAsker::new(answers));
     let eis = Arc::new(FakeEis::new());
-    let service = RemoteDesktopService::new(Box::new(asker.clone()), Box::new(eis.clone()));
+    let service =
+        RemoteDesktopService::new(Box::new(Arc::clone(&asker)), Box::new(Arc::clone(&eis)));
     (service, asker, eis)
 }
 
@@ -203,7 +204,7 @@ impl Asker for Absent {
 #[tokio::test]
 async fn with_no_shell_to_ask_nothing_is_granted_and_the_session_can_be_asked_again() {
     let eis = Arc::new(FakeEis::new());
-    let service = RemoteDesktopService::new(Box::new(Absent), Box::new(eis.clone()));
+    let service = RemoteDesktopService::new(Box::new(Absent), Box::new(Arc::clone(&eis)));
     service.create(key(1), "a");
     assert_eq!(service.begin(&key(1)).await.0, 2);
     assert!(matches!(
@@ -245,15 +246,15 @@ async fn a_yes_belongs_to_the_session_it_was_asked_about() {
         entered: Arc::default(),
         proceed: Arc::default(),
     };
-    let (entered, proceed) = (gate.entered.clone(), gate.proceed.clone());
+    let (entered, proceed) = (Arc::clone(&gate.entered), Arc::clone(&gate.proceed));
     let eis = Arc::new(FakeEis::new());
     let service = Arc::new(RemoteDesktopService::new(
         Box::new(gate),
-        Box::new(eis.clone()),
+        Box::new(Arc::clone(&eis)),
     ));
     service.create(key(1), "org.example.Meet");
     let asking = tokio::spawn({
-        let service = service.clone();
+        let service = Arc::clone(&service);
         async move { service.begin(&key(1)).await }
     });
     entered.notified().await;
@@ -396,10 +397,12 @@ fn remembering(
         standing: program(program_path),
         names: names.clone(),
     };
-    let service =
-        RemoteDesktopService::new(Box::new(asker.clone()), Box::new(Arc::new(FakeEis::new())))
-            .with_names(names)
-            .with_memory(Arc::clone(keeper), Arc::new(told));
+    let service = RemoteDesktopService::new(
+        Box::new(Arc::clone(&asker)),
+        Box::new(Arc::new(FakeEis::new())),
+    )
+    .with_names(names)
+    .with_memory(Arc::clone(keeper), Arc::new(told));
     (service, asker, dir)
 }
 

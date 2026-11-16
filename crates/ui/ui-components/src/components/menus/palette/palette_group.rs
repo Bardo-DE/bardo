@@ -133,6 +133,7 @@ pub struct GroupOrder<G>(pub Vec<G>);
 impl<G: PartialEq> GroupOrder<G> {
     /// `groups`, each tagged with its kind, in this order: the kinds named here first, in the
     /// order named, then any others in the order given. Groups of one kind keep their order.
+    #[must_use]
     pub fn arrange<T>(&self, groups: Vec<(G, PaletteGroup<T>)>) -> PaletteGroups<T> {
         let rank = |kind: &G| self.0.iter().position(|named| named == kind);
         let mut tagged: Vec<(usize, (G, PaletteGroup<T>))> =

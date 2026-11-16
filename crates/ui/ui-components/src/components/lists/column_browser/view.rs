@@ -1,4 +1,4 @@
-//! ColumnBrowser: Finder's column view (Miller columns). A row of columns, each a list of rows (a
+//! `ColumnBrowser`: Finder's column view (Miller columns). A row of columns, each a list of rows (a
 //! glyph, a name cut from the middle, a chevron on a row with something under it), scrolling
 //! sideways when they outgrow the box. The data is the app's: it lists the `columns` and each
 //! one's `selection`, and the browser reports what the person did. It never walks a filesystem.

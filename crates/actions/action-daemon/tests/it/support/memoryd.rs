@@ -87,7 +87,7 @@ impl FakeMemoryd {
 
     /// Serves it on `connection` under the real name.
     pub async fn serve(self: &Arc<Self>, connection: &zbus::Connection) {
-        serve_on(connection, self.clone())
+        serve_on(connection, Arc::clone(self))
             .await
             .expect("serve memoryd");
     }

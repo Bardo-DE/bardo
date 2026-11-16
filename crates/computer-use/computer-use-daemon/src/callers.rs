@@ -35,6 +35,7 @@ const CLASSES: [(Standing, CuaCaller); 3] = [
 
 /// The table the package ships. A shipped file that does not read is an empty table: nobody is
 /// identified, which is the strict way to fail.
+#[must_use]
 pub fn shipped() -> CallerTable {
     table_from_toml(SHIPPED).unwrap_or_default()
 }
@@ -79,6 +80,7 @@ pub fn identity(
 }
 
 /// Which class `caller` is: the first whose standing it holds; `Other` when it holds none.
+#[must_use]
 pub fn classify(caller: &Caller) -> CuaCaller {
     CLASSES
         .iter()

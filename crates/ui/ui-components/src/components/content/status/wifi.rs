@@ -1,4 +1,4 @@
-//! WifiGlyph: the Wi-Fi fan as layers, the dot and three arcs from the inside out, a "!" badge
+//! `WifiGlyph`: the Wi-Fi fan as layers, the dot and three arcs from the inside out, a "!" badge
 //! and a slash (design/26-DETAILS.md 5.1.1). Joining lights one layer at a time, a step every
 //! `--t-spin-step`, from the moment the join starts; a strength change cross-fades the arcs; no
 //! internet grows the badge in; turning the radio off draws the slash on.

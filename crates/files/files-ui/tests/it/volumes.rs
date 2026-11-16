@@ -52,7 +52,7 @@ fn names(heard: &Heard) -> Vec<String> {
 #[test]
 fn the_edge_lists_the_disks_at_the_start_and_again_when_one_is_plugged_in() {
     let fake = Arc::new(FakeVolumes::with(vec![stick()]));
-    let mut rig = rig_over(fake.clone());
+    let mut rig = rig_over(Arc::<FakeVolumes>::clone(&fake));
     assert_eq!(names(&next(&mut rig.inbox)), ["STICK"]);
 
     fake.set(vec![stick(), card()]);
@@ -62,7 +62,7 @@ fn the_edge_lists_the_disks_at_the_start_and_again_when_one_is_plugged_in() {
 #[test]
 fn opening_a_disk_mounts_it_and_says_where() {
     let fake = Arc::new(FakeVolumes::with(vec![card()]));
-    let mut rig = rig_over(fake.clone());
+    let mut rig = rig_over(Arc::<FakeVolumes>::clone(&fake));
     let _ = next(&mut rig.inbox);
     rig.edge
         .run_in(TabId::FIRST, vec![Effect::MountVolume(id("card"))]);
@@ -141,7 +141,7 @@ fn window_over(
 #[test]
 fn the_sidebar_lists_the_disks_under_locations_and_the_eject_button_ejects() {
     let fake = Arc::new(FakeVolumes::with(vec![stick(), card()]));
-    let (mut harness, _dir, _config) = window_over(fake.clone(), "STICK");
+    let (mut harness, _dir, _config) = window_over(Arc::clone(&fake), "STICK");
     let html = harness.html();
     for text in ["STICK", "CARD", "Eject STICK", "Eject CARD"] {
         assert!(html.contains(text), "{text} is not in the sidebar:\n{html}");
@@ -159,7 +159,7 @@ fn the_sidebar_lists_the_disks_under_locations_and_the_eject_button_ejects() {
 #[test]
 fn forcing_an_eject_goes_to_the_seam_and_takes_the_disk_off_the_list() {
     let fake = Arc::new(FakeVolumes::with(vec![stick(), card()]));
-    let mut rig = rig_over(fake.clone());
+    let mut rig = rig_over(Arc::<FakeVolumes>::clone(&fake));
     let _ = next(&mut rig.inbox);
     rig.edge
         .run_in(TabId::FIRST, vec![Effect::ForceEjectVolume(id("stick"))]);
@@ -178,7 +178,7 @@ const FIRST_BUTTON: &str = ".ds-alert-slot:nth-child(1) > .ds-button";
 fn a_busy_disk_asks_in_an_alert_and_force_eject_ejects_it_anyway() {
     let busy = EjectFailure::InUse(vec![ProgramName::new("vlc"), ProgramName::new("bash")]);
     let fake = Arc::new(FakeVolumes::with(vec![stick(), card()]).failing_eject(busy));
-    let (mut harness, _dir, _config) = window_over(fake.clone(), "STICK");
+    let (mut harness, _dir, _config) = window_over(Arc::clone(&fake), "STICK");
     let press = |harness: &mut ui_harness::Harness, selector: &str| {
         let at: Point = harness
             .centre(selector)

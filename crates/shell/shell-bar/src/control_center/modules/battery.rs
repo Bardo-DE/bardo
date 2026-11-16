@@ -148,7 +148,7 @@ fn ring_state(percent: u16, power: BatteryPower) -> BatteryState {
     }
 }
 
-/// The Battery item in the bar: the battery glyph by level and power; hidden without a battery (`UPower`'s display device absent: a desktop).
+/// The Battery item in the bar: the battery glyph by level and power; hidden without a battery (UPower's display device absent: a desktop).
 #[component]
 fn BatteryItem() -> Element {
     let battery = use_service::<BatteryService>()();

@@ -142,7 +142,7 @@ fn running_to_a_goal_hands_stops_out_one_instant_at_a_time_so_arming_shows() {
     clock.plug_output(key, vblanks);
     let seen: Rc<RefCell<Vec<(Mono, Stop)>>> = Rc::default();
     let mut event_loop: EventLoop<'static, ()> = EventLoop::try_new().expect("event loop");
-    let (log, view, arm) = (seen.clone(), clock.clone(), clock.clone());
+    let (log, view, arm) = (Rc::clone(&seen), clock.clone(), clock.clone());
     event_loop
         .handle()
         .insert_source(

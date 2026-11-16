@@ -91,8 +91,8 @@ fn map(name: String, options: Vec<&str>) -> Result<Command, String> {
             .split_once('=')
             .ok_or_else(|| format!("'{option}' is not key=value"))?;
         match key {
-            "class" => ask.class = value.to_owned(),
-            "instance" => ask.instance = value.to_owned(),
+            "class" => value.clone_into(&mut ask.class),
+            "instance" => value.clone_into(&mut ask.instance),
             "size" => ask.size = pair(value, 'x').ok_or_else(|| format!("bad size '{value}'"))?,
             "at" => ask.at = pair(value, ',').ok_or_else(|| format!("bad position '{value}'"))?,
             "kind" => {

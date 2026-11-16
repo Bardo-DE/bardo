@@ -86,7 +86,7 @@ async fn fixture_in(world: computer_use_fake::World) -> Fixture {
         shipped_callers(),
         dir.path().join("proc"),
     ));
-    let serving = serve_on_with(&daemon, supervisor.clone(), who.clone())
+    let serving = serve_on_with(&daemon, Arc::clone(&supervisor), Arc::clone(&who))
         .await
         .expect("cuad serves");
     Fixture {

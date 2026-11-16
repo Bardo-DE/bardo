@@ -15,6 +15,7 @@ pub(super) type Effects<K> = Vec<MenuTrackEffect<K>>;
 
 impl<K: Clone + PartialEq> MenuTrack<K> {
     /// A closed tracker.
+    #[must_use]
     pub fn closed() -> Self {
         MenuTrack {
             phase: MenuPhase::Closed,

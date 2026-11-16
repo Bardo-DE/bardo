@@ -71,9 +71,9 @@ async fn say<S: Seams>(
     match event {
         SupervisorEvent::Added(run) => {
             let object = RunObject {
-                supervisor: supervisor.clone(),
+                supervisor: Arc::clone(supervisor),
                 id: run.clone(),
-                who: who.clone(),
+                who: Arc::clone(who),
             };
             let _ = connection.object_server().at(run_path(&run), object).await;
             if let Ok(path) = OwnedObjectPath::try_from(run_path(&run)) {

@@ -118,7 +118,7 @@ impl AgentSeat for EvalSeat {
     }
 
     fn keymap(&self) -> Arc<Keymap> {
-        self.keymap.clone()
+        Arc::clone(&self.keymap)
     }
 
     async fn attach(&self, _lease: &LeaseGrant, socket: EiSocket) -> Result<(), SeatError> {
@@ -177,7 +177,7 @@ impl WindowCapture for EvalCapture {
 
     async fn open(&self, _lease: &LeaseGrant) -> Result<EvalCaptureSession, CaptureError> {
         Ok(EvalCaptureSession {
-            stage: self.stage.clone(),
+            stage: Arc::clone(&self.stage),
             clock: self.clock.clone(),
             seq: 0,
         })

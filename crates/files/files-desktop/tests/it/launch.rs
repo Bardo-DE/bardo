@@ -77,9 +77,9 @@ fn rig(mimeapps: &str, spawn: FakeSpawn) -> Rig {
         associations,
         apps,
     };
-    let launcher = DesktopLauncher::builder(catalog, activate.clone())
-        .spawn(spawn.clone())
-        .icons(theme.clone())
+    let launcher = DesktopLauncher::builder(catalog, Arc::<FakeActivate>::clone(&activate))
+        .spawn(Arc::<FakeSpawn>::clone(&spawn))
+        .icons(Arc::<FakeIcons>::clone(&theme))
         .build();
     Rig {
         launcher,

@@ -105,7 +105,7 @@ pub fn rig(toml: &str, mood: Mood, with_process: bool) -> Rig {
     let file = Arc::new(AgentsFile::parse(toml).expect("agents.toml"));
     let registry = Registry::default();
     let spawn = AgentSpawn::new(
-        file.clone(),
+        Arc::clone(&file),
         Arc::new(accounts.clone()),
         procs,
         dir.path().to_owned(),

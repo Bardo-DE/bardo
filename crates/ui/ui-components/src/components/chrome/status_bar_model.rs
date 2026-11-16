@@ -4,6 +4,7 @@
 ///
 /// `available` is the app's own words for the room left ("40 GB"), already formatted for the
 /// reader's units; the line then ends in "available". Counts are plural except one.
+#[must_use]
 pub fn item_count_text(count: usize, available: Option<&str>) -> String {
     let noun = if count == 1 { "item" } else { "items" };
     match available {

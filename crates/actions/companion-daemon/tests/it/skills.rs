@@ -63,7 +63,7 @@ fn tool_names(request: &inference_core::ChatRequest) -> Vec<String> {
 async fn the_catalogue_lists_offered_skills_and_the_contexts_match_is_expanded() {
     let mut w = world_with_skills(vec![words("Fine.")], installed());
     let front = w.open("work").await;
-    w.say(&front.session, "hello").await;
+    Box::pin(w.say(&front.session, "hello")).await;
 
     let system = w.infer.system_text(0);
     for id in [
@@ -106,7 +106,7 @@ async fn a_load_puts_the_skill_first_keeps_its_body_and_is_audited() {
         installed(),
     );
     let front = w.open("work").await;
-    w.say(&front.session, "tidy my inbox").await;
+    Box::pin(w.say(&front.session, "tidy my inbox")).await;
 
     let asked = w.infer.asked();
     assert_eq!(asked.len(), 2);
@@ -165,7 +165,7 @@ async fn at_most_three_skills_load_in_a_task_and_a_hidden_one_never() {
         installed(),
     );
     let front = w.open("work").await;
-    w.say(&front.session, "read everything").await;
+    Box::pin(w.say(&front.session, "read everything")).await;
 
     let loads: Vec<(bool, String)> = w
         .records()
@@ -214,7 +214,7 @@ async fn a_load_over_the_byte_budget_is_refused_and_audited_as_nothing_loaded() 
         ],
     );
     let front = w.open("work").await;
-    w.say(&front.session, "read everything").await;
+    Box::pin(w.say(&front.session, "read everything")).await;
 
     let ends: Vec<String> = w
         .records()

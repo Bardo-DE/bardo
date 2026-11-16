@@ -72,6 +72,7 @@ fn strongest(view: &PlanView) -> EffectMark {
 }
 
 /// The buttons the phase offers. Undo all only once a step has run.
+#[must_use]
 pub fn plan_actions(view: &PlanView) -> Vec<CardAction> {
     let ran = steps(view).any(|step| step.state == PlanStepState::Done);
     let undo = built_in(

@@ -211,7 +211,7 @@ async fn records_reach_memory_as_cua_events_of_the_runs_session_and_space() {
     let service = Arc::new(memory_fake::fake_service(
         memory_fake::ScriptedConsolidator::default(),
     ));
-    let cuad = links(desk.cuad_connection().await, service.clone());
+    let cuad = links(desk.cuad_connection().await, Arc::clone(&service));
     let task = computer_use_fake::scene::task();
     let mut task = task;
     task.app = mail();

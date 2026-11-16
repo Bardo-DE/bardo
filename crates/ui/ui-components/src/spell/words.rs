@@ -24,16 +24,19 @@ pub struct WordSpan {
 
 impl WordSpan {
     /// The stretch from `start` to `end`.
+    #[must_use]
     pub fn new(start: usize, end: usize) -> WordSpan {
         WordSpan { start, end }
     }
 
     /// Whether the two share a byte.
+    #[must_use]
     pub fn overlaps(self, other: WordSpan) -> bool {
         self.start < other.end && other.start < self.end
     }
 
     /// Whether `offset` is in it or at either end: a caret touching the word.
+    #[must_use]
     pub fn touches(self, offset: usize) -> bool {
         self.start <= offset && offset <= self.end
     }
@@ -41,6 +44,7 @@ impl WordSpan {
 
 /// The words of `text` a dictionary should check, in order, less any that overlap `skips` (the
 /// host's code stretches).
+#[must_use]
 pub fn words(text: &str, skips: &[WordSpan]) -> Vec<WordSpan> {
     let code = code_spans(text);
     chunks(text)
@@ -52,6 +56,7 @@ pub fn words(text: &str, skips: &[WordSpan]) -> Vec<WordSpan> {
 }
 
 /// The word of `text` the caret at `offset` touches, if any: the one being typed.
+#[must_use]
 pub fn word_at(text: &str, offset: usize) -> Option<WordSpan> {
     chunks(text)
         .flat_map(|chunk| runs(text, chunk))

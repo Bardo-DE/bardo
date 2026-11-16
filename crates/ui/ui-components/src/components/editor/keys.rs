@@ -24,7 +24,11 @@ pub(crate) fn key_down(ctx: &SurfaceCtx, event: &KeyboardEvent) {
         KeyAction::Copy => EditInput::Copy,
         KeyAction::Paste => {
             event.prevent_default();
-            match ctx.host.edit().and_then(|edit| edit.paste()) {
+            match ctx
+                .host
+                .edit()
+                .and_then(crate::host::parts::EditHost::paste)
+            {
                 Some(pasted) => EditInput::Paste(pasted),
                 None => return,
             }

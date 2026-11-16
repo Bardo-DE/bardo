@@ -354,11 +354,11 @@ impl Live {
             return;
         };
         tokio::spawn(async move {
-            let said = match within(
+            let said = match Box::pin(within(
                 COMPANION_CALL,
                 "the permissions mode",
                 intents::set_mode(&connection, session, mode),
-            )
+            ))
             .await
             {
                 Ok(said) => said,
@@ -381,11 +381,11 @@ impl Live {
             return;
         };
         tokio::spawn(async move {
-            let said = within(
+            let said = Box::pin(within(
                 COMPANION_CALL,
                 "the permissions mode",
                 intents::set_mode(&connection, session.clone(), mode),
-            )
+            ))
             .await;
             match said {
                 Ok(changed @ ModeMsg::Changed { .. }) => {
@@ -448,7 +448,7 @@ impl Live {
         for (_, follower) in self.followed.drain() {
             follower.abort();
         }
-        self.connection = connection.clone();
+        self.connection.clone_from(&connection);
         match connection {
             None => self.feed(CompanionEvent::Reached(false)),
             Some(connection) => {
@@ -566,11 +566,11 @@ impl Live {
         let (inner, events, at) = (self.inner.clone(), self.events.clone(), self.unix());
         let mode = self.state.mode.turn_mode();
         tokio::spawn(async move {
-            let asked = within(
+            let asked = Box::pin(within(
                 COMPANION_CALL,
                 "the assistant",
                 answer::ask(&connection, input, mode, at, &events),
-            )
+            ))
             .await;
             match asked {
                 Ok(Ok(path)) => {
@@ -728,11 +728,11 @@ async fn announce(connection: &Connection, inner: &mpsc::UnboundedSender<Inner>)
 
 /// intentd's journal and late hits, while intentd is on the bus.
 async fn follow_intentd(connection: Connection, events: mpsc::UnboundedSender<CompanionEvent>) {
-    owner::while_owned(
+    Box::pin(owner::while_owned(
         &connection,
         INTENTS_BUS,
         || intents::follow(connection.clone(), events.clone()),
         || {},
-    )
+    ))
     .await;
 }

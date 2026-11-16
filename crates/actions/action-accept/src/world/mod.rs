@@ -136,6 +136,7 @@ pub enum AcpSetting {
 }
 
 /// The scratch `settings.toml` of a world: the person's ACP setting.
+#[must_use]
 pub fn settings_toml(acp: AcpSetting) -> String {
     match acp {
         AcpSetting::Off => String::new(),
@@ -215,6 +216,7 @@ impl Scratch {
     }
 
     /// The root.
+    #[must_use]
     pub fn path(&self) -> &Path {
         &self.path
     }

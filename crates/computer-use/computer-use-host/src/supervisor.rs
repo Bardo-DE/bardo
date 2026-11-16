@@ -370,13 +370,13 @@ impl<S: Seams> Supervisor<S> {
                 },
             );
             if state.pump.is_none() {
-                state.pump = Some(tokio::spawn(pump(self.shared.clone())));
+                state.pump = Some(tokio::spawn(pump(Arc::clone(&self.shared))));
             }
             (run, effects)
         };
         let id = run.id.clone();
         self.shared.tell(SupervisorEvent::Added(id.clone()));
-        let handle = tokio::spawn(drive(self.shared.clone(), run, effects, inbox));
+        let handle = tokio::spawn(drive(Arc::clone(&self.shared), run, effects, inbox));
         if let Some(live) = self.shared.state().live.get_mut(&id) {
             live.task = Some(handle);
         }

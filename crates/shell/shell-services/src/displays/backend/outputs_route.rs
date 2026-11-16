@@ -33,6 +33,7 @@ impl std::fmt::Debug for WlrOutputs {
 impl OutputsRoute {
     /// Connect to `route`'s compositor and pick by its globals; a compositor that cannot be
     /// reached, or whose descriptions do not bind, gets none.
+    #[must_use]
     pub fn pick(route: &WaylandRoute) -> OutputsRoute {
         let client = route
             .connect()

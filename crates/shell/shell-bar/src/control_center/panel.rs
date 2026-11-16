@@ -122,7 +122,7 @@ impl KeyboardHome {
     /// The panel mounted: keep it and give it the keyboard.
     pub(crate) fn mounted(mut self, event: MountedEvent) {
         let element = event.data();
-        self.0.set(Some(element.clone()));
+        self.0.set(Some(Rc::clone(&element)));
         focus_soon(element);
     }
 

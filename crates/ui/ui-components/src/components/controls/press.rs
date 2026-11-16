@@ -26,6 +26,7 @@ pub(crate) fn press_of(event: &MouseEvent, button: PointerButton) -> Press {
 
 /// The pointer button a mouse event's trigger names. No trigger is a keyboard activation,
 /// which reports primary; the back and forward buttons (and unknown ones) are not presses.
+#[must_use]
 pub fn button_of(trigger: Option<MouseButton>) -> Option<PointerButton> {
     match trigger {
         None | Some(MouseButton::Primary) => Some(PointerButton::Primary),
@@ -56,6 +57,7 @@ fn keep_at_control(stop: bool, event: &MouseEvent) {
 /// string: a `bool` attribute reaches dioxus-native as `disabled="false"` on every enabled
 /// control, which Blitz reads as disabled (a click then no longer toggles an enclosing
 /// `<details>`). A busy control takes no input either, but stays where it is in the tab order.
+#[must_use]
 pub fn disabled(availability: Availability) -> Option<&'static str> {
     match availability {
         Availability::Enabled | Availability::Busy => None,
@@ -107,6 +109,7 @@ pub struct PressListeners {
 
 impl PressListeners {
     /// Listeners that report to `press` and let the event bubble on.
+    #[must_use]
     pub fn new(press: EventHandler<Press>) -> Self {
         PressListeners {
             press,
@@ -115,6 +118,7 @@ impl PressListeners {
     }
 
     /// The same listeners, keeping the event at the control (`true`) or passing it on.
+    #[must_use]
     pub fn with_stop_propagation(self, stop_propagation: bool) -> Self {
         PressListeners {
             stop_propagation,
@@ -186,6 +190,7 @@ pub fn use_pressing() -> Pressing {
 
 impl Pressing {
     /// `data-pressed`: `"true"` while a press is under way.
+    #[must_use]
     pub fn attr(&self) -> Option<&'static str> {
         self.phase.read().attr()
     }

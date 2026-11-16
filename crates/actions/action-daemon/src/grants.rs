@@ -33,6 +33,7 @@ pub struct FileGrants {
 
 impl FileGrants {
     /// Grants stored at `path`.
+    #[must_use]
     pub fn at(path: PathBuf) -> Self {
         Self {
             path,
@@ -45,6 +46,7 @@ impl FileGrants {
     /// The same store writing "never" and "ask first" rules into the rules files of `dirs`
     /// (`never.cedar` in the person's, `assistant.cedar` in the assistant's), and reading the
     /// policy back from them.
+    #[must_use]
     pub fn with_rules(self, dirs: PolicyDirs) -> Self {
         Self {
             rules: Some(dirs),
@@ -55,6 +57,7 @@ impl FileGrants {
     /// The same store with the shipped defaults of each data directory under it
     /// (`bardo/intents/default-grants.json`): the person's own entries, a denial included,
     /// always win over a default.
+    #[must_use]
     pub fn with_defaults(self, data_dirs: &[PathBuf]) -> Self {
         Self {
             defaults: data_dirs.iter().map(|d| default_grants_file(d)).collect(),

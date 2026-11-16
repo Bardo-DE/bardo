@@ -118,8 +118,7 @@ async fn the_assistant_gives_a_job_to_a_helper_by_name_and_the_job_runs_under_th
     };
 
     let front = w.open("work").await;
-    w.say(&front.session, "ask Research to compare the offers")
-        .await;
+    Box::pin(w.say(&front.session, "ask Research to compare the offers")).await;
 
     // The front conversation saw the helper by name in its view, and its call went through.
     assert!(
@@ -184,8 +183,7 @@ async fn a_job_the_desk_refuses_is_failed_in_the_routers_record_and_not_done() {
     w.companion.set_desk(Arc::new(hub.clone()));
 
     let front = w.open("work").await;
-    w.say(&front.session, "ask Nobody to compare the offers")
-        .await;
+    Box::pin(w.say(&front.session, "ask Nobody to compare the offers")).await;
 
     assert!(hub.board().jobs().is_empty(), "nothing was handed on");
     // The companion's own history and the router's record agree: the desk refused it.
@@ -218,7 +216,7 @@ async fn a_goal_the_assistant_wrote_after_reading_something_untrusted_is_not_a_j
     hub.create(work_form("Research", model())).await;
 
     let front = w.open("work").await;
-    w.say(&front.session, "what is the invoice about").await;
+    Box::pin(w.say(&front.session, "what is the invoice about")).await;
 
     assert!(hub.board().jobs().is_empty(), "nothing was handed on");
     // The assistant was told why, in words that name no machinery.
@@ -270,7 +268,7 @@ async fn the_assistant_only_proposes_a_helper_and_nothing_exists_until_the_perso
     w.companion.set_desk(Arc::new(hub.clone()));
     let front = w.open("work").await;
 
-    w.say(&front.session, "set up a helper for my mail").await;
+    Box::pin(w.say(&front.session, "set up a helper for my mail")).await;
     assert!(hub.board().cards().is_empty(), "no yes, no helper");
     assert_eq!(
         w.router.seams.confirmer.requests().len(),
@@ -280,7 +278,7 @@ async fn the_assistant_only_proposes_a_helper_and_nothing_exists_until_the_perso
 
     // A dismissed sheet ends that task: the person's follow-up is a new conversation.
     let again = w.open("work").await;
-    w.say(&again.session, "yes, set it up").await;
+    Box::pin(w.say(&again.session, "yes, set it up")).await;
     let board = hub.board();
     assert_eq!(board.cards().len(), 1);
     let card = &board.cards()[0];

@@ -1,4 +1,4 @@
-//! SpaceColour: the colour half of the Space editor on its own, for a host that edits a Space a
+//! `SpaceColour`: the colour half of the Space editor on its own, for a host that edits a Space a
 //! part at a time (a popover per part, opened from the Space's menu) rather than in one panel:
 //! the field and its handles, the stops, the grain and the presets. The name, the theme, the
 //! card's accent and the contrast readout are the host's to offer elsewhere; the theme and the

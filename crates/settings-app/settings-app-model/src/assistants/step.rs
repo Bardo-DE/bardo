@@ -144,12 +144,12 @@ pub fn places_step(state: PlacesState, input: PlacesInput) -> (PlacesState, Vec<
                     .own
                     .iter_mut()
                     .filter(|own| own.name == name)
-                    .for_each(|own| own.model = model.clone()),
+                    .for_each(|own| own.model.clone_from(&model)),
                 PlaceRef::Cloud(name) => places
                     .cloud
                     .iter_mut()
                     .filter(|cloud| cloud.name == name)
-                    .for_each(|cloud| cloud.model = model.clone()),
+                    .for_each(|cloud| cloud.model.clone_from(&model)),
             }
             written(places, confirming)
         }

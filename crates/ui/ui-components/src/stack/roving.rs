@@ -74,6 +74,7 @@ pub enum Edge {
 }
 
 /// The first or last enabled item of `live`; `selected` when none is enabled.
+#[must_use]
 pub fn edge_live(edge: Edge, selected: usize, live: &[Availability]) -> usize {
     let mut enabled = live
         .iter()
@@ -99,6 +100,7 @@ pub enum Rove {
 impl Rove {
     /// The move `key` asks for along one axis: Left or Up is back, Right or Down is on, Home
     /// and End are the ends; any other key asks for none.
+    #[must_use]
     pub fn of(key: &Key) -> Option<Rove> {
         match key {
             Key::ArrowLeft | Key::ArrowUp => Some(Rove::Step(Step::Up)),
@@ -121,6 +123,7 @@ pub struct Roving<K> {
 
 impl<K: Clone + PartialEq> Roving<K> {
     /// `items` in order, none focused yet.
+    #[must_use]
     pub fn new(items: Vec<(K, Availability)>, wraps: bool) -> Self {
         Roving {
             items,
@@ -130,6 +133,7 @@ impl<K: Clone + PartialEq> Roving<K> {
     }
 
     /// The focused item, if any.
+    #[must_use]
     pub fn focused(&self) -> Option<&K> {
         self.focused
             .and_then(|index| self.items.get(index))
@@ -154,6 +158,7 @@ impl<K: Clone + PartialEq> Roving<K> {
     }
 
     /// One step. From nothing focused, Down lands on the first enabled item and Up on the last.
+    #[must_use]
     pub fn step(mut self, step: Step) -> Self {
         let live = self.live();
         self.focused = match self.focused {
@@ -171,6 +176,7 @@ impl<K: Clone + PartialEq> Roving<K> {
     }
 
     /// Move as `rove` says.
+    #[must_use]
     pub fn rove(self, rove: Rove) -> Self {
         match rove {
             Rove::Step(step) => self.step(step),
@@ -179,6 +185,7 @@ impl<K: Clone + PartialEq> Roving<K> {
     }
 
     /// Home or End.
+    #[must_use]
     pub fn edge(mut self, edge: Edge) -> Self {
         let live = self.live();
         self.focused = Some(edge_live(edge, self.focused.unwrap_or(0), &live));

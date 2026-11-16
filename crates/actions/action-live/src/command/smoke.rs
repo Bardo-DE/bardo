@@ -83,7 +83,10 @@ async fn smoke_agent(
             .engine
             .source(agent_cassette(), args.inferd_config.as_deref())?;
         let dirs = (Some(args.out.join("scratch")), Some(smoke_catalog));
-        print!("{}", list_models_acp(binaries, &spec, &model, dirs).await?);
+        print!(
+            "{}",
+            Box::pin(list_models_acp(binaries, &spec, &model, dirs)).await?
+        );
         return Ok(ExitCode::SUCCESS);
     }
     let redactor = spec
@@ -108,7 +111,7 @@ async fn smoke_agent(
             .engine
             .source(agent_cassette(), args.inferd_config.as_deref())?;
         let dirs = (Some(args.out.join("scratch")), Some(smoke_catalog.clone()));
-        let r = run_flow_acp(binaries, flow, &spec, &model, dirs, patience).await;
+        let r = Box::pin(run_flow_acp(binaries, flow, &spec, &model, dirs, patience)).await;
         let file = traces.join(format!("{}.trace.txt", flow.slug()));
         let header = format!("{}\n\n", catalog::describe(&smoke_catalog));
         std::fs::write(&file, redactor.scrub(&(header + &r.transcript)))?;
@@ -152,7 +155,7 @@ pub(super) async fn smoke(args: SmokeArgs, binaries: &Binaries) -> Result<ExitCo
     say_reach(args.engine);
     say_agent(&args.agent);
     if let Agent::Acp(spec) = args.agent.clone() {
-        return smoke_agent(args, *spec, binaries).await;
+        return Box::pin(smoke_agent(args, *spec, binaries)).await;
     }
     let smoke_catalog = args
         .catalog
@@ -183,7 +186,7 @@ pub(super) async fn smoke(args: SmokeArgs, binaries: &Binaries) -> Result<ExitCo
             .source(play.cassette(), args.inferd_config.as_deref())?;
         let (name, transcript, failures) = match &play {
             Play::Flow(flow) => {
-                let r = run_flow(
+                let r = Box::pin(run_flow(
                     binaries,
                     *flow,
                     &model,
@@ -191,14 +194,20 @@ pub(super) async fn smoke(args: SmokeArgs, binaries: &Binaries) -> Result<ExitCo
                     dirs().1,
                     keys_home.as_ref(),
                     patience,
-                )
+                ))
                 .await;
                 (play.name(), r.transcript, r.failures)
             }
             Play::Hostile(case) => {
-                let r =
-                    run_planner_case(binaries, case, &model, dirs(), keys_home.as_ref(), patience)
-                        .await;
+                let r = Box::pin(run_planner_case(
+                    binaries,
+                    case,
+                    &model,
+                    dirs(),
+                    keys_home.as_ref(),
+                    patience,
+                ))
+                .await;
                 (play.name(), r.transcript, r.failures)
             }
         };

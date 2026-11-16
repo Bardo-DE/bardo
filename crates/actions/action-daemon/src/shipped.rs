@@ -60,6 +60,7 @@ impl ShippedEntries {
     }
 
     /// The entries, in file order.
+    #[must_use]
     pub fn into_entries(self) -> Vec<IndexEntry> {
         self.0
     }

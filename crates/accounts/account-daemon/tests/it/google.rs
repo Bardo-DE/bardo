@@ -165,7 +165,7 @@ impl World {
             Arc::clone(&service),
             Arc::clone(&callers),
             Options {
-                clock: Some(sky.clone()),
+                clock: Some(Arc::<Sky>::clone(&sky)),
                 ..Options::default()
             },
         )

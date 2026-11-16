@@ -93,7 +93,7 @@ pub fn Card(
 fn media(peeked: &Arc<AnyPeeked>, page_room: Size) -> Element {
     match &peeked.body {
         Body::Picture(image) => rsx! {
-            picture::Picture { image: image.clone(), label: peeked.name.clone() }
+            picture::Picture { image: Arc::clone(image), label: peeked.name.clone() }
         },
         Body::Page(page) => rsx! {
             PdfThumb { page: page::thumb(&page.page), size: page_room, label: peeked.name.clone() }

@@ -25,11 +25,13 @@ pub struct FakeUpdates(Arc<Kit<UpdateStatus, UpdatesAsked>>);
 
 impl FakeUpdates {
     /// A service in this standing.
+    #[must_use]
     pub fn answering(status: UpdateStatus) -> FakeUpdates {
         FakeUpdates(Kit::new(Ok(status)))
     }
 
     /// No service on the bus.
+    #[must_use]
     pub fn absent() -> FakeUpdates {
         FakeUpdates(Kit::new(Err(Absence::NotRunning)))
     }
@@ -56,6 +58,7 @@ impl FakeUpdates {
     }
 
     /// What was asked of it, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<UpdatesAsked> {
         self.0.asked()
     }
@@ -111,6 +114,7 @@ pub struct FakeLeaves(Arc<AtomicUsize>);
 
 impl FakeLeaves {
     /// How many times the log-out was started.
+    #[must_use]
     pub fn started(&self) -> usize {
         self.0.load(Ordering::SeqCst)
     }

@@ -317,7 +317,7 @@ fn emptying_the_trash_asks_first_and_cancel_keeps_everything() {
         files_core::Location::Trash,
         config.path(),
         &opener,
-        trash.clone(),
+        Arc::clone(&trash),
     );
     let mut harness = harness(launch);
     settle_until(&mut harness, |h| h.html().contains("notes.txt"));

@@ -20,6 +20,7 @@ use zbus::object_server::SignalEmitter;
 const ACTION: &str = "computeruse.run.start";
 
 /// `{ "computeruse.run.start": "offered" | "hidden" }` for the setting.
+#[must_use]
 pub fn reach_json(enabled: bool) -> String {
     let word = if enabled { "offered" } else { "hidden" };
     serde_json::json!({ ACTION: word }).to_string()

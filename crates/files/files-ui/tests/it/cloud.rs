@@ -70,7 +70,7 @@ fn open(extra: Vec<CloudDrive>, state: DriveState) -> Rig {
     );
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
-    let launch = launch(dir.path(), config.path(), &opener).with_clouds(clouds.clone());
+    let launch = launch(dir.path(), config.path(), &opener).with_clouds(Arc::<FakeClouds>::clone(&clouds));
     let mut harness = harness(launch);
     settle_until(&mut harness, |h| h.html().contains("zebra.png"));
     // The cloud thread has joined the news and read the rows once it has badged the one in the
@@ -237,7 +237,7 @@ fn the_edge_lists_the_drives_reads_items_and_tells_a_download_then_its_news() {
         FakeClouds::with(vec![drive("od", "OneDrive", "", at)])
             .holding(report.clone(), in_the_cloud()),
     );
-    let (edge, mut inbox) = edge_over(fake.clone());
+    let (edge, mut inbox) = edge_over(Arc::clone(&fake));
     let Heard::All(Input::Clouds(listed)) = next(&mut inbox) else {
         panic!("the drives are told first");
     };
@@ -274,7 +274,7 @@ fn an_ask_the_service_cannot_take_is_told_as_a_refusal_in_words() {
     let at = Path::new("/c/OneDrive");
     let report = item(at, "report.pdf");
     let fake = Arc::new(FakeClouds::with(vec![drive("od", "OneDrive", "", at)]));
-    let (edge, mut inbox) = edge_over(fake.clone());
+    let (edge, mut inbox) = edge_over(Arc::clone(&fake));
     let _ = next(&mut inbox);
     fake.set_away(true);
     assert_eq!(next(&mut inbox), Heard::All(Input::Clouds(Vec::new())));
@@ -305,7 +305,7 @@ fn save_a_copy_is_in_the_menu_of_an_online_row_only_and_selects_the_new_file() {
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
     let mut harness =
-        harness(launch(dir.path(), config.path(), &opener).with_clouds(clouds.clone()));
+        harness(launch(dir.path(), config.path(), &opener).with_clouds(Arc::<FakeClouds>::clone(&clouds)));
     settle_until(&mut harness, |h| {
         h.html().contains("zebra.png") && h.count("[aria-label=\"In the cloud\"]") == 1
     });

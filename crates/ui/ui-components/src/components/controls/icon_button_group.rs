@@ -1,4 +1,4 @@
-//! IconButtonGroup: a row of small icon buttons that share one rounded group, as in a block or
+//! `IconButtonGroup`: a row of small icon buttons that share one rounded group, as in a block or
 //! inline editor's toolbar. The caller's buttons are `Button`s with `Bezel::Toolbar` and
 //! `ImagePosition::Only` at the group's `size`; the group draws the shared plate and keeps them
 //! a hairline apart. It is a layout and a name for assistive technology, not a control: each

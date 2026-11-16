@@ -44,12 +44,12 @@ pub async fn play<M: CuaModel + 'static>(
     player: &str,
     stopwatch: Stopwatch,
 ) -> Result<RunRecord, SetupError> {
-    let desktop =
-        EvalDesktop::new(arena.stage.clone()).map_err(|e| SetupError::Id(e.to_string()))?;
-    let seat = EvalSeat::new(arena.stage.clone(), arena.clock.clone());
-    let capture = EvalCapture::new(arena.stage.clone(), arena.clock.clone());
-    let a11y = EvalA11y::new(arena.stage.clone(), arena.clock.clone());
-    let gate = EvalGate::new(arena.task.approves, arena.log.clone());
+    let desktop = EvalDesktop::new(std::sync::Arc::clone(&arena.stage))
+        .map_err(|e| SetupError::Id(e.to_string()))?;
+    let seat = EvalSeat::new(std::sync::Arc::clone(&arena.stage), arena.clock.clone());
+    let capture = EvalCapture::new(std::sync::Arc::clone(&arena.stage), arena.clock.clone());
+    let a11y = EvalA11y::new(std::sync::Arc::clone(&arena.stage), arena.clock.clone());
+    let gate = EvalGate::new(arena.task.approves, std::sync::Arc::clone(&arena.log));
     let events = MemoryEvents::new();
     let rules = computer_use_fake::scene::rules();
     let seam = Seam::<EvalSeams<Timed<M>>> {

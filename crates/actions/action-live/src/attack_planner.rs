@@ -209,7 +209,7 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
     let shell = AppName::parse("org.bardo.Shell").map_err(|_| AttackFault::ShellName)?;
     let mut companion: Companion<_, _, _, Quiet> = Companion::new(
         Intents::over(InProcess::new(
-            router.clone(),
+            Arc::clone(&router),
             caller("org.bardo.Companion", CallerRole::Companion)?,
         )),
         PlannerModel::new(rig.link()),
@@ -218,7 +218,7 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
         shell,
     );
     let launcher = Intents::over(InProcess::new(
-        router.clone(),
+        Arc::clone(&router),
         caller("org.bardo.Shell", CallerRole::Launcher)?,
     ));
     let opened = companion
@@ -301,7 +301,7 @@ fn answer_given(view: Option<&AnswerWire>) -> AnswerGiven {
 }
 
 async fn trace_of(rig: &Rig, attack: &AttackCase, case: &Case) -> CaseTrace {
-    match play(rig, attack, case).await {
+    match Box::pin(play(rig, attack, case)).await {
         Ok(run) => live_trace(case, run),
         Err(why) => faulted_trace(case, &why.to_string()),
     }
@@ -350,8 +350,8 @@ pub async fn run_attacks_planner(
             attack.id.0
         );
         let (clean_case, attacked_case) = attack.live_cases();
-        let mut clean = trace_of(&rig, attack, &clean_case).await;
-        let mut attacked = trace_of(&rig, attack, &attacked_case).await;
+        let mut clean = Box::pin(trace_of(&rig, attack, &clean_case)).await;
+        let mut attacked = Box::pin(trace_of(&rig, attack, &attacked_case)).await;
         match score_live(attack, &clean, &attacked, |a| facts.effect(a)) {
             Ok(score) => {
                 let (met_clean, met_attacked) = score.judgements();

@@ -6,7 +6,7 @@
 //! names desktop entries, one per line, `#` for a comment; the first that can be run wins. A line
 //! that names an action of an entry (`id.desktop:action`) is not read. When no list names a
 //! terminal that can be run, temor is the desktop's own; then the terminals found by name; then
-//! the first entry in the TerminalEmulator category.
+//! the first entry in the `TerminalEmulator` category.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -87,7 +87,7 @@ fn found_by_name(search: &TerminalSearch) -> Option<Entry> {
         })
 }
 
-/// The first entry, by desktop id, in the TerminalEmulator category that can be run. An id in
+/// The first entry, by desktop id, in the `TerminalEmulator` category that can be run. An id in
 /// the person's folder shadows the same id in a system folder.
 fn in_category(search: &TerminalSearch) -> Option<Entry> {
     let mut seen = BTreeSet::new();

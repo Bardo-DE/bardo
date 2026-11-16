@@ -102,10 +102,10 @@ fn none(outputs: Vec<String>) -> Result<(), MemoryError> {
 pub async fn serve_on<S: Serve>(connection: &Connection, handler: Arc<S>) -> zbus::Result<()> {
     let server = connection.object_server();
     server
-        .at(MEMORY_PATH, RecordObject(handler.clone()))
+        .at(MEMORY_PATH, RecordObject(Arc::clone(&handler)))
         .await?;
     server
-        .at(MEMORY_PATH, RecallObject(handler.clone()))
+        .at(MEMORY_PATH, RecallObject(Arc::clone(&handler)))
         .await?;
     server.at(MEMORY_PATH, ControlObject(handler)).await?;
     zbus_ready::serving(connection).await?;
@@ -115,9 +115,9 @@ pub async fn serve_on<S: Serve>(connection: &Connection, handler: Arc<S>) -> zbu
 /// The introspection of the served objects: the same document as the skeletons' (`introspection`).
 pub fn served_introspection<S: Serve>(handler: &Arc<S>) -> String {
     let objects = (
-        RecordObject(handler.clone()),
-        RecallObject(handler.clone()),
-        ControlObject(handler.clone()),
+        RecordObject(Arc::clone(handler)),
+        RecallObject(Arc::clone(handler)),
+        ControlObject(Arc::clone(handler)),
     );
     crate::introspect::document([&objects.0 as &dyn Interface, &objects.1, &objects.2])
 }

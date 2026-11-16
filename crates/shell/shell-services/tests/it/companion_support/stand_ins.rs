@@ -297,7 +297,7 @@ impl StandInCompanion {
                 StandInAnswer {
                     session: self.session.clone(),
                     log: self.log.clone(),
-                    view: self.view.clone(),
+                    view: Arc::clone(&self.view),
                     acts: self.acts,
                     routing: self.routing.clone(),
                 },

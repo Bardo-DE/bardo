@@ -98,6 +98,7 @@ impl MenuTree {
     }
 
     /// Every node, parents before their rows, in the order the bar draws them.
+    #[must_use]
     pub fn walk(&self) -> Vec<(&MenuNode, usize)> {
         fn visit<'a>(node: &'a MenuNode, depth: usize, out: &mut Vec<(&'a MenuNode, usize)>) {
             out.push((node, depth));
@@ -115,6 +116,7 @@ impl MenuTree {
     }
 
     /// The node with `id`.
+    #[must_use]
     pub fn node(&self, id: NodeId) -> Option<&MenuNode> {
         self.walk()
             .into_iter()
@@ -122,6 +124,7 @@ impl MenuTree {
     }
 
     /// The id of the first item that runs `command`.
+    #[must_use]
     pub fn id_of(&self, command: &CommandId) -> Option<NodeId> {
         self.walk()
             .into_iter()
@@ -132,6 +135,7 @@ impl MenuTree {
     }
 
     /// The command item `id` runs, if it is a command item.
+    #[must_use]
     pub fn command_of(&self, id: NodeId) -> Option<&CommandId> {
         match self.node(id).map(|node| &node.kind) {
             Some(NodeKind::Command { command, .. }) => Some(command),
@@ -140,6 +144,7 @@ impl MenuTree {
     }
 
     /// The menu of `section`.
+    #[must_use]
     pub fn menu(&self, section: BarSection) -> Option<&MenuNode> {
         self.menus.iter().find(|menu| {
             matches!(&menu.kind, NodeKind::Submenu { section: Some(own), .. } if *own == section)
@@ -149,6 +154,7 @@ impl MenuTree {
 
 impl MenuNode {
     /// The rows of a submenu; none for any other node.
+    #[must_use]
     pub fn children(&self) -> &[MenuNode] {
         match &self.kind {
             NodeKind::Submenu { children, .. } => children,

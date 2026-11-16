@@ -1,4 +1,4 @@
-//! SplitView: the panes before the last have widths; the last takes what is left (design/30
+//! `SplitView`: the panes before the last have widths; the last takes what is left (design/30
 //! section 2.7, `NSSplitView`). A divider is a hairline in a 6 px drag zone: dragging it sets the
 //! pane before it 1:1, held to the pane's widths (`PaneSpec::dragged`); a pane that may fold
 //! folds away past half its least and opens again when dragged back. A double-click on a divider

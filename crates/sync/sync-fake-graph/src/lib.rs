@@ -379,7 +379,7 @@ impl GraphHandle {
 
     /// Sets the address `GET /v1.0/me` names (the account's mail address).
     pub fn set_mail(&self, address: &str) {
-        lock(&self.shared.state).mail = address.to_owned();
+        address.clone_into(&mut lock(&self.shared.state).mail);
     }
 
     /// Changes how the server answers.

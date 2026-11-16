@@ -52,7 +52,7 @@ impl Player {
     ) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
         let current = Arc::new(AtomicU64::new(0));
-        tokio::spawn(run(device, rx, current.clone(), events));
+        tokio::spawn(run(device, rx, Arc::clone(&current), events));
         Self { tx, current }
     }
 

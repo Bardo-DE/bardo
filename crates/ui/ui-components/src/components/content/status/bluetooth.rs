@@ -1,4 +1,4 @@
-//! BluetoothGlyph: the stroked rune, two connected dots and a slash as layers (design/26-DETAILS.md
+//! `BluetoothGlyph`: the stroked rune, two connected dots and a slash as layers (design/26-DETAILS.md
 //! 5.1.2). A connection that lands grows the dots in; turning the radio off draws the slash on.
 
 use super::bluetooth_state::BluetoothState;

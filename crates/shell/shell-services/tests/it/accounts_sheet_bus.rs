@@ -101,7 +101,7 @@ fn shell_claiming(bus: &PrivateBus, claims: NameClaims) -> Shell {
     let callers = Introduced::new();
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
-        callers: callers.clone(),
+        callers: Arc::<Introduced>::clone(&callers),
         claims,
         ..Env::isolated(scratch.path())
     };

@@ -208,10 +208,8 @@ mod dev_callers_tests {
     #[cfg(not(feature = "dev-callers"))]
     #[test]
     fn this_build_has_no_dev_callers_option() {
-        assert!(Cli::try_parse_from(["bardo-settings"]).is_ok());
-        assert!(
-            Cli::try_parse_from(["bardo-settings", "--dev-callers", "/tmp/rows.toml"]).is_err()
-        );
+        Cli::try_parse_from(["bardo-settings"]).unwrap();
+        Cli::try_parse_from(["bardo-settings", "--dev-callers", "/tmp/rows.toml"]).unwrap_err();
         let cli = Cli::try_parse_from(["bardo-settings"]).expect("valid flags");
         assert_eq!(cli.dev_callers(), None::<&Path>);
     }

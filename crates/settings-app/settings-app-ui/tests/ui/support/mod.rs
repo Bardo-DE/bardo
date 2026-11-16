@@ -178,7 +178,7 @@ impl Sandbox {
         Sandbox { wifi, ..self }
     }
 
-    /// This world with `BlueZ` in this standing.
+    /// This world with BlueZ in this standing.
     pub fn with_bluetooth(self, bluetooth: FakeBluetooth) -> Sandbox {
         Sandbox { bluetooth, ..self }
     }
@@ -279,9 +279,9 @@ impl Sandbox {
         .with_wifi(Arc::new(self.wifi.clone()))
         .with_bluetooth(Arc::new(self.bluetooth.clone()))
         .with_displays(Arc::new(self.displays.clone()))
-        .with_engines(self.engines.clone())
-        .with_pictures(self.pictures.clone())
-        .with_corners(self.corners.clone())
+        .with_engines(Arc::clone(&self.engines))
+        .with_pictures(Arc::clone(&self.pictures))
+        .with_corners(Arc::clone(&self.corners))
         .with_agents_program(self.agents_program.clone());
         let client = match &self.spaces {
             Some(spaces) => client.with_spaces(Arc::clone(spaces)),

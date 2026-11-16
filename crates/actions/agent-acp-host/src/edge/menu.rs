@@ -16,6 +16,7 @@ pub enum EdgeMenu {
 
 impl EdgeMenu {
     /// Whether `action` is on the menu.
+    #[must_use]
     pub fn offers(&self, action: &ActionRef) -> bool {
         match self {
             EdgeMenu::Everything => true,

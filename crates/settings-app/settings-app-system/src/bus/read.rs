@@ -66,6 +66,7 @@ async fn pass(module: &impl Rows, valued: fn(&KeyKind) -> bool) -> Result<Descri
 }
 
 /// The words of a list value; an item that is not a word is left out.
+#[must_use]
 pub fn words_of(items: &[toml::Value]) -> Vec<String> {
     items
         .iter()

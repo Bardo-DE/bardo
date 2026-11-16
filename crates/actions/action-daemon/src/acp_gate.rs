@@ -28,6 +28,7 @@ pub struct AcpGate {
 
 impl AcpGate {
     /// A gate showing `expose`.
+    #[must_use]
     pub fn new(expose: bool) -> Self {
         Self {
             expose: Arc::new(watch::channel(expose).0),
@@ -36,6 +37,7 @@ impl AcpGate {
     }
 
     /// A gate that is shut: the name is nobody. What a daemon that never read the setting uses.
+    #[must_use]
     pub fn shut() -> Self {
         Self::new(false)
     }
@@ -51,11 +53,13 @@ impl AcpGate {
     }
 
     /// The setting now.
+    #[must_use]
     pub fn expose(&self) -> bool {
         *self.expose.borrow()
     }
 
     /// `agent.acp.agents` now.
+    #[must_use]
     pub fn agents(&self) -> bool {
         *self.agents.borrow()
     }

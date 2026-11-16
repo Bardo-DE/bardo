@@ -187,7 +187,10 @@ pub async fn run_planner_case(
         app: action_accept::things::App::Mail,
         prompt: &case.prompt,
     };
-    let played = observe(binaries, script, model, dirs, keys_home, patience, at_rest).await;
+    let played = Box::pin(observe(
+        binaries, script, model, dirs, keys_home, patience, at_rest,
+    ))
+    .await;
     let Played { evidence, logs } = match played {
         Ok(played) => played,
         Err(fault) => {

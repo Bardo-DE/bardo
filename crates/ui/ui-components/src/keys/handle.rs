@@ -25,6 +25,7 @@ pub struct Keys {
 
 impl Keys {
     /// The keymap `source` gives. Call in a component, so the handle lives as long as it.
+    #[must_use]
     pub fn new(source: KeySource) -> Keys {
         Keys {
             state: CopyValue::new(KeyState::load(source)),
@@ -33,11 +34,13 @@ impl Keys {
     }
 
     /// The platform the keymap is for.
+    #[must_use]
     pub fn platform(&self) -> Platform {
         self.state.read().keymap.platform()
     }
 
     /// The action `key` with `modifiers` held triggers in `context`, if any.
+    #[must_use]
     pub fn resolve(&self, key: &Key, modifiers: Modifiers, context: Context) -> Option<Action> {
         let state = self.state.read();
         ui_core::command::resolve(&state.keymap, key, modifiers, context)
@@ -45,6 +48,7 @@ impl Keys {
 
     /// The action a key event triggers in `context`, if any: `Context::TextEntry` in a text
     /// field, `Context::Terminal` in a terminal, `Context::Normal` elsewhere.
+    #[must_use]
     pub fn action_of(&self, event: &KeyboardEvent, context: Context) -> Option<Action> {
         self.resolve(&event.key(), event.modifiers(), context)
     }
@@ -91,18 +95,21 @@ impl Keys {
     }
 
     /// The chords that trigger `action` in ordinary window content, best first.
+    #[must_use]
     pub fn chords_of(&self, action: &Action) -> Vec<Chord> {
         let _ = self.generation.read();
         self.state.read().keymap.chords_of(action)
     }
 
     /// `shortcut` as this keymap's platform shows it (see `ui_core::command::shortcut_text`).
+    #[must_use]
     pub fn text_of(&self, shortcut: &Shortcut) -> String {
         let _ = self.generation.read();
         shortcut_text(&self.state.read().keymap, shortcut)
     }
 
     /// The caps `shortcut` is drawn on.
+    #[must_use]
     pub fn caps_of(&self, shortcut: &Shortcut) -> Vec<KeyCap> {
         let _ = self.generation.read();
         shortcut_caps(&self.state.read().keymap, shortcut)
@@ -114,6 +121,7 @@ impl Keys {
     }
 
     /// What went wrong reading the source or registering, in plain words, for a settings screen.
+    #[must_use]
     pub fn problems(&self) -> Vec<String> {
         self.state.read().problems().to_vec()
     }

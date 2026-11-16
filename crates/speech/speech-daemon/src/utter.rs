@@ -307,7 +307,7 @@ where
             UtteranceEffect::Emit(event) => self.emit(event).await,
             UtteranceEffect::Earcon(which) => {
                 if self.earcons {
-                    playback::earcon(self.device.clone(), which);
+                    playback::earcon(std::sync::Arc::clone(&self.device), which);
                 }
             }
             UtteranceEffect::StartTail { ms } => {
@@ -363,7 +363,7 @@ where
             Usage::Interactive,
         )));
         self.stt = Some(link::spawn(
-            self.transport.clone(),
+            std::sync::Arc::clone(&self.transport),
             stt_need(),
             DataClass::Voice,
             Tier::Balanced,

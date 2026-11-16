@@ -22,6 +22,7 @@ pub struct FakePicker(Arc<Kit<(), PickerAsked>>);
 
 impl FakePicker {
     /// A module that takes every change.
+    #[must_use]
     pub fn taking() -> FakePicker {
         FakePicker(Kit::new(Ok(())))
     }
@@ -32,6 +33,7 @@ impl FakePicker {
     }
 
     /// What was set, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<PickerAsked> {
         self.0.asked()
     }

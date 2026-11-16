@@ -37,19 +37,17 @@ impl Harness for Acp {
             },
         );
         let opened = opening("/work/app");
-        let session = wired
-            .court
-            .open(OpenAgent {
-                program: super::rig::program(),
-                cwd: opened.cwd.clone().expect("cwd"),
-                sheets: SheetSurface::Desktop,
-                space: opened.space.clone(),
-                label: opened.label.clone(),
-                rewind: Default::default(),
-                helper: None,
-            })
-            .await
-            .expect("the router opens the session");
+        let session = Box::pin(wired.court.open(OpenAgent {
+            program: super::rig::program(),
+            cwd: opened.cwd.clone().expect("cwd"),
+            sheets: SheetSurface::Desktop,
+            space: opened.space.clone(),
+            label: opened.label.clone(),
+            rewind: Default::default(),
+            helper: None,
+        }))
+        .await
+        .expect("the router opens the session");
         wired
             .backend
             .start(StartSession {
@@ -90,23 +88,26 @@ fn harness() -> Acp {
 #[tokio::test]
 async fn it_runs_a_turn() {
     let mut h = harness();
-    contract::runs_a_turn(&mut h).await;
+    Box::pin(contract::runs_a_turn(&mut h)).await;
 }
 
 #[tokio::test]
 async fn a_stop_before_the_next_pull_stops_the_call() {
     let mut h = harness();
-    contract::a_stop_before_the_next_pull_stops_the_call(&mut h).await;
+    Box::pin(contract::a_stop_before_the_next_pull_stops_the_call(&mut h)).await;
 }
 
 #[tokio::test]
 async fn a_call_waits_for_the_pull_after_its_announcement() {
     let mut h = harness();
-    contract::a_call_waits_for_the_pull_after_its_announcement(&mut h).await;
+    Box::pin(contract::a_call_waits_for_the_pull_after_its_announcement(
+        &mut h,
+    ))
+    .await;
 }
 
 #[tokio::test]
 async fn a_dropped_pull_loses_and_repeats_nothing() {
     let mut h = harness();
-    contract::a_dropped_pull_loses_and_repeats_nothing(&mut h).await;
+    Box::pin(contract::a_dropped_pull_loses_and_repeats_nothing(&mut h)).await;
 }

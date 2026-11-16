@@ -78,26 +78,31 @@ where
 
 impl<P: Clone + PartialEq + 'static, R: Clone + Default + PartialEq + 'static> SpacesHandle<P, R> {
     /// The list, as a signal to read in a view.
+    #[must_use]
     pub fn spaces(&self) -> Signal<Spaces<P, R>> {
         self.spaces
     }
 
     /// The look of the Space on screen: the root's `Ds { look }`.
+    #[must_use]
     pub fn look(&self) -> SpaceLook {
         self.spaces.read().current().look.clone()
     }
 
     /// The Space on screen.
+    #[must_use]
     pub fn current(&self) -> SpaceId {
         self.spaces.read().current().id
     }
 
     /// The edge the content slides in from after the last switch, for the app's `data-slide`.
+    #[must_use]
     pub fn slide(&self) -> Option<SlideIn> {
         *self.slide.read()
     }
 
     /// The Space whose part is open, if any. A switch is refused meanwhile.
+    #[must_use]
     pub fn editing(&self) -> Option<SpaceId> {
         *self.editing.read()
     }
@@ -105,6 +110,7 @@ impl<P: Clone + PartialEq + 'static, R: Clone + Default + PartialEq + 'static> S
     /// Switch to `id`: remember where the app is, show the Space, write the list, and tell the
     /// app to show the place it was left at. `None` while a part is open, for the current
     /// Space, or for none.
+    #[must_use]
     pub fn switch(&self, id: SpaceId) -> Option<Switched<R>> {
         if self.editing().is_some() {
             return None;
@@ -116,12 +122,14 @@ impl<P: Clone + PartialEq + 'static, R: Clone + Default + PartialEq + 'static> S
     }
 
     /// [`Self::switch`] to the Space at `index`.
+    #[must_use]
     pub fn switch_index(&self, index: usize) -> Option<Switched<R>> {
         let id = self.spaces.read().at(index)?.id;
         self.switch(id)
     }
 
     /// A key press on the window: switch when it is `chord` and a digit.
+    #[must_use]
     pub fn on_key(&self, chord: SwitchChord, event: &KeyboardEvent) -> Option<Switched<R>> {
         let number = chord.pressed(self.keys.platform(), &event.key(), event.modifiers())?;
         self.switch_index(usize::from(number.get()) - 1)

@@ -71,7 +71,7 @@ mod tests {
         assert_eq!(make_in(&shot, &cache).ok(), Some(made), "cached");
         let broken = dir.join("Screenshot_2.png");
         std::fs::write(&broken, b"not a png").expect("written"); // test-only
-        assert!(make_in(&broken, &cache).is_err());
+        make_in(&broken, &cache).unwrap_err();
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

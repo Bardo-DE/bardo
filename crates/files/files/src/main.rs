@@ -90,8 +90,8 @@ fn main() -> ExitCode {
     // The cloud drives need the session bus; without it the window shows none.
     let cloud = runtime.block_on(clouds::connect(runtime.handle().clone()));
     let opener = match &cloud {
-        Some(cloud) => DesktopOpener::new(launcher.clone()).with_web(cloud.web.clone()),
-        None => DesktopOpener::new(launcher.clone()),
+        Some(cloud) => DesktopOpener::new(Arc::clone(&launcher)).with_web(cloud.web.clone()),
+        None => DesktopOpener::new(Arc::clone(&launcher)),
     };
     let launch = Launch::new(start, Arc::new(opener))
         .with_file_icons(IconSources::new(Search::from_env(), db))

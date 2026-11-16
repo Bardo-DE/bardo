@@ -37,6 +37,7 @@ pub struct LiveReach {
 /// The actions a provider's answer names, with the values this daemon understands: anything
 /// else in the answer (an unknown value, a malformed document) is left out, so the manifest's
 /// value stands.
+#[must_use]
 pub fn parse_reach(text: &str) -> BTreeMap<String, ReachNow> {
     serde_json::from_str::<BTreeMap<String, serde_json::Value>>(text)
         .unwrap_or_default()
@@ -47,6 +48,7 @@ pub fn parse_reach(text: &str) -> BTreeMap<String, ReachNow> {
 
 impl LiveReach {
     /// Nothing said by anyone: every manifest is as its file declares.
+    #[must_use]
     pub fn none() -> Self {
         Self::default()
     }
@@ -56,7 +58,7 @@ impl LiveReach {
         let mut held = self
             .said
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if said.is_empty() {
             held.remove(&app);
         } else {
@@ -67,11 +69,12 @@ impl LiveReach {
     /// `manifest` with what its app said laid over it. Only the actions the manifest declares
     /// change, and only between `hidden` and `offered`: an action the file asks about every time
     /// stays as it is.
+    #[must_use]
     pub fn overlay(&self, manifest: ValidManifest) -> ValidManifest {
         let held = self
             .said
             .lock()
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let Some(said) = held.get(&manifest.manifest().app) else {
             return manifest;
         };
@@ -91,7 +94,7 @@ fn installed<S: Seams>(router: &Router<S>) -> Vec<AppName> {
     let st = router
         .state
         .lock()
-        .unwrap_or_else(|poisoned| poisoned.into_inner());
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     st.registry
         .all()
         .map(|m| m.manifest().app.clone())
@@ -161,7 +164,7 @@ pub async fn follow<S: Seams>(
         .msg_type(Type::Signal)
         .interface("org.bardo.IntentReach1")
         .and_then(|b| b.member("ReachChanged"))
-        .map(|b| b.build())
+        .map(zbus::match_rule::Builder::build)
     else {
         return;
     };

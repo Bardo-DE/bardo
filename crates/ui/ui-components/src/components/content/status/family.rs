@@ -1,4 +1,4 @@
-//! StatusGlyph: the bar's status glyphs as one family, for a caller that holds any of them
+//! `StatusGlyph`: the bar's status glyphs as one family, for a caller that holds any of them
 //! (design/26-DETAILS.md section 7).
 
 use super::battery::BatteryGlyph;
@@ -26,6 +26,7 @@ pub enum StatusState {
 
 impl StatusState {
     /// The state in words (R8).
+    #[must_use]
     pub fn words(self) -> String {
         match self {
             StatusState::Wifi(state) => state.words().to_owned(),

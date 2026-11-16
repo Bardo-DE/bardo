@@ -125,7 +125,7 @@ impl<K> Held<K> {
         Opening: Future<Output = Result<K, SecretsError>>,
     {
         let keyring = Arc::new(open().await?);
-        *self.slot() = Some(keyring.clone());
+        *self.slot() = Some(Arc::clone(&keyring));
         Ok(keyring)
     }
 
@@ -151,7 +151,7 @@ impl<K> Held<K> {
             Some(keyring) => keyring,
             None => self.open(&open).await?,
         };
-        let answer = call(keyring.clone()).await;
+        let answer = call(Arc::clone(&keyring)).await;
         if !matches!(answer, Err(SecretsError::Unavailable)) {
             return answer;
         }
@@ -160,7 +160,7 @@ impl<K> Held<K> {
             return answer;
         }
         let fresh = self.open(&open).await?;
-        let answer = call(fresh.clone()).await;
+        let answer = call(Arc::clone(&fresh)).await;
         if matches!(answer, Err(SecretsError::Unavailable)) {
             self.forget(&fresh);
         }

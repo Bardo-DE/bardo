@@ -19,23 +19,23 @@ fn actors(rig: &super::rig::Rig<super::rig::Fakes>) -> Vec<Actor> {
 }
 
 async fn acted(label: Option<String>) -> Vec<Actor> {
-    let (mut rig, _files) = started(Setup {
+    let (mut rig, _files) = Box::pin(started(Setup {
         turns: vec![vec![
             call("r", "fs/read_text_file", read("/work/app/README.md")),
             Act::Stop("end_turn"),
         ]],
         label,
         ..Setup::default()
-    })
+    }))
     .await;
-    run_turn(&mut rig, "read it").await;
+    Box::pin(run_turn(&mut rig, "read it")).await;
     actors(&rig)
 }
 
 #[tokio::test]
 async fn the_hosts_label_is_on_the_audited_actor() {
     let label = "Claude Code".to_owned();
-    let seen = acted(Some(label.clone())).await;
+    let seen = Box::pin(acted(Some(label.clone()))).await;
     assert!(!seen.is_empty());
     for actor in seen {
         assert!(matches!(actor, Actor::Acp { label: Some(l), .. } if l == label));
@@ -45,7 +45,7 @@ async fn the_hosts_label_is_on_the_audited_actor() {
 #[tokio::test]
 async fn no_label_configured_is_none_whatever_the_agent_calls_itself() {
     // The fake agent's `initialize` answers with a title of its own.
-    let seen = acted(None).await;
+    let seen = Box::pin(acted(None)).await;
     assert!(!seen.is_empty());
     for actor in seen {
         assert!(matches!(actor, Actor::Acp { label: None, .. }));
@@ -55,7 +55,7 @@ async fn no_label_configured_is_none_whatever_the_agent_calls_itself() {
 #[tokio::test]
 async fn the_agents_title_does_not_change_the_label() {
     let label = "Mine".to_owned();
-    for actor in acted(Some(label.clone())).await {
+    for actor in Box::pin(acted(Some(label.clone()))).await {
         assert!(matches!(actor, Actor::Acp { label: Some(l), .. } if l == label));
     }
 }
@@ -63,10 +63,10 @@ async fn the_agents_title_does_not_change_the_label() {
 #[tokio::test]
 async fn the_hosts_checkpoints_choice_is_what_the_router_is_told() {
     for rewind in [Rewind::Docket, Rewind::Agent] {
-        let (rig, _files) = started(Setup {
+        let (rig, _files) = Box::pin(started(Setup {
             rewind,
             ..Setup::default()
-        })
+        }))
         .await;
         let told = rig
             .router

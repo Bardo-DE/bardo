@@ -72,7 +72,7 @@ pub fn run() -> ExitCode {
     let app = AppHandle::new();
     let _runtime = enter_runtime();
     let provider = match SettingsProvider::new(
-        env.catalogue.clone(),
+        Arc::clone(&env.catalogue),
         env.config_home.clone(),
         outbox,
         Arc::new(env.client.clone()),

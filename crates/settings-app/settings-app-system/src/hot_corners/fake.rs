@@ -20,6 +20,7 @@ pub struct FakeCorners(Arc<Book>);
 
 impl FakeCorners {
     /// Apps whose manifests are `texts`.
+    #[must_use]
     pub fn with_manifests(texts: &[&str]) -> FakeCorners {
         FakeCorners(Arc::new(Book {
             manifests: texts.iter().map(|text| (*text).to_owned()).collect(),
@@ -33,11 +34,13 @@ impl FakeCorners {
     }
 
     /// What the person was asked for, in order.
+    #[must_use]
     pub fn asked(&self) -> Vec<HotOpenKind> {
         locked(&self.0.asked).clone()
     }
 
     /// The handle the environment takes.
+    #[must_use]
     pub fn desk(&self) -> Arc<dyn CornerDesk> {
         Arc::new(self.clone())
     }

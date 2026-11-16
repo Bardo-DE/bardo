@@ -41,6 +41,7 @@ pub fn builtin_manifests() -> Result<Vec<ValidManifest>, ManifestFileError> {
 /// installed file may declare them. Memory, Companion and Checkpoints are answered in process; the external
 /// agents' pseudo-app (`org.bardo.AcpAgent`) is answered by the host that launched the agent, on
 /// that bus name, like an installed app.
+#[must_use]
 pub fn is_builtin(app: &AppName) -> bool {
     matches!(
         app.as_str(),

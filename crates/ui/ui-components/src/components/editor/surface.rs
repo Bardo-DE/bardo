@@ -1,4 +1,4 @@
-//! EditSurface: a focusable block that hosts an app's own rendered text and hands the app its
+//! `EditSurface`: a focusable block that hosts an app's own rendered text and hands the app its
 //! input (FINDINGS "Edit surface"). mailo's composer renders its paragraphs and objects as the
 //! children, marked with `data-edit-node`; the surface owns the focus and the IME, turns keys,
 //! IME composition and clipboard gestures into [`EditInput`]s, resolves pointer presses to

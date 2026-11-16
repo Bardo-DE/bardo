@@ -20,6 +20,7 @@ impl Default for Answers {
 
 impl Answers {
     /// A receiver of everything said from now on. Taken once per run of a listening service.
+    #[must_use]
     pub fn hear(&self) -> broadcast::Receiver<Said> {
         self.0.subscribe()
     }

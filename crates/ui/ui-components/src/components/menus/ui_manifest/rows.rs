@@ -41,6 +41,7 @@ pub fn menu_rows<T: AppCommand>(items: &[MenuItem<T>]) -> Vec<CommandRow> {
 }
 
 /// A row for every command in the menu bar, its six menus in the bar's order.
+#[must_use]
 pub fn bar_rows<T: AppCommand + Clone>(bar: &MenuBarModel<T>) -> Vec<CommandRow> {
     bar.menus()
         .iter()

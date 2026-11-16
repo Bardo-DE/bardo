@@ -123,7 +123,7 @@ impl Transport for Scripted {
         Ok(Session {
             events: std::mem::take(&mut *self.events.lock().expect("lock")),
             hang: self.hang,
-            sent: self.sent.clone(),
+            sent: Arc::clone(&self.sent),
         })
     }
 }

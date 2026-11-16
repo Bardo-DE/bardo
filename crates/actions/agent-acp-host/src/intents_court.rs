@@ -27,7 +27,7 @@ struct Flight {
 }
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
-    m.lock().unwrap_or_else(|e| e.into_inner())
+    m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// The router, as the host of an external agent calls it.
@@ -39,8 +39,8 @@ pub struct IntentsCourt<T: Transport + 'static> {
 impl<T: Transport + 'static> Clone for IntentsCourt<T> {
     fn clone(&self) -> Self {
         Self {
-            intents: self.intents.clone(),
-            flights: self.flights.clone(),
+            intents: Arc::clone(&self.intents),
+            flights: Arc::clone(&self.flights),
         }
     }
 }
@@ -64,12 +64,16 @@ impl<T: Transport + 'static> IntentsCourt<T> {
     fn flight(&self, n: u64, session: &SessionId, call: &AgentCall) -> Arc<Flight> {
         let mut flights = locked(&self.flights);
         if let Some(flight) = flights.get(&n) {
-            return flight.clone();
+            return Arc::clone(flight);
         }
         let flight = Arc::new(Flight::default());
-        flights.insert(n, flight.clone());
+        flights.insert(n, Arc::clone(&flight));
         let request = call.request();
-        let (intents, session, landing) = (self.intents.clone(), session.clone(), flight.clone());
+        let (intents, session, landing) = (
+            Arc::clone(&self.intents),
+            session.clone(),
+            Arc::clone(&flight),
+        );
         tokio::spawn(async move {
             let ruled = match request {
                 // A name or path the router's grammar refuses is not a call it was asked.

@@ -58,7 +58,7 @@ impl FakeEmbedder {
     /// without one is in another space.
     #[must_use]
     pub fn with_document_prefix(mut self, prefix: &str) -> Self {
-        self.card.prompts.document = prefix.to_owned();
+        prefix.clone_into(&mut self.card.prompts.document);
         self
     }
 
@@ -67,7 +67,7 @@ impl FakeEmbedder {
     #[must_use]
     pub fn named(model: &str) -> Self {
         let mut fake = Self::new();
-        fake.card.model = model.to_owned();
+        model.clone_into(&mut fake.card.model);
         fake
     }
 

@@ -127,6 +127,7 @@ pub(crate) async fn owned_by_us(dbus: &DBusProxy<'_>, name: &BusName<'_>) -> Res
 
 impl DbusLink {
     /// Calls apps over `connection`.
+    #[must_use]
     pub fn new(connection: BusConnection) -> Self {
         Self { connection }
     }

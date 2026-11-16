@@ -100,9 +100,9 @@ impl World {
         let config = Arc::new(config);
         serve_on_gated(
             &daemon,
-            router.clone(),
-            config.clone(),
-            who.clone(),
+            Arc::clone(&router),
+            Arc::clone(&config),
+            Arc::clone(&who),
             &root,
             acp,
             None,

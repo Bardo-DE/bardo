@@ -33,6 +33,7 @@ impl PamHelper {
     /// This running executable's own `auth-check` subcommand (`bardo-shell auth-check`). Started through
     /// `/proc/self/exe`, which names the program image this process runs even after an update has
     /// replaced or removed its file, so the daemon and its helper are always the same build.
+    #[must_use]
     pub fn this_exe() -> PamHelper {
         PamHelper {
             program: PathBuf::from(THIS_EXE),

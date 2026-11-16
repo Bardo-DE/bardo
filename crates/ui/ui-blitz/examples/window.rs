@@ -87,7 +87,7 @@ fn entries() -> Vec<MenuItem<u8>> {
             availability: Availability::Enabled,
             hint: None,
             keep_open: false,
-            text: Default::default(),
+            text: ItemText::default(),
         })
         .collect()
 }

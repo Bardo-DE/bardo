@@ -81,13 +81,13 @@ async fn a_pressed_card_is_performed_in_the_answers_session_and_the_answer_follo
     );
     let mut w = world(vec![]);
     let opened = w.open("work").await;
-    let router = w.router.clone();
+    let router = Arc::clone(&w.router);
     let companion = Arc::new(Mutex::new(w.companion));
     let who = who(&server, scratch.path());
     serve_on_rooted(
         &server,
-        companion.clone(),
-        who.clone(),
+        Arc::clone(&companion),
+        Arc::clone(&who),
         ProcRoot::Honoured(scratch.path().to_owned()),
     )
     .await

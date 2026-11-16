@@ -1,4 +1,4 @@
-//! RowAction: a button at the end of a row that acts on that row without picking it (the ×
+//! `RowAction`: a button at the end of a row that acts on that row without picking it (the ×
 //! that removes a recent search, the ⋯ that opens the row's menu). It is an `IconButton`, and its
 //! click, press and pointer moves stop inside it, so the row neither runs, closes its palette
 //! nor takes the selection while the pointer is on the button.
@@ -43,6 +43,7 @@ impl RowAction {
     }
 
     /// The same action with `common` on its button.
+    #[must_use]
     pub fn with_common(self, common: Common) -> Self {
         RowAction { common, ..self }
     }

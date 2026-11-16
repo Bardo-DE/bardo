@@ -1,4 +1,4 @@
-//! PaneHeader and PaneFooter: the head and the foot of a control-center module's detail pane
+//! `PaneHeader` and `PaneFooter`: the head and the foot of a control-center module's detail pane
 //! (design/30 section 2.10, `PaneSwitcher`). The header is an optional back button, the pane's
 //! title and a trailing element (the feature's switch); the footer holds one action under a
 //! hairline. The body between them is the caller's.

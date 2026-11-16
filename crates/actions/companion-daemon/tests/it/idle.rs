@@ -25,7 +25,7 @@ async fn a_narrative_is_written_after_thirty_quiet_seconds_from_the_skeleton_alo
         words("The person asked about the invoice and it was read."),
     ]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "read the invoice").await;
+    Box::pin(w.say(&opened.session, "read the invoice")).await;
     assert_eq!(w.infer.asked().len(), 2);
 
     // Too soon: nothing is asked of the model.
@@ -94,12 +94,12 @@ async fn a_narrative_is_written_after_thirty_quiet_seconds_from_the_skeleton_alo
 async fn an_interactive_request_cancels_the_narrative_and_it_is_tried_again_later() {
     let mut w = world(vec![words("Done."), Say::Hang]);
     let first = w.open("work").await;
-    w.say(&first.session, "hello").await;
+    Box::pin(w.say(&first.session, "hello")).await;
     w.set_time(1_000 + 31);
 
     // The narrative is running (the model never answers) when the person speaks: the stream is
     // dropped, nothing is recorded, and the job goes back to the front of the queue.
-    let shared = w.companion.shared.clone();
+    let shared = std::sync::Arc::clone(&w.companion.shared);
     let tick = w.companion.tick_at(UnixSeconds(1_000 + 31));
     let speaks = async {
         tokio::task::yield_now().await;
@@ -116,7 +116,7 @@ async fn an_interactive_request_cancels_the_narrative_and_it_is_tried_again_late
     w.infer
         .push(vec![words("Fine."), words("They said hello twice.")]);
     let second = w.open("work").await;
-    w.say(&second.session, "hello again").await;
+    Box::pin(w.say(&second.session, "hello again")).await;
     assert_eq!(w.infer.asked().len(), 3);
     w.set_time(1_000 + 200);
     w.companion.tick().await.expect("tick");

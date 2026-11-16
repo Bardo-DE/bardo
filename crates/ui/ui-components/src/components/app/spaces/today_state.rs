@@ -47,6 +47,7 @@ where
 
 impl<I: Clone + PartialEq + 'static, K: Clone + PartialEq + 'static> TodayHandle<I, K> {
     /// The state, to read in a view.
+    #[must_use]
     pub fn today(&self) -> Signal<Today<I, K>> {
         self.today
     }

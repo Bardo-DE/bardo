@@ -265,7 +265,7 @@ fn hover_intent_sequences() {
     for (name, steps) in cases {
         let mut machine = HoverIntent::default();
         for (n, (at, event, want_phase, want_effect)) in steps.into_iter().enumerate() {
-            let (next, effect) = machine.step(event.clone(), Stamp(at), &Default::default(), &());
+            let (next, effect) = machine.step(event.clone(), Stamp(at), &TipDelay::default(), &());
             assert_eq!(
                 effect, want_effect,
                 "{name}, step {n} ({event:?} at {at} ms): effect"
@@ -290,7 +290,7 @@ fn warmth_follows_the_card_and_the_warm_window() {
         (500, HoverEvent::Out),
         (650, HoverEvent::Elapsed),
     ] {
-        machine = machine.step(event, Stamp(at), &Default::default(), &()).0;
+        machine = machine.step(event, Stamp(at), &TipDelay::default(), &()).0;
         warmth.push(machine.warmth(Stamp(at)));
     }
     warmth.push(machine.warmth(Stamp(1049)));
@@ -301,7 +301,7 @@ fn warmth_follows_the_card_and_the_warm_window() {
 #[test]
 fn the_machine_wakes_for_the_open_and_the_close_and_rests_otherwise() {
     let step = |machine: HoverIntent<u8>, event, at| {
-        machine.step(event, Stamp(at), &Default::default(), &()).0
+        machine.step(event, Stamp(at), &TipDelay::default(), &()).0
     };
     let idle = HoverIntent::default();
     assert_eq!(idle.wake(), None);

@@ -56,7 +56,7 @@ fn with_memory(script: Vec<Say>) -> (World, Arc<Recall>) {
     w.router
         .seams
         .link
-        .host(app("org.bardo.Memory"), memory.clone());
+        .host(app("org.bardo.Memory"), Arc::<Recall>::clone(&memory));
     (w, memory)
 }
 
@@ -77,8 +77,7 @@ fn recalls(w: &World) -> usize {
 async fn the_persons_words_are_searched_before_the_first_planner_call_with_no_sheet() {
     let (mut w, memory) = with_memory(vec![words("Taipei.")]);
     let opened = w.open("work").await;
-    w.say(&opened.session, "What is the capital of Taiwan?")
-        .await;
+    Box::pin(w.say(&opened.session, "What is the capital of Taiwan?")).await;
 
     assert_eq!(memory.asked(), ["What is the capital of Taiwan?"]);
     assert!(
@@ -112,7 +111,7 @@ async fn a_worker_a_missing_memory_and_the_recall_switch_leave_the_turn_as_it_wa
         words("done"),
     ]);
     let front = w.open("work").await;
-    w.say(&front.session, "get someone to tidy up").await;
+    Box::pin(w.say(&front.session, "get someone to tidy up")).await;
     assert_eq!(memory.asked(), ["get someone to tidy up"]);
 
     // Memory is not there: the turn goes on without it.
@@ -122,8 +121,7 @@ async fn a_worker_a_missing_memory_and_the_recall_switch_leave_the_turn_as_it_wa
         .link
         .answer_from(&app("org.bardo.Memory"), Answering::Absent);
     let opened = w.open("work").await;
-    w.say(&opened.session, "What is the capital of Taiwan?")
-        .await;
+    Box::pin(w.say(&opened.session, "What is the capital of Taiwan?")).await;
     assert!(memory.asked().is_empty());
     assert!(!w.infer.user_text(0).contains("memory.recall"));
     assert_eq!(
@@ -139,7 +137,6 @@ async fn a_worker_a_missing_memory_and_the_recall_switch_leave_the_turn_as_it_wa
     let (mut w, memory) = with_memory(vec![words("Taipei.")]);
     w.companion.config.assembler.recall = base_ids::Tokens(0);
     let opened = w.open("work").await;
-    w.say(&opened.session, "What is the capital of Taiwan?")
-        .await;
+    Box::pin(w.say(&opened.session, "What is the capital of Taiwan?")).await;
     assert!(memory.asked().is_empty());
 }

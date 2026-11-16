@@ -151,7 +151,7 @@ fn ready_phase(session: &CaptureSession, stride: u32, pixels: Vec<u8>) -> Captur
         (Some(size), Some(format)) => {
             let mut frame = Frame::new(size, stride, format, pixels);
             frame.transform = session.transform;
-            frame.damage = session.damage.clone();
+            frame.damage.clone_from(&session.damage);
             frame.presented = session.presented;
             CapturePhase::Ready(frame)
         }

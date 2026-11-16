@@ -5,6 +5,7 @@ use action_testbus::Reaped;
 use std::path::Path;
 use std::process::{Command, Stdio};
 
+#[must_use]
 pub fn env_of(dir: &Path) -> Vec<(&'static str, String)> {
     let at = |p: &str| dir.join(p).display().to_string();
     vec![

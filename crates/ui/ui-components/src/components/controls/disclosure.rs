@@ -65,7 +65,7 @@ pub(crate) fn Collapsing(
                 class: "ds-disclosure-content",
                 onmounted: move |event| {
                     let element = event.data();
-                    content.set(Some(element.clone()));
+                    content.set(Some(Rc::clone(&element)));
                     spawn_in(scope, async move {
                         if let Some(rect) = client_rect(&element).await {
                             measured.set(rect.size.height);

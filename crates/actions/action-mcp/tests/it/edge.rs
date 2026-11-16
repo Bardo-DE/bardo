@@ -98,8 +98,8 @@ async fn rig_with(configure: impl FnOnce(McpEdge<Recording>) -> McpEdge<Recordin
     allow_mail_for_the_client(&router);
     let seen = Arc::new(Mutex::new(vec![]));
     let transport = Recording {
-        inner: InProcess::new(router.clone(), mcp_caller()),
-        seen: seen.clone(),
+        inner: InProcess::new(Arc::clone(&router), mcp_caller()),
+        seen: Arc::clone(&seen),
     };
     let edge = configure(McpEdge::new(
         Intents::over(transport),
@@ -107,7 +107,7 @@ async fn rig_with(configure: impl FnOnce(McpEdge<Recording>) -> McpEdge<Recordin
     ));
     let (server_io, client_io) = tokio::io::duplex(64 * 1024);
     tokio::spawn(async move {
-        if let Ok(running) = edge.serve(server_io).await {
+        if let Ok(running) = Box::pin(edge.serve(server_io)).await {
             let _ = running.waiting().await;
         }
     });

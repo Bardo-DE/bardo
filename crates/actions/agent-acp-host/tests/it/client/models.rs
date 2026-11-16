@@ -28,13 +28,13 @@ async fn open_with(offer: Offer, wanted: Option<ModelId>) -> (Result<(), HostFau
         wired.desk.clone(),
         wired.terminal_fallback,
     );
-    let opened = host.open(opening(CWD)).await.map(|_| ());
+    let opened = Box::pin(host.open(opening(CWD))).await.map(|_| ());
     (opened, wired.agent)
 }
 
 #[tokio::test]
 async fn the_configured_model_is_set_with_the_session_option_and_awaited() {
-    let (opened, agent) = open_with(Offer::Option, model("gemini-pro-agent")).await;
+    let (opened, agent) = Box::pin(open_with(Offer::Option, model("gemini-pro-agent"))).await;
     assert_eq!(opened, Ok(()));
     let sessions = agent.switches();
     assert_eq!(sessions.len(), 1);
@@ -45,7 +45,7 @@ async fn the_configured_model_is_set_with_the_session_option_and_awaited() {
 
 #[tokio::test]
 async fn the_older_model_list_is_switched_with_set_model() {
-    let (opened, agent) = open_with(Offer::Older, model("gemini-pro-agent")).await;
+    let (opened, agent) = Box::pin(open_with(Offer::Older, model("gemini-pro-agent"))).await;
     assert_eq!(opened, Ok(()));
     let sessions = agent.switches();
     assert_eq!(sessions[0].0, "session/set_model");
@@ -55,7 +55,7 @@ async fn the_older_model_list_is_switched_with_set_model() {
 #[tokio::test]
 async fn a_model_that_is_not_offered_is_refused_with_the_ones_that_are() {
     for offer in [Offer::Option, Offer::Older] {
-        let (opened, agent) = open_with(offer, model("gpt-9")).await;
+        let (opened, agent) = Box::pin(open_with(offer, model("gpt-9"))).await;
         let Err(HostFault::Backend(BackendFault::ModelNotOffered(offered))) = opened else {
             panic!("expected the list of models, got {opened:?}");
         };
@@ -69,14 +69,14 @@ async fn a_model_that_is_not_offered_is_refused_with_the_ones_that_are() {
 
 #[tokio::test]
 async fn the_model_already_in_use_is_not_switched_to() {
-    let (opened, agent) = open_with(Offer::Option, model("flash")).await;
+    let (opened, agent) = Box::pin(open_with(Offer::Option, model("flash"))).await;
     assert_eq!(opened, Ok(()));
     assert!(agent.switches().is_empty());
 }
 
 #[tokio::test]
 async fn an_agent_that_offers_no_choice_refuses_a_configured_model() {
-    let (opened, _agent) = open_with(Offer::None, model("flash")).await;
+    let (opened, _agent) = Box::pin(open_with(Offer::None, model("flash"))).await;
     assert_eq!(
         opened,
         Err(HostFault::Backend(BackendFault::ModelNotChoosable))
@@ -85,7 +85,7 @@ async fn an_agent_that_offers_no_choice_refuses_a_configured_model() {
 
 #[tokio::test]
 async fn an_agent_that_refuses_the_switch_is_a_typed_refusal() {
-    let (opened, _agent) = open_with(Offer::Stubborn, model("gemini-pro-agent")).await;
+    let (opened, _agent) = Box::pin(open_with(Offer::Stubborn, model("gemini-pro-agent"))).await;
     assert_eq!(opened, Err(HostFault::Backend(BackendFault::ModelRefused)));
 }
 
@@ -104,7 +104,7 @@ async fn no_model_configured_leaves_the_agents_own_and_lists_what_it_offers() {
         wired.desk.clone(),
         wired.terminal_fallback,
     );
-    host.open(opening(CWD)).await.expect("open");
+    Box::pin(host.open(opening(CWD))).await.expect("open");
     assert!(wired.agent.switches().is_empty());
     let models = host.backend().models().expect("offered");
     assert_eq!(models.current.as_deref(), Some("flash"));
