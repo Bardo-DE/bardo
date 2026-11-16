@@ -105,6 +105,10 @@ impl<U: EngineUse> LocalTurn<'_, U> {
 }
 
 /// The one refusal any request the bridge cannot express gets; the cause goes to the log.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed by name to `map_err`, which hands the error over by value"
+)]
 fn unsupported(error: BridgeError) -> InferRefusal {
     tracing::warn!(error = %error, "a request could not be turned into a model turn");
     InferRefusal::Unsupported

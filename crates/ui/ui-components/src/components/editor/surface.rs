@@ -129,16 +129,16 @@ pub fn EditSurface(
         use_effect(use_reactive!(|caret| {
             checker.state.caret.replace(caret);
             touch(&checker);
-        }));
-    }
+        }))
+    };
     {
         let state = Rc::clone(&state);
         use_drop(move || {
             if let (Some(edit), Some(listener)) = (host.edit(), state.listener.take()) {
                 edit.ime().forget(listener);
             }
-        });
-    }
+        })
+    };
 
     let mounted = {
         let ctx = ctx.clone();
