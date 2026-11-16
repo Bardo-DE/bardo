@@ -4,7 +4,7 @@
 //! that has a runtime implements [`ByteStream`] over its own streams.
 
 use std::collections::VecDeque;
-use std::future::{Future, poll_fn};
+use std::future::poll_fn;
 use std::io;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::task::{Context, Poll, Waker};

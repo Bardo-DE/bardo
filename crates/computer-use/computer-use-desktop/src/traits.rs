@@ -6,7 +6,6 @@ use crate::event::DesktopEvent;
 use crate::glow::GlowState;
 use crate::lease::{LeaseId, LeaseRequest, Leased, Suspend};
 use crate::window::ToplevelInfo;
-use std::future::Future;
 
 /// What is on the desktop.
 pub trait Desktop: Send + Sync {

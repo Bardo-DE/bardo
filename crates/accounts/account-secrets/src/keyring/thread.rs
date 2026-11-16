@@ -5,7 +5,6 @@
 //! crate may not reach an executor, so the wait is a future the thread wakes.
 
 use crate::error::SecretsError;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::task::{Context, Poll, Waker};

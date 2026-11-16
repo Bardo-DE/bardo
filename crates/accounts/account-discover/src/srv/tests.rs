@@ -1,7 +1,6 @@
 //! SRV records, ported from `srv_records` in mailo's `crates/mail-proto/tests/discover.rs`.
 
 use super::*;
-use crate::found::{Pop3Server, Source};
 use crate::testing::{ADDRESS, Records, name, srv};
 
 fn urls(found: &Found) -> Vec<String> {

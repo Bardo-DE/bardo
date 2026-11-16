@@ -1,7 +1,6 @@
 //! The DNS seam (hickory behind it in the daemon, a fake in tests).
 
 use account_provider::DomainName;
-use std::future::Future;
 
 /// One SRV record.
 #[derive(Debug, Clone, PartialEq, Eq)]

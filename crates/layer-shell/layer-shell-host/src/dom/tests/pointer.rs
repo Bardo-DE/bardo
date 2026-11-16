@@ -14,7 +14,6 @@ use blitz_traits::events::{
     UiEvent,
 };
 use dioxus::prelude::*;
-use keyboard_types::Modifiers;
 
 /// The margin reset quire's `css/reset.css` brings; the host's UA sheet sizes the root
 /// but leaves margins to the design system.

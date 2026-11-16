@@ -1,7 +1,7 @@
 use super::*;
 use std::pin::pin;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::task::{Context, Wake};
+use std::task::Wake;
 
 struct Count(AtomicUsize);
 

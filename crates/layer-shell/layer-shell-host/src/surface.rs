@@ -292,7 +292,6 @@ pub(crate) fn visibility_change(from: Visibility, to: Visibility) -> VisibilityC
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::msg::Visibility;
 
     #[test]
     fn a_zero_axis_keeps_the_requested_size() {

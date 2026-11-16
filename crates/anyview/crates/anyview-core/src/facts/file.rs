@@ -120,7 +120,6 @@ mod tests {
     use super::*;
     use crate::facts::FactGroup;
     use crate::sniff::{FileHead, SniffStep, sniff};
-    use crate::source::FileName;
 
     fn sniffed(name: &str, head: &[u8]) -> Sniffed {
         match sniff(&FileHead::new(head), &FileName::new(name).unwrap()) {

@@ -4,7 +4,6 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::task::Wake;
 
-use std::future::Future;
 use std::task::{Context, Poll, Waker};
 
 use crate::scale::{LiveScale, Scale120};

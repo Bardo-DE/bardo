@@ -1,7 +1,6 @@
 //! What the assistant and the command line may ask of the window, as typed data, and the window's
 //! side of it.
 
-use std::future::Future;
 use std::path::PathBuf;
 
 use files_core::{FileName, FolderPath, ItemRef, Location, OpKind};

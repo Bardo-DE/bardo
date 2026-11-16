@@ -2,7 +2,6 @@
 //! intentd, on a bus of its own) reaches a fake window, and nobody else is answered.
 
 use std::collections::HashMap;
-use std::future::Future;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, PoisonError};
 

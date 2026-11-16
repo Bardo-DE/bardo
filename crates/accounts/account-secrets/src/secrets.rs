@@ -3,7 +3,6 @@
 use crate::error::SecretsError;
 use account_core::AccountId;
 use account_core::{Credential, SecretKey};
-use std::future::Future;
 
 /// A store of credentials, filed by [`SecretKey`].
 pub trait Secrets: Send + Sync {

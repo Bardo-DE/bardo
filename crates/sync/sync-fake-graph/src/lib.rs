@@ -24,7 +24,6 @@ use account_fake_servers::seen::{Running, Seen, lock};
 use account_provider::ProviderSpec;
 use drive::Body;
 use routes::{Origins, State, answer, answer_link};
-use std::future::Future;
 use std::io;
 use std::sync::{Arc, Mutex};
 

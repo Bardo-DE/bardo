@@ -20,7 +20,6 @@ use blitz_dom::node::ComputedStyles;
 use blitz_dom::{Document as _, DocumentConfig, Widget};
 use blitz_traits::events::UiEvent;
 use blitz_traits::shell::{ColorScheme, Viewport};
-use dioxus::core::{Element, VirtualDom};
 use dioxus::prelude::*;
 use dioxus_native_dom::{CustomWidgetAttr, DioxusDocument};
 use peniko::kurbo::{Affine, Rect};

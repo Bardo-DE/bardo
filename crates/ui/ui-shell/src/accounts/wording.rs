@@ -250,7 +250,7 @@ pub(crate) fn step_cursor(
 mod tests {
     use super::*;
     use crate::accounts::hidden::Hidden;
-    use crate::accounts::model::{Attempt, ChoiceKey, FieldText, ProviderKey};
+    use crate::accounts::model::{Attempt, FieldText, ProviderKey};
     use ui_core::word::Word;
 
     fn entry(key: &str, label: &str) -> ProviderEntry {

@@ -10,7 +10,6 @@ use crate::consent::Grant;
 use account_capability::{CapabilityKind, VocabVersion};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::future::Future;
 
 /// The first vocabulary version a file was ever written with. Older numbers never reached a
 /// disk, so there is nothing to migrate from.

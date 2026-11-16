@@ -23,7 +23,6 @@
 //! See design/10 §10.4; FINDINGS F31.
 
 use std::cell::RefCell;
-use std::future::Future;
 use std::pin::Pin;
 use std::rc::Rc;
 use std::task::{Context, Poll, Waker};

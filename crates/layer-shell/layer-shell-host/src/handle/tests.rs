@@ -11,17 +11,11 @@ use super::*;
 use crate::clipboard::SharedSelection;
 use crate::dom::document::{DocumentEnv, SurfaceDocument};
 use crate::dom::shell_provider::HostShellProvider;
-use crate::grab::{GrabRecord, GrabRefused, PointerFacts, Press};
-use crate::handle::{
-    HandleParts, RequestQueue, use_frame_tick, use_surface, use_surface_scale, use_toplevel_state,
-};
-use crate::id::SurfaceIds;
-use crate::live::Live;
-use crate::msg::{CommonOp, Request, SurfaceOp, WindowOp};
+use crate::grab::{GrabRefused, PointerFacts, Press};
+use crate::msg::{CommonOp, WindowOp};
 use crate::prepaint::Prepaint;
-use crate::role::RoleKind;
 use crate::tick::FrameTick;
-use crate::toplevel::{Maximize, ResizeEdge, ToplevelState};
+use crate::toplevel::{Maximize, ResizeEdge};
 use blitz_embed::fonts::SharedFonts;
 use blitz_embed::net::LocalNet;
 use blitz_embed::scroll::time::Elapsed;

@@ -2,7 +2,6 @@
 
 use super::*;
 use crate::testing::{ADDRESS, Table, name, respond};
-use account_http::http::Response;
 
 fn login() -> LoginName {
     LoginName(ADDRESS.to_owned())

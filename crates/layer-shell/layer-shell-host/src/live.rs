@@ -5,7 +5,6 @@
 //! `tick::FrameTicks`, so the sharing is `Rc`.
 
 use std::cell::RefCell;
-use std::future::Future;
 use std::pin::Pin;
 use std::rc::Rc;
 use std::task::{Context, Poll, Waker};

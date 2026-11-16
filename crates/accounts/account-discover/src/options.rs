@@ -6,7 +6,7 @@
 use crate::found::*;
 use crate::search::{Outcome, discover_mail, discover_mail_with};
 use crate::testing::{ADDRESS, Records, Table, doc, respond, server};
-use crate::{DiscoverFault, parse_autoconfig, parse_autoconfig_with};
+use crate::{parse_autoconfig, parse_autoconfig_with};
 use account_core::{Direction, LoginName, Tls};
 use account_provider::ProviderSet;
 

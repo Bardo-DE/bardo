@@ -5,7 +5,6 @@
 
 use std::cell::RefCell;
 use std::collections::VecDeque;
-use std::future::Future;
 use std::pin::Pin;
 use std::rc::Rc;
 use std::task::{Context, Poll, Waker};

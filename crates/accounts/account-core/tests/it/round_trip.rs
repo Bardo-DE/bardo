@@ -2,21 +2,11 @@
 //! programs read keep their slugs.
 
 use account_capability::*;
-use account_capability::{
-    Access, AgentCap, AgentProgram, AgentProtocol, Albums, Capability, CapabilityKind, CuaBatching,
-    CuaCap, CuaEnv, Delta, EmbedCap, EmbedPrompts, EnvName, HashKind, IdentityCap, ImageGenCap,
-    ImageMode, KeyValueCap, LabelModel, LanguageSet, LanguageTag, LibraryRead, LlmCap, LlmFeature,
-    LlmWire, MailCap, MailTransport, Modality, NotesCap, NotesTransport, PhotosCap, PimCap,
-    PimTransport, PushCap, PushChannel, RerankCap, SpeechCap, SpeechMode, StorageCap, StorageScope,
+use account_core::consent::{
+    AccountChoice, AskPurpose, ConsentAnswer, ConsentAsk, Decision, Grant, GrantScope, Usage,
+    Verdict,
 };
 use account_core::*;
-use account_core::{
-    GrantKey,
-    consent::{
-        AccountChoice, AskPurpose, ConsentAnswer, ConsentAsk, Decision, Grant, GrantScope, Usage,
-        Verdict,
-    },
-};
 use account_match::Need;
 use account_match::{
     AgentNeed, CuaNeed, DimsNeed, EmbedNeed, IdentityNeed, ImageGenNeed, KeyValueNeed, LlmNeed,
