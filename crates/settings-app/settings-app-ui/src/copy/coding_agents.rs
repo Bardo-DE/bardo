@@ -44,15 +44,15 @@ pub(crate) fn downloading(name: &str) -> String {
 pub(crate) fn add_refusal(refusal: &AddRefusal) -> String {
     match refusal {
         AddRefusal::NothingNew => NOTHING_NEW.to_owned(),
-        AddRefusal::Fault(fault) => add_fault(*fault).to_owned(),
+        AddRefusal::Fault(fault) => add_fault(fault).to_owned(),
         AddRefusal::DownloadSaid(said) => said.clone(),
         AddRefusal::DownloadFailed => DOWNLOAD_FAILED.to_owned(),
     }
 }
 
-fn add_fault(fault: AddFault) -> &'static str {
+fn add_fault(fault: &AddFault) -> &'static str {
     match fault {
-        AddFault::Unreadable => {
+        AddFault::Unreadable | AddFault::Syntax(_) => {
             "The list of coding assistants can\u{2019}t be read, so nothing was changed."
         }
         AddFault::Listed => "That coding assistant is already offered.",
@@ -60,7 +60,7 @@ fn add_fault(fault: AddFault) -> &'static str {
             "That coding assistant\u{2019}s name has characters that can\u{2019}t be kept."
         }
         AddFault::BadLabel => "Give it a name of up to 64 letters.",
-        AddFault::Io => "The list of coding assistants can\u{2019}t be written.",
+        AddFault::Io(_) => "The list of coding assistants can\u{2019}t be written.",
     }
 }
 
@@ -68,10 +68,10 @@ fn add_fault(fault: AddFault) -> &'static str {
 pub(crate) fn remove_refusal(fault: ChoiceFault) -> &'static str {
     match fault {
         ChoiceFault::NoSuchAgent => "That coding assistant isn\u{2019}t on the list any more.",
-        ChoiceFault::Unreadable => {
+        ChoiceFault::Unreadable | ChoiceFault::Syntax(_) => {
             "The list of coding assistants can\u{2019}t be read, so nothing was changed."
         }
-        ChoiceFault::BadModel | ChoiceFault::BadWay | ChoiceFault::Io => {
+        ChoiceFault::BadModel | ChoiceFault::BadWay | ChoiceFault::Io(_) => {
             "The list of coding assistants can\u{2019}t be written."
         }
     }
@@ -111,14 +111,14 @@ mod tests {
             AddFault::Listed,
             AddFault::BadName,
             AddFault::BadLabel,
-            AddFault::Io,
+            AddFault::Io(std::io::Error::other("disk full").into()),
         ];
         let removes = [
             ChoiceFault::NoSuchAgent,
             ChoiceFault::Unreadable,
             ChoiceFault::BadModel,
             ChoiceFault::BadWay,
-            ChoiceFault::Io,
+            ChoiceFault::Io(std::io::Error::other("disk full")),
         ];
         let sentences = adds
             .into_iter()

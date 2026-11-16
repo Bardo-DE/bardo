@@ -2,7 +2,6 @@
 //! told are made once, at the edge that serves them (companiond today, the view crate later); a
 //! decision here never carries words.
 
-use base_ids::IdError;
 use companion_model::helper::{GoalFault, HandFault, HelperName, JobFault, JobRefusal, ReachFault};
 use companion_model::routine::ScheduleFault;
 
@@ -78,7 +77,7 @@ pub enum Refusal {
     /// A routine was asked for a helper that is not there.
     UnknownHelper,
     /// The kind of thing to watch for is not one.
-    WatchKind(IdError),
+    WatchKind(account_core::CoreError),
     /// Nothing was said to watch for.
     WatchWords,
     /// The routine book made no routine.

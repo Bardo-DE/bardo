@@ -296,7 +296,10 @@ fn someone_elses_computer_is_never_asked_about() {
     guests.forget(&node("nFRIEND")).unwrap();
     assert_eq!(welcome.admit(&guests, NOW), Err(Refusal::Shared));
     assert!(guests.asking().is_empty(), "no question is raised for it");
-    assert_eq!(guests.ask(&node("nPI"), "pi", NOW), Ok(AskOutcome::Raised));
+    assert_eq!(
+        guests.ask(&node("nPI"), "pi", NOW).unwrap(),
+        AskOutcome::Raised
+    );
 }
 
 #[test]

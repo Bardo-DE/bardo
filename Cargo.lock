@@ -465,6 +465,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -491,6 +492,7 @@ dependencies = [
  "http",
  "httpdate",
  "thiserror 2.0.21",
+ "tracing",
 ]
 
 [[package]]
@@ -563,6 +565,7 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
+ "base-ids",
  "base-url",
  "http",
  "serde_json",
@@ -596,10 +599,12 @@ name = "account-oauth-probe-proto"
 version = "0.1.0"
 dependencies = [
  "account-capability",
+ "base-ids",
  "base-url",
  "http",
  "serde",
  "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -721,6 +726,7 @@ dependencies = [
  "account-wire",
  "base-time",
  "base-url",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -739,6 +745,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+ "tracing",
 ]
 
 [[package]]
@@ -6331,6 +6338,7 @@ dependencies = [
  "freedesktop-icons",
  "tempfile",
  "tokio",
+ "tracing",
  "ui-extensions",
  "ui-helpers",
  "ui-settings",
@@ -9846,6 +9854,7 @@ dependencies = [
  "speech-provider",
  "thiserror 2.0.21",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

@@ -192,12 +192,12 @@ async fn state_change(
     Some(
         from_word::<AccountState>(&word)
             .map(|state| AccountChange::State(account, state))
-            .ok_or(Malformed::Row),
+            .ok_or_else(|| Malformed::Row.into()),
     )
 }
 
-fn account_ref(path: &str) -> Result<AccountRef, Malformed> {
-    AccountRef::of_object_path(path).ok_or(Malformed::Row)
+fn account_ref(path: &str) -> Result<AccountRef, MalformedError> {
+    AccountRef::of_object_path(path).ok_or_else(|| Malformed::Row.into())
 }
 
 impl AccountWatch for Bus {

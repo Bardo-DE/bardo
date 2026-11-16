@@ -27,13 +27,13 @@ pub enum SealError {
     Truncated,
     /// Wrong key, wrong place, or altered bytes.
     #[error("sealed file failed authentication")]
-    Unauthentic(#[source] chacha20poly1305::aead::Error),
+    Unauthentic,
     /// A format version this build does not know.
     #[error("unknown sealed-file version {0}")]
     UnknownVersion(u8),
     /// The plaintext is too large for the cipher.
     #[error("plaintext too large to seal")]
-    TooLarge(#[source] chacha20poly1305::aead::Error),
+    TooLarge,
 }
 
 /// Associated data: the Space and the vault-relative path, each length-prefixed.
@@ -89,7 +89,7 @@ pub fn seal(key: &SubKey, aad: &Aad, plain: &[u8], nonce: Nonce) -> Result<Vec<u
     };
     let ciphertext = cipher
         .encrypt(XNonce::from_slice(&nonce.0), payload)
-        .map_err(SealError::TooLarge)?;
+        .map_err(|chacha20poly1305::aead::Error| SealError::TooLarge)?;
     let mut out = Vec::with_capacity(HEADER_LEN + ciphertext.len());
     out.extend_from_slice(MAGIC);
     out.push(VERSION);
@@ -130,5 +130,5 @@ pub fn unseal(key: &SubKey, aad: &Aad, sealed: &[u8]) -> Result<Vec<u8>, SealErr
                 aad: aad.as_bytes(),
             },
         )
-        .map_err(SealError::Unauthentic)
+        .map_err(|chacha20poly1305::aead::Error| SealError::Unauthentic)
 }

@@ -235,8 +235,8 @@ mod tests {
     #[test]
     fn date_times_and_text() {
         assert_eq!(
-            parse_date_time("20260927T093060"),
-            Ok(date(2026, 9, 27).at(9, 30, 59, 0))
+            parse_date_time("20260927T093060").unwrap(),
+            date(2026, 9, 27).at(9, 30, 59, 0)
         );
         parse_date_time("20260927T0930").unwrap_err();
         parse_date_time("20261327T093000").unwrap_err();

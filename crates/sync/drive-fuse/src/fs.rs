@@ -88,7 +88,7 @@ pub fn write_errno(error: &WriteError) -> Errno {
         WriteError::NotEmpty => Errno::ENOTEMPTY,
         WriteError::Folder => Errno::EISDIR,
         WriteError::NotFolder => Errno::ENOTDIR,
-        WriteError::Read(error) => errno_of(*error),
+        WriteError::Read(error) => errno_of(error.clone()),
         WriteError::Cache(_) => Errno::EIO,
     }
 }

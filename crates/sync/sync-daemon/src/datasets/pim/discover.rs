@@ -289,10 +289,12 @@ mod tests {
                 asked: Mutex::default(),
             };
             assert_eq!(
-                discover(&script, &endpoint(), PimKind::Calendar)
-                    .await
-                    .expect_err("fails"),
-                *want
+                std::mem::discriminant(
+                    &discover(&script, &endpoint(), PimKind::Calendar)
+                        .await
+                        .expect_err("fails")
+                ),
+                std::mem::discriminant(&*want)
             );
         }
         let unreachable = Script {
@@ -300,20 +302,24 @@ mod tests {
             asked: Mutex::default(),
         };
         assert_eq!(
-            discover(&unreachable, &endpoint(), PimKind::Calendar)
-                .await
-                .expect_err("fails"),
-            DiscoverError::Unreachable
+            std::mem::discriminant(
+                &discover(&unreachable, &endpoint(), PimKind::Calendar)
+                    .await
+                    .expect_err("fails")
+            ),
+            std::mem::discriminant(&DiscoverError::Unreachable)
         );
         let garbage = Script {
             answers: vec![("/remote.php/dav/", 207, "nope".to_owned())],
             asked: Mutex::default(),
         };
         assert_eq!(
-            discover(&garbage, &endpoint(), PimKind::Calendar)
-                .await
-                .expect_err("fails"),
-            DiscoverError::Unreadable
+            std::mem::discriminant(
+                &discover(&garbage, &endpoint(), PimKind::Calendar)
+                    .await
+                    .expect_err("fails")
+            ),
+            std::mem::discriminant(&DiscoverError::Unreadable)
         );
     }
 }

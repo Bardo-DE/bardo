@@ -48,8 +48,7 @@ pub enum Failure {
 /// be built.
 pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, Failure> {
     let url = WebUrl::parse(url).map_err(Failure::Address)?;
-    let mut bearer = HeaderValue::from_str(&format!("Bearer {token}"))
-        .map_err(Failure::Token)?;
+    let mut bearer = HeaderValue::from_str(&format!("Bearer {token}")).map_err(Failure::Token)?;
     bearer.set_sensitive(true);
     Request::builder()
         .method(Method::GET)

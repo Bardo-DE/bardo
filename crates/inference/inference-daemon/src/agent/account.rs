@@ -259,7 +259,7 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
     let key = cloud.key(&grant).await.map_err(|error| {
         Failure::new(
             Cause::Upstream,
-            format!("the account's key could not be read: {error}"),
+            format!("the account's key could not be read: {error:?}"),
         )
     })?;
     let extra = match shape {

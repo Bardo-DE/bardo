@@ -405,7 +405,7 @@ impl From<inference_tailnet::GuestError> for ComputerError {
             GuestError::NotAsking => ComputerError::NotAsking,
             GuestError::TooManyAsking => ComputerError::TooManyAsking,
             GuestError::TooMany => ComputerError::TooMany,
-            GuestError::NotSaved(_) => ComputerError::NotSaved,
+            GuestError::NotSaved(cause) => ComputerError::NotSaved(SaveFailed(Arc::from(cause))),
         }
     }
 }
@@ -424,7 +424,7 @@ impl ComputerError {
             ComputerError::ModelTaken(_) => "ModelTaken",
             ComputerError::BadAddress(_) => "BadAddress",
             ComputerError::BadKey(_) => "BadKey",
-            ComputerError::NotSaved => "NotSaved",
+            ComputerError::NotSaved(_) => "NotSaved",
             ComputerError::NotThere => "NotThere",
             ComputerError::AddedByHand => "AddedByHand",
             ComputerError::Unavailable => "Unavailable",
@@ -705,12 +705,9 @@ impl Computers {
         }
         let mut written: Vec<&Path> = Vec::new();
         for (path, key) in &keys {
-            if AtomicWrite::PRIVATE
-                .write(path, key.expose().as_bytes())
-                .is_err()
-            {
+            if let Err(cause) = AtomicWrite::PRIVATE.write(path, key.expose().as_bytes()) {
                 forget(&written);
-                return Err(ComputerError::NotSaved);
+                return Err(ComputerError::not_saved(cause));
             }
             written.push(path);
         }

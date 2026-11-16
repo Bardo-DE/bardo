@@ -166,10 +166,10 @@ fn an_assistant_added_from_the_installed_ones_can_be_removed_again() {
     assert!(!back.contains("gemini"), "{back}");
     assert!(back.starts_with("# mine\n"), "the comment stays: {back}");
     assert_eq!(load_agents(&config, &data).rows.len(), 2, "the others stay");
-    assert_eq!(
+    assert!(matches!(
         remove_agent(&config, "gemini"),
         Err(ChoiceFault::NoSuchAgent)
-    );
+    ));
     assert!(
         data.0
             .join("bardo/actions/agents/installed/gemini/1.0.0")

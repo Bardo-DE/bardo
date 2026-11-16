@@ -20,8 +20,14 @@ fn the_first_ask_is_raised_and_the_next_is_only_pending() {
     let seen = Arc::new(Mutex::new(Vec::new()));
     let log = Arc::clone(&seen);
     guests.on_event(move |event| log.lock().unwrap().push(event.clone()));
-    assert_eq!(guests.ask(&node("nPI"), "pi", NOW), Ok(AskOutcome::Raised));
-    assert_eq!(guests.ask(&node("nPI"), "pi", NOW), Ok(AskOutcome::Pending));
+    assert_eq!(
+        guests.ask(&node("nPI"), "pi", NOW).unwrap(),
+        AskOutcome::Raised
+    );
+    assert_eq!(
+        guests.ask(&node("nPI"), "pi", NOW).unwrap(),
+        AskOutcome::Pending
+    );
     let told = seen.lock().unwrap().clone();
     assert_eq!(
         told,
@@ -76,21 +82,23 @@ fn forgetting_a_record_makes_the_computer_a_stranger_again() {
     guests
         .set(&node("nPI"), "pi", GuestAnswer::Allow, NOW)
         .unwrap();
-    assert_eq!(guests.forget(&node("nPI")), Ok(true));
+    assert!(guests.forget(&node("nPI")).unwrap());
     assert_eq!(guests.state_of(&node("nPI")), None);
-    assert_eq!(
-        guests.forget(&node("nPI")),
-        Ok(false),
+    assert!(
+        !guests.forget(&node("nPI")).unwrap(),
         "nothing left to forget"
     );
-    assert_eq!(guests.ask(&node("nPI"), "pi", NOW), Ok(AskOutcome::Raised));
+    assert_eq!(
+        guests.ask(&node("nPI"), "pi", NOW).unwrap(),
+        AskOutcome::Raised
+    );
 }
 
 #[test]
 fn forgetting_also_withdraws_a_question() {
     let guests = Guests::in_memory();
     guests.ask(&node("nPI"), "pi", NOW).unwrap();
-    assert_eq!(guests.forget(&node("nPI")), Ok(true));
+    assert!(guests.forget(&node("nPI")).unwrap());
     assert!(guests.asking().is_empty());
 }
 
@@ -105,9 +113,15 @@ fn the_questions_waiting_at_once_are_limited() {
         Err(GuestError::TooManyAsking)
     ));
     // One that already waits is not a new question.
-    assert_eq!(guests.ask(&node("n0"), "x", NOW), Ok(AskOutcome::Pending));
+    assert_eq!(
+        guests.ask(&node("n0"), "x", NOW).unwrap(),
+        AskOutcome::Pending
+    );
     guests.answer(&node("n0"), GuestAnswer::Deny, NOW).unwrap();
-    assert_eq!(guests.ask(&node("nLAST"), "x", NOW), Ok(AskOutcome::Raised));
+    assert_eq!(
+        guests.ask(&node("nLAST"), "x", NOW).unwrap(),
+        AskOutcome::Raised
+    );
 }
 
 #[test]

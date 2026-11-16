@@ -196,7 +196,12 @@ mod tests {
             ("empty", "", Err(LoopbackFault::Malformed)),
         ];
         for (name, request, want) in cases {
-            assert_eq!(parse(request), want.clone().map(str::to_owned), "{name}");
+            let kind = |fault: LoopbackFault| std::mem::discriminant(&fault);
+            assert_eq!(
+                parse(request).map_err(kind),
+                want.clone().map(str::to_owned).map_err(kind),
+                "{name}"
+            );
         }
     }
 

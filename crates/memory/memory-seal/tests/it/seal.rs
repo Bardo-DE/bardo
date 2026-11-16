@@ -1,6 +1,5 @@
 //! Sealing, derivation and the key store.
 
-use chacha20poly1305::aead::Error as AeadError;
 use memory_core::SpaceId;
 use memory_seal::*;
 
@@ -38,16 +37,16 @@ fn unseal_rejects_moved_file() {
     let moved_space = Aad::file(&space("home"), "facts/a.md");
     assert_eq!(
         unseal(&sub, &moved_path, &sealed),
-        Err(SealError::Unauthentic(AeadError))
+        Err(SealError::Unauthentic)
     );
     assert_eq!(
         unseal(&sub, &moved_space, &sealed),
-        Err(SealError::Unauthentic(AeadError))
+        Err(SealError::Unauthentic)
     );
     let other = derive(&key(), &space("home"), Purpose::Files);
     assert_eq!(
         unseal(&other, &Aad::file(&space("work"), "facts/a.md"), &sealed),
-        Err(SealError::Unauthentic(AeadError))
+        Err(SealError::Unauthentic)
     );
 }
 
@@ -72,7 +71,7 @@ fn unseal_reports_each_malformation() {
         ("magic only", b"QMEM".to_vec(), SealError::Truncated),
         ("short body", good[..30].to_vec(), SealError::Truncated),
         ("future version", unknown, SealError::UnknownVersion(9)),
-        ("flipped bit", flipped, SealError::Unauthentic(AeadError)),
+        ("flipped bit", flipped, SealError::Unauthentic),
     ];
     for (name, bytes, want) in cases {
         assert_eq!(unseal(&sub, &aad, &bytes), Err(want), "{name}");

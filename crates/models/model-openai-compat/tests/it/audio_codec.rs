@@ -210,7 +210,10 @@ fn a_transcription_reply_is_its_text_field() {
         br#"["text"]"#,
         b"",
     ] {
-        assert_eq!(decode_transcription(bad), Err(AudioCodecError::Unreadable));
+        assert!(matches!(
+            decode_transcription(bad),
+            Err(AudioCodecError::Unreadable)
+        ));
     }
 }
 

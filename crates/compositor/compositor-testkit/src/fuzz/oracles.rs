@@ -37,6 +37,7 @@ pub(super) fn snapshot<H: FuzzHost>(host: &mut H, id: ClientId) -> Snapshot {
 /// Oracle 1: pumps, and says so if the compositor panicked doing it.
 pub(super) fn alive_pump<H: FuzzHost>(host: &mut H) -> Result<(), FuzzFailure> {
     catch_unwind(AssertUnwindSafe(|| host.pump()))
+        .map(|_progressed| ())
         .map_err(|payload| FuzzFailure::Panicked(PanicSite::Pump, panic_message(&*payload)))
 }
 

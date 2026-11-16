@@ -471,7 +471,12 @@ mod tests {
             Ok::<_, SecretsError>(())
         };
         for refusal in [SecretsError::Missing, SecretsError::Locked] {
-            let got = held.run(open, |_| async { Err::<(), _>(refusal) }).await;
+            let got = held
+                .run(open, |_| {
+                    let refusal = refusal.clone();
+                    async move { Err::<(), _>(refusal) }
+                })
+                .await;
             assert_eq!(got, Err(refusal));
         }
         assert_eq!(opens.load(Ordering::SeqCst), 1, "opened once, never again");

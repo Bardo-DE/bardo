@@ -41,9 +41,9 @@ pub fn save_agent_choice(
     choice: &AgentChoice,
 ) -> Result<(), FilesError> {
     write_agent_choice(&config.0.join(AGENTS_FILE), program, choice).map_err(|fault| match fault {
-        ChoiceFault::Io => FilesError::Io {
+        ChoiceFault::Io(source) => FilesError::Io {
             path: AGENTS_FILE.into(),
-            source: std::io::Error::other(fault.to_string()),
+            source,
         },
         _ => FilesError::Garbled {
             path: AGENTS_FILE.into(),

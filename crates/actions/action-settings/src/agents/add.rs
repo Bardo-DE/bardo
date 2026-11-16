@@ -23,8 +23,8 @@ pub struct NewAgent {
     pub label: String,
 }
 
-/// Why an agent was not added.
-#[derive(Debug, thiserror::Error)]
+/// Why an agent was not added. Two faults are equal when they are the same kind of failure.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum AddFault {
     /// `agents.toml` is not valid TOML, or `agent` in it is not a list of entries.
     #[error("the agents file can't be read")]
@@ -43,8 +43,16 @@ pub enum AddFault {
     BadLabel,
     /// The file could not be written.
     #[error("the agents file can't be written")]
-    Io(#[source] std::io::Error),
+    Io(#[source] std::sync::Arc<std::io::Error>),
 }
+
+impl PartialEq for AddFault {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Eq for AddFault {}
 
 fn word_fine(id: &str) -> bool {
     !id.is_empty()
@@ -130,13 +138,13 @@ pub fn write_agent_add(path: &Path, agent: &NewAgent) -> Result<(), AddFault> {
     let text = match std::fs::read_to_string(path) {
         Ok(text) => text,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
-        Err(error) => return Err(AddFault::Io(error)),
+        Err(error) => return Err(AddFault::Io(error.into())),
     };
     let edited = edit_agent_add(&text, agent)?;
     if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir).map_err(AddFault::Io)?;
+        std::fs::create_dir_all(dir).map_err(|error| AddFault::Io(error.into()))?;
     }
-    write_atomic(path, edited.as_bytes()).map_err(AddFault::Io)
+    write_atomic(path, edited.as_bytes()).map_err(|error| AddFault::Io(error.into()))
 }
 
 /// Takes the entry of `program` out of the file at `path`; the file is replaced whole or not at

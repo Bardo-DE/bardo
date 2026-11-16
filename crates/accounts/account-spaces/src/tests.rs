@@ -172,7 +172,7 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
     let (mut book, said) = SpaceBook::open(Some(&store(&scratch))).await;
     assert!(said.is_some_and(|s| s.contains("spaces.json")));
     assert!(book.list().is_empty());
-    assert_eq!(
+    assert!(matches!(
         book.create(
             &app("org.bardo.Photos"),
             name("x"),
@@ -181,7 +181,7 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
         )
         .await,
         Err(SpaceFault::Unsaved)
-    );
+    ));
     assert_eq!(
         std::fs::read_to_string(dir.join("spaces.json")).expect("read"),
         "{ not the spaces"
@@ -200,10 +200,10 @@ async fn a_registered_id_is_kept_as_minted_and_registering_it_again_changes_noth
     let workspace = DesktopSpace::parse("s-0123456789abcdef0123456789abcdef").expect("id");
     let taken = DesktopSpace::parse("space-1").expect("id");
     for id in [&workspace, &taken] {
-        assert_eq!(
+        assert!(
             book.register(&casement, id.clone(), name("One"), SpaceLook::default(), at)
-                .await,
-            Ok(true)
+                .await
+                .unwrap()
         );
     }
     book.rename(&workspace, name("Mine"))
@@ -211,16 +211,17 @@ async fn a_registered_id_is_kept_as_minted_and_registering_it_again_changes_noth
         .expect("renamed");
     // A whole window of starts registers the same workspaces again: all known, none counted.
     for _ in 0..=CREATES_PER_WINDOW {
-        assert_eq!(
-            book.register(
-                &casement,
-                workspace.clone(),
-                name("One"),
-                SpaceLook::default(),
-                at
-            )
-            .await,
-            Ok(false)
+        assert!(
+            !book
+                .register(
+                    &casement,
+                    workspace.clone(),
+                    name("One"),
+                    SpaceLook::default(),
+                    at
+                )
+                .await
+                .unwrap()
         );
     }
     assert_eq!(

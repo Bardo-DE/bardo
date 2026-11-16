@@ -195,7 +195,9 @@ impl PlaceId {
             return ComputerName::parse(name).map(|name| Self::computer(&name));
         }
         if let Some(account) = text.strip_prefix(ACCOUNT_PREFIX) {
-            return AccountId::parse(account).map(|account| Self::account(&account));
+            return AccountId::parse(account)
+                .map(|account| Self::account(&account))
+                .map_err(CoreError::from);
         }
         Err(bad())
     }
