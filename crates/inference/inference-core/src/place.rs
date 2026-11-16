@@ -192,16 +192,10 @@ impl PlaceId {
             return Ok(Self::this_computer());
         }
         if let Some(name) = text.strip_prefix(COMPUTER_PREFIX) {
-            return ComputerName::parse(name)
-                .map(|name| Self::computer(&name))
-                .ok()
-                .ok_or_else(bad);
+            return ComputerName::parse(name).map(|name| Self::computer(&name));
         }
         if let Some(account) = text.strip_prefix(ACCOUNT_PREFIX) {
-            return AccountId::parse(account)
-                .map(|account| Self::account(&account))
-                .ok()
-                .ok_or_else(bad);
+            return AccountId::parse(account).map(|account| Self::account(&account));
         }
         Err(bad())
     }

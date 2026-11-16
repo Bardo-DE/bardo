@@ -98,7 +98,7 @@ pub enum EngineRowError {
     State(String),
     /// The state is `found` and no path came with it.
     #[error("found without a path")]
-    NoPath,
+    NoPath(#[source] Box<EngineRowError>),
     /// The place is not one this version knows.
     #[error("unknown place {0:?}")]
     Place(String),
@@ -155,11 +155,7 @@ fn text(details: &Details, key: &'static str) -> Result<String, EngineRowError> 
 pub fn local_engine_from_dbus(
     (id, details): (String, Details),
 ) -> Result<LocalEngine, EngineRowError> {
-    let path = || {
-        text(&details, ENGINE_KEY_PATH)
-            .ok()
-            .ok_or(EngineRowError::NoPath)
-    };
+    let path = || text(&details, ENGINE_KEY_PATH).map_err(|e| EngineRowError::NoPath(Box::new(e)));
     let state = match text(&details, ENGINE_KEY_STATE)?.as_str() {
         FOUND => EngineState::Found(PathBuf::from(path()?)),
         CHANGED => EngineState::Changed(PathBuf::from(path()?)),
@@ -242,7 +238,9 @@ mod tests {
         details.remove(ENGINE_KEY_PATH);
         assert_eq!(
             local_engine_from_dbus((id.clone(), details)),
-            Err(EngineRowError::NoPath)
+            Err(EngineRowError::NoPath(Box::new(EngineRowError::Missing(
+                ENGINE_KEY_PATH
+            ))))
         );
         let (_, mut details) = local_engine_to_dbus(&engine(EngineState::Missing));
         details.insert(

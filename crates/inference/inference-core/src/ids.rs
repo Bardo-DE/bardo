@@ -42,8 +42,7 @@ impl<'de> Deserialize<'de> for Base64Bytes {
         STANDARD
             .decode(text)
             .map(Base64Bytes)
-            .ok()
-            .ok_or_else(|| serde::de::Error::custom(TextError::NotBase64))
+            .map_err(|e| serde::de::Error::custom(format!("{}: {e}", TextError::NotBase64)))
     }
 }
 
