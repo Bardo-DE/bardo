@@ -15,6 +15,9 @@ After=bardo-input-broker.socket
 [Service]
 Type=simple
 ExecStart=/usr/local/bin/bardo-input-broker
+# A daemon exits with a failure when one of its background duties dies; systemd brings it back.
+Restart=on-failure
+RestartSec=2
 User=root
 UMask=0077
 
