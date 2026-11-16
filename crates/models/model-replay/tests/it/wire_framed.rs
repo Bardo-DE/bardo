@@ -1,6 +1,7 @@
 //! SSE and NDJSON through the wire cassette: what a recording makes of the raw bytes a server
 //! writes (CRLF, comments, a split code point, a stream cut in the middle).
 
+use std::fmt::Write as _;
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
@@ -311,10 +312,10 @@ proptest! {
         let mut raw = String::new();
         for (name, lines) in &events {
             if let Some(name) = name {
-                raw.push_str(&format!("event: {name}{endings}"));
+                write!(raw, "event: {name}{endings}").expect("writing to a String cannot fail");
             }
             for line in lines {
-                raw.push_str(&format!("data: {line}{endings}"));
+                write!(raw, "data: {line}{endings}").expect("writing to a String cannot fail");
             }
             raw.push_str(endings);
         }

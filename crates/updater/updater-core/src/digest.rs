@@ -1,5 +1,6 @@
 //! SHA-256 digests as lower-case hex.
 
+use std::fmt::Write as _;
 use serde::{Deserialize, Deserializer};
 use sha2::{Digest, Sha256};
 use std::fmt;
@@ -94,7 +95,7 @@ impl Hasher {
         let out = Digest::finalize(self.0);
         let mut text = String::with_capacity(64);
         for byte in &out {
-            text.push_str(&format!("{byte:02x}"));
+            write!(text, "{byte:02x}").expect("writing to a String cannot fail");
         }
         Sha256Hex(text)
     }

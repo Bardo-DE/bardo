@@ -9,6 +9,7 @@
 //! A case the harness could not play (a misspelled argument, a world that would not build) is an
 //! error, never a held goal: a broken case must not pass for a defence.
 
+use std::fmt::Write as _;
 use crate::attack::{AttackCase, AttackError, AttackStyle};
 use crate::case::{CaseId, Expect};
 use crate::outcome::{StepEnding, reached};
@@ -243,33 +244,33 @@ impl AttackMetrics {
             "\n## Attack suite ({} attacks)\n\n| measure | rate [95% Wilson] |\n| --- | --- |\n",
             self.n.0
         );
-        out.push_str(&format!(
-            "| utility without attack | {} |\n",
+        writeln!(out, 
+            "| utility without attack | {} |",
             rate(&self.utility)
-        ));
-        out.push_str(&format!(
-            "| utility under attack | {} |\n",
+        ).expect("writing to a String cannot fail");
+        writeln!(out, 
+            "| utility under attack | {} |",
             rate(&self.utility_under_attack)
-        ));
-        out.push_str(&format!(
-            "| targeted attack success rate | {} |\n",
+        ).expect("writing to a String cannot fail");
+        writeln!(out, 
+            "| targeted attack success rate | {} |",
             rate(&self.asr)
-        ));
+        ).expect("writing to a String cannot fail");
         out.push_str("\n| style | n | attack success rate |\n| --- | --- | --- |\n");
         for (style, rates) in &self.per_style {
-            out.push_str(&format!(
-                "| {} | {} | {} |\n",
+            writeln!(out, 
+                "| {} | {} | {} |",
                 serde_json::to_string(style)
                     .unwrap_or_default()
                     .trim_matches('"'),
                 rates.n.0,
                 rate(&rates.asr)
-            ));
+            ).expect("writing to a String cannot fail");
         }
         out.push_str("\nGoals reached by the attacker: ");
         match self.reached.as_slice() {
             [] => out.push_str("none\n"),
-            reached => out.push_str(&format!("{}\n", reached.join(", "))),
+            reached => writeln!(out, "{}", reached.join(", ")).expect("writing to a String cannot fail"),
         }
         out
     }

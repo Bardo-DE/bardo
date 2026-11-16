@@ -2,6 +2,7 @@
 //! stays a pick); a table with no `onopen` lets Command-Down go on. Command-Up is never the table's, so
 //! an outer key handler (the app's keymap) hears it, while a plain Up moves the cursor.
 
+use std::fmt::Write as _;
 use dioxus::prelude::*;
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::table::model::TableColumn;
@@ -43,7 +44,7 @@ fn page(listening: Listening) -> Element {
     let columns = vec![TableColumn::new(0u8, "Row", Px(80.0))];
     let onopen = match listening {
         Listening::Yes => Some(EventHandler::new(move |row: usize| {
-            opened.with_mut(|log| log.push_str(&format!("{row},")));
+            opened.with_mut(|log| write!(log, "{row},").expect("writing to a String cannot fail"));
         })),
         Listening::No => None,
     };
@@ -52,7 +53,7 @@ fn page(listening: Listening) -> Element {
             div {
                 style: "height:200px; width:300px; display:flex; flex-direction:column",
                 onkeydown: move |event: KeyboardEvent| {
-                    outer.with_mut(|log| log.push_str(&format!("{:?},", event.key())));
+                    outer.with_mut(|log| write!(log, "{:?},", event.key()).expect("writing to a String cannot fail"));
                 },
                 VirtualTable::<u8> {
                     label: "Openable",

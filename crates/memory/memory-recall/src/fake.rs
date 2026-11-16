@@ -90,7 +90,9 @@ impl FakeEmbedder {
         }
         let norm = buckets.iter().map(|x| x * x).sum::<f32>().sqrt();
         if norm > 0.0 {
-            buckets.iter_mut().for_each(|x| *x /= norm);
+            for x in &mut buckets {
+                *x /= norm;
+            }
         }
         Vector(buckets)
     }

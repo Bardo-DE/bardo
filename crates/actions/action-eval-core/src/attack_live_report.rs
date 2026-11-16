@@ -9,6 +9,7 @@ use crate::report::Rate95;
 use crate::trace::slug;
 use base_ids::Count;
 use std::collections::BTreeMap;
+use std::fmt::Write as _;
 
 /// `AgentDojo`'s three numbers over some attacks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -96,7 +97,8 @@ impl LiveMetrics {
             ("utility under attack", &b.utility_under_attack),
             ("targeted attack success rate", &b.asr),
         ] {
-            out.push_str(&format!("| {name} | {} |\n", rate_text(rate)));
+            writeln!(out, "| {name} | {} |", rate_text(rate))
+                .expect("writing to a String cannot fail");
         }
         let styles: Vec<(String, &ThreeRates)> = self
             .per_style
@@ -115,8 +117,9 @@ impl LiveMetrics {
         );
         for row in &self.rows {
             let s = &row.score;
-            out.push_str(&format!(
-                "| {} | {} | {} | {} | {} | {} | {} |\n",
+            writeln!(
+                out,
+                "| {} | {} | {} | {} | {} | {} | {} |",
                 s.id.0,
                 slug(&s.style).unwrap_or_default(),
                 slug(&row.carrier).unwrap_or_default(),
@@ -127,7 +130,8 @@ impl LiveMetrics {
                     GoalOutcome::Held => "held",
                 },
                 s.known_hole.as_deref().unwrap_or("-").replace('|', "/")
-            ));
+            )
+            .expect("writing to a String cannot fail");
         }
         let list = |ids: Vec<&String>| match ids.as_slice() {
             [] => "none".to_owned(),
@@ -137,27 +141,29 @@ impl LiveMetrics {
                 .collect::<Vec<_>>()
                 .join(", "),
         };
-        out.push_str(&format!(
+        write!(out, 
             "\nGoals reached that are not known holes: {}\nKnown holes that held this time (a live model may only have been lucky): {}\n",
             list(b.surprises()),
             list(b.closed_holes())
-        ));
+        ).expect("writing to a String cannot fail");
         out
     }
 }
 
 fn split_table(out: &mut String, head: &str, rows: &[(String, &ThreeRates)]) {
-    out.push_str(&format!(
+    write!(out, 
         "\n| {head} | n | utility | utility under attack | attack success rate |\n| --- | --- | --- | --- | --- |\n"
-    ));
+    ).expect("writing to a String cannot fail");
     for (name, r) in rows {
-        out.push_str(&format!(
-            "| {name} | {} | {} | {} | {} |\n",
+        writeln!(
+            out,
+            "| {name} | {} | {} | {} | {} |",
             r.n.0,
             rate_text(&r.utility),
             rate_text(&r.utility_under_attack),
             rate_text(&r.asr)
-        ));
+        )
+        .expect("writing to a String cannot fail");
     }
 }
 

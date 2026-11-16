@@ -1,6 +1,7 @@
 //! A function key sent through the harness reaches an app as chordkit's action: F9 is
 //! `ToggleSidebar` in the CUA table, and a Mac table (Ctrl+Command+S) leaves it alone.
 
+use std::fmt::Write as _;
 use dioxus::prelude::*;
 use keymap::{Action, Context, Desktop, Platform, StandardAction};
 use std::time::Duration;
@@ -41,7 +42,7 @@ fn Pad() -> Element {
             tabindex: "0",
             style: "width:200px;height:60px",
             onkeydown: on_action(keys, Context::Normal, move |action| {
-                log.with_mut(|log| log.push_str(&format!("{action:?};")));
+                log.with_mut(|log| write!(log, "{action:?};").expect("writing to a String cannot fail"));
                 true
             }),
             "pad"

@@ -1,6 +1,7 @@
 //! What a run reports: per corpus counts, rates with their Wilson interval, latencies and cost.
 //! Everything is an integer unit; floats exist only inside [`wilson`].
 
+use std::fmt::Write as _;
 use crate::attack_score::AttackMetrics;
 use crate::case::Corpus;
 use action_vocab::Millis;
@@ -148,8 +149,8 @@ impl RunReport {
              | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n",
         );
         for (corpus, m) in &self.per_corpus {
-            out.push_str(&format!(
-                "| {} | {} | {} | {} | {} | {} | {} | {} | {} ms | {} ms | {} |\n",
+            writeln!(out, 
+                "| {} | {} | {} | {} | {} | {} | {} | {} | {} ms | {} ms | {} |",
                 serde_json::to_string(corpus)
                     .unwrap_or_default()
                     .trim_matches('"'),
@@ -163,7 +164,7 @@ impl RunReport {
                 m.p50.0,
                 m.p95.0,
                 charge(m.cost_per_1000)
-            ));
+            ).expect("writing to a String cannot fail");
         }
         if let Some(attack) = &self.attack {
             out.push_str(&attack.render());
@@ -171,8 +172,8 @@ impl RunReport {
         out.push_str("\n## Latency per review stage\n\n| corpus | stage | p50 | p95 |\n| --- | --- | --- | --- |\n");
         for (corpus, m) in &self.per_corpus {
             for (stage, l) in &m.per_stage {
-                out.push_str(&format!(
-                    "| {} | {} | {} ms | {} ms |\n",
+                writeln!(out, 
+                    "| {} | {} | {} ms | {} ms |",
                     serde_json::to_string(corpus)
                         .unwrap_or_default()
                         .trim_matches('"'),
@@ -181,22 +182,26 @@ impl RunReport {
                         .trim_matches('"'),
                     l.p50.0,
                     l.p95.0
-                ));
+                ).expect("writing to a String cannot fail");
             }
         }
         out.push_str("\n## Cases that missed what they expected\n\n");
         match note.missed.as_slice() {
             [] => out.push_str("none\n"),
-            missed => missed
-                .iter()
-                .for_each(|id| out.push_str(&format!("- {id}\n"))),
+            missed => {
+                for id in missed {
+                    writeln!(out, "- {id}").expect("writing to a String cannot fail");
+                }
+            }
         }
         out.push_str("\n## Cases that could not run in this mode\n\n");
         match note.skipped.as_slice() {
             [] => out.push_str("none\n"),
-            skipped => skipped
-                .iter()
-                .for_each(|(id, why)| out.push_str(&format!("- {id}: {why}\n"))),
+            skipped => {
+                for (id, why) in skipped {
+                    writeln!(out, "- {id}: {why}").expect("writing to a String cannot fail");
+                }
+            }
         }
         out
     }

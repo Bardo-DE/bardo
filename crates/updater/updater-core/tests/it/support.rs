@@ -1,5 +1,6 @@
 //! A builder for `release.toml` text, so each test changes one thing.
 
+use std::fmt::Write as _;
 use updater_core::Sha256Hex;
 
 /// One file of the fake bundle.
@@ -69,18 +70,18 @@ impl Doc {
             self.bundle_size
         );
         for file in &self.files {
-            text += &format!(
+            write!(text, 
                 "[[file]]\npath = \"{}\"\nsha256 = \"{}\"\nmode = {}\n",
                 file.path,
                 Sha256Hex::of(file.content.as_bytes()),
                 file.mode
-            );
+            ).expect("writing to a String cannot fail");
         }
         for (link, target) in &self.exports {
-            text += &format!("[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n");
+            write!(text, "[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n").expect("writing to a String cannot fail");
         }
         for path in &self.system {
-            text += &format!("[[system]]\npath = \"{path}\"\n");
+            write!(text, "[[system]]\npath = \"{path}\"\n").expect("writing to a String cannot fail");
         }
         text
     }

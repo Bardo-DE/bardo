@@ -486,7 +486,9 @@ async fn embed_docs(
                     reason = "a document has far fewer than 2^24 chunks, where f32 stops being exact"
                 )]
                 let n = n as f32;
-                v.iter_mut().for_each(|x| *x /= n);
+                for x in &mut v {
+                    *x /= n;
+                }
                 (d.id.clone(), Vector(v))
             })
         })

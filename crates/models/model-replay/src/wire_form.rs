@@ -1,6 +1,7 @@
 //! The pure half of wire cassettes: the scrubbed request a codec built, frames to bytes and back,
 //! and the plans that slice bytes into chunks.
 
+use std::fmt::Write as _;
 use model_http::{Exchange, Framing, HttpStatus, ResponseHead};
 use model_provider::JsonText;
 use serde_json::Value;
@@ -105,11 +106,10 @@ pub(crate) fn frame_bytes(frame: &WireFrame, framing: Framing) -> Vec<u8> {
                 .as_ref()
                 .map(|e| format!("event: {}\n", e.0))
                 .unwrap_or_default();
-            let data: String = frame
-                .data
-                .split('\n')
-                .map(|l| format!("data: {l}\n"))
-                .collect();
+            let mut data = String::new();
+            for line in frame.data.split('\n') {
+                writeln!(data, "data: {line}").expect("writing to a String cannot fail");
+            }
             format!("{event}{data}\n")
         }
         // Ndjson, Whole and any framing this build does not know: one line per frame.

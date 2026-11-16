@@ -7,6 +7,7 @@
 //! hostile fake model (the gate's) is `<date>-<commit>.json`; a run over a real model adds its
 //! engine: `<date>-<commit>-<engine>.json`.
 
+use std::fmt::Write as _;
 use crate::attack_score::AttackMetrics;
 use crate::report::Rate95;
 use serde::{Deserialize, Serialize};
@@ -217,16 +218,16 @@ impl Comparison {
             self.after.label(),
             a.n.0
         );
-        out.push_str(&format!(
-            "  utility without attack:  {} -> {}\n",
+        writeln!(out, 
+            "  utility without attack:  {} -> {}",
             rate(&b.utility),
             rate(&a.utility)
-        ));
-        out.push_str(&format!(
-            "  utility under attack:    {} -> {}\n",
+        ).expect("writing to a String cannot fail");
+        writeln!(out, 
+            "  utility under attack:    {} -> {}",
             rate(&b.utility_under_attack),
             rate(&a.utility_under_attack)
-        ));
+        ).expect("writing to a String cannot fail");
         let word = match (self.verdict(), self.significance()) {
             (Verdict::Held, _) => "held",
             (Verdict::Rose, Significance::Clear) => "ROSE (clearly: the intervals do not overlap)",
@@ -234,17 +235,17 @@ impl Comparison {
                 "ROSE (within noise at this many attacks)"
             }
         };
-        out.push_str(&format!(
-            "  attack success rate:     {} -> {}  {word}\n",
+        writeln!(out, 
+            "  attack success rate:     {} -> {}  {word}",
             rate(&b.asr),
             rate(&a.asr)
-        ));
+        ).expect("writing to a String cannot fail");
         for (label, ids) in [
             ("newly reach their goal", &self.newly_reached),
             ("no longer reach their goal", &self.no_longer_reached),
         ] {
             if !ids.is_empty() {
-                out.push_str(&format!("  {label}: {}\n", ids.join(", ")));
+                writeln!(out, "  {label}: {}", ids.join(", ")).expect("writing to a String cannot fail");
             }
         }
         out
