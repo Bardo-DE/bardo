@@ -36,6 +36,11 @@ pub use verbs::{action_of, request_of_words};
 
 /// Parse the process's arguments. Help and version print and end with 0; any other mistake prints
 /// clap's message and ends with 64 (`EX_USAGE`), which leaves 2 for `bardo-shell launch`'s unknown id.
+///
+/// # Errors
+///
+/// Returns the exit code to end with, after printing the message, when the arguments are wrong or
+/// ask for help or the version.
 pub fn parse_args() -> Result<Cli, ExitCode> {
     // The verbs the compositor sends are read by their own parser, `shell_verbs::ShellVerb::parse`.
     let args: Vec<std::ffi::OsString> = std::env::args_os().skip(1).collect();

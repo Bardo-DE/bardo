@@ -66,6 +66,10 @@ pub enum NotifyError {
 /// Where notices go.
 pub trait Notify: std::fmt::Debug {
     /// Sends `notice`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`NotifyError`] when the service manager cannot be reached.
     fn send(&mut self, notice: &Notice) -> Result<(), NotifyError>;
 }
 

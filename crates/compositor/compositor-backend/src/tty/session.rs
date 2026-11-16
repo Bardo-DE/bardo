@@ -25,9 +25,17 @@ pub enum SessionNote {
 /// `compositor_testkit::fakes::FakeSession`.
 pub trait TtySession: std::fmt::Debug {
     /// Opens a device through the session (a revoked session refuses).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SessionFault`] when the session is revoked or refuses to open the device.
     fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionFault>;
 
     /// Asks to switch to `vt`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SessionFault`] when the session refuses the switch.
     fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault>;
 
     /// The seat changes since the last call: another session taking it and giving it back.

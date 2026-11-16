@@ -25,6 +25,11 @@ pub struct ToolNameError;
 pub struct ToolName(String);
 
 impl ToolName {
+    /// A tool name, checked.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ToolNameError`] when `name` is not a valid tool name.
     pub fn new(name: impl Into<String>) -> Result<Self, ToolNameError> {
         let name = name.into();
         let ok = (1..=64).contains(&name.len())
@@ -69,6 +74,11 @@ pub struct JsonError(pub String);
 pub struct JsonText(String);
 
 impl JsonText {
+    /// JSON text, checked to parse.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`JsonError`] when `text` is not valid JSON.
     pub fn new(text: impl Into<String>) -> Result<Self, JsonError> {
         let text = text.into();
         serde_json::from_str::<serde::de::IgnoredAny>(&text)

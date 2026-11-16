@@ -62,6 +62,10 @@ impl SchemeWatch {
     /// Reads `source`'s colour scheme and passes it to `tell` (from the watcher's thread), then
     /// passes each change. `tell` returning `Break` ends the watch. A desktop without the portal
     /// is the default scheme once and never a change.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SchemeError::Thread`] when the watcher's thread cannot be started.
     pub fn start(
         source: SystemPrefsSource,
         tell: impl FnMut(Scheme) -> ControlFlow<()> + Send + 'static,

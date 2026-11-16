@@ -106,10 +106,18 @@ pub enum WritebackError {
 /// The writeback connector of one display device.
 pub trait Writeback: std::fmt::Debug {
     /// Queues a job that reads the frame `crtc` (scanning out `size` pixels) shows next.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WritebackError`] when the job cannot be queued.
     fn begin(&mut self, crtc: CrtcId, size: PhysicalSize) -> Result<(), WritebackError>;
 
     /// The frame of the job `begin` queued, once the device has composed it; the job's
     /// resources are released.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WritebackError`] when the device failed to compose the frame.
     fn finish(&mut self) -> Result<RawCapture, WritebackError>;
 }
 
@@ -132,6 +140,11 @@ impl TtyBackend {
     /// Queues one writeback job on the first lit output (SIGHUP in `--drm-node` mode). Refused
     /// while the seat is lent, while another job is pending, when no output is lit, and when the
     /// run has no writeback seam.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WritebackError`] when the run has no writeback seam, the seat is lent, a job is
+    /// pending, no output is lit, or the job cannot be queued.
     pub fn request_writeback(&mut self) -> Result<(), WritebackError> {
         if self.seams.writeback.is_none() {
             return Err(WritebackError::NotEnabled);

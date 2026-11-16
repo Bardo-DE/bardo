@@ -24,6 +24,11 @@ pub type Stream = interprocess::local_socket::Stream;
 ///
 /// The descriptor is a duplicate of the stream's, and the stream is closed: the peer sees one
 /// connection throughout, now owned by whoever holds the descriptor.
+///
+/// # Errors
+///
+/// Returns the I/O error of duplicating the descriptor, or an error when the stream is not a Unix
+/// socket.
 #[cfg(unix)]
 pub fn into_fd(stream: Stream) -> std::io::Result<std::os::fd::OwnedFd> {
     #[allow(unreachable_patterns)]
@@ -54,6 +59,10 @@ pub struct Listening {
 
 impl Listening {
     /// Wait for the next client.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of accepting the connection.
     pub fn accept(&self) -> std::io::Result<Stream> {
         self.listener.accept()
     }

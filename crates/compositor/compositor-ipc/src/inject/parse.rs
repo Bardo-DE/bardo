@@ -29,6 +29,10 @@ const NO_PIXELS: SubPoint = SubPoint {
 const BUTTON_RANGE: std::ops::Range<u32> = 0x100..0x300;
 
 /// The line `line` says.
+///
+/// # Errors
+///
+/// Returns [`IpcError::BadLine`] when `line` is not a line of the protocol.
 pub fn parse_inject(line: &str) -> Result<InjectLine, IpcError> {
     let bad = || IpcError::BadLine(line.to_owned());
     let trimmed = line.trim();

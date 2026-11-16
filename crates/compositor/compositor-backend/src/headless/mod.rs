@@ -109,6 +109,10 @@ pub struct HeadlessBackend {
 impl HeadlessBackend {
     /// Starts the renderer and plugs `config`'s outputs (reported through [`HeadlessBackend::
     /// announce`] by the caller, so start-up and hotplug are one code path).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the renderer cannot be started.
     pub fn start(config: HeadlessConfig) -> Result<HeadlessBackend, BackendError> {
         let renderer = config.renderer.start()?;
         let mut backend = HeadlessBackend {
@@ -212,6 +216,10 @@ impl HeadlessBackend {
 
     /// Draws `source` alone into a fresh image of `size` at `scale` and reads it back: a window's
     /// pixels without whatever overlaps it, on or off any screen (window capture).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the renderer cannot draw `source` or read it back.
     pub fn render_offscreen(
         &mut self,
         size: PhysicalSize,
@@ -229,6 +237,10 @@ impl HeadlessBackend {
     }
 
     /// Draws `frame` into a client's dma-buf `target` (a capture's buffer).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the renderer cannot draw into `target`.
     pub fn write_dmabuf(
         &mut self,
         target: &mut smithay::backend::allocator::dmabuf::Dmabuf,
@@ -245,6 +257,11 @@ impl HeadlessBackend {
 
     /// Renders `source` alone straight into a client's dma-buf `target` of exactly `size`: window
     /// capture with no read-back. A software renderer refuses, and the caller reads back instead.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the renderer cannot draw into `target`, as a software renderer
+    /// cannot.
     pub fn render_window_dmabuf(
         &mut self,
         target: &mut smithay::backend::allocator::dmabuf::Dmabuf,
@@ -259,6 +276,11 @@ impl HeadlessBackend {
     /// Blits `from`, a part of the frame `name` last presented (with or without its cursor, as
     /// `cursor` says), into a client's dma-buf `target`: the frame is the output's own GPU image,
     /// so nothing is read back. [`BackendError::NoFrame`] while the output has presented none.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when the output has no presented frame or `from` is not
+    /// inside it, or the error of blitting into `target`.
     pub fn blit_output_dmabuf(
         &mut self,
         name: &OutputName,
@@ -281,6 +303,10 @@ impl HeadlessBackend {
     }
 
     /// Reads a client's dma-buf `source` back (a cursor surface's buffer).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the buffer cannot be read.
     pub fn read_dmabuf(
         &mut self,
         source: &smithay::backend::allocator::dmabuf::Dmabuf,
@@ -329,6 +355,10 @@ impl HeadlessBackend {
     /// Draws `source` into `name`'s image and records it as the frame presented at vblank `seq`
     /// of the session clock's instant `at`. A dark or unplugged output presents nothing: `false`; `true` when a frame was presented
     /// (its [`HeadlessBackend::last_frame`] moved).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the renderer cannot draw `source`.
     pub fn present(
         &mut self,
         name: &OutputName,

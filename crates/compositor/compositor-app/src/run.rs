@@ -186,6 +186,11 @@ impl RunError {
 
 /// Runs the compositor until it is asked to stop. A build with `testing` or `debug-inject`
 /// refuses every backend but headless and refuses to start outside the jail (§3.2).
+///
+/// # Errors
+///
+/// Returns [`RunError`] when the jail check refuses the start or the compositor cannot start or its
+/// loop fails.
 pub fn run(config: RunConfig) -> Result<(), RunError> {
     #[cfg(any(feature = "testing", feature = "debug-inject"))]
     crate::jail_check::require_start(&config.start, std::path::Path::new("/"))?;

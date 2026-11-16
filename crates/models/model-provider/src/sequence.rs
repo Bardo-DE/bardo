@@ -24,6 +24,11 @@ pub enum SequenceFault {
 ///
 /// Still unanswered call. A tool call and its result are matched by id, so a second result for one
 /// call is an orphan.
+///
+/// # Errors
+///
+/// Returns [`SequenceFault`] when an assistant message follows another, a tool result answers no
+/// earlier call, or a tool call is left unanswered.
 pub fn check(messages: &[Message]) -> Result<(), SequenceFault> {
     let mut pending: BTreeSet<&ToolCallId> = BTreeSet::new();
     let mut previous: Option<Role> = None;

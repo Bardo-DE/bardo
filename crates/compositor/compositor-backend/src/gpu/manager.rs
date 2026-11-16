@@ -28,12 +28,20 @@ impl GpuStack {
     /// let mut nodes = SysRenderNodes::new(SysRoot::under("/nonexistent-sys-root".as_ref()));
     /// assert!(GpuStack::start(&mut nodes, &GpuChoice::Auto).is_err(), "no GPU, no stack");
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GpuError`] when GPU detection, the plan or opening a node fails.
     pub fn start(nodes: &mut dyn RenderNodes, choice: &GpuChoice) -> Result<GpuStack, GpuError> {
         GpuStack::from_facts(&nodes.nodes(), nodes, choice)
     }
 
     /// `gone` was unplugged: the stack is replanned without it. Buffers that lived on it
     /// import as `DeviceMissing`, and the next commit falls back to shm.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GpuError`] when the plan without `gone` cannot be made or a node cannot be opened.
     pub fn unplugged(
         self,
         gone: &DrmNodeId,

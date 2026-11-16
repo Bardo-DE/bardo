@@ -67,6 +67,10 @@ pub struct BeyondReceipt {
 
 /// Lowers confidentiality to `to`, which must be at least as restrictive as what the receipt
 /// covers: a person who confirmed a release to one Space has not confirmed `Public`.
+///
+/// # Errors
+///
+/// Returns [`BeyondReceipt`] when `to` is less restrictive than what the receipt covers.
 pub fn declassify<T>(
     value: Labelled<T>,
     to: Confidentiality,

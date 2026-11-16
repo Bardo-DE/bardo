@@ -132,6 +132,10 @@ pub struct LanguageTag(String);
 
 impl LanguageTag {
     /// The tag written as `text`: 1 to 35 bytes of ASCII letters, digits and `-`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IdError`] when `text` is not a valid language tag.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         let ok = !text.is_empty()
             && text.len() <= 35

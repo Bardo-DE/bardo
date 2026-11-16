@@ -41,6 +41,10 @@ pub fn schema() -> Schema {
 }
 
 /// Writes `compositor.settings.toml` into `to` (created if needed, replaced atomically).
+///
+/// # Errors
+///
+/// Returns [`ConfigError`] when the schema cannot be written to `to`.
 pub fn write_schema(to: &Path) -> Result<(), ConfigError> {
     schema().write_to(to)?;
     Ok(())

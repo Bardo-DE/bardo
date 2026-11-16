@@ -187,6 +187,10 @@ pub enum SpawnError {
 /// Starts programs.
 pub trait Spawner: std::fmt::Debug {
     /// Starts the program `spec` names.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SpawnError`] when the program cannot be started.
     fn spawn(&mut self, spec: SpawnSpec) -> Result<Spawned, SpawnError>;
 
     /// The programs that ended since the last call, as of `now` (the session clock's). The one

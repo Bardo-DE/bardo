@@ -71,6 +71,11 @@ fn maker_of(sysname: &str) -> Option<Maker> {
 impl RealInputFeed {
     /// Opens libinput on `seat`, its devices opened through `session`, and has `handle`'s loop
     /// read its events.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`InputError`] when libinput cannot be assigned the seat or its source cannot be
+    /// inserted into the loop.
     pub fn open<D: 'static, S: Session + 'static>(
         seat: &str,
         session: S,

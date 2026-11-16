@@ -17,6 +17,11 @@ pub struct AgentProgram(Box<str>);
 
 impl AgentProgram {
     /// The program written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IdError`] when `text` is not 1 to 48 bytes of lowercase ASCII letters, digits and
+    /// `-`, starting with a letter.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         let mut bytes = text.bytes();
         let ok = text.len() <= 48
@@ -40,6 +45,10 @@ pub struct EnvName(String);
 
 impl EnvName {
     /// The variable name written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IdError`] when `text` is not a valid environment variable name.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         let mut bytes = text.bytes();
         let ok = text.len() <= 64

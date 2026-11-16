@@ -17,6 +17,11 @@ pub enum SpecError {
 ///
 /// An engine that needs a GPU share has an estimate, and the weights are a kind the engine reads
 /// (`command` has no `--model` for anything else). Run it after `parse_entry`.
+///
+/// # Errors
+///
+/// Returns [`SpecError`] when an engine profile that needs a GPU share has no estimate, or its
+/// weights are a kind the engine does not read.
 pub fn check_entry(entry: &ModelEntry) -> Result<(), SpecError> {
     for profile in &entry.engines {
         let spec = engine(profile.kind);

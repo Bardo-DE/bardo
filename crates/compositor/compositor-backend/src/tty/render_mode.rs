@@ -27,6 +27,11 @@ pub enum RenderMode {
 /// `FakeKms`.
 pub trait ScanoutMaker {
     /// A surface drawn by GLES on the GPU. May fail: a driver that cannot start.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the GPU surface cannot be made, for instance when the driver
+    /// cannot start.
     fn gpu(
         &mut self,
         connector: ConnectorId,
@@ -34,6 +39,10 @@ pub trait ScanoutMaker {
     ) -> Result<Box<dyn ScanoutSurface>, KmsError>;
 
     /// A surface drawn by pixman into dumb buffers. Opens no GPU userspace at all.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the dumb buffers or the surface cannot be made.
     fn software(
         &mut self,
         connector: ConnectorId,
@@ -83,6 +92,10 @@ impl Routes {
 
     /// The surface for `connector`: pixman in software mode and for an output whose GPU surface
     /// failed before; else GLES, with pixman if GLES fails now (said once, in the log).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when neither the GLES surface nor the pixman fallback can be made.
     pub fn open(
         &mut self,
         maker: &mut dyn ScanoutMaker,

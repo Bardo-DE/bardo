@@ -10,6 +10,11 @@ pub const SNAPSHOT_BUDGET: std::time::Duration = std::time::Duration::from_secs(
 
 /// One snapshot of `device`, or [`DeviceError::TimedOut`] if `expiry` completes first. The
 /// expiry is a future the caller supplies, so a test fires it without waiting on any clock.
+///
+/// # Errors
+///
+/// Returns [`DeviceError`] when the device fails to snapshot, or [`DeviceError::TimedOut`] when
+/// `expiry` completes first.
 pub async fn snapshot_before<D: AudioDevice>(
     device: &D,
     expiry: impl Future<Output = ()>,

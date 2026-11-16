@@ -296,6 +296,10 @@ impl TtyBackend {
     ///     let _ = (&backend.plan, &backend.devices);
     /// }
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the session or the GPUs cannot be set up.
     pub fn start(mut seams: TtySeams) -> Result<TtyBackend, BackendError> {
         let plan = match plan_for(&seams.nodes.nodes(), &seams.choice) {
             Ok(plan) => Some(plan),
@@ -488,6 +492,10 @@ impl TtyBackend {
     /// Asks the session for the VT `sym` names (a `Ctrl+Alt+Fn` chord, after xkb); the VT asked
     /// for, or none when `sym` names no VT. The session's own pause note follows when the
     /// switch happens.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the session refuses to switch to the VT.
     pub fn request_vt(&mut self, sym: Keysym) -> Result<Option<VtNumber>, BackendError> {
         let Some(vt) = vt_of_keysym(sym) else {
             return Ok(None);
@@ -497,6 +505,10 @@ impl TtyBackend {
     }
 
     /// Asks the session for VT `vt`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the session refuses to switch to `vt`.
     pub fn switch_to(&mut self, vt: VtNumber) -> Result<(), BackendError> {
         self.seams.session.switch_vt(vt)?;
         Ok(())
@@ -604,6 +616,11 @@ impl TtyBackend {
     /// clock's instant); the frame queued (waiting while the seat is paused, the output is
     /// dark or a flip is pending; unchanged when it would show nothing new). While a capture is open on the output the frame is
     /// also drawn into its shadow.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the frame cannot be drawn or queued, or the capture copy of it
+    /// cannot be drawn.
     pub fn present(
         &mut self,
         output: &OutputName,
@@ -692,6 +709,10 @@ impl TtyBackend {
 
     /// Starts or stops keeping a read-back of what `output` shows, which has `config` (a
     /// capture session was opened or closed on it).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the read-back shadow of the output cannot be started.
     pub fn watch(
         &mut self,
         output: &OutputName,
@@ -726,6 +747,11 @@ impl TtyBackend {
     /// Draws `frame` into a client's dma-buf `target`: with the display GPU's renderer when it
     /// lists the buffer's format and modifier, else (or when binding fails, one log line) with
     /// the software renderer, which binds linear buffers only.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when neither the display GPU's renderer nor the software renderer
+    /// can draw into `target`.
     pub fn write_dmabuf(
         &mut self,
         target: &mut smithay::backend::allocator::dmabuf::Dmabuf,
@@ -750,6 +776,10 @@ impl TtyBackend {
     }
 
     /// Reads a client's dma-buf `source` back through the software renderer.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the software renderer cannot read the buffer.
     pub fn read_dmabuf(
         &mut self,
         source: &smithay::backend::allocator::dmabuf::Dmabuf,
@@ -760,6 +790,10 @@ impl TtyBackend {
     /// Draws `source` alone into a fresh image of `size` at `scale` through the software
     /// renderer and reads it back: a window's pixels for window capture. A client buffer pixman
     /// cannot import (a dma-buf of a GPU) is missing from it, as from the capture shadow.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the software renderer cannot draw `source` or read it back.
     pub fn render_offscreen(
         &mut self,
         size: compositor_core::geometry::PhysicalSize,

@@ -79,6 +79,11 @@ fn git_root(dir: &Path) -> Option<PathBuf> {
 
 /// Checks a directory the way `open` does: absolute, a directory, no group or other bits, outside
 /// every git work tree. Returns its real path.
+///
+/// # Errors
+///
+/// Returns [`HomeFault`] when `dir` is not absolute, is not a directory, is open to group or
+/// others, cannot be resolved, or lies inside a git work tree.
 pub fn check_dir(dir: &Path) -> Result<PathBuf, HomeFault> {
     if !dir.is_absolute() {
         return Err(HomeFault::NotAbsolute(dir.to_owned()));
@@ -98,6 +103,11 @@ pub fn check_dir(dir: &Path) -> Result<PathBuf, HomeFault> {
 
 impl KeysHome {
     /// Checks `dir` and that it holds the account.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HomeFault`] when `dir` fails [`check_dir`] or does not hold a private keys file
+    /// and the account registry.
     pub fn open(dir: &Path) -> Result<Self, HomeFault> {
         let real = check_dir(dir)?;
         let keys = real.join(KEYS_FILE);
@@ -120,6 +130,10 @@ impl KeysHome {
 
     /// Copies the non-secret records into a world's scratch root: accountd's state under
     /// `.local/state` and the provider files under `data/bardo/accounts/providers`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of creating a directory or copying a record.
     pub fn seed(&self, root: &Path) -> std::io::Result<()> {
         copy_tree(&self.0.join("state"), &root.join(".local/state"))?;
         copy_tree(&self.0.join("data"), &root.join("data"))

@@ -341,13 +341,25 @@ pub trait Kms: std::fmt::Debug {
     fn test(&mut self, commit: &KmsCommit) -> CommitVerdict;
 
     /// Applies `commit`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the kernel rejects the commit.
     fn commit(&mut self, commit: KmsCommit) -> Result<(), KmsError>;
 
     /// Lights or darkens one connector (DPMS).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the power state cannot be set.
     fn set_power(&mut self, connector: ConnectorId, power: bool) -> Result<(), KmsError>;
 
     /// Loads a gamma ramp on one connector's CRTC (the plan's sketch has no gamma call;
     /// `Effect::SetGamma` needs one: FINDINGS).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the ramp cannot be loaded.
     fn set_gamma(&mut self, connector: ConnectorId, ramp: &GammaRamp) -> Result<(), KmsError>;
 
     /// The connector changes since the last call (hotplug, a link retrain), as the same
@@ -357,6 +369,10 @@ pub trait Kms: std::fmt::Debug {
     /// The surface that scans `connector` out, made once a commit has lit it (P1-T: the D2 to
     /// D3 hand-off; the real device gives up its `DrmSurface` and the vblank source). Asking
     /// again for a connector lit by a later commit gives a fresh surface.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the connector has no lit surface or the surface cannot be made.
     fn scanout(
         &mut self,
         connector: ConnectorId,
@@ -368,6 +384,10 @@ pub trait Kms: std::fmt::Debug {
     fn pause(&mut self);
 
     /// The seat is back: take master again. The caller then commits every output again.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the device cannot take master again.
     fn resume(&mut self) -> Result<(), KmsError>;
 
     /// The device's renderer lent to draw captures into a client's dma-buf (GPU formats and
@@ -381,5 +401,10 @@ pub trait Kms: std::fmt::Debug {
 /// hands out a fixture.
 pub trait KmsOpener: std::fmt::Debug {
     /// The device at `path`, opened.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the device at `path` cannot be opened or its resources cannot be
+    /// read.
     fn open(&mut self, path: &DevicePath) -> Result<Box<dyn Kms>, KmsError>;
 }

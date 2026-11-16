@@ -93,6 +93,10 @@ impl Compositor1 {
 /// assert_eq!(parse_connect_role("shell").expect("shell"), ConnectionRole::Shell);
 /// assert!(parse_connect_role("public").is_err());
 /// ```
+///
+/// # Errors
+///
+/// Returns [`IpcError::BadRole`] when `text` is none of the roles.
 pub fn parse_connect_role(text: &str) -> Result<ConnectionRole, IpcError> {
     match text {
         "shell" => Ok(ConnectionRole::Shell),

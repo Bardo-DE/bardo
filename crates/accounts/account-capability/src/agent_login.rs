@@ -17,6 +17,10 @@ pub struct LoginRequestId(Box<str>);
 
 impl LoginRequestId {
     /// The request id written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IdError`] when `text` is not a valid login request id.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         if is_id(text) {
             Ok(Self(text.into()))
@@ -71,6 +75,11 @@ impl LoginOutcome {
 
     /// The outcome two words stand for. A reason with any outcome but `failed`, a `failed` with
     /// no reason, and a word outside the set are all refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IdError`] when the outcome word is unknown, a `failed` has no reason, or another
+    /// outcome has one.
     pub fn from_wire(outcome: &str, reason: &str) -> Result<Self, IdError> {
         let fault = from_word::<LoginFault>(reason);
         match (outcome, reason, fault) {

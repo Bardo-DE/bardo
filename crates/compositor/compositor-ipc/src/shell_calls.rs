@@ -82,6 +82,10 @@ pub struct FailedCall {
 /// The session-bus calls a binding makes.
 pub trait ShellCalls: std::fmt::Debug {
     /// Sends `call` (string arguments, no reply awaited).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ShellCallError`] when the call cannot be sent.
     fn call(&mut self, call: &DbusCall) -> Result<(), ShellCallError>;
 
     /// The calls that failed since the last time this was asked.

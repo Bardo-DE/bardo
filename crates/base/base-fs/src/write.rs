@@ -59,6 +59,11 @@ pub enum NewFileMode {
 /// A symlink at `path` is followed and its target replaced, so a dotfile-managed link stays a
 /// link. An existing file's permissions are kept; a new file gets `new_file`. Writers of the same
 /// file in this process take turns, so their staging files and renames never interleave.
+///
+/// # Errors
+///
+/// Returns [`WriteError`] when the target cannot be resolved or the staging file cannot be written,
+/// synced or renamed into place.
 pub fn write_atomic(path: &Path, body: &[u8], new_file: NewFileMode) -> Result<(), WriteError> {
     let target = link::resolve(path).map_err(|source| WriteError::at(path, source))?;
     lock::with(&target, || {

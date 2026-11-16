@@ -70,6 +70,11 @@ impl TryFrom<ChordParts> for Chord {
 }
 
 impl Chord {
+    /// The chord of `mods` and `key`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ChordError`] when `key` is `Unidentified` or `Dead`, which no chord can name.
     pub fn new(mods: BTreeSet<Modifier>, key: keyboard_types::Key) -> Result<Self, ChordError> {
         match key {
             keyboard_types::Key::Unidentified => Err(ChordError::Unidentified),
@@ -93,6 +98,11 @@ impl Repeat {
     pub const ONCE: Repeat = Repeat(1);
     pub const MAX: u8 = 20;
 
+    /// A repeat count of `times`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RepeatError`] when `times` is outside the range a repeat may take.
     pub fn new(times: u8) -> Result<Self, RepeatError> {
         if (1..=Self::MAX).contains(&times) {
             Ok(Repeat(times))
@@ -138,6 +148,11 @@ pub struct WaitMs(u32);
 impl WaitMs {
     pub const MAX: u32 = 60_000;
 
+    /// A wait of `ms` milliseconds.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WaitError`] when `ms` is outside the range a wait may take.
     pub fn new(ms: u32) -> Result<Self, WaitError> {
         if ms <= Self::MAX {
             Ok(WaitMs(ms))

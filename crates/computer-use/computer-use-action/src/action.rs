@@ -118,6 +118,10 @@ impl<S: CoordSpace> CuaAction<S> {
 
     /// Re-expresses every point and length in space `T`. Nodes pass through; a rectangle's
     /// origin maps as a point and its extent as two lengths. The first error stops the map.
+    ///
+    /// # Errors
+    ///
+    /// Returns the first error `f` or `g` returns.
     pub fn map_points<T: CoordSpace, E>(
         self,
         f: impl Fn(Point<S>) -> Result<Point<T>, E>,

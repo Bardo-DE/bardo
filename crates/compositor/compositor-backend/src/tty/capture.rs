@@ -93,6 +93,11 @@ impl TtyBackend {
     /// of a closing window), its bottom corners cut by `radius` logical pixels. Only for a seat
     /// whose [`body_on_gpu`](Self::body_on_gpu) is `true`; the texture is drawn by the
     /// scanout's renderer, which is that GPU's.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when the seat does not render on the GPU, or the error of
+    /// rendering the texture.
     pub fn render_window_texture(
         &mut self,
         size: PhysicalSize,
@@ -127,6 +132,11 @@ impl TtyBackend {
 
     /// Renders `source` alone straight into a client's dma-buf `target` of exactly `size` with
     /// the display GPU: window capture with no read-back.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when the seat has no capture GPU, or the error of
+    /// rendering into `target`.
     pub fn render_window_dmabuf(
         &mut self,
         target: &mut Dmabuf,
@@ -140,6 +150,11 @@ impl TtyBackend {
 
     /// Draws `from`, a part of the frame last drawn for `output` on the display GPU, into a
     /// client's dma-buf `target`. [`BackendError::NoFrame`] when that frame is not on the GPU.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when the frame is not on the GPU or there is no capture
+    /// GPU, or the error of blitting into `target`.
     pub fn blit_output_dmabuf(
         &mut self,
         output: &OutputName,
@@ -156,6 +171,11 @@ impl TtyBackend {
 
     /// `area` of the frame last drawn for `output` on the display GPU, read back to the CPU (a
     /// shared-memory buffer). Only `area` is copied: a one-pixel pick reads one pixel.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when the frame is not on the GPU or there is no capture
+    /// GPU, or the error of reading `area` back.
     pub fn read_output(
         &mut self,
         output: &OutputName,

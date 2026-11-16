@@ -41,6 +41,11 @@ pub struct Epub {
 impl Epub {
     /// The EPUB `input` (a path, or any bytes a host injects): its container and package document. A book with no chapter is
     /// [`BookError::Empty`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BookError`] when the archive, its container or its package document cannot be read
+    /// or parsed, or the book has no chapter ([`BookError::Empty`]).
     pub fn open(input: impl Into<Input>) -> Result<Epub, BookError> {
         let input = input.into();
         let container = read(
@@ -85,6 +90,10 @@ impl Epub {
     }
 
     /// The chapter `at` as sealed HTML. Blocking.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BookError`] when `at` is not a chapter or the chapter cannot be read or sealed.
     pub fn chapter(&self, at: SectionIndex) -> Result<Chapter, BookError> {
         self.chapter_until(at, &Deadline::NEVER)
     }
@@ -92,6 +101,11 @@ impl Epub {
     /// [`Epub::chapter`], ended with an interrupted archive error as soon as `interrupt` says so:
     /// it is asked before each part of the zip is unpacked and once the chapter is sealed, so a
     /// chapter that lost an image to it is never returned as whole. Blocking.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BookError`] when `interrupt` fires, `at` is not a chapter or the chapter cannot be
+    /// read or sealed.
     pub fn chapter_until(
         &self,
         at: SectionIndex,

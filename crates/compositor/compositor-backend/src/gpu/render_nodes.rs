@@ -121,5 +121,9 @@ pub trait RenderNodes: std::fmt::Debug {
     fn nodes(&self) -> Vec<GpuFacts>;
 
     /// Opens a render node.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GpuError`] when the node cannot be opened.
     fn open(&mut self, node: &DrmNodeId) -> Result<GpuHandle, GpuError>;
 }

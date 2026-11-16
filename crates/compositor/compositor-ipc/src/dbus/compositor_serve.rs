@@ -107,6 +107,10 @@ impl CallerSetup {
 /// The channel carries the calls for the event loop to answer, at most [`CONNECT_QUEUE`] at a time;
 /// the connection is casement's handle on the bus (keep it, or the name is released when the last
 /// clone goes). The thread behind it lives as long as the process.
+///
+/// # Errors
+///
+/// Returns [`IpcError::Bus`] when the thread cannot be started or cannot connect to the bus.
 pub fn serve_compositor_at(
     address: &str,
     setup: CallerSetup,

@@ -65,6 +65,11 @@ pub trait Backend {
     }
 
     /// Draws `frame` into a client's dma-buf `target` (a capture's buffer).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the backend cannot draw into a client's buffer; the default
+    /// has no target and always returns it.
     fn write_dmabuf(
         &mut self,
         _target: &mut Dmabuf,
@@ -74,12 +79,22 @@ pub trait Backend {
     }
 
     /// Reads a client's dma-buf `source` (a cursor surface's buffer) back.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the buffer cannot be read back; the default has no target and
+    /// always returns it.
     fn read_dmabuf(&mut self, _source: &Dmabuf) -> Result<ArgbImage, BackendError> {
         Err(RenderError::NoTarget.into())
     }
 
     /// Draws `source` alone into a fresh image of `size` at `scale` and reads it back (window
     /// capture).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the image cannot be drawn or read back; the default has no
+    /// target and always returns it.
     fn render_offscreen(
         &mut self,
         _size: PhysicalSize,
@@ -91,6 +106,11 @@ pub trait Backend {
 
     /// Renders `source` alone straight into a client's dma-buf `target`: window capture with no
     /// read-back.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when the backend cannot render into a client's buffer,
+    /// which is the default.
     fn render_window_dmabuf(
         &mut self,
         _target: &mut Dmabuf,
@@ -103,6 +123,11 @@ pub trait Backend {
 
     /// Blits `from`, a part of the frame `output` last presented (with its cursor when `cursor`),
     /// into a client's dma-buf `target`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when there is no frame to blit from or the backend cannot
+    /// blit into a client's buffer, which is the default.
     fn blit_output_dmabuf(
         &mut self,
         _output: &OutputName,

@@ -73,6 +73,10 @@ pub fn spawn_consent_writer(
 }
 
 /// Save `consent` as `voice.consent` and publish the file.
+///
+/// # Errors
+///
+/// Returns the message of the failure to save the settings.
 pub fn write_consent(
     store: &Store,
     settings: &watch::Sender<ShellFile>,

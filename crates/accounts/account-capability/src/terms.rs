@@ -46,11 +46,19 @@ macro_rules! word_flag {
             }
 
             /// Writes the flag as its word.
+            ///
+            /// # Errors
+            ///
+            /// Returns the serializer's error when writing the word fails.
             pub fn serialize<S: Serializer>(flag: &bool, serializer: S) -> Result<S::Ok, S::Error> {
                 if *flag { Word::Yes } else { Word::No }.serialize(serializer)
             }
 
             /// Reads the flag from its word.
+            ///
+            /// # Errors
+            ///
+            /// Returns the deserializer's error when the input is not one of the flag's words.
             pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<bool, D::Error> {
                 Ok(matches!(Word::deserialize(deserializer)?, Word::Yes))
             }

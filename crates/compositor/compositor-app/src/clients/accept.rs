@@ -42,6 +42,10 @@ impl<S, D: 'static> fmt::Debug for Surviving<S, D> {
 /// is logged, instead of ending the loop.
 ///
 /// `callback` gets each accepted stream as it would from `source` itself.
+///
+/// # Errors
+///
+/// Returns the calloop error when `source` cannot be inserted into the loop.
 pub fn insert<S, D, F>(
     handle: &LoopHandle<'static, D>,
     source: S,

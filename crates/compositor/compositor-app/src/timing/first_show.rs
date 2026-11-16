@@ -71,6 +71,10 @@ impl FirstShow {
     /// The open animation is at rest in a frame at `at`: the finished record. A window not yet
     /// on a frame is not at rest yet and comes back unchanged. With no animation the first frame
     /// is also the one at rest, so `settled_at` equals `first_frame_at`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the unchanged [`FirstShow`] when the window is not yet on a frame.
     pub fn settled(self, at: Stamp) -> Result<WindowReady, FirstShow> {
         match self {
             FirstShow::Shown {

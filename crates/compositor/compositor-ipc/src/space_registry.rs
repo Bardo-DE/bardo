@@ -98,6 +98,10 @@ pub enum RegistryError {
 /// Where the Spaces casement mints are registered.
 pub trait SpaceRegistry: std::fmt::Debug {
     /// Queues `spaces` and returns; the answers come back through [`SpaceRegistry::failures`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RegistryError`] when the registrations cannot be queued.
     fn register(&mut self, spaces: Vec<SpaceRegistration>) -> Result<(), RegistryError>;
 
     /// The registrations that failed since the last time this was asked.

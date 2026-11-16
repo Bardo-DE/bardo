@@ -29,6 +29,11 @@ use smithay::reexports::calloop::LoopHandle;
 /// no format source is given (the formats would be read through a GBM device and an EGL
 /// display), and the display devices open no GBM device: nothing in the session loads a GPU
 /// driver's userspace.
+///
+/// # Errors
+///
+/// Returns [`BackendError`] when the session, the udev monitor, the GPUs or the input cannot be set
+/// up.
 pub fn real_seams<D: 'static>(
     root: SysRoot,
     choice: GpuChoice,

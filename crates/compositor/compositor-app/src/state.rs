@@ -204,6 +204,11 @@ impl State {
     /// document read, every global created behind the I7 filter, the backend started, the clock
     /// attached to `event_loop`, an empty model at the clock's now. Outputs are plugged
     /// afterwards through the core loop, the same path hotplug takes.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StartError`] when the settings, the globals, the backend or the clock cannot be
+    /// started.
     pub fn new(
         config: StartConfig,
         display: &mut Display<State>,
@@ -214,6 +219,10 @@ impl State {
     }
 
     /// The same with these seams (the test kit injects its fakes here).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StartError`] when the globals, the backend or the clock cannot be started.
     pub fn with_seams(
         config: StartConfig,
         mut seams: Seams,

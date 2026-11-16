@@ -215,6 +215,10 @@ impl ConfirmObject {
 
 /// Serves `Confirm1` on `connection` and claims sill's two names there. Returns the handle and
 /// the channel on which each request shown arrives.
+///
+/// # Errors
+///
+/// Returns the bus error when the interface cannot be served or either name cannot be claimed.
 pub async fn serve(
     connection: &zbus::Connection,
 ) -> zbus::Result<(Sheet, mpsc::UnboundedReceiver<ConfirmRequest>)> {

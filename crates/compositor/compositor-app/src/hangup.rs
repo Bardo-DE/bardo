@@ -32,6 +32,11 @@ pub struct ReloadRequested;
 
 /// Starts the watcher; the channel yields one [`ReloadRequested`] for each `SIGHUP`. Returns
 /// once the handler is installed, so a signal sent after this is heard.
+///
+/// # Errors
+///
+/// Returns [`HangupError`] when the thread cannot be started or does not report that the handler is
+/// installed in time.
 pub fn watch() -> Result<Channel<ReloadRequested>, HangupError> {
     let (sender, channel) = channel::channel();
     let (ready_tx, ready) = mpsc::channel();

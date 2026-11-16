@@ -74,6 +74,11 @@ pub enum SpecError {
 
 impl VirtualOutputSpec {
     /// The spec `text` describes (grammar in the module docs).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::BadSpec`] when `text` has no name, mode, scale or position, or has
+    /// an unknown option.
     pub fn parse(text: &str) -> Result<VirtualOutputSpec, BackendError> {
         let bad = |why: SpecError| BackendError::BadSpec {
             text: text.to_owned(),

@@ -46,6 +46,11 @@ impl Listening {
     /// drop(listening);
     /// let _ = std::fs::remove_dir_all(dir);
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`XwaylandError`] when `dir` cannot be created or is not safe, a socket cannot be
+    /// bound, or no display number is free.
     pub fn bind(dir: &X11Dir) -> Result<Listening, XwaylandError> {
         std::fs::create_dir_all(&dir.0)?;
         check_dir(&dir.0)?;
@@ -87,6 +92,10 @@ impl Listening {
     }
 
     /// Copies of the sockets, to hand to a program while casement keeps its own.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`XwaylandError::Socket`] when a socket cannot be duplicated.
     pub fn duplicate(&self) -> Result<Vec<OwnedFd>, XwaylandError> {
         self.sockets
             .iter()

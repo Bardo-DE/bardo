@@ -118,6 +118,10 @@ impl Scanout {
 
     /// Draws `source` and queues it: the vblank it is for, unchanged, or waiting while a flip is
     /// pending.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the frame cannot be drawn or queued.
     pub fn present(
         &mut self,
         source: &dyn FrameSource,
@@ -181,6 +185,10 @@ impl Scanout {
     }
 
     /// The output goes dark: the surface stops scanning out until the next frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the surface cannot stop scanning out.
     pub fn blank(&mut self) -> Result<(), KmsError> {
         self.flip = FlipTracker::new();
         self.watch = self.watch.idle();
@@ -280,6 +288,10 @@ impl ScanoutSet {
 
     /// Queues a frame of `source` for `name` at `now`; none while held, unlit or a flip is
     /// pending.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the frame cannot be drawn or queued.
     pub fn present(
         &mut self,
         name: &OutputName,

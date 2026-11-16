@@ -24,6 +24,10 @@ impl From<Listening> for Door {
 
 impl Door {
     /// Wait for the next client.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of accepting the connection.
     pub fn accept(&self) -> io::Result<Stream> {
         self.0.accept()
     }

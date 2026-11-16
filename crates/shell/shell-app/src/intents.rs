@@ -42,6 +42,11 @@ pub fn request_of(action: ShellAction) -> Request {
 }
 
 /// How the host's answer reads to the provider.
+///
+/// # Errors
+///
+/// Returns [`ShellFault`] when the shell reports a failure, an unsupported request or an unexpected
+/// answer.
 pub fn result_of(response: Response) -> Result<(), ShellFault> {
     match response {
         Response::Done => Ok(()),

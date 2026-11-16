@@ -28,6 +28,11 @@ macro_rules! ident {
         pub struct $name(String);
 
         impl $name {
+            /// The identifier `name`, checked.
+            ///
+            /// # Errors
+            ///
+            /// Returns [`IdentError`] when `name` is not a valid identifier.
             pub fn new(name: impl Into<String>) -> Result<Self, IdentError> {
                 let name = name.into();
                 let mut chars = name.chars();
@@ -186,6 +191,11 @@ impl Shape {
     /// range and a `Tagged` with no variants. The grammar is a subset of what `check` accepts: a
     /// date reads every day a month has, except 29 February (a leap year is not a rule a grammar
     /// states), and every `Tagged` value writes its tag first.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ShapeFault`] when the shape has no grammar: an empty `Choice`, an empty `Integer`
+    /// range or a `Tagged` with no variants.
     pub fn to_gbnf(&self) -> Result<String, ShapeFault> {
         self.gbnf_text()
     }
@@ -212,6 +222,10 @@ impl Shape {
     }
 
     /// Our own checker for the same vocabulary.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ShapeFault`] when `json` is not text of this shape.
     pub fn check(&self, json: &JsonText) -> Result<(), ShapeFault> {
         self.check_json(json)
     }
@@ -221,5 +235,10 @@ impl Shape {
 /// construction and on deserialisation, so `read` is serde plus the checked constructors).
 pub trait Extract: Sized {
     fn shape() -> Shape;
+    /// The value `json` holds, read through its shape.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ShapeFault`] when `json` is not text of this shape.
     fn read(json: &JsonText) -> Result<Self, ShapeFault>;
 }

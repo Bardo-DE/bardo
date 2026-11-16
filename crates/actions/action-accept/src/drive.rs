@@ -206,6 +206,12 @@ impl Answer {
     /// [`Answer::history_until`] that hands back what it saw, as the error, when nothing
     /// changed for the answer's patience, when the whole wait passed [`TOTAL_PATIENCES`] of it (an
     /// answer that keeps changing without coming to rest), or when the signal stream ended.
+    ///
+    /// # Errors
+    ///
+    /// Returns everything the answer showed as the error when it stopped changing for the answer's
+    /// patience, when the whole wait ran out, or when the signal stream ended before `stop` was
+    /// satisfied.
     pub async fn try_history_until(
         &mut self,
         stop: impl Fn(&AnswerWire) -> bool,

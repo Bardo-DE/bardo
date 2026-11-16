@@ -47,21 +47,37 @@ pub enum FakeError {
 }
 
 /// The fixture mail manifest, validated.
+///
+/// # Errors
+///
+/// Returns [`ManifestFileError`] when the fixture is not a valid manifest.
 pub fn mail_manifest() -> Result<ValidManifest, ManifestFileError> {
     parse(MAIL_MANIFEST)
 }
 
 /// The fixture files manifest, validated.
+///
+/// # Errors
+///
+/// Returns [`ManifestFileError`] when the fixture is not a valid manifest.
 pub fn files_manifest() -> Result<ValidManifest, ManifestFileError> {
     parse(FILES_MANIFEST)
 }
 
 /// The fixture menu manifest, validated.
+///
+/// # Errors
+///
+/// Returns [`ManifestFileError`] when the fixture is not a valid manifest.
 pub fn menu_manifest() -> Result<ValidManifest, ManifestFileError> {
     parse(MENU_MANIFEST)
 }
 
 /// A registry holding the two fixtures and the three shipped built-in manifests.
+///
+/// # Errors
+///
+/// Returns [`ManifestFileError`] when a fixture or built-in manifest is not valid.
 pub fn registry() -> Result<Registry, ManifestFileError> {
     let mut registry = Registry::new();
     for text in [
@@ -78,6 +94,10 @@ pub fn registry() -> Result<Registry, ManifestFileError> {
 
 /// Installs the fake menu app's manifest in `router` (it is not in `registry()`: the menu is only
 /// for the tests of per-call effects, and the default world's goldens do not list it).
+///
+/// # Errors
+///
+/// Returns [`ManifestFileError`] when the menu fixture is not a valid manifest.
 pub fn install_menu(router: &Router<FakeSeams>) -> Result<(), ManifestFileError> {
     let menu = menu_manifest()?;
     match router.state.lock() {
@@ -92,6 +112,10 @@ pub fn install_menu(router: &Router<FakeSeams>) -> Result<(), ManifestFileError>
 ///
 /// A writer that fails (no task policy), and the clock at the epoch. Tests replace what they need
 /// through `router.seams`.
+///
+/// # Errors
+///
+/// Returns [`FakeError`] when a fixture manifest or the built-in presets cannot be loaded.
 pub fn fake_router(config: AgentConfig) -> Result<Router<FakeSeams>, FakeError> {
     fake_router_with(
         config,
@@ -103,6 +127,10 @@ pub fn fake_router(config: AgentConfig) -> Result<Router<FakeSeams>, FakeError> 
 
 /// [`fake_router`] with this reviewer, writer and clock in place of the fakes: what a live run
 /// builds, with the real cascade and the real writer over inferd.
+///
+/// # Errors
+///
+/// Returns [`FakeError`] when a fixture manifest or the built-in presets cannot be loaded.
 pub fn fake_router_with<R: Reviewer, W: PolicyWriter, K: Clock>(
     config: AgentConfig,
     reviewer: R,
@@ -114,6 +142,10 @@ pub fn fake_router_with<R: Reviewer, W: PolicyWriter, K: Clock>(
 
 /// [`fake_router_with`] over `log`: the router a test builds after dropping the first one, to
 /// restore sessions from what the first wrote.
+///
+/// # Errors
+///
+/// Returns [`FakeError`] when a fixture manifest or the built-in presets cannot be loaded.
 pub fn fake_router_on<R: Reviewer, W: PolicyWriter, K: Clock, L: SessionLog>(
     config: AgentConfig,
     reviewer: R,
@@ -139,6 +171,10 @@ pub type Reading<R, W, K, L, C, Rd> = Router<FakeSeams<R, W, K, L, C, Rd>>;
 
 /// [`fake_router_on`] with this confirmer in place of the scripted one: a test whose sheets are
 /// answered by something else (a desk the host of an external agent shows).
+///
+/// # Errors
+///
+/// Returns [`FakeError`] when a fixture manifest or the built-in presets cannot be loaded.
 pub fn fake_router_over<
     R: Reviewer,
     W: PolicyWriter,
@@ -166,6 +202,11 @@ pub fn fake_router_over<
 
 /// [`fake_router_over`] with this reader in place of the scripted one: a live run whose planner
 /// reads untrusted text through a real reader model.
+///
+/// # Errors
+///
+/// Returns [`FakeError`] when the Space, a fixture manifest or the built-in presets cannot be
+/// loaded.
 pub fn fake_router_reading<
     R: Reviewer,
     W: PolicyWriter,

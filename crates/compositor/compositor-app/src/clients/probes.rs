@@ -73,6 +73,10 @@ pub struct Looking {
 
 impl Probes {
     /// Looks run by `judge`; their results arrive on `handle`'s loop.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LoopError`] when the results channel cannot be inserted into the event loop.
     pub fn start(judge: Judge, handle: &LoopHandle<'static, State>) -> Result<Probes, LoopError> {
         let (done, results): (Sender<Done>, Channel<Done>) = channel();
         handle

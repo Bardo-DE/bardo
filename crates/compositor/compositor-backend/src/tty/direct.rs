@@ -56,6 +56,10 @@ pub struct DriverRefusal {
 /// assert!(require_vkms(OsStr::new("vkms")).is_ok());
 /// assert!(require_vkms(OsStr::new("amdgpu")).is_err());
 /// ```
+///
+/// # Errors
+///
+/// Returns [`DriverRefusal`] when `driver` is not vkms.
 pub fn require_vkms(driver: &OsStr) -> Result<(), DriverRefusal> {
     if driver == OsStr::new(VKMS_DRIVER) {
         Ok(())

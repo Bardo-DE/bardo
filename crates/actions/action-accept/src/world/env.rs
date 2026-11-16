@@ -129,6 +129,10 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
 
 /// Starts the daemon `name` from `binary` in the scratch root `dir`, on the bus at `bus`, with the
 /// model tap on when `tap` names a file.
+///
+/// # Errors
+///
+/// Returns the I/O error of creating the log file or spawning the process.
 pub fn spawn(
     dir: &Path,
     bus: &str,

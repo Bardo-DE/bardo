@@ -46,6 +46,10 @@ pub enum EdidError {
 ///
 /// assert!(parse_edid(&[]).is_err());
 /// ```
+///
+/// # Errors
+///
+/// Returns [`EdidError`] when `bytes` is too short, has a wrong header or has a wrong checksum.
 pub fn parse_edid(bytes: &[u8]) -> Result<EdidFacts, EdidError> {
     let block = bytes
         .get(..BASE_BLOCK)

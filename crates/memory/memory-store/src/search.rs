@@ -49,10 +49,22 @@ pub trait SearchIndex: Send {
     fn card(&self) -> &EmbedderCard;
     /// The documents of the given facet kinds and trust tier (`None` is any), as the allow-list
     /// of a search.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IndexFailure`] when the index cannot be read.
     fn allow_kinds(&self, kinds: &[&str], trust: Option<Integrity>) -> Result<Allow, IndexFailure>;
     /// The lexical half's ranked list for `q`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IndexFailure`] when the index cannot be read.
     fn lexical(&self, q: &SearchQuery) -> Result<Vec<Ranked>, IndexFailure>;
     /// The `k` documents nearest to `v` among the allowed ones, best first.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IndexFailure`] when the index cannot be read.
     fn nearest(&self, v: &Vector, k: TopK, allow: &Allow) -> Result<Vec<Ranked>, IndexFailure>;
     /// Clears and rebuilds from `docs`, embedding in the background. A lost embedder that can
     /// come back leaves the index lexical-only and returns `Ok`.
@@ -75,5 +87,9 @@ pub trait SearchIndex: Send {
         e: &E,
     ) -> impl Future<Output = Result<(), IndexFailure>> + Send;
     /// Removes documents from both halves; how many were there.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`IndexFailure`] when the documents cannot be removed.
     fn remove(&mut self, ids: &[DocId]) -> Result<u32, IndexFailure>;
 }

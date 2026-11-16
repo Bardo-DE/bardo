@@ -50,6 +50,10 @@ pub enum HookError {
 }
 
 /// Appends `line` and a newline to the file at `path`, creating it.
+///
+/// # Errors
+///
+/// Returns the I/O error of opening or writing the file.
 pub fn append_line(path: &Path, line: &str) -> io::Result<()> {
     let mut file = OpenOptions::new().create(true).append(true).open(path)?;
     file.write_all(format!("{line}\n").as_bytes())
@@ -65,6 +69,10 @@ pub fn meta_path(path: &Path) -> PathBuf {
 
 /// Writes the frame's raw buffer to `path` and its description to `path.meta`, the
 /// description last.
+///
+/// # Errors
+///
+/// Returns the I/O error of writing the buffer or its description.
 pub fn write_capture(path: &Path, frame: &RawCapture) -> io::Result<()> {
     std::fs::write(path, &frame.bytes)?;
     std::fs::write(meta_path(path), format!("{}\n", frame.meta_line()))
@@ -170,6 +178,11 @@ pub struct TestHooks {
 impl TestHooks {
     /// The hooks for `mode`: none for a real seat; for `--drm-node`, the signals are heard
     /// and the files written.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HookError`] when the session link is missing or a signal handler or file source
+    /// cannot be set up.
     pub fn attach(state: &mut State, mode: &TtyMode) -> Result<TestHooks, HookError> {
         let (TtyMode::Direct(direct), BackendKind::Tty(tty)) = (mode, &mut state.backend) else {
             return Ok(TestHooks::default());

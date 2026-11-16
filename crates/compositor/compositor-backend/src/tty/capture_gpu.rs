@@ -29,6 +29,10 @@ pub trait CaptureGpu: std::fmt::Debug {
     fn formats(&self) -> Vec<Format>;
 
     /// Draws `frame` into the client's dma-buf `target`, and returns once the GPU is done.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the GPU cannot draw into `target`.
     fn write_dmabuf(
         &mut self,
         target: &mut Dmabuf,
@@ -49,6 +53,11 @@ pub trait CaptureGpu: std::fmt::Debug {
 
     /// Draws `source` as the frame `output` shows, into images that stay on the GPU (one with
     /// the cursor, one without); the area that changed since the last call.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the scene cannot be drawn; the default has no target and
+    /// always returns it.
     fn draw_scene(
         &mut self,
         output: &OutputName,
@@ -61,6 +70,11 @@ pub trait CaptureGpu: std::fmt::Debug {
 
     /// Draws `from`, a part of the frame last drawn for `output`, into the client's dma-buf
     /// `target` on the GPU, and returns once it is done. No CPU read.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when there is no such frame on the GPU, which is the
+    /// default.
     fn blit_scene(
         &mut self,
         output: &OutputName,
@@ -75,6 +89,11 @@ pub trait CaptureGpu: std::fmt::Debug {
     /// `area` of the frame last drawn for `output` read back to the CPU, for a shared-memory
     /// buffer: only those pixels cross to the CPU (a one-pixel colour pick reads one pixel).
     /// [`BackendError::NoFrame`] when `area` is not inside the frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::NoFrame`] when `area` is not inside the frame or there is no such
+    /// frame, which is the default.
     fn read_scene(
         &mut self,
         output: &OutputName,
@@ -92,6 +111,11 @@ pub trait CaptureGpu: std::fmt::Debug {
 
     /// Renders `source` alone straight into the client's dma-buf `target` of exactly `size` at
     /// `scale` (window capture), and returns once it is done. No CPU read.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the window cannot be rendered; the default has no target and
+    /// always returns it.
     fn render_window(
         &mut self,
         target: &mut Dmabuf,
@@ -107,6 +131,11 @@ pub trait CaptureGpu: std::fmt::Debug {
     /// bottom corners cut by `radius` logical pixels, and returns once it is done: the last image
     /// of a closing window, with no CPU read. The texture is this renderer's own; only it draws
     /// it (see [`body_on_gpu`]).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the texture cannot be rendered; the default has no target and
+    /// always returns it.
     fn render_window_texture(
         &mut self,
         size: PhysicalSize,

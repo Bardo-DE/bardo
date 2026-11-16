@@ -45,6 +45,11 @@ impl Readback {
     /// Starts (`watch`: a capture session is open, so every frame shown is drawn again into the
     /// shadow) or stops (nothing is drawn for it) watching `output`, shown with `config`. A
     /// watched output whose mode, scale or transform changed gets a new shadow.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the shadow's renderer cannot be started or resized for
+    /// `config`.
     pub fn watch(
         &mut self,
         output: &OutputName,
@@ -91,6 +96,10 @@ impl Readback {
 
     /// Draws `source` alone into a fresh image of `size` at `scale` through the software
     /// renderer and reads it back (window capture: no output needs to be watched).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the shadow's renderer is not started or cannot draw `source`.
     pub fn render_offscreen(
         &mut self,
         size: PhysicalSize,
@@ -111,6 +120,11 @@ impl Readback {
     }
 
     /// Draws `frame` into a client's dma-buf `target` through the shadow's renderer.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the shadow's renderer is not started or cannot draw into
+    /// `target`.
     pub fn write_dmabuf(
         &mut self,
         target: &mut smithay::backend::allocator::dmabuf::Dmabuf,
@@ -120,6 +134,11 @@ impl Readback {
     }
 
     /// Reads a client's dma-buf `source` back through the shadow's renderer.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the shadow's renderer is not started or cannot read the
+    /// buffer.
     pub fn read_dmabuf(
         &mut self,
         source: &smithay::backend::allocator::dmabuf::Dmabuf,
@@ -129,6 +148,10 @@ impl Readback {
 
     /// Draws `source` into the shadow of `output` as the frame shown at `seq`; nothing when the
     /// output is not watched.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the shadow cannot draw `source`.
     pub fn draw(
         &mut self,
         output: &OutputName,
@@ -147,6 +170,10 @@ impl Readback {
 
     /// Draws `source` into the shadow of `output` when it is watched and has no frame yet (the
     /// scene is unchanged, so no flip drew one).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the shadow cannot draw `source`.
     pub fn draw_first(
         &mut self,
         output: &OutputName,

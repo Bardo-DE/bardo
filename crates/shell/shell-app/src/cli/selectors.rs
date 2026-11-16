@@ -45,6 +45,10 @@ pub fn parts() -> PublishedParts {
 }
 
 /// Write `shell.toml` into `dir` (made if it is missing) and return its path.
+///
+/// # Errors
+///
+/// Returns the I/O error of creating `dir` or writing the file.
 pub fn write_to(dir: &Path) -> io::Result<PathBuf> {
     parts().write_to(dir)
 }

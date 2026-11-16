@@ -87,6 +87,10 @@ pub trait ScanoutSurface: std::fmt::Debug {
 
     /// The output goes dark (DPMS off): stop scanning out. The next frame queued lights it
     /// again. Nothing to do by default.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the surface cannot stop scanning out.
     fn blank(&mut self) -> Result<(), KmsError> {
         Ok(())
     }

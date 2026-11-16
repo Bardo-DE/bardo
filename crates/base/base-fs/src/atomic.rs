@@ -54,11 +54,19 @@ impl AtomicWrite {
     }
 
     /// Replaces `target` with `bytes`, atomically.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of staging or committing the write.
     pub fn write(&self, target: &Path, bytes: &[u8]) -> io::Result<()> {
         self.publish(target, |file| file.write_all(bytes))
     }
 
     /// Replaces `target` with the contents of `source`, the same way.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of reading `source` or of staging or committing the write.
     pub fn copy(&self, source: &Path, target: &Path) -> io::Result<()> {
         self.publish(target, |file| {
             io::copy(&mut std::fs::File::open(source)?, file).map(|_| ())
@@ -67,6 +75,10 @@ impl AtomicWrite {
 
     /// The first half of a write: `bytes` on disk and synced under a staging name beside
     /// `target`, which it returns. Until [`AtomicWrite::commit`] the target is untouched.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of resolving `target` or of writing and syncing the staged file.
     pub fn stage(&self, target: &Path, bytes: &[u8]) -> io::Result<PathBuf> {
         let target = link::resolve(target)?;
         lock::with(&target, || {
@@ -76,6 +88,11 @@ impl AtomicWrite {
 
     /// The second half: the staged file replaces `target` and the directory entry is made
     /// durable. The staged file is removed if that fails.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of resolving `target`, renaming the staged file or syncing the
+    /// directory.
     pub fn commit(&self, staged: &Path, target: &Path) -> io::Result<()> {
         let target = link::resolve(target)?;
         lock::with(&target, || write::commit(staged, &target))
@@ -149,6 +166,10 @@ impl AtomicFile {
     }
 
     /// The file's bytes; `None` when there is no file.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of reading the file, other than its being absent.
     pub fn read(&self) -> io::Result<Option<Vec<u8>>> {
         match std::fs::read(self.path()) {
             Ok(bytes) => Ok(Some(bytes)),
@@ -158,6 +179,10 @@ impl AtomicFile {
     }
 
     /// Replaces the file with `text`, atomically, keeping the one it replaces as the backup.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of staging the text or of replacing the file or keeping its backup.
     pub fn write(&self, text: &str) -> io::Result<()> {
         let staged = self.stage(text)?;
         let kept = self.keep_previous();
@@ -176,6 +201,10 @@ impl AtomicFile {
 
     /// The first half of a save: the whole document on disk and synced, under a staging name of
     /// its own, which it returns. Until the commit the file is untouched.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of resolving the path or of writing and syncing the staged file.
     pub fn stage(&self, text: &str) -> io::Result<PathBuf> {
         AtomicWrite::PRIVATE.stage(&self.path(), text.as_bytes())
     }

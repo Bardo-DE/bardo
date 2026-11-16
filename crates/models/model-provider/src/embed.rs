@@ -90,6 +90,11 @@ pub enum EmbedFault {
 
 impl EmbedEnd {
     /// `Ok` when there are `want` vectors, each `dims` wide.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`EmbedFault::CountMismatch`] when there are not `want` vectors and
+    /// [`EmbedFault::WidthMismatch`] when one is not `dims` wide.
     pub fn check(&self, want: Count, dims: Dims) -> Result<(), EmbedFault> {
         let got = Count(u32::try_from(self.vectors.len()).unwrap_or(u32::MAX));
         if got != want {

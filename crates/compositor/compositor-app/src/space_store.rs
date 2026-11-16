@@ -101,9 +101,17 @@ pub enum SpaceStoreError {
 /// The Spaces file's text, stored somewhere.
 pub trait SpaceStore: std::fmt::Debug {
     /// The stored text, or none when nothing was stored yet.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SpaceStoreError`] when the stored text cannot be read.
     fn read(&self) -> Result<Option<String>, SpaceStoreError>;
 
     /// Stores `text`, replacing what was there, atomically.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SpaceStoreError`] when the text cannot be written.
     fn write(&mut self, text: &str) -> Result<(), SpaceStoreError>;
 }
 
@@ -175,6 +183,10 @@ impl SpaceStore for EphemeralSpaceStore {
 }
 
 /// The stored Spaces: none when nothing was stored.
+///
+/// # Errors
+///
+/// Returns [`SpaceStoreError`] when the stored text cannot be read or parsed.
 pub fn load_spaces(store: &dyn SpaceStore) -> Result<SpaceFile, SpaceStoreError> {
     match store.read()? {
         Some(text) => {
@@ -192,6 +204,10 @@ pub fn load_spaces(store: &dyn SpaceStore) -> Result<SpaceFile, SpaceStoreError>
 }
 
 /// Stores `file`.
+///
+/// # Errors
+///
+/// Returns [`SpaceStoreError`] when `file` cannot be rendered or stored.
 pub fn save_spaces(store: &mut dyn SpaceStore, file: &SpaceFile) -> Result<(), SpaceStoreError> {
     store.write(&file.render()?)
 }

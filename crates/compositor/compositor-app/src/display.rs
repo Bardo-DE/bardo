@@ -27,6 +27,11 @@ impl SharedDisplay {
 /// client requests into the `State`.
 ///
 /// Returns the shared display (its owner flushes clients after each loop turn).
+///
+/// # Errors
+///
+/// Returns [`StartError`] when the display's poll fd cannot be duplicated or its source cannot be
+/// inserted into the loop.
 pub fn attach_display(
     mut display: Display<State>,
     event_loop: &LoopHandle<'static, State>,

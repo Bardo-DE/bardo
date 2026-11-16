@@ -44,6 +44,10 @@ pub enum LockRefusal {
 /// The session lock, as the daemon uses it.
 pub trait SessionLockHost {
     /// Lock the session with one surface per output from `factory`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LockRefusal`] when the session cannot be locked.
     fn lock_session(&mut self, factory: LockFactory) -> Result<LockId, LockRefusal>;
     /// Unlock `id` (its documents are told `Unlocking`, then `unlock_and_destroy`).
     fn unlock_session(&mut self, id: LockId);

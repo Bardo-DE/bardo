@@ -62,6 +62,10 @@ use makers::Makers;
 /// may open a DRM node without root. `session_real.rs` provides the implementation.
 pub trait FdSource: std::fmt::Debug {
     /// The opened node at `path`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the node at `path` cannot be opened.
     fn fd(&mut self, path: &DevicePath) -> Result<OwnedFd, KmsError>;
 }
 
@@ -130,6 +134,11 @@ fn open_gbm(fd: &DrmDeviceFd) -> Option<GbmDevice<DrmDeviceFd>> {
 impl RealKms {
     /// Wraps the device behind `fd`: reads its resources, takes master, and has `handle`'s loop
     /// read the device's vblank events.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the device's resources cannot be read, master cannot be taken or
+    /// its event source cannot be inserted into the loop.
     pub fn open<D: 'static>(
         fd: OwnedFd,
         handle: &LoopHandle<'static, D>,
@@ -141,6 +150,11 @@ impl RealKms {
     /// says (a frame drawn on the render GPU and copied across when another GPU renders). In
     /// [`RenderMode::Software`] no GBM device is opened and the hub is never asked for a
     /// renderer.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the device cannot be created, its resources cannot be probed, or
+    /// its event source cannot be inserted into the loop.
     pub fn open_routed<D: 'static>(
         fd: OwnedFd,
         handle: &LoopHandle<'static, D>,

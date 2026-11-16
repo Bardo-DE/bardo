@@ -83,6 +83,10 @@ impl Intake {
     }
 
     /// Counts a call by the unique bus name `caller`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ConnectRefusal::TooMany`] when `caller` has made too many calls lately.
     pub fn rate(&self, caller: &str) -> Result<(), ConnectRefusal> {
         let mut rate = self.rate.lock().unwrap_or_else(PoisonError::into_inner);
         if rate.admit(caller) {
@@ -102,6 +106,11 @@ impl Intake {
 
     /// Puts `ask` in the queue and gives back where its answer will arrive. A full queue drops
     /// the call; a loop that is gone is `Unavailable`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ConnectRefusal::TooMany`] when the queue is full and
+    /// [`ConnectRefusal::Unavailable`] when the loop is gone.
     pub fn enqueue(
         &self,
         ask: ConnectAsk,

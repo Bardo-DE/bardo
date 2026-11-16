@@ -173,6 +173,11 @@ impl Message {
 
     /// The first fault, if the message is malformed. Pure; the router checks before it
     /// delivers.
+    ///
+    /// # Errors
+    ///
+    /// Returns the first [`Fault`] found: no parts, too many parts, text too long, a reply to
+    /// itself or a report from a user.
     pub fn check(&self) -> Result<(), Fault> {
         let long = self
             .parts

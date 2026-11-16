@@ -53,6 +53,10 @@ pub enum Vetting {
 
 /// Inserts the client on `stream` with `role`, `peer` and `standing`, mints its key and tells
 /// the model (`Event::ClientConnected`, then `Event::ClientStanding` for a judged one).
+///
+/// # Errors
+///
+/// Returns the I/O error of inserting the client into the display.
 pub fn insert_client(
     state: &mut State,
     stream: UnixStream,

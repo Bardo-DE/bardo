@@ -40,6 +40,10 @@ impl SleepHandler for Linked {
 /// let (link, _inbox) = sleep_channel(|| {});
 /// let _watch = watch(link, None).expect("login1 is on the bus");
 /// ```
+///
+/// # Errors
+///
+/// Returns [`SleepError`] when the watcher cannot connect to the bus or subscribe to logind.
 pub fn watch(link: SleepLink, bus: Option<String>) -> Result<SleepWatch, SleepError> {
     SleepWatch::start(bus, Linked(link))
 }

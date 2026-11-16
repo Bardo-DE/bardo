@@ -38,6 +38,11 @@ pub enum UpdateError<E> {
 /// 0600 and left in place). A holder that does not let go within a few seconds makes the update
 /// fail with an error of kind `TimedOut`. A caller must not call `update_atomic` or
 /// `write_atomic` for the same path from inside `edit`.
+///
+/// # Errors
+///
+/// Returns [`UpdateError`] when the file cannot be locked, read or written, or when `edit` returns
+/// an error, in which case the file is left alone.
 pub fn update_atomic<E>(
     path: &Path,
     cap: ReadCap,

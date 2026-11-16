@@ -19,6 +19,10 @@ pub fn short_run(dir: &Path) -> PathBuf {
 }
 
 /// Points the short name at `<dir>/run`, replacing a stale link of an earlier run of the same root.
+///
+/// # Errors
+///
+/// Returns the I/O error of replacing the link or creating `<dir>/run`.
 pub fn link_run(dir: &Path) -> std::io::Result<()> {
     let link = short_run(dir);
     unlink_run(dir);

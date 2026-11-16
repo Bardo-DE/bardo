@@ -148,6 +148,10 @@ pub enum Entropy {
 
 impl Entropy {
     /// The sixteen bytes.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of reading `/dev/urandom`.
     pub fn bytes(self) -> std::io::Result<[u8; 16]> {
         match self {
             Entropy::Fixed(bytes) => Ok(bytes),
@@ -203,6 +207,11 @@ pub enum CliError {
 }
 
 /// What `args` (without the program name) ask for.
+///
+/// # Errors
+///
+/// Returns [`CliError`] when a flag is unknown, lacks its value or has a value that is not one of
+/// the words it takes.
 pub fn parse_args(args: &[String]) -> Result<Command, CliError> {
     let mut config = StartConfig {
         backend: BackendChoice::Headless,

@@ -77,6 +77,10 @@ impl fmt::Debug for WinitBackend {
 impl WinitBackend {
     /// Opens the window at `output`'s size and scale; the output it announces is the window's
     /// own size and scale, which the host may have changed.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the window or its GLES renderer cannot be created.
     pub fn start(requested: VirtualOutputSpec) -> Result<WinitBackend, BackendError> {
         let scale = f64::from(requested.scale.0) / 120.0;
         let logical = LogicalSize::new(
@@ -193,6 +197,10 @@ impl WinitBackend {
     /// Draws `source` into the window and swaps; the number of the frame shown. None while the
     /// host has not asked for a frame: swapping then would block the whole loop (a hidden window
     /// is never asked).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the window cannot be bound, drawn into or swapped.
     pub fn present(&mut self, source: &dyn FrameSource) -> Result<Option<VblankSeq>, BackendError> {
         if !self.granted {
             return Ok(None);

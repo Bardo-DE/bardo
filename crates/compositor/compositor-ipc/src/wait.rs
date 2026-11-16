@@ -30,6 +30,10 @@ pub enum WaitPredicate {
 }
 
 /// The predicate `text` says.
+///
+/// # Errors
+///
+/// Returns [`IpcError::BadLine`] when `text` is not a predicate of the protocol.
 pub fn parse_wait(text: &str) -> Result<WaitPredicate, IpcError> {
     let words: Vec<&str> = text.split_whitespace().collect();
     let parsed = match words.as_slice() {

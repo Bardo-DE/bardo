@@ -76,6 +76,11 @@ impl TtyBackend {
     ///     }
     /// }
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the output has no driver, or the commit or the scanout surface
+    /// fails.
     pub fn apply(
         &mut self,
         name: &OutputName,

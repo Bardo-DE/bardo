@@ -53,23 +53,55 @@ pub enum LogError {
 /// Reading the log.
 pub trait LogRead {
     /// The newest entry, or the checkpoint's position when the log is empty.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the log cannot be read.
     fn head(&self) -> Result<Head, LogError>;
     /// Where the retained entries start: genesis, or the last prune.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the log cannot be read.
     fn checkpoint(&self) -> Result<Checkpoint, LogError>;
     /// A page, newest first, from a cursor, filtered.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the log cannot be read.
     fn page(&self, q: &PageQuery) -> Result<Vec<Entry>, LogError>;
     /// The entries whose bodies name `thing` in the given role.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the log cannot be read.
     fn touching(&self, thing: &ThingRef, role: RoleFilter) -> Result<Vec<Seq>, LogError>;
     /// Every entry from `from`, ascending: for verification and index rebuilds.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the log cannot be read.
     fn scan(&self, from: Seq) -> Result<Vec<Entry>, LogError>;
 }
 
 /// Writing the log.
 pub trait LogWrite: LogRead {
     /// Chains and stores a header and, unless the admission was header-only, its body.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the entry cannot be chained or stored.
     fn append(&mut self, header: NewHeader, body: Option<EventBody>) -> Result<Entry, LogError>;
     /// Erases bodies and their `things` rows; headers and digests stay.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the bodies cannot be erased.
     fn erase_bodies(&mut self, seqs: &[Seq]) -> Result<Count, LogError>;
     /// Removes the prefix up to and including `cut`, leaving a checkpoint. Prefix only.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LogError`] when the prefix cannot be removed or the checkpoint cannot be stored.
     fn prune_before(&mut self, cut: Seq) -> Result<Checkpoint, LogError>;
 }

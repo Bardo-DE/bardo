@@ -42,6 +42,11 @@ fn mime_of(entry: &str) -> Option<&'static str> {
 
 impl Comic {
     /// The comic in the zip `input` (a path, or any bytes a host injects): its images, sorted. A zip with none is [`BookError::Empty`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BookError`] when the zip cannot be opened or read, or holds no image
+    /// ([`BookError::Empty`]).
     pub fn open(input: impl Into<Input>) -> Result<Comic, BookError> {
         let input = input.into();
         let mut pages: Vec<ComicPage> = file_names(&input)?
@@ -71,6 +76,11 @@ impl Comic {
     }
 
     /// The page `at` and its bytes. Blocking.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BookError::NoSuchSection`] when `at` is not a page, or the error of reading the
+    /// page from the zip.
     pub fn page(&self, at: SectionIndex) -> Result<(&ComicPage, Vec<u8>), BookError> {
         let page = self
             .pages

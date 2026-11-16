@@ -71,6 +71,11 @@ pub fn role_for_connection(role: &ConnectionRole) -> Option<RoleName> {
 ///
 /// A caller that is not one of them is refused with the one fixed sentence, and the refusal is
 /// logged once with the roles asked and the standing found.
+///
+/// # Errors
+///
+/// Returns the D-Bus error `NotTheCaller` when `sender` is unknown, cannot be looked up, or does
+/// not prove one of `roles` in full.
 pub async fn require(
     check: &dyn CallerCheck,
     sender: Option<&str>,

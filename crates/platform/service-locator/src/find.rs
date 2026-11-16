@@ -218,6 +218,11 @@ fn wait_for(at: &Address, wait: Duration) -> Result<Stream, Error> {
 /// Fixing it here needs one `unsafe` call to `SetHandleInformation` or an equivalent dependency.
 /// It is not done because this crate compiles under `unsafe_code = "forbid"` and the workaround
 /// above is cheap; if that trade stops being the right one, this is where it changes.
+///
+/// # Errors
+///
+/// Returns [`Error::NoSelf`] when the running binary cannot be found and [`Error::CannotSpawn`]
+/// when it cannot be started.
 pub fn spawn(args: &[&str]) -> Result<(), Error> {
     let exe = std::env::current_exe().map_err(Error::NoSelf)?;
     let mut command = std::process::Command::new(exe);

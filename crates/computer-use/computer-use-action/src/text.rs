@@ -66,6 +66,11 @@ macro_rules! bounded_text {
             /// The most characters this text may hold.
             pub const MAX_CHARS: u32 = $max;
 
+            /// The text, checked against this field's length and character rules.
+            ///
+            /// # Errors
+            ///
+            /// Returns [`TextError`] when `text` is empty, too long or holds a character the field refuses.
             pub fn new(text: impl Into<String>) -> Result<Self, TextError> {
                 let text = text.into();
                 check(&text, Self::MAX_CHARS, $controls, $empty)?;

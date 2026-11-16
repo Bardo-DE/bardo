@@ -110,11 +110,27 @@ pub enum VaultError {
 /// atomic (temporary file, then rename) so a crash never leaves half a file.
 pub trait Vault: Send + Sync {
     /// Every file under `dir`, at any depth, sorted.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`VaultError`] when `dir` cannot be listed.
     fn list(&self, dir: &VaultPath) -> Result<Vec<VaultPath>, VaultError>;
     /// A file's bytes (unsealed, for a sealed vault).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`VaultError`] when the file is missing, cannot be read or cannot be unsealed.
     fn read(&self, p: &VaultPath) -> Result<Vec<u8>, VaultError>;
     /// Replaces or creates a file atomically.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`VaultError`] when the file cannot be sealed or written.
     fn write_atomic(&self, p: &VaultPath, bytes: &[u8]) -> Result<(), VaultError>;
     /// Removes a file.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`VaultError`] when the file cannot be removed.
     fn remove(&self, p: &VaultPath) -> Result<(), VaultError>;
 }

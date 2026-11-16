@@ -33,6 +33,10 @@ pub fn default_source(eval_dir: &Path) -> PathBuf {
 }
 
 /// Copies every `*.toml` of `from` into `to` (made if absent); returns how many.
+///
+/// # Errors
+///
+/// Returns the I/O error of creating `to`, reading `from` or copying an entry.
 pub fn copy_entries(from: &Path, to: &Path) -> std::io::Result<usize> {
     std::fs::create_dir_all(to)?;
     let mut n = 0;

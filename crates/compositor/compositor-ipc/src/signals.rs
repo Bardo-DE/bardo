@@ -62,6 +62,11 @@ pub struct SignalWatch {
 impl SignalWatch {
     /// Installs the handlers and starts the thread. Returns once they are installed, so a
     /// signal sent after this is heard.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SignalError`] when the thread cannot be started or does not report that the
+    /// handlers are installed in time.
     pub fn start(handler: impl SignalHandler) -> Result<SignalWatch, SignalError> {
         let (stop, stopped) = oneshot::channel();
         let (ready_tx, ready) = mpsc::channel();

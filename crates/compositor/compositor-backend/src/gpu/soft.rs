@@ -88,6 +88,10 @@ pub struct SoftPixman {
 
 impl SoftPixman {
     /// A new soft GPU renderer with a fresh context id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError`] when the pixman renderer cannot be created.
     pub fn new() -> Result<SoftPixman, BackendError> {
         let inner = PixmanRenderer::new()?;
         Ok(SoftPixman {
@@ -330,6 +334,10 @@ pub struct FixedUdmabuf {
 
 impl FixedUdmabuf {
     /// Opens `/dev/udmabuf` (bound into the jail; preflight exits 3 without it).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BackendError::DeniedOpen`] when `/dev/udmabuf` cannot be opened.
     pub fn new() -> Result<FixedUdmabuf, BackendError> {
         UdmabufAllocator::new()
             .map(|udmabuf| FixedUdmabuf { udmabuf })

@@ -53,6 +53,10 @@ pub fn followed(current: &CasementSettings, doc: &CasementDoc) -> CasementSettin
 }
 
 /// Follows the file. A file that cannot be watched is logged and the settings read at start are kept.
+///
+/// # Errors
+///
+/// Returns [`crate::StartError`] when the settings source cannot be inserted into the event loop.
 pub fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate::StartError> {
     let (sender, receiver) = channel::channel::<CasementDoc>();
     let mut watch = config::watch(home, &ThreadSpawner);

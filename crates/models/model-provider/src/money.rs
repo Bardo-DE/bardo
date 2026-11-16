@@ -34,6 +34,11 @@ impl Money {
     }
 
     /// The sum of two amounts of the same currency; never a panic.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MoneyError::CurrencyMismatch`] when the currencies differ and
+    /// [`MoneyError::Overflow`] when the sum does not fit.
     pub fn checked_add(self, other: Money) -> Result<Money, MoneyError> {
         if self.currency != other.currency {
             return Err(MoneyError::CurrencyMismatch);

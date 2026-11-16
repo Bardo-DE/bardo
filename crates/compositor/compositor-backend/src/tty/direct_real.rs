@@ -56,6 +56,11 @@ fn device_on(fd: &OwnedFd) -> io::Result<DrmDeviceFd> {
 /// With the writeback connector when `writeback` asks. `mode` says how the node's outputs are drawn
 /// (`--safe`: by the CPU, with no GBM device opened). `handle`'s loop is woken whenever the edge
 /// sends a note.
+///
+/// # Errors
+///
+/// Returns [`BackendError`] when the node cannot be opened, is not vkms, or cannot be set up as the
+/// display device.
 pub fn direct_seams<D: 'static>(
     node: &Path,
     writeback: bool,

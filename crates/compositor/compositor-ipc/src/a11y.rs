@@ -86,6 +86,10 @@ pub struct A11yWorker {
 impl A11yWorker {
     /// Starts the thread, checking against the bus at `address` (the session bus). The channel
     /// carries the answers to the event loop. The thread ends when the worker is dropped.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of starting the thread.
     pub fn start(address: String) -> Result<(A11yWorker, Channel<A11yVerdict>), std::io::Error> {
         let (queue, incoming) = channel(A11Y_QUEUE);
         let (verdicts, answers) = sync_channel(A11Y_QUEUE);
@@ -96,6 +100,11 @@ impl A11yWorker {
     }
 
     /// Queues `ask`; refused when too many are waiting or the thread has stopped.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`A11yFault::Busy`] when too many claims are waiting and [`A11yFault::Stopped`] when
+    /// the thread has stopped.
     pub fn check(&self, ask: A11yAsk) -> Result<(), A11yFault> {
         self.queue.try_send(ask).map_err(|error| match error {
             TrySendError::Full(_) => A11yFault::Busy,

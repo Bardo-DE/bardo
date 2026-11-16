@@ -53,6 +53,10 @@ const APP: AppName = AppName::desktop("compositor");
 ///
 /// `Some(dir)` stands in for `$XDG_CONFIG_HOME`, so the file is `dir/compositor/settings.toml`
 /// (ui-settings' scratch root); `None` reads the environment.
+///
+/// # Errors
+///
+/// Returns [`ConfigError`] when the settings file exists but cannot be read.
 pub fn load(home: Option<&Path>) -> Result<CasementDoc, ConfigError> {
     let loaded = store(home).load::<CasementDoc>();
     for key in &loaded.unknown {

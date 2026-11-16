@@ -199,6 +199,11 @@ impl Drop for Scratch {
 }
 
 impl Scratch {
+    /// A scratch root under `keep_in`, or a temporary one when it is `None`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of creating the directories.
     pub fn made(keep_in: Option<&Path>) -> std::io::Result<Self> {
         match keep_in {
             Some(root) => {

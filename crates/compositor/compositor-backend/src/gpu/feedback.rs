@@ -9,11 +9,20 @@ use std::collections::{BTreeMap, BTreeSet};
 /// A node's formats. Real: the node's EGL display; fake: `compositor_testkit::gpu::FormatSet`.
 pub trait FormatSource: std::fmt::Debug {
     /// The formats `node` renders to and imports.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GpuError`] when the node's formats cannot be read.
     fn formats_of(&mut self, node: &DrmNodeId) -> Result<Vec<FormatEntry>, GpuError>;
 }
 
 /// The table for every node the plan names (the render GPU and each scanout GPU), each read
 /// once. A node detection does not list is `GpuError::UnknownNode`.
+///
+/// # Errors
+///
+/// Returns [`GpuError::UnknownNode`] for a node detection does not list, or the error of reading a
+/// node's formats.
 pub fn format_table(
     source: &mut dyn FormatSource,
     nodes: &dyn RenderNodes,

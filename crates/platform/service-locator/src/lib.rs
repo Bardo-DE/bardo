@@ -118,6 +118,10 @@ impl Agent {
     /// The name becomes a directory on Unix and part of a machine-wide pipe name on Windows, so
     /// it is restricted to ASCII letters, digits and `-`. Keep it short: on macOS the whole
     /// socket path has 104 bytes to fit in, and `TMPDIR` has already spent forty of them.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error`] when `name` is not allowed or the environment names no directory to use.
     pub fn new(name: &str) -> Result<Self, Error> {
         Self::in_environment(name, here(), &Environment::read())
     }
@@ -125,6 +129,10 @@ impl Agent {
     /// The same, told where it is and what the environment says.
     ///
     /// For tests, and for a program that wants its agent somewhere specific.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error`] when `name` is not allowed or `env` names no directory to use.
     pub fn in_environment(name: &str, host: Host, env: &Environment) -> Result<Self, Error> {
         Ok(Self {
             address: address_on(name, host, env)?,
@@ -146,16 +154,30 @@ impl Agent {
     }
 
     /// Become the agent, or report that another process already is.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::AlreadyRunning`] when another process is the agent, or the error of
+    /// preparing the address.
     pub fn listen(&self) -> Result<Listening, Error> {
         serve::listen(&self.address)
     }
 
     /// Knock. `Ok(None)` means nobody is home.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error`] when the address cannot be prepared or the connection fails for a reason
+    /// other than nobody listening.
     pub fn connect(&self) -> Result<Option<Stream>, Error> {
         find::connect(&self.address)
     }
 
     /// Knock, and start one if nobody answers.
+    ///
+    /// # Errors
+    ///
+    /// Returns the error of `start`, or [`Error`] when nobody answers within `wait`.
     pub fn connect_or_start(
         &self,
         start: impl FnOnce() -> Result<(), Error>,

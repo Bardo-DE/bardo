@@ -79,6 +79,10 @@ impl<E: Display + Send + 'static> LatestWriter<E> {
 
     /// Hands `text` over to be written. Without a thread it is written now and the result is
     /// the write's.
+    ///
+    /// # Errors
+    ///
+    /// Returns the write's error when there is no writer thread and the write fails.
     pub fn put(&self, text: &str) -> Result<(), E> {
         if self.thread.is_none() {
             let mut write = self.write.lock().unwrap_or_else(PoisonError::into_inner);

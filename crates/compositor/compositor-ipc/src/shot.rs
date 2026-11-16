@@ -22,6 +22,10 @@ pub enum ShotArea {
 }
 
 /// The area `text` says.
+///
+/// # Errors
+///
+/// Returns [`IpcError::BadLine`] when `text` is not an area of the protocol.
 pub fn parse_shot(text: &str) -> Result<ShotArea, IpcError> {
     let bad = || IpcError::BadLine(text.to_owned());
     match text.split_once(':') {

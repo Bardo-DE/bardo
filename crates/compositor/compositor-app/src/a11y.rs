@@ -20,6 +20,10 @@ use std::fmt::Debug;
 /// Who checks the roots clients claim.
 pub trait A11yChecks: Debug {
     /// Queues one claim for checking; the answer comes back through [`adopt`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`A11yFault`] when the claim cannot be queued.
     fn check(&self, ask: A11yAsk) -> Result<(), A11yFault>;
 }
 
@@ -42,6 +46,10 @@ impl A11yChecks for NoA11y {
 
 /// Starts checking claims against the bus at `address`, and feeds each verdict into the model
 /// from `handle`'s loop.
+///
+/// # Errors
+///
+/// Returns [`LoopError`] when the checker's channel cannot be inserted into the event loop.
 pub fn attach(
     state: &mut State,
     handle: &LoopHandle<'static, State>,

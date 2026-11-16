@@ -75,6 +75,10 @@ impl Live {
 ///
 /// The bindings already in the settings (casement's own `[bindings]`) stay first. A watch that
 /// cannot start is logged and the keymap read once is kept.
+///
+/// # Errors
+///
+/// Returns [`crate::StartError`] when the keymap source cannot be inserted into the event loop.
 pub fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate::StartError> {
     let source = source_for(home);
     let (sender, receiver) = channel::channel::<()>();

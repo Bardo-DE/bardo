@@ -42,6 +42,11 @@ pub fn main(request: &Request) -> ExitCode {
 
 /// One request's reply. `Quit`, `Ping` and `Launch` never start a daemon: a launch asked of a
 /// shell that was not running would time the shell's start, not the launch.
+///
+/// # Errors
+///
+/// Returns [`ClientError`] when the shell is not running, the connection fails or the request or
+/// reply cannot be sent or read.
 pub fn send(request: &Request) -> Result<Response, ClientError> {
     let agent = service_locator::Agent::new("bardo-shell")?;
     let mut stream = match request {

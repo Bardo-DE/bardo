@@ -62,6 +62,10 @@ impl TtyBackend {
     /// formats, with the render GPU's scanout tranche from the planes of the devices open now.
     /// None while there is no plan (no GPU was found) or no format source was injected: the
     /// caller then offers what it would offer without a seat (the soft offer, or none).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GpuError`] when the formats of a node cannot be read.
     pub fn dmabuf_feedback(&mut self) -> Result<Option<FeedbackPlan>, GpuError> {
         let (Some(plan), Some(source)) = (&self.plan, self.seams.formats.as_mut()) else {
             return Ok(None);

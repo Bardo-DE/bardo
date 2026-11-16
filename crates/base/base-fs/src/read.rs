@@ -116,6 +116,11 @@ fn open(path: &Path) -> io::Result<File> {
 /// swapped between the two), and it is opened without blocking, so a FIFO or a device at the path
 /// is [`ReadError::NotRegular`] rather than a hang. A file that grows past the cap while being
 /// read is refused too.
+///
+/// # Errors
+///
+/// Returns [`ReadError`] when the file cannot be inspected or opened, is not a regular file, or is
+/// larger than `cap`.
 pub fn read_capped(path: &Path, cap: ReadCap) -> Result<Vec<u8>, ReadError> {
     let at = |source: io::Error| ReadError::at(path, source);
     let named = std::fs::metadata(path).map_err(at)?;
@@ -149,6 +154,10 @@ pub fn read_capped(path: &Path, cap: ReadCap) -> Result<Vec<u8>, ReadError> {
 }
 
 /// [`read_capped`] as UTF-8 text.
+///
+/// # Errors
+///
+/// Returns [`ReadError`] when [`read_capped`] fails or the bytes are not UTF-8.
 pub fn read_text_capped(path: &Path, cap: ReadCap) -> Result<String, ReadError> {
     String::from_utf8(read_capped(path, cap)?).map_err(|source| ReadError::NotText {
         path: path.to_path_buf(),

@@ -56,6 +56,10 @@ const UNIT_COMMANDS: [(&str, DesktopCommand); 8] = [
 
 impl ActionWords {
     /// The action these words name.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CoreError::Malformed`] when the words name no action.
     pub fn parse(&self) -> Result<BindingAction, CoreError> {
         let words: Vec<&str> = self.0.iter().map(String::as_str).collect();
         match words.as_slice() {

@@ -134,6 +134,11 @@ impl Xwayland {
     /// the Wayland socket `wayland`. Satellite's command line is
     /// `<binary> <display> -listenfd <fd>...`, the numbers being those the program inherits.
     /// On failure the sockets come back (boxed: they carry the restart window).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`XwaylandError`] together with the sockets, handed back for the next try, when
+    /// satellite cannot be started.
     pub fn start(
         config: &XwaylandConfig,
         spawner: &mut dyn Spawner,
@@ -222,6 +227,10 @@ pub enum XwaylandState {
 
 impl XwaylandState {
     /// The state `config` asks for at start: off, or listening on a free display in `dir`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`XwaylandError`] when no display can be bound in `dir`.
     pub fn bind(config: &XwaylandConfig, dir: &X11Dir) -> Result<XwaylandState, XwaylandError> {
         match config.mode {
             XwaylandMode::Satellite => Ok(XwaylandState::Listening(Listening::bind(dir)?)),
@@ -232,6 +241,11 @@ impl XwaylandState {
     /// Starts satellite when a client is waiting on the sockets, at most [`MAX_STARTS`] times in
     /// [`WINDOW`] (`now` is the session clock's); a start that fails leaves the sockets bound
     /// (the next call tries again) and returns why.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`XwaylandError`] when satellite cannot be started; the sockets stay bound and the
+    /// next call tries again.
     pub fn serve(
         &mut self,
         config: &XwaylandConfig,

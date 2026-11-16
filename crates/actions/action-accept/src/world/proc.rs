@@ -51,6 +51,10 @@ pub fn place(root: &Path, pid: u32, cgroup: Cgroup<'_>) {
 /// runs is what its caller row matches (`exe`).
 ///
 /// A unit's main process needs none: the fixture gives it the image its row names.
+///
+/// # Errors
+///
+/// Returns the I/O error of replacing the link, other than the old link being absent.
 pub fn link_image(pid_dir: &Path, name: &str) -> std::io::Result<()> {
     let link = pid_dir.join("exe");
     match std::fs::remove_file(&link) {

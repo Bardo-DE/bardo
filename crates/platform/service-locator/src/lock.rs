@@ -81,6 +81,11 @@ fn same_file(_file: &std::fs::File, _path: &Path) -> bool {
 /// permissions are the whole of the authentication: an agent any local process could talk to
 /// would be an agent any local process could use. A directory that already exists is trusted only
 /// if this user owns it (see [`private_dir`]).
+///
+/// # Errors
+///
+/// Returns [`Error::AlreadyRunning`] when another process holds the lock, or the error of making
+/// the directory or opening the file.
 pub fn take(path: &Path) -> Result<Held, Error> {
     if let Some(parent) = path.parent() {
         private_dir(parent)?;

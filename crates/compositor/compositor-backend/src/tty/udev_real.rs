@@ -22,6 +22,10 @@ pub struct RealUdev {
 
 impl RealUdev {
     /// Starts watching the DRM devices of `seat`, with `handle`'s loop reading the monitor.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of opening the udev monitor or inserting it into the loop.
     pub fn watch<D: 'static>(
         seat: &str,
         handle: &LoopHandle<'static, D>,

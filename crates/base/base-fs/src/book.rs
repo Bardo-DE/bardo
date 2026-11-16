@@ -35,6 +35,10 @@ pub struct Committed<D> {
 ///
 /// A document that cannot be written leaves `held` as it was. The caller wakes whoever follows the
 /// document after this returns, never from inside the save.
+///
+/// # Errors
+///
+/// Returns [`SaveFailed`] when `after` cannot be serialized or written; `held` is left as it was.
 pub async fn commit<D>(
     file: Option<&AtomicFile>,
     held: &mut D,

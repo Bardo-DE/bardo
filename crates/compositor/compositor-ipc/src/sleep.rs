@@ -84,6 +84,11 @@ impl SleepWatch {
     /// fake logind on it; none for the system bus, a real seat), subscribes to
     /// `PrepareForSleep` and takes the delay inhibitor. Returns once the subscription is made,
     /// so a signal sent after this is heard.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SleepError`] when the thread cannot be started, the bus or logind cannot be
+    /// reached, or the thread does not report in time.
     pub fn start(
         address: Option<String>,
         handler: impl SleepHandler,

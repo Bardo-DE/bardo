@@ -94,6 +94,10 @@ impl WallClock {
 
 impl ClockSource {
     /// The clock `choice` asks for, its timer source inserted into `event_loop`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`StartError`] when the timer source cannot be inserted into the event loop.
     pub fn start(
         choice: ClockChoice,
         event_loop: &LoopHandle<'static, State>,

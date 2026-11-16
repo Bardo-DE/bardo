@@ -44,6 +44,11 @@ pub struct RealSession {
 
 impl RealSession {
     /// Opens the seat (logind or seatd) and has `handle`'s loop listen for it changing hands.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SessionFault::Unavailable`] when no seat is available or the loop cannot listen
+    /// for it.
     pub fn open<D: 'static>(handle: &LoopHandle<'static, D>) -> Result<RealSession, SessionFault> {
         let unavailable = SessionFault::Unavailable;
         let (seat, notifier) =

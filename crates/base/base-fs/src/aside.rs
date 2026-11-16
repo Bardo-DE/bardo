@@ -16,6 +16,10 @@ use std::path::{Path, PathBuf};
 ///
 /// A symlink is moved as the link it is. The rename takes the same per-path turn as
 /// [`crate::write_atomic`].
+///
+/// # Errors
+///
+/// Returns [`WriteError`] when the file cannot be renamed.
 pub fn move_aside(path: &Path, at: UnixSeconds) -> Result<PathBuf, WriteError> {
     lock::with(path, || rename_aside(path, at)).map_err(|source| WriteError::at(path, source))
 }

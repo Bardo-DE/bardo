@@ -14,6 +14,11 @@ macro_rules! text_id {
 
         impl $name {
             /// The id written as `text`, or why it is not one.
+            ///
+            /// # Errors
+            ///
+            /// Returns [`CoreError::MalformedId`](::account_core::CoreError::MalformedId) when
+            /// `text` is not a valid id.
             pub fn parse(text: &str) -> Result<Self, ::account_core::CoreError> {
                 let ok: fn(&str) -> bool = $ok;
                 if ok(text) {

@@ -30,6 +30,10 @@ use smithay::reexports::calloop::channel::{Channel, Event as ChannelEvent};
 use smithay::reexports::calloop::{Error as LoopError, LoopHandle, RegistrationToken};
 
 /// Starts answering `calls` on `handle`'s loop.
+///
+/// # Errors
+///
+/// Returns [`LoopError`] when the calls channel cannot be inserted into the event loop.
 pub fn attach(
     handle: &LoopHandle<'static, State>,
     calls: Channel<ConnectCall>,

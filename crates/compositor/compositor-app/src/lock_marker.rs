@@ -18,6 +18,10 @@ pub trait LockMarker: std::fmt::Debug {
     fn marked(&self) -> bool;
 
     /// Writes (`true`) or removes (`false`) the marker.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LockMarkerError`] when the marker cannot be written or removed.
     fn set(&mut self, marked: bool) -> Result<(), LockMarkerError>;
 }
 

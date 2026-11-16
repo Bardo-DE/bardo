@@ -151,6 +151,11 @@ pub const fn here() -> Host {
 /// fallbacks matter more than they look: a login shell over ssh often has no `XDG_RUNTIME_DIR`,
 /// and refusing to run there would make the agent unavailable in exactly the session most likely
 /// to want a command-line client.
+///
+/// # Errors
+///
+/// Returns [`Error::BadName`] when `name` is not allowed and [`Error::Homeless`] when the
+/// environment names no directory to use.
 pub fn address_on(name: &str, host: Host, env: &Environment) -> Result<Address, Error> {
     if name.is_empty() || !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
         // Refused rather than escaped. The name reaches a filesystem path on two platforms and a

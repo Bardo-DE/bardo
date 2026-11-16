@@ -38,6 +38,10 @@ impl TtyDevices {
 
     /// A device appeared: open it and report its connectors as plugged. An already open node is
     /// reconciled instead (a repeated `Added` loses and repeats nothing).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError`] when the device cannot be opened or its connectors cannot be read.
     pub fn added(
         &mut self,
         path: DevicePath,
@@ -53,6 +57,11 @@ impl TtyDevices {
     }
 
     /// A device changed: reconcile its connectors.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`KmsError::DeviceGone`] when the device is not open, or the error of reading its
+    /// connectors.
     pub fn changed(&mut self, path: &DevicePath) -> Result<Vec<ConnectorEvent>, KmsError> {
         let device = self
             .devices

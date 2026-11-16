@@ -194,6 +194,11 @@ impl Node {
 impl Shape {
     /// The shape of a JSON schema, or why the vocabulary cannot say it. See the module docs for
     /// the subset. Total: any text is read or refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SchemaRefusal`] when `schema` is not JSON, is nested deeper than the limits allow,
+    /// or says something the vocabulary cannot.
     pub fn from_json_schema(
         schema: &SchemaText,
         limits: SchemaLimits,

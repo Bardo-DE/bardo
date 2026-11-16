@@ -36,6 +36,11 @@ pub struct StopRequested;
 ///
 /// Returns once the handlers are installed, so a signal sent after this is heard. The thread lives
 /// for the process.
+///
+/// # Errors
+///
+/// Returns [`StopError`] when the thread cannot be started or does not report that the handlers are
+/// installed in time.
 pub fn watch() -> Result<Channel<StopRequested>, StopError> {
     let (sender, channel) = channel::channel();
     let (ready_tx, ready) = mpsc::channel();

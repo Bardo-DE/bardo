@@ -22,6 +22,10 @@ pub enum JailRefusal {
 
 /// Whether a start with `config` may go ahead under `root` (`/` in the binary). The jail's
 /// conditions are `compositor_privacy::breach`'s, shared with `bardo-compositorctl`.
+///
+/// # Errors
+///
+/// Returns [`JailRefusal`] when the backend is not headless or the process is outside the jail.
 pub fn require_start(config: &StartConfig, root: &Path) -> Result<(), JailRefusal> {
     if config.backend != BackendChoice::Headless {
         return Err(JailRefusal::Backend);
