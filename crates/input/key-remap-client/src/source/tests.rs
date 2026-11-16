@@ -196,7 +196,7 @@ fn watch_fires_when_the_daemon_says_the_keymap_changed_and_not_for_the_first_sta
         "the first state is not a change"
     );
 
-    daemon.change(state("paste = Primary+Alt+V\n"));
+    daemon.change(&state("paste = Primary+Alt+V\n"));
     wait_for("the callback", || count.load(Ordering::SeqCst) == 1);
 }
 

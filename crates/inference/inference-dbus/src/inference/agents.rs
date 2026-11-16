@@ -15,7 +15,9 @@ use account_dbus_macros::bus_interface;
 /// model id), which model ids it serves (`listed` or `any`) and, for `listed`, the ids.
 pub type RouteArg = (String, String, String, Vec<String>);
 
-/// An endpoint (`(sssqsss)`): the session id, the scheme (`http`), the host (`127.0.0.1`), the
+/// An endpoint (`(sssqsss)`).
+///
+/// The fields are the session id, the scheme (`http`), the host (`127.0.0.1`), the
 /// port, the base URL to give the agent (derived from the three before it and the protocol), the
 /// token and the protocol the base URL is for (`anthropic_messages` or `openai_compatible`).
 pub type EndpointArg = (String, String, String, u16, String, String, String);

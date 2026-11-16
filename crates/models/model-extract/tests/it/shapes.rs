@@ -11,8 +11,9 @@ impl Extract for Verdict {
 
     fn read(json: &JsonText) -> Result<Self, ShapeFault> {
         serde_json::from_str(json.as_str())
+            .ok()
             .map(Verdict)
-            .map_err(|_| ShapeFault::NotJson)
+            .ok_or(ShapeFault::NotJson)
     }
 }
 

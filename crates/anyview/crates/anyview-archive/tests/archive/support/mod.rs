@@ -1,6 +1,9 @@
 //! Archives built in memory and written to a scratch folder, one function per container.
 // Each test crate uses some of these helpers, and none of them is a `#[test]` function.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test crate that includes this module uses some helpers and not others"
+)]
 
 use anyview_core::{FilePath, Input};
 use anyview_fs::OnDisk;

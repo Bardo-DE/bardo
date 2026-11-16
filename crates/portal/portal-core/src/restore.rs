@@ -117,9 +117,10 @@ impl fmt::Debug for RestoreToken {
 /// the app end, so "while it runs" is bounded by the longest a session of one app plausibly lasts.
 pub const WHILE_RUNNING_SECS: u64 = 24 * 60 * 60;
 
-/// How long a grant for [`Keep::UntilRevoked`] is remembered: thirty days, the interval at
-/// which macOS asks again whether an app may keep recording the screen. After that the person is
-/// asked once more, and a new grant starts a new thirty days.
+/// How long a grant for [`Keep::UntilRevoked`] is remembered: thirty days, the interval at which
+/// macOS asks again whether an app may keep recording the screen.
+///
+/// After that the person is asked once more, and a new grant starts a new thirty days.
 pub const UNTIL_REVOKED_SECS: u64 = 30 * 24 * 60 * 60;
 
 /// The most grants the book holds; when more are added the oldest are forgotten.

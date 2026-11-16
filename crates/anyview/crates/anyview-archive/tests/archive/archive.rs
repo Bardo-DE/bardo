@@ -60,7 +60,7 @@ fn every_container_lists_its_entries_with_kinds_and_sizes() {
         assert!(!listing.one_file, "{name}");
         assert_eq!(
             listing.count,
-            EntryCount::Exact(want.len() as u32),
+            EntryCount::Exact(u32::try_from(want.len()).unwrap()),
             "{name}"
         );
         assert_eq!(listing.unpacked, ByteLen(23), "{name}");

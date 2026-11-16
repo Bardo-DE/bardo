@@ -1,6 +1,7 @@
 //! A standing grant: the person, in Settings, lets one app share the screen and take over the
-//! keyboard and pointer without being asked each time (a remote-access app that is used while
-//! nobody sits at the machine).
+//! keyboard and pointer without being asked each time.
+//!
+//! The case is a remote-access app that is used while nobody sits at the machine.
 //!
 //! It differs from a token grant in three ways. The person makes it, not the app, so it does not
 //! depend on the app asking to be remembered (some never do). It names a rule, not sources, so it

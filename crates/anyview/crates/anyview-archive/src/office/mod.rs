@@ -97,7 +97,7 @@ impl OfficeLook {
 }
 
 /// `text` as one line of at most [`NAME_CHARS`] characters, an ellipsis marking what was cut.
-fn one_line(text: String) -> String {
+fn one_line(text: &str) -> String {
     let line = text.split_whitespace().collect::<Vec<_>>().join(" ");
     match line.char_indices().nth(NAME_CHARS) {
         Some((end, _)) => format!("{}…", line[..end].trim_end()),
@@ -110,9 +110,14 @@ fn part(src: &Input, name: &str, allowed: ByteLen, interrupt: &dyn Interrupt) ->
     extract_until(src, ArchiveFormat::Zip, name, limits, interrupt).ok()
 }
 
-/// What the office document `src` (a path, or any source a host injects), whose format sniffing named, says about itself. A format
+/// What the office document `src` says about itself, its format being the one sniffing named.
+///
+/// `src` is a path, or any source a host injects. A format
 /// that is not a zip package (the binary Word, Excel and `PowerPoint`) says nothing. Parts that are
 /// missing or do not parse leave their fields empty: the facts the file does have still stand.
+///
+/// # Errors
+/// [`ArchiveError`] when the file cannot be opened or read as a zip package.
 pub fn office_look(
     src: impl Into<Input>,
     format: OfficeFormat,
@@ -122,6 +127,9 @@ pub fn office_look(
 
 /// [`office_look`], reading no further part once `interrupt` says to end: the look has the fields
 /// of the parts read by then, as one whose parts are missing does.
+///
+/// # Errors
+/// As [`office_look`].
 pub fn office_look_until(
     src: impl Into<Input>,
     format: OfficeFormat,
@@ -144,8 +152,8 @@ pub fn office_look_until(
             author,
             count,
         } = source.read(&bytes);
-        look.title = look.title.or(title.map(one_line));
-        look.author = look.author.or(author.map(one_line));
+        look.title = look.title.or(title.as_deref().map(one_line));
+        look.author = look.author.or(author.as_deref().map(one_line));
         look.count = look.count.or(count);
     }
     look.thumbnail = parts.thumbnails.iter().find_map(|(name, codec)| {

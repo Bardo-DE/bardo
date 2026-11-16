@@ -381,8 +381,8 @@ fn a_standing_grant_does_not_run_out_covers_what_it_was_given_and_goes_with_a_re
         grant(app, Keep::WhileRunning, NOW),
     );
     let listed = book.remembered(NOW);
-    let line = listed.iter().find(|r| r.app_id == app).expect("listed");
-    assert_eq!(line.keep, Keep::UntilRevoked);
+    let row = listed.iter().find(|r| r.app_id == app).expect("listed");
+    assert_eq!(row.keep, Keep::UntilRevoked);
     assert_eq!(listed.len(), 2);
 
     // One revoke takes both kinds back.

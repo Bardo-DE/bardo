@@ -17,7 +17,7 @@
 //! let (changed, events) = mpsc::channel();
 //! let dir = std::path::PathBuf::from("/home/me/.config/mydaemon");
 //! // Dropping `watch` stops it.
-//! let watch = Watch::start(dir, "settings.toml", move || {
+//! let watch = Watch::start(&dir, "settings.toml", move || {
 //!     // The receiver is gone once the daemon stops; nobody is left to tell.
 //!     let _ = changed.send(());
 //! })?;
@@ -28,7 +28,7 @@
 //! ```
 
 use std::ffi::{OsStr, OsString};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 
@@ -77,12 +77,12 @@ impl Watch {
     /// # Errors
     /// `dir` could not be made, or the system's file watcher refused.
     pub fn start(
-        dir: PathBuf,
+        dir: &Path,
         file_name: impl Into<OsString>,
         on_change: impl Fn() + Send + 'static,
     ) -> Result<Self, WatchError> {
-        std::fs::create_dir_all(&dir).map_err(|source| WatchError::CreateDir {
-            dir: dir.clone(),
+        std::fs::create_dir_all(dir).map_err(|source| WatchError::CreateDir {
+            dir: dir.to_path_buf(),
             source,
         })?;
         let file = file_name.into();
@@ -94,7 +94,7 @@ impl Watch {
                     on_change();
                 }
             })?;
-        watcher.watch(&dir, RecursiveMode::NonRecursive)?;
+        watcher.watch(dir, RecursiveMode::NonRecursive)?;
         Ok(Self { _watcher: watcher })
     }
 }
@@ -150,7 +150,7 @@ mod tests {
         let root = base_testkit::Scratch::new("daemon-watch");
         let dir = root.join("nested");
         let (sender, heard) = mpsc::channel();
-        let watch = Watch::start(dir.clone(), "settings.toml", move || {
+        let watch = Watch::start(&dir, "settings.toml", move || {
             let _ = sender.send(());
         })
         .expect("watch");

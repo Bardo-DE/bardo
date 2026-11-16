@@ -4,7 +4,10 @@
 //!
 //! Its own binary, in a process of its own: it resets the kernel's high-water mark of the process's memory, so no other test may run beside it.
 
-#![allow(clippy::unwrap_used)]
+#![expect(
+    clippy::unwrap_used,
+    reason = "tests unwrap fixtures they just built; a failure is the test failing"
+)]
 
 #[path = "archive/support/mod.rs"]
 mod support;

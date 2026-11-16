@@ -30,6 +30,10 @@ pub fn need_to_dbus(need: &Need) -> NeedArg {
 }
 
 /// The need a D-Bus argument carries, or why it is not one.
+///
+/// # Errors
+/// [`CoreError`] when the details are not a vardict of JSON values or do not read as the need
+/// its kind names.
 pub fn need_from_dbus(arg: NeedArg) -> Result<Need, CoreError> {
     let (kind, details) = arg;
     let fields = from_vardict(&details)?;
@@ -55,7 +59,7 @@ mod tests {
 
     #[test]
     fn an_unknown_kind_is_refused() {
-        let arg = ("teleport".to_owned(), Default::default());
+        let arg = ("teleport".to_owned(), Details::default());
         need_from_dbus(arg).unwrap_err();
     }
 }

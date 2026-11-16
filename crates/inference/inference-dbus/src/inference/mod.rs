@@ -1,5 +1,7 @@
 //! inferd's interfaces and vocabulary: inference (`Inference`) and the agents' endpoints
-//! (`Agents`), with the bus names, option keys, row keys and error prefixes that go with them, and
+//! (`Agents`).
+//!
+//! With them go the bus names, option keys, row keys and error prefixes, and
 //! the codec of a need and a candidate. These leave porter with inferd. The AI keys, the agent
 //! launcher's calls and the AI broker's questions are accountd's (`account_dbus::accounts`).
 

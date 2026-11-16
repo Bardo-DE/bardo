@@ -34,6 +34,9 @@ struct RawNotice {
 
 impl Notice {
     /// Reads one line of the stream.
+    ///
+    /// # Errors
+    /// [`TailscaleError::Malformed`] when the line is not a JSON object of the expected shape.
     pub fn parse(line: &[u8]) -> Result<Self, TailscaleError> {
         let raw: RawNotice = crate::object::object(line)?;
         Ok(Self {

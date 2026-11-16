@@ -8,12 +8,15 @@ use anyview_core::work::Interrupt;
 use anyview_core::{ArchiveFormat, ByteLen, Deadline, Input};
 use std::io::Cursor;
 
-/// The start of the index of the archive `src` (a path, or any source a host injects), whose format `format` was sniffed.
+/// The start of the index of the archive `src`, whose format `format` was sniffed.
 ///
-/// `budget` is the most bytes it reads from the file (the index of a zip, a 7z or a tar's
+/// `src` is a path, or any source a host injects. `budget` is the most bytes it reads from the file (the index of a zip, a 7z or a tar's
 /// headers) or unpacks from a compressed stream; an index larger than that is
 /// [`ArchiveError::OverBudget`] for a zip or a 7z, and a lower-bound count for a tar or a stream.
 /// `limit` is how many entries it keeps. Blocking: run it on a worker.
+///
+/// # Errors
+/// [`ArchiveError`] when the archive cannot be opened or read, or is over `budget` (zip, 7z).
 pub fn list(
     src: impl Into<Input>,
     format: ArchiveFormat,
@@ -23,11 +26,15 @@ pub fn list(
     list_until(src, format, limit, budget, &Deadline::NEVER)
 }
 
-/// [`list`], ending early when `interrupt` says so (a peek's [`Deadline`], a viewer job's stop):
-/// the entries read so far come back as a start with a lower-bound count, and a listing that
+/// [`list`], ending early when `interrupt` says so (a peek's [`Deadline`], a viewer job's stop).
+///
+/// The entries read so far come back as a start with a lower-bound count, and a listing that
 /// was interrupted before it had any entry is [`ArchiveError::Interrupted`]. It is asked once per
 /// entry, and once per chunk while a compressed stream unpacks; the codecs and the zip and 7z
 /// crates' own parsing of an index are not reached by it.
+///
+/// # Errors
+/// As [`list`], and [`ArchiveError::Interrupted`] when interrupted before any entry.
 pub fn list_until(
     src: impl Into<Input>,
     format: ArchiveFormat,

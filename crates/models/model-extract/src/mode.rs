@@ -49,14 +49,13 @@ pub fn choose(
     let composes = tools == ToolsPresent::No || with_tools == ShapeWithTools::Together;
     let native = composes.then(|| scalar(caps, shape).or_else(|| general(caps, shape)));
     native.flatten().unwrap_or_else(|| match caps.tools {
-        ToolSupport::Absent => ExtractMode::Prompted,
+        // A model whose calls are read from its text is not given the synthetic result tool: the
+        // reading is the computer-use session's, and a reply is validated as prompted text.
+        ToolSupport::Absent | ToolSupport::ClientParsed => ExtractMode::Prompted,
         ToolSupport::Native | ToolSupport::ServerParsed => ExtractMode::ToolCall {
             tool: ToolName::new(FINAL_RESULT_TOOL)
                 .unwrap_or_else(|_| unreachable!("the synthetic tool name is valid")),
         },
-        // A model whose calls are read from its text is not given the synthetic result tool: the
-        // reading is the computer-use session's, and a reply is validated as prompted text.
-        ToolSupport::ClientParsed => ExtractMode::Prompted,
     })
 }
 

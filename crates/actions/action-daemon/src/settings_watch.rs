@@ -68,7 +68,7 @@ impl SettingsWatch {
                     .file_name()
                     .map(ToOwned::to_owned)
                     .ok_or_else(|| "no settings file name".to_owned())?;
-                Watch::start(dir, file, move || {
+                Watch::start(&dir, file, move || {
                     // The receiver is gone once the watch ended; nobody is left to tell.
                     let _ = signal.send(());
                 })

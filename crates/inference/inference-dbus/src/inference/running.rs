@@ -111,6 +111,7 @@ impl RunningModel {
     }
 
     /// The same, failed for `reason`.
+    #[must_use]
     pub fn reason(self, reason: impl Into<String>) -> Self {
         Self {
             reason: Some(reason.into()),

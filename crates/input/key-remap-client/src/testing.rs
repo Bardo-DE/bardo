@@ -45,7 +45,7 @@ impl FakeDaemon {
         std::thread::spawn(move || {
             while let Ok(fd) = rustix::net::accept(&listener) {
                 let shared = Arc::clone(&accepting);
-                std::thread::spawn(move || serve(Arc::new(fd), version, &shared));
+                std::thread::spawn(move || serve(&Arc::new(fd), version, &shared));
             }
         });
         FakeDaemon {
@@ -56,9 +56,9 @@ impl FakeDaemon {
     }
 
     /// Replaces the keymap and tells every watcher.
-    pub(crate) fn change(&self, keymap: KeymapState) {
+    pub(crate) fn change(&self, keymap: &KeymapState) {
         let mut shared = self.shared.lock().expect("lock");
-        shared.keymap = keymap.clone();
+        keymap.clone_into(&mut shared.keymap);
         for watcher in &shared.watchers {
             send(watcher, &ToClient::Keymap(keymap.clone()));
         }
@@ -70,14 +70,14 @@ impl FakeDaemon {
     }
 }
 
-fn serve(fd: Arc<OwnedFd>, version: u16, shared: &Mutex<Shared>) {
+fn serve(fd: &Arc<OwnedFd>, version: u16, shared: &Mutex<Shared>) {
     let me = {
         let mut shared = shared.lock().expect("lock");
         shared.next_id += 1;
         shared.next_id
     };
     send(
-        &fd,
+        fd,
         &ToClient::Hello {
             version,
             status: Status {
@@ -87,7 +87,7 @@ fn serve(fd: Arc<OwnedFd>, version: u16, shared: &Mutex<Shared>) {
         },
     );
     let mut buf = vec![0u8; protocol::MAX_PACKET];
-    while let Ok((n, _)) = rustix::net::recv(&*fd, &mut buf, RecvFlags::empty()) {
+    while let Ok((n, _)) = rustix::net::recv(&**fd, &mut buf, RecvFlags::empty()) {
         if n == 0 {
             break;
         }
@@ -97,20 +97,20 @@ fn serve(fd: Arc<OwnedFd>, version: u16, shared: &Mutex<Shared>) {
         let mut shared = shared.lock().expect("lock");
         match message {
             ToDaemon::Keymap(KeymapCall::Watch) => {
-                shared.watchers.push(Arc::clone(&fd));
-                send(&fd, &ToClient::Keymap(shared.keymap.clone()));
+                shared.watchers.push(Arc::clone(fd));
+                send(fd, &ToClient::Keymap(shared.keymap.clone()));
             }
             ToDaemon::Keymap(KeymapCall::Register(registration)) => {
                 shared.registered.push((me, registration));
             }
             ToDaemon::Keymap(KeymapCall::List) => {
                 let all = shared.registered.iter().map(|(_, r)| r.clone()).collect();
-                send(&fd, &ToClient::Registered(all));
+                send(fd, &ToClient::Registered(all));
             }
             ToDaemon::Steer(_) => {}
         }
     }
     let mut shared = shared.lock().expect("lock");
     shared.registered.retain(|(owner, _)| *owner != me);
-    shared.watchers.retain(|w| !Arc::ptr_eq(w, &fd));
+    shared.watchers.retain(|w| !Arc::ptr_eq(w, fd));
 }

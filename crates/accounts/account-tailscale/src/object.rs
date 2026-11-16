@@ -8,7 +8,9 @@ use serde::de::DeserializeOwned;
 pub(crate) fn object<T: DeserializeOwned>(body: &[u8]) -> Result<T, TailscaleError> {
     let first = body.iter().find(|b| !b.is_ascii_whitespace());
     match first {
-        Some(b'{') => serde_json::from_slice(body).map_err(|_| TailscaleError::Malformed),
+        Some(b'{') => serde_json::from_slice(body)
+            .ok()
+            .ok_or(TailscaleError::Malformed),
         _ => Err(TailscaleError::Malformed),
     }
 }

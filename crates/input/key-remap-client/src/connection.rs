@@ -97,6 +97,10 @@ pub struct Connection {
 
 impl Connection {
     /// Connects to the socket at `path` and reads `Hello`, waiting at most `wait` for it.
+    ///
+    /// # Errors
+    /// [`ClientError`] when nothing listens at `path`, the daemon is silent for `wait` or closes
+    /// the connection, or its `Hello` is not one or names a version this client does not speak.
     pub fn open(path: &Path, wait: Duration) -> Result<Connection, ClientError> {
         // CLOEXEC: a program that starts shells or other programs must not hand them this
         // connection, or the daemon would go on counting it after the program has exited.
@@ -162,6 +166,9 @@ impl Connection {
     }
 
     /// Sends one message.
+    ///
+    /// # Errors
+    /// [`ClientError::Io`] when the message cannot be sent.
     pub fn send(&self, message: &ToDaemon) -> Result<(), ClientError> {
         rustix::net::send(&self.fd, &protocol::encode(message), SendFlags::NOSIGNAL)
             .map(drop)
@@ -169,6 +176,10 @@ impl Connection {
     }
 
     /// The next message, waiting at most `wait`.
+    ///
+    /// # Errors
+    /// [`ClientError`] when receiving fails or the packet is not a message of the protocol. Silence
+    /// and a closed connection are answers ([`Heard`]), not errors.
     pub fn recv(&self, wait: Duration) -> Result<Heard, ClientError> {
         set_socket_timeout(
             &self.fd,

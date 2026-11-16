@@ -17,9 +17,10 @@ pub enum FileText {
     Unusable(String),
 }
 
-/// Reads the text of the regular file at `path`, at most `max_bytes` of it. A symbolic link to a
-/// regular file is followed (a dotfile manager's); anything that is not a regular file, a file
-/// over the limit and one that is not UTF-8 text are `Unusable`.
+/// Reads the text of the regular file at `path`, at most `max_bytes` of it.
+///
+/// A symbolic link to a regular file is followed (a dotfile manager's); anything that is not a
+/// regular file, a file over the limit and one that is not UTF-8 text are `Unusable`.
 #[must_use]
 pub fn read_text(path: &Path, max_bytes: u64) -> FileText {
     match base_fs::read_text_capped(path, ReadCap::bytes(max_bytes)) {
@@ -45,12 +46,12 @@ mod tests {
             read_text(&path, LIMIT),
             FileText::Text("copy = Primary+C\n".into())
         );
-        std::fs::write(&path, vec![b'#'; LIMIT as usize]).unwrap();
+        std::fs::write(&path, vec![b'#'; usize::try_from(LIMIT).unwrap()]).unwrap();
         assert!(
             matches!(read_text(&path, LIMIT), FileText::Text(_)),
             "the limit itself"
         );
-        std::fs::write(&path, vec![b'#'; LIMIT as usize + 1]).unwrap();
+        std::fs::write(&path, vec![b'#'; usize::try_from(LIMIT).unwrap() + 1]).unwrap();
         assert!(matches!(read_text(&path, LIMIT), FileText::Unusable(w) if w.contains("larger")));
         std::fs::write(&path, [0xff, 0xfe]).unwrap();
         assert!(matches!(read_text(&path, LIMIT), FileText::Unusable(w) if w.contains("text")));

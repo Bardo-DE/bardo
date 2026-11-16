@@ -144,6 +144,9 @@ fn selects(pattern: &str, namespace: &str) -> bool {
 }
 
 /// Read one setting.
+///
+/// # Errors
+/// [`SettingsRefusal`] when the namespace and key name no setting this portal serves.
 pub fn read(
     appearance: &Appearance,
     namespace: &str,

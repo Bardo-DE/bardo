@@ -143,7 +143,7 @@ pub fn step(session: CastSession, input: CastIn) -> (CastSession, Vec<CastOut>) 
     use CastOut as O;
     use CastSession as S;
     match (session, input) {
-        (S::Closed, _) => (S::Closed, Vec::new()),
+        (S::Closed, _) | (S::Created, I::Close) => (S::Closed, Vec::new()),
 
         (S::Created, I::Start { restored }) if !restored.is_empty() => (
             S::SourcesSelected(restored.clone()),
@@ -155,7 +155,6 @@ pub fn step(session: CastSession, input: CastIn) -> (CastSession, Vec<CastOut>) 
             vec![O::OpenStream(sources)],
         ),
         (S::Created, I::Picked(_)) => (S::Closed, vec![O::Reply(CastReply::Cancelled)]),
-        (S::Created, I::Close) => (S::Closed, Vec::new()),
 
         (S::SourcesSelected(sources), I::NodeReady(node)) => (
             S::Started { node },

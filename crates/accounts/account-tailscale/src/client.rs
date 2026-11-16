@@ -148,7 +148,8 @@ impl LocalApi {
             .map_err(|e| self.refused_by(e.kind()))?;
         let (mut sender, connection) = http1::handshake::<_, Full<Bytes>>(TokioIo::new(stream))
             .await
-            .map_err(|_| TailscaleError::NotRunning)?;
+            .ok()
+            .ok_or(TailscaleError::NotRunning)?;
         // The connection ends when the response and the sender are dropped, or tailscaled stops.
         tokio::spawn(async move {
             let _ = connection.await;
@@ -158,11 +159,13 @@ impl LocalApi {
             .uri(target)
             .header(hyper::header::HOST, LOCALAPI_HOST)
             .body(Full::new(Bytes::new()))
-            .map_err(|_| TailscaleError::Malformed)?;
+            .ok()
+            .ok_or(TailscaleError::Malformed)?;
         let response = sender
             .send_request(request)
             .await
-            .map_err(|_| TailscaleError::NotRunning)?;
+            .ok()
+            .ok_or(TailscaleError::NotRunning)?;
         match response.status() {
             StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => Err(TailscaleError::Refused),
             _ => Ok(response),
@@ -177,7 +180,7 @@ impl LocalApi {
             let mut body = response.into_body();
             let mut bytes = Vec::new();
             while let Some(frame) = body.frame().await {
-                let frame = frame.map_err(|_| TailscaleError::NotRunning)?;
+                let frame = frame.ok().ok_or(TailscaleError::NotRunning)?;
                 if let Some(data) = frame.data_ref() {
                     if bytes.len() + data.len() > MAX_ANSWER {
                         return Err(TailscaleError::Malformed);
@@ -197,6 +200,10 @@ impl LocalApi {
 
     /// This computer's Tailscale, as it says it is now. Signed out is an answer, not an error:
     /// read [`Status::standing`].
+    ///
+    /// # Errors
+    /// Fails when Tailscale is not running, refuses the request, does not answer within the
+    /// timeout, or answers with something that is not a status.
     pub async fn status(&self) -> Result<Status, TailscaleError> {
         let answer = self.exchange(Method::GET, "/localapi/v0/status").await?;
         match answer.status {
@@ -207,6 +214,9 @@ impl LocalApi {
 
     /// Who the address `addr` (a Tailscale address and the port it dialled from) belongs to.
     /// An address no computer of the network has is [`TailscaleError::NoSuchPeer`].
+    ///
+    /// # Errors
+    /// [`TailscaleError::NoSuchPeer`] for an unknown address; otherwise as [`Self::status`].
     pub async fn whois(&self, addr: SocketAddr) -> Result<WhoIs, TailscaleError> {
         let target = format!("/localapi/v0/whois?addr={}", encode_addr(&addr.to_string()));
         let answer = self.exchange(Method::GET, &target).await?;
@@ -220,6 +230,10 @@ impl LocalApi {
     /// Asks Tailscale to start its own sign-in (`login-interactive`). The page the person opens
     /// is Tailscale's: read it from [`Status::auth_url`] once it has one. Needs write access to
     /// the socket, which Tailscale gives its operator.
+    ///
+    /// # Errors
+    /// Fails when Tailscale is not running, refuses the request (the operator right is missing),
+    /// does not answer within the timeout, or does not accept the login.
     pub async fn start_login(&self) -> Result<(), TailscaleError> {
         let answer = self
             .exchange(Method::POST, "/localapi/v0/login-interactive")
@@ -233,6 +247,10 @@ impl LocalApi {
 
     /// Starts watching Tailscale's notices. The first answer comes within the timeout; the
     /// stream after it stays open until it is dropped or Tailscale stops.
+    ///
+    /// # Errors
+    /// Fails when Tailscale is not running, refuses the request, does not answer within the
+    /// timeout, or answers with something other than a stream.
     pub async fn watch(&self) -> Result<Watch, TailscaleError> {
         let target = format!("/localapi/v0/watch-ipn-bus?mask={WATCH_MASK}");
         let response = tokio::time::timeout(self.timeout, self.send(Method::GET, &target))
@@ -275,6 +293,9 @@ pub struct Watch {
 impl Watch {
     /// The next notice. `None` when Tailscale ended the stream; an error when it went away
     /// mid-line or said something that is not a notice.
+    ///
+    /// # Errors
+    /// Fails when Tailscale went away mid-line or a line is not a notice.
     pub async fn next(&mut self) -> Result<Option<Notice>, TailscaleError> {
         loop {
             if let Some(end) = self.buffer.iter().position(|b| *b == b'\n') {

@@ -25,6 +25,10 @@ const PNG: &[u8] = b"\x89PNG\r\n\x1a\nbytes";
 type Case<'a> = (&'a str, OfficeFormat, Vec<(&'a str, &'a [u8])>, OfficeLook);
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of every format's fixture and wanted look"
+)]
 fn each_format_is_read_from_its_own_parts() {
     // name, format, entries, wanted
     let cases: Vec<Case> = vec![

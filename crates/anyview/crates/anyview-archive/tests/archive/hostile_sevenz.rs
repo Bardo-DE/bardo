@@ -137,11 +137,11 @@ fn a_real_7z_still_lists_and_extracts() {
 fn split_header(bytes: &[u8]) -> (u64, Vec<u8>, Vec<u8>) {
     let word = |from: usize| u64::from_le_bytes(bytes[from..from + 8].try_into().unwrap());
     let (offset, size) = (word(12), word(20));
-    let at = 32 + offset as usize;
+    let at = 32 + usize::try_from(offset).unwrap();
     (
         offset,
         bytes[32..at].to_vec(),
-        bytes[at..at + size as usize].to_vec(),
+        bytes[at..at + usize::try_from(size).unwrap()].to_vec(),
     )
 }
 

@@ -91,6 +91,9 @@ impl WhoIs {
     /// Reads the body of a whois answer. Tailscale says both the node and the user are present
     /// in an answer that succeeded; one that has neither, or an id that is not one, is
     /// malformed.
+    ///
+    /// # Errors
+    /// [`TailscaleError::Malformed`] in those cases and when the body is not a JSON object.
     pub fn parse(body: &[u8]) -> Result<Self, TailscaleError> {
         let raw: RawWhoIs = crate::object::object(body)?;
         let (Some(node), Some(user)) = (raw.node, raw.user) else {
@@ -98,7 +101,9 @@ impl WhoIs {
         };
         Ok(Self {
             node: WhoIsNode {
-                id: NodeId::parse(&node.id).map_err(|_| TailscaleError::Malformed)?,
+                id: NodeId::parse(&node.id)
+                    .ok()
+                    .ok_or(TailscaleError::Malformed)?,
                 dns: node.name.trim_end_matches('.').to_owned(),
                 user: UserId(node.user),
                 sharer: Some(node.sharer).filter(|id| *id != 0).map(UserId),
@@ -124,7 +129,7 @@ mod tests {
     use super::*;
     use serde_json::json;
 
-    fn answer(node: serde_json::Value) -> Vec<u8> {
+    fn answer(node: &serde_json::Value) -> Vec<u8> {
         json!({
             "Node": node,
             "UserProfile": {"ID": 1, "LoginName": "ada@example.org", "DisplayName": "Ada"},
@@ -143,7 +148,7 @@ mod tests {
 
     #[test]
     fn a_whois_answer_reads() {
-        let who = WhoIs::parse(&answer(base())).expect("whois");
+        let who = WhoIs::parse(&answer(&base())).expect("whois");
         assert_eq!(who.node.id.as_str(), "nPXS7a2CNTRL");
         assert_eq!(who.node.dns, "pi.tail1234.ts.net");
         assert_eq!(who.node.addresses.len(), 2);
@@ -157,11 +162,11 @@ mod tests {
     fn a_tag_or_a_sharer_decides_the_owner_before_the_user_does() {
         let mut tagged = base();
         tagged["Tags"] = json!(["tag:server"]);
-        let who = WhoIs::parse(&answer(tagged)).expect("whois");
+        let who = WhoIs::parse(&answer(&tagged)).expect("whois");
         assert_eq!(who.owner(UserId(1)), MachineOwner::Tagged);
         let mut shared = base();
         shared["Sharer"] = json!(7);
-        let who = WhoIs::parse(&answer(shared)).expect("whois");
+        let who = WhoIs::parse(&answer(&shared)).expect("whois");
         assert_eq!(who.node.sharer, Some(UserId(7)));
         assert_eq!(who.owner(UserId(1)), MachineOwner::Shared);
     }
@@ -173,7 +178,7 @@ mod tests {
             "{}".to_owned(),
             json!({"Node": base()}).to_string(),
             json!({"UserProfile": {"ID": 1}}).to_string(),
-            String::from_utf8(answer(json!({"StableID": "not an id", "User": 1}))).expect("text"),
+            String::from_utf8(answer(&json!({"StableID": "not an id", "User": 1}))).expect("text"),
         ] {
             assert_eq!(
                 WhoIs::parse(body.as_bytes()),

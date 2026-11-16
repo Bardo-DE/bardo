@@ -22,8 +22,9 @@ impl Extract for Verdict {
     }
     fn read(json: &JsonText) -> Result<Self, ShapeFault> {
         serde_json::from_str(json.as_str())
+            .ok()
             .map(Verdict)
-            .map_err(|_| ShapeFault::NotJson)
+            .ok_or(ShapeFault::NotJson)
     }
 }
 
@@ -46,8 +47,9 @@ impl Extract for Review {
         ])
     }
     fn read(json: &JsonText) -> Result<Self, ShapeFault> {
-        let value: serde_json::Value =
-            serde_json::from_str(json.as_str()).map_err(|_| ShapeFault::NotJson)?;
+        let value: serde_json::Value = serde_json::from_str(json.as_str())
+            .ok()
+            .ok_or(ShapeFault::NotJson)?;
         Ok(Review {
             score: value["score"].as_i64().unwrap_or(0),
         })
@@ -190,6 +192,15 @@ fn a_good_reply_is_done_in_every_mode() {
 
 #[test]
 fn a_bare_choice_or_integer_reply_is_read_as_its_value() {
+    struct Int(i64);
+    impl Extract for Int {
+        fn shape() -> Shape {
+            Shape::Integer { min: 0, max: 9 }
+        }
+        fn read(json: &JsonText) -> Result<Self, ShapeFault> {
+            Ok(Int(json.as_str().parse().unwrap_or(-1)))
+        }
+    }
     for (mode, text) in [
         (
             ExtractMode::Native(OutputShape::Choice(vec!["allow".into(), "deny".into()])),
@@ -205,15 +216,6 @@ fn a_bare_choice_or_integer_reply_is_read_as_its_value() {
             s.absorb(&base(), &end(StopReason::EndTurn), text, &[]),
             Extracted::Done(Verdict("deny".into()))
         );
-    }
-    struct Int(i64);
-    impl Extract for Int {
-        fn shape() -> Shape {
-            Shape::Integer { min: 0, max: 9 }
-        }
-        fn read(json: &JsonText) -> Result<Self, ShapeFault> {
-            Ok(Int(json.as_str().parse().unwrap_or(-1)))
-        }
     }
     let mut s = session::<Int>(ExtractMode::Native(OutputShape::Regex("[0-9]".into())), 0);
     let Extracted::Done(Int(n)) = s.absorb(&base(), &end(StopReason::EndTurn), "7", &[]) else {

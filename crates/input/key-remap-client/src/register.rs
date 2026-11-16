@@ -17,6 +17,9 @@ impl KeycapSource {
     /// Tells keycap `app`'s actions and their default chords. Informational: each app resolves
     /// its own keys in-process through chordkit, and this changes no binding. Keep the result
     /// alive while the app runs.
+    ///
+    /// # Errors
+    /// [`ClientError`] when keycap cannot be reached or does not answer.
     pub fn register(
         &self,
         app: &AppId,
@@ -37,6 +40,9 @@ impl KeycapSource {
     }
 
     /// Every app's actions registered with keycap right now, for a settings screen.
+    ///
+    /// # Errors
+    /// [`ClientError`] when keycap cannot be reached or does not answer.
     pub fn registered(&self) -> Result<Vec<Registration>, ClientError> {
         let link = Connection::open(self.socket(), WAIT)?;
         link.send(&ToDaemon::Keymap(KeymapCall::List))?;

@@ -8,8 +8,10 @@ use crate::session::Machine;
 use crate::{ExtractMode, Extracted, RepairBudget, RepairsLeft};
 
 /// [`ExtractSession`](crate::ExtractSession) for a `Shape` held as a value: the reply that comes
-/// back has passed `Shape::check` and is handed on as the JSON it was. The mode, the one-repair
-/// rule and the failure reasons are the typed session's, and so is the machine under both.
+/// back has passed `Shape::check` and is handed on as the JSON it was.
+///
+/// The mode, the one-repair rule and the failure reasons are the typed session's, and so is the
+/// machine under both.
 ///
 /// Built from schema text with [`ShapedSession::from_schema`], which refuses a schema the shape
 /// vocabulary cannot say: such a request is sent with its schema to the engine and not validated.
@@ -29,6 +31,9 @@ impl ShapedSession {
     }
 
     /// A session for the shape of `schema`, or why the schema is not one.
+    ///
+    /// # Errors
+    /// [`SchemaRefusal`] when the shape vocabulary cannot say the schema.
     pub fn from_schema(
         schema: &SchemaText,
         limits: SchemaLimits,

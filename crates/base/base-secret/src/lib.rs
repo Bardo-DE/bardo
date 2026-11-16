@@ -7,7 +7,9 @@ use std::fmt;
 use subtle::ConstantTimeEq;
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
-/// Secret text, held in a [`secrecy::SecretString`]: its `Debug` never shows it, so it cannot
+/// Secret text, held in a [`secrecy::SecretString`].
+///
+/// Its `Debug` never shows it, so it cannot
 /// leak into a log, a panic or an error; its bytes are overwritten when it is dropped, so a freed
 /// buffer does not keep it; two of them compare in constant time (`subtle`). It has no
 /// `Serialize`: a value that must be written goes through [`write_secret`] or
@@ -60,9 +62,14 @@ impl<'de> Deserialize<'de> for SecretText {
     }
 }
 
-/// Writes a secret as its text. The one way a [`SecretText`] is serialised, named by
+/// Writes a secret as its text.
+///
+/// The one way a [`SecretText`] is serialised, named by
 /// `#[serde(serialize_with = "...")]` at each field that must carry it (the stored credential,
 /// an issued token, a typed sheet answer, `clients.toml`).
+///
+/// # Errors
+/// Whatever `serializer` returns when it cannot write the text.
 pub fn write_secret<S: serde::Serializer>(
     secret: &SecretText,
     serializer: S,
@@ -71,6 +78,9 @@ pub fn write_secret<S: serde::Serializer>(
 }
 
 /// [`write_secret`] for an optional secret.
+///
+/// # Errors
+/// Whatever `serializer` returns when it cannot write the value.
 pub fn write_secret_option<S: serde::Serializer>(
     secret: &Option<SecretText>,
     serializer: S,

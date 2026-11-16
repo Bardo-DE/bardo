@@ -156,12 +156,13 @@ impl Machine {
         read: impl Fn(&JsonText) -> Result<T, ShapeFault>,
     ) -> Extracted<T> {
         match end.stop {
-            StopReason::MaxTokens => return Extracted::Failed(ExtractFailure::Truncated),
+            // A stop the server named but this build does not know: the reply may be cut, so it
+            // is not trusted.
+            StopReason::MaxTokens | StopReason::Unrecognized => {
+                return Extracted::Failed(ExtractFailure::Truncated);
+            }
             StopReason::ContentFilter => return Extracted::Failed(ExtractFailure::Refused),
             StopReason::EndTurn | StopReason::ToolUse | StopReason::StopSequence => {}
-            // A stop the server named but this build does not know, or a variant added later: the
-            // reply may be cut, so it is not trusted.
-            _ => return Extracted::Failed(ExtractFailure::Truncated),
         }
         let fault = match self
             .candidate(text, calls, shape)
@@ -197,9 +198,9 @@ impl Machine {
             ExtractMode::Native(OutputShape::Choice(_) | OutputShape::Regex(_)) => {
                 bare_value(shape, text)
             }
-            ExtractMode::Native(_) | ExtractMode::Prompted => {
-                JsonText::new(unfenced(text)).map_err(|_| ShapeFault::NotJson)
-            }
+            ExtractMode::Native(_) | ExtractMode::Prompted => JsonText::new(unfenced(text))
+                .ok()
+                .ok_or(ShapeFault::NotJson),
         }
     }
 }
@@ -232,7 +233,7 @@ fn bare_value(shape: &Shape, text: &str) -> Result<JsonText, ShapeFault> {
         Shape::Choice(_) => serde_json::Value::String(text.to_owned()).to_string(),
         _ => text.to_owned(),
     };
-    JsonText::new(json).map_err(|_| ShapeFault::NotJson)
+    JsonText::new(json).ok().ok_or(ShapeFault::NotJson)
 }
 
 /// `text` without one surrounding Markdown code fence, which models add to a JSON reply.

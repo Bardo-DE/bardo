@@ -12,9 +12,10 @@ use std::net::IpAddr;
 /// The longest node id read. Tailscale's are a dozen characters (`nPXS7a2CNTRL`).
 const NODE_ID_MAX: usize = 64;
 
-/// A Tailscale node's STABLE id (Tailscale's `StableNodeID`, the string `ID` of its status and
-/// `StableID` of its whois, such as `nPXS7a2CNTRL`): it stays the same when the computer is
-/// renamed, gets another address or a new key. It is never the numeric node id or the node key,
+/// A Tailscale node's STABLE id (Tailscale's `StableNodeID`, such as `nPXS7a2CNTRL`).
+///
+/// It is the string `ID` of its status and `StableID` of its whois, and stays the same when the
+/// computer is renamed, gets another address or a new key. It is never the numeric node id or the node key,
 /// which change. Approval, SSH pins and consent are kept by it, never by name or address.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
@@ -22,6 +23,9 @@ pub struct NodeId(Box<str>);
 
 impl NodeId {
     /// The node id written as `text`: 1 to 64 letters, digits, `-` or `_`.
+    ///
+    /// # Errors
+    /// [`IdError`] when `text` is empty, too long or has another character.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         let good = !text.is_empty()
             && text.len() <= NODE_ID_MAX

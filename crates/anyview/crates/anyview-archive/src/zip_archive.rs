@@ -119,6 +119,9 @@ const MIMETYPE_BYTES: u64 = 128;
 ///
 /// A zip whose directory is larger than `budget` is [`ArchiveError::OverBudget`]; one that does not
 /// parse is [`ArchiveError::Malformed`].
+///
+/// # Errors
+/// [`ArchiveError`]: the file cannot be opened, is over `budget`, or is not a zip.
 pub fn zip_entries(src: impl Into<Input>, budget: ByteLen) -> Result<ZipEntries, ArchiveError> {
     let src = &src.into();
     let format = ArchiveFormat::Zip;

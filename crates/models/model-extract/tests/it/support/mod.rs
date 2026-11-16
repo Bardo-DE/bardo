@@ -1,5 +1,8 @@
 //! Shared builders. Each test file uses a subset.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test file that includes this module uses a subset of the builders"
+)]
 
 use computer_use_action::{GridMax, ModelSpace};
 use model_provider::{

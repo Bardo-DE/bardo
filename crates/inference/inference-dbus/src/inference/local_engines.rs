@@ -155,7 +155,11 @@ fn text(details: &Details, key: &'static str) -> Result<String, EngineRowError> 
 pub fn local_engine_from_dbus(
     (id, details): (String, Details),
 ) -> Result<LocalEngine, EngineRowError> {
-    let path = || text(&details, ENGINE_KEY_PATH).map_err(|_| EngineRowError::NoPath);
+    let path = || {
+        text(&details, ENGINE_KEY_PATH)
+            .ok()
+            .ok_or(EngineRowError::NoPath)
+    };
     let state = match text(&details, ENGINE_KEY_STATE)?.as_str() {
         FOUND => EngineState::Found(PathBuf::from(path()?)),
         CHANGED => EngineState::Changed(PathBuf::from(path()?)),

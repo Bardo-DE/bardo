@@ -107,11 +107,13 @@ pub(crate) fn check(file: &mut ReadAtStream, len: u64, budget: u64) -> Checked<(
 /// `size` bytes at `at`; the caller has held `size` against the file's length and a limit.
 fn read_at(file: &mut ReadAtStream, at: u64, size: u64) -> Checked<Vec<u8>> {
     file.seek(SeekFrom::Start(at))
-        .map_err(|_| Fault::Broken("the header cannot be reached"))?;
+        .ok()
+        .ok_or(Fault::Broken("the header cannot be reached"))?;
     let mut bytes = Vec::new();
     file.take(size)
         .read_to_end(&mut bytes)
-        .map_err(|_| Fault::Broken("the header cannot be read"))?;
+        .ok()
+        .ok_or(Fault::Broken("the header cannot be read"))?;
     if bytes.len() as u64 != size {
         return Err(Fault::Broken("the header is cut short"));
     }
@@ -157,7 +159,8 @@ fn unpack_header(
             let (props, dictionary) = lzma_props(&coder.props)?;
             Box::new(
                 LzmaReader::new_with_props(raw.as_slice(), unpacked, props, dictionary, None)
-                    .map_err(|_| Fault::Broken("the encoded header does not unpack"))?,
+                    .ok()
+                    .ok_or(Fault::Broken("the encoded header does not unpack"))?,
             )
         }
         id if id == LZMA2 => {
@@ -169,7 +172,8 @@ fn unpack_header(
     reader
         .take(unpacked)
         .read_to_end(&mut out)
-        .map_err(|_| Fault::Broken("the encoded header does not unpack"))?;
+        .ok()
+        .ok_or(Fault::Broken("the encoded header does not unpack"))?;
     if out.len() as u64 != unpacked {
         return Err(Fault::Broken("the encoded header is cut short"));
     }
@@ -190,7 +194,9 @@ impl<'a> Cursor<'a> {
     }
 
     fn take(&mut self, count: u64) -> Checked<&'a [u8]> {
-        let count = usize::try_from(count).map_err(|_| Fault::Broken("the header ends early"))?;
+        let count = usize::try_from(count)
+            .ok()
+            .ok_or(Fault::Broken("the header ends early"))?;
         if count > self.0.len() {
             return Err(Fault::Broken("the header ends early"));
         }

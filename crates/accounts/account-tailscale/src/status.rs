@@ -286,6 +286,9 @@ impl RawNode {
 
 impl Status {
     /// Reads the body of a status answer.
+    ///
+    /// # Errors
+    /// [`TailscaleError::Malformed`] when the body is not a JSON object of the expected shape.
     pub fn parse(body: &[u8]) -> Result<Self, TailscaleError> {
         let raw: RawStatus = crate::object::object(body)?;
         let mut peers: Vec<Node> = raw

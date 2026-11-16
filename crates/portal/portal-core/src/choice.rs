@@ -117,6 +117,10 @@ pub enum ChoiceRefusal {
 
 impl ChoiceRequest {
     /// Check an answer against the request.
+    ///
+    /// # Errors
+    /// [`ChoiceRefusal`] when nothing, too many, a wrong kind, a cursor mode not offered, or the
+    /// same source twice was picked.
     pub fn accept(
         &self,
         sources: Vec<CastSource>,

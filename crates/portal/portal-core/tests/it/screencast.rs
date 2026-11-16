@@ -9,6 +9,10 @@ fn win(id: &str) -> CastSource {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table listing every transition of the session"
+)]
 fn the_transition_table() {
     use CastIn as I;
     use CastOut as O;

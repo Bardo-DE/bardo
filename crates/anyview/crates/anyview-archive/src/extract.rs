@@ -41,9 +41,14 @@ impl ExtractLimits {
     }
 }
 
-/// The bytes of the entry `entry` of the archive `src` (a path, or any source a host injects), whose format `format` was sniffed.
+/// The bytes of the entry `entry` of the archive `src`, whose format `format` was sniffed.
 ///
-/// Blocking: run it on a worker. A folder or a link is [`ArchiveError::NotAFile`].
+/// `src` is a path, or any source a host injects. Blocking: run it on a worker. A folder or a
+/// link is [`ArchiveError::NotAFile`].
+///
+/// # Errors
+/// [`ArchiveError`] when the archive cannot be opened or read, the entry is missing or is not a
+/// file, or the entry is larger than `limits` allow.
 pub fn extract(
     src: impl Into<Input>,
     format: ArchiveFormat,
@@ -53,11 +58,15 @@ pub fn extract(
     extract_until(src, format, entry, limits, &Deadline::NEVER)
 }
 
-/// [`extract`], ending with [`ArchiveError::Interrupted`] as soon as `interrupt` says so: it is
-/// asked once per entry looked at and once per chunk of an entry or a compressed stream unpacked.
+/// [`extract`], ending with [`ArchiveError::Interrupted`] as soon as `interrupt` says so.
+///
+/// `interrupt` is asked once per entry looked at and once per chunk of an entry or a compressed stream unpacked.
 /// A 7z's decoder cannot be stopped inside an entry it passes over, so the entries it has to
 /// decode before the wanted one are held to `limits.scanned` beforehand, by the sizes the header
 /// states. A part of an entry is never returned.
+///
+/// # Errors
+/// As [`extract`], and [`ArchiveError::Interrupted`] when `interrupt` ends it.
 pub fn extract_until(
     src: impl Into<Input>,
     format: ArchiveFormat,

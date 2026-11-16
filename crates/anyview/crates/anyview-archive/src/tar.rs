@@ -41,7 +41,10 @@ pub(crate) fn path_of<R: Read>(entry: &tar::Entry<'_, R>) -> String {
 // `EntryType` is `non_exhaustive`: a wildcard is the only way to match a type the tar crate may
 // extend, and what falls to it (devices, pipes, the extension headers the reader folds into the
 // entry they describe) is not a file to show.
-#[allow(clippy::wildcard_enum_match_arm)]
+#[expect(
+    clippy::wildcard_enum_match_arm,
+    reason = "`EntryType` is non-exhaustive: the wildcard covers what the tar crate may add"
+)]
 pub(crate) fn kind_of(kind: EntryType) -> EntryKind {
     match kind {
         EntryType::Directory => EntryKind::Directory,
