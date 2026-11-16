@@ -202,7 +202,7 @@ fn zip(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackFau
         budget.entry()?;
         let mut file = zipped.by_index(n).map_err(damaged)?;
         let link = file.unix_mode().is_some_and(|m| m & 0o170000 == 0o120000);
-        let shown = file.name().to_owned();
+        let shown = file.name().map_err(damaged)?.into_owned();
         let rel = file
             .enclosed_name()
             .and_then(|p| inside(&p))
