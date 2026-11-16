@@ -21,6 +21,7 @@ path = "src/lib.rs"
 agent-acp-core = {path = "../agent-acp-core"}
 action-tools = {path = "../action-tools"}
 agent-client-protocol = { workspace = true }
+base-path = { path = "../../base/base-path" }
 sandbox = {path = "../../sandbox/sandbox"}
 companion-model = {path = "../companion-model"}
 const-hex = { workspace = true }

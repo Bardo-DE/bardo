@@ -5,10 +5,11 @@
 //! `output` is bounded and redacted. `kill` and `release` always work: no policy stands in front of
 //! stopping a command.
 
+use crate::SandboxState;
 use crate::env::sandbox_env;
 use crate::output::{Shown, shown};
 use crate::sandbox::{Argv, ExitReport, Job, Network, RunSpec, Sandbox, StartFault};
-use crate::{AbsPath, SandboxState};
+use base_path::AbsPath;
 use std::collections::BTreeMap;
 
 /// Output kept when the requester names no limit.
@@ -99,7 +100,8 @@ struct Term<J> {
 ///
 /// ```
 /// use sandbox::fake::{FakeSandbox, Script};
-/// use sandbox::{AbsPath, Argv, ExitReport, Launch, Shell};
+/// use sandbox::{Argv, ExitReport, Launch, Shell};
+/// use base_path::AbsPath;
 ///
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// let (sandbox, seen) = FakeSandbox::ready(vec![Script::done("hello\n", 0)]);

@@ -20,10 +20,10 @@ use agent_acp_host::{AcpBackend, AgentHost, IntentsCourt, Parts, Performer, Seam
 use agent_session::fake::MemoryLog;
 use agent_session::{BackendEvent, BackendKind, Opening, SessionHost, SheetChoice, TurnEnd};
 use base_ids::Count;
+use base_path::AbsPath;
 use permission_core::ProgramName;
 use permission_core::{ActionMatch, StandingGrant, TaskPolicy, TaskPolicyState, acp_agent_app};
 use provenance::{AgentRef, Effect, SessionId, SpaceId, TaskId, UnixSeconds};
-use sandbox::AbsPath;
 use sandbox::fake::{FakeSandbox, Script, Seen};
 use sandbox::{Network, NetworkMode};
 use std::collections::BTreeSet;

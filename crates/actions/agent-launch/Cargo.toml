@@ -33,6 +33,7 @@ permission-core = {path = "../permission-core"}
 action-store = {path = "../action-store"}
 agent-session = {path = "../agent-session"}
 action-settings = {path = "../action-settings"}
+base-path = { path = "../../base/base-path" }
 sandbox = {path = "../../sandbox/sandbox"}
 fnv = { workspace = true }
 account-client = {optional = true, path = "../../accounts/account-client"}

@@ -16,9 +16,9 @@ use agent_acp_bin::harness::host::{HostError, Hosted, Places, SandboxLimits, Wir
 use agent_acp_host::{Models, ToolsOffer};
 use agent_launch::{AgentsFile, LoginOnly, Registry};
 use agent_session::{BackendEvent, EndCause, SessionHost, TurnEnd};
+use base_path::AbsPath;
 use permission_core::ProgramName;
 use provenance::{SpaceId, UnixSeconds};
-use sandbox::AbsPath;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;

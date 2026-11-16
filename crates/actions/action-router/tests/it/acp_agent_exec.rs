@@ -7,12 +7,12 @@ use crate::support::*;
 use action_core::*;
 use action_fake::ScriptedConfirmer;
 use action_router::GrantStore;
+use base_path::AbsPath;
 use permission_core::{
     AlwaysOffer, CommandPrefix, DERIVES_OWN, DERIVES_PARAM, DERIVES_READ, GrantCaller,
     NETWORK_CLOSED, NETWORK_OPEN, NETWORK_PARAM, StandingGrant, StandingScope, TERMINAL_RUN,
     Withheld, acp_agent_action,
 };
-use sandbox::AbsPath;
 
 const PROJ: &str = "/home/u/proj";
 

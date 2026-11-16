@@ -64,8 +64,8 @@ use action_core::Rewind;
 use agent_acp_host::{ModelId, SignIn};
 use agent_registry::dirs::AgentsDir;
 use agent_registry::launch::LaunchFault;
+use base_path::AbsPath;
 use permission_core::ProgramName;
-use sandbox::AbsPath;
 use sandbox::NetworkMode;
 use sandbox::egress::HostFault;
 

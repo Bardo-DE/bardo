@@ -24,6 +24,7 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 action-review = {path = "../action-review"}
 agent-registry = {path = "../agent-registry"}
+base-path = { path = "../../base/base-path" }
 sandbox = {path = "../../sandbox/sandbox"}
 clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
 companion-wire = {path = "../companion-wire"}

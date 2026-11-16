@@ -33,7 +33,7 @@ futures-util = { workspace = true, features = ["std"] }
 tracing = { workspace = true }
 
 [dev-dependencies]
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 model-provider = {path = "../../models/model-provider"}
 toml = { workspace = true }
 rust_decimal = { workspace = true, features = ["std", "serde"] }

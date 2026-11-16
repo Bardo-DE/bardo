@@ -5,8 +5,8 @@ use agent_acp_host::LaunchPlan;
 use agent_acp_host::fake::{ChannelWire, pipe};
 use agent_launch::fake::{FakeAccounts, FakeProc, FakeProcs, Mood, ProcsSeen, Secrets};
 use agent_launch::{AgentSpawn, AgentsFile, Registry};
+use base_path::AbsPath;
 use permission_core::ProgramName;
-use sandbox::AbsPath;
 
 use provenance::SessionId;
 use std::sync::Arc;

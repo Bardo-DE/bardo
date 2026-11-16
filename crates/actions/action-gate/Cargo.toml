@@ -12,7 +12,7 @@ publish.workspace = true
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 action-review = {path = "../action-review"}
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 action-context = {path = "../action-context"}
 action-core = {path = "../action-core"}
 action-manifest = {path = "../action-manifest"}

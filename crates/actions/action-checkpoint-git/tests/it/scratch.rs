@@ -3,7 +3,7 @@
 
 use action_checkpoint::WorkRoot;
 use action_checkpoint_git::GitStore;
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 

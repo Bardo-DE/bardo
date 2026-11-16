@@ -4,8 +4,8 @@ use action_checkpoint::{Decision, Saved, TreeId, WorkRoot, decide, next_id, rete
 use action_core::{CheckpointEvent, CheckpointId, CheckpointNote, Retention, Rewind, SkipReason};
 use action_vocab::{Days, TurnId, Workspace};
 use base_ids::Count;
+use base_path::AbsPath;
 use base_time::UnixSeconds;
-use sandbox::AbsPath;
 
 const DAY: i64 = 86_400;
 const NOW: i64 = 100 * DAY;

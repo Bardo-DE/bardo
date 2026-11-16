@@ -5,7 +5,8 @@
 use crate::bwrap_job::locked;
 use crate::output::Tail;
 use crate::sandbox::{Captured, ExitReport, Job, KILLED, RunSpec, Sandbox, StartFault};
-use crate::{AbsPath, CannotSandbox, SandboxState};
+use crate::{CannotSandbox, SandboxState};
+use base_path::AbsPath;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 

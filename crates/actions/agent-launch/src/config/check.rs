@@ -6,8 +6,8 @@ use crate::reach::Reach;
 use action_core::Rewind;
 use agent_acp_host::{ModelId, SignIn};
 use agent_registry::dirs::AgentsDir;
+use base_path::AbsPath;
 use permission_core::ProgramName;
-use sandbox::AbsPath;
 use sandbox::NetworkMode;
 
 use account_capability::{AgentProgram, AgentProtocol, EnvName};

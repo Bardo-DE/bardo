@@ -19,10 +19,10 @@ use action_provider::serve_on_with;
 use agent_launch::{
     Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Entry, Registry, login_run,
 };
+use base_path::AbsPath;
 use companion_model::helper::{TerminalLine, TerminalLogin, TerminalRun};
 use companion_model::{SeenCommand, WatchedAgent};
 use permission_core::ACP_AGENT_APP;
-use sandbox::AbsPath;
 
 use action_store::SystemClock;
 use provenance::{HelperId, SessionId, TaskId};

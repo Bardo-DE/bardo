@@ -1,8 +1,9 @@
 //! The terminal table over the fake sandbox: what reaches the sandbox, what is refused, and that
 //! kill and release always work.
 
+use base_path::AbsPath;
+use sandbox::CannotSandbox;
 use sandbox::fake::{FakeSandbox, Script};
-use sandbox::{AbsPath, CannotSandbox};
 use sandbox::{Argv, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellFault, StartFault};
 
 fn launch(line: &[&str]) -> Launch {

@@ -7,7 +7,7 @@
 use crate::config::{Entry, Route};
 use crate::env::{Lent, child_env};
 use crate::spawn::binds;
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use sandbox::{AgentNet, AgentRun, Argv, EnvVar, NetworkMode};
 use std::collections::BTreeMap;
 

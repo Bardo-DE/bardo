@@ -22,9 +22,9 @@ use agent_client_protocol::schema::v1::{
     ReleaseTerminalRequest, ReleaseTerminalResponse, TerminalOutputRequest, TerminalOutputResponse,
     WaitForTerminalExitRequest, WaitForTerminalExitResponse,
 };
+use base_path::AbsPath;
 use permission_core::{Derivation, Served};
 use provenance::SessionId;
-use sandbox::AbsPath;
 use sandbox::{Network, NetworkMode, Sandbox};
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, MutexGuard};

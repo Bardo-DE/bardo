@@ -13,11 +13,11 @@ use action_core::{
 use action_vocab::{LabelText, ParamName, TargetValue, UndoToken, Value};
 use agent_acp_core::call::StageId;
 use agent_acp_core::taint::source;
+use base_path::AbsPath;
 use permission_core::{
     FILES_READ, FILES_SENSITIVE, FILES_WRITE, PermissionKind, REPORTED, TERMINAL_RUN,
 };
 use provenance::{Integrity, Label, Labelled, Source};
-use sandbox::AbsPath;
 use sandbox::Sandbox;
 use std::collections::BTreeSet;
 

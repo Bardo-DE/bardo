@@ -8,8 +8,8 @@ use action_vocab::TurnId;
 use agent_acp_core::call::AgentCall;
 use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
 use agent_acp_host::{ToolsEdge, ToolsOffer};
+use base_path::AbsPath;
 use provenance::SessionId;
-use sandbox::AbsPath;
 use sandbox::{Access, AgentNet, AgentRun, Argv, Bind, EnvVar, Profile, agent_bwrap_args};
 use std::path::Path;
 use std::process::{Command, Stdio};
@@ -44,8 +44,8 @@ fn abs(path: &Path) -> AbsPath {
     AbsPath::parse(path.to_str().expect("utf8")).expect("abs")
 }
 
-fn shell_abs(path: &Path) -> sandbox::AbsPath {
-    sandbox::AbsPath::parse(path.to_str().expect("utf8")).expect("abs")
+fn shell_abs(path: &Path) -> base_path::AbsPath {
+    base_path::AbsPath::parse(path.to_str().expect("utf8")).expect("abs")
 }
 
 const SCRIPT: &str = r#"
@@ -72,7 +72,7 @@ async fn a_process_in_the_sandbox_with_no_network_reaches_its_sessions_edge_and_
     let session = SessionId::parse("s-1").expect("session");
     let program = permission_core::ProgramName::parse("claude-code").expect("program");
     let edge = ToolsEdge::start(&offer, &session, &program, Stand).expect("edge");
-    let run = |socket: &sandbox::AbsPath, token: &str| {
+    let run = |socket: &base_path::AbsPath, token: &str| {
         let run = AgentRun::new(
             Argv::new(
                 python.to_str().expect("utf8"),
@@ -97,7 +97,7 @@ async fn a_process_in_the_sandbox_with_no_network_reaches_its_sessions_edge_and_
             AgentNet::None,
         )
         .with_bind(Bind::new(
-            sandbox::AbsPath::parse(edge.bind().socket.as_str()).expect("abs"),
+            base_path::AbsPath::parse(edge.bind().socket.as_str()).expect("abs"),
             Access::ReadWrite,
         ));
         Command::new(&bwrap)
@@ -109,7 +109,7 @@ async fn a_process_in_the_sandbox_with_no_network_reaches_its_sessions_edge_and_
             .output()
             .map(|o| String::from_utf8_lossy(&o.stdout).into_owned())
     };
-    let socket = sandbox::AbsPath::parse(edge.bind().socket.as_str()).expect("abs");
+    let socket = base_path::AbsPath::parse(edge.bind().socket.as_str()).expect("abs");
     let listing = run(&socket, edge.token().reveal()).expect("bwrap runs");
     if listing.trim().is_empty() {
         eprintln!("SKIP edge sandbox test: namespaces are denied here");

@@ -170,7 +170,7 @@ pub fn covers_approval(held: &CallFacts, call: &CallFacts) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sandbox::AbsPath;
+    use base_path::AbsPath;
 
     #[test]
     fn every_kinds_word_names_it_and_other_words_name_none() {

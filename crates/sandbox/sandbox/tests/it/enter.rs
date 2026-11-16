@@ -1,10 +1,10 @@
 //! The exec stage's words (built and parsed strictly), its report line, and how the bubblewrap
 //! arguments carry it. Nothing here needs a kernel with Landlock.
 
+use base_path::{AbsPath, AbsPathError};
 use sandbox::{
-    AbsPath, Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnterFault, EnterPlan, EnvVar,
-    INSIDE_ENTER, INSIDE_FORWARDER, LandlockLevel, NetRule, Overlay, PathFault, Profile,
-    agent_bwrap_args,
+    Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnterFault, EnterPlan, EnvVar,
+    INSIDE_ENTER, INSIDE_FORWARDER, LandlockLevel, NetRule, Overlay, Profile, agent_bwrap_args,
 };
 
 fn abs(text: &str) -> AbsPath {
@@ -60,11 +60,11 @@ fn the_parser_refuses_what_it_does_not_know() {
         ),
         bad(
             &["--read", "relative", "--net-none", "--", "a"],
-            EnterFault::BadPath(PathFault::NotAbsolute),
+            EnterFault::BadPath(AbsPathError::NotAbsolute),
         ),
         bad(
             &["--write", "/a/../b", "--net-none", "--", "a"],
-            EnterFault::BadPath(PathFault::ParentStep),
+            EnterFault::BadPath(AbsPathError::ParentStep),
         ),
         bad(&["--read", "/", "--net-none", "--", "a"], EnterFault::Root),
         bad(&["--write", "/", "--net-none", "--", "a"], EnterFault::Root),

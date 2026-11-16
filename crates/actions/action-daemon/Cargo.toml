@@ -18,7 +18,7 @@ path = "src/main.rs"
 
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 companion-model = {path = "../companion-model"}
 action-checkpoint-git = {path = "../action-checkpoint-git"}
 permission-core = {path = "../permission-core"}

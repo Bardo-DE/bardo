@@ -12,7 +12,7 @@ publish.workspace = true
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 action-checkpoint = {path = "../action-checkpoint"}
 action-core = {path = "../action-core"}
 action-manifest = {path = "../action-manifest", features = ["manifest-file"]}

@@ -33,7 +33,7 @@ tracing = { workspace = true }
 
 [dev-dependencies]
 base-ids = { path = "../../base/base-ids" }
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-fake = {path = "../action-fake"}
 action-testbus = {path = "../action-testbus"}

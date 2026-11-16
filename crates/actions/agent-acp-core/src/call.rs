@@ -5,12 +5,12 @@
 
 use crate::confine::Care;
 use action_vocab::{CallRequest, ChoiceId, FileRef, Origin, TargetValue, Value};
+use base_path::AbsPath;
 use permission_core::{
     DERIVES_PARAM, Derivation, FILES_READ, FILES_SENSITIVE, FILES_WRITE, NETWORK_PARAM,
     PermissionKind, REPORTED, TERMINAL_RUN, acp_agent_action, derives_choice, network_choice,
 };
 use provenance::{Integrity, Label, Labelled, ModelRole, Source};
-use sandbox::AbsPath;
 use std::collections::BTreeSet;
 
 /// A handle the host holds for what is too big or too private for a sheet or a reviewer (the

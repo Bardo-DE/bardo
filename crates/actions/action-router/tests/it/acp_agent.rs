@@ -12,6 +12,7 @@ use action_vocab::{
     CallRequest, Caller, CallerRole, ChoiceId, FileRef, Origin, TargetValue, Value, Workspace,
 };
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen, WireRefusal};
+use base_path::AbsPath;
 use permission_core::{
     ActionMatch, AlwaysOffer, DERIVES_OWN, DERIVES_PARAM, DERIVES_READ, DenyCode, FILES_READ,
     FILES_WRITE, NETWORK_CLOSED, NETWORK_PARAM, ProgramName, StandingScope, TERMINAL_RUN,
@@ -20,7 +21,6 @@ use permission_core::{
 use provenance::{
     Actor, AgentRef, ClientName, DataClass, Effect, Label, Labelled, SessionId, Source,
 };
-use sandbox::AbsPath;
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
 

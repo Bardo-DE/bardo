@@ -10,12 +10,12 @@ use action_review::{ReviewReason, ReviewVerdict};
 use action_router::{GrantStore, Router};
 use action_vocab::{ActionRef, CallRequest, FileRef, Origin, TargetValue, Value};
 use action_wire::{IntentsReply, IntentsRequest};
+use base_path::AbsPath;
 use permission_core::{
     ActionMatch, AlwaysOffer, DenyCode, GrantCaller, ReasonCode, ReasonText, Recipient,
     ReviewError, StandingGrant, StandingScope, Withheld,
 };
 use provenance::{Labelled, UnixSeconds};
-use sandbox::AbsPath;
 
 pub(crate) const ADDRESS: &str = "accounting@example.test";
 

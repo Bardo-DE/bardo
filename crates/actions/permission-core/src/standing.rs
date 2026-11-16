@@ -9,7 +9,7 @@ use action_vocab::ActionRef;
 use provenance::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
-use sandbox::AbsPath;
+use base_path::AbsPath;
 
 /// A host name, lower case: `example.org`. Matched whole, never as a suffix, so `example.org`
 /// does not cover `evilexample.org`.

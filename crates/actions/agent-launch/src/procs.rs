@@ -78,12 +78,12 @@ impl BwrapProcs {
     }
 
     /// A fresh, unused path for one start's filter file.
-    fn filter_path(&self) -> Option<sandbox::AbsPath> {
+    fn filter_path(&self) -> Option<base_path::AbsPath> {
         let n = FILTERS.fetch_add(1, Ordering::Relaxed);
         let file = self
             .filter_dir
             .join(format!("docket-seccomp-{}-{n}.bpf", std::process::id()));
-        sandbox::AbsPath::parse(file.to_str()?).ok()
+        base_path::AbsPath::parse(file.to_str()?).ok()
     }
 }
 

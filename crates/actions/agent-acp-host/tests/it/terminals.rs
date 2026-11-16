@@ -4,7 +4,7 @@
 use agent_acp_core::command_deadline::CommandDeadline;
 use agent_acp_host::Terminals;
 use agent_client_protocol::schema::v1::Error;
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use sandbox::CannotSandbox;
 use sandbox::fake::{FakeSandbox, Script, Seen};
 use serde::Serialize;

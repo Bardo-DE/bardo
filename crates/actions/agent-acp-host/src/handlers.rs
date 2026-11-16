@@ -23,8 +23,8 @@ use agent_client_protocol::schema::v1::{
     RequestPermissionResponse, SelectedPermissionOutcome, TerminalId, WriteTextFileRequest,
     WriteTextFileResponse,
 };
+use base_path::AbsPath;
 use permission_core::{BreakerTrip, DenyCode, SandboxState};
-use sandbox::AbsPath;
 use sandbox::Argv;
 use serde::Serialize;
 use serde_json::Value as Json;

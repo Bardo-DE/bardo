@@ -5,7 +5,6 @@ mod endpoint;
 mod enter;
 mod forward;
 mod output;
-mod path;
 mod real;
 mod shell;
 

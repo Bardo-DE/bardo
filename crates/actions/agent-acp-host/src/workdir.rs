@@ -7,7 +7,7 @@
 //! `resolve` walks the file system; `from_resolved` is the pure half, given the real paths.
 
 use agent_acp_core::confine::is_secret;
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use std::path::{Path, PathBuf};
 
 /// Why a directory is not a [`Workdir`].

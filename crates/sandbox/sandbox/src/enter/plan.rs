@@ -2,7 +2,7 @@
 //! the same code that builds the bubblewrap command line (`build`) and parsed strictly here.
 //! `words` and `parse` are each other's inverse, so the two cannot drift.
 
-use crate::{AbsPath, PathFault};
+use base_path::{AbsPath, AbsPathError};
 use serde::{Deserialize, Serialize};
 
 const READ: &str = "--read";
@@ -89,7 +89,7 @@ pub enum EnterFault {
     MissingValue(&'static str),
     /// A value that is not an absolute path.
     #[error("not a usable path: {0}")]
-    BadPath(PathFault),
+    BadPath(AbsPathError),
     /// `/` itself: it would grant the whole file system.
     #[error("a path must not be /")]
     Root,

@@ -5,8 +5,8 @@
 use super::edge::EdgeBind;
 use super::models::ModelId;
 use agent_client_protocol::{Client, ConnectTo};
+use base_path::AbsPath;
 use permission_core::ProgramName;
-use sandbox::AbsPath;
 
 use provenance::SessionId;
 use std::future::Future;

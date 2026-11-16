@@ -3,7 +3,7 @@
 //! (the sandbox half of the checkpoint repository's rule that a hostile `.git` never runs), and
 //! any other path the host names (the checkpoint repository, when it sits under the workspace).
 
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use std::path::Path;
 
 /// The directory name that is protected wherever it is found.

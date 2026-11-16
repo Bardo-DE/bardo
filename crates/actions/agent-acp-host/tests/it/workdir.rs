@@ -3,7 +3,7 @@
 //! Scratch directories only.
 
 use agent_acp_host::{Workdir, WorkdirFault};
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use std::os::unix::fs::symlink;
 use std::path::Path;
 

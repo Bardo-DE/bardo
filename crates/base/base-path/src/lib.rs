@@ -1,4 +1,4 @@
-//! A host path that is absolute and normalised: the only kind of path the sandbox accepts.
+//! A host path that is absolute and normalised, parsed once where it enters.
 
 use serde::{Deserialize, Serialize};
 
@@ -10,7 +10,7 @@ pub struct AbsPath(String);
 
 /// Why text is not an absolute path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum PathFault {
+pub enum AbsPathError {
     /// It does not start with `/`.
     #[error("a path must be absolute")]
     NotAbsolute,
@@ -27,18 +27,18 @@ pub enum PathFault {
 
 impl AbsPath {
     /// `text` as an absolute path, `.` and doubled slashes folded away.
-    pub fn parse(text: &str) -> Result<Self, PathFault> {
+    pub fn parse(text: &str) -> Result<Self, AbsPathError> {
         if !text.starts_with('/') {
-            return Err(PathFault::NotAbsolute);
+            return Err(AbsPathError::NotAbsolute);
         }
         if text.chars().any(char::is_control) {
-            return Err(PathFault::Control);
+            return Err(AbsPathError::Control);
         }
         let mut parts = Vec::new();
         for part in text.split('/') {
             match part {
                 "" | "." => {}
-                ".." => return Err(PathFault::ParentStep),
+                ".." => return Err(AbsPathError::ParentStep),
                 other => parts.push(other),
             }
         }
@@ -90,7 +90,7 @@ impl AbsPath {
 }
 
 impl TryFrom<String> for AbsPath {
-    type Error = PathFault;
+    type Error = AbsPathError;
 
     fn try_from(text: String) -> Result<Self, Self::Error> {
         Self::parse(&text)
@@ -98,13 +98,13 @@ impl TryFrom<String> for AbsPath {
 }
 
 impl TryFrom<&std::path::Path> for AbsPath {
-    type Error = PathFault;
+    type Error = AbsPathError;
 
     /// Strict: a path that is not UTF-8 is a fault, never a lossy replacement that names a
     /// different file.
     fn try_from(path: &std::path::Path) -> Result<Self, Self::Error> {
         path.to_str()
-            .ok_or(PathFault::NotUtf8)
+            .ok_or(AbsPathError::NotUtf8)
             .and_then(Self::parse)
     }
 }

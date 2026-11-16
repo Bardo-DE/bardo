@@ -1,7 +1,8 @@
 //! The `Sandbox` seam: what the shell tool asks of whatever confines a command. Synchronous and
 //! small on purpose: a job is polled, waited on and killed; nothing here names a runtime.
 
-use crate::{AbsPath, SandboxState};
+use crate::SandboxState;
+use base_path::AbsPath;
 
 /// A command and its arguments: at least the program.
 #[derive(Debug, Clone, PartialEq, Eq)]

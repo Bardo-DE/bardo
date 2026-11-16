@@ -1,6 +1,6 @@
 //! The agent process's bubblewrap arguments, as plain strings.
 
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use sandbox::{
     Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnvVar, INSIDE_FORWARDER, INSIDE_SOCKET,
     Network, NetworkMode, Profile, RESOLVER_FILES, RunSpec, agent_bwrap_args, bwrap_args,

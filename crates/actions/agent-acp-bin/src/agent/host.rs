@@ -16,9 +16,9 @@ use agent_acp_host::{AgentHost, EdgeMenu, IntentsCourt, OsFiles, Seams, ToolsOff
 use agent_launch::{Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Registry};
 use agent_registry::dirs::AgentsDir;
 use agent_session::{BackendKind, HostFault, Opening, SessionHost};
+use base_path::AbsPath;
 use permission_core::ProgramName;
 use provenance::{AgentRef, SessionId, SpaceId, TaskId};
-use sandbox::AbsPath;
 use sandbox::{Detected, NetworkMode};
 use std::marker::PhantomData;
 use std::path::PathBuf;

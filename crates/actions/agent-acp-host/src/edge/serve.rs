@@ -11,9 +11,9 @@ use action_tools::{
 };
 use agent_acp_core::call::AgentCall;
 use agent_acp_core::court::{Court, Ruled};
+use base_path::AbsPath;
 use permission_core::BreakerTrip;
 use permission_core::ProgramName;
-use sandbox::AbsPath;
 
 use provenance::{ClientName, SessionId};
 use serde_json::Value as Json;

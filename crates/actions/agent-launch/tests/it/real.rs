@@ -40,7 +40,7 @@ async fn a_confined_process_speaks_lines_over_its_stdio_with_exactly_the_environ
             ],
         )
         .expect("argv"),
-        sandbox::AbsPath::parse(cwd.to_str().expect("utf8")).expect("abs"),
+        base_path::AbsPath::parse(cwd.to_str().expect("utf8")).expect("abs"),
         vec![
             var("PATH", "/usr/bin:/bin"),
             var("HOME", "/tmp"),

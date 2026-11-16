@@ -20,8 +20,8 @@ use agent_client_protocol::schema::v1::{
     TerminalId, TerminalOutputRequest, TerminalOutputResponse, WaitForTerminalExitRequest,
     WaitForTerminalExitResponse,
 };
+use base_path::AbsPath;
 use permission_core::SandboxState;
-use sandbox::AbsPath;
 use sandbox::{Argv, ExitReport, Launch, Network, Sandbox, Shell, ShellFault, StartFault, TermId};
 use std::collections::BTreeMap;
 use std::time::{Duration, Instant};

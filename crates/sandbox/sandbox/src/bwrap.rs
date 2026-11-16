@@ -21,7 +21,8 @@ use crate::launch::{Enforcement, Env, Feed, Launcher, UserSession};
 use crate::profile::Profile;
 use crate::sandbox::{RunSpec, Sandbox, StartFault};
 use crate::seccomp::default_filter;
-use crate::{AbsPath, CannotSandbox, SandboxState};
+use crate::{CannotSandbox, SandboxState};
+use base_path::AbsPath;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
@@ -272,7 +273,8 @@ impl Detected {
     /// it starts a real `bwrap`, which needs unprivileged user namespaces.
     ///
     /// ```no_run
-    /// use sandbox::{AbsPath, Argv, Detected, Launch, Shell};
+    /// use sandbox::{Argv, Detected, Launch, Shell};
+    /// use base_path::AbsPath;
     ///
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let sandbox = Detected::probe("/usr/bin:/bin");

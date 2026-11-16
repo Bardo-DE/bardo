@@ -2,7 +2,7 @@
 //! listener standing in for a model endpoint. Skips, with a printed reason, where bwrap, user
 //! namespaces or a loopback are missing. Scratch directories only.
 
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use sandbox::forward::{Bridge, Loopback};
 use sandbox::{AgentNet, AgentRun, Argv, EndpointBind, EnvVar, Profile, agent_bwrap_args};
 use std::io::{Read, Write};

@@ -11,12 +11,12 @@
 //! the bubblewrap process, never in its arguments, so a key is not on a command line);
 //! no capabilities; a new session; death with its parent.
 
-use crate::AbsPath;
 use crate::confinement::confinement;
 use crate::enter::{INSIDE_ENTER, plan_for};
 use crate::net::{AgentNet, EndpointBind};
 use crate::profile::Profile;
 use crate::sandbox::{Argv, EnvVar};
+use base_path::AbsPath;
 
 /// Where the forwarder and its socket appear inside the sandbox.
 pub const INSIDE_FORWARDER: &str = "/run/bardo/sandbox/forward";

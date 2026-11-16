@@ -1,8 +1,8 @@
 //! Standing grants: scope matching, the held list and its text.
 
 use action_vocab::ActionRef;
+use base_path::{AbsPath, AbsPathError};
 use permission_core::*;
-use sandbox::{AbsPath, PathFault};
 
 pub(crate) fn path(t: &str) -> AbsPath {
     AbsPath::parse(t).expect("path")
@@ -54,9 +54,9 @@ fn path_prefixes_match_whole_components() {
 
 #[test]
 fn a_path_cannot_step_up_or_be_relative() {
-    assert_eq!(AbsPath::parse("/a/../b"), Err(PathFault::ParentStep));
-    assert_eq!(AbsPath::parse("a/b"), Err(PathFault::NotAbsolute));
-    assert_eq!(AbsPath::parse("/a\nb"), Err(PathFault::Control));
+    assert_eq!(AbsPath::parse("/a/../b"), Err(AbsPathError::ParentStep));
+    assert_eq!(AbsPath::parse("a/b"), Err(AbsPathError::NotAbsolute));
+    assert_eq!(AbsPath::parse("/a\nb"), Err(AbsPathError::Control));
 }
 
 #[test]

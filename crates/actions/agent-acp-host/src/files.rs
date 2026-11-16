@@ -9,7 +9,7 @@
 //! read or changed.
 
 use super::workdir::{Workdir, WorkdirFault};
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Component, Path, PathBuf};

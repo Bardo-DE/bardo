@@ -6,8 +6,8 @@ use crate::agent_app::is_agent_action;
 use crate::grant::GrantCaller;
 use crate::standing::{Recipient, ScopeKind, StandingGrant, StandingScope};
 use action_vocab::ActionRef;
+use base_path::AbsPath;
 use provenance::Effect;
-use sandbox::AbsPath;
 use serde::{Deserialize, Serialize};
 
 /// The arguments of a call, reduced to what a scope can be compared with.

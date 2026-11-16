@@ -47,7 +47,7 @@ account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
 account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-fake = {path = "../action-fake"}
 inference-core = {path = "../../inference/inference-core"}

@@ -11,11 +11,11 @@ use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use account_core::{AppName, DataClass, GrantId};
 use action_router::GrantStore;
 use action_vocab::ActionRef;
+use base_path::AbsPath;
 use permission_core::{
     ActionGrant, ActionGrantKey, GrantCaller, GrantTarget, StandingGrant, StandingScope,
 };
 use provenance::{ActionName, SpaceScope, UnixSeconds};
-use sandbox::AbsPath;
 use std::path::Path;
 
 /// A class grant for `action`, to be recorded or compared.

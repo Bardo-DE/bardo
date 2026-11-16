@@ -42,11 +42,11 @@ use agent_session::{
     BackendEvent, BackendFault, BackendKind, Choices, ResumePlan, Resumed, SessionBackend,
     StartSession, TurnEnd,
 };
+use base_path::AbsPath;
 use companion_model::helper::SignInWay;
 use permission_core::PermissionKind;
 use permission_core::ProgramName;
 use provenance::Effect;
-use sandbox::AbsPath;
 use sandbox::Sandbox;
 use std::collections::VecDeque;
 

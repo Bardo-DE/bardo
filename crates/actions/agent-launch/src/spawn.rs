@@ -25,7 +25,7 @@ use crate::procs::{Proc, Procs};
 use crate::protect;
 use account_core::SessionToken;
 use agent_acp_host::{EdgeBind, LaunchPlan, SandboxStep, Spawn, SpawnFault, Spawned};
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use sandbox::egress::{Resolver, SystemResolver};
 use sandbox::forward::{Bridge, Loopback};
 use sandbox::{Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, NetworkMode};
@@ -269,7 +269,7 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         let socket = dir.join("ep.sock");
         let inside = socket
             .to_str()
-            .and_then(|t| sandbox::AbsPath::parse(t).ok())
+            .and_then(|t| base_path::AbsPath::parse(t).ok())
             .ok_or(SpawnFault::Sandbox(SandboxStep::SocketPath))?;
         Ok((
             socket,
@@ -320,7 +320,7 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
     /// `run` with every `.git` directory of the workspace, and the named extra paths that lie
     /// in it, bound read-only over the writable workspace. A `.git` that cannot be protected
     /// stops the start; an extra outside the workspace is not the agent's and is left out.
-    fn guarded(&self, run: AgentRun, cwd: &sandbox::AbsPath) -> Result<AgentRun, SpawnFault> {
+    fn guarded(&self, run: AgentRun, cwd: &base_path::AbsPath) -> Result<AgentRun, SpawnFault> {
         let run = protect::git_dirs(cwd)
             .into_iter()
             .try_fold(run, AgentRun::with_protect)

@@ -11,7 +11,7 @@ use crate::config::Entry;
 use crate::managed::claude_code_env;
 use account_capability::EnvName;
 use account_core::SecretText;
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use sandbox::{EnvVar, SANDBOX_HOME, SANDBOX_PATH};
 
 /// What a route lent the child, kept alive until the process is built.

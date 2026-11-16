@@ -7,8 +7,8 @@ use crate::problem::{GitCause, GitProblem, Report};
 use crate::run::{GitCommand, GitFault, GitOut, Limits, run_git};
 use action_checkpoint::{StoreFault, TreeListing, WorkRoot};
 use action_core::CheckpointId;
+use base_path::AbsPath;
 use provenance::SessionId;
-use sandbox::AbsPath;
 use std::path::{Path, PathBuf};
 
 /// Options before every command, none of them from the folder: no background refresh, no pager,

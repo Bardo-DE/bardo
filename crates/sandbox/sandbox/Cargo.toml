@@ -19,6 +19,7 @@ path = "src/bin/bardo-sandbox-enter.rs"
 required-features = ["landlock"]
 
 [dependencies]
+base-path = { path = "../../base/base-path" }
 serde = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 

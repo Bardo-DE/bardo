@@ -1,6 +1,6 @@
 //! `AbsPath`: absolute, normalised, never stepping up.
 
-use sandbox::{AbsPath, PathFault};
+use base_path::{AbsPath, AbsPathError};
 
 #[test]
 fn dots_and_doubled_slashes_fold_away_and_only_slash_is_the_root() {
@@ -12,7 +12,7 @@ fn dots_and_doubled_slashes_fold_away_and_only_slash_is_the_root() {
 
 #[test]
 fn relative_parent_and_control_are_refused() {
-    assert_eq!(AbsPath::parse("a/b"), Err(PathFault::NotAbsolute));
-    assert_eq!(AbsPath::parse("/a/../b"), Err(PathFault::ParentStep));
-    assert_eq!(AbsPath::parse("/a\nb"), Err(PathFault::Control));
+    assert_eq!(AbsPath::parse("a/b"), Err(AbsPathError::NotAbsolute));
+    assert_eq!(AbsPath::parse("/a/../b"), Err(AbsPathError::ParentStep));
+    assert_eq!(AbsPath::parse("/a\nb"), Err(AbsPathError::Control));
 }

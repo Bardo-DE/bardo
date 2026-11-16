@@ -9,7 +9,7 @@
 //! `/etc` is mostly harmless but holds a few secrets (password hashes, sudoers, host keys, saved
 //! network credentials); those are covered by an empty file or directory when the host has them.
 
-use crate::AbsPath;
+use base_path::AbsPath;
 
 /// Host directories (or links) bound read-only at the same path when they exist.
 const SYSTEM_DIRS: &[&str] = &["/bin", "/sbin", "/lib", "/lib32", "/lib64"];

@@ -25,8 +25,8 @@
 //!   `EndpointOnly` (one forwarded endpoint) and `Allowlist` (named hosts); `Host` should be
 //!   chosen per program by the person, never as a default.
 
-use crate::AbsPath;
 use crate::sandbox::{EnvVar, Network};
+use base_path::AbsPath;
 use serde::{Deserialize, Serialize};
 
 /// Where a host keeps the resolver file `/etc/resolv.conf` points at, when it is a link into a

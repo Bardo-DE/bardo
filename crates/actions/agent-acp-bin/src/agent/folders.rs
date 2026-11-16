@@ -3,8 +3,8 @@
 
 use super::places::Places;
 use agent_acp_host::Workdir;
+use base_path::AbsPath;
 use permission_core::ProgramName;
-use sandbox::AbsPath;
 
 use std::path::PathBuf;
 

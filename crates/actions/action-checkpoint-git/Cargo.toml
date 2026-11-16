@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 action-checkpoint = {path = "../action-checkpoint"}
 action-core = {path = "../action-core"}
 percent-encoding = { workspace = true }

@@ -2,10 +2,10 @@
 //! `agent_bwrap_args` reads, so the bubblewrap mounts and the Landlock rules name the same places.
 
 use super::plan::{EnterPlan, NetRule};
-use crate::AbsPath;
 use crate::agent::{Access, AgentRun};
 use crate::net::AgentNet;
 use crate::profile::Profile;
+use base_path::AbsPath;
 
 /// Places that are always fresh in-memory directories inside the sandbox and writable: the
 /// agent's private scratch, home and shared memory. `/run` is not among them.

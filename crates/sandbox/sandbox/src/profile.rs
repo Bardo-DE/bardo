@@ -2,9 +2,9 @@
 //! scratch directories are. A `Profile` is plain data, so a test builds one and reads the
 //! arguments.
 
-use crate::AbsPath;
 use crate::harden::Bytes;
 use crate::root::Root;
+use base_path::AbsPath;
 
 /// What the shared confinement adds to the command line.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

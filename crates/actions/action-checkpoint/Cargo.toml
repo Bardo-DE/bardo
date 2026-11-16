@@ -15,7 +15,7 @@ testing = []
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-sandbox = {path = "../../sandbox/sandbox"}
+base-path = { path = "../../base/base-path" }
 const-hex = { workspace = true }
 action-core = {path = "../action-core"}
 action-vocab = {path = "../action-vocab"}

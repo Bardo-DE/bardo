@@ -2,7 +2,7 @@
 //! or the kernel refuses user namespaces (a locked-down build jail may). They use a scratch directory as
 //! the working directory and never the real home.
 
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use sandbox::{
     Argv, BwrapSandbox, ExitReport, Hardening, Launch, LimitPolicy, Limits, Shell, UserSession,
 };

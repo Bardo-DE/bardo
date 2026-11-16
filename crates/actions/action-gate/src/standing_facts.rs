@@ -4,11 +4,11 @@
 
 use action_manifest::{ActionDecl, ArgSink};
 use action_vocab::{CallRequest, ParamName, TargetValue, Value};
+use base_path::AbsPath;
 use permission_core::{
     ArgFacts, CallFacts, DERIVES_PARAM, Domain, ExecFacts, NETWORK_PARAM, NetPrograms, Recipient,
     TERMINAL_RUN,
 };
-use sandbox::AbsPath;
 use std::sync::LazyLock;
 use url::Url;
 

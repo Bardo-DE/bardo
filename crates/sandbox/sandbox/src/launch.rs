@@ -11,10 +11,10 @@
 //! them once and reading them back; where that does not work, `resolve` is an error and no
 //! sandbox exists.
 
-use crate::AbsPath;
 use crate::harden::{LimitPolicy, Limits};
 use crate::sandbox::EnvVar;
 use crate::state::CannotSandbox;
+use base_path::AbsPath;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 

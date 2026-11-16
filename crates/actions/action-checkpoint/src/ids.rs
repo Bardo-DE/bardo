@@ -3,8 +3,8 @@
 
 use action_core::CheckpointId;
 use action_vocab::Workspace;
+use base_path::{AbsPath, AbsPathError};
 use base_time::UnixSeconds;
-use sandbox::{AbsPath, PathFault};
 
 /// The folder a session works in, absolute and normalised: where points are taken and restored.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -17,7 +17,7 @@ impl WorkRoot {
     }
 
     /// The session's workspace as a root; a workspace that steps up with `..` is refused.
-    pub fn of(workspace: &Workspace) -> Result<Self, PathFault> {
+    pub fn of(workspace: &Workspace) -> Result<Self, AbsPathError> {
         AbsPath::parse(workspace.as_str()).map(Self)
     }
 

@@ -5,7 +5,7 @@
 //! into a command line. A person who accepts no limits has to say so with `AcceptNoLimits`; the
 //! default is the strict choice, and a sandbox that cannot apply it refuses to start.
 
-use crate::AbsPath;
+use base_path::AbsPath;
 use serde::{Deserialize, Serialize};
 
 /// A size in bytes.

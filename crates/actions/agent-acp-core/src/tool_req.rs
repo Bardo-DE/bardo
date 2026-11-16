@@ -9,7 +9,7 @@ use crate::call::{Command, PermissionAsk};
 use crate::confine::{Care, confine, named};
 use crate::names;
 use agent_client_protocol::schema::v1::{ToolCallUpdate, ToolKind};
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use serde_json::Value;
 
 /// A permission request, read.

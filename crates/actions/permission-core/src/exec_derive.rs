@@ -18,7 +18,7 @@
 //!
 //! What it misses is why the network rule (`exec_reach`) is unconditional.
 
-use sandbox::AbsPath;
+use base_path::AbsPath;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 

@@ -6,9 +6,9 @@ use action_checkpoint::{
 };
 use action_core::{CheckpointId, PlanDigest};
 use base_ids::Count;
+use base_path::AbsPath;
 use base_time::UnixSeconds;
 use provenance::SessionId;
-use sandbox::AbsPath;
 
 fn root(text: &str) -> WorkRoot {
     WorkRoot::new(AbsPath::parse(text).expect("path"))

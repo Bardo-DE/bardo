@@ -107,7 +107,7 @@ fn standing_grant(prefix: &str) -> permission_core::StandingGrant {
                 app: AppName::parse("org.bardo.Files").expect("app"),
                 name: ActionName::parse("files.file.move").expect("action"),
             },
-            under: sandbox::AbsPath::parse(prefix).expect("path"),
+            under: base_path::AbsPath::parse(prefix).expect("path"),
         },
         UnixSeconds(1),
     )

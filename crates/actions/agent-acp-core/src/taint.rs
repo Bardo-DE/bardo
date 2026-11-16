@@ -4,9 +4,9 @@
 //! then uses in a command) is a change to what counts here and to the label the performer gives,
 //! not a hunt through string compares.
 
+use base_path::AbsPath;
 use permission_core::PermissionKind;
 use provenance::Source;
-use sandbox::AbsPath;
 
 /// What caused it.
 #[derive(Debug, Clone, PartialEq, Eq)]

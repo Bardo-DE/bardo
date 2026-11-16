@@ -215,7 +215,7 @@ fn a_sign_in_in_a_terminal_runs_the_entrys_command_with_the_login_added_and_only
     let file = AgentsFile::parse(LOGIN).expect("file");
     let name = permission_core::ProgramName::parse("claude-code").expect("name");
     let entry = file.get(&name).expect("entry");
-    let folder = sandbox::AbsPath::parse("/home/me/helpers/h-1").expect("folder");
+    let folder = base_path::AbsPath::parse("/home/me/helpers/h-1").expect("folder");
     let env = std::collections::BTreeMap::from([("BROWSER".to_owned(), "none".to_owned())]);
     let run = agent_launch::login_run(entry, &["/login".to_owned()], &env, &folder)
         .expect("a login entry has a run");

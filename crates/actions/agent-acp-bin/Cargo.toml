@@ -55,6 +55,7 @@ agent-planner = {path = "../agent-planner"}
 agent-session = {path = "../agent-session"}
 action-settings = {path = "../action-settings"}
 clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+base-path = { path = "../../base/base-path" }
 sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}
 companion-tasks = {path = "../companion-tasks"}
 futures-util = { workspace = true, features = ["std"] }
