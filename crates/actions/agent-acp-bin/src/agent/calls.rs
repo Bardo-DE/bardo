@@ -62,7 +62,10 @@ impl<T: Clone + Send + Sync + 'static> Calls<T> {
     /// The reply of the call `id` once it has ended, waiting up to [`WAIT`] for it: `None` while
     /// it is still working. `lost` is the reply of a call whose task ended without one.
     pub async fn wait(&self, id: &str, lost: T) -> Result<Option<T>, NoSuchTurn> {
-        let id: u64 = id.parse().ok().ok_or(NoSuchTurn)?;
+        // An id that is not a number is the id of no turn.
+        let Ok(id) = id.parse::<u64>() else {
+            return Err(NoSuchTurn);
+        };
         let mut reply = self
             .running
             .lock()

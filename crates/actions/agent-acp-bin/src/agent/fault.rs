@@ -2,14 +2,14 @@
 
 /// Why the agent host could not start or went on no longer. The words are the ones the program
 /// prints, after `bardo-agent: `.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum AgentFault {
     /// The settings do not let an agent run.
     #[error("{0}")]
     Permit(String),
     /// `agents.toml` is not under the configuration directory.
     #[error("no agents.toml under the configuration directory")]
-    NoAgentsFile,
+    NoAgentsFile(#[source] std::sync::Arc<std::io::Error>),
     /// `agents.toml` is not a configuration.
     #[error("{0}")]
     Agents(String),

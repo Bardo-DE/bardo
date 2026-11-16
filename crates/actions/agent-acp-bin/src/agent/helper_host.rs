@@ -290,7 +290,7 @@ impl HelperHost {
     fn told(fault: &AgentFault) -> JobFault {
         match fault {
             AgentFault::Permit(_) => JobFault::TurnedOff,
-            AgentFault::NoAgentsFile | AgentFault::Agents(_) => JobFault::NotSetUp,
+            AgentFault::NoAgentsFile(_) | AgentFault::Agents(_) => JobFault::NotSetUp,
             AgentFault::NoSandbox(_) => JobFault::NoSandbox,
             _ => JobFault::Crashed,
         }

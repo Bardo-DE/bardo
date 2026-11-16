@@ -33,8 +33,7 @@ pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
         ));
     }
     let text = std::fs::read_to_string(places.config_dir().join("actions/agents.toml"))
-        .ok()
-        .ok_or(AgentFault::NoAgentsFile)?;
+        .map_err(|e| AgentFault::NoAgentsFile(std::sync::Arc::new(e)))?;
     let agents = places.agents_dir();
     let file = Arc::new(
         AgentsFile::parse_in(&text, Some(&agents))

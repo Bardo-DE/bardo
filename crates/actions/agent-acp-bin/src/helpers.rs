@@ -110,8 +110,11 @@ impl<T: IntentsTransport> Records for RouterRecords<T> {
         self.intents
             .session_turn(session.clone(), said)
             .await
-            .ok()
-            .ok_or_else(|| HelperRefusal(NOT_RECORDED.to_owned()))
+            .map_err(|e| {
+                // The person reads the fixed words; the cause goes to the log.
+                eprintln!("bardo-agent: a helper's turn could not be recorded: {e}");
+                HelperRefusal(NOT_RECORDED.to_owned())
+            })
     }
 
     async fn ended(&self, session: &SessionId, turn: TurnId, end: TurnEnd) {

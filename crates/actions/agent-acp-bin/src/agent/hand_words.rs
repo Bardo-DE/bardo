@@ -10,7 +10,7 @@ use agent_session::{BackendFault, HostFault, TurnEnd};
 pub fn refusal_of_fault(fault: &AgentFault) -> HandRefusal {
     match fault {
         AgentFault::Permit(_) => HandRefusal::TurnedOff,
-        AgentFault::NoAgentsFile => HandRefusal::NotSetUp,
+        AgentFault::NoAgentsFile(_) => HandRefusal::NotSetUp,
         AgentFault::Agents(_) => HandRefusal::Failed {
             message: "The list of coding agents can't be read. Open Settings to check it."
                 .to_owned(),
@@ -81,7 +81,10 @@ mod tests {
     fn a_setting_that_is_off_and_a_missing_list_are_said_as_what_they_are() {
         let rows = [
             (AgentFault::Permit("off".into()), HandRefusal::TurnedOff),
-            (AgentFault::NoAgentsFile, HandRefusal::NotSetUp),
+            (
+                AgentFault::NoAgentsFile(std::sync::Arc::new(std::io::ErrorKind::NotFound.into())),
+                HandRefusal::NotSetUp,
+            ),
         ];
         for (fault, expected) in rows {
             assert_eq!(refusal_of_fault(&fault), expected, "{fault:?}");

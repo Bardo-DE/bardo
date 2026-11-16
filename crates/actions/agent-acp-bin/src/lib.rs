@@ -62,7 +62,7 @@ pub enum LiveFault {
     Bus(String),
     /// The editor's app name is not one.
     #[error("not an app name: {0}")]
-    App(String),
+    App(String, #[source] account_core::CoreError),
     /// `agent-acp-callers.toml` exists and cannot be used.
     #[error("{0}")]
     Callers(String),
@@ -107,9 +107,7 @@ async fn serve_on(
     seams: Callers,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<(), LiveFault> {
-    let editor = AppName::parse(BUS_NAME)
-        .ok()
-        .ok_or_else(|| LiveFault::App(BUS_NAME.to_owned()))?;
+    let editor = AppName::parse(BUS_NAME).map_err(|e| LiveFault::App(BUS_NAME.to_owned(), e))?;
     let bus = |e: zbus::Error| LiveFault::Bus(e.to_string());
     let connection = action_dbus::session_connection(env).await.map_err(bus)?;
     // The sheets intentd hands this process for an editor's session wait on the desk the host
@@ -135,9 +133,7 @@ async fn serve_on(
         .map_err(bus)?;
     zbus_ready::serving(&connection).await.map_err(bus)?;
     connection.request_name(BUS_NAME).await.map_err(bus)?;
-    let shell = AppName::parse(SHELL)
-        .ok()
-        .ok_or_else(|| LiveFault::App(SHELL.to_owned()))?;
+    let shell = AppName::parse(SHELL).map_err(|e| LiveFault::App(SHELL.to_owned(), e))?;
     let companion = Companion::new(
         Intents::over(DbusTransport::new(connection.clone())),
         PlannerModel::new(action_dbus::inferd_transport(&connection, trace)),
