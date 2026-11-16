@@ -19,8 +19,7 @@ fn sandbox_here() -> bool {
     match Detected::probe("/usr/bin:/bin:/usr/local/bin") {
         Detected::Bwrap(_) => true,
         Detected::Missing(why) => {
-            eprintln!("SKIP acp engine test: no sandbox here ({why:?})");
-            false
+            panic!("bwrap is a required test tool (install bubblewrap): {why:?}")
         }
     }
 }

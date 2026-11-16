@@ -25,7 +25,7 @@ pub struct PrivateBus {
 }
 
 impl PrivateBus {
-    /// Starts a bus, or says why not and returns `None` so the test ends early.
+    /// Starts a bus; panics, saying how to install it, when `dbus-daemon` is missing.
     pub fn start(test: &str) -> Option<PrivateBus> {
         let scratch = tempfile::tempdir().unwrap();
         let socket = scratch.path().join("bus.sock");
@@ -41,10 +41,9 @@ impl PrivateBus {
             .spawn();
         let mut daemon = match spawned {
             Ok(daemon) => daemon,
-            Err(error) => {
-                eprintln!("skipping {test}: dbus-daemon cannot be started ({error})");
-                return None;
-            }
+            Err(error) => panic!(
+                "{test}: dbus-daemon cannot be started ({error}); it is a required test tool, install it (Fedora: dnf install dbus-daemon; Debian/Ubuntu: apt install dbus-daemon)"
+            ),
         };
         let mut address = String::new();
         if let Some(stdout) = daemon.stdout.take() {
@@ -57,8 +56,7 @@ impl PrivateBus {
             _scratch: scratch,
         };
         if !bus.address.starts_with("unix:") {
-            eprintln!("skipping {test}: dbus-daemon printed no address");
-            return None;
+            panic!("{test}: the private dbus-daemon printed no address");
         }
         Some(bus)
     }

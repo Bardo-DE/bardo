@@ -13,8 +13,8 @@ pub struct PrivateBus {
 }
 
 impl PrivateBus {
-    /// Start one. Without a `dbus-daemon` there is nothing to test against: the answer is `None`,
-    /// said on stderr so the skip is visible, and a test never falls back to the real bus.
+    /// Start one. Without a `dbus-daemon`, a required test tool, this panics with how to install it:
+    /// a test never passes by skipping and never falls back to the real bus.
     pub fn start() -> Option<Self> {
         let scratch = tempfile::tempdir().ok()?;
         let config = scratch.path().join("bus.conf");
@@ -36,10 +36,9 @@ impl PrivateBus {
             .spawn()
         {
             Ok(child) => child,
-            Err(error) => {
-                eprintln!("SKIPPED: no private bus, dbus-daemon did not start ({error})");
-                return None;
-            }
+            Err(error) => panic!(
+                "dbus-daemon did not start ({error}); it is a required test tool, install it (Fedora: dnf install dbus-daemon; Debian/Ubuntu: apt install dbus-daemon)"
+            ),
         };
         let mut address = String::new();
         let read = child
@@ -50,8 +49,7 @@ impl PrivateBus {
         if !matches!(read, Some(Ok(_))) || !address.starts_with("unix:") {
             let _ = child.kill();
             let _ = child.wait();
-            eprintln!("SKIPPED: no private bus, dbus-daemon gave no address");
-            return None;
+            panic!("the private dbus-daemon gave no address");
         }
         Some(Self {
             child,

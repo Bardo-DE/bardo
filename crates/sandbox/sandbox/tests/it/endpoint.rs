@@ -41,8 +41,7 @@ fn run_in_sandbox(program: &Path, net: AgentNet, cwd: &Path, script: &str) -> Op
 
 fn rig() -> Option<(std::path::PathBuf, TcpListener, tempfile::TempDir)> {
     let Some(program) = bwrap() else {
-        eprintln!("SKIP endpoint test: no bwrap");
-        return None;
+        panic!("bwrap is a required test tool (install bubblewrap)");
     };
     let Ok(listener) = TcpListener::bind("127.0.0.1:0") else {
         eprintln!("SKIP endpoint test: no loopback here");

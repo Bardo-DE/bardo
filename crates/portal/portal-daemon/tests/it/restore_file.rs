@@ -137,10 +137,10 @@ fn a_fifo_or_a_huge_file_is_not_read_for_ever() {
     let dir = tempfile::tempdir().expect("tempdir");
     let path = dir.path().join("restore");
     let made = std::process::Command::new("mkfifo").arg(&path).status();
-    if !made.is_ok_and(|status| status.success()) {
-        eprintln!("SKIPPED: no mkfifo");
-        return;
-    }
+    assert!(
+        made.is_ok_and(|status| status.success()),
+        "mkfifo failed; mkfifo is a required test tool (coreutils)"
+    );
     assert!(matches!(
         FileStore::new(path).load(),
         Err(StoreError::Damaged)

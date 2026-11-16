@@ -1,5 +1,5 @@
 //! The real process seam, where bubblewrap works: stdio piped as lines, the environment exactly
-//! the one given. Skips, with a printed reason, where it does not. Scratch directories, an
+//! the one given. Needs bubblewrap, a required test tool. Scratch directories, an
 //! unreachable bus, a scratch home.
 
 use agent_launch::{BwrapProcs, Proc, Procs, StdioWire};
@@ -11,8 +11,7 @@ fn bwrap() -> Option<BwrapSandbox> {
     match Detected::probe(&path) {
         Detected::Bwrap(found) => Some(found),
         Detected::Missing(why) => {
-            eprintln!("SKIP real process test: {why}");
-            None
+            panic!("bwrap is a required test tool (install bubblewrap): {why}")
         }
     }
 }

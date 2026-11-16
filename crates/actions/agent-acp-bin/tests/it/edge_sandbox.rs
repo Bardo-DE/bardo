@@ -59,8 +59,7 @@ print(s.makefile().readline().strip())
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_process_in_the_sandbox_with_no_network_reaches_its_sessions_edge_and_only_that() {
     let (Some(bwrap), Some(python)) = (on_path("bwrap"), on_path("python3")) else {
-        eprintln!("SKIP edge sandbox test: no bwrap or python3");
-        return;
+        panic!("bwrap and python3 are required test tools (install bubblewrap and python3)");
     };
     let dir = tempfile::tempdir().expect("scratch");
     let work = dir.path().join("work");

@@ -75,10 +75,10 @@ fn a_fifo_in_place_of_an_entry_does_not_block_and_falls_back_to_the_id() {
         .join("applications")
         .join("org.example.Pipe.desktop");
     let made = std::process::Command::new("mkfifo").arg(&fifo).status();
-    if !made.is_ok_and(|status| status.success()) {
-        eprintln!("SKIPPED: no mkfifo");
-        return;
-    }
+    assert!(
+        made.is_ok_and(|status| status.success()),
+        "mkfifo failed; mkfifo is a required test tool (coreutils)"
+    );
     let names = AppNames::new(vec![dir.path().to_path_buf()], vec![]);
     assert_eq!(names.label("org.example.Pipe"), "org.example.Pipe");
 }

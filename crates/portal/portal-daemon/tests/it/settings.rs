@@ -117,14 +117,14 @@ fn a_document_that_is_not_a_small_regular_file_is_an_error_not_a_hang() {
     ));
     let fifo = dir.path().join("fifo.toml");
     let made = std::process::Command::new("mkfifo").arg(&fifo).status();
-    if made.is_ok_and(|status| status.success()) {
-        assert!(matches!(
-            DesktopAppearance::at(fifo).current(),
-            Err(AppearanceError::Unreadable(_))
-        ));
-    } else {
-        eprintln!("SKIPPED (fifo): no mkfifo");
-    }
+    assert!(
+        made.is_ok_and(|status| status.success()),
+        "mkfifo failed; mkfifo is a required test tool (coreutils)"
+    );
+    assert!(matches!(
+        DesktopAppearance::at(fifo).current(),
+        Err(AppearanceError::Unreadable(_))
+    ));
 }
 
 /// A source that reads once and then fails.

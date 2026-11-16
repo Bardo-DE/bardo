@@ -29,8 +29,7 @@ pub struct PrivateBus {
 }
 
 impl PrivateBus {
-    /// Start a bus, or `None` with a message on stderr when `dbus-daemon` is not installed.
-    #[must_use]
+    /// Start a bus; panics, saying how to install it, when `dbus-daemon` is missing.
     pub fn start() -> Option<PrivateBus> {
         let scratch = tempfile::tempdir().ok()?;
         let socket = scratch.path().join("bus");
@@ -44,10 +43,9 @@ impl PrivateBus {
             .spawn();
         let mut daemon = match spawned {
             Ok(daemon) => daemon,
-            Err(error) => {
-                eprintln!("SKIPPED: dbus-daemon cannot be started ({error}); no private bus");
-                return None;
-            }
+            Err(error) => panic!(
+                "dbus-daemon cannot be started ({error}); it is a required test tool, install it (Fedora: dnf install dbus-daemon; Debian/Ubuntu: apt install dbus-daemon)"
+            ),
         };
         let stdout = daemon.stdout.take()?;
         let mut address = String::new();
