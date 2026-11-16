@@ -213,10 +213,10 @@ fn the_test_keys_feature_is_declared_and_is_not_a_default_feature_of_accountd_or
     }
     // And accountd's own feature is the only thing that turns account-secrets' on.
     let manifest: toml::Table = include_str!("../../Cargo.toml").parse().expect("manifest");
-    let dependency = &manifest["dependencies"]["porter-secrets"];
+    let dependency = &manifest["dependencies"]["account-secrets"];
     assert!(
         !dependency.to_string().contains("test-keys"),
-        "the normal dependency on porter-secrets does not name test-keys: {dependency}"
+        "the normal dependency on account-secrets does not name test-keys: {dependency}"
     );
 }
 

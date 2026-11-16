@@ -69,7 +69,7 @@ fn sheet_at(scheme: Scheme) -> Result<RgbaImage, GalleryError> {
 
 /// Where the progress page keeps the accent pictures.
 fn progress_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/progress/shots/accent")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../tools/progress/shots/accent")
 }
 
 /// Write `picture` as `name` in `dir`, and in the progress page's `shots/accent` when

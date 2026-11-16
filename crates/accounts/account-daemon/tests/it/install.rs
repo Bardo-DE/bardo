@@ -11,7 +11,7 @@ use std::process::Command;
 use base_testkit::Scratch;
 
 fn repo() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..")
 }
 
 /// Stand-in daemons: the script installs what it is given, it does not need real builds.

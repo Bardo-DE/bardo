@@ -117,7 +117,7 @@ pub fn render(shot: Shot) -> Result<image::RgbaImage, GalleryError> {
 
 /// Where the progress page keeps the gallery's pictures.
 pub fn progress_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/progress/shots/gallery")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../tools/progress/shots/gallery")
 }
 
 /// Render every shot into `dir` (only `page`'s when one is named, at `scale` percent), write `dir/index.html`, and, when `progress` asks, copy the pictures to

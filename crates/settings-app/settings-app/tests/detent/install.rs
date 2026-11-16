@@ -8,7 +8,7 @@ use std::process::Command;
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 
 fn repo() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("..")
 }
 
 fn install_into(scratch: &Scratch) -> PathBuf {

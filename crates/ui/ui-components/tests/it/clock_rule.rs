@@ -52,7 +52,7 @@ fn offences(path: &Path) -> Vec<String> {
 }
 
 /// The crates whose sources the rule covers, next to this one.
-const CRATES: &[&str] = &["ds", "ds-core", "ds-style", "ds-motion", "ds-shell"];
+const CRATES: &[&str] = &["ui-components", "ui-core", "ui-style", "ui-motion", "ui-shell"];
 
 #[test]
 fn ds_reads_time_only_through_ds_time() {
@@ -83,12 +83,12 @@ fn test_sources() -> Vec<PathBuf> {
         .unwrap_or_else(|error| panic!("{crates:?}: {error}"))
         .filter_map(Result::ok)
         .map(|entry| entry.path())
-        .filter(|path| path.file_name().is_some_and(|name| name != "ds-harness"))
+        .filter(|path| path.file_name().is_some_and(|name| name != "ui-harness"))
         .map(|path| path.join("tests"))
         .filter(|path| path.is_dir())
         .flat_map(|path| sources(&path));
-    let consumer = crates.join("../examples/consumer/tests");
-    let gallery = crates.join("ds-gallery/src/tests.rs");
+    let consumer = crates.join("examples/consumer/tests");
+    let gallery = crates.join("ui-gallery/src/tests.rs");
     tests
         .chain(sources(&consumer))
         .chain(gallery.is_file().then_some(gallery))

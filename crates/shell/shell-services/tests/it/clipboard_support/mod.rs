@@ -96,7 +96,7 @@ pub fn secret_source(socket: &Path) -> Child {
             "run",
             "--quiet",
             "-p",
-            "sill-services",
+            "shell-services",
             "--example",
             "secret_source",
             "--",
