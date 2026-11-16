@@ -183,6 +183,7 @@ impl AppConfig {
 
     /// Provide `value` at the root, read with `use_context::<T>()` anywhere in the app: the
     /// window's equivalent of dioxus desktop's `LaunchBuilder::with_context`.
+    #[must_use]
     pub fn with_context<T: Clone + Send + Sync + 'static>(mut self, value: T) -> Self {
         self.setup.contexts = self.setup.contexts.with(value);
         self

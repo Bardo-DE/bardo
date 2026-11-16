@@ -24,8 +24,8 @@ fn message(from: AgentRef, to: AgentRef, kind: MessageKind, text: &str, in_space
         label: provenance::Label {
             integrity: provenance::Integrity::Trusted,
             confidentiality: provenance::Confidentiality::Public,
-            classes: Default::default(),
-            sources: Default::default(),
+            classes: std::collections::BTreeSet::default(),
+            sources: std::collections::BTreeSet::default(),
         },
         sent: at(0),
     }

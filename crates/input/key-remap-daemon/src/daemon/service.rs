@@ -1,6 +1,6 @@
 //! `run`: brings the daemon up and hands the main thread to the reader.
 
-use super::devices::status_of;
+use super::devices::{Devices, status_of};
 use super::discover::{Hotplug, spawn as watch_nodes};
 use super::env::Env;
 use super::inbox::{Inbox, Message, forward, mailbox};
@@ -14,7 +14,7 @@ use crate::ConfigLayer;
 use crate::config::{self, system, vendor};
 use crate::keymap;
 use key_remap_client::FileText;
-use key_remap_proto::Warning;
+use key_remap_proto::{KeymapState, Warning};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::time::Duration;
@@ -29,9 +29,9 @@ pub(crate) fn run(env: Env) -> Result<(), String> {
     let (inbox, mailbox) = mailbox().map_err(|e| format!("inbox: {e}"))?;
     let path = socket_path(&env.runtime_dir);
     let listener = bind(&path).map_err(|e| format!("{}: {e}", path.display()))?;
-    let initial = status_of(&Default::default(), false);
+    let initial = status_of(&Devices::default(), false);
     let first_keymap = keymap::read(&env.config_dir);
-    keymap::settle(&Default::default(), first_keymap.clone())
+    keymap::settle(&KeymapState::default(), first_keymap.clone())
         .problems
         .iter()
         .for_each(|p| eprintln!("keycap: keymap: line {}: {}", p.line, p.what));

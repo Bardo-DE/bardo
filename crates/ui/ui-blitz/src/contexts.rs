@@ -28,6 +28,7 @@ impl RootContexts {
 
     /// These contexts and `value`, provided as `T` at the root. A later value of the same type
     /// shadows an earlier one, as nested `use_context_provider`s do.
+    #[must_use]
     pub fn with<T: Clone + Send + Sync + 'static>(mut self, value: T) -> Self {
         self.factories
             .push(Arc::new(move || Box::new(value.clone()) as Box<dyn Any>));

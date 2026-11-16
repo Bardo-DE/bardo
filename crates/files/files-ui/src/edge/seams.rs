@@ -49,26 +49,31 @@ impl Seams {
     }
 
     /// The same seams offering the apps `apps` knows in Open With.
+    #[must_use]
     pub fn with_apps(self, apps: Arc<dyn Apps>) -> Seams {
         Seams { apps, ..self }
     }
 
     /// The same seams over the disks `volumes` knows.
+    #[must_use]
     pub fn with_volumes(self, volumes: Arc<dyn Volumes>) -> Seams {
         Seams { volumes, ..self }
     }
 
     /// The same seams over the cloud drives `clouds` knows.
+    #[must_use]
     pub fn with_clouds(self, clouds: Arc<dyn Clouds>) -> Seams {
         Seams { clouds, ..self }
     }
 
     /// The same seams sharing thumbnails through `thumbnails`.
+    #[must_use]
     pub fn with_thumbnails(self, thumbnails: Arc<dyn ThumbnailCache + Send + Sync>) -> Seams {
         Seams { thumbnails, ..self }
     }
 
     /// The same seams remembering folder views in `prefs`.
+    #[must_use]
     pub fn with_prefs(self, prefs: Arc<dyn PrefsStore>) -> Seams {
         Seams { prefs, ..self }
     }

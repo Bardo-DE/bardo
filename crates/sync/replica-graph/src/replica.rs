@@ -94,6 +94,7 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// The same replica asking for delta pages of `size` items (at least one).
+    #[must_use]
     pub fn with_page(self, size: usize) -> Self {
         Self {
             page: size.max(1),
@@ -102,11 +103,13 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// The same replica with these upload limits.
+    #[must_use]
     pub fn with_uploads(self, uploads: Uploads) -> Self {
         Self { uploads, ..self }
     }
 
     /// The same replica with its folder below `root` ([`Root::AppFolder`] unless told otherwise).
+    #[must_use]
     pub fn with_root(self, root: Root) -> Self {
         Self {
             addr: self.addr.with_root(root),
@@ -115,6 +118,7 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// The same replica starting from a tree an earlier one learnt ([`GraphReplica::folders`]).
+    #[must_use]
     pub fn with_folders(self, folders: Folders) -> Self {
         let state = State {
             root: None,

@@ -44,12 +44,14 @@ impl FakeVolumes {
     }
 
     /// The same computer where every eject fails with `failure`.
+    #[must_use]
     pub fn failing_eject(self, failure: EjectFailure) -> FakeVolumes {
         self.lock().eject_fails = Some(failure);
         self
     }
 
     /// The same computer where every open fails with `failure`.
+    #[must_use]
     pub fn failing_mount(self, failure: MountFailure) -> FakeVolumes {
         self.lock().mount_fails = Some(failure);
         self

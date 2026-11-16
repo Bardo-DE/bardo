@@ -94,7 +94,7 @@ pub fn schema() -> Schema {
         version: 1,
         key,
         // The file holds no tables of another program's.
-        foreign: Default::default(),
+        foreign: ui_settings::schema::ForeignTables::default(),
         footnotes: Vec::new(),
         // Every key sits on files' own page; none is declared.
         pages: Vec::new(),

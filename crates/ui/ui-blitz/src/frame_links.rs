@@ -72,6 +72,7 @@ impl FrameLinks {
     /// Also call `handler` as the pointer comes onto and leaves a link inside a frame (a link
     /// pill). A set that has no click handler stays inert: a link that does nothing has nothing
     /// to preview.
+    #[must_use]
     pub fn with_hover(self, handler: impl Fn(FrameLinkHover) + Send + Sync + 'static) -> Self {
         self.when_clicking(|links| links.hover = Some(Arc::new(handler)))
     }
@@ -81,6 +82,7 @@ impl FrameLinks {
     /// against the frame's base URL. It is heard just before the page's own `oncontextmenu`
     /// for the same press, so the app can keep it for the menu that handler opens. A set that
     /// has no click handler stays inert.
+    #[must_use]
     pub fn with_context_menu(
         self,
         handler: impl Fn(FrameLinkMenu) + Send + Sync + 'static,
@@ -92,6 +94,7 @@ impl FrameLinks {
     /// (mailo opens an inline image in Peek): an `img` with a `src`, resolved against the frame's
     /// base URL (a `cid:` reference stays `cid:`), and no link above it, since a click on a linked
     /// image is the link's. A set that has no click handler stays inert.
+    #[must_use]
     pub fn with_image_click(
         self,
         handler: impl Fn(FrameImageClick) + Send + Sync + 'static,

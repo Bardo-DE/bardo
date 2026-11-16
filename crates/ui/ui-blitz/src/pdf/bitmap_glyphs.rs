@@ -135,7 +135,7 @@ mod tests {
                 font_size: 32.0,
                 hint: false,
                 normalized_coords: Vec::new(),
-                embolden: Default::default(),
+                embolden: peniko::kurbo::Vec2::default(),
                 style: Style::Fill(peniko::Fill::NonZero),
                 brush: Paint::Solid(Color::BLACK),
                 brush_alpha: 1.0,

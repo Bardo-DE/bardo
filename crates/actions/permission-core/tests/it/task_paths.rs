@@ -16,7 +16,7 @@ fn files_call(paths: &[&str]) -> CallRequest {
             name: action("mail.thread.archive"),
         },
         target: TargetValue::Files(paths.iter().map(|p| file(p)).collect()),
-        args: Default::default(),
+        args: std::collections::BTreeMap::new(),
         origin: Origin::Companion,
     }
 }

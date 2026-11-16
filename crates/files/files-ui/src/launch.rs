@@ -148,6 +148,7 @@ impl Launch {
     }
 
     /// The same launch offering the apps `apps` knows in Open With.
+    #[must_use]
     pub fn with_apps(self, apps: Arc<dyn Apps>) -> Launch {
         Launch {
             seams: self.seams.with_apps(apps),
@@ -156,6 +157,7 @@ impl Launch {
     }
 
     /// The same launch listing, opening and ejecting the disks `volumes` knows.
+    #[must_use]
     pub fn with_volumes(self, volumes: Arc<dyn Volumes>) -> Launch {
         Launch {
             seams: self.seams.with_volumes(volumes),
@@ -164,6 +166,7 @@ impl Launch {
     }
 
     /// The same launch showing the cloud drives `clouds` knows.
+    #[must_use]
     pub fn with_clouds(self, clouds: Arc<dyn Clouds>) -> Launch {
         Launch {
             seams: self.seams.with_clouds(clouds),
@@ -173,6 +176,7 @@ impl Launch {
 
     /// The same launch showing the thumbnails `thumbnails` shares with the desktop, and adding to
     /// them.
+    #[must_use]
     pub fn with_thumbnails(self, thumbnails: Arc<dyn ThumbnailCache + Send + Sync>) -> Launch {
         Launch {
             seams: self.seams.with_thumbnails(thumbnails),
@@ -181,6 +185,7 @@ impl Launch {
     }
 
     /// The same launch remembering each folder's view and sort in `prefs`.
+    #[must_use]
     pub fn with_prefs(self, prefs: Arc<dyn PrefsStore>) -> Launch {
         Launch {
             seams: self.seams.with_prefs(prefs),

@@ -7,7 +7,7 @@ use crate::pdf::html;
 use crate::pdf::pages::{self, Printed};
 use crate::pdf::run_texts;
 use crate::pdf::spec::{ContentBox, PageSpec};
-use pdfrum_anyrender::Sources;
+use pdfrum_anyrender::{ImageSources, RunTexts, Sources};
 
 /// Which text source a print uses.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,9 +26,9 @@ fn print(body: &str, texts: Texts) -> (Printed, String) {
     let sources = Sources {
         texts: match texts {
             Texts::Layout => run_texts::collect(&doc),
-            Texts::CmapOnly => Default::default(),
+            Texts::CmapOnly => RunTexts::default(),
         },
-        images: Default::default(),
+        images: ImageSources::default(),
     };
     let printed = pages::print_from(&mut doc, content, &sources).expect("prints");
     let read = pdfrum::Document::from_bytes(printed.bytes.clone()).expect("opens");

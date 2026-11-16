@@ -241,7 +241,7 @@ mod tests {
             cwd: None,
             started_from,
             label: None,
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
         }
     }
 

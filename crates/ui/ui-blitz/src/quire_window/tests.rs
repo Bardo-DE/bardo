@@ -2,7 +2,7 @@
 //! it receives is `set_frame(compositor_shadow, the window radius token)`, and a compositor
 //! without the global is told nothing and nothing fails.
 
-use super::fake_compositor::{Fake, Frame, Mode, Offer};
+use super::fake_compositor::{Fake, Frame, Log, Mode, Offer};
 use super::{FrameError, attach, window_radius};
 use crate::wayland_surface::{Adopted, Foreign, adopt};
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
@@ -170,5 +170,5 @@ fn a_compositor_without_the_global_is_told_nothing_and_nothing_fails() {
     app.settle();
 
     assert!(matches!(error, FrameError::Unsupported(_)), "{error}");
-    assert_eq!(compositor.log(), Default::default());
+    assert_eq!(compositor.log(), Log::default());
 }
