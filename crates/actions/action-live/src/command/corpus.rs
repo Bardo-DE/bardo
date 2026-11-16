@@ -120,10 +120,8 @@ fn corpus_agent(args: &CorpusArgs, spec: &AcpSpec) -> Result<ExitCode, CommandFa
 
 /// Today in UTC, as `YYYY-MM-DD`: the one clock read of the summary, made here in the binary.
 fn today() -> String {
-    let secs = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs());
-    utc_date(secs)
+    let now = base_time::Clock::now(&base_time::SystemClock);
+    utc_date(u64::try_from(now.0).unwrap_or(0))
 }
 
 /// Keeps the attack suite's numbers of this run under `dir`, named by day and commit.

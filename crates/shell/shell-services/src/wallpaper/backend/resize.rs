@@ -101,17 +101,18 @@ fn resize_into(source: &Path, width: u32, height: u32, dest: &Path) -> Result<()
     let cropped = image
         .crop_imm(window.x, window.y, window.width, window.height)
         .resize_exact(width, height, FilterType::Lanczos3);
-    let mut temp = dest.to_path_buf();
-    temp.set_extension("png.tmp");
+    let mut png = Vec::new();
     cropped
-        .save_with_format(&temp, image::ImageFormat::Png)
+        .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
         .map_err(|error| ServiceError::Io {
-            path: temp.clone(),
+            path: dest.to_path_buf(),
             source: std::io::Error::other(error),
         })?;
-    std::fs::rename(&temp, dest).map_err(|source| ServiceError::Io {
-        path: dest.to_path_buf(),
-        source,
+    base_fs::write_atomic(dest, &png, base_fs::NewFileMode::Umask).map_err(|error| {
+        ServiceError::Io {
+            path: dest.to_path_buf(),
+            source: error.source,
+        }
     })
 }
 

@@ -34,6 +34,7 @@ tracing = { workspace = true }
 tokio = ["dep:tokio"]
 
 [dev-dependencies]
+base-time = { path = "../../base/base-time" }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}

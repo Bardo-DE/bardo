@@ -75,7 +75,7 @@ fn plain(part: &str) -> Result<(), SummaryError> {
 pub fn utc_date(unix_secs: u64) -> String {
     i64::try_from(unix_secs)
         .ok()
-        .and_then(|secs| action_vocab::when::utc_day(provenance::UnixSeconds(secs)))
+        .and_then(|secs| provenance::UnixSeconds(secs).utc_date())
         .unwrap_or_else(|| String::from("1970-01-01"))
 }
 

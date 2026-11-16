@@ -131,10 +131,9 @@ async fn the_bridge_lists_what_the_host_lists_and_sends_the_token_and_nothing_el
     let requests = seen.lock().expect("lock").clone();
     assert_eq!(requests.len(), 1);
     assert_eq!(requests[0].op, EdgeOp::List);
-    assert!(
-        requests[0]
-            .token
-            .matches(&EdgeToken::parse(TOKEN).expect("token"))
+    assert_eq!(
+        requests[0].token,
+        EdgeToken::parse(TOKEN).expect("token")
     );
 }
 

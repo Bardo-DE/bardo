@@ -4,6 +4,7 @@
 //! its files to where this one does. Each daemon names its own old and new paths; this module only
 //! finds the XDG bases the same way the daemon does and says what moved.
 
+use base_xdg::Xdg;
 use std::path::{Path, PathBuf};
 
 /// `$XDG_CONFIG_HOME`, else `$HOME/.config`.
@@ -13,15 +14,7 @@ pub fn config_base(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
 
 /// `$XDG_DATA_HOME`, else `$HOME/.local/share`.
 pub fn data_base(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
-    env("XDG_DATA_HOME")
-        .filter(|v| !v.is_empty())
-        .map(PathBuf::from)
-        .unwrap_or_else(|| {
-            env("HOME")
-                .map(PathBuf::from)
-                .unwrap_or_default()
-                .join(".local/share")
-        })
+    Xdg::new(env).data_home().unwrap_or_default()
 }
 
 /// Moves every entry of the folder `old` into `new`, once, and says so on stderr as `who`.

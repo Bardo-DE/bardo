@@ -8,6 +8,7 @@
 
 use crate::fault::ToolFault;
 use crate::tools::ToolSpec;
+use base_secret::SecretText;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as Json;
 
@@ -19,32 +20,21 @@ pub const EDGE_TOKEN_ENV: &str = "BARDO_EDGE_TOKEN";
 pub const EDGE_LINE_MAX: usize = 4 * 1024 * 1024;
 
 /// The capability one session's edge accepts: 64 hex characters the host minted. It is never
-/// printed: `Debug` hides it.
+/// printed: `Debug` hides it, two compare in constant time, and it is wiped when dropped.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct EdgeToken(String);
+pub struct EdgeToken(#[serde(serialize_with = "base_secret::write_secret")] SecretText);
 
 impl EdgeToken {
     /// A token from its text; `None` unless it is 64 lowercase hex characters.
     pub fn parse(text: &str) -> Option<Self> {
         let hex = text.len() == 64 && text.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'));
-        hex.then(|| Self(text.to_owned()))
+        hex.then(|| Self(SecretText::new(text)))
     }
 
     /// The text, for the environment of the process that is to use it.
     pub fn reveal(&self) -> &str {
-        &self.0
-    }
-
-    /// Whether `other` is the same token, compared without stopping at the first difference.
-    pub fn matches(&self, other: &EdgeToken) -> bool {
-        self.0.len() == other.0.len()
-            && self
-                .0
-                .bytes()
-                .zip(other.0.bytes())
-                .fold(0_u8, |diff, (a, b)| diff | (a ^ b))
-                == 0
+        self.0.expose()
     }
 }
 
@@ -120,8 +110,8 @@ mod tests {
     #[test]
     fn tokens_compare_by_content() {
         let other = EdgeToken::parse(&"cd".repeat(32)).expect("token");
-        assert!(token().matches(&token()));
-        assert!(!token().matches(&other));
+        assert_eq!(token(), token());
+        assert_ne!(token(), other);
     }
 
     #[test]

@@ -9,7 +9,6 @@ use crate::{
 };
 use action_client::Intents;
 use provenance::{SpaceId, UnixSeconds};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Reads standard input to its end. Called only when the command line names `-`.
 pub type ReadStdin = fn() -> Stdin;
@@ -29,7 +28,7 @@ pub struct Process {
     /// How to read the environment.
     pub env: EnvLookup,
     /// The time now.
-    pub now: SystemTime,
+    pub now: UnixSeconds,
 }
 
 fn unavailable(what: &impl std::fmt::Display) -> Report {
@@ -38,13 +37,6 @@ fn unavailable(what: &impl std::fmt::Display) -> Report {
         stderr: format!("bardo-do: {what}\n"),
         exit: Exit::Unavailable,
     }
-}
-
-fn seconds(now: SystemTime) -> UnixSeconds {
-    UnixSeconds(
-        now.duration_since(UNIX_EPOCH)
-            .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(0)),
-    )
 }
 
 /// `bardo-do ask`: intentd records the turn, companiond is asked.
@@ -68,7 +60,7 @@ async fn ask(
         &companion,
         text,
         space,
-        seconds(process.now),
+        process.now,
         process.stdout,
         json,
     )

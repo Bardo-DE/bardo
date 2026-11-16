@@ -13,6 +13,7 @@ name = "action_tools"
 path = "src/lib.rs"
 
 [dependencies]
+base-secret = { path = "../../base/base-secret" }
 action-core = {path = "../action-core"}
 action-manifest = {path = "../action-manifest"}
 permission-core = {path = "../permission-core"}

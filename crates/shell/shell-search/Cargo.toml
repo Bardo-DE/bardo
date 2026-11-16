@@ -16,6 +16,7 @@ action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
 anyview-core = {path = "../../anyview/crates/anyview-core"}
 anyview-store = {path = "../../anyview/crates/anyview-store"}
+base-time = { path = "../../base/base-time" }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-services = {path = "../shell-services"}

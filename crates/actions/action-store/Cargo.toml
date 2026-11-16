@@ -10,8 +10,8 @@ publish.workspace = true
 
 [dependencies]
 action-vocab = {path = "../action-vocab"}
-provenance = {path = "../../provenance/provenance"}
-atomic-write-file = { workspace = true }
+base-fs = { path = "../../base/base-fs" }
+base-time = { path = "../../base/base-time" }
 futures-util = { workspace = true, features = ["std"] }
 thiserror = { workspace = true }
 

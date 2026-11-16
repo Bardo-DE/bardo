@@ -3,7 +3,7 @@
 
 use action_router::{Flag, Queue};
 use action_vocab::{Clock, Millis, Seconds};
-use provenance::UnixSeconds;
+use base_time::UnixSeconds;
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug, Default)]
@@ -75,11 +75,13 @@ impl FixedClock {
     }
 }
 
-impl Clock for FixedClock {
+impl base_time::Clock for FixedClock {
     fn now(&self) -> UnixSeconds {
         UnixSeconds(self.start.0.saturating_add(self.sky().passed))
     }
+}
 
+impl Clock for FixedClock {
     async fn after(&self, wait: Millis) {
         let flag = {
             let mut sky = self.sky();

@@ -4,6 +4,10 @@
 use super::limits::{kind_of, notes_of, problem_of, version_of};
 use crate::Absence;
 
+/// A moment, in seconds since 1970: the base type, part of this crate's vocabulary (a screen
+/// grant and every "last checked" carry one).
+pub use base_time::UnixSeconds;
+
 /// Where the update flow stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UpdatePhase {
@@ -60,10 +64,6 @@ pub struct ByteCount(pub u64);
 /// A share of a whole in thousandths: 1000 is all of it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct Permille(pub u32);
-
-/// A moment, in seconds since 1970.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct UnixSeconds(pub i64);
 
 /// What kind of failure the service reports (its `ProblemKind`), for the kinds this window acts on.
 /// It is never shown; the person reads the service's own sentence. A word this window does not

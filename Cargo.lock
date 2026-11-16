@@ -99,6 +99,7 @@ name = "account-callers"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-fs",
  "base-testkit",
  "caller-identity-core",
  "caller-identity-dbus",
@@ -348,6 +349,7 @@ dependencies = [
 name = "account-fake-secret-service"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "serde",
  "thiserror 2.0.21",
  "tokio",
@@ -671,6 +673,7 @@ dependencies = [
  "account-service",
  "account-service-core",
  "account-wire",
+ "base-fs",
  "base-testkit",
  "base-time",
  "base-url",
@@ -1233,6 +1236,7 @@ dependencies = [
  "agent-session",
  "base-ids",
  "base-path",
+ "base-time",
  "computer-use-action",
  "inference-client",
  "inference-core",
@@ -1329,6 +1333,7 @@ dependencies = [
  "agent-session",
  "base-ids",
  "base-path",
+ "base-time",
  "clap",
  "companion-tasks",
  "companion-wire",
@@ -1470,6 +1475,7 @@ dependencies = [
  "agent-skills",
  "base-ids",
  "base-path",
+ "base-time",
  "companion-model",
  "computer-use-action",
  "futures-util",
@@ -1510,9 +1516,9 @@ name = "action-store"
 version = "0.1.0"
 dependencies = [
  "action-vocab",
- "atomic-write-file",
+ "base-fs",
+ "base-time",
  "futures-util",
- "provenance",
  "tempfile",
  "thiserror 2.0.21",
 ]
@@ -1583,6 +1589,7 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "base-ids",
+ "base-time",
  "chrono",
  "provenance",
  "serde",
@@ -1679,6 +1686,7 @@ dependencies = [
  "agent-session",
  "base-ids",
  "base-path",
+ "base-time",
  "clap",
  "companion-client",
  "companion-model",
@@ -1857,6 +1865,7 @@ dependencies = [
  "agent-skills-disk",
  "base-ids",
  "base-path",
+ "base-time",
  "companion-memory",
  "companion-memory-core",
  "companion-tasks",
@@ -2987,16 +2996,6 @@ name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
-
-[[package]]
-name = "atomic-write-file"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae67d5c03ee972c101a1d8db3ddbf8a9c819ad1ea9d6fd9cd385605547b60edb"
-dependencies = [
- "nix 0.31.3",
- "rand 0.10.3",
-]
 
 [[package]]
 name = "atomic_refcell"
@@ -4150,6 +4149,7 @@ dependencies = [
  "agent-skills",
  "agent-skills-disk",
  "base-ids",
+ "base-time",
  "companion-core",
  "companion-helpers",
  "companion-model",
@@ -4189,6 +4189,7 @@ dependencies = [
  "action-wire",
  "agent-planner",
  "base-ids",
+ "base-time",
  "chrono",
  "companion-core",
  "companion-helpers",
@@ -4336,6 +4337,8 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "base-fs",
+ "base-time",
+ "base-xdg",
  "calloop",
  "compositor-agent",
  "compositor-backend",
@@ -4401,6 +4404,7 @@ name = "compositor-core"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-time",
  "desktop-protocols",
  "proptest",
  "serde",
@@ -4544,6 +4548,7 @@ name = "compositor-testkit"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-time",
  "compositor-app",
  "compositor-backend",
  "compositor-core",
@@ -6060,6 +6065,7 @@ name = "drive-mount-daemon"
 version = "0.1.0"
 dependencies = [
  "base-testkit",
+ "base-xdg",
  "listenfd",
  "rustix 1.1.6",
 ]
@@ -9592,8 +9598,10 @@ dependencies = [
  "account-daemon-support",
  "account-dbus",
  "account-wire",
- "atomic-write-file",
+ "base-fs",
  "base-ids",
+ "base-time",
+ "base-xdg",
  "blake3",
  "clap",
  "getrandom 0.4.3",
@@ -9676,6 +9684,7 @@ dependencies = [
 name = "memory-fake"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "chrono",
  "memory-core",
  "memory-eventlog",
@@ -9725,6 +9734,8 @@ dependencies = [
 name = "memory-host"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-xdg",
  "memory-core",
  "memory-settings",
  "tempfile",
@@ -9753,7 +9764,7 @@ dependencies = [
 name = "memory-keyfile"
 version = "0.1.0"
 dependencies = [
- "atomic-write-file",
+ "base-fs",
  "const-hex",
  "memory-core",
  "memory-seal",
@@ -9765,6 +9776,8 @@ dependencies = [
 name = "memory-local"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-time",
  "getrandom 0.4.3",
  "memory-client",
  "memory-core",
@@ -9826,6 +9839,7 @@ dependencies = [
 name = "memory-service"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "blake3",
  "chrono",
  "const-hex",
@@ -13140,6 +13154,7 @@ dependencies = [
  "action-settings",
  "action-vocab",
  "base-ids",
+ "base-time",
  "inference-core",
  "inference-tailnet",
  "key-remap-client",
@@ -13168,6 +13183,7 @@ dependencies = [
  "anyview-fs",
  "anyview-image",
  "anyview-platform",
+ "base-time",
  "bluez-proxy",
  "desktop-client",
  "desktop-protocols",
@@ -13455,6 +13471,7 @@ dependencies = [
  "anyview-image",
  "anyview-peek",
  "anyview-platform",
+ "base-time",
  "companion-model",
  "companion-wire",
  "dioxus",
@@ -13499,6 +13516,7 @@ dependencies = [
  "action-wire",
  "agent-voice-wire",
  "base-ids",
+ "base-time",
  "base-url",
  "companion-model",
  "companion-wire",
@@ -13580,6 +13598,7 @@ dependencies = [
  "action-vocab",
  "anyview-core",
  "anyview-store",
+ "base-time",
  "companion-model",
  "companion-wire",
  "computer-use-action",
@@ -13633,6 +13652,7 @@ dependencies = [
  "async-trait",
  "base-fs",
  "base-ids",
+ "base-time",
  "bluez-proxy",
  "caller-identity-dbus",
  "companion-model",
@@ -14716,6 +14736,7 @@ dependencies = [
  "account-dbus",
  "account-fake-servers",
  "account-rig",
+ "base-fs",
  "base-testkit",
  "base-time",
  "base-url",
@@ -15636,6 +15657,7 @@ version = "0.1.0"
 dependencies = [
  "base-fs",
  "base-time",
+ "base-xdg",
  "dioxus",
  "futures-timer",
  "notify",
@@ -15845,6 +15867,7 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 name = "updater-core"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "minisign-verify",
  "proptest",
  "semver",
@@ -15859,6 +15882,9 @@ dependencies = [
 name = "updater-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-time",
+ "base-xdg",
  "caller-identity-dbus",
  "old-folders",
  "semver",
@@ -15882,6 +15908,7 @@ dependencies = [
 name = "updater-root"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "rustix 1.1.6",
  "semver",
  "tar",

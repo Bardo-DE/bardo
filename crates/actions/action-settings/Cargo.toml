@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 agent-registry = {path = "../agent-registry"}
 action-core = {path = "../action-core"}
 permission-core = {path = "../permission-core"}

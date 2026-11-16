@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::{ActionId, Cookie};
-use crate::auth::Secret;
+use base_secret::SecretText;
 
 /// A request made up by `bardo-shell debug polkit`: shown like a real one, answered by an in-process
 /// stand-in helper that accepts `FAKE_SECRET` and nothing else, and completed to nobody.
@@ -21,7 +21,7 @@ pub enum PolkitCommand {
     /// register). The daemon sends `true` at start.
     Policy(bool),
     /// The person's answer to the current request's prompt.
-    Answer { cookie: Cookie, secret: Secret },
+    Answer { cookie: Cookie, secret: SecretText },
     /// The person cancelled the request (Cancel, Escape): polkitd hears `Cancelled`.
     Dismiss(Cookie),
     /// Show a made-up request (`bardo-shell debug polkit`).

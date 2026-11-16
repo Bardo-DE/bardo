@@ -433,11 +433,8 @@ fn pane(panel: &PanelCtx, aside: Aside) -> Element {
 }
 
 fn now() -> shell_launcher::UnixTime {
-    shell_launcher::UnixTime(
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_or(0, |since| since.as_secs()),
-    )
+    use base_time::Clock as _;
+    shell_launcher::UnixTime(u64::try_from(base_time::SystemClock.now().0).unwrap_or(0))
 }
 
 /// What the rows' icons are drawn with: the icon style on the active Space, the surface's

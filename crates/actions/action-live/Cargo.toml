@@ -19,6 +19,8 @@ path = "src/bin/agent-bringup.rs"
 # The daemons the world starts are action-accept's binaries (`accept-actiond` and the rest), found
 # beside the running program (`Binaries::beside`): build them first with `cargo build -p action-accept --bins`.
 [dependencies]
+base-time = { path = "../../base/base-time" }
+base-fs = { path = "../../base/base-fs" }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }

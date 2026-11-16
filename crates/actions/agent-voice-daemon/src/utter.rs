@@ -58,10 +58,7 @@ where
     T::Session: 'static,
 {
     pub(crate) fn now() -> UnixSeconds {
-        let secs = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX));
-        UnixSeconds(secs)
+        base_time::Clock::now(&base_time::SystemClock)
     }
 
     pub(crate) fn status_text(&self) -> String {

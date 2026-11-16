@@ -38,13 +38,15 @@ impl FixedClock {
     }
 }
 
-impl Clock for FixedClock {
-    fn now(&self) -> Stamp {
-        Stamp(self.stamp.load(Ordering::SeqCst))
-    }
-
-    fn unix(&self) -> UnixSeconds {
+impl base_time::Clock for FixedClock {
+    fn now(&self) -> UnixSeconds {
         UnixSeconds(self.unix.load(Ordering::SeqCst))
+    }
+}
+
+impl Clock for FixedClock {
+    fn stamp(&self) -> Stamp {
+        Stamp(self.stamp.load(Ordering::SeqCst))
     }
 
     async fn after(&self, limit: std::time::Duration) {
@@ -63,10 +65,10 @@ mod tests {
     #[test]
     fn a_fixed_clock_moves_only_when_told() {
         let clock = FixedClock::at(Stamp(1000), UnixSeconds(1_700_000_000));
-        assert_eq!(clock.now(), Stamp(1000));
-        assert_eq!(clock.now(), Stamp(1000));
+        assert_eq!(clock.stamp(), Stamp(1000));
+        assert_eq!(clock.stamp(), Stamp(1000));
         clock.advance(2500);
-        assert_eq!(clock.now(), Stamp(3500));
-        assert_eq!(clock.unix(), UnixSeconds(1_700_000_002));
+        assert_eq!(clock.stamp(), Stamp(3500));
+        assert_eq!(base_time::Clock::now(&clock), UnixSeconds(1_700_000_002));
     }
 }

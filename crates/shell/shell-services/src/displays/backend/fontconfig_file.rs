@@ -3,6 +3,7 @@
 
 use std::path::{Path, PathBuf};
 
+use base_fs::{NewFileMode, write_atomic};
 use shell_model::displays::font::{FILE_NAME, FontRendering, conflicts, is_ours, snippet};
 use shell_model::displays::policy::FontRenderingMode;
 
@@ -85,9 +86,8 @@ pub fn sync(
     match &action {
         FontFileAction::Write(text) => {
             std::fs::create_dir_all(&conf_d).map_err(io(&conf_d))?;
-            let tmp = path.with_extension("conf.part");
-            std::fs::write(&tmp, text).map_err(io(&tmp))?;
-            std::fs::rename(&tmp, &path).map_err(io(&path))?;
+            write_atomic(&path, text.as_bytes(), NewFileMode::Umask)
+                .map_err(|error| io(&path)(error.source))?;
         }
         FontFileAction::Remove => std::fs::remove_file(&path).map_err(io(&path))?,
         FontFileAction::Keep => {}

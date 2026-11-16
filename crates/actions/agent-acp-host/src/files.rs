@@ -10,6 +10,7 @@
 
 use super::workdir::{Workdir, WorkdirFault};
 use base_path::AbsPath;
+use base_xdg::Xdg;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Component, Path, PathBuf};
@@ -199,8 +200,8 @@ fn read_text(file: &mut File) -> Result<String, FileFault> {
 
 impl Files for OsFiles {
     fn workdir(&self, scope: &AbsPath, asked: &AbsPath) -> Result<Workdir, WorkdirFault> {
-        let home = std::env::var_os("HOME").map(PathBuf::from);
-        Workdir::resolve(scope, asked, home.as_deref())
+        let xdg = Xdg::process();
+        Workdir::resolve(scope, asked, xdg.home())
     }
 
     fn real(&self, path: &AbsPath) -> Result<AbsPath, FileFault> {

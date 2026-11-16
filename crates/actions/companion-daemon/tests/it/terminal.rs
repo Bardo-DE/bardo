@@ -10,7 +10,8 @@ use account_callers::ProcRoot;
 use action_core::*;
 use action_dbus::callers::Role;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details};
-use action_vocab::{Caller, CallerRole, Clock, Origin, WindowKey};
+use action_vocab::{Caller, CallerRole, Origin, WindowKey};
+use base_time::Clock as _;
 use action_wire::{
     CallerId, IntentsReply, IntentsRequest, SessionOpen, SessionOpened, StartedFrom, StoredAsk,
     StoredView, TerminalScope,

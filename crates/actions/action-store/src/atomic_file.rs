@@ -1,13 +1,16 @@
 //! One durable way to replace a file, and one way to read a file that may not exist yet.
 //!
 //! A grant file holds the person's consent, so a crash or a failed write must leave the old
-//! file or the new one, never half of one and never nothing. [`write_atomic`] writes through
-//! `atomic-write-file`: a temporary file beside the target, synced, renamed into place, with the
-//! directory synced so the rename itself survives a power cut.
+//! file or the new one, never half of one and never nothing. Both are the one implementation in
+//! `base-fs`; this adds only the directory a first write needs and the "no such file is `None`"
+//! shape the callers read.
 
-use atomic_write_file::AtomicWriteFile;
-use std::io::{ErrorKind, Write};
+use base_fs::{NewFileMode, ReadCap, ReadError};
+use std::io::Error;
 use std::path::Path;
+
+/// The most a file this crate reads may hold.
+const READ_CAP: ReadCap = ReadCap::mib(16);
 
 /// Replaces the file at `path` with `bytes`, creating its directory when needed. When this
 /// returns an error the file still holds what it held before.
@@ -15,17 +18,16 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     if let Some(dir) = path.parent().filter(|dir| !dir.as_os_str().is_empty()) {
         std::fs::create_dir_all(dir)?;
     }
-    let mut file = AtomicWriteFile::open(path)?;
-    file.write_all(bytes)?;
-    file.commit()
+    base_fs::write_atomic(path, bytes, NewFileMode::Umask).map_err(|why| why.source)
 }
 
 /// The text of the file at `path`, or `None` when there is no such file. Any other failure is
 /// an error: an unreadable file is not an empty one.
 pub fn read_optional(path: &Path) -> std::io::Result<Option<String>> {
-    match std::fs::read_to_string(path) {
+    match base_fs::read_text_capped(path, READ_CAP) {
         Ok(text) => Ok(Some(text)),
-        Err(why) if why.kind() == ErrorKind::NotFound => Ok(None),
-        Err(why) => Err(why),
+        Err(ReadError::NotFound { .. }) => Ok(None),
+        Err(ReadError::Io { source, .. }) => Err(source),
+        Err(other) => Err(Error::other(other)),
     }
 }

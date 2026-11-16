@@ -237,7 +237,7 @@ impl<C: Court> Serving<C> {
         let Ok(request) = serde_json::from_slice::<EdgeRequest>(bytes) else {
             return EdgeReply::Refused;
         };
-        if !self.token.matches(&request.token) {
+        if self.token != request.token {
             return EdgeReply::Refused;
         }
         let Some(registry) = self.court.registry().await else {

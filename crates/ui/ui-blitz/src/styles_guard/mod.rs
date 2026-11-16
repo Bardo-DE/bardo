@@ -137,15 +137,11 @@ fn write(file: &Path, records: &[Record]) {
     let Some(dir) = file.parent() else {
         return;
     };
-    let name = file
-        .file_name()
-        .and_then(|name| name.to_str())
-        .unwrap_or("guard");
-    let temp = file.with_file_name(format!("{name}.tmp{}", std::process::id()));
-    let written = std::fs::create_dir_all(dir)
-        .and_then(|()| std::fs::write(&temp, render(records)))
-        .and_then(|()| std::fs::rename(&temp, file));
-    if written.is_err() {
-        let _ = std::fs::remove_file(&temp);
+    if std::fs::create_dir_all(dir).is_ok() {
+        let _ = base_fs::write_atomic(
+            file,
+            render(records).as_bytes(),
+            base_fs::NewFileMode::Umask,
+        );
     }
 }

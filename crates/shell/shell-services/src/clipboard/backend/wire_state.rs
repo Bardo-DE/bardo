@@ -8,8 +8,8 @@ use std::fs::File;
 use std::io::ErrorKind;
 use std::os::fd::{AsFd, OwnedFd};
 use std::sync::Arc;
-use std::time::{SystemTime, UNIX_EPOCH};
 
+use base_time::{Clock, SystemClock};
 use shell_launcher::UnixTime;
 use shell_model::clipboard::{
     ClipContent, ClipEvent, ImageCap, ImagesKept, MimePick, Skipped, offer_verdict,
@@ -246,9 +246,5 @@ impl WireState {
 
 /// The wall clock, in whole seconds; a clock before 1970 reads as 1970.
 fn now() -> UnixTime {
-    UnixTime(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |d| d.as_secs()),
-    )
+    UnixTime(u64::try_from(SystemClock.now().0).unwrap_or(0))
 }

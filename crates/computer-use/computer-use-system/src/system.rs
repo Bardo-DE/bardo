@@ -58,7 +58,7 @@ struct RunClock(SystemClock);
 
 impl StampClock for RunClock {
     fn now(&self) -> Stamp {
-        self.0.now()
+        self.0.stamp()
     }
 }
 

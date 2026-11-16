@@ -1,6 +1,7 @@
 //! The fallback: the PDF in a temporary file, opened in the system's viewer.
 
 use super::{PrintError, PrintOutcome};
+use base_xdg::Xdg;
 use std::fs::{DirBuilder, File, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -42,10 +43,7 @@ pub(super) fn open(pdf: &[u8], title: &str) -> Result<PrintOutcome, PrintError> 
 /// `$XDG_RUNTIME_DIR/bardo-print` when the runtime directory is an absolute directory, else the
 /// system temporary directory.
 fn staging_dir() -> PathBuf {
-    match std::env::var_os("XDG_RUNTIME_DIR")
-        .map(PathBuf::from)
-        .filter(|dir| dir.is_absolute() && dir.is_dir())
-    {
+    match Xdg::process().runtime_dir().filter(|dir| dir.is_dir()) {
         Some(runtime) => runtime.join(STAGING),
         None => std::env::temp_dir(),
     }

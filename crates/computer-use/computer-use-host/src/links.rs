@@ -1,14 +1,12 @@
 //! The event log and the message path over the daemons: memoryd for records, the router for
 //! reports.
 
-use crate::clock::SystemClock;
 use crate::lock::locked;
 use account_core::{AppName, DataClass};
 use action_client::{ClientError, Intents, Transport as IntentsTransport, TransportError};
 use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
 use base_time::UnixSeconds;
 use computer_use_bus::{CuaRecord, CuaTask};
-use computer_use_run::Clock;
 use computer_use_run::{LinkError, MessageLink, RecordSink};
 use memory_client::{Memory, Transport as MemoryTransport};
 use memory_core::{
@@ -124,7 +122,7 @@ pub fn record_of(ctx: &RecordContext, record: &CuaRecord) -> Result<Record, Reco
 
 /// The seconds since the epoch: the system's clock, here in the daemon.
 fn system_unix() -> UnixSeconds {
-    SystemClock::start().unix()
+    base_time::Clock::now(&base_time::SystemClock)
 }
 
 /// Records over memoryd and messages over the router.

@@ -19,23 +19,17 @@ pub use account_callers::{
     Caller, CallerFileError, CallerRole as Role, CallerTable, Callers, ProcCallers, load_callers,
     table_from_toml,
 };
+use base_xdg::Xdg;
 use std::path::{Path, PathBuf};
 use zbus::fdo;
 
 /// Where the system's callers files are installed.
 pub const SYSTEM_DIR: &str = "/etc/bardo";
 
-/// The person's configuration directory: `$XDG_CONFIG_HOME`, else `$HOME/.config`.
+/// The person's configuration directory: `$XDG_CONFIG_HOME`, else `$HOME/.config`. Empty when
+/// neither is an absolute path, so a file under it is then looked for in the working folder.
 pub fn config_home(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
-    env("XDG_CONFIG_HOME")
-        .filter(|v| !v.is_empty())
-        .map(PathBuf::from)
-        .unwrap_or_else(|| {
-            env("HOME")
-                .map(PathBuf::from)
-                .unwrap_or_default()
-                .join(".config")
-        })
+    Xdg::new(env).config_home().unwrap_or_default()
 }
 
 /// The person's folder of one domain: `<config>/bardo/<domain>`.

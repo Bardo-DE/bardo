@@ -3,7 +3,7 @@
 use base_time::UnixSeconds;
 use computer_use_desktop::Stamp;
 use computer_use_run::Clock;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::Instant;
 
 /// The system's clock, with its origin at construction. Copies share the origin: capture
 /// stamps its frames on the same clock the run machine reads.
@@ -21,16 +21,15 @@ impl SystemClock {
     }
 }
 
-impl Clock for SystemClock {
-    fn now(&self) -> Stamp {
-        Stamp(u64::try_from(self.origin.elapsed().as_millis()).unwrap_or(u64::MAX))
+impl base_time::Clock for SystemClock {
+    fn now(&self) -> UnixSeconds {
+        base_time::Clock::now(&base_time::SystemClock)
     }
+}
 
-    fn unix(&self) -> UnixSeconds {
-        let seconds = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX));
-        UnixSeconds(seconds)
+impl Clock for SystemClock {
+    fn stamp(&self) -> Stamp {
+        Stamp(u64::try_from(self.origin.elapsed().as_millis()).unwrap_or(u64::MAX))
     }
 
     fn after(&self, limit: std::time::Duration) -> impl std::future::Future<Output = ()> + Send {

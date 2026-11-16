@@ -13,7 +13,8 @@ use action_core::{
     TASK_POLICY_MAX, TaintNote, UserTurn, tool_schema,
 };
 use action_manifest::{ActionDecl, AgentReach, Visibility};
-use action_vocab::{ActionRef, CallerRole, Clock, FileRef, LabelText, Workspace};
+use action_vocab::{ActionRef, CallerRole, FileRef, LabelText, Workspace};
+use base_time::Clock as _;
 use action_wire::{IntentsReply, WidenAnswer, WireRefusal};
 use base_ids::Count;
 use permission_core::{

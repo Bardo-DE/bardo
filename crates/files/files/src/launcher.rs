@@ -3,6 +3,7 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use base_xdg::Xdg;
 use files_desktop::{
     Activate, ActivationToken, Catalog, DesktopLauncher, StartError, installed_check, load_apps,
 };
@@ -14,11 +15,14 @@ use crate::icons::ThemeIcons;
 /// specification's defaults).
 pub fn xdg_dirs() -> XdgDirs {
     let home = dirs::home_dir().unwrap_or_default();
+    let xdg = Xdg::process();
     XdgDirs {
-        data_home: dirs::data_dir().unwrap_or_else(|| home.join(".local/share")),
-        data_dirs: listed("XDG_DATA_DIRS", &["/usr/local/share", "/usr/share"]),
-        config_home: dirs::config_dir().unwrap_or_else(|| home.join(".config")),
-        config_dirs: listed("XDG_CONFIG_DIRS", &["/etc/xdg"]),
+        data_home: xdg
+            .data_home()
+            .unwrap_or_else(|_| home.join(".local/share")),
+        data_dirs: xdg.data_dirs(),
+        config_home: xdg.config_home().unwrap_or_else(|_| home.join(".config")),
+        config_dirs: xdg.config_dirs(),
         current_desktops: std::env::var("XDG_CURRENT_DESKTOP")
             .map(|value| {
                 value
@@ -28,18 +32,6 @@ pub fn xdg_dirs() -> XdgDirs {
                     .collect()
             })
             .unwrap_or_default(),
-    }
-}
-
-/// The folders of a colon-separated variable, or `default` when it is unset or empty.
-fn listed(variable: &str, default: &[&str]) -> Vec<PathBuf> {
-    let from_env: Vec<PathBuf> = std::env::var_os(variable)
-        .map(|value| std::env::split_paths(&value).collect())
-        .unwrap_or_default();
-    if from_env.is_empty() {
-        default.iter().map(PathBuf::from).collect()
-    } else {
-        from_env
     }
 }
 

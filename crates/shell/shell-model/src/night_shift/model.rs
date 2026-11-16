@@ -81,9 +81,9 @@ impl Default for NightLight {
     }
 }
 
-/// Seconds since the Unix epoch.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct UnixSeconds(pub i64);
+/// Seconds since the Unix epoch: the base type, part of this module's vocabulary (a manual
+/// "until" and the shell's `Now` carry one).
+pub use base_time::UnixSeconds;
 
 /// "Turn On Until Tomorrow": casement is set to warm all day until `until`, then put back as
 /// `restore` says.

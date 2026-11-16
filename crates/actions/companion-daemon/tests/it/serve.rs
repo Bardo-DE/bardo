@@ -11,7 +11,8 @@ use action_dbus::{
     Bus, COMPANION_BUS, COMPANION_PATH, CompanionAnswerProxy, CompanionProxy, Details,
     introspection,
 };
-use action_vocab::{Caller, Clock, Origin, TurnId, WindowKey};
+use action_vocab::{Caller, Origin, TurnId, WindowKey};
+use base_time::Clock as _;
 use action_wire::{SessionOpen, SessionOpened};
 use companion_daemon::serve_on_rooted;
 use companion_wire::{AnswerPhase, AnswerWire, AskWire, FrontTask};

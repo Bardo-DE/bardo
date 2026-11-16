@@ -28,6 +28,7 @@ name = "bardo-agent-net-enter"
 path = "src/bin/bardo-agent-net-enter.rs"
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 companion-client = {path = "../companion-client"}

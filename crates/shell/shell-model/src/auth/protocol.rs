@@ -9,7 +9,8 @@
 
 use thiserror::Error;
 
-use super::{Attempt, AuthFault, Outcome, PamNote, PamService, Secret, UserName, Verdict};
+use super::{Attempt, AuthFault, Outcome, PamNote, PamService, UserName, Verdict};
+use base_secret::SecretText;
 
 /// What the parent writes.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -69,7 +70,7 @@ pub fn decode_request(bytes: &[u8]) -> Result<HelperRequest, ProtocolError> {
         service: PamService(text(service)?),
         attempt: Attempt {
             user: UserName(text(user)?),
-            secret: Secret::new(text(secret)?),
+            secret: SecretText::new(text(secret)?),
         },
     })
 }
@@ -162,14 +163,15 @@ mod tests {
         render_line, verdict_of,
     };
     use crate::auth::PamService;
-    use crate::auth::{Attempt, AuthFault, Outcome, PamNote, Secret, UserName, Verdict};
+    use crate::auth::{Attempt, AuthFault, Outcome, PamNote, UserName, Verdict};
+    use base_secret::SecretText;
 
     fn request(secret: &str) -> HelperRequest {
         HelperRequest {
             service: PamService("bardo-shell".to_owned()),
             attempt: Attempt {
                 user: UserName("ada".to_owned()),
-                secret: Secret::new(secret),
+                secret: SecretText::new(secret),
             },
         }
     }

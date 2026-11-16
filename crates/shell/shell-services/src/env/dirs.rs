@@ -4,10 +4,8 @@
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
+use base_xdg::Xdg;
 use ui_helpers::XdgEnv;
-
-/// The system configuration directories when `$XDG_CONFIG_DIRS` names none.
-const DEFAULT_CONFIG_DIRS: [&str; 1] = ["/etc/xdg"];
 
 /// The folder old icon themes and the few programs that predate the data directories still use:
 /// `/usr/share/pixmaps`, where an icon lookup ends.
@@ -70,7 +68,7 @@ impl Dirs {
             data: xdg.data_home().unwrap_or_else(|| home.join(".local/share")),
             data_dirs: xdg.data_dirs(),
             applications: xdg.applications_dirs(),
-            config_dirs: config_dirs_from(std::env::var_os("XDG_CONFIG_DIRS")),
+            config_dirs: Xdg::process().config_dirs(),
             program_dirs: absolute_dirs(std::env::var_os("PATH")),
             state: dirs::state_dir().unwrap_or_else(|| home.join(".local/state")),
             cache: dirs::cache_dir().unwrap_or_else(|| home.join(".cache")),
@@ -189,23 +187,8 @@ fn absolute_dirs(raw: Option<OsString>) -> Vec<PathBuf> {
         .collect()
 }
 
-/// `named`, or `default` when `named` is empty.
-fn or_default(named: Vec<PathBuf>, default: &[&str]) -> Vec<PathBuf> {
-    match named.is_empty() {
-        true => default.iter().map(PathBuf::from).collect(),
-        false => named,
-    }
-}
-
-/// The directories `$XDG_CONFIG_DIRS` (`raw`) names: colon-separated, absolute ones only; the
-/// specification's default when it is unset or names none.
-fn config_dirs_from(raw: Option<OsString>) -> Vec<PathBuf> {
-    or_default(absolute_dirs(raw), &DEFAULT_CONFIG_DIRS)
-}
-
 #[cfg(test)]
 mod tests {
-    use std::ffi::OsString;
     use std::path::{Path, PathBuf};
 
     use super::{Dirs, app_stores_in};
@@ -229,20 +212,6 @@ mod tests {
             dirs.keycap_config(),
             Path::new("/scratch/config/bardo/key-remap")
         );
-    }
-
-    #[test]
-    fn config_dirs_are_the_absolute_entries_or_etc_xdg() {
-        const CASES: &[(Option<&str>, &[&str])] = &[
-            (None, &["/etc/xdg"]),
-            (Some("rel"), &["/etc/xdg"]),
-            (Some("/a:rel:/b"), &["/a", "/b"]),
-        ];
-        for (raw, want) in CASES {
-            let got = super::config_dirs_from(raw.map(OsString::from));
-            let want: Vec<PathBuf> = want.iter().map(PathBuf::from).collect();
-            assert_eq!(got, want, "{raw:?}");
-        }
     }
 
     #[test]

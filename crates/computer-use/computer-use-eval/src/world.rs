@@ -30,13 +30,15 @@ use std::sync::{Arc, Mutex};
 #[derive(Debug, Clone)]
 pub struct EvalClock(pub Arc<computer_use_fake::FixedClock>);
 
-impl Clock for EvalClock {
-    fn now(&self) -> Stamp {
-        self.0.now()
+impl base_time::Clock for EvalClock {
+    fn now(&self) -> UnixSeconds {
+        base_time::Clock::now(&*self.0)
     }
+}
 
-    fn unix(&self) -> UnixSeconds {
-        self.0.unix()
+impl Clock for EvalClock {
+    fn stamp(&self) -> Stamp {
+        self.0.stamp()
     }
 }
 
@@ -85,7 +87,7 @@ impl A11ySource for EvalA11y {
             DataClass::Screen,
             space,
         );
-        Ok(self.stage.tree(self.clock.now(), &label))
+        Ok(self.stage.tree(self.clock.stamp(), &label))
     }
 }
 
@@ -134,7 +136,7 @@ impl AgentSeat for EvalSeat {
             ops: Count(u32::try_from(ops.len()).unwrap_or(u32::MAX)),
             text_path: None,
             origin: InputOrigin::SharedSeatViaEi,
-            at: self.clock.now(),
+            at: self.clock.stamp(),
         })
     }
 
@@ -193,7 +195,7 @@ impl CaptureSession for EvalCaptureSession {
         let DeviceSize { w, h } = pixels.size;
         Ok(Frame {
             seq: FrameSeq(self.seq),
-            at: self.clock.now(),
+            at: self.clock.stamp(),
             pixels,
             logical: Size::new(Coord(w), Coord(h)),
             scale: Scale120(120),
@@ -210,7 +212,7 @@ impl CaptureSession for EvalCaptureSession {
         match self.stage.changed() {
             ScreenChange::Same => Err(CaptureError::SourceGone),
             ScreenChange::Changed([w, h]) => Ok(DamageAt {
-                at: self.clock.now(),
+                at: self.clock.stamp(),
                 region: Rect {
                     origin: Point::new(Coord(0), Coord(0)),
                     size: Size::new(Coord(w), Coord(h)),

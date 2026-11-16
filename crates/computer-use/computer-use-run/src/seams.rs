@@ -6,7 +6,6 @@ use crate::rules::Rules;
 use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
 use action_gate_wire::{CuaAsk, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk, WireRefusal};
-use base_time::UnixSeconds;
 use computer_use_a11y_tree::A11ySource;
 use computer_use_bus::{CuaRecord, CuaTask};
 use computer_use_capture::WindowCapture;
@@ -31,13 +30,11 @@ pub enum LinkError {
     Protocol(String),
 }
 
-/// The clock. Only the daemon reads the system's.
-pub trait Clock: Send + Sync {
+/// The clock. Only the daemon reads the system's. Wall time is [`base_time::Clock::now`]; this
+/// adds cuad's own stamps and the timers.
+pub trait Clock: base_time::Clock {
     /// Now, on cuad's clock.
-    fn now(&self) -> Stamp;
-
-    /// Now, as wall time.
-    fn unix(&self) -> UnixSeconds;
+    fn stamp(&self) -> Stamp;
 
     /// Ready once `limit` has passed. A clock with no timers (a harness) never is, so what is
     /// bounded by it waits as long as it likes.

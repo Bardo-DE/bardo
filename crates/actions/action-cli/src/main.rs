@@ -4,7 +4,6 @@ use action_cli::program::{self, Process};
 use action_cli::{Exit, SessionBus, Stdin, Stdout};
 use std::io::{IsTerminal, Read, Write};
 use std::process::ExitCode;
-use std::time::SystemTime;
 
 fn read_stdin() -> Stdin {
     let mut text = String::new();
@@ -28,7 +27,7 @@ fn main() -> ExitCode {
         },
         stdin: read_stdin,
         env,
-        now: SystemTime::now(),
+        now: base_time::Clock::now(&base_time::SystemClock),
     };
     let Ok(runtime) = tokio::runtime::Builder::new_current_thread()
         .enable_all()

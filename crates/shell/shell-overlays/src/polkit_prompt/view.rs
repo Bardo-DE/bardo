@@ -14,7 +14,7 @@ use dioxus::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
-use shell_model::auth::Secret;
+use base_secret::SecretText;
 use shell_model::polkit_agent::{Cookie, PolkitCommand};
 use shell_services::{Control, PolkitAgentService};
 use ui_components::prelude::*;
@@ -79,7 +79,7 @@ fn prompt(
             common: Common { id: Some(PANEL_ID.to_owned()), ..Common::default() },
             oninput: move |_: String| {},
             onsubmit: move |text: String| {
-                let secret = Secret::new(text);
+                let secret = SecretText::new(text);
                 let cookie: Cookie = answer_to.clone();
                 // A stopped agent has no request to answer; the prompt goes with it.
                 let _ = submit.send(PolkitCommand::Answer { cookie, secret });

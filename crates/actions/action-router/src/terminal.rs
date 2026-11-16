@@ -14,7 +14,8 @@ use action_core::EventSink;
 use action_gate::prepared::Prepared;
 use action_gate::terminal::{grant_policy, kinds_of};
 use action_review::Breaker;
-use action_vocab::{ActionRef, CallerRole, Clock};
+use action_vocab::{ActionRef, CallerRole};
+use base_time::Clock as _;
 use permission_core::{ActionMatch, TaskPolicyState};
 use provenance::{Actor, SpaceScope};
 

@@ -7,9 +7,9 @@ use crate::bus::{BusSource, Pinned, ToAbsence, absence_of, connect, pinned, rela
 use crate::deadline::{Deadline, peer};
 use crate::ticks::Ticks;
 use account_dbus::{BusFailure, classify};
+use base_time::{Clock, SystemClock};
 use settings_app_model::{Absence, UnixSeconds, UpdateStatus, UpdateVersion, Work};
 use std::collections::HashMap;
-use std::time::{SystemTime, UNIX_EPOCH};
 use ui_peer::{NotAnswering, within};
 use zbus::fdo::{DBusProxy, PropertiesProxy};
 use zbus::names::InterfaceName;
@@ -216,12 +216,7 @@ impl UpdatesLink for OnBus {
     }
 
     fn now(&self) -> UnixSeconds {
-        let seconds = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |since| {
-                i64::try_from(since.as_secs()).unwrap_or(i64::MAX)
-            });
-        UnixSeconds(seconds)
+        SystemClock.now()
     }
 }
 

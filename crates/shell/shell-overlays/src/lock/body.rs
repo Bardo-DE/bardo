@@ -5,7 +5,8 @@ use dioxus::prelude::*;
 use layer_shell_host::OutputInfo;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
-use shell_model::auth::{Auth, AuthCommand, AuthFault, AuthPhase, PamNote, Secret};
+use shell_model::auth::{Auth, AuthCommand, AuthFault, AuthPhase, PamNote};
+use base_secret::SecretText;
 use shell_model::ids::OutputName;
 use ui_components::prelude::*;
 
@@ -93,7 +94,7 @@ pub(super) fn LockBody(
                 hint: hint_of(&auth),
                 oninput: move |_: String| {},
                 onsubmit: move |text: String| {
-                    let _ = control.send(AuthCommand::Submit(Secret::new(text)));
+                    let _ = control.send(AuthCommand::Submit(SecretText::new(text)));
                 },
             }
         }

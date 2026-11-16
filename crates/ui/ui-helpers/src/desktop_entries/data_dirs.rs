@@ -1,6 +1,6 @@
 //! The folders desktop entries are searched in.
 
-use crate::catalog::data_dirs;
+use base_xdg::Xdg;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
@@ -33,24 +33,30 @@ impl XdgEnv {
         }
     }
 
+    /// The XDG rules over these three values: the folder a variable names when it is absolute,
+    /// else the default under an absolute `HOME`.
+    fn rules(&self) -> Xdg<impl Fn(&str) -> Option<String> + '_> {
+        Xdg::new(|name| {
+            let value = match name {
+                "XDG_DATA_HOME" => self.data_home.as_deref(),
+                "XDG_DATA_DIRS" => self.data_dirs.as_deref(),
+                "HOME" => self.home.as_deref().map(Path::as_os_str),
+                _ => None,
+            };
+            value.and_then(|value| value.to_str()).map(str::to_owned)
+        })
+    }
+
     /// The person's data folder: `XDG_DATA_HOME` when it is an absolute path, else
     /// `$HOME/.local/share`; none when neither is usable.
     pub fn data_home(&self) -> Option<PathBuf> {
-        let set = self
-            .data_home
-            .as_ref()
-            .map(PathBuf::from)
-            .filter(|dir| dir.is_absolute());
-        set.or_else(|| {
-            let home = self.home.as_ref().filter(|home| home.is_absolute())?;
-            Some(home.join(".local/share"))
-        })
+        self.rules().data_home().ok()
     }
 
     /// The system data folders: `XDG_DATA_DIRS` without its empty and relative entries, or
     /// `/usr/local/share:/usr/share` when it is unset or empty.
     pub fn data_dirs(&self) -> Vec<PathBuf> {
-        data_dirs(self.data_dirs.as_deref())
+        self.rules().data_dirs()
     }
 
     /// The `applications` folders, most important first: the person's, each system one, then the

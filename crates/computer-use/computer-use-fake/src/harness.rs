@@ -148,7 +148,7 @@ pub async fn run_harness_answering(
                 None => return Err(HarnessError::Stuck(run.phase)),
             },
         };
-        let (next, fx) = run.step(input, clock.now());
+        let (next, fx) = run.step(input, clock.stamp());
         run = next;
         effects.extend(fx);
     }
@@ -164,7 +164,7 @@ async fn idle(run: &Run, exec: &mut Exec<'_, FakeSeams>, clock: &FixedClock) -> 
         return Some(RunInput::Damage(damage));
     }
     let wake = run.wake()?;
-    let now = clock.now();
+    let now = clock.stamp();
     if wake > now {
         clock.advance(wake.0 - now.0);
     }

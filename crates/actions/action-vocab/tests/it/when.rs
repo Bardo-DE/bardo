@@ -71,16 +71,15 @@ fn leap_seconds_lowercase_t_and_spaces_read_as_before() {
 }
 
 #[test]
-fn utc_texts_are_rfc3339() {
+fn utc_instants_are_rfc3339() {
     let cases = [
-        (0, "1970-01-01T00:00:00Z", "1970-01-01"),
-        (951_782_400, "2000-02-29T00:00:00Z", "2000-02-29"),
-        (1_760_000_000, "2025-10-09T08:53:20Z", "2025-10-09"),
-        (-1, "1969-12-31T23:59:59Z", "1969-12-31"),
+        (0, "1970-01-01T00:00:00Z"),
+        (951_782_400, "2000-02-29T00:00:00Z"),
+        (1_760_000_000, "2025-10-09T08:53:20Z"),
+        (-1, "1969-12-31T23:59:59Z"),
     ];
-    for (at, instant, day) in cases {
+    for (at, instant) in cases {
         assert_eq!(when::utc_instant(UnixSeconds(at)).as_deref(), Some(instant));
-        assert_eq!(when::utc_day(UnixSeconds(at)).as_deref(), Some(day));
     }
 }
 

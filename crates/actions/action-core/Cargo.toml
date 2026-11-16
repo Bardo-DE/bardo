@@ -12,6 +12,7 @@ publish.workspace = true
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
+base-secret = { path = "../../base/base-secret" }
 companion-model = {path = "../companion-model"}
 action-manifest = {path = "../action-manifest"}
 permission-core = {path = "../permission-core"}

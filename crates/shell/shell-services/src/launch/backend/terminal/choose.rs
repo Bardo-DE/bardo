@@ -9,8 +9,9 @@
 //! the first entry in the TerminalEmulator category.
 
 use std::collections::BTreeSet;
-use std::io::Read;
 use std::path::{Path, PathBuf};
+
+use base_fs::{ReadCap, read_text_capped};
 
 use super::entry::{self, Entry, TERMINAL_CATEGORY};
 use super::{Terminal, TerminalSearch};
@@ -115,13 +116,8 @@ fn entry_ids(dir: &Path) -> Vec<String> {
         .collect()
 }
 
-/// The text of the file at `path`, up to [`READ_CAP`] bytes; none when it cannot be read.
-fn read_capped(path: &PathBuf) -> Option<String> {
-    let mut text = String::new();
-    std::fs::File::open(path)
-        .ok()?
-        .take(READ_CAP)
-        .read_to_string(&mut text)
-        .ok()?;
-    Some(text)
+/// The text of the file at `path`; none when it cannot be read or is longer than [`READ_CAP`]
+/// bytes.
+fn read_capped(path: &Path) -> Option<String> {
+    read_text_capped(path, ReadCap::bytes(READ_CAP)).ok()
 }

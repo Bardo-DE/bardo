@@ -13,6 +13,7 @@ publish.workspace = true
 testing = ["zbus/p2p"]
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-wire = {path = "../../accounts/account-wire"}

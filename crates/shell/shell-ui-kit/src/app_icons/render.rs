@@ -10,10 +10,10 @@
 //! and, as a raster, at most [`ICON_MAX_SIDE`] pixels either way and [`DECODE_MAX_BYTES`] of memory
 //! while decoding.
 
-use std::io::{Cursor, Read};
+use std::io::Cursor;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU64, Ordering};
 
+use base_fs::{NewFileMode, ReadCap, ReadError, read_capped};
 use image::imageops::FilterType;
 use image::{ImageFormat, ImageReader, Limits, RgbaImage};
 use ui_components::prelude::*;
@@ -85,19 +85,14 @@ pub fn render(source: &Path, px: AssetPx, recolour: Recolour) -> Result<Vec<u8>,
 /// The bytes of the plain file `path` when it is at most `ceiling` long; anything else (a pipe, a
 /// device, a directory, a larger file) is [`RenderError::Unfit`].
 fn read_bounded(path: &Path, ceiling: u64) -> Result<Vec<u8>, RenderError> {
-    let meta = std::fs::metadata(path)?;
-    if !meta.is_file() || meta.len() > ceiling {
-        return Err(RenderError::Unfit);
+    match read_capped(path, ReadCap::bytes(ceiling)) {
+        Ok(bytes) => Ok(bytes),
+        Err(ReadError::NotFound { .. }) => Err(RenderError::Io(std::io::ErrorKind::NotFound.into())),
+        Err(ReadError::Io { source, .. }) => Err(RenderError::Io(source)),
+        Err(ReadError::NotRegular { .. } | ReadError::TooBig { .. } | ReadError::NotText { .. }) => {
+            Err(RenderError::Unfit)
+        }
     }
-    let mut bytes = Vec::new();
-    // A file that grows after the check is still read no further than the ceiling.
-    std::fs::File::open(path)?
-        .take(ceiling + 1)
-        .read_to_end(&mut bytes)?;
-    if bytes.len() > usize::try_from(ceiling).unwrap_or(usize::MAX) {
-        return Err(RenderError::Unfit);
-    }
-    Ok(bytes)
 }
 
 /// `bytes` decoded as a raster within [`ICON_MAX_SIDE`] and [`DECODE_MAX_BYTES`].
@@ -161,15 +156,9 @@ fn fit(raster: RgbaImage, px: AssetPx) -> RgbaImage {
 /// `bytes` written to `dir/name` through a temporary file and a rename, so a reader (Blitz, or
 /// another bardo-shell process) never sees half a PNG.
 pub fn write_atomic(dir: &Path, name: &str, bytes: &[u8]) -> std::io::Result<PathBuf> {
-    static NEXT: AtomicU64 = AtomicU64::new(0);
     std::fs::create_dir_all(dir)?;
     let target = dir.join(name);
-    let n = NEXT.fetch_add(1, Ordering::Relaxed);
-    let temp = dir.join(format!(".{name}.{}-{n}.tmp", std::process::id()));
-    std::fs::write(&temp, bytes)?;
-    std::fs::rename(&temp, &target).inspect_err(|_| {
-        let _ = std::fs::remove_file(&temp);
-    })?;
+    base_fs::write_atomic(&target, bytes, NewFileMode::Umask).map_err(|error| error.source)?;
     Ok(target)
 }
 

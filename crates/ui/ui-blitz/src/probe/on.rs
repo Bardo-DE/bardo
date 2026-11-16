@@ -45,8 +45,7 @@ impl Probe {
         if *self.last.borrow() == text {
             return;
         }
-        let partial = file.with_extension("tmp");
-        if std::fs::write(&partial, &text).is_ok() && std::fs::rename(&partial, file).is_ok() {
+        if base_fs::write_atomic(file, text.as_bytes(), base_fs::NewFileMode::Umask).is_ok() {
             self.last.replace(text);
         }
     }

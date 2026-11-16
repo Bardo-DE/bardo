@@ -9,6 +9,7 @@
 //! table, so a CBDT-only `NotoColorEmoji.ttf` is never the colour face, whatever it is called.
 
 use crate::sfnt::table_listed;
+use base_xdg::Xdg;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
@@ -17,9 +18,6 @@ const COLRV1_FILE: &str = "Noto-COLRv1.ttf";
 
 /// The directory under a data dir's `fonts` that the desktop installer fills.
 const QUIRE_DIR: &str = "bardo";
-
-/// `XDG_DATA_DIRS` when it is unset or empty.
-const DEFAULT_DATA_DIRS: &str = "/usr/local/share:/usr/share";
 
 /// Where Fedora's `google-noto-color-emoji-fonts` puts it.
 const FEDORA_PATH: &str = "/usr/share/fonts/google-noto-color-emoji-fonts/Noto-COLRv1.ttf";
@@ -51,42 +49,36 @@ pub(crate) trait FontFiles {
     fn colrv1_named_under(&self, dir: &Path) -> Vec<PathBuf>;
 }
 
-fn non_empty(value: Option<&str>) -> Option<&str> {
-    value.filter(|text| !text.is_empty())
-}
-
 impl EmojiDirs {
-    /// From the values of `XDG_DATA_DIRS`, `XDG_DATA_HOME` and `HOME`. Empty counts as unset.
+    /// From the values of `XDG_DATA_DIRS`, `XDG_DATA_HOME` and `HOME`, by the XDG rules (empty
+    /// counts as unset, a relative path is ignored).
     pub(crate) fn from_vars(
         xdg_data_dirs: Option<&str>,
         xdg_data_home: Option<&str>,
         home: Option<&str>,
     ) -> EmojiDirs {
-        let home = non_empty(home).map(PathBuf::from);
-        let data_home = non_empty(xdg_data_home)
-            .map(PathBuf::from)
-            .or_else(|| home.as_ref().map(|home| home.join(".local/share")));
-        let data_dirs = non_empty(xdg_data_dirs)
-            .unwrap_or(DEFAULT_DATA_DIRS)
-            .split(':')
-            .filter(|dir| !dir.is_empty())
-            .map(PathBuf::from)
-            .collect();
-        EmojiDirs {
-            data_dirs,
-            data_home,
-            home,
-        }
+        Self::from_xdg(&Xdg::new(|name| {
+            let value = match name {
+                "XDG_DATA_DIRS" => xdg_data_dirs,
+                "XDG_DATA_HOME" => xdg_data_home,
+                "HOME" => home,
+                _ => None,
+            };
+            value.map(str::to_owned)
+        }))
     }
 
     /// From the process environment.
     pub(crate) fn from_env() -> EmojiDirs {
-        let var = |name: &str| std::env::var(name).ok();
-        EmojiDirs::from_vars(
-            var("XDG_DATA_DIRS").as_deref(),
-            var("XDG_DATA_HOME").as_deref(),
-            var("HOME").as_deref(),
-        )
+        Self::from_xdg(&Xdg::process())
+    }
+
+    fn from_xdg<F: Fn(&str) -> Option<String>>(xdg: &Xdg<F>) -> EmojiDirs {
+        EmojiDirs {
+            data_dirs: xdg.data_dirs(),
+            data_home: xdg.data_home().ok(),
+            home: xdg.home().map(Path::to_path_buf),
+        }
     }
 
     /// The files that are named for the COLRv1 build, best first: our install dir under each data

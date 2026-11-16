@@ -9,7 +9,7 @@ use crate::seams::{GrantStore, Seams};
 use action_core::AuditRecord;
 use action_core::EventSink;
 use action_gate::prepared::Prepared;
-use action_vocab::Clock;
+use base_time::Clock as _;
 use permission_core::{CallFacts, GrantCaller, StandingGrant, StandingGrantId, StandingScope};
 
 impl<S: Seams> Router<S> {

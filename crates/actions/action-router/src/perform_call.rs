@@ -10,7 +10,8 @@ use action_gate::brief_sheet::is_brief_confirm;
 use action_gate::call::{CallEvent, CallState};
 use action_gate::driven::{Next, Run};
 use action_gate::prepared::{Prepared, grants_for};
-use action_vocab::{Clock, UndoId};
+use action_vocab::{UndoId};
+use base_time::Clock as _;
 use agent_session::{CallOpen, SessionEntry};
 use provenance::{Actor, AgentRole, SessionId};
 

@@ -194,24 +194,11 @@ impl Catalog {
     }
 }
 
-/// The directories of an `XDG_DATA_DIRS` value: the default list when it is unset or empty, and
-/// empty or relative entries dropped.
-pub fn data_dirs(value: Option<&std::ffi::OsStr>) -> Vec<PathBuf> {
-    let list = value
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| std::ffi::OsStr::new("/usr/local/share:/usr/share"));
-    std::env::split_paths(list)
-        .filter(|dir| dir.is_absolute())
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{Catalog, CatalogError, data_dirs};
+    use super::{Catalog, CatalogError};
     use crate::capability::CapabilityName;
     use crate::family::Family;
-    use std::ffi::OsStr;
-    use std::path::PathBuf;
 
     const GOOD: &str = r#"
         [video-playback]
@@ -313,21 +300,5 @@ mod tests {
         let missing = Catalog::load("other", &both);
         assert!(matches!(missing, Err(CatalogError::NotFound { .. })));
         let _ = std::fs::remove_dir_all(&root);
-    }
-
-    #[test]
-    fn data_dirs_follow_the_xdg_rules() {
-        let paths = |dirs: Vec<PathBuf>| -> Vec<String> {
-            dirs.iter().map(|d| d.display().to_string()).collect()
-        };
-        assert_eq!(paths(data_dirs(None)), ["/usr/local/share", "/usr/share"]);
-        assert_eq!(
-            paths(data_dirs(Some(OsStr::new("")))),
-            ["/usr/local/share", "/usr/share"]
-        );
-        assert_eq!(
-            paths(data_dirs(Some(OsStr::new("/a::rel:/b")))),
-            ["/a", "/b"]
-        );
     }
 }

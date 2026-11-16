@@ -4,21 +4,20 @@
 
 use crate::thread_sleep;
 use action_vocab::{Clock, Millis};
-use provenance::UnixSeconds;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use base_time::UnixSeconds;
+use std::time::Duration;
 
-/// The one system `Clock`.
+/// The one system `Clock`: `base_time::SystemClock`'s seconds, and deadlines on a thread.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct SystemClock;
 
-impl Clock for SystemClock {
+impl base_time::Clock for SystemClock {
     fn now(&self) -> UnixSeconds {
-        let seconds = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX));
-        UnixSeconds(seconds)
+        base_time::Clock::now(&base_time::SystemClock)
     }
+}
 
+impl Clock for SystemClock {
     async fn after(&self, wait: Millis) {
         if wait.0 > 0 {
             thread_sleep(Duration::from_millis(u64::from(wait.0))).await;

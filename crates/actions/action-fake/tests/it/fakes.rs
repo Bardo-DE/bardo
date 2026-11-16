@@ -460,6 +460,7 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
 
 #[tokio::test]
 async fn the_virtual_clock_completes_a_timer_only_when_advanced_to_it() {
+    use base_time::Clock as _;
     use std::future::Future;
     let clock = FixedClock::at(UnixSeconds(1));
     let mut timer = Box::pin(clock.after(Millis(100)));

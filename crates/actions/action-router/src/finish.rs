@@ -17,7 +17,8 @@ use action_core::{
 use action_gate::driven::{Driven, decision_of, step_end};
 use action_gate::prepared::{Early, Prepared};
 use action_review::note;
-use action_vocab::{Clock, Origin, Value};
+use action_vocab::{Origin, Value};
+use base_time::Clock as _;
 use action_wire::LedgerStep;
 use agent_session::{BreakerNote, SessionEntry};
 use permission_core::approves;

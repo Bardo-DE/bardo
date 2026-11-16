@@ -60,7 +60,6 @@ members = [
     "crates/wayland/desktop-client",
     "crates/wayland/shell-verbs",
     "crates/keymap/keymap",
-    "crates/keymap/keymap-fs",
     "crates/keymap/keymap-gnome",
     "crates/keymap/keymap-kde",
     "crates/keymap/keymap-macos",

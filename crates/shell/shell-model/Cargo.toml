@@ -18,6 +18,7 @@ action-vocab = {path = "../../actions/action-vocab"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 shell-launcher = {path = "../shell-launcher"}
 keymap = {path = "../../keymap/keymap"}

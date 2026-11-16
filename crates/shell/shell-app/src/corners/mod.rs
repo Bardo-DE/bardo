@@ -12,7 +12,7 @@
 mod effect;
 mod keys;
 
-use std::path::PathBuf;
+use std::path::Path;
 use std::process::Stdio;
 
 use layer_shell_host::{HostHandle, OutputId};
@@ -72,7 +72,7 @@ pub fn spawn_hits(
             let Some(binding) = pick(bindings, mods) else {
                 continue;
             };
-            let home = std::env::var_os("HOME").map(PathBuf::from);
+            let home = base_xdg::Xdg::process().home().map(Path::to_path_buf);
             let effect = corner_effect(&binding.action, home.as_deref());
             act(effect, hit.output, &doing).await;
         }

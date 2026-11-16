@@ -18,7 +18,8 @@ use action_core::{
     AppRefusal, CheckpointEvent, CheckpointFault, CheckpointId, CheckpointNote, FailText, Follow,
     Invocation, Outcome, PlanDigest, Preview, TurnState, Undoable,
 };
-use action_vocab::{Args, CallRequest, CallerRole, Clock, LabelText, ParamName, TurnId, Value};
+use action_vocab::{Args, CallRequest, CallerRole, LabelText, ParamName, TurnId, Value};
+use base_time::Clock as _;
 use action_wire::{CallerId, WireRefusal};
 use agent_session::{Claimant, may_restore};
 use base_ids::Count;

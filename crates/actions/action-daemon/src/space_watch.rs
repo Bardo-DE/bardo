@@ -13,7 +13,7 @@ use action_core::{EventSink, MemoryLink};
 use action_dbus::BusConnection;
 use action_router::{Router, Seams};
 use action_store::GrantFileError;
-use action_vocab::Clock;
+use base_time::Clock as _;
 use permission_core::{Ended, KnownSpaces};
 use provenance::SpaceId;
 use std::sync::Arc;

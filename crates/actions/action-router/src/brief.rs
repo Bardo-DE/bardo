@@ -14,7 +14,8 @@ use action_core::{AppRefusal, AuditRecord, BriefEdit, FailText, Outcome, Preview
 use action_gate::brief_sheet::text_of;
 use action_gate::driven::Run;
 use action_gate::prepared::Prepared;
-use action_vocab::{Clock, LabelText, Value};
+use action_vocab::{LabelText, Value};
+use base_time::Clock as _;
 use provenance::{Labelled, Source};
 
 fn plain(words: &str) -> Option<LabelText> {

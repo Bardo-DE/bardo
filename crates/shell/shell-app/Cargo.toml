@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 shell-model = {path = "../shell-model"}
 provenance = {path = "../../provenance/provenance"}
 clap = {version = "4", features = ["derive"]}

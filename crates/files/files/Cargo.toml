@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 anyview-platform = {path = "../../anyview/crates/anyview-platform"}
 dirs = { workspace = true }
 ui-extensions = {path = "../../ui/ui-extensions"}

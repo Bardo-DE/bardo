@@ -169,7 +169,7 @@ impl<S: Seams> Exec<'_, S> {
         match self.seam.a11y.snapshot(&target, budget).await {
             Ok(mut snapshot) => {
                 // A source does not read the clock: the tree is stamped when the run got it.
-                snapshot.taken = self.seam.clock.now();
+                snapshot.taken = self.seam.clock.stamp();
                 Ok((prune(&snapshot, budget), size_of(&info)))
             }
             Err(error) => Err(absence_of(&error)),

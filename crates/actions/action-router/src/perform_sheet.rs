@@ -14,7 +14,7 @@ use action_gate::confirm::confirm_request;
 use action_gate::driven::{Next, Run};
 use action_gate::gate::Pending;
 use action_gate::prepared::Prepared;
-use action_vocab::Clock;
+use base_time::Clock as _;
 use permission_core::{AskReason, PolicyId};
 
 impl<S: Seams> Router<S> {

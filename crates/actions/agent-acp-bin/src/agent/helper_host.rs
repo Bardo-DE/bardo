@@ -26,7 +26,7 @@ use companion_model::{SeenCommand, WatchedAgent};
 use permission_core::ProgramName;
 
 use action_store::SystemClock;
-use action_vocab::Clock;
+use base_time::Clock as _;
 use provenance::SessionId;
 use std::collections::BTreeMap;
 use std::path::Path;

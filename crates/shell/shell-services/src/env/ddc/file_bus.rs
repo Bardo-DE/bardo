@@ -12,6 +12,7 @@
 use std::io::Write as _;
 use std::path::PathBuf;
 
+use base_fs::{NewFileMode, write_atomic};
 use serde::{Deserialize, Serialize};
 use shell_model::displays::ddc::Endpoint;
 use shell_model::displays::ddc::vcp::{Feature, Level};
@@ -54,10 +55,8 @@ impl FileBus {
     fn save(&self, monitors: &Monitors) -> Result<(), DdcError> {
         let text =
             serde_json::to_string(monitors).map_err(|e| DdcError::Protocol(e.to_string()))?;
-        let next = self.path.with_extension("next");
-        std::fs::write(&next, text)
-            .and_then(|()| std::fs::rename(&next, &self.path))
-            .map_err(|e| DdcError::Bus(e.to_string()))
+        write_atomic(&self.path, text.as_bytes(), NewFileMode::Umask)
+            .map_err(|e| DdcError::Bus(e.source.to_string()))
     }
 
     fn log(&self, id: DdcId, feature: Feature, value: u16) {

@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 
-use super::Secret;
+use base_secret::SecretText;
 
 /// A verdict made up by `bardo-shell debug auth` (debug builds only: the daemon refuses it otherwise).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
@@ -17,7 +17,7 @@ pub enum FakeVerdict {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AuthCommand {
     /// Check `secret` for this session's user (ignored while `Checking`).
-    Submit(Secret),
+    Submit(SecretText),
     /// A new lock begins, or the last one ended: back to `Idle`, notes cleared. The failure count
     /// is kept until a success (it only counts: no lockout).
     Reset,

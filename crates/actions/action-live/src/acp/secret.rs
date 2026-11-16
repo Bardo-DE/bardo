@@ -8,6 +8,7 @@
 //! scratch tree at the end of the run, whatever an agent has said or done with it.
 
 use super::spec::CredentialsSource;
+use base_fs::ReadCap;
 use std::io::Write;
 use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt};
 use std::path::{Path, PathBuf};
@@ -150,11 +151,8 @@ impl Redactor {
     }
 
     fn sweep_file(&self, path: &Path) {
-        const LARGEST: u64 = 64 * 1024 * 1024;
-        if !std::fs::metadata(path).is_ok_and(|m| m.len() <= LARGEST) {
-            return;
-        }
-        let Ok(bytes) = std::fs::read(path) else {
+        const LARGEST: ReadCap = ReadCap::mib(64);
+        let Ok(bytes) = base_fs::read_capped(path, LARGEST) else {
             return;
         };
         if !self.is_clean(&bytes) {

@@ -6,6 +6,7 @@
 //! runs. Our desktop's own source (keycap) is plugged in by the desktop's launcher, not found here.
 //! The environment is read through a lookup the caller passes, so a test supplies its own.
 
+use base_xdg::Xdg;
 use keymap::{ChangeCallback, Desktop, HostOs, Keymap, KeymapSource, Platform, SourceError, Watch};
 use keymap_gnome::{GnomeSource, parse_dconf_dump};
 use keymap_kde::KdeSource;
@@ -48,10 +49,7 @@ pub(crate) fn platform_of(var: &impl Fn(&str) -> Option<String>) -> Platform {
 
 /// The user's config directory: `XDG_CONFIG_HOME`, else `~/.config`.
 pub(crate) fn config_dir(var: &impl Fn(&str) -> Option<String>) -> Option<PathBuf> {
-    var("XDG_CONFIG_HOME")
-        .filter(|dir| !dir.is_empty())
-        .map(PathBuf::from)
-        .or_else(|| var("HOME").map(|home| PathBuf::from(home).join(".config")))
+    Xdg::new(|name| var(name)).config_home().ok()
 }
 
 /// What reading the dconf database gives: its dump, or why there is none.

@@ -75,8 +75,3 @@ pub fn instant(text: &str) -> Result<UnixSeconds, NotRfc3339> {
 pub fn utc_instant(at: UnixSeconds) -> Option<String> {
     DateTime::from_timestamp(at.0, 0).map(|t| t.to_rfc3339_opts(SecondsFormat::Secs, true))
 }
-
-/// The UTC calendar day of `at`, `2026-10-03`; none when it is beyond the calendar.
-pub fn utc_day(at: UnixSeconds) -> Option<String> {
-    DateTime::from_timestamp(at.0, 0).map(|t| t.format("%Y-%m-%d").to_string())
-}

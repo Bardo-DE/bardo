@@ -10,7 +10,8 @@ use account_capability::ModelId;
 use account_core::AccountId;
 use action_core::*;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details};
-use action_vocab::{Caller, Clock, Origin, WindowKey};
+use action_vocab::{Caller, Origin, WindowKey};
+use base_time::Clock as _;
 use action_wire::{SessionOpen, SessionOpened};
 use companion_daemon::serve_on_rooted;
 use companion_wire::{

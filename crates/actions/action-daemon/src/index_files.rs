@@ -1,15 +1,13 @@
 //! What apps pushed to the index, kept across logins: `bardo/intents/index/<AppName>.json`
 //! under the person's data directory, one file per app, `{"version":1,"entries":[...]}`. Each
-//! write replaces the file whole (a temporary file in the same directory, mode 0600, synced,
-//! renamed), so a crash leaves the old file or the new one. The entries are not encrypted: they
+//! write replaces the file whole (`base_fs`'s atomic write, mode 0600), so a crash leaves the old file or the new one. The entries are not encrypted: they
 //! are as exposed as the app's own store.
 
 use account_core::AppName;
 use action_core::IndexEntry;
 use action_router::{Router, Seams};
+use base_fs::atomic::AtomicWrite;
 use serde::{Deserialize, Serialize};
-use std::io::Write;
-use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
@@ -38,7 +36,7 @@ struct IndexFile {
 #[derive(Debug, Clone)]
 pub struct IndexStore {
     dir: PathBuf,
-    /// Held while a file is written, so two writes of one app never share the temporary file.
+    /// Held while a file is written, so two writes of one app land in the order they were made.
     writing: Arc<Mutex<()>>,
 }
 
@@ -62,18 +60,7 @@ impl IndexStore {
             entries,
         })
         .map_err(|e| IndexFileFault::Malformed(e.to_string()))?;
-        std::fs::create_dir_all(&self.dir)?;
-        let target = self.file_of(app);
-        let temporary = self.dir.join(format!("{app}.json.tmp"));
-        let placed = write_private(&temporary, &bytes).and_then(|()| {
-            std::fs::rename(&temporary, &target)?;
-            std::fs::File::open(&self.dir)?.sync_all()
-        });
-        if placed.is_err() {
-            // Best effort: the error that matters is the one being returned.
-            let _ = std::fs::remove_file(&temporary);
-        }
-        Ok(placed?)
+        Ok(AtomicWrite::PRIVATE.write(&self.file_of(app), &bytes)?)
     }
 
     /// Reads the file at `path`.
@@ -119,16 +106,4 @@ impl IndexStore {
             }
         }
     }
-}
-
-/// Writes `bytes` to a new file only the person can read, and syncs it.
-fn write_private(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
-    let mut file = std::fs::OpenOptions::new()
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .mode(0o600)
-        .open(path)?;
-    file.write_all(bytes)?;
-    file.sync_all()
 }

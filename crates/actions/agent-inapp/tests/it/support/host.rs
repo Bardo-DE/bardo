@@ -50,11 +50,13 @@ impl MovingClock {
     }
 }
 
-impl Clock for MovingClock {
+impl base_time::Clock for MovingClock {
     fn now(&self) -> UnixSeconds {
         UnixSeconds(self.0.load(Ordering::SeqCst))
     }
+}
 
+impl Clock for MovingClock {
     async fn after(&self, wait: Millis) {
         if wait.0 != 0 {
             std::future::pending::<()>().await;

@@ -68,7 +68,7 @@ pub async fn play<M: CuaModel + 'static>(
         rules.clone(),
     );
     let id = RunId::parse("r-1").map_err(|e| SetupError::Id(e.to_string()))?;
-    let (run, _) = Run::start(id, arena.cua_task()?, env, arena.clock.now());
+    let (run, _) = Run::start(id, arena.cua_task()?, env, arena.clock.stamp());
     let mut model = Timed::new(model, stopwatch);
     let ended = drive(run, seam, &mut model, arena).await;
     let latencies = std::mem::take(&mut model.took);
@@ -130,7 +130,7 @@ async fn drive<M: CuaModel + 'static>(
                 },
             },
         };
-        let (next, fx) = run.step(input, arena.clock.now());
+        let (next, fx) = run.step(input, arena.clock.stamp());
         run = next;
         effects.extend(fx);
     }
@@ -149,7 +149,7 @@ async fn idle<M: CuaModel + 'static>(
         return Some(RunInput::Damage(damage));
     }
     let wake = run.wake()?;
-    let now = clock.now();
+    let now = clock.stamp();
     if wake > now {
         clock.0.advance(wake.0 - now.0);
     }

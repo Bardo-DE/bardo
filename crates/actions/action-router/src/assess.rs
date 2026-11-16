@@ -11,7 +11,8 @@ use action_core::{AppRefusal, AuditRecord, CallEnd, CallRefusal};
 use action_gate::classify::{at_ceiling, classify_step, delegation_end};
 use action_gate::driven::Driven;
 use action_gate::prepared::{Early, Prepared};
-use action_vocab::{CallClass, CallRequest, Classification, Clock, Depth, WindowKey};
+use action_vocab::{CallClass, CallRequest, Classification, Depth, WindowKey};
+use base_time::Clock as _;
 
 impl<S: Seams> Router<S> {
     /// Prepares a call and, when its action classifies per call and an agent made it, asks the

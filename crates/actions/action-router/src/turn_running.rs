@@ -14,7 +14,8 @@ use crate::router::Router;
 use crate::seams::Seams;
 use action_context::state::RunningTurn;
 use action_core::TurnState;
-use action_vocab::{CallerRole, Clock, TurnId};
+use action_vocab::{CallerRole, TurnId};
+use base_time::Clock as _;
 use action_wire::{CallerId, IntentsReply, WireRefusal};
 use provenance::SessionId;
 

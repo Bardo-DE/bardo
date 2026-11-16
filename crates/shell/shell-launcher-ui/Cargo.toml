@@ -37,6 +37,7 @@ jiff = { workspace = true }
 md-5 = { workspace = true }
 provenance = {path = "../../provenance/provenance"}
 layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
+base-time = { path = "../../base/base-time" }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-search = {path = "../shell-search"}

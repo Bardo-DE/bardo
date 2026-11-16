@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
 settings-app-system = {path = "../settings-app-system"}

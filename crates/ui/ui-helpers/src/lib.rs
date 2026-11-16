@@ -86,7 +86,7 @@ mod probe;
 mod watch;
 
 pub use capability::{CapabilityName, Executable, NameError, PackageName};
-pub use catalog::{Catalog, CatalogError, Entry, data_dirs};
+pub use catalog::{Catalog, CatalogError, Entry};
 pub use desktop_entries::{
     AppIdentity, AppKeys, ApplicationEntry, DesktopId, DesktopIdError, EntryFile, XdgEnv,
     entry_for_window, first_of_each_id, load_entries, match_app, walk_applications,

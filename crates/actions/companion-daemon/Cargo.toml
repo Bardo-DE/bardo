@@ -52,6 +52,7 @@ zbus-ready = { path = "../../zbus-ready" }
 otlp = ["action-log/otlp"]
 
 [dev-dependencies]
+base-time = { path = "../../base/base-time" }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }

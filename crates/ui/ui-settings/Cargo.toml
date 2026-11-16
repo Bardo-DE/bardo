@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 base-time = { path = "../../base/base-time" }
 base-fs = { path = "../../base/base-fs" }
+base-xdg = { path = "../../base/base-xdg" }
 ui-core = {path = "../ui-core"}
 # Temporary: the one-time move of the folders the desktop shares (`pre_bardo`); deleted with it.
 old-folders = {path = "../../platform/old-folders"}

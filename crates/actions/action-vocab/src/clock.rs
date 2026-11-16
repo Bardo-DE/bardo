@@ -2,13 +2,11 @@
 //! test's in `action-fake`; nothing else in the repo reads the time or sleeps for a deadline.
 
 use crate::Millis;
-use provenance::UnixSeconds;
 use std::future::Future;
 
-/// The one clock.
-pub trait Clock: Send + Sync {
-    /// Now.
-    fn now(&self) -> UnixSeconds;
+/// The one clock: [`base_time::Clock`] (now, as Unix seconds) plus the deadline a host races a
+/// peer against.
+pub trait Clock: base_time::Clock {
     /// Completes after `wait`: the deadline a host races a peer against (the real clock sleeps;
     /// a fake completes at once only for no time at all).
     fn after(&self, wait: Millis) -> impl Future<Output = ()> + Send;

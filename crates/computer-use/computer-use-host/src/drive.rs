@@ -268,7 +268,7 @@ pub(crate) async fn drive<S: Seams>(
     let mut damage_dry = false;
     let outcome = loop {
         while let Ok(input) = control.try_recv() {
-            machine.interrupt(&shared, input, shared.clock.now());
+            machine.interrupt(&shared, input, shared.clock.stamp());
         }
         while let Ok(event) = wire.try_recv() {
             heard(&shared, &id, &mut machine, event);
@@ -308,7 +308,7 @@ pub(crate) async fn drive<S: Seams>(
             .await
                 && let Some(failure) = deadline.and_then(|d| d.failure)
             {
-                machine.feed(&shared, failure, shared.clock.now());
+                machine.feed(&shared, failure, shared.clock.stamp());
             }
             continue;
         }
@@ -330,18 +330,18 @@ pub(crate) async fn drive<S: Seams>(
         let wake = machine.run().wake();
         let watching = machine.run().track.settle.wants_damage() && !damage_dry;
         let nap = wake.map_or(Duration::MAX, |at| {
-            Duration::from_millis(at.0.saturating_sub(shared.clock.now().0))
+            Duration::from_millis(at.0.saturating_sub(shared.clock.stamp().0))
         });
         tokio::select! {
             biased;
-            Some(input) = control.recv() => { machine.interrupt(&shared, input, shared.clock.now()); },
+            Some(input) = control.recv() => { machine.interrupt(&shared, input, shared.clock.stamp()); },
             Some(event) = wire.recv() => heard(&shared, &id, &mut machine, event),
             seen = exec.next_damage(), if watching => match seen {
-                Some(change) => machine.feed(&shared, RunInput::Damage(change), shared.clock.now()),
+                Some(change) => machine.feed(&shared, RunInput::Damage(change), shared.clock.stamp()),
                 None => damage_dry = true,
             },
             () = tokio::time::sleep(nap), if wake.is_some() => {
-                let now = shared.clock.now();
+                let now = shared.clock.stamp();
                 machine.feed(&shared, RunInput::Tick, wake.map_or(now, |due| now.max(due)));
             }
         }
@@ -390,12 +390,12 @@ async fn race<S: Seams, T>(
     loop {
         let wake = machine.run().wake();
         let nap = wake.map_or(Duration::ZERO, |at| {
-            Duration::from_millis(at.0.saturating_sub(shared.clock.now().0))
+            Duration::from_millis(at.0.saturating_sub(shared.clock.stamp().0))
         });
         tokio::select! {
             biased;
             Some(input) = control.recv() => {
-                if machine.interrupt(shared, input, shared.clock.now()) {
+                if machine.interrupt(shared, input, shared.clock.stamp()) {
                     return Raced::Interrupted;
                 }
             }
@@ -403,7 +403,7 @@ async fn race<S: Seams, T>(
             done = &mut work => return Raced::Finished(done),
             () = &mut timer, if limit.is_some() => return Raced::TimedOut,
             () = tokio::time::sleep(nap), if wake.is_some() => {
-                let now = shared.clock.now();
+                let now = shared.clock.stamp();
                 machine.feed(shared, RunInput::Tick, wake.map_or(now, |due| now.max(due)));
                 if machine.run().phase.is_finished() {
                     machine.queue.retain(|e| !is_work(e));
@@ -417,7 +417,7 @@ async fn race<S: Seams, T>(
 /// What an effect said as it ran: an input for the machine, or a signal for the bus.
 fn heard<S: Seams>(shared: &Shared<S>, id: &RunId, machine: &mut Machine, event: Wire) {
     match event {
-        Wire::Input(input) => machine.feed(shared, input, shared.clock.now()),
+        Wire::Input(input) => machine.feed(shared, input, shared.clock.stamp()),
         Wire::Signal(signal) => shared.tell(SupervisorEvent::Signal(id.clone(), signal)),
     }
 }

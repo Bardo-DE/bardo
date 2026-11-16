@@ -17,6 +17,9 @@ name = "bardo-actiond"
 path = "src/main.rs"
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
+base-fs = { path = "../../base/base-fs" }
+base-xdg = { path = "../../base/base-xdg" }
 base-ids = { path = "../../base/base-ids" }
 base-path = { path = "../../base/base-path" }
 companion-model = {path = "../companion-model"}

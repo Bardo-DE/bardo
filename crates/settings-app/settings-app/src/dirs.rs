@@ -4,20 +4,11 @@ use settings_app_files::{CacheHome, ConfigHome, DataHome, StateHome};
 use std::ffi::OsString;
 use std::path::PathBuf;
 
-/// `value` as an absolute path; unset, empty and relative values are no value. The XDG rule, as
-/// quire applies it to its own directories (`ui_settings::xdg::base_dir`, which is crate-private:
-/// when quire publishes it this file calls it), so `XDG_CONFIG_HOME=` in a unit file is not "the
-/// working directory".
-fn absolute(value: Option<OsString>) -> Option<PathBuf> {
-    value
-        .filter(|value| !value.is_empty())
-        .map(PathBuf::from)
-        .filter(|path| path.is_absolute())
-}
-
-/// `xdg` when it is a usable path, else `home` (itself usable) with `under_home` below it.
+/// `xdg` when it is a usable path, else `home` (itself usable) with `under_home` below it: the
+/// XDG rule, written once in `base_xdg` and applied through `ui_settings::xdg`, so
+/// `XDG_CONFIG_HOME=` in a unit file is not "the working directory".
 fn base_from(xdg: Option<OsString>, home: Option<OsString>, under_home: &str) -> Option<PathBuf> {
-    absolute(xdg).or_else(|| absolute(home).map(|home| home.join(under_home)))
+    ui_settings::xdg::base_dir(xdg.as_deref(), home.as_deref(), under_home)
 }
 
 /// `$XDG_CONFIG_HOME`, else `$HOME/.config`.
@@ -105,13 +96,10 @@ const STORE_EXPORTS: [&str; 2] = [
 /// directories' (`/usr/local/share:/usr/share` when the variable is unset), then Flatpak's user
 /// install and the stores' exports, in the order of precedence.
 fn application_dirs_from(data_home: Option<DataHome>, data_dirs: Option<OsString>) -> Vec<PathBuf> {
-    let listed = data_dirs
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| OsString::from("/usr/local/share:/usr/share"));
     let shares = data_home
         .iter()
         .map(|home| home.0.clone())
-        .chain(std::env::split_paths(&listed).filter(|dir| dir.is_absolute()));
+        .chain(ui_settings::xdg::search_dirs(data_dirs.as_deref()));
     let exports = data_home
         .iter()
         .map(|home| home.0.join("flatpak/exports/share/applications"))
@@ -128,12 +116,9 @@ fn application_dirs_from(data_home: Option<DataHome>, data_dirs: Option<OsString
 /// unset), absolute ones only and without the person's own data home, which is looked at
 /// separately: where installed Extensions and apps' published style parts are.
 fn system_data_dirs_from(data_home: Option<DataHome>, data_dirs: Option<OsString>) -> Vec<PathBuf> {
-    let listed = data_dirs
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| OsString::from("/usr/local/share:/usr/share"));
     unique(
-        std::env::split_paths(&listed)
-            .filter(|dir| dir.is_absolute())
+        ui_settings::xdg::search_dirs(data_dirs.as_deref())
+            .into_iter()
             .filter(|dir| data_home.as_ref().is_none_or(|home| *dir != home.0))
             .collect(),
     )

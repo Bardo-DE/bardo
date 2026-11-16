@@ -37,11 +37,12 @@ pub(crate) fn make_in(from: &Path, cache: &Path) -> Result<PathBuf, ServiceError
         true => image.thumbnail(PREVIEW_MAX, PREVIEW_MAX),
         false => image,
     };
-    let temp = dest.with_extension("png.tmp");
+    let mut png = Vec::new();
     small
-        .save_with_format(&temp, image::ImageFormat::Png)
-        .map_err(|e| io(&temp, std::io::Error::other(e)))?;
-    std::fs::rename(&temp, &dest).map_err(|e| io(&dest, e))?;
+        .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
+        .map_err(|e| io(&dest, std::io::Error::other(e)))?;
+    base_fs::write_atomic(&dest, &png, base_fs::NewFileMode::Umask)
+        .map_err(|e| io(&dest, e.source))?;
     Ok(dest)
 }
 

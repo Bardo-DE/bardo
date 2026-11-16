@@ -31,14 +31,15 @@ pub fn ensure_backdrop(image: &Path) -> Result<PathBuf, ServiceError> {
     };
     let source = image::open(image).map_err(io(image))?.to_rgba8();
     let blurred = blur(&source);
-    let mut temp = backdrop.clone();
-    temp.set_extension("png.tmp");
+    let mut png = Vec::new();
     blurred
-        .save_with_format(&temp, image::ImageFormat::Png)
-        .map_err(io(&temp))?;
-    std::fs::rename(&temp, &backdrop).map_err(|source| ServiceError::Io {
-        path: backdrop.clone(),
-        source,
+        .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
+        .map_err(io(&backdrop))?;
+    base_fs::write_atomic(&backdrop, &png, base_fs::NewFileMode::Umask).map_err(|error| {
+        ServiceError::Io {
+            path: backdrop.clone(),
+            source: error.source,
+        }
     })?;
     Ok(backdrop)
 }

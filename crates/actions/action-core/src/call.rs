@@ -9,6 +9,7 @@ use action_vocab::{
     UndoToken, Value,
 };
 use base_ids::Permille;
+use base_secret::SecretText;
 use permission_core::{BreakerTrip, DenyCode};
 use provenance::{Actor, EntityId, Labelled, SpaceId, SpaceScope};
 use serde::{Deserialize, Serialize};
@@ -59,17 +60,17 @@ pub struct ActivatedInvocation {
 /// and by the router to the app. It is never logged or audited, so its `Debug` shows nothing.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct ActivationToken(String);
+pub struct ActivationToken(#[serde(serialize_with = "base_secret::write_secret")] SecretText);
 
 impl ActivationToken {
     /// A token, unless it is empty.
     pub fn parse(text: &str) -> Option<Self> {
-        (!text.is_empty()).then(|| Self(text.to_owned()))
+        (!text.is_empty()).then(|| Self(SecretText::new(text)))
     }
 
     /// The token's text, for handing to the compositor.
     pub fn as_str(&self) -> &str {
-        &self.0
+        self.0.expose()
     }
 }
 

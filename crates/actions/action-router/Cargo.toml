@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-time = { path = "../../base/base-time" }
 base-ids = { path = "../../base/base-ids" }
 companion-model = {path = "../companion-model"}
 action-checkpoint = {path = "../action-checkpoint"}

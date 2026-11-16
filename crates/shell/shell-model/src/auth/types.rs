@@ -1,10 +1,9 @@
 //! The auth service's words: who is asked, what they typed, what PAM said, what is published.
 
-use std::fmt;
 use std::path::PathBuf;
 
+use base_secret::SecretText;
 use serde::{Deserialize, Serialize};
-use zeroize::Zeroizing;
 
 /// A login name (`pohsuanlai`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
@@ -16,34 +15,11 @@ pub struct UserName(pub String);
 #[serde(transparent)]
 pub struct RealName(pub String);
 
-/// What was typed into a password field. Its `Debug` never shows it, it is never serialised,
-/// and its bytes are overwritten when it is dropped (and each clone's when that is: `Zeroizing`
-/// writes them in a way the compiler may not remove).
-#[derive(Clone, PartialEq, Eq)]
-pub struct Secret(Zeroizing<String>);
-
-impl Secret {
-    pub fn new(text: impl Into<String>) -> Secret {
-        Secret(Zeroizing::new(text.into()))
-    }
-
-    /// The text, for the one place that hands it on (the helper's stdin, PAM's conversation).
-    pub fn expose(&self) -> &str {
-        &self.0
-    }
-}
-
-impl fmt::Debug for Secret {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("Secret(..)")
-    }
-}
-
 /// One password check: whose, and what was typed.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Attempt {
     pub user: UserName,
-    pub secret: Secret,
+    pub secret: SecretText,
 }
 
 /// How one check ended.

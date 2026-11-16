@@ -10,7 +10,8 @@ use std::path::{Path, PathBuf};
 
 use shell_model::notifications::{STORED_VERSION, StoredHistory};
 
-use crate::durable::{self, Access};
+use crate::durable;
+use base_fs::NewFileMode;
 use crate::error::ServiceError;
 
 /// The file's name inside `$XDG_STATE_HOME/bardo/shell`.
@@ -44,7 +45,7 @@ pub fn save(path: &Path, stored: &StoredHistory) -> Result<(), ServiceError> {
         path: path.to_path_buf(),
         source: std::io::Error::other(e),
     })?;
-    durable::write_file(path, text.as_bytes(), Access::OwnerOnly)
+    durable::write_file(path, text.as_bytes(), NewFileMode::OwnerOnly)
 }
 
 #[cfg(test)]

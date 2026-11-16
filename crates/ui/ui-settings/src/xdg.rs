@@ -18,8 +18,7 @@
 use std::ffi::OsStr;
 use std::path::PathBuf;
 
-/// What `$XDG_DATA_DIRS` is when it is unset or empty.
-pub(crate) const DEFAULT_DATA_DIRS: &str = "/usr/local/share:/usr/share";
+use base_xdg::Xdg;
 
 /// The default of `$XDG_CONFIG_HOME`, under `$HOME`.
 pub const CONFIG_HOME_UNDER_HOME: &str = ".config";
@@ -30,32 +29,34 @@ pub const STATE_HOME_UNDER_HOME: &str = ".local/state";
 /// The default of `$XDG_DATA_HOME`, under `$HOME`.
 pub const DATA_HOME_UNDER_HOME: &str = ".local/share";
 
-/// `value` as an absolute path: `None` when it is unset, empty or relative.
-fn absolute(value: Option<&OsStr>) -> Option<PathBuf> {
-    value
-        .filter(|value| !value.is_empty())
-        .map(PathBuf::from)
-        .filter(|path| path.is_absolute())
-}
-
 /// A `$XDG_*_HOME` directory: `xdg` when it is a usable absolute path, else `$HOME/<under_home>`
 /// when `home` is one, else `None`. Pass one of [`CONFIG_HOME_UNDER_HOME`],
 /// [`STATE_HOME_UNDER_HOME`] and [`DATA_HOME_UNDER_HOME`] as `under_home`, and the two variables'
-/// values as the caller read them (this function reads no environment).
+/// values as the caller read them (this function reads no environment). The rules are
+/// `base_xdg`'s; a value that is not UTF-8 reads as unset.
 pub fn base_dir(xdg: Option<&OsStr>, home: Option<&OsStr>, under_home: &str) -> Option<PathBuf> {
-    absolute(xdg).or_else(|| absolute(home).map(|home| home.join(under_home)))
+    const VAR: &str = "XDG_BASE";
+    let env = |name: &str| match name {
+        VAR => text(xdg),
+        "HOME" => text(home),
+        _ => None,
+    };
+    Xdg::new(env).dir(VAR, under_home).ok()
 }
 
 /// The directories of a `:`-separated search list such as `$XDG_DATA_DIRS`: `value` when it is
 /// set and non-empty, else `/usr/local/share:/usr/share`, with every empty or relative entry
 /// dropped.
 pub fn search_dirs(value: Option<&OsStr>) -> Vec<PathBuf> {
-    let list = value
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| OsStr::new(DEFAULT_DATA_DIRS));
-    std::env::split_paths(list)
-        .filter(|dir| dir.is_absolute())
-        .collect()
+    let env = |name: &str| match name {
+        "XDG_DATA_DIRS" => text(value),
+        _ => None,
+    };
+    Xdg::new(env).data_dirs()
+}
+
+fn text(value: Option<&OsStr>) -> Option<String> {
+    value.and_then(OsStr::to_str).map(str::to_owned)
 }
 
 #[cfg(test)]

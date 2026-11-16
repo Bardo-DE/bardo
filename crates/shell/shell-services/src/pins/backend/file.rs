@@ -12,7 +12,8 @@ use toml::{Table, Value};
 
 use super::legacy;
 use crate::ServiceError;
-use crate::durable::{self, Access};
+use crate::durable;
+use base_fs::NewFileMode;
 
 /// The file's name inside `$XDG_CONFIG_HOME/bardo/shell`.
 pub(crate) const FILE_NAME: &str = "layout.toml";
@@ -60,7 +61,7 @@ pub(crate) fn save(dir: &Path, pins: &DockPins) -> Result<(), ServiceError> {
     durable::write_file(
         &dir.join(FILE_NAME),
         render(read_table(dir), pins).as_bytes(),
-        Access::AsFound,
+        NewFileMode::OwnerOnly,
     )
 }
 

@@ -3,6 +3,7 @@
 
 use crate::client::Client;
 use crate::picker::{AgentSearch, ReasonFeed};
+use base_xdg::Xdg;
 use settings_app_files::{CacheHome, ConfigHome, DataHome, PictureDirs};
 use settings_app_system::accounts::{AccountsLink, OnBus as AccountsOnBus};
 use settings_app_system::bluetooth::{BluetoothLink, OnBluetooth};
@@ -26,7 +27,7 @@ use settings_app_system::sync::{OnBus as SyncOnBus, SyncLink};
 use settings_app_system::updates::{Departure, OnBus, PowerMenu, UpdatesLink};
 use settings_app_system::wallpaper::{OnDisk, Pictures, Thumbnails};
 use settings_app_system::wifi::{OnWifi, WifiLink};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 /// The person's own folders the client reads and writes: settings, data and cache (or scratch
@@ -50,8 +51,9 @@ fn person_on(bus: &BusSource) -> Arc<dyn PersonLink> {
         BusSource::Session => Arc::new(OnAccounts::new(
             bus.clone(),
             PathBuf::from("/etc/passwd"),
-            std::env::var_os("HOME")
-                .map(PathBuf::from)
+            Xdg::process()
+                .home()
+                .map(Path::to_path_buf)
                 .unwrap_or_default(),
         )),
         BusSource::Absent | BusSource::Address(..) => Arc::new(NoPerson),

@@ -15,7 +15,8 @@ use ui_core::settings::KeyPath;
 use ui_core::word::Word;
 use ui_settings::{Edit, SettingsError, SettingsWriter};
 
-use crate::durable::{self, Access};
+use crate::durable;
+use base_fs::NewFileMode;
 
 /// casement's settings file, in its config directory.
 pub(super) const SETTINGS: &str = "settings.toml";
@@ -249,7 +250,7 @@ pub(super) fn write_manual(dir: &Path, manual: Option<&Manual>) -> Result<(), Fi
         serde_json::to_string_pretty(&file)
             .unwrap_or_default()
             .as_bytes(),
-        Access::OwnerOnly,
+        NewFileMode::OwnerOnly,
     )?;
     Ok(())
 }

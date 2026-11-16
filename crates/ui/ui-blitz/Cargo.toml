@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 base-fs = { path = "../../base/base-fs" }
+base-xdg = { path = "../../base/base-xdg" }
 ui-components = {path = "../ui-components"}
 # The shell's work areas as plain data (`Outputs`); its D-Bus reading is the opt-in `desktop-outputs`
 # feature, so an app that never asks builds no D-Bus client.

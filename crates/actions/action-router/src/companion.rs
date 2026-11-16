@@ -21,7 +21,8 @@ use action_core::{
 use action_gate::companion_names::{
     HELPER_POST_JOB, HELPER_PROPOSE, LIMIT_ADD, ROUTINE_PROPOSE, task_entity, task_of,
 };
-use action_vocab::{CallerRole, ChoiceId, Clock, LabelText, ParamName, TargetValue, Value};
+use action_vocab::{CallerRole, ChoiceId, LabelText, ParamName, TargetValue, Value};
+use base_time::Clock as _;
 use action_wire::{CallerId, IntentsReply, SessionOpen, SessionOpened, TaskStart, WireRefusal};
 use companion_model::helper::{GoalOrigin, JobRefusal};
 use permission_core::COMPANION_APP;

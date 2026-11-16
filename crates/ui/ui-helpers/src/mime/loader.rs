@@ -1,8 +1,8 @@
 //! The only code that reads files: the XDG folders, given as an argument.
 
-use std::fs;
-use std::io;
 use std::path::{Path, PathBuf};
+
+use base_fs::{ReadCap, read_text_capped};
 
 use super::assoc::Associations;
 use super::db::{MimeDb, MimeLayer};
@@ -54,15 +54,9 @@ enum Read {
 }
 
 fn read_capped(path: &Path) -> Read {
-    match fs::metadata(path) {
-        Err(error) if error.kind() == io::ErrorKind::NotFound => return Read::Missing,
-        Err(_) => return Read::Skipped,
-        Ok(meta) if meta.len() > MAX_BYTES => return Read::Skipped,
-        Ok(_) => {}
-    }
-    match fs::read_to_string(path) {
+    match read_text_capped(path, ReadCap::bytes(MAX_BYTES)) {
         Ok(text) => Read::Text(text),
-        Err(error) if error.kind() == io::ErrorKind::NotFound => Read::Missing,
+        Err(error) if error.is_missing() => Read::Missing,
         Err(_) => Read::Skipped,
     }
 }

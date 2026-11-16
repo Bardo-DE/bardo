@@ -14,6 +14,7 @@ use action_core::{
     AgentConfig, CheckpointEvent, CheckpointId, CheckpointNote, Retention, Rewind, SkipReason,
 };
 use action_vocab::{Clock, Millis, TurnId};
+use base_time::Clock as _;
 use agent_session::{Logged, Read, SessionEntry, SessionLog, resume_plan};
 use base_ids::Count;
 use provenance::SessionId;

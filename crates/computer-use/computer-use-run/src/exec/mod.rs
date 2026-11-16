@@ -347,6 +347,6 @@ impl<'a, S: Seams> Exec<'a, S> {
 
     /// The clock the run is on.
     pub fn now(&self) -> computer_use_desktop::Stamp {
-        self.seam.clock.now()
+        self.seam.clock.stamp()
     }
 }

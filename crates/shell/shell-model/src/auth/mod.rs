@@ -12,5 +12,5 @@ pub use gate::{Checks, GateIn, GateOut};
 pub use model::{Auth, AuthPhase};
 pub use types::{
     Account, Attempt, Attempts, AuthFault, AvatarSource, Outcome, PamNote, PamService, RealName,
-    Secret, UserName, Verdict,
+    UserName, Verdict,
 };

@@ -66,7 +66,7 @@ impl<O: Outlet> StepSink for Forward<'_, O> {
 
 impl<S: Seams> Exec<'_, S> {
     pub(super) async fn acquire(&mut self, request: LeaseRequest, out: &mut impl Outlet) {
-        let began = self.seam.clock.now();
+        let began = self.seam.clock.stamp();
         self.note(out, Step::Lease, Progress::Started);
         let leased = match bounded(
             self.seam.clock,
@@ -92,7 +92,7 @@ impl<S: Seams> Exec<'_, S> {
         self.note(out, Step::Lease, Progress::Finished(self.since(began)));
         let grant = leased.grant;
 
-        let began = self.seam.clock.now();
+        let began = self.seam.clock.stamp();
         self.note(out, Step::Phase(AcquirePhase::Attach), Progress::Started);
         let attached = bounded(
             self.seam.clock,
@@ -127,7 +127,7 @@ impl<S: Seams> Exec<'_, S> {
             }
         }
 
-        let began = self.seam.clock.now();
+        let began = self.seam.clock.stamp();
         self.note(out, Step::Phase(AcquirePhase::Capture), Progress::Started);
         match bounded(self.seam.clock, PHASE_LIMIT, self.seam.capture.open(&grant)).await {
             Bound::Done(Ok(capture)) => {
@@ -171,7 +171,7 @@ impl<S: Seams> Exec<'_, S> {
     }
 
     fn since(&self, began: Stamp) -> u64 {
-        self.seam.clock.now().0.saturating_sub(began.0)
+        self.seam.clock.stamp().0.saturating_sub(began.0)
     }
 
     fn note(&self, out: &mut impl Outlet, step: Step, progress: Progress) {

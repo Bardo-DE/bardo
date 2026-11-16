@@ -13,14 +13,11 @@ use action_eval_core::utc_date;
 use clap::Parser;
 use cli::{Cli, Request};
 use std::process::ExitCode;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Today in UTC, as `YYYY-MM-DD`: the one clock read of the attack summary.
 fn today() -> String {
-    let secs = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs());
-    utc_date(secs)
+    let now = base_time::Clock::now(&base_time::SystemClock);
+    utc_date(u64::try_from(now.0).unwrap_or(0))
 }
 
 fn main() -> ExitCode {

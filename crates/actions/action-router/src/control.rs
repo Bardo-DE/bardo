@@ -9,7 +9,8 @@ use action_core::EventSink;
 use action_core::{
     AuditRecord, Confirmer, Halt, HaltCause, UndoEntry, UndoFault, UndoScope, UndoState,
 };
-use action_vocab::{CallerRole, Clock, UndoId};
+use action_vocab::{CallerRole, UndoId};
+use base_time::Clock as _;
 use action_wire::{CallerId, IntentsReply, JournalFilter, UndoReport};
 use base_ids::Count;
 use provenance::{Actor, SpaceScope};

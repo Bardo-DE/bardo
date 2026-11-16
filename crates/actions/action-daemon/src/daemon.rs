@@ -38,6 +38,7 @@ use action_store::SystemClock;
 use agent_skills::{Roots, discover};
 use agent_skills_disk::DiskFolder;
 use base_path::AbsPath;
+use base_xdg::{PathError, Xdg};
 use companion_memory::{AlmanacMemory, AlmanacSessionLog};
 use companion_memory_core::QueuedSink;
 use permission_core::Floor;
@@ -151,51 +152,30 @@ pub struct Setup {
     pub permissions: PolicyDirs,
 }
 
-fn home(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
-    env("HOME").map(PathBuf::from).unwrap_or_default()
-}
-
-fn listed(value: Option<String>, fallback: &str) -> Vec<PathBuf> {
-    value
-        .filter(|v| !v.is_empty())
-        .unwrap_or_else(|| fallback.to_owned())
-        .split(':')
-        .map(PathBuf::from)
-        .collect()
-}
-
 /// `$XDG_DATA_HOME` then `$XDG_DATA_DIRS`, with their defaults.
-pub fn data_dirs(env: &impl Fn(&str) -> Option<String>) -> Vec<PathBuf> {
-    let first = env("XDG_DATA_HOME")
-        .filter(|v| !v.is_empty())
-        .map(PathBuf::from)
-        .unwrap_or_else(|| home(env).join(".local/share"));
-    let mut dirs = vec![first];
-    dirs.extend(listed(env("XDG_DATA_DIRS"), "/usr/local/share:/usr/share"));
-    dirs
+///
+/// # Errors
+/// Neither `XDG_DATA_HOME` nor `HOME` is an absolute path.
+pub fn data_dirs(env: &impl Fn(&str) -> Option<String>) -> Result<Vec<PathBuf>, PathError> {
+    let xdg = Xdg::new(env);
+    let mut dirs = vec![xdg.data_home()?];
+    dirs.extend(xdg.data_dirs());
+    Ok(dirs)
 }
 
-/// `$XDG_CONFIG_HOME`, with its default.
-fn config_home(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
-    env("XDG_CONFIG_HOME")
-        .filter(|v| !v.is_empty())
-        .map(PathBuf::from)
-        .unwrap_or_else(|| home(env).join(".config"))
-}
-
-/// `$XDG_CONFIG_HOME` then `$XDG_CONFIG_DIRS`, with their defaults.
-fn config_dirs(env: &impl Fn(&str) -> Option<String>) -> Vec<PathBuf> {
-    let mut dirs = vec![config_home(env)];
-    dirs.extend(listed(env("XDG_CONFIG_DIRS"), "/etc/xdg"));
-    dirs
+/// The directory the daemon keeps its files in could not be found.
+fn state(why: PathError) -> DaemonFault {
+    DaemonFault::State(why.to_string())
 }
 
 impl Setup {
     /// Reads the configuration (the first `bardo/actions/actiond.toml` of the configuration
     /// directories, else the shipped one) and the manifests of the data directories.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, DaemonFault> {
-        let found = config_dirs(env)
-            .into_iter()
+        let xdg = Xdg::new(env);
+        let config_home = xdg.config_home().map_err(state)?;
+        let found = std::iter::once(config_home.clone())
+            .chain(xdg.config_dirs())
             .map(|d| d.join("bardo").join("actions").join("actiond.toml"))
             .find_map(|path| std::fs::read_to_string(path).ok());
         let config = match found {
@@ -204,11 +184,11 @@ impl Setup {
         }
         .map_err(DaemonFault::Config)?;
         let callers = callers::read(env).map_err(|e| DaemonFault::Callers(e.to_string()))?;
-        let data = data_dirs(env);
+        let data = data_dirs(env).map_err(state)?;
         let permissions = PolicyDirs {
             data_home: data[0].clone(),
             system_data: data[1..].to_vec(),
-            person: config_home(env)
+            person: config_home
                 .join("bardo")
                 .join("actions")
                 .join("permissions"),

@@ -20,6 +20,7 @@ zbus = {version = "5.19", optional = true}
 
 [dev-dependencies]
 base-time = { path = "../../base/base-time" }
+base-xdg = { path = "../../base/base-xdg" }
 # The tests' runtime; the crate itself names none (zbus brings its own executor).
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
 # The tests run zbus on that runtime (the fake PackageKit sleeps with tokio inside a zbus
