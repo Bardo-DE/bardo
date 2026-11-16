@@ -93,7 +93,7 @@ impl Machine for Ticker {
     type Params = ();
     type Ctx = ();
 
-    fn step(self, input: TickIn, at: Stamp, _: &(), _: &()) -> (Ticker, Vec<()>) {
+    fn step(self, input: TickIn, at: Stamp, (): &(), (): &()) -> (Ticker, Vec<()>) {
         let next = match (input, self.due) {
             (TickIn::Report(report), _) if report == self.report => self,
             (TickIn::Report(report), _) => Ticker::arrived(report, at),
@@ -157,14 +157,14 @@ mod tests {
 
     #[test]
     fn the_ticker_beats_on_each_second_of_the_track_until_it_ends_or_is_held() {
+        /// Name, state before, input, time (ms), the position after, next wake.
+        type Case = (&'static str, Ticker, TickIn, u64, Duration, Option<u64>);
         let running = report(61_400, 63_000, PositionClock::Running);
         let held = Report {
             clock: PositionClock::Held,
             ..running
         };
         let arrived = |report, at| Ticker::arrived(report, Stamp(at));
-        /// Name, state before, input, time (ms), the position after, next wake.
-        type Case = (&'static str, Ticker, TickIn, u64, Duration, Option<u64>);
         let cases: &[Case] = &[
             (
                 "a report arrives at 100: the next second is 600 ms on",

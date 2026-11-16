@@ -47,8 +47,14 @@ pub(crate) struct Form {
     pub(crate) pieces: &'static [Piece],
 }
 
-const fn slab(x: f32, y: f32, w: f32, h: f32, r: f32) -> Piece {
-    Piece::Slab(Slab { x, y, w, h, r })
+const fn slab(left: f32, top: f32, width: f32, height: f32, radius: f32) -> Piece {
+    Piece::Slab(Slab {
+        x: left,
+        y: top,
+        w: width,
+        h: height,
+        r: radius,
+    })
 }
 
 const fn form(rule: FillRule, pieces: &'static [Piece]) -> Form {
@@ -213,16 +219,16 @@ fn num(n: f32) -> String {
 
 /// A rounded rectangle as a closed path, clockwise from its top edge.
 fn slab_path(s: Slab) -> String {
-    let r = s.r.min(s.w / 2.0).min(s.h / 2.0);
-    let (x, y, w, h) = (
-        num(s.x + r),
+    let radius = s.r.min(s.w / 2.0).min(s.h / 2.0);
+    let (left, top, run, rise) = (
+        num(s.x + radius),
         num(s.y),
-        num(s.w - 2.0 * r),
-        num(s.h - 2.0 * r),
+        num(s.w - 2.0 * radius),
+        num(s.h - 2.0 * radius),
     );
-    let r = num(r);
+    let r = num(radius);
     format!(
-        "M{x} {y}h{w}a{r} {r} 0 0 1 {r} {r}v{h}a{r} {r} 0 0 1 -{r} {r}h-{w}a{r} {r} 0 0 1 -{r} -{r}v-{h}a{r} {r} 0 0 1 {r} -{r}z"
+        "M{left} {top}h{run}a{r} {r} 0 0 1 {r} {r}v{rise}a{r} {r} 0 0 1 -{r} {r}h-{run}a{r} {r} 0 0 1 -{r} -{r}v-{rise}a{r} {r} 0 0 1 {r} -{r}z"
     )
 }
 

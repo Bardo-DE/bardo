@@ -1,4 +1,6 @@
-//! The dock's geometry tokens (the macOS polish pass, 2026-09-24; design/10-BEHAVIOUR-dock.md
+//! The dock's geometry tokens.
+//!
+//! They come from the macOS polish pass (2026-09-24; design/10-BEHAVIOUR-dock.md
 //! sections 10.3.1 and 10.3.2): the tile, the gap between tiles, the pill's padding, the running
 //! dot, the pill's corner, the edge clamp and the separator, each a tuned token a look or the
 //! person's style sheet moves; only the tile's size has a settings key (macOS's Size slider).
@@ -11,7 +13,9 @@ use ui_components::base::word::Word;
 use ui_components::style::tokens::dock_floor::DockFloorToken;
 use ui_components::style::tokens::token::Token;
 
-/// One dock geometry token, each a tuned token (a look or the person's style sheet may write its
+/// One dock geometry token.
+///
+/// Each is a tuned token (a look or the person's style sheet may write its
 /// `input`, the default behind it). Rust that computes with one reads it from the document
 /// (`shell_dock::dock::tokens`), with these defaults as its constants.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
@@ -81,6 +85,11 @@ impl DockMetrics {
     /// Every input, inline: `--dock-tile-px:48px;--dock-floor-on:0;`.
     #[must_use]
     pub fn style_attr(&self) -> String {
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "rounded and clamped to 0..=999 just before, so it fits a u16"
+        )]
         let tile = format!("{}px", self.tile.0.round().clamp(0.0, 999.0) as u16);
         let floor = if self.floor { "1" } else { "0" };
         [

@@ -1,4 +1,6 @@
-//! The widget contract (design/23-WIDGETS.md section 9): what a widget is, as one trait. A
+//! The widget contract (design/23-WIDGETS.md section 9): what a widget is, as one trait.
+//!
+//! A
 //! widget is data in, content out: it names its kind and the sizes it draws, gives a placeholder
 //! entry for a size, and draws an entry at a size. It never draws its card: the corner, the
 //! inset and the title row are quire's ([`crate::widget::card::WidgetCard`]),
@@ -41,7 +43,9 @@ impl WidgetKind {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum NoIntent {}
 
-/// What an entry is drawn with: the size it was given (always one of the widget's own
+/// What an entry is drawn with.
+///
+/// It is the size it was given (always one of the widget's own
 /// [`Widget::sizes`]), the host's wake stamp (a widget replays its appear motion on a new one),
 /// and the handler for the widget's own controls.
 #[derive(Debug, Clone, PartialEq)]
@@ -76,6 +80,10 @@ pub trait Widget: Clone + PartialEq + Default + 'static {
     fn placeholder(size: WidgetSize) -> Self::Entry;
 
     /// The content of `entry` in `cx`, without the card.
+    ///
+    /// # Errors
+    ///
+    /// Returns the render error of the components it mounts, as any dioxus `Element` does.
     fn view(entry: &Self::Entry, cx: WidgetContext<Self::Intent>) -> Element;
 
     /// The card's title row; none by default (a glanceable widget's content fills the card,

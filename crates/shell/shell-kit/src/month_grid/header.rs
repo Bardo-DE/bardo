@@ -6,11 +6,10 @@
 use crate::month_grid::data::MonthStep;
 use crate::month_grid::density::Drawn;
 use dioxus::prelude::*;
-use ui_components::components::content::text_runs::{TextLine, text};
+use ui_components::components::content::text_runs::text;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
-use ui_components::style::icon::Icon;
-use ui_components::style::icon::render::{Glyph, IconSize};
+use ui_components::style::icon::render::Glyph;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// The header row at `density`.

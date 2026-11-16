@@ -9,12 +9,9 @@
 
 use dioxus::prelude::*;
 use ui_components::base::press::Press;
-use ui_components::components::content::label::{Label, LabelStyle};
-use ui_components::components::content::text_runs::TextLine;
-use ui_components::components::controls::button::Button;
+use ui_components::components::content::label::LabelStyle;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// A detail pane's header: `back` draws a back button that calls it (a module's own dropdown, which

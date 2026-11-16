@@ -74,12 +74,18 @@ fn main() {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(
+    non_snake_case,
+    reason = "a component's name is its type-like function name"
+)]
 fn Light() -> Element {
     rsx! { Sheet { theme: Theme::Light } }
 }
 
-#[allow(non_snake_case)]
+#[expect(
+    non_snake_case,
+    reason = "a component's name is its type-like function name"
+)]
 fn Dark() -> Element {
     rsx! { Sheet { theme: Theme::Dark } }
 }

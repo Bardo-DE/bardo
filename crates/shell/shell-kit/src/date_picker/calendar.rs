@@ -126,6 +126,11 @@ pub(crate) fn month_grid(month: MonthKey, picked: DayKey) -> MonthGridData {
     let rows = (0..weeks)
         .map(|week| {
             let days = std::array::from_fn(|at| {
+                #[expect(
+                    clippy::cast_possible_truncation,
+                    clippy::cast_possible_wrap,
+                    reason = "`at` indexes a seven-day array, so it is below 7"
+                )]
                 let key = shifted(first, week * 7 + at as i32);
                 let place = match (key.year, key.month).cmp(&(month.year, month.month)) {
                     std::cmp::Ordering::Less => DayPlace::Before,

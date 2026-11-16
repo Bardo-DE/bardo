@@ -85,7 +85,7 @@ impl Machine for Frames {
     /// A play shows its first frame at once; each hold's end shows the next, and the last one's
     /// ends on frame 0. Nothing loops and nothing runs at rest. A wake before the hold ends
     /// changes nothing.
-    fn step(self, input: FramesIn, at: Stamp, _: &(), _: &()) -> (Frames, Vec<()>) {
+    fn step(self, input: FramesIn, at: Stamp, (): &(), (): &()) -> (Frames, Vec<()>) {
         let next = match (input, self.until) {
             (FramesIn::Play(frames), _) => {
                 let mut upcoming = frames;
@@ -147,14 +147,14 @@ mod tests {
 
     #[test]
     fn a_play_shows_each_frame_for_its_hold_and_ends_on_the_rest_frame() {
+        /// Name, state before, input, time, frame shown after, next wake.
+        type Case = (&'static str, Frames, FramesIn, u64, u16, Option<u64>);
         let anim = vec![held(0, 100), held(1, 50), held(2, 200)];
         let play = |at| {
             Frames::default()
                 .step(FramesIn::Play(anim.clone()), Stamp(at), &(), &())
                 .0
         };
-        /// Name, state before, input, time, frame shown after, next wake.
-        type Case = (&'static str, Frames, FramesIn, u64, u16, Option<u64>);
         let cases: Vec<Case> = vec![
             (
                 "a play shows the first frame at once",

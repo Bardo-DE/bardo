@@ -1,4 +1,6 @@
-//! `DatePicker` (design/30 section 2.3, `NSDatePicker`). The textual style is one bezel of
+//! `DatePicker` (design/30 section 2.3, `NSDatePicker`).
+//!
+//! The textual style is one bezel of
 //! segments (month, day, year, hour, minute) with a stepper after it: a press selects a segment,
 //! Up and Down or the stepper change it, Left and Right move between segments. The graphical
 //! style is the `MonthGrid`, its header stepping months and a press on a day picking it, above
@@ -19,7 +21,6 @@ use dioxus::prelude::*;
 use ui_components::components::fields::stepper::model::StepDirection;
 use ui_components::components::fields::stepper::view::Stepper;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// The segments `elements` shows, in reading order.
@@ -78,7 +79,7 @@ fn field(
                     "aria-valuenow": "{value.value(segment)}",
                     "aria-valuemin": "{value.range(segment).min()}",
                     "aria-valuemax": "{value.range(segment).max()}",
-                    "data-selected": if segment == selected { Some("true") } else { None },
+                    "data-selected": (segment == selected).then_some("true"),
                     disabled: if live { None } else { Some("true") },
                     onclick: move |_| select.call(segment),
                     "{digits(value, segment)}"

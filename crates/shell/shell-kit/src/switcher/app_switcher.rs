@@ -1,4 +1,6 @@
-//! `AppSwitcher`: the Cmd+Tab panel (design/13-BEHAVIOUR-menus-windows.md section 13.3.5;
+//! `AppSwitcher`: the Cmd+Tab panel.
+//!
+//! It follows (design/13-BEHAVIOUR-menus-windows.md section 13.3.5;
 //! design/20-SURFACES.md section 1.11; design/04-COMPONENTS.md section 43). One row of app
 //! icons on the Osd material with the Space gradient, as the OSD card draws it; the selection a rounded square of `--f-pill` that springs from
 //! cell to cell, the selected app's name under it, inside the panel. The component only draws and reports: the
@@ -102,7 +104,11 @@ pub fn AppSwitcher(
     // redirecting from where it is when the selection moves on mid-slide.
     let pitch = PxPerUnit(row.cell.0 + metrics.gap.0);
     let spec = SpringSpec::for_touch(Touch::Remote).response(SpringResponse::Quick);
-    let ring = use_spring(at as f32, spec, pitch);
+    let ring = use_spring(
+        f32::from(u16::try_from(at).unwrap_or(u16::MAX)),
+        spec,
+        pitch,
+    );
     let style = format!(
         "--switcher-cell:{}px;--switcher-icon:{}px;--switcher-gap:{}px;--switcher-view:{}px;--switcher-shift:{}px;--switcher-at:{}",
         row.cell.0,
@@ -117,6 +123,11 @@ pub fn AppSwitcher(
         .find(|(app, _)| app.key == selected)
         .map(|(app, _)| app.name.clone())
         .unwrap_or_default();
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "clamped to 0..=255 just before, so the cast only drops the fraction"
+    )]
     let size = IconSize::Px(IconPx(row.icon.0.clamp(0.0, 255.0) as u8));
     let class = common.class("ds-switcher");
     let data = common.data_attributes();

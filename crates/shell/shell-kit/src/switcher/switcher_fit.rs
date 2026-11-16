@@ -1,4 +1,6 @@
-//! How the app switcher's row fits its output (design/13-BEHAVIOUR-menus-windows.md section
+//! How the app switcher's row fits its output.
+//!
+//! The rule (design/13-BEHAVIOUR-menus-windows.md section
 //! 13.3.5, "Overflow"): cells at their full size while the row fits `output_w - 64`; past that
 //! the icons shrink to fit, down to a minimum; past that the row keeps the minimum and scrolls,
 //! with the selection centred where it can be and the row's ends never pulled inside the view.
@@ -65,7 +67,7 @@ pub fn fit(
     let inset = (metrics.cell.0 - metrics.icon.0).max(0.0);
     let room =
         output.map(|width| (width.0 - SWITCHER_MARGIN.0 - 2.0 * SWITCHER_PADDING.0).max(0.0));
-    let cells = count.max(1) as f32;
+    let cells = f32::from(u16::try_from(count.max(1)).unwrap_or(u16::MAX));
     let gaps = (cells - 1.0) * metrics.gap.0;
     let full = row(cells, metrics.cell.0, gaps);
     let cell = match room {
@@ -79,7 +81,8 @@ pub fn fit(
     let width = row(cells, cell, gaps);
     let view = room.map_or(width, |room| width.min(room));
     let shift = if width > view {
-        let at = selected.min(count.saturating_sub(1)) as f32;
+        let at =
+            f32::from(u16::try_from(selected.min(count.saturating_sub(1))).unwrap_or(u16::MAX));
         let centre = at * (cell + metrics.gap.0) + cell / 2.0;
         (centre - view / 2.0).clamp(0.0, width - view).round()
     } else {
@@ -133,6 +136,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "`selected` is one of a few small test indices, exact in f32"
+    )]
     fn past_the_minimum_the_row_scrolls_to_keep_the_selection_in_view() {
         // Fourteen on 800: room 704 would need cells of 42, under the minimum 48 + 16, so cells
         // stay 64 and the row (14 x 64 + 13 x 8 = 1000) scrolls inside a 704 view.

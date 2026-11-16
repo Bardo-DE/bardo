@@ -56,6 +56,10 @@ pub(crate) fn shot_frame(width: Px, size: ImageSize) -> ShotFrame {
 }
 
 /// Height over width, or `None` for a picture with no pixels.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "picture sides are far below 2^24, so f32 holds them exactly"
+)]
 fn ratio(size: ImageSize) -> Option<f32> {
     (size.width > 0 && size.height > 0).then(|| size.height as f32 / size.width as f32)
 }
@@ -146,6 +150,11 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "MAT is a small positive constant"
+    )]
     fn the_mat_is_the_spacing_token_the_stylesheet_subtracts() {
         assert_eq!(u32::from(SpacingToken::S4.tenths()), (MAT.0 * 10.0) as u32);
     }

@@ -44,6 +44,11 @@ impl Clip {
 }
 
 /// How many lines text `height` tall makes at `line` per line, to the nearest whole line.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "clamped to 0..=255 just before, so the cast only drops the rounded-off fraction"
+)]
 pub(crate) fn lines(height: f32, line: f32) -> u8 {
     if line <= 0.0 {
         return 0;

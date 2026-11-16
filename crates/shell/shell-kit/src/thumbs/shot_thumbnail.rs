@@ -23,25 +23,16 @@ use crate::notifications::swipe::{NotificationSwipe, use_card_swipe};
 use crate::thumbs::shot_frame::shot_frame;
 use crate::thumbs::shot_press::{DragLane, DragStart, PressInput, ShotPress};
 use dioxus::prelude::*;
-use ui_components::base::geometry::units::{Point, Px};
 use ui_components::base::vocab::shown_word;
-use ui_components::base::word::Word;
-use ui_components::components::content::image_source::{ImageSize, ImageSource};
+use ui_components::components::content::image_source::ImageSize;
 use ui_components::components::content::picture_fit::picture_style;
-use ui_components::components::content::text_runs::TextLine;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::components::overlays::swipe_glue::SwipeGlue;
-use ui_components::motion::anim::Anim;
 use ui_components::motion::presence::spec::PresenceSpec;
 use ui_components::motion::presence::use_presence::{EntranceAlias, Presented, use_presence};
 use ui_components::motion::presence::{Exit, Presence};
 use ui_components::motion::swipe::SwipeMetrics;
 use ui_components::prelude::*;
-use ui_components::root::chrome::RootChrome;
-use ui_components::root::common::Common;
-use ui_components::root::surface::Surface;
-use ui_components::style::appearance::material::Material;
-use ui_components::style::icon::Icon;
 
 /// One action the thumbnail offers on hover: Delete now; Mark Up and Copy Text once the shell
 /// has them. Its press stays at its button: it never also opens the picture.
@@ -165,7 +156,7 @@ fn ShotCard(
                 role: "group",
                 "aria-label": "Screenshot",
                 style: "height:{frame.card.height.0}px",
-                {picture(image, picture_style(frame.picture), Press { press, swiper, lane, onopen, ondrag })}
+                {picture(image, picture_style(frame.picture), &Press { machine: press, swiper, lane, onopen, ondrag })}
                 if !actions.is_empty() {
                     {action_row(actions)}
                 }
@@ -186,7 +177,7 @@ fn card_style(width: Px, swipe: Option<String>) -> String {
 /// the lane a drag out may take, and who hears the open and the drag.
 #[derive(Clone, Copy)]
 struct Press {
-    press: Signal<ShotPress>,
+    machine: Signal<ShotPress>,
     swiper: SwipeGlue,
     lane: DragLane,
     onopen: Option<EventHandler<()>>,
@@ -195,7 +186,7 @@ struct Press {
 
 impl Press {
     fn feed(self, input: PressInput) {
-        let mut press = self.press;
+        let mut press = self.machine;
         let (next, start) = press.peek().clone().step(input);
         press.set(next);
         if let (Some(start), Some(ondrag)) = (start, self.ondrag) {
@@ -212,14 +203,15 @@ impl Press {
     /// A click opens only when neither a drag out nor a swipe ended with it.
     fn click(self) {
         let swiped = !self.swiper.click_passes();
-        if self.press.peek().opens() && !swiped {
+        if self.machine.peek().opens() && !swiped {
             self.open();
         }
     }
 }
 
 /// The picture and its press target.
-fn picture(image: ImageSource, style: String, press: Press) -> Element {
+fn picture(image: ImageSource, style: String, press: &Press) -> Element {
+    let press = *press;
     rsx! {
         div {
             class: "ds-shot-picture",
@@ -243,6 +235,10 @@ fn picture(image: ImageSource, style: String, press: Press) -> Element {
 }
 
 /// A pointer event's client point.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "client coordinates are far inside f32's range; only sub-pixel precision is lost"
+)]
 fn client(event: &PointerEvent) -> Point {
     let at = event.client_coordinates();
     Point {

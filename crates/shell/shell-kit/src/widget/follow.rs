@@ -75,13 +75,13 @@ impl<E: Clone + PartialEq + 'static> Machine for Follower<E> {
         self,
         input: FollowIn<E>,
         at: Stamp,
-        _: &(),
-        clock: &FrameClock,
+        (): &(),
+        cx: &FrameClock,
     ) -> (Follower<E>, Vec<RefreshAsk>) {
         match (input, self.timeline.as_ref(), self.due) {
             (FollowIn::Arrive(timeline), held, _) if held != Some(&timeline) => (
                 Follower {
-                    due: due_after(&timeline, at, at, clock),
+                    due: due_after(&timeline, at, at, cx),
                     timeline: Some(timeline),
                     arrived: at,
                 },
@@ -89,7 +89,7 @@ impl<E: Clone + PartialEq + 'static> Machine for Follower<E> {
             ),
             (FollowIn::Elapsed, Some(timeline), Due::Entry(due)) if at >= due => (
                 Follower {
-                    due: due_after(timeline, at, self.arrived, clock),
+                    due: due_after(timeline, at, self.arrived, cx),
                     ..self
                 },
                 Vec::new(),
@@ -163,12 +163,6 @@ mod tests {
 
     #[test]
     fn it_wakes_for_each_entry_date_then_for_the_refresh_once_and_then_rests() {
-        let origin = Instant::now();
-        let clock = FrameClock::new(origin);
-        let ms = |seconds: u64| Stamp(seconds * 1000);
-        let never = timeline(origin, Refresh::Never);
-        let at_end = timeline(origin, Refresh::AtEnd);
-        let arrive = |tl| FollowIn::Arrive(tl);
         /// Name, state before, input, time (ms), state after, what it asks, next wake.
         type Case = (
             &'static str,
@@ -179,6 +173,12 @@ mod tests {
             Vec<RefreshAsk>,
             Option<Stamp>,
         );
+        let origin = Instant::now();
+        let clock = FrameClock::new(origin);
+        let ms = |seconds: u64| Stamp(seconds * 1000);
+        let never = timeline(origin, Refresh::Never);
+        let at_end = timeline(origin, Refresh::AtEnd);
+        let arrive = |tl| FollowIn::Arrive(tl);
         let cases: Vec<Case> = vec![
             (
                 "a timeline arrives: it wakes for the second entry",
