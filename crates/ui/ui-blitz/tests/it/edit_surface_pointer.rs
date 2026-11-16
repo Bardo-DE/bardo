@@ -216,6 +216,8 @@ fn a_drag_keeps_reporting_outside_the_surface_until_the_release() {
 
 #[test]
 fn home_end_and_delete_reach_the_app() {
+    use dioxus::prelude::Key as K;
+
     let mut harness = fresh();
     harness.send(Input::click(centre(&harness, "#one")));
     drain(&INPUT);
@@ -234,7 +236,6 @@ fn home_end_and_delete_reach_the_app() {
             _ => None,
         })
         .collect();
-    use dioxus::prelude::Key as K;
     assert_eq!(keys, vec![K::Home, K::End, K::Delete, K::PageDown]);
     harness.send(Input::chord(&[ShortcutKey::Shift], ShortcutKey::Insert));
     assert!(matches!(

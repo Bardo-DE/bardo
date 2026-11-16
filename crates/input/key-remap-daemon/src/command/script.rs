@@ -205,9 +205,10 @@ mod tests {
     #[test]
     #[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
     fn line_table() {
+        type Case = (&'static str, &'static str, Result<Option<Input>, Problem>);
+
         let focus = |s: &str| Input::Remap(RemapInput::Focus(ProfileName::parse(s).unwrap()));
         let led = |led, lamp| Input::Led(LedEvent { led, lamp });
-        type Case = (&'static str, &'static str, Result<Option<Input>, Problem>);
         let cases: &[Case] = &[
             ("blank", "", Ok(None)),
             ("spaces", "   \t ", Ok(None)),

@@ -287,7 +287,6 @@ mod tests {
 
     #[test]
     fn a_link_is_followed_only_on_the_origin_that_made_it() {
-        let a = addr("");
         const CASES: &[(&str, bool)] = &[
             (
                 "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=1",
@@ -298,6 +297,8 @@ mod tests {
             ("http://graph.microsoft.com/v1.0/x", false),
             ("https://other.example/v1.0/x", false),
         ];
+
+        let a = addr("");
         for (link, ok) in CASES {
             assert_eq!(a.owns(link), *ok, "{link}");
         }

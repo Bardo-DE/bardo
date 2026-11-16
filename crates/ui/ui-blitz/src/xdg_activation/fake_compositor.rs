@@ -112,9 +112,9 @@ impl GlobalDispatch<WlCompositor, ()> for State {
         _: &Client,
         resource: New<WlCompositor>,
         (): &(),
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
-        init.init(resource, ());
+        data_init.init(resource, ());
     }
 }
 
@@ -126,10 +126,10 @@ impl Dispatch<WlCompositor, ()> for State {
         request: wl_compositor::Request,
         (): &(),
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         if let wl_compositor::Request::CreateSurface { id } = request {
-            init.init(id, ());
+            data_init.init(id, ());
         }
     }
 }
@@ -154,9 +154,9 @@ impl GlobalDispatch<XdgActivationV1, ()> for State {
         _: &Client,
         resource: New<XdgActivationV1>,
         (): &(),
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
-        init.init(resource, ());
+        data_init.init(resource, ());
     }
 }
 
@@ -168,7 +168,7 @@ impl Dispatch<XdgActivationV1, ()> for State {
         request: xdg_activation_v1::Request,
         (): &(),
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         match request {
             xdg_activation_v1::Request::Activate { token, surface } => {
@@ -182,7 +182,7 @@ impl Dispatch<XdgActivationV1, ()> for State {
                     });
             }
             xdg_activation_v1::Request::GetActivationToken { id } => {
-                init.init(id, ());
+                data_init.init(id, ());
             }
             _ => {}
         }

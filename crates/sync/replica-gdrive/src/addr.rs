@@ -197,7 +197,6 @@ mod tests {
 
     #[test]
     fn a_name_in_a_query_is_escaped_and_a_path_stays_inside_the_folder() {
-        assert_eq!(literal("it's a \\ name"), r"'it\'s a \\ name'");
         const CASES: &[(&str, bool)] = &[
             ("a.jpg", true),
             ("2026/a.jpg", true),
@@ -208,6 +207,8 @@ mod tests {
             ("a/./b", false),
             ("a/", false),
         ];
+
+        assert_eq!(literal("it's a \\ name"), r"'it\'s a \\ name'");
         for (path, ok) in CASES {
             assert_eq!(names_of(path).is_some(), *ok, "{path:?}");
         }

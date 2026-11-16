@@ -146,9 +146,9 @@ macro_rules! plain_global {
                 _: &Client,
                 resource: New<$interface>,
                 _: &(),
-                init: &mut DataInit<'_, Self>,
+                data_init: &mut DataInit<'_, Self>,
             ) {
-                init.init(resource, ());
+                data_init.init(resource, ());
             }
         }
     )*};
@@ -164,10 +164,10 @@ impl Dispatch<WlCompositor, ()> for State {
         request: wl_compositor::Request,
         (): &(),
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         if let wl_compositor::Request::CreateSurface { id } = request {
-            init.init(id, ());
+            data_init.init(id, ());
         }
     }
 }
@@ -193,10 +193,10 @@ impl Dispatch<XdgWmBase, ()> for State {
         request: xdg_wm_base::Request,
         (): &(),
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         if let xdg_wm_base::Request::GetXdgSurface { id, .. } = request {
-            init.init(id, ());
+            data_init.init(id, ());
         }
     }
 }
@@ -209,10 +209,10 @@ impl Dispatch<XdgSurface, ()> for State {
         request: xdg_surface::Request,
         (): &(),
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         if let xdg_surface::Request::GetToplevel { id } = request {
-            init.init(id, ());
+            data_init.init(id, ());
         }
     }
 }
@@ -238,11 +238,11 @@ impl Dispatch<BardoWindowManagerV1, ()> for State {
         request: bardo_window_manager_v1::Request,
         (): &(),
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         if let bardo_window_manager_v1::Request::GetWindow { id, .. } = request {
             state.log().windows += 1;
-            init.init(id, ());
+            data_init.init(id, ());
         }
     }
 }

@@ -132,9 +132,6 @@ mod tests {
 
     #[test]
     fn who_resized_the_window_follows_the_request_its_size_and_its_age() {
-        let t0 = Instant::now();
-        let ms = |n: u64| t0 + Duration::from_millis(n);
-        // Each case: the request (size, at ms) if any, then the resize (size, at ms).
         type Case = (
             &'static str,
             Option<(Extent, u64)>,
@@ -153,6 +150,10 @@ mod tests {
             ("no change is no event", None,                       (e(800, 600), 10),  None),
             ("no change, requested",  Some((e(800, 600), 0)),     (e(800, 600), 10),  None),
         ];
+
+        let t0 = Instant::now();
+        let ms = |n: u64| t0 + Duration::from_millis(n);
+        // Each case: the request (size, at ms) if any, then the resize (size, at ms).
         for (name, request, (got, at), expected) in CASES {
             let mut ledger = SizeLedger::new(e(800, 600));
             if let Some((want, at)) = request {

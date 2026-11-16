@@ -165,6 +165,8 @@ mod trusted_files {
 
     #[test]
     fn a_missing_file_or_folder_is_no_layer_and_no_problem() {
+        type Read = fn(&Path) -> (ConfigLayer, Vec<key_remap_proto::Warning>);
+
         for layer in LAYERS {
             let trees = [
                 ("no folder", FixtureProc::new()),
@@ -178,7 +180,6 @@ mod trusted_files {
             }
         }
         let dir = Scratch::new("no-file");
-        type Read = fn(&Path) -> (ConfigLayer, Vec<key_remap_proto::Warning>);
         let reads: [Read; 2] = [super::super::vendor, super::super::system];
         for read in reads {
             assert_eq!(

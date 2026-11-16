@@ -26,9 +26,10 @@ fn editor() -> GrantCaller {
 
 #[test]
 fn the_offer_rule_table() {
+    type Case<'a> = (&'static str, AskFacts<'a>, Option<Withheld>);
+
     use AskReason as R;
     let rule = [R::Rule(PolicyId("x".into()))];
-    type Case<'a> = (&'static str, AskFacts<'a>, Option<Withheld>);
     let plain: &'static [AskReason] = &[R::FirstUse];
     let table: Vec<Case<'_>> = vec![
         (

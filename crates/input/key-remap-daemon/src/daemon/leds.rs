@@ -193,7 +193,6 @@ mod tests {
 
     #[test]
     fn led_state_remembers_the_last_lamp_of_each_led() {
-        let set = |led, lamp| LedEvent { led, lamp };
         type Case = (&'static str, &'static [(Led, bool)], &'static [InputEvent]);
         const CASES: &[Case] = &[
             ("nothing set, nothing to write", &[], &[]),
@@ -214,6 +213,8 @@ mod tests {
                 &[ev(EV_LED, 0, 1), ev(EV_LED, 2, 1)],
             ),
         ];
+
+        let set = |led, lamp| LedEvent { led, lamp };
         for &(name, changes, want) in CASES {
             let changes: Vec<LedEvent> = changes.iter().map(|&(l, m)| set(l, m)).collect();
             let state = LedState::default().observe(&changes);

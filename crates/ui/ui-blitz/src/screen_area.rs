@@ -181,9 +181,6 @@ mod tests {
 
     #[test]
     fn the_shells_work_area_replaces_the_window_systems_guess() {
-        let known = |of| ScreenArea::new(e(3840, 2160), Scale(240), of).expect("scale");
-        let shell = desktop_area((2560, 1440), (2560, 1340), 180);
-        // name, of, output, work, scale
         const CASES: &[(&str, ScreenOf, Extent, Extent, Scale)] = &[
             (
                 "primary",
@@ -200,6 +197,10 @@ mod tests {
                 Scale(240),
             ),
         ];
+
+        let known = |of| ScreenArea::new(e(3840, 2160), Scale(240), of).expect("scale");
+        let shell = desktop_area((2560, 1440), (2560, 1340), 180);
+        // name, of, output, work, scale
         for &(name, of, output, work, scale) in CASES {
             let area = known(of).on_desktop(Some(&shell));
             assert_eq!(

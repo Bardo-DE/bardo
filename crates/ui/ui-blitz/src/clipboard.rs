@@ -175,8 +175,8 @@ impl Clipboard for System {
             })
     }
 
-    fn write_files(&self, set: &ClipboardFiles) -> Result<(), ClipboardError> {
-        let paths = set.paths.clone();
+    fn write_files(&self, files: &ClipboardFiles) -> Result<(), ClipboardError> {
+        let paths = files.paths.clone();
         guarded(move || files::write_system(&paths).ok()).ok_or(ClipboardError::Unavailable)
     }
 

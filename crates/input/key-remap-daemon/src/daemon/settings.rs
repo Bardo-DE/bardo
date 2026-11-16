@@ -149,6 +149,8 @@ mod tests {
 
     #[test]
     fn the_vendor_file_lies_over_the_built_in_mapping_and_under_the_machine_file() {
+        type Case = (&'static str, Option<String>, Option<String>);
+
         const CAPS: &str = "capslock";
         let caps = |ctrl_or_alt: &str| {
             format!(
@@ -158,7 +160,6 @@ mod tests {
         let stroke = |s: &str| {
             crate::RuleAction::Map(crate::Stroke::parse(s).unwrap(), crate::Hold::Restore)
         };
-        type Case = (&'static str, Option<String>, Option<String>);
         let cases: [(Case, Option<crate::RuleAction>); 4] = [
             (("neither file", None, None), None),
             (

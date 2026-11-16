@@ -45,13 +45,13 @@ impl Machine for Opening {
         input: SwIn,
         at: Stamp,
         params: &SwitcherParams,
-        facts: &Facts,
+        cx: &Facts,
     ) -> (Opening, Vec<SwOut>) {
         let input = match input {
-            SwIn::Elapsed => tick_input(self.phase(), facts.hold),
+            SwIn::Elapsed => tick_input(self.phase(), cx.hold),
             other => other,
         };
-        let (next, outs) = self.0.step(input, at, params, &facts.apps);
+        let (next, outs) = self.0.step(input, at, params, &cx.apps);
         (Opening(next), outs)
     }
 
