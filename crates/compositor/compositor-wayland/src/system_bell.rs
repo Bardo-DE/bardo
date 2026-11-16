@@ -37,9 +37,11 @@ pub fn on_bell(part: &mut SystemBellPart, surface: Option<&WlSurface>) -> Vec<Ev
     Vec::new()
 }
 
-/// The app a bell is for: the app of `window` when the client named a surface of one of its
-/// windows, else the active app (a bell with no surface is the app the person is in), else
-/// nobody (a bell for no one is not rung).
+/// The app a bell is for.
+///
+/// The app of `window` when the client named a surface of one of its windows, else the active app
+/// (a bell with no surface is the app the person is in), else nobody (a bell for no one is not
+/// rung).
 #[must_use]
 pub fn app_to_ring(model: &Model, window: Option<WindowId>) -> Option<AppKey> {
     window

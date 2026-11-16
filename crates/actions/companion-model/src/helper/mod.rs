@@ -1,6 +1,8 @@
-//! Helpers: persistent, named agents the person keeps, several working at once. A helper is a
-//! standing grant of attention, so it exists only when the person confirms its card; each job it
-//! does is an ordinary task under a policy that is never wider than the helper's `reach`.
+//! Helpers: persistent, named agents the person keeps, several working at once.
+//!
+//! A helper is a standing grant of attention, so it exists only when the person confirms its card;
+//! each job it does is an ordinary task under a policy that is never wider than the helper's
+//! `reach`.
 //!
 //! This module is the pure half: the card ([`HelperCard`]), the board of jobs and the mailbox of
 //! posts ([`Board`], moved by [`step`]), the rules that keep two channels apart (what a helper is

@@ -98,8 +98,9 @@ impl<P: Provides> Rejected<P> {
 }
 
 /// Reads every manifest the search's layout names, in the person's directory and in each system
-/// directory, and ranks them. A file that is not a usable manifest is listed in `rejected` and
-/// skipped; nothing here fails.
+/// directory, and ranks them.
+///
+/// A file that is not a usable manifest is listed in `rejected` and skipped; nothing here fails.
 #[must_use]
 pub fn discover<P: Provides>(search: &Search<'_>) -> Discovery<P> {
     let Scan {
@@ -112,10 +113,11 @@ pub fn discover<P: Provides>(search: &Search<'_>) -> Discovery<P> {
     }
 }
 
-/// Reads every manifest as [`discover`] does and stops there: no candidate is set aside or
-/// ranked, so a host can make its own checks first and call [`Registry::resolve`] after.
-/// Read with [`Raw`](crate::manifest::Raw) as `P` when the host owns no vocabulary of its own
-/// and hands the entries on to [`reparse`](crate::reparse).
+/// Reads every manifest as [`discover`] does and stops there: no candidate is set aside or ranked,
+/// so a host can make its own checks first and call [`Registry::resolve`] after.
+///
+/// Read with [`Raw`](crate::manifest::Raw) as `P` when the host owns no vocabulary of its own and
+/// hands the entries on to [`reparse`](crate::reparse).
 #[must_use]
 pub fn scan<P: Provides>(search: &Search<'_>) -> Scan<P> {
     let dirs = std::iter::once((Origin::User, search.user)).chain(

@@ -230,9 +230,10 @@ fn hold<D: OutputManagementHandler>(
     }
 }
 
-/// The answer about `client`'s power over the displays came out: the conclusions that waited
-/// are checked and answered now (against the heads as they are then, so a stale serial is
-/// `cancelled`), or `failed`.
+/// The answer about `client`'s power over the displays came out.
+///
+/// The conclusions that waited are checked and answered now (against the heads as they are then, so
+/// a stale serial is `cancelled`), or `failed`.
 pub fn on_resolved<D: OutputManagementHandler>(
     state: &mut D,
     client: ClientKey,

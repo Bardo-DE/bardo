@@ -36,9 +36,10 @@ pub async fn token_within(asked: oneshot::Receiver<Option<String>>) -> Option<St
         .flatten()
 }
 
-/// The token for launching `app` from `surface`, when the launch has a surface to ask for it:
-/// the one place the "has a surface" question is answered, so no entrance launches without a
-/// token it could have had.
+/// The token for launching `app` from `surface`, when the launch has a surface to ask for it.
+///
+/// The one place the "has a surface" question is answered, so no entrance launches without a token
+/// it could have had.
 pub async fn token_from(surface: Option<&SurfaceHandle>, app: Option<String>) -> Option<String> {
     match surface {
         Some(surface) => activation_token(surface, app).await,
@@ -46,9 +47,14 @@ pub async fn token_from(surface: Option<&SurfaceHandle>, app: Option<String>) ->
     }
 }
 
-/// Launch `app` through `launch` with a token asked of `surface` (none when the surface is gone
-/// or the compositor gives none): the one path every launch from a surface takes, so the app's
-/// window is let to the front.
+/// Launch `app` through `launch` with a token asked of `surface` (none when the surface is gone or
+/// the compositor gives none).
+///
+/// The one path every launch from a surface takes, so the app's window is let to the front.
+///
+/// # Errors
+///
+/// Returns [`ServiceError`] when the command could not be started or the service refused it.
 pub async fn launch_with_token(
     surface: Option<&SurfaceHandle>,
     launch: &Control<LaunchCommand>,
@@ -67,6 +73,10 @@ pub async fn launch_with_token(
 
 /// Open Settings at `link` through `launch` with a token asked of `surface` (none when the
 /// surface is gone or the compositor gives none): the one path every entrance to Settings takes.
+///
+/// # Errors
+///
+/// Returns [`ServiceError`] when the command could not be started or the service refused it.
 pub async fn open_settings_with_token(
     surface: Option<&SurfaceHandle>,
     launch: &Control<LaunchCommand>,

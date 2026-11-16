@@ -42,13 +42,15 @@ impl BackgroundEffectPart {
     }
 }
 
-/// `surface` set its blur region (surface-local logical rectangles), or cleared it with an
-/// empty one. The model has no blur event (blur v0 reads [`blur_region_of`] at render), so
-/// nothing is fed to it; a request that names no area is logged and treated as a clear.
+/// `surface` set its blur region (surface-local logical rectangles), or cleared it with an empty
+/// one.
+///
+/// The model has no blur event (blur v0 reads [`blur_region_of`] at render), so nothing is fed to
+/// it; a request that names no area is logged and treated as a clear.
 pub fn on_blur_region(
     part: &mut BackgroundEffectPart,
     surface: &WlSurface,
-    region: Vec<LogicalRect>,
+    region: &[LogicalRect],
 ) -> Vec<Event> {
     let _ = (part, surface);
     let area = region.iter().filter(|rect| has_area(rect)).count();

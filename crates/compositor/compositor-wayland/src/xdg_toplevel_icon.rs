@@ -168,7 +168,7 @@ where
                     states.cached_state.get::<ToplevelIcon>().pending().parts = assigned;
                 });
             }
-            Request::Destroy => {}
+            // `Destroy`, and a request a later protocol adds: nothing to do.
             _ => {}
         }
     }

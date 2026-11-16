@@ -4,10 +4,11 @@ use crate::pixels::{BYTES_PER_PIXEL, PixelBuf};
 use computer_use_desktop::Digest32;
 pub use computer_use_types::FrameDigest;
 
-/// The digest of `buf`: equal buffers (same format, size and bytes, stride padding ignored)
-/// give equal digests and one changed pixel gives another. A buffer whose data is shorter than
-/// its size says is hashed as far as the data goes, with the shortfall marked, so it never
-/// collides with a full one. Pure.
+/// The digest of `buf`: equal buffers (same format, size and bytes, stride padding ignored) give
+/// equal digests and one changed pixel gives another.
+///
+/// A buffer whose data is shorter than its size says is hashed as far as the data goes, with the
+/// shortfall marked, so it never collides with a full one. Pure.
 #[must_use]
 pub fn digest(buf: &PixelBuf) -> FrameDigest {
     let mut hasher = blake3::Hasher::new();

@@ -5,9 +5,10 @@ use std::fmt;
 use std::hash::{Hash, Hasher};
 
 /// A dotted version such as `1.2.0`, compared number by number: `1.10` is newer than `1.9`, and
-/// trailing zeros do not matter (`1.2` equals `1.2.0`). A semver pre-release such as
-/// `0.1.0-beta.1` ranks below its release, and pre-releases compare as semver does. It prints as
-/// it was written.
+/// trailing zeros do not matter (`1.2` equals `1.2.0`).
+///
+/// A semver pre-release such as `0.1.0-beta.1` ranks below its release, and pre-releases compare as
+/// semver does. It prints as it was written.
 #[derive(Debug, Clone)]
 pub struct Version {
     numbers: Vec<u32>,
@@ -33,6 +34,10 @@ impl Version {
     /// `text` as a version: numbers separated by single dots, such as `2` or `1.4.12`, then
     /// optionally `-` and a pre-release of dot-separated letters, digits and hyphens, such as
     /// `1.4.12-beta.1`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`InvalidVersion`] when the text is not a dotted version.
     pub fn parse(text: &str) -> Result<Version, InvalidVersion> {
         let invalid = || InvalidVersion {
             version: text.to_owned(),

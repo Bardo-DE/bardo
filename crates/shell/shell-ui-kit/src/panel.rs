@@ -1,6 +1,9 @@
-//! The panel a column surface hangs in: the notification center's corner and padding, and its life on one output, pure. A link says whether the column is wanted
-//! here; it enters, stays, plays its exit and only then is the surface unmapped (the link has no
-//! "leaving" state, so the exit is the surface's own to count).
+//! The panel a column surface hangs in: the notification center's corner and padding, and its life
+//! on one output, pure.
+//!
+//! A link says whether the column is wanted here; it enters, stays, plays its exit and only then is
+//! the surface unmapped (the link has no "leaving" state, so the exit is the surface's own to
+//! count).
 
 /// The panel's corner: quire's Popover (`--r-panel`, 14).
 pub const PANEL_RADIUS: i32 = 14;

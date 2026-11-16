@@ -83,11 +83,11 @@ fn first_use(data: &ClientState, power: Power) -> Vec<Event> {
         .collect()
 }
 
-/// [`admit`] for the protocols smithay serves whole (the clipboard managers, the input method,
-/// the window list of `ext_foreign_toplevel_list`): the answer in smithay's words. A client
-/// that must wait is parked in the [`Ledger`] under its connection, so
-/// `Effect::Resolve` can settle what smithay holds for it
-/// ([`release_gate`]). smithay keeps at most
+/// [`admit`] for the protocols smithay serves whole (the clipboard managers, the input method, the
+/// window list of `ext_foreign_toplevel_list`): the answer in smithay's words.
+///
+/// A client that must wait is parked in the [`Ledger`] under its connection, so `Effect::Resolve`
+/// can settle what smithay holds for it ([`release_gate`]). smithay keeps at most
 /// [`MAX_HELD_PER_CLIENT`](smithay::wayland::gate::MAX_HELD_PER_CLIENT) objects per client and
 /// protocol and refuses the rest itself, so casement keeps no count of its own for them.
 pub fn gate<D: ConsentHandler>(state: &mut D, client: &Client, power: Power) -> Gate {

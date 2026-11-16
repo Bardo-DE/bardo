@@ -1,7 +1,8 @@
-//! What a layer surface is, to the daemon that spawns it and the harness that drives it: the
-//! [`Surface`] trait, where it goes on an output ([`Place`], [`OutputRank`]), whether it starts
-//! mapped ([`Start`]), the session lock's twin ([`LockSurface`]) and the one component that
-//! mounts any of them ([`mount`]).
+//! What a layer surface is, to the daemon that spawns it and the harness that drives it.
+//!
+//! The [`Surface`] trait, where it goes on an output ([`Place`], [`OutputRank`]), whether it starts
+//! mapped ([`Start`]), the session lock's twin ([`LockSurface`]) and the one component that mounts
+//! any of them ([`mount`]).
 //!
 //! A surface's own component tree stays in its directory under `surfaces/`; this module only
 //! names the seam. The seam supplies no `Ds` boilerplate of its own: a surface's `root` is its
@@ -40,9 +41,11 @@ use shell_settings::ShellFile;
 
 use crate::links::Links;
 
-/// One kind of layer surface: the OSD, the dock, a hot corner. The daemon spawns, resizes and
-/// closes any `S: Surface` per output and per slot from these five answers, and
-/// [`SurfaceHarness`](crate::harness::SurfaceHarness) mounts the same `root` in a test.
+/// One kind of layer surface: the OSD, the dock, a hot corner.
+///
+/// The daemon spawns, resizes and closes any `S: Surface` per output and per slot from these five
+/// answers, and [`SurfaceHarness`](crate::harness::SurfaceHarness) mounts the same `root` in a
+/// test.
 pub trait Surface: 'static {
     /// The surface's name: its layer namespace is `sill-<NAME>-<output>` (a slotted surface
     /// adds its slot), and the stylesheet selectors a person writes name it.
@@ -86,5 +89,9 @@ pub trait Surface: 'static {
         }
     }
     /// The surface's document. Runs inside [`mount`], so it may call hooks.
+    #[expect(
+        clippy::missing_errors_doc,
+        reason = "`Element` is dioxus's `Result` alias; a component renders or returns `Ok`, and the caller is the dioxus runtime"
+    )]
     fn root(output: OutputInfo, slot: Self::Slot) -> Element;
 }

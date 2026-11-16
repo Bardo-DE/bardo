@@ -1,6 +1,8 @@
 //! The whole `bardo-do` program over what the process hands it: the command line, standard input
-//! and output, the environment, the clock and the buses. Nothing here reads a global; `main` (and
-//! the acceptance harness's copy of it) collects those and passes them in.
+//! and output, the environment, the clock and the buses.
+//!
+//! Nothing here reads a global; `main` (and the acceptance harness's copy of it) collects those and
+//! passes them in.
 
 use crate::SessionBus;
 use crate::{

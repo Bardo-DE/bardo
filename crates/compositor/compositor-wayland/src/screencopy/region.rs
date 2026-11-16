@@ -4,9 +4,10 @@
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use ui_core::geometry::scale::Scale;
 
-/// The part of the output's frame the logical rectangle `(x, y, w, h)` covers at `scale`, each
-/// edge rounded to the nearest physical pixel and the whole cut to a frame of `mode`. `None`
-/// when nothing of it lies on the output (or the rectangle has no area).
+/// The part of the output's frame the logical rectangle `(x, y, w, h)` covers at `scale`, each edge
+/// rounded to the nearest physical pixel and the whole cut to a frame of `mode`.
+///
+/// `None` when nothing of it lies on the output (or the rectangle has no area).
 ///
 /// ```
 /// use compositor_core::geometry::PhysicalSize;

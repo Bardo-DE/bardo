@@ -1,7 +1,8 @@
-//! `bardo_shell_v1`: the shell's surface roles (which layer surface is the bar, the dock, the
-//! switcher), the minimise targets the dock gives its tiles, and the events only the
-//! compositor sees (the real modifier keys, edge reveals). Shell connections
-//! only. Frozen at P2-Z; filled by P2-Q2.
+//! `bardo_shell_v1`.
+//!
+//! The shell's surface roles (which layer surface is the bar, the dock, the switcher), the minimise
+//! targets the dock gives its tiles, and the events only the compositor sees (the real modifier
+//! keys, edge reveals). Shell connections only. Frozen at P2-Z; filled by P2-Q2.
 //!
 //! The wire glue is written: the part, the handler trait, the global's and the object's
 //! dispatch, and the errors a refusal becomes. What each request decides (`on_*`) and what a
@@ -313,9 +314,15 @@ fn refuse_target(resource: &BardoShellV1, refusal: TargetRefusal) {
 }
 
 /// `set_role`: `surface` (the layer `layer` made for `output`, when it is one of the client's)
-/// takes `role`. Refuses a surface that is no layer surface of the client and a role another live
-/// surface holds (for a bar or a dock, another on the same output); otherwise the request the
-/// model takes (`Event::Shell(ShellRequest::Role)`).
+/// takes `role`.
+///
+/// Refuses a surface that is no layer surface of the client and a role another live surface holds
+/// (for a bar or a dock, another on the same output); otherwise the request the model takes
+/// (`Event::Shell(ShellRequest::Role)`).
+///
+/// # Errors
+///
+/// Returns [`RoleRefusal`] when the role is refused (a protocol error to the client).
 pub fn on_set_role(
     part: &mut QuireShellPart,
     layer: Option<LayerKey>,
@@ -349,10 +356,15 @@ fn shares(role: ShellRole, holder: &RoleHolder, output: Option<&OutputKey>) -> b
     }
 }
 
-/// `set_minimise_target`: where the window `window` (the `ext_foreign_toplevel_list`
-/// identifier the client sent, turned into the model's window when the model knows it; `None`
-/// when it is no identifier or names no live window) shrinks into, `local` to the `dock`
-/// layer surface.
+/// `set_minimise_target`.
+///
+/// Where the window `window` (the `ext_foreign_toplevel_list` identifier the client sent, turned
+/// into the model's window when the model knows it; `None` when it is no identifier or names no
+/// live window) shrinks into, `local` to the `dock` layer surface.
+///
+/// # Errors
+///
+/// Returns [`TargetRefusal`] when the minimise target is refused (a protocol error to the client).
 pub fn on_set_minimise_target(
     _part: &mut QuireShellPart,
     dock: Option<LayerKey>,
@@ -369,6 +381,10 @@ pub fn on_set_minimise_target(
 }
 
 /// `clear_minimise_target`: forget the target of the window `toplevel`.
+///
+/// # Errors
+///
+/// Returns [`TargetRefusal`] when the minimise target is refused (a protocol error to the client).
 pub fn on_clear_minimise_target(
     _part: &mut QuireShellPart,
     toplevel: &str,
@@ -379,9 +395,10 @@ pub fn on_clear_minimise_target(
     })])
 }
 
-/// `window_menu_pick`: the entry `entry` of the menu of `window`. A window the model does not
-/// know and an entry the XML does not name (both `None`) are ignored, with no error: the menu
-/// was on screen while the window went away.
+/// `window_menu_pick`: the entry `entry` of the menu of `window`.
+///
+/// A window the model does not know and an entry the XML does not name (both `None`) are ignored,
+/// with no error: the menu was on screen while the window went away.
 ///
 /// ```
 /// use compositor_core::WindowId;
@@ -413,9 +430,14 @@ pub fn on_layer_gone(part: &mut QuireShellPart, layer: LayerKey) {
     part.asked.remove(&layer);
 }
 
-/// The model said `note`: record it (a role taken, a minimise target) or send it to the
-/// shell (`modifiers` to the role surfaces; a reveal is sent by [`shell_screen::send_reveal`], which
-/// needs the outputs).
+/// The model said `note`.
+///
+/// Record it (a role taken, a minimise target) or send it to the shell (`modifiers` to the role
+/// surfaces; a reveal is sent by [`shell_screen::send_reveal`], which needs the outputs).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_note(part: &mut QuireShellPart, note: &ShellNote) -> Result<(), WaylandFault> {
     match note {
         ShellNote::Role(layer, role) => {
@@ -432,8 +454,6 @@ pub fn apply_note(part: &mut QuireShellPart, note: &ShellNote) -> Result<(), Way
                 );
             }
         }
-        // The table lives in the model; the dock bounce that would use it is P3's.
-        ShellNote::MinimiseTarget(..) => {}
         ShellNote::Modifiers(mods) => {
             if part.mods != *mods {
                 part.mods = *mods;
@@ -449,6 +469,8 @@ pub fn apply_note(part: &mut QuireShellPart, note: &ShellNote) -> Result<(), Way
         ShellNote::SplitChoose(choices) => shell_split::send_choose(part, choices),
         ShellNote::SplitChoiceEnd(first) => shell_split::send_choice_end(part, *first),
         ShellNote::Overview(overview) => shell_overview::send_state(part, *overview),
+        // `MinimiseTarget`: the table lives in the model; the dock bounce that would use it is
+        // P3's. The other notes have nothing to send to a shell object.
         _ => {}
     }
     Ok(())

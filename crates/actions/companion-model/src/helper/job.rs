@@ -42,6 +42,10 @@ pub struct GoalText(String);
 
 impl GoalText {
     /// The goal written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GoalFault`] when the text is not a goal.
     pub fn parse(text: &str) -> Result<Self, GoalFault> {
         let text = text.trim();
         if text.is_empty() {

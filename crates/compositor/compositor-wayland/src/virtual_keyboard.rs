@@ -52,10 +52,11 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 /// The version casement serves.
 pub const VERSION: u32 = 1;
 
-/// The first device id a virtual keyboard's events carry: far above the backend's own
-/// numbering (which counts from 1), so it never names a physical device. Each keyboard takes
-/// the next one ([`VirtualKeyboardPart::next_device`]), so two clients' pressed keys never
-/// share a device and one's going releases only its own.
+/// The first device id a virtual keyboard's events carry: far above the backend's own numbering
+/// (which counts from 1), so it never names a physical device.
+///
+/// Each keyboard takes the next one ([`VirtualKeyboardPart::next_device`]), so two clients' pressed
+/// keys never share a device and one's going releases only its own.
 pub const VIRTUAL_KEYBOARD_DEVICE: DeviceId = DeviceId(0x8000_0000);
 
 /// The most keys one virtual keyboard may hold down at once (a keyboard has ten fingers and a
@@ -422,11 +423,11 @@ where
         client: &Client,
         resource: &ZwpVirtualKeyboardV1,
         request: zwp_virtual_keyboard_v1::Request,
-        handle: &DisplayHandle,
+        dhandle: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
     ) {
         if let Routed::Now(request) = self.gate.route(request) {
-            self.carry_out(state, client, resource, request, handle);
+            self.carry_out(state, client, resource, request, dhandle);
         }
     }
 

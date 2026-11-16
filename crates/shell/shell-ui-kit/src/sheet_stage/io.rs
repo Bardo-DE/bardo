@@ -10,9 +10,10 @@ use super::step::advance;
 use crate::hooks::use_follow_visibility;
 use crate::surface::{LayerPreset, Pointer};
 
-/// The stage following `wanted` (read inside an effect, so the signals it reads drive it), and
-/// the surface's mapping and input (`preset`'s while up) following the stage. Nothing to map
-/// without a host (a test, an SSR render).
+/// The stage following `wanted` (read inside an effect, so the signals it reads drive it), and the
+/// surface's mapping and input (`preset`'s while up) following the stage.
+///
+/// Nothing to map without a host (a test, an SSR render).
 pub fn use_sheet_stage<T>(
     preset: LayerPreset,
     wanted: impl Fn() -> Option<T> + 'static,
@@ -29,6 +30,7 @@ where
 
 /// The surface's input region following `pointer` (read inside an effect, so the signals it reads
 /// drive it): `preset`'s input while it takes the pointer, none while it passes it through.
+///
 /// Nothing to set without a host (a test, an SSR render).
 pub fn use_follow_pointer(preset: LayerPreset, pointer: impl Fn() -> Pointer + 'static) {
     let surface = try_use_context::<SurfaceHandle>();

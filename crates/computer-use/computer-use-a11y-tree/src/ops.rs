@@ -61,11 +61,13 @@ fn missing_with_ancestors(
     need
 }
 
-/// The snapshot cut to `budget` nodes: the root first, then actionable nodes on screen, then
-/// anything on screen, then the rest (each class in tree order); a node is only kept with all
-/// its ancestors, so the kept nodes are still a tree. The kept nodes keep their order, the
-/// dropped ones are counted in `truncated` (added to what an earlier pruning dropped). A budget
-/// that already fits changes nothing; a budget of zero keeps the root alone.
+/// The snapshot cut to `budget` nodes.
+///
+/// The root first, then actionable nodes on screen, then anything on screen, then the rest (each
+/// class in tree order); a node is only kept with all its ancestors, so the kept nodes are still a
+/// tree. The kept nodes keep their order, the dropped ones are counted in `truncated` (added to
+/// what an earlier pruning dropped). A budget that already fits changes nothing; a budget of zero
+/// keeps the root alone.
 #[must_use]
 pub fn prune(snapshot: &A11ySnapshot, budget: NodeBudget) -> A11ySnapshot {
     let limit = usize::try_from(budget.0).unwrap_or(usize::MAX).max(1);
@@ -162,9 +164,10 @@ fn step_matches(step: &SelectorStep, node: &A11yNode) -> bool {
         }
 }
 
-/// Which nodes `selector` names: the first step must match the window root, each later step a
-/// child of what the one before matched. An empty path names nothing. Slots name nothing here
-/// (their values arrive at replay).
+/// Which nodes `selector` names: the first step must match the window root, each later step a child
+/// of what the one before matched.
+///
+/// An empty path names nothing. Slots name nothing here (their values arrive at replay).
 #[must_use]
 pub fn resolve(snapshot: &A11ySnapshot, selector: &NodeSelector) -> Resolution {
     let Some((first, rest)) = selector.path.split_first() else {

@@ -16,8 +16,13 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 /// Serves `org.bardo.Reader1` on `connection` over the inferd and intentd it reaches through it,
-/// answering the process `who` names as intentd. Returns once the name is ours; the connection
-/// keeps serving until it closes.
+/// answering the process `who` names as intentd.
+///
+/// Returns once the name is ours; the connection keeps serving until it closes.
+///
+/// # Errors
+///
+/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
 pub async fn start(
     connection: &BusConnection,
     tap: InferWatch,
@@ -29,8 +34,10 @@ pub async fn start(
 }
 
 /// What only the acceptance harness's mains choose: the `/proc` callers are read from and the
-/// system's callers file. The shipped `main` passes the default (the system's `/proc`, the file
-/// under `/etc/bardo`) and no environment variable can change either.
+/// system's callers file.
+///
+/// The shipped `main` passes the default (the system's `/proc`, the file under `/etc/bardo`) and no
+/// environment variable can change either.
 #[derive(Debug, Clone)]
 pub struct HarnessSeams {
     /// Where callers' processes are read: the system's `/proc`, or a fixture tree.
@@ -50,11 +57,19 @@ impl Default for HarnessSeams {
 
 /// The daemon: the session bus from `env` (the process's environment, which its `main` passes
 /// in), served until it closes.
+///
+/// # Errors
+///
+/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
 pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeFault> {
     run_with(InferWatch::off(), HarnessSeams::default(), env).await
 }
 
 /// [`run`] with the inferd watch and the seams the acceptance harness's mains choose.
+///
+/// # Errors
+///
+/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
 pub async fn run_with(
     tap: InferWatch,
     seams: HarnessSeams,

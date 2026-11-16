@@ -1,5 +1,6 @@
-//! The two things most handler traits ask of the composition root alike: feed the events a
-//! request produced into the model, and name the model's output for a client's `wl_output`.
+//! The two things most handler traits ask of the composition root alike: feed the events a request
+//! produced into the model, and name the model's output for a client's `wl_output`.
+//!
 //! A protocol's handler trait extends the one it needs instead of declaring its own copy.
 
 use compositor_core::{Event, OutputKey};

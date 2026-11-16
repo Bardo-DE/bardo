@@ -1,6 +1,7 @@
-//! `wl_compositor`: surfaces and their commits. A commit is classified here by the surface's
-//! role and routed by the handler to the module that owns that role (xdg toplevel, popup,
-//! layer, lock surface, cursor).
+//! `wl_compositor`: surfaces and their commits.
+//!
+//! A commit is classified here by the surface's role and routed by the handler to the module that
+//! owns that role (xdg toplevel, popup, layer, lock surface, cursor).
 
 use crate::states::GlobalFilter;
 use compositor_core::Event;
@@ -87,19 +88,22 @@ pub fn root_of(surface: &WlSurface) -> WlSurface {
     root
 }
 
-/// Classifies a commit on `surface` by its role and says where the role-specific handling
-/// goes. smithay's buffer bookkeeping that every role shares (`on_commit_buffer_handler`,
-/// which also validates viewports) runs in the handler first: it is generic over the
-/// composition root's state. (The plan's sketch returned events; the routing needs the other
-/// modules' parts, so the handler routes: FINDINGS.)
+/// Classifies a commit on `surface` by its role and says where the role-specific handling goes.
+///
+/// smithay's buffer bookkeeping that every role shares (`on_commit_buffer_handler`, which also
+/// validates viewports) runs in the handler first: it is generic over the composition root's state.
+/// (The plan's sketch returned events; the routing needs the other modules' parts, so the handler
+/// routes: FINDINGS.)
 pub fn on_commit(part: &mut CompositorPart, surface: &WlSurface) -> CommitRoute {
     let _ = part;
     route_of_role(get_role(surface))
 }
 
-/// A surface was destroyed. A plain surface leaves nothing in the model (smithay drops its
-/// textures and callbacks with its data); a toplevel's or layer's own destruction arrives
-/// through its role module first and carries the event.
+/// A surface was destroyed.
+///
+/// A plain surface leaves nothing in the model (smithay drops its textures and callbacks with its
+/// data); a toplevel's or layer's own destruction arrives through its role module first and carries
+/// the event.
 pub fn on_destroyed(part: &mut CompositorPart, surface: &WlSurface) -> Vec<Event> {
     let _ = (part, surface);
     Vec::new()

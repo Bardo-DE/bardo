@@ -1,6 +1,7 @@
 //! The service values as quire's status glyph states (design/26 section 5.1), pure: which Wi-Fi,
-//! battery, Bluetooth and volume state each item hands its glyph. The glyph decides the moment
-//! from its own table; these only say what is true.
+//! battery, Bluetooth and volume state each item hands its glyph.
+//!
+//! The glyph decides the moment from its own table; these only say what is true.
 
 use shell_model::attempt::{Attempt, OpStamp};
 use shell_model::battery::{Battery, Charge};
@@ -48,9 +49,11 @@ fn thousandths(percent: u16) -> Fraction {
     Fraction(percent.saturating_mul(10))
 }
 
-/// The network item's glyph. Joining carries the service's join stamp (one per attempt);
-/// connectivity None, Portal or Limited is the "!" badge; disconnected is Off with the radio off,
-/// the last failure while it stands, else Idle.
+/// The network item's glyph.
+///
+/// Joining carries the service's join stamp (one per attempt); connectivity None, Portal or Limited
+/// is the "!" badge; disconnected is Off with the radio off, the last failure while it stands, else
+/// Idle.
 #[must_use]
 pub fn network_glyph(network: &Network, radio: Radio) -> NetworkGlyph {
     match (&network.link, network.join.now, radio) {

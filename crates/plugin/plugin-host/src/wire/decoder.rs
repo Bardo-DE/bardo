@@ -25,6 +25,10 @@ impl FrameDecoder {
 
     /// The next whole frame, or `None` until more bytes arrive. A header over the limits or JSON
     /// that is not a `T` is an error, and the decoder is then spent.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WireError`] when the bytes are not a well-formed frame.
     pub fn next_frame<T: DeserializeOwned>(&mut self) -> Result<Option<Frame<T>>, WireError> {
         self.next_frame_within(u64::from(MAX_PAYLOAD_BYTES))
     }
@@ -32,6 +36,10 @@ impl FrameDecoder {
     /// [`next_frame`](Self::next_frame) for a reply that may carry at most `max_payload` bytes of
     /// payload: a header that announces more is refused as soon as it is parsed, before any of the
     /// payload is buffered, so a plugin cannot make the host hold what it will then reject.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WireError`] when the bytes are not a well-formed frame.
     pub fn next_frame_within<T: DeserializeOwned>(
         &mut self,
         max_payload: u64,

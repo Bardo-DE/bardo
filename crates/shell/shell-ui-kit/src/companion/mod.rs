@@ -1,6 +1,8 @@
-//! The companion's wire as quire's view types. quire may not name an agent crate, so each wire
-//! type that has a view (an effect, a run's state, an answer, a plan, a form, a footer) is
-//! converted here, by a total function pinned by a `*_total` test that visits every variant.
+//! The companion's wire as quire's view types.
+//!
+//! quire may not name an agent crate, so each wire type that has a view (an effect, a run's state,
+//! an answer, a plan, a form, a footer) is converted here, by a total function pinned by a
+//! `*_total` test that visits every variant.
 //!
 //! Words come from the wire's own labelled text or fixed phrases; a handle the companion left in
 //! a text is shown through `ViewCx::display` (the router resolves it for the screen with
@@ -29,7 +31,10 @@ pub use words::refusal_words;
 
 /// What a conversion reads besides the wire: the person's time zone, and the text a handle
 /// stands for where the router has resolved one.
-#[allow(missing_debug_implementations)]
+#[expect(
+    missing_debug_implementations,
+    reason = "it holds a closure, which has no `Debug`"
+)]
 pub struct ViewCx<'a> {
     /// Where times are worded.
     pub zone: &'a TimeZone,

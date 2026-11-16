@@ -6,7 +6,6 @@ use action_router::{Router, Seams};
 #[cfg(feature = "in_process")]
 use action_wire::CallerId;
 use action_wire::{IntentsReply, IntentsRequest};
-use std::future::Future;
 #[cfg(feature = "in_process")]
 use std::sync::Arc;
 
@@ -66,6 +65,10 @@ impl<S: Seams + 'static> Transport for InProcess<S> {
         Ok(self.router.handle(&self.caller, request).await)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn watch(&self, request: IntentsRequest) -> Result<Watched, TransportError> {
         Ok(crate::watch_in_process::watched(
             Arc::clone(&self.router),
@@ -96,6 +99,10 @@ impl DbusTransport {
     /// sent. (A name that already has an owner is not activated: a bus without an activation
     /// file for it, a private bus a person started intentd on by hand, answers
     /// `StartServiceByName` with an error even then.)
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TransportError`] when the request got no reply.
     pub async fn connect() -> Result<Self, TransportError> {
         let connection = action_dbus::BusConnection::session()
             .await
@@ -123,7 +130,8 @@ impl DbusTransport {
                     &(action_dbus::INTENTS_BUS, 0u32),
                 )
                 .await
-                .map_err(|_| TransportError::Closed)?;
+                .ok()
+                .ok_or(TransportError::Closed)?;
         }
         Ok(Self::new(connection))
     }

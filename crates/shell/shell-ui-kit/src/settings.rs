@@ -1,6 +1,7 @@
-//! The settings as a surface receives them: one more `Root::context` value beside
-//! `crate::services::Services`, read by [`crate::hooks::use_settings`],
-//! [`crate::hooks::use_section`], [`crate::hooks::use_styles`] and
+//! The settings as a surface receives them.
+//!
+//! One more `Root::context` value beside `crate::services::Services`, read by
+//! [`crate::hooks::use_settings`], [`crate::hooks::use_section`], [`crate::hooks::use_styles`] and
 //! [`crate::hooks::use_appearance`].
 
 use shell_settings::ShellFile;

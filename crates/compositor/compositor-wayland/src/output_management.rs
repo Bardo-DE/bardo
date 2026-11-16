@@ -248,6 +248,10 @@ pub fn on_configuration(
 /// apply_heads::<D>(&mut part, display, &OutputBook::default()).expect("nothing to announce");
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_heads<D>(
     part: &mut OutputManagementPart,
     display: &DisplayHandle,

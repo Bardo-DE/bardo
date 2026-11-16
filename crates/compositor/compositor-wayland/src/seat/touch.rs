@@ -57,6 +57,10 @@ where
 
 /// Delivers a touch step over `focus` (the surface a touch point went down on; motion keeps
 /// the focus its `down` set).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_touch<D>(
     seat: &Seat<D>,
     state: &mut D,

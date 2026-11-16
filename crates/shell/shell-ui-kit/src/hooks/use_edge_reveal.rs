@@ -9,8 +9,9 @@ use shell_model::desktop::Shown;
 use crate::links::{EdgeLink, RevealEdge};
 
 /// Call `reveal` with the state of `edge` on `output` each time it changes (first `Shown`, then
-/// `Hidden`; nothing at start). A root without the link gets no calls, which is a session
-/// without the desktop's compositor.
+/// `Hidden`; nothing at start).
+///
+/// A root without the link gets no calls, which is a session without the desktop's compositor.
 pub fn use_edge_reveal(edge: RevealEdge, output: OutputId, reveal: Callback<Shown>) {
     let link = try_use_context::<EdgeLink>();
     use_hook(move || {

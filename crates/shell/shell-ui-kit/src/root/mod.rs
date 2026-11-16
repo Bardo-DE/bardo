@@ -1,8 +1,9 @@
-//! What every surface's document is rooted in: quire's faces and pre-paint pass, the seat's
-//! signals bridge and [`SurfaceRoot`]. Every root gets quire's document host through
-//! `ui_blitz::provide_host()` and the keymap through [`provide_keymap`], called at the top of the
-//! root component, and quire's
-//! `HostSignals` through [`use_host_signals`], called by `mount`, `mount_lock` and `PopupFrame`.
+//! What every surface's document is rooted in: quire's faces and pre-paint pass, the seat's signals
+//! bridge and [`SurfaceRoot`].
+//!
+//! Every root gets quire's document host through `ui_blitz::provide_host()` and the keymap through
+//! [`provide_keymap`], called at the top of the root component, and quire's `HostSignals` through
+//! [`use_host_signals`], called by `mount`, `mount_lock` and `PopupFrame`.
 
 mod click_away;
 mod file_roots;

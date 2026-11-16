@@ -1,6 +1,8 @@
-//! `zwlr_foreign_toplevel_manager_v1`: the window list for docks and switchers that speak the
-//! wlr protocol (sill's `desktop_wl` Wlr arm). Every window is listed with its title, app id,
-//! state and the outputs it is on; the handle's requests become `Event::WlrToplevel`.
+//! `zwlr_foreign_toplevel_manager_v1`: the window list for docks and switchers that speak the wlr
+//! protocol (sill's `desktop_wl` Wlr arm).
+//!
+//! Every window is listed with its title, app id, state and the outputs it is on; the handle's
+//! requests become `Event::WlrToplevel`.
 //!
 //! smithay has no module for it, so this one carries its own `GlobalDispatch2` and `Dispatch2`
 //! impls (as `quire_window` does); `delegate_dispatch2!` in the composition root routes to
@@ -313,8 +315,9 @@ where
     }
 }
 
-/// The rectangle a `set_rectangle` names, in global logical coordinates: `rect` is in the
-/// surface's own, `origin` is where the surface sits (the origin when casement does not know).
+/// The rectangle a `set_rectangle` names, in global logical coordinates: `rect` is in the surface's
+/// own, `origin` is where the surface sits (the origin when casement does not know).
+///
 /// `None` for a negative size, which the protocol makes an error.
 #[must_use]
 pub fn rectangle_of(
@@ -469,6 +472,10 @@ fn list_all_on(part: &mut WlrToplevelPart, manager: &ZwlrForeignToplevelManagerV
 
 /// Lists `window` (or sends what changed: title, app id, state, the outputs it is on), then
 /// `done`. `outputs` are the ones it is on.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_toplevel(
     part: &mut WlrToplevelPart,
     window: &Window,
@@ -503,6 +510,10 @@ pub fn apply_toplevel(
 }
 
 /// Withdraws `window`: its handles get `closed`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_closed(part: &mut WlrToplevelPart, window: WindowId) -> Result<(), WaylandFault> {
     part.facts
         .remove(&window)

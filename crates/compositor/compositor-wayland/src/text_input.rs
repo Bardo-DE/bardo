@@ -46,9 +46,11 @@ impl TextInputPart {
     }
 }
 
-/// A text field enabled text input. smithay takes the field's requests itself and relays them
-/// to the input method, and the model has no text-field state, so this is no event; it opens
-/// a new activation for the gate (the wait for the input method's grab starts afresh).
+/// A text field enabled text input.
+///
+/// smithay takes the field's requests itself and relays them to the input method, and the model has
+/// no text-field state, so this is no event; it opens a new activation for the gate (the wait for
+/// the input method's grab starts afresh).
 pub fn on_enable(part: &mut TextInputPart, surface: &WlSurface) -> Vec<Event> {
     let _ = surface;
     part.gate.restart();
@@ -76,9 +78,10 @@ pub fn facts_of<D: SeatHandler + 'static>(seat: &Seat<D>) -> ImeFacts {
     }
 }
 
-/// `key` arrived: the keys to deliver now, in order (the key itself, unless an input method
-/// is about to take the keyboard; then it waits and comes out of [`settle_keys`]). Deliver
-/// them through smithay's keyboard `input`, which honours the input method's grab.
+/// `key` arrived: the keys to deliver now, in order (the key itself, unless an input method is
+/// about to take the keyboard; then it waits and comes out of [`settle_keys`]).
+///
+/// Deliver them through smithay's keyboard `input`, which honours the input method's grab.
 pub fn admit_key<D: SeatHandler + 'static>(
     part: &mut TextInputPart,
     seat: &Seat<D>,
@@ -97,11 +100,16 @@ pub fn settle_keys<D: SeatHandler + 'static>(
     part.gate.settle(facts_of(seat), now)
 }
 
-/// Moves text-input focus with keyboard focus. smithay does this itself when keyboard focus
-/// moves to a surface; this reconciles the two when they differ (focus moved without it, or
-/// the surface is gone): `leave` for the old focus, then the new focus is set *before* `enter`
-/// is sent, so the field's immediate `enable` is not discarded as coming from an unfocused
-/// client (the SP1 A5 failure).
+/// Moves text-input focus with keyboard focus.
+///
+/// smithay does this itself when keyboard focus moves to a surface; this reconciles the two when
+/// they differ (focus moved without it, or the surface is gone): `leave` for the old focus, then
+/// the new focus is set *before* `enter` is sent, so the field's immediate `enable` is not
+/// discarded as coming from an unfocused client (the SP1 A5 failure).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_text_focus<D: SeatHandler + 'static>(
     seat: &Seat<D>,
     focus: Option<&WlSurface>,
@@ -126,6 +134,10 @@ pub fn apply_text_focus<D: SeatHandler + 'static>(
 }
 
 /// Sends a preedit to the focused, enabled field and closes the batch with `done`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_preedit<D: SeatHandler + 'static>(
     seat: &Seat<D>,
     text: &str,
@@ -137,6 +149,10 @@ pub fn apply_preedit<D: SeatHandler + 'static>(
 }
 
 /// Commits text to the focused, enabled field and closes the batch with `done`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_commit_string<D: SeatHandler + 'static>(
     seat: &Seat<D>,
     text: &str,

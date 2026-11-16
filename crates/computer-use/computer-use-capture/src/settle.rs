@@ -45,12 +45,13 @@ pub enum Settle {
     TimedOut,
 }
 
-/// Decides from the damage since the action. The screen is quiet once nothing has changed for
-/// `quiet`, counted from the later of the action (`since`) and the newest damage event, so a
-/// screen that has not changed yet is not settled the moment the action ends. Otherwise it has
-/// timed out when `timeout` has passed since `since`, and else it is waiting, with `wake` at
-/// the earlier of the end of the quiet period and the timeout. Events before `since` are not
-/// the action's and are ignored. Pure.
+/// Decides from the damage since the action.
+///
+/// The screen is quiet once nothing has changed for `quiet`, counted from the later of the action
+/// (`since`) and the newest damage event, so a screen that has not changed yet is not settled the
+/// moment the action ends. Otherwise it has timed out when `timeout` has passed since `since`, and
+/// else it is waiting, with `wake` at the earlier of the end of the quiet period and the timeout.
+/// Events before `since` are not the action's and are ignored. Pure.
 #[must_use]
 pub fn settle(events: &[DamageAt], quiet: Ms, timeout: Ms, since: Stamp, now: Stamp) -> Settle {
     let last = events
@@ -78,11 +79,12 @@ fn row_of(buf: &PixelBuf, y: usize, row_bytes: usize) -> Option<&[u8]> {
     buf.data.get(start..start.checked_add(row_bytes)?)
 }
 
-/// The bounding box of the pixels that differ between two frames, in the buffers' own pixels,
-/// or `None` when they are equal. Stock captures at logical resolution (`Frame.scale` is 120
-/// there), so these are window-local logical pixels; a caller with another scale divides by it.
-/// Two buffers that do not have the same format and size differ everywhere: the whole of `next`.
-/// Stride padding is not compared. Pure.
+/// The bounding box of the pixels that differ between two frames, in the buffers' own pixels, or
+/// `None` when they are equal.
+///
+/// Stock captures at logical resolution (`Frame.scale` is 120 there), so these are window-local
+/// logical pixels; a caller with another scale divides by it. Two buffers that do not have the same
+/// format and size differ everywhere: the whole of `next`. Stride padding is not compared. Pure.
 #[must_use]
 pub fn pixel_diff(prev: &PixelBuf, next: &PixelBuf) -> Option<Rect<WindowSpace>> {
     let (w, h) = (next.size.w, next.size.h);

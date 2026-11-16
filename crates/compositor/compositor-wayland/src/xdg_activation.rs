@@ -1,7 +1,9 @@
-//! `xdg_activation_v1`: tokens and activation requests. A request activates only under A7's
-//! rule: the token was asked for by a client that held a recent press, and it is used while
-//! recent. smithay stamps tokens with the wall clock (`Instant::now`), so token age is judged
-//! against the session's `Mono` kept beside each token here, never smithay's stamp (A36).
+//! `xdg_activation_v1`: tokens and activation requests.
+//!
+//! A request activates only under A7's rule: the token was asked for by a client that held a recent
+//! press, and it is used while recent. smithay stamps tokens with the wall clock (`Instant::now`),
+//! so token age is judged against the session's `Mono` kept beside each token here, never smithay's
+//! stamp (A36).
 //!
 //! The verdict is a [`TokenCheck`] the model acts on: `Valid` activates, anything else only asks
 //! for the app's attention (03 A7).
@@ -26,11 +28,13 @@ use std::time::Duration;
 pub const TOKEN_LIFETIME: Duration = Duration::from_secs(5);
 
 /// How long a launch token stays good: one asked for naming the app it launches (`app_id`), as a
-/// launcher, the dock or the Spotlight panel does. The press still earns it within
-/// [`TOKEN_LIFETIME`]; only its use may come later, because an app can take this long to show its
-/// first window (a cold browser, Blender), and the Mac has no cut-off for an app the person
-/// launched. Tokens are one-use and handed only to the launched process, so the longer life lets
-/// nothing else in. Not longer than [`TOKEN_MEMORY`], so the table still holds it.
+/// launcher, the dock or the Spotlight panel does.
+///
+/// The press still earns it within [`TOKEN_LIFETIME`]; only its use may come later, because an app
+/// can take this long to show its first window (a cold browser, Blender), and the Mac has no
+/// cut-off for an app the person launched. Tokens are one-use and handed only to the launched
+/// process, so the longer life lets nothing else in. Not longer than [`TOKEN_MEMORY`], so the table
+/// still holds it.
 pub const LAUNCH_LIFETIME: Duration = Duration::from_secs(60);
 
 /// How long a spent-looking token is remembered, so a late use is still judged (`Stale`, which
@@ -105,8 +109,10 @@ impl XdgActivationPart {
 }
 
 /// Whether the press `record` (what the seat remembers of the serial the token carried, for the
-/// asking client) earns a token requested at `now`. An agent lease's press earns none: the
-/// agent drives one window, and a token would let that app bring another to the front.
+/// asking client) earns a token requested at `now`.
+///
+/// An agent lease's press earns none: the agent drives one window, and a token would let that app
+/// bring another to the front.
 #[must_use]
 pub fn earned_by_press(record: Option<&PressRecord>, now: Mono) -> bool {
     match record {
@@ -116,9 +122,10 @@ pub fn earned_by_press(record: Option<&PressRecord>, now: Mono) -> bool {
     }
 }
 
-/// The verdict on a token `issued` (if the compositor issued it) used at `now`: `Valid` only
-/// for a token earned by a press and still within its reach's lifetime; everything else is
-/// `Stale` (an unknown token is a bad one, not a missing one).
+/// The verdict on a token `issued` (if the compositor issued it) used at `now`.
+///
+/// `Valid` only for a token earned by a press and still within its reach's lifetime; everything
+/// else is `Stale` (an unknown token is a bad one, not a missing one).
 #[must_use]
 pub fn judge(issued: Option<&IssuedToken>, now: Mono) -> TokenCheck {
     match issued {
@@ -145,9 +152,10 @@ fn forget_old(part: &mut XdgActivationPart, now: Mono) {
         .retain_tokens(|token, _| !expired.iter().any(|key| key == token.as_str()));
 }
 
-/// A client asked for a token at `now`: true when it is issued (it is judged when used), unless its asker already holds
-/// [`TOKENS_PER_CLIENT`] live ones. Of `data` only the app it names is read (its reach); smithay's
-/// stamp is ignored (A36).
+/// A client asked for a token at `now`: true when it is issued (it is judged when used), unless its
+/// asker already holds [`TOKENS_PER_CLIENT`] live ones.
+///
+/// Of `data` only the app it names is read (its reach); smithay's stamp is ignored (A36).
 pub fn on_token_request(
     part: &mut XdgActivationPart,
     token: &XdgActivationToken,
@@ -203,7 +211,7 @@ pub fn on_activate(window: WindowId, check: TokenCheck) -> Vec<Event> {
 mod tests {
     use super::*;
     use crate::serial::PressKind;
-    use compositor_core::input::{DeviceClass, Origin};
+    use compositor_core::input::DeviceClass;
 
     fn at(ms: u64) -> Mono {
         Mono(Duration::from_millis(ms))

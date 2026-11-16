@@ -44,11 +44,12 @@ impl ClearedClients {
     }
 }
 
-/// The clients that disconnected since the loop last looked. smithay announces a disconnect
-/// from `ClientData::disconnected`, which has no access to the state, so the key is queued
-/// here and the loop drains it (`compositor_app::clients::take_gone`) into `Event::ClientGone`. The
-/// queue also holds the consent ledger, so a disconnect forgets what was said of the client's
-/// powers at once.
+/// The clients that disconnected since the loop last looked.
+///
+/// smithay announces a disconnect from `ClientData::disconnected`, which has no access to the
+/// state, so the key is queued here and the loop drains it (`compositor_app::clients::take_gone`)
+/// into `Event::ClientGone`. The queue also holds the consent ledger, so a disconnect forgets what
+/// was said of the client's powers at once.
 #[derive(Debug, Clone, Default)]
 pub struct GoneQueue {
     gone: Arc<Mutex<Vec<ClientKey>>>,
@@ -141,17 +142,20 @@ impl ClientState {
     }
 
     /// The same client, known as `maker` for the security contexts it creates.
+    #[must_use]
     pub fn with_maker(self, maker: Maker) -> ClientState {
         ClientState { maker, ..self }
     }
 
     /// The same client, whose toplevels come from `origin`.
+    #[must_use]
     pub fn with_origin(self, origin: WindowOrigin) -> ClientState {
         ClientState { origin, ..self }
     }
 
     /// The same client, whose program is known as `standing`, shown every global but those of
     /// the `hidden` powers.
+    #[must_use]
     pub fn with_standing(self, standing: ClientStanding, hidden: PowerSet) -> ClientState {
         ClientState {
             standing,
@@ -163,6 +167,7 @@ impl ClientState {
     /// The same client, whose program is known as `standing`, shown the globals `privilege`
     /// does not refuse that standing (the person's book and the administrator's floor at this
     /// moment).
+    #[must_use]
     pub fn with_standing_under(
         self,
         privilege: &Privilege,
@@ -173,11 +178,13 @@ impl ClientState {
     }
 
     /// The same client, whose image `image` watches.
+    #[must_use]
     pub fn with_image_watch(self, image: Arc<dyn ImageWatch>) -> ClientState {
         ClientState { image, ..self }
     }
 
     /// The same client reporting its disconnect to `gone`.
+    #[must_use]
     pub fn with_gone(self, gone: GoneQueue) -> ClientState {
         ClientState { gone, ..self }
     }

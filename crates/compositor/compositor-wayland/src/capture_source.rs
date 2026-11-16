@@ -248,6 +248,10 @@ pub fn on_source_destroyed(book: &mut ToplevelCaptureBook, source: ToplevelSourc
 }
 
 /// A client started a session on `source`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn on_session(
     book: &mut ToplevelCaptureBook,
     source: ToplevelSourceId,
@@ -264,6 +268,10 @@ pub fn on_session(
 
 /// A client asked for a frame of `session` into a buffer of `buffer`, the window now showing
 /// `content`: the damage gate decides whether to render or to hold.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn on_frame_request(
     book: &mut ToplevelCaptureBook,
     session: ToplevelSessionId,
@@ -331,6 +339,10 @@ pub fn apply_content(
 
 /// The frame of `session` (showing `content`) was copied into the client's buffer, presented
 /// at `at`: `ready`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_ready(
     book: &mut ToplevelCaptureBook,
     session: ToplevelSessionId,
@@ -346,6 +358,10 @@ pub fn apply_ready(
 }
 
 /// The frame of `session` could not be made: `failed`. A session whose window is gone is over.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_failed(
     book: &mut ToplevelCaptureBook,
     session: ToplevelSessionId,

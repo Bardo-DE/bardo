@@ -53,9 +53,10 @@ impl FifoPart {
     }
 }
 
-/// A committed surface set a fifo barrier: the barrier its applied content update carries is
-/// kept until a frame has been presented. (A commit that waits on an earlier barrier is held
-/// back by smithay until that one is signalled.)
+/// A committed surface set a fifo barrier: the barrier its applied content update carries is kept
+/// until a frame has been presented.
+///
+/// (A commit that waits on an earlier barrier is held back by smithay until that one is signalled.)
 pub fn on_barrier(part: &mut FifoPart, surface: &WlSurface) -> Vec<Event> {
     let barrier = with_states(surface, |states| {
         states
@@ -76,9 +77,14 @@ pub fn on_barrier(part: &mut FifoPart, surface: &WlSurface) -> Vec<Event> {
     Vec::new()
 }
 
-/// `output` presented a frame: every waiting barrier is signalled (P0 presents each surface on
-/// the first output, A28, so whichever output frames first releases it). The clients that
-/// had commits held back are listed for [`take_cleared`].
+/// `output` presented a frame: every waiting barrier is signalled (P0 presents each surface on the
+/// first output, A28, so whichever output frames first releases it).
+///
+/// The clients that had commits held back are listed for [`take_cleared`].
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_presented(
     part: &mut FifoPart,
     output: &OutputKey,

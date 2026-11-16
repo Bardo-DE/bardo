@@ -15,9 +15,10 @@ use smithay::wayland::{GlobalData, GlobalDispatch2};
 /// The version `wl_shm` is served at.
 const VERSION: u32 = 2;
 
-/// The pixel formats every client may assume, in the order a bind announces them. smithay
-/// announces from a `HashSet`, whose order changes from one run to the next, and no hash order
-/// may reach the wire (B17), so the global is ours and the announcement is this list.
+/// The pixel formats every client may assume, in the order a bind announces them.
+///
+/// smithay announces from a `HashSet`, whose order changes from one run to the next, and no hash
+/// order may reach the wire (B17), so the global is ours and the announcement is this list.
 pub const ADVERTISED: [Format; 2] = [Format::Argb8888, Format::Xrgb8888];
 
 /// `wl_shm`.
@@ -74,9 +75,11 @@ impl ShmPart {
     }
 }
 
-/// A client buffer was destroyed (`BufferHandler`). The textures made from it live in each
-/// surface's renderer state, which smithay resets when the surface commits another buffer or
-/// is destroyed, so nothing here holds one and nothing reaches the model.
+/// A client buffer was destroyed (`BufferHandler`).
+///
+/// The textures made from it live in each surface's renderer state, which smithay resets when the
+/// surface commits another buffer or is destroyed, so nothing here holds one and nothing reaches
+/// the model.
 pub fn on_buffer_destroyed(part: &mut ShmPart, buffer: &WlBuffer) -> Vec<Event> {
     let _ = (part, buffer);
     Vec::new()

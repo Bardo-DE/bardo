@@ -1,8 +1,10 @@
-//! Unpacks an archive file into a directory, refusing anything that would land outside it or
-//! that is larger than the limits. The archive is read as a stream and every byte written is
-//! counted: the sizes an archive states about itself are never trusted. The entries are
-//! unpacked into a staging folder beside the target, which replaces the target only when the whole
-//! archive passed, so a refused archive leaves nothing in the target.
+//! Unpacks an archive file into a directory, refusing anything that would land outside it or that
+//! is larger than the limits.
+//!
+//! The archive is read as a stream and every byte written is counted: the sizes an archive states
+//! about itself are never trusted. The entries are unpacked into a staging folder beside the
+//! target, which replaces the target only when the whole archive passed, so a refused archive
+//! leaves nothing in the target.
 
 use flate2::read::GzDecoder;
 use std::fs::File;
@@ -58,6 +60,10 @@ enum Kind {
     Zip,
 }
 
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "archive names are matched as published, in lower case; a name in another case is refused as an unknown kind"
+)]
 fn kind(name: &str) -> Result<Kind, UnpackFault> {
     let name = name.split(['?', '#']).next().unwrap_or(name);
     if name.ends_with(".tar.gz") || name.ends_with(".tgz") {

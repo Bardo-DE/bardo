@@ -1,7 +1,9 @@
-//! `bardo_shell_v1` version 5: the compositor asks the person, through the shell, whether a
-//! program may use a power (`permission_ask`), takes a question back (`permission_withdraw`)
-//! and hears the answer (`permission_answer`). The model decides what to ask and when
-//! (`compositor_core::privilege`); this only carries the words.
+//! `bardo_shell_v1` version 5.
+//!
+//! The compositor asks the person, through the shell, whether a program may use a power
+//! (`permission_ask`), takes a question back (`permission_withdraw`) and hears the answer
+//! (`permission_answer`). The model decides what to ask and when (`compositor_core::privilege`);
+//! this only carries the words.
 //!
 //! The part keeps the questions it has sent and not seen answered or withdrawn, so a second
 //! object of the shell that binds while one is on screen is shown it too. A shell that bound a
@@ -26,11 +28,12 @@ pub const SINCE: u32 = 5;
 /// ([`OPEN_ASKS`](compositor_core::privilege::OPEN_ASKS)); the bound is only a guard.
 const MAX_SENT: usize = 16;
 
-/// The least time between a question being sent and its answer arriving. The shell's sheet is
-/// disarmed for longer (sill's `PERMISSION_ARM_AFTER`, 600 ms) so a key held down or a click
-/// that was meant for the window behind cannot answer it; an answer faster than this did not
-/// come from a person looking at the sheet, so the shell connection that sent it is cut (the
-/// margin under the sheet's delay is for scheduling and the wire).
+/// The least time between a question being sent and its answer arriving.
+///
+/// The shell's sheet is disarmed for longer (sill's `PERMISSION_ARM_AFTER`, 600 ms) so a key held
+/// down or a click that was meant for the window behind cannot answer it; an answer faster than
+/// this did not come from a person looking at the sheet, so the shell connection that sent it is
+/// cut (the margin under the sheet's delay is for scheduling and the wire).
 pub const ANSWER_NOT_BEFORE: Duration = Duration::from_millis(500);
 
 /// An answer that came sooner than the sheet could have been read: the shell connection that
@@ -107,11 +110,16 @@ pub fn apply_withdraw(part: &mut QuireShellPart, ask: AskId) {
     }
 }
 
-/// `permission_answer`: the person's word on `ask`, heard at `now`. An answer for a question
-/// the part has not sent or has settled, and one with a code the XML does not name, changes
-/// nothing; one that comes less than [`ANSWER_NOT_BEFORE`] after the question was sent is the
-/// shell's fault (`AnsweredTooSoon`) and settles nothing: the question stays open. `wall` is
-/// the date the answer is stamped with.
+/// `permission_answer`: the person's word on `ask`, heard at `now`.
+///
+/// An answer for a question the part has not sent or has settled, and one with a code the XML does
+/// not name, changes nothing; one that comes less than [`ANSWER_NOT_BEFORE`] after the question was
+/// sent is the shell's fault (`AnsweredTooSoon`) and settles nothing: the question stays open.
+/// `wall` is the date the answer is stamped with.
+///
+/// # Errors
+///
+/// Returns [`AnsweredTooSoon`] when the answer arrives before it was asked for.
 pub fn on_answer(
     part: &mut QuireShellPart,
     ask: u32,
@@ -136,9 +144,10 @@ pub fn on_answer(
     }])
 }
 
-/// A shell object bound: it is shown the questions still open, and when it is the first that
-/// can carry them the model hears the shell can be asked (it then sends the question the
-/// shell lost, if one was waiting).
+/// A shell object bound.
+///
+/// It is shown the questions still open, and when it is the first that can carry them the model
+/// hears the shell can be asked (it then sends the question the shell lost, if one was waiting).
 #[must_use]
 pub fn on_bind(part: &QuireShellPart, shell: &BardoShellV1) -> Vec<Event> {
     if shell.version() < SINCE {
@@ -148,9 +157,10 @@ pub fn on_bind(part: &QuireShellPart, shell: &BardoShellV1) -> Vec<Event> {
     vec![Event::ShellReady]
 }
 
-/// A shell object of `version` went. When it was the last that could carry the question, the
-/// part forgets the questions it sent (the model sends them again to the next shell) and the
-/// model hears the shell cannot be asked.
+/// A shell object of `version` went.
+///
+/// When it was the last that could carry the question, the part forgets the questions it sent (the
+/// model sends them again to the next shell) and the model hears the shell cannot be asked.
 pub fn on_unbind(part: &mut QuireShellPart, version: u32) -> Vec<Event> {
     let any_left = part.bound.iter().any(|shell| shell.version() >= SINCE);
     match (version >= SINCE, any_left) {

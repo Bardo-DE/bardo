@@ -32,6 +32,10 @@ fn need_of(inputs: &[Labelled<String>]) -> Need {
 
 /// Asks the reader model through `transport` and reads the reply under `ask.want`. A schema with
 /// no shape in the structured-output vocabulary is refused before any model is asked.
+///
+/// # Errors
+///
+/// Returns [`ReaderError`] when the reader could not answer.
 pub async fn read<T: Transport>(
     transport: &T,
     ask: &ReaderAsk,
@@ -42,12 +46,14 @@ pub async fn read<T: Transport>(
     let mut session = transport
         .open(&need_of(inputs), request.class, request.tier)
         .await
-        .map_err(|_| ReaderError::ModelUnavailable)?;
+        .ok()
+        .ok_or(ReaderError::ModelUnavailable)?;
     // `turn` reads before it believes a failed write: a daemon that refuses a session hangs up
     // after writing the refusal.
     let reply = turn(&mut session, InferRequest::Chat(request), &mut Discard)
         .await
-        .map_err(|_| ReaderError::ModelUnavailable)?;
+        .ok()
+        .ok_or(ReaderError::ModelUnavailable)?;
     match reply {
         InferReply::Chat(chat) => match chat.stop {
             StopReason::EndTurn | StopReason::StopSequence => answer_of(&chat.text, &ask.want),
@@ -64,10 +70,11 @@ pub async fn read<T: Transport>(
 }
 
 /// The reader inside the app's own process: a second model session with no tools, which sees the
-/// quarantined text and answers a typed value only. The isolation of the desktop's `readerd` (a
-/// separate process) is replaced by the session boundary: the reader's request is built from a
-/// fixed instruction and fenced data, never from the planner's words, and the planner never
-/// reads the answer's text except as a handle.
+/// quarantined text and answers a typed value only.
+///
+/// The isolation of the desktop's `readerd` (a separate process) is replaced by the session
+/// boundary: the reader's request is built from a fixed instruction and fenced data, never from the
+/// planner's words, and the planner never reads the answer's text except as a handle.
 #[derive(Debug)]
 pub struct TransportReader<T: Transport> {
     key: ReaderKey,

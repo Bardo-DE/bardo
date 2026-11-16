@@ -88,8 +88,9 @@ pub fn sent_image_size(size: LogicalSize, scale: Scale, transform: Transform) ->
 }
 
 /// Where a cursor whose hotspot is at `at` (global logical pixels), drawn `size` large with its
-/// hotspot `hotspot` from the image's corner (both logical), is on the frame of `view`; none
-/// when no pixel of the image is on it (the cursor "enters" the capture when its image meets
+/// hotspot `hotspot` from the image's corner (both logical), is on the frame of `view`.
+///
+/// None when no pixel of the image is on it (the cursor "enters" the capture when its image meets
 /// the frame).
 ///
 /// The image's corner is placed the way the cursor element is: `at - hotspot` in logical
@@ -142,9 +143,9 @@ pub fn place(
     if !(meets(corner.0, image.w, upright.w) && meets(corner.1, image.h, upright.h)) {
         return None;
     }
-    let side = |n: u32| i32::try_from(n).ok();
-    let frame = (side(upright.w)?, side(upright.h)?);
-    let inside = (side(image.w)?, side(image.h)?);
+    let signed = |n: u32| i32::try_from(n).ok();
+    let frame = (signed(upright.w)?, signed(upright.h)?);
+    let inside = (signed(image.w)?, signed(image.h)?);
     Some(Placement {
         position: turn_point(
             view.transform,

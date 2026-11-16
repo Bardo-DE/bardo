@@ -1,5 +1,6 @@
 //! `bardo_window_manager_v1` (C50): what an app says about its toplevel (first-mouse regions,
 //! frame, role, accessibility root, edited) and what it learns back (emphasis, placement).
+//!
 //! Advertised from P0 so layer-shell-host can tell casement apart by this global; requests are
 //! stored in the model, `request_placement` is acted on from P2 (the model's `place`).
 //!
@@ -213,7 +214,7 @@ where
                 }
                 state.quire_window_events(events);
             }
-            bardo_window_manager_v1::Request::Destroy => {}
+            // `Destroy`, and a request a later protocol adds: nothing to do.
             _ => {}
         }
     }
@@ -505,6 +506,10 @@ pub fn on_request_placement(
 }
 
 /// Sends `window` its emphasis (from focus).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_emphasis(
     part: &mut QuireWindowPart,
     window: WindowId,
@@ -534,6 +539,10 @@ pub fn apply_emphasis(
 /// assert!(apply_placement(part, WindowId(1), PlacementMark::Left).is_ok());
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_placement(
     part: &mut QuireWindowPart,
     window: WindowId,
@@ -553,6 +562,10 @@ pub fn apply_placement(
 
 /// Tells `client` the person asked its app to quit: `quit` on each manager it holds at
 /// version 2 or later. A client with none (or none alive) has nobody to tell.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_quit(part: &mut QuireWindowPart, client: ClientKey) -> Result<(), WaylandFault> {
     let live: Vec<&BardoWindowManagerV1> = part
         .quit_managers

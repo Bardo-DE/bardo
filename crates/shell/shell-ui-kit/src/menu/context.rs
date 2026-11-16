@@ -32,9 +32,14 @@ pub struct ContextMenuLink<Model: MenuModel> {
 }
 
 /// The root of `Model`'s popup (`HostRoot::new(context_menu_popup::<Model>)`).
+#[expect(
+    clippy::missing_errors_doc,
+    reason = "`Element` is dioxus's `Result` alias; a component renders or returns `Ok`, and the caller is the dioxus runtime"
+)]
 pub fn context_menu_popup<Model: MenuModel>() -> Element {
-    ui_blitz::provide_host();
-    crate::root::provide_keymap();
+    // Both provide into the component's context; the handles they return are not needed here.
+    let _ = ui_blitz::provide_host();
+    let _ = crate::root::provide_keymap();
     let link = use_context::<ContextMenuLink<Model>>();
     let surface = use_surface();
     let gone = link.reports.clone();

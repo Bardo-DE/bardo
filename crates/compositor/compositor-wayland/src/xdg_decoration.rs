@@ -96,9 +96,10 @@ pub fn mode_for(wish: DecorationWish) -> DecorationMode {
     }
 }
 
-/// `toplevel` expressed `wish` (a new decoration object counts as `Unset`). The model has no
-/// event for it: the answer is [`mode_for`] the wish, carried out by [`apply_mode`], and the
-/// handler does both, so this returns nothing for the model.
+/// `toplevel` expressed `wish` (a new decoration object counts as `Unset`).
+///
+/// The model has no event for it: the answer is [`mode_for`] the wish, carried out by
+/// [`apply_mode`], and the handler does both, so this returns nothing for the model.
 pub fn on_decoration_mode(
     part: &mut XdgDecorationPart,
     toplevel: &ToplevelSurface,
@@ -116,9 +117,14 @@ fn wire_mode(mode: DecorationMode) -> Mode {
     }
 }
 
-/// Tells `toplevel` who draws its frame (sent with its next configure; a toplevel not yet
-/// configured gets it with its initial one, and one already configured gets a configure now,
-/// because the protocol answers every `set_mode` with one).
+/// Tells `toplevel` who draws its frame (sent with its next configure.
+///
+/// A toplevel not yet configured gets it with its initial one, and one already configured gets a
+/// configure now, because the protocol answers every `set_mode` with one).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_mode(
     part: &mut XdgDecorationPart,
     toplevel: &ToplevelSurface,

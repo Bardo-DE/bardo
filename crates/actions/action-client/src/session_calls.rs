@@ -15,6 +15,11 @@ use provenance::SessionId;
 impl<T: Transport> Intents<T> {
     /// What memory knows for the session's Space, every untrusted text a handle
     /// (`Session.Recall`, the companion only).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_recall(
         &self,
         session: SessionId,
@@ -32,6 +37,11 @@ impl<T: Transport> Intents<T> {
 
     /// The durable log of sessions (`Session.Stored`): the sessions the caller may bring back, or
     /// a page of one session's rows.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_stored(&self, ask: StoredAsk) -> Result<StoredView, ClientError> {
         self.ask(IntentsRequest::SessionStored { ask }, |r| match r {
             IntentsReply::Stored(view) => Some(view),
@@ -42,6 +52,11 @@ impl<T: Transport> Intents<T> {
 
     /// Asks the quarantined reader (`Session.Read`, the companion only): a closed-set value
     /// comes back plain, any text in it as a handle.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_read(
         &self,
         session: SessionId,
@@ -56,6 +71,11 @@ impl<T: Transport> Intents<T> {
 
     /// Hands the router an episode to record (`Session.Note`, the companion only): the idle
     /// pass's narrative, or a side conversation's episode.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_note(&self, session: SessionId, note: NoteAsk) -> Result<(), ClientError> {
         self.ask(IntentsRequest::SessionNote { session, note }, |r| match r {
             IntentsReply::Done => Some(()),
@@ -65,6 +85,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The session's task policy, if the writer made one (`Session.TaskPolicy`).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_task_policy(
         &self,
         session: SessionId,
@@ -78,6 +103,11 @@ impl<T: Transport> Intents<T> {
 
     /// Narrows a subagent's task policy from what the person said to it (`Session.Narrow`, the
     /// companion only): never wider than the policy it has.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_narrow(
         &self,
         session: SessionId,
@@ -95,6 +125,11 @@ impl<T: Transport> Intents<T> {
 
     /// What the session holds by handle: shape, source and size, never the content
     /// (`Session.Handles`, the companion only).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_handles(
         &self,
         session: SessionId,

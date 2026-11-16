@@ -236,7 +236,6 @@ impl IdleBook {
             (BTreeMap::new(), Moved::default()),
             |(mut kept, moved), (id, watch)| {
                 let (phase, moved) = match (watch.honours_inhibitors, inhibited, watch.phase) {
-                    (false, _, phase) => (phase, moved),
                     (true, true, Phase::Idle) => {
                         idle.remove(&id);
                         (Phase::Held, moved.signal(Signal::Resumed(id)))
@@ -249,7 +248,8 @@ impl IdleBook {
                         Phase::Quiet { since: now },
                         moved.effect(watch.arm(id, now)),
                     ),
-                    (true, _, phase) => (phase, moved),
+                    // Not honouring inhibitors, or no change to make: the phase stays.
+                    (_, _, phase) => (phase, moved),
                 };
                 kept.insert(id, Watch { phase, ..watch });
                 (kept, moved)

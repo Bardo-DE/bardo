@@ -28,18 +28,27 @@ pub enum GreetError {
     Broken,
 }
 
-/// The refusal a refusal body carries, when it is one: `Some(None)` for a code not known here.
-fn refusal_of(body: &[u8]) -> Option<Option<Refusal>> {
-    let value: serde_json::Value = serde_json::from_slice(body).ok()?;
-    let code = value.get("error")?.get("code")?.as_str()?;
-    Some(Refusal::from_slug(code))
+/// What a refusal body says: the refusal it carries (`Refused(None)` for a code not known here),
+/// or `NotLending` when it is not a refusal body at all.
+fn refusal_error(body: &[u8]) -> GreetError {
+    let code = serde_json::from_slice::<serde_json::Value>(body)
+        .ok()
+        .and_then(|value| value.get("error")?.get("code")?.as_str().map(str::to_owned));
+    code.map_or(GreetError::NotLending, |code| {
+        GreetError::Refused(Refusal::from_slug(&code))
+    })
 }
 
 /// Asks the computer on `stream` for its hello. `host` is what the request names as the host.
+///
+/// # Errors
+///
+/// Returns [`GreetError`] when the hello could not be read.
 pub async fn greet(stream: TcpStream, host: &str) -> Result<Hello, GreetError> {
     let (mut sender, connection) = http1::handshake::<_, Empty<Bytes>>(TokioIo::new(stream))
         .await
-        .map_err(|_| GreetError::Broken)?;
+        .ok()
+        .ok_or(GreetError::Broken)?;
     let driver = tokio::spawn(async move {
         let _ = connection.await;
     });
@@ -48,17 +57,19 @@ pub async fn greet(stream: TcpStream, host: &str) -> Result<Hello, GreetError> {
         .uri(HELLO_PATH)
         .header(hyper::header::HOST, host)
         .body(Empty::<Bytes>::new())
-        .map_err(|_| GreetError::Broken)?;
+        .ok()
+        .ok_or(GreetError::Broken)?;
     let answer = async {
         let response = sender
             .send_request(request)
             .await
-            .map_err(|_| GreetError::Broken)?;
+            .ok()
+            .ok_or(GreetError::Broken)?;
         let status = response.status();
         let mut body = response.into_body();
         let mut bytes = Vec::new();
         while let Some(frame) = body.frame().await {
-            let frame = frame.map_err(|_| GreetError::Broken)?;
+            let frame = frame.ok().ok_or(GreetError::Broken)?;
             if let Some(data) = frame.data_ref() {
                 if bytes.len() + data.len() > MOST {
                     return Err(GreetError::NotLending);
@@ -73,6 +84,6 @@ pub async fn greet(stream: TcpStream, host: &str) -> Result<Hello, GreetError> {
     let (status, bytes) = answer?;
     match status {
         StatusCode::OK => Hello::parse(&bytes).ok_or(GreetError::NotLending),
-        _ => Err(refusal_of(&bytes).map_or(GreetError::NotLending, GreetError::Refused)),
+        _ => Err(refusal_error(&bytes)),
     }
 }

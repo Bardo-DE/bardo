@@ -8,8 +8,9 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 /// What the agent app asks to be run, for a way of signing in that needs a terminal: arguments
-/// appended to its usual command, and variables set over its usual ones. Both are the agent's
-/// own words, passed on as given and never shown.
+/// appended to its usual command, and variables set over its usual ones.
+///
+/// Both are the agent's own words, passed on as given and never shown.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TerminalLogin {
     /// Arguments to append to the agent's command.
@@ -38,9 +39,10 @@ pub struct TerminalLine {
 }
 
 /// What a terminal is to run for a sign-in, resolved from the agent's entry in the list of coding
-/// agents, so the shell guesses nothing. `plain` is the agent's own command with the login added;
-/// `confined` is the same program inside the sandbox the agent host would put it in, and is what
-/// to run whenever it is present.
+/// agents, so the shell guesses nothing.
+///
+/// `plain` is the agent's own command with the login added; `confined` is the same program inside
+/// the sandbox the agent host would put it in, and is what to run whenever it is present.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TerminalRun {
     /// The command as the list names it. Its environment is set over the terminal's own.
@@ -75,10 +77,11 @@ pub struct SignInWay {
     pub how: SignInHow,
 }
 
-/// A request to the shell: open a terminal window that runs the agent app's own command with
-/// `login` added, inside the helper's sandbox and with the agent's login folder, so the sign-in
-/// lands where the agent will read it. When the window closes the shell tells the companion, which
-/// starts the helper again.
+/// A request to the shell.
+///
+/// Open a terminal window that runs the agent app's own command with `login` added, inside the
+/// helper's sandbox and with the agent's login folder, so the sign-in lands where the agent will
+/// read it. When the window closes the shell tells the companion, which starts the helper again.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TerminalRequest {
     /// The helper the person is signing in for.
@@ -98,9 +101,10 @@ pub struct TerminalRequest {
     pub handoff: Option<SessionId>,
 }
 
-/// What an agent app said in answer to a job. It is the agent model's text: the board labels it
-/// untrusted, a planner reads it only as a handle and never as an instruction, and it never
-/// becomes another helper's goal.
+/// What an agent app said in answer to a job.
+///
+/// It is the agent model's text: the board labels it untrusted, a planner reads it only as a handle
+/// and never as an instruction, and it never becomes another helper's goal.
 ///
 /// It crosses the bus between the board and the host of the agent apps as the plain text it is.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]

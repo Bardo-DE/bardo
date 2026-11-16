@@ -1,5 +1,6 @@
-//! Parameters as a terminal types them, converted by the manifest's declared type: text (`-`
-//! reads stdin), a number, a choice (checked against the manifest), a date, an entity
+//! Parameters as a terminal types them, converted by the manifest's declared type.
+//!
+//! Text (`-` reads stdin), a number, a choice (checked against the manifest), a date, an entity
 //! (`<kind>:<key>`, or a handle `#<n>` printed by an earlier command), a file, a link. A value is
 //! checked here only far enough to say what is wrong; the router checks it again against the same
 //! manifest, and labels it `Untrusted, Source::Cli`.
@@ -89,7 +90,8 @@ fn entity(kind: &EntityKind, reading: &Reading<'_>, raw: &str) -> Result<EntityI
         .owner_of(kind, reading.owner)
         .ok_or_else(|| Failure::usage(format!("no installed app declares {kind}")))?;
     let key = EntityKey::parse(key)
-        .map_err(|_| Failure::usage(format!("{key:?} is not a key of a {kind}")))?;
+        .ok()
+        .ok_or_else(|| Failure::usage(format!("{key:?} is not a key of a {kind}")))?;
     Ok(EntityId {
         app,
         kind: kind.clone(),
@@ -120,6 +122,11 @@ fn text(
 }
 
 /// One word as a value of `ty`.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Value, Failure> {
     let usage = |why: String| Failure::usage(why);
     if handle(raw).is_some() && matches!(ty, ParamType::Entities(_)) {
@@ -173,19 +180,32 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
         ParamType::File => file(raw).map(Value::File),
         ParamType::Url => Url::parse(raw)
             .map(|_| Value::Url(raw.to_owned()))
-            .map_err(|_| usage("expected a link such as https://example.org".to_owned())),
+            .ok()
+            .ok_or_else(|| usage("expected a link such as https://example.org".to_owned())),
     }
 }
 
 /// A path as the absolute file it names.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn file(raw: &str) -> Result<FileRef, Failure> {
-    let path =
-        std::path::absolute(raw).map_err(|_| Failure::usage(format!("{raw:?} is not a path")))?;
+    let path = std::path::absolute(raw)
+        .ok()
+        .ok_or_else(|| Failure::usage(format!("{raw:?} is not a path")))?;
     FileRef::parse(&path.to_string_lossy())
-        .map_err(|_| Failure::usage(format!("{raw:?} is not a usable path")))
+        .ok()
+        .ok_or_else(|| Failure::usage(format!("{raw:?} is not a usable path")))
 }
 
 /// What the action acts on, from the words after its name.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn target(
     decl: &ActionDecl,
     reading: &Reading<'_>,
@@ -219,6 +239,11 @@ pub fn target(
 }
 
 /// The arguments of one call: every `--param` the action declares, converted, and nothing else.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn arguments(
     decl: &ActionDecl,
     reading: &mut Reading<'_>,

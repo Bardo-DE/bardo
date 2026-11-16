@@ -33,13 +33,19 @@ fn tint(coverage: &Plane, colour: [f32; 3], opacity: f32) -> Rgba32FImage {
 }
 
 /// 08 2.5 scales its 48 px values by `plate side / 48`; never below one pixel.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 fn unit(grid: PlateGrid) -> f32 {
     (grid.side as f32 / 48.0).max(1.0)
 }
 
-/// `flat` over the `--shadow-2` drop shadow (08 2.5: `0 6px 16px -6px rgba(26,30,26,.30)` at
-/// 48 px, scaled). The shadow is a squircle shrunk by the spread, moved down by the offset
-/// and blurred with sigma = blur / 2; whatever falls past the canvas edge is lost.
+/// `flat` over the `--shadow-2` drop shadow (08 2.5: `0 6px 16px -6px rgba(26,30,26,.30)` at 48 px,
+/// scaled).
+///
+/// The shadow is a squircle shrunk by the spread, moved down by the offset and blurred with sigma =
+/// blur / 2; whatever falls past the canvas edge is lost.
 #[must_use]
 pub fn drop_shadow(flat: &Rgba32FImage, grid: PlateGrid, t: &Template) -> Rgba32FImage {
     let s = unit(grid);

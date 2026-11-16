@@ -19,11 +19,12 @@ pub struct Candidate {
     pub clip: Option<LogicalRect>,
 }
 
-/// The surface under `at`: the first of `candidates` (the caller lists them front to back:
-/// lock surfaces, overlay and top layers, windows by stacking, bottom and background layers)
-/// that has a surface, a subsurface or a popup with input there, and where that surface's
-/// top-left is. A surface whose input region excludes the point is skipped, so a transparent
-/// bar does not swallow the pointer.
+/// The surface under `at`.
+///
+/// The first of `candidates` (the caller lists them front to back: lock surfaces, overlay and top
+/// layers, windows by stacking, bottom and background layers) that has a surface, a subsurface or a
+/// popup with input there, and where that surface's top-left is. A surface whose input region
+/// excludes the point is skipped, so a transparent bar does not swallow the pointer.
 #[must_use]
 pub fn surface_under(candidates: &[Candidate], at: LogicalPoint) -> Option<SurfaceAt> {
     let point: Point<f64, Logical> = Point::from((f64::from(at.x), f64::from(at.y)));

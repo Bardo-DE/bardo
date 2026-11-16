@@ -8,9 +8,11 @@ use smithay::reexports::wayland_server::{Client, DisplayHandle, GlobalDispatch};
 use smithay::wayland::GlobalData;
 use smithay::wayland::idle_inhibit::{IdleInhibitHandler, IdleInhibitManagerState};
 
-/// Inhibitors the session counts in all, whoever holds them: each is looked at whenever the
-/// windows change, so the walk is bounded however many clients ask. One past it is not counted
-/// (a player never loses its connection over another client's inhibitors).
+/// Inhibitors the session counts in all, whoever holds them: each is looked at whenever the windows
+/// change, so the walk is bounded however many clients ask.
+///
+/// One past it is not counted (a player never loses its connection over another client's
+/// inhibitors).
 pub const MAX_INHIBITORS: usize = 128;
 
 /// `zwp_idle_inhibit_manager_v1` and the surfaces that hold idleness off (one entry per live
@@ -88,9 +90,11 @@ impl IdleInhibitPart {
     }
 }
 
-/// `surface` started inhibiting idleness (it counts while visible); says whether idleness is
-/// now held off. The model has no idle event, so the answer goes to
-/// `idle_notify::on_inhibit` instead of the core loop.
+/// `surface` started inhibiting idleness (it counts while visible); says whether idleness is now
+/// held off.
+///
+/// The model has no idle event, so the answer goes to `idle_notify::on_inhibit` instead of the core
+/// loop.
 pub fn on_inhibit(part: &mut IdleInhibitPart, surface: &WlSurface) -> bool {
     part.forget_dead();
     if part.inhibitors.len() < MAX_INHIBITORS {

@@ -1,6 +1,7 @@
 //! `wp_security_context_manager_v1`: a sandbox engine (Flatpak) makes a listening socket whose
-//! clients carry the engine's facts; they connect as `ConnectionRole::Sandboxed` and see less
-//! (I7). Hidden from sandboxed clients themselves.
+//! clients carry the engine's facts; they connect as `ConnectionRole::Sandboxed` and see less (I7).
+//!
+//! Hidden from sandboxed clients themselves.
 
 use crate::states::GlobalFilter;
 use account_core::{PeerIdentity, SandboxFacts};
@@ -44,10 +45,12 @@ impl SecurityContextPart {
     }
 }
 
-/// The sandbox facts a security context carries (engine, app id, instance), as porter reads
-/// them; clients of its listener connect as `Sandboxed(facts)`. The handler inserts the
-/// listener into the event loop. A field the sandbox engine did not set is the empty text,
-/// which porter's `identity_of` never takes for a name, so the clients stay unproven.
+/// The sandbox facts a security context carries (engine, app id, instance), as porter reads them;
+/// clients of its listener connect as `Sandboxed(facts)`.
+///
+/// The handler inserts the listener into the event loop. A field the sandbox engine did not set is
+/// the empty text, which porter's `identity_of` never takes for a name, so the clients stay
+/// unproven.
 ///
 /// No event: a listener is not a client, and the model first hears of a sandboxed client when
 /// it connects (`Event::ClientConnected` carries the role).
@@ -76,14 +79,15 @@ pub enum Maker {
     Other,
 }
 
-/// What the clients of a context are known as. A context is its creator's claim about another
-/// process (any public client may make one, and the engine's name, app id and instance id are
-/// whatever it wrote), so only the known sandbox launcher can give its clients an app: facts
-/// that would prove an app (`facts_prove`) count only when the `maker` is the launcher and is
-/// itself proven. A context made by any other program, however well that program is proven
-/// (a root-owned image in a scope it named itself is proven), leaves every client of its
-/// socket with no app, an unknown one (CASW-04, owner decision 2026-10-17). The clients' powers
-/// do not depend on this: they are sandboxed whoever made the context.
+/// What the clients of a context are known as.
+///
+/// A context is its creator's claim about another process (any public client may make one, and the
+/// engine's name, app id and instance id are whatever it wrote), so only the known sandbox launcher
+/// can give its clients an app: facts that would prove an app (`facts_prove`) count only when the
+/// `maker` is the launcher and is itself proven. A context made by any other program, however well
+/// that program is proven (a root-owned image in a scope it named itself is proven), leaves every
+/// client of its socket with no app, an unknown one (CASW-04, owner decision 2026-10-17). The
+/// clients' powers do not depend on this: they are sandboxed whoever made the context.
 #[must_use]
 pub fn identity_for_clients(
     creator: &PeerIdentity,

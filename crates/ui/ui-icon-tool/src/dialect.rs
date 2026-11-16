@@ -60,9 +60,11 @@ pub struct Tint {
     pub strength: f32,
 }
 
-/// The palette: eight named hues, evenly spread every 45 degrees around the `OKLCh` wheel (round
-/// five; round four had six, unevenly spaced: slate 255, teal 200, sage 150, ochre 85, clay 40,
-/// plum 320). Every icon's colour comes from one of them.
+/// The palette.
+///
+/// Eight named hues, evenly spread every 45 degrees around the `OKLCh` wheel (round five; round
+/// four had six, unevenly spaced: slate 255, teal 200, sage 150, ochre 85, clay 40, plum 320).
+/// Every icon's colour comes from one of them.
 pub const PALETTE: [(&str, f32); 8] = [
     ("clay", 40.0),
     ("ochre", 85.0),
@@ -90,8 +92,8 @@ impl FromStr for Tint {
 }
 
 impl<'de> Deserialize<'de> for Tint {
-    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        String::deserialize(d)?
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        String::deserialize(deserializer)?
             .parse()
             .map_err(serde::de::Error::custom)
     }

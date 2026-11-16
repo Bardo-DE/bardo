@@ -9,9 +9,11 @@ use std::process::{Child, Command, Stdio};
 /// name.
 const WATCH: &str = r#"while kill -0 "$1" 2>/dev/null && ! grep -q ') Z ' "/proc/$1/stat" 2>/dev/null; do sleep 1; done; kill -9 -- "-$2" 2>/dev/null"#;
 
-/// A child killed by PID, and waited for, when this drops: held for a whole test, so it runs at
-/// the end, on a panic and on an early return. `spawn` must be given a command that does not
-/// fork away (a daemon run with `--nofork`), or the PID is not the daemon's.
+/// A child killed by PID, and waited for, when this drops: held for a whole test, so it runs at the
+/// end, on a panic and on an early return.
+///
+/// `spawn` must be given a command that does not fork away (a daemon run with `--nofork`), or the
+/// PID is not the daemon's.
 ///
 /// The child leads a process group of its own. On drop the group gets SIGTERM and a grace period
 /// (a daemon that put its own children in groups of their own, as inferd does with its engines,
@@ -31,6 +33,10 @@ pub struct Reaped {
 
 impl Reaped {
     /// Starts `command` and guards it, with a watchdog for the owner dying without unwinding.
+    ///
+    /// # Errors
+    ///
+    /// Returns an I/O error when the command or the watchdog could not be started.
     pub fn spawn(command: &mut Command) -> io::Result<Self> {
         let child = command.process_group(0).spawn()?;
         let watchdog = Command::new("/bin/sh")

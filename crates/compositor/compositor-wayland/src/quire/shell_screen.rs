@@ -1,7 +1,8 @@
-//! `bardo_shell_v1` version 7: what the bar does in full screen (`set_full_screen_bar`), how much
-//! motion the person allows (`set_motion`), and the edge reveal that names its output
-//! (`reveal_on_output`, sent in place of `reveal` to a shell that bound version 7). The model
-//! decides; this only carries.
+//! `bardo_shell_v1` version 7.
+//!
+//! What the bar does in full screen (`set_full_screen_bar`), how much motion the person allows
+//! (`set_motion`), and the edge reveal that names its output (`reveal_on_output`, sent in place of
+//! `reveal` to a shell that bound version 7). The model decides; this only carries.
 
 use super::shell::QuireShellPart;
 use compositor_core::shell::ShellRequest;

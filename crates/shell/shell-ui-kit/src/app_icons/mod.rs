@@ -1,6 +1,8 @@
-//! App icons in the icon style (design/08-ICONS.md §4): every app's own (hicolor, or the entry's
-//! own file) icon on quire's neutral plate, re-coloured for `icons.style` (Colour, Muted,
-//! Monochrome) and `icons.monochrome_tint`. Every entry takes this one path.
+//! App icons in the icon style (design/08-ICONS.md §4).
+//!
+//! Every app's own (hicolor, or the entry's own file) icon on quire's neutral plate, re-coloured
+//! for `icons.style` (Colour, Muted, Monochrome) and `icons.monochrome_tint`. Every entry takes
+//! this one path.
 //!
 //! Pure: [`size`] (the raster for a size at a scale), [`look`] (the settings read against the
 //! Space), [`key`] and [`plan`]. Effects: [`render`] (making a raster) and [`cache`] (making a

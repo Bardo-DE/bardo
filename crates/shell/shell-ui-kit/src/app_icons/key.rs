@@ -1,6 +1,8 @@
-//! A re-tinted icon's identity in the cache: which file, at which raster size, in which style,
-//! tint and scheme. The output scale is folded into the size (a 48 px tile at 1.5 and a 72 px one at 1
-//! are the same raster). Pure.
+//! A re-tinted icon's identity in the cache: which file, at which raster size, in which style, tint
+//! and scheme.
+//!
+//! The output scale is folded into the size (a 48 px tile at 1.5 and a 72 px one at 1 are the same
+//! raster). Pure.
 
 use std::path::PathBuf;
 
@@ -21,6 +23,11 @@ pub struct TintKey {
 impl TintKey {
     /// `tint`, rounded to the key's steps.
     #[must_use]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the hue is reduced below 360 degrees (3600 tenths) and the chroma is clamped to 0..=1 (10000 steps), both non-negative and within u16"
+    )]
     pub fn of(tint: Tint) -> TintKey {
         let hue = (f64::from(tint.hue).rem_euclid(360.0) * 10.0).round() as u16 % 3600;
         let chroma = (f64::from(tint.chroma).clamp(0.0, 1.0) * 10_000.0).round() as u16;
@@ -145,6 +152,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::case_sensitive_file_extension_comparisons,
+        reason = "the cache file name is made by this crate and is always lower case"
+    )]
     fn file_names_are_readable_and_stable() {
         let term = key(
             PathBuf::from("/usr/share/icons/hicolor/scalable/apps/terminal.svg"),

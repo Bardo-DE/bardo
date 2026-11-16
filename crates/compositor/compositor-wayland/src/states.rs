@@ -18,10 +18,11 @@ use compositor_core::policy::{ConnectionRole, GlobalKind, PowerSet, advertised_t
 use smithay::input::SeatHandler;
 use smithay::reexports::wayland_server::Client;
 
-/// One field per protocol module: what the composition root holds as `State::wl`. Lanes fill
-/// each module's functions; the field set changes only in a freeze (each delta freeze adds its
-/// modules' parts). Generic over the composition root's state type `D` only because smithay's
-/// seat is.
+/// One field per protocol module: what the composition root holds as `State::wl`.
+///
+/// Lanes fill each module's functions; the field set changes only in a freeze (each delta freeze
+/// adds its modules' parts). Generic over the composition root's state type `D` only because
+/// smithay's seat is.
 #[derive(Debug)]
 pub struct WaylandStates<D: SeatHandler + 'static> {
     /// Client keys minted as clients connect.
@@ -141,9 +142,10 @@ pub struct WaylandStates<D: SeatHandler + 'static> {
     pub quire_shell: quire::shell::QuireShellPart,
 }
 
-/// Which globals a connection sees: the decision function takes the global, the connection's
-/// role and the powers it was refused at connect time (`compositor_core::policy::advertised_to`,
-/// I7). Copied into every filtered global's `can_view`.
+/// Which globals a connection sees: the decision function takes the global, the connection's role
+/// and the powers it was refused at connect time (`compositor_core::policy::advertised_to`, I7).
+///
+/// Copied into every filtered global's `can_view`.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct GlobalFilter;
 

@@ -138,9 +138,10 @@ pub fn popups_of(part: &XdgShellPart) -> Vec<PopupSurface> {
     part.popup_surfaces.values().cloned().collect()
 }
 
-/// The room a reactive popup is constrained by changed (its parent moved): a mapped popup whose
-/// positioner is `reactive` is placed again and configured with the new position
-/// (`xdg_positioner.set_reactive`). Any other popup stays where it is.
+/// The room a reactive popup is constrained by changed (its parent moved).
+///
+/// A mapped popup whose positioner is `reactive` is placed again and configured with the new
+/// position (`xdg_positioner.set_reactive`). Any other popup stays where it is.
 pub fn on_room_changed(popup: &PopupSurface, bounds: PopupBounds) {
     if !popup.is_initial_configure_sent() {
         return;
@@ -162,8 +163,9 @@ pub fn on_room_changed(popup: &PopupSurface, bounds: PopupBounds) {
     }
 }
 
-/// A mapped popup's acked configure takes effect at once, not at the next commit: "the client
-/// must acknowledge the new popup configuration for the new position to take effect"
+/// A mapped popup's acked configure takes effect at once, not at the next commit.
+///
+/// "the client must acknowledge the new popup configuration for the new position to take effect"
 /// (`xdg_popup.repositioned`). Before the first commit the ack waits for it as ever.
 pub fn on_popup_acked(surface: &WlSurface, configure: PopupConfigure) {
     with_states(surface, |states| {

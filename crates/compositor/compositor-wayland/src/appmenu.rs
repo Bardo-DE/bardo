@@ -1,7 +1,8 @@
-//! `org_kde_kwin_appmenu_manager` / `org_kde_kwin_appmenu`: a Qt client tells the compositor
-//! the D-Bus service and object path of its `com.canonical.dbusmenu` (P3-MN). casement never
-//! reads the menu; it records the address on the window (`WindowHintChange::Menu`) and the
-//! shell hears it through `bardo_desktop_app_v1.menu_source`.
+//! `org_kde_kwin_appmenu_manager` / `org_kde_kwin_appmenu`: a Qt client tells the compositor the
+//! D-Bus service and object path of its `com.canonical.dbusmenu` (P3-MN).
+//!
+//! casement never reads the menu; it records the address on the window (`WindowHintChange::Menu`)
+//! and the shell hears it through `bardo_desktop_app_v1.menu_source`.
 //!
 //! This file is the meaning of the requests as pure functions. The global itself needs the
 //! protocol's generated server code, which no crate in the workspace carries yet: the
@@ -33,9 +34,10 @@ impl AppMenuPart {
     }
 }
 
-/// `set_address`: the window's menu is at service `service`, object `path`. An address the
-/// D-Bus specification does not allow is ignored (the previous one stands). `mapped` says
-/// whether the model already has the window.
+/// `set_address`: the window's menu is at service `service`, object `path`.
+///
+/// An address the D-Bus specification does not allow is ignored (the previous one stands). `mapped`
+/// says whether the model already has the window.
 pub fn on_address(
     part: &mut AppMenuPart,
     window: WindowId,
@@ -91,6 +93,7 @@ fn announce(window: WindowId, source: MenuSource, mapped: bool) -> Vec<Event> {
 
 /// Whether `name` is a well-formed D-Bus bus name: a unique name (`:1.42`) or a well-known one
 /// (`org.kde.Foo`), at most 255 bytes, two or more elements of letters, digits, `_` and `-`.
+///
 /// Elements of a well-known name do not start with a digit.
 #[must_use]
 pub fn valid_bus_name(name: &str) -> bool {

@@ -1,7 +1,9 @@
 //! `gtk_shell1` (only `gtk_surface1.set_dbus_properties`, P3-MN): a GTK 3 client tells the
-//! compositor where its `org.gtk.Menus` and `org.gtk.Actions` objects are. casement records
-//! them on the window and the shell hears them through `bardo_desktop_app_v1.menu_source`.
-//! Every other request of the protocol is the glue's to accept and ignore.
+//! compositor where its `org.gtk.Menus` and `org.gtk.Actions` objects are.
+//!
+//! casement records them on the window and the shell hears them through
+//! `bardo_desktop_app_v1.menu_source`. Every other request of the protocol is the glue's to accept
+//! and ignore.
 //!
 //! Pure functions only, like [`crate::appmenu`]; the generated server code is the blocked
 //! dependency (FINDINGS, "Global menus").
@@ -28,8 +30,9 @@ pub struct DbusProperties {
     pub unique_bus_name: Option<String>,
 }
 
-/// `set_dbus_properties`: a client that names a bus and a menu bar path has a global menu. A
-/// call without a menu bar path or with a malformed name or path clears the window's menu: GTK
+/// `set_dbus_properties`: a client that names a bus and a menu bar path has a global menu.
+///
+/// A call without a menu bar path or with a malformed name or path clears the window's menu: GTK
 /// calls it again with the new values whenever its menu model changes.
 pub fn on_properties(
     part: &mut AppMenuPart,

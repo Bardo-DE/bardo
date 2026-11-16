@@ -187,7 +187,6 @@ where
             | Request::SetMasteringLuminance { .. } => {
                 resource.post_error(Error::UnsupportedFeature, "this feature is not served");
             }
-            Request::SetMaxCll { .. } | Request::SetMaxFall { .. } => {}
             Request::Create { image_description } => {
                 let given = *self.given();
                 match (given.primaries, given.transfer) {
@@ -221,6 +220,7 @@ where
                     }
                 }
             }
+            // `SetMaxCll`, `SetMaxFall`, and a request a later protocol adds: nothing to do.
             _ => {}
         }
     }
@@ -269,10 +269,12 @@ where
     }
 }
 
-/// Sends the information asked for since the last call. `done` is a destructor event: sent from
-/// inside the `get_information` that created the object, it would destroy the object before the
-/// request returns, and the backend then writes the new object's data into freed memory. So the
-/// handler queues the object and the loop calls this after every dispatch of the clients.
+/// Sends the information asked for since the last call.
+///
+/// `done` is a destructor event: sent from inside the `get_information` that created the object, it
+/// would destroy the object before the request returns, and the backend then writes the new
+/// object's data into freed memory. So the handler queues the object and the loop calls this after
+/// every dispatch of the clients.
 pub fn send_unsent(part: &mut super::ColorPart) {
     for (info, tag) in std::mem::take(&mut part.unsent) {
         if info.is_alive() {

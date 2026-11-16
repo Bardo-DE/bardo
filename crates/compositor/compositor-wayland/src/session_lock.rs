@@ -1,6 +1,7 @@
-//! `ext_session_lock_v1`: the lock screen. While locked, input reaches only lock surfaces
-//! (and only physical input, I3); a locker that dies leaves every output covered
-//! (`compositor_render::LockCoverElement`), never the session revealed.
+//! `ext_session_lock_v1`: the lock screen.
+//!
+//! While locked, input reaches only lock surfaces (and only physical input, I3); a locker that dies
+//! leaves every output covered (`compositor_render::LockCoverElement`), never the session revealed.
 //!
 //! The flow: `lock` stores the requesting locker and tells the model (`LockEvent::Requested`);
 //! the model draws covers and, once the locker's first surface has content, answers
@@ -109,9 +110,11 @@ impl SessionLockPart {
     }
 }
 
-/// A client asked to lock the session. A request while another locker holds or is taking the
-/// session is refused (the newcomer is dropped, which sends it `finished`); a locker that
-/// died since is reported first, so the newcomer takes the lock over.
+/// A client asked to lock the session.
+///
+/// A request while another locker holds or is taking the session is refused (the newcomer is
+/// dropped, which sends it `finished`); a locker that died since is reported first, so the newcomer
+/// takes the lock over.
 pub fn on_lock(part: &mut SessionLockPart, locker: SessionLocker) -> Vec<Event> {
     let mut events = poll_locker(part);
     let client = locker
@@ -152,8 +155,10 @@ enum Attach {
     Unchanged,
 }
 
-/// A lock surface committed: the first commit with a buffer on an output tells the model the
-/// locker covers it (`LockEvent::SurfaceCommitted`); one that removes its buffer no longer covers it
+/// A lock surface committed.
+///
+/// The first commit with a buffer on an output tells the model the locker covers it
+/// (`LockEvent::SurfaceCommitted`); one that removes its buffer no longer covers it
 /// (`LockEvent::SurfaceGone`).
 pub fn on_lock_surface_commit(part: &mut SessionLockPart, surface: &WlSurface) -> Vec<Event> {
     let Some(output) = part.output_of(surface) else {
@@ -239,6 +244,10 @@ pub fn poll_locker(part: &mut SessionLockPart) -> Vec<Event> {
 }
 
 /// Sends `locked` (every output is covered by a lock surface or a cover).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_locked(part: &mut SessionLockPart) -> Result<(), WaylandFault> {
     let locker = part.pending.take().ok_or(WaylandFault::SurfaceGone)?;
     part.held = Some(locker.ext_session_lock().clone());
@@ -252,6 +261,10 @@ pub fn apply_finished(part: &mut SessionLockPart) {
 }
 
 /// Sends `output`'s lock surface its size.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_lock_configure(
     part: &mut SessionLockPart,
     output: &OutputKey,

@@ -32,6 +32,10 @@ pub fn encode<T: Serialize>(msg: &T) -> Vec<u8> {
 }
 
 /// A message from one packet.
+///
+/// # Errors
+///
+/// Returns [`ProtocolError`] when the bytes are not a message of this protocol.
 pub fn decode<T: for<'de> Deserialize<'de>>(bytes: &[u8]) -> Result<T, ProtocolError> {
     if bytes.len() > MAX_PACKET {
         return Err(ProtocolError::TooLong(bytes.len()));

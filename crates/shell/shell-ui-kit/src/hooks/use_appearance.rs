@@ -7,9 +7,11 @@ use ui_settings::Environment;
 
 use crate::settings::SettingsFeed;
 
-/// An appearance a root pins in place of the desktop's: a test or a headless render provides it
-/// as a root context so its surfaces read neither the settings portal nor
-/// `bardo/appearance.toml`, and what they draw is the test's, not the developer's own desktop.
+/// An appearance a root pins in place of the desktop's.
+///
+/// A test or a headless render provides it as a root context so its surfaces read neither the
+/// settings portal nor `bardo/appearance.toml`, and what they draw is the test's, not the
+/// developer's own desktop.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct PinnedAppearance(pub Environment);
 
@@ -18,10 +20,11 @@ pub struct PinnedAppearance(pub Environment);
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct SwitchableAppearance(pub Signal<Environment>);
 
-/// The appearance every surface draws from: the root's [`SwitchableAppearance`] or
-/// [`PinnedAppearance`], else the [`SettingsFeed`]'s `appearance` (the daemon's one watch of
-/// `bardo/appearance.toml` and the settings portal). A root with none of them gets
-/// `Environment::default()`; no surface starts a watch of its own.
+/// The appearance every surface draws from.
+///
+/// The root's [`SwitchableAppearance`] or [`PinnedAppearance`], else the [`SettingsFeed`]'s
+/// `appearance` (the daemon's one watch of `bardo/appearance.toml` and the settings portal). A root
+/// with none of them gets `Environment::default()`; no surface starts a watch of its own.
 pub fn use_appearance() -> ReadSignal<Environment> {
     // Read once, so the branch below (and the hooks it calls) is the same on every render.
     let switchable = use_hook(try_consume_context::<SwitchableAppearance>);

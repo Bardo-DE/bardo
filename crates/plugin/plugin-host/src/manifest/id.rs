@@ -15,6 +15,10 @@ pub struct InvalidId {
 
 impl PluginId {
     /// `text` as an id, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`InvalidId`] when the text is not a plugin id.
     pub fn parse(text: &str) -> Result<PluginId, InvalidId> {
         let fits = !text.is_empty()
             && text.len() <= 64
@@ -33,6 +37,10 @@ impl PluginId {
     /// `text` as a reverse-DNS id such as `org.example.Paper`: dot-separated words of letters,
     /// digits, `-` and `_`, up to 128 characters. It names an extension's folder, so it can
     /// never be empty, hold a slash, or be `.` or `..`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`InvalidId`] when the text is not a plugin id.
     pub fn parse_dotted(text: &str) -> Result<PluginId, InvalidId> {
         let word = |word: &str| {
             !word.is_empty()

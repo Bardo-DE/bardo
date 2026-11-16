@@ -39,9 +39,10 @@ impl MaskReason {
     }
 }
 
-/// A window-local region and why it is hidden. A hint going in (from `computer_use_a11y_tree::secret_rects`,
-/// the sensitive-window rules and the text-input heuristic); in a [`MaskReport`], a region as
-/// applied, clamped to the window.
+/// A window-local region and why it is hidden.
+///
+/// A hint going in (from `computer_use_a11y_tree::secret_rects`, the sensitive-window rules and the
+/// text-input heuristic); in a [`MaskReport`], a region as applied, clamped to the window.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MaskRegion {
     /// Window-local logical pixels.
@@ -87,7 +88,7 @@ fn device_edge(logical: u32, scale: Scale120) -> u64 {
 /// buffer is not applied and not reported. Pure.
 #[must_use]
 pub fn apply_masks(
-    buf: PixelBuf,
+    buf: &PixelBuf,
     scale: Scale120,
     regions: &[MaskRegion],
 ) -> (PixelBuf, Vec<MaskRegion>) {

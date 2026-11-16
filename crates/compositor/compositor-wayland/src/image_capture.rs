@@ -1,6 +1,8 @@
-//! `ext_output_image_capture_source_manager_v1` and `ext_image_copy_capture_manager_v1`: a
-//! client captures an output (the screenshot tool, the screencast portal's stopgap). A capture
-//! is the same frame scanout shows (byte-exact on pixman); toplevel sources arrive with P2.
+//! `ext_output_image_capture_source_manager_v1` and `ext_image_copy_capture_manager_v1`: a client
+//! captures an output (the screenshot tool, the screencast portal's stopgap).
+//!
+//! A capture is the same frame scanout shows (byte-exact on pixman); toplevel sources arrive with
+//! P2.
 //!
 //! smithay owns the wire (buffer validation, the session's constraints, the frame's events);
 //! this module keeps the [`CaptureBook`] (which source shows which output, which session has a
@@ -175,6 +177,10 @@ pub fn on_source_destroyed(book: &mut CaptureBook, source: CaptureSourceId) {
 }
 
 /// A client started a session on `source`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn on_session(
     book: &mut CaptureBook,
     source: CaptureSourceId,
@@ -183,6 +189,10 @@ pub fn on_session(
 }
 
 /// A client asked for a frame: what to render.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn on_frame_request(
     book: &mut CaptureBook,
     session: CaptureSessionId,
@@ -192,6 +202,10 @@ pub fn on_frame_request(
 }
 
 /// The frame was copied into the client's buffer, presented at `at`: `ready`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_ready(
     book: &mut CaptureBook,
     session: CaptureSessionId,
@@ -201,6 +215,10 @@ pub fn apply_ready(
 }
 
 /// The frame could not be made: `failed`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_failed(
     book: &mut CaptureBook,
     session: CaptureSessionId,

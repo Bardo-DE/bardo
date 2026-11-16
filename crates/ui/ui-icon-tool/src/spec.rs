@@ -57,6 +57,11 @@ pub struct Spec {
 }
 
 /// Parses a spec from TOML text.
+///
+/// # Errors
+///
+/// Returns [`IconsError`] when the input is not a valid icon spec; the error names the input at
+/// fault.
 pub fn parse_spec(text: &str) -> Result<Spec, IconsError> {
     Ok(toml::from_str(text)?)
 }

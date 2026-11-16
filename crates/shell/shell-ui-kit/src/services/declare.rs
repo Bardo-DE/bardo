@@ -47,10 +47,11 @@ macro_rules! services {
             )*
         }
     ) => {
-        /// Every running service, each field named after its module. Surfaces read a service
-        /// through `shell-ui-kit::hooks::use_service` and command it through `use_control`;
-        /// nothing here is a Dioxus signal (review rule: never pass a Signal through
-        /// `Root::context`).
+        /// Every running service, each field named after its module.
+        ///
+        /// Surfaces read a service through `shell-ui-kit::hooks::use_service` and command it
+        /// through `use_control`; nothing here is a Dioxus signal (review rule: never pass a Signal
+        /// through `Root::context`).
         #[derive(Debug, Clone)]
         pub struct Services {
             $(

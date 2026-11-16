@@ -48,6 +48,11 @@ pub enum GrantFileError {
 }
 
 /// What the file at `path` holds, decoded: `none` when the file is missing or blank.
+///
+/// # Errors
+///
+/// Returns [`GrantFileError`] when the file could not be read, or when its text is not one `decode`
+/// accepts.
 pub fn read_grant_file<T, E: Display>(
     path: &Path,
     none: T,
@@ -67,6 +72,11 @@ pub fn read_grant_file<T, E: Display>(
 }
 
 /// The list the file at `path` holds: none when the file is missing or blank.
+///
+/// # Errors
+///
+/// Returns [`GrantFileError`] when the file could not be read, or when its text is not one `decode`
+/// accepts.
 pub fn read_grant_list<T, E: Display>(
     path: &Path,
     decode: impl FnOnce(&str) -> Result<Vec<T>, E>,
@@ -75,6 +85,10 @@ pub fn read_grant_list<T, E: Display>(
 }
 
 /// Replaces the file at `path` with `text`. A text that could not be encoded writes nothing.
+///
+/// # Errors
+///
+/// Returns [`GrantFileError`] when the consent file could not be read or written.
 pub fn write_grant_list<E: Display>(
     path: &Path,
     text: Result<String, E>,

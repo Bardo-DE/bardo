@@ -69,9 +69,11 @@ fn is_timed(surface: &WlSurface) -> bool {
     })
 }
 
-/// A committing surface set a timestamp barrier. Commits that carry a timestamp are held back
-/// by smithay before `CompositorHandler::commit` runs, so the handler calls this from a
-/// pre-commit hook, and the surface is watched until its barriers are signalled.
+/// A committing surface set a timestamp barrier.
+///
+/// Commits that carry a timestamp are held back by smithay before `CompositorHandler::commit` runs,
+/// so the handler calls this from a pre-commit hook, and the surface is watched until its barriers
+/// are signalled.
 pub fn on_barrier(part: &mut CommitTimingPart, surface: &WlSurface) -> Vec<Event> {
     // The mark says the surface is in the list already: no search (CASW-20).
     if is_timed(surface) && !watch_mark::set::<Watched>(surface) {
@@ -81,9 +83,14 @@ pub fn on_barrier(part: &mut CommitTimingPart, surface: &WlSurface) -> Vec<Event
 }
 
 /// `output` is about to present at `presented.at`: barriers due by then are signalled (the
-/// timestamps are `CLOCK_MONOTONIC`, as `presented.at` is: the caller adds the session's epoch). P0
-/// presents each surface on the first output (A28), so any output's frame counts. The clients
+/// timestamps are `CLOCK_MONOTONIC`, as `presented.at` is: the caller adds the session's epoch).
+///
+/// P0 presents each surface on the first output (A28), so any output's frame counts. The clients
 /// that had commits held back are listed for [`take_cleared`].
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_presented(
     part: &mut CommitTimingPart,
     output: &OutputKey,

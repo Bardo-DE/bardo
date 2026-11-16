@@ -23,7 +23,6 @@ use crate::{PORT, is_network_address};
 use account_tailscale::NodeId;
 use account_tailscale::{LocalApi, TailscaleError};
 use std::collections::{BTreeMap, BTreeSet};
-use std::future::Future;
 use std::net::{IpAddr, SocketAddr};
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, PoisonError};
@@ -107,9 +106,11 @@ pub struct Permit {
     _one: OwnedSemaphorePermit,
 }
 
-/// A connection that passed the judgement. Its parts are private, so a handler holds it whole
-/// (or takes the stream with the permit, [`Visit::into_stream`]): a handler that let the permit
-/// go early would let more connections in than the limits say.
+/// A connection that passed the judgement.
+///
+/// Its parts are private, so a handler holds it whole (or takes the stream with the permit,
+/// [`Visit::into_stream`]): a handler that let the permit go early would let more connections in
+/// than the limits say.
 #[derive(Debug)]
 pub struct Visit {
     stream: TcpStream,
@@ -341,24 +342,21 @@ async fn accept<V: Visits>(listener: TcpListener, shared: Arc<Shared<V>>) {
     let mut connections = JoinSet::new();
     let mut pause = Duration::from_millis(50);
     loop {
-        match listener.accept().await {
-            Ok((stream, from)) => {
-                pause = Duration::from_millis(50);
-                connections.spawn(connection(stream, from, Arc::clone(&shared)));
-                while connections.try_join_next().is_some() {}
-            }
+        if let Ok((stream, from)) = listener.accept().await {
+            pause = Duration::from_millis(50);
+            connections.spawn(connection(stream, from, Arc::clone(&shared)));
+            while connections.try_join_next().is_some() {}
+        } else {
             // Out of descriptors, or a connection that reset before it was taken: a passing
             // trouble. Wait a little, longer each time, and go on.
-            Err(_) => {
-                tokio::time::sleep(pause).await;
-                pause = (pause * 2).min(Duration::from_secs(2));
-            }
+            tokio::time::sleep(pause).await;
+            pause = (pause * 2).min(Duration::from_secs(2));
         }
     }
 }
 
 /// What a refusal is answered with: a JSON error in the shape model clients read.
-fn refusal_response(refusal: &Refusal, words: fn(&Refusal) -> &'static str) -> String {
+fn refusal_response(refusal: Refusal, words: fn(&Refusal) -> &'static str) -> String {
     let status = refusal.status();
     let reason = match status {
         403 => "Forbidden",
@@ -366,7 +364,7 @@ fn refusal_response(refusal: &Refusal, words: fn(&Refusal) -> &'static str) -> S
         _ => "Service Unavailable",
     };
     let body = serde_json::json!({
-        "error": {"message": words(refusal), "type": "refused", "code": refusal.slug()}
+        "error": {"message": words(&refusal), "type": "refused", "code": refusal.slug()}
     })
     .to_string();
     format!(
@@ -382,7 +380,7 @@ async fn refuse(mut stream: TcpStream, refusal: Refusal, words: fn(&Refusal) -> 
     let mut first = [0_u8; 4096];
     let _ = tokio::time::timeout(Duration::from_secs(10), stream.read(&mut first)).await;
     let _ = stream
-        .write_all(refusal_response(&refusal, words).as_bytes())
+        .write_all(refusal_response(refusal, words).as_bytes())
         .await;
     let _ = stream.shutdown().await;
 }

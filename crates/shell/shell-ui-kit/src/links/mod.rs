@@ -1,6 +1,7 @@
-//! The shared channels every surface root gets beside `Services` and `SettingsFeed`, one file
-//! per link: the daemon (or another surface) writes one end, the surfaces follow the other. A
-//! link is a watch channel or a value over one, never a Dioxus signal. [`Links`] holds them all;
+//! The shared channels every surface root gets beside `Services` and `SettingsFeed`, one file per
+//! link: the daemon (or another surface) writes one end, the surfaces follow the other.
+//!
+//! A link is a watch channel or a value over one, never a Dioxus signal. [`Links`] holds them all;
 //! the daemon builds it once and hands it to every root.
 
 mod actions;

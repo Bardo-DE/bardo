@@ -169,7 +169,9 @@ fn scan(words: &[String]) -> Result<Scan, Failure> {
 }
 
 fn session_word(word: &str) -> Result<SessionId, Failure> {
-    SessionId::parse(word).map_err(|_| Failure::usage(format!("{word:?} is not a session id")))
+    SessionId::parse(word)
+        .ok()
+        .ok_or_else(|| Failure::usage(format!("{word:?} is not a session id")))
 }
 
 fn command(scan: &Scan) -> Result<Command, Failure> {
@@ -186,7 +188,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
     }
     match words.as_slice() {
         _ if scan.has("help") => Ok(Command::Help),
-        [] if scan.has("last") => Ok(Command::Undo(UndoWhich::Last)),
+        [] | ["undo"] if scan.has("last") => Ok(Command::Undo(UndoWhich::Last)),
         [] => Err(Failure::usage("no command given (try: bardo-do --help)")),
         ["apps"] => no_flags("apps").map(|()| Command::Apps),
         ["apps", ..] => Err(Failure::usage("apps takes no arguments")),
@@ -203,7 +205,8 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 space: match scan.space.as_deref() {
                     None => SpaceId::desktop(),
                     Some(id) => SpaceId::parse(id)
-                        .map_err(|_| Failure::usage("--space is not a Space id"))?,
+                        .ok()
+                        .ok_or_else(|| Failure::usage("--space is not a Space id"))?,
                 },
             })
         }),
@@ -217,7 +220,8 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 [] => None,
                 [(name, row)] if name == "at" => Some(
                     row.parse::<u64>()
-                        .map_err(|_| Failure::usage("--at is not a row number"))?,
+                        .ok()
+                        .ok_or_else(|| Failure::usage("--at is not a row number"))?,
                 ),
                 _ => {
                     return Err(Failure::usage(
@@ -233,11 +237,11 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
         ["sessions", ..] => Err(Failure::usage(
             "usage: bardo-do sessions | sessions load <id> | sessions fork <id> [--at <row>]",
         )),
-        ["undo"] if scan.has("last") => Ok(Command::Undo(UndoWhich::Last)),
         ["undo", id] => id
             .parse::<u64>()
             .map(|n| Command::Undo(UndoWhich::Entry(n)))
-            .map_err(|_| Failure::usage(format!("{id:?} is not an undo id"))),
+            .ok()
+            .ok_or_else(|| Failure::usage(format!("{id:?} is not an undo id"))),
         ["undo", ..] => Err(Failure::usage("usage: bardo-do undo <undo-id> | --last")),
         [app] if scan.has("list") => Ok(Command::List {
             app: (*app).to_owned(),
@@ -262,7 +266,8 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 .as_deref()
                 .map(SessionId::parse)
                 .transpose()
-                .map_err(|_| Failure::usage("--session is not a session id"))?,
+                .ok()
+                .ok_or_else(|| Failure::usage("--session is not a session id"))?,
             params: scan.params.clone(),
             targets: targets.iter().map(|t| (*t).to_owned()).collect(),
         })),
@@ -270,6 +275,11 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
 }
 
 /// Reads the command line (without the program name).
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn parse(words: &[String]) -> Result<Parsed, Failure> {
     // A shell's half-typed words (`--`, `-`, `--to=`) are not a command line: they pass as typed.
     if let Some((first, typed)) = words.split_first()

@@ -1,5 +1,6 @@
-//! Which app a notification came from, and the icon its card shows: the sender's `app_icon`
-//! (a file, or a theme name the caller resolves), else its desktop entry's icon, else a bell.
+//! Which app a notification came from, and the icon its card shows: the sender's `app_icon` (a
+//! file, or a theme name the caller resolves), else its desktop entry's icon, else a bell.
+//!
 //! The entry is found as a window's is (`shell_model::windows::app_for`: the `desktop-entry` hint,
 //! else the app name, whole or by its last labels), then by the entry's own `Name`.
 

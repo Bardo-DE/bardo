@@ -11,6 +11,11 @@ use provenance::SessionId;
 
 impl<T: Transport> Intents<T> {
     /// The session's restore points, oldest first (`Checkpoint.List`).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn checkpoint_list(&self, session: SessionId) -> Result<CheckpointList, ClientError> {
         self.ask(IntentsRequest::CheckpointList { session }, |r| match r {
             IntentsReply::Checkpoints(list) => Some(*list),
@@ -21,6 +26,11 @@ impl<T: Transport> Intents<T> {
 
     /// What restoring `id` would change, or why that cannot be said (`Checkpoint.Plan`).
     /// Read-only.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn checkpoint_plan(
         &self,
         session: SessionId,
@@ -38,6 +48,11 @@ impl<T: Transport> Intents<T> {
 
     /// Opens a session that only keeps restore points for an agent the caller watches but does
     /// not host (`Checkpoint.Watch`). `label` is display text. A terminal only.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn checkpoint_watch(
         &self,
         workspace: Workspace,
@@ -58,6 +73,11 @@ impl<T: Transport> Intents<T> {
 
     /// The watched agent started working: takes a restore point and starts the running turn
     /// (`Checkpoint.Mark`). End the turn it answers with `session_turn_ended`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn checkpoint_mark(&self, session: SessionId) -> Result<TurnId, ClientError> {
         self.ask(IntentsRequest::CheckpointMark { session }, |r| match r {
             IntentsReply::TurnRecorded(turn) => Some(turn),
@@ -70,6 +90,11 @@ impl<T: Transport> Intents<T> {
     /// own id for the conversation, so the shell can offer to bring it into docket
     /// (`Checkpoint.WatchAgent`). Answers the watch session and who closes it: the companion's
     /// own session when it handed this conversation over, else a new one. A terminal only.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn checkpoint_watch_agent(
         &self,
         workspace: Workspace,
@@ -93,6 +118,11 @@ impl<T: Transport> Intents<T> {
     /// Moves a session's conversation to the app's own terminal program or back
     /// (`Checkpoint.Handover`). `agent` names the app and its own id for the conversation when it
     /// goes to the terminal. Answers what the router holds for it. The host of the agent apps only.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn checkpoint_handover(
         &self,
         session: SessionId,
@@ -111,6 +141,11 @@ impl<T: Transport> Intents<T> {
 
     /// The open watch sessions whose agent app a terminal named (`Checkpoint.Watched`). The
     /// companion only.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn checkpoint_watched(&self) -> Result<Vec<WatchedLine>, ClientError> {
         self.ask(IntentsRequest::CheckpointWatched, |r| match r {
             IntentsReply::Watched(lines) => Some(lines),

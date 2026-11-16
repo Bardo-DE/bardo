@@ -1,6 +1,8 @@
-//! A hang guard for a test executable. It is not a timing assertion: no test's outcome depends
-//! on it. It exists so a test that waits forever (a lost wake-up, a peer that never answers)
-//! ends the whole process loudly, instead of idling for days after its worktree is gone.
+//! A hang guard for a test executable.
+//!
+//! It is not a timing assertion: no test's outcome depends on it. It exists so a test that waits
+//! forever (a lost wake-up, a peer that never answers) ends the whole process loudly, instead of
+//! idling for days after its worktree is gone.
 
 use std::sync::Once;
 use std::time::Duration;

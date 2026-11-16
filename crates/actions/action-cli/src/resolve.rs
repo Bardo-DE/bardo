@@ -1,8 +1,10 @@
-//! Which app and which action a word names, from the installed manifests: the app by its slug
-//! (`mail`, the last element of its name, lowercased) or its full name, the action by its name
-//! without the app's prefix (`thread.archive`) or in full (`mail.thread.archive`). An action the
-//! app keeps for the person (`reach = hidden`) is not listed or described, but a call that
-//! names it by hand is sent on: the router is the one that refuses it.
+//! Which app and which action a word names, from the installed manifests.
+//!
+//! The app by its slug (`mail`, the last element of its name, lowercased) or its full name, the
+//! action by its name without the app's prefix (`thread.archive`) or in full
+//! (`mail.thread.archive`). An action the app keeps for the person (`reach = hidden`) is not listed
+//! or described, but a call that names it by hand is sent on: the router is the one that refuses
+//! it.
 
 use crate::exit::Failure;
 use account_core::AppName;
@@ -29,6 +31,11 @@ impl Apps {
     }
 
     /// The app a word names.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the
+    /// failure says what is wrong.
     pub fn app(&self, word: &str) -> Result<&Manifest, Failure> {
         let named: Vec<&Manifest> = self
             .0
@@ -48,6 +55,11 @@ impl Apps {
     }
 
     /// The action of `app` a word names, hidden or not.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the
+    /// failure says what is wrong.
     pub fn action<'a>(&self, app: &'a Manifest, word: &str) -> Result<&'a ActionDecl, Failure> {
         let full = if word.starts_with(&format!("{}.", slug(&app.app))) {
             word.to_owned()

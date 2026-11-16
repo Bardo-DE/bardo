@@ -89,9 +89,14 @@ pub fn told(disclosed: bool, text: &str) -> &str {
     if disclosed { text } else { "" }
 }
 
-/// Lists `window` (or sends its changed title and app id; nothing is sent when neither
-/// changed). A title the protocol cannot carry (the text is app-authored) goes out as given;
-/// both are empty when not `disclosed`.
+/// Lists `window` (or sends its changed title and app id; nothing is sent when neither changed).
+///
+/// A title the protocol cannot carry (the text is app-authored) goes out as given; both are empty
+/// when not `disclosed`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_toplevel(
     part: &mut ForeignToplevelListPart,
     window: &Window,
@@ -119,6 +124,10 @@ pub fn apply_toplevel(
 }
 
 /// Withdraws `window`: its handles get `closed` and the window is forgotten.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_closed(
     part: &mut ForeignToplevelListPart,
     window: WindowId,

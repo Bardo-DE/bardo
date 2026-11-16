@@ -144,6 +144,10 @@ pub fn on_released(part: &mut GammaPart, output: &OutputKey) -> Vec<Event> {
 
 /// Announces `output`'s table size to the control (`gamma_size`) and records the control as
 /// holding it.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_size(
     part: &mut GammaPart,
     output: &OutputKey,
@@ -303,10 +307,11 @@ fn wait<D: GammaHandler>(
     refused.control.failed();
 }
 
-/// The answer about `client`'s power over the displays came out. Allowed, the controls that
-/// waited take their outputs (one whose output cannot take a ramp any more, or is held by
-/// another control by now, fails); refused, they fail; taken back, the controls in use fail
-/// too and the identity curve is restored.
+/// The answer about `client`'s power over the displays came out.
+///
+/// Allowed, the controls that waited take their outputs (one whose output cannot take a ramp any
+/// more, or is held by another control by now, fails); refused, they fail; taken back, the controls
+/// in use fail too and the identity curve is restored.
 pub fn on_resolved<D: GammaHandler>(state: &mut D, client: ClientKey, outcome: PowerOutcome) {
     let waiting = state.gamma_part().waiting.take(client);
     match outcome {

@@ -1,7 +1,9 @@
-//! `xdg_wm_base`: toplevels and popups. A toplevel's id is minted when it is created; it
-//! enters the model when it maps (its first commit with a buffer after the initial
-//! configure). P0 places floating windows only (centre, then cascade, in the model and
-//! layout); this module reports what the client did and carries the model's configures out.
+//! `xdg_wm_base`: toplevels and popups.
+//!
+//! A toplevel's id is minted when it is created; it enters the model when it maps (its first commit
+//! with a buffer after the initial configure). P0 places floating windows only (centre, then
+//! cascade, in the model and layout); this module reports what the client did and carries the
+//! model's configures out.
 //!
 //! The module is a directory of small files behind one name:
 //! - [`commit`]: what a commit means (initial configure, map, resize, unmap) and the pure

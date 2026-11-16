@@ -44,9 +44,15 @@ fn appearance(theme: Theme) -> Environment {
     environment
 }
 
-/// A surface's `inks` read in both schemes: when it starts in either one, and after a live
-/// switch to the other (the regression: a live change to Dark left glyphs in their light-scheme
-/// ink, dark on a dark surface). `start` mounts the surface pinned to the theme it is given.
+/// A surface's `inks` read in both schemes.
+///
+/// When it starts in either one, and after a live switch to the other (the regression: a live
+/// change to Dark left glyphs in their light-scheme ink, dark on a dark surface). `start` mounts
+/// the surface pinned to the theme it is given.
+///
+/// # Panics
+///
+/// Panics when any of `inks` is weak in a scheme, which is the failure this check exists to report.
 pub fn assert_inks_read_in_each_scheme<S: Surface>(
     inks: &[(&str, &str)],
     start: impl Fn(Environment) -> SurfaceHarness<S>,
@@ -72,17 +78,29 @@ pub fn assert_inks_read_in_each_scheme<S: Surface>(
 }
 
 /// The WCAG contrast between the ground behind the first element matching `selector` (the colour
-/// most of its box shows) and the pixel that differs most from it: how well its glyph or text
-/// reads as painted, in a document drawn at `scale_percent`. `None` when nothing matches or the
-/// render fails; about 1 for an element that paints nothing visible against its ground.
+/// most of its box shows) and the pixel that differs most from it.
+///
+/// How well its glyph or text reads as painted, in a document drawn at `scale_percent`. `None` when
+/// nothing matches or the render fails; about 1 for an element that paints nothing visible against
+/// its ground.
 pub fn ink_contrast(harness: &mut Harness, scale_percent: u16, selector: &str) -> Option<f32> {
     let rect = harness.rect(selector)?;
     let image = harness.render_over(Backdrop::Scheme).ok()?;
     let scale = f32::from(scale_percent) / 100.0;
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "rect and scale are non-negative, and a rendered image is far smaller than u32::MAX pixels"
+    )]
     let (left, top) = (
         (rect.origin.x.0 * scale) as u32,
         (rect.origin.y.0 * scale) as u32,
     );
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "rect and scale are non-negative, and a rendered image is far smaller than u32::MAX pixels"
+    )]
     let (right, bottom) = (
         (((rect.origin.x.0 + rect.size.width.0) * scale).ceil() as u32).min(image.width()),
         (((rect.origin.y.0 + rect.size.height.0) * scale).ceil() as u32).min(image.height()),

@@ -112,7 +112,8 @@ impl SwitcherLink {
                     was_held
                 });
                 if was_held {
-                    self.ask(output, SwitcherAsk::Cancel);
+                    // The cancel's serial is not waited on: the switcher reads the ask log.
+                    let _ = self.ask(output, SwitcherAsk::Cancel);
                 }
             }
         }
@@ -194,8 +195,8 @@ mod tests {
     fn asks_made_between_two_reads_are_all_kept_in_order() {
         let link = SwitcherLink::new();
         let seen = link.ask(OutputId(1), SwitcherAsk::Chord(Dir::Next));
-        link.ask(OutputId(1), SwitcherAsk::Chord(Dir::Next));
-        link.ask(OutputId(1), SwitcherAsk::Commit);
+        let _ = link.ask(OutputId(1), SwitcherAsk::Chord(Dir::Next));
+        let _ = link.ask(OutputId(1), SwitcherAsk::Commit);
         let fresh: Vec<_> = link
             .subscribe()
             .borrow()
@@ -211,7 +212,7 @@ mod tests {
             ]
         );
         for _ in 0..40 {
-            link.ask(OutputId(1), SwitcherAsk::Cancel);
+            let _ = link.ask(OutputId(1), SwitcherAsk::Cancel);
         }
         assert_eq!(link.subscribe().borrow().since(None).len(), 16);
     }

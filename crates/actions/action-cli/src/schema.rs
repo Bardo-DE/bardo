@@ -1,7 +1,8 @@
-//! `describe`: the JSON Schema of an action's parameters as the command line takes them, built
-//! from stoker's `Shape` and rendered by `Shape::to_json_schema`. The command line's forms are
-//! the schema's forms: a thing is the text `<kind>:<key>`, a link or a path is text, a decimal
-//! and a duration are the text typed.
+//! `describe`: the JSON Schema of an action's parameters as the command line takes them, built from
+//! stoker's `Shape` and rendered by `Shape::to_json_schema`.
+//!
+//! The command line's forms are the schema's forms: a thing is the text `<kind>:<key>`, a link or a
+//! path is text, a decimal and a duration are the text typed.
 
 use crate::exit::{Exit, Failure};
 use crate::resolve::{short_name, slug};
@@ -47,7 +48,7 @@ fn shape_of_type(ty: &ParamType) -> Shape {
 }
 
 fn field(param: &ParamDecl) -> Result<Field, Failure> {
-    let name = FieldName::new(param.name.as_str()).map_err(|_| {
+    let name = FieldName::new(param.name.as_str()).ok().ok_or_else(|| {
         Failure::new(
             Exit::Usage,
             format!("{} cannot be described as a schema field", param.name),
@@ -64,6 +65,11 @@ fn field(param: &ParamDecl) -> Result<Field, Failure> {
 }
 
 /// The shape of an action's arguments: one field per parameter, optional ones optional.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn shape(action: &ActionDecl) -> Result<Shape, Failure> {
     action
         .params
@@ -74,15 +80,21 @@ pub fn shape(action: &ActionDecl) -> Result<Shape, Failure> {
 }
 
 /// The JSON Schema of an action's arguments.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn json_schema(action: &ActionDecl) -> Result<Value, Failure> {
     let rendered = shape(action)?.to_json_schema(SchemaDialect::Plain);
     serde_json::from_str(rendered.0.as_str())
-        .map_err(|_| Failure::new(Exit::Usage, "the schema did not render"))
+        .ok()
+        .ok_or_else(|| Failure::new(Exit::Usage, "the schema did not render"))
 }
 
 fn type_word(ty: &ParamType) -> &'static str {
     match ty {
-        ParamType::Text { .. } => "text",
+        ParamType::Text { .. } | ParamType::Dynamic(_) => "text",
         ParamType::Integer { .. } => "integer",
         ParamType::Decimal { .. } => "decimal",
         ParamType::Date => "date",
@@ -93,7 +105,6 @@ fn type_word(ty: &ParamType) -> &'static str {
         ParamType::Entities(_) => "entities",
         ParamType::File => "file",
         ParamType::Url => "url",
-        ParamType::Dynamic(_) => "text",
     }
 }
 
@@ -133,6 +144,11 @@ pub fn action_row(app: &Manifest, action: &ActionDecl) -> Value {
 }
 
 /// What `describe` prints as JSON.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn described(app: &Manifest, action: &ActionDecl) -> Result<Value, Failure> {
     let mut row = action_row(app, action);
     if let Value::Object(map) = &mut row {

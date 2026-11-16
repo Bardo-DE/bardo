@@ -41,6 +41,10 @@ impl<W: Protocol> Session<W> {
     }
 
     /// Sends another request on the same plugin.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RunError`] when the plugin could not be run or its answer could not be read.
     pub fn send(&mut self, request: &W::Request) -> Result<(), RunError<Cap<W>>> {
         self.process.send(request)
     }
@@ -53,6 +57,10 @@ impl<W: Protocol> Session<W> {
 
     /// The one message that answers a request that has no stream. Waits at most the silence
     /// timeout.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RunError`] when the plugin could not be run or its answer could not be read.
     pub fn reply(&mut self) -> Result<Frame<W::Message>, RunError<Cap<W>>> {
         match self.process.receive(self.timeouts.silence)? {
             Arrival::Message(frame) => Ok(frame),
@@ -70,6 +78,11 @@ impl<W: Protocol> Session<W> {
     ///
     /// `on_message` gets the plugin's id and the message, and says whether to go on. An error of
     /// its own ends the stream, and the plugin with it.
+    ///
+    /// # Errors
+    ///
+    /// Returns `E`: the error `on_message` ended the stream with, or the [`RunError`] converted
+    /// into `E` when the plugin is silent, is cancelled, or its output cannot be read.
     pub fn stream<T, E>(
         &mut self,
         mut cancel: impl FnMut(Instant) -> bool,

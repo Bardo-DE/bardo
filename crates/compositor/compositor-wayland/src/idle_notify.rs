@@ -1,7 +1,8 @@
-//! `ext_idle_notifier_v1`: idle and resumed notifications. smithay's notifier arms calloop
-//! timers on the wall clock, which the virtual clock cannot stop, and hands the handler no
-//! hook when a client asks for one, so casement serves the protocol itself (A36): the global
-//! and both object types are ours, and idleness is timed on the session's timers
+//! `ext_idle_notifier_v1`: idle and resumed notifications.
+//!
+//! smithay's notifier arms calloop timers on the wall clock, which the virtual clock cannot stop,
+//! and hands the handler no hook when a client asks for one, so casement serves the protocol itself
+//! (A36): the global and both object types are ours, and idleness is timed on the session's timers
 //! (`TimerKey::IdleNotify`, armed through `Effect::ArmTimer`) by the pure [`IdleBook`].
 //!
 //! smithay's `IdleNotifierState` is not created: clients see `ext_idle_notifier_v1` exactly
@@ -38,16 +39,18 @@ use std::time::Duration;
 /// The version casement serves (2 adds `get_input_idle_notification`).
 pub const VERSION: u32 = 2;
 
-/// The shortest idle timeout a sandboxed or unproven peer is served (CASW-07, decided
-/// 2026-10-16): a `resumed` fires on every input event on the desktop, so a 1 ms watch would
-/// read another window's keystroke timing; 5 s is far from useful for that and still short
-/// enough for a screensaver or a video player.
+/// The shortest idle timeout a sandboxed or unproven peer is served (CASW-07, decided 2026-10-16).
+///
+/// A `resumed` fires on every input event on the desktop, so a 1 ms watch would read another
+/// window's keystroke timing; 5 s is far from useful for that and still short enough for a
+/// screensaver or a video player.
 pub const UNTRUSTED_MIN_TIMEOUT: Duration = Duration::from_secs(5);
 
-/// The shortest timeout `role` and `peer` get: the shell and the agent tier any, and every
-/// other peer [`UNTRUSTED_MIN_TIMEOUT`] (NEW-CAS-7). A native peer proven only by the name of a
-/// launcher's scope is no exception: any program of the person's can make a scope of any name,
-/// so the name proves nothing about who it is.
+/// The shortest timeout `role` and `peer` get: the shell and the agent tier any, and every other
+/// peer [`UNTRUSTED_MIN_TIMEOUT`] (NEW-CAS-7).
+///
+/// A native peer proven only by the name of a launcher's scope is no exception: any program of the
+/// person's can make a scope of any name, so the name proves nothing about who it is.
 #[must_use]
 pub fn timeout_floor(role: &ConnectionRole, peer: &PeerIdentity) -> Duration {
     let _ = peer;
@@ -182,6 +185,10 @@ pub fn on_destroyed(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Vec<Effect
 }
 
 /// Sends `idled` to notifier `id`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_idle(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Result<(), WaylandFault> {
     part.objects
         .get(&id)
@@ -190,6 +197,10 @@ pub fn apply_idle(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Result<(), W
 }
 
 /// Sends `resumed` to notifier `id`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_resumed(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Result<(), WaylandFault> {
     part.objects
         .get(&id)
@@ -235,7 +246,7 @@ where
         client: &Client,
         _resource: &ExtIdleNotifierV1,
         request: ext_idle_notifier_v1::Request,
-        handle: &DisplayHandle,
+        dhandle: &DisplayHandle,
         data_init: &mut DataInit<'_, D>,
     ) {
         let (new, timeout, honours_inhibitors) = match request {
@@ -254,7 +265,7 @@ where
         // A client past its cap is cut after this request (CASW-07's watch cap, NEW-CAS-2); the
         // object it asked for is made inert, with an id no watch ever has.
         let held = state.idle_notify_part().book.held_by(key);
-        if !limits::admit(handle, client, Limit::IdleWatches, held) {
+        if !limits::admit(dhandle, client, Limit::IdleWatches, held) {
             data_init.init(new, IdleNotificationData { id: UNWATCHED });
             return;
         }

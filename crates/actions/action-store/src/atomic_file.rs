@@ -14,6 +14,10 @@ const READ_CAP: ReadCap = ReadCap::mib(16);
 
 /// Replaces the file at `path` with `bytes`, creating its directory when needed. When this
 /// returns an error the file still holds what it held before.
+///
+/// # Errors
+///
+/// Returns an I/O error when the directory could not be created or the file could not be written.
 pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
     if let Some(dir) = path.parent().filter(|dir| !dir.as_os_str().is_empty()) {
         std::fs::create_dir_all(dir)?;
@@ -23,6 +27,10 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
 
 /// The text of the file at `path`, or `None` when there is no such file. Any other failure is
 /// an error: an unreadable file is not an empty one.
+///
+/// # Errors
+///
+/// Returns an I/O error when the file exists but could not be read, or is too large to read.
 pub fn read_optional(path: &Path) -> std::io::Result<Option<String>> {
     match base_fs::read_text_capped(path, READ_CAP) {
         Ok(text) => Ok(Some(text)),

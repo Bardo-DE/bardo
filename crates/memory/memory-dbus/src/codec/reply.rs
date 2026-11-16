@@ -15,10 +15,15 @@ fn one_json<T: serde::de::DeserializeOwned>(outputs: &[String]) -> Result<T, Cod
     parse(one(outputs)?)
 }
 
-/// The reply of `call` from the body's values (the `s` outputs, in order). A member that returns
-/// nothing answers `Ok`; `Record` and `RecordBatch` answer `Ok` when their first output is empty
-/// (admission kept nothing). A refusal never gets here: it is the bus error, which the caller
-/// maps with `MemoryError::refusal`.
+/// The reply of `call` from the body's values (the `s` outputs, in order).
+///
+/// A member that returns nothing answers `Ok`; `Record` and `RecordBatch` answer `Ok` when their
+/// first output is empty (admission kept nothing). A refusal never gets here: it is the bus error,
+/// which the caller maps with `MemoryError::refusal`.
+///
+/// # Errors
+///
+/// Returns [`CodecError`] when the body could not be encoded or decoded.
 pub fn decode_reply(call: &Call, outputs: &[String]) -> Result<MemoryReply, CodecError> {
     use MemoryReply as R;
     match call.member {
@@ -34,7 +39,8 @@ pub fn decode_reply(call: &Call, outputs: &[String]) -> Result<MemoryReply, Code
                 Count(
                     count
                         .parse()
-                        .map_err(|_| CodecError::Json(format!("count {count:?}")))?,
+                        .ok()
+                        .ok_or_else(|| CodecError::Json(format!("count {count:?}")))?,
                 ),
             )),
             _ => Err(CodecError::Shape),
@@ -80,6 +86,10 @@ pub fn decode_reply(call: &Call, outputs: &[String]) -> Result<MemoryReply, Code
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as `map_err(invalid)`, which hands the error over by value"
+)]
 fn invalid(e: CodecError) -> MemoryError {
     MemoryError::Invalid(e.to_string())
 }
@@ -90,6 +100,10 @@ fn single<T: serde::Serialize>(value: &T) -> Result<Vec<String>, MemoryError> {
 
 /// The outputs the member `call` returns for `reply`: the daemon's half. A refusal is the bus
 /// error of that name; a reply that is not the kind the member answers with is `Invalid`.
+///
+/// # Errors
+///
+/// Returns [`MemoryError`] when the call failed or the reply could not be encoded or read.
 pub fn encode_reply(call: &Call, reply: &MemoryReply) -> Result<Vec<String>, MemoryError> {
     use MemoryReply as R;
     let nothing = Ok(Vec::new());
@@ -105,14 +119,14 @@ pub fn encode_reply(call: &Call, reply: &MemoryReply) -> Result<Vec<String>, Mem
             "ExplainFile" | "Mark" | "Settle" | "Revert" | "SetRule" | "RemoveRule"
             | "ConfirmSettings" | "Pause" | "Resume" | "Rebuild",
             R::Ok,
-        ) => nothing,
+        )
         // The draft of a run is read with `Consolidation`; the member itself returns nothing.
-        (
+        | (
             "RunConsolidation" | "ApplyConsolidation" | "DiscardConsolidation",
             R::Ok | R::Consolidation(_),
         ) => nothing,
         ("Search" | "Inject", R::Hits(v)) => single(v),
-        ("Facts", R::Facts(v)) => single(v),
+        ("Facts", R::Facts(v)) | ("Pending", R::Pending(v)) => single(v),
         ("Recent", R::Recent(v)) => single(v),
         ("Entries", R::Entries(page)) => single(page),
         ("RecordDurable", R::Durable(ack)) => single(ack),
@@ -128,7 +142,6 @@ pub fn encode_reply(call: &Call, reply: &MemoryReply) -> Result<Vec<String>, Mem
         ("Timeline", R::Timeline(v)) => single(v),
         ("PlanForget", R::Plan(v)) => single(v),
         ("Forget", R::Forgot(v)) => single(v),
-        ("Pending", R::Pending(v)) => single(v),
         ("Consolidation", R::Consolidation(v)) => single(v),
         ("Rules", R::Rules(v)) => single(v),
         ("Verify", R::Verified(v)) => single(v),

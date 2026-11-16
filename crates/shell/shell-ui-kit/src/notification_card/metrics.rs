@@ -1,18 +1,18 @@
 //! The card's numbers in quire's words: the notification tokens the layer maths and the icon's
-//! raster read ([`NotificationTokens`]), the swipe thresholds as a `SwipeMetrics`, and the
-//! icon's side. The banner and center widths, the icon and the banner column's place are tuned
-//! tokens (`NotificationToken`) a look or the person's style sheet may move; the surfaces need
-//! them before the first layout, so [`NotificationTokens::read`] takes the resolved length of a
-//! custom property (`ui_blitz::Resolved::length` on the surface's document, read again when the
-//! `Styles` signal changes) and a token a sheet does not write, or writes as `calc()`, is the
-//! shipped constant. The constants and the token defaults are the only two copies; a test
-//! compares them.
+//! raster read ([`NotificationTokens`]), the swipe thresholds as a `SwipeMetrics`, and the icon's
+//! side.
+//!
+//! The banner and center widths, the icon and the banner column's place are tuned tokens
+//! (`NotificationToken`) a look or the person's style sheet may move; the surfaces need them before
+//! the first layout, so [`NotificationTokens::read`] takes the resolved length of a custom property
+//! (`ui_blitz::Resolved::length` on the surface's document, read again when the `Styles` signal
+//! changes) and a token a sheet does not write, or writes as `calc()`, is the shipped constant. The
+//! constants and the token defaults are the only two copies; a test compares them.
 
 use shell_kit::tokens::notifications::NotificationToken;
 use ui_components::motion::swipe::{Speed, SwipeMetrics};
 use ui_components::prelude::*;
 use ui_components::style::icon::render::IconPx;
-use ui_settings::Fraction;
 
 /// `--notifications-banner-width`'s shipped value.
 pub const BANNER_WIDTH: u16 = 320;
@@ -56,6 +56,11 @@ impl NotificationTokens {
     /// The values `length` resolves (a property name to its length), the shipped constant for
     /// each it does not.
     pub fn read(length: impl Fn(&str) -> Option<Px>) -> NotificationTokens {
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "the length is rounded and clamped to 0..=u16::MAX just before the cast"
+        )]
         let one = |token: NotificationToken, shipped: u16| {
             length(token.input().as_str()).map_or(shipped, |px| {
                 px.0.round().clamp(0.0, f32::from(u16::MAX)) as u16

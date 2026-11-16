@@ -1,8 +1,10 @@
-//! The notification center's widgets (design/20 §1.14): Calendar, then Up Next, under the
-//! history, each on quire's widget interface. quire owns the card
-//! (`shell_kit::prelude::WidgetCard`); a widget is a `shell_kit::prelude::Widget`
-//! (quire's `MonthWidget` and bardo-shell's own [`up_next::UpNext`]), and bardo-shell only provides each one's
-//! entries from its services ([`Widget`] picks the provider for a kind).
+//! The notification center's widgets (design/20 §1.14): Calendar, then Up Next, under the history,
+//! each on quire's widget interface.
+//!
+//! quire owns the card (`shell_kit::prelude::WidgetCard`); a widget is a
+//! `shell_kit::prelude::Widget` (quire's `MonthWidget` and bardo-shell's own [`up_next::UpNext`]),
+//! and bardo-shell only provides each one's entries from its services ([`Widget`] picks the
+//! provider for a kind).
 
 mod card;
 mod kind;

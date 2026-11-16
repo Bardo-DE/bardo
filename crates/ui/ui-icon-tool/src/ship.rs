@@ -15,11 +15,12 @@ use crate::{
     finish, grid_for, render_icon, retint, roles,
 };
 
-/// Every pixel size the set exports, each drawn directly: the freedesktop sizes 16, 22, 24, 32,
-/// 48, 64, 128, 256, 512; their `@2` up to 256@2 as 08 2.6 settles (32, 44, 48, 64, 96, 128,
-/// 256, 512); and the 1.5x sizes 24 -> 36, 32 -> 48, 48 -> 72, 64 -> 96. A size shared by
-/// several (48 is 48, 24@2 and 32 at 1.5x) is one file. 512@2 (1024) is not exported: 08 2.6
-/// stops `@2` at 256, and the grain makes a 1024 PNG about 1.2 MB.
+/// Every pixel size the set exports, each drawn directly.
+///
+/// The freedesktop sizes 16, 22, 24, 32, 48, 64, 128, 256, 512; their `@2` up to 256@2 as 08 2.6
+/// settles (32, 44, 48, 64, 96, 128, 256, 512); and the 1.5x sizes 24 -> 36, 32 -> 48, 48 -> 72, 64
+/// -> 96. A size shared by several (48 is 48, 24@2 and 32 at 1.5x) is one file. 512@2 (1024) is not
+/// exported: 08 2.6 stops `@2` at 256, and the grain makes a 1024 PNG about 1.2 MB.
 pub const SHIP_PX: [u32; 13] = [16, 22, 24, 32, 36, 44, 48, 64, 72, 96, 128, 256, 512];
 
 /// Where an icon's face comes from.
@@ -108,6 +109,12 @@ pub const FACE_CROP: f32 = 0.78;
 
 /// A Klein face retinted into a look, at its render's size.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
+)]
 pub fn klein_face(raw: &Rgba32FImage, look: Look) -> Rgba32FImage {
     let side = (raw.width().min(raw.height()) as f32 * FACE_CROP) as u32;
     let (x0, y0) = ((raw.width() - side) / 2, (raw.height() - side) / 2);

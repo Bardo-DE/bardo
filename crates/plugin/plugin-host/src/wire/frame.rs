@@ -30,6 +30,10 @@ pub struct Frame<T> {
 }
 
 /// `message` and `payload` as the bytes of one frame.
+///
+/// # Errors
+///
+/// Returns [`WireError`] when the bytes are not a well-formed frame.
 pub fn encode_frame<T: Serialize>(message: &T, payload: &[u8]) -> Result<Vec<u8>, WireError> {
     let json = serde_json::to_vec(message).map_err(|error| WireError::Unwritable {
         reason: error.to_string(),
@@ -65,6 +69,10 @@ fn checked_payload(len: u64) -> Result<u32, WireError> {
 }
 
 /// Writes one frame and flushes: what a plugin's main loop calls.
+///
+/// # Errors
+///
+/// Returns [`WireError`] when the bytes are not a well-formed frame.
 pub fn write_frame<W: Write, T: Serialize>(
     out: &mut W,
     message: &T,
@@ -78,6 +86,10 @@ pub fn write_frame<W: Write, T: Serialize>(
 
 /// Reads one frame, blocking: what a plugin's main loop calls. `Closed` means the stream ended
 /// between frames.
+///
+/// # Errors
+///
+/// Returns [`WireError`] when the bytes are not a well-formed frame.
 pub fn read_frame<R: Read, T: DeserializeOwned>(input: &mut R) -> Result<Frame<T>, WireError> {
     let mut header = [0u8; HEADER];
     read_exact(input, &mut header, WireError::Closed)?;

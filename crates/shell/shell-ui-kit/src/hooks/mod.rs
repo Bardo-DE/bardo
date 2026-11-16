@@ -1,8 +1,8 @@
-//! The hooks every surface reads its sources through. [`use_service`] (and
-//! [`use_service_part`], [`use_control`]) reach any service by its type; the rest read the
-//! settings, the appearance and the focus mode, and [`use_follow_visibility`] maps a surface by a
-//! reading. A hook never owns a channel, spawns a service or
-//! reads a file.
+//! The hooks every surface reads its sources through.
+//!
+//! [`use_service`] (and [`use_service_part`], [`use_control`]) reach any service by its type; the
+//! rest read the settings, the appearance and the focus mode, and [`use_follow_visibility`] maps a
+//! surface by a reading. A hook never owns a channel, spawns a service or reads a file.
 
 mod use_appearance;
 mod use_banner_output;

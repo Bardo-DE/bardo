@@ -95,6 +95,11 @@ impl<T: Transport> Intents<T> {
 
     /// Performs a call. The outer error is the transport or a refused request; the inner result
     /// is the call's own end.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn perform(
         &self,
         call: CallRequest,
@@ -107,6 +112,11 @@ impl<T: Transport> Intents<T> {
 
     /// `perform` with the launcher's activation token, which intentd passes to the app when the
     /// caller is the launcher and drops for every other role.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn perform_activated(
         &self,
         call: CallRequest,
@@ -129,6 +139,11 @@ impl<T: Transport> Intents<T> {
 
     /// What the app would change if `call` ran, through the same checks and policy as
     /// `perform`: nobody is asked, nothing runs. A call policy refuses comes back refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn dry_run(
         &self,
         call: CallRequest,
@@ -142,6 +157,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The installed manifests.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn manifests(&self) -> Result<Vec<ValidManifest>, ClientError> {
         self.ask(IntentsRequest::Manifests, |r| match r {
             IntentsReply::Manifests(all) => Some(all),
@@ -151,6 +171,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The undo journal, newest first. A terminal sees only the rows of its own acts.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn journal(&self, filter: JournalFilter) -> Result<Vec<UndoEntry>, ClientError> {
         self.ask(IntentsRequest::ControlJournal(filter), |r| match r {
             IntentsReply::Journal(rows) => Some(rows),
@@ -160,6 +185,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The actions the terminal may run without asking, until logout (control centre).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn terminal_grants(&self) -> Result<Vec<ActionRef>, ClientError> {
         self.ask(IntentsRequest::ControlTerminalGrants, |r| match r {
             IntentsReply::TerminalGrants(actions) => Some(actions),
@@ -169,6 +199,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Withdraws one standing terminal grant (control centre).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn revoke_terminal_grant(&self, action: ActionRef) -> Result<(), ClientError> {
         self.ask(IntentsRequest::ControlTerminalRevoke(action), |r| match r {
             IntentsReply::Done => Some(()),
@@ -178,6 +213,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The standing "allow always" grants held (Settings).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn standing_grants(
         &self,
     ) -> Result<Vec<permission_core::StandingGrant>, ClientError> {
@@ -189,6 +229,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Revokes one standing grant (Settings): the next call it covered asks again.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn revoke_standing_grant(
         &self,
         id: permission_core::StandingGrantId,
@@ -202,6 +247,11 @@ impl<T: Transport> Intents<T> {
 
     /// Resumes `scope` after a halt (control centre). It also reopens the terminal sessions the
     /// breaker paused in that scope: a terminal has no way to say it is the person.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn resume(&self, scope: SpaceScope) -> Result<(), ClientError> {
         self.ask(IntentsRequest::ControlResume { scope }, |r| match r {
             IntentsReply::Done => Some(()),
@@ -211,6 +261,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Halts `scope` (control centre, compositor).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn halt(&self, scope: SpaceScope, cause: HaltCause) -> Result<(), ClientError> {
         self.ask(IntentsRequest::ControlHalt { scope, cause }, |r| match r {
             IntentsReply::Done => Some(()),
@@ -220,6 +275,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The kill switch (control centre, compositor).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn kill_switch(&self) -> Result<KillSwitch, ClientError> {
         self.ask(IntentsRequest::ControlState, |r| match r {
             IntentsReply::State(kill) => Some(kill),
@@ -229,6 +289,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// A preview of one thing.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn preview(&self, id: EntityId) -> Result<Preview, ClientError> {
         self.ask(IntentsRequest::Preview(id), |r| match r {
             IntentsReply::Preview(p) => Some(p),
@@ -238,6 +303,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Options for a parameter.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn suggest(&self, ask: SuggestAsk) -> Result<Vec<EntityRef>, ClientError> {
         self.ask(IntentsRequest::Suggest(ask), |r| match r {
             IntentsReply::Suggestions(s) => Some(s),
@@ -247,6 +317,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Searches the router's index; the answer is complete, no hits come later.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn search(&self, ask: SearchAsk) -> Result<Vec<Hit>, ClientError> {
         self.ask(IntentsRequest::Search(ask), |r| match r {
             IntentsReply::Hits(h) => Some(h),
@@ -256,6 +331,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Undoes one journal row.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn undo(
         &self,
         entry: UndoId,
@@ -268,6 +348,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Undoes a run, a task or an entry.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn undo_all(&self, scope: UndoScope) -> Result<UndoReport, ClientError> {
         self.ask(IntentsRequest::UndoAll(scope), |r| match r {
             IntentsReply::UndoneAll(report) => Some(report),
@@ -277,6 +362,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// What the person is doing, as a planner may read it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn context(
         &self,
         session: SessionId,
@@ -290,6 +380,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Computer use: may a run use this app in this Space? The person is asked inside the router.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn gate_grant(&self, ask: GrantAsk) -> Result<GrantAnswer, ClientError> {
         self.ask(IntentsRequest::GateGrant(ask), |r| match r {
             IntentsReply::Granted(answer) => Some(answer),
@@ -300,6 +395,11 @@ impl<T: Transport> Intents<T> {
 
     /// Computer use: may this pixel step run? A confirmation is resolved inside the router
     /// before it answers.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn gate_check(&self, ask: CuaAsk) -> Result<GateAnswer, ClientError> {
         self.ask(IntentsRequest::GateCheck(ask), |r| match r {
             IntentsReply::Gate(answer) => Some(answer),
@@ -309,6 +409,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Opens a session.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_open(&self, open: SessionOpen) -> Result<SessionOpened, ClientError> {
         self.ask(IntentsRequest::SessionOpen(open), |r| match r {
             IntentsReply::SessionOpened(opened) => Some(opened),
@@ -318,6 +423,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Records the person's turn (launcher, field and terminal roles only).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_turn(
         &self,
         session: SessionId,
@@ -332,6 +442,11 @@ impl<T: Transport> Intents<T> {
 
     /// Switches a conversation between Auto and Manual from the next step (the shell and the
     /// control centre only; refused as `Locked` when the administrator holds Manual).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_mode(&self, session: SessionId, mode: Mode) -> Result<(), ClientError> {
         let ask = SessionModeAsk { session, mode };
         self.ask(IntentsRequest::SessionMode(ask), |r| match r {
@@ -342,6 +457,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Closes a session.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_close(&self, session: SessionId) -> Result<(), ClientError> {
         self.ask(IntentsRequest::SessionClose { session }, |r| match r {
             IntentsReply::Done => Some(()),
@@ -351,6 +471,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Says the agent's turn is over, however it ended (the same roles as `session_turn`).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_turn_ended(
         &self,
         session: SessionId,
@@ -366,6 +491,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The text behind a handle, for the screen.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_display(
         &self,
         session: SessionId,
@@ -383,6 +513,11 @@ impl<T: Transport> Intents<T> {
 
     /// The text behind a handle with its label, for the screen: the label says whether the
     /// content is the person's own or came from outside, so the screen can mark it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_display_labelled(
         &self,
         session: SessionId,
@@ -400,6 +535,11 @@ impl<T: Transport> Intents<T> {
 
     /// The text behind a handle and its label, for the quarantined reader (the `reader` role's
     /// alone): the session now counts as having shown it to a reader.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_resolve(
         &self,
         session: SessionId,
@@ -416,6 +556,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Asks the person to widen the task policy.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn session_widen(
         &self,
         session: SessionId,
@@ -432,6 +577,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// Sends a message: a request, a note or a report, to an agent in any Space.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn send(
         &self,
         session: SessionId,
@@ -448,6 +598,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// The messages that wait for an agent.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn inbox(&self, ask: InboxAsk) -> Result<Vec<InboundLine>, ClientError> {
         self.ask(IntentsRequest::MessageInbox(ask), |r| match r {
             IntentsReply::Inbox(lines) => Some(lines),

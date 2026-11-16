@@ -8,10 +8,15 @@ use compositor_core::window::SizeLimits;
 use desktop_protocols::vocab::{Modality, WindowRole};
 use smithay::wayland::shell::xdg::dialog::ToplevelDialogHint;
 
-/// The id a client declared with `set_app_id`, or one of its own making when it declared none
-/// (or one that is not a well-formed id): a client with no name is its own app, so two such
-/// clients never share a Dock tile.
+/// The id a client declared with `set_app_id`, or one of its own making when it declared none (or
+/// one that is not a well-formed id).
+///
+/// A client with no name is its own app, so two such clients never share a Dock tile.
 #[must_use]
+#[expect(
+    clippy::missing_panics_doc,
+    reason = "the `expect` cannot fire: the fallback id is built from fixed characters and a number, which always parse"
+)]
 pub fn claimed_of(app_id: Option<&str>, client: ClientKey) -> ClaimedId {
     app_id
         .and_then(|text| ClaimedId::parse(text).ok())
@@ -42,9 +47,10 @@ pub fn modality_of(hint: ToplevelDialogHint) -> Modality {
     }
 }
 
-/// The limits `set_min_size` and `set_max_size` describe: zero on the minimum's axis is no
-/// minimum; zero on the maximum's axis is no maximum on that axis, and none on both is
-/// unbounded. Negative sizes (which smithay lets through to us as written) count as zero.
+/// The limits `set_min_size` and `set_max_size` describe: zero on the minimum's axis is no minimum;
+/// zero on the maximum's axis is no maximum on that axis, and none on both is unbounded.
+///
+/// Negative sizes (which smithay lets through to us as written) count as zero.
 #[must_use]
 pub fn limits_of(min: (i32, i32), max: (i32, i32)) -> SizeLimits {
     let side = |value: i32| u32::try_from(value).unwrap_or(0);

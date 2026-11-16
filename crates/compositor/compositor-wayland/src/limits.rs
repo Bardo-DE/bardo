@@ -1,9 +1,10 @@
-//! What one client may hold at once (CASC-03, CASW-06). The loop is single-threaded, so a peer
-//! that makes objects without end stalls the whole session; each kind of object has a cap, and a
-//! client that asks for one past it is cut (its connection closed, with a log line naming the
-//! cap), never allowed to wedge us. The system backend's kill sends no `wl_display` error, and
-//! reaching the client's `wl_display` resource to post `no_memory` would need `unsafe`; the log
-//! line is where the reason lives.
+//! What one client may hold at once (CASC-03, CASW-06).
+//!
+//! The loop is single-threaded, so a peer that makes objects without end stalls the whole session;
+//! each kind of object has a cap, and a client that asks for one past it is cut (its connection
+//! closed, with a log line naming the cap), never allowed to wedge us. The system backend's kill
+//! sends no `wl_display` error, and reaching the client's `wl_display` resource to post `no_memory`
+//! would need `unsafe`; the log line is where the reason lives.
 //!
 //! The caps are generous: a person's real clients are an order of magnitude under them. Each
 //! call site counts what the client holds from the collection it already keeps, asks
@@ -61,8 +62,9 @@ pub const MAX_EXPORTS: usize = 256;
 /// the loop, and a keyboard sets its keymap once or when the layout changes.
 pub const MAX_KEYMAPS: usize = 16;
 
-/// Idle notifications (`ext_idle_notifier_v1.get_idle_notification`) one client may hold: a
-/// screen saver, a player and a chat app want one or two each, and every one is a timer and a
+/// Idle notifications (`ext_idle_notifier_v1.get_idle_notification`) one client may hold.
+///
+/// A screen saver, a player and a chat app want one or two each, and every one is a timer and a
 /// `resumed` on the next input event while it is idle.
 pub const MAX_IDLE_WATCHES: usize = 32;
 
@@ -71,15 +73,18 @@ pub const MAX_IDLE_WATCHES: usize = 32;
 pub const MAX_IDLE_INHIBITORS: usize = 16;
 
 /// Toplevels the whole session holds: every model step compares the published state of every
-/// window, so the walk is bounded however many clients each hold their share (CASC-03). Far
-/// above what a person keeps open.
+/// window, so the walk is bounded however many clients each hold their share (CASC-03).
+///
+/// Far above what a person keeps open.
 pub const MAX_WINDOWS: usize = 4096;
 
-/// The most pixels a client's cursor buffer may have per side when the compositor reads it back
-/// for a capture (NEW-CASB-8): twice the largest cursor surface that is drawn (256 logical
-/// pixels, `compositor_render::MAX_CLIENT_CURSOR`), room for a 2x cursor. A viewport can show a
-/// small surface from a buffer of any size, so the surface cap alone does not bound the read;
-/// this one does, and is checked before a byte of the buffer is copied.
+/// The most pixels a client's cursor buffer may have per side when the compositor reads it back for
+/// a capture (NEW-CASB-8).
+///
+/// Twice the largest cursor surface that is drawn (256 logical pixels,
+/// `compositor_render::MAX_CLIENT_CURSOR`), room for a 2x cursor. A viewport can show a small
+/// surface from a buffer of any size, so the surface cap alone does not bound the read; this one
+/// does, and is checked before a byte of the buffer is copied.
 pub const MAX_CURSOR_BUFFER_SIDE: u32 = 512;
 
 /// Whether a cursor buffer of `size` pixels may be read back: neither side is over
@@ -238,13 +243,13 @@ mod tests {
     #[test]
     fn a_cursor_buffer_over_the_cap_on_either_side_is_not_read() {
         let size = |w, h| PhysicalSize { w, h };
-        let side = MAX_CURSOR_BUFFER_SIDE;
+        let cap = MAX_CURSOR_BUFFER_SIDE;
         let cases = [
             ("a pointer", size(24, 24), true),
             ("a 2x pointer", size(48, 48), true),
-            ("at the cap", size(side, side), true),
-            ("one too wide", size(side + 1, 24), false),
-            ("one too tall", size(24, side + 1), false),
+            ("at the cap", size(cap, cap), true),
+            ("one too wide", size(cap + 1, 24), false),
+            ("one too tall", size(24, cap + 1), false),
             ("a pool-sized buffer", size(8192, 8192), false),
             ("the widest", size(u32::MAX, u32::MAX), false),
         ];

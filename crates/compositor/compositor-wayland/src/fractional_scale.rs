@@ -44,10 +44,12 @@ impl FractionalScalePart {
     }
 }
 
-/// The scale a new surface is told to draw at, before it has a window and so before anyone
-/// can say which output it will appear on: the primary output's, which is where every new
-/// window opens (the output at the top-left of the global space, ties by key). `None` while no
-/// output is plugged: the client then assumes 1x until [`apply_scale`] says otherwise.
+/// The scale a new surface is told to draw at, before it has a window and so before anyone can say
+/// which output it will appear on.
+///
+/// The primary output's, which is where every new window opens (the output at the top-left of the
+/// global space, ties by key). `None` while no output is plugged: the client then assumes 1x until
+/// [`apply_scale`] says otherwise.
 #[must_use]
 pub fn home_scale(outputs: &OutputBook) -> Option<Scale> {
     outputs
@@ -57,18 +59,24 @@ pub fn home_scale(outputs: &OutputBook) -> Option<Scale> {
         .map(|(_, state)| state.config.scale)
 }
 
-/// A surface asked for its preferred scale (or was created): nothing reaches the model; the
-/// handler answers with [`apply_scale`] for [`home_scale`], before the surface's first
-/// configure (the surface already carries the scale when its `wp_fractional_scale_v1` is
-/// created, so the event is the first thing the object sees).
+/// A surface asked for its preferred scale (or was created).
+///
+/// Nothing reaches the model; the handler answers with [`apply_scale`] for [`home_scale`], before
+/// the surface's first configure (the surface already carries the scale when its
+/// `wp_fractional_scale_v1` is created, so the event is the first thing the object sees).
 pub fn on_preferred(part: &mut FractionalScalePart, surface: &WlSurface) -> Vec<Event> {
     let _ = (part, surface);
     Vec::new()
 }
 
-/// Sends `scale` as `surface`'s preferred scale (in 120ths on the wire) and, for a `wl_surface`
-/// of version 6 or later, the matching integer buffer scale (the ceiling). smithay sends each
-/// only when it changes.
+/// Sends `scale` as `surface`'s preferred scale (in 120ths on the wire) and, for a `wl_surface` of
+/// version 6 or later, the matching integer buffer scale (the ceiling).
+///
+/// smithay sends each only when it changes.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_scale(
     part: &mut FractionalScalePart,
     surface: &WlSurface,

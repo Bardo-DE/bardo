@@ -61,10 +61,11 @@ impl PendingHints {
     }
 }
 
-/// The first-mouse regions a `wl_region` describes: its added rectangles (surface-local). A
-/// subtracted rectangle is not representable as a list of rectangles, so a region with any
-/// subtraction keeps only the added rectangles no subtraction fully covers; an empty region
-/// is none.
+/// The first-mouse regions a `wl_region` describes: its added rectangles (surface-local).
+///
+/// A subtracted rectangle is not representable as a list of rectangles, so a region with any
+/// subtraction keeps only the added rectangles no subtraction fully covers; an empty region is
+/// none.
 #[must_use]
 pub fn first_mouse_of(region: &RegionAttributes) -> Vec<LogicalRect> {
     let read: Vec<_> = region.rects.iter().take(MAX_FIRST_MOUSE_RECTS).collect();
@@ -100,6 +101,10 @@ pub struct BadRole;
 
 /// The role `set_role` may set: `document`, `utility` and `pip`; `dialog` and `shell` are known
 /// from other protocols (xdg-dialog, `bardo_shell_v1`) and a client cannot ask for them.
+///
+/// # Errors
+///
+/// Returns [`BadRole`] when the client may not have the role it asked for.
 pub fn role_request(role: WindowRole) -> Result<WindowRole, BadRole> {
     match role {
         WindowRole::Document | WindowRole::Utility | WindowRole::Pip => Ok(role),
@@ -109,6 +114,10 @@ pub fn role_request(role: WindowRole) -> Result<WindowRole, BadRole> {
 
 /// The accessibility root a `set_a11y_root` names: an empty name clears it, and one too long to
 /// be a D-Bus name or path is not passed on.
+///
+/// # Errors
+///
+/// Returns [`A11yTooLong`] when the name or the path is too long to be a D-Bus one.
 pub fn a11y_of(bus_name: &str, object_path: &str) -> Result<Option<A11yRoot>, A11yTooLong> {
     if bus_name.is_empty() {
         return Ok(None);
@@ -136,9 +145,11 @@ pub fn placement_events(window: WindowId, target: PlaceTarget, serial: InputSeri
     }]
 }
 
-/// What the model goes back to when the extension object is destroyed (the compositor forgets
-/// every value set through it): no first-mouse regions, a client frame with square corners that says nothing, a
-/// saved document, no accessibility root, and the role the window had without the object.
+/// What the model goes back to when the extension object is destroyed (the compositor forgets every
+/// value set through it).
+///
+/// No first-mouse regions, a client frame with square corners that says nothing, a saved document,
+/// no accessibility root, and the role the window had without the object.
 #[must_use]
 pub fn forgotten(base_role: WindowRole) -> Vec<WindowHintChange> {
     vec![
@@ -153,7 +164,7 @@ pub fn forgotten(base_role: WindowRole) -> Vec<WindowHintChange> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
+    use compositor_core::geometry::{LogicalPoint, LogicalSize};
     use smithay::utils::Rectangle;
 
     /// A kind and a rectangle as x, y, width, height.

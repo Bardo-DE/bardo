@@ -45,6 +45,11 @@ enum Place<'a> {
 impl<P: Provides> Manifest<P> {
     /// Parses and checks the text of a manifest in the flat layout (`<id>.toml`). The shared
     /// fields are checked here; each `[[provides]]` table goes to [`Provides::parse`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ManifestError`] when the manifest is not valid or names a file or folder that does
+    /// not match.
     pub fn parse(text: &str) -> Result<Manifest<P>, ManifestError<P::Capability, P::Fault>> {
         read(text, Place::Flat)
     }
@@ -53,6 +58,11 @@ impl<P: Provides> Manifest<P> {
     /// are relative to `folder` and must stay inside it ([`Entry::resolve`] does that for a
     /// host's entries; `[program] path` may also be absolute). Checking that the folder is
     /// named for the id is [`Manifest::check_folder_name`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ManifestError`] when the manifest is not valid or names a file or folder that does
+    /// not match.
     pub fn parse_in_folder(
         text: &str,
         folder: &Path,

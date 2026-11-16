@@ -23,6 +23,10 @@ pub enum ServeFault {
     Callers(String),
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as `map_err(bus)`, which hands the error over by value"
+)]
 fn bus(error: zbus::Error) -> ServeFault {
     ServeFault::Bus(error.to_string())
 }
@@ -54,11 +58,11 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
             tracing::warn!(%refused, "refused a caller that is not intentd");
             return Err(refused.into());
         }
-        let session = SessionId::parse(&session).map_err(|_| {
+        let session = SessionId::parse(&session).ok().ok_or_else(|| {
             tracing::warn!("refused a request whose session is not an id");
             fdo::Error::InvalidArgs("not a session id".into())
         })?;
-        let ask: ReaderAsk = serde_json::from_str(&ask).map_err(|_| {
+        let ask: ReaderAsk = serde_json::from_str(&ask).ok().ok_or_else(|| {
             tracing::warn!("refused a request that is not a reader ask");
             fdo::Error::InvalidArgs("not a reader ask".into())
         })?;
@@ -77,9 +81,15 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
     }
 }
 
-/// Exports `org.bardo.Reader1` at its path on `connection` and claims the name. Only the process
-/// that `callers` names as intentd (the `agent` role of the app `org.bardo.Intents`) may ask.
-/// Returns once the name is ours; the connection keeps serving until it closes.
+/// Exports `org.bardo.Reader1` at its path on `connection` and claims the name.
+///
+/// Only the process that `callers` names as intentd (the `agent` role of the app
+/// `org.bardo.Intents`) may ask. Returns once the name is ours; the connection keeps serving until
+/// it closes.
+///
+/// # Errors
+///
+/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
 pub async fn serve_on<P, I>(
     connection: &BusConnection,
     service: Arc<ReaderService<P, I>>,
@@ -109,9 +119,14 @@ where
 }
 
 /// Claims `org.bardo.Reader1` on the session bus and serves `Extract(session, ask)` until the
-/// connection closes. Only intentd may call it: the process behind the caller is named by
-/// `readerd-callers.toml` (the system's under `/etc/bardo`, the person's over it) before the ask
-/// is read.
+/// connection closes.
+///
+/// Only intentd may call it: the process behind the caller is named by `readerd-callers.toml` (the
+/// system's under `/etc/bardo`, the person's over it) before the ask is read.
+///
+/// # Errors
+///
+/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
 pub async fn serve<P, I>(
     service: Arc<ReaderService<P, I>>,
     env: &impl Fn(&str) -> Option<String>,

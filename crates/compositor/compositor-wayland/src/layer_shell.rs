@@ -1,6 +1,7 @@
-//! `zwlr_layer_shell_v1`: the shell's bars, docks, panels and wallpaper. An `Exclusive` layer
-//! takes the keyboard on the commit that maps it, with the current modifiers (A16, SP1 A2); a
-//! layer mapping under a resting pointer gets `enter` at once (SP1 A1).
+//! `zwlr_layer_shell_v1`: the shell's bars, docks, panels and wallpaper.
+//!
+//! An `Exclusive` layer takes the keyboard on the commit that maps it, with the current modifiers
+//! (A16, SP1 A2); a layer mapping under a resting pointer gets `enter` at once (SP1 A1).
 //!
 //! A layer surface enters the model on its first commit (the one that asks for the initial
 //! configure): the model answers with `Effect::ConfigureLayer` and, for an exclusive layer, the
@@ -128,9 +129,10 @@ pub fn on_new_layer(
     Vec::new()
 }
 
-/// A layer surface committed: its initial configure (it maps into the model and the model
-/// answers with its size), a changed spec (`Event::LayerChanged`), or its buffer going away
-/// (`Event::LayerUnmapped`).
+/// A layer surface committed.
+///
+/// Its initial configure (it maps into the model and the model answers with its size), a changed
+/// spec (`Event::LayerChanged`), or its buffer going away (`Event::LayerUnmapped`).
 pub fn on_layer_commit(part: &mut LayerShellPart, surface: &WlSurface) -> Vec<Event> {
     let Some(layer) = part.key_of(surface) else {
         return Vec::new();
@@ -139,15 +141,15 @@ pub fn on_layer_commit(part: &mut LayerShellPart, surface: &WlSurface) -> Vec<Ev
     else {
         return Vec::new();
     };
-    let (cached, has_buffer) =
+    let (cached, buffered_now) =
         handle.with_cached_state(|cached| (*cached, cached.last_acked.is_some()));
-    let had_buffer = std::mem::replace(&mut record.has_buffer, has_buffer);
+    let buffered_before = std::mem::replace(&mut record.has_buffer, buffered_now);
     let Some(output) = record.output.clone() else {
         return Vec::new();
     };
     let spec = spec_of(&output, &cached, &record.namespace.0, record.from_shell);
     let known = record.known.take();
-    let (known, events) = after_commit(known, had_buffer, has_buffer, spec, layer);
+    let (known, events) = after_commit(known, buffered_before, buffered_now, spec, layer);
     record.known = known;
     events
 }
@@ -157,12 +159,12 @@ pub fn on_layer_commit(part: &mut LayerShellPart, surface: &WlSurface) -> Vec<Ev
 /// spec that differs from what the model knows is a change.
 fn after_commit(
     known: Option<LayerSpec>,
-    had_buffer: bool,
-    has_buffer: bool,
+    buffered_before: bool,
+    buffered_now: bool,
     spec: LayerSpec,
     layer: LayerKey,
 ) -> (Option<LayerSpec>, Vec<Event>) {
-    match (known, had_buffer, has_buffer) {
+    match (known, buffered_before, buffered_now) {
         (Some(_), true, false) => (None, vec![Event::LayerUnmapped { layer }]),
         (None, _, _) => (Some(spec.clone()), vec![Event::LayerMapped { layer, spec }]),
         (Some(held), _, _) if held != spec => (
@@ -202,6 +204,10 @@ pub fn on_layer_popup(
 
 /// Sends `layer` its size (the initial configure when it has none yet, else a configure only
 /// when the size changed).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_layer_configure(
     part: &mut LayerShellPart,
     layer: LayerKey,

@@ -58,13 +58,13 @@ pub fn commit_step(phase: Phase, configured: bool, buffer: Option<LogicalSize>) 
         // smithay resets a toplevel's role (the initial configure included) in the very commit
         // that removes its buffer, so a mapped window reads as not configured exactly then: it is
         // the unmap, and the configure follows the client's next bare commit.
-        (false, Phase::Mapped(_), None) => CommitStep::Unmap,
+        // A mapped window with no buffer is unmapped, configured or not.
+        (_, Phase::Mapped(_), None) => CommitStep::Unmap,
         (false, _, _) => CommitStep::InitialConfigure,
         (true, Phase::Unmapped, Some(size)) => CommitStep::Map(size),
         (true, Phase::Unmapped, None) => CommitStep::Nothing,
         (true, Phase::Mapped(had), Some(size)) if had == size => CommitStep::Nothing,
         (true, Phase::Mapped(_), Some(size)) => CommitStep::Resize(size),
-        (true, Phase::Mapped(_), None) => CommitStep::Unmap,
     }
 }
 

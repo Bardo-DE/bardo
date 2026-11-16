@@ -30,7 +30,6 @@ use account_sheet::{
 use account_wire::AccountsReply;
 use account_wire::{ParentWindow, Refusal};
 use std::collections::VecDeque;
-use std::future::Future;
 
 /// Who an add is for when the host already knows ("Continue as"): the provider the identity is
 /// with, the address its page opens on, and whether this client was signed in for that identity
@@ -357,6 +356,10 @@ impl Job for EditServers {
         true
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn store<E: Ports>(
         &self,
         _at: &Accounts<'_, E>,
@@ -367,7 +370,9 @@ impl Job for EditServers {
         _choices: &[KindToggle],
     ) -> Result<EditedServers, ()> {
         let answers = answers.ok_or(())?;
-        EditedServers::from_answers(answers, signed.endpoints.clone()).map_err(|_| ())
+        EditedServers::from_answers(answers, signed.endpoints.clone())
+            .ok()
+            .ok_or_else(|| ())
     }
 }
 
@@ -377,9 +382,8 @@ fn fault_of(error: ProviderError) -> SignInFault {
         ProviderError::Unauthorized => SignInFault::Refused,
         ProviderError::Forbidden => SignInFault::Forbidden,
         ProviderError::Unreachable => SignInFault::Unreachable,
-        ProviderError::Unreadable => SignInFault::Unreadable,
-        // a variant a newer porter adds: the sign-in ends as unreadable
-        _ => SignInFault::Unreadable,
+        // Access not given has no sign-in word of its own here: the sign-in ends as unreadable.
+        ProviderError::Unreadable | ProviderError::NeedsConsent => SignInFault::Unreadable,
     }
 }
 
@@ -632,18 +636,13 @@ impl<E: Ports> Accounts<'_, E> {
             _ => return person(link.input().await),
         };
         run.polling = false;
-        self.settled(job, run, polled).await
+        self.settled(job, run, polled)
     }
 
     /// What a sign-in's step is to the machine. A sign-in that skipped the consent screen
     /// (`signed_in_before`) and ended `Unreadable` (the provider handed back nothing to keep) is a
     /// fact of its own, told once: whether it is tried again is the machine's to say.
-    async fn settled<J: Job>(
-        &self,
-        job: &J,
-        run: &mut RunOf<E, J>,
-        step: SignInStep,
-    ) -> SheetEvent {
+    fn settled<J: Job>(&self, job: &J, run: &mut RunOf<E, J>, step: SignInStep) -> SheetEvent {
         let before = matches!(
             (&step, job.adds(), &run.identity),
             (
@@ -659,7 +658,7 @@ impl<E: Ports> Accounts<'_, E> {
             identity.signed_in_before = false;
             return SheetEvent::SignedInBefore;
         }
-        said(run, step)
+        said(run, &step)
     }
 
     /// Starts the sign-in of the sheet's provider again, as a first sign-in, in place of the one
@@ -676,7 +675,7 @@ impl<E: Ports> Accounts<'_, E> {
             Some(Ok(mut signin)) => {
                 let first = signin.next(SignInInput::Start).await;
                 run.signin = Some(signin);
-                self.settled(job, run, first).await
+                self.settled(job, run, first)
             }
             Some(Err(_)) | None => SheetEvent::SignIn(Progress::Failed(SignInFault::Unreadable)),
         }
@@ -755,7 +754,7 @@ impl<E: Ports> Accounts<'_, E> {
                 };
                 let first = signin.next(SignInInput::Start).await;
                 run.signin = Some(signin);
-                Some(self.settled(job, run, first).await)
+                Some(self.settled(job, run, first))
             }
             other => {
                 let signin = run.signin.as_mut()?;
@@ -777,7 +776,7 @@ impl<E: Ports> Accounts<'_, E> {
                     }
                     return Some(SheetEvent::Duplicate);
                 }
-                Some(self.settled(job, run, step).await)
+                Some(self.settled(job, run, step))
             }
         }
     }
@@ -833,7 +832,7 @@ fn finish<J: Job>(
 fn left(fault: SheetFault) -> Refusal {
     match fault {
         SheetFault::Closed => Refusal::Dismissed,
-        _ => Refusal::Unavailable,
+        SheetFault::Unavailable => Refusal::Unavailable,
     }
 }
 
@@ -855,8 +854,8 @@ fn login_hint_of(endpoints: &[ServiceEndpoint]) -> Option<LoginHint> {
 
 /// What a sign-in's step is to the machine, keeping the credential here: `Done` leaves the
 /// signed account with the run and tells the machine only that it is done.
-fn said<S, D>(run: &mut Run<S, D>, step: SignInStep) -> SheetEvent {
-    match &step {
+fn said<S, D>(run: &mut Run<S, D>, step: &SignInStep) -> SheetEvent {
+    match step {
         SignInStep::Done(signed) => run.signed = Some(signed.clone()),
         SignInStep::OpenBrowser { .. } | SignInStep::ShowCode { .. } => run.polling = true,
         _ => {}

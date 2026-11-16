@@ -1,7 +1,8 @@
-//! Dates, instants, durations and decimals as a terminal writes them. A date or an instant is
-//! RFC 3339 (`2026-10-03`, `2026-10-03T09:30:00+02:00`). The launcher's natural-date parser
-//! ("tomorrow at nine") is sill's and cannot be reached from here; that is an interface ask,
-//! and until it lands a natural date is a usage error that says so.
+//! Dates, instants, durations and decimals as a terminal writes them.
+//!
+//! A date or an instant is RFC 3339 (`2026-10-03`, `2026-10-03T09:30:00+02:00`). The launcher's
+//! natural-date parser ("tomorrow at nine") is sill's and cannot be reached from here; that is an
+//! interface ask, and until it lands a natural date is a usage error that says so.
 
 use action_vocab::{CivilDate, Decimal, Scale, Seconds};
 use provenance::UnixSeconds;
@@ -23,20 +24,32 @@ pub enum WhenFault {
 }
 
 fn rfc3339<T>(read: Result<T, action_vocab::when::NotRfc3339>) -> Result<T, WhenFault> {
-    read.map_err(|_| WhenFault::NotRfc3339)
+    read.ok().ok_or(WhenFault::NotRfc3339)
 }
 
 /// A calendar date: `2026-10-03`, or the date part of an RFC 3339 instant as written.
+///
+/// # Errors
+///
+/// Returns [`WhenFault`] when the text is not a value of this kind.
 pub fn date(text: &str) -> Result<CivilDate, WhenFault> {
     rfc3339(action_vocab::when::date(text))
 }
 
 /// An instant: RFC 3339, or a bare date taken as midnight UTC.
+///
+/// # Errors
+///
+/// Returns [`WhenFault`] when the text is not a value of this kind.
 pub fn instant(text: &str) -> Result<UnixSeconds, WhenFault> {
     rfc3339(action_vocab::when::instant(text))
 }
 
 /// A length of time: whole seconds, or `d`, `h`, `m` and `s` units (`1h30m`).
+///
+/// # Errors
+///
+/// Returns [`WhenFault`] when the text is not a value of this kind.
 pub fn duration(text: &str) -> Result<Seconds, WhenFault> {
     let mut total: u64 = 0;
     let mut number = String::new();
@@ -53,7 +66,7 @@ pub fn duration(text: &str) -> Result<Seconds, WhenFault> {
             's' => 1,
             _ => return Err(WhenFault::NotDuration),
         };
-        let n: u64 = number.parse().map_err(|_| WhenFault::NotDuration)?;
+        let n: u64 = number.parse().ok().ok_or(WhenFault::NotDuration)?;
         total = total.saturating_add(n.saturating_mul(unit));
         number.clear();
         saw_unit = true;
@@ -62,17 +75,22 @@ pub fn duration(text: &str) -> Result<Seconds, WhenFault> {
         if saw_unit {
             return Err(WhenFault::NotDuration);
         }
-        total = number.parse().map_err(|_| WhenFault::NotDuration)?;
+        total = number.parse().ok().ok_or(WhenFault::NotDuration)?;
     }
     if text.is_empty() {
         return Err(WhenFault::NotDuration);
     }
     u32::try_from(total)
         .map(Seconds)
-        .map_err(|_| WhenFault::NotDuration)
+        .ok()
+        .ok_or(WhenFault::NotDuration)
 }
 
 /// A fixed-point number with exactly `scale` digits after the point (missing ones are zeros).
+///
+/// # Errors
+///
+/// Returns [`WhenFault`] when the text is not a value of this kind.
 pub fn decimal(text: &str, scale: Scale) -> Result<Decimal, WhenFault> {
     let fault = WhenFault::NotDecimal(scale.0);
     let (negative, body) = match text.strip_prefix('-') {
@@ -85,7 +103,7 @@ pub fn decimal(text: &str, scale: Scale) -> Result<Decimal, WhenFault> {
         return Err(fault);
     }
     let padded = format!("{whole}{frac:0<width$}", width = usize::from(scale.0));
-    let units: i64 = padded.parse().map_err(|_| fault)?;
+    let units: i64 = padded.parse().ok().ok_or(fault)?;
     Ok(Decimal {
         units: if negative { -units } else { units },
         scale,

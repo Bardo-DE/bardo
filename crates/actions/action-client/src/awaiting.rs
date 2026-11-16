@@ -6,7 +6,6 @@ use crate::transport::TransportError;
 use action_dbus::BusConnection;
 use futures_util::StreamExt;
 use futures_util::future::{Either, select};
-use std::future::Future;
 use zbus::fdo::DBusProxy;
 use zbus::message::Type;
 use zbus::zvariant::OwnedObjectPath;
@@ -26,14 +25,20 @@ async fn owner_of(connection: &BusConnection, service: &str) -> Result<String, T
     dbus.get_name_owner(name)
         .await
         .map(|owner| owner.to_string())
-        .map_err(|_| TransportError::Closed)
+        .ok()
+        .ok_or(TransportError::Closed)
 }
 
 /// Starts a request with `start` and waits for its `Response`: `Ok(Ok((code, body)))`, or
-/// `Ok(Err(e))` when the method itself failed (a request refused before it started). The
-/// signal is subscribed to before `start` runs, so an answer quicker than the method's own
-/// reply is not lost; it counts only from the owner of `service`, and the wait ends `Closed`
-/// when that owner leaves the bus.
+/// `Ok(Err(e))` when the method itself failed (a request refused before it started).
+///
+/// The signal is subscribed to before `start` runs, so an answer quicker than the method's own
+/// reply is not lost; it counts only from the owner of `service`, and the wait ends `Closed` when
+/// that owner leaves the bus.
+///
+/// # Errors
+///
+/// Returns [`TransportError`] when the request got no reply.
 pub async fn requested(
     connection: &BusConnection,
     service: &str,
@@ -76,10 +81,7 @@ pub async fn requested(
                 return Err(TransportError::Closed);
             }
             Either::Right((Some(change), _)) => {
-                let gone = change
-                    .args()
-                    .map(|a| a.new_owner().is_none())
-                    .unwrap_or(true);
+                let gone = change.args().map_or(true, |a| a.new_owner().is_none());
                 if gone {
                     return Err(TransportError::Closed);
                 }

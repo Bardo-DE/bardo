@@ -58,9 +58,10 @@ impl InputMethodPart {
     }
 }
 
-/// The input method committed text or preedit for the focused field. smithay relays
-/// `commit_string`, `set_preedit_string` and `commit` between the input method and the field
-/// itself and the model has no text state, so there is nothing to feed it.
+/// The input method committed text or preedit for the focused field.
+///
+/// smithay relays `commit_string`, `set_preedit_string` and `commit` between the input method and
+/// the field itself and the model has no text state, so there is nothing to feed it.
 pub fn on_im_commit(part: &mut InputMethodPart) -> Vec<Event> {
     let _ = part;
     Vec::new()

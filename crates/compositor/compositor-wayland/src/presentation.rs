@@ -73,9 +73,11 @@ pub struct Presented {
     pub refresh: Millihertz,
 }
 
-/// Tells the part which smithay `Output` stands for `key`, so feedback can say where the frame
-/// was shown (`sync_output`). Called when an output is plugged, with the `Output` that
-/// `output::apply_plug` made; without it feedback is still sent, without `sync_output`.
+/// Tells the part which smithay `Output` stands for `key`, so feedback can say where the frame was
+/// shown (`sync_output`).
+///
+/// Called when an output is plugged, with the `Output` that `output::apply_plug` made; without it
+/// feedback is still sent, without `sync_output`.
 pub fn learn_output(part: &mut PresentationPart, key: OutputKey, output: Output) {
     part.outputs.insert(key, output);
 }
@@ -85,9 +87,11 @@ pub fn forget_output(part: &mut PresentationPart, key: &OutputKey) {
     part.outputs.remove(key);
 }
 
-/// A committed surface asked for presentation feedback: the callbacks it committed are
-/// collected for the next frame. Callbacks of an earlier commit of the same surface that was
-/// never shown are discarded (superseded, as the protocol says). Nothing reaches the model.
+/// A committed surface asked for presentation feedback: the callbacks it committed are collected
+/// for the next frame.
+///
+/// Callbacks of an earlier commit of the same surface that was never shown are discarded
+/// (superseded, as the protocol says). Nothing reaches the model.
 pub fn on_feedback(part: &mut PresentationPart, surface: &WlSurface) -> Vec<Event> {
     let fresh = with_states(surface, |states| {
         std::mem::take(
@@ -166,6 +170,10 @@ fn detached() -> Output {
 
 /// Sends `presented` to every feedback collected for `output`'s last frame; feedback whose
 /// surface is gone is discarded.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_presented(
     part: &mut PresentationPart,
     output: &OutputKey,

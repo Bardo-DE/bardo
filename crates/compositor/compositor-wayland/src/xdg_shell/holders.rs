@@ -7,9 +7,10 @@ use compositor_core::ClientKey;
 use smithay::reexports::wayland_server::{Client, Resource};
 use std::collections::BTreeMap;
 
-/// The client to cut: the one of `held` (windows per client) holding the most. When `asker` holds
-/// as many as the largest other client, it is `asker` (a tie is the asker's to lose), so an
-/// asker is never spared for holding no less than the rest.
+/// The client to cut: the one of `held` (windows per client) holding the most.
+///
+/// When `asker` holds as many as the largest other client, it is `asker` (a tie is the asker's to
+/// lose), so an asker is never spared for holding no less than the rest.
 #[must_use]
 pub fn heaviest_holder(held: &BTreeMap<ClientKey, usize>, asker: ClientKey) -> ClientKey {
     let start = (asker, held.get(&asker).copied().unwrap_or(0));

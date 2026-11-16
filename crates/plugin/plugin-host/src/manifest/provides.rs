@@ -49,6 +49,10 @@ impl Entry {
     /// absolute. In a folder layout it is relative to the manifest's folder and must stay
     /// inside it: an absolute path or a `..` is a [`Refusal::PathEscapes`]. A host calls this
     /// instead of [`absolute`] so one entry type serves both layouts.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal`] when the host will not take the entry.
     pub fn resolve<E>(&self, path: PathBuf) -> Result<PathBuf, Refusal<E>> {
         match &self.folder {
             None => absolute(path),
@@ -58,6 +62,10 @@ impl Entry {
 
     /// Reads the entry as the host's own raw shape. A table that is not of that shape is a
     /// [`Refusal::Syntax`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal`] when the host will not take the entry.
     pub fn read<T: DeserializeOwned, E>(self) -> Result<T, Refusal<E>> {
         self.table
             .try_into()
@@ -90,6 +98,10 @@ pub enum Refusal<E> {
 }
 
 /// `path` if it is absolute, else a [`Refusal::PathNotAbsolute`].
+///
+/// # Errors
+///
+/// Returns [`Refusal`] when the host will not take the entry.
 pub fn absolute<E>(path: PathBuf) -> Result<PathBuf, Refusal<E>> {
     if path.is_absolute() {
         Ok(path)
@@ -98,9 +110,10 @@ pub fn absolute<E>(path: PathBuf) -> Result<PathBuf, Refusal<E>> {
     }
 }
 
-/// One `[[provides]]` entry of a manifest, parsed into the host's own type. A host implements it
-/// for one type (usually an enum with a variant for each capability), and bayonet's [`Manifest`]
-/// and [`Registry`] are generic over it.
+/// One `[[provides]]` entry of a manifest, parsed into the host's own type.
+///
+/// A host implements it for one type (usually an enum with a variant for each capability), and
+/// bayonet's [`Manifest`] and [`Registry`] are generic over it.
 ///
 /// [`Manifest`]: super::Manifest
 /// [`Registry`]: crate::registry::Registry
@@ -112,6 +125,10 @@ pub trait Provides: Sized + fmt::Debug + Clone + Eq {
     type Fault: std::error::Error + Clone + Eq + 'static;
 
     /// Parses one entry. The `capability` key is the host's to read, with every key beside it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal`] when the host will not take the entry.
     fn parse(entry: Entry) -> Result<Self, Refusal<Self::Fault>>;
 
     /// Which capability this entry provides.

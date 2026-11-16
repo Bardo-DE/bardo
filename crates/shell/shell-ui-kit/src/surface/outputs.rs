@@ -2,9 +2,10 @@
 
 use layer_shell_host::OutputId;
 
-/// A surface's rule for outputs, declared once as [`super::Surface::OUTPUTS`]. The daemon spawns
-/// by it and every opener (a verb, a chord, the companion) picks the output by it, so one panel
-/// never opens on different screens depending on the door it came through.
+/// A surface's rule for outputs, declared once as [`super::Surface::OUTPUTS`].
+///
+/// The daemon spawns by it and every opener (a verb, a chord, the companion) picks the output by
+/// it, so one panel never opens on different screens depending on the door it came through.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum OutputPolicy {
     /// One surface on every output, and nothing picks among them: the dock, a hot corner.

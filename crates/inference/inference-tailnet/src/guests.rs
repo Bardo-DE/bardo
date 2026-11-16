@@ -267,14 +267,21 @@ impl Guests {
         let Some(path) = &self.path else {
             return Ok(());
         };
-        let text = toml::to_string_pretty(file).map_err(|_| GuestError::NotSaved)?;
+        let text = toml::to_string_pretty(file)
+            .ok()
+            .ok_or(GuestError::NotSaved)?;
         AtomicWrite::PRIVATE
             .write(path, text.as_bytes())
-            .map_err(|_| GuestError::NotSaved)
+            .ok()
+            .ok_or(GuestError::NotSaved)
     }
 
     /// Notes that the computer `node`, called `name`, wants to use the models and has not been
     /// answered: [`AskOutcome::Raised`] the first time, so the person is told once.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GuestError`] when the change was not made.
     pub fn ask(
         &self,
         node: &NodeId,
@@ -311,6 +318,10 @@ impl Guests {
     }
 
     /// The person's answer to a computer that is waiting: yes (`allow`) or no.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GuestError`] when the change was not made.
     pub fn answer(
         &self,
         node: &NodeId,
@@ -336,6 +347,10 @@ impl Guests {
 
     /// The person's word about a computer, waiting or not (Settings only): it may be one this
     /// computer would never ask about, such as a server or another person's computer.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GuestError`] when the change was not made.
     pub fn set(
         &self,
         node: &NodeId,
@@ -366,6 +381,10 @@ impl Guests {
 
     /// Forgets what the person said about `node`, and any question it has waiting: it is asked
     /// about again the next time it wants a model. Whether there was anything to forget.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`GuestError`] when the change was not made.
     pub fn forget(&self, node: &NodeId) -> Result<bool, GuestError> {
         let changed = {
             let mut inner = held(&self.inner);

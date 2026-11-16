@@ -1,6 +1,8 @@
 //! `bardo_shell_v1`, the Split View part: the offer of the other half (`split_choose`,
 //! `split_candidate`, `split_choice_end`) and the shell's answers (`split_pick`, `split_cancel`,
-//! `split_divide`). The model decides; this only carries.
+//! `split_divide`).
+//!
+//! The model decides; this only carries.
 
 use super::shell::QuireShellPart;
 use crate::foreign_toplevel_list::identifier_of;
@@ -37,8 +39,10 @@ pub fn send_choice_end(part: &QuireShellPart, first: WindowId) {
 }
 
 /// `split_pick`: `window` (turned into the model's window when the model knows it, `None`
-/// otherwise) fills the other half. A window the model does not know is ignored, with no error:
-/// the offer may be on screen while the window goes away.
+/// otherwise) fills the other half.
+///
+/// A window the model does not know is ignored, with no error: the offer may be on screen while the
+/// window goes away.
 ///
 /// ```
 /// use compositor_core::WindowId;
@@ -66,8 +70,9 @@ pub fn on_split_cancel() -> Vec<Event> {
 }
 
 /// `split_divide`: the leading window of the pair of `window` takes `share` thousandths of the
-/// width (more than the whole is the whole; the model keeps its own bounds). A window the model
-/// does not know is ignored.
+/// width (more than the whole is the whole; the model keeps its own bounds).
+///
+/// A window the model does not know is ignored.
 ///
 /// ```
 /// use compositor_core::WindowId;

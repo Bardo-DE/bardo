@@ -7,9 +7,11 @@ use ui_core::vocab::Availability;
 
 use super::marks::effect_mark;
 
-/// A card's button. The first button that only reads or writes undoably is the default; an
-/// outbound button is never drawn as the default without its mark, and a destructive one is
-/// never the default at all (running commands counts as destructive).
+/// A card's button.
+///
+/// The first button that only reads or writes undoably is the default; an outbound button is never
+/// drawn as the default without its mark, and a destructive one is never the default at all
+/// (running commands counts as destructive).
 #[must_use]
 pub fn card_action(card: &CardWire, first: bool) -> CardAction {
     let role = match (card.effect, first) {

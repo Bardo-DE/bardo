@@ -1,7 +1,9 @@
-//! Routines: a helper's standing instructions, run without being asked. A routine is a goal in the
-//! person's words (Trusted, written when the routine is made) and what starts it: a time, an
-//! almanac event, or another job ending done. A run is an ordinary job on the helper's board; the
-//! last 20 runs are kept, and three that do not finish in a row pause the routine.
+//! Routines: a helper's standing instructions, run without being asked.
+//!
+//! A routine is a goal in the person's words (Trusted, written when the routine is made) and what
+//! starts it: a time, an almanac event, or another job ending done. A run is an ordinary job on the
+//! helper's board; the last 20 runs are kept, and three that do not finish in a row pause the
+//! routine.
 //!
 //! This is the pure half. Nothing here reads a clock, a bus or a timer: companiond owns the book,
 //! passes the time and the local zone in, and carries out the effects.

@@ -1,7 +1,8 @@
 //! The look of a workspace and of the active one on an output (design/21 §5): the preset the
-//! workspace's position picks and the grain a constant. Every surface
-//! draws its `Ds { look }` from [`use_active_look`], so an output follows its own active
-//! workspace (rule 6).
+//! workspace's position picks and the grain a constant.
+//!
+//! Every surface draws its `Ds { look }` from [`use_active_look`], so an output follows its own
+//! active workspace (rule 6).
 //!
 //! quire has no `spaces.json` store yet (design/21 §10 names `ui-settings`' writer); until it
 //! does [`use_space_look`] returns the design/21 §4 default for the workspace's index:

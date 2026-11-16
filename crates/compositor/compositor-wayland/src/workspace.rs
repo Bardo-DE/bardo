@@ -1,6 +1,7 @@
-//! `ext_workspace_manager_v1`: the Spaces as workspaces, one group per output, with ids that
-//! are casement's minted `SpaceId`s and so stable across a restart (C16). Its requests become
-//! `Event::Workspace`.
+//! `ext_workspace_manager_v1`: the Spaces as workspaces, one group per output, with ids that are
+//! casement's minted `SpaceId`s and so stable across a restart (C16).
+//!
+//! Its requests become `Event::Workspace`.
 //!
 //! smithay has no module for it, so this one carries its own `GlobalDispatch2` and `Dispatch2`
 //! impls (as `quire_window` does). A client's requests wait until its `commit` and then go to
@@ -600,6 +601,10 @@ fn enter_outputs(
 
 /// Publishes `spaces` (groups, workspaces with their ids, names, coordinates and states) and
 /// sends `done`. `outputs` are the `wl_output` globals of the plugged displays, by key.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_spaces(
     part: &mut WorkspacePart,
     spaces: &SpaceBook,

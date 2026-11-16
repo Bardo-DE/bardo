@@ -1,6 +1,8 @@
-//! `zwlr_screencopy_manager_v1` (version 3): the older capture protocol `grim`, `wf-recorder`
-//! and the screenshot portals' fallbacks speak. A client captures one output, or a region of it
-//! in the output's logical pixels, into a shared-memory buffer.
+//! `zwlr_screencopy_manager_v1` (version 3): the older capture protocol `grim`, `wf-recorder` and
+//! the screenshot portals' fallbacks speak.
+//!
+//! A client captures one output, or a region of it in the output's logical pixels, into a
+//! shared-memory buffer.
 //!
 //! The frame is the one scanout shows, the same pixels `ext_image_copy_capture` serves
 //! ([`crate::image_capture`]); this module keeps the wire and the pending requests, and the
@@ -460,15 +462,15 @@ where
         client: &Client,
         resource: &ZwlrScreencopyFrameV1,
         request: zwlr_screencopy_frame_v1::Request,
-        handle: &DisplayHandle,
+        dhandle: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
     ) {
         match request {
             zwlr_screencopy_frame_v1::Request::Copy { buffer } => {
-                self.copy(state, (client, handle), resource, buffer, false);
+                self.copy(state, (client, dhandle), resource, buffer, false);
             }
             zwlr_screencopy_frame_v1::Request::CopyWithDamage { buffer } => {
-                self.copy(state, (client, handle), resource, buffer, true);
+                self.copy(state, (client, dhandle), resource, buffer, true);
             }
             _ => {}
         }

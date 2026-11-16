@@ -1,7 +1,8 @@
-//! `wl_subcompositor`: subsurfaces. The global comes with `wl_compositor`
-//! ([`crate::compositor::CompositorPart`]); this module holds what subsurfaces add.
-//! smithay keeps the tree, the stacking order (`place_above`, `place_below`), synchronised
-//! commits and the `bad_surface`/`bad_parent` protocol errors.
+//! `wl_subcompositor`: subsurfaces.
+//!
+//! The global comes with `wl_compositor` ([`crate::compositor::CompositorPart`]); this module holds
+//! what subsurfaces add. smithay keeps the tree, the stacking order (`place_above`, `place_below`),
+//! synchronised commits and the `bad_surface`/`bad_parent` protocol errors.
 
 use compositor_core::Event;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;

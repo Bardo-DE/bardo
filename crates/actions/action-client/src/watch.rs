@@ -13,7 +13,6 @@ use action_gate_wire::{CuaAsk, GateAnswer};
 use action_vocab::{CallRequest, WindowKey};
 use action_wire::{IntentsReply, IntentsRequest};
 use provenance::SessionId;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
@@ -120,11 +119,21 @@ impl std::fmt::Debug for GateSteer {
 
 impl GateSteer {
     /// The run's input is suspended: the router may show the sheet.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn proceed(&self) -> Result<(), ClientError> {
         Ok(self.0.proceed().await?)
     }
 
     /// Withdraws the check (a paused run): the sheet comes down and no verdict follows.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn close(&self) -> Result<(), ClientError> {
         Ok(self.0.close().await?)
     }
@@ -145,6 +154,11 @@ impl std::fmt::Debug for GateWatch {
 impl GateWatch {
     /// The next event. Other progress is not the gate's and is skipped; a verdict ends the
     /// watch, and a refused request is an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn next(&mut self) -> Result<GateEvent, ClientError> {
         loop {
             match self.events.next().await? {
@@ -170,11 +184,21 @@ impl GateWatch {
     }
 
     /// `GateSteer::proceed`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn proceed(&self) -> Result<(), ClientError> {
         self.steer.proceed().await
     }
 
     /// `GateSteer::close`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn close(&self) -> Result<(), ClientError> {
         self.steer.close().await
     }
@@ -184,6 +208,11 @@ impl<T: Transport> Intents<T> {
     /// Computer use: may this pixel step run, watched. The router says `Confirming(id)` before it
     /// draws a sheet and waits for `proceed`; the verdict is the last event. A transport that
     /// cannot watch gives the verdict alone (`gate_check` is the same without the watch).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn gate_check_watched(&self, ask: CuaAsk) -> Result<GateWatch, ClientError> {
         let Watched { events, steering } = self
             .transport()
@@ -227,6 +256,11 @@ impl PerformWatch {
     }
 
     /// The next event; the call's end is the last, and a refused request is an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn next(&mut self) -> Result<PerformEvent, ClientError> {
         match self.events.next().await? {
             Said::Progress(progress) => Ok(PerformEvent::Progress(progress)),
@@ -243,6 +277,11 @@ impl<T: Transport> Intents<T> {
     /// `perform`, watched: the progress of the call comes out as it happens (a person's sheet is
     /// announced as `Confirming(id)` as it is drawn) and the end is the last event. A transport
     /// that cannot watch gives the end alone.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn perform_watched(
         &self,
         call: CallRequest,
@@ -254,6 +293,11 @@ impl<T: Transport> Intents<T> {
     }
 
     /// `perform_watched` with the launcher's activation token (see `perform_activated`).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ClientError`] when the request could not be made or the service's reply was not
+    /// the one wanted.
     pub async fn perform_watched_activated(
         &self,
         call: CallRequest,

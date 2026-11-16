@@ -17,9 +17,10 @@ const SEEN_TOKENS_MAX: usize = 256;
 /// The most bytes of a seen command line kept, all words together.
 const SEEN_BYTES_MAX: usize = 64 * 1024;
 
-/// An agent app's own id for one conversation. It goes on a command line and the app says it, so
-/// it must be one plain word (letters, digits, `-`, `_`, `.`, `:`; at most 128 bytes) that no
-/// program takes for an option (no leading `-`).
+/// An agent app's own id for one conversation.
+///
+/// It goes on a command line and the app says it, so it must be one plain word (letters, digits,
+/// `-`, `_`, `.`, `:`; at most 128 bytes) that no program takes for an option (no leading `-`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct AppSessionId(String);
@@ -31,6 +32,10 @@ pub struct AppSessionIdError;
 
 impl AppSessionId {
     /// `text` as an app conversation id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AppSessionIdError`] when the text is not an app conversation id.
     pub fn parse(text: &str) -> Result<Self, AppSessionIdError> {
         let word = |c: char| c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '.' | ':');
         let plain = !text.is_empty()
@@ -71,9 +76,10 @@ impl From<AppSessionId> for String {
     }
 }
 
-/// The command line a terminal saw running in one of its panes, word by word. It comes from
-/// outside and can hold secrets: it is only matched, never stored or logged, and its `Debug`
-/// shows how many words it has and nothing else.
+/// The command line a terminal saw running in one of its panes, word by word.
+///
+/// It comes from outside and can hold secrets: it is only matched, never stored or logged, and its
+/// `Debug` shows how many words it has and nothing else.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(try_from = "Vec<String>", into = "Vec<String>")]
 pub struct SeenCommand(Vec<String>);
@@ -97,6 +103,10 @@ pub enum SeenCommandFault {
 
 impl SeenCommand {
     /// `words` as a seen command line.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SeenCommandFault`] when the words are not a seen command line.
     pub fn parse(words: Vec<String>) -> Result<Self, SeenCommandFault> {
         if words.is_empty() {
             return Err(SeenCommandFault::Empty);
@@ -140,9 +150,11 @@ impl From<SeenCommand> for Vec<String> {
     }
 }
 
-/// An agent app and its own id for one conversation, which is what the app's command-line
-/// program picks up again. Said by the host that ran the app or by the terminal that watches it;
-/// never read from a model's words.
+/// An agent app and its own id for one conversation, which is what the app's command-line program
+/// picks up again.
+///
+/// Said by the host that ran the app or by the terminal that watches it; never read from a model's
+/// words.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WatchedAgent {
     /// The configured program (`agents.toml`).
@@ -172,9 +184,10 @@ pub struct Watching {
     pub owner: WatchOwner,
 }
 
-/// Where a conversation with an agent app is running, or goes: in docket, or in the app's own
-/// program in a terminal (a handover to the terminal makes the session a watch session; back to
-/// the desktop makes it an agent session again).
+/// Where a conversation with an agent app is running, or goes.
+///
+/// In docket, or in the app's own program in a terminal (a handover to the terminal makes the
+/// session a watch session; back to the desktop makes it an agent session again).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RunsIn {

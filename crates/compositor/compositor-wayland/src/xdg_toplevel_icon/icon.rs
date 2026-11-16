@@ -10,7 +10,7 @@ use smithay::reexports::wayland_server::backend::ClientId;
 use smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer;
 use smithay::reexports::wayland_server::{Client, DataInit, DisplayHandle, Resource};
 use smithay::wayland::Dispatch2;
-use smithay::wayland::shm::{BufferAccessError, with_buffer_contents};
+use smithay::wayland::shm::with_buffer_contents;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 /// A pixel buffer of an icon: shm-backed and square, at a scale.
@@ -83,9 +83,10 @@ impl Refusal {
 /// The edge of `buffer`, or why it is no icon buffer.
 fn edge_of(buffer: &WlBuffer) -> Result<u32, Refusal> {
     let size = with_buffer_contents(buffer, |_, _, data| (data.width, data.height))
-        .map_err(|_: BufferAccessError| Refusal::NotShm)?;
+        .ok()
+        .ok_or(Refusal::NotShm)?;
     match size {
-        (w, h) if w == h => u32::try_from(w).map_err(|_| Refusal::NotSquare),
+        (w, h) if w == h => u32::try_from(w).ok().ok_or(Refusal::NotSquare),
         _ => Err(Refusal::NotSquare),
     }
 }
@@ -189,16 +190,16 @@ where
         &self,
         _state: &mut D,
         client: &Client,
-        icon: &XdgToplevelIconV1,
+        resource: &XdgToplevelIconV1,
         request: xdg_toplevel_icon_v1::Request,
-        display: &DisplayHandle,
+        dhandle: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
     ) {
         use xdg_toplevel_icon_v1::Request;
         let mut phase = self.phase();
         let Phase::Building(parts) = &mut *phase else {
             if matches!(request, Request::SetName { .. } | Request::AddBuffer { .. }) {
-                icon.post_error(
+                resource.post_error(
                     xdg_toplevel_icon_v1::Error::Immutable,
                     "Request made after the icon has been assigned to a toplevel via 'set_icon'",
                 );
@@ -211,7 +212,7 @@ where
                 // A client past its cap is cut (CASW-06): the table these sit in is scanned by
                 // every buffer destroy of every client.
                 let held = self.registry.held_by(&client.id());
-                if !limits::admit(display, client, Limit::IconBuffers, held) {
+                if !limits::admit(dhandle, client, Limit::IconBuffers, held) {
                     return;
                 }
                 match edge_of(&buffer) {
@@ -224,17 +225,17 @@ where
                         let (next, displaced) = std::mem::take(parts).with_buffer(added);
                         *parts = next;
                         if let Some(displaced) = displaced {
-                            self.registry.release(&displaced, icon);
+                            self.registry.release(&displaced, resource);
                         }
-                        self.registry.hold(buffer, icon);
+                        self.registry.hold(buffer, resource);
                     }
-                    Err(refusal) => icon.post_error(
+                    Err(refusal) => resource.post_error(
                         xdg_toplevel_icon_v1::Error::InvalidBuffer,
                         refusal.text().to_owned(),
                     ),
                 }
             }
-            Request::Destroy => {}
+            // `Destroy`, and a request a later protocol adds: nothing to do.
             _ => {}
         }
     }

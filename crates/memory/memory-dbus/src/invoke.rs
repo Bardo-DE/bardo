@@ -15,6 +15,10 @@ fn fd_missing() -> MemoryError {
 /// Calls `call` on `connection` and returns the member's outputs as `s` values, in order (a
 /// number is its decimal). `fd` is the stream `Export` writes the tar to; other members take
 /// none.
+///
+/// # Errors
+///
+/// Returns [`MemoryError`] when the call failed or the reply could not be encoded or read.
 pub async fn invoke(
     connection: &Connection,
     call: &Call,

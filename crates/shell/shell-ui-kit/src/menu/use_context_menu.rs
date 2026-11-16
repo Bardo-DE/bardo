@@ -76,13 +76,15 @@ impl<Model: MenuModel> ContextMenu<Model> {
         if let Some(feed) = self.feed.clone() {
             root = root.context(feed);
         }
-        surface.open_popup(geom.config(), geom.placement(anchor), root);
+        // The popup's id is not kept: the menu reports through its link.
+        let _ = surface.open_popup(geom.config(), geom.placement(anchor), root);
     }
 }
 
-/// The context menu of the surface this runs in. `name` is the popup document's `data-surface`
-/// (what a user stylesheet names the menu by); `picked` is called with each entry the person
-/// picks. A dismissal calls nothing.
+/// The context menu of the surface this runs in.
+///
+/// `name` is the popup document's `data-surface` (what a user stylesheet names the menu by);
+/// `picked` is called with each entry the person picks. A dismissal calls nothing.
 pub fn use_context_menu<Model: MenuModel>(
     name: &'static str,
     picked: impl FnMut(Model::Pick) + 'static,

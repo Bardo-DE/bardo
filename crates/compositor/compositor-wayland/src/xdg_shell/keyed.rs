@@ -16,8 +16,9 @@ use compositor_core::focus::TokenCheck;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 
 /// The events of mapping `surface` keyed, when this commit is its first and carries a buffer;
-/// `None` for any other commit (the ordinary path handles it). The caller feeds the events and
-/// then calls [`send_initial_configure`].
+/// `None` for any other commit (the ordinary path handles it).
+///
+/// The caller feeds the events and then calls [`send_initial_configure`].
 pub fn map_keyed_on_first_buffer(
     part: &mut XdgShellPart,
     surface: &WlSurface,

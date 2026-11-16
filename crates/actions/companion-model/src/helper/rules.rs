@@ -31,10 +31,16 @@ impl JobRefusal {
     }
 }
 
-/// The two channels, never mixed: a goal is an instruction only when the person wrote it, when
-/// the planner that wrote it had seen nothing untrusted, or when it lies inside a brief the person
-/// checked. Everything else a helper derived from untrusted content travels as a handle and can
-/// never become another helper's instruction.
+/// The two channels, never mixed.
+///
+/// A goal is an instruction only when the person wrote it, when the planner that wrote it had seen
+/// nothing untrusted, or when it lies inside a brief the person checked. Everything else a helper
+/// derived from untrusted content travels as a handle and can never become another helper's
+/// instruction.
+///
+/// # Errors
+///
+/// Returns [`JobRefusal`] when the job was not made.
 pub fn admit_goal(origin: GoalOrigin) -> Result<GoalSource, JobRefusal> {
     match origin {
         GoalOrigin::Person => Ok(GoalSource::Person),

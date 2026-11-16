@@ -51,6 +51,10 @@ pub struct HelperName(String);
 
 impl HelperName {
     /// The name written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HelperTextFault`] when the text is not a valid name or role.
     pub fn parse(text: &str) -> Result<Self, HelperTextFault> {
         checked(text, NAME_MAX, false).map(Self)
     }
@@ -82,6 +86,10 @@ pub struct Role(String);
 
 impl Role {
     /// The role written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HelperTextFault`] when the text is not a valid name or role.
     pub fn parse(text: &str) -> Result<Self, HelperTextFault> {
         checked(text, ROLE_MAX, true).map(Self)
     }

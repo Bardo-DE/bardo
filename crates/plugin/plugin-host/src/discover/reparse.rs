@@ -24,14 +24,19 @@ pub struct Reparsed<P: Provides> {
     pub skipped: Vec<Skipped>,
 }
 
-/// Turns the entries of a scan that knew no vocabulary into the owner's own type `P`. Entries
-/// whose word `P` does not own ([`Provides::owns`]) are reported in `skipped`, never as an error:
-/// they belong to someone else. Entries it owns go to [`Provides::parse`], and the checks the
-/// scan could not make run now: a capability listed twice, a wire capability with no program,
-/// and the programs and paths of the owner's entries (missing, not executable, outside the
-/// folder). The result is a [`Candidate<P>`] for
-/// [`Registry::resolve`](crate::registry::Registry::resolve), which runs after the owner's own
-/// checks.
+/// Turns the entries of a scan that knew no vocabulary into the owner's own type `P`.
+///
+/// Entries whose word `P` does not own ([`Provides::owns`]) are reported in `skipped`, never as an
+/// error: they belong to someone else. Entries it owns go to [`Provides::parse`], and the checks
+/// the scan could not make run now: a capability listed twice, a wire capability with no program,
+/// and the programs and paths of the owner's entries (missing, not executable, outside the folder).
+/// The result is a [`Candidate<P>`] for [`Registry::resolve`](crate::registry::Registry::resolve),
+/// which runs after the owner's own checks.
+///
+/// # Errors
+///
+/// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
+/// says what is wrong.
 pub fn reparse<P: Provides>(candidate: Candidate<Raw>) -> Result<Reparsed<P>, Failure<P>> {
     let Candidate {
         manifest, origin, ..

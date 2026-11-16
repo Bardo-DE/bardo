@@ -1,7 +1,8 @@
-//! Space pictures for the shell's Spaces bar (`bardo_shell_v1.get_space_capture_source`): the
-//! sources and sessions of the ext-image-copy-capture objects that show one Space of an output
-//! as a small picture, and the damage gate that holds a frame request until something in the
-//! Space changed.
+//! Space pictures for the shell's Spaces bar (`bardo_shell_v1.get_space_capture_source`).
+//!
+//! The sources and sessions of the ext-image-copy-capture objects that show one Space of an output
+//! as a small picture, and the damage gate that holds a frame request until something in the Space
+//! changed.
 //!
 //! The book is plain data and the functions are pure; [`SpaceShotPart`] adds the smithay
 //! objects whose drop is a protocol event (a session's `stopped`, a held frame's `failed`).

@@ -1,6 +1,7 @@
-//! Installing a pinned version, and asking what a newer one would be. The network is reached
-//! here and nowhere else, through the `Fetch` seam. Nothing updates by itself: a newer version
-//! is installed only when the person names it.
+//! Installing a pinned version, and asking what a newer one would be.
+//!
+//! The network is reached here and nowhere else, through the `Fetch` seam. Nothing updates by
+//! itself: a newer version is installed only when the person names it.
 
 use crate::fetch::{Fetch, FetchFault};
 use crate::run::{Run, RunFault};
@@ -143,6 +144,10 @@ pub fn offers(dir: &AgentsDir, snapshot: &Snapshot) -> Vec<Offer> {
 }
 
 /// Installs `want` from `snapshot`. Already installed is not an error and reaches nothing.
+///
+/// # Errors
+///
+/// Returns [`InstallFault`] when the install did not happen; nothing is left half-installed.
 pub fn install(
     dir: &AgentsDir,
     snapshot: &Snapshot,
@@ -252,7 +257,7 @@ fn binary(
     };
     let check = match &bin.sha256 {
         Some(text) => {
-            let expected = Sha256Hex::parse(text).map_err(|_| refused(text))?;
+            let expected = Sha256Hex::parse(text).ok().ok_or_else(|| refused(text))?;
             if expected != got {
                 return Err(refused(expected.as_str()));
             }
@@ -262,7 +267,9 @@ fn binary(
         // with the pin. An unreadable pin is a refusal, never a fresh start.
         None => match std::fs::read_to_string(pin) {
             Ok(text) => {
-                let pinned = Sha256Hex::parse(&text).map_err(|_| refused(text.trim()))?;
+                let pinned = Sha256Hex::parse(&text)
+                    .ok()
+                    .ok_or_else(|| refused(text.trim()))?;
                 if pinned != got {
                     return Err(refused(pinned.as_str()));
                 }
@@ -308,9 +315,11 @@ fn npm(package: &Package, files: &Path, run: &dyn Run) -> Result<String, Install
     let name = package_name(&package.package);
     let manifest =
         std::fs::read_to_string(files.join("node_modules").join(name).join("package.json"))
-            .map_err(|_| InstallFault::NoProgram)?;
-    let json: serde_json::Value =
-        serde_json::from_str(&manifest).map_err(|_| InstallFault::NoProgram)?;
+            .ok()
+            .ok_or(InstallFault::NoProgram)?;
+    let json: serde_json::Value = serde_json::from_str(&manifest)
+        .ok()
+        .ok_or(InstallFault::NoProgram)?;
     let bin = match json.get("bin") {
         Some(serde_json::Value::String(_)) => name.rsplit('/').next().map(str::to_owned),
         Some(serde_json::Value::Object(map)) => map.keys().next().cloned(),

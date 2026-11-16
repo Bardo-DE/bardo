@@ -3,8 +3,9 @@
 use smithay::backend::allocator::{Format, Fourcc, Modifier};
 
 /// The formats and modifiers a capture client may allocate: those `renderable` (the renderer can
-/// draw a capture into them) that `accepted` (the dma-buf global takes the buffer from the
-/// client). Grouped by format in the order the renderer lists them, each modifier once.
+/// draw a capture into them) that `accepted` (the dma-buf global takes the buffer from the client).
+///
+/// Grouped by format in the order the renderer lists them, each modifier once.
 ///
 /// ```
 /// use compositor_wayland::image_capture::dma_offer;

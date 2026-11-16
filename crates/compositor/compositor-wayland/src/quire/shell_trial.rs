@@ -1,8 +1,9 @@
-//! `bardo_shell_v1` version 6: the display trial. A program changed the displays; the compositor
-//! applied the change and asks the person, through the shell, whether to keep it
-//! (`displays_trial`), takes the question down (`displays_trial_end`) and hears the answer
-//! (`displays_trial_answer`). The model decides when to ask and what an answer does
-//! (`compositor_core`'s `model/display_trial.rs`); this only carries the words.
+//! `bardo_shell_v1` version 6: the display trial.
+//!
+//! A program changed the displays; the compositor applied the change and asks the person, through
+//! the shell, whether to keep it (`displays_trial`), takes the question down (`displays_trial_end`)
+//! and hears the answer (`displays_trial_answer`). The model decides when to ask and what an answer
+//! does (`compositor_core`'s `model/display_trial.rs`); this only carries the words.
 //!
 //! The part remembers the one open trial, so a shell that binds while it is open (it
 //! restarted) is asked at once with the time left. A shell that bound a version older than 6
@@ -77,10 +78,15 @@ pub fn apply_end(part: &mut QuireShellPart, trial: TrialId) {
     }
 }
 
-/// `displays_trial_answer`: the person's word on `trial`, heard at `now`. An answer for a trial
-/// that is not open, and one with a code the XML does not name, changes nothing; one that comes
-/// less than [`ANSWER_NOT_BEFORE`] after the question was first sent is the shell's fault
-/// (`AnsweredTooSoon`) and settles nothing: the trial stays open.
+/// `displays_trial_answer`: the person's word on `trial`, heard at `now`.
+///
+/// An answer for a trial that is not open, and one with a code the XML does not name, changes
+/// nothing; one that comes less than [`ANSWER_NOT_BEFORE`] after the question was first sent is the
+/// shell's fault (`AnsweredTooSoon`) and settles nothing: the trial stays open.
+///
+/// # Errors
+///
+/// Returns [`AnsweredTooSoon`] when the answer arrives before it was asked for.
 pub fn on_answer(
     part: &QuireShellPart,
     trial: u32,

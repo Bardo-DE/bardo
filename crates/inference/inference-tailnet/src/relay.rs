@@ -28,6 +28,10 @@ pub struct Relay {
 
 impl Relay {
     /// Listens at `path` and carries each connection to the computer `node`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an I/O error when a file left at `path` could not be removed or the listener could not be bound.
     pub fn start(
         path: &Path,
         node: NodeId,

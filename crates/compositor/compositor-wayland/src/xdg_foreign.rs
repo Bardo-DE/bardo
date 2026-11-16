@@ -1,6 +1,8 @@
-//! `zxdg_exporter_v2` and `zxdg_importer_v2`: parenting across clients (a portal dialog over
-//! an app). An imported parent reaches the model through `xdg_shell::on_parent`, so this module
-//! has no request functions (the plan listed `on_export`/`on_import`: FINDINGS).
+//! `zxdg_exporter_v2` and `zxdg_importer_v2`: parenting across clients (a portal dialog over an
+//! app).
+//!
+//! An imported parent reaches the model through `xdg_shell::on_parent`, so this module has no
+//! request functions (the plan listed `on_export`/`on_import`: FINDINGS).
 //!
 //! The protocol is served here, not by smithay's module: smithay never sends the importers
 //! `zxdg_imported_v2.destroyed` when an export goes away (the protocol says it must, and an
@@ -159,9 +161,9 @@ where
         &self,
         _state: &mut D,
         client: &Client,
-        exporter: &ZxdgExporterV2,
+        resource: &ZxdgExporterV2,
         request: zxdg_exporter_v2::Request,
-        display: &DisplayHandle,
+        dhandle: &DisplayHandle,
         data_init: &mut DataInit<'_, D>,
     ) {
         let zxdg_exporter_v2::Request::ExportToplevel { id, surface } = request else {
@@ -177,7 +179,7 @@ where
                     book: self.book.clone(),
                 },
             );
-            exporter.post_error(
+            resource.post_error(
                 zxdg_exporter_v2::Error::InvalidSurface,
                 "exported surface had an invalid role",
             );
@@ -185,7 +187,7 @@ where
         }
         // A client past its cap is cut (CASW-06); the new object still gets data, as above.
         let held = self.book.lock().held_by(&client.id());
-        if !limits::admit(display, client, Limit::Exports, held) {
+        if !limits::admit(dhandle, client, Limit::Exports, held) {
             data_init.init(
                 id,
                 Exported {
@@ -196,14 +198,14 @@ where
             return;
         }
         let handle = self.book.lock().export(surface);
-        let exported = data_init.init(
+        let object = data_init.init(
             id,
             Exported {
                 handle: handle.clone(),
                 book: self.book.clone(),
             },
         );
-        exported.handle(handle.as_str().to_owned());
+        object.handle(handle.as_str().to_owned());
     }
 }
 
@@ -272,7 +274,7 @@ where
         &self,
         state: &mut D,
         _client: &Client,
-        imported: &ZxdgImportedV2,
+        resource: &ZxdgImportedV2,
         request: zxdg_imported_v2::Request,
         _display: &DisplayHandle,
         _data_init: &mut DataInit<'_, D>,
@@ -287,7 +289,7 @@ where
             states.data_map.get::<XdgToplevelSurfaceData>().is_some()
         });
         if !is_toplevel || !is_valid_parent(&child, &parent) {
-            imported.post_error(
+            resource.post_error(
                 zxdg_imported_v2::Error::InvalidSurface,
                 "invalid parent relationship",
             );
@@ -306,7 +308,7 @@ where
         });
         self.book
             .lock()
-            .adopt(&self.handle, child.clone(), imported.clone());
+            .adopt(&self.handle, child.clone(), resource.clone());
         if changed {
             orphan_changed(state, &child);
         }

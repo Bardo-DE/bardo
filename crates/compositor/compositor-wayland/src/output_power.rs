@@ -1,7 +1,9 @@
-//! `zwlr_output_power_manager_v1`: a client (an idle daemon, sill's lock) lights an output or
-//! turns it dark. Works on virtual outputs too: power is part of `OutputConfig`, so a request
-//! is one `Event::OutputRequested` that changes only the power, and the `mode` event goes to
-//! the control once the model's configuration says so ([`follow`]).
+//! `zwlr_output_power_manager_v1`: a client (an idle daemon, sill's lock) lights an output or turns
+//! it dark.
+//!
+//! Works on virtual outputs too: power is part of `OutputConfig`, so a request is one
+//! `Event::OutputRequested` that changes only the power, and the `mode` event goes to the control
+//! once the model's configuration says so ([`follow`]).
 //!
 //! One control per output: a second control on an output, or one on an output that is gone,
 //! says `failed` at once. A control whose output is unplugged says `failed` and lets go. Hidden
@@ -105,9 +107,10 @@ pub struct PowerData {
     output: Option<OutputKey>,
 }
 
-/// A client's `set_mode` on `output`: one `Event::OutputRequested` that changes only the power
-/// (an output it darkens is lit again when its control goes, [`on_released`]). `by` is who the
-/// control's client is: a program's change is a trial the person keeps or reverts.
+/// A client's `set_mode` on `output`: one `Event::OutputRequested` that changes only the power (an
+/// output it darkens is lit again when its control goes, [`on_released`]).
+///
+/// `by` is who the control's client is: a program's change is a trial the person keeps or reverts.
 ///
 /// ```no_run
 /// use compositor_core::output::Requester;
@@ -155,6 +158,10 @@ pub fn on_released(part: &mut OutputPowerPart, output: &OutputKey) -> Vec<Event>
 }
 
 /// Tells the holders of a control on `output` its power is now `power` (`mode` event).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_mode(
     part: &mut OutputPowerPart,
     output: &OutputKey,
@@ -301,10 +308,11 @@ fn wait<D: OutputPowerHandler>(
     refused.control.failed();
 }
 
-/// The answer about `client`'s power over the displays came out. Allowed, the controls that
-/// waited take their outputs (one whose output is gone, or held by another control by now,
-/// fails); refused, they fail; taken back, the controls in use fail too and the outputs they
-/// left dark are lit.
+/// The answer about `client`'s power over the displays came out.
+///
+/// Allowed, the controls that waited take their outputs (one whose output is gone, or held by
+/// another control by now, fails); refused, they fail; taken back, the controls in use fail too and
+/// the outputs they left dark are lit.
 pub fn on_resolved<D: OutputPowerHandler>(state: &mut D, client: ClientKey, outcome: PowerOutcome) {
     let waiting = state.output_power_part().waiting.take(client);
     match outcome {

@@ -6,7 +6,6 @@
 
 use futures_util::future::{Either, select};
 use futures_util::task::AtomicWaker;
-use std::future::Future;
 use std::pin::pin;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -112,6 +111,10 @@ pub async fn stop_after(sleep: impl Future<Output = ()>, cancel: impl Future<Out
 }
 
 /// `work`, unless `stop` resolves first, which drops it.
+///
+/// # Errors
+///
+/// Returns the [`Stop`] that `stop` resolved with when it resolves before `work` does.
 pub async fn until<T>(
     work: impl Future<Output = T>,
     stop: impl Future<Output = Stop>,
@@ -125,6 +128,10 @@ pub async fn until<T>(
 }
 
 /// `work`, unless `sleep` resolves first, which drops it.
+///
+/// # Errors
+///
+/// Returns [`Stop::TimedOut`] when `sleep` resolves before `work` does.
 pub async fn within<T>(
     sleep: impl Future<Output = ()>,
     work: impl Future<Output = T>,

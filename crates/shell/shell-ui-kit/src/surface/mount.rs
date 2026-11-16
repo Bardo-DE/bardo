@@ -47,9 +47,14 @@ impl<S: Surface> fmt::Debug for MountProps<S> {
 
 /// The root component of `S`: quire's document host and the seat's signals, then its `root`, in
 /// the component's scope.
+#[expect(
+    clippy::missing_errors_doc,
+    reason = "`Element` is dioxus's `Result` alias; a component renders or returns `Ok`, and the caller is the dioxus runtime"
+)]
 pub fn mount<S: Surface>(props: MountProps<S>) -> Element {
-    ui_blitz::provide_host();
-    crate::root::provide_keymap();
+    // Both provide into the component's context; the handles they return are not needed here.
+    let _ = ui_blitz::provide_host();
+    let _ = crate::root::provide_keymap();
     use_context_provider(|| SurfaceName(S::NAME));
     use_host_signals();
     S::root(props.output, props.slot)

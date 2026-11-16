@@ -1,11 +1,12 @@
-//! `zwp_linux_dmabuf_v1`: GPU buffers. No global until the backend offers a main device
-//! (`--dmabuf soft` in the jail, a render node from P1); `--dmabuf none` advertises nothing.
-//! Every imported buffer is tagged with the node of the feedback tranche it came from (A5):
-//! the tag is a smithay `DrmNode`, a device type this crate may not name (B6), so the
-//! composition root's handler applies it from the [`MainDevice`] that
+//! `zwp_linux_dmabuf_v1`: GPU buffers.
+//!
+//! No global until the backend offers a main device (`--dmabuf soft` in the jail, a render node
+//! from P1); `--dmabuf none` advertises nothing. Every imported buffer is tagged with the node of
+//! the feedback tranche it came from (A5): the tag is a smithay `DrmNode`, a device type this crate
+//! may not name (B6), so the composition root's handler applies it from the [`MainDevice`] that
 //! [`DmabufPart::source_device`] reports. The protocol does not say which tranche a client
-//! allocated from, so a buffer's tranche is the one that offers its format and modifier; the
-//! plan's `feedback_for` offers each pair once, so the answer is unambiguous.
+//! allocated from, so a buffer's tranche is the one that offers its format and modifier; the plan's
+//! `feedback_for` offers each pair once, so the answer is unambiguous.
 
 use crate::states::{GlobalFilter, WaylandFault};
 use compositor_core::gpu::{FeedbackPlan, TrancheUse};
@@ -211,9 +212,10 @@ impl DmabufOffer {
 /// casement targets sample, so a buffer past it could only fail on every frame it is drawn.
 pub const MAX_DMABUF_SIDE: u32 = 16384;
 
-/// A client imported `dmabuf`: true (the renderer can sample it) when something is advertised and the buffer's format
-/// and modifier are among the formats of any offered tranche. The handler tags an accepted
-/// buffer with [`DmabufPart::source_device`]'s node (A5).
+/// A client imported `dmabuf`: true (the renderer can sample it) when something is advertised and
+/// the buffer's format and modifier are among the formats of any offered tranche.
+///
+/// The handler tags an accepted buffer with [`DmabufPart::source_device`]'s node (A5).
 ///
 /// A buffer is refused too when a side is past [`MAX_DMABUF_SIDE`], or when it is linear and a
 /// plane reaches past the end of its file (CASW-17): the protocol would say "created" for a
@@ -289,9 +291,15 @@ fn planes_fit(planes: &[Plane], sizes: &[Option<u64>], height: u32) -> bool {
             })
 }
 
-/// Creates (or replaces) the global with default feedback for `offer`, filtered by the I7
-/// table (`GlobalKind::Dmabuf`). A feedback table that cannot be built is logged and nothing
-/// is advertised (clients fall back to shm).
+/// Creates (or replaces) the global with default feedback for `offer`, filtered by the I7 table
+/// (`GlobalKind::Dmabuf`).
+///
+/// A feedback table that cannot be built is logged and nothing is advertised (clients fall back to
+/// shm).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_offer<D>(
     part: &mut DmabufPart,
     display: &DisplayHandle,

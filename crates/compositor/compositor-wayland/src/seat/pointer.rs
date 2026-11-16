@@ -84,6 +84,10 @@ where
 }
 
 /// Delivers a pointer motion or button.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_pointer<D>(
     seat: &Seat<D>,
     state: &mut D,
@@ -175,12 +179,17 @@ fn relative_of<F: From<WlSurface>>(
     ))
 }
 
-/// Recomputes pointer focus for a pointer that has not moved (A16, SP1 A1): `focus` is the
-/// surface now under it, found by the caller from the scene. When it is the surface that
-/// already has the pointer, its client hears a motion only if the surface has moved since it was
-/// last told the position (the coordinates it holds are stale), and none while a constraint holds
-/// the pointer; otherwise the old one gets `leave` and the new one `enter` at the pointer's own
-/// position.
+/// Recomputes pointer focus for a pointer that has not moved (A16, SP1 A1): `focus` is the surface
+/// now under it, found by the caller from the scene.
+///
+/// When it is the surface that already has the pointer, its client hears a motion only if the
+/// surface has moved since it was last told the position (the coordinates it holds are stale), and
+/// none while a constraint holds the pointer; otherwise the old one gets `leave` and the new one
+/// `enter` at the pointer's own position.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_refocus<D>(
     seat: &Seat<D>,
     state: &mut D,
@@ -195,8 +204,8 @@ where
     let current: Option<WlSurface> = pointer.current_focus().and_then(Into::into);
     let wanted = focus.as_ref().map(|at| &at.surface);
     if current.as_ref() == wanted {
-        let stale = focus.as_ref().filter(|at| focus_origin::moved(at));
-        let Some(at) = stale else {
+        let shifted = focus.as_ref().filter(|at| focus_origin::moved(at));
+        let Some(at) = shifted else {
             return Ok(());
         };
         if !matches!(hold_of(&pointer), Hold::Free) {
@@ -219,6 +228,10 @@ where
 }
 
 /// Delivers one scroll frame (`axis_source` and `axis_value120` always sent: SP1 B1).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_axis<D>(
     seat: &Seat<D>,
     state: &mut D,
@@ -239,6 +252,10 @@ fn fingers_of(fingers: u8) -> u32 {
 }
 
 /// Delivers a gesture step to the client under the pointer.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_gesture<D>(
     seat: &Seat<D>,
     state: &mut D,

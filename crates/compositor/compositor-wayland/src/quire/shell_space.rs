@@ -1,9 +1,10 @@
-//! `bardo_shell_v1` versions 2 to 4, the Spaces bar's part: which outputs Mission Control is up on
-//! (`overview_output`), the rectangles a dragged window can be dropped on (`space_target_clear`,
-//! `space_target`, and from version 3 `space_target_new`, the "add desktop" tile) and the target
-//! under it (`drop_target`, `drop_target_new`), and from version 4 where a window drag begins and ends
-//! (`window_drag_begin`, `window_drag_end`). The picture of a Space is
-//! [`super::space_shot`]. The model and the loop decide; this only carries.
+//! `bardo_shell_v1` versions 2 to 4, the Spaces bar's part.
+//!
+//! Which outputs Mission Control is up on (`overview_output`), the rectangles a dragged window can
+//! be dropped on (`space_target_clear`, `space_target`, and from version 3 `space_target_new`, the
+//! "add desktop" tile) and the target under it (`drop_target`, `drop_target_new`), and from version
+//! 4 where a window drag begins and ends (`window_drag_begin`, `window_drag_end`). The picture of a
+//! Space is [`super::space_shot`]. The model and the loop decide; this only carries.
 
 use super::shell::{QuireShellHandler, QuireShellPart};
 use crate::foreign_toplevel_list::identifier_of;
@@ -38,9 +39,10 @@ pub fn on_space_target_clear(part: &mut QuireShellPart, output: Option<OutputKey
 }
 
 /// `space_target`: the rectangle `x`, `y`, `width`, `height` (global logical pixels) moves a
-/// dropped window to `space`. An empty rectangle is refused; an output or a Space the
-/// compositor does not know is kept out (`None`) without an error, since either may be gone by
-/// the time the request arrives.
+/// dropped window to `space`.
+///
+/// An empty rectangle is refused; an output or a Space the compositor does not know is kept out
+/// (`None`) without an error, since either may be gone by the time the request arrives.
 ///
 /// ```
 /// use compositor_wayland::quire::shell_space::{EmptyTarget, target_rect};
@@ -59,9 +61,11 @@ pub fn on_space_target(
     }
 }
 
-/// `space_target_new`: the rectangle (global logical pixels) a dropped window makes a new Space
-/// on `output` with. An empty rectangle removes it; an output the compositor does not know is
-/// kept out without an error.
+/// `space_target_new`: the rectangle (global logical pixels) a dropped window makes a new Space on
+/// `output` with.
+///
+/// An empty rectangle removes it; an output the compositor does not know is kept out without an
+/// error.
 ///
 /// ```
 /// use compositor_wayland::quire::shell_space::new_target_rect;
@@ -85,6 +89,10 @@ pub fn new_target_rect(x: i32, y: i32, width: u32, height: u32) -> Option<Logica
 }
 
 /// The rectangle of a `space_target`, or why it is refused.
+///
+/// # Errors
+///
+/// Returns [`EmptyTarget`] when the target has no width or no height.
 pub fn target_rect(x: i32, y: i32, width: u32, height: u32) -> Result<LogicalRect, EmptyTarget> {
     if width == 0 || height == 0 {
         Err(EmptyTarget)

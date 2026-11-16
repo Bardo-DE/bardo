@@ -1,6 +1,7 @@
-//! `bardo_shell_v1`, the overview part: the shell's `overview` request (its Mission Control key
-//! or gesture) and the `overview_state` event that tells it when to draw its Spaces bar. The
-//! model decides; this only carries.
+//! `bardo_shell_v1`, the overview part: the shell's `overview` request (its Mission Control key or
+//! gesture) and the `overview_state` event that tells it when to draw its Spaces bar.
+//!
+//! The model decides; this only carries.
 
 use super::shell::QuireShellPart;
 use compositor_core::Event;
@@ -37,7 +38,7 @@ pub fn send_state(part: &QuireShellPart, overview: Overview) {
         Overview::Entering => (OverviewState::Entering, 0),
         Overview::Open => (OverviewState::Open, OPEN),
         Overview::Leaving => (OverviewState::Leaving, OPEN),
-        _ => (OverviewState::Closed, 0),
+        Overview::Closed => (OverviewState::Closed, 0),
     };
     let wire = bardo_shell_v1::OverviewMode::try_from(OverviewMode::MissionControl.code())
         .ok()

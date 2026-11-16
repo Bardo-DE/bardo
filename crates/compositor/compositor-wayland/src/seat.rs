@@ -1,6 +1,7 @@
-//! `wl_seat`: the one seat, its pointer, keyboard and touch. Input reaches clients only
-//! through the `apply_*` functions here, after the model routed it; their focus targets are
-//! surfaces the handler resolved from the model's ids.
+//! `wl_seat`: the one seat, its pointer, keyboard and touch.
+//!
+//! Input reaches clients only through the `apply_*` functions here, after the model routed it;
+//! their focus targets are surfaces the handler resolved from the model's ids.
 //!
 //! smithay's input handles take the whole compositor state (`&mut D`), so the `apply_*`
 //! functions take the seat (a cheap handle) and the state instead of the part.
@@ -80,6 +81,10 @@ pub struct SeatPart<D: SeatHandler + 'static> {
 impl<D: SeatHandler + 'static> SeatPart<D> {
     /// Creates `seat0` (version 9) with a pointer, a keyboard compiled from `keyboard`'s XKB
     /// names and repeat settings, and touch. Every connection sees it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
     pub fn new(
         display: &DisplayHandle,
         role_filter: GlobalFilter,
@@ -204,6 +209,10 @@ pub fn on_cursor_image(
 
 /// Moves keyboard focus to `focus` (nothing when `None`), sending the current modifiers with
 /// the enter.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_keyboard_focus<D>(
     seat: &Seat<D>,
     state: &mut D,
@@ -224,6 +233,10 @@ where
 /// wire is `enter`, `modifiers`, `key`). `filter` sees the modifiers and the key's symbol first and may
 /// intercept it (a binding): its answer is returned, `None` when the key was forwarded. A key
 /// that is forwarded goes the way `forward` says.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the seat has no keyboard.
 pub fn apply_key<D, T>(
     seat: &Seat<D>,
     state: &mut D,
@@ -259,6 +272,10 @@ where
 }
 
 /// Changes the repeat rate and delay every keyboard of the seat advertises (a settings
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 /// change reaches clients that are already bound).
 pub fn apply_repeat_info<D>(seat: &Seat<D>, keyboard: &KeyboardSettings) -> Result<(), WaylandFault>
 where

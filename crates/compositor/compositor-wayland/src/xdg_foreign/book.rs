@@ -11,9 +11,10 @@ use std::collections::BTreeMap;
 use std::hash::BuildHasher;
 use std::sync::{Arc, Mutex, MutexGuard};
 
-/// What an exported toplevel is called on the wire: 32 hex digits, drawn from std's random
-/// hasher keys (a handle is a capability to parent a window to another app's, so it is not
-/// guessable), never from the order of anything.
+/// What an exported toplevel is called on the wire.
+///
+/// 32 hex digits, drawn from std's random hasher keys (a handle is a capability to parent a window
+/// to another app's, so it is not guessable), never from the order of anything.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Handle(String);
 

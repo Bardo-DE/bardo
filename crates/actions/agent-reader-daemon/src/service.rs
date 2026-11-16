@@ -8,9 +8,11 @@ use action_vocab::Value;
 use inference_client::Transport as InferTransport;
 use provenance::{Labelled, Quarantined, SessionId};
 
-/// Reads for intentd: resolves handles through `Intents1.Session.Resolve` (the reader role),
-/// asks the reader model through inferd (`Need::Llm` with structured output, no tools), and
-/// answers a value that fits the schema.
+/// Reads for intentd.
+///
+/// Resolves handles through `Intents1.Session.Resolve` (the reader role), asks the reader model
+/// through inferd (`Need::Llm` with structured output, no tools), and answers a value that fits the
+/// schema.
 #[derive(Debug)]
 pub struct ReaderService<P: InferTransport, I: IntentsTransport> {
     host: ReaderHost,
@@ -48,6 +50,10 @@ impl<P: InferTransport, I: IntentsTransport> ReaderService<P, I> {
     /// One `Reader1.Extract(session, ask)`: resolves each handle of the ask in the session,
     /// then reads. A handle the router will not resolve (not this session's, or the caller is
     /// not the reader) fails the whole read: nothing is read from a part of the ask.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ReaderError`] when the reader could not answer.
     pub async fn extract_in(
         &self,
         session: &SessionId,
@@ -59,7 +65,8 @@ impl<P: InferTransport, I: IntentsTransport> ReaderService<P, I> {
                 .intents
                 .session_resolve(session.clone(), *handle)
                 .await
-                .map_err(|_| ReaderError::ModelUnavailable)?;
+                .ok()
+                .ok_or(ReaderError::ModelUnavailable)?;
             inputs.push(Quarantined::new(Labelled {
                 value: resolved.text,
                 label: resolved.label,

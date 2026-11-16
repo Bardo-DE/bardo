@@ -1,9 +1,10 @@
-//! A fake `org.bardo.Storage1` for building Files before syncd serves the real one: two drives
-//! of real files under a scratch folder, whose states move as the real ones will. Download Now
-//! fills a progress fraction ten times a second until the file is downloaded; Keep Downloaded and
-//! Remove Download change what they say; the commands of [`World::command`] (read from stdin by
-//! `sync-rig-storage`) take a drive offline, ask for sign-in again, add a file as another
-//! device would, or start an upload, an error or a conflict on one item.
+//! A fake `org.bardo.Storage1` for building Files before syncd serves the real one: two drives of
+//! real files under a scratch folder, whose states move as the real ones will.
+//!
+//! Download Now fills a progress fraction ten times a second until the file is downloaded; Keep
+//! Downloaded and Remove Download change what they say; the commands of [`World::command`] (read
+//! from stdin by `sync-rig-storage`) take a drive offline, ask for sign-in again, add a file as
+//! another device would, or start an upload, an error or a conflict on one item.
 //!
 //! The files on disk are ordinary files with a line of text: nothing here is downloaded from
 //! anywhere, only the states are. Test tooling, never installed.
@@ -219,6 +220,14 @@ const PLANTED: &[(&str, &str, ItemKind, ItemState, bool, u64)] = &[
 impl World {
     /// Two drives under `dir/drives/`, a `OneDrive` and a Google Drive, their files written to
     /// disk.
+    ///
+    /// # Errors
+    ///
+    /// Returns an I/O error when the drive folders or their files could not be written under `dir`.
+    #[expect(
+        clippy::missing_panics_doc,
+        reason = "the `expect` cannot fire: every planted item names one of the two drives built just above"
+    )]
     pub fn plant(dir: &Path) -> std::io::Result<World> {
         let root = dir.join("drives");
         let drives = vec![
@@ -505,7 +514,7 @@ impl World {
             .file_stem()
             .map(|stem| stem.to_string_lossy().into_owned())
             .unwrap_or_default();
-        (1..)
+        (1..=u32::MAX)
             .map(|n| match n {
                 1 => document.with_file_name(format!("{stem}.{extension}")),
                 n => document.with_file_name(format!("{stem} {n}.{extension}")),
@@ -594,6 +603,11 @@ impl World {
 
     /// One command, as `sync-rig-storage` reads them from stdin; what it changed, and whether
     /// the drives changed. `Err` holds what to print for a command it does not know.
+    ///
+    /// # Errors
+    ///
+    /// Returns the text to print when the verb is not a command it knows, its words do not fit the
+    /// verb, or it names a drive that does not exist.
     pub fn command(&mut self, line: &str) -> Result<(Changed, bool), String> {
         let mut changed = Changed::new();
         let mut words_of = line.split_whitespace();
@@ -923,10 +937,18 @@ impl World {
             let moving: Vec<&&Item> = files.iter().filter(|item| item.state == state).collect();
             if !moving.is_empty() {
                 let bytes: u64 = moving.iter().map(|item| item.size).sum();
+                #[expect(
+                    clippy::cast_precision_loss,
+                    reason = "file sizes in the fake are far below 2^53 bytes, so the f64 is exact"
+                )]
                 let moved: f64 = moving
                     .iter()
                     .map(|item| item.size as f64 * item.fraction)
                     .sum();
+                #[expect(
+                    clippy::cast_precision_loss,
+                    reason = "file sizes in the fake are far below 2^53 bytes, so the f64 is exact"
+                )]
                 let fraction = if bytes == 0 {
                     0.0
                 } else {
@@ -1030,6 +1052,11 @@ impl FakeStorage {
 
     /// Runs `step` on the world and sends what it changed: the drives too when `step` says so
     /// or a drive's bytes here moved.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the world's lock is poisoned, which happens only if an earlier step panicked
+    /// while holding it.
     pub async fn apply<T>(
         &self,
         emitter: &SignalEmitter<'_>,
@@ -1070,10 +1097,18 @@ impl FakeStorage {
 impl StorageServer for FakeStorage {
     type Error = fdo::Error;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn drives(&self, _: Call<'_>) -> fdo::Result<Vec<(String, Details)>> {
         Ok(self.lock().drives())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn items(&self, _: Call<'_>, paths: Vec<String>) -> fdo::Result<ItemDetails> {
         Ok(self.lock().items(&paths))
     }
@@ -1142,6 +1177,10 @@ impl StorageServer for FakeStorage {
 
     /// The fake tells every connection; it takes the call so Files can make it as it will to
     /// syncd.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn watch(&self, _: Call<'_>) -> fdo::Result<()> {
         Ok(())
     }
@@ -1149,6 +1188,10 @@ impl StorageServer for FakeStorage {
 
 /// Serves `storage` at `/org/bardo/Storage1` on `connection` under `name`, and steps its
 /// transfers every [`TICK`] until the connection closes.
+///
+/// # Errors
+///
+/// Returns a bus error when the service cannot be exported or its name cannot be taken.
 pub async fn serve(connection: &Connection, name: &str, storage: FakeStorage) -> zbus::Result<()> {
     connection
         .object_server()

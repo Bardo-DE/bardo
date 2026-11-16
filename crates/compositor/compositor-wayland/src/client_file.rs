@@ -1,8 +1,10 @@
-//! Reading a file a client handed over (a virtual keyboard's keymap, a gamma ramp) on the
-//! loop (CASW-09). A client can pass any file descriptor it likes, and a regular file on a
-//! filesystem it serves itself (a FUSE mount a user may make) blocks a `pread` for as long as
-//! its process wants: the whole session would stand still. So only a memory file is read: a
-//! `memfd`, or a file on `tmpfs`, which is what the protocols ask clients to send anyway.
+//! Reading a file a client handed over (a virtual keyboard's keymap, a gamma ramp) on the loop
+//! (CASW-09).
+//!
+//! A client can pass any file descriptor it likes, and a regular file on a filesystem it serves
+//! itself (a FUSE mount a user may make) blocks a `pread` for as long as its process wants: the
+//! whole session would stand still. So only a memory file is read: a `memfd`, or a file on `tmpfs`,
+//! which is what the protocols ask clients to send anyway.
 //!
 //! The test is `fcntl(F_GET_SEALS)`: it succeeds on exactly those files and fails (`EINVAL`) on
 //! a pipe, a device, a socket and a file of any other filesystem, and it asks the filesystem

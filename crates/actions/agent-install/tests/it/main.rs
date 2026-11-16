@@ -41,9 +41,12 @@ struct FakeNpm;
 impl Run for FakeNpm {
     fn run(&self, _: &str, _: &[String], dir: &Path) -> Result<(), RunFault> {
         let pkg = dir.join("node_modules/@scope/tool");
-        std::fs::create_dir_all(&pkg).map_err(|_| RunFault("npm".into()))?;
+        std::fs::create_dir_all(&pkg)
+            .ok()
+            .ok_or_else(|| RunFault("npm".into()))?;
         std::fs::write(pkg.join("package.json"), r#"{"bin": {"tool-acp": "x.js"}}"#)
-            .map_err(|_| RunFault("npm".into()))
+            .ok()
+            .ok_or_else(|| RunFault("npm".into()))
     }
 }
 
@@ -64,15 +67,19 @@ impl Run for FakeUv {
         }
         let bin = dir.join("venv/bin");
         if args.iter().any(|a| a == "venv") {
-            std::fs::create_dir_all(&bin).map_err(|_| fail())?;
-            return std::fs::write(bin.join("python"), b"").map_err(|_| fail());
+            std::fs::create_dir_all(&bin).ok().ok_or_else(fail)?;
+            return std::fs::write(bin.join("python"), b"")
+                .ok()
+                .ok_or_else(fail);
         }
         if !self.leaves_program {
             return Ok(());
         }
         let requirement = args.last().ok_or_else(fail)?;
         let name = requirement.split("==").next().unwrap_or_default();
-        std::fs::write(bin.join(name), b"#!/bin/sh\n").map_err(|_| fail())
+        std::fs::write(bin.join(name), b"#!/bin/sh\n")
+            .ok()
+            .ok_or_else(fail)
     }
 }
 
@@ -149,6 +156,7 @@ fn want<'a>(id: &'a str, version: &'a str) -> Want<'a> {
 
 #[test]
 fn a_declared_digest_is_checked_and_the_program_unpacks_executable() {
+    use std::os::unix::fs::PermissionsExt;
     let net = served("1.0.0", b"#!/bin/sh\n");
     let digest = Sha256Hex::of(&net.0["https://dl.test/agy-1.0.0.zip"]);
     let tmp = tempfile::tempdir().expect("tmp");
@@ -159,7 +167,6 @@ fn a_declared_digest_is_checked_and_the_program_unpacks_executable() {
     assert_eq!(record.args, ["--uid="]);
     let command = program(&dir, "agy-acp", "1.0.0");
     assert!(command.is_file());
-    use std::os::unix::fs::PermissionsExt;
     let mode = std::fs::metadata(&command)
         .expect("meta")
         .permissions()
@@ -202,7 +209,8 @@ fn a_reinstall_with_no_declared_digest_is_compared_with_the_first_one() {
     let dir = AgentsDir::at(tmp.path());
     let snap = snapshot(None, "1.0.0");
     let go = |body: &[u8]| {
-        std::fs::remove_dir_all(tmp.path().join("installed")).ok();
+        // Nothing is there before the first install.
+        let _ = std::fs::remove_dir_all(tmp.path().join("installed"));
         install(
             &dir,
             &snap,

@@ -45,6 +45,10 @@ pub struct TimeOfDay {
 
 impl TimeOfDay {
     /// The time `hour`:`minute`, if it is one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
     pub fn new(hour: u8, minute: u8) -> Result<Self, ScheduleFault> {
         if hour < 24 && minute < 60 {
             Ok(Self { hour, minute })
@@ -54,13 +58,17 @@ impl TimeOfDay {
     }
 
     /// The time written `8:00` or `08:00`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
     pub fn parse(text: &str) -> Result<Self, ScheduleFault> {
         let (hour, minute) = text.trim().split_once(':').ok_or(ScheduleFault::Time)?;
         if minute.len() != 2 {
             return Err(ScheduleFault::Time);
         }
-        let hour = hour.parse().map_err(|_| ScheduleFault::Time)?;
-        let minute = minute.parse().map_err(|_| ScheduleFault::Time)?;
+        let hour = hour.parse().ok().ok_or(ScheduleFault::Time)?;
+        let minute = minute.parse().ok().ok_or(ScheduleFault::Time)?;
         Self::new(hour, minute)
     }
 
@@ -101,6 +109,10 @@ pub struct Hours(u8);
 
 impl Hours {
     /// `n` hours, if that is from 1 to 12.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
     pub fn new(n: u8) -> Result<Self, ScheduleFault> {
         if (1..=MOST_HOURS).contains(&n) {
             Ok(Self(n))
@@ -142,6 +154,10 @@ fn is_weekday(days_since_epoch: i64) -> bool {
 
 impl Schedule {
     /// The schedule written in plain words.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
     pub fn parse(text: &str) -> Result<Self, ScheduleFault> {
         let lower = text.trim().to_lowercase();
         let words: Vec<&str> = lower.split_whitespace().collect();
@@ -150,7 +166,7 @@ impl Schedule {
             ["weekdays", time] => Ok(Schedule::Weekdays(TimeOfDay::parse(time)?)),
             ["every", "hour"] => Ok(Schedule::Every(Hours::new(1)?)),
             ["every", n, "hours"] => {
-                let n = n.parse().map_err(|_| ScheduleFault::Hours)?;
+                let n = n.parse().ok().ok_or(ScheduleFault::Hours)?;
                 Ok(Schedule::Every(Hours::new(n)?))
             }
             _ => Err(ScheduleFault::Words),

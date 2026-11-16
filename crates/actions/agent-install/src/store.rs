@@ -1,6 +1,8 @@
 //! The agents directory on disk: the install record and the offered record read and written, and
-//! what is installed listed. The paths are `agent_registry::dirs::AgentsDir`'s; the values and their
-//! text are `agent_registry`'s.
+//! what is installed listed.
+//!
+//! The paths are `agent_registry::dirs::AgentsDir`'s; the values and their text are
+//! `agent_registry`'s.
 
 use action_store::{read_optional, write_atomic};
 use agent_registry::dirs::AgentsDir;
@@ -10,14 +12,24 @@ use agent_registry::slug::Slug;
 use std::path::Path;
 
 /// Writes the record into `dir`, the version's directory.
+///
+/// # Errors
+///
+/// Returns an I/O error when the record could not be rendered or the file could not be written.
 pub fn write_record(record: &Record, dir: &Path) -> std::io::Result<()> {
     let text = record.render().map_err(std::io::Error::other)?;
     std::fs::write(dir.join(FILE), text)
 }
 
 /// Reads the record in `dir`, the version's directory.
+///
+/// # Errors
+///
+/// Returns [`RecordFault`] when the record could not be read.
 pub fn read_record(dir: &Path) -> Result<Record, RecordFault> {
-    let text = std::fs::read_to_string(dir.join(FILE)).map_err(|_| RecordFault::Missing)?;
+    let text = std::fs::read_to_string(dir.join(FILE))
+        .ok()
+        .ok_or(RecordFault::Missing)?;
     Record::parse(&text)
 }
 
@@ -61,18 +73,28 @@ pub fn versions(dir: &AgentsDir, id: &Slug) -> Vec<Slug> {
 }
 
 /// Reads the record of `id`; none when the agent never started.
+///
+/// # Errors
+///
+/// Returns [`OfferedFault`] when the record could not be read or written.
 pub fn read_offered(dir: &AgentsDir, id: &str) -> Result<Option<Offered>, OfferedFault> {
-    let path = dir.offered(&Slug::parse(id).map_err(|_| OfferedFault::Name)?);
-    let text = read_optional(&path).map_err(|_| OfferedFault::Io)?;
+    let path = dir.offered(&Slug::parse(id).ok().ok_or(OfferedFault::Name)?);
+    let text = read_optional(&path).ok().ok_or(OfferedFault::Io)?;
     text.map(|t| Offered::parse(&t)).transpose()
 }
 
 /// Replaces the record of `id` with `offered` (see [`Offered::after`] for its counter and the
 /// models it keeps) and returns what was written.
+///
+/// # Errors
+///
+/// Returns [`OfferedFault`] when the record could not be read or written.
 pub fn write_offered(dir: &AgentsDir, id: &str, offered: Offered) -> Result<Offered, OfferedFault> {
-    let path = dir.offered(&Slug::parse(id).map_err(|_| OfferedFault::Name)?);
+    let path = dir.offered(&Slug::parse(id).ok().ok_or(OfferedFault::Name)?);
     let before = read_offered(dir, id).ok().flatten();
     let next = offered.after(before.as_ref());
-    write_atomic(&path, next.render()?.as_bytes()).map_err(|_| OfferedFault::Io)?;
+    write_atomic(&path, next.render()?.as_bytes())
+        .ok()
+        .ok_or(OfferedFault::Io)?;
     Ok(next)
 }

@@ -24,8 +24,10 @@ pub enum PanelFocus {
 }
 
 /// One opening of any panel: the parts every panel's opening has, and the panel's own `payload`
-/// (what the launcher opens with, which button the power menu focuses; `()` when there is
-/// nothing more). A payload's fields read through the opening (`opening.query`).
+/// (what the launcher opens with, which button the power menu focuses; `()` when there is nothing
+/// more).
+///
+/// A payload's fields read through the opening (`opening.query`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Opening<P> {
     /// The output whose panel shows.
@@ -87,6 +89,7 @@ impl<P: Clone> Reveal<Opening<P>> {
     }
 
     /// Hidden, keeping the serial.
+    #[must_use]
     pub fn hidden(&self) -> Reveal<Opening<P>> {
         Reveal::Hidden {
             last: self.serial(),
@@ -100,6 +103,7 @@ impl<P: Clone> Reveal<Opening<P>> {
 
     /// The panel's keyboard focus changed: gaining it is noted, losing it after holding it
     /// closes the panel.
+    #[must_use]
     pub fn after_focus(&self, focus: KeyboardFocus) -> Reveal<Opening<P>> {
         match (self, focus) {
             (Reveal::Revealed(opening), KeyboardFocus::Gained) => Reveal::Revealed(Opening {
@@ -119,6 +123,7 @@ impl<P: Clone> Reveal<Opening<P>> {
 impl<P: Clone + PartialEq> Reveal<Opening<P>> {
     /// Opened on `output` with `payload`. An open panel on the same output with the same payload
     /// stays the same opening (no second entrance); anything else is a new one.
+    #[must_use]
     pub fn open(&self, output: OutputId, payload: P) -> Reveal<Opening<P>> {
         match self.opening() {
             Some(open) if open.output == output && open.payload == payload => self.clone(),
@@ -127,6 +132,7 @@ impl<P: Clone + PartialEq> Reveal<Opening<P>> {
     }
 
     /// Opened on `output` with `payload` as a new opening, even over an open one.
+    #[must_use]
     pub fn reopen(&self, output: OutputId, payload: P) -> Reveal<Opening<P>> {
         Reveal::Revealed(Opening {
             output,
@@ -137,6 +143,7 @@ impl<P: Clone + PartialEq> Reveal<Opening<P>> {
     }
 
     /// Hidden when open, else opened on `output` with `payload`.
+    #[must_use]
     pub fn toggle(&self, output: OutputId, payload: P) -> Reveal<Opening<P>> {
         match self {
             Reveal::Revealed(_) => self.hidden(),
@@ -146,8 +153,10 @@ impl<P: Clone + PartialEq> Reveal<Opening<P>> {
 }
 
 /// A panel's link: the value every one of its surfaces follows and the daemon, the bar and the
-/// panel itself write. The verbs every panel has are here once; what a panel adds (the power
-/// menu's exit, the launcher's mode switch) it does through [`PanelLink::update`]. Clone is cheap.
+/// panel itself write.
+///
+/// The verbs every panel has are here once; what a panel adds (the power menu's exit, the
+/// launcher's mode switch) it does through [`PanelLink::update`]. Clone is cheap.
 #[derive(Debug)]
 pub struct PanelLink<P> {
     shown: Shared<Reveal<Opening<P>>>,

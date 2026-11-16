@@ -114,6 +114,10 @@ impl KeymapBook {
 
 /// Compiles `names` and puts the keymap on `keyboard`, for every bound client. On failure the
 /// keyboard keeps its keymap, untouched.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn switch_layout<D>(
     keyboard: &KeyboardHandle<D>,
     data: &mut D,

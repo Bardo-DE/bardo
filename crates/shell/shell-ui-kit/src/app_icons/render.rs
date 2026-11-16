@@ -59,6 +59,10 @@ pub struct Recolour {
 }
 
 /// `source` at `px`, re-coloured as `recolour` says, as PNG bytes.
+///
+/// # Errors
+///
+/// Returns [`RenderError`] when the icon could not be made.
 pub fn render(source: &Path, px: AssetPx, recolour: Recolour) -> Result<Vec<u8>, RenderError> {
     let svg = source
         .extension()
@@ -116,10 +120,14 @@ fn rasterize_svg(bytes: &[u8], px: AssetPx) -> Result<RgbaImage, RenderError> {
     let side = u32::from(px.0);
     let mut pixmap = tiny_skia::Pixmap::new(side, side)
         .ok_or_else(|| RenderError::Svg(format!("no {side} px canvas")))?;
-    let size = tree.size();
-    let scale = f64::from(side) / f64::from(size.width().max(size.height()));
-    let dx = (f64::from(side) - f64::from(size.width()) * scale) / 2.0;
-    let dy = (f64::from(side) - f64::from(size.height()) * scale) / 2.0;
+    let svg_size = tree.size();
+    let scale = f64::from(side) / f64::from(svg_size.width().max(svg_size.height()));
+    let dx = (f64::from(side) - f64::from(svg_size.width()) * scale) / 2.0;
+    let dy = (f64::from(side) - f64::from(svg_size.height()) * scale) / 2.0;
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "tiny-skia takes f32; the scale and offsets are icon pixel sizes of a few hundred at most"
+    )]
     let transform =
         tiny_skia::Transform::from_row(scale as f32, 0.0, 0.0, scale as f32, dx as f32, dy as f32);
     resvg::render(&tree, transform, &mut pixmap.as_mut());
@@ -157,6 +165,10 @@ fn fit(raster: RgbaImage, px: AssetPx) -> RgbaImage {
 
 /// `bytes` written to `dir/name` through a temporary file and a rename, so a reader (Blitz, or
 /// another bardo-shell process) never sees half a PNG.
+///
+/// # Errors
+///
+/// Returns an I/O error when the directory could not be created or the file could not be written.
 pub fn write_atomic(dir: &Path, name: &str, bytes: &[u8]) -> std::io::Result<PathBuf> {
     std::fs::create_dir_all(dir)?;
     let target = dir.join(name);

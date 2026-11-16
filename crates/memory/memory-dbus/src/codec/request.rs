@@ -24,6 +24,10 @@ fn space_and<T: serde::Serialize>(id: &SpaceId, value: &T) -> Result<Vec<CallArg
 }
 
 /// The call that carries `request`.
+///
+/// # Errors
+///
+/// Returns [`CodecError`] when the body could not be encoded or decoded.
 pub fn encode_request(request: &MemoryRequest) -> Result<Call, CodecError> {
     use Iface::{Control, Recall, Record as Rec};
     use MemoryRequest as R;
@@ -62,7 +66,8 @@ pub fn encode_request(request: &MemoryRequest) -> Result<Call, CodecError> {
         R::RemoveRule(id) => call(Control, "RemoveRule", vec![body(id)?]),
         R::Pause(s, until) => {
             let until = u64::try_from(until.0)
-                .map_err(|_| CodecError::Json("a time before the epoch".into()))?;
+                .ok()
+                .ok_or_else(|| CodecError::Json("a time before the epoch".into()))?;
             call(Control, "Pause", vec![space(s), CallArg::Seconds(until)])
         }
         R::Resume(s) => call(Control, "Resume", vec![space(s)]),
@@ -126,9 +131,14 @@ fn one_body<T: serde::de::DeserializeOwned>(mut args: Args<'_>) -> Result<T, Cod
     Ok(value)
 }
 
-/// The request a call carries: the daemon's half of the table. An unknown member, a wrong
-/// argument count or kind, a body that is not the member's type, or a Space argument that
-/// disagrees with the body's own are errors.
+/// The request a call carries: the daemon's half of the table.
+///
+/// An unknown member, a wrong argument count or kind, a body that is not the member's type, or a
+/// Space argument that disagrees with the body's own are errors.
+///
+/// # Errors
+///
+/// Returns [`CodecError`] when the body could not be encoded or decoded.
 pub fn decode_request(call: &Call) -> Result<MemoryRequest, CodecError> {
     use Iface::{Control, Recall, Record as Rec};
     use MemoryRequest as R;
@@ -202,7 +212,8 @@ pub fn decode_request(call: &Call) -> Result<MemoryRequest, CodecError> {
         (Control, "Pause") => {
             let id = parse_space(args.text()?)?;
             let until = i64::try_from(args.seconds()?)
-                .map_err(|_| CodecError::Json("a time past the range".into()))?;
+                .ok()
+                .ok_or_else(|| CodecError::Json("a time past the range".into()))?;
             args.end()?;
             Ok(R::Pause(id, UnixSeconds(until)))
         }

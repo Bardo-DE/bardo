@@ -44,6 +44,7 @@ impl Runner {
     ///     .with_log(move |line| kept.lock().unwrap().push(line.to_owned()));
     /// # drop(runner);
     /// ```
+    #[must_use]
     pub fn with_log(self, sink: impl Fn(&str) + Send + Sync + 'static) -> Runner {
         Runner {
             log: Log {
@@ -56,6 +57,10 @@ impl Runner {
 
     /// What `plugin` says of itself when started: its greeting message, checked against the
     /// protocol the host speaks. Blocking: it starts the plugin and kills it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RunError`] when the plugin could not be run or its answer could not be read.
     pub fn hello<W: Protocol>(
         &self,
         plugin: &Installed<W::Provides>,
@@ -128,6 +133,10 @@ impl Runner {
     ///     }
     /// }
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RunError`] when the plugin could not be run or its answer could not be read.
     pub fn open<W: Protocol>(
         &self,
         plugin: &Installed<W::Provides>,

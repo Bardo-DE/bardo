@@ -45,6 +45,10 @@ impl CaptureBook {
     }
 
     /// Notes a session on `source`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
     pub fn add_session(
         &mut self,
         source: CaptureSourceId,
@@ -67,6 +71,10 @@ impl CaptureBook {
     }
 
     /// A frame asked for on `session` with a buffer of `buffer`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
     pub fn request_frame(
         &mut self,
         session: CaptureSessionId,
@@ -85,6 +93,10 @@ impl CaptureBook {
     }
 
     /// The pending frame of `session` was delivered at `at`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
     pub fn frame_ready(&mut self, session: CaptureSessionId, at: Mono) -> Result<(), WaylandFault> {
         self.pending
             .remove(&session)
@@ -94,6 +106,10 @@ impl CaptureBook {
     }
 
     /// The pending frame of `session` failed. A session whose output is gone is over.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
     pub fn frame_failed(
         &mut self,
         session: CaptureSessionId,

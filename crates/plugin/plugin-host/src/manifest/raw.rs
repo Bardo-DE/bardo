@@ -9,9 +9,10 @@ use std::path::{Path, PathBuf};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct RawCapability;
 
-/// A `[[provides]]` entry kept as the TOML it was written in, with its `capability` word. A scan
-/// that owns no vocabulary reads manifests as `Manifest<Raw>`; each owner then turns the entries
-/// of its own words into its own [`Provides`] type with [`reparse`](crate::reparse).
+/// A `[[provides]]` entry kept as the TOML it was written in, with its `capability` word.
+///
+/// A scan that owns no vocabulary reads manifests as `Manifest<Raw>`; each owner then turns the
+/// entries of its own words into its own [`Provides`] type with [`reparse`](crate::reparse).
 #[derive(Debug, Clone)]
 pub struct Raw {
     word: String,

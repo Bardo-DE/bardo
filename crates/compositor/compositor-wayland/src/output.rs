@@ -1,6 +1,7 @@
-//! `wl_output` and `zxdg_output_manager_v1`: one global per plugged output, created and
-//! removed as the backend reports connectors (`ConnectorEvent`), the same path for headless
-//! and KMS. (Not in the plan's module list; `GlobalKind::Output` needs a home: FINDINGS.)
+//! `wl_output` and `zxdg_output_manager_v1`: one global per plugged output, created and removed as
+//! the backend reports connectors (`ConnectorEvent`), the same path for headless and KMS.
+//!
+//! (Not in the plan's module list; `GlobalKind::Output` needs a home: FINDINGS.)
 
 use crate::states::{GlobalFilter, WaylandFault};
 use compositor_core::geometry::LogicalPoint;
@@ -146,9 +147,14 @@ fn apply_state(output: &Output, wire: &OutputWire) {
     );
 }
 
-/// Advertises a plugged output: a `wl_output` global (and its xdg-output) with the name, the
-/// make and model, the mode, the scale ceiling and the position. Plugging a key that is
-/// already advertised replaces it.
+/// Advertises a plugged output: a `wl_output` global (and its xdg-output) with the name, the make
+/// and model, the mode, the scale ceiling and the position.
+///
+/// Plugging a key that is already advertised replaces it.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_plug<D>(
     part: &mut OutputPart,
     display: &DisplayHandle,
@@ -170,9 +176,15 @@ where
     Ok(())
 }
 
-/// Sends a changed mode, scale, transform or position to every bound `wl_output` and
-/// `xdg_output` (smithay sends each only if it changed, then `done`). An output that is not
-/// advertised changes nothing: the connector event that follows its plug carries it.
+/// Sends a changed mode, scale, transform or position to every bound `wl_output` and `xdg_output`
+/// (smithay sends each only if it changed, then `done`).
+///
+/// An output that is not advertised changes nothing: the connector event that follows its plug
+/// carries it.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_change(part: &mut OutputPart, wire: &OutputWire) -> Result<(), WaylandFault> {
     match part.outputs.get(&wire.key) {
         Some(output) => apply_state(output, wire),
@@ -185,6 +197,10 @@ pub fn apply_change(part: &mut OutputPart, wire: &OutputWire) -> Result<(), Wayl
 
 /// Withdraws an unplugged output's global: clients bound to it see `global_remove` and the
 /// bound `wl_output` stays valid but inert.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_unplug(
     part: &mut OutputPart,
     display: &DisplayHandle,

@@ -20,10 +20,12 @@ use desktop_protocols::vocab::Toggle;
 use smithay::reexports::wayland_protocols::xdg::shell::server::xdg_toplevel::{ResizeEdge, State};
 use smithay::wayland::shell::xdg::ToplevelSurface;
 
-/// Whether the press `record` (what the seat remembers of the serial the client sent, if it
-/// was delivered to that client and is recent) is proof enough for `any_press`: `false` for an
-/// interactive move, resize or window menu (a pointer button, a touch or a pen tip), `true` for
-/// a popup grab or a placement request (any press, a key included, and a button release).
+/// Whether the press `record` (what the seat remembers of the serial the client sent, if it was
+/// delivered to that client and is recent) is proof enough for `any_press`.
+///
+/// `false` for an interactive move, resize or window menu (a pointer button, a touch or a pen tip),
+/// `true` for a popup grab or a placement request (any press, a key included, and a button
+/// release).
 ///
 /// An agent lease's press is never proof of a drag: an interactive move or resize is the
 /// compositor's own interaction, which the agent never drives (a popup grab inside its window is
@@ -31,9 +33,9 @@ use smithay::wayland::shell::xdg::ToplevelSurface;
 #[must_use]
 pub fn grab_proven(record: Option<&PressRecord>, any_press: bool) -> bool {
     match (record.map(|press| (press.kind, press.origin)), any_press) {
-        (None, _) => false,
-        (Some((_, Origin::Agent(_))), false) => false,
-        (Some((PressKind::Key | PressKind::Release, _)), false) => false,
+        (None, _)
+        | (Some((_, Origin::Agent(_))), false)
+        | (Some((PressKind::Key | PressKind::Release, _)), false) => false,
         (Some(_), _) => true,
     }
 }
@@ -187,7 +189,7 @@ pub fn on_pong(part: &mut XdgShellPart, client: ClientKey) -> Vec<Event> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use compositor_core::input::{DeviceClass, Origin};
+    use compositor_core::input::DeviceClass;
     use compositor_core::time::Mono;
 
     fn press(kind: PressKind) -> PressRecord {

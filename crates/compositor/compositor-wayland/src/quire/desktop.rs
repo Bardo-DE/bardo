@@ -1,7 +1,8 @@
 //! `bardo_desktop_manager_v1` and the objects it makes (`bardo_desktop_app_v1`,
-//! `bardo_desktop_window_v1`, `bardo_desktop_space_v1`): the compositor's model of apps,
-//! windows and Spaces, published to the shell (which also manages through it) and to the
-//! agent tier (which only reads it). Frozen at P2-Z; filled by P2-Q1.
+//! `bardo_desktop_window_v1`, `bardo_desktop_space_v1`).
+//!
+//! The compositor's model of apps, windows and Spaces, published to the shell (which also manages
+//! through it) and to the agent tier (which only reads it). Frozen at P2-Z; filled by P2-Q1.
 //!
 //! The wire glue (the part, the handler trait, the global's and the four objects' dispatch,
 //! the refusal of management on an agent connection, the makers that create the objects an
@@ -112,9 +113,10 @@ impl QuireDesktopPart {
     }
 }
 
-/// How to create the app, window and Space objects a manager announces (`app`, `window` and
-/// `space` events carry a `new_id`). Built where the state type is known, so the publishing
-/// functions need no type parameter.
+/// How to create the app, window and Space objects a manager announces (`app`, `window` and `space`
+/// events carry a `new_id`).
+///
+/// Built where the state type is known, so the publishing functions need no type parameter.
 #[derive(Debug, Clone)]
 pub struct Makers {
     display: DisplayHandle,
@@ -293,10 +295,15 @@ where
         let role = ClientState::of(client).map_or(ConnectionRole::Public, |data| data.role.clone());
         // The shell manages the model; everything else reads it (every management request is
         // `not_permitted`).
-        let manages = matches!(role, ConnectionRole::Shell);
-        let manager = data_init.init(resource, ManagerData { manages });
+        let may_manage = matches!(role, ConnectionRole::Shell);
+        let manager = data_init.init(
+            resource,
+            ManagerData {
+                manages: may_manage,
+            },
+        );
         let DesktopParts { part, view } = state.quire_desktop_parts();
-        if let Err(fault) = on_bind(part, &view, manager, manages) {
+        if let Err(fault) = on_bind(part, &view, manager, may_manage) {
             tracing::warn!(%fault, "a desktop manager could not be given its state");
         }
     }
@@ -309,8 +316,8 @@ where
 /// Posts the manager's `not_permitted` (an agent connection made a management request) and
 /// says whether the request was refused. The error is the manager's, so it goes on the
 /// manager, whichever of its objects asked.
-fn refused(manages: bool, manager: &BardoDesktopManagerV1) -> bool {
-    if manages {
+fn refused(may_manage: bool, manager: &BardoDesktopManagerV1) -> bool {
+    if may_manage {
         return false;
     }
     manager.post_error(
@@ -494,18 +501,23 @@ where
     }
 }
 
-/// A manager was bound: record it and send it the whole desktop. The order is the Spaces and
-/// the apps (each `space` or `app` event with its state burst), then a `window` event for
-/// every window, so a window's burst can name any app, Space or parent, then each window's
-/// burst, `active` and `done`.
+/// A manager was bound: record it and send it the whole desktop.
+///
+/// The order is the Spaces and the apps (each `space` or `app` event with its state burst), then a
+/// `window` event for every window, so a window's burst can name any app, Space or parent, then
+/// each window's burst, `active` and `done`.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn on_bind(
     part: &mut QuireDesktopPart,
     view: &DesktopView<'_>,
     manager: BardoDesktopManagerV1,
-    manages: bool,
+    may_manage: bool,
 ) -> Result<(), WaylandFault> {
     let QuireDesktopPart { bound, makers, .. } = part;
-    let mut fresh = Bound::new(manager, manages);
+    let mut fresh = Bound::new(manager, may_manage);
     for space in view.model.spaces().iter() {
         fresh.space(makers, view, &space.id);
     }
@@ -527,6 +539,10 @@ pub fn on_bind(
 
 /// `get_window_for`: `object` is the desktop window of `window`; record it and send its
 /// state burst (it is closed at once when the model has no such window).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn on_get_window_for(
     part: &mut QuireDesktopPart,
     view: &DesktopView<'_>,
@@ -590,10 +606,15 @@ pub fn on_manager_gone(part: &mut QuireDesktopPart, manager: &BardoDesktopManage
     part.bound.retain(|bound| bound.manager != *manager);
 }
 
-/// The model said `note`: send every bound manager the object it names as it now is (a new
-/// object is created and announced first), or its `closed` and `removed` end, then `done`.
-/// A manager that was stopped gets no new object. Saying the same thing again sends nothing:
-/// each object remembers what it was told.
+/// The model said `note`: send every bound manager the object it names as it now is (a new object
+/// is created and announced first), or its `closed` and `removed` end, then `done`.
+///
+/// A manager that was stopped gets no new object. Saying the same thing again sends nothing: each
+/// object remembers what it was told.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_note(
     part: &mut QuireDesktopPart,
     view: &DesktopView<'_>,

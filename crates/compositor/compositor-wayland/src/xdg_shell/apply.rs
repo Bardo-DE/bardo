@@ -45,9 +45,15 @@ pub(super) fn apply_spec(state: &mut ToplevelState, spec: &ConfigureSpec) {
     }
 }
 
-/// Sends `window` a configure. Nothing goes out when the pending state equals what the client
-/// was last told; before the initial configure the state only waits in the pending slot, and
-/// the initial configure (sent at the first commit) carries it.
+/// Sends `window` a configure.
+///
+/// Nothing goes out when the pending state equals what the client was last told; before the initial
+/// configure the state only waits in the pending slot, and the initial configure (sent at the first
+/// commit) carries it.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_configure(
     part: &mut XdgShellPart,
     window: WindowId,
@@ -68,6 +74,10 @@ pub fn apply_configure(
 }
 
 /// Asks `window` to close.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_close(part: &mut XdgShellPart, window: WindowId) -> Result<(), WaylandFault> {
     let toplevel = part
         .toplevels
@@ -82,6 +92,10 @@ pub fn apply_close(part: &mut XdgShellPart, window: WindowId) -> Result<(), Wayl
 
 /// Pings `client`. A ping already outstanding is the answer the model is timing, so it is not
 /// an error to ask again.
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_ping(part: &mut XdgShellPart, client: ClientKey) -> Result<(), WaylandFault> {
     let shell = part.clients.get(&client).ok_or(WaylandFault::SurfaceGone)?;
     match shell.send_ping(SERIAL_COUNTER.next_serial()) {
@@ -91,6 +105,10 @@ pub fn apply_ping(part: &mut XdgShellPart, client: ClientKey) -> Result<(), Wayl
 }
 
 /// Dismisses `popup` (and the popups above it).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_popup_done(part: &mut XdgShellPart, popup: PopupKey) -> Result<(), WaylandFault> {
     let surface = part
         .popup_surfaces
@@ -102,7 +120,9 @@ pub fn apply_popup_done(part: &mut XdgShellPart, popup: PopupKey) -> Result<(), 
     }
     let kind = PopupKind::Xdg(surface.clone());
     if let Ok(root) = find_popup_root_surface(&kind) {
-        PopupManager::dismiss_popup(&root, &kind).map_err(|_| WaylandFault::SurfaceGone)
+        PopupManager::dismiss_popup(&root, &kind)
+            .ok()
+            .ok_or(WaylandFault::SurfaceGone)
     } else {
         surface.send_popup_done();
         Ok(())

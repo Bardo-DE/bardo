@@ -1,8 +1,9 @@
 //! The auto-hide phase machine the dock and the bar share (design/10 §10.4 "Reveal"): pure, `now`
-//! an argument, the consequence returned as a [`Change`]. A surface maps its own events to
-//! [`Input`], applies the [`Change`] to its layer (input region, blur, frames, timer) and draws
-//! [`slide_offset`]. What is not shared is the surface's own: the dock's busy states, the bar's
-//! open popups (both are a [`Hold`]), and the regions each sets.
+//! an argument, the consequence returned as a [`Change`].
+//!
+//! A surface maps its own events to [`Input`], applies the [`Change`] to its layer (input region,
+//! blur, frames, timer) and draws [`slide_offset`]. What is not shared is the surface's own: the
+//! dock's busy states, the bar's open popups (both are a [`Hold`]), and the regions each sets.
 //!
 //! The compositor's edge reveal in full screen ([`Input::Edge`]) is the compositor's own motion:
 //! the machine goes straight between `Shown` and `Hidden` and the surface slides nowhere.
@@ -124,7 +125,9 @@ pub fn advance(
             Phase::Armed { since: now },
             Some(Change::Arm(now.after(t.delay))),
         ),
-        (Phase::Armed { .. }, Input::Outside) => (Phase::Hidden, None),
+        (Phase::Armed { .. }, Input::Outside | Input::Edge(EdgeShown::Hidden)) => {
+            (Phase::Hidden, None)
+        }
         (Phase::Armed { since }, Input::Tick | Input::Frame) if now.since(since) >= t.delay.0 => {
             (Phase::Showing { since: now }, Some(Change::Show))
         }
@@ -151,7 +154,6 @@ pub fn advance(
             Phase::Hidden | Phase::Armed { .. } | Phase::Showing { .. } | Phase::Hiding { .. },
             Input::Edge(EdgeShown::Shown),
         ) => (Phase::Shown, Some(Change::Pop)),
-        (Phase::Armed { .. }, Input::Edge(EdgeShown::Hidden)) => (Phase::Hidden, None),
         (
             Phase::Showing { .. } | Phase::Shown | Phase::Hiding { .. },
             Input::Edge(EdgeShown::Hidden),
@@ -176,6 +178,10 @@ pub fn slide_offset(phase: &Phase, now: Stamp, t: &Timing, distance: Cpx) -> Cpx
                 .min(1000),
         )
     };
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the distance scaled by a fraction of at most 1000 permille stays within the i32 distance it came from"
+    )]
     let scaled = |fraction: Permille| {
         Cpx((f64::from(distance.0) * f64::from(fraction.0) / 1000.0).round() as i32)
     };

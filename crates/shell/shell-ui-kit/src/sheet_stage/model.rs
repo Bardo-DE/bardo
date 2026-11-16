@@ -5,8 +5,9 @@ use layer_shell_host::Visibility;
 use crate::surface::Pointer;
 
 /// What a sheet's surface shows: nothing, the wanted value, or the value that has gone while its
-/// sheet plays its exit. The next value replaces a leaving one at once (keyed by the caller, the
-/// sheet enters again).
+/// sheet plays its exit.
+///
+/// The next value replaces a leaving one at once (keyed by the caller, the sheet enters again).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SheetStage<T> {
     /// Nothing drawn; the surface is unmapped.

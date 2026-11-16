@@ -111,6 +111,10 @@ pub fn on_drop(part: &mut DataDevicePart, at: LogicalPoint) -> Vec<Event> {
 
 /// Gives the clipboard and primary-selection focus to `client` (the keyboard focus's client,
 /// or nobody).
+///
+/// # Errors
+///
+/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
 pub fn apply_selection_focus<D>(
     display: &DisplayHandle,
     seat: &Seat<D>,

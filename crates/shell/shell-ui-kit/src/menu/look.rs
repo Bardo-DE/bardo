@@ -43,9 +43,11 @@ impl PopupRoom {
     }
 }
 
-/// The look a popup this surface opens is handed: the surface's own appearance, read live from
-/// the settings and the desktop's appearance. The material's tint and stack are stylesheet
-/// tokens, so the popup's root takes them from the same sheet.
+/// The look a popup this surface opens is handed: the surface's own appearance, read live from the
+/// settings and the desktop's appearance.
+///
+/// The material's tint and stack are stylesheet tokens, so the popup's root takes them from the
+/// same sheet.
 #[must_use]
 pub fn use_popup_look() -> PopupLook {
     let environment = use_appearance()();

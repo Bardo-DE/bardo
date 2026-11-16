@@ -42,8 +42,9 @@ impl PointerConstraintsPart {
     }
 }
 
-/// `surface` asked to lock or confine `pointer`; it activates when the surface has pointer
-/// focus (otherwise it waits: `seat::apply_pointer` activates it when the pointer enters).
+/// `surface` asked to lock or confine `pointer`; it activates when the surface has pointer focus
+/// (otherwise it waits: `seat::apply_pointer` activates it when the pointer enters).
+///
 /// Nothing is reported to the model.
 pub fn on_constraint<D>(
     part: &mut PointerConstraintsPart,
@@ -66,12 +67,13 @@ where
     Vec::new()
 }
 
-/// The keyboard moved from `left` to `entered` (a window was activated): a constraint holds only
-/// while its surface has the keyboard as well as the pointer, as the compositors wlcs was
-/// written against decide ("when the compositor deems implementation-specific constraints are
-/// satisfied", pointer-constraints-v1). The surface that lost it is released (a persistent
-/// constraint waits, a one-shot one is over); the one that gained it, when the pointer is on it,
-/// holds again.
+/// The keyboard moved from `left` to `entered` (a window was activated).
+///
+/// A constraint holds only while its surface has the keyboard as well as the pointer, as the
+/// compositors wlcs was written against decide ("when the compositor deems implementation-specific
+/// constraints are satisfied", pointer-constraints-v1). The surface that lost it is released (a
+/// persistent constraint waits, a one-shot one is over); the one that gained it, when the pointer
+/// is on it, holds again.
 pub fn on_keyboard_focus<D>(
     pointer: &PointerHandle<D>,
     left: Option<&WlSurface>,

@@ -52,6 +52,10 @@ const MOST_AT_ONCE: Count = Count(20);
 
 /// The reach for `apps` up to `ceiling` in `space`, over the installed `manifests`: the policy's
 /// kinds are the kinds of thing the named apps own. It never expires and trusts no sink.
+///
+/// # Errors
+///
+/// Returns [`ReachFault`] when what the person named is not a reach.
 pub fn reach_policy(
     apps: &[AppName],
     ceiling: Ceiling,

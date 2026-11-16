@@ -51,12 +51,12 @@ impl From<&Refusal> for MemoryError {
             Refusal::NotPending => MemoryError::NotPending(text),
             Refusal::Busy => MemoryError::Busy(text),
             Refusal::SpaceFull => MemoryError::SpaceFull(text),
-            Refusal::Unavailable => MemoryError::Unavailable(text),
             Refusal::NotKept(why) => {
                 MemoryError::NotKept(serde_json::to_string(why).unwrap_or_default())
             }
             Refusal::Invalid(why) => MemoryError::Invalid(why.clone()),
-            // A refusal this build does not know: report it as unavailable, a refusal, never success.
+            // `Unavailable`, and a refusal this build does not know: report it as unavailable, a
+            // refusal, never success.
             _ => MemoryError::Unavailable(text),
         }
     }

@@ -92,6 +92,10 @@ impl HelperRecord {
     }
 
     /// The payload as it is stored: the inner value's serde form, not the enum's.
+    ///
+    /// # Errors
+    ///
+    /// Returns the serialiser's error when the inner value cannot be written as JSON.
     pub fn json(&self) -> Result<String, serde_json::Error> {
         match self {
             HelperRecord::Card(card) => serde_json::to_string(card),
@@ -102,6 +106,10 @@ impl HelperRecord {
     }
 
     /// The record of `kind` whose payload is `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the parser's error when `text` is not the JSON form of a payload of `kind`.
     pub fn from_json(kind: HelperRecordKind, text: &str) -> Result<Self, serde_json::Error> {
         Ok(match kind {
             HelperRecordKind::Card => HelperRecord::Card(serde_json::from_str(text)?),

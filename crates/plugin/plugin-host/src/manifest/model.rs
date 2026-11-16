@@ -39,6 +39,11 @@ pub struct Manifest<P> {
 
 impl<P: Provides> Manifest<P> {
     /// Checks that the file the manifest was read from is called `<id>.toml`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ManifestError`] when the manifest is not valid or names a file or folder that does
+    /// not match.
     pub fn check_file_name(
         &self,
         file: &Path,
@@ -58,6 +63,11 @@ impl<P: Provides> Manifest<P> {
     }
 
     /// Checks that the folder the manifest was read from is called `<id>`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ManifestError`] when the manifest is not valid or names a file or folder that does
+    /// not match.
     pub fn check_folder_name(
         &self,
         folder: &Path,

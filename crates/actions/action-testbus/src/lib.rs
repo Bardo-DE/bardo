@@ -134,6 +134,11 @@ impl PrivateBus {
     }
 
     /// A new connection to this bus.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the bus address is not valid or the connection cannot be made: a test has no bus
+    /// to fall back to.
     pub async fn connect(&self) -> action_dbus::BusConnection {
         zbus::connection::Builder::address(self.address.as_str())
             .expect("address")

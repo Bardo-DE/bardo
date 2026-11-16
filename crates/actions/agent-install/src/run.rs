@@ -11,6 +11,10 @@ pub struct RunFault(pub String);
 /// Runs a program to its end.
 pub trait Run {
     /// Runs `program` with `args`, working in `dir`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`RunFault`] when the program did not run to success.
     fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunFault>;
 }
 
@@ -24,7 +28,8 @@ impl Run for System {
             .args(args)
             .current_dir(dir)
             .status()
-            .map_err(|_| RunFault(program.to_owned()))?;
+            .ok()
+            .ok_or_else(|| RunFault(program.to_owned()))?;
         status
             .success()
             .then_some(())

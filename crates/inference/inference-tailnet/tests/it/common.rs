@@ -158,10 +158,10 @@ pub async fn connect_from(source: IpAddr, to: SocketAddr) -> std::io::Result<Tcp
 pub async fn ask(mut stream: TcpStream, request: &str) -> String {
     stream.write_all(request.as_bytes()).await.expect("send");
     let mut answer = Vec::new();
-    tokio::time::timeout(GENEROUS, stream.read_to_end(&mut answer))
+    // A peer may reset the connection after it answered: what was read before that is the answer.
+    let _ = tokio::time::timeout(GENEROUS, stream.read_to_end(&mut answer))
         .await
-        .expect("an answer within the generous wait")
-        .ok();
+        .expect("an answer within the generous wait");
     String::from_utf8_lossy(&answer).into_owned()
 }
 

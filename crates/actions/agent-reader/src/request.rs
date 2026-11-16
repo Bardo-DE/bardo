@@ -12,6 +12,7 @@ use inference_core::{
 use provenance::{Label, Labelled};
 use serde_json::json;
 use std::collections::hash_map::DefaultHasher;
+use std::fmt::Write as _;
 use std::hash::{Hash, Hasher};
 
 /// The fixed instruction of a task. It says what to do with the data and never takes text from
@@ -52,10 +53,12 @@ const BY_SENSITIVITY: [DataClass; 13] = [
     DataClass::Public,
 ];
 
-/// The class a read over `labels` is sent as: the most sensitive present. A class porter adds
-/// that this list does not rank yet counts as more sensitive than any ranked one, so a new class
-/// is never sent as something looser. Text that no label classes is treated as the person's own
-/// words, whose floor is this computer, so an unclassed input is never sent off it.
+/// The class a read over `labels` is sent as: the most sensitive present.
+///
+/// A class porter adds that this list does not rank yet counts as more sensitive than any ranked
+/// one, so a new class is never sent as something looser. Text that no label classes is treated as
+/// the person's own words, whose floor is this computer, so an unclassed input is never sent off
+/// it.
 pub fn class_of<'a>(labels: impl IntoIterator<Item = &'a Label>) -> DataClass {
     let present: Vec<&Label> = labels.into_iter().collect();
     let classes = || present.iter().flat_map(|l| l.classes.iter().copied());
@@ -73,7 +76,9 @@ pub fn class_of<'a>(labels: impl IntoIterator<Item = &'a Label>) -> DataClass {
 /// data cannot close it early.
 fn fence_for(inputs: &[Labelled<String>]) -> String {
     let mut hasher = DefaultHasher::new();
-    inputs.iter().for_each(|i| i.value.hash(&mut hasher));
+    for input in inputs {
+        input.value.hash(&mut hasher);
+    }
     let mut nonce = hasher.finish();
     loop {
         let fence = format!("FENCE-{nonce:016x}");
@@ -84,11 +89,13 @@ fn fence_for(inputs: &[Labelled<String>]) -> String {
     }
 }
 
-/// How the reply is asked for. A choice is asked for as a choice. Anything else is JSON under
-/// the schema of `ValueSchema::shape` (stoker's `Shape::to_json_schema`), and a value that is
-/// not a record is wrapped as `{"answer": ...}`, since a structured reply is an object.
-/// A schema that has no shape in that vocabulary falls back to any JSON object; the answer is
-/// checked against the ask afterwards either way.
+/// How the reply is asked for.
+///
+/// A choice is asked for as a choice. Anything else is JSON under the schema of
+/// `ValueSchema::shape` (stoker's `Shape::to_json_schema`), and a value that is not a record is
+/// wrapped as `{"answer": ...}`, since a structured reply is an object. A schema that has no shape
+/// in that vocabulary falls back to any JSON object; the answer is checked against the ask
+/// afterwards either way.
 #[must_use]
 pub fn reply_shape(want: &ValueSchema) -> ReplyShape {
     if let ValueSchema::Choice(ids) = want {
@@ -127,7 +134,8 @@ fn fenced(inputs: &[Labelled<String>]) -> String {
     for (n, input) in inputs.iter().enumerate() {
         let data = input.value.replace(&fence, "");
         let n = n + 1;
-        text.push_str(&format!("{fence} begin {n}\n{data}\n{fence} end {n}\n"));
+        // Writing to a `String` cannot fail.
+        let _ = write!(text, "{fence} begin {n}\n{data}\n{fence} end {n}\n");
     }
     text
 }
@@ -139,10 +147,11 @@ fn message(role: Role, text: String) -> ChatMessage {
     }
 }
 
-/// The chat request for an ask: the fixed instruction, the inputs as fenced data, no tools, and
-/// the schema as the reply shape (`ValueSchema::shape` rendered by stoker's `Shape`; inferd owns
-/// validation, repair and retry). The class is the strictest of the inputs' classes, and the
-/// request is interactive.
+/// The chat request for an ask.
+///
+/// The fixed instruction, the inputs as fenced data, no tools, and the schema as the reply shape
+/// (`ValueSchema::shape` rendered by stoker's `Shape`; inferd owns validation, repair and retry).
+/// The class is the strictest of the inputs' classes, and the request is interactive.
 #[must_use]
 pub fn reader_request(ask: &ReaderAsk, inputs: &[Labelled<String>]) -> ChatRequest {
     ChatRequest::new(

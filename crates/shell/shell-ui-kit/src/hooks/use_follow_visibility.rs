@@ -2,8 +2,9 @@ use dioxus::prelude::*;
 use layer_shell_host::{SurfaceHandle, Visibility};
 
 /// The surface's mapping following `visibility` (read inside an effect, so the signals it reads
-/// drive it): mapped while it says `Shown`, unmapped while it says `Hidden`. A repeat sets
-/// nothing. Nothing to map without a host (a test, an SSR render).
+/// drive it): mapped while it says `Shown`, unmapped while it says `Hidden`.
+///
+/// A repeat sets nothing. Nothing to map without a host (a test, an SSR render).
 pub fn use_follow_visibility(visibility: impl Fn() -> Visibility + 'static) {
     let surface = try_use_context::<SurfaceHandle>();
     let mut applied = use_hook(|| CopyValue::new(None::<Visibility>));
@@ -20,8 +21,9 @@ pub fn use_follow_visibility(visibility: impl Fn() -> Visibility + 'static) {
 }
 
 /// The surface mapped once `visibility` says `Shown`, and never unmapped here: for a surface whose
-/// exit plays first and ends in [`use_unmap_on_hidden`]. A repeat sets nothing. Nothing to map
-/// without a host (a test, an SSR render).
+/// exit plays first and ends in [`use_unmap_on_hidden`].
+///
+/// A repeat sets nothing. Nothing to map without a host (a test, an SSR render).
 pub fn use_map_when_shown(visibility: impl Fn() -> Visibility + 'static) {
     let surface = try_use_context::<SurfaceHandle>();
     let mut applied = use_hook(|| CopyValue::new(Visibility::Hidden));

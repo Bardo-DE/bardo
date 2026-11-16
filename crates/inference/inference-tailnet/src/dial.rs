@@ -72,6 +72,10 @@ impl Dialer {
     }
 
     /// A connection to the computer `node`, once Tailscale has said that is who is there.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`DialError`] when the computer was not reached.
     pub async fn connect(&self, node: &NodeId) -> Result<TcpStream, DialError> {
         let status = self.api.status().await.map_err(DialError::Tailscale)?;
         let me = match status.standing() {

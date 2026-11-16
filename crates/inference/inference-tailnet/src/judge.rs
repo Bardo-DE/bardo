@@ -68,6 +68,10 @@ impl Welcome {
     /// not answered about is put on the list of those waiting (the person is told once) and
     /// refused with [`Refusal::Waiting`] until they answer. The record is read now, so a yes
     /// taken back is taken back at once.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal`] when the host will not take the entry.
     pub fn admit(&self, guests: &Guests, now: base_time::UnixSeconds) -> Result<(), Refusal> {
         match guests.state_of(&self.peer.node) {
             Some(State::Approved) => Ok(()),
@@ -92,6 +96,10 @@ impl Welcome {
 
 /// Judges a request that came from `from`, when Tailscale answered `answer` to the question of
 /// who has that address. `me` is this computer.
+///
+/// # Errors
+///
+/// Returns [`Refusal`] when the host will not take the entry.
 pub fn judge(
     me: &Identity,
     from: IpAddr,
