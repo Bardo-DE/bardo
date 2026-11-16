@@ -29,7 +29,7 @@ impl Web {
         let url = url.clone();
         self.runtime.spawn(async move {
             if let Err(said) = open_url(&connection, &url).await {
-                eprintln!("files: {said}");
+                eprintln!("bardo-files: {said}");
             }
         });
         Ok(())

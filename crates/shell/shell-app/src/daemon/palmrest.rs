@@ -1,7 +1,7 @@
 //! What palmrest asks of the session. palmrest is a system service with no session of its own, so
 //! a gesture whose action needs one (the workspace steps, a line of the shell's own commands, a
 //! program of the person's) arrives here as `HostEvent::Palmrest` and the shell carries it out as
-//! the person: the workspace steps and shell lines are requests, answered as `sill workspace next`
+//! the person: the workspace steps and shell lines are requests, answered as `bardo-shell workspace next`
 //! and the like are, and a program is started as a child of the shell. The decision is pure
 //! ([`plan`]); only [`run`] has an effect.
 
@@ -65,10 +65,10 @@ pub fn run(program: &str, args: &[String]) {
                     let _ = child.wait();
                 });
             if let Err(error) = reaped {
-                eprintln!("sill: palmrest: could not wait for {program}: {error}");
+                eprintln!("bardo-shell: palmrest: could not wait for {program}: {error}");
             }
         }
-        Err(error) => eprintln!("sill: palmrest: running {program}: {error}"),
+        Err(error) => eprintln!("bardo-shell: palmrest: running {program}: {error}"),
     }
 }
 

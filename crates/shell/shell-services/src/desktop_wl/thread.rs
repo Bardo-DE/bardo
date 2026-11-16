@@ -52,7 +52,7 @@ pub(super) fn run(
     match open(&endpoint) {
         Ok(connection) => follow(connection, publish, commands),
         Err(refusal) => {
-            eprintln!("sill: windows: {refusal}; toplevels and workspaces stay empty");
+            eprintln!("bardo-shell: windows: {refusal}; toplevels and workspaces stay empty");
             park_commands(commands);
             // Held until now so the receivers read empty values, not a closed channel.
             drop(publish);

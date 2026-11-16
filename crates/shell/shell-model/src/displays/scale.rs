@@ -1,5 +1,5 @@
-//! An output's scale as the compositor reports it. sill never decides one: the compositor picks
-//! a display's scale when it first sees the display, and sill only shows what it chose.
+//! An output's scale as the compositor reports it. bardo-shell never decides one: the compositor picks
+//! a display's scale when it first sees the display, and bardo-shell only shows what it chose.
 
 use serde::{Deserialize, Serialize};
 

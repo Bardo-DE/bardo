@@ -78,8 +78,8 @@ mod tests {
     fn the_backdrop_sits_beside_its_image() {
         let cases = [
             (
-                "/home/ada/.cache/sill/wallpaper/00000000deadbeef-1920x1080.png",
-                "/home/ada/.cache/sill/wallpaper/00000000deadbeef-1920x1080-backdrop.png",
+                "/home/ada/.cache/bardo/shell/wallpaper/00000000deadbeef-1920x1080.png",
+                "/home/ada/.cache/bardo/shell/wallpaper/00000000deadbeef-1920x1080-backdrop.png",
             ),
             ("/tmp/a.png", "/tmp/a-backdrop.png"),
         ];

@@ -1,4 +1,4 @@
-//! `$XDG_STATE_HOME/sill/notifications.json`: the history, kept across restarts (effects: the
+//! `$XDG_STATE_HOME/bardo/shell/notifications.json`: the history, kept across restarts (effects: the
 //! filesystem). Written whole and durably after every change that
 //! touches the history (`NotificationsEffect::SaveHistory`); read once at start. A file that cannot
 //! be read is kept as `.damaged` rather than written over.
@@ -13,10 +13,10 @@ use shell_model::notifications::{STORED_VERSION, StoredHistory};
 use crate::durable::{self, Access};
 use crate::error::ServiceError;
 
-/// The file's name inside `$XDG_STATE_HOME/sill`.
+/// The file's name inside `$XDG_STATE_HOME/bardo/shell`.
 pub const FILE_NAME: &str = "notifications.json";
 
-/// `notifications.json` in sill's folder of `dirs`' state directory.
+/// `notifications.json` in bardo-shell's folder of `dirs`' state directory.
 pub fn path_in(dirs: &crate::env::Dirs) -> PathBuf {
     dirs.sill_state().join(FILE_NAME)
 }
@@ -100,7 +100,7 @@ mod tests {
     #[test]
     fn pixels_are_not_written_and_the_rest_round_trips() {
         let dir = std::env::temp_dir().join(format!("sill-notes-{}", std::process::id()));
-        let path = dir.join("state/sill/notifications.json");
+        let path = dir.join("state/bardo/shell/notifications.json");
         let stored = for_disk(&state());
         assert_eq!(stored.version, STORED_VERSION);
         assert_eq!(stored.last_id, NotificationId(7));

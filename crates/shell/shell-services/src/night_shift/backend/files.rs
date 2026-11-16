@@ -2,7 +2,7 @@
 //! manual turn-on's `night-shift.json`. Both are parsed once here into the model's types. The
 //! person's `settings.toml` is edited through `ui_settings::SettingsWriter` (every comment, blank
 //! line and key order stays, a link to a dotfiles copy is written through, and a change is one
-//! lock and one write); the manual file is sill's own and private.
+//! lock and one write); the manual file is bardo-shell's own and private.
 
 use std::io::ErrorKind;
 use std::path::Path;
@@ -19,7 +19,7 @@ use crate::durable::{self, Access};
 
 /// casement's settings file, in its config directory.
 pub(super) const SETTINGS: &str = "settings.toml";
-/// The manual turn-on, in sill's state directory.
+/// The manual turn-on, in bardo-shell's state directory.
 const MANUAL: &str = "night-shift.json";
 
 /// Why a file could not be used.
@@ -123,9 +123,9 @@ pub(super) enum Skipping {
     AsWas,
 }
 
-/// `night_light.skip_outputs` for the monitors `skip` (sill's), among the `existing` entries: an
+/// `night_light.skip_outputs` for the monitors `skip` (bardo-shell's), among the `existing` entries: an
 /// entry that names a display by its identity (`edid:...`, `connector:...`; a connector name
-/// has no colon) is the person's and stays, in front; every plain connector name is sill's to
+/// has no colon) is the person's and stays, in front; every plain connector name is bardo-shell's to
 /// replace.
 pub(super) fn skip_list(existing: &[String], skip: &[OutputName]) -> Vec<String> {
     existing
@@ -382,7 +382,7 @@ mod tests {
         let cases: &[SkipCase<'_>] = &[
             ("nothing either way", &[], &[], &[]),
             (
-                "sill's monitors are listed",
+                "bardo-shell's monitors are listed",
                 &[],
                 &["DP-1", "HDMI-A-1"],
                 &["DP-1", "HDMI-A-1"],
@@ -400,7 +400,7 @@ mod tests {
                 &["edid:ACME/M1/S1", " connector:DP-9", "DP-2"],
             ),
             (
-                "no monitors of sill's, only the person's",
+                "no monitors of bardo-shell's, only the person's",
                 &["edid:A/B/C", "DP-1"],
                 &[],
                 &["edid:A/B/C"],

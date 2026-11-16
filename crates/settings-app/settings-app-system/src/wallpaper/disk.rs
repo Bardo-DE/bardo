@@ -37,7 +37,7 @@ impl OnDisk {
             .unwrap_or_default();
         if !is_picture(chosen) {
             eprintln!(
-                "detent: wallpaper: {} is not a kind of picture the desktop draws",
+                "bardo-settings: wallpaper: {} is not a kind of picture the desktop draws",
                 chosen.display()
             );
             return AddOutcome::NotAPicture(name);
@@ -46,7 +46,7 @@ impl OnDisk {
             Ok(kept) => AddOutcome::Added(kept),
             Err(fault) => {
                 eprintln!(
-                    "detent: wallpaper: could not add {}: {fault}",
+                    "bardo-settings: wallpaper: could not add {}: {fault}",
                     chosen.display()
                 );
                 AddOutcome::CouldNotCopy(name)
@@ -66,7 +66,7 @@ impl Pictures for OnDisk {
                 Asked::Path(chosen) => self.keep(&PathBuf::from(chosen)),
                 Asked::Closed => AddOutcome::Closed,
                 Asked::Unavailable => {
-                    eprintln!("detent: wallpaper: no file chooser to ask");
+                    eprintln!("bardo-settings: wallpaper: no file chooser to ask");
                     AddOutcome::NoChooser
                 }
             }

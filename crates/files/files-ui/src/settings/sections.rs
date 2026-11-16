@@ -9,7 +9,7 @@ use super::words::NewWindowsShow;
 
 /// The Settings page the keys are on: files' own.
 fn page() -> Page {
-    Page::App(APP.0.to_owned())
+    Page::App(APP.name().to_owned())
 }
 
 /// `general.*`: where a new window opens.

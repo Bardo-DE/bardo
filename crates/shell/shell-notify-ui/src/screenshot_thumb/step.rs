@@ -11,7 +11,7 @@
 //!   `Leave(id, why)` (the surface tells the service) and the state is `Leaving` while the exit
 //!   plays, the card's own (`ThumbExit::Card`) or, after a swipe, its row's (`ThumbExit::Row`);
 //!   `ExitSettled` hides (`Hide`, the surface unmaps).
-//! - The keyboard is never taken on appear. The shared ask (`FocusAsked`, from `sill focus-latest`)
+//! - The keyboard is never taken on appear. The shared ask (`FocusAsked`, from `bardo-shell focus-latest`)
 //!   gives the card the keyboard (`TakeKeyboard`) and pauses the hold like the pointer does; the
 //!   keys then act as the card's buttons do (Enter and Space open it in quire's card; Delete and
 //!   Backspace are `TrashPressed`; Escape is `Dismissed`: the hold's own leave, the file kept). Every
@@ -120,7 +120,7 @@ pub enum ThumbIn {
     TrashPressed,
     /// The Escape key: dismissed like the hold running out, the file kept.
     Dismissed,
-    /// `sill focus-latest`: the person wants the keyboard on the card.
+    /// `bardo-shell focus-latest`: the person wants the keyboard on the card.
     FocusAsked,
     /// The compositor took the keyboard away.
     FocusLost,

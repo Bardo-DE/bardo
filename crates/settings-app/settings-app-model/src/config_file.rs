@@ -41,10 +41,10 @@ mod tests {
         ("bardo/appearance.toml", true),
         ("../settings.toml", false),
         ("/etc/settings.toml", false),
-        ("sill/../../x.toml", false),
+        ("shell/../../x.toml", false),
         ("settings.toml", false),
-        ("sill/deep/settings.toml", false),
-        ("sill/settings.json", false),
+        ("shell/deep/settings.toml", false),
+        ("shell/settings.json", false),
         ("", false),
     ];
 

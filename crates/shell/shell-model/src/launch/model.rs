@@ -5,7 +5,7 @@ use shell_launcher::AppId;
 
 use super::LaunchDone;
 
-/// A transient systemd scope's unit name: `app-sill-<id>-<nonce>.scope`.
+/// A transient systemd scope's unit name: `app-bardo-<id>-<nonce>.scope`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ScopeUnit(pub String);

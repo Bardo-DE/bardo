@@ -1,5 +1,5 @@
 //! The thumbnail's picture: the screenshot downscaled to at most [`PREVIEW_MAX`] px on its long
-//! side, a PNG in `$XDG_CACHE_HOME/sill/shots/` named by [`preview_name`], written to a temp
+//! side, a PNG in `$XDG_CACHE_HOME/bardo/shell/shots/` named by [`preview_name`], written to a temp
 //! file and renamed so a document never reads half of it. Blocking: run on the pool.
 
 use std::path::{Path, PathBuf};
@@ -13,7 +13,7 @@ use crate::error::ServiceError;
 /// The preview's long side in px: twice the thumbnail's width, for a 2x output.
 pub const PREVIEW_MAX: u32 = 480;
 
-/// Where previews go: `shots` in sill's folder of `dirs`' cache directory.
+/// Where previews go: `shots` in bardo-shell's folder of `dirs`' cache directory.
 pub(crate) fn cache_in(dirs: &Dirs) -> PathBuf {
     dirs.sill_cache().join("shots")
 }

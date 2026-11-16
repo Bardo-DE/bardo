@@ -25,7 +25,7 @@ use shell_ui_kit::sheet_stage::SheetExit;
 use std::time::Duration;
 use ui_components::base::time::clock::sleep;
 
-/// The power menu's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The power menu's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const POWER_MENU_CSS: &str = include_str!("style.css");
 
 /// The panel on `output`.

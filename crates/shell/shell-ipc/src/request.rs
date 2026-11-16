@@ -22,42 +22,42 @@ pub enum Request {
     /// Re-read the settings without restarting.
     Reload,
     /// Do an action of the shell: lock, a screenshot, a panel, a step of the switcher, a pin
-    /// (`sill lock`, `sill screenshot`, `sill launcher toggle`, ...). One request for every
+    /// (`bardo-shell lock`, `bardo-shell screenshot`, `bardo-shell launcher toggle`, ...). One request for every
     /// action; what each is lives in `shell_model::actions`.
     Do(Ask),
-    /// Open, close or seed the launcher (`sill launcher {open,close}`; `toggle` is an action).
+    /// Open, close or seed the launcher (`bardo-shell launcher {open,close}`; `toggle` is an action).
     Launcher(LauncherRequest),
-    /// The power menu, opened, closed or flipped (`sill power-menu {open,close,toggle}`). An
+    /// The power menu, opened, closed or flipped (`bardo-shell power-menu {open,close,toggle}`). An
     /// action only opens or flips a panel, so a close needs its own word.
     PowerMenu(Reveal),
-    /// The Force Quit Applications panel (`sill force-quit {open,close,toggle}`), on the output
+    /// The Force Quit Applications panel (`bardo-shell force-quit {open,close,toggle}`), on the output
     /// of the active window.
     ForceQuit(Reveal),
-    /// The notification center (`sill notifications {open,close}`).
+    /// The notification center (`bardo-shell notifications {open,close}`).
     NotificationCenter(Reveal),
-    /// The companion's summon (`sill companion {tap,summon,dismiss,stop-all}`).
+    /// The companion's summon (`bardo-shell companion {tap,summon,dismiss,stop-all}`).
     Companion(CompanionRequest),
-    /// Hold-to-talk (`sill voice {hold-start,hold-end,hold-cancel}`).
+    /// Hold-to-talk (`bardo-shell voice {hold-start,hold-end,hold-cancel}`).
     Voice(VoiceRequest),
     /// Read a state: answered with `Response::Status`.
     Status(StatusRequest),
-    /// The brightness and volume keys (`sill display {brightness,volume} ...`), bound to
+    /// The brightness and volume keys (`bardo-shell display {brightness,volume} ...`), bound to
     /// XF86MonBrightness*/XF86Audio* in the compositor's shortcuts.
     Display(DisplayRequest),
-    /// Forget every clipboard entry now (`sill clipboard clear`).
+    /// Forget every clipboard entry now (`bardo-shell clipboard clear`).
     ClearClipboard,
     /// Dismiss every banner on screen (each sender hears `NotificationClosed`, reason 2).
     DismissNotifications,
     /// Give the keyboard to the newest transient card: the screenshot thumbnail or the newest
-    /// banner, whichever appeared last (`sill focus-latest`; bound in the compositor's shortcuts
+    /// banner, whichever appeared last (`bardo-shell focus-latest`; bound in the compositor's shortcuts
     /// like the launcher's). Nothing happens when none is showing.
     FocusLatest,
-    /// Restart keycap, or end its pause (`sill keycap retry|resume`).
+    /// Restart keycap, or end its pause (`bardo-shell keycap retry|resume`).
     Keycap(KeycapAsk),
-    /// Withdraw a standing terminal grant, or let a paused terminal go on (`sill intents
+    /// Withdraw a standing terminal grant, or let a paused terminal go on (`bardo-shell intents
     /// revoke|resume`).
     Intents(IntentsAsk),
-    /// Open an installed app the way a click in the dock does (`sill launch <desktop-id>`):
+    /// Open an installed app the way a click in the dock does (`bardo-shell launch <desktop-id>`):
     /// answered `Response::Launched` once the app's process exists, or `Failed`.
     Launch(AppId),
     /// Development probes (`dev/accept/*.sh`); answered even in a release build, acted on only

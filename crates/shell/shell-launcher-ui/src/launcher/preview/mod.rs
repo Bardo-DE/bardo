@@ -4,10 +4,10 @@
 //! through quire's `ui_components::motion::detail` in [`moment::use_pane_detail`].
 //!
 //! It is quire's `PreviewPane`, set beside the results as the palette's
-//! `aside`: sill maps a [`Preview`] to quire's `PaneContent` (`content.rs`) and a row's actions
+//! `aside`: bardo-shell maps a [`Preview`] to quire's `PaneContent` (`content.rs`) and a row's actions
 //! to `PaneAction`s with their chords. A file's content is the viewer's own pane
 //! (`anyview_peek::Card`) in `PaneContent::Slot`: the viewer's parts sniff and peek at it off the
-//! UI thread (`load.rs`), so a file looks the same here as in the viewer's window, and sill
+//! UI thread (`load.rs`), so a file looks the same here as in the viewer's window, and bardo-shell
 //! names no format. The pane never takes the keyboard: `focused` draws the ring on the action
 //! the panel's Tab reached. The pane is the future Quick Look app's shared part (design/20 §2.4).
 

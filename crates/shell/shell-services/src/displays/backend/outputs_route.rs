@@ -1,5 +1,5 @@
 //! Where the outputs are read from: the compositor's standard output management
-//! (`zwlr_output_manager_v1`), picked from its globals. sill only reads them; the scale of a
+//! (`zwlr_output_manager_v1`), picked from its globals. bardo-shell only reads them; the scale of a
 //! display is the compositor's to set.
 
 use desktop_client::Desktop;

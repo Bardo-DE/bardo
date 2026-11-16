@@ -32,7 +32,7 @@ fn main() {
 fn run() -> Result<(), String> {
     // The wallpaper service's own task needs an entered multi-thread runtime for its whole
     // life, independent of whatever layer-shell-host's `Host` enters for its own event loop (the same
-    // split the real daemon makes: `crates/sill/src/daemon.rs::run` builds its own runtime for
+    // split the real daemon makes: `crates/shell/shell-app/src/daemon.rs::run` builds its own runtime for
     // the daemon's `start` before `Host::connect`). Kept alive by staying in scope for the rest of
     // this function, which does not return until `host.run` does.
     let runtime = tokio::runtime::Builder::new_multi_thread()

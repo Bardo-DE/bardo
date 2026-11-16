@@ -15,7 +15,7 @@
 //! the fade settles; `layer_shell_host::use_lock_phase()` saying `Unlocking` first (the daemon's
 //! backstop) skips the fade. A click on a lock surface moves the prompt there (macOS: the prompt
 //! follows the display you click), as the keyboard's focus does (the daemon). Style nothing under
-//! `.ds-lock*`: the fade is sill's own wrapper's.
+//! `.ds-lock*`: the fade is bardo-shell's own wrapper's.
 //!
 //! Outside a lock document (a test's SSR, a harness) there is no `LockHandle`: the stage draws
 //! the same and the unlock is the daemon's backstop alone.

@@ -277,7 +277,7 @@ impl IntentProvider for SettingsProvider {
     }
 
     /// Never answers: the launcher's search reads intentd's own index (the pages and keys in
-    /// `quire/search/org.bardo.Settings.toml`, see `search_file`), so a query never reaches
+    /// `bardo/actions/search/org.bardo.Settings.toml`, see `search_file`), so a query never reaches
     /// this app. Design: search-index/DESIGN.md, "Launcher search".
     async fn search(&self, _text: &str) -> Vec<Hit> {
         Vec::new()

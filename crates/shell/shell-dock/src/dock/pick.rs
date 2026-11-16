@@ -19,7 +19,7 @@ const DOCK_PAGE: &str = "dock";
 pub enum LoginChange {
     /// Copy the app's desktop entry at `entry` into the autostart folder.
     On { app: AppId, entry: PathBuf },
-    /// Remove the entry sill wrote, if it did.
+    /// Remove the entry bardo-shell wrote, if it did.
     Off { app: AppId },
 }
 

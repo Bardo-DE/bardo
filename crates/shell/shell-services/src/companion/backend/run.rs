@@ -157,7 +157,7 @@ struct Live {
     /// every update of its answer.
     displayed: HashSet<(TaskId, Handle)>,
     old_companion: OldCompanion,
-    /// The session each answer sill asked was opened in: the fallback for a companion whose
+    /// The session each answer bardo-shell asked was opened in: the fallback for a companion whose
     /// answers do not name theirs.
     opened: HashMap<TaskId, SessionId>,
 }
@@ -210,7 +210,7 @@ impl Live {
     }
 
     /// An answer object that names no session is from an older companion: it is shown through
-    /// the session the ask opened, if sill asked it; otherwise it has none.
+    /// the session the ask opened, if bardo-shell asked it; otherwise it has none.
     fn named(&mut self, event: CompanionEvent) -> Option<CompanionEvent> {
         let CompanionEvent::Session {
             task,
@@ -231,7 +231,7 @@ impl Live {
     fn warn_old_companion(&mut self) {
         if matches!(self.old_companion, OldCompanion::Unremarked) {
             eprintln!(
-                "sill: companion: an answer names no Session; using the session the ask opened"
+                "bardo-shell: companion: an answer names no Session; using the session the ask opened"
             );
             self.old_companion = OldCompanion::Remarked;
         }
@@ -263,7 +263,7 @@ impl Live {
                         let _ = events.send(CompanionEvent::Shown { task, handle, text });
                     }
                     Err(why) => {
-                        eprintln!("sill: companion: showing a handle: {why}");
+                        eprintln!("bardo-shell: companion: showing a handle: {why}");
                         let _ = events.send(CompanionEvent::Unshown { task, handle });
                     }
                 }
@@ -281,7 +281,7 @@ impl Live {
             CompanionEffect::Helpers(HelpersCommand::OpenModelPicker) => {
                 let page = LaunchCommand::OpenSettings(SettingsOpen::at(assistant_model()));
                 if let Err(error) = self.launch.send(page) {
-                    eprintln!("sill: companion: opening the model picker: {error}");
+                    eprintln!("bardo-shell: companion: opening the model picker: {error}");
                 }
             }
             CompanionEffect::Helpers(HelpersCommand::OpenTerminal(request)) => {
@@ -335,7 +335,7 @@ impl Live {
             {
                 Ok(reply) => reply,
                 Err(silent) => {
-                    eprintln!("sill: companion: helpers: {silent}");
+                    eprintln!("bardo-shell: companion: helpers: {silent}");
                     Some(HelpersMsg::Unreached)
                 }
             };
@@ -363,7 +363,7 @@ impl Live {
             {
                 Ok(said) => said,
                 Err(silent) => {
-                    eprintln!("sill: companion: {silent}");
+                    eprintln!("bardo-shell: companion: {silent}");
                     ModeMsg::NotApplied(mode)
                 }
             };
@@ -377,7 +377,7 @@ impl Live {
     fn probe_mode(&self, session: SessionId, mode: permission_core::Mode) {
         let events = self.events.clone();
         let Some(connection) = self.connection.clone() else {
-            eprintln!("sill: companion: no bus to switch {session} to {mode:?}");
+            eprintln!("bardo-shell: companion: no bus to switch {session} to {mode:?}");
             return;
         };
         tokio::spawn(async move {
@@ -392,9 +392,9 @@ impl Live {
                     let _ = events.send(CompanionEvent::Mode(changed));
                 }
                 Ok(other) => {
-                    eprintln!("sill: companion: switching {session} to {mode:?}: {other:?}")
+                    eprintln!("bardo-shell: companion: switching {session} to {mode:?}: {other:?}")
                 }
-                Err(silent) => eprintln!("sill: companion: {silent}"),
+                Err(silent) => eprintln!("bardo-shell: companion: {silent}"),
             }
         });
     }
@@ -417,7 +417,7 @@ impl Live {
                 Ok(reply) => {
                     let _ = events.send(CompanionEvent::Terminals(reply));
                 }
-                Err(silent) => eprintln!("sill: companion: terminals: {silent}"),
+                Err(silent) => eprintln!("bardo-shell: companion: terminals: {silent}"),
             }
         });
     }
@@ -434,8 +434,8 @@ impl Live {
         tokio::spawn(async move {
             match within(COMPANION_CALL, what, call(connection)).await {
                 Ok(Ok(())) => {}
-                Ok(Err(why)) => eprintln!("sill: companion: {what}: {why}"),
-                Err(silent) => eprintln!("sill: companion: {silent}"),
+                Ok(Err(why)) => eprintln!("bardo-shell: companion: {what}: {why}"),
+                Err(silent) => eprintln!("bardo-shell: companion: {silent}"),
             }
         });
     }
@@ -576,8 +576,8 @@ impl Live {
                 Ok(Ok(path)) => {
                     let _ = inner.send(Inner::Follow(path));
                 }
-                Ok(Err(why)) => eprintln!("sill: companion: asking: {why}"),
-                Err(silent) => eprintln!("sill: companion: asking: {silent}"),
+                Ok(Err(why)) => eprintln!("bardo-shell: companion: asking: {why}"),
+                Err(silent) => eprintln!("bardo-shell: companion: asking: {silent}"),
             }
         });
     }

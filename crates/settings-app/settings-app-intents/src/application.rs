@@ -1,6 +1,6 @@
 //! `org.freedesktop.Application` at `/org/bardo/Settings`: the Desktop Entry spec's D-Bus
 //! activation, so the launcher starts Settings (as its user unit), raises it, or opens it at an
-//! account. A second `detent` hands over through the same `Activate`.
+//! account. A second `bardo-settings` hands over through the same `Activate`.
 
 use crate::callers::{Refusals, admit, settings_owner};
 use crate::serve::BUS_PEER;
@@ -126,10 +126,10 @@ impl Application {
                     .window
                     .send(Notice::OpenTarget(target))
                     .map_err(|_| gone())?,
-                None => eprintln!("detent: open-target needs page:, key: or account: text"),
+                None => eprintln!("bardo-settings: open-target needs page:, key: or account: text"),
             },
             _ => {
-                eprintln!("detent: no action {action_name:?}, ignored");
+                eprintln!("bardo-settings: no action {action_name:?}, ignored");
                 return Ok(());
             }
         }
@@ -158,7 +158,7 @@ pub(crate) async fn export_application(
         .map_err(action_provider::ServeError::Bus)
 }
 
-/// Why a second `detent` could not hand over.
+/// Why a second `bardo-settings` could not hand over.
 #[derive(Debug, thiserror::Error)]
 pub enum HandOverFault {
     /// The program that owns the name is not Settings, so nothing was sent to it: not the page,
@@ -172,9 +172,9 @@ pub enum HandOverFault {
     Bus(#[from] zbus::Error),
 }
 
-/// Asks the running Settings to show itself: what a second `detent` does instead of opening a
+/// Asks the running Settings to show itself: what a second `bardo-settings` does instead of opening a
 /// second window. `token` is the xdg-activation token this process was started with, if any;
-/// `page` is the page the second `detent` was asked to open, if any. The owner of
+/// `page` is the page the second `bardo-settings` was asked to open, if any. The owner of
 /// `org.bardo.Settings` must hold the Settings role first, judged by `peers`, and is then called
 /// by its own unique name, so a program that takes the name meanwhile hears nothing.
 pub async fn hand_over(
@@ -199,7 +199,7 @@ pub async fn hand_over(
 
 /// [`hand_over`] on the session bus, connecting first and judging with the desktop's caller
 /// table: the whole of it, connecting included, gets the read deadline, so a stuck bus socket
-/// ends a second `detent` instead of hanging it.
+/// ends a second `bardo-settings` instead of hanging it.
 pub async fn hand_over_session(
     token: Option<String>,
     page: Option<PageSlug>,

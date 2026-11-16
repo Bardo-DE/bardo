@@ -1,4 +1,4 @@
-//! The shell's own surfaces and the keyboard. The profile follows the focused toplevel, but sill's
+//! The shell's own surfaces and the keyboard. The profile follows the focused toplevel, but bardo-shell's
 //! surfaces (the launcher, menus, the switcher, the companion, the lock) are layer surfaces and
 //! popups the compositor never lists as toplevels: while one holds the keyboard keycap would keep
 //! the profile of the window underneath, usually `default`, which writes Command as Ctrl, and the

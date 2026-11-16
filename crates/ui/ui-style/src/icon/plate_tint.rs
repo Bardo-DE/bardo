@@ -26,7 +26,7 @@ pub enum PlateTint {
 }
 
 impl PlateTint {
-    /// The plate's re-colouring for `style` and `tint`, the pair sill already hands `retint`:
+    /// The plate's re-colouring for `style` and `tint`, the pair bardo-shell already hands `retint`:
     /// `None` for Colour, which draws the family as designed.
     pub fn of(style: IconStyle, tint: Tint) -> Option<PlateTint> {
         match style {

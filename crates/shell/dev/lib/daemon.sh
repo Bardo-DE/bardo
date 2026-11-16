@@ -25,7 +25,7 @@ in_env() {
 # answers "no reply within": its thread was busy (a surface's first frame in a debug build on a
 # loaded host), which is the host's time, not a verdict. A call that changes something (a toggle,
 # a key, a notification) is made once.
-sill() {
+bardo-shell() {
   case "$1 ${2:-}" in
     "debug stats"|"debug capture"|"debug launcher-rows"|"notifications status"|"idle status"|"lock status"|"ping ")
       sill_patient "$@" ;;
@@ -38,13 +38,13 @@ sill() {
 # then waits for the state it needs); its output goes to stdout.
 sill_sent() {
   local out rc
-  out=$(sill "$@" 2>&1)
+  out=$(bardo-shell "$@" 2>&1)
   rc=$?
   [ -z "$out" ] || printf '%s\n' "$out"
   [ "$rc" = 0 ] || [[ "$out" == *"no reply within"* ]]
 }
 
-# `sill ARGS` made up to 6 times while it ends with "no reply within"; stdout and stderr stay apart.
+# `bardo-shell ARGS` made up to 6 times while it ends with "no reply within"; stdout and stderr stay apart.
 sill_patient() {
   local err out rc tries=0
   err=$(mktemp "${TMPDIR:-/tmp}/sill-patient.XXXXXX") || { in_env "$BARDO_SHELL_BIN" "$@"; return; }
@@ -99,7 +99,7 @@ prebuilt() {
   return "$missing"
 }
 
-# Starts `sill run` in the background on the private buses with the fake DDC, its log in
+# Starts `bardo-shell run` in the background on the private buses with the fake DDC, its log in
 # $OUT_DIR/daemon.log and the arguments "$@" after `run` (`--dev-callers` first when dev_caller named
 # any stand-in); sets DAEMON and waits for `ping`.
 launch_daemon() {
@@ -113,7 +113,7 @@ launch_daemon() {
 
 # Waits up to 10 s for the daemon to answer `ping`.
 wait_ping() {
-  for _ in $(seq 100); do sill ping >/dev/null 2>&1 && return 0; sleep 0.1; done
+  for _ in $(seq 100); do bardo-shell ping >/dev/null 2>&1 && return 0; sleep 0.1; done
   echo "the daemon never answered ping (see $OUT_DIR/daemon.log)" >&2
   return 1
 }
@@ -136,7 +136,7 @@ stop_daemon() {
   return "$result"
 }
 
-# What one `sill debug capture` of the bar costs, in ms (the best of three; measured once, on the
+# What one `bardo-shell debug capture` of the bar costs, in ms (the best of three; measured once, on the
 # first use). Latency figures that are read off a capture loop ("the OSD showed N ms after the
 # change") include the capture that finally saw it, 150 to 300 ms of PNG encoding and IPC on a
 # 2560 px output; `captured_ms N` takes it off, so a budget judges the shell and not the probe.
@@ -147,7 +147,7 @@ capture_cost_ms() {
     bar=$(surface_named sill-bar-)
     for _ in 1 2 3; do
       t0=$(date +%s%N)
-      sill debug capture "$bar" "$OUT_DIR/cost.png" >/dev/null 2>&1
+      bardo-shell debug capture "$bar" "$OUT_DIR/cost.png" >/dev/null 2>&1
       t=$(( ($(date +%s%N) - t0) / 1000000 ))
       [ "$t" -ge "$best" ] || best=$t
     done
@@ -172,9 +172,9 @@ await_frames_settled() {
   return 1
 }
 
-# The first surface of `sill debug stats` named PREFIX... (popups, `NAME/menu`, never match).
+# The first surface of `bardo-shell debug stats` named PREFIX... (popups, `NAME/menu`, never match).
 surface_named() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 for row in json.loads(sys.stdin.read())["v"]:
     s = row["surface"]
@@ -190,21 +190,21 @@ output_name() {
     [ -n "$bar" ] && { echo "${bar#sill-bar-}"; return 0; }
     sleep 0.1
   done
-  echo "no bar in 'sill debug stats'" >&2
+  echo "no bar in 'bardo-shell debug stats'" >&2
   return 1
 }
 
-# A surface's cumulative frame counter, and its `frames callbacks` pair, from `sill debug stats`
+# A surface's cumulative frame counter, and its `frames callbacks` pair, from `bardo-shell debug stats`
 # (which drains the timing samples; the counters stay cumulative).
 frames_of() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 for row in json.loads(sys.stdin.read())["v"]:
     if row["surface"] == sys.argv[1]:
         print(row["frames"])' "$1"
 }
 counters_of() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 for row in json.loads(sys.stdin.read())["v"]:
     if row["surface"] == sys.argv[1]:
@@ -233,7 +233,7 @@ prove_dry_run() {
   local backend="$1" log="$OUT_DIR/dry-run.log"
   DRY_RUN=unproven
   {
-    grep "sill: session: dry run, recording to $RECORD" "$OUT_DIR/daemon.log" || return 1
+    grep "bardo-shell: session: dry run, recording to $RECORD" "$OUT_DIR/daemon.log" || return 1
     grep "$backend.backend=dry-run" "$OUT_DIR/daemon.log" || return 1
     if grep "$backend.backend=live" "$OUT_DIR/daemon.log"; then return 1; fi
   } >"$log" 2>&1

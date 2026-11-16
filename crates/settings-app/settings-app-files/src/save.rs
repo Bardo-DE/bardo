@@ -82,7 +82,7 @@ fn edited(path: &Path, text: &str, edits: &Edits<'_>) -> Result<String, FilesErr
 /// through [`update_atomic`] (a uniquely named temporary file, flushed, renamed, the directory
 /// flushed; the file's mode and a link to it are kept), so a crash cannot leave half a file and
 /// a directory watch sees one rename. Every other key, known or not, keeps the text it had
-/// (detent is not the program that owns the file, so it never removes anything). A file that
+/// (bardo-settings is not the program that owns the file, so it never removes anything). A file that
 /// exists and cannot be read, or is not valid TOML, is left alone.
 pub fn save(
     home: &ConfigHome,

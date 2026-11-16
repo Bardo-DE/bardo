@@ -63,7 +63,7 @@ pub struct Env {
     pub polkit: polkit_agent::PolkitRoute,
     /// Where the session's actions go: logind, or a dry run's record.
     pub session_actions: Arc<dyn SessionActions>,
-    /// What checks the lock screen's password: PAM through `sill auth-check`, or a stand-in.
+    /// What checks the lock screen's password: PAM through `bardo-shell auth-check`, or a stand-in.
     pub authenticator: Arc<dyn Authenticator>,
     /// Who this process runs as, for the lock screen: the system's accounts database, or a
     /// stand-in that never reads it.
@@ -140,7 +140,7 @@ pub enum IdleTimesSource {
 impl Env {
     /// The process's own: its buses, its compositor, its directories, the system clock, the
     /// kernel's i2c buses, polkitd on the system bus, logind's session actions, PAM through
-    /// `sill auth-check`, the system's accounts database and keycap's socket under `/run/keycap`.
+    /// `bardo-shell auth-check`, the system's accounts database and keycap's socket under `/run/keycap`.
     pub fn from_process() -> Env {
         let buses = Buses::from_process();
         Env {

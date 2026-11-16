@@ -231,7 +231,7 @@ impl Search {
         self.deadline = None;
         if self.pending > 0 {
             eprintln!(
-                "sill: search: {} provider(s) did not answer within {PROVIDER_DEADLINE:?}",
+                "bardo-shell: search: {} provider(s) did not answer within {PROVIDER_DEADLINE:?}",
                 self.pending
             );
             self.pending = 0;
@@ -263,7 +263,7 @@ impl Search {
         match catch_unwind(AssertUnwindSafe(|| provider.activate(item, choice))) {
             Ok(activation) => self.outlets.carry(effect(&activation)),
             Err(_) => eprintln!(
-                "sill: the {:?} provider panicked activating a row",
+                "bardo-shell: the {:?} provider panicked activating a row",
                 item.provider
             ),
         }

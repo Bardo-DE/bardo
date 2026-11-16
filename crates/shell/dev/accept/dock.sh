@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Acceptance for the dock, on casement (brought up and ended by start_compositor). Starts `sill run` from this checkout's debug build (`--features debug`) with a
+# Acceptance for the dock, on casement (brought up and ended by start_compositor). Starts `bardo-shell run` from this checkout's debug build (`--features debug`) with a
 # scratch HOME and XDG tree (the pins, the appearance file and the icon cache it writes never touch
 # the real ones), its own XDG_RUNTIME_DIR (the nested socket as an absolute WAYLAND_DISPLAY) and a
 # private dbus-daemon as both its session and its system bus (refused if it would be the real one),
@@ -8,12 +8,12 @@
 # Default steps (the dock's behaviour):
 #   1. The dock reserves base + margin: a maximised probe is output_h - bar_h - 68 (gut 8 + tile
 #      48 + 2 x the 6 px padding).
-#   2. Hover sweep at 60 Hz for 1 s through `sill debug pointer`: frames >= 0.9 x callbacks;
-#      then, after `sill debug leave` and the 200 ms shrink, 5 s idle: 0 frames.
+#   2. Hover sweep at 60 Hz for 1 s through `bardo-shell debug pointer`: frames >= 0.9 x callbacks;
+#      then, after `bardo-shell debug leave` and the 200 ms shrink, 5 s idle: 0 frames.
 #   3. A click on the pinned, not-running foot tile launches it: its running dot
 #      (the dock's view of a mapped toplevel) shows within 3 s.
 #   4. `badge_emitter` for that app shows a count badge within 1 s.
-#   5. A secondary click on that tile (`surface_click --button secondary`: `sill debug click` on KWin,
+#   5. A secondary click on that tile (`surface_click --button secondary`: `bardo-shell debug click` on KWin,
 #      a real right press through casement's inject on casement) opens its context
 #      menu popup.
 #   6. The pill's corner is a squircle of `--sill-dock-pill-radius` (PILL_RADIUS, its shipped 22;
@@ -93,14 +93,14 @@ first_tile_x() {
 # Waits up to 5 s for the dock's surface and sets DOCK to its name.
 await_dock() {
   for _ in $(seq 50); do DOCK=$(surface_named sill-dock-); [ -n "$DOCK" ] && break; sleep 0.1; done
-  [ -n "${DOCK:-}" ] || { echo "no dock surface in 'sill debug stats'" >&2; return 1; }
+  [ -n "${DOCK:-}" ] || { echo "no dock surface in 'bardo-shell debug stats'" >&2; return 1; }
 }
 
 # The dock's height in logical px, from a capture of it (its width is OUT_W logical px), and the
 # surface-local rows derived from it.
 read_geometry() {
   local png="$OUT_DIR/geometry.png"
-  sill debug capture "$DOCK" "$png" >/dev/null 2>&1 || { echo "no capture of $DOCK" >&2; return 1; }
+  bardo-shell debug capture "$DOCK" "$png" >/dev/null 2>&1 || { echo "no capture of $DOCK" >&2; return 1; }
   SURFACE_H=$(python3 - "$png" "$OUT_W" <<'PY'
 import sys
 from PIL import Image
@@ -115,10 +115,10 @@ PY
 }
 
 start_dock_daemon() {
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   backdrop_seed "$CONFIG" || return 1
   launch_daemon || return 1
-  sill dock pin "$TERM_ID" >"$OUT_DIR/pin.log" 2>&1 || return 1
+  bardo-shell dock pin "$TERM_ID" >"$OUT_DIR/pin.log" 2>&1 || return 1
   await_dock || return 1
   sleep 1
   read_geometry || return 1
@@ -144,20 +144,20 @@ start, span, hz = width // 2 - 160, 320, 60
 t0 = time.monotonic()
 for i in range(hz):
     x = start + span * i // (hz - 1)
-    subprocess.run([sill, "debug", "pointer", dock, str(x), y], check=True, capture_output=True)
+    subprocess.run([bardo-shell, "debug", "pointer", dock, str(x), y], check=True, capture_output=True)
     wait = t0 + (i + 1) / hz - time.monotonic()
     if wait > 0:
         time.sleep(wait)
 print(f"sweep: {hz} moves in {time.monotonic() - t0:.3f}s")
 EOF
   sleep 0.05
-  sill debug pointer "$DOCK" $(( OUT_W / 2 )) "$PILL_Y" >/dev/null
+  bardo-shell debug pointer "$DOCK" $(( OUT_W / 2 )) "$PILL_Y" >/dev/null
   sleep 0.3
   shot "$SHOTS/dock-casement-magnified.png" >/dev/null 2>&1 || true
   read -r f1 c1 < <(counters_of "$DOCK")
   frames=$(( f1 - f0 )); callbacks=$(( c1 - c0 ))
   echo "sweep: frames $frames callbacks $callbacks" | tee -a "$log" >&2
-  sill debug leave "$DOCK" >/dev/null
+  bardo-shell debug leave "$DOCK" >/dev/null
   sleep 1
   await_frames_settled "$DOCK" || echo "the dock was still drawing 20 s after the leave" >&2
   read -r f2 _ < <(counters_of "$DOCK")
@@ -180,8 +180,8 @@ step_launch() {
   cp "$OUT_DIR/pixel.png" "$OUT_DIR/launch-before.png"
   echo "click the foot tile at $x,$PILL_Y; dot pixel before: $before" >"$log"
   start=$(date +%s%N)
-  sill debug click "$DOCK" "$x" "$PILL_Y" >>"$log" 2>&1 || return 1
-  sill debug leave "$DOCK" >/dev/null
+  bardo-shell debug click "$DOCK" "$x" "$PILL_Y" >>"$log" 2>&1 || return 1
+  bardo-shell debug leave "$DOCK" >/dev/null
   local took found=no
   for _ in $(seq 60); do
     after=$(pixel "$DOCK" "$x" "$DOT_Y" "$OUT_W")
@@ -236,7 +236,7 @@ step_menu() {
   # synthetic click's serial. The dock is anchored to the bottom of the output, full width.
   surface_click "$DOCK" "$x" "$PILL_Y" --button secondary --origin 0 $(( OUT_H - SURFACE_H )) >"$log" 2>&1 || return 1
   for _ in $(seq 40); do
-    sill debug capture "$DOCK/popup" "$OUT_DIR/menu-popup.png" >>"$log" 2>&1 && { opened=yes; break; }
+    bardo-shell debug capture "$DOCK/popup" "$OUT_DIR/menu-popup.png" >>"$log" 2>&1 && { opened=yes; break; }
     sleep 0.05
   done
   sleep 0.5
@@ -253,9 +253,9 @@ step_radius() {
   # far from the dock closes the menu and takes the pointer off it.
   [ "$COMPOSITOR" = casement ] && bardo-compositorctl debug inject "move 10 10" "sleep 60" "press left" \
     "sleep 40" "release left" "sleep 200" >/dev/null 2>&1
-  sill debug leave "$DOCK" >/dev/null 2>&1
+  bardo-shell debug leave "$DOCK" >/dev/null 2>&1
   sleep 1
-  sill debug capture "$DOCK" "$OUT_DIR/radius.png" >"$log" 2>&1 || return 1
+  bardo-shell debug capture "$DOCK" "$OUT_DIR/radius.png" >"$log" 2>&1 || return 1
   python3 - "$OUT_DIR/radius.png" "$OUT_W" "$PILL_Y" "$PILL_RADIUS" <<'EOF' | tee -a "$log" >&2
 import sys
 from PIL import Image
@@ -280,26 +280,26 @@ EOF
 # Monochrome again, but `appearance.theme = "dark"`: no new raster (the dark scheme changes the
 # plate alone, through quire's own stylesheet, not a re-tinted file), so no wait, only a shot.
 style_monochrome_dark() {
-  mkdir -p "$CONFIG/quire"
+  mkdir -p "$CONFIG/bardo"
   printf '[appearance]\ntheme = "dark"\n\n[icons]\nstyle = "monochrome"\nmonochrome_tint = "space"\n' \
     >"$CONFIG/bardo/appearance.toml"
 }
 
 style() {
-  mkdir -p "$CONFIG/quire"
+  mkdir -p "$CONFIG/bardo"
   printf '[icons]\nstyle = "%s"\nmonochrome_tint = "space"\n' "$1" >"$CONFIG/bardo/appearance.toml"
 }
 
 # How many re-tinted rasters of style $1 the scratch cache holds.
 cached() {
-  find "$CACHE/sill/icons" -name "*-$1-*.png" 2>/dev/null | wc -l
+  find "$CACHE/bardo/shell/icons" -name "*-$1-*.png" 2>/dev/null | wc -l
 }
 
 step_icons_start() {
   style colour
   launch_daemon || return 1
   local id
-  for id in "${PINS[@]}"; do sill dock pin "$id" >>"$OUT_DIR/pin.log" 2>&1 || return 1; done
+  for id in "${PINS[@]}"; do bardo-shell dock pin "$id" >>"$OUT_DIR/pin.log" 2>&1 || return 1; done
   await_dock || return 1
   sleep 2
 }
@@ -309,7 +309,7 @@ step_ping_compositor() {
 }
 
 shoot_dock() {
-  sill debug capture "$DOCK" "$SHOTS/dock-icons-$1.png" >"$OUT_DIR/capture-$1.log" 2>&1
+  bardo-shell debug capture "$DOCK" "$SHOTS/dock-icons-$1.png" >"$OUT_DIR/capture-$1.log" 2>&1
   grep -q '"kind":"done"' "$OUT_DIR/capture-$1.log"
 }
 
@@ -320,21 +320,21 @@ step_colour() {
 # The launcher, queried for "foot" so foot shows as a row: its own
 # hicolor icon on the row's plate, the fallback every entry takes (dev/out/launcher-icons.png).
 step_launcher() {
-  sill launcher open --query foot >>"$OUT_DIR/launcher.log" 2>&1
+  bardo-shell launcher open --query foot >>"$OUT_DIR/launcher.log" 2>&1
   local name="" rc=1
   for _ in $(seq 50); do name=$(surface_named sill-launcher-); [ -n "$name" ] && break; sleep 0.1; done
   if [ -n "$name" ]; then
     # The surface exists in `debug stats` before its first frame is presented; retry the
     # capture rather than racing it with one fixed sleep.
     for _ in $(seq 30); do
-      sill debug capture "$name" "$SHOTS/launcher-icons.png" >"$OUT_DIR/capture-launcher.log" 2>&1
+      bardo-shell debug capture "$name" "$SHOTS/launcher-icons.png" >"$OUT_DIR/capture-launcher.log" 2>&1
       grep -q '"kind":"done"' "$OUT_DIR/capture-launcher.log" && { rc=0; break; }
       sleep 0.2
     done
   else
-    echo "no launcher surface in 'sill debug stats'" >&2
+    echo "no launcher surface in 'bardo-shell debug stats'" >&2
   fi
-  sill launcher close >>"$OUT_DIR/launcher.log" 2>&1
+  bardo-shell launcher close >>"$OUT_DIR/launcher.log" 2>&1
   return "$rc"
 }
 
@@ -404,7 +404,7 @@ if [ "$MODE" = icons ]; then
     run_steps step_colour step_launcher step_muted step_monochrome step_icons_idle step_monochrome_dark
     status=$STATUS
   fi
-  ls -l "$CACHE/sill/icons" >"$OUT_DIR/cache-files.log" 2>&1
+  ls -l "$CACHE/bardo/shell/icons" >"$OUT_DIR/cache-files.log" 2>&1
   cleanup || status=1
   echo "output dir: $OUT_DIR; shots: $SHOTS/dock-icons-{colour,muted,monochrome,monochrome-dark}.png, $SHOTS/launcher-icons.png" >&2
 else

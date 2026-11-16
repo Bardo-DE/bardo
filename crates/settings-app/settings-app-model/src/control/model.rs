@@ -13,7 +13,7 @@ pub enum FileOnly {
     Shortcut,
     /// A list of values: quire has no list editor.
     List,
-    /// An action the owning program runs through its live settings module (a button): detent
+    /// An action the owning program runs through its live settings module (a button): bardo-settings
     /// has no live client yet, so the row is read-only until the Accounts pane's lane wires one.
     Action,
 }

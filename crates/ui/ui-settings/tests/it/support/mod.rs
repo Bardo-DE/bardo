@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use ui_settings::{AppName, ConfigRoot, Store};
 
 /// The program name every test's store uses.
-pub const APP: AppName = AppName("probe");
+pub const APP: AppName = AppName::desktop("probe");
 
 /// One test's own directory under the system temp dir, removed on drop. (No `tempfile`: it is not
 /// in the pinned dependency block.)
@@ -35,7 +35,7 @@ impl Scratch {
 
     /// The program directory itself, where the store's files land.
     pub fn app_dir(&self) -> PathBuf {
-        self.0.join(APP.0)
+        APP.under(&self.0)
     }
 }
 

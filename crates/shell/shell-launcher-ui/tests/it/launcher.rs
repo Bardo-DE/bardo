@@ -50,7 +50,12 @@ fn a_query_groups_under_the_top_hit() {
     );
     assert_eq!(
         titles(&open.harness),
-        vec!["Firefox", "Files", "Wi-Fi", "Firefox — sill launcher"]
+        vec![
+            "Firefox",
+            "Files",
+            "Wi-Fi",
+            "Firefox — bardo-shell launcher"
+        ]
     );
     assert!(
         html.contains("Web Browser"),
@@ -115,7 +120,7 @@ fn the_empty_query_lists_actions_then_recent() {
             "Restart",
             "Firefox",
             "Files",
-            "Firefox — sill launcher",
+            "Firefox — bardo-shell launcher",
             "Terminal",
             "Wi-Fi"
         ]

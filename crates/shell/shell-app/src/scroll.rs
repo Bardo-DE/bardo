@@ -40,7 +40,7 @@ const MOMENTUM_BOOST_THRESHOLD_PX_S: host::ScrollScalar = host::ScrollScalar(350
 /// The grace, in ms, before a second scroll counts as a double scroll.
 const DOUBLE_SCROLL_GRACE_MS: host::ScrollMs = host::ScrollMs(150);
 /// The track's width at rest, in px: a scroll bar's geometry is painted by layer-shell-host on any
-/// surface and no sill document holds it, so it is a constant here (macOS's overlay scroller).
+/// surface and no bardo-shell document holds it, so it is a constant here (macOS's overlay scroller).
 const SCROLLBAR_TRACK_THICKNESS_PX: host::ScrollPx = host::ScrollPx(12);
 /// The track's width while the pointer is near, in px.
 const SCROLLBAR_TRACK_THICKNESS_HOVER_PX: host::ScrollPx = host::ScrollPx(16);

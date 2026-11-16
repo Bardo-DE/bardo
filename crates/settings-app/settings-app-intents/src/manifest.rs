@@ -1,5 +1,5 @@
 //! The manifest this app ships, read from the file the installer puts under
-//! `$XDG_DATA_DIRS/quire/intents/`: one declaration, so the file and the provider cannot drift.
+//! `$XDG_DATA_DIRS/bardo/intents/`: one declaration, so the file and the provider cannot drift.
 
 use action_manifest::{Manifest, ManifestError, ValidManifest, validate};
 

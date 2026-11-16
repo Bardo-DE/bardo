@@ -2,7 +2,7 @@
 //! an opening's [`MenuSession`], feed [`advance`] the alert's answers and dismissals, and hand a
 //! chosen action to the session service once quire's `Sheet` has played its exit (its
 //! `on_hidden`). Once hidden, nothing runs and nothing asks for a frame. A daemon whose session
-//! actions are a dry run (`sill run --session-dry-run`) says so in the `power_menu.backend=` line,
+//! actions are a dry run (`bardo-shell run --session-dry-run`) says so in the `power_menu.backend=` line,
 //! which the acceptance script proves before it presses Enter.
 
 use dioxus::prelude::*;
@@ -184,7 +184,7 @@ impl MenuCtx {
         if let Then::Run(action) = then
             && let Err(error) = self.control.send(SessionCommand::Run(action))
         {
-            eprintln!("sill: power menu: {}: {error}", action_label(action));
+            eprintln!("bardo-shell: power menu: {}: {error}", action_label(action));
         }
     }
 }

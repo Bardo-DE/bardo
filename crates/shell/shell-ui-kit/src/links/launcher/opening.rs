@@ -10,7 +10,7 @@ use crate::links::Opening;
 /// What the launcher is opened with.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LauncherAsk {
-    /// The query the field starts with (`sill launcher open --query`).
+    /// The query the field starts with (`bardo-shell launcher open --query`).
     pub query: String,
     /// What the panel is for: finding things, or talking to the companion. A change of it in
     /// place (the same serial) keeps the rows, the selection and the query.

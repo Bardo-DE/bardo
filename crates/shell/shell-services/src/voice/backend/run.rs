@@ -167,7 +167,7 @@ impl Live {
                 self.feed(VoiceEvent::Reached(true));
             }
             Err(error) => {
-                eprintln!("sill: voice: cannot watch for the end of an utterance: {error}");
+                eprintln!("bardo-shell: voice: cannot watch for the end of an utterance: {error}");
                 self.feed(VoiceEvent::Reached(false));
             }
         }
@@ -343,7 +343,7 @@ async fn ask_begin(
 ) -> Result<(OwnedObjectPath, UnixStream), VoiceEvent> {
     // The ask goes to whoever owns the name; it is said only to voiced.
     if let Err(refused) = signals::voiced().owner(peers).await {
-        eprintln!("sill: voice: the owner of the voice name is not voiced: {refused}");
+        eprintln!("bardo-shell: voice: the owner of the voice name is not voiced: {refused}");
         return Err(VoiceEvent::Unreachable);
     }
     let begin = VoiceBegin {

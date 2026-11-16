@@ -440,7 +440,7 @@ opacity(t) = 1 for t < 0.5 s after the last change; 1 - (t - 0.5)/0.24 until 0
 
 ## 11.6 Configuration
 
-Settings app keys (host config `~/.config/quire/scroll.json`, read by every layer-shell-host
+Settings app keys (host config `~/.config/bardo/scroll.json`, read by every layer-shell-host
 process; palmrest keys in 12 §12.6):
 
 | Key | Type | Default | Range | Status |

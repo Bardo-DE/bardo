@@ -130,7 +130,7 @@ impl Debounced {
         for (folder, mode) in places.iter().filter_map(Place::folder) {
             match watcher.watch(&folder, mode) {
                 Ok(()) => watched += 1,
-                Err(error) => eprintln!("sill: watching {}: {error}", folder.display()),
+                Err(error) => eprintln!("bardo-shell: watching {}: {error}", folder.display()),
             }
         }
         if watched == 0 {
@@ -260,24 +260,25 @@ mod tests {
         let tree = Place::Tree("/d".into());
         assert!(tree.covers(Path::new("/d/a/b.ics")));
         assert!(!tree.covers(Path::new("/e/b.ics")));
-        let later = Place::Appearing("/d/sill/wallpaper-source".into());
-        assert!(later.covers(Path::new("/d/sill/wallpaper-source")));
-        assert!(!later.covers(Path::new("/d/sill")));
+        let later = Place::Appearing("/d/bardo/shell/wallpaper-source".into());
+        assert!(later.covers(Path::new("/d/bardo/shell/wallpaper-source")));
+        assert!(!later.covers(Path::new("/d/bardo/shell")));
     }
 
     #[test]
     fn an_appearing_file_is_watched_from_the_nearest_folder_that_exists() {
         let dir = TempDir::new("debounced-appearing");
-        let target = dir.path().join("sill/wallpaper-source");
+        let target = dir.path().join("bardo/shell/wallpaper-source");
         let above = |place: &Place| place.folder().map(|(folder, _)| folder);
         assert_eq!(
             above(&Place::Appearing(target.clone())),
             Some(dir.path().to_path_buf())
         );
-        std::fs::create_dir_all(dir.path().join("sill")).unwrap_or_else(|e| panic!("{e}"));
+        std::fs::create_dir_all(dir.path().join("bardo").join("shell"))
+            .unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(
             above(&Place::Appearing(target)),
-            Some(dir.path().join("sill"))
+            Some(dir.path().join("bardo").join("shell"))
         );
     }
 }

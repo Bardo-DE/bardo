@@ -36,7 +36,7 @@ use shell_ui_kit::hooks::{use_link, use_service, use_service_part, use_services}
 use shell_ui_kit::links::ActionLink;
 use shell_ui_kit::links::{LauncherLink, LauncherOpening, OpenSerial, Reveal};
 
-/// The stderr line for one opening: from the request's arrival (`sill launcher toggle|open`)
+/// The stderr line for one opening: from the request's arrival (`bardo-shell launcher toggle|open`)
 /// to the first frame the compositor showed of the panel. The daemon's
 /// `launcher.open_latency_ms` times the IPC dispatch alone.
 pub fn first_frame_line(elapsed: std::time::Duration) -> String {
@@ -151,7 +151,7 @@ fn register_own_actions(keys: Keys) {
         return;
     };
     if let Err(conflict) = keys.register(&app, &shell_launcher::registration(&app)) {
-        eprintln!("sill: launcher keys: {conflict}");
+        eprintln!("bardo-shell: launcher keys: {conflict}");
     }
 }
 
@@ -484,7 +484,7 @@ impl PanelCtx {
                 let companion = self.services.companion.state.borrow();
                 let toplevels = self.services.windows.state.borrow().toplevels.clone();
                 let apps = self.services.apps.state.borrow();
-                // sill has no Space store yet, so no workspace has a Space of its own and every
+                // bardo-shell has no Space store yet, so no workspace has a Space of its own and every
                 // ask is made on the desktop (FINDINGS: the Space store).
                 let space = provenance::SpaceId::desktop();
                 LauncherEffect::Ask(ask_input(
@@ -531,7 +531,7 @@ impl PanelCtx {
         spawn(async move {
             let after = effect.after();
             if let Err(error) = run_effect(effect, &from, &services).await {
-                eprintln!("sill: launcher: {error}");
+                eprintln!("bardo-shell: launcher: {error}");
             }
             if asked {
                 // The prompt is sent: the field empties and the selection follows the answer.

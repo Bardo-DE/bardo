@@ -10,7 +10,7 @@ use shell_ui_kit::links::Corner;
 use shell_ui_kit::root::use_root_style;
 
 /// This surface's stylesheet: the one rule the transparent element needs (a bare `div` has no
-/// height without one), lint-clean under `Profile::Strict` (`crates/sill/tests/lint.rs`).
+/// height without one), lint-clean under `Profile::Strict` (`crates/shell/shell-app/tests/lint.rs`).
 pub const HOT_CORNERS_CSS: &str = include_str!("style.css");
 
 /// `corner` of `output`.

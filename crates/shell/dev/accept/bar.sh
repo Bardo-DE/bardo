@@ -8,18 +8,18 @@
 # start_compositor), then the bar demo's steps on a headless KWin:
 #   Daemon (casement):
 #     1. ping: the daemon answers.
-#     2. single instance: a second `sill run` exits 0 fast without touching Wayland.
-#     3. reload: `sill reload` answers Done.
+#     2. single instance: a second `bardo-shell run` exits 0 fast without touching Wayland.
+#     3. reload: `bardo-shell reload` answers Done.
 #     4. IPC latency: a ping answers well inside the 2 s reply timeout.
 #     5. exclusive zone: a maximised probe window is output_h - bar_h (less the dock's 68 when
 #        the daemon runs one).
 #     6. idle: 5 s with the pointer still, the bar's commit counter does not move; shoots
 #        dev/out/bar-casement.png over the test wallpaper.
 #     7. menus: a press on the control center's item opens its menu popup, an outside press
-#        dismisses it (`sill debug click`); shoots dev/out/bar-casement-menu.png.
+#        dismisses it (`bardo-shell debug click`); shoots dev/out/bar-casement-menu.png.
 #     8. clock: a click toggles the notification center and opens no bar menu, a second click
 #        closes it.
-#     9. quit: `sill quit` ends the daemon and a `ping` after it finds nobody home. Runs last.
+#     9. quit: `bardo-shell quit` ends the daemon and a `ping` after it finds nobody home. Runs last.
 #   Bar demo (a headless KWin, `examples/bar_demo.rs`: the real `Bar` on fake services, with
 #   layer-shell-host's `probe_toplevel`; works while the real session is locked):
 #     1. exclusive zone: a maximised probe window is the output height minus the bar height;
@@ -36,15 +36,15 @@
 #   The demo's logs and result JSON: target/accept-bar/. It passes only when 1-4 pass.
 #
 # --ui: only the bar demo's steps, on the headless KWin (no casement needed).
-# --ui-nested: the bar demo's steps 3-4 on the running casement (`sill run` may already
+# --ui-nested: the bar demo's steps 3-4 on the running casement (`bardo-shell run` may already
 #   reserve a bar there, so no exclusive-zone or idle step); screenshot dev/out/bar-casement-menu.png.
 #
 # --real-input [STEP...]: the bar's menus and the keyboard of the control center and the
 # notification center under REAL input, on layer-shell-host's private headless KWin (scripts/dev/
 # kwin-virtual.sh) driven by layer-shell-host's scripts/dev/fake-input.sh. Every menu and panel here is
-# opened by a real pointer click on its bar item, never by `sill control-center toggle` or
-# `sill notifications open`; every key is a real Wayland key event. `sill debug capture` and
-# `sill debug notify` only look and seed. As on the user's session, an app window has the
+# opened by a real pointer click on its bar item, never by `bardo-shell control-center toggle` or
+# `bardo-shell notifications open`; every key is a real Wayland key event. `bardo-shell debug capture` and
+# `bardo-shell debug notify` only look and seed. As on the user's session, an app window has the
 # keyboard first: dev/key-sink.py, a plain GTK 4 window clicked into focus, which logs every key
 # it is sent. A shell panel opened from the bar must take the keyboard from it; a key the sink
 # logs went to the app instead. ONE fake-input client serves the whole run.
@@ -56,7 +56,7 @@
 #   3. A real click on the control center's item opens it with the keyboard: real Tab moves the
 #      focus ring (each Tab changes the panel, a Shift+Tab goes back), real Space toggles the
 #      focused tile (Focus, first in `control_center.modules`: `notifications.dnd` turns on, and off
-#      again on a second Space; the tile changes on its own, no `sill reload` needed), real Escape
+#      again on a second Space; the tile changes on its own, no `bardo-shell reload` needed), real Escape
 #      closes the panel. The sink gets none of these keys.
 #   4. Two notifications seeded; a real click on the clock opens the notification center with
 #      the keyboard: real Down moves the focus ring onto a row, real Escape closes the center.
@@ -67,7 +67,7 @@
 #      the keyboard: real Down moves its ring, real Escape closes it; the sink gets no key.
 #   Keyboard back. After a bar menu closes, does the app have the keyboard back (a real "j"
 #      reaches the sink)? Recorded, not asserted: layer-shell-host's side. Only on a full run.
-# Captures: target/accept-bar/*.png. Then the input client, the sink, the daemon (`sill quit`) and
+# Captures: target/accept-bar/*.png. Then the input client, the sink, the daemon (`bardo-shell quit`) and
 # the headless KWin are stopped. Steps 0-6 must pass; the keyboard-back line never changes the
 # exit status.
 #
@@ -119,10 +119,10 @@ for left, right in runs:
 EOF
 }
 
-# Every bar surface's frame and commit counters from `sill debug stats`, as `name frames commits`
+# Every bar surface's frame and commit counters from `bardo-shell debug stats`, as `name frames commits`
 # lines (popups, `<bar>/popup`, are left out).
 bar_counters() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 reply = json.loads(sys.stdin.read())
 for row in reply["v"]:
@@ -139,31 +139,31 @@ start_bar_daemon() {
 
 # 1. The daemon answers.
 step_ping() {
-  sill ping >"$OUT_DIR/ping.log" 2>&1
+  bardo-shell ping >"$OUT_DIR/ping.log" 2>&1
 }
 
-# 2. A second `sill run` finds the lock held and exits 0 without touching Wayland (latchkey
+# 2. A second `bardo-shell run` finds the lock held and exits 0 without touching Wayland (latchkey
 #    `AlreadyRunning`), and does so fast: `daemon::run` checks the lock before it does anything
 #    slow, so a live daemon never lets a rival get far enough to matter.
 step_single_instance() {
   local start elapsed
   start=$(date +%s%N)
-  if ! sill run "${FAKE_DDC_FLAGS[@]}" >"$OUT_DIR/single-instance.log" 2>&1; then
-    echo "a second 'sill run' did not exit 0 (see $OUT_DIR/single-instance.log)" >&2
+  if ! bardo-shell run "${FAKE_DDC_FLAGS[@]}" >"$OUT_DIR/single-instance.log" 2>&1; then
+    echo "a second 'bardo-shell run' did not exit 0 (see $OUT_DIR/single-instance.log)" >&2
     return 1
   fi
   elapsed=$(( ($(date +%s%N) - start) / 1000000 ))
-  echo "second 'sill run' exited 0 in ${elapsed}ms" >>"$OUT_DIR/single-instance.log"
+  echo "second 'bardo-shell run' exited 0 in ${elapsed}ms" >>"$OUT_DIR/single-instance.log"
   if [ "$elapsed" -gt 3000 ]; then
     echo "took ${elapsed}ms; expected well under the 3 s client start budget" >&2
     return 1
   fi
 }
 
-# 3. `sill reload` re-reads settings.toml and answers Done (no bar to confirm the effect on:
+# 3. `bardo-shell reload` re-reads settings.toml and answers Done (no bar to confirm the effect on:
 #    that is dock-ui's/bar-ui's job through a visible change).
 step_reload() {
-  sill reload >"$OUT_DIR/reload.log" 2>&1 || return 1
+  bardo-shell reload >"$OUT_DIR/reload.log" 2>&1 || return 1
   grep -q '"kind":"done"' "$OUT_DIR/reload.log"
 }
 
@@ -173,7 +173,7 @@ step_reload() {
 step_ipc_latency() {
   local start elapsed
   start=$(date +%s%N)
-  sill ping >"$OUT_DIR/ipc-latency.log" 2>&1 || return 1
+  bardo-shell ping >"$OUT_DIR/ipc-latency.log" 2>&1 || return 1
   elapsed=$(( ($(date +%s%N) - start) / 1000000 ))
   echo "ping answered in ${elapsed}ms" >>"$OUT_DIR/ipc-latency.log"
   if [ "$elapsed" -gt 1000 ]; then
@@ -192,7 +192,7 @@ step_exclusive_zone() {
   height=$(maximised_height) || return $?
   # The dock reserves its base + margin too when the daemon runs one on this output: gut 8
   # + tile 48 + 2 x the 6 px padding.
-  if sill debug stats 2>/dev/null | grep -q '"sill-dock-'; then dock_reserve=68; fi
+  if bardo-shell debug stats 2>/dev/null | grep -q '"sill-dock-'; then dock_reserve=68; fi
   echo "output ${out_h}, maximised window ${height}, bar ${BAR_H}, dock ${dock_reserve}" | tee -a "$OUT_DIR/exclusive-zone.log" >&2
   [ "$height" = "$(( out_h - BAR_H - dock_reserve ))" ]
 }
@@ -206,7 +206,7 @@ step_idle() {
   # The clock repaints on the minute; keep the 5 s window clear of a minute boundary.
   while [ "$(date +%S | sed 's/^0//')" -gt 50 ]; do sleep 1; done
   before=$(bar_counters) || return 1
-  [ -n "$before" ] || { echo "no bar surface in 'sill debug stats'" >&2; return 1; }
+  [ -n "$before" ] || { echo "no bar surface in 'bardo-shell debug stats'" >&2; return 1; }
   sleep 5
   after=$(bar_counters) || return 1
   printf 'before:\n%s\nafter:\n%s\n' "$before" "$after" | tee "$OUT_DIR/idle.log" >&2
@@ -216,27 +216,27 @@ step_idle() {
 
 # The status items' centres, right to left, from a capture of bar $1 (the clock's is first).
 bar_status_items() {
-  sill debug capture "$1" "$OUT_DIR/bar.png" >/dev/null 2>&1 || return 1
+  bardo-shell debug capture "$1" "$OUT_DIR/bar.png" >/dev/null 2>&1 || return 1
   inked_items "$OUT_DIR/bar.png" | awk '{print $1}'
 }
 
 # 7. Menus: a press on a title opens its menu; an outside press dismisses it (design/13 §13.8 tests
-#    1 and 3), on the daemon's own bar through `sill debug click`. The title is the control center's
+#    1 and 3), on the daemon's own bar through `bardo-shell debug click`. The title is the control center's
 #    item, the status item left of the clock (the clock opens no menu: it toggles the notification
 #    center, step 8); the bar's empty middle stands in for an outside press (a compositor-level
-#    outside press cannot be synthesized). Whether the popup is up is whether `sill debug capture
+#    outside press cannot be synthesized). Whether the popup is up is whether `bardo-shell debug capture
 #    <bar>/popup` succeeds: `debug stats` lists bars only. Shoots the nested screen with the menu
 #    open to dev/out/bar-casement-menu.png.
 step_menus() {
   local log="$OUT_DIR/menus.log" bar width y popup opened=no closed=no items
   : >"$log"
   bar=$(bar_counters | awk 'NR==1 {print $1}')
-  [ -n "$bar" ] || { echo "no bar surface in 'sill debug stats'" >&2; return 1; }
+  [ -n "$bar" ] || { echo "no bar surface in 'bardo-shell debug stats'" >&2; return 1; }
   width=$(output_size | awk '{print $1}')
   [ -n "$width" ] || { echo "no output width from wayland-info" >&2; return 1; }
   y=$(( BAR_H / 2 ))
   popup="$bar/popup"
-  popup_up() { sill debug capture "$popup" "$OUT_DIR/popup.png" >>"$log" 2>&1; }
+  popup_up() { bardo-shell debug capture "$popup" "$OUT_DIR/popup.png" >>"$log" 2>&1; }
   if popup_up; then
     echo "a popup was already open before the click" | tee -a "$log" >&2
     return 1
@@ -263,15 +263,15 @@ step_menus() {
 
 # 8. The clock: a click toggles the notification center on its output
 #    and opens no bar menu; a second click closes the center. Whether the center is up is
-#    whether `sill debug capture sill-notification-center-<out>` succeeds.
+#    whether `bardo-shell debug capture sill-notification-center-<out>` succeeds.
 step_clock_center() {
   local log="$OUT_DIR/clock.log" bar center y items opened=no closed=no menu=no
   : >"$log"
   bar=$(bar_counters | awk 'NR==1 {print $1}')
-  [ -n "$bar" ] || { echo "no bar surface in 'sill debug stats'" >&2; return 1; }
+  [ -n "$bar" ] || { echo "no bar surface in 'bardo-shell debug stats'" >&2; return 1; }
   center="sill-notification-center-${bar#sill-bar-}"
   y=$(( BAR_H / 2 ))
-  center_up() { sill debug capture "$center" "$OUT_DIR/center.png" >>"$log" 2>&1; }
+  center_up() { bardo-shell debug capture "$center" "$OUT_DIR/center.png" >>"$log" 2>&1; }
   if center_up; then echo "the center was open before the click" | tee -a "$log" >&2; return 1; fi
   mapfile -t items < <(bar_status_items "$bar")
   [ "${#items[@]}" -ge 1 ] || { echo "no clock found on the bar" | tee -a "$log" >&2; return 1; }
@@ -281,7 +281,7 @@ step_clock_center() {
     center_up && { opened=yes; break; }
     sleep 0.05
   done
-  sill debug capture "$bar/popup" "$OUT_DIR/popup.png" >>"$log" 2>&1 && menu=yes
+  bardo-shell debug capture "$bar/popup" "$OUT_DIR/popup.png" >>"$log" 2>&1 && menu=yes
   sleep 0.5
   surface_click "$bar" "${items[0]}" "$y" >>"$log" 2>&1 || return 1
   for _ in $(seq 40); do
@@ -296,11 +296,11 @@ step_clock_center() {
 # 9. Quit closes every surface and exits; a `ping` after it finds nobody home. Runs last: it
 #    stops the daemon every earlier step relied on.
 step_quit() {
-  sill quit >"$OUT_DIR/quit.log" 2>&1 || return 1
+  bardo-shell quit >"$OUT_DIR/quit.log" 2>&1 || return 1
   grep -q '"kind":"done"' "$OUT_DIR/quit.log" || return 1
   sleep 0.2
-  if sill ping >"$OUT_DIR/quit-ping.log" 2>&1; then
-    echo "'sill ping' still succeeded after quit (see $OUT_DIR/quit-ping.log)" >&2
+  if bardo-shell ping >"$OUT_DIR/quit-ping.log" 2>&1; then
+    echo "'bardo-shell ping' still succeeded after quit (see $OUT_DIR/quit-ping.log)" >&2
     return 1
   fi
 }
@@ -604,13 +604,13 @@ sink_frame() {
 import json, sys
 for line in sys.stdin:
     w = json.loads(line)
-    if w.get("caption") == "sill key sink":
+    if w.get("caption") == "bardo-shell key sink":
         print(*w["frame"]); break'
 }
 
 # Starts the daemon with the settings the steps need and finds the bar, its popup and the center.
 start_real_daemon() {
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   cat >"$CONFIG/shell/settings.toml" <<'EOF'
 [control_center]
 modules = ["focus", "appearance", "wifi", "bluetooth", "sound"]
@@ -629,7 +629,7 @@ EOF
 
 # Captures SURFACE $1 into $OUT_DIR/$2.png; fails while it is not mapped.
 shoot() {
-  sill debug capture "$1" "$OUT_DIR/$2.png" >>"$OUT_DIR/capture.log" 2>&1 && return 0
+  bardo-shell debug capture "$1" "$OUT_DIR/$2.png" >>"$OUT_DIR/capture.log" 2>&1 && return 0
   echo "no capture of $1 for $2 (not mapped)" >&2
   return 1
 }
@@ -815,7 +815,7 @@ step_control_center_keys() {
   echo "control center opened by a real click on its item ($CC_AT): real Tab changed [$b1]," \
     "a second Tab [$b2], Shift+Tab back to the first Tab's look: [$back]" >&2
   # Space on the focused Focus tile stores `notifications.dnd`. The daemon's file watch republishes
-  # the settings feed the tile reads on its own: no `sill reload` here; the key itself is all real,
+  # the settings feed the tile reads on its own: no `bardo-shell reload` here; the key itself is all real,
   # and `settled` waits out the watch's debounce plus the redraw.
   press_keys space || return 1
   local dnd_on dnd_off
@@ -823,7 +823,7 @@ step_control_center_keys() {
   settled "$POPUP" cc-space || return 1
   space=$(diff_box cc-back cc-space)
   echo "real Space on the focused tile (Focus): notifications.dnd $dnd_on; the tile changed" \
-    "[$space] with no 'sill reload'" >&2
+    "[$space] with no 'bardo-shell reload'" >&2
   press_keys space || return 1
   dnd_off=$(await_dnd false)
   echo "real Space again: notifications.dnd $dnd_off" >&2
@@ -839,8 +839,8 @@ step_control_center_keys() {
 SEEDED=no
 seed_notes() {
   [ "$SEEDED" = no ] || return 0
-  sill debug notify "Ada" --app chat --body "Hi" >>"$OUT_DIR/notify.log" 2>&1 || return 1
-  sill debug notify "Grace" --app mail --body "The report" >>"$OUT_DIR/notify.log" 2>&1 || return 1
+  bardo-shell debug notify "Ada" --app chat --body "Hi" >>"$OUT_DIR/notify.log" 2>&1 || return 1
+  bardo-shell debug notify "Grace" --app mail --body "The report" >>"$OUT_DIR/notify.log" 2>&1 || return 1
   sleep 8
   SEEDED=yes
 }

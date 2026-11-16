@@ -13,7 +13,7 @@ use super::randr::Head;
 use super::scale::DisplayScale;
 use crate::ids::OutputName;
 
-/// One output and everything sill derives from it.
+/// One output and everything bardo-shell derives from it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DisplayOutput {
     pub name: OutputName,

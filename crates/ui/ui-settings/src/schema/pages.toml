@@ -76,7 +76,7 @@ title = "Accounts"
 symbol = "key"
 order = 120
 
-# Step sill opens to sign in to the person's accounts (`detent --page accounts-setup`): reachable by id,
+# Step bardo-shell opens to sign in to the person's accounts (`bardo-settings --page accounts-setup`): reachable by id,
 # never a sidebar row.
 [[page]]
 id = "accounts-setup"
@@ -123,7 +123,7 @@ symbol = "sparkles"
 order = 55
 aliases = ["assistant_model", "Assistant Model"]
 
-# First-run step of the model picker (detent) and the step sill opens after first login: reachable
+# First-run step of the model picker (bardo-settings) and the step bardo-shell opens after first login: reachable
 # by id, never a sidebar row.
 [[page]]
 id = "assistant-model-setup"

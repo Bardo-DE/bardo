@@ -15,8 +15,8 @@ use crate::control::Control;
 use crate::env::{Children, ProcessGroup, Start};
 use crate::launch::{Manager, user_manager};
 
-/// The scopes sill starts every app in.
-const APP_SCOPES: &str = "app-sill-*.scope";
+/// The scopes bardo-shell starts every app in.
+const APP_SCOPES: &str = "app-bardo-*.scope";
 
 /// How long the scopes get to take the signal before the session ends.
 const SCOPE_GRACE: Duration = Duration::from_secs(1);

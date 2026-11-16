@@ -1,4 +1,4 @@
-//! The center's words, pure: its title, the empty state, and the footer that says when sill is
+//! The center's words, pure: its title, the empty state, and the footer that says when bardo-shell is
 //! not the one receiving notifications. A group's name is the card's (`use_app_mark`).
 
 use shell_model::notifications::{NameHolder, ServerMode, ServerStatus};
@@ -9,7 +9,7 @@ pub const TITLE: &str = "Notifications";
 /// What an empty history says.
 pub const EMPTY: &str = "No Notifications";
 
-/// The footer, when sill is not receiving notifications: another daemon holds the name, or
+/// The footer, when bardo-shell is not receiving notifications: another daemon holds the name, or
 /// the service has not been configured yet (passive).
 pub fn server_line(server: &ServerStatus) -> Option<String> {
     match (&server.holder, server.mode) {

@@ -1,5 +1,5 @@
 //! Not every run of a command palette group's action goes through the palette's own
-//! Enter or click — `sill debug launcher-key enter` steps the keyboard machine directly, a demo
+//! Enter or click — `bardo-shell debug launcher-key enter` steps the keyboard machine directly, a demo
 //! may run the action from its own button — and hands the palette the next `groups` with no
 //! Enter or click of its own for the palette to have seen. `ui_components::components::menus::palette::palette_motion::PaletteHandle::mark_group_action`
 //! (from `use_palette_handle`) lets that caller book the change first: the palette then plays
@@ -38,7 +38,7 @@ fn item(value: u8, title: String) -> PaletteRow<u8> {
 }
 
 /// The "Applications" group's rows: never grown or shrunk by the palette itself — the test steps
-/// it directly, as a caller-driven activation would (sill's keyboard machine toggling a section
+/// it directly, as a caller-driven activation would (bardo-shell's keyboard machine toggling a section
 /// without going through the palette's own Enter or click).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Rows {

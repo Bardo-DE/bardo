@@ -150,7 +150,7 @@ fn a_stored_look_nothing_installed_has_is_kept_on_load() {
             word("standard"),
         )],
     };
-    std::fs::create_dir_all(scratch.join("config/quire")).expect("mkdir");
+    std::fs::create_dir_all(scratch.join("config/bardo")).expect("mkdir");
     std::fs::write(
         scratch.join("config/bardo/appearance.toml"),
         "[appearance]\nlook = \"org.example.Gone\"\n",

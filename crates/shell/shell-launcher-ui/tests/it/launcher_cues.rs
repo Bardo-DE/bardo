@@ -199,7 +199,7 @@ fn show_more_enters_its_rows_and_show_less_heals() {
     assert_settles_to_zero_frames(&mut open.harness);
 }
 
-/// The same Show More through the link (`sill debug launcher-key`): sill runs the group's
+/// The same Show More through the link (`bardo-shell debug launcher-key`): bardo-shell runs the group's
 /// action itself and marks it on quire's palette handle, so the rows still enter.
 #[test]
 fn a_show_more_through_the_link_still_enters() {

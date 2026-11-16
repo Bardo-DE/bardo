@@ -1,4 +1,4 @@
-//! `sill intents status|revoke|resume` and its pure mapping to a request.
+//! `bardo-shell intents status|revoke|resume` and its pure mapping to a request.
 
 use clap::Subcommand;
 use shell_ipc::request::Request;
@@ -6,13 +6,13 @@ use shell_ipc::status::StatusRequest;
 use shell_model::intents::terminal::parse_grant;
 use shell_model::intents::{ActionRef, IntentsAsk};
 
-/// `sill intents ...`.
+/// `bardo-shell intents ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Subcommand)]
 pub enum IntentsAction {
-    /// Whether sill serves intentd's sheet, what waits on it, and what the terminal may do
+    /// Whether bardo-shell serves intentd's sheet, what waits on it, and what the terminal may do
     /// without asking.
     Status,
-    /// Withdraw one standing terminal grant: `sill intents revoke org.bardo.Shell:shell.dock.pin`.
+    /// Withdraw one standing terminal grant: `bardo-shell intents revoke org.bardo.Shell:shell.dock.pin`.
     Revoke {
         #[arg(value_name = "APP:ACTION", value_parser = parse_grant)]
         grant: ActionRef,
@@ -21,7 +21,7 @@ pub enum IntentsAction {
     Resume,
 }
 
-/// The request `sill intents ACTION` sends.
+/// The request `bardo-shell intents ACTION` sends.
 pub fn intents_request(action: &IntentsAction) -> Request {
     match action {
         IntentsAction::Status => Request::Status(StatusRequest::Intents),

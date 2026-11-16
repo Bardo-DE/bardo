@@ -35,7 +35,7 @@ fn install_under(scratch: &Scratch, prefix: &str) -> PathBuf {
 fn the_manifest_is_installed_where_intentd_reads_it() {
     let scratch = Scratch::under(TMP, "install-manifest");
     let usr = install_into(&scratch);
-    let installed = usr.join("share/quire/intents/org.bardo.Settings.toml");
+    let installed = usr.join("share/bardo/intents/org.bardo.Settings.toml");
     let shipped = repo().join("dist/intents/org.bardo.Settings.toml");
     assert_eq!(
         std::fs::read_to_string(&installed).expect("installed"),
@@ -59,8 +59,9 @@ const ROW_FIELDS: [&str; 5] = ["kind", "key", "title", "subtitle", "keywords"];
 fn the_search_entries_are_installed_where_intentd_reads_them() {
     let scratch = Scratch::under(TMP, "install-search");
     let usr = install_into(&scratch);
-    let text = std::fs::read_to_string(usr.join("share/quire/search/org.bardo.Settings.toml"))
-        .expect("the search file is installed beside the manifest");
+    let text =
+        std::fs::read_to_string(usr.join("share/bardo/actions/search/org.bardo.Settings.toml"))
+            .expect("the search file is installed beside the manifest");
     let file: toml::Table = text.parse().expect("a TOML search file");
     let rows = file["entries"].as_array().expect("the entries");
     for row in rows {
@@ -97,7 +98,7 @@ fn the_service_file_names_the_app_and_the_installed_binary() {
         service.contains("SystemdService=org.bardo.Settings.service\n"),
         "{service}"
     );
-    assert!(usr.join("bin/detent").is_file());
+    assert!(usr.join("bin/bardo-settings").is_file());
     assert!(
         usr.join("share/applications/org.bardo.Settings.desktop")
             .is_file()
@@ -172,13 +173,15 @@ fn a_prefix_with_characters_sed_reads_as_syntax_is_written_as_it_is() {
         std::fs::read_to_string(root.join("share/dbus-1/services/org.bardo.Settings.service"))
             .expect("the service file");
     assert!(
-        service.contains(&format!("Exec={prefix}/bin/detent --service\n")),
+        service.contains(&format!("Exec={prefix}/bin/bardo-settings --service\n")),
         "{service}"
     );
     let unit = std::fs::read_to_string(root.join("lib/systemd/user/org.bardo.Settings.service"))
         .expect("the unit");
     assert!(
-        unit.contains(&format!("ExecStart={prefix}/bin/detent --service\n")),
+        unit.contains(&format!(
+            "ExecStart={prefix}/bin/bardo-settings --service\n"
+        )),
         "{unit}"
     );
 }

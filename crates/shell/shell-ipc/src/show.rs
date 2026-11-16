@@ -18,7 +18,7 @@ pub enum Reveal {
     Close,
 }
 
-/// The launcher's two verbs that are not an action (`sill launcher {open [--query],close}`;
+/// The launcher's two verbs that are not an action (`bardo-shell launcher {open [--query],close}`;
 /// `toggle` is the `launcher` action).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -42,7 +42,7 @@ pub enum VoiceRequest {
     HoldCancel,
 }
 
-/// The companion's four verbs (`sill companion {tap,summon,dismiss,stop-all}`).
+/// The companion's four verbs (`bardo-shell companion {tap,summon,dismiss,stop-all}`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 pub enum CompanionRequest {

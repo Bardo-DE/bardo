@@ -117,7 +117,7 @@ impl Live {
                 true
             }
             Err(error) => {
-                eprintln!("sill: guest asks: reading the questions: {error}");
+                eprintln!("bardo-shell: guest asks: reading the questions: {error}");
                 false
             }
         }
@@ -135,7 +135,7 @@ impl Live {
         self.board.learn(&computers);
     }
 
-    /// The server's word: a press of a notice sill posted answers the question; a close ends the
+    /// The server's word: a press of a notice bardo-shell posted answers the question; a close ends the
     /// notice's claim.
     async fn heard_server(&mut self, said: Said, proxy: &Guests) {
         // The notes may already have let go of a notice just pressed.
@@ -188,7 +188,10 @@ impl Live {
 /// other refusal is printed in inferd's own words.
 async fn answer(proxy: &Guests, node: &Computer, verdict: Verdict) {
     let Ok(id) = NodeId::parse(node.as_str()) else {
-        eprintln!("sill: guest asks: {} is not a computer id", node.as_str());
+        eprintln!(
+            "bardo-shell: guest asks: {} is not a computer id",
+            node.as_str()
+        );
         return;
     };
     let Err(error) = proxy.answer_guest(&id, wire::answer(verdict)).await else {
@@ -202,6 +205,9 @@ async fn answer(proxy: &Guests, node: &Computer, verdict: Verdict) {
         })
     );
     if !already {
-        eprintln!("sill: guest asks: answering {}: {error}", node.as_str());
+        eprintln!(
+            "bardo-shell: guest asks: answering {}: {error}",
+            node.as_str()
+        );
     }
 }

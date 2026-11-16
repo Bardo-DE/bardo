@@ -99,12 +99,12 @@ pub fn probe_needed(displays: &Displays) -> bool {
     unanswered || (displays.outputs.is_empty() && displays.ddc.is_empty())
 }
 
-/// Each warmed display's gains as they were before sill touched them.
+/// Each warmed display's gains as they were before bardo-shell touched them.
 pub type Originals = BTreeMap<DdcId, RgbGain>;
 
 /// The writes that bring every DDC display with RGB gains to `warmth`, and the originals to
 /// keep: `Some` scales each display's own gains (remembered the first time) by the warmth
-/// multipliers; `None` puts back every gain sill changed and forgets them.
+/// multipliers; `None` puts back every gain bardo-shell changed and forgets them.
 pub fn warmth_writes(
     displays: &Displays,
     originals: &Originals,

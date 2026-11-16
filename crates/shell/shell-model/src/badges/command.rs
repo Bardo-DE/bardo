@@ -36,6 +36,6 @@ pub enum BadgeEvent {
 /// What the badges service can be told.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BadgesCommand {
-    /// Forget every badge (after `sill reload`).
+    /// Forget every badge (after `bardo-shell reload`).
     Clear,
 }

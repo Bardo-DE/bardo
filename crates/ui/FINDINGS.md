@@ -561,7 +561,7 @@ adapter opens).
   sizes, three styles (Colour, Muted, Monochrome). Monochrome ships neutral and is tinted at run
   time by `ds::style::icon::retint::retint`, so one set serves every Space. The lookup
   (`ds_settings::app_icon_path`) tries `$QUIRE_ICON_ASSETS` (the apps directory itself),
-  `$XDG_DATA_HOME/quire/icons/apps`, each `$XDG_DATA_DIRS/quire/icons/apps`, then the
+  `$XDG_DATA_HOME/bardo/icons/apps`, each `$XDG_DATA_DIRS/bardo/icons/apps`, then the
   repository's `assets/icons/apps` in development; the first existing directory wins whole; the
   exact size, else the nearest larger, else the largest smaller. It lives in `ds-settings`
   because it reads the disk and `ds` stays effect-free.
@@ -1513,7 +1513,7 @@ the decisions and what was verified:
 
 ## Settings and schema
 
-- **Settings files** are `quire/appearance.toml` (design/22) and `spaces.json`, each a
+- **Settings files** are `bardo/appearance.toml` (design/22) and `spaces.json`, each a
   `SettingsDoc` read, saved and watched through `ds_settings::Store`. The read is lenient key by
   key: each key is laid over the struct's default and kept only if it deserialises (a
   per-field `deserialize_with` would turn a bad key into the type's zero, not the key's default).

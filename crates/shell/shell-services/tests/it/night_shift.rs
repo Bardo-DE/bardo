@@ -1,7 +1,7 @@
-//! Night Shift on scratch directories (casement's config folder and sill's state folder under a
+//! Night Shift on scratch directories (casement's config folder and bardo-shell's state folder under a
 //! temporary root, no bus): the switch writes casement's `[night_light]` and keeps the manual
-//! turn-on's end, turning it off puts casement back, a turn-on that ran out while sill was away
-//! is ended at start, and where sill warms monitors itself casement is told to leave those alone
+//! turn-on's end, turning it off puts casement back, a turn-on that ran out while bardo-shell was away
+//! is ended at start, and where bardo-shell warms monitors itself casement is told to leave those alone
 //! and keeps warming the rest.
 
 use std::time::Duration;
@@ -22,7 +22,11 @@ const SETTLE: Duration = Duration::from_secs(5);
 fn files(scratch: &TempDir) -> (std::path::PathBuf, std::path::PathBuf) {
     let env = Env::isolated(scratch.path());
     (
-        env.dirs.config.join("casement").join("settings.toml"),
+        env.dirs
+            .config
+            .join("bardo")
+            .join("compositor")
+            .join("settings.toml"),
         env.dirs.sill_state().join("night-shift.json"),
     )
 }
@@ -175,7 +179,7 @@ async fn where_sill_warms_monitors_casement_is_told_to_leave_them_alone_and_warm
     assert_eq!(
         skip_in(&settings),
         ["DP-1"],
-        "the monitor sill warms is left alone"
+        "the monitor bardo-shell warms is left alone"
     );
 
     monitors.send_replace(with_monitors(vec![

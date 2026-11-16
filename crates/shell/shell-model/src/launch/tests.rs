@@ -8,7 +8,7 @@ use super::{
 fn scope(app: &str, n: u32) -> LaunchedScope {
     LaunchedScope {
         app: AppId(app.to_owned()),
-        unit: ScopeUnit(format!("app-sill-{app}-{n}.scope")),
+        unit: ScopeUnit(format!("app-bardo-{app}-{n}.scope")),
     }
 }
 
@@ -96,8 +96,8 @@ fn the_timing_line_has_the_fields_scripts_read() {
     let cases: Vec<(&str, LaunchTiming, &str)> = vec![
         (
             "a scope",
-            timing("foot", Some("app-sill-foot-1.scope"), 100, 250, Some(4242)),
-            "launch desktop_id=foot unit=app-sill-foot-1.scope requested_at=100 spawned_at=250 pid=4242",
+            timing("foot", Some("app-bardo-foot-1.scope"), 100, 250, Some(4242)),
+            "launch desktop_id=foot unit=app-bardo-foot-1.scope requested_at=100 spawned_at=250 pid=4242",
         ),
         (
             "activation has no unit and no process",
@@ -108,12 +108,12 @@ fn the_timing_line_has_the_fields_scripts_read() {
             "whitespace in an id becomes underscores",
             timing(
                 "my app\tx",
-                Some("app-sill-my\\x20app-1.scope"),
+                Some("app-bardo-my\\x20app-1.scope"),
                 1,
                 2,
                 Some(1),
             ),
-            "launch desktop_id=my_app_x unit=app-sill-my\\x20app-1.scope requested_at=1 spawned_at=2 pid=1",
+            "launch desktop_id=my_app_x unit=app-bardo-my\\x20app-1.scope requested_at=1 spawned_at=2 pid=1",
         ),
         (
             "a monotonic reading of days of uptime keeps every digit",

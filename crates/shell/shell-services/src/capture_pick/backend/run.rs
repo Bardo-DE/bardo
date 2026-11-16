@@ -277,7 +277,7 @@ impl Live {
                 .at(PATH, PickerObject { calls, peers })
                 .await;
             if let Err(error) = exported {
-                eprintln!("sill: capture picker: serving {PATH} failed: {error}");
+                eprintln!("bardo-shell: capture picker: serving {PATH} failed: {error}");
                 return;
             }
             watch_caller(connection, left).await;

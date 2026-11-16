@@ -1,4 +1,4 @@
-//! The PDF thumbnail as markup (sill M9's launcher preview): each state, pending, a portrait and a landscape page, an empty document, and the two
+//! The PDF thumbnail as markup (bardo-shell M9's launcher preview): each state, pending, a portrait and a landscape page, an empty document, and the two
 //! failures, matches its golden under `tests/snapshots/pdf_thumb/`, lints clean, and uses only
 //! `ds-` classes the stylesheet styles.
 //!

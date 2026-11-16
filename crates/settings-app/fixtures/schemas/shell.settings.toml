@@ -1,4 +1,4 @@
-app = "sill"
+app = "shell"
 file = "shell/settings.toml"
 version = 1
 

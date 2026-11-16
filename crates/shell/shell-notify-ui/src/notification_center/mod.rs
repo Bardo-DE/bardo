@@ -3,8 +3,8 @@
 //!
 //! One Overlay surface per output, spawned hidden and kept warm like the power menu, following
 //! one shared [`shell_ui_kit::links::CenterLink`]. Opened by a click on the bar's clock (as macOS 11 on) and by
-//! `sill notifications {toggle,open}`; closed by the clock again, Escape, a click outside the
-//! column, or `sill notifications close`. Why a layer and not a popup: `layer.rs`.
+//! `bardo-shell notifications {toggle,open}`; closed by the clock again, Escape, a click outside the
+//! column, or `bardo-shell notifications close`. Why a layer and not a popup: `layer.rs`.
 
 pub mod groups;
 pub mod keymap;

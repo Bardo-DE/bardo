@@ -87,7 +87,7 @@ pub const ASIDE_WIDTH: Px = Px(360.0);
 ///
 /// `aside` is drawn beside the results, under the field, past a hairline divider, `aside_width`
 /// wide: over the window the card widens by that much; in a surface the card still fills its
-/// container, so the host widens the surface (sill's launcher panel) and the results column
+/// container, so the host widens the surface (bardo-shell's launcher panel) and the results column
 /// narrows by it otherwise. Use it for a [`PreviewPane`](crate::components::lists::preview::pane::PreviewPane).
 ///
 /// `shown` keeps the palette mounted while hidden: `Some(false)` lays out nothing and
@@ -109,14 +109,14 @@ pub const ASIDE_WIDTH: Px = Px(360.0);
 /// come in as roster rows do; the rows it removes go and what follows heals up by their height.
 /// A result set replaces the last one in place, with no motion.
 ///
-/// `trailing` is a control at the end of the search field's row (sill's Auto/Manual switch): the
+/// `trailing` is a control at the end of the search field's row (bardo-shell's Auto/Manual switch): the
 /// row gives it its own room, so the field narrows and a long query is cut at the field's edge,
 /// never run under it. Absent, the field is the whole row.
 ///
 /// `corner` gives the card a squircle corner (`Corner::Squircle`, the launcher's) or another
 /// radius; absent, it keeps `--r-panel`.
 ///
-/// `handle` ([`use_palette_handle`]) lets a caller that runs a group's action itself (`sill debug
+/// `handle` ([`use_palette_handle`]) lets a caller that runs a group's action itself (`bardo-shell debug
 /// launcher-key enter`, a demo's own button — never the palette's own Enter or
 /// click) still get Show More's rise or Show Less's heal: call its `mark_group_action(group)`
 /// before making the change that follows. Absent, or the change turns out not to be that

@@ -141,7 +141,7 @@ pub(super) fn silent(done: zbus::Result<()>) -> Option<HelpersMsg> {
 
 /// Log what went wrong; the person is told that the helpers could not be reached.
 pub(super) fn unreached(why: &dyn std::fmt::Display) -> HelpersMsg {
-    eprintln!("sill: companion: helpers: {why}");
+    eprintln!("bardo-shell: companion: helpers: {why}");
     HelpersMsg::Unreached
 }
 

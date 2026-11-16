@@ -434,7 +434,7 @@ The full introspection is porter's `dbus/org.bardo.Inference1.xml`, checked by t
 | Flatpak reach | `--talk-name=org.bardo.Accounts1` finish arg; consent is enforced inside the daemon | P |
 | Storage | the consent store is accountd's own table, PermissionStore-shaped, so a portal can adopt it; persisted with the registry as `$XDG_STATE_HOME/porter/registry.json` (`Persisted { vocab, accounts, grants, toggles }`, atomic write; JSON, not SQLite: tens of rows, no SQLCipher in mailo); a vocabulary bump now needs a migration test [2026-10-05] | P |
 | Voice | the caller `org.bardo.Voice` with class `Voice` and an `OnDevice` route holds a shipped default grant, because the person's first-use voice consent (a sill sheet) is the grant; any other route for `Voice` needs `ai.local_only` off, a floor change and an explicit grant; an app transcribing its own files uses its own class and the normal grant | P |
-| Audit | grants, denials, revocations, token issues (with audience), proxy opens, sign-ins, re-auths, removals, adoptions: time, app, account, capability; never content; `$XDG_STATE_HOME/quire/accountd/audit.jsonl`, the shape of inferd's [2026-10-05] | P |
+| Audit | grants, denials, revocations, token issues (with audience), proxy opens, sign-ins, re-auths, removals, adoptions: time, app, account, capability; never content; `$XDG_STATE_HOME/bardo/accountd/audit.jsonl`, the shape of inferd's [2026-10-05] | P |
 | Add and allow | when an app's `Choose` finds no fitting account and the person adds one from that sheet, the last step reads "Add, and allow Mail to use it": one grant, not a second prompt [refines, 2026-10-05] | P |
 | Audience | `IssueToken` refuses an audience outside the grant's kind (`AudienceNotGranted`) | P |
 

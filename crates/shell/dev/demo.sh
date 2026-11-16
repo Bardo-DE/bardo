@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A demo session: today's sill inside a headless casement, left running between commands.
+# A demo session: today's bardo-shell inside a headless casement, left running between commands.
 #
 #   dev/demo.sh start            build, seed a scratch desktop, leave it up
 #   dev/demo.sh tour             play the tour and write a frame of each beat to dev/out/demo-*.png
@@ -36,7 +36,7 @@ DEMO_DIR="$BARDO_SHELL_TARGET/demo"
 OUT_DIR="$DEMO_DIR"
 ENV_FILE="$DEMO_DIR/env"
 PROCS="$DEMO_DIR/procs"
-CLIENT="$DEMO_DIR/sill"
+CLIENT="$DEMO_DIR/bardo-shell"
 SHOTS="$BARDO_SHELL_REPO/dev/out"
 PLAYER="$BARDO_SHELL_OUT/examples/mpris_player"
 # Set by start (or read back from $ENV_FILE): the scratch tree's directory (scratch_use), the
@@ -122,12 +122,12 @@ await_compositor() {
 # ---------------------------------------------------------------- the scratch desktop
 
 write_scene() {
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   cat >"$CONFIG/shell/settings.toml" <<'EOF'
 [launcher]
 web_search = true
 EOF
-  cat >"$CONFIG/sill/layout.toml" <<'EOF'
+  cat >"$CONFIG/bardo/shell/layout.toml" <<'EOF'
 version = 1
 
 [[dock]]
@@ -251,7 +251,7 @@ EOF
   record_proc mailo $!
 }
 
-# The client other terminals use to talk to this daemon: `target/demo/sill launcher open`.
+# The client other terminals use to talk to this daemon: `target/demo/bardo-shell launcher open`.
 write_client() {
   {
     echo '#!/usr/bin/env bash'
@@ -322,7 +322,7 @@ cmd_start() {
   [ ! -f "$ENV_FILE" ] || teardown
   rm -f "$PROCS"
 
-  echo "demo.sh: building sill ($BARDO_SHELL_PROFILE)"
+  echo "demo.sh: building bardo-shell ($BARDO_SHELL_PROFILE)"
   build "-p shell-testkit --example mpris_player" || exit 1
 
   trap abort_start EXIT
@@ -361,8 +361,8 @@ cmd_start() {
   start_mail
   # Let the wallpaper and the windows paint, then post the two banners.
   sleep 1
-  sill debug notify "Lunch?" --app Mail --body "Noon at the usual place." >"$DEMO_DIR/notify.log" 2>&1
-  sill debug notify "Ping" --app Chat --body "Are you there?" >>"$DEMO_DIR/notify.log" 2>&1
+  bardo-shell debug notify "Lunch?" --app Mail --body "Noon at the usual place." >"$DEMO_DIR/notify.log" 2>&1
+  bardo-shell debug notify "Ping" --app Chat --body "Are you there?" >>"$DEMO_DIR/notify.log" 2>&1
 
   record_scratch_clients
   write_env
@@ -503,7 +503,7 @@ await_up() {
   sleep "${2:-0.4}"
 }
 
-# The launcher's panel, for `sill debug key`.
+# The launcher's panel, for `bardo-shell debug key`.
 launcher_panel() { echo "sill-launcher-$NAME"; }
 
 # Types $1 into the open launcher's field, replacing what is there: Ctrl+A and BackSpace, then
@@ -511,12 +511,12 @@ launcher_panel() { echo "sill-launcher-$NAME"; }
 type_query() {
   local panel char
   panel=$(launcher_panel)
-  sill debug key "$panel" a+ctrl >/dev/null
-  sill debug key "$panel" Backspace >/dev/null
+  bardo-shell debug key "$panel" a+ctrl >/dev/null
+  bardo-shell debug key "$panel" Backspace >/dev/null
   while IFS= read -r -n1 char; do
     [ -n "$char" ] || continue
     [ "$char" != " " ] || char=Space
-    sill debug key "$panel" "$char" >/dev/null
+    bardo-shell debug key "$panel" "$char" >/dev/null
     sleep 0.04
   done <<<"$1"
 }
@@ -530,7 +530,7 @@ launcher_key() {
     quick-look) spec=y+ctrl ;;
     *) spec="$1" ;;
   esac
-  sill debug key "$(launcher_panel)" "$spec" >/dev/null
+  bardo-shell debug key "$(launcher_panel)" "$spec" >/dev/null
 }
 
 # What the bar (from its capture $1, $2 device px per logical px) has inked: "APP_X APP_Y NEXT_X
@@ -654,7 +654,7 @@ PY
 wifi_press() {
   local before
   before=$(grep -c "^radio $3" "$DEMO_DIR/fake-nm.log")
-  sill debug click "$BAR/popup" "$1" "$2" >/dev/null
+  bardo-shell debug click "$BAR/popup" "$1" "$2" >/dev/null
   for _ in $(seq 40); do
     [ "$(grep -c "^radio $3" "$DEMO_DIR/fake-nm.log")" -gt "$before" ] && return 0
     sleep 0.1
@@ -667,7 +667,7 @@ wifi_press() {
 # the panel is on the output).
 await_control_center() {
   for _ in $(seq 40); do
-    sill debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null 2>&1 \
+    bardo-shell debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null 2>&1 \
       && python3 -c 'import sys; from PIL import Image; sys.exit(0 if Image.open(sys.argv[1]).height > 400 else 1)' \
         "$WORK/popup.png" && return 0
     sleep 0.1
@@ -677,18 +677,18 @@ await_control_center() {
 
 # Closes whatever a previous look left open.
 settle() {
-  sill launcher close >/dev/null 2>&1
-  sill notifications close >/dev/null 2>&1
-  sill notifications dismiss-all >/dev/null 2>&1
-  sill power-menu close >/dev/null 2>&1
-  sill switcher cancel >/dev/null 2>&1
+  bardo-shell launcher close >/dev/null 2>&1
+  bardo-shell notifications close >/dev/null 2>&1
+  bardo-shell notifications dismiss-all >/dev/null 2>&1
+  bardo-shell power-menu close >/dev/null 2>&1
+  bardo-shell switcher cancel >/dev/null 2>&1
   # A click in the bar's empty middle dismisses a menu; it does not open one. The control center
   # does not dismiss on it, so toggle that one only while it is still up.
-  if sill debug capture "$BAR/popup" "$WORK/probe.png" >/dev/null 2>&1; then
-    sill debug click "$BAR" $((WIDTH / 2)) 12 >/dev/null 2>&1
+  if bardo-shell debug capture "$BAR/popup" "$WORK/probe.png" >/dev/null 2>&1; then
+    bardo-shell debug click "$BAR" $((WIDTH / 2)) 12 >/dev/null 2>&1
     sleep 0.3
-    if sill debug capture "$BAR/popup" "$WORK/probe.png" >/dev/null 2>&1; then
-      sill control-center toggle >/dev/null 2>&1
+    if bardo-shell debug capture "$BAR/popup" "$WORK/probe.png" >/dev/null 2>&1; then
+      bardo-shell control-center toggle >/dev/null 2>&1
       sleep 0.3
     fi
   fi
@@ -719,23 +719,23 @@ beat_rest() {
 beat_dock() {
   echo "demo.sh tour: 2 dock"
   local x0 x1 pill_y icon_x i x
-  sill debug capture "$DOCK" "$WORK/dock.png" >/dev/null
+  bardo-shell debug capture "$DOCK" "$WORK/dock.png" >/dev/null
   read -r x0 x1 pill_y _ <<<"$(dock_geometry "$WORK/dock.png" "$WIDTH")"
   # A short sweep, then a pause on the magnified icon.
   for i in $(seq 0 10); do
     x=$(( x0 + (x1 - x0) * i / 10 ))
-    sill debug pointer "$DOCK" "$x" "$pill_y" >/dev/null
+    bardo-shell debug pointer "$DOCK" "$x" "$pill_y" >/dev/null
     if [ -n "${DEMO_RECORD:-}" ]; then sleep 0.02; else sleep 0.03; fi
   done
   cmd_shot "$SHOTS/demo-2-dock.png"
   show 1.4
   # The sweep leaves the pointer on the last icon, which magnifies the row and moves every icon.
   # Let that settle, then right-click the middle pin where it rests.
-  sill debug leave "$DOCK" >/dev/null
+  bardo-shell debug leave "$DOCK" >/dev/null
   sleep 0.45
-  sill debug capture "$DOCK" "$WORK/dock.png" >/dev/null
+  bardo-shell debug capture "$DOCK" "$WORK/dock.png" >/dev/null
   read -r _ _ pill_y icon_x <<<"$(dock_geometry "$WORK/dock.png" "$WIDTH")"
-  sill debug click "$DOCK" "$icon_x" "$pill_y" --button secondary >/dev/null
+  bardo-shell debug click "$DOCK" "$icon_x" "$pill_y" --button secondary >/dev/null
   # Long enough to read the menu in the recording; the stills path only waits for it to paint.
   await_up "$DOCK/popup" 0.3
   show 2.0
@@ -743,28 +743,28 @@ beat_dock() {
   # Escape dismisses the popup through the panel's own key path. A click on the bar while this
   # popup is still the topmost is a protocol error and drops the shell. Leave as well, or the
   # magnification stays for the rest of the tour.
-  sill debug key "$DOCK/popup" Escape >/dev/null 2>&1
+  bardo-shell debug key "$DOCK/popup" Escape >/dev/null 2>&1
   wait_surface "$DOCK/popup" 20 down || die "tour: the dock's menu did not close; stopping before a click on the bar drops the shell"
-  sill debug leave "$DOCK" >/dev/null
+  bardo-shell debug leave "$DOCK" >/dev/null
   sleep 0.2
 }
 
 beat_menus() {
   echo "demo.sh tour: 3 menus"
   local scale app_x app_y next_x next_y
-  sill debug capture "$BAR" "$WORK/bar.png" >/dev/null
+  bardo-shell debug capture "$BAR" "$WORK/bar.png" >/dev/null
   scale=$(python3 -c 'import sys; from PIL import Image; print(Image.open(sys.argv[1]).width / int(sys.argv[2]))' \
     "$WORK/bar.png" "$WIDTH")
   read -r app_x app_y next_x next_y CLOCK_X CLOCK_Y <<<"$(bar_targets "$WORK/bar.png" "$scale")"
-  sill debug click "$BAR" "$app_x" "$app_y" >/dev/null
+  bardo-shell debug click "$BAR" "$app_x" "$app_y" >/dev/null
   await_up "$BAR/popup" 0.3
   cmd_shot "$SHOTS/demo-3-menu.png"
   show 1.8
-  sill debug click "$BAR" "$next_x" "$next_y" >/dev/null
+  bardo-shell debug click "$BAR" "$next_x" "$next_y" >/dev/null
   sleep 0.7
   cmd_shot "$SHOTS/demo-3-switched.png"
   show 1.8
-  sill debug click "$BAR" $((WIDTH / 2)) 12 >/dev/null
+  bardo-shell debug click "$BAR" $((WIDTH / 2)) 12 >/dev/null
   wait_surface "$BAR/popup" 30 down
   sleep 0.15
 }
@@ -811,7 +811,7 @@ beat_launcher() {
   # One opening. Later queries are typed into the field that is already up. Tab and Shift+Tab
   # pick one section, and typing stays inside that section, so a query that should search
   # everything is typed only after the keys that land back on every provider.
-  sill launcher open --query "" >/dev/null
+  bardo-shell launcher open --query "" >/dev/null
   await_up "$(launcher_panel)" 0.5
   cmd_shot "$SHOTS/demo-4-actions.png"
   show 1.6
@@ -854,7 +854,7 @@ beat_launcher() {
   sleep 0.85
   cmd_shot "$SHOTS/demo-4-pdf.png"
   show 2.2
-  sill launcher close >/dev/null
+  bardo-shell launcher close >/dev/null
   sleep 0.15
 }
 
@@ -863,9 +863,9 @@ beat_control_center() {
   local left top right bottom tile wx wy cx radios
   # A click in the bar's middle dismisses the menu from beat 3. The control center then opens by
   # its own command: guessing which status icon is which from ink runs opened Wi-Fi instead.
-  sill debug click "$BAR" $((WIDTH / 2)) 12 >/dev/null 2>&1
+  bardo-shell debug click "$BAR" $((WIDTH / 2)) 12 >/dev/null 2>&1
   sleep 0.2
-  sill control-center toggle >/dev/null
+  bardo-shell control-center toggle >/dev/null
   await_control_center
   # While recording, grim belongs to the recorder, so just give the panel a moment to show.
   if [ -n "${DEMO_RECORD:-}" ]; then
@@ -886,18 +886,18 @@ PY
   fi
   # The theme control is the panel's last row: "System | Light | Dark", the last segment 68 px in
   # from the panel's right edge and 32 px up from its bottom. Dark, then back to System.
-  sill debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null
+  bardo-shell debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null
   read -r left top right bottom <<<"$(panel_box "$WORK/popup.png")"
-  sill debug click "$BAR/popup" $(( right - 68 )) $(( bottom - 32 )) >/dev/null
+  bardo-shell debug click "$BAR/popup" $(( right - 68 )) $(( bottom - 32 )) >/dev/null
   sleep 0.45
   cmd_shot "$SHOTS/demo-5-dark.png"
   show 1.6
-  sill debug click "$BAR/popup" $(( left + 66 )) $(( bottom - 32 )) >/dev/null
+  bardo-shell debug click "$BAR/popup" $(( left + 66 )) $(( bottom - 32 )) >/dev/null
   sleep 0.3
   # The stand-in NetworkManager logs every radio request ("radio on", "radio off") and starts with
   # the radio on: put it off first if it is not (a nothing logged yet means on), then press the
   # tile again and wait for the "radio on" it logs, which joins the saved network.
-  sill debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null
+  bardo-shell debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null
   read -r left top right bottom <<<"$(panel_box "$WORK/popup.png")"
   # Tiles are 56 px, padded 10, gapped 10, two columns. The body click stays left of the chevron;
   # the chevron is the tile's right edge.
@@ -913,26 +913,26 @@ PY
   cmd_shot "$SHOTS/demo-5-wifi.png"
   show 1.6
   # The chevron opens the network list: Home (just joined) and Cafe.
-  sill debug click "$BAR/popup" "$cx" "$wy" >/dev/null
+  bardo-shell debug click "$BAR/popup" "$cx" "$wy" >/dev/null
   sleep 0.7
   cmd_shot "$SHOTS/demo-5-wifi-list.png"
   show 2.2
-  sill control-center toggle >/dev/null
+  bardo-shell control-center toggle >/dev/null
   sleep 0.15
 
   echo "demo.sh tour: 5 bluetooth"
-  sill control-center toggle >/dev/null
+  bardo-shell control-center toggle >/dev/null
   await_control_center
   sleep 0.3
-  sill debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null
+  bardo-shell debug capture "$BAR/popup" "$WORK/popup.png" >/dev/null
   read -r left top right bottom <<<"$(panel_box "$WORK/popup.png")"
   tile=$(( (right - left - 30) / 2 ))
   # Bluetooth is the top-right tile. Its chevron opens the device list.
-  sill debug click "$BAR/popup" $(( left + 10 + tile + 10 + tile - 18 )) $(( top + 38 )) >/dev/null
+  bardo-shell debug click "$BAR/popup" $(( left + 10 + tile + 10 + tile - 18 )) $(( top + 38 )) >/dev/null
   sleep 0.7
   cmd_shot "$SHOTS/demo-5-bluetooth.png"
   show 2.0
-  sill control-center toggle >/dev/null
+  bardo-shell control-center toggle >/dev/null
   sleep 0.15
 }
 
@@ -940,12 +940,12 @@ beat_osd_switcher_power() {
   echo "demo.sh tour: 6 volume"
   # A made-up volume change: the indicator, not this machine's mixer. It stays about 1.5 s, so
   # the next indicator replaces it instead of a gap.
-  sill debug osd volume 64 >/dev/null
+  bardo-shell debug osd volume 64 >/dev/null
   await_up "sill-osd-$NAME" 0.3
   cmd_shot "$SHOTS/demo-6-volume.png"
   show 1.15
   echo "demo.sh tour: 6 brightness"
-  sill debug osd brightness 40 >/dev/null
+  bardo-shell debug osd brightness 40 >/dev/null
   sleep 0.3
   cmd_shot "$SHOTS/demo-6-brightness.png"
   show 1.15
@@ -953,19 +953,19 @@ beat_osd_switcher_power() {
   sleep 0.35
 
   echo "demo.sh tour: 7 switcher"
-  sill debug switcher foot org.gnome.Nautilus google-chrome >/dev/null
+  bardo-shell debug switcher foot org.gnome.Nautilus google-chrome >/dev/null
   await_up "sill-switcher-$NAME" 0.4
   cmd_shot "$SHOTS/demo-7-switcher.png"
   show 2.0
-  sill switcher cancel >/dev/null 2>&1
+  bardo-shell switcher cancel >/dev/null 2>&1
   sleep 0.12
 
   echo "demo.sh tour: 8 power"
-  sill power-menu open >/dev/null
+  bardo-shell power-menu open >/dev/null
   await_up "sill-power-menu-$NAME" 0.5
   cmd_shot "$SHOTS/demo-8-power.png"
   show 2.0
-  sill power-menu close >/dev/null
+  bardo-shell power-menu close >/dev/null
   sleep 0.12
 }
 
@@ -983,7 +983,7 @@ d.rectangle((70, 250, 250, 430), fill=(244, 240, 232))
 d.polygon([(60, 250), (160, 170), (260, 250)], fill=(196, 122, 92))
 im.save(sys.argv[1])
 PY
-  sill debug screenshot "$WORK/picture.png" >/dev/null
+  bardo-shell debug screenshot "$WORK/picture.png" >/dev/null
   # The thumbnail's surface captures before it is on screen; give it its slide-in.
   sleep 1.5
   cmd_shot "$SHOTS/demo-10-screenshot.png"
@@ -994,15 +994,15 @@ PY
 
   echo "demo.sh tour: 11 password"
   local polkit px py
-  sill debug polkit --message "Authentication is required to install updates" \
+  bardo-shell debug polkit --message "Authentication is required to install updates" \
     --action org.freedesktop.packagekit.package-install >/dev/null
   await_up "sill-polkit-$NAME" 0.5
   cmd_shot "$SHOTS/demo-11-polkit.png"
   show 2.2
   polkit=$(surface_named sill-polkit-)
-  if [ -n "$polkit" ] && sill debug capture "$polkit" "$WORK/polkit.png" >/dev/null 2>&1; then
+  if [ -n "$polkit" ] && bardo-shell debug capture "$polkit" "$WORK/polkit.png" >/dev/null 2>&1; then
     if read -r px py <<<"$(polkit_cancel "$WORK/polkit.png")" && [ -n "${py:-}" ]; then
-      sill debug click "$polkit" "$px" "$py" >/dev/null 2>&1
+      bardo-shell debug click "$polkit" "$px" "$py" >/dev/null 2>&1
       sleep 0.35
     fi
   fi
@@ -1011,22 +1011,22 @@ PY
 
 beat_notifications() {
   echo "demo.sh tour: 12 notifications"
-  sill notifications dismiss-all >/dev/null 2>&1
-  sill debug notify "Lunch?" --app Mail --body "Noon at the usual place." >/dev/null
-  sill debug notify "Ping" --app Chat --body "Are you there?" >/dev/null
+  bardo-shell notifications dismiss-all >/dev/null 2>&1
+  bardo-shell debug notify "Lunch?" --app Mail --body "Noon at the usual place." >/dev/null
+  bardo-shell debug notify "Ping" --app Chat --body "Are you there?" >/dev/null
   await_up "sill-banners-$NAME" 0.5
   cmd_shot "$SHOTS/demo-12-banners.png"
   show 2.0
-  sill notifications close >/dev/null 2>&1
+  bardo-shell notifications close >/dev/null 2>&1
   # The clock opens the center.
-  sill debug click "$BAR" "$CLOCK_X" "$CLOCK_Y" >/dev/null
+  bardo-shell debug click "$BAR" "$CLOCK_X" "$CLOCK_Y" >/dev/null
   await_up "sill-notification-center-$NAME" 0.6
   cmd_shot "$SHOTS/demo-12-center.png"
   show 2.6
 }
 
 # Plays the beats on the running demo and writes one frame of each to dev/out. Pointer moves and
-# clicks go through `sill debug`, the path the acceptance scripts use; nothing here is aimed at
+# clicks go through `bardo-shell debug`, the path the acceptance scripts use; nothing here is aimed at
 # the host session. `tour --video` records the desktop for the length of the tour.
 cmd_tour() {
   local video=0

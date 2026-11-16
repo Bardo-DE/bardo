@@ -1,11 +1,11 @@
-//! Which output shows the banners. macOS shows notifications on the main display only; sill's
-//! stand-in is the daemon's first output (the one `sill launcher` and `sill power-menu` open on),
+//! Which output shows the banners. macOS shows notifications on the main display only; bardo-shell's
+//! stand-in is the daemon's first output (the one `bardo-shell launcher` and `bardo-shell power-menu` open on),
 //! written here by the daemon whenever the outputs change. Every other output's banner surface
 //! stays hidden. One output, so a banner is counted, paused and dismissed once.
 //!
 //! The link is also the transients' shared keyboard channel: each transient surface (the
 //! screenshot thumbnail, the banner column) says here when a card appears and when none is left,
-//! `sill focus-latest` asks for the keyboard and the link names the one that appeared last, and
+//! `bardo-shell focus-latest` asks for the keyboard and the link names the one that appeared last, and
 //! only that surface answers. The compositor's focus loss on a surface comes back the same way,
 //! naming the surface.
 
@@ -51,7 +51,7 @@ pub enum KeyWhat {
     /// Nothing yet.
     #[default]
     Idle,
-    /// The person asked for the keyboard (`sill focus-latest`): this transient appeared last.
+    /// The person asked for the keyboard (`bardo-shell focus-latest`): this transient appeared last.
     Asked(Transient),
     /// The compositor took the keyboard away from this transient's surface.
     Lost(Transient),
@@ -101,7 +101,7 @@ impl BannerLink {
             .modify(|showing| showing.retain(|t| *t != transient));
     }
 
-    /// Ask for the keyboard on the transient that appeared last (`sill focus-latest`); nothing
+    /// Ask for the keyboard on the transient that appeared last (`bardo-shell focus-latest`); nothing
     /// when none is up.
     pub fn ask_keyboard(&self) {
         let newest = self.showing.now().last().copied();

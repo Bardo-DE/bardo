@@ -40,7 +40,9 @@ impl Store {
 
     /// The error for a root that has no directory for this program.
     pub(crate) fn no_config_dir(&self) -> SettingsError {
-        SettingsError::NoConfigDir { app: self.app.0 }
+        SettingsError::NoConfigDir {
+            app: self.app.name(),
+        }
     }
 
     /// The path `D` is stored at.

@@ -1,5 +1,5 @@
 //! The Controls page's external icons: a status item's symbolic SVG and coloured pixmap, as
-//! sill's tray draws them (design/08-ICONS.md section 1.5).
+//! bardo-shell's tray draws them (design/08-ICONS.md section 1.5).
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;

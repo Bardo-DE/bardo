@@ -1,7 +1,7 @@
 //! Which logind session this process belongs to, found one way for every service that needs it
-//! (the session's power actions, the locker, idle's hint): by pid (sill started from the session
+//! (the session's power actions, the locker, idle's hint): by pid (bardo-shell started from the session
 //! script), else by the `XDG_SESSION_ID` the process edge read, else the user's display session
-//! (sill as a systemd user service, which logind places in no session).
+//! (bardo-shell as a systemd user service, which logind places in no session).
 
 use logind_zbus::manager::ManagerProxy;
 use logind_zbus::user::UserProxy;

@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # Power menu acceptance (design/20 §1.8), on a private headless KWin (layer-shell-host
-# scripts/dev/kwin-virtual.sh). Starts `sill run` from this checkout's debug build (`--features
+# scripts/dev/kwin-virtual.sh). Starts `bardo-shell run` from this checkout's debug build (`--features
 # debug`) with its own XDG_RUNTIME_DIR and scratch HOME and XDG dirs, on KWin's private bus (the
 # daemon's session AND system bus; start_compositor refuses to go on if it would be the real one), and
 # quits it at the end.
 #
 # SAFETY. A confirmed action would really log out, restart, shut down or suspend the machine if it
-# reached logind. The daemon is started with `sill run --session-dry-run RECORD`: a debug build
+# reached logind. The daemon is started with `bardo-shell run --session-dry-run RECORD`: a debug build
 # then takes every session action through a dry run that only prints and records the chosen one,
 # never logind (crates/shell/shell-app/src/run_args.rs, crates/shell/shell-services/src/env/session_actions.rs).
 # Before a button is ever pressed, the script proves the dry run is in force from the daemon's own
 # log (the "dry run, recording to" line, and `power_menu.backend=dry-run` with no
 # `power_menu.backend=live`); without that proof the pressing steps are skipped (exit 2), never run.
 #
-# KEYS. By default every key is `sill debug key SURFACE KEY`: layer-shell-host's `Inject::Key`, which
+# KEYS. By default every key is `bardo-shell debug key SURFACE KEY`: layer-shell-host's `Inject::Key`, which
 # enters the power menu where a real xkb key does (the same machine, focus, modality and IME),
 # whether or not the compositor gave the menu the keyboard. The keys are only sent while the dry
 # run is proven and the menu is mapped. With --real-input every key and press is a real Wayland
@@ -21,7 +21,7 @@
 #
 # Default steps:
 #   1. Warm: `sill-power-menu-<out>` exists from the start, hidden (no capture).
-#   2. `sill power-menu open` shows the alert on its sheet: a capture with the sheet's pixels,
+#   2. `bardo-shell power-menu open` shows the alert on its sheet: a capture with the sheet's pixels,
 #      into dev/out/power-menu.png. `close` hides it; `toggle` twice round-trips.
 #   3. Tab moves the keyboard to the next button: the frame differs from the opening's by the
 #      focus ring's move (dev/out/power-menu-tab.png).
@@ -59,7 +59,7 @@ scratch_new
 # the output opaque, so at least half of that), into $2 (default: the scratch capture).
 shows() {
   local png="${2:-$OUT_DIR/menu.png}"
-  sill debug capture "$MENU" "$png" >>"$1" 2>&1 || return 1
+  bardo-shell debug capture "$MENU" "$png" >>"$1" 2>&1 || return 1
   [ "$(opaque_pixels "$png")" -gt 50000 ]
 }
 
@@ -72,14 +72,14 @@ start_menu_daemon() {
   sleep 1
 }
 
-# Press the keys "$@" (`sill debug key` names: ArrowRight, Enter, Escape, ...) on the menu, one at
+# Press the keys "$@" (`bardo-shell debug key` names: ArrowRight, Enter, Escape, ...) on the menu, one at
 # a time, only while the menu is mapped and the dry run is proven.
 type_keys() {
   local log="$1"; shift
   [ "$DRY_RUN" = proven ] || { echo "no keys without a proven dry run" | tee -a "$log" >&2; return 1; }
   for key in "$@"; do
     wait_surface "$MENU" 5 up || { echo "the menu is not up for '$key'" | tee -a "$log" >&2; return 1; }
-    sill debug key "$MENU" "$key" >>"$log" 2>&1 || { echo "the daemon refused key '$key'" >&2; return 1; }
+    bardo-shell debug key "$MENU" "$key" >>"$log" 2>&1 || { echo "the daemon refused key '$key'" >&2; return 1; }
     echo "key $key" >>"$log"
     sleep 0.2
   done
@@ -90,7 +90,7 @@ type_keys() {
 open_with_keyboard() {
   local log="$1" before
   before=$(count_log 'power_menu.keyboard=held')
-  sill power-menu open >>"$log" 2>&1 || return 1
+  bardo-shell power-menu open >>"$log" 2>&1 || return 1
   wait_surface "$MENU" 30 up || return 1
   sleep 0.6 # the sheet's peek-in
   if [ "$(count_log 'power_menu.keyboard=held')" -gt "$before" ]; then
@@ -103,9 +103,9 @@ open_with_keyboard() {
 # 1.
 step_warm() {
   local log="$OUT_DIR/warm.log"
-  sill debug stats >"$log" 2>&1
-  grep -q "\"$MENU\"" "$log" || { echo "$MENU is not in 'sill debug stats'" >&2; return 1; }
-  if sill debug capture "$MENU" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
+  bardo-shell debug stats >"$log" 2>&1
+  grep -q "\"$MENU\"" "$log" || { echo "$MENU is not in 'bardo-shell debug stats'" >&2; return 1; }
+  if bardo-shell debug capture "$MENU" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
     echo "the power menu is mapped before any open" >&2; return 1
   fi
   echo "$MENU spawned at start, hidden" | tee -a "$log" >&2
@@ -115,15 +115,15 @@ step_warm() {
 step_open_close_toggle() {
   local log="$OUT_DIR/open.log"
   : >"$log"
-  sill power-menu open >>"$log" 2>&1 || return 1
+  bardo-shell power-menu open >>"$log" 2>&1 || return 1
   wait_surface "$MENU" 30 up || { echo "open: never mapped" >&2; return 1; }
   sleep 0.8
   shows "$log" "$SHOTS/power-menu.png" || { echo "open: the sheet did not draw" >&2; return 1; }
-  sill power-menu close >>"$log" 2>&1 || return 1
+  bardo-shell power-menu close >>"$log" 2>&1 || return 1
   wait_surface "$MENU" 20 down || { echo "close: still mapped" >&2; return 1; }
-  sill power-menu toggle >>"$log" 2>&1 || return 1
+  bardo-shell power-menu toggle >>"$log" 2>&1 || return 1
   wait_surface "$MENU" 20 up || { echo "toggle: never mapped" >&2; return 1; }
-  sill power-menu toggle >>"$log" 2>&1 || return 1
+  bardo-shell power-menu toggle >>"$log" 2>&1 || return 1
   wait_surface "$MENU" 20 down || { echo "toggle: still mapped" >&2; return 1; }
   echo "open shows the alert on its sheet; close hides it; toggle twice round-trips" | tee -a "$log" >&2
 }
@@ -140,7 +140,7 @@ step_tab() {
   capture "$MENU" "$OUT_DIR/before-tab.png" || { echo "no capture before Tab" >&2; return 1; }
   type_keys "$log" Tab || return 2
   sleep 0.4
-  sill debug capture "$MENU" "$SHOTS/power-menu-tab.png" >>"$log" 2>&1 || { echo "no capture after Tab" >&2; return 1; }
+  bardo-shell debug capture "$MENU" "$SHOTS/power-menu-tab.png" >>"$log" 2>&1 || { echo "no capture after Tab" >&2; return 1; }
   before=$(changed_fraction "$OUT_DIR/before-tab.png" "$SHOTS/power-menu-tab.png")
   echo "Tab: $before of the frame changed" | tee -a "$log" >&2
   [ "$before" != 0.0000 ] || { echo "Tab: the keyboard did not move" >&2; return 1; }
@@ -153,7 +153,7 @@ step_presses_record() {
   : >"$log"
   if [ "$DRY_RUN" != proven ]; then
     echo "the dry run is not proven: no button is pressed" | tee -a "$log" >&2
-    sill power-menu close >/dev/null 2>&1
+    bardo-shell power-menu close >/dev/null 2>&1
     return 2
   fi
   wait_surface "$MENU" 5 up || { echo "the menu is not open for Space" >&2; return 1; }
@@ -190,7 +190,7 @@ step_escape() {
 # 6.
 step_idle() {
   local log="$OUT_DIR/idle.log" f0 f1
-  sill power-menu close >/dev/null 2>&1
+  bardo-shell power-menu close >/dev/null 2>&1
   sleep 1
   f0=$(frames_of "$MENU")
   sleep 5
@@ -204,7 +204,7 @@ step_real_keyboard() {
   local before
   [ "$DRY_RUN" = proven ] || { echo "no dry run proven: the menu is not opened" >&2; return 2; }
   before=$(count_log 'power_menu.keyboard=held')
-  sill power-menu open >/dev/null 2>&1 || return 1
+  bardo-shell power-menu open >/dev/null 2>&1 || return 1
   wait_surface "$MENU" 30 up || { echo "open: never mapped" >&2; return 1; }
   wait_log 'power_menu.keyboard=held' 30 1 "$before" || {
     echo "the menu never held the real keyboard" >&2; return 1; }
@@ -239,7 +239,7 @@ step_real_escape() {
 # Real 4.
 step_real_scrim_click() {
   [ "$DRY_RUN" = proven ] || return 2
-  sill power-menu open >/dev/null 2>&1 || return 1
+  bardo-shell power-menu open >/dev/null 2>&1 || return 1
   wait_surface "$MENU" 30 up || { echo "open: never mapped" >&2; return 1; }
   sleep 0.6
   click 40 $(( ${SIZE#*x} - 40 ))
@@ -268,7 +268,7 @@ else
   run_steps step_warm step_open_close_toggle step_tab step_presses_record step_escape step_idle
 fi
 status=$STATUS
-sill power-menu close >/dev/null 2>&1
+bardo-shell power-menu close >/dev/null 2>&1
 cleanup || status=1
 echo "logs in $OUT_DIR; captures in $SHOTS"
 exit "$status"

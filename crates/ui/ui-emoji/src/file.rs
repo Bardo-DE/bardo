@@ -3,7 +3,7 @@
 //!
 //! Our renderers draw colour emoji only from the COLRv1 build of Noto Color Emoji. Fedora ships
 //! it; Ubuntu and Arch ship the bitmap (CBDT) build, which draws nothing, so the desktop installer
-//! puts `Noto-COLRv1.ttf` in `<prefix>/share/fonts/quire/`. The search is a pure function of the
+//! puts `Noto-COLRv1.ttf` in `<prefix>/share/fonts/bardo/`. The search is a pure function of the
 //! environment values ([`EmojiDirs`]) and a [`FontFiles`] view of the disk; [`Disk`] is the one
 //! implementation that touches the real filesystem. A file is chosen only when it lists a `COLR`
 //! table, so a CBDT-only `NotoColorEmoji.ttf` is never the colour face, whatever it is called.
@@ -16,7 +16,7 @@ use std::path::{Path, PathBuf};
 const COLRV1_FILE: &str = "Noto-COLRv1.ttf";
 
 /// The directory under a data dir's `fonts` that the desktop installer fills.
-const QUIRE_DIR: &str = "quire";
+const QUIRE_DIR: &str = "bardo";
 
 /// `XDG_DATA_DIRS` when it is unset or empty.
 const DEFAULT_DATA_DIRS: &str = "/usr/local/share:/usr/share";
@@ -233,9 +233,9 @@ mod tests {
         assert_eq!(
             got,
             [
-                "/opt/a/fonts/quire/Noto-COLRv1.ttf",
-                "/opt/b/fonts/quire/Noto-COLRv1.ttf",
-                "/home/u/.local/share/fonts/quire/Noto-COLRv1.ttf",
+                "/opt/a/fonts/bardo/Noto-COLRv1.ttf",
+                "/opt/b/fonts/bardo/Noto-COLRv1.ttf",
+                "/home/u/.local/share/fonts/bardo/Noto-COLRv1.ttf",
                 "/usr/share/fonts/google-noto-color-emoji-fonts/Noto-COLRv1.ttf",
                 "/usr/share/fonts/noto/Noto-COLRv1.ttf",
             ]
@@ -251,7 +251,7 @@ mod tests {
                 [
                     "/usr/local/share/fonts/bardo/Noto-COLRv1.ttf",
                     "/usr/share/fonts/bardo/Noto-COLRv1.ttf",
-                    "/home/u/.local/share/fonts/quire/Noto-COLRv1.ttf",
+                    "/home/u/.local/share/fonts/bardo/Noto-COLRv1.ttf",
                 ]
             );
         }

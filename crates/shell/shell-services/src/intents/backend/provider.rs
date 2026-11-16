@@ -1,4 +1,4 @@
-//! sill as an `IntentProvider1`: the shell's own actions. intentd calls `Perform`; the provider
+//! bardo-shell as an `IntentProvider1`: the shell's own actions. intentd calls `Perform`; the provider
 //! reads the invocation into a [`ShellAction`], has the daemon do it (a [`ShellCall`]) and says
 //! how it went. Everything else a provider can be asked is answered with nothing to say: the
 //! shell indexes nothing, previews nothing and declares no `dry_run`.
@@ -161,7 +161,7 @@ impl ContextSource for ShellContext {
         ContextSnapshot {
             app: self.app.clone(),
             window: Labelled {
-                value: "sill".to_owned(),
+                value: "bardo-shell".to_owned(),
                 label: Label::trusted_user(),
             },
             here: Here::Nowhere,

@@ -213,7 +213,7 @@ impl WireState {
 
     /// A fault, by kind only (never what was being read or written).
     fn fault(&self, what: &str, kind: ErrorKind) {
-        eprintln!("sill: clipboard: {what}: {kind}");
+        eprintln!("bardo-shell: clipboard: {what}: {kind}");
         self.tell.say(ClipEvent::Skipped(Skipped::Empty));
     }
 }

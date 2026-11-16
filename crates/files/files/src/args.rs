@@ -1,4 +1,4 @@
-//! The command line: `files [--dbus-activated] [FOLDER]`.
+//! The command line: `bardo-files [--dbus-activated] [FOLDER]`.
 //!
 //! `FOLDER` is a path, a `file://` address (the desktop launches `files %U`) or `trash:///`, the
 //! Trash. More than one is
@@ -60,7 +60,7 @@ impl Args {
     }
 }
 
-/// `files --write-schema DIR`: the folder to write the settings schema into, when that is what was
+/// `bardo-files --write-schema DIR`: the folder to write the settings schema into, when that is what was
 /// asked (it is the whole command line); the error is a sentence for the person.
 pub fn schema_dir(args: &[OsString]) -> Option<Result<PathBuf, String>> {
     let (first, rest) = args.split_first()?;

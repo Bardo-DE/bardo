@@ -57,7 +57,7 @@ impl Outlets {
             _ => Ok(()),
         };
         if let Err(error) = sent {
-            eprintln!("sill: launcher activation: {error}");
+            eprintln!("bardo-shell: launcher activation: {error}");
         }
     }
 }

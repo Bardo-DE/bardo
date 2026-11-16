@@ -1,4 +1,4 @@
-//! Night Shift's policy from `display.night_warmth`: where sill warms the monitors itself over
+//! Night Shift's policy from `display.night_warmth`: where bardo-shell warms the monitors itself over
 //! DDC/CI, casement's software night light is told to leave those alone, so they are not warmed
 //! twice, and keeps warming the rest.
 

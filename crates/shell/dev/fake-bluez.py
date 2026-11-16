@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A made-up BlueZ for dev/accept/control-center.sh --real-input: `org.bluez` on the private
 bus named by argv[1], never the system bus, with one adapter (hci0, powered) and one paired,
-connected keyboard. It answers what sill's Bluetooth service asks (the object manager at `/`,
+connected keyboard. It answers what bardo-shell's Bluetooth service asks (the object manager at `/`,
 `Adapter1.Powered` read and set, `Device1`'s fields, Connect and Disconnect) and emits the
 property changes BlueZ would. Every `Powered` set is appended to argv[2] ("powered true" or
 "powered false"), which is how the script reads what the control center did.

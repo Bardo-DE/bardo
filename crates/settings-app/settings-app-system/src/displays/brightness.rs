@@ -1,5 +1,5 @@
 //! The brightness sliders' side of the shell's bus: `org.bardo.Displays1`, which lists the
-//! displays whose brightness sill can read and sets one. The owner of the name must hold the
+//! displays whose brightness bardo-shell can read and sets one. The owner of the name must hold the
 //! shell's role before it is read or told anything (`live::pinned`), and a call goes to the owner
 //! that was confirmed. Nothing is started: a shell that is not there has no sliders.
 

@@ -8,7 +8,7 @@
 //! Why a layer and not an xdg popup from the clock (design/20 §1.6 allows either): macOS 11 on
 //! opens Notification Center from the clock as a full-height column pinned to the right edge,
 //! not a menu hanging from the item; the history can fill the output's height, and the widgets
-//! slot below it wants that height too; `sill notifications toggle` must open it without a
+//! slot below it wants that height too; `bardo-shell notifications toggle` must open it without a
 //! pointer serial, which a grabbing popup needs (the control center's problem); and a popup
 //! would join the bar's hover switch, which Notification Center does not.
 

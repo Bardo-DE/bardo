@@ -1,4 +1,4 @@
-//! The words between `super::PamHelper` and its child, `sill auth-check`: pure, so both ends
+//! The words between `super::PamHelper` and its child, `bardo-shell auth-check`: pure, so both ends
 //! are table-tested without a process.
 //!
 //! The request is the child's whole stdin: the PAM service, the user and the secret, each
@@ -166,7 +166,7 @@ mod tests {
 
     fn request(secret: &str) -> HelperRequest {
         HelperRequest {
-            service: PamService("sill".to_owned()),
+            service: PamService("bardo-shell".to_owned()),
             attempt: Attempt {
                 user: UserName("ada".to_owned()),
                 secret: Secret::new(secret),
@@ -176,15 +176,18 @@ mod tests {
 
     #[test]
     fn requests_round_trip_and_bad_ones_are_refused() {
-        assert_eq!(encode_request(&request("pw")), b"sill\0ada\0pw\0".to_vec());
+        assert_eq!(
+            encode_request(&request("pw")),
+            b"bardo-shell\0ada\0pw\0".to_vec()
+        );
         for secret in ["pw", "", "with space", "new\nline", "ünïcode"] {
             let bytes = encode_request(&request(secret));
             assert_eq!(decode_request(&bytes), Ok(request(secret)), "{secret:?}");
         }
         let bad: [(&[u8], ProtocolError); 3] = [
-            (b"sill\0ada\0", ProtocolError::Fields),
-            (b"sill\0ada\0pw", ProtocolError::Fields),
-            (b"sill\0\xff\0pw\0", ProtocolError::Encoding),
+            (b"bardo-shell\0ada\0", ProtocolError::Fields),
+            (b"bardo-shell\0ada\0pw", ProtocolError::Fields),
+            (b"bardo-shell\0\xff\0pw\0", ProtocolError::Encoding),
         ];
         for (bytes, want) in bad {
             assert_eq!(decode_request(bytes), Err(want), "{bytes:?}");

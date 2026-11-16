@@ -1,7 +1,7 @@
 //! Spellchecking for `ui_components::prelude::EditSurface` (the `spell` feature; design/04-COMPONENTS.md
 //! section 50): `ui_components::prelude::SpellService` on Blitz. The system's Hunspell dictionaries
 //! (`/usr/share/hunspell`; nothing is bundled) are read and checked by `spellbook`, unmodified
-//! (MPL-2.0), on a worker thread; learned words go to `~/.local/share/quire/spelling/<lang>.dic`.
+//! (MPL-2.0), on a worker thread; learned words go to `~/.local/share/bardo/spelling/<lang>.dic`.
 //!
 //! An app provides it at the top of its root with [`provide`] (the system's dictionaries, in
 //! the locale's language); a test gives it dictionaries of its own with [`provide_with`].

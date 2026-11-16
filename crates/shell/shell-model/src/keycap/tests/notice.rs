@@ -65,7 +65,7 @@ fn each_attention_has_its_words() {
             "failed",
             Attention::Failed,
             "Command-key layout stopped",
-            "Keys work as on a standard keyboard. Run `sill keycap retry` to try again.",
+            "Keys work as on a standard keyboard. Run `bardo-shell keycap retry` to try again.",
         ),
         (
             "conflict",
@@ -77,7 +77,7 @@ fn each_attention_has_its_words() {
             "paused",
             Attention::Paused,
             "Command-key layout paused",
-            "Keys work as on a standard keyboard. Run `sill keycap resume` to turn it back on.",
+            "Keys work as on a standard keyboard. Run `bardo-shell keycap resume` to turn it back on.",
         ),
     ];
     for (case, attention, summary, body) in cases {

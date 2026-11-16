@@ -27,9 +27,9 @@ pub struct ShotPolicy {
 pub enum ShotCommand {
     /// Watch and take per `policy` from now on; the first one ends the passive start.
     Configure(ShotPolicy),
-    /// `sill screenshot KIND`: run the tool (ignored while one is still running).
+    /// `bardo-shell screenshot KIND`: run the tool (ignored while one is still running).
     Take(ShotKind),
-    /// `sill debug screenshot PATH`: as if the watch had just seen `PATH` (any name, any folder).
+    /// `bardo-shell debug screenshot PATH`: as if the watch had just seen `PATH` (any name, any folder).
     Announce(PathBuf),
     /// The thumbnail went away, and why: opened, kept, trashed or dragged out.
     Leave(ShotId, ShotLeave),

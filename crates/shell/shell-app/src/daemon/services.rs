@@ -18,7 +18,7 @@ use crate::policy::{
     wallpaper::WallpaperBridge,
 };
 
-/// Tell each service that is passive until told what it should do: sill's own lock and polkit
+/// Tell each service that is passive until told what it should do: bardo-shell's own lock and polkit
 /// agent, and the policies the settings decide (the first one sent ends a service's passive
 /// start, and each is sent again whenever its answer changes).
 pub(crate) fn follow_settings(
@@ -38,7 +38,7 @@ pub(crate) fn follow_settings(
         },
         services.notifications.control.clone(),
     );
-    // The lock and the polkit agent are sill's own; the seat at intentd (the confirmation sheet,
+    // The lock and the polkit agent are bardo-shell's own; the seat at intentd (the confirmation sheet,
     // the terminal's grants, `org.bardo.Shell`), the accounts sheet and the outputs' and
     // workspaces' names claim themselves at start (`Env::claims`).
     let _ = services.locker.control.send(LockerCommand::Configure);
@@ -48,8 +48,8 @@ pub(crate) fn follow_settings(
         .polkit_agent
         .control
         .send(PolkitCommand::Policy(true));
-    // sill's own idle follows `idle.*` and `session.lock_grace_s`, and is `Off` anywhere but a
-    // sill session.
+    // bardo-shell's own idle follows `idle.*` and `session.lock_grace_s`, and is `Off` anywhere but a
+    // bardo-shell session.
     let idle = IdleBridge {
         times: env.idle_times,
     };

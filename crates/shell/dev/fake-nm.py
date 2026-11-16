@@ -2,7 +2,7 @@
 """A made-up NetworkManager for dev/accept/control-center.sh: `org.freedesktop.NetworkManager`
 on the private bus named by argv[1], never the system bus, with one Wi-Fi device (wlan0), three
 access points (one active and connected), one saved connection and a primary wireless
-connection. It answers what sill's Network and Wi-Fi services ask: the manager's
+connection. It answers what bardo-shell's Network and Wi-Fi services ask: the manager's
 `PrimaryConnection`, `ActivatingConnection`, `Connectivity`, `WirelessEnabled`,
 `WirelessHardwareEnabled` and `GetAllDevices`; the device's `DeviceType`, `State`,
 `AccessPoints`, `ActiveAccessPoint`, `LastScan`, `RequestScan` and `Disconnect`; each access

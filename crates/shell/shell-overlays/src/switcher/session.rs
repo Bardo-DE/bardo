@@ -12,9 +12,9 @@ use shell_ui_kit::links::AskSerial;
 /// Whose windows a session's verbs touch.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Windows {
-    /// The compositor's: from `sill switcher next|prev`.
+    /// The compositor's: from `bardo-shell switcher next|prev`.
     Live,
-    /// None: `sill debug switcher`'s made-up apps.
+    /// None: `bardo-shell debug switcher`'s made-up apps.
     MadeUp,
 }
 

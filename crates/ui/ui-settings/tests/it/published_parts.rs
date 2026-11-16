@@ -12,11 +12,11 @@ fn classes(names: &[&str]) -> Vec<String> {
 #[test]
 fn only_the_apps_own_prefix_is_kept_on_write_and_on_read() {
     let parts = PublishedParts::new(
-        "sill",
+        "shell",
         classes(&["sill-bar", "ds-row", "mailo-list", "sill-bar-item"]),
     );
     assert_eq!(parts.classes, classes(&["sill-bar", "sill-bar-item"]));
-    let text = "app = \"sill\"\nclasses = [\"sill-bar\", \"ds-chip\"]\n";
+    let text = "app = \"shell\"\nclasses = [\"sill-bar\", \"ds-chip\"]\n";
     let read = PublishedParts::from_toml(text).expect("parses");
     assert_eq!(read.classes, classes(&["sill-bar"]));
     assert_eq!(PublishedParts::from_toml(&parts.to_toml()), Ok(parts));
@@ -27,14 +27,14 @@ fn every_app_is_found_once_and_a_misnamed_file_is_skipped() {
     let scratch = Scratch::new();
     let system = scratch.root().join("system");
     let person = scratch.root().join("person");
-    PublishedParts::new("sill", classes(&["sill-bar"]))
+    PublishedParts::new("shell", classes(&["sill-bar"]))
         .write_to(&system)
         .expect("writes");
     PublishedParts::new("files", classes(&["files-path"]))
         .write_to(&system)
         .expect("writes");
     // The person's directory comes last: it may add an app, never replace an installed one.
-    PublishedParts::new("sill", classes(&["sill-dock"]))
+    PublishedParts::new("shell", classes(&["sill-dock"]))
         .write_to(&person)
         .expect("writes");
     PublishedParts::new("temor", classes(&["temor-tab"]))
@@ -50,7 +50,7 @@ fn every_app_is_found_once_and_a_misnamed_file_is_skipped() {
         apps,
         [
             ("files", &classes(&["files-path"])[..]),
-            ("sill", &classes(&["sill-bar"])[..]),
+            ("shell", &classes(&["sill-bar"])[..]),
             ("temor", &classes(&["temor-tab"])[..]),
         ]
     );
@@ -66,9 +66,9 @@ fn the_directories_are_the_system_ones_then_the_persons() {
     assert_eq!(
         dirs,
         [
-            "/usr/local/share/quire/selectors",
+            "/usr/local/share/bardo/selectors",
             "/usr/share/bardo/selectors",
-            "/home/p/.local/share/quire/selectors",
+            "/home/p/.local/share/bardo/selectors",
         ]
         .map(std::path::PathBuf::from)
     );

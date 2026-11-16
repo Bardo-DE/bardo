@@ -52,7 +52,7 @@ impl Slot {
 pub struct StyleHomes {
     /// The look Extension's folder.
     pub look: Option<PathBuf>,
-    /// `~/.config/quire`.
+    /// `~/.config/bardo`.
     pub desktop: Option<PathBuf>,
     /// `~/.config/<app>`.
     pub app: Option<PathBuf>,

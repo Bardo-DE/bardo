@@ -224,7 +224,7 @@ repaint on every switch and would compete with the tint as the Space's colour cl
 
 ## 10. Storage (settled path and schema)
 
-`$XDG_CONFIG_HOME/quire/spaces.json`, atomic write (the `ui-settings` writer), watched with
+`$XDG_CONFIG_HOME/bardo/spaces.json`, atomic write (the `ui-settings` writer), watched with
 `notify` (rename replaces inode; debounce 30 ms). **Settled** (2026-09-24, sill gap Q3):
 `ds::style::space::store::SpaceStore` is this schema (`crates/ds-style/src/space/store.rs`); a consumer reads, writes and
 watches it through `ui-settings`'s generic settings file API (`Settings<SpaceStore>` with

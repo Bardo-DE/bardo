@@ -45,7 +45,7 @@ fn corner_key(path: &str) -> KeySpec {
     }
 }
 
-fn sill() -> Schema {
+fn shell_schema() -> Schema {
     let corners = ["top_left", "top_right", "bottom_left", "bottom_right"];
     let keys: Vec<KeySpec> = corners
         .iter()
@@ -54,7 +54,7 @@ fn sill() -> Schema {
     Schema {
         footnotes: Vec::new(),
         pages: Vec::new(),
-        app: AppId("sill".to_owned()),
+        app: AppId("bardo-shell".to_owned()),
         file: FilePath(FILE.to_owned()),
         foreign: Default::default(),
         version: 1,
@@ -64,8 +64,8 @@ fn sill() -> Schema {
 
 fn world(name: &str, fake: &Fake) -> Sandbox {
     let sandbox = Sandbox::new(name).with_corners(fake.desk());
-    sandbox.remove_schema("sill");
-    sandbox.install_schema(&sill());
+    sandbox.remove_schema("bardo-shell");
+    sandbox.install_schema(&shell_schema());
     sandbox
 }
 

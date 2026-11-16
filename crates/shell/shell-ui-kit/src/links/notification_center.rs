@@ -1,5 +1,5 @@
 //! Whether the notification center is open, and on which output: one shared state written by
-//! every opener (the bar's clock, `sill notifications {toggle,open,close}`) and followed by
+//! every opener (the bar's clock, `bardo-shell notifications {toggle,open,close}`) and followed by
 //! every output's center surface onto its own visibility, the way the power menu shares
 //! `PowerMenuLink`. The center carries nothing of its own, so it is a bare [`PanelLink`].
 

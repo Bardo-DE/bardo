@@ -108,7 +108,7 @@ services! {
         };
         /// The clipboard history: passive until the daemon's policy.
         clipboard: ClipboardService = ();
-        /// sill's own lock screen; the session's Lock goes through it.
+        /// bardo-shell's own lock screen; the session's Lock goes through it.
         locker: LockerService = ();
         session: SessionService = SessionLinks {
             locker: locker.control.clone(),
@@ -128,7 +128,7 @@ services! {
         });
         /// The lock screen's password check (idle until a secret is submitted).
         auth: AuthService = ();
-        /// sill's own idle: passive until the daemon's policy, and `Off` anywhere but a sill
+        /// bardo-shell's own idle: passive until the daemon's policy, and `Off` anywhere but a bardo-shell
         /// session.
         idle: IdleService = IdleLinks {
             lock: locker.state.clone(),
@@ -199,7 +199,7 @@ services! {
         events: EventsService = ();
         /// The polkit agent (passive until the daemon's policy).
         polkit_agent: PolkitAgentService = ();
-        /// sill's seat at intentd: the confirmation sheet it serves, the terminal's grants, the shell's
+        /// bardo-shell's seat at intentd: the confirmation sheet it serves, the terminal's grants, the shell's
         /// own actions as `org.bardo.Shell`; passive until the daemon says to serve.
         intents: IntentsService = IntentsLinks {
             calls: wiring.shell_calls,

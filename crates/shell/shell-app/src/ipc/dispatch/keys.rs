@@ -1,4 +1,4 @@
-//! The brightness and volume keys (`sill display ...`): the level change goes to the displays or
+//! The brightness and volume keys (`bardo-shell display ...`): the level change goes to the displays or
 //! the volume service, and the OSD follows a change that was carried out.
 
 use shell_ipc::act::{DisplayRequest, LevelRequest, VolumeRequest};

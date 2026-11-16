@@ -55,7 +55,7 @@ pub struct ThumbAction {
     pub onpress: EventHandler<()>,
 }
 
-/// The screenshot thumbnail. `image` is drawn at `width` (240 by default, sill's surface) in a
+/// The screenshot thumbnail. `image` is drawn at `width` (240 by default, bardo-shell's surface) in a
 /// box of `size`'s ratio held between 2:1 and 16:10. `common.id` names the card's plate for the
 /// host's input and blur region (`Element("thumb")`); the consumer's classes and data go on its
 /// root. `swipe` turns swipe to dismiss on, with

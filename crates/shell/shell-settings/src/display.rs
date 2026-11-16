@@ -1,4 +1,4 @@
-//! `display.*`: how sill treats displays (brightness and volume keys, night warmth, font
+//! `display.*`: how bardo-shell treats displays (brightness and volume keys, night warmth, font
 //! rendering for other apps, colour management). All Advanced for now (design/22 §5 has no
 //! Displays page yet). There is no scale key: the compositor owns a display's scale.
 

@@ -1,7 +1,7 @@
 # Surface names in your style.css
 
-Your stylesheet is `~/.config/sill/style.css`. It is read live: save the file and every surface
-restyles, delete it and they return to the design system's own look. `sill style check [FILE]`
+Your stylesheet is `~/.config/bardo/shell/style.css`. It is read live: save the file and every surface
+restyles, delete it and they return to the design system's own look. `bardo-shell style check [FILE]`
 reports what is wrong or worth knowing in it.
 
 Every surface's root carries `data-surface`, so `.ds[data-surface=bar]` is the bar's root. The rest of the public

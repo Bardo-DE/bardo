@@ -107,12 +107,12 @@ pub enum Exposure {
     Advanced,
 }
 
-/// Whether an agent (the companion, through detent's intents) may set a key. Two states, not a
+/// Whether an agent (the companion, through bardo-settings's intents) may set a key. Two states, not a
 /// `bool`, so a call site names the choice. A key is hands-off unless its program marks it, so a
 /// schema written before the mark existed keeps every key hands-off.
 ///
 /// Wire form: the `[[key]]` table of the schema file carries `agent = "settable"` for a
-/// settable key and nothing for a hands-off one (detent reads that spelling).
+/// settable key and nothing for a hands-off one (bardo-settings reads that spelling).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AgentSetting {

@@ -7,7 +7,7 @@ use shell_settings::ShellFile;
 use crate::links::Links;
 use crate::root::{SurfaceName, use_host_signals};
 
-/// A surface the compositor's session lock draws instead of a layer surface: sill has one, the
+/// A surface the compositor's session lock draws instead of a layer surface: bardo-shell has one, the
 /// lock screen. Its link is [`crate::links::LockLink`].
 #[derive(Debug, Clone, Copy)]
 pub struct LockSurface {

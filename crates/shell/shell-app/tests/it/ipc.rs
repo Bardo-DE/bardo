@@ -12,7 +12,7 @@ use shell_ipc::response::{FailureKind, Response};
 use shell_ipc::show::LauncherRequest;
 
 /// A `Listening` on a throwaway socket under a per-test temp directory, so this suite never
-/// touches the real `sill` agent's socket even when it runs alongside a live daemon.
+/// touches the real `bardo-shell` agent's socket even when it runs alongside a live daemon.
 fn temp_door(name: &str) -> (service_locator::Agent, service_locator::Listening) {
     // Short on purpose: the socket path must fit sun_path (108 bytes) under any TMPDIR; the pid
     // and the clock already make it unique, and `name` is only for messages.

@@ -28,14 +28,14 @@ pub(super) async fn timeline(
     let waiting = match waiting {
         Ok(rows) => CompanionEvent::WaitingLoaded(generation, rows),
         Err(why) => {
-            eprintln!("sill: companion: what waits to be remembered: {why}");
+            eprintln!("bardo-shell: companion: what waits to be remembered: {why}");
             CompanionEvent::WaitingFailed(generation)
         }
     };
     let timeline = match timeline {
         Ok(page) => CompanionEvent::TimelineLoaded(generation, page.entries),
         Err(why) => {
-            eprintln!("sill: companion: the memory timeline: {why}");
+            eprintln!("bardo-shell: companion: the memory timeline: {why}");
             CompanionEvent::TimelineFailed(generation)
         }
     };
@@ -52,7 +52,7 @@ pub(super) async fn settle(
     match settled(&connection, &fact, verb, at).await {
         Ok(()) => CompanionEvent::Settled(fact),
         Err(why) => {
-            eprintln!("sill: companion: answering a memory: {why}");
+            eprintln!("bardo-shell: companion: answering a memory: {why}");
             CompanionEvent::SettleFailed
         }
     }

@@ -1,5 +1,5 @@
 //! Open at Login on a scratch config folder: the entry is a marked copy, turning off removes only
-//! a file sill wrote, and a file someone else put there is shown as on and kept.
+//! a file bardo-shell wrote, and a file someone else put there is shown as on and kept.
 
 use shell_launcher::AppId;
 use shell_services::autostart::{Login, file_of, login_of, turn_off, turn_on};
@@ -33,7 +33,7 @@ fn turning_on_copies_the_entry_with_one_line_added_and_off_removes_it() {
         written,
         ENTRY.replacen(
             "[Desktop Entry]\n",
-            "[Desktop Entry]\nX-Quire-Autostart=true\n",
+            "[Desktop Entry]\nX-Bardo-Autostart=true\n",
             1
         )
     );

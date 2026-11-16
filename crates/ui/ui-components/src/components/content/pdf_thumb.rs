@@ -1,4 +1,4 @@
-//! PdfThumb: a PDF's first page as a thumbnail (design/04-COMPONENTS.md section 45; sill M9's
+//! PdfThumb: a PDF's first page as a thumbnail (design/04-COMPONENTS.md section 45; bardo-shell M9's
 //! launcher preview, and design/20 section 2.4's Quick Look later).
 //!
 //! ds draws; it never reads a file or rasterises (it is renderer-free, `scripts/check-boundary.sh`).

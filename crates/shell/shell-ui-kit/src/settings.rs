@@ -22,7 +22,7 @@ pub struct TurnOnStyles;
 pub struct SettingsFeed {
     /// The settled `settings.toml`.
     pub settings: watch::Receiver<ShellFile>,
-    /// The settled styles: the desktop-wide `bardo/style.css` and sill's own `style.css`, and the
+    /// The settled styles: the desktop-wide `bardo/style.css` and bardo-shell's own `style.css`, and the
     /// look (empty until the look setting lands), with the folder each may read files from.
     pub styles: watch::Receiver<Styles>,
     /// The crash guard of this start's styles; none in a render that has no guard.

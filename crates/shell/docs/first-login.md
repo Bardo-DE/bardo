@@ -25,9 +25,9 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 
    `dist/install.sh` runs the same `cargo metadata --locked` check as its step 2 and, when it fails,
    names the siblings that are behind and the `git -C <path> pull --ff-only` that fixes each; follow that
-   advice and run it again. Install only when `sill` and `quire` are both on a merged master (a
+   advice and run it again. Install only when `bardo-shell` and `quire` are both on a merged master (a
    quire merge breaks sill until sill follows it).
-3. **Remove a stale binary that would shadow the install:** `rm -f ~/.cargo/bin/sill`.
+3. **Remove a stale binary that would shadow the install:** `rm -f ~/.cargo/bin/bardo-shell`.
 4. **Install sill and the session.** The login entry "sill (casement)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, detent, sill, keycap and the rest, then the session files). sill's own part, from `~/sill`:
 
    ```sh
@@ -43,7 +43,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    Nothing is installed for the linker.
 
    It installs `/usr/local/bin/bardo-shell`, `/etc/pam.d/bardo-shell`, the intents manifest
-   `/usr/local/share/quire/intents/org.bardo.Shell.toml`, the skills and the settings schema; it also
+   `/usr/local/share/bardo/intents/org.bardo.Shell.toml`, the skills and the settings schema; it also
    copies the keycap layer to `~/.config/keycap/keycap.toml` when you have none (an existing file is
    never touched). It is safe to run again. Then install the session from `~/desktop` (it writes
    `bardo-session` and the `sill (casement)` entry in `wayland-sessions`). Confirm:
@@ -78,7 +78,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    Cmd+Space as Alt+Space (KRunner), which opens nothing in sill. So the sill session has its own layer,
    `~/.config/keycap/keycap.toml` (copied from `dist/keycap/keycap.toml` by the install). sill forwards
    that file to keycap and keycap lays it over the machine file, so in sill Cmd+Space is Super+Space and
-   Cmd+Shift+3/4/5 is Print (`sill screenshot area`); Plasma never forwards it and keeps `alt+space`.
+   Cmd+Shift+3/4/5 is Print (`bardo-shell screenshot area`); Plasma never forwards it and keeps `alt+space`.
    It also sends Cmd+Tab and Shift+Cmd+Tab to the app switcher (Super+Tab, with Super held while Cmd is held, so the
    panel stays up), Shift+Cmd+Q to the power menu and Option+Cmd+Esc to Force Quit. If you installed before these
    were added, the install does not touch your file: it prints the rules yours lacks and the one command to
@@ -168,7 +168,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 ### The agent stack (none of it blocks the session)
 
 - Do not install or enable `bardo-voiced.service`: its binary is still a skeleton that exits 2.
-- Summon the assistant once with no model installed (`sill companion summon`): it must
+- Summon the assistant once with no model installed (`bardo-shell companion summon`): it must
   end with a plain failure within a few seconds, and the session keeps working.
 - `journalctl --user -u memoryd -b`: no crash loop. With the keyring locked or absent, memoryd reports the
   Space locked and intentd counts audit records as lost; that is expected.
@@ -178,11 +178,11 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 ## 4. Known gaps (decided, not bugs)
 
 - No Toshy: the Mac layout is keycap's. Without keycap running, Cmd is Cmd. A lone Cmd tap has no sender yet (the assistant's
-  Cmd double-tap); use `sill companion summon`.
-- `sill workspace next` and `prev` stop at the first and last workspace (no wrap).
-- Option+Cmd+Esc (Force Quit Applications) does nothing until casement runs `sill force-quit toggle`
+  Cmd double-tap); use `bardo-shell companion summon`.
+- `bardo-shell workspace next` and `prev` stop at the first and last workspace (no wrap).
+- Option+Cmd+Esc (Force Quit Applications) does nothing until casement runs `bardo-shell force-quit toggle`
   for its Force Quit chord (today the chord is swallowed by a command that does nothing). Run
-  `sill force-quit toggle` from a terminal to see the panel.
+  `bardo-shell force-quit toggle` from a terminal to see the panel.
 - No sink list in the control centre (G352): switch audio in Settings > Sound or `wpctl set-default <id>`.
 - Mouse settings are casement's (`~/.config/compositor/settings.toml`, section 1, item 8), or per device in
   Settings > Mouse (the "palmrest" devices).

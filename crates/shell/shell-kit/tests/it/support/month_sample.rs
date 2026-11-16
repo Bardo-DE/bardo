@@ -1,4 +1,4 @@
-//! A month laid out the way the shell lays it out (sill's `month_grid`), so the tests and the
+//! A month laid out the way the shell lays it out (bardo-shell's `month_grid`), so the tests and the
 //! gallery have real months to draw: proleptic Gregorian civil dates by day count, the first
 //! weekday, the neighbours' padding days, today, the busy days, and each row's ISO week (the
 //! week of its Thursday). quire itself never computes a month; this stands in for the caller.

@@ -3,7 +3,7 @@
 //!
 //! A service of its own beside [`super::NetworkService`] rather than more fields on `Network`: the
 //! bar draws `Network` and would repaint on every scan otherwise, and the two share nothing but the
-//! bus. Same proxies as the rest of the network (sill's own, in `nm`).
+//! bus. Same proxies as the rest of the network (bardo-shell's own, in `nm`).
 
 mod backend;
 

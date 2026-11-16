@@ -1,5 +1,5 @@
 //! How layer-shell-host sets the lock surfaces up: their name prefix, `sill-lock`, so each is
-//! `sill-lock/<output>` (what `sill debug capture` and `debug stats` address).
+//! `sill-lock/<output>` (what `bardo-shell debug capture` and `debug stats` address).
 
 use layer_shell_host::LockConfig;
 use shell_settings::ShellFile;

@@ -1,6 +1,6 @@
 //! The settings provider against a fixture schema directory: two files
-//! (`tests/fixtures/settings/{quire,sill}.settings.toml`) standing in for an installed quire
-//! schema and an installed sill schema, discovered and indexed together — design/22-SETTINGS.md
+//! (`tests/fixtures/settings/{quire,bardo-shell}.settings.toml`) standing in for an installed quire
+//! schema and an installed bardo-shell schema, discovered and indexed together — design/22-SETTINGS.md
 //! §9.3's "the launcher's Settings provider reads the same schemas... no hand-kept table".
 //!
 //! The four deep-link examples design/22-SETTINGS.md itself names: §9.6's acceptance list
@@ -97,7 +97,7 @@ fn both_fixture_schemas_are_discovered() {
         ("Accent", "appearance"),
         ("Magnification", "dock"),
         ("Natural scrolling", "mouse-and-gestures"),
-        ("Modules", "sill"),
+        ("Modules", "bardo-shell"),
     ] {
         let targets = query_target(&provider, label);
         assert!(
@@ -120,5 +120,5 @@ fn a_third_party_page_key_carries_its_app_id_as_the_page_label() {
         .flatten()
         .find(|item| item.id.0.ends_with("control_center.modules"))
         .expect("control_center.modules should be found by its label");
-    assert_eq!(item.subtitle, "sill");
+    assert_eq!(item.subtitle, "bardo-shell");
 }

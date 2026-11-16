@@ -146,7 +146,7 @@ fn it_is_applied_on_top_and_never_offered_as_a_choice() {
     let person = scratch.root("home");
     install_entries(&person, "org.example.Paper", ICONS);
     write(
-        &person.join("quire/extensions/org.example.Paper/file-icons/image.svg"),
+        &person.join("bardo/extensions/org.example.Paper/file-icons/image.svg"),
         SVG,
     );
     let changes = YourChanges::in_root(&person);

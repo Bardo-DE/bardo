@@ -1,4 +1,4 @@
-app = "palmrest"
+app = "mouse-gestures"
 file = "mouse-gestures/gestures.toml"
 version = 1
 

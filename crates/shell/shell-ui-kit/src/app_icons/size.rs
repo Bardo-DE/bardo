@@ -3,7 +3,7 @@
 //!
 //! `ui_settings::app_icon_path` already picks the nearest file to a size a
 //! caller asks for, so it could take a raw device-pixel count; [`pick`] stays in front of it
-//! anyway (behaviour quire does not cover), because sill still needs to know the bucket itself,
+//! anyway (behaviour quire does not cover), because bardo-shell still needs to know the bucket itself,
 //! not just get a file back: the retint cache key names it, and a dock tile is loaded once for
 //! the largest size it is ever drawn at (the magnified size when magnification is on), so a
 //! magnification sweep never swaps files mid-flight — [`pick`] is what makes that one, stable

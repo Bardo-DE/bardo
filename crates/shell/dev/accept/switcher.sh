@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # App switcher acceptance (design/13 §13.3.5, design/20 §1.11), on casement
-# (brought up and ended by start_compositor). Starts `sill run`
+# (brought up and ended by start_compositor). Starts `bardo-shell run`
 # from this checkout's build (BARDO_SHELL_PROFILE, debug by default; `--features debug`) with its own XDG_RUNTIME_DIR
 # (WAYLAND_DISPLAY as an absolute socket path) and a scratch XDG_CONFIG_HOME, and three windows of
 # its own inside the nested compositor, never the user's:
@@ -11,10 +11,10 @@
 # Started term, demo, calc, so the most recently used order is calc, demo, term. Every window
 # is killed at the end.
 #
-# The chord is `sill switcher next|prev`, as the compositor's window-switch shortcut runs it.
-# Its modifier is Alt, injected with `sill debug key SURFACE Alt --action press|release`
+# The chord is `bardo-shell switcher next|prev`, as the compositor's window-switch shortcut runs it.
+# Its modifier is Alt, injected with `bardo-shell debug key SURFACE Alt --action press|release`
 # (layer-shell-host's `Inject::Key`, which moves the seat modifiers the switcher reads through
-# `use_modifiers`); its release is the release. The keys pressed while Alt is held are `sill debug
+# `use_modifiers`); its release is the release. The keys pressed while Alt is held are `bardo-shell debug
 # key SURFACE KEY` too, and nothing reaches the user's session: every key goes to the switcher
 # surface of this run's own daemon. The show delay is 400 ms (`switcher.show_delay_ms`). Right and
 # Left step as Tab and Shift+Tab do. The script needs casement for the windows
@@ -60,19 +60,19 @@ if [ "$COMPOSITOR" = casement ]; then
   exit 2
 fi
 scratch_new
-mkdir -p "$CONFIG/sill"
+mkdir -p "$CONFIG/bardo/shell"
 PIDS=()
 HOLD=
 
 # Alt down on the switcher, held for $1 ms (none: a bare tap of Alt), then up: the modifier the
 # switcher reads through `use_modifiers`.
 alt_held() {
-  sill debug key "$SWITCHER" Alt --action press >>"$OUT_DIR/keys.log" 2>&1
+  bardo-shell debug key "$SWITCHER" Alt --action press >>"$OUT_DIR/keys.log" 2>&1
   [ -n "${1:-}" ] && sleep "$(python3 -c "print($1 / 1000)")"
-  sill debug key "$SWITCHER" Alt --action release >>"$OUT_DIR/keys.log" 2>&1
+  bardo-shell debug key "$SWITCHER" Alt --action release >>"$OUT_DIR/keys.log" 2>&1
 }
-# Press the named key (`sill debug key` names) on the switcher.
-press() { sill debug key "$SWITCHER" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
+# Press the named key (`bardo-shell debug key` names) on the switcher.
+press() { bardo-shell debug key "$SWITCHER" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
 
 # The mean absolute difference of two PNGs' RGBA bytes (0-255).
 diff_of() {
@@ -90,7 +90,7 @@ EOF
 
 # Capture the switcher to $1; succeeds only when the panel drew (over 1000 opaque pixels).
 panel_to() {
-  sill debug capture "$SWITCHER" "$1" >/dev/null 2>&1 || return 1
+  bardo-shell debug capture "$SWITCHER" "$1" >/dev/null 2>&1 || return 1
   [ "$(opaque_pixels "$1")" -gt 1000 ]
 }
 
@@ -110,7 +110,7 @@ wait_hidden() {
   local start
   start=$(now_ms)
   while [ $(( $(now_ms) - start )) -lt "$1" ]; do
-    sill debug capture "$SWITCHER" "$OUT_DIR/gone.png" >/dev/null 2>&1 || return 0
+    bardo-shell debug capture "$SWITCHER" "$OUT_DIR/gone.png" >/dev/null 2>&1 || return 0
     sleep 0.02
   done
   return 1
@@ -194,17 +194,17 @@ stop_windows() {
   done
 }
 
-# How much longer a held chord is held on a debug build: every `sill debug capture` and key
+# How much longer a held chord is held on a debug build: every `bardo-shell debug capture` and key
 # takes several times as long there, and a step's own captures run while Alt is down, so a hold
 # sized for an idle host ends before the step does (a loaded host, load 20 or more, is the same) and "the release did not activate" is a script
 # artefact, not a finding. The nominal holds are the ones in the steps.
 HOLD_SCALE=3
 budgets_apply || HOLD_SCALE=6
 
-# The chord `sill switcher next`, then Alt held for $1 ms times HOLD_SCALE (in the background,
+# The chord `bardo-shell switcher next`, then Alt held for $1 ms times HOLD_SCALE (in the background,
 # its pid in HOLD), down inside the show delay.
 chord_held() {
-  sill switcher next >>"$OUT_DIR/chords.log" 2>&1
+  bardo-shell switcher next >>"$OUT_DIR/chords.log" 2>&1
   alt_held $(( $1 * HOLD_SCALE )) &
   HOLD=$!
   sleep 0.05
@@ -213,9 +213,9 @@ chord_held() {
 # 1.
 step_warm() {
   local log="$OUT_DIR/warm.log"
-  sill debug stats >"$log" 2>&1
-  grep -q "\"$SWITCHER\"" "$log" || { echo "$SWITCHER is not in 'sill debug stats'" >&2; return 1; }
-  if sill debug capture "$SWITCHER" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
+  bardo-shell debug stats >"$log" 2>&1
+  grep -q "\"$SWITCHER\"" "$log" || { echo "$SWITCHER is not in 'bardo-shell debug stats'" >&2; return 1; }
+  if bardo-shell debug capture "$SWITCHER" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
     echo "the switcher is mapped before any chord" >&2; return 1
   fi
   echo "$SWITCHER spawned at start, hidden" | tee -a "$log" >&2
@@ -226,7 +226,7 @@ quick_commit() {
   local f0 f1 start took
   f0=$(frames_of "$SWITCHER")
   start=$(now_ms)
-  sill switcher next >>"$1" 2>&1; sill switcher commit >>"$1" 2>&1
+  bardo-shell switcher next >>"$1" 2>&1; bardo-shell switcher commit >>"$1" 2>&1
   took=$(( $(now_ms) - start ))
   sleep 0.4
   f1=$(frames_of "$SWITCHER")
@@ -250,7 +250,7 @@ step_quick_tap() {
   echo "again in ${took} ms: demo $(demo_state) (calc); switcher frames ${frames}" | tee -a "$log" >&2
   within_delay "$took" && [ "$frames" -le 2 ] || ok=no
   f0=$(frames_of "$SWITCHER")
-  sill switcher next >>"$log" 2>&1
+  bardo-shell switcher next >>"$log" 2>&1
   sleep "$(python3 -c "print(($SHOW_DELAY_MS + 300) / 1000)")"
   if panel_to "$OUT_DIR/stuck.png"; then
     # The seat told the switcher a modifier is held (the host session can leave the nested seat
@@ -282,11 +282,11 @@ step_show_move_cancel() {
   sleep 0.3
   shot "$SHOTS/switcher-casement.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
   panel_to "$OUT_DIR/a.png"
-  sill switcher next >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/b.png"
-  sill switcher prev >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/c.png"
+  bardo-shell switcher next >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/b.png"
+  bardo-shell switcher prev >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/c.png"
   ab=$(diff_of "$OUT_DIR/a.png" "$OUT_DIR/b.png")
   ac=$(diff_of "$OUT_DIR/a.png" "$OUT_DIR/c.png")
-  sill switcher cancel >>"$log" 2>&1
+  bardo-shell switcher cancel >>"$log" 2>&1
   wait_hidden 1500 || { echo "cancel left it up" >&2; wait "$HOLD"; return 1; }
   wait "$HOLD"
   sleep 0.5
@@ -304,9 +304,9 @@ step_commit_third() {
   : >"$log"
   chord_held 2500
   sleep 0.5
-  sill switcher next >>"$log" 2>&1
+  bardo-shell switcher next >>"$log" 2>&1
   sleep 0.1
-  sill switcher commit >>"$log" 2>&1
+  bardo-shell switcher commit >>"$log" 2>&1
   wait_hidden 1500 || { echo "commit left it up" >&2; wait "$HOLD"; return 1; }
   wait_demo Inactive 2000 || { echo "the third app (term) was not activated" >&2; wait "$HOLD"; return 1; }
   wait "$HOLD"

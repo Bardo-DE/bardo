@@ -1,8 +1,8 @@
 //! `IdleDim`'s share: the pre-screen-off dim overlay's opacity, driven from Rust like a sweep
 //! (design/26-DETAILS.md section 4.1, "Why Rust tweens") rather than a CSS keyframe, because waking must snap the share to zero on input even mid-fade, and a CSS `animation`
-//! cannot retarget without a restyle. sill's own idle service owns the phase this plays
+//! cannot retarget without a restyle. bardo-shell's own idle service owns the phase this plays
 //! (dim before screen-off, never real brightness; design/22-SETTINGS.md section 3.24
-//! the dim lead and level; sill FINDINGS "sill idle").
+//! the dim lead and level; bardo-shell FINDINGS "bardo-shell idle").
 //!
 //! Not built on `Detailed`/`Cue`: those classify an arbitrary state change into
 //! one of the grammar's moments, but this primitive already knows exactly what a phase change

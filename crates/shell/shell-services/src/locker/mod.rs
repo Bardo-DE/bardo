@@ -1,12 +1,12 @@
-//! The lock screen: sill's own, on layer-shell-host's `ext-session-lock-v1` surfaces (design/20
-//! §1.9). sill locks on its own Lock action (the launcher row, the power menu, `sill lock`), on
+//! The lock screen: bardo-shell's own, on layer-shell-host's `ext-session-lock-v1` surfaces (design/20
+//! §1.9). bardo-shell locks on its own Lock action (the launcher row, the power menu, `bardo-shell lock`), on
 //! logind's `Lock` for this session, and before sleep on `PrepareForSleep(true)`, holding a
 //! logind delay inhibitor until the lock reports locked or `SLEEP_HOLD_MS` runs out. Never a
 //! second lock while one holds.
 //!
-//! Which signals are sill's depends on the session (`shell_model::locker::Host`): in sill's own session every
+//! Which signals are bardo-shell's depends on the session (`shell_model::locker::Host`): in bardo-shell's own session every
 //! trigger is; nested in another desktop's session (development) only
-//! sill's own Lock action is, so sill never locks on another desktop's behalf.
+//! bardo-shell's own Lock action is, so bardo-shell never locks on another desktop's behalf.
 
 mod backend;
 
@@ -16,7 +16,7 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
-/// sill's own lock screen as a [`Service`], logind on `env`'s system bus, the crash marker in
+/// bardo-shell's own lock screen as a [`Service`], logind on `env`'s system bus, the crash marker in
 /// its runtime directory. Inert until the first `Configure` or `Use`.
 #[derive(Debug)]
 pub enum LockerService {}

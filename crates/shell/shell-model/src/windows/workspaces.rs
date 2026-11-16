@@ -89,7 +89,7 @@ fn activate_in(group: WorkspaceGroup, key: WorkspaceKey) -> WorkspaceGroup {
     }
 }
 
-/// Which way `sill workspace` steps, and the `direction` choice of `shell.workspace.switch`.
+/// Which way `bardo-shell workspace` steps, and the `direction` choice of `shell.workspace.switch`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 pub enum Step {

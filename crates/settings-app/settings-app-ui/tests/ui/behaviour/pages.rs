@@ -65,7 +65,9 @@ fn a_custom_gesture_action_is_read_only_and_survives_a_save() {
 
     // Scroll speed is palmrest's own key: a press on its slider writes into the same file.
     click(&mut harness, ".ds-slider[*|aria-label=\"Scroll speed\"]");
-    let after = sandbox.read("mouse-gestures/gestures.toml").expect("written");
+    let after = sandbox
+        .read("mouse-gestures/gestures.toml")
+        .expect("written");
     let table: toml::Table = after.parse().expect("valid toml");
     let speed = table["scroll"]["speed"].as_integer().expect("an integer");
     assert!(
@@ -96,9 +98,9 @@ fn a_gesture_action_menu_reads_in_the_schemas_words() {
 #[test]
 fn saving_never_removes_a_key_from_sill_or_quire_files() {
     let sandbox = Sandbox::new("keep-unknown");
-    let sill = "[dock]\npuppy = true\nposition = \"sideways\"\n[mystery]\nx = 1\n";
+    let shell_file = "[dock]\npuppy = true\nposition = \"sideways\"\n[mystery]\nx = 1\n";
     let quire = "version = 1\n[appearance]\nold_key = 1\n";
-    sandbox.write("shell/settings.toml", sill);
+    sandbox.write("shell/settings.toml", shell_file);
     sandbox.write("bardo/appearance.toml", quire);
 
     let mut harness = sandbox.harness(opening("dock"));

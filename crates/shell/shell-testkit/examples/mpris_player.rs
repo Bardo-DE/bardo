@@ -30,7 +30,7 @@ async fn main() -> ExitCode {
 
     let name = format!("org.mpris.MediaPlayer2.{}", config.suffix);
     let root = Root {
-        identity: format!("sill test player ({})", config.suffix),
+        identity: format!("bardo-shell test player ({})", config.suffix),
     };
     let player = Player {
         playback: if config.paused { PAUSED } else { PLAYING },
@@ -179,7 +179,7 @@ impl Config {
     /// The `Metadata` dictionary MPRIS clients read: a title, an artist, an album and a fixed
     /// three-minute length, enough for `now_playing::live::track_of` and `timeline_of`.
     fn metadata(&self) -> HashMap<String, OwnedValue> {
-        let track_id = ObjectPath::from_static_str_unchecked("/org/sill/MprisPlayer/track1");
+        let track_id = ObjectPath::from_static_str_unchecked("/org/bardo/Shell/MprisPlayer/track1");
         let mut map = HashMap::new();
         map.insert("mpris:trackid".to_owned(), OwnedValue::from(track_id));
         map.insert(

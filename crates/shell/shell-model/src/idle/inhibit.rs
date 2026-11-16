@@ -1,6 +1,6 @@
-//! Idle inhibitors that are sill's to honour. Wayland's `zwp_idle_inhibit_manager_v1` is the
+//! Idle inhibitors that are bardo-shell's to honour. Wayland's `zwp_idle_inhibit_manager_v1` is the
 //! compositor's: it stops sending `idled` for `get_idle_notification` while a visible
-//! surface inhibits, so sill sees nothing of it. Two other kinds are sill's:
+//! surface inhibits, so bardo-shell sees nothing of it. Two other kinds are bardo-shell's:
 //!
 //! - **`org.freedesktop.ScreenSaver.Inhibit(app, reason) -> cookie`** and `UnInhibit(cookie)` on
 //!   the session bus (at `/org/freedesktop/ScreenSaver` and `/ScreenSaver`), which browsers and
@@ -9,7 +9,7 @@
 //! - **logind's idle inhibitors** (`systemd-inhibit --what=idle`), read from the Manager's
 //!   `BlockInhibited` property (a `:`-separated list that contains `idle`).
 //!
-//! While either holds, sill drops its idle notifications (no dim, no screen off, no idle
+//! While either holds, bardo-shell drops its idle notifications (no dim, no screen off, no idle
 //! suspend), as a desktop's idle daemon does, and holds them again when both are free.
 
 use serde::{Deserialize, Serialize};
@@ -78,7 +78,7 @@ pub enum InhibitReply {
     TooMany,
 }
 
-/// Whether idle is held off by an inhibitor sill honours.
+/// Whether idle is held off by an inhibitor bardo-shell honours.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Inhibition {

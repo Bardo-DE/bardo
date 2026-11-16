@@ -2,8 +2,8 @@
 # The accounts sheet's acceptance, on a private headless compositor (casement under
 # dev/accept.sh --compositor casement, else KWin, started and stopped by the script), against a
 # stand-in accountd: examples/accountd_standin.rs owns `org.bardo.Accounts1` on the private bus,
-# drives sill's `org.bardo.AccountsSheet1` (Open, Update, Close) with SheetView JSON from this
-# directory's heredocs, and prints each `Input` the sheet sends back. Keys are `sill debug key
+# drives bardo-shell's `org.bardo.AccountsSheet1` (Open, Update, Close) with SheetView JSON from this
+# directory's heredocs, and prints each `Input` the sheet sends back. Keys are `bardo-shell debug key
 # SURFACE KEY` (layer-shell-host's Inject::Key, which enters the sheet where an xkb key does).
 #
 # Nothing here reaches the person's accountd, session bus, secret store or ~/.config: the private
@@ -32,7 +32,7 @@ STANDIN_BIN="$BARDO_SHELL_OUT/examples/accountd_standin"
 SECRET=sill-fake
 
 scratch_new
-mkdir -p "$CONFIG/sill" "$OUT_DIR/views"
+mkdir -p "$CONFIG/bardo/shell" "$OUT_DIR/views"
 STANDIN=
 SHEET=
 
@@ -88,14 +88,14 @@ start_standin() {
   await_line "^ready$" || { echo "the stand-in accountd never started" >&2; return 1; }
 }
 
-press() { sill debug key "$SHEET" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
+press() { bardo-shell debug key "$SHEET" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
 type_text() {
   local text="$1" i
   for (( i = 0; i < ${#text}; i++ )); do press "${text:i:1}" || return 1; done
 }
 
 captured() {
-  sill debug capture "$SHEET" "$1" >>"$OUT_DIR/capture.log" 2>&1 || return 1
+  bardo-shell debug capture "$SHEET" "$1" >>"$OUT_DIR/capture.log" 2>&1 || return 1
   [ "$(opaque_pixels "$1")" -gt 1000 ]
 }
 await_shown() {
@@ -105,7 +105,7 @@ await_shown() {
 }
 await_hidden() {
   for _ in $(seq 30); do
-    sill debug capture "$SHEET" "$OUT_DIR/late.png" >>"$OUT_DIR/capture.log" 2>&1 || return 0
+    bardo-shell debug capture "$SHEET" "$OUT_DIR/late.png" >>"$OUT_DIR/capture.log" 2>&1 || return 0
     sleep 0.1
   done
   echo "the sheet never hid" >&2
@@ -150,14 +150,14 @@ trap cleanup EXIT
 
 # 1.
 step_hidden_and_forged_open_refused() {
-  sill debug stats | grep -q "\"$SHEET\"" || { echo "$SHEET is not in debug stats" >&2; return 1; }
-  if sill debug capture "$SHEET" "$OUT_DIR/hidden.png" >>"$OUT_DIR/capture.log" 2>&1; then
+  bardo-shell debug stats | grep -q "\"$SHEET\"" || { echo "$SHEET is not in debug stats" >&2; return 1; }
+  if bardo-shell debug capture "$SHEET" "$OUT_DIR/hidden.png" >>"$OUT_DIR/capture.log" 2>&1; then
     echo "$SHEET is mapped before any sheet" >&2; return 1
   fi
   standin "forge-open evil $OUT_DIR/views/providers.json"
   await_line "^forged evil refused$" || { echo "a forged Open was not refused: $(tail -2 "$OUT_DIR/standin.log")" >&2; return 1; }
   sleep 0.5
-  if sill debug capture "$SHEET" "$OUT_DIR/forged.png" >>"$OUT_DIR/capture.log" 2>&1; then
+  if bardo-shell debug capture "$SHEET" "$OUT_DIR/forged.png" >>"$OUT_DIR/capture.log" 2>&1; then
     echo "a forged Open drew" >&2; return 1
   fi
   echo "$SHEET exists, hidden; a forged Open was refused and drew nothing" >&2

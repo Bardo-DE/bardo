@@ -1,8 +1,8 @@
-//! sill's own lock screen on the daemon's side: the follower that turns the locker's and the auth service's state into a wish to hold the
+//! bardo-shell's own lock screen on the daemon's side: the follower that turns the locker's and the auth service's state into a wish to hold the
 //! session lock or not, the host-thread half that takes and drops layer-shell-host's session lock
 //! through [`host::SessionLockHost`], and the prompt's output.
 //!
-//! The flow: `sill lock` (or logind's Lock in a sill session, or a lock marker left by a sill
+//! The flow: `bardo-shell lock` (or logind's Lock in a bardo-shell session, or a lock marker left by a bardo-shell
 //! that died locked) steps the locker service to `Locking`;
 //! [`spawn_follower`] sees [`LockWish::Held`] and sends `ShellMsg::Lock`; [`apply`] resets the
 //! auth service, points the [`LockLink`] at the main display and locks with a
@@ -16,7 +16,7 @@
 //! `Unlocked` / `Finished` become `Shell(Unlocked)` / `Shell(Finished)` and `AuthCommand::Reset`;
 //! a refusal is `Shell(Refused)`.
 //!
-//! Safety: nothing here runs in a test against a real session. `sill debug auth accept` is
+//! Safety: nothing here runs in a test against a real session. `bardo-shell debug auth accept` is
 //! refused unless the daemon was built with `debug`, and the acceptance scripts only ever run
 //! such a daemon on the nested compositor (`wayland-1`), never on `wayland-0`.
 
@@ -143,7 +143,9 @@ pub fn apply(
             match host.lock_session(factory()) {
                 Ok(id) | Err(LockRefusal::InProgress(id)) => held.id = Some(id),
                 Err(LockRefusal::Unsupported) => {
-                    eprintln!("sill: the compositor has no ext-session-lock-v1; not locking");
+                    eprintln!(
+                        "bardo-shell: the compositor has no ext-session-lock-v1; not locking"
+                    );
                     let _ = services
                         .locker
                         .control

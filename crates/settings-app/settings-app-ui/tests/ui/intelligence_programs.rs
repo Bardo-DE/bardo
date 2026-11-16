@@ -114,7 +114,9 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
 
     // Top to bottom, because the page is only ever scrolled down: the Assistant section first.
     flip(&mut harness, "Other apps");
-    let docket = sandbox.read("actions/settings.toml").expect("docket's file");
+    let docket = sandbox
+        .read("actions/settings.toml")
+        .expect("docket's file");
     assert!(docket.contains("expose = true"), "{docket}");
     assert!(
         !docket.contains("autopause") && !docket.contains("when"),
@@ -133,12 +135,14 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
     assert_eq!(sandbox.read("computer-use/settings.toml"), None);
 
     flip(&mut harness, "Pause when I touch the window");
-    let cua = sandbox.read("computer-use/settings.toml").expect("cua's file");
+    let cua = sandbox
+        .read("computer-use/settings.toml")
+        .expect("cua's file");
     assert!(cua.contains("autopause = false"), "{cua}");
     assert!(!cua.contains("when"), "{cua}");
 
     assert_eq!(
-        sandbox.read("inferd/inferd.toml"),
+        sandbox.read("inference/inferd.toml"),
         None,
         "inferd's file is not touched"
     );
@@ -157,14 +161,14 @@ fn lending_this_computers_models_is_off_until_the_switch_is_flipped() {
         "off by default"
     );
     assert_eq!(
-        sandbox.read("inferd/inferd.toml"),
+        sandbox.read("inference/inferd.toml"),
         None,
         "looking writes nothing"
     );
     // Turning it on is asked about first (tests/ui/lending.rs drives the answer).
     click(&mut harness, &toggle);
     assert_eq!(
-        sandbox.read("inferd/inferd.toml"),
+        sandbox.read("inference/inferd.toml"),
         None,
         "the press alone writes nothing"
     );
@@ -178,5 +182,8 @@ fn rows_that_do_not_fit_are_shown_as_written_and_never_rewritten() {
     let harness = sandbox.harness(intelligence());
     assert_eq!(harness.count(".key-rows"), 0);
     assert!(harness.html().contains("Edit in file"));
-    assert_eq!(sandbox.read("computer-use/settings.toml").as_deref(), Some(written));
+    assert_eq!(
+        sandbox.read("computer-use/settings.toml").as_deref(),
+        Some(written)
+    );
 }

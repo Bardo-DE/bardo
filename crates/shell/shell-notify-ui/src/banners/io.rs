@@ -132,7 +132,7 @@ impl Column {
             spawn(async move {
                 let landed = focus_by_selector(&plate, Select::None).await;
                 if let Err(error @ (FocusError::Busy | FocusError::Refused { .. })) = landed {
-                    eprintln!("sill: banner focus: {error}");
+                    eprintln!("bardo-shell: banner focus: {error}");
                 }
             })
         });
@@ -195,7 +195,7 @@ impl Column {
             }
             CardPress::Close => BannerIn::Close,
             CardPress::Link(href) => {
-                // sill has no URL opener yet: the link keeps its press.
+                // bardo-shell has no URL opener yet: the link keeps its press.
                 eprintln!("banners.link={}", shell_model::untrusted::for_log(&href.0));
                 return;
             }

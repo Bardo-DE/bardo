@@ -160,7 +160,7 @@ async fn begin(connection: Connection, agent: AgentAt, cookie: String, action: O
     ]);
     let body = (
         action.unwrap_or_else(|| "org.sill.test.run".to_owned()),
-        "Authentication is required to run the sill test program".to_owned(),
+        "Authentication is required to run the bardo-shell test program".to_owned(),
         String::new(),
         details,
         cookie.clone(),

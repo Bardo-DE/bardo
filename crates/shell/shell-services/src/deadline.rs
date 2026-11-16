@@ -1,4 +1,4 @@
-//! How long the shell waits on a peer. Every await on a program outside sill (an app, a system
+//! How long the shell waits on a peer. Every await on a program outside bardo-shell (an app, a system
 //! daemon, the compositor) is bounded by one of these, so a peer that stops answering costs one
 //! failed step and never wedges the loop that asked.
 

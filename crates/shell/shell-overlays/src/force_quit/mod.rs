@@ -1,4 +1,4 @@
-//! The Force Quit Applications panel (Option+Command+Escape, `sill force-quit`): a sheet
+//! The Force Quit Applications panel (Option+Command+Escape, `bardo-shell force-quit`): a sheet
 //! centred on one output listing the running apps with their icons, "(not responding)" beside
 //! the ones that do not answer the desktop's pings, and a Force Quit button that asks "Do you want
 //! to force quit "App"? You will lose any unsaved changes." before it ends the app's
@@ -21,5 +21,5 @@ mod view;
 
 pub use surface::ForceQuit;
 
-/// The panel's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The panel's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const FORCE_QUIT_CSS: &str = include_str!("style.css");

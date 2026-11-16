@@ -40,7 +40,7 @@ pub struct IdleTimes {
 pub struct DimLevel(pub u8);
 
 /// The warning before the displays go off: dimmed for `lead` first (zero: no
-/// dim). Drawn as a sill overlay, never by changing a backlight or a monitor's brightness.
+/// dim). Drawn as a bardo-shell overlay, never by changing a backlight or a monitor's brightness.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct DimPlan {
     pub lead: IdleSecs,
@@ -81,13 +81,13 @@ pub struct IdleConfig {
     pub grace: LockGrace,
 }
 
-/// Whether sill runs idle here.
+/// Whether bardo-shell runs idle here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum IdleMode {
-    /// sill does nothing about idle, and why.
+    /// bardo-shell does nothing about idle, and why.
     Off(OffReason),
-    /// sill dims, turns the displays off, locks and suspends.
+    /// bardo-shell dims, turns the displays off, locks and suspends.
     Own,
 }
 
@@ -97,7 +97,7 @@ impl Default for IdleMode {
     }
 }
 
-/// Why [`IdleMode::Off`] was chosen (for the log and a later `sill idle status`).
+/// Why [`IdleMode::Off`] was chosen (for the log and a later `bardo-shell idle status`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum OffReason {
@@ -149,7 +149,7 @@ pub enum Threshold {
     Suspend,
 }
 
-/// Who owns idle here: `Own` only in a sill session; else `Off` with the reason (a guest
+/// Who owns idle here: `Own` only in a bardo-shell session; else `Off` with the reason (a guest
 /// session: another desktop's, never touched).
 pub fn resolve_mode(host: Host) -> IdleMode {
     match host {

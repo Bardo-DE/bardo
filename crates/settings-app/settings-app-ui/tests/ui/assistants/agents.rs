@@ -6,7 +6,10 @@ use super::*;
 fn an_outside_assistant_is_listed_by_its_plain_name_and_its_model_is_chosen_in_its_entry() {
     let sandbox = Sandbox::new("coding-assistants");
     sandbox.write("actions/agents.toml", AGENTS);
-    sandbox.write_data("docket/agents/state/claude-code/offered.toml", OFFERED);
+    sandbox.write_data(
+        "bardo/actions/agents/state/claude-code/offered.toml",
+        OFFERED,
+    );
     let mut harness = sandbox.harness(intelligence());
     let group = "[data-assistants=\"coding\"]";
     settle(&mut harness, "the group", |h| h.count(group) == 1);
@@ -49,7 +52,7 @@ fn an_installed_assistant_is_added_from_a_sheet_that_says_it_uses_the_internet()
     let sandbox = Sandbox::new("coding-assistants-add");
     sandbox.write("actions/agents.toml", AGENTS);
     sandbox.write_data(
-        "docket/agents/installed/gemini/1.0.0/installed.toml",
+        "bardo/actions/agents/installed/gemini/1.0.0/installed.toml",
         INSTALLED,
     );
     let mut harness = sandbox.harness(intelligence());

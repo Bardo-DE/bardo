@@ -1,4 +1,4 @@
-//! `sill debug stats`: every surface's frame statistics, through the always-public
+//! `bardo-shell debug stats`: every surface's frame statistics, through the always-public
 //! `HostCtx::take_stats` (it needs neither the `debug` feature nor layer-shell-host's `debug-inject`;
 //! draining, so each report covers only the time since the previous one).
 

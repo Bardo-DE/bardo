@@ -71,7 +71,7 @@ pub async fn shell_connection(bus: &Bus) -> Option<OwnedFd> {
         Ok(connection) => connection,
         Err(ConnectError::NoBus(_)) => return None,
         Err(error) => {
-            eprintln!("sill: desktop: the session bus: {error}");
+            eprintln!("bardo-shell: desktop: the session bus: {error}");
             return None;
         }
     };
@@ -81,7 +81,7 @@ pub async fn shell_connection(bus: &Bus) -> Option<OwnedFd> {
             None
         }
         Err(error) => {
-            eprintln!("sill: desktop: {error}; connecting through the environment");
+            eprintln!("bardo-shell: desktop: {error}; connecting through the environment");
             None
         }
     }

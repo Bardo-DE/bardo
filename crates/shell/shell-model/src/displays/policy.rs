@@ -42,7 +42,7 @@ pub enum NightWarmthMode {
     Hardware,
 }
 
-/// Whether sill writes its fontconfig snippet for apps that are not sill's.
+/// Whether bardo-shell writes its fontconfig snippet for apps that are not bardo-shell's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]
@@ -76,7 +76,7 @@ impl Default for DisplayPolicy {
 }
 
 impl DisplayPolicy {
-    /// The strength to warm the DDC displays to, or `None` when sill leaves them alone.
+    /// The strength to warm the DDC displays to, or `None` when bardo-shell leaves them alone.
     pub fn warmth(&self) -> Option<Percent> {
         match self.night_warmth {
             NightWarmthMode::Hardware => Some(self.night_warmth_strength),

@@ -39,7 +39,7 @@ impl TerminalWindow {
     /// Wait until the window is closed.
     pub(crate) async fn closed(mut self) {
         if let Err(error) = self.child.wait().await {
-            eprintln!("sill: terminal: waiting for the window: {error}");
+            eprintln!("bardo-shell: terminal: waiting for the window: {error}");
         }
     }
 }

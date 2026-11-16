@@ -1,4 +1,4 @@
-//! The schemas docket, almanac and cua install under `$XDG_DATA_DIRS/quire/settings`: found
+//! The schemas the actions, memory and computer-use programs install under `$XDG_DATA_DIRS/bardo/settings`: found
 //! there, each key in the section it names and the file its program reads.
 
 use settings_app_model::{Catalogue, PageSlug, advanced_name, discover};
@@ -12,7 +12,7 @@ const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 /// does, and returns that directory.
 fn install(scratch: &Scratch, prefix: &str, name: &str) -> std::path::PathBuf {
     let share = scratch.join(prefix).join("share");
-    let target = share.join("quire/settings");
+    let target = share.join("bardo/settings");
     std::fs::create_dir_all(&target).expect("mkdir");
     let file = format!("{name}.settings.toml");
     std::fs::copy(fixture_dir().join(&file), target.join(file)).expect("copy");
@@ -22,9 +22,9 @@ fn install(scratch: &Scratch, prefix: &str, name: &str) -> std::path::PathBuf {
 fn catalogue(test: &str) -> Catalogue {
     let scratch = Scratch::under(TMP, test);
     let shares = [
-        install(&scratch, "docket", "docket"),
-        install(&scratch, "almanac", "almanac"),
-        install(&scratch, "cua", "cua"),
+        install(&scratch, "actions", "actions"),
+        install(&scratch, "memory", "memory"),
+        install(&scratch, "computer-use", "computer-use"),
     ];
     let joined = std::env::join_paths(&shares).expect("paths");
     let dirs = ui_settings::schema::data_dirs_from(
@@ -36,7 +36,7 @@ fn catalogue(test: &str) -> Catalogue {
     assert_eq!(found.warnings, []);
     let mut apps: Vec<_> = found.programs.iter().map(|p| p.app.0.as_str()).collect();
     apps.sort_unstable();
-    assert_eq!(apps, ["almanac", "cua", "docket"]);
+    assert_eq!(apps, ["actions", "computer-use", "memory"]);
     Catalogue::build(&found.programs)
 }
 

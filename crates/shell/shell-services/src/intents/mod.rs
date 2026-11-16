@@ -1,7 +1,7 @@
-//! sill's seat at intentd. One connection to the session bus owns three things, because intentd
+//! bardo-shell's seat at intentd. One connection to the session bus owns three things, because intentd
 //! names a caller's role from the well-known names its connection owns:
 //!
-//! - `org.bardo.Shell`, where sill is the **provider** of the shell's own actions
+//! - `org.bardo.Shell`, where bardo-shell is the **provider** of the shell's own actions
 //!   (`IntentProvider1`; `dist/intents/org.bardo.Shell.toml` declares them). A `Perform` is handed
 //!   to the daemon as a [`ShellCall`] and answered when the daemon has done it. This name also
 //!   gives the connection the `launcher`, `confirm` and `control` roles in intentd's shipped

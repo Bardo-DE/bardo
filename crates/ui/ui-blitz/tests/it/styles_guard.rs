@@ -139,7 +139,7 @@ fn two_starts_that_never_got_good_make_the_third_start_without_styles() {
     // It stays off on the fourth start too: nothing was marked good.
     assert!(!StylesGuard::begin(&state, "mailo", &sheets).load());
     // Another program has its own file.
-    assert!(StylesGuard::begin(&state, "sill", &sheets).load());
+    assert!(StylesGuard::begin(&state, "bardo-shell", &sheets).load());
 }
 
 #[test]
@@ -162,9 +162,9 @@ fn a_changed_sheet_or_turn_on_again_clears_the_guard() {
     );
     // Turn On Again with the very same sheets also forgets them.
     for _ in 0..2 {
-        StylesGuard::begin(&state, "sill", &broken);
+        StylesGuard::begin(&state, "bardo-shell", &broken);
     }
-    let off = StylesGuard::begin(&state, "sill", &broken);
+    let off = StylesGuard::begin(&state, "bardo-shell", &broken);
     assert!(!off.load());
     assert!(off.turn_on_again(&broken).load());
 }

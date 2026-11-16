@@ -48,7 +48,7 @@ pub(super) async fn search(
     let event = match got {
         Ok(hits) => CompanionEvent::ThingsFound(generation, hits),
         Err(error) => {
-            eprintln!("sill: companion: searching: {error}");
+            eprintln!("bardo-shell: companion: searching: {error}");
             CompanionEvent::ThingsFailed(generation)
         }
     };
@@ -115,7 +115,7 @@ pub(super) async fn set_mode(connection: &Connection, session: SessionId, mode: 
         Ok(()) => ModeMsg::Changed { session, mode },
         Err(ClientError::Refused(WireRefusal::Locked)) => ModeMsg::Locked,
         Err(error) => {
-            eprintln!("sill: companion: switching the mode: {error}");
+            eprintln!("bardo-shell: companion: switching the mode: {error}");
             ModeMsg::NotApplied(mode)
         }
     }

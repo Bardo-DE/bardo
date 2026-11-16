@@ -90,7 +90,7 @@ pub(crate) async fn open(setup: &Reach, request: OpenRequest) {
         &wrapper,
         token,
     ) {
-        eprintln!("sill: launch: opening failed ({:?})", error.kind());
+        eprintln!("bardo-shell: launch: opening failed ({:?})", error.kind());
     }
 }
 
@@ -312,7 +312,7 @@ mod tests {
     fn a_scope_wraps_the_argv_and_bare_leaves_it() {
         let argv = |parts: &[&str]| parts.iter().map(OsString::from).collect::<Vec<_>>();
         let open = argv(&["xdg-open", "/home/p/a.pdf"]);
-        let unit = ScopeUnit("app-sill-open.7-1.scope".to_owned());
+        let unit = ScopeUnit("app-bardo-open.7-1.scope".to_owned());
         let cases: Vec<(Wrapper, Vec<OsString>)> = vec![
             (Wrapper::Bare, open.clone()),
             (
@@ -322,7 +322,7 @@ mod tests {
                     "--user",
                     "--scope",
                     "--collect",
-                    "--unit=app-sill-open.7-1.scope",
+                    "--unit=app-bardo-open.7-1.scope",
                     "--",
                     "xdg-open",
                     "/home/p/a.pdf",

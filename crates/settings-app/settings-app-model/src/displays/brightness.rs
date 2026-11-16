@@ -1,4 +1,4 @@
-//! The brightness sill lists for each display (`org.bardo.Displays1`): only the displays whose
+//! The brightness bardo-shell lists for each display (`org.bardo.Displays1`): only the displays whose
 //! brightness it can read have one, so a display it does not list has no slider.
 
 use super::model::OutputId;
@@ -30,7 +30,7 @@ impl Brightness {
     }
 }
 
-/// The brightness of each display sill lists.
+/// The brightness of each display bardo-shell lists.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct BrightnessList(Vec<(OutputId, Brightness)>);
 
@@ -47,7 +47,7 @@ impl BrightnessList {
         BrightnessList(listed)
     }
 
-    /// The brightness of `output`; none when sill does not list it.
+    /// The brightness of `output`; none when bardo-shell does not list it.
     pub fn level_of(&self, output: &OutputId) -> Option<Brightness> {
         self.0
             .iter()
@@ -55,8 +55,8 @@ impl BrightnessList {
             .map(|(_, level)| *level)
     }
 
-    /// The list with `output` at `level`, so a slider stays where it was dragged until sill says
-    /// otherwise; an output sill does not list stays unlisted.
+    /// The list with `output` at `level`, so a slider stays where it was dragged until bardo-shell says
+    /// otherwise; an output bardo-shell does not list stays unlisted.
     pub fn with(mut self, output: &OutputId, level: Brightness) -> BrightnessList {
         if let Some((_, at)) = self.0.iter_mut().find(|(id, _)| id == output) {
             *at = level;

@@ -1,5 +1,5 @@
 //! The app switcher (design/13 §13.3.5, design/20 §1.11): Cmd+Tab over applications, not windows.
-//! The window switcher shortcuts run `sill switcher next|prev`,
+//! The window switcher shortcuts run `bardo-shell switcher next|prev`,
 //! which the daemon writes to the [`shell_ui_kit::links::SwitcherLink`]; the switcher surface on the chosen output takes
 //! the keyboard (`Exclusive`) at once, so it sees the chord's modifier go up (Alt's or Super's
 //! key-up, or layer-shell-host's modifiers on focus: `hold.rs`, `watch.rs`), and runs

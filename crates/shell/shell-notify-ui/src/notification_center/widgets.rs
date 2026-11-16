@@ -1,6 +1,6 @@
 //! The widgets slot below the history (macOS's Notification Center widgets; design/20 §1.14):
 //! Calendar, then Up Next, each a [`Widget`] on quire's card (a tile on the Popover, Medium).
-//! Nothing adds, removes or orders them. The panel injects sill's widgets' stylesheets
+//! Nothing adds, removes or orders them. The panel injects bardo-shell's widgets' stylesheets
 //! (`widgets_css`).
 
 use dioxus::prelude::*;

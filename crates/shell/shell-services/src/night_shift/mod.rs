@@ -6,7 +6,7 @@
 //! file is left as it is (the table is merged key by key); an edit made elsewhere (Settings) is
 //! read back through a directory watch.
 //!
-//! Where sill warms the monitors itself over DDC/CI (`display.night_warmth`), the shell tells this
+//! Where bardo-shell warms the monitors itself over DDC/CI (`display.night_warmth`), the shell tells this
 //! service (`NightShiftCommand::Backend`) and it lists those monitors' connectors in casement's
 //! `night_light.skip_outputs`, following the displays service as monitors come and go; casement
 //! keeps warming every other output. Entries of that list that name a display by its identity
@@ -30,7 +30,7 @@ impl Service for NightShiftService {
     const NAME: &'static str = "night-shift";
     type State = NightShift;
     type Command = NightShiftCommand;
-    /// The displays, whose DDC monitors casement is told to leave alone where sill warms them.
+    /// The displays, whose DDC monitors casement is told to leave alone where bardo-shell warms them.
     type Deps = watch::Receiver<Displays>;
 
     fn run(
@@ -38,7 +38,7 @@ impl Service for NightShiftService {
         displays: watch::Receiver<Displays>,
         io: ServiceIo<Self>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
-        let casement = env.dirs.config.join("casement");
+        let casement = env.dirs.config.join("bardo").join("compositor");
         let state = env.dirs.sill_state();
         let clock = std::sync::Arc::clone(&env.clock);
         async move {

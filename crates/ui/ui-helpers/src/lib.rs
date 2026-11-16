@@ -23,7 +23,7 @@
 //!
 //! # The helpers file
 //!
-//! An app ships `$XDG_DATA_DIRS/quire/helpers/<app>.toml`. Each top-level table is a
+//! An app ships `$XDG_DATA_DIRS/bardo/helpers/<app>.toml`. Each top-level table is a
 //! capability; its fields are:
 //!
 //! - `tool`: the tool's name as the person knows it;
@@ -53,7 +53,7 @@
 //! # Why PackageKit's system transaction API, not `Modify2`
 //!
 //! `org.freedesktop.PackageKit.Modify2` (`InstallPackageNames`) is a session-bus interface that
-//! a desktop's software centre must implement (GNOME Software does, KDE and sill's shell do not
+//! a desktop's software centre must implement (GNOME Software does, KDE and bardo-shell's shell do not
 //! necessarily), and it reports nothing but done or failed. The system service
 //! `org.freedesktop.PackageKit` is the one every PackageKit install ships, is documented in the
 //! interface XML, and gives what the sheet needs: `Resolve` tells whether a candidate exists

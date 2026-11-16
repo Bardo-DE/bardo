@@ -9,13 +9,13 @@ use super::super::{Cli, Command, USAGE, usage_code};
 use super::{Ending, Output, PrintTiming, ending, launch_request, report};
 
 fn parsed(args: &[&str]) -> Result<Cli, clap::Error> {
-    Cli::try_parse_from(std::iter::once("sill").chain(args.iter().copied()))
+    Cli::try_parse_from(std::iter::once("bardo-shell").chain(args.iter().copied()))
 }
 
 fn timing() -> LaunchTiming {
     LaunchTiming {
         app: AppId("foot".to_owned()),
-        unit: Some(ScopeUnit("app-sill-foot-1.scope".to_owned())),
+        unit: Some(ScopeUnit("app-bardo-foot-1.scope".to_owned())),
         requested_at: Stamp(100),
         spawned_at: Stamp(250),
         pid: Some(Pid(4242)),
@@ -116,7 +116,7 @@ fn what_the_shell_answers_decides_the_exit_code() {
 
 #[test]
 fn the_timing_line_goes_to_stdout_only_when_asked_and_a_failure_to_stderr() {
-    let line = "launch desktop_id=foot unit=app-sill-foot-1.scope requested_at=100 spawned_at=250 pid=4242\n";
+    let line = "launch desktop_id=foot unit=app-bardo-foot-1.scope requested_at=100 spawned_at=250 pid=4242\n";
     let failed = Ending::Failed {
         code: 2,
         sentence: "No app has that id.".to_owned(),
@@ -137,13 +137,13 @@ fn the_timing_line_goes_to_stdout_only_when_asked_and_a_failure_to_stderr() {
         (
             failed.clone(),
             PrintTiming::Print,
-            Output::Stderr("sill: No app has that id.".to_owned()),
+            Output::Stderr("bardo-shell: No app has that id.".to_owned()),
             2,
         ),
         (
             failed,
             PrintTiming::Skip,
-            Output::Stderr("sill: No app has that id.".to_owned()),
+            Output::Stderr("bardo-shell: No app has that id.".to_owned()),
             2,
         ),
     ];

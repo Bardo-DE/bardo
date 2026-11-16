@@ -1,5 +1,5 @@
 //! The one way a command prints its answer to stdout. Rust's `println!` panics when the reader
-//! has gone (`sill ping | head -c0`: "failed printing to stdout: Broken pipe"); a
+//! has gone (`bardo-shell ping | head -c0`: "failed printing to stdout: Broken pipe"); a
 //! command line tool should end quietly instead, as the reader asked for no more. [`emit`] writes
 //! through any [`Write`] so the closed-pipe case is a unit test over a writer that fails.
 
@@ -40,7 +40,7 @@ pub fn emit(out: &mut impl Write, text: &str) -> Emitted {
 pub fn print(text: &str) -> Emitted {
     let emitted = emit(&mut io::stdout().lock(), text);
     if let Emitted::Failed(error) = &emitted {
-        eprintln!("sill: writing to stdout: {error}");
+        eprintln!("bardo-shell: writing to stdout: {error}");
     }
     emitted
 }

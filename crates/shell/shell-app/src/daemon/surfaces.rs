@@ -122,7 +122,10 @@ fn prepare_wallpapers(outputs: &Outputs, services: &Services) {
             height: buffer.height.unsigned_abs(),
         });
         if let Err(error) = prepared {
-            eprintln!("sill: preparing the wallpaper on {:?}: {error}", info.name);
+            eprintln!(
+                "bardo-shell: preparing the wallpaper on {:?}: {error}",
+                info.name
+            );
         }
     }
 }
@@ -141,7 +144,10 @@ pub(crate) fn spawn_hidden(
             Some(id)
         }
         Err(error) => {
-            eprintln!("sill: spawning {namespace} on {:?}: {error}", info.name);
+            eprintln!(
+                "bardo-shell: spawning {namespace} on {:?}: {error}",
+                info.name
+            );
             None
         }
     }

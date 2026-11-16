@@ -178,7 +178,7 @@ impl DisplaysLink for OnCompositor {
                 .name("detent-displays-watch".to_owned())
                 .spawn(move || watch_blocking(&ticker));
             if let Err(fault) = watching {
-                eprintln!("detent: displays: no watch for changes: {fault}");
+                eprintln!("bardo-settings: displays: no watch for changes: {fault}");
             }
             Ok(ticks)
         })

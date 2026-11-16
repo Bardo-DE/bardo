@@ -394,8 +394,8 @@ fn a_wheel_detent_over_the_list_moves_it_60_px() {
 }
 
 /// Shapes of focus that must keep their keys, and ones that must scroll: a ui-style menu
-/// (`role="menu"` with `onkeydown`) inside a scroller; sill's notification column (a focused
-/// scroller with its own `onkeydown`); sill's power menu (a focused root with `onkeydown` over
+/// (`role="menu"` with `onkeydown`) inside a scroller; bardo-shell's notification column (a focused
+/// scroller with its own `onkeydown`); bardo-shell's power menu (a focused root with `onkeydown` over
 /// a banded sheet); a focusable scroller with no listener; and a wheel-reading element that is
 /// not a scroll container.
 fn keyed() -> Element {

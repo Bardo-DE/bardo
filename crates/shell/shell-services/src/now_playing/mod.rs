@@ -4,7 +4,7 @@
 //! Spoken through hand-written `zbus` proxies for `org.mpris.MediaPlayer2` and
 //! `org.mpris.MediaPlayer2.Player`, found by `ListNames` and followed by `NameOwnerChanged`
 //! (the `mpris` crate runs on the `dbus` crate and libdbus). Album art reaches the surface only as
-//! a file in `$XDG_CACHE_HOME/sill/art/`, the one folder of covers the shell may draw from: an
+//! a file in `$XDG_CACHE_HOME/bardo/shell/art/`, the one folder of covers the shell may draw from: an
 //! `http(s)://` one is downloaded once into it and a `file://` one is copied into it, each only
 //! within a size (`shell_model::now_playing::art_source`, `backend::art`).
 

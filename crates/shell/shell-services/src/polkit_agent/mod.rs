@@ -1,8 +1,8 @@
-//! sill's own polkit authentication agent (design/20 §1.10). The daemon's own process registers
+//! bardo-shell's own polkit authentication agent (design/20 §1.10). The daemon's own process registers
 //! `org.freedesktop.PolicyKit1.AuthenticationAgent` for its logind session; polkitd calls
 //! `BeginAuthentication` when a program of that session needs an administrator (`pkexec`, a
 //! settings page), the service publishes a `PromptView` the polkit prompt surface draws, and
-//! the typed secret goes to polkit's own helper, never through sill's PAM.
+//! the typed secret goes to polkit's own helper, never through bardo-shell's PAM.
 //!
 //! How agents authenticate: an agent never checks a password itself, and
 //! never needs root. It hands the request's cookie to `polkit-agent-helper-1` (setuid root;
@@ -39,7 +39,7 @@ pub use backend::{
     AGENT_PATH, AUTHORITY_NAME, AUTHORITY_PATH, HelperChoice, PolkitRoute, SessionChoice,
 };
 
-/// sill's polkit agent as a [`Service`], registering where `env`'s [`PolkitRoute`] says (the
+/// bardo-shell's polkit agent as a [`Service`], registering where `env`'s [`PolkitRoute`] says (the
 /// daemon's: [`PolkitRoute::system`]); passive until a `Policy(Own)`.
 #[derive(Debug)]
 pub enum PolkitAgentService {}

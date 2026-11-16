@@ -1,5 +1,5 @@
-//! keycap, the Mac keyboard daemon: sill tells it which profile the focused window wants and
-//! the person's `keycap.toml`, learns from it whether it runs and holds the keyboards, and tells
+//! keycap, the Mac keyboard daemon: bardo-shell tells it which profile the focused window wants and
+//! the person's `key-remap.toml`, learns from it whether it runs and holds the keyboards, and tells
 //! the person when that needs them (`shell_model::keycap::attention`).
 //!
 //! The socket (`/run/bardo/key-remap/key-remap.sock`, `Env::keycap_socket`) is held by a thread of its own,
@@ -15,7 +15,7 @@
 //! `Overrides` (the person's `keyboard.overrides`) replaces the service's own and re-chooses the
 //! focused window's profile, sending `Focus` when it changed.
 //!
-//! The notices carry no action, so recovery is `sill keycap retry` and `sill keycap resume`.
+//! The notices carry no action, so recovery is `bardo-shell keycap retry` and `bardo-shell keycap resume`.
 
 mod backend;
 

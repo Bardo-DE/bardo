@@ -24,7 +24,7 @@ require_private_system_bus() {
 # the real system bus). This shell fragment, run as the command dbus-run-session execs, copies its
 # fresh private session bus onto DBUS_SYSTEM_BUS_ADDRESS too before starting the daemon (one
 # private bus standing in for both), and refuses outright if dbus-run-session left it real.
-# Arguments after the binary go to `sill run`. Usage:
+# Arguments after the binary go to `bardo-shell run`. Usage:
 #   dbus-run-session --config-file="$BARDO_SHELL_REPO/dev/private-bus.conf" -- \
 #     sh -c "$PRIVATE_BOTH_BUSES" "$BARDO_SHELL_BIN" "${FAKE_DDC_FLAGS[@]}"
 read -r -d '' PRIVATE_BOTH_BUSES <<'SH' || true
@@ -58,7 +58,7 @@ stop_private_bus() {
 }
 
 # Writes a scratch DDC fixture naming no monitor (`{"displays":[]}`) and sets FAKE_DDC to it and
-# FAKE_DDC_FLAGS to `--fake-ddc FILE`, the `sill run` option that makes a debug build's DDC worker
+# FAKE_DDC_FLAGS to `--fake-ddc FILE`, the `bardo-shell run` option that makes a debug build's DDC worker
 # talk to the file instead of opening the real /dev/i2c-*. Every daemon launch line passes
 # "${FAKE_DDC_FLAGS[@]}" right after `run`. $1: the directory to write ddc.json into (a fresh
 # mktemp -d if omitted). Call in the script's own shell (never in a command substitution, which
@@ -86,7 +86,7 @@ require_fake_ddc() {
 
 # Names a stand-in a script built in this checkout as the desktop's service APP in the role ROLE
 # (accounts, router, ...), for the daemon under test only: the row goes into $SCRATCH/dev-callers.toml
-# (mode 600, never anywhere else) and DEV_CALLERS_FLAGS becomes `--dev-callers FILE`, the `sill run`
+# (mode 600, never anywhere else) and DEV_CALLERS_FLAGS becomes `--dev-callers FILE`, the `bardo-shell run`
 # option of a debug build that reads that file as the person's own rows (peephole's developer rows,
 # `Proof::Dev`, below every real proof). The release table is never read or written. Needs
 # scratch_new first. $1 APP, $2 ROLE, $3 the stand-in's image (resolved: /proc names the real path).

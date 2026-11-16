@@ -143,7 +143,7 @@ Desktop, In Stage Manager), Widget style (Automatic, Monochrome, Full-color), Us
   (22 §3.20). The size is not chosen: sill's widget size table `size_of(kind, host)`
   fixes one size per kind and host (every notification center tile Medium, the month Large there;
   on the desktop Calendar and Battery Small, Up Next, Now Playing and World Clock Medium).
-- Positions: **state**, `$XDG_STATE_HOME/sill/desktop-widgets.json`, no settings key (F881, and
+- Positions: **state**, `$XDG_STATE_HOME/bardo/shell/desktop-widgets.json`, no settings key (F881, and
   22 §1 rule 3). Each entry is a `saved::SavedEntry { output: OutputKey, placement: Placement {
   kind, slot: GridSlot { column, row } } }`; `OutputKey::{Any, Named(connector)}`. An output with
   entries of its own reads only those; one with none reads the `Any` entries, so a pre-F881 file
@@ -379,7 +379,7 @@ plug-ins; an app adds items to its own Dock menu (HIG dock-menus).
 
 **Before sill 848a20a7.** sill: `DockPins { version, pinned: Vec<AppId> }` in `dock.json`, `PinEvent::Pin {
 app, at: PinAt::{End,Index} }` and unpin, applied by one writer task (`pins::run`: load once,
-reduce, save atomically, watch for outside edits); `sill dock pin` and Keep in Dock send it
+reduce, save atomically, watch for outside edits); `bardo-shell dock pin` and Keep in Dock send it
 events. Drag reorder and drag-out remove live in the dock machine (`dock/machine/press.rs`),
 always on, no mode. Stacks deferred (`10-BEHAVIOUR-dock.md` R25).
 
@@ -640,7 +640,7 @@ notification so the Settings page lists them. No trait. Picker: the Settings app
 page, `SettingsRow` list of apps (icon, name, current style as the trailing value), each opening a
 pane of the per-app keys.
 
-**The seen apps are state, not a key**: `$XDG_STATE_HOME/sill/notifying-apps.json`, a list of
+**The seen apps are state, not a key**: `$XDG_STATE_HOME/bardo/shell/notifying-apps.json`, a list of
 `{app, name, first_seen}`, written by the notifications task. It has no design/22 row. It does
 not reuse the history file (`notifications.json`, `history_file.rs`) because the history is
 capped (`notifications.history_cap`, which may be 0), is emptied when the person clears the
@@ -752,7 +752,7 @@ Rules (all layouts):
    `shell-services`, the way `pins::run` owns `dock.json` today): it loads once, applies events
    through a pure reducer, saves atomically (temp file and rename), and picks up an outside edit
    through the directory watch (30 ms debounce, 22 §2). Surfaces and CLI commands never write:
-   they send the task events (`sill dock pin` sends `PinEvent::Pin` today; a widget drop sends
+   they send the task events (`bardo-shell dock pin` sends `PinEvent::Pin` today; a widget drop sends
    the dropped arrangement; the Settings app's picker writes the file like an outside editor
    does, and the task's watch picks it up).
 5. **Order is list order.** No `index` field; a reorder rewrites the list.
@@ -859,7 +859,7 @@ appear motion once when it scrolls into view (the wake stamp), never on a loop.
 Two halves, as the reference: a **static manifest** so a picker lists an app's kinds without
 running it (the widget gallery shows apps that are closed), and a **live interface** for data.
 
-1. **Manifest**: `$XDG_DATA_DIRS/quire/kinds/<app-id>.toml`, installed with the app's `.desktop`
+1. **Manifest**: `$XDG_DATA_DIRS/bardo/kinds/<app-id>.toml`, installed with the app's `.desktop`
    file (the same place and discovery rule as the settings schemas, 22 §9.2):
 
    ```toml
@@ -1033,7 +1033,7 @@ compositor fork reports held modifiers (4.9).
     silently breaks a binding the person made there, and refusing hides why.
 
 Note on decision 1 (revision): `layout.toml` holds only membership, order and per-instance
-config. Positions and cells stay state (`$XDG_STATE_HOME/sill/desktop-widgets.json`, sill F881,
+config. Positions and cells stay state (`$XDG_STATE_HOME/bardo/shell/desktop-widgets.json`, sill F881,
 22 §1 rule 3); the settled choice is unchanged by this.
 
 ## 8. Sources

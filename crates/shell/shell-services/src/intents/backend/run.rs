@@ -196,7 +196,7 @@ impl Live {
                 )
                 .await;
             if let Err(error) = sent {
-                eprintln!("sill: intents: answering the sheet's asker: {error}");
+                eprintln!("bardo-shell: intents: answering the sheet's asker: {error}");
             }
             retire(&connection, &asker.path).await;
         });
@@ -258,7 +258,7 @@ impl Live {
                 self.feed(IntentsEvent::Terminal(TerminalEvent::Loaded(grants)));
             }
             Inner::Grants(Err(why)) => {
-                eprintln!("sill: intents: reading the terminal's grants: {why}");
+                eprintln!("bardo-shell: intents: reading the terminal's grants: {why}");
                 self.feed(IntentsEvent::Terminal(TerminalEvent::Unreachable));
             }
             Inner::Resumed(Ok(())) | Inner::Signal(Signalled::Resumed) => {
@@ -266,13 +266,15 @@ impl Live {
                     Breaker::Running,
                 )));
             }
-            Inner::Resumed(Err(why)) => eprintln!("sill: intents: resuming the terminal: {why}"),
+            Inner::Resumed(Err(why)) => {
+                eprintln!("bardo-shell: intents: resuming the terminal: {why}")
+            }
             Inner::LimitUndone(id, Ok(())) => {
                 self.feed(IntentsEvent::Sheet(SheetEvent::LimitUndone(id)));
             }
             // The sheet keeps its line and its Undo: the entry is still there.
             Inner::LimitUndone(_, Err(why)) => {
-                eprintln!("sill: intents: undoing a limit: {why}");
+                eprintln!("bardo-shell: intents: undoing a limit: {why}");
             }
             Inner::Signal(Signalled::Tripped) => {
                 self.feed(IntentsEvent::Terminal(TerminalEvent::Breaker(
@@ -311,7 +313,7 @@ impl Live {
         let (connection, inner) = (self.connection.clone(), self.inner.clone());
         tokio::spawn(async move {
             if let Err(why) = control::revoke(&connection, &grant).await {
-                eprintln!("sill: intents: revoking a terminal grant: {why}");
+                eprintln!("bardo-shell: intents: revoking a terminal grant: {why}");
             }
             let _ = inner.send(Inner::Reload);
         });

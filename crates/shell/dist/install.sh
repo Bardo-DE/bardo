@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Install sill from the bardo tree: build `sill` in release, then put the binary, the PAM service,
+# Install bardo-shell from the bardo tree: build `bardo-shell` in release, then put the binary, the PAM service,
 # the intents manifest (`org.bardo.Shell`, for intentd and `bardo-do`), the companion skills
 # (dist/skills) and the settings schema where a login reads them, and copy the keycap layer for
-# the sill session to ~/.config/keycap/keycap.toml when that file is missing (never over yours).
-# The login itself, "sill (casement)", is the desktop repo's session/ and install/. Run as
+# the bardo-shell session to ~/.config/key-remap/key-remap.toml when that file is missing (never over yours).
+# The login itself, "Bardo", is the desktop repo's session/ and install/. Run as
 # yourself; the root step asks once. Safe to run again.
 #
 #   dist/install.sh --dry-run    print every step, change nothing (no build; the lock check still runs)
 #   dist/install.sh              do it
-#   --prefix DIR                 install under DIR (default /usr/local): DIR/bin, DIR/share/quire
+#   --prefix DIR                 install under DIR (default /usr/local): DIR/bin, DIR/share/bardo
 #   --destdir DIR                stage under DIR instead of the real system (packaging): nothing is
 #                                escalated, and the keycap layer, udev reload and user manager are skipped
 #   --no-build                   do not run cargo; use the release binary already built
@@ -36,30 +36,30 @@ parse_flags "$@"
 step "1/8 checks"
 refuse_root
 [ "$NO_BUILD" = 1 ] || command -v cargo >/dev/null || { echo "cargo not found (install rustup: the repo pins its Rust version)" >&2; exit 1; }
-if [ -e "$HOME/.cargo/bin/sill" ] && [ -z "$DESTDIR" ]; then
-  note "WARNING: $HOME/.cargo/bin/sill would come first on a login shell's PATH and shadow $BIN_DEST;"
-  note "         remove it (rm $HOME/.cargo/bin/sill) or the session runs the old build"
+if [ -e "$HOME/.cargo/bin/bardo-shell" ] && [ -z "$DESTDIR" ]; then
+  note "WARNING: $HOME/.cargo/bin/bardo-shell would come first on a login shell's PATH and shadow $BIN_DEST;"
+  note "         remove it (rm $HOME/.cargo/bin/bardo-shell) or the session runs the old build"
 fi
 need_root_helper
 
 step "2/8 the lock file against the workspace"
 if [ "$NO_BUILD" = 1 ]; then note "skipped: --no-build"; else check_lock; fi
 
-step "3/8 build sill (release, from $TREE)"
+step "3/8 build bardo-shell (release, from $TREE)"
 if [ "$NO_BUILD" = 1 ]; then
   note "skipped: --no-build"
 else
   run cargo_outside build --release --locked --manifest-path "$TREE/Cargo.toml" -p shell-app
 fi
-BUILT="${CARGO_TARGET_DIR:-$TREE/target}/release/sill"
+BUILT="${CARGO_TARGET_DIR:-$TREE/target}/release/bardo-shell"
 [ "$DRY" = 1 ] || [ -x "$BUILT" ] || { echo "no binary at $BUILT" >&2; exit 1; }
 
 step "4/8 the binary"
 put 755 "$BUILT" "$BIN_DEST"
 
 step "5/8 the PAM service, the intents manifest, the skills and the settings schema"
-put 644 "$DIST/pam.d/sill" "$PAM_DEST"
-# intentd (docket) lists it, and `bardo-do shell --list` shows it: sill serves it as `org.bardo.Shell`.
+put 644 "$DIST/pam.d/bardo-shell" "$PAM_DEST"
+# intentd (docket) lists it, and `bardo-do shell --list` shows it: bardo-shell serves it as `org.bardo.Shell`.
 put 644 "$DIST/intents/org.bardo.Shell.toml" "$INTENTS_DEST"
 # The skills the companion loads (agent-eval --check-skills validates them); they grant nothing.
 while IFS= read -r file; do
@@ -78,7 +78,7 @@ fi
 
 step "6/8 external monitor brightness (DDC/CI): the i2c rule and module"
 if ddcutil_rule_present "$DESTDIR"; then
-  note "a ddcutil udev rule exists: sill adds none (the ddcutil package loads i2c-dev as well)"
+  note "a ddcutil udev rule exists: bardo-shell adds none (the ddcutil package loads i2c-dev as well)"
 else
   put 644 "$DDC_RULE_SRC" "$DDC_RULE_DEST"
   put 644 "$DDC_MODULES_SRC" "$DDC_MODULES_DEST"
@@ -89,7 +89,7 @@ else
   fi
 fi
 
-step "7/8 the keycap layer for the sill session (copied when missing; never overwritten)"
+step "7/8 the keycap layer for the bardo-shell session (copied when missing; never overwritten)"
 if [ -n "$DESTDIR" ]; then
   note "skipped: a staging root has no person's home"
 elif [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ] && cmp -s "$BARDO_KEY_REMAP_LAYER_SRC" "$BARDO_KEY_REMAP_LAYER_DEST"; then
@@ -105,7 +105,7 @@ elif [ -e "$BARDO_KEY_REMAP_LAYER_DEST" ]; then
     note "Your file has every rule of the new one; it differs only in comments or extra rules of yours."
   fi
   note "To see every difference:  diff $BARDO_KEY_REMAP_LAYER_DEST $BARDO_KEY_REMAP_LAYER_SRC"
-  note "To use the new file (keeps yours as keycap.toml.bak):  cp $BARDO_KEY_REMAP_LAYER_DEST $BARDO_KEY_REMAP_LAYER_DEST.bak && cp $BARDO_KEY_REMAP_LAYER_SRC $BARDO_KEY_REMAP_LAYER_DEST"
+  note "To use the new file (keeps yours as key-remap.toml.bak):  cp $BARDO_KEY_REMAP_LAYER_DEST $BARDO_KEY_REMAP_LAYER_DEST.bak && cp $BARDO_KEY_REMAP_LAYER_SRC $BARDO_KEY_REMAP_LAYER_DEST"
 else
   run install -D -m 644 "$BARDO_KEY_REMAP_LAYER_SRC" "$BARDO_KEY_REMAP_LAYER_DEST"
 fi
@@ -124,4 +124,4 @@ fi
 
 step "done"
 print_pending
-note "Next: install the \"sill (casement)\" login from the desktop repo, then docs/first-login.md. Plasma is untouched and stays in the session list."
+note "Next: install the \"Bardo\" login from the desktop repo, then docs/first-login.md. Plasma is untouched and stays in the session list."

@@ -147,7 +147,7 @@ never reaches it.
 
 ## 10. Storage (settled path; target (clean-up phase) schema)
 
-`$XDG_CONFIG_HOME/quire/spaces.json`, atomic write (the `ui-settings` writer), watched with
+`$XDG_CONFIG_HOME/bardo/spaces.json`, atomic write (the `ui-settings` writer), watched with
 `notify` (rename replaces inode; debounce 30 ms). `ds::style::space::store::SpaceStore` is the
 schema (`crates/ds-style/src/space/store.rs`), read and written through `ui-settings`'s
 `Settings<SpaceStore>` with `Format::Json`. A `null` in `by_index` means "no look stored at this

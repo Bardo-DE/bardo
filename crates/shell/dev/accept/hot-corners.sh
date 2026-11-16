@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # Hot corners acceptance (design/20 §1.16, design/13 §13.3.12), on casement
 # (brought up and ended by start_compositor).
-# Starts `sill run` from this checkout's debug build (`--features debug`) with a scratch HOME and
+# Starts `bardo-shell run` from this checkout's debug build (`--features debug`) with a scratch HOME and
 # XDG tree, on a private bus (dev/private-bus.conf) that is both its session and its system bus,
 # and with its own XDG_RUNTIME_DIR (the nested socket given as an absolute WAYLAND_DISPLAY), so
-# another sill running meanwhile keeps its own single-instance lock and IPC socket. The scratch
+# another bardo-shell running meanwhile keeps its own single-instance lock and IPC socket. The scratch
 # config: top_left = launcher, top_right = notification_center, bottom_right = command (touches
 # a temp file), bottom_left = none; dwell_ms and rearm_ms are left at their defaults (150, 500),
 # so the timing checks below are against the real numbers. Never sets a corner to `lock` (never
 # touches the real session's locker). The daemon is quit at the end.
 #
-#   1. `sill debug stats` lists the three active corners and not `bottom_left`'s.
-#   2. `sill debug corner top-left` opens the launcher; `top-right` opens the notification
+#   1. `bardo-shell debug stats` lists the three active corners and not `bottom_left`'s.
+#   2. `bardo-shell debug corner top-left` opens the launcher; `top-right` opens the notification
 #      center; `bottom-right` runs the command, touching the temp file.
 #   3. A real pointer dwell on the top-left corner's own surface (layer-shell-host's debug-inject, the
 #      same path a real pointer takes): entering fires the launcher only after the dwell (checked
@@ -20,7 +20,7 @@
 #      (past `rearm_ms`) re-arm it, and a fresh dwell fires again, which Toggle closes (design/13
 #      §13.3.12's toggle rule: Launcher, NotificationCenter, ControlCenter, Workspaces and
 #      ShowDesktop close on a second hit; Lock and Command never toggle).
-#   4. `top_left = "none"` and `sill reload` removes its surface; the other two stay.
+#   4. `top_left = "none"` and `bardo-shell reload` removes its surface; the other two stay.
 #   5. 5 s idle, no debug command sent meanwhile: 0 frames on the surviving corner surfaces (the
 #      element is never painted, so even the real dwell in step 3 left no lasting frames; this
 #      checks the quiet case).
@@ -29,8 +29,8 @@
 # modifier portably, and taking the keyboard to get one would steal focus, which a hot corner must
 # never do. The machine has no modifier input, so there is nothing to check here.
 #
-# Exit 0 when every step passed, 1 on a failure. Another sill daemon started from a
-# `target/*/sill run` is waited for (up to 10 minutes), so two shells never share the nested
+# Exit 0 when every step passed, 1 on a failure. Another bardo-shell daemon started from a
+# `target/*/bardo-shell run` is waited for (up to 10 minutes), so two shells never share the nested
 # output's screenshots.
 #
 # Usage: dev/accept/hot-corners.sh
@@ -40,9 +40,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib/all.sh"
 OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-hot-corners"
 mkdir -p "$OUT_DIR"
 
-# Whether SURFACE $1 is listed in `sill debug stats` (popups and corners alike).
+# Whether SURFACE $1 is listed in `bardo-shell debug stats` (popups and corners alike).
 has_surface() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 names = {row["surface"] for row in json.loads(sys.stdin.read())["v"]}
 sys.exit(0 if sys.argv[1] in names else 1)' "$1"
@@ -52,7 +52,7 @@ start_hot_corners_daemon() {
   MARK="$OUT_DIR/bottom-right-touched"
   rm -f "$MARK"
   backdrop_seed "$CONFIG" || return 1
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   cat >"$CONFIG/shell/settings.toml" <<TOML
 [hot_corners]
 top_left = "launcher"
@@ -77,7 +77,7 @@ TOML
 step_stats() {
   local log="$OUT_DIR/stats.log"
   : >"$log"
-  sill debug stats >"$log" 2>&1
+  bardo-shell debug stats >"$log" 2>&1
   has_surface "$TOP_LEFT" || { echo "$TOP_LEFT missing from stats" | tee -a "$log" >&2; return 1; }
   has_surface "$TOP_RIGHT" || { echo "$TOP_RIGHT missing from stats" | tee -a "$log" >&2; return 1; }
   has_surface "$BOTTOM_RIGHT" || { echo "$BOTTOM_RIGHT missing from stats" | tee -a "$log" >&2; return 1; }
@@ -92,17 +92,17 @@ step_stats() {
 step_fake_hits() {
   local log="$OUT_DIR/fake.log"
   : >"$log"
-  sill debug corner top-left >>"$log" 2>&1 || return 1
+  bardo-shell debug corner top-left >>"$log" 2>&1 || return 1
   wait_surface "$LAUNCHER" 20 up || { echo "top-left did not open the launcher" | tee -a "$log" >&2; return 1; }
-  sill launcher close >>"$log" 2>&1
+  bardo-shell launcher close >>"$log" 2>&1
   wait_surface "$LAUNCHER" 20 down || return 1
 
-  sill debug corner top-right >>"$log" 2>&1 || return 1
+  bardo-shell debug corner top-right >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 up || { echo "top-right did not open the center" | tee -a "$log" >&2; return 1; }
-  sill notifications close >>"$log" 2>&1
+  bardo-shell notifications close >>"$log" 2>&1
   wait_surface "$CENTER" 20 down || return 1
 
-  sill debug corner bottom-right >>"$log" 2>&1 || return 1
+  bardo-shell debug corner bottom-right >>"$log" 2>&1 || return 1
   for _ in $(seq 40); do [ -e "$MARK" ] && break; sleep 0.05; done
   [ -e "$MARK" ] || { echo "bottom-right's command never touched $MARK" | tee -a "$log" >&2; return 1; }
   echo "top-left opens the launcher, top-right the center, bottom-right touches $MARK" \
@@ -113,10 +113,10 @@ step_fake_hits() {
 step_dwell() {
   local log="$OUT_DIR/dwell.log"
   : >"$log"
-  sill launcher close >>"$log" 2>&1
+  bardo-shell launcher close >>"$log" 2>&1
   wait_surface "$LAUNCHER" 20 down || return 1
 
-  sill debug pointer "$TOP_LEFT" 0 0 >>"$log" 2>&1 || return 1
+  bardo-shell debug pointer "$TOP_LEFT" 0 0 >>"$log" 2>&1 || return 1
   sleep 0.05
   if mapped "$LAUNCHER"; then
     echo "the launcher opened before the dwell (50 ms)" | tee -a "$log" >&2; return 1
@@ -125,20 +125,20 @@ step_dwell() {
   mapped "$LAUNCHER" || { echo "the launcher did not open by 400 ms" | tee -a "$log" >&2; return 1; }
 
   # A second pointer, still inside, with no leave: no fresh dwell, no second fire.
-  sill debug pointer "$TOP_LEFT" 0 0 >>"$log" 2>&1
+  bardo-shell debug pointer "$TOP_LEFT" 0 0 >>"$log" 2>&1
   sleep 0.3
   mapped "$LAUNCHER" || { echo "a second pointer with no leave closed it" | tee -a "$log" >&2; return 1; }
 
-  sill debug leave "$TOP_LEFT" >>"$log" 2>&1 || return 1
+  bardo-shell debug leave "$TOP_LEFT" >>"$log" 2>&1 || return 1
   sleep 0.6
-  sill debug pointer "$TOP_LEFT" 0 0 >>"$log" 2>&1 || return 1
+  bardo-shell debug pointer "$TOP_LEFT" 0 0 >>"$log" 2>&1 || return 1
   sleep 0.3
   wait_surface "$LAUNCHER" 20 down || {
     echo "leaving and 600 ms did not re-arm the corner (the second dwell should have toggled it closed)" \
       | tee -a "$log" >&2
     return 1
   }
-  sill debug leave "$TOP_LEFT" >>"$log" 2>&1
+  bardo-shell debug leave "$TOP_LEFT" >>"$log" 2>&1
   echo "the dwell fires once at ~150 ms, not at 50 ms; a second pointer with no leave does nothing; a leave and 600 ms re-arm it, and the next dwell toggles the launcher closed" \
     | tee -a "$log" >&2
 }
@@ -155,7 +155,7 @@ bottom_left = "none"
 bottom_right = "command"
 bottom_right_command = "touch $MARK"
 TOML
-  sill reload >>"$log" 2>&1 || return 1
+  bardo-shell reload >>"$log" 2>&1 || return 1
   for _ in $(seq 40); do has_surface "$TOP_LEFT" || break; sleep 0.05; done
   if has_surface "$TOP_LEFT"; then
     echo "$TOP_LEFT still listed after top_left = none" | tee -a "$log" >&2; return 1

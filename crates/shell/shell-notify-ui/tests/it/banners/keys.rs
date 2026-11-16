@@ -1,4 +1,4 @@
-//! The banners' keyboard: they appear without taking focus; `sill focus-latest` (the link asks,
+//! The banners' keyboard: they appear without taking focus; `bardo-shell focus-latest` (the link asks,
 //! naming the banners when they appeared last) gives the newest card the keyboard and pauses its
 //! hold; Up and Down move along the stack, Enter presses the card, Tab reaches its buttons,
 //! Enter presses a button too, Escape, Delete and Backspace dismiss the card and hand the focus on.

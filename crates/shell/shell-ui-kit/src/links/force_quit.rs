@@ -1,5 +1,5 @@
 //! The Force Quit Applications panel's channels. The daemon writes whether the panel is open and
-//! on which output (`sill force-quit`, the keyboard shortcut); the link holds the desktop's view,
+//! on which output (`bardo-shell force-quit`, the keyboard shortcut); the link holds the desktop's view,
 //! from which the panel lists the apps; every output's panel surface follows both. The surface
 //! that shows the panel writes the app the person confirmed, and the daemon carries it out.
 
@@ -73,7 +73,7 @@ impl ForceQuitLink {
         self.panel.toggle(output, ());
     }
 
-    /// Close: Escape, Done, a press away from the panel, or `sill force-quit close`.
+    /// Close: Escape, Done, a press away from the panel, or `bardo-shell force-quit close`.
     pub fn close(&self) {
         self.panel.close();
     }

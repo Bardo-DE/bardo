@@ -17,7 +17,7 @@ const GROUP_OR_OTHER_WRITE: u32 = 0o022;
 pub enum SchemaOrigin {
     /// A folder owned by root and writable by nobody else.
     System,
-    /// Any other folder, such as `~/.local/share/quire/settings`.
+    /// Any other folder, such as `~/.local/share/bardo/settings`.
     PersonWritable,
 }
 

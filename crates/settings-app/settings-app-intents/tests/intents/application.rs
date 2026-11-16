@@ -1,4 +1,4 @@
-//! `org.freedesktop.Application` on `org.bardo.Settings`, called the way sill calls it.
+//! `org.freedesktop.Application` on `org.bardo.Settings`, called the way bardo-shell calls it.
 
 use crate::support::{World, peers_knowing};
 use settings_app_callers::roles;
@@ -98,7 +98,7 @@ async fn open_target_tells_the_window_the_target_its_text_names() {
 #[tokio::test(flavor = "multi_thread")]
 async fn open_page_shows_the_page_its_slug_names_and_raises() {
     let world = World::start("app-open-page", &[]).await;
-    // Each slug is shown and the window raised: a plain page, then the slugs sill is told to send
+    // Each slug is shown and the window raised: a plain page, then the slugs bardo-shell is told to send
     // for the assistant's model page and its first-run step.
     let slugs = [
         "software-update",
@@ -322,7 +322,7 @@ async fn a_program_in_no_row_of_the_table_cannot_raise_or_open_anything() {
 async fn a_second_detent_sends_nothing_to_an_owner_that_is_not_settings() {
     let world = World::start("app-hand-over-squatter", &[]).await;
     let second = world.caller(roles::SETTINGS).await;
-    // The second detent's peers know the owner of the name as the shell, not as Settings.
+    // The second bardo-settings's peers know the owner of the name as the shell, not as Settings.
     let knows = peers_knowing(&second, &world.owner(), &roles::SHELL);
     let handed = hand_over(&second, &knows, Some("tok-3".to_owned()), None).await;
     assert!(

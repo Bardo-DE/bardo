@@ -4,7 +4,7 @@ use desktop_protocols::vocab::{OverviewMode, Toggle};
 
 use super::DesktopCommand;
 
-/// Open Mission Control (`sill workspace overview`, the hot corner that shows the Spaces).
+/// Open Mission Control (`bardo-shell workspace overview`, the hot corner that shows the Spaces).
 pub fn open_mission_control() -> DesktopCommand {
     DesktopCommand::Overview {
         mode: OverviewMode::MissionControl,

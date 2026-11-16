@@ -2,7 +2,7 @@
 Type=Application
 Name=Files
 Comment=Browse and organise your files and folders
-Exec=files %U
+Exec=bardo-files %U
 Icon=system-file-manager
 Terminal=false
 Categories=System;FileManager;

@@ -4107,7 +4107,7 @@ pub struct SpellConfig { pub dictionaries: Vec<PathBuf>, pub user: PathBuf }
 | Debounce | `DelayToken::SpellDebounce`, 300 ms after the last input or caret move | proposed |
 | Menu | quire's context `Menu` at the pointer (or under the caret for the key): up to 5 suggestions (`No Guesses Found` when none), a rule, `Ignore Spelling`, `Learn Spelling` | the reference's spelling items |
 | Language | the surface's `lang`, else the host's: `LC_ALL`, else `LANG`; a region with no dictionary falls back (`en_NZ` → `en_US`, `de_CH` → `de_DE`) | proposed; the list setting is not in design/22 yet |
-| User dictionary | `$XDG_DATA_HOME/quire/spelling/<lang>.dic`, one word per line | proposed |
+| User dictionary | `$XDG_DATA_HOME/bardo/spelling/<lang>.dic`, one word per line | proposed |
 
 **Behaviour.**
 

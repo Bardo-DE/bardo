@@ -21,9 +21,9 @@ fn homes(name: &str) -> (Scratch, ConfigHome, DataHome) {
     let scratch = Scratch::under(TMP, name);
     let config = scratch.join("config");
     let data = scratch.join("data");
-    std::fs::create_dir_all(config.join("docket")).expect("mkdir");
-    std::fs::write(config.join("actions/agents.toml"), AGENTS).expect("agents");
-    let state = data.join("docket/agents/state/claude-code");
+    std::fs::create_dir_all(config.join("bardo/actions")).expect("mkdir");
+    std::fs::write(config.join("bardo/actions/agents.toml"), AGENTS).expect("agents");
+    let state = data.join("bardo/actions/agents/state/claude-code");
     std::fs::create_dir_all(&state).expect("mkdir");
     std::fs::write(state.join("offered.toml"), OFFERED).expect("offered");
     (scratch, ConfigHome(config), DataHome(data))
@@ -71,7 +71,8 @@ fn a_choice_is_written_into_its_entry_and_nothing_else_moves() {
     let (scratch, config, data) = homes("agents-write");
     save_agent_choice(&config, "claude-code", &model_choice("opus")).expect("saved");
     save_agent_choice(&config, "claude-code", &way_choice("login")).expect("saved");
-    let text = std::fs::read_to_string(scratch.join("config/actions/agents.toml")).expect("file");
+    let text =
+        std::fs::read_to_string(scratch.join("config/bardo/actions/agents.toml")).expect("file");
     assert!(text.starts_with("# mine\n"), "{text}");
     assert!(text.contains("program = \"mine\""), "{text}");
     let after = load_agents(&config, &data);
@@ -94,7 +95,7 @@ fn a_choice_is_written_into_its_entry_and_nothing_else_moves() {
 fn install(data: &DataHome, id: &str, version: &str) {
     let dir = data
         .0
-        .join("docket/agents/installed")
+        .join("bardo/actions/agents/installed")
         .join(id)
         .join(version);
     std::fs::create_dir_all(&dir).expect("mkdir");
@@ -146,7 +147,7 @@ fn an_assistant_added_from_the_installed_ones_can_be_removed_again() {
     let form = AddForm::offline(&unlisted_found(&installed_agents(&data), &rows), &rows);
     let new = added(&form.typed("My Gemini".to_owned()));
     add_agent(&config, &new).expect("added");
-    let path = scratch.join("config/actions/agents.toml");
+    let path = scratch.join("config/bardo/actions/agents.toml");
     let text = std::fs::read_to_string(&path).expect("file");
     assert!(text.starts_with("# mine\n"), "the comment stays: {text}");
     for want in [
@@ -170,7 +171,9 @@ fn an_assistant_added_from_the_installed_ones_can_be_removed_again() {
         Err(ChoiceFault::NoSuchAgent)
     );
     assert!(
-        data.0.join("docket/agents/installed/gemini/1.0.0").is_dir(),
+        data.0
+            .join("bardo/actions/agents/installed/gemini/1.0.0")
+            .is_dir(),
         "the installed files stay"
     );
 }

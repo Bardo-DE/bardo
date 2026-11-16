@@ -32,7 +32,7 @@ pub const MAX_TRIES: u32 = 3;
 pub enum Origin {
     /// polkitd's `BeginAuthentication`: its completion answers the method call.
     Bus,
-    /// `sill debug polkit`: answered by the stand-in helper, completed to nobody.
+    /// `bardo-shell debug polkit`: answered by the stand-in helper, completed to nobody.
     Fake,
 }
 

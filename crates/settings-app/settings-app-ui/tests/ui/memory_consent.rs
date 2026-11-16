@@ -63,7 +63,7 @@ fn confining(name: &str, file: Option<&str>, word: &'static str) -> World {
         .expect("a runtime for the fake");
     let bus = PrivateBus::start(name);
     let sandbox = Sandbox::new(name).on_bus(&bus.address);
-    let path = sandbox.config_home().0.join("memory/settings.toml");
+    let path = sandbox.config_home().0.join("bardo/memory/settings.toml");
     if let Some(text) = file {
         sandbox.write("memory/settings.toml", text);
     }

@@ -23,8 +23,8 @@ settings-app-testkit = {path = "../settings-app-testkit"}
 # Test seams: a standing introduced for a bus name's owner, and peers over an empty table. A shipped
 # binary never enables it; a dev-dependency does.
 testing = ["caller-identity-dbus/fake"]
-# `detent --dev-callers FILE`: callers named in a person's own rows file are let in at `Proof::Dev`
-# (peephole's `dev-rows`). Off by default; only the `detent` binary's feature of the same name turns it
+# `bardo-settings --dev-callers FILE`: callers named in a person's own rows file are let in at `Proof::Dev`
+# (peephole's `dev-rows`). Off by default; only the `bardo-settings` binary's feature of the same name turns it
 # on, so no shipped build has it.
 dev-callers = ["caller-identity-dbus/dev-rows", "dep:rustix", "dep:thiserror"]
 

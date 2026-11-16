@@ -7,7 +7,7 @@
 //! on X11 (and wherever winit can place a window).
 //!
 //! `launch` provides it as `ui_components::prelude::WindowHost` and refreshes the state on every resize and focus
-//! change. Another Blitz host (layer-shell-host's surfaces, through sill) provides its own
+//! change. Another Blitz host (layer-shell-host's surfaces, through bardo-shell) provides its own
 //! `HostWindow` over its `SurfaceHandle` instead.
 
 use crate::window_place::{Area, placement};

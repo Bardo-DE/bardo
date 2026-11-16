@@ -19,7 +19,7 @@ pub(crate) async fn run(
     let wake = match Wake::new() {
         Ok(wake) => Arc::new(wake),
         Err(error) => {
-            eprintln!("sill: volume: no way to wake the sound thread: {error}");
+            eprintln!("bardo-shell: volume: no way to wake the sound thread: {error}");
             return;
         }
     };

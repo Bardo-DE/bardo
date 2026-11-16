@@ -1,6 +1,6 @@
-//! sill's own lock screen (design/20 §1.9): one
+//! bardo-shell's own lock screen (design/20 §1.9): one
 //! `ext-session-lock-v1` surface per output, which layer-shell-host creates when the daemon locks
-//! (`crates/sill/src/lock/`), never a layer surface. Each draws quire's `LockScreen` stage in
+//! (`crates/shell/shell-app/src/lock/`), never a layer surface. Each draws quire's `LockScreen` stage in
 //! `Ds { material: Window, extent: Viewport }`: the output's pre-blurred wallpaper crop
 //! ([`backdrop::backdrop_for`]), quire's `LockClock` ([`model::clock_lines`]) and, on the output
 //! [`shell_ui_kit::links::LockLink`] names, quire's `LockPrompt` ([`model::lock_user`], [`model::prompt_state`],

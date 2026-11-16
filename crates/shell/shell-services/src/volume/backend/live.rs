@@ -111,7 +111,7 @@ fn session(
     let Some(mut mainloop) = Mainloop::new() else {
         return Session::Lost;
     };
-    let Some(context) = Context::new(&mainloop, "sill") else {
+    let Some(context) = Context::new(&mainloop, "bardo-shell") else {
         return Session::Lost;
     };
     let context = Rc::new(RefCell::new(context));

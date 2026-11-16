@@ -66,7 +66,7 @@ pub enum BannerIn {
     Tick,
     HoverIn,
     HoverOut,
-    /// The keyboard came to the card (`sill focus-latest`, or an arrow from a neighbour).
+    /// The keyboard came to the card (`bardo-shell focus-latest`, or an arrow from a neighbour).
     KeysIn,
     /// The keyboard left the card. The deck folds these and the pointer into one hold or rest
     /// (`deck::feed`); the machine itself only hears hover.

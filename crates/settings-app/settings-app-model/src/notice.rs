@@ -109,7 +109,7 @@ impl Outbox {
             drop(queue);
             if self.dropped.fetch_add(1, Ordering::Relaxed) == 0 {
                 eprintln!(
-                    "detent: {NOTICE_INBOX} notices are waiting for the window; more are dropped until it catches up"
+                    "bardo-settings: {NOTICE_INBOX} notices are waiting for the window; more are dropped until it catches up"
                 );
             }
             return Ok(());
@@ -199,7 +199,7 @@ pub fn inbox() -> (Outbox, Inbox) {
 
 impl Inbox {
     /// A new queue for the next window to take from this inbox, and the end to send to it. A
-    /// service that opens its windows one after another (`detent --service`) hands each the same
+    /// service that opens its windows one after another (`bardo-settings --service`) hands each the same
     /// [`Inbox`] through its environment; the receiver a window left behind is replaced.
     pub fn refill(&self) -> Outbox {
         let (outbox, receiver) = pair();

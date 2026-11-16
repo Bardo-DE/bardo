@@ -13,7 +13,7 @@ use super::key::KeySpec;
 use super::page_decl::PageDecl;
 use crate::xdg;
 
-/// The directory name a schema's owning program installs under: `quire`, `sill`, `mailo`. The
+/// The directory name a schema's owning program installs under: `bardo`, `shell`, `mailo`. The
 /// derive reads it off the first path segment of `#[settings(file = "...")]`
 /// (`crates/ds-settings-derive/src/gen_struct.rs`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -27,7 +27,7 @@ pub struct AppId(pub String);
 pub struct FilePath(pub String);
 
 /// The top-level tables of a program's settings file that the program owns but that are not
-/// settings (an engine list, a probe table): the Settings app and detent's unknown-key check
+/// settings (an engine list, a probe table): the Settings app and bardo-settings's unknown-key check
 /// leave every key under them alone (design/22-SETTINGS.md section 9.2). Empty for most files,
 /// and then not written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -120,7 +120,7 @@ const SCHEMA_CAP: ReadCap = ReadCap::kib(256);
 const SCHEMA_SUFFIX: &str = ".settings.toml";
 
 /// Every valid schema found directly under each of `dirs` (section 9.3: "discover every
-/// `*.settings.toml` under `$XDG_DATA_DIRS/quire/settings/`..."), in directory order and then
+/// `*.settings.toml` under `$XDG_DATA_DIRS/bardo/settings/`..."), in directory order and then
 /// file name order within a directory. A directory that does not exist is skipped silently (a
 /// normal `$XDG_DATA_DIRS` entry with nothing installed yet); a file that exists but will not
 /// parse is skipped with a warning on stderr (section 9.2, "a schema without a program... is
@@ -209,7 +209,7 @@ fn admit(path: &Path, found: &[Schema]) -> Result<Schema, String> {
     Ok(schema)
 }
 
-/// Every `$XDG_DATA_DIRS`-listed `<dir>/quire/settings`, then `$XDG_DATA_HOME/quire/settings`
+/// Every `$XDG_DATA_DIRS`-listed `<dir>/bardo/settings`, then `$XDG_DATA_HOME/bardo/settings`
 /// last, the directories [`discover`] scans (section 9.2). The user's directory comes last
 /// because [`discover`] keeps the first schema it finds for a program: a user's own install can
 /// add a program but never shadow an installed one (and so never change which of its keys an
@@ -240,7 +240,7 @@ pub fn data_dirs_from(
             home.as_deref(),
             xdg::DATA_HOME_UNDER_HOME,
         ))
-        .map(|base| base.join("quire").join("settings"))
+        .map(|base| base.join("bardo").join("settings"))
         .collect()
 }
 
@@ -271,7 +271,7 @@ mod tests {
     fn sample() -> Schema {
         Schema {
             footnotes: Vec::new(),
-            app: AppId("quire".to_owned()),
+            app: AppId("bardo".to_owned()),
             file: FilePath("bardo/appearance.toml".to_owned()),
             version: 1,
             foreign: Default::default(),
@@ -440,9 +440,9 @@ mod tests {
                 os("/a:/b"),
                 os("/home/ada"),
                 vec![
-                    "/a/quire/settings",
-                    "/b/quire/settings",
-                    "/xdg-data-home/quire/settings",
+                    "/a/bardo/settings",
+                    "/b/bardo/settings",
+                    "/xdg-data-home/bardo/settings",
                 ],
             ),
             (
@@ -450,7 +450,7 @@ mod tests {
                 None,
                 os("/a"),
                 os("/home/ada"),
-                vec!["/a/quire/settings", "/home/ada/.local/share/quire/settings"],
+                vec!["/a/bardo/settings", "/home/ada/.local/share/bardo/settings"],
             ),
             (
                 "empty values are ignored",
@@ -458,9 +458,9 @@ mod tests {
                 os(""),
                 os("/home/ada"),
                 vec![
-                    "/usr/local/share/quire/settings",
+                    "/usr/local/share/bardo/settings",
                     "/usr/share/bardo/settings",
-                    "/home/ada/.local/share/quire/settings",
+                    "/home/ada/.local/share/bardo/settings",
                 ],
             ),
             (
@@ -468,7 +468,7 @@ mod tests {
                 os("rel"),
                 os("rel:/a"),
                 None,
-                vec!["/a/quire/settings"],
+                vec!["/a/bardo/settings"],
             ),
         ];
         for (name, home, dirs, user, want) in cases {
@@ -488,14 +488,14 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
         let schema = sample();
 
-        let absent = maybe_write_schema(&schema, &["quire".to_owned()]).unwrap();
+        let absent = maybe_write_schema(&schema, &["bardo".to_owned()]).unwrap();
         assert!(!absent);
         assert!(!dir.exists());
 
         let present = maybe_write_schema(
             &schema,
             &[
-                "quire".to_owned(),
+                "bardo".to_owned(),
                 "--write-schema".to_owned(),
                 dir.to_string_lossy().into_owned(),
             ],
@@ -506,7 +506,7 @@ mod tests {
         std::fs::remove_dir_all(&dir).unwrap();
 
         // The flag without a directory is an error.
-        let args = vec!["quire".to_owned(), "--write-schema".to_owned()];
+        let args = vec!["bardo".to_owned(), "--write-schema".to_owned()];
         assert!(maybe_write_schema(&schema, &args).is_err());
     }
 }
@@ -555,7 +555,7 @@ mod page_tests {
     use super::Schema;
     use crate::schema::{Page, PageStatus, PageTable};
 
-    const HEAD: &str = "app = \"sill\"\nfile = \"shell/settings.toml\"\nversion = 1\n";
+    const HEAD: &str = "app = \"shell\"\nfile = \"shell/settings.toml\"\nversion = 1\n";
     const PAGE: &str = "[[page]]\nid = \"lighting\"\ntitle = \"Lighting\"\nsymbol = \"sun\"\norder = 25\naliases = [\"light\"]\n";
     const KEY: &str = "[[key]]\npath = \"lamp.level\"\ndefault = \"x\"\nlabel = \"Level\"\nhelp = \"\"\nsection = \"\"\nexposure = \"basic\"\n[key.kind]\nkind = \"text\"\n[key.page]\nkind = \"lighting\"\n";
 

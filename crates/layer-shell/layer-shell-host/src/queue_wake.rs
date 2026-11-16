@@ -1,6 +1,6 @@
 //! The host's Wayland queue in the loop, dispatched however its events arrive.
 //!
-//! The host's thread is not the only reader of its connection: a program that shares it (sill's
+//! The host's thread is not the only reader of its connection: a program that shares it (bardo-shell's
 //! desktop-protocol thread) and Mesa's own reads for a GPU surface read the socket too, and such a
 //! read moves the host's events into the host's queue at once. calloop's Wayland source wakes only
 //! on the socket and on libwayland's queue, so those events sat there until some unrelated socket

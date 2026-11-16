@@ -29,7 +29,7 @@ pub use sections::{AdvancedSettings, GeneralSettings, SidebarSettings};
 pub use words::NewWindowsShow;
 
 /// The directory under the config root, and the schema's app id.
-pub const APP: AppName = AppName("files");
+pub const APP: AppName = AppName::desktop("files");
 
 /// The settings file, relative to the config root, as the schema names it.
 const FILE: &str = "files/settings.toml";
@@ -87,7 +87,7 @@ pub fn schema() -> Schema {
     .map(with_word_labels)
     .collect();
     Schema {
-        app: AppId(APP.0.to_owned()),
+        app: AppId(APP.name().to_owned()),
         file: FilePath(FILE.to_owned()),
         version: 1,
         key,

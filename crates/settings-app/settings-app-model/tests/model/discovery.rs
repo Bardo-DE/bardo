@@ -26,7 +26,7 @@ fn write(dir: &std::path::Path, name: &str, schema: &Schema) {
 #[test]
 fn a_stale_schema_is_skipped_with_a_warning() {
     let scratch = Scratch::under(TMP, "discovery-stale");
-    let dir = scratch.join("quire/settings");
+    let dir = scratch.join("bardo/settings");
     write(&dir, "good", &schema("good", "good/settings.toml", 1));
     write(&dir, "future", &schema("future", "future/settings.toml", 2));
     write(

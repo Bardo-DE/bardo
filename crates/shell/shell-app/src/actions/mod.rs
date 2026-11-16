@@ -159,6 +159,10 @@ pub fn spawn_asks(rt: &Handle, link: &ActionLink, host: HostHandle<ShellMsg>) {
 /// What the host says of an ask that failed: nobody is waiting for the answer, so it is logged.
 pub fn report(asked: &Asked, response: &Response) {
     if let Response::Failed(failure) = response {
-        eprintln!("sill: {}: {}", def(asked.ask.action).label, failure.message);
+        eprintln!(
+            "bardo-shell: {}: {}",
+            def(asked.ask.action).label,
+            failure.message
+        );
     }
 }

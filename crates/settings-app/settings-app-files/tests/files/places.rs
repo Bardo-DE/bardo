@@ -38,7 +38,7 @@ fn what_is_saved_reads_back_as_docket_reads_it() {
 fn every_other_key_of_the_file_keeps_its_text() {
     let scratch = Scratch::under(TMP, "places-other-keys");
     let home = ConfigHome(scratch.path().to_path_buf());
-    let file = scratch.join("actions/settings.toml");
+    let file = scratch.join("bardo/actions/settings.toml");
     std::fs::create_dir_all(file.parent().expect("a parent")).expect("dir");
     let before =
         "# mine\n[agent]\nstrictness = \"strict\"   # careful\n\n[assistant]\nnote = \"kept\"\n";

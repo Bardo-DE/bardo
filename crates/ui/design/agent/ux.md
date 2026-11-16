@@ -47,7 +47,7 @@ Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < u
 | Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | sill `shell-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
 | Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | sill `shell-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
 | Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | sill `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
-| `sill companion summon\|tap\|dismiss\|stop-all` | sill `shell-ipc::show` (`ShowRequest::Companion`), `sill/src/cli` | new request | |
+| `bardo-shell companion summon\|tap\|dismiss\|stop-all` | sill `shell-ipc::show` (`ShowRequest::Companion`), `sill/src/cli` | new request | |
 | Providers `CompanionProvider`, `RunsProvider`, `MemoryProvider` | sill `shell-search::providers/{companion,runs,memory}/` | new | rows from the companion service state |
 | Wire to props conversions (`view_of_*`) | sill `shell-ui-kit::companion/` | new module | the only place wire types meet ds props |
 | Launcher companion mode | sill `shell-launcher-ui::launcher/{mode.rs, companion_keys.rs, companion_pane.rs}` | new files; `keys.rs`/`session.rs`/`panel.rs` gain a mode | |
@@ -413,7 +413,7 @@ pub enum CompanionRequest {
 }
 ```
 
-CLI: `sill companion tap|summon|dismiss|stop-all`.
+CLI: `bardo-shell companion tap|summon|dismiss|stop-all`.
 
 **`shell-model::companion`**:
 
@@ -644,7 +644,7 @@ sill:
   - `double_tap_in_open_launcher_switches_mode_in_place` (same serial, same rows, same selection);
   - surface test `answer_card_in_aside`.
 - `shell-bar`: `companion_item_idle_zero_frames` (layer-shell-host stats: no frames over 2 s of virtual time in Idle and Waiting).
-- `sill` daemon (PrivateBus, scratch XDG): `summon_falls_back_to_launcher_after_app_wait`; `summon_routes_to_serving_app`; `stop_all_pauses_space`.
+- `bardo-shell` daemon (PrivateBus, scratch XDG): `summon_falls_back_to_launcher_after_app_wait`; `summon_routes_to_serving_app`; `stop_all_pauses_space`.
 
 Fakes and fixtures:
 - `FakeCompanionPort` (ds `testing` feature): scripted answers.
@@ -675,7 +675,7 @@ Fakes and fixtures:
   - `shell-settings/src/{companion.rs, control_center.rs (variant), lib.rs}`;
   - `shell-ui-kit/src/companion/**` (signatures);
   - `shell-launcher-ui/src/launcher/{mode.rs, companion_keys.rs}` (types only);
-  - `dist/casement/.../custom` (one row: unique chord to `sill companion tap`);
+  - `dist/casement/.../custom` (one row: unique chord to `bardo-shell companion tap`);
   - `dist/toshy/companion_tap.py`;
   - design/22 §3 rows (doc edit in quire, coordinated).
 
@@ -737,7 +737,7 @@ Fakes and fixtures:
 9. Settings page name: "Intelligence" (as in design/31) or "Companion"?
 10. Undo wording for agent actions in app menus: "Undo Archive (Companion)", or a plain "Undo Archive" with the actor shown only in the activity strip?
 11. Toshy route:
-    - (A) Toshy detects the double-tap in Python and emits one unique chord to `sill companion summon`, which is the settled wording;
+    - (A) Toshy detects the double-tap in Python and emits one unique chord to `bardo-shell companion summon`, which is the settled wording;
     - (B) Toshy maps a lone ⌘ tap to a unique key, and sill's tested `Tap` machine detects the double. This needs a spike: does a tap-vs-hold remap on ⌘ disturb ⌘-click and ⌘-drag?
 
     I recommend B if the spike passes, otherwise A.

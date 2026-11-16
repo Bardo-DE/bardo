@@ -1,4 +1,4 @@
-//! What a sill process hands layer-shell-host: quire's faces and the pre-paint pass.
+//! What a bardo-shell process hands layer-shell-host: quire's faces and the pre-paint pass.
 
 use shell_services::env::Dirs;
 use ui_components::style::fonts::FACES;
@@ -18,7 +18,7 @@ pub fn faces() -> layer_shell_host::FontFaces {
     layer_shell_host::FontFaces(FACES.iter().map(|face| face.bytes).collect())
 }
 
-/// The host configuration every sill process starts from: quire's faces, the pre-paint pass and
+/// The host configuration every bardo-shell process starts from: quire's faces, the pre-paint pass and
 /// the folders pictures may be read from ([`file_roots`], under `dirs`). The daemon adds its
 /// settings on top; the demos use it as it is.
 pub fn host_config(dirs: &Dirs) -> layer_shell_host::HostConfig {

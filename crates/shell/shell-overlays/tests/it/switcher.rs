@@ -3,7 +3,7 @@
 //! order and the previous one selected; a commit inside the delay switches with no panel; Tab,
 //! Shift+Tab and the chord step; the release (Alt's key-up) and a click activate; Escape and
 //! cancel touch nothing; Q closes the app's windows and folds its tile; H minimizes; the
-//! made-up apps of `sill debug switcher` show at once and touch no window.
+//! made-up apps of `bardo-shell debug switcher` show at once and touch no window.
 
 use std::time::Duration;
 

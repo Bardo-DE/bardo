@@ -1,4 +1,4 @@
-//! The launcher's command line: `sill launcher {toggle,open,close}` and `sill clipboard
+//! The launcher's command line: `bardo-shell launcher {toggle,open,close}` and `bardo-shell clipboard
 //! {status,clear}`.
 
 use clap::Subcommand;
@@ -9,7 +9,7 @@ use shell_launcher::actions::ActionId;
 
 use super::verbs::do_request;
 
-/// `sill launcher ...`.
+/// `bardo-shell launcher ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Subcommand)]
 pub enum LauncherAction {
     Toggle,
@@ -21,7 +21,7 @@ pub enum LauncherAction {
     Close,
 }
 
-/// `sill clipboard ...`.
+/// `bardo-shell clipboard ...`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Subcommand)]
 pub enum ClipboardAction {
     /// Whether the clipboard history is kept, and how many entries it holds (never what).
@@ -30,7 +30,7 @@ pub enum ClipboardAction {
     Clear,
 }
 
-/// The request `sill launcher ACTION` sends.
+/// The request `bardo-shell launcher ACTION` sends.
 pub fn launcher_request(action: &LauncherAction) -> Request {
     match action {
         LauncherAction::Toggle => do_request(ActionId::Launcher),
@@ -41,7 +41,7 @@ pub fn launcher_request(action: &LauncherAction) -> Request {
     }
 }
 
-/// The request `sill clipboard ACTION` sends.
+/// The request `bardo-shell clipboard ACTION` sends.
 pub fn clipboard_request(action: ClipboardAction) -> Request {
     match action {
         ClipboardAction::Status => Request::Status(StatusRequest::Clipboard),

@@ -3,7 +3,7 @@
 //! the keyboard back without remounting the palette; a row the pointer moves over is the
 //! selection Enter runs.
 //!
-//! "fi" finds, best first: Firefox (the top hit), Files (Applications), "Firefox — sill
+//! "fi" finds, best first: Firefox (the top hit), Files (Applications), "Firefox — bardo-shell
 //! launcher" (Windows), Wi-Fi (Settings). Firefox has two actions, Files one.
 
 use crate::launcher_harness;
@@ -83,7 +83,7 @@ fn the_row_under_the_pointer_is_the_selection() {
     // Rows are equally tall under their headings; walk down until the window row is selected.
     let mut y = first.origin.y.0 + first.size.height.0 / 2.0;
     let x = first.origin.x.0 + first.size.width.0 / 2.0;
-    while selected_title(&open.harness).as_deref() != Some("Firefox — sill launcher")
+    while selected_title(&open.harness).as_deref() != Some("Firefox — bardo-shell launcher")
         && y < card.origin.y.0 + card.size.height.0
     {
         open.harness
@@ -93,7 +93,7 @@ fn the_row_under_the_pointer_is_the_selection() {
     }
     assert_eq!(
         selected_title(&open.harness).as_deref(),
-        Some("Firefox — sill launcher")
+        Some("Firefox — bardo-shell launcher")
     );
     open.harness.send(Input::key(ShortcutKey::Enter));
     let link = open.link.clone();

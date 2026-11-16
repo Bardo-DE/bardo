@@ -1,5 +1,5 @@
-# Settings (detent) as a systemd user unit: the unit accountd and inferd know Settings by.
-# Both give the Settings role only to this unit's main process, so a detent started any other way
+# Settings (bardo-settings) as a systemd user unit: the unit accountd and inferd know Settings by.
+# Both give the Settings role only to this unit's main process, so a bardo-settings started any other way
 # (a terminal, an app scope, another unit) is an ordinary app with no Settings role. It is found,
 # and started, by D-Bus activation (dbus-1/services/org.bardo.Settings.service) when an intent
 # addresses org.bardo.Settings. `--service` runs it with no window and no focus; an action that

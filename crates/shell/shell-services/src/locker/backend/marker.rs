@@ -1,7 +1,7 @@
 //! Re-locking after a crash: the lock surfaces are the shell's own, and a compositor keeps a
-//! session locked when its locker dies, so a sill that dies while locked leaves
+//! session locked when its locker dies, so a bardo-shell that dies while locked leaves
 //! a locked, blank session.
-//! `dist/sill-session` restarts `sill run`; the new daemon must then lock again at once so the
+//! `dist/sill-session` restarts `bardo-shell run`; the new daemon must then lock again at once so the
 //! person gets a prompt. No protocol lets a client ask whether the session is locked, so the
 //! service keeps a marker file while its own lock is held: written as soon as a lock is asked
 //! for (before the compositor is asked to cover the session, so a crash in the gap still
@@ -51,12 +51,12 @@ pub fn marker_change(was: LockPhase, now: LockPhase) -> MarkerChange {
     }
 }
 
-/// `$XDG_RUNTIME_DIR/sill/locked` for `runtime_dir`.
+/// `$XDG_RUNTIME_DIR/bardo/shell/locked` for `runtime_dir`.
 pub fn marker_path(runtime_dir: &Path) -> PathBuf {
-    runtime_dir.join("sill").join("locked")
+    runtime_dir.join("bardo").join("shell").join("locked")
 }
 
-/// `LockNow` exactly when sill's own lock runs (`mode` is `Some`) and the marker is `Present`;
+/// `LockNow` exactly when bardo-shell's own lock runs (`mode` is `Some`) and the marker is `Present`;
 /// no mode never locks.
 pub fn restore_on_start(mode: Option<Host>, marker: LockMarker) -> Restore {
     match (mode, marker) {
@@ -103,7 +103,7 @@ mod tests {
         }
         assert_eq!(
             marker_path(Path::new("/run/user/1000")),
-            PathBuf::from("/run/user/1000/sill/locked")
+            PathBuf::from("/run/user/1000/bardo/shell/locked")
         );
     }
 }

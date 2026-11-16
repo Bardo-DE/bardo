@@ -1,4 +1,4 @@
-//! Hold-to-talk from the daemon's side: the three edges of the hold (`sill voice ...`), which
+//! Hold-to-talk from the daemon's side: the three edges of the hold (`bardo-shell voice ...`), which
 //! open the companion and start, finish or cancel the utterance, and the consent sheet's answer
 //! written into `settings.toml`. The machines run in the voice service
 //! (`shell_services::voice`); the settings keys are the ones `voiced` reads on every begin.
@@ -16,7 +16,7 @@ use crate::companion::focus_of;
 use crate::daemon::settings::{load, write_key};
 use crate::ipc::dispatch::{Reach, sent};
 
-/// Answer `sill voice ...`. A hold begins by putting the launcher in companion mode (a summon no
+/// Answer `bardo-shell voice ...`. A hold begins by putting the launcher in companion mode (a summon no
 /// app takes, so the prompt is the launcher's) and starting the utterance over what was focused.
 pub fn dispatch(reach: &Reach, request: VoiceRequest) -> Response {
     let services = reach.services;
@@ -64,7 +64,7 @@ pub fn spawn_consent_writer(
     rt.spawn(async move {
         while let Some(consent) = consents.recv().await {
             if let Err(error) = write_consent(&store, &settings, consent) {
-                eprintln!("sill: voice: {error}");
+                eprintln!("bardo-shell: voice: {error}");
             }
         }
     });
@@ -107,7 +107,7 @@ mod tests {
         crate::daemon::settings::save(&store, &before).unwrap_or_else(|e| panic!("{e}"));
         let (tx, rx) = watch::channel(before);
         let table_of = || -> toml::Table {
-            std::fs::read_to_string(dir.join("shell/settings.toml"))
+            std::fs::read_to_string(dir.join("bardo/shell/settings.toml"))
                 .unwrap_or_else(|e| panic!("{e}"))
                 .parse()
                 .unwrap_or_else(|e| panic!("{e}"))

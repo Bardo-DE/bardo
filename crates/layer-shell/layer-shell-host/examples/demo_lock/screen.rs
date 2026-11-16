@@ -1,7 +1,7 @@
 //! One output's lock document: the output's name, a plain password field that takes focus when
 //! mounted (the compositor gives the lock surface the keyboard, so typing reaches it without a
 //! click), and Enter checks the text. "letmein" unlocks through `use_lock().unlock()`; anything
-//! else is refused and the field cleared. Real authentication is the shell's (PAM in sill).
+//! else is refused and the field cleared. Real authentication is the shell's (PAM in bardo-shell).
 
 use std::collections::BTreeMap;
 use std::sync::Mutex;

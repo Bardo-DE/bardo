@@ -86,7 +86,7 @@ async fn publish(
 /// Every applications directory that exists, plus the directory the GTK settings file lives in
 /// (a theme change rescans exactly like a new `.desktop` file, since [`publish`] re-reads
 /// [`icon_theme`] every time), as one watch. A directory that does not exist is skipped:
-/// `sill reload` and the next daemon start both still find what it would have caught. A close
+/// `bardo-shell reload` and the next daemon start both still find what it would have caught. A close
 /// after a write counts, because the scan itself opens and closes every `.desktop` file for
 /// reading and counting those made each rescan signal the next one, forever (a busy loop of
 /// scans and blocking-pool threads at idle).

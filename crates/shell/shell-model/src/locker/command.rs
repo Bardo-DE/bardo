@@ -32,7 +32,7 @@ pub enum LockerEvent {
 /// What the live side must do.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum LockerEffect {
-    /// Take `Inhibit("sleep", "sill", "lock before sleep", "delay")`.
+    /// Take `Inhibit("sleep", "bardo-shell", "lock before sleep", "delay")`.
     TakeInhibitor,
     /// Close the inhibitor's descriptor.
     ReleaseInhibitor,
@@ -58,15 +58,15 @@ pub enum ShellLockEvent {
 pub enum LockerCommand {
     /// Resolve the mode against this session (at start).
     Configure,
-    /// An already resolved mode: sill's own lock screen for this kind of session, or `None` to
+    /// An already resolved mode: bardo-shell's own lock screen for this kind of session, or `None` to
     /// never lock (tests).
     Use(Option<Host>),
-    /// Lock now (sill's own Lock action).
+    /// Lock now (bardo-shell's own Lock action).
     Lock,
     /// What happened to the shell's own lock.
     Shell(ShellLockEvent),
-    /// Lock because sill's idle service turned the displays off (`LockCause::IdleScreenOff`).
+    /// Lock because bardo-shell's idle service turned the displays off (`LockCause::IdleScreenOff`).
     /// Counts in every kind of session the idle
-    /// service runs in (it runs only in a sill session, or where a test told it to).
+    /// service runs in (it runs only in a bardo-shell session, or where a test told it to).
     IdleLock,
 }

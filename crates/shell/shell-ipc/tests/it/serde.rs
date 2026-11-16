@@ -435,12 +435,12 @@ fn responses() -> Vec<(Response, &'static str)> {
         (
             Response::Launched(LaunchTiming {
                 app: app("foot"),
-                unit: Some(ScopeUnit("app-sill-foot-1.scope".to_owned())),
+                unit: Some(ScopeUnit("app-bardo-foot-1.scope".to_owned())),
                 requested_at: Stamp(100),
                 spawned_at: Stamp(18_446_744_073_709_551_615),
                 pid: Some(Pid(4242)),
             }),
-            r#"{"kind":"launched","v":{"app":"foot","unit":"app-sill-foot-1.scope","requested_at":100,"spawned_at":18446744073709551615,"pid":4242}}"#,
+            r#"{"kind":"launched","v":{"app":"foot","unit":"app-bardo-foot-1.scope","requested_at":100,"spawned_at":18446744073709551615,"pid":4242}}"#,
         ),
         (
             Response::Launched(LaunchTiming {

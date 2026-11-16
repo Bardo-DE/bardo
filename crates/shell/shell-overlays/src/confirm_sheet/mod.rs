@@ -37,5 +37,5 @@ mod view;
 pub use surface::ConfirmSheet;
 
 /// The confirmation sheet's stylesheet (lint-clean under `Profile::Strict`,
-/// `crates/sill/tests/lint.rs`).
+/// `crates/shell/shell-app/tests/lint.rs`).
 pub const CONFIRM_SHEET_CSS: &str = include_str!("style.css");

@@ -1,5 +1,5 @@
 //! The single-instance lock file, watched. The lock belongs to a file, and a cache cleaner or a
-//! tidy-minded person can delete that file: the next `sill` would lock a new one and start a second
+//! tidy-minded person can delete that file: the next `bardo-shell` would lock a new one and start a second
 //! daemon beside this one, which then unlinks this daemon's socket for its own. latchkey's rule for
 //! a daemon is to ask `displaced()` now and then and to stop when it is displaced; [`spawn`] is that
 //! question, asked on the daemon's async runtime every [`STANDING_EVERY`].
@@ -100,7 +100,7 @@ mod tests {
     async fn a_lock_file_replaced_by_another_ends_the_watch() {
         let dir = TempDir::new("door-guard-replaced");
         let (agent, door) = held_in(&dir);
-        // A cleaner removed it and a second `sill` made a new one in its place.
+        // A cleaner removed it and a second `bardo-shell` made a new one in its place.
         std::fs::remove_file(&agent.address().lock).unwrap_or_else(|e| panic!("{e}"));
         std::fs::write(&agent.address().lock, b"").unwrap_or_else(|e| panic!("{e}"));
         let said = tokio::time::timeout(Duration::from_secs(5), until_displaced(door, QUICK))

@@ -19,7 +19,7 @@ pub fn choose(sources: &[&dyn ProfileSource], window: Option<FocusedWindow<'_>>)
         .unwrap_or_else(ProfileName::default_profile)
 }
 
-/// The profile the focused window wants under sill's sources, most specific first: the user's
+/// The profile the focused window wants under bardo-shell's sources, most specific first: the user's
 /// overrides, what the app declares, the profiles keycap has for one app (Ghostty), then the
 /// category table.
 pub fn wanted(
@@ -35,7 +35,7 @@ pub fn wanted(
 
 /// The active toplevel and its desktop entry; `None` while no toplevel is active.
 ///
-/// Only toplevels are considered. sill's own surfaces (the bar, the dock, the launcher) are
+/// Only toplevels are considered. bardo-shell's own surfaces (the bar, the dock, the launcher) are
 /// layer surfaces, which the compositor never lists as toplevels, so they can never be the
 /// focused window here, and no source is ever asked about them.
 pub fn focused<'a>(toplevels: &'a Toplevels, apps: &'a AppIndex) -> Option<FocusedWindow<'a>> {

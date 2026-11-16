@@ -118,7 +118,7 @@ fn the_program_is_found_beside_the_running_one_first_then_on_path() {
         std::fs::create_dir_all(dir).expect("mkdir");
         std::fs::write(dir.join("bardo-agents"), "").expect("file");
     }
-    let running = prefix.join("detent");
+    let running = prefix.join("bardo-settings");
     let path = other.to_str().expect("utf8");
     assert_eq!(
         find_agents_program(Some(&running), path),

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sill's own idle acceptance, on casement ONLY (brought up and ended by start_compositor). Its
+# bardo-shell's own idle acceptance, on casement ONLY (brought up and ended by start_compositor). Its
 # "displays" are headless outputs, so powering them off darkens nothing real.
 #
 # SAFETY. Nothing here reaches logind, the session bus's org.freedesktop.ScreenSaver, PAM, a
@@ -12,10 +12,10 @@
 #   app's to 5 s);
 # - the daemon gets its own XDG_RUNTIME_DIR, XDG_CONFIG_HOME, XDG_STATE_HOME and XDG_CACHE_HOME,
 #   the nested socket as an absolute WAYLAND_DISPLAY (the script refuses wayland-0), and
-#   XDG_CURRENT_DESKTOP=bardo so it resolves a sill session (Host::SillSession) and owns idle;
-# - short idle times come from `sill run --idle-times`, which only a debug build takes;
-# - no password is typed: an asked lock is opened with `sill debug auth accept` (debug build);
-# - no input is typed anywhere: a wake is `sill debug idle-wake` (debug build), a made-up
+#   XDG_CURRENT_DESKTOP=bardo so it resolves a bardo-shell session (Host::SillSession) and owns idle;
+# - short idle times come from `bardo-shell run --idle-times`, which only a debug build takes;
+# - no password is typed: an asked lock is opened with `bardo-shell debug auth accept` (debug build);
+# - no input is typed anywhere: a wake is `bardo-shell debug idle-wake` (debug build), a made-up
 #   `resumed` (the compositor counts no synthetic input as activity);
 # - whatever fails, the script ends by accepting on the daemon, quitting it, and running the
 #   recovery lock-and-unlock (`session_locker 0`), so the nested session is left unlocked.
@@ -43,10 +43,10 @@
 #      control, so it cannot be shown here.
 #   2. A wake within the grace: unlocked with no password (the daemon logs "grace NoPassword").
 #   3. Idle again, then a wake after the grace (7 s): still locked ("grace Ask"); accept opens it.
-#   4. `sill lock` (cause action), the lock screen goes dark after 60 s, a wake at once: still
+#   4. `bardo-shell lock` (cause action), the lock screen goes dark after 60 s, a wake at once: still
 #      locked, no grace.
 #   5. A ScreenSaver.Inhibit from a test client holds idle for 9 s (> 6 s: no dim, no off, no
-#      lock; `sill idle status` counts it); UnInhibit lets idle lock again; a second inhibit
+#      lock; `bardo-shell idle status` counts it); UnInhibit lets idle lock again; a second inhibit
 #      ends when its client leaves the bus.
 #   6. PrepareForSleep(true) from the stand-in locks with cause sleep; after the wake, a made-up wake:
 #      still locked.
@@ -54,8 +54,8 @@
 #      from the last wake (the lock's new watches do not restart the suspend watch), the
 #      idle hint set true then false; after PrepareForSleep true/false and a wake: still locked.
 #
-# Exit 0 when every step passed, 1 on a failure. Another sill daemon started from a
-# `target/*/sill run` is waited for (up to 10 minutes).
+# Exit 0 when every step passed, 1 on a failure. Another bardo-shell daemon started from a
+# `target/*/bardo-shell run` is waited for (up to 10 minutes).
 #
 # Usage: dev/accept/idle.sh
 set -uo pipefail
@@ -74,23 +74,23 @@ case "$(basename "$WL")" in
   wayland-0) echo "the nested socket is wayland-0 (the real session): refusing" >&2; exit 1 ;;
 esac
 scratch_new
-mkdir -p "$CONFIG/sill"
+mkdir -p "$CONFIG/bardo/shell"
 LOGIND=
 TIMES="6,0"
 DAEMON_LOG="$OUT_DIR/daemon.log"
-# The daemon resolves a sill session (Host::SillSession) and owns idle only as the sill session's desktop (quire, as bardo-session sets it).
+# The daemon resolves a bardo-shell session (Host::SillSession) and owns idle only as the bardo-shell session's desktop (quire, as bardo-session sets it).
 SESSION_ENV=(XDG_CURRENT_DESKTOP=bardo)
 # The session bus: casement's (set by start_compositor), so the daemon reaches org.bardo.Compositor1.
 session_bus() { echo "${BARDO_COMPOSITOR_BUS:-$BUS}"; }
 IN_ENV_EXTRA=("${SESSION_ENV[@]}")
 
 nested_locker() { WAYLAND_DISPLAY="$WL" "$LOCKER" "$@"; }
-# A wake: `sill debug idle-wake` stands in for the compositor's `resumed` (the compositor counts no virtual-keyboard input as activity, and a key typed into a
+# A wake: `bardo-shell debug idle-wake` stands in for the compositor's `resumed` (the compositor counts no virtual-keyboard input as activity, and a key typed into a
 # window of it would be real input on the person's own session).
 # It also holds every idle notification afresh, so the idle timers count from here.
-wake() { sill debug idle-wake >/dev/null; }
+wake() { bardo-shell debug idle-wake >/dev/null; }
 # A wake that also says how long it took: the timers restart somewhere inside the call, and on a
-# loaded host the `sill` client alone takes seconds, so a time counted from the call's end is
+# loaded host the `bardo-shell` client alone takes seconds, so a time counted from the call's end is
 # short of the real one by up to that much. WAKE_SLACK (ms) is the uncertainty: "never early" is
 # checked against elapsed + WAKE_SLACK, "never late" against elapsed alone.
 WAKE_SLACK=0
@@ -114,14 +114,14 @@ wake_timed() {
 # A command to the logind stand-in.
 logind() { echo "$*" >&3; }
 
-# `sill lock status` as "phase cause" (cause null while unlocked).
-lock_state() { sill lock status 2>/dev/null | python3 -c '
+# `bardo-shell lock status` as "phase cause" (cause null while unlocked).
+lock_state() { bardo-shell lock status 2>/dev/null | python3 -c '
 import json, sys
 r = json.loads(sys.stdin.read())["v"]["v"]
 print(r["phase"], r["cause"] or "none")' 2>/dev/null; }
 
-# `sill idle status` as "mode phase dim inhibition inhibits".
-idle_state() { sill idle status 2>/dev/null | python3 -c '
+# `bardo-shell idle status` as "mode phase dim inhibition inhibits".
+idle_state() { bardo-shell idle status 2>/dev/null | python3 -c '
 import json, sys
 r = json.loads(sys.stdin.read())["v"]["v"]
 m = r["mode"]["kind"] + ("" if r["mode"]["kind"] == "own" else ":" + r["mode"]["v"])
@@ -139,7 +139,7 @@ until_match() {
   done
 }
 
-# ms until `sill idle status` matches the regex $1, or -1 within ${2:-5000} ms: a step waits on the
+# ms until `bardo-shell idle status` matches the regex $1, or -1 within ${2:-5000} ms: a step waits on the
 # state it needs, never on a sleep that a loaded host stretches.
 until_idle() { until_match "$(now_ms)" idle_state "$1" "${2:-5000}"; }
 
@@ -201,7 +201,7 @@ open_lock() {
     "unlocked "*) return 0 ;;
   esac
   wake
-  sill debug auth accept >/dev/null 2>&1
+  bardo-shell debug auth accept >/dev/null 2>&1
   [ "$(until_match "$(now_ms)" lock_state '^unlocked' 4000)" -ge 0 ]
 }
 
@@ -218,7 +218,7 @@ EOF
 }
 
 # Capture the dim surface to $1; fails while it is unmapped.
-capture_dim() { sill debug capture "$DIM_SURFACE" "$1" >/dev/null 2>&1; }
+capture_dim() { bardo-shell debug capture "$DIM_SURFACE" "$1" >/dev/null 2>&1; }
 
 # 1.
 step_dim_off_lock() {
@@ -354,13 +354,13 @@ step_manual_lock_asks() {
   local log="$OUT_DIR/4-manual-lock.log" start locked off still graces
   : >"$log"
   wake; start=$(now_ms)
-  sill lock >>"$log" 2>&1
+  bardo-shell lock >>"$log" 2>&1
   locked=$(until_match "$start" lock_state '^locked action$' 3000)
   off=$(until_match "$start" idle_state ' displays_off ' 90000)
   graces=$(grep -c 'grace ' "$DAEMON_LOG")
   wake; sleep 1.5
   still=$(lock_state)
-  echo "sill lock: locked (action) at ${locked} ms; the lock screen went dark at ${off} ms (60 s); a wake at once: '$still'; grace lines before/after: $graces/$(grep -c 'grace ' "$DAEMON_LOG")" \
+  echo "bardo-shell lock: locked (action) at ${locked} ms; the lock screen went dark at ${off} ms (60 s); a wake at once: '$still'; grace lines before/after: $graces/$(grep -c 'grace ' "$DAEMON_LOG")" \
     | tee -a "$log" >&2
   local ok=1
   [ "$locked" -ge 0 ] && [ "$off" -ge 0 ] && [ "$still" = "locked action" ] \

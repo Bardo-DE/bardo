@@ -2,7 +2,7 @@
 //! output's OSD surface (which follows it), the way the launcher shares `LauncherLink`.
 //!
 //! A change names what moved, the outputs that show it, and where its level comes from: the
-//! live services (volume, displays) for a real key press, or a fixed reading for `sill debug
+//! live services (volume, displays) for a real key press, or a fixed reading for `bardo-shell debug
 //! osd`, which fakes a change without touching a real level. Each change carries one more
 //! serial than the last, so a surface restarts its hold even when the same key is pressed again.
 
@@ -32,7 +32,7 @@ pub struct OsdChange {
     pub kind: OsdKind,
     /// The outputs whose indicator shows it.
     pub outputs: Vec<OutputId>,
-    /// A made-up reading (`sill debug osd`: nothing real moved), or `None` for the level the
+    /// A made-up reading (`bardo-shell debug osd`: nothing real moved), or `None` for the level the
     /// volume or displays service publishes now.
     pub level: Option<Level>,
 }

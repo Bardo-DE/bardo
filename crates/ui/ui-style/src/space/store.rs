@@ -44,7 +44,7 @@ impl Default for SpaceDefaults {
     }
 }
 
-/// `quire/spaces.json`, whole.
+/// `bardo/spaces.json`, whole.
 ///
 /// `by_index` holds `None` for a position with no stored look, so a look stored for workspace
 /// 3 does not invent looks for 0 to 2. A malformed entry there costs that position only; the

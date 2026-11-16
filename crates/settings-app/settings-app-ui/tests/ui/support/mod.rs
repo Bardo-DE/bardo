@@ -77,7 +77,7 @@ impl Sandbox {
     pub fn new(name: &str) -> Sandbox {
         let scratch = Scratch::under(TMP, name);
         seed_schemas(&scratch.join("data"));
-        let shipped = scratch.join("share/porter/inferd-tailnet.conf");
+        let shipped = scratch.join("share/bardo/inference/tailnet.conf");
         std::fs::create_dir_all(shipped.parent().expect("a file has a parent")).expect("mkdir");
         std::fs::write(&shipped, lending::SHIPPED).expect("the shipped file");
         Sandbox {
@@ -205,7 +205,7 @@ impl Sandbox {
     pub fn add_schema(&self, name: &str, text: &str) {
         let path = self
             .scratch
-            .join("data/quire/settings")
+            .join("data/bardo/settings")
             .join(format!("{name}.settings.toml"));
         std::fs::write(path, text).expect("schema");
     }
@@ -238,12 +238,12 @@ impl Sandbox {
 
     /// The text of a settings file under the config home, if it was written.
     pub fn read(&self, relative: &str) -> Option<String> {
-        std::fs::read_to_string(self.config_home().0.join(relative)).ok()
+        std::fs::read_to_string(self.config_home().path_of_relative(relative.as_ref())).ok()
     }
 
     /// Puts `text` at `relative` under the config home.
     pub fn write(&self, relative: &str, text: &str) {
-        let path = self.config_home().0.join(relative);
+        let path = self.config_home().path_of_relative(relative.as_ref());
         std::fs::create_dir_all(path.parent().expect("a file has a parent")).expect("mkdir");
         std::fs::write(path, text).expect("write");
     }
@@ -290,7 +290,7 @@ impl Sandbox {
         }
         .build();
         Env::discover(
-            &[self.scratch.join("data/quire/settings")],
+            &[self.scratch.join("data/bardo/settings")],
             Homes {
                 config: self.config_home(),
                 data: self.data_home(),
@@ -329,7 +329,7 @@ impl Sandbox {
     pub fn lender(&self) -> Lender {
         Lender::over(
             LendingConfig::new(
-                self.scratch.join("share/porter/inferd-tailnet.conf"),
+                self.scratch.join("share/bardo/inference/tailnet.conf"),
                 self.scratch.join("config/systemd/user"),
             ),
             self.units.clone(),
@@ -343,7 +343,12 @@ impl Sandbox {
 
     /// The drop-in the switch wrote, if it is there.
     pub fn drop_in(&self) -> Option<String> {
-        self.read("systemd/user/bardo-inferd.service.d/tailnet.conf")
+        std::fs::read_to_string(
+            self.config_home()
+                .0
+                .join("systemd/user/bardo-inferd.service.d/tailnet.conf"),
+        )
+        .ok()
     }
 
     /// A harness running the app in this world, light.
@@ -370,7 +375,7 @@ impl Sandbox {
     pub fn remove_schema(&self, name: &str) {
         let path = self
             .scratch
-            .join("data/quire/settings")
+            .join("data/bardo/settings")
             .join(format!("{name}.settings.toml"));
         std::fs::remove_file(path).expect("an installed schema");
     }
@@ -378,7 +383,7 @@ impl Sandbox {
     /// Installs `schema` beside the real ones, as a program's package would.
     pub fn install_schema(&self, schema: &Schema) {
         schema
-            .write_to(&self.scratch.join("data/quire/settings"))
+            .write_to(&self.scratch.join("data/bardo/settings"))
             .expect("write the schema");
     }
 

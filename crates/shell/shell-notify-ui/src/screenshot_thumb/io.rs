@@ -78,7 +78,7 @@ impl Thumb {
         self.input(ThumbIn::DragStarted(id));
         let surface = self.surface.peek().clone();
         let (Some(surface), Some(spec)) = (surface, file_drag(picture, look)) else {
-            eprintln!("sill: screenshot drag: no surface or no file URI; the card stays");
+            eprintln!("bardo-shell: screenshot drag: no surface or no file URI; the card stays");
             self.input(ThumbIn::DragEnded(id, DragEnd::Refused));
             return;
         };
@@ -87,13 +87,15 @@ impl Thumb {
             // in `Dragging` with its hold stopped, on screen for good: this ends it as cancelled.
             let watchdog = spawn(async move {
                 sleep(DRAG_LIMIT).await;
-                eprintln!("sill: screenshot drag: no end after {DRAG_LIMIT:?}; the card stays");
+                eprintln!(
+                    "bardo-shell: screenshot drag: no end after {DRAG_LIMIT:?}; the card stays"
+                );
                 self.input(ThumbIn::DragEnded(id, DragEnd::Cancelled));
             });
             spawn(async move {
                 let outcome = surface.start_drag(spec).await;
                 watchdog.cancel();
-                eprintln!("sill: screenshot drag: {outcome:?}");
+                eprintln!("bardo-shell: screenshot drag: {outcome:?}");
                 self.input(ThumbIn::DragEnded(id, drag_end(&outcome)));
             })
         });
@@ -142,7 +144,7 @@ impl Thumb {
             spawn(async move {
                 let landed = focus_by_selector(PICTURE, Select::None).await;
                 if let Err(error @ (FocusError::Busy | FocusError::Refused { .. })) = landed {
-                    eprintln!("sill: screenshot thumbnail focus: {error}");
+                    eprintln!("bardo-shell: screenshot thumbnail focus: {error}");
                 }
             })
         });

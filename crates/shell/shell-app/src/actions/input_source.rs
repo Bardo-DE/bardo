@@ -1,6 +1,6 @@
 //! Next Input Source: handed to the input source service, which finds the running input-method
 //! framework when asked. From a surface nobody waits for the answer and a refusal is the
-//! service's to log ([`next`]); `sill do` waits for it ([`ask`]) and is told in a plain sentence.
+//! service's to log ([`next`]); `bardo-shell do` waits for it ([`ask`]) and is told in a plain sentence.
 
 use std::sync::mpsc::SyncSender;
 use std::time::Duration;
@@ -12,7 +12,7 @@ use tokio::runtime::Handle;
 
 use crate::ipc::dispatch::{Reach, failed, sent};
 
-/// How long `sill do` waits for the service's answer: inside the IPC server's reply time.
+/// How long `bardo-shell do` waits for the service's answer: inside the IPC server's reply time.
 const ANSWER_WITHIN: Duration = Duration::from_millis(1500);
 
 /// Switch to the next input source.
@@ -44,7 +44,7 @@ pub fn ask(services: &Services, runtime: &Handle, reply: SyncSender<Response>) {
     });
 }
 
-/// What `sill do next-input-source` is told of how the switch went.
+/// What `bardo-shell do next-input-source` is told of how the switch went.
 fn response_of(now: &InputSwitch) -> Response {
     match now {
         InputSwitch::Switched(_) => Response::Done,

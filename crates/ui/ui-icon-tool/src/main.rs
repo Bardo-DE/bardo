@@ -32,12 +32,12 @@ enum Command {
         sheet: Option<PathBuf>,
     },
     /// Copy the shipped app-icon set where `ui_settings::apps_dir` finds it: by default this
-    /// repository's `assets/icons/apps` to `$XDG_DATA_HOME/quire/icons/apps`.
+    /// repository's `assets/icons/apps` to `$XDG_DATA_HOME/bardo/icons/apps`.
     Install {
         /// The set to copy (default: the repository's `assets/icons/apps`).
         #[arg(long)]
         from: Option<PathBuf>,
-        /// Where to put it (default: `$XDG_DATA_HOME/quire/icons/apps`).
+        /// Where to put it (default: `$XDG_DATA_HOME/bardo/icons/apps`).
         #[arg(long)]
         to: Option<PathBuf>,
     },

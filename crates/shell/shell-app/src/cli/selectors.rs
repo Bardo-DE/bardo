@@ -1,5 +1,5 @@
-//! `sill --write-selectors DIR`: the shell's public style parts as data, so Settings can check a
-//! person's stylesheet against them without linking sill. The table
+//! `bardo-shell --write-selectors DIR`: the shell's public style parts as data, so Settings can check a
+//! person's stylesheet against them without linking bardo-shell. The table
 //! lists only the parts a stylesheet may rely on; every other `sill-` class is internal.
 
 use std::io;
@@ -11,7 +11,7 @@ use ui_settings::PublishedParts;
 
 /// The parts of the shell a stylesheet may name.
 pub const SILL_SELECTORS: AppSelectors = AppSelectors {
-    app: "sill",
+    app: "shell",
     components: &[
         ComponentSelectors {
             component: "Bar",
@@ -39,10 +39,10 @@ pub const SILL_SELECTORS: AppSelectors = AppSelectors {
 
 /// The table as data, the file Settings reads.
 pub fn parts() -> PublishedParts {
-    PublishedParts::new(APP.0, SILL_SELECTORS.classes())
+    PublishedParts::new(APP.name(), SILL_SELECTORS.classes())
 }
 
-/// Write `sill.toml` into `dir` (made if it is missing) and return its path.
+/// Write `shell.toml` into `dir` (made if it is missing) and return its path.
 pub fn write_to(dir: &Path) -> io::Result<PathBuf> {
     parts().write_to(dir)
 }
@@ -65,11 +65,11 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("sill-selectors-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let written = write_to(&dir).unwrap_or_else(|e| panic!("{}: {e}", dir.display()));
-        assert_eq!(written, dir.join("sill.toml"));
+        assert_eq!(written, dir.join("shell.toml"));
         let found = discover_parts(std::slice::from_ref(&dir));
         let _ = std::fs::remove_dir_all(&dir);
         assert_eq!(found.len(), 1);
-        assert_eq!(found[0].app, "sill");
+        assert_eq!(found[0].app, "shell");
         assert_eq!(found[0].classes, SILL_SELECTORS.classes());
         assert!(
             found[0]

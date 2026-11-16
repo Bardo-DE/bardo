@@ -122,7 +122,7 @@ impl Live {
             Ok(list) => self.apply(AccountsEvent::Listed(list)),
             Err(error) if retry::is_refusal(&error) => return Met::Refused,
             Err(error) => {
-                eprintln!("sill: accounts: asking who needs signing in: {error}");
+                eprintln!("bardo-shell: accounts: asking who needs signing in: {error}");
                 return Met::Ended(Ended::Unreadable);
             }
         }
@@ -158,7 +158,7 @@ impl Live {
         self.board.learn(&accounts);
     }
 
-    /// The notifications server's word: a press of a notice sill posted signs the account in
+    /// The notifications server's word: a press of a notice bardo-shell posted signs the account in
     /// again; a close ends the notice's claim.
     fn heard_server(&mut self, said: Said) {
         // The notes may already have let go of a notice just pressed: what they held is learnt
@@ -214,7 +214,7 @@ impl Live {
                     let post = notice::no_launcher_posting(&label);
                     let _ = notifications.send(NotificationsCommand::Post(Box::new(post)));
                 }
-                Err(error) => eprintln!("sill: accounts: signing in again: {error}"),
+                Err(error) => eprintln!("bardo-shell: accounts: signing in again: {error}"),
             }
         });
     }

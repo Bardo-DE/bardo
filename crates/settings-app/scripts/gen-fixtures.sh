@@ -2,8 +2,8 @@
 # Regenerates fixtures/schemas from the real programs' own `--write-schema`, into a scratch
 # directory first. Builds each program in the bardo workspace (../../Cargo.toml).
 #
-#   sill        sill --write-schema <dir>
-#   palmrest    palmrest --write-schema <dir>
+#   bardo-shell        bardo-shell --write-schema <dir>
+#   mouse-gestures  bardo-mouse-gestures --write-schema <dir>
 #   quire       ui-settings' `write_schema` example (quire has no app binary)
 #   inferd      ../inference/dist/inference.settings.toml (written by hand, no --write-schema yet)
 #   docket      ../actions/dist/settings/actions.settings.toml
@@ -14,7 +14,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-scratch="$(mktemp -d "${TMPDIR:-/tmp}/detent-fixtures.XXXXXX")"
+scratch="$(mktemp -d "${TMPDIR:-/tmp}/bardo-settings-fixtures.XXXXXX")"
 trap 'rm -rf "$scratch"' EXIT
 
 # A private home: the programs read no real config while writing a schema.
@@ -24,8 +24,8 @@ cargo build --quiet --manifest-path ../../Cargo.toml -p shell-app
 cargo build --quiet --manifest-path ../../Cargo.toml -p mouse-gestures-daemon
 cargo build --quiet --manifest-path ../../Cargo.toml -p ui-settings --example write_schema
 
-private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Cargo.toml | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')/debug/sill" --write-schema "$scratch/out"
-private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Cargo.toml | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')/debug/palmrest" --write-schema "$scratch/out"
+private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Cargo.toml | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')/debug/bardo-shell" --write-schema "$scratch/out"
+private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Cargo.toml | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')/debug/bardo-mouse-gestures" --write-schema "$scratch/out"
 private "$(cargo metadata --format-version 1 --no-deps --manifest-path ../../Cargo.toml | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])')/debug/examples/write_schema" --write-schema "$scratch/out"
 
 mkdir -p fixtures/schemas

@@ -19,13 +19,13 @@ cd "$(dirname "$0")/.."
 # shell-services and shell-search are effectful but UI-free: their state reaches surfaces only
 # through watch channels read by shell-ui-kit's hooks, so neither links a renderer. shell-services
 # names ui-settings (its dioxus feature off) for Night Shift's SettingsWriter edits.
-# shell-testkit is std only and names no sill crate.
-# shell-kit (the shell-only parts over quire's `ds`) names no other sill crate and no service,
+# shell-testkit is std only and names no bardo-shell crate.
+# shell-kit (the shell-only parts over quire's `ds`) names no other bardo-shell crate and no service,
 # bus, runtime or compositor client: it is what the surfaces and shell-ui-kit draw with.
 # shell-ui-kit is what every surface shares, so it reaches no surface crate and not the binary.
-# `sill` (the whole process) takes the viewer's light tier, its history, its vocabulary and its
+# `bardo-shell` (the whole process) takes the viewer's light tier, its history, its vocabulary and its
 # D-Bus requests, and never its media player: it reaches neither libmpv binding.
-# The surface crates never depend on one another and none depends on `sill`; the daemon is the one
+# The surface crates never depend on one another and none depends on `bardo-shell`; the daemon is the one
 # crate that names them all.
 PURE="dioxus dioxus-core zbus wayland-client tokio libpulse-binding layer-shell-host ui-components ui-shell shell-kit ui-blitz ui-harness blitz-dom"
 UI_FREE="dioxus dioxus-core blitz-dom layer-shell-host ui-components ui-shell shell-kit ui-blitz ui-harness"

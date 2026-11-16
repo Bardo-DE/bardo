@@ -1,5 +1,5 @@
-//! design/22-SETTINGS.md §6 test 5 and §9.6 `every_key_in_catalogue_has_a_spec`, for sill's
-//! domains: every key §3.4-3.8 and §3.11-3.14 name (plus the §3.1 rows sill owns) has a
+//! design/22-SETTINGS.md §6 test 5 and §9.6 `every_key_in_catalogue_has_a_spec`, for bardo-shell's
+//! domains: every key §3.4-3.8 and §3.11-3.14 name (plus the §3.1 rows bardo-shell owns) has a
 //! `KeySpec`, and every `KeySpec` has a row, path for path.
 
 use crate::common;
@@ -7,7 +7,7 @@ use crate::common;
 use common::{doc, keys_in_section};
 use shell_settings::schemas;
 
-/// The sections that are sill's, each with the heading that ends it. §3.9 `gestures` and §3.10
+/// The sections that are bardo-shell's, each with the heading that ends it. §3.9 `gestures` and §3.10
 /// `palm_rejection` are palmrest's file, not this one.
 const SECTIONS: &[(&str, &str)] = &[
     ("### 3.4 `bar`", "### 3.5 `dock`"),
@@ -23,11 +23,11 @@ const SECTIONS: &[(&str, &str)] = &[
     ("### 3.33 `wallpaper`", "## 4. Rust shape"),
 ];
 
-/// §3.1 rows that are sill's, not `AppearanceSettings`': the mirror image of ui-settings'
+/// §3.1 rows that are bardo-shell's, not `AppearanceSettings`': the mirror image of ui-settings'
 /// `SILL_OWNED` list (its `tests/keys.rs`).
 const FROM_APPEARANCE: &[&str] = &[];
 
-/// Keys sill ships that design/22 has no row for yet; the row is quire's to add (FINDINGS: open
+/// Keys bardo-shell ships that design/22 has no row for yet; the row is quire's to add (FINDINGS: open
 /// items), and this list ends when it does. `bar.autohide` is the Mac's "Automatically hide and
 /// show the menu bar".
 const UNCATALOGUED: &[&str] = &["voice.hold_to_talk", "bar.autohide"];
@@ -42,7 +42,7 @@ fn doc_keys() -> Vec<String> {
     for key in FROM_APPEARANCE {
         assert!(
             appearance.iter().any(|k| k == key),
-            "{key} is listed as sill's but is not a §3.1 row any more"
+            "{key} is listed as bardo-shell's but is not a §3.1 row any more"
         );
         keys.push((*key).to_owned());
     }

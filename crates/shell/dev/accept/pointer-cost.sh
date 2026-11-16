@@ -43,7 +43,7 @@ sleep 5 # the first frames and the wallpaper settle
 
 # One line per surface: name frames callbacks.
 snapshot() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 for row in json.loads(sys.stdin.read())["v"]:
     print(row["surface"], row["frames"], row["callbacks"])'

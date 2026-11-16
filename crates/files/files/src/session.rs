@@ -50,7 +50,7 @@ pub async fn join(
 ) -> Role {
     let (sender, requests) = channel();
     let offline = |requests: Requests, said: InstanceError| {
-        eprintln!("files: {said}");
+        eprintln!("bardo-files: {said}");
         Role::App(Running {
             requests,
             activate: Arc::new(NoBus),
@@ -73,7 +73,7 @@ pub async fn join(
             // The actions for agents live on the connection that owns the name; without them the
             // window still works, so a failure is only said.
             if let Err(said) = intents::offer(&connection, Arc::new(port)).await {
-                eprintln!("files: {said}");
+                eprintln!("bardo-files: {said}");
             }
             Role::App(Running {
                 requests,
@@ -84,7 +84,7 @@ pub async fn join(
         Ok(Claim::Running) => match hand_over(&connection, dbus_activated, place, token).await {
             Ok(()) => Role::Handed,
             Err(said) => {
-                eprintln!("files: {said}");
+                eprintln!("bardo-files: {said}");
                 Role::App(Running {
                     requests,
                     activate,

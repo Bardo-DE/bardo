@@ -20,7 +20,7 @@ use zbus::zvariant::Value;
 
 const INTERFACE: &str = "com.canonical.Unity.LauncherEntry";
 const MEMBER: &str = "Update";
-const PATH: &str = "/org/sill/BadgeEmitter";
+const PATH: &str = "/org/bardo/Shell/BadgeEmitter";
 const REPEAT: Duration = Duration::from_millis(200);
 
 /// Whether this run's badge should be bouncing the dock.

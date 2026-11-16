@@ -82,7 +82,7 @@ pub enum LaunchCommand {
     Launch(LaunchRequest),
     /// `org.freedesktop.FileManager1.ShowItems([desktop file uri])` (dock Cmd-click).
     ShowInFiles(AppId),
-    /// SIGKILL the app's `app-sill-*` scopes (dock Force Quit).
+    /// SIGKILL the app's `app-bardo-*` scopes (dock Force Quit).
     ForceQuit(AppId),
     /// Open a file, reveal it, or open an address with the default handler (the launcher's rows).
     Open(OpenRequest),

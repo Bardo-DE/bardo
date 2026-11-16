@@ -1,4 +1,4 @@
-//! sill's seat at the companion: the double tap and the summon that decide where the prompt
+//! bardo-shell's seat at the companion: the double tap and the summon that decide where the prompt
 //! opens, the questions the launcher asks (`org.bardo.Companion1`), the answers that come back,
 //! the things apps index (`org.bardo.Intents1.Search`), the undo journal, the computer-use runs
 //! (`org.bardo.ComputerUse1`) and the memory timeline (`org.bardo.Memory1`).

@@ -1,4 +1,4 @@
-//! Wire toplevels into sill's windows, most recently activated first.
+//! Wire toplevels into bardo-shell's windows, most recently activated first.
 
 use desktop_client::DesktopState;
 use desktop_client::toplevel::{Toplevel as WireToplevel, ToplevelFlag, ToplevelFlags};

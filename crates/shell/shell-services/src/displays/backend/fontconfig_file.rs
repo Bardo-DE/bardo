@@ -1,4 +1,4 @@
-//! Writing and removing sill's fontconfig snippet: `$XDG_CONFIG_HOME/fontconfig/conf.d/
+//! Writing and removing bardo-shell's fontconfig snippet: `$XDG_CONFIG_HOME/fontconfig/conf.d/
 //! 50-sill-rendering.conf`. The decision is [`plan`] (pure); [`sync`] carries it out.
 
 use std::path::{Path, PathBuf};
@@ -13,7 +13,7 @@ use crate::error::ServiceError;
 pub enum FontFileAction {
     /// Write this text (the file is missing or says something else).
     Write(String),
-    /// Remove sill's file.
+    /// Remove bardo-shell's file.
     Remove,
     /// Nothing to do.
     Keep,
@@ -22,15 +22,15 @@ pub enum FontFileAction {
 /// What the directory holds now.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct FontFiles {
-    /// sill's file's text, if it exists.
+    /// bardo-shell's file's text, if it exists.
     pub ours: Option<String>,
     /// Every other file's text: `conf.d/*.conf` and `fonts.conf`.
     pub others: Vec<String>,
 }
 
 /// The rule: `auto` with a known density and no conflicting file of the person's own writes
-/// the snippet; `off`, or a conflict, removes sill's file if sill wrote it (a file of the same
-/// name without sill's header is the person's, and stays). Without a density there is nothing
+/// the snippet; `off`, or a conflict, removes bardo-shell's file if bardo-shell wrote it (a file of the same
+/// name without bardo-shell's header is the person's, and stays). Without a density there is nothing
 /// to base a default on, and the file is left as it is.
 pub fn plan(
     mode: FontRenderingMode,

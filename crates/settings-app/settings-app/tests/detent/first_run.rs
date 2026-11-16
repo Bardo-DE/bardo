@@ -1,4 +1,4 @@
-//! `detent --first-run` run as the binary: once the first run has happened it exits at once, with
+//! `bardo-settings --first-run` run as the binary: once the first run has happened it exits at once, with
 //! no window, no bus and nothing written, whatever the environment lacks.
 
 use settings_app_files::{FirstRunMark, StateHome};
@@ -26,7 +26,7 @@ fn run(scratch: &Scratch) -> std::process::ExitStatus {
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
-        .expect("detent starts");
+        .expect("bardo-settings starts");
     let started = Instant::now();
     loop {
         if let Some(status) = child.try_wait().expect("wait") {

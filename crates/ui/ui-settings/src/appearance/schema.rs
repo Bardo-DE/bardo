@@ -10,7 +10,7 @@ use crate::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
 pub fn quire_schema() -> Schema {
     Schema {
         footnotes: Vec::new(),
-        app: AppId("quire".to_owned()),
+        app: AppId("bardo".to_owned()),
         file: FilePath("bardo/appearance.toml".to_owned()),
         version: 1,
         foreign: ForeignTables::default(),

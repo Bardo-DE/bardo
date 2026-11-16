@@ -1,4 +1,4 @@
-//! The thumbnail's keyboard: it appears without taking focus; `sill focus-latest` (the banners'
+//! The thumbnail's keyboard: it appears without taking focus; `bardo-shell focus-latest` (the banners'
 //! link asks) gives it the keyboard, pauses the hold, and then Enter and Space open it, Delete
 //! and Backspace trash it, Escape dismisses it and Tab moves between its buttons.
 

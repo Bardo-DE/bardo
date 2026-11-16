@@ -91,6 +91,6 @@ async fn announce(connection: &Connection, levels: &[(String, u32)]) {
         )
         .await;
     if let Err(error) = sent {
-        eprintln!("sill: displays: telling Settings the brightness changed failed: {error}");
+        eprintln!("bardo-shell: displays: telling Settings the brightness changed failed: {error}");
     }
 }

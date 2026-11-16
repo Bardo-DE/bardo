@@ -3,7 +3,7 @@
 //! A tile shows its wallpaper at 72 logical pixels; decoding the original (a 5120 by 2880 picture is
 //! sixty megabytes of pixels) for that would stall the page. So each tile draws a small copy from the
 //! freedesktop thumbnail cache, `<cache home>/thumbnails/large/<md5 of the file's address>.png`, the
-//! cache a file manager and sill's launcher share (`anyview_platform::portable::FreedesktopThumbnails`).
+//! cache a file manager and bardo-shell's launcher share (`anyview_platform::portable::FreedesktopThumbnails`).
 //! A copy made for this very version of the file is reused; otherwise the original is decoded once,
 //! scaled to 256 pixels on its longer side (twice a tile at the display's usual scale) and stored.
 

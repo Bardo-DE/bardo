@@ -1,6 +1,6 @@
 //! A bar menu's keyboard, for `scripts/dev/accept-popup-keyboard.sh`: a 32 px
-//! `KeyboardMode::None` bar, like sill's, with one "Menu" button that opens a grabbing popup on
-//! its press (as sill's bar items do, so the grab carries the press's serial). The popup's panel
+//! `KeyboardMode::None` bar, like bardo-shell's, with one "Menu" button that opens a grabbing popup on
+//! its press (as bardo-shell's bar items do, so the grab carries the press's serial). The popup's panel
 //! focuses itself when it mounts and prints every key that reaches it; Escape closes it.
 //!
 //! The panel also prints the seat's input modality whenever it changes (`use_input_modality`):

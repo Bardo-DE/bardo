@@ -32,7 +32,7 @@ async fn bus_waiting(bus: &Bus) -> Option<Connection> {
     match bus.connect_waiting().await {
         Ok(connection) => Some(connection),
         Err(error) => {
-            eprintln!("sill: idle: no bus at {:?}: {error}", bus.route());
+            eprintln!("bardo-shell: idle: no bus at {:?}: {error}", bus.route());
             None
         }
     }
@@ -49,7 +49,7 @@ pub(crate) async fn connect(system: &Bus, session_id: Option<&str>) -> Option<Id
     {
         Ok(manager) => manager,
         Err(error) => {
-            eprintln!("sill: idle: no logind: {error}");
+            eprintln!("bardo-shell: idle: no logind: {error}");
             return None;
         }
     };
@@ -62,12 +62,12 @@ pub(crate) async fn connect(system: &Bus, session_id: Option<&str>) -> Option<Id
         None => None,
     };
     if session.is_none() {
-        eprintln!("sill: idle: no logind session; the idle hint is not set");
+        eprintln!("bardo-shell: idle: no logind session; the idle hint is not set");
     }
     match manager.idle_action().await.as_deref() {
         Ok("ignore") | Err(_) => {}
         Ok(action) => eprintln!(
-            "sill: idle: logind's IdleAction is {action:?}: sill's idle hint will trigger it too (F912)"
+            "bardo-shell: idle: logind's IdleAction is {action:?}: bardo-shell's idle hint will trigger it too (F912)"
         ),
     }
     Some(IdleLogind {
@@ -89,7 +89,7 @@ impl IdleLogind {
     /// `Suspend(false)`; a failure (a `block` sleep inhibitor, polkit) is logged.
     pub(crate) async fn suspend(&self) {
         if let Err(error) = self.manager.suspend(false).await {
-            eprintln!("sill: idle: logind refused to suspend: {error}");
+            eprintln!("bardo-shell: idle: logind refused to suspend: {error}");
         }
     }
 
@@ -102,7 +102,7 @@ impl IdleLogind {
             IdleHint::Active => false,
         };
         if let Err(error) = session.set_idle_hint(idle).await {
-            eprintln!("sill: idle: SetIdleHint({idle}): {error}");
+            eprintln!("bardo-shell: idle: SetIdleHint({idle}): {error}");
         }
     }
 }

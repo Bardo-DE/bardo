@@ -13,7 +13,7 @@ pub struct ShotId(pub u64);
 pub enum ShotPreview {
     /// Being made: the thumbnail waits for it (a few tens of ms for a 4K PNG).
     Pending,
-    /// A downscaled PNG in `$XDG_CACHE_HOME/sill/shots/` ([`super::preview_name`]).
+    /// A downscaled PNG in `$XDG_CACHE_HOME/bardo/shell/shots/` ([`super::preview_name`]).
     Ready(PathBuf),
     /// The preview could not be made: draw the file itself.
     Original,
@@ -36,7 +36,7 @@ pub enum Watching {
     Off,
     /// These folders (the ones that exist).
     Folders(Vec<PathBuf>),
-    /// The watch could not start; the reason, for `sill debug` and the log.
+    /// The watch could not start; the reason, for `bardo-shell debug` and the log.
     Failed(String),
 }
 

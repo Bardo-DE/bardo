@@ -12,7 +12,7 @@
 //! loop ends with the process.
 //!
 //! The accept loop and the per-connection read/dispatch/write are generic over how a request is
-//! answered ([`spawn_with`]) so `crates/sill/tests/it/ipc.rs` can drive them with a fake
+//! answered ([`spawn_with`]) so `crates/shell/shell-app/tests/it/ipc.rs` can drive them with a fake
 //! dispatcher instead of a running [`HostHandle`] and [`layer_shell_host::Host`], which need a live
 //! Wayland display. [`spawn`] is the real dispatcher, over `ShellMsg::Ipc`.
 
@@ -100,7 +100,7 @@ pub fn spawn_with(
             }
             match accepted {
                 Ok(stream) => serve_off_loop(stream, &dispatch, &live),
-                Err(error) => eprintln!("sill: ipc accept: {error}"),
+                Err(error) => eprintln!("bardo-shell: ipc accept: {error}"),
             }
         }
     });
@@ -123,11 +123,11 @@ fn serve_off_loop(
             let _slot = slot;
             match own_user_stream(stream) {
                 Ok(stream) => serve_one_with(stream, &dispatch),
-                Err(error) => eprintln!("sill: ipc connection refused: {error}"),
+                Err(error) => eprintln!("bardo-shell: ipc connection refused: {error}"),
             }
         });
     if let Err(error) = spawned {
-        eprintln!("sill: ipc connection thread: {error}");
+        eprintln!("bardo-shell: ipc connection thread: {error}");
     }
 }
 

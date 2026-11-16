@@ -1,9 +1,9 @@
 //! The wallpaper: one pre-resized PNG per output size and scheme, cached in
-//! `$XDG_CACHE_HOME/sill/wallpaper/<hash>-<w>x<h>.png` (image 0.25 Lanczos3; light/dark cross-fade
+//! `$XDG_CACHE_HOME/bardo/shell/wallpaper/<hash>-<w>x<h>.png` (image 0.25 Lanczos3; light/dark cross-fade
 //! over t-big; renders only on change).
 //!
 //! The picture is the `wallpaper.picture` setting, which the daemon sends as
-//! `WallpaperCommand::Picture`; while it is empty the old `sill/wallpaper-source` file in the
+//! `WallpaperCommand::Picture`; while it is empty the old `bardo/shell/wallpaper-source` file in the
 //! config directory is read instead (a read-only migration).
 //!
 //! `spawn`'s task owns everything effectful: `backend::config::resolve_source` resolves the source

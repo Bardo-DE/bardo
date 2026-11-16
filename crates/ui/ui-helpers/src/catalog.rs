@@ -167,13 +167,13 @@ impl Catalog {
         Ok(Catalog { entries })
     }
 
-    /// The app's helpers file: the first `<dir>/quire/helpers/<app>.toml` among `data_dirs`
+    /// The app's helpers file: the first `<dir>/bardo/helpers/<app>.toml` among `data_dirs`
     /// (an `XDG_DATA_DIRS` list, earlier entries first).
     pub fn load(app: &str, data_dirs: &[PathBuf]) -> Result<Catalog, CatalogError> {
         let file = format!("{app}.toml");
         let found = data_dirs
             .iter()
-            .map(|dir| dir.join("quire").join("helpers").join(&file))
+            .map(|dir| dir.join("bardo").join("helpers").join(&file))
             .find(|path| Path::is_file(path));
         let path = found.ok_or(CatalogError::NotFound { file })?;
         let text = std::fs::read_to_string(&path).map_err(|source| CatalogError::Read {
@@ -299,7 +299,7 @@ mod tests {
         let root = std::env::temp_dir().join(format!("ds-helpers-load-{}", std::process::id()));
         let (first, second) = (root.join("a"), root.join("b"));
         for (dir, tool) in [(&first, "first"), (&second, "second")] {
-            let folder = dir.join("quire/helpers");
+            let folder = dir.join("bardo/helpers");
             std::fs::create_dir_all(&folder).expect("scratch dir");
             let body = format!("[x]\ntool=\"{tool}\"\npurpose=\"p\"\nprobe=[\"x\"]\n");
             std::fs::write(folder.join("anyview.toml"), body).expect("scratch file");

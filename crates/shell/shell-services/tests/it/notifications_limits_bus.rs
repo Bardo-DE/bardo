@@ -352,6 +352,6 @@ fn the_name_cannot_be_taken_from_the_server() {
             .body()
             .deserialize()
             .unwrap_or_else(|e| panic!("{e}"));
-        assert_eq!(info.0, "sill", "sill still answers");
+        assert_eq!(info.0, "bardo-shell", "bardo-shell still answers");
     });
 }

@@ -1,5 +1,5 @@
 //! The settings the daemon holds: the one watch channel every surface and policy follows, fed by
-//! the file watch and by `sill reload`.
+//! the file watch and by `bardo-shell reload`.
 
 use layer_shell_host::HostEvent;
 use shell_settings::ShellFile;
@@ -16,8 +16,8 @@ pub fn reload(store: &Store, settings: &watch::Sender<ShellFile>) {
 
 /// `event`'s file, published to `settings_tx`, if it is a watched settings change
 /// (`ShellMsg::Settings`, from the file watch task in `daemon::run`); anything else is a no-op. The same
-/// act [`reload`] performs for `sill reload`, so a plain `settings.toml` edit (or one of
-/// sill's own writes: `super::focus`) takes effect without one.
+/// act [`reload`] performs for `bardo-shell reload`, so a plain `settings.toml` edit (or one of
+/// bardo-shell's own writes: `super::focus`) takes effect without one.
 /// `ui_settings::Store::watch` already debounces a burst of writes to one settled file and keeps the
 /// last good file on a parse failure, so there is nothing further to coalesce or guard here.
 pub fn publish_watched(settings_tx: &watch::Sender<ShellFile>, event: &HostEvent<ShellMsg>) {
@@ -78,7 +78,7 @@ mod settings_publish_tests {
         assert_eq!(rx.borrow().clone(), ShellFile::default());
     }
 
-    /// The regression itself: a `settings.toml` edit under a temp config dir, with no `sill
+    /// The regression itself: a `settings.toml` edit under a temp config dir, with no `bardo-shell
     /// reload`, reaches a `SettingsFeed`-shaped channel through the same watch and the same
     /// `publish_watched` the host event handler calls.
     #[tokio::test]

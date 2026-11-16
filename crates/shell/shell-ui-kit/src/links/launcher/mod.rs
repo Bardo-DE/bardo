@@ -1,7 +1,7 @@
 //! Whether the launcher is showing, shared by its two surfaces and the daemon (two surfaces kept
 //! warm, shown and hidden with `set_visibility`).
 //!
-//! One `watch` channel holds a [`Reveal<LauncherOpening>`]. The daemon writes it for `sill launcher
+//! One `watch` channel holds a [`Reveal<LauncherOpening>`]. The daemon writes it for `bardo-shell launcher
 //! toggle|open|close` and for the panel's `Focus::Lost`; the panel writes it for Escape and an
 //! activation, the catcher for a click. Each surface mirrors it onto its own visibility, so no
 //! surface needs another's id. The transitions are pure functions of the value.
@@ -56,7 +56,7 @@ pub struct LauncherLink {
     hit: Shared<PanelHit>,
     /// The panel's resolved placement tokens; none until the panel has read them.
     place: Shared<Option<PanelPlace>>,
-    /// The rows the open panel shows, for `sill debug launcher-rows`.
+    /// The rows the open panel shows, for `bardo-shell debug launcher-rows`.
     rows: Shared<Option<ShownRows>>,
 }
 

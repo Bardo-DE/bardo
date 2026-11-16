@@ -18,12 +18,12 @@ fn write(folder: &Path, file: &str, text: &str) {
 }
 
 /// Installs the Extension `id` with a look and its stylesheet into `data_home`
-/// (`quire/extensions/<id>`), and returns its folder.
+/// (`bardo/extensions/<id>`), and returns its folder.
 ///
 /// # Panics
 /// If the files cannot be written.
 pub fn install_look(data_home: &Path, id: &str, name: &str, summary: &str) -> PathBuf {
-    let folder = data_home.join("quire").join("extensions").join(id);
+    let folder = data_home.join("bardo").join("extensions").join(id);
     write(&folder, "extension.toml", &look_manifest(id, name, summary));
     write(&folder, "look.css", ".ds { --accent: red; }\n");
     folder
@@ -34,7 +34,7 @@ pub fn install_look(data_home: &Path, id: &str, name: &str, summary: &str) -> Pa
 /// # Panics
 /// If the manifest cannot be written.
 pub fn install_torn_look(data_home: &Path, id: &str, name: &str) -> PathBuf {
-    let folder = data_home.join("quire").join("extensions").join(id);
+    let folder = data_home.join("bardo").join("extensions").join(id);
     write(&folder, "extension.toml", &look_manifest(id, name, "Torn"));
     folder
 }
@@ -44,7 +44,7 @@ pub fn install_torn_look(data_home: &Path, id: &str, name: &str) -> PathBuf {
 /// # Panics
 /// If the files cannot be written.
 pub fn install_file_icons(data_home: &Path, id: &str, name: &str, summary: &str) -> PathBuf {
-    let folder = data_home.join("quire").join("extensions").join(id);
+    let folder = data_home.join("bardo").join("extensions").join(id);
     write(
         &folder,
         "extension.toml",
@@ -68,7 +68,7 @@ pub fn install_file_icons(data_home: &Path, id: &str, name: &str, summary: &str)
 /// If the files cannot be written.
 pub fn install_your_changes(data_home: &Path, holds_changes: bool) -> PathBuf {
     let folder = data_home
-        .join("quire")
+        .join("bardo")
         .join("extensions")
         .join("user.YourChanges");
     write(

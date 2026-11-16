@@ -53,7 +53,7 @@ pub struct WidgetContext<I: 'static> {
 }
 
 /// A widget: one implementation per kind, a unit type (`Default`). The shell's are
-/// [`crate::widget::calendar::MonthWidget`] and sill's Up Next.
+/// [`crate::widget::calendar::MonthWidget`] and bardo-shell's Up Next.
 ///
 /// `Entry` is everything one moment of the widget shows, as plain data. `view` is a pure function of the entry
 /// and the context: it returns markup (it may mount components, which may keep their own motion

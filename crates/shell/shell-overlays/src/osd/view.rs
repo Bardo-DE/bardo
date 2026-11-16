@@ -1,6 +1,6 @@
 //! The indicator's render: one transparent Osd root (design/20 §1.7) holding quire's `Osd` card.
 //! The card paints its own tinted frame, owns its own entrance and exit fade, and calls
-//! `on_hidden` once the exit has settled, so `io.rs` can unmap the surface then; sill's own
+//! `on_hidden` once the exit has settled, so `io.rs` can unmap the surface then; bardo-shell's own
 //! hold machine (`step.rs`) only decides when the card is shown.
 
 use dioxus::prelude::*;
@@ -21,7 +21,7 @@ use shell_ui_kit::hooks::{use_follow_place, use_service, use_surface_tokens};
 use shell_ui_kit::links::{OsdKind, OsdLink};
 use shell_ui_kit::root::SurfaceRoot;
 
-/// The indicator's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The indicator's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const OSD_CSS: &str = include_str!("style.css");
 
 /// The level's style: the bezel's sixteen squares, as the Mac's volume and brightness keys draw

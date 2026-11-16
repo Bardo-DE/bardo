@@ -11,7 +11,7 @@ use std::time::Duration;
 use ui_components::prelude::ShortcutKey;
 use ui_harness::{Harness, Input};
 
-const KEYMAP: &str = "keycap/keymap";
+const KEYMAP: &str = "key-remap/keymap";
 const ALERT: &str = ".ds-alert";
 const REPLACE: &str = ".ds-alert .ds-button[data-answers=\"return\"]";
 const CANCEL: &str = ".ds-alert .ds-button[data-answers=\"escape\"]";
@@ -107,7 +107,7 @@ fn reset_puts_one_shortcut_back_and_touches_only_the_persons_file() {
         "the standard chord is back: {cell}"
     );
     assert_eq!(
-        sandbox.read("keycap/keymap.part"),
+        sandbox.read("key-remap/keymap.part"),
         None,
         "no temporary file is left"
     );

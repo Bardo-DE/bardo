@@ -90,7 +90,7 @@ fn keys_in_section(doc: &str, heading: &str, next_heading: &str) -> Vec<String> 
 #[test]
 fn both_domains_resolve_to_quire_appearance_toml() {
     for schema in schemas() {
-        assert_eq!(schema.app.0, "quire");
+        assert_eq!(schema.app.0, "bardo");
         assert_eq!(schema.file.0, "bardo/appearance.toml");
         assert_eq!(schema.version, 1);
         for key in &schema.key {
@@ -677,7 +677,7 @@ mod places {
 }
 
 // ---------------------------------------------------------------------------------------------
-// notes, slider ends and section footnotes (detent's style pass, 2026-10-27)
+// notes, slider ends and section footnotes (bardo-settings's style pass, 2026-10-27)
 
 mod notes_and_footnotes {
     use ui_settings::schema::{
@@ -686,7 +686,7 @@ mod notes_and_footnotes {
 
     #[derive(Debug, Default, ui_settings::SettingsSchema)]
     #[settings(
-        file = "quire/test.toml",
+        file = "bardo/test.toml",
         domain = "dock",
         page = Page::Dock,
         footnote(section = "Hiding", text = "The Dock comes back when the pointer reaches the edge.")

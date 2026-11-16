@@ -1,4 +1,4 @@
-//! The sill daemon and command line, as a library so `crates/sill/tests/**` can exercise its
+//! The bardo-shell daemon and command line, as a library so `crates/shell/shell-app/tests/**` can exercise its
 //! internals (`main.rs` is a thin wrapper over this crate).
 
 pub mod actions;
@@ -23,6 +23,7 @@ pub mod outgoing;
 pub mod outputs;
 pub mod permission_answers;
 pub mod policy;
+pub mod pre_bardo;
 pub mod release;
 pub mod run_args;
 pub mod scroll;

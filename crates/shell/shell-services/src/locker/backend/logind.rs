@@ -20,7 +20,7 @@ pub(crate) enum Standing {
     Up,
 }
 
-/// What the live loop listens to and calls. Every part is optional: without a system bus sill
+/// What the live loop listens to and calls. Every part is optional: without a system bus bardo-shell
 /// still locks on its own Lock action.
 #[derive(Default)]
 pub(crate) struct Logind {
@@ -84,10 +84,15 @@ pub(crate) async fn connect(bus: &Bus, session_id: Option<&str>) -> Logind {
     }
 }
 
-/// `Inhibit("sleep", "sill", "lock before sleep", "delay")`.
+/// `Inhibit("sleep", "bardo-shell", "lock before sleep", "delay")`.
 pub(crate) async fn inhibit(manager: &ManagerProxy<'_>) -> Option<OwnedFd> {
     manager
-        .inhibit(InhibitType::Sleep, "sill", "lock before sleep", "delay")
+        .inhibit(
+            InhibitType::Sleep,
+            "bardo-shell",
+            "lock before sleep",
+            "delay",
+        )
         .await
         .ok()
 }

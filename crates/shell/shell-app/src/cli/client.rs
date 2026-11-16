@@ -18,22 +18,22 @@ pub const START_TIMEOUT: Duration = Duration::from_secs(3);
 pub fn main(request: &Request) -> ExitCode {
     match send(request) {
         Ok(Response::Failed(failure)) => {
-            eprintln!("sill: {}", failure.message);
+            eprintln!("bardo-shell: {}", failure.message);
             ExitCode::FAILURE
         }
         Ok(response) => match encode(&response) {
             Ok(line) => stdout::print(&line).exit_code(),
             Err(error) => {
-                eprintln!("sill: encoding the reply: {error}");
+                eprintln!("bardo-shell: encoding the reply: {error}");
                 ExitCode::FAILURE
             }
         },
         Err(ClientError::NotRunning) => {
-            eprintln!("sill: no daemon is running");
+            eprintln!("bardo-shell: no daemon is running");
             ExitCode::FAILURE
         }
         Err(error) => {
-            eprintln!("sill: {error}");
+            eprintln!("bardo-shell: {error}");
             ExitCode::FAILURE
         }
     }
@@ -42,7 +42,7 @@ pub fn main(request: &Request) -> ExitCode {
 /// One request's reply. `Quit`, `Ping` and `Launch` never start a daemon: a launch asked of a
 /// shell that was not running would time the shell's start, not the launch.
 pub fn send(request: &Request) -> Result<Response, ClientError> {
-    let agent = service_locator::Agent::new("sill")?;
+    let agent = service_locator::Agent::new("bardo-shell")?;
     let mut stream = match request {
         Request::Ping | Request::Quit | Request::Launch(_) => {
             agent.connect()?.ok_or(ClientError::NotRunning)?

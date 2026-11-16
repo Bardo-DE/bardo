@@ -1,4 +1,4 @@
-//! Session commands: the power actions (`SessionAction::ALL`) and sill's own Reload.
+//! Session commands: the power actions (`SessionAction::ALL`) and bardo-shell's own Reload.
 //!
 //! Every action logind offers is a row named and searched by `shell_model::session::words` (its
 //! title and its aliases), the same words the bar's system menu and the power menu show; what
@@ -15,7 +15,7 @@ use shell_launcher::{
 use shell_model::session::{Offer, Session, words};
 use tokio::sync::watch;
 
-/// The Reload row's words: sill's own command, not a power action.
+/// The Reload row's words: bardo-shell's own command, not a power action.
 const RELOAD_TITLE: &str = "Reload";
 const RELOAD_ALIASES: &[&str] = &["Reload Sill", "Refresh"];
 

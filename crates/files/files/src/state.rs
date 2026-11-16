@@ -8,7 +8,7 @@ use files_fs::{NoPrefs, PrefsStore, TomlPrefs};
 use ui_settings::{AppName, ConfigRoot};
 
 /// The directory name under the state folder (`$XDG_STATE_HOME`, else `~/.local/state`).
-const APP: AppName = AppName("files");
+const APP: AppName = AppName::desktop("files");
 
 /// The file the folder views are kept in under `root`; `None` when the root has no state folder
 /// (no `$HOME` to start from).
@@ -34,7 +34,7 @@ mod tests {
         let root = ConfigRoot::Scratch(PathBuf::from("/scratch"));
         assert_eq!(
             prefs_file(&root),
-            Some(PathBuf::from("/scratch/.state/files/folders.toml"))
+            Some(PathBuf::from("/scratch/.state/bardo/files/folders.toml"))
         );
     }
 }

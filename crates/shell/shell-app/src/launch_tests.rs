@@ -19,7 +19,7 @@ fn app(id: &str) -> AppId {
 fn timing_at(requested_at: Stamp) -> LaunchTiming {
     LaunchTiming {
         app: app("foot"),
-        unit: Some(ScopeUnit("app-sill-foot-1.scope".to_owned())),
+        unit: Some(ScopeUnit("app-bardo-foot-1.scope".to_owned())),
         requested_at,
         spawned_at: Stamp(requested_at.0 + 1),
         pid: Some(Pid(7)),

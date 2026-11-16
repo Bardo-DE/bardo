@@ -1,4 +1,4 @@
-//! `sill style check [FILE]`: what `ui_lint::user_stylesheet` says about the person's `style.css`
+//! `bardo-shell style check [FILE]`: what `ui_lint::user_stylesheet` says about the person's `style.css`
 //! (or `FILE`), one line per note with its line and column. Reading the file is the only effect;
 //! the report is [`check`], pure over the text. It never asks the daemon, which loads the file
 //! whatever this says. The exit code is non-zero only for text that is not well-formed CSS.
@@ -14,14 +14,14 @@ use ui_settings::{ConfigRoot, Store, UserStyle};
 
 use super::stdout::{self, Emitted};
 
-/// `sill style ...`.
+/// `bardo-shell style ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Subcommand)]
 pub enum StyleAction {
     /// Report what is wrong or worth knowing in your style.css: text that is not CSS (exit 1),
     /// variables nothing declares, selectors outside the public surface, `!important`, remote
     /// URLs. The daemon loads the file whatever this says.
     Check {
-        /// The file to check; your `style.css` in sill's config directory when left out.
+        /// The file to check; your `style.css` in bardo-shell's config directory when left out.
         file: Option<PathBuf>,
     },
 }
@@ -87,7 +87,7 @@ pub fn main(action: &StyleAction) -> ExitCode {
         None => match Store::new(ConfigRoot::Xdg, APP).path::<UserStyle>() {
             Some(path) => Source::Own(path),
             None => {
-                eprintln!("sill: no config directory to find style.css in");
+                eprintln!("bardo-shell: no config directory to find style.css in");
                 return ExitCode::from(2);
             }
         },
@@ -109,7 +109,9 @@ pub fn main(action: &StyleAction) -> ExitCode {
                 }
             }
             Err(error) => {
-                eprintln!("sill: {name}: not UTF-8, the daemon keeps the last good text: {error}");
+                eprintln!(
+                    "bardo-shell: {name}: not UTF-8, the daemon keeps the last good text: {error}"
+                );
                 ExitCode::FAILURE
             }
         },
@@ -117,7 +119,7 @@ pub fn main(action: &StyleAction) -> ExitCode {
             stdout::print(&format!("{name}: no file, an empty style\n")).exit_code()
         }
         Err(error) => {
-            eprintln!("sill: {name}: {error}");
+            eprintln!("bardo-shell: {name}: {error}");
             ExitCode::from(2)
         }
     }

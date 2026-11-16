@@ -2,7 +2,7 @@
 //! toplevel list, wlr toplevel management, ext workspace) projected into the windows and
 //! workspaces the shell draws, and the shell's commands as wire requests.
 //!
-//! The wire client is `desktop-client`; this module holds sill's part: recency (the protocols
+//! The wire client is `desktop-client`; this module holds bardo-shell's part: recency (the protocols
 //! give none), apps, Spaces and the commands' mapping. The thread starts in `thread`, which
 //! picks the arm from the compositor's globals ([`backend_of`]).
 

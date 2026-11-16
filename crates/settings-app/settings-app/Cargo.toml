@@ -21,7 +21,7 @@ ui-settings = {path = "../../ui/ui-settings"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [features]
-# `detent --dev-callers FILE`: the stand-ins a checkout built, named in the person's own rows file,
+# `bardo-settings --dev-callers FILE`: the stand-ins a checkout built, named in the person's own rows file,
 # are let in as the desktop's services (accountd, inferd, syncd, the compositor, the shell) at a
 # standing below every real proof. Off by default; the desktop's test jail builds with it, a
 # release build never does.
@@ -30,11 +30,12 @@ dev-callers = ["dep:settings-app-callers", "settings-app-callers/dev-callers"]
 [dev-dependencies]
 settings-app-testkit = {path = "../settings-app-testkit"}
 toml = {version = "1"}
+tempfile = "3"
 
 [lints.rust]
 unsafe_code = "deny"
 missing_debug_implementations = "warn"
 
 [[bin]]
-name = "detent"
+name = "bardo-settings"
 path = "src/main.rs"

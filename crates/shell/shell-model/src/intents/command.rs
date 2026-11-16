@@ -27,7 +27,7 @@ pub enum IntentsCommand {
     RefreshGrants,
 }
 
-/// The part of [`IntentsCommand`] that crosses the IPC wire: what `sill intents` asks.
+/// The part of [`IntentsCommand`] that crosses the IPC wire: what `bardo-shell intents` asks.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum IntentsAsk {

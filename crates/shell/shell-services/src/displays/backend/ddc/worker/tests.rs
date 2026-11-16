@@ -163,7 +163,7 @@ fn a_reread_follows_the_monitor_but_never_undoes_a_waiting_write() {
     send(DdcJob::Reread(Feature::Brightness));
     std::thread::sleep(Duration::from_millis(50));
     assert_eq!(shown(&displays), Some(70));
-    // sill's write of 30 waits for its debounce; a re-read meanwhile keeps 30 on show.
+    // bardo-shell's write of 30 waits for its debounce; a re-read meanwhile keeps 30 on show.
     send(brightness(30));
     send(DdcJob::Reread(Feature::Brightness));
     std::thread::sleep(Duration::from_millis(20));

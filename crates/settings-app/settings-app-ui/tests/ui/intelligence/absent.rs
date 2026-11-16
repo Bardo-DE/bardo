@@ -9,7 +9,7 @@ use settings_app_system::modules::FakeModules;
 fn an_absent_inferd_blocks_nothing_on_the_page() {
     let sandbox = Sandbox::new("intelligence-absent-writes");
     let mut harness = sandbox.harness(intelligence());
-    assert_eq!(sandbox.read("inferd/inferd.toml"), None);
+    assert_eq!(sandbox.read("inference/inferd.toml"), None);
     let local_only = "[aria-label=\"Keep AI on this computer\"] .ds-toggle";
     let before = harness.attr(local_only, "aria-checked");
     assert_eq!(before.as_deref(), Some("true"), "local-only starts on");
@@ -20,7 +20,7 @@ fn an_absent_inferd_blocks_nothing_on_the_page() {
         Some("false")
     );
     let written = sandbox
-        .read("inferd/inferd.toml")
+        .read("inference/inferd.toml")
         .expect("the file row wrote");
     assert!(written.contains("local_only = false"), "{written}");
 }

@@ -17,8 +17,12 @@ use ui_settings::schema::Schema;
 /// A scratch config folder whose `files/settings.toml` says `text`.
 fn written(text: &str) -> (TempDir, ConfigRoot) {
     let dir = tempfile::tempdir().unwrap();
-    std::fs::create_dir_all(dir.path().join("files")).unwrap();
-    std::fs::write(dir.path().join("files").join("settings.toml"), text).unwrap();
+    std::fs::create_dir_all(dir.path().join("bardo").join("files")).unwrap();
+    std::fs::write(
+        dir.path().join("bardo").join("files").join("settings.toml"),
+        text,
+    )
+    .unwrap();
     let root = ConfigRoot::Scratch(dir.path().to_path_buf());
     (dir, root)
 }

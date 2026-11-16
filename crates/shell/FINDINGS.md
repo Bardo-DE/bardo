@@ -36,7 +36,7 @@ A settled item is deleted, not marked closed.
   client dies, until another client locks and unlocks. sill never kills a locker; on a test
   compositor `examples/session_locker.rs 0` recovers a leftover lock.
 - **A headless compositor counts no synthetic input as activity**: virtual-keyboard keys never
-  produce `ext_idle_notification_v1.resumed`, so `sill debug idle-wake` stands in. An `Exclusive`
+  produce `ext_idle_notification_v1.resumed`, so `bardo-shell debug idle-wake` stands in. An `Exclusive`
   layer gets no `wl_keyboard.enter` while its window is unfocused on a host, and a popup opened
   without a real input serial gets no keyboard.
 - **Harness facts.** A daemon's `agent.sock` path must fit 108 bytes, so scratch
@@ -49,7 +49,7 @@ A settled item is deleted, not marked closed.
 - **Layer ordering.** An all-anchored Overlay with exclusive zone `Auto` sits below the bar's
   reserve and above the dock's (the notification center relies on it). Layer-shell does not order
   two surfaces on one layer, so the desktop widgets are on `Bottom`, not a second `Background`.
-- **Shortcuts.** The window-switch chord is `sill switcher next|prev`. The keyboard remapper maps
+- **Shortcuts.** The window-switch chord is `bardo-shell switcher next|prev`. The keyboard remapper maps
   physical Cmd+Tab to Alt+Tab with `bind`, so Alt stays held for as long as Cmd is and the
   release reads as Alt going up. Super+Escape is the lock chord, `loginctl lock-session`.
 - **Screenshots are not announced.** A screenshot portal's response reaches only its caller; sill
@@ -155,9 +155,9 @@ A settled item is deleted, not marked closed.
   or `FAILURE`. Registration is per logind session, so sill's agent registers only where no
   other agent holds the session.
 - **PAM without root**: `pam_unix` in a non-root process calls the setuid `unix_chkpwd`. sill runs
-  PAM in a `sill auth-check` child per attempt (the `nonstick` crate: pre-generated bindings, no
+  PAM in a `bardo-shell auth-check` child per attempt (the `nonstick` crate: pre-generated bindings, no
   libclang), the secret NUL-terminated on its stdin, every copy zeroed, killed after 15 s. The
-  service is `sill` when `/etc/pam.d/sill` exists (`dist/pam.d/sill`), else `login`. `pam` and
+  service is `bardo-shell` when `/etc/pam.d/bardo-shell` exists (`dist/pam.d/bardo-shell`), else `login`. `pam` and
   `pam-client` need bindgen and libclang at build time.
 - **Clipboard**: `ext_data_control_v1` (else wlr), selection only, never primary. An offer
   carrying a secret hint (`x-kde-passwordManagerHint`, `org.nspasteboard.*Type`) is skipped
@@ -200,8 +200,8 @@ A settled item is deleted, not marked closed.
   socket has been down 3 s, then every 5 s: `GetUnit` answers `NoSuchUnit` for an installed unit
   that is not loaded (stopped and collected), which reads as `NotInstalled`, and that is as
   silent as `Unknown`. A stopped unit is silent on purpose; only a unit that gave up (five
-  failures in 30 s) is `Failed`. keycap's notices carry no action, so they point at `sill keycap retry` and
-  `sill keycap resume`.
+  failures in 30 s) is `Failed`. keycap's notices carry no action, so they point at `bardo-shell keycap retry` and
+  `bardo-shell keycap resume`.
   `keyboard.overrides` (design/22 §3.25) is a list of `{ app, profile }` tables, which needs
   quire's `ds-settings` list-of-tables keys (`SettingsRow`, quire PR #2): sill builds against
   quire's `claude/settings-rows` branch until that PR merges. A row whose `profile` is not a
@@ -285,7 +285,7 @@ A settled item is deleted, not marked closed.
   `dist/udev/60-sill-ddc.rules` (any `0x03????` class, which also covers the `0x0302xx` discrete
   GPU of hybrid laptops) and `dist/modules-load.d/sill-ddc.conf` do the same. `uaccess` reaches
   only the active local session.
-- **The fake DDC** (`env::ddc::FileBus`): a `debug` build's `sill run
+- **The fake DDC** (`env::ddc::FileBus`): a `debug` build's `bardo-shell run
   --fake-ddc FILE` puts it in the daemon's `Env` in place of the kernel's buses, so the worker
   talks to monitors in a JSON file, never `/dev/i2c-*`. A build without `debug` takes no such
   flag.
@@ -435,7 +435,7 @@ A settled item is deleted, not marked closed.
   none comes back as `RefusalWire::NoModel` (`{"kind":"no_model"}`, docket's `companion-wire`); the
   card and the row say "Choose a model to use the assistant." with a "Choose Model…" button that
   opens Settings' `assistant-model` page (`Activation::OpenSettings`); nothing opens Settings
-  without a press. The model is picked in the one-time OS setup (`detent --first-run`), not by sill.
+  without a press. The model is picked in the one-time OS setup (`bardo-settings --first-run`), not by sill.
 
 ## Decisions in force (departures from the design docs)
 
@@ -467,8 +467,8 @@ A settled item is deleted, not marked closed.
   line on the daemon's stderr (`sill: settings.toml: unknown key ...`), on every read, and the next
   save drops it. A value that does not parse costs only its own key; a file that is not TOML at
   all keeps the last good file in the watch and is reported invalid.
-- **Places are state, not settings**: dock pins (`[[dock]]` rows of `$XDG_CONFIG_HOME/sill/layout.toml`, version = 1, kind `quire.dock.app` + `app`; an old `dock.json` is read once into it and left in place) and, per
-  output connector, the desktop's widget list and cells (`$XDG_STATE_HOME/sill/desktop-widgets.json`:
+- **Places are state, not settings**: dock pins (`[[dock]]` rows of `$XDG_CONFIG_HOME/bardo/shell/layout.toml`, version = 1, kind `quire.dock.app` + `app`; an old `dock.json` is read once into it and left in place) and, per
+  output connector, the desktop's widget list and cells (`$XDG_STATE_HOME/bardo/shell/desktop-widgets.json`:
   `{"outputs":[{"output":"DP-1","widgets":[...],"places":[...]}]}`). `widgets.desktop_widgets` is
   the default list: an output has a `widgets` list of its own once Edit Widgets has edited it
   there, and follows the setting until then: each monitor edits its own layout, which design/28 4.1
@@ -481,7 +481,7 @@ A settled item is deleted, not marked closed.
   `Cpx`, hundredths of a pixel. A tile's id is an FNV-1a of what it stands for, so a bounce stays
   on its app.
 - **The control center is a bar menu** (design/13 §13.3.7 has it join the bar's hover switch),
-  drawn in the bar's one popup and hung from the output's right edge. `sill control-center
+  drawn in the bar's one popup and hung from the output's right edge. `bardo-shell control-center
   toggle` writes a link the bar follows, since an IPC request has no input serial for a grab.
 - **The notification center is a layer, not a popup**: a full-height column at the right edge,
   as macOS's; its transparent rest is the click-outside catcher. The clock opens it. Banners
@@ -507,7 +507,7 @@ A settled item is deleted, not marked closed.
 ### Lock and idle
 
 - **sill's own lock screen is the only locker, and the default.** No lockout after wrong
-  passwords (only PAM's own delay). A crash marker (`$XDG_RUNTIME_DIR/sill/locked`) makes a
+  passwords (only PAM's own delay). A crash marker (`$XDG_RUNTIME_DIR/bardo/shell/locked`) makes a
   restarted sill lock again at once. Nested in another desktop sill follows no logind signal
   (so it never locks the host's session); in a sill session it follows `Lock` and
   `PrepareForSleep`.
@@ -525,7 +525,7 @@ A settled item is deleted, not marked closed.
   (a manual lock, Super+Escape, a lid, a suspend, a restored or adopted lock) asks. A grace is an
   unforgeable `GraceTicket` the idle service hands the auth service; nothing on IPC carries one.
 
-- **The screenshot thumbnail takes the keyboard only when asked** (`sill focus-latest`, an `Act`
+- **The screenshot thumbnail takes the keyboard only when asked** (`bardo-shell focus-latest`, an `Act`
   verb answered on `BannerLink`'s key channel). The layer is `KeyboardMode::None`; on the ask it
   becomes `Exclusive` (an `OnDemand` layer is focused only by a click, so it cannot be asked
   for), the seat modality is set to `Keyboard` so quire's ring shows before any key arrives, and
@@ -534,7 +534,7 @@ A settled item is deleted, not marked closed.
   Escape dismisses like the hold running out (the file is kept); Delete and Backspace are the
   Delete button; Enter and Space are quire's picture.
 - **The banners take the keyboard the same way**, one card at a time. The transients tell
-  `BannerLink` when a card appears and when none is up; `sill focus-latest` asks it, and it names
+  `BannerLink` when a card appears and when none is up; `bardo-shell focus-latest` asks it, and it names
   the one that appeared last (`KeyWhat::Asked(Transient)`), so only that surface answers (the
   compositor's focus loss names its surface the same way). The keyboard goes to the newest
   listed card's plate (quire's `NotificationCard` plate is a focusable button: Enter and Space
@@ -573,7 +573,7 @@ a source; `assumed` means not yet checked.
 | Background blur that also boosts saturation (about x1.8) with a tunable sigma (22 logical px for widget cards) | macOS vibrancy behind widgets and panels (quire design/23) | blur only elsewhere |
 | A locker that dies while locked: policy | A compositor that keeps the lock until another client locks and unlocks is secure but strands the person; sill relocks from its crash marker | design choice for casement |
 | An Inhibit portal | Flatpak apps' "keep the screen on" | casement's portal at P2 |
-| Synthetic input that counts as idle activity | So an idle test can wake the seat (`sill debug idle-wake` stands in) | test harness only |
+| Synthetic input that counts as idle activity | So an idle test can wake the seat (`bardo-shell debug idle-wake` stands in) | test harness only |
 | A virtual-keyboard path that reaches clients in a headless session | Key tests on the headless compositor | test harness only |
 
 - **Surfaces read the windows model, not `DesktopView`.** The Wlr arm publishes through the compositor
@@ -682,13 +682,13 @@ a source; `assumed` means not yet checked.
   (no click, no `Run.Perform`). Tests: `crates/sill-services/tests/it/app_menu_bus.rs` (classify table, changed-layout,
   destructive-accepted, and the real router with a cross-app delegate).
 - **G373** App menus: the verified path needs the app launched in a systemd scope
-  (`app-<id>-<n>.scope`, which the launcher and `sill`'s own start); an app started from a
+  (`app-<id>-<n>.scope`, which the launcher and `bardo-shell`'s own start); an app started from a
   terminal has no scope, so its command ids are claims and its items are clicks. The app's
   `AboutToShow` is sent for each menu's own id, not for lazily filled submenus.
 
 - **G331** The desktop grid is measured when the layer mounts; a live output resize re-places
   only on the next spawn.
-- **G351** `sill idle status` counts `ScreenSaver` inhibits but does not name the apps.
+- **G351** `bardo-shell idle status` counts `ScreenSaver` inhibits but does not name the apps.
 - **G350** No failure reason on a failed Wi-Fi or Bluetooth row (NetworkManager's `StateReason`
   and BlueZ's error are not read).
 - **G353** Two devices connecting at once share one connect stamp.
@@ -709,7 +709,7 @@ a source; `assumed` means not yet checked.
   tap.
 - **G292** Timing budgets flake on a loaded debug build (launcher-ui's 100 ms, the calendar
   edit's 2 s, the banner's 300 ms); `dev/accept/notifications.sh --real-input`'s overflow step fails
-  when a `sill debug notify` misses its 2 s reply under load.
+  when a `bardo-shell debug notify` misses its 2 s reply under load.
 - One real-clock test, `results::tests::a_newer_keystroke_cancels_the_older_query...`, can fail
   under load; a paused tokio clock would pin it.
 - `dev/accept/bar.sh --real-input`'s `step_center_then_menu` failed once on a
@@ -751,7 +751,7 @@ a source; `assumed` means not yet checked.
   A plan card has no Stop or Undo All button: the plan's own step machine is quire's (`plan_step`,
   unfilled).
 - **The summon's origin is always the double tap**; a voice summon waits for voice.
-- **No Toshy snippet ships for route B.** The session's shortcuts bind `Ctrl+Alt+Shift+Super F19` to `sill companion tap`
+- **No Toshy snippet ships for route B.** The session's shortcuts bind `Ctrl+Alt+Shift+Super F19` to `bardo-shell companion tap`
   (and `F20` to `summon`, route A); the remap of a lone Cmd tap to that chord is written in the keyboard
   remapper's own config until spike T says tap-versus-hold is safe on Cmd.
 
@@ -814,15 +814,15 @@ a source; `assumed` means not yet checked.
 - **G2** Minimize rectangles: `set_rectangle` needs the dock's `wl_surface`, which lives on
   shell-host's connection, while the toplevel manager lives on the windows thread's.
 - **G4** No drag and drop into shell surfaces (file drops on dock tiles, spring-loading).
-- **G11** `sill debug` cannot inject a wheel event, so the tray scroll is proved by tables only.
-- **G20** `sill debug key` sends a key event to a surface but no modifier state to the seat, so
+- **G11** `bardo-shell debug` cannot inject a wheel event, so the tray scroll is proved by tables only.
+- **G20** `bardo-shell debug key` sends a key event to a surface but no modifier state to the seat, so
   a held chord (the switcher's Alt) still needs a real modifier: `wtype -M alt` on the nested
   compositor in `dev/accept/switcher.sh`.
 - **G180** A document hears the keyboard's modifiers only on its next key or pointer event, so
   a quick tap that beats the switcher's map, or Caps Lock before the first key on the lock
   screen, is not seen.
 - **G290** The presented frame puts two widgets' contents in the center's first tile when all
-  five are shown; `sill debug capture` of the same surface is right.
+  five are shown; `bardo-shell debug capture` of the same surface is right.
 - **G6012** `dev/accept/widgets.sh --real-input` fails `step_real_add` and `step_real_remove` on sill
   master too (checked in a scratch worktree of master d079c35a): the gallery's default selection
   is Up Next where the script expects World Clock, and Remove is clicked at a fixed offset. The
@@ -887,11 +887,11 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 - **design/22 has no `voice` section.** `voice.hold_to_talk` ships and `voice.consent` is state
   (`#[settings(skip)]`); `crates/sill-settings/tests/it/keys.rs` lists `voice.hold_to_talk` as
   `UNCATALOGUED`. Ends when quire's design/22 gains the rows and `SECTIONS` names them.
-- **The hold's edges come from a source that detects the hold itself** (`sill voice
+- **The hold's edges come from a source that detects the hold itself** (`bardo-shell voice
   hold-start|hold-end|hold-cancel`). The raw-edge machine (`HoldKey`: command down, up, other key,
   pointer) is not built; it ends when keycap or the compositor sends raw edges.
 - **Cancel carries a cause** (docket a0c168a): Escape when the launcher is dismissed, OtherInput
-  for `sill voice hold-cancel`, Shell for the service's own cancel after a broken stream.
+  for `bardo-shell voice hold-cancel`, Shell for the service's own cancel after a broken stream.
   `FocusLost` is modelled but nothing sends it: sill does not watch the focus leaving the prompt
   while a hold is on. A cancel voiced refuses as `Malformed` leaves its microphone open, so the
   service says "Voice stopped working."; so does a frame over `MAX_FRAME` (stream closed).
@@ -1196,7 +1196,7 @@ and casement's `quire_shell_v1` version 2 (casement-protocols `ea171a1`).
   goes, a failed answer, drop highlight, the outbox, space ids); sill-ui-kit link tests (the new parts, repeats wake no one);
   sill-services `desktop_quire.rs` (the two notes, `SetSpaceTargets`, a picture asked for and returned as a PNG note);
   sill-overlays `spaces_bar.rs` (the existing five moved to quire's selectors, plus per-output, picture and drop highlight, the
-  published cards against the drawn thumbnail); layer tests (height, input element); `sill` `spaces_bar.rs` (the notes reach the link).
+  published cards against the drawn thumbnail); layer tests (height, input element); `bardo-shell` `spaces_bar.rs` (the notes reach the link).
 - **Check at the gate.** Everything compiles for the first time: the `ds::prelude` names (`BarSpaceKey`, `ImageSource`, `Rect`, `Common`,
   `BarExpansion`), `Memo<BarShow>` in `use_map_when_up`/`use_publish_layout`, the `fn(&mut SpacesBarFeed) -> &mut T` closures in
   `SpacesBarLink::edit`, `Option::is_none_or`, the doc tests in `sill::spaces_bar`. The harness cases: that `use_rect` yields a
@@ -1252,7 +1252,7 @@ version 3 (casement-protocols `0f7afcb`, casement `3eaf1f7`) and completes the S
 - **Tests.** sill-model `bar_tests.rs` (the plus's place, targets then the plus's target sent, moved alone, cleared with the bar; an ask
   per Space, kept across a switch, forgotten when the Space leaves; the plus lit and put out by a tile; the outbox); `tests.rs` (the
   new command is Quire-only); sill-services `desktop_quire.rs` (`SetNewSpaceTarget` set and removed, `DropTargetNew` note); sill-ui-kit
-  link test; `sill` `spaces_bar.rs` (the note reaches the link); sill-overlays `spaces_bar.rs` (the plus where it is drawn, a picture
+  link test; `bardo-shell` `spaces_bar.rs` (the note reaches the link); sill-overlays `spaces_bar.rs` (the plus where it is drawn, a picture
   on every tile, the plus lit, the wallpaper backdrop for the right output only) and `io.rs` (`css_url`).
 - **Check at the gate.** First compile: `ds::prelude::{DropState, Scheme, SpaceLook, resolve}` in `io.rs`; `Memo<Option<String>>` read
   as `(bar.wallpaper)()`; `"data-backdrop": Option<&str>` and `"data-add-drop": Option<&'static str>` attributes in `rsx!`;
@@ -1343,7 +1343,7 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
 - **What it is.** The control center's Display module gains a Night Shift row (a switch, a line
   saying what it is doing, and a Less Warm to More Warm slider while it warms or will). The
   switch is macOS's "Turn On Until Tomorrow": casement's `night_light.mode` becomes `always` and
-  the previous table is kept in `$XDG_STATE_HOME/sill/night-shift.json` with the end (the next
+  the previous table is kept in `$XDG_STATE_HOME/bardo/shell/night-shift.json` with the end (the next
   time the clock reads `night_light.to`); the service puts it back at the end, and at start if
   the end passed while sill was away. Off ends a manual turn-on, else sets the mode off. A change
   made in Settings ends a manual turn-on. Only the `night_light` keys are written; the rest of
@@ -1376,7 +1376,7 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
 
 ## wave-6/force-quit: Force Quit Applications
 
-- **The panel.** `sill force-quit {open,close,toggle}` opens a centred `Sheet` on the output of the
+- **The panel.** `bardo-shell force-quit {open,close,toggle}` opens a centred `Sheet` on the output of the
   active window: the apps the compositor lists (`quire_desktop_app_v1`, in `DesktopView`; those
   with windows, most recently used first), each with its icon, "(not responding)" after the name
   of one whose life is `not_responding` or any of whose windows does not answer pings, a hung app
@@ -1393,7 +1393,7 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
   Mac convention; keycap writes it as Alt+Super+Esc). casement binds the action to
   `DesktopCommand::ForceQuitPanel`, which does nothing and swallows the chord
   (`crates/casement/src/keymap/shell.rs`, `ROWS`) and the shell protocol has no event for
-  it. **Ask of casement:** run `sill force-quit toggle` for that row (`Does::Sill(&["force-quit",
+  it. **Ask of casement:** run `bardo-shell force-quit toggle` for that row (`Does::Sill(&["force-quit",
   "toggle"])`), as it does for the launcher and the screenshots; nothing else is needed on sill's
   side. Until then the chord does nothing and the panel is opened from a terminal.
 - **Consolidated.** The capture, confirm, Force Quit, polkit and voice consent sheets share
@@ -1569,7 +1569,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   `accountd_standin` example) and `dev/accept/confirm.sh` (docket's `accept-intentd`) were refused on
   every call. peephole v0.1.4 added the seam (feature `dev-rows`: `Table::from_toml_dev`,
   `TableFiles::load_dev`, `RowOrigin::Dev`, `Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`).
-  sill's side: `sill run --dev-callers FILE` exists only in a build with the sill crate's `debug`
+  sill's side: `bardo-shell run --dev-callers FILE` exists only in a build with the sill crate's `debug`
   feature, which alone turns on `sill-services/dev-callers`, which alone turns on
   `peephole-bus/dev-rows`; none is a default feature or a dependency of a shipped build, so a release
   build has neither the flag nor the feature (the desktop gate greps for `dev-rows`; a table test
@@ -1747,7 +1747,7 @@ action needs one reaches the shell as `HostEvent::Palmrest(PalmrestAction)` (she
 `ToHost::Run`, sent to the shell's connection only). `daemon/palmrest.rs` decides, purely, what each ask
 comes to: `Workspace(Prev/Next/Overview)` and a `Shell{words}` line are parsed with the command line's own
 grammar (`Cli::try_parse_from(["sill", words...])`) and sent through the same `answer` an IPC client's request
-takes, so they do what `sill workspace next` and the like do; `quit` and the `debug` probes are refused; a
+takes, so they do what `bardo-shell workspace next` and the like do; `quit` and the `debug` probes are refused; a
 `Command{argv}` is a program started without a shell as a child of the shell, reaped on a thread of its own.
 Nothing runs while the lock screen is up (`shell_lock.id`), and the words are within the protocol's bounds
 (16 words of 256 bytes) before they get here. Not run on a session: the tests are the pure table of
@@ -1773,9 +1773,9 @@ pane has none.
   as data.
 - **Open: a new helper's Space is `desktop`.** The form needs a Space; the card has no Space choice.
 
-## workflow timing: `sill launch` and the `launch` timing line (2026-10-17)
+## workflow timing: `bardo-shell launch` and the `launch` timing line (2026-10-17)
 
-Every app launch through the launch service (Dock, launcher, bar, desktop widgets, `sill launch`) writes one
+Every app launch through the launch service (Dock, launcher, bar, desktop widgets, `bardo-shell launch`) writes one
 line to the daemon's stderr, which the user unit sends to the journal: `timing: launch desktop_id=<id>
 unit=<scope> requested_at=<ns> spawned_at=<ns> pid=<pid>`. Times are `CLOCK_MONOTONIC` nanoseconds
 (`sill_services::launch::monotonic_now`). `requested_at` is stamped when the service takes the command off its
@@ -1787,18 +1787,18 @@ The line is built by the pure `sill_model::launch::launch_line`.
 
 - **sill does not use `tracing`.** No sill crate depends on it and no subscriber is installed; the daemon's
   log is `eprintln!` (315 call sites), and `sill.service` sets no `StandardError`/`SyslogIdentifier`, so the
-  journal holds it under the identifier `sill`, always, with no level filter. The line is therefore written as
+  journal holds it under the identifier `bardo-shell`, always, with no level filter. The line is therefore written as
   `timing: launch ...` (what a tracing fmt layer prints after the level, so a script's match on `timing: launch`
   works for both). Moving the daemon onto `tracing` would need `tracing` and `tracing-subscriber` in
   Cargo.toml; not done. A shell that `latchkey` started on demand (not the unit) has stderr on `/dev/null`:
   the workflow scripts need the unit.
-- **`sill launch <desktop-id> [--print-timing]`** is `Act(Launch(AppId))` answered `Launched(LaunchTiming)`. The
+- **`bardo-shell launch <desktop-id> [--print-timing]`** is `Act(Launch(AppId))` answered `Launched(LaunchTiming)`. The
   host loop asks the first dock's surface for the activation token (as a dock click does), then `launch::serve`
   sends the same `LaunchCommand::Launch` and waits for the service's `Launches::done`. Only apps in the app
   index launch; `.desktop` on the id is dropped. Exit 0, 1 (a sentence on stderr), 2 (`FailureKind::UnknownApp`),
   64 for a wrong command line. The 64 applies to every verb now (clap's own 2 is mapped in `cli::parse_args`),
   so 2 is free for the unknown id. The IPC reply time is 2 s: an app whose `Activate` takes longer is
-  answered `Timeout` (exit 1) although it opens. `sill launch` never starts a daemon.
+  answered `Timeout` (exit 1) although it opens. `bardo-shell launch` never starts a daemon.
 - **Open: the queue.** The launch service handles one command at a time; a D-Bus `Activate` that is slow holds
   later launches back, and `requested_at` (taken when the service reaches the command) does not count that wait.
 

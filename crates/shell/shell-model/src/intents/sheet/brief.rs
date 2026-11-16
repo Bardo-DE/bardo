@@ -1,6 +1,6 @@
 //! The brief sheet's data: the text a helper would work from, the spans the router flagged in it,
 //! and the pieces it falls into. The router writes the flags with a plain word
-//! list, never a model, so a page cannot talk them out of showing; sill only draws them.
+//! list, never a model, so a page cannot talk them out of showing; bardo-shell only draws them.
 
 /// How many bytes a brief may be: the router refuses a longer answer, so the sheet does too.
 pub const BRIEF_MAX_BYTES: usize = 4000;

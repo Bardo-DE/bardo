@@ -1,5 +1,5 @@
 //! Where the wallpaper's picture comes from: the `wallpaper.picture` setting as the daemon sends
-//! it, and, while that is empty, the old `sill/wallpaper-source` file (read, never written).
+//! it, and, while that is empty, the old `bardo/shell/wallpaper-source` file (read, never written).
 
 use std::path::{Path, PathBuf};
 use std::time::Duration;
@@ -41,7 +41,7 @@ async fn the_setting_wins_and_the_old_file_serves_while_it_is_empty() {
     let env = Env::isolated(scratch.path());
     let old = png(scratch.path(), "old.png", 40);
     let chosen = png(scratch.path(), "chosen.png", 200);
-    let old_file = env.dirs.config.join("sill/wallpaper-source");
+    let old_file = env.dirs.config.join("bardo/shell/wallpaper-source");
     std::fs::create_dir_all(old_file.parent().unwrap_or_else(|| panic!("no parent")))
         .unwrap_or_else(|e| panic!("{e}"));
     let old_text = format!("{}\n", old.display());

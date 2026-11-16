@@ -4,7 +4,7 @@
 //! display's EDID product name and the display has a speaker volume (VCP 0x62), a change the
 //! person makes to the software level or mute is sent on to the monitor as well. Pure.
 //!
-//! Only changes are followed, never a state: starting sill, or switching the default sink to
+//! Only changes are followed, never a state: starting bardo-shell, or switching the default sink to
 //! the monitor, sends nothing, so the monitor keeps whatever volume it had until the person
 //! actually changes it. The software path is untouched either way.
 

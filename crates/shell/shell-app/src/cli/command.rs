@@ -98,13 +98,13 @@ pub enum Command {
         #[arg(value_parser = word::<WorkspaceRequest>())]
         action: WorkspaceRequest,
     },
-    /// sill's own polkit agent.
+    /// bardo-shell's own polkit agent.
     Polkit {
-        /// What to do: `status` says whether sill's agent is registered and what it shows.
+        /// What to do: `status` says whether bardo-shell's agent is registered and what it shows.
         #[arg(value_parser = ["status"])]
         verb: String,
     },
-    /// sill's own idle: the dim, the displays off, the lock at screen off and the idle suspend.
+    /// bardo-shell's own idle: the dim, the displays off, the lock at screen off and the idle suspend.
     Idle {
         /// What to do: `status` says who owns idle, where it has got to, and what holds it off.
         #[arg(value_parser = ["status"])]
@@ -115,7 +115,7 @@ pub enum Command {
         #[command(subcommand)]
         action: KeycapAction,
     },
-    /// What intentd may ask of sill: its confirmation sheet, and the terminal's standing grants.
+    /// What intentd may ask of bardo-shell: its confirmation sheet, and the terminal's standing grants.
     Intents {
         #[command(subcommand)]
         action: IntentsAction,

@@ -1,6 +1,6 @@
 [package]
 name = "shell-ipc"
-description = "The sill IPC protocol: newline-delimited JSON requests and responses, one per connection."
+description = "The bardo-shell IPC protocol: newline-delimited JSON requests and responses, one per connection."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -22,7 +22,7 @@ shell-testkit = {path = "../shell-testkit"}
 key-remap-proto = {path = "../../input/key-remap-proto"}
 
 [features]
-# The command line parses straight into the request types (`sill` turns this on).
+# The command line parses straight into the request types (`bardo-shell` turns this on).
 cli = ["dep:clap"]
 
 [lints.rust]

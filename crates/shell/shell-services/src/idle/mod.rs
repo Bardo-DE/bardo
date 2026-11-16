@@ -1,10 +1,10 @@
-//! sill's own idle service: the dim, the displays off, the lock at screen off and the idle
-//! suspend (the user's pick). Owning idle is how sill knows why it
+//! bardo-shell's own idle service: the dim, the displays off, the lock at screen off and the idle
+//! suspend (the user's pick). Owning idle is how bardo-shell knows why it
 //! locked ([`shell_model::locker::LockCause`]), which the lock grace (`session.lock_grace_s`,
 //! `grace_verdict`) needs.
 //!
 //! **Passive until the daemon's first [`IdleCommand`]**, and `Off` (nothing held, nothing
-//! touched) anywhere but a sill session (`resolve_mode`), so no
+//! touched) anywhere but a bardo-shell session (`resolve_mode`), so no
 //! test and no nested run ever dims, powers off or suspends the real session's displays. Live
 //! tests name a nested compositor and private buses in their [`Env`](crate::env::Env).
 //!
@@ -23,7 +23,7 @@ use crate::service::{Service, ServiceIo};
 
 pub use backend::IdleLinks;
 
-/// sill's own idle as a [`Service`], on `env`'s compositor and buses, reading and driving the
+/// bardo-shell's own idle as a [`Service`], on `env`'s compositor and buses, reading and driving the
 /// services in its [`IdleLinks`]. Passive until the first command.
 #[derive(Debug)]
 pub enum IdleService {}

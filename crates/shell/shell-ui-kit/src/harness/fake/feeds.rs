@@ -52,7 +52,7 @@ pub struct Feeds {
     pub agenda: watch::Sender<shell_model::events::Agenda>,
     pub shots: watch::Sender<shell_model::screenshots::Shots>,
     pub shot_commands: mpsc::UnboundedReceiver<shell_model::screenshots::ShotCommand>,
-    /// sill's own idle service (passive, `Off(NoPolicy)`, until a test feeds it).
+    /// bardo-shell's own idle service (passive, `Off(NoPolicy)`, until a test feeds it).
     pub idle: watch::Sender<shell_model::idle::Idle>,
     /// The displays (none until a test feeds some), and what the Display module sends.
     pub displays: watch::Sender<shell_model::displays::Displays>,

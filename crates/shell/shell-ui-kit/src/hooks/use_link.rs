@@ -20,7 +20,7 @@ pub(crate) fn tell_if_missing<T: 'static>(link: &Option<T>) {
     if link.is_none() && !*told.peek() {
         told.set(true);
         eprintln!(
-            "sill: {} is not provided here; this control does nothing",
+            "bardo-shell: {} is not provided here; this control does nothing",
             std::any::type_name::<T>()
         );
     }

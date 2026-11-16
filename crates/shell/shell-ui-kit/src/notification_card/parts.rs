@@ -1,6 +1,6 @@
 //! The ids a banner writes, so its surface can name them in an element region (layer-shell-host's
 //! `RegionSpec::Elements`): quire's plate (`NotificationCard { id }`, design/20 §1.6
-//! `Element("toast-<id>")`) and sill's wrapper around the whole card, which a group's layers
+//! `Element("toast-<id>")`) and bardo-shell's wrapper around the whole card, which a group's layers
 //! reach below the plate. Unique per document, since a notification id is.
 
 use shell_model::notifications::NotificationId;

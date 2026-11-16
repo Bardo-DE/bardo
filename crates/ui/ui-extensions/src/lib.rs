@@ -1,11 +1,11 @@
 //! Extensions: things a person adds to the desktop, found in folders and described by one
 //! manifest each. This crate is the folder scan, the envelope checks, the on and off state, and
 //! the data capabilities (a look, file icons). It is a library with no UI, no async runtime and
-//! no bus, so sill, files, mailo, anyview, detent and casement can all use it.
+//! no bus, so bardo-shell, files, mailo, anyview, bardo-settings and casement can all use it.
 //!
 //! # Finding them
 //!
-//! An Extension is `<data>/quire/extensions/<id>/extension.toml` beside the files it names, in
+//! An Extension is `<data>/bardo/extensions/<id>/extension.toml` beside the files it names, in
 //! the person's data directory and in each system one. [`Search`] takes those roots as values
 //! ([`Search::new`]; [`Search::from_env`] reads the XDG variables for a program), so a test or a
 //! portable install passes its own. [`Search::scan`] returns every copy of every id **unranked**

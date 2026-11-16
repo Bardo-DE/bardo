@@ -1,4 +1,4 @@
-//! sill's own idle, live: the service on the nested compositor (`wayland-1`, or
+//! bardo-shell's own idle, live: the service on the nested compositor (`wayland-1`, or
 //! `BARDO_SHELL_NESTED_WAYLAND`; pinged by connecting, never stopped; never `wayland-0`) with
 //! `org.freedesktop.ScreenSaver` on a private bus and no logind at all (`BusRoute::Absent`), so
 //! nothing can suspend or hint. Run it with

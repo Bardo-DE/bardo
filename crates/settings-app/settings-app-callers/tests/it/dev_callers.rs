@@ -1,4 +1,4 @@
-//! `detent --dev-callers FILE` (feature `dev-callers`): a stand-in a checkout built is let in as the
+//! `bardo-settings --dev-callers FILE` (feature `dev-callers`): a stand-in a checkout built is let in as the
 //! service its row names, at `Proof::Dev`, only in a build with the feature, and only as that role.
 //! Scratch folders and made-up process facts only; nothing reads the desktop's table or `/proc`.
 

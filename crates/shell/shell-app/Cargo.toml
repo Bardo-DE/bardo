@@ -1,6 +1,6 @@
 [package]
 name = "shell-app"
-description = "The sill daemon and command line."
+description = "The bardo-shell daemon and command line."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -41,6 +41,7 @@ serde = {version = "1", features = ["derive"]}
 toml = {version = "1"}
 
 [dev-dependencies]
+tempfile = "3"
 serde_json = {version = "1"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 agent-voice-wire = {path = "../../actions/agent-voice-wire"}
@@ -61,9 +62,9 @@ default = ["media"]
 # The launcher's preview pane reads a recording's facts and an audio cover (anyview-peek's `media`,
 # pure-Rust header parsers). `--no-default-features` leaves them out of the daemon.
 media = ["shell-launcher-ui/media"]
-# `sill debug pointer|leave|capture|key` act on surfaces (layer-shell-host's per-surface injection).
+# `bardo-shell debug pointer|leave|capture|key` act on surfaces (layer-shell-host's per-surface injection).
 # Without it those requests answer `Failed(Unsupported)`; `debug stats` always works. It also gives
-# `sill run` the stand-in flags (`--fake-ddc`, `--dev-callers`, ...); a release build has none.
+# `bardo-shell run` the stand-in flags (`--fake-ddc`, `--dev-callers`, ...); a release build has none.
 debug = ["layer-shell-host/debug-inject", "shell-services/dev-callers"]
 
 [lints.rust]
@@ -71,5 +72,5 @@ unsafe_code = "deny"
 missing_debug_implementations = "warn"
 
 [[bin]]
-name = "sill"
+name = "bardo-shell"
 path = "src/main.rs"

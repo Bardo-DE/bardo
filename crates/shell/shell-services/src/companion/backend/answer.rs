@@ -190,7 +190,7 @@ pub(super) async fn card(
         Err(silent) => Err(silent.into()),
     };
     if let Err(why) = pressed {
-        eprintln!("sill: companion: a card button: {why}");
+        eprintln!("bardo-shell: companion: a card button: {why}");
         let _ = events.send(CompanionEvent::CardRefused { task, action });
     }
 }

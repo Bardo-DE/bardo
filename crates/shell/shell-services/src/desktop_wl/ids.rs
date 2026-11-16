@@ -1,4 +1,4 @@
-//! The keys and ids the wire client hands out, in sill's own types.
+//! The keys and ids the wire client hands out, in bardo-shell's own types.
 
 use account_core::SpaceId;
 use desktop_client::workspace::Workspace as WireWorkspace;

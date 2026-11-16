@@ -77,7 +77,7 @@ const CASES: &[Row] = &[
         Ask,
     ),
     (
-        "sill's Lock (⌃⌘Q, launcher, power menu)",
+        "bardo-shell's Lock (⌃⌘Q, launcher, power menu)",
         Some(Action),
         5,
         100,

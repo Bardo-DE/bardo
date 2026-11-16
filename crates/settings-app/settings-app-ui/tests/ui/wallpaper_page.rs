@@ -13,12 +13,12 @@ use ui_settings::schema::{
 
 const FILE: &str = "shell/settings.toml";
 
-/// A stand-in for sill's schema with only the wallpaper's key (sill's fixture predates it).
-fn sill() -> Schema {
+/// A stand-in for bardo-shell's schema with only the wallpaper's key (bardo-shell's fixture predates it).
+fn shell_schema() -> Schema {
     Schema {
         footnotes: Vec::new(),
         pages: Vec::new(),
-        app: AppId("sill".to_owned()),
+        app: AppId("bardo-shell".to_owned()),
         file: FilePath(FILE.to_owned()),
         foreign: Default::default(),
         version: 1,
@@ -53,8 +53,8 @@ fn opening() -> Opening {
 /// A world with only the wallpaper key, working through `fake`.
 fn world(name: &str, fake: &Fake) -> Sandbox {
     let sandbox = Sandbox::new(name).with_pictures(fake.pictures());
-    sandbox.remove_schema("sill");
-    sandbox.install_schema(&sill());
+    sandbox.remove_schema("bardo-shell");
+    sandbox.install_schema(&shell_schema());
     sandbox
 }
 

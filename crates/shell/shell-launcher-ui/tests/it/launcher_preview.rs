@@ -1,7 +1,7 @@
 //! Launcher v2 on the real panel in a `ui_harness::Harness`: the runner's sections
 //! with Top Hit and "Show More", the preview pane's keys (Space while browsing, ⌘Y, → at the end,
 //! Escape one level at a time), a row chord run from the results, Tab to one provider, and the
-//! rows `sill debug launcher-rows` reports. The preview rows are the fakes' (`launcher_support/m9.rs`).
+//! rows `bardo-shell debug launcher-rows` reports. The preview rows are the fakes' (`launcher_support/m9.rs`).
 
 use crate::launcher_harness;
 
@@ -194,7 +194,7 @@ fn command_y_while_typing_then_right_enter_the_pane_and_escape_steps_out() {
         !html.contains("data-focused=\"true\""),
         "the results have the keyboard"
     );
-    // `sill debug launcher-key right` is → at the field's end.
+    // `bardo-shell debug launcher-key right` is → at the field's end.
     press(&mut open, Press::Right);
     let html = open.harness.html();
     assert!(html.contains("Reveal in Files"), "the pane's controls");

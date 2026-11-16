@@ -7,7 +7,7 @@
 //! `PolkitCommand::Answer { cookie, secret: Secret::new(text) }` (the text moves into the `Secret`
 //! at once and is never kept in a signal), `oncancel` sending `PolkitCommand::Dismiss(cookie)`;
 //! when the request goes away `shown` turns `false` and the surface unmaps at `on_hidden`
-//! (`shell_ui_kit::sheet_stage`). Nothing is styled under `.ds-polkit*`; the only markup of sill's own is the
+//! (`shell_ui_kit::sheet_stage`). Nothing is styled under `.ds-polkit*`; the only markup of bardo-shell's own is the
 //! wrapper that hears the keys' modifiers, since quire's sheet floats in the root's overlay host.
 
 use dioxus::prelude::*;

@@ -1,4 +1,4 @@
-//! The sill IPC protocol: newline-delimited JSON requests and responses, one request per
+//! The bardo-shell IPC protocol: newline-delimited JSON requests and responses, one request per
 //! connection.
 //!
 //! Pure: no socket, no runtime. The daemon (`shell_app::ipc`) and the command line (`shell_app::cli`) own

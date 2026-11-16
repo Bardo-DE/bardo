@@ -1,6 +1,6 @@
 //! `icons install`: copy the shipped app-icon set to where `ui_settings::apps_dir` looks:
 //! by default from this repository's `assets/icons/apps` to
-//! `$XDG_DATA_HOME/quire/icons/apps`, the lookup's second step, so an installed shell finds the
+//! `$XDG_DATA_HOME/bardo/icons/apps`, the lookup's second step, so an installed shell finds the
 //! icons without a checkout beside it.
 
 use std::path::{Path, PathBuf};

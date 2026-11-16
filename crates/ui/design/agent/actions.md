@@ -192,7 +192,7 @@ pub struct LabelText(String);    // app-authored UI words from the manifest (tru
 pub struct IconName(String);
 pub struct IntentsVocab(pub u32); impl IntentsVocab { pub const CURRENT: IntentsVocab = IntentsVocab(1); }
 
-/// `$XDG_DATA_DIRS/quire/intents/<AppName>.toml`, installed beside the app's
+/// `$XDG_DATA_DIRS/bardo/intents/<AppName>.toml`, installed beside the app's
 /// `dbus-1/services/<AppName>.service` (DBusActivatable). Its serde form is the file format;
 /// every field is written (porter's provider-file rule).
 pub struct Manifest {
@@ -615,7 +615,7 @@ The Cedar API used is `Authorizer::is_authorized` with `Response::diagnostics().
 Files:
 - `crates/policy-point/schema/bardo.cedarschema`. Namespace `Quire`. Entities: `Caller { kind: String }`, `App`, `Space`, `Act in [App] { effect, classes: Set<String>, reach, lasting }`. Actions: `perform`, `perform_unasked`, `perform_reviewed`, `search`, `preview`, `suggest`, `read_context`, `undo`, `index_push`. Context is the record above, using slugs.
 - `crates/policy-point/policies/default.cedar`. Each policy carries `@id`. Its content is the table in §4.4.
-- A user override directory `$XDG_CONFIG_HOME/quire/policy/*.cedar` comes later and is forbid-only (it may only tighten).
+- A user override directory `$XDG_CONFIG_HOME/bardo/policy/*.cedar` comes later and is forbid-only (it may only tighten).
 
 ### 3.11 `action-router` seams (freeze now; bodies `todo!()`)
 
@@ -701,7 +701,7 @@ Caller roles are configured in `intentd`'s config:
 - `Cancel(id s)`.
 - The interface is frozen now; who serves it is decided later.
 
-**Daemon config**, `$XDG_CONFIG_HOME/quire/actiond.toml`, the serde form of `IntentdConfig { roles: BTreeMap<Role, Vec<AppName>>, reviewer: ReviewerChoice, … }`. Freeze later; budgets and strictness come from settings keys.
+**Daemon config**, `$XDG_CONFIG_HOME/bardo/actiond.toml`, the serde form of `IntentdConfig { roles: BTreeMap<Role, Vec<AppName>>, reviewer: ReviewerChoice, … }`. Freeze later; budgets and strictness come from settings keys.
 
 ### 3.13 `action-client` (freeze now)
 

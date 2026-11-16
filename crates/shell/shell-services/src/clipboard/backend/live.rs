@@ -76,7 +76,7 @@ impl Live {
                 let tell = Tell::new(self.epoch, self.heard.clone());
                 match start(self.display.clone(), self.state.policy.images, tell) {
                     Ok(wire) => self.wire = Some(wire),
-                    Err(error) => eprintln!("sill: clipboard: no thread: {}", error.kind()),
+                    Err(error) => eprintln!("bardo-shell: clipboard: no thread: {}", error.kind()),
                 }
             }
             ClipEffect::Disconnect => {
@@ -93,7 +93,7 @@ impl Live {
     }
 }
 
-/// `shown` to the launcher and `sill clipboard status`, when it changed.
+/// `shown` to the launcher and `bardo-shell clipboard status`, when it changed.
 fn publish(tx: &watch::Sender<Clipboard>, shown: &Clipboard) {
     tx.send_if_modified(|published| {
         let changed = published != shown;

@@ -65,7 +65,7 @@ One quiet Look (design/30 §3). Shell chrome is the Mac material alone and takes
 | Relation to Spaces | independent of SpaceLook (21-SPACES §8) | P |
 | Keyboard | `None` | S |
 | Blur / input | blur none; input `Empty` | S |
-| Cache | `$XDG_CACHE_HOME/sill/wallpaper/<hash>-<w>x<h>.png`, Lanczos3 | S |
+| Cache | `$XDG_CACHE_HOME/bardo/shell/wallpaper/<hash>-<w>x<h>.png`, Lanczos3 | S |
 | Milestone | M2 | S |
 
 ### 1.5 Control center (SPEC Tier 1)

@@ -13,8 +13,8 @@ use shell_model::locker::Lock;
 use shell_model::notifications::{History, Notifications, ServerStatus};
 use shell_model::polkit_agent::{ActionId, Polkit, Registration};
 
-/// `sill notifications status|...`, `sill lock status`, `sill polkit status`, `sill clipboard
-/// status`, `sill idle status`, `sill keycap status`.
+/// `bardo-shell notifications status|...`, `bardo-shell lock status`, `bardo-shell polkit status`, `bardo-shell clipboard
+/// status`, `bardo-shell idle status`, `bardo-shell keycap status`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StatusRequest {
@@ -23,7 +23,7 @@ pub enum StatusRequest {
     Notifications,
     /// What the lock screen is doing.
     Lock,
-    /// Whether sill's agent is registered and what it shows.
+    /// Whether bardo-shell's agent is registered and what it shows.
     Polkit,
     /// Whether history is kept, how, and how many entries; never what they hold.
     Clipboard,
@@ -31,7 +31,7 @@ pub enum StatusRequest {
     Idle,
     /// Whether keycap runs, and what it says about its mode and the keyboards.
     Keycap,
-    /// Whether sill serves intentd's sheet, what waits on it, and the terminal's grants.
+    /// Whether bardo-shell serves intentd's sheet, what waits on it, and the terminal's grants.
     Intents,
 }
 
@@ -86,7 +86,7 @@ impl ClipboardStatus {
     }
 }
 
-/// sill's polkit agent: whether it is registered, the action on screen and how many wait.
+/// bardo-shell's polkit agent: whether it is registered, the action on screen and how many wait.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PolkitStatus {
     pub registration: Registration,
@@ -106,7 +106,7 @@ impl PolkitStatus {
     }
 }
 
-/// Where sill stands with intentd: whether it serves the sheet, what is on it, and the terminal.
+/// Where bardo-shell stands with intentd: whether it serves the sheet, what is on it, and the terminal.
 /// Names and counts only: a question's arguments are the person's, never on the wire.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IntentsStatus {
@@ -122,13 +122,13 @@ pub struct IntentsStatus {
     pub reach: ControlReach,
 }
 
-/// Whether sill serves the sheet.
+/// Whether bardo-shell serves the sheet.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LinkStatus {
     /// Not asked to serve yet.
     Passive,
-    /// `org.bardo.Confirm1` and `org.bardo.Shell` are sill's.
+    /// `org.bardo.Confirm1` and `org.bardo.Shell` are bardo-shell's.
     Serving,
     /// It could not take the names (no bus, a name taken); the log says which.
     Unavailable,

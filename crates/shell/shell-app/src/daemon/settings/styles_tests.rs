@@ -114,7 +114,7 @@ fn a_reload_re_reads_both_files_and_a_deleted_file_is_an_empty_style() {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
-/// A write to the desktop-wide `style.css` under a temp config dir, with no `sill reload`, reaches
+/// A write to the desktop-wide `style.css` under a temp config dir, with no `bardo-shell reload`, reaches
 /// the feed through the same watch and the same publish the host event handler calls.
 #[tokio::test]
 async fn a_desktop_wide_file_write_reaches_the_feed_without_a_reload() {

@@ -146,7 +146,7 @@ fn the_shipped_editorial_look_installs_as_a_usable_look() {
     const EDITORIAL: &str = "org.bardo.look.Editorial";
     let scratch = Scratch::new();
     let system = scratch.root("system");
-    let folder = system.join("quire").join("extensions").join(EDITORIAL);
+    let folder = system.join("bardo").join("extensions").join(EDITORIAL);
     for file in ["extension.toml", "look.css"] {
         let text = std::fs::read_to_string(format!("{SHIPPED}/{EDITORIAL}/{file}"))
             .unwrap_or_else(|e| panic!("{file}: {e}"));

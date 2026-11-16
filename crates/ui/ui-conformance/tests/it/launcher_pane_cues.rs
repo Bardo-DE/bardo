@@ -3,7 +3,7 @@
 //! cross-fade the media in place and never replay the entrance; a running load shows the pending
 //! look (a ring over "Loading…") at once and it keeps turning for as long as the load runs;
 //! Reduced snaps the media and keeps the ring turning. Every moment ends at 0 frames (R3). The
-//! pane's state and its table are sill's (`preview/moment.rs`).
+//! pane's state and its table are bardo-shell's (`preview/moment.rs`).
 
 use dioxus::prelude::*;
 use std::time::Duration;
@@ -28,7 +28,7 @@ enum Kind {
     Slot,
 }
 
-/// The pane as the person sees it: sill's `PaneState`.
+/// The pane as the person sees it: bardo-shell's `PaneState`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Pane {
     Hidden,

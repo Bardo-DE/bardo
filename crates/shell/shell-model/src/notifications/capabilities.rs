@@ -1,8 +1,8 @@
-//! `GetCapabilities` and `GetServerInformation`: what sill tells a sender it can do.
+//! `GetCapabilities` and `GetServerInformation`: what bardo-shell tells a sender it can do.
 //!
 //! Advertised only what the banners and the center draw: actions, a body with the markup subset
 //! and links, a static icon, and persistence (the history). Not `body-images` (an `<img>` shows
-//! its alt text), `action-icons`, `icon-multi` or `sound` (sill plays no sounds yet).
+//! its alt text), `action-icons`, `icon-multi` or `sound` (bardo-shell plays no sounds yet).
 
 /// The capability words, in the spec's spelling.
 pub const CAPABILITIES: &[&str] = &[
@@ -14,7 +14,7 @@ pub const CAPABILITIES: &[&str] = &[
     "persistence",
 ];
 
-/// The spec version sill implements (1.2 added `ActivationToken`).
+/// The spec version bardo-shell implements (1.2 added `ActivationToken`).
 pub const SPEC_VERSION: &str = "1.2";
 
 /// `GetServerInformation`'s four strings.
@@ -26,10 +26,10 @@ pub struct ServerInformation {
     pub spec_version: &'static str,
 }
 
-/// sill's answer.
+/// bardo-shell's answer.
 pub const SERVER_INFORMATION: ServerInformation = ServerInformation {
-    name: "sill",
-    vendor: "sill",
+    name: "bardo-shell",
+    vendor: "bardo-shell",
     version: env!("CARGO_PKG_VERSION"),
     spec_version: SPEC_VERSION,
 };

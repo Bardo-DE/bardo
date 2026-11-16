@@ -1,4 +1,4 @@
-//! The VCP features sill uses (MCCS 2.2 codes), their raw readings, and a display's controls
+//! The VCP features bardo-shell uses (MCCS 2.2 codes), their raw readings, and a display's controls
 //! as typed values. Pure.
 
 use serde::{Deserialize, Serialize};
@@ -94,7 +94,7 @@ pub struct RgbGain {
     pub blue: Level,
 }
 
-/// What a display lets sill change, and the values last read or written. `None` is a feature
+/// What a display lets bardo-shell change, and the values last read or written. `None` is a feature
 /// the display did not answer for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub struct Controls {

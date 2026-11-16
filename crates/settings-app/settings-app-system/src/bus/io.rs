@@ -18,7 +18,7 @@ use zbus::names::BusName;
 
 /// A failure the person sees only as "failed": its cause goes to the log.
 fn failed(why: impl std::fmt::Display) -> Absence {
-    eprintln!("detent: a settings service failed: {why}");
+    eprintln!("bardo-settings: a settings service failed: {why}");
     Absence::Failed
 }
 

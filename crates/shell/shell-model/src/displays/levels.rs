@@ -20,7 +20,7 @@ impl OutputLevel {
 }
 
 impl Displays {
-    /// Every output whose brightness sill can read (a built-in panel's backlight, a monitor that
+    /// Every output whose brightness bardo-shell can read (a built-in panel's backlight, a monitor that
     /// answers DDC/CI), in the compositor's order. An output with nothing to read is not listed.
     pub fn levels(&self) -> Vec<OutputLevel> {
         self.outputs

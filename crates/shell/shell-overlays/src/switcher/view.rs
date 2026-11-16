@@ -32,7 +32,7 @@ use shell_ui_kit::look::use_active_look;
 use shell_ui_kit::root::{SurfaceRoot, use_host_scale};
 use ui_behaviour::switcher::{Phase, SwitcherParams};
 
-/// The switcher's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The switcher's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const SWITCHER_CSS: &str = include_str!("style.css");
 
 pub(super) fn switcher(output: OutputInfo) -> Element {

@@ -1,6 +1,6 @@
 [package]
 name = "settings-app-intents"
-description = "What an agent or a command line may do in Settings: detent's intents manifest and its IntentProvider1 provider."
+description = "What an agent or a command line may do in Settings: bardo-settings's intents manifest and its IntentProvider1 provider."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

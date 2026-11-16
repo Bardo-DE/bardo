@@ -49,7 +49,7 @@ async fn bring_back(
 /// Log what went wrong. A bring back the person asked for says it did not happen; a list that
 /// could not be read changes nothing.
 fn unreached(why: &dyn std::fmt::Display, command: TerminalsCommand) -> TerminalsMsg {
-    eprintln!("sill: companion: terminals: {why}");
+    eprintln!("bardo-shell: companion: terminals: {why}");
     match command {
         TerminalsCommand::List => TerminalsMsg::Unreached,
         TerminalsCommand::BringBack(session) => {

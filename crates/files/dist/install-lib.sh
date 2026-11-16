@@ -8,7 +8,7 @@
 DIST="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$DIST/.." && pwd)"
 TREE="$(cd "$ROOT/../.." && pwd)"   # the bardo tree
-APPDIST="$ROOT/crates/files/dist"
+APPDIST="$ROOT/files/dist"
 
 # BARDO_FILES_PREFIX is where the files will live on the computer (the paths the service files name);
 # BARDO_FILES_DESTDIR is a staging root put in front of every path written (a release bundle, a scratch
@@ -16,19 +16,19 @@ APPDIST="$ROOT/crates/files/dist"
 PREFIX="${BARDO_FILES_PREFIX:-/usr/local}"
 DESTDIR="${BARDO_FILES_DESTDIR:-}"
 ROOTED="$DESTDIR$PREFIX"
-BIN_INSTALLED="$PREFIX/bin/files"
-BIN_DEST="$ROOTED/bin/files"
+BIN_INSTALLED="$PREFIX/bin/bardo-files"
+BIN_DEST="$ROOTED/bin/bardo-files"
 DESKTOP_DEST="$ROOTED/share/applications/org.bardo.Files.desktop"
 # The two bus services: Files by its own name, and the file-manager name other programs call to
 # "show this folder". Both under $PREFIX/share, which is on XDG_DATA_DIRS for /usr and /usr/local.
 SERVICE_DEST="$ROOTED/share/dbus-1/services/org.bardo.Files.service"
 FM_SERVICE_DEST="$ROOTED/share/dbus-1/services/org.bardo.Files.FileManager1.service"
 # The intents manifest the desktop's router reads, beside the other apps'.
-INTENTS_DEST="$ROOTED/share/quire/intents/org.bardo.Files.toml"
+INTENTS_DEST="$ROOTED/share/bardo/intents/org.bardo.Files.toml"
 # The schema the Settings app reads to draw Files' page, written by the binary itself.
-SCHEMA_DEST="$ROOTED/share/quire/settings/files.settings.toml"
+SCHEMA_DEST="$ROOTED/share/bardo/settings/files.settings.toml"
 # The binary to install: a release build unless BARDO_FILES_BIN says otherwise.
-BUILT="${BARDO_FILES_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/files}"
+BUILT="${BARDO_FILES_BIN:-${CARGO_TARGET_DIR:-$TREE/target}/release/bardo-files}"
 # What the person asked to escalate with, if anything (SUDO=doas ./install.sh), read before SUDO is
 # reset below.
 ASKED_SUDO="${SUDO:-}"
@@ -41,7 +41,7 @@ DRY=0
 # service_text SRC: a bus service file, its Exec= naming the binary where it will be installed.
 service_text() { sed "s|^Exec=/usr/bin/bardo-files |Exec=$BIN_INSTALLED |" "$1"; }
 # desktop_text: the desktop entry, launching that same binary.
-desktop_text() { sed "s|^Exec=files |Exec=$BIN_INSTALLED |" "$APPDIST/org.bardo.Files.desktop"; }
+desktop_text() { sed "s|^Exec=bardo-files |Exec=$BIN_INSTALLED |" "$APPDIST/org.bardo.Files.desktop"; }
 
 # parse_flags "$@": --dry-run, and the extra flags a script allows ($EXTRA_FLAGS, space-separated).
 parse_flags() {

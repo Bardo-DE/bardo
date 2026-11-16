@@ -1,6 +1,6 @@
 [package]
 name = "shell-settings"
-description = "sill's settings file, shell/settings.toml, as data: the shell domains of design/22-SETTINGS.md, their Section and schema."
+description = "bardo-shell's settings file, shell/settings.toml, as data: the shell domains of design/22-SETTINGS.md, their Section and schema."
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"

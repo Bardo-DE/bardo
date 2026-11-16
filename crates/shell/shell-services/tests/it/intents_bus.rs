@@ -1,4 +1,4 @@
-//! sill's seat at intentd on a private bus: a stand-in intentd owns `org.bardo.Intents1`, asks the
+//! bardo-shell's seat at intentd on a private bus: a stand-in intentd owns `org.bardo.Intents1`, asks the
 //! sheet through docket's own client (`ConfirmProxy` and `action_client::requested`, the calls
 //! intentd's `SheetConfirmer` makes), serves `Control`, and calls the shell's `IntentProvider1`.
 //! Never the person's session bus; a test skips, saying so, without a `dbus-daemon`. The same chain
@@ -147,9 +147,13 @@ fn intentd_is_this_process() -> TempDir {
     };
     write(
         procs.path().join(format!("{pid}/cgroup")),
-        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-actiond.service\n".to_owned(),
+        "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-actiond.service\n"
+            .to_owned(),
     );
-    write(procs.path().join("units/bardo-actiond.service"), pid.to_string());
+    write(
+        procs.path().join("units/bardo-actiond.service"),
+        pid.to_string(),
+    );
     procs
 }
 

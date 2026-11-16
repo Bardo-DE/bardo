@@ -91,7 +91,7 @@ fn custom_refuses_a_taken_combination_in_any_order_or_case() {
     }
 }
 
-/// sill's launcher row chords are standard: Quick Look, Reveal and Copy.
+/// bardo-shell's launcher row chords are standard: Quick Look, Reveal and Copy.
 #[test]
 fn the_launcher_row_chords_are_standard() {
     let cases = [

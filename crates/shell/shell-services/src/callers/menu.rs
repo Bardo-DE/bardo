@@ -22,7 +22,7 @@ pub(crate) async fn menu_shown(
     let trust = menu_trust(&who, client);
     if !trust {
         eprintln!(
-            "sill: callers: the owner of the menu name of {} is not that app, so its menu is not shown",
+            "bardo-shell: callers: the owner of the menu name of {} is not that app, so its menu is not shown",
             for_log(&client.key)
         );
     }

@@ -344,7 +344,7 @@ fn power_menu_states() -> Vec<(&'static str, String)> {
     vec![("hidden", hidden), ("open", open)]
 }
 
-/// The Spaces bar down, then up (the strip and the plus; sill has no Space id of its own to
+/// The Spaces bar down, then up (the strip and the plus; bardo-shell has no Space id of its own to
 /// list, the pills are drawn in the overlay crate's tests).
 fn spaces_bar_states() -> Vec<(&'static str, String)> {
     let mut bar = SurfaceHarness::<SpacesBar>::setup(SpacesBarLink::new(), ()).start();

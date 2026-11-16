@@ -1,4 +1,4 @@
-//! `keyboard.*`: how sill treats the keyboard per app (design/22 §3.25). One key, a list of
+//! `keyboard.*`: how bardo-shell treats the keyboard per app (design/22 §3.25). One key, a list of
 //! tables: the keycap profile each app's keys are drawn with. The file keeps the person's text;
 //! [`overrides`] turns it into the typed values the keycap service reads, once per load.
 

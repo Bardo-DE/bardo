@@ -320,7 +320,7 @@ impl Service {
     /// Log `message` the first time it is seen.
     fn warn(&mut self, message: String) {
         if self.warned.insert(message.clone()) {
-            eprintln!("sill: displays: {message}");
+            eprintln!("bardo-shell: displays: {message}");
         }
     }
 }

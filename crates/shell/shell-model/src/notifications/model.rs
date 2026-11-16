@@ -92,7 +92,7 @@ pub enum ServerMode {
     /// Ask for the name (never replacing a holder), and ask again whenever it falls free.
     Own,
     /// Never ask: another daemon (mako, dunst) serves notifications. The service
-    /// still reports who holds the name, and `sill debug notify` still shows banners.
+    /// still reports who holds the name, and `bardo-shell debug notify` still shows banners.
     #[default]
     Passive,
 }

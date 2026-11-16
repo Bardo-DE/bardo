@@ -1,4 +1,4 @@
-//! A stand-in for accountd on a private bus: it owns `org.bardo.Accounts1` there and drives sill's
+//! A stand-in for accountd on a private bus: it owns `org.bardo.Accounts1` there and drives bardo-shell's
 //! accounts sheet (`org.bardo.AccountsSheet1`) the way accountd does, so `dev/accept/accounts.sh`
 //! can play the consent question and the add-account steps without accountd.
 //!

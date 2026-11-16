@@ -74,19 +74,19 @@ fn unique(dirs: Vec<PathBuf>) -> Vec<PathBuf> {
     })
 }
 
-/// Each `$XDG_DATA_DIRS` entry's `quire/settings`, then `$XDG_DATA_HOME`'s: the order of trust, a
+/// Each `$XDG_DATA_DIRS` entry's `bardo/settings`, then `$XDG_DATA_HOME`'s: the order of trust, a
 /// schema in the person's own directory adds a program and never replaces an installed one's.
 pub fn schema_dirs() -> Vec<PathBuf> {
     unique(ui_settings::schema::data_dirs())
 }
 
-/// Each data directory's `quire/intents`, the folders of the installed apps' manifests, in the
+/// Each data directory's `bardo/intents`, the folders of the installed apps' manifests, in the
 /// order of `schema_dirs` (beside which they sit).
 pub fn intent_dirs() -> Vec<PathBuf> {
     intent_dirs_beside(&schema_dirs())
 }
 
-/// The `intents` folder beside each of the `quire/settings` folders `schemas`.
+/// The `intents` folder beside each of the `bardo/settings` folders `schemas`.
 fn intent_dirs_beside(schemas: &[PathBuf]) -> Vec<PathBuf> {
     schemas
         .iter()
@@ -259,7 +259,7 @@ mod tests {
     fn manifests_are_looked_for_beside_each_schema_folder_in_its_order() {
         let schemas = [
             "/usr/share/bardo/settings",
-            "/home/ada/.local/share/quire/settings",
+            "/home/ada/.local/share/bardo/settings",
         ]
         .map(PathBuf::from)
         .to_vec();
@@ -267,7 +267,7 @@ mod tests {
             intent_dirs_beside(&schemas),
             [
                 "/usr/share/bardo/intents",
-                "/home/ada/.local/share/quire/intents"
+                "/home/ada/.local/share/bardo/intents"
             ]
             .map(PathBuf::from)
             .to_vec()

@@ -186,7 +186,7 @@ const WAITING_TEXT_MAX_CHARS: usize = 200;
 
 /// A row of what an assistant asked to remember: the words proposed, and who asked. The app a
 /// note came from is named when the source still exists and the actor is not an app itself.
-/// A helper's proposal names the helper as the person calls it (`helpers` is the list sill
+/// A helper's proposal names the helper as the person calls it (`helpers` is the list bardo-shell
 /// holds), or "A helper" when it is not in the list. The router, which memory recorded as the
 /// author of an assistant's proposal before it carried the helper, reads as "The assistant".
 pub fn waiting_line(

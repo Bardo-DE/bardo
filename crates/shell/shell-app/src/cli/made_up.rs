@@ -1,4 +1,4 @@
-//! The made-up notification and polkit request `sill debug notify` and `sill debug polkit` send,
+//! The made-up notification and polkit request `bardo-shell debug notify` and `bardo-shell debug polkit` send,
 //! as the `shell-model` values the services would have received from a real sender.
 
 use clap::{Args, ValueEnum};
@@ -11,13 +11,13 @@ use ui_core::word::Word;
 
 use super::word::word;
 
-/// `sill debug notify SUMMARY ...`: the made-up notification's parts.
+/// `bardo-shell debug notify SUMMARY ...`: the made-up notification's parts.
 #[derive(Debug, Clone, PartialEq, Eq, Args)]
 pub struct NotifyArgs {
     /// The headline.
     pub summary: String,
     /// The sending app's name (and the group it falls in).
-    #[arg(long, default_value = "sill")]
+    #[arg(long, default_value = "bardo-shell")]
     pub app: String,
     /// Markup, as a sender would write it.
     #[arg(long, default_value = "")]
@@ -36,25 +36,25 @@ pub struct NotifyArgs {
     pub replaces: u32,
 }
 
-/// `sill debug polkit ...`: the made-up request's parts.
+/// `bardo-shell debug polkit ...`: the made-up request's parts.
 #[derive(Debug, Clone, PartialEq, Eq, Args)]
 pub struct PolkitArgs {
     /// The action id shown.
     #[arg(long = "action", default_value = "org.sill.debug.prompt")]
     pub action_id: String,
     /// The message shown.
-    #[arg(long, default_value = "sill is testing its password prompt")]
+    #[arg(long, default_value = "bardo-shell is testing its password prompt")]
     pub message: String,
 }
 
-/// `sill debug notify --expire ...`.
+/// `bardo-shell debug notify --expire ...`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum ExpireArg {
     Default,
     Never,
 }
 
-/// The request `sill debug polkit` makes: shown like a real one, with no icon.
+/// The request `bardo-shell debug polkit` makes: shown like a real one, with no icon.
 pub fn polkit_request(args: &PolkitArgs) -> FakeRequest {
     FakeRequest {
         action_id: ActionId(args.action_id.clone()),

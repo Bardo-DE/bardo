@@ -26,7 +26,7 @@ use crate::daemon::msg::ShellMsg;
 /// How long a burst of file events settles before the look is looked for again.
 const SETTLE: Duration = Duration::from_millis(150);
 
-/// Where Extensions are installed: `<data>/quire/extensions/<id>/` in the person's data directory
+/// Where Extensions are installed: `<data>/bardo/extensions/<id>/` in the person's data directory
 /// and in each system one.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LookSearch {
@@ -53,7 +53,7 @@ impl LookSearch {
     fn folders(&self) -> Vec<PathBuf> {
         std::iter::once(&self.person)
             .chain(&self.system)
-            .map(|root| root.join("quire").join("extensions"))
+            .map(|root| root.join("bardo").join("extensions"))
             .collect()
     }
 }
@@ -78,7 +78,7 @@ pub fn chosen_look(extensions: &Store, appearance: &Store, search: &LookSearch) 
     let off = extensions.load::<ExtensionsFile>().value.off_ids();
     let resolved = search.search().scan(&off).resolve(Capability::Look);
     for problem in resolved.problems().iter().filter(|p| p.id.0 == id) {
-        eprintln!("sill: the look {id}: {}", problem.words());
+        eprintln!("bardo-shell: the look {id}: {}", problem.words());
     }
     match look::stylesheet_for(&choice, &resolved.registry) {
         Some(sheet) => ChosenLook {
@@ -86,7 +86,7 @@ pub fn chosen_look(extensions: &Store, appearance: &Store, search: &LookSearch) 
             home: Some(sheet.folder),
         },
         None => {
-            eprintln!("sill: the look {id} is not available; using the standard look");
+            eprintln!("bardo-shell: the look {id} is not available; using the standard look");
             ChosenLook::default()
         }
     }
@@ -94,7 +94,7 @@ pub fn chosen_look(extensions: &Store, appearance: &Store, search: &LookSearch) 
 
 /// Watch `extensions`' file and the Extension folders on `runtime`, sending `ShellMsg::Look` to
 /// `host` after each settled change. A place that cannot be watched is logged and the look then
-/// changes only through `sill reload` and `appearance.look`.
+/// changes only through `bardo-shell reload` and `appearance.look`.
 pub fn spawn_look_watch(
     runtime: &Runtime,
     extensions: &Store,
@@ -103,7 +103,7 @@ pub fn spawn_look_watch(
 ) {
     let mut file = extensions.watch::<ExtensionsFile>(&TokioSpawner::on(runtime.handle().clone()));
     if let WatchState::Blind { reason } = file.state() {
-        eprintln!("sill: watching the extensions list: {reason}");
+        eprintln!("bardo-shell: watching the extensions list: {reason}");
     }
     let (touched, mut touches) = mpsc::unbounded_channel();
     let watcher = watch_folders(search, touched);
@@ -138,7 +138,7 @@ fn watch_folders(
             let _ = touched.send(());
         }
     })
-    .inspect_err(|error| eprintln!("sill: watching the extensions: {error}"))
+    .inspect_err(|error| eprintln!("bardo-shell: watching the extensions: {error}"))
     .ok()?;
     let folders = search.folders();
     if let Some(own) = folders.first() {
@@ -147,7 +147,7 @@ fn watch_folders(
     }
     for folder in folders.iter().filter(|folder| folder.is_dir()) {
         if let Err(error) = watcher.watch(folder, RecursiveMode::Recursive) {
-            eprintln!("sill: watching {}: {error}", folder.display());
+            eprintln!("bardo-shell: watching {}: {error}", folder.display());
         }
     }
     Some(watcher)

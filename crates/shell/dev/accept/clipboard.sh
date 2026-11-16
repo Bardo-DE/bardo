@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Clipboard history acceptance, on casement (brought up and ended by start_compositor).
-# Starts `sill run` from this checkout's debug build (`--features debug`) on a private bus (the
+# Starts `bardo-shell run` from this checkout's debug build (`--features debug`) on a private bus (the
 # daemon's session AND system bus), with a scratch HOME and XDG directories, its own
 # XDG_RUNTIME_DIR and the nested socket as an absolute WAYLAND_DISPLAY. `wl-copy`,
 # `wl-paste` and the `secret_source` example are pointed at the nested socket by absolute path;
@@ -8,16 +8,16 @@
 # copied is made up, and no clipboard content is printed or written to a file: only counts,
 # modes and protocols are logged. The nested selection is cleared before and after.
 #
-#   1. `sill clipboard status`: memory, ext (the compositor offers ext_data_control_v1), 0 entries.
+#   1. `bardo-shell clipboard status`: memory, ext (the compositor offers ext_data_control_v1), 0 entries.
 #   2. `wl-copy` of a made-up string: 1 entry.
 #   3. `secret_source` (text marked with x-kde-passwordManagerHint) takes the selection: still 1.
-#   4. `sill launcher open --query lantern`: one clipboard row (`sill debug launcher-rows`),
+#   4. `bardo-shell launcher open --query lantern`: one clipboard row (`bardo-shell debug launcher-rows`),
 #      under Top Hit (a single match, never repeated below it) or Clipboard;
-#      `sill debug key` ArrowDown onto it (the emoji 🏮 can be the Top Hit for "lantern"), then
+#      `bardo-shell debug key` ArrowDown onto it (the emoji 🏮 can be the Top Hit for "lantern"), then
 #      Enter, then `wl-paste` answers the string.
-#   5. `launcher.clipboard_history = "off"`, `sill reload`: off, not_connected, 0 entries.
+#   5. `launcher.clipboard_history = "off"`, `bardo-shell reload`: off, not_connected, 0 entries.
 #   6. Back on (the nested selection cleared first: turning history on keeps the selection
-#      there is), two copies, `sill clipboard clear`: 0 entries.
+#      there is), two copies, `bardo-shell clipboard clear`: 0 entries.
 #
 # Exit 0 when every step passed, 1 on a failure.
 #
@@ -44,9 +44,9 @@ ping_nested() {
   [ -S "$WL" ] && WAYLAND_DISPLAY="$WL" wayland-info >/dev/null 2>&1
 }
 
-# "mode protocol entries" from `sill clipboard status` (counts only, by design).
+# "mode protocol entries" from `bardo-shell clipboard status` (counts only, by design).
 status_line() {
-  sill clipboard status 2>/dev/null | python3 -c '
+  bardo-shell clipboard status 2>/dev/null | python3 -c '
 import json, sys
 try:
     doc = json.loads(sys.stdin.read())
@@ -70,7 +70,7 @@ wait_status() {
 }
 
 write_settings() {
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   cat >"$CONFIG/shell/settings.toml" <<TOML
 [launcher]
 clipboard_history = "$1"
@@ -134,7 +134,7 @@ PY
 
 # The launcher's selected line.
 selected_row() {
-  sill debug launcher-rows 2>/dev/null | python3 -c '
+  bardo-shell debug launcher-rows 2>/dev/null | python3 -c '
 import json, sys
 print(json.loads(sys.stdin.read())["v"]["selected"])' 2>/dev/null || echo -1
 }
@@ -146,20 +146,20 @@ step_launcher() {
   # The marked copy was killed above; put the made-up text back as the selection first, so a
   # paste proves the history's offer and not wl-copy's.
   nested_wl wl-copy -- "something else, made up" || return 1
-  sill launcher open --query "$WORD" >/dev/null 2>&1 || { echo "launcher open failed" >&2; return 1; }
+  bardo-shell launcher open --query "$WORD" >/dev/null 2>&1 || { echo "launcher open failed" >&2; return 1; }
   sleep 0.5
-  sill debug launcher-rows >"$rows" 2>&1
+  bardo-shell debug launcher-rows >"$rows" 2>&1
   local at
   at=$(clip_row "$rows") || return 1
   # Enter runs the selected row: another provider's row (the emoji 🏮 for "lantern") may be the
   # Top Hit, so move to the clipboard row first.
   for _ in $(seq 20); do
     [ "$(selected_row)" -lt "$at" ] || break
-    sill debug key "$panel" ArrowDown >/dev/null 2>&1 || return 1
+    bardo-shell debug key "$panel" ArrowDown >/dev/null 2>&1 || return 1
     sleep 0.2
   done
   [ "$(selected_row)" = "$at" ] || { echo "could not select the clipboard row ($at)" >&2; return 1; }
-  sill debug key "$panel" Enter >/dev/null 2>&1 || return 1
+  bardo-shell debug key "$panel" Enter >/dev/null 2>&1 || return 1
   for _ in $(seq 30); do
     if [ "$(nested_wl wl-paste --no-newline --type text)" = "$MADE_UP" ]; then
       echo "wl-paste read the offered entry" >&2
@@ -174,7 +174,7 @@ step_launcher() {
 # 5.
 step_off() {
   write_settings off
-  sill reload >/dev/null 2>&1 || return 1
+  bardo-shell reload >/dev/null 2>&1 || return 1
   wait_status "off not_connected 0"
 }
 
@@ -183,13 +183,13 @@ step_clear() {
   # Turning history on reads the selection there is; start from none.
   nested_wl wl-copy --clear
   write_settings memory
-  sill reload >/dev/null 2>&1 || return 1
+  bardo-shell reload >/dev/null 2>&1 || return 1
   wait_status "memory ext 0" || return 1
   nested_wl wl-copy -- "m9-accept first made-up copy" || return 1
   wait_status "memory ext 1" || return 1
   nested_wl wl-copy -- "m9-accept second made-up copy" || return 1
   wait_status "memory ext 2" || return 1
-  sill clipboard clear >/dev/null 2>&1 || return 1
+  bardo-shell clipboard clear >/dev/null 2>&1 || return 1
   wait_status "memory ext 0"
 }
 

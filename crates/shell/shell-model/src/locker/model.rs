@@ -16,7 +16,7 @@ use ui_core::time::stamp::{Ms, Stamp};
 pub const READY_GIVE_UP_MS: Ms = Ms(10_000);
 
 /// How long sleep waits for the lock at most: under logind's default `InhibitDelayMaxSec` (5 s),
-/// so it is sill, not logind, that lets go.
+/// so it is bardo-shell, not logind, that lets go.
 pub const SLEEP_HOLD_MS: Ms = Ms(4_000);
 
 /// What the lock screen is doing, as surfaces and tests see it.
@@ -45,10 +45,10 @@ pub enum Hold {
 /// The locker service's whole state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Locker {
-    /// True when sill's own lock screen does the locking; false and nothing locks.
+    /// True when bardo-shell's own lock screen does the locking; false and nothing locks.
     pub own: bool,
-    /// True when logind's `Lock` and `PrepareForSleep` start a lock (a sill session); false when
-    /// another desktop owns this logind session and only sill's own Lock does.
+    /// True when logind's `Lock` and `PrepareForSleep` start a lock (a bardo-shell session); false when
+    /// another desktop owns this logind session and only bardo-shell's own Lock does.
     pub follow_logind: bool,
     pub phase: LockPhase,
     /// When a lock that has not said locked is taken as locked anyway; set exactly while

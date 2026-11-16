@@ -34,10 +34,11 @@ fn harness_spec(sandbox: &Sandbox) -> settings_app_model::FileSpec {
         .files
         .iter()
         .find(|f| {
-            f.file.relative().ends_with("settings.toml") && f.file.relative().starts_with("sill")
+            f.file.relative().ends_with("settings.toml")
+                && f.file.relative().starts_with("bardo-shell")
         })
         .cloned()
-        .expect("sill's file")
+        .expect("bardo-shell's file")
 }
 
 fn detent_model_key(path: &str) -> ui_settings::schema::KeyPath {

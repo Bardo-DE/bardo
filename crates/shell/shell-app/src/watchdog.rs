@@ -82,7 +82,7 @@ impl Notifier {
             return;
         };
         if let Err(error) = deliver(address, message.text()) {
-            eprintln!("sill: telling the service manager {message:?}: {error}");
+            eprintln!("bardo-shell: telling the service manager {message:?}: {error}");
         }
     }
 }
@@ -134,7 +134,7 @@ pub fn spawn(notifier: Notifier, beats: impl Fn() -> u64 + Send + 'static) {
             }
         });
     if let Err(error) = spawned {
-        eprintln!("sill: no watchdog thread: {error}");
+        eprintln!("bardo-shell: no watchdog thread: {error}");
     }
 }
 

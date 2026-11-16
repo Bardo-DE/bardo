@@ -64,6 +64,6 @@ async fn announce(connection: &Connection) {
     };
     let emitter = object.signal_emitter();
     if let Err(error) = object.get().await.work_areas_changed(emitter).await {
-        eprintln!("sill: work areas: announcing the change failed: {error}");
+        eprintln!("bardo-shell: work areas: announcing the change failed: {error}");
     }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Calendar acceptance (design/20 §1.12 and §1.14), on casement (brought up and ended by start_compositor).
-# Starts `sill run` from this checkout's debug build (`--features debug`) on a private bus (the
+# Starts `bardo-shell run` from this checkout's debug build (`--features debug`) on a private bus (the
 # daemon's session AND system bus), with a scratch HOME and XDG directories, its own
 # XDG_RUNTIME_DIR (the nested socket as an absolute WAYLAND_DISPLAY) and a fake DDC.
 # `calendar.sources` names three temp `.ics` files written here (never a real
@@ -10,7 +10,7 @@
 # personal.ics "Dentist" tomorrow at 09:00. `widgets.center = ["calendar",
 # "up_next"]`. The daemon is quit at the end.
 #
-#   1. `sill notifications open`: a capture of `sill-notification-center-<out>` shows the month
+#   1. `bardo-shell notifications open`: a capture of `sill-notification-center-<out>` shows the month
 #      with today on the accent disc (dev/out/calendar-casement.png; the output with the center
 #      open, dev/out/calendar-widget-casement.png).
 #   2. The center's Calendar tile is the Medium card (a today column beside the compact month): it
@@ -23,7 +23,7 @@
 #      and is Up Next's third-soonest, so it draws nowhere.
 #   3. work.ics rewritten with the review cancelled: within 2 s the bars are the Calendar's team,
 #      then Up Next's team and personal (now the two soonest).
-#   4. `calendar.week_numbers = true` and `sill reload`: the center's Calendar is the Medium
+#   4. `calendar.week_numbers = true` and `bardo-shell reload`: the center's Calendar is the Medium
 #      card, whose compact month never draws the week column whatever the setting says (quire's
 #      `month_grid::shown_weeks`: "a week column would not fit"), so today's disc stays where it
 #      was (within 2 px) and the card still draws (the reload broke nothing). The week column
@@ -31,8 +31,8 @@
 #   5. 5 s idle while open, clear of the minute's turn: 0 frames on the center.
 #
 # Exit 0 when every step passed, 2 when the notification center draws no widgets (the widget
-# slot is not in this build), 1 on a failure. Another sill daemon started from a
-# `target/*/sill run` is waited for (up to 10 minutes).
+# slot is not in this build), 1 on a failure. Another bardo-shell daemon started from a
+# `target/*/bardo-shell run` is waited for (up to 10 minutes).
 #
 # Usage: dev/accept/calendar.sh
 set -uo pipefail
@@ -161,7 +161,7 @@ bars_of() { sed -e 's/^BARS *//' -e 's/ *;.*$//' <<<"$1"; }
 disc_of() { sed -e 's/^.*DISC //' <<<"$1"; }
 
 write_settings() {
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   cat >"$CONFIG/shell/settings.toml" <<TOML
 [calendar]
 sources = "$CAL/work.ics;$CAL/team.ics;$CAL/personal.ics"
@@ -197,10 +197,10 @@ PERSONAL=$(hue_of personal)
 step_month_and_up_next() {
   local log="$OUT_DIR/open.log" seen
   : >"$log"
-  sill notifications open >>"$log" 2>&1 || return 1
+  bardo-shell notifications open >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 up || { echo "the center never mapped" >&2; return 1; }
   sleep 1
-  sill debug capture "$CENTER" "$SHOTS/calendar-casement.png" >>"$log" 2>&1 || return 1
+  bardo-shell debug capture "$CENTER" "$SHOTS/calendar-casement.png" >>"$log" 2>&1 || return 1
   shot "$SHOTS/calendar-widget-casement.png" || echo "screenshot failed" >&2
   seen=$(probe "$SHOTS/calendar-casement.png")
   echo "capture: $seen (work $WORK, team $TEAM, personal $PERSONAL)" | tee -a "$log" >&2
@@ -225,7 +225,7 @@ step_edit() {
   # surface takes seconds on a loaded host, which says nothing about the file watcher.
   for _ in $(seq 150); do
     began=$(date +%s%N)
-    sill debug capture "$CENTER" "$OUT_DIR/edit.png" >>"$log" 2>&1 || return 1
+    bardo-shell debug capture "$CENTER" "$OUT_DIR/edit.png" >>"$log" 2>&1 || return 1
     seen=$(probe "$OUT_DIR/edit.png")
     [ "$(bars_of "$seen")" = "$TEAM $TEAM $PERSONAL" ] && break
     sleep 0.05
@@ -241,9 +241,9 @@ step_week_numbers_ignored() {
   local log="$OUT_DIR/weeks.log" seen before after
   : >"$log"
   write_settings true
-  sill reload >>"$log" 2>&1 || return 1
+  bardo-shell reload >>"$log" 2>&1 || return 1
   sleep 1
-  sill debug capture "$CENTER" "$OUT_DIR/weeks.png" >>"$log" 2>&1 || return 1
+  bardo-shell debug capture "$CENTER" "$OUT_DIR/weeks.png" >>"$log" 2>&1 || return 1
   shot "$OUT_DIR/weeks-output.png" || true
   seen=$(probe "$OUT_DIR/weeks.png")
   before=$(cut -d' ' -f1 <<<"$DISC_BEFORE")
@@ -262,7 +262,7 @@ step_idle() {
   sleep 5
   f1=$(frames_of "$CENTER")
   echo "5 s idle open: $(( f1 - f0 )) frames on $CENTER" | tee -a "$log" >&2
-  sill notifications close >>"$log" 2>&1
+  bardo-shell notifications close >>"$log" 2>&1
   [ "$(( f1 - f0 ))" = 0 ]
 }
 

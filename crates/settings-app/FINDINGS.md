@@ -61,7 +61,7 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
   id per section. quire should derive a unique one.
 - `deep_link` in `ds_settings::schema` answers only a unique match; detent's search ranks (label,
   help, then every word) and highlights all hits. The launcher's provider still uses `deep_link`.
-- design/22 section 2 says every file has a top-level `version = 1`. `quire/appearance.toml` has it
+- design/22 section 2 says every file has a top-level `version = 1`. `bardo/appearance.toml` has it
   (`AppearanceFile::version`), `sill/settings.toml` does not. detent carries `version` through a
   save when the file has one and never adds it.
 - `Page` has no Spotlight page (design/22 section 5 lists one); sill's launcher keys are on
@@ -72,7 +72,7 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
 - **Schemas read:** inferd's (`fixtures/schemas/inferd.settings.toml`, 21 rows, hands-off), docket's
   (18 rows: Privacy basic; Review time, Session budgets and Task approvals Advanced), almanac's
   (8 rows: Memory basic, Retention Advanced) and cua's (14 rows: Computer use basic; Run limits,
-  Timing and Window detail Advanced). Each is installed to `$XDG_DATA_DIRS/quire/settings/` and
+  Timing and Window detail Advanced). Each is installed to `$XDG_DATA_DIRS/bardo/settings/` and
   writes its own `$XDG_CONFIG_HOME/<program>/settings.toml`. Not shipped anywhere yet: sill's
   `companion.*` (sill's `dist/` has no companion schema); the Companion section appears when a
   schema names it, and the layout test uses a stand-in. Closes when sill ships its schema.
@@ -121,7 +121,7 @@ Open items, each with its closing condition:
   directory, the system's directories before the user's, never settable under `ai.`, `cua.` and the
   other prefixes); there is no second parser. `discover` also judges the schema's folder
   (`SchemaOrigin`): `System` is a folder owned by root with every folder above it, closed to group
-  and others; anything else (`~/.local/share/quire/settings`) is `PersonWritable`, and such a schema
+  and others; anything else (`~/.local/share/bardo/settings`) is `PersonWritable`, and such a schema
   still describes its program for display and the person's own edits, but every key of it reads
   hands-off. `ds-settings` does not say which folder a schema came from, so detent scans the folders
   one at a time and keeps the first schema per program, as `ds-settings` does. Debug builds only,
@@ -160,10 +160,10 @@ Open items, each with its closing condition:
   - The owner check proves the compositor in full (the unit manager confirms its unit). If the
     compositor runs outside a unit the page reads "could not be confirmed" until the peephole table
     says otherwise; not tried on a real session.
-- **No headless activation.** The bus file starts `detent`, which opens its window; a read or a set
+- **No headless activation.** The bus file starts `bardo-settings`, which opens its window; a read or a set
   that arrives by D-Bus activation therefore shows Settings. A background provider needs
   `ds_blitz::launch_idle` with an `AppHandle` that opens the window only for `settings.page.show`.
-- **No single instance, and the window is not raised.** A second `detent` loses the bus name and runs
+- **No single instance, and the window is not raised.** A second `bardo-settings` loses the bus name and runs
   without the service, so intents reach the first. `settings.page.show` switches the page of the
   running window but does not focus it (quire has no window-raise request in `ds-blitz`).
 - **A key path two programs share names no key.** `Catalogue::entry` answers only an unambiguous
@@ -240,7 +240,7 @@ Open items, each with its closing condition:
   announcing would leave the row as it was until the page is opened again.
 - **First run remembers itself in a state file, not a settings row.** `$XDG_STATE_HOME/detent/first-run`
   (else `~/.local/state`), one line `done`, written when Done has written everything; a settings row
-  would need a schema that owns it, and the first run is not a preference. `detent --first-run` exits
+  would need a schema that owns it, and the first run is not a preference. `bardo-settings --first-run` exits
   at once, before reading anything, when the file exists. A window closed without Done leaves no
   file, so it asks again at the next login. sill launches it once per session
   (`~/rs-wt/accounts/ai1b-sill-first-run.diff`, an ask against `dist/sill-session`); until then it is
@@ -305,7 +305,7 @@ Open items, each with its closing condition:
 - **Not a fixed page of quire.** `ds_settings::schema::Page` has no Software Update variant, and detent
   does not edit quire. The catalogue holds the page as `Page::App("Software Update")`
   (`detent-model/src/updates/page.rs` is the only place that knows): its label is that name, its slug is
-  `software-update` (hyphenated because slipway's notification runs `detent --page software-update`; the
+  `software-update` (hyphenated because slipway's notification runs `bardo-settings --page software-update`; the
   fixed pages use underscores), it is always listed (no file names it, like Accounts) and sits after
   Viewer. Closes when quire adds `Page::SoftwareUpdate`: delete that file's sentinel and the three
   guards on `Page::App` (`page.rs`, `layout.rs`, `icons.rs`).
@@ -318,7 +318,7 @@ Open items, each with its closing condition:
   Settings must not wake a service the session did not start, so the page reads `NameHasOwner` first; a
   service that starts later is followed (name changes and `PropertiesChanged` tick a re-read). The
   page says plainly that updates are not available when it is not there.
-- **Log Out opens the shell's power menu** (`sill power-menu open`, which asks before it logs out). There
+- **Log Out opens the shell's power menu** (`bardo-shell power-menu open`, which asks before it logs out). There
   is no bus method for logging out in detent or sill. When the command is missing or fails, a toast says
   to use the power menu of the desktop. Closes if sill offers a bus call for it.
 - **"Last checked" is not ticked.** It is worked out when the page draws (on each service change and each
@@ -334,7 +334,7 @@ Open items, each with its closing condition:
   three plain endings: the person cancels the password (nothing happened, no message beyond the
   button coming back), the service refuses the caller ("done from Settings" sentence of the service,
   shown as it is), and the work failing (the service's `Problem`). Needs an owner decision to add.
-- **A second `detent --page X` navigates the running window** (`ActivateAction("open-page", [slug])`, then
+- **A second `bardo-settings --page X` navigates the running window** (`ActivateAction("open-page", [slug])`, then
   a raise), so the notification's button lands on the page whether or not Settings was open.
 
 ## Assistant Model (`detent-model/src/assistant_model/`, `detent-ui/src/assistant_model/`)
@@ -345,7 +345,7 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
 - **The page and the step.** The page `assistant-model` ("Assistant Model") is listed after
   Intelligence and draws only the assistant's row of inferd's picker. The step `assistant-model-setup`
   is the same row as a short dialogue (heading, one sentence, Skip, Continue; no sidebar). Both open
-  through `open-page` (`ActivateAction("open-page", [slug])`) and `detent --page <slug>`; the setup
+  through `open-page` (`ActivateAction("open-page", [slug])`) and `bardo-settings --page <slug>`; the setup
   step is not a page of the catalogue, so the intents action `settings.page.show` refuses it as an
   unknown page. Like Software Update the page is `Page::App("Assistant Model")`, with the same
   closing condition (quire adding a variant).
@@ -379,11 +379,11 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
   the pick is made if the model can now be picked, else dropped. The test for "needs an account" is the
   module's reason text compared whole (`NEEDS_ACCOUNT`, inferd's `cloud::picker::NEEDS_ACCOUNT`).
   Closes when porter-infer exports that text or a typed reason, so detent stops copying it.
-- **The welcome window (`detent --first-run`) still has a "Local model" row** that leaves the text slot
+- **The welcome window (`bardo-settings --first-run`) still has a "Local model" row** that leaves the text slot
   to "Automatic" when untouched. It is a second place that picks the assistant's model and its
   default wording claims one. Recommend removing the row (keeping the local-only switch) once sill
   opens the step; left alone here because the welcome window is another flow with its own tests.
-- **The running window does not resize.** `detent --page assistant-model-setup` starts at the step's
+- **The running window does not resize.** `bardo-settings --page assistant-model-setup` starts at the step's
   size (440 by 520); a Settings window already open keeps its size and centres the step in it.
 
 ## Memory settings that wait for confirmation (`detent-model/src/memory_consent/`, `detent-ui/src/memory_consent/`)
@@ -516,7 +516,7 @@ The pages quire v0.3.36 declares (`wifi`, `bluetooth`, `displays`). Each is a pu
   when sill's services serve `Describe/Get/Set/Changed` and a page asks for them.
 - **External edits**: values are read once at start, and again when the intents provider tells the
   window it wrote a key (`Notice::Reload`). A change made by another program or an editor
-  shows after a restart (only `quire/appearance.toml` is watched, by `use_environment`, so the window
+  shows after a restart (only `bardo/appearance.toml` is watched, by `use_environment`, so the window
   follows the theme live). `Store::watch` is typed, so a schema-driven watch needs the same
   untyped API as above.
 - **Unknown and invalid keys** are printed on stderr at load (`detent-ui/src/files.rs`) and left in
@@ -537,7 +537,7 @@ What the audit found and where each landed. A row marked deferred or needing a d
 | DETENT-04 | fixed in this process, open across programs | Saves of settings files take one process-wide turn around read and write (the window thread and the intents provider both save), and the temporary names are unique. A write by another program (sill) of the same file between detent's read and rename is still lost: that needs a cross-process lock in `ds_helpers` (interface ask in the audit report: an `update_atomic` that holds the lock across the read). The keymap's `save_person` still writes the whole text it was given. |
 | DETENT-15 | fixed | `save_places` is one edit of the `assistant` table's keys and one rename; the arm that returned `Ok` without writing is an error. |
 | DETENT-02 | fixed here | The side reader is deleted and an agent mark is honoured only for a schema from a root-owned, closed folder (above). Tests: `detent-model/tests/model/agent_marks.rs` (a user-directory schema lends no marks to an installed one, a stale schema lends none, a never-settable mark drops the schema, a file not named for its program marks nothing, a schema from a folder the person can write is shown with every key hands-off, an open folder is the person's whoever owns it, `/usr` is system and a missing folder is not), `detent-model/src/origin.rs` (the owner and mode table). |
-| DETENT-07 | fixed in detent, quire carries the live calls | Every call detent makes to another process runs under a named quire `Deadline` (`detent-system/src/deadline.rs`: `answered`, plus `within` where the failure keeps its type; `peer::*` are the plain names a sentence uses): connecting to the bus, who owns a name, the Spaces, memory, sync, assistant, account and update calls, the service manager, the add sheets (the prompt deadline), the intents service's startup and a second `detent`'s hand-over (`serve_session`, `hand_over_session` in `detent-intents`), and the whole of `read_accounts` (one action deadline, so an agent's `settings.accounts.list` cannot hold the router for as long as every call could). `LiveClient` carries its own read and action deadlines (quire); a `LiveError::Timeout` is the words the module gives ("The service is not answering"), feeds `Failed` to the Accounts pane (which clears the row's pending latch) and `Absence::Failed` elsewhere. A refusal shown to the person is the module's own sentence (`live::plain`), not the error's bus name. Tests: `detent-system/src/deadline_tests.rs` (a call that never returns ends at its deadline). Not tested end to end: a module that never answers an action, because the deadlines are quire's fixed values (a test would wait ten real seconds); the Accounts pane's `Failed` clearing `pending` is covered by the model tests. |
+| DETENT-07 | fixed in detent, quire carries the live calls | Every call detent makes to another process runs under a named quire `Deadline` (`detent-system/src/deadline.rs`: `answered`, plus `within` where the failure keeps its type; `peer::*` are the plain names a sentence uses): connecting to the bus, who owns a name, the Spaces, memory, sync, assistant, account and update calls, the service manager, the add sheets (the prompt deadline), the intents service's startup and a second `bardo-settings`'s hand-over (`serve_session`, `hand_over_session` in `detent-intents`), and the whole of `read_accounts` (one action deadline, so an agent's `settings.accounts.list` cannot hold the router for as long as every call could). `LiveClient` carries its own read and action deadlines (quire); a `LiveError::Timeout` is the words the module gives ("The service is not answering"), feeds `Failed` to the Accounts pane (which clears the row's pending latch) and `Absence::Failed` elsewhere. A refusal shown to the person is the module's own sentence (`live::plain`), not the error's bus name. Tests: `detent-system/src/deadline_tests.rs` (a call that never returns ends at its deadline). Not tested end to end: a module that never answers an action, because the deadlines are quire's fixed values (a test would wait ten real seconds); the Accounts pane's `Failed` clearing `pending` is covered by the model tests. |
 | DETENT-09 | fixed | `detent-system/src/ticks.rs`: `Ticks` is a one-slot wake-up (ticks that come while one waits are one, so a service flooding signals cannot grow a queue or make the page re-read faster than it can) and owns its relay tasks (dropping it aborts them, so leaving the page ends the connection's tasks at once instead of at the service's next signal). Used by the Software Update page and by the computers list. `UpdateTicks` is now `Ticks`; the test service makes one with `UpdateTicks::channel()`. Tests: `detent-system/src/ticks_tests.rs`. |
 | DETENT-06 | fixed here; the name's owner is DETENT-05 | The page reads the service's eight properties in one `GetAll` (`updates/wire.rs`, tested) and `UpdateStatus::of_wire` bounds what the service may make it hold (`detent-model/src/updates/limits.rs`: a version is at most 64 version characters or the service is taken as making no sense; notes at most 200 lines and 16 KiB; a problem one line of at most 300 characters). Tests: `detent-model/tests/model/update_limits.rs`. Install carries the version (slipway 5c33809, `Install(version: s)`): `UpdatesEffect::Install` holds an `UpdateVersion`, a newtype made only by `UpdateVersion::parse` (the same bounds) and taken from the offer on the page, so with no offer there is no install effect to carry out (`updates_step`, tested for every standing); the proxy's `install(&self, version: &str)` sends it. `VersionChanged` (or a failed state whose `ProblemKind` is `version-changed`: slipway publishes a machine-readable `ProblemKind` beside `Problem`, read in the same `GetAll` into `UpdateWire.problem_kind` and parsed once into the typed `ProblemKind` by `updates/limits.rs` `kind_of`; a word longer than 64 bytes, an unknown word and a missing one, from an older slipway, are all `ProblemKind::Other`, a plain failure shown in slipway's own sentence; the kind is never shown; the copy of slipway's sentence is gone) makes the page read the service again and show the new version with the note "A newer version arrived. Check what's new before installing." (`UpdatesNotice::NewerVersion`; gone on the next press or when no offer waits); `NotAVersion` and `Refused` are told in their own sentence in a toast. Tests: `detent-model/tests/model/update_limits.rs` (`a_failure_kind_the_page_does_not_know_is_a_plain_failure`), `detent-system/src/updates/wire.rs` (a missing or odd kind reads as none), `detent-model/src/updates/tests/` (`an_install_names_the_version…`, `an_offer_that_changed…`, `a_failure_that_says_the_offer_changed…`), `detent-ui/tests/ui/software_update.rs`. The owner of the name is checked as DETENT-05 describes. |
 | DETENT-05 | fixed here (quire `OwnerCheck`, peephole) | Before anything is read from a service or sent to it, the owner of its bus name must hold the service's role in the desktop's caller table, proved in full (the unit manager confirms the unit): `org.quire.Accounts1` holds `accounts`, `Sync1` `sync`, `Inference1` `inference`, `Updates1` `updater`, `Memory1` `memory`. `detent-callers::RoleCheck` is the `OwnerCheck` over peephole's `BusPeers`; every `LiveClient` takes it (quire asks it before the first read or `Set` and again whenever the name changes hands, and then speaks to the owner by its unique name, so a typed client secret cannot reach a program that merely took the name). The direct callers ask `live::confirmed` (sync holds: the signal is not joined, the discard is not confirmed; the Software Update page; memory's controls; inferd's computers and AI-key sheet) or `live::not_squatted` (the Spaces registry, memory's Space removal and the add sheet, which still ask by name when nobody owns it, as before, so the bus may start the real service). A refused owner is `Absence::Unavailable` ("could not be confirmed", per pane) and a `LiveError::NotTheService` becomes the same. Sync1's `NeedsConfirmation` is parsed with a name bound (`DATASET_NAME_MAX = 256`, a longer name drops the signal) and the banners with a row bound (`HOLDS_MAX = 64`, in `hold_step`); the rest of the service's strings were bounded by DETENT-06 and quire's reply caps. Tests: `detent-ui/tests/ui/accounts/trust.rs` (squatter not read, sent no call and no secret; wrong role; right role read), `holds.rs` (squatter's hold not shown, nothing confirmed to it), `detent-model/src/accounts/hold_tests.rs` (the bounds), `detent-callers` (names to roles). Residual: the page's update subscription is made before the check, though everything it hears is read again through the check. Whether slipway's session-bus proxy lets a sandboxed app own those names is still the owner's call. If `/etc/quire/desktop-callers.toml` is missing or not root-only, no program is trusted and every one of the five services shows as unavailable (a line in the log says why). |
@@ -547,7 +547,7 @@ What the audit found and where each landed. A row marked deferred or needing a d
 | DETENT-11 | fixed here, to move to quire | `crates/detent/src/dirs.rs` ignores an empty or relative `XDG_*_HOME` and `HOME`, as quire does for its own directories. It repeats quire's rule because `ds_settings::xdg` is crate-private; the ask to quire is to make `base_dir` public, after which `dirs.rs` calls it. |
 | DETENT-13 | fixed here | A sign-in secret is write-only. The model marks one by its path (`accounts.clients.<issuer>.secret`, the same rule that makes it wait for its key; nothing in the schema marks it). It is still read to learn whether there is one, but `standing_only` (applied when a module's rows are heard) replaces its text with a mark at once and `SignInClient::read` keeps only `SecretStanding::{Set, NotSet}`, so neither the pane nor the rows it keeps hold the text. The field is a secure one that starts empty with "Set" or "Not set" where the text would be; what is typed replaces the secret (trimmed; an empty field writes nothing, because a field the person only passed through must not wipe the secret) and the field is made anew. A set secret has a Clear button beside it (`AccountsInput::SecretCleared`, `SignInClient::cleared`): it writes the empty text, which accountd takes as removing the secret (`client_rows.rs`, `RowEdit::Secret("")`), and the row reads Not set until the list is read again; nothing is sent for a secret there is none of, for a key, or while another change is in flight. The typed text travels as `Secret` (a newtype with a hand-written `Debug` that prints `Secret(<hidden>)`) in `ClientText::Secret` and `AccountsEffect::SetSecret`, so a derived `Debug` on an input or an effect cannot print it. Tests: `detent-model/src/accounts/flow_tests.rs` (a stored secret keeps only its standing, typing replaces it, an empty field writes nothing, Clear writes the empty text and only for a set secret, `Debug` of the secret, the input and the effect never prints it), `detent-ui/tests/ui/accounts/secrets.rs` (the field says Set, the text is nowhere on screen, typing sends the new one; Clear sends the empty text, then the field says Not set and the button is gone). Residual: the text exists in memory while it is typed and sent, and in the module's reply before `standing_only`. |
 | DETENT-14 | partly fixed | `Range` works the span of a slider in floating point (`i64::MIN..i64::MAX` no longer overflows) and the key-step uses `saturating_sub`. Not done: a pattern's regular expression is still compiled per cell per render (its size is bounded by the `regex` crate's limit). |
-| DETENT-16 | fixed here | `Activate` and `ActivateAction` are admitted only from roles `shell`, `settings` (a second `detent`) and `agent_tier`, proved in full; any other caller, an unidentifiable one and a message with no sender get `AccessDenied` and nothing reaches the window (`detent-intents/src/callers.rs`; a line in the log for the 1st, 2nd, 4th, 8th... refusal). The window's inbox is `NOTICE_INBOX = 32` (was 64); more are dropped and the first drop after the window caught up is said once (`detent-model/src/notice.rs`). A second `detent` asks peephole whether the owner of `org.quire.Settings` holds `settings` before sending its activation token or page, and calls that owner by its unique name; otherwise `HandOverFault::NotSettings` and nothing is sent (`hand_over`, `hand_over_session`). Consequence worth knowing: a `detent` started by hand (a terminal, an app scope) has no Settings role, so it neither passes as the running Settings nor is admitted when it asks a running one to show itself; the launcher (the shell) is. Tests: `detent-intents/tests/intents/application.rs` (the table over every role of the desktop, a stranger, a hand-over to an owner that is not Settings), `detent-model/src/notice_tests.rs`. The claim that Skip/Continue of the model step quits the whole Settings was not read and is not addressed here. |
+| DETENT-16 | fixed here | `Activate` and `ActivateAction` are admitted only from roles `shell`, `settings` (a second `bardo-settings`) and `agent_tier`, proved in full; any other caller, an unidentifiable one and a message with no sender get `AccessDenied` and nothing reaches the window (`detent-intents/src/callers.rs`; a line in the log for the 1st, 2nd, 4th, 8th... refusal). The window's inbox is `NOTICE_INBOX = 32` (was 64); more are dropped and the first drop after the window caught up is said once (`detent-model/src/notice.rs`). A second `bardo-settings` asks peephole whether the owner of `org.quire.Settings` holds `settings` before sending its activation token or page, and calls that owner by its unique name; otherwise `HandOverFault::NotSettings` and nothing is sent (`hand_over`, `hand_over_session`). Consequence worth knowing: a `bardo-settings` started by hand (a terminal, an app scope) has no Settings role, so it neither passes as the running Settings nor is admitted when it asks a running one to show itself; the launcher (the shell) is. Tests: `detent-intents/tests/intents/application.rs` (the table over every role of the desktop, a stranger, a hand-over to an owner that is not Settings), `detent-model/src/notice_tests.rs`. The claim that Skip/Continue of the model step quits the whole Settings was not read and is not addressed here. |
 | DETENT-17 | fixed | `deny.toml` has advisories, bans and sources (git hosts limited to the ones the lock holds); `scripts/install.sh` escapes `PREFIX` for `sed` (test in `crates/detent/tests/detent/install.rs`). The lock still needs the sibling checkouts through `[patch]`, as every repo here does. |
 
 ### Quire's schema rule against porter's inferd schema (found 2026-10-16)
@@ -556,7 +556,7 @@ What the audit found and where each landed. A row marked deferred or needing a d
 program's own directory. porter's `dist/inferd.settings.toml` names `file = "quire/inferd.toml"`
 for `app = "inferd"`, so with the new quire the Intelligence page's rows (and `fixtures/schemas/inferd.settings.toml`,
 which every `Sandbox` test seeds) are skipped with a line on stderr. Not worked around here: either
-porter moves inferd's file to `inferd/inferd.toml` (quire's own test uses that name) and this repo's
+porter moves inferd's file to `inference/inferd.toml` (quire's own test uses that name) and this repo's
 fixture and its `quire/inferd.toml` test paths follow, or quire exempts it. The gate will show it
 as the Intelligence tests failing and the `every_key_of_every_schema...` file list losing
 `quire/inferd.toml`.
@@ -565,7 +565,7 @@ as the Intelligence tests failing and the `every_key_of_every_schema...` file li
 
 The jail has no `/etc/quire/desktop-callers.toml` and no units, so Settings printed "no program is
 trusted" and refused accountd, inferd and syncd as strangers. Fixed with peephole v0.1.4's developer
-rows: feature `dev-callers` on the `detent` binary, `detent --dev-callers FILE`, `Proof::Dev` accepted
+rows: feature `dev-callers` on the `bardo-settings` binary, `bardo-settings --dev-callers FILE`, `Proof::Dev` accepted
 through `detent_callers::allowing` in that build only (ARCHITECTURE "Stand-in services in a test
 jail"). A release build is unchanged. Limits: not a security boundary (the person's own file names who
 is a service). Not verified here (no compile, no run): the build with the feature, the jail scripts
@@ -581,8 +581,8 @@ is given before it, so a jail with no manager does not stop it (read in peephole
 - The Memory section's confinement line against the real memory service: on a normal kernel it
   reads "Memory keeps itself to its own folders"; with memory stopped there is no line. The tests
   use a stand-in service.
-- `detent` on a real session: opens, follows the desktop theme, a toggle on the Dock page changes
-  `~/.config/sill/settings.toml` and sill's dock reacts. Only the harness has run the window: a
+- `bardo-settings` on a real session: opens, follows the desktop theme, a toggle on the Dock page changes
+  `~/.config/bardo/shell/settings.toml` and sill's dock reacts. Only the harness has run the window: a
   launch of the binary on scratch directories reached window creation and stopped with "no
   adapter found" (the build sandbox had no Vulkan device), so the real window is unchecked.
 - The Software Update page against the real slipway service: Check for Updates, Update Now through the
@@ -592,7 +592,7 @@ is given before it, so a jail with no manager does not stop it (read in peephole
   release landed shows the new version and the note (the error name `org.quire.Updates1.Error.VersionChanged`
   read from `zbus::Error::MethodError`), and a refusal while busy is told in the service's sentence. The
   tests use a stand-in service that answers with the same outcomes, not the bus's error replies.
-- The assistant's first-run step on a real session: `detent --page assistant-model-setup` closes the
+- The assistant's first-run step on a real session: `bardo-settings --page assistant-model-setup` closes the
   window on Skip and on Continue, and the same slug sent to a running Settings through `open-page`
   shows the step. The tests have no window to close.
 
@@ -611,7 +611,7 @@ is given before it, so a jail with no manager does not stop it (read in peephole
   from the portal's documentation and not tried against a portal.
 - The restart that follows Continue stops a conversation that is open; the person pressed Continue
   knowing the sheet says "Your assistant restarts to use it."
-- `detent`'s `Cargo.lock` needs the new path crates (stoker's `engine-manifest`, `engine-probe`,
+- `bardo-settings`'s `Cargo.lock` needs the new path crates (stoker's `engine-manifest`, `engine-probe`,
   `engine-spec`, `engine-install` and `model-catalog`, which replaced porter's `porter-engines` and
   `porter-engines-install` in the 2026-10-29 move; steward's `inferd-client` and `steward-dbus`;
   porter's `porter-client-dbus`) and what they bring (`sha2`, `rustix`, the TLS stack of

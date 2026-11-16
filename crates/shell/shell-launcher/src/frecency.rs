@@ -1,5 +1,5 @@
 //! How often and how recently a result was chosen (age buckets 100/70/50/30/10 x count, in
-//! `$XDG_STATE_HOME/sill/frecency.json`). Pure: the file is read and written by `shell-services`,
+//! `$XDG_STATE_HOME/bardo/shell/frecency.json`). Pure: the file is read and written by `shell-services`,
 //! the clock is an argument.
 
 use std::collections::BTreeMap;

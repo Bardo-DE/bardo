@@ -72,7 +72,7 @@ fn hidden() -> Element {
     )
 }
 
-/// Swipe to dismiss on, inside a `BannerStack` at the bottom right as sill hosts it.
+/// Swipe to dismiss on, inside a `BannerStack` at the bottom right as bardo-shell hosts it.
 fn in_stack() -> Element {
     let card = rsx! {
         ShotThumbnail {

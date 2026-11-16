@@ -19,12 +19,12 @@ PURE="dioxus dioxus-core tokio blitz-dom ds ui-blitz ui-harness ui-lint"
 RULES=(
   "settings-app-model: $PURE"
   "settings-app-files: $PURE"
-  "settings-app-callers: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-model settings-app-files settings-app-intents settings-app-ui detent"
-  "settings-app-testkit: $PURE zbus ui-settings settings-app-model settings-app-files settings-app-ui detent"
-  "settings-app-system: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-client settings-app-ui settings-app-intents detent"
-  "settings-app-client: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui settings-app-intents detent"
-  "settings-app-ui: detent settings-app-intents"
-  "settings-app-intents: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui detent"
+  "settings-app-callers: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-model settings-app-files settings-app-intents settings-app-ui bardo-settings"
+  "settings-app-testkit: $PURE zbus ui-settings settings-app-model settings-app-files settings-app-ui bardo-settings"
+  "settings-app-system: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-client settings-app-ui settings-app-intents bardo-settings"
+  "settings-app-client: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui settings-app-intents bardo-settings"
+  "settings-app-ui: bardo-settings settings-app-intents"
+  "settings-app-intents: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui bardo-settings"
 )
 fail=0
 
@@ -88,7 +88,7 @@ EDGES=(
   "settings-app-intents: settings-app-callers settings-app-client settings-app-files settings-app-model action-core action-dbus action-manifest action-provider action-vocab action-wire ui-peer ui-settings account-core account-ids prov"
   "settings-app-system: memory-core anyview-core anyview-fs anyview-image anyview-platform desktop-protocols desktop-client settings-app-callers settings-app-files settings-app-model ui-peer ui-settings engine-install engine-manifest engine-probe engine-spec inference-client model-catalog account-callers account-client account-client-dbus account-core account-dbus inference-tailnet account-tailscale account-wire inference-dbus sync-bus"
   "settings-app-ui: settings-app-client settings-app-model ds ui-blitz ui-helpers ui-lint ui-settings"
-  "detent: settings-app-callers settings-app-client settings-app-files settings-app-intents settings-app-model settings-app-ui ui-blitz ui-settings"
+  "bardo-settings: settings-app-callers settings-app-client settings-app-files settings-app-intents settings-app-model settings-app-ui ui-blitz ui-settings"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -105,7 +105,7 @@ for edge in "${EDGES[@]}"; do
 done
 
 # Every workspace member has a row above, so a new crate cannot slip in unchecked.
-for member in $(cargo metadata --no-deps --format-version 1 2>/dev/null | grep -o '"name":"detent[a-z-]*"' | cut -d'"' -f4 | sort -u); do
+for member in $(cargo metadata --no-deps --format-version 1 2>/dev/null | grep -o '"name":"bardo-settings[a-z-]*"' | cut -d'"' -f4 | sort -u); do
   printf '%s\n' "${EDGES[@]}" | grep -q "^$member:" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 

@@ -1,4 +1,4 @@
-//! The first-run window (`detent --first-run`) as pure state: keep AI on this computer, Done.
+//! The first-run window (`bardo-settings --first-run`) as pure state: keep AI on this computer, Done.
 //! The assistant's model is the picker's own row, drawn in the window and written as it is chosen.
 
 mod model;

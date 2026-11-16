@@ -23,7 +23,9 @@ pub(super) async fn keep(
     let written = match inference.set_helper_pool(Slot::Text, helper, &models).await {
         Ok(()) => true,
         Err(why) => {
-            eprintln!("sill: companion: helpers: the models Automatic may use for {helper}: {why}");
+            eprintln!(
+                "bardo-shell: companion: helpers: the models Automatic may use for {helper}: {why}"
+            );
             false
         }
     };

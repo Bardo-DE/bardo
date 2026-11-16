@@ -76,7 +76,7 @@ fn the_notes_of_every_style_file_are_counted_and_listed_with_their_file_and_line
         "/* mine */\nbody { transition: all 1s; }\n",
     );
     sandbox.write(
-        "sill/style.css",
+        "bardo-shell/style.css",
         "\nwindow { box-shadow: 0 0 200px black; }\n",
     );
     let mut harness = sandbox.harness(appearance());
@@ -94,7 +94,7 @@ fn the_notes_of_every_style_file_are_counted_and_listed_with_their_file_and_line
         "Animates everything",
         "bardo/style.css, line 2",
         "Large shadows may slow the desktop",
-        "sill/style.css, line 2",
+        "bardo-shell/style.css, line 2",
     ] {
         assert!(html.contains(want), "{want} is in the sheet:\n{html}");
     }
@@ -103,7 +103,7 @@ fn the_notes_of_every_style_file_are_counted_and_listed_with_their_file_and_line
 #[test]
 fn a_class_an_installed_app_publishes_is_not_an_internal_selector() {
     let style = ".sill-bar { color: red; }\n";
-    let published = "app = \"sill\"\nclasses = [\"sill-bar\"]\n";
+    let published = "app = \"bardo-shell\"\nclasses = [\"sill-bar\"]\n";
 
     let without = Sandbox::new("style-notes-unpublished");
     without.write("bardo/style.css", style);
@@ -119,7 +119,7 @@ fn a_class_an_installed_app_publishes_is_not_an_internal_selector() {
 
     let with = Sandbox::new("style-notes-published");
     with.write("bardo/style.css", style);
-    with.write_data("quire/selectors/sill.toml", published);
+    with.write_data("bardo/selectors/sill.toml", published);
     let mut harness = with.harness(appearance());
     for _ in 0..40 {
         harness.advance(Duration::from_millis(50));

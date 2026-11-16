@@ -35,7 +35,7 @@ struct Probe {
 impl Default for Probe {
     fn default() -> Self {
         Probe {
-            name: "quire".to_owned(),
+            name: "bardo".to_owned(),
             count: 5,
             inner: Inner::default(),
             by_name: BTreeMap::new(),

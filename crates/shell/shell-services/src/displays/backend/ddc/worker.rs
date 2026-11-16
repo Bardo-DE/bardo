@@ -1,6 +1,6 @@
 //! The one thread that talks DDC. Every bus transaction happens here, one at a time; the rest
 //! of the shell sends [`DdcJob`]s and reads the published [`DdcDisplay`]s, which double as the
-//! read cache (a value is read at probe time and then follows sill's own writes, so a slider
+//! read cache (a value is read at probe time and then follows bardo-shell's own writes, so a slider
 //! never waits on the bus).
 
 use std::collections::BTreeSet;
@@ -26,7 +26,7 @@ pub enum DdcJob {
     /// Set a feature: cached at once, written after the debounce.
     Write(Write),
     /// Read `feature` again on every display (a change made on the monitor or by another
-    /// program), except where sill's own write of it is still waiting.
+    /// program), except where bardo-shell's own write of it is still waiting.
     Reread(Feature),
 }
 
@@ -153,7 +153,7 @@ impl Worker {
             .collect();
         let found = self.displays.len();
         if self.found != Some(found) {
-            eprintln!("sill: ddc: {found} display(s) answer DDC/CI");
+            eprintln!("bardo-shell: ddc: {found} display(s) answer DDC/CI");
             self.found = Some(found);
         }
         self.publish();
@@ -181,7 +181,7 @@ impl Worker {
         result
             .map_err(|error| {
                 if self.warned.insert((id, feature, op)) {
-                    eprintln!("sill: ddc bus {} {feature:?} {op:?}: {error}", id.0);
+                    eprintln!("bardo-shell: ddc bus {} {feature:?} {op:?}: {error}", id.0);
                 }
             })
             .ok()

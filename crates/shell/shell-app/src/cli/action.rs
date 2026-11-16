@@ -1,4 +1,4 @@
-//! `sill do ACTION`: any action of the shell by its id, as a menu or a chord asks for it. The
+//! `bardo-shell do ACTION`: any action of the shell by its id, as a menu or a chord asks for it. The
 //! other verbs are the same asks under friendlier words; this one needs no verb of its own when
 //! an action is added. What the action is done to is named by at most one of `--app`,
 //! `--windows` and `--settings`; the shell refuses a subject the action cannot use.
@@ -11,7 +11,7 @@ use shell_model::actions::{Ask, Subject};
 
 use super::word::word;
 
-/// `sill do ...`.
+/// `bardo-shell do ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Args)]
 pub struct DoArgs {
     /// The action's id, for example `lock`, `next-space` or `quit-app`.
@@ -50,7 +50,7 @@ impl DoSubject {
     }
 }
 
-/// The request `sill do ACTION ...` sends.
+/// The request `bardo-shell do ACTION ...` sends.
 pub fn do_action_request(args: &DoArgs) -> Request {
     Request::Do(Ask::on(args.action, args.on.subject()))
 }

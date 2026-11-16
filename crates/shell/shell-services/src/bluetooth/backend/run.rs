@@ -65,7 +65,7 @@ impl Tracked {
 }
 
 /// Runs until `commands` closes. Without a bus, BlueZ or an adapter, `tx` stays at its default.
-/// BlueZ may start after sill or restart under it: each owner of `org.bluez` gets a session that
+/// BlueZ may start after bardo-shell or restart under it: each owner of `org.bluez` gets a session that
 /// opens the object manager's streams and seeds, and an owner leaving publishes `Gone` (stopping
 /// every watcher).
 pub(crate) async fn run(

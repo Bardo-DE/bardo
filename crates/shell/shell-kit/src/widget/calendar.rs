@@ -41,7 +41,7 @@ pub struct MonthFace {
     #[serde(default)]
     pub today: Option<TodayLine>,
     /// Today's events still to come, in order: the Medium card shows the first, the Large card
-    /// as many as fit. The Calendar app fills them; sill's Up Next can feed them now.
+    /// as many as fit. The Calendar app fills them; bardo-shell's Up Next can feed them now.
     #[serde(default)]
     pub events: Vec<EventLine>,
     /// The quiet line when there are none, in the provider's words ("No events today").

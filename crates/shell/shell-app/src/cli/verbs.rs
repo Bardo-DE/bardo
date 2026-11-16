@@ -45,7 +45,7 @@ pub fn action_of(verb: ShellVerb) -> ActionId {
     }
 }
 
-/// The action `sill switcher WORD` is.
+/// The action `bardo-shell switcher WORD` is.
 pub(super) fn switcher_action(word: SwitcherRequest) -> ActionId {
     match word {
         SwitcherRequest::Next => ActionId::SwitcherNext,
@@ -55,7 +55,7 @@ pub(super) fn switcher_action(word: SwitcherRequest) -> ActionId {
     }
 }
 
-/// The action `sill workspace WORD` is.
+/// The action `bardo-shell workspace WORD` is.
 pub(super) fn workspace_action(word: WorkspaceRequest) -> ActionId {
     match word {
         WorkspaceRequest::Prev => ActionId::PreviousSpace,
@@ -78,7 +78,7 @@ pub fn request_of_words<S: AsRef<str>>(words: &[S]) -> Option<Request> {
     if let Some(verb) = ShellVerb::parse(&words) {
         return Some(do_request(action_of(verb)));
     }
-    Cli::try_parse_from(once("sill").chain(words))
+    Cli::try_parse_from(once("bardo-shell").chain(words))
         .ok()
         .and_then(|cli| cli.command)
         .and_then(|command| request(&command))

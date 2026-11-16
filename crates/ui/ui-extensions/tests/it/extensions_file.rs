@@ -14,7 +14,7 @@ fn id(text: &str) -> ExtensionId {
 fn the_schema_is_one_rows_key_on_the_extensions_page_that_an_agent_cannot_set() {
     let schema = extensions_schema();
 
-    assert_eq!(schema.app.0, "quire");
+    assert_eq!(schema.app.0, "bardo");
     assert_eq!(schema.file.0, "bardo/extensions.toml");
     assert_eq!(schema.key.len(), 1);
     let key = &schema.key[0];

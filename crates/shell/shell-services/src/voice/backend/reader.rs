@@ -35,7 +35,9 @@ pub(super) async fn read(
                     buffer.drain(..used);
                 }
                 Unframed::TooLong { len } => {
-                    eprintln!("sill: voice: a frame of {len} bytes is over the cap; closing");
+                    eprintln!(
+                        "bardo-shell: voice: a frame of {len} bytes is over the cap; closing"
+                    );
                     let _ = inbound.send(Inbound::TooLong(serial));
                     return;
                 }

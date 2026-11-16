@@ -1,4 +1,4 @@
-//! Settings pages and keys: quire and sill's own schemas (design/22 §9.3 "deep links").
+//! Settings pages and keys: quire and bardo-shell's own schemas (design/22 §9.3 "deep links").
 
 pub mod index;
 pub mod schema_files;
@@ -46,7 +46,7 @@ impl Default for SettingsProvider {
 }
 
 impl SettingsProvider {
-    /// Indexes the installed quire and sill schemas: `quire/settings` in each of `data_dirs` (the
+    /// Indexes the installed quire and bardo-shell schemas: `bardo/settings` in each of `data_dirs` (the
     /// system data directories) and then in `data_home`, as the environment was read once at the
     /// edge ([`shell_services::env::Dirs`]).
     pub fn new(data_home: &Path, data_dirs: &[PathBuf]) -> SettingsProvider {
@@ -55,7 +55,7 @@ impl SettingsProvider {
                 .iter()
                 .map(PathBuf::as_path)
                 .chain(std::iter::once(data_home))
-                .map(|base| base.join("quire").join("settings"))
+                .map(|base| base.join("bardo").join("settings"))
                 .collect(),
         )
     }
@@ -87,7 +87,7 @@ impl SettingsProvider {
                         Ok(schema) => Some(schema),
                         Err(error) => {
                             eprintln!(
-                                "sill settings provider: skipping stale schema {}: {error}",
+                                "bardo-shell settings provider: skipping stale schema {}: {error}",
                                 path.display()
                             );
                             None

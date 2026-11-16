@@ -1,4 +1,4 @@
-//! sill's polkit agent against a stand-in Authority on a private bus and the stand-in helper
+//! bardo-shell's polkit agent against a stand-in Authority on a private bus and the stand-in helper
 //! (`src/bin/polkit_helper.rs`), never polkitd, the system bus or PAM. The bus test needs a
 //! `dbus-daemon` and skips, saying so, without one.
 

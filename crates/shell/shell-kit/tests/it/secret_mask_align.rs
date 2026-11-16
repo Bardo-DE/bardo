@@ -27,7 +27,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-/// What is typed: eight characters, wider hidden than their dots, as in sill's capture.
+/// What is typed: eight characters, wider hidden than their dots, as in bardo-shell's capture.
 const TYPED: &str = "hunter2x";
 
 #[allow(non_snake_case)]
@@ -37,7 +37,7 @@ fn Polkit() -> Element {
             // The root is as tall as its content; the sheet is drawn over this.
             div { style: "height:400px" }
             PolkitPrompt {
-                action: "Authentication is required to run the sill test program",
+                action: "Authentication is required to run the bardo-shell test program",
                 user: LockUser::new(
                     "pohsuanlai",
                     AvatarFace {

@@ -651,7 +651,7 @@ observed) is kept.
 
 | Behaviour | Rule | Status | Source |
 | --- | --- | --- | --- |
-| Open / toggle | `sill launcher toggle` (compositor shortcut); `open --query` | settled (plan) | plan sill |
+| Open / toggle | `bardo-shell launcher toggle` (compositor shortcut); `open --query` | settled (plan) | plan sill |
 | Close | Escape, focus lost, click on the catcher (the transparent full-screen surface), or toggle | settled (plan) | plan sill |
 | Navigate | Up / Down move the selection; Enter runs it | settled (plan) | plan sill |
 | Providers | Tab cycles providers (apps, calculator, settings, windows, system) | settled (plan) | plan sill |

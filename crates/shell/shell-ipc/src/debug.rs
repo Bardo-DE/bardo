@@ -147,7 +147,7 @@ pub struct Point {
     pub y: i32,
 }
 
-/// The launcher as shown on the output it is open on (`sill debug launcher-rows`): each section
+/// The launcher as shown on the output it is open on (`bardo-shell debug launcher-rows`): each section
 /// with its row titles, the selection, and the preview pane. Answered only by a daemon built
 /// with `debug`; clipboard rows' titles are replaced by `"<clipboard>"`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -1,6 +1,6 @@
 //! The accounts sheet's root: while accountd has a sheet open and the sheets' output is this one,
 //! the surface maps itself and a window stands centred in it: quire's titlebar carrying the step's
-//! title, over the step's own column. The consent question is quire's `ConsentBody` in the same window. Every part is quire's; what sill adds is the window's place
+//! title, over the step's own column. The consent question is quire's `ConsentBody` in the same window. Every part is quire's; what bardo-shell adds is the window's place
 //! and look (`style.css`, tokens only) and where each event goes (`io.rs`).
 
 use dioxus::prelude::*;

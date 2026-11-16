@@ -1,4 +1,4 @@
-//! sill's seat at intentd: the confirmation sheet it serves (`org.bardo.Confirm1`), the standing
+//! bardo-shell's seat at intentd: the confirmation sheet it serves (`org.bardo.Confirm1`), the standing
 //! terminal grants and the breaker it holds the `control` role over (`org.bardo.Intents1.Control`),
 //! and the shell's own actions it provides as `org.bardo.Shell` (`IntentProvider1`). One
 //! connection owns all three, because intentd names a caller's role from the well-known names its

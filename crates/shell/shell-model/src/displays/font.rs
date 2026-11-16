@@ -1,4 +1,4 @@
-//! Font rendering for apps that are not sill's, from the displays' density: greyscale
+//! Font rendering for apps that are not bardo-shell's, from the displays' density: greyscale
 //! antialiasing always (subpixel colour fringes on a panel whose subpixel order nobody knows
 //! are worse than none), and slight hinting only where pixels are still big enough to snap to.
 //! Pure: the density in, the fontconfig snippet out, plus the check for a person's own
@@ -43,8 +43,8 @@ pub fn font_rendering_for(max: Ppi) -> FontRendering {
 /// defaults and before a person's own `9x-` files.
 pub const FILE_NAME: &str = "50-sill-rendering.conf";
 
-/// The comment every file sill writes starts with: what marks a file as sill's to remove.
-pub const HEADER: &str = "<!-- Written by sill (display.font_rendering = auto).";
+/// The comment every file bardo-shell writes starts with: what marks a file as bardo-shell's to remove.
+pub const HEADER: &str = "<!-- Written by bardo-shell (display.font_rendering = auto).";
 
 /// The fontconfig snippet for `rendering`.
 pub fn snippet(rendering: FontRendering) -> String {
@@ -56,9 +56,9 @@ pub fn snippet(rendering: FontRendering) -> String {
         r#"<?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
 {HEADER}
-     Set display.font_rendering = "off" in ~/.config/shell/settings.toml and sill removes this
+     Set display.font_rendering = "off" in ~/.config/shell/settings.toml and bardo-shell removes this
      file; a file of your own in conf.d that sets antialias, hinting, hintstyle or rgba makes
-     sill stand aside. -->
+     bardo-shell stand aside. -->
 <fontconfig>
   <match target="font">
     <edit name="antialias" mode="assign"><bool>true</bool></edit>
@@ -72,13 +72,13 @@ pub fn snippet(rendering: FontRendering) -> String {
     )
 }
 
-/// Whether `text` is a file sill wrote.
+/// Whether `text` is a file bardo-shell wrote.
 pub fn is_ours(text: &str) -> bool {
     text.lines()
         .any(|line| line.trim_start().starts_with(HEADER))
 }
 
-/// The properties whose setting by someone else means sill stands aside.
+/// The properties whose setting by someone else means bardo-shell stands aside.
 const CONTESTED: &[&str] = &["antialias", "hinting", "hintstyle", "rgba"];
 
 /// Whether a person's fontconfig file sets one of the rendering properties: an `<edit>` whose

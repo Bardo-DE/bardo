@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Launcher open latency of ONE daemon binary, on the harness's private headless KWin (never the
-# person's session): request (`sill launcher open`) to the first frame the compositor showed of the
+# person's session): request (`bardo-shell launcher open`) to the first frame the compositor showed of the
 # panel, the daemon's own `launcher.open_to_frame_ms` line. Run it once per build and compare.
 #
-#   dev/measure-launcher-open.sh --bin target/release/sill --label media [--samples 30] [--cold 8]
+#   dev/measure-launcher-open.sh --bin target/release/bardo-shell --label media [--samples 30] [--cold 8]
 #
-# The binary must be built with `--features debug` (that is what gives `sill run` its `--fake-ddc`,
+# The binary must be built with `--features debug` (that is what gives `bardo-shell run` its `--fake-ddc`,
 # so a release build never opens the real /dev/i2c-*), e.g.
 #   cargo build --release -p shell-app --features debug                          # with media
 #   cargo build --release -p shell-app --features debug --no-default-features    # without it
@@ -54,7 +54,7 @@ frames() { grep -o 'launcher\.open_to_frame_ms=[0-9.]*' "$OUT_DIR/daemon.log" | 
 open_once() {
   local before after
   before=$(frames | wc -l)
-  sill launcher open --query "$1" >>"$OUT_DIR/keys.log" 2>&1
+  bardo-shell launcher open --query "$1" >>"$OUT_DIR/keys.log" 2>&1
   for _ in $(seq 200); do
     after=$(frames | wc -l)
     [ "$after" -gt "$before" ] && break
@@ -62,7 +62,7 @@ open_once() {
   done
   [ "$after" -gt "$before" ] || { echo "no open_to_frame_ms line for query '$1'" >&2; return 1; }
   sleep 0.3
-  sill launcher close >>"$OUT_DIR/keys.log" 2>&1
+  bardo-shell launcher close >>"$OUT_DIR/keys.log" 2>&1
   sleep 0.3
 }
 
@@ -86,7 +86,7 @@ start_scratch_daemon() {
 start_kwin || { echo "the headless KWin did not start (see $OUT_DIR/kwin.log)" >&2; exit 1; }
 trap cleanup EXIT
 scratch_new
-mkdir -p "$HOME_DIR/Documents" "$CONFIG/sill"
+mkdir -p "$HOME_DIR/Documents" "$CONFIG/bardo/shell"
 cp "$FIXTURES/clip.mkv" "$HOME_DIR/Documents/m9media-clip.mkv"
 cp "$FIXTURES/cover.mp3" "$HOME_DIR/Documents/m9media-cover.mp3"
 cp "$FIXTURES/tone.flac" "$HOME_DIR/Documents/m9media-tone.flac"
@@ -117,9 +117,9 @@ frames | tail -n "$SAMPLES" | summary warm
 echo "daemon RSS closed: $(rss_kb) kB" | tee -a "$OUT_DIR/summary.txt"
 for _ in $(seq "$SAMPLES"); do open_once "m9media" || exit 1; done
 frames | tail -n "$SAMPLES" | summary media
-sill launcher open --query "m9media" >>"$OUT_DIR/keys.log" 2>&1
+bardo-shell launcher open --query "m9media" >>"$OUT_DIR/keys.log" 2>&1
 sleep 1.5
 echo "daemon RSS open with the media rows: $(rss_kb) kB" | tee -a "$OUT_DIR/summary.txt"
-echo "rows: $(sill debug launcher-rows 2>/dev/null | head -c 300)" >>"$OUT_DIR/summary.txt"
-sill launcher close >>"$OUT_DIR/keys.log" 2>&1
+echo "rows: $(bardo-shell debug launcher-rows 2>/dev/null | head -c 300)" >>"$OUT_DIR/summary.txt"
+bardo-shell launcher close >>"$OUT_DIR/keys.log" 2>&1
 echo "raw samples in $OUT_DIR/daemon.log"

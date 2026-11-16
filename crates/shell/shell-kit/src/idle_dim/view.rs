@@ -1,6 +1,6 @@
-//! `IdleDim`: the pre-screen-off dim overlay (design/22-SETTINGS.md section 3.24; sill FINDINGS
-//! "sill idle"). A full-screen scrim, black at `level` (`--scrim-idle`), never real
-//! brightness, that ignores every pointer and key event: sill's idle service owns waking the
+//! `IdleDim`: the pre-screen-off dim overlay (design/22-SETTINGS.md section 3.24; bardo-shell FINDINGS
+//! "bardo-shell idle"). A full-screen scrim, black at `level` (`--scrim-idle`), never real
+//! brightness, that ignores every pointer and key event: bardo-shell's idle service owns waking the
 //! display, this draws the dim and nothing else. It fades in over `--t-idle-dim --e-out`
 //! towards `level` and snaps to nothing the instant `phase` goes back to
 //! [`IdleDimPhase::Awake`] — there is no exit animation to wait for
@@ -18,7 +18,7 @@ use ui_components::base::vocab::Percent;
 use ui_components::root::common::Common;
 
 /// The idle dim overlay. `level` is the dim level (10..90); `phase` is the caller's own
-/// request, driven by sill's idle service.
+/// request, driven by bardo-shell's idle service.
 #[component]
 pub fn IdleDim(level: Percent, phase: IdleDimPhase, #[props(default)] common: Common) -> Element {
     let share = use_idle_dim(level, phase);

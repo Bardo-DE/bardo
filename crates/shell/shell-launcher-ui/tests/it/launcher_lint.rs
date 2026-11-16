@@ -1,5 +1,5 @@
 //! Coherence rules 1 and 2 for the launcher's panel over results (the empty panel and the
-//! catcher are rows of `crates/sill/tests/lint.rs`): the real `Launcher` (open over results, with
+//! catcher are rows of `crates/shell/shell-app/tests/lint.rs`): the real `Launcher` (open over results, with
 //! its preview pane, in companion mode with an answer card) through the markup lint, rendered by
 //! the harness (its palette embedded, measured and focused as live) and by an SSR pass. All of it
 //! runs under `Profile::Details` (design/26-DETAILS.md): `Strict` plus timing only by the

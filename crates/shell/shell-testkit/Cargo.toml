@@ -12,8 +12,8 @@ publish = false
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
-# The stand-ins in `examples/` speak sill's own protocols and reuse its types. Only examples
-# name these: the library reaches no sill crate (scripts/check-boundary.sh).
+# The stand-ins in `examples/` speak bardo-shell's own protocols and reuse its types. Only examples
+# name these: the library reaches no bardo-shell crate (scripts/check-boundary.sh).
 [dev-dependencies]
 account-core = {path = "../../accounts/account-core"}
 account-dbus = {path = "../../accounts/account-dbus"}

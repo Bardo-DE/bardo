@@ -127,7 +127,7 @@ impl Dirs {
     }
 
     /// Every folder a notification's picture may be read from: the icon folders
-    /// ([`Dirs::icon_dirs`]) and `notifications` in sill's cache folder.
+    /// ([`Dirs::icon_dirs`]) and `notifications` in bardo-shell's cache folder.
     pub fn notification_image_dirs(&self) -> Vec<PathBuf> {
         let mut dirs = self.icon_dirs();
         dirs.push(self.sill_cache().join("notifications"));
@@ -140,30 +140,30 @@ impl Dirs {
         self.cache.join("thumbnails")
     }
 
-    /// `sill`'s own folder under the state directory.
+    /// `bardo-shell`'s own folder under the state directory.
     pub fn sill_state(&self) -> PathBuf {
-        self.state.join("sill")
+        self.state.join("bardo").join("shell")
     }
 
     /// The desktop's shared folder under the state directory (`quire`): where quire keeps records
     /// every app shares, such as the styles guard's.
     pub fn quire_state(&self) -> PathBuf {
-        self.state.join("quire")
+        self.state.join("bardo")
     }
 
-    /// `sill`'s own folder under the cache directory.
+    /// `bardo-shell`'s own folder under the cache directory.
     pub fn sill_cache(&self) -> PathBuf {
-        self.cache.join("sill")
+        self.cache.join("bardo").join("shell")
     }
 
-    /// `sill`'s own folder under the config directory (the settings file, the dock pins).
+    /// `bardo-shell`'s own folder under the config directory (the settings file, the dock pins).
     pub fn sill_config(&self) -> PathBuf {
-        self.config.join("sill")
+        self.config.join("bardo").join("shell")
     }
 
-    /// keycap's folder under the config directory: the person's `keycap.toml` is in it.
+    /// key-remap's folder under the config directory: the person's `key-remap.toml` is in it.
     pub fn keycap_config(&self) -> PathBuf {
-        self.config.join("keycap")
+        self.config.join("bardo").join("key-remap")
     }
 }
 
@@ -224,8 +224,11 @@ mod tests {
         }
         assert_eq!(dirs.runtime.as_deref(), Some(Path::new("/scratch/run")));
         assert_eq!(dirs.pictures, None);
-        assert_eq!(dirs.sill_state(), Path::new("/scratch/state/sill"));
-        assert_eq!(dirs.keycap_config(), Path::new("/scratch/config/keycap"));
+        assert_eq!(dirs.sill_state(), Path::new("/scratch/state/bardo/shell"));
+        assert_eq!(
+            dirs.keycap_config(),
+            Path::new("/scratch/config/bardo/key-remap")
+        );
     }
 
     #[test]

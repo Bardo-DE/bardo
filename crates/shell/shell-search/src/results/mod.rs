@@ -1,6 +1,6 @@
 //! The launcher's search: providers run off the UI thread, batches merge into one ranked list,
 //! stale generations are dropped, and every activation is counted in
-//! `$XDG_STATE_HOME/sill/frecency.json`.
+//! `$XDG_STATE_HOME/bardo/shell/frecency.json`.
 //!
 //! Each [`SearchCommand::Query`] begins a generation (`Cancel::begin`, so every older query
 //! reads as cancelled) and runs every provider on its own blocking task; their batches merge
@@ -80,7 +80,7 @@ pub struct ResultsLinks {
 }
 
 /// The launcher's search as a [`Service`]: its providers queried in parallel on the blocking
-/// pool, its history loaded from sill's folder of `env`'s state directory. Tracker (the files
+/// pool, its history loaded from bardo-shell's folder of `env`'s state directory. Tracker (the files
 /// index) is reached on `env`'s session bus; the rates cache and
 /// the files provider's home are `env`'s directories.
 #[derive(Debug)]

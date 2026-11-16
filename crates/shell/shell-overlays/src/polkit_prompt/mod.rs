@@ -1,4 +1,4 @@
-//! sill's own polkit prompt (design/20 §1.10): one
+//! bardo-shell's own polkit prompt (design/20 §1.10): one
 //! Overlay per output, kept warm and hidden like the power menu, shown on the sheets' output (the
 //! focused window's, latched by the daemon: `SheetLink`) while the polkit agent's `current` holds a request: quire's
 //! `PolkitPrompt` (a narrow `Sheet` over the modal scrim, `peek-in` in and `sheet-out` out: the
@@ -12,7 +12,7 @@
 //!
 //! The daemon tells the service to register at start; it stays passive until then. Registering an
 //! agent is per logind session: nested in another desktop's session, the daemon shares that
-//! session, whose own agent already holds it, so polkitd refuses sill's
+//! session, whose own agent already holds it, so polkitd refuses bardo-shell's
 //! (`Registration::Refused`), and that is the right outcome there. Acceptance runs the agent on
 //! a private bus with a stand-in Authority, never on the system bus.
 

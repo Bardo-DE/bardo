@@ -58,7 +58,7 @@ impl Outcomes {
 
 /// A failed launch of `app`: the person is told `cause`; `detail` goes to the journal.
 pub(super) fn failed(app: AppId, cause: FailureCause, detail: &str) -> LaunchOutcome {
-    eprintln!("sill: launch: {}: {detail}", app.0);
+    eprintln!("bardo-shell: launch: {}: {detail}", app.0);
     LaunchOutcome::Failed { app, cause }
 }
 

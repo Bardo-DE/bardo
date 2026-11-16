@@ -25,7 +25,7 @@ use crate::voice::VoiceSettings;
 use crate::wallpaper::WallpaperSettings;
 
 /// The directory name under `$XDG_CONFIG_HOME`.
-pub const APP: AppName = AppName("sill");
+pub const APP: AppName = AppName::desktop("shell");
 
 /// Every shell domain (design/22 §4.4 `ShellFile`).
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -39,12 +39,12 @@ pub struct ShellFile {
     pub notifications: NotificationsSettings,
     pub control_center: ControlCenterSettings,
     pub display: DisplaySettings,
-    /// sill's own lock screen.
+    /// bardo-shell's own lock screen.
     pub session: SessionSettings,
     pub calendar: CalendarSettings,
     pub screenshot: ScreenshotSettings,
     pub hot_corners: HotCornerSettings,
-    /// sill's own idle service.
+    /// bardo-shell's own idle service.
     pub idle: IdleSettings,
     /// How the keyboard is treated per app (keycap profiles).
     pub keyboard: KeyboardSettings,

@@ -34,7 +34,7 @@ pub use request::request;
 pub use verbs::{action_of, request_of_words};
 
 /// Parse the process's arguments. Help and version print and end with 0; any other mistake prints
-/// clap's message and ends with 64 (`EX_USAGE`), which leaves 2 for `sill launch`'s unknown id.
+/// clap's message and ends with 64 (`EX_USAGE`), which leaves 2 for `bardo-shell launch`'s unknown id.
 pub fn parse_args() -> Result<Cli, ExitCode> {
     // The verbs the compositor sends are read by their own parser, `shell_verbs::ShellVerb::parse`.
     let args: Vec<std::ffi::OsString> = std::env::args_os().skip(1).collect();
@@ -60,14 +60,14 @@ fn usage_code(error: &clap::Error) -> u8 {
 /// `EX_USAGE` of sysexits.h: the command line was wrong.
 pub const USAGE: u8 = 64;
 
-/// sill, the desktop shell.
+/// bardo-shell, the desktop shell.
 #[derive(Debug, Parser)]
-#[command(name = "sill", version, about)]
+#[command(name = "bardo-shell", version, about)]
 pub struct Cli {
     /// Write `shell.settings.toml` (the settings schema, design/22 §9.2) into DIR and exit.
     #[arg(long, value_name = "DIR")]
     pub write_schema: Option<PathBuf>,
-    /// Write `sill.toml`, the style parts a stylesheet may rely on, into DIR and exit.
+    /// Write `shell.toml`, the style parts a stylesheet may rely on, into DIR and exit.
     #[arg(long, value_name = "DIR")]
     pub write_selectors: Option<PathBuf>,
     #[command(subcommand)]

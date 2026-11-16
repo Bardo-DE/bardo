@@ -1,4 +1,4 @@
-//! Whether `detent --first-run` has already run: a one-line file in detent's own state
+//! Whether `bardo-settings --first-run` has already run: a one-line file in the Settings app's own state
 //! directory, not a settings row (a settings row would be a key some schema must own, and the
 //! first run is not a preference).
 
@@ -6,7 +6,7 @@ use std::io;
 use std::path::PathBuf;
 use ui_helpers::{NewFileMode, write_atomic};
 
-/// The file's name under `<state home>/detent/`.
+/// The file's name under `<state home>/bardo/settings/`.
 const FILE: &str = "first-run";
 
 /// What the file holds: only that it exists matters.
@@ -23,10 +23,10 @@ pub struct FirstRunMark {
 }
 
 impl FirstRunMark {
-    /// The mark under `home`: `<home>/detent/first-run`.
+    /// The mark under `home`: `<home>/bardo/settings/first-run`.
     pub fn under(home: &StateHome) -> FirstRunMark {
         FirstRunMark {
-            path: home.0.join("detent").join(FILE),
+            path: ui_settings::app_folder(&home.0, "settings").join(FILE),
         }
     }
 

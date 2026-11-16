@@ -1,7 +1,7 @@
 //! What a prompt sent from the panel carries: the chips the person kept, the window they asked
 //! over and its app. The panel's chips are the window it was summoned over, when there was one;
 //! the launcher has no results or selection of its own to offer. The Space is the one the caller
-//! names: the focused workspace's when sill has a Space for it.
+//! names: the focused workspace's when bardo-shell has a Space for it.
 
 use action_core::{ContextKeep, Keep, TurnVia};
 use provenance::{AppName, SpaceId};

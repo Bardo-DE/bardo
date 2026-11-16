@@ -20,7 +20,7 @@
 //!   history, and `Closed` says `Dismissed` (the spec's "dismissed by the user": the banner is
 //!   gone); a transient one, which the history never held, is gone entirely. Under `"dismiss"`
 //!   it is **Dismissed**. An id with no banner changes nothing.
-//! - **DismissedAll** (`sill notifications dismiss-all`): every live banner dismissed, in banner
+//! - **DismissedAll** (`bardo-shell notifications dismiss-all`): every live banner dismissed, in banner
 //!   order. The history keeps what is not on screen.
 //! - **BannerTimedOut**: the banner leaves; the notification stays in the history. One the
 //!   history does not hold (transient) is `Closed` with `Expired`. A persisting banner never

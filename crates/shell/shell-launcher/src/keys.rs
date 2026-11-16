@@ -34,7 +34,7 @@ impl ActionKeys {
     }
 }
 
-/// An action only the launcher has. Its id is `sill.` and its slug.
+/// An action only the launcher has. Its id is `bardo-shell.` and its slug.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum OwnAction {
     /// Search the web for the query.
@@ -89,7 +89,7 @@ impl OwnAction {
 }
 
 /// The app name the launcher's own actions are registered under.
-pub const APP: &str = "sill";
+pub const APP: &str = "shell";
 
 /// What the panel registers for `app`: every own action with its default chord, and the standard
 /// actions the launcher does not offer (Bold, whose ⌘B Search the web takes, and Move to Trash,

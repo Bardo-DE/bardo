@@ -120,7 +120,7 @@ impl ShellSeat {
         };
         let sent = arm.command(command).is_ok();
         if !sent {
-            eprintln!("sill: desktop: the desktop arm has stopped");
+            eprintln!("bardo-shell: desktop: the desktop arm has stopped");
             self.arm = None;
         }
         sent
@@ -204,7 +204,7 @@ impl ShellSeat {
                     self.prefs.sent = None;
                 }
                 Err(error) => {
-                    eprintln!("sill: desktop: {error}; the shell protocol is not followed");
+                    eprintln!("bardo-shell: desktop: {error}; the shell protocol is not followed");
                     return;
                 }
             }
@@ -214,7 +214,7 @@ impl ShellSeat {
             .as_ref()
             .is_some_and(|arm| arm.register(role, output, surface).is_err());
         if gone {
-            eprintln!("sill: desktop: the desktop arm has stopped");
+            eprintln!("bardo-shell: desktop: the desktop arm has stopped");
             self.arm = None;
             return;
         }

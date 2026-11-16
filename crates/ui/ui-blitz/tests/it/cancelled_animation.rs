@@ -1,7 +1,7 @@
 //! Blitz at the pinned rev keeps a CSS animation's last value on an
 //! element whose `animation-name` goes away before the animation ends, in paint and in the hit
 //! test, while `Harness::rect` (layout, no transform) reads the resting box. The raw case is
-//! sill's repro, ported; it passes only with Blitz patched to restyle such an element. The
+//! bardo-shell's repro, ported; it passes only with Blitz patched to restyle such an element. The
 //! quire cases are the defence that holds on the unpatched pin: a `SidePanel` whose entrance timer
 //! (wall clock) settles while the frame clock has barely started the slide, and a hide taken back
 //! halfway through `panel-out`; neither may leave the panel off its resting box.

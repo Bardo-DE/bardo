@@ -1,4 +1,4 @@
-//! `session.*`: sill's own lock screen (design/20 §1.9); design/22 §3.19 has the rows. The lock
+//! `session.*`: bardo-shell's own lock screen (design/20 §1.9); design/22 §3.19 has the rows. The lock
 //! grace lives here because it belongs to the lock screen, but its `KeySpec` is on the Power page
 //! with `idle.*` (design/22 §3.19; `crate::schema` moves it, the derive has one page a struct).
 

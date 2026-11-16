@@ -28,7 +28,7 @@ impl CornerLink {
         CornerLink::default()
     }
 
-    /// `corner` of `output` fired (its surface's machine said `Fire`, or `sill debug corner`).
+    /// `corner` of `output` fired (its surface's machine said `Fire`, or `bardo-shell debug corner`).
     pub fn hit(&self, corner: Corner, output: OutputId) {
         self.hits.modify(|last| {
             let seq = last.map_or(1, |hit| hit.seq + 1);

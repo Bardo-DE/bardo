@@ -1,4 +1,4 @@
-//! `sill run --dev-callers FILE` (feature `dev-callers`): a person's own rows file is taken only
+//! `bardo-shell run --dev-callers FILE` (feature `dev-callers`): a person's own rows file is taken only
 //! when it is a plain file that this user or root owns and nobody else can write, and it must
 //! parse; any other state adds nothing. Scratch folders only; nothing reads the desktop's table.
 #![cfg(feature = "dev-callers")]

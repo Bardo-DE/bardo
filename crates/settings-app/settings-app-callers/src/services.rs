@@ -20,7 +20,7 @@ pub const COMPOSITOR_BUS: &str = "org.bardo.Compositor1";
 /// calls on it is `org.bardo.Portal1`.
 pub const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.bardo";
 
-/// The shell (sill): each display's brightness, which Settings lists and sets.
+/// The shell (bardo-shell): each display's brightness, which Settings lists and sets.
 pub const DISPLAYS_BUS: &str = "org.bardo.Displays1";
 
 /// The proof a service's owner must show. All eight run as units, so the unit manager confirms the

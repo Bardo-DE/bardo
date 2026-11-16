@@ -62,7 +62,7 @@ pub fn load_all(env: &Env) -> Files {
         })
         .collect();
     for line in SAID.fresh(found) {
-        eprintln!("detent: {line}");
+        eprintln!("bardo-settings: {line}");
     }
     files
 }

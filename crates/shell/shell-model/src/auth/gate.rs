@@ -17,7 +17,7 @@
 //!
 //! PAM's own modules may still pause after a wrong password (`pam_unix`'s fixed failure delay,
 //! or `pam_faillock` where the system configures it); that is the login stack's policy, not
-//! sill's.
+//! bardo-shell's.
 
 use super::{Attempts, Outcome};
 

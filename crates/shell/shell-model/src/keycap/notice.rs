@@ -36,7 +36,7 @@ pub fn notice_text(attention: &Attention) -> Notice {
     let (summary, body) = match attention {
         Attention::Failed => (
             "Command-key layout stopped".to_owned(),
-            "Keys work as on a standard keyboard. Run `sill keycap retry` to try again.".to_owned(),
+            "Keys work as on a standard keyboard. Run `bardo-shell keycap retry` to try again.".to_owned(),
         ),
         Attention::Conflict { device } => (
             "Another keyboard program is running".to_owned(),
@@ -44,7 +44,7 @@ pub fn notice_text(attention: &Attention) -> Notice {
         ),
         Attention::Paused => (
             "Command-key layout paused".to_owned(),
-            "Keys work as on a standard keyboard. Run `sill keycap resume` to turn it back on."
+            "Keys work as on a standard keyboard. Run `bardo-shell keycap resume` to turn it back on."
                 .to_owned(),
         ),
     };

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Notification center acceptance (design/20 §1.6), on casement (brought up and ended by start_compositor). Starts `sill run` from this checkout's debug
+# Notification center acceptance (design/20 §1.6), on casement (brought up and ended by start_compositor). Starts `bardo-shell run` from this checkout's debug
 # build (`--features debug`) on a private bus (dev/private-bus.conf: no service directories, so
 # nothing is activated and the real session's org.freedesktop.Notifications is never touched) as
 # both its session and its system bus, with scratch HOME and XDG directories, a fake DDC fixture
 # and its own XDG_RUNTIME_DIR (the nested socket given as an absolute WAYLAND_DISPLAY), so another
-# sill running meanwhile keeps its own single-instance lock and IPC socket. Every notification
-# comes from `sill debug notify`. The daemon is quit at the end.
+# bardo-shell running meanwhile keeps its own single-instance lock and IPC socket. Every notification
+# comes from `bardo-shell debug notify`. The daemon is quit at the end.
 #
 #   1. `sill-notification-center-<out>` exists from the start, hidden (no capture).
-#   2. `sill notifications toggle` shows it (a capture with the column's pixels; the empty state
+#   2. `bardo-shell notifications toggle` shows it (a capture with the column's pixels; the empty state
 #      in dev/out/notification-center-empty-casement.png), `toggle`
 #      again hides it, `open` twice stays open, `close` hides it.
 #   3. A debug click on the bar's clock opens it; a second click closes it.
@@ -19,9 +19,9 @@
 #   5. A click left of the column closes it.
 #   6. 5 s idle while open, and 5 s after it hides: 0 frames on the center surface.
 #
-# Exit 0 when every step passed, 2 when step 4 could not run (`sill debug notify` refused: the
-# notifications service's live loop is not in this build), 1 on a failure. Another sill daemon
-# started from a `target/*/sill run` is waited for (up to 10 minutes), so two shells never share
+# Exit 0 when every step passed, 2 when step 4 could not run (`bardo-shell debug notify` refused: the
+# notifications service's live loop is not in this build), 1 on a failure. Another bardo-shell daemon
+# started from a `target/*/bardo-shell run` is waited for (up to 10 minutes), so two shells never share
 # the nested output's screenshots.
 #
 # The panel, the group headers and the cards are quire's (`Panel`, `GroupHeader`,
@@ -37,9 +37,9 @@ SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 scratch_new
 
-# `sill notifications status`'s kept count.
+# `bardo-shell notifications status`'s kept count.
 kept() {
-  sill notifications status | python3 -c 'import json, sys; print(json.loads(sys.stdin.read())["v"]["v"]["kept"])'
+  bardo-shell notifications status | python3 -c 'import json, sys; print(json.loads(sys.stdin.read())["v"]["v"]["kept"])'
 }
 
 # The column's box in a capture of the center: "LEFT TOP RIGHT BOTTOM" of the pixels that are
@@ -129,7 +129,7 @@ EOF
 
 # The clock: the first run of inked columns from the bar's right end. Prints "X Y".
 clock_centre() {
-  sill debug capture "$BAR" "$OUT_DIR/bar.png" >/dev/null 2>&1 || return 1
+  bardo-shell debug capture "$BAR" "$OUT_DIR/bar.png" >/dev/null 2>&1 || return 1
   python3 - "$OUT_DIR/bar.png" <<'EOF'
 import sys
 from PIL import Image
@@ -175,8 +175,8 @@ cleanup() {
 # 1.
 step_warm() {
   local log="$OUT_DIR/warm.log"
-  sill debug stats >"$log" 2>&1
-  grep -q "\"$CENTER\"" "$log" || { echo "$CENTER is not in 'sill debug stats'" >&2; return 1; }
+  bardo-shell debug stats >"$log" 2>&1
+  grep -q "\"$CENTER\"" "$log" || { echo "$CENTER is not in 'bardo-shell debug stats'" >&2; return 1; }
   if mapped "$CENTER"; then echo "the center is mapped before any open" >&2; return 1; fi
   echo "$CENTER spawned at start, hidden" | tee -a "$log" >&2
 }
@@ -185,10 +185,10 @@ step_warm() {
 step_toggle_open_close() {
   local log="$OUT_DIR/toggle.log" box size shot
   : >"$log"
-  sill notifications toggle >>"$log" 2>&1 || return 1
+  bardo-shell notifications toggle >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 up || { echo "toggle: never mapped" >&2; return 1; }
   sleep 0.6
-  sill debug capture "$CENTER" "$OUT_DIR/toggled.png" >>"$log" 2>&1 || return 1
+  bardo-shell debug capture "$CENTER" "$OUT_DIR/toggled.png" >>"$log" 2>&1 || return 1
   box=$(column_box "$OUT_DIR/toggled.png") || { echo "toggle: no column drawn" >&2; return 1; }
   shot "$SHOTS/notification-center-empty-casement.png" >>"$log" 2>&1 \
     || echo "screenshot failed" >&2
@@ -196,14 +196,14 @@ step_toggle_open_close() {
     "$OUT_DIR/toggled.png")
   shot=$(python3 -c 'import sys; from PIL import Image; print(*Image.open(sys.argv[1]).size)' \
     "$SHOTS/notification-center-empty-casement.png")
-  sill notifications toggle >>"$log" 2>&1 || return 1
+  bardo-shell notifications toggle >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 down || { echo "toggle: still mapped" >&2; return 1; }
-  sill notifications open >>"$log" 2>&1 || return 1
-  sill notifications open >>"$log" 2>&1 || return 1
+  bardo-shell notifications open >>"$log" 2>&1 || return 1
+  bardo-shell notifications open >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 up || { echo "open: never mapped" >&2; return 1; }
   sleep 0.6
   mapped "$CENTER" || { echo "open twice: not open" >&2; return 1; }
-  sill notifications close >>"$log" 2>&1 || return 1
+  bardo-shell notifications close >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 down || { echo "close: still mapped" >&2; return 1; }
   echo "toggle shows the column (box $box in a $size surface, the output shot $shot: the surface keeps clear of the bar's reserve) and hides it; open twice stays open; close hides it" \
     | tee -a "$log" >&2
@@ -215,11 +215,11 @@ step_clock() {
   : >"$log"
   at=$(clock_centre) || { echo "no clock found in the bar" >&2; return 1; }
   # shellcheck disable=SC2086
-  sill debug click "$BAR" $at >>"$log" 2>&1
+  bardo-shell debug click "$BAR" $at >>"$log" 2>&1
   wait_surface "$CENTER" 20 up || { echo "a click on the clock ($at) opened nothing" | tee -a "$log" >&2; return 1; }
   sleep 0.6
   # shellcheck disable=SC2086
-  sill debug click "$BAR" $at >>"$log" 2>&1
+  bardo-shell debug click "$BAR" $at >>"$log" 2>&1
   wait_surface "$CENTER" 20 down || { echo "a second click on the clock left it open" | tee -a "$log" >&2; return 1; }
   echo "a click on the clock at $at opens the center; a second closes it" | tee -a "$log" >&2
 }
@@ -228,18 +228,18 @@ step_clock() {
 step_groups() {
   local log="$OUT_DIR/groups.log" before after fold clear rows buttons
   : >"$log"
-  if ! sill debug notify "ping" --app Chat --body "are you there?" >>"$log" 2>&1; then
-    echo "sill debug notify: $(tail -n 1 "$log") (the service's live loop is not in this build)" >&2
+  if ! bardo-shell debug notify "ping" --app Chat --body "are you there?" >>"$log" 2>&1; then
+    echo "bardo-shell debug notify: $(tail -n 1 "$log") (the service's live loop is not in this build)" >&2
     return 2
   fi
-  sill debug notify "Re: plans" --app Mail --body "Saturday works." >>"$log" 2>&1 || return 1
-  sill debug notify "Lunch?" --app Mail --body "Noon at the usual place." >>"$log" 2>&1 || return 1
+  bardo-shell debug notify "Re: plans" --app Mail --body "Saturday works." >>"$log" 2>&1 || return 1
+  bardo-shell debug notify "Lunch?" --app Mail --body "Noon at the usual place." >>"$log" 2>&1 || return 1
   sleep 0.3
   before=$(kept)
-  sill notifications open >>"$log" 2>&1 || return 1
+  bardo-shell notifications open >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 up || return 1
   sleep 0.8
-  sill debug capture "$CENTER" "$OUT_DIR/groups.png" >>"$log" 2>&1 || return 1
+  bardo-shell debug capture "$CENTER" "$OUT_DIR/groups.png" >>"$log" 2>&1 || return 1
   shot "$SHOTS/notification-center-casement.png" >>"$log" 2>&1 \
     || echo "screenshot failed" >&2
   ink_rows "$OUT_DIR/groups.png" >"$OUT_DIR/rows-collapsed.txt"
@@ -247,11 +247,11 @@ step_groups() {
     || { echo "no group header found" | tee -a "$log" >&2; return 1; }
   fold="${buttons[0]} ${buttons[1]}"
   # shellcheck disable=SC2086
-  sill debug click "$CENTER" $fold >>"$log" 2>&1
+  bardo-shell debug click "$CENTER" $fold >>"$log" 2>&1
   # Off the header: a hovered Quiet button's ground would run its words into Clear's.
-  sill debug leave "$CENTER" >>"$log" 2>&1
+  bardo-shell debug leave "$CENTER" >>"$log" 2>&1
   sleep 0.5
-  sill debug capture "$CENTER" "$OUT_DIR/open.png" >>"$log" 2>&1 || return 1
+  bardo-shell debug capture "$CENTER" "$OUT_DIR/open.png" >>"$log" 2>&1 || return 1
   shot "$SHOTS/notification-center-open-casement.png" >>"$log" 2>&1 \
     || echo "screenshot failed" >&2
   ink_rows "$OUT_DIR/open.png" >"$OUT_DIR/rows-open.txt"
@@ -262,7 +262,7 @@ step_groups() {
     || { echo "no group header found" | tee -a "$log" >&2; return 1; }
   clear="${buttons[2]} ${buttons[3]}"
   # shellcheck disable=SC2086
-  sill debug click "$CENTER" $clear >>"$log" 2>&1
+  bardo-shell debug click "$CENTER" $clear >>"$log" 2>&1
   sleep 0.4
   after=$(kept)
   rows="$(wc -l <"$OUT_DIR/rows-collapsed.txt") ink rows collapsed, $(wc -l <"$OUT_DIR/rows-open.txt") opened"
@@ -275,8 +275,8 @@ step_groups() {
 step_outside() {
   local log="$OUT_DIR/outside.log"
   : >"$log"
-  mapped "$CENTER" || { sill notifications open >>"$log" 2>&1; wait_surface "$CENTER" 20 up || return 1; sleep 0.6; }
-  sill debug click "$CENTER" 100 300 >>"$log" 2>&1
+  mapped "$CENTER" || { bardo-shell notifications open >>"$log" 2>&1; wait_surface "$CENTER" 20 up || return 1; sleep 0.6; }
+  bardo-shell debug click "$CENTER" 100 300 >>"$log" 2>&1
   wait_surface "$CENTER" 20 down || { echo "a click outside the column left it open" | tee -a "$log" >&2; return 1; }
   echo "a click left of the column closes it" | tee -a "$log" >&2
 }
@@ -284,7 +284,7 @@ step_outside() {
 # 6.
 step_idle() {
   local log="$OUT_DIR/idle.log" f0 f1 f2 f3
-  sill notifications open >"$log" 2>&1
+  bardo-shell notifications open >"$log" 2>&1
   wait_surface "$CENTER" 20 up || return 1
   sleep 1
   # The clock redraws the ages once a minute: keep the windows clear of the minute's turn.
@@ -292,7 +292,7 @@ step_idle() {
   f0=$(frames_of "$CENTER")
   sleep 5
   f1=$(frames_of "$CENTER")
-  sill notifications close >>"$log" 2>&1
+  bardo-shell notifications close >>"$log" 2>&1
   wait_surface "$CENTER" 20 down || return 1
   sleep 1
   f2=$(frames_of "$CENTER")

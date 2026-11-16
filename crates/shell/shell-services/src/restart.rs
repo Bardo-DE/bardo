@@ -92,9 +92,9 @@ impl Tries {
             Ending::Cancelled => return Next::Stop { line: None },
             Ending::Impossible(why) => {
                 return Next::Stop {
-                    line: why
-                        .as_ref()
-                        .map(|why| format!("sill: {service}: {why}; it keeps its last value")),
+                    line: why.as_ref().map(|why| {
+                        format!("bardo-shell: {service}: {why}; it keeps its last value")
+                    }),
                 };
             }
             Ending::Returned if lasted < NOTHING_TO_DO_WITHIN => {
@@ -110,14 +110,14 @@ impl Tries {
         if self.failed > RESTARTS_MAX {
             return Next::Stop {
                 line: Some(format!(
-                    "sill: {service}: {why}; giving up after {RESTARTS_MAX} restarts, it keeps its last value"
+                    "bardo-shell: {service}: {why}; giving up after {RESTARTS_MAX} restarts, it keeps its last value"
                 )),
             };
         }
         let wait = self.backoff.wait();
         Next::Restart {
             line: format!(
-                "sill: {service}: {why}; starting it again in {wait:?} (restart {} of {RESTARTS_MAX})",
+                "bardo-shell: {service}: {why}; starting it again in {wait:?} (restart {} of {RESTARTS_MAX})",
                 self.failed
             ),
             wait,
@@ -183,7 +183,7 @@ mod tests {
                 panic!("restart {n} was refused");
             };
             assert_eq!(wait, FIRST_WAIT * 2_u32.pow(n), "restart {n}");
-            assert!(line.starts_with("sill: svc: panicked: boom; starting it again"));
+            assert!(line.starts_with("bardo-shell: svc: panicked: boom; starting it again"));
         }
         let Next::Stop { line } = tries.after("svc", &ending, quick) else {
             panic!("it was started a sixth time");
@@ -233,7 +233,7 @@ mod tests {
         assert_eq!(
             tries.after("svc", &Ending::Impossible(Some("no bus".to_owned())), quick),
             Next::Stop {
-                line: Some("sill: svc: no bus; it keeps its last value".to_owned())
+                line: Some("bardo-shell: svc: no bus; it keeps its last value".to_owned())
             }
         );
     }

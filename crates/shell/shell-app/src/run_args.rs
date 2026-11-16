@@ -1,10 +1,10 @@
-//! `sill run`'s options and the [`Env`] they make. A build without the `debug` feature takes
+//! `bardo-shell run`'s options and the [`Env`] they make. A build without the `debug` feature takes
 //! none and always runs on the process's own seams ([`Env::from_process`]); a `debug` build's
 //! dev scripts swap single seams for stand-ins with flags, never with environment variables.
 
 use shell_services::env::Env;
 
-/// `sill run`'s options.
+/// `bardo-shell run`'s options.
 #[derive(Debug, Clone, PartialEq, Eq, Default, clap::Args)]
 pub struct RunArgs {
     #[cfg(feature = "debug")]
@@ -85,14 +85,14 @@ fn dev_callers(
     match shipped.clone().with_dev_rows(path) {
         Ok(callers) => {
             eprintln!(
-                "sill: callers: stand-ins named in {} are let in below every real proof (--dev-callers)",
+                "bardo-shell: callers: stand-ins named in {} are let in below every real proof (--dev-callers)",
                 path.display()
             );
             std::sync::Arc::new(callers)
         }
         Err(error) => {
             eprintln!(
-                "sill: callers: --dev-callers {} adds nothing ({error})",
+                "bardo-shell: callers: --dev-callers {} adds nothing ({error})",
                 path.display()
             );
             std::sync::Arc::new(shipped)
@@ -131,7 +131,7 @@ impl DebugSeams {
         let ddc: Arc<dyn shell_services::env::ddc::DdcBus> = match &self.fake_ddc {
             Some(path) => {
                 eprintln!(
-                    "sill: displays: DDC is the fake in {} (--fake-ddc): no real monitor is touched",
+                    "bardo-shell: displays: DDC is the fake in {} (--fake-ddc): no real monitor is touched",
                     path.display()
                 );
                 Arc::new(FileBus::new(path.clone()))
@@ -165,7 +165,7 @@ impl DebugSeams {
                     DryRunOffersArg::Logind => DryRunOffers::Logind,
                 };
                 eprintln!(
-                    "sill: session: dry run, recording to {}, offering {offers:?}",
+                    "bardo-shell: session: dry run, recording to {}, offering {offers:?}",
                     record.display()
                 );
                 Arc::new(DryRunActions::new(offers, Some(record.clone())))
@@ -179,7 +179,7 @@ impl DebugSeams {
         let proc_root = match &self.proc_root {
             Some(dir) => {
                 eprintln!(
-                    "sill: callers: named by the stand-in proc root {} (--proc-root)",
+                    "bardo-shell: callers: named by the stand-in proc root {} (--proc-root)",
                     dir.display()
                 );
                 dir.clone()
@@ -207,8 +207,10 @@ mod release_tests {
 
     #[test]
     fn run_has_no_dev_callers_flag() {
-        assert!(Cli::try_parse_from(["sill", "run"]).is_ok());
-        assert!(Cli::try_parse_from(["sill", "run", "--dev-callers", "/tmp/rows.toml"]).is_err());
+        assert!(Cli::try_parse_from(["bardo-shell", "run"]).is_ok());
+        assert!(
+            Cli::try_parse_from(["bardo-shell", "run", "--dev-callers", "/tmp/rows.toml"]).is_err()
+        );
     }
 }
 
@@ -220,7 +222,8 @@ mod tests {
 
     #[test]
     fn run_takes_idle_times_in_seconds_and_refuses_anything_else() {
-        let parse = |value: &str| Cli::try_parse_from(["sill", "run", "--idle-times", value]);
+        let parse =
+            |value: &str| Cli::try_parse_from(["bardo-shell", "run", "--idle-times", value]);
         let Ok(Cli {
             command: Some(Command::Run(args)),
             ..
@@ -243,7 +246,7 @@ mod tests {
         use shell_services::polkit_agent::{HelperChoice, PolkitRoute, SessionChoice};
 
         let setup = |args: &[&str]| {
-            let cli = Cli::try_parse_from([&["sill", "run"], args].concat())
+            let cli = Cli::try_parse_from([&["bardo-shell", "run"], args].concat())
                 .unwrap_or_else(|e| panic!("{e}"));
             let Some(Command::Run(run)) = cli.command else {
                 panic!("not run");
@@ -280,13 +283,15 @@ mod tests {
         for (args, want) in cases {
             assert_eq!(setup(&args), want, "{args:?}");
         }
-        assert!(Cli::try_parse_from(["sill", "run", "--polkit-helper", "/x/helper"]).is_err());
+        assert!(
+            Cli::try_parse_from(["bardo-shell", "run", "--polkit-helper", "/x/helper"]).is_err()
+        );
     }
 
     /// The dry run's offers only make sense with the dry run.
     #[test]
     fn dry_run_offers_need_a_session_dry_run() {
-        let parse = |args: &[&str]| Cli::try_parse_from([&["sill", "run"], args].concat());
+        let parse = |args: &[&str]| Cli::try_parse_from([&["bardo-shell", "run"], args].concat());
         assert!(parse(&["--session-dry-run-offers", "logind"]).is_err());
         let Ok(Cli {
             command: Some(Command::Run(args)),
@@ -317,7 +322,7 @@ mod tests {
             ("--proc-root", "/tmp/proc", |d| d.proc_root.as_deref()),
         ];
         for (flag, value, pick) in cases {
-            let cli = Cli::try_parse_from(["sill", "run", flag, value])
+            let cli = Cli::try_parse_from(["bardo-shell", "run", flag, value])
                 .unwrap_or_else(|e| panic!("{flag}: {e}"));
             let Some(Command::Run(args)) = cli.command else {
                 panic!("{flag}: not run: {:?}", cli.command);

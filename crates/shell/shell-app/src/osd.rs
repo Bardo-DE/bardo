@@ -1,11 +1,11 @@
 //! The daemon's half of the OSD (design/20 §1.7): the decision of which changes show and where.
 //! The indicator per output is spawned like any `Surface` (`shell_overlays::Osd`).
 //!
-//! **Which changes show.** Only the ones sill makes itself: `sill display volume ...` and
-//! `sill display brightness ...`, which are what the volume and brightness keys run (bound
+//! **Which changes show.** Only the ones bardo-shell makes itself: `bardo-shell display volume ...` and
+//! `bardo-shell display brightness ...`, which are what the volume and brightness keys run (bound
 //! in the compositor's shortcuts), so a key press always shows. A level another app sets (a player's own slider,
 //! `pactl`, the monitor's buttons) never does: macOS shows its indicator for the keys only, and
-//! following every PipeWire change would flash it whenever an app ramps its stream. `sill debug
+//! following every PipeWire change would flash it whenever an app ramps its stream. `bardo-shell debug
 //! osd` shows a made-up change and moves nothing real.
 //!
 //! **Where.** Volume: the output of the active window (the daemon's stand-in for the output under
@@ -93,7 +93,7 @@ fn show(
     link.show(kind, ids, level);
 }
 
-/// `sill display ...` was carried out (`response`): show its change.
+/// `bardo-shell display ...` was carried out (`response`): show its change.
 pub fn after_display(
     link: &OsdLink,
     services: &Services,
@@ -107,7 +107,7 @@ pub fn after_display(
     }
 }
 
-/// `sill debug osd`: show a made-up change of `kind` at `level`, moving no real level.
+/// `bardo-shell debug osd`: show a made-up change of `kind` at `level`, moving no real level.
 pub fn fake(
     link: &OsdLink,
     services: &Services,

@@ -5,7 +5,7 @@
 //! later result set replaces in place with no motion (R1, R12).
 //!
 //! The person's own Enter or click is not the only way a group's action runs: a
-//! caller may run it itself (`sill debug launcher-key enter` stepping the keyboard machine
+//! caller may run it itself (`bardo-shell debug launcher-key enter` stepping the keyboard machine
 //! directly, a demo's own button) and just hand the palette the next `groups`, with no Enter or
 //! click of its own for the palette to have seen. [`PaletteHandle::mark_group_action`] books that
 //! change as though it were: the caller marks the group before making the change, and only a
@@ -77,7 +77,7 @@ impl ActionBook {
 /// A caller's mark on a `CommandPalette`'s next change of results: pass it as
 /// `CommandPalette { handle: Some(handle) }`, then call [`mark_group_action`](Self::mark_group_action)
 /// before making the change yourself (running a group's action without going through the
-/// palette's own Enter or click, e.g. `sill debug launcher-key enter`, a demo's own button). The
+/// palette's own Enter or click, e.g. `bardo-shell debug launcher-key enter`, a demo's own button). The
 /// palette plays that group's Show More or Show Less exactly as it would its own; any other
 /// caller-driven change, unmarked, plays nothing, as before.
 #[derive(Clone, Copy, PartialEq)]

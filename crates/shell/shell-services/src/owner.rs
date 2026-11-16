@@ -1,4 +1,4 @@
-//! A daemon that starts after sill, or restarts under it: [`Owner::session`] runs a service's
+//! A daemon that starts after bardo-shell, or restarts under it: [`Owner::session`] runs a service's
 //! session (seed, then follow) only while a well-known bus name has an owner, and starts it over
 //! when the owner changes. [`appeared`] and [`changed`] are its two halves, for the few services
 //! whose loop is not that shape.

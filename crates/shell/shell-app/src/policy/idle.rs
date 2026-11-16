@@ -1,9 +1,9 @@
-//! sill's own idle on the daemon's side: the idle service's config from `idle.*` and
+//! bardo-shell's own idle on the daemon's side: the idle service's config from `idle.*` and
 //! `session.lock_grace_s` ([`policy_of`]), sent now and on every change ([`IdleBridge`]). The
-//! service resolves the kind of session itself and is `Off` anywhere but a sill session.
+//! service resolves the kind of session itself and is `Off` anywhere but a bardo-shell session.
 //!
 //! The daemon's [`IdleTimesSource`] can fix the times instead of the settings: a `debug` build's
-//! `sill run --idle-times <screen_off_s>,<suspend_s>` (0 never, [`test_times`]) uses those
+//! `bardo-shell run --idle-times <screen_off_s>,<suspend_s>` (0 never, [`test_times`]) uses those
 //! seconds for both power sources, since `dev/accept/idle.sh` needs seconds and the keys count
 //! minutes.
 

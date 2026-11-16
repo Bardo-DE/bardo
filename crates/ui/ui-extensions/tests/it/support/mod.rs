@@ -52,9 +52,9 @@ pub fn manifest(id: &str, name: &str, version: &str, entries: &str) -> String {
     )
 }
 
-/// The folder `<root>/quire/extensions/<id>` with `text` as its manifest; returns the folder.
+/// The folder `<root>/bardo/extensions/<id>` with `text` as its manifest; returns the folder.
 pub fn install(root: &Path, id: &str, text: &str) -> PathBuf {
-    let folder = root.join("quire").join("extensions").join(id);
+    let folder = root.join("bardo").join("extensions").join(id);
     fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{}: {e}", folder.display()));
     write(&folder.join("extension.toml"), text);
     folder

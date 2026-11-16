@@ -134,7 +134,7 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
 - [ ] Gesture acceptance tests pass (if touched). Cite `12-BEHAVIOUR-gestures.md`.
 - [ ] Menu, window, notification and launcher acceptance tests pass (if touched). Cite
       `13-BEHAVIOUR-menus-windows.md`.
-- [ ] Idle surface paints 0 frames (`sill debug stats`). Cite `20-SURFACES.md`.
+- [ ] Idle surface paints 0 frames (`bardo-shell debug stats`). Cite `20-SURFACES.md`.
 
 ## 8. Icons
 

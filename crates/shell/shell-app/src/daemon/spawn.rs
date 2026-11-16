@@ -129,7 +129,10 @@ fn spawn_layer(
             let namespace = config.namespace.clone();
             ctx.spawn_layer(config, root)
                 .inspect_err(|error| {
-                    eprintln!("sill: spawning {namespace} on {:?}: {error}", info.name);
+                    eprintln!(
+                        "bardo-shell: spawning {namespace} on {:?}: {error}",
+                        info.name
+                    );
                 })
                 .ok()
         }

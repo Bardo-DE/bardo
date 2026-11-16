@@ -1,4 +1,4 @@
-//! The client side: what the Settings app (detent) uses to read and set a live module.
+//! The client side: what the Settings app (bardo-settings) uses to read and set a live module.
 
 use std::collections::{BTreeMap, HashMap};
 use std::future::Future;

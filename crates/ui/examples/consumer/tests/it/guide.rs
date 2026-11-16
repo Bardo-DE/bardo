@@ -180,7 +180,8 @@ fn EmbeddedPalette() -> Element {
 
     let (label, placeholder, query, empty) =
         (String::new(), String::new(), String::new(), String::new());
-    let groups: Vec<ui_components::components::menus::palette::palette_group::PaletteGroup<Hit>> = Vec::new();
+    let groups: Vec<ui_components::components::menus::palette::palette_group::PaletteGroup<Hit>> =
+        Vec::new();
     let items: Vec<MenuItem<u8>> = Vec::new();
     let mut actions = use_signal(|| false);
     let mut row = use_signal(|| None::<Rect>);
@@ -209,7 +210,8 @@ fn EmbeddedPalette() -> Element {
 #[component]
 fn KeptPalette() -> Element {
     let (label, placeholder, empty) = (String::new(), String::new(), String::new());
-    let groups: Vec<ui_components::components::menus::palette::palette_group::PaletteGroup<Hit>> = Vec::new();
+    let groups: Vec<ui_components::components::menus::palette::palette_group::PaletteGroup<Hit>> =
+        Vec::new();
     let mut shown = use_signal(|| false);
     let mut query = use_signal(String::new);
     rsx! {
@@ -230,7 +232,8 @@ fn ActionsKey() -> Element {
 
     let (label, placeholder, query, empty) =
         (String::new(), String::new(), String::new(), String::new());
-    let groups: Vec<ui_components::components::menus::palette::palette_group::PaletteGroup<Hit>> = Vec::new();
+    let groups: Vec<ui_components::components::menus::palette::palette_group::PaletteGroup<Hit>> =
+        Vec::new();
     let items: Vec<MenuItem<u8>> = Vec::new();
     let mut actions = use_signal(|| false);
     let field = use_focus_request();
@@ -280,13 +283,21 @@ mod rule_two {
 
     #[test]
     fn markup_lint_is_clean() {
-        let offences = markup(&render_ssr(), &full_css(), &LintConfig::new(&ui_components::kits()));
+        let offences = markup(
+            &render_ssr(),
+            &full_css(),
+            &LintConfig::new(&ui_components::kits()),
+        );
         assert!(offences.is_empty(), "{offences:#?}");
     }
 
     #[test]
     fn no_raw_button_is_rendered() {
-        let offences = markup(&render_ssr(), &full_css(), &LintConfig::new(&ui_components::kits()));
+        let offences = markup(
+            &render_ssr(),
+            &full_css(),
+            &LintConfig::new(&ui_components::kits()),
+        );
         assert!(
             offences.iter().all(|o| o.rule != Rule::RawMarkup),
             "{offences:#?}"
@@ -297,8 +308,8 @@ mod rule_two {
 /// Section 5, rule 4.
 #[test]
 fn the_badge_times_out_on_ds_motions_own_clock() {
-    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
     use std::time::Duration;
+    use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
     let resolved = resolve(
         Appearance::default(),
@@ -329,7 +340,9 @@ fn the_badge_times_out_on_ds_motions_own_clock() {
 fn menu_track_steps() {
     use ui_components::base::machine::Machine;
     use ui_components::base::time::stamp::Stamp;
-    use ui_components::stack::menu_track::types::{MenuTiming, MenuTrack, MenuTrackEffect, MenuTrackEvent};
+    use ui_components::stack::menu_track::types::{
+        MenuTiming, MenuTrack, MenuTrackEffect, MenuTrackEvent,
+    };
 
     let track: MenuTrack<u32> = MenuTrack::closed();
     let timing = MenuTiming::default();
@@ -381,7 +394,7 @@ mod settings_files {
     fn use_store(
         spawner: &dyn ui_components::base::spawner::Spawner,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let store = Store::new(ConfigRoot::Xdg, AppName("your-app-id"));
+        let store = Store::new(ConfigRoot::Xdg, AppName::foreign("your-app-id"));
         let loaded = store.load::<YourFile>();
         store.save(&loaded.value)?;
         let mut watch = store.watch::<YourFile>(spawner);
@@ -391,10 +404,10 @@ mod settings_files {
 
 /// Section 7, the settings schema.
 mod schema {
+    use serde::{Deserialize, Serialize};
     use ui_components::prelude::*;
     use ui_settings::SettingsSchema; // the derive macro (macro namespace)
     use ui_settings::schema::{Page, SettingsSchema}; // the trait `.schema()` needs (type namespace)
-    use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
     #[serde(rename_all = "snake_case")]
@@ -443,7 +456,7 @@ fn UserStyled() -> Element {
     use ui_settings::{AppName, ConfigRoot, Store};
 
     let desktop = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
-    let own = Store::new(ConfigRoot::Xdg, AppName("your-app-id"));
+    let own = Store::new(ConfigRoot::Xdg, AppName::foreign("your-app-id"));
     let mut styles = use_signal({
         let (desktop, own) = (desktop.clone(), own.clone());
         move || Styles {

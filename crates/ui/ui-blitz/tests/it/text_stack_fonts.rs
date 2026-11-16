@@ -1,4 +1,4 @@
-//! Why sill drew digits and spaces from Noto Color Emoji (FINDINGS "Colour emoji"):
+//! Why bardo-shell drew digits and spaces from Noto Color Emoji (FINDINGS "Colour emoji"):
 //! the stack `"Inter","Noto Color Emoji",system-ui,sans-serif` is laid out here through the font
 //! context layer-shell-host builds for every surface (`layer_shell_host::dom::fonts::SharedFonts::system`:
 //! `FontContext::new()` and Blitz's bullet face, nothing else) and through quire's own
@@ -19,7 +19,7 @@ use skrifa::MetadataProvider;
 use std::sync::Arc;
 
 const STACK: &str = "\"Inter\",\"Noto Color Emoji\",system-ui,sans-serif";
-/// sill's broken strings: a file name and the bar clock.
+/// bardo-shell's broken strings: a file name and the bar clock.
 /// A face, a thumbs-up with a skin tone, a flag and a ZWJ family.
 const EMOJI: &str = "\u{1F600}\u{1F44D}\u{1F3FD}\u{1F1F9}\u{1F1FC}\u{1F469}\u{200D}\u{1F469}\u{200D}\u{1F467}\u{200D}\u{1F466}";
 const LAST: &str = "\"Inter\",system-ui,sans-serif,\"Noto Color Emoji\"";
@@ -138,7 +138,7 @@ fn inter_is_not_a_family_in_shell_hosts_font_context() {
 }
 
 /// Under quire's context the stack is Inter's to the pixel; under layer-shell-host's it is wider than
-/// system-ui alone by the emoji face's advances, which is sill's "m 9 -extra- 1 .pdf".
+/// system-ui alone by the emoji face's advances, which is bardo-shell's "m 9 -extra- 1 .pdf".
 #[test]
 fn the_stack_is_inter_under_quire_and_takes_the_emoji_faces_digits_under_shell_host() {
     if !applies() {

@@ -33,7 +33,7 @@ fn account_of(id: &str) -> AccountTarget {
 
 /// The page `text` names, through quire's page table (an id, an alias, the old `app:` form): the
 /// catalogue's page that the table declares under that id, else the hidden first-run step (which
-/// the table resolves but the sidebar does not list), else the accounts step (which only detent
+/// the table resolves but the sidebar does not list), else the accounts step (which only bardo-settings
 /// declares), else a page only the catalogue knows by that slug.
 fn page_slug(catalogue: &Catalogue, text: &str) -> Option<PageSlug> {
     let table = PageTable::built_in();

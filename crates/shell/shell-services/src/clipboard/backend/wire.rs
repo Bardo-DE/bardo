@@ -61,7 +61,7 @@ impl Follow for WireState {
             Binding::Bound { manager, device }
         } else {
             let [ext, wlr] = manager_interfaces();
-            eprintln!("sill: clipboard: no seat, or neither {ext} nor {wlr}");
+            eprintln!("bardo-shell: clipboard: no seat, or neither {ext} nor {wlr}");
             Binding::Unsupported
         };
         tell.say(ClipEvent::Connected(match &binding {

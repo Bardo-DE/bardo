@@ -8,12 +8,12 @@ use super::{
 };
 
 /// What the notifications service can be told: by the daemon (the policy, a debug post), by the
-/// banners and the center (the person's actions), and by `sill notifications`.
+/// banners and the center (the person's actions), and by `bardo-shell notifications`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NotificationsCommand {
     /// The settings and focus mode now in effect; the first one ends the passive start.
     Policy(NotificationsPolicy),
-    /// A notification as if `Notify` had been called (`sill debug notify`); no reply id.
+    /// A notification as if `Notify` had been called (`bardo-shell debug notify`); no reply id.
     Post(Box<Posting>),
     /// The person dismissed it (the close button, a history row's clear).
     Dismiss(NotificationId),
@@ -38,7 +38,7 @@ pub enum NotificationsCommand {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum NotificationsEvent {
-    /// A `Notify` (or `sill debug notify`), with the id `assign_id` gave it.
+    /// A `Notify` (or `bardo-shell debug notify`), with the id `assign_id` gave it.
     Posted(Box<Notification>),
     /// `CloseNotification`.
     ClosedByApp(NotificationId),

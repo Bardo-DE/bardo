@@ -1,4 +1,4 @@
-app = "sill"
+app = "shell"
 file = "shell/settings.toml"
 version = 1
 
@@ -49,4 +49,4 @@ kind = "text"
 
 [key.page]
 kind = "app"
-v = "sill"
+v = "bardo-shell"

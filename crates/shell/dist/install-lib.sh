@@ -1,9 +1,9 @@
 # shellcheck shell=bash disable=SC2034
-# Shared by dist/install.sh and dist/uninstall.sh (sourced, never run). Where each piece of sill
+# Shared by dist/install.sh and dist/uninstall.sh (sourced, never run). Where each piece of bardo-shell
 # goes, and the helpers that print every step and honour --dry-run.
 #
-# Nothing here touches Plasma's files, Toshy's units or keycap's system files: sill is the files
-# below, the binary, and one user file for keycap (the sill layer), and nothing else.
+# Nothing here touches Plasma's files, Toshy's units or keycap's system files: bardo-shell is the files
+# below, the binary, and one user file for keycap (the bardo-shell layer), and nothing else.
 
 DIST="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$DIST/.." && pwd)"
@@ -16,11 +16,11 @@ PREFIX=/usr/local
 DESTDIR=
 NO_BUILD=0
 
-# The sill session's keycap layer. sill forwards this user file to keycap, which lays it over
+# The bardo-shell session's keycap layer. bardo-shell forwards this user file to keycap, which lays it over
 # /etc/bardo/key-remap/key-remap.toml (the Plasma overlay, which Plasma never overrides); the file is copied
 # when missing and never overwritten.
-BARDO_KEY_REMAP_LAYER_SRC="$DIST/keycap/keycap.toml"
-BARDO_KEY_REMAP_LAYER_DEST="${XDG_CONFIG_HOME:-$HOME/.config}/keycap/keycap.toml"
+BARDO_KEY_REMAP_LAYER_SRC="$DIST/key-remap/key-remap.toml"
+BARDO_KEY_REMAP_LAYER_DEST="${XDG_CONFIG_HOME:-$HOME/.config}/bardo/key-remap/key-remap.toml"
 
 # DDC/CI for external monitors: a uaccess rule on the i2c buses and the i2c-dev module load. Put in
 # place only where no ddcutil rule exists (ddcutil_rule_present).
@@ -31,17 +31,17 @@ DDC_MODULES_DEST=/etc/modules-load.d/bardo-shell-ddc.conf
 
 # set_dests: every destination, from $PREFIX.
 set_dests() {
-  BIN_DEST="$PREFIX/bin/sill"
+  BIN_DEST="$PREFIX/bin/bardo-shell"
   PAM_DEST=/etc/pam.d/bardo-shell
   # What the shell can be asked to do (`org.bardo.Shell`): intentd reads every manifest under
-  # $XDG_DATA_DIRS/quire/intents/, and /usr/local/share is in the default XDG_DATA_DIRS.
-  INTENTS_DEST="$PREFIX/share/quire/intents/org.bardo.Shell.toml"
-  # The skills sill teaches the companion (dist/skills/<id>/): docket's loader reads every directory
-  # under $XDG_DATA_DIRS/quire/skills/.
-  SKILLS_DEST="$PREFIX/share/quire/skills"
-  # sill's settings schema (every domain's keys, app `sill`): Settings (detent) reads every schema
-  # under $XDG_DATA_DIRS/quire/settings/. The binary writes it (`sill --write-schema <dir>`).
-  SCHEMA_DEST="$PREFIX/share/quire/settings/shell.settings.toml"
+  # $XDG_DATA_DIRS/bardo/intents/, and /usr/local/share is in the default XDG_DATA_DIRS.
+  INTENTS_DEST="$PREFIX/share/bardo/intents/org.bardo.Shell.toml"
+  # The skills bardo-shell teaches the companion (dist/skills/<id>/): docket's loader reads every directory
+  # under $XDG_DATA_DIRS/bardo/skills/.
+  SKILLS_DEST="$PREFIX/share/bardo/skills"
+  # bardo-shell's settings schema (every domain's keys, app `bardo-shell`): Settings (bardo-settings) reads every schema
+  # under $XDG_DATA_DIRS/bardo/settings/. The binary writes it (`bardo-shell --write-schema <dir>`).
+  SCHEMA_DEST="$PREFIX/share/bardo/settings/shell.settings.toml"
 }
 set_dests
 
@@ -187,7 +187,7 @@ print_pending() {
 }
 
 # ddcutil_rule_present ROOT: whether a ddcutil package (or the admin) already put a udev rule for the
-# i2c buses under ROOT (empty ROOT: the real system). Then sill's own rule is not installed.
+# i2c buses under ROOT (empty ROOT: the real system). Then bardo-shell's own rule is not installed.
 ddcutil_rule_present() {
   local root="$1" pattern
   for pattern in /usr/lib/udev/rules.d/60-ddcutil-i2c.rules /lib/udev/rules.d/60-ddcutil-i2c.rules /etc/udev/rules.d/60-ddcutil*.rules; do

@@ -123,7 +123,7 @@ fn the_list_on_offer_is_shown_and_an_assistant_not_installed_is_downloaded_then_
         sandbox
             .data_home()
             .0
-            .join("docket/agents/installed/codex/2.0.0")
+            .join("bardo/actions/agents/installed/codex/2.0.0")
             .is_dir(),
         "downloaded"
     );
@@ -154,7 +154,7 @@ fn a_list_that_cannot_be_fetched_says_why_and_still_offers_the_installed_ones() 
     let failing = format!("echo '{NO_ROUTE}' >&2\n  exit 1");
     let sandbox = world("online-assistants-offline", &failing, INSTALLS);
     sandbox.write_data(
-        "docket/agents/installed/gemini/1.0.0/installed.toml",
+        "bardo/actions/agents/installed/gemini/1.0.0/installed.toml",
         INSTALLED,
     );
     let mut harness = sandbox.harness(intelligence());

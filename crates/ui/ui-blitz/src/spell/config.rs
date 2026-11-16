@@ -1,5 +1,5 @@
 //! Where the dictionaries are: the system's Hunspell directories, and the user's own words
-//! under XDG data (`~/.local/share/quire/spelling/<lang>.dic`, one word per line).
+//! under XDG data (`~/.local/share/bardo/spelling/<lang>.dic`, one word per line).
 
 use std::path::PathBuf;
 use ui_components::spell::lang::Lang;
@@ -23,7 +23,7 @@ pub struct SpellConfig {
 
 impl SpellConfig {
     /// The system's dictionaries (and `$XDG_DATA_HOME/hunspell`), and the user's words under
-    /// `$XDG_DATA_HOME/quire/spelling`.
+    /// `$XDG_DATA_HOME/bardo/spelling`.
     pub fn system() -> SpellConfig {
         let data = dirs::data_dir().unwrap_or_else(|| PathBuf::from(".local/share"));
         let mut dictionaries: Vec<PathBuf> =
@@ -31,7 +31,7 @@ impl SpellConfig {
         dictionaries.push(data.join("hunspell"));
         SpellConfig {
             dictionaries,
-            user: data.join("quire").join("spelling"),
+            user: data.join("bardo").join("spelling"),
         }
     }
 

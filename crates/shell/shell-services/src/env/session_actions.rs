@@ -121,7 +121,10 @@ impl SessionActions for DryRunActions {
                 .open(path)
                 .and_then(|mut file| writeln!(file, "{line}"));
             if let Err(error) = appended {
-                eprintln!("sill: session: recording to {}: {error}", path.display());
+                eprintln!(
+                    "bardo-shell: session: recording to {}: {error}",
+                    path.display()
+                );
             }
         }
         ActionReach::DryRun

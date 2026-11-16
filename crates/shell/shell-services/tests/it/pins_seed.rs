@@ -102,7 +102,7 @@ async fn a_fresh_dock_starts_with_the_desktops_apps_once_they_are_installed() {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_emptied_dock_stays_empty() {
     let scratch = TempDir::new("pins-seed-emptied");
-    let folder = scratch.path().join("config/sill");
+    let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(folder.join("layout.toml"), "version = 1\ndock = []\n")
         .unwrap_or_else(|e| panic!("{e}"));
@@ -133,7 +133,7 @@ async fn a_pin_made_before_the_apps_were_known_is_kept() {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_old_dock_file_is_carried_over_and_never_seeded_over() {
     let scratch = TempDir::new("pins-seed-migrated");
-    let folder = scratch.path().join("config/sill");
+    let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     let old = r#"{"pinned":["firefox"]}"#;
     std::fs::write(folder.join("dock.json"), old).unwrap_or_else(|e| panic!("{e}"));
@@ -156,7 +156,7 @@ async fn an_old_dock_file_is_carried_over_and_never_seeded_over() {
 async fn an_edit_of_layout_toml_reaches_the_dock() {
     let scratch = TempDir::new("pins-live-reload");
     // The folder is there before the shell starts, as on any login: the watch is on it.
-    let folder = scratch.path().join("config/sill");
+    let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     let (mut pins, _apps, file) = start(&scratch);
     // Let the first read and the watch settle before the edit.
@@ -172,7 +172,7 @@ async fn an_edit_of_layout_toml_reaches_the_dock() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_pin_under_an_old_id_is_the_renamed_app_and_the_file_follows_the_next_save() {
     let scratch = TempDir::new("pins-renamed");
-    let folder = scratch.path().join("config/sill");
+    let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     let row = |app: &str| format!("[[dock]]\nkind = \"quire.dock.app\"\napp = \"{app}\"\n");
     let stored = format!(

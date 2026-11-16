@@ -31,7 +31,7 @@ impl PanelCtx {
     /// Tell the companion service something.
     fn companion_send(&self, command: CompanionCommand) {
         if let Err(error) = self.services.companion.control.send(command) {
-            eprintln!("sill: launcher: {error}");
+            eprintln!("bardo-shell: launcher: {error}");
         }
     }
 

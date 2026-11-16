@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Live IME check on KDE: open sill's launcher demo on wayland-0 and keep it open until
+# Live IME check on KDE: open bardo-shell's launcher demo on wayland-0 and keep it open until
 # `ime-live.sh capture` or `ime-live.sh stop`. The user types into it by hand (KWin has no
 # virtual keyboard, so nothing can type for them).
 #

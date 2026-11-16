@@ -1,4 +1,4 @@
-//! `sill debug ...`: the development probes' command line, and their pure mappings to requests.
+//! `bardo-shell debug ...`: the development probes' command line, and their pure mappings to requests.
 //! Each made-up input is built as the `shell-model` value the service would have received.
 
 use std::path::PathBuf;
@@ -19,7 +19,7 @@ use shell_model::volume::Mute;
 use super::made_up::{NotifyArgs, PolkitArgs, polkit_request, posting};
 use super::word::word;
 
-/// `sill debug ...`.
+/// `bardo-shell debug ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Subcommand)]
 pub enum DebugAction {
     /// Frame statistics for every surface.
@@ -69,7 +69,7 @@ pub enum DebugAction {
         corner: Corner,
     },
     /// `button` presses at X Y on SURFACE and stays down: the first half of a real drag
-    /// (layer-shell-host's `Inject::PointerDown`). `sill debug pointer` moves while it
+    /// (layer-shell-host's `Inject::PointerDown`). `bardo-shell debug pointer` moves while it
     /// is held, and `pointer-release` lets go.
     PointerPress {
         surface: String,
@@ -119,7 +119,7 @@ pub enum DebugAction {
     },
 }
 
-/// The request `sill debug ACTION` sends.
+/// The request `bardo-shell debug ACTION` sends.
 pub fn debug_request(action: &DebugAction) -> Request {
     Request::Debug(match action {
         DebugAction::Stats => DebugRequest::Stats,

@@ -1,5 +1,5 @@
 //! The Overlays page's embedded palette: `CommandPalette` hosted in a surface of its own, as
-//! sill's launcher panel draws it: no scrim, the card filling its
+//! bardo-shell's launcher panel draws it: no scrim, the card filling its
 //! container and carrying the id a blur region names, `cmdk-in`, app icons in the rows; and a
 //! warm palette kept mounted while hidden and shown by a button.
 

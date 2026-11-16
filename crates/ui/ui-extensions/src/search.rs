@@ -10,8 +10,8 @@ use plugin_host::{Layout, Rejected};
 use ui_core::settings::ExtensionId;
 use ui_settings::xdg;
 
-/// The folder under a data directory where Extensions live: `<data>/quire/extensions/<id>/`.
-const APP: &str = "quire";
+/// The folder under a data directory where Extensions live: `<data>/bardo/extensions/<id>/`.
+const APP: &str = "bardo";
 const FOLDER: &str = "extensions";
 const MANIFEST: &str = "extension.toml";
 
@@ -23,7 +23,7 @@ pub const PROTOCOL: u32 = 1;
 /// [`Search::from_env`], and a test or a portable install passes its own.
 ///
 /// A root is a data directory, the shape of `$XDG_DATA_HOME`: Extensions are in
-/// `<root>/quire/extensions/<id>/extension.toml`.
+/// `<root>/bardo/extensions/<id>/extension.toml`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Search {
     person: Option<PathBuf>,

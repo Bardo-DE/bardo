@@ -1,14 +1,14 @@
 //! Screenshots: noticing a new one, so the floating thumbnail can show it (design/20 §1.13), and
-//! taking one on `sill screenshot`.
+//! taking one on `bardo-shell screenshot`.
 //!
-//! How sill learns a screenshot happened (researched): the desktop portal
+//! How bardo-shell learns a screenshot happened (researched): the desktop portal
 //! (`org.freedesktop.portal.Screenshot`) saves the image as `Screenshot_%Y-%m-%d_%H-%M-%S.png`
 //! in the Pictures folder, or a tool is told a folder to save into. Neither announces the file
 //! on the bus: the portal's `Response` goes to the caller only. So the one route that sees
-//! every screenshot, whoever took it (the Print key, `sill screenshot`, spectacle, grim), is
+//! every screenshot, whoever took it (the Print key, `bardo-shell screenshot`, spectacle, grim), is
 //! **an inotify watch of the screenshot folders** (`notify`, already a dependency): a new file
 //! whose name reads as a screenshot (`names::is_screenshot_name`), seen when it is closed after
-//! writing or renamed into place, becomes the current `Shot`. `sill screenshot
+//! writing or renamed into place, becomes the current `Shot`. `bardo-shell screenshot
 //! [area|window|screen]` only runs the portal's screenshot (`tool::portal_command`); its file arrives through
 //! the same watch, so there is one path to test. A clipboard-only screenshot has no file and no
 //! thumbnail, as on macOS.

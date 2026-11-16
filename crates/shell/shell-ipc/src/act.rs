@@ -6,7 +6,7 @@
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 
-/// A display key, or a slider standing in for one (`sill display ...`).
+/// A display key, or a slider standing in for one (`bardo-shell display ...`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(feature = "cli", derive(clap::Subcommand))]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -48,9 +48,9 @@ pub enum VolumeRequest {
     ToggleMute,
 }
 
-/// The words of `sill switcher ...`: the window switcher shortcuts run
+/// The words of `bardo-shell switcher ...`: the window switcher shortcuts run
 /// `next` / `prev`; `cancel` and `commit` are for scripts and for a compositor
-/// that tells sill about the modifier's release some other way.
+/// that tells bardo-shell about the modifier's release some other way.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 pub enum SwitcherRequest {
@@ -64,7 +64,7 @@ pub enum SwitcherRequest {
     Commit,
 }
 
-/// The words of `sill workspace ...`: palmrest's swipes run `prev` and `next`.
+/// The words of `bardo-shell workspace ...`: palmrest's swipes run `prev` and `next`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 pub enum WorkspaceRequest {

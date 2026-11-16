@@ -31,7 +31,7 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// `body` under a control center's root, as sill draws it.
+/// `body` under a control center's root, as bardo-shell draws it.
 fn rooted(body: Element) -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, stylesheet: Inject::Host,

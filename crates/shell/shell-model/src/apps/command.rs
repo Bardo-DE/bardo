@@ -3,6 +3,6 @@
 /// What the apps service can be told.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppsCommand {
-    /// Rescan now (`sill reload`).
+    /// Rescan now (`bardo-shell reload`).
     Rescan,
 }

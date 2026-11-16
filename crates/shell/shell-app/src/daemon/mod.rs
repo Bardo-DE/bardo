@@ -1,4 +1,4 @@
-//! The daemon: `sill run` ([`run`]) takes the single-instance lock, starts the services, the IPC
+//! The daemon: `bardo-shell run` ([`run`]) takes the single-instance lock, starts the services, the IPC
 //! server and the settings watch, connects the host and keeps one row of surfaces per output.
 //! `events` handles what the host reports, `compositor` holds the desktop's own compositor's
 //! connection, arm and notes, `surfaces` spawns what an output lacks (`spawn` any

@@ -74,7 +74,7 @@ fn unknown(proc_root: &Path, pid: u32) -> Identity {
     match flatpak_scope(proc_root, pid) {
         FlatpakScope::Unreadable => {
             eprintln!(
-                "sill: app menu: process {pid} is a Flatpak app whose /proc/{pid}/root/.flatpak-info \
+                "bardo-shell: app menu: process {pid} is a Flatpak app whose /proc/{pid}/root/.flatpak-info \
                  cannot be read from here; it is shown as an unknown app"
             );
             Identity::Unreadable

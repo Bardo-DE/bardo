@@ -11,7 +11,7 @@ use ui_components::components::content::image_source::ImageSize;
 /// radius subtracts from the card's.
 pub(crate) const MAT: Px = Px(4.0);
 
-/// The tallest picture box, as height over width: 16:10, the shape sill sizes the thumbnail's
+/// The tallest picture box, as height over width: 16:10, the shape bardo-shell sizes the thumbnail's
 /// surface for; a taller picture is pillarboxed.
 const TALLEST: f32 = 10.0 / 16.0;
 

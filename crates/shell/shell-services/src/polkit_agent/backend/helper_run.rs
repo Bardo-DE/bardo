@@ -1,5 +1,5 @@
 //! One helper run for the request on screen: polkit's helper as a `kill_on_drop` child or on
-//! its socket, or, for a `sill debug polkit` request, an in-process stand-in that accepts
+//! its socket, or, for a `bardo-shell debug polkit` request, an in-process stand-in that accepts
 //! [`FAKE_SECRET`]. A run reports its lines as [`RunEvent`]s tagged with its [`RunId`], so a
 //! stopped run's late lines are told apart; dropping a [`Run`] aborts its task, which kills the
 //! child. The answer reaches the task over an in-process channel and is written from a buffer

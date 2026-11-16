@@ -1,4 +1,4 @@
-//! `idle.*`: sill's own idle service: the screen off, the lock at screen off and the idle suspend
+//! `idle.*`: bardo-shell's own idle service: the screen off, the lock at screen off and the idle suspend
 //! (the dim is constants in the daemon's policy). design/22 §3.24 has the rows. Minutes are
 //! `Mins`, plain integers in the file; every key is on the Power page, Advanced, with
 //! `session.lock_grace_s` (`crate::schema` moves that one key).
@@ -8,7 +8,7 @@ use shell_model::idle::IdleLock;
 use ui_settings::Mins;
 use ui_settings::schema::Page;
 
-/// sill's idle service.
+/// bardo-shell's idle service.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(

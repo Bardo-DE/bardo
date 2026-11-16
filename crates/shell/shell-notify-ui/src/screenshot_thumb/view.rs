@@ -28,7 +28,7 @@ use shell_ui_kit::look::use_active_look;
 use shell_ui_kit::notification_card::swipe_metrics;
 use shell_ui_kit::root::SurfaceRoot;
 
-/// The thumbnail's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The thumbnail's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const SCREENSHOT_THUMB_CSS: &str = include_str!("style.css");
 
 /// The thumbnail on `output`.

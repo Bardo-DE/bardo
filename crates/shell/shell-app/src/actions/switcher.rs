@@ -1,4 +1,4 @@
-//! The app switcher's asks: the switcher actions and the made-up open from `sill debug switcher`,
+//! The app switcher's asks: the switcher actions and the made-up open from `bardo-shell debug switcher`,
 //! written to the switcher's link for the output it opens on.
 //!
 //! Which output: [`Outputs::open_on`](crate::outputs::Outputs::open_on)'s rule.

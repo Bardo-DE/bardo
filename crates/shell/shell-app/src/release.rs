@@ -1,6 +1,6 @@
 //! Telling the update service the release in use started well. The service keeps the previous
 //! release until one has been confirmed, and takes a release back if sessions on it keep not
-//! reaching a working desktop; so a session that did reach one says so, with `slipway confirm`.
+//! reaching a working desktop; so a session that did reach one says so, with `bardo-updater confirm`.
 //!
 //! "Reached one" is: the shell has run for [`SETTLE`] on the person's own session bus, its host
 //! thread (the connection to the compositor) still answers, and nothing has taken it down. A
@@ -61,7 +61,7 @@ fn speaks(session: &BusRoute, mode: SessionMode) -> Speaks {
 /// exported. `exists` says whether a file is there.
 fn slipway_program(bin_dir: Option<&Path>, exists: impl Fn(&Path) -> bool) -> Option<PathBuf> {
     bin_dir
-        .map(|dir| dir.join("slipway"))
+        .map(|dir| dir.join("bardo-updater"))
         .into_iter()
         .chain([PathBuf::from(EXPORTED)])
         .find(|program| exists(program))
@@ -84,7 +84,7 @@ pub fn spawn_confirmation(rt: &Handle, env: &Env, host: HostHandle<ShellMsg>) {
         Speaks::NotTheInstalled => return,
         Speaks::FellBackToSafe => {
             eprintln!(
-                "sill: not telling the update service this release is good: the session fell \
+                "bardo-shell: not telling the update service this release is good: the session fell \
                  back to the safe compositor, so this run proves nothing about the release"
             );
             return;
@@ -107,7 +107,7 @@ pub fn spawn_confirmation(rt: &Handle, env: &Env, host: HostHandle<ShellMsg>) {
         if answered == Answered::Yes {
             let program = slipway_program(bin_dir.as_deref(), Path::is_file);
             if let Confirmed::Not(why) = confirm(children.as_ref(), program) {
-                eprintln!("sill: telling the update service this release is good: {why}");
+                eprintln!("bardo-shell: telling the update service this release is good: {why}");
             }
         }
     });
@@ -134,12 +134,12 @@ enum Confirmed {
     Not(String),
 }
 
-/// Run `slipway confirm` with `program`. A release that cannot say it is good is rolled back after
+/// Run `bardo-updater confirm` with `program`. A release that cannot say it is good is rolled back after
 /// three logins, so a missing program is an error to log, not a thing to pass over.
 fn confirm(children: &dyn Children, program: Option<PathBuf>) -> Confirmed {
     let Some(program) = program else {
         return Confirmed::Not(format!(
-            "no slipway program beside this one or at {EXPORTED}, so this release stays unconfirmed"
+            "no bardo-updater program beside this one or at {EXPORTED}, so this release stays unconfirmed"
         ));
     };
     match children.detach(&confirm_command(program.clone())) {
@@ -226,9 +226,9 @@ mod tests {
 
     #[test]
     fn the_update_service_is_found_beside_this_program_else_where_it_is_exported() {
-        let beside = PathBuf::from("/opt/quire/releases/1/bin/slipway");
+        let beside = PathBuf::from("/opt/bardo/releases/1/bin/bardo-updater");
         let exported = PathBuf::from(EXPORTED);
-        let dir = PathBuf::from("/opt/quire/releases/1/bin");
+        let dir = PathBuf::from("/opt/bardo/releases/1/bin");
         // (case, the release's program folder, the programs that exist, the one found)
         type Case<'a> = (
             &'a str,
@@ -263,7 +263,7 @@ mod tests {
     #[test]
     fn confirming_runs_the_found_program_with_confirm_once() {
         let recorder = RecordedChildren::default();
-        let program = PathBuf::from("/opt/quire/releases/1/bin/slipway");
+        let program = PathBuf::from("/opt/bardo/releases/1/bin/bardo-updater");
         assert_eq!(confirm(&recorder, Some(program.clone())), Confirmed::Told);
         assert_eq!(recorder.started(), [confirm_command(program.clone())]);
         assert_eq!(
@@ -291,7 +291,7 @@ mod tests {
         let missing = confirm(&recorder, None);
         assert!(matches!(missing, Confirmed::Not(why) if why.contains(EXPORTED)));
         assert!(recorder.started().is_empty(), "nothing was started");
-        let failed = confirm(&Unstartable, Some(PathBuf::from("/x/slipway")));
-        assert!(matches!(failed, Confirmed::Not(why) if why.contains("/x/slipway")));
+        let failed = confirm(&Unstartable, Some(PathBuf::from("/x/bardo-updater")));
+        assert!(matches!(failed, Confirmed::Not(why) if why.contains("/x/bardo-updater")));
     }
 }

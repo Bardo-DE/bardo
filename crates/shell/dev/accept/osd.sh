@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
-# OSD acceptance (design/20 §1.7), on casement (brought up and ended by start_compositor). Starts `sill run` from this checkout's debug build
+# OSD acceptance (design/20 §1.7), on casement (brought up and ended by start_compositor). Starts `bardo-shell run` from this checkout's debug build
 # (`--features debug`) with a scratch HOME and XDG tree, on a private bus that is both its session
 # and its system bus, and quits it at the end.
 #
-# The changes are made up with `sill debug osd` (a fixed level, shown on the output a real change
+# The changes are made up with `bardo-shell debug osd` (a fixed level, shown on the output a real change
 # would use): the nested session shares the real PipeWire default sink, which may be somebody's
 # headphones, and a brightness key there could reach a real monitor over DDC/CI, so nothing here
-# moves a real level. `sill display volume|brightness` take the same path to the OSD after
+# moves a real level. `bardo-shell display volume|brightness` take the same path to the OSD after
 # their service call (crates/shell/shell-app/src/osd.rs, `after_display`).
 #
 #   1. Warm: the OSD surface exists from the start, hidden (no capture).
-#   2. `sill debug osd volume 60` shows it: a capture with the card's pixels within 200 ms.
+#   2. `bardo-shell debug osd volume 60` shows it: a capture with the card's pixels within 200 ms.
 #      Screenshot dev/out/osd-casement.png while it holds.
 #   3. It hides by itself about 1.5 s after the change: the capture fails between the hold
 #      (the OSD's constant hold, 1500) and the hold plus the fade (--t-move) plus 400 ms of slack.
 #   4. A change during the fade takes it back: shown again at 1.6 s, it is still up at 2.4 s.
 #   5. 5 s idle after it hides: 0 frames on the OSD surface.
 #
-# Then, not one of the four: `sill debug osd volume 60 --mute muted` for a second screenshot,
+# Then, not one of the four: `bardo-shell debug osd volume 60 --mute muted` for a second screenshot,
 # dev/out/osd-casement-muted.png, of quire's `Osd` card muted (non-fatal: it does not flip the
 # script's exit status).
 #
@@ -32,7 +32,7 @@ HOLD_MS=1500
 
 # Whether the OSD captures (it is mapped) with more than 1000 opaque pixels (the card drew).
 shows() {
-  sill debug capture "$OSD" "$OUT_DIR/osd.png" >>"$1" 2>&1 || return 1
+  bardo-shell debug capture "$OSD" "$OUT_DIR/osd.png" >>"$1" 2>&1 || return 1
   [ "$(opaque_pixels "$OUT_DIR/osd.png")" -gt 1000 ]
 }
 
@@ -47,9 +47,9 @@ start_osd_daemon() {
 # 1.
 step_warm() {
   local log="$OUT_DIR/warm.log"
-  sill debug stats >"$log" 2>&1
-  grep -q "\"$OSD\"" "$log" || { echo "$OSD is not in 'sill debug stats'" >&2; return 1; }
-  if sill debug capture "$OSD" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
+  bardo-shell debug stats >"$log" 2>&1
+  grep -q "\"$OSD\"" "$log" || { echo "$OSD is not in 'bardo-shell debug stats'" >&2; return 1; }
+  if bardo-shell debug capture "$OSD" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
     echo "the OSD is mapped before any change" >&2; return 1
   fi
   echo "$OSD spawned at start, hidden" | tee -a "$log" >&2
@@ -60,10 +60,10 @@ step_shows_then_hides() {
   local log="$OUT_DIR/show.log" start shown=-1 gone=-1 t
   : >"$log"
   start=$(now_ms)
-  sill debug osd volume 60 >>"$log" 2>&1 || return 1
+  bardo-shell debug osd volume 60 >>"$log" 2>&1 || return 1
   # Timed at the capture's return; the pixel count after it is not counted.
   for _ in $(seq 40); do
-    if sill debug capture "$OSD" "$OUT_DIR/osd.png" >>"$log" 2>&1; then
+    if bardo-shell debug capture "$OSD" "$OUT_DIR/osd.png" >>"$log" 2>&1; then
       t=$(( $(now_ms) - start ))
       [ "$(opaque_pixels "$OUT_DIR/osd.png")" -gt 1000 ] && { shown=$t; break; }
     fi
@@ -74,7 +74,7 @@ step_shows_then_hides() {
   cp "$OUT_DIR/osd.png" "$OUT_DIR/osd-shown.png" 2>/dev/null
   while [ $(( $(now_ms) - start )) -lt 4000 ]; do
     t=$(( $(now_ms) - start ))
-    if ! sill debug capture "$OSD" "$OUT_DIR/osd-late.png" >>"$log" 2>&1; then gone=$t; break; fi
+    if ! bardo-shell debug capture "$OSD" "$OUT_DIR/osd-late.png" >>"$log" 2>&1; then gone=$t; break; fi
     sleep 0.05
   done
   local limit=$(( HOLD_MS + 250 + 400 ))
@@ -92,15 +92,15 @@ step_retrigger() {
   : >"$log"
   sleep 0.5
   start=$(now_ms)
-  sill debug osd brightness 40 >>"$log" 2>&1 || return 1
+  bardo-shell debug osd brightness 40 >>"$log" 2>&1 || return 1
   while [ $(( $(now_ms) - start )) -lt $(( HOLD_MS + 100 )) ]; do sleep 0.02; done
-  sill debug osd brightness 45 >>"$log" 2>&1 || return 1
+  bardo-shell debug osd brightness 45 >>"$log" 2>&1 || return 1
   while [ $(( $(now_ms) - start )) -lt $(( HOLD_MS + 900 )) ]; do sleep 0.02; done
   shows "$log" && up=yes
   echo "a change 100 ms into the fade: still up $(( $(now_ms) - start )) ms after the first: $up" \
     | tee -a "$log" >&2
   [ "$up" = yes ] || return 1
-  for _ in $(seq 60); do sill debug capture "$OSD" "$OUT_DIR/osd-late.png" >>"$log" 2>&1 || return 0; sleep 0.05; done
+  for _ in $(seq 60); do bardo-shell debug capture "$OSD" "$OUT_DIR/osd-late.png" >>"$log" 2>&1 || return 0; sleep 0.05; done
   echo "it never hid after the second change" >&2; return 1
 }
 
@@ -116,11 +116,11 @@ step_idle() {
 }
 
 # Not one of the four: a second screenshot, muted, from the same fake-change debug path
-# (`sill debug osd volume N --mute muted`), so both looks are on file. Non-fatal.
+# (`bardo-shell debug osd volume N --mute muted`), so both looks are on file. Non-fatal.
 step_muted_shot() {
   local log="$OUT_DIR/muted.log"
   : >"$log"
-  sill debug osd volume 60 --mute muted >>"$log" 2>&1 || { echo "muted: sill debug osd failed" >&2; return 1; }
+  bardo-shell debug osd volume 60 --mute muted >>"$log" 2>&1 || { echo "muted: bardo-shell debug osd failed" >&2; return 1; }
   for _ in $(seq 40); do
     shows "$log" && break
     sleep 0.02

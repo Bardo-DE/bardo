@@ -38,19 +38,19 @@ fn kept(_: &mut Set) -> Fixup {
 fn storage(scratch: &Scratch) -> SpacesStorage {
     SpacesStorage::new(
         &ConfigRoot::Scratch(scratch.root().to_path_buf()),
-        AppName("notes"),
+        AppName::desktop("notes"),
     )
 }
 
 fn spaces_dir(scratch: &Scratch) -> PathBuf {
-    let dir = scratch.root().join("notes");
+    let dir = scratch.root().join("bardo").join("notes");
     std::fs::create_dir_all(&dir).expect("dir");
     dir
 }
 
 fn state_dir(scratch: &Scratch) -> PathBuf {
     let dir = ConfigRoot::Scratch(scratch.root().to_path_buf())
-        .state_dir(AppName("notes"))
+        .state_dir(AppName::desktop("notes"))
         .expect("state dir");
     std::fs::create_dir_all(&dir).expect("dir");
     dir

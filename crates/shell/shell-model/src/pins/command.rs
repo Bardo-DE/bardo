@@ -9,7 +9,7 @@ use super::DockPins;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum PinAt {
-    /// After the last pin (`sill dock pin`, Keep in Dock).
+    /// After the last pin (`bardo-shell dock pin`, Keep in Dock).
     End,
     /// At this slot (a drop between tiles), clamped to the end.
     Index(u32),

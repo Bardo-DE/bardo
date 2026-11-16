@@ -2,7 +2,7 @@
 # on: casement (the sibling casement checkout's dev/up.sh, headless, INSIDE the jail: only
 # dev/accept.sh --compositor casement, or a script run under packaging/harness/jail.sh, can use
 # it) and layer-shell-host's headless KWin (kwin-virtual.sh). The KWin harness belongs to layer-shell-host;
-# sill only wraps it.
+# bardo-shell only wraps it.
 #
 # BARDO_SHELL_COMPOSITOR=casement|kwin picks the compositor for `start_compositor`; unset, each script
 # keeps its own choice: casement by default, kwin where it runs headless KWin (its
@@ -19,7 +19,7 @@ if [ ! -x "$BARDO_LAYER_SHELL_HOST_DEV/kwin-virtual.sh" ]; then
 fi
 # The build every script runs: BARDO_SHELL_PROFILE=debug (the default) or release, from cargo's target
 # directory (CARGO_TARGET_DIR when set, else the tree's target/). Both carry
-# `--features debug` (the fake DDC, `sill debug ...`), which `build` passes. The latency budgets
+# `--features debug` (the fake DDC, `bardo-shell debug ...`), which `build` passes. The latency budgets
 # (a warm launcher open, a banner's first frame, ...) are release budgets: a debug build is
 # several times slower, so `budgets_apply` is false there (and on a host whose load is past its
 # core count) and a script prints the measurement but does not fail it. Run the suite with
@@ -33,8 +33,8 @@ case "$BARDO_SHELL_PROFILE" in
 esac
 BARDO_SHELL_TARGET="${CARGO_TARGET_DIR:-$BARDO_SHELL_TREE/target}"
 BARDO_SHELL_OUT="$BARDO_SHELL_TARGET/$BARDO_SHELL_PROFILE"
-BARDO_SHELL_BIN="${BARDO_SHELL_BIN:-$BARDO_SHELL_OUT/sill}"
-# A budget also needs a host that is not oversubscribed: the figures include `sill debug capture`
+BARDO_SHELL_BIN="${BARDO_SHELL_BIN:-$BARDO_SHELL_OUT/bardo-shell}"
+# A budget also needs a host that is not oversubscribed: the figures include `bardo-shell debug capture`
 # and key round trips, which stretch several-fold when the one-minute load average is past the
 # core count (another build or an agent suite running), and then say nothing about the shell.
 budgets_apply() {
@@ -65,7 +65,7 @@ COMPOSITOR=
 # Where a script's logs and captures go: the target directory and dev/out in a checkout, but the
 # jail's own scratch dir inside one (A8: state never lands in the checkout, so jails run in parallel).
 if [ -n "${JAIL_SCRATCH:-}" ]; then
-  BARDO_SHELL_OUT_ROOT="$JAIL_SCRATCH/sill"
+  BARDO_SHELL_OUT_ROOT="$JAIL_SCRATCH/bardo/shell"
   BARDO_SHELL_SHOTS="$BARDO_SHELL_OUT_ROOT/shots"
 else
   BARDO_SHELL_OUT_ROOT="$BARDO_SHELL_TARGET"
@@ -136,23 +136,23 @@ nested_output_size() {
   nested wayland-info | sed -n 's/.*logical_width: \([0-9]*\), logical_height: \([0-9]*\).*/\1 \2/p' | head -1
 }
 
-# True when a `sill run` of the person's draws on the compositor socket $WL (its WAYLAND_DISPLAY,
+# True when a `bardo-shell run` of the person's draws on the compositor socket $WL (its WAYLAND_DISPLAY,
 # read from /proc): only a daemon on the same output is in this script's screenshots. Daemons on
 # other compositors (another agent's nested session, the real one) are none of its business.
 daemon_on_wl() {
   local pid
-  for pid in $(pgrep -u "$(id -u)" -f 'sill run'); do
+  for pid in $(pgrep -u "$(id -u)" -f 'bardo-shell run'); do
     tr '\0' '\n' <"/proc/$pid/environ" 2>/dev/null | grep -qx "WAYLAND_DISPLAY=$WL" && return 0
   done
   return 1
 }
 
-# Waits up to 10 minutes for no other sill daemon on this script's compositor ($WL): it would be
+# Waits up to 10 minutes for no other bardo-shell daemon on this script's compositor ($WL): it would be
 # in the screenshots. Fails when one is still there.
 await_no_process() {
   local waited=0
   while daemon_on_wl; do
-    [ "$waited" = 0 ] && echo "another sill daemon is running; waiting for it to finish" >&2
+    [ "$waited" = 0 ] && echo "another bardo-shell daemon is running; waiting for it to finish" >&2
     waited=$((waited + 1))
     [ "$waited" -gt 600 ] && { echo "it is still running after 10 min" >&2; return 1; }
     sleep 1
@@ -244,7 +244,7 @@ write_casement_floor() {
   [ -n "$OUT_DIR" ] || { echo "write_casement_floor: OUT_DIR is not set" >&2; return 1; }
   rm -rf "$dir" && mkdir -m 700 "$dir" || return 1
   {
-    echo "# The dev session's floor (sill dev/lib/compositor.sh): the programs the dev scripts run."
+    echo "# The dev session's floor (bardo-shell dev/lib/compositor.sh): the programs the dev scripts run."
     for row in "${BARDO_COMPOSITOR_FLOOR_ROWS[@]}"; do
       power=${row%% *}
       tool=${row#* }
@@ -273,8 +273,8 @@ write_casement_floor() {
 write_casement_callers() {
   local dir="$1" bin path
   {
-    echo "# The dev session's shell (sill dev/lib/compositor.sh): this checkout's daemons."
-    for bin in "$BARDO_SHELL_BIN" "$BARDO_SHELL_OUT/sill-nodebug"; do
+    echo "# The dev session's shell (bardo-shell dev/lib/compositor.sh): this checkout's daemons."
+    for bin in "$BARDO_SHELL_BIN" "$BARDO_SHELL_OUT/bardo-shell-nodebug"; do
       [ -x "$bin" ] || continue
       path=$(readlink -f "$bin") || continue
       printf '\n[[peer]]\napp = "org.bardo.Shell"\nrole = "shell"\nexe = ["%s"]\n' "$path"
@@ -285,7 +285,7 @@ write_casement_callers() {
 
 # Starts casement through its own dev/up.sh and sets WL, BUS, BARDO_COMPOSITOR_ENV. $1 is a size "WxH"
 # (default $SIZE); KWIN_VIRTUAL_OUTPUTS=2 (widgets.sh) means two outputs side by side. The clock
-# is the wall clock: sill's animations and timers run on real time, and a stepped clock would
+# is the wall clock: bardo-shell's animations and timers run on real time, and a stepped clock would
 # stand still until a script advanced it. Refuses a bus that would be the session's.
 start_casement() {
   local size="${1:-$SIZE}" spec up_out env_file floor

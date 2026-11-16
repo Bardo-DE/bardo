@@ -183,7 +183,7 @@ impl Live {
     /// Start what `Own` needs before the machine sees the policy, and stop it after `Off`.
     async fn use_policy(&mut self, policy: shell_model::idle::IdlePolicy) {
         if policy.mode != self.state.policy.mode {
-            eprintln!("sill: idle: {:?}", policy.mode);
+            eprintln!("bardo-shell: idle: {:?}", policy.mode);
         }
         match policy.mode {
             IdleMode::Own => {
@@ -220,7 +220,7 @@ impl Live {
             };
             match wl::start(route, tell) {
                 Ok(wire) => self.held.wire = Some(wire),
-                Err(error) => eprintln!("sill: idle: no thread: {error}"),
+                Err(error) => eprintln!("bardo-shell: idle: no thread: {error}"),
             }
             // A fresh connection holds nothing: the machine's set must be sent again.
             self.state.held.clear();
@@ -259,7 +259,7 @@ impl Live {
         }
         let now = self.now();
         match heard.event {
-            WlEvent::Bound(protocols) => eprintln!("sill: idle: bound {protocols:?}"),
+            WlEvent::Bound(protocols) => eprintln!("bardo-shell: idle: bound {protocols:?}"),
             WlEvent::Idled(stage) => self.feed(IdleEvent::Idled(stage, now)).await,
             WlEvent::Resumed => self.feed(IdleEvent::Resumed(now)).await,
             WlEvent::Gone => {
@@ -277,7 +277,7 @@ impl Live {
     async fn inhibit(&mut self, msg: InhibitMsg) -> shell_model::idle::InhibitReply {
         if let InhibitMsg::Inhibit { app, reason, .. } = &msg {
             eprintln!(
-                "sill: idle: inhibited by {} ({})",
+                "bardo-shell: idle: inhibited by {} ({})",
                 for_log(app),
                 for_log(reason)
             );
@@ -335,21 +335,21 @@ impl Live {
         match effect {
             IdleEffect::Watch(watches) => self.order(Order::Watch(watches)),
             IdleEffect::Displays(power) => {
-                eprintln!("sill: idle: displays {power:?}");
+                eprintln!("bardo-shell: idle: displays {power:?}");
                 self.order(Order::Displays(power));
             }
             // The dim overlay (`shell-ui-kit` `idle_dim`, mapped by the daemon's
             // `idle_dim` follower) reads `Idle.dim`, published after the step.
-            IdleEffect::Dim(level) => eprintln!("sill: idle: dim {level:?}"),
-            IdleEffect::Undim => eprintln!("sill: idle: undim"),
+            IdleEffect::Dim(level) => eprintln!("bardo-shell: idle: dim {level:?}"),
+            IdleEffect::Undim => eprintln!("bardo-shell: idle: undim"),
             IdleEffect::Lock => {
-                eprintln!("sill: idle: lock at screen off");
+                eprintln!("bardo-shell: idle: lock at screen off");
                 let _ = self.links.locker.send(LockerCommand::IdleLock);
             }
             IdleEffect::Grace(case) => {
                 let verdict = shell_model::idle::grace_verdict(&case);
                 eprintln!(
-                    "sill: idle: grace {verdict:?} (woke after {} ms)",
+                    "bardo-shell: idle: grace {verdict:?} (woke after {} ms)",
                     case.woke.0
                 );
                 if let Some(ticket) = ticket(&case) {
@@ -358,10 +358,10 @@ impl Live {
             }
             IdleEffect::Suspend => match &self.held.logind {
                 Some(logind) => {
-                    eprintln!("sill: idle: suspend");
+                    eprintln!("bardo-shell: idle: suspend");
                     logind.suspend().await;
                 }
-                None => eprintln!("sill: idle: no logind to suspend"),
+                None => eprintln!("bardo-shell: idle: no logind to suspend"),
             },
             IdleEffect::IdleHint(hint) => {
                 if let Some(logind) = &self.held.logind {

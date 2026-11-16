@@ -1,7 +1,7 @@
 //! The crash guard for styles (customization design section 7.4). A bad stylesheet can stop a
 //! program from starting, and a program that cannot start cannot show the switch that turns the
 //! style off. So before a window first loads styles the guard writes the fingerprint of the three
-//! sheets to `<state>/quire/styles-guard/<program>` marked `starting`, and once the first frame
+//! sheets to `<state>/bardo/styles-guard/<program>` marked `starting`, and once the first frame
 //! has been drawn and the program has lived five seconds it marks the record `good`. If the last
 //! two starts with the same sheets never got there, the next start is without them: the app
 //! draws with `custom_styles: false` and shows `ui_components::prelude::StylesOffNotice`, whose button calls

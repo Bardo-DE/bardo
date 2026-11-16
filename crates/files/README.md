@@ -33,8 +33,8 @@ files name `/usr/bin/bardo-files`, so change them for another prefix):
 | `crates/files/dist/org.bardo.Files.desktop` | `<prefix>/share/applications/` |
 | `crates/files/dist/org.bardo.Files.FileManager1.service` | `<prefix>/share/dbus-1/services/` |
 | `crates/files/dist/org.bardo.Files.service` | `<prefix>/share/dbus-1/services/` |
-| `dist/intents/org.bardo.Files.toml` | `<prefix>/share/quire/intents/` |
-| `files --write-schema DIR` writes `files.settings.toml` | `<prefix>/share/quire/settings/` |
+| `dist/intents/org.bardo.Files.toml` | `<prefix>/share/bardo/intents/` |
+| `files --write-schema DIR` writes `files.settings.toml` | `<prefix>/share/bardo/settings/` |
 
 Files is one running app. A second `files FOLDER` hands the folder to the first and exits. While it
 runs, it answers `org.freedesktop.FileManager1` (`ShowFolders`, `ShowItems`, `ShowItemProperties`),

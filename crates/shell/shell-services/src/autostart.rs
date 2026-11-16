@@ -1,7 +1,7 @@
 //! Open at Login: the freedesktop autostart entry `$XDG_CONFIG_HOME/autostart/<app id>.desktop`.
 //!
 //! Turning it on copies the app's own desktop entry there, with one line added under
-//! `[Desktop Entry]` that says sill wrote it ([`MARK_LINE`]). Turning it off deletes the file only
+//! `[Desktop Entry]` that says bardo-shell wrote it ([`MARK_LINE`]). Turning it off deletes the file only
 //! when that line is in it: a file the person or another program put there is shown as on and
 //! left alone. The state is always read from the folder, never remembered.
 
@@ -12,11 +12,11 @@ use shell_launcher::AppId;
 use crate::env::Dirs;
 use crate::error::ServiceError;
 
-/// The key that marks a file sill wrote.
-pub const MARK_KEY: &str = "X-Quire-Autostart";
+/// The key that marks a file bardo-shell wrote.
+pub const MARK_KEY: &str = "X-Bardo-Autostart";
 
 /// The line added to a copied entry.
-const MARK_LINE: &str = "X-Quire-Autostart=true";
+const MARK_LINE: &str = "X-Bardo-Autostart=true";
 
 /// The group header the mark goes under.
 const HEADER: &str = "[Desktop Entry]";
@@ -26,7 +26,7 @@ const HEADER: &str = "[Desktop Entry]";
 pub enum Login {
     /// No autostart entry for the app.
     Off,
-    /// An entry sill wrote: sill may remove it.
+    /// An entry bardo-shell wrote: bardo-shell may remove it.
     OurEntry,
     /// An entry someone else wrote: shown as on, never removed here.
     OthersEntry,
@@ -46,7 +46,7 @@ pub fn file_of(dirs: &Dirs, app: &AppId) -> PathBuf {
         .join(format!("{}.desktop", app.0))
 }
 
-/// Whether `text` carries sill's mark.
+/// Whether `text` carries bardo-shell's mark.
 pub fn is_marked(text: &str) -> bool {
     text.lines().any(|line| line.trim() == MARK_LINE)
 }
@@ -100,7 +100,7 @@ pub fn turn_on(dirs: &Dirs, app: &AppId, entry: &Path) -> Result<(), ServiceErro
     std::fs::write(&target, marked).map_err(|e| io(&target, e))
 }
 
-/// Stop starting `app` at login: remove the entry when sill wrote it, and only then.
+/// Stop starting `app` at login: remove the entry when bardo-shell wrote it, and only then.
 pub fn turn_off(dirs: &Dirs, app: &AppId) -> Result<(), ServiceError> {
     match login_of(dirs, app) {
         Login::OurEntry => {
@@ -115,7 +115,7 @@ pub fn turn_off(dirs: &Dirs, app: &AppId) -> Result<(), ServiceError> {
 pub fn turn_on_in_background(dirs: Dirs, app: AppId, entry: PathBuf) {
     std::thread::spawn(move || {
         if let Err(error) = turn_on(&dirs, &app, &entry) {
-            eprintln!("sill: Open at Login: {error}");
+            eprintln!("bardo-shell: Open at Login: {error}");
         }
     });
 }
@@ -124,7 +124,7 @@ pub fn turn_on_in_background(dirs: Dirs, app: AppId, entry: PathBuf) {
 pub fn turn_off_in_background(dirs: Dirs, app: AppId) {
     std::thread::spawn(move || {
         if let Err(error) = turn_off(&dirs, &app) {
-            eprintln!("sill: Open at Login: {error}");
+            eprintln!("bardo-shell: Open at Login: {error}");
         }
     });
 }

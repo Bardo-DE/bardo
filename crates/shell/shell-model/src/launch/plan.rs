@@ -65,11 +65,12 @@ fn icon_arg(icon: &AppIcon) -> String {
     }
 }
 
-/// `app-sill-<id>-<nonce>.scope`, the scope a launch runs in: porter's [`ScopeName`] writes it, so
+/// `app-bardo-<id>-<nonce>.scope`, the scope a launch runs in: porter's [`ScopeName`] writes it, so
 /// what porter reads back to learn which app a process is (`identity_of`) is the same name. The id
 /// is escaped as a unit name component (`systemd-escape`); an empty id has no scope.
 pub fn scope_unit(app: &AppId, nonce: u32) -> Result<ScopeUnit, CoreError> {
-    ScopeName::new(Some("sill"), &app.0, &nonce.to_string()).map(|name| ScopeUnit(name.to_string()))
+    ScopeName::new(Some("bardo"), &app.0, &nonce.to_string())
+        .map(|name| ScopeUnit(name.to_string()))
 }
 
 #[cfg(test)]
@@ -115,7 +116,7 @@ mod tests {
     }
 
     fn unit() -> ScopeUnit {
-        ScopeUnit("app-sill-foot-1.scope".to_owned())
+        ScopeUnit("app-bardo-foot-1.scope".to_owned())
     }
 
     fn request(action: DesktopAction) -> LaunchRequest {
@@ -131,27 +132,27 @@ mod tests {
     #[test]
     fn the_id_is_escaped_as_a_unit_name_component() {
         let table: &[(&str, &str, &str)] = &[
-            ("plain", "foot", "app-sill-foot-1.scope"),
+            ("plain", "foot", "app-bardo-foot-1.scope"),
             (
                 "reverse dns",
                 "org.mozilla.firefox",
-                "app-sill-org.mozilla.firefox-1.scope",
+                "app-bardo-org.mozilla.firefox-1.scope",
             ),
             (
                 "leading dot is escaped",
                 ".hidden",
-                "app-sill-\\x2ehidden-1.scope",
+                "app-bardo-\\x2ehidden-1.scope",
             ),
-            ("space is escaped", "a b", "app-sill-a\\x20b-1.scope"),
+            ("space is escaped", "a b", "app-bardo-a\\x20b-1.scope"),
             (
                 "a literal dash is escaped",
                 "a-b",
-                "app-sill-a\\x2db-1.scope",
+                "app-bardo-a\\x2db-1.scope",
             ),
             (
                 "colon, underscore and mid dot are kept",
                 "a:b_c.d",
-                "app-sill-a:b_c.d-1.scope",
+                "app-bardo-a:b_c.d-1.scope",
             ),
         ];
         for (name, given, want) in table {
@@ -169,7 +170,7 @@ mod tests {
         let b = scope_unit(&id("foot"), 2).expect("a non-empty id");
         assert_ne!(a, b);
         for unit in [&a, &b] {
-            assert!(unit.0.starts_with("app-sill-foot-"));
+            assert!(unit.0.starts_with("app-bardo-foot-"));
             assert!(unit.0.ends_with(".scope"));
             assert!(
                 unit.0.chars().all(|c| c.is_ascii_alphanumeric()
@@ -194,7 +195,7 @@ mod tests {
                 "--user".to_owned(),
                 "--scope".to_owned(),
                 "--collect".to_owned(),
-                "--unit=app-sill-foot-1.scope".to_owned(),
+                "--unit=app-bardo-foot-1.scope".to_owned(),
                 "--".to_owned(),
                 "foot".to_owned(),
                 "-e".to_owned(),
@@ -218,7 +219,7 @@ mod tests {
                 "--user".to_owned(),
                 "--scope".to_owned(),
                 "--collect".to_owned(),
-                "--unit=app-sill-foot-1.scope".to_owned(),
+                "--unit=app-bardo-foot-1.scope".to_owned(),
                 "--".to_owned(),
                 "ghostty".to_owned(),
                 "-e".to_owned(),

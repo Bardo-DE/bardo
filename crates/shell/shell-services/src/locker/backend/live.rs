@@ -1,7 +1,7 @@
 //! The locker service's loop: turns commands, logind's signals, the shell's lock reports and the
 //! clock into [`LockerEvent`]s, steps the machine, performs its effects and publishes [`Lock`].
 //!
-//! With sill's own lock (a mode of `Some`) the loop also keeps [`super::marker`]'s file (written when the phase
+//! With bardo-shell's own lock (a mode of `Some`) the loop also keeps [`super::marker`]'s file (written when the phase
 //! leaves `Unlocked`, before the lock is published and so before the session is covered; removed
 //! when it returns to `Unlocked`) and, right after a mode
 //! resolves to an own lock, locks at once when [`super::marker::restore_on_start`] says so.
@@ -30,7 +30,7 @@ use crate::supervise::Backoff;
 struct Live {
     tx: watch::Sender<Lock>,
     machine: Locker,
-    /// The session kind sill's own lock runs in; `None` never locks.
+    /// The session kind bardo-shell's own lock runs in; `None` never locks.
     mode: Option<Host>,
     epoch: Instant,
     logind: Logind,
@@ -150,7 +150,7 @@ impl Live {
                 self.feed(LockerEvent::Requested(LockCause::Action, now))
                     .await;
             }
-            // sill's own idle turned the displays off.
+            // bardo-shell's own idle turned the displays off.
             LockerCommand::IdleLock => {
                 let now = self.now();
                 self.feed(LockerEvent::Requested(LockCause::IdleScreenOff, now))
@@ -178,7 +178,7 @@ impl Live {
             follow_logind: mode.is_some_and(Host::follows_logind),
         };
         self.feed(event).await;
-        // A sill that died while its own lock held left the marker: lock again at once, so the
+        // A bardo-shell that died while its own lock held left the marker: lock again at once, so the
         // person gets a prompt on the session the compositor kept locked.
         let found = match &self.marker {
             Some(path) if path.exists() => LockMarker::Present,
@@ -203,7 +203,10 @@ impl Live {
                     .map_or(Ok(()), std::fs::create_dir_all)
                     .and_then(|()| std::fs::write(path, b"locked\n"));
                 if let Err(error) = written {
-                    eprintln!("sill: writing the lock marker {}: {error}", path.display());
+                    eprintln!(
+                        "bardo-shell: writing the lock marker {}: {error}",
+                        path.display()
+                    );
                 }
             }
             MarkerChange::Remove => {

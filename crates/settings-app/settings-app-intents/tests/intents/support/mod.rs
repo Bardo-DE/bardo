@@ -178,7 +178,7 @@ impl World {
         }
     }
 
-    /// A connection to the bus, as the launcher (sill) has: the shell, which calls the app by name.
+    /// A connection to the bus, as the launcher (bardo-shell) has: the shell, which calls the app by name.
     pub async fn launcher(&self) -> zbus::Connection {
         self.caller(roles::SHELL).await
     }

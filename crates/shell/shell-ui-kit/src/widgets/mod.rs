@@ -1,7 +1,7 @@
 //! The notification center's widgets (design/20 §1.14): Calendar, then Up Next, under the
 //! history, each on quire's widget interface. quire owns the card
 //! (`shell_kit::prelude::WidgetCard`); a widget is a `shell_kit::prelude::Widget`
-//! (quire's `MonthWidget` and sill's own [`up_next::UpNext`]), and sill only provides each one's
+//! (quire's `MonthWidget` and bardo-shell's own [`up_next::UpNext`]), and bardo-shell only provides each one's
 //! entries from its services ([`Widget`] picks the provider for a kind).
 
 mod card;
@@ -20,7 +20,7 @@ pub use wake::{provide_widget_wake, use_widget_wake};
 /// Medium (336 fits its 360 less the padding).
 pub const SIZE: WidgetSize = WidgetSize::Medium;
 
-/// sill's own widgets' stylesheets (quire's widgets style themselves), for the notification
+/// bardo-shell's own widgets' stylesheets (quire's widgets style themselves), for the notification
 /// center to inject beside its own.
 pub fn widgets_css() -> &'static str {
     up_next::CSS

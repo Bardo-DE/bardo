@@ -22,7 +22,7 @@ impl Say {
     fn command(&self, command: CompanionCommand) {
         // A stopped service has nobody to tell.
         if let Err(error) = self.0.send(command) {
-            eprintln!("sill: launcher: {error}");
+            eprintln!("bardo-shell: launcher: {error}");
         }
     }
 }

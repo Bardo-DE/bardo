@@ -1,6 +1,6 @@
-//! The desktop's command line: `sill dock`. The verbs
-//! that are a wire enum's words (`sill power-menu`, `sill force-quit`, `sill screenshot`,
-//! `sill companion`, `sill voice`) take the enum itself, parsed by `word::word`.
+//! The desktop's command line: `bardo-shell dock`. The verbs
+//! that are a wire enum's words (`bardo-shell power-menu`, `bardo-shell force-quit`, `bardo-shell screenshot`,
+//! `bardo-shell companion`, `bardo-shell voice`) take the enum itself, parsed by `word::word`.
 
 use clap::Subcommand;
 use shell_ipc::request::Request;
@@ -10,7 +10,7 @@ use shell_model::actions::{Ask, Subject};
 
 use super::verbs::do_request;
 
-/// `sill dock ...`.
+/// `bardo-shell dock ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Subcommand)]
 pub enum DockAction {
     /// Keep APP (a desktop id, `org.mozilla.firefox`) in the dock.
@@ -22,7 +22,7 @@ pub enum DockAction {
     ToggleHide,
 }
 
-/// The request `sill dock ACTION` sends.
+/// The request `bardo-shell dock ACTION` sends.
 pub fn dock_request(action: &DockAction) -> Request {
     match action {
         DockAction::Pin { app } => app_request(ActionId::PinApp, app),

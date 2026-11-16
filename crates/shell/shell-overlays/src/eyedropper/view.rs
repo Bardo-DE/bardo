@@ -20,7 +20,7 @@ use ui_components::prelude::*;
 use super::io::use_sampler;
 use super::model::{cell_style, loupe_style, surface_of, zoom_style};
 
-/// The eyedropper's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The eyedropper's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const EYEDROPPER_CSS: &str = include_str!("style.css");
 
 pub(super) fn color_sampler(output: OutputInfo) -> Element {

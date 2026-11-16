@@ -168,7 +168,7 @@ impl CenterCtx {
             if let Err(error) =
                 control.send(NotificationsCommand::InvokeAction { id, action, token })
             {
-                eprintln!("sill: notification center: {error}");
+                eprintln!("bardo-shell: notification center: {error}");
             }
             link.close();
         });
@@ -176,7 +176,7 @@ impl CenterCtx {
 
     fn send(&self, command: NotificationsCommand) {
         if let Err(error) = self.control.send(command) {
-            eprintln!("sill: notification center: {error}");
+            eprintln!("bardo-shell: notification center: {error}");
         }
     }
 }

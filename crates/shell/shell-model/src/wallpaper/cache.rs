@@ -4,7 +4,7 @@
 use std::os::unix::ffi::OsStrExt;
 use std::path::{Path, PathBuf};
 
-/// The cache directory's name inside `$XDG_CACHE_HOME/sill`.
+/// The cache directory's name inside `$XDG_CACHE_HOME/bardo/shell`.
 pub const CACHE_DIR: &str = "wallpaper";
 
 /// `<hash>-<w>x<h>.png`, the hash as 16 lowercase hex digits.

@@ -173,7 +173,7 @@ impl Following {
         match call {
             ShellCall::Command(command) => {
                 if let Err(error) = self.arm.execute(&command) {
-                    eprintln!("sill: desktop_quire: {error}");
+                    eprintln!("bardo-shell: desktop_quire: {error}");
                 }
             }
             ShellCall::Register {
@@ -183,7 +183,7 @@ impl Following {
             } => {
                 let key = self.arm.desktop_mut().register_surface(&surface);
                 if let Err(error) = self.arm.assign(role, output, key) {
-                    eprintln!("sill: desktop_quire: {error}");
+                    eprintln!("bardo-shell: desktop_quire: {error}");
                 }
             }
         }
@@ -199,14 +199,14 @@ fn run(
     let client = match DesktopClient::with_config(&connection, DesktopConfig::holding_shell()) {
         Ok(client) => client,
         Err(error) => {
-            eprintln!("sill: desktop_quire: {error}; the shell protocol is not followed");
+            eprintln!("bardo-shell: desktop_quire: {error}; the shell protocol is not followed");
             return;
         }
     };
     let (waker, wake) = match waker_and_source() {
         Ok(pair) => pair,
         Err(error) => {
-            eprintln!("sill: desktop_quire: {error}; the shell protocol is not followed");
+            eprintln!("bardo-shell: desktop_quire: {error}; the shell protocol is not followed");
             return;
         }
     };
@@ -216,7 +216,7 @@ fn run(
     };
     following.hand_out();
     if let Err(error) = drive(&mut following, wake, calls) {
-        eprintln!("sill: desktop_quire: {error}; the shell protocol stops here");
+        eprintln!("bardo-shell: desktop_quire: {error}; the shell protocol stops here");
     }
 }
 
@@ -246,7 +246,7 @@ fn drive(
     handle
         .insert_source(wake, |(), (), following: &mut Following| {
             if let Err(error) = following.pump() {
-                eprintln!("sill: desktop_quire: {error}");
+                eprintln!("bardo-shell: desktop_quire: {error}");
             }
         })
         .map_err(|error| error.error)?;

@@ -2,7 +2,7 @@
 
 use ui_core::word::Word;
 
-/// Which summon an ask or an answer belongs to: sill mints it when it calls the app.
+/// Which summon an ask or an answer belongs to: bardo-shell mints it when it calls the app.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct SummonSerial(pub u64);
 

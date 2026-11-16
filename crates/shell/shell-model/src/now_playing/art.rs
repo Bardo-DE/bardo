@@ -1,5 +1,5 @@
 //! Album art: where an `mpris:artUrl` points, and the cache file a cover is kept in
-//! (`$XDG_CACHE_HOME/sill/art/<name>`), whether it was downloaded or copied from a local file.
+//! (`$XDG_CACHE_HOME/bardo/shell/art/<name>`), whether it was downloaded or copied from a local file.
 //! Pure; the service does the download and the copy.
 
 use std::path::{Path, PathBuf};

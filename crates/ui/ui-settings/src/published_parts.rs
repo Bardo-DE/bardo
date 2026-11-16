@@ -1,9 +1,9 @@
 //! An app's published style parts as data: what a person's stylesheet may rely on in that app
 //! (`ui_components::selectors::AppSelectors`), installed beside its settings schema
-//! as `$XDG_DATA_DIRS/quire/selectors/<app>.toml`, so Settings can check a stylesheet against
+//! as `$XDG_DATA_DIRS/bardo/selectors/<app>.toml`, so Settings can check a stylesheet against
 //! every app's parts without linking any app (customization design section 7.3).
 //!
-//! The file is two keys: `app = "sill"` and `classes = ["shell-bar", "sill-bar-item", ...]`. A
+//! The file is two keys: `app = "shell"` and `classes = ["shell-bar", "sill-bar-item", ...]`. A
 //! class outside the app's own `<app>-` prefix is dropped on both write and read, so a file cannot
 //! claim a `ds-` name or another app's.
 
@@ -21,7 +21,7 @@ const PARTS_CAP: ReadCap = ReadCap::kib(256);
 /// One app's public style parts.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PublishedParts {
-    /// The app's short name, lower case: `sill`.
+    /// The app's short name, lower case: `shell`.
     pub app: String,
     /// Every public class, without the leading dot, each starting with `<app>-`.
     pub classes: Vec<String>,
@@ -110,8 +110,8 @@ fn admit(path: &Path, found: &[PublishedParts]) -> Result<PublishedParts, String
     Ok(parts)
 }
 
-/// The directories [`discover_parts`] scans: each `$XDG_DATA_DIRS` entry's `quire/selectors`,
-/// then `$XDG_DATA_HOME/quire/selectors` last, with the environment handed in.
+/// The directories [`discover_parts`] scans: each `$XDG_DATA_DIRS` entry's `bardo/selectors`,
+/// then `$XDG_DATA_HOME/bardo/selectors` last, with the environment handed in.
 pub fn parts_dirs_from(
     xdg_data_home: Option<std::ffi::OsString>,
     xdg_data_dirs: Option<std::ffi::OsString>,
@@ -124,7 +124,7 @@ pub fn parts_dirs_from(
             home.as_deref(),
             xdg::DATA_HOME_UNDER_HOME,
         ))
-        .map(|base| base.join("quire").join("selectors"))
+        .map(|base| base.join("bardo").join("selectors"))
         .collect()
 }
 

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use crate::xdg;
 
 /// The directory under a data directory that holds the app icons.
-const SUBDIR: &str = "quire/icons/apps";
+const SUBDIR: &str = "bardo/icons/apps";
 
 /// The repository's own set, for a path-dependency consumer in development. Debug builds only: a
 /// release build must not carry the builder's source path, nor trust a directory there.
@@ -18,9 +18,9 @@ const DEV_ASSETS: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../assets/icons/a
 pub enum AssetsOrigin {
     /// `$BARDO_ICON_ASSETS`.
     Override,
-    /// `$XDG_DATA_HOME/quire/icons/apps`.
+    /// `$XDG_DATA_HOME/bardo/icons/apps`.
     DataHome,
-    /// One `$XDG_DATA_DIRS` entry's `quire/icons/apps`.
+    /// One `$XDG_DATA_DIRS` entry's `bardo/icons/apps`.
     DataDir,
     /// The repository's `assets/icons/apps`, from `CARGO_MANIFEST_DIR` at compile time:
     /// debug builds only; a release build never lists it.
@@ -144,7 +144,7 @@ pub fn apps_dir() -> Option<PathBuf> {
     find_apps_dir(&AssetsEnv::current(), a_directory).map(|dir| dir.path)
 }
 
-/// Where `icons install` copies the set: `$XDG_DATA_HOME/quire/icons/apps` (step 2).
+/// Where `icons install` copies the set: `$XDG_DATA_HOME/bardo/icons/apps` (step 2).
 pub fn install_dir(env: &AssetsEnv) -> Option<PathBuf> {
     data_home(env).map(|home| home.join(SUBDIR))
 }
@@ -195,17 +195,17 @@ mod tests {
                 env(Some("/opt/icons"), Some("/data"), Some("/a:/b")),
                 vec![
                     (Override, "/opt/icons"),
-                    (DataHome, "/data/quire/icons/apps"),
-                    (DataDir, "/a/quire/icons/apps"),
-                    (DataDir, "/b/quire/icons/apps"),
+                    (DataHome, "/data/bardo/icons/apps"),
+                    (DataDir, "/a/bardo/icons/apps"),
+                    (DataDir, "/b/bardo/icons/apps"),
                 ],
             ),
             (
                 "nothing set: the XDG defaults",
                 env(None, None, None),
                 vec![
-                    (DataHome, "/home/ada/.local/share/quire/icons/apps"),
-                    (DataDir, "/usr/local/share/quire/icons/apps"),
+                    (DataHome, "/home/ada/.local/share/bardo/icons/apps"),
+                    (DataDir, "/usr/local/share/bardo/icons/apps"),
                     (DataDir, "/usr/share/bardo/icons/apps"),
                 ],
             ),
@@ -213,8 +213,8 @@ mod tests {
                 "empty values read as unset; relative entries are skipped",
                 env(Some(""), Some("rel"), Some(":/c:rel")),
                 vec![
-                    (DataHome, "/home/ada/.local/share/quire/icons/apps"),
-                    (DataDir, "/c/quire/icons/apps"),
+                    (DataHome, "/home/ada/.local/share/bardo/icons/apps"),
+                    (DataDir, "/c/bardo/icons/apps"),
                 ],
             ),
         ];
@@ -234,18 +234,18 @@ mod tests {
         let cases: &[(&str, &[&str], Option<Step>)] = &[
             (
                 "the override",
-                &["/opt/icons", "/data/quire/icons/apps"],
+                &["/opt/icons", "/data/bardo/icons/apps"],
                 Some((AssetsOrigin::Override, "/opt/icons")),
             ),
             (
                 "an installed set over a system one",
-                &["/data/quire/icons/apps", "/b/quire/icons/apps"],
-                Some((AssetsOrigin::DataHome, "/data/quire/icons/apps")),
+                &["/data/bardo/icons/apps", "/b/bardo/icons/apps"],
+                Some((AssetsOrigin::DataHome, "/data/bardo/icons/apps")),
             ),
             (
                 "the second system dir",
-                &["/b/quire/icons/apps"],
-                Some((AssetsOrigin::DataDir, "/b/quire/icons/apps")),
+                &["/b/bardo/icons/apps"],
+                Some((AssetsOrigin::DataDir, "/b/bardo/icons/apps")),
             ),
             ("nothing anywhere", &[], None),
         ];
@@ -275,7 +275,7 @@ mod tests {
     fn the_install_dir_is_under_the_data_home() {
         assert_eq!(
             install_dir(&env(None, Some("/data"), None)),
-            Some(PathBuf::from("/data/quire/icons/apps"))
+            Some(PathBuf::from("/data/bardo/icons/apps"))
         );
     }
 

@@ -1,4 +1,4 @@
-//! `files`: the desktop's file manager.
+//! `bardo-files`: the desktop's file manager.
 //!
 //! This is the only place the program reads its arguments and its environment: the folder to
 //! open, the person's home and user folders, the XDG folders and the working folder. They are
@@ -15,6 +15,7 @@ mod launcher;
 mod opener;
 mod places;
 mod port;
+mod pre_bardo;
 mod session;
 mod state;
 mod thumbnails;
@@ -40,6 +41,8 @@ use crate::session::{Role, join, launch_token};
 use crate::volumes::DesktopVolumes;
 
 fn main() -> ExitCode {
+    // Temporary: delete with the old-folders crate in the release after everyone has started once.
+    pre_bardo::move_from_env();
     let argv: Vec<OsString> = std::env::args_os().skip(1).collect();
     if let Some(asked) = args::schema_dir(&argv) {
         return write_schema(asked);
@@ -47,9 +50,9 @@ fn main() -> ExitCode {
     let args = match Args::parse(argv) {
         Ok(args) => args,
         Err(said) => {
-            eprintln!("files: {said}");
-            eprintln!("usage: files [FOLDER]");
-            eprintln!("       files --write-schema DIR");
+            eprintln!("bardo-files: {said}");
+            eprintln!("usage: bardo-files [FOLDER]");
+            eprintln!("       bardo-files --write-schema DIR");
             return ExitCode::from(2);
         }
     };
@@ -61,7 +64,7 @@ fn main() -> ExitCode {
         )),
     };
     let Some(start) = folder else {
-        eprintln!("files: there is no folder to open; give one: files FOLDER");
+        eprintln!("bardo-files: there is no folder to open; give one: bardo-files FOLDER");
         return ExitCode::FAILURE;
     };
     let runtime = match tokio::runtime::Builder::new_multi_thread()
@@ -71,7 +74,7 @@ fn main() -> ExitCode {
     {
         Ok(runtime) => runtime,
         Err(err) => {
-            eprintln!("files: {err}");
+            eprintln!("bardo-files: {err}");
             return ExitCode::FAILURE;
         }
     };
@@ -125,18 +128,18 @@ fn main() -> ExitCode {
     match files_ui::run(launch) {
         Ok(()) => ExitCode::SUCCESS,
         Err(err) => {
-            eprintln!("files: {err}");
+            eprintln!("bardo-files: {err}");
             ExitCode::FAILURE
         }
     }
 }
 
-/// `files --write-schema DIR`: the schema the Settings app reads, written into `DIR`.
+/// `bardo-files --write-schema DIR`: the schema the Settings app reads, written into `DIR`.
 fn write_schema(asked: Result<PathBuf, String>) -> ExitCode {
     let dir = match asked {
         Ok(dir) => dir,
         Err(said) => {
-            eprintln!("files: {said}");
+            eprintln!("bardo-files: {said}");
             return ExitCode::from(2);
         }
     };
@@ -146,7 +149,7 @@ fn write_schema(asked: Result<PathBuf, String>) -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(err) => {
-            eprintln!("files: {}: {err}", dir.display());
+            eprintln!("bardo-files: {}: {err}", dir.display());
             ExitCode::FAILURE
         }
     }

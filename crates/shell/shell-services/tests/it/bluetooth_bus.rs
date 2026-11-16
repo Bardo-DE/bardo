@@ -1,5 +1,5 @@
-//! sill's Bluetooth service against `dev/fake-bluez.py` on a private bus, never the system bus:
-//! sill starts first, BlueZ appears late, is killed, and comes back. The test needs a
+//! bardo-shell's Bluetooth service against `dev/fake-bluez.py` on a private bus, never the system bus:
+//! bardo-shell starts first, BlueZ appears late, is killed, and comes back. The test needs a
 //! `dbus-daemon` and python's `dbus` and `gi`, and skips, saying so, without them.
 
 use std::path::{Path, PathBuf};
@@ -84,7 +84,7 @@ fn bluez_starting_late_dying_and_returning_is_followed() {
             ),
             ..Env::isolated(&scratch)
         };
-        // sill first: no org.bluez yet.
+        // bardo-shell first: no org.bluez yet.
         let service = spawn::<BluetoothService>(&tokio::runtime::Handle::current(), &env, ());
         let mut rx = service.state;
         tokio::time::sleep(Duration::from_millis(500)).await;

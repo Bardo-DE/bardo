@@ -1,5 +1,5 @@
 //! The consent sheet's answer, end to end on a private bus and a scratch config directory: a
-//! stand-in `voiced` that decides from the `[voice]` table of the very file sill writes, the voice
+//! stand-in `voiced` that decides from the `[voice]` table of the very file bardo-shell writes, the voice
 //! service refused with `NeedsConsent`, the answer turned into the consent the daemon writes, and
 //! the next hold either begun (Allow) or never attempted (Not Now). Never the person's `~/.config`.
 
@@ -50,7 +50,7 @@ async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &TempDir) -> toml
     desk.send(VoiceCommand::Params(VoiceBridge.of(&rx.borrow())));
     desk.state(|v| (v.params.consent == consent).then_some(()))
         .await;
-    std::fs::read_to_string(dir.path().join("shell/settings.toml"))
+    std::fs::read_to_string(dir.path().join("bardo/shell/settings.toml"))
         .unwrap_or_else(|e| panic!("{e}"))
         .parse()
         .unwrap_or_else(|e| panic!("{e}"))
@@ -59,7 +59,7 @@ async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &TempDir) -> toml
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
     let dir = TempDir::new("voice-consent-allow");
-    let file = dir.path().join("shell/settings.toml");
+    let file = dir.path().join("bardo/shell/settings.toml");
     let mut desk = desk_or_return!(BeginAnswer::FromSettings(file));
     assert_eq!(begins(&desk), 0);
     let table = answered(&mut desk, ConsentAnswer::Allow, &dir).await;
@@ -87,7 +87,7 @@ async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn not_now_writes_declined_and_the_next_hold_never_calls_begin() {
     let dir = TempDir::new("voice-consent-not-now");
-    let file = dir.path().join("shell/settings.toml");
+    let file = dir.path().join("bardo/shell/settings.toml");
     let mut desk = desk_or_return!(BeginAnswer::FromSettings(file));
     let table = answered(&mut desk, ConsentAnswer::NotNow, &dir).await;
     assert_eq!(table["voice"]["consent"].as_str(), Some("declined"));
@@ -102,7 +102,7 @@ async fn not_now_writes_declined_and_the_next_hold_never_calls_begin() {
     assert_eq!(
         begins(&desk),
         2,
-        "sill itself did not begin while voice was declined"
+        "bardo-shell itself did not begin while voice was declined"
     );
     assert!(!desk.voice.state.borrow().sheet);
 }

@@ -1,4 +1,4 @@
-//! A person's own rows (feature `dev-callers`, which only the `detent` binary's feature of the same
+//! A person's own rows (feature `dev-callers`, which only the `bardo-settings` binary's feature of the same
 //! name turns on): the stand-ins a checkout builds, named in a file the person owns, are let in as the
 //! services they stand for, at `Proof::Dev`, below every real proof. A release build has none of this:
 //! the feature, the option and peephole's `dev-rows` are all absent.
@@ -8,7 +8,7 @@ use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFile
 use std::path::Path;
 use std::sync::OnceLock;
 
-/// The rows `detent --dev-callers` named, read once at start and merged after the desktop's table by
+/// The rows `bardo-settings --dev-callers` named, read once at start and merged after the desktop's table by
 /// every [`desktop_peers`](crate::desktop_peers).
 static ROWS: OnceLock<Table> = OnceLock::new();
 

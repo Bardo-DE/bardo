@@ -18,7 +18,7 @@ type Set = Spaces<Note, String>;
 fn storage(scratch: &Scratch) -> SpacesStorage {
     SpacesStorage::new(
         &ConfigRoot::Scratch(scratch.root().to_path_buf()),
-        AppName("notes"),
+        AppName::desktop("notes"),
     )
 }
 
@@ -46,7 +46,7 @@ fn a_first_run_is_written_and_read_back() {
 
 fn disk_dir(scratch: &Scratch) -> std::path::PathBuf {
     ConfigRoot::Scratch(scratch.root().to_path_buf())
-        .dir(AppName("notes"))
+        .dir(AppName::desktop("notes"))
         .expect("scratch has a dir")
 }
 
@@ -92,7 +92,7 @@ fn today_lives_in_the_state_directory_and_boots_pruned() {
     today.opened(SpaceId(0), 2, Epoch(IDLE.as_secs() as i64));
     disk.save_today(&today).expect("saves");
     let state = ConfigRoot::Scratch(scratch.root().to_path_buf())
-        .state_dir(AppName("notes"))
+        .state_dir(AppName::desktop("notes"))
         .expect("dir");
     assert!(state.join("today.json").exists());
     assert!(!disk_dir(&scratch).join("today.json").exists());
@@ -130,7 +130,7 @@ fn a_mailo_shaped_today_keeps_its_entries_parked_drafts_and_prunes() {
     let scratch = Scratch::new();
     let disk = storage(&scratch);
     let state = ConfigRoot::Scratch(scratch.root().to_path_buf())
-        .state_dir(AppName("notes"))
+        .state_dir(AppName::desktop("notes"))
         .expect("dir");
     std::fs::create_dir_all(&state).expect("dir");
     std::fs::write(state.join("today.json"), text).expect("write");
@@ -165,7 +165,7 @@ const MAILO_TODAY: &str = r#"{"entries":[
 
 fn write_today(scratch: &Scratch, text: &str) {
     let state = ConfigRoot::Scratch(scratch.root().to_path_buf())
-        .state_dir(AppName("notes"))
+        .state_dir(AppName::desktop("notes"))
         .expect("dir");
     std::fs::create_dir_all(&state).expect("dir");
     std::fs::write(state.join("today.json"), text).expect("write");

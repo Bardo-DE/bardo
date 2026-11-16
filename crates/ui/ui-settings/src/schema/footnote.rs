@@ -1,5 +1,5 @@
 //! A section's footnote: the grey paragraph a Mac settings pane puts under a group of rows,
-//! once, where one row's note would not do (design/27 §5.12; detent's style pass, 2026-10-27).
+//! once, where one row's note would not do (design/27 §5.12; bardo-settings's style pass, 2026-10-27).
 
 use super::key::Section;
 use super::page::Page;

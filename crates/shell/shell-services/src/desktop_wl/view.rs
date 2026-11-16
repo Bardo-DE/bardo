@@ -1,5 +1,5 @@
 //! The wire state as the shell's [`DesktopView`]: apps grouped and ranked, windows, Spaces and
-//! what is active. Grouping and recency are sill's: the protocols give windows, not apps.
+//! what is active. Grouping and recency are bardo-shell's: the protocols give windows, not apps.
 
 use desktop_client::toplevel::Toplevel as WireToplevel;
 use desktop_client::workspace::WorkspaceFlag;

@@ -64,6 +64,6 @@ async fn announce(connection: &Connection) {
     };
     let emitter = object.signal_emitter();
     if let Err(error) = object.get().await.workspaces_changed(emitter).await {
-        eprintln!("sill: workspace looks: announcing the change failed: {error}");
+        eprintln!("bardo-shell: workspace looks: announcing the change failed: {error}");
     }
 }

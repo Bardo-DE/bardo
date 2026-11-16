@@ -80,7 +80,7 @@ impl Persist {
     /// Start a saver for `dir` (on the current runtime), or none.
     pub(crate) fn start(dir: Option<PathBuf>, initial: Frecency) -> Persist {
         let Some(dir) = dir else {
-            eprintln!("sill: no state directory; launcher frecency is not persisted");
+            eprintln!("bardo-shell: no state directory; launcher frecency is not persisted");
             return Persist::Nowhere;
         };
         let (tx, rx) = watch::channel(initial);
@@ -104,8 +104,8 @@ async fn save_latest(dir: PathBuf, mut versions: watch::Receiver<Frecency>) {
         let written = tokio::task::spawn_blocking(move || save_frecency(&at, &frecency)).await;
         match written {
             Ok(Ok(())) => {}
-            Ok(Err(error)) => eprintln!("sill: saving frecency: {error}"),
-            Err(error) => eprintln!("sill: saving frecency: {error}"),
+            Ok(Err(error)) => eprintln!("bardo-shell: saving frecency: {error}"),
+            Err(error) => eprintln!("bardo-shell: saving frecency: {error}"),
         }
     }
 }

@@ -4,7 +4,7 @@ use super::inhibit::{Inhibition, LogindIdle};
 use super::policy::{DimLevel, IdleMode, PowerSource};
 use serde::{Deserialize, Serialize};
 
-/// What surfaces (the dim overlay) and `sill idle status` read.
+/// What surfaces (the dim overlay) and `bardo-shell idle status` read.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub struct Idle {
     pub mode: IdleMode,
@@ -13,7 +13,7 @@ pub struct Idle {
     pub dim: DimShown,
     pub power: PowerSource,
     pub inhibition: Inhibition,
-    /// `org.freedesktop.ScreenSaver` inhibits held (for `sill idle status`).
+    /// `org.freedesktop.ScreenSaver` inhibits held (for `bardo-shell idle status`).
     pub inhibits: u32,
     /// Whether logind's `BlockInhibited` names `idle`.
     pub logind: LogindIdle,
@@ -30,7 +30,7 @@ pub enum IdlePhase {
     Dimmed,
     /// The displays are off (locked or not).
     DisplaysOff,
-    /// sill asked logind to suspend and no wake has come yet.
+    /// bardo-shell asked logind to suspend and no wake has come yet.
     Suspending,
 }
 

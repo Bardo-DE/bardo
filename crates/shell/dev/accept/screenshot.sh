@@ -3,7 +3,7 @@
 # out (layer-shell-host's `SurfaceHandle::start_drag`) on layer-shell-host's private headless KWin
 # (scripts/dev/kwin-virtual.sh) driven by ONE fake-input client (scripts/dev/fake-input.sh).
 #
-# Starts `sill run` from this checkout's debug build (`--features debug`) on a private bus
+# Starts `bardo-shell run` from this checkout's debug build (`--features debug`) on a private bus
 # (dev/private-bus.conf) as both its session and its system bus, with scratch HOME and XDG
 # directories, a fake DDC fixture and its own XDG_RUNTIME_DIR (the compositor's socket as an
 # absolute WAYLAND_DISPLAY). Never the user's session (wayland-0), never ~/Pictures or the real
@@ -12,19 +12,19 @@
 # arguments; the output shot is grim on the nested socket only (no fallback).
 #
 #   1. `sill-screenshot-thumb-<out>` exists from the start, hidden (no capture).
-#   2. `sill debug screenshot <temp>/Screenshot_a.png` shows it within 500 ms; screenshot
+#   2. `bardo-shell debug screenshot <temp>/Screenshot_a.png` shows it within 500 ms; screenshot
 #      dev/out/screenshot-thumb-casement.png while it holds.
 #   3. It hides after the hold (the thumbnail hold, 5200) plus the exit, and the file
 #      is still there.
-#   4. `sill screenshot screen` runs the portal stand-in, whose file the watch shows.
-#   5. `sill debug click` on the card runs the opener with that file.
-#   6. A new shot hovered at 4 s (`sill debug pointer`) is still up at 7 s, and gone 1.5 s plus
-#      the exit after `sill debug leave`.
+#   4. `bardo-shell screenshot screen` runs the portal stand-in, whose file the watch shows.
+#   5. `bardo-shell debug click` on the card runs the opener with that file.
+#   6. A new shot hovered at 4 s (`bardo-shell debug pointer`) is still up at 7 s, and gone 1.5 s plus
+#      the exit after `bardo-shell debug leave`.
 #   7. 5 s while hidden: 0 frames on the thumbnail surface.
 #
 # --real-input steps (`dock.position = "left"`, so nothing reserves the bottom edge and the
 # thumbnail sits at the output's true bottom-right corner):
-#   1. `sill debug screenshot <temp>/Screenshot_drag.png` (a copy of the services' fixture): the
+#   1. `bardo-shell debug screenshot <temp>/Screenshot_drag.png` (a copy of the services' fixture): the
 #      thumbnail shows.
 #   2. A real press on the card's picture, a first step 12 px left (past quire's 8 px drag
 #      threshold, and not rightwards, which is the swipe's), a glide up-left over the bare
@@ -34,8 +34,8 @@
 #   3. The hold resumes (the banners' 1500 ms rest): the thumbnail unmaps within the rest plus
 #      the exit and slack, and the file is kept.
 #
-# Exit 0 only when every step passed; 1 on a failure. On the nested compositor another sill
-# daemon started from a `target/*/sill run` is waited for (up to 10 minutes).
+# Exit 0 only when every step passed; 1 on a failure. On the nested compositor another bardo-shell
+# daemon started from a `target/*/bardo-shell run` is waited for (up to 10 minutes).
 #
 # Usage: dev/accept/screenshot.sh [--real-input]
 set -uo pipefail
@@ -61,7 +61,7 @@ ELSEWHERE="$SCRATCH/elsewhere"
 STUBS="$SCRATCH/stubs"
 OPENED="$OUT_DIR/opened.log"
 TRASHED="$OUT_DIR/trashed.log"
-mkdir -p "$CONFIG/sill" "$WATCHED" "$ELSEWHERE" "$STUBS"
+mkdir -p "$CONFIG/bardo/shell" "$WATCHED" "$ELSEWHERE" "$STUBS"
 KWIN_UP=no
 BOX=
 RELEASED=0
@@ -139,7 +139,7 @@ TOML
 
 # The card's centre in the surface: the surface's own size less the room around the card.
 card_centre() {
-  sill debug capture "$THUMB" "$OUT_DIR/card.png" >/dev/null 2>&1 || return 1
+  bardo-shell debug capture "$THUMB" "$OUT_DIR/card.png" >/dev/null 2>&1 || return 1
   python3 - "$OUT_DIR/card.png" <<'PY'
 import sys
 from PIL import Image
@@ -151,7 +151,7 @@ PY
 
 # The card's bounding box and the surface's size in a capture: "W H LEFT TOP RIGHT BOTTOM".
 card_geometry() {
-  sill debug capture "$THUMB" "$OUT_DIR/card.png" >/dev/null 2>&1 || return 1
+  bardo-shell debug capture "$THUMB" "$OUT_DIR/card.png" >/dev/null 2>&1 || return 1
   python3 - "$OUT_DIR/card.png" <<'PY'
 import sys
 from PIL import Image
@@ -164,8 +164,8 @@ PY
 # 1.
 step_warm() {
   local log="$OUT_DIR/warm.log"
-  sill debug stats >"$log" 2>&1
-  grep -q "\"$THUMB\"" "$log" || { echo "$THUMB is not in 'sill debug stats'" >&2; return 1; }
+  bardo-shell debug stats >"$log" 2>&1
+  grep -q "\"$THUMB\"" "$log" || { echo "$THUMB is not in 'bardo-shell debug stats'" >&2; return 1; }
   if mapped "$THUMB"; then echo "the thumbnail is mapped before any screenshot" >&2; return 1; fi
   echo "$THUMB spawned at start, hidden" | tee -a "$log" >&2
 }
@@ -176,14 +176,14 @@ step_debug_shot_shows_then_hides() {
   : >"$log"
   cp "$FIXTURE" "$ELSEWHERE/Screenshot_a.png"
   start=$(now_ms)
-  sill debug screenshot "$ELSEWHERE/Screenshot_a.png" >>"$log" 2>&1 || { cat "$log" >&2; return 1; }
+  bardo-shell debug screenshot "$ELSEWHERE/Screenshot_a.png" >>"$log" 2>&1 || { cat "$log" >&2; return 1; }
   shown=$(until_shown "$start" 1500)
   sleep 0.5
   nested_shot "$SHOTS/screenshot-thumb-casement.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
   cp "$OUT_DIR/probe.png" "$OUT_DIR/thumb-shown.png" 2>/dev/null
   gone=$(until_gone "$start" 9000)
   limit=$(( HOLD_MS + 800 + 400 ))
-  echo "shown ${shown} ms after 'sill debug screenshot'; hidden at ${gone} ms (hold ${HOLD_MS} ms, limit ${limit} ms); file kept: $(test -f "$ELSEWHERE/Screenshot_a.png" && echo yes || echo no)" \
+  echo "shown ${shown} ms after 'bardo-shell debug screenshot'; hidden at ${gone} ms (hold ${HOLD_MS} ms, limit ${limit} ms); file kept: $(test -f "$ELSEWHERE/Screenshot_a.png" && echo yes || echo no)" \
     | tee -a "$log" >&2
   [ "$shown" -ge 0 ] && budget_check "the screenshot thumbnail shown ${shown} ms after the request (less the capture's own $(capture_cost_ms) ms) against 500 ms" "$(( $(captured_ms "$shown") <= 500 ))" \
     && [ "$gone" -ge "$HOLD_MS" ] && [ "$gone" -le "$limit" ] \
@@ -195,15 +195,15 @@ step_tool_then_click() {
   local log="$OUT_DIR/tool.log" start shown at file
   : >"$log"
   start=$(now_ms)
-  sill screenshot screen >>"$log" 2>&1 || { cat "$log" >&2; return 1; }
+  bardo-shell screenshot screen >>"$log" 2>&1 || { cat "$log" >&2; return 1; }
   shown=$(until_shown "$start" 3000)
   file=$(ls "$WATCHED"/Screenshot_screen_*.png 2>/dev/null | head -n 1)
-  echo "the stand-in saved ${file:-nothing}; shown ${shown} ms after 'sill screenshot screen'" | tee -a "$log" >&2
+  echo "the stand-in saved ${file:-nothing}; shown ${shown} ms after 'bardo-shell screenshot screen'" | tee -a "$log" >&2
   [ "$shown" -ge 0 ] && [ -n "$file" ] || return 1
   sleep 0.5
   at=$(card_centre) || { echo "no card to click" >&2; return 1; }
   # shellcheck disable=SC2086
-  sill debug click "$THUMB" $at >>"$log" 2>&1
+  bardo-shell debug click "$THUMB" $at >>"$log" 2>&1
   for _ in $(seq 40); do grep -q . "$OPENED" && break; sleep 0.05; done
   gone=$(until_gone "$(now_ms)" 2000)
   echo "a click at $at ran the opener with: $(cat "$OPENED"); unmapped ${gone} ms later" | tee -a "$log" >&2
@@ -214,19 +214,19 @@ step_tool_then_click() {
 step_hover_pauses() {
   local log="$OUT_DIR/hover.log" start at up7 left gone limit
   : >"$log"
-  sill debug leave "$THUMB" >>"$log" 2>&1
+  bardo-shell debug leave "$THUMB" >>"$log" 2>&1
   cp "$FIXTURE" "$ELSEWHERE/Screenshot_b.png"
   start=$(now_ms)
-  sill debug screenshot "$ELSEWHERE/Screenshot_b.png" >>"$log" 2>&1 || return 1
+  bardo-shell debug screenshot "$ELSEWHERE/Screenshot_b.png" >>"$log" 2>&1 || return 1
   [ "$(until_shown "$start" 1500)" -ge 0 ] || { echo "hover: never shown" >&2; return 1; }
   while [ $(( $(now_ms) - start )) -lt 4000 ]; do sleep 0.05; done
   at=$(card_centre) || return 1
   # shellcheck disable=SC2086
-  sill debug pointer "$THUMB" $at >>"$log" 2>&1
+  bardo-shell debug pointer "$THUMB" $at >>"$log" 2>&1
   while [ $(( $(now_ms) - start )) -lt 7000 ]; do sleep 0.05; done
   up7=no; shows && up7=yes
   left=$(now_ms)
-  sill debug leave "$THUMB" >>"$log" 2>&1
+  bardo-shell debug leave "$THUMB" >>"$log" 2>&1
   gone=$(until_gone "$left" 4000)
   limit=$(( REST_MS + 800 + 400 ))
   echo "hovered at 4 s: up at 7 s: $up7; hidden ${gone} ms after the leave (rest ${REST_MS} ms, limit ${limit} ms)" \
@@ -248,7 +248,7 @@ step_idle() {
 # Real 1.
 step_real_shows() {
   cp "$FIXTURE" "$WATCHED/Screenshot_drag.png"
-  sill debug screenshot "$WATCHED/Screenshot_drag.png" >"$OUT_DIR/shot.log" 2>&1
+  bardo-shell debug screenshot "$WATCHED/Screenshot_drag.png" >"$OUT_DIR/shot.log" 2>&1
   BOX=
   for _ in $(seq 40); do BOX=$(card_geometry) && break; sleep 0.1; done
   sleep 0.6
@@ -274,7 +274,7 @@ step_real_drag_cancelled_over_nothing() {
   RELEASED=$(now_ms)
   outcome=
   for _ in $(seq 30); do
-    outcome=$(tail -n +$(( mark + 1 )) "$OUT_DIR/daemon.log" | sed -n 's/^sill: screenshot drag: //p' | head -n 1)
+    outcome=$(tail -n +$(( mark + 1 )) "$OUT_DIR/daemon.log" | sed -n 's/^bardo-shell: screenshot drag: //p' | head -n 1)
     [ -n "$outcome" ] && break
     sleep 0.1
   done

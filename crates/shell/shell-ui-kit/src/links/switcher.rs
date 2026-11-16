@@ -1,4 +1,4 @@
-//! The daemon's asks to the switcher (`sill switcher next|prev|cancel|commit`, `sill debug
+//! The daemon's asks to the switcher (`bardo-shell switcher next|prev|cancel|commit`, `bardo-shell debug
 //! switcher`): one shared channel of the recent asks, numbered so two chords in a row are two
 //! asks, and kept so that a second Tab arriving before the surface has read the first is still
 //! a second step. Every output's switcher surface follows it and acts on asks for its own output.

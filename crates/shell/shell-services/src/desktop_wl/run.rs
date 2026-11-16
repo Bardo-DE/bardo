@@ -31,7 +31,7 @@ pub(super) fn run(
     let client = match DesktopClient::new(&connection) {
         Ok(client) => client,
         Err(error) => {
-            eprintln!("sill: desktop_wl: {error}; toplevels and workspaces stay empty");
+            eprintln!("bardo-shell: desktop_wl: {error}; toplevels and workspaces stay empty");
             park_commands(commands);
             // Held until now so the receivers read empty values, not a closed channel.
             drop(publish);
@@ -95,13 +95,13 @@ impl Wlr {
             Ok(requests) => {
                 for request in requests {
                     if let Err(error) = self.client.send(request) {
-                        eprintln!("sill: desktop_wl: {error}");
+                        eprintln!("bardo-shell: desktop_wl: {error}");
                         break;
                     }
                 }
             }
             Err(Refusal::Unsupported) => {}
-            Err(refusal) => eprintln!("sill: desktop_wl: {refusal}"),
+            Err(refusal) => eprintln!("bardo-shell: desktop_wl: {refusal}"),
         }
     }
 }
@@ -120,7 +120,7 @@ fn follow(mut wlr: Wlr, commands: UnboundedReceiver<WlCommand>) {
     let mut event_loop = match EventLoop::<Wlr>::try_new() {
         Ok(event_loop) => event_loop,
         Err(error) => {
-            eprintln!("sill: desktop_wl: {error}; toplevels and workspaces are now empty");
+            eprintln!("bardo-shell: desktop_wl: {error}; toplevels and workspaces are now empty");
             wlr.publish.clear();
             park_commands(commands);
             return;
@@ -133,12 +133,12 @@ fn follow(mut wlr: Wlr, commands: UnboundedReceiver<WlCommand>) {
     {
         Ok(forwarder) => forwarder,
         Err(error) => {
-            eprintln!("sill: desktop_wl: no command thread: {error}; commands are refused");
+            eprintln!("bardo-shell: desktop_wl: no command thread: {error}; commands are refused");
             return;
         }
     };
     if let Err(error) = drive(&mut event_loop, &mut wlr, from_forwarder) {
-        eprintln!("sill: desktop_wl: {error}; toplevels and workspaces are now empty");
+        eprintln!("bardo-shell: desktop_wl: {error}; toplevels and workspaces are now empty");
     }
     wlr.publish.clear();
     // The watch senders live in `wlr`: keep them until the forwarder has seen every Control go,

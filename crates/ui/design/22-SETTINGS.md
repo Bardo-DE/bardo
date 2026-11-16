@@ -7,7 +7,7 @@ the citation convention of `README.md#3-citation-convention`.
 ## 1. What this governs
 
 Every runtime-tunable number and closed-set choice for the desktop shell: the design-system
-appearance (`quire`), the shell (`sill`, its bar/dock/launcher/menus/notifications/spaces), and
+appearance (`quire`), the shell (`bardo-shell`, its bar/dock/launcher/menus/notifications/spaces), and
 the gesture daemon (`palmrest`). The rule, per the user's decision of 2026-09-24 recorded in
 `README.md#4-canonical-source`: **no value any design doc marks "proposed" is hard-coded**; it
 ships as the default *and* is read from a settings key listed in section 3. A **settled** value
@@ -33,7 +33,7 @@ preferences:
    O-29). Those are review gaps for review/build, not tunable defaults, and are excluded; see
    the "could not find a default" list in the handback report.
 3. **Per-workspace instance data is not a global default.** `21-SPACES.md#10-storage-settled-path-target-clean-up-phase-schema`'s
-   `$XDG_CONFIG_HOME/quire/spaces.json` stores each workspace's chosen `SpaceLook` (its hue, chroma
+   `$XDG_CONFIG_HOME/bardo/spaces.json` stores each workspace's chosen `SpaceLook` (its hue, chroma
    factor, grain, theme; target (clean-up phase), 21 section 1) — that is saved *state*, like
    the dock's pinned items (`[[dock]]` in `sill/layout.toml`), not a settings default. The *defaults* applied when a workspace has
    none (preset table, fallback grain) are keys in the `spaces` domain below.
@@ -41,7 +41,7 @@ preferences:
 ## 2. Storage
 
 One TOML file per owning program, replacing the plan's `appearance.json` (PLAN "Design:
-`<ds>`") and the docs' scattered `~/.config/quire/scroll.json` / `~/.config/sill/settings.json`
+`<ds>`") and the docs' scattered `~/.config/bardo/scroll.json` / `~/.config/bardo/shell/settings.json`
 / `~/.config/palmrest/config.toml` mentions (`11-BEHAVIOUR-scroll.md#11-6-configuration`,
 `10-BEHAVIOUR-dock.md#10-6-configuration`, `12-BEHAVIOUR-gestures.md#12-6-configuration`): this
 doc is the authority on where each key actually lives, and supersedes those inline paths.
@@ -49,10 +49,10 @@ doc is the authority on where each key actually lives, and supersedes those inli
 | File | Owner | Domains |
 | --- | --- | --- |
 | `$XDG_CONFIG_HOME/bardo/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
-| `$XDG_CONFIG_HOME/shell/settings.toml` | `sill` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
+| `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
 | `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (almanac), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is porter's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
-| `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` | `palmrest` (the gesture daemon, PLAN Appendix B); `sill`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
+| `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` | `palmrest` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
 
 Rules, all three files:
 
@@ -145,7 +145,7 @@ vocabulary they use):
 | `control_center.material` | `Material::{Sheet}` (fixed for v1) | `Sheet` | | `03-COLOR.md#17-3-material-per-surface` | RETIRING: no reader; the panel is always a Sheet |
 
 `notifications.banner_material` is stored under `appearance` (it names a `ds::prelude::Material`
-variant, appearance's vocabulary) but is *read* by `sill`'s notifications surface; see section
+variant, appearance's vocabulary) but is *read* by `bardo-shell`'s notifications surface; see section
 7 for the cross-file read this implies.
 
 ### 3.2 `motion` (bardo/appearance.toml — level selector only)
@@ -161,7 +161,7 @@ level itself is user-tunable, and it is `appearance.motion_level` (3.1).
 
 The app-icon *generation* pipeline (`08-ICONS.md#3-generation-pipeline`) is a build-time tool
 (`quire-icons`), not a runtime setting, and is out of scope. These are the runtime,
-per-third-party-icon rendering values `sill`'s dock/launcher apply live (`08-ICONS.md#4-third-party-app-icons`).
+per-third-party-icon rendering values `bardo-shell`'s dock/launcher apply live (`08-ICONS.md#4-third-party-app-icons`).
 
 <!-- keys:begin icons -->
 
@@ -194,7 +194,7 @@ icon in both schemes) are no longer settings. The three constants with no reader
 
 ### 3.5 `dock` (shell/settings.toml)
 
-Pinned items live in `[[dock]]` rows of `~/.config/sill/layout.toml` (design/28 §5.6, built in sill 848a20a7; the old `dock.json` is read once and carried over), not in this file (
+Pinned items live in `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (design/28 §5.6, built in sill 848a20a7; the old `dock.json` is read once and carried over), not in this file (
 `10-BEHAVIOUR-dock.md#10-6-configuration`).
 
 | Key | Type | Default | Range / Alt | Source | Status |
@@ -351,7 +351,7 @@ The calendar sources and the Calendar and Up Next widgets (design/20 §1.12; sil
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `calendar.sources` | `Text` | `"auto"` | `auto` (KOrganizer's file via Akonadi's iCal resource, `~/.local/share/sill/calendars`, `~/.calendars`), `off`, or `.ics` files and folders separated by `;` | `20-SURFACES.md#1-12-calendar-popup-spec-tier-2`; F401, F402 | proposed (M10 freeze, 2026-09-26) |
+| `calendar.sources` | `Text` | `"auto"` | `auto` (KOrganizer's file via Akonadi's iCal resource, `~/.local/share/bardo/shell/calendars`, `~/.calendars`), `off`, or `.ics` files and folders separated by `;` | `20-SURFACES.md#1-12-calendar-popup-spec-tier-2`; F401, F402 | proposed (M10 freeze, 2026-09-26) |
 | `calendar.first_weekday` | `FirstWeekday::{Monday,Sunday}` | `Monday` | the month's first column (ISO 8601) | same; F403 | proposed (M10 freeze, 2026-09-26) |
 | `calendar.week_numbers` | `WeekNumbers::{Hide,Show}` | `Hide` | a column of ISO week numbers | same; F403 | proposed (M10 freeze, 2026-09-26) |
 
@@ -828,7 +828,7 @@ pub struct GesturesFile {            // mouse-gestures/gestures.toml
 
 /// Composes all three files; `ui-settings`, `shell-settings` and `palmrest` each own one
 /// field's I/O, but a surface that needs more than one file's values (the dock reading
-/// `spaces` for tint, `sill` reading `appearance.banner_material`) takes `&Settings`.
+/// `spaces` for tint, `bardo-shell` reading `appearance.banner_material`) takes `&Settings`.
 pub struct Settings {
     pub appearance: AppearanceFile,
     pub shell: ShellFile,
@@ -1039,7 +1039,7 @@ says so).
 ### 9.2 Where the schema lives
 
 The derive's build step writes `target/.../<app-id>.settings.toml` and the package installs it
-to `$XDG_DATA_DIRS/quire/settings/<app-id>.settings.toml`, next to the `.desktop` file, the way
+to `$XDG_DATA_DIRS/bardo/settings/<app-id>.settings.toml`, next to the `.desktop` file, the way
 GSettings ships schemas. The file is TOML, one `[[key]]` table per `KeySpec`, plus `app`,
 `file` and `version`. Developers run `cargo run -p <app> -- --write-schema <dir>` for a local
 install. quire's own schema (`bardo.settings.toml`: the `appearance` and `icons` domains of
@@ -1100,7 +1100,7 @@ as "edit in settings.toml".
 
 ### 9.3 What the Settings app does
 
-1. Discover every `*.settings.toml` under `$XDG_DATA_DIRS/quire/settings/` (and
+1. Discover every `*.settings.toml` under `$XDG_DATA_DIRS/bardo/settings/` (and
    `$XDG_DATA_HOME`), parse, group keys by `page` then `section`, render with the widget table
    above; pages come from a fixed `Page` enum (Appearance, Dock, Mouse and Gestures, Keyboard
    and Shortcuts, Notifications, Spaces, Accounts, Privacy, Power, Apps, Intelligence, Viewer, plus one page per third-party app
@@ -1318,10 +1318,10 @@ program's own sections move onto the same markers when its schema is passed with
 
 1. **Whether palmrest and sill share one file.** This doc keeps them separate
    (`mouse-gestures/gestures.toml` vs `shell/settings.toml`) because `palmrest` is a separate daemon
-   that must start and apply its own config before `sill` or any compositor exists
+   that must start and apply its own config before `bardo-shell` or any compositor exists
    (`12-BEHAVIOUR-gestures.md#12-3-12-daemon-architecture`), and because `12.6`'s own doc text
    already assumes a `palmrest/config.toml`. A merged file would need `palmrest` to depend on
-   `sill`'s schema or vice versa, which sill's crate boundaries (its ARCHITECTURE.md, "Crates":
+   `bardo-shell`'s schema or vice versa, which sill's crate boundaries (its ARCHITECTURE.md, "Crates":
    `shell-launcher`/`shell-ipc` must not reach several crates) argue against generalizing.
    Kept separate; revisit only if the two are shown to drift out of sync in practice.
 2. **`appearance.accent`'s set is settled (2026-09-30)**: macOS's eight, Blue the default; the
@@ -1329,10 +1329,10 @@ program's own sections move onto the same markers when its schema is passed with
 3. **`control_center.modules`'s order is plan-derived, not compared against the Claude Doc spec
    (rev 31)** (`13-BEHAVIOUR-menus-windows.md#13-9-open-decisions` item 4) — the default above
    ships but is explicitly provisional.
-4. **Whether `notifications.banner_material`'s read crosses from `appearance.toml` into `sill`'s
+4. **Whether `notifications.banner_material`'s read crosses from `appearance.toml` into `bardo-shell`'s
    process cleanly** — today `ui-settings::use_environment` is the only cross-file read path
-   named in the plan (PLAN "Design: `<ds>`"); this doc assumes `sill` calls it for one field of
-   `Appearance`, which is untested until `sill`'s `W1`/`M1` waves land.
+   named in the plan (PLAN "Design: `<ds>`"); this doc assumes `bardo-shell` calls it for one field of
+   `Appearance`, which is untested until `bardo-shell`'s `W1`/`M1` waves land.
 5. **(Removed 2026-10-27.)** `icons.plate_glyph_colour_policy` is no longer a setting.
 6. **Bar height** — settled 2026-09-28: 24, per `29-SIZING.md` §13 (the user picked the reference height; items 22). It stays a tunable number, not an enum.
 

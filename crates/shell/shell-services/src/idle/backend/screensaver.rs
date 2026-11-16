@@ -4,7 +4,7 @@
 //! loop, which owns the inhibitors ([`shell_model::idle::inhibit_step`]); a caller that leaves the
 //! bus loses
 //! its inhibits (`NameOwnerChanged`). The name is asked for without replacing a holder: if
-//! another holds it, its inhibits never reach sill, and that is logged.
+//! another holds it, its inhibits never reach bardo-shell, and that is logged.
 
 use shell_model::idle::{BusPeer, Idle, IdlePhase, InhibitCookie, InhibitMsg, InhibitReply};
 use shell_model::serve::ClaimError;
@@ -37,7 +37,7 @@ struct Saver {
 }
 
 fn stopped() -> fdo::Error {
-    fdo::Error::Failed("sill's idle service has stopped".to_owned())
+    fdo::Error::Failed("bardo-shell's idle service has stopped".to_owned())
 }
 
 fn caller(header: &Header<'_>) -> fdo::Result<BusPeer> {
@@ -132,11 +132,13 @@ pub(crate) async fn serve(
         Ok(connection) => connection,
         Err(ClaimError::NoBus) => return None,
         Err(ClaimError::NameTaken(_)) => {
-            eprintln!("sill: idle: {BUS_NAME} is held by another; its inhibits never reach sill");
+            eprintln!(
+                "bardo-shell: idle: {BUS_NAME} is held by another; its inhibits never reach bardo-shell"
+            );
             return None;
         }
         Err(ClaimError::Refused(why)) => {
-            eprintln!("sill: idle: serving {BUS_NAME}: {why}");
+            eprintln!("bardo-shell: idle: serving {BUS_NAME}: {why}");
             return None;
         }
     };

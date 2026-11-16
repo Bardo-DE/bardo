@@ -87,7 +87,7 @@ fn wallpaper(content: Content) -> Element {
     }
 }
 
-/// The wallpaper's layer surface, shaped like sill's.
+/// The wallpaper's layer surface, shaped like bardo-shell's.
 fn wallpaper_config() -> LayerConfig {
     LayerConfig {
         namespace: "wallpaper".to_owned(),

@@ -1,6 +1,6 @@
 //! `cargo run -p ui-settings --example write_schema -- --write-schema <dir>`: writes
-//! `bardo.settings.toml`, the schema of `bardo/appearance.toml`, the way `sill --write-schema`
-//! writes sill's (design/22-SETTINGS.md section 9.2). quire has no app binary, so this example
+//! `bardo.settings.toml`, the schema of `bardo/appearance.toml`, the way `bardo-shell --write-schema`
+//! writes bardo-shell's (design/22-SETTINGS.md section 9.2). quire has no app binary, so this example
 //! is its `--write-schema`.
 
 use std::process::ExitCode;

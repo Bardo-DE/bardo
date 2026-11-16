@@ -76,9 +76,9 @@ fn the_desktops_own_list_beats_the_general_list_and_temor() {
     scratch.entry("kitty.desktop", "kitty", "");
     scratch.entry("foot.desktop", "foot", "");
     scratch.write("config/xdg-terminals.list", "# mine\nfoot.desktop\n");
-    scratch.write("config/quire-xdg-terminals.list", "\nkitty.desktop\n");
+    scratch.write("config/bardo-xdg-terminals.list", "\nkitty.desktop\n");
     assert_eq!(
-        words(choose(&scratch.search(&["quire"]))),
+        words(choose(&scratch.search(&["bardo"]))),
         ["kitty", "-e"],
         "the desktop's list is read first"
     );
@@ -150,6 +150,6 @@ fn a_terminal_nobody_listed_is_found_by_its_category() {
 #[test]
 fn a_computer_with_no_terminal_has_no_wrapper() {
     let scratch = Scratch::new("terminal-none");
-    assert_eq!(choose(&scratch.search(&["quire"])), None);
-    assert_eq!(wrapper(&scratch.search(&["quire"])), Vec::<String>::new());
+    assert_eq!(choose(&scratch.search(&["bardo"])), None);
+    assert_eq!(wrapper(&scratch.search(&["bardo"])), Vec::<String>::new());
 }

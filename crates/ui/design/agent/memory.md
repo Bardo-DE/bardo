@@ -235,7 +235,7 @@ pub struct FactDraft { pub topic: TopicPath, pub text: FactText, pub links: Vec<
 
 **Layout (XDG; all paths come from injected `Dirs`, never from `dirs::*` deep in the code):**
 ```
-$XDG_DATA_HOME/quire/memory/
+$XDG_DATA_HOME/bardo/memory/
   spaces.toml                         # SpaceMeta per Space: id, created, replica, vault kind, format
   system/events.db                    # desktop-level log: Space created/deleted, checkpoint anchors
   <space>/events.db (+ -wal)          # eventlog, SQLCipher, key = derive(space, "eventlog")
@@ -244,8 +244,8 @@ $XDG_DATA_HOME/quire/memory/
   <space>/pending/<fact-id>.md        # untrusted-derived drafts awaiting confirmation
   <space>/procedures/<app>/<name>.md  # CUA procedures (format: cua area; same metadata trailer)
   <space>/consolidation/<run>.toml    # the diff of one run + pre-images for revert (kept until next run)
-$XDG_CACHE_HOME/quire/memory/<space>/index.db   # recall index, SQLCipher; deletable, rebuilt
-$XDG_CONFIG_HOME/quire/memory.toml               # RuleSet + defaults (written only by memoryd)
+$XDG_CACHE_HOME/bardo/memory/<space>/index.db   # recall index, SQLCipher; deletable, rebuilt
+$XDG_CONFIG_HOME/bardo/memory.toml               # RuleSet + defaults (written only by memoryd)
 $XDG_RUNTIME_DIR/quire/memory/edit/<space>/...   # decrypted edit copies (tmpfs), Q1
 ```
 

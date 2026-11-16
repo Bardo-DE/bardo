@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use ui_style::kit::reach::within;
 use ui_style::kit::{LookStyle, Slot, StyleHomes, Styles, UserStyle};
 
-const HOME: &str = "/home/ada/.config/quire";
+const HOME: &str = "/home/ada/.config/bardo";
 
 struct Case {
     name: &'static str,
@@ -36,7 +36,7 @@ const CASES: &[Case] = &[
     },
     Case {
         name: "absolute file inside",
-        css: "a { background: url(file:///home/ada/.config/quire/grain.png) }",
+        css: "a { background: url(file:///home/ada/.config/bardo/grain.png) }",
         kept: true,
     },
     Case {
@@ -76,7 +76,7 @@ const CASES: &[Case] = &[
     },
     Case {
         name: "way out inside a path",
-        css: "a { background: url(file:///home/ada/.config/quire/../x.png) }",
+        css: "a { background: url(file:///home/ada/.config/bardo/../x.png) }",
         kept: false,
     },
     Case {

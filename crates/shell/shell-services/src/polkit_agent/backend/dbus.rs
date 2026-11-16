@@ -1,4 +1,4 @@
-//! The agent object sill serves and the Authority it registers with. Private to the service: the
+//! The agent object bardo-shell serves and the Authority it registers with. Private to the service: the
 //! fixed parts are the D-Bus names and signatures, which are polkit's
 //! (`org.freedesktop.PolicyKit1.AuthenticationAgent.xml`), and [`request_from_wire`]'s contract.
 
@@ -9,8 +9,8 @@ use tokio::sync::{mpsc, oneshot};
 use zbus::zvariant::OwnedValue;
 use zbus::{interface, proxy};
 
-/// Where sill serves its agent object (any path is allowed; this one is sill's).
-pub const AGENT_PATH: &str = "/org/sill/PolicyKit1/AuthenticationAgent";
+/// Where bardo-shell serves its agent object (any path is allowed; this one is bardo-shell's).
+pub const AGENT_PATH: &str = "/org/bardo/Shell/PolicyKit1/AuthenticationAgent";
 
 /// polkitd's name and its Authority's path.
 pub const AUTHORITY_NAME: &str = "org.freedesktop.PolicyKit1";
@@ -94,7 +94,7 @@ impl Agent {
         let (reply, answer) = oneshot::channel();
         self.calls
             .send(Call::Begin { request, reply })
-            .map_err(|_| AgentError::Failed("sill's agent has stopped".to_owned()))?;
+            .map_err(|_| AgentError::Failed("bardo-shell's agent has stopped".to_owned()))?;
         match answer.await {
             Ok(Completion::Authorized) => Ok(()),
             Ok(Completion::Cancelled) => Err(AgentError::Cancelled("cancelled".to_owned())),
@@ -107,11 +107,11 @@ impl Agent {
     async fn cancel_authentication(&self, cookie: String) -> Result<(), AgentError> {
         self.calls
             .send(Call::Cancel(Cookie(cookie)))
-            .map_err(|_| AgentError::Failed("sill's agent has stopped".to_owned()))
+            .map_err(|_| AgentError::Failed("bardo-shell's agent has stopped".to_owned()))
     }
 }
 
-/// The part of polkitd's Authority an agent calls. A subject is `(kind, details)`: sill sends
+/// The part of polkitd's Authority an agent calls. A subject is `(kind, details)`: bardo-shell sends
 /// `("unix-session", {"session-id": <id>})`.
 #[proxy(
     interface = "org.freedesktop.PolicyKit1.Authority",

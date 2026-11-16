@@ -80,7 +80,7 @@ fn notification(summary: &str) -> Posting {
     Posting {
         replaces: None,
         app: AppRef {
-            name: "sill".to_owned(),
+            name: "bardo-shell".to_owned(),
             icon: IconRef::None,
             desktop_entry: None,
         },
@@ -368,7 +368,7 @@ fn every_command_line_sends_its_request() {
             &["debug", "polkit"],
             debug(DebugRequest::Polkit(FakeRequest {
                 action_id: ActionId("org.sill.debug.prompt".to_owned()),
-                message: "sill is testing its password prompt".to_owned(),
+                message: "bardo-shell is testing its password prompt".to_owned(),
                 icon: String::new(),
             })),
         ),
@@ -575,7 +575,7 @@ fn every_command_line_sends_its_request() {
         ),
     ];
     for (args, want) in cases {
-        let cli = Cli::try_parse_from(std::iter::once("sill").chain(args.iter().copied()))
+        let cli = Cli::try_parse_from(std::iter::once("bardo-shell").chain(args.iter().copied()))
             .unwrap_or_else(|e| panic!("{args:?}: {e}"));
         let command = cli
             .command
@@ -639,7 +639,8 @@ fn a_malformed_command_line_is_refused() {
         &["frobnicate"],
     ] {
         assert!(
-            Cli::try_parse_from(std::iter::once("sill").chain(args.iter().copied())).is_err(),
+            Cli::try_parse_from(std::iter::once("bardo-shell").chain(args.iter().copied()))
+                .is_err(),
             "{args:?}"
         );
     }
@@ -647,7 +648,7 @@ fn a_malformed_command_line_is_refused() {
 
 #[test]
 fn write_schema_needs_no_subcommand() {
-    let cli = Cli::try_parse_from(["sill", "--write-schema", "/tmp/schemas"])
+    let cli = Cli::try_parse_from(["bardo-shell", "--write-schema", "/tmp/schemas"])
         .unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(cli.write_schema, Some(PathBuf::from("/tmp/schemas")));
     assert!(cli.command.is_none());
@@ -655,7 +656,7 @@ fn write_schema_needs_no_subcommand() {
 
 #[test]
 fn write_selectors_needs_no_subcommand() {
-    let cli = Cli::try_parse_from(["sill", "--write-selectors", "/tmp/selectors"])
+    let cli = Cli::try_parse_from(["bardo-shell", "--write-selectors", "/tmp/selectors"])
         .unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(cli.write_selectors, Some(PathBuf::from("/tmp/selectors")));
     assert!(cli.command.is_none());
@@ -674,7 +675,7 @@ fn every_verb_the_compositor_sends_parses_and_reaches_its_action() {
             want,
             "{verb:?} by its words"
         );
-        let line = std::iter::once("sill").chain(words.iter().copied());
+        let line = std::iter::once("bardo-shell").chain(words.iter().copied());
         let by_clap = Cli::try_parse_from(line).ok().and_then(|cli| cli.command);
         assert_eq!(
             by_clap.as_ref().and_then(request),

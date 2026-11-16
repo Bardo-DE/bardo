@@ -48,7 +48,7 @@ comp_build() {
 # comp_tools: the casement tools directory, or exit 3 saying how to build it.
 comp_tools() {
   local tools="${BARDO_COMPOSITOR_TOOLS:-$BARDO_COMPOSITOR_DIR/dev/out/tools}" tool
-  for tool in casement bardo-compositorctl fake-logind; do
+  for tool in bardo-compositor bardo-compositorctl fake-logind; do
     if [ ! -x "$tools/bin/$tool" ]; then
       echo "comp: $tools/bin/$tool is missing: run $BARDO_COMPOSITOR_DIR/dev/bootstrap.sh --build-only outside the jail" >&2
       return 3

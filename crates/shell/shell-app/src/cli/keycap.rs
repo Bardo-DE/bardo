@@ -1,11 +1,11 @@
-//! `sill keycap status|retry|resume` and its pure mapping to a request.
+//! `bardo-shell keycap status|retry|resume` and its pure mapping to a request.
 
 use clap::Subcommand;
 use shell_ipc::request::Request;
 use shell_ipc::status::StatusRequest;
 use shell_model::keycap::KeycapAsk;
 
-/// `sill keycap ...`.
+/// `bardo-shell keycap ...`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Subcommand)]
 pub enum KeycapAction {
     /// Whether keycap runs, and what it says about its mode and the keyboards.
@@ -16,7 +16,7 @@ pub enum KeycapAction {
     Resume,
 }
 
-/// The request `sill keycap ACTION` sends.
+/// The request `bardo-shell keycap ACTION` sends.
 pub fn keycap_request(action: KeycapAction) -> Request {
     match action {
         KeycapAction::Status => Request::Status(StatusRequest::Keycap),

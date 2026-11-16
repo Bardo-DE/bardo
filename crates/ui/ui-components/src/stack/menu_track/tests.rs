@@ -1,5 +1,5 @@
 //! design/13 section 13.4's table and section 13.8 tests 1-5 as input sequences (ported from
-//! sill's `bar/menu_track/tests.rs`).
+//! bardo-shell's `bar/menu_track/tests.rs`).
 
 use crate::stack::menu_track::triangle::{inside, shielded};
 use crate::stack::menu_track::types::{

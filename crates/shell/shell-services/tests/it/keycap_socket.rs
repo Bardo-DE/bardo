@@ -206,20 +206,20 @@ struct Rig {
 }
 
 impl Rig {
-    /// Where the service looks for `keycap.toml`.
+    /// Where the service looks for `key-remap.toml`.
     fn config_dir(&self) -> PathBuf {
         shell_services::env::Dirs::under(self.scratch.path()).keycap_config()
     }
 }
 
-/// The service against a fake daemon, with `config` as the person's `keycap.toml` if given.
+/// The service against a fake daemon, with `config` as the person's `key-remap.toml` if given.
 fn rig(config: Option<&str>) -> Rig {
     let (daemon, socket) = Daemon::start();
     let scratch = TempDir::new("keycap-scratch");
     let config_dir = shell_services::env::Dirs::under(scratch.path()).keycap_config();
     if let Some(text) = config {
         std::fs::create_dir_all(&config_dir).unwrap_or_else(|e| panic!("{e}"));
-        std::fs::write(config_dir.join("keycap.toml"), text).unwrap_or_else(|e| panic!("{e}"));
+        std::fs::write(config_dir.join("key-remap.toml"), text).unwrap_or_else(|e| panic!("{e}"));
     }
     let env = Env {
         keycap_socket: Some(socket),
@@ -413,11 +413,11 @@ async fn the_config_file_is_told_on_connect_and_again_when_it_changes() {
     assert_eq!(peer.next(LONG), Some(config("[profile.term]\n")));
     assert_eq!(peer.next(SHORT), None);
 
-    std::fs::write(rig.config_dir().join("keycap.toml"), "[profile.term2]\n")
+    std::fs::write(rig.config_dir().join("key-remap.toml"), "[profile.term2]\n")
         .unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(peer.next(LONG), Some(config("[profile.term2]\n")));
 
-    std::fs::remove_file(rig.config_dir().join("keycap.toml")).unwrap_or_else(|e| panic!("{e}"));
+    std::fs::remove_file(rig.config_dir().join("key-remap.toml")).unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(
         peer.next(LONG),
         Some(config("")),

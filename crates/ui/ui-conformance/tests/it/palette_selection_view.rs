@@ -181,17 +181,17 @@ fn the_list_keeps_the_callers_selection_in_view() {
     );
 }
 
-/// Twenty-four rows in one group, as sill's real-input run had them.
+/// Twenty-four rows in one group, as bardo-shell's real-input run had them.
 fn rows_24() -> PaletteGroups<u8> {
     let rows = (0..24).map(|n| item(n, &format!("Row {n}"))).collect();
     PaletteGroups(vec![PaletteGroup::list("Many", rows)])
 }
 
-/// The same under the palette's own keys (sill's real-input run): Down pressed eleven times in a
+/// The same under the palette's own keys (bardo-shell's real-input run): Down pressed eleven times in a
 /// 24-row group, with no caller holding the selection, brings row 11 (below the fold at rest)
 /// into view against the bottom edge; Up back to row 2 (above the fold with 38 px palette rows)
 /// brings it in against the top edge. The
-/// palette is on a surface 420 px tall, as sill's launcher panel bounds it.
+/// palette is on a surface 420 px tall, as bardo-shell's launcher panel bounds it.
 #[test]
 fn the_palettes_own_down_and_up_scroll_the_selection_into_view() {
     #[allow(non_snake_case)]

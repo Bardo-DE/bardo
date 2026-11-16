@@ -1,5 +1,5 @@
 //! A [`DdcBus`] of made-up monitors kept in a JSON file, for the acceptance scripts (a `debug`
-//! build's `sill run --fake-ddc FILE`) and tests: every read reads the file again, so a script that
+//! build's `bardo-shell run --fake-ddc FILE`) and tests: every read reads the file again, so a script that
 //! rewrites a level plays a change made on the monitor's own buttons; every write sets the
 //! level in the file and appends `write <id> <feature> <value>` to `<file>.writes`, which the
 //! script checks. Nothing here opens a device.

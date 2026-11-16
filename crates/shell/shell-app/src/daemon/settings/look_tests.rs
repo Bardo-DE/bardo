@@ -39,7 +39,7 @@ impl Scratch {
         let folder = self
             .0
             .join("data")
-            .join("quire")
+            .join("bardo")
             .join("extensions")
             .join(PAPER);
         fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{}: {e}", folder.display()));

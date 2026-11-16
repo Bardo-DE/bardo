@@ -1,4 +1,4 @@
-//! sill serves the screen-sharing picker: `org.bardo.Shell1.PickCaptureSource`, which transom (the
+//! bardo-shell serves the screen-sharing picker: `org.bardo.Shell1.PickCaptureSource`, which transom (the
 //! portal backend) calls with what an app asked to share and which returns what the person picked;
 //! and the questions beside it (`PickColor`, `AskPermission`).
 //!

@@ -1,5 +1,5 @@
 //! The intents manifests of the installed apps: one `<AppName>.toml` for each app in a
-//! `quire/intents` folder of a data directory. The Hot Corners sheet reads them to list the
+//! `bardo/intents` folder of a data directory. The Hot Corners sheet reads them to list the
 //! actions a corner can run; what they mean is `settings-app-model`'s.
 
 use std::path::{Path, PathBuf};

@@ -1,5 +1,5 @@
 //! The companion from the daemon's side: what a summon finds focused, the four verbs of
-//! `sill companion`, and the launcher effects the summon's machine asks for. The machines
+//! `bardo-shell companion`, and the launcher effects the summon's machine asks for. The machines
 //! themselves run in the companion service (`shell_services::companion`); this is the host
 //! thread's part, which owns the outputs and the launcher link.
 //!
@@ -41,7 +41,7 @@ pub fn focus_of(services: &Services, launcher: &LauncherLink) -> FocusInput {
     }
 }
 
-/// Answer `sill companion ...`: tell the service, which decides.
+/// Answer `bardo-shell companion ...`: tell the service, which decides.
 pub fn dispatch(reach: &Reach, request: CompanionRequest) -> Response {
     let focus = || focus_of(reach.services, &reach.links.launcher);
     let command = match request {

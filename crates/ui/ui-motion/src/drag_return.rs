@@ -3,7 +3,7 @@
 //! springs back to its place on a two-dimensional spring, each axis starting at the velocity the
 //! hand had along it. Picked up again on the way, it follows from where it is.
 //!
-//! The dock's tile return is the first user (sill wires the drag and draws the offset).
+//! The dock's tile return is the first user (bardo-shell wires the drag and draws the offset).
 
 use super::spring::SpringPhase;
 use super::spring_point::{Release, SpringPointMotion, use_spring_point_motion};

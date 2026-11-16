@@ -6,7 +6,7 @@
 //! layer-shell-host's drag source ([`drag`]): a copy dismisses it (`Dragged`), a move gives the file away
 //! (`Moved`), a cancel leaves it.
 //!
-//! The card never takes the keyboard on appear. `sill focus-latest` (the launcher's kind of
+//! The card never takes the keyboard on appear. `bardo-shell focus-latest` (the launcher's kind of
 //! shortcut) asks for it through the banners' link ([`shell_ui_kit::links::BannerLink`]);
 //! the card then holds the keyboard and its hold pauses, Enter and Space open it, Delete and
 //! Backspace trash it, Escape dismisses it (the file kept), Tab moves between its buttons; every

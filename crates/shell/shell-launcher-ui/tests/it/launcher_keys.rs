@@ -2,7 +2,7 @@
 //! over the fake search runner: Down, Down, Enter runs the third row; Tab moves to the next
 //! provider's group; Escape closes.
 //!
-//! "fi" finds, best first: Firefox (the top hit), Files (Applications), "Firefox — sill
+//! "fi" finds, best first: Firefox (the top hit), Files (Applications), "Firefox — bardo-shell
 //! launcher" (Windows), Wi-Fi (Settings).
 
 use crate::launcher_harness;
@@ -20,7 +20,12 @@ fn three_downs_and_enter_run_the_fourth_row() {
     let mut open = open("fi");
     assert_eq!(
         titles(&open.harness),
-        vec!["Firefox", "Files", "Wi-Fi", "Firefox — sill launcher"]
+        vec![
+            "Firefox",
+            "Files",
+            "Wi-Fi",
+            "Firefox — bardo-shell launcher"
+        ]
     );
     for _ in 0..3 {
         open.harness.send(Input::key(ShortcutKey::Down));
@@ -63,7 +68,7 @@ fn tab_moves_to_the_next_group() {
     settle(&mut open.harness, |h| h.count(".ds-row") == 1);
     assert_eq!(
         titles(&open.harness),
-        vec!["Firefox — sill launcher"],
+        vec!["Firefox — bardo-shell launcher"],
         "then Windows"
     );
     // The field still has the keyboard after the palette remounted: Enter runs the window.

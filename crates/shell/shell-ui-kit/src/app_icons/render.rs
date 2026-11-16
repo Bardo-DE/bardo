@@ -159,7 +159,7 @@ fn fit(raster: RgbaImage, px: AssetPx) -> RgbaImage {
 }
 
 /// `bytes` written to `dir/name` through a temporary file and a rename, so a reader (Blitz, or
-/// another sill process) never sees half a PNG.
+/// another bardo-shell process) never sees half a PNG.
 pub fn write_atomic(dir: &Path, name: &str, bytes: &[u8]) -> std::io::Result<PathBuf> {
     static NEXT: AtomicU64 = AtomicU64::new(0);
     std::fs::create_dir_all(dir)?;

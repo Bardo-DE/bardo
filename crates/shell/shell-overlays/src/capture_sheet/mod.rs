@@ -20,5 +20,5 @@ mod view;
 
 pub use surface::CaptureSheet;
 
-/// The sheet's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The sheet's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const CAPTURE_SHEET_CSS: &str = include_str!("style.css");

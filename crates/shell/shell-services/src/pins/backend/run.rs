@@ -27,7 +27,7 @@ pub(crate) async fn run(
     let mut touched = match Debounced::file(&dir, FILE_NAME) {
         Ok(touched) => Some(touched),
         Err(error) => {
-            eprintln!("sill: watching {}: {error}", dir.display());
+            eprintln!("bardo-shell: watching {}: {error}", dir.display());
             None
         }
     };
@@ -80,7 +80,7 @@ fn seed(dir: &Path, tx: &Published<DockPins, PinEvent>, installed: &AppIndex) {
 fn apply_and_save(dir: &Path, tx: &Published<DockPins, PinEvent>, event: PinEvent) {
     let next = tx.next(event);
     if let Err(error) = save(dir, &next) {
-        eprintln!("sill: saving {}: {error}", dir.display());
+        eprintln!("bardo-shell: saving {}: {error}", dir.display());
     }
     tx.set(next);
 }

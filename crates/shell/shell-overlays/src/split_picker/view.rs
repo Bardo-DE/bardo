@@ -24,7 +24,7 @@ use shell_ui_kit::app_icons::{ICON_SIDE, TileIcons, use_tile_icons};
 use shell_ui_kit::links::SplitPickerLink;
 use shell_ui_kit::root::SurfaceRoot;
 
-/// The picker's stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The picker's stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const SPLIT_PICKER_CSS: &str = include_str!("style.css");
 
 pub(super) fn split_picker(output: OutputInfo) -> Element {

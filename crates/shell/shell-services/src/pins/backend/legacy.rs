@@ -5,7 +5,7 @@ use std::path::Path;
 
 use shell_model::pins::DockPins;
 
-/// The old file's name inside `$XDG_CONFIG_HOME/sill`.
+/// The old file's name inside `$XDG_CONFIG_HOME/bardo/shell`.
 pub(super) const FILE_NAME: &str = "dock.json";
 
 /// The pins the old file holds; a missing or unreadable file holds none to carry over.

@@ -1,6 +1,6 @@
 //! Inside the column: the title with Clear All (`Button{Quiet}`), the history grouped by app
 //! (`group_views`) as one quire `List` of headers and cards (each drawn by `group.rs`),
-//! or the empty state; the footer when sill is not the one receiving notifications; and the
+//! or the empty state; the footer when bardo-shell is not the one receiving notifications; and the
 //! widgets slot at the bottom. The column holds the keyboard: every key goes through
 //! [`step_keys`] over the drawn rows.
 //!

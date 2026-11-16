@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::keyboard::{ShellFocus, UserOverrides};
 
-/// What a person can ask of keycap from outside the daemon (`sill keycap retry` and `resume`):
+/// What a person can ask of keycap from outside the daemon (`bardo-shell keycap retry` and `resume`):
 /// the part of [`KeycapCommand`] that crosses the IPC wire.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

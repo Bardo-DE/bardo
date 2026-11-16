@@ -78,7 +78,7 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
   right-click on one lists suggestions, Ignore and Learn and the menu looks right at 1x and at a
   fractional scale; click into a word and type (no mark until you leave it); a Chinese or
   Japanese line typed through fcitx5 is never marked. Learn writes
-  `~/.local/share/quire/spelling/en_US.dic`.
+  `~/.local/share/bardo/spelling/en_US.dic`.
 
 ## mailo
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Screenshot. `dev/shot.sh OUT.png` shoots the nested compositor with grim (or the host with
 # spectacle): layer-shell-host's scripts/dev/shot.sh. `dev/shot.sh --surface NAME OUT.png` renders one
-# surface offscreen through the daemon (`sill debug capture`), compositor-independent.
+# surface offscreen through the daemon (`bardo-shell debug capture`), compositor-independent.
 set -euo pipefail
 # shellcheck source=dev/lib/compositor.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib/compositor.sh"

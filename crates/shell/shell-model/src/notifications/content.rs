@@ -2,7 +2,7 @@
 //! notification it becomes once the server has given it an id and a time ([`Notification`]).
 //!
 //! The D-Bus boundary (`dbus.rs`) turns the wire's strings, integers and `a{sv}` hints into
-//! these once; `sill debug notify` builds a [`Posting`] directly, without a bus.
+//! these once; `bardo-shell debug notify` builds a [`Posting`] directly, without a bus.
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -147,7 +147,7 @@ pub fn pair_actions(flat: &[String]) -> Vec<Action> {
         .collect()
 }
 
-/// The hints sill reads; the rest are ignored.
+/// The hints bardo-shell reads; the rest are ignored.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub struct Hints {
     /// `urgency` (byte).

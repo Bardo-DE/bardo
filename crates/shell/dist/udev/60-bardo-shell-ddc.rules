@@ -1,4 +1,4 @@
-# DDC/CI for sill: let the user at the active seat open the i2c buses of display controllers,
+# DDC/CI for bardo-shell: let the user at the active seat open the i2c buses of display controllers,
 # so brightness, speaker volume and night warmth reach external monitors without a group.
 #
 # dist/install.sh installs this only where no ddcutil rule exists. A ddcutil package that ships

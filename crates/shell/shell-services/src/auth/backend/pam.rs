@@ -1,4 +1,4 @@
-//! PAM itself, through `nonstick` (MIT; a safe API over libpam). Only `sill auth-check` calls
+//! PAM itself, through `nonstick` (MIT; a safe API over libpam). Only `bardo-shell auth-check` calls
 //! [`check`], in its own short-lived process; the daemon never does.
 
 use std::cell::{Cell, RefCell};
@@ -13,10 +13,10 @@ use nonstick::{
 };
 use shell_model::auth::{Attempt, AuthFault, Outcome, PamNote, PamService, Verdict};
 
-/// sill's own service (`dist/pam.d/sill`).
-pub const SILL_SERVICE: &str = "sill";
+/// bardo-shell's own service (`dist/pam.d/bardo-shell`).
+pub const SILL_SERVICE: &str = "bardo-shell";
 
-/// The fallback when sill's file is not installed: every distribution has `login`, and
+/// The fallback when bardo-shell's file is not installed: every distribution has `login`, and
 /// swaylock's own file is only `auth include login`.
 pub const FALLBACK_SERVICE: &str = "login";
 
@@ -139,8 +139,8 @@ mod tests {
     #[test]
     fn sills_own_file_wins_else_login() {
         let cases: [(&[&str], &str); 4] = [
-            (&["/etc/pam.d/bardo-shell"], "sill"),
-            (&["/usr/lib/pam.d/bardo-shell"], "sill"),
+            (&["/etc/pam.d/bardo-shell"], "bardo-shell"),
+            (&["/usr/lib/pam.d/bardo-shell"], "bardo-shell"),
             (&["/etc/pam.d/login"], "login"),
             (&[], "login"),
         ];

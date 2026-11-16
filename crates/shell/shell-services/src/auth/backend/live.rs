@@ -30,7 +30,7 @@ use tokio::sync::{mpsc, watch};
 use super::account::avatar_source;
 use crate::env::{Authenticator, Bus, Passwd, Person};
 
-/// How long a made-up verdict (`sill debug auth`) takes, so the surface sees `Checking` and the
+/// How long a made-up verdict (`bardo-shell debug auth`) takes, so the surface sees `Checking` and the
 /// field shakes again on every wrong one.
 pub const FAKE_CHECK_MS: u64 = 250;
 

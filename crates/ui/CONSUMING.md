@@ -1485,7 +1485,7 @@ Totem's codec prompt: a sheet says what the app needs, the person says yes, Pack
 tool (`Helpers::available`), show the sheet then, and never at launch or in the background. A
 person who says Not Now is not asked again until they try the feature again.
 
-**The data file.** Ship `$XDG_DATA_DIRS/quire/helpers/<app>.toml`. One top-level table per
+**The data file.** Ship `$XDG_DATA_DIRS/bardo/helpers/<app>.toml`. One top-level table per
 capability (lowercase letters, digits, hyphens):
 
 ```toml
@@ -1759,7 +1759,7 @@ fn main() {
 ```
 
 `cargo run -p your-app -- --write-schema target/schema` writes `<app-id>.settings.toml`
-(section 9.2); install it to `$XDG_DATA_DIRS/quire/settings/` for a local dev loop, or ship it
+(section 9.2); install it to `$XDG_DATA_DIRS/bardo/settings/` for a local dev loop, or ship it
 next to your `.desktop` file. `KeyKind` picks the widget for you — a two-variant enum is a
 `Toggle` when its words are an on/off pair and two segments otherwise, three to five a
 `SegmentedControl`, more a `Menu`, a `#[settings(range = "..")]` newtype a `Slider` — see

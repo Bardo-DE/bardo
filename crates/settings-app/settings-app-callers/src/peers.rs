@@ -11,13 +11,13 @@ use zbus::Connection;
 /// A table that cannot be read leaves an empty one, so no program is a service and every question
 /// is refused: Settings then shows its services as unavailable instead of trusting a name.
 ///
-/// A build with `dev-callers` adds the rows of the person's own file (`detent --dev-callers`) after
+/// A build with `dev-callers` adds the rows of the person's own file (`bardo-settings --dev-callers`) after
 /// the table; a release build has no such rows.
 pub fn desktop_peers(connection: &Connection) -> BusPeers {
     let table = TableFiles::desktop()
         .load(&RealProc::system())
         .unwrap_or_else(|why| {
-            eprintln!("detent: the list of the desktop's own programs could not be read ({why}); no program is trusted");
+            eprintln!("bardo-settings: the list of the desktop's own programs could not be read ({why}); no program is trusted");
             Table::empty()
         });
     #[cfg(feature = "dev-callers")]

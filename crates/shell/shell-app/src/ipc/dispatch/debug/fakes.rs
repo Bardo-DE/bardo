@@ -20,7 +20,7 @@ use super::super::reach::Reach;
 use super::super::reply::{sent, unsupported};
 use crate::actions::switcher;
 
-/// `sill debug osd`: the OSD for a change that moves no real level (the session's default sink
+/// `bardo-shell debug osd`: the OSD for a change that moves no real level (the session's default sink
 /// may be somebody's headphones).
 pub fn osd(reach: &Reach, kind: OsdKind, percent: Percent, mute: Mute) -> Response {
     let level = crate::osd::fake_level(percent, mute);
@@ -35,7 +35,7 @@ pub fn osd(reach: &Reach, kind: OsdKind, percent: Percent, mute: Mute) -> Respon
     Response::Done
 }
 
-/// `sill debug notify`: through the same reducer as a `Notify`, so it shows a banner and enters
+/// `bardo-shell debug notify`: through the same reducer as a `Notify`, so it shows a banner and enters
 /// the history.
 pub fn notify(reach: &Reach, posting: Posting) -> Response {
     sent(
@@ -48,7 +48,7 @@ pub fn notify(reach: &Reach, posting: Posting) -> Response {
     )
 }
 
-/// `sill debug screenshot`: the thumbnail for a file, as if the folder watch had seen it.
+/// `bardo-shell debug screenshot`: the thumbnail for a file, as if the folder watch had seen it.
 pub fn screenshot(reach: &Reach, path: PathBuf) -> Response {
     sent(
         reach
@@ -60,7 +60,7 @@ pub fn screenshot(reach: &Reach, path: PathBuf) -> Response {
     )
 }
 
-/// `sill debug corner`: a hit of `corner` on the first output, as if its dwell had run out.
+/// `bardo-shell debug corner`: a hit of `corner` on the first output, as if its dwell had run out.
 pub fn corner(reach: &Reach, corner: Corner) -> Response {
     let first = reach.outputs.outputs.first().map(|(info, _)| info.id);
     match first {
@@ -72,7 +72,7 @@ pub fn corner(reach: &Reach, corner: Corner) -> Response {
     }
 }
 
-/// `sill debug polkit`: a made-up request shown like a real one.
+/// `bardo-shell debug polkit`: a made-up request shown like a real one.
 pub fn polkit(reach: &Reach, request: FakeRequest) -> Response {
     sent(
         reach
@@ -84,12 +84,12 @@ pub fn polkit(reach: &Reach, request: FakeRequest) -> Response {
     )
 }
 
-/// `sill debug switcher`: the switcher on made-up apps, shown at once.
+/// `bardo-shell debug switcher`: the switcher on made-up apps, shown at once.
 pub fn switcher(reach: &Reach, apps: Vec<AppId>) -> Response {
     switcher::ask(reach, SwitcherAsk::Fake(apps))
 }
 
-/// `sill debug auth`: a verdict for the lock screen's check. Only a daemon built with `debug`
+/// `bardo-shell debug auth`: a verdict for the lock screen's check. Only a daemon built with `debug`
 /// takes it: an accepted verdict unlocks.
 #[cfg(feature = "debug")]
 pub fn auth(reach: &Reach, verdict: FakeVerdict) -> Response {
@@ -107,7 +107,7 @@ pub fn auth(_reach: &Reach, verdict: FakeVerdict) -> Response {
     ))
 }
 
-/// `sill debug idle-wake`: a made-up `resumed`. Only a daemon built with `debug` takes it: a
+/// `bardo-shell debug idle-wake`: a made-up `resumed`. Only a daemon built with `debug` takes it: a
 /// wake inside the lock grace opens the lock.
 #[cfg(feature = "debug")]
 pub fn idle_wake(reach: &Reach) -> Response {

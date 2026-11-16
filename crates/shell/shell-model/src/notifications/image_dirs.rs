@@ -1,6 +1,6 @@
 //! Where a notification's picture may come from. Any bus caller names `app_icon` and
 //! `image-path`; a path is drawn only when it lies in one of these folders (the icon themes and
-//! pixmaps, sill's own notification cache), so a sender cannot make the shell open an arbitrary
+//! pixmaps, bardo-shell's own notification cache), so a sender cannot make the shell open an arbitrary
 //! file. A symlink inside a folder that leads out of it is refused where the file is read (the
 //! host's file roots); this check is about the path as written.
 
@@ -85,7 +85,7 @@ mod tests {
     fn dirs() -> ImageDirs {
         ImageDirs::new([
             PathBuf::from("/usr/share/icons"),
-            PathBuf::from("/home/p/.cache/sill/notifications"),
+            PathBuf::from("/home/p/.cache/bardo/shell/notifications"),
             PathBuf::from("relative/is/left/out"),
         ])
     }
@@ -106,8 +106,8 @@ mod tests {
             ),
             (
                 "the notification cache",
-                file("/home/p/.cache/sill/notifications/1.png"),
-                file("/home/p/.cache/sill/notifications/1.png"),
+                file("/home/p/.cache/bardo/shell/notifications/1.png"),
+                file("/home/p/.cache/bardo/shell/notifications/1.png"),
             ),
             (
                 "a secret file",

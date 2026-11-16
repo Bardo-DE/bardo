@@ -14,7 +14,7 @@ use shell_ui_kit::hooks::{use_appearance, use_service};
 use shell_ui_kit::menu::use_popup_look;
 use shell_ui_kit::root::use_root_style;
 
-/// The wallpaper's own stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The wallpaper's own stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const WALLPAPER_CSS: &str = include_str!("style.css");
 
 /// The wallpaper on `output`: an `Ds` root over two cross-fading image layers showing the

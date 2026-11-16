@@ -11,11 +11,11 @@ use ui_helpers::{ApplicationEntry, DesktopFile, DesktopGroup, DesktopId, EntryLo
 use super::icon_roots::IconRoots;
 use super::icons::{IconTheme, resolve_icon};
 
-/// The desktop names this scan targets. sill runs as the desktop's own session
-/// (`quire`), so `OnlyShowIn`/`NotShowIn` are matched against these constants rather than the
+/// The desktop names this scan targets. bardo-shell runs as the desktop's own session
+/// (`bardo`), so `OnlyShowIn`/`NotShowIn` are matched against these constants rather than the
 /// live `XDG_CURRENT_DESKTOP`, which keeps the result deterministic under a nested test
 /// compositor too. An entry shown in either is shown here.
-const CURRENT_DESKTOPS: [&str; 1] = ["quire"];
+const CURRENT_DESKTOPS: [&str; 1] = ["bardo"];
 
 /// The desktop entry key naming the keyboard profile an app wants.
 const KEYBOARD_PROFILE_KEY: &str = "X-Keycap-Profile";
@@ -112,7 +112,7 @@ fn keyboard_profile(entry: &DesktopGroup, path: &Path) -> Option<ProfileName> {
     ProfileName::parse(value)
         .inspect_err(|error| {
             eprintln!(
-                "sill: apps: {}: {KEYBOARD_PROFILE_KEY} {value:?} ignored: {error}",
+                "bardo-shell: apps: {}: {KEYBOARD_PROFILE_KEY} {value:?} ignored: {error}",
                 path.display()
             )
         })
@@ -250,18 +250,18 @@ mod tests {
                 false,
             ),
             (
-                "only quire",
-                "[Desktop Entry]\nType=Application\nOnlyShowIn=quire;\n",
+                "only bardo",
+                "[Desktop Entry]\nType=Application\nOnlyShowIn=bardo;\n",
                 true,
             ),
             (
-                "quire or gnome",
-                "[Desktop Entry]\nType=Application\nOnlyShowIn=GNOME;quire;\n",
+                "bardo or gnome",
+                "[Desktop Entry]\nType=Application\nOnlyShowIn=GNOME;bardo;\n",
                 true,
             ),
             (
-                "not quire",
-                "[Desktop Entry]\nType=Application\nNotShowIn=quire;\n",
+                "not bardo",
+                "[Desktop Entry]\nType=Application\nNotShowIn=bardo;\n",
                 false,
             ),
             (
@@ -275,8 +275,8 @@ mod tests {
                 true,
             ),
             (
-                "quire is not a substring match away",
-                "[Desktop Entry]\nType=Application\nOnlyShowIn=Xquire;\n",
+                "bardo is not a substring match away",
+                "[Desktop Entry]\nType=Application\nOnlyShowIn=Xbardo;\n",
                 false,
             ),
         ];

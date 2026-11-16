@@ -29,7 +29,7 @@ pub fn with_token(
             None => None,
         };
         if let Err(error) = send(token) {
-            eprintln!("sill: launching: {error}");
+            eprintln!("bardo-shell: launching: {error}");
         }
     });
     Response::Done

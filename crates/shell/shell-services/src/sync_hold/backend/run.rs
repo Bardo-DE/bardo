@@ -85,7 +85,7 @@ impl Live {
             return Ended::Unreadable;
         };
         if let Err(error) = proxy.watch().await {
-            eprintln!("sill: sync hold: joining syncd: {error}");
+            eprintln!("bardo-shell: sync hold: joining syncd: {error}");
             return Ended::Unreadable;
         }
         loop {
@@ -100,7 +100,7 @@ impl Live {
                 command = commands.recv() => match command {
                     Some(SyncHoldCommand::Rewatch) => {
                         if let Err(error) = proxy.watch().await {
-                            eprintln!("sill: sync hold: joining syncd: {error}");
+                            eprintln!("bardo-shell: sync hold: joining syncd: {error}");
                         }
                     }
                     None => return Ended::Commands,
@@ -138,7 +138,7 @@ impl Live {
         self.board.learn(&datasets);
     }
 
-    /// The server's word: a press of a notice sill posted opens Settings at the account; a close
+    /// The server's word: a press of a notice bardo-shell posted opens Settings at the account; a close
     /// ends the notice's claim.
     fn heard_server(&mut self, said: Said) {
         // The notes may already have let go of a notice just pressed.

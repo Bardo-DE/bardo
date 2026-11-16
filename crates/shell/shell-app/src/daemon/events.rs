@@ -58,7 +58,7 @@ pub struct Shell {
     /// Where the service manager is told the shell has started.
     pub notify: crate::watchdog::Notifier,
     /// The async runtime the services run on, for the work an IPC request starts off the host
-    /// thread (`sill launch` waits for the app's process).
+    /// thread (`bardo-shell launch` waits for the app's process).
     pub runtime: tokio::runtime::Handle,
     /// The windows Show Desktop put away, to bring back on its next firing.
     pub stash: RefCell<crate::actions::show_desktop::Stash>,
@@ -152,11 +152,11 @@ fn palmrest_ask(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, ask: &PalmrestAc
     match palmrest::plan(ask) {
         Plan::Request(request) => {
             if let Response::Failed(failure) = answer(shell, ctx, request) {
-                eprintln!("sill: palmrest: {}", failure.message);
+                eprintln!("bardo-shell: palmrest: {}", failure.message);
             }
         }
         Plan::Program { program, args } => palmrest::run(&program, &args),
-        Plan::Refused(why) => eprintln!("sill: palmrest: {ask:?}: {why}"),
+        Plan::Refused(why) => eprintln!("bardo-shell: palmrest: {ask:?}: {why}"),
     }
 }
 
@@ -253,7 +253,7 @@ fn host_event(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, event: HostEvent<S
         ctx.set_scroll_config(crate::scroll::config(&shell.settings.borrow()));
     }
     // The watch's re-read reaches the feed (every follower: the policies, the locker, corners, the
-    // focus mode) the same way `sill reload` does; geometry follows the same event just below.
+    // focus mode) the same way `bardo-shell reload` does; geometry follows the same event just below.
     settings::publish_watched(&shell.settings, &event);
     shell.styles.publish(&event);
     settings::publish_watched_appearance(&shell.appearance, &event);
@@ -454,7 +454,7 @@ fn on_surface_closed(outputs: &mut Outputs, id: SurfaceId, reason: CloseReason) 
         .map_or("surface", |surface| surface.name);
     if reason != CloseReason::Requested {
         eprintln!(
-            "sill: the {name} on {:?} closed unexpectedly ({reason:?}); respawning",
+            "bardo-shell: the {name} on {:?} closed unexpectedly ({reason:?}); respawning",
             info.name
         );
     }

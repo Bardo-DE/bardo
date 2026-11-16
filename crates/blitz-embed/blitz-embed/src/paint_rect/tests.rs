@@ -46,7 +46,7 @@ fn a_rect_paints_through_every_transform_on_its_chain() {
             bounds(70.0, 20.0, 100.0, 40.0),
         ),
         (
-            "a parent's translateX(60px) (sill's swipe)",
+            "a parent's translateX(60px) (bardo-shell's swipe)",
             bounds(0.0, 0.0, 100.0, 40.0),
             vec![at(0.0, 0.0, Affine2::translate(60.0, 0.0))],
             bounds(60.0, 0.0, 100.0, 40.0),

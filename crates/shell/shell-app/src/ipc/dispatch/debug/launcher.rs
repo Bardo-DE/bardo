@@ -1,4 +1,4 @@
-//! `sill debug launcher-rows`: what `dev/accept/launcher.sh` reads the open launcher with. It goes
+//! `bardo-shell debug launcher-rows`: what `dev/accept/launcher.sh` reads the open launcher with. It goes
 //! through the `LauncherLink`: the rows the panel shows (clipboard titles already `<clipboard>`). Refused by a daemon built without `debug`.
 
 use shell_ipc::response::Response;

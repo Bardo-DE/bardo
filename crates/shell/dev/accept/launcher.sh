@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Launcher acceptance, on a private headless KWin (layer-shell-host scripts/dev/kwin-virtual.sh) that
 # the script starts and stops. The default mode runs four groups of steps with every key sent by
-# `sill debug key SURFACE KEY` (layer-shell-host's `Inject::Key`: the key enters the panel where a real
+# `bardo-shell debug key SURFACE KEY` (layer-shell-host's `Inject::Key`: the key enters the panel where a real
 # xkb key does, whether or not KWin gave the panel the keyboard); --real-input types real Wayland
 # key events instead.
 #
-# Every group starts `sill run` from this checkout's debug build (`--features debug`) in its own
+# Every group starts `bardo-shell run` from this checkout's debug build (`--features debug`) in its own
 # scratch tree (scratch_new: HOME and every XDG directory, its own XDG_RUNTIME_DIR) on a private
 # bus that is both its session and its system bus, with the fake DDC fixture, on the
 # compositor's socket (an absolute WAYLAND_DISPLAY). Nothing reaches the person's files, index,
@@ -15,24 +15,24 @@
 # Default mode, groups in this order (`--only GROUP`, repeatable, runs just those):
 #
 #   toggle: open latency, panel and idle frames (p95 < 100 ms over 20 toggles)
-#     1. 20 `sill launcher toggle` round trips, each timed on the daemon's own side
+#     1. 20 `bardo-shell launcher toggle` round trips, each timed on the daemon's own side
 #        (`crates/shell/shell-app/src/daemon.rs`'s `launcher.open_latency_ms` line). Asserts p95 < 100 ms;
 #        prints p50/p95/max.
-#     2. The panel exists after a toggle (`sill debug capture <launcher panel>`), and after the
+#     2. The panel exists after a toggle (`bardo-shell debug capture <launcher panel>`), and after the
 #        closing toggle, 5 s idle adds 0 frames to every launcher surface.
-#     3. `sill quit` ends the daemon, which then no longer answers `ping`.
+#     3. `bardo-shell quit` ends the daemon, which then no longer answers `ping`.
 #
 #   ui: the panel and the catcher
 #     1. Warm: both launcher surfaces exist from the start, hidden (no capture of either).
-#     2. `sill launcher toggle` shows the panel: over 10 warm openings, a capture of
+#     2. `bardo-shell launcher toggle` shows the panel: over 10 warm openings, a capture of
 #        `sill-launcher-<output>` within 100 ms of the toggle has the panel's pixels (the first
 #        opening after start is reported separately); the daemon's
 #        `launcher.open_to_frame_ms` lines are printed.
-#     3. `sill launcher toggle` again hides it (no capture), and a click on the catcher closes a
+#     3. `bardo-shell launcher toggle` again hides it (no capture), and a click on the catcher closes a
 #        reopened one.
 #     4. 5 s idle after the hide: 0 frames on the panel and the catcher.
 #     5. Stress: 20 toggles 150 ms apart (each close lands mid entrance), then 5 s idle; the
-#        daemon still answers `sill ping` and is still running.
+#        daemon still answers `bardo-shell ping` and is still running.
 #     6. On `examples/launcher_demo.rs` (fake results, driven through its stdin): `open`, then
 #        the keys `f` and `i` (layer-shell-host's `key` verb) show rows; Ctrl+K opens the selected
 #        row's actions menu; Escape twice closes the menu, then the launcher. Captures of the
@@ -40,9 +40,9 @@
 #
 #   palette: the palette, its preview pane, sections and emoji grid
 #     A scratch HOME holds a PDF, a PNG, a Markdown file and six more `m9-*` documents,
-#     (the provider asks `fd`). Every key goes through `sill debug key`, every look
-#     through `sill debug launcher-rows` and `sill debug capture` of the panel.
-#     1. Open latency: 10 warm `sill launcher open` / `close`, the panel's
+#     (the provider asks `fd`). Every key goes through `bardo-shell debug key`, every look
+#     through `bardo-shell debug launcher-rows` and `bardo-shell debug capture` of the panel.
+#     1. Open latency: 10 warm `bardo-shell launcher open` / `close`, the panel's
 #        `launcher.open_to_frame_ms` p50/p95/max; only the count of openings is asserted, since
 #        the host's load moves the numbers.
 #     2. `--query m9` lists Top Hit, then Documents.
@@ -57,7 +57,7 @@
 #     7. `tab` to Emoji with nothing typed (Shift+Tab twice: Web, then Emoji) shows quire's emoji
 #        grid (dev/out/launcher-v2-emoji.png).
 #     8. 5 s idle after closing: 0 frames on the launcher's surfaces.
-#     C. Home then →, End then →: the key claim reads the caret under sill.
+#     C. Home then →, End then →: the key claim reads the caret under bardo-shell.
 #     F. The same looks over the fakes' fixtures (`tests/launcher_support/m9.rs`: a PDF, a PNG, a
 #        Markdown file, five more PDFs, a clipboard entry, emoji), on `examples/launcher_demo.rs`
 #        (its keys are layer-shell-host's `key` verb) after the daemon has quit, while the files and emoji providers answer nothing:
@@ -76,8 +76,8 @@
 #     on it and records ShowItems. examples/files_probe.rs drives FilesProvider as the runner
 #     does and carries out the first row's activation through the real launch service.
 #     1. The `fd` backend: the provider lists m9-report.pdf under ~/Documents for
-#        "m9-rep" and for "M9-REP" (names match without case); the daemon, after `sill launcher
-#        open --query m9-rep`, lists it once in `sill debug launcher-rows`, under Top Hit (a
+#        "m9-rep" and for "M9-REP" (names match without case); the daemon, after `bardo-shell launcher
+#        open --query m9-rep`, lists it once in `bardo-shell debug launcher-rows`, under Top Hit (a
 #        single match is the Top Hit, never repeated below it) or Documents.
 #     2. Enter opens it: the stub opener records the file's path and the token, bare and in a
 #        transient scope.
@@ -88,8 +88,8 @@
 #
 # --real-input: layer-shell-host's scripts/dev/fake-input.sh drives the headless KWin: every key is a
 # real Wayland key event with a real serial and keyboard focus, reaching the palette's field and
-# quire's key claim as a person's would. `sill debug launcher-rows` and `sill debug capture` only
-# look; no key goes through `sill debug key`. The bus is KWin's private bus, given to
+# quire's key claim as a person's would. `bardo-shell debug launcher-rows` and `bardo-shell debug capture` only
+# look; no key goes through `bardo-shell debug key`. The bus is KWin's private bus, given to
 # the daemon (and the stub file manager, as an argument) only, never to this shell. ONE
 # fake-input client serves the whole run. `wl-copy`/`wl-paste` get KWin's socket by absolute
 # path and only made-up strings, and no clipboard content is printed. The provider asks `fd`.
@@ -104,7 +104,7 @@
 #     4. Real Shift+Tab twice with nothing typed filters to Emoji (the grid); real Down, Down,
 #        Right, Left, Up each move the selection by a row or a cell; real Enter copies the
 #        selected glyph (`wl-paste` on KWin's socket reads it).
-#     5. The clipboard: KWin offers ext_data_control_manager_v1, so `sill clipboard status` says
+#     5. The clipboard: KWin offers ext_data_control_manager_v1, so `bardo-shell clipboard status` says
 #        `memory ext`; a made-up copy made on KWin's socket, then another, shows as one
 #        clipboard row for its word; real Enter restores it (`wl-paste` reads it back). Were
 #        neither protocol offered, status would say `unsupported` and the step would be
@@ -112,7 +112,7 @@
 #     Scroll. Real Down past the card's visible rows (Documents filtered, 24 rows): is the
 #        selected row scrolled into view? Real Up back to the first row. Recorded, not asserted
 #        (quire's open gap): OPEN while the selected row is off the card.
-#     Caret. `sill launcher open --query m9`, then a real "x": where the caret starts. Recorded,
+#     Caret. `bardo-shell launcher open --query m9`, then a real "x": where the caret starts. Recorded,
 #        not asserted: OPEN while the query becomes "xm9" (the caret at the start). Then real
 #        End and →: the pane shows (the claim reads the caret at the end).
 #     Captures: target/accept-launcher/real-input/*.png.
@@ -176,7 +176,7 @@ group_end() {
 
 # The launcher's own surfaces, "name frames" lines, and the sum of their frames.
 launcher_counters() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 for row in json.loads(sys.stdin.read())["v"]:
     if row["surface"].startswith("sill-launcher-"):
@@ -195,13 +195,13 @@ open_latencies() {
   fi
 }
 
-# One field of `sill debug launcher-rows` (clipboard titles are "<clipboard>" there): preview,
+# One field of `bardo-shell debug launcher-rows` (clipboard titles are "<clipboard>" there): preview,
 # selected, query, headings, count, hidden:<title>, rows:<title>, row:<index> (the line at that
 # index over every section), index:<title>:<row> (the row's index over every section),
 # where:<row> (the section titles holding that row). Empty and exit 1 while the launcher is
 # closed.
 field() {
-  sill debug launcher-rows 2>>"$OUT_DIR/rows.log" | python3 -c '
+  bardo-shell debug launcher-rows 2>>"$OUT_DIR/rows.log" | python3 -c '
 import json, sys
 text = sys.stdin.read().strip()
 try:
@@ -247,7 +247,7 @@ elif want.startswith("where:"):
 
 is_open() { field query >/dev/null 2>&1; }
 
-close_launcher() { sill launcher close >>"$OUT_DIR/keys.log" 2>&1; sleep 0.3; }
+close_launcher() { bardo-shell launcher close >>"$OUT_DIR/keys.log" 2>&1; sleep 0.3; }
 
 # Capture of the launcher panel into $1.
 capture_launcher() { capture "sill-launcher-$NAME" "$1"; }
@@ -308,7 +308,7 @@ stop_fm() {
   FM=
 }
 
-# `sill debug key`'s spelling (a W3C key name, `+super` for ⌘ (Cmd arrives as Super), `+shift`) of a key by its usual word;
+# `bardo-shell debug key`'s spelling (a W3C key name, `+super` for ⌘ (Cmd arrives as Super), `+shift`) of a key by its usual word;
 # any other word is already a key name (`f`, `Home`).
 key_spec() {
   case "$1" in
@@ -343,7 +343,7 @@ step_toggle_latency() {
   before=$(open_latencies | wc -l)
   for _ in $(seq "$TOGGLES"); do
     # The daemon times and logs the round trip before it even looks at the request.
-    sill launcher toggle >>"$log" 2>&1 || true
+    bardo-shell launcher toggle >>"$log" 2>&1 || true
   done
   after=$(open_latencies | wc -l)
   n=$(( after - before ))
@@ -361,17 +361,17 @@ step_toggle_latency() {
 step_panel_and_idle() {
   local log="$OUT_DIR/panel.log" surface before after
   : >"$log"
-  sill launcher toggle >>"$log" 2>&1 || true
+  bardo-shell launcher toggle >>"$log" 2>&1 || true
   surface=$(launcher_counters | awk 'NR==1 {print $1}')
   if [ -z "$surface" ]; then
-    echo "no sill-launcher-* surface in 'sill debug stats'" | tee -a "$log" >&2
+    echo "no sill-launcher-* surface in 'bardo-shell debug stats'" | tee -a "$log" >&2
     return 1
   fi
-  sill debug capture "$surface" "$OUT_DIR/panel.png" >>"$log" 2>&1 || {
+  bardo-shell debug capture "$surface" "$OUT_DIR/panel.png" >>"$log" 2>&1 || {
     echo "the launcher surface is listed but would not capture" >&2
     return 1
   }
-  sill launcher toggle >>"$log" 2>&1 || true # close it
+  bardo-shell launcher toggle >>"$log" 2>&1 || true # close it
   # Counted once the close has landed: a frame of the opening still in flight at the capture
   # (a loaded host, a debug build) is the opening's, not idle's.
   sleep 0.5
@@ -384,11 +384,11 @@ step_panel_and_idle() {
 
 # toggle 3.
 step_quit() {
-  sill quit >"$OUT_DIR/quit.log" 2>&1 || return 1
+  bardo-shell quit >"$OUT_DIR/quit.log" 2>&1 || return 1
   grep -q '"kind":"done"' "$OUT_DIR/quit.log" || return 1
   sleep 0.2
-  if sill ping >"$OUT_DIR/quit-ping.log" 2>&1; then
-    echo "'sill ping' still succeeded after quit (see $OUT_DIR/quit-ping.log)" >&2
+  if bardo-shell ping >"$OUT_DIR/quit-ping.log" 2>&1; then
+    echo "'bardo-shell ping' still succeeded after quit (see $OUT_DIR/quit-ping.log)" >&2
     return 1
   fi
 }
@@ -422,10 +422,10 @@ EOF
 # ui 1.
 step_ui_warm() {
   local log="$OUT_DIR/warm.log"
-  sill debug stats >"$log" 2>&1
+  bardo-shell debug stats >"$log" 2>&1
   grep -q "\"$PANEL\"" "$log" && grep -q "\"$CATCHER\"" "$log" || {
-    echo "the launcher surfaces are not in 'sill debug stats'" >&2; return 1; }
-  if sill debug capture "$PANEL" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
+    echo "the launcher surfaces are not in 'bardo-shell debug stats'" >&2; return 1; }
+  if bardo-shell debug capture "$PANEL" "$OUT_DIR/hidden.png" >>"$log" 2>&1; then
     echo "the panel is mapped before any toggle" >&2; return 1
   fi
   echo "both launcher surfaces spawned at start, hidden" | tee -a "$log" >&2
@@ -437,10 +437,10 @@ step_ui_warm() {
 toggle_to_capture() {
   local log="$1" start attempts=0 px
   start=$(date +%s%N)
-  sill launcher toggle >>"$log" 2>&1 || return 1
+  bardo-shell launcher toggle >>"$log" 2>&1 || return 1
   for _ in $(seq 200); do
     attempts=$(( attempts + 1 ))
-    if sill debug capture "$PANEL" "$OUT_DIR/open.png" >>"$log" 2>&1; then
+    if bardo-shell debug capture "$PANEL" "$OUT_DIR/open.png" >>"$log" 2>&1; then
       local took=$(( ($(date +%s%N) - start) / 1000000 ))
       px=$(opaque_pixels "$OUT_DIR/open.png")
       [ "$px" -gt 1000 ] && { echo "$took"; return 0; }
@@ -453,11 +453,11 @@ step_ui_toggle_shows() {
   local log="$OUT_DIR/toggle.log" first warm=() ms
   : >"$log"
   first=$(toggle_to_capture "$log") || return 1
-  sill launcher toggle >>"$log" 2>&1; sleep 0.4
+  bardo-shell launcher toggle >>"$log" 2>&1; sleep 0.4
   for _ in $(seq 10); do
     ms=$(toggle_to_capture "$log") || return 1
     warm+=("$ms")
-    sill launcher toggle >>"$log" 2>&1; sleep 0.4
+    bardo-shell launcher toggle >>"$log" 2>&1; sleep 0.4
   done
   local frames
   frames=$(grep -o 'launcher.open_to_frame_ms=[0-9.]*' "$OUT_DIR/daemon.log" | cut -d= -f2 | tr '\n' ' ')
@@ -477,18 +477,18 @@ EOF
 # ui 3.
 step_ui_hide() {
   local log="$OUT_DIR/hide.log" hidden=no closed=no
-  sill launcher toggle >"$log" 2>&1 || return 1
+  bardo-shell launcher toggle >"$log" 2>&1 || return 1
   sleep 0.5
-  sill launcher toggle >>"$log" 2>&1 || return 1
+  bardo-shell launcher toggle >>"$log" 2>&1 || return 1
   for _ in $(seq 40); do
-    sill debug capture "$PANEL" "$OUT_DIR/after-hide.png" >>"$log" 2>&1 || { hidden=yes; break; }
+    bardo-shell debug capture "$PANEL" "$OUT_DIR/after-hide.png" >>"$log" 2>&1 || { hidden=yes; break; }
     sleep 0.025
   done
-  sill launcher toggle >>"$log" 2>&1
+  bardo-shell launcher toggle >>"$log" 2>&1
   sleep 0.5
-  sill debug click "$CATCHER" 20 "$(( OUT_H - 20 ))" >>"$log" 2>&1
+  bardo-shell debug click "$CATCHER" 20 "$(( OUT_H - 20 ))" >>"$log" 2>&1
   for _ in $(seq 40); do
-    sill debug capture "$PANEL" "$OUT_DIR/after-catch.png" >>"$log" 2>&1 || { closed=yes; break; }
+    bardo-shell debug capture "$PANEL" "$OUT_DIR/after-catch.png" >>"$log" 2>&1 || { closed=yes; break; }
     sleep 0.025
   done
   echo "toggle hides: $hidden; a catcher click closes: $closed" | tee -a "$log" >&2
@@ -516,7 +516,7 @@ step_ui_stress() {
   for _ in $(seq 20); do
     # A toggle the daemon does not answer within the client's 2 s on a loaded host is the host's:
     # it still counts (the daemon may have handled it); the verdict is below, on the daemon.
-    sill launcher toggle >>"$log" 2>&1 || late=$(( late + 1 ))
+    bardo-shell launcher toggle >>"$log" 2>&1 || late=$(( late + 1 ))
     sleep 0.15
   done
   took=$(( ($(date +%s%N) - start) / 1000000 ))
@@ -525,7 +525,7 @@ step_ui_stress() {
   kill -0 "$DAEMON" 2>/dev/null && alive=yes
   # The ping answers once the queue of toggles has drained: up to 20 s.
   for _ in $(seq 20); do
-    sill ping >>"$log" 2>&1 && { answers=yes; break; }
+    bardo-shell ping >>"$log" 2>&1 && { answers=yes; break; }
     sleep 1
   done
   [ "$late" = 0 ] || echo "$late of 20 toggles went unanswered within the client's time" | tee -a "$log" >&2
@@ -604,11 +604,11 @@ group_ui() {
 
 OPENINGS=10
 
-# One key (`key_spec`'s words) on the launcher's panel, through `sill debug key`.
-debug_key() { sill debug key "sill-launcher-$NAME" "$(key_spec "$1")" >>"$OUT_DIR/keys.log" 2>&1; sleep 0.25; }
+# One key (`key_spec`'s words) on the launcher's panel, through `bardo-shell debug key`.
+debug_key() { bardo-shell debug key "sill-launcher-$NAME" "$(key_spec "$1")" >>"$OUT_DIR/keys.log" 2>&1; sleep 0.25; }
 
 open_query() {
-  sill launcher open --query "$1" >>"$OUT_DIR/keys.log" 2>&1
+  bardo-shell launcher open --query "$1" >>"$OUT_DIR/keys.log" 2>&1
   for _ in $(seq 40); do
     [ -n "$(field headings 2>/dev/null)" ] && break
     sleep 0.1
@@ -617,7 +617,7 @@ open_query() {
 }
 
 # Waits (up to ${2:-100} tenths of a second) for the preview pane to be `shown` (not hidden) or
-# `hidden`; the state read through `sill debug launcher-rows`, so it is what the daemon has
+# `hidden`; the state read through `bardo-shell debug launcher-rows`, so it is what the daemon has
 # handled, not what the last key was meant to do.
 await_preview() {
   local want=$1 now
@@ -723,7 +723,7 @@ pane_levels_once() {
   open_query "$query"
   echo "pane levels on --query $query ($(field headings))" >&2
   debug_key quick-look
-  # A key is answered when the daemon has handled it, not when `sill debug key` returns: every
+  # A key is answered when the daemon has handled it, not when `bardo-shell debug key` returns: every
   # look below waits for the state it expects (up to 10 s), never for a fixed sleep.
   await_preview shown || { echo "quick-look showed nothing" >&2; return 1; }
   # `right` reaches the pane's first control once the pane has been drawn (a capture returns when a
@@ -776,7 +776,7 @@ step_palette_emoji() {
   close_launcher
 }
 
-# palette C. The caret under sill: After `--query m9` the caret is at the end, so Home puts it at
+# palette C. The caret under bardo-shell: After `--query m9` the caret is at the end, so Home puts it at
 #    the start, where → moves it and the pane stays hidden; End, then →, finds the caret at the
 #    end and opens the pane.
 step_palette_caret() {
@@ -850,7 +850,7 @@ group_palette() {
   build "-p shell-launcher-ui --example launcher_demo" || { group_end; return 1; }
   : >"$OUT_DIR/keys.log"
   seed_documents "$HOME_DIR" 3000 pdfs
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   printf '[launcher]\nweb_search = true\n' >"$CONFIG/shell/settings.toml"
   start_private_bus || { group_end; return 1; }
   launch_daemon || { group_end; return 1; }
@@ -892,7 +892,7 @@ judge() {
 }
 
 seed_files() {
-  mkdir -p "$HOME_DIR/Documents" "$HOME_DIR/notes" "$CONFIG/sill" "$DATA/applications"
+  mkdir -p "$HOME_DIR/Documents" "$HOME_DIR/notes" "$CONFIG/bardo/shell" "$DATA/applications"
   : >"$OPENED"
   printf '%%PDF-1.4\n1 0 obj << /Type /Catalog >> endobj\ntrailer << /Root 1 0 R >>\n%%%%EOF\n' \
     >"$HOME_DIR/Documents/m9-report.pdf"
@@ -900,7 +900,7 @@ seed_files() {
   cat >"$SCRATCH/record-open" <<EOF
 #!/bin/sh
 printf '%s\ttoken=%s\n' "\$1" "\${XDG_ACTIVATION_TOKEN:-}" >>"$OPENED"
-grep -o 'app-sill-open[^/]*\.scope' /proc/\$\$/cgroup >>"$SCRATCH/scopes.log"
+grep -o 'app-bardo-open[^/]*\.scope' /proc/\$\$/cgroup >>"$SCRATCH/scopes.log"
 EOF
   chmod +x "$SCRATCH/record-open"
   cat >"$DATA/applications/sill-stub-opener.desktop" <<EOF
@@ -937,20 +937,20 @@ start_bus_with_services() {
   require_private_system_bus "$BUS" || return 1
 }
 
-# `sill debug launcher-rows` after opening the launcher on $1.
+# `bardo-shell debug launcher-rows` after opening the launcher on $1.
 daemon_rows() {
-  sill launcher open --query "$1" >/dev/null 2>&1
+  bardo-shell launcher open --query "$1" >/dev/null 2>&1
   sleep 1
   local rows
-  rows=$(sill debug launcher-rows 2>&1)
-  sill launcher close >/dev/null 2>&1
+  rows=$(bardo-shell debug launcher-rows 2>&1)
+  bardo-shell launcher close >/dev/null 2>&1
   echo "$rows"
 }
 
 # The count of lines of $2 matching $1.
 count_in() { grep -c -- "$1" "$2" 2>/dev/null || true; }
 
-# The title of the one section of `sill debug launcher-rows` (on stdin) listing row $1, else
+# The title of the one section of `bardo-shell debug launcher-rows` (on stdin) listing row $1, else
 # nothing. A single match is the Top Hit, which is never repeated below it, so a
 # file's row is under "Top Hit" or "Documents".
 section_of() {
@@ -1006,7 +1006,7 @@ files_open() {
   fi
   in_env env XDG_RUNTIME_DIR="$real_runtime" "$BARDO_FILES_PROBE" --home "$HOME_DIR" --backend fd \
     --query m9-rep --choose primary >>"$OUT_DIR/step2.txt" 2>&1
-  if grep -qxF "$want" "$OPENED" && grep -q 'app-sill-open' "$SCRATCH/scopes.log"; then
+  if grep -qxF "$want" "$OPENED" && grep -q 'app-bardo-open' "$SCRATCH/scopes.log"; then
     pass 2 "Enter opened it inside a transient scope ($(head -1 "$SCRATCH/scopes.log"))"
   else
     fail 2 "scoped open recorded: $(tr '\n' '|' <"$OPENED") scope: $(tr '\n' '|' <"$SCRATCH/scopes.log")"
@@ -1145,9 +1145,9 @@ await_field() {
 
 # Open the launcher with nothing typed (the field has the keyboard), wait for its rows.
 open_empty() {
-  sill launcher close >/dev/null 2>&1
+  bardo-shell launcher close >/dev/null 2>&1
   sleep 0.3
-  sill launcher open >/dev/null 2>&1
+  bardo-shell launcher open >/dev/null 2>&1
   for _ in $(seq 40); do is_open && break; sleep 0.1; done
   sleep 0.5
   is_open
@@ -1327,9 +1327,9 @@ step_real_emoji() {
   [ "$pasted" = "$glyph" ] && [ -n "$glyph" ] && [ "$moved" = 0 ]
 }
 
-# "mode protocol entries" from `sill clipboard status` (counts only).
+# "mode protocol entries" from `bardo-shell clipboard status` (counts only).
 clip_status() {
-  sill clipboard status 2>/dev/null | python3 -c '
+  bardo-shell clipboard status 2>/dev/null | python3 -c '
 import json, sys
 try:
     v = json.loads(sys.stdin.read())["v"]["v"]
@@ -1344,7 +1344,7 @@ step_real_clipboard() {
   close_launcher
   local status word=lighthouse made_up="m9-real-input lighthouse 7731 made-up words"
   status=$(clip_status)
-  echo "sill clipboard status on KWin: $status" >&2
+  echo "bardo-shell clipboard status on KWin: $status" >&2
   case "$status" in
     "memory unsupported"*) echo "KWin offers no data-control manager" >&2; return 2 ;;
     "memory ext"* | "memory wlr"*) ;;
@@ -1360,7 +1360,7 @@ step_real_clipboard() {
   await_field where:"<clipboard>" "Top Hit" 2>/dev/null || await_field where:"<clipboard>" Clipboard \
     || { echo "no clipboard row for '$word': $(field headings)" >&2; return 1; }
   local rows
-  rows=$(sill debug launcher-rows | grep -o '<clipboard>' | wc -l)
+  rows=$(bardo-shell debug launcher-rows | grep -o '<clipboard>' | wc -l)
   echo "real typing '$word': $rows clipboard row, under $(field where:"<clipboard>")" >&2
   [ "$rows" = 1 ] || return 1
   [ "$(field row:"$(field selected)")" = "<clipboard>" ] || { echo "the clipboard row is not selected" >&2; return 1; }
@@ -1406,7 +1406,7 @@ record_scroll() {
 # Caret. Recorded: where the caret starts when the launcher opens with a query.
 record_caret() {
   close_launcher
-  sill launcher open --query m9 >/dev/null 2>&1
+  bardo-shell launcher open --query m9 >/dev/null 2>&1
   await_field query m9 || return 1
   sleep 0.5
   shot q341-open
@@ -1415,11 +1415,11 @@ record_caret() {
   local query caret=OPEN
   query=$(field query)
   [ "$query" = m9x ] && caret=CLOSED
-  echo "caret $caret: after 'sill launcher open --query m9' a real 'x' makes the query" \
+  echo "caret $caret: after 'bardo-shell launcher open --query m9' a real 'x' makes the query" \
     "'$query' (m9x when the caret starts at the end)" >&2
   press BackSpace || return 1
   close_launcher
-  sill launcher open --query m9 >/dev/null 2>&1
+  bardo-shell launcher open --query m9 >/dev/null 2>&1
   await_field query m9 || return 1
   sleep 0.5
   press Right || return 1
@@ -1460,7 +1460,7 @@ main_real() {
   : >"$OUT_DIR/keys.log"
   echo "$COMPOSITOR at $WL; data-control: $(env WAYLAND_DISPLAY="$WL" wayland-info 2>/dev/null \
     | grep -o "'[a-z_]*data_control_manager_v1'" | tr '\n' ' ')" >&2
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   printf '[launcher]\nweb_search = true\nclipboard_history = "memory"\n' \
     >"$CONFIG/shell/settings.toml"
   launch_daemon || exit 1

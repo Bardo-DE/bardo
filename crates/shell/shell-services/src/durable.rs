@@ -103,7 +103,7 @@ pub fn set_aside(path: &Path) {
     aside.push(".damaged");
     if path.exists() && fs::rename(path, path.with_file_name(aside)).is_ok() {
         eprintln!(
-            "sill: {} could not be read; kept as .damaged",
+            "bardo-shell: {} could not be read; kept as .damaged",
             path.display()
         );
     }
@@ -139,12 +139,12 @@ mod tests {
     #[test]
     fn a_new_file_is_private_whole_and_leaves_nothing_beside_it() {
         let dir = TempDir::new("durable-new");
-        let path = dir.path().join("state/sill/a.json");
+        let path = dir.path().join("state/bardo/shell/a.json");
         write(&path, b"one", Access::OwnerOnly).unwrap_or_else(|e| panic!("{e}"));
         write(&path, b"two", Access::OwnerOnly).unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(std::fs::read(&path).unwrap_or_default(), b"two");
         assert_eq!(mode(&path), 0o600);
-        assert_eq!(names(&dir.path().join("state/sill")), vec!["a.json"]);
+        assert_eq!(names(&dir.path().join("state/bardo/shell")), vec!["a.json"]);
     }
 
     #[test]

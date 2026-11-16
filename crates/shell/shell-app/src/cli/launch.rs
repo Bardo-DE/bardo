@@ -1,4 +1,4 @@
-//! `sill launch DESKTOP-ID [--print-timing]`: open an installed app exactly as a click in the
+//! `bardo-shell launch DESKTOP-ID [--print-timing]`: open an installed app exactly as a click in the
 //! dock does. The running shell does the launch and answers once the app's process exists; with
 //! `--print-timing` the timing line is printed on stdout.
 //!
@@ -17,7 +17,7 @@ use shell_model::launch::{LaunchTiming, launch_line};
 use super::client::{ClientError, send};
 use super::stdout;
 
-/// `sill launch ...`.
+/// `bardo-shell launch ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Args)]
 pub struct LaunchArgs {
     /// The app's desktop id, for example `org.mozilla.firefox`; a trailing `.desktop` is fine.
@@ -50,7 +50,7 @@ impl PrintTiming {
     }
 }
 
-/// The request `sill launch APP` sends: the desktop id without its `.desktop` ending, as the
+/// The request `bardo-shell launch APP` sends: the desktop id without its `.desktop` ending, as the
 /// shell's app index names apps.
 pub fn launch_request(args: &LaunchArgs) -> Request {
     let id = args.app.strip_suffix(".desktop").unwrap_or(&args.app);
@@ -90,7 +90,7 @@ pub fn report(ending: &Ending, print: PrintTiming) -> (Output, u8) {
         }
         (Ending::Launched(_), PrintTiming::Skip) => (Output::Nothing, 0),
         (Ending::Failed { code, sentence }, _) => {
-            (Output::Stderr(format!("sill: {sentence}")), *code)
+            (Output::Stderr(format!("bardo-shell: {sentence}")), *code)
         }
     }
 }
@@ -103,7 +103,7 @@ pub enum Output {
     Stderr(String),
 }
 
-/// Run `sill launch`.
+/// Run `bardo-shell launch`.
 pub fn main(args: &LaunchArgs) -> ExitCode {
     let (output, code) = report(&ending(send(&launch_request(args))), args.timing);
     match output {

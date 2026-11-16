@@ -1,4 +1,4 @@
-//! sill as the control center of intentd: the terminal's standing grants and the way back from the
+//! bardo-shell as the control center of intentd: the terminal's standing grants and the way back from the
 //! breaker. The connection owns `org.bardo.Shell`, which the shipped `actiond.toml` gives the
 //! `control` role, so these members answer it and nobody else.
 

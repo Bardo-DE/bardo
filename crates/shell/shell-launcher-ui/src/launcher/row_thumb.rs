@@ -9,7 +9,7 @@
 //! (`FreedesktopThumbnails::lookup` checks the address and the time the picture says). A file
 //! with no thumbnail has none in its row. A file in the Pictures folder, which the host may
 //! read, is drawn from itself, as before. Nothing is copied: a copy would hold the whole picture
-//! in sill's cache and need scaling, which the specification's cache already is.
+//! in bardo-shell's cache and need scaling, which the specification's cache already is.
 
 use std::path::{Path, PathBuf};
 

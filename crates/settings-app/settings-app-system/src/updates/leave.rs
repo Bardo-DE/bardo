@@ -21,7 +21,7 @@ pub trait Departure: Debug + Send + Sync {
 pub struct PowerMenu;
 
 fn open_power_menu() -> Result<(), String> {
-    let opened = Command::new("sill")
+    let opened = Command::new("bardo-shell")
         .args(["power-menu", "open"])
         .stdin(Stdio::null())
         .stdout(Stdio::null())

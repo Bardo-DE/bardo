@@ -180,7 +180,7 @@ The person's choices are `$XDG_CONFIG_HOME/files/settings.toml`, read through qu
 (lenient: a bad value costs only its own key; atomic write; a directory watch). `files-ui/src/settings`
 holds the document (`FilesDoc`: `general`, `sidebar`, `advanced`, each a struct deriving
 `SettingsSchema`), its `Word` enums, the schema (`files --write-schema DIR` writes
-`files.settings.toml`, which the installer puts in `share/quire/settings/`) and `follow`, which turns
+`files.settings.toml`, which the installer puts in `share/bardo/settings/`) and `follow`, which turns
 the file into a `tokio::sync::watch` channel of `Preferences` that `Launch` carries. `Preferences` is
 plain data: `files_core::Behaviour` (folders on top, the two warnings) and the sidebar's rows. The
 window sends `Input::Behave` to every tab when it changes, so the model stays pure; a tab opened later

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install files into the desktop from this checkout: build it in release, then put the binary, the
+# Install bardo-files into the desktop from this checkout: build it in release, then put the binary, the
 # desktop entry, the two bus services that start it (by its own name and as the desktop's file
 # manager), the intents manifest and the settings schema where the session reads them. Run as
 # yourself; sudo asks once when the place is not yours. Safe to run again.
@@ -26,13 +26,13 @@ parse_flags "$@"
 step "1/4 checks"
 refuse_root
 command -v cargo >/dev/null || [ "${FLAG_no_build:-0}" = 1 ] || [ -n "${BARDO_FILES_BIN:-}" ] || { echo "cargo not found" >&2; exit 1; }
-if [ -e "$HOME/.cargo/bin/files" ]; then
-  note "WARNING: $HOME/.cargo/bin/files would come first on a login shell's PATH and shadow $BIN_INSTALLED;"
-  note "         remove it (rm $HOME/.cargo/bin/files) or a shell runs the old build"
+if [ -e "$HOME/.cargo/bin/bardo-files" ]; then
+  note "WARNING: $HOME/.cargo/bin/bardo-files would come first on a login shell's PATH and shadow $BIN_INSTALLED;"
+  note "         remove it (rm $HOME/.cargo/bin/bardo-files) or a shell runs the old build"
 fi
 need_sudo
 
-step "2/4 build files (release, from $TREE)"
+step "2/4 build bardo-files (release, from $TREE)"
 if [ "${FLAG_no_build:-0}" = 1 ] || [ -n "${BARDO_FILES_BIN:-}" ]; then
   note "no build: using $BUILT"
 else
@@ -40,13 +40,13 @@ else
   TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$TREE/rust-toolchain.toml" 2>/dev/null | head -n 1)"
   note "cargo build runs from / with --manifest-path $TREE/Cargo.toml${TOOLCHAIN:+ (toolchain $TOOLCHAIN)}"
   if [ "$DRY" = 1 ]; then
-    run cargo build --release --locked --manifest-path "$TREE/Cargo.toml" -p files --bin files
+    run cargo build --release --locked --manifest-path "$TREE/Cargo.toml" -p files --bin bardo-files
   else
     (
       cd /
       [ -z "$TOOLCHAIN" ] || ! command -v rustup >/dev/null || export RUSTUP_TOOLCHAIN="$TOOLCHAIN"
       export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$TREE/target}"
-      run cargo build --release --locked --manifest-path "$TREE/Cargo.toml" -p files --bin files
+      run cargo build --release --locked --manifest-path "$TREE/Cargo.toml" -p files --bin bardo-files
     )
   fi
 fi
@@ -68,7 +68,7 @@ put 644 "$DIST/intents/org.bardo.Files.toml" "$INTENTS_DEST"
 if [ "$DRY" = 1 ]; then
   note "would run: $BUILT --write-schema and install files.settings.toml"
 else
-  "$BUILT" --write-schema "$TMP/schema" >/dev/null || { echo "files --write-schema failed" >&2; exit 1; }
+  "$BUILT" --write-schema "$TMP/schema" >/dev/null || { echo "bardo-files --write-schema failed" >&2; exit 1; }
   put 644 "$TMP/schema/files.settings.toml" "$SCHEMA_DEST"
 fi
 

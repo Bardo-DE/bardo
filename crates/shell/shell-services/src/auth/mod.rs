@@ -1,4 +1,4 @@
-//! The password check behind sill's own lock screen (design/20 §1.9). The lock surface sends the
+//! The password check behind bardo-shell's own lock screen (design/20 §1.9). The lock surface sends the
 //! typed secret ([`AuthCommand::Submit`]); the service runs it through an `Authenticator` off the
 //! UI thread, counts failures through the pure `gate` machine (one check at a time; no lockout),
 //! and publishes [`Auth`], whose `AuthPhase::Accepted` is what the lock surfaces unlock on (the
@@ -10,13 +10,13 @@
 //! own password against `/etc/shadow` and nobody else's. swaylock (MIT) runs PAM in a forked
 //! child that it talks to over a pipe (service `swaylock`, whose file is `auth include login`);
 //! hyprlock runs it on a thread (service `hyprlock`); a greeter's locker can call `pam-client`
-//! on tokio's blocking pool, then `acct_mgmt`. sill takes swaylock's
-//! shape: [`PamHelper`] runs `sill auth-check` as a child per attempt, which calls PAM through
+//! on tokio's blocking pool, then `acct_mgmt`. bardo-shell takes swaylock's
+//! shape: [`PamHelper`] runs `bardo-shell auth-check` as a child per attempt, which calls PAM through
 //! the safe `nonstick` crate ([`backend::pam::check`]), so a module that hangs (a network
 //! directory, a
 //! fingerprint reader) is killed with its child instead of wedging a thread, and the lock
-//! surface's process never holds a PAM handle. The PAM service is `sill` when
-//! `/etc/pam.d/bardo-shell` exists (`dist/pam.d/sill`: `auth include login`, as swaylock's), else
+//! surface's process never holds a PAM handle. The PAM service is `bardo-shell` when
+//! `/etc/pam.d/bardo-shell` exists (`dist/pam.d/bardo-shell`: `auth include login`, as swaylock's), else
 //! `login` ([`backend::pam::service`]).
 //!
 //! Nothing here runs PAM until a [`AuthCommand::Submit`] arrives, and every test drives a
@@ -37,7 +37,7 @@ use crate::service::{Service, ServiceIo};
 pub use backend::{PamHelper, pam};
 
 /// The lock screen's password check as a [`Service`], through `env`'s `Authenticator` (PAM
-/// through `sill auth-check` in the daemon, a `FakeAuthenticator` in every test), the account
+/// through `bardo-shell auth-check` in the daemon, a `FakeAuthenticator` in every test), the account
 /// read from `env`'s accounts database, system bus and home. Idle until the first `Submit`: nothing is checked, and
 /// no PAM module runs, before that.
 #[derive(Debug)]

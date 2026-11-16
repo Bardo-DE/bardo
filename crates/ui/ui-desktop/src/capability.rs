@@ -80,7 +80,7 @@ impl Capability {
             Capability::Memory => Some(session("org.bardo.Memory1")),
             // companiond, design/33-AGENT.md section 5 (docket repo).
             Capability::Companion => Some(session("org.bardo.Companion1")),
-            // sill's `work_areas` service (sill/crates/sill-services/src/work_areas).
+            // bardo-shell's `work_areas` service (bardo-shell/crates/sill-services/src/work_areas).
             Capability::Outputs => Some(session("org.bardo.Outputs1")),
             Capability::Helpers => Some(Service {
                 bus: Bus::System,
@@ -92,7 +92,7 @@ impl Capability {
             // TODO: blur is a Wayland protocol (ext-background-effect-v1), not a bus service.
             Capability::Materials => None,
             // TODO: anyview serves `org.bardo.Anyview1.Peek`, but the shell's peek endpoint has
-            // no name in sill or layer-shell-host yet.
+            // no name in bardo-shell or layer-shell-host yet.
             Capability::Peek => None,
             // TODO: no share sheet service is specified in any repo yet.
             Capability::Share => None,

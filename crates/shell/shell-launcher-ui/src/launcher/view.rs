@@ -191,7 +191,7 @@ impl View {
         kinds
     }
 
-    /// The panel as `sill debug launcher-rows` reports it (clipboard titles withheld).
+    /// The panel as `bardo-shell debug launcher-rows` reports it (clipboard titles withheld).
     pub fn report(&self, query: &str, selected: usize) -> ShownRows {
         ShownRows {
             query: query.to_owned(),

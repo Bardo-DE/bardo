@@ -2,7 +2,7 @@
 //! spawned like any `Surface` (`shell_overlays::hot_corners::HotCorners`).
 //!
 //! A firing arrives on the [`CornerLink`] (from a corner surface's machine, or from
-//! `sill debug corner`); [`spawn_hits`] follows it, picks the corner's binding for exactly the
+//! `bardo-shell debug corner`); [`spawn_hits`] follows it, picks the corner's binding for exactly the
 //! modifier keys held now ([`keys::pick`]) and turns it into a [`CornerEffect`]: an action of the
 //! shell, handed to the interpreter (`crate::actions`) with the corner's output as its origin; an
 //! activation the launcher's own path carries out (launch, open, an app's action); the companion
@@ -113,22 +113,22 @@ async fn act(effect: CornerEffect, output: OutputId, doing: &Doing) {
                 .control
                 .send(CompanionCommand::Tap(focus))
             {
-                eprintln!("sill: hot corner: the assistant: {error}");
+                eprintln!("bardo-shell: hot corner: the assistant: {error}");
             }
         }
         CornerEffect::Activate(activation) => {
             if let Err(error) = activate(activation, services) {
-                eprintln!("sill: hot corner: {error}");
+                eprintln!("bardo-shell: hot corner: {error}");
             }
         }
         CornerEffect::Run { program, args } => {
             let mut command = tokio::process::Command::new(&program);
             command.args(&args).stdin(Stdio::null()).kill_on_drop(false);
             if let Err(error) = command.spawn() {
-                eprintln!("sill: hot corner: running {program}: {error}");
+                eprintln!("bardo-shell: hot corner: running {program}: {error}");
             }
         }
-        CornerEffect::Cannot(why) => eprintln!("sill: hot corner: {why}"),
+        CornerEffect::Cannot(why) => eprintln!("bardo-shell: hot corner: {why}"),
     }
 }
 
@@ -154,7 +154,7 @@ fn activate(activation: Activation, services: &Services) -> Result<(), ServiceEr
             .control
             .send(CompanionCommand::Perform(call)),
         other => {
-            eprintln!("sill: hot corner: nothing carries out {other:?}");
+            eprintln!("bardo-shell: hot corner: nothing carries out {other:?}");
             Ok(())
         }
     }

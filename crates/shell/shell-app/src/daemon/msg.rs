@@ -12,7 +12,7 @@ use ui_settings::{Environment, UserStyle};
 pub enum Sheet {
     /// `~/.config/bardo/style.css`, every quire app's.
     Desktop,
-    /// `~/.config/sill/style.css`, the shell's own.
+    /// `~/.config/bardo/shell/style.css`, the shell's own.
     App,
 }
 

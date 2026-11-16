@@ -75,7 +75,7 @@ pub(crate) fn specimens() -> Vec<Specimen> {
         .collect()
 }
 
-/// The sample is the month sill's own test pins: September 2026 from Monday is five rows from
+/// The sample is the month bardo-shell's own test pins: September 2026 from Monday is five rows from
 /// 31 August (ISO week 36) to 4 October; from Sunday it starts on 30 August, still week 36.
 #[test]
 fn the_sample_is_the_month_sill_pins() {

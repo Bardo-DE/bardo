@@ -133,7 +133,7 @@ pub enum ColourToken {
     WarnInk,
     /// `--scrim-modal`: the dimming behind a modal that asks for a decision (a shutdown dialog),
     /// black at .40 in light and .55 in dark, where `--scrim` (.22) only pushes a peek back
-    /// (sill FINDINGS "Sheet and modal parts"; design/03-COLOR.md section 17). A colour like
+    /// (bardo-shell FINDINGS "Sheet and modal parts"; design/03-COLOR.md section 17). A colour like
     /// `--scrim`, not an opacity, because its strength differs by scheme.
     ScrimModal,
     /// `--scroll-thumb`: the host's own overlay scrollbar thumb (design/11-BEHAVIOUR-scroll.md
@@ -161,7 +161,7 @@ pub enum ColourToken {
     /// `--scrim-idle`: the pre-screen-off idle overlay's colour, black, the same in both
     /// schemes — not `--scrim` or `--scrim-modal`, whose alphas are fixed. This one's opacity is
     /// the person's own `idle.dim_level_pct` (10..90), set inline by `IdleDim` itself
-    /// (design/22-SETTINGS.md section 3.24; sill FINDINGS "sill idle": dim with an
+    /// (design/22-SETTINGS.md section 3.24; bardo-shell FINDINGS "bardo-shell idle": dim with an
     /// overlay, never real brightness), so the token carries no alpha of its own.
     ScrimIdle,
     /// `--knob-fill`: a switch's and a slider's knob, a plain white disc in either scheme (the

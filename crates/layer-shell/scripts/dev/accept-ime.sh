@@ -22,7 +22,7 @@
 #              stray ㄋ, ㄧ or letters)
 # McBopomofo commits its composing buffer with Return; Space opens the candidate list instead.
 #
-# IME_LAUNCHER=1 (optional) repeats compose and backspace on sill's launcher_demo (`cargo build -p shell-launcher-ui
+# IME_LAUNCHER=1 (optional) repeats compose and backspace on bardo-shell's launcher_demo (`cargo build -p shell-launcher-ui
 # --example launcher_demo` first), reading the panel's field back with the
 # debug-inject `<panel> focused` verb, and captures the panel to out/ime-launcher.png.
 #
@@ -211,7 +211,7 @@ printf 'quit\n' >&4
 for _ in $(seq 50); do kill -0 "$DEMO" 2>/dev/null || break; sleep 0.1; done
 [ -z "${IME_LAUNCHER:-}" ] && exit "$status"
 
-# --- sill's launcher ----------------------------------------------------------------------------
+# --- bardo-shell's launcher ----------------------------------------------------------------------------
 : >"$OUT/ime-launcher.log" && : >"$OUT/ime-launcher.out"
 (
   comp_source

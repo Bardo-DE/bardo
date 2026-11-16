@@ -1,9 +1,9 @@
-//! The lock grace (`session.lock_grace_s`): the one pure rule that may open sill's lock screen
+//! The lock grace (`session.lock_grace_s`): the one pure rule that may open bardo-shell's lock screen
 //! without a password, and the ticket that carries
 //! its answer to the auth service.
 //!
 //! The rule: `NoPassword` exactly when **all** hold, else `Ask`:
-//! - the lock's cause is [`LockCause::IdleScreenOff`] (sill's own idle path turned the displays
+//! - the lock's cause is [`LockCause::IdleScreenOff`] (bardo-shell's own idle path turned the displays
 //!   off and locked; never a lock someone asked for, a logind `Lock`, a sleep, a re-lock after a
 //!   crash);
 //! - the grace is not zero;

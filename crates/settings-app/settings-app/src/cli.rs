@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 /// The desktop's Settings app.
 #[derive(Debug, Parser)]
-#[command(name = "detent", version)]
+#[command(name = "bardo-settings", version)]
 pub struct Cli {
     /// Open on this page (`appearance`, `dock`, `mouse_and_gestures`, `software-update`, `assistant-model`, ...); `assistant-model-setup` opens the first-run step that asks for the assistant's model, and `accounts-setup` the one that asks the person to sign in to their accounts.
     #[arg(long)]
@@ -25,10 +25,10 @@ pub struct Cli {
     #[arg(long, conflicts_with_all = ["page", "search", "first_run", "write_search_entries"])]
     service: bool,
     /// Write the launcher's search entries for Settings' pages and keys to this file
-    /// (`quire/search/org.bardo.Settings.toml`) and exit; the installer runs it.
+    /// (`bardo/actions/search/org.bardo.Settings.toml`) and exit; the installer runs it.
     #[arg(long, value_name = "FILE")]
     write_search_entries: Option<PathBuf>,
-    /// With `--write-search-entries`: read schemas from this `quire/settings` folder instead of
+    /// With `--write-search-entries`: read schemas from this `bardo/settings` folder instead of
     /// the data directories' (repeat for several; an installer names the staged tree).
     #[arg(long, value_name = "DIR", requires = "write_search_entries")]
     schemas: Vec<PathBuf>,
@@ -42,7 +42,7 @@ pub struct Cli {
     dev_callers: Option<PathBuf>,
 }
 
-/// What this run of `detent` is for.
+/// What this run of `bardo-settings` is for.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Run {
     /// The Settings window, opening here.
@@ -112,23 +112,29 @@ mod tests {
         // `(arguments, the page, the search)`; no flags open on the first page.
         const OPENINGS: &[(&[&str], Option<&str>, &str)] = &[
             (
-                &["detent", "--page", "dock", "--search", "magnification"],
+                &[
+                    "bardo-settings",
+                    "--page",
+                    "dock",
+                    "--search",
+                    "magnification",
+                ],
                 Some("dock"),
                 "magnification",
             ),
-            (&["detent"], None, ""),
+            (&["bardo-settings"], None, ""),
             (
-                &["detent", "--page", "software-update"],
+                &["bardo-settings", "--page", "software-update"],
                 Some("software-update"),
                 "",
             ),
             (
-                &["detent", "--page", "assistant-model-setup"],
+                &["bardo-settings", "--page", "assistant-model-setup"],
                 Some("assistant-model-setup"),
                 "",
             ),
             (
-                &["detent", "--page", "accounts-setup"],
+                &["bardo-settings", "--page", "accounts-setup"],
                 Some("accounts-setup"),
                 "",
             ),
@@ -146,43 +152,43 @@ mod tests {
 
     #[test]
     fn the_service_flag_is_a_run_with_no_window() {
-        let cli = Cli::try_parse_from(["detent", "--service"]).expect("valid flags");
+        let cli = Cli::try_parse_from(["bardo-settings", "--service"]).expect("valid flags");
         assert_eq!(cli.run(), Run::Service);
-        assert!(Cli::try_parse_from(["detent", "--service", "--page", "dock"]).is_err());
-        assert!(Cli::try_parse_from(["detent", "--service", "--first-run"]).is_err());
+        assert!(Cli::try_parse_from(["bardo-settings", "--service", "--page", "dock"]).is_err());
+        assert!(Cli::try_parse_from(["bardo-settings", "--service", "--first-run"]).is_err());
     }
 
     #[test]
     fn writing_the_search_entries_names_the_file_and_the_schema_folders() {
         let cli = Cli::try_parse_from([
-            "detent",
+            "bardo-settings",
             "--write-search-entries",
             "/tmp/out.toml",
             "--schemas",
-            "/a/quire/settings",
+            "/a/bardo/settings",
             "--schemas",
-            "/b/quire/settings",
+            "/b/bardo/settings",
         ])
         .expect("valid flags");
         assert_eq!(
             cli.run(),
             Run::SearchEntries {
                 file: "/tmp/out.toml".into(),
-                schemas: vec!["/a/quire/settings".into(), "/b/quire/settings".into()],
+                schemas: vec!["/a/bardo/settings".into(), "/b/bardo/settings".into()],
             }
         );
-        assert!(Cli::try_parse_from(["detent", "--schemas", "/a"]).is_err());
+        assert!(Cli::try_parse_from(["bardo-settings", "--schemas", "/a"]).is_err());
     }
 
     #[test]
     fn first_run_is_its_own_run() {
-        let cli = Cli::try_parse_from(["detent", "--first-run"]).expect("valid flags");
+        let cli = Cli::try_parse_from(["bardo-settings", "--first-run"]).expect("valid flags");
         assert_eq!(cli.run(), Run::Setup);
     }
 }
 
 /// A build with the `dev-callers` feature takes `--dev-callers FILE`; a build without it has no such
-/// option, so a release `detent` refuses it like any other flag it does not know.
+/// option, so a release `bardo-settings` refuses it like any other flag it does not know.
 #[cfg(test)]
 mod dev_callers_tests {
     use super::Cli;
@@ -192,19 +198,21 @@ mod dev_callers_tests {
     #[cfg(feature = "dev-callers")]
     #[test]
     fn this_build_takes_a_dev_callers_file() {
-        let cli = Cli::try_parse_from(["detent", "--dev-callers", "/tmp/rows.toml"])
+        let cli = Cli::try_parse_from(["bardo-settings", "--dev-callers", "/tmp/rows.toml"])
             .expect("valid flags");
         assert_eq!(cli.dev_callers(), Some(Path::new("/tmp/rows.toml")));
-        let none = Cli::try_parse_from(["detent"]).expect("valid flags");
+        let none = Cli::try_parse_from(["bardo-settings"]).expect("valid flags");
         assert_eq!(none.dev_callers(), None);
     }
 
     #[cfg(not(feature = "dev-callers"))]
     #[test]
     fn this_build_has_no_dev_callers_option() {
-        assert!(Cli::try_parse_from(["detent"]).is_ok());
-        assert!(Cli::try_parse_from(["detent", "--dev-callers", "/tmp/rows.toml"]).is_err());
-        let cli = Cli::try_parse_from(["detent"]).expect("valid flags");
+        assert!(Cli::try_parse_from(["bardo-settings"]).is_ok());
+        assert!(
+            Cli::try_parse_from(["bardo-settings", "--dev-callers", "/tmp/rows.toml"]).is_err()
+        );
+        let cli = Cli::try_parse_from(["bardo-settings"]).expect("valid flags");
         assert_eq!(cli.dev_callers(), None::<&Path>);
     }
 }

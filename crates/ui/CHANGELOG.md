@@ -34,7 +34,7 @@ first, with what a consumer has to change.
 
 ### wh-ed
 
-- **Editorial is a look Extension, and the typeface choice is gone** (the Settings prune of 2026-10-27). quire ships `extensions/org.quire.look.Editorial/` (`extension.toml` + `look.css`, capability `look`, `styles_for = 1`): mail's Bricolage Grotesque, Karla and Space Mono with their tracking and sizes, picked under Settings › Look (`appearance.look`). Install the folder as `<prefix>/share/quire/extensions/org.quire.look.Editorial/`. The faces still ship inside ds-style, so the look names them by family.
+- **Editorial is a look Extension, and the typeface choice is gone** (the Settings prune of 2026-10-27). quire ships `extensions/org.quire.look.Editorial/` (`extension.toml` + `look.css`, capability `look`, `styles_for = 1`): mail's Bricolage Grotesque, Karla and Space Mono with their tracking and sizes, picked under Settings › Look (`appearance.look`). Install the folder as `<prefix>/share/bardo/extensions/org.quire.look.Editorial/`. The faces still ship inside ds-style, so the look names them by family.
   Deleted: `ds_style::appearance::typeface::Typeface` (and its prelude export), `Ds { typeface }`, `ds::root::typeface` (`use_typeface`), `data-typeface` on `.ds` roots and scopes, the `.ds[data-typeface=editorial]` token block, `TokenScope::typeface` and `in_typeface`, the token derive's `system`/`editorial` value pair, `set::Only` (and `TokenSet::only`), `FontSize::{FLOORED, CAP_FITTED}`, the `appearance.typeface` setting and `AppearanceSettings::typeface()`, and the gallery's typeface axis, `--typeface` and `-editorial` shots. `set::Place::Typeface` is `Place::Type`. An old settings file holding `appearance.typeface` still loads: the unknown key is reported once and kept, and nothing reads it.
   Changed: `Family::face_name()`, `FontSize::css()`, `FontSize::px()` and `chrome::title_font()` take no typeface. Goldens lose `data-typeface="system"`, and the `.ds` block declares the `--fs-*` steps in one place.
   **Consumer change:** delete `typeface: ..` from every `Ds { .. }`, and any `now.settings.appearance.typeface()` with it; `title_font(Typeface::System)` becomes `title_font()`; an app that kept mail's voice with `Typeface::Editorial` writes its own faces in its stylesheet or leaves it to the person's Look; a sheet selecting on `data-typeface` is refused by `ds-lint` (no root carries it).
@@ -294,7 +294,7 @@ Public items that were two-way enums, mirror types or enum-wrapped trait objects
 - The cascade gains the look layer: `@layer ds, app, look;` (`ds_style::css::layers::ORDER`, with
   `LOOK` and `layers::look(css)`). `Ds { user_style }` becomes `Ds { styles: ReadSignal<Styles>,
   custom_styles: CustomStyles }`: `ds_style::kit::Styles { look, desktop, app, homes }` carries the
-  chosen look (`@layer look`), the person's desktop-wide `~/.config/quire/style.css` and their
+  chosen look (`@layer look`), the person's desktop-wide `~/.config/bardo/style.css` and their
   `~/.config/<app>/style.css` (unlayered, desktop-wide first). Each non-blank sheet is its own
   `<style data-ds-style=look|desktop|app>` (was `data-ds-user`). The look is filled by the app as
   a string; `Ds` does not find look Extensions. The desktop-wide file is `UserStyle` under
@@ -305,7 +305,7 @@ Public items that were two-way enums, mirror types or enum-wrapped trait objects
   page, default `use`, agent-settable): `CustomStyles::Off` makes `Ds` draw none of the three
   sheets. It is in `AGENT_SETTABLE_PROPOSED` and in design/22 sections 3.1 and 9.7.
 - Crash guard: `ds_blitz::StylesGuard::begin(state_dir, program, &styles)` records the start in
-  `<state>/quire/styles-guard/<program>`, `use_styles_guard(guard)` marks it good after the first
+  `<state>/bardo/styles-guard/<program>`, `use_styles_guard(guard)` marks it good after the first
   frame plus five seconds, and two unfinished starts with the same sheets give `Load::Without`
   (the pure `styles_guard::decide`). `ds::prelude::StylesOffNotice { program, onturnon }` is the
   one-line notice with **Turn On Again** (`StylesGuard::turn_on_again`); `changed` clears the guard
@@ -333,14 +333,14 @@ Public items that were two-way enums, mirror types or enum-wrapped trait objects
 ### wh-e2b
 
 - New crate `ds-extensions`: Extensions as a library (no UI, no runtime, no bus). `Search::new(person,
-  system)` / `Search::from_env()` scan `<data>/quire/extensions/<id>/extension.toml` and return every
+  system)` / `Search::from_env()` scan `<data>/bardo/extensions/<id>/extension.toml` and return every
   copy of every id unranked, with the turned-off ids and their names (`Found`, `Off`), so a host can
   say "off" instead of "missing". `Found::resolve(Capability)` checks (paths stay in the folder, a
   look's stylesheet at most 256 KiB) and ranks (usable first, protocol, the person's copy over the
   system's, newer version, id) through bayonet; an Extension that fails is a `Problem` with a line in
   plain words and is never half used. `Capability` is `file_icons` and `look`; `Provision` claims only
   those words, so another owner (anyview-plugin) reparses the raw candidates itself.
-- `quire/extensions.toml` (`ExtensionsFile`, `extensions_schema()`): a schema'd file on the new
+- `bardo/extensions.toml` (`ExtensionsFile`, `extensions_schema()`): a schema'd file on the new
   Extensions page (after Appearance) with one Rows key, `extensions.off`; not agent-settable.
 - `KeyKind::Provided { capability }` and `ds_settings::schema::Provided`: a key whose value is
   `standard` or an Extension id, with `#[settings(provided = "look")]`. The caller fills the choices
@@ -364,7 +364,7 @@ Public items that were two-way enums, mirror types or enum-wrapped trait objects
 ### Whopper (merge)
 
 - Published style parts as data: an app writes its `AppSelectors::classes()` with
-  `ds_settings::PublishedParts::new(app, classes).write_to(<prefix>/share/quire/selectors)`, and
+  `ds_settings::PublishedParts::new(app, classes).write_to(<prefix>/share/bardo/selectors)`, and
   Settings reads every app's with `discover_parts(&parts_dirs())`, then passes each `classes` to
   `ds_lint::user_stylesheet_with`, so a person's rule on `sill-*` is not reported as internal
   without linking sill. A class outside the app's prefix is dropped on write and read.
@@ -507,7 +507,7 @@ blitz-kit stay where v0.3.41 put them.
 
 - `PathControl`: Finder's path bar. An app gives `PathSegment`s (name, glyph, drop state) and hears a click on a segment, or on one in the collapsed middle of a long path, by index; a segment it marks `Accepts` or `Target` takes a drop (`ondropenter`, `ondropleave`, `ondrop`), driven like a `Row`'s. New classes: `ds-path-control`, `ds-path-segment`, `ds-path-name`, `ds-path-chevron`, `ds-path-more`.
 - `Toolbar` takes `title_menu` (a list of `PathSegment`s) and `ontitlemenu`: a click on the title with the primary modifier held opens a menu of the enclosing folders.
-- `detent --page accounts-setup` has a page: the hidden built-in `accounts-setup`, "Sign in to Your Accounts", resolves by id and by `accounts_setup`.
+- `bardo-settings --page accounts-setup` has a page: the hidden built-in `accounts-setup`, "Sign in to Your Accounts", resolves by id and by `accounts_setup`.
 
 ## v0.3.41
 

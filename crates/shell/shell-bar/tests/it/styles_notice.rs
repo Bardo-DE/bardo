@@ -13,7 +13,7 @@ use ui_components::style::kit::{Styles, UserStyle};
 use ui_harness::Input;
 
 const CSS: &str = ".ds { --accent: red }";
-const SENTENCE: &str = "Your styles were turned off because sill could not start with them.";
+const SENTENCE: &str = "Your styles were turned off because bardo-shell could not start with them.";
 const BUTTON: &str = ".ds-inline-banner .ds-button";
 
 fn styles() -> Styles {
@@ -29,7 +29,7 @@ fn guard_after(dir: &TempDir, starts: usize) -> StylesGuard {
     // Every start is recorded in turn, so each one must run: the last guard is the answer.
     (0..starts)
         .fold(None, |_, _| {
-            Some(StylesGuard::begin(dir.path(), "sill", &styles))
+            Some(StylesGuard::begin(dir.path(), "shell", &styles))
         })
         .unwrap_or_else(|| panic!("no starts"))
 }

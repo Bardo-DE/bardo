@@ -82,7 +82,7 @@ pub async fn run_effect(
                 Some(actions) => {
                     actions.do_it(action, Origin::of(from.surface.as_ref(), from.output));
                 }
-                None => eprintln!("sill: launcher: no daemon here to do {action:?}"),
+                None => eprintln!("bardo-shell: launcher: no daemon here to do {action:?}"),
             }
             Ok(())
         }

@@ -77,7 +77,7 @@ impl MenuBar {
     }
 
     /// Open `menu` as a click on its title would, or close it when it is the one showing:
-    /// `sill control-center toggle`, which has no pointer event behind it.
+    /// `bardo-shell control-center toggle`, which has no pointer event behind it.
     pub(crate) fn toggle(&self, menu: BarMenu) {
         let press = BarInput::Bar {
             input: Event::PressTitle(menu.id()),
@@ -174,7 +174,7 @@ fn use_menu_follow(output: &OutputInfo, app: Option<&FrontApp>) {
     });
 }
 
-/// Follow `sill control-center toggle` (the daemon's `ControlCenterLink`, absent in a demo or a
+/// Follow `bardo-shell control-center toggle` (the daemon's `ControlCenterLink`, absent in a demo or a
 /// test): an ask for this bar's output toggles its control center.
 fn use_control_center_asks(bar: MenuBar, output: OutputId) {
     let link = use_link::<ControlCenterLink>();

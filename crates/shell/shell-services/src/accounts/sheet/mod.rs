@@ -1,4 +1,4 @@
-//! sill draws the accounts sheet: this is the half that serves it (`org.bardo.AccountsSheet1`,
+//! bardo-shell draws the accounts sheet: this is the half that serves it (`org.bardo.AccountsSheet1`,
 //! porter's frozen interface; PLAN §2.4).
 //!
 //! accountd calls `Open(handle, parent_window, view)`, `Update(handle, view)` and `Close(handle)`

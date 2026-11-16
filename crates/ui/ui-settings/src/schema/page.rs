@@ -28,7 +28,7 @@ pub enum Page {
     /// What programs may reach: the per-app permission rows the compositor publishes
     /// (design/22-SETTINGS.md section 5), as macOS's "Privacy & Security" does.
     Privacy,
-    /// sill's idle service (design/22-SETTINGS.md section 3.24 `idle.*`, section 3.19
+    /// bardo-shell's idle service (design/22-SETTINGS.md section 3.24 `idle.*`, section 3.19
     /// `session.lock_grace_s`).
     Power,
     Apps,

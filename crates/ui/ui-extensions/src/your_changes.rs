@@ -88,11 +88,11 @@ pub struct YourChanges {
 
 impl YourChanges {
     /// The changes held under the data root `person` (the shape of `$XDG_DATA_HOME`, as
-    /// [`Search::new`] takes it): `<person>/quire/extensions/user.YourChanges`.
+    /// [`Search::new`] takes it): `<person>/bardo/extensions/user.YourChanges`.
     pub fn in_root(person: &Path) -> YourChanges {
         YourChanges {
             folder: person
-                .join("quire")
+                .join("bardo")
                 .join("extensions")
                 .join(YOUR_CHANGES_ID),
         }

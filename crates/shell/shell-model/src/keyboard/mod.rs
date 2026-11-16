@@ -1,5 +1,5 @@
 //! Which keyboard profile the focused window wants: the open `ProfileSource` trait, the sources
-//! sill ships, and the pure choice over them. keycap knows profiles, not apps; this is the whole
+//! bardo-shell ships, and the pure choice over them. keycap knows profiles, not apps; this is the whole
 //! desktop side of that contract (`key_remap_proto::Steer::Focus`).
 
 mod choose;

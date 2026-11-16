@@ -61,7 +61,7 @@ pub(crate) async fn run(
         )
         .await;
         if let Err(error) = handled {
-            eprintln!("sill: launch: {error}");
+            eprintln!("bardo-shell: launch: {error}");
         }
     }
 }
@@ -330,7 +330,7 @@ async fn show_in_files(session: &Bus, apps: &watch::Receiver<AppIndex>, app_id: 
     }
 }
 
-/// `systemctl --user kill --signal=KILL` every `app-sill-*` scope this service started for
+/// `systemctl --user kill --signal=KILL` every `app-bardo-*` scope this service started for
 /// `app_id`; each scope's own [`wait_for_exit`] task reports the `Exited` outcome when it dies,
 /// so this sends the signal only.
 async fn force_quit(tx: &watch::Sender<Launches>, app_id: &AppId) {
@@ -354,7 +354,7 @@ async fn open_settings(session: &Bus, open: &SettingsOpen) {
     if let Some(connection) = session_connection(session).await
         && let Err(error) = call(BUS_CALL, "Settings", dbus::open_settings(&connection, open)).await
     {
-        eprintln!("sill: launch: opening Settings: {error}");
+        eprintln!("bardo-shell: launch: opening Settings: {error}");
     }
 }
 
@@ -364,7 +364,7 @@ async fn session_connection(session: &Bus) -> Option<zbus::Connection> {
         Ok(connection) => Some(connection),
         Err(ConnectError::NoBus(_)) => None,
         Err(error) => {
-            eprintln!("sill: launch: opening Settings: {error}");
+            eprintln!("bardo-shell: launch: opening Settings: {error}");
             None
         }
     }

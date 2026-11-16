@@ -12,14 +12,14 @@ use shell_settings::{
 };
 use ui_settings::{ConfigRoot, Px, Store};
 
-/// The store whose `sill` directory is inside `dir`.
+/// The store whose `bardo-shell` directory is inside `dir`.
 fn store(dir: &TempDir) -> Store {
     Store::new(ConfigRoot::Scratch(dir.path().to_owned()), APP)
 }
 
 /// Write `settings.toml` (raw bytes) into the store's directory.
 fn write(dir: &TempDir, bytes: &[u8]) {
-    let app = dir.path().join("sill");
+    let app = dir.path().join("bardo").join("shell");
     std::fs::create_dir_all(&app).unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(app.join("settings.toml"), bytes).unwrap_or_else(|e| panic!("{e}"));
 }
@@ -106,7 +106,7 @@ fn missing_or_garbage_files_are_the_defaults() {
 #[test]
 fn a_save_is_one_file_and_reads_back() {
     let dir = TempDir::new("save");
-    let target = dir.path().join("sill");
+    let target = dir.path().join("bardo").join("shell");
     let file = with(|f| {
         f.dock.autohide = true;
         f.bar.battery_low_percent = Percent(30);
@@ -197,8 +197,9 @@ fn idle_seconds_and_minutes_are_plain_integers_both_ways() {
     assert_eq!(read, want);
 
     store(&dir).save(&read).unwrap_or_else(|e| panic!("{e}"));
-    let written = std::fs::read_to_string(dir.path().join("sill").join("settings.toml"))
-        .unwrap_or_else(|e| panic!("{e}"));
+    let written =
+        std::fs::read_to_string(dir.path().join("bardo").join("shell").join("settings.toml"))
+            .unwrap_or_else(|e| panic!("{e}"));
     let tree: toml::Table = toml::from_str(&written).unwrap_or_else(|e| panic!("{e}"));
     let at = |table: &str, key: &str| tree.get(table).and_then(|t| t.get(key)).cloned();
     const WRITTEN: &[(&str, &str, i64)] = &[

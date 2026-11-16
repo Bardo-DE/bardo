@@ -14,7 +14,7 @@ use super::legacy;
 use crate::ServiceError;
 use crate::durable::{self, Access};
 
-/// The file's name inside `$XDG_CONFIG_HOME/sill`.
+/// The file's name inside `$XDG_CONFIG_HOME/bardo/shell`.
 pub(crate) const FILE_NAME: &str = "layout.toml";
 
 /// The file format's version.
@@ -35,12 +35,12 @@ pub(crate) fn load(dir: &Path) -> DockPins {
     };
     match save(dir, &pins) {
         Ok(()) => eprintln!(
-            "sill: the dock moved from {} to {} ({} is left as it was)",
+            "bardo-shell: the dock moved from {} to {} ({} is left as it was)",
             legacy::FILE_NAME,
             FILE_NAME,
             legacy::FILE_NAME
         ),
-        Err(error) => eprintln!("sill: saving {}: {error}", dir.display()),
+        Err(error) => eprintln!("bardo-shell: saving {}: {error}", dir.display()),
     }
     pins
 }

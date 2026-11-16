@@ -1,4 +1,4 @@
-//! `sill style check`: its report per stylesheet, its exit code, and its grammar.
+//! `bardo-shell style check`: its report per stylesheet, its exit code, and its grammar.
 
 use std::process::ExitCode;
 
@@ -72,7 +72,7 @@ fn the_shells_own_surfaces_are_public_selectors() {
 #[test]
 fn the_grammar_takes_an_optional_file() {
     let parsed = |args: &[&str]| {
-        let mut argv = vec!["sill"];
+        let mut argv = vec!["bardo-shell"];
         argv.extend_from_slice(args);
         Cli::try_parse_from(argv).map(|cli| cli.command)
     };

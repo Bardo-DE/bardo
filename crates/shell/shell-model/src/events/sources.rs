@@ -79,14 +79,14 @@ fn place_of(path: PathBuf) -> IcsPlace {
     }
 }
 
-/// Where `auto` looks, in order: `$XDG_DATA_HOME/sill/calendars` (a directory to drop `.ics`
-/// files into), `$XDG_DATA_HOME/porter/vdir` (what porter's syncd mirrors from the accounts
+/// Where `auto` looks, in order: `$XDG_DATA_HOME/bardo/shell/calendars` (a directory to drop `.ics`
+/// files into), `$XDG_DATA_HOME/bardo/sync/vdir` (what porter's syncd mirrors from the accounts
 /// the person granted it: `<account>/<collection>/*.ics`) and `~/.calendars` (vdirsyncer and
 /// khal's convention). Candidates only: the caller keeps those that exist (`provider_for`).
 pub fn auto_places(env: &AutoEnv) -> Vec<IcsPlace> {
     vec![
-        IcsPlace::Dir(env.data_home.join("sill").join("calendars")),
-        IcsPlace::Vdir(env.data_home.join("porter").join("vdir")),
+        IcsPlace::Dir(env.data_home.join("bardo").join("shell").join("calendars")),
+        IcsPlace::Vdir(env.data_home.join("bardo").join("sync").join("vdir")),
         IcsPlace::Dir(env.home.join(".calendars")),
     ]
 }
@@ -135,8 +135,10 @@ mod tests {
         assert_eq!(
             auto_places(&env),
             vec![
-                IcsPlace::Dir(PathBuf::from("/home/ada/.local/share/sill/calendars")),
-                IcsPlace::Vdir(PathBuf::from("/home/ada/.local/share/porter/vdir")),
+                IcsPlace::Dir(PathBuf::from(
+                    "/home/ada/.local/share/bardo/shell/calendars"
+                )),
+                IcsPlace::Vdir(PathBuf::from("/home/ada/.local/share/bardo/sync/vdir")),
                 IcsPlace::Dir(PathBuf::from("/home/ada/.calendars")),
             ]
         );

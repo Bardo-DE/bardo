@@ -4,7 +4,7 @@
 //! focus lost, a catcher click or `launcher toggle`.
 //!
 //! Both surfaces follow one shared [`shell_ui_kit::links::LauncherLink`] (`links`), which the daemon writes
-//! for `sill launcher toggle|open|close` and the panel's focus, and each surface maps or
+//! for `bardo-shell launcher toggle|open|close` and the panel's focus, and each surface maps or
 //! unmaps itself from. The panel also writes there which part of it takes presses
 //! ([`shell_ui_kit::links::PanelHit`]: its content-sized card), which the catcher's input leaves out.
 

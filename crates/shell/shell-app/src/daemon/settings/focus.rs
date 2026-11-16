@@ -53,7 +53,7 @@ async fn run(
 /// Writes `mode` into the store's `settings.toml`: the one key `notifications.dnd`, in place.
 fn write(store: &Store, mode: bool) {
     if let Err(error) = write_key(store, "notifications.dnd", &mode) {
-        eprintln!("sill: focus: could not save settings.toml: {error}");
+        eprintln!("bardo-shell: focus: could not save settings.toml: {error}");
     }
 }
 

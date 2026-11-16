@@ -77,7 +77,7 @@ prebuild() {
   {
     echo "== the daemon without the debug feature (lock.sh's last step asks a build without it)"
     (cd "$root" && cargo build "${flags[@]}" -p shell-app) || return 1
-    cp -f "$BARDO_SHELL_OUT/sill" "$BARDO_SHELL_OUT/sill-nodebug" || return 1
+    cp -f "$BARDO_SHELL_OUT/bardo-shell" "$BARDO_SHELL_OUT/bardo-shell-nodebug" || return 1
     echo "== the daemon with --features debug, the testkit's examples, the launcher demo"
     (cd "$root" && cargo build "${flags[@]}" -p shell-app --features debug \
       && cargo build "${flags[@]}" -p shell-testkit --examples \
@@ -98,10 +98,10 @@ if [ "$build" = yes ]; then
   prebuild || exit 3
 fi
 if [ "$compositor" = casement ]; then
-  for tool in casement bardo-compositorctl compositor-probe fake-logind; do
+  for tool in bardo-compositor bardo-compositorctl compositor-probe fake-logind; do
     [ -x "$BARDO_COMPOSITOR_TOOLS/bin/$tool" ] || { echo "accept.sh: $BARDO_COMPOSITOR_TOOLS/bin/$tool is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
   done
-  for artefact in "$BARDO_SHELL_OUT/sill" "$BARDO_SHELL_OUT/sill-nodebug"; do
+  for artefact in "$BARDO_SHELL_OUT/bardo-shell" "$BARDO_SHELL_OUT/bardo-shell-nodebug"; do
     [ -x "$artefact" ] || { echo "accept.sh: $artefact is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
   done
   jail="${BARDO_SHELL_JAIL:-$BARDO_SHELL_TREE/packaging/harness/jail.sh}"

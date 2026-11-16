@@ -2,9 +2,9 @@
 //! `Env` already resolved, and the log lines a load leaves.
 //!
 //! What a file held that did not become a setting (a key nobody reads, a value a key refused, a
-//! file that is not TOML) goes to the daemon's log on stderr, one line each, prefixed `sill:`. It
+//! file that is not TOML) goes to the daemon's log on stderr, one line each, prefixed `bardo-shell:`. It
 //! is reported on every read, the watch's re-reads included. Writes go through `patch`, which
-//! sets only the keys it changes and keeps the rest of the file. There is no `sill` verb that
+//! sets only the keys it changes and keeps the rest of the file. There is no `bardo-shell` verb that
 //! reads the file for its diagnostics.
 
 use std::path::Path;
@@ -29,7 +29,7 @@ pub fn desktop_store(config: &Path) -> Store {
 /// Print what `loaded` reports, one line per key.
 pub fn report<D: SettingsDoc>(loaded: &Loaded<D>) {
     for line in loaded.diagnostics(D::FILE) {
-        eprintln!("sill: {line}");
+        eprintln!("bardo-shell: {line}");
     }
 }
 
@@ -37,7 +37,7 @@ pub fn report<D: SettingsDoc>(loaded: &Loaded<D>) {
 pub fn report_shell(loaded: &Loaded<ShellFile>) {
     report(loaded);
     for line in shell_settings::overrides(&loaded.value.keyboard).1 {
-        eprintln!("sill: {}: {line}", ShellFile::FILE.0);
+        eprintln!("bardo-shell: {}: {line}", ShellFile::FILE.0);
     }
 }
 
@@ -56,7 +56,7 @@ pub fn save(store: &Store, file: &ShellFile) -> Result<(), SettingsError> {
     let saved = store.save(file)?;
     if let Some(kept) = saved.kept_at {
         eprintln!(
-            "sill: {}: could not be read, kept at {}",
+            "bardo-shell: {}: could not be read, kept at {}",
             ShellFile::FILE.0,
             kept.display()
         );

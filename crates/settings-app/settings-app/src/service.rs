@@ -1,7 +1,7 @@
-//! `detent --service`: the intents with no window. The bus starts Settings this way to answer an
+//! `bardo-settings --service`: the intents with no window. The bus starts Settings this way to answer an
 //! action (a read, a write, a search-less launcher asking for the pages), and nothing is drawn or
 //! focused until an action asks for a window: `settings.page.show`, `settings.page.open`, the
-//! freedesktop `Activate`/`ActivateAction` or a later plain `detent` handing over. The window
+//! freedesktop `Activate`/`ActivateAction` or a later plain `bardo-settings` handing over. The window
 //! is opened on demand, and the process leaves once no window has been open for [`IDLE`].
 
 use crate::{HEIGHT, WIDTH, ended, enter_runtime_block, environment};
@@ -79,7 +79,7 @@ pub fn run() -> ExitCode {
     ) {
         Ok(provider) => provider,
         Err(fault) => {
-            eprintln!("detent: no intents service: {fault}");
+            eprintln!("bardo-settings: no intents service: {fault}");
             return ExitCode::FAILURE;
         }
     };
@@ -89,7 +89,7 @@ pub fn run() -> ExitCode {
         // Settings is already up and answering: this start has nothing to add.
         Err(ServeFault::Running) => return ExitCode::SUCCESS,
         Err(fault) => {
-            eprintln!("detent: no intents service: {fault}");
+            eprintln!("bardo-settings: no intents service: {fault}");
             return ExitCode::FAILURE;
         }
     };

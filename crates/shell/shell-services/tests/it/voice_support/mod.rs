@@ -5,7 +5,7 @@
 
 #![allow(
     dead_code,
-    reason = "sill's voice_consent test includes this bench by path and uses another part of it"
+    reason = "bardo-shell's voice_consent test includes this bench by path and uses another part of it"
 )]
 
 mod callers;

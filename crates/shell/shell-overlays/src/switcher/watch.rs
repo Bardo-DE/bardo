@@ -1,6 +1,6 @@
 //! The chord's modifiers as layer-shell-host publishes them (`use_modifiers`), fed to the
 //! machine through [`SwitcherCtx::modifiers`]. Mounted per opening on a host surface only
-//! (`use_modifiers` needs one) and only for the compositor's apps (`sill debug switcher`'s
+//! (`use_modifiers` needs one) and only for the compositor's apps (`bardo-shell debug switcher`'s
 //! made-up apps close on a key or a click, never on the state they opened in); mounting marks
 //! the opening followed (`hold.rs`: the show delay then ends a tap that never read held).
 //!

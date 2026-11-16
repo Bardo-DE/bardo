@@ -4,27 +4,27 @@
 #
 # Nothing here reaches polkitd, the system bus, PAM or a real password. Every bus is KWin's
 # private one (start_compositor refuses to go on if it would be the real one): the daemon's session and
-# system bus addresses both name it, and its polkit agent is pointed at it by `sill run
+# system bus addresses both name it, and its polkit agent is pointed at it by `bardo-shell run
 # --polkit-bus` (a debug build's flag,
 # crates/shell/shell-app/src/run_args.rs, with --polkit-helper and --polkit-session). There,
 # examples/polkit_authority.rs plays polkitd's Authority (records the registration, sends
 # BeginAuthentication and CancelAuthentication on command, prints each call's result), and
 # crates/shell/shell-services/src/bin/polkit_helper.rs plays polkit-agent-helper-1 (the helper protocol; accepts
 # `sill-fake`, refuses anything else, runs no PAM). The daemon gets its own XDG_RUNTIME_DIR and
-# a scratch XDG_CONFIG_HOME. Keys are `sill debug key SURFACE KEY`: layer-shell-host's `Inject::Key`,
+# a scratch XDG_CONFIG_HOME. Keys are `bardo-shell debug key SURFACE KEY`: layer-shell-host's `Inject::Key`,
 # which enters the prompt where a real xkb key does, whether or not the compositor gave it the
 # keyboard.
 #
-#   1. The agent registered with the stand-in for ("unix-session", {session-id}) at sill's path,
-#      `sill polkit status` says registered, and sill-polkit-<out> exists, hidden.
+#   1. The agent registered with the stand-in for ("unix-session", {session-id}) at bardo-shell's path,
+#      `bardo-shell polkit status` says registered, and sill-polkit-<out> exists, hidden.
 #   2. The stand-in's BeginAuthentication shows the prompt (a capture of the surface,
-#      also into dev/out/polkit.png); `sill polkit status` shows the action.
+#      also into dev/out/polkit.png); `bardo-shell polkit status` shows the action.
 #   3. A wrong password: the stand-in helper refuses, the field shakes (frames while it plays)
 #      and clears (the capture after it matches the one before typing), the request stays.
 #   4. `sill-fake`: the stand-in Authority's call returns (authorized) and the prompt hides.
 #   5. CancelAuthentication hides the prompt; the call fails Cancelled.
 #   6. Escape cancels: the call fails Cancelled and the prompt hides.
-#   7. `sill debug polkit` shows a made-up request with no bus call, and Escape dismisses it.
+#   7. `bardo-shell debug polkit` shows a made-up request with no bus call, and Escape dismisses it.
 #   8. 5 s idle, hidden: 0 frames on the prompt surface.
 #
 # Usage: dev/accept/polkit.sh
@@ -36,24 +36,24 @@ SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 AUTHORITY_BIN="$BARDO_SHELL_OUT/examples/polkit_authority"
 HELPER_BIN="$BARDO_SHELL_OUT/polkit_helper"
-AGENT_PATH=/org/sill/PolicyKit1/AuthenticationAgent
+AGENT_PATH=/org/bardo/Shell/PolicyKit1/AuthenticationAgent
 SESSION_ID=accept-polkit
 ACTION=org.sill.test.run
 
 scratch_new
-mkdir -p "$CONFIG/sill"
+mkdir -p "$CONFIG/bardo/shell"
 AUTHORITY=
 
-# Type "$1" into the prompt, one key event per character (`sill debug key` names: a letter, a
+# Type "$1" into the prompt, one key event per character (`bardo-shell debug key` names: a letter, a
 # digit or `-`).
 type_text() {
   local text="$1" i
   for (( i = 0; i < ${#text}; i++ )); do
-    sill debug key "$PROMPT" "${text:i:1}" >>"$OUT_DIR/keys.log" 2>&1 || return 1
+    bardo-shell debug key "$PROMPT" "${text:i:1}" >>"$OUT_DIR/keys.log" 2>&1 || return 1
   done
 }
 # Press the named key on the prompt (`Enter`, `Escape`).
-press() { sill debug key "$PROMPT" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
+press() { bardo-shell debug key "$PROMPT" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
 # A command to the stand-in Authority.
 authority() { echo "$*" >&3; }
 
@@ -94,9 +94,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# One field of `sill polkit status`: registration (its kind), showing, waiting.
+# One field of `bardo-shell polkit status`: registration (its kind), showing, waiting.
 status_field() {
-  sill polkit status 2>/dev/null | python3 -c '
+  bardo-shell polkit status 2>/dev/null | python3 -c '
 import json, sys
 def find(v):
     if isinstance(v, dict):
@@ -139,7 +139,7 @@ EOF
 
 # The prompt captures (it is mapped) into $1 with its sheet drawn.
 captured() {
-  sill debug capture "$PROMPT" "$1" >>"$OUT_DIR/capture.log" 2>&1 || return 1
+  bardo-shell debug capture "$PROMPT" "$1" >>"$OUT_DIR/capture.log" 2>&1 || return 1
   [ "$(opaque_pixels "$1")" -gt 1000 ]
 }
 
@@ -151,7 +151,7 @@ await_shown() {
 
 await_hidden() {
   for _ in $(seq 30); do
-    sill debug capture "$PROMPT" "$OUT_DIR/late.png" >>"$OUT_DIR/capture.log" 2>&1 || return 0
+    bardo-shell debug capture "$PROMPT" "$OUT_DIR/late.png" >>"$OUT_DIR/capture.log" 2>&1 || return 0
     sleep 0.1
   done
   echo "the prompt never hid" >&2
@@ -165,8 +165,8 @@ step_registered() {
     return 1
   }
   await_status registration registered || return 1
-  sill debug stats | grep -q "\"$PROMPT\"" || { echo "$PROMPT is not in debug stats" >&2; return 1; }
-  if sill debug capture "$PROMPT" "$OUT_DIR/hidden.png" >>"$OUT_DIR/capture.log" 2>&1; then
+  bardo-shell debug stats | grep -q "\"$PROMPT\"" || { echo "$PROMPT is not in debug stats" >&2; return 1; }
+  if bardo-shell debug capture "$PROMPT" "$OUT_DIR/hidden.png" >>"$OUT_DIR/capture.log" 2>&1; then
     echo "$PROMPT is mapped before any request" >&2; return 1
   fi
   echo "registered for ($SESSION_ID, $AGENT_PATH); $PROMPT exists, hidden" >&2
@@ -243,7 +243,7 @@ step_escape_cancels() {
 
 # 7.
 step_debug_polkit() {
-  sill debug polkit --action org.sill.debug.made-up --message "A made-up request" \
+  bardo-shell debug polkit --action org.sill.debug.made-up --message "A made-up request" \
     >>"$OUT_DIR/debug.log" 2>&1 || return 1
   await_shown made-up || return 1
   await_status showing org.sill.debug.made-up || return 1
@@ -253,7 +253,7 @@ step_debug_polkit() {
   if grep -q "made-up" "$OUT_DIR/authority.log"; then
     echo "the made-up request reached the bus" >&2; return 1
   fi
-  echo "sill debug polkit: shown, dismissed by Escape, nothing on the bus" >&2
+  echo "bardo-shell debug polkit: shown, dismissed by Escape, nothing on the bus" >&2
 }
 
 # 8.

@@ -1,5 +1,5 @@
-//! The person's styles: `~/.config/bardo/style.css` (every quire app) and sill's own
-//! `~/.config/sill/style.css`, read at start, watched, and published to the feeds every surface
+//! The person's styles: `~/.config/bardo/style.css` (every quire app) and bardo-shell's own
+//! `~/.config/bardo/shell/style.css`, read at start, watched, and published to the feeds every surface
 //! root draws them from (ARCHITECTURE.md section 8). The [`StyleKeeper`] holds both files' stores
 //! and the two feeds: the sheets, and the crash guard of this start's sheets
 //! (`ui_blitz::StylesGuard`), which turns the person's styles off when the last two starts with
@@ -7,16 +7,16 @@
 //! guard turned them off for says so on the bar, and its Turn On Again button asks for
 //! [`StyleKeeper::turn_on_again`].
 //!
-//! The watches send each settled text to the host thread, which publishes it; `sill reload`
+//! The watches send each settled text to the host thread, which publishes it; `bardo-shell reload`
 //! re-reads both. A missing file is an empty style; text that is not UTF-8 keeps the last good
 //! text and is reported on stderr like any damaged settings file. Nothing here parses the CSS:
-//! `sill style check` reports what is wrong in it. A `url()` the reach rule cut is logged once
+//! `bardo-shell style check` reports what is wrong in it. A `url()` the reach rule cut is logged once
 //! per change, one line each, so the person can see why an image did not show.
 //!
 //! The look is the third sheet of the cascade: the stylesheet of the look Extension
 //! `appearance.look` names (`look.rs`), filled into `Styles::look` and `StyleHomes::look` in
 //! [`load_styles`] and nowhere else. It is looked for again when the appearance changes, when
-//! `extensions.toml` or an Extension folder changes, and at `sill reload`. The crash guard covers
+//! `extensions.toml` or an Extension folder changes, and at `bardo-shell reload`. The crash guard covers
 //! it like the other two sheets, since it is part of [`Styles`].
 
 use std::path::Path;
@@ -36,7 +36,7 @@ use super::store::report;
 use crate::daemon::msg::{Sheet, ShellMsg};
 
 /// The name the guard keeps its record under, and the notice names.
-const PROGRAM: &str = "sill";
+const PROGRAM: &str = "shell";
 
 /// The three stores a style comes from (the desktop one also holds `extensions.toml`), the feeds they are published to, and the guard.
 #[derive(Debug)]
@@ -135,7 +135,7 @@ impl StyleKeeper {
     /// this start's sheets guarded afresh.
     pub fn turn_on_again(&self) {
         if let Err(error) = write_use(&self.appearance) {
-            eprintln!("sill: turning my styles on again: {error}");
+            eprintln!("bardo-shell: turning my styles on again: {error}");
         }
         let styles = self.styles.borrow().clone();
         self.guard
@@ -191,7 +191,7 @@ pub fn load_styles(
 fn report_dropped(styles: &Styles) {
     for cut in styles.dropped() {
         eprintln!(
-            "sill: {} style.css line {}: {} is outside its folder and was not loaded",
+            "bardo-shell: {} style.css line {}: {} is outside its folder and was not loaded",
             cut.slot.attribute(),
             cut.cut.line,
             cut.cut.target
@@ -209,11 +209,11 @@ fn write_use(store: &Store) -> Result<(), SettingsError> {
 
 /// Watch `store`'s `style.css` on `runtime`, sending each settled text to `host` as `sheet`'s. A
 /// directory that cannot be watched is logged and the style then changes only through
-/// `sill reload`.
+/// `bardo-shell reload`.
 fn spawn_style_watch(runtime: &Runtime, store: &Store, sheet: Sheet, host: HostHandle<ShellMsg>) {
     let mut watch = store.watch::<UserStyle>(&TokioSpawner::on(runtime.handle().clone()));
     if let WatchState::Blind { reason } = watch.state() {
-        eprintln!("sill: watching the style: {reason}");
+        eprintln!("bardo-shell: watching the style: {reason}");
         return;
     }
     runtime.spawn(async move {

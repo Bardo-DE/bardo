@@ -1,4 +1,4 @@
-//! A notification as quire's `NotificationCard`: sill finds the app's icon and name, writes the
+//! A notification as quire's `NotificationCard`: bardo-shell finds the app's icon and name, writes the
 //! age, turns the body's runs and the actions into quire's, and hears the card's presses as one
 //! [`CardPress`]. The card's look (the plate, the clamp, hover, the close button, the group's
 //! layers, the swipe) is quire's.

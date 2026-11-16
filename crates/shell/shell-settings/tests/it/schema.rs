@@ -1,5 +1,5 @@
-//! design/22-SETTINGS.md §9.6 for sill's schema: it round-trips, every kind has a widget, it
-//! names sill's file, the Settings pages match §5, and the deep links resolve.
+//! design/22-SETTINGS.md §9.6 for bardo-shell's schema: it round-trips, every kind has a widget, it
+//! names bardo-shell's file, the Settings pages match §5, and the deep links resolve.
 
 use shell_settings::{schema, schemas};
 use ui_settings::schema::{Exposure, Page, Schema, deep_link_path};
@@ -16,13 +16,13 @@ fn schema_round_trip() {
 #[test]
 fn every_domain_names_sills_file() {
     for schema in schemas().into_iter().chain([schema()]) {
-        assert_eq!(schema.app.0, "sill");
+        assert_eq!(schema.app.0, "bardo-shell");
         assert_eq!(schema.file.0, "shell/settings.toml");
         assert_eq!(schema.version, 1);
     }
 }
 
-/// §5: the keys each Settings page shows. Every other sill key is Advanced (file only).
+/// §5: the keys each Settings page shows. Every other bardo-shell key is Advanced (file only).
 const BASIC: &[&str] = &[
     "bar.autohide",
     "dock.magnification",
@@ -76,7 +76,7 @@ fn basic_keys_are_on_their_section_5_pages() {
     }
 }
 
-/// §5: the Power page holds sill's idle service, every `idle.*` key and the lock grace,
+/// §5: the Power page holds bardo-shell's idle service, every `idle.*` key and the lock grace,
 /// all Advanced; nothing else is on it, and the rest of `session.*` stays on Accounts.
 #[test]
 fn the_power_page_is_idle_and_the_lock_grace() {

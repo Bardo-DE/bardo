@@ -1,5 +1,5 @@
 //! The pictures the Wallpaper page offers: the ones the system ships, in its backgrounds folders,
-//! and the ones the person added, copied into detent's own data folder so they stay when the
+//! and the ones the person added, copied into bardo-settings's own data folder so they stay when the
 //! original moves. A wallpaper package (a folder of one picture per screen size) is one picture.
 
 use crate::packages::package_in;
@@ -15,7 +15,7 @@ const SYSTEM_FOLDERS: &[&str] = &[
     "/usr/share/wallpapers",
 ];
 
-/// The folder of the added pictures, under `<data home>/detent/`.
+/// The folder of the added pictures, under `<data home>/bardo/settings/`.
 const ADDED_FOLDER: &str = "pictures";
 
 /// How deep a folder of backgrounds is looked into (a release's folder holds a folder of sizes).
@@ -42,7 +42,7 @@ impl PictureDirs {
     pub fn standard(home: &DataHome) -> PictureDirs {
         PictureDirs::new(
             SYSTEM_FOLDERS.iter().map(PathBuf::from).collect(),
-            home.0.join("detent").join(ADDED_FOLDER),
+            ui_settings::app_folder(&home.0, "settings").join(ADDED_FOLDER),
         )
     }
 

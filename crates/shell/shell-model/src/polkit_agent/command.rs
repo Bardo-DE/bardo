@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::{ActionId, Cookie};
 use crate::auth::Secret;
 
-/// A request made up by `sill debug polkit`: shown like a real one, answered by an in-process
+/// A request made up by `bardo-shell debug polkit`: shown like a real one, answered by an in-process
 /// stand-in helper that accepts `FAKE_SECRET` and nothing else, and completed to nobody.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct FakeRequest {
@@ -24,6 +24,6 @@ pub enum PolkitCommand {
     Answer { cookie: Cookie, secret: Secret },
     /// The person cancelled the request (Cancel, Escape): polkitd hears `Cancelled`.
     Dismiss(Cookie),
-    /// Show a made-up request (`sill debug polkit`).
+    /// Show a made-up request (`bardo-shell debug polkit`).
     Fake(FakeRequest),
 }

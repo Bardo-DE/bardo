@@ -53,7 +53,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 - [ ] **Banners with a real mouse** (hover, the close button, a click, a 90 px and a 50 px drag
   already pass under fake input on a headless KWin through
   `dev/accept/notifications.sh --real-input`; this is the feel with a real mouse and touchpad):
-  `sill debug notify "Hi" --body "..." --action default=Open` on a debug build. It posts straight
+  `bardo-shell debug notify "Hi" --body "..." --action default=Open` on a debug build. It posts straight
   to sill's banners without D-Bus, so sill need not hold `org.freedesktop.Notifications`. The card
   follows a drag 1:1 to the right and damped to the left, springs back under 80 px and flies out
   past it or on a flick; after a click on one card, the next card under the pointer still pauses
@@ -83,7 +83,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 - [ ] **Launcher with a Mac keyboard through keycap** (real typing, Down, Space, Ctrl+Y, → twice,
   Tab, Escape three times, Ctrl+R, Shift+Tab to Emoji and Enter on a clipboard row already pass
   under fake input through `dev/accept/launcher.sh --real-input`; this is the physical keys and
-  the look). Open the launcher with `sill launcher open` (Cmd+Space itself needs a sill (casement)
+  the look). Open the launcher with `bardo-shell launcher open` (Cmd+Space itself needs a sill (casement)
   login) and type part of a document's name: ⌘Y shows the preview, Space after an arrow toggles
   it and never types a space, → at the end of the text shows it and a second → puts the focus
   ring on its first button, Tab walks the buttons, Escape leaves the pane, hides it, then closes.
@@ -106,9 +106,9 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 - [ ] **Clipboard history in real apps**: copy text in two apps, then open the launcher and type
   a word of it: both show as Clipboard rows, and Enter puts one back (paste it somewhere; also
   an older row with Ctrl+V in a text editor and a terminal). Copy a password from KeePassXC (or
-  another manager that marks copies): it never shows. `sill clipboard status` says `memory`,
+  another manager that marks copies): it never shows. `bardo-shell clipboard status` says `memory`,
   `ext`. Turning `launcher.clipboard_history` off empties it at once.
-- [ ] **Dragging a desktop widget with a real pointer**: with `sill widgets toggle-desktop` on,
+- [ ] **Dragging a desktop widget with a real pointer**: with `bardo-shell widgets toggle-desktop` on,
   press the Calendar and drag it: it lifts under the pointer and follows it, and a quiet slot
   guide shows the cell it will land in; held over the Batteries, they step aside and go back
   when you move on; released, the Calendar springs into its cell. Quit and restart sill: the
@@ -137,7 +137,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 - [ ] **The center's month by eye**: the center's month is Medium (today beside the compact
   month, filling its tile); check it reads right.
 - [ ] **Screenshot thumbnail drag onto a real app**: show a thumbnail (take a screenshot, or
-  `sill debug screenshot <a copy of a PNG>`), drag it onto a file manager window: the file
+  `bardo-shell debug screenshot <a copy of a PNG>`), drag it onto a file manager window: the file
   copies there, the card leaves, the original stays; onto a terminal it inserts the path.
 
 ## Needs a real sill (casement) login (not the headless compositor)
@@ -146,12 +146,12 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   `~/.config/keycap/keycap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
   Plasma overlay, applies).
 - [ ] **Super shortcuts** reach the shell (the headless compositor never gets them).
-- [ ] **A compositor shortcut runs `sill launcher toggle`**: bind Ctrl+Alt+Space to run
-  `sill launcher toggle` (or use Cmd+Space above) and press it: the launcher opens, and a
-  second press closes it. The compositor must resolve `sill` on its own `PATH` and the spawned
+- [ ] **A compositor shortcut runs `bardo-shell launcher toggle`**: bind Ctrl+Alt+Space to run
+  `bardo-shell launcher toggle` (or use Cmd+Space above) and press it: the launcher opens, and a
+  second press closes it. The compositor must resolve `bardo-shell` on its own `PATH` and the spawned
   client must reach the daemon's socket; no injected key reaches a compositor's shortcut matcher.
 - [ ] **Brightness keys on the external monitor** (DDC/CI, with the brightness shortcuts bound to
-  `sill display brightness up|down`): the keys (or `sill display brightness up|down`) move the BenQ MA270U's backlight
+  `bardo-shell display brightness up|down`): the keys (or `bardo-shell display brightness up|down`) move the BenQ MA270U's backlight
   within about a quarter second, sill's OSD shows the level, no stuck value after fast repeats.
 - [ ] **The Display capsule on the BenQ MA270U** (the pointer path passes headlessly at scale 2
   in `dev/accept/control-center.sh --real-input`): open the control center from the bar: within 2 s the
@@ -160,8 +160,8 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   track: it jumps there. Change the brightness with the monitor's own buttons with the control
   center open: the capsule follows within 2 s. Put it back where it was afterwards.
 - [ ] **Screenshot thumbnail and notification banners from the keyboard**: bind a shortcut to
-  run `sill focus-latest`, keep typing in an app, take a screenshot
-  (`sill screenshot area`): the thumbnail slides in and typing still goes to the app. Press the
+  run `bardo-shell focus-latest`, keep typing in an app, take a screenshot
+  (`bardo-shell screenshot area`): the thumbnail slides in and typing still goes to the app. Press the
   shortcut: the thumbnail takes the keyboard (its focus ring shows on the picture, the hold stops
   running out). Enter or Space opens the file, Delete or Backspace trashes it, Escape slides it
   away and keeps the file; Tab moves to its Delete button and back. After any of them typing
@@ -174,10 +174,10 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   and the ring moves on to the other; closing the last gives typing back to the app. With none
   showing the shortcut does nothing.
 - [ ] **Power menu with the real keyboard** (real Tab, Escape and a click outside the alert already pass
-  on a headless KWin through `dev/accept/power-menu.sh --real-input`): `sill power-menu open`, then Tab
+  on a headless KWin through `dev/accept/power-menu.sh --real-input`): `bardo-shell power-menu open`, then Tab
   moves the ring between the buttons, Esc closes. Do NOT press Return or Space on Restart/Shut Down unless you mean it; the
-  dry run (`sill run --session-dry-run <file>` on a debug build) records instead.
-- [ ] **Cmd+Tab** (with the window-switch shortcut bound to `sill switcher next|prev`): a quick Cmd+Tab tap switches to
+  dry run (`bardo-shell run --session-dry-run <file>` on a debug build) records instead.
+- [ ] **Cmd+Tab** (with the window-switch shortcut bound to `bardo-shell switcher next|prev`): a quick Cmd+Tab tap switches to
   the previous app with no panel; holding shows the panel after about 150 ms; Tab moves;
   releasing Cmd switches; Q quits the selected app; H hides it; Esc cancels.
 - [ ] **Control center details on real services, the rest**:
@@ -198,25 +198,25 @@ first real login; the boxes below are what it proves. Then pick "sill (casement)
 screen.
 
 - [ ] **GPU choice**: the journal line `layer-shell-host: adapter <name> ...` names the GPU the
-  compositor renders on, and `sill` is not at 100% CPU.
+  compositor renders on, and `bardo-shell` is not at 100% CPU.
 - [ ] **Key repeat** is 400 ms / 10 per second at once (hold a key).
 - [ ] **Secrets**: `secret-tool search xdg:schema org.freedesktop.Secret.Generic` finds the
   Secret Service without a wallet prompt; Chrome and Electron apps stay signed in.
-- [ ] **Workspace gestures**: with two workspaces, `sill workspace next` and `prev` move between
+- [ ] **Workspace gestures**: with two workspaces, `bardo-shell workspace next` and `prev` move between
   them; at the ends nothing happens; the Magic Mouse two-finger swipes do the same (palmrest).
-  `sill workspace overview` opens Mission Control, and so does a hot corner set to Workspaces.
+  `bardo-shell workspace overview` opens Mission Control, and so does a hot corner set to Workspaces.
 - [ ] **Hot corner, keyed binding**: give the top left corner two bindings, none held (Mission Control) and Option held (Lock Screen). Rest the pointer there: Mission Control opens. Leave, hold Option, rest in the corner: the screen locks (not Mission Control).
 - [ ] **Hot corner, only a keyed binding**: set the bottom right corner to one binding that needs Command held. A plain rest there does nothing; hold Command and rest: it fires. Hold Command and Shift: nothing (the keys must match exactly).
 - [ ] **Hot corner, app action**: bind a corner to an app's action that needs no parameters (Mail > Compose). Rest in it: the action runs in that app. Name an action the app does not have: a line in the journal says why, and Settings does not open.
 - [ ] **Hot corner, open a folder**: bind a corner to open `~/Documents`. Rest in it: the folder opens in the file manager. The same for an app (it starts) and a web address (the browser opens it).
 - [ ] **Hot corner, Application Windows and Assistant**: Application Windows opens App Exposé for the focused app; Assistant opens the companion as the double-tap does. Put Display to Sleep logs that it is not available yet until the idle service can turn the displays off on request.
-- [ ] **Force Quit Applications**: `sill force-quit toggle` opens a sheet listing the open apps with
+- [ ] **Force Quit Applications**: `bardo-shell force-quit toggle` opens a sheet listing the open apps with
   their icons; an app that does not answer shows "(not responding)" and starts selected; Force
   Quit asks "Do you want to force quit ...?" with Cancel as the default; Force Quit ends the
   app (start a `sleep`-hung test client and stop it with `kill -STOP`); Escape answers the
   question, then closes the panel.
 - [ ] **The session comes up**: bar, dock, wallpaper; `systemctl --user is-active
-  graphical-session.target` says `active`; `sill polkit status` says `registered`.
+  graphical-session.target` says `active`; `bardo-shell polkit status` says `registered`.
 - [ ] **The power key** opens sill's power menu and does not power off (`systemd-inhibit --list`
   shows a `handle-power-key` block held for sill).
 - [ ] **Log out** from the power menu ends the session back to the login screen (nothing left
@@ -249,10 +249,10 @@ Set a short screen-off time in sill's idle settings (e.g. 60 s).
 `dev/accept/idle.sh` covers the rules on casement with made-up wakes, since the
 headless compositor counts no synthetic input as activity.
 
-- [ ] `sill idle status` says `{"kind":"own"}`. After that
+- [ ] `bardo-shell idle status` says `{"kind":"own"}`. After that
   long idle: `dimmed` 5 s before the screen-off time, every screen fading to half over about
   2 s (a key or the mouse during it brings them back at once, and a click during it lands on the
-  window under it), then `displays_off`, and `sill lock status` says cause `idle_screen_off`.
+  window under it), then `displays_off`, and `bardo-shell lock status` says cause `idle_screen_off`.
 - [ ] The screens are really off (dark, not black-but-lit) while the lock is granted, and nothing
   of the desktop shows when they come back. The lock screen, left alone, goes dark again after
   60 s.
@@ -261,7 +261,7 @@ headless compositor counts no synthetic input as activity.
 - [ ] Lock by hand (⌃⌘Q, Super+Escape, `loginctl lock-session`, the launcher's Lock row), wake at
   once: the password is asked.
 - [ ] Play a video in a browser (Firefox or Chromium): the screen never dims or goes off while
-  it plays (`sill idle status` shows `"inhibition":"held"` for a ScreenSaver inhibit), and does
+  it plays (`bardo-shell idle status` shows `"inhibition":"held"` for a ScreenSaver inhibit), and does
   once it is paused.
 - [ ] On battery, with a short suspend time (`idle.suspend_battery_min = 1`): the machine suspends; on resume the
   password is asked, even at once.
@@ -289,9 +289,9 @@ root for the unit. Install keycap first (`install.sh` in the keycap repo, with i
 folder and polkit rule `dist/bardo-key-remap.polkit.rules`), run sill's `dist/install.sh` (it copies the
 sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when missing), then log in to a sill session.
 
-- [ ] `sill keycap status` says `connected` with your keyboard listed and `grab` `active`.
+- [ ] `bardo-shell keycap status` says `connected` with your keyboard listed and `grab` `active`.
 - [ ] Cmd+Space opens the launcher and again closes it (Super+Space, not Alt+Space), and Cmd+Shift+4 starts
-  `sill screenshot area`.
+  `bardo-shell screenshot area`.
 - [ ] Focus a terminal (foot, Alacritty): Cmd+C copies in it, and Ctrl+C still
   interrupts a running program. Focus a browser: Cmd+C copies there too. Moving between the two
   changes nothing visible and loses no keystroke.
@@ -304,20 +304,20 @@ sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when miss
 - [ ] Edit `~/.config/keycap/keycap.toml` (a rule on a key you can tell): the change applies
   within a second, no restart.
 - [ ] `sudo pkill -KILL keycap` once: keys keep working, **no notification** appears (systemd
-  brings it back in 200 ms; `sill keycap status` is `connected` again).
+  brings it back in 200 ms; `bardo-shell keycap status` is `connected` again).
 - [ ] Make it give up: run `for i in 1 2 3 4 5 6; do sudo pkill -KILL keycap; sleep 0.4; done`.
   After about 3 s a "Command-key layout stopped" notification appears, the keys work as on a
-  standard keyboard, and `sill keycap status` says `failed`. `sill keycap retry` (no password
+  standard keyboard, and `bardo-shell keycap status` says `failed`. `bardo-shell keycap retry` (no password
   asked) brings it back: the notification goes and the layout works again.
 - [ ] `sudo systemctl stop keycap`: nothing is posted (stopped on purpose); `sudo systemctl start
   keycap` and the layout is back.
-- [ ] `sudo systemctl mask --now keycap`: nothing is posted and `sill keycap status` says `not_installed`
+- [ ] `sudo systemctl mask --now keycap`: nothing is posted and `bardo-shell keycap status` says `not_installed`
   or `unknown`; `sudo systemctl unmask keycap && sudo systemctl start keycap` restores it.
 - [ ] Start another remapper that grabs the same keyboard (`keyd`, or `kmonad`): an "Another keyboard
   program is running" notification names the keyboard; stopping the other program clears it
   within about 30 s, and keycap grabs the keyboard.
 - [ ] Press both Shifts and Esc: a "Command-key layout paused" notification appears and the
-  keys work as on a standard keyboard. `sill keycap resume` brings the layout back and the
+  keys work as on a standard keyboard. `bardo-shell keycap resume` brings the layout back and the
   notification goes.
 - [ ] Log out and in again: the login screen already has the layout, and after login the terminal
   and the browser behave as in the second item.
@@ -357,7 +357,7 @@ need a person, a real compositor or real eyes.
 - [ ] **A paused terminal**: three refused calls in a row (`bardo-do memory forget memory.fact:x`,
   exit 3) pause it; the next call exits 7. Intentd does not yet announce the pause
   (`BreakerTripped` is declared and not emitted), so the Terminal module shows nothing until a grant
-  exists; `sill intents resume` is the way back today.
+  exists; `bardo-shell intents resume` is the way back today.
 - [ ] **The keyboard still reaches the window behind**: after answering, typing reaches the
   terminal again (the sheet's `Exclusive` keyboard is released when it leaves).
 - [ ] **Phase A is forgeable**: a key typed by uinput answers the sheet. Known; Phase B closes it.
@@ -367,7 +367,7 @@ need a person, a real compositor or real eyes.
 The service, the machines and the launcher's mode are tested on stand-ins and fakes; these need
 the real daemons or a real keyboard.
 
-- [ ] **Double tap, route B** (a lone Cmd tap mapped to the unique chord that runs `sill companion
+- [ ] **Double tap, route B** (a lone Cmd tap mapped to the unique chord that runs `bardo-shell companion
   tap`; Toshy did this and keycap does not emit that chord yet, so this waits for a sender): tap Cmd twice within the double-tap window with the launcher closed: the launcher opens as a
   prompt ("Ask the assistant", no rows). Cmd-click and Cmd-drag in a terminal and a browser are
   unharmed (spike T). One tap does nothing; two taps a second apart do nothing.
@@ -384,7 +384,7 @@ the real daemons or a real keyboard.
   app and closes the panel. Needs quire's `AnswerCard` fill; until then the pane's card is an empty
   placeholder and only the row's words and buttons show.
 - [ ] **Command-period** in the prompt: stops the answer being made; on a run's row (Tab to Runs) it
-  stops the run. `sill companion stop-all` pauses every run that is going and leaves paused and ended
+  stops the run. `bardo-shell companion stop-all` pauses every run that is going and leaves paused and ended
   ones alone.
 - [ ] **A run's row** (a real cua run): the row follows the run's phase; "Take Over" and "Hand Back"
   change the state; "Watch" does nothing from sill (the compositor's) and must not close the panel.
@@ -401,7 +401,7 @@ the real daemons or a real keyboard.
   must work. While a sill surface holds the keyboard sill tells keycap `keymap-aware` (and the
   window's profile again when it lets go): check in keycap's log that the
   profile flips on open and back on close, and that Cmd+Tab still switches apps while the launcher is up.
-- [ ] **Next Input Source**: with fcitx5 running and two or more input methods in its group, `sill do next-input-source` (Control-Space once casement binds it) switches fcitx5 to the next input method, wrapping from the last to the first; the same with IBus running and two or more engines turned on (`ibus engine` shows the change). With no input-method framework running `sill do next-input-source` prints "No input sources to switch." and exits non-zero.
+- [ ] **Next Input Source**: with fcitx5 running and two or more input methods in its group, `bardo-shell do next-input-source` (Control-Space once casement binds it) switches fcitx5 to the next input method, wrapping from the last to the first; the same with IBus running and two or more engines turned on (`ibus engine` shows the change). With no input-method framework running `bardo-shell do next-input-source` prints "No input sources to switch." and exits non-zero.
 - [ ] **Dock Cmd/Alt+click**: Cmd+click on a running tile raises it with the other windows hidden as
   before; Alt+click hides the current one. The dock reads Command as the keymap's primary modifier,
   which is Super on our desktop; if keycap rewrites Cmd to Ctrl for the focused window the click
@@ -453,7 +453,7 @@ the real daemons or a real keyboard.
   output's wallpaper (the wallpaper is the one on the desktop, light or dark as the desktop is); a Space with no windows shows the bare
   wallpaper. Switching Space with Mission Control open keeps the pictures. The expanded bar is taller than the 112 px the windows leave free, so its lower part lies over the top of the window
   tiles; a click on a window tile below the bar still reaches it, and a click on the bar's own box does not fall through. Closing Mission
-  Control lifts it away and it is gone (no stuck strip, `sill debug stats` shows the surface unmapped). A click on a card switches
+  Control lifts it away and it is gone (no stuck strip, `bardo-shell debug stats` shows the surface unmapped). A click on a card switches
   to that Space and leaves Mission Control; the plus adds a Desktop and stays in Mission Control. App Expose and Show Desktop show no
   bar. With two monitors the bar is on the monitors Mission Control is up on, each with its own Spaces.
 - [ ] **Drag a window onto a Space**: in Mission Control drag a window tile up onto a card. The card under the dragged window lights
@@ -571,7 +571,7 @@ the real daemons or a real keyboard.
 
 - [ ] **Each menu opens**: right-click an app tile, the Trash tile, and the empty part of the dock (between tiles, or on the line before Trash). Each opens its menu over the dock. Press and hold on a tile also opens that tile's menu. Control-click is the dock's "Show in Files" click, not a menu: note it if you expected a menu there.
 - [ ] **App tile, the Mac's order**: a running app with windows reads its windows, its actions, an Options submenu (Keep in Dock or Remove from Dock, Open at Login, Show in Files), then Show All Windows, Hide and Quit (Force Quit while Option is held at open). Show All Windows brings the app's minimised windows back and raises the front one.
-- [ ] **Open at Login survives a re-login**: Options, Open at Login. Reopen the menu: it is checked, and `~/.config/autostart/<app id>.desktop` exists with an `X-Quire-Autostart=true` line. Log out and in: the app starts by itself. Options, Open at Login again unchecks it and removes the file. An app whose autostart file you wrote yourself shows checked, and unchecking does nothing.
+- [ ] **Open at Login survives a re-login**: Options, Open at Login. Reopen the menu: it is checked, and `~/.config/autostart/<app id>.desktop` exists with an `X-Bardo-Autostart=true` line. Log out and in: the app starts by itself. Options, Open at Login again unchecks it and removes the file. An app whose autostart file you wrote yourself shows checked, and unchecking does nothing.
 - [ ] **Trash**: Open shows the Trash in the file manager. Empty Trash is dimmed while the Trash is empty. With something in it, Empty Trash asks "Are you sure you want to permanently erase the items in the Trash?" with "You can't undo this action." and Cancel (default, Escape) and Empty Trash. Cancel leaves everything. Empty Trash erases `files/` and `info/` of the home Trash; per-volume trash folders on other disks are left.
 - [ ] **The dock's own menu**: Turn Hiding On hides the dock and the item then reads Turn Hiding Off; Turn Magnification Off stops the icons growing and the item reads Turn Magnification On. Both change `settings.toml` and Settings shows the same state. Dock Settings… opens Settings on the Dock page. There is no Position on Screen or Minimise Windows Using row: the dock has no such setting yet.
 - [ ] **Order setting**: Settings, Dock, Menu order (Advanced) set to Windows first gives the flat app menu (no Options, no Show All Windows).
@@ -603,7 +603,7 @@ the real daemons or a real keyboard.
 - [ ] **List beside detail**: Settings > Internet Accounts shows the accounts on the left and the chosen one on the right; arrows and click choose. The split is tall enough and scrolls inside on a small window (`.accounts-split` is a fixed 40em).
 - [ ] **Sync line**: a synced account shows "Synced N minutes ago" and its storage under Sync now; a ring turns round its mark while items wait.
 - [ ] **Apps with access**: each app row reads "Allowed on <date>"; hovering shows Revoke on the row and a card naming what it uses.
-- [ ] **First run**: `detent --page accounts-setup` shows "Sign in to Your Accounts", Add Account… opens the provider list, Skip always works, Continue once an account is listed.
+- [ ] **First run**: `bardo-settings --page accounts-setup` shows "Sign in to Your Accounts", Add Account… opens the provider list, Skip always works, Continue once an account is listed.
 - [ ] **Needs attention** (detent d022958): an account that must sign in again, or that its provider signs out on a set day, shows a yellow banner with Sign In…, which starts the sign-in; its row's dot says "Sign-in ends soon" (or needs sign-in).
 - [ ] **Input shortcuts** (detent 9d7f723): Settings > Keyboard Shortcuts lists an Input group with Next input language and Emoji & Symbols, and both keys work on the desktop.
 
@@ -626,7 +626,7 @@ Settings > Appearance, "Automatically hide and show the menu bar" (`bar.autohide
 
 - [ ] **Always hides it on the desktop**: set Always. The bar slides away; windows now use the full height (maximise one: it reaches the top edge). Rest the pointer at the top edge for about 0.2 s: the bar slides down over the windows. Move the pointer off it: it slides away. Pushing past the edge for a moment and back out before the delay does nothing.
 - [ ] **A menu keeps it**: with the bar down, open an app menu, then a status item's menu, then the Control Centre, one after the other. Each time, move the pointer off the bar into the menu and away from it: the bar stays down. Close the menu with the pointer off the bar: the bar slides away. With the pointer still on the bar when the menu closes, it stays.
-- [ ] **Control Centre by command**: with the bar hidden, run `sill control-center toggle`. The bar comes down with the panel; closing the panel lets it go.
+- [ ] **Control Centre by command**: with the bar hidden, run `bardo-shell control-center toggle`. The bar comes down with the panel; closing the panel lets it go.
 - [ ] **On Desktop Only and the desktop**: set On Desktop Only; the bar hides on the desktop exactly as in Always. Full screen an app: the bar is up at once, fixed, and the app's window starts below it (casement keeps it); leave full screen and it hides again.
 - [ ] **In Full Screen Only and Never fix it**: set either: the bar comes back at once, reserving its height again, with no blur gap or strip left behind; it never slides on the desktop.
 - [ ] **Live**: change the setting while the bar is up and while it is down: it applies without a restart.

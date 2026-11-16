@@ -22,7 +22,7 @@ def say(line):
 def main():
     Gtk.init()
     loop = GLib.MainLoop()
-    window = Gtk.Window(title="sill key sink")
+    window = Gtk.Window(title="bardo-shell key sink")
     window.set_default_size(800, 500)
     keys = Gtk.EventControllerKey()
 

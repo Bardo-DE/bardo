@@ -35,13 +35,13 @@ fn the_person_file_is_written_whole_in_keycaps_place_and_read_back() {
     files
         .save_person("", "# mine\ncopy = Super+Alt+C\n")
         .expect("saved");
-    let path = dir.join("config/keycap/keymap");
+    let path = dir.join("config/bardo/key-remap/keymap");
     assert_eq!(
         std::fs::read_to_string(&path).expect("the file"),
         "# mine\ncopy = Super+Alt+C\n"
     );
     assert!(
-        !dir.join("config/keycap/keymap.part").exists(),
+        !dir.join("config/bardo/key-remap/keymap.part").exists(),
         "no temporary file is left"
     );
     assert_eq!(files.read().person.text, "# mine\ncopy = Super+Alt+C\n");
@@ -55,8 +55,8 @@ fn the_person_file_is_written_whole_in_keycaps_place_and_read_back() {
 fn a_file_that_is_not_text_or_too_large_comes_back_with_a_reason() {
     let dir = scratch("keymap-trouble");
     let files = files(&dir);
-    std::fs::create_dir_all(dir.join("config/keycap")).expect("mkdir");
-    std::fs::write(dir.join("config/keycap/keymap"), [0xff, 0xfe]).expect("write");
+    std::fs::create_dir_all(dir.join("config/bardo/key-remap")).expect("mkdir");
+    std::fs::write(dir.join("config/bardo/key-remap/keymap"), [0xff, 0xfe]).expect("write");
     let person = files.read().person;
     assert_eq!(person.text, "");
     assert!(
@@ -64,7 +64,11 @@ fn a_file_that_is_not_text_or_too_large_comes_back_with_a_reason() {
             .trouble
             .is_some_and(|why| why.contains("not plain text"))
     );
-    std::fs::write(dir.join("config/keycap/keymap"), "#".repeat(33 * 1024)).expect("write");
+    std::fs::write(
+        dir.join("config/bardo/key-remap/keymap"),
+        "#".repeat(33 * 1024),
+    )
+    .expect("write");
     let person = files.read().person;
     assert!(person.trouble.is_some_and(|why| why.contains("32 KiB")));
 }

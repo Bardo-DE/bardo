@@ -94,7 +94,7 @@ pub(crate) trait Follow: Dispatch<WlRegistry, GlobalListContents> + Sized + 'sta
     /// What the thread tells the service.
     type Event: Send + 'static;
 
-    /// The service's name: the thread is `sill-<NAME>`, and its lines start `sill: <NAME>:`.
+    /// The service's name: the thread is `sill-<NAME>`, and its lines start `bardo-shell: <NAME>:`.
     const NAME: &'static str;
     /// What the line says follows when the thread is not following a compositor.
     const UNFOLLOWED: &'static str;
@@ -140,7 +140,7 @@ fn run<F: Follow>(
     tell: Tell<F::Event>,
 ) {
     if let Err(refusal) = follow::<F>(display, start, orders, tell.clone()) {
-        eprintln!("sill: {}: {refusal}; {}", F::NAME, F::UNFOLLOWED);
+        eprintln!("bardo-shell: {}: {refusal}; {}", F::NAME, F::UNFOLLOWED);
     }
     tell.say(F::gone());
 }

@@ -25,6 +25,7 @@ mod lenient;
 #[cfg(feature = "live")]
 pub mod live;
 mod portal;
+pub mod pre_bardo;
 mod preserve;
 pub mod published_parts;
 mod region;
@@ -55,7 +56,7 @@ pub use portal::{
 };
 pub use published_parts::{PublishedParts, discover_parts, parts_dirs, parts_dirs_from};
 pub use region::{HourCycle, RegionSettings, ResolvedHours, time_locale};
-pub use root::{AppName, ConfigRoot};
+pub use root::{AppName, ConfigRoot, app_folder};
 pub use spaces_storage::{Fixup, Origin, SpacesLoad, SpacesStorage};
 pub use store::Store;
 pub use ui_settings_derive::{SettingsRow, SettingsSchema};

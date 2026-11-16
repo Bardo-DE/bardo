@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Wallpaper acceptance (design/20 §1.4), against a casement
-# (brought up and ended by start_compositor) with a real `sill run`, which spawns a `Wallpaper` per output
+# (brought up and ended by start_compositor) with a real `bardo-shell run`, which spawns a `Wallpaper` per output
 # (`spawn_surface::<Wallpaper>` in `daemon/surfaces.rs`) and sends the
 # wallpaper service a `Prepare` (`prepare_wallpapers`) at the output's buffer size, so this
-# script starts its own `sill run`.
+# script starts its own `bardo-shell run`.
 #
-# The wallpaper source and sill's own settings live under a scratch XDG_CONFIG_HOME (never
+# The wallpaper source and bardo-shell's own settings live under a scratch XDG_CONFIG_HOME (never
 # the real ~/.config), so there is nothing to back up or restore. The daemon runs in its own
 # XDG_RUNTIME_DIR and scratch HOME, and a private dbus-daemon (dev/private-bus.conf) is its
 # session AND system bus, refused if it would be the real one.
@@ -14,7 +14,7 @@
 # centre pixel matches the marked source image's own centre pixel (cover-fit keeps the crop
 # centred, `geometry.rs`); five idle seconds add zero frames. Screenshot:
 # `dev/out/wallpaper-casement.png` (the nested screen, `shot.sh`); the pixel check itself reads
-# `sill debug capture`'s own file, not the screenshot.
+# `bardo-shell debug capture`'s own file, not the screenshot.
 #
 # Usage: dev/accept/wallpaper.sh
 set -uo pipefail
@@ -28,7 +28,7 @@ scratch_new
 
 # A marked source image and the wallpaper-source file naming it, under the scratch
 # XDG_CONFIG_HOME.
-CONFIG_FILE="$CONFIG/sill/wallpaper-source"
+CONFIG_FILE="$CONFIG/bardo/shell/wallpaper-source"
 SOURCE_PNG="$OUT_DIR/source.png"
 
 cleanup() {
@@ -70,14 +70,14 @@ start_private_bus || exit 1
 launch_daemon
 
 step_ping() {
-  sill ping >"$OUT_DIR/ping.log" 2>&1 && kill -0 "$DAEMON" 2>/dev/null && return 0
-  echo "sill never answered ping (see $OUT_DIR/daemon.log)" >&2
+  bardo-shell ping >"$OUT_DIR/ping.log" 2>&1 && kill -0 "$DAEMON" 2>/dev/null && return 0
+  echo "bardo-shell never answered ping (see $OUT_DIR/daemon.log)" >&2
   return 1
 }
 
 # Every wallpaper surface's frame/commit counters, as `name frames commits` lines.
 wallpaper_counters() {
-  sill debug stats | python3 -c '
+  bardo-shell debug stats | python3 -c '
 import json, sys
 reply = json.loads(sys.stdin.read())
 for row in reply["v"]:
@@ -114,7 +114,7 @@ step_centre_pixel() {
 
 capture_matches() {
   local name=$1 cap=$2
-  sill debug capture "$name" "$cap" >"$OUT_DIR/capture.log" 2>&1 || return 1
+  bardo-shell debug capture "$name" "$cap" >"$OUT_DIR/capture.log" 2>&1 || return 1
   grep -q '"kind":"done"' "$OUT_DIR/capture.log" || { echo "capture did not report done" >&2; return 1; }
   python3 - "$SOURCE_PNG" "$cap" <<'PY'
 import sys

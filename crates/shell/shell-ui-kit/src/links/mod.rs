@@ -80,7 +80,7 @@ pub struct Links {
     /// Every corner surface writes its firings here; the daemon carries them out. The
     /// screenshot thumbnail follows `banners` (it shows on the banners' output).
     pub corners: CornerLink,
-    /// `sill switcher ...` asks every switcher surface here; the lock surfaces follow
+    /// `bardo-shell switcher ...` asks every switcher surface here; the lock surfaces follow
     /// `lock` for which one shows the password prompt.
     pub switcher: SwitcherLink,
     pub lock: LockLink,

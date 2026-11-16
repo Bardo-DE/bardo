@@ -1,4 +1,4 @@
-//! The deck's keyboard, pure: which card holds it. The person asks for it (`sill focus-latest`),
+//! The deck's keyboard, pure: which card holds it. The person asks for it (`bardo-shell focus-latest`),
 //! it goes to the newest listed card and pauses that card's hold; arrows move it to the neighbour
 //! card; the dismiss keys close the card that holds it and hand it to the next card, or give it
 //! back when none is left; the compositor taking it away gives it back. A held card that leaves
@@ -20,7 +20,7 @@ pub enum Neighbour {
 /// What happened to the keyboard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum KeysIn {
-    /// `sill focus-latest` chose the banners: the keyboard goes to the newest card (or comes
+    /// `bardo-shell focus-latest` chose the banners: the keyboard goes to the newest card (or comes
     /// back to the one that holds it).
     Asked,
     /// The compositor took the keyboard away.

@@ -3,7 +3,7 @@
 //! connections' SSIDs, and the active access point; every change through
 //! [`shell_model::wifi::step`]; [`WifiCommand`]s carried out.
 //!
-//! Same bus and proxies as the network service (`networkmanager-proxy`). NetworkManager starting after sill
+//! Same bus and proxies as the network service (`networkmanager-proxy`). NetworkManager starting after bardo-shell
 //! or restarting under it is followed through its bus name ([`crate::owner`]), and the wireless
 //! device is looked for again whenever one is added or removed (a USB adapter plugged in later).
 //! Access point signals arrive in floods during a scan, so they are folded into one refresh a

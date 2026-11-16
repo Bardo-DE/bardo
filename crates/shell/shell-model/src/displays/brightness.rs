@@ -54,7 +54,7 @@ pub enum BrightnessTarget {
     Backlight(BacklightName),
     /// An external monitor's own brightness, over DDC/CI.
     Ddc(DdcId),
-    /// Nothing sill can change.
+    /// Nothing bardo-shell can change.
     None,
 }
 

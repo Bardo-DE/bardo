@@ -39,7 +39,7 @@ pub fn empty(dirs: &Dirs) -> Result<(), ServiceError> {
 pub fn empty_in_background(dirs: Dirs) {
     std::thread::spawn(move || {
         if let Err(error) = empty(&dirs) {
-            eprintln!("sill: Empty Trash: {error}");
+            eprintln!("bardo-shell: Empty Trash: {error}");
         }
     });
 }

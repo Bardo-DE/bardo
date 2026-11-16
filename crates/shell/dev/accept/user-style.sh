@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The person's style.css, live (quire ARCHITECTURE.md section 10, sill section 8). One daemon runs
+# The person's style.css, live (quire ARCHITECTURE.md section 10, bardo-shell section 8). One daemon runs
 # from this checkout's debug build on layer-shell-host's private headless KWin, on a private bus that is
 # both its session and its system bus, with a scratch HOME and XDG tree, its own XDG_RUNTIME_DIR
 # and the fake DDC; nothing reaches the user's session. The daemon is started once and never
@@ -7,11 +7,11 @@
 #
 #   1. Baseline: the bar, the dock and the OSD (shown again just before each of its captures:
 #      its hold is a constant 1.5 s) are captured with no style.css.
-#   2. `sill style check` on the style to be written prints its notes and exits 0.
+#   2. `bardo-shell style check` on the style to be written prints its notes and exits 0.
 #   3. style.css is written with a rule per surface (`.ds[data-surface=NAME]` and a token
 #      override: the bar's and the dock's frame alpha to 0, the OSD's ink and shadow ring to magenta). Every
 #      surface's capture changes without a restart (the same daemon pid answers ping);
-#      `sill style check` on a file that is not CSS exits 1.
+#      `bardo-shell style check` on a file that is not CSS exits 1.
 #   4. The file is edited (frame alpha .45, the ink and ring green): every surface changes again from the
 #      first edit (the live text is replaced, not added to).
 #   5. The file is deleted: every surface returns to its baseline (`changed_fraction` under 0.2%).
@@ -44,12 +44,12 @@ style_for() {
 }
 
 start_daemon() {
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   launch_daemon || return 1
   DAEMON_PID=$DAEMON
   NAME=$(output_name) || return 1
   SURFACES=("sill-bar-$NAME" "sill-dock-$NAME" "sill-osd-$NAME")
-  sill debug osd volume 60 >"$OUT_DIR/osd.log" 2>&1 || return 1
+  bardo-shell debug osd volume 60 >"$OUT_DIR/osd.log" 2>&1 || return 1
   wait_surface "sill-osd-$NAME" 30 || { echo "the OSD never mapped" >&2; return 1; }
   sleep 1
 }
@@ -57,7 +57,7 @@ start_daemon() {
 # Shows the OSD again and waits for its first frame: once hidden, its surface is gone, and a new
 # one takes a moment to be presented. The 0.3 s after lets the fade-in finish inside the hold.
 show_osd() {
-  sill debug osd volume 60 >>"$OUT_DIR/osd.log" 2>&1 || return 1
+  bardo-shell debug osd volume 60 >>"$OUT_DIR/osd.log" 2>&1 || return 1
   for _ in $(seq 30); do
     capture "$1" "$OUT_DIR/osd-probe.png" && { sleep 0.3; return 0; }
     sleep 0.1
@@ -92,28 +92,28 @@ step_baseline() { capture_all base; }
 
 step_check_clean() {
   style_for 0 "rgb(255, 0, 255)" >"$OUT_DIR/good.css"
-  sill style check "$OUT_DIR/good.css" >"$OUT_DIR/check-good.log" 2>&1 || {
+  bardo-shell style check "$OUT_DIR/good.css" >"$OUT_DIR/check-good.log" 2>&1 || {
     cat "$OUT_DIR/check-good.log" >&2; return 1; }
   cat "$OUT_DIR/check-good.log" >&2
 }
 
 step_written() {
-  style_for 0 "rgb(255, 0, 255)" >"$CONFIG/sill/style.css"
+  style_for 0 "rgb(255, 0, 255)" >"$CONFIG/bardo/shell/style.css"
   expect_styled base different written || return 1
   printf '.ds { color: red \n}}}\n' >"$OUT_DIR/bad.css"
-  if sill style check "$OUT_DIR/bad.css" >"$OUT_DIR/check-bad.log" 2>&1; then
-    echo "sill style check accepted a file that is not CSS" >&2; return 1
+  if bardo-shell style check "$OUT_DIR/bad.css" >"$OUT_DIR/check-bad.log" 2>&1; then
+    echo "bardo-shell style check accepted a file that is not CSS" >&2; return 1
   fi
   cat "$OUT_DIR/check-bad.log" >&2
 }
 
 step_edited() {
-  style_for .45 "rgb(0, 255, 0)" >"$CONFIG/sill/style.css"
+  style_for .45 "rgb(0, 255, 0)" >"$CONFIG/bardo/shell/style.css"
   expect_styled written different edited || return 1
 }
 
 step_deleted() {
-  rm -f "$CONFIG/sill/style.css"
+  rm -f "$CONFIG/bardo/shell/style.css"
   expect_styled base same reverted
 }
 
@@ -145,9 +145,9 @@ step_geometry() {
   local base
   capture "sill-bar-$NAME" "$OUT_DIR/geometry-base.png" || return 1
   base=$(png_height "$OUT_DIR/geometry-base.png")
-  printf '.ds[data-surface=bar] { --shell-bar-h: 40px }\n' >"$CONFIG/sill/style.css"
+  printf '.ds[data-surface=bar] { --shell-bar-h: 40px }\n' >"$CONFIG/bardo/shell/style.css"
   wait_bar_height "$base" is-not || return 1
-  rm -f "$CONFIG/sill/style.css"
+  rm -f "$CONFIG/bardo/shell/style.css"
   wait_bar_height "$base" is
 }
 

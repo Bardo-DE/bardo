@@ -1,4 +1,4 @@
-//! PDF thumbnails from a path (sill M9's launcher preview): the first page of a PDF written here
+//! PDF thumbnails from a path (bardo-shell M9's launcher preview): the first page of a PDF written here
 //! is rasterised at the page's aspect and painted red where the page is red; a second request for
 //! the file as it is is answered from the cache (proved by rewriting the file's bytes under its
 //! old modification time and still getting the old page), and a new modification time misses;

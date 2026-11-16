@@ -4,7 +4,7 @@
 //! name cannot be taken away), serve [`super::dbus::Server`] while owned, load the history, and
 //! run every call and command through [`shell_model::notifications::step`], carrying out its
 //! effects (signals, and the history's write, gathered and run off the loop by [`super::save`]; a
-//! `Sound` is dropped, as sill plays no sounds yet) and publishing the result. Each bus caller is
+//! `Sound` is dropped, as bardo-shell plays no sounds yet) and publishing the result. Each bus caller is
 //! held to its allowance and may replace or close only what it posted ([`super::senders`]); a
 //! clock tick sweeps an app's critical banners that have stood too long.
 //!
@@ -218,7 +218,7 @@ impl Core {
     }
 
     async fn perform(&mut self, effect: NotificationsEffect, bus: Option<&Bus>) {
-        // Signals only while sill holds the name: a passive sill's ids are not the holder's.
+        // Signals only while bardo-shell holds the name: a passive bardo-shell's ids are not the holder's.
         let speaking = match (bus, &self.state.live.server) {
             (
                 Some(bus),

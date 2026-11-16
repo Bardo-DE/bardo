@@ -1,4 +1,4 @@
-app = "quire"
+app = "bardo"
 file = "bardo/appearance.toml"
 version = 1
 

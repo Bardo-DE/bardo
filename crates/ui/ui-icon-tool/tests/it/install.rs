@@ -9,7 +9,7 @@ use ui_settings::icon_assets::{APP_ICON_PX, AppIconName, Presence, find_app_icon
 
 #[test]
 fn install_copies_the_set_where_the_lookup_finds_it() {
-    let to = Path::new(env!("CARGO_TARGET_TMPDIR")).join("installed-icons/quire/icons/apps");
+    let to = Path::new(env!("CARGO_TARGET_TMPDIR")).join("installed-icons/bardo/icons/apps");
     std::fs::remove_dir_all(&to).ok();
     let status = Command::new(env!("CARGO_BIN_EXE_icons"))
         .args(["install", "--to"])

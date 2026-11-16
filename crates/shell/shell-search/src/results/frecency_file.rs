@@ -7,7 +7,7 @@ use shell_launcher::Frecency;
 use shell_services::durable::{self, Access};
 use shell_services::error::ServiceError;
 
-/// The file's name inside `$XDG_STATE_HOME/sill`.
+/// The file's name inside `$XDG_STATE_HOME/bardo/shell`.
 pub const FILE_NAME: &str = "frecency.json";
 
 /// The history in `dir`; missing is empty, and so is one that cannot be read, which is kept as
@@ -55,7 +55,7 @@ mod tests {
                 key(ProviderKind::System, "lock"),
                 UnixTime(NOW.0 - 86_400 * 20),
             );
-        let nested = dir.path().join("state/sill");
+        let nested = dir.path().join("state/bardo/shell");
         save_frecency(&nested, &frecency).unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(load_frecency(&nested), frecency);
         let names: Vec<_> = std::fs::read_dir(&nested)

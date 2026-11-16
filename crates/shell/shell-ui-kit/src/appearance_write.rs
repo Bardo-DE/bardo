@@ -11,7 +11,7 @@ pub fn write_appearance(next: Appearance) {
     let store = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
     let file = with_appearance(store.load::<AppearanceFile>().value, next);
     if let Err(error) = store.save(&file) {
-        eprintln!("sill: writing the appearance: {error}");
+        eprintln!("bardo-shell: writing the appearance: {error}");
     }
 }
 

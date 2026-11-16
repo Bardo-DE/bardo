@@ -411,7 +411,7 @@ pub struct UndoToken(String); pub struct Handle(u64); pub struct LabelText(Strin
 pub struct ActionRef { pub app: AppName, pub name: ActionName }
 pub struct IntentsVocab(pub u32); // CURRENT = 1
 
-// manifest ($XDG_DATA_DIRS/quire/intents/<AppName>.toml); actions.md §3.3 + addendum
+// manifest ($XDG_DATA_DIRS/bardo/intents/<AppName>.toml); actions.md §3.3 + addendum
 pub struct ActionDecl { pub name: ActionName, pub label: LabelText, pub on: TargetKind, pub params: Vec<ParamDecl>,
     pub effect: prov::Effect, pub classes: BTreeSet<DataClass>, pub undo: UndoSupport, pub reach: AgentReach,
     pub latency: Latency, pub result: ResultShape, pub keys: KeyHint, pub lasting: Lasting, pub dry_run: DryRun }
@@ -685,7 +685,7 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 
 | # | Step | Owner |
 |---|---|---|
-| 1 | Toshy emits the chord → `sill companion tap` (route B) or `summon` (route A) → `ShowRequest::Companion` | ux (sill), Toshy spike |
+| 1 | Toshy emits the chord → `bardo-shell companion tap` (route B) or `summon` (route A) → `ShowRequest::Companion` | ux (sill), Toshy spike |
 | 2 | `Tap` machine → `Summon` machine: mailo focused, owns `org.bardo.Mail` with a manifest → `AskApp` → `IntentProvider1.Summon(serial)`; sill calls `Companion1.Prepare()` in parallel | ux (sill), docket (method) |
 | 3 | In mailo, action-ui-adapter asks ds's `CompanionPort`: the search field answers `TookField`; **ui-intents freezes the context at this moment** (query "lisbon receipts", 12 visible results, selection) before the field turns into a prompt; chips Query, Results(12) | quire ui-intents, action-ui-adapter |
 | 4 | User types and sends. action-ui-adapter: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.bardo.Mail)`) → `Companion1.Ask` | docket |
@@ -865,7 +865,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C48 | second `wl_seat` vs reis | EI via reis always |
 | C49 | masking in compositor vs capturer | both by backend, `MaskWhere` recorded |
 | C50 | P1 inline replace runs at once (item 9) vs waits for Apply (agent-ux P1, ux `ReplacePhase::Proposed`) | user decides (Q-U9); both phases frozen |
-| C51 | `sill companion stop-all` "pause" vs cua `StopAll` "cancel" | stop-all = `Halt(space, StopKey)` → runs Pause; kill chord = `Halt(Any)` + `Cua1.StopAll` |
+| C51 | `bardo-shell companion stop-all` "pause" vs cua `StopAll` "cancel" | stop-all = `Halt(space, StopKey)` → runs Pause; kill chord = `Halt(Any)` + `Cua1.StopAll` |
 | C52 | Build map lists `egress`, `secret-cell` with no spec | deferred to the first cloud backend |
 | C53 | Every planner role needs a model; 16 GB fits one | one resident model; SecondOpinion from another family on demand, absent → Ask; Q-M2 |
 

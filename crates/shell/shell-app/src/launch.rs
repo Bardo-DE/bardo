@@ -1,5 +1,5 @@
 //! The daemon's half of launching: ask layer-shell-host for an xdg-activation token on behalf of the
-//! surface the click came from, then hand the request to the launch service. `sill launch` goes
+//! surface the click came from, then hand the request to the launch service. `bardo-shell launch` goes
 //! through the same two steps ([`ask`] on the host thread, [`serve`] off it) and is answered with
 //! the launch's timing.
 
@@ -23,7 +23,7 @@ use crate::daemon::msg::ShellMsg;
 use crate::ipc::server::REPLY_TIMEOUT;
 use crate::outputs::Outputs;
 
-/// One `sill launch` on its way from the host thread to the launch service.
+/// One `bardo-shell launch` on its way from the host thread to the launch service.
 #[derive(Debug)]
 pub struct LaunchAsk {
     pub app: AppId,
@@ -34,7 +34,7 @@ pub struct LaunchAsk {
     pub reply: SyncSender<Response>,
 }
 
-/// Begin `sill launch app` on the host thread, where surfaces can be asked for a token: an app
+/// Begin `bardo-shell launch app` on the host thread, where surfaces can be asked for a token: an app
 /// that is not installed is refused at once, else the token is asked of the first dock (the
 /// surface a dock click comes from) and the rest is [`serve`]d on `runtime`.
 pub fn ask(
@@ -121,7 +121,7 @@ pub async fn serve(
     let _gone_is_dropped = reply.send(response);
 }
 
-/// What `sill launch` is told of a launch that ended as `done`.
+/// What `bardo-shell launch` is told of a launch that ended as `done`.
 pub fn response_of(done: &LaunchDone, name: &str) -> Response {
     match done {
         LaunchDone::Spawned(timing) => Response::Launched(timing.clone()),
@@ -135,7 +135,7 @@ pub fn response_of(done: &LaunchDone, name: &str) -> Response {
     }
 }
 
-/// The refusal of a `sill launch` for an id no installed app has.
+/// The refusal of a `bardo-shell launch` for an id no installed app has.
 fn unknown_app(app: &AppId) -> Response {
     refusal(
         FailureKind::UnknownApp,

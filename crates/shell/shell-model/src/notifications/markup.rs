@@ -5,7 +5,7 @@
 //! Parse at the boundary: a body that is not well-formed still becomes runs. An
 //! unknown tag is dropped and its text kept; a `<` that opens no tag is text; `<br>` (not in the
 //! spec, but common from web senders) is a line break; an image becomes its `alt` text, since
-//! sill does not advertise `body-images`.
+//! bardo-shell does not advertise `body-images`.
 
 use std::sync::Arc;
 
@@ -104,7 +104,7 @@ pub const LINK_SCHEMES: &[&str] = &["http", "https", "mailto"];
 
 impl Body {
     /// `text` as one unstyled run, markup and all (a sender that did not ask for markup, and
-    /// `sill debug notify`); no runs for an empty text.
+    /// `bardo-shell debug notify`); no runs for an empty text.
     pub fn plain(text: &str) -> Body {
         let runs = (!text.is_empty())
             .then(|| BodyRun {

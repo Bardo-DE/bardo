@@ -155,7 +155,9 @@ impl Live {
                 )
                 .await;
             if sent.is_err() {
-                eprintln!("sill: accounts sheet: telling the service what the person did failed");
+                eprintln!(
+                    "bardo-shell: accounts sheet: telling the service what the person did failed"
+                );
             }
         });
     }

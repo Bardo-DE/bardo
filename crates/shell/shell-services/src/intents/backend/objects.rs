@@ -1,4 +1,4 @@
-//! The objects sill exports for intentd: `org.bardo.Confirm1` and one `org.bardo.Intents1.Request`
+//! The objects bardo-shell exports for intentd: `org.bardo.Confirm1` and one `org.bardo.Intents1.Request`
 //! per question. They do nothing but check who is calling and hand the call to the service's
 //! loop; the loop decides.
 

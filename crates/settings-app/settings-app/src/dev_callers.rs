@@ -13,11 +13,11 @@ pub fn take_up(path: Option<&Path>) -> Result<(), ExitCode> {
         return Ok(());
     };
     settings_app_callers::use_dev_rows(path).map_err(|fault| {
-        eprintln!("detent: --dev-callers {}: {fault}", path.display());
+        eprintln!("bardo-settings: --dev-callers {}: {fault}", path.display());
         ExitCode::FAILURE
     })?;
     eprintln!(
-        "detent: programs named in {} are let in as the desktop's services, below every real proof (--dev-callers)",
+        "bardo-settings: programs named in {} are let in as the desktop's services, below every real proof (--dev-callers)",
         path.display()
     );
     Ok(())

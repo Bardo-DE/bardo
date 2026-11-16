@@ -22,7 +22,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-/// A small desktop widget holding the month, as sill's calendar widget draws it.
+/// A small desktop widget holding the month, as bardo-shell's calendar widget draws it.
 #[allow(non_snake_case)]
 fn SmallCalendar() -> Element {
     rsx! {
@@ -230,7 +230,7 @@ fn todays_compact_disc_is_a_circle_twice_its_number() {
     );
 }
 
-/// The small widget with the month inside a row flex wrapper that does not stretch it, as sill's
+/// The small widget with the month inside a row flex wrapper that does not stretch it, as bardo-shell's
 /// `.sill-cal` places it: unstretched, the month's own height must still fit the content box.
 #[allow(non_snake_case)]
 fn WrappedSmallCalendar() -> Element {

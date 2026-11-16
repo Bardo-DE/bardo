@@ -110,7 +110,7 @@ async fn watch(
     }
     let proxy = match run_proxy(connection, path).await {
         Ok(proxy) => proxy,
-        Err(why) => return eprintln!("sill: companion: following a run: {why}"),
+        Err(why) => return eprintln!("bardo-shell: companion: following a run: {why}"),
     };
     let run = match proxy
         .id()
@@ -119,12 +119,12 @@ async fn watch(
         .and_then(|id| RunId::parse(&id).map_err(CallError::invalid))
     {
         Ok(run) => run,
-        Err(why) => return eprintln!("sill: companion: a run's id: {why}"),
+        Err(why) => return eprintln!("bardo-shell: companion: a run's id: {why}"),
     };
     let (events, named) = (events.clone(), run.clone());
     let task = tokio::spawn(async move {
         if let Err(why) = follow_run(named, proxy, events).await {
-            eprintln!("sill: companion: following a run: {why}");
+            eprintln!("bardo-shell: companion: following a run: {why}");
         }
     });
     followers.insert(key, Follower { run, task });

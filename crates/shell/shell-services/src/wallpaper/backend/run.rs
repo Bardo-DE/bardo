@@ -18,7 +18,7 @@ use super::resize;
 use crate::debounced::{self, Debounced, EventFilter, Place};
 use crate::env::Dirs;
 
-/// `wallpaper` in sill's folder of `dirs`' cache directory.
+/// `wallpaper` in bardo-shell's folder of `dirs`' cache directory.
 pub(crate) fn cache_directory(dirs: &Dirs) -> PathBuf {
     dirs.sill_cache().join(CACHE_DIR)
 }

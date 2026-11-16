@@ -1,5 +1,5 @@
-//! sill's tray service (the SNI host) on the session bus named by `DBUS_SESSION_BUS_ADDRESS`,
-//! which `system-tray` reads itself and sill's tray backend therefore cannot be pointed at
+//! bardo-shell's tray service (the SNI host) on the session bus named by `DBUS_SESSION_BUS_ADDRESS`,
+//! which `system-tray` reads itself and bardo-shell's tray backend therefore cannot be pointed at
 //! another way. The tray test starts this as a child with only the child's environment naming a
 //! private bus; it refuses to run without that variable, so it never falls back to the real
 //! session bus.

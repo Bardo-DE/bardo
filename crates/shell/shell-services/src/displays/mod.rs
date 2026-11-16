@@ -3,7 +3,7 @@
 //!
 //! - **Outputs.** Every output's EDID (size, native mode) gives its density and gamut; the
 //!   compositor's own output management ([`OutputsRoute`], picked from its globals) lists
-//!   them. sill never decides or sets a scale: the compositor chooses it, sill shows it.
+//!   them. bardo-shell never decides or sets a scale: the compositor chooses it, bardo-shell shows it.
 //! - **Gamut.** The EDID primaries classified as sRGB, Display P3 or wide (`classify`); stored
 //!   for colour management, which no compositor offers yet.
 //! - **DDC/CI.** External monitors' brightness, contrast, speaker volume, mute, input and RGB

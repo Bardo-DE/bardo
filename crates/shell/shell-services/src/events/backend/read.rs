@@ -209,7 +209,7 @@ fn note_unsupported(path: &Path, event: &IcsEvent) {
     let mut logged = LOGGED.lock().unwrap_or_else(PoisonError::into_inner);
     if logged.get_or_insert_with(HashSet::new).insert(key) {
         eprintln!(
-            "sill: events: {}: {:?} repeats by {}, which is not expanded; shown once",
+            "bardo-shell: events: {}: {:?} repeats by {}, which is not expanded; shown once",
             path.display(),
             event.summary,
             parts.join(";"),

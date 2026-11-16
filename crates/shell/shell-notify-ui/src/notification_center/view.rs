@@ -12,7 +12,7 @@ use shell_ui_kit::root::SurfaceRoot;
 use shell_ui_kit::widgets::widgets_css;
 
 /// The center's stylesheet (lint-clean under `Profile::Strict`,
-/// `crates/sill/tests/lint.rs`).
+/// `crates/shell/shell-app/tests/lint.rs`).
 pub const NOTIFICATION_CENTER_CSS: &str = include_str!("style.css");
 
 /// The center on `output`.

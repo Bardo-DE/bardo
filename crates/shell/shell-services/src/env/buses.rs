@@ -84,7 +84,7 @@ impl Bus {
                 Err(OpenError::Refused(error)) => {
                     let wait = backoff.wait();
                     eprintln!(
-                        "sill: the {:?} bus is not reachable ({error}); trying again in {wait:?}",
+                        "bardo-shell: the {:?} bus is not reachable ({error}); trying again in {wait:?}",
                         self.kind
                     );
                     backoff.after_attempt(started.elapsed());

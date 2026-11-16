@@ -1,4 +1,4 @@
-//! `#[derive(SettingsSchema)]` on the shapes sill needed and the derive used to refuse:
+//! `#[derive(SettingsSchema)]` on the shapes bardo-shell needed and the derive used to refuse:
 //! text by type (`String`, `PathBuf`, `Cow<str>`), a text newtype through
 //! `#[settings(text)]`, and a one-variant enum. The refusals (`MissingRange`, an empty enum)
 //! are compile errors, tested on the expansion in `crates/ds-settings-derive/src`.
@@ -48,7 +48,7 @@ struct Probe {
 impl Default for Probe {
     fn default() -> Self {
         Probe {
-            name: "quire".to_owned(),
+            name: "bardo".to_owned(),
             folder: PathBuf::from("/tmp"),
             greeting: Cow::Borrowed("hello"),
             sound_theme: SoundTheme("freedesktop".to_owned()),

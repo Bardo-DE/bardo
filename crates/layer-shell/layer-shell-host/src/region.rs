@@ -61,7 +61,7 @@ impl RoundedRect {
 /// `RegionSpec::Elements` region: the rect is inflated by `inflate`, then rounded to `radius`
 /// (the same two fields `RegionSpec::Element` carries directly — kept a separate struct-variant
 /// there, not this type, so an existing `RegionSpec::Element { .. }` construction, such as
-/// sill's, keeps compiling unchanged).
+/// bardo-shell's, keeps compiling unchanged).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ElementRegion {
     pub id: ElementId,

@@ -82,8 +82,8 @@ async fn a_launch_runs_in_a_real_systemd_scope_and_exits() {
     })
     .await
     .unwrap_or_else(|_| panic!("no Started outcome within 5s"));
-    eprintln!("sill: live launch started unit {}", started.0);
-    assert!(started.0.starts_with("app-sill-"));
+    eprintln!("bardo-shell: live launch started unit {}", started.0);
+    assert!(started.0.starts_with("app-bardo-"));
     assert!(started.0.ends_with(".scope"));
 
     tokio::time::timeout(Duration::from_secs(10), async {
@@ -96,7 +96,7 @@ async fn a_launch_runs_in_a_real_systemd_scope_and_exits() {
     })
     .await
     .unwrap_or_else(|_| panic!("the scope never reported Exited within 10s"));
-    eprintln!("sill: live launch unit {} exited", started.0);
+    eprintln!("bardo-shell: live launch unit {} exited", started.0);
 }
 
 /// What an isolated `Env` is asked to open: recorded, never started, so no test ever opens a file
@@ -240,7 +240,11 @@ async fn a_launch_that_reaches_its_program_is_answered_with_its_timing() {
     let unit = timing
         .unit
         .unwrap_or_else(|| panic!("a launch has a scope's name"));
-    assert!(unit.0.starts_with("app-sill-sill\\x2dtimed-"), "{}", unit.0);
+    assert!(
+        unit.0.starts_with("app-bardo-sill\\x2dtimed-"),
+        "{}",
+        unit.0
+    );
 }
 
 #[tokio::test]

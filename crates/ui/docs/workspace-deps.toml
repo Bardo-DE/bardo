@@ -1,5 +1,5 @@
 # ---- BEGIN PINNED BLOCK (source of truth: quire/docs/workspace-deps.toml) ----
-# Copied verbatim into [workspace.dependencies] of quire, layer-shell-host and sill. Bumped only by a
+# Copied verbatim into [workspace.dependencies] of quire, layer-shell-host and bardo-shell. Bumped only by a
 # dedicated "toolchain bump" wave that runs every repo's gates. Versions of the render stack
 # (anyrender, vello, wgpu, parley) are the ones blitz's own Cargo.lock resolves at this rev;
 # taffy (git) and stylo come through the blitz crates and are never named directly.
@@ -19,7 +19,7 @@ keymap-gnome = { git = "https://github.com/Bardo-DE/chordkit.git", rev = "99eec9
 # blitz 0.3.0-beta.2). The in-tree dioxus-native-dom targets dioxus 0.7.x.
 # Blitz comes from our fork (github.com/Bardo-DE/blitz, branch quire-pin): upstream e99fbdbd plus
 # bf588142 (restyles elements whose animation was cancelled mid-way) and 1b23fbd9 (attributes carry no
-# namespace, so `[data-x=y]` matches) (sill G295). Move back
+# namespace, so `[data-x=y]` matches) (bardo-shell G295). Move back
 # to DioxusLabs/blitz when a toolchain-bump wave finds the fix (or its equivalent) upstream.
 blitz-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"] }
 blitz-paint = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"] }
@@ -59,7 +59,7 @@ vello_common = "0.1"
 parley = { version = "0.11.1", default-features = false, features = ["std"] }
 image = { version = "0.25.6", default-features = false, features = ["png", "jpeg"] }
 
-# Wayland client (layer-shell-host and sill share one sctk major).
+# Wayland client (layer-shell-host and bardo-shell share one sctk major).
 smithay-client-toolkit = { version = "0.20", default-features = false, features = ["calloop", "xkbcommon"] }
 wayland-client = "0.31"
 wayland-backend = { version = "0.3", features = ["client_system"] }
@@ -85,7 +85,7 @@ rustix = { version = "1.1", default-features = false, features = ["std", "event"
 futures-timer = "3"
 cssparser = "0.37"
 notify = "8.2"
-# zbus: shell repos (sill, layer-shell-host) and programs that own their tokio runtime (anyview) take
+# zbus: shell repos (bardo-shell, layer-shell-host) and programs that own their tokio runtime (anyview) take
 # this tokio line and also enable `ui-settings/tokio`. quire and the other app repos take `zbus = { version = "5.19" }` with its default async-io backend: a library
 # must not pick the executor for its consumers (mailo's blocking keyring calls under a tokio runtime
 # panicked when ui-settings forced zbus/tokio through feature unification).

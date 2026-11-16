@@ -95,7 +95,7 @@ fn Sheet(theme: Theme) -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { theme, ..Appearance::default() }, material: Material::Window,
             div { style: "display:flex;flex-direction:column;gap:8px;padding:12px;",
-                // The bar: 32 tall as sill's default, a title pill, three status items, the clock.
+                // The bar: 32 tall as bardo-shell's default, a title pill, three status items, the clock.
                 Surface { material: Material::Bar, theme: Some(scheme),
                     div { style: "display:flex;align-items:center;gap:4px;height:32px;padding:0 8px;{metrics}",
                         MenuBarItem { shown: true, label: "Files", onclick: |_| {} }

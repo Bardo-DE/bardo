@@ -12,5 +12,5 @@ mod view;
 pub use surface::VoiceConsentSheet;
 
 /// The consent sheet's stylesheet (lint-clean under `Profile::Strict`,
-/// `crates/sill/tests/lint.rs`).
+/// `crates/shell/shell-app/tests/lint.rs`).
 pub const VOICE_CONSENT_CSS: &str = include_str!("style.css");

@@ -63,7 +63,7 @@ pub struct AskInput {
 /// What the daemon and the surfaces tell the service.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CompanionCommand {
-    /// Switch a conversation the box may not hold to `mode`, for a probe (`sill debug mode`): the
+    /// Switch a conversation the box may not hold to `mode`, for a probe (`bardo-shell debug mode`): the
     /// router is asked as for the box's own, and only a change it signals reaches the box.
     SessionMode {
         /// The conversation.

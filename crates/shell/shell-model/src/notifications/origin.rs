@@ -50,7 +50,7 @@ mod tests {
             (Some("sill-accounts"), Origin::System),
             (Some("sill-keycap"), Origin::System),
             (Some("org.example.Mail"), Origin::App),
-            (Some("sill"), Origin::App),
+            (Some("bardo-shell"), Origin::App),
             (Some("not-sill-accounts"), Origin::App),
             (None, Origin::App),
         ];

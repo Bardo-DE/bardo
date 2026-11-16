@@ -1,4 +1,4 @@
-//! The one place sill names layer-shell-host's session lock: `HostCtx::lock_session(LockConfig, factory)
+//! The one place bardo-shell names layer-shell-host's session lock: `HostCtx::lock_session(LockConfig, factory)
 //! -> Result<LockId, LockError::{Unsupported, InProgress}>`, `unlock_session(LockId)`,
 //! `lock_surfaces(LockId)`, and `HostEvent::Lock { id, state: Locked | Unlocked | Finished }`.
 //! Lock surfaces are made on request, one per output (and for outputs added while locked); a
@@ -69,7 +69,7 @@ impl SessionLockHost for HostCtx<ShellMsg> {
     }
 }
 
-/// layer-shell-host's error as sill's refusal.
+/// layer-shell-host's error as bardo-shell's refusal.
 pub fn refusal_of(error: LockError) -> LockRefusal {
     match error {
         LockError::Unsupported => LockRefusal::Unsupported,

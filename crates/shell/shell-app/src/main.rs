@@ -1,7 +1,7 @@
-//! The sill daemon and command line: `sill run` is the daemon; every other subcommand is a client
+//! The bardo-shell daemon and command line: `bardo-shell run` is the daemon; every other subcommand is a client
 //! that sends one request and prints the reply.
 //!
-//! The implementation lives in the `sill` library (`lib.rs`) so `crates/sill/tests/**` can
+//! The implementation lives in the `bardo-shell` library (`lib.rs`) so `crates/shell/shell-app/tests/**` can
 //! exercise it; this binary is a thin wrapper.
 
 use std::process::ExitCode;
@@ -9,6 +9,8 @@ use std::process::ExitCode;
 use shell_app::cli;
 
 fn main() -> ExitCode {
+    // Temporary: delete with the old-folders crate in the release after everyone has started once.
+    shell_app::pre_bardo::move_from_env();
     let cli = match cli::parse_args() {
         Ok(cli) => cli,
         Err(code) => return code,
@@ -17,7 +19,10 @@ fn main() -> ExitCode {
         return match shell_settings::schema().write_to(dir) {
             Ok(path) => shell_app::cli::stdout::print(&format!("{}\n", path.display())).exit_code(),
             Err(error) => {
-                eprintln!("sill: writing the schema to {}: {error}", dir.display());
+                eprintln!(
+                    "bardo-shell: writing the schema to {}: {error}",
+                    dir.display()
+                );
                 ExitCode::FAILURE
             }
         };
@@ -27,7 +32,7 @@ fn main() -> ExitCode {
             Ok(path) => shell_app::cli::stdout::print(&format!("{}\n", path.display())).exit_code(),
             Err(error) => {
                 eprintln!(
-                    "sill: writing the style parts to {}: {error}",
+                    "bardo-shell: writing the style parts to {}: {error}",
                     dir.display()
                 );
                 ExitCode::FAILURE
@@ -44,7 +49,7 @@ fn main() -> ExitCode {
             None => ExitCode::SUCCESS,
         },
         None => {
-            eprintln!("sill: a subcommand is required (sill --help)");
+            eprintln!("bardo-shell: a subcommand is required (bardo-shell --help)");
             ExitCode::from(cli::USAGE)
         }
     }

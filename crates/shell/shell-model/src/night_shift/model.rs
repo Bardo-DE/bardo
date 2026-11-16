@@ -102,7 +102,7 @@ pub struct NightShift {
     pub light: NightLight,
     pub manual: Option<Manual>,
     /// Who warms the monitors that answer DDC/CI (`display.night_warmth`): casement in software
-    /// like every other display (`Off`), or sill over each monitor's own colour gains
+    /// like every other display (`Off`), or bardo-shell over each monitor's own colour gains
     /// (`Hardware`), casement then leaving those monitors alone (`night_light.skip_outputs`).
     pub backend: NightWarmthMode,
 }

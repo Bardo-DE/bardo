@@ -10,7 +10,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-# ui-core is plain data and maths, so sill's pure crates can use it: not even dioxus. ui-style and
+# ui-core is plain data and maths, so bardo-shell's pure crates can use it: not even dioxus. ui-style and
 # ui-motion name dioxus only through their `dioxus` feature (ui-style: scope, scale, task, busy,
 # `Glyph`; ui-motion: the hooks, timers and event conversions), which neither enables by default,
 # so a compositor or a crate that only reads settings links no Dioxus; ui-settings has the same
@@ -98,7 +98,7 @@ EDGES=(
   "ui-behaviour: ui-core"
   "ui-components: ui-core ui-intents ui-motion ui-style"
   "ui-shell: ui-components ui-core ui-motion ui-style"
-  "ui-settings: ui-core ui-helpers ui-peer ui-style ui-settings-derive"
+  "ui-settings: old-folders ui-core ui-helpers ui-peer ui-style ui-settings-derive"
   "ui-settings-page: ui-components ui-settings"
   "ui-extensions: ui-core ui-helpers ui-settings ui-style"
   "ui-peer:"

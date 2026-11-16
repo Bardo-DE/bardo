@@ -50,7 +50,7 @@ fn grid(density: MonthDensity) -> Element {
     }
 }
 
-/// `size`'s frame on the desktop layer, as sill's desktop surface draws it.
+/// `size`'s frame on the desktop layer, as bardo-shell's desktop surface draws it.
 fn framed(size: WidgetSize) -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Widget, chrome: Some(RootChrome::Transparent), stylesheet: Inject::Host,

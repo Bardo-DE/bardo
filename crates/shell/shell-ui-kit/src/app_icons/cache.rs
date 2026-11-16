@@ -2,7 +2,7 @@
 //! blocking pool, the filesystem).
 //!
 //! A raster is made once per [`IconKey`] (icon, size at the output scale, style, tint) on
-//! tokio's blocking pool and kept as a file in `$XDG_CACHE_HOME/sill/icons/`, which the view
+//! tokio's blocking pool and kept as a file in `$XDG_CACHE_HOME/bardo/shell/icons/`, which the view
 //! loads by `file://` URL. Files rather than memory: an `IconUrl` is a `file:` or a `data:`
 //! URL, and a `data:` URL puts some twenty kilobytes of base64 into a tile's inline style,
 //! which the dock rewrites on every magnification frame; a file URL is a few dozen bytes, and
@@ -63,9 +63,9 @@ static CACHE: LazyLock<Cache> = LazyLock::new(|| Cache {
     done: watch::Sender::new(Generation::default()),
 });
 
-/// `$XDG_CACHE_HOME/sill/icons`.
+/// `$XDG_CACHE_HOME/bardo/shell/icons`.
 fn cache_dir() -> Option<PathBuf> {
-    dirs::cache_dir().map(|dir| dir.join("sill").join("icons"))
+    dirs::cache_dir().map(|dir| dir.join("bardo").join("shell").join("icons"))
 }
 
 fn slots() -> MutexGuard<'static, HashMap<IconKey, Slot>> {
@@ -142,7 +142,10 @@ fn make(key: IconKey, source: PathBuf, dir: PathBuf) {
         {
             Ok(path) => Slot::Ready(path),
             Err(why) => {
-                eprintln!("sill: icon {} not re-tinted: {why}", key.path.display());
+                eprintln!(
+                    "bardo-shell: icon {} not re-tinted: {why}",
+                    key.path.display()
+                );
                 Slot::Failed
             }
         }

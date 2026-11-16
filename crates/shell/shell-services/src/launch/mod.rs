@@ -1,5 +1,5 @@
 //! Starting apps (activation token, DBusActivatable via org.freedesktop.Application.Activate,
-//! Terminal=true wrapper, `systemd-run --user --scope --collect --unit=app-sill-<id>-<rand>.scope`
+//! Terminal=true wrapper, `systemd-run --user --scope --collect --unit=app-bardo-<id>-<rand>.scope`
 //! (fallback process group)), and the desktop's one terminal opener (`backend/terminal/`).
 //!
 //! The activation token comes from layer-shell-host (`SurfaceHandle::activation_token`) in the

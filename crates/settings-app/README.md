@@ -30,4 +30,4 @@ On the session bus detent owns `org.bardo.Settings` and serves two interfaces:
     page at that account (`/org/bardo/Accounts1/account/<segment>`); an unknown account shows the
     list, and an unknown action is logged and ignored.
 
-A second `detent` finds the name taken, calls `Activate` on the running one and exits.
+A second `bardo-settings` finds the name taken, calls `Activate` on the running one and exits.

@@ -94,7 +94,7 @@ fn mouse_and_gestures_holds_palmrests_and_sills_keys_with_the_advanced_ones_apar
     );
     assert!(
         basic.contains(&"scroll.natural"),
-        "sill's key sits beside palmrest's"
+        "bardo-shell's key sits beside palmrest's"
     );
     assert!(!basic.contains(&"scroll.momentum"), "{basic:?}");
     let advanced: Vec<&str> = page
@@ -124,7 +124,7 @@ fn every_key_of_every_schema_is_on_exactly_one_page() {
             "memory/settings.toml",
             "computer-use/settings.toml",
             "actions/settings.toml",
-            "inferd/inferd.toml",
+            "inference/inferd.toml",
             "mouse-gestures/gestures.toml",
             "bardo/appearance.toml",
             "shell/settings.toml"

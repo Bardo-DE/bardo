@@ -33,7 +33,7 @@ use shell_ui_kit::look::use_active_look;
 use shell_ui_kit::menu::PopupLook;
 use shell_ui_kit::root::{StylesNotice, use_root_style};
 
-/// The bar's own stylesheet (lint-clean under `Profile::Strict`, `crates/sill/tests/lint.rs`).
+/// The bar's own stylesheet (lint-clean under `Profile::Strict`, `crates/shell/shell-app/tests/lint.rs`).
 pub const BAR_CSS: &str = include_str!("style.css");
 
 /// The bar on `output`. The root draws the Space gradient at the Bar's tint alpha and puts its

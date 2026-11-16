@@ -1,4 +1,4 @@
-//! Layer namespaces: `sill-<surface>-<output>`, the name `sill debug` addresses a surface by.
+//! Layer namespaces: `sill-<surface>-<output>`, the name `bardo-shell debug` addresses a surface by.
 
 use layer_shell_host::OutputInfo;
 

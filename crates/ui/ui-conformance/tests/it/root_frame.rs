@@ -6,7 +6,7 @@
 //! cell) gives the root the viewport's height even inside an absolutely placed parent; a frame in
 //! flow at the viewport's size with the same grid does too. Measured on a real Blitz document.
 //!
-//! Whether a press lands in a 0 px box is Blitz's hit test's business: in sill's bar popup
+//! Whether a press lands in a 0 px box is Blitz's hit test's business: in bardo-shell's bar popup
 //! none did; in this harness the card's button still takes one. So the tests hold the
 //! heights, which are what the rule is about, and check the press only where the frame is sound.
 
@@ -24,7 +24,7 @@ enum Frame {
     Absolute,
     /// Out of flow with insets, and the floor.
     AbsoluteWithFloor,
-    /// In flow at the viewport's size, a one-cell grid (sill's popup frame).
+    /// In flow at the viewport's size, a one-cell grid (bardo-shell's popup frame).
     InFlow,
 }
 

@@ -1,6 +1,6 @@
-//! `sill run`: take the single-instance lock, start the services and the IPC server, connect the
+//! `bardo-shell run`: take the single-instance lock, start the services and the IPC server, connect the
 //! host, and keep one set of surfaces per output. The lock is
-//! `service_locator::Agent::new("sill").listen()`; `AlreadyRunning` exits 0.
+//! `service_locator::Agent::new("bardo-shell").listen()`; `AlreadyRunning` exits 0.
 //!
 //! `Links` is built once here and handed to the shell state, which gives it to every surface
 //! root and to the IPC dispatch.
@@ -107,7 +107,7 @@ pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
         Err(error) => {
             // Without a pulse to read the unit's watchdog would restart a healthy shell, so the
             // watcher pings on every look instead.
-            eprintln!("sill: no pulse for the watchdog: {error}");
+            eprintln!("bardo-shell: no pulse for the watchdog: {error}");
             let looks = std::sync::atomic::AtomicU64::new(0);
             crate::watchdog::spawn(notify.clone(), move || {
                 looks.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
@@ -212,7 +212,7 @@ fn exit_clean_at(phase: LockPhase) -> ExitCode {
     match leaving_at(phase) {
         Leaving::Allowed => ExitCode::SUCCESS,
         Leaving::Refused => {
-            eprintln!("sill: leaving while the session is locked; the shell is restarted");
+            eprintln!("bardo-shell: leaving while the session is locked; the shell is restarted");
             ExitCode::FAILURE
         }
     }
@@ -221,7 +221,7 @@ fn exit_clean_at(phase: LockPhase) -> ExitCode {
 /// The single-instance lock: another daemon already running exits 0. The agent is returned with
 /// the door because stopping the IPC server knocks on it.
 fn take_door() -> Result<(service_locator::Agent, Door), ExitCode> {
-    let agent = service_locator::Agent::new("sill")
+    let agent = service_locator::Agent::new("bardo-shell")
         .map_err(|error| fatal(&format!("naming this agent: {error}")))?;
     let listening = agent.listen().map_err(|error| match error {
         service_locator::Error::AlreadyRunning => ExitCode::SUCCESS,
@@ -323,7 +323,7 @@ const RUNTIME_SHUTDOWN_BOUND: Duration = Duration::from_secs(4);
 /// finish. Dropping a `tokio::runtime::Runtime` plainly waits forever for that, and a
 /// `spawn_blocking` task that calls into something that hangs (an output tool under a
 /// compositor without `zwlr_output_manager_v1`) would otherwise keep
-/// the daemon from ever exiting after `sill quit` already got its answer. Past the bound, that
+/// the daemon from ever exiting after `bardo-shell quit` already got its answer. Past the bound, that
 /// thread (and whatever it is stuck in) is left running and the process exits without it; a
 /// warning on stderr says so.
 fn shutdown_runtime(runtime: tokio::runtime::Runtime) {
@@ -337,14 +337,14 @@ fn shutdown_runtime_within(runtime: tokio::runtime::Runtime, bound: Duration) {
     runtime.shutdown_timeout(bound);
     if started.elapsed() >= bound {
         eprintln!(
-            "sill: the async runtime did not shut down within {bound:?}; a service's thread is \
+            "bardo-shell: the async runtime did not shut down within {bound:?}; a service's thread is \
              still running and is left behind as the process exits"
         );
     }
 }
 
 fn fatal(message: &str) -> ExitCode {
-    eprintln!("sill: {message}");
+    eprintln!("bardo-shell: {message}");
     ExitCode::FAILURE
 }
 

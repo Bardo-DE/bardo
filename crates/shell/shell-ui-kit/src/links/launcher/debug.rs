@@ -1,4 +1,4 @@
-//! What `sill debug launcher-rows` reaches through the [`LauncherLink`](super::LauncherLink): the
+//! What `bardo-shell debug launcher-rows` reaches through the [`LauncherLink`](super::LauncherLink): the
 //! rows the panel shows. The panel publishes [`ShownRows`] after every
 //! render while it is open and `None` when it hides; clipboard rows' titles never reach it
 //! (they are `<clipboard>` here already, so no clipboard text leaves the panel).

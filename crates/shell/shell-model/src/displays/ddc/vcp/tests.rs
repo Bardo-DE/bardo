@@ -5,7 +5,7 @@ fn level(value: u16, max: u16) -> Option<Level> {
     Some(Level { value, max })
 }
 
-/// What the MA270U answered (ddcutil and sill's own probe agree).
+/// What the MA270U answered (ddcutil and bardo-shell's own probe agree).
 fn ma270u() -> Vec<(Feature, Option<Level>)> {
     vec![
         (Feature::Brightness, level(49, 100)),

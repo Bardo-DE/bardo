@@ -1,4 +1,4 @@
-//! Wire workspaces into sill's groups of workspaces, in each group's order.
+//! Wire workspaces into bardo-shell's groups of workspaces, in each group's order.
 
 use desktop_client::DesktopState;
 use desktop_client::workspace::{

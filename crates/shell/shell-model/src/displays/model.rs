@@ -11,7 +11,7 @@ use crate::units::Percent;
 /// Every display, as the control center, the OSD and the settings read them.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Displays {
-    /// The compositor's outputs, described (after any scale sill just set).
+    /// The compositor's outputs, described (after any scale bardo-shell just set).
     pub outputs: Vec<DisplayOutput>,
     /// The monitors that answer DDC/CI, with their cached controls.
     pub ddc: Vec<DdcDisplay>,

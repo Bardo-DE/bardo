@@ -6,11 +6,11 @@
 # (dev/private-bus.conf: no service directories, so nothing is activated) that stands in as BOTH
 # its session and its system bus, with its own XDG_RUNTIME_DIR (WAYLAND_DISPLAY an absolute
 # socket path), scratch HOME and XDG directories and a fake DDC fixture. Nothing here reaches the
-# real session bus's org.freedesktop.Notifications (the person's own daemon), another sill's IPC
+# real session bus's org.freedesktop.Notifications (the person's own daemon), another bardo-shell's IPC
 # socket, the real ~/.config or ~/.cache, or the user's session (wayland-0).
 #
-# Default: the banners, on casement (brought up and ended by start_compositor). Every notification comes from `sill debug notify` (the service's own
-# reducer, no D-Bus). Another sill daemon drawing on the same nested output would be in the
+# Default: the banners, on casement (brought up and ended by start_compositor). Every notification comes from `bardo-shell debug notify` (the service's own
+# reducer, no D-Bus). Another bardo-shell daemon drawing on the same nested output would be in the
 # screenshots, so the script waits for it to finish first.
 #
 #   1. Warm: `sill-banners-<out>` exists from the start, hidden (no capture).
@@ -18,14 +18,14 @@
 #      dev/out/banners-casement.png.
 #   3. It hides between the hold (the banner hold, 5200) and the hold plus the exit
 #      (--t-move) plus 400 ms; `status` then says banners 0, kept 1.
-#   4. Hovered once up (`sill debug pointer` on the card) it is still up 6.7 s later, and gone by
-#      1500 ms plus the exit plus 400 ms after `sill debug leave`.
+#   4. Hovered once up (`bardo-shell debug pointer` on the card) it is still up 6.7 s later, and gone by
+#      1500 ms plus the exit plus 400 ms after `bardo-shell debug leave`.
 #   5. Three from one app within 2 s make one card (one card's height, `status` banners 3); five
 #      from five apps make three cards (three cards' height). Then three from one app and two
 #      others: dev/out/banners-stack-casement.png, a stack with a group.
-#   6. notifications.dnd = true and `sill reload`: a normal one shows no banner but kept rises;
+#   6. notifications.dnd = true and `bardo-shell reload`: a normal one shows no banner but kept rises;
 #      so does an app's critical one (only the shell's own notices pass Do Not Disturb).
-#   7. `sill debug click` on the body of one sent with `--action default=Open`: the card leaves
+#   7. `bardo-shell debug click` on the body of one sent with `--action default=Open`: the card leaves
 #      and kept falls by one.
 #   8. 5 s after the last card leaves: 0 frames on the column.
 #
@@ -33,14 +33,14 @@
 # the holder example (examples/notifications_holder.rs) get the private bus's address.
 #
 #   1. `sill notifications status` says holder sill, mode own.
-#   2. GetServerInformation answers ('sill', 'sill', <version>, '1.2'); GetCapabilities the six
+#   2. GetServerInformation answers ('bardo-shell', 'bardo-shell', <version>, '1.2'); GetCapabilities the six
 #      words.
 #   3. `notify-send -a accept Hello`: status counts 1 banner and 1 kept.
 #   4. CloseNotification <id> from another connection than the sender's is refused and the card
-#      stays; `sill notifications dismiss-all` then closes it and `gdbus monitor` beside it records
+#      stays; `bardo-shell notifications dismiss-all` then closes it and `gdbus monitor` beside it records
 #      NotificationClosed (<id>, 2).
 #   5. With another holder started first, mode own reports holder other with that pid, and the
-#      holder keeps the name; when it leaves, sill takes it.
+#      holder keeps the name; when it leaves, bardo-shell takes it.
 #   6. The history file under the scratch XDG_STATE_HOME survives a daemon restart (status kept
 #      is the same).
 #
@@ -71,7 +71,7 @@
 #  9b. A real click on Clear All (found in a capture of the center): kept falls to 0 and the
 #      center then rests, 0 frames over 3 s.
 #  9c. Clear and Clear All play their exit (quire's LeavingList): Chat (two) and
-#      CI (one) posted with `sill debug notify`, the center opened by a real click on the clock;
+#      CI (one) posted with `bardo-shell debug notify`, the center opened by a real click on the clock;
 #      a real click on Chat's Clear (found in a capture): kept falls by two, the list settles
 #      Chat's head and card after their fold (the daemon logs each settled row), the center
 #      draws frames while they fold and CI heals up into Chat's place, then rests at 0 frames
@@ -82,7 +82,7 @@
 #      test); only a finger gesture does, and fake-input has no finger source — recorded, not
 #      proven.
 #  11. 5 s idle: 0 frames on the banners and the center.
-#  12. `status` afterwards: holder still sill.
+#  12. `status` afterwards: holder still bardo-shell.
 #
 # In layer-shell-host an enter moves the document's pointer and an unmap withdraws it, so a "move onto"
 # is one motion and the steps run in their natural order. `repro` keeps both as regression checks.
@@ -140,7 +140,7 @@ BANNER_CARD_X=220
 BANNER_CARD_Y=76
 ONE_CARD_MAX=170
 THREE_CARDS_MIN=160
-# The real-input run's resting pointer: somewhere on the desktop, away from every sill surface
+# The real-input run's resting pointer: somewhere on the desktop, away from every bardo-shell surface
 # but the wallpaper.
 REST_X=$(( WIDTH / 3 ))
 REST_Y=$(( HEIGHT / 2 ))
@@ -152,14 +152,14 @@ MONITOR=
 KWIN_UP=no
 mkdir -p "$OUT_DIR" "$SHOTS"
 scratch_new
-mkdir -p "$CONFIG/sill"
+mkdir -p "$CONFIG/bardo/shell"
 
 since() { echo $(( $(now_ms) - $1 )); }
 notify() { sill_sent debug notify "$@" >>"$OUT_DIR/notify.log" 2>&1; }
 
-# One field of `sill notifications status`: mode, holder (its kind), pid, banners or kept.
+# One field of `bardo-shell notifications status`: mode, holder (its kind), pid, banners or kept.
 status_field() {
-  sill notifications status 2>/dev/null | python3 -c '
+  bardo-shell notifications status 2>/dev/null | python3 -c '
 import json, sys
 def find(v):
     if isinstance(v, dict):
@@ -203,7 +203,7 @@ await_hidden() {
 
 # Clears the banners and waits for the column to unmap.
 clear_banners() {
-  sill notifications dismiss-all >>"$OUT_DIR/notify.log" 2>&1
+  bardo-shell notifications dismiss-all >>"$OUT_DIR/notify.log" 2>&1
   wait_surface "$BANNERS" 30 down
 }
 
@@ -242,7 +242,7 @@ shows() {
   local png="${1:-$OUT_DIR/banners.png}"
   for _ in $(seq 10); do
     rm -f "$png"
-    sill debug capture "$BANNERS" "$png" >>"$OUT_DIR/capture.log" 2>&1 || return 1
+    bardo-shell debug capture "$BANNERS" "$png" >>"$OUT_DIR/capture.log" 2>&1 || return 1
     [ -s "$png" ] && break
     sleep 0.05
   done
@@ -267,9 +267,9 @@ recover_banners() { clear_banners; }
 
 # 1.
 step_warm() {
-  sill debug stats >"$OUT_DIR/warm.log" 2>&1
-  grep -q "\"$BANNERS\"" "$OUT_DIR/warm.log" || { echo "$BANNERS is not in 'sill debug stats'" >&2; return 1; }
-  if sill debug capture "$BANNERS" "$OUT_DIR/hidden.png" >>"$OUT_DIR/warm.log" 2>&1; then
+  bardo-shell debug stats >"$OUT_DIR/warm.log" 2>&1
+  grep -q "\"$BANNERS\"" "$OUT_DIR/warm.log" || { echo "$BANNERS is not in 'bardo-shell debug stats'" >&2; return 1; }
+  if bardo-shell debug capture "$BANNERS" "$OUT_DIR/hidden.png" >>"$OUT_DIR/warm.log" 2>&1; then
     echo "the column is mapped before any notification" >&2; return 1
   fi
   echo "$BANNERS spawned at start, hidden" >&2
@@ -295,7 +295,7 @@ step_shows_holds_hides() {
   local limit=$((HOLD_MS + EXIT_MS + SLACK_MS))
   echo "shown ${shown} ms after the notification; hidden at ${gone} ms (hold ${HOLD_MS}, limit ${limit})" >&2
   # Functional: it showed, and it hid by itself, never before its hold. The time it took to hide
-  # is a budget: `gone` is counted from before the `sill debug notify` call and ends at the
+  # is a budget: `gone` is counted from before the `bardo-shell debug notify` call and ends at the
   # poll that saw the column unmapped, so a loaded host (a slow client, a slow capture) adds to it.
   [ "$shown" -ge 0 ] && budget_check "the banner shown ${shown} ms after the notification (less the capture's own $(capture_cost_ms) ms) against 300 ms" "$(( $(captured_ms "$shown") <= 300 ))" \
     && [ "$gone" -ge "$HOLD_MS" ] \
@@ -354,7 +354,7 @@ step_grouping() {
   notify "Ada Lovelace" --app chat --body "Hi" || return 1
   notify "Ada Lovelace" --app chat --body "Are you there?" || return 1
   notify "Ada Lovelace" --app chat --body "The engine is running again." || return 1
-  notify "Build finished" --app builder --body "sill: 0 warnings, all tests passed." || return 1
+  notify "Build finished" --app builder --body "bardo-shell: 0 warnings, all tests passed." || return 1
   notify "Lunch on Thursday?" --app mail --body "Are you free at noon on Thursday?" \
     --action default=Open --action reply=Reply || return 1
   sleep 0.8
@@ -389,7 +389,7 @@ step_click() {
   notify "Open me" --app accept --body "A click opens it." --action default=Open || return 1
   await_shows || return 1
   kept=$(status_field kept)
-  sill debug click "$BANNERS" "$BANNER_CARD_X" "$BANNER_CARD_Y" >>"$OUT_DIR/pointer.log" 2>&1 || return 1
+  bardo-shell debug click "$BANNERS" "$BANNER_CARD_X" "$BANNER_CARD_Y" >>"$OUT_DIR/pointer.log" 2>&1 || return 1
   gone=$(await_hidden 2000)
   await_status kept $((kept - 1)) || return 1
   after=$(status_field kept)
@@ -433,7 +433,7 @@ step_information() {
   info=$(call --method "$DBUS_NAME.GetServerInformation") || return 1
   caps=$(call --method "$DBUS_NAME.GetCapabilities") || return 1
   echo "GetServerInformation $info; GetCapabilities $caps" | tee "$OUT_DIR/information.log" >&2
-  [[ "$info" =~ ^\(\'sill\',\ \'sill\',\ \'[^\']+\',\ \'1\.2\'\)$ ]] || return 1
+  [[ "$info" =~ ^\(\'bardo-shell\',\ \'bardo-shell\',\ \'[^\']+\',\ \'1\.2\'\)$ ]] || return 1
   [ "$caps" = "(['actions', 'body', 'body-hyperlinks', 'body-markup', 'icon-static', 'persistence'],)" ]
 }
 
@@ -455,7 +455,7 @@ step_close() {
     kill "$watcher"; echo "another connection closed $ID" >&2; return 1
   fi
   await_status banners 1 || { kill "$watcher"; return 1; }
-  sill notifications dismiss-all >/dev/null 2>&1 || { kill "$watcher"; return 1; }
+  bardo-shell notifications dismiss-all >/dev/null 2>&1 || { kill "$watcher"; return 1; }
   local heard=no
   for _ in $(seq 30); do
     grep -q "NotificationClosed (uint32 $ID, uint32 2)" "$monitor" && { heard=yes; break; }
@@ -478,11 +478,11 @@ step_other_holder() {
   launch_daemon || return 1
   await_status mode own && await_status holder other && await_status pid "$HOLDER" || return 1
   sleep 1
-  [ "$(bus_holder_pid)" = "$HOLDER" ] || { echo "sill replaced the holder" >&2; return 1; }
+  [ "$(bus_holder_pid)" = "$HOLDER" ] || { echo "bardo-shell replaced the holder" >&2; return 1; }
   echo "holder pid $HOLDER kept the name; status holder other, pid $HOLDER" >&2
   kill "$HOLDER"; wait "$HOLDER" 2>/dev/null; HOLDER=
   await_status holder sill || return 1
-  echo "the holder left; sill took the name" >&2
+  echo "the holder left; bardo-shell took the name" >&2
 }
 
 # 6.
@@ -490,11 +490,11 @@ step_history_survives() {
   local base
   base=$(status_field kept)
   in_env timeout 5 notify-send -a accept "Kept" || return 1
-  # The same Notify step 5 sent, answered now that sill holds the name.
+  # The same Notify step 5 sent, answered now that bardo-shell holds the name.
   call --method "$DBUS_NAME.Notify" -- other 0 '' 'Also kept' '' '@as []' '@a{sv} {}' -1 \
     >"$OUT_DIR/notify.log" 2>&1 || { cat "$OUT_DIR/notify.log" >&2; return 1; }
   await_status kept $((base + 2)) || return 1
-  local file="$STATE/sill/notifications.json"
+  local file="$STATE/bardo/shell/notifications.json"
   [ -s "$file" ] || { echo "no history file at $file" >&2; return 1; }
   stop_daemon
   launch_daemon || return 1
@@ -537,7 +537,7 @@ stop_monitor() {
   MONITOR=
 }
 
-# A wallpaper of fine checks (2 px), named as sill's wallpaper source:
+# A wallpaper of fine checks (2 px), named as bardo-shell's wallpaper source:
 # blur over it shows as flat grey where the checks were, which a flat wallpaper hides.
 seed_checks() {
   local png="$OUT_DIR/checks.png"
@@ -551,13 +551,13 @@ img.putdata([(40, 40, 40) if ((x // cell) + (y // cell)) % 2 else (220, 220, 220
              for y in range(h * k) for x in range(w * k)])
 img.save(out)
 EOF
-  mkdir -p "$CONFIG/sill"
-  printf '%s\n' "$png" >"$CONFIG/sill/wallpaper-source"
+  mkdir -p "$CONFIG/bardo/shell"
+  printf '%s\n' "$png" >"$CONFIG/bardo/shell/wallpaper-source"
 }
 
 
 column_origin() {
-  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" --class sill 2>/dev/null | python3 -c '
+  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" --class bardo-shell 2>/dev/null | python3 -c '
 import json, sys
 for line in sys.stdin:
     w = json.loads(line)
@@ -622,7 +622,7 @@ post_card() {
 # The status items' centres, right to left, from a capture of the bar: runs of inked columns
 # (the control center's reading; the clock's is first). Prints "x" per item.
 status_items() {
-  sill debug capture "$BAR" "$OUT_DIR/bar.png" >/dev/null 2>&1 || return 1
+  bardo-shell debug capture "$BAR" "$OUT_DIR/bar.png" >/dev/null 2>&1 || return 1
   python3 - "$OUT_DIR/bar.png" "$WIDTH" <<'EOF'
 import sys
 from PIL import Image
@@ -921,7 +921,7 @@ repro_card_under_resting_pointer() {
 
 # The whole output as KWin composites it (blur, stale buffers and all), to $1: spectacle on the
 # headless KWin's socket and private bus (KWin's ScreenShot2 answers only a client whose desktop
-# file lists it, which spectacle's does). `sill debug capture` renders a surface offscreen and so
+# file lists it, which spectacle's does). `bardo-shell debug capture` renders a surface offscreen and so
 # cannot see what the compositor still draws for it.
 screen_shot() {
   rm -f "$1"
@@ -945,7 +945,7 @@ print(max(sums), sum(1 for s in sums if s > 24))
 EOF
 }
 
-# Wait up to 10 s for the checks wallpaper to show on the output (sill's wallpaper surface loads
+# Wait up to 10 s for the checks wallpaper to show on the output (bardo-shell's wallpaper surface loads
 # it after the daemon is up).
 await_checks() {
   local png="$OUT_DIR/checks-up.png"
@@ -1053,9 +1053,9 @@ print(round((left + right) / 2 / k), round((top + 14 * k) / k))
 EOF
 }
 
-# The top of the sill window as large as capture $1 (logical px), from KWin's window list.
+# The top of the bardo-shell window as large as capture $1 (logical px), from KWin's window list.
 surface_top() {
-  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" --class sill 2>/dev/null | python3 -c '
+  "$BARDO_LAYER_SHELL_HOST_DEV/kwin-windows.sh" --class bardo-shell 2>/dev/null | python3 -c '
 import json, sys
 from PIL import Image
 img = Image.open(sys.argv[1]); k = img.width / int(sys.argv[2])

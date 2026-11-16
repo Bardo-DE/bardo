@@ -1,5 +1,5 @@
 //! The keymap the Shortcuts list sits on: keycap's `KeycapSource` for this computer's layer, the
-//! desktop's own bindings and the change watch, and the person's own keymap file, which detent
+//! desktop's own bindings and the change watch, and the person's own keymap file, which bardo-settings
 //! reads as text (to keep the person's comments) and writes.
 
 use crate::error::{FilesError, reason_of};
@@ -14,7 +14,7 @@ use ui_helpers::{NewFileMode, ReadCap, ReadError, read_text_capped, update_atomi
 const MAX_BYTES: ReadCap = ReadCap::kib(32);
 
 /// Where keycap's daemon would be, under a scratch home: nowhere, so nothing real is asked.
-const NO_SOCKET: &str = "keycap/no-daemon.sock";
+const NO_SOCKET: &str = "bardo/key-remap/no-daemon.sock";
 
 /// The keymap layers: keycap's source.
 #[derive(Debug, Clone)]
@@ -30,10 +30,10 @@ impl KeymapFiles {
         }
     }
 
-    /// The person's keymap under `home` (`<home>/keycap/keymap`), no daemon and no machine
+    /// The person's keymap under `home` (`<home>/bardo/key-remap/keymap`), no daemon and no machine
     /// keymap: what a test over scratch directories reads.
     pub fn under(home: &ConfigHome) -> KeymapFiles {
-        let dir = home.0.join("keycap");
+        let dir = ui_settings::app_folder(&home.0, "key-remap");
         KeymapFiles {
             source: KeycapSource::new(home.0.join(NO_SOCKET), PathBuf::new(), dir.join("keymap")),
         }

@@ -43,7 +43,7 @@ pub(super) async fn open(search: &TerminalSearch, request: TerminalRequest) -> H
             }
         }
         Err(error) => {
-            eprintln!("sill: companion: helpers: the terminal window did not open: {error}");
+            eprintln!("bardo-shell: companion: helpers: the terminal window did not open: {error}");
             HelpersMsg::NoTerminal
         }
     }

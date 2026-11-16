@@ -103,7 +103,7 @@ behaviour and numbers.
 ### 13.3.5 App switcher (Cmd+Tab)
 
 Bound through the compositor's shortcuts (`system_actions` `WindowSwitcher` / `WindowSwitcherPrevious`
--> `sill switcher next|prev`; Toshy turns physical Cmd+Tab into the switcher chord). The surface
+-> `bardo-shell switcher next|prev`; Toshy turns physical Cmd+Tab into the switcher chord). The surface
 is an Overlay layer with `KeyboardMode::Exclusive`, kept warm (plan launcher pattern).
 
 | Value | Number | Status | Basis |
@@ -126,7 +126,7 @@ is an Overlay layer with `KeyboardMode::Exclusive`, kept warm (plan launcher pat
 
 ### 13.3.6 Notifications
 
-`sill` owns `org.freedesktop.Notifications` (the desktop notification daemon absent, plan compositor findings).
+`bardo-shell` owns `org.freedesktop.Notifications` (the desktop notification daemon absent, plan compositor findings).
 
 | Value | Number | Status | Basis |
 | --- | --- | --- | --- |
@@ -257,9 +257,9 @@ holding exactly a set of modifier keys and one `CornerDo`: `Desktop(CornerAction
 
 | Action | Does |
 | --- | --- |
-| `Launcher` | `sill launcher toggle` |
-| `NotificationCenter` | `sill notifications toggle` |
-| `ControlCenter` | `sill control-center toggle` |
+| `Launcher` | `bardo-shell launcher toggle` |
+| `NotificationCenter` | `bardo-shell notifications toggle` |
+| `ControlCenter` | `bardo-shell control-center toggle` |
 | `ShowDesktop` | the compositor's show-desktop; toggles back |
 | `Lock` | the session's locker (`session.locker`) |
 | `Workspaces` | the workspace overview |
@@ -409,7 +409,7 @@ Platform limits:
   is close + reopen with the last button serial, which the compositor may refuse (then the
   menu closes and the next press opens the other one).
 - the nested compositor does not grab the keyboard: KDE eats Super and Cmd+Tab
-  chords; switcher and launcher are tested through `sill` CLI/IPC in the nested session.
+  chords; switcher and launcher are tested through `bardo-shell` CLI/IPC in the nested session.
 - a popup or layer under a still pointer gets no enter; menus open by press
   so this affects only the first hover highlight.
 - No foreign-toplevel protocol on KWin: switcher and window lists are empty there.
@@ -422,7 +422,7 @@ Platform limits:
 
 ## 13.8 Acceptance tests
 
-Driven by `ds_harness::Harness` (pure menus) and `sill debug` in the nested compositor.
+Driven by `ds_harness::Harness` (pure menus) and `bardo-shell debug` in the nested compositor.
 
 1. **Open on press**: a press on a bar title shows its menu on the next frame; release on the
    title leaves it open; a second press on the title closes it.

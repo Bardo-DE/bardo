@@ -30,7 +30,7 @@ pub fn StylesNotice() -> Element {
         StylesAlive { guard }
         if off {
             StylesOffNotice {
-                program: "sill",
+                program: "bardo-shell",
                 onturnon: move |()| turn_on.send(TurnOnStyles),
             }
         }

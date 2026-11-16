@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Control center acceptance. Starts `sill run` from this checkout's debug build (`--features
+# Control center acceptance. Starts `bardo-shell run` from this checkout's debug build (`--features
 # debug`) on a private bus (the daemon's session AND system bus), with a scratch HOME and XDG
 # directories, its own XDG_RUNTIME_DIR and a fake DDC, and quits it at the end. Its settings hide
 # the Sound and Battery bar items, so the status area reads, from the right: the clock, the
@@ -11,7 +11,7 @@
 #   1. A debug click on the control center's item opens `sill-bar-<out>/popup` at the panel's
 #      size (320 + the shadow room), its card 8 px inside the output's right edge (read from a
 #      screenshot); a second click closes it. Screenshot dev/out/control-center-casement.png.
-#   2. An outside click (the bar's empty middle) closes it; Escape (`sill debug key`: layer-shell-host's
+#   2. An outside click (the bar's empty middle) closes it; Escape (`bardo-shell debug key`: layer-shell-host's
 #      `Inject::Key`, which needs no grab) closes it too, or the step says why it could not try.
 #   3. The Wi-Fi tile's chevron slides the Wi-Fi pane in: the popup takes the pane's size (a
 #      Wi-Fi pane with a long list of networks may be as tall as the grid; then it only has to
@@ -19,7 +19,7 @@
 #      Screenshot dev/out/control-center-wifi-casement.png.
 #   4. The Wi-Fi bar item opens the Wi-Fi pane directly: its popup is about the pane's size from
 #      step 3 (within 24 px: no back header), not the grid's.
-#   5. `sill control-center toggle` opens it with no pointer event behind it, and again closes
+#   5. `bardo-shell control-center toggle` opens it with no pointer event behind it, and again closes
 #      it; whether the compositor maps a popup opened without a fresh input serial, and whether its
 #      grab holds (an outside click dismisses it), is printed. Not mapped: exit 2, naming it.
 #   6. 5 s idle after closing: 0 frames on the bar.
@@ -28,15 +28,15 @@
 # on layer-shell-host's private headless KWin (scripts/dev/kwin-virtual.sh) driven by layer-shell-host's
 # scripts/dev/fake-input.sh: the control center is opened by a real click on its bar item, and its
 # brightness capsule is dragged and clicked by a real pointer, with real serials, through KWin's
-# own popup grab. No `sill debug` opener, click or pointer is used; `sill debug capture` and
-# `sill debug stats` only look. The headless output is 3840 x 2160 at scale 2, as the user's BenQ
+# own popup grab. No `bardo-shell debug` opener, click or pointer is used; `bardo-shell debug capture` and
+# `bardo-shell debug stats` only look. The headless output is 3840 x 2160 at scale 2, as the user's BenQ
 # MA270U (CC_SIZE and CC_SCALE change it), set through kscreen-doctor on KWin's own socket and bus.
 #
 # SAFETY (--real-input). No real monitor, no real outputs list, no real Bluetooth:
 # - Bluetooth is a FAKE: dev/fake-bluez.py owns org.bluez on KWin's private bus (never the
 #   system bus; it refuses one) with a made-up adapter and keyboard, and logs every Powered set
 #   to a scratch file. The daemon's Bluetooth service reads it as its system bus.
-# - DDC is a FAKE: the daemon runs with `sill run --fake-ddc FILE` naming a JSON file of one
+# - DDC is a FAKE: the daemon runs with `bardo-shell run --fake-ddc FILE` naming a JSON file of one
 #   made-up monitor on the headless output. The daemon's log must say so ("DDC is the fake in
 #   ...") before any input is sent; otherwise the script stops. The fake never opens /dev/i2c-*.
 # - KWin has no zwlr_output_manager_v1, so the displays service reports no outputs.
@@ -135,7 +135,7 @@ SAFE=unproven
 
 # The settings both modes run on.
 write_settings() {
-  mkdir -p "$CONFIG/sill"
+  mkdir -p "$CONFIG/bardo/shell"
   printf '[control_center]\nmenu_bar_sound = false\nmenu_bar_battery = false\n' \
     >"$CONFIG/shell/settings.toml"
 }
@@ -173,7 +173,7 @@ EOF
 # SURFACE's size as "WIDTH HEIGHT", read from a capture (a popup is not in `debug stats`, but
 # layer-shell-host names it `<bar>/popup` for `debug capture`); nothing when it is not mapped.
 size_of() {
-  sill debug capture "$1" "$OUT_DIR/size.png" >/dev/null 2>&1 || return 1
+  bardo-shell debug capture "$1" "$OUT_DIR/size.png" >/dev/null 2>&1 || return 1
   python3 -c 'import sys; from PIL import Image; print(*Image.open(sys.argv[1]).size)' \
     "$OUT_DIR/size.png"
 }
@@ -189,7 +189,7 @@ click_bar() { # x y
 escape_key() {
   case "$COMPOSITOR" in
     casement) bardo-compositorctl debug inject "key Escape down" "sleep 30" "key Escape up" "sleep 150" ;;
-    *) sill debug key "$POPUP" Escape ;;
+    *) bardo-shell debug key "$POPUP" Escape ;;
   esac
 }
 
@@ -224,7 +224,7 @@ step_item_click() {
   wait_surface "$POPUP" 20 up || { echo "a click on the item opened no popup" | tee -a "$log" >&2; return 1; }
   sleep 0.6
   width=$(popup_width)
-  sill debug capture "$POPUP" "$OUT_DIR/panel.png" >>"$log" 2>&1 || return 1
+  bardo-shell debug capture "$POPUP" "$OUT_DIR/panel.png" >>"$log" 2>&1 || return 1
   # A screenshot taken before the compositor shows the popup has no card in it (gap = the whole
   # width): take it again, up to four times.
   for _ in 1 2 3 4; do
@@ -286,7 +286,7 @@ step_wifi_pane() {
   before=$(popup_height)
   # The Wi-Fi tile's chevron, popup-local: the card at (28, 8) with a hairline, the panel's
   # padding 12, a half tile 144 wide and 52 tall, its 18 px chevron 4 in from the right.
-  sill debug click "$POPUP" 171 47 >>"$log" 2>&1
+  bardo-shell debug click "$POPUP" 171 47 >>"$log" 2>&1
   sleep 0.8
   after=$(popup_height)
   shot "$SHOTS/control-center-wifi-casement.png" >>"$log" 2>&1 \
@@ -311,7 +311,7 @@ step_module_item() {
   sleep 0.5
   width=$(popup_width)
   height=$(popup_height)
-  sill debug capture "$POPUP" "$OUT_DIR/wifi-item.png" >>"$log" 2>&1
+  bardo-shell debug capture "$POPUP" "$OUT_DIR/wifi-item.png" >>"$log" 2>&1
   close_popup
   echo "the Wi-Fi item: a ${width}x${height} popup (the pane from step 3 is ${PANE_H:-?} tall, the grid ${GRID_H:-?})" \
     | tee -a "$log" >&2
@@ -326,23 +326,23 @@ step_module_item() {
 step_toggle() {
   local log="$OUT_DIR/toggle.log" held grab
   : >"$log"
-  sill control-center toggle >>"$log" 2>&1 || { echo "the toggle request failed" >&2; return 1; }
+  bardo-shell control-center toggle >>"$log" 2>&1 || { echo "the toggle request failed" >&2; return 1; }
   if ! wait_surface "$POPUP" 20 up; then
-    echo "sill control-center toggle: the compositor did not map the popup (grab without a fresh input serial refused)" \
+    echo "bardo-shell control-center toggle: the compositor did not map the popup (grab without a fresh input serial refused)" \
       | tee -a "$log" >&2
     return 2
   fi
   sleep 1
   if popup_up; then held="it stays mapped"; else held="it was dismissed at once (popup_done)"; fi
-  sill debug capture "$POPUP" "$OUT_DIR/toggled.png" >/dev/null 2>&1
-  sill control-center toggle >>"$log" 2>&1
+  bardo-shell debug capture "$POPUP" "$OUT_DIR/toggled.png" >/dev/null 2>&1
+  bardo-shell control-center toggle >>"$log" 2>&1
   wait_surface "$POPUP" 20 down || { echo "a second toggle left it open" | tee -a "$log" >&2; return 1; }
-  sill control-center toggle >>"$log" 2>&1
+  bardo-shell control-center toggle >>"$log" 2>&1
   wait_surface "$POPUP" 20 up || return 1
   sleep 0.5
   if close_popup; then grab="an outside click on the bar closes it"; else
     grab="an outside click left it open"; fi
-  echo "sill control-center toggle: mapped with no pointer event behind it, $held; a second toggle closed it; $grab" \
+  echo "bardo-shell control-center toggle: mapped with no pointer event behind it, $held; a second toggle closed it; $grab" \
     | tee -a "$log" >&2
   ! popup_up
 }
@@ -476,7 +476,7 @@ stop_bluez() {
 prove_safe() {
   local log="$OUT_DIR/safety.log"
   {
-    grep "sill: displays: DDC is the fake in $DDC" "$OUT_DIR/daemon.log" || return 1
+    grep "bardo-shell: displays: DDC is the fake in $DDC" "$OUT_DIR/daemon.log" || return 1
     grep "power_menu.backend=dry-run" "$OUT_DIR/daemon.log" || return 1
     grep "fake-bluez: org.bluez on $BUS" "$OUT_DIR/bluez.log" || return 1
   } >"$log" 2>&1

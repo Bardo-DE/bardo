@@ -272,7 +272,7 @@ fn icon_source(tile: RowLeading) -> Option<IconSource> {
     }
 }
 
-/// Tell `sill debug launcher-rows` what shows.
+/// Tell `bardo-shell debug launcher-rows` what shows.
 fn publish_rows(link: &LauncherLink, shown: &Shown) {
     let mut rows = shown
         .view

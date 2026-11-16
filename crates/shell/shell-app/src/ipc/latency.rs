@@ -9,9 +9,9 @@ pub fn log_open_latency(elapsed: Duration) {
     eprintln!("{}", open_latency_line(elapsed));
 }
 
-/// The stderr line for one `sill launcher toggle`'s latency, `elapsed` since the IPC request
+/// The stderr line for one `bardo-shell launcher toggle`'s latency, `elapsed` since the IPC request
 /// arrived. Its own function (rather than inlined in [`log_open_latency`]) so
-/// `crates/sill/tests/latency.rs` can check the arithmetic without a wall clock.
+/// `crates/shell/shell-app/tests/latency.rs` can check the arithmetic without a wall clock.
 pub fn open_latency_line(elapsed: Duration) -> String {
     format!(
         "launcher.open_latency_ms={:.3}",

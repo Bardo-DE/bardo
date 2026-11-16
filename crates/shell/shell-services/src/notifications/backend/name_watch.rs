@@ -1,10 +1,10 @@
 //! The bus half of the live loop: the connection, who holds `org.freedesktop.Notifications`
 //! (`GetNameOwner`, `GetConnectionUnixProcessID`, `/proc/<pid>/comm`), and asking for or giving
 //! back the name (`DoNotQueue`, never `ReplaceExisting`, and without `AllowReplacement`: another
-//! program cannot take the name from sill and read what the apps send).
+//! program cannot take the name from bardo-shell and read what the apps send).
 //!
 //! The holder is always read back from the bus rather than inferred from a reply, so a
-//! `NameOwnerChanged`, a `NameLost` (another daemon replaced sill) and a policy change all
+//! `NameOwnerChanged`, a `NameLost` (another daemon replaced bardo-shell) and a policy change all
 //! settle the same way: [`Bus::settle`].
 
 use shell_model::notifications::{
@@ -32,7 +32,7 @@ pub(crate) struct Bus {
 
 impl Bus {
     /// Connect to `bus`, with the `NameOwnerChanged` stream for the name; `None` when the bus
-    /// is absent or unreachable (the service then runs without one: `sill debug notify` works).
+    /// is absent or unreachable (the service then runs without one: `bardo-shell debug notify` works).
     pub(crate) async fn connect(
         bus: &crate::env::Bus,
         calls: mpsc::UnboundedSender<Call>,
@@ -41,7 +41,7 @@ impl Bus {
             Ok(connection) => connection,
             Err(crate::env::ConnectError::NoBus(_)) => return None,
             Err(error) => {
-                eprintln!("sill: notifications: no bus: {error}");
+                eprintln!("bardo-shell: notifications: no bus: {error}");
                 return None;
             }
         };
@@ -111,24 +111,24 @@ impl Bus {
             .at(OBJECT_PATH, server)
             .await
         {
-            eprintln!("sill: notifications: serving {OBJECT_PATH}: {error}");
+            eprintln!("bardo-shell: notifications: serving {OBJECT_PATH}: {error}");
             return;
         }
         if let Err(error) = zbus_ready::serving(&self.connection).await {
-            eprintln!("sill: notifications: serving {OBJECT_PATH}: {error}");
+            eprintln!("bardo-shell: notifications: serving {OBJECT_PATH}: {error}");
             return;
         }
         match serve::take_name(&self.connection, BUS_NAME).await {
             // Taken is not an error: the holder is read back and shown.
             Ok(()) | Err(ClaimError::NameTaken(_)) => {}
-            Err(error) => eprintln!("sill: notifications: requesting {BUS_NAME}: {error:?}"),
+            Err(error) => eprintln!("bardo-shell: notifications: requesting {BUS_NAME}: {error:?}"),
         }
     }
 
     /// Give the name back and stop serving the object.
     pub(crate) async fn release(&self) {
         if let Err(error) = self.connection.release_name(BUS_NAME).await {
-            eprintln!("sill: notifications: releasing {BUS_NAME}: {error}");
+            eprintln!("bardo-shell: notifications: releasing {BUS_NAME}: {error}");
         }
         let _ = self
             .connection
@@ -143,7 +143,7 @@ impl Bus {
             return;
         };
         if let Err(error) = Server::notification_closed(&emitter, id.0, reason.wire()).await {
-            eprintln!("sill: notifications: NotificationClosed: {error}");
+            eprintln!("bardo-shell: notifications: NotificationClosed: {error}");
         }
     }
 
@@ -169,10 +169,10 @@ impl Bus {
         if let (Activation::Token(token), Some(_)) = (token, to)
             && let Err(error) = Server::activation_token(&emitter, id.0, &token.0).await
         {
-            eprintln!("sill: notifications: ActivationToken: {error}");
+            eprintln!("bardo-shell: notifications: ActivationToken: {error}");
         }
         if let Err(error) = Server::action_invoked(&emitter, id.0, &action.0).await {
-            eprintln!("sill: notifications: ActionInvoked: {error}");
+            eprintln!("bardo-shell: notifications: ActionInvoked: {error}");
         }
     }
 }

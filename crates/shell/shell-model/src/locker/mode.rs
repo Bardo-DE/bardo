@@ -1,13 +1,13 @@
-//! What kind of session sill runs in, and what the locker service does there: sill's own lock
+//! What kind of session bardo-shell runs in, and what the locker service does there: bardo-shell's own lock
 //! screen, whose logind triggers depend on the session ([`Host`]).
 
-/// What kind of session sill is running in.
+/// What kind of session bardo-shell is running in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Host {
-    /// sill's own session (`dist/sill-session`, or the desktop's own: `XDG_CURRENT_DESKTOP`
+    /// bardo-shell's own session (`dist/sill-session`, or the desktop's own: `XDG_CURRENT_DESKTOP`
     /// names quire).
     SillSession,
-    /// Another desktop's session, e.g. sill on a nested compositor during development:
+    /// Another desktop's session, e.g. bardo-shell on a nested compositor during development:
     /// logind's signals belong to that desktop.
     Guest,
 }
@@ -21,14 +21,14 @@ impl Host {
         }
     }
 
-    /// Whether logind's `Lock` and `PrepareForSleep` are ours to act on: a sill session only.
+    /// Whether logind's `Lock` and `PrepareForSleep` are ours to act on: a bardo-shell session only.
     pub fn follows_logind(self) -> bool {
         self == Host::SillSession
     }
 }
 
-/// The desktop names a sill session carries in `XDG_CURRENT_DESKTOP`.
-const OWN_DESKTOPS: [&str; 1] = ["quire"];
+/// The desktop names a bardo-shell session carries in `XDG_CURRENT_DESKTOP`.
+const OWN_DESKTOPS: [&str; 1] = ["bardo"];
 
 fn is_own_desktop(name: &str) -> bool {
     OWN_DESKTOPS
@@ -43,10 +43,10 @@ mod tests {
     #[test]
     fn only_a_sill_session_follows_logind() {
         let cases = [
-            ("quire", Host::SillSession),
-            ("Quire", Host::SillSession),
-            ("GNOME:quire", Host::SillSession),
-            ("quirey", Host::Guest),
+            ("bardo", Host::SillSession),
+            ("Bardo", Host::SillSession),
+            ("GNOME:bardo", Host::SillSession),
+            ("bardoy", Host::Guest),
             ("KDE", Host::Guest),
             ("", Host::Guest),
         ];

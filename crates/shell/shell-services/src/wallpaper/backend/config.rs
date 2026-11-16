@@ -2,7 +2,7 @@
 //! [`WallpaperPicture`].
 //!
 //! Migration: while the setting is empty ([`WallpaperPicture::Unset`]), the picture is the one the
-//! old private file `sill/wallpaper-source` under the config directory names (its first line).
+//! old private file `bardo/shell/wallpaper-source` under the config directory names (its first line).
 //! That file is only read here, never written or removed; the setting wins as soon as it is set.
 //!
 //! [`parse_source_path`] reads the old file's line; a blank file, or a path that is not a file on
@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 use shell_model::wallpaper::{WallpaperPicture, WallpaperSource};
 
 /// The old file this reads while the setting is empty, under the config directory.
-const RELATIVE_PATH: &str = "sill/wallpaper-source";
+const RELATIVE_PATH: &str = "bardo/shell/wallpaper-source";
 
 /// Where the old file is kept under the config directory `config`.
 pub fn config_path(config: &Path) -> PathBuf {

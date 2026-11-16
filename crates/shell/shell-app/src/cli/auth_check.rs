@@ -1,4 +1,4 @@
-//! `sill auth-check`: the lock screen's PAM helper. The auth service runs it once per attempt
+//! `bardo-shell auth-check`: the lock screen's PAM helper. The auth service runs it once per attempt
 //! (`shell_services::auth::PamHelper`): it reads the whole request from stdin
 //! (`protocol::decode_request`), runs PAM (`pam::check`), writes the notes and the outcome on
 //! stdout (`protocol::render_line`), and exits 0 (an unreadable request is `fault helper_failed`

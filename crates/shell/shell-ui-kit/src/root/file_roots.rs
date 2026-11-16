@@ -13,7 +13,7 @@ const ACCOUNT_PICTURES: &str = "/var/lib/AccountsService/icons";
 
 /// The folders and files the shell draws from, in the order of the table in ARCHITECTURE.md:
 /// the icon themes and pixmaps ([`Dirs::icon_dirs`]); the app stores' folders, where a desktop
-/// entry may name its icon by absolute path ([`Dirs::app_stores`]); sill's own cache (the tinted
+/// entry may name its icon by absolute path ([`Dirs::app_stores`]); bardo-shell's own cache (the tinted
 /// app icons, the wallpaper and its blurred copy, the now-playing covers, the screenshot
 /// previews); the freedesktop thumbnail cache ([`Dirs::thumbnails`], a picture file's thumbnail
 /// in a launcher row); the Pictures folder (a screenshot before its preview is made); the
@@ -65,7 +65,7 @@ mod tests {
                     "/usr/share/pixmaps",
                     "/s/opt",
                     "/s/home/.local/opt",
-                    "/s/cache/sill",
+                    "/s/cache/bardo/shell",
                     "/s/cache/thumbnails",
                     "/s/home/.face",
                     "/var/lib/AccountsService/icons",
@@ -83,7 +83,7 @@ mod tests {
                     "/usr/share/pixmaps",
                     "/s/opt",
                     "/s/home/.local/opt",
-                    "/s/cache/sill",
+                    "/s/cache/bardo/shell",
                     "/s/cache/thumbnails",
                     "/s/home/Pictures",
                     "/s/home/.face",

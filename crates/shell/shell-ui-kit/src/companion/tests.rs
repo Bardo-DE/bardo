@@ -126,7 +126,7 @@ fn effect_mark_total() {
     }
 }
 
-/// Each state of sill's run is the view state of the same name (their words are `Word` slugs).
+/// Each state of bardo-shell's run is the view state of the same name (their words are `Word` slugs).
 #[test]
 fn run_state_total() {
     for state in RunState::ALL {

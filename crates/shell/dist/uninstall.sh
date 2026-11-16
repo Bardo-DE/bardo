@@ -7,7 +7,7 @@
 #
 #   dist/uninstall.sh --dry-run        print every step, change nothing
 #   dist/uninstall.sh                  remove the system files
-#   dist/uninstall.sh --forget-seeds   also remove the keycap layer in ~/.config/keycap, but only
+#   dist/uninstall.sh --forget-seeds   also remove the keycap layer in ~/.config/bardo/key-remap, but only
 #                                      while it is still identical to the seed (a file you never
 #                                      changed)
 #   --prefix DIR, --destdir DIR        the same as install.sh's
@@ -23,11 +23,15 @@ parse_flags "$@"
 
 # Paths of earlier installs, cleaned up so they do not linger.
 LEGACY_FILES=(
+  /usr/local/bin/sill
+  /etc/pam.d/sill
+  /etc/udev/rules.d/60-sill-ddc.rules
+  /etc/modules-load.d/sill-ddc.conf
   /usr/local/bin/sill-session
   /usr/share/wayland-sessions/sill.desktop
   /etc/systemd/user/sill-session.target
 )
-LEGACY_SEED_DIR=/usr/local/share/sill
+LEGACY_SEED_DIR=/usr/local/share/bardo/shell
 
 step "1/3 checks"
 refuse_root

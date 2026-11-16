@@ -243,7 +243,10 @@ fn capabilities_and_server_information_answer_as_the_spec_says() {
             .body()
             .deserialize()
             .unwrap_or_else(|e| panic!("{e}"));
-        assert_eq!((info.0.as_str(), info.1.as_str()), ("sill", "sill"));
+        assert_eq!(
+            (info.0.as_str(), info.1.as_str()),
+            ("bardo-shell", "bardo-shell")
+        );
         assert_eq!(info.3, "1.2");
     });
 }
@@ -384,7 +387,10 @@ fn notify_send_and_gdbus_reach_the_server() {
         ]
         .concat(),
     );
-    assert!(info.starts_with("('sill', 'sill', '"), "{info}");
+    assert!(
+        info.starts_with("('bardo-shell', 'bardo-shell', '"),
+        "{info}"
+    );
     assert!(info.ends_with("'1.2')"), "{info}");
     // gdbus is not the connection notify-send posted from, so it may not close it.
     let refused = std::process::Command::new("gdbus")

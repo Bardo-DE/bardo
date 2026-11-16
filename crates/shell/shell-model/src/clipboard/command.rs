@@ -13,7 +13,7 @@ pub enum ClipboardCommand {
     Offer(ClipKey),
     /// Drop one entry.
     Forget(ClipKey),
-    /// Drop every entry (`sill clipboard clear`).
+    /// Drop every entry (`bardo-shell clipboard clear`).
     Clear,
 }
 

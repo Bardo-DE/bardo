@@ -68,7 +68,7 @@ pub(crate) fn standing_of(state: AccountState) -> AccountStanding {
     }
 }
 
-/// Ask accountd to sign the account in again; the sign-in itself is drawn by sill's own sheet.
+/// Ask accountd to sign the account in again; the sign-in itself is drawn by bardo-shell's own sheet.
 /// Returns once the sheet has been answered.
 pub(crate) async fn sign_in_again(
     accountd: &Accountd,

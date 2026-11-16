@@ -1,7 +1,7 @@
-# What sill's shell can be asked to do (`org.bardo.Shell`), declared once for every face: the
+# What bardo-shell's shell can be asked to do (`org.bardo.Shell`), declared once for every face: the
 # launcher and the companion (D-Bus), outside agents (MCP) and the terminal (`bardo-do shell ...`).
-# sill serves them as `IntentProvider1` on that bus name; intentd gates every call. Installed by
-# dist/install.sh under $XDG_DATA_DIRS/quire/intents/. Every field is written (porter's
+# bardo-shell serves them as `IntentProvider1` on that bus name; intentd gates every call. Installed by
+# dist/install.sh under $XDG_DATA_DIRS/bardo/intents/. Every field is written (porter's
 # provider-file rule); the action names carry the app's own prefix (`shell`). The parsed form is
 # held to `sill_model::intents::shell` by a test, so a name or an option cannot drift.
 #

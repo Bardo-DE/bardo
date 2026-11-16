@@ -1,4 +1,4 @@
-//! `sill control-center toggle`: the daemon asks a bar to toggle its control center. The
+//! `bardo-shell control-center toggle`: the daemon asks a bar to toggle its control center. The
 //! control center is a popup of a bar, not a surface of the daemon's, so the daemon cannot show
 //! it itself; it writes an ask here (a root context of every bar), and the bar on that output
 //! feeds its menu session a toggle of `BarMenu::ControlCenter`.

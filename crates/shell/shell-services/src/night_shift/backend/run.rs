@@ -1,7 +1,7 @@
 //! The loop: load the two files, then feed the pure step the person's commands, casement's file
 //! changing under us, and the clock reaching the end of a manual turn-on; what the step asks
 //! (a write of either file) is carried out here. Beside it, casement's `skip_outputs` is kept to
-//! the monitors sill warms (`shell_model::night_shift::skip_outputs`) as the displays come and go.
+//! the monitors bardo-shell warms (`shell_model::night_shift::skip_outputs`) as the displays come and go.
 
 use std::collections::BTreeSet;
 use std::path::PathBuf;
@@ -41,7 +41,7 @@ pub(crate) async fn run(
         Ok(touched) => Some(touched),
         Err(error) => {
             eprintln!(
-                "sill: night shift: watching {}: {error}",
+                "bardo-shell: night shift: watching {}: {error}",
                 casement.display()
             );
             None
@@ -120,7 +120,7 @@ struct Live {
     tx: watch::Sender<NightShift>,
     /// casement's config directory.
     casement: PathBuf,
-    /// sill's state directory.
+    /// bardo-shell's state directory.
     state: PathBuf,
     clock: Arc<dyn WallClock>,
     /// The displays service's monitors.
@@ -147,7 +147,7 @@ impl Live {
                 manual: read_manual(&self.state),
             },
             Err(error) => {
-                eprintln!("sill: night shift: casement's settings: {error}");
+                eprintln!("bardo-shell: night shift: casement's settings: {error}");
                 NightShiftEvent::Unreachable
             }
         };
@@ -165,7 +165,7 @@ impl Live {
         self.sync_skip();
     }
 
-    /// Make casement's `skip_outputs` list the monitors sill warms, once the shell has said who
+    /// Make casement's `skip_outputs` list the monitors bardo-shell warms, once the shell has said who
     /// warms them and casement's settings are readable.
     fn sync_skip(&mut self) {
         if self.heard == Heard::Not || !self.current.reached {
@@ -181,13 +181,13 @@ impl Live {
         for bus in lost {
             if self.said.insert(bus) {
                 eprintln!(
-                    "sill: night shift: DDC monitor {} has no known connector; the software light warms it too",
+                    "bardo-shell: night shift: DDC monitor {} has no known connector; the software light warms it too",
                     bus.0
                 );
             }
         }
         if let Err(error) = write_skip(&self.casement, &skip) {
-            eprintln!("sill: night shift: casement's skip list: {error}");
+            eprintln!("bardo-shell: night shift: casement's skip list: {error}");
         }
     }
 
@@ -198,7 +198,7 @@ impl Live {
         self.current = next;
         for effect in effects {
             if let Err(error) = self.carry(effect) {
-                eprintln!("sill: night shift: {error}");
+                eprintln!("bardo-shell: night shift: {error}");
                 let (lost, _) = step(self.current, NightShiftEvent::Unreachable);
                 self.current = lost;
             }

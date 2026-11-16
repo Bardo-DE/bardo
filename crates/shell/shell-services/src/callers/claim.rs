@@ -28,7 +28,7 @@ pub(crate) struct Claim<T> {
 impl<T> Claim<T> {
     /// What lets a caller in: the role, proved `Full`; and, in a build with `dev-callers`, the
     /// role at `Proof::Dev` as well, which only a stand-in named in the person's own rows file
-    /// (`sill run --dev-callers`) has at that standing.
+    /// (`bardo-shell run --dev-callers`) has at that standing.
     pub(crate) fn requirements(&self) -> Vec<Requirement> {
         let real = Requirement::new(self.role.clone(), PROOF);
         #[cfg(feature = "dev-callers")]
@@ -89,7 +89,7 @@ pub(crate) async fn check<T: Copy>(
 /// Say in the journal that `sender` was refused, and for which roles.
 pub(crate) fn log_refusal<T>(sender: Option<&str>, claims: &[Claim<T>], refused: &Refused) {
     let wanted: Vec<&str> = claims.iter().map(|claim| claim.role.as_str()).collect();
-    eprintln!("sill: callers: {sender:?} refused for {wanted:?}: {refused}");
+    eprintln!("bardo-shell: callers: {sender:?} refused for {wanted:?}: {refused}");
 }
 
 /// The claim whose role `standing` holds.

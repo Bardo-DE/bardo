@@ -1,4 +1,4 @@
-//! The real [`Authenticator`]: one `sill auth-check` child per attempt (swaylock's shape, module
+//! The real [`Authenticator`]: one `bardo-shell auth-check` child per attempt (swaylock's shape, module
 //! doc), spoken to with [`shell_model::auth::protocol`].
 
 use std::io::{BufRead, BufReader, Write};
@@ -30,7 +30,7 @@ pub struct PamHelper {
 }
 
 impl PamHelper {
-    /// This running executable's own `auth-check` subcommand (`sill auth-check`). Started through
+    /// This running executable's own `auth-check` subcommand (`bardo-shell auth-check`). Started through
     /// `/proc/self/exe`, which names the program image this process runs even after an update has
     /// replaced or removed its file, so the daemon and its helper are always the same build.
     pub fn this_exe() -> PamHelper {

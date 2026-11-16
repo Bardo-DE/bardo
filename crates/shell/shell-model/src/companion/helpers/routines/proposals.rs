@@ -1,6 +1,6 @@
 //! The words a suggested routine wears. A helper (or the agent app behind it) may suggest a
-//! routine; sill shows what it would do and when, and makes nothing until the person accepts. The
-//! suggester's own reason is shown as a quotation, never as sill's words.
+//! routine; bardo-shell shows what it would do and when, and makes nothing until the person accepts. The
+//! suggester's own reason is shown as a quotation, never as bardo-shell's words.
 
 use companion_wire::{RoutineProposal, WhenForm};
 
@@ -30,7 +30,7 @@ pub fn proposal_when(proposal: &RoutineProposal) -> String {
     }
 }
 
-/// The suggester's reason, in quotation marks: it is data, not something sill says. Nothing for
+/// The suggester's reason, in quotation marks: it is data, not something bardo-shell says. Nothing for
 /// an empty reason.
 pub fn proposal_why(proposal: &RoutineProposal) -> Option<String> {
     let why = proposal.why.trim();

@@ -1,4 +1,4 @@
-//! `quire/spaces.json` through a `Store` on a scratch directory: a Space saved with the retired
+//! `bardo/spaces.json` through a `Store` on a scratch directory: a Space saved with the retired
 //! `card_accent`, whatever its word, keeps every other key, and so does every other Space.
 
 use crate::support;

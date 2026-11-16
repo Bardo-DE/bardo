@@ -1,11 +1,11 @@
 //! Notifications (design/20 §1.6, design/13 §13.3.6): an `org.freedesktop.Notifications` server
 //! on the session bus, the live banners, and the history grouped by app, kept in
-//! `$XDG_STATE_HOME/sill/notifications.json`.
+//! `$XDG_STATE_HOME/bardo/shell/notifications.json`.
 //!
 //! **It never fights another daemon.** The service asks for the name only while the daemon's
 //! policy says `Own` (the daemon always does; no setting), with `DoNotQueue` and
-//! never `ReplaceExisting`: when mako or plasmashell holds it, sill stays passive, reports the
-//! holder (`NameHolder::Other`), and asks again only when the name falls free. Once sill holds
+//! never `ReplaceExisting`: when mako or plasmashell holds it, bardo-shell stays passive, reports the
+//! holder (`NameHolder::Other`), and asks again only when the name falls free. Once bardo-shell holds
 //! the name it is not offered for replacement, so no other program can take it and read what apps
 //! send. Until the daemon's first [`NotificationsCommand::Policy`] the service is passive, so a
 //! test or a headless render that spawns `crate::Services` never takes the name.
@@ -21,7 +21,7 @@
 //! [`NotificationsCommand::BannerTimedOut`]; the sender's `expire_timeout` only decides whether
 //! a banner persists (0). A banner leaving by itself keeps its notification in the history.
 //!
-//! **Without D-Bus.** `sill debug notify` posts a `Posting` straight to the service
+//! **Without D-Bus.** `bardo-shell debug notify` posts a `Posting` straight to the service
 //! ([`NotificationsCommand::Post`]), through the same reducer, so the banners and the center can
 //! be accepted without a bus (and on a machine whose session already has a notification daemon).
 //!

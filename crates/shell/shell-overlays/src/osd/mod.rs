@@ -9,8 +9,8 @@
 //! (`reading.rs`), and hands both to quire's `Osd` card (`view.rs`), which owns its own entrance
 //! and exit fade and the Osd material tinted by the active Space (design/21 §3).
 //!
-//! Which changes show is the daemon's decision (`shell_app::osd`): the ones sill itself makes for
-//! `sill display volume|brightness` (the keys), never another app's.
+//! Which changes show is the daemon's decision (`shell_app::osd`): the ones bardo-shell itself makes for
+//! `bardo-shell display volume|brightness` (the keys), never another app's.
 
 mod io;
 mod layer;

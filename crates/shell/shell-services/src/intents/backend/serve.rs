@@ -83,7 +83,7 @@ fn intentd_at(connection: &Connection, proc_root: &Path) -> Identity {
     Identity::on(connection.clone(), intentd_only(), fixture)
 }
 
-/// docket's `serve_on_with` says a taken name with a type, as everything sill claims itself does
+/// docket's `serve_on_with` says a taken name with a type, as everything bardo-shell claims itself does
 /// ([`serve::take_name`]); a bus that refused the name is taken too.
 fn docket_trouble(error: ServeError) -> ClaimError {
     match error {

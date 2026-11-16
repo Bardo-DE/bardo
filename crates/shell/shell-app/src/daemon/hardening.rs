@@ -15,7 +15,7 @@ pub(super) fn forbid_core_files() {
         maximum: Some(0),
     };
     if let Err(error) = setrlimit(Resource::Core, none) {
-        eprintln!("sill: could not forbid core files: {error}");
+        eprintln!("bardo-shell: could not forbid core files: {error}");
     }
 }
 

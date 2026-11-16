@@ -85,7 +85,7 @@ impl Saver {
 
 fn write(file: &std::path::Path, stored: &StoredHistory) {
     if let Err(error) = history_file::save(file, stored) {
-        eprintln!("sill: notifications: saving the history: {error}");
+        eprintln!("bardo-shell: notifications: saving the history: {error}");
     }
 }
 

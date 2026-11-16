@@ -1,4 +1,4 @@
-//! The dock's pinned apps, the `[[dock]]` rows of `~/.config/sill/layout.toml` (design/28 §5.6:
+//! The dock's pinned apps, the `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (design/28 §5.6:
 //! membership and order are data in the program's layout file). The old `dock.json` is read once
 //! into it and left in place.
 

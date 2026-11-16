@@ -1,4 +1,4 @@
-//! The `pdf-thumb` worker's latest-wins queue (sill M9: the launcher's preview changes on every
+//! The `pdf-thumb` worker's latest-wins queue (bardo-shell M9: the launcher's preview changes on every
 //! arrow key). One thumbnail asked for 20 PDFs in quick succession, as holding Down would, runs
 //! at most a few rasters (the one already running when each request came, and the last), never
 //! 20, and ends showing the last page asked for. Its own test binary, so the process-wide

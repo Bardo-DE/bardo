@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # The confirmation sheet and the seat at intentd, end to end, with the REAL intentd and `bardo-do`
-# from docket and the real sill daemon, on a private headless KWin started and stopped by the
+# from docket and the real bardo-shell daemon, on a private headless KWin started and stopped by the
 # script (a private copy of layer-shell-host's scripts/dev, so nothing of another session's
 # `.kwin-env` is read or written). The chain under test is the one a login has:
 #
-#   bardo-do  ->  intentd (the gate)  ->  org.bardo.Confirm1 (sill's sheet)  ->  the person's answer
-#                                    ->  org.bardo.Shell IntentProvider1 (sill does the action)
+#   bardo-do  ->  intentd (the gate)  ->  org.bardo.Confirm1 (bardo-shell's sheet)  ->  the person's answer
+#                                    ->  org.bardo.Shell IntentProvider1 (bardo-shell does the action)
 #
 # Nothing here reaches the person's session bus, logind, polkit, ~/.config or a real keyboard.
 # One private bus is the daemon's session AND system bus (start_compositor refuses anything else);
-# intentd, bardo-do and sill all run in a scratch HOME and scratch XDG directories, with an
+# intentd, bardo-do and bardo-shell all run in a scratch HOME and scratch XDG directories, with an
 # XDG_DATA_DIRS that names nothing, so the only manifests are the two the script copies in
 # (`dist/intents/org.bardo.Shell.toml`, and docket's `org.bardo.Memory.toml` for a hidden action).
-# The person's answers are `sill debug key SURFACE KEY`: layer-shell-host's Inject::Key, which enters
+# The person's answers are `bardo-shell debug key SURFACE KEY`: layer-shell-host's Inject::Key, which enters
 # the sheet where an xkb key does, whether or not the compositor gave it the keyboard.
 #
 # docket is built from $BARDO_ACTIONS_DIR (default crates/actions of this tree) into its own target
@@ -25,13 +25,13 @@
 #      undo --last` takes it back through the provider.
 #   4. Escape denies: exit 4, nothing pinned.
 #   5. "Allow from the terminal: this action, until logout" (Shift+Tab to it, Return): exit 0,
-#      `sill intents status` lists the grant, and the next `dock.pin` asks nobody.
-#   6. `sill intents revoke` takes the grant away: the next call asks again.
+#      `bardo-shell intents status` lists the grant, and the next `dock.pin` asks nobody.
+#   6. `bardo-shell intents revoke` takes the grant away: the next call asks again.
 #   7. A destructive action (`shell screenshot`) asks for a HOLD: a tap of Space on the hold
 #      button answers nothing, Space held for 1.5 s allows it: exit 0.
 #   8. Three refused calls in a row (a hidden action, exit 3) pause the terminal: the next call
-#      exits 7; `sill intents resume` lets it go on.
-#   9. With intentd gone, `bardo-do` exits 6, no sheet is left on screen, and sill is still alive.
+#      exits 7; `bardo-shell intents resume` lets it go on.
+#   9. With intentd gone, `bardo-do` exits 6, no sheet is left on screen, and bardo-shell is still alive.
 #
 # Exit 0 when every step passed, 1 on a failure, 2 when a step could not run.
 #
@@ -57,7 +57,7 @@ ASKER=
 SHEET=
 
 scratch_new
-mkdir -p "$CONFIG/sill" "$DATA/quire/intents"
+mkdir -p "$CONFIG/bardo/shell" "$DATA/bardo/intents"
 
 # intentd names a caller that owns no bus name by its cgroup, and only a terminal's child
 # (`vte-spawn-*.scope`) is the cli that `bardo-do` must be; this script runs in whatever scope its
@@ -91,14 +91,14 @@ as_unit() {
 unit_prefix() { UNIT_PREFIX=(bash -c "$(declare -f as_unit); PROC_ROOT=\$0 as_unit \"\$@\"" "$PROC_ROOT" "$1"); }
 
 # `bardo-do ARGS` in the scratch environment, to completion.
-quire() { in_env bash -c "$(declare -f as_terminal); PROC_ROOT=\$0 as_terminal \"\$@\"" "$PROC_ROOT" "$BARDO_DO" "$@"; }
+bardo_do() { in_env bash -c "$(declare -f as_terminal); PROC_ROOT=\$0 as_terminal \"\$@\"" "$PROC_ROOT" "$BARDO_DO" "$@"; }
 
 # `bardo-do ARGS` in the background: its output and exit code go to $OUT_DIR/NAME.{out,code}.
-quire_bg() {
+bardo_do_bg() {
   local name="$1"
   shift
   rm -f "$OUT_DIR/$name.code"
-  ( quire "$@" >"$OUT_DIR/$name.out" 2>&1; echo $? >"$OUT_DIR/$name.code" ) &
+  ( bardo_do "$@" >"$OUT_DIR/$name.out" 2>&1; echo $? >"$OUT_DIR/$name.code" ) &
   ASKER=$!
 }
 
@@ -111,10 +111,10 @@ code_of() {
   echo -1
 }
 
-# One field of `sill intents status`: link, showing, waiting, grants (space-separated), breaker,
+# One field of `bardo-shell intents status`: link, showing, waiting, grants (space-separated), breaker,
 # reach.
 intents_field() {
-  sill intents status 2>/dev/null | python3 -c '
+  bardo-shell intents status 2>/dev/null | python3 -c '
 import json, sys
 r = json.loads(sys.stdin.read())["v"]["v"]
 v = r[sys.argv[1]]
@@ -146,11 +146,11 @@ await_sheet() {
 
 # Past the arming (500 ms) with margin, so a key counts.
 armed() { sleep 1; }
-key() { sill debug key "$SHEET" "$@" >>"$OUT_DIR/keys.log" 2>&1; }
+key() { bardo-shell debug key "$SHEET" "$@" >>"$OUT_DIR/keys.log" 2>&1; }
 
 # The sheet's capture into $1: mapped and drawn.
 capture_sheet() {
-  sill debug capture "$SHEET" "$1" >>"$OUT_DIR/capture.log" 2>&1 || return 1
+  bardo-shell debug capture "$SHEET" "$1" >>"$OUT_DIR/capture.log" 2>&1 || return 1
   [ "$(opaque_pixels "$1")" -gt 1000 ]
 }
 
@@ -175,13 +175,13 @@ fresh() {
 start_intentd() {
   mkdir -p "$PROC_ROOT"
   cp "$BARDO_ACTIONS_DIR/dist/actiond-callers.toml" "$OUT_DIR/actiond-callers.toml" || return 1
-  unit_prefix intentd
+  unit_prefix bardo-actiond
   in_env env BARDO_ACTIOND_PROC_ROOT="$PROC_ROOT" BARDO_ACTIOND_SYSTEM_CALLERS="$OUT_DIR/actiond-callers.toml" \
     "${UNIT_PREFIX[@]}" "$INTENTD" >"$OUT_DIR/intentd.log" 2>&1 &
   BARDO_ACTIOND_PID=$!
   # intentd owns org.bardo.Intents1 once `bardo-do apps` answers.
   for _ in $(seq 100); do
-    quire apps >/dev/null 2>&1 && return 0
+    bardo_do apps >/dev/null 2>&1 && return 0
     kill -0 "$BARDO_ACTIOND_PID" 2>/dev/null || { echo "intentd died (see $OUT_DIR/intentd.log)" >&2; return 1; }
     sleep 0.1
   done
@@ -195,8 +195,8 @@ pinned() { grep -rqs -- "$1" "$CONFIG" "$DATA" "$STATE" 2>/dev/null; }
 # 1.
 step_manifest_listed() {
   local apps list
-  apps=$(quire apps 2>&1) || { echo "bardo-do apps failed: $apps" >&2; return 1; }
-  list=$(quire shell --list 2>&1) || { echo "bardo-do shell --list failed: $list" >&2; return 1; }
+  apps=$(bardo_do apps 2>&1) || { echo "bardo-do apps failed: $apps" >&2; return 1; }
+  list=$(bardo_do shell --list 2>&1) || { echo "bardo-do shell --list failed: $list" >&2; return 1; }
   echo "$apps" | tee "$OUT_DIR/1-apps.log" >&2
   echo "$list" | tee -a "$OUT_DIR/1-apps.log" >&2
   echo "$apps" | grep -qw shell || return 1
@@ -208,7 +208,7 @@ step_manifest_listed() {
 # 2.
 step_a_read_asks_nobody() {
   fresh || return 1
-  quire shell launcher.open --query mail >"$OUT_DIR/2.out" 2>&1
+  bardo_do shell launcher.open --query mail >"$OUT_DIR/2.out" 2>&1
   local code=$?
   echo "launcher.open: exit $code, sheet '$(intents_field showing)'" | tee "$OUT_DIR/2.log" >&2
   [ "$code" = 0 ] && [ -z "$(intents_field showing)" ]
@@ -219,7 +219,7 @@ step_a_write_asks_and_allow_pins() {
   fresh || return 1
   local log="$OUT_DIR/3-allow.log" id code
   : >"$log"
-  quire_bg allow shell dock.pin --app e2e-allow.desktop
+  bardo_do_bg allow shell dock.pin --app e2e-allow.desktop
   id=$(await_sheet 10) || { echo "no sheet appeared" | tee -a "$log" >&2; return 1; }
   echo "the sheet for $id is up" | tee -a "$log" >&2
   # Past the arming (and the sheet's entrance): the picture is of the armed sheet, and Return
@@ -236,7 +236,7 @@ step_a_write_asks_and_allow_pins() {
   echo "dock.pin allowed: exit $code; pinned: $(pinned e2e-allow.desktop && echo yes || echo no); sheet '$(intents_field showing)'" | tee -a "$log" >&2
   [ "$code" = 0 ] && pinned e2e-allow.desktop && [ -z "$(intents_field showing)" ] || return 1
   # The provider takes it back: the pin leaves the file.
-  quire undo --last >"$OUT_DIR/3-undo.out" 2>&1
+  bardo_do undo --last >"$OUT_DIR/3-undo.out" 2>&1
   code=$?
   sleep 0.5
   echo "undo --last: exit $code; pinned: $(pinned e2e-allow.desktop && echo yes || echo no)" | tee -a "$log" >&2
@@ -247,7 +247,7 @@ step_a_write_asks_and_allow_pins() {
 step_escape_denies() {
   fresh || return 1
   local log="$OUT_DIR/4-deny.log" code
-  quire_bg deny shell dock.pin --app e2e-deny.desktop
+  bardo_do_bg deny shell dock.pin --app e2e-deny.desktop
   await_sheet 10 >/dev/null || { echo "no sheet appeared" | tee "$log" >&2; return 1; }
   key Escape
   code=$(code_of deny)
@@ -259,7 +259,7 @@ step_escape_denies() {
 step_allow_from_the_terminal() {
   fresh || return 1
   local log="$OUT_DIR/5-terminal.log" code
-  quire_bg term shell dock.pin --app e2e-term.desktop
+  bardo_do_bg term shell dock.pin --app e2e-term.desktop
   await_sheet 10 >/dev/null || { echo "no sheet appeared" | tee "$log" >&2; return 1; }
   armed
   # The keyboard is on Allow; the terminal's offer is three buttons back (Don't Allow, Never,
@@ -273,7 +273,7 @@ step_allow_from_the_terminal() {
   echo "allow from the terminal: exit $code; grants: $(intents_field grants)" | tee "$log" >&2
   [ "$code" = 0 ] || return 1
   # The grant stands: the next call asks nobody.
-  quire shell dock.pin --app e2e-term2.desktop >"$OUT_DIR/5-again.out" 2>&1
+  bardo_do shell dock.pin --app e2e-term2.desktop >"$OUT_DIR/5-again.out" 2>&1
   code=$?
   echo "the next dock.pin: exit $code, sheet '$(intents_field showing)'" | tee -a "$log" >&2
   [ "$code" = 0 ] && [ -z "$(intents_field showing)" ] && pinned e2e-term2.desktop
@@ -283,9 +283,9 @@ step_allow_from_the_terminal() {
 step_revoke_asks_again() {
   fresh || return 1
   local log="$OUT_DIR/6-revoke.log" code
-  sill intents revoke org.bardo.Shell:shell.dock.pin >>"$log" 2>&1 || return 1
+  bardo-shell intents revoke org.bardo.Shell:shell.dock.pin >>"$log" 2>&1 || return 1
   await_field grants "" 10 || return 1
-  quire_bg again shell dock.pin --app e2e-term3.desktop
+  bardo_do_bg again shell dock.pin --app e2e-term3.desktop
   await_sheet 10 >/dev/null || { echo "no sheet after the revoke" | tee -a "$log" >&2; return 1; }
   key Escape
   code=$(code_of again)
@@ -297,7 +297,7 @@ step_revoke_asks_again() {
 step_a_destructive_action_asks_for_a_hold() {
   fresh || return 1
   local log="$OUT_DIR/7-hold.log" code
-  quire_bg hold shell screenshot --kind screen
+  bardo_do_bg hold shell screenshot --kind screen
   await_sheet 10 >/dev/null || { echo "no sheet appeared" | tee "$log" >&2; return 1; }
   armed
   await_captured "$SHOTS/confirm-hold.png" || echo "the hold sheet did not capture (non-fatal)" >&2
@@ -321,20 +321,20 @@ step_the_breaker_pauses_and_resume_lets_go() {
   local log="$OUT_DIR/8-breaker.log" code
   : >"$log"
   # Denials count toward the breaker too: start from a fresh one.
-  sill intents resume >>"$log" 2>&1 || return 1
+  bardo-shell intents resume >>"$log" 2>&1 || return 1
   sleep 0.5
   for key in f1 f2 f3; do
-    quire memory forget "memory.fact:$key" >>"$log" 2>&1
+    bardo_do memory forget "memory.fact:$key" >>"$log" 2>&1
     code=$?
     [ "$code" = 3 ] || { echo "a hidden action exited $code, not 3" | tee -a "$log" >&2; return 1; }
   done
-  quire shell launcher.open >>"$log" 2>&1
+  bardo_do shell launcher.open >>"$log" 2>&1
   code=$?
   echo "after three refusals the next call exits $code" | tee -a "$log" >&2
   [ "$code" = 7 ] || return 1
-  sill intents resume >>"$log" 2>&1 || return 1
+  bardo-shell intents resume >>"$log" 2>&1 || return 1
   sleep 0.5
-  quire shell launcher.open >>"$log" 2>&1
+  bardo_do shell launcher.open >>"$log" 2>&1
   code=$?
   echo "after Resume the next call exits $code" | tee -a "$log" >&2
   [ "$code" = 0 ]
@@ -343,18 +343,18 @@ step_the_breaker_pauses_and_resume_lets_go() {
 # 9.
 step_intentd_gone() {
   local log="$OUT_DIR/9-gone.log" code
-  quire_bg orphan shell dock.pin --app e2e-orphan.desktop
+  bardo_do_bg orphan shell dock.pin --app e2e-orphan.desktop
   await_sheet 10 >/dev/null || { echo "no sheet appeared" | tee "$log" >&2; return 1; }
   kill "$BARDO_ACTIOND_PID" 2>/dev/null
   wait "$BARDO_ACTIOND_PID" 2>/dev/null
   BARDO_ACTIOND_PID=
-  # Nobody waits for the answer: the sheet goes, sill stays.
+  # Nobody waits for the answer: the sheet goes, bardo-shell stays.
   await_field showing "" 10 || return 1
   code=$(code_of orphan)
-  quire shell launcher.open >>"$log" 2>&1
+  bardo_do shell launcher.open >>"$log" 2>&1
   local gone=$?
-  sill ping >/dev/null 2>&1 || { echo "sill is gone" | tee -a "$log" >&2; return 1; }
-  echo "the waiting call exited $code, a new one $gone (6: intentd is not there); sill answers ping" | tee -a "$log" >&2
+  bardo-shell ping >/dev/null 2>&1 || { echo "bardo-shell is gone" | tee -a "$log" >&2; return 1; }
+  echo "the waiting call exited $code, a new one $gone (6: intentd is not there); bardo-shell answers ping" | tee -a "$log" >&2
   [ "$gone" = 6 ]
 }
 
@@ -383,14 +383,14 @@ build || exit 1
 build_docket || exit 1
 start_compositor --default kwin || exit 1
 IN_ENV_EXTRA=(XDG_DATA_DIRS="$DATA/none" XDG_CONFIG_DIRS="$CONFIG/none")
-cp "$BARDO_SHELL_REPO/dist/intents/org.bardo.Shell.toml" "$DATA/quire/intents/"
-cp "$BARDO_ACTIONS_DIR/manifests/org.bardo.Memory.toml" "$DATA/quire/intents/"
+cp "$BARDO_SHELL_REPO/dist/intents/org.bardo.Shell.toml" "$DATA/bardo/intents/"
+cp "$BARDO_ACTIONS_DIR/manifests/org.bardo.Memory.toml" "$DATA/bardo/intents/"
 backdrop_seed "$CONFIG" || exit 1
 : >"$CONFIG/shell/settings.toml"
 status=0
 # The stand-in intentd is the router for this daemon only (a debug build's `--dev-callers`).
 dev_caller org.bardo.Intents router "$INTENTD" || exit 1
-unit_prefix sill
+unit_prefix bardo-shell
 LAUNCH_PREFIX=("${UNIT_PREFIX[@]}")
 if start_intentd && launch_daemon --proc-root "$PROC_ROOT"; then
   NAME=$(output_name) || exit 1

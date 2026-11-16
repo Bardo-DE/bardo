@@ -171,7 +171,7 @@ fn use_follow_stack(
     }));
 }
 
-/// Follow the link's keyboard events: `sill focus-latest` choosing the banners, and the
+/// Follow the link's keyboard events: `bardo-shell focus-latest` choosing the banners, and the
 /// compositor taking the keyboard away.
 fn use_keyboard_asks(column: Column, link: &BannerLink) {
     let keys = use_watch(link.subscribe_keys());

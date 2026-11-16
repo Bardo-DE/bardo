@@ -16,7 +16,7 @@ enum Piece {
     Close(TagName),
     /// `<br>` or `<img alt>`: text that stands where the tag was.
     Stands(String),
-    /// A tag sill does not draw: its text is kept, the tag dropped.
+    /// A tag bardo-shell does not draw: its text is kept, the tag dropped.
     Dropped,
 }
 

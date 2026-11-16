@@ -101,7 +101,7 @@ fn the_footer_says_why_when_it_is_on_and_is_gone_when_it_is_off() {
         let sandbox = Sandbox::new(&format!("intelligence-reason-{name}"));
         if let Some(on) = setting {
             sandbox.write(
-                "inferd/inferd.toml",
+                "inference/inferd.toml",
                 &format!("[ai.auto]\nshow_reason = {on}\n"),
             );
         }

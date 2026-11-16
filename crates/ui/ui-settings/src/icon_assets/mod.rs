@@ -2,13 +2,13 @@
 //! (design/08-ICONS.md 2.11).
 //!
 //! quire ships `assets/icons/apps/<app>/[muted|monochrome/]<px>.png`; every consumer used to
-//! guess where that directory lands (sill searched its own variable, then the data dirs, then a
+//! guess where that directory lands (bardo-shell searched its own variable, then the data dirs, then a
 //! sibling checkout). The order is settled here, once, and documented in CONSUMING.md:
 //!
 //! 1. `$BARDO_ICON_ASSETS`, the apps directory itself (a packager's or a test's override);
-//! 2. `$XDG_DATA_HOME/quire/icons/apps` (`$HOME/.local/share` when unset), where
+//! 2. `$XDG_DATA_HOME/bardo/icons/apps` (`$HOME/.local/share` when unset), where
 //!    `icons install` copies the set;
-//! 3. each `$XDG_DATA_DIRS` entry's `quire/icons/apps` (`/usr/local/share:/usr/share` when
+//! 3. each `$XDG_DATA_DIRS` entry's `bardo/icons/apps` (`/usr/local/share:/usr/share` when
 //!    unset), for a system package;
 //! 4. the repository's own `assets/icons/apps`, resolved from this crate's `CARGO_MANIFEST_DIR`
 //!    at compile time: development only, for a consumer that takes quire as a path dependency.

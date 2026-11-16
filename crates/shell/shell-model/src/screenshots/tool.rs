@@ -1,4 +1,4 @@
-//! What `sill screenshot KIND` runs: the portal's screenshot, and the command line per kind.
+//! What `bardo-shell screenshot KIND` runs: the portal's screenshot, and the command line per kind.
 //!
 //! The desktop portal's screenshot cannot be told area or window: it opens the portal's picker
 //! (whose own buttons choose a rectangle, a window or an output, and where to save) when asked
@@ -8,7 +8,7 @@
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
 
-/// `sill screenshot`'s argument.
+/// `bardo-shell screenshot`'s argument.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 pub enum ShotKind {
@@ -35,7 +35,7 @@ pub struct CommandLine {
     pub args: Vec<String>,
 }
 
-/// The command `sill screenshot KIND` runs: `gdbus call` of the portal's `Screenshot`,
+/// The command `bardo-shell screenshot KIND` runs: `gdbus call` of the portal's `Screenshot`,
 /// interactive (the picker) for `area` and `window` and not for `screen`.
 pub fn portal_command(kind: ShotKind) -> CommandLine {
     match kind {

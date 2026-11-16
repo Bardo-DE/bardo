@@ -42,7 +42,7 @@ impl DesktopCallers {
             .load(&RealProc::system())
             .unwrap_or_else(|error| {
                 eprintln!(
-                    "sill: callers: the table of the desktop's own programs could not be loaded ({error}), so every call to the shell's bus objects is refused"
+                    "bardo-shell: callers: the table of the desktop's own programs could not be loaded ({error}), so every call to the shell's bus objects is refused"
                 );
                 Table::empty()
             });

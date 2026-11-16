@@ -1,8 +1,9 @@
-//! `detent`: the desktop's Settings app, one window on Blitz.
+//! `bardo-settings`: the desktop's Settings app, one window on Blitz.
 
 mod cli;
 mod dev_callers;
 mod dirs;
+mod pre_bardo;
 mod service;
 
 use clap::Parser;
@@ -41,6 +42,8 @@ fn window_size(wanted: Option<&PageSlug>) -> WindowSize {
 }
 
 fn main() -> ExitCode {
+    // Temporary: delete with the old-folders crate in the release after everyone has started once.
+    pre_bardo::move_from_env();
     let cli = cli::Cli::parse();
     if let Err(code) = dev_callers::take_up(cli.dev_callers()) {
         return code;
@@ -64,13 +67,13 @@ fn write_search_entries(file: &Path, schemas: Vec<PathBuf>) -> ExitCode {
     };
     let found = discover(&dirs);
     for warning in &found.warnings {
-        eprintln!("detent: {warning}");
+        eprintln!("bardo-settings: {warning}");
     }
     let text = search_entries(&Catalogue::build(&found.programs));
     match std::fs::write(file, text) {
         Ok(()) => ExitCode::SUCCESS,
         Err(fault) => {
-            eprintln!("detent: cannot write {}: {fault}", file.display());
+            eprintln!("bardo-settings: cannot write {}: {fault}", file.display());
             ExitCode::FAILURE
         }
     }
@@ -84,7 +87,9 @@ fn environment(opening: Opening) -> Result<Env, ExitCode> {
         dirs::state_home(),
         dirs::cache_home(),
     ) else {
-        eprintln!("detent: neither XDG_CONFIG_HOME nor HOME is set, nowhere to keep settings");
+        eprintln!(
+            "bardo-settings: neither XDG_CONFIG_HOME nor HOME is set, nowhere to keep settings"
+        );
         return Err(ExitCode::FAILURE);
     };
     let path = std::env::var("PATH").unwrap_or_default();
@@ -118,7 +123,7 @@ fn environment(opening: Opening) -> Result<Env, ExitCode> {
     .with_application_dirs(dirs::application_dirs())
     .with_system_data_dirs(dirs::system_data_dirs());
     for warning in &env.warnings {
-        eprintln!("detent: {warning}");
+        eprintln!("bardo-settings: {warning}");
     }
     Ok(env)
 }
@@ -128,7 +133,7 @@ fn environment(opening: Opening) -> Result<Env, ExitCode> {
 fn first_run() -> ExitCode {
     let Some(state_home) = dirs::state_home() else {
         eprintln!(
-            "detent: neither XDG_STATE_HOME nor HOME is set, nowhere to remember the first run"
+            "bardo-settings: neither XDG_STATE_HOME nor HOME is set, nowhere to remember the first run"
         );
         return ExitCode::FAILURE;
     };
@@ -172,12 +177,12 @@ fn settings(opening: Opening) -> ExitCode {
             Ok(connection) => Some(connection),
             Err(ServeFault::Running) => return hand_over_to_running(wanted),
             Err(fault) => {
-                eprintln!("detent: no intents service: {fault}");
+                eprintln!("bardo-settings: no intents service: {fault}");
                 None
             }
         },
         Err(fault) => {
-            eprintln!("detent: no intents service: {fault}");
+            eprintln!("bardo-settings: no intents service: {fault}");
             None
         }
     };
@@ -196,7 +201,7 @@ fn ended(launched: Result<(), LaunchError>) -> ExitCode {
     match launched {
         Ok(()) => ExitCode::SUCCESS,
         Err(fault) => {
-            eprintln!("detent: {fault}");
+            eprintln!("bardo-settings: {fault}");
             ExitCode::FAILURE
         }
     }
@@ -220,7 +225,9 @@ fn hand_over_to_running(page: Option<PageSlug>) -> ExitCode {
     match handed {
         Ok(()) => ExitCode::SUCCESS,
         Err(fault) => {
-            eprintln!("detent: could not hand over to the Settings that is running: {fault}");
+            eprintln!(
+                "bardo-settings: could not hand over to the Settings that is running: {fault}"
+            );
             ExitCode::FAILURE
         }
     }

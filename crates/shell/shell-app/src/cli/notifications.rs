@@ -1,4 +1,4 @@
-//! `sill notifications {toggle,open,close,dismiss-all,status}`: the notification center's and the
+//! `bardo-shell notifications {toggle,open,close,dismiss-all,status}`: the notification center's and the
 //! banners' command line, and its pure mapping to a request.
 
 use clap::Subcommand;
@@ -9,7 +9,7 @@ use shell_launcher::actions::ActionId;
 
 use super::verbs::do_request;
 
-/// `sill notifications ...`.
+/// `bardo-shell notifications ...`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Subcommand)]
 pub enum NotificationsAction {
     /// Open the notification center when closed, close it when open: a shortcut.
@@ -25,7 +25,7 @@ pub enum NotificationsAction {
     Status,
 }
 
-/// The request `sill notifications ACTION` sends.
+/// The request `bardo-shell notifications ACTION` sends.
 pub fn notifications_request(action: NotificationsAction) -> Request {
     match action {
         NotificationsAction::Toggle => do_request(ActionId::NotificationCenter),

@@ -97,7 +97,7 @@ pub fn catalogue() -> Vec<Item> {
         row(
             Windows,
             "10",
-            "Firefox — sill launcher",
+            "Firefox — bardo-shell launcher",
             "Firefox, workspace 2",
             750,
         ),

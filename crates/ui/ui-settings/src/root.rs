@@ -4,19 +4,93 @@
 //! Config, not data: a cosmetic choice is never a write to the file that holds someone's mail.
 
 use std::ffi::OsStr;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use crate::xdg;
 
-/// The directory name a program's files live under: `quire`, `sill`, `mailo`.
+/// Which tree of the config, state and data bases a program's folder sits in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct AppName(pub &'static str);
+enum Owner {
+    /// A program of the desktop: `<base>/bardo/<name>`.
+    Desktop,
+    /// The desktop as a whole (its look, its extensions): the `bardo` level itself, `<base>/bardo`.
+    DesktopWide,
+    /// A program that is not part of the desktop: `<base>/<name>`.
+    Foreign,
+}
+
+/// The directory a program's files live under: `bardo/shell` for a program of the desktop,
+/// `bardo` for the desktop as a whole, `mailo` for a foreign program.
+///
+/// Settings file ids keep the grammar `<app>/<file>` whichever owner the program has: the
+/// owner only decides where the folder sits inside each base.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct AppName {
+    name: &'static str,
+    owner: Owner,
+}
 
 impl AppName {
-    /// The design system's own settings (`appearance.toml`).
-    pub const QUIRE: AppName = AppName("quire");
-    /// mailo.
-    pub const MAILO: AppName = AppName("mailo");
+    /// The desktop-wide settings (`appearance.toml`, `style.css`, `extensions.toml`), which sit
+    /// directly in the `bardo` level.
+    pub const QUIRE: AppName = AppName {
+        name: "bardo",
+        owner: Owner::DesktopWide,
+    };
+    /// mailo, a program outside the desktop: its folders stay at `<base>/mailo`.
+    pub const MAILO: AppName = AppName::foreign("mailo");
+
+    /// A program of the desktop (`shell`, `settings`, `files`): its folders are
+    /// `<base>/bardo/<name>`.
+    pub const fn desktop(name: &'static str) -> AppName {
+        AppName {
+            name,
+            owner: Owner::Desktop,
+        }
+    }
+
+    /// A program that is not part of the desktop: its folders are `<base>/<name>`.
+    pub const fn foreign(name: &'static str) -> AppName {
+        AppName {
+            name,
+            owner: Owner::Foreign,
+        }
+    }
+
+    /// The program's own name (`bardo` for the desktop-wide one).
+    pub const fn name(self) -> &'static str {
+        self.name
+    }
+
+    /// This program's folder inside `base`, one of the XDG bases (config, state, data, cache).
+    pub fn under(self, base: &Path) -> PathBuf {
+        match self.owner {
+            Owner::Desktop => base.join(DESKTOP_LEVEL).join(self.name),
+            Owner::DesktopWide => base.join(DESKTOP_LEVEL),
+            Owner::Foreign => base.join(self.name),
+        }
+    }
+}
+
+/// The folder every program of the desktop shares inside each XDG base.
+const DESKTOP_LEVEL: &str = "bardo";
+
+/// The programs outside the desktop whose settings the desktop knows by their file id
+/// (`mailo/settings.toml`): their folders stay at `<base>/<name>`.
+const FOREIGN_PROGRAMS: &[&str] = &["mailo"];
+
+/// The folder of the program named by the first part of a settings file id (`shell` of
+/// `shell/settings.toml`) inside `base`: the same place [`AppName::under`] gives, for a name only
+/// known at run time. `bardo` is the desktop-wide level; a program of [`FOREIGN_PROGRAMS`] sits
+/// directly in `base`; every other one is a program of the desktop.
+pub fn app_folder(base: &Path, app: &str) -> PathBuf {
+    if app == DESKTOP_LEVEL {
+        base.join(DESKTOP_LEVEL)
+    } else if FOREIGN_PROGRAMS.contains(&app) {
+        base.join(app)
+    } else {
+        base.join(DESKTOP_LEVEL).join(app)
+    }
 }
 
 /// The tree every program's config directory sits in.
@@ -41,7 +115,7 @@ impl ConfigRoot {
                 std::env::var_os("XDG_CONFIG_HOME").as_deref(),
                 std::env::var_os("HOME").as_deref(),
             ),
-            ConfigRoot::Scratch(base) => Some(base.join(app.0)),
+            ConfigRoot::Scratch(base) => Some(app.under(base)),
         }
     }
 }
@@ -57,21 +131,22 @@ impl ConfigRoot {
                 std::env::var_os("HOME").as_deref(),
                 xdg::STATE_HOME_UNDER_HOME,
             )
-            .map(|base| base.join(app.0)),
-            ConfigRoot::Scratch(base) => Some(base.join(".state").join(app.0)),
+            .map(|base| app.under(&base)),
+            ConfigRoot::Scratch(base) => Some(app.under(&base.join(".state"))),
         }
     }
 }
 
 fn xdg_dir(app: AppName, xdg: Option<&OsStr>, home: Option<&OsStr>) -> Option<PathBuf> {
-    xdg::base_dir(xdg, home, xdg::CONFIG_HOME_UNDER_HOME).map(|base| base.join(app.0))
+    xdg::base_dir(xdg, home, xdg::CONFIG_HOME_UNDER_HOME).map(|base| app.under(&base))
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{AppName, ConfigRoot, xdg_dir};
+    use super::{AppName, ConfigRoot, app_folder, xdg_dir};
     use std::ffi::OsStr;
-    use std::path::PathBuf;
+    use std::path::Path;
+    use std::path::{Path, PathBuf};
 
     struct Case {
         name: &'static str,
@@ -85,25 +160,25 @@ mod tests {
             name: "xdg wins",
             xdg: Some("/xdg"),
             home: Some("/home/ada"),
-            expect: Some("/xdg/quire"),
+            expect: Some("/xdg/bardo"),
         },
         Case {
             name: "home when xdg is unset",
             xdg: None,
             home: Some("/home/ada"),
-            expect: Some("/home/ada/.config/quire"),
+            expect: Some("/home/ada/.config/bardo"),
         },
         Case {
             name: "home when xdg is empty",
             xdg: Some(""),
             home: Some("/home/ada"),
-            expect: Some("/home/ada/.config/quire"),
+            expect: Some("/home/ada/.config/bardo"),
         },
         Case {
             name: "home when xdg is relative",
             xdg: Some("config"),
             home: Some("/home/ada"),
-            expect: Some("/home/ada/.config/quire"),
+            expect: Some("/home/ada/.config/bardo"),
         },
         Case {
             name: "neither",
@@ -150,11 +225,43 @@ mod tests {
     }
 
     #[test]
+    fn a_program_of_the_desktop_sits_under_the_bardo_level() {
+        assert_eq!(
+            xdg_dir(AppName::desktop("shell"), Some(OsStr::new("/xdg")), None),
+            Some(PathBuf::from("/xdg/bardo/shell"))
+        );
+    }
+
+    #[test]
+    fn a_folder_named_at_run_time_is_where_the_typed_name_puts_it() {
+        let base = Path::new("/xdg");
+        assert_eq!(app_folder(base, "bardo"), AppName::QUIRE.under(base));
+        assert_eq!(
+            app_folder(base, "shell"),
+            AppName::desktop("shell").under(base)
+        );
+        assert_eq!(app_folder(base, "mailo"), AppName::MAILO.under(base));
+    }
+
+    #[test]
+    fn a_scratch_state_directory_follows_the_same_layout() {
+        let root = ConfigRoot::Scratch(PathBuf::from("/scratch"));
+        assert_eq!(
+            root.state_dir(AppName::desktop("files")),
+            Some(PathBuf::from("/scratch/.state/bardo/files"))
+        );
+        assert_eq!(
+            root.state_dir(AppName::MAILO),
+            Some(PathBuf::from("/scratch/.state/mailo"))
+        );
+    }
+
+    #[test]
     fn a_scratch_root_stands_in_for_xdg_config_home() {
         let root = ConfigRoot::Scratch(PathBuf::from("/scratch"));
         assert_eq!(
             root.dir(AppName::QUIRE),
-            Some(PathBuf::from("/scratch/quire"))
+            Some(PathBuf::from("/scratch/bardo"))
         );
     }
 }

@@ -18,7 +18,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-/// The results as the launcher sees them: sill's `ListState`, cut down.
+/// The results as the launcher sees them: bardo-shell's `ListState`, cut down.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum List {
     Waiting,

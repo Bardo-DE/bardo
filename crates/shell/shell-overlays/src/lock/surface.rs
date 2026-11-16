@@ -6,7 +6,7 @@ use layer_shell_host::HostRoot;
 use shell_ui_kit::links::Links;
 use shell_ui_kit::surface::LockSurface;
 
-/// sill's own lock screen: the clock on every output, the password prompt on one.
+/// bardo-shell's own lock screen: the clock on every output, the password prompt on one.
 pub const LOCK: LockSurface = LockSurface {
     name: "lock",
     config,

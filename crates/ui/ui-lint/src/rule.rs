@@ -78,7 +78,7 @@ pub enum Rule {
     /// `cursor: pointer` on a rule whose subject is not a link: controls use the arrow, and the
     /// pointing hand means only "this is a link" (design/27-HIG-PARITY.md section 6.3). A link is
     /// an `a`, a `[role=link]`, or a class with a `link` segment (`.ds-run-link`). A
-    /// [`super::Severity::Warning`] under Strict until sill's sweep is clean.
+    /// [`super::Severity::Warning`] under Strict until bardo-shell's sweep is clean.
     PointerCursor,
     /// A font size under the 10 px floor (design/27 section 3.16): a literal below 10 px, or a
     /// `var(--fs-*)` whose System value is below it. A [`super::Severity::Warning`] under Strict.

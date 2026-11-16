@@ -31,9 +31,10 @@ fn key(path: &str, kind: KeyKind, marked: bool, exposure: Exposure) -> KeySpec {
 }
 
 fn catalogue(keys: Vec<KeySpec>) -> Catalogue {
-    let file = ConfigFile::parse(&FilePath("shell/settings.toml".to_owned())).expect("a plain path");
+    let file =
+        ConfigFile::parse(&FilePath("shell/settings.toml".to_owned())).expect("a plain path");
     Catalogue::build(&[ProgramSchema {
-        app: AppId("sill".to_owned()),
+        app: AppId("bardo-shell".to_owned()),
         file,
         keys,
         foreign: Default::default(),

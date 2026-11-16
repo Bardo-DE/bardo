@@ -359,7 +359,7 @@ rim and highlight are `--hair`.
   The settings key is `icons.symbolic_chroma_max` (design/22-SETTINGS.md section 3.3, settled
   2026-09-24: default 0.04, range 0.0..=0.2, Advanced). `ChromaLimit` gains a `Default` (the same
   0.04) and `TryFrom<f32>`, which takes the key's plain chroma value and refuses anything outside
-  the range (`DsError::ChromaLimitRange`); `sill` still needs to register the key in its own
+  the range (`DsError::ChromaLimitRange`); `bardo-shell` still needs to register the key in its own
   settings crate and pass the parsed value into `classify_with` (FINDINGS "Settings and schema"). The
   caller maps `IconKind` to `IconSource`.
 
@@ -680,7 +680,7 @@ at 256; with the grain a 1024 PNG is about 1.2 MB).
 (`<app>/muted/`); **Monochrome** = every app in the Monochrome dialect, exported neutral grey
 (`<app>/monochrome/`) and tinted at run time by `ds::icon::retint` from `icons.monochrome_tint`
 (Space, Accent, Neutral). Third-party icons in our plates go through the same `retint` in Muted
-(chroma x 4/7) and Monochrome (keep lightness, take the tint's hue and chroma). `sill`'s part:
+(chroma x 4/7) and Monochrome (keep lightness, take the tint's hue and chroma). `bardo-shell`'s part:
 CONSUMING.md "App icons and the icon style".
 
 **Consistency.** Procedural and Klein-derived icons share the plate geometry, bevel arc, bottom
@@ -900,7 +900,7 @@ Every dock tile and launcher row has the same silhouette. A third-party app's ow
 - Source size: the smallest themed size ≥ 2 x the rendered size, else `scalable`, else the
   largest available.
 - Cache: rendered once per (app-id, icon file mtime, size, scale, theme) under
-  `$XDG_CACHE_HOME/sill/icons/` (proposed).
+  `$XDG_CACHE_HOME/bardo/shell/icons/` (proposed).
 
 ### 4.2 Icons that are already squircles or rounded squares (proposed)
 

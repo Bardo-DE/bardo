@@ -1,4 +1,4 @@
-//! Who may ask the running Settings to show itself, and whom a second `detent` may hand its
+//! Who may ask the running Settings to show itself, and whom a second `bardo-settings` may hand its
 //! activation token to (audit DETENT-16).
 //!
 //! `org.freedesktop.Application` is a public door on the session bus: any program can call
@@ -11,7 +11,7 @@ use zbus::fdo;
 use zbus::message::Header;
 
 /// The roles that may call `Activate` and `ActivateAction`: the shell (the launcher, a notification
-/// or a menu), another Settings (a second `detent` handing over), and the agent tier (an assistant
+/// or a menu), another Settings (a second `bardo-settings` handing over), and the agent tier (an assistant
 /// that opens a page). All three run as units, so the proof is the unit's (and, in a `dev-callers`
 /// build, a stand-in named in the person's own rows is let in as well).
 pub(crate) fn activators() -> Vec<Requirement> {
@@ -21,7 +21,7 @@ pub(crate) fn activators() -> Vec<Requirement> {
         .collect()
 }
 
-/// The role the owner of `org.bardo.Settings` must hold before a second `detent` sends it an
+/// The role the owner of `org.bardo.Settings` must hold before a second `bardo-settings` sends it an
 /// activation token: Settings itself.
 pub(crate) fn settings_owner() -> Vec<Requirement> {
     allowing(roles::SETTINGS, Proof::Full)
@@ -62,7 +62,7 @@ pub(crate) async fn admit(
 fn note(refusals: &Refusals, refused: Refused, sender: &str) {
     if let Some(seen) = refusals.mention() {
         eprintln!(
-            "detent: a call to show Settings from {sender} was dropped ({refused}); {seen} so far"
+            "bardo-settings: a call to show Settings from {sender} was dropped ({refused}); {seen} so far"
         );
     }
 }
