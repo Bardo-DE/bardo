@@ -66,8 +66,8 @@ fn positive<T: TryFrom<u64> + PartialEq + Default>(
     name: &'static str,
     text: &str,
 ) -> Result<T, ArgsError> {
-    let n: u64 = text.parse().map_err(|_| ArgsError::Invalid(name))?;
-    let value = T::try_from(n).map_err(|_| ArgsError::Invalid(name))?;
+    let n: u64 = text.parse().ok().ok_or(ArgsError::Invalid(name))?;
+    let value = T::try_from(n).ok().ok_or(ArgsError::Invalid(name))?;
     if value == T::default() {
         return Err(ArgsError::Invalid(name));
     }
@@ -83,6 +83,11 @@ fn path(name: &'static str, text: &str) -> Result<PathBuf, ArgsError> {
 
 /// Reads the arguments after the program name: the four flags, each exactly once, each followed
 /// by its value, and nothing else.
+///
+/// # Errors
+/// [`ArgsError::Unknown`] for a flag that is not one of the four, [`ArgsError::Missing`] for a
+/// flag that is absent, and [`ArgsError::Invalid`] for a repeated flag, a flag without a value or
+/// a value that does not fit it.
 pub fn parse_args(args: &[String]) -> Result<HostArgs, ArgsError> {
     let mut seen = Seen::default();
     let mut rest = args.iter();

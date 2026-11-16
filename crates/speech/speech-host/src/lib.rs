@@ -35,6 +35,9 @@ pub enum HostError {
 /// Serves with no engine linked: this crate cannot recognise speech, so it answers
 /// `HostError::Model`. The binary of `speech-host-sherpa` calls [`serve_with`] with its
 /// recognizer instead.
+///
+/// # Errors
+/// Always [`HostError::Model`]: there is no engine to load a model into.
 pub fn serve(args: &HostArgs) -> Result<(), HostError> {
     let _ = args;
     Err(HostError::Model)

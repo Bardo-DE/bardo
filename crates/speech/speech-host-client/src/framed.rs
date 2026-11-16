@@ -18,21 +18,25 @@ impl FrameBuffer {
 
     /// The next whole host frame, `None` while one is incomplete. A header over the cap is
     /// refused before the body is waited for; a body that is not a host message is unreadable.
+    ///
+    /// # Errors
+    /// [`ProviderError::Unreadable`] when the length header is over the cap or the body does not
+    /// decode as a host message.
     pub fn take(&mut self) -> Result<Option<HostOut>, ProviderError> {
         let Some(header) = self.pending.first_chunk::<4>() else {
             return Ok(None);
         };
-        let len = frame_length(*header).map_err(unreadable)?;
+        let len = frame_length(*header).map_err(|e| unreadable(&e))?;
         let Some(body) = self.pending.get(4..4 + len) else {
             return Ok(None);
         };
-        let frame = decode_frame(body).map_err(unreadable)?;
+        let frame = decode_frame(body).map_err(|e| unreadable(&e))?;
         self.pending.drain(..4 + len);
         Ok(Some(frame))
     }
 }
 
 /// A frame the host sent that cannot be read; the cause is the frame error, never the bytes.
-fn unreadable(error: FrameError) -> ProviderError {
+fn unreadable(error: &FrameError) -> ProviderError {
     ProviderError::Unreadable(error.to_string())
 }

@@ -10,20 +10,31 @@ pub struct Finished {
     pub end: SttEnd,
 }
 
-/// One streaming recognizer, one utterance at a time. The serve loop guarantees the order:
-/// `begin`, any number of `accept`, then `finish` or `reset`; `reset` also follows an error and a
+/// One streaming recognizer, one utterance at a time.
+///
+/// The serve loop guarantees the order: `begin`, any number of `accept`, then `finish` or `reset`; `reset` also follows an error and a
 /// dropped connection. Audio is held in memory only, for the utterance.
 pub trait Recognizer {
     /// The models this engine serves, for the `Hello` reply.
     fn models(&self) -> Vec<SpeechModelInfo>;
 
     /// Starts an utterance; an unserved model or an unsupported format is an error.
+    ///
+    /// # Errors
+    /// A [`ProviderError`] when the requested model is not served or the audio format is not
+    /// supported.
     fn begin(&mut self, request: &SttRequest) -> Result<(), ProviderError>;
 
     /// Feeds one chunk and returns the events it made (possibly none).
+    ///
+    /// # Errors
+    /// A [`ProviderError`] when the engine cannot take the chunk.
     fn accept(&mut self, chunk: &AudioChunk) -> Result<Vec<TranscriptEvent>, ProviderError>;
 
     /// No more audio: flush and summarise.
+    ///
+    /// # Errors
+    /// A [`ProviderError`] when the engine fails while flushing.
     fn finish(&mut self) -> Result<Finished, ProviderError>;
 
     /// Drops the utterance and everything held for it.
