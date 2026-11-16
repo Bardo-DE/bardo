@@ -11,7 +11,7 @@ use crate::links::{SheetLink, SheetOutput};
 /// without a `SheetLink` follows a default one (nothing shows) and says so once on stderr.
 pub fn use_sheet_output() -> ReadSignal<SheetOutput> {
     let found = use_hook(try_consume_context::<SheetLink>);
-    tell_if_missing(&found);
+    tell_if_missing(found.as_ref());
     let link = use_hook(|| found.clone().unwrap_or_default());
     use_watch(link.subscribe())
 }

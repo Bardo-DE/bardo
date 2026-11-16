@@ -54,7 +54,7 @@ fn damage_at(ms: u64) -> DamageAt {
 #[test]
 fn apply_masks_blacks_exact_device_pixels_at_scale_150() {
     // At 1.5 (180 in 120ths) a 2-lpx region at logical (2,2) covers device pixels 3..6.
-    let (masked, applied) = apply_masks(white(30, 30), Scale120(180), &[region(2, 2, 2, 2)]);
+    let (masked, applied) = apply_masks(&white(30, 30), Scale120(180), &[region(2, 2, 2, 2)]);
     for y in 0..30 {
         for x in 0..30 {
             let inside = (3..6).contains(&x) && (3..6).contains(&y);
@@ -71,7 +71,7 @@ fn apply_masks_blacks_exact_device_pixels_at_scale_150() {
 
 #[test]
 fn a_region_past_the_edge_is_clamped_and_reported_as_applied() {
-    let (masked, applied) = apply_masks(white(10, 10), Scale120(120), &[region(8, 8, 10, 10)]);
+    let (masked, applied) = apply_masks(&white(10, 10), Scale120(120), &[region(8, 8, 10, 10)]);
     assert_eq!(pixel(&masked, 9, 9), [0, 0, 0, 255]);
     assert_eq!(pixel(&masked, 7, 7), [255, 255, 255, 255]);
     assert_eq!(applied, vec![region(8, 8, 2, 2)]);

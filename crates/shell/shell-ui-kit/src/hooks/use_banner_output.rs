@@ -11,7 +11,7 @@ use crate::links::{BannerLink, BannerOutput};
 /// without a `BannerLink` follows a default one (nothing shows) and says so once on stderr.
 pub fn use_banner_output() -> ReadSignal<BannerOutput> {
     let found = use_hook(try_consume_context::<BannerLink>);
-    tell_if_missing(&found);
+    tell_if_missing(found.as_ref());
     let link = use_hook(|| found.clone().unwrap_or_default());
     use_watch(link.subscribe())
 }
