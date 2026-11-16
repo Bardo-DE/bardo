@@ -38,7 +38,7 @@ fn expect(rx: &Receiver<FolderEvent>, want: &[FolderEvent]) {
                 missing.retain(|i| want[*i] != event);
                 seen.push(event);
             }
-            Err(_) => panic!("wanted {want:?}, saw only {seen:?}"),
+            Err(timeout) => panic!("wanted {want:?}, saw only {seen:?}: {timeout}"),
         }
     }
 }

@@ -177,7 +177,7 @@ impl FakeCompositor {
             served: BTreeSet::new(),
             held: Vec::new(),
         };
-        let thread = std::thread::spawn(move || serve(display, state, queue, ring));
+        let thread = std::thread::spawn(move || serve(display, state, &queue, &ring));
         Self {
             jobs,
             bell,
@@ -266,15 +266,15 @@ impl Drop for FakeCompositor {
 fn serve(
     mut display: Display<Compositor>,
     mut state: Compositor,
-    queue: Receiver<Job>,
-    ring: UnixStream,
+    queue: &Receiver<Job>,
+    ring: &UnixStream,
 ) {
     use std::io::Read;
     loop {
         let ready = {
             let mut fds = [
                 PollFd::new(&display, PollFlags::IN),
-                PollFd::new(&ring, PollFlags::IN),
+                PollFd::new(ring, PollFlags::IN),
             ];
             loop {
                 match poll(&mut fds, None) {
@@ -287,7 +287,7 @@ fn serve(
         };
         if ready {
             let mut drain = [0u8; 64];
-            let _ = (&ring).read(&mut drain);
+            let _ = (&*ring).read(&mut drain);
             while let Ok(job) = queue.try_recv() {
                 match job {
                     Job::Run(run) => run(&mut state),
@@ -353,7 +353,11 @@ impl Compositor {
             return;
         };
         let (w, h) = window.size;
-        if buf.size != (w as i32, h as i32) || self.closed[top] {
+        let (wide, high) = (
+            i32::try_from(w).expect("a test window is far narrower than i32::MAX"),
+            i32::try_from(h).expect("a test window is far shorter than i32::MAX"),
+        );
+        if buf.size != (wide, high) || self.closed[top] {
             frame.failed(if self.closed[top] {
                 FailureReason::Stopped
             } else {
@@ -363,11 +367,12 @@ impl Compositor {
         }
         let mut done = 0;
         while done < window.pixels.len() {
-            let at = buf.offset as u64 + done as u64;
+            let at =
+                u64::try_from(buf.offset).expect("a pool offset is not negative") + done as u64;
             done += pwrite(&*buf.file, &window.pixels[done..], at).expect("pwrite");
         }
         let _ = buf.stride;
-        frame.damage(0, 0, w as i32, h as i32);
+        frame.damage(0, 0, wide, high);
         frame.ready();
         self.frames_served += 1;
     }

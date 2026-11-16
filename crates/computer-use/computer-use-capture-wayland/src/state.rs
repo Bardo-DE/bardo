@@ -228,11 +228,11 @@ pub(crate) fn pick_format(offered: &[WEnum<Format>]) -> Option<(Format, PixelFor
 impl Dispatch<WlRegistry, ()> for CapState {
     fn event(
         state: &mut Self,
-        registry: &WlRegistry,
+        proxy: &WlRegistry,
         event: wl_registry::Event,
         (): &(),
         _: &Connection,
-        qh: &QueueHandle<Self>,
+        qhandle: &QueueHandle<Self>,
     ) {
         let wl_registry::Event::Global {
             name, interface, ..
@@ -241,15 +241,15 @@ impl Dispatch<WlRegistry, ()> for CapState {
             return;
         };
         match interface.as_str() {
-            "ext_foreign_toplevel_list_v1" => state.list = Some(registry.bind(name, 1, qh, ())),
+            "ext_foreign_toplevel_list_v1" => state.list = Some(proxy.bind(name, 1, qhandle, ())),
             "ext_foreign_toplevel_image_capture_source_manager_v1" => {
-                state.sources = Some(registry.bind(name, 1, qh, ()));
+                state.sources = Some(proxy.bind(name, 1, qhandle, ()));
             }
             "ext_image_copy_capture_manager_v1" => {
-                state.copy = Some(registry.bind(name, 1, qh, ()));
+                state.copy = Some(proxy.bind(name, 1, qhandle, ()));
             }
-            "bardo_agent_manager_v1" => state.agent = Some(registry.bind(name, 1, qh, ())),
-            "wl_shm" => state.shm = Some(registry.bind(name, 1, qh, ())),
+            "bardo_agent_manager_v1" => state.agent = Some(proxy.bind(name, 1, qhandle, ())),
+            "wl_shm" => state.shm = Some(proxy.bind(name, 1, qhandle, ())),
             _ => {}
         }
     }
@@ -300,14 +300,14 @@ impl Dispatch<ExtForeignToplevelListV1, ()> for CapState {
 impl Dispatch<ExtForeignToplevelHandleV1, ()> for CapState {
     fn event(
         state: &mut Self,
-        handle: &ExtForeignToplevelHandleV1,
+        proxy: &ExtForeignToplevelHandleV1,
         event: ext_foreign_toplevel_handle_v1::Event,
         (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         use ext_foreign_toplevel_handle_v1::Event;
-        let key = &Key::of(handle);
+        let key = &Key::of(proxy);
         match event {
             Event::Identifier { identifier } => {
                 if let Some(top) = state.toplevels.get_mut(key) {
@@ -316,7 +316,7 @@ impl Dispatch<ExtForeignToplevelHandleV1, ()> for CapState {
             }
             Event::Closed => {
                 state.toplevels.remove(key);
-                handle.destroy();
+                proxy.destroy();
             }
             _ => {}
         }
@@ -344,14 +344,14 @@ ignore_events! {
 impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for CapState {
     fn event(
         state: &mut Self,
-        session: &ExtImageCopyCaptureSessionV1,
+        proxy: &ExtImageCopyCaptureSessionV1,
         event: ext_image_copy_capture_session_v1::Event,
         (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         use ext_image_copy_capture_session_v1::Event;
-        let Some(rec) = state.sessions.get_mut(&Key::of(session)) else {
+        let Some(rec) = state.sessions.get_mut(&Key::of(proxy)) else {
             return;
         };
         match event {
@@ -374,14 +374,14 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for CapState {
 impl Dispatch<ExtImageCopyCaptureFrameV1, Key> for CapState {
     fn event(
         state: &mut Self,
-        frame: &ExtImageCopyCaptureFrameV1,
+        proxy: &ExtImageCopyCaptureFrameV1,
         event: ext_image_copy_capture_frame_v1::Event,
-        key: &Key,
+        data: &Key,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         use ext_image_copy_capture_frame_v1::Event;
-        let Some(rec) = state.sessions.get_mut(key) else {
+        let Some(rec) = state.sessions.get_mut(data) else {
             return;
         };
         match event {
@@ -399,7 +399,7 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, Key> for CapState {
             }
             Event::Ready => {
                 rec.frame = FrameSlot::Ready(std::mem::take(&mut rec.damage));
-                frame.destroy();
+                proxy.destroy();
             }
             Event::Failed { reason } => {
                 rec.frame = FrameSlot::Failed(match reason {
@@ -407,7 +407,7 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, Key> for CapState {
                     WEnum::Value(FailureReason::Stopped) => Failure::Stopped,
                     _ => Failure::Unknown,
                 });
-                frame.destroy();
+                proxy.destroy();
             }
             _ => {}
         }

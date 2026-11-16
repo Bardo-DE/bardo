@@ -69,6 +69,7 @@ impl FakeClouds {
     }
 
     /// The same computer knowing `item` as `details`.
+    #[must_use]
     pub fn holding(self, item: ItemRef, details: CloudItem) -> FakeClouds {
         self.lock().items.insert(item, details);
         self
@@ -322,7 +323,7 @@ impl FakeClouds {
     /// "Plan.docx", else "Plan 2.docx", "Plan 3.docx"... the first the fake does not hold.
     fn free_name(&self, document: &ItemRef, stem: &str, export: &str) -> Option<ItemRef> {
         let state = self.lock();
-        (1..)
+        (1_u32..=u32::MAX)
             .map(|n| match n {
                 1 => format!("{stem}.{export}"),
                 n => format!("{stem} {n}.{export}"),

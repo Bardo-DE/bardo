@@ -24,7 +24,7 @@ impl std::fmt::Debug for Web {
 impl Web {
     /// Asks the desktop to open `url`. The window's thread must not block on the bus, so the
     /// call is made on the runtime; a failure is only said on stderr, as the other bus work is.
-    pub fn open(&self, url: &OnlineUrl) -> Result<(), OpenFailure> {
+    pub fn open(&self, url: &OnlineUrl) {
         let connection = self.connection.clone();
         let url = url.clone();
         self.runtime.spawn(async move {
@@ -32,7 +32,6 @@ impl Web {
                 eprintln!("bardo-files: {said}");
             }
         });
-        Ok(())
     }
 }
 

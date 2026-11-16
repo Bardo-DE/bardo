@@ -27,6 +27,10 @@ pub enum AbsPathError {
 
 impl AbsPath {
     /// `text` as an absolute path, `.` and doubled slashes folded away.
+    ///
+    /// # Errors
+    /// `AbsPathError` when `text` does not start with `/`, holds a control character or steps up
+    /// with `..`.
     pub fn parse(text: &str) -> Result<Self, AbsPathError> {
         if !text.starts_with('/') {
             return Err(AbsPathError::NotAbsolute);

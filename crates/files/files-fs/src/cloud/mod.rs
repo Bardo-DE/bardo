@@ -45,26 +45,47 @@ impl fmt::Debug for CloudGuard {
 /// of its own.
 pub trait Clouds: Send + Sync {
     /// The drives now; `Unavailable` while the service is not there.
+    ///
+    /// # Errors
+    /// `Unavailable` while the service is not there.
     fn drives(&self) -> Result<Vec<CloudDrive>, CloudError>;
 
     /// Where each of `items` stands. An item on no drive, or not there, is left out.
+    ///
+    /// # Errors
+    /// `CloudError` when the service cannot be asked.
     fn items(&self, items: &[ItemRef]) -> Result<Vec<(ItemRef, CloudItem)>, CloudError>;
 
     /// "Download Now": the items that were not taken, with the reasons.
+    ///
+    /// # Errors
+    /// `CloudError` when the service cannot be asked.
     fn download(&self, items: &[ItemRef]) -> Result<Vec<Refused>, CloudError>;
 
     /// "Remove Download": the items that were not taken, with the reasons.
+    ///
+    /// # Errors
+    /// `CloudError` when the service cannot be asked.
     fn remove_download(&self, items: &[ItemRef]) -> Result<Vec<Refused>, CloudError>;
 
     /// "Save a Copy": saves each online document of `items` as a file next to it. Anything else
     /// is refused, with the reason.
+    ///
+    /// # Errors
+    /// `CloudError` when the service cannot be asked.
     fn save_copy(&self, items: &[ItemRef]) -> Result<SavedCopies, CloudError>;
 
     /// "Keep Downloaded" on or off: the items that were not taken, with the reasons.
+    ///
+    /// # Errors
+    /// `CloudError` when the service cannot be asked.
     fn keep(&self, items: &[ItemRef], keep: bool) -> Result<Vec<Refused>, CloudError>;
 
     /// Calls `news` with every change until the guard drops. The service going away or coming
     /// back is news too (`CloudNews::Drives`): the caller asks for the drives again.
+    ///
+    /// # Errors
+    /// `CloudError` when the service cannot be asked to report changes.
     fn watch(&self, news: News) -> Result<CloudGuard, CloudError>;
 }
 

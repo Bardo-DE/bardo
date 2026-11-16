@@ -44,8 +44,8 @@ fn main() -> ExitCode {
     if let Some(asked) = args::schema_dir(&argv) {
         return write_schema(asked);
     }
-    let args = match Args::parse(argv) {
-        Ok(args) => args,
+    let parsed = match Args::parse(argv) {
+        Ok(parsed) => parsed,
         Err(said) => {
             eprintln!("bardo-files: {said}");
             eprintln!("usage: bardo-files [FOLDER]");
@@ -53,7 +53,7 @@ fn main() -> ExitCode {
             return ExitCode::from(2);
         }
     };
-    let folder = match args.start {
+    let folder = match parsed.start {
         Start::Trash => Some(Location::Trash),
         Start::Given(path) => folder_at(absolute(path, std::env::current_dir().ok())),
         Start::Home => folder_at(places::new_window(
@@ -76,7 +76,7 @@ fn main() -> ExitCode {
         }
     };
     let role = runtime.block_on(join(
-        args.dbus_activated,
+        parsed.dbus_activated,
         start.clone(),
         launch_token(),
         runtime.handle().clone(),

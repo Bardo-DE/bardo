@@ -125,6 +125,10 @@ mod tests {
         Args::parse(args.iter().map(OsString::from))
     }
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "compared with the `Result` that `parse` returns in the same table"
+    )]
     fn given(path: &str) -> Result<Args, String> {
         Ok(Args {
             start: Start::Given(PathBuf::from(path)),
@@ -207,7 +211,7 @@ mod tests {
             ("nothing", args(&[]), None),
         ];
         for (name, list, want) in cases {
-            let got = schema_dir(&list).map(|asked| asked.map_err(|_| ()));
+            let got = schema_dir(&list).map(|asked| asked.map_err(drop));
             let want = want.map(|asked: Result<&str, ()>| asked.map(PathBuf::from));
             assert_eq!(got, want, "{name}");
         }

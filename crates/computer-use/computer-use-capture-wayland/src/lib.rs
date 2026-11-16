@@ -37,11 +37,12 @@ pub struct StockToplevelCapture {
     clock: Arc<dyn StampClock>,
 }
 
-/// Capture through the lease's `get_capture_source`: the compositor masks before the buffer
-/// leaves, so frames are reported as masked by the compositor and the hints go to it. Needs
-/// the agent connection (`Compositor1.Connect("agent")`); a compositor that does not advertise
-/// `bardo_agent_manager_v1` (casement master does not yet) makes `open` answer
-/// [`CaptureError::BackendUnavailable`].
+/// Capture through the lease's `get_capture_source`.
+///
+/// The compositor masks before the buffer leaves, so frames are reported as masked by the
+/// compositor and the hints go to it. Needs the agent connection (`Compositor1.Connect("agent")`);
+/// a compositor that does not advertise `bardo_agent_manager_v1` (casement master does not yet)
+/// makes `open` answer [`CaptureError::BackendUnavailable`].
 #[derive(Debug)]
 pub struct QuireMaskedCapture {
     pump: Arc<Pump<CapState>>,

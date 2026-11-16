@@ -49,21 +49,25 @@ fn choice_of(with: OpenAs) -> Result<AppChoice, OpenFailure> {
     match with {
         OpenAs::Default => Ok(AppChoice::Default),
         OpenAs::App(pick) => DesktopId::new(pick.as_str())
+            .ok()
             .map(AppChoice::App)
-            .map_err(|_| OpenFailure("That app can\u{2019}t be found.".to_owned())),
+            .ok_or_else(|| OpenFailure("That app can\u{2019}t be found.".to_owned())),
     }
 }
 
 impl Opener for DesktopOpener {
     fn open(&self, targets: Vec<PathBuf>, with: OpenAs) -> Result<(), OpenFailure> {
         self.launcher
-            .open(&targets, choice_of(with)?, None)
+            .open(&targets, &choice_of(with)?, None)
             .map_err(|error| OpenFailure(error.to_string()))
     }
 
     fn open_url(&self, url: &OnlineUrl) -> Result<(), OpenFailure> {
         match &self.web {
-            Some(web) => web.open(url),
+            Some(web) => {
+                web.open(url);
+                Ok(())
+            }
             None => Err(OpenFailure(
                 "Online documents can\u{2019}t be opened right now.".to_owned(),
             )),

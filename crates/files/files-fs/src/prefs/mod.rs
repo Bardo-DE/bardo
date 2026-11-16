@@ -41,5 +41,8 @@ pub trait PrefsStore: Send + Sync {
     fn load(&self, folder: &FolderPath) -> FolderPrefs;
 
     /// Remembers that `folder` is shown with `prefs`.
+    ///
+    /// # Errors
+    /// `PrefsError` when the preferences cannot be written.
     fn save(&self, folder: &FolderPath, prefs: FolderPrefs) -> Result<(), PrefsError>;
 }

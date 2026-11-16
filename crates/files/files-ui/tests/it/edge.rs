@@ -175,7 +175,7 @@ fn watching_follows_a_folder_until_it_is_left() {
         .run_in(TabId::FIRST, vec![Effect::Watch(place.clone())]);
     assert_eq!(rig.watcher.watched(), vec![here.clone()]);
 
-    rig.watcher.push(&here, FolderEvent::Changed(name("a")));
+    rig.watcher.push(&here, &FolderEvent::Changed(name("a")));
     assert_eq!(
         next(&mut rig.inbox),
         Heard::Tab(

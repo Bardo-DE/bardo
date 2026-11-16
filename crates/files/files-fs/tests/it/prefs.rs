@@ -11,13 +11,13 @@ fn folder(path: &str) -> FolderPath {
 }
 
 fn icons_by_size() -> FolderPrefs {
-    let mut prefs = FolderPrefs::default();
-    prefs.view = ViewMode::Icons;
-    prefs.sort = Sort {
-        key: SortKey::Size,
-        order: SortOrder::Descending,
-    };
-    prefs
+    FolderPrefs {
+        view: ViewMode::Icons,
+        sort: Sort {
+            key: SortKey::Size,
+            order: SortOrder::Descending,
+        },
+    }
 }
 
 #[test]
@@ -75,10 +75,9 @@ fn text_is_read_leniently() {
             "another table is ignored",
             "[other]\nx = 1\n\n[[folder]]\npath = \"/a\"\nview = \"icons\"\n",
             "/a",
-            Some({
-                let mut prefs = FolderPrefs::default();
-                prefs.view = ViewMode::Icons;
-                prefs
+            Some(FolderPrefs {
+                view: ViewMode::Icons,
+                ..FolderPrefs::default()
             }),
         ),
     ];

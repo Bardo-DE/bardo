@@ -75,7 +75,8 @@ impl Shared {
     pub(crate) fn read(&self) -> Result<computer_use_capture::PixelBuf, CaptureError> {
         let stride = self.size.0 * BPP;
         let len = usize::try_from(u64::from(stride) * u64::from(self.size.1))
-            .map_err(|_| CaptureError::Format)?;
+            .ok()
+            .ok_or(CaptureError::Format)?;
         let mut data = vec![0u8; len];
         let mut filled = 0;
         while filled < len {

@@ -34,7 +34,8 @@ impl Volumes for DesktopVolumes {
     fn list(&self) -> Result<Vec<Volume>, VolumeError> {
         self.runtime
             .block_on(self.disks.list())
-            .map_err(|_| VolumeError)
+            .ok()
+            .ok_or(VolumeError)
     }
 
     fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
@@ -51,12 +52,13 @@ impl Volumes for DesktopVolumes {
 
     fn watch(&self, changed: Changed) -> Result<WatchGuard, VolumeError> {
         // Subscribed before this returns, so a list made after it misses nothing.
-        let mut changes = self
+        let mut stream = self
             .runtime
             .block_on(self.disks.changes())
-            .map_err(|_| VolumeError)?;
+            .ok()
+            .ok_or(VolumeError)?;
         let task = self.runtime.spawn(async move {
-            while changes.next().await.is_some() {
+            while stream.next().await.is_some() {
                 changed();
             }
         });

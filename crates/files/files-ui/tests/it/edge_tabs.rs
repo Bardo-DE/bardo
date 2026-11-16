@@ -54,7 +54,7 @@ fn two_tabs_on_one_folder_each_watch_it_and_each_stop_alone() {
     ]);
     assert_eq!(rig.watcher.watched(), vec![here.clone(), here.clone()]);
     rig.lister.set(here.clone(), Ok(vec![file("a")]));
-    rig.watcher.push(&here, FolderEvent::Changed(name("a")));
+    rig.watcher.push(&here, &FolderEvent::Changed(name("a")));
     // Both hear the change, each as its own.
     let heard = [next(&mut rig.inbox), next(&mut rig.inbox)];
     for tab in [first, second] {

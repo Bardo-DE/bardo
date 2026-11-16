@@ -26,9 +26,9 @@ impl GlobalDispatch<BardoAgentManagerV1, ()> for Compositor {
         _: &Client,
         resource: New<BardoAgentManagerV1>,
         (): &(),
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
-        init.init(resource, ());
+        data_init.init(resource, ());
     }
 }
 
@@ -40,11 +40,11 @@ impl Dispatch<BardoAgentManagerV1, ()> for Compositor {
         request: bardo_agent_manager_v1::Request,
         (): &(),
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         if let bardo_agent_manager_v1::Request::CreateLease { id, toplevel, .. } = request {
             let top = toplevel.data::<usize>().copied().unwrap_or(usize::MAX);
-            let lease = init.init(id, top);
+            let lease = data_init.init(id, top);
             match state.stance {
                 Stance::Grant => lease.granted(),
                 Stance::Refuse(reason) => lease.revoked(reason),
@@ -59,14 +59,14 @@ impl Dispatch<BardoAgentLeaseV1, usize> for Compositor {
         _: &Client,
         _: &BardoAgentLeaseV1,
         request: bardo_agent_lease_v1::Request,
-        top: &usize,
+        data: &usize,
         _: &DisplayHandle,
-        init: &mut DataInit<'_, Self>,
+        data_init: &mut DataInit<'_, Self>,
     ) {
         use bardo_agent_lease_v1::Request;
         match request {
             Request::GetCaptureSource { source } => {
-                init.init(source, *top);
+                data_init.init(source, *data);
             }
             Request::SetMaskHints { hints } => state.hints.push(hints),
             _ => {}

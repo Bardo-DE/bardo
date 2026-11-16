@@ -2,7 +2,6 @@
 //! the window's request channel, so a change is queued, shown and undone like the person's own.
 //! The two reads and the undo wait for the window's answer.
 
-use std::future::Future;
 use std::path::{Path, PathBuf};
 
 use files_core::{Bring, FileName, FolderPath, ItemRef, Location};
@@ -12,8 +11,8 @@ use files_ui::{Query, ReadError, Reading, Request, RequestSender};
 
 /// What the window is to do with a path an agent named.
 pub fn open_input(path: &Path) -> Result<Input, Refusal> {
-    let folder = FolderPath::new(path).map_err(|_| not_there())?;
-    let meta = std::fs::metadata(path).map_err(|_| not_there())?;
+    let folder = FolderPath::new(path).ok().ok_or_else(not_there)?;
+    let meta = std::fs::metadata(path).ok().ok_or_else(not_there)?;
     if meta.is_dir() {
         return Ok(Input::Go(Location::Folder(folder)));
     }
@@ -39,7 +38,7 @@ fn closed(_: ReadError) -> Refusal {
     Refusal::Closed
 }
 
-fn paths_of(items: Vec<ItemRef>) -> Vec<PathBuf> {
+fn paths_of(items: &[ItemRef]) -> Vec<PathBuf> {
     items.iter().map(ItemRef::path).collect()
 }
 
@@ -64,9 +63,9 @@ impl Port {
             .map_err(closed)
     }
 
-    fn quietly(&self, input: Input) -> Result<Reply, Refusal> {
+    fn quietly(&self, input: Input) -> Reply {
         self.sender.send_quietly(input);
-        Ok(Reply::Done)
+        Reply::Done
     }
 
     /// Takes back the newest change, if it is the one `undoing` describes.
@@ -77,7 +76,7 @@ impl Port {
         };
         match next {
             Some(next) if next.kind == undoing.kind && next.count == undoing.count => {
-                self.quietly(Input::Undo)
+                Ok(self.quietly(Input::Undo))
             }
             Some(_) | None => Err(Refusal::Gone),
         }
@@ -90,18 +89,18 @@ impl Port {
                 self.sender.send(Request { input, raise: None });
                 Ok(Reply::Done)
             }
-            Ask::Trash(items) => self.quietly(Input::TrashItems(items)),
-            Ask::NewFolder { parent, name } => self.quietly(Input::MakeFolder { parent, name }),
-            Ask::Copy { sources, to } => self.quietly(Input::Bring {
+            Ask::Trash(items) => Ok(self.quietly(Input::TrashItems(items))),
+            Ask::NewFolder { parent, name } => Ok(self.quietly(Input::MakeFolder { parent, name })),
+            Ask::Copy { sources, to } => Ok(self.quietly(Input::Bring {
                 sources,
                 destination: to,
                 how: Bring::Copy,
-            }),
-            Ask::Move { sources, to } => self.quietly(Input::Bring {
+            })),
+            Ask::Move { sources, to } => Ok(self.quietly(Input::Bring {
                 sources,
                 destination: to,
                 how: Bring::Move,
-            }),
+            })),
             Ask::EmptyTrash => {
                 // The person is asked in the window, which comes forward for it.
                 let input = Input::AskEmptyTrash;
@@ -109,7 +108,7 @@ impl Port {
                 Ok(Reply::Done)
             }
             Ask::Selection => match self.read(Query::Selection).await? {
-                Reading::Selection(items) => Ok(Reply::Items(paths_of(items))),
+                Reading::Selection(items) => Ok(Reply::Items(paths_of(&items))),
                 Reading::Place(_) | Reading::Undo(_) => Err(Refusal::Closed),
             },
             Ask::CurrentFolder => match self.read(Query::CurrentFolder).await? {

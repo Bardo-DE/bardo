@@ -131,14 +131,14 @@ impl CapState {
 impl Dispatch<BardoAgentLeaseV1, ()> for CapState {
     fn event(
         state: &mut Self,
-        lease: &BardoAgentLeaseV1,
+        proxy: &BardoAgentLeaseV1,
         event: bardo_agent_lease_v1::Event,
         (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         use bardo_agent_lease_v1::Event;
-        let Some(rec) = state.leases.get_mut(&Key::of(lease)) else {
+        let Some(rec) = state.leases.get_mut(&Key::of(proxy)) else {
             return;
         };
         match event {
@@ -149,7 +149,7 @@ impl Dispatch<BardoAgentLeaseV1, ()> for CapState {
                     _ => Ended::Withdrawn,
                 });
                 // The last event: the client destroys the object.
-                lease.destroy();
+                proxy.destroy();
             }
             _ => {}
         }

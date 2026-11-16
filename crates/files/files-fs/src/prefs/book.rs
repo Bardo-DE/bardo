@@ -1,8 +1,9 @@
 //! The remembered folders, as data and as text.
 
 use std::collections::BTreeMap;
+use std::fmt::Write as _;
 
-use files_core::{FolderPath, FolderPrefs, SortKey, SortOrder, ViewMode};
+use files_core::{FolderPath, FolderPrefs, Sort, SortKey, SortOrder, ViewMode};
 
 /// How many folders are remembered; the one least recently changed is forgotten first.
 pub const KEPT: usize = 500;
@@ -78,13 +79,15 @@ impl PrefBook {
             };
             let quoted = |word: &str| toml::Value::String(word.to_owned()).to_string();
             let prefs = found.prefs;
-            text.push_str(&format!(
+            // Writing to a `String` cannot fail.
+            let _ = write!(
+                text,
                 "\n[[folder]]\npath = {}\nview = {}\nkey = {}\norder = {}\n",
                 quoted(path),
                 quoted(prefs.view.slug()),
                 quoted(prefs.sort.key.slug()),
                 quoted(prefs.sort.order.slug()),
-            ));
+            );
         }
         text
     }
@@ -115,13 +118,15 @@ impl PrefBook {
 /// The prefs one stored table holds.
 fn prefs_of(entry: &toml::Table) -> FolderPrefs {
     let word = |key: &str| entry.get(key).and_then(toml::Value::as_str);
-    let mut prefs = FolderPrefs::default();
-    prefs.view = word("view")
-        .and_then(ViewMode::from_slug)
-        .unwrap_or_default();
-    prefs.sort.key = word("key").and_then(SortKey::from_slug).unwrap_or_default();
-    prefs.sort.order = word("order")
-        .and_then(SortOrder::from_slug)
-        .unwrap_or_default();
-    prefs
+    FolderPrefs {
+        view: word("view")
+            .and_then(ViewMode::from_slug)
+            .unwrap_or_default(),
+        sort: Sort {
+            key: word("key").and_then(SortKey::from_slug).unwrap_or_default(),
+            order: word("order")
+                .and_then(SortOrder::from_slug)
+                .unwrap_or_default(),
+        },
+    }
 }

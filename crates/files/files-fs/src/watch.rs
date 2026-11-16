@@ -28,6 +28,9 @@ pub enum FolderEvent {
 pub trait Watcher {
     /// Calls `sink` for each change among the direct children of `folder`, from another thread,
     /// until the returned handle is dropped.
+    ///
+    /// # Errors
+    /// `WatchError` when `folder` is not there, may not be watched or the system has no watch left.
     fn watch(
         &self,
         folder: &FolderPath,
@@ -66,10 +69,10 @@ impl Watcher for NotifyWatcher {
         sink: Box<dyn Fn(FolderEvent) + Send>,
     ) -> Result<WatchHandle, WatchError> {
         let root = folder.as_path().to_path_buf();
-        let watched = root.clone();
+        let base = root.clone();
         let mut watcher = notify::recommended_watcher(move |result: notify::Result<Event>| {
             let events = match result {
-                Ok(event) => translate(&watched, event),
+                Ok(event) => translate(&base, &event),
                 Err(_) => vec![FolderEvent::Rescan],
             };
             events.into_iter().for_each(&sink);
@@ -99,13 +102,13 @@ fn watch_error(err: notify::Error) -> WatchError {
 
 /// The folder events one system event stands for. Paths that are not direct children of
 /// `folder` are ignored, except the folder itself going away.
-fn translate(folder: &Path, event: Event) -> Vec<FolderEvent> {
+fn translate(folder: &Path, event: &Event) -> Vec<FolderEvent> {
     if event.need_rescan() {
         return vec![FolderEvent::Rescan];
     }
     let paths = &event.paths;
     let itself = paths.iter().any(|p| p == folder);
-    match event.kind {
+    match &event.kind {
         EventKind::Create(_) => each(folder, paths, FolderEvent::Added),
         EventKind::Remove(_) | EventKind::Modify(ModifyKind::Name(RenameMode::From)) => {
             if itself {

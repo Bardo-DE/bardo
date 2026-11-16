@@ -5,9 +5,10 @@
 use wayland_client::protocol::wl_callback::WlCallback;
 use wayland_client::{Connection, Dispatch, Proxy, QueueHandle};
 
-/// Names one object (a toplevel, a workspace, a capture session) in a state's tables. It is the
-/// object's id on the connection, unique while the object lives; a state drops its record when
-/// the compositor closes the object, before the id can be reused.
+/// Names one object (a toplevel, a workspace, a capture session) in a state's tables.
+///
+/// It is the object's id on the connection, unique while the object lives; a state drops its record
+/// when the compositor closes the object, before the id can be reused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ObjectKey(u32);
 

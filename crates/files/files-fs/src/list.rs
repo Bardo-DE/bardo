@@ -15,13 +15,22 @@ use crate::error::ListError;
 pub trait Lister: Send + Sync {
     /// Every entry of `folder`, in no particular order. An entry that vanishes while the folder is
     /// read is left out. The entries carry no type (`mime`); another crate finds it.
+    ///
+    /// # Errors
+    /// `ListError` when `folder` is not there, may not be read or is not a folder.
     fn list(&self, folder: &FolderPath) -> Result<Vec<Entry>, ListError>;
 
     /// The one entry `name` of `folder`, as [`Lister::list`] would give it.
+    ///
+    /// # Errors
+    /// `ListError` when `folder` or the entry is not there or may not be read.
     fn entry(&self, folder: &FolderPath, name: &FileName) -> Result<Entry, ListError>;
 
     /// What Get Info says of `item`: its kind, size, dates and, for a folder, how many items it
     /// holds. A link is described, not followed.
+    ///
+    /// # Errors
+    /// `ListError` when `item` is not there or may not be read.
     fn info(&self, item: &ItemRef) -> Result<Info, ListError>;
 }
 
@@ -40,6 +49,9 @@ pub struct DiskLister;
 
 impl DiskLister {
     /// Like [`Lister::list`], and says how many entries it left out.
+    ///
+    /// # Errors
+    /// `ListError` when `folder` is not there, may not be read or is not a folder.
     pub fn list_counted(&self, folder: &FolderPath) -> Result<Listing, ListError> {
         let children = fs::read_dir(folder.as_path()).map_err(|e| ListError::from_io(&e))?;
         let mut entries = Vec::new();

@@ -103,7 +103,7 @@ impl FakeWatcher {
 
     /// Delivers `event` to every sink watching `folder`. The sinks run on the calling thread, so
     /// a sink must not call back into this watcher.
-    pub fn push(&self, folder: &FolderPath, event: FolderEvent) {
+    pub fn push(&self, folder: &FolderPath, event: &FolderEvent) {
         let registry = locked(&self.registry);
         for (_, watched, sink) in &registry.sinks {
             if watched == folder {
