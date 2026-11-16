@@ -57,7 +57,7 @@ fn nth_row(n: usize) -> String {
 
 /// A launcher panel logging the palette's selection and row rects; typing into the field
 /// gives the field an operator token, which moves the list down without moving the selection.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Rows() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut query = use_signal(String::new);
@@ -183,12 +183,12 @@ fn TabPage(takes: TakesTab) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn TabConsumed() -> Element {
     rsx! { TabPage { takes: TakesTab::Consumes } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn TabPassed() -> Element {
     rsx! { TabPage { takes: TakesTab::Passes } }
 }
@@ -263,7 +263,7 @@ fn KeptPage() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn KeptFresh() -> Element {
     rsx! { KeptPage {} }
 }
@@ -414,12 +414,12 @@ fn trailing_page(trailing: bool) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn WithTrailing() -> Element {
     trailing_page(true)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn WithoutTrailing() -> Element {
     trailing_page(false)
 }

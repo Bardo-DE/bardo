@@ -9,7 +9,7 @@ use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
 use ui_harness::Input;
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Trailed() -> Element {
     let log = use_signal(Vec::<String>::new);
     let mut picked = use_signal(|| 0u32);

@@ -15,7 +15,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut sort = use_signal(|| None::<Sort<u8>>);
     let columns = vec![
@@ -95,7 +95,7 @@ fn dragging_a_header_edge_resizes_the_column_and_stops_at_its_least() {
     assert_eq!(head(&harness), 48.0, "held at the least");
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Ruled() -> Element {
     let columns = vec![TableColumn::new(0u8, "Name", Px(150.0))];
     let rows = vec![TableRow::new(1u8, "A", vec![rsx! { "A" }])];

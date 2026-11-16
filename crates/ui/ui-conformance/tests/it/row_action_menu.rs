@@ -92,7 +92,7 @@ fn Overflow() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn OwnPage() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -101,7 +101,7 @@ fn OwnPage() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn OverflowPage() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,

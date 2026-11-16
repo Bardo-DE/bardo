@@ -40,7 +40,7 @@ fn sections(query: &str, drawn: u32) -> Vec<SuggestionSection<String>> {
 
 /// A button that summons the card as mail's ⌘K does: the query cleared, the card shown, and the
 /// field asked for by selector with its text selected.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut query = use_signal(String::new);
     let mut shown = use_signal(|| false);

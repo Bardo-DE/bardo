@@ -16,7 +16,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Thread() -> Element {
     let mut mounted = use_signal(|| 0u32);
     let data = DataName::parse("hc")

@@ -43,7 +43,7 @@ fn items(on: &[usize]) -> Vec<MenuItem<usize>> {
     ]
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut on = use_signal(Vec::<usize>::new);

@@ -78,12 +78,12 @@ fn Page(drive: Drive) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FieldDriven() -> Element {
     rsx! { Page { drive: Drive::Field } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn OwnCursor() -> Element {
     rsx! { Page { drive: Drive::Own } }
 }

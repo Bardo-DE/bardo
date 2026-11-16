@@ -133,7 +133,7 @@ fn Page(card: Card) -> Element {
 
 macro_rules! app {
     ($name:ident, $card:expr) => {
-        #[allow(non_snake_case)]
+        #[allow(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
         fn $name() -> Element {
             rsx! {
                 Ds { appearance: Appearance::default(), material: Material::Window,
@@ -293,7 +293,7 @@ fn MailPage() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn MailApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, MailPage {} }

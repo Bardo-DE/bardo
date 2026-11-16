@@ -40,12 +40,12 @@ fn opener(page: Page) -> Option<String> {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn StackApp() -> Element {
     stack_app(Motion::default())
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ReducedApp() -> Element {
     stack_app(Motion::Reduced)
 }

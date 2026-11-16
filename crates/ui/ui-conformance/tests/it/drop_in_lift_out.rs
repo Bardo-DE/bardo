@@ -47,7 +47,7 @@ fn Bar() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
@@ -55,7 +55,7 @@ fn Page() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ReducedPage() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {

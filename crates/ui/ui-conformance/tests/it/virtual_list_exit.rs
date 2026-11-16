@@ -24,7 +24,7 @@ thread_local! {
 }
 
 /// A page whose list is given `GIVEN`.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let (exit, change) = GIVEN.with(Cell::get);
     let mut keys = use_signal(|| (1..=10u32).collect::<Vec<u32>>());

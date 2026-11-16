@@ -38,7 +38,7 @@ thread_local! {
     static BUTTONS: Cell<bool> = const { Cell::new(true) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let flow = FLOW.with(Cell::get);
     let on_dismiss = match LISTENING.with(Cell::get) {

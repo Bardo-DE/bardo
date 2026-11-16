@@ -43,7 +43,7 @@ fn items() -> Vec<MenuItem<u8>> {
         .collect()
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Unmounting() -> Element {
     let open = use_signal(|| true);
     OPEN.with(|slot| *slot.borrow_mut() = Some(open));
@@ -63,7 +63,7 @@ fn Unmounting() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FormRow() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

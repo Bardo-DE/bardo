@@ -34,7 +34,7 @@ use probe::{centred, distance, ink, keep, pixels, rect};
 
 // ---- 1. TextField is one line tall ----------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FieldsApp() -> Element {
     rsx! {
         Root {
@@ -89,7 +89,7 @@ fn a_text_input_is_one_line_tall_and_fills_its_wrapper() {
 
 /// No grain: since the window root paints its grain the default
 /// look's 35 is visible noise, and this test asks only that no pill is drawn on a flat ground.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn EmptyApp() -> Element {
     let look = SpaceLook {
         grain: Grain(0),
@@ -138,7 +138,7 @@ fn Push() -> Element {
     rsx! {}
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ToastApp() -> Element {
     rsx! {
         Root {
@@ -172,7 +172,7 @@ fn the_toast_action_shows_its_label() {
     assert!(label > 40, "the action's label painted {label} pixels");
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn SendApp() -> Element {
     rsx! {
         Root {
@@ -204,7 +204,7 @@ fn the_send_pill_undo_shows_its_label() {
 
 // ---- 5. SectionHeader: one full-width row each ----------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn HeadersApp() -> Element {
     rsx! {
         Root {
@@ -248,7 +248,7 @@ fn each_section_header_is_a_full_width_row_of_its_own() {
 
 // ---- 6. A Row without an accessory starts at the left --------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ItemsApp() -> Element {
     rsx! {
         Root {
@@ -289,7 +289,7 @@ fn a_row_without_an_accessory_keeps_its_title_left() {
 
 // ---- 8. SpaceEditor: the field paints and the presets are 22 px ---------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn EditorApp() -> Element {
     let look = SpaceLook {
         dots: PRESETS[0].dots.to_vec(),

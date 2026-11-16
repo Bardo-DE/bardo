@@ -32,7 +32,7 @@ fn tint(space: usize) -> Tint {
 
 /// Row `scheme`, each Space's tinted plate then an untinted one. A hollow glyph (`Square`, outline)
 /// leaves the plate's centre to the gradient.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Plates() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

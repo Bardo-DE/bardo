@@ -30,12 +30,12 @@ fn stage(motion: Motion) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Standard() -> Element {
     stage(Motion::Standard)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Reduced() -> Element {
     stage(Motion::Reduced)
 }

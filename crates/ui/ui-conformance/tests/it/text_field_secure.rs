@@ -32,7 +32,7 @@ fn type_text(harness: &mut Harness, text: &str) {
 
 /// A secret field whose every input and change is logged (lengths only on screen, the text in
 /// a signal the test reads through `.heard`, outside the field).
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Secret() -> Element {
     let mut inputs = use_signal(Vec::<String>::new);
     let mut changes = use_signal(Vec::<String>::new);
@@ -85,7 +85,7 @@ fn a_secret_is_typed_and_heard_but_never_written_into_the_markup() {
 }
 
 /// A plain field inside a 24 px title and a bezeled one beside it.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Titled() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet,

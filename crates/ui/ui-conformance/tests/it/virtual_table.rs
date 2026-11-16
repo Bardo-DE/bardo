@@ -37,7 +37,7 @@ fn built() -> usize {
     BUILT.with(|built| built.borrow().len())
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let scroller = use_scroller();
     let mut cursor = use_signal(|| None::<usize>);
@@ -168,7 +168,7 @@ fn the_keys_ask_to_move_the_cursor_by_a_row_and_by_a_page_and_the_cursor_row_is_
     );
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Bare() -> Element {
     let scroller = use_scroller();
     let columns = vec![TableColumn::new(0u8, "Row", Px(80.0))];
@@ -221,7 +221,7 @@ fn the_header_rule_shows_once_the_rows_are_scrolled() {
     assert!(harness.html().contains("data-scrolled=\"no\""));
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Looked() -> Element {
     let scroller = use_scroller();
     let columns = vec![TableColumn::new(0u8, "Row", Px(80.0))];
@@ -303,7 +303,7 @@ fn a_list_look_is_marked_and_stripes_every_other_row_by_index_and_marks_the_curs
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Picking() -> Element {
     let scroller = use_scroller();
     let mut chosen = use_signal(RowSelection::none);

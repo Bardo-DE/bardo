@@ -20,7 +20,7 @@ fn ms(n: u64) -> Duration {
 }
 
 /// A controlled editor: the name and motion live here, and are shown beside it.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Editor() -> Element {
     let mut name = use_signal(|| "Work".to_string());
     let mut motion = use_signal(|| Motion::Standard);

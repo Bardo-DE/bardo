@@ -57,7 +57,7 @@ static DEVICE: GlobalSignal<Run> = Signal::global(|| Run::Rest);
 static OUTPUT: GlobalSignal<Run> = Signal::global(|| Run::Rest);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Rows() -> Element {
     let (net, device, output) = (NET(), DEVICE(), OUTPUT());
     let disc = match net.joined() {

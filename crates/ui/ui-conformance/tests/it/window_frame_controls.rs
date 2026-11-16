@@ -89,12 +89,12 @@ fn framed(maximized: bool) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Normal() -> Element {
     framed(false)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Zoomed() -> Element {
     framed(true)
 }

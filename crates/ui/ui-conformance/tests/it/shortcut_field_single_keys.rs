@@ -22,7 +22,7 @@ fn plain(c: char) -> Chord {
     Chord::new(ChordModifiers::empty(), ChordKey::Char(c))
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut shortcut = use_signal(|| Some(plain('j')));
     let mut log = use_signal(String::new);

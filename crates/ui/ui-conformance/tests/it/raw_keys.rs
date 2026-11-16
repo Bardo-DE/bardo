@@ -29,7 +29,7 @@ fn heard() -> Vec<RawKey> {
     HEARD.with(|heard| heard.borrow().clone())
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut told = use_signal(|| 0u8);
     let mut downs = use_signal(|| 0u8);

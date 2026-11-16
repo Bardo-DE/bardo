@@ -44,7 +44,7 @@ fn sections(query: &str) -> Vec<SuggestionSection<String>> {
     ]
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut query = use_signal(String::new);
     let mut log = use_signal(Vec::<String>::new);

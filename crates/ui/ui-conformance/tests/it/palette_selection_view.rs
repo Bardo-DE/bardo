@@ -50,7 +50,7 @@ fn jump(key: &dioxus::prelude::Key) -> Option<usize> {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn LongPalette() -> Element {
     let mut selected = use_signal(|| 0usize);
     let claim = move |key: FieldKey| -> bool {
@@ -194,7 +194,7 @@ fn rows_24() -> PaletteGroups<u8> {
 /// palette is on a surface 420 px tall, as bardo-shell's launcher panel bounds it.
 #[test]
 fn the_palettes_own_down_and_up_scroll_the_selection_into_view() {
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Own() -> Element {
         rsx! {
             Ds { appearance: Appearance::default(), material: Material::Sheet,
@@ -323,17 +323,17 @@ fn Opened(initial_caret: Option<InitialCaret>) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn DefaultCaret() -> Element {
     rsx! { Opened { initial_caret: None } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn StartCaret() -> Element {
     rsx! { Opened { initial_caret: Some(InitialCaret::Start) } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn SelectAllCaret() -> Element {
     rsx! { Opened { initial_caret: Some(InitialCaret::SelectAll) } }
 }
@@ -372,7 +372,7 @@ fn a_palette_opened_on_a_query_puts_the_caret_where_it_is_asked() {
     assert_eq!(harness.text_of(".query").as_deref(), Some("[x]"));
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn KeyedRow() -> Element {
     let row = PaletteRow {
         leading: RowLeading::Icon(Icon::File),

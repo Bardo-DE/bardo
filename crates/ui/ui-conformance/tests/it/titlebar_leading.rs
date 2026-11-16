@@ -11,7 +11,7 @@ use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
 use ui_harness::Input;
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Led() -> Element {
     let log = use_signal(Vec::<String>::new);
     let mut picked = use_signal(|| 0u32);
@@ -36,13 +36,13 @@ fn Led() -> Element {
 }
 
 /// A bare titlebar with a wide leading control and a trailing one, the title centred.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn BarCentred() -> Element {
     bar(TitleRoom::Centred)
 }
 
 /// The same bar with the title kept to the room between the two controls.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn BarBeside() -> Element {
     bar(TitleRoom::Beside)
 }

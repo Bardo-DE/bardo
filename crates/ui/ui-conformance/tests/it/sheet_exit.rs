@@ -22,7 +22,7 @@ fn fading(motion: Motion) -> Harness {
         static MOTION: std::cell::Cell<Motion> = const { std::cell::Cell::new(Motion::Standard) };
     }
     MOTION.with(|cell| cell.set(motion));
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Fading() -> Element {
         let motion = MOTION.with(std::cell::Cell::get);
         rsx! {
@@ -35,7 +35,7 @@ fn fading(motion: Motion) -> Harness {
 }
 
 /// A power menu the page shows and hides from a context signal, logging `on_hidden`.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let shown = use_context_provider(|| Signal::new(true));
     let mut log = use_signal(Vec::<&'static str>::new);

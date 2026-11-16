@@ -34,7 +34,7 @@ fn cases() -> [usize; 2] {
 }
 
 /// Each dot at (40 + 60n, 30), its reference box at (40 + 60n, 70).
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Dots() -> Element {
     rsx! {
         Ds { sheet: Some(ui_shell::stylesheet()), appearance: Appearance::default(), material: Material::Popover,

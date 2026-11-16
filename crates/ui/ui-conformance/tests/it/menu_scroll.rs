@@ -46,12 +46,12 @@ fn menu_of(count: u8) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Long() -> Element {
     menu_of(30)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Short() -> Element {
     menu_of(4)
 }

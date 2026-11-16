@@ -31,7 +31,7 @@ fn place(name: &str) -> Vec<DataAttr> {
 }
 
 /// The places during a drag the page tracks itself: the place under the pointer is the target.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut over = use_signal(|| None::<&'static str>);

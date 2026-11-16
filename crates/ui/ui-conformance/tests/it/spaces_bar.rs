@@ -68,7 +68,7 @@ fn Hung(held: Option<bool>) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
@@ -76,7 +76,7 @@ fn Page() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Held() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
@@ -84,7 +84,7 @@ fn Held() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Open() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {

@@ -44,7 +44,7 @@ fn near(seen: &[[u8; 4]], want: [u8; 3]) -> usize {
 /// from the column's, so each shows which rule won.
 const LONE_CLASS: &str = ".ds-where-probe{color:rgb(230,20,20);font-size:24px}";
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn WhereApp() -> Element {
     rsx! {
         Root {
@@ -103,7 +103,7 @@ fn look() -> SpaceLook {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn NarrowEditor() -> Element {
     rsx! {
         Root {
@@ -114,7 +114,7 @@ fn NarrowEditor() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn WideEditor() -> Element {
     rsx! {
         Root {
@@ -188,7 +188,7 @@ fn the_space_editor_dots_stay_round_in_a_narrow_and_a_wide_panel() {
 
 // ---- A section header's action ends its row ------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ActionHeadersApp() -> Element {
     let action = || vec![HeaderAction::new("Clear", EventHandler::new(|()| {}))];
     rsx! {
@@ -225,7 +225,7 @@ fn a_section_headers_action_sits_at_its_right_edge_with_and_without_a_value() {
 
 // ---- Quiet spaces its glyph; Danger is Mini at rest and red on hover -----------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ButtonsApp() -> Element {
     rsx! {
         Root {

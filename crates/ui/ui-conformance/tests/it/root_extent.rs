@@ -26,12 +26,12 @@ fn Overlay(extent: RootExtent) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Content() -> Element {
     rsx! { Overlay { extent: RootExtent::Content } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Full() -> Element {
     rsx! { Overlay { extent: RootExtent::Viewport } }
 }
@@ -74,7 +74,7 @@ fn a_viewport_root_is_the_viewports_size_and_its_sheet_is_placed_in_it() {
     );
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Window() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Window,

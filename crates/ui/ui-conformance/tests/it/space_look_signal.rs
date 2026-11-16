@@ -23,7 +23,7 @@ fn Reader() -> Element {
     rsx! { p { class: "read", "{look.theme.slug()}|{frame.solid}" } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Switching() -> Element {
     let mut theme = use_signal(|| Theme::Light);
     rsx! {

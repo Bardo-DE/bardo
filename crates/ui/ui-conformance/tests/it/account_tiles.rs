@@ -40,7 +40,7 @@ fn account(key: char, provider: MarkProvider) -> PinItem<char> {
 
 /// Three accounts and the Add account tile, in the pinned grid on a window with no grain, each
 /// press and each new order logged.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Tiles() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut order = use_signal(|| vec!['P', 'W', 'G']);
@@ -199,7 +199,7 @@ static RUNNING: GlobalSignal<bool> = Signal::global(|| true);
 
 /// Four accounts, one of each status: A needs attention, B is working, C is working with no
 /// operation running, D is quiet. Each pick, status press and new order is logged.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Statuses() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let operation = if RUNNING() {
@@ -357,7 +357,7 @@ thread_local! {
     static WIDTH: std::cell::Cell<u32> = const { std::cell::Cell::new(212) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn OneTile() -> Element {
     let width = WIDTH.with(std::cell::Cell::get);
     rsx! {

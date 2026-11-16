@@ -35,12 +35,12 @@ fn page(theme: Theme, scheme: Scheme) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Light() -> Element {
     page(Theme::Light, Scheme::Light)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Dark() -> Element {
     page(Theme::Dark, Scheme::Dark)
 }

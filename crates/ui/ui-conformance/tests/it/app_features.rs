@@ -23,7 +23,7 @@ fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Edge() -> Element {
     let mut pinned = use_signal(|| false);
     rsx! {
@@ -85,7 +85,7 @@ fn a_click_on_the_strip_pins_the_sidebar() {
     assert_eq!(harness.count(".ds-edge"), 0, "no strip while pinned");
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Today() -> Element {
     let start = now();
     let mut hovered = use_signal(Vec::<String>::new);
@@ -159,7 +159,7 @@ fn a_today_tab_leaves_when_its_time_is_up() {
     assert_eq!(harness.count(".ds-row"), 1, "{}", harness.html());
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Link() -> Element {
     let mut copied = use_signal(String::new);
     rsx! {

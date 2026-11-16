@@ -20,7 +20,7 @@ enum Placed {
     Moved,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     let mut placed = use_signal(|| Placed::Start);
     let mut node = use_signal(|| None::<MountedRef>);

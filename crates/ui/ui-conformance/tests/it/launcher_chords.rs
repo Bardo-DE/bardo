@@ -39,7 +39,7 @@ fn file(value: u8, title: &str) -> PaletteRow<u8> {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Files() -> Element {
     let rows = vec![file(1, "One.pdf"), file(2, "Two.pdf"), file(3, "Three.pdf")];
     rsx! {
@@ -133,7 +133,7 @@ fn moving_the_selection_moves_the_chord() {
     );
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Pane() -> Element {
     let actions = vec![PaneAction {
         label: "Reveal in Files".to_string(),

@@ -33,7 +33,7 @@ fn rows() -> Vec<MenuItem<u8>> {
     ]
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -124,7 +124,7 @@ fn a_result_row_draws_marks_an_avatar_and_a_second_line() {
 }
 
 /// Two tag rows in a popup menu.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn SwatchPage() -> Element {
     let items = vec![
         MenuItem::new(1, "Red").with_image(MenuImage::Swatch(SystemHue::Red)),

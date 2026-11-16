@@ -24,7 +24,7 @@ fn log(harness: &Harness) -> String {
 
 /// Two plain fields, `a` and `b`, a password `c` the caller focuses through a request (and on
 /// mount), and a button that makes the request. Every focus and blur is logged.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Fields() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let request = use_focus_request();
@@ -121,7 +121,7 @@ fn a_secure_field_draws_dots_not_what_is_typed() {
 }
 
 /// A field with a select-all request and the text it holds; Escape in the field asks again.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Asked() -> Element {
     let request = use_focus_request().with_select_all();
     let mut text = use_signal(String::new);

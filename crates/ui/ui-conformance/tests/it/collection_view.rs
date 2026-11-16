@@ -46,7 +46,7 @@ fn caption(n: u32) -> String {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut keys = use_signal(|| (0..TILES).collect::<Vec<u32>>());
     let mut cursor = use_signal(|| None::<usize>);
@@ -241,7 +241,7 @@ const FILE: u32 = 1;
 const TAGGED: u32 = 2;
 
 /// Three tiles in four columns, the fourth column empty, logging what the owner hears.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FewPage() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut cursor = use_signal(|| None::<usize>);
@@ -400,7 +400,7 @@ fn a_badge_sits_centred_under_the_caption_without_moving_it() {
 }
 
 /// Forty landscape tiles in four columns, sized to their rows.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn WidePage() -> Element {
     let items: Vec<CollectionItem<u32>> = (0..40)
         .map(|n| {
@@ -456,7 +456,7 @@ fn a_default_view_has_neither_the_landscape_nor_the_content_mark() {
     assert_eq!(harness.attr(".ds-cv", "data-extent"), None);
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FileIconsPage() -> Element {
     let items = vec![
         CollectionItem::new(

@@ -35,17 +35,17 @@ fn page(theme: Theme, anchor: Option<Anchor>) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Light() -> Element {
     page(Theme::Light, None)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Dark() -> Element {
     page(Theme::Dark, None)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Placed() -> Element {
     page(
         Theme::Light,

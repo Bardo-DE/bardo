@@ -18,7 +18,7 @@ const VIEW: Viewport = Viewport {
 
 /// Three collapsible sections, each with a header action; the page logs every press and every
 /// click that reaches a summary.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |entry: &str| log.with_mut(|log| log.push(entry.to_string()));

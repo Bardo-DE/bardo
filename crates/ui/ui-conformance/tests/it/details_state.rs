@@ -49,7 +49,7 @@ static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
 const WIFI: PendingSpec = PendingSpec::Iterate { layers: 4 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Item() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,
@@ -58,7 +58,7 @@ fn Item() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 #[component]
 fn ItemBody() -> Element {
     let detail = use_detail(NET(), Touch::Remote);

@@ -41,7 +41,7 @@ fn is_actions(event: &KeyboardEvent) -> bool {
     event.modifiers().ctrl() && event.key() == dioxus::prelude::Key::Character("k".to_string())
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Launcher() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut actions = use_signal(|| false);

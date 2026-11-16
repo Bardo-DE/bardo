@@ -59,12 +59,12 @@ fn table(start: RowSelection) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn EmptyTable() -> Element {
     table(RowSelection::none())
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn TableWithFirst() -> Element {
     table(RowSelection::single(0))
 }
@@ -96,7 +96,7 @@ fn grid(start: RowSelection) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn EmptyGrid() -> Element {
     grid(RowSelection::none())
 }

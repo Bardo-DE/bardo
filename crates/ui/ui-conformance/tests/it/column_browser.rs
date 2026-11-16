@@ -72,7 +72,7 @@ fn columns(root: &[Node], path: &[usize]) -> Vec<BrowserColumn<&'static str>> {
     shown
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut path = use_signal(Vec::<usize>::new);
     let root = tree();

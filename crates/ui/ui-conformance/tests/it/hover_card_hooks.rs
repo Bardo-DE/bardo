@@ -121,17 +121,17 @@ fn Page(placing: Placing) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ByElement() -> Element {
     rsx! { Ds { appearance: Appearance::default(), material: Material::Window, Page { placing: Placing::Element } } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ByPoint() -> Element {
     rsx! { Ds { appearance: Appearance::default(), material: Material::Window, Page { placing: Placing::Point } } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Unplaced() -> Element {
     rsx! { Ds { appearance: Appearance::default(), material: Material::Window, Page { placing: Placing::Unplaced } } }
 }

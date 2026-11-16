@@ -37,7 +37,7 @@ fn place(path: &str) -> Common {
 }
 
 /// Two branches, each with a leaf; Projects accepts the drag, Archive is its target.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |entry: String| log.with_mut(|log| log.push(entry));

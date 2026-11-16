@@ -47,7 +47,7 @@ fn ms(n: u64) -> Duration {
 
 // ---- Controls ----------------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn PressApp() -> Element {
     let mut pinned = use_signal(|| Check::Off);
     rsx! {
@@ -75,7 +75,7 @@ fn the_root_stamps_the_last_input_modality() {
     assert_eq!(modality(&harness).as_deref(), Some("pointer"));
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ToggleApp() -> Element {
     let mut wifi = use_signal(|| Check::Off);
     rsx! {
@@ -101,14 +101,14 @@ fn a_toggle_switches() {
 
 // ---- Component cases (overlays and lists) ---------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn HoverCardApp() -> Element {
     rsx! {
         Root { HoverCardDemo {} }
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn HoverCardDemo() -> Element {
     let hub = use_hover_hub();
     rsx! {
@@ -141,14 +141,14 @@ fn a_hover_card_appears_after_500_ms_and_not_before() {
     );
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ToastApp() -> Element {
     rsx! {
         Root { ToastDemo {} }
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ToastDemo() -> Element {
     let toasts = use_toasts();
     rsx! {
@@ -197,7 +197,7 @@ fn a_toast_hides_after_its_hold() {
 
 // ---- Wave 2 integration props ------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FocusApp() -> Element {
     rsx! {
         Root {
@@ -206,7 +206,7 @@ fn FocusApp() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ManualApp() -> Element {
     rsx! {
         Root {
@@ -248,7 +248,7 @@ fn a_field_focused_on_mount_takes_typing_without_a_click() {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn EditorApp() -> Element {
     let mut active = use_signal(|| DotIndex(0));
     let mut look = use_signal(|| SpaceLook {

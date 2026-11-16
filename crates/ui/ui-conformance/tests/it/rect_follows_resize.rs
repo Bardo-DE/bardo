@@ -17,7 +17,7 @@ const VIEW: Viewport = Viewport {
 
 /// A box whose width changes with the "window", and a button that stands in for the host: it
 /// changes the width and then reports the resize.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     let resized = use_context_provider(WindowResized::new);
     let mut wide = use_signal(|| false);

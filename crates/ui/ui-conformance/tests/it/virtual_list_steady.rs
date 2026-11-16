@@ -16,7 +16,7 @@ const VIEW: Viewport = Viewport {
 /// The list is 200 px tall: ten 20 px rows show.
 const SHOWN: usize = 10;
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     // Keys count down from 999 to 100 so a row's key is stable and a prepend is a smaller key.
     let mut keys = use_signal(|| (100..1000u32).rev().collect::<Vec<u32>>());

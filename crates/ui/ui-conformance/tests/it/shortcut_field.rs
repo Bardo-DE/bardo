@@ -22,7 +22,7 @@ fn start() -> Chord {
     Chord::new(ChordModifiers::META, ChordKey::Char('j'))
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let keys = ui_components::keys::use_keys();
     let mut shortcut = use_signal(|| Some(start()));

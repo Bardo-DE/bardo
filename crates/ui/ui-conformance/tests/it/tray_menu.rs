@@ -79,7 +79,7 @@ fn picture_png() -> Vec<u8> {
 const PROBE_CSS: &str = ".ink-host{color:var(--ink);display:flex;gap:16px;padding:16px}\
     .ink-swatch{width:32px;height:32px;background:var(--ink)}";
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ExternalApp() -> Element {
     let symbolic = IconSource::Symbolic(ExternalIcon {
         url: IconUrl::png(&mask_png()),
@@ -160,7 +160,7 @@ fn a_symbolic_mask_takes_the_ink_and_an_image_keeps_its_colour() {
 
 // ---- Presses ----------------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn PressApp() -> Element {
     let mut seen = use_signal(|| "none".to_string());
     let record = move |press: Press| seen.set(format!("{:?}", press.button));
@@ -228,7 +228,7 @@ fn entries() -> Vec<MenuItem<u8>> {
     ]
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn MenuApp() -> Element {
     let mut picked = use_signal(|| 0u8);
     let mut open = use_signal(|| true);

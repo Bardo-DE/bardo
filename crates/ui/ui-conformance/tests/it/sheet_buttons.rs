@@ -17,7 +17,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A power menu's row, and a row of the same actions disabled.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<&'static str>::new);
     rsx! {

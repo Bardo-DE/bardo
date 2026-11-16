@@ -134,22 +134,22 @@ fn Panel(selection: Selection, give_back: GiveBack) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn OwnSelection() -> Element {
     rsx! { Panel { selection: Selection::Own, give_back: GiveBack::Yes } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FollowedSelection() -> Element {
     rsx! { Panel { selection: Selection::Followed, give_back: GiveBack::Yes } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn PinnedSelection() -> Element {
     rsx! { Panel { selection: Selection::Pinned, give_back: GiveBack::Yes } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn KeptFocus() -> Element {
     rsx! { Panel { selection: Selection::Own, give_back: GiveBack::No } }
 }
@@ -350,7 +350,7 @@ fn red_png() -> Vec<u8> {
     bytes.into_inner()
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn AppIconRow() -> Element {
     let icon = IconSource::Image(ExternalIcon {
         url: IconUrl::png(&red_png()),

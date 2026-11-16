@@ -27,12 +27,12 @@ fn titled(title: &'static str) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Long() -> Element {
     titled(LONG)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Short() -> Element {
     titled("Inbox.png")
 }

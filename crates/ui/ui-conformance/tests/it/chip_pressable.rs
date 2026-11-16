@@ -17,7 +17,7 @@ const VIEW: Viewport = Viewport {
 const FACE: &str = ".ds-chip-press";
 const REMOVE: &str = ".ds-chip-remove";
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     let mut presses = use_signal(|| 0u32);
     let mut removed = use_signal(|| 0u32);

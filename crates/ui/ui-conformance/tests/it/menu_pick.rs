@@ -66,12 +66,12 @@ fn Page(flow: Flow) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Floating() -> Element {
     rsx! { Page { flow: Flow::Floating } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Inline() -> Element {
     rsx! { Page { flow: Flow::Inline } }
 }

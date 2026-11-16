@@ -37,7 +37,7 @@ const PANE_LEFT: f32 = 100.0;
 const PANE_TOP: f32 = 50.0;
 const PANE_HEIGHT: f32 = 300.0;
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let pane_width = PANE_WIDTH.with(Cell::get);
     let probe = use_rect();

@@ -26,7 +26,7 @@ fn ms(n: u64) -> Duration {
 const PINS: [&str; 3] = ["Dana Okafor", "Sam Lindqvist", "Mei Chen"];
 
 /// A pinned list whose items are hover targets themselves, and a time with its tip.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let hub = use_hover_hub();
     rsx! {
@@ -52,7 +52,7 @@ fn Page() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, Page {} }

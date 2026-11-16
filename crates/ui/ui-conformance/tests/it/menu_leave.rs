@@ -58,17 +58,17 @@ fn Page(start: Option<usize>, expanded: Option<usize>) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Plain() -> Element {
     rsx! { Page { start: None, expanded: None } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn OnSecond() -> Element {
     rsx! { Page { start: Some(1), expanded: None } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Expanded() -> Element {
     rsx! { Page { start: None, expanded: Some(2) } }
 }

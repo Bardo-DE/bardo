@@ -24,7 +24,7 @@ const NAME: &str = "holiday-picture-2026-final-edit.png";
 /// The room the name cell is given: 14 characters beside the icon.
 const ROOM: Px = Px(120.0);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let scroller = use_scroller();
     let mut log = use_signal(String::new);

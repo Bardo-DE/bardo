@@ -19,7 +19,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// Primary, Secondary and Danger at Regular, then the same three at Mini, each in its own box.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

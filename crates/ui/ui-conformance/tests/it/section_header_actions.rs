@@ -17,7 +17,7 @@ fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Header() -> Element {
     let mut log = use_signal(Vec::<&'static str>::new);
     rsx! {

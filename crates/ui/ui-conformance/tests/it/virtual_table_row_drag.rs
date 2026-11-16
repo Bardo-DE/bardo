@@ -25,7 +25,7 @@ const ROWS: usize = 100;
 const CELL: f32 = 150.0;
 
 /// Every fifth row is a folder; rows 1 to 3 start selected.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let scroller = use_scroller();
     let mut chosen = use_signal(|| RowSelection::of_rows(Some(1), Some(3), [1, 2, 3]));

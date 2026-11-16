@@ -19,7 +19,7 @@ const MID_EXIT: Duration = Duration::from_millis(50);
 /// Past the row-out and the heal.
 const SETTLED: Duration = Duration::from_millis(700);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut keys = use_signal(|| (1..=10u32).collect::<Vec<u32>>());
     let row = Callback::new(|key: u32| rsx! { p { class: "item", "{key}" } });

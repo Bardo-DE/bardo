@@ -30,7 +30,7 @@ const VIEW: Viewport = Viewport {
 
 /// One Small cap per arrow, plus a plain Small letter cap (`plain`) as the height baseline every
 /// arrow cap must still match, each in its own box so each can be probed alone.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let keys = [
         ("left", ShortcutKey::Left),

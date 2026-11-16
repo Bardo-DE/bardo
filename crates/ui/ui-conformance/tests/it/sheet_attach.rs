@@ -22,7 +22,7 @@ thread_local! {
     static WIDTH: Cell<SheetWidth> = const { Cell::new(SheetWidth::Regular) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Sheet, extent: RootExtent::Viewport,

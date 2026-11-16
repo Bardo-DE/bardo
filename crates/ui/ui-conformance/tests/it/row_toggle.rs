@@ -16,7 +16,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// Two device rows with switches, the second disabled; the page logs what each heard.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn RowsApp() -> Element {
     let mut on = use_signal(|| Check::Off);
     let mut log = use_signal(Vec::<String>::new);

@@ -35,7 +35,7 @@ fn fields(protocol: &str) -> Vec<FormField> {
     ]
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Form() -> Element {
     let mut protocol = use_signal(|| "imap".to_owned());
     let mut heard = use_signal(Vec::<String>::new);

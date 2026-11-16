@@ -58,17 +58,17 @@ fn Page(lines: ThreadLines, expanded: bool) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Three() -> Element {
     rsx! { Page { lines: ThreadLines::Three, expanded: false } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Two() -> Element {
     rsx! { Page { lines: ThreadLines::Two, expanded: false } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Open() -> Element {
     rsx! { Page { lines: ThreadLines::Three, expanded: true } }
 }

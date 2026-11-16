@@ -30,7 +30,7 @@ fn virtual_harness(app: fn() -> Element) -> Harness {
 
 static LEVEL: GlobalSignal<Fraction> = Signal::global(|| Fraction(300));
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Level() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -120,7 +120,7 @@ fn a_slider_let_go_while_still_keeps_its_value() {
 
 static WIFI: GlobalSignal<Check> = Signal::global(|| Check::Off);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Wifi() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -163,7 +163,7 @@ fn a_toggle_clicked_again_mid_slide_turns_back_from_where_it_is() {
 
 static CELL: GlobalSignal<(f32, f32)> = Signal::global(|| (0.0, 0.0));
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Widget() -> Element {
     let (x, y) = CELL();
     let spec = SpringSpec::for_touch(Touch::Remote);

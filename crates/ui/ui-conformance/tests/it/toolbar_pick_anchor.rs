@@ -21,7 +21,7 @@ thread_local! {
     static ROOM: Cell<f32> = const { Cell::new(560.0) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut hung = use_signal(|| None::<(u8, Anchor)>);
     let leading = vec![ToolbarItem::new(1u8, "Back", Icon::ChevronLeft)];

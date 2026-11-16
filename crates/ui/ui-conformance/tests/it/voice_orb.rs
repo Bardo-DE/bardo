@@ -19,7 +19,7 @@ static ACTIVITY: GlobalSignal<bool> = Signal::global(|| false);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
 /// A 192 px orb (a 20 s turn) on the window ground, its activity and motion set from outside.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Stage() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

@@ -77,7 +77,7 @@ fn look() -> SpaceLook {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let theme = if DARK.with(Cell::get) {
         Theme::Dark

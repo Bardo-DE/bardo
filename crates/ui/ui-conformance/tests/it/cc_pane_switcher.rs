@@ -27,7 +27,7 @@ const VIEW: Viewport = Viewport {
 
 /// A tall root (three rows) and a short detail (one row), two buttons that ask for each pane,
 /// and a log of every pane the switcher settled on.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn PanesApp() -> Element {
     let mut shown = use_signal(|| Pane::Root);
     let mut log = use_signal(Vec::<&'static str>::new);

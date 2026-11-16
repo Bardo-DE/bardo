@@ -32,7 +32,7 @@ const VIEW: Viewport = Viewport {
 /// The rail is 200 px wide from x 60 (room for the rubber band either side).
 const PROBE_CSS: &str = ".bar{margin:30px 0 0 60px;width:200px}";
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Level() -> Element {
     rsx! {
         Ds {

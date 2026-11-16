@@ -34,7 +34,7 @@ fn settled(app: fn() -> Element, scale_percent: u16) -> Harness {
     harness
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn LongMenu() -> Element {
     let items = (0..ROWS)
         .map(|value| MenuItem::Item {
@@ -63,7 +63,7 @@ fn LongMenu() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn LongPalette() -> Element {
     let rows = (0..ROWS)
         .map(|value| PaletteRow::new(value, format!("Command {value}")))

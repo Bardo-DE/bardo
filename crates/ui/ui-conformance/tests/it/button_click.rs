@@ -35,7 +35,7 @@ fn Clickable() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn InlineApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -44,7 +44,7 @@ fn InlineApp() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn InlineTextApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -53,7 +53,7 @@ fn InlineTextApp() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn BlockAfterApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -62,7 +62,7 @@ fn BlockAfterApp() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FlexApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

@@ -19,7 +19,7 @@ fn ms(n: u64) -> Duration {
 
 /// A three-row and a six-row note and a plain field to move the caret to; what is typed and
 /// what is committed are written to `.typed` and `.committed`.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Notes() -> Element {
     let mut typed = use_signal(String::new);
     let mut committed = use_signal(|| "nothing".to_owned());

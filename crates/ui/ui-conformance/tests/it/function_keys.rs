@@ -15,7 +15,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -25,7 +25,7 @@ fn Page() -> Element {
 }
 
 /// Under `Ds`, so `use_keys` reads the root's keymap (the harness's platform), not the default.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 #[component]
 fn Pad() -> Element {
     let keys = ui_components::keys::use_keys();

@@ -126,12 +126,12 @@ fn early_unmount() -> Vec<Step> {
     vec![(10, Shown::Yes), (100, Shown::No)]
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn PaletteGoneEarly() -> Element {
     rsx! { Scripted { subject: Subject::Palette, script: early_unmount(), motion: Motion::Standard } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn MenuGoneEarly() -> Element {
     rsx! { Scripted { subject: Subject::Menu, script: early_unmount(), motion: Motion::Standard } }
 }

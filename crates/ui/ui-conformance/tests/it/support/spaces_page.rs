@@ -1,7 +1,7 @@
 //! A toy notes app on the Spaces kit: three Spaces, a place that is restored on switch, and the
 //! head, foot and menu. Shared by `spaces_switch` and `spaces_menu`.
 
-#![allow(dead_code)]
+#![allow(dead_code, reason = "each includer uses its own part of this module")]
 
 use dioxus::prelude::*;
 use ui_components::components::app::spaces::{
@@ -103,23 +103,23 @@ fn page_of(count: usize, with_extra: Extra, editing: Editing) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 pub fn Three() -> Element {
     page_of(3, Extra::None, Editing::Sheet)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 pub fn One() -> Element {
     page_of(1, Extra::None, Editing::Sheet)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 pub fn WithAccounts() -> Element {
     page_of(2, Extra::Accounts, Editing::Sheet)
 }
 
 /// Three Spaces whose Edit Space... opens the app's own page.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 pub fn EditedOnAPage() -> Element {
     page_of(3, Extra::None, Editing::Page)
 }

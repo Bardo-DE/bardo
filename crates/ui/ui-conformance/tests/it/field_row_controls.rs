@@ -31,12 +31,12 @@ fn row(width: u32) -> impl Fn() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Wide() -> Element {
     row(700)()
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Narrow() -> Element {
     row(330)()
 }

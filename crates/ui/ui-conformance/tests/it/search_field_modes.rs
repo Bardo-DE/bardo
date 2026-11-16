@@ -74,7 +74,7 @@ fn sections(long_row: bool) -> Vec<SuggestionSection<String>> {
     .collect()
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let setup = SETUP.with(Cell::get);
     let mut query = use_signal(String::new);
@@ -384,7 +384,7 @@ fn a_token_pressed_or_removed_is_told_and_the_caret_stays_in_the_field() {
     );
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Disabled() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

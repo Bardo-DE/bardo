@@ -28,7 +28,7 @@ const TICK: Duration = Duration::from_millis(50);
 const PANES: [&str; 3] = ["Wi-Fi", "Bluetooth", "Sound"];
 
 /// Three chevron rows in a grouped list; the page logs what the list heard.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Settings() -> Element {
     let mut cursor = use_signal(|| Some("Wi-Fi"));
     let mut log = use_signal(Vec::<String>::new);

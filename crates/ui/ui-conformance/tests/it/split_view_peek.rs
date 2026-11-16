@@ -24,7 +24,7 @@ thread_local! {
     static PEEKING: Cell<bool> = const { Cell::new(true) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut pinned = use_signal(|| false);
     let pane = SplitPane::new(

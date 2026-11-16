@@ -15,7 +15,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn AnchorApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -30,7 +30,7 @@ fn AnchorApp() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Anchored() -> Element {
     let mut open = use_signal(|| Check::Off);
     let mut element = use_signal(|| None::<MountedRef>);

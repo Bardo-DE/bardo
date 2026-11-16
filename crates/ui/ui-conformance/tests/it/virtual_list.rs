@@ -30,7 +30,7 @@ fn built() -> usize {
     BUILT.with(|built| built.borrow().len())
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut keys = use_signal(|| (0..ROWS).collect::<Vec<u32>>());
     let mut cursor = use_signal(|| None::<u32>);

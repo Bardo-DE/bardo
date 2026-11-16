@@ -18,7 +18,7 @@ const VIEW: Viewport = Viewport {
 
 /// An app box that hears keys, a context menu whose one item opens a sheet with no first stop
 /// of its own, and a log of what was heard.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut menu = use_signal(|| true);
@@ -113,12 +113,12 @@ fn FirstStop(field: bool) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn FieldFirst() -> Element {
     rsx! { FirstStop { field: true } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ButtonFirst() -> Element {
     rsx! { FirstStop { field: false } }
 }

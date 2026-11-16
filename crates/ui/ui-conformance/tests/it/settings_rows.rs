@@ -36,7 +36,7 @@ const NARROW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Pane() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -53,7 +53,7 @@ fn Pane() -> Element {
 }
 
 /// A `FormSection` holding a `FieldRow` and then a grouped List of one row.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn RowThenList() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -230,7 +230,7 @@ fn a_source_list_glyph_takes_the_ink_of_a_selection_that_moves() {
     );
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn More() -> Element {
     let mut log = use_signal(String::new);
     rsx! {
@@ -258,7 +258,7 @@ fn row_more_reports_the_press_before_it_has_measured_itself() {
     assert!(log.ends_with("rect;"), "the rect follows: {log}");
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Asking() -> Element {
     let named = |label: &str, role, id: &str| {
         AlertButton::new(label, role, EventHandler::new(|()| {})).with_common(Common {
@@ -281,7 +281,7 @@ fn an_alert_button_carries_the_id_its_host_gave_it() {
     assert_eq!(harness.text_of("#cancel").as_deref(), Some("Cancel"));
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn WideControl() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -314,7 +314,7 @@ fn a_wide_control_wraps_inside_the_row_instead_of_overflowing() {
     );
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn ShortLabelToggle() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -370,7 +370,7 @@ fn a_grouped_list_after_a_field_row_has_the_hairline_between_them() {
 }
 
 /// A `FormSection` in the dark scheme whose row leads with the neutral family's tile.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn NeutralTileInDark() -> Element {
     rsx! {
         Ds { appearance: Appearance { theme: Theme::Dark, ..Appearance::default() }, material: Material::Window,
