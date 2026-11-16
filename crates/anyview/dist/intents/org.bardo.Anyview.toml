@@ -1,5 +1,5 @@
 # What an agent may ask the Viewer to do (docket intents vocabulary 1). Installed to
-# $XDG_DATA_DIRS/quire/intents/org.bardo.Anyview.toml beside dbus-1/services/org.bardo.Anyview.service,
+# $XDG_DATA_DIRS/bardo/intents/org.bardo.Anyview.toml beside dbus-1/services/org.bardo.Anyview.service,
 # which starts the viewer when docket's router calls the name. Every field is written.
 #
 # Reading only: opening a file shows it in the window and changes nothing on disk. The viewer's

@@ -1,4 +1,4 @@
-//! Finding the plugins: the Extensions under `quire/extensions` in the data directories (and, for
+//! Finding the plugins: the Extensions under `bardo/extensions` in the data directories (and, for
 //! one more release, the flat manifests under `anyview/plugins`), whether the programs they name
 //! are there, and which are turned off. The scan is quire's (`ui-extensions`), the entries are
 //! this viewer's (`anyview-plugin`), the ranking is bayonet's; this names the roots.
@@ -31,7 +31,7 @@ pub struct Discovery {
     pub rejected: Vec<Rejected>,
 }
 
-/// Reads every Extension manifest in `$XDG_DATA_HOME/quire/extensions` (the person's) and in each
+/// Reads every Extension manifest in `$XDG_DATA_HOME/bardo/extensions` (the person's) and in each
 /// of `$XDG_DATA_DIRS` (the system's, most important first), as `env` names them, and the ones
 /// still in the old place for one release. A file that is not a usable manifest is listed in
 /// `rejected` and skipped; nothing here fails.
@@ -40,7 +40,7 @@ pub fn discover(env: &Env) -> Discovery {
     discover_in(env, &env.dirs.data)
 }
 
-/// [`discover`] with `folder` as the person's data directory, whose `quire/extensions` is read
+/// [`discover`] with `folder` as the person's data directory, whose `bardo/extensions` is read
 /// first: a host that keeps its plugins elsewhere (a development tree, a portable install) names
 /// the folder, and `env`'s system directories still follow.
 ///

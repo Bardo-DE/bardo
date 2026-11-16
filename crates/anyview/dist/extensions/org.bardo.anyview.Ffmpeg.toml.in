@@ -1,5 +1,5 @@
 # The manifest of the FFmpeg plugin (ARCHITECTURE section 2l). install.sh fills in
-# @PREFIX@ and installs the result as <prefix>/share/quire/extensions/org.bardo.anyview.Ffmpeg/extension.toml (an Extension: the folder name is the id).
+# @PREFIX@ and installs the result as <prefix>/share/bardo/extensions/org.bardo.anyview.Ffmpeg/extension.toml (an Extension: the folder name is the id).
 #
 # The plugin runs the person's own ffprobe and ffmpeg: it looks for them as `--ffmpeg` and `--ffprobe`
 # arguments (add them to `args` to name an absolute path), then the ANYVIEW_FFMPEG and ANYVIEW_FFPROBE

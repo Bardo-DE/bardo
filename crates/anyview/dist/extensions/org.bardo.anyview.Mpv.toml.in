@@ -1,6 +1,6 @@
 # The manifest of the playback plugin (ARCHITECTURE section 2l). install.sh fills in
 # @MPV@ (the person's own mpv, found on the search path at install time or named with --mpv) and
-# @PREFIX@, and installs the result as <prefix>/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml (an Extension: the folder name is the id).
+# @PREFIX@, and installs the result as <prefix>/share/bardo/extensions/org.bardo.anyview.Mpv/extension.toml (an Extension: the folder name is the id).
 #
 # Playback is not spoken over the plugin protocol. The viewer runs this mpv as a child process with the
 # C plugin of mpv-wgpu loaded into it (`--script`), so no libmpv and no mpv code is linked into the

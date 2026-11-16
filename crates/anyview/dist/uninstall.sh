@@ -153,27 +153,27 @@ else
   remove_file "$PREFIX/share/applications/$APP_ID.desktop"
   remove_file "$PREFIX/share/dbus-1/services/$BUS_NAME.service"
   remove_file "$PREFIX/share/dbus-1/services/$APP_ID.service"
-  remove_file "$PREFIX/share/quire/intents/$APP_ID.toml"
-  remove_file "$PREFIX/share/quire/skills/files-viewer/SKILL.md"
-  remove_file "$PREFIX/share/quire/skills/files-viewer/skill.toml"
+  remove_file "$PREFIX/share/bardo/intents/$APP_ID.toml"
+  remove_file "$PREFIX/share/bardo/skills/files-viewer/SKILL.md"
+  remove_file "$PREFIX/share/bardo/skills/files-viewer/skill.toml"
   remove_file "$PREFIX/share/metainfo/$APP_ID.metainfo.xml"
   for doc in LICENSE-MIT LICENSE-APACHE THIRD-PARTY-NOTICES.md; do
     remove_file "$PREFIX/share/doc/anyview/$doc"
   done
   # The plugins install.sh put in: their programs and manifests, and the folders that
   # held them when nothing else is in them.
-  remove_file "$PREFIX/share/quire/helpers/anyview.toml"
+  remove_file "$PREFIX/share/bardo/helpers/anyview.toml"
   remove_file "$PREFIX/libexec/anyview/anyview-ffmpeg"
-  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Ffmpeg/extension.toml"
+  remove_file "$PREFIX/share/bardo/extensions/org.bardo.anyview.Ffmpeg/extension.toml"
   remove_file "$PREFIX/libexec/anyview/anyview-heif"
-  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Heif/extension.toml"
+  remove_file "$PREFIX/share/bardo/extensions/org.bardo.anyview.Heif/extension.toml"
   remove_file "$PREFIX/libexec/anyview/anyview-raw"
-  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Raw/extension.toml"
+  remove_file "$PREFIX/share/bardo/extensions/org.bardo.anyview.Raw/extension.toml"
   remove_file "$PREFIX/libexec/anyview/mpv-wgpu-cplugin.so"
-  remove_file "$PREFIX/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml"
+  remove_file "$PREFIX/share/bardo/extensions/org.bardo.anyview.Mpv/extension.toml"
   remove_legacy_manifests
   if [[ "$DRY_RUN" == no ]]; then
-    for folder in libexec/anyview libexec share/quire/extensions/org.bardo.anyview.Ffmpeg share/quire/extensions/org.bardo.anyview.Heif share/quire/extensions/org.bardo.anyview.Raw share/quire/extensions/org.bardo.anyview.Mpv share/quire/extensions share/anyview/plugins share/anyview share/doc/anyview share/quire/helpers share/quire/intents share/quire/skills/files-viewer share/quire/skills share/quire; do
+    for folder in libexec/anyview libexec share/bardo/extensions/org.bardo.anyview.Ffmpeg share/bardo/extensions/org.bardo.anyview.Heif share/bardo/extensions/org.bardo.anyview.Raw share/bardo/extensions/org.bardo.anyview.Mpv share/bardo/extensions share/anyview/plugins share/anyview share/doc/anyview share/bardo/helpers share/bardo/intents share/bardo/skills/files-viewer share/bardo/skills share/bardo; do
       [[ -d "$(dest "$PREFIX/$folder")" ]] && remove_dir "$(dest "$PREFIX/$folder")"
     done
   fi

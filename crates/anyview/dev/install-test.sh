@@ -63,12 +63,12 @@ check "dry run says it is a dry run" grep -q "dry run: nothing is changed" <<<"$
 check "dry run names the binary" grep -q "$prefix/bin/anyview" <<<"$out"
 check "dry run names the entry" grep -q "$prefix/share/applications/org.bardo.Anyview.desktop" <<<"$out"
 check "dry run names the notices" grep -q "$prefix/share/doc/anyview/THIRD-PARTY-NOTICES.md" <<<"$out"
-check "dry run names the helpers file" grep -q "$prefix/share/quire/helpers/anyview.toml" <<<"$out"
+check "dry run names the helpers file" grep -q "$prefix/share/bardo/helpers/anyview.toml" <<<"$out"
 check "dry run names the metainfo" grep -q "$prefix/share/metainfo/org.bardo.Anyview.metainfo.xml" <<<"$out"
 check "dry run names the service" grep -q "$prefix/share/dbus-1/services/org.bardo.Anyview1.service" <<<"$out"
 check "dry run names the agent service" grep -q "$prefix/share/dbus-1/services/org.bardo.Anyview.service" <<<"$out"
-check "dry run names the intents manifest" grep -q "$prefix/share/quire/intents/org.bardo.Anyview.toml" <<<"$out"
-check "dry run names the skill" grep -q "$prefix/share/quire/skills/files-viewer/SKILL.md" <<<"$out"
+check "dry run names the intents manifest" grep -q "$prefix/share/bardo/intents/org.bardo.Anyview.toml" <<<"$out"
+check "dry run names the skill" grep -q "$prefix/share/bardo/skills/files-viewer/SKILL.md" <<<"$out"
 check "dry run names both icons" grep -q "256x256/apps/org.bardo.Anyview.png" <<<"$out"
 check "dry run ignores a file that is not a size" bash -c '! grep -q README <<<"$0"' "$out"
 check "dry run without --set-default names no xdg-mime" bash -c '! grep -q xdg-mime <<<"$0"' "$out"
@@ -92,15 +92,15 @@ check "the entry starts the installed binary" bash -c "grep -qx 'Exec=$prefix/bi
 service="$installed/share/dbus-1/services/org.bardo.Anyview1.service"
 check "the metainfo is installed" cmp -s "$repo/dist/org.bardo.Anyview.metainfo.xml" "$installed/share/metainfo/org.bardo.Anyview.metainfo.xml"
 check "the notices are installed under doc" cmp -s "$repo/THIRD-PARTY-NOTICES.md" "$installed/share/doc/anyview/THIRD-PARTY-NOTICES.md"
-check "the helpers file is installed where quire looks for it" cmp -s "$repo/dist/helpers/anyview.toml" "$installed/share/quire/helpers/anyview.toml"
-check "the receipt lists the helpers file" grep -qx "file $prefix/share/quire/helpers/anyview.toml" "$installed/share/anyview/install-receipt"
+check "the helpers file is installed where the desktop looks for it" cmp -s "$repo/dist/helpers/anyview.toml" "$installed/share/bardo/helpers/anyview.toml"
+check "the receipt lists the helpers file" grep -qx "file $prefix/share/bardo/helpers/anyview.toml" "$installed/share/anyview/install-receipt"
 check "the service names the bus" grep -qx "Name=org.bardo.Anyview1" "$service"
 check "the service runs the installed binary, without DESTDIR" grep -qx "Exec=$prefix/bin/anyview" "$service"
 agent_service="$installed/share/dbus-1/services/org.bardo.Anyview.service"
 check "the agent service names the bus docket calls" grep -qx "Name=org.bardo.Anyview" "$agent_service"
 check "the agent service runs the installed binary, without DESTDIR" grep -qx "Exec=$prefix/bin/anyview" "$agent_service"
-check "the intents manifest is installed where docket looks for it" cmp -s "$repo/dist/intents/org.bardo.Anyview.toml" "$installed/share/quire/intents/org.bardo.Anyview.toml"
-check "the skill is installed where docket looks for it" bash -c "cmp -s '$repo/dist/skills/files-viewer/SKILL.md' '$installed/share/quire/skills/files-viewer/SKILL.md' && cmp -s '$repo/dist/skills/files-viewer/skill.toml' '$installed/share/quire/skills/files-viewer/skill.toml'"
+check "the intents manifest is installed where docket looks for it" cmp -s "$repo/dist/intents/org.bardo.Anyview.toml" "$installed/share/bardo/intents/org.bardo.Anyview.toml"
+check "the skill is installed where docket looks for it" bash -c "cmp -s '$repo/dist/skills/files-viewer/SKILL.md' '$installed/share/bardo/skills/files-viewer/SKILL.md' && cmp -s '$repo/dist/skills/files-viewer/skill.toml' '$installed/share/bardo/skills/files-viewer/skill.toml'"
 check "the 16 icon is in place" cmp -s "$icons/16.png" "$installed/share/icons/hicolor/16x16/apps/org.bardo.Anyview.png"
 check "the 256 icon is in place" cmp -s "$icons/256.png" "$installed/share/icons/hicolor/256x256/apps/org.bardo.Anyview.png"
 want="$(printf '%s\n' ./opt ./opt/av ./opt/av/bin ./opt/av/bin/anyview ./opt/av/share ./opt/av/share/anyview ./opt/av/share/anyview/install-receipt ./opt/av/share/applications \
@@ -112,9 +112,9 @@ want="$(printf '%s\n' ./opt ./opt/av ./opt/av/bin ./opt/av/bin/anyview ./opt/av/
   ./opt/av/share/icons/hicolor/16x16 ./opt/av/share/icons/hicolor/16x16/apps \
   ./opt/av/share/icons/hicolor/16x16/apps/org.bardo.Anyview.png ./opt/av/share/icons/hicolor/256x256 \
   ./opt/av/share/icons/hicolor/256x256/apps ./opt/av/share/icons/hicolor/256x256/apps/org.bardo.Anyview.png \
-  ./opt/av/share/quire ./opt/av/share/quire/helpers ./opt/av/share/quire/helpers/anyview.toml \
-  ./opt/av/share/quire/intents ./opt/av/share/quire/intents/org.bardo.Anyview.toml ./opt/av/share/quire/skills \
-  ./opt/av/share/quire/skills/files-viewer ./opt/av/share/quire/skills/files-viewer/SKILL.md ./opt/av/share/quire/skills/files-viewer/skill.toml | LC_ALL=C sort)"
+  ./opt/av/share/bardo ./opt/av/share/bardo/helpers ./opt/av/share/bardo/helpers/anyview.toml \
+  ./opt/av/share/bardo/intents ./opt/av/share/bardo/intents/org.bardo.Anyview.toml ./opt/av/share/bardo/skills \
+  ./opt/av/share/bardo/skills/files-viewer ./opt/av/share/bardo/skills/files-viewer/SKILL.md ./opt/av/share/bardo/skills/files-viewer/skill.toml | LC_ALL=C sort)"
 check "the staged tree is exactly the files" test "$(tree_of "$stage")" = "$want"
 check "staging registered nothing" test ! -s "$calls"
 check "HOME and XDG stay empty" bash -c "[ -z \"\$(find $HOME $XDG_CONFIG_HOME $XDG_DATA_HOME -mindepth 1)\" ]"
@@ -186,9 +186,9 @@ SHIM
 chmod +x "$shims/cargo"
 export CARGO_TARGET_DIR="$scratch/target"
 
-# A plugin is an Extension: share/quire/extensions/org.bardo.anyview.<Name>/extension.toml.
+# A plugin is an Extension: share/bardo/extensions/org.bardo.anyview.<Name>/extension.toml.
 extension_of() { printf 'org.bardo.anyview.%s%s' "$(printf %s "${1:0:1}" | tr a-z A-Z)" "${1:1}"; }
-manifest_of() { printf '%s/share/quire/extensions/%s/extension.toml' "$installed" "$(extension_of "$1")"; }
+manifest_of() { printf '%s/share/bardo/extensions/%s/extension.toml' "$installed" "$(extension_of "$1")"; }
 mpv_manifest="$(manifest_of mpv)"
 mkdir -p "$scratch/pathbin"
 printf '#!/bin/sh\necho fake mpv\n' >"$scratch/pathbin/mpv"
@@ -222,11 +222,11 @@ fetching_install() { DESTDIR="$stage" MPV_WGPU_URL="$src" ANYVIEW_MPV_SIBLING= b
 out="$(with_mpv env MPV_WGPU_URL=https://example.invalid/mpv-wgpu.git ANYVIEW_MPV_SIBLING= DESTDIR="$stage" bash "$repo/dist/install.sh" --prefix "$prefix" --dry-run 2>&1)"
 for id in ffmpeg heif raw; do
   check "default dry run names the $id program" grep -q "$prefix/libexec/anyview/anyview-$id" <<<"$out"
-  check "default dry run names the $id manifest" grep -q "$prefix/share/quire/extensions/$(extension_of "$id")/extension.toml" <<<"$out"
+  check "default dry run names the $id manifest" grep -q "$prefix/share/bardo/extensions/$(extension_of "$id")/extension.toml" <<<"$out"
 done
 check "default dry run builds the three plugins in one cargo run" grep -q "cargo build --release -p anyview-ffmpeg -p anyview-heif -p anyview-raw" <<<"$out"
 check "default dry run says what it would fetch" grep -q "git fetch --depth 1 https://example.invalid/mpv-wgpu.git $pin" <<<"$out"
-check "default dry run names the mpv manifest" grep -q "$prefix/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml" <<<"$out"
+check "default dry run names the mpv manifest" grep -q "$prefix/share/bardo/extensions/org.bardo.anyview.Mpv/extension.toml" <<<"$out"
 check "the default dry run installs nothing, fetches nothing, builds nothing" bash -c "[ -z \"\$(find '$stage' -mindepth 1 2>/dev/null)\" ] && [ ! -s '$cargo_log' ] && [ -z \"\$(find '$XDG_CACHE_HOME' -mindepth 1)\" ]"
 
 # 6b. The real default install, with the mpv-wgpu source fetched from the local stand-in.
@@ -238,7 +238,7 @@ for id in ffmpeg heif raw; do
   check "the $id manifest is the folder's Extension" grep -qx "id = \"$(extension_of "$id")\"" "$manifest"
   check "the $id manifest names the installed program, without DESTDIR" grep -qx "path = \"$prefix/libexec/anyview/anyview-$id\"" "$manifest"
   check "no placeholder is left in the $id manifest" bash -c "! grep -q '@' $manifest"
-  check "the receipt lists the $id program and manifest" bash -c "grep -qx 'file $prefix/libexec/anyview/anyview-$id' $installed/share/anyview/install-receipt && grep -qx 'file $prefix/share/quire/extensions/$(extension_of "$id")/extension.toml' $installed/share/anyview/install-receipt"
+  check "the receipt lists the $id program and manifest" bash -c "grep -qx 'file $prefix/libexec/anyview/anyview-$id' $installed/share/anyview/install-receipt && grep -qx 'file $prefix/share/bardo/extensions/$(extension_of "$id")/extension.toml' $installed/share/anyview/install-receipt"
 done
 check "the ffmpeg manifest lists the export targets" grep -q 'targets = \["trim", "audio-copy", "m4a", "mp3", "flac", "wav", "opus", "cut"\]' "$(manifest_of ffmpeg)"
 check "the heif manifest provides decode and thumbnail" bash -c "grep -q 'capability = \"decode\"' $(manifest_of heif) && grep -q 'capability = \"thumbnail\"' $(manifest_of heif)"
@@ -254,7 +254,7 @@ check "the mpv manifest names the mpv found on the search path" grep -qx "mpv = 
 check "the mpv manifest names the installed C plugin, without DESTDIR" grep -qx "cplugin = \"$prefix/libexec/anyview/mpv-wgpu-cplugin.so\"" "$mpv_manifest"
 check "the mpv manifest provides playback" grep -q 'capability = "play"' "$mpv_manifest"
 check "no placeholder is left in the mpv manifest" bash -c "! grep -q '@' $mpv_manifest"
-check "the receipt lists the C plugin and the mpv manifest" bash -c "grep -qx 'file $prefix/libexec/anyview/mpv-wgpu-cplugin.so' $installed/share/anyview/install-receipt && grep -qx 'file $prefix/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml' $installed/share/anyview/install-receipt"
+check "the receipt lists the C plugin and the mpv manifest" bash -c "grep -qx 'file $prefix/libexec/anyview/mpv-wgpu-cplugin.so' $installed/share/anyview/install-receipt && grep -qx 'file $prefix/share/bardo/extensions/org.bardo.anyview.Mpv/extension.toml' $installed/share/anyview/install-receipt"
 check "staging the plugins registered nothing" test ! -s "$calls"
 check "HOME and XDG config stay empty" bash -c "[ -z \"\$(find $HOME $XDG_CONFIG_HOME $XDG_DATA_HOME -mindepth 1)\" ]"
 # A second run reuses the checkout (no second fetch) and leaves the files alone.
@@ -273,12 +273,12 @@ with_mpv fetching_install --without-plugin heif --without-plugin mpv >"$scratch/
 check "--without-plugin keeps the others" test -x "$installed/libexec/anyview/anyview-ffmpeg" -a -x "$installed/libexec/anyview/anyview-raw"
 check "--without-plugin heif leaves heif out" test ! -e "$installed/libexec/anyview/anyview-heif" -a ! -e "$(manifest_of heif)"
 check "--without-plugin mpv leaves mpv out and fetches nothing" bash -c "[ ! -e $mpv_manifest ] && [ ! -e '$XDG_CACHE_HOME/anyview' ]"
-check "the receipt covers the plugins that were installed" grep -qx "file $prefix/share/quire/extensions/org.bardo.anyview.Raw/extension.toml" "$installed/share/anyview/install-receipt"
+check "the receipt covers the plugins that were installed" grep -qx "file $prefix/share/bardo/extensions/org.bardo.anyview.Raw/extension.toml" "$installed/share/anyview/install-receipt"
 check "the receipt names no plugin that was left out" bash -c "! grep -q 'heif\|mpv' $installed/share/anyview/install-receipt"
 uninstall >/dev/null 2>&1
 check "uninstall after --without-plugin leaves the staging tree empty" empty "$stage"
 install --no-plugins >/dev/null 2>&1
-check "--no-plugins installs the viewer alone" test ! -e "$installed/libexec" -a ! -e "$installed/share/quire/extensions"
+check "--no-plugins installs the viewer alone" test ! -e "$installed/libexec" -a ! -e "$installed/share/bardo/extensions"
 uninstall >/dev/null 2>&1
 out="$(with_mpv fetching_install --without-plugin mpv --with-plugin ffmpeg 2>&1)"
 check "--with-plugin prints a one-line deprecation note" grep -q "^note: --with-plugin is not needed any more" <<<"$out"

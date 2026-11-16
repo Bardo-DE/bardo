@@ -15,7 +15,7 @@
 #   --no-plugins   install the viewer alone.
 #
 # The plugins install with the viewer, each as a program under DIR/libexec/anyview and an Extension, a
-# folder with one manifest, under DIR/share/quire/extensions/org.bardo.anyview.<Name> (Settings lists
+# folder with one manifest, under DIR/share/bardo/extensions/org.bardo.anyview.<Name> (Settings lists
 # them under Extensions). Each one runs your own distribution's tool and links no codec, so a plugin
 # whose tool is not installed yet is still installed: it says so when it is used, and starts working once
 # you install the package (see the README's table).
@@ -301,8 +301,8 @@ for doc in LICENSE-MIT LICENSE-APACHE THIRD-PARTY-NOTICES.md; do
 done
 
 # The helpers file: which distro tool each plugin runs and which package provides it, for the prompt that
-# offers to install a missing one (quire looks for $XDG_DATA_DIRS/quire/helpers/<app>.toml).
-install_file 644 "$HERE/dist/helpers/anyview.toml" "$PREFIX/share/quire/helpers/anyview.toml"
+# offers to install a missing one (the desktop looks for $XDG_DATA_DIRS/bardo/helpers/<app>.toml).
+install_file 644 "$HERE/dist/helpers/anyview.toml" "$PREFIX/share/bardo/helpers/anyview.toml"
 
 # The service file names the binary's path on this machine, so its Exec is rewritten to the
 # installed one (never to a path inside DESTDIR: that is where it lands, not where it will run).
@@ -319,7 +319,7 @@ fi
 # The agent layer (docket): the viewer's second bus name, org.bardo.Anyview, is the one docket's router
 # calls, so it gets its own activation file (the viewer owns both names; whichever is called first starts
 # it), and the intents manifest and the skill are installed where docket looks for them
-# ($XDG_DATA_DIRS/quire/intents and /quire/skills).
+# ($XDG_DATA_DIRS/bardo/intents and /bardo/skills).
 agent_service="$PREFIX/share/dbus-1/services/$APP_ID.service"
 if [[ "$DRY_RUN" == yes ]]; then
   say "  install $agent_service"
@@ -329,11 +329,11 @@ else
   sed "s|^Exec=.*|Exec=$PREFIX/bin/anyview|" "$HERE/dist/$APP_ID.service" >"$rendered_agent"
   install_file 644 "$rendered_agent" "$agent_service"
 fi
-install_file 644 "$HERE/dist/intents/$APP_ID.toml" "$PREFIX/share/quire/intents/$APP_ID.toml"
+install_file 644 "$HERE/dist/intents/$APP_ID.toml" "$PREFIX/share/bardo/intents/$APP_ID.toml"
 for skill_dir in "$HERE"/dist/skills/*/; do
   skill_id="$(basename "$skill_dir")"
   for skill_file in SKILL.md skill.toml; do
-    install_file 644 "$skill_dir$skill_file" "$PREFIX/share/quire/skills/$skill_id/$skill_file"
+    install_file 644 "$skill_dir$skill_file" "$PREFIX/share/bardo/skills/$skill_id/$skill_file"
   done
 done
 
@@ -344,7 +344,7 @@ done
 if [[ "$WITH_FFMPEG" == yes ]]; then
   say "2b. the FFmpeg plugin"
   install_file 755 "$FFMPEG_BIN" "$PREFIX/libexec/anyview/anyview-ffmpeg"
-  manifest="$PREFIX/share/quire/extensions/org.bardo.anyview.Ffmpeg/extension.toml"
+  manifest="$PREFIX/share/bardo/extensions/org.bardo.anyview.Ffmpeg/extension.toml"
   if [[ "$DRY_RUN" == yes ]]; then
     say "  install $manifest"
     say "      (path = $PREFIX/libexec/anyview/anyview-ffmpeg, from dist/extensions/org.bardo.anyview.Ffmpeg.toml.in)"
@@ -366,7 +366,7 @@ install_picture_plugin() {
   local extension="org.bardo.anyview.$name"
   say "2d. the $label plugin"
   install_file 755 "$bin" "$PREFIX/libexec/anyview/anyview-$id"
-  local manifest="$PREFIX/share/quire/extensions/$extension/extension.toml"
+  local manifest="$PREFIX/share/bardo/extensions/$extension/extension.toml"
   if [[ "$DRY_RUN" == yes ]]; then
     say "  install $manifest"
     say "      (path = $PREFIX/libexec/anyview/anyview-$id, from dist/extensions/$extension.toml.in)"
@@ -387,7 +387,7 @@ install_picture_plugin() {
 if [[ "$WITH_MPV" == yes ]]; then
   say "2c. the mpv plugin"
   install_file 755 "$MPV_CPLUGIN" "$PREFIX/libexec/anyview/mpv-wgpu-cplugin.so"
-  manifest="$PREFIX/share/quire/extensions/org.bardo.anyview.Mpv/extension.toml"
+  manifest="$PREFIX/share/bardo/extensions/org.bardo.anyview.Mpv/extension.toml"
   if [[ "$DRY_RUN" == yes ]]; then
     say "  install $manifest"
     say "      (mpv = $MPV_PATH, cplugin = $PREFIX/libexec/anyview/mpv-wgpu-cplugin.so, from dist/extensions/org.bardo.anyview.Mpv.toml.in)"
