@@ -1,7 +1,8 @@
-//! Roving focus (design/30-CATALOGUE.md section 1.4): one item of a set is the focused one; the
-//! arrows move it, Home and End jump to the ends, a disabled item is passed over, and only a
-//! menu wraps. Pure: the menu, the command palette and a list step through it, and
-//! [`Roving`] holds the same rules over keyed items.
+//! Roving focus (design/30-CATALOGUE.md section 1.4).
+//!
+//! One item of a set is the focused one; the arrows move it, Home and End jump to the ends, a
+//! disabled item is passed over, and only a menu wraps. Pure: the menu, the command palette and a
+//! list step through it, and [`Roving`] holds the same rules over keyed items.
 
 use dioxus::prelude::Key;
 use ui_core::vocab::Availability;
@@ -141,6 +142,7 @@ impl<K: Clone + PartialEq> Roving<K> {
     }
 
     /// Focus `key`, if it is listed and enabled; otherwise nothing changes.
+    #[must_use]
     pub fn focus(mut self, key: &K) -> Self {
         let found = self
             .items

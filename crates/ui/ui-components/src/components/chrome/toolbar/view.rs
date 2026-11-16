@@ -1,8 +1,9 @@
 //! Toolbar: the band across the top of a window's content (design/30 section 2.7, `NSToolbar`).
-//! Leading items, the title (or a control the caller puts in its place), trailing items, and
-//! when they do not all fit the overflow chevron, which opens the rest as a menu. Items are
-//! `Button { Toolbar }`: the glyph alone, a fill under the pointer and while pressed. A pick
-//! reports the item's value and its button (`Picked`), so a menu or popover can hang from it.
+//!
+//! Leading items, the title (or a control the caller puts in its place), trailing items, and when
+//! they do not all fit the overflow chevron, which opens the rest as a menu. Items are `Button {
+//! Toolbar }`: the glyph alone, a fill under the pointer and while pressed. A pick reports the
+//! item's value and its button (`Picked`), so a menu or popover can hang from it.
 //!
 //! Markup: `div.ds-toolbar[role=toolbar][data-overflow]` of `span.ds-toolbar-leading`,
 //! `span.ds-toolbar-title` (`.ds-toolbar-heading`, `.ds-toolbar-subtitle`),
@@ -230,7 +231,7 @@ pub fn Toolbar<T: Clone + PartialEq + 'static>(
             class: common.class("ds-toolbar"),
             role: "toolbar",
             "aria-label": common.aria_label.clone(),
-            "data-overflow": if overflowing { Some("true") } else { None },
+            "data-overflow": overflowing.then_some("true"),
             oncontextmenu: move |event: MouseEvent| {
                 if let Some(hear) = oncontextmenu {
                     event.stop_propagation();

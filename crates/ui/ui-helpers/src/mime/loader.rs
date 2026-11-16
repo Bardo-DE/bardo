@@ -125,9 +125,11 @@ impl MimeDb {
     }
 }
 
-/// The `mimeapps.list` files to read, highest precedence first: for the config home and each
-/// config folder, then the `applications` folder of the data home and each data folder, the
-/// `<desktop>-mimeapps.list` of each current desktop (lower-cased) and then `mimeapps.list`.
+/// The `mimeapps.list` files to read, highest precedence first.
+///
+/// For the config home and each config folder, then the `applications` folder of the data home and
+/// each data folder, the `<desktop>-mimeapps.list` of each current desktop (lower-cased) and then
+/// `mimeapps.list`.
 #[must_use]
 pub fn mimeapps_paths(dirs: &XdgDirs) -> Vec<PathBuf> {
     let config = std::iter::once(&dirs.config_home)

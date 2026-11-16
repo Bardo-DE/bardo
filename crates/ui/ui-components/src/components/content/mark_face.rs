@@ -1,6 +1,7 @@
 //! `MarkFace`: a provider mark described as data, a letter of one or two characters on a colour
-//! (`#RRGGBB`), as a host that ships its providers as data supplies it. Quire never names the
-//! host; it validates the pair and picks the letter's ink itself.
+//! (`#RRGGBB`), as a host that ships its providers as data supplies it.
+//!
+//! Quire never names the host; it validates the pair and picks the letter's ink itself.
 
 use crate::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone};
 use ui_core::colour::contrast::ratio;

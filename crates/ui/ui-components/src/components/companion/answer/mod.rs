@@ -1,6 +1,8 @@
 //! The answer card and what every card shares (design/32 section 4): the actions, the footer and
-//! the answer variants without a card of their own. The card draws every variant's body itself;
-//! the plan and the replacement have their own lists and bars for where they stand alone.
+//! the answer variants without a card of their own.
+//!
+//! The card draws every variant's body itself; the plan and the replacement have their own lists
+//! and bars for where they stand alone.
 
 pub mod action;
 pub mod actions;

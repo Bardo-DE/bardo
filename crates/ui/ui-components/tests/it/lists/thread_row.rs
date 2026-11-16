@@ -8,9 +8,7 @@ use dioxus::prelude::*;
 use ui_components::components::app::hover_strip::{ActionId, HoverStrip};
 use ui_components::components::app::row_more::RowMore;
 use ui_components::components::app::thread_row::ThreadRow;
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_core::vocab::RowState;
 
 /// "Re: UIDL stability" with the hit marked and the prefix faint.

@@ -1,7 +1,8 @@
 //! The one arc geometry as pure arithmetic (design/30 section 2.9; the battery ring of
-//! design/23-WIDGETS.md section 4.1 measured it): where the track and the level's arc start and
-//! end on a 100-unit dial, and the SVG path for each, so a table can pin every arc without
-//! rendering a ring.
+//! design/23-WIDGETS.md section 4.1 measured it).
+//!
+//! Where the track and the level's arc start and end on a 100-unit dial, and the SVG path for each,
+//! so a table can pin every arc without rendering a ring.
 //!
 //! The ring is a stroke of [`STROKE`] units on a circle of [`RADIUS`] (the stroke's outer edge
 //! touches the box: 0.093 of the diameter, as measured). The arc runs clockwise from twelve.

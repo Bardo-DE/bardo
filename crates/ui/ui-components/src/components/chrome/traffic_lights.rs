@@ -1,10 +1,12 @@
 //! The traffic lights (design/04-COMPONENTS.md "Window frame"): close, minimize and zoom, 12 px
-//! discs 8 px apart at the titlebar's start. Coloured at rest in the active window, grey in an
-//! inactive one, and their marks appear while the pointer is over the group, as on macOS. The
-//! green one zooms on a click, and always with Option held; held for `menu_press` or rested on for `menu_hover` (or
-//! right-clicked, or `ArrowDown` with the keyboard on it) it opens the tiling menu, whose
-//! placements the host cannot make are shown unavailable. Each light keeps its press: a press on
-//! a light never starts the titlebar's move, and a double-click on one never zooms.
+//! discs 8 px apart at the titlebar's start.
+//!
+//! Coloured at rest in the active window, grey in an inactive one, and their marks appear while the
+//! pointer is over the group, as on macOS. The green one zooms on a click, and always with Option
+//! held; held for `menu_press` or rested on for `menu_hover` (or right-clicked, or `ArrowDown` with
+//! the keyboard on it) it opens the tiling menu, whose placements the host cannot make are shown
+//! unavailable. Each light keeps its press: a press on a light never starts the titlebar's move,
+//! and a double-click on one never zooms.
 
 use crate::components::chrome::light_mark::{LightMark, Mark};
 use crate::components::menus::item::item::{MenuImage, MenuItem};
@@ -31,13 +33,7 @@ type TileMenu = Option<[bool; 4]>;
 pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: bool) -> Element {
     let host = use_window_host();
     let state = use_window_state();
-    let mut menu = use_signal(|| {
-        if pose {
-            Some(support(host.as_ref()))
-        } else {
-            None
-        }
-    });
+    let mut menu = use_signal(|| pose.then(|| support(host.as_ref())));
     let mut anchor = use_signal(|| None::<MountedRef>);
     let opener = Opener {
         menu,
@@ -59,9 +55,10 @@ pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: bool) -> Element {
         },
     );
     let (close, minimize, pick) = (host.clone(), host.clone(), host);
-    let zoom_mark = match state.maximized {
-        true => Mark::Restore,
-        false => Mark::Zoom,
+    let zoom_mark = if state.maximized {
+        Mark::Restore
+    } else {
+        Mark::Zoom
     };
     let expanded = menu().is_some();
     rsx! {

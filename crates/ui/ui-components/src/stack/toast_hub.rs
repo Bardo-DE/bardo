@@ -1,6 +1,7 @@
-//! The toast's state: one visible at a time, each push restarting the 5000 ms hold, which the
-//! pointer over the toast pauses (design/30 section 2.9, design/04-COMPONENTS.md section 23,
-//! design/06-INTERACTIONS.md section 9).
+//! The toast's state: one visible at a time, each push restarting the 5000 ms hold.
+//!
+//! Which the pointer over the toast pauses (design/30 section 2.9, design/04-COMPONENTS.md section
+//! 23, design/06-INTERACTIONS.md section 9).
 //!
 //! The hold is a task of the root that provides the hub and drops with it; it writes through
 //! `try_set`, so a hold that finds the hub gone stops (`ui_style::task`).
@@ -50,9 +51,11 @@ impl ToastAction {
     }
 }
 
-/// Whether the toast answers the pointer yet. A toast that appears under a still pointer does
-/// not take it (the Mac's banners don't): a press there reaches what is below, and the toast
-/// neither counts as hovered nor holds. A move of the pointer arms it.
+/// Whether the toast answers the pointer yet.
+///
+/// A toast that appears under a still pointer does not take it (the Mac's banners don't): a press
+/// there reaches what is below, and the toast neither counts as hovered nor holds. A move of the
+/// pointer arms it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Armed {
     /// It just appeared and the pointer has not moved since: transparent to the pointer.

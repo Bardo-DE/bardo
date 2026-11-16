@@ -11,9 +11,11 @@ use ui_style::task::{try_get, try_set};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
 pub struct FocusTicket(pub u32);
 
-/// A caller's handle on a field's focus: pass it as `Focus::Controlled(request)` to a
-/// `TextField` (or as `focus` to a palette's search field), then call [`FocusRequest::request`]
-/// from a handler whenever the field should have the keyboard again.
+/// A caller's handle on a field's focus.
+///
+/// Pass it as `Focus::Controlled(request)` to a `TextField` (or as `focus` to a palette's search
+/// field), then call [`FocusRequest::request`] from a handler whenever the field should have the
+/// keyboard again.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct FocusRequest {
     asked: Signal<FocusTicket>,

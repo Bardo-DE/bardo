@@ -1,6 +1,7 @@
-//! A row's shape: what a `Row` draws beyond its title, detail and accessory. `Plain` is an
-//! ordinary row; `File` and `Clip` are the launcher's file and clipboard results (design/30
-//! section 2.4, absorbed from the menu's row shapes). Drawn by `shape_view`.
+//! A row's shape: what a `Row` draws beyond its title, detail and accessory.
+//!
+//! `Plain` is an ordinary row; `File` and `Clip` are the launcher's file and clipboard results
+//! (design/30 section 2.4, absorbed from the menu's row shapes). Drawn by `shape_view`.
 
 use crate::components::content::image_source::{ImageSize, ImageSource};
 use ui_core::word::Word;

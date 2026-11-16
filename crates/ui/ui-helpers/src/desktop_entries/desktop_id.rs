@@ -23,9 +23,10 @@ pub enum DesktopIdError {
 }
 
 /// A desktop file ID (Desktop Entry Specification, "Desktop File ID"): the file's path under its
-/// `applications` folder with each `/` made a `-`, so `kde/foo.desktop` is `kde-foo.desktop`. The
-/// text keeps the `.desktop` suffix; [`DesktopId::stem`] is the id without it, the form a window's
-/// app id is compared with.
+/// `applications` folder with each `/` made a `-`, so `kde/foo.desktop` is `kde-foo.desktop`.
+///
+/// The text keeps the `.desktop` suffix; [`DesktopId::stem`] is the id without it, the form a
+/// window's app id is compared with.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DesktopId(String);
 

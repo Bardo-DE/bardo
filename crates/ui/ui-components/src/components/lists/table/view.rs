@@ -1,8 +1,9 @@
-//! Table: a header of columns over a `List` of rows (design/30 section 2.6, `NSTableView`). A press
-//! on a sortable header asks for a sort (`Sort::after_press`); the sorted header draws its
+//! Table: a header of columns over a `List` of rows (design/30 section 2.6, `NSTableView`).
+//!
+//! A press on a sortable header asks for a sort (`Sort::after_press`); the sorted header draws its
 //! indicator and writes `aria-sort`; the edge between two headers drags 1:1, held at the column's
-//! least, and the last column takes what is left. Rows are the list's: selection is the caller's,
-//! a selected row is the accent under its ink while the table holds the keyboard and grey when it
+//! least, and the last column takes what is left. Rows are the list's: selection is the caller's, a
+//! selected row is the accent under its ink while the table holds the keyboard and grey when it
 //! does not, and no row is striped.
 //!
 //! Markup: `div.ds-table[role=group]` (the grid template as `--table-cols`) of

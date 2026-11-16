@@ -1,6 +1,8 @@
-//! What an icon slot shows: a quire glyph, an icon quire does not draw (a status item's pixmap,
-//! an icon theme's file, a third party's symbolic SVG, design/08-ICONS.md section 1.5), drawn
-//! recoloured to the text colour (symbolic) or as it is (an image), or a status glyph.
+//! What an icon slot shows.
+//!
+//! A quire glyph, an icon quire does not draw (a status item's pixmap, an icon theme's file, a third
+//! party's symbolic SVG, design/08-ICONS.md section 1.5), drawn recoloured to the text colour
+//! (symbolic) or as it is (an image), or a status glyph.
 
 use crate::components::content::status::family::StatusState;
 use ui_style::icon::Icon;

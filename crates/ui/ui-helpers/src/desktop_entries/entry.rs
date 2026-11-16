@@ -46,9 +46,11 @@ fn value_of(file: &DesktopFile, key: &str) -> Option<String> {
     (!value.is_empty()).then_some(value)
 }
 
-/// Every entry under `dirs` (the `applications` folders, most important first), each id once,
-/// the most important folder's file standing for it. A file that cannot be read, is over
-/// [`DESKTOP_ENTRY_CAP`], is not text, or has no `[Desktop Entry]` group is skipped.
+/// Every entry under `dirs` (the `applications` folders, most important first), each id once, the
+/// most important folder's file standing for it.
+///
+/// A file that cannot be read, is over [`DESKTOP_ENTRY_CAP`], is not text, or has no `[Desktop
+/// Entry]` group is skipped.
 #[must_use]
 pub fn load_entries(dirs: &[PathBuf]) -> Vec<ApplicationEntry> {
     first_of_each_id(walk_applications(dirs))

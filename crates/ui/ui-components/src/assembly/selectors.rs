@@ -18,10 +18,11 @@
 //! (a gallery example that restyles it and a `lint::user_stylesheet` case that accepts it come
 //! with the row).
 
-/// The version of the public styling surface this table describes. It is bumped when a public
-/// name is renamed or removed, and not when one is added: a look made for an earlier number may
-/// have lost a part, a look made for a later one cannot have. A look Extension records the number
-/// it was made against (`styles_for`).
+/// The version of the public styling surface this table describes.
+///
+/// It is bumped when a public name is renamed or removed, and not when one is added: a look made
+/// for an earlier number may have lost a part, a look made for a later one cannot have. A look
+/// Extension records the number it was made against (`styles_for`).
 pub const SURFACE: u32 = 1;
 
 /// One component's public class names.
@@ -65,9 +66,11 @@ pub struct Axis {
 /// by the consumer's surface root, not by a component.
 pub const SURFACE_ATTRIBUTE: &str = "data-surface";
 
-/// A public part that was renamed. For one quire release the part carries both names: the old
-/// class stays on the element and in this table, so a person's stylesheet keeps working, and the
-/// release notes list it under "Styles". The release after it deletes the row.
+/// A public part that was renamed.
+///
+/// For one quire release the part carries both names: the old class stays on the element and in
+/// this table, so a person's stylesheet keeps working, and the release notes list it under
+/// "Styles". The release after it deletes the row.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PartRename {
     /// The component's root class: `ds-chip`.
@@ -96,10 +99,12 @@ impl PartRename {
 /// nothing was renamed.
 pub const RENAMES: &[PartRename] = &[];
 
-/// An app's own public parts, in the table's format. Every root and part carries the app's
-/// prefix (`<app>-`), so an app can never claim a `ds-` name. A part nobody listed is internal.
-/// The app publishes the table (a `const`) and `ui_lint::user_stylesheet_with` reads
-/// [`AppSelectors::classes`] so a listed part is not reported as an internal selector.
+/// An app's own public parts, in the table's format.
+///
+/// Every root and part carries the app's prefix (`<app>-`), so an app can never claim a `ds-` name.
+/// A part nobody listed is internal. The app publishes the table (a `const`) and
+/// `ui_lint::user_stylesheet_with` reads [`AppSelectors::classes`] so a listed part is not reported
+/// as an internal selector.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct AppSelectors {
     /// The app's short name, lower case: `mailo`. Every class below starts with `<app>-`.
@@ -428,13 +433,14 @@ pub fn markdown() -> String {
     page.push_str("## Components\n\n| Component | Root | Parts |\n| --- | --- | --- |\n");
     for component in COMPONENTS {
         let parts = component.part_selectors();
-        let parts = match parts.is_empty() {
-            true => "none yet".to_string(),
-            false => parts
+        let parts = if parts.is_empty() {
+            "none yet".to_string()
+        } else {
+            parts
                 .iter()
                 .map(|part| format!("`{part}`"))
                 .collect::<Vec<_>>()
-                .join(", "),
+                .join(", ")
         };
         page.push_str(&format!(
             "| {} | `{}` | {parts} |\n",

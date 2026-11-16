@@ -1,6 +1,7 @@
-//! `LevelIndicator`: `NSLevelIndicator` (design/30 section 2.9): a read-only level, continuous or in
-//! sixteen steps, with an optional glyph that follows it and warning and critical bands: the
-//! volume and brightness bar of the OSD, a battery or storage row.
+//! `LevelIndicator`: `NSLevelIndicator` (design/30 section 2.9).
+//!
+//! A read-only level, continuous or in sixteen steps, with an optional glyph that follows it and
+//! warning and critical bands: the volume and brightness bar of the OSD, a battery or storage row.
 //! Markup: `div.ds-level-indicator[role=meter][data-style][data-band][data-size]`, the level as
 //! `--f`; parts `track`, `fill`, `icon`.
 
@@ -23,8 +24,9 @@ pub enum LevelStyle {
 }
 
 /// Where a level starts to warn (`NSLevelIndicator.warningValue` and `criticalValue`): a level at
-/// or under `warning` reads as a warning, at or under `critical` as critical. Both of nothing
-/// (the default) never warn.
+/// or under `warning` reads as a warning, at or under `critical` as critical.
+///
+/// Both of nothing (the default) never warn.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Bands {
     /// At or under this the fill is the warning colour.

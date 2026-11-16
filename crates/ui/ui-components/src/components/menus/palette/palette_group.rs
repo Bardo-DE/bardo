@@ -1,6 +1,7 @@
 //! A command palette's groups: a titled run of rows or an emoji grid, with an optional action on
-//! its header ("Show More"). `CommandPalette { groups }` takes [`PaletteGroups`], which a `Vec`
-//! of groups converts into.
+//! its header ("Show More").
+//!
+//! `CommandPalette { groups }` takes [`PaletteGroups`], which a `Vec` of groups converts into.
 
 use crate::components::content::text_runs::TextLine;
 use crate::components::lists::emoji_grid::grid::EmojiCells;
@@ -111,6 +112,7 @@ impl<T> PaletteGroup<T> {
     }
 
     /// The same group with `label` as its header's action, running `run`.
+    #[must_use]
     pub fn with_action(self, label: impl Into<String>, run: EventHandler<()>) -> Self {
         PaletteGroup {
             action: Some((label.into(), run)),
@@ -124,9 +126,11 @@ impl<T> PaletteGroup<T> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct PaletteGroups<T: 'static>(pub Vec<PaletteGroup<T>>);
 
-/// The order a Space wants its result groups in (design/30 section 2.11): the launcher's results
-/// come grouped by kind, each under its `SectionHeader`, and each Space lists the kinds it cares
-/// about first. `G` is the caller's own kind (`Apps`, `Files`, `Commands`).
+/// The order a Space wants its result groups in (design/30 section 2.11).
+///
+/// The launcher's results come grouped by kind, each under its `SectionHeader`, and each Space
+/// lists the kinds it cares about first. `G` is the caller's own kind (`Apps`, `Files`,
+/// `Commands`).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct GroupOrder<G>(pub Vec<G>);
 

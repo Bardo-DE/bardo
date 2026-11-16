@@ -1,6 +1,7 @@
-//! `ProviderMark`: a letter in the provider's colour on a white chip, never the provider's logo,
-//! or the favicon the app supplies (design/04-COMPONENTS.md section 28). A local-folders
-//! account, which has no provider, shows a neutral folder instead of a letter.
+//! `ProviderMark`: a letter in the provider's colour on a white chip, never the provider's logo, or
+//! the favicon the app supplies (design/04-COMPONENTS.md section 28).
+//!
+//! A local-folders account, which has no provider, shows a neutral folder instead of a letter.
 
 use crate::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone};
 use crate::components::content::image_source::ImageSource;

@@ -1,6 +1,7 @@
-//! Row: one line of a list, a menu's kin (`NSTableCellView`, design/30 section 2.6). A leading
-//! element, a title, a detail, a trailing accessory and the row's state are one anatomy for
-//! settings rows, sidebar rows, palette results and mail rows: the last hands its own `content`
+//! Row: one line of a list, a menu's kin (`NSTableCellView`, design/30 section 2.6).
+//!
+//! A leading element, a title, a detail, a trailing accessory and the row's state are one anatomy
+//! for settings rows, sidebar rows, palette results and mail rows: the last hands its own `content`
 //! in place of the words.
 
 use crate::components::content::text_runs::{TextLine, text};
@@ -42,9 +43,11 @@ pub enum Outline {
     Branch(bool),
 }
 
-/// A hook a row calls when its element mounts, held apart from the scope that made it: a parent
-/// that lists its rows and is itself gone by the time the renderer reports the mount (a palette
-/// unmounted a frame after it mounted) is not called, where an `EventHandler` it owns would panic.
+/// A hook a row calls when its element mounts, held apart from the scope that made it.
+///
+/// A parent that lists its rows and is itself gone by the time the renderer reports the mount (a
+/// palette unmounted a frame after it mounted) is not called, where an `EventHandler` it owns would
+/// panic.
 #[derive(Clone)]
 pub struct RowMounted(std::rc::Rc<dyn Fn(MountedEvent)>);
 

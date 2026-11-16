@@ -1,7 +1,9 @@
-//! `ProgressIndicator` (design/30 section 2.9, `NSProgressIndicator`): a bar, a spoke spinner,
-//! a ring or a pie. Markup: `div.ds-progress[data-style][data-size]` with `role="progressbar"`; a known
-//! share is `--f` on the fill and `aria-valuenow`; an operation without a known share is
-//! `data-pending` (`step` while it runs) and the loop's step as `--step` on the root, so nothing turns without an
+//! `ProgressIndicator` (design/30 section 2.9, `NSProgressIndicator`): a bar, a spoke spinner, a
+//! ring or a pie.
+//!
+//! Markup: `div.ds-progress[data-style][data-size]` with `role="progressbar"`; a known share is
+//! `--f` on the fill and `aria-valuenow`; an operation without a known share is `data-pending`
+//! (`step` while it runs) and the loop's step as `--step` on the root, so nothing turns without an
 //! [`Operation`](ui_motion::detail::operation::Operation).
 
 use super::arc::{PIE_RIM, RingSpan, arc_path, pie_path};
@@ -61,13 +63,13 @@ pub fn ProgressIndicator(
             role: "progressbar",
             "data-style": style.slug(),
             "data-size": size.slug(),
-            "data-gap": if style == ProgressStyle::Ring { Some(if notched { "notched" } else { "closed" }) } else { None },
+            "data-gap": (style == ProgressStyle::Ring).then(|| if notched { "notched" } else { "closed" }),
             "data-pending": if known { None } else { Some(frame.slug()) },
             "aria-label": common.aria_label.clone(),
-            "aria-valuemin": if known { Some("0") } else { None },
-            "aria-valuemax": if known { Some("100") } else { None },
+            "aria-valuemin": known.then_some("0"),
+            "aria-valuemax": known.then_some("100"),
             "aria-valuenow": progress.valuenow().map(|now| now.to_string()),
-            "aria-busy": if running { Some("true") } else { None },
+            "aria-busy": running.then_some("true"),
             style: step_of(frame).map(|step| format!("--step:{step}")),
             onmounted: move |event| common.mounted(event),
             ..data,

@@ -1,9 +1,11 @@
 //! `EmptyState`: what a list, a pane or a page says when there is nothing to show (design/30
-//! section 2.9, SwiftUI `ContentUnavailableView`): a title, an optional description and an
-//! optional action, centred, and a glyph above them only when the caller brings one. No form draws
-//! a glyph of its own: the title already says what the glyph would (an empty inbox, a search, a
-//! failure whose Retry sits right below), and a 48 px picture of it is the loudest thing in the
-//! pane for the least news, so Mail's empty and failed lists are words alone.
+//! section 2.9, SwiftUI `ContentUnavailableView`).
+//!
+//! A title, an optional description and an optional action, centred, and a glyph above them only
+//! when the caller brings one. No form draws a glyph of its own: the title already says what the
+//! glyph would (an empty inbox, a search, a failure whose Retry sits right below), and a 48 px
+//! picture of it is the loudest thing in the pane for the least news, so Mail's empty and failed
+//! lists are words alone.
 //!
 //! Three forms (`EmptyForm`): `Empty` (nothing here yet), `NoResults` (a search or filter found
 //! nothing) and `Failure` (it could not be loaded, with a Retry when the caller can). It is static

@@ -6,7 +6,6 @@
 use super::cases::Case;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
 use ui_components::components::overlays::hover_card::target::{HoverTarget, TargetElement};
 use ui_components::host::measure::Anchor;

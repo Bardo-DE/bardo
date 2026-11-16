@@ -1,9 +1,10 @@
 //! Button: `NSButton` in its push, toolbar, inline and help bezels (design/30 section 2.1).
+//!
 //! Markup: `button.ds-button[data-variant=<bezel>][data-role][data-size][data-availability]`;
-//! `data-state` and `aria-pressed` only for a toggle button; `aria-haspopup` only for a button
-//! that opens a menu, dialog or listbox; `data-answers` for a button that
-//! answers Return or Escape; `data-image=only` when the label is not drawn; `data-pressed`
-//! while a press is under way; the consumer's own `data-*` and classes after quire's.
+//! `data-state` and `aria-pressed` only for a toggle button; `aria-haspopup` only for a button that
+//! opens a menu, dialog or listbox; `data-answers` for a button that answers Return or Escape;
+//! `data-image=only` when the label is not drawn; `data-pressed` while a press is under way; the
+//! consumer's own `data-*` and classes after quire's.
 
 use crate::components::content::icon_source::IconSource;
 use crate::components::content::icon_view::IconView;

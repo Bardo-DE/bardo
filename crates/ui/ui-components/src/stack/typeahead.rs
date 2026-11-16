@@ -1,7 +1,8 @@
-//! Type-to-select (design/30-CATALOGUE.md section 1.4): letters typed in quick succession make
-//! a buffer, and the selection jumps to the next item whose label starts with it. The buffer is
-//! forgotten once `TypeaheadReset` has passed since the last letter. A single letter typed again
-//! and again steps through the items that start with it.
+//! Type-to-select (design/30-CATALOGUE.md section 1.4): letters typed in quick succession make a
+//! buffer, and the selection jumps to the next item whose label starts with it.
+//!
+//! The buffer is forgotten once `TypeaheadReset` has passed since the last letter. A single letter
+//! typed again and again steps through the items that start with it.
 
 use std::time::Instant;
 use ui_style::tokens::delay::DelayToken;

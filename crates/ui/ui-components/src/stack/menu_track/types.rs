@@ -12,10 +12,12 @@ use ui_core::vocab::PressPhase;
 pub struct ItemPath(pub Vec<u16>);
 
 /// How the open menu came to show: by a press on its own title, or by the pointer entering its
-/// title while another menu was open (the hover switch). A press on the title of a menu the
-/// pointer switched to keeps it open, as the click the person meant (macOS: with one menu open,
-/// a click on another title shows that one); only a press on a title the person already pressed
-/// (or dragged to and released on) closes it (design/13 section 13.3.2 "Click toggles").
+/// title while another menu was open (the hover switch).
+///
+/// A press on the title of a menu the pointer switched to keeps it open, as the click the person
+/// meant (macOS: with one menu open, a click on another title shows that one); only a press on a
+/// title the person already pressed (or dragged to and released on) closes it (design/13 section
+/// 13.3.2 "Click toggles").
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ShownBy {
     /// A press on its title, or a release there after a press-drag.
@@ -53,9 +55,11 @@ pub enum MenuTarget<K> {
     Outside,
 }
 
-/// The safe triangle (design/13 section 13.3.4): from the last pointer sample to the open
-/// submenu's near-edge corners. Its hysteresis is the corners' 4 px inflation and the
-/// `from` corner following the pointer, so a steady diagonal never falls off an edge.
+/// The safe triangle (design/13 section 13.3.4): from the last pointer sample to the open submenu's
+/// near-edge corners.
+///
+/// Its hysteresis is the corners' 4 px inflation and the `from` corner following the pointer, so a
+/// steady diagonal never falls off an edge.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct SafeTriangle {
     /// The last pointer sample inside the triangle.
@@ -123,8 +127,9 @@ pub enum MenuPhase<K> {
     Tracking(Session<K>),
 }
 
-/// The tracker's timings (its [`Machine::Params`](ui_core::machine::Machine::Params)), from
-/// `menus.submenu_delay_ms` and `menus.submenu_triangle_timeout_ms` (design/22-SETTINGS.md;
+/// The tracker's timings (its [`Machine::Params`](ui_core::machine::Machine::Params)).
+///
+/// From `menus.submenu_delay_ms` and `menus.submenu_triangle_timeout_ms` (design/22-SETTINGS.md;
 /// proposed 200 and 300 ms).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct MenuTiming {

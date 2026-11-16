@@ -71,7 +71,7 @@ impl Machine for Drift {
     type Params = Duration;
     type Ctx = ();
 
-    fn step(self, input: DriftIn, at: Stamp, every: &Duration, _: &()) -> (Drift, Vec<Edge>) {
+    fn step(self, input: DriftIn, at: Stamp, every: &Duration, &(): &()) -> (Drift, Vec<Edge>) {
         match (self, input) {
             (_, DriftIn::Over(edge)) => (
                 Drift::Toward {

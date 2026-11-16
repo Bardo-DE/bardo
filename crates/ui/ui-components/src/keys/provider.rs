@@ -5,9 +5,10 @@ use super::source::KeySource;
 use dioxus::prelude::*;
 use keymap::{AppAction, AppId, Conflict, DefaultChord, Platform, Registration};
 
-/// The root's keymap: the enclosing root's when there is one, else a new one from the
-/// [`KeySource`] the launcher provided (our desktop's conventions without one). Reloads it when
-/// the source said its settings changed.
+/// The root's keymap: the enclosing root's when there is one, else a new one from the [`KeySource`]
+/// the launcher provided (our desktop's conventions without one).
+///
+/// Reloads it when the source said its settings changed.
 ///
 /// `Ds` calls this; an app does not. Use it instead of [`use_keys`] only in a component that sits
 /// below the app's `App` yet above `Ds` (a host or shell that draws `Ds` itself), where

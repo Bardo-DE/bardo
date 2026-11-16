@@ -1,8 +1,10 @@
 //! `ShortcutField`: the control that records a keyboard shortcut (System Settings' shortcut
-//! recorder). It shows the chord it was given; a click, or Return or Space with the keyboard on
-//! it, makes it listen ("Type shortcut"); the next combination is offered to the caller, Escape
-//! gives up, Backspace or Delete clears. While it listens it keeps every key it hears from the
-//! window's actions.
+//! recorder).
+//!
+//! It shows the chord it was given; a click, or Return or Space with the keyboard on it, makes it
+//! listen ("Type shortcut"); the next combination is offered to the caller, Escape gives up,
+//! Backspace or Delete clears. While it listens it keeps every key it hears from the window's
+//! actions.
 //!
 //! `single_keys` chooses what counts: combinations, or single keys (a bare key, or Shift with a
 //! character; Delete is then a key). `more` lists the action's further keys, drawn as caps beside
@@ -114,27 +116,24 @@ pub fn ShortcutField(
                         }
                     });
                 },
-                onkeydown: move |event: KeyboardEvent| match listening() {
-                    false => {
-                        if live && activates(&event, ActivationKeys::ReturnAndSpace) {
-                            event.prevent_default();
-                            event.stop_propagation();
-                            listening.set(true);
-                        }
-                    }
-                    true => {
-                        let heard = hear(platform, single_keys, &event.key(), event.modifiers());
-                        if heard == Heard::Leave {
-                            return;
-                        }
+                onkeydown: move |event: KeyboardEvent| if !listening() {
+                    if live && activates(&event, ActivationKeys::ReturnAndSpace) {
                         event.prevent_default();
                         event.stop_propagation();
-                        match heard {
-                            Heard::Offer(chord) => finish(ShortcutRecorded::Chord(chord)),
-                            Heard::Clear => finish(ShortcutRecorded::Cleared),
-                            Heard::Cancel => finish(ShortcutRecorded::Cancelled),
-                            Heard::Wait | Heard::Leave => {}
-                        }
+                        listening.set(true);
+                    }
+                } else {
+                    let heard = hear(platform, single_keys, &event.key(), event.modifiers());
+                    if heard == Heard::Leave {
+                        return;
+                    }
+                    event.prevent_default();
+                    event.stop_propagation();
+                    match heard {
+                        Heard::Offer(chord) => finish(ShortcutRecorded::Chord(chord)),
+                        Heard::Clear => finish(ShortcutRecorded::Cleared),
+                        Heard::Cancel => finish(ShortcutRecorded::Cancelled),
+                        Heard::Wait | Heard::Leave => {}
                     }
                 },
                 onmounted: move |event| {

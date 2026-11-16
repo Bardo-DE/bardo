@@ -3,7 +3,6 @@
 
 use dioxus::prelude::*;
 use ui_components::components::app::thread_row::ThreadRow;
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
 use ui_core::vocab::RowState;
 

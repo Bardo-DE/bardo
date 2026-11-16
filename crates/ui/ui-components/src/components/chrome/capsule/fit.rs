@@ -1,6 +1,8 @@
-//! What a capsule shows in the width it has. A capsule is as wide as its slots, and its stage can
-//! be narrower than that, so [`fit`] drops the least important slots, a rank at a time, until what
-//! is left fits: the way `QuickTime` and Preview thin their controls as the window narrows.
+//! What a capsule shows in the width it has.
+//!
+//! A capsule is as wide as its slots, and its stage can be narrower than that, so [`fit`] drops the
+//! least important slots, a rank at a time, until what is left fits: the way `QuickTime` and
+//! Preview thin their controls as the window narrows.
 //!
 //! It is a pure function of the slots and the stage width, so the same width always shows the
 //! same slots and a slot that returns takes its old place: the result is one entry per input
@@ -112,10 +114,11 @@ fn ranks<T>(slots: &[RankedSlot<T>]) -> Vec<u8> {
 }
 
 /// Which of `slots` show on a stage `stage` pixels wide, one entry per slot in the same order.
-/// A whole rank goes at once, the highest number first, until the rest fit (a group ranked
-/// alike never thins piecemeal); dividers left with nothing to divide go with them. Essential
-/// slots stay however narrow the stage, and with no width to go by (the stage is not measured
-/// yet) every slot shows.
+///
+/// A whole rank goes at once, the highest number first, until the rest fit (a group ranked alike
+/// never thins piecemeal); dividers left with nothing to divide go with them. Essential slots stay
+/// however narrow the stage, and with no width to go by (the stage is not measured yet) every slot
+/// shows.
 pub fn fit<T>(slots: &[RankedSlot<T>], stage: Option<u32>) -> Vec<bool> {
     let mut shown = vec![true; slots.len()];
     let Some(stage) = stage else {

@@ -1,6 +1,8 @@
 //! Disclosure: the triangle that opens and closes a body of content (`NSButton` disclosure
-//! triangle, design/30 section 2.1). The triangle turns over `--t-quick`; the body's height and
-//! opacity follow it over `--t-move` (`use_collapse`), from the height the body measured.
+//! triangle, design/30 section 2.1).
+//!
+//! The triangle turns over `--t-quick`; the body's height and opacity follow it over `--t-move`
+//! (`use_collapse`), from the height the body measured.
 
 use crate::host::measure::client_rect;
 use crate::root::common::Common;
@@ -59,7 +61,7 @@ pub(crate) fn Collapsing(
             role: "region",
             "data-shown": shown_word(shown),
             "data-closed": closed,
-            "aria-hidden": if !shown { Some("true") } else { None },
+            "aria-hidden": (!shown).then_some("true"),
             style: collapse.style(measured()),
             div {
                 class: "ds-disclosure-content",

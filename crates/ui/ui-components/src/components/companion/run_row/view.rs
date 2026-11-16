@@ -23,7 +23,7 @@ pub fn RunRow(
             class: "ds-run-row",
             "data-state": view.state.slug(),
             "data-place": view.place.slug(),
-            "aria-selected": if selection { Some("true") } else { None },
+            "aria-selected": selection.then_some("true"),
             OutcomeMark { outcome }
         }
     }

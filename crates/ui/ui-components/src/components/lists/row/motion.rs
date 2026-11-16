@@ -1,6 +1,7 @@
 //! A row's own part in a motion of its list's rows (the command palette's Show More and Show Less,
-//! design/26-DETAILS.md section 5.6): coming in as an added row, or the last row kept, after which
-//! everything heals up.
+//! design/26-DETAILS.md section 5.6).
+//!
+//! Coming in as an added row, or the last row kept, after which everything heals up.
 
 /// A row's part in a motion of the rows around it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

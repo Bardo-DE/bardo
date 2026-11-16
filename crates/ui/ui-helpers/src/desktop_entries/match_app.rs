@@ -17,8 +17,9 @@ pub struct AppKeys {
 }
 
 /// The position in `apps` of the entry a toplevel with Wayland `app_id` (and, through `XWayland`,
-/// `wm_class`) belongs to. The first rule that matches any entry wins; within a rule, the first
-/// entry. The rules, in order:
+/// `wm_class`) belongs to.
+///
+/// The first rule that matches any entry wins; within a rule, the first entry. The rules, in order:
 ///
 /// 1. the id is `app_id`;
 /// 2. the id is `app_id` in any case;

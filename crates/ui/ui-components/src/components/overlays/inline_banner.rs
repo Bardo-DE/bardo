@@ -1,8 +1,10 @@
 //! `InlineBanner`: a message in a pane's own flow, above the content it is about (design/30 section
-//! 2.9): "remote images are blocked" over a message, "a read receipt was asked for", "you
-//! accepted this invitation". It is not a notification (that is [`Toast`](super::toast) and the
-//! shell's banners): it takes a place in the layout, stays until what it says stops being true or
-//! the person closes it, and never floats.
+//! 2.9).
+//!
+//! "remote images are blocked" over a message, "a read receipt was asked for", "you accepted this
+//! invitation". It is not a notification (that is [`Toast`](super::toast) and the shell's banners):
+//! it takes a place in the layout, stays until what it says stops being true or the person closes
+//! it, and never floats.
 //!
 //! It is static, as Mail's remote-content bar is: it appears and disappears in place with no
 //! motion (design/30 section 2.9, design/00 rule 10: a concession is dull). `shown` is only a

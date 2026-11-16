@@ -1,8 +1,11 @@
-//! The spelling menu and the marks' layer of an [`EditSurface`](crate::components::editor::surface::EditSurface)
-//! (design/04-COMPONENTS.md section 50). A right-click, or the context-menu key with the caret
-//! on a marked word, opens quire's context [`Menu`] with up to five suggestions, then "Ignore
-//! Spelling" (this session) and "Learn Spelling" (the user's dictionary). A suggestion reaches
-//! the app as one [`SpellReplace`], which it applies as one undoable edit.
+//! The spelling menu and the marks' layer of an
+//! [`EditSurface`](crate::components::editor::surface::EditSurface) (design/04-COMPONENTS.md
+//! section 50).
+//!
+//! A right-click, or the context-menu key with the caret on a marked word, opens quire's context
+//! [`Menu`] with up to five suggestions, then "Ignore Spelling" (this session) and "Learn Spelling"
+//! (the user's dictionary). A suggestion reaches the app as one [`SpellReplace`], which it applies
+//! as one undoable edit.
 
 use crate::components::editor::spell::{SpellCtx, draw, touch};
 use crate::components::menus::item::item::MenuItem;

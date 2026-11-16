@@ -53,10 +53,11 @@ pub fn frame_style(scheme: Scheme, activity: bool, hover: GroupHover) -> FrameSt
     }
 }
 
-/// The scheme a person's `appearance.theme` paints before the desktop is asked. `System` follows
-/// the desktop's preference, which `compositor_app::appearance` reads over the settings portal; until
-/// it has answered (and on a desktop without a portal) it paints Light, the scheme the desktop
-/// starts in.
+/// The scheme a person's `appearance.theme` paints before the desktop is asked.
+///
+/// `System` follows the desktop's preference, which `compositor_app::appearance` reads over the
+/// settings portal; until it has answered (and on a desktop without a portal) it paints Light, the
+/// scheme the desktop starts in.
 ///
 /// ```
 /// use compositor_layout::{Scheme, Theme, scheme_of};
@@ -202,7 +203,6 @@ fn darker(of: FrameColour) -> FrameColour {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use compositor_core::window::Light;
 
     #[test]
     fn the_metrics_are_the_chrome_tokens() {

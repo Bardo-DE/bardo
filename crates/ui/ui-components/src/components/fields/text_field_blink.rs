@@ -8,7 +8,7 @@
 //! paints no more frames until the caret next moves, as GNOME's `cursor-blink-timeout` does.
 //! Under Reduced motion it never blinks.
 
-use dioxus::core::{ScopeId, Task, current_scope_id};
+use dioxus::core::{Task, current_scope_id};
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_core::time::clock::sleep;

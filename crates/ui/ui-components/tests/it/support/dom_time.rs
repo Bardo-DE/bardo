@@ -4,7 +4,6 @@
 
 use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
-use std::future::Future;
 use std::ops::{Deref, DerefMut};
 use std::pin::pin;
 use std::task::{Context, Waker};

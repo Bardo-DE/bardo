@@ -1,9 +1,10 @@
 //! The window frame of a client-decorated window (design/04-COMPONENTS.md "Window frame";
-//! design/13-BEHAVIOUR-menus-windows.md section 13.3.11): a titlebar across the top that moves
-//! the window when dragged and zooms it on a double-click, the three traffic lights at its start
-//! (`traffic_lights`), and grab zones along every edge that resize it (`resize_edges`). Every
-//! request goes to the host's [`HostWindow`](crate::window::host::HostWindow); without one the frame draws and
-//! does nothing.
+//! design/13-BEHAVIOUR-menus-windows.md section 13.3.11).
+//!
+//! A titlebar across the top that moves the window when dragged and zooms it on a double-click, the
+//! three traffic lights at its start (`traffic_lights`), and grab zones along every edge that
+//! resize it (`resize_edges`). Every request goes to the host's
+//! [`HostWindow`](crate::window::host::HostWindow); without one the frame draws and does nothing.
 //!
 //! `Ds { window: WindowFrame::Titlebar { .. } }` draws it: the root becomes a column of the
 //! titlebar and `div.ds-window-body` (the app's children), and the edges lie over both. The
@@ -77,6 +78,7 @@ impl WindowFrame {
     }
 
     /// The same frame with `leading` after its lights; no frame has no bar.
+    #[must_use]
     pub fn with_leading(self, leading: Element) -> Self {
         match self {
             WindowFrame::None => WindowFrame::None,
@@ -99,6 +101,7 @@ impl WindowFrame {
     }
 
     /// The same frame with `trailing` at the end of its bar; no frame has no bar.
+    #[must_use]
     pub fn with_trailing(self, trailing: Element) -> Self {
         match self {
             WindowFrame::None => WindowFrame::None,
@@ -121,6 +124,7 @@ impl WindowFrame {
     }
 
     /// The same frame with `parts` beside its title; no frame has none.
+    #[must_use]
     pub fn with_parts(self, parts: TitleParts) -> Self {
         match self {
             WindowFrame::None => WindowFrame::None,

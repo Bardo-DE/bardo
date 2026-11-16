@@ -1,8 +1,9 @@
-//! A touchpad's gestures with their phases: a pinch, and a scroll that says when it began and
-//! when the fingers lifted. Blitz carries neither (its wheel event has no phase and it has no
-//! pinch event; FINDINGS "Events"), but the window sees winit's events before the document does,
-//! so the host publishes them here and a component listens with [`use_gestures`], without
-//! naming a renderer.
+//! A touchpad's gestures with their phases: a pinch, and a scroll that says when it began and when
+//! the fingers lifted.
+//!
+//! Blitz carries neither (its wheel event has no phase and it has no pinch event; FINDINGS
+//! "Events"), but the window sees winit's events before the document does, so the host publishes
+//! them here and a component listens with [`use_gestures`], without naming a renderer.
 //!
 //! ```ignore
 //! use_gestures(move |gesture| match gesture {
@@ -200,9 +201,10 @@ impl GestureBus {
     }
 }
 
-/// Hear the window's gestures for as long as the calling component lives, a wheel's detents as
-/// they arrive ([`WheelDelivery::AsReceived`]). With no host there is no bus and nothing arrives
-/// (a server render, a document with no window).
+/// Hear the window's gestures for as long as the calling component lives, a wheel's detents as they
+/// arrive ([`WheelDelivery::AsReceived`]).
+///
+/// With no host there is no bus and nothing arrives (a server render, a document with no window).
 pub fn use_gestures(on_gesture: impl FnMut(Gesture) + 'static) {
     use_gestures_with(WheelDelivery::AsReceived, on_gesture);
 }

@@ -1,6 +1,7 @@
 //! What goes with a window's title (design/30 section 2.7, `NSWindow` titlebar): a proxy icon
-//! before it, the edited dot after it, and a subtitle in the faint ink. Data, and the one
-//! function that draws the title area from it.
+//! before it, the edited dot after it, and a subtitle in the faint ink.
+//!
+//! Data, and the one function that draws the title area from it.
 //!
 //! Markup: `span.ds-titlebar-title` holding `span.ds-titlebar-proxy`, `span.ds-titlebar-name`,
 //! `span.ds-titlebar-edited` and `span.ds-titlebar-subtitle`, each present only when it has

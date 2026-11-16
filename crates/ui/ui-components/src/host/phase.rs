@@ -1,8 +1,10 @@
 //! What a component asks of the host's frame phase: the step the host runs once per frame, after
-//! layout, with the document free. A component never reads or writes the document while it
-//! renders (the renderer holds it, so the access answers busy and the caller waits a frame);
-//! instead it asks the phase to publish what it observed into a signal when that changes, and to
-//! apply a write it queued. The write lands in that frame's document and shows on the next.
+//! layout, with the document free.
+//!
+//! A component never reads or writes the document while it renders (the renderer holds it, so the
+//! access answers busy and the caller waits a frame); instead it asks the phase to publish what it
+//! observed into a signal when that changes, and to apply a write it queued. The write lands in
+//! that frame's document and shows on the next.
 
 use crate::host::position::{TextPosition, TextRange};
 use dioxus::prelude::{CopyValue, Signal};

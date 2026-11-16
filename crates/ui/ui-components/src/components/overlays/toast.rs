@@ -1,6 +1,7 @@
 //! Toast: a short notice that slides in from the right, holds, and slides out (design/30 section
-//! 2.9, design/04-COMPONENTS.md section 23, design/06-INTERACTIONS.md section 9). It is not a
-//! macOS component; it moves like a notification banner.
+//! 2.9, design/04-COMPONENTS.md section 23, design/06-INTERACTIONS.md section 9).
+//!
+//! It is not a macOS component; it moves like a notification banner.
 //!
 //! `Ds` renders `ToastHost` after the overlay host. It draws the hub's toast, one at a time: it
 //! slides in from past the right edge over `--t-move --e-out` and, when the hub hides it, slides

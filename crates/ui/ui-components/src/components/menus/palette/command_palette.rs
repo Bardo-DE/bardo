@@ -246,7 +246,7 @@ pub fn CommandPalette<T: Clone + PartialEq + 'static>(
                 }
                 Some(PaletteKey::Run) => run(current),
                 Some(PaletteKey::Close) if float.takes_escape() => {
-                    onclose.call(PaletteClose::Escape)
+                    onclose.call(PaletteClose::Escape);
                 }
                 Some(PaletteKey::Close) | None => {}
             }

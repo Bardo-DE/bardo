@@ -3,10 +3,12 @@
 use crate::capability::{CapabilityName, Executable, PackageName};
 use crate::install_line::InstallLine;
 
-/// What a request that found nothing was about, for the sheet's words: the capability asked for,
-/// the first candidate package for this distro (what to look for in a software centre) and the
-/// first probe program (what a package must provide). Either is `None` when the file gives none.
-/// `install_lines` is the same package as a command to copy, for where nothing can install it.
+/// What a request that found nothing was about, for the sheet's words.
+///
+/// The capability asked for, the first candidate package for this distro (what to look for in a
+/// software centre) and the first probe program (what a package must provide). Either is `None`
+/// when the file gives none. `install_lines` is the same package as a command to copy, for where
+/// nothing can install it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Missing {
     /// The capability that was asked for.

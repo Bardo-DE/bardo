@@ -118,7 +118,7 @@ fn checkable(word: &str) -> bool {
     let digit = word.chars().any(char::is_numeric);
     let upper = word.chars().any(char::is_uppercase);
     let lower = word.chars().any(char::is_lowercase);
-    !digit && !(upper && !lower)
+    !digit && (!upper || lower)
 }
 
 /// Whether a chunk is a URL, an email address or a path.

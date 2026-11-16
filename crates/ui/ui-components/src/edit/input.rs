@@ -1,6 +1,8 @@
-//! What an `EditSurface` tells its app: typed text, keys, IME composition
-//! and clipboard gestures, in the order they happened. An app's adapter maps each to its editor
-//! core's input (mailo builds `editor::InputEvent`s from them).
+//! What an `EditSurface` tells its app: typed text, keys, IME composition and clipboard gestures,
+//! in the order they happened.
+//!
+//! An app's adapter maps each to its editor core's input (mailo builds `editor::InputEvent`s from
+//! them).
 
 use crate::host::pasted::Pasted;
 use dioxus::prelude::{Key, Modifiers};

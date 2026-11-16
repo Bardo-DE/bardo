@@ -14,9 +14,10 @@ pub enum PointerPhase {
     Release,
 }
 
-/// A pointer event the host routes to the surface that captured the pointer at a press: every
-/// move and the release until the button comes up, wherever the pointer is, so a drag selection
-/// keeps following it outside the surface's box.
+/// A pointer event the host routes to the surface that captured the pointer at a press.
+///
+/// Every move and the release until the button comes up, wherever the pointer is, so a drag
+/// selection keeps following it outside the surface's box.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CapturedPointer {
     /// [`PointerPhase::Drag`] for a move, [`PointerPhase::Release`] for the release.

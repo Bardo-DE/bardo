@@ -1,6 +1,7 @@
-//! Scrolling a scroller the least that shows one of its items: a command palette's
-//! selected row, cell or header action, moved by a key the caller claimed or by the caller's own
-//! `selected`, is brought to the nearest edge of the list, never centred.
+//! Scrolling a scroller the least that shows one of its items.
+//!
+//! A command palette's selected row, cell or header action, moved by a key the caller claimed or by
+//! the caller's own `selected`, is brought to the nearest edge of the list, never centred.
 //!
 //! Blitz's own `scroll_into_view` scrolls the document's viewport only, never the list, so the
 //! host does it: [`GeometryHost::reveal`](crate::host::parts::GeometryHost::reveal) reads the item's place in

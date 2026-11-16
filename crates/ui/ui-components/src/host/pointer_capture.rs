@@ -1,9 +1,10 @@
-//! Following the pointer past an element's own box: [`use_pointer_capture`] is the hook for a
-//! drag that must not stop where the element does (panning a picture, scrubbing a timeline,
-//! resizing a divider). Blitz delivers a move only to the element under the pointer and has no
-//! pointer capture of its own (FINDINGS "Events"), so a press asks the host to route every move
-//! and the primary release to the element's sink until the button comes up, the way an edit
-//! surface does for a selection drag.
+//! Following the pointer past an element's own box.
+//!
+//! [`use_pointer_capture`] is the hook for a drag that must not stop where the element does
+//! (panning a picture, scrubbing a timeline, resizing a divider). Blitz delivers a move only to the
+//! element under the pointer and has no pointer capture of its own (FINDINGS "Events"), so a press
+//! asks the host to route every move and the primary release to the element's sink until the button
+//! comes up, the way an edit surface does for a selection drag.
 //!
 //! ```ignore
 //! let hold = use_pointer_capture(move |pointer: CapturedPointer| match pointer.phase {

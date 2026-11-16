@@ -31,9 +31,10 @@ pub(crate) enum Layout {
 /// A height as the list draws it: never negative, and never not-a-number or infinite (a row with
 /// such a height takes no room).
 fn drawn(height: Px) -> f32 {
-    match height.0.is_finite() {
-        true => height.0.max(0.0),
-        false => 0.0,
+    if height.0.is_finite() {
+        height.0.max(0.0)
+    } else {
+        0.0
     }
 }
 
@@ -72,10 +73,13 @@ impl Layout {
     /// How tall row `index` is; zero past the end.
     pub(crate) fn height(&self, index: usize) -> Px {
         match self {
-            Layout::Even { pitch, len } => match index < *len {
-                true => *pitch,
-                false => Px(0.0),
-            },
+            Layout::Even { pitch, len } => {
+                if index < *len {
+                    *pitch
+                } else {
+                    Px(0.0)
+                }
+            }
             Layout::Uneven(_) => Px(self.top(index + 1).0 - self.top(index).0),
         }
     }

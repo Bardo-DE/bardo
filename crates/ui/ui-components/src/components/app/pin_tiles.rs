@@ -1,6 +1,8 @@
-//! `PinTiles`: the pinned grid (design/30 section 2.11): a group of `PinTile`s four to a row, the
-//! Add tile last, and a tile dragged onto another's place takes it (the drop line shows where it
-//! lands). The grid never reorders itself: it hands the new order to the caller, who owns it.
+//! `PinTiles`: the pinned grid (design/30 section 2.11).
+//!
+//! A group of `PinTile`s four to a row, the Add tile last, and a tile dragged onto another's place
+//! takes it (the drop line shows where it lands). The grid never reorders itself: it hands the new
+//! order to the caller, who owns it.
 
 use crate::components::app::pin_tile::{PinFace, PinStatus, PinTile};
 use crate::components::content::provider_mark::MarkStyle;
@@ -45,16 +47,19 @@ impl<K> PinItem<K> {
     }
 
     /// With this unread count (zero draws no badge).
+    #[must_use]
     pub fn unread(self, unread: u32) -> Self {
         PinItem { unread, ..self }
     }
 
     /// With this provider mark.
+    #[must_use]
     pub fn mark(self, mark: MarkStyle) -> Self {
         PinItem { mark, ..self }
     }
 
     /// With this problem mark.
+    #[must_use]
     pub fn status(self, status: PinStatus) -> Self {
         PinItem { status, ..self }
     }

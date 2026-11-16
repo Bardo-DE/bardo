@@ -1,7 +1,9 @@
 //! Skeleton: a grey placeholder shape shown in place of content that is still loading (design/30
-//! section 2.9, SwiftUI's `redacted`). It is kept although macOS has no counterpart, and moves the
-//! macOS way: a static fill, no shimmer, and a cross-fade over `--t-quick` when the content
-//! arrives (the caller hides it; it fades out before it is gone).
+//! section 2.9, SwiftUI's `redacted`).
+//!
+//! It is kept although macOS has no counterpart, and moves the macOS way: a static fill, no
+//! shimmer, and a cross-fade over `--t-quick` when the content arrives (the caller hides it; it
+//! fades out before it is gone).
 //!
 //! A skeleton is shown while an `Operation` without a value is running; the caller says so with
 //! `shown`. Three shapes (`SkeletonShape`): a `Line` of text, a `Block` (an image, a card) and a

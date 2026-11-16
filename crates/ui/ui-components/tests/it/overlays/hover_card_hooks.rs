@@ -5,7 +5,6 @@
 use super::cases::Case;
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::components::overlays::hover_card::intent::{HoverAnchor, use_hover_intent};
 use ui_components::components::overlays::hover_card::parts::HoverCardPart;
 use ui_components::host::measure::Anchor;

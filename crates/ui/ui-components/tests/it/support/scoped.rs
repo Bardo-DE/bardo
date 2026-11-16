@@ -5,7 +5,6 @@ use dioxus::prelude::*;
 use ui_components::prelude::*;
 use ui_style::appearance::resolve::Resolved;
 use ui_style::appearance::system::Contrast;
-use ui_style::appearance::transparency::Transparency;
 use ui_style::scope::Scope;
 
 /// The scope a component reads when nothing above it is a `Ds`: light, Postmark, Reduced motion

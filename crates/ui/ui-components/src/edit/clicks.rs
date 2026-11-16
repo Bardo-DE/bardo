@@ -1,6 +1,8 @@
-//! Counting a quick run of presses (double and triple click). The surface keeps the press's
-//! default action from running (it would start Blitz's own text selection), so it cannot use
-//! the renderer's click count and keeps its own: within 500 ms and 4 px of the last press.
+//! Counting a quick run of presses (double and triple click).
+//!
+//! The surface keeps the press's default action from running (it would start Blitz's own text
+//! selection), so it cannot use the renderer's click count and keeps its own: within 500 ms and 4
+//! px of the last press.
 
 use std::time::Instant;
 use ui_core::geometry::units::Point;

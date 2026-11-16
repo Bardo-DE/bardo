@@ -1,6 +1,7 @@
 //! The Spaces bar as markup: `div.ds-spaces-bar[role=group]` holding a row of
-//! `button.ds-spaces-bar-space` (a thumbnail when expanded, the name), and a plus at the right
-//! edge when the host can add a Space.
+//! `button.ds-spaces-bar-space` (a thumbnail when expanded, the name).
+//!
+//! And a plus at the right edge when the host can add a Space.
 //!
 //! Shown, the bar drops in from the top edge over `--t-overview --e-out`; hidden, it lifts away
 //! over `--t-overview --e-exit` and `on_hidden` runs once the lift has settled, when the host

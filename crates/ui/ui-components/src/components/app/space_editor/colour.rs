@@ -1,8 +1,10 @@
-//! `SpaceColour`: the colour half of the Space editor on its own, for a host that edits a Space a
-//! part at a time (a popover per part, opened from the Space's menu) rather than in one panel:
-//! the field and its handles, the stops, the grain and the presets. The name, the theme, the
-//! card's accent and the contrast readout are the host's to offer elsewhere; the theme and the
-//! accent are each one `SegmentedControl` (or a menu of checks) over [`SpaceLook`].
+//! `SpaceColour`: the colour half of the Space editor on its own.
+//!
+//! For a host that edits a Space a part at a time (a popover per part, opened from the Space's
+//! menu) rather than in one panel: the field and its handles, the stops, the grain and the presets.
+//! The name, the theme, the card's accent and the contrast readout are the host's to offer
+//! elsewhere; the theme and the accent are each one `SegmentedControl` (or a menu of checks) over
+//! [`SpaceLook`].
 //!
 //! Controlled as [`super::SpaceEditor`] is: every edit is a whole new look through `onchange`,
 //! and `active_dot` seeds which dot the handles and keys move, a pick inside reported through

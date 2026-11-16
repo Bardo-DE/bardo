@@ -13,11 +13,12 @@ pub struct EntryFile {
     pub id: DesktopId,
 }
 
-/// Every `.desktop` file under `roots`, in order: a folder's own files by name, then its
-/// subfolders by name, each root before the next. A root or folder that cannot be read is
-/// skipped. A folder is entered once however many links lead to it, so a link back up the tree
-/// ends the walk. The same id can come twice (one per root); [`first_of_each_id`] drops the
-/// shadowed ones.
+/// Every `.desktop` file under `roots`, in order: a folder's own files by name, then its subfolders
+/// by name, each root before the next.
+///
+/// A root or folder that cannot be read is skipped. A folder is entered once however many links
+/// lead to it, so a link back up the tree ends the walk. The same id can come twice (one per root);
+/// [`first_of_each_id`] drops the shadowed ones.
 #[must_use]
 pub fn walk_applications(roots: &[PathBuf]) -> Vec<EntryFile> {
     let mut walk = Walk::default();

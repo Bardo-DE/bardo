@@ -1,6 +1,8 @@
-//! Where a picture sits inside its box, as inline CSS: a rect the caller has fitted (a screenshot's
-//! card, a PDF page, a preview pane's media), written to whole hundredths of a pixel so the box a
-//! host sizes for and the box the document lays out are the same number.
+//! Where a picture sits inside its box, as inline CSS.
+//!
+//! A rect the caller has fitted (a screenshot's card, a PDF page, a preview pane's media), written
+//! to whole hundredths of a pixel so the box a host sizes for and the box the document lays out are
+//! the same number.
 
 use ui_core::geometry::units::{Px, Rect};
 

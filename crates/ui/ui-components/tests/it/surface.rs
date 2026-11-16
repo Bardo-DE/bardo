@@ -4,7 +4,6 @@
 
 use crate::support::golden;
 
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ui_components::prelude::*;
 use ui_style::tokens::shape::{Corner, Radius};

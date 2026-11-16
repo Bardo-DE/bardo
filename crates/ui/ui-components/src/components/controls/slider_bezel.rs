@@ -67,7 +67,7 @@ pub(crate) fn BezelSlider(
             "data-pressed": pressed,
             role: "slider",
             // A disabled level is not a stop in the tab order: it takes no key and no press.
-            tabindex: if takes_input { Some("0") } else { None },
+            tabindex: takes_input.then_some("0"),
             "aria-label": common.aria_label.clone().unwrap_or_else(|| label.clone()),
             "aria-valuemin": "0",
             "aria-valuemax": "100",

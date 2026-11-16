@@ -5,7 +5,6 @@
 
 use dioxus::prelude::*;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName, ExtraClass, PassThroughError};
 use ui_lint::{LintConfig, Rule, markup, stylesheet};
 use ui_style::tokens::control_size::ControlSize;

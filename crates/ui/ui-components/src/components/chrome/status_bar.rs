@@ -1,8 +1,9 @@
 //! Status bar: the thin row along the bottom of a window's content (Finder's "12 items, 40 GB
-//! available"). A leading slot, a centred line of text in the secondary ink, a trailing slot,
-//! and a hairline on top. The words are the app's (`status_bar_model::item_count_text` writes the
-//! usual count); a bottom bar is for small status, never for anything critical (design/27
-//! section 5.10).
+//! available").
+//!
+//! A leading slot, a centred line of text in the secondary ink, a trailing slot, and a hairline on
+//! top. The words are the app's (`status_bar_model::item_count_text` writes the usual count); a
+//! bottom bar is for small status, never for anything critical (design/27 section 5.10).
 //!
 //! Markup: `div.ds-status-bar[role=status]` of `span.ds-status-bar-leading`,
 //! `span.ds-status-bar-text` and `span.ds-status-bar-trailing`. The two slots are always

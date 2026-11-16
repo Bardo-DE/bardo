@@ -1,6 +1,7 @@
-//! Which words are marked, and how the marks follow an edit. Pure: the surface's driver
-//! (`components/edit_surface_spell.rs`) reads the text and the checker's answers and asks these
-//! functions what to draw.
+//! Which words are marked, and how the marks follow an edit.
+//!
+//! Pure: the surface's driver (`components/edit_surface_spell.rs`) reads the text and the checker's
+//! answers and asks these functions what to draw.
 //!
 //! The reference's behaviour: a misspelling is marked once the checker has seen it, but the word
 //! being typed is not marked until the caret leaves it ([`Typing`]); a mark after the edit point
@@ -78,9 +79,10 @@ pub fn marks_for(
         .collect()
 }
 
-/// One paragraph's marks after its text went from `before` to `after`: a mark whose word is
-/// still whole where it was stays; one whose word moved by the text's change in length (an edit
-/// before it) moves with it; any other is dropped until the next check.
+/// One paragraph's marks after its text went from `before` to `after`.
+///
+/// A mark whose word is still whole where it was stays; one whose word moved by the text's change
+/// in length (an edit before it) moves with it; any other is dropped until the next check.
 #[must_use]
 pub fn reconcile(marks: Vec<Misspelt>, before: &str, after: &str) -> Vec<Misspelt> {
     let delta = after.len() as isize - before.len() as isize;
@@ -107,8 +109,10 @@ fn whole_at(text: &str, span: WordSpan, word: &str) -> bool {
 }
 
 /// The word being typed after a read of the caret's paragraph (`text`; `changed` when it differs
-/// from the last read: the user typed in it): the word at the caret if the paragraph changed; the same word as before while the
-/// caret stays on it; otherwise none.
+/// from the last read: the user typed in it).
+///
+/// The word at the caret if the paragraph changed; the same word as before while the caret stays on
+/// it; otherwise none.
 #[must_use]
 pub fn typing_after(
     before: Option<Typing>,

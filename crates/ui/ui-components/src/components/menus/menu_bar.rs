@@ -1,7 +1,8 @@
-//! `MenuBar`: the model of an app's menu bar (`NSMenu` mainMenu, design/30 section 2.4): the six
-//! menus in the order the Mac draws them (App, File, Edit, View, Window, Help), each with its
-//! standard items and their standard key equivalents, Help led by its search. Data only: the bar
-//! that draws it is the shell's, and a menu's rows are `MenuItem`s the one `Menu` draws.
+//! `MenuBar`: the model of an app's menu bar (`NSMenu` mainMenu, design/30 section 2.4).
+//!
+//! The six menus in the order the Mac draws them (App, File, Edit, View, Window, Help), each with
+//! its standard items and their standard key equivalents, Help led by its search. Data only: the
+//! bar that draws it is the shell's, and a menu's rows are `MenuItem`s the one `Menu` draws.
 //!
 //! An item's value is the caller's command type `T`: `MenuBarModel::standard` is given the
 //! function that turns a [`BarCommand`] into it, and the app adds its own items to a section
@@ -186,6 +187,7 @@ impl<T: Clone> MenuBarModel<T> {
 
     /// The same bar with each item's availability as `available` says for its command: a
     /// command with nothing to act on (Paste with an empty clipboard) is drawn disabled.
+    #[must_use]
     pub fn availability(self, available: impl Fn(&T) -> Availability) -> Self {
         let menus = self
             .menus

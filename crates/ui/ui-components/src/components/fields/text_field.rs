@@ -195,7 +195,7 @@ pub fn TextField(
     let told = Told {
         focus: use_callback(move |()| {
             caret.refresh();
-            focus_in.call(())
+            focus_in.call(());
         }),
         blur: use_callback(move |()| {
             caret.refresh();

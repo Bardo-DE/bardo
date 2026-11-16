@@ -1,7 +1,9 @@
 //! Picture: an image in a rounded frame, cropped to fill it (`object-fit: cover`), as Finder's
-//! Quick Look shows a wallpaper or a photo. The frame is as wide as its parent and takes the
-//! shape's ratio ([`PictureShape::Landscape`] is the 16:10 of a screen); the picture is cropped
-//! to it and never stretched. The corner radius is `--r-media`.
+//! Quick Look shows a wallpaper or a photo.
+//!
+//! The frame is as wide as its parent and takes the shape's ratio ([`PictureShape::Landscape`] is
+//! the 16:10 of a screen); the picture is cropped to it and never stretched. The corner radius is
+//! `--r-media`.
 //!
 //! The alt text is required: it is the picture's accessible name. quire never fetches, so the
 //! source is an [`ImageSource`] (a `data:` URI or a `file:` URL).

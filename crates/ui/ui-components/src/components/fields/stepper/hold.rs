@@ -80,7 +80,7 @@ impl Machine for StepHold {
         input: HoldIn,
         at: Stamp,
         pace: &RepeatPace,
-        _: &(),
+        &(): &(),
     ) -> (StepHold, Vec<StepDirection>) {
         match (self, input) {
             (_, HoldIn::Press(direction)) => (

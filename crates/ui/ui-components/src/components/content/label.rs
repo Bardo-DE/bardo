@@ -1,6 +1,8 @@
 //! Label: `NSTextField` as a label, the one way to draw plain text (design/30 section 2.8).
+//!
 //! Markup: `span.ds-label[data-role][data-style]`, with `data-severity` for a status tone and
-//! `data-availability` and `aria-disabled` when it is not enabled; the text is a [`TextLine`], whole or as runs in their tones.
+//! `data-availability` and `aria-disabled` when it is not enabled; the text is a [`TextLine`],
+//! whole or as runs in their tones.
 
 use crate::components::content::text_runs::{TextLine, text};
 use crate::root::common::Common;
@@ -64,7 +66,7 @@ pub fn Label(
             "data-role": role.slug(),
             "data-style": style.slug(),
             "data-severity": severity.map(Severity::slug),
-            "data-availability": if disabled { Some(availability.slug()) } else { None },
+            "data-availability": disabled.then(|| availability.slug()),
             "aria-label": common.aria_label.clone(),
             "aria-disabled": availability.aria_disabled(),
             onmounted: move |event| common.mounted(event),

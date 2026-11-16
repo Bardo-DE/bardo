@@ -6,7 +6,6 @@
 use crate::error::HttpError;
 use crate::seam::Http;
 use http::{Request, Response};
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 

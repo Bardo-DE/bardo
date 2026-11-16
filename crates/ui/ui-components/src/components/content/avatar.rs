@@ -45,10 +45,12 @@ pub enum AvatarShape {
     Square,
 }
 
-/// The hue for a person with no stored colour, hashed from their address or name (design/03-COLOR.md
-/// section 13): the same as [`PersonHue::of`], so a consumer never keeps its own hash or hex
-/// table. Paint it with `AvatarTone::Person`, or [`PersonHue::colour`] where a component takes
-/// a [`Colour`]; the eight stored-colour swatches are [`ui_style::tokens::person::PersonSwatch`].
+/// The hue for a person with no stored colour, hashed from their address or name
+/// (design/03-COLOR.md section 13).
+///
+/// The same as [`PersonHue::of`], so a consumer never keeps its own hash or hex table. Paint it
+/// with `AvatarTone::Person`, or [`PersonHue::colour`] where a component takes a [`Colour`]; the
+/// eight stored-colour swatches are [`ui_style::tokens::person::PersonSwatch`].
 #[must_use]
 pub fn person_hue(name: &str) -> PersonHue {
     PersonHue::of(name)
@@ -165,9 +167,11 @@ impl AvatarTone {
     }
 }
 
-/// `colour` at the strength `muting` gives: an account that is not the one in view keeps its
-/// hue at .55 of its chroma, so it is still that account but states nothing about the list (S's
-/// `saturate(.55)`, as an unpressed `AccountTile` shows it).
+/// `colour` at the strength `muting` gives.
+///
+/// An account that is not the one in view keeps its hue at .55 of its chroma, so it is still that
+/// account but states nothing about the list (S's `saturate(.55)`, as an unpressed `AccountTile`
+/// shows it).
 #[must_use]
 pub fn muting_colour(muting: bool, colour: Colour) -> Colour {
     if muting { muted(colour) } else { colour }

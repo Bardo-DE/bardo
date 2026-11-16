@@ -1,6 +1,8 @@
-//! Menus: the one menu and its items, the pop-up and pull-down buttons that open one, the search field that
-//! owns a menu of suggestions, the command palette and pick list built on the same rows, and the conformance file an app's menu items and
-//! shortcuts are written to.
+//! Menus: the one menu and its items, the pop-up and pull-down buttons that open one, the search
+//! field that owns a menu of suggestions.
+//!
+//! The command palette and pick list built on the same rows, and the conformance file an app's menu
+//! items and shortcuts are written to.
 
 pub(crate) mod alive;
 pub mod export;

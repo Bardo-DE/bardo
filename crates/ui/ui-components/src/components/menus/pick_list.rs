@@ -1,8 +1,9 @@
-//! `PickList`: a popover with a search field over a list of rows, for choosing one thing or toggling
-//! several out of a list too long to scan (a label to add, a folder to move to). It is the
-//! command palette's field, rows, keys and marking hung from a control as an `NSPopover` is,
-//! rather than centred over the window (design/30 section 2.4). The field is the palette's plain
-//! query row, flush with the popover, so the popover's edge is the only outline around it.
+//! `PickList`: a popover with a search field over a list of rows, for choosing one thing or
+//! toggling several out of a list too long to scan (a label to add, a folder to move to).
+//!
+//! It is the command palette's field, rows, keys and marking hung from a control as an `NSPopover`
+//! is, rather than centred over the window (design/30 section 2.4). The field is the palette's
+//! plain query row, flush with the popover, so the popover's edge is the only outline around it.
 //!
 //! The caller owns the query and the rows, as the palette's caller does: it narrows `groups` by
 //! what `oninput` says, and a "Create" row is one more row it adds when nothing matches. Up and

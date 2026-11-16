@@ -12,7 +12,6 @@
 use crate::components::fields::text_field_model::MASK_DOT;
 use crate::host::caret::FieldSelection;
 use crate::host::document::DocumentHost;
-use dioxus::core::ScopeId;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::time::{FRAME_SLACK, clock::sleep};

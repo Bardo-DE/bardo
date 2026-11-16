@@ -11,13 +11,15 @@ use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::geometry::units::{Point, Rect};
 
-/// A handle on one `EditSurface`: pass it as the surface's `handle`, then
-/// read geometry from a handler or a task. Each read answers [`Probe::Busy`] while the renderer
-/// holds the document (ask again next frame) and [`Probe::Unknown`] before the surface mounts,
-/// with no host, or where nothing addressable is. Geometry is the last laid-out frame's: after a
-/// change to the text, a read answers for the text as it was drawn, one frame late. To draw a
-/// caret in the same frame as the text it follows, use [`use_caret_rect`](crate::edit::caret::use_caret_rect)
-/// instead of reading [`caret_rect`](EditHandle::caret_rect) after the change.
+/// A handle on one `EditSurface`: pass it as the surface's `handle`, then read geometry from a
+/// handler or a task.
+///
+/// Each read answers [`Probe::Busy`] while the renderer holds the document (ask again next frame)
+/// and [`Probe::Unknown`] before the surface mounts, with no host, or where nothing addressable is.
+/// Geometry is the last laid-out frame's: after a change to the text, a read answers for the text
+/// as it was drawn, one frame late. To draw a caret in the same frame as the text it follows, use
+/// [`use_caret_rect`](crate::edit::caret::use_caret_rect) instead of reading
+/// [`caret_rect`](EditHandle::caret_rect) after the change.
 #[derive(Debug, Clone, Copy)]
 pub struct EditHandle {
     element: Signal<Option<Rc<MountedData>>>,

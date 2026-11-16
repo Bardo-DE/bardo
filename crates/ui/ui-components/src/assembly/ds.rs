@@ -1,10 +1,11 @@
-//! The root: `div.ds` carrying `data-theme`, `data-accent`, `data-motion`,
-//! `data-material`, `data-blur`, `data-modality` and the hover hub's `data-hover`, with the frame's `--f-*`
-//! inline; then the stylesheet (when inlined), the frame layers and grain, the children, the
-//! overlay host and the toast host. It provides `Scope`, `HoverHub`, `ToastHub`, `LayerStack`
-//! and `Overlays` as context. Its click handler, the last to hear a click, hands a click that
-//! landed on nothing focusable to the host's `ClickFocusHost` (FINDINGS "Native focus"), and it
-//! provides the same seams to the controls inside it, which hand over a click they keep to
+//! The root: `div.ds` carrying `data-theme`, `data-accent`, `data-motion`, `data-material`,
+//! `data-blur`, `data-modality` and the hover hub's `data-hover`.
+//!
+//! With the frame's `--f-*` inline; then the stylesheet (when inlined), the frame layers and grain,
+//! the children, the overlay host and the toast host. It provides `Scope`, `HoverHub`, `ToastHub`,
+//! `LayerStack` and `Overlays` as context. Its click handler, the last to hear a click, hands a
+//! click that landed on nothing focusable to the host's `ClickFocusHost` (FINDINGS "Native focus"),
+//! and it provides the same seams to the controls inside it, which hand over a click they keep to
 //! themselves (`focus::click::kept_click`).
 //!
 //! What the root paints follows its material (`chrome.rs`): a Window draws the Space gradient

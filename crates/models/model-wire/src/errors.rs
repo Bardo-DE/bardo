@@ -6,10 +6,11 @@ use model_provider::{ProviderError, RetrySeconds, ServerStatus};
 
 use crate::CodecError;
 
-/// A connection that never opened or broke is `Unreachable`; a timeout is `Timeout`; an answer
-/// the transport reports as a bare status is a `Server` error when it is 5xx and a bad request
-/// otherwise. A replay with no exchange left for the request is a bad request: the code under test
-/// asked for something its cassette does not hold.
+/// A connection that never opened or broke is `Unreachable`.
+///
+/// A timeout is `Timeout`; an answer the transport reports as a bare status is a `Server` error
+/// when it is 5xx and a bad request otherwise. A replay with no exchange left for the request is a
+/// bad request: the code under test asked for something its cassette does not hold.
 #[must_use]
 pub fn http_error(error: HttpError) -> ProviderError {
     match error {

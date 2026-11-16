@@ -1,6 +1,8 @@
 //! Sheet: the panel a window or the shell puts up to ask for something (design/30 section 2.5,
-//! `NSWindow` sheet): it slides down from the top, dims nothing (macOS has no scrim; a host that
-//! wants the click outside caught draws its own catcher) and takes Escape.
+//! `NSWindow` sheet).
+//!
+//! It slides down from the top, dims nothing (macOS has no scrim; a host that wants the click
+//! outside caught draws its own catcher) and takes Escape.
 //!
 //! [`Attach::Window`] hangs it from the top edge of its root; [`Attach::Within`] from the top edge
 //! of one pane, as a document's sheet hangs from its own titlebar; [`Attach::Centre`] centres it,

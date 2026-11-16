@@ -1,6 +1,8 @@
-//! Where a field's caret is when a key arrives: the launcher's Right shows the
-//! preview pane only with the caret at the end of the query. Blitz keeps the caret in the
-//! document, so the host reads it; a host that cannot answers [`Caret::Unknown`].
+//! Where a field's caret is when a key arrives: the launcher's Right shows the preview pane only
+//! with the caret at the end of the query.
+//!
+//! Blitz keeps the caret in the document, so the host reads it; a host that cannot answers
+//! [`Caret::Unknown`].
 
 /// Where a field's caret is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -40,8 +42,9 @@ pub fn stem_end(text: &str) -> usize {
     }
 }
 
-/// A field's caret and selection as the host reads them: a masked field draws its
-/// own caret over its dots, since Blitz measures the hidden text in another face than the dots.
+/// A field's caret and selection as the host reads them: a masked field draws its own caret over
+/// its dots, since Blitz measures the hidden text in another face than the dots.
+///
 /// Offsets count characters (`char`s) of the field's text, as the mask draws one dot for each.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum FieldSelection {

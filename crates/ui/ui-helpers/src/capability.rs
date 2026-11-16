@@ -54,12 +54,13 @@ impl fmt::Display for CapabilityName {
     }
 }
 
-/// A package name as the distro spells it (`libheif-tools`): ASCII letters and digits with `+`, `.`,
-/// `_` and `-` inside, starting with a letter or digit. That is every name the four package
-/// managers use, and it is also what keeps a name from being anything else: `PackageKit` reads
-/// `@name` as a group and `name;version;arch;repo` as an exact id, and the install line shown to
-/// copy (`sudo dnf install <name>`) is pasted into a shell, where `$(`, a backtick, `|` or `&`
-/// would run.
+/// A package name as the distro spells it (`libheif-tools`): ASCII letters and digits with `+`,
+/// `.`, `_` and `-` inside, starting with a letter or digit.
+///
+/// That is every name the four package managers use, and it is also what keeps a name from being
+/// anything else: `PackageKit` reads `@name` as a group and `name;version;arch;repo` as an exact
+/// id, and the install line shown to copy (`sudo dnf install <name>`) is pasted into a shell, where
+/// `$(`, a backtick, `|` or `&` would run.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct PackageName(String);
 

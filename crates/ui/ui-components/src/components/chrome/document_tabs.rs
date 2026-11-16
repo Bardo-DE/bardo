@@ -1,9 +1,10 @@
 //! `DocumentTabs`: the tab strip of a document window, as Finder and Safari draw it (design/27
-//! section 5, pre-Liquid-Glass): a full-width strip under the toolbar whose tabs share the width
-//! equally, each with a close button that shows under the pointer and on the selected tab, and a
-//! plus at the end. It is not `TabView` (`NSTabView`: a framed body of at most six tabs behind a
-//! segmented control); this strip has no body, no limit and a close button, and the document
-//! under it is the app's.
+//! section 5, pre-Liquid-Glass).
+//!
+//! A full-width strip under the toolbar whose tabs share the width equally, each with a close
+//! button that shows under the pointer and on the selected tab, and a plus at the end. It is not
+//! `TabView` (`NSTabView`: a framed body of at most six tabs behind a segmented control); this
+//! strip has no body, no limit and a close button, and the document under it is the app's.
 //!
 //! The strip does not hide itself: the app draws it when [`strip_shown`] says two or more tabs
 //! are open and leaves it out otherwise. The strip owns nothing: it hears `onselect(index)`,

@@ -76,9 +76,10 @@ pub(crate) fn drop_target(
     let nearest = RowDropTarget::Between(row + usize::from(into >= 0.5));
     match (kind(row), gaps) {
         (RowDropKind::Container, false) => Some(RowDropTarget::Onto(row)),
-        (RowDropKind::Container, true) => Some(match ONTO.contains(&into) {
-            true => RowDropTarget::Onto(row),
-            false => nearest,
+        (RowDropKind::Container, true) => Some(if ONTO.contains(&into) {
+            RowDropTarget::Onto(row)
+        } else {
+            nearest
         }),
         (RowDropKind::Item, true) => Some(nearest),
         (RowDropKind::Item, false) => None,

@@ -1,7 +1,8 @@
-//! A caller's handle on one `TextField`: give it the keyboard (selecting its
-//! text), take the keyboard from it, or read its mounted element, from any handler. The
-//! `TextField`'s own `FieldFocus::Controlled` asks for the focus by re-rendering; a handle acts at
-//! once, and hands out the element, which a request never did.
+//! A caller's handle on one `TextField`: give it the keyboard (selecting its text), take the
+//! keyboard from it, or read its mounted element, from any handler.
+//!
+//! The `TextField`'s own `FieldFocus::Controlled` asks for the focus by re-rendering; a handle acts
+//! at once, and hands out the element, which a request never did.
 
 use crate::focus::select::Select;
 use crate::focus::soon::{blur_element, focus_selecting};

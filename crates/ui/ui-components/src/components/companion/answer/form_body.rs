@@ -151,8 +151,9 @@ fn Picks(
 
 /// Whether `key` is the pick, as the toggle state it draws.
 fn pressed(picked: Option<&str>, key: &str) -> Check {
-    match picked == Some(key) {
-        true => Check::On,
-        false => Check::Off,
+    if picked == Some(key) {
+        Check::On
+    } else {
+        Check::Off
     }
 }

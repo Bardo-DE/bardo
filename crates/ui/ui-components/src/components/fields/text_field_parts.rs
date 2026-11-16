@@ -82,7 +82,6 @@ pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
     }
     let Field {
         bezeled,
-        rows: _,
         size,
         label,
         id,
@@ -97,6 +96,7 @@ pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
         told,
         ime,
         blink,
+        ..
     } = field;
     let count = kind.mask(&value).map_or(0, |dots| dots.chars().count());
     let owner = caret.owner(count);

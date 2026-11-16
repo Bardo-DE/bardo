@@ -1,10 +1,13 @@
 //! `EdgePeek`: a sidebar that may be hidden, and reveals itself at the window's edge (design/30
-//! section 2.11, design/06-INTERACTIONS.md section 7). Pinned it is the sidebar in its column.
-//! Hidden, a 10 px strip on the left edge waits for the pointer: after the `Label` profile's
-//! intent delay ([`HoverIntent`](ui_motion::hover_intent::HoverIntent)) the sidebar floats
-//! over the content and slides in from the left by a spring; when the pointer leaves it and the strip it slides back out. A click on the strip
-//! pins it (`onpin`). The panel renders in place, not through the overlay host, because it is
-//! the sidebar itself, so its children stay mounted whether it is pinned, peeking or hidden.
+//! section 2.11, design/06-INTERACTIONS.md section 7).
+//!
+//! Pinned it is the sidebar in its column. Hidden, a 10 px strip on the left edge waits for the
+//! pointer: after the `Label` profile's intent delay
+//! ([`HoverIntent`](ui_motion::hover_intent::HoverIntent)) the sidebar floats over the content and
+//! slides in from the left by a spring; when the pointer leaves it and the strip it slides back
+//! out. A click on the strip pins it (`onpin`). The panel renders in place, not through the overlay
+//! host, because it is the sidebar itself, so its children stay mounted whether it is pinned,
+//! peeking or hidden.
 
 use crate::components::app::hover_open::use_hover_open;
 use crate::root::common::Common;

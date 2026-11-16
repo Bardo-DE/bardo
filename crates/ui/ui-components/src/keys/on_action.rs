@@ -5,6 +5,7 @@ use dioxus::prelude::KeyboardEvent;
 use keymap::{Action, Context};
 
 /// An `onkeydown` handler that resolves each key in `context` and hands the action to `handle`.
+///
 /// `handle` answers whether the app took the action: only a taken action consumes the key event;
 /// one the app ignores goes on to the focused widget as usual.
 ///

@@ -95,11 +95,13 @@ impl<C> TableColumn<C> {
     }
 
     /// The same column with cells at `align`.
+    #[must_use]
     pub fn aligned(self, align: CellAlign) -> Self {
         TableColumn { align, ..self }
     }
 
     /// The same column whose header sorts, or not, as `sortable` says.
+    #[must_use]
     pub fn sortable(self, sortable: bool) -> Self {
         TableColumn { sortable, ..self }
     }

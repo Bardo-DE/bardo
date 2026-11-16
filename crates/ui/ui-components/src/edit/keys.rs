@@ -1,7 +1,8 @@
-//! Reading a key press on the surface: text to insert, a clipboard gesture, or a key for the
-//! app. Pure, so the table below is the whole rule. Which chord is a paste is the keymap's
-//! (Command+V on a Mac and our desktop, Ctrl+V elsewhere); the CUA clipboard keys every platform
-//! shares (Shift+Insert, Ctrl+Insert, Shift+Delete) are read as they are.
+//! Reading a key press on the surface: text to insert, a clipboard gesture, or a key for the app.
+//!
+//! Pure, so the table below is the whole rule. Which chord is a paste is the keymap's (Command+V on
+//! a Mac and our desktop, Ctrl+V elsewhere); the CUA clipboard keys every platform shares
+//! (Shift+Insert, Ctrl+Insert, Shift+Delete) are read as they are.
 
 use crate::edit::input::KeyInput;
 use dioxus::prelude::{Key, Modifiers};
@@ -23,10 +24,11 @@ pub enum KeyAction {
     Key(KeyInput),
 }
 
-/// What pressing `key` with `modifiers` held means under `keymap`. A character with no Ctrl or
-/// Super types; Alt alone does not make a chord, since it types characters on some layouts
-/// (macOS Option, AltGr reported as Alt). A chord the keymap binds to Paste, Cut or Copy is that
-/// gesture; any other is the app's.
+/// What pressing `key` with `modifiers` held means under `keymap`.
+///
+/// A character with no Ctrl or Super types; Alt alone does not make a chord, since it types
+/// characters on some layouts (macOS Option, AltGr reported as Alt). A chord the keymap binds to
+/// Paste, Cut or Copy is that gesture; any other is the app's.
 #[must_use]
 pub fn classify(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> KeyAction {
     if let Some(gesture) = shared_clipboard_key(key, modifiers) {

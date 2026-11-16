@@ -1,7 +1,8 @@
-//! `PathControl`: a path as a row of segments (Finder's path bar, design/30 section 4). Each
-//! segment is a glyph and a name, a chevron between neighbours; a click on one reports its index.
-//! A long path collapses its middle segments behind a "…" that opens them as a menu. The last
-//! segment is where the path ends; it is drawn in the full ink and still reports a click.
+//! `PathControl`: a path as a row of segments (Finder's path bar, design/30 section 4).
+//!
+//! Each segment is a glyph and a name, a chevron between neighbours; a click on one reports its
+//! index. A long path collapses its middle segments behind a "…" that opens them as a menu. The
+//! last segment is where the path ends; it is drawn in the full ink and still reports a click.
 //!
 //! A segment is a place that takes a drop: the owner drives `PathSegment::drop` from its drag as
 //! it does a `Row`'s, and the control reports the pointer coming, going and being released on

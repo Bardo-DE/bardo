@@ -1,7 +1,8 @@
-//! The swipe to dismiss a toast and a notification card share: the glue between an element's
-//! pointer and wheel events and the pure machine (`ui_motion::swipe`), and the spring that
-//! carries it home when a drag ends under both thresholds (design/30 section 1.4, "Swipe";
-//! design/27 section 3.12).
+//! The swipe to dismiss a toast and a notification card share.
+//!
+//! The glue between an element's pointer and wheel events and the pure machine
+//! (`ui_motion::swipe`), and the spring that carries it home when a drag ends under both thresholds
+//! (design/30 section 1.4, "Swipe"; design/27 section 3.12).
 //!
 //! Released past 80 px or 600 px/s to the right it is dismissed from where it is; the element's
 //! exit starts at the offset the drag left (`--swipe-dx`), so it flies on rather than starting

@@ -254,9 +254,10 @@ pub trait Hosting: AccountsLink + ServerEdits + GrantsLink + std::fmt::Debug {}
 
 impl<T: AccountsLink + ServerEdits + GrantsLink + std::fmt::Debug> Hosting for T {}
 
-/// What an app that runs the service itself brings: who it is, its providers, its secret store
-/// and the host that draws its sheets; the clock, the store of its registry and the relay host
-/// default to the system clock, none and none.
+/// What an app that runs the service itself brings.
+///
+/// Who it is, its providers, its secret store and the host that draws its sheets; the clock, the
+/// store of its registry and the relay host default to the system clock, none and none.
 #[derive(Debug)]
 pub struct HostConfig<P, S, U, K = SystemClock, R = NoStore, H = NoRelays> {
     app: AppId,
@@ -330,8 +331,10 @@ impl<P, S, U, K, R, H> HostConfig<P, S, U, K, R, H> {
 }
 
 /// The handle over the service `config` describes, answering for the app it names, with an empty
-/// registry that lives for the process. A config with a store is not accepted here (it would start
-/// from nothing and overwrite what the store holds): [`hosted_with_store`] loads it first.
+/// registry that lives for the process.
+///
+/// A config with a store is not accepted here (it would start from nothing and overwrite what the
+/// store holds): [`hosted_with_store`] loads it first.
 pub fn hosted<P, S, U, K, H>(config: HostConfig<P, S, U, K, NoStore, H>) -> Porter<impl Hosting>
 where
     P: Provider + 'static,
@@ -344,8 +347,9 @@ where
 }
 
 /// The handle over the service `config` describes, starting from the registry its store holds (an
-/// empty one where nothing was stored yet) and saving to the store after every change. A store
-/// that cannot be read is an error, never an empty registry.
+/// empty one where nothing was stored yet) and saving to the store after every change.
+///
+/// A store that cannot be read is an error, never an empty registry.
 ///
 /// # Errors
 /// The store's [`StoreError`] when it cannot load.

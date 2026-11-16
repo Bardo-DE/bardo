@@ -107,9 +107,10 @@ pub fn load_dir(
     )
 }
 
-/// Reads every root through `folder`: the person's own first, then each shipped root in order. The first valid
-/// skill of an id wins; a later one of the same id is shadowed. A directory that fails is
-/// reported, and does not shadow anything.
+/// Reads every root through `folder`: the person's own first, then each shipped root in order.
+///
+/// The first valid skill of an id wins; a later one of the same id is shadowed. A directory that
+/// fails is reported, and does not shadow anything.
 pub fn discover(roots: &Roots, folder: &impl SkillFolder) -> Found {
     let own = roots.own.iter().map(|r| (r, Origin::Own));
     let shipped = roots.shipped.iter().map(|r| (r, Origin::Shipped));

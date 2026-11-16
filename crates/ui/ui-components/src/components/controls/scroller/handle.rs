@@ -85,12 +85,13 @@ impl ScrollerRef {
     /// Scroll to `offset`, kept in range once the scroller has been measured.
     pub fn scroll_to(&self, offset: Px) {
         let now = *self.scroll.peek();
-        let next = match now.viewport.0 > 0.0 {
-            true => now.to(offset),
-            false => Scroll {
+        let next = if now.viewport.0 > 0.0 {
+            now.to(offset)
+        } else {
+            Scroll {
                 offset: Px(offset.0.max(0.0)),
                 ..now
-            },
+            }
         };
         if next.offset == now.offset {
             return;

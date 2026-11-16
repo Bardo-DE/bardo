@@ -8,8 +8,9 @@ use dioxus::prelude::*;
 use ui_core::vocab::DropState;
 
 /// A drop target's handle: bind its element with [`FileDropHandle::mounted`], read what the drag
-/// looks like from it with [`FileDropHandle::drag`], and write [`FileDropHandle::drop_attr`] as
-/// its `data-drop` so CSS can light it.
+/// looks like from it with [`FileDropHandle::drag`].
+///
+/// And write [`FileDropHandle::drop_attr`] as its `data-drop` so CSS can light it.
 #[derive(Clone, Copy)]
 pub struct FileDropHandle {
     view: Signal<TargetView>,
@@ -26,9 +27,10 @@ impl std::fmt::Debug for FileDropHandle {
     }
 }
 
-/// Make the calling component's element a drop target for files dragged in from outside the
-/// window. `ondrop` hears the paths let go on it (on it or on anything inside it that is not a
-/// target of its own).
+/// Make the calling component's element a drop target for files dragged in from outside the window.
+///
+/// `ondrop` hears the paths let go on it (on it or on anything inside it that is not a target of
+/// its own).
 ///
 /// ```ignore
 /// let drop = crate::file_drop::hook::use_file_drop(move |files: crate::file_drop::drag::FileDrop| attach(files.paths));

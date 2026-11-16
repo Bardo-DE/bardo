@@ -1,7 +1,9 @@
 //! `IconView`: any icon slot's content, a quire glyph or an external icon (design/08-ICONS.md
-//! section 1.5). A glyph draws as `Glyph` does; an external icon is a square `span`:
-//! `mask-image` over `currentColor` when symbolic (spike S7), `background-image` when an image
-//! (spike S8). Both URLs load through the document's net provider, one frame late.
+//! section 1.5).
+//!
+//! A glyph draws as `Glyph` does; an external icon is a square `span`: `mask-image` over
+//! `currentColor` when symbolic (spike S7), `background-image` when an image (spike S8). Both URLs
+//! load through the document's net provider, one frame late.
 
 use crate::components::content::icon_source::{ExternalIcon, IconSource};
 use crate::components::content::status::family::{StatusGlyph, StatusState};

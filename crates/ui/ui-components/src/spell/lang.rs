@@ -3,9 +3,11 @@
 use serde::{Deserialize, Serialize};
 use ui_core::error::DsError;
 
-/// A dictionary's language, as Hunspell names its files: `en_US` for `en_US.aff`/`en_US.dic`,
-/// `de` for `de.aff`. A language code of two or three lower-case letters, then optionally `_`
-/// and a two-letter upper-case region.
+/// A dictionary's language, as Hunspell names its files: `en_US` for `en_US.aff`/`en_US.dic`, `de`
+/// for `de.aff`.
+///
+/// A language code of two or three lower-case letters, then optionally `_` and a two-letter
+/// upper-case region.
 ///
 /// Read from a stored file through [`Lang::parse`], so a name that is not a language code (one
 /// with a path in it, say) is refused instead of reaching a file path.

@@ -1,7 +1,9 @@
-//! The pointer hooks a row hands its caller: the sender's name and the time each
-//! open a hover card of their own (design/06-INTERACTIONS.md section 3: `sender` and `time`
-//! targets inside a `thread` row), and the row itself starts a drag on a press and opens the
-//! thread card on entry. quire draws the parts, so it attaches the caller's handlers to them.
+//! The pointer hooks a row hands its caller.
+//!
+//! The sender's name and the time each open a hover card of their own (design/06-INTERACTIONS.md
+//! section 3: `sender` and `time` targets inside a `thread` row), and the row itself starts a drag
+//! on a press and opens the thread card on entry. quire draws the parts, so it attaches the
+//! caller's handlers to them.
 
 use crate::components::lists::row::row::relay;
 use dioxus::prelude::*;
@@ -60,7 +62,7 @@ impl Machine for RowPointer {
     type Params = Duration;
     type Ctx = ();
 
-    fn step(self, input: RowIn, at: Stamp, grace: &Duration, _: &()) -> (RowPointer, Vec<()>) {
+    fn step(self, input: RowIn, at: Stamp, grace: &Duration, &(): &()) -> (RowPointer, Vec<()>) {
         match input {
             RowIn::Crossed(on_row) => (RowPointer { on_row, wait: None }, Vec::new()),
             RowIn::PartLeft => (

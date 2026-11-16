@@ -85,10 +85,11 @@ pub fn split_backdrop() -> FrameColour {
 /// solid fallback floor, "alpha at least .94" (design/03 section 17.1), at 0.96.
 const REDUCED_ALPHA: u8 = 245;
 
-/// What a blur is drawn as when transparency is reduced: the Window material's ground, paper
-/// (the Window material has no tint; its solid fallback is the page, design/20 and 21-SPACES
-/// section 7), at 0.96 so a translucent tint over it reads as mostly solid. Light paper in a light
-/// scheme, dark in a dark one.
+/// What a blur is drawn as when transparency is reduced.
+///
+/// The Window material's ground, paper (the Window material has no tint; its solid fallback is the
+/// page, design/20 and 21-SPACES section 7), at 0.96 so a translucent tint over it reads as mostly
+/// solid. Light paper in a light scheme, dark in a dark one.
 ///
 /// ```
 /// use compositor_layout::{Scheme, reduced_stand_in};

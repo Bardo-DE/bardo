@@ -21,9 +21,11 @@ use ui_style::busy::wait_out_busy;
 const LAYOUT_ATTEMPTS: usize = 40;
 
 /// Give `element` the keyboard from a task of the calling scope, a frame later whenever the
-/// document is busy. Best-effort: a renderer without focus still shows the element, and the
-/// person can click into it. Call it from a handler or a hook, never from inside a task that
-/// the renderer may be polling with its document held (it spawns, it does not focus).
+/// document is busy.
+///
+/// Best-effort: a renderer without focus still shows the element, and the person can click into it.
+/// Call it from a handler or a hook, never from inside a task that the renderer may be polling with
+/// its document held (it spawns, it does not focus).
 ///
 /// Public so an app focuses its own element (mailo's `.app` shell after a panel closes) with the
 /// same wait for a busy document quire's fields use.
@@ -31,7 +33,8 @@ pub fn focus_soon(element: Rc<MountedData>) {
     focus_soon_selecting(element, Select::None);
 }
 
-/// As [`focus_soon`], then do `select` with the element's text once the caret is in it:
+/// As [`focus_soon`], then do `select` with the element's text once the caret is in it.
+///
 /// [`Select::All`] selects a field's whole value through the host's
 /// [`FocusHost::select`](crate::host::parts::FocusHost::select).
 pub fn focus_soon_selecting(element: Rc<MountedData>, select: Select) {
@@ -58,10 +61,12 @@ pub fn focus_soon_told(element: Rc<MountedData>, select: Select, told: EventHand
     });
 }
 
-/// As [`focus_soon_selecting`], landing the caret at any [`InitialCaret`], or nowhere (a field's start or end
-/// too), for a surface whose own `onfocus` hears the focus event the host's write raises: `told`
-/// is no longer called here (calling it too told the caller twice) and stays in the signature
-/// until the callers drop it.
+/// As [`focus_soon_selecting`], landing the caret at any [`InitialCaret`], or nowhere (a field's
+/// start or end too).
+///
+/// For a surface whose own `onfocus` hears the focus event the host's write raises: `told` is no
+/// longer called here (calling it too told the caller twice) and stays in the signature until the
+/// callers drop it.
 ///
 /// Public so an app's own field surface lands the caret the way `TextField` does.
 pub fn focus_landing_told(

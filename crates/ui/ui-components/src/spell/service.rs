@@ -1,15 +1,15 @@
-//! The service an `EditSurface` checks spelling through. `ds` stays
-//! effect-free: reading dictionaries, checking on a worker thread and writing the user's
-//! dictionary are `ui_blitz::spell`'s (its `spell` feature), which provides an
-//! `Rc<dyn SpellService>` as root context. Without one a surface with
-//! [`Spell::On`](super::Spell) checks nothing and draws nothing.
+//! The service an `EditSurface` checks spelling through.
+//!
+//! `ds` stays effect-free: reading dictionaries, checking on a worker thread and writing the user's
+//! dictionary are `ui_blitz::spell`'s (its `spell` feature), which provides an `Rc<dyn
+//! SpellService>` as root context. Without one a surface with [`Spell::On`](super::Spell) checks
+//! nothing and draws nothing.
 
 use super::lang::Lang;
 use super::words::WordSpan;
 use crate::host::position::EditNode;
 use crate::host::probe::Probe;
 use dioxus::prelude::MountedData;
-use std::future::Future;
 use std::pin::Pin;
 
 /// An answer the host gives later, off the UI thread. Awaited from the surface's own tasks.

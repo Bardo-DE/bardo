@@ -1,6 +1,8 @@
 //! The toolbar's search item (`NSSearchToolbarItem`): a search field while the band has room for
-//! it, a magnifier button when it does not. Pressing the button opens the field where it was,
-//! with the caret in it; the caret leaving an empty field, or Escape in one, folds it back.
+//! it, a magnifier button when it does not.
+//!
+//! Pressing the button opens the field where it was, with the caret in it; the caret leaving an
+//! empty field, or Escape in one, folds it back.
 
 use crate::components::chrome::toolbar::model::SearchFit;
 use crate::components::content::icon_source::IconSource;
@@ -120,7 +122,7 @@ pub(crate) fn search_item(search: &ToolbarSearch, fit: SearchFit, opened: Signal
     rsx! {
         div {
             class: "ds-toolbar-search",
-            "data-seat": if place == SeatPlace::Expanded { Some("expanded") } else { None },
+            "data-seat": (place == SeatPlace::Expanded).then_some("expanded"),
             style: "width:{width}px",
             onkeydown: move |event: KeyboardEvent| {
                 if event.key() == Key::Escape && place == SeatPlace::Expanded {

@@ -40,10 +40,8 @@ use ui_components::components::companion::run_row::view::RunRow;
 use ui_components::components::companion::served_by::view::ServedByChip;
 use ui_components::components::companion::{ChipKind, ContextChip};
 use ui_components::components::content::avatar::{AvatarFace, AvatarShape, AvatarSize, AvatarTone};
-use ui_components::components::content::text_runs::{RunTone, TextLine, TextRun};
-use ui_components::components::fields::text_field_model::Validity;
 use ui_components::prelude::*;
-use ui_core::vocab::{ActorMark, Availability, CompanionPresence, EffectMark, Tally};
+use ui_core::vocab::{ActorMark, CompanionPresence, EffectMark, Tally};
 use ui_lint::{LintConfig, markup};
 
 fn footer() -> CardFooter {

@@ -1,5 +1,6 @@
-//! Menu tracking (design/13-BEHAVIOUR-menus-windows.md sections 13.3.2-13.3.4, 13.4 and 13.5):
-//! open on press, click mode, press-drag-release, hover switch between open menus, the submenu
+//! Menu tracking (design/13-BEHAVIOUR-menus-windows.md sections 13.3.2-13.3.4, 13.4 and 13.5).
+//!
+//! Open on press, click mode, press-drag-release, hover switch between open menus, the submenu
 //! delay, and the safe triangle that keeps a submenu open while the pointer heads for it.
 //!
 //! Pure: `now` is an argument and every effect is returned for the caller to perform. The

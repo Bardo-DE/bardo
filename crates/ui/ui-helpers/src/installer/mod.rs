@@ -18,7 +18,6 @@ pub use packagekit::PackageKit;
 use crate::capability::PackageName;
 use crate::family::Family;
 use crate::outcome::{Missing, Outcome};
-use std::future::Future;
 use std::pin::Pin;
 use ui_peer::Deadline;
 

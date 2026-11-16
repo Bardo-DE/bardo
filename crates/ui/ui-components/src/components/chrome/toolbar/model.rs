@@ -51,6 +51,7 @@ impl<T> ToolbarItem<T> {
     }
 
     /// The same item with the key that does what it does.
+    #[must_use]
     pub fn with_shortcut(self, shortcut: Shortcut) -> Self {
         ToolbarItem {
             shortcut: Some(shortcut),
@@ -59,6 +60,7 @@ impl<T> ToolbarItem<T> {
     }
 
     /// The same item as a toggle in state `check`.
+    #[must_use]
     pub fn toggle(self, check: Check) -> Self {
         ToolbarItem {
             check: Some(check),
@@ -67,6 +69,7 @@ impl<T> ToolbarItem<T> {
     }
 
     /// The same item with `availability`.
+    #[must_use]
     pub fn with(self, availability: Availability) -> Self {
         ToolbarItem {
             availability,

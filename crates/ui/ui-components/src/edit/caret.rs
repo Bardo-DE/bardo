@@ -12,11 +12,12 @@ use crate::host::position::TextPosition;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Rect;
 
-/// The caret's box at `at` in `handle`'s surface, relative to the surface's border box (draw it
-/// at `left`/`top` inside the surface's positioned container), as the surface laid out its text
-/// in the frame being drawn. `None` until the surface has mounted and been laid out, while `at`
-/// is `None` or names nothing in it, and on a host that runs no frame phase (read
-/// [`EditHandle::caret_rect`] there).
+/// The caret's box at `at` in `handle`'s surface.
+///
+/// Relative to the surface's border box (draw it at `left`/`top` inside the surface's positioned
+/// container), as the surface laid out its text in the frame being drawn. `None` until the surface
+/// has mounted and been laid out, while `at` is `None` or names nothing in it, and on a host that
+/// runs no frame phase (read [`EditHandle::caret_rect`] there).
 #[must_use]
 pub fn use_caret_rect(handle: EditHandle, at: Option<TextPosition>) -> ReadSignal<Option<Rect>> {
     let position = use_hook(|| CopyValue::new(None::<TextPosition>));

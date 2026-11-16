@@ -1,7 +1,8 @@
-//! Measuring a mounted element: the rect a component keeps ([`use_rect`], fed by the host's frame
-//! phase through [`use_layout`](crate::host::layout::use_layout)) and the one-shot async read
-//! ([`client_rect`]) that a host with no phase, and a few waits that have not moved onto the
-//! phase, use.
+//! Measuring a mounted element.
+//!
+//! The rect a component keeps ([`use_rect`], fed by the host's frame phase through
+//! [`use_layout`](crate::host::layout::use_layout)) and the one-shot async read ([`client_rect`])
+//! that a host with no phase, and a few waits that have not moved onto the phase, use.
 //!
 //! Two phases (spike S9): `get_client_rect` inside `onmounted` returns 0 x 0, and is right only
 //! after the next resolve. So the `onmounted` handler only keeps the element; the rect is
@@ -205,12 +206,14 @@ const STILL_FRAMES: u8 = 4;
 /// The most frames [`follow_rect`] follows an element for.
 const FOLLOW_FRAMES: u16 = 240;
 
-/// Follow `element`'s client rect frame by frame until it has held still for a few frames
-/// running, calling `placed` with each new one: layout may not have reached the element at first
-/// (a rect of no size, or none) and may move it after (fonts, siblings arriving), so the first
-/// reading is not the answer. This is the one "settle until stable" for every floating surface
-/// that places itself against an element (popovers, tooltips, hover cards, dock labels); a
-/// surface placed against the latest `placed` never stands at the origin or over its anchor.
+/// Follow `element`'s client rect frame by frame until it has held still for a few frames running,
+/// calling `placed` with each new one.
+///
+/// Layout may not have reached the element at first (a rect of no size, or none) and may move it
+/// after (fonts, siblings arriving), so the first reading is not the answer. This is the one
+/// "settle until stable" for every floating surface that places itself against an element
+/// (popovers, tooltips, hover cards, dock labels); a surface placed against the latest `placed`
+/// never stands at the origin or over its anchor.
 pub async fn follow_rect(element: &MountedData, mut placed: impl FnMut(Rect)) {
     let mut last = None;
     let mut still = 0u8;
@@ -236,9 +239,11 @@ pub async fn follow_rect(element: &MountedData, mut placed: impl FnMut(Rect)) {
 }
 
 /// Follow `first`'s and `second`'s client rects together, frame by frame, until both have held
-/// still for a few frames: [`follow_rect`]'s settle for a pair, in one wait rather than two
-/// (a submenu measures its parent row and its panel). The rects read last, or `None` when `first`
-/// never had an area; `second` is `None` when it is absent or never had one.
+/// still for a few frames.
+///
+/// [`follow_rect`]'s settle for a pair, in one wait rather than two (a submenu measures its parent
+/// row and its panel). The rects read last, or `None` when `first` never had an area; `second` is
+/// `None` when it is absent or never had one.
 pub async fn follow_rects(
     first: &MountedData,
     second: Option<&MountedData>,

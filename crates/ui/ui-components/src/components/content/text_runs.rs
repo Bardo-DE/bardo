@@ -1,8 +1,9 @@
-//! `TextLine`: a line a caller hands a component either whole or as runs in several tones, so a
-//! search hit can mark the words it matched and a palette row can set a name in a stronger
-//! tone than its path. The caller computes the runs; quire only draws them, as
-//! `<mark class="ds-mark">` for a hit and `span.ds-run[data-tone]` for a weight, never as markup
-//! from strings.
+//! `TextLine`: a line a caller hands a component either whole or as runs in several tones.
+//!
+//! So a search hit can mark the words it matched and a palette row can set a name in a stronger
+//! tone than its path. The caller computes the runs; quire only draws them, as `<mark
+//! class="ds-mark">` for a hit and `span.ds-run[data-tone]` for a weight, never as markup from
+//! strings.
 //!
 //! A `String` or `&str` converts into [`TextLine::Plain`], so a prop that took a `String` takes a
 //! `TextLine` with no change at the call site; an optional one takes the string itself, `None`, or a

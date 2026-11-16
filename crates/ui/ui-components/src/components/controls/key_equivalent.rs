@@ -1,9 +1,10 @@
 //! `KeyEquivalent`: a shortcut as it is written beside a menu item or on a key cap (design/30
 //! section 2.1): the symbols in the Mac's order, Control, Option, Shift, Command, then the key.
-//! `Text` is the plain run of glyphs after a menu item's words; `Cap` draws each key as a key
-//! cap. A "key plus label" is a `KeyEquivalent` beside a `Label`, not a component. It is static:
-//! no hover, no press. Markup: `span.ds-key-equivalent[data-style][data-size]`, in `Cap` holding
-//! one `kbd.ds-key-equivalent-key` per key.
+//!
+//! `Text` is the plain run of glyphs after a menu item's words; `Cap` draws each key as a key cap.
+//! A "key plus label" is a `KeyEquivalent` beside a `Label`, not a component. It is static: no
+//! hover, no press. Markup: `span.ds-key-equivalent[data-style][data-size]`, in `Cap` holding one
+//! `kbd.ds-key-equivalent-key` per key.
 
 use crate::keys::use_keys;
 use crate::root::common::Common;

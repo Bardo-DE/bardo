@@ -53,9 +53,11 @@ pub enum PathPart {
 }
 
 /// What stays on the band for a path of `len` segments when it has room for `room` places (the
-/// collapse mark takes one). A path that fits shows every segment. A longer one keeps the first
-/// segment, the collapse mark, and the last `room - 2` segments, so the root and the folder the
-/// path ends in are always there. `room` below three counts as three.
+/// collapse mark takes one).
+///
+/// A path that fits shows every segment. A longer one keeps the first segment, the collapse mark,
+/// and the last `room - 2` segments, so the root and the folder the path ends in are always there.
+/// `room` below three counts as three.
 pub fn parts(len: usize, room: usize) -> Vec<PathPart> {
     let room = room.max(LEAST_ROOM);
     if len <= room {

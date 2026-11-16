@@ -1,9 +1,10 @@
-//! Focusing an element named by a CSS selector: an app's panel opens and its
-//! field, or the window's own `.app`, should have the keyboard, and the caller holds no mounted
-//! handle for it. The host finds the element in its document
-//! ([`GeometryHost::find`](crate::host::parts::GeometryHost::find)), the focus and the select-all go through the
-//! same writes a field's own focus does, and a `TextField` found this way hears its `onfocus` once, as through
-//! `Focus::OnMount`.
+//! Focusing an element named by a CSS selector: an app's panel opens and its field, or the window's
+//! own `.app`, should have the keyboard, and the caller holds no mounted handle for it.
+//!
+//! The host finds the element in its document
+//! ([`GeometryHost::find`](crate::host::parts::GeometryHost::find)), the focus and the select-all
+//! go through the same writes a field's own focus does, and a `TextField` found this way hears its
+//! `onfocus` once, as through `Focus::OnMount`.
 
 use crate::focus::select::Select;
 use crate::focus::soon::focus_selecting;
@@ -48,9 +49,10 @@ pub enum FocusError {
     },
 }
 
-/// Give the first element matching `selector` the keyboard, then do `select` with its text,
-/// waiting for up to twenty frames for it to be drawn and out a busy document. A `TextField`
-/// found this way hears its `onfocus` once.
+/// Give the first element matching `selector` the keyboard, then do `select` with its text, waiting
+/// for up to twenty frames for it to be drawn and out a busy document.
+///
+/// A `TextField` found this way hears its `onfocus` once.
 ///
 /// Await it from a task of a scope that outlives the ask (the window's shell, when the panel
 /// asking is closing): `spawn(async move { let _ = crate::focus::selector::focus_by_selector(".find input",

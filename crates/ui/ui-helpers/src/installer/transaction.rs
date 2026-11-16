@@ -7,7 +7,7 @@
 //! `Package` or a `Finished`. A `PackageKit` that vanishes mid-transaction ends the wait at once,
 //! and one that goes quiet is asked to cancel.
 
-use std::future::{Future, poll_fn};
+use std::future::poll_fn;
 use std::pin::Pin;
 use std::task::Poll;
 use ui_peer::{Deadline, NotAnswering, within};

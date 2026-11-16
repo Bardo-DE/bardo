@@ -12,9 +12,10 @@ use ui_style::icon::Icon;
 use ui_style::icon::family::PlateFamily;
 use ui_style::icon::render::{IconPx, IconSize};
 
-/// The pane's media box: a picture or a page is fitted into it at its own aspect, and a PDF's
-/// page is rasterised for it (`ui_blitz::use_pdf_page(path, PANE_MEDIA)`). 328 is a 360 pane's
-/// width inside its 16 px padding.
+/// The pane's media box: a picture or a page is fitted into it at its own aspect.
+///
+/// And a PDF's page is rasterised for it (`ui_blitz::use_pdf_page(path, PANE_MEDIA)`). 328 is a 360
+/// pane's width inside its 16 px padding.
 pub const PANE_MEDIA: Size = Size {
     width: Px(328.0),
     height: Px(220.0),

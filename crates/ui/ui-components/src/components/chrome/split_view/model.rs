@@ -178,11 +178,13 @@ impl SplitPane {
     }
 
     /// The same pane, `shown`.
+    #[must_use]
     pub fn shown(self, shown: bool) -> Self {
         SplitPane { shown, ..self }
     }
 
     /// The same pane, its body an `EdgePeek` that stays reachable while the pane is folded.
+    #[must_use]
     pub fn peeking(self) -> Self {
         SplitPane {
             peeks: true,

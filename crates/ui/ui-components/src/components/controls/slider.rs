@@ -1,9 +1,10 @@
 //! Slider: `NSSlider` (design/30 section 2.1): a value in a range, set by a drag, a click or the
 //! arrows, in the linear look of a settings row or the level look of the control center.
-//! The look picks the drawing and the gesture that goes with it (`slider_linear`,
-//! `slider_bezel`); what a caller sees is one component and one `onchange`.
-//! Markup: `div.ds-slider[role=slider][data-look][data-size]`, the level as `--f`; parts `track`,
-//! `fill`, `thumb`, `icon`, and a `tick` for each mark.
+//!
+//! The look picks the drawing and the gesture that goes with it (`slider_linear`, `slider_bezel`);
+//! what a caller sees is one component and one `onchange`. Markup:
+//! `div.ds-slider[role=slider][data-look][data-size]`, the level as `--f`; parts `track`, `fill`,
+//! `thumb`, `icon`, and a `tick` for each mark.
 
 use crate::components::content::level_glyph::vocab::LevelSource;
 use crate::components::controls::slider_bezel::BezelSlider;

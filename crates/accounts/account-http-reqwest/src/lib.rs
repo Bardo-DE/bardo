@@ -161,9 +161,11 @@ impl account_http::Http for ReqwestHttp {
     }
 }
 
-/// Receives a response as it arrives, for a body too long to hold: the head once, then each
-/// piece of the body in turn. Each answers whether to go on reading (`Continue`) or to stop
-/// because the rest is not wanted (`Break`, and the connection is dropped).
+/// Receives a response as it arrives, for a body too long to hold: the head once, then each piece
+/// of the body in turn.
+///
+/// Each answers whether to go on reading (`Continue`) or to stop because the rest is not wanted
+/// (`Break`, and the connection is dropped).
 pub trait BodySink: Send {
     /// The status and headers, before any of the body. `Break` reads no body.
     fn head(&mut self, status: StatusCode, headers: &HeaderMap) -> ControlFlow<()>;

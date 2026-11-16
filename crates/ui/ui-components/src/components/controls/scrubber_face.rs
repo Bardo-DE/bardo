@@ -1,6 +1,8 @@
-//! The scrubber's drawing: the bar, its buffered bands, the played fill, the thumb and the
-//! tooltip, in the pose and at the place the caller gives. `Scrubber` holds the pointer and
-//! feeds this; a host that owns the pose itself (the gallery, a golden) draws it directly.
+//! The scrubber's drawing: the bar, its buffered bands, the played fill, the thumb and the tooltip,
+//! in the pose and at the place the caller gives.
+//!
+//! `Scrubber` holds the pointer and feeds this; a host that owns the pose itself (the gallery, a
+//! golden) draws it directly.
 //!
 //! Markup: `div.ds-scrubber[role=slider][data-state][data-size][data-availability]`, the played
 //! share as `--f` and the tooltip's place as `--tip`; parts `track` (holding `buffered`, one per
@@ -55,7 +57,7 @@ pub fn ScrubberFace(
             id: common.id.clone(),
             class,
             role: "slider",
-            tabindex: if takes_input { Some("0") } else { None },
+            tabindex: takes_input.then_some("0"),
             "data-state": pose.slug(),
             "data-size": size.slug(),
             "data-availability": availability.slug(),

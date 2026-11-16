@@ -1,8 +1,10 @@
 //! `StylesOffNotice`: the one line shown when the crash guard started a program without the
-//! person's styles (customization design section 7.4): "Your styles were turned off because
-//! <program> could not start with them." and a **Turn On Again** button. It is an
-//! [`InlineBanner`](super::inline_banner) with a warning and one action, so it has no markup or
-//! rules of its own. Nothing opens Settings by itself: the button is the whole way forward.
+//! person's styles (customization design section 7.4).
+//!
+//! "Your styles were turned off because <program> could not start with them." and a **Turn On
+//! Again** button. It is an [`InlineBanner`](super::inline_banner) with a warning and one action,
+//! so it has no markup or rules of its own. Nothing opens Settings by itself: the button is the
+//! whole way forward.
 
 use crate::components::controls::button::Button;
 use crate::components::overlays::inline_banner::InlineBanner;

@@ -1,8 +1,10 @@
-//! Fade: a wrapper that lets its content go away gently. While `shown` is `true` the content is
-//! drawn as it is; when `shown` turns `false` it fades out over `--t-quick` (the popover's exit)
-//! and is then unmounted, and `on_hidden` runs once it has settled. Finder's download badge is the
-//! use: the ring or pie stays mounted through the fade when a download completes, where an `if`
-//! would drop it at once. Under Reduced motion it leaves on the reduced settle, as every presence does.
+//! Fade: a wrapper that lets its content go away gently.
+//!
+//! While `shown` is `true` the content is drawn as it is; when `shown` turns `false` it fades out
+//! over `--t-quick` (the popover's exit) and is then unmounted, and `on_hidden` runs once it has
+//! settled. Finder's download badge is the use: the ring or pie stays mounted through the fade when
+//! a download completes, where an `if` would drop it at once. Under Reduced motion it leaves on the
+//! reduced settle, as every presence does.
 //!
 //! Built on `use_presence`, like every surface that is shown and hidden; the content appears at
 //! once (no entrance), and a show while it fades takes the hide back. While it fades it takes no

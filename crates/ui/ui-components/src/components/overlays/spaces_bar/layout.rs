@@ -1,7 +1,8 @@
 //! The rectangles the bar's elements are drawn at, measured, for a host that places something
-//! against them (the compositor's drop targets over the cards): the host's frame phase keeps each
-//! element's rect ([`use_rect`]), the bar gathers them into a [`BarLayout`] and reports it to
-//! `on_layout` whenever any of them changes.
+//! against them (the compositor's drop targets over the cards).
+//!
+//! The host's frame phase keeps each element's rect ([`use_rect`]), the bar gathers them into a
+//! [`BarLayout`] and reports it to `on_layout` whenever any of them changes.
 
 use super::model::BarSpaceKey;
 use crate::host::measure::{RectProbe, use_rect};

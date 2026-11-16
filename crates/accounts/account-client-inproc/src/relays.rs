@@ -41,10 +41,11 @@ mod porter_relays {
     use tokio::sync::OnceCell;
 
     /// A [`RelayHost`] that runs `account_proxy::relay` on the caller's tokio runtime, dialling the
-    /// endpoint over TCP and rustls. Certificate checks are always on; the trusted roots are the
-    /// platform's (`webpki-roots` when it has none), read from disk once, on first use, off the
-    /// async threads. [`RelayHost::run`] must be called from inside a tokio runtime, as
-    /// `Hosted` does.
+    /// endpoint over TCP and rustls.
+    ///
+    /// Certificate checks are always on; the trusted roots are the platform's (`webpki-roots` when
+    /// it has none), read from disk once, on first use, off the async threads. [`RelayHost::run`]
+    /// must be called from inside a tokio runtime, as `Hosted` does.
     #[derive(Debug, Clone, Default)]
     pub struct PorterRelays {
         connector: Arc<OnceCell<RustlsConnect>>,

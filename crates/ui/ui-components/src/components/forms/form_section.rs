@@ -1,7 +1,9 @@
 //! `FormSection`: a titled group of rows on the `--grp` ground, with a help footer under it
-//! (design/34-MODERN-LOOK.md sections 2.3 and 3.5). The group is one rounded card with no outer
-//! line; the rows inside it (`FieldRow`s, or a grouped `List`) are separated by a hairline that
-//! starts at the row's text and none above the first or below the last.
+//! (design/34-MODERN-LOOK.md sections 2.3 and 3.5).
+//!
+//! The group is one rounded card with no outer line; the rows inside it (`FieldRow`s, or a grouped
+//! `List`) are separated by a hairline that starts at the row's text and none above the first or
+//! below the last.
 //!
 //! Markup: `section.ds-form-section` of an optional `div.ds-form-section-title`,
 //! `div.ds-form-section-group` and an optional `p.ds-form-section-footer`.

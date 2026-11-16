@@ -12,13 +12,16 @@ const GAP: f32 = 6.0;
 const ADVANCE: f32 = 7.0;
 
 /// How many characters of a name fit in a cell `room` wide, the icon and the gap taken out; at
-/// least one. A column's width less the cell's padding (and the outline's indent and triangle,
-/// when it is one) is the room.
+/// least one.
+///
+/// A column's width less the cell's padding (and the outline's indent and triangle, when it is one)
+/// is the room.
 #[must_use]
 pub fn name_chars(room: Px) -> usize {
-    match room.0.is_finite() {
-        true => (((room.0 - ICON - GAP) / ADVANCE).floor().max(1.0)) as usize,
-        false => 1,
+    if room.0.is_finite() {
+        (((room.0 - ICON - GAP) / ADVANCE).floor().max(1.0)) as usize
+    } else {
+        1
     }
 }
 

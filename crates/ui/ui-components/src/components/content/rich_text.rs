@@ -1,10 +1,10 @@
-//! Rich: a body of runs that may hold links (notification parts). The Notifications
-//! spec lets a body carry `<b>`, `<i>`, `<u>` and `<a href>`; the server parses that markup into
-//! runs once, and quire draws them: a toned run as [`Text`] draws it, a link as
-//! `a.ds-run-link`. A link keeps its press (the rule of a stopped press:
-//! propagation stopped and the default prevented), so a press on a link inside a notification
-//! opens the link and never also opens the notification, and Blitz never navigates the
-//! document itself.
+//! Rich: a body of runs that may hold links (notification parts).
+//!
+//! The Notifications spec lets a body carry `<b>`, `<i>`, `<u>` and `<a href>`; the server parses
+//! that markup into runs once, and quire draws them: a toned run as [`Text`] draws it, a link as
+//! `a.ds-run-link`. A link keeps its press (the rule of a stopped press: propagation stopped and
+//! the default prevented), so a press on a link inside a notification opens the link and never also
+//! opens the notification, and Blitz never navigates the document itself.
 //!
 //! A [`Text`], a `String` or a `&str` converts into a `Rich`, so a body that has no links is
 //! written as before.

@@ -14,7 +14,7 @@ use crate::spell::lang::{Lang, Spell};
 use crate::spell::marks::{Misspelt, Typing, marks_for, reconcile, shown, typing_after};
 use crate::spell::service::{Paragraph, SpellService};
 use crate::spell::words::words;
-use dioxus::core::{ScopeId, Task, current_scope_id};
+use dioxus::core::{Task, current_scope_id};
 use dioxus::prelude::*;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
@@ -200,13 +200,14 @@ async fn check(ctx: &SpellCtx, paragraphs: &[Paragraph]) {
         .flat_map(|(p, spans)| spans.iter().filter_map(|s| p.text.get(s.start..s.end)))
         .map(str::to_owned)
         .collect();
-    let wrong: HashSet<String> = match asked.is_empty() {
-        true => HashSet::new(),
-        false => service
+    let wrong: HashSet<String> = if asked.is_empty() {
+        HashSet::new()
+    } else {
+        service
             .check(ctx.langs(), asked.into_iter().collect())
             .await
             .into_iter()
-            .collect(),
+            .collect()
     };
     let mut marks = ctx.state.marks.borrow_mut();
     let mut checked = ctx.state.checked.borrow_mut();

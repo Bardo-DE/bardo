@@ -8,9 +8,11 @@ use crate::names::action_named;
 /// The value for an unbound shortcut.
 const UNBOUND: &str = "none";
 
-/// The system bindings in `text`, a kdeglobals file. A value lists alternatives separated by
-/// `;` or a tab; `none` unbinds. A chord that cannot be read is reported in `problems` and
-/// skipped; other names in the group are not ours and are ignored.
+/// The system bindings in `text`, a kdeglobals file.
+///
+/// A value lists alternatives separated by `;` or a tab; `none` unbinds. A chord that cannot be
+/// read is reported in `problems` and skipped; other names in the group are not ours and are
+/// ignored.
 pub fn parse_kdeglobals(text: &str) -> SystemImport {
     let mut import = SystemImport::default();
     let shortcuts = keyfile::parse(text)

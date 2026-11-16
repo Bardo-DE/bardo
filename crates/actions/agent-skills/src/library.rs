@@ -128,10 +128,11 @@ fn matches(skill: &Skill, at: &Situation) -> bool {
     skill.when.always || app || kind
 }
 
-/// The skills to expand at the start of a turn: those whose `when` matches (`always`, the focused
-/// app, or a kind in the context), `always` ones first, then by id, at most two, and stopping at
-/// the first whose body does not fit in `room` bytes (what is left of [`BODY_BUDGET_BYTES`] after
-/// the loaded skills).
+/// The skills to expand at the start of a turn.
+///
+/// Those whose `when` matches (`always`, the focused app, or a kind in the context), `always` ones
+/// first, then by id, at most two, and stopping at the first whose body does not fit in `room`
+/// bytes (what is left of [`BODY_BUDGET_BYTES`] after the loaded skills).
 #[must_use]
 pub fn preselect<'a>(offered: &[&'a Skill], at: &Situation, room: usize) -> Vec<&'a Skill> {
     let mut hits: Vec<&Skill> = offered.iter().copied().filter(|s| matches(s, at)).collect();

@@ -1,7 +1,9 @@
 //! Badge: the Dock and app badge (design/30 section 2.9): a capsule with a count, or a dot when
-//! there is nothing to count. `Alert` is the red capsule of an unread count; `Quiet` is the
-//! neutral capsule of a list's trailing count. More than 999 reads `999+`; zero draws nothing.
-//! Markup: `span.ds-badge[data-tone][data-size]` holding `span.ds-badge-label` (no label on a dot).
+//! there is nothing to count.
+//!
+//! `Alert` is the red capsule of an unread count; `Quiet` is the neutral capsule of a list's
+//! trailing count. More than 999 reads `999+`; zero draws nothing. Markup:
+//! `span.ds-badge[data-tone][data-size]` holding `span.ds-badge-label` (no label on a dot).
 
 use crate::root::common::Common;
 use dioxus::prelude::*;

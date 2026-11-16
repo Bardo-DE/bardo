@@ -8,6 +8,7 @@ use dioxus::prelude::try_consume_context;
 use std::rc::Rc;
 
 /// What a component asks of the document it is drawn in, split into parts of a few methods each.
+///
 /// A host provides one `Rc<dyn DocumentHost>` as root context, every part installed at once, so a
 /// root can never hold a subset. The parts a host may not have are optional.
 pub trait DocumentHost {

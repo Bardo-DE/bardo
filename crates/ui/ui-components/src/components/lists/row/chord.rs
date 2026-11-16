@@ -1,7 +1,8 @@
 //! A row's action chord (launcher chords): the keys that run the row's first action, drawn as a
-//! plain [`Chord`](crate::components::controls::chord::Chord) after its accessory. Spotlight
-//! shows it only on the highlighted row, so the list reads as its data (a file's time) and the
-//! hint follows the selection; `Always` keeps it on every row.
+//! plain [`Chord`](crate::components::controls::chord::Chord) after its accessory.
+//!
+//! Spotlight shows it only on the highlighted row, so the list reads as its data (a file's time)
+//! and the hint follows the selection; `Always` keeps it on every row.
 
 use ui_core::vocab::Shortcut;
 

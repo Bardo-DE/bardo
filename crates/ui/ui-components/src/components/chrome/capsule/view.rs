@@ -1,9 +1,10 @@
-//! Capsule: the pill of controls that floats over content (design/30 section 2.7a). It is a
-//! card in the Osd material (the transparent-scope rule of `ui_style`'s materials paints it, as
-//! it does a popover), bottom centre of its parent, whose buttons are `Button { Toolbar }` and
-//! whose readouts are text. The owner decides when it shows (`shown`): it fades in over
-//! `--t-quick`, fades out over `--t-quick` and calls `on_hidden` once it has gone, and takes
-//! the pointer only while it is on screen.
+//! Capsule: the pill of controls that floats over content (design/30 section 2.7a).
+//!
+//! It is a card in the Osd material (the transparent-scope rule of `ui_style`'s materials paints
+//! it, as it does a popover), bottom centre of its parent, whose buttons are `Button { Toolbar }`
+//! and whose readouts are text. The owner decides when it shows (`shown`): it fades in over
+//! `--t-quick`, fades out over `--t-quick` and calls `on_hidden` once it has gone, and takes the
+//! pointer only while it is on screen.
 //!
 //! Markup: `div.ds.ds-capsule-scope` (a transparent Osd scope that fills its parent) holding
 //! `div.ds-capsule[role=toolbar][data-shown][data-presence]` of `button.ds-button`,

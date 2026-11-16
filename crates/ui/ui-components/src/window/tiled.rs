@@ -1,6 +1,8 @@
 //! Which edges of a window the compositor has tiled against a neighbour or the screen (the
-//! xdg-shell `tiled_*` states). A tiled window squares the corners and drops the shadow on those
-//! sides, so a frame reads it; a host that cannot tell reports none.
+//! xdg-shell `tiled_*` states).
+//!
+//! A tiled window squares the corners and drops the shadow on those sides, so a frame reads it; a
+//! host that cannot tell reports none.
 
 use ui_core::word::Word;
 

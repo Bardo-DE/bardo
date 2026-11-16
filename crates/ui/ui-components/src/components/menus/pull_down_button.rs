@@ -1,8 +1,10 @@
-//! `PullDownButton`: a button that opens a menu of actions (`NSPopUpButton` in its pull-down
-//! style, design/30 section 2.1). The button wears an icon, a label or both and a chevron down,
-//! and keeps them whatever is picked; its menu marks nothing and hangs from the button's lower
-//! edge. It is the foot's one chevron in Dia's sidebar: New Space, history, Settings and Hide
-//! sidebar behind a single control. It shares `PopUpButton`'s open-state props and its keys.
+//! `PullDownButton`: a button that opens a menu of actions (`NSPopUpButton` in its pull-down style,
+//! design/30 section 2.1).
+//!
+//! The button wears an icon, a label or both and a chevron down, and keeps them whatever is picked;
+//! its menu marks nothing and hangs from the button's lower edge. It is the foot's one chevron in
+//! Dia's sidebar: New Space, history, Settings and Hide sidebar behind a single control. It shares
+//! `PopUpButton`'s open-state props and its keys.
 
 use crate::components::content::icon_source::IconSource;
 use crate::components::controls::button::Button;

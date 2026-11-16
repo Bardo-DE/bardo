@@ -1,16 +1,18 @@
 //! `SplitView`: the panes before the last have widths; the last takes what is left (design/30
-//! section 2.7, `NSSplitView`). A divider is a hairline in a 6 px drag zone: dragging it sets the
-//! pane before it 1:1, held to the pane's widths (`PaneSpec::dragged`); a pane that may fold
-//! folds away past half its least and opens again when dragged back. A double-click on a divider
-//! returns its pane to the preferred width, opening it if it was folded. A divider takes the
-//! keyboard as a separator: Left and Right move it by ten pixels, Return resets it. Whether a
-//! pane is open is the caller's (`SplitPane::shown`, reported by `on_shown`), so a toolbar
-//! button can fold a sidebar; how wide it is when open is the view's. A pane folds by clipping
-//! its body, unless it is `SplitPane::peeking`: its body is then an `EdgePeek`, which keeps its
-//! strip at the window's edge and floats the sidebar over the content once the pane is folded.
-//! The last pane may have a least width of its own (`least_rest`): when the view is too narrow
-//! for every pane's width, the panes before it give up width, down to their own least, before
-//! it does, so a reader beside a list is never squeezed to nothing.
+//! section 2.7, `NSSplitView`).
+//!
+//! A divider is a hairline in a 6 px drag zone: dragging it sets the pane before it 1:1, held to
+//! the pane's widths (`PaneSpec::dragged`); a pane that may fold folds away past half its least and
+//! opens again when dragged back. A double-click on a divider returns its pane to the preferred
+//! width, opening it if it was folded. A divider takes the keyboard as a separator: Left and Right
+//! move it by ten pixels, Return resets it. Whether a pane is open is the caller's
+//! (`SplitPane::shown`, reported by `on_shown`), so a toolbar button can fold a sidebar; how wide
+//! it is when open is the view's. A pane folds by clipping its body, unless it is
+//! `SplitPane::peeking`: its body is then an `EdgePeek`, which keeps its strip at the window's edge
+//! and floats the sidebar over the content once the pane is folded. The last pane may have a least
+//! width of its own (`least_rest`): when the view is too narrow for every pane's width, the panes
+//! before it give up width, down to their own least, before it does, so a reader beside a list is
+//! never squeezed to nothing.
 //!
 //! `axis` sets whether the panes lie side by side (`SplitAxis::Row`, the default) or one above
 //! the next (`Column`; a divider then moves with Up and Down). A pane's size is `PaneSize`: pixels,
@@ -265,7 +267,7 @@ pub fn SplitView(
             "aria-label": common.aria_label.clone().unwrap_or(label),
             "data-axis": (axis != SplitAxis::Row).then(|| axis.slug()),
             "data-unfocused": dim_unfocused.then_some("dim"),
-            "data-dragging": if dragging { Some("true") } else { None },
+            "data-dragging": dragging.then_some("true"),
             onmounted: move |event: MountedEvent| {
                 probe.on_mounted(event.clone());
                 common.mounted(event);

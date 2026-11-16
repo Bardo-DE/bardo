@@ -1,9 +1,10 @@
-//! `FileIcon`: the standard file icon, drawn (customization design section 6.1). A page with a
-//! folded corner carries the kind's mark in the kind's colour and, when there is room, the
-//! extension as a small bold label; a folder is the blue Mac folder, a special one with its glyph
-//! embossed; a picture is the file's own thumbnail on a page frame; artwork (a chosen set's icon,
-//! or the person's own) is drawn whole. The standard shapes are inline SVG and the marks are
-//! quire's glyphs, so it scales from 16 to 512 px.
+//! `FileIcon`: the standard file icon, drawn (customization design section 6.1).
+//!
+//! A page with a folded corner carries the kind's mark in the kind's colour and, when there is
+//! room, the extension as a small bold label; a folder is the blue Mac folder, a special one with
+//! its glyph embossed; a picture is the file's own thumbnail on a page frame; artwork (a chosen
+//! set's icon, or the person's own) is drawn whole. The standard shapes are inline SVG and the
+//! marks are quire's glyphs, so it scales from 16 to 512 px.
 //!
 //! The page stays light in the dark scheme, as the reference's does; the folder takes its dark
 //! tones. Under `icons.style = monochrome` (`style: FileIconStyle::Monochrome(tint)`) the folder

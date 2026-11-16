@@ -1,6 +1,7 @@
-//! `PaneStack`: the pages of a settings pane, one shown at a time, the rest under it. The caller
-//! owns the path ([`PanePath`]); choosing a row pushes a key onto it, `on_back` pops it. The
-//! stack keeps only the transition's phase (which page is leaving, and in which slot).
+//! `PaneStack`: the pages of a settings pane, one shown at a time, the rest under it.
+//!
+//! The caller owns the path ([`PanePath`]); choosing a row pushes a key onto it, `on_back` pops it.
+//! The stack keeps only the transition's phase (which page is leaving, and in which slot).
 //!
 //! Motion (design/34 section 7): a push brings the new page in from the right and the old one
 //! leaves to the left, 26 px and a fade; a pop is the mirror. One spring in Rust carries it

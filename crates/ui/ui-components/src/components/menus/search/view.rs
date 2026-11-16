@@ -1,8 +1,10 @@
 //! `SearchField`: a search `TextField` that owns its suggestions panel (`NSSearchField`'s
-//! suggestions menu, Spotlight's results). The keyboard never leaves the field: the panel is a
-//! `Menu` whose cursor the field drives, hung from the field so a press on the field is inside
-//! it, or, as a card, drawn inline under the field in one surface with it. `step` holds what each
-//! key does and `highlight` which row is lit; this file wires them to the field and the menu.
+//! suggestions menu, Spotlight's results).
+//!
+//! The keyboard never leaves the field: the panel is a `Menu` whose cursor the field drives, hung
+//! from the field so a press on the field is inside it, or, as a card, drawn inline under the field
+//! in one surface with it. `step` holds what each key does and `highlight` which row is lit; this
+//! file wires them to the field and the menu.
 
 use crate::components::fields::text_field::TextField;
 use crate::components::fields::text_field_focus::FieldFocus;

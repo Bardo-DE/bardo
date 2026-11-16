@@ -6,10 +6,11 @@ use crate::root::common::Common;
 use dioxus::prelude::*;
 use ui_core::vocab::aria_word;
 
-/// One action at a header's end: its words and what a press does. `selection: Selected` draws it
-/// as a keyboard selection (`data-selected`): a command palette's cursor resting on a group's
-/// "Show More". `onmounted` hears its element as it mounts: the palette keeps it in view when
-/// its cursor rests there.
+/// One action at a header's end: its words and what a press does.
+///
+/// `selection: Selected` draws it as a keyboard selection (`data-selected`): a command palette's
+/// cursor resting on a group's "Show More". `onmounted` hears its element as it mounts: the palette
+/// keeps it in view when its cursor rests there.
 #[derive(Debug, Clone, PartialEq)]
 pub struct HeaderAction {
     /// The action's words: "Show More".

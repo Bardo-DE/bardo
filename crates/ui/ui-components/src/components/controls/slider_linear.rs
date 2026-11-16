@@ -63,7 +63,7 @@ fn follow(
             knob.go(
                 at,
                 SpringSpec::for_touch(Touch::Remote).response(SpringResponse::Quick),
-            )
+            );
         }),
         DragPhase::Pending { .. } | DragPhase::Live { .. } => queue_effect(move || knob.track(at)),
     }
@@ -168,7 +168,7 @@ pub(crate) fn LinearSlider(
             id: common.id.clone(),
             class,
             role: "slider",
-            tabindex: if enabled { Some("0") } else { None },
+            tabindex: enabled.then_some("0"),
             "data-look": SliderLook::Linear.slug(),
             "data-size": size.slug(),
             "data-availability": availability.slug(),

@@ -1,13 +1,16 @@
 //! That the window's size or scale changed: a counter the host bumps, so a hook that measured an
-//! element can measure it again. Layout follows the event by a frame, so a reader waits that
-//! frame before it reads (the read `layout::use_layout` falls back to when the host runs no frame
-//! phase does; with a phase, the host publishes the rect after the layout that followed).
+//! element can measure it again.
+//!
+//! Layout follows the event by a frame, so a reader waits that frame before it reads (the read
+//! `layout::use_layout` falls back to when the host runs no frame phase does; with a phase, the
+//! host publishes the rect after the layout that followed).
 
 use dioxus::prelude::*;
 
-/// How many times the window has changed size or scale, as a signal: provided as root context by
-/// the host that sees the window's events (`launch`), and absent where nothing resizes (a server
-/// render, a shell surface whose host measures for itself).
+/// How many times the window has changed size or scale, as a signal.
+///
+/// Provided as root context by the host that sees the window's events (`launch`), and absent where
+/// nothing resizes (a server render, a shell surface whose host measures for itself).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct WindowResized(Signal<u64>);
 

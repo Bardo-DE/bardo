@@ -1,7 +1,8 @@
-//! Space switching by key (design/30 section 2.11, design/27 section 8 decision 5): the
-//! platform's Switch-to-Space-n action (Ctrl+1 to Ctrl+9 on our desktop, where Command+1 to 9 are
-//! left to the apps), as the keymap binds it. The Space's colour then cross-fades over `--t-big`
-//! (the frame's own transition, not this file's).
+//! Space switching by key (design/30 section 2.11, design/27 section 8 decision 5).
+//!
+//! The platform's Switch-to-Space-n action (Ctrl+1 to Ctrl+9 on our desktop, where Command+1 to 9
+//! are left to the apps), as the keymap binds it. The Space's colour then cross-fades over
+//! `--t-big` (the frame's own transition, not this file's).
 
 use dioxus::prelude::{Key, Modifiers};
 use keymap::{Action, Context, Keymap, StandardAction};

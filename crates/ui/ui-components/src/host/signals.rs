@@ -5,9 +5,10 @@ use dioxus::prelude::*;
 use ui_core::geometry::scale::Scale;
 
 /// The host's live values, provided as root context by whatever sees the raw input and the window
-/// (`launch`, the harness, a shell's surface root). `Ds` stamps them on `.ds` and sizes the pixel
-/// tokens by the scale. Signals, because each changes while the tree lives: a key press, a window
-/// moved to another output, focus lost.
+/// (`launch`, the harness, a shell's surface root).
+///
+/// `Ds` stamps them on `.ds` and sizes the pixel tokens by the scale. Signals, because each changes
+/// while the tree lives: a key press, a window moved to another output, focus lost.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct HostSignals {
     /// Whether the person last drove the window with the keyboard (focus rings show); `false`

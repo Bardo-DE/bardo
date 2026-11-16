@@ -1,8 +1,10 @@
-//! The host seam a window frame drives (FINDINGS "Window frame"). `ds` stays renderer-free: it
-//! names what a client-decorated window asks of its platform, and each host fills it in —
-//! ui-blitz over the winit window `launch` opens (`ui_blitz::window`), bardo-shell over layer-shell-host's
-//! `SurfaceHandle` (`begin_move`, `begin_resize(edge)`, `set_maximized`, `use_toplevel_state`).
-//! A trait: each host holds its own window handle, and a test's stub records what it was asked.
+//! The host seam a window frame drives (FINDINGS "Window frame").
+//!
+//! `ds` stays renderer-free: it names what a client-decorated window asks of its platform, and each
+//! host fills it in — ui-blitz over the winit window `launch` opens (`ui_blitz::window`),
+//! bardo-shell over layer-shell-host's `SurfaceHandle` (`begin_move`, `begin_resize(edge)`,
+//! `set_maximized`, `use_toplevel_state`). A trait: each host holds its own window handle, and a
+//! test's stub records what it was asked.
 //!
 //! The host is provided as [`WindowHost`] context, which also carries the last [`WindowState`]
 //! as a signal, so the frame redraws when the window is zoomed or loses the keyboard. The host
@@ -15,9 +17,10 @@ use super::vocab::{PageZoom, ResizeEdge, TileError, WindowState, WindowTile, Zoo
 use dioxus::prelude::*;
 use std::rc::Rc;
 
-/// What a client-decorated window asks of its platform. Every request is fire-and-forget: the
-/// compositor answers with a configure (a new size, a new state), which the host reports through
-/// [`WindowHost::refresh`] or [`WindowHost::publish`].
+/// What a client-decorated window asks of its platform.
+///
+/// Every request is fire-and-forget: the compositor answers with a configure (a new size, a new
+/// state), which the host reports through [`WindowHost::refresh`] or [`WindowHost::publish`].
 pub trait HostWindow {
     /// Start an interactive move with the pointer button that is down now. Call it while the
     /// button is still held: Wayland's `xdg_toplevel.move` needs the press's serial.

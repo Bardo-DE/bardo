@@ -12,19 +12,22 @@ use compositor_core::window::{SpacePlace, Window, WindowState, floats_above, she
 use compositor_core::{Model, OutputKey, OutputState, WindowId};
 use std::collections::BTreeMap;
 
-/// What `model` asks layout to arrange: every plugged output with its usable area (after
-/// layer exclusive zones, A26), scale, mode and Spaces, each Space with its windows in
-/// stacking order (the model's stack ranks, A28). A window on every Space is arranged on the
-/// shown Space of its home output. An output with no Space has nothing to arrange and is left
-/// out.
+/// What `model` asks layout to arrange.
+///
+/// Every plugged output with its usable area (after layer exclusive zones, A26), scale, mode and
+/// Spaces, each Space with its windows in stacking order (the model's stack ranks, A28). A window
+/// on every Space is arranged on the shown Space of its home output. An output with no Space has
+/// nothing to arrange and is left out.
 #[must_use]
 pub fn spec_of(model: &Model) -> SceneSpec {
     spec_of_framed(model, &BTreeMap::new())
 }
 
-/// [`spec_of`] for a model some of whose windows carry a frame above their content: `frames`
-/// holds each such window's reserve (the titlebar's height). The model does not know who draws
-/// a window's frame (the wire answer is an edge fact), so the caller says.
+/// [`spec_of`] for a model some of whose windows carry a frame above their content: `frames` holds
+/// each such window's reserve (the titlebar's height).
+///
+/// The model does not know who draws a window's frame (the wire answer is an edge fact), so the
+/// caller says.
 ///
 /// ```
 /// use compositor_core::Model;
@@ -197,8 +200,6 @@ fn placement_of(state: &WindowState) -> WindowPlacement {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_core::SpaceId;
-    use compositor_core::WindowId;
     use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
     use compositor_core::space::SplitPair;
     use compositor_core::window::Restore;

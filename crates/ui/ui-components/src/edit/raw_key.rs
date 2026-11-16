@@ -1,6 +1,7 @@
-//! A key press as an app that draws its own region (a terminal) needs it: which physical key,
-//! down or up or repeating, and what it types. Pure: the surface reads the event, and this is the
-//! rule that reads the text off it.
+//! A key press as an app that draws its own region (a terminal) needs it: which physical key, down
+//! or up or repeating, and what it types.
+//!
+//! Pure: the surface reads the event, and this is the rule that reads the text off it.
 
 use dioxus::prelude::{Code, Key, Location, Modifiers};
 use ui_core::command::types_text;

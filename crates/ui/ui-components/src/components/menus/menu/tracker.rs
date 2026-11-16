@@ -19,7 +19,7 @@ use crate::stack::menu_track::types::{
     Submenu,
 };
 use crate::stack::typeahead::Typeahead;
-use dioxus::core::{ScopeId, current_scope_id};
+use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 use ui_core::geometry::units::{Point, Px, Rect};
 use ui_core::time::{
@@ -276,7 +276,7 @@ impl Hands {
                 }
             }
             MenuTrackEffect::Open(..)
-            | MenuTrackEffect::Check(_)
+            | MenuTrackEffect::Check(())
             | MenuTrackEffect::Close(_)
             | MenuTrackEffect::Pick(_)
             | MenuTrackEffect::Adjacent(_) => {}

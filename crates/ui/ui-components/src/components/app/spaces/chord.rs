@@ -7,10 +7,12 @@ use ui_core::command::chord_of;
 use ui_core::standard_action::SpaceNumber;
 use ui_core::vocab::{Shortcut, ShortcutKey};
 
-/// Which chord goes with 1 to 9. The default is the platform's primary modifier (Command on a Mac
-/// and our desktop, Ctrl elsewhere, chordkit's `Primary`): an app's own Spaces are the app's. The
-/// desktop's own workspace switch is a standard action (`space_switch::space_pressed`), which
-/// design/27 section 8 keeps off the primary modifier on our desktop.
+/// Which chord goes with 1 to 9.
+///
+/// The default is the platform's primary modifier (Command on a Mac and our desktop, Ctrl
+/// elsewhere, chordkit's `Primary`): an app's own Spaces are the app's. The desktop's own workspace
+/// switch is a standard action (`space_switch::space_pressed`), which design/27 section 8 keeps off
+/// the primary modifier on our desktop.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum SwitchChord {
     /// Primary+1 to Primary+9 (⌘1 to ⌘9 on a Mac).

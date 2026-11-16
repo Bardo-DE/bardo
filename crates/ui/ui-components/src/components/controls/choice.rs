@@ -43,6 +43,7 @@ impl<T> Choice<T> {
     }
 
     /// The same choice with `icon`.
+    #[must_use]
     pub fn with_icon(self, icon: impl Into<IconSource>) -> Self {
         Choice {
             icon: Some(icon.into()),
@@ -52,6 +53,7 @@ impl<T> Choice<T> {
 
     /// The same choice named `name` for assistive technology: an image-only segment is
     /// `Choice::new(value, "").with_icon(icon).with_name("Grid")`.
+    #[must_use]
     pub fn with_name(self, name: impl Into<String>) -> Self {
         Choice {
             name: Some(name.into()),
@@ -60,6 +62,7 @@ impl<T> Choice<T> {
     }
 
     /// The same choice drawn as a colour circle painted with the custom property `var`.
+    #[must_use]
     pub fn with_swatch(self, var: impl Into<String>) -> Self {
         Choice {
             swatch: Some(var.into()),
@@ -68,6 +71,7 @@ impl<T> Choice<T> {
     }
 
     /// The same choice, `availability`.
+    #[must_use]
     pub fn with_availability(self, availability: Availability) -> Self {
         Choice {
             availability,

@@ -1,6 +1,7 @@
-//! Files dragged into the window from outside (a file manager, a desktop): which of the app's
-//! drop targets the pointer is over, and the paths it lets go of there (mailo: attachments
-//! dropped onto the composer).
+//! Files dragged into the window from outside (a file manager, a desktop).
+//!
+//! Which of the app's drop targets the pointer is over, and the paths it lets go of there (mailo:
+//! attachments dropped onto the composer).
 //!
 //! `ds` stays renderer-free: the host hears the platform's drag, turns it into
 //! [`FileDragInput`]s and feeds them to a [`FileDropBoard`], which it provides as root context, and

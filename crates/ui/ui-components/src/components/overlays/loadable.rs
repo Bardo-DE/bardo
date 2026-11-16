@@ -1,8 +1,10 @@
-//! Loadable: the pane or list that shows a placeholder while its content loads, the content when
-//! it is ready, and a Failure `EmptyState` with a Retry when it could not be loaded (design/30
-//! section 2.9: a composition of `ProgressIndicator`, `EmptyState` (Failure) and the cross-fade
-//! primitive of section 1.3, not a new look). It is the one place that decides which of the three
-//! is drawn, so every loading pane moves the same way.
+//! Loadable: the pane or list that shows a placeholder while its content loads, the content when it
+//! is ready.
+//!
+//! And a Failure `EmptyState` with a Retry when it could not be loaded (design/30 section 2.9: a
+//! composition of `ProgressIndicator`, `EmptyState` (Failure) and the cross-fade primitive of
+//! section 1.3, not a new look). It is the one place that decides which of the three is drawn, so
+//! every loading pane moves the same way.
 //!
 //! `phase` says which: [`Phase::Loading`] carries the [`Operation`] that runs (the default
 //! placeholder, a `Spinner` at `ControlSize::Regular`, turns only while it is `Running`: R4),

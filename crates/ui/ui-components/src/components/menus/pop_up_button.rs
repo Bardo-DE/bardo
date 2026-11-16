@@ -1,4 +1,5 @@
 //! `PopUpButton`: a button that opens a menu of choices (`NSPopUpButton`, design/30 section 2.1).
+//!
 //! A pop-up shows the chosen item and marks it in its menu; a pull-down keeps a fixed title and
 //! marks nothing; an overflow is a pull-down drawn as the ⋯ image alone (Finder's Action button),
 //! for the extra commands of a row or a toolbar. It owns its chevrons, opens a `Menu`, and selects

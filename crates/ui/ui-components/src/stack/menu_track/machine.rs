@@ -78,7 +78,7 @@ impl<K: Clone + PartialEq + 'static> Machine for MenuTrack<K> {
         event: MenuTrackEvent<K>,
         at: Stamp,
         timing: &MenuTiming,
-        _: &(),
+        &(): &(),
     ) -> (Self, Effects<K>) {
         let (phase, effects) = match self.phase {
             MenuPhase::Closed => closed(event),

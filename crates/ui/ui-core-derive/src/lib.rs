@@ -29,10 +29,11 @@ pub fn derive_word(input: TokenStream) -> TokenStream {
     }
 }
 
-/// Implements `Token` for a fieldless enum that is also a `Word`: the custom property
-/// `--<prefix><slug>` (or a variant's `name`), the value the variant's attributes name, and, for
-/// `kind = tuned`, the `input` a consumer writes. `css = path` names a function that computes
-/// every variant's value where a table is not a literal.
+/// Implements `Token` for a fieldless enum that is also a `Word`.
+///
+/// The custom property `--<prefix><slug>` (or a variant's `name`), the value the variant's
+/// attributes name, and, for `kind = tuned`, the `input` a consumer writes. `css = path` names a
+/// function that computes every variant's value where a table is not a literal.
 #[proc_macro_derive(Token, attributes(token))]
 pub fn derive_token(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);

@@ -1,6 +1,8 @@
-//! Where a sheet hangs (design/30 section 2.5, `NSWindow` sheet): from the top of its window, as a
-//! settings sheet drops from the titlebar, from the top of one pane of it, as a document's sheet
-//! drops from its own titlebar, or centred, as the shell's app-modal dialog stands.
+//! Where a sheet hangs (design/30 section 2.5, `NSWindow` sheet).
+//!
+//! From the top of its window, as a settings sheet drops from the titlebar, from the top of one
+//! pane of it, as a document's sheet drops from its own titlebar, or centred, as the shell's
+//! app-modal dialog stands.
 
 use crate::host::measure::Anchor;
 use ui_core::geometry::units::{Point, Rect};

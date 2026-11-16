@@ -1,6 +1,7 @@
-//! The one hover manager every card goes through: it owns the [`ui_motion::hover_intent::HoverIntent`] machine
-//! (its deadlines are its open and close timers), and stamps `data-hover="warm|cold"` on `.ds` (design/04-COMPONENTS.md
-//! O-11).
+//! The one hover manager every card goes through.
+//!
+//! It owns the [`ui_motion::hover_intent::HoverIntent`] machine (its deadlines are its open and
+//! close timers), and stamps `data-hover="warm|cold"` on `.ds` (design/04-COMPONENTS.md O-11).
 //!
 //! The fade-out and warm timers are tasks of the root that provides it and drop with it; every
 //! write a timer makes is a `try_set`, so a timer that outlives the hub's signals stops instead of panicking

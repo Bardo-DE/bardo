@@ -1,6 +1,8 @@
 //! Where in the app's own markup a caret sits: an element the app marked, and an offset into its
-//! text. The app renders `data-edit-node="{key}"` on every paragraph and object it can address
-//! (mailo's `data-n`), so a position is in the app's vocabulary, not the renderer's.
+//! text.
+//!
+//! The app renders `data-edit-node="{key}"` on every paragraph and object it can address (mailo's
+//! `data-n`), so a position is in the app's vocabulary, not the renderer's.
 
 use ui_core::word::Word;
 
@@ -14,9 +16,10 @@ pub const EDIT_KIND_ATTR: &str = "data-edit-kind";
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct EditNode(pub String);
 
-/// An offset into an addressable element. For text, UTF-8 bytes into the element's own text: the
-/// text nodes whose nearest addressable ancestor it is, in document order. For an atom, `0` is
-/// before it and `1` after it.
+/// An offset into an addressable element.
+///
+/// For text, UTF-8 bytes into the element's own text: the text nodes whose nearest addressable
+/// ancestor it is, in document order. For an atom, `0` is before it and `1` after it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
 pub struct TextOffset(pub usize);
 

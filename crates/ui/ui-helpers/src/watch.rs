@@ -94,7 +94,6 @@ impl Subscription {
 #[cfg(test)]
 mod tests {
     use super::Log;
-    use std::future::Future;
     use std::pin::pin;
     use std::sync::Arc;
     use std::sync::atomic::{AtomicUsize, Ordering};

@@ -1,6 +1,7 @@
 //! What a `Scrubber` is told and what it shows (design/30 section 2.1a): the buffered ranges, the
-//! pose that says whether the pointer is on it, and the time its tooltip reads. Data and the pure
-//! arithmetic only.
+//! pose that says whether the pointer is on it, and the time its tooltip reads.
+//!
+//! Data and the pure arithmetic only.
 
 use ui_core::vocab::Fraction;
 use ui_core::word::Word;

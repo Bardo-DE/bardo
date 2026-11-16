@@ -4,7 +4,6 @@
 //! root's inputs), a root at 1x or with no scale writes nothing, and a `Glyph` under a 1.25 root
 //! snaps its stroke.
 
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::prelude::*;

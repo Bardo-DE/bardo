@@ -1,8 +1,10 @@
 //! Sidebar: the pane of a `SplitView` that lists places (`NSSplitViewItem` sidebar, design/30
-//! section 2.7): an optional header (a search field, a command pill), then sections that scroll
-//! (source-list `List`s at the sidebar's size, and whatever else the caller puts between them:
-//! pinned tiles, Today tabs), then an optional foot that stays at the bottom. The ground is paper
-//! or leaves the window's own colour showing (a Space's tint), by `fill`.
+//! section 2.7).
+//!
+//! An optional header (a search field, a command pill), then sections that scroll (source-list
+//! `List`s at the sidebar's size, and whatever else the caller puts between them: pinned tiles,
+//! Today tabs), then an optional foot that stays at the bottom. The ground is paper or leaves the
+//! window's own colour showing (a Space's tint), by `fill`.
 //!
 //! Markup: `nav.ds-sidebar[data-size][data-fill]` of `div.ds-sidebar-header`,
 //! `div.ds-sidebar-body` (one `div.ds-sidebar-section` per section; the body also carries

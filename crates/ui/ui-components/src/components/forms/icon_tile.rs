@@ -1,7 +1,9 @@
-//! `IconTile`: the 28 px rounded tile that leads a grouped row, a colour with a white glyph on it
-//! (System Settings' General, Wi-Fi and Sound tiles; design/34-MODERN-LOOK.md sections 2.3 and
-//! 3.5). Its sibling is the circular avatar a row of people leads with: the tile's other face
-//! is an [`AvatarFace`], drawn by `Avatar` itself, so the two sit in the same leading slot.
+//! `IconTile`: the 28 px rounded tile that leads a grouped row.
+//!
+//! A colour with a white glyph on it (System Settings' General, Wi-Fi and Sound tiles;
+//! design/34-MODERN-LOOK.md sections 2.3 and 3.5). Its sibling is the circular avatar a row of
+//! people leads with: the tile's other face is an [`AvatarFace`], drawn by `Avatar` itself, so the
+//! two sit in the same leading slot.
 //!
 //! The ground is the caller's colour under a soft vertical gradient from a lighter step of the
 //! same hue (design/08: matte, per-app gradient, no outline); the glyph is the on-hue ink.

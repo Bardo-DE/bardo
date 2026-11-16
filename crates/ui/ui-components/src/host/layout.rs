@@ -1,7 +1,9 @@
-//! The rect of a mounted element, kept in a signal by the host's frame phase: no read waits for a
-//! frame and none retries, because the host publishes the rect after each layout that changed it
-//! (`ui_components::host::phase`). A host that runs no phase answers `Unsupported`, and the rect is read
-//! through the host's `measure` instead (see `ui_components::host::measure`).
+//! The rect of a mounted element, kept in a signal by the host's frame phase.
+//!
+//! No read waits for a frame and none retries, because the host publishes the rect after each
+//! layout that changed it (`ui_components::host::phase`). A host that runs no phase answers
+//! `Unsupported`, and the rect is read through the host's `measure` instead (see
+//! `ui_components::host::measure`).
 
 use crate::host::document::use_document_host;
 use crate::host::measure::{MountedRef, read_after_layout};
@@ -22,8 +24,9 @@ enum Driven {
 }
 
 /// `node`'s border box in logical pixels, in the window's coordinates: `None` until the node is
-/// mounted and the host has laid it out, then the rect after each layout that changed it. `node`
-/// is the typed handle an element's `onmounted` gives (`MountedRef(event.data())`).
+/// mounted and the host has laid it out, then the rect after each layout that changed it.
+///
+/// `node` is the typed handle an element's `onmounted` gives (`MountedRef(event.data())`).
 #[must_use]
 pub fn use_layout(node: ReadSignal<Option<MountedRef>>) -> ReadSignal<Option<Rect>> {
     let rect = use_signal(|| None::<Rect>);

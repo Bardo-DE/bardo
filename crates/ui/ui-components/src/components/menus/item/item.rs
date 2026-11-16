@@ -1,6 +1,7 @@
-//! `MenuItem`: what a `Menu` lists, as data (`NSMenuItem`, design/30 section 2.4): a command with
-//! its image, key equivalent and check state, a parent of a submenu, a section header, a status
-//! line and a separator. `view` draws one item, `lines` the whole panel.
+//! `MenuItem`: what a `Menu` lists, as data (`NSMenuItem`, design/30 section 2.4).
+//!
+//! A command with its image, key equivalent and check state, a parent of a submenu, a section
+//! header, a status line and a separator. `view` draws one item, `lines` the whole panel.
 
 use crate::components::content::avatar::AvatarFace;
 use crate::components::content::icon_source::IconSource;
@@ -148,6 +149,7 @@ impl<T> MenuSwatch<T> {
     }
 
     /// The same dot with the state mark `check`.
+    #[must_use]
     pub fn with_check(self, check: Check) -> Self {
         MenuSwatch {
             check: Some(check),
@@ -156,6 +158,7 @@ impl<T> MenuSwatch<T> {
     }
 
     /// The same dot with `keep_open` as whether its pick leaves the menu up.
+    #[must_use]
     pub fn with_keep_open(self, keep_open: bool) -> Self {
         MenuSwatch { keep_open, ..self }
     }
@@ -221,6 +224,7 @@ impl<T> MenuItem<T> {
     }
 
     /// The same item with `image`; a header, status line or rule has none to change.
+    #[must_use]
     pub fn with_image(mut self, image: MenuImage) -> Self {
         if let MenuItem::Item { image: slot, .. } | MenuItem::Submenu { image: slot, .. } =
             &mut self
@@ -240,6 +244,7 @@ impl<T> MenuItem<T> {
     }
 
     /// The same item with the key equivalent `key`; only a command has one.
+    #[must_use]
     pub fn with_key(mut self, key: Shortcut) -> Self {
         if let MenuItem::Item { key: slot, .. } = &mut self {
             *slot = Some(key);
@@ -248,6 +253,7 @@ impl<T> MenuItem<T> {
     }
 
     /// The same item with the trailing `hint`; only a command has one.
+    #[must_use]
     pub fn with_hint(mut self, hint: impl Into<String>) -> Self {
         if let MenuItem::Item { hint: slot, .. } = &mut self {
             *slot = Some(hint.into());
@@ -256,6 +262,7 @@ impl<T> MenuItem<T> {
     }
 
     /// The same item with the state mark `check`; only a command has one.
+    #[must_use]
     pub fn with_check(mut self, check: Check) -> Self {
         if let MenuItem::Item { check: slot, .. } = &mut self {
             *slot = Some(check);
@@ -264,6 +271,7 @@ impl<T> MenuItem<T> {
     }
 
     /// The same item with `availability`; a header, status line or rule has none to change.
+    #[must_use]
     pub fn with_availability(mut self, to: Availability) -> Self {
         match &mut self {
             MenuItem::Item { availability, .. } | MenuItem::Submenu { availability, .. } => {
@@ -277,6 +285,7 @@ impl<T> MenuItem<T> {
 
     /// The same item with `keep_open` as whether its pick leaves the menu up; only a command has
     /// one.
+    #[must_use]
     pub fn with_keep_open(mut self, to: bool) -> Self {
         if let MenuItem::Item { keep_open, .. } = &mut self {
             *keep_open = to;
@@ -286,6 +295,7 @@ impl<T> MenuItem<T> {
 
     /// The same item with the characters of its title that a query matched drawn emphasised; only
     /// a command has a title to mark.
+    #[must_use]
     pub fn with_marks(mut self, marks: Marks) -> Self {
         if let MenuItem::Item { text, .. } = &mut self {
             text.marks = marks;
@@ -295,6 +305,7 @@ impl<T> MenuItem<T> {
 
     /// The same item with a tooltip `tip`, shown on hover even while the item is disabled (the
     /// reason it is); only a command has one.
+    #[must_use]
     pub fn with_tip(mut self, tip: impl Into<String>) -> Self {
         if let MenuItem::Item { text, .. } = &mut self {
             text.tip = Some(tip.into());
@@ -303,6 +314,7 @@ impl<T> MenuItem<T> {
     }
 
     /// The same item with a second, fainter line under its title; only a command has one.
+    #[must_use]
     pub fn with_subtitle(mut self, subtitle: impl Into<String>) -> Self {
         if let MenuItem::Item { text, .. } = &mut self {
             text.subtitle = Some(subtitle.into());

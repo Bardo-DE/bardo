@@ -63,6 +63,7 @@ impl<K> CollectionItem<K> {
     }
 
     /// The same tile with `field` in place of its caption.
+    #[must_use]
     pub fn editing(self, field: Element) -> Self {
         CollectionItem {
             edit: Some(field),
@@ -71,6 +72,7 @@ impl<K> CollectionItem<K> {
     }
 
     /// The same tile with `badge` centred under its caption.
+    #[must_use]
     pub fn badged(self, badge: Element) -> Self {
         CollectionItem {
             badge: Some(badge),
@@ -79,6 +81,7 @@ impl<K> CollectionItem<K> {
     }
 
     /// The same tile with `drop` as its part in a drag.
+    #[must_use]
     pub fn in_drag(self, drop: DropState) -> Self {
         CollectionItem { drop, ..self }
     }

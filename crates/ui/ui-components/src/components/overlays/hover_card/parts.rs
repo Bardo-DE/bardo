@@ -1,7 +1,8 @@
 //! A hover card's content blocks as data (design/04-COMPONENTS.md section 22 "Markup"), so a
 //! consumer composes a card from parts rather than writing `ds-hovercard-*` markup by hand.
-//! Each part renders exactly the block the section draws; the card renders them in the order
-//! given, before any children.
+//!
+//! Each part renders exactly the block the section draws; the card renders them in the order given,
+//! before any children.
 
 use crate::components::content::avatar::{Avatar, AvatarSize, AvatarTone};
 use crate::components::content::label::{Label, LabelRole, LabelStyle};

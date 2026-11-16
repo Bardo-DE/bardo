@@ -8,7 +8,6 @@ use crate::host::document::DocumentHost;
 use crate::host::ime::{ImeEvent, ImeListener};
 use crate::host::measure::BUSY_ATTEMPTS;
 use crate::host::probe::Probe;
-use dioxus::core::ScopeId;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::time::{FRAME_SLACK, clock::sleep};

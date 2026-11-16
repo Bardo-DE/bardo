@@ -1,5 +1,8 @@
-//! Overlays and feedback: the popover every floating surface shares, sheets, alerts, side panels, the Spaces bar,
-//! tooltips, hover cards, toasts, the empty state, the fade-out wrapper, the skeleton and its row, the loadable pane, and the drag ghost.
+//! Overlays and feedback: the popover every floating surface shares, sheets, alerts, side panels,
+//! the Spaces bar, tooltips, hover cards, toasts.
+//!
+//! The empty state, the fade-out wrapper, the skeleton and its row, the loadable pane, and the drag
+//! ghost.
 
 pub(crate) mod alert;
 pub mod alert_arming;

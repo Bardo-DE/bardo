@@ -33,9 +33,10 @@ use crate::components::lists::virtual_table::row_drag::{RowDrag, RowDropMark};
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
 
-/// The id of the box that scrolls sideways in a table whose root has `id`, once it holds columns
-/// in place: the root itself scrolls sideways otherwise. A caller that scrolls the table
-/// sideways (to show a find hit) names this box.
+/// The id of the box that scrolls sideways in a table whose root has `id`, once it holds columns in
+/// place: the root itself scrolls sideways otherwise.
+///
+/// A caller that scrolls the table sideways (to show a find hit) names this box.
 #[must_use]
 pub fn columns_id(id: &str) -> String {
     format!("{id}-columns")

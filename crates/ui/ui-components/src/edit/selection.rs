@@ -11,11 +11,12 @@ use crate::host::position::TextRange;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Rect;
 
-/// The boxes `range` covers in `handle`'s surface, relative to the surface's border box (draw
-/// them at `left`/`top` inside the surface's positioned container), as the surface laid out its
-/// text in the frame being drawn. Empty until the surface has mounted and been laid out, while
-/// `range` is `None`, collapsed or names nothing in it, and on a host that runs no frame phase
-/// (read [`EditHandle::selection_rects`] there).
+/// The boxes `range` covers in `handle`'s surface.
+///
+/// Relative to the surface's border box (draw them at `left`/`top` inside the surface's positioned
+/// container), as the surface laid out its text in the frame being drawn. Empty until the surface
+/// has mounted and been laid out, while `range` is `None`, collapsed or names nothing in it, and on
+/// a host that runs no frame phase (read [`EditHandle::selection_rects`] there).
 pub fn use_selection_rects(handle: EditHandle, range: Option<TextRange>) -> ReadSignal<Vec<Rect>> {
     let said = use_hook(|| CopyValue::new(None::<TextRange>));
     // Not a signal: the phase reads it as it runs, ahead of any wake-up a signal would queue.

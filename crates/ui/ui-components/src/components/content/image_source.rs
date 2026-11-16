@@ -1,16 +1,18 @@
-//! Pictures the app supplies: where the pixels come from ([`ImageSource`]) and how big they are
-//! ([`ImageSize`]). quire never fetches: a source is a `data:` URI or a `file:` URL, the two
-//! schemes a quire document's net provider answers. `ProviderMark`'s favicon and the screenshot
-//! thumbnail both take one.
+//! Pictures the app supplies.
+//!
+//! Where the pixels come from ([`ImageSource`]) and how big they are ([`ImageSize`]). quire never
+//! fetches: a source is a `data:` URI or a `file:` URL, the two schemes a quire document's net
+//! provider answers. `ProviderMark`'s favicon and the screenshot thumbnail both take one.
 
 use std::path::Path;
 use ui_core::error::DsError;
 use ui_style::icon::url::IconUrl;
 
 /// An image the app supplies, as a `data:` URI or a `file:` URL, written as an `<img>`'s `src`.
-/// The caller decides which: a screenshot already on disk is cheaper as its path than
-/// re-encoded, a favicon in memory is a `data:` URI. The field stays public so a caller holding
-/// a URI already wraps it as it is.
+///
+/// The caller decides which: a screenshot already on disk is cheaper as its path than re-encoded, a
+/// favicon in memory is a `data:` URI. The field stays public so a caller holding a URI already
+/// wraps it as it is.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ImageSource(pub String);
 

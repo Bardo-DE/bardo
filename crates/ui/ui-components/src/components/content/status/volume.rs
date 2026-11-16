@@ -1,6 +1,7 @@
-//! `VolumeGlyph`: the bar's volume item on `LevelGlyph`'s layers (design/26-DETAILS.md 5.1.4):
-//! the waves cross-fade by thirds over `--t-quick` as the level moves, and muting fades the
-//! waves out as the slash comes in. A held volume key moves nothing else (R12): no count, no bump.
+//! `VolumeGlyph`: the bar's volume item on `LevelGlyph`'s layers (design/26-DETAILS.md 5.1.4).
+//!
+//! The waves cross-fade by thirds over `--t-quick` as the level moves, and muting fades the waves
+//! out as the slash comes in. A held volume key moves nothing else (R12): no count, no bump.
 
 use crate::components::content::level_glyph::glyph::{LevelGlyphView, waves};
 use crate::components::content::level_glyph::vocab::LevelGlyph;

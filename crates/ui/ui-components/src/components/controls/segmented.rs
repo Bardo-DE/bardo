@@ -181,7 +181,7 @@ pub fn SegmentedControl<T: Clone + PartialEq + 'static>(
                 Segment {
                     key: "{index}",
                     selected: tracking.selects(&choice.value),
-                    thumb: if one { Some(thumb_over(thumb.position(), index)) } else { None },
+                    thumb: one.then(|| thumb_over(thumb.position(), index)),
                     enabled: choice.availability,
                     group: availability,
                     size,
@@ -233,8 +233,8 @@ fn Segment<T: Clone + PartialEq + 'static>(
             r#type: "button",
             class: "ds-segmented-segment",
             role: if thumb.is_some() { "radio" } else { "button" },
-            "aria-checked": if thumb.is_some() { Some(checked.aria()) } else { None },
-            "aria-pressed": if thumb.is_none() { Some(checked.aria()) } else { None },
+            "aria-checked": thumb.is_some().then(|| checked.aria()),
+            "aria-pressed": thumb.is_none().then(|| checked.aria()),
             // A `SelectOne` control is one stop in the tab order, its selected segment; the arrows
             // move within it.
             tabindex: match (thumb, selected) {

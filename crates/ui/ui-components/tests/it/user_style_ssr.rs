@@ -2,7 +2,6 @@
 //! the design-system sheet and in cascade order (look, desktop-wide, app), redrawn when the signal
 //! changes, absent when blank, and all absent when "Use my styles" is off.
 
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::prelude::*;

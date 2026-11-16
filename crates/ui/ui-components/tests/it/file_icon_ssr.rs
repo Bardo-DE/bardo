@@ -2,11 +2,8 @@
 //! monochrome paint, and that the stylesheet knows every kind and token the markup names.
 
 use dioxus::core::VirtualDom;
-use ui_components::components::content::file_icon::{
-    FileIcon, FileIconChoice, FileIconProps, LABEL_MIN_PX,
-};
+use ui_components::components::content::file_icon::{FileIconProps, LABEL_MIN_PX};
 use ui_components::prelude::*;
-use ui_core::word::Word;
 use ui_style::icon::render::IconPx;
 use ui_style::icon::retint::Tint;
 

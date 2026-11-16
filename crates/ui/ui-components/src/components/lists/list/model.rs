@@ -80,6 +80,7 @@ impl<K> ListItem<K> {
     }
 
     /// The same item with `availability`.
+    #[must_use]
     pub fn with(self, availability: Availability) -> Self {
         ListItem {
             availability,

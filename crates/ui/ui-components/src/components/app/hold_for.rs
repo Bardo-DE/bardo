@@ -43,7 +43,7 @@ impl Machine for HoldFor {
     type Params = Duration;
     type Ctx = ();
 
-    fn step(self, input: HoldForIn, at: Stamp, delay: &Duration, _: &()) -> (HoldFor, Vec<()>) {
+    fn step(self, input: HoldForIn, at: Stamp, delay: &Duration, &(): &()) -> (HoldFor, Vec<()>) {
         let next = match (self, input) {
             (_, HoldForIn::Start) => HoldFor::Held(at.after_span(*delay)),
             (HoldFor::Held(until), HoldForIn::Elapsed) if at >= until => HoldFor::Done,

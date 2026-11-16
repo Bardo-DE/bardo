@@ -1,8 +1,10 @@
-//! The command palette's list motions (design/26-DETAILS.md section 5.4's group-expand grammar):
-//! a group's Show More and Show Less. The added rows come in as a roster row does (`row-in`),
-//! and on Show Less everything after the rows kept heals up by the height the removed rows took
-//! (`heal`). The palette owns its rows and outlives its result sets, so it plays these itself; a
-//! later result set replaces in place with no motion (R1, R12).
+//! The command palette's list motions (design/26-DETAILS.md section 5.4's group-expand grammar): a
+//! group's Show More and Show Less.
+//!
+//! The added rows come in as a roster row does (`row-in`), and on Show Less everything after the
+//! rows kept heals up by the height the removed rows took (`heal`). The palette owns its rows and
+//! outlives its result sets, so it plays these itself; a later result set replaces in place with no
+//! motion (R1, R12).
 //!
 //! The person's own Enter or click is not the only way a group's action runs: a
 //! caller may run it itself (`bardo-shell debug launcher-key enter` stepping the keyboard machine
@@ -74,12 +76,13 @@ impl ActionBook {
     }
 }
 
-/// A caller's mark on a `CommandPalette`'s next change of results: pass it as
-/// `CommandPalette { handle: Some(handle) }`, then call [`mark_group_action`](Self::mark_group_action)
-/// before making the change yourself (running a group's action without going through the
-/// palette's own Enter or click, e.g. `bardo-shell debug launcher-key enter`, a demo's own button). The
-/// palette plays that group's Show More or Show Less exactly as it would its own; any other
-/// caller-driven change, unmarked, plays nothing, as before.
+/// A caller's mark on a `CommandPalette`'s next change of results.
+///
+/// Pass it as `CommandPalette { handle: Some(handle) }`, then call
+/// [`mark_group_action`](Self::mark_group_action) before making the change yourself (running a
+/// group's action without going through the palette's own Enter or click, e.g. `bardo-shell debug
+/// launcher-key enter`, a demo's own button). The palette plays that group's Show More or Show Less
+/// exactly as it would its own; any other caller-driven change, unmarked, plays nothing, as before.
 #[derive(Clone, Copy, PartialEq)]
 pub struct PaletteHandle(ActionBook);
 

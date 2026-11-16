@@ -3,7 +3,6 @@
 use super::cases::{Case, PartsCard};
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::components::overlays::hover_card::parts::{FlagTone, HoverCardPart};
 use ui_components::prelude::*;
 

@@ -101,9 +101,10 @@ fn retarget<K: Clone>(
     if hot != session.hot {
         effects.insert(0, MenuTrackEffect::Highlight(hot.clone()));
     }
-    let cursor = match left {
-        true => None,
-        false => hot.clone().or_else(|| session.cursor.clone()),
+    let cursor = if left {
+        None
+    } else {
+        hot.clone().or_else(|| session.cursor.clone())
     };
     let session = Session {
         entered,

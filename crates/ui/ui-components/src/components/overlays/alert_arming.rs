@@ -1,6 +1,8 @@
 //! An alert's arming delay (`Alert`'s `arm_after`) and the rule that decides what an input does
-//! while it waits: an answer already in flight (a keypress or click aimed at the window under a
-//! permission question) must not land on a question the person never saw.
+//! while it waits.
+//!
+//! An answer already in flight (a keypress or click aimed at the window under a permission
+//! question) must not land on a question the person never saw.
 
 use crate::components::overlays::alert_model::{AlertRole, default_button, escape_button};
 use std::time::Duration;
@@ -8,10 +10,12 @@ use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
 use ui_core::vocab::Availability;
 
-/// Whether an alert takes answers yet: `Alert`'s `arm_after` holds them off for a moment after
-/// the alert appears, so a keypress or click that was already on its way (the person typing in
-/// the window under a permission question) cannot answer it. Without a delay an alert is
-/// `Armed` from the start. The deadline is in the state, and the clock alone ends the wait.
+/// Whether an alert takes answers yet.
+///
+/// `Alert`'s `arm_after` holds them off for a moment after the alert appears, so a keypress or
+/// click that was already on its way (the person typing in the window under a permission question)
+/// cannot answer it. Without a delay an alert is `Armed` from the start. The deadline is in the
+/// state, and the clock alone ends the wait.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Arming {
     /// Takes answers: Return, Escape, Space and clicks do what they always do.
@@ -77,9 +81,10 @@ pub enum Route {
     Nothing,
 }
 
-/// What `input` comes to for an alert whose buttons have `roles`: nothing until it is armed, then
-/// Return presses the default, Escape reports a dismissal the caller listens for or else presses
-/// Cancel, and a press is that button's.
+/// What `input` comes to for an alert whose buttons have `roles`.
+///
+/// Nothing until it is armed, then Return presses the default, Escape reports a dismissal the
+/// caller listens for or else presses Cancel, and a press is that button's.
 #[must_use]
 pub fn route(arming: Arming, input: AlertInput, roles: &[AlertRole], hearing: Hearing) -> Route {
     let press = |index: Option<usize>| index.map_or(Route::Nothing, Route::Press);
@@ -100,7 +105,7 @@ impl Machine for Arming {
     type Params = ();
     type Ctx = ();
 
-    fn step(self, input: Elapsed, at: Stamp, _: &(), _: &()) -> (Arming, Vec<()>) {
+    fn step(self, input: Elapsed, at: Stamp, &(): &(), &(): &()) -> (Arming, Vec<()>) {
         let next = match (self, input) {
             (Arming::Waiting { until }, Elapsed) if at >= until => Arming::Armed,
             (state, Elapsed) => state,

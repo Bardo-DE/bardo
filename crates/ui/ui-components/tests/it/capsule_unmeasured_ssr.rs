@@ -1,7 +1,6 @@
 //! A capsule that has not measured its stage yet is drawn hidden and takes no presses, so a
 //! narrow stage never flashes the full capsule for a frame before the fit drops slots.
 
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::chrome::capsule::model::CapsuleSlot;

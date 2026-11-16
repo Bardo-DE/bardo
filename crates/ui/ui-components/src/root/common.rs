@@ -5,7 +5,6 @@
 //! (`#[props(default)] common: Common`), instead of five props each spelt its own way.
 
 use crate::root::pass_through::{DataAttr, ExtraClass, attributes, class_list};
-use dioxus::core::Attribute;
 use dioxus::prelude::*;
 use std::fmt;
 

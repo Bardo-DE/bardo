@@ -6,7 +6,6 @@ use dioxus::core::NoOpMutations;
 use dioxus::prelude::*;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
-use ui_style::icon::Icon;
 
 fn button_markup(app: fn() -> Element) -> String {
     let mut dom = VirtualDom::new(app);

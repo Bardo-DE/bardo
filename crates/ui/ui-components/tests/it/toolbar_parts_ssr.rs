@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use ui_components::components::chrome::toolbar::model::{ToolbarItem, ToolbarRoom};
 use ui_components::components::chrome::toolbar::view::Toolbar;
 use ui_components::prelude::*;
-use ui_style::icon::Icon;
 
 /// The markup of the element that opens with `start`, to the end of the page (the stylesheet
 /// before it names every class, so a search must begin at the element).

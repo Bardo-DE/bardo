@@ -1,7 +1,6 @@
 //! The sleep seam: a sign-in that polls (Login Flow v2 waits for the person in the browser)
 //! waits through this, so no family reaches a runtime and a test waits for no time at all.
 
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;

@@ -1,8 +1,10 @@
 //! `AppStyle`: a consumer's own stylesheet, in the `app` cascade layer (ARCHITECTURE.md section
-//! 10). The design system is `@layer ds`, a consumer's sheets come after it in `@layer app`, and
-//! the person's `style.css` is unlayered, so the order of who wins is user, then app, then ds
-//! whatever the specificity of each rule. The text starts with the layer order statement, so the
-//! order holds whichever sheet the renderer parses first.
+//! 10).
+//!
+//! The design system is `@layer ds`, a consumer's sheets come after it in `@layer app`, and the
+//! person's `style.css` is unlayered, so the order of who wins is user, then app, then ds whatever
+//! the specificity of each rule. The text starts with the layer order statement, so the order holds
+//! whichever sheet the renderer parses first.
 
 use dioxus::prelude::*;
 use std::borrow::Cow;

@@ -1,8 +1,9 @@
-//! `TodayTabs`: the temporary tabs under the pinned tiles (design/30 section 2.11): pages the
-//! person opened today, each a `Row` of the `SourceList` shape that carries what it has left and
-//! is dropped when that runs out. A tab enters and leaves by the `List`'s roster: it fades and
-//! slides in, and on its close (or its expiry) it fades and slides out while the rows below close
-//! the gap. The tabs are the caller's; this only stops listing one once its time is up.
+//! `TodayTabs`: the temporary tabs under the pinned tiles (design/30 section 2.11).
+//!
+//! Pages the person opened today, each a `Row` of the `SourceList` shape that carries what it has
+//! left and is dropped when that runs out. A tab enters and leaves by the `List`'s roster: it fades
+//! and slides in, and on its close (or its expiry) it fades and slides out while the rows below
+//! close the gap. The tabs are the caller's; this only stops listing one once its time is up.
 
 use crate::components::lists::list::list::List;
 use crate::components::lists::list::model::{ListItem, ListStyle};

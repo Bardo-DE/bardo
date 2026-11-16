@@ -1,6 +1,7 @@
-//! The words of a tooltip, in one house style (owner decision 2026-10-09, design/30 section 2.5):
-//! a tooltip is "just a noun with keybinds", written `Name  ⌘K`: a short noun phrase in title
-//! case, two spaces, then the key as quire draws it. No parentheses, no sentence, no full stop.
+//! The words of a tooltip, in one house style (owner decision 2026-10-09, design/30 section 2.5).
+//!
+//! A tooltip is "just a noun with keybinds", written `Name  ⌘K`: a short noun phrase in title case,
+//! two spaces, then the key as quire draws it. No parentheses, no sentence, no full stop.
 //!
 //! Every tip quire draws is built here, so the style cannot drift. The tip is separate from the
 //! accessible name: a control's `aria-label` keeps its full wording ("Star this thread") while

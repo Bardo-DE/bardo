@@ -65,8 +65,8 @@ pub(crate) fn PaneBox(
             onpointerdown: move |_| on_hold.call(()),
             onkeydown: move |_| on_hold.call(()),
             "data-folded": peeks.then_some("peeks"),
-            "data-away": if away { Some("true") } else { None },
-            "aria-hidden": if !shown && !peeks { Some("true") } else { None },
+            "data-away": away.then_some("true"),
+            "aria-hidden": (!shown && !peeks).then_some("true"),
             style: "--pane-w:{drawn}px;--pane-open:{width.0}px;--pane-least:{held}px",
             div { class: "ds-split-pane-body", {body} }
         }

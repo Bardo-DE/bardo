@@ -1,6 +1,7 @@
-//! Press: what a Button hands its `onclick`: which pointer button activated it,
-//! the modifiers held and where it happened. A
-//! tray icon's right-click has to reach the app as a secondary press, its middle click as a
+//! Press: what a Button hands its `onclick`: which pointer button activated it, the modifiers held
+//! and where it happened.
+//!
+//! A tray icon's right-click has to reach the app as a secondary press, its middle click as a
 //! middle one, and SNI's `ContextMenu(x, y)` and `Activate(x, y)` want the point.
 
 use crate::focus::click::kept_click;
@@ -52,11 +53,13 @@ fn keep_at_control(stop: bool, event: &MouseEvent) {
     }
 }
 
-/// What a control's availability writes on the element besides `aria-disabled`: `disabled`, so
-/// the platform neither focuses nor activates it. Present only when disabled, as an attribute
-/// string: a `bool` attribute reaches dioxus-native as `disabled="false"` on every enabled
-/// control, which Blitz reads as disabled (a click then no longer toggles an enclosing
-/// `<details>`). A busy control takes no input either, but stays where it is in the tab order.
+/// What a control's availability writes on the element besides `aria-disabled`: `disabled`, so the
+/// platform neither focuses nor activates it.
+///
+/// Present only when disabled, as an attribute string: a `bool` attribute reaches dioxus-native as
+/// `disabled="false"` on every enabled control, which Blitz reads as disabled (a click then no
+/// longer toggles an enclosing `<details>`). A busy control takes no input either, but stays where
+/// it is in the tab order.
 #[must_use]
 pub fn disabled(availability: Availability) -> Option<&'static str> {
     match availability {
@@ -65,9 +68,11 @@ pub fn disabled(availability: Availability) -> Option<&'static str> {
     }
 }
 
-/// The keys that activate a focused control: a push button answers Return and Space; a button
-/// that answers Escape leaves Return to the dialog around it (the default button's key) and
-/// answers Space only, as does a switch, a checkbox, a radio button or a segment.
+/// The keys that activate a focused control.
+///
+/// A push button answers Return and Space; a button that answers Escape leaves Return to the dialog
+/// around it (the default button's key) and answers Space only, as does a switch, a checkbox, a
+/// radio button or a segment.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum ActivationKeys {
     /// Return and Space.
@@ -96,11 +101,12 @@ pub(crate) fn activates(event: &KeyboardEvent, keys: ActivationKeys) -> bool {
     is_activation_key(&event.key(), keys) && !event.is_auto_repeating()
 }
 
-/// The three listeners a pressable control puts on its element, all reporting through `press`:
-/// `click` (primary, and keyboard activation), `contextmenu` (secondary: Blitz and browsers
-/// send a right-click as that and never as a click; its default is prevented), and `mouseup`
-/// for the middle button, which neither fires as a click on Blitz. Under
-/// a stopped press each of them keeps its event at the control before reporting.
+/// The three listeners a pressable control puts on its element, all reporting through `press`.
+///
+/// `click` (primary, and keyboard activation), `contextmenu` (secondary: Blitz and browsers send a
+/// right-click as that and never as a click; its default is prevented), and `mouseup` for the
+/// middle button, which neither fires as a click on Blitz. Under a stopped press each of them keeps
+/// its event at the control before reporting.
 #[derive(Debug, Clone, Copy)]
 pub struct PressListeners {
     press: EventHandler<Press>,
@@ -172,9 +178,10 @@ impl PressListeners {
     }
 }
 
-/// Where the press on a control stands, for `data-pressed` (design/30 section 1.4): down by the
-/// primary button or by Space or Return, until it is released, leaves the control or the control
-/// loses the keyboard. A control puts [`Pressing::listeners`] on its element and writes
+/// Where the press on a control stands, for `data-pressed` (design/30 section 1.4).
+///
+/// Down by the primary button or by Space or Return, until it is released, leaves the control or
+/// the control loses the keyboard. A control puts [`Pressing::listeners`] on its element and writes
 /// [`Pressing::attr`].
 #[derive(Debug, Clone, Copy)]
 pub struct Pressing {

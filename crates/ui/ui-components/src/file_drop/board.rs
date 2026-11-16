@@ -11,9 +11,11 @@ use std::rc::Rc;
 use ui_core::geometry::units::Point;
 use ui_core::vocab::DropState;
 
-/// The file drags of one window, provided as root context by whatever feeds them (`launch`'s
-/// window and the harness): every mounted [`use_file_drop`](crate::file_drop::hook::use_file_drop) target enters
-/// it, and the host feeds it the drag as the platform reports it, finding targets through its
+/// The file drags of one window, provided as root context by whatever feeds them (`launch`'s window
+/// and the harness).
+///
+/// Every mounted [`use_file_drop`](crate::file_drop::hook::use_file_drop) target enters it, and the
+/// host feeds it the drag as the platform reports it, finding targets through its
 /// [`FileDropHost`](crate::host::parts::FileDropHost).
 #[derive(Clone)]
 pub struct FileDropBoard {

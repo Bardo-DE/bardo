@@ -59,7 +59,7 @@ impl Machine for Glow {
     type Params = ();
     type Ctx = ();
 
-    fn step(self, input: GlowIn, at: Stamp, _: &(), _: &()) -> (Glow, Vec<()>) {
+    fn step(self, input: GlowIn, at: Stamp, &(): &(), &(): &()) -> (Glow, Vec<()>) {
         let next = match (input, self.run) {
             (GlowIn::Spin(Some(period)), Some(run)) if run.period == period => self,
             (GlowIn::Spin(Some(period)), _) => Glow {

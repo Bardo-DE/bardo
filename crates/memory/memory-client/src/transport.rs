@@ -1,7 +1,6 @@
 //! How a request reaches memoryd: in process, nowhere (other desktops), or over D-Bus.
 
 use memory_core::{MemoryReply, MemoryRequest};
-use std::future::Future;
 
 /// Why a request did not get an answer.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

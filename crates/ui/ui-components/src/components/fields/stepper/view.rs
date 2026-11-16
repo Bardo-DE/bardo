@@ -1,8 +1,10 @@
-//! Stepper: the pair, and unless `bare`, the text field it changes (design/30 section
-//! 2.1, `NSStepper`). A press on a half steps once at once; held past `DelayToken::RepeatStart`
-//! it repeats every `DelayToken::RepeatEvery` until it is let go. The pair takes the keyboard as
-//! a spin button: Up and Down step, Home and End go to the ends. The field beside it commits a
-//! typed number on Return or when the caret leaves, and the arrow keys in it step too.
+//! Stepper: the pair, and unless `bare`, the text field it changes (design/30 section 2.1,
+//! `NSStepper`).
+//!
+//! A press on a half steps once at once; held past `DelayToken::RepeatStart` it repeats every
+//! `DelayToken::RepeatEvery` until it is let go. The pair takes the keyboard as a spin button: Up
+//! and Down step, Home and End go to the ends. The field beside it commits a typed number on Return
+//! or when the caret leaves, and the arrow keys in it step too.
 //!
 //! Markup: `span.ds-stepper[data-size]` holding the `TextField` (with `Field`) and
 //! `span.ds-stepper-pair[role=spinbutton]` of `span.ds-stepper-up` and `span.ds-stepper-down`;
@@ -163,7 +165,7 @@ pub fn Stepper(
             span {
                 class: "ds-stepper-pair",
                 role: "spinbutton",
-                tabindex: if live { Some("0") } else { None },
+                tabindex: live.then_some("0"),
                 "aria-label": label,
                 "aria-valuenow": "{value}",
                 "aria-valuemin": "{range.min()}",

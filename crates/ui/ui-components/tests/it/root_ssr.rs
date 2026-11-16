@@ -2,7 +2,6 @@
 //! the frame layers on a Window and grouped on shell chrome, and never the word "system" (design/03-COLOR.md section
 //! 17.1, design/05-MOTION.md section 9 rule 11, spike S12).
 
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use std::collections::BTreeMap;
 use ui_components::assembly::ds::Inject;

@@ -1,6 +1,7 @@
-//! `TabView`: `NSTabView` (design/30 section 2.7): a strip of at most six tabs, a `SegmentedControl`
-//! in `SelectOne`, over the body of the tab that is selected. The caller draws that body; the
-//! view frames it.
+//! `TabView`: `NSTabView` (design/30 section 2.7): a strip of at most six tabs, a
+//! `SegmentedControl` in `SelectOne`, over the body of the tab that is selected.
+//!
+//! The caller draws that body; the view frames it.
 //!
 //! Markup: `div.ds-tab-view[data-size]` of `div.ds-tab-view-strip` around the segmented control
 //! and `div.ds-tab-view-body[role=tabpanel]`.

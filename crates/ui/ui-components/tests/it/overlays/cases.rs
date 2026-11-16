@@ -11,12 +11,10 @@ use ui_components::components::content::avatar::{
 };
 use ui_components::components::content::label::LabelRole;
 use ui_components::components::content::label::LabelStyle;
-use ui_components::components::content::text_runs::{RunTone, TextRun};
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::controls::button_model::ImagePosition;
 use ui_components::components::controls::key_equivalent::KeyEquivalent;
 use ui_components::components::controls::key_equivalent::KeyStyle;
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::components::menus::palette::palette_group::PaletteGroups;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
 use ui_components::components::overlays::hover_card::parts::{
@@ -25,8 +23,6 @@ use ui_components::components::overlays::hover_card::parts::{
 use ui_components::components::overlays::hover_card::target::HoverTarget;
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::host::measure::Anchor;
-use ui_components::motion::detail::operation::Operation;
-use ui_components::motion::detail::operation::PendingToken;
 use ui_components::prelude::*;
 use ui_components::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
 use ui_components::stack::toast_hub::{ToastAction, UndoToken};
@@ -40,12 +36,9 @@ use ui_style::icon::url::IconUrl;
 use ui_style::tokens::control_size::ControlSize;
 
 use std::time::Duration;
-use ui_components::components::content::image_source::ImageSource;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::empty_state::EmptyForm;
-use ui_components::components::overlays::inline_banner::InlineBanner;
 use ui_components::components::overlays::sheet_attach::Attach;
-use ui_components::components::overlays::skeleton::{Skeleton, SkeletonShape};
 
 /// One component in one state.
 pub struct Case {

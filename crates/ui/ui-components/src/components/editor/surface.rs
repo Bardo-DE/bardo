@@ -118,27 +118,27 @@ pub fn EditSurface(
                     edit.ime().cursor_area(element, area)
                 });
             }
-        }));
-    }
+        }))
+    };
     {
         let checker = checker.clone();
-        use_effect(use_reactive!(|spell| respell(&checker, spell)));
-    }
+        use_effect(use_reactive!(|spell| respell(&checker, spell)))
+    };
     {
         let checker = checker.clone();
         use_effect(use_reactive!(|caret| {
             checker.state.caret.replace(caret);
             touch(&checker);
-        }));
-    }
+        }))
+    };
     {
         let state = Rc::clone(&state);
         use_drop(move || {
             if let (Some(edit), Some(listener)) = (host.edit(), state.listener.take()) {
                 edit.ime().forget(listener);
             }
-        });
-    }
+        })
+    };
 
     let mounted = {
         let ctx = ctx.clone();
@@ -182,7 +182,7 @@ pub fn EditSurface(
                     event.prevent_default();
                     return;
                 }
-                key_down(&keys, &event)
+                key_down(&keys, &event);
             },
             oncontextmenu: move |event: MouseEvent| {
                 if at_pointer(&pointed, menu, point_of_mouse(&event)) == Asked::Opened {

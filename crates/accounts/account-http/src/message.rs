@@ -11,8 +11,10 @@ use http::request::Builder;
 use http::{Method, Request, Response, Uri};
 
 /// A request to `url`: the builder with its method and URI set, to which the caller adds headers
-/// and a body. The URI is the URL's text; a URL the `http` crate does not take as a URI fails
-/// when the body is set.
+/// and a body.
+///
+/// The URI is the URL's text; a URL the `http` crate does not take as a URI fails when the body is
+/// set.
 #[must_use]
 pub fn request(method: Method, url: &WebUrl) -> Builder {
     Request::builder().method(method).uri(url.as_str())

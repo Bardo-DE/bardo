@@ -15,10 +15,12 @@ use std::rc::Rc;
 /// The host's record of a hand-back: `(surface, opener)`.
 pub type Record = dyn Fn(&MountedData, &MountedData);
 
-/// The host's hand-back seam: `(surface, opener)` records that when `surface` is removed while it
-/// has the keyboard, `opener` (or its nearest focusable ancestor) should have it next, if `opener`
-/// is still in the document. A host with no loop of its own to watch removals holds none, and the
-/// renderer's own focus handling stands.
+/// The host's hand-back seam.
+///
+/// `(surface, opener)` records that when `surface` is removed while it has the keyboard, `opener`
+/// (or its nearest focusable ancestor) should have it next, if `opener` is still in the document. A
+/// host with no loop of its own to watch removals holds none, and the renderer's own focus handling
+/// stands.
 #[derive(Clone, Default)]
 pub struct HandBack(Option<Rc<Record>>);
 

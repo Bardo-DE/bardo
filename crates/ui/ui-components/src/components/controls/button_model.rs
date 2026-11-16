@@ -18,10 +18,11 @@ pub enum Bezel {
     Help,
 }
 
-/// Which key of the window the button answers, `data-answers`. A dialog routes Return to the
-/// button that answers it and Escape to the one that answers Cancel. A button that answers
-/// Escape is activated by Space only, leaving Return to the default button; any other focused
-/// button answers Return and Space itself.
+/// Which key of the window the button answers, `data-answers`.
+///
+/// A dialog routes Return to the button that answers it and Escape to the one that answers Cancel.
+/// A button that answers Escape is activated by Space only, leaving Return to the default button;
+/// any other focused button answers Return and Space itself.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 pub enum Answers {
     /// Neither.

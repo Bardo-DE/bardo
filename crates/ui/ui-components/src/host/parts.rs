@@ -1,6 +1,8 @@
-//! The parts of the document seam. Each is a cohesive handful of reads and writes; a host
-//! implements them all (`DocumentHost`), and every method answers `Busy` or `Unknown` rather than
-//! panicking when the renderer holds the document or the element is not its own.
+//! The parts of the document seam.
+//!
+//! Each is a cohesive handful of reads and writes; a host implements them all (`DocumentHost`), and
+//! every method answers `Busy` or `Unknown` rather than panicking when the renderer holds the
+//! document or the element is not its own.
 
 use crate::host::captured::CapturedPointer;
 use crate::host::caret::{Caret, FieldSelection, InitialCaret};

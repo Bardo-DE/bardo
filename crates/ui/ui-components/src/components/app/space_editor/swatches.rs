@@ -1,8 +1,9 @@
-//! `PresetSwatches`: a Space's colour as one row of the eight presets and a ninth, Custom, for a
-//! settings page that edits a Space in a form row (a name field above it, a theme below) rather
-//! than in the editor. Custom opens the editor's colour on its own in a small popover: the field,
-//! the stops and the grain ([`super::colour::SpaceColour`] without its presets, which the row
-//! already holds).
+//! `PresetSwatches`: a Space's colour as one row of the eight presets and a ninth, Custom.
+//!
+//! For a settings page that edits a Space in a form row (a name field above it, a theme below)
+//! rather than in the editor. Custom opens the editor's colour on its own in a small popover: the
+//! field, the stops and the grain ([`super::colour::SpaceColour`] without its presets, which the
+//! row already holds).
 
 use super::handles::Field;
 use super::parts::{GrainRow, Stops};
@@ -101,8 +102,8 @@ pub fn PresetSwatches(
                 "aria-expanded": if shown() { "true" } else { "false" },
                 "aria-label": CUSTOM,
                 title: CUSTOM,
-                "data-stops": if preset.is_none() { Some(own.count()) } else { None },
-                style: if preset.is_none() { Some(own.style_attr()) } else { None },
+                "data-stops": preset.is_none().then(|| own.count()),
+                style: preset.is_none().then(|| own.style_attr()),
                 onmounted: move |event| custom.set(Some(MountedRef(event.data()))),
                 onclick: move |_| shown.set(!shown()),
             }

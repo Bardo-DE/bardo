@@ -17,8 +17,9 @@ pub enum BatteryPower {
     Held,
 }
 
-/// The level at or under which a discharging battery's fill turns `--battery-low` (R15). The
-/// reference turns it at about a fifth; the shell reads it from `bar.battery_low_percent`
+/// The level at or under which a discharging battery's fill turns `--battery-low` (R15).
+///
+/// The reference turns it at about a fifth; the shell reads it from `bar.battery_low_percent`
 /// (proposed, design/26), so it is the caller's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct LowAt(pub Fraction);

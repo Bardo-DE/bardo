@@ -62,7 +62,7 @@ pub fn DragGhost(
             id: common.id.clone(),
             class: common.class("ds-drag-ghost"),
             style: ghost_style(at),
-            "data-count": if badge.is_some() { Some("many") } else { None },
+            "data-count": badge.is_some().then_some("many"),
             "aria-label": common.aria_label.clone(),
             onmounted: move |event| common.mounted(event),
             ..data,

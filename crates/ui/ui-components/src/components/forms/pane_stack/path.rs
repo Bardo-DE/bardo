@@ -29,6 +29,7 @@ impl<K: Clone> PanePath<K> {
     }
 
     /// This path with `page` pushed on top.
+    #[must_use]
     pub fn pushed(&self, page: K) -> Self {
         PanePath {
             root: self.root.clone(),
@@ -37,6 +38,7 @@ impl<K: Clone> PanePath<K> {
     }
 
     /// This path with its top page popped; a path at its root stays there.
+    #[must_use]
     pub fn popped(&self) -> Self {
         PanePath {
             root: self.root.clone(),

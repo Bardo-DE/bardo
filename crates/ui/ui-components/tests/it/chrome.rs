@@ -5,7 +5,6 @@
 
 use crate::support::golden;
 
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::prelude::*;

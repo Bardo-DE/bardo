@@ -1,5 +1,7 @@
 //! `RadioGroup`: one choice out of a few, `NSButton` radio buttons in a group (design/30 section
-//! 2.3). Markup: `div.ds-radio-group[role=radiogroup]` of
+//! 2.3).
+//!
+//! Markup: `div.ds-radio-group[role=radiogroup]` of
 //! `button.ds-radio-group-item[role=radio][aria-checked]`, each holding
 //! `span.ds-radio-group-indicator`, an optional image and `span.ds-radio-group-label`.
 //!

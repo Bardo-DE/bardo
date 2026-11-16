@@ -1,8 +1,8 @@
-//! Checkbox: `NSButton` as a checkbox (design/30 section 2.3). A box that is off, on or mixed,
-//! and its label; a press on either flips it, and so does Space.
+//! Checkbox: `NSButton` as a checkbox (design/30 section 2.3).
+//!
+//! A box that is off, on or mixed, and its label; a press on either flips it, and so does Space.
 //! Markup: `button.ds-checkbox[role=checkbox][aria-checked][data-state][data-size]` holding
-//! `span.ds-checkbox-indicator` (the box, with the check mark in it) and
-//! `span.ds-checkbox-label`.
+//! `span.ds-checkbox-indicator` (the box, with the check mark in it) and `span.ds-checkbox-label`.
 
 use crate::components::content::text_runs::{TextLine, text};
 use crate::components::controls::press::{ActivationKeys, activates, disabled, use_pressing};
