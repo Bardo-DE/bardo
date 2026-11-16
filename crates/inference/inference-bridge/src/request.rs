@@ -25,14 +25,21 @@ use std::os::fd::OwnedFd;
 pub const MAX_ATTACHMENT: u64 = 1 << 30;
 
 /// Why a request could not be turned into a model turn.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum BridgeError {
-    /// A name, schema or argument text is malformed, or an image type has no encoder.
+    /// A name or argument text is malformed, an image type has no encoder, or there is no
+    /// sampling to use.
     #[error("the request cannot be expressed to the engine")]
     Unsupported,
-    /// A descriptor could not be read, is too large, or the request names one that is not there.
+    /// The reply schema is not valid JSON.
+    #[error("the reply schema cannot be expressed to the engine")]
+    Schema(#[source] sp::JsonError),
+    /// A descriptor is too large, or the request names one that is not there.
     #[error("an attached image could not be read")]
     Attachment,
+    /// A descriptor could not be read.
+    #[error("an attached image could not be read from its descriptor")]
+    AttachmentRead(#[source] std::io::Error),
 }
 
 /// The bytes of the descriptors that came with one frame, by attach index.
@@ -46,23 +53,22 @@ impl Frames {
     /// is all it needs.
     ///
     /// # Errors
-    /// [`BridgeError::Attachment`] when a descriptor cannot be read or is over [`MAX_ATTACHMENT`].
+    /// [`BridgeError::AttachmentRead`] when a descriptor cannot be read, and
+    /// [`BridgeError::Attachment`] when it is over [`MAX_ATTACHMENT`].
     #[cfg(unix)]
     pub fn read(fds: Vec<OwnedFd>) -> Result<Self, BridgeError> {
         fds.into_iter()
             .map(|fd| {
                 let mut file = File::from(fd);
-                let size = file.metadata().ok().ok_or(BridgeError::Attachment)?.len();
+                let size = file.metadata().map_err(BridgeError::AttachmentRead)?.len();
                 if size > MAX_ATTACHMENT {
                     return Err(BridgeError::Attachment);
                 }
                 file.seek(SeekFrom::Start(0))
-                    .ok()
-                    .ok_or(BridgeError::Attachment)?;
+                    .map_err(BridgeError::AttachmentRead)?;
                 let mut bytes = Vec::with_capacity(usize::try_from(size).unwrap_or(0));
                 file.read_to_end(&mut bytes)
-                    .ok()
-                    .ok_or(BridgeError::Attachment)?;
+                    .map_err(BridgeError::AttachmentRead)?;
                 Ok(bytes)
             })
             .collect::<Result<Vec<_>, _>>()
@@ -144,9 +150,7 @@ fn shape(shape: &pi::ReplyShape, json: JsonReply) -> Result<sp::OutputShape, Bri
     Ok(match shape {
         pi::ReplyShape::Text => sp::OutputShape::Free,
         pi::ReplyShape::Json(schema) => {
-            let schema = sp::JsonText::new(schema.as_str())
-                .ok()
-                .ok_or(BridgeError::Unsupported)?;
+            let schema = sp::JsonText::new(schema.as_str()).map_err(BridgeError::Schema)?;
             match json {
                 JsonReply::Schema => sp::OutputShape::JsonSchema(sp::SchemaText(schema)),
                 JsonReply::ObjectOnly => sp::OutputShape::JsonObject,
@@ -267,9 +271,10 @@ fn default_sampling(target: &Target, reasoning: sp::Reasoning) -> Option<sp::Sam
 /// Sampling and the output limit the request leaves open come from the target.
 ///
 /// # Errors
-/// [`BridgeError::Unsupported`] when the request cannot be expressed to the engine (a malformed
-/// schema, an image type with no encoder, no sampling to use), and [`BridgeError::Attachment`]
-/// when an attached image cannot be read.
+/// [`BridgeError::Unsupported`] when the request cannot be expressed to the engine (an image
+/// type with no encoder, no sampling to use), [`BridgeError::Schema`] for a malformed schema, and
+/// [`BridgeError::Attachment`] or [`BridgeError::AttachmentRead`] when an attached image cannot
+/// be read.
 pub fn chat_turn_for(
     target: &Target,
     request: &pi::ChatRequest,

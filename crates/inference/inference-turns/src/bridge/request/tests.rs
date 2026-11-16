@@ -156,10 +156,10 @@ fn tools_shapes_and_tool_choices_map_one_to_one() {
     ));
     assert_eq!(turn.messages.len(), json.messages.len() + 1);
     json.shape = pi::ReplyShape::Json("{not json".into());
-    assert_eq!(
+    assert!(matches!(
         chat_turn(&model, &json, &Frames::default()),
-        Err(BridgeError::Unsupported)
-    );
+        Err(BridgeError::Schema(_))
+    ));
 }
 
 #[test]
@@ -251,22 +251,22 @@ fn images_come_inline_or_from_the_descriptors_by_index() {
     assert!(matches!(&inline.messages[0].parts[0], sp::Part::Image(i) if i.bytes.0 == b"inline"));
 
     // An index nobody attached, and a type with no encoder.
-    assert_eq!(
+    assert!(matches!(
         chat_turn(
             &model,
             &request(vec![image(pi::ImageSource::Attached(pi::AttachIndex(2)))]),
             &frames
         ),
         Err(BridgeError::Attachment)
-    );
+    ));
     let gif = user(vec![pi::MessagePart::Image(pi::ImagePart {
         media_type: "image/gif".into(),
         source: pi::ImageSource::Attached(pi::AttachIndex(0)),
     })]);
-    assert_eq!(
+    assert!(matches!(
         chat_turn(&model, &request(vec![gif]), &frames),
         Err(BridgeError::Unsupported)
-    );
+    ));
 }
 
 #[test]
@@ -343,8 +343,8 @@ fn embedding_texts_carry_the_prefix_of_their_role_and_are_cut_into_batches() {
 fn a_model_without_embedding_details_cannot_embed() {
     let scratch = Scratch::new("bridge-noembed");
     let chat = models(&scratch).remove(0);
-    assert_eq!(
+    assert!(matches!(
         embed_turns(&chat, &embed(&["a"], pi::EmbedRole::Query, DimsNeed::Any)),
         Err(BridgeError::Unsupported)
-    );
+    ));
 }

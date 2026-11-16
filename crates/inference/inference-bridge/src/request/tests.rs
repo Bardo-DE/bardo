@@ -81,14 +81,14 @@ fn a_choice_that_asks_for_scores_asks_the_engine_for_its_first_tokens_and_nothin
 
 #[test]
 fn an_entry_that_writes_no_sampling_cannot_express_an_open_one() {
-    assert_eq!(
+    assert!(matches!(
         chat_turn_for(
             &target(DefaultSampling::Entry(None)),
             &chat(vec![pi::MessagePart::Text("hi".into())]),
             &Frames::default(),
         ),
         Err(BridgeError::Unsupported)
-    );
+    ));
 }
 
 #[test]
@@ -97,14 +97,14 @@ fn an_attached_image_with_no_descriptors_is_an_attachment_error() {
         media_type: "image/png".into(),
         source: pi::ImageSource::Attached(pi::AttachIndex(0)),
     });
-    assert_eq!(
+    assert!(matches!(
         chat_turn_for(
             &target(DefaultSampling::Provider),
             &chat(vec![image]),
             &Frames::default()
         ),
         Err(BridgeError::Attachment)
-    );
+    ));
 }
 
 #[test]
@@ -113,14 +113,14 @@ fn an_inline_image_of_a_type_with_no_encoder_is_unsupported() {
         media_type: "image/gif".into(),
         source: pi::ImageSource::Inline(pi::Base64Bytes(vec![1])),
     });
-    assert_eq!(
+    assert!(matches!(
         chat_turn_for(
             &target(DefaultSampling::Provider),
             &chat(vec![image]),
             &Frames::default()
         ),
         Err(BridgeError::Unsupported)
-    );
+    ));
 }
 
 #[test]
