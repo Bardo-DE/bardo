@@ -55,8 +55,7 @@ impl NextcloudFlow {
     fn known_server(&self) -> Option<EndpointUrl> {
         let held = match &self.mode {
             SignInMode::Reauthenticate { endpoints, .. } => server_of(endpoints).map(|(s, _)| s),
-            SignInMode::Add => None,
-            // a variant a newer porter adds: no held server, so the person is asked for one
+            // `Add`, or a variant a newer porter adds: no held server, so the person is asked for one
             _ => None,
         };
         held.or_else(|| self.fixed.clone())

@@ -55,9 +55,11 @@ pub enum Shortfall {
     BaseUrl,
 }
 
-/// How one need meets one kind of capability: the first field of the offer that falls short, in
-/// the need's field order, or `None` when every minimum is met. The need of each kind implements
-/// it for its capability; [`matches`](crate::matches) picks the pair.
+/// How one need meets one kind of capability.
+///
+/// It is the first field of the offer that falls short, in the need's field order, or `None` when
+/// every minimum is met. The need of each kind implements it for its capability;
+/// [`matches`](crate::matches) picks the pair.
 pub trait Wants<C> {
     /// The first field of `offer` that falls short of this need.
     fn short_of(&self, offer: &C) -> Option<Shortfall>;

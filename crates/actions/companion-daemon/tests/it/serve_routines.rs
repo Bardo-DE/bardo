@@ -58,6 +58,10 @@ impl RoutineDesk for RecordingRoutines {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order; splitting it would hide the sequence being tested"
+)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
     let scratch = tempfile::tempdir().expect("scratch");
@@ -94,7 +98,7 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: base_ids::Count(8),
-        kind: Default::default(),
+        kind: companion_model::helper::HelperKind::default(),
     };
     let helpers = CompanionHelpers2Proxy::new(&shell).await.expect("proxy");
     helpers
@@ -228,7 +232,7 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: base_ids::Count(8),
-        kind: Default::default(),
+        kind: companion_model::helper::HelperKind::default(),
     };
     let form = serde_json::to_string(&form).expect("json");
     let theirs = CompanionHelpers2Proxy::new(&shell).await.expect("proxy");

@@ -36,7 +36,7 @@ async fn display(w: &World, session: &SessionId) -> Result<String, action_client
     w.launcher.session_display(session.clone(), READ).await
 }
 
-fn refused(shown: Result<String, action_client::ClientError>) -> bool {
+fn refused(shown: &Result<String, action_client::ClientError>) -> bool {
     matches!(
         shown,
         Err(action_client::ClientError::Refused(
@@ -55,7 +55,7 @@ async fn a_handle_still_shows_after_the_task_finished_and_not_after_close() {
     Box::pin(w.companion.close(opened.session.clone()))
         .await
         .expect("close");
-    assert!(refused(display(&w, &opened.session).await));
+    assert!(refused(&display(&w, &opened.session).await));
     assert!(w.companion.task_of(&opened.session).is_none());
     assert!(w.companion.shared.answer(&opened.task).is_none());
     assert!(w.companion.shared.session_of(&opened.task).is_none());
@@ -147,7 +147,7 @@ async fn the_ninth_finished_task_closes_the_oldest_and_each_leaves_one_episode()
     }
     // The ninth finish closed the first, as a dismissal would: its answer is gone and the router
     // refuses to show it; the other eight still show.
-    assert!(refused(display(&w, &sessions[0].session).await));
+    assert!(refused(&display(&w, &sessions[0].session).await));
     assert!(w.companion.task_of(&sessions[0].session).is_none());
     assert!(w.companion.shared.answer(&sessions[0].task).is_none());
     for later in &sessions[1..] {
@@ -200,6 +200,10 @@ async fn a_workers_report_still_ends_its_task_while_its_session_waits() {
     assert!(!w.companion.runtimes.contains_key(&wtask));
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order; splitting it would hide the sequence being tested"
+)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_answer_object_names_its_session_and_close_removes_it() {
     let scratch = tempfile::tempdir().expect("scratch");
@@ -305,5 +309,5 @@ async fn the_answer_object_names_its_session_and_close_removes_it() {
 
     proxy.close(opened.session.as_str()).await.expect("close");
     answers.session().await.unwrap_err();
-    assert!(refused(launcher.session_display(session, READ).await));
+    assert!(refused(&launcher.session_display(session, READ).await));
 }

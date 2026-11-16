@@ -45,7 +45,7 @@ async fn adding(
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_add_sheet_is_shown_with_the_window_and_ended_by_the_host() {
-    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), SheetHost::quiet()).await;
     let (_client, mut sheet, path, handle) = adding(&rig).await;
     {
         let calls = rig.host_log.calls();
@@ -69,7 +69,7 @@ async fn the_add_sheet_is_shown_with_the_window_and_ended_by_the_host() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_forged_input_is_ignored_whoever_sends_it_and_whatever_handle_it_names() {
-    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), SheetHost::quiet()).await;
     let (_client, mut sheet, path, handle) = adding(&rig).await;
 
     // Another connection sends a Dismiss for the real handle.
@@ -109,7 +109,7 @@ async fn a_forged_input_is_ignored_whoever_sends_it_and_whatever_handle_it_names
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_process_that_only_claimed_the_name_is_not_the_host() {
-    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), SheetHost::quiet()).await;
     let host_name = rig.host_connection.unique_name().expect("name").to_string();
     // The owner of the name is not in the SheetHost role.
     rig.callers
@@ -136,7 +136,7 @@ async fn a_process_that_only_claimed_the_name_is_not_the_host() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn no_host_on_the_bus_is_no_sheet() {
-    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), SheetHost::quiet()).await;
     rig.host_connection
         .release_name(account_wire::names::SHEET_BUS)
         .await
@@ -155,7 +155,7 @@ async fn no_host_on_the_bus_is_no_sheet() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_host_that_leaves_ends_the_sheet() {
-    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), SheetHost::quiet()).await;
     let (_client, mut sheet, path, _handle) = adding(&rig).await;
     rig.host_connection.close().await.expect("close");
     let (code, _) = sheet.response(&path).await.expect("response");
@@ -165,7 +165,7 @@ async fn a_host_that_leaves_ends_the_sheet() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_caller_that_closes_the_request_takes_the_host_sheet_down() {
-    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), SheetHost::quiet()).await;
     let (_client, sheet, path, handle) = adding(&rig).await;
     sheet.closer(Some(path)).expect("closer").close().await;
     eventually("the host to be told to close", || {
@@ -181,7 +181,7 @@ async fn a_caller_that_closes_the_request_while_open_is_on_its_way_back_takes_th
     // and the sheet stayed up (the flake of the test above, made certain by a host whose `Open`
     // returns late).
     let host = SheetHost::quiet().slow_to_return(Duration::from_secs(2));
-    let rig = Rig::start_with(Default::default(), host).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), host).await;
     let (_client, sheet, path, handle) = adding(&rig).await;
     sheet.closer(Some(path)).expect("closer").close().await;
     eventually("the host to be told to close", || {
@@ -250,7 +250,7 @@ async fn a_link_reports_closed_when_the_host_goes() {
 /// the same app too; once the first is closed the app may ask again.
 #[tokio::test(flavor = "multi_thread")]
 async fn a_second_sheet_of_a_kind_while_one_is_open_is_refused_until_it_ends() {
-    let rig = Rig::start_with(Default::default(), SheetHost::quiet()).await;
+    let rig = Rig::start_with(account_daemon::Options::default(), SheetHost::quiet()).await;
     let (client, sheet, path, _handle) = adding(&rig).await;
     let ask = |connection: zbus::Connection| async move {
         let options = Sheet::subscribe(&connection)

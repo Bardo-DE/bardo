@@ -107,11 +107,11 @@ impl SheetHost {
         tokio::time::sleep(self.open_returns_after).await;
     }
 
-    async fn update(&self, handle: String, view: String) {
+    fn update(&self, handle: String, view: String) {
         self.log.calls().updated.push((handle, view));
     }
 
-    async fn close(&self, handle: String) {
+    fn close(&self, handle: String) {
         self.log.calls().closed.push(handle);
     }
 

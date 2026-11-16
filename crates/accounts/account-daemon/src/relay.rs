@@ -12,9 +12,10 @@ use std::sync::Arc;
 use tokio::net::UnixStream;
 use tokio::sync::OnceCell;
 
-/// Runs relays on the daemon's tokio runtime over TCP and rustls. Certificate checks are always
-/// on; the trusted roots are the platform's (`webpki-roots` when it has none), read from disk
-/// once, on first use, off the async threads.
+/// Runs relays on the daemon's tokio runtime over TCP and rustls.
+///
+/// Certificate checks are always on; the trusted roots are the platform's (`webpki-roots` when it
+/// has none), read from disk once, on first use, off the async threads.
 #[derive(Debug, Clone, Default)]
 pub struct Relays {
     connector: Arc<OnceCell<RustlsConnect>>,

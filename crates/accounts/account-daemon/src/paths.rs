@@ -44,6 +44,11 @@ pub const TAILSCALE_SOCKET_VAR: &str = "BARDO_ACCOUNTD_TAILSCALE_SOCKET";
 impl Paths {
     /// The paths for the environment `var` reads, with `extra_providers` laid over the system's
     /// and the user's provider directories.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`PathError`] when the environment leaves no absolute state, config or data
+    /// directory (no usable `HOME` or XDG variable).
     pub fn resolve(
         var: impl Fn(&str) -> Option<String>,
         extra_providers: &[PathBuf],
@@ -274,9 +279,10 @@ mod tests {
     }
 }
 
-/// Whether this binary honours `BARDO_ACCOUNTD_PROC_ROOT`: only with the `test-proc-root` feature (the
-/// jailed and acceptance tests run processes outside service cgroups). A release build ignores
-/// the variable.
+/// Whether this binary honours `BARDO_ACCOUNTD_PROC_ROOT`: only with the `test-proc-root` feature
+/// (the jailed and acceptance tests run processes outside service cgroups).
+///
+/// A release build ignores the variable.
 pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");
 
 #[cfg(test)]

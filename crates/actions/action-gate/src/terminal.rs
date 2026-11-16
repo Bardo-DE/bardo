@@ -1,7 +1,9 @@
-//! The terminal's standing grants, the pure half: whether a terminal session holds a grant, and
-//! the task policy that carries it. A terminal cannot tell the person from an agent typing in
-//! it, so every act that is not a read asks; the one way to skip the ask is the person's own
-//! answer on the sheet, "Allow from the terminal: this action, until logout".
+//! The terminal's standing grants, the pure half: whether a terminal session holds a grant, and the
+//! task policy that carries it.
+//!
+//! A terminal cannot tell the person from an agent typing in it, so every act that is not a read
+//! asks; the one way to skip the ask is the person's own answer on the sheet, "Allow from the
+//! terminal: this action, until logout".
 
 use action_context::state::SessionRecord;
 use action_manifest::{ActionDecl, TargetKind};
@@ -40,6 +42,9 @@ pub fn kinds_of(decl: &ActionDecl) -> BTreeSet<EntityKind> {
 
 /// The task policy a terminal session starts with when the person first allows an action from
 /// the terminal: no action yet, the declaration's kinds and ceiling, until logout.
+///
+/// # Panics
+/// Never: the fixed rationale phrase obeys the label grammar.
 #[must_use]
 pub fn grant_policy(record: &SessionRecord, decl: &ActionDecl, mass_at: Count) -> TaskPolicy {
     TaskPolicy {

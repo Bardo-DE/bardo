@@ -28,7 +28,7 @@ impl<S: Seams> Router<S> {
             GrantId::parse(&format!("g-{n}")).ok()
         };
         if let Some(id) = id {
-            for grant in grants_for(p, id, now, p.who.grant_caller()) {
+            for grant in grants_for(p, &id, now, &p.who.grant_caller()) {
                 self.seams.grants().record(grant);
             }
         }
@@ -133,7 +133,7 @@ impl<S: Seams> Router<S> {
                 .link()
                 .perform_classified(
                     &p.request.action.app,
-                    self.invocation(p),
+                    Self::invocation(p),
                     p.activation.clone(),
                     p.classified.as_ref().map(|c| c.sent.clone()),
                     p.decl.latency,

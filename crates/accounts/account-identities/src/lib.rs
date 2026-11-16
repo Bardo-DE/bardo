@@ -107,7 +107,8 @@ impl UseBook {
         base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
-            .map_err(|_| Unsaved)
+            .ok()
+            .ok_or(Unsaved)
     }
 }
 
@@ -124,6 +125,9 @@ impl UseBook {
 
     /// Records that `app` uses `identity`. An app that is recorded already changes nothing and
     /// writes nothing.
+    ///
+    /// # Errors
+    /// [`Unsaved`] when the book is read-only or the change could not be written.
     pub async fn record(&mut self, identity: IdentityId, app: AppName) -> Result<(), Unsaved> {
         if !self.writable {
             return Err(Unsaved);
@@ -142,6 +146,9 @@ impl UseBook {
     }
 
     /// Forgets the apps of `identity`, which was removed. Nothing to forget changes nothing.
+    ///
+    /// # Errors
+    /// [`Unsaved`] when the book is read-only or the change could not be written.
     pub async fn forget(&mut self, identity: &IdentityId) -> Result<(), Unsaved> {
         if !self.writable {
             return Err(Unsaved);

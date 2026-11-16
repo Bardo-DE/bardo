@@ -50,9 +50,9 @@ async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
 
     // Served as declared, on the object the conversation is on.
     let declared = introspection(Bus::Companion);
-    let served = introspect(&shell, COMPANION_PATH).await;
+    let on_bus = introspect(&shell, COMPANION_PATH).await;
     assert_eq!(
-        block(&served, "org.bardo.Companion1.Helpers"),
+        block(&on_bus, "org.bardo.Companion1.Helpers"),
         block(&declared, "org.bardo.Companion1.Helpers")
     );
 
@@ -70,7 +70,7 @@ async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: base_ids::Count(8),
-        kind: Default::default(),
+        kind: companion_model::helper::HelperKind::default(),
     };
     let form = serde_json::to_string(&form).expect("json");
     let made: HelperReply =
@@ -134,6 +134,10 @@ impl RoutineDesk for EmptyRoutines {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order; splitting it would hide the sequence being tested"
+)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shell_alone() {
     let scratch = tempfile::tempdir().expect("scratch");
@@ -161,13 +165,13 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
 
     // Served as declared, and the first version is still there as it was.
     let declared = introspection(Bus::Companion);
-    let served = introspect(&shell, COMPANION_PATH).await;
+    let on_bus = introspect(&shell, COMPANION_PATH).await;
     for name in [
         "org.bardo.Companion1.Helpers",
         "org.bardo.Companion1.Helpers2",
         "org.bardo.Companion1.Terminals",
     ] {
-        assert_eq!(block(&served, name), block(&declared, name));
+        assert_eq!(block(&on_bus, name), block(&declared, name));
     }
 
     let helpers = CompanionHelpers2Proxy::new(&shell).await.expect("proxy");
@@ -184,7 +188,7 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: base_ids::Count(8),
-        kind: Default::default(),
+        kind: companion_model::helper::HelperKind::default(),
     };
     let form = serde_json::to_string(&form).expect("json");
     let made: HelperReply =
@@ -255,6 +259,10 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
     nobody.recognise(&line).await.unwrap_err();
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order; splitting it would hide the sequence being tested"
+)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_editor_bridge_reads_the_helpers_and_changes_nothing_and_a_stranger_reads_nothing() {
     let scratch = tempfile::tempdir().expect("scratch");
@@ -290,7 +298,7 @@ async fn the_editor_bridge_reads_the_helpers_and_changes_nothing_and_a_stranger_
         apps: vec![app("org.bardo.Mail")],
         ceiling: Ceiling::Look,
         steps: base_ids::Count(8),
-        kind: Default::default(),
+        kind: companion_model::helper::HelperKind::default(),
     };
     let form = serde_json::to_string(&form).expect("json");
     let theirs = CompanionHelpers2Proxy::new(&shell).await.expect("proxy");

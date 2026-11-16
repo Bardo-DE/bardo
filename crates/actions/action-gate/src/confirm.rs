@@ -1,6 +1,8 @@
-//! What the sheet shows for a call that needs the person: only the manifest's words, the
-//! router's own formatting of typed arguments, and the app's dry-run preview. Agent prose is
-//! never drawn, and somebody else's words are drawn quoted with where they came from.
+//! What the sheet shows for a call that needs the person: only the manifest's words, the router's
+//! own formatting of typed arguments, and the app's dry-run preview.
+//!
+//! Agent prose is never drawn, and somebody else's words are drawn quoted with where they came
+//! from.
 
 use crate::prepared::Prepared;
 use action_context::state::SessionRecord;
@@ -15,10 +17,11 @@ use permission_core::{AlwaysOffer, AskReason, Limited};
 use provenance::{Actor, Effect, Integrity, Label, Source};
 use std::collections::BTreeSet;
 
-/// Whether the sheet may offer the standing grant for `p`: it comes from the terminal, the only
-/// thing that asks is the terminal rule itself (no Rule of Two, untrusted sink, mass or
-/// memory rule would ask on top, which a grant could not lift), and the action is neither
-/// destructive nor one that asks every time.
+/// Whether the sheet may offer the standing grant for `p`.
+///
+/// It comes from the terminal, the only thing that asks is the terminal rule itself (no Rule of
+/// Two, untrusted sink, mass or memory rule would ask on top, which a grant could not lift), and
+/// the action is neither destructive nor one that asks every time.
 #[must_use]
 pub fn offers_grant(p: &Prepared, why: &[AskReason]) -> bool {
     p.who.actor == Actor::Cli

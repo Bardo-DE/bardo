@@ -1,5 +1,8 @@
 //! A planner over a scripted model, and the view and catalogue the planner tests read it with.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different part of the shared support"
+)]
 
 use super::infer::{Say, ScriptedInfer};
 use account_core::AppName;

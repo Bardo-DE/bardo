@@ -17,7 +17,7 @@ use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_PATH};
 use base_time::{Clock, Monotonic, SystemClock, SystemMonotonic};
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, OnceLock};
-use zbus::{Connection, ObjectServer};
+use zbus::Connection;
 
 /// What `serve_with` adds to the objects every accountd serves.
 #[derive(Default)]
@@ -76,8 +76,14 @@ impl std::fmt::Debug for Options {
 }
 
 /// Serves `org.bardo.Accounts1` on `connection` over `host`, answering for the apps `callers`
-/// names, and takes the name. One `Account` object is registered per account the registry holds
-/// now; the settings module, `Spaces1`, `Identities1` and `Tailnet1` are served.
+/// names, and takes the name.
+///
+/// One `Account` object is registered per account the registry holds now; the settings module,
+/// `Spaces1`, `Identities1` and `Tailnet1` are served.
+///
+/// # Errors
+///
+/// Returns the bus error when an object cannot be registered or the name cannot be claimed.
 pub async fn serve<H: Host, C: Callers>(
     connection: &Connection,
     host: Arc<H>,
@@ -87,6 +93,10 @@ pub async fn serve<H: Host, C: Callers>(
 }
 
 /// [`serve`] with `options`.
+///
+/// # Errors
+///
+/// Returns the bus error when an object cannot be registered or the name cannot be claimed.
 pub async fn serve_with<H: Host, C: Callers>(
     connection: &Connection,
     host: Arc<H>,
@@ -140,58 +150,7 @@ pub async fn serve_with<H: Host, C: Callers>(
         credentials: crate::launcher::Credentials::default(),
     });
     crate::publish::start(&core, heard);
-    let server: &ObjectServer = connection.object_server();
-    server
-        .at(
-            ACCOUNTS_PATH,
-            ManagerServed(Manager::new(Arc::clone(&core))),
-        )
-        .await?;
-    server
-        .at(
-            ACCOUNTS_PATH,
-            KeysServed(crate::keys::KeysObject::new(Arc::clone(&core))),
-        )
-        .await?;
-    server
-        .at(
-            ACCOUNTS_PATH,
-            LauncherServed(crate::launcher::LauncherObject::new(Arc::clone(&core))),
-        )
-        .await?;
-    server
-        .at(
-            ACCOUNTS_PATH,
-            BrokerServed(crate::broker::BrokerObject::new(Arc::clone(&core))),
-        )
-        .await?;
-    server
-        .at(
-            account_wire::names::GRANTS_PATH,
-            GrantsServed(crate::grants_object::GrantsObject::new(Arc::clone(&core))),
-        )
-        .await?;
-    server
-        .at(
-            account_wire::names::SPACES_PATH,
-            SpacesServed(crate::spaces_object::SpacesObject::new(Arc::clone(&core))),
-        )
-        .await?;
-    server
-        .at(
-            account_wire::names::IDENTITIES_PATH,
-            IdentitiesServed(crate::identities_object::IdentitiesObject::new(Arc::clone(
-                &core,
-            ))),
-        )
-        .await?;
-    server
-        .at(
-            account_wire::names::TAILNET_PATH,
-            TailnetServed(crate::tailnet_object::TailnetObject::new(Arc::clone(&core))),
-        )
-        .await?;
-    publish_accounts(server, &core).await?;
+    register_objects(connection, &core).await?;
     crate::settings::serve_settings(connection, &core).await?;
     crate::roster::watch(connection, Arc::clone(&core)).await?;
     if let Some(watch) = core.tailnet.clone() {
@@ -202,4 +161,63 @@ pub async fn serve_with<H: Host, C: Callers>(
     zbus_ready::serving(connection).await?;
     connection.request_name(ACCOUNTS_BUS).await?;
     Ok(())
+}
+
+/// Puts every object of the service on the bus, under its path.
+async fn register_objects<H: Host, C: Callers>(
+    connection: &Connection,
+    core: &Arc<Core<H, C>>,
+) -> zbus::Result<()> {
+    let server = connection.object_server();
+    server
+        .at(
+            ACCOUNTS_PATH,
+            ManagerServed(Manager::new(Arc::clone(core))),
+        )
+        .await?;
+    server
+        .at(
+            ACCOUNTS_PATH,
+            KeysServed(crate::keys::KeysObject::new(Arc::clone(core))),
+        )
+        .await?;
+    server
+        .at(
+            ACCOUNTS_PATH,
+            LauncherServed(crate::launcher::LauncherObject::new(Arc::clone(core))),
+        )
+        .await?;
+    server
+        .at(
+            ACCOUNTS_PATH,
+            BrokerServed(crate::broker::BrokerObject::new(Arc::clone(core))),
+        )
+        .await?;
+    server
+        .at(
+            account_wire::names::GRANTS_PATH,
+            GrantsServed(crate::grants_object::GrantsObject::new(Arc::clone(core))),
+        )
+        .await?;
+    server
+        .at(
+            account_wire::names::SPACES_PATH,
+            SpacesServed(crate::spaces_object::SpacesObject::new(Arc::clone(core))),
+        )
+        .await?;
+    server
+        .at(
+            account_wire::names::IDENTITIES_PATH,
+            IdentitiesServed(crate::identities_object::IdentitiesObject::new(Arc::clone(
+                core,
+            ))),
+        )
+        .await?;
+    server
+        .at(
+            account_wire::names::TAILNET_PATH,
+            TailnetServed(crate::tailnet_object::TailnetObject::new(Arc::clone(core))),
+        )
+        .await?;
+    publish_accounts(server, core).await
 }

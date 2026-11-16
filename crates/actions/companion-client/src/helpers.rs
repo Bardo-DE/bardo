@@ -15,7 +15,6 @@ use companion_wire::{
 use futures_util::{Stream, StreamExt};
 use provenance::{EntityId, HelperId, SessionId};
 use serde::de::DeserializeOwned;
-use std::future::Future;
 use std::pin::Pin;
 
 /// Each time something about the helpers or their routines changed. The signal carries nothing:
@@ -201,6 +200,10 @@ pub struct DbusHelpers {
 impl DbusHelpers {
     /// Talks to companiond over `connection`; the bus starts it on the first call when it is
     /// installed with an activation file.
+    ///
+    /// # Errors
+    /// `TransportError` when a proxy cannot be built on `connection` (the bus is closed or
+    /// companiond cannot be found).
     pub async fn over(connection: &BusConnection) -> Result<Self, TransportError> {
         let helpers = CompanionHelpers2Proxy::new(connection)
             .await
@@ -212,6 +215,9 @@ impl DbusHelpers {
     }
 
     /// Connects to the session bus.
+    ///
+    /// # Errors
+    /// `TransportError::Bus` when the session bus cannot be reached, else as [`DbusHelpers::over`].
     pub async fn connect() -> Result<Self, TransportError> {
         let connection = BusConnection::session()
             .await

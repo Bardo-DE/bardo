@@ -9,7 +9,6 @@ use account_core::{RelayPlan, SecretText, SessionToken};
 use account_match::Need;
 use account_service_core::Ports;
 use account_wire::{AccountsReply, ParentWindow, Refusal};
-use std::future::Future;
 
 /// The grants domain: who may use which account, and how a grant is given, used and ended.
 pub trait GrantsApi {

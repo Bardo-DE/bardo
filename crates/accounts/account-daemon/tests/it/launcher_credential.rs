@@ -57,8 +57,8 @@ async fn registered(rig: &Rig, name: &str) -> Launcher {
 }
 
 /// The key a reply's descriptor holds, after checking it is sealed.
-fn key_of(handle: zbus::zvariant::OwnedFd) -> String {
-    let fd = std::os::fd::AsFd::as_fd(&handle)
+fn key_of(handle: &zbus::zvariant::OwnedFd) -> String {
+    let fd = std::os::fd::AsFd::as_fd(handle)
         .try_clone_to_owned()
         .expect("a descriptor");
     assert_eq!(
@@ -97,7 +97,7 @@ async fn a_credential_is_a_sealed_key_on_a_descriptor_and_the_key_is_in_no_line(
         .await
         .expect("issued");
     assert!(!id.is_empty());
-    assert_eq!(key_of(handle), KEY);
+    assert_eq!(key_of(&handle), KEY);
 
     launcher
         .proxy

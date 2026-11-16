@@ -65,6 +65,10 @@ fn google_photos() -> Offer {
     }))
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of matching cases; each row is a short need, offer and verdict"
+)]
 fn cases() -> Vec<(&'static str, Need, Offer, Match)> {
     use Access::{Read, ReadWrite};
     use StorageScope::{AppFolder, Full};
@@ -188,7 +192,7 @@ fn cases() -> Vec<(&'static str, Need, Offer, Match)> {
         (
             "llm with a small window falls short on context",
             Need::Llm(LlmNeed {
-                features: Default::default(),
+                features: std::collections::BTreeSet::new(),
                 context: Tokens(32_000),
             }),
             present(llm(&[LlmFeature::Chat], 8_000)),
@@ -197,7 +201,7 @@ fn cases() -> Vec<(&'static str, Need, Offer, Match)> {
         (
             "llm with an unstated window is not known to be too small",
             Need::Llm(LlmNeed {
-                features: Default::default(),
+                features: std::collections::BTreeSet::new(),
                 context: Tokens(32_000),
             }),
             present(llm(&[LlmFeature::Chat], 0)),

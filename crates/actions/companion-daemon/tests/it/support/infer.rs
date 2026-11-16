@@ -170,6 +170,10 @@ fn reply(text: String, calls: Vec<(String, Json)>) -> InferEvent {
 }
 
 impl InferSession for ScriptedSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`InferSession::send` is an async trait method; the scripted session has nothing to await"
+    )]
     async fn send(&mut self, frame: ClientFrame) -> Result<(), SessionError> {
         let ClientFrame::Request(InferRequest::Chat(request)) = frame else {
             return Err(SessionError::Malformed("not a chat".into()));
@@ -228,6 +232,10 @@ impl InferSession for ScriptedSession {
 impl Transport for ScriptedInfer {
     type Session = ScriptedSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Transport::open_with` is an async trait method; the scripted transport has nothing to await"
+    )]
     async fn open_with(
         &self,
         _need: &Need,

@@ -48,10 +48,10 @@ fn open_json() -> String {
     .expect("json")
 }
 
-fn denied<T: std::fmt::Debug>(result: zbus::Result<T>) -> bool {
+fn denied<T: std::fmt::Debug>(result: &zbus::Result<T>) -> bool {
     matches!(
         result,
-        Err(zbus::Error::MethodError(ref name, ..))
+        Err(zbus::Error::MethodError(name, ..))
             if name.as_str() == "org.freedesktop.DBus.Error.AccessDenied"
     )
 }
@@ -129,7 +129,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
     assert_eq!(phase, AnswerPhase::Done);
 
     // What is the shell's alone stays the shell's.
-    assert!(denied(answers.act("{}").await), "Act");
+    assert!(denied(&answers.act("{}").await), "Act");
     let told = proxy
         .told(
             r#"{"kind":"companion"}"#,
@@ -137,7 +137,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
             r#"{"id":1,"text":"x","at":1,"from":{"kind":"terminal"},"via":"typed"}"#,
         )
         .await;
-    assert!(denied(told), "Told");
+    assert!(denied(&told), "Told");
 
     // It may stop its own answer; a peer that is neither the shell nor a terminal may neither
     // stop it nor read it.
@@ -157,7 +157,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
     assert!(theirs.view().await.is_err(), "View");
     assert!(theirs.session().await.is_err(), "Session");
     assert!(theirs.routing().await.is_err(), "Routing");
-    assert!(denied(theirs.cancel().await), "Cancel");
+    assert!(denied(&theirs.cancel().await), "Cancel");
 
     proxy.close(opened.session.as_str()).await.expect("close");
 }
@@ -181,17 +181,17 @@ async fn a_process_that_is_not_a_terminal_or_owns_a_name_speaks_for_nobody() {
     let proxy = CompanionProxy::new(&client).await.expect("proxy");
 
     // No cgroup in the fake proc root: nothing says it is a terminal.
-    assert!(denied(proxy.open(&open_json()).await), "no cgroup");
+    assert!(denied(&proxy.open(&open_json()).await), "no cgroup");
     // A service unit's scope is not a terminal's.
     place(&proc_root, "some.service");
-    assert!(denied(proxy.open(&open_json()).await), "a unit");
+    assert!(denied(&proxy.open(&open_json()).await), "a unit");
     // A terminal's child that owns an application name is that application, not the person.
     place(&proc_root, "vte-spawn-1.scope");
     client
         .request_name("org.bardo.Mail")
         .await
         .expect("a name of its own");
-    assert!(denied(proxy.open(&open_json()).await), "owns a name");
+    assert!(denied(&proxy.open(&open_json()).await), "owns a name");
 }
 
 /// `Session.Stored` as `app` in `role` asks it.
@@ -308,6 +308,6 @@ async fn a_process_the_table_names_as_less_than_the_shell_speaks_for_nobody() {
         .expect("serving");
         identity.introduce_app(&client, "org.bardo.Shell", standing);
         let proxy = CompanionProxy::new(&client).await.expect("proxy");
-        assert!(denied(proxy.open(&open_json()).await), "{what}");
+        assert!(denied(&proxy.open(&open_json()).await), "{what}");
     }
 }

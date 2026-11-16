@@ -6,7 +6,6 @@
 use action_core::{HandOver, HandRefusal, HandReply};
 use action_dbus::{AgentHostProxy, BusConnection};
 use companion_tasks::Handoff;
-use std::future::Future;
 use std::pin::Pin;
 
 /// The agent host, on the session bus.
@@ -40,7 +39,7 @@ impl HostLink {
         // The host answers each wait within a minute with the turn still running or its reply.
         loop {
             match host.wait(&turn).await {
-                Ok(text) if text.is_empty() => continue,
+                Ok(text) if text.is_empty() => {}
                 Ok(text) => return serde_json::from_str(&text).unwrap_or_else(|_| unreachable()),
                 Err(_) => return unreachable(),
             }

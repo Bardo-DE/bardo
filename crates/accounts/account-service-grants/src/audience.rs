@@ -57,7 +57,6 @@ v = { access = "read_write", delta = "poll", quota = "reported", scope = "full",
 
     #[test]
     fn a_grant_covers_the_audiences_of_its_own_kind_only() {
-        let spec = parse_provider(FILE).expect("parses");
         const CASES: &[(&str, CapabilityKind, &str, bool)] = &[
             ("mail over imap", CapabilityKind::Mail, "imap", true),
             ("mail sends over smtp", CapabilityKind::Mail, "smtp", true),
@@ -95,6 +94,7 @@ v = { access = "read_write", delta = "poll", quota = "reported", scope = "full",
             ),
             ("a lookalike family", CapabilityKind::Storage, "web", false),
         ];
+        let spec = parse_provider(FILE).expect("parses");
         for (name, kind, audience, covered) in CASES {
             assert_eq!(
                 covers(&spec, *kind, &Audience((*audience).into())),

@@ -1,7 +1,9 @@
-//! accountd as one thing a program can run: [`Config`] says where everything is, [`Daemon::build`]
-//! loads the caller tables, the provider files and the registry and serves `org.bardo.Accounts1`,
-//! and [`Daemon::run`] keeps it serving until told to stop. The binary is this and nothing more:
-//! it reads its arguments, asks [`Config::from_env`] for the environment's answers and calls these.
+//! accountd as one thing a program can run.
+//!
+//! [`Config`] says where everything is, [`Daemon::build`] loads the caller tables, the provider
+//! files and the registry and serves `org.bardo.Accounts1`, and [`Daemon::run`] keeps it serving
+//! until told to stop. The binary is this and nothing more: it reads its arguments, asks
+//! [`Config::from_env`] for the environment's answers and calls these.
 //!
 //! No other function in the library reads the environment. A program that embeds accountd builds
 //! its [`Config`] with [`Config::new`] and the `with_*` methods, naming every path and the bus
@@ -31,7 +33,6 @@ use account_sheets::{AppNames, BusSheets};
 use account_store::FileStore;
 use base_time::{Clock, SystemClock};
 use base_xdg::PathError;
-use std::future::Future;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
@@ -131,7 +132,7 @@ fn tailscale(paths: &Paths) -> account_tailscale::LocalApi {
 /// The provider files accountd serves and the families that serve them.
 pub(crate) struct Families {
     /// The family of each provider served.
-    pub(crate) families: Vec<Box<dyn DynProvider>>,
+    pub(crate) providers: Vec<Box<dyn DynProvider>>,
     /// The local runtimes (Ollama, llama.cpp, LM Studio): no family, reported by the probe.
     pub(crate) local: Vec<ProviderSpec>,
     /// What a person reads for each provider, and which group of the page it is under.
@@ -141,7 +142,7 @@ pub(crate) struct Families {
 impl Families {
     /// The ids of the providers a family serves (what `accountd add` checks before it asks).
     pub(crate) fn served_ids(&self) -> Vec<ProviderId> {
-        self.families
+        self.providers
             .iter()
             .map(|family| Provider::spec(family).id.clone())
             .collect()
@@ -169,7 +170,7 @@ pub(crate) fn families_of(paths: &Paths, clock: Arc<dyn Clock>) -> Families {
         eprintln!("accountd: no family serves provider `{}` yet", spec.id);
     }
     Families {
-        families,
+        providers: families,
         local,
         names,
     }
@@ -241,7 +242,7 @@ impl Daemon {
         let clock: Arc<dyn Clock> = Arc::new(SystemClock);
 
         let Families {
-            families,
+            providers: families,
             local,
             names: provider_names,
             ..

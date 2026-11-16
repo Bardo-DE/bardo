@@ -195,6 +195,10 @@ impl KeyValueNeed {
 
 /// Any push channel.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[expect(
+    clippy::empty_structs_with_brackets,
+    reason = "the wire form is an empty map, not null, which a unit struct would serialise to"
+)]
 pub struct PushNeed {}
 
 impl PushNeed {

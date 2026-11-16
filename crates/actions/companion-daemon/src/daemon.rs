@@ -23,11 +23,12 @@ use futures_util::lock::Mutex;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-/// What only the acceptance harness's mains choose: the `/proc` callers are read from (a tree
-/// other than `/proc` is a fixture, whose units' main processes are in `<root>/units`), the
-/// system's callers file, and whether the inferd watch writes to a file. The shipped `main` passes
-/// the default (the system's `/proc`, `/etc/bardo`, no watch) and no environment variable can
-/// change any.
+/// What only the acceptance harness's mains choose.
+///
+/// The `/proc` callers are read from (a tree other than `/proc` is a fixture, whose units' main
+/// processes are in `<root>/units`), the system's callers file, and whether the inferd watch writes
+/// to a file. The shipped `main` passes the default (the system's `/proc`, `/etc/bardo`, no watch)
+/// and no environment variable can change any.
 #[derive(Debug, Clone)]
 pub struct HarnessSeams {
     /// Where callers' cgroups are read.
@@ -52,10 +53,14 @@ impl Default for HarnessSeams {
 /// The companion as the daemon runs it: inferd and the router over the session bus.
 pub type Daemon = Companiond<PlannerModel<InferLink>, DbusTransport>;
 
-/// Builds the companion over `connection`, takes up what a restart finds in the eventlog (a
-/// router or memoryd that is not there yet leaves it with nothing to resume, never a failure) and
-/// serves `org.bardo.Companion1`. Returns once the name is ours; the connection keeps serving
-/// until it closes.
+/// Builds the companion over `connection` and serves `org.bardo.Companion1`.
+///
+/// It takes up what a restart finds in the eventlog (a router or memoryd that is not there yet
+/// leaves it with nothing to resume, never a failure). Returns once the name is ours; the
+/// connection keeps serving until it closes.
+///
+/// # Errors
+/// `ServeFault` when the daemon cannot start: see [`start_with_agents`].
 pub async fn start(
     connection: &BusConnection,
     config: CompaniondConfig,
@@ -73,6 +78,9 @@ pub async fn start(
 
 /// [`start`] with the skill directories the daemon's `main` found: the only place skill text
 /// can come from. A directory that does not load is named on stderr and left out.
+///
+/// # Errors
+/// `ServeFault` when the daemon cannot start: see [`start_with_agents`].
 pub async fn start_with(
     connection: &BusConnection,
     config: CompaniondConfig,
@@ -86,9 +94,14 @@ pub async fn start_with(
     .await
 }
 
-/// [`start_with`] with the host of the agent apps that are helpers: a helper whose kind is an
-/// agent app runs its jobs there, one agent process per helper. With none, such a job fails at
-/// once, and every other helper is unaffected.
+/// [`start_with`] with the host of the agent apps that are helpers: a helper whose kind is an agent
+/// app runs its jobs there, one agent process per helper.
+///
+/// With none, such a job fails at once, and every other helper is unaffected.
+///
+/// # Errors
+/// `ServeFault` when the companion cannot be built or `org.bardo.Companion1` cannot be claimed on
+/// `connection`.
 pub async fn start_with_agents(
     connection: &BusConnection,
     config: CompaniondConfig,
@@ -205,11 +218,19 @@ pub async fn start_with_agents(
 
 /// The daemon: its configuration and the session bus from `env` (the process's environment, which
 /// its `main` passes in), served until the bus closes.
+///
+/// # Errors
+/// `ServeFault` when the configuration cannot be read, the session bus is unreachable or serving
+/// fails.
 pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeFault> {
     Box::pin(run_with(HarnessSeams::default(), env)).await
 }
 
 /// [`run`] with the seams the acceptance harness's mains choose.
+///
+/// # Errors
+/// `ServeFault` when the configuration cannot be read, the session bus is unreachable or serving
+/// fails.
 pub async fn run_with(
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,

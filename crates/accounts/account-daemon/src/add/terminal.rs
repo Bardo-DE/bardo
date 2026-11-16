@@ -150,6 +150,10 @@ impl<T: Terminal> TerminalSheets<T> {
 impl<T: Terminal> Sheets for TerminalSheets<T> {
     type Link = TerminalLink<T>;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for",
+    )]
     async fn consent(&self, ask: ConsentAsk, _window: &ParentWindow) -> ConsentAnswer {
         let target = self
             .inner
@@ -201,8 +205,8 @@ fn label_of(kind: FieldKind) -> &'static str {
         FieldKind::OutgoingSecurity => "Outgoing security",
         FieldKind::SessionUrl => "JMAP session URL",
         FieldKind::ServerUrl => "Server address",
-        // a kind a newer porter adds: named by what it is
-        _ => "Answer",
+        // the one kind with no label of its own
+        FieldKind::Name => "Answer",
     }
 }
 
@@ -214,11 +218,11 @@ fn prompt_of(field: &FieldSpec) -> String {
         label.push_str(" (optional)");
     }
     if let Some((last, rest)) = field.kind.choices().split_last() {
-        label.push_str(&format!(" [{} or {last}]", rest.join(", ")));
+        label = format!("{label} [{} or {last}]", rest.join(", "));
     }
     // A secret is never prefilled, so none is shown.
     if let (Some(default), Entry::Plain) = (&field.prefill, field.entry) {
-        label.push_str(&format!(" (empty: {default})"));
+        label = format!("{label} (empty: {default})");
     }
     label
 }
@@ -286,6 +290,10 @@ impl<T: Terminal> TerminalLink<T> {
 }
 
 impl<T: Terminal> SheetLink for TerminalLink<T> {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for",
+    )]
     async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
         let terminal = &self.inner.terminal;
         match &view {

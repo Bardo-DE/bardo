@@ -4,6 +4,8 @@
 //! and bounds the result by the grants (`Router::bound_policy`); if the writer fails there is no
 //! policy and every non-read call is outside.
 
+use std::fmt::Write as _;
+
 use crate::draft::{Draft, key, policy_of, schema};
 use crate::model::{Discard, chat_of, turn};
 use account_capability::LlmFeature;
@@ -50,14 +52,14 @@ impl<T: Transport> TransportWriter<T> {
 /// The prompt: the catalogue (names, labels and effects, all the apps' own words) and the
 /// person's turns, numbered.
 fn prompt(turns: &[UserTurn], catalogue: &[ActionCard]) -> String {
-    let actions: String = catalogue
-        .iter()
-        .map(|c| format!("- {} ({:?}): {}\n", key(c), c.effect, c.label))
-        .collect();
-    let said: String = turns
-        .iter()
-        .map(|t| format!("[{}] {}\n", t.id.0, t.text))
-        .collect();
+    let mut actions = String::new();
+    for c in catalogue {
+        let _ = writeln!(actions, "- {} ({:?}): {}", key(c), c.effect, c.label);
+    }
+    let mut said = String::new();
+    for t in turns {
+        let _ = writeln!(said, "[{}] {}", t.id.0, t.text);
+    }
     format!("Actions that exist:\n{actions}\nWhat the person said:\n{said}")
 }
 
@@ -143,7 +145,8 @@ impl<T: Transport> PolicyWriter for TransportWriter<T> {
             .transport
             .open(&need(&request), request.class, request.tier)
             .await
-            .map_err(|_| ReviewError::Unavailable)?;
+            .ok()
+            .ok_or(ReviewError::Unavailable)?;
         let reply = turn(&mut session, InferRequest::Chat(request), &mut Discard)
             .await
             .map_err(failed)?;
@@ -153,8 +156,9 @@ impl<T: Transport> PolicyWriter for TransportWriter<T> {
             inference_core::StopReason::MaxTokens => return Err(ReviewError::OutOfRoom),
             _ => return Err(ReviewError::Unparseable),
         }
-        let draft: Draft =
-            serde_json::from_str(&chat.text).map_err(|_| ReviewError::Unparseable)?;
-        Ok(policy_of(draft, task, turns, catalogue, space))
+        let draft: Draft = serde_json::from_str(&chat.text)
+            .ok()
+            .ok_or(ReviewError::Unparseable)?;
+        Ok(policy_of(&draft, task, turns, catalogue, space))
     }
 }

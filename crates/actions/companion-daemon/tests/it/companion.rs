@@ -94,6 +94,10 @@ impl Scripted {
 }
 
 impl RecentSource for Scripted {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`RecentSource::recent` is an async trait method; the scripted source has nothing to await"
+    )]
     async fn recent(&self, query: RecentQuery) -> Result<Vec<RecentEntry>, ReplayFault> {
         self.1.lock().expect("log").push(query);
         self.0.clone()
@@ -199,7 +203,7 @@ fn replay_reads_oldest_first_skips_the_routers_log_and_refuses_a_body_it_cannot_
 }
 
 /// A record of a run as cuad writes it (`computer-use-bus`'s `CuaRecord`: tag `kind`, content `v`).
-fn run_record(kind: &str, v: serde_json::Value) -> String {
+fn run_record(kind: &str, v: &serde_json::Value) -> String {
     serde_json::json!({ "kind": kind, "v": v }).to_string()
 }
 
@@ -207,9 +211,9 @@ fn run_record(kind: &str, v: serde_json::Value) -> String {
 fn a_computer_use_run_is_rebuilt_from_its_area_records() {
     let started = run_record(
         "cua.run.started",
-        serde_json::json!({ "run": "r-3", "session": "s-2", "space": "work", "app": "org.example.Browser" }),
+        &serde_json::json!({ "run": "r-3", "session": "s-2", "space": "work", "app": "org.example.Browser" }),
     );
-    let asked = run_record("cua.asked", serde_json::json!({ "run": "r-3", "n": 4 }));
+    let asked = run_record("cua.asked", &serde_json::json!({ "run": "r-3", "n": 4 }));
     let rows = |last: &str, body: String| {
         vec![
             entry(4, last, 40, Some(body)),
@@ -231,20 +235,23 @@ fn a_computer_use_run_is_rebuilt_from_its_area_records() {
     let finished = |outcome: serde_json::Value| {
         run_record(
             "cua.run.finished",
-            serde_json::json!({ "run": "r-3", "outcome": outcome }),
+            &serde_json::json!({ "run": "r-3", "outcome": outcome }),
         )
     };
     let rows_expected: [(&str, String, RosterState); 7] = [
         (
             "cua.confirmed",
-            run_record("cua.confirmed", serde_json::json!({ "run": "r-3", "n": 5 })),
+            run_record(
+                "cua.confirmed",
+                &serde_json::json!({ "run": "r-3", "n": 5 }),
+            ),
             RosterState::Working,
         ),
         (
             "cua.taken_over",
             run_record(
                 "cua.taken_over",
-                serde_json::json!({ "run": "r-3", "n": 5 }),
+                &serde_json::json!({ "run": "r-3", "n": 5 }),
             ),
             RosterState::Paused,
         ),
@@ -252,7 +259,7 @@ fn a_computer_use_run_is_rebuilt_from_its_area_records() {
             "cua.handed_back",
             run_record(
                 "cua.handed_back",
-                serde_json::json!({ "run": "r-3", "n": 6 }),
+                &serde_json::json!({ "run": "r-3", "n": 6 }),
             ),
             RosterState::Working,
         ),
@@ -299,7 +306,7 @@ fn recover_events(events: &[agent_loop::ReplayEvent]) -> RosterState {
 fn a_run_whose_start_is_older_than_the_window_says_nothing_and_a_broken_record_is_a_fault() {
     let finished = run_record(
         "cua.run.finished",
-        serde_json::json!({ "run": "r-9", "outcome": { "kind": "done" } }),
+        &serde_json::json!({ "run": "r-9", "outcome": { "kind": "done" } }),
     );
     assert_eq!(
         replay_of(&[entry(1, "cua.run.finished", 5, Some(finished))]).expect("events"),

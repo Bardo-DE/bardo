@@ -1,6 +1,8 @@
 //! The facts the router gathers for Cedar before it asks: the kill switch, the budgets, the
-//! breaker, the limits and the taint. Each is computed here from the router's state and reaches
-//! the policy only as a context value; the refusal they bring about is Cedar's ruling.
+//! breaker, the limits and the taint.
+//!
+//! Each is computed here from the router's state and reaches the policy only as a context value;
+//! the refusal they bring about is Cedar's ruling.
 
 use action_core::{Budget, Cost, KillSwitch, Ledger, charge, halted};
 use permission_core::Limited;

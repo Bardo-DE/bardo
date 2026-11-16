@@ -19,11 +19,12 @@ use account_sheet::host::Sheets;
 use account_wire::{AccountsReply, AccountsRequest};
 use account_wire::{ParentWindow, Refusal};
 use base_time::Clock;
-use std::future::Future;
 
 /// The service as the bus objects use it: one request in, one reply out, for a caller already
-/// identified. [`AccountService`] is the implementation; the trait keeps the zbus objects free
-/// of its four seam parameters.
+/// identified.
+///
+/// [`AccountService`] is the implementation; the trait keeps the zbus objects free of its four seam
+/// parameters.
 pub trait Host: Send + Sync + 'static {
     /// Answers `request` from `caller`.
     fn handle(

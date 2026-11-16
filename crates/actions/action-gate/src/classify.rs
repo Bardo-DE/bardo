@@ -179,7 +179,7 @@ mod tests {
         let call = |a: ActionRef| action_vocab::CallRequest {
             action: a,
             target: action_vocab::TargetValue::Nothing,
-            args: Default::default(),
+            args: std::collections::BTreeMap::default(),
             origin: action_vocab::Origin::AppInternal,
         };
         assert_eq!(

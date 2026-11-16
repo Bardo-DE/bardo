@@ -1,6 +1,7 @@
-//! Whether a call is inside the task policy. `permission_core::covers` judges the call from the
-//! manifest's declaration (its effect, its cap and where each argument goes) and the labels; the
-//! clock's expiry is the router's.
+//! Whether a call is inside the task policy.
+//!
+//! `permission_core::covers` judges the call from the manifest's declaration (its effect, its cap
+//! and where each argument goes) and the labels; the clock's expiry is the router's.
 
 use action_manifest::ActionDecl;
 use action_vocab::CallRequest;

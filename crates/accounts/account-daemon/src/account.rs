@@ -57,7 +57,7 @@ async fn visible<H: Host, C: Callers>(
     let caller = core
         .identify(header, Standing::Any)
         .await
-        .map_err(|_| fdo::Error::AccessDenied("accountd does not know this caller".into()))?;
+        .ok().ok_or_else(|| fdo::Error::AccessDenied("accountd does not know this caller".into()))?;
     let registry = core.host.registry();
     let path = header
         .path()
@@ -124,9 +124,8 @@ impl<H: Host, C: Callers> AccountServer for AccountObject<H, C> {
             .iter()
             .filter_map(|claim| {
                 let slug = serde_json::to_value(claim.offer.kind()).ok()?;
-                let fields = match serde_json::to_value(claim).ok()? {
-                    serde_json::Value::Object(fields) => fields,
-                    _ => return None,
+                let serde_json::Value::Object(fields) = serde_json::to_value(claim).ok()? else {
+                    return None;
                 };
                 Some((slug.as_str()?.to_owned(), to_vardict(&fields)))
             })

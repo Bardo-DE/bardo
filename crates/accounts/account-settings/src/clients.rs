@@ -1,7 +1,9 @@
 //! What Settings changes in the person's `clients.toml`: one row's client id or secret, with the
-//! rest of the file as it was. The row's other lines (Google's `testing` and `byo`, which
-//! `account_oauth` reads beside the row, and any `endpoints`) and every other row are kept, so a
-//! hand-written Google row survives its key being changed in Settings.
+//! rest of the file as it was.
+//!
+//! The row's other lines (Google's `testing` and `byo`, which `account_oauth` reads beside the row,
+//! and any `endpoints`) and every other row are kept, so a hand-written Google row survives its key
+//! being changed in Settings.
 
 use account_provider::{ClientChannel, Issuer, parse_clients};
 use base_ids::word::word;
@@ -28,10 +30,18 @@ pub enum RowRefused {
     Unwritable(String),
 }
 
-/// `text` (the file as it is; empty reads as no rows, a damaged one is refused) with `edit` made to the row of
-/// `issuer` on `channel`. A new row for Google says `testing = true`: a person's own Google
-/// client is in testing until Google verifies it, which is what makes porter say why Google
-/// signs the account out after seven days.
+/// `text` (the file as it is; empty reads as no rows, a damaged one is refused) with `edit` made to
+/// the row of `issuer` on `channel`.
+///
+/// A new row for Google says `testing = true`: a person's own Google client is in testing until
+/// Google verifies it, which is what makes porter say why Google signs the account out after seven
+/// days.
+///
+/// # Errors
+///
+/// Returns [`RowRefused::Damaged`] when `text` does not parse, [`RowRefused::NoKey`] when a secret
+/// is set for an issuer with no row, and [`RowRefused::Unwritable`] when the result would not be a
+/// valid clients file.
 pub fn edited(
     text: &str,
     issuer: Issuer,

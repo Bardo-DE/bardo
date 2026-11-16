@@ -162,6 +162,10 @@ fn user_fact(text: &str) -> memory_core::FactView {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order; splitting it would hide the sequence being tested"
+)]
 #[tokio::test]
 async fn the_working_set_is_rebuilt_from_memory_every_turn_within_its_budget() {
     let space = space("work");

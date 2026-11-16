@@ -17,14 +17,18 @@ pub(super) async fn revoke(
     login: &LoginName,
     password: &SecretText,
 ) -> Result<RevokeOutcome, ProviderError> {
-    let authorization =
-        sensitive(&basic(&login.0, password)).map_err(|HttpError::Malformed| ProviderError::Unreadable)?;
-    let request = revoke::request(server, authorization).ok().ok_or(ProviderError::Unreadable)?;
+    let authorization = sensitive(&basic(&login.0, password))
+        .ok()
+        .ok_or(ProviderError::Unreadable)?;
+    let request = revoke::request(server, authorization)
+        .ok()
+        .ok_or(ProviderError::Unreadable)?;
     let response = io
         .http
         .send(request)
         .await
-        .map_err(|_| ProviderError::Unreachable)?;
+        .ok()
+        .ok_or(ProviderError::Unreachable)?;
     match revoke::revoked(server, &response) {
         Ok(Revoked::Done) => Ok(RevokeOutcome::Revoked),
         Ok(Revoked::Manual(page)) => Ok(RevokeOutcome::Manual(page)),

@@ -3,9 +3,11 @@
 
 use account_http::http::Response;
 
-/// What an issuer wrote in its error body: the `error` code and the human `error_description`
-/// (RFC 6749 section 5.2), for a host to show. Both are untrusted text from the network, so each
-/// has its control characters stripped and is cut to [`SAYS_MAX_CHARS`] characters.
+/// What an issuer wrote in its error body: the `error` code and the human `error_description` (RFC
+/// 6749 section 5.2), for a host to show.
+///
+/// Both are untrusted text from the network, so each has its control characters stripped and is cut
+/// to [`SAYS_MAX_CHARS`] characters.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IssuerSays {
     /// The `error` code, e.g. `invalid_grant`.

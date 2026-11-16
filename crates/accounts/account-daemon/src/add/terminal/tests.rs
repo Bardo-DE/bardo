@@ -65,9 +65,9 @@ fn submitted(input: SheetInput) -> Vec<(FieldKind, String)> {
 
 #[tokio::test]
 async fn an_empty_answer_takes_the_default_and_a_hidden_field_is_typed_hidden() {
+    use FieldKind::*;
     let link = link(&["jmap", "", "tok-1", "ada"]);
     let answers = submitted(link.fields(form()).await.expect("answers"));
-    use FieldKind::*;
     assert_eq!(
         answers,
         [

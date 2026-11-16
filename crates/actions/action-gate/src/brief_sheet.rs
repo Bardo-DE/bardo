@@ -47,10 +47,11 @@ pub(crate) fn sheet_of(p: &Prepared) -> Option<BriefSheet> {
     Some(BriefSheet::of(title, text, pieces))
 }
 
-/// What a brief sheet's answer comes to. A yes counts only when it carries the person's words,
-/// and only once: any other answer (a yes from a surface that cannot edit, an "always", a
-/// "never", a terminal grant) is not a confirmation, and nothing is kept. Other calls' answers
-/// pass unchanged.
+/// What a brief sheet's answer comes to.
+///
+/// A yes counts only when it carries the person's words, and only once: any other answer (a yes
+/// from a surface that cannot edit, an "always", a "never", a terminal grant) is not a
+/// confirmation, and nothing is kept. Other calls' answers pass unchanged.
 #[must_use]
 pub fn brief_answer(p: &Prepared, answer: ConfirmAnswer) -> ConfirmAnswer {
     if !is_brief_confirm(&p.request.action) {

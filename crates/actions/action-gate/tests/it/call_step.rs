@@ -30,7 +30,7 @@ fn sheet(id: &str) -> ConfirmRequest {
         why: vec![AskReason::FirstUse],
         taint: TaintNote::Clean,
         offer: ConfirmOffer::OnceOnly,
-        always: Default::default(),
+        always: permission_core::AlwaysOffer::default(),
         limits: SheetLimits::default(),
         gesture: Gesture::Press,
         anchor: Anchor::Launcher,
@@ -41,10 +41,18 @@ fn sheet(id: &str) -> ConfirmRequest {
     }
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "stands in for a reviewer's result, which the call events carry as a `Result`"
+)]
 fn allow() -> Result<ReviewVerdict, ReviewError> {
     Ok(ReviewVerdict::Allow)
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "stands in for a reviewer's result, which the call events carry as a `Result`"
+)]
 fn flag() -> Result<ReviewVerdict, ReviewError> {
     Ok(ReviewVerdict::Ask {
         why: ReviewReason {
@@ -54,6 +62,10 @@ fn flag() -> Result<ReviewVerdict, ReviewError> {
     })
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "stands in for a reviewer's result, which the call events carry as a `Result`"
+)]
 fn deny() -> Result<ReviewVerdict, ReviewError> {
     Ok(ReviewVerdict::Deny {
         why: ReviewReason {
@@ -112,6 +124,10 @@ type Row = (
     Vec<CallEffect>,
 );
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "the lifecycle table: one short row per transition"
+)]
 fn rows() -> Vec<Row> {
     use CallEffect as E;
     use CallEvent as V;

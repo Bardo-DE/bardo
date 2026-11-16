@@ -144,7 +144,7 @@ fn path_of_person(turns: &[UserTurn], path: &str) -> Option<action_vocab::FileRe
 
 /// The policy a draft is, once everything in it is checked against the catalogue and the turns.
 pub(crate) fn policy_of(
-    draft: Draft,
+    draft: &Draft,
     task: &TaskId,
     turns: &[UserTurn],
     catalogue: &[ActionCard],

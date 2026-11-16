@@ -92,7 +92,7 @@ pub fn candidate(permit: &str) -> Candidate {
             .iter()
             .find_map(|claim| match &claim.offer {
                 account_capability::Offer::Present(capability) => Some(capability.clone()),
-                _ => None,
+                account_capability::Offer::Absent { .. } => None,
             })
             .expect("a capability"),
         Restriction::none(),
@@ -211,7 +211,7 @@ struct RequestObject {
 
 #[zbus::interface(name = "org.bardo.Accounts1.Request")]
 impl RequestObject {
-    async fn close(&self) {
+    fn close(&self) {
         self.shared.seen.lock().expect("lock").closed += 1;
     }
 }
@@ -276,7 +276,7 @@ fn choose_reply(sheets: &Sheets) -> Option<AccountsReply> {
     match sheets {
         Sheets::Permit(permit) => Some(AccountsReply::Chosen(candidate(permit))),
         Sheets::Refuse(refusal) => Some(AccountsReply::Refused(*refusal)),
-        _ => None,
+        Sheets::Hang => None,
     }
 }
 
@@ -319,7 +319,7 @@ struct Launcher {
 
 #[zbus::interface(name = "org.bardo.Accounts1.Launcher")]
 impl Launcher {
-    async fn register_launcher(
+    fn register_launcher(
         &self,
         #[zbus(header)] header: Header<'_>,
         programs: Vec<String>,
@@ -335,7 +335,7 @@ impl Launcher {
         Ok(())
     }
 
-    async fn begin_session(&self, session: String) {
+    fn begin_session(&self, session: String) {
         self.shared
             .seen
             .lock()
@@ -344,7 +344,7 @@ impl Launcher {
             .push(session);
     }
 
-    async fn end_session(&self, session: String) {
+    fn end_session(&self, session: String) {
         self.shared
             .seen
             .lock()
@@ -353,7 +353,7 @@ impl Launcher {
             .retain(|open| *open != session);
     }
 
-    #[allow(clippy::too_many_arguments)]
+    #[expect(clippy::too_many_arguments, reason = "mirrors the D-Bus method RequestAgentKey, which takes this many arguments")]
     async fn request_agent_key(
         &self,
         #[zbus(header)] header: Header<'_>,
@@ -361,9 +361,11 @@ impl Launcher {
         program: String,
         class: String,
         session: String,
-        _parent_window: String,
+        parent_window: String,
         options: Details,
     ) -> zbus::fdo::Result<OwnedObjectPath> {
+        // The fake does not look at the window.
+        let _ = parent_window;
         self.shared
             .seen
             .lock()
@@ -381,7 +383,7 @@ impl Launcher {
         .await
     }
 
-    async fn report_agent_login(
+    fn report_agent_login(
         &self,
         request: String,
         outcome: String,
@@ -390,7 +392,7 @@ impl Launcher {
         self.report(request, outcome, reason)
     }
 
-    async fn report_agent_logout(
+    fn report_agent_logout(
         &self,
         request: String,
         outcome: String,
@@ -401,7 +403,7 @@ impl Launcher {
 
     /// A credential of the key `KEY`, on a sealed memfd. The permits `g-once` and `g-gone` are
     /// refused as accountd refuses them.
-    async fn issue_process_credential(
+    fn issue_process_credential(
         &self,
         permit: String,
         program: String,
@@ -423,7 +425,7 @@ impl Launcher {
         Ok((id, OwnedFd::from(key)))
     }
 
-    async fn revoke_process_credential(&self, id: String) -> Result<(), Fault> {
+    fn revoke_process_credential(&self, id: String) -> Result<(), Fault> {
         let mut seen = self.shared.seen.lock().expect("lock");
         if seen.revoked.contains(&id) {
             return Err(Fault::UnknownCredential(String::new()));

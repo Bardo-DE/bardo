@@ -85,6 +85,9 @@ fn context_of(request: &ChatRequest) -> Tokens {
 /// A daemon that refuses a session writes the refusal and hangs up, so the write can fail while
 /// the answer is already waiting: a failed write is ignored and the answer is read first; only
 /// a session with nothing to read is unreachable.
+///
+/// # Errors
+/// `Unreachable` when the session ends before it gives a final reply.
 pub async fn turn<S: InferSession>(
     session: &mut S,
     request: InferRequest,
@@ -106,14 +109,15 @@ pub async fn turn<S: InferSession>(
     }
 }
 
-/// What a reply that is not the one asked for is as a `Model` error: a refusal of inferd is the
-/// model refusing (the reviewer's cascade turns every one into asking the person), a failed call
-/// is its error, and an answer of another kind is unreadable.
+/// What a reply that is not the one asked for is as a `Model` error.
+///
+/// A refusal of inferd is the model refusing (the reviewer's cascade turns every one into asking
+/// the person), a failed call is its error, and an answer of another kind is unreadable.
 #[must_use]
-pub fn unwanted(reply: InferReply) -> ModelError {
+pub fn unwanted(reply: &InferReply) -> ModelError {
     match reply {
         InferReply::Refused(_) => ModelError::Refused,
-        InferReply::Failed(why) => why,
+        InferReply::Failed(why) => *why,
         InferReply::Cancelled => ModelError::Unreachable,
         _ => ModelError::Unparseable,
     }
@@ -125,7 +129,7 @@ pub fn chat_turn(reply: InferReply) -> Result<ChatReply, TurnError> {
     match reply {
         InferReply::Chat(chat) => Ok(chat),
         InferReply::Refused(refusal) => Err(refusal.into()),
-        other => Err(unwanted(other).into()),
+        other => Err(unwanted(&other).into()),
     }
 }
 
@@ -134,23 +138,29 @@ pub fn embed_turn(reply: InferReply) -> Result<EmbedReply, TurnError> {
     match reply {
         InferReply::Embed(embedded) => Ok(embedded),
         InferReply::Refused(refusal) => Err(refusal.into()),
-        other => Err(unwanted(other).into()),
+        other => Err(unwanted(&other).into()),
     }
 }
 
 /// The chat reply of a turn's last event.
+///
+/// # Errors
+/// The error [`unwanted`] makes of a reply that is not a chat reply.
 pub fn chat_of(reply: InferReply) -> Result<ChatReply, ModelError> {
     match reply {
         InferReply::Chat(chat) => Ok(chat),
-        other => Err(unwanted(other)),
+        other => Err(unwanted(&other)),
     }
 }
 
 /// The embeddings of a turn's last event.
+///
+/// # Errors
+/// The error [`unwanted`] makes of a reply that is not an embedding.
 pub fn embed_of(reply: InferReply) -> Result<EmbedReply, ModelError> {
     match reply {
         InferReply::Embed(embedded) => Ok(embedded),
-        other => Err(unwanted(other)),
+        other => Err(unwanted(&other)),
     }
 }
 
@@ -168,7 +178,8 @@ impl<T: Transport> Model for TransportModel<T> {
             .transport
             .open(&chat_need(request), request.class, request.tier)
             .await
-            .map_err(|_| ModelError::Unreachable)?;
+            .ok()
+            .ok_or(ModelError::Unreachable)?;
         chat_turn(turn(&mut session, InferRequest::Chat(request.clone()), sink).await?)
     }
 
@@ -192,7 +203,8 @@ impl<T: Transport> Model for TransportModel<T> {
             .transport
             .open(&need, request.class, account_capability::Tier::Fast)
             .await
-            .map_err(|_| ModelError::Unreachable)?;
+            .ok()
+            .ok_or(ModelError::Unreachable)?;
         chat_turn(turn(&mut session, InferRequest::Task(request.clone()), sink).await?)
     }
 
@@ -205,7 +217,8 @@ impl<T: Transport> Model for TransportModel<T> {
             .transport
             .open(&need, request.class, account_capability::Tier::Fast)
             .await
-            .map_err(|_| ModelError::Unreachable)?;
+            .ok()
+            .ok_or(ModelError::Unreachable)?;
         let reply = turn(
             &mut session,
             InferRequest::Embed(request.clone()),

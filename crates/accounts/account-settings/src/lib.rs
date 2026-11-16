@@ -35,7 +35,6 @@ use account_core::{Account, AccountId, AppName, GrantId};
 use account_service_core::registry::Registry;
 use account_sheet::ProviderGroup;
 use accounts::{Directory, UsedBy};
-use std::future::Future;
 use std::pin::Pin;
 use ui_settings::live::LiveError;
 use ui_settings::schema::KeySpec;
@@ -76,7 +75,7 @@ impl<'a> At<'a> {
         At {
             account,
             grants: &registry.grants,
-            used_by: used_by.get(&account.id).map(Vec::as_slice).unwrap_or(&[]),
+            used_by: used_by.get(&account.id).map_or(&[][..], Vec::as_slice),
             directory,
         }
     }

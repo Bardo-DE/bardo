@@ -98,11 +98,15 @@ fn tool_with(ty: ParamType, need: ParamNeed) -> CatalogueTool {
     tool
 }
 
-fn read(ty: ParamType, json: serde_json::Value) -> Result<Value, ArgsFault> {
+fn read(ty: ParamType, json: &serde_json::Value) -> Result<Value, ArgsFault> {
     let tool = tool_with(ty, ParamNeed::Required);
     read_call(&tool, &json!({ "p": json })).map(|c| c.args[&param("p")].value.clone())
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order; splitting it would hide the sequence being tested"
+)]
 #[test]
 fn each_declared_type_reads_its_json() {
     use ParamType as T;
@@ -210,7 +214,7 @@ fn each_declared_type_reads_its_json() {
         ),
     ];
     for (name, ty, json, want) in cases {
-        assert_eq!(read(ty, json), want, "{name}");
+        assert_eq!(read(ty, &json), want, "{name}");
     }
 }
 
@@ -483,17 +487,17 @@ async fn quire_related_is_read_into_the_call_of_the_related_action_of_the_things
     let ModelOutput::Calls(calls) = planner.plan(&v).await.expect("a call") else {
         panic!("a call")
     };
-    let [planned] = calls.as_slice() else {
+    let [only] = calls.as_slice() else {
         panic!("one call: {calls:?}")
     };
     assert_eq!(
-        planned.call.action.name,
+        only.call.action.name,
         ActionName::parse("mail.thread.related").expect("action")
     );
-    assert_eq!(planned.call.target, TargetValue::Handles(vec![Handle(1)]));
-    assert_eq!(planned.call.origin, Origin::Companion);
+    assert_eq!(only.call.target, TargetValue::Handles(vec![Handle(1)]));
+    assert_eq!(only.call.origin, Origin::Companion);
     assert_eq!(
-        planned.call.args[&param("relation")].value,
+        only.call.args[&param("relation")].value,
         Value::Choice(ChoiceId::parse("from").expect("choice"))
     );
 }

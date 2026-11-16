@@ -63,7 +63,7 @@ impl<H: Host, C: Callers> Core<H, C> {
         let caller = self
             .identify(header, Standing::Launcher)
             .await
-            .map_err(|_| denied())?;
+            .ok().ok_or_else(denied)?;
         match caller.role {
             CallerRole::AgentLauncher => Ok(header.sender().ok_or_else(denied)?.to_string()),
             _ => Err(denied()),

@@ -1,7 +1,7 @@
 //! The rig every bus test of accountd uses: a private bus, accountd's front end over the real
 //! `AccountService` with the fake providers, a hand-written sheet host, and clients introduced
 //! by unique name. Nothing here reaches the real session, Secret Service or network.
-#![allow(dead_code)]
+#![allow(dead_code, reason = "helpers shared by the test files; each file uses some of them")]
 
 pub mod bus;
 pub mod host;
@@ -158,7 +158,7 @@ impl Rig {
                     access: SecretText::new(ACCESS_TOKEN),
                     refresh: SecretText::new(REFRESH_TOKEN),
                     expires_at: base_time::UnixSeconds(1_790_000_000),
-                    granted: Default::default(),
+                    granted: account_core::GrantedScopes::default(),
                 },
             ),
         ] {

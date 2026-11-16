@@ -17,7 +17,6 @@ use account_service_core::refusal::secrets_refusal;
 use account_sheet::host::Sheets;
 use account_wire::{ParentWindow, Refusal};
 use base_time::Clock;
-use std::future::Future;
 use std::pin::Pin;
 
 /// A boxed future, so the desk can be used as a trait object.

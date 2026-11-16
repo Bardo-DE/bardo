@@ -62,6 +62,10 @@ pub async fn view_until_done(answers: &CompanionAnswerProxy<'_>) -> AnswerWire {
     panic!("the answer never finished: {:?}", answers.view().await);
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order; splitting it would hide the sequence being tested"
+)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
     let scratch = tempfile::tempdir().expect("scratch");

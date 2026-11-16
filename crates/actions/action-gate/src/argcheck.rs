@@ -10,6 +10,9 @@ use action_vocab::{Args, ParamName, ParamType, TargetValue, Value};
 use provenance::Labelled;
 
 /// The name a fault about the target carries.
+///
+/// # Panics
+/// Never: `target` is a valid parameter name.
 #[must_use]
 pub fn target_name() -> ParamName {
     ParamName::parse("target").expect("`target` is a valid parameter name")
@@ -24,6 +27,9 @@ fn is_handle_name(text: &str) -> bool {
 
 /// The first text parameter whose whole value is a handle's name, as given (before handles are
 /// resolved): a handle goes in as `{"handle": n}`, and its name as words searches for the name.
+///
+/// # Errors
+/// The parameter, and `HandleAsText`, when a text parameter's whole value is a handle's name.
 pub fn no_handle_names(decl: &ActionDecl, args: &Args) -> Result<(), (ParamName, ArgFault)> {
     let named = decl.params.iter().find(|p| {
         matches!(p.ty, ParamType::Text { .. })
@@ -37,6 +43,10 @@ pub fn no_handle_names(decl: &ActionDecl, args: &Args) -> Result<(), (ParamName,
 
 /// The arguments with defaults filled in (a parameter the router fills is not the caller's to
 /// send: `WrongType`), or the first parameter that is wrong and why.
+///
+/// # Errors
+/// The first parameter (or the target) that is missing, stray, of the wrong type or out of its
+/// limits, with the fault.
 pub fn check_call(
     decl: &ActionDecl,
     app: &AppName,
@@ -76,7 +86,9 @@ pub fn check_call(
 
 fn check_target(decl: &ActionDecl, target: &TargetValue) -> Result<(), ArgFault> {
     match (&decl.on, target) {
-        (TargetKind::Nothing, TargetValue::Nothing) => Ok(()),
+        (TargetKind::Nothing, TargetValue::Nothing) | (TargetKind::Text, TargetValue::Text(_)) => {
+            Ok(())
+        }
         (TargetKind::One(kind), TargetValue::Entities(ids)) => match ids.as_slice() {
             [one] if one.kind == *kind => Ok(()),
             [] => Err(ArgFault::Missing),
@@ -91,13 +103,12 @@ fn check_target(decl: &ActionDecl, target: &TargetValue) -> Result<(), ArgFault>
                 Err(ArgFault::WrongType)
             }
         }
-        (TargetKind::Text, TargetValue::Text(_)) => Ok(()),
         (TargetKind::Files, TargetValue::Files(files)) if !files.is_empty() => Ok(()),
-        (TargetKind::Files, TargetValue::Files(_)) => Err(ArgFault::Missing),
         (
             TargetKind::One(_) | TargetKind::Many(_) | TargetKind::Text | TargetKind::Files,
             TargetValue::Nothing,
-        ) => Err(ArgFault::Missing),
+        )
+        | (TargetKind::Files, TargetValue::Files(_)) => Err(ArgFault::Missing),
         _ => Err(ArgFault::WrongType),
     }
 }

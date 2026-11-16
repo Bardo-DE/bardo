@@ -1,10 +1,11 @@
-//! The keys of accountd's settings module (PLAN §2.5), as a pure function of the registry: for
-//! each account of every group (the identities and Tailscale, the AI services, the programs on
-//! this computer and the assistants) the rows of [`crate::ROWS`] that the account has; and one
-//! text row per OAuth issuer for a bring-your-own client id. Sync switches are syncd's. What an
-//! account spent on hosted models is inferd's (`spend.month` and `spend.cap`, whose paths this
-//! module spells so that both modules name the same account). Every key is under `accounts.`, so
-//! it is never agent-settable (`ui-settings` refuses a schema that says otherwise).
+//! The keys of accountd's settings module (PLAN §2.5), as a pure function of the registry.
+//!
+//! For each account of every group (the identities and Tailscale, the AI services, the programs on
+//! this computer and the assistants) the rows of [`crate::ROWS`] that the account has; and one text
+//! row per OAuth issuer for a bring-your-own client id. Sync switches are syncd's. What an account
+//! spent on hosted models is inferd's (`spend.month` and `spend.cap`, whose paths this module
+//! spells so that both modules name the same account). Every key is under `accounts.`, so it is
+//! never agent-settable (`ui-settings` refuses a schema that says otherwise).
 
 use crate::spec as spec_of;
 use crate::{At, GrantRow, PERMITS, ROWS, Row};
@@ -77,8 +78,10 @@ fn sentence_case(word: &str) -> String {
 }
 
 /// The account a key path names and the rest of the path after it: an id may hold dots, so the
-/// account is found by prefix, the longest id first. Every daemon that serves rows of an account
-/// finds it here, so that two modules spell one account's rows the same way.
+/// account is found by prefix, the longest id first.
+///
+/// Every daemon that serves rows of an account finds it here, so that two modules spell one
+/// account's rows the same way.
 pub fn account_tail<'a, 'i>(
     path: &'a str,
     ids: impl IntoIterator<Item = &'i AccountId>,
@@ -152,9 +155,10 @@ pub fn listed(account: &Account, directory: &dyn Directory) -> bool {
     ProviderGroup::ALL.contains(&directory.group_of(account))
 }
 
-/// The value a read of `key` answers, or `None` when `registry` holds no such row (an account
-/// that is gone, an expiry that does not apply, an app that is not there). The sign-in key rows
-/// are the person's clients file's, which the daemon reads.
+/// The value a read of `key` answers, or `None` when `registry` holds no such row (an account that
+/// is gone, an expiry that does not apply, an app that is not there).
+///
+/// The sign-in key rows are the person's clients file's, which the daemon reads.
 pub fn read(
     key: &Key,
     registry: &Registry,

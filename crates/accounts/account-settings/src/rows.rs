@@ -149,10 +149,11 @@ impl AccountRow for Reauth {
                 "Sign in",
                 "Asks the assistant to sign itself in, which needs its app to be running.",
             ),
-            // Tailscale keeps its own sign-in, and an agent signs out from its own row.
-            AuthKind::OwnProgram | AuthKind::AgentLogin => return Vec::new(),
-            // A program on this computer signs in with nothing: there is nothing to sign in to.
-            AuthKind::LocalRuntime | AuthKind::None => return Vec::new(),
+            // Tailscale keeps its own sign-in, and an agent signs out from its own row. A program on
+            // this computer signs in with nothing: there is nothing to sign in to.
+            AuthKind::OwnProgram | AuthKind::AgentLogin | AuthKind::LocalRuntime | AuthKind::None => {
+                return Vec::new();
+            }
             _ => ("Sign in again", ""),
         };
         vec![button(

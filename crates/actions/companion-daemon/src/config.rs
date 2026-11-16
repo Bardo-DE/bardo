@@ -50,22 +50,33 @@ impl Default for CompaniondConfig {
 
 impl CompaniondConfig {
     /// Reads the file.
+    ///
+    /// # Errors
+    /// `ConfigError` when `text` is not a valid companiond configuration.
     pub fn parse(text: &str) -> Result<Self, ConfigError> {
         toml::from_str(text).map_err(|e| ConfigError(e.to_string()))
     }
 
     /// The configuration the package ships (`dist/companiond.toml`).
+    ///
+    /// # Errors
+    /// `ConfigError` if the shipped file does not parse (a packaging bug).
     pub fn shipped() -> Result<Self, ConfigError> {
         Self::parse(SHIPPED)
     }
 
     /// The first `bardo/actions/companiond.toml` of the configuration directories (`$XDG_CONFIG_HOME`,
     /// then `$XDG_CONFIG_DIRS`), else the shipped one.
+    ///
+    /// # Errors
+    /// `ConfigError` when the first file found does not parse.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, ConfigError> {
         let home = env("XDG_CONFIG_HOME")
             .filter(|v| !v.is_empty())
-            .map(PathBuf::from)
-            .unwrap_or_else(|| PathBuf::from(env("HOME").unwrap_or_default()).join(".config"));
+            .map_or_else(
+                || PathBuf::from(env("HOME").unwrap_or_default()).join(".config"),
+                PathBuf::from,
+            );
         let rest = env("XDG_CONFIG_DIRS")
             .filter(|v| !v.is_empty())
             .unwrap_or_else(|| "/etc/xdg".to_owned());

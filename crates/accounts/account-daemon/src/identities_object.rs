@@ -81,7 +81,7 @@ fn may_use(role: CallerRole) -> bool {
 }
 
 fn identity_arg(text: &str) -> Result<IdentityId, RefusedError> {
-    IdentityId::parse(text).map_err(|_| RefusedError::invalid("There is no such identity."))
+    IdentityId::parse(text).ok().ok_or_else(|| RefusedError::invalid("There is no such identity."))
 }
 
 /// What a use that could not be saved is told, in plain words.
@@ -95,19 +95,12 @@ impl<H: Host, C: Callers> IdentitiesObject<H, C> {
     /// and so is a role porter does not know yet.
     async fn user(&self, header: &Header<'_>) -> Result<account_callers::Caller, RefusedError> {
         let caller = self.0.identify(header, Standing::Any).await?;
-        match caller.role {
-            role if may_use(role) => Ok(caller),
-            CallerRole::Agent
-            | CallerRole::Cua
-            | CallerRole::AgentLauncher
-            | CallerRole::Terminal
-            | CallerRole::Compositor => Err(RefusedError::access_denied(
+        if may_use(caller.role) {
+            Ok(caller)
+        } else {
+            Err(RefusedError::access_denied(
                 "only an app the person uses may ask about identities",
-            )),
-            // A role porter does not know yet asks nothing.
-            _ => Err(RefusedError::access_denied(
-                "only an app the person uses may ask about identities",
-            )),
+            ))
         }
     }
 
@@ -173,7 +166,7 @@ impl<H: Host, C: Callers> IdentitiesServer for IdentitiesObject<H, C> {
             .into_iter()
             .filter(|(identity, _)| match &hint {
                 ProviderHint::Provider(provider) => identity.provider == *provider,
-                _ => true,
+                ProviderHint::Any => true,
             })
             .collect();
         if fitting.is_empty() {

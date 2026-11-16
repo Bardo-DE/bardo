@@ -64,6 +64,11 @@ pub(crate) fn head_complete(buf: &[u8]) -> Result<bool, LoopbackFault> {
 
 /// The code in the redirect request `head` (through the blank line), if its `state` is
 /// `expected`.
+///
+/// # Errors
+///
+/// Returns a [`LoopbackFault`] when the request is oversized, malformed, has the wrong `state`,
+/// carries no code, or reports that the issuer refused.
 pub fn parse_redirect(head: &[u8], expected: &OAuthState) -> Result<AuthCode, LoopbackFault> {
     if head.len() > MAX_REDIRECT_BYTES {
         return Err(LoopbackFault::Oversized);

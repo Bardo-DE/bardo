@@ -1,4 +1,7 @@
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different part of the shared support"
+)]
 
 pub mod bus;
 pub mod infer;

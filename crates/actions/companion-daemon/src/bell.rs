@@ -4,7 +4,6 @@
 
 use companion_tasks::{Change, Surface};
 use provenance::TaskId;
-use std::future::Future;
 use tokio::sync::{Notify, broadcast};
 
 /// What the bus's tasks listen on.

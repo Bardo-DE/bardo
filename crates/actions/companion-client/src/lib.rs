@@ -28,7 +28,6 @@ use action_client::TransportError;
 use action_wire::{SessionOpen, SessionOpened};
 use companion_wire::{AnswerWire, AskWire};
 use provenance::SessionId;
-use std::future::Future;
 
 mod bus;
 mod helpers;

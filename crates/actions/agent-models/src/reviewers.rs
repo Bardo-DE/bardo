@@ -17,8 +17,9 @@ fn choice(model: &str, family: &str) -> Option<ModelChoice> {
     })
 }
 
-/// The set used when nothing names one: three placeholder local models of three families. The
-/// daemon answers a model it does not have with an error, which asks the person, so the
+/// The set used when nothing names one: three placeholder local models of three families.
+///
+/// The daemon answers a model it does not have with an error, which asks the person, so the
 /// placeholder set can never allow anything; it only keeps the cascade built.
 #[must_use]
 pub fn placeholder_set() -> Option<ReviewerSet> {

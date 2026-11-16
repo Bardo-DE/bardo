@@ -16,9 +16,10 @@ use account_provider::{
 use serde::Deserialize;
 use std::path::Path;
 
-/// What a client row says besides its id, secret and endpoints. [`account_provider::ClientEntry`]
-/// does not carry these (it is shared with mailo, which builds it field by field), so the
-/// registry reads them from the same files beside it.
+/// What a client row says besides its id, secret and endpoints.
+///
+/// [`account_provider::ClientEntry`] does not carry these (it is shared with mailo, which builds it
+/// field by field), so the registry reads them from the same files beside it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct ClientTraits {
     /// Whether the client is the person's own (`byo = true`), so mail may be asked.
@@ -84,6 +85,11 @@ impl ClientRegistry {
     /// The registry from the two files at the paths the caller names. A file that does not exist
     /// is empty (a fresh install has no override); one that exists and is damaged is an error,
     /// never read as empty: that would report a configured client as missing.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`RegistryError`] when a file exists and cannot be read or is not a valid clients
+    /// file.
     pub fn from_paths(shipped: &Path, own: &Path) -> Result<Self, RegistryError> {
         let (shipped_file, shipped_traits) = read_clients(shipped)?;
         let (own_file, own_traits) = read_clients(own)?;
@@ -261,11 +267,16 @@ struct MailoEndpoints {
     token: String,
 }
 
-/// Reads mailo's `oauth.json` (the `OAuthRegistry` of `signin.rs`) as clients for `channel`
-/// (mailo has no channels, so the caller says which build the ids were registered for). Mailo's
-/// overridden `auth`/`token` become the entry's endpoints, with revoke absent: a
-/// sovereign-cloud or proxy override is not known to have either. The result is for the person's
-/// own file.
+/// Reads mailo's `oauth.json` (the `OAuthRegistry` of `signin.rs`) as clients for `channel`.
+///
+/// Mailo has no channels, so the caller says which build the ids were registered for. Mailo's
+/// overridden `auth`/`token` become the entry's endpoints, with revoke absent: a sovereign-cloud or
+/// proxy override is not known to have either. The result is for the person's own file.
+///
+/// # Errors
+///
+/// Returns [`RegistryError::Mailo`] when the text is not mailo's file or an overridden endpoint is
+/// not a valid URL.
 pub fn from_mailo(text: &str, channel: ClientChannel) -> Result<ClientsFile, RegistryError> {
     let mailo: MailoFile =
         serde_json::from_str(text).map_err(|e| RegistryError::Mailo(e.to_string()))?;
@@ -301,7 +312,6 @@ pub fn from_mailo(text: &str, channel: ClientChannel) -> Result<ClientsFile, Reg
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_provider::parse_clients;
 
     fn file(text: &str) -> ClientsFile {
         parse_clients(text).expect("parses")

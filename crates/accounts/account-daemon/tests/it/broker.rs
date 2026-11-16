@@ -36,8 +36,8 @@ async fn broker(rig: &Rig) -> (zbus::Connection, BrokerProxy<'static>) {
     (connection, proxy)
 }
 
-fn read_all(fd: zbus::zvariant::OwnedFd) -> String {
-    let fd = std::os::fd::AsFd::as_fd(&fd)
+fn read_all(fd: &zbus::zvariant::OwnedFd) -> String {
+    let fd = std::os::fd::AsFd::as_fd(fd)
         .try_clone_to_owned()
         .expect("a descriptor");
     assert_eq!(
@@ -109,7 +109,7 @@ async fn a_permit_opens_the_key_on_a_sealed_descriptor_and_the_audit_says_so_wit
     .await;
     let (_connection, broker) = broker(&rig).await;
     let fd = broker.read_key("g-held").await.expect("the key");
-    assert_eq!(read_all(fd), KEY);
+    assert_eq!(read_all(&fd), KEY);
     let released: Vec<_> = rig
         .audit
         .entries()
@@ -161,7 +161,7 @@ async fn a_permit_that_does_not_open_a_key_is_refused_and_a_once_permit_is_spent
         .expect("on");
     // An allow-once permit is spent by the first read that works.
     let first = broker.read_key("g-once").await.expect("first read");
-    assert_eq!(read_all(first), KEY);
+    assert_eq!(read_all(&first), KEY);
     assert_eq!(
         error_name(broker.read_key("g-once").await.expect_err("spent")),
         refused("UnknownGrant")

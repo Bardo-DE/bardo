@@ -42,8 +42,9 @@ fn caller_of(speaker: &Speaker) -> fdo::Result<Caller> {
     match speaker {
         Speaker::Shell => Ok(Caller::launcher()),
         Speaker::Editor => AppName::parse(EDITOR_APP)
+            .ok()
             .map(Caller::editor)
-            .map_err(|_| fdo::Error::Failed("the editor bridge has no app name".into())),
+            .ok_or_else(|| fdo::Error::Failed("the editor bridge has no app name".into())),
         Speaker::Terminal(_) => Err(fdo::Error::AccessDenied(
             "a terminal does not speak in a helper's conversation".into(),
         )),
@@ -410,7 +411,8 @@ impl Helpers2Object {
     ) -> fdo::Result<String> {
         let speaker = self.speakers.require(&header, Call::Converse).await?;
         let session = SessionId::parse(&session)
-            .map_err(|_| fdo::Error::InvalidArgs("there is no such conversation".into()))?;
+            .ok()
+            .ok_or_else(|| fdo::Error::InvalidArgs("there is no such conversation".into()))?;
         json(
             &self
                 .desk
@@ -449,7 +451,8 @@ impl TerminalsObject {
     ) -> fdo::Result<String> {
         self.speakers.require(&header, Call::Helpers).await?;
         let session = SessionId::parse(&session)
-            .map_err(|_| fdo::Error::InvalidArgs("there is no such conversation".into()))?;
+            .ok()
+            .ok_or_else(|| fdo::Error::InvalidArgs("there is no such conversation".into()))?;
         json(&self.desk.bring_back_terminal(session).await)
     }
 
@@ -460,7 +463,8 @@ impl TerminalsObject {
     ) -> fdo::Result<String> {
         self.speakers.require(&header, Call::Recognise).await?;
         let seen: SeenCommand = serde_json::from_str(&seen)
-            .map_err(|_| fdo::Error::InvalidArgs("that is not a command line".into()))?;
+            .ok()
+            .ok_or_else(|| fdo::Error::InvalidArgs("that is not a command line".into()))?;
         json(&self.desk.recognise(seen).await)
     }
 

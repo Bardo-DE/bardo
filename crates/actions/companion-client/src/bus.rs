@@ -20,6 +20,10 @@ pub struct DbusCompanion {
     companion: CompanionProxy<'static>,
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as `map_err(fault_of)` at every call, which passes the error by value"
+)]
 pub(crate) fn fault_of(error: zbus::Error) -> TransportError {
     match &error {
         zbus::Error::MethodError(name, _, _)
@@ -48,6 +52,10 @@ pub(crate) fn json<T: serde::Serialize>(value: &T) -> Result<String, TransportEr
 impl DbusCompanion {
     /// Talks to companiond over `connection`; the bus starts it on the first call when it is
     /// installed with an activation file.
+    ///
+    /// # Errors
+    /// `TransportError` when the proxy cannot be built on `connection` (the bus is closed or
+    /// companiond cannot be found).
     pub async fn over(connection: BusConnection) -> Result<Self, TransportError> {
         let companion = CompanionProxy::new(&connection).await.map_err(fault_of)?;
         Ok(Self {
@@ -57,6 +65,10 @@ impl DbusCompanion {
     }
 
     /// Connects to the session bus.
+    ///
+    /// # Errors
+    /// `TransportError::Bus` when the session bus cannot be reached, else as
+    /// [`DbusCompanion::over`].
     pub async fn connect() -> Result<Self, TransportError> {
         let connection = BusConnection::session()
             .await

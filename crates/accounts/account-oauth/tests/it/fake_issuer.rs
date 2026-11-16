@@ -22,17 +22,17 @@ struct LoopbackHttp;
 impl Http for LoopbackHttp {
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         let (address, target) =
-            split_loopback(&request.uri().to_string()).map_err(|_| HttpError::Unreachable)?;
+            split_loopback(&request.uri().to_string()).ok().ok_or(HttpError::Unreachable)?;
         let (head, body) = request.into_parts();
         let mut wire =
             account_fake_servers::http::Request::new(head.method.as_str(), &target).with_body(body);
         for (name, value) in &head.headers {
-            let value = value.to_str().map_err(|_| HttpError::Malformed)?;
+            let value = value.to_str().ok().ok_or(HttpError::Malformed)?;
             wire = wire.with_header(name.as_str(), value);
         }
         let response = send(&address, Scheme::Http, &wire)
             .await
-            .map_err(|_| HttpError::Unreachable)?;
+            .ok().ok_or(HttpError::Unreachable)?;
         let answer = response.headers.iter().fold(
             account_http::http::Response::builder().status(response.status),
             |answer, (name, value)| answer.header(name.as_str(), value.as_str()),
@@ -252,7 +252,7 @@ fn oauth(access: &str, refresh: &str, expires_at: i64) -> Credential {
         access: SecretText::new(access),
         refresh: SecretText::new(refresh),
         expires_at: UnixSeconds(expires_at),
-        granted: Default::default(),
+        granted: account_core::GrantedScopes::default(),
     }
 }
 

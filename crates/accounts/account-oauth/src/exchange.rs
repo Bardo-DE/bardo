@@ -73,8 +73,9 @@ pub enum ExchangeFault {
     Unreadable,
 }
 
-/// An [`ExchangeFault`] with what the issuer said about it, from the `*_detailed` calls. The
-/// plain calls return the fault alone, unchanged; a host that wants to show the issuer's reason
+/// An [`ExchangeFault`] with what the issuer said about it, from the `*_detailed` calls.
+///
+/// The plain calls return the fault alone, unchanged; a host that wants to show the issuer's reason
 /// (mailo does) calls the detailed one and reads `says`.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{fault}")]
@@ -99,6 +100,12 @@ impl From<ExchangeFault> for ExchangeFailure {
 }
 
 /// Exchanges the redirect's code for tokens, with the PKCE verifier.
+///
+/// # Errors
+///
+/// Returns an [`ExchangeFault`]: `Refused` when the issuer answers `invalid_grant` or 401,
+/// `Unreachable` when it cannot be reached or answers 5xx, and `Unreadable` when its answer is not
+/// what it documents.
 pub async fn exchange_code<H: Http>(
     http: &H,
     endpoints: &IssuerEndpoints,
@@ -111,6 +118,12 @@ pub async fn exchange_code<H: Http>(
 }
 
 /// [`exchange_code`] naming the scopes to redeem the code for (see `redeem_scope`).
+///
+/// # Errors
+///
+/// Returns an [`ExchangeFault`]: `Refused` when the issuer answers `invalid_grant` or 401,
+/// `Unreachable` when it cannot be reached or answers 5xx, and `Unreadable` when its answer is not
+/// what it documents.
 pub async fn exchange_code_scoped<H: Http>(
     http: &H,
     endpoints: &IssuerEndpoints,
@@ -126,6 +139,11 @@ pub async fn exchange_code_scoped<H: Http>(
 }
 
 /// [`exchange_code_scoped`] with the issuer's `error` and `error_description` on a failure.
+///
+/// # Errors
+///
+/// Returns an [`ExchangeFailure`] carrying the [`ExchangeFault`] (refused, unreachable or
+/// unreadable) and what the issuer said about it.
 pub async fn exchange_code_scoped_detailed<H: Http>(
     http: &H,
     endpoints: &IssuerEndpoints,
@@ -147,6 +165,12 @@ pub async fn exchange_code_scoped_detailed<H: Http>(
 
 /// Renews an access token from the refresh token; `Refused` for `invalid_grant`. The answer's
 /// `refresh_token` is the rotated one when the issuer rotates, and absent when it does not.
+///
+/// # Errors
+///
+/// Returns an [`ExchangeFault`]: `Refused` when the issuer answers `invalid_grant` or 401,
+/// `Unreachable` when it cannot be reached or answers 5xx, and `Unreadable` when its answer is not
+/// what it documents.
 pub async fn refresh<H: Http>(
     http: &H,
     endpoints: &IssuerEndpoints,
@@ -160,6 +184,12 @@ pub async fn refresh<H: Http>(
 
 /// [`refresh`] for the access token of another resource: Microsoft issues one token per resource
 /// and reaches the others by refreshing with their scopes.
+///
+/// # Errors
+///
+/// Returns an [`ExchangeFault`]: `Refused` when the issuer answers `invalid_grant` or 401,
+/// `Unreachable` when it cannot be reached or answers 5xx, and `Unreadable` when its answer is not
+/// what it documents.
 pub async fn refresh_scoped<H: Http>(
     http: &H,
     endpoints: &IssuerEndpoints,
@@ -173,6 +203,11 @@ pub async fn refresh_scoped<H: Http>(
 }
 
 /// [`refresh_scoped`] with the issuer's `error` and `error_description` on a failure.
+///
+/// # Errors
+///
+/// Returns an [`ExchangeFailure`] carrying the [`ExchangeFault`] (refused, unreachable or
+/// unreadable) and what the issuer said about it.
 pub async fn refresh_scoped_detailed<H: Http>(
     http: &H,
     endpoints: &IssuerEndpoints,
@@ -190,6 +225,11 @@ pub async fn refresh_scoped_detailed<H: Http>(
 
 /// Revokes a token at the issuer, best effort; an issuer without a revoke endpoint is a success
 /// (there is nothing to ask).
+///
+/// # Errors
+///
+/// Returns an [`ExchangeFault`]: `Refused` for a 401, `Unreachable` when the issuer cannot be
+/// reached or answers 429 or 5xx, and `Unreadable` for any other failing status.
 pub async fn revoke<H: Http>(
     http: &H,
     endpoints: &IssuerEndpoints,
@@ -229,7 +269,7 @@ fn read_tokens_detailed(response: &Response<Vec<u8>>) -> Result<TokenResponse, E
     let fault = match response.status().as_u16() {
         200..=299 => {
             return serde_json::from_slice(response.body())
-                .map_err(|_| ExchangeFault::Unreadable.into());
+                .ok().ok_or_else(|| ExchangeFault::Unreadable.into());
         }
         401 => ExchangeFault::Refused,
         400 if oauth_error(response).as_deref() == Some("invalid_grant") => ExchangeFault::Refused,
@@ -250,14 +290,14 @@ async fn send_form<H: Http>(
     pairs: &[(&str, &str)],
 ) -> Result<Response<Vec<u8>>, ExchangeFault> {
     let request = request_to(Method::POST, url)
-        .map_err(|_| ExchangeFault::Unreachable)?
+        .ok().ok_or(ExchangeFault::Unreachable)?
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .header(ACCEPT, "application/json")
         .body(form::body(pairs).into_bytes())
-        .map_err(|_| ExchangeFault::Unreachable)?;
+        .ok().ok_or(ExchangeFault::Unreachable)?;
     http.send(request)
         .await
-        .map_err(|_| ExchangeFault::Unreachable)
+        .ok().ok_or(ExchangeFault::Unreachable)
 }
 
 #[cfg(test)]

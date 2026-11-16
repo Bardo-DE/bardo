@@ -279,10 +279,10 @@ mod tests {
 
     #[test]
     fn a_code_for_two_resources_is_redeemed_for_the_first() {
-        let s = |list: &[&str]| list.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
         const IMAP: &str = "https://outlook.office.com/IMAP.AccessAsUser.All";
         const SMTP: &str = "https://outlook.office.com/SMTP.Send";
         const GRAPH: &str = "https://graph.microsoft.com/Mail.Send";
+        let s = |list: &[&str]| list.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
         let cases = [
             ("one resource", s(&[IMAP, SMTP, "offline_access"]), None),
             ("none", s(&["offline_access"]), None),

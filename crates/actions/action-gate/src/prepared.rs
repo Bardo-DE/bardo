@@ -176,9 +176,9 @@ pub fn proposed(decl: &ActionDecl, call: &CallRequest, targets: &[EntityId]) -> 
 #[must_use]
 pub fn grants_for(
     prepared: &Prepared,
-    id: GrantId,
+    id: &GrantId,
     at: provenance::UnixSeconds,
-    caller: GrantCaller,
+    caller: &GrantCaller,
 ) -> Vec<permission_core::ActionGrant> {
     prepared
         .decl

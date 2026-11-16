@@ -110,11 +110,12 @@ impl Speakers {
     /// terminal's child.
     async fn terminal(&self, sender: &str) -> fdo::Result<Option<TerminalScope>> {
         let dbus = DBusProxy::new(&self.connection).await?;
-        let who = BusName::try_from(sender).map_err(|_| denied())?;
+        let who = BusName::try_from(sender).ok().ok_or_else(denied)?;
         let credentials = dbus
             .get_connection_credentials(who)
             .await
-            .map_err(|_| denied())?;
+            .ok()
+            .ok_or_else(denied)?;
         let same_user = own_uid().is_some_and(|ours| credentials.unix_user_id() == Some(ours));
         let scope = credentials
             .process_id()
@@ -130,6 +131,10 @@ impl Speakers {
 
     /// Who is on the other end of this call: the shell if the table names the sender so, a
     /// terminal if nothing names it and it is the same user in a terminal's scope, else nobody.
+    ///
+    /// # Errors
+    /// `AccessDenied` when the call has no sender or the sender cannot be told apart from a
+    /// stranger; a bus fault otherwise.
     pub async fn identify(&self, header: &Header<'_>) -> fdo::Result<Speaker> {
         let sender = header
             .sender()
@@ -145,6 +150,9 @@ impl Speakers {
 
     /// [`Speakers::identify`], then the table: the call is refused for a speaker that may not
     /// make it.
+    ///
+    /// # Errors
+    /// `AccessDenied` when the speaker may not make `call`, else as [`Speakers::identify`].
     pub async fn require(&self, header: &Header<'_>, call: Call) -> fdo::Result<Speaker> {
         let speaker = self.identify(header).await?;
         if permits(&speaker, call) {
@@ -159,6 +167,9 @@ impl Speakers {
 
     /// [`Speakers::require`] for a property read, where the bus may hand no header: that caller
     /// is nobody.
+    ///
+    /// # Errors
+    /// `AccessDenied` when the bus gave no header, else as [`Speakers::require`].
     pub async fn require_read(&self, header: Option<&Header<'_>>) -> fdo::Result<Speaker> {
         let header = header.ok_or_else(denied)?;
         self.require(header, Call::Read).await

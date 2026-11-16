@@ -11,9 +11,10 @@ use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 
-/// How the redirect URI ends. An issuer that compares redirect URIs byte for byte against the
-/// registration needs the form that was registered; the listener accepts either, because a
-/// browser sends `GET /?code=...` for both.
+/// How the redirect URI ends.
+///
+/// An issuer that compares redirect URIs byte for byte against the registration needs the form that
+/// was registered; the listener accepts either, because a browser sends `GET /?code=...` for both.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum RedirectPath {
     /// `http://127.0.0.1:<port>/`, porter's form and the default.
@@ -33,11 +34,19 @@ pub struct LoopbackServer {
 
 impl LoopbackServer {
     /// Binds 127.0.0.1 on a free port.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when no loopback port can be bound.
     pub async fn bind() -> std::io::Result<Self> {
         Self::bind_with(RedirectPath::default()).await
     }
 
     /// [`bind`](Self::bind) with the redirect URI ending as `path` says.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when no loopback port can be bound.
     pub async fn bind_with(path: RedirectPath) -> std::io::Result<Self> {
         let listener = TcpListener::bind("127.0.0.1:0").await?;
         let port = listener.local_addr()?.port();
@@ -66,6 +75,11 @@ impl LoopbackServer {
     /// Accepts one request within the wait limit, answers the person with a page, and returns
     /// the code if the state is `expected`. The listener is consumed: whatever arrives second
     /// finds nothing listening.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LoopbackFault`] when the request is not the redirect (wrong `state`, no code,
+    /// oversized or malformed), the issuer refused, or the wait limit passes first.
     pub async fn wait(self, expected: &OAuthState) -> Result<AuthCode, LoopbackFault> {
         self.wait_for(expected, Duration::from_secs(REDIRECT_WAIT_SECONDS))
             .await
@@ -89,6 +103,11 @@ impl LoopbackServer {
     /// connection that sends nothing is cut after [`STRAY_READ_SECONDS`] and counts as a stray.
     /// A request with the right `state` ends the wait whatever it carries (a code, the issuer's
     /// `error`, or nothing). Cancel by dropping the future: the listener goes with it.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LoopbackFault`] when the issuer refused, or `TimedOut` when no answering request
+    /// arrives before `deadline`.
     pub async fn wait_until(
         self,
         expected: &OAuthState,
@@ -104,7 +123,7 @@ impl LoopbackServer {
             .listener
             .accept()
             .await
-            .map_err(|_| LoopbackFault::Malformed)?;
+            .ok().ok_or(LoopbackFault::Malformed)?;
         drop(self.listener);
         serve(&mut socket, expected).await
     }
@@ -116,7 +135,7 @@ impl LoopbackServer {
                 .listener
                 .accept()
                 .await
-                .map_err(|_| LoopbackFault::Malformed)?;
+                .ok().ok_or(LoopbackFault::Malformed)?;
             let limit = Duration::from_secs(STRAY_READ_SECONDS);
             let outcome = tokio::time::timeout(limit, serve(&mut socket, expected))
                 .await

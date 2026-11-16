@@ -13,10 +13,15 @@ use companion_tasks::ServeFault;
 use futures_util::lock::Mutex;
 use std::sync::Arc;
 
-/// Claims `org.bardo.Companion1` on `connection`, serves the root object and one answer object
-/// per task, listens for `Message.Arrived` and keeps time. The callers are told apart by `who`
-/// (the shell is the process it names as the shell's unit; a terminal's child is read from the
-/// system's `/proc`). Returns once the name is ours; the connection keeps serving until it closes.
+/// Claims `org.bardo.Companion1` on `connection`, serves the root object and one answer object per
+/// task, listens for `Message.Arrived` and keeps time.
+///
+/// The callers are told apart by `who` (the shell is the process it names as the shell's unit; a
+/// terminal's child is read from the system's `/proc`). Returns once the name is ours; the
+/// connection keeps serving until it closes.
+///
+/// # Errors
+/// `ServeFault` when the name cannot be claimed or an object cannot be served on `connection`.
 pub async fn serve_on<P, I, K>(
     connection: &BusConnection,
     companion: Arc<Mutex<Companiond<P, I, K>>>,
@@ -32,6 +37,9 @@ where
 
 /// [`serve_on`] reading terminals' cgroups under `proc_root` instead of `/proc`: how a test
 /// presents its processes as a terminal. The daemon's own `serve_on` always reads `/proc`.
+///
+/// # Errors
+/// `ServeFault` when the name cannot be claimed or an object cannot be served on `connection`.
 pub async fn serve_on_rooted<P, I, K>(
     connection: &BusConnection,
     companion: Arc<Mutex<Companiond<P, I, K>>>,
@@ -49,6 +57,10 @@ where
 /// Claims `org.bardo.Companion1` on the session bus and serves it until the connection closes,
 /// telling callers apart by `companiond-callers.toml` (the system's under `/etc/bardo`, the
 /// person's over it).
+///
+/// # Errors
+/// `ServeFault` when the session bus is unreachable, the callers file is unreadable or serving
+/// fails.
 pub async fn serve<P, I, K>(
     companion: Arc<Mutex<Companiond<P, I, K>>>,
     env: &impl Fn(&str) -> Option<String>,

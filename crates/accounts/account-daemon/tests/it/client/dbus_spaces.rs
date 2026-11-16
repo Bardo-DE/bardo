@@ -15,6 +15,7 @@ fn name(text: &str) -> SpaceName {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_lists_creates_and_hears_of_new_spaces() {
+    use account_dbus::BusStream;
     let daemon = Daemon::start([]).await;
     let watcher = Bus::over(daemon.client_as(named("org.bardo.Mail")).await).spaces();
     let mut changes = watcher.watch().await.expect("watch");
@@ -30,7 +31,6 @@ async fn an_app_lists_creates_and_hears_of_new_spaces() {
     assert_eq!(list[0].name, name("Work"));
     assert_eq!(list[0].look, look);
 
-    use account_dbus::BusStream;
     let next = tokio::time::timeout(
         base_testkit::GENEROUS,
         std::future::poll_fn(|cx| std::pin::Pin::new(&mut changes).poll_next(cx)),

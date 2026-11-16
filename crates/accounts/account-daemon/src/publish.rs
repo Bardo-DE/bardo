@@ -93,7 +93,7 @@ impl<H: Host, C: Callers> Core<H, C> {
                         .remove::<AccountServed<AccountObject<H, C>>, _>(account_path(id))
                         .await;
                 }
-                _ => {}
+                Event::StateChanged(_) => {}
             }
         }
         self.announce_states(&list, &before, &after).await;

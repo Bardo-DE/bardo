@@ -50,24 +50,24 @@ fn fault(fault: SpaceFault) -> RefusedError {
             "Too many new Spaces at once: at most {CREATES_PER_WINDOW} a minute. Try again in a \
              minute."
         )),
-        // Unsaved, and a fault a later porter adds.
-        _ => RefusedError::failed("The Spaces could not be saved."),
+        // Unsaved.
+        SpaceFault::Unsaved => RefusedError::failed("The Spaces could not be saved."),
     }
 }
 
 fn space_arg(id: &str) -> Result<DesktopSpace, RefusedError> {
-    DesktopSpace::parse(id).map_err(|_| RefusedError::invalid("There is no such Space."))
+    DesktopSpace::parse(id).ok().ok_or_else(|| RefusedError::invalid("There is no such Space."))
 }
 
 fn name_arg(text: &str) -> Result<SpaceName, RefusedError> {
-    SpaceName::parse(text).map_err(|_| {
+    SpaceName::parse(text).ok().ok_or_else(|| {
         RefusedError::invalid("A Space's name must have 1 to 64 characters and no line breaks.")
     })
 }
 
 fn look_arg(text: &str) -> Result<SpaceLook, RefusedError> {
     SpaceLook::parse(text)
-        .map_err(|_| RefusedError::invalid("A Space's look must be at most 1024 bytes."))
+        .ok().ok_or_else(|| RefusedError::invalid("A Space's look must be at most 1024 bytes."))
 }
 
 impl<H: Host, C: Callers> SpacesObject<H, C> {
@@ -94,11 +94,8 @@ impl<H: Host, C: Callers> SpacesObject<H, C> {
             | CallerRole::AgentLauncher
             | CallerRole::Terminal
             | CallerRole::Compositor
-            | CallerRole::PorterDaemon => Err(RefusedError::access_denied(
-                "only an app the person uses may make a Space",
-            )),
-            // A role porter does not know yet makes nothing.
-            _ => Err(RefusedError::access_denied(
+            | CallerRole::PorterDaemon
+            | CallerRole::AiBroker => Err(RefusedError::access_denied(
                 "only an app the person uses may make a Space",
             )),
         }
@@ -201,7 +198,7 @@ impl<H: Host, C: Callers> SpacesServer for SpacesObject<H, C> {
         look: String,
     ) -> Result<(), RefusedError> {
         let caller = self.registrar(&header).await?;
-        let id = DesktopSpace::parse(&id).map_err(|_| {
+        let id = DesktopSpace::parse(&id).ok().ok_or_else(|| {
             RefusedError::invalid(
                 "A Space's id must be 1 to 64 lowercase letters, digits, '.', '_' or '-', \
                  starting with a letter or digit, and not \"desktop\".",

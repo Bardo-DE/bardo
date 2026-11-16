@@ -180,7 +180,7 @@ impl<H: Host, C> AccountsSettings<H, C> {
                     .map(|s| s.expose().to_owned())
                     .unwrap_or_default(),
             ),
-            key => read(&key, &view.registry, &view.used, &self.directory()).ok_or_else(unknown),
+            key @ Key::Account(..) => read(&key, &view.registry, &view.used, &self.directory()).ok_or_else(unknown),
         }
     }
 }
@@ -205,6 +205,10 @@ impl Directory for Names<'_> {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function over `io::Error`s, which it takes by value",
+)]
 fn failed(why: impl ToString) -> LiveError {
     LiveError::Failed(why.to_string())
 }

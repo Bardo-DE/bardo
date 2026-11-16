@@ -107,12 +107,18 @@ pub fn code_of(verdict: &Result<ReviewVerdict, ReviewError>) -> ReasonCode {
 }
 
 /// The id of a sheet that was never issued.
+///
+/// # Panics
+/// Never: `c-0` is a valid confirmation id.
 #[must_use]
 pub fn unissued() -> ConfirmId {
     ConfirmId::parse("c-0").expect("`c-0` is a valid confirmation id")
 }
 
 /// The model id the reviewer of `stage` is named by.
+///
+/// # Panics
+/// Never: the three reviewer names are valid model ids.
 #[must_use]
 pub fn reviewer_model(stage: Stage) -> ModelId {
     let name = match stage {

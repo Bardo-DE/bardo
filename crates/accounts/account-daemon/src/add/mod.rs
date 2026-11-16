@@ -79,9 +79,14 @@ impl AddArgs {
     /// The arguments as typed: a provider id, `--allow` apps as `name` or `name:isolation`
     /// (`org.bardo.Companion`, `org.example.App:flatpak`; unsandboxed when none is given), and
     /// `--class` slugs.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AddError::Argument`] when the provider id, an app id or an isolation does not
+    /// parse.
     pub fn parse(provider: &str, allow: &[String], classes: &[String]) -> Result<Self, AddError> {
         let bad = |what: &str, text: &str| AddError::Argument(format!("{what} `{text}`"));
-        let provider = ProviderId::parse(provider).map_err(|_| bad("provider id", provider))?;
+        let provider = ProviderId::parse(provider).ok().ok_or_else(|| bad("provider id", provider))?;
         let allow = allow
             .iter()
             .map(|text| {
@@ -90,7 +95,7 @@ impl AddArgs {
                     None => (text.as_str(), Some(Isolation::Unsandboxed)),
                 };
                 Ok(AppId {
-                    name: AppName::parse(name).map_err(|_| bad("app id", text))?,
+                    name: AppName::parse(name).ok().ok_or_else(|| bad("app id", text))?,
                     isolation: isolation.ok_or_else(|| bad("isolation in", text))?,
                 })
             })
@@ -199,6 +204,10 @@ fn person() -> AppId {
 
 /// Takes `org.bardo.Accounts1` on `connection` so no daemon runs beside the command. A name that
 /// is owned, or that another claimant is waiting on, is a daemon.
+///
+/// # Errors
+///
+/// Returns [`AddError::DaemonRunning`] when the name is owned, queued for, or refused by the bus.
 pub async fn take_the_name(connection: &zbus::Connection) -> Result<(), AddError> {
     let reply = connection
         .request_name_with_flags(ACCOUNTS_BUS, zbus::fdo::RequestNameFlags::DoNotQueue.into())
@@ -211,6 +220,12 @@ pub async fn take_the_name(connection: &zbus::Connection) -> Result<(), AddError
 
 /// Adds the account and gives it to the `--allow` apps. `service` is built over the daemon's own
 /// seams with `sheets` as its sheet host.
+///
+/// # Errors
+///
+/// Returns [`AddError::UnknownProvider`] when `args.provider` is not among `served`,
+/// [`AddError::Refused`] when the service refuses the sign-in, and [`AddError::AllowFailed`] when
+/// the account is added but an `--allow` permit is not made.
 pub async fn run<P, S, T, K, R, A>(
     service: &AccountService<P, S, TerminalSheets<T>, K, R, A>,
     sheets: &TerminalSheets<T>,
@@ -291,8 +306,9 @@ where
 }
 
 /// `accountd add`: the provider files, the registry and the secret store the daemon uses, a
-/// terminal for a sheet, and the bus name as the lock. `provider`, `allow` and `classes` are the
-/// command's arguments as typed.
+/// terminal for a sheet, and the bus name as the lock.
+///
+/// `provider`, `allow` and `classes` are the command's arguments as typed.
 ///
 /// # Errors
 /// See [`AddError`].
@@ -326,7 +342,7 @@ pub async fn add_account(
     };
     let sheets = TerminalSheets::new(StdTerminal);
     let service = AccountService::new(
-        families.families,
+        families.providers,
         registry,
         chosen.keys,
         sheets.clone(),

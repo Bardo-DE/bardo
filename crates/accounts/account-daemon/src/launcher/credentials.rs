@@ -89,7 +89,7 @@ impl Credentials {
         state.next += 1;
         // "cred-<n>" is always an id; the error arm is not reachable.
         ProcessCredentialId::parse(&format!("{ID_PREFIX}{}", state.next))
-            .map_err(|_| Refusal::Unavailable)
+            .ok().ok_or(Refusal::Unavailable)
     }
 
     /// Ends `id` for the connection `owner` that was issued it: `note` is told (the audit line).

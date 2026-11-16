@@ -111,6 +111,10 @@ async fn request(
     Ok(reply_of(SheetKind::Choose, code, results).expect("a reply"))
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario read top to bottom: ask once, then reach the server through the descriptor",
+)]
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor() {
     let dav = FakeDav::start("alice", APP_PASSWORD).await.expect("dav");
@@ -172,15 +176,15 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
     );
     let answer = tokio::task::spawn_blocking(move || {
         stream.write_all(asked.as_bytes()).expect("write");
-        let mut head = Vec::new();
+        let mut response_head = Vec::new();
         let mut byte = [0u8; 1];
-        while !head.ends_with(b"\r\n\r\n") {
+        while !response_head.ends_with(b"\r\n\r\n") {
             if stream.read(&mut byte).expect("read") == 0 {
                 break;
             }
-            head.push(byte[0]);
+            response_head.push(byte[0]);
         }
-        String::from_utf8_lossy(&head).into_owned()
+        String::from_utf8_lossy(&response_head).into_owned()
     })
     .await
     .expect("join");

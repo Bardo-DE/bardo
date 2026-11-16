@@ -2,7 +2,10 @@
 //! scripted one. The hostile-model corpora run through intentd's adapters (`intentd/tests`); these
 //! pin what the portable crate owes on its own.
 
-#[allow(dead_code)]
+#[allow(
+    dead_code,
+    reason = "the shared inference support has helpers this binary does not use"
+)]
 #[path = "../../../companion-daemon/tests/it/support/infer.rs"]
 mod infer;
 

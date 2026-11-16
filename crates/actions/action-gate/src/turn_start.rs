@@ -1,6 +1,8 @@
 //! The one read a turn start may run unasked: the companion looks up memory for the words the
-//! person just typed, before its first planner call. The call is made as any other (gated,
-//! counted, audited, labelled), and only the sheet that would ask about a first use is skipped.
+//! person just typed, before its first planner call.
+//!
+//! The call is made as any other (gated, counted, audited, labelled), and only the sheet that would
+//! ask about a first use is skipped.
 //!
 //! The exception is typed and narrow. The caller says `Origin::TurnStart`; the router then
 //! checks everything itself: the action is `memory.recall` of the memory app, the caller is the

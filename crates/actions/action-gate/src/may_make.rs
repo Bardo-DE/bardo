@@ -5,10 +5,11 @@ use action_manifest::{ActionDecl, is_offered};
 use action_vocab::{ActionRef, CallerRole};
 use permission_core::is_agent_action;
 
-/// Whether a caller in `role` may make a call of `action`. The pseudo-app belongs to the host of
-/// an external agent alone; that host makes it no call of another app but the ones the agent's
-/// edge offers (`AgentReach::Offered` of an app that is not host-only), so a hostile agent cannot
-/// reach an action nobody offered it by naming it.
+/// Whether a caller in `role` may make a call of `action`.
+///
+/// The pseudo-app belongs to the host of an external agent alone; that host makes it no call of
+/// another app but the ones the agent's edge offers (`AgentReach::Offered` of an app that is not
+/// host-only), so a hostile agent cannot reach an action nobody offered it by naming it.
 #[must_use]
 pub fn may_make(
     registry: &Registry,

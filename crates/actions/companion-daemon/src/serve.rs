@@ -39,6 +39,10 @@ fn failed(error: ServeFault) -> fdo::Error {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as `map_err(bad)` at every call, which passes the error by value"
+)]
 pub(crate) fn bad(error: serde_json::Error) -> fdo::Error {
     fdo::Error::InvalidArgs(error.to_string())
 }
@@ -68,7 +72,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock> Root<P, I, K> {
 
 #[zbus::interface(name = "org.bardo.Companion1")]
 impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static> Root<P, I, K> {
-    async fn prepare(&self, options: Details) -> fdo::Result<()> {
+    fn prepare(&self, options: Details) -> fdo::Result<()> {
         let _ = options;
         Ok(())
     }
@@ -159,11 +163,11 @@ impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static> Ro
         Ok(())
     }
 
-    async fn roster(&self) -> fdo::Result<String> {
+    fn roster(&self) -> fdo::Result<String> {
         json(&self.shared.roster())
     }
 
-    async fn front(&self) -> fdo::Result<String> {
+    fn front(&self) -> fdo::Result<String> {
         json(&self.shared.front())
     }
 
@@ -261,6 +265,10 @@ impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static>
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as `map_err(bus)` at every call, which passes the error by value"
+)]
 fn bus(error: zbus::Error) -> ServeFault {
     ServeFault::Bus(error.to_string())
 }
@@ -364,6 +372,9 @@ async fn forward<P, I, K>(
 
 /// [`serve_on_rooted`] with the routines the daemon keeps, which `Companion1.Helpers2` lists and
 /// changes. With none, its routine calls say routines are not kept here.
+///
+/// # Errors
+/// `ServeFault` when the name cannot be claimed or an object cannot be served on `connection`.
 pub async fn serve_with_routines<P, I, K>(
     connection: &BusConnection,
     companion: Arc<Mutex<Companiond<P, I, K>>>,

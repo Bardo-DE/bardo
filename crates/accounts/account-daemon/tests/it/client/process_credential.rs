@@ -91,7 +91,7 @@ async fn a_memfd_credential_sets_a_child_up_by_value_or_by_an_inherited_descript
             assert_eq!(var.as_str(), "ANTHROPIC_API_KEY");
             assert_eq!(value.expose(), KEY);
         }
-        other => panic!("{other:?}"),
+        other @ ChildKey::File { .. } => panic!("{other:?}"),
     }
     // By descriptor: `<VAR>_FILE` names /proc/self/fd/<n> and a duplicate is to be placed there.
     match credential
@@ -107,7 +107,7 @@ async fn a_memfd_credential_sets_a_child_up_by_value_or_by_an_inherited_descript
             file.read_exact_at(&mut bytes, 0).expect("read");
             assert_eq!(bytes, KEY.as_bytes());
         }
-        other => panic!("{other:?}"),
+        other @ ChildKey::Value { .. } => panic!("{other:?}"),
     }
 
     // Ended by the launcher when the process is over; once.

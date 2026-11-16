@@ -151,9 +151,11 @@ struct State {
     sessions: BTreeMap<SessionToken, String>,
 }
 
-/// The registered launchers and their pending requests. Cloning gives another handle on the same
-/// roster: the one the daemon keeps (for the agent sign-in rows, as the `account_service`
-/// `Launchers` seam and the `Roster` the add sheet asks) and the one the bus object uses.
+/// The registered launchers and their pending requests.
+///
+/// Cloning gives another handle on the same roster: the one the daemon keeps (for the agent sign-in
+/// rows, as the `account_service` `Launchers` seam and the `Roster` the add sheet asks) and the one
+/// the bus object uses.
 #[derive(Clone)]
 pub struct Launchers {
     state: Arc<Mutex<State>>,
@@ -382,7 +384,7 @@ impl Launchers {
             let owner = state.programs.get(program).cloned().ok_or(NoLauncher)?;
             state.next += 1;
             let request =
-                LoginRequestId::parse(&format!("login-{}", state.next)).map_err(|_| NoLauncher)?;
+                LoginRequestId::parse(&format!("login-{}", state.next)).ok().ok_or(NoLauncher)?;
             let (done, waiting) = oneshot::channel();
             let bound = i64::try_from(self.timing.bound.as_secs()).unwrap_or(i64::MAX);
             state.pending.insert(

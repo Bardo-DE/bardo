@@ -1,7 +1,8 @@
-//! The call lifecycle as a pure step (call lifecycle §4.1 with the addendum's rows): the
-//! router feeds it events and carries out the effects it returns. The decision before dispatch
-//! is [`gate`](crate::gate); this machine sequences review, preview, confirmation and dispatch
-//! around it.
+//! The call lifecycle as a pure step (call lifecycle §4.1 with the addendum's rows): the router
+//! feeds it events and carries out the effects it returns.
+//!
+//! The decision before dispatch is [`gate`](crate::gate); this machine sequences review, preview,
+//! confirmation and dispatch around it.
 
 use crate::gate::Pending;
 use account_core::AppName;
@@ -121,8 +122,8 @@ pub fn call_step(state: CallState, event: CallEvent) -> (CallState, Vec<CallEffe
             (halted(), vec![])
         }
         (S::Gating, V::Gated(pending)) => gated(pending),
-        (S::Reviewing { planned, mut done }, V::Verdict(stage, result)) => {
-            done.push((stage, result));
+        (S::Reviewing { planned, mut done }, V::Verdict(which, result)) => {
+            done.push((which, result));
             reviewed(planned, done)
         }
         (S::Previewing, V::Previewed(request)) => {

@@ -105,9 +105,8 @@ fn args_of(decl: &ActionDecl, request: &CallRequest) -> ArgFacts {
             None => ArgFacts::Opaque,
         };
     }
-    let mut paths = match gather(decl, request, ArgSink::Path, path_of) {
-        Some(paths) => paths,
-        None => return ArgFacts::Opaque,
+    let Some(mut paths) = gather(decl, request, ArgSink::Path, path_of) else {
+        return ArgFacts::Opaque;
     };
     if let TargetValue::Files(files) = &request.target {
         for file in files {
@@ -117,9 +116,8 @@ fn args_of(decl: &ActionDecl, request: &CallRequest) -> ArgFacts {
             }
         }
     }
-    let mut to = match gather(decl, request, ArgSink::Recipient, recipient_of) {
-        Some(to) => to,
-        None => return ArgFacts::Opaque,
+    let Some(mut to) = gather(decl, request, ArgSink::Recipient, recipient_of) else {
+        return ArgFacts::Opaque;
     };
     match gather(decl, request, ArgSink::Destination, recipient_of) {
         Some(more) => to.extend(more),

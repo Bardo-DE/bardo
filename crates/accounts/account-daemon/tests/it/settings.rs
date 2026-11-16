@@ -536,7 +536,7 @@ async fn a_sign_in_again_that_ends_without_signing_in_is_said_on_its_row() {
     // The mail account's provider is not loaded: its sign-in fails, and the person closes the
     // sheet that says so.
     let rig = Rig::start_over(
-        Default::default(),
+        account_daemon::Options::default(),
         SheetHost::answering(account_sheet::SheetInput::Dismiss),
         vec![account_fake::cloud_provider(), account_fake::llm_provider()],
     )
