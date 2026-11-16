@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the desktop from the bardo tree: runs each component's own installer (crates/<name>/...), in dependency order,
+# Install the desktop from the bardo tree: runs each component's own installer (crates/<domain>/...), in dependency order,
 # on programs built from this one tree.
 #
 #   ./install.sh [--dry-run] [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--tree DIR] [--no-build] [--only NAME[,NAME]]
@@ -144,9 +144,27 @@ root_prefix() {
 # environment it takes, the places it writes, and why it is left to you (empty: it can run here).
 dir="" script="" args=() envs=() writes=() yourself="" blurb=""
 
+# domain_of NAME: the folder of crates/ that holds the component NAME (the part names are the programs' own).
+domain_of() {
+  case "$1" in
+    porter) echo accounts ;;
+    steward) echo inference ;;
+    ferry) echo sync ;;
+    stoker) echo models ;;
+    almanac) echo memory ;;
+    docket) echo actions ;;
+    cua) echo computer-use ;;
+    detent) echo settings-app ;;
+    casement) echo compositor ;;
+    sill) echo shell ;;
+    transom) echo portal ;;
+    *) echo "$1" ;;
+  esac
+}
+
 # describe NAME: fills the variables above for one component.
 describe() {
-  dir="$tree/crates/$1" args=() envs=() writes=() yourself="" blurb=""
+  dir="$tree/crates/$(domain_of "$1")" args=() envs=() writes=() yourself="" blurb=""
   case "$1" in
     callers)
       # The list of the desktop's own programs, a file of this repo (dist/desktop-callers.toml), placed at the fixed
@@ -274,7 +292,7 @@ describe() {
       # This repo's own session installer (never sudo; it stops with the root command when a place is not writable).
       dir="$HERE"
       script=install/install.sh
-      # It also puts casement.service and sill.service, root-held, in <sysconfdir>/systemd/user, from the casement and sill crates of the tree (--tree).
+      # It also puts casement.service and sill.service, root-held, in <sysconfdir>/systemd/user, from the compositor and shell folders of the tree (--tree).
       args=(--prefix "$prefix" --sysconfdir "$sysconfdir")
       [ -z "$destdir" ] || args+=(--destdir "$destdir")
       args+=(--tree "$tree")

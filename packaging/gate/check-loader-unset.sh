@@ -7,9 +7,9 @@
 #
 #   gate/check-loader-unset.sh [--peephole DIR] [--crates DIR] [--table FILE] [--pending FILE] [--dropin FILE]...
 #
-#   --peephole DIR   the peephole crate (default: $PEEPHOLE_DIR, then the peephole crate of this tree). None: exit 2
-#   --crates DIR   the component crate folders (crates/<name> of this tree), where the unit files are looked for under <repo>/dist, <repo>/dbus and one folder
-#                    deeper (default: crates/ of this tree). A unit whose file is not found is noted and skipped
+#   --peephole DIR   the caller-identity folder, holding caller-identity-core (default: $PEEPHOLE_DIR, then crates/identity of this tree). None: exit 2
+#   --crates DIR   the component domain folders (crates/<domain> of this tree), where the unit files are looked for under <domain>/dist, <domain>/dbus and one folder
+#                    deeper (<domain>/<group>/dist) (default: crates/ of this tree). A unit whose file is not found is noted and skipped
 #   --table FILE     the table of the desktop's programs (default dist/desktop-callers.toml): its `unit` rows are the units checked,
 #                    xdg-desktop-portal.service excepted (it is the distro's; its drop-in is checked instead), plus turnstile.service
 #   --pending FILE   units that wait for their own repository to carry the line (default gate/loader-unset-pending.txt: `unit
@@ -39,15 +39,15 @@ while [ $# -gt 0 ]; do
 done
 command -v python3 >/dev/null || { echo "check-loader-unset: python3 is not installed" >&2; exit 2; }
 if [ -z "$peephole" ]; then
-  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/peephole"; do
-    if [ -n "$d" ] && [ -f "$d/peephole-core/src/facts.rs" ]; then peephole=$d; break; fi
+  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/identity"; do
+    if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/facts.rs" ]; then peephole=$d; break; fi
   done
 fi
-if [ -z "$peephole" ] || [ ! -f "$peephole/peephole-core/src/facts.rs" ]; then
+if [ -z "$peephole" ] || [ ! -f "$peephole/caller-identity-core/src/facts.rs" ]; then
   echo "check-loader-unset: no peephole crate (caller-identity-core/src/facts.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
   exit 2
 fi
-exec python3 -I - "$peephole/peephole-core/src/facts.rs" "$table" "$crates_dir" "$pending" "${dropins[@]}" <<'PY'
+exec python3 -I - "$peephole/caller-identity-core/src/facts.rs" "$table" "$crates_dir" "$pending" "${dropins[@]}" <<'PY'
 import os
 import re
 import sys
@@ -102,12 +102,13 @@ for repo in sorted(os.listdir(crates_dir)):
     base = os.path.join(crates_dir, repo)
     if not os.path.isdir(base):
         continue
-    for sub in ("dist", "dbus", os.path.join("dist", "systemd")):
-        d = os.path.join(base, sub)
-        if os.path.isdir(d):
-            for name in os.listdir(d):
-                if name.endswith(".service") and os.path.isfile(os.path.join(d, name)):
-                    found.setdefault(name, os.path.join(d, name))
+    for top in [base] + [os.path.join(base, x) for x in sorted(os.listdir(base))]:
+        for sub in ("dist", "dbus", os.path.join("dist", "systemd")):
+            d = os.path.join(top, sub)
+            if os.path.isdir(d):
+                for name in os.listdir(d):
+                    if name.endswith(".service") and os.path.isfile(os.path.join(d, name)):
+                        found.setdefault(name, os.path.join(d, name))
 
 for u in units:
     path = found.get(u)

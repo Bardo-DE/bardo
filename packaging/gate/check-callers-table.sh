@@ -6,9 +6,9 @@
 #   gate/check-callers-table.sh [--table FILE] [--peephole DIR] [--crates DIR]
 #
 #   --table FILE     the table (default dist/desktop-callers.toml of this repo)
-#   --peephole DIR   the peephole crate: its caller-identity-core/src/roles.rs lists the roles (default: $PEEPHOLE_DIR, then the
-#                    peephole crate of this tree). Without one the check cannot say which roles are missing: exit 2
-#   --crates DIR   the component crate folders (crates/<name> of this tree), to compare each unit's ExecStart program with the row's `exe` list
+#   --peephole DIR   the caller-identity folder: its caller-identity-core/src/roles.rs lists the roles (default: $PEEPHOLE_DIR, then
+#                    crates/identity of this tree). Without one the check cannot say which roles are missing: exit 2
+#   --crates DIR   the component domain folders (crates/<domain> of this tree), to compare each unit's ExecStart program with the row's `exe` list
 #                    (default: crates/ of this tree; a unit whose file is not found there is noted and skipped)
 #
 # Checks: the file parses; every key is one the reader knows; every row has an app, a role and a non-empty list of
@@ -36,15 +36,15 @@ done
 command -v python3 >/dev/null || { echo "check-callers-table: python3 is not installed" >&2; exit 2; }
 [ -f "$table" ] || { echo "check-callers-table: no table at $table" >&2; exit 2; }
 if [ -z "$peephole" ]; then
-  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/peephole"; do
-    if [ -n "$d" ] && [ -f "$d/peephole-core/src/roles.rs" ]; then peephole=$d; break; fi
+  for d in "${PEEPHOLE_DIR:-}" "$ROOT/../crates/identity"; do
+    if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/roles.rs" ]; then peephole=$d; break; fi
   done
 fi
-if [ -z "$peephole" ] || [ ! -f "$peephole/peephole-core/src/roles.rs" ]; then
+if [ -z "$peephole" ] || [ ! -f "$peephole/caller-identity-core/src/roles.rs" ]; then
   echo "check-callers-table: no peephole crate (caller-identity-core/src/roles.rs): give --peephole DIR or set PEEPHOLE_DIR" >&2
   exit 2
 fi
-exec python3 -I - "$table" "$peephole/peephole-core/src/roles.rs" "$crates_dir" <<'PY'
+exec python3 -I - "$table" "$peephole/caller-identity-core/src/roles.rs" "$crates_dir" <<'PY'
 import fnmatch
 import os
 import re
@@ -159,12 +159,17 @@ def segment_glob(pattern, path):
 unit_files = {}
 if os.path.isdir(crates_dir):
     for repo in sorted(os.listdir(crates_dir)):
-        for sub in ("dist", "dbus", "dist/systemd"):
-            d = os.path.join(crates_dir, repo, sub)
-            if os.path.isdir(d):
-                for name in sorted(os.listdir(d)):
-                    if name.endswith(".service"):
-                        unit_files.setdefault(name, os.path.join(d, name))
+        base = os.path.join(crates_dir, repo)
+        if not os.path.isdir(base):
+            continue
+        # <domain>/dist and, one folder deeper, <domain>/<group>/dist (input/key-remap, ...)
+        for top in [base] + [os.path.join(base, x) for x in sorted(os.listdir(base))]:
+            for sub in ("dist", "dbus", "dist/systemd"):
+                d = os.path.join(top, sub)
+                if os.path.isdir(d):
+                    for name in sorted(os.listdir(d)):
+                        if name.endswith(".service"):
+                            unit_files.setdefault(name, os.path.join(d, name))
 checked = skipped = 0
 for row in rows:
     unit = row.get("unit")

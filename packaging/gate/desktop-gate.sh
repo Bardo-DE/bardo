@@ -96,7 +96,7 @@ run_scenario() {
 # only for a script listed in sill-accept-skips.txt whose phase has not closed; any FAIL is rerun once,
 # alone and one at a time (a loaded host starves the timing-sensitive scripts), and says so.
 sill_accept() {
-  local work="$ROOT/build/sill-accept" sill="$TREE/crates/sill" log rc=0 name why closes
+  local work="$ROOT/build/sill-accept" sill="$TREE/crates/shell" log rc=0 name why closes
   local -a failed=() skipped=()
   rm -rf "$work"; mkdir -p "$work"; log="$work/accept.log"
   export CARGO_TARGET_DIR="$work/target" CASEMENT_TARGET="$work/casement-target" CASEMENT_TOOLS="$work/casement-tools"

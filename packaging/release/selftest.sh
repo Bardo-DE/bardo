@@ -84,7 +84,7 @@ pack "$tmp/c3" >/dev/null 2>&1 || check "a stage with a polkit action in it no l
 rm -rf "$top/share/polkit-1"
 
 # The committed list is slipway's: the same text in slipway's format passes, one rule missing or added does not.
-rust="$tmp/slipway/crates/slipway-core/src/release/system.rs"
+rust="$tmp/updater/updater-core/src/release/system.rs"
 mkdir -p "$(dirname "$rust")"
 render() { # LIST-FILTER-AWK: the list as slipway's Rust, optionally changed by an awk program on the rule lines
   { echo "pub const ALLOWED_SYSTEM_FILES: [SystemRule; 13] = ["
@@ -92,11 +92,11 @@ render() { # LIST-FILTER-AWK: the list as slipway's Rust, optionally changed by 
     echo "];"; } >"$rust"
 }
 render '{ print }'
-"$HERE/check-system-list.sh" --slipway "$tmp/slipway" >/dev/null || check "the list does not match slipway's own text"
+"$HERE/check-system-list.sh" --slipway "$tmp/updater" >/dev/null || check "the list does not match slipway's own text"
 render 'NR != 4 { print }'
-"$HERE/check-system-list.sh" --slipway "$tmp/slipway" >/dev/null 2>&1 && check "a rule slipway does not have was not noticed"
+"$HERE/check-system-list.sh" --slipway "$tmp/updater" >/dev/null 2>&1 && check "a rule slipway does not have was not noticed"
 render '{ print } END { print "/etc/polkit-1/rules.d exact 00-all.rules" }'
-"$HERE/check-system-list.sh" --slipway "$tmp/slipway" >/dev/null 2>&1 && check "a rule only slipway has was not noticed"
+"$HERE/check-system-list.sh" --slipway "$tmp/updater" >/dev/null 2>&1 && check "a rule only slipway has was not noticed"
 
 # The forger itself is sound: with no fault, its release verifies (so a refusal above is for the fault).
 python3 -I "$HERE/selftest-forge.py" "$tmp/h-good" good "$tmp/key.sec" && "$HERE/verify.sh" "$tmp/h-good" --pubkey "$tmp/key.pub" >/dev/null || check "the forger's fault-free release does not verify"

@@ -3,7 +3,7 @@
 #   exact   the file is named exactly NAME
 #   ending  any plain name that ends in NAME and is longer than it
 #
-# A committed copy of slipway-core's ALLOWED_SYSTEM_FILES (crates/slipway-core/src/release/system.rs), in the same
+# A committed copy of slipway-core's ALLOWED_SYSTEM_FILES (crates/updater/updater-core/src/release/system.rs), in the same
 # order. release.py reads it for pack and verify, so `system/` holding a path no rule here names fails the pack, and
 # release/check-system-list.sh compares it with slipway's source (the workflow runs that). slipway's privileged helper
 # is installed by hand and is not replaced by a release, so a file added here also needs a new helper on every

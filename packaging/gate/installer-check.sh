@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The top-level installer against stub component installers in a scratch tree (crates/<name>/...): the dry run prints the plan in
+# The top-level installer against stub component installers in a scratch tree (crates/<domain>/...): the dry run prints the plan in
 # order and runs nothing, a real run passes the prefix and the staging root through, a failing component stops the run
 # with a message naming it, and nothing writes outside the scratch directory (HOME is the scratch one) or calls sudo.
 #
@@ -25,42 +25,42 @@ echo "$1 \$* PREFIX=\${PREFIX:-} DESTDIR=\${DESTDIR:-} CTD=\${CARGO_TARGET_DIR:-
 STUB
   chmod +x "$f"
 }
-stub porter/scripts/install.sh porter
-stub steward/scripts/install.sh steward
-stub ferry/scripts/install.sh ferry
-stub stoker/scripts/install.sh stoker
-stub almanac/scripts/install.sh almanac
-stub docket/scripts/install.sh docket
-stub cua/scripts/install.sh cua
-stub detent/scripts/install.sh detent
-stub casement/scripts/install.sh casement
-stub sill/dist/install.sh sill
-stub transom/scripts/install.sh transom
-stub keycap/install.sh keycap
+stub accounts/scripts/install.sh porter
+stub inference/scripts/install.sh steward
+stub sync/scripts/install.sh ferry
+stub models/scripts/install.sh stoker
+stub memory/scripts/install.sh almanac
+stub actions/scripts/install.sh docket
+stub computer-use/scripts/install.sh cua
+stub settings-app/scripts/install.sh detent
+stub compositor/scripts/install.sh casement
+stub shell/dist/install.sh sill
+stub portal/scripts/install.sh transom
+stub input/key-remap/install.sh keycap
 stub files/dist/install.sh files
-stub palmrest/install.sh palmrest
+stub input/mouse-gestures/install.sh palmrest
 # The two units the session installer puts in /etc/systemd/user, as the casement and sill checkouts ship them.
-mkdir -p "$sib/crates/casement/dist" "$sib/crates/sill/dist"
+mkdir -p "$sib/crates/compositor/dist" "$sib/crates/shell/dist"
 # the stub units carry the loader line the real ones do (peephole's list), so the loader step below checks them as it would a release
 unset_line='UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE'
-printf '[Service]\nExecStart=/usr/bin/casement $CASEMENT_SESSION_ARGS\n%s\n' "$unset_line" >"$sib/crates/casement/dist/casement.service"
-printf '[Service]\nExecStart=/usr/bin/sill run\n%s\n' "$unset_line" >"$sib/crates/sill/dist/sill.service"
+printf '[Service]\nExecStart=/usr/bin/casement $CASEMENT_SESSION_ARGS\n%s\n' "$unset_line" >"$sib/crates/compositor/dist/casement.service"
+printf '[Service]\nExecStart=/usr/bin/sill run\n%s\n' "$unset_line" >"$sib/crates/shell/dist/sill.service"
 mkdir -p "$sib/target/release"; : >"$sib/target/release/detent"; chmod +x "$sib/target/release/detent"
 # The input service, the keyboard map and the touchpad service: the files install/system.sh takes from their crates (the unit as
 # each crate ships it), and their programs, already built (so no compiler runs here). keycap's and palmrest's own installers,
 # stubbed above, must never run.
-mkdir -p "$sib/crates/turnstile/dist" "$sib/crates/keycap/dist" "$sib/crates/palmrest/dist"
-printf '[Socket]\nListenSequentialPacket=/run/turnstile/input.sock\nSocketMode=0666\n' >"$sib/crates/turnstile/dist/turnstile.socket"
-printf '[Service]\nExecStart=/usr/local/bin/turnstile\nUser=root\n%s\n' "$unset_line" >"$sib/crates/turnstile/dist/turnstile.service"
-printf 'KERNEL=="uinput", SUBSYSTEM=="misc", MODE="0600", GROUP="root", TAG-="uaccess", OPTIONS+="static_node=uinput"\n' >"$sib/crates/turnstile/dist/72-turnstile.rules"
-printf 'uinput\n' >"$sib/crates/turnstile/dist/turnstile-modules.conf"
-printf '[Service]\nExecStart=/usr/local/bin/keycap\nDynamicUser=yes\n%s\n' "$unset_line" >"$sib/crates/keycap/dist/keycap.service"
-printf '// polkit\n' >"$sib/crates/keycap/dist/keycap.polkit.rules"
-printf 'KERNEL=="uinput", GROUP="input", MODE="0660"\n' >"$sib/crates/keycap/dist/70-keycap.rules"
-printf '[Service]\nDeviceAllow=/dev/uinput rw\n' >"$sib/crates/keycap/dist/keycap.uinput.conf"
-printf '[Service]\nExecStart=/usr/local/bin/palmrest\nDynamicUser=yes\n%s\n' "$unset_line" >"$sib/crates/palmrest/dist/palmrest.service"
-printf 'SUBSYSTEM=="hidraw", KERNELS=="0005:004C:0269.*", GROUP="input", MODE="0660"\n' >"$sib/crates/palmrest/dist/70-palmrest.rules"
-printf 'options hid_magicmouse emulate_scroll_wheel=0 emulate_3button=1\n' >"$sib/crates/palmrest/dist/99-palmrest.conf"
+mkdir -p "$sib/crates/input/input-broker/dist" "$sib/crates/input/key-remap/dist" "$sib/crates/input/mouse-gestures/dist"
+printf '[Socket]\nListenSequentialPacket=/run/turnstile/input.sock\nSocketMode=0666\n' >"$sib/crates/input/input-broker/dist/turnstile.socket"
+printf '[Service]\nExecStart=/usr/local/bin/turnstile\nUser=root\n%s\n' "$unset_line" >"$sib/crates/input/input-broker/dist/turnstile.service"
+printf 'KERNEL=="uinput", SUBSYSTEM=="misc", MODE="0600", GROUP="root", TAG-="uaccess", OPTIONS+="static_node=uinput"\n' >"$sib/crates/input/input-broker/dist/72-turnstile.rules"
+printf 'uinput\n' >"$sib/crates/input/input-broker/dist/turnstile-modules.conf"
+printf '[Service]\nExecStart=/usr/local/bin/keycap\nDynamicUser=yes\n%s\n' "$unset_line" >"$sib/crates/input/key-remap/dist/keycap.service"
+printf '// polkit\n' >"$sib/crates/input/key-remap/dist/keycap.polkit.rules"
+printf 'KERNEL=="uinput", GROUP="input", MODE="0660"\n' >"$sib/crates/input/key-remap/dist/70-keycap.rules"
+printf '[Service]\nDeviceAllow=/dev/uinput rw\n' >"$sib/crates/input/key-remap/dist/keycap.uinput.conf"
+printf '[Service]\nExecStart=/usr/local/bin/palmrest\nDynamicUser=yes\n%s\n' "$unset_line" >"$sib/crates/input/mouse-gestures/dist/palmrest.service"
+printf 'SUBSYSTEM=="hidraw", KERNELS=="0005:004C:0269.*", GROUP="input", MODE="0660"\n' >"$sib/crates/input/mouse-gestures/dist/70-palmrest.rules"
+printf 'options hid_magicmouse emulate_scroll_wheel=0 emulate_3button=1\n' >"$sib/crates/input/mouse-gestures/dist/99-palmrest.conf"
 for b in turnstile keycap palmrest; do printf '#!/bin/sh\n' >"$sib/target/release/$b"; chmod +x "$sib/target/release/$b"; done
 # A sudo that fails the check when called.
 printf '#!/bin/sh\necho sudo >>"%s"\nexit 1\n' "$log" >"$tmp/bin/sudo"; chmod +x "$tmp/bin/sudo"
@@ -96,7 +96,7 @@ plan=$(inst --dry-run --prefix /usr) || fail "system prefix dry run failed"
 printf '%s\n' "$plan" | grep -q 'porter .*yourself (needs root' || fail "a system prefix was not reported as needing root"
 printf '%s\n' "$plan" | grep -q 'session .*yourself (needs root' || fail "the session step was not left to the person without root: $plan"
 printf '%s\n' "$plan" | grep -q '&& asroot .*install/install.sh --prefix /usr --sysconfdir /etc' || fail "the session root command does not go through the escalation program: $plan"
-printf '%s\n' "$plan" | grep -q 'cd .*porter && asroot .*scripts/install.sh --prefix /usr' || fail "the root command does not go through the escalation program: $plan"
+printf '%s\n' "$plan" | grep -q 'cd .*accounts && asroot .*scripts/install.sh --prefix /usr' || fail "the root command does not go through the escalation program: $plan"
 printf '%s\n' "$plan" | grep -q 'callers .*yourself (needs root: /etc/quire' || fail "the callers table was not left to the person without root: $plan"
 printf '%s\n' "$plan" | grep -q '&& asroot .*install/system.sh callers *$' || fail "the callers root command does not go through the escalation program: $plan"
 printf '%s\n' "$plan" | grep -q '&& asroot .*install/system.sh turnstile --prefix /usr --tree' || fail "the input service root command is missing: $plan"
@@ -105,16 +105,17 @@ printf '%s\n' "$plan" | grep -q '&& asroot .*install/system.sh palmrest --prefix
 # 2b. without a staging root almanac, docket and cua are left to the person, as themselves: their installers refuse to
 # run as root and ask for sudo for /etc/quire themselves, so no root command is printed for them.
 plan=$(inst --dry-run --prefix "$tmp/user-prefix") || fail "user prefix dry run failed"
+declare -A domain=([almanac]=memory [docket]=actions [cua]=computer-use [stoker]=models)
 for c in almanac docket cua; do
   printf '%s\n' "$plan" | grep -q "$c .*yourself (its caller table" || fail "$c was not left to the person: $plan"
-  printf '%s\n' "$plan" | grep -q "cd .*$c && .*scripts/install.sh --prefix $tmp/user-prefix --no-build *\$" || fail "$c command is missing: $plan"
-  ! printf '%s\n' "$plan" | grep -q "asroot .*$c/scripts/install.sh" || fail "$c was offered as a root command: $plan"
+  printf '%s\n' "$plan" | grep -q "cd .*${domain[$c]} && .*scripts/install.sh --prefix $tmp/user-prefix --no-build *\$" || fail "$c command is missing: $plan"
+  ! printf '%s\n' "$plan" | grep -q "asroot .*${domain[$c]}/scripts/install.sh" || fail "$c was offered as a root command: $plan"
 done
 
 # 2c. without a staging root stoker is left to the person, as themselves (its installer asks for sudo itself).
 plan=$(inst --dry-run --prefix "$tmp/user-prefix") || fail "user prefix dry run failed"
 printf '%s\n' "$plan" | grep -q 'stoker .*yourself (its installer asks for sudo' || fail "stoker was not left to the person: $plan"
-! printf '%s\n' "$plan" | grep -q "asroot .*stoker/scripts/install.sh" || fail "stoker was offered as a root command: $plan"
+! printf '%s\n' "$plan" | grep -q "asroot .*${domain[stoker]}/scripts/install.sh" || fail "stoker was offered as a root command: $plan"
 
 # 2d. a prefix off the session's search paths prints, never writes, how to tell the session: the data dirs line and the unit links.
 for p in /opt/d "$tmp/user-prefix"; do
@@ -154,9 +155,9 @@ printf '%s\n' "$plan" | grep -q "install/system.sh turnstile --prefix $tmp/user-
 inst --destdir "$dest" --prefix /opt/d >"$tmp/out.log" 2>&1 || { cat "$tmp/out.log" >&2; fail "staged run failed"; }
 # porter goes under the same prefix as everything else (its daemons find what they ship under XDG_DATA_DIRS),
 # with the caller tables in --sysconfdir.
-grep -q "^porter/scripts/install.sh --prefix /opt/d --sysconfdir /etc --no-build --destdir $dest" "$log" || fail "porter did not get the prefix, /etc and the destdir: $(cat "$log")"
-grep -q "^stoker/scripts/install.sh --prefix /opt/d --sysconfdir /etc --no-build --destdir $dest" "$log" || fail "stoker did not get the prefix, /etc and the destdir: $(cat "$log")"
-grep -q "^casement/scripts/install.sh --prefix /opt/d --locked --no-build --destdir $dest" "$log" || fail "casement did not get the prefix and destdir: $(cat "$log")"
+grep -q "^accounts/scripts/install.sh --prefix /opt/d --sysconfdir /etc --no-build --destdir $dest" "$log" || fail "porter did not get the prefix, /etc and the destdir: $(cat "$log")"
+grep -q "^models/scripts/install.sh --prefix /opt/d --sysconfdir /etc --no-build --destdir $dest" "$log" || fail "stoker did not get the prefix, /etc and the destdir: $(cat "$log")"
+grep -q "^compositor/scripts/install.sh --prefix /opt/d --locked --no-build --destdir $dest" "$log" || fail "casement did not get the prefix and destdir: $(cat "$log")"
 ! grep -q 'note: porter goes to' "$tmp/out.log" || fail "a porter prefix note is still printed: $(cat "$tmp/out.log")"
 # the session step is this repo's own installer: really run, into the staging root
 [ -x "$dest/opt/d/bin/desktop-session" ] || fail "desktop-session was not staged under the prefix"
@@ -174,16 +175,16 @@ grep -q '^Wants=slipway.service$' "$dest/etc/systemd/user/desktop-session.target
 grep -q '^ExecStart=/opt/d/bin/casement \$CASEMENT_SESSION_ARGS$' "$dest/etc/systemd/user/casement.service" || fail "casement.service was not staged with the prefix and the session arguments: $(cat "$dest/etc/systemd/user/casement.service" 2>&1)"
 grep -q '^ExecStart=/opt/d/bin/sill run$' "$dest/etc/systemd/user/sill.service" || fail "sill.service was not staged with the prefix: $(cat "$dest/etc/systemd/user/sill.service" 2>&1)"
 [ "$(stat -c %a "$dest/etc/systemd/user/casement.service")" = 644 ] || fail "casement.service is not mode 644"
-grep -q "^almanac/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "almanac did not get the prefix and destdir: $(cat "$log")"
-grep -q "^docket/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "docket did not get the prefix and destdir: $(cat "$log")"
-grep -q "^cua/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "cua did not get the prefix and destdir: $(cat "$log")"
-grep -q "^detent/scripts/install.sh  PREFIX=/opt/d DESTDIR=$dest" "$log" || fail "detent did not get PREFIX and DESTDIR"
-grep -q "^transom/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "transom did not get the prefix and destdir"
-grep -q "^porter/scripts/install.sh .*CTD=$sib/target\$" "$log" || fail "porter was not told where the one target directory is: $(cat "$log")"
+grep -q "^memory/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "almanac did not get the prefix and destdir: $(cat "$log")"
+grep -q "^actions/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "docket did not get the prefix and destdir: $(cat "$log")"
+grep -q "^computer-use/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "cua did not get the prefix and destdir: $(cat "$log")"
+grep -q "^settings-app/scripts/install.sh  PREFIX=/opt/d DESTDIR=$dest" "$log" || fail "detent did not get PREFIX and DESTDIR"
+grep -q "^portal/scripts/install.sh --prefix /opt/d --no-build --destdir $dest" "$log" || fail "transom did not get the prefix and destdir"
+grep -q "^accounts/scripts/install.sh .*CTD=$sib/target\$" "$log" || fail "porter was not told where the one target directory is: $(cat "$log")"
 grep -q "FILES_PREFIX=/opt/d FILES_DESTDIR=$dest" "$log" || fail "files did not get its prefix and destdir"
-! grep -q "^keycap/install.sh" "$log" || fail "keycap's own installer ran: it gives the input group /dev/uinput and the service a drop-in to open it"
-! grep -q "^palmrest/install.sh" "$log" || fail "palmrest's own installer ran: the desktop places the touchpad service with install/system.sh"
-grep -q "^transom/scripts/install.sh" "$log" || fail "no component ran"
+! grep -q "^input/key-remap/install.sh" "$log" || fail "keycap's own installer ran: it gives the input group /dev/uinput and the service a drop-in to open it"
+! grep -q "^input/mouse-gestures/install.sh" "$log" || fail "palmrest's own installer ran: the desktop places the touchpad service with install/system.sh"
+grep -q "^portal/scripts/install.sh" "$log" || fail "no component ran"
 # the desktop's own system files: the callers table (an exact copy, 644), the input service and the keyboard map
 cmp -s "$HERE/../dist/desktop-callers.toml" "$dest/etc/quire/desktop-callers.toml" || fail "the callers table was not staged as it is in dist/"
 [ "$(stat -c %a "$dest/etc/quire/desktop-callers.toml")" = 644 ] || fail "the callers table is not mode 644"
@@ -212,11 +213,11 @@ grep -q 'GROUP="input"' "$dest/etc/udev/rules.d/70-palmrest.rules" || fail "the 
 # which is what build.sh stages (no retarget; /usr/local/bin/keycap is the link exports.toml makes to bin/keycap)
 grep -qE '^/usr/lib/systemd/system +exact +keycap\.service$' "$HERE/../release/system-files.list" || fail "slipway's list (release/system-files.list) does not name /usr/lib/systemd/system/keycap.service"
 inst --destdir "$tmp/dest-default" --prefix /usr/local --only keycap,palmrest >"$tmp/out-default.log" 2>&1 || { cat "$tmp/out-default.log" >&2; fail "the keyboard map or touchpad step failed at the default prefix"; }
-cmp -s "$sib/crates/palmrest/dist/palmrest.service" "$tmp/dest-default/usr/lib/systemd/system/palmrest.service" || fail "palmrest.service from install.sh at the default prefix is not the unit a release stages: $(cat "$tmp/dest-default/usr/lib/systemd/system/palmrest.service" 2>&1)"
+cmp -s "$sib/crates/input/mouse-gestures/dist/palmrest.service" "$tmp/dest-default/usr/lib/systemd/system/palmrest.service" || fail "palmrest.service from install.sh at the default prefix is not the unit a release stages: $(cat "$tmp/dest-default/usr/lib/systemd/system/palmrest.service" 2>&1)"
 grep -qE '^/usr/lib/systemd/system +exact +palmrest\.service$' "$HERE/../release/system-files.list" || fail "slipway's list (release/system-files.list) does not name /usr/lib/systemd/system/palmrest.service"
 grep -qF 'put_system 644 "$d/dist/palmrest.service" /usr/lib/systemd/system/palmrest.service' "$HERE/../release/build.sh" || fail "release/build.sh does not stage palmrest.service at /usr/lib/systemd/system"
 ! grep -q 'retarget.*palmrest\.service' "$HERE/../release/build.sh" || fail "release/build.sh rewrites palmrest.service's ExecStart: install.sh's unit and the release's would differ"
-cmp -s "$sib/crates/keycap/dist/keycap.service" "$tmp/dest-default/usr/lib/systemd/system/keycap.service" || fail "keycap.service from install.sh at the default prefix is not the unit a release stages: $(cat "$tmp/dest-default/usr/lib/systemd/system/keycap.service" 2>&1)"
+cmp -s "$sib/crates/input/key-remap/dist/keycap.service" "$tmp/dest-default/usr/lib/systemd/system/keycap.service" || fail "keycap.service from install.sh at the default prefix is not the unit a release stages: $(cat "$tmp/dest-default/usr/lib/systemd/system/keycap.service" 2>&1)"
 grep -qF 'put_system 644 "$d/dist/keycap.service" /usr/lib/systemd/system/keycap.service' "$HERE/../release/build.sh" || fail "release/build.sh does not stage keycap.service at /usr/lib/systemd/system"
 ! grep -q 'retarget.*keycap\.service' "$HERE/../release/build.sh" || fail "release/build.sh rewrites keycap.service's ExecStart: install.sh's unit and the release's would differ"
 grep -A1 -x 'link = "/usr/local/bin/keycap"' "$HERE/../release/exports.toml" | grep -qx 'target = "bin/keycap"' || fail "release/exports.toml has no /usr/local/bin/keycap link to bin/keycap"
@@ -295,14 +296,14 @@ grep -q 'fontconfig already has' "$tmp/out.log" || fail "the skip was not said"
 
 # 3d. the loader-variable check itself, on generated trees: a unit that lacks one name of the list is a fault, a complete one passes, a
 # unit on the debt list that is complete is a fault, and the drop-in is held to the same list.
-lt="$tmp/loader"; mkdir -p "$lt/peephole/peephole-core/src" "$lt/sibs/x/dist" "$lt/sibs/y/dist" "$lt/sibs/desktop"
-printf 'pub const LOADER_VARIABLES: [&str; 3] = [\n    "LD_PRELOAD",\n    "LD_LIBRARY_PATH",\n    "GTK_PATH",\n];\n' >"$lt/peephole/peephole-core/src/facts.rs"
+lt="$tmp/loader"; mkdir -p "$lt/identity/caller-identity-core/src" "$lt/sibs/x/dist" "$lt/sibs/y/dist" "$lt/sibs/desktop"
+printf 'pub const LOADER_VARIABLES: [&str; 3] = [\n    "LD_PRELOAD",\n    "LD_LIBRARY_PATH",\n    "GTK_PATH",\n];\n' >"$lt/identity/caller-identity-core/src/facts.rs"
 printf '[[peer]]\napp = "a"\nunit = "a.service"\nexe = ["/usr/bin/a"]\nrole = "r"\n[[peer]]\napp = "b"\nunit = "b.service"\nexe = ["/usr/bin/b"]\nrole = "r"\n' >"$lt/table.toml"
 printf '[Service]\nUnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH\nUnsetEnvironment=GTK_PATH\n' >"$lt/sibs/x/dist/a.service"
 printf '[Service]\nUnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH\n' >"$lt/sibs/y/dist/b.service"
 printf '[Service]\nUnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH GTK_PATH\n' >"$lt/dropin.conf"
 : >"$lt/pending.txt"
-loader() { "$HERE/check-loader-unset.sh" --peephole "$lt/peephole" --crates "$lt/sibs" --table "$lt/table.toml" --pending "$lt/pending.txt" "$@" >"$lt/out.log" 2>&1; }
+loader() { "$HERE/check-loader-unset.sh" --peephole "$lt/identity" --crates "$lt/sibs" --table "$lt/table.toml" --pending "$lt/pending.txt" "$@" >"$lt/out.log" 2>&1; }
 loader && fail "a unit that lacks GTK_PATH passed the loader check: $(cat "$lt/out.log")"
 grep -q 'b.service .*does not unset: GTK_PATH' "$lt/out.log" || fail "the loader check does not name the unit and the variable: $(cat "$lt/out.log")"
 printf 'b.service y\n' >"$lt/pending.txt"
@@ -335,7 +336,7 @@ unset -f log read_settings
 : >"$log"
 if STUB_FAIL=detent inst --destdir "$dest" >"$tmp/out.log" 2>&1; then fail "a failing component did not fail the run"; fi
 grep -q 'detent failed (exit 7)' "$tmp/out.log" || fail "the failure does not name the component: $(cat "$tmp/out.log")"
-! grep -q "^transom/" "$log" || fail "a component after the failure ran"
+! grep -q "^portal/" "$log" || fail "a component after the failure ran"
 
 # 4c. the session uninstall removes the two units only while they are still what the installer wrote.
 units="$dest/etc/systemd/user"
@@ -351,7 +352,7 @@ grep -q 'kept (not what the installer wrote)' "$tmp/out.log" || fail "the kept u
 [ ! -e "$units/sill.service" ] || fail "an unchanged sill.service was kept (second run)"
 
 # 4d. a unit whose source is missing is warned about and skipped, not an error.
-rm -f -- "$sib/crates/sill/dist/sill.service"
+rm -f -- "$sib/crates/shell/dist/sill.service"
 out=$("$HERE/../install/install.sh" --dry-run --destdir "$dest" --prefix /opt/d --tree "$sib" 2>&1) || fail "a missing unit source failed the session installer"
 printf '%s\n' "$out" | grep -q 'WARNING: .*sill.service is missing' || fail "the missing sill.service was not warned about: $out"
 

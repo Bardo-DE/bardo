@@ -70,9 +70,28 @@ fi
 
 tree_rev=$(git -C "$tree" rev-parse HEAD)
 
-# repo_dir NAME: the crate folder of NAME in the tree; records "NAME rev" (the tree's commit) for pack.sh.
+# repo_dir NAME: the folder of NAME (a component name) in the tree, under crates/; records "NAME rev" (the tree's commit) for pack.sh.
 repo_dir() {
-  local repo=$1 dir="$tree/crates/$1"
+  local repo=$1 dir folder
+  case "$repo" in
+    casement) folder=compositor ;;
+    sill) folder=shell ;;
+    porter) folder=accounts ;;
+    steward) folder=inference ;;
+    ferry) folder=sync ;;
+    stoker) folder=models ;;
+    almanac) folder=memory ;;
+    docket) folder=actions ;;
+    cua) folder=computer-use ;;
+    detent) folder=settings-app ;;
+    transom) folder=portal ;;
+    turnstile) folder=input/input-broker ;;
+    keycap) folder=input/key-remap ;;
+    palmrest) folder=input/mouse-gestures ;;
+    slipway) folder=updater ;;
+    *) folder=$repo ;;
+  esac
+  dir="$tree/crates/$folder"
   [ -d "$dir" ] || die "$repo: no folder at $dir (--tree says where the bardo tree is)" 2
   echo "$repo $tree_rev" >"$out/components.d/$repo.txt"
   printf '%s' "$dir"
@@ -164,8 +183,8 @@ build_session() {
   # (ui-blitz emoji_file.rs: <data dir>/fonts/quire/Noto-COLRv1.ttf for each XDG data dir, /usr/share included) finds it.
   put 644 "$ROOT/fonts/Noto-COLRv1.ttf" share/fonts/quire/Noto-COLRv1.ttf
   put 644 "$ROOT/fonts/OFL.txt" share/fonts/quire/OFL-Noto-COLRv1.txt
-  # quire's look Extensions (Editorial), from the quire crate of this tree (install.sh above is given no tree, so it stages none).
-  local q="$tree/crates/quire" f
+  # quire's look Extensions (Editorial), from the ui folder of this tree (install.sh above is given no tree, so it stages none).
+  local q="$tree/crates/ui" f
   (cd "$q/extensions" && find . -type f | sort) | while IFS= read -r f; do
     put 644 "$q/extensions/$f" "share/quire/extensions/${f#./}"
   done
