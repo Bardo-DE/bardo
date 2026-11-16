@@ -31,6 +31,66 @@ pub trait RestoreStore: Send + Sync + std::fmt::Debug {
     /// The saved book; an empty one if nothing was saved.
     fn load(&self) -> Result<RestoreBook, StoreError>;
     /// Replace the saved book.
+    fn save(&self, book: &RestoreBook) -> Result<(), StoreError>;
+}
+
+/// A store in a file the caller names (a file in the user's state directory, mode 0600, because
+/// a token is a secret).
+#[derive(Debug)]
+pub struct FileStore {
+    path: PathBuf,
+}
+
+impl FileStore {
+    /// A store at `path`.
+    pub fn new(path: PathBuf) -> Self {
+        Self { path }
+    }
+
+    /// Where this store reads and writes.
+    pub fn path(&self) -> &std::path::Path {
+        &self.path
+    }
+}
+
+impl RestoreStore for FileStore {
+    /// The saved book. A file whose first line is not this version's is moved aside to
+    /// `<name>.bad` and reported as damaged; a line that cannot be read is skipped (loudly) and
+    /// a copy of the whole file is kept as `<name>.bad`, so a flaw in one line loses one grant and
+    /// never the rest, and nothing is lost without a trace.
+    fn load(&self) -> Result<RestoreBook, StoreError> {
+        let text = match read_text_capped(&self.path, MAX_FILE) {
+            Ok(text) => text,
+            Err(ReadError::NotFound { .. }) => return Ok(RestoreBook::new()),
+            // A file that is not text, not a regular file or far too large is not one we wrote.
+            Err(ReadError::NotText { .. } | ReadError::NotRegular { .. } | ReadError::TooBig { .. }) => {
+                self.set_aside(Aside::Move);
+                return Err(StoreError::Damaged);
+            }
+            Err(ReadError::Io { source, .. }) => return Err(StoreError::Io(source)),
+        };
+        match decode(&text) {
+            Decoded::Book { book, skipped: 0 } => Ok(book),
+            Decoded::Book { book, skipped } => {
+                tracing::error!(
+                    skipped,
+                    "lines of the restore file could not be read and were left out; \
+                     a copy of the file is kept next to it"
+                );
+                self.set_aside(Aside::Copy);
+                Ok(book)
+            }
+            Decoded::OlderVersion => {
+                tracing::info!("the restore file is from an older version; its grants are dropped");
+                Ok(RestoreBook::new())
+            }
+            Decoded::Foreign => {
+                self.set_aside(Aside::Move);
+                Err(StoreError::Damaged)
+            }
+        }
+    }
+
     fn save(&self, book: &RestoreBook) -> Result<(), StoreError> {
         if let Some(dir) = self.path.parent().filter(|d| !d.as_os_str().is_empty()) {
             std::fs::create_dir_all(dir)?;

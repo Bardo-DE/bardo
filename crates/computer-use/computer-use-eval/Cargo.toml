@@ -13,6 +13,7 @@ name = "computer-use-eval"
 path = "src/main.rs"
 
 [dependencies]
+base-secret = { path = "../../base/base-secret" }
 action-gate-wire = {path = "../../actions/action-gate-wire"}
 action-wire = {path = "../../actions/action-wire"}
 account-capability = {path = "../../accounts/account-capability"}

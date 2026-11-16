@@ -25,7 +25,7 @@ use computer_use_eval::report::{Check, Report, render};
 use computer_use_eval::run::RunRecord;
 use keymap::Platform;
 use model_http::{
-    AuthHeader, HostName, HttpClient, HttpEndpoint, HttpTarget, Port, Proxy, Secret, Timeouts,
+    AuthHeader, HostName, HttpClient, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts,
     UrlPath, WaitMs,
 };
 use model_openai_compat::{Flavor, OpenAiCodec};
@@ -192,7 +192,7 @@ async fn play(args: &Args, corpus: &Corpus) -> Result<Played, PlayError> {
                 None => AuthHeader::None,
                 Some(path) => {
                     let key = std::fs::read_to_string(path).map_err(PlayError::io(path))?;
-                    AuthHeader::Bearer(Secret(key.trim().to_owned()))
+                    AuthHeader::Bearer(base_secret::SecretText::new(key.trim()))
                 }
             };
             let provider = Arc::new(

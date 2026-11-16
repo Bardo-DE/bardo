@@ -2,7 +2,7 @@
 //! `unsafe`). Best effort by the kernel's ABI, and it says how far it got.
 
 use super::plan::{EnterPlan, LandlockLevel, NetRule};
-use crate::path::AbsPath;
+use base_path::AbsPath;
 use landlock::{
     ABI, Access, AccessFs, AccessNet, LandlockStatus, NetPort, RestrictionStatus, Ruleset,
     RulesetAttr, RulesetCreatedAttr, RulesetError, RulesetStatus, path_beneath_rules,

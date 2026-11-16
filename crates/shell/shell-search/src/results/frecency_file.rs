@@ -4,7 +4,8 @@ use std::path::Path;
 
 use shell_launcher::Frecency;
 
-use shell_services::durable::{self, Access};
+use base_fs::NewFileMode;
+use shell_services::durable;
 use shell_services::error::ServiceError;
 
 /// The file's name inside `$XDG_STATE_HOME/bardo/shell`.
@@ -29,7 +30,7 @@ pub fn save_frecency(dir: &Path, frecency: &Frecency) -> Result<(), ServiceError
     durable::write_file(
         &dir.join(FILE_NAME),
         frecency.to_json().as_bytes(),
-        Access::OwnerOnly,
+        NewFileMode::OwnerOnly,
     )
 }
 

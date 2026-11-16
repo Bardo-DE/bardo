@@ -910,6 +910,7 @@ dependencies = [
  "agent-reader-daemon",
  "agent-session",
  "base-ids",
+ "base-time",
  "companion-daemon",
  "companion-wire",
  "fnv",
@@ -983,6 +984,7 @@ dependencies = [
  "agent-skills",
  "agent-skills-disk",
  "base-ids",
+ "base-time",
  "companion-client",
  "companion-wire",
  "futures-util",
@@ -1061,6 +1063,7 @@ dependencies = [
  "action-manifest",
  "action-vocab",
  "base-ids",
+ "base-secret",
  "base-time",
  "companion-model",
  "inference-core",
@@ -1113,8 +1116,11 @@ dependencies = [
  "agent-session",
  "agent-skills",
  "agent-skills-disk",
+ "base-fs",
  "base-ids",
  "base-path",
+ "base-time",
+ "base-xdg",
  "companion-memory",
  "companion-memory-core",
  "companion-model",
@@ -1157,6 +1163,7 @@ dependencies = [
  "action-manifest",
  "action-vocab",
  "action-wire",
+ "base-xdg",
  "inference-client",
  "inference-core",
  "inference-dbus",
@@ -1186,6 +1193,7 @@ dependencies = [
  "agent-skills",
  "agent-skills-disk",
  "base-ids",
+ "base-time",
  "clap",
  "permission-core",
  "proptest",
@@ -1331,6 +1339,7 @@ dependencies = [
  "agent-reader",
  "agent-registry",
  "agent-session",
+ "base-fs",
  "base-ids",
  "base-path",
  "base-time",
@@ -1501,6 +1510,7 @@ dependencies = [
  "action-store",
  "action-vocab",
  "agent-registry",
+ "base-xdg",
  "model-provider",
  "permission-core",
  "rust_decimal",
@@ -1540,6 +1550,7 @@ dependencies = [
  "action-core",
  "action-manifest",
  "action-vocab",
+ "base-secret",
  "permission-core",
  "provenance",
  "serde",
@@ -1750,6 +1761,7 @@ dependencies = [
  "agent-session",
  "base-ids",
  "base-path",
+ "base-xdg",
  "companion-model",
  "const-hex",
  "futures-channel",
@@ -2086,6 +2098,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "agent-reader",
+ "base-ids",
  "futures-util",
  "inference-client",
  "inference-core",
@@ -3695,6 +3708,7 @@ dependencies = [
 name = "caller-identity-linux"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "caller-identity-core",
  "nix 0.31.3",
  "rustix 1.1.6",
@@ -4421,6 +4435,7 @@ dependencies = [
 name = "compositor-ctl"
 version = "0.1.0"
 dependencies = [
+ "base-xdg",
  "compositor-privacy",
  "desktop-client",
  "image",
@@ -4435,6 +4450,7 @@ dependencies = [
 name = "compositor-icons"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "freedesktop-icons",
  "image",
  "resvg",
@@ -4498,7 +4514,6 @@ name = "compositor-privacy"
 version = "0.1.0"
 dependencies = [
  "base-fs",
- "base-time",
  "compositor-core",
  "desktop-protocols",
  "rustix 1.1.6",
@@ -4526,6 +4541,7 @@ dependencies = [
 name = "compositor-testclient"
 version = "0.1.0"
 dependencies = [
+ "base-xdg",
  "compositor-core",
  "compositor-testkit",
  "desktop-client",
@@ -4703,6 +4719,7 @@ dependencies = [
  "action-wire",
  "base-ids",
  "base-time",
+ "base-xdg",
  "computer-use-action",
  "computer-use-bus",
  "computer-use-capture",
@@ -4769,6 +4786,7 @@ dependencies = [
  "action-gate-wire",
  "action-wire",
  "base-ids",
+ "base-secret",
  "base-time",
  "computer-use-a11y-tree",
  "computer-use-action",
@@ -4863,6 +4881,7 @@ dependencies = [
  "action-wire",
  "base-ids",
  "base-time",
+ "base-xdg",
  "computer-use-a11y-tree",
  "computer-use-action",
  "computer-use-bus",
@@ -6201,6 +6220,7 @@ checksum = "66b7e2430c6dff6a955451e2cfc438f09cea1965a9d6f87f7e3b90decc014099"
 name = "engine-install"
 version = "0.1.0"
 dependencies = [
+ "base-secret",
  "engine-manifest",
  "engine-probe",
  "engine-spec",
@@ -6233,6 +6253,7 @@ dependencies = [
 name = "engine-probe"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "engine-manifest",
  "engine-spec",
  "model-catalog",
@@ -6520,6 +6541,7 @@ name = "files"
 version = "0.1.0"
 dependencies = [
  "anyview-platform",
+ "base-xdg",
  "dirs 6.0.0",
  "files-core",
  "files-desktop",
@@ -7859,6 +7881,7 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-url",
+ "base-xdg",
  "computer-use-action",
  "inference-bridge",
  "inference-core",
@@ -8040,6 +8063,7 @@ dependencies = [
  "account-match",
  "account-tailscale",
  "base-ids",
+ "base-secret",
  "base-testkit",
  "computer-use-action",
  "engine-probe",
@@ -8183,6 +8207,8 @@ dependencies = [
 name = "input-broker-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-time",
  "caller-identity-core",
  "caller-identity-linux",
  "input-broker-client",
@@ -8745,9 +8771,10 @@ dependencies = [
 name = "key-remap-client"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-xdg",
  "key-remap-proto",
  "keymap",
- "keymap-fs",
  "rustix 1.1.6",
  "shell-verbs",
  "tempfile",
@@ -8841,28 +8868,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "keymap-fs"
-version = "0.1.0"
-dependencies = [
- "libc",
- "tempfile",
- "thiserror 2.0.21",
-]
-
-[[package]]
 name = "keymap-gnome"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "keymap",
- "keymap-fs",
 ]
 
 [[package]]
 name = "keymap-kde"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "keymap",
- "keymap-fs",
 ]
 
 [[package]]
@@ -8995,6 +9013,8 @@ dependencies = [
  "anyrender",
  "anyrender_vello_cpu",
  "anyrender_vello_hybrid",
+ "base-fs",
+ "base-xdg",
  "blitz-dom",
  "blitz-embed",
  "blitz-paint",
@@ -9708,6 +9728,7 @@ dependencies = [
 name = "memory-files"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "memory-core",
  "memory-files",
  "memory-seal",
@@ -10032,6 +10053,7 @@ version = "0.1.0"
 name = "model-http"
 version = "0.1.0"
 dependencies = [
+ "base-secret",
  "proptest",
  "rcgen",
  "reqwest",
@@ -10042,7 +10064,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "tokio-rustls",
- "zeroize",
 ]
 
 [[package]]
@@ -10141,6 +10162,8 @@ dependencies = [
 name = "mouse-gestures-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-xdg",
  "caller-identity-core",
  "caller-identity-linux",
  "input-broker-client",
@@ -11668,6 +11691,9 @@ dependencies = [
 name = "portal-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-time",
+ "base-xdg",
  "caller-identity-dbus",
  "image",
  "old-folders",
@@ -13025,6 +13051,7 @@ dependencies = [
 name = "service-locator"
 version = "0.1.0"
 dependencies = [
+ "base-xdg",
  "caller-identity-core",
  "caller-identity-linux",
  "interprocess",
@@ -13080,6 +13107,7 @@ name = "settings-app-client"
 version = "0.1.0"
 dependencies = [
  "account-provider",
+ "base-xdg",
  "inference-core",
  "memory-core",
  "settings-app-files",
@@ -13154,6 +13182,7 @@ dependencies = [
  "action-settings",
  "action-vocab",
  "base-ids",
+ "base-secret",
  "base-time",
  "inference-core",
  "inference-tailnet",
@@ -13322,6 +13351,7 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "agent-voice-wire",
+ "base-xdg",
  "caller-identity-dbus",
  "clap",
  "keyboard-types 0.7.0",
@@ -13516,6 +13546,7 @@ dependencies = [
  "action-wire",
  "agent-voice-wire",
  "base-ids",
+ "base-secret",
  "base-time",
  "base-url",
  "companion-model",
@@ -13537,7 +13568,6 @@ dependencies = [
  "toml",
  "ui-core",
  "ui-helpers",
- "zeroize",
 ]
 
 [[package]]
@@ -13566,6 +13596,7 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-sheet",
+ "base-secret",
  "base-url",
  "desktop-client",
  "dioxus",
@@ -13598,6 +13629,7 @@ dependencies = [
  "action-vocab",
  "anyview-core",
  "anyview-store",
+ "base-fs",
  "base-time",
  "companion-model",
  "companion-wire",
@@ -13652,7 +13684,9 @@ dependencies = [
  "async-trait",
  "base-fs",
  "base-ids",
+ "base-secret",
  "base-time",
+ "base-xdg",
  "bluez-proxy",
  "caller-identity-dbus",
  "companion-model",
@@ -13749,6 +13783,7 @@ dependencies = [
  "action-core",
  "action-manifest",
  "action-vocab",
+ "base-fs",
  "companion-wire",
  "computer-use-action",
  "dioxus",
@@ -15403,6 +15438,7 @@ dependencies = [
  "anyrender_vello_hybrid",
  "arboard",
  "base-fs",
+ "base-xdg",
  "blitz-dom",
  "blitz-embed",
  "blitz-html",
@@ -15519,6 +15555,7 @@ dependencies = [
 name = "ui-emoji"
 version = "0.1.0"
 dependencies = [
+ "base-xdg",
  "fontique",
 ]
 
@@ -15592,6 +15629,7 @@ version = "0.1.0"
 dependencies = [
  "base-fs",
  "base-time",
+ "base-xdg",
  "serde",
  "thiserror 2.0.21",
  "tokio",
@@ -15718,6 +15756,7 @@ dependencies = [
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "dioxus",
  "dioxus-ssr",
  "image",

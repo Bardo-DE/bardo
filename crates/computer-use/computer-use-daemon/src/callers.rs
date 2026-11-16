@@ -43,7 +43,7 @@ pub fn shipped() -> CallerTable {
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     #[cfg(feature = "fixture-callers")]
     if let Some(system) = env(SYSTEM_CALLERS_VAR) {
-        return read_table_at_in("computer-use", std::path::Path::new(&system), FILE, env);
+        return action_dbus::callers::read_table_at_in("computer-use", std::path::Path::new(&system), FILE, env);
     }
     read_table_in("computer-use", FILE, env)
 }
