@@ -72,8 +72,23 @@ fn build(sibling: &Sibling, root: &Path, target: &Path) -> PathBuf {
     }
     std::env::vars()
         .map(|(name, _)| name)
-        .filter(|name| name.starts_with("CARGO_") && name != "CARGO_HOME")
-        .chain(["MAKEFLAGS", "MFLAGS", "RUSTFLAGS", "RUSTDOCFLAGS"].map(str::to_owned))
+        .filter(|name| {
+            (name.starts_with("CARGO_") && name != "CARGO_HOME")
+                // A `cargo clippy` run lints through the workspace wrapper: these siblings are
+                // built to run, not to be linted again under another feature set.
+                || name.starts_with("CLIPPY")
+                || name.starts_with("__CLIPPY")
+        })
+        .chain(
+            [
+                "MAKEFLAGS",
+                "MFLAGS",
+                "RUSTFLAGS",
+                "RUSTDOCFLAGS",
+                "RUSTC_WORKSPACE_WRAPPER",
+            ]
+            .map(str::to_owned),
+        )
         .for_each(|name| {
             command.env_remove(name);
         });
