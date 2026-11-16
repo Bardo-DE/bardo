@@ -202,7 +202,8 @@ pub(super) fn composite(bytes: &[u8]) -> Result<(u32, u32, Vec<u8>), Gap> {
             (4, _) => {
                 // Photoshop stores CMYK inverted: 255 is no ink.
                 let key = u32::from(value(3, pixel));
-                let mix = |ink: u8| ((u32::from(ink) * key + 127) / 255) as u8; // at most 255
+                let mix =
+                    |ink: u8| u8::try_from((u32::from(ink) * key + 127) / 255).unwrap_or(u8::MAX);
                 [
                     mix(value(0, pixel)),
                     mix(value(1, pixel)),
@@ -289,9 +290,17 @@ mod tests {
         info.extend([0xAB; 9]);
         let mut out = Vec::new();
         if version == 2 {
-            out.extend((info.len() as u64).to_be_bytes());
+            out.extend(
+                u64::try_from(info.len())
+                    .expect("a short block")
+                    .to_be_bytes(),
+            );
         } else {
-            out.extend((info.len() as u32).to_be_bytes());
+            out.extend(
+                u32::try_from(info.len())
+                    .expect("a short block")
+                    .to_be_bytes(),
+            );
         }
         out.extend(info);
         out
@@ -304,9 +313,13 @@ mod tests {
             .iter()
             .map(|row| {
                 if row.len() > 1 && row.iter().all(|byte| *byte == row[0]) {
-                    vec![(1 - row.len() as i16) as u8, row[0]]
+                    vec![
+                        u8::try_from(257 - row.len()).expect("a run of 2 to 128 bytes"),
+                        row[0],
+                    ]
                 } else {
-                    let mut line = vec![(row.len() - 1) as u8];
+                    let mut line =
+                        vec![u8::try_from(row.len() - 1).expect("a literal run of 1 to 128 bytes")];
                     line.extend(*row);
                     line
                 }
@@ -315,9 +328,17 @@ mod tests {
         let mut out = Vec::new();
         for line in &packed {
             if version == 2 {
-                out.extend((line.len() as u32).to_be_bytes());
+                out.extend(
+                    u32::try_from(line.len())
+                        .expect("a short row")
+                        .to_be_bytes(),
+                );
             } else {
-                out.extend((line.len() as u16).to_be_bytes());
+                out.extend(
+                    u16::try_from(line.len())
+                        .expect("a short row")
+                        .to_be_bytes(),
+                );
             }
         }
         for line in packed {

@@ -710,7 +710,10 @@ impl Tree {
             return Response::new(416).with_header("Content-Range", &format!("bytes */{len}"));
         }
         let end = to.parse::<u64>().map_or(len - 1, |e| e.min(len - 1));
-        let slice = node.body[start as usize..=end as usize].to_vec();
+        let (Ok(first), Ok(last)) = (usize::try_from(start), usize::try_from(end)) else {
+            return whole;
+        };
+        let slice = node.body[first..=last].to_vec();
         Response::new(206)
             .with_header("ETag", &etag(node.changed))
             .with_header("Content-Range", &format!("bytes {start}-{end}/{len}"))

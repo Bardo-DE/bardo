@@ -168,7 +168,12 @@ pub fn FileTableGallery() -> Element {
             ),
             _ => (8, 0.0),
         };
-        Px(chars as f32 * 7.0 + indent)
+        #[expect(
+            clippy::cast_precision_loss,
+            reason = "a name is a few dozen characters, exact in f32"
+        )]
+        let width = chars as f32 * 7.0 + indent;
+        Px(width)
     });
     let dropping = shown.clone();
     let toggling = shown.clone();

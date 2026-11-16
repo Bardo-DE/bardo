@@ -77,7 +77,8 @@ impl Rgba8 {
         for pixel in bytes.as_chunks_mut::<4>().0 {
             let alpha = u32::from(pixel[3]);
             for channel in &mut pixel[..3] {
-                *channel = ((u32::from(*channel) * alpha + 127) / 255) as u8; // at most 255
+                *channel =
+                    u8::try_from((u32::from(*channel) * alpha + 127) / 255).unwrap_or(u8::MAX);
             }
         }
         PremultipliedRgba8 {

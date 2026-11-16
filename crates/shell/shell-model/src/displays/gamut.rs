@@ -121,7 +121,8 @@ mod tests {
     /// EDID's 10-bit grid.
     fn primaries(points: [(u16, u16); 4]) -> Primaries {
         let c = |(x, y): (u16, u16)| {
-            let tenbit = |v: u16| ((u32::from(v) * 1024 + 500) / 1000) as u16;
+            let tenbit =
+                |v: u16| u16::try_from((u32::from(v) * 1024 + 500) / 1000).unwrap_or(u16::MAX);
             Chromaticity {
                 x: tenbit(x),
                 y: tenbit(y),

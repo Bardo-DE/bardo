@@ -53,10 +53,12 @@ pub(crate) const SVG_LONG_EDGE_MAX: u32 = 4096;
 
 /// What a lossless edit of a picture holds at its peak, per pixel: the samples as the file stores
 /// them, the turned copy and the written file.
+#[cfg(feature = "encode")]
 const REWRITE_BYTES_PER_PIXEL: u64 = 12;
 
 /// `Ok` when a picture of `width` by `height` fits a lossless edit, which reads its samples whole
 /// from the size the header states.
+#[cfg(feature = "encode")]
 pub(crate) fn admit_rewrite(width: u32, height: u32) -> Result<(), ImageError> {
     let size = PixelSize {
         width: anyview_core::PixelLen(width),

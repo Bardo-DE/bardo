@@ -213,7 +213,10 @@ impl Network {
 #[derive(Debug, Clone, PartialEq, Eq)]
 // A test builds a handful of these and writes `Daemon::Running(network)`; boxing the network
 // would put a `Box::new` in every one of them for no gain.
-#[allow(clippy::large_enum_variant)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "one daemon value is built per test, so boxing the large variant gains nothing"
+)]
 pub enum Daemon {
     /// Running, nobody signed in. `auth_url` is the page Tailscale gives once a sign-in is
     /// asked for (`login-interactive`); until then `status` has none.

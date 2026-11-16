@@ -149,7 +149,11 @@ fn a_preview_in_an_iso_media_file_is_found_too() {
     // Canon's CR3 keeps a JPEG in a box of its own.
     let preview = jpeg(48, 32);
     let mut file = b"\0\0\0\x18ftypcrx \0\0\0\x01crx isom".to_vec();
-    file.extend(((preview.len() + 8) as u32).to_be_bytes());
+    file.extend(
+        u32::try_from(preview.len() + 8)
+            .expect("a small preview")
+            .to_be_bytes(),
+    );
     file.extend(b"PRVW");
     file.extend(&preview);
     let picture = decode(&file, Ceiling::VIEW).unwrap();

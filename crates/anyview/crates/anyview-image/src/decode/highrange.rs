@@ -84,6 +84,11 @@ pub(crate) fn encoded(linear: f32) -> u8 {
     byte(curved)
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the value is clamped to 0..=255 before the cast"
+)]
 fn byte(value: f32) -> u8 {
     let value = if value.is_finite() { value } else { 0.0 };
     (value.clamp(0.0, 1.0) * 255.0 + 0.5) as u8 // clamped to 0..=255

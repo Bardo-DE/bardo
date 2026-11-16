@@ -68,7 +68,8 @@ pub fn SpacesPage() -> Element {
                 div { class: "g-spaces",
                     tabindex: "0",
                     onkeydown: move |event: KeyboardEvent| {
-                        spaces.on_key(SwitchChord::Primary, &event);
+                        // Whether the chord switched a Space is not needed here: the Space head redraws from the handle.
+                        let _ = spaces.on_key(SwitchChord::Primary, &event);
                     },
                     div { class: "g-spaces-side",
                         SpaceHead { handle: spaces }

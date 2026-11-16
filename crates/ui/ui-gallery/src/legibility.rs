@@ -138,6 +138,11 @@ fn rgba(css: &str) -> Option<([u8; 3], f64)> {
 
 /// `colour` at its alpha over an opaque `backdrop`, rounded to 8 bits, as a hex.
 fn over((rgb, alpha): ([u8; 3], f64), backdrop: [u8; 3]) -> String {
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the mix is clamped to 0..=255 before the cast"
+    )]
     let mix = |fore: u8, back: u8| {
         (f64::from(fore) * alpha + f64::from(back) * (1.0 - alpha))
             .round()

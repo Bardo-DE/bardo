@@ -24,15 +24,25 @@ pub fn app_icon_in(
 ) -> Option<IconSource> {
     let side = 64u32;
     let mut picture = RgbaImage::from_fn(side, side, |x, y| {
-        let (fx, fy) = (x as f32 + 0.5, y as f32 + 0.5);
-        let inside = rounded(fx, fy, side as f32, 14.0);
+        #[expect(
+            clippy::cast_precision_loss,
+            reason = "the icon is 64 pixels across, exact in f32"
+        )]
+        let (fx, fy, extent) = (x as f32 + 0.5, y as f32 + 0.5, side as f32);
+        let inside = rounded(fx, fy, extent, 14.0);
         let (dx, dy) = (fx - 32.0, fy - 34.0);
         let disc = dx * dx + dy * dy <= 11.0 * 11.0;
-        let lift = 1.0 + 0.35 * (1.0 - fy / side as f32);
+        let lift = 1.0 + 0.35 * (1.0 - fy / extent);
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "the channel is capped at 255 and never negative"
+        )]
+        let lifted = |channel: u8| (f32::from(channel) * lift).min(255.0) as u8;
         let [r, g, b] = if disc {
             [250, 250, 250]
         } else {
-            hue.map(|channel| (f32::from(channel) * lift).min(255.0) as u8)
+            hue.map(lifted)
         };
         Rgba([r, g, b, if inside { 255 } else { 0 }])
     });

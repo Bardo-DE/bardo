@@ -10,7 +10,10 @@ use ui_components::prelude::*;
 use ui_components::root::chrome::Ground;
 
 /// The gallery, starting from the axes this thread was handed (`crate::axes::start_with`).
-#[allow(non_snake_case)] // A component: launch and snapshot name it like a type.
+#[expect(
+    non_snake_case,
+    reason = "a component: launch and snapshot name it like a type"
+)]
 pub fn App() -> Element {
     let axes = use_signal(starting);
     use_context_provider(|| axes);
@@ -42,7 +45,7 @@ pub fn App() -> Element {
 #[component]
 fn PageBody(page: Page) -> Element {
     let entry = registry::entry(page);
-    #[allow(non_snake_case)] // Rendered as a component.
+    #[expect(non_snake_case, reason = "rendered as a component")]
     let Body = entry.body;
     rsx! {
         SectionHeader { title: entry.title }

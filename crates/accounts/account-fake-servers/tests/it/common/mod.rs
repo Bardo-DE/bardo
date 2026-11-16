@@ -1,6 +1,6 @@
 //! Helpers the Nextcloud and DAV self-tests share.
 
-#![allow(dead_code)]
+#![allow(dead_code, reason = "each test binary uses some of these helpers")]
 
 use account_fake::FakeAddress;
 use account_fake_servers::browser::split_loopback;

@@ -22,6 +22,10 @@ fn measured(open: &mut launcher_harness::Open) {
 }
 
 /// The card's height as the harness lays it out, whole pixels up.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a card is at most a few hundred pixels tall, so it fits an i32"
+)]
 fn card_height(open: &launcher_harness::Open) -> i32 {
     let rect = open
         .harness

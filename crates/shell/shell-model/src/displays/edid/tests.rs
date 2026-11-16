@@ -22,17 +22,20 @@ pub(crate) fn block(primaries: [(u16, u16); 4], cm: (u8, u8), timing_mm: (u16, u
     b[19] = 4;
     b[21] = cm.0;
     b[22] = cm.1;
-    let tenbit = |thousandths: u16| ((u32::from(thousandths) * 1024 + 500) / 1000) as u16;
+    let tenbit = |thousandths: u16| {
+        u16::try_from((u32::from(thousandths) * 1024 + 500) / 1000).unwrap_or(u16::MAX)
+    };
     let points: Vec<(u16, u16)> = primaries
         .iter()
         .map(|&(x, y)| (tenbit(x), tenbit(y)))
         .collect();
-    let low = |i: usize| ((points[i].0 & 3) << 2 | (points[i].1 & 3)) as u8;
+    let low =
+        |i: usize| u8::try_from((points[i].0 & 3) << 2 | (points[i].1 & 3)).expect("four bits");
     b[25] = low(0) << 4 | low(1);
     b[26] = low(2) << 4 | low(3);
     for (i, (x, y)) in points.iter().enumerate() {
-        b[27 + i * 2] = (x >> 2) as u8;
-        b[28 + i * 2] = (y >> 2) as u8;
+        b[27 + i * 2] = u8::try_from(x >> 2).expect("ten bits shifted down fit a byte");
+        b[28 + i * 2] = u8::try_from(y >> 2).expect("ten bits shifted down fit a byte");
     }
     // 1920x1080 at 148.5 MHz, 2200x1125 total: 60 Hz.
     let d = &mut b[54..72];

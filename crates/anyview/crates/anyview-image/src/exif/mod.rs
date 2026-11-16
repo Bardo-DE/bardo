@@ -6,6 +6,7 @@ mod format;
 mod location;
 mod patch;
 mod rows;
+#[cfg(feature = "encode")]
 mod strip;
 
 #[cfg(test)]

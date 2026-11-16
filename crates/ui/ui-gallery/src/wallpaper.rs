@@ -42,12 +42,25 @@ fn calm(scheme: Scheme) -> RgbImage {
         ),
         Scheme::Dark => ([22.0, 30.0, 42.0], [44.0, 34.0, 48.0], [38.0, 58.0, 70.0]),
     };
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "the picture is a few hundred pixels across, exact in f32"
+    )]
     let (width, height) = (CALM_WIDTH as f32, CALM_HEIGHT as f32);
     RgbImage::from_fn(CALM_WIDTH, CALM_HEIGHT, |x, y| {
+        #[expect(
+            clippy::cast_precision_loss,
+            reason = "pixel coordinates are a few hundred, exact in f32"
+        )]
         let (u, v) = (x as f32 / width, y as f32 / height);
         let t = f32::midpoint(u, v).clamp(0.0, 1.0);
         let (dx, dy) = (u - 0.72, (v - 0.28) * 0.8);
         let g = (-(dx * dx + dy * dy) / 0.06).exp() * 0.7;
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "the channel is clamped to 0..=255 before the cast"
+        )]
         let channel = |c: usize| {
             let base = from[c] + (to[c] - from[c]) * t;
             (base + (glow[c] - base) * g).round().clamp(0.0, 255.0) as u8
@@ -72,10 +85,25 @@ fn picture() -> RgbImage {
 
 /// A saturated hue for position `t` along the diagonal.
 fn band(t: u32) -> Rgb<u8> {
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "t % 240 is below 240, exact in f32"
+    )]
     let hue = (t % 240) as f32 / 240.0 * 6.0;
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the fraction is in 0..1, so the product rounds to 0..=255"
+    )]
     let rising = (hue.fract() * 255.0).round() as u8;
     let falling = 255 - rising;
-    let [r, g, b] = match hue as u32 {
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the hue is in 0..6, so its whole part is 0..=5"
+    )]
+    let sextant = hue as u32;
+    let [r, g, b] = match sextant {
         0 => [255, rising, 40],
         1 => [falling, 255, 40],
         2 => [40, 255, rising],

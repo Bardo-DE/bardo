@@ -49,7 +49,10 @@ const VIEW: Viewport = Viewport {
     scale_percent: 300,
 };
 
-#[allow(non_snake_case)] // A component: the harness names it like a type.
+#[expect(
+    non_snake_case,
+    reason = "a component: the harness names it like a type"
+)]
 fn Stage() -> Element {
     let body = match STRIP() {
         Strip::Pending => rsx! { NetView { net: NET() } },
@@ -100,10 +103,16 @@ fn crop(picture: &RgbaImage, rect: Option<Rect>, scale: f32) -> RgbaImage {
         return picture.clone();
     };
     let pad = 12.0;
-    let x = ((rect.origin.x.0 - pad).max(0.0) * scale) as u32;
-    let y = ((rect.origin.y.0 - pad).max(0.0) * scale) as u32;
-    let width = ((rect.size.width.0 + 2.0 * pad) * scale) as u32;
-    let height = ((rect.size.height.0 + 2.0 * pad) * scale) as u32;
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "lengths in pixels are non-negative and far below u32::MAX"
+    )]
+    let pixels = |length: f32| length as u32;
+    let x = pixels((rect.origin.x.0 - pad).max(0.0) * scale);
+    let y = pixels((rect.origin.y.0 - pad).max(0.0) * scale);
+    let width = pixels((rect.size.width.0 + 2.0 * pad) * scale);
+    let height = pixels((rect.size.height.0 + 2.0 * pad) * scale);
     imageops::crop_imm(
         picture,
         x,

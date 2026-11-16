@@ -95,7 +95,7 @@ mod tests {
     fn block(tags: &[u16], tail: usize) -> Vec<u8> {
         let mut out = b"II*\0".to_vec();
         out.extend_from_slice(&8_u32.to_le_bytes());
-        out.extend_from_slice(&(tags.len() as u16).to_le_bytes());
+        out.extend_from_slice(&u16::try_from(tags.len()).expect("a few tags").to_le_bytes());
         for tag in tags {
             out.extend_from_slice(&tag.to_le_bytes());
             out.extend_from_slice(&4_u16.to_le_bytes());

@@ -27,6 +27,12 @@ fn main() {
         let cold = millis(path);
         let mut warm: Vec<f64> = (0..samples).map(|_| millis(path)).collect();
         warm.sort_by(f64::total_cmp);
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            clippy::cast_precision_loss,
+            reason = "a sample count is tiny and p is a fraction, so the index is small and in range"
+        )]
         let at = |p: f64| warm[((warm.len() - 1) as f64 * p).round() as usize];
         println!(
             "{file}: cold {cold:.2} ms, warm p50 {:.2} ms, p95 {:.2} ms, max {:.2} ms (n={})",

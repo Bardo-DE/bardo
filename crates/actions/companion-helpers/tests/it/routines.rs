@@ -217,7 +217,7 @@ async fn three_runs_that_do_not_finish_pause_the_routine_and_tell_the_person_onc
     for day in 0..4 {
         set(&hand, day * DAY + 8 * H + 1);
         routines.tick().await;
-        let job = JobId(day as u64 + 1);
+        let job = JobId(u64::try_from(day).expect("a day count") + 1);
         host.log()
             .ends
             .insert(job, JobEnd::Failed(JobFault::NoAnswer));

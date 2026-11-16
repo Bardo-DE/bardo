@@ -23,7 +23,14 @@ pub fn density(pixels: Pixels, size: Option<Millimetres>) -> Option<Ppi> {
     let diagonal_px = f64::from(pixels.width).hypot(f64::from(pixels.height));
     let diagonal_in = f64::from(size.width).hypot(f64::from(size.height)) / 25.4;
     let ppi = (diagonal_px / diagonal_in).round();
-    (diagonal_in > 0.0 && PLAUSIBLE_PPI.contains(&(ppi as u32))).then_some(Ppi(ppi as u16))
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a float-to-int cast saturates, and the range check below rejects what is outside 40..=600"
+    )]
+    let whole = ppi as u32;
+    (diagonal_in > 0.0 && PLAUSIBLE_PPI.contains(&whole))
+        .then(|| Ppi(u16::try_from(whole).unwrap_or(u16::MAX)))
 }
 
 #[cfg(test)]

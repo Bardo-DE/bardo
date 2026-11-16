@@ -59,7 +59,11 @@ fn a_missing_oversized_or_malformed_file_is_refused_with_the_same_caps_as_the_sh
         load(&FixtureProc::new()),
         Err(LoadError::Unreadable { .. })
     ));
-    let huge = FixtureProc::new().file(FILE, vec![b'#'; TABLE_FILE_CAP as usize + 1], own());
+    let huge = FixtureProc::new().file(
+        FILE,
+        vec![b'#'; usize::try_from(TABLE_FILE_CAP).expect("a cap that fits memory") + 1],
+        own(),
+    );
     assert!(matches!(load(&huge), Err(LoadError::Unreadable { .. })));
     let bad = FixtureProc::new().file(FILE, "[[peer]]\napp = \"x\"\n", own());
     assert!(matches!(load(&bad), Err(LoadError::Table { .. })));

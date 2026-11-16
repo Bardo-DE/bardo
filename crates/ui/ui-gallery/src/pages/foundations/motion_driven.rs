@@ -173,7 +173,7 @@ fn DockCell() -> Element {
                 class: "g-detail",
                 onpointerdown: move |event| {
                     let at = event.client_coordinates();
-                    let at = Point { x: Px(at.x as f32), y: Px(at.y as f32) };
+                    let at = point_at(at.x, at.y);
                     from.set(Some(at));
                     let now = ui_components::base::time::clock::now();
                     meters.set((VelocityMeter::default().moved(at.x, now), VelocityMeter::default().moved(at.y, now)));
@@ -181,7 +181,7 @@ fn DockCell() -> Element {
                 onpointermove: move |event| {
                     let Some(start) = from() else { return };
                     let at = event.client_coordinates();
-                    let at = Point { x: Px(at.x as f32), y: Px(at.y as f32) };
+                    let at = point_at(at.x, at.y);
                     let now = ui_components::base::time::clock::now();
                     let (mx, my) = meters();
                     meters.set((mx.moved(at.x, now), my.moved(at.y, now)));
@@ -205,6 +205,18 @@ fn DockCell() -> Element {
 }
 
 /// Knock the tile off its place and let it spring home, as a drop that missed does.
+/// A pointer position in logical pixels as a point.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pointer position in logical pixels is far inside f32's range"
+)]
+fn point_at(x: f64, y: f64) -> Point {
+    Point {
+        x: Px(x as f32),
+        y: Px(y as f32),
+    }
+}
+
 fn nudge(drag: DragReturn) {
     drag.follow(Point {
         x: Px(-40.0),

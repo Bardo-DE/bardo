@@ -71,11 +71,14 @@ pub fn blur_region(actions: ActionsShown) -> RegionSpec {
 /// What the panel takes, from the card's bottom edge in panel coordinates (`foot`) and whether
 /// the actions menu is open. A foot at or above the top (read before layout) measures nothing.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a card is at most the panel's 460 px, so its rounded foot fits an i32"
+)]
 pub fn hit_for(foot: f32, actions: ActionsShown) -> PanelHit {
     match actions {
         ActionsShown::Open => PanelHit::Whole,
         ActionsShown::Closed if foot >= 1.0 => PanelHit::Card {
-            // A card is at most the panel's 460 px, so its rounded foot fits an i32.
             height: foot.ceil() as i32,
         },
         ActionsShown::Closed => PanelHit::Whole,

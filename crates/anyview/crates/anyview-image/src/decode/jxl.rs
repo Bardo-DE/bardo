@@ -38,6 +38,11 @@ pub(crate) fn decode(bytes: &[u8], ceiling: Ceiling) -> Result<(Rgba8, ColourInf
         width: PixelLen(u32::try_from(buffer.width()).unwrap_or(u32::MAX)),
         height: PixelLen(u32::try_from(buffer.height()).unwrap_or(u32::MAX)),
     };
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the sample is clamped to 0..=255 before the cast"
+    )]
     let to_byte = |sample: f32| (sample.clamp(0.0, 1.0) * 255.0 + 0.5) as u8; // clamped to 0..=255
     let bytes: Vec<u8> = buffer
         .buf()

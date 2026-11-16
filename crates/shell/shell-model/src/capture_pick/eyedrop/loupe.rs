@@ -38,14 +38,20 @@ pub struct Loupe {
 #[must_use]
 pub fn loupe_at(shot: (u32, u32), surface: (u32, u32), at: (f64, f64)) -> Option<Loupe> {
     let pixel = pixel_under(shot, surface, at)?;
-    let centre = (GRID / 2) as i32;
-    let cell = CELL as i32;
-    let half = (SIDE / 2) as i32;
+    let signed = |n: u32| i32::try_from(n).unwrap_or(i32::MAX);
+    let centre = signed(GRID / 2);
+    let cell = signed(CELL);
+    let half = signed(SIDE / 2);
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a pointer position that fell on the picture is a few thousand pixels at most"
+    )]
+    let (at_x, at_y) = (at.0.round() as i32, at.1.round() as i32);
     Some(Loupe {
-        left: at.0.round() as i32 - half,
-        top: at.1.round() as i32 - half,
-        picture_left: (centre - pixel.x as i32) * cell,
-        picture_top: (centre - pixel.y as i32) * cell,
+        left: at_x - half,
+        top: at_y - half,
+        picture_left: (centre - signed(pixel.x)) * cell,
+        picture_top: (centre - signed(pixel.y)) * cell,
         picture_width: shot.0 * CELL,
         picture_height: shot.1 * CELL,
     })

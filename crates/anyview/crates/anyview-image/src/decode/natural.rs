@@ -65,6 +65,11 @@ fn declared_by_svg(head: &[u8]) -> Option<PixelSize> {
         (None, None, Some((vw, vh))) => (vw, vh),
         _ => return None,
     };
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a positive finite length rounded up; the cast saturates"
+    )]
     let whole = |length: f64| {
         (length.is_finite() && length > 0.0).then(|| PixelLen((length.ceil() as u32).max(1)))
     };

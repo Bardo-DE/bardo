@@ -98,7 +98,10 @@ impl Emitted {
     fn body(&self) -> (String, HashMap<String, Value<'static>>) {
         let mut props = HashMap::new();
         if let Some(count) = self.count {
-            props.insert("count".to_owned(), Value::from(count as i64));
+            props.insert(
+                "count".to_owned(),
+                Value::from(i64::try_from(count).unwrap_or(i64::MAX)),
+            );
             props.insert("count-visible".to_owned(), Value::from(true));
         }
         if let Some(progress) = self.progress {

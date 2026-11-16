@@ -31,7 +31,10 @@ thread_local! {
 }
 
 /// One column, rendered on its own (Blitz's CPU renderer loses layers in one large document).
-#[allow(non_snake_case)] // A component: the harness names it like a type.
+#[expect(
+    non_snake_case,
+    reason = "a component: the harness names it like a type"
+)]
 fn Sheet() -> Element {
     let scheme = SCHEME.get();
     let theme = match scheme {
@@ -62,7 +65,16 @@ fn sheet_at(scheme: Scheme) -> Result<RgbaImage, GalleryError> {
         source,
     })?;
     let scale = f32::from(SCALE) / 100.0;
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "the sheet height is a few thousand pixels, exact in f32"
+    )]
     let height = sheet.map_or(HEIGHT as f32, |rect| rect.origin.y.0 + rect.size.height.0);
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a positive height in pixels, rounded up, fits u32"
+    )]
     let tall = ((height * scale).ceil() as u32).min(picture.height());
     Ok(imageops::crop_imm(&picture, 0, 0, picture.width(), tall).to_image())
 }

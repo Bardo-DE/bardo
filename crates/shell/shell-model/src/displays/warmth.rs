@@ -45,7 +45,13 @@ pub fn temperature(strength: Percent) -> Kelvin {
     let s = f64::from(strength.0.min(100)) / 100.0;
     let mired = |k: Kelvin| 1e6 / f64::from(k.0);
     let m = mired(NEUTRAL) + s * (mired(WARMEST) - mired(NEUTRAL));
-    Kelvin((1e6 / m).round() as u16)
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "m lies between the mireds of NEUTRAL and WARMEST, so the temperature is positive and fits u16"
+    )]
+    let kelvin = (1e6 / m).round() as u16;
+    Kelvin(kelvin)
 }
 
 /// The multipliers for `kelvin`, normalised to 6500 K, and clamped to 1000-6500 K.
@@ -54,6 +60,11 @@ pub fn gains(kelvin: Kelvin) -> Gains {
     let k = f64::from(kelvin.0.clamp(1000, NEUTRAL.0));
     let (r, g, b) = blackbody(k);
     let (r0, g0, b0) = blackbody(f64::from(NEUTRAL.0));
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the ratio is clamped to 0..=1, so the result is in 0..=1000"
+    )]
     let per_mille = |v: f64, v0: f64| Permille(((v / v0).clamp(0.0, 1.0) * 1000.0).round() as u32);
     Gains {
         red: per_mille(r, r0),

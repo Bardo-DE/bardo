@@ -1,6 +1,6 @@
 //! Builds new-shape catalog files from parts, for the parser, narrowing and slot tests.
 
-#![allow(dead_code)]
+#![allow(dead_code, reason = "each test binary uses some of these helpers")]
 
 pub const SAMPLING: &str = r#"sampling = { reasoning_on = { temperature = 600, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_off = { temperature = 0, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_default = "off" }"#;
 

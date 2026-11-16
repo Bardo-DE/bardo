@@ -101,7 +101,11 @@ fn a_file_that_is_not_a_table_fails_the_whole_load() {
     assert!(matches!(apps(&tree), Err(LoadError::Table { .. })));
     let huge = FixtureProc::new().file(
         MAIN,
-        vec![b'#'; caller_identity_linux::TABLE_FILE_CAP as usize + 1],
+        vec![
+            b'#';
+            usize::try_from(caller_identity_linux::TABLE_FILE_CAP).expect("a cap that fits memory")
+                + 1
+        ],
         FileTrust::RootOnly,
     );
     assert!(matches!(apps(&huge), Err(LoadError::Unreadable { .. })));

@@ -21,8 +21,22 @@ pub(crate) fn fit_area(size: PixelSize, max: PixelArea) -> PixelSize {
     if area <= max.0 || area == 0 {
         return size;
     }
-    let scale = (max.0 as f64 / area as f64).sqrt(); // sizes are far below 2^52
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "pixel areas are far below 2^52, where f64 stops being exact"
+    )]
+    let scale = (max.0 as f64 / area as f64).sqrt();
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a positive side scaled down by at most one, so it fits"
+    )]
     let mut width = ((f64::from(size.width.0) * scale) as u64).max(1);
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a positive side scaled down by at most one, so it fits"
+    )]
     let mut height = ((f64::from(size.height.0) * scale) as u64).max(1);
     // Truncating both sides leaves the area under the budget except at one pixel wide.
     while width * height > max.0 && (width > 1 || height > 1) {
@@ -33,8 +47,8 @@ pub(crate) fn fit_area(size: PixelSize, max: PixelArea) -> PixelSize {
         }
     }
     PixelSize {
-        width: PixelLen(width as u32), // at most the original width
-        height: PixelLen(height as u32),
+        width: PixelLen(u32::try_from(width).unwrap_or(size.width.0)),
+        height: PixelLen(u32::try_from(height).unwrap_or(size.height.0)),
     }
 }
 

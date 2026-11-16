@@ -64,6 +64,11 @@ impl LauncherTokens {
     /// it does not.
     pub fn read(length: impl Fn(&str) -> Option<Px>) -> LauncherTokens {
         let shipped = LauncherTokens::default();
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "the value is clamped to 0..=65535 before the cast"
+        )]
         let whole = |px: Px| px.0.round().clamp(0.0, f32::from(u16::MAX)) as u16;
         let one = |token: LauncherToken, shipped: u16| {
             length(token.input().as_str()).map_or(shipped, whole)

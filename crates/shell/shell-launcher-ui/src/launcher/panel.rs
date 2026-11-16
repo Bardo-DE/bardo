@@ -61,10 +61,21 @@ pub const LAUNCHER_CSS: &str = include_str!("style.css");
 /// quire reads a new palette's first row before the freshly mapped surface has laid it out and
 /// reports 0 x 0, then nothing more until the selection moves, and the selection
 /// is always the first row then.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "the card inset is a few dozen pixels, exact in f32"
+)]
 pub const FIRST_ROW_FOOT: Point = Point {
     x: Px(48.0 + CARD_INSET as f32),
     y: Px(118.5),
 };
+
+/// The width the preview pane adds to the card.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "the preview width is a few hundred pixels, exact in f32"
+)]
+const PREVIEW_WIDTH: Px = Px(PREVIEW_WIDTH_PX as f32);
 
 /// A reported row rect, unless it is the empty one quire reports before layout.
 pub fn measured(rect: Rect) -> Option<Rect> {
@@ -380,7 +391,7 @@ fn palette(
             claim: Callback::new(move |field: FieldKey| claim.claim(&field)),
             handle: Some(panel.palette),
             aside: pane,
-            aside_width: Px(PREVIEW_WIDTH_PX as f32),
+            aside_width: PREVIEW_WIDTH,
         }
         if shown.mode == LauncherMode::Companion {
             ModeSwitch {

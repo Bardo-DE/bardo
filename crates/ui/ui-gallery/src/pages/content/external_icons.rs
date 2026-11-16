@@ -27,13 +27,23 @@ fn keyboard_file() -> Option<IconUrl> {
 /// hue turns around it, PNG-encoded.
 fn pixmap() -> Option<IconUrl> {
     let picture = RgbaImage::from_fn(22, 22, |x, y| {
+        #[expect(
+            clippy::cast_precision_loss,
+            reason = "the icon is 22 pixels across, exact in f32"
+        )]
         let (dx, dy) = (x as f32 - 10.5, y as f32 - 10.5);
         let inside = dx * dx + dy * dy <= 10.0 * 10.0;
         let turn = (dy.atan2(dx) / std::f32::consts::TAU + 0.5) * 3.0;
-        let [r, g, b] = [0.0f32, 1.0, 2.0].map(|phase| {
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "the level is between 60 and 240"
+        )]
+        let level = |phase: f32| {
             let near = 1.0 - ((turn - phase).rem_euclid(3.0) - 1.5).abs().min(1.0);
             (60.0 + 180.0 * near) as u8
-        });
+        };
+        let [r, g, b] = [0.0f32, 1.0, 2.0].map(level);
         Rgba([r, g, b, if inside { 255 } else { 0 }])
     });
     let mut bytes = Cursor::new(Vec::new());

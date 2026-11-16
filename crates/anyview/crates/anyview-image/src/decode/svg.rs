@@ -41,7 +41,12 @@ impl Svg {
     /// The size the document declares, rounded up to whole pixels and at least one.
     pub(crate) fn intrinsic(&self) -> PixelSize {
         let size = self.0.size();
-        let whole = |length: f32| PixelLen((length.ceil() as u32).max(1)); // saturating cast
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "a length rounded up; the cast saturates and the result is at least one"
+        )]
+        let whole = |length: f32| PixelLen((length.ceil() as u32).max(1));
         PixelSize {
             width: whole(size.width()),
             height: whole(size.height()),
@@ -54,17 +59,16 @@ impl Svg {
         let mut pixmap =
             tiny_skia::Pixmap::new(width, height).ok_or(ImageError::TooLarge { size })?;
         let intrinsic = self.0.size();
-        svg_limits::check(
-            &self.0,
-            (
-                width as f32 / intrinsic.width(),
-                height as f32 / intrinsic.height(),
-            ),
-        )?;
-        let transform = tiny_skia::Transform::from_scale(
+        #[expect(
+            clippy::cast_precision_loss,
+            reason = "pixel sizes are far below 2^24, where f32 stops being exact"
+        )]
+        let scale = (
             width as f32 / intrinsic.width(),
             height as f32 / intrinsic.height(),
         );
+        svg_limits::check(&self.0, scale)?;
+        let transform = tiny_skia::Transform::from_scale(scale.0, scale.1);
         resvg::render(&self.0, transform, &mut pixmap.as_mut());
         // tiny-skia draws premultiplied.
         Ok(PremultipliedRgba8::new(size, pixmap.take())?.unpremultiplied())

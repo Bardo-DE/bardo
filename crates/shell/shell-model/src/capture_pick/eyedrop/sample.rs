@@ -18,6 +18,11 @@ pub struct ShotPixel {
 /// the surface or either size is empty.
 #[must_use]
 pub fn pixel_under(shot: (u32, u32), surface: (u32, u32), at: (f64, f64)) -> Option<ShotPixel> {
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the position is inside 0..extent, so the floor is in 0..size, which fits u32"
+    )]
     let across = |size: u32, extent: u32, position: f64| -> Option<u32> {
         let (size, extent) = (f64::from(size), f64::from(extent));
         // `contains` is false for a NaN position as well.

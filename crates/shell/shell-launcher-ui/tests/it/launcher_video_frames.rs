@@ -1,7 +1,7 @@
 //! A video's picture in the pane comes from the freedesktop thumbnail cache of the injected cache
 //! directory, and only while the thumbnail is of this very version of the file.
 #![cfg(feature = "media")]
-#![allow(clippy::unwrap_used)]
+#![allow(clippy::unwrap_used, reason = "a test fails by panicking")]
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

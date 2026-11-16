@@ -6,7 +6,9 @@ use crate::desktop::{OutputPicture, OutputShot};
 /// A picture `width` by `height` whose pixel `(x, y)` is `(x, y, 7)`, so every pixel names itself.
 fn shot(width: u32, height: u32) -> OutputShot {
     let rgba: Vec<u8> = (0..height)
-        .flat_map(|y| (0..width).flat_map(move |x| [x as u8, y as u8, 7, 255]))
+        .flat_map(|y| {
+            (0..width).flat_map(move |x| [x.to_le_bytes()[0], y.to_le_bytes()[0], 7, 255])
+        })
         .collect();
     OutputShot {
         size: (width, height),

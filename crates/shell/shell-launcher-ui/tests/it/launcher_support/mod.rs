@@ -172,7 +172,7 @@ pub fn placed(rows: &[Item], text: &str, only: Option<ProviderKind>) -> Placemen
         let spans = match (plan.rule(kind), items.len()) {
             (Some(rule), n) if n > 0 => vec![SectionSpan {
                 section: rule.section,
-                rows: n as u32,
+                rows: u32::try_from(n).unwrap_or(u32::MAX),
             }],
             _ => Vec::new(),
         };

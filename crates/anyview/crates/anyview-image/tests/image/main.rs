@@ -1,6 +1,6 @@
 //! The integration tests of anyview-image, in one binary so they link once.
 
-#![allow(clippy::unwrap_used)]
+#![allow(clippy::unwrap_used, reason = "a test fails by panicking")]
 
 mod breadth;
 mod decode;

@@ -103,7 +103,11 @@ mod tests {
         {
             let mut encoder = GifEncoder::new(&mut out);
             for grey in 0..frames {
-                let picture = RgbaImage::from_pixel(8, 6, image::Rgba([grey as u8; 4]));
+                let picture = RgbaImage::from_pixel(
+                    8,
+                    6,
+                    image::Rgba([u8::try_from(grey).expect("a few frames"); 4]),
+                );
                 encoder.encode_frame(Frame::new(picture)).unwrap();
             }
         }
@@ -113,7 +117,10 @@ mod tests {
     #[test]
     fn a_gif_is_counted_from_its_blocks() {
         for frames in [1, 2, 3, 40] {
-            assert_eq!(of(&gif_of(frames), ImageFormat::Gif), Some(frames as u32));
+            assert_eq!(
+                of(&gif_of(frames), ImageFormat::Gif),
+                Some(u32::try_from(frames).expect("a few frames"))
+            );
         }
     }
 

@@ -1,6 +1,6 @@
 //! Loading fixtures the way the viewer meets files: an `Input` on disk and what sniffing made of it.
 // Each test crate uses some of these helpers, and none of them is a `#[test]` function.
-#![allow(dead_code)]
+#![allow(dead_code, reason = "each test binary uses some of these helpers")]
 
 use anyview_core::{
     ByteLen, FileHead, FileName, FilePath, FileStamp, Input, ModTime, PeekBudget, PixelArea,

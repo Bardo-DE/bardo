@@ -13,7 +13,14 @@ use ui_components::style::tokens::timing::DurationToken;
 /// `170ms`, `5.2s`.
 pub fn millis(duration: Duration) -> String {
     match duration.as_millis() {
-        ms if ms >= 2000 && ms % 100 == 0 => format!("{}s", ms as f64 / 1000.0),
+        ms if ms >= 2000 && ms % 100 == 0 => {
+            let tenths = ms / 100;
+            if tenths % 10 == 0 {
+                format!("{}s", tenths / 10)
+            } else {
+                format!("{}.{}s", tenths / 10, tenths % 10)
+            }
+        }
         ms => format!("{ms}ms"),
     }
 }
