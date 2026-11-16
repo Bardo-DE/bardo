@@ -28,9 +28,9 @@ fn catalogue(test: &str) -> Catalogue {
     ];
     let joined = std::env::join_paths(&shares).expect("paths");
     let dirs = ui_settings::schema::data_dirs_from(
-        Some(OsString::from(scratch.join("home/share"))),
-        Some(joined),
-        Some(OsString::from(scratch.join("home"))),
+        Some(OsString::from(scratch.join("home/share")).as_os_str()),
+        Some(joined.as_os_str()),
+        Some(OsString::from(scratch.join("home")).as_os_str()),
     );
     let found = discover(&dirs);
     assert_eq!(found.warnings, []);
