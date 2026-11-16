@@ -21,7 +21,7 @@ pub fn provider_refusal(error: ProviderError) -> Refusal {
 #[must_use]
 pub fn secrets_refusal(error: SecretsError) -> Refusal {
     match error {
-        SecretsError::Missing | SecretsError::Unreadable => Refusal::NeedsReauth,
+        SecretsError::Missing | SecretsError::Unreadable(_) => Refusal::NeedsReauth,
         // locked, unreachable, and a failure a later account-secrets adds
         _ => Refusal::Unavailable,
     }
@@ -70,7 +70,7 @@ mod tests {
     fn a_secret_store_fault_is_told_to_the_app_as_what_it_can_act_on() {
         assert_eq!(secrets_refusal(SecretsError::Missing), Refusal::NeedsReauth);
         assert_eq!(
-            secrets_refusal(SecretsError::Unreadable),
+            secrets_refusal(SecretsError::Unreadable(None)),
             Refusal::NeedsReauth
         );
         assert_eq!(

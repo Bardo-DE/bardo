@@ -78,8 +78,7 @@ pub(super) async fn off_thread<T: Send + 'static>(
             let value = work();
             sender.0.settle(Slot::Done(value));
         })
-        .ok()
-        .ok_or(SecretsError::Unavailable)?;
+        .map_err(|e| SecretsError::Worker(Arc::new(e)))?;
     Receiver(shared).await
 }
 

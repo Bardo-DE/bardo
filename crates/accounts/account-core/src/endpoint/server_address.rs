@@ -14,17 +14,26 @@
 //! only. This module knows nothing of what a tailnet's computer is.
 
 use super::{EndpointUrl, Tls, UrlScheme};
+use crate::error::CoreError;
 
-/// Why an address is not accepted.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+/// Why an address is not accepted. Two faults are equal when they are the same kind.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ServerAddressFault {
     /// Not a web address (`http` or `https`, a host, an optional port and path).
     #[error("not a web address")]
-    NotAnAddress,
+    NotAnAddress(#[source] Option<CoreError>),
     /// Plain `http` to a host that is neither this computer nor one of the person's own.
     #[error("plain http is for this computer and your own computers only")]
     PlainOffTrusted,
 }
+
+impl PartialEq for ServerAddressFault {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Eq for ServerAddressFault {}
 
 /// An accepted address: where the server is and how the connection is secured.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -67,9 +76,8 @@ pub fn server_address(
     text: &str,
     is_own: impl Fn(&str) -> bool,
 ) -> Result<ServerAddress, ServerAddressFault> {
-    let url = EndpointUrl::parse(text.trim())
-        .ok()
-        .ok_or(ServerAddressFault::NotAnAddress)?;
+    let url =
+        EndpointUrl::parse(text.trim()).map_err(|e| ServerAddressFault::NotAnAddress(Some(e)))?;
     let origin = url.origin();
     match origin.scheme {
         UrlScheme::Https => Ok(ServerAddress {
@@ -85,7 +93,7 @@ pub fn server_address(
             })
         }
         UrlScheme::Http => Err(ServerAddressFault::PlainOffTrusted),
-        _ => Err(ServerAddressFault::NotAnAddress),
+        _ => Err(ServerAddressFault::NotAnAddress(None)),
     }
 }
 
@@ -98,12 +106,11 @@ pub fn server_address(
 /// # Errors
 /// [`ServerAddressFault::NotAnAddress`] for text that is not an `http` or `https` address.
 pub fn server_address_shape(text: &str) -> Result<EndpointUrl, ServerAddressFault> {
-    let url = EndpointUrl::parse(text.trim())
-        .ok()
-        .ok_or(ServerAddressFault::NotAnAddress)?;
+    let url =
+        EndpointUrl::parse(text.trim()).map_err(|e| ServerAddressFault::NotAnAddress(Some(e)))?;
     match url.origin().scheme {
         UrlScheme::Https | UrlScheme::Http => Ok(url),
-        _ => Err(ServerAddressFault::NotAnAddress),
+        _ => Err(ServerAddressFault::NotAnAddress(None)),
     }
 }
 
@@ -184,24 +191,24 @@ mod tests {
             (
                 "not a web address",
                 "ftp://llm.example.test",
-                Err(ServerAddressFault::NotAnAddress),
+                Err(ServerAddressFault::NotAnAddress(None)),
             ),
             (
                 "no scheme",
                 "llm.example.test/v1",
-                Err(ServerAddressFault::NotAnAddress),
+                Err(ServerAddressFault::NotAnAddress(None)),
             ),
             (
                 "a mail scheme",
                 "imaps://mail.example.test",
-                Err(ServerAddressFault::NotAnAddress),
+                Err(ServerAddressFault::NotAnAddress(None)),
             ),
             (
                 "a query",
                 "https://llm.example.test/v1?key=1",
-                Err(ServerAddressFault::NotAnAddress),
+                Err(ServerAddressFault::NotAnAddress(None)),
             ),
-            ("empty", "", Err(ServerAddressFault::NotAnAddress)),
+            ("empty", "", Err(ServerAddressFault::NotAnAddress(None))),
         ];
         for (what, text, want) in cases {
             let got = server_address(text, is_own).map(|address| address.tls());

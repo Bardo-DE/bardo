@@ -60,7 +60,7 @@ impl From<std::io::Error> for FileSecretsError {
 impl From<FileSecretsError> for SecretsError {
     fn from(error: FileSecretsError) -> Self {
         match error {
-            FileSecretsError::Corrupt => SecretsError::Unreadable,
+            FileSecretsError::Corrupt => SecretsError::Unreadable(None),
             FileSecretsError::NotAbsolute
             | FileSecretsError::NotAFile
             | FileSecretsError::Mode { .. }
@@ -253,7 +253,7 @@ fn private_options() -> OpenOptions {
 
 impl Secrets for FileSecrets {
     async fn put(&self, key: &SecretKey, value: &Credential) -> Result<(), SecretsError> {
-        let credential = serde_json::to_value(value).map_err(|_| SecretsError::Unreadable)?;
+        let credential = serde_json::to_value(value).map_err(SecretsError::unreadable)?;
         let namespace = &self.namespace;
         Ok(self.update(|items| {
             items.retain(|item| !item.is(namespace, key));
@@ -267,7 +267,7 @@ impl Secrets for FileSecrets {
         key: &SecretKey,
         value: &Credential,
     ) -> Result<bool, SecretsError> {
-        let credential = serde_json::to_value(value).map_err(|_| SecretsError::Unreadable)?;
+        let credential = serde_json::to_value(value).map_err(SecretsError::unreadable)?;
         let namespace = &self.namespace;
         Ok(self.update(|items| {
             if items.iter().any(|item| item.is(namespace, key)) {
@@ -287,7 +287,7 @@ impl Secrets for FileSecrets {
             )
         })?;
         let item = found.ok_or(SecretsError::Missing)?;
-        serde_json::from_value(item.credential).map_err(|_| SecretsError::Unreadable)
+        serde_json::from_value(item.credential).map_err(SecretsError::unreadable)
     }
 
     async fn delete(&self, key: &SecretKey) -> Result<(), SecretsError> {

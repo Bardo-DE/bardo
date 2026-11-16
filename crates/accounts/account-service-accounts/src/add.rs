@@ -34,7 +34,7 @@ impl<E: Ports> Accounts<'_, E> {
         };
         match self.ctx.secrets().get(&key).await {
             Ok(Credential::ApiKey(key)) => Ok(key),
-            Ok(_) | Err(SecretsError::Missing | SecretsError::Unreadable) => {
+            Ok(_) | Err(SecretsError::Missing | SecretsError::Unreadable(_)) => {
                 Err(Refusal::NeedsReauth)
             }
             // locked, unreachable, and a failure a later account-secrets adds

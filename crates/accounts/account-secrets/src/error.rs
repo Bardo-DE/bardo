@@ -1,7 +1,9 @@
 //! account-secrets' one error.
 
-/// Why the store could not answer.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+use std::sync::Arc;
+
+/// Why the store could not answer. Two errors are equal when they are the same kind of failure.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum SecretsError {
     /// Nothing is filed under that key.
     #[error("no such secret")]
@@ -17,5 +19,23 @@ pub enum SecretsError {
     Unavailable,
     /// An item exists but does not decode as a credential.
     #[error("secret item unreadable")]
-    Unreadable,
+    Unreadable(#[source] Option<Arc<dyn std::error::Error + Send + Sync>>),
+    /// The thread that talks to the store could not be started.
+    #[error("The keychain could not be reached.")]
+    Worker(#[source] Arc<std::io::Error>),
 }
+
+impl SecretsError {
+    /// An item that does not decode as a credential, because of `cause`.
+    pub fn unreadable(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self::Unreadable(Some(Arc::new(cause)))
+    }
+}
+
+impl PartialEq for SecretsError {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Eq for SecretsError {}

@@ -34,7 +34,7 @@ pub trait Secrets: Send + Sync {
     ) -> impl Future<Output = Result<bool, SecretsError>> + Send {
         async move {
             match self.get(key).await {
-                Ok(_) | Err(SecretsError::Unreadable) => Ok(false),
+                Ok(_) | Err(SecretsError::Unreadable(_)) => Ok(false),
                 Err(SecretsError::Missing) => self.put(key, value).await.map(|()| true),
                 Err(other) => Err(other),
             }
