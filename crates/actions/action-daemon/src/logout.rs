@@ -29,6 +29,10 @@ pub struct Logouts {
 }
 
 /// Subscribes to `SessionRemoved` of logind on `system`.
+///
+/// # Errors
+///
+/// Returns a [`ServeFault`] when the system bus refuses the logind subscription.
 pub async fn watch_logind(system: &BusConnection) -> Result<Logouts, ServeFault> {
     let bus = |e: zbus::Error| ServeFault::Bus(e.to_string());
     let manager = Login1ManagerProxy::new(system).await.map_err(bus)?;
@@ -54,6 +58,10 @@ impl Logouts {
 }
 
 /// `watch_logind`, then `end_terminals`, in one call.
+///
+/// # Errors
+///
+/// Returns a [`ServeFault`] when the system bus refuses the logind subscription.
 pub async fn end_terminals_at_logout<S: Seams + 'static>(
     system: &BusConnection,
     router: Arc<Router<S>>,

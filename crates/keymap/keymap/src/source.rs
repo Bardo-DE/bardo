@@ -91,10 +91,18 @@ impl std::fmt::Debug for Watch {
 /// Something that can give the keymap a platform really has.
 pub trait KeymapSource {
     /// The platform's keymap: its conventions with this source's settings laid over them.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SourceError`] when the settings file or service cannot be read.
     fn load(&self, platform: Platform) -> Result<Keymap, SourceError>;
 
     /// Calls `on_change` whenever the settings change, until the returned `Watch` is dropped.
     /// The default never fires; a source with a notification channel overrides it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SourceError::Unsupported`] when the source cannot watch for changes.
     fn watch(&self, on_change: ChangeCallback) -> Result<Watch, SourceError> {
         drop(on_change);
         Ok(Watch::inert())

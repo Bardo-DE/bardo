@@ -55,6 +55,11 @@ impl IndexStore {
     }
 
     /// Replaces the file of `app` with `entries`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IndexFileFault`] when the entries cannot be encoded or the disk refuses the
+    /// file.
     pub fn write(&self, app: &AppName, entries: Vec<IndexEntry>) -> Result<(), IndexFileFault> {
         let bytes = serde_json::to_vec(&IndexFile {
             version: VERSION,

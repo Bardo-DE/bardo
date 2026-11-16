@@ -35,6 +35,10 @@ pub struct AppId(String);
 
 impl AppId {
     /// An app name: lowercase letters, digits, `-` and `_`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ActionIdError::BadApp`] when `name` is not lowercase letters, digits, `-` and `_`.
     pub fn new(name: &str) -> Result<AppId, ActionIdError> {
         if valid_segment(name) {
             Ok(AppId(name.to_owned()))
@@ -64,6 +68,11 @@ pub struct AppAction(String);
 
 impl AppAction {
     /// An app action id: two or more dot-separated parts of lowercase letters, digits, `-`, `_`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ActionIdError::BadAction`] when `id` is not two or more dot-separated parts of
+    /// lowercase letters, digits, `-` and `_`.
     pub fn new(id: &str) -> Result<AppAction, ActionIdError> {
         let parts = id.split('.').count();
         if parts >= 2 && id.split('.').all(valid_segment) {

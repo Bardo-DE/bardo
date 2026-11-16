@@ -15,10 +15,11 @@ use smithay::desktop::PopupManager;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::utils::Scale;
 
-/// Every popup surface whose root is `root` (smithay's popup tree), front first (a popup's
-/// children before it, later popups before earlier ones), each with where its top-left is in
-/// global logical pixels when `root`'s top-left sits at `origin`. The renderer draws popups
-/// there and the pointer's hit test finds them there.
+/// Every popup surface whose root is `root` (smithay's popup tree), front first.
+///
+/// A popup's children come before it, and later popups before earlier ones. Each comes with where
+/// its top-left is in global logical pixels when `root`'s top-left sits at `origin`. The renderer
+/// draws popups there and the pointer's hit test finds them there.
 #[must_use]
 pub fn popup_surfaces(root: &WlSurface, origin: LogicalPoint) -> Vec<(WlSurface, LogicalPoint)> {
     let root_geometry = geometry_origin(root);
@@ -86,9 +87,10 @@ impl PopupRide {
     }
 }
 
-/// [`popup_elements`] for a window in a Scale flight: each popup is laid out at its real size
-/// and stretched by the ratio about `ride.about`, so a menu shrinks toward its window's corner
-/// with it and fades with it.
+/// [`popup_elements`] for a window in a Scale flight.
+///
+/// Each popup is laid out at its real size and stretched by the ratio about `ride.about`, so a menu
+/// shrinks toward its window's corner with it and fades with it.
 pub fn popup_elements_riding<R: Compositor>(
     root: &WlSurface,
     origin: LogicalPoint,

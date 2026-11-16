@@ -149,6 +149,10 @@ pub fn changes(before: &Marks, after: &Marks) -> Vec<Changed> {
 }
 
 /// Says one change on the bus, to everyone who listens.
+///
+/// # Errors
+///
+/// Returns the bus error when the signal cannot be sent.
 pub async fn emit(connection: &BusConnection, change: &Changed) -> zbus::Result<()> {
     let (interface, member, body) = match change {
         Changed::Manifest(app) => (
@@ -210,16 +214,19 @@ pub async fn emit(connection: &BusConnection, change: &Changed) -> zbus::Result<
     }
 }
 
-/// Makes the registry what the installed manifests say, beside the built-in ones: a new or
-/// changed file is installed, a file that is gone takes its app with it. The built-in providers
-/// are never replaced or removed by a file.
+/// Makes the registry what the installed manifests say, beside the built-in ones: a new or changed
+/// file is installed, a file that is gone takes its app with it.
+///
+/// The built-in providers are never replaced or removed by a file.
 pub fn rescan<S: Seams>(router: &Router<S>, data_dirs: &[PathBuf]) {
     rescan_with(router, data_dirs, &LiveReach::none());
 }
 
-/// [`rescan`] with what the providers said about their actions' reach laid over each manifest
-/// (see `reach`). The reach is part of the manifest's digest, so a change in it is a
-/// `ManifestChanged` like any other.
+/// [`rescan`] with what the providers said about their actions' reach laid over each manifest (see
+/// `reach`).
+///
+/// The reach is part of the manifest's digest, so a change in it is a `ManifestChanged` like any
+/// other.
 pub fn rescan_with<S: Seams>(router: &Router<S>, data_dirs: &[PathBuf], live: &LiveReach) {
     let loaded = load_manifests(data_dirs).manifests;
     let wanted: BTreeMap<AppName, ValidManifest> = loaded
@@ -271,8 +278,10 @@ impl Default for Cadence {
     }
 }
 
-/// Looks at the router every `cadence.every`, rescans the manifests every few looks, and says
-/// each change on `connection`; `live` is what the providers said about their reach. Runs until the task is aborted.
+/// Looks at the router every `cadence.every`, rescans the manifests every few looks, and says each
+/// change on `connection`.
+///
+/// `live` is what the providers said about their reach. Runs until the task is aborted.
 pub async fn pump<S: Seams>(
     router: std::sync::Arc<Router<S>>,
     connection: BusConnection,

@@ -27,6 +27,10 @@ pub trait Compositor:
 
     /// Blur, before its draw: blur what lies under `dst` into `cache` as `blur` asks (smithay
     /// calls it whenever that changed). The stand-in needs nothing.
+    ///
+    /// # Errors
+    ///
+    /// Returns the renderer's error when the blur cannot be captured.
     fn capture_blur_v0(
         frame: &mut Self::Frame<'_, '_>,
         blur: &BlurV0Element,
@@ -39,6 +43,10 @@ pub trait Compositor:
 
     /// Blur: draw `blur` at `dst` where `damage` (relative to `dst`) asks. The default is
     /// the stand-in colour over the region.
+    ///
+    /// # Errors
+    ///
+    /// Returns the renderer's error when the blur cannot be drawn.
     fn draw_blur_v0(
         frame: &mut Self::Frame<'_, '_>,
         blur: &BlurV0Element,
@@ -54,6 +62,10 @@ pub trait Compositor:
     /// `damage` (relative to `dst`) asks. The default clips by pieces weighted by coverage
     /// (pixman, the dummy renderer, a multi-GPU copy; FINDINGS, `wave-2026-10-15/corners`); a
     /// renderer with shaders masks the corners in the fragment shader.
+    ///
+    /// # Errors
+    ///
+    /// Returns the renderer's error when the clip cannot be drawn.
     fn draw_rounded_clip(
         frame: &mut Self::Frame<'_, '_>,
         clip: &RoundedClipElement<Self>,
@@ -70,6 +82,10 @@ pub trait Compositor:
     /// A strip of a genie's surface that reaches the window's bottom corners: draw `clip` at
     /// `dst` where `damage` (relative to `dst`) asks. The default draws the strip unclipped; a
     /// renderer with shaders masks the corners as they are in the window at rest.
+    ///
+    /// # Errors
+    ///
+    /// Returns the renderer's error when the strip cannot be drawn.
     fn draw_clip_strip(
         frame: &mut Self::Frame<'_, '_>,
         clip: &ClipStripElement<Self>,

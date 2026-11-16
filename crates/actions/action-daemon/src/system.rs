@@ -13,10 +13,12 @@ use companion_memory::{AlmanacMemory, AlmanacSessionLog};
 use companion_memory_core::QueuedSink;
 use provenance::SessionId;
 
-/// The sessions' log of the running daemon: memoryd's, or none. The daemon reads the log once at
-/// start (`Router::adopt_sessions`); a memoryd that cannot serve it (not running, or too old to
-/// have `Entries` and `RecordDurable` on the bus) leaves the sessions unrecorded for this run,
-/// and the daemon says so, rather than refusing every call for want of a record.
+/// The sessions' log of the running daemon: memoryd's, or none.
+///
+/// The daemon reads the log once at start (`Router::adopt_sessions`); a memoryd that cannot serve
+/// it (not running, or too old to have `Entries` and `RecordDurable` on the bus) leaves the
+/// sessions unrecorded for this run, and the daemon says so, rather than refusing every call for
+/// want of a record.
 #[derive(Debug)]
 pub enum DaemonLog<M: memory_client::Transport> {
     /// Sessions are recorded in memoryd.
@@ -58,8 +60,9 @@ impl<M: memory_client::Transport> SessionLog for DaemonLog<M> {
     }
 }
 
-/// The seams of the running daemon: apps and the sheet over the session bus, the built-in
-/// providers in process, models over
+/// The seams of the running daemon.
+///
+/// Apps and the sheet are over the session bus, the built-in providers in process, models over
 /// inferd (`P` is inference-client's transport), memory over memoryd (`M` is memory-client's).
 #[derive(Debug)]
 pub struct SystemSeams<P: inference_client::Transport, M: memory_client::Transport> {

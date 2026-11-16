@@ -47,8 +47,15 @@ pub(super) fn read_installed(layout: &Layout) -> Result<updater_core::Installed,
 }
 
 /// Verifies the release staged in `staged_dir` from scratch and installs it, switching `current`
-/// with one atomic rename. A release not newer than the current one is refused. No security labels
-/// are set; the helper uses [`install_with`].
+/// with one atomic rename.
+///
+/// A release not newer than the current one is refused. No security labels are set; the helper uses
+/// [`install_with`].
+///
+/// # Errors
+///
+/// Returns an [`ApplyError`] when the lock is held, the release does not verify or its bundle does
+/// not match, or a file cannot be written.
 pub fn install(
     layout: &Layout,
     staged_dir: &Path,
@@ -62,6 +69,11 @@ pub fn install(
 /// The signature is checked first and the plan is made from the signed version, so an older release is
 /// refused before a byte of its bundle is read. The bundle is then copied once into a private file
 /// while it is hashed, and the unpack reads that copy.
+///
+/// # Errors
+///
+/// Returns an [`ApplyError`] when the lock is held, the release does not verify or its bundle does
+/// not match, or a file cannot be written.
 pub fn install_with(
     layout: &Layout,
     staged_dir: &Path,
@@ -83,11 +95,21 @@ pub fn install_with(
 
 /// Goes back to the previous release; the release left becomes the new `previous`. The record kept in
 /// the release being returned to must verify with `auth` before anything moves.
+///
+/// # Errors
+///
+/// Returns an [`ApplyError`] when the lock is held, there is no previous release to go back to, or
+/// a file cannot be written.
 pub fn rollback(layout: &Layout, auth: &dyn Authenticator) -> Result<Applied, ApplyError> {
     rollback_with(layout, auth, &NoRelabel)
 }
 
 /// [`rollback`], setting the labels of any system files put back with `relabel`.
+///
+/// # Errors
+///
+/// Returns an [`ApplyError`] when the lock is held, there is no previous release to go back to, or
+/// a file cannot be written.
 pub fn rollback_with(
     layout: &Layout,
     auth: &dyn Authenticator,

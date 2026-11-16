@@ -61,6 +61,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// Takes up the task of a stored session. The router is asked for the session's handles,
     /// which restores its record from the log when it holds none; a router that has no such
     /// session after that cannot run it.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn adopt_stored(
         &mut self,
         session: &SessionId,
@@ -92,6 +96,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// Runs a turn that `begin_ask` began, telling `tap` of each step.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn run_begun_tapped<T: crate::tap::Tap>(
         &mut self,
         begun: crate::runtime::Begun,

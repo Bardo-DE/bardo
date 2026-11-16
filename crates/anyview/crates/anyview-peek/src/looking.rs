@@ -15,9 +15,10 @@ pub(crate) const PANE_FIT: PixelSize = PixelSize {
     height: PixelLen(220),
 };
 
-/// What a look at a file is asked to do: what it may spend, the box a page is drawn in, and where
-/// a picture of a video comes from. Start from [`Peeking::pane`] and change one setting with the
-/// `with_*` methods.
+/// What a look at a file is asked to do: what it may spend, the box a page is drawn in, and where a
+/// picture of a video comes from.
+///
+/// Start from [`Peeking::pane`] and change one setting with the `with_*` methods.
 #[derive(Debug, Clone)]
 pub struct Peeking {
     /// What a peek may spend: bytes read, pixels decoded, time.
@@ -67,11 +68,12 @@ impl Default for Peeking {
     }
 }
 
-/// Looks at a file: what it is, and the card a pane draws for it. `src` is a path made with
-/// `anyview_fs::OnDisk::on_disk`, or any bytes a host injects (`Input::from((name, bytes))`).
-/// Blocking, so run it on a worker. It never fails: a file that cannot be read or peeked comes
-/// back as [`Body::Unavailable`](crate::Body::Unavailable) with the reason, and the facts the file
-/// can still give.
+/// Looks at a file: what it is, and the card a pane draws for it.
+///
+/// `src` is a path made with `anyview_fs::OnDisk::on_disk`, or any bytes a host injects
+/// (`Input::from((name, bytes))`). Blocking, so run it on a worker. It never fails: a file that
+/// cannot be read or peeked comes back as [`Body::Unavailable`](crate::Body::Unavailable) with the
+/// reason, and the facts the file can still give.
 ///
 /// ```no_run
 /// use anyview_core::FilePath;

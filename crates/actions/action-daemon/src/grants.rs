@@ -96,11 +96,19 @@ impl FileGrants {
     /// Drops every grant over a desktop-wide Space `known` does not hold (and any over another
     /// app's own Space), and those the file holds for a Space porter does not read. Run at
     /// start: a Space removed while the daemon was away ends its grants here.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`GrantFileError`] when the grants file cannot be read or rewritten.
     pub fn reconcile_with(&self, known: &KnownSpaces) -> Result<Vec<Ended>, GrantFileError> {
         self.settle(|grants| reconcile(grants, Some(known)))
     }
 
     /// Drops every grant scoped to exactly `gone`: the Space was removed.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`GrantFileError`] when the grants file cannot be read or rewritten.
     pub fn end_space(&self, gone: &SpaceId) -> Result<Vec<Ended>, GrantFileError> {
         self.settle(|grants| without_space(grants, gone))
     }

@@ -37,6 +37,11 @@ pub struct IntentdConfig {
 impl IntentdConfig {
     /// Reads and checks the file: the reviewer set, if there is one, has a second opinion of
     /// another family.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigError`] when `text` is not a configuration, or the second opinion is of
+    /// the deliberate model's family.
     pub fn parse(text: &str) -> Result<Self, ConfigError> {
         let config: IntentdConfig =
             toml::from_str(text).map_err(|e| ConfigError::Toml(e.to_string()))?;
@@ -51,6 +56,10 @@ impl IntentdConfig {
     /// The configuration the package ships (`dist/actiond.toml`): the role names of the quire
     /// desktop, no reviewer set, the proposed values. What a machine with no file of its own
     /// runs with.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigError`] if the shipped file is not a valid configuration.
     pub fn shipped() -> Result<Self, ConfigError> {
         Self::parse(SHIPPED)
     }

@@ -124,6 +124,11 @@ impl Layout {
     }
 
     /// What is installed: where the links point and which release directories are complete.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the releases directory cannot be listed, other than by not
+    /// existing.
     pub fn installed(&self) -> io::Result<Installed> {
         let named = |link: PathBuf| -> Option<Version> {
             let target = std::fs::read_link(link).ok()?;

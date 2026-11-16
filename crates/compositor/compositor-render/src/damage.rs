@@ -47,10 +47,16 @@ const CLEAR: Rgba8 = Rgba8 {
     a: 255,
 };
 
-/// Draws `elements` (front first, smithay's order) into `target` with `tracker`, which knows
-/// the output's mode, scale and transform. `age` is the target's buffer age (0 when unknown:
-/// everything is redrawn). Waits for nothing: [`Rendered::sync`] says whether a fence is
-/// pending. Where no element draws, the output is opaque black.
+/// Draws `elements` (front first, smithay's order) into `target` with `tracker`, which knows the
+/// output's mode, scale and transform.
+///
+/// `age` is the target's buffer age (0 when unknown: everything is redrawn). Waits for nothing:
+/// [`Rendered::sync`] says whether a fence is pending. Where no element draws, the output is opaque
+/// black.
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the renderer refuses or the output has nothing to render into.
 pub fn render_output<R: Compositor>(
     renderer: &mut R,
     target: &mut R::Framebuffer<'_>,
@@ -78,9 +84,11 @@ pub fn render_output<R: Compositor>(
 }
 
 /// `elements` as anything that draws them must take them: a damage tracker, or smithay's
-/// `DrmCompositor` on a real device. Drawn bare, a clipped window, a genie strip or a blur draws
-/// as its plain surface (smithay knows nothing of our hooks), so a window lost its rounded
-/// corners on real hardware while every headless picture had them.
+/// `DrmCompositor` on a real device.
+///
+/// Drawn bare, a clipped window, a genie strip or a blur draws as its plain surface (smithay knows
+/// nothing of our hooks), so a window lost its rounded corners on real hardware while every
+/// headless picture had them.
 pub fn routed<'a, R: Compositor>(
     renderer: &mut R,
     elements: &'a [CasementElement<R>],

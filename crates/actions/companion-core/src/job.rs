@@ -6,8 +6,10 @@ use companion_model::helper::{CallVerdict, HelperCard, Job, JobFault, SignInWay}
 use provenance::{EntityId, SessionId, TaskId};
 
 /// An earlier job's answer, handed to a job as data: the session the answer was given in, and its
-/// words. The router labels the words with what that session had read and delivers them to the
-/// receiving planner as a handle, never as text.
+/// words.
+///
+/// The router labels the words with what that session had read and delivers them to the receiving
+/// planner as a handle, never as text.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct JobInput {
     /// The session of the job that answered.

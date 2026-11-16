@@ -79,9 +79,10 @@ impl Surface {
     }
 }
 
-/// Asks through sill's `Confirm1` (a sheet in phase A, the trusted surface in phase B), or, for a
-/// call in a session an editor drives, through the `Confirm1` the editor's process serves. The
-/// receipt's input proof says which; a spoken answer is never one.
+/// Asks through sill's `Confirm1` (a sheet in phase A, the trusted surface in phase B).
+///
+/// For a call in a session an editor drives, it asks through the `Confirm1` the editor's process
+/// serves. The receipt's input proof says which; a spoken answer is never one.
 #[derive(Debug, Clone)]
 pub struct SheetConfirmer {
     connection: BusConnection,

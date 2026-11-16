@@ -10,6 +10,10 @@ pub trait WireCode: Sized + Copy + 'static {
     /// The value's code on the wire.
     fn code(self) -> u32;
     /// The value a wire code names.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CodeError`] when `code` names no value of the set.
     fn from_code(code: u32) -> Result<Self, CodeError>;
 
     /// The generated enum of the same name that carries this value's code (the server or client

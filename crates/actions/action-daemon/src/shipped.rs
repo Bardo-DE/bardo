@@ -40,6 +40,11 @@ pub struct ShippedEntries(Vec<IndexEntry>);
 
 impl ShippedEntries {
     /// Reads the text of a shipped file.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ShippedFault`] when `text` is not a shipped file, or a kind or key in it is not
+    /// a valid id.
     pub fn parse(text: &str) -> Result<Self, ShippedFault> {
         let file: File =
             toml::from_str(text).map_err(|e| ShippedFault::Malformed(e.to_string()))?;

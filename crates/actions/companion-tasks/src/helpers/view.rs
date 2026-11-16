@@ -7,9 +7,11 @@ use companion_model::helper::{GoalSource, HelperCard, HelperModel, HelperName, J
 use inference_core::{Asker, OpenOptions};
 use provenance::HelperId;
 
-/// The options a helper's inference sessions open with: the helper is the one asking, and when
-/// the card names a model, that model and no other. A card with none opens with none; its jobs do
-/// not run until the person chooses (the board holds them), so nothing stands in for it.
+/// The options a helper's inference sessions open with: the helper is the one asking, and when the
+/// card names a model, that model and no other.
+///
+/// A card with none opens with none; its jobs do not run until the person chooses (the board holds
+/// them), so nothing stands in for it.
 #[must_use]
 pub fn open_options(card: &HelperCard) -> OpenOptions {
     options_of(&card.id, &card.model)
@@ -26,6 +28,10 @@ fn options_of(helper: &HelperId, model: &HelperModel) -> OpenOptions {
 /// The voice of the conversation the person has with a helper, from what its card shows: the same
 /// options as its jobs (the helper asks, on its model), and a role that says who it is and what
 /// it is for.
+///
+/// # Errors
+///
+/// Returns a [`RoleFault`] when the role is empty or too long.
 pub fn conversation_voice(
     helper: &HelperId,
     name: &HelperName,
@@ -43,9 +49,15 @@ pub fn conversation_voice(
 }
 
 /// The role a helper's planner works under: who it is, what it is for in the person's words, and
-/// the job. The goal is an instruction only because the board admits it from the person or from a
-/// planner that had read nothing untrusted; posts, results and app replies reach the planner as
-/// handles in its untrusted section, never here.
+/// the job.
+///
+/// The goal is an instruction only because the board admits it from the person or from a planner
+/// that had read nothing untrusted; posts, results and app replies reach the planner as handles in
+/// its untrusted section, never here.
+///
+/// # Errors
+///
+/// Returns a [`RoleFault`] when the role is empty or too long.
 pub fn role_text(card: &HelperCard, job: &Job) -> Result<RoleText, RoleFault> {
     let from = match job.source {
         GoalSource::Person => "the person",

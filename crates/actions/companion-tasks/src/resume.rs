@@ -17,10 +17,12 @@ use agent_loop::Rebuilt;
 use agent_planner::Planner;
 use provenance::{AgentRef, SpaceId, UnixSeconds};
 
-/// What a restart found: the front task's fresh session, if it had one, and how many of the
-/// things it reads were read (`restored`) and how many were not (`failed`: the stored sessions,
-/// and each Space's open and read). A restart that read nothing and failed everything is the
-/// signal that the router or memoryd was away.
+/// What a restart found.
+///
+/// The front task's fresh session, if it had one, and how many of the things it reads were read
+/// (`restored`) and how many were not (`failed`: the stored sessions, and each Space's open and
+/// read). A restart that read nothing and failed everything is the signal that the router or
+/// memoryd was away.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Restarted {
     /// The front task's fresh session.
@@ -81,6 +83,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// purpose, which is closed again), rebuilds the roster and the front task, and takes them
     /// up. A Space the router or memoryd cannot answer for adds nothing; sessions an editor
     /// opened are not the companion's and are left out.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn restore(&mut self, spaces: &[SpaceId]) -> Result<Restarted, ServeFault> {
         let since = UnixSeconds(self.clock.now().0.saturating_sub(RETENTION));
         let (mut restored, mut failed) = (0, 0);
@@ -148,6 +154,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// Takes up what a restart rebuilt. A front task that was open is opened again as a fresh
     /// session (the old one died with the process or is the router's to close); nothing else is
     /// guessed.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn resume(&mut self, rebuilt: Rebuilt) -> Result<Option<SessionOpened>, ServeFault> {
         for line in rebuilt.roster().entries {
             self.known.insert(line.agent.clone(), line);

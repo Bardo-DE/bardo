@@ -38,9 +38,10 @@ fn is_card(name: &str) -> bool {
         .is_some_and(|rest| !rest.is_empty() && rest.bytes().all(|b| b.is_ascii_digit()))
 }
 
-/// The computer whose files are under `root` (`/` for this one; a test's own directory
-/// otherwise): its processor is this program's, its cards are what `<root>/sys/class/drm`
-/// lists, its distro is `<root>/etc/os-release`. `None` for a processor no engine is built for.
+/// The computer whose files are under `root` (`/` for this one; a test's own directory otherwise).
+///
+/// Its processor is this program's, its cards are what `<root>/sys/class/drm` lists, its distro is
+/// `<root>/etc/os-release`. `None` for a processor no engine is built for.
 #[must_use]
 pub fn read_host(root: &Path, choice: BackendChoice) -> Option<Host> {
     let under = |path: &str| root.join(path.trim_start_matches('/'));

@@ -4,6 +4,10 @@ use keymap::keyboard_types::{Modifiers, NamedKey};
 use keymap::{Chord, Key};
 
 /// Reads one accelerator. `Err` is a plain-words reason.
+///
+/// # Errors
+///
+/// Returns the reason in plain words when `text` is not an accelerator.
 pub fn parse_accelerator(text: &str) -> Result<Chord, String> {
     let mut modifiers = Modifiers::empty();
     let mut rest = text.trim();

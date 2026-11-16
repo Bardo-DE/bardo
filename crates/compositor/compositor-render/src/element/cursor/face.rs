@@ -12,10 +12,11 @@ use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::wayland::compositor::with_states;
 use ui_core::geometry::scale::Scale;
 
-/// The largest a client's cursor surface may be drawn, per side, in logical pixels (CASW-08): a
-/// pointer is a few dozen pixels, so a bigger surface is a client drawing something else (a fake
-/// dialog above the trusted surfaces) or sizing a screencast's buffers by it. Past it the arrow
-/// is drawn and announced instead.
+/// The largest a client's cursor surface may be drawn, per side, in logical pixels (CASW-08).
+///
+/// A pointer is a few dozen pixels, so a bigger surface is a client drawing something else (a fake
+/// dialog above the trusted surfaces) or sizing a screencast's buffers by it. Past it the arrow is
+/// drawn and announced instead.
 pub const MAX_CLIENT_CURSOR: u32 = 256;
 
 /// What the cursor looks like, in logical pixels.
@@ -78,9 +79,10 @@ pub fn drawn(requested: CursorDraw, book: &TextureBook) -> CursorDraw {
     }
 }
 
-/// The pixels of the cursor at `scale`, as little-endian premultiplied `Argb8888` rows (B, G,
-/// R, A bytes, top row first), `buffer_size(face.size, scale)` on a side. Only the
-/// compositor's own shapes have pixels here: a client's cursor surface is not read back.
+/// The pixels of the cursor at `scale`, as little-endian premultiplied `Argb8888` rows (B, G, R, A
+/// bytes, top row first), `buffer_size(face.size, scale)` on a side.
+///
+/// Only the compositor's own shapes have pixels here: a client's cursor surface is not read back.
 ///
 /// ```
 /// use compositor_core::geometry::LogicalPoint;
@@ -88,9 +90,9 @@ pub fn drawn(requested: CursorDraw, book: &TextureBook) -> CursorDraw {
 /// use ui_core::geometry::scale::Scale;
 ///
 /// let chrome = ChromeLayer {
-///     cursor: CursorDraw::Named(CursorShape::Text),
-///     cursor_at: LogicalPoint { x: 0, y: 0 },
-///     covers: Vec::new(),
+/// cursor: CursorDraw::Named(CursorShape::Text),
+/// cursor_at: LogicalPoint { x: 0, y: 0 },
+/// covers: Vec::new(),
 /// };
 /// let argb = cursor_pixels(&chrome, Scale(120)).expect("a named cursor has pixels");
 /// assert_eq!(argb.len(), 24 * 24 * 4);

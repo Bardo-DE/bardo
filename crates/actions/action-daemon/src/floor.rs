@@ -33,6 +33,10 @@ pub enum FloorError {
 }
 
 /// The floor the file at `path` describes: none when the file is missing.
+///
+/// # Errors
+///
+/// Returns a [`FloorError`] when the file exists and cannot be read, or is not a floor.
 pub fn read_floor(path: &Path) -> Result<Floor, FloorError> {
     let text = match std::fs::read_to_string(path) {
         Ok(text) => text,

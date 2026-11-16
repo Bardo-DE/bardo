@@ -178,6 +178,11 @@ fn origin(dirs: &PolicyDirs, skipped: &[Rejected]) -> PresetOrigin {
 }
 
 /// The policy set the files make now.
+///
+/// # Errors
+///
+/// Returns a [`LayerError`] when the schema, a core or built-in source, an administrator's policy
+/// file or the merged set is bad.
 pub fn load_policies(dirs: &PolicyDirs) -> Result<LoadedPolicies, LayerError> {
     let layered = Pdp::layered(SCHEMA, &read_sources(dirs))?;
     Ok(LoadedPolicies {

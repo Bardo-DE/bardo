@@ -6,10 +6,11 @@ use keymap::{Chord, SystemImport};
 use crate::accelerator::parse_accelerator;
 use crate::keys::action_for;
 
-/// The system bindings in `text`, the output of `dconf dump /`. Only the keys that mean a
-/// standard action are read. Values are `GVariant` text: `['<Super>h', '<Alt>F9']`, `'<Super>l'`,
-/// `@as []` (unbound) or `'disabled'` (unbound). An accelerator that cannot be read is reported
-/// in `problems`.
+/// The system bindings in `text`, the output of `dconf dump /`.
+///
+/// Only the keys that mean a standard action are read. Values are `GVariant` text: `['<Super>h',
+/// '<Alt>F9']`, `'<Super>l'`, `@as []` (unbound) or `'disabled'` (unbound). An accelerator that
+/// cannot be read is reported in `problems`.
 #[must_use]
 pub fn parse_dconf_dump(text: &str) -> SystemImport {
     let mut import = SystemImport::default();

@@ -24,9 +24,10 @@ impl<'a> ThumbLayer<'a> {
     }
 }
 
-/// Where a window of `window` (global logical pixels) lands in a picture of `picture` pixels
-/// of the output `output` (global logical pixels): both edges are scaled and rounded, so
-/// windows that touch still touch.
+/// Where a window of `window` (global logical pixels) lands in a picture of `picture` pixels of the
+/// output `output` (global logical pixels).
+///
+/// Both edges are scaled and rounded, so windows that touch still touch.
 ///
 /// ```
 /// use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalSize};
@@ -67,8 +68,10 @@ pub fn thumb_dest(window: LogicalRect, output: LogicalRect, picture: PhysicalSiz
 }
 
 /// The picture of `size` with `layers` drawn into it, back first: premultiplied RGBA, rows top
-/// first, transparent where no window is. Each picture pixel averages the box of window pixels
-/// it covers (at least one), so a shrunk window is smooth, not jagged.
+/// first, transparent where no window is.
+///
+/// Each picture pixel averages the box of window pixels it covers (at least one), so a shrunk
+/// window is smooth, not jagged.
 ///
 /// ```
 /// use compositor_core::geometry::{PhysicalRect, PhysicalSize};
@@ -76,9 +79,9 @@ pub fn thumb_dest(window: LogicalRect, output: LogicalRect, picture: PhysicalSiz
 ///
 /// let red = [255, 0, 0, 255].repeat(4);
 /// let layer = ThumbLayer::new(
-///     PhysicalRect { x: 1, y: 0, w: 1, h: 1 },
-///     PhysicalSize { w: 2, h: 2 },
-///     &red,
+/// PhysicalRect { x: 1, y: 0, w: 1, h: 1 },
+/// PhysicalSize { w: 2, h: 2 },
+/// &red,
 /// );
 /// let picture = compose_thumb(PhysicalSize { w: 2, h: 1 }, &[layer]);
 /// assert_eq!(picture, [0, 0, 0, 0, 255, 0, 0, 255]);

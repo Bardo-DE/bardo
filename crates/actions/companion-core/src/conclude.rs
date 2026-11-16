@@ -6,9 +6,10 @@ use crate::job::{JobEnding, JobReport, OpenedJob};
 use companion_model::helper::{BoardEvent, CallVerdict, JobFault, JobId, ResultHandle, SignInWay};
 use provenance::{EntityId, SessionId};
 
-/// Whether the hub closes the session an answer was given in when the answer is let go. A native
-/// job's session is the hub's to close; an agent app's session is its process's, kept open across
-/// the helper's jobs, and ends with that process.
+/// Whether the hub closes the session an answer was given in when the answer is let go.
+///
+/// A native job's session is the hub's to close; an agent app's session is its process's, kept open
+/// across the helper's jobs, and ends with that process.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Hold {
     /// The hub closes the session.

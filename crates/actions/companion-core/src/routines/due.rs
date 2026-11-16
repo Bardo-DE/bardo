@@ -5,9 +5,10 @@ use companion_model::helper::JobId;
 use companion_model::routine::{JobEnd, RoutineBook, RoutineEvent};
 use provenance::UnixSeconds;
 
-/// The events for the jobs that ended by `now`: each run of the book that has not ended and whose
-/// job `end_of` says has, then each job a routine waits for that ended done (a job a routine waits
-/// for starts it only by ending done).
+/// The events for the jobs that ended by `now`.
+///
+/// Each run of the book that has not ended and whose job `end_of` says has, then each job a routine
+/// waits for that ended done (a job a routine waits for starts it only by ending done).
 pub fn ended_events(
     book: &RoutineBook,
     now: UnixSeconds,

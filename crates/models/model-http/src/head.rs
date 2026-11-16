@@ -20,6 +20,11 @@ pub struct RequestId(String);
 pub struct RequestIdError;
 
 impl RequestId {
+    /// A request id from `text`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`RequestIdError`] when `text` is not 1 to 128 printable ASCII bytes.
     pub fn new(text: impl Into<String>) -> Result<Self, RequestIdError> {
         let text = text.into();
         let ok = (1..=128).contains(&text.len()) && text.bytes().all(|b| b.is_ascii_graphic());

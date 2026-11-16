@@ -15,6 +15,10 @@ pub fn set_umask() {
 
 /// Sets the umask first, then moves to `/`, switches off core dumps (a dump of the helper holds the
 /// release key and the files it reads) and lifts the limits the caller may have lowered.
+///
+/// # Errors
+///
+/// Returns the I/O error when the working directory cannot be changed or a limit cannot be set.
 pub fn reset_process() -> io::Result<()> {
     set_umask();
     chdir("/")?;

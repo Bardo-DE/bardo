@@ -35,9 +35,10 @@ impl HostOs {
 /// The variable that names the platform outright, for machines the guesses get wrong.
 pub const OVERRIDE_VAR: &str = "BARDO_KEYMAP_PLATFORM";
 
-/// The platform for `os`, reading variables through `var`. `BARDO_KEYMAP_PLATFORM` (a platform slug)
-/// wins; otherwise Linux desktops come from `XDG_CURRENT_DESKTOP` (a colon-separated list),
-/// then `DESKTOP_SESSION`, then `KDE_FULL_SESSION`.
+/// The platform for `os`, reading variables through `var`.
+///
+/// `BARDO_KEYMAP_PLATFORM` (a platform slug) wins; otherwise Linux desktops come from
+/// `XDG_CURRENT_DESKTOP` (a colon-separated list), then `DESKTOP_SESSION`, then `KDE_FULL_SESSION`.
 pub fn detect(os: HostOs, var: impl Fn(&str) -> Option<String>) -> Platform {
     if let Some(platform) = var(OVERRIDE_VAR).and_then(|text| text.parse().ok()) {
         return platform;

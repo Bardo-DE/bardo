@@ -100,9 +100,11 @@ impl SpaceWatch {
     }
 }
 
-/// What to ask the almanac since `since`: one question per Space (Spaces are walls), for the
-/// events the book's watching routines wait for. A routine watches its helper's Space, or the one
-/// it names; `space_of` tells a helper's Space, and a routine whose helper is gone asks nothing.
+/// What to ask the almanac since `since`: one question per Space (Spaces are walls), for the events
+/// the book's watching routines wait for.
+///
+/// A routine watches its helper's Space, or the one it names; `space_of` tells a helper's Space,
+/// and a routine whose helper is gone asks nothing.
 pub fn event_asks(
     book: &RoutineBook,
     since: UnixSeconds,

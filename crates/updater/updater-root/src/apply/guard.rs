@@ -44,8 +44,15 @@ pub(super) fn write_record(layout: &Layout, record: &GuardRecord) -> Result<(), 
 }
 
 /// Notes that the session is about to start (or has started) the release that is current, in boot
-/// `boot`, and goes back to the previous release when this one has been started in more than
+/// `boot`.
+///
+/// It goes back to the previous release when this one has been started in more than
 /// [`updater_core::MAX_UNCONFIRMED_BOOTS`] different boots without ever being confirmed.
+///
+/// # Errors
+///
+/// Returns an [`ApplyError`] when the state files cannot be read or written, or the current release
+/// does not verify.
 pub fn note_start(
     layout: &Layout,
     auth: &dyn Authenticator,
@@ -77,6 +84,10 @@ pub fn note_start(
 
 /// Records that the session started well on the release that is current. Does nothing when no release
 /// is installed under the root.
+///
+/// # Errors
+///
+/// Returns an [`ApplyError`] when the state files cannot be read or written.
 pub fn note_confirmed(layout: &Layout) -> Result<(), ApplyError> {
     if !layout.root.exists() {
         return Ok(());

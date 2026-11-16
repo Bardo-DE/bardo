@@ -84,6 +84,10 @@ struct Compiled(RefCell<Option<GlesTexProgram>>);
 
 /// Draws the whole of `texture` at its own size, one texel to one pixel, converted by
 /// `transform`: the output's picture made ready for a wide-gamut panel.
+///
+/// # Errors
+///
+/// Returns the GLES error when the shader cannot be compiled or the draw fails.
 pub fn draw_converted(
     frame: &mut GlesFrame<'_, '_>,
     texture: &GlesTexture,

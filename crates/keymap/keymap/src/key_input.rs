@@ -7,9 +7,11 @@ use crate::key::Key;
 use crate::modifier::chord_modifiers;
 use crate::platform::{Context, Platform};
 
-/// A key press as a toolkit reports it: the modifier flags it holds (as keyboard-types has them,
-/// `ALT_GRAPH` included) and the key, which is the logical key with Shift not applied (`z`, not
-/// `Z`; `=`, not `+`) as most toolkits' "key without modifiers" gives.
+/// A key press as a toolkit reports it.
+///
+/// It holds the modifier flags (as keyboard-types has them, `ALT_GRAPH` included) and the key,
+/// which is the logical key with Shift not applied (`z`, not `Z`; `=`, not `+`) as most toolkits'
+/// "key without modifiers" gives.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct KeyInput {
     /// The modifiers held. When `AltGr` is held, leave Ctrl and Alt as the toolkit has them.

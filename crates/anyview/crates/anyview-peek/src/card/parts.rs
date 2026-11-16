@@ -14,9 +14,10 @@ pub enum Part {
     Facts,
 }
 
-/// The parts of the card a caller wants drawn, a set of [`Part`]. The default is all of them, which
-/// is the card as it was before callers could choose: a mail attachment strip asks for
-/// `Parts::of([Part::Media])`.
+/// The parts of the card a caller wants drawn, a set of [`Part`].
+///
+/// The default is all of them, which is the card as it was before callers could choose: a mail
+/// attachment strip asks for `Parts::of([Part::Media])`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Parts(u8);
 

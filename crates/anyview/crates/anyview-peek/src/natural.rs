@@ -7,7 +7,9 @@ use anyview_core::{FileHead, FormatKind, Input, PixelSize, SniffStep, sniff};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 /// The size of the picture of the file `src` (a path, or any bytes a host injects), in pixels and
-/// upright: a raster picture or SVG (the size it declares) or a video (its resolution). `None` for
+/// upright.
+///
+/// A raster picture or SVG gives the size it declares and a video its resolution. `None` for
 /// everything else, a path that is not a regular file, and a file whose header does not say or
 /// cannot be read; the caller then uses its default. The size is the file's own claim and may be
 /// absurd. Blocking, and bounded: at most a quarter of a mebibyte of a picture and eight of a
@@ -41,9 +43,11 @@ pub fn natural_size(src: impl Into<Input>) -> Option<PixelSize> {
     .flatten()
 }
 
-/// Whether `src` (a path, or any bytes a host injects) is an audio file, by its head. Only the
-/// first bytes are read, nothing is decoded and no tag is parsed, so it is cheap for any caller.
-/// `false` for anything else, a path that is not a regular file, and bytes that cannot be read.
+/// Whether `src` (a path, or any bytes a host injects) is an audio file, by its head.
+///
+/// Only the first bytes are read, nothing is decoded and no tag is parsed, so it is cheap for any
+/// caller. `false` for anything else, a path that is not a regular file, and bytes that cannot be
+/// read.
 #[must_use]
 pub fn is_audio(src: impl Into<Input>) -> bool {
     let src = src.into();

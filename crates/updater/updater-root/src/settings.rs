@@ -66,6 +66,11 @@ pub enum SettingsError {
 
 impl RootSettings {
     /// Reads `path`; a missing file means all defaults.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the file exists and cannot be read or parsed, or names a
+    /// setting that is not a path.
     pub fn load(path: &Path) -> Result<Self, SettingsError> {
         match std::fs::read_to_string(path) {
             Ok(text) => Self::parse(&text, path),
@@ -78,6 +83,10 @@ impl RootSettings {
     }
 
     /// Reads the text of the settings file; `path` is only named in a refusal.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when `text` is not TOML, or names a setting that is not a path.
     pub fn parse(text: &str, path: &Path) -> Result<Self, SettingsError> {
         let table: toml::Table = toml::from_str(text).map_err(|source| SettingsError::Parse {
             path: path.to_owned(),

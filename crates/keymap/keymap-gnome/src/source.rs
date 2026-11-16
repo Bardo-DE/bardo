@@ -11,9 +11,10 @@ use crate::parse::parse_dconf_dump;
 /// (kdeglobals and a dconf dump are tens of KiB) and small enough to hold in memory at once.
 const SETTINGS_FILE_LIMIT: ReadCap = ReadCap::mib(4);
 
-/// Reads the person's GNOME shortcut choices from a dconf keyfile dump (the output of
-/// `dconf dump /`, saved by the caller). A missing file means nothing was changed, so the keymap
-/// is GNOME's conventions as they are.
+/// Reads the person's GNOME shortcut choices from a dconf keyfile dump (the output of `dconf dump
+/// /`, saved by the caller).
+///
+/// A missing file means nothing was changed, so the keymap is GNOME's conventions as they are.
 #[derive(Debug, Clone)]
 pub struct GnomeSource {
     path: PathBuf,

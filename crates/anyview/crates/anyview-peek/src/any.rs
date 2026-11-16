@@ -52,11 +52,13 @@ impl AnyPeeked {
     }
 }
 
-/// Peeks at `src` (made with `anyview_fs::OnDisk::on_disk`, or any bytes a host injects),
-/// whose type `sniffed` established, inside `budget`: blocking, so run it on a worker. It never
-/// fails: a peek that cannot be made comes back as [`Body::Unavailable`] with the reason, and the
-/// facts the file can still give (its type, size and date). [`look`](crate::look) is this after
-/// the probe, with every setting of [`Peeking`]; this is for a caller that has probed already.
+/// Peeks at `src` (made with `anyview_fs::OnDisk::on_disk`, or any bytes a host injects), whose
+/// type `sniffed` established, inside `budget`.
+///
+/// Blocking, so run it on a worker. It never fails: a peek that cannot be made comes back as
+/// [`Body::Unavailable`] with the reason, and the facts the file can still give (its type, size and
+/// date). [`look`](crate::look) is this after the probe, with every setting of [`Peeking`]; this is
+/// for a caller that has probed already.
 #[must_use]
 pub fn peek(src: impl Into<Input>, sniffed: &Sniffed, budget: &PeekBudget) -> AnyPeeked {
     peek_looking(&src.into(), sniffed, &Peeking::pane().with_budget(*budget))
