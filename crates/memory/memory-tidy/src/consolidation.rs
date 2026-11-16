@@ -4,6 +4,7 @@ use memory_core::{
     ConsolidateFailure, EventRef, Fact, Hunk, KindTag, Label, Link, RunId, RunState, SpaceId,
     ThingView, TidyHunk, TopicPath, UnixSeconds, UserText,
 };
+use std::sync::Arc;
 
 /// One event as the consolidator sees it: no bodies beyond what the person saw.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -52,25 +53,50 @@ pub struct Draft {
     pub hunks: Vec<Hunk>,
 }
 
-/// Why the consolidator failed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+/// Why the consolidator failed. Two errors are equal when they are the same kind of failure.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ConsolidateError {
-    /// The model could not be reached or refused.
+    /// The model refused or said it is not available.
     #[error("the consolidation model is unavailable")]
     Unavailable,
-    /// Its answer could not be read.
+    /// The model could not be asked: the session did not open, broke, or ran out of time.
+    #[error("the consolidation model could not be asked")]
+    Unreachable(#[source] Arc<dyn std::error::Error + Send + Sync>),
+    /// Its answer held no draft.
     #[error("the consolidation draft is unreadable")]
     Unparseable,
+    /// Its answer held JSON that does not read as a draft.
+    #[error("the consolidation draft is not in the expected shape")]
+    Malformed(#[source] Arc<serde_json::Error>),
     /// The embedder or GPU was busy.
     #[error("busy")]
     Busy,
 }
 
+impl ConsolidateError {
+    /// The model could not be asked, because of `source`.
+    pub fn unreachable(source: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self::Unreachable(Arc::new(source))
+    }
+}
+
+impl PartialEq for ConsolidateError {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Eq for ConsolidateError {}
+
 impl From<ConsolidateError> for ConsolidateFailure {
     fn from(e: ConsolidateError) -> Self {
         match e {
-            ConsolidateError::Unavailable => ConsolidateFailure::ModelUnavailable,
-            ConsolidateError::Unparseable => ConsolidateFailure::Unparseable,
+            ConsolidateError::Unavailable | ConsolidateError::Unreachable(_) => {
+                ConsolidateFailure::ModelUnavailable
+            }
+            ConsolidateError::Unparseable | ConsolidateError::Malformed(_) => {
+                ConsolidateFailure::Unparseable
+            }
             ConsolidateError::Busy => ConsolidateFailure::EmbedderBusy,
         }
     }

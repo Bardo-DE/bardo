@@ -363,6 +363,7 @@ fn degraded_why(error: &EmbedError) -> DegradedWhy {
     match error {
         EmbedError::Refused(_) => DegradedWhy::EmbedderRefused,
         EmbedError::Unavailable
+        | EmbedError::Unreachable(_)
         | EmbedError::Busy
         | EmbedError::TooLong
         | EmbedError::Failed { .. } => DegradedWhy::EmbedderUnavailable,

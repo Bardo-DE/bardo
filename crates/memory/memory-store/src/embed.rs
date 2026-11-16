@@ -2,6 +2,7 @@
 
 use crate::doc::ClassTag;
 use crate::vector::{EmbedRole, EmbedderCard, Urgency, Vector};
+use std::sync::Arc;
 
 /// Whether trying again can help.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -13,12 +14,17 @@ pub enum RetryClass {
     Fatal,
 }
 
-/// Why texts could not be embedded.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+/// Why texts could not be embedded. Two errors are equal when they are the same kind of failure
+/// (and, for `Refused` and `Failed`, say the same thing); the cause of an `Unreachable` is not
+/// compared.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum EmbedError {
     /// No embedder is reachable. Retry.
     #[error("embedder unavailable")]
     Unavailable,
+    /// The embedder could not be asked: the session broke or ran out of time. Retry.
+    #[error("embedder could not be asked")]
+    Unreachable(#[source] Arc<dyn std::error::Error + Send + Sync>),
     /// The embedder is busy with interactive work, or loading. Retry.
     #[error("embedder busy")]
     Busy,
@@ -38,13 +44,41 @@ pub enum EmbedError {
     },
 }
 
+impl PartialEq for EmbedError {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Refused(a), Self::Refused(b)) => a == b,
+            (
+                Self::Failed {
+                    class: class_a,
+                    why: why_a,
+                },
+                Self::Failed {
+                    class: class_b,
+                    why: why_b,
+                },
+            ) => class_a == class_b && why_a == why_b,
+            _ => std::mem::discriminant(self) == std::mem::discriminant(other),
+        }
+    }
+}
+
+impl Eq for EmbedError {}
+
 impl EmbedError {
+    /// The embedder could not be asked, because of `source`.
+    pub fn unreachable(source: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self::Unreachable(Arc::new(source))
+    }
+
     /// Whether trying again can help. `Index::upsert` marks the index `LexicalOnly` and queues a
     /// retry on `Retry`, and reports the document as unembeddable on `Fatal`.
     #[must_use]
     pub fn retry_class(&self) -> RetryClass {
         match self {
-            EmbedError::Unavailable | EmbedError::Busy => RetryClass::Retry,
+            EmbedError::Unavailable | EmbedError::Unreachable(_) | EmbedError::Busy => {
+                RetryClass::Retry
+            }
             EmbedError::Refused(_) | EmbedError::TooLong => RetryClass::Fatal,
             EmbedError::Failed { class, .. } => *class,
         }

@@ -173,7 +173,7 @@ async fn a_reply_that_does_not_fit_the_index_is_fatal() {
 }
 
 #[tokio::test]
-async fn an_absent_daemon_or_a_closed_session_is_unavailable() {
+async fn an_absent_daemon_or_a_closed_session_cannot_be_asked() {
     let down = InferdEmbedder::new(Scripted::down(), card());
     assert_eq!(
         down.embed(&texts(1), EmbedRole::Query, Urgency::Interactive)
@@ -182,12 +182,12 @@ async fn an_absent_daemon_or_a_closed_session_is_unavailable() {
     );
     // The session ends before the turn does.
     let closed = InferdEmbedder::new(Scripted::playing(vec![]), card());
-    assert_eq!(
+    assert!(matches!(
         closed
             .embed(&texts(1), EmbedRole::Query, Urgency::Interactive)
             .await,
-        Err(EmbedError::Unavailable)
-    );
+        Err(EmbedError::Unreachable(_))
+    ));
 }
 
 #[tokio::test]

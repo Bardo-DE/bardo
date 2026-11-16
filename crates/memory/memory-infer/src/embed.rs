@@ -89,14 +89,12 @@ impl<T: Transport> InferdEmbedder<T> {
                 .open(&need_for(&self.card), class, Tier::Fast),
         )
         .await
-        .ok()
-        .ok_or(EmbedError::Unavailable)?
+        .map_err(EmbedError::unreachable)?
         .map_err(transport_failure)?;
         let request = request_for(&self.card, class, texts, role, urgency);
         let reply = turn(&mut session, request, self.deadlines.turn)
             .await
-            .ok()
-            .ok_or(EmbedError::Unavailable)?;
+            .map_err(EmbedError::unreachable)?;
         vectors_of(reply, texts.len(), &self.card)
     }
 }

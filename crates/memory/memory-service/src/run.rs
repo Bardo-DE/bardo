@@ -112,7 +112,7 @@ impl<B: Backend> Open<B> {
             Err(e) => {
                 self.run = step(state, RunEvent::DraftFailed(e.into())).0;
                 return Err(match e {
-                    ConsolidateError::Unparseable => {
+                    ConsolidateError::Unparseable | ConsolidateError::Malformed(_) => {
                         failed("the consolidation draft is unreadable")
                     }
                     _ => Refusal::Busy,

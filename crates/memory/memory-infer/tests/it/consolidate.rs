@@ -91,5 +91,8 @@ async fn the_consolidator_maps_every_refusal_and_failure() {
         "an answer that is not the object"
     );
     let down = InferdConsolidator::new(Scripted::down());
-    assert_eq!(down.draft(consolidation_input()).await, Err(Unavailable));
+    assert!(matches!(
+        down.draft(consolidation_input()).await,
+        Err(ConsolidateError::Unreachable(_))
+    ));
 }

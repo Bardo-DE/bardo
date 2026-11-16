@@ -107,10 +107,8 @@ impl<T: Transport> Consolidator for InferdConsolidator<T> {
             self.transport.open(&need(), class, Tier::Balanced),
         )
         .await
-        .ok()
-        .ok_or(ConsolidateError::Unavailable)?
-        .ok()
-        .ok_or(ConsolidateError::Unavailable)?;
+        .map_err(ConsolidateError::unreachable)?
+        .map_err(ConsolidateError::unreachable)?;
         let request = InferRequest::Task(TaskRequest::new(
             Task::Extract,
             render_prompt(&input),
@@ -119,8 +117,7 @@ impl<T: Transport> Consolidator for InferdConsolidator<T> {
         ));
         match turn(&mut session, request, self.deadlines.turn)
             .await
-            .ok()
-            .ok_or(ConsolidateError::Unavailable)?
+            .map_err(ConsolidateError::unreachable)?
         {
             InferReply::Chat(reply) => parse_draft(&reply.text, &input),
             InferReply::Refused(why) => Err(refusal(why)),

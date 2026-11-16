@@ -235,9 +235,11 @@ fn an_answer_that_is_not_the_object_is_unparseable() {
         "{\"nothing\":[]}",
         "}{",
     ] {
-        assert_eq!(
-            parse_draft(answer, &consolidation_input()),
-            Err(ConsolidateError::Unparseable),
+        assert!(
+            matches!(
+                parse_draft(answer, &consolidation_input()),
+                Err(ConsolidateError::Unparseable | ConsolidateError::Malformed(_))
+            ),
             "{answer:?}"
         );
     }

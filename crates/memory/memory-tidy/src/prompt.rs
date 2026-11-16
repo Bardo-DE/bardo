@@ -235,12 +235,12 @@ fn hunk_from(input: &ConsolidationInput, index: usize, hunk: ModelHunk) -> Optio
 /// The draft the model's answer says. Hunks that cannot be built are dropped one by one.
 ///
 /// # Errors
-/// `ConsolidateError::Unparseable` when the answer holds no JSON object that reads as a draft.
+/// `ConsolidateError::Unparseable` when the answer holds no JSON object, and
+/// `ConsolidateError::Malformed` when the object does not read as a draft.
 pub fn parse_draft(answer: &str, input: &ConsolidationInput) -> Result<Draft, ConsolidateError> {
     let json = object_in(answer).ok_or(ConsolidateError::Unparseable)?;
     let parsed: Answer = serde_json::from_str(json)
-        .ok()
-        .ok_or(ConsolidateError::Unparseable)?;
+        .map_err(|error| ConsolidateError::Malformed(std::sync::Arc::new(error)))?;
     let hunks = parsed
         .hunks
         .into_iter()

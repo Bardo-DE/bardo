@@ -212,10 +212,10 @@ async fn with_inferd_down_recall_is_lexical_only_and_consolidation_is_off() {
         Err(EmbedError::Unavailable)
     );
     let consolidator = InferdConsolidator::new(Arc::clone(&rig.link));
-    assert_eq!(
+    assert!(matches!(
         consolidator.draft(input()).await.err(),
-        Some(ConsolidateError::Unavailable)
-    );
+        Some(ConsolidateError::Unreachable(_))
+    ));
     // Through the service, a run is refused as busy (retried next night), not a crash.
     let run = rig
         .service
