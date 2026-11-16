@@ -196,9 +196,13 @@ fn steps(selection: &Selection) -> Vec<Step> {
     };
     let mut fmt = vec!["fmt".to_owned(), "--check".to_owned()];
     fmt.extend(fmt_pkgs);
+    // Any warning fails the gate: the workspace lint set is the bar, and a warning nobody has to
+    // fix only grows into the next backlog.
+    let mut clippy = with_pkgs(&["clippy", "--all-targets"]);
+    clippy.extend(["--", "-D", "warnings"].map(str::to_owned));
     let mut steps = vec![
         step(fmt, 10, false),
-        step(with_pkgs(&["clippy", "--all-targets"]), 150, false),
+        step(clippy, 150, false),
         step(with_pkgs(&["test", "--no-run"]), 150, false),
         step(
             with_pkgs(&["nextest", "run", "--profile", "gate", "--no-fail-fast"]),
@@ -271,7 +275,17 @@ mod tests {
     fn all_uses_workspace_flags() {
         let s = steps(&Selection::All);
         assert_eq!(s[0].args, ["fmt", "--check", "--all"]);
-        assert_eq!(s[1].args, ["clippy", "--all-targets", "--workspace"]);
+        assert_eq!(
+            s[1].args,
+            [
+                "clippy",
+                "--all-targets",
+                "--workspace",
+                "--",
+                "-D",
+                "warnings"
+            ]
+        );
         assert_eq!(s[2].args, ["test", "--no-run", "--workspace"]);
         assert_eq!(
             s[3].args,
@@ -295,7 +309,20 @@ mod tests {
         let pkgs = ["a", "b"].iter().map(|s| (*s).to_owned()).collect();
         let s = steps(&Selection::Some(pkgs));
         assert_eq!(s[0].args, ["fmt", "--check", "-p", "a", "-p", "b"]);
-        assert_eq!(s[1].args, ["clippy", "--all-targets", "-p", "a", "-p", "b"]);
+        assert_eq!(
+            s[1].args,
+            [
+                "clippy",
+                "--all-targets",
+                "-p",
+                "a",
+                "-p",
+                "b",
+                "--",
+                "-D",
+                "warnings"
+            ]
+        );
     }
 
     #[test]
