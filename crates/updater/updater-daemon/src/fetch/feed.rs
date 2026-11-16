@@ -29,6 +29,9 @@ pub enum FeedError {
     /// The signature is missing or wrong.
     #[error(transparent)]
     Signature(#[from] SignError),
+    /// The signature file is not text.
+    #[error("the signature is not text")]
+    SignatureNotText(#[source] std::string::FromUtf8Error),
     /// The signed text is not a valid release.
     #[error(transparent)]
     Release(#[from] ReleaseError),
@@ -42,8 +45,7 @@ fn get(
 ) -> Result<Fetched, FeedError> {
     let bytes = read_small(fetch.open(index_url)?, MAX_INDEX_BYTES as u64)?;
     let signature = String::from_utf8(read_small(fetch.open(signature_url)?, MAX_SIGNATURE_BYTES)?)
-        .ok()
-        .ok_or(SignError::BadSignature)?;
+        .map_err(FeedError::SignatureNotText)?;
     auth.authenticate(&bytes, &signature)?;
     let release = Release::parse(&bytes)?;
     Ok(Fetched {

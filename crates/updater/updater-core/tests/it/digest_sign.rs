@@ -39,15 +39,15 @@ const TEST_SIGNATURE: &str = concat!(
 #[test]
 fn a_real_signature_verifies_and_a_changed_message_does_not() {
     let key = PublicKey::parse(TEST_KEY).expect("key");
-    assert_eq!(key.authenticate(b"test", TEST_SIGNATURE), Ok(()));
-    assert_eq!(
+    key.authenticate(b"test", TEST_SIGNATURE).expect("valid");
+    assert!(matches!(
         key.authenticate(b"tesT", TEST_SIGNATURE),
-        Err(SignError::NotSigned)
-    );
-    assert_eq!(
+        Err(SignError::NotSigned(_))
+    ));
+    assert!(matches!(
         key.authenticate(b"", TEST_SIGNATURE),
-        Err(SignError::NotSigned)
-    );
+        Err(SignError::NotSigned(_))
+    ));
 }
 
 #[test]
@@ -55,13 +55,13 @@ fn a_key_file_with_a_comment_line_is_read_too() {
     let file = format!("untrusted comment: minisign public key 1\n{TEST_KEY}\n");
     // The comment is kept, so compare what the keys do, not the parsed values.
     let with_comment = PublicKey::parse(&file).expect("a key file");
-    assert_eq!(with_comment.authenticate(b"test", TEST_SIGNATURE), Ok(()));
-    assert_eq!(
+    with_comment
+        .authenticate(b"test", TEST_SIGNATURE)
+        .expect("valid");
+    assert!(matches!(
         with_comment.authenticate(b"tested", TEST_SIGNATURE),
-        PublicKey::parse(TEST_KEY)
-            .expect("a key")
-            .authenticate(b"tested", TEST_SIGNATURE)
-    );
+        Err(SignError::NotSigned(_))
+    ));
 }
 
 #[test]
@@ -71,7 +71,10 @@ fn bad_keys_and_signatures_are_refused() {
         "not a key",
         "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO",
     ] {
-        assert_eq!(PublicKey::parse(bad), Err(SignError::BadKey), "{bad:?}");
+        assert!(
+            matches!(PublicKey::parse(bad), Err(SignError::BadKey(_))),
+            "{bad:?}"
+        );
     }
     let key = PublicKey::parse(TEST_KEY).expect("key");
     for bad in [
@@ -79,9 +82,11 @@ fn bad_keys_and_signatures_are_refused() {
         "garbage",
         "untrusted comment: x\nAAAA\ntrusted comment: y\nBBBB",
     ] {
-        assert_eq!(
-            key.authenticate(b"test", bad),
-            Err(SignError::BadSignature),
+        assert!(
+            matches!(
+                key.authenticate(b"test", bad),
+                Err(SignError::BadSignature(_))
+            ),
             "{bad:?}"
         );
     }

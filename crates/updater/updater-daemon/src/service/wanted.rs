@@ -22,10 +22,10 @@ impl Wanted {
         if text.len() > MAX_VERSION_BYTES {
             return Err(Problem::NotAVersion);
         }
-        Version::parse(text)
-            .map(Self)
-            .ok()
-            .ok_or(Problem::NotAVersion)
+        Version::parse(text).map(Self).map_err(|error| {
+            tracing::debug!(error = %error, "a caller named something that is not a version");
+            Problem::NotAVersion
+        })
     }
 
     /// Whether `offered` is the version that was shown; [`Problem::VersionChanged`] when it is not.

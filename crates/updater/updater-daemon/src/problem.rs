@@ -120,7 +120,9 @@ impl From<&FeedError> for Problem {
     fn from(e: &FeedError) -> Self {
         match e {
             FeedError::Fetch(_) => Self::Offline,
-            FeedError::Signature(_) | FeedError::Release(_) => Self::Unverified,
+            FeedError::Signature(_) | FeedError::SignatureNotText(_) | FeedError::Release(_) => {
+                Self::Unverified
+            }
         }
     }
 }

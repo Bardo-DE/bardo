@@ -2,18 +2,21 @@
 
 use minisign_verify::Signature;
 
+/// The error the minisign library reports; it is the cause inside every [`SignError`].
+pub use minisign_verify::Error as VerifyError;
+
 /// Why a signature was not accepted.
-#[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum SignError {
     /// The key text is not a minisign public key.
     #[error("the release key is not readable")]
-    BadKey,
+    BadKey(#[source] VerifyError),
     /// The signature text is not a minisign signature.
     #[error("the release signature is not readable")]
-    BadSignature,
+    BadSignature(#[source] VerifyError),
     /// The signature does not match the bytes or was made by another key.
     #[error("the release is not signed by the expected key")]
-    NotSigned,
+    NotSigned(#[source] VerifyError),
 }
 
 /// Something that can say whether a message was signed by the trusted key. The real one is
@@ -45,18 +48,15 @@ impl PublicKey {
         } else {
             minisign_verify::PublicKey::from_base64(trimmed)
         };
-        key.map(Self).ok().ok_or(SignError::BadKey)
+        key.map(Self).map_err(SignError::BadKey)
     }
 }
 
 impl Authenticator for PublicKey {
     fn authenticate(&self, message: &[u8], signature: &str) -> Result<(), SignError> {
-        let signature = Signature::decode(signature)
-            .ok()
-            .ok_or(SignError::BadSignature)?;
+        let signature = Signature::decode(signature).map_err(SignError::BadSignature)?;
         self.0
             .verify(message, &signature, false)
-            .ok()
-            .ok_or(SignError::NotSigned)
+            .map_err(SignError::NotSigned)
     }
 }
