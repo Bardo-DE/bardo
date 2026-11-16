@@ -10,7 +10,9 @@ use computer_use_action::{ActionClass, CuaAction, WindowSpace};
 use keyboard_types::Key;
 use provenance::Effect;
 
-/// The effect of `action`, and why: a node that maps to a typed action wins (the basis names the
+/// The effect of `action`, and why.
+///
+/// A node that maps to a typed action wins (the basis names the
 /// action and the router replaces the effect with the one the action declares; the effect
 /// returned is the default table's); otherwise a window class makes typing and Enter `Outbound`
 /// in a mail compose window, a terminal, a payments window or a bank window, and so does a click on a commit control (Send, Pay, Submit,

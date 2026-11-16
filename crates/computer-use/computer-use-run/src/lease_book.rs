@@ -42,6 +42,9 @@ pub struct LeaseBook {
 impl LeaseBook {
     /// The book after `run` takes `window`; refused when another run holds the window or `run`
     /// already holds a window (the holder in the way is named).
+    ///
+    /// # Errors
+    /// [`LeaseHeld`] when another run holds `window` or `run` already holds a window.
     pub fn claim(&self, window: &ToplevelIdent, run: &RunId) -> Result<LeaseBook, LeaseHeld> {
         if let Some(slot) = self.slots.get(window) {
             return Err(LeaseHeld {

@@ -1,4 +1,6 @@
-//! The scroll engine of design/11-BEHAVIOUR-scroll, shared by every Blitz host: the physics
+//! The scroll engine of design/11-BEHAVIOUR-scroll, shared by every Blitz host.
+//!
+//! It holds the physics
 //! (detent latching, the smooth step, momentum, the rubber band, keyboard steps), the document
 //! side (finding the scroller under a point, geometry, raw offset writes, the `data-wheel` and
 //! `data-overscroll` markers) and a driver that joins them for one document.

@@ -1,5 +1,7 @@
 //! A touchpad gesture from a host's pointer-scroll events (design/11 §11.3.2, §11.3.9,
-//! §11.3.13): the first pan is Began once its axis locks, the host's stop is Ended. A host maps
+//! §11.3.13).
+//!
+//! The first pan is Began once its axis locks, the host's stop is Ended. A host maps
 //! its own device events (Wayland axis frames, winit's `MouseWheel`) to a [`PointerScroll`]; the
 //! machine here is the same for all of them. Pure.
 

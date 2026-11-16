@@ -1,6 +1,7 @@
-//! The scroll engine's view of a Blitz document: which scrollers are under a point, their
-//! geometry, the raw offset writes, and the markers (`data-wheel`, `data-overscroll`,
-//! `data-keys`). The only place the engine touches Blitz (design/11 §11.3.1, §11.7).
+//! The scroll engine's view of a Blitz document.
+//!
+//! It finds which scrollers are under a point, their geometry, the raw offset writes, and the
+//! markers (`data-wheel`, `data-overscroll`, `data-keys`). The only place the engine touches Blitz (design/11 §11.3.1, §11.7).
 //!
 //! Offsets are written raw: `set_viewport_scroll` for the viewport and `scroll_offset_mut` for
 //! an element. Neither clamps, redraws, dispatches `scroll` or shows Blitz's scrollbars, and

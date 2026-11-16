@@ -28,9 +28,13 @@ pub const ENGINE_RETRY: RetryPolicy = RetryPolicy {
     cap: WaitMs(4000),
 };
 
-/// The porter `ModelId` for the name an engine serves a model under (`Hcompany/Holo-3.1-4B`
-/// becomes `hcompany-holo-3.1-4b`): lower case, every character outside the id grammar becomes
+/// The porter `ModelId` for the name an engine serves a model under.
+///
+/// `Hcompany/Holo-3.1-4B` becomes `hcompany-holo-3.1-4b`: lower case, every character outside the id grammar becomes
 /// `-`, runs collapse, ends are trimmed, at most 64 bytes.
+///
+/// # Errors
+/// [`IdError`] when what is left is not a valid model id (for one, when nothing is left).
 pub fn model_id_of(served_name: &str) -> Result<ModelId, IdError> {
     let mut slug = String::new();
     for c in served_name.chars().flat_map(char::to_lowercase) {

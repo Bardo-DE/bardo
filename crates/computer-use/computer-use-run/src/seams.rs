@@ -13,7 +13,6 @@ use computer_use_desktop::{Desktop, LeaseControl, Stamp};
 use computer_use_seat_input::AgentSeat;
 use provenance::{ConfirmId, RunId, SessionId, SpaceId};
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 
 /// Why a call to a neighbour failed.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
@@ -121,7 +120,9 @@ pub trait MessageLink: Send + Sync {
     ) -> impl Future<Output = Result<Vec<InboundLine>, LinkError>> + Send;
 }
 
-/// Everything a run is carried out against, as types: the real set in computer-use-system (`SystemSeams`), the
+/// Everything a run is carried out against, as types.
+///
+/// The real set is in computer-use-system (`SystemSeams`), the
 /// fakes in `computer-use-fake` (`FakeSeams`). Closed sets of implementations are generic parameters
 /// bundled here, never `dyn`. Every seam outlives the tasks a run is driven from, so each is
 /// `'static`.

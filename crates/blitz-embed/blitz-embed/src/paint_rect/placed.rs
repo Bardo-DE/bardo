@@ -13,7 +13,9 @@ pub struct Placed {
 }
 
 /// Where `bounds` (a layout rectangle) paints, given the transformed boxes from the element
-/// itself outward (`chain[0]` is the innermost): the bounding box of its four corners carried
+/// itself outward.
+///
+/// `chain[0]` is the innermost box. The result is the bounding box of its four corners carried
 /// through each one in turn. An empty chain returns `bounds` unchanged.
 pub fn painted_bounds(bounds: Bounds, chain: &[Placed]) -> Bounds {
     let corners = [

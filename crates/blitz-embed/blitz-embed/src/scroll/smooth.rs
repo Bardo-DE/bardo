@@ -1,4 +1,6 @@
-//! The smooth step (design/11 §11.5.4): a discrete jump (a key, a wheel detent, a command)
+//! The smooth step (design/11 §11.5.4).
+//!
+//! A discrete jump (a key, a wheel detent, a command)
 //! animated at 1000 px/s, capped at 200 ms, on `--e-out` = `cubic-bezier(.22, .9, .30, 1)`.
 //! Settled values (R18), so constants rather than settings keys.
 

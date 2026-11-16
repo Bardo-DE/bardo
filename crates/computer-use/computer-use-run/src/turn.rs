@@ -91,7 +91,9 @@ fn answer_note(outcome: &ActionOutcome) -> Option<StepNote> {
     }
 }
 
-/// The note a message that reached the run becomes: its plain text parts, one per line, from
+/// The note a message that reached the run becomes.
+///
+/// It holds its plain text parts, one per line, from
 /// the person when the sender is the person and from an agent otherwise. A part the router held
 /// back as a handle is not text the run may read, and a message with no plain text says
 /// nothing. Pure.
@@ -128,7 +130,9 @@ fn masked_regions(obs: &Observation) -> MaskedRegions {
     MaskedRegions(u16::try_from(count).unwrap_or(u16::MAX))
 }
 
-/// The step request for `obs`: the window geometry, the frame described and attached, the cursor,
+/// The step request for `obs`.
+///
+/// It holds the window geometry, the frame described and attached, the cursor,
 /// how the previous actions ended, how many regions were masked, and the tree rendered to text
 /// (secret values never rendered). `notes` is the messages that reached the run since the last
 /// step as `StepNote`s, oldest first (empty when none: an agent's note is untrusted text, a
@@ -139,7 +143,9 @@ pub fn turn(obs: &Observation) -> (CuaStepRequest, FrameAttachment) {
     turn_after(obs, false)
 }
 
-/// [`turn`], telling the model what the last input did to the window: an input that ran and left
+/// [`turn`], telling the model what the last input did to the window.
+///
+/// An input that ran and left
 /// the screen as it was is reported to the model as such (porter's `PrevResult` has no word for
 /// "ran, no change", so it goes as a failure with plain words).
 pub fn turn_after(obs: &Observation, unchanged: bool) -> (CuaStepRequest, FrameAttachment) {

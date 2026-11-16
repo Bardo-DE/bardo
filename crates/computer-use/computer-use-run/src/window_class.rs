@@ -40,7 +40,9 @@ pub fn window_class_of(rules: &WindowRules, app: &AppName, title: &str) -> Windo
     class_in(&rules.money_titles, &title).unwrap_or(WindowClass::Ordinary)
 }
 
-/// The class of the window of `app` titled `title` whose accessibility tree is `nodes`: what
+/// The class of the window of `app` titled `title` whose accessibility tree is `nodes`.
+///
+/// It is what
 /// [`window_class_of`] says, and when that is `Ordinary`, `Payments` if a pay control is on
 /// screen (a button named for paying, wherever the page's title is silent).
 #[must_use]

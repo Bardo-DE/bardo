@@ -29,6 +29,9 @@ pub enum GoTo {
 
 /// The folder a typed `text` names: `~` stands for `home`, and anything else must be a full path.
 /// Nothing is read from the disk; whether the folder is there is asked of the caller.
+///
+/// # Errors
+/// [`GoToProblem::NotFound`] when `text` is neither `~` (with a `home` known) nor a full path.
 pub fn expand(text: &str, home: Option<&FolderPath>) -> Result<FolderPath, GoToProblem> {
     let text = text.trim();
     let path: Option<PathBuf> = match text.strip_prefix('~') {

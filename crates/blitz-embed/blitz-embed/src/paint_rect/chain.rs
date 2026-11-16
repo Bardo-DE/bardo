@@ -5,8 +5,9 @@ use blitz_dom::{BaseDocument, NodeId};
 use super::{Affine2, Placed, painted_bounds};
 use crate::units::{Bounds, PagePoint};
 
-/// Where the element `id` paints, in surface-local logical px: its layout box
-/// (`get_client_bounding_rect`) carried through its own and its ancestors' CSS transforms;
+/// Where the element `id` paints, in surface-local logical px.
+///
+/// Its layout box (`get_client_bounding_rect`) carried through its own and its ancestors' CSS transforms;
 /// `None` before layout or when absent. Read once per rendered frame, a region follows a
 /// transform as it animates.
 pub fn painted_rect(doc: &BaseDocument, id: NodeId) -> Option<Bounds> {

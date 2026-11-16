@@ -192,7 +192,9 @@ impl<'a> ScreenView<'a> {
     }
 }
 
-/// Looks at a screen before the model does: the phrase tables and hidden characters, and whether
+/// Looks at a screen before the model does.
+///
+/// It checks the phrase tables and hidden characters, and whether
 /// the node holding them is unseen. No model; the quarantined reader adds its own verdict through
 /// `CuaModel::classify_screen` (see `RunEffect::ReadScreen`).
 #[derive(Debug, Clone, Copy)]

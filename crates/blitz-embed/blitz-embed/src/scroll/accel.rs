@@ -1,4 +1,6 @@
-//! Acceleration (the pointer-speed curves libinput and macOS apply, here on scrolling). A wheel
+//! Acceleration (the pointer-speed curves libinput and macOS apply, here on scrolling).
+//!
+//! A wheel
 //! click is a click while the wheel turns at a reading pace, and each click carries further the
 //! faster the wheel spins, so a flick of the wheel crosses a long page without a hundred turns:
 //! the rate is detents per second, smoothed over the burst, and a pause ends the burst. Fingers
@@ -125,7 +127,10 @@ mod tests {
     fn the_gain_builds_over_a_burst_and_never_falls_inside_it() {
         let gains = burst(20, 1.0, 50);
         assert!(gains.windows(2).all(|w| w[1] >= w[0] - 1e-9), "{gains:?}");
-        assert!(gains[0] == 1.0 && gains[19] > gains[2], "{gains:?}");
+        assert!(
+            (gains[0] - 1.0).abs() < 1e-9 && gains[19] > gains[2],
+            "{gains:?}"
+        );
     }
 
     #[test]

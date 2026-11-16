@@ -9,7 +9,9 @@ pub const EXCERPT_CHARS: usize = 80;
 /// How many characters of context an excerpt keeps before the match.
 const LEAD_CHARS: usize = 16;
 
-/// A short piece of screen text, kept so the person can be shown what was found. It is screen
+/// A short piece of screen text, kept so the person can be shown what was found.
+///
+/// It is screen
 /// content: whoever shows it labels it `Untrusted(Screen)` and shows it as data. It is never
 /// longer than [`EXCERPT_CHARS`] (plus a mark at each cut end), holds no control or invisible
 /// character, and is never written to the event log.

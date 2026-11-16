@@ -61,6 +61,9 @@ pub(crate) fn asked_options(turn: &sp::TurnRequest) -> Option<Vec<String>> {
 
 /// The shares a turn asked for, from the first token its engine reported: `None` when the turn
 /// did not ask, else the shares or why there are none.
+///
+/// # Errors
+/// The inner `Err` is the [`NoScores`] of [`option_scores`].
 #[must_use]
 pub fn turn_scores(
     turn: &sp::TurnRequest,
@@ -71,6 +74,10 @@ pub fn turn_scores(
 }
 
 /// The share of each of `options` in the order given, adding up to 1000, or why there is none.
+///
+/// # Errors
+/// [`NoScores::EngineGaveNone`] when the engine reported no first-token log probabilities, and
+/// [`NoScores::Unusable`] when they do not cover the options or do not add up to shares.
 pub fn option_scores(
     options: &[String],
     first_token: Option<&FirstTokenLogprobs>,
@@ -90,7 +97,8 @@ pub fn option_scores(
             })
             .collect(),
     )
-    .map_err(|_| NoScores::Unusable)
+    .ok()
+    .ok_or(NoScores::Unusable)
 }
 
 #[cfg(test)]

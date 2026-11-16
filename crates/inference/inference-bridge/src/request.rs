@@ -44,20 +44,25 @@ impl Frames {
     /// wrote). A descriptor over [`MAX_ATTACHMENT`] bytes is refused. Descriptors ride on frames
     /// on Unix only: where there are none, a request names no attachment and `Frames::default()`
     /// is all it needs.
+    ///
+    /// # Errors
+    /// [`BridgeError::Attachment`] when a descriptor cannot be read or is over [`MAX_ATTACHMENT`].
     #[cfg(unix)]
     pub fn read(fds: Vec<OwnedFd>) -> Result<Self, BridgeError> {
         fds.into_iter()
             .map(|fd| {
                 let mut file = File::from(fd);
-                let size = file.metadata().map_err(|_| BridgeError::Attachment)?.len();
+                let size = file.metadata().ok().ok_or(BridgeError::Attachment)?.len();
                 if size > MAX_ATTACHMENT {
                     return Err(BridgeError::Attachment);
                 }
                 file.seek(SeekFrom::Start(0))
-                    .map_err(|_| BridgeError::Attachment)?;
+                    .ok()
+                    .ok_or(BridgeError::Attachment)?;
                 let mut bytes = Vec::with_capacity(usize::try_from(size).unwrap_or(0));
                 file.read_to_end(&mut bytes)
-                    .map_err(|_| BridgeError::Attachment)?;
+                    .ok()
+                    .ok_or(BridgeError::Attachment)?;
                 Ok(bytes)
             })
             .collect::<Result<Vec<_>, _>>()
@@ -65,6 +70,9 @@ impl Frames {
     }
 
     /// The bytes behind a source: inline ones as they are, attached ones by index.
+    ///
+    /// # Errors
+    /// [`BridgeError::Attachment`] when an attached source names a descriptor that did not come.
     pub fn resolve(&self, source: &pi::ImageSource) -> Result<Vec<u8>, BridgeError> {
         match source {
             pi::ImageSource::Inline(bytes) => Ok(bytes.0.clone()),
@@ -136,8 +144,9 @@ fn shape(shape: &pi::ReplyShape, json: JsonReply) -> Result<sp::OutputShape, Bri
     Ok(match shape {
         pi::ReplyShape::Text => sp::OutputShape::Free,
         pi::ReplyShape::Json(schema) => {
-            let schema =
-                sp::JsonText::new(schema.as_str()).map_err(|_| BridgeError::Unsupported)?;
+            let schema = sp::JsonText::new(schema.as_str())
+                .ok()
+                .ok_or(BridgeError::Unsupported)?;
             match json {
                 JsonReply::Schema => sp::OutputShape::JsonSchema(sp::SchemaText(schema)),
                 JsonReply::ObjectOnly => sp::OutputShape::JsonObject,
@@ -253,8 +262,14 @@ fn default_sampling(target: &Target, reasoning: sp::Reasoning) -> Option<sp::Sam
     }
 }
 
-/// The turn for a chat request on `target`. Sampling and the output limit the request leaves open
-/// come from the target.
+/// The turn for a chat request on `target`.
+///
+/// Sampling and the output limit the request leaves open come from the target.
+///
+/// # Errors
+/// [`BridgeError::Unsupported`] when the request cannot be expressed to the engine (a malformed
+/// schema, an image type with no encoder, no sampling to use), and [`BridgeError::Attachment`]
+/// when an attached image cannot be read.
 pub fn chat_turn_for(
     target: &Target,
     request: &pi::ChatRequest,
@@ -339,8 +354,8 @@ fn schema_in_prompt(messages: &mut Vec<sp::Message>, schema: &str) {
 }
 
 /// The instruction a task kind is carried out under.
-fn task_instruction(task: pi::Task) -> Result<&'static str, BridgeError> {
-    Ok(match task {
+fn task_instruction(task: pi::Task) -> &'static str {
+    match task {
         pi::Task::Summarise => {
             "Summarise the text the user gives you. Reply with the summary only."
         }
@@ -353,10 +368,13 @@ fn task_instruction(task: pi::Task) -> Result<&'static str, BridgeError> {
         pi::Task::Classify => {
             "Classify the text the user gives you in one or two words. Reply with the label only."
         }
-    })
+    }
 }
 
 /// A task as a chat turn on `target`: its instruction, then the text.
+///
+/// # Errors
+/// The errors of [`chat_turn_for`].
 pub fn task_turn_for(
     target: &Target,
     request: &pi::TaskRequest,
@@ -366,9 +384,7 @@ pub fn task_turn_for(
         vec![
             pi::ChatMessage {
                 role: pi::Role::System,
-                parts: vec![pi::MessagePart::Text(
-                    task_instruction(request.task)?.into(),
-                )],
+                parts: vec![pi::MessagePart::Text(task_instruction(request.task).into())],
             },
             pi::ChatMessage {
                 role: pi::Role::User,
@@ -389,11 +405,12 @@ pub fn task_turn_for(
 
 /// The embedding turns of a request: the model's prefix for the request's role goes before every
 /// text, and the texts are cut into batches of the model's limit.
+#[must_use]
 pub fn embed_turns_for(
     name: &sp::ModelName,
     embed: &EmbedCaps,
     request: &pi::EmbedRequest,
-) -> Result<Vec<sp::EmbedTurn>, BridgeError> {
+) -> Vec<sp::EmbedTurn> {
     let role = request.role;
     let prefix = match role {
         sp::EmbedRole::Query => &embed.prompts.query.0,
@@ -404,7 +421,7 @@ pub fn embed_turns_for(
         DimsNeed::Exactly(dims) => sp::Knob::Set(sp::Dims(dims.0)),
     };
     let batches = sp::plan_batches(request.inputs.len(), embed.max_batch);
-    Ok(batches
+    batches
         .into_iter()
         .map(|range| sp::EmbedTurn {
             model: name.clone(),
@@ -415,7 +432,7 @@ pub fn embed_turns_for(
             role,
             dims,
         })
-        .collect())
+        .collect()
 }
 
 #[cfg(test)]

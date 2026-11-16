@@ -16,7 +16,9 @@ pub fn task_line(task: &CuaTask) -> String {
     }
 }
 
-/// The hints, in order: the planner's plan when the task line is the person's and the plan
+/// The hints, in order.
+///
+/// First the planner's plan when the task line is the person's and the plan
 /// differs, then the earlier attempts of `run`'s conversation (a heading and one hint per line),
 /// then `shared`, the hints about the desktop.
 #[must_use]

@@ -112,9 +112,6 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::UserResume => resume(run, fx),
         RunInput::UserTakeOver => take_over(run, fx, at),
         RunInput::UserHandBack => hand_back(run, fx),
-        // Input like any other: it changes nothing here, and the supervisor hands what it says
-        // to the model as a note at the next look.
-        RunInput::Inbound(_) => {}
         RunInput::Routed(served) => {
             fx.push(RunEffect::Record(Box::new(CuaRecord::Routed {
                 run: run.id.clone(),
@@ -130,7 +127,9 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::GrantUnanswered if run.phase == RunPhase::Granting => {
             finish_unanswered(run, fx);
         }
-        RunInput::GrantUnanswered => {}
+        // `Inbound` is input like any other: it changes nothing here, and the supervisor hands
+        // what it says to the model as a note at the next look.
+        RunInput::GrantUnanswered | RunInput::Inbound(_) => {}
         // The window the desktop leased is not the app the consent and the allow-list were for.
         RunInput::Leased(grant) if grant.window.app != run.task.app => {
             leased_elsewhere(run, fx, grant.id);

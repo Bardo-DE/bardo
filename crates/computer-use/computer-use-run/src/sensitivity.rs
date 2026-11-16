@@ -62,8 +62,9 @@ fn title_has(title: &str, fragments: &[String]) -> bool {
     fragments.iter().any(|f| title.contains(f.as_str()))
 }
 
-/// The sensitivity of the window of `app` titled `title`, whose
-/// accessibility tree is `nodes`. A password entry on screen makes it `Credentials` first; then
+/// The sensitivity of the window of `app` titled `title`, whose accessibility tree is `nodes`.
+///
+/// A password entry on screen makes it `Credentials` first; then
 /// the class the app and title name (a password manager is `Credentials`, an admin tool is
 /// `Admin`, payments and banking are `Payment`); then the title's own words. Pure.
 pub fn window_sensitivity(

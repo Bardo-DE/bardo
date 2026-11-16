@@ -1,4 +1,6 @@
-//! The scroll state machine (design/11 §11.4): pure. The host reads the latched scroller's
+//! The scroll state machine (design/11 §11.4): pure.
+//!
+//! The host reads the latched scroller's
 //! geometry from the laid-out document, calls [`step`] with an input and the time, and performs
 //! the returned effects (writes the raw offsets, notifies). Every animation is a closed form of
 //! the time since its phase began (`scroll::animate`), so `now` can be advanced by hand.
@@ -105,7 +107,7 @@ pub fn step(
             latched,
             dir,
             kinetic,
-        } => began(engine, latched, dir, kinetic, now, &g, physics),
+        } => began(&engine, latched, dir, kinetic, now, &g, physics),
         ScrollIn::Changed { delta, at } => changed(engine, delta.0, at, &g, physics),
         ScrollIn::Lifted { at } => lifted_to_wait(engine, at, now, &g, physics),
         ScrollIn::Tail { delta, at } => tail(engine, delta.0, at, &g, physics),

@@ -2,7 +2,9 @@
 
 use std::path::{Path, PathBuf};
 
-/// The directories a document may read local files from. A consumer names them (a wallpaper
+/// The directories a document may read local files from.
+///
+/// A consumer names them (a wallpaper
 /// cache, the icon directories); a path anywhere else, or one that only reaches a root through a
 /// symlink or `..`, is refused. The default holds none, so a consumer that names nothing serves
 /// no files.

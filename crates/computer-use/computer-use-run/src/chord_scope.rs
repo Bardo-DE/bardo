@@ -125,7 +125,9 @@ pub fn standard_actions_of(chord: &Chord) -> Vec<StandardAction> {
         .collect()
 }
 
-/// Whether `chord` is one the desktop acts on itself on `platform`: bound to a desktop-wide action
+/// Whether `chord` is one the desktop acts on itself on `platform`.
+///
+/// It is bound to a desktop-wide action
 /// in the platform's conventions, or reserved by the platform. Ordinary shortcuts (copy, paste,
 /// undo, save, find) are not.
 #[must_use]

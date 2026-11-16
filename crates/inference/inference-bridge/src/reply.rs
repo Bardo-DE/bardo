@@ -110,7 +110,9 @@ pub fn usage(usage: sp::TurnUsage) -> pi::TokenUsage {
     }
 }
 
-/// What the client is told when the engine fails. A gateway 5xx is a transient reach failure
+/// What the client is told when the engine fails.
+///
+/// A gateway 5xx is a transient reach failure
 /// (ARCHITECTURE section 2); a timeout has no variant of its own and is the same; a request the
 /// engine rejected is told as a refusal (the model could not be asked), which the app cannot
 /// fix by retrying.

@@ -253,7 +253,9 @@ pub fn digest(records: &[CuaRecord], app: &AppName, current: Option<&RunId>) -> 
     digest_within(records, app, current, Limits::BRIEFING)
 }
 
-/// [`digest`] with its limits given: runs are grouped by the run their records name, a run
+/// [`digest`] with its limits given.
+///
+/// Runs are grouped by the run their records name, a run
 /// counts when its start names `app`, the newest `limits.attempts` stay, and whole attempts are
 /// dropped from the oldest end until the lines fit.
 pub fn digest_within(

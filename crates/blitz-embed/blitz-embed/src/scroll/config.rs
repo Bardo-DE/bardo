@@ -1,5 +1,7 @@
 //! `ScrollSettings`: every tunable number of the scroll engine, one field per settings key of
-//! design/22 §3.7 `scroll`, with the documented defaults. A host reads its own settings file and
+//! design/22 §3.7 `scroll`, with the documented defaults.
+//!
+//! A host reads its own settings file and
 //! hands the engine a `ScrollSettings`; the kit never reads a file itself.
 //!
 //! Field names are the keys without their section, and with feature `settings` the serde form is

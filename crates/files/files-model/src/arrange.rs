@@ -5,7 +5,9 @@ use files_core::{Behaviour, Entry, FolderPrefs, SortKey};
 use crate::open::{Opens, opens};
 use crate::sort::compare;
 
-/// The indexes into `entries` of the rows to show, in order: hidden entries are left out unless
+/// The indexes into `entries` of the rows to show, in order.
+///
+/// Hidden entries are left out unless
 /// `show_hidden` shows them, and the rest are sorted by `prefs.sort`. With `behaviour` putting
 /// folders first and a sort by name, the folders come before the files in either direction.
 #[must_use]

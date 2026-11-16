@@ -1,5 +1,6 @@
-//! Programmatic scrolls (design/11 §11.3.11): `ScrollCmd`, which a host's handle accepts
-//! (layer-shell-host's `SurfaceHandle::scroll`, ui-blitz's `ScrollHandle`). They run through the engine
+//! Programmatic scrolls (design/11 §11.3.11): `ScrollCmd`, which a host's handle accepts.
+//!
+//! The handles are layer-shell-host's `SurfaceHandle::scroll` and ui-blitz's `ScrollHandle`. They run through the engine
 //! with the smooth rule (or at once), never through Blitz's own `scroll_to` (whose 300 ms
 //! animation would fight the engine).
 
@@ -36,7 +37,9 @@ pub enum ScrollCmd {
 }
 
 /// The offset that brings a child spanning `child_start..child_end` into a view spanning
-/// `view_start..view_end` (both in the same coordinates, the view scrolled to `offset`) with
+/// `view_start..view_end`.
+///
+/// Both are in the same coordinates, the view scrolled to `offset`, with
 /// `margin` to spare; `None` if it is already fully in view. Clamped to `0..=max`.
 #[must_use]
 pub fn into_view(

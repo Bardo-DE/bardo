@@ -1,5 +1,7 @@
 //! The smooth step for a consumer that owns its own offset (a canvas, a paged viewer) instead of
-//! a Blitz scroller: the same rule as the engine's wheel and key steps (design/11 §11.3.11,
+//! a Blitz scroller.
+//!
+//! It is the same rule as the engine's wheel and key steps (design/11 §11.3.11,
 //! §11.5.4) as a value that hands out how far to move since the last frame.
 //!
 //! [`Target::push`] adds a step to what is still undelivered and restarts from where the offset

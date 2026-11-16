@@ -32,7 +32,9 @@ fn capitalised(words: &str) -> String {
     }
 }
 
-/// One short line telling a model the keyboard shortcuts of the desktop `keymap` is for, in the
+/// One short line telling a model the keyboard shortcuts of the desktop `keymap` is for.
+///
+/// They are in the
 /// way the person sees them ("Copy ⌘C" on a Mac, "Copy Ctrl+C" elsewhere), and, where the
 /// Command key is the primary one, that it is sent as Super. An action the keymap leaves
 /// unbound is left out; `None` when it binds none of them.

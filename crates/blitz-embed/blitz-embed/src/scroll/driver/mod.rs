@@ -1,4 +1,6 @@
-//! The engine applied to one Blitz document: a scroller is found under the pointer, the engine
+//! The engine applied to one Blitz document.
+//!
+//! A scroller is found under the pointer, the engine
 //! steps with the document's own geometry, and its offsets are written raw. The pure physics is
 //! `scroll::engine`; what a host adds is turning its device events into [`PointerScroll`],
 //! [`ScrollKey`](crate::scroll::keys::ScrollKey) and [`ScrollCmd`](crate::scroll::cmd::ScrollCmd)

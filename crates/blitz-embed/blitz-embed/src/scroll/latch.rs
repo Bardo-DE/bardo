@@ -25,7 +25,9 @@ pub struct Latched {
     pub began: AtEdge,
 }
 
-/// Latch a gesture on `axis` moving toward `dir` (design/11 §11.3.3): the innermost scroller
+/// Latch a gesture on `axis` moving toward `dir` (design/11 §11.3.3).
+///
+/// The innermost scroller
 /// that can move that way; else the innermost elastic one, which rubber-bands; else nothing.
 /// `chain` holds only scrollers that scroll on `axis`.
 #[must_use]
@@ -140,14 +142,14 @@ mod tests {
         }
     }
 
-    fn latched(node: u64, began: AtEdge) -> Option<Latched> {
-        Some(Latched {
+    fn latched(node: u64, began: AtEdge) -> Latched {
+        Latched {
             latch: Latch {
                 scroller: Scroller::Node(node),
                 axis: ScrollAxis::Y,
             },
             began,
-        })
+        }
     }
 
     #[test]
@@ -158,19 +160,19 @@ mod tests {
                 "inner can move: inner",
                 vec![candidate(1, 100.0, 500.0, E), candidate(2, 0.0, 900.0, E)],
                 Dir::Pos,
-                latched(1, AtEdge::Inside),
+                Some(latched(1, AtEdge::Inside)),
             ),
             (
                 "inner at its bottom: the page",
                 vec![candidate(1, 500.0, 500.0, E), candidate(2, 0.0, 900.0, E)],
                 Dir::Pos,
-                latched(2, AtEdge::Inside),
+                Some(latched(2, AtEdge::Inside)),
             ),
             (
                 "none can move: the innermost elastic stretches",
                 vec![candidate(1, 500.0, 500.0, R), candidate(2, 900.0, 900.0, E)],
                 Dir::Pos,
-                latched(2, AtEdge::AtEdge),
+                Some(latched(2, AtEdge::AtEdge)),
             ),
             (
                 "none can move, none elastic: nothing",

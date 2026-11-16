@@ -14,8 +14,9 @@ pub fn page_point(doc: &BaseDocument, at: ViewPoint) -> (f64, f64) {
     (at.x + scroll.x, at.y + scroll.y)
 }
 
-/// The scrollers on `axis` from the element under surface-local `at` outward, innermost first,
-/// ending with the viewport when it can scroll or stretch on `axis`. Over an `iframe`, the
+/// The scrollers on `axis` from the element under surface-local `at` outward, innermost first.
+///
+/// The chain ends with the viewport when it can scroll or stretch on `axis`. Over an `iframe`, the
 /// scrollers of its document come first, then those around the `iframe`.
 pub fn chain_at(doc: &BaseDocument, at: ViewPoint, axis: ScrollAxis) -> Vec<Candidate> {
     candidates(doc, at, axis, true)

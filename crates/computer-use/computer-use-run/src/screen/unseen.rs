@@ -116,7 +116,9 @@ pub fn secret_masks(seen: &A11ySnapshot, withheld: &Withheld) -> Vec<Rect<Window
 }
 
 /// The snapshot without the nodes the person cannot see, for a window of `window`, and those
-/// nodes. This is the one place the model's view of the tree is made: every later reader (the
+/// nodes.
+///
+/// This is the one place the model's view of the tree is made: every later reader (the
 /// rendered tree, `Target::Node` resolution, the step record, the reader's text) takes the
 /// pruned tree. Node ids are not renumbered, so every id left is the one the source gave; the
 /// children of a dropped node move up to its nearest kept ancestor. The dropped nodes are

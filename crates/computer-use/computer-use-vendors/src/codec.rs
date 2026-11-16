@@ -16,6 +16,10 @@ pub trait WireCodec {
     /// The tool declaration: a `NativeTool` or `Function` per dialect, for an image of this size.
     fn tools(&self, image: Size<ImageSpace>) -> Vec<ToolSpec>;
     /// Decodes the model's calls. Vendor safety hints may only add asks.
+    ///
+    /// # Errors
+    /// [`WireError::UnknownTool`] when no call names a tool of the dialect, and
+    /// [`WireError::BadArguments`] when the calls' arguments are not JSON objects.
     fn decode(&self, calls: &[ToolCall], safety: &[SafetySignal]) -> Result<Parsed, WireError>;
     /// Encodes the results of the previous step and the next observation as the vendor wants
     /// them (`tool_result`, `computer_call_output`, `function_response`).
@@ -122,6 +126,10 @@ impl<S: CoordSpace> Tally<S> {
 
     /// Every call being no tool of the dialect, or no JSON object, is a fault of the whole
     /// reply; anything else is per-call drops in the `Parsed`.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "any parse fault of the batch is the one `UnknownTool` fault of the reply; its detail has no meaning on the wire"
+    )]
     fn finish(self, wrap: impl FnOnce(Vec<CuaAction<S>>) -> InSpace) -> Result<Parsed, WireError> {
         if self.calls > 0 && self.unreadable == self.calls {
             return Err(WireError::BadArguments);
