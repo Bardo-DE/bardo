@@ -19,6 +19,23 @@ impl Sha256Hex {
         Self(const_hex::encode(sum))
     }
 
+    /// The digest of everything `reader` yields, read in chunks.
+    ///
+    /// # Errors
+    /// The reader's error.
+    pub fn of_reader(mut reader: impl std::io::Read) -> std::io::Result<Self> {
+        let mut hasher = Sha256::new();
+        let mut chunk = vec![0_u8; 64 * 1024];
+        loop {
+            let n = reader.read(&mut chunk)?;
+            if n == 0 {
+                break;
+            }
+            hasher.update(&chunk[..n]);
+        }
+        Ok(Self(const_hex::encode(hasher.finalize())))
+    }
+
     /// A digest the registry or a record wrote.
     pub fn parse(text: &str) -> Result<Self, DigestRefused> {
         let text = text.trim().to_ascii_lowercase();

@@ -4,6 +4,7 @@
 use agent_install::fetch::{Fetch, FetchFault};
 use agent_install::run::{Run, RunFault};
 use agent_install::store::{agents, read_record, versions};
+use agent_install::unpack::{Limits, UnpackFault, unpack};
 use agent_install::uv::PythonPackage;
 use agent_install::{InstallFault, Offer, Standing, Want, install, offers, standing};
 use agent_registry::dirs::AgentsDir;
@@ -26,6 +27,11 @@ impl Fetch for Served {
             .get(url)
             .cloned()
             .ok_or_else(|| FetchFault(url.to_owned()))
+    }
+
+    fn download(&self, url: &str, to: &Path) -> Result<(), FetchFault> {
+        let bytes = self.get(url)?;
+        std::fs::write(to, bytes).map_err(|e| FetchFault(format!("{url}: {e}")))
     }
 }
 
@@ -329,17 +335,164 @@ fn python_package_forms_are_read_and_direct_references_refused() {
     PythonPackage::parse("../escape").unwrap_err();
 }
 
+/// Writes `bytes` as the archive `name` in `dir` and returns its path.
+fn archive_file(dir: &Path, name: &str, bytes: &[u8]) -> std::path::PathBuf {
+    let path = dir.join(name);
+    std::fs::write(&path, bytes).expect("archive");
+    path
+}
+
+/// A zip of `(name, body)` files, deflated.
+fn zip_many(files: &[(&str, &[u8])]) -> Vec<u8> {
+    let mut out = std::io::Cursor::new(Vec::new());
+    let mut zip = zip::ZipWriter::new(&mut out);
+    let options = zip::write::SimpleFileOptions::default()
+        .compression_method(zip::CompressionMethod::Deflated);
+    for (name, body) in files {
+        zip.start_file(*name, options).expect("start");
+        zip.write_all(body).expect("write");
+    }
+    zip.finish().expect("finish");
+    out.into_inner()
+}
+
+/// Whether `into` holds nothing and no staging folder is left beside it.
+fn left_nothing(tmp: &Path, into: &Path) -> bool {
+    let empty = std::fs::read_dir(into).map_or(true, |mut d| d.next().is_none());
+    let staged = std::fs::read_dir(tmp).expect("tmp").any(|e| {
+        e.expect("entry")
+            .file_name()
+            .to_string_lossy()
+            .ends_with(".unpacking")
+    });
+    empty && !staged
+}
+
+fn small() -> Limits {
+    Limits {
+        total: 1000,
+        entry: 600,
+        entries: 3,
+    }
+}
+
 #[test]
 fn a_tarball_unpacks_and_an_escaping_entry_is_refused() {
     let tmp = tempfile::tempdir().expect("tmp");
     let into = tmp.path().join("out");
-    std::fs::create_dir_all(&into).expect("dir");
-    agent_install::unpack::unpack("a.tar.gz", &tar_gz_of("bin/agy", b"x"), &into).expect("unpack");
+    let good = archive_file(tmp.path(), "a.tar.gz", &tar_gz_of("bin/agy", b"x"));
+    unpack("a.tar.gz", &good, &into, &Limits::default()).expect("unpack");
     assert!(into.join("bin/agy").is_file());
-    let bad = zip_of("../escape", b"x");
-    let fault = agent_install::unpack::unpack("a.zip", &bad, &into).expect_err("escape");
-    assert_eq!(fault, agent_install::unpack::UnpackFault::Path);
+    let other = tmp.path().join("other");
+    let bad = archive_file(tmp.path(), "a.zip", &zip_of("../escape", b"x"));
+    let fault = unpack("a.zip", &bad, &other, &Limits::default()).expect_err("escape");
+    assert!(matches!(fault, UnpackFault::Path(_)), "{fault}");
     assert!(!tmp.path().join("escape").exists());
-    let kind = agent_install::unpack::unpack("a.tar.bz2", b"", &into).expect_err("kind");
-    assert_eq!(kind, agent_install::unpack::UnpackFault::Kind);
+    assert!(left_nothing(tmp.path(), &other));
+    let kind = unpack("a.tar.bz2", &good, &other, &Limits::default()).expect_err("kind");
+    assert_eq!(kind, UnpackFault::Kind);
+}
+
+#[test]
+fn an_absolute_path_is_refused_and_nothing_is_left() {
+    let tmp = tempfile::tempdir().expect("tmp");
+    let into = tmp.path().join("out");
+    let mut header = tar::Header::new_gnu();
+    header.set_size(1);
+    header.set_mode(0o644);
+    header.as_old_mut().name[..9].copy_from_slice(b"/tmp/evil");
+    header.set_cksum();
+    let mut builder = tar::Builder::new(Vec::new());
+    builder.append(&header, &b"x"[..]).expect("append");
+    let mut gz = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+    gz.write_all(&builder.into_inner().expect("tar"))
+        .expect("gz");
+    let file = archive_file(tmp.path(), "a.tgz", &gz.finish().expect("end"));
+    let fault = unpack("a.tgz", &file, &into, &Limits::default()).expect_err("absolute");
+    assert!(matches!(fault, UnpackFault::Path(_)), "{fault}");
+    assert!(left_nothing(tmp.path(), &into));
+}
+
+#[test]
+fn an_archive_over_the_total_cap_is_refused_and_nothing_is_left() {
+    let tmp = tempfile::tempdir().expect("tmp");
+    let into = tmp.path().join("out");
+    let (a, b) = (vec![1_u8; 500], vec![2_u8; 500]);
+    let c = vec![3_u8; 500];
+    let file = archive_file(
+        tmp.path(),
+        "a.zip",
+        &zip_many(&[("a", &a), ("b", &b), ("c", &c)]),
+    );
+    let fault = unpack("a.zip", &file, &into, &small()).expect_err("over total");
+    assert!(matches!(fault, UnpackFault::TooLarge(_)), "{fault}");
+    assert!(left_nothing(tmp.path(), &into));
+}
+
+#[test]
+fn a_file_over_the_entry_cap_is_refused_whatever_the_header_says() {
+    let tmp = tempfile::tempdir().expect("tmp");
+    let into = tmp.path().join("out");
+    // A tar header states the size it writes, so the count of real bytes is what stops this one.
+    let file = archive_file(tmp.path(), "a.tar.gz", &tar_gz_of("big", &vec![0_u8; 700]));
+    let fault = unpack("a.tar.gz", &file, &into, &small()).expect_err("over entry");
+    assert!(matches!(fault, UnpackFault::TooLarge(_)), "{fault}");
+    assert!(left_nothing(tmp.path(), &into));
+}
+
+/// A zip with one deflated file of `real` zero bytes whose headers both say it is `claimed`.
+fn lying_zip(real: usize, claimed: u32) -> Vec<u8> {
+    let mut bytes = zip_many(&[("liar", &vec![0_u8; real])]);
+    let central = bytes
+        .windows(4)
+        .rposition(|w| w == b"PK\x01\x02")
+        .expect("central header");
+    bytes[22..26].copy_from_slice(&claimed.to_le_bytes());
+    bytes[central + 24..central + 28].copy_from_slice(&claimed.to_le_bytes());
+    bytes
+}
+
+#[test]
+fn an_entry_that_lies_about_its_size_is_refused_and_nothing_is_left() {
+    let tmp = tempfile::tempdir().expect("tmp");
+    let into = tmp.path().join("out");
+    let file = archive_file(tmp.path(), "a.zip", &lying_zip(900, 10));
+    let fault = unpack("a.zip", &file, &into, &small()).expect_err("liar");
+    // The stated size fits the cap; the real bytes do not (or the reader notices the mismatch).
+    assert!(
+        matches!(fault, UnpackFault::TooLarge(_) | UnpackFault::Damaged(_)),
+        "{fault}"
+    );
+    assert!(left_nothing(tmp.path(), &into));
+}
+
+#[test]
+fn too_many_entries_are_refused_and_nothing_is_left() {
+    let tmp = tempfile::tempdir().expect("tmp");
+    let into = tmp.path().join("out");
+    let file = archive_file(
+        tmp.path(),
+        "a.zip",
+        &zip_many(&[("a", b"1"), ("b", b"2"), ("c", b"3"), ("d", b"4")]),
+    );
+    let fault = unpack("a.zip", &file, &into, &small()).expect_err("too many");
+    assert!(matches!(fault, UnpackFault::TooLarge(_)), "{fault}");
+    assert!(left_nothing(tmp.path(), &into));
+}
+
+#[test]
+fn a_download_over_the_cap_is_cut_off_and_removed() {
+    let tmp = tempfile::tempdir().expect("tmp");
+    let serve = tmp.path().join("serve");
+    std::fs::create_dir(&serve).expect("serve");
+    std::fs::write(serve.join("small.bin"), b"abc").expect("file");
+    let files = agent_install::fetch::Files::under(&serve);
+    let to = tmp.path().join("got");
+    files.download("file://small.bin", &to).expect("download");
+    assert_eq!(std::fs::read(&to).expect("got"), b"abc");
+    let fault = files
+        .download("file://missing.bin", &tmp.path().join("none"))
+        .expect_err("missing");
+    assert!(fault.0.contains("missing.bin"), "{fault}");
+    assert!(!tmp.path().join("none").exists());
 }

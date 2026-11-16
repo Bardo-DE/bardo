@@ -5,7 +5,7 @@
 use crate::fetch::{Fetch, FetchFault};
 use crate::run::{Run, RunFault};
 use crate::store::{read_record, versions, write_record};
-use crate::unpack::{UnpackFault, unpack};
+use crate::unpack::{Limits, UnpackFault, unpack};
 use crate::uv::uvx;
 use agent_registry::dirs::AgentsDir;
 use agent_registry::hash::Sha256Hex;
@@ -53,11 +53,16 @@ pub enum InstallFault {
     #[error(transparent)]
     Run(#[from] RunFault),
     /// The disk refused.
-    #[error("the agents directory could not be written")]
-    Disk,
+    #[error("the agents directory could not be written: {0}")]
+    Disk(String),
     /// The program the list names is not in what was unpacked.
     #[error("the download does not contain the program the list names")]
     NoProgram,
+}
+
+/// The disk's refusal, with its cause.
+fn disk(why: impl std::fmt::Display) -> InstallFault {
+    InstallFault::Disk(why.to_string())
 }
 
 /// What the person asked to install.
@@ -161,10 +166,10 @@ pub fn install(
     // Staged at its final place: a python environment keeps absolute paths, so it cannot be moved
     // into place afterwards. A directory without a record is not installed (see `store::versions`).
     let _ = std::fs::remove_dir_all(&target);
-    std::fs::create_dir_all(target.join(FILES)).map_err(|_| InstallFault::Disk)?;
+    std::fs::create_dir_all(target.join(FILES)).map_err(disk)?;
     let pin = dir.pin(&id, &version);
     let record = fill(listing, (&target, &pin), (fetch, run)).and_then(|record| {
-        write_record(&record, &target).map_err(|_| InstallFault::Disk)?;
+        write_record(&record, &target).map_err(disk)?;
         Ok(record)
     });
     if record.is_err() {
@@ -194,7 +199,8 @@ fn fill(
         .binary
         .get(&Platform::of(std::env::consts::OS, std::env::consts::ARCH))
     {
-        let (digest, check) = binary(bin, (&files, pin), fetch)?;
+        let stage = target.join(".download");
+        let (digest, check) = binary(bin, (&files, pin, &stage), fetch)?;
         let found = files.join(&bin.cmd);
         found
             .is_file()
@@ -232,11 +238,14 @@ fn fill(
 
 fn binary(
     bin: &Binary,
-    (files, pin): (&Path, &Path),
+    (files, pin, stage): (&Path, &Path, &Path),
     fetch: &dyn Fetch,
 ) -> Result<(String, Check), InstallFault> {
-    let bytes = fetch.get(&bin.archive)?;
-    let got = Sha256Hex::of(&bytes);
+    // Streamed to a staging file beside the files, never held in memory.
+    fetch.download(&bin.archive, stage)?;
+    let got = std::fs::File::open(stage)
+        .and_then(Sha256Hex::of_reader)
+        .map_err(disk)?;
     let refused = |expected: &str| InstallFault::Digest {
         expected: expected.to_owned(),
         got: got.as_str().to_owned(),
@@ -260,14 +269,15 @@ fn binary(
                 Check::Pinned
             }
             Err(why) if why.kind() == std::io::ErrorKind::NotFound => Check::FirstUse,
-            Err(_) => return Err(InstallFault::Disk),
+            Err(why) => return Err(disk(why)),
         },
     };
-    unpack(&bin.archive, &bytes, files)?;
+    unpack(&bin.archive, stage, files, &Limits::default())?;
+    std::fs::remove_file(stage).map_err(disk)?;
     if check == Check::FirstUse {
-        let dir = pin.parent().ok_or(InstallFault::Disk)?;
-        std::fs::create_dir_all(dir).map_err(|_| InstallFault::Disk)?;
-        std::fs::write(pin, got.as_str()).map_err(|_| InstallFault::Disk)?;
+        let dir = pin.parent().ok_or_else(|| disk("the pin has no folder"))?;
+        std::fs::create_dir_all(dir).map_err(disk)?;
+        std::fs::write(pin, got.as_str()).map_err(disk)?;
     }
     Ok((got.as_str().to_owned(), check))
 }
