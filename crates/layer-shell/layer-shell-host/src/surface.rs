@@ -48,6 +48,8 @@ pub(crate) struct AppliedRegions {
     pub input: Tracked,
     /// Starts empty: a new `wl_surface` has no blur, so "no blur" sends nothing.
     pub blur: Tracked,
+    /// Starts empty: a new `wl_surface` has no opaque region.
+    pub opaque: Tracked,
 }
 
 impl Default for AppliedRegions {
@@ -55,6 +57,7 @@ impl Default for AppliedRegions {
         AppliedRegions {
             input: Tracked::new(),
             blur: Tracked::holding(Vec::new()),
+            opaque: Tracked::holding(Vec::new()),
         }
     }
 }

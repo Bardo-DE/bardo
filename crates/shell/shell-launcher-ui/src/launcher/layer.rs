@@ -86,6 +86,7 @@ pub fn layer(output: &OutputInfo, tokens: &LauncherTokens) -> LayerConfig {
         output: OutputTarget::Output(output.id),
         blur: BlurSpec::Region(card_region()),
         input: panel_input(PanelHit::Whole),
+        opaque: false,
     }
 }
 

@@ -131,6 +131,7 @@ pub fn dock_config(layer: LayerLevel, cards: Cards) -> LayerConfig {
         output: OutputTarget::CompositorPicks,
         blur: BlurSpec::Region(region.clone()),
         input: region,
+        opaque: false,
     }
 }
 

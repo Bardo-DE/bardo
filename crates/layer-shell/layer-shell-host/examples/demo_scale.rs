@@ -75,6 +75,7 @@ fn strip_config() -> LayerConfig {
         output: OutputTarget::CompositorPicks,
         blur: BlurSpec::None,
         input: RegionSpec::Empty,
+        opaque: false,
     }
 }
 

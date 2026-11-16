@@ -13,15 +13,19 @@ pub(crate) struct Swapchain {
     pub(crate) surface: wgpu::Surface<'static>,
     pub(crate) config: Option<wgpu::SurfaceConfiguration>,
     pub(crate) scene: vello_hybrid::Scene,
+    /// The surface draws only opaque pixels, so an opaque alpha mode is preferred.
+    opaque: bool,
 }
 
 impl Swapchain {
-    /// A swapchain for `surface`, unconfigured until the first `configure`.
-    pub(crate) fn new(surface: wgpu::Surface<'static>) -> Swapchain {
+    /// A swapchain for `surface`, unconfigured until the first `configure`; `opaque` when the
+    /// surface draws only opaque pixels.
+    pub(crate) fn new(surface: wgpu::Surface<'static>, opaque: bool) -> Swapchain {
         Swapchain {
             surface,
             config: None,
             scene: vello_hybrid::Scene::new(1, 1),
+            opaque,
         }
     }
 
@@ -36,7 +40,7 @@ impl Swapchain {
                 height,
                 ..previous
             },
-            None => first_config(&self.surface, gpu, width, height),
+            None => first_config(&self.surface, gpu, (width, height), self.opaque),
         };
         let device = &gpu.device.device;
         let scope = device.push_error_scope(wgpu::ErrorFilter::Validation);
@@ -95,8 +99,8 @@ pub(crate) fn pixel_extent(buffer: Size) -> (u32, u32) {
 fn first_config(
     surface: &wgpu::Surface<'static>,
     gpu: &GpuContext,
-    width: u32,
-    height: u32,
+    (width, height): (u32, u32),
+    opaque: bool,
 ) -> wgpu::SurfaceConfiguration {
     let caps = surface.get_capabilities(&gpu.device.adapter);
     let config = wgpu::SurfaceConfiguration {
@@ -106,7 +110,7 @@ fn first_config(
         height,
         present_mode: choose_present(&caps.present_modes),
         desired_maximum_frame_latency: 2,
-        alpha_mode: choose_alpha(&caps.alpha_modes),
+        alpha_mode: choose_alpha(&caps.alpha_modes, opaque),
         view_formats: vec![],
     };
     eprintln!(
@@ -125,21 +129,31 @@ pub(crate) fn choose_present(offered: &[wgpu::PresentMode]) -> wgpu::PresentMode
     }
 }
 
-/// `PreMultiplied` (what `vello_hybrid` emits), else `PostMultiplied`, else `Opaque`.
+/// `PreMultiplied` (what `vello_hybrid` emits), else `PostMultiplied`, else `Opaque`; for a
+/// surface that draws only opaque pixels (`opaque`), `Opaque` first when offered, so the
+/// compositor can scan it out or skip what it covers, and otherwise as for a translucent one.
 ///
 /// `Opaque` is taken even when the surface does not list it, only when nothing else is
 /// listed at all; a surface that lists only an unusual mode (`Inherit`) gets that mode, which
 /// the stats report as opaque.
-pub(crate) fn choose_alpha(offered: &[wgpu::CompositeAlphaMode]) -> wgpu::CompositeAlphaMode {
-    [
+pub(crate) fn choose_alpha(
+    offered: &[wgpu::CompositeAlphaMode],
+    opaque: bool,
+) -> wgpu::CompositeAlphaMode {
+    let translucent = [
         wgpu::CompositeAlphaMode::PreMultiplied,
         wgpu::CompositeAlphaMode::PostMultiplied,
         wgpu::CompositeAlphaMode::Opaque,
-    ]
-    .into_iter()
-    .find(|mode| offered.contains(mode))
-    .or_else(|| offered.first().copied())
-    .unwrap_or(wgpu::CompositeAlphaMode::Opaque)
+    ];
+    let preferred = opaque
+        .then_some(wgpu::CompositeAlphaMode::Opaque)
+        .into_iter()
+        .chain(translucent);
+    preferred
+        .into_iter()
+        .find(|mode| offered.contains(mode))
+        .or_else(|| offered.first().copied())
+        .unwrap_or(wgpu::CompositeAlphaMode::Opaque)
 }
 
 /// The stats name of a wgpu present mode.

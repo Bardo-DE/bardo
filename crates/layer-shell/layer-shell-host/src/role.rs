@@ -80,6 +80,18 @@ impl Role {
         }
     }
 
+    /// Whether the surface declared that it draws only opaque pixels (a layer surface's
+    /// `LayerConfig::opaque`).
+    pub(crate) fn opaque(&self) -> bool {
+        match self {
+            Role::Layer { config, .. } => config.opaque,
+            Role::Popup { .. }
+            | Role::Toplevel { .. }
+            | Role::DragIcon { .. }
+            | Role::Lock { .. } => false,
+        }
+    }
+
     /// The parent, for a popup.
     pub(crate) fn parent(&self) -> Option<SurfaceId> {
         match self {

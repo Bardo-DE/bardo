@@ -35,6 +35,7 @@ pub fn layer(output: &OutputInfo, corner: Corner) -> LayerConfig {
         output: OutputTarget::Output(output.id),
         blur: BlurSpec::None,
         input: RegionSpec::Whole,
+        opaque: false,
     }
 }
 

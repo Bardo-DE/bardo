@@ -58,6 +58,7 @@ pub fn layer(output: &OutputInfo, settings: &ShellFile, tokens: &DockTokens) -> 
             Reveal::Fixed => crate::dock::machine::hit_region(),
             _ => crate::dock::machine::strip_region(),
         },
+        opaque: false,
     }
 }
 

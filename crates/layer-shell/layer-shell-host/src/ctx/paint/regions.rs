@@ -8,6 +8,7 @@ use crate::csd::{Inset, band, to_surface};
 use crate::handlers::background_effect::BackgroundEffect;
 use crate::region::Rect;
 use crate::resolve::resolve;
+use crate::scale::Size;
 use crate::state::HostState;
 use crate::surface::HostSurface;
 
@@ -44,6 +45,13 @@ pub(super) fn send_regions(
         let region = region_of(compositor, rects);
         wl.set_input_region(region.as_ref().map(Region::wl_region));
     }
+    let opaque = opaque_region(surface.role.opaque(), surface.logical);
+    if surface.regions.opaque.update(&opaque)
+        && let Some(rects) = &opaque
+    {
+        let region = region_of(compositor, rects);
+        wl.set_opaque_region(region.as_ref().map(Region::wl_region));
+    }
     if surface.regions.blur.update(&blur)
         && let Some(rects) = &blur
         && let Some(effect) = effect
@@ -71,4 +79,53 @@ fn region_of(compositor: &CompositorState, rects: &[Rect]) -> Option<Region> {
         region.add(rect.x, rect.y, rect.width, rect.height);
     }
     Some(region)
+}
+
+/// The opaque region of a surface of `logical` size, in surface-local logical coordinates:
+/// all of it when the surface is `opaque` and has an area, else nothing to send. The region
+/// follows the logical size, so a resize resends it and a scale change (same logical size)
+/// does not.
+fn opaque_region(opaque: bool, logical: Size) -> Option<Vec<Rect>> {
+    (opaque && logical.has_area()).then(|| {
+        vec![Rect {
+            x: 0,
+            y: 0,
+            width: logical.width,
+            height: logical.height,
+        }]
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn size(width: i32, height: i32) -> Size {
+        Size { width, height }
+    }
+
+    #[test]
+    fn an_opaque_surface_declares_all_of_itself_opaque() {
+        let whole = Rect {
+            x: 0,
+            y: 0,
+            width: 3840,
+            height: 2160,
+        };
+        assert_eq!(opaque_region(true, size(3840, 2160)), Some(vec![whole]));
+    }
+
+    #[test]
+    fn a_translucent_or_unsized_surface_sends_no_opaque_region() {
+        assert_eq!(opaque_region(false, size(3840, 2160)), None);
+        assert_eq!(opaque_region(true, size(0, 0)), None);
+    }
+
+    #[test]
+    fn a_resize_changes_the_opaque_region_and_a_repeat_does_not() {
+        let mut tracked = crate::resolve::Tracked::holding(Vec::new());
+        assert!(tracked.update(&opaque_region(true, size(100, 50))));
+        assert!(!tracked.update(&opaque_region(true, size(100, 50))));
+        assert!(tracked.update(&opaque_region(true, size(120, 50))));
+    }
 }

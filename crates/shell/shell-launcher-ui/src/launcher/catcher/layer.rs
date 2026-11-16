@@ -81,6 +81,7 @@ pub fn layer(output: &OutputInfo) -> LayerConfig {
         output: OutputTarget::Output(output.id),
         blur: BlurSpec::None,
         input: RegionSpec::Whole,
+        opaque: false,
     }
 }
 

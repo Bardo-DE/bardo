@@ -58,6 +58,7 @@ pub fn layer(output: &OutputInfo, tokens: &NotificationTokens) -> LayerConfig {
         output: OutputTarget::Output(output.id),
         blur: BlurSpec::None,
         input: RegionSpec::Empty,
+        opaque: false,
     }
 }
 
