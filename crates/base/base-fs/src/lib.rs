@@ -4,15 +4,17 @@
 //! - [`read_capped`] / [`read_text_capped`]: open a regular file without blocking on a FIFO, take
 //!   at most the caller's [`ReadCap`], and say apart "there is no such file" ([`ReadError::NotFound`])
 //!   from every other failure.
-//! - [`write_atomic`]: a unique temporary file beside the target, `sync_all`, a rename, and an
-//!   fsync of the directory; the target's mode is kept, a symlink is written through to its
-//!   target, and two writers of one path in a process take turns.
+//! - [`write_atomic`]: the one writer. A uniquely named staging file (`.<name>.<pid>.<n>.tmp`)
+//!   beside the target, `sync_all`, a rename, and an fsync of the directory; the target's mode is
+//!   kept, a symlink is written through to its target, and two writers of one path in a process
+//!   take turns. Everything below writes through the same core.
 //! - [`update_atomic`]: read, edit and write back while holding the file's lock (in this process
 //!   and, through a sidecar `flock`, between programs).
 //! - [`move_aside`]: a damaged file kept under a timestamped `.bad` name before anything is
 //!   written in its place.
-//! - [`atomic::AtomicWrite`]: the same write as a value (owner-only or shared, parent folders made
-//!   or not, staged and committed in two steps); [`atomic::AtomicFile`]: one small file kept with
+//! - [`atomic::AtomicWrite`]: the same write as a value of options (owner-only or umask for a new
+//!   file, parent folders made or not; the symlink, mode and lock rules are `write_atomic`'s),
+//!   which can also stage and commit in two steps; [`atomic::AtomicFile`]: one small file kept with
 //!   its backup. With the `book` feature, [`book::commit`] saves a kept document on the blocking pool.
 
 mod aside;

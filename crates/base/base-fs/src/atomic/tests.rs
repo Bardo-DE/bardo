@@ -1,4 +1,5 @@
 use super::*;
+use crate::write::sync_count;
 use base_testkit::Scratch;
 
 fn names(dir: &Path) -> Vec<String> {
@@ -83,7 +84,7 @@ fn a_copy_publishes_the_source_whole() {
 }
 
 #[test]
-fn staging_names_are_dot_files_ending_in_tmp_and_never_repeat() {
+fn staging_names_are_dot_files_of_the_target_ending_in_tmp_and_never_repeat() {
     let target = Path::new("/some/dir/registry.json");
     let all: std::collections::HashSet<PathBuf> = (0..64).map(|_| staging_beside(target)).collect();
     assert_eq!(all.len(), 64);
@@ -91,7 +92,7 @@ fn staging_names_are_dot_files_ending_in_tmp_and_never_repeat() {
         assert_eq!(name.parent(), Some(Path::new("/some/dir")));
         let name = name.file_name().expect("name").to_string_lossy();
         assert!(
-            name.starts_with(".tmp-") && name.ends_with(".tmp"),
+            name.starts_with(".registry.json.") && name.ends_with(".tmp"),
             "{name}"
         );
     }
@@ -101,6 +102,71 @@ fn staging_names_are_dot_files_ending_in_tmp_and_never_repeat() {
 fn a_target_with_no_directory_part_is_written_in_the_current_one() {
     assert_eq!(directory_of(Path::new("file")), Path::new("."));
     assert_eq!(directory_of(Path::new("/x/file")), Path::new("/x"));
+}
+
+#[cfg(unix)]
+#[test]
+fn a_shared_write_follows_a_symlink_and_keeps_an_existing_files_mode() {
+    use std::os::unix::fs::{PermissionsExt, symlink};
+    let scratch = Scratch::new("atomic");
+    let real = scratch.join("real");
+    std::fs::write(&real, b"old").expect("real");
+    std::fs::set_permissions(&real, std::fs::Permissions::from_mode(0o640)).expect("chmod");
+    let link = scratch.join("link");
+    symlink(&real, &link).expect("link");
+    AtomicWrite::SHARED.write(&link, b"new").expect("written");
+    assert!(
+        std::fs::symlink_metadata(&link)
+            .expect("meta")
+            .file_type()
+            .is_symlink(),
+        "the link stays a link"
+    );
+    assert_eq!(std::fs::read(&real).expect("read"), b"new");
+    let mode = std::fs::metadata(&real).expect("meta").permissions().mode();
+    assert_eq!(mode & 0o777, 0o640, "the existing mode is kept");
+}
+
+#[cfg(unix)]
+#[test]
+fn a_private_write_makes_an_existing_file_owner_only_again() {
+    use std::os::unix::fs::PermissionsExt;
+    let scratch = Scratch::new("atomic");
+    let target = scratch.join("credentials");
+    std::fs::write(&target, b"old").expect("old");
+    std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o644)).expect("chmod");
+    AtomicWrite::PRIVATE
+        .write(&target, b"new")
+        .expect("written");
+    let mode = std::fs::metadata(&target)
+        .expect("meta")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o777, 0o600);
+}
+
+#[test]
+fn writers_of_one_path_in_a_process_never_lose_a_file() {
+    let scratch = Scratch::new("atomic");
+    let target = scratch.join("shared");
+    std::thread::scope(|scope| {
+        for n in 0..8 {
+            let target = &target;
+            scope.spawn(move || {
+                for _ in 0..8 {
+                    AtomicWrite::SHARED
+                        .write(target, format!("writer {n}").as_bytes())
+                        .expect("written");
+                }
+            });
+        }
+    });
+    assert!(
+        std::fs::read_to_string(&target)
+            .expect("read")
+            .starts_with("writer ")
+    );
+    assert_eq!(names(scratch.path()), ["shared"]);
 }
 
 #[test]

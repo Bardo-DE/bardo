@@ -3,10 +3,10 @@
 use crate::cap::ReadCap;
 use crate::flock::Flock;
 use crate::read::{ReadError, read_text_capped};
-use crate::write::{NewFileMode, WriteError, publish};
+use crate::write::{NewFileMode, WriteError, directory_of, publish};
 use crate::{link, lock};
 use std::ffi::OsString;
-use std::io;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 /// Why an update did not happen.
@@ -29,7 +29,7 @@ pub enum UpdateError<E> {
 /// `edit` gets the current text, or `None` when there is no file yet, and returns the whole new
 /// text. The read goes through [`read_text_capped`] with `cap` (a file that exists and cannot be
 /// read is [`UpdateError::Read`], never taken for a missing one and never written over), and the
-/// write is [`write_atomic`](crate::write_atomic)'s: a unique temporary file, `sync_all`, a
+/// write is [`write_atomic`](crate::write_atomic)'s: a unique staging file, `sync_all`, a
 /// rename, an fsync of the directory, the file's mode kept (or `new_file` for a new one), a
 /// symlink written through.
 ///
@@ -62,7 +62,8 @@ fn under_lock<E>(
         Err(error) => return Err(UpdateError::Read(error)),
     };
     let text = edit(current).map_err(UpdateError::Edit)?;
-    publish(target, text.as_bytes(), new_file).map_err(|source| write_failed(target, source))
+    publish(target, new_file, |file| file.write_all(text.as_bytes()))
+        .map_err(|source| write_failed(target, source))
 }
 
 fn write_failed<E>(path: &Path, source: io::Error) -> UpdateError<E> {
@@ -71,15 +72,11 @@ fn write_failed<E>(path: &Path, source: io::Error) -> UpdateError<E> {
 
 /// `.<name>.lock` in the directory of `target`.
 fn sidecar(target: &Path) -> io::Result<PathBuf> {
-    let dir = match target.parent() {
-        Some(parent) if !parent.as_os_str().is_empty() => parent,
-        _ => Path::new("."),
-    };
     let name = target
         .file_name()
         .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "the path has no file name"))?;
     let mut lock_name = OsString::from(".");
     lock_name.push(name);
     lock_name.push(".lock");
-    Ok(dir.join(lock_name))
+    Ok(directory_of(target).join(lock_name))
 }

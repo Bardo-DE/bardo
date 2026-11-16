@@ -1,6 +1,7 @@
 //! Keeping a damaged file instead of writing over it.
 
-use crate::{lock, write::WriteError};
+use crate::lock;
+use crate::write::{WriteError, directory_of, sync_dir};
 use base_time::UnixSeconds;
 use std::ffi::OsString;
 use std::io;
@@ -32,11 +33,6 @@ fn rename_aside(path: &Path, at: UnixSeconds) -> io::Result<PathBuf> {
         .find(|candidate| std::fs::symlink_metadata(candidate).is_err())
         .ok_or_else(|| io::Error::other("no free name"))?;
     std::fs::rename(path, &free)?;
-    if let Some(dir) = path.parent().filter(|dir| !dir.as_os_str().is_empty()) {
-        #[cfg(unix)]
-        std::fs::File::open(dir)?.sync_all()?;
-        #[cfg(not(unix))]
-        let _ = dir;
-    }
+    sync_dir(directory_of(path))?;
     Ok(free)
 }
