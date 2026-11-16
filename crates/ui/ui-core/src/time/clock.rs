@@ -37,10 +37,12 @@ thread_local! {
     static WALL_FINISHED: Cell<u64> = const { Cell::new(0) };
 }
 
-/// How many wall-clock sleeps have finished on this thread, counted when the sleep's owner
-/// polls it and finds it done. A test host that bounds how many rounds of work a document may
-/// take reads it to tell a round that real time made (a timer ran out) from one the document
-/// made itself; a virtual sleep never counts, since virtual time only moves when the host says.
+/// How many wall-clock sleeps have finished on this thread, counted when the sleep's owner polls it
+/// and finds it done.
+///
+/// A test host that bounds how many rounds of work a document may take reads it to tell a round
+/// that real time made (a timer ran out) from one the document made itself; a virtual sleep never
+/// counts, since virtual time only moves when the host says.
 pub fn wall_sleeps_finished() -> u64 {
     WALL_FINISHED.with(Cell::get)
 }
@@ -62,9 +64,10 @@ fn push(queue: Option<Rc<VirtualQueue>>) -> ClockGuard {
     })
 }
 
-/// Make the wall clock the one [`now`] and [`sleep`] read on this thread until the guard drops,
-/// even while a [`VirtualClock`] installed earlier is still alive: a wall-clock test host built
-/// beside a virtual one must not read the virtual one's time.
+/// Make the wall clock the one [`now`] and [`sleep`] read on this thread until the guard drops.
+///
+/// This holds even while a [`VirtualClock`] installed earlier is still alive: a wall-clock test
+/// host built beside a virtual one must not read the virtual one's time.
 pub fn install_wall() -> ClockGuard {
     push(None)
 }
@@ -115,9 +118,11 @@ impl Future for Wait {
     }
 }
 
-/// A clock that moves only when told to: a test harness installs one so that [`now`] and
-/// [`sleep`] across the design system (motion timers, presence, hover intent, toast holds,
-/// pending, detail tweens) follow the test's time instead of the machine's.
+/// A clock that moves only when told to.
+///
+/// A test harness installs one so that [`now`] and [`sleep`] across the design system (motion
+/// timers, presence, hover intent, toast holds, pending, detail tweens) follow the test's time
+/// instead of the machine's.
 ///
 /// It starts at the wall-clock instant it was made and stands still there until
 /// [`VirtualClock::advance_to`]. The clock and every sleep on it stay on the thread that made

@@ -259,9 +259,10 @@ fn runs(program: &str, exe: &ExePath) -> bool {
     named.is_some() && named == exe.file_name()
 }
 
-/// The bus name of the app a session handle belongs to: the path ends in
-/// `.../<sender>/<token>`, where `<sender>` is the app's unique name without its colon and with
-/// dots written as underscores (`:1.42` is `1_42`).
+/// The bus name of the app a session handle belongs to.
+///
+/// The path ends in `.../<sender>/<token>`, where `<sender>` is the app's unique name without its
+/// colon and with dots written as underscores (`:1.42` is `1_42`).
 #[must_use]
 pub fn sender_of(session: &str) -> Option<String> {
     let mut parts = session.rsplit('/');

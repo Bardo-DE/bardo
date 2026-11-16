@@ -1,6 +1,8 @@
-//! `Word`: a closed vocabulary. Every enum whose variants are a fixed set of named things (a
-//! theme, a size, a state) implements it by `#[derive(Word)]`, which gives the list of variants,
-//! the attribute value or CSS word each one is written as, and the label a person reads.
+//! `Word`: a closed vocabulary.
+//!
+//! Every enum whose variants are a fixed set of named things (a theme, a size, a state) implements
+//! it by `#[derive(Word)]`, which gives the list of variants, the attribute value or CSS word each
+//! one is written as, and the label a person reads.
 
 #[cfg(test)]
 mod tests;

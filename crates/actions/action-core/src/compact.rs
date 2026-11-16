@@ -16,9 +16,10 @@ use serde::{Deserialize, Serialize};
 pub const SUMMARY_MAX_CHARS: usize = 2000;
 
 /// How much of a task's start a summary stands for: the oldest `turns` of the person's turns and
-/// the oldest `steps` of its steps. It is a count from the start, so a later summary covers
-/// everything an earlier one did, and a step is never split from its result (a step line is a
-/// call and how it ended).
+/// the oldest `steps` of its steps.
+///
+/// It is a count from the start, so a later summary covers everything an earlier one did, and a
+/// step is never split from its result (a step line is a call and how it ended).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Covers {
     /// The person's turns it stands for, from the first.

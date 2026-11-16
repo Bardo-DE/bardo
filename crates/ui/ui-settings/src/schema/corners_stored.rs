@@ -84,10 +84,12 @@ impl TryFrom<StoredHotCorners> for HotCornerSettings {
 }
 
 /// The corners of a file's `hot_corners` table that still hold the older one word take their
-/// `*_command` key in: `top_left = "command"` with `top_left_command = "x"` becomes the list
-/// `[{ action = "command", command = "x" }]` (an empty `x`, an empty list), and the `*_command`
-/// key of any word corner goes. The lenient reader then sees only keys the type writes back, so
-/// an older command is kept and its key is not reported as unknown.
+/// `*_command` key in.
+///
+/// `top_left = "command"` with `top_left_command = "x"` becomes the list `[{ action = "command",
+/// command = "x" }]` (an empty `x`, an empty list), and the `*_command` key of any word corner
+/// goes. The lenient reader then sees only keys the type writes back, so an older command is kept
+/// and its key is not reported as unknown.
 ///
 /// A program that edits the settings file as TOML text (Settings) runs the same fold before it
 /// reads the corners.

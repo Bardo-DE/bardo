@@ -14,9 +14,10 @@ const MAX_PRINTED_BYTES: u64 = 16 * 1024 * 1024;
 /// tokens; the token classes are the ones `tokens_html` and the Markdown renderer write.
 const PAGE_STYLE: &str = include_str!("print.css");
 
-/// `doc` as a whole HTML page, ready to print: Markdown is rendered (a local image becomes a
-/// `data:` URL, since the printer loads nothing else), source code is highlighted, plain text is
-/// kept as it is. Blocking: reads the file.
+/// `doc` as a whole HTML page, ready to print.
+///
+/// Markdown is rendered (a local image becomes a `data:` URL, since the printer loads nothing
+/// else), source code is highlighted, plain text is kept as it is. Blocking: reads the file.
 pub fn printable_html(doc: &HtmlDoc, highlighter: &Highlighter) -> Result<String, TextError> {
     let (file, body) = match doc {
         HtmlDoc::Markdown(file) => {

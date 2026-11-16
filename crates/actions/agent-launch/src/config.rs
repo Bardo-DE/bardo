@@ -1,6 +1,8 @@
-//! The agent programs the person lists in `agents.toml`: what to run, how it takes a model
-//! endpoint or a key, what it may see and write, and how much network it gets. Nothing starts
-//! unless `agent.acp.agents` is on and the program is listed here; a prompt cannot add one.
+//! The agent programs the person lists in `agents.toml`: what to run, how it takes a model endpoint
+//! or a key, what it may see and write, and how much network it gets.
+//!
+//! Nothing starts unless `agent.acp.agents` is on and the program is listed here; a prompt cannot
+//! add one.
 //!
 //! ```toml
 //! [[agent]]

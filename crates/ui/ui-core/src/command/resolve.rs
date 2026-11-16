@@ -22,10 +22,11 @@ pub fn chord_of(platform: Platform, key: &Key, modifiers: Modifiers) -> Option<C
     Some(key_input(key, modifiers)?.normalise(platform))
 }
 
-/// Whether the key press is typing: a character or editing key with no Ctrl, Alt or Super
-/// (Shift alone still types). The test a type-ahead list or a text field uses before it takes
-/// the key. A character string longer than one character (an IME's commit) types like any
-/// character.
+/// Whether the key press is typing: a character or editing key with no Ctrl, Alt or Super (Shift
+/// alone still types).
+///
+/// The test a type-ahead list or a text field uses before it takes the key. A character string
+/// longer than one character (an IME's commit) types like any character.
 #[must_use]
 pub fn types_text(key: &Key, modifiers: Modifiers) -> bool {
     let stand_in = || matches!(key, Key::Character(_)).then_some(ChordKey::Char('a'));

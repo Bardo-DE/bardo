@@ -7,9 +7,10 @@ use ui_core::word::Word;
 
 use super::key::{KeyKind, KeySpec};
 
-/// The id of a control, as a schema writes it: `control = "picture"` on a key. Kept as text so a
-/// schema that names a control this build does not have still reads; [`Control::named`] says
-/// whether it is known.
+/// The id of a control, as a schema writes it: `control = "picture"` on a key.
+///
+/// Kept as text so a schema that names a control this build does not have still reads;
+/// [`Control::named`] says whether it is known.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ControlName(pub String);

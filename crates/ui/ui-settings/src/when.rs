@@ -8,9 +8,10 @@ use crate::region::ResolvedHours;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct UnixSecs(pub i64);
 
-/// How far the local zone is ahead of UTC, in whole seconds (negative west of Greenwich). The
-/// offset at `now` is used for both instants, so a change of daylight time between them can move
-/// a time by an hour.
+/// How far the local zone is ahead of UTC, in whole seconds (negative west of Greenwich).
+///
+/// The offset at `now` is used for both instants, so a change of daylight time between them can
+/// move a time by an hour.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct UtcOffset(pub i32);
 
@@ -81,8 +82,9 @@ fn time_of_day(minute: i64, hours: ResolvedHours) -> String {
 }
 
 /// `modified` as a list cell words it at `now`: "Today at 14:05" for the same local day,
-/// "Yesterday" for the day before, otherwise a short date with its year ("Oct 5, 2026"). A time
-/// in the future is a date too. Month names are English until the desktop has a locale seam.
+/// "Yesterday" for the day before, otherwise a short date with its year ("Oct 5, 2026").
+///
+/// A time in the future is a date too. Month names are English until the desktop has a locale seam.
 #[must_use]
 pub fn list_date(
     modified: UnixSecs,

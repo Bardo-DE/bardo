@@ -53,11 +53,12 @@ pub struct Plan {
     pub index_docs: Vec<String>,
 }
 
-/// Computes the closure of `scope`: events whose subjects or sources match (including `Area`
-/// payloads by their `things`, and messages by the entities they name), facts linked to any of
-/// them or to the thing, transitively, pending facts, procedures and index documents. Pure over
-/// the snapshots; a log that cannot be read gives an empty event list (the service checks the
-/// log before it plans).
+/// Computes the closure of `scope`.
+///
+/// That is the events whose subjects or sources match (including `Area` payloads by their `things`,
+/// and messages by the entities they name), facts linked to any of them or to the thing,
+/// transitively, pending facts, procedures and index documents. Pure over the snapshots; a log that
+/// cannot be read gives an empty event list (the service checks the log before it plans).
 pub fn plan_forget(
     space: &SpaceId,
     scope: &ForgetScope,

@@ -5,9 +5,10 @@ use crate::units::Px;
 use std::path::{Path, PathBuf};
 use ui_style::icon::retint::IconStyle;
 
-/// The sizes every app ships in every style, each drawn directly (design/08 2.11): the
-/// freedesktop sizes, their `@2` up to 256@2, and the 1.5x sizes 36, 48, 72, 96. `tools/icons`
-/// checks its `SHIP_PX` against this list.
+/// The sizes every app ships in every style, each drawn directly (design/08 2.11): the freedesktop
+/// sizes, their `@2` up to 256@2, and the 1.5x sizes 36, 48, 72, 96.
+///
+/// `tools/icons` checks its `SHIP_PX` against this list.
 pub const APP_ICON_PX: [u16; 13] = [16, 22, 24, 32, 36, 44, 48, 64, 72, 96, 128, 256, 512];
 
 /// An app's directory name under the apps directory (`mail`, `files`): lower-case ASCII
@@ -31,9 +32,10 @@ impl AppIconName {
     }
 }
 
-/// The sizes to try for a `size` px icon, in order: the shipped sizes at or above it,
-/// smallest first (a larger file scales down cleanly), then the ones below it, largest first
-/// (a request above 512 still gets the 512).
+/// The sizes to try for a `size` px icon, in order.
+///
+/// The shipped sizes at or above it come first, smallest first (a larger file scales down cleanly),
+/// then the ones below it, largest first (a request above 512 still gets the 512).
 #[must_use]
 pub fn sizes_to_try(size: Px) -> Vec<u16> {
     let larger = APP_ICON_PX.into_iter().filter(|px| *px >= size.0);
@@ -67,11 +69,12 @@ pub fn find_app_icon(
         .find(|path| probe(path) == Presence::Present)
 }
 
-/// The file that draws `app` at `size` physical pixels (the icon's size times the output
-/// scale) in `style`: `<apps>/<app>/<px>.png`, `<app>/muted/<px>.png` or
-/// `<app>/monochrome/<px>.png`, the exact size or the nearest shipped one above it, under the
-/// directory [`apps_dir`] finds. `None` when there is no set, no such app, or a name that
-/// [`AppIconName::parse`] refuses.
+/// The file that draws `app` at `size` physical pixels (the icon's size times the output scale) in
+/// `style`.
+///
+/// It is `<apps>/<app>/<px>.png`, `<app>/muted/<px>.png` or `<app>/monochrome/<px>.png`, the exact
+/// size or the nearest shipped one above it, under the directory [`apps_dir`] finds. `None` when
+/// there is no set, no such app, or a name that [`AppIconName::parse`] refuses.
 pub fn app_icon_path(app: &str, size: Px, style: IconStyle) -> Option<PathBuf> {
     let app = AppIconName::parse(app)?;
     find_app_icon(&apps_dir()?, &app, size, style, a_file)

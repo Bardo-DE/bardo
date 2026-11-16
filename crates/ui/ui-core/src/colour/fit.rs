@@ -1,8 +1,8 @@
-//! `oklch(l c h)` into 8-bit sRGB the way the approved CSS prototype does it: chroma stepped
-//! down by [`GAMUT_STEP`] until the colour fits (within half a thousandth), each channel
-//! rounded with JavaScript's `Math.round`. The Space palette, the accent band and the emoji
-//! discs all draw their derived colours through it, so they agree with the prototype to the
-//! byte.
+//! `oklch(l c h)` into 8-bit sRGB the way the approved CSS prototype does it.
+//!
+//! Chroma is stepped down by [`GAMUT_STEP`] until the colour fits (within half a thousandth), each
+//! channel rounded with JavaScript's `Math.round`. The Space palette, the accent band and the emoji
+//! discs all draw their derived colours through it, so they agree with the prototype to the byte.
 
 use super::oklab::{Oklab, Oklch};
 use super::srgb::{LinearRgb, encode};

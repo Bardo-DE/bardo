@@ -1,6 +1,7 @@
-//! Clipping known text to a known width in Rust, where `.ds-truncate`'s mask fade will not do:
-//! the hover card's two-line message, a fixed-width snippet (design/04-COMPONENTS.md
-//! "Truncation", design/02-TYPE.md section 10).
+//! Clipping known text to a known width in Rust, where `.ds-truncate`'s mask fade will not do.
+//!
+//! Examples are the hover card's two-line message and a fixed-width snippet
+//! (design/04-COMPONENTS.md "Truncation", design/02-TYPE.md section 10).
 
 /// The mark that ends clipped text.
 const ELLIPSIS: char = '…';

@@ -21,9 +21,10 @@ use crate::session::SessionSettings;
 use crate::voice::VoiceSettings;
 use crate::wallpaper::WallpaperSettings;
 
-/// The keys whose struct sits on another page but which design/22 §5 puts on Power: the lock
-/// grace answers bardo-shell's idle service, not the locker (§3.19). The derive gives a whole
-/// struct one page, so [`schemas`] moves these keys after it.
+/// The keys whose struct sits on another page but which design/22 §5 puts on Power: the lock grace
+/// answers bardo-shell's idle service, not the locker (§3.19).
+///
+/// The derive gives a whole struct one page, so [`schemas`] moves these keys after it.
 pub const POWER_KEYS_ELSEWHERE: &[&str] = &["session.lock_grace_s"];
 
 /// `schema` with every key named in `paths` moved to `page`.

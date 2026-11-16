@@ -328,10 +328,11 @@ fn flag_line(line: &str, base: usize, out: &mut Vec<BriefFlag>) {
     }
 }
 
-/// The stretches of `text` the person should look at: links, addresses and places, lines that
-/// open with an order, and lines about files, accounts or keys. A plain word list, no model, so
-/// nothing in the text can talk it out of showing. It is advice: text it does not flag is not
-/// claimed safe.
+/// The stretches of `text` the person should look at: links, addresses and places, lines that open
+/// with an order, and lines about files, accounts or keys.
+///
+/// A plain word list, no model, so nothing in the text can talk it out of showing. It is advice:
+/// text it does not flag is not claimed safe.
 #[must_use]
 pub fn flag_brief(text: &str) -> Vec<BriefFlag> {
     let mut flags = Vec::new();

@@ -1,7 +1,8 @@
 //! The process seam: starts one confined agent process and hands back its stdio, as a transport for
-//! the SDK's client role, and a handle. `BwrapProcs` is the real one (bubblewrap as a separate
-//! program, never linked); `fake::FakeProcs` records the run it was asked for and returns an
-//! in-memory pipe.
+//! the SDK's client role, and a handle.
+//!
+//! `BwrapProcs` is the real one (bubblewrap as a separate program, never linked); `fake::FakeProcs`
+//! records the run it was asked for and returns an in-memory pipe.
 
 use agent_acp_server::capped_lines;
 use agent_client_protocol::{Agent, Client, ConnectTo, Error};
@@ -53,9 +54,11 @@ pub trait Procs: Send {
     ) -> impl Future<Output = Result<(Self::Transport, Self::Proc), ProcFault>> + Send;
 }
 
-/// Bubblewrap with its hardening: resource limits and the syscall filter, as the detected
-/// sandbox says. A sandbox that cannot apply them never reaches here (detection fails), and one
-/// that cannot start the agent under them starts nothing.
+/// Bubblewrap with its hardening: resource limits and the syscall filter, as the detected sandbox
+/// says.
+///
+/// A sandbox that cannot apply them never reaches here (detection fails), and one that cannot start
+/// the agent under them starts nothing.
 #[derive(Debug, Clone)]
 pub struct BwrapProcs {
     sandbox: BwrapSandbox,

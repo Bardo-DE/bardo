@@ -1,10 +1,11 @@
-//! A timed pure state machine. A [`Machine`] decides `(state, input, time, settings, outside
-//! facts) -> (state, outputs)` and says when it wants to be stepped again with no input. It never
-//! reads a clock and never does anything: `ui_components::machine::use_machine` keeps the state (or the
-//! caller does, with `use_machine_in`), stamps every step with a
-//! [`FrameClock`](crate::time::stamp::FrameClock), sleeps until [`Machine::wake`] on
-//! `ui_core::time`'s clock (so a harness's virtual clock drives it), and hands each output to
-//! the surface's effect handler.
+//! A timed pure state machine.
+//!
+//! A [`Machine`] decides `(state, input, time, settings, outside facts) -> (state, outputs)` and
+//! says when it wants to be stepped again with no input. It never reads a clock and never does
+//! anything: `ui_components::machine::use_machine` keeps the state (or the caller does, with
+//! `use_machine_in`), stamps every step with a [`FrameClock`](crate::time::stamp::FrameClock),
+//! sleeps until [`Machine::wake`] on `ui_core::time`'s clock (so a harness's virtual clock drives
+//! it), and hands each output to the surface's effect handler.
 //!
 //! Time is [`Stamp`], the one "when" of the design system (milliseconds from an origin the
 //! caller keeps); every timed machine in the pure crates (`ui-behaviour`, `ui-motion`) takes it.

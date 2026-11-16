@@ -1,6 +1,8 @@
 //! The one way library code starts a task that outlives its caller: it hands the future to a
-//! [`Spawner`] it was given, and never names a runtime. `ui-blitz`'s `launch` owns the runtime and
-//! provides the implementor; a test drives an inline one.
+//! [`Spawner`] it was given, and never names a runtime.
+//!
+//! `ui-blitz`'s `launch` owns the runtime and provides the implementor; a test drives an inline
+//! one.
 
 use std::pin::Pin;
 

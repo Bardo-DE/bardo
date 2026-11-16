@@ -123,9 +123,10 @@ pub enum Anchor {
     Centre,
 }
 
-/// Where a sheet for a call in an editor's session goes: the app behind the editor's connection,
-/// as the router saw it (never a name the editor wrote about itself), and the session, so the
-/// editor's process shows the sheet in the right one.
+/// Where a sheet for a call in an editor's session goes.
+///
+/// That is the app behind the editor's connection, as the router saw it (never a name the editor
+/// wrote about itself), and the session, so the editor's process shows the sheet in the right one.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EditorRoute {
     /// The editor's app.
@@ -216,9 +217,11 @@ pub struct ConfirmRequest {
     pub brief: Option<BriefSheet>,
 }
 
-/// What every sheet must say. A consumer outside docket builds a request from this with
-/// [`ConfirmRequest::new`] rather than a struct literal, so a field added with a default (like
-/// `always`) never breaks it; a new required field lands here, and breaking then is intended.
+/// What every sheet must say.
+///
+/// A consumer outside docket builds a request from this with [`ConfirmRequest::new`] rather than a
+/// struct literal, so a field added with a default (like `always`) never breaks it; a new required
+/// field lands here, and breaking then is intended.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConfirmParts {
     /// Which confirmation.

@@ -1,7 +1,9 @@
-//! Scrolling along the vertical axis, as plain values: where the scroller is, how much it shows and
-//! how long its content is, and what follows from that (the offset kept in range, the rows a
-//! windowed list must draw, whether the end is near). A host publishes the observed state; a
-//! component's model changes it with these functions and asks the host to scroll to the result.
+//! Scrolling along the vertical axis, as plain values.
+//!
+//! Where the scroller is, how much it shows and how long its content is, and what follows from that
+//! (the offset kept in range, the rows a windowed list must draw, whether the end is near). A host
+//! publishes the observed state; a component's model changes it with these functions and asks the
+//! host to scroll to the result.
 
 use super::units::Px;
 use std::ops::Range;
@@ -29,8 +31,10 @@ pub struct ScrollSpan {
 }
 
 /// The scroll offset that shows `item` in a scrollport `view` long scrolled to `current`, moving
-/// the least: unchanged when the item is inside the view (or the view inside it), else the item's
-/// nearer edge aligned with the view's (CSSOM `scrollIntoView` with `block: nearest`).
+/// the least.
+///
+/// Unchanged when the item is inside the view (or the view inside it), else the item's nearer edge
+/// aligned with the view's (CSSOM `scrollIntoView` with `block: nearest`).
 #[must_use]
 pub fn nearest_scroll(current: f32, view: f32, item: ScrollSpan) -> f32 {
     let end = item.start + item.length;

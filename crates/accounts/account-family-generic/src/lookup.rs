@@ -158,22 +158,22 @@ impl Lookup for MailLookup {
     async fn resumed(
         &self,
         seams: &Seams<'_>,
-        typed: Typed,
+        mid: Typed,
         answers: Vec<FieldAnswer>,
     ) -> Outcome<Typed> {
         let Ok(manual) = parse_manual(&answers) else {
             return Outcome::Fail(SignInFault::Unreadable);
         };
-        let login = LoginName(manual.login().map_or(typed.login.clone(), str::to_owned));
-        let mut credential = Credential::Password(typed.password.clone());
+        let login = LoginName(manual.login().map_or(mid.login.clone(), str::to_owned));
+        let mut credential = Credential::Password(mid.password.clone());
         let built = match &manual {
             Manual::Imap(servers) => {
-                proto_mail::typed(Family::Imap, servers, &typed.login, seams.spec)
+                proto_mail::typed(Family::Imap, servers, &mid.login, seams.spec)
                     .ok()
                     .ok_or(SignInFault::Unreadable)
             }
             Manual::Pop3(servers) => {
-                proto_mail::typed(Family::Pop3, servers, &typed.login, seams.spec)
+                proto_mail::typed(Family::Pop3, servers, &mid.login, seams.spec)
                     .ok()
                     .ok_or(SignInFault::Unreadable)
             }
@@ -187,7 +187,7 @@ impl Lookup for MailLookup {
         match built {
             Ok((endpoints, claims)) => Outcome::Known(Located {
                 credential,
-                label: typed.login,
+                label: mid.login,
                 endpoints,
                 claims,
             }),

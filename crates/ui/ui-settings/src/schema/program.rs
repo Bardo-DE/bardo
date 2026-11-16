@@ -13,8 +13,9 @@ use super::key::KeySpec;
 use super::page_decl::PageDecl;
 use crate::xdg;
 
-/// The directory name a schema's owning program installs under: `bardo`, `shell`, `mailo`. The
-/// derive reads it off the first path segment of `#[settings(file = "...")]`
+/// The directory name a schema's owning program installs under: `bardo`, `shell`, `mailo`.
+///
+/// The derive reads it off the first path segment of `#[settings(file = "...")]`
 /// (`crates/ds-settings-derive/src/gen_struct.rs`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -27,9 +28,11 @@ pub struct AppId(pub String);
 pub struct FilePath(pub String);
 
 /// The top-level tables of a program's settings file that the program owns but that are not
-/// settings (an engine list, a probe table): the Settings app and bardo-settings's unknown-key check
-/// leave every key under them alone (design/22-SETTINGS.md section 9.2). Empty for most files,
-/// and then not written.
+/// settings.
+///
+/// Examples are an engine list and a probe table: the Settings app and bardo-settings's unknown-key
+/// check leave every key under them alone (design/22-SETTINGS.md section 9.2). Empty for most
+/// files, and then not written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ForeignTables(pub Vec<String>);
@@ -121,12 +124,13 @@ const SCHEMA_CAP: ReadCap = ReadCap::kib(256);
 /// The suffix of a schema file's name; what precedes it is the program it describes.
 const SCHEMA_SUFFIX: &str = ".settings.toml";
 
-/// Every valid schema found directly under each of `dirs` (section 9.3: "discover every
-/// `*.settings.toml` under `$XDG_DATA_DIRS/bardo/settings/`..."), in directory order and then
-/// file name order within a directory. A directory that does not exist is skipped silently (a
-/// normal `$XDG_DATA_DIRS` entry with nothing installed yet); a file that exists but will not
-/// parse is skipped with a warning on stderr (section 9.2, "a schema without a program... is
-/// skipped with a warning").
+/// Every valid schema found directly under each of `dirs`, in directory order and then file name
+/// order within a directory.
+///
+/// Section 9.3 says "discover every `*.settings.toml` under `$XDG_DATA_DIRS/bardo/settings/`...". A
+/// directory that does not exist is skipped silently (a normal `$XDG_DATA_DIRS` entry with nothing
+/// installed yet); a file that exists but will not parse is skipped with a warning on stderr
+/// (section 9.2, "a schema without a program... is skipped with a warning").
 ///
 /// A schema is admitted only for what its location says it is:
 ///
@@ -212,13 +216,14 @@ fn admit(path: &Path, found: &[Schema]) -> Result<Schema, String> {
     Ok(schema)
 }
 
-/// Every `$XDG_DATA_DIRS`-listed `<dir>/bardo/settings`, then `$XDG_DATA_HOME/bardo/settings`
-/// last, the directories [`discover`] scans (section 9.2). The user's directory comes last
-/// because [`discover`] keeps the first schema it finds for a program: a user's own install can
-/// add a program but never shadow an installed one (and so never change which of its keys an
-/// agent may set). Falls back to the XDG defaults
-/// (`~/.local/share`, `/usr/local/share:/usr/share`) when the variable is unset, per the XDG
-/// base directory specification.
+/// Every `$XDG_DATA_DIRS`-listed `<dir>/bardo/settings`, then `$XDG_DATA_HOME/bardo/settings` last,
+/// the directories [`discover`] scans (section 9.2).
+///
+/// The user's directory comes last because [`discover`] keeps the first schema it finds for a
+/// program: a user's own install can add a program but never shadow an installed one (and so never
+/// change which of its keys an agent may set). Falls back to the XDG defaults (`~/.local/share`,
+/// `/usr/local/share:/usr/share`) when the variable is unset, per the XDG base directory
+/// specification.
 #[must_use]
 pub fn data_dirs() -> Vec<PathBuf> {
     data_dirs_from(
@@ -228,10 +233,11 @@ pub fn data_dirs() -> Vec<PathBuf> {
     )
 }
 
-/// [`data_dirs`] with the environment handed in: `xdg_data_home` (else `home`'s `.local/share`)
-/// and `xdg_data_dirs` (else `/usr/local/share:/usr/share`), so a caller that owns its
-/// directories, or a test, names them itself. The XDG rules (`crate::xdg`) apply: an empty or
-/// relative value is ignored.
+/// [`data_dirs`] with the environment handed in.
+///
+/// `xdg_data_home` (else `home`'s `.local/share`) and `xdg_data_dirs` (else
+/// `/usr/local/share:/usr/share`), so a caller that owns its directories, or a test, names them
+/// itself. The XDG rules (`crate::xdg`) apply: an empty or relative value is ignored.
 #[must_use]
 pub fn data_dirs_from(
     xdg_data_home: Option<std::ffi::OsString>,

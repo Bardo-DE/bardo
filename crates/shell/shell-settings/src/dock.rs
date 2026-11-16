@@ -1,7 +1,8 @@
-//! `dock.*` (design/22 §3.5, §4.1; design/10 §10.6). The Dock page shows the keys §5
-//! lists; the magnified size is Advanced. Timing is constants in the dock's crates, and the rest of
-//! the geometry (gap, padding, corner, dot, separator) is stylesheet tokens (`DockToken`). Pinned
-//! apps are placements in `layout.toml`, not here.
+//! `dock.*` (design/22 §3.5, §4.1; design/10 §10.6).
+//!
+//! The Dock page shows the keys §5 lists; the magnified size is Advanced. Timing is constants in
+//! the dock's crates, and the rest of the geometry (gap, padding, corner, dot, separator) is
+//! stylesheet tokens (`DockToken`). Pinned apps are placements in `layout.toml`, not here.
 
 use serde::{Deserialize, Serialize};
 use ui_settings::Px;

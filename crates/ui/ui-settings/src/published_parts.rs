@@ -1,7 +1,9 @@
-//! An app's published style parts as data: what a person's stylesheet may rely on in that app
-//! (`ui_components::selectors::AppSelectors`), installed beside its settings schema
-//! as `$XDG_DATA_DIRS/bardo/selectors/<app>.toml`, so Settings can check a stylesheet against
-//! every app's parts without linking any app (customization design section 7.3).
+//! An app's published style parts as data.
+//!
+//! That is what a person's stylesheet may rely on in that app
+//! (`ui_components::selectors::AppSelectors`), installed beside its settings schema as
+//! `$XDG_DATA_DIRS/bardo/selectors/<app>.toml`, so Settings can check a stylesheet against every
+//! app's parts without linking any app (customization design section 7.3).
 //!
 //! The file is two keys: `app = "shell"` and `classes = ["shell-bar", "shell-bar-item", ...]`. A
 //! class outside the app's own `<app>-` prefix is dropped on both write and read, so a file cannot
@@ -69,10 +71,11 @@ fn own(app: &str, classes: Vec<String>) -> Vec<String> {
         .collect()
 }
 
-/// Every installed app's parts in `dirs` (see [`parts_dirs_from`]). The first file for an app
-/// wins, as for settings schemas, so a person's own directory (last) can add an app but not
-/// replace an installed one's parts. A file not named for its app, unreadable or malformed is
-/// skipped with a line on standard error.
+/// Every installed app's parts in `dirs` (see [`parts_dirs_from`]).
+///
+/// The first file for an app wins, as for settings schemas, so a person's own directory (last) can
+/// add an app but not replace an installed one's parts. A file not named for its app, unreadable or
+/// malformed is skipped with a line on standard error.
 pub fn discover_parts(dirs: &[PathBuf]) -> Vec<PublishedParts> {
     let mut found: Vec<PublishedParts> = Vec::new();
     for dir in dirs {

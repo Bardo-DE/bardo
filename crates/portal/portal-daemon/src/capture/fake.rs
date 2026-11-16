@@ -7,9 +7,11 @@ use std::time::Duration;
 
 use super::{Arrival, CaptureError, CaptureSource, CapturedFrame, FrameData, PixelFormat};
 
-/// Serves a fixed run of frames, then [`CaptureError::Ended`]. A `None` in the run is a spell in
-/// which the picture did not change: [`CaptureSource::next_frame`] answers [`Arrival::Quiet`] once
-/// for it, and [`CaptureSource::frame`] (which waits for a change) steps over it.
+/// Serves a fixed run of frames, then [`CaptureError::Ended`].
+///
+/// A `None` in the run is a spell in which the picture did not change:
+/// [`CaptureSource::next_frame`] answers [`Arrival::Quiet`] once for it, and
+/// [`CaptureSource::frame`] (which waits for a change) steps over it.
 #[derive(Debug)]
 pub struct FakeCapture {
     size: Extent,

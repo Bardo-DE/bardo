@@ -382,8 +382,9 @@ pub fn file_uri(path: &Path) -> Result<String, ShotError> {
 /// How many names are tried before giving up on finding a free one.
 const NAME_TRIES: u32 = 100;
 
-/// Take a screenshot: grab, compose, encode, and write a new file in the pictures folder. The
-/// file is created, never overwritten, readable by its owner only (the home folder may be open
+/// Take a screenshot: grab, compose, encode, and write a new file in the pictures folder.
+///
+/// The file is created, never overwritten, readable by its owner only (the home folder may be open
 /// to others), and appears under its final name only when it is whole. Returns the file's path.
 pub fn take(setup: &ScreenshotSetup, seq: u32) -> Result<PathBuf, ShotError> {
     if !setup.pictures.is_absolute() {

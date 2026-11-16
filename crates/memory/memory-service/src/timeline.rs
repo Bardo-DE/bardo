@@ -5,9 +5,10 @@ use memory_core::{
 };
 use memory_store::{BodyState, Entry};
 
-/// The timeline row of `entry` in `space`. `erased_by` says why an erased body is gone and
-/// `derived_facts` how many facts came from the event: the service knows both (the audit log
-/// and the fact graph); the entry alone does not.
+/// The timeline row of `entry` in `space`.
+///
+/// `erased_by` says why an erased body is gone and `derived_facts` how many facts came from the
+/// event: the service knows both (the audit log and the fact graph); the entry alone does not.
 #[must_use]
 pub fn timeline_entry(
     space: &SpaceId,

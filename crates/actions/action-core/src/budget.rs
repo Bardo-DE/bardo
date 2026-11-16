@@ -119,10 +119,11 @@ pub struct Cost {
 
 const WINDOW_SECONDS: i64 = 60;
 
-/// Spends one call from the ledger, or names the budget that is out. Money the model turns have
-/// spent (`charge_turn`) counts against `spend` here, so a session over its cap, or whose
-/// spend cannot be counted, makes no more calls. The wall budget counts from
-/// the session's start; the per-minute budget counts calls in a one-minute window.
+/// Spends one call from the ledger, or names the budget that is out.
+///
+/// Money the model turns have spent (`charge_turn`) counts against `spend` here, so a session over
+/// its cap, or whose spend cannot be counted, makes no more calls. The wall budget counts from the
+/// session's start; the per-minute budget counts calls in a one-minute window.
 pub fn charge(
     ledger: &Ledger,
     budget: &Budget,

@@ -7,9 +7,10 @@
 use crate::word::Word;
 use serde::{Deserialize, Serialize};
 
-/// Whether a control takes input (design/30 section 1.5). `Disabled` adds `aria-disabled="true"`
-/// and drops the handler; `Busy` adds `aria-busy="true"`, drops the handler as well, and is
-/// where a control's busy accessory shows.
+/// Whether a control takes input (design/30 section 1.5).
+///
+/// `Disabled` adds `aria-disabled="true"` and drops the handler; `Busy` adds `aria-busy="true"`,
+/// drops the handler as well, and is where a control's busy accessory shows.
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word, serde::Serialize, serde::Deserialize,
 )]
@@ -25,8 +26,10 @@ pub enum Availability {
 }
 
 /// How much attention a message asks for (design/30 section 2.9): the tone of an inline banner and
-/// of a status label. `Info` is the accent, the others are the status colours `--ok`, `--warn`
-/// and `--danger`. `data-severity`.
+/// of a status label.
+///
+/// `Info` is the accent, the others are the status colours `--ok`, `--warn` and `--danger`.
+/// `data-severity`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 pub enum Severity {
     /// A note: the accent.
@@ -52,10 +55,11 @@ pub enum HasPopup {
     Listbox,
 }
 
-/// Where an item stands in a drag (design/04-COMPONENTS.md section 34): the place under the
-/// pointer that would take the drop writes `data-drop="target"`, every other place that could
-/// take it `data-drop="accepts"`, the thing being dragged `data-drag="source"`, and every
-/// other item neither.
+/// Where an item stands in a drag (design/04-COMPONENTS.md section 34).
+///
+/// The place under the pointer that would take the drop writes `data-drop="target"`, every other
+/// place that could take it `data-drop="accepts"`, the thing being dragged `data-drag="source"`,
+/// and every other item neither.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 pub enum DropState {
     /// Not part of the drag.
@@ -72,9 +76,10 @@ pub enum DropState {
     Source,
 }
 
-/// On, off or mixed (`NSControl.StateValue`, design/30 section 1.5): a toggle's value, a
-/// toggle button's pressed state, a menu item's check mark. `aria-pressed` on a button,
-/// `aria-checked` on a toggle or a menu item; `Mixed` writes `"mixed"`.
+/// On, off or mixed (`NSControl.StateValue`, design/30 section 1.5): a toggle's value, a toggle
+/// button's pressed state, a menu item's check mark.
+///
+/// `aria-pressed` on a button, `aria-checked` on a toggle or a menu item; `Mixed` writes `"mixed"`.
 ///
 /// `Toggle` has no mixed look: it refuses `Mixed` and draws it as `Off`.
 #[derive(
@@ -151,10 +156,12 @@ pub struct RowState {
 #[serde(transparent)]
 pub struct Fraction(pub u16);
 
-/// A percentage, 0 to 100, clamped on construction: `IdleDim`'s `level`
-/// (design/22-SETTINGS.md section 3.24 `idle.dim_level_pct`). `ds` may not depend on
-/// `ui-settings` (`scripts/check-boundary.sh`), so the two `Percent` types agree by shape, not
-/// by sharing a definition; a caller already holding `ui_settings::Percent` passes its `.0`.
+/// A percentage, 0 to 100, clamped on construction: `IdleDim`'s `level` (design/22-SETTINGS.md
+/// section 3.24 `idle.dim_level_pct`).
+///
+/// `ds` may not depend on `ui-settings` (`scripts/check-boundary.sh`), so the two `Percent` types
+/// agree by shape, not by sharing a definition; a caller already holding `ui_settings::Percent`
+/// passes its `.0`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(from = "u8", into = "u8")]
 pub struct Percent(pub u8);
@@ -230,8 +237,10 @@ pub enum ShortcutKey {
 }
 
 /// A key combination, modifiers first, rendered as glyphs with no separator: `⌃T`
-/// (design/04-COMPONENTS.md O-2). Bind a standard one with [`Shortcut::standard`] and an app's
-/// own with [`Shortcut::custom`], which refuses a reserved combination (design/27 section 6.2).
+/// (design/04-COMPONENTS.md O-2).
+///
+/// Bind a standard one with [`Shortcut::standard`] and an app's own with [`Shortcut::custom`],
+/// which refuses a reserved combination (design/27 section 6.2).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub struct Shortcut(pub Vec<ShortcutKey>);
 

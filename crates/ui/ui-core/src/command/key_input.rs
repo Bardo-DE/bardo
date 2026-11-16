@@ -89,10 +89,12 @@ pub fn chord_key_of(key: &Key) -> Option<ChordKey> {
     ChordKey::from_logical(&logical_key(key)?)
 }
 
-/// The key press `key` with `modifiers` held, as chordkit takes it. The key is as the toolkit
-/// reports it: a shifted symbol (`!` for Shift+1) is not unshifted here, so an app chord that
-/// holds Shift with a symbol key reads the base key from the physical code. `AltGraph` rides in
-/// the flags: it types a character, and chordkit then reads no chord from the press.
+/// The key press `key` with `modifiers` held, as chordkit takes it.
+///
+/// The key is as the toolkit reports it: a shifted symbol (`!` for Shift+1) is not unshifted here,
+/// so an app chord that holds Shift with a symbol key reads the base key from the physical code.
+/// `AltGraph` rides in the flags: it types a character, and chordkit then reads no chord from the
+/// press.
 #[must_use]
 pub fn key_input(key: &Key, modifiers: Modifiers) -> Option<KeyInput> {
     KeyInput::from_logical(flags_of(modifiers), &logical_key(key)?)

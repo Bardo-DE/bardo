@@ -1,7 +1,8 @@
-//! The rules every `CheckpointStore` keeps, written once for each store's test to run (the
-//! feature `testing`). Its checks panic by design. A store's test supplies a `Workbench`: a
-//! folder the store works on and the means to change it from outside, as a person or an agent
-//! would.
+//! The rules every `CheckpointStore` keeps, written once for each store's test to run (the feature
+//! `testing`).
+//!
+//! Its checks panic by design. A store's test supplies a `Workbench`: a folder the store works on
+//! and the means to change it from outside, as a person or an agent would.
 
 use crate::ids::WorkRoot;
 use crate::store::{ApplyAsk, CheckpointStore, DropAsk, PlanAsk, StoreFault, TakeAsk};

@@ -36,9 +36,11 @@ impl Format {
     }
 }
 
-/// A type stored as one settings file. [`crate::Store`] is the only way to load, save and watch
-/// it: a file is read leniently (a bad value costs only its own key), written atomically, and a
-/// key the type does not read is reported and never kept.
+/// A type stored as one settings file.
+///
+/// [`crate::Store`] is the only way to load, save and watch it: a file is read leniently (a bad
+/// value costs only its own key), written atomically, and a key the type does not read is reported
+/// and never kept.
 pub trait SettingsDoc:
     Serialize + DeserializeOwned + Default + Clone + PartialEq + 'static
 {

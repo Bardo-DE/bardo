@@ -7,9 +7,10 @@ use super::key::KeySpec;
 use super::program::Schema;
 
 /// The one key across every schema in `schemas` whose label or help text mentions `query`
-/// (case-insensitive), or [`None`] if no key matches or more than one does — a query that
-/// resolves to two keys is not a deep link, it is a search result list, which is a different
-/// feature.
+/// (case-insensitive).
+///
+/// [`None`] if no key matches or more than one does: a query that resolves to two keys is not a
+/// deep link, it is a search result list, which is a different feature.
 #[must_use]
 pub fn deep_link<'a>(schemas: &'a [Schema], query: &str) -> Option<&'a KeySpec> {
     let query = query.to_lowercase();

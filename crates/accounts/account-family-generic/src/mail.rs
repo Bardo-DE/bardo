@@ -59,10 +59,9 @@ pub(super) async fn look(
             }
             None => Looked::Ask,
         },
-        // Another provider describes this address; this family cannot sign in to it, so the
-        // person may still name the servers.
-        Ok(Outcome::Provider(_)) => Looked::Ask,
         Err(not_found) if not_found.offline() => Looked::Offline,
-        Err(_) => Looked::Ask,
+        // Another provider describes this address (this family cannot sign in to it) or the
+        // lookup found nothing: the person may still name the servers.
+        Ok(Outcome::Provider(_)) | Err(_) => Looked::Ask,
     }
 }

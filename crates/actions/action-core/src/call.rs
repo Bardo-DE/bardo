@@ -35,11 +35,12 @@ pub struct Invocation {
     pub space: SpaceId,
 }
 
-/// What `IntentProvider1.Perform` carries: the [`Invocation`] and, beside it, the `classified`
-/// effect the router gated on (per-call actions only) and the activation
-/// token the launcher sent with the call (a capability the app may redeem with the compositor to
-/// take focus). The JSON is the invocation's with a top-level `"activation"` when there is a
-/// token, so a provider that reads only an `Invocation` is unaffected.
+/// What `IntentProvider1.Perform` carries: the [`Invocation`] and what travels beside it.
+///
+/// Beside the [`Invocation`] go the `classified` effect the router gated on (per-call actions only)
+/// and the activation token the launcher sent with the call (a capability the app may redeem with
+/// the compositor to take focus). The JSON is the invocation's with a top-level `"activation"` when
+/// there is a token, so a provider that reads only an `Invocation` is unaffected.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ActivatedInvocation {
     /// The call.

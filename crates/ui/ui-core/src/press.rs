@@ -1,7 +1,8 @@
-//! What a pressable control hands its caller: which pointer button activated it, the
-//! modifiers held and where it happened. A tray icon's right-click has to reach the app as a
-//! secondary press, its middle click as a middle one, and SNI's `ContextMenu(x, y)` and
-//! `Activate(x, y)` want the point.
+//! What a pressable control hands its caller: which pointer button activated it, the modifiers held
+//! and where it happened.
+//!
+//! A tray icon's right-click has to reach the app as a secondary press, its middle click as a
+//! middle one, and SNI's `ContextMenu(x, y)` and `Activate(x, y)` want the point.
 
 use crate::geometry::units::Point;
 use keyboard_types::Modifiers;

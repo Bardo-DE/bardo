@@ -7,10 +7,11 @@ use ui_core::time::stamp::Stamp;
 
 use crate::dir::Dir;
 
-/// The switcher machine: its phase. `sel` indexes the MRU app list the caller keeps; the machine
-/// sees only how many apps it holds (the step's context, the current app first) and answers with
-/// indexes into it, so the compositor runs it over its own app ids and the shell over its
-/// launcher's.
+/// The switcher machine: its phase.
+///
+/// `sel` indexes the MRU app list the caller keeps; the machine sees only how many apps it holds
+/// (the step's context, the current app first) and answers with indexes into it, so the compositor
+/// runs it over its own app ids and the shell over its launcher's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Phase {
     /// Nothing held.

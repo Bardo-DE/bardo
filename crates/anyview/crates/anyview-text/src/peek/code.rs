@@ -25,9 +25,11 @@ pub struct CodePeeked {
     pub syntax: SyntaxName,
 }
 
-/// The peek of the kind `Code`. It builds the highlighter's syntax set on every call, because a
-/// peek has nowhere to keep one (the trait takes no state); the set loads its syntaxes lazily, so
-/// this costs only the syntax the file uses.
+/// The peek of the kind `Code`.
+///
+/// It builds the highlighter's syntax set on every call, because a peek has nowhere to keep one
+/// (the trait takes no state); the set loads its syntaxes lazily, so this costs only the syntax the
+/// file uses.
 #[derive(Debug, Clone, Copy)]
 pub struct CodePeek;
 

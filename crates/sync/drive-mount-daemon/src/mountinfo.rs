@@ -26,9 +26,10 @@ impl Entry {
     }
 }
 
-/// Ends FUSE connection `connection` at once (`<connections>/<n>/abort`): every call waiting on
-/// it fails, and whoever serves it sees it gone, even while a file there is still open. Only the
-/// person who mounted it may, and only where `fusectl` is mounted and writable.
+/// Ends FUSE connection `connection` at once (`<connections>/<n>/abort`): every call waiting on it
+/// fails, and whoever serves it sees it gone, even while a file there is still open.
+///
+/// Only the person who mounted it may, and only where `fusectl` is mounted and writable.
 ///
 /// # Errors
 /// The connection is not there, or its abort file cannot be written.

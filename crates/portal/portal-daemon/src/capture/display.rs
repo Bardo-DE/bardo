@@ -46,8 +46,9 @@ impl Handout {
     }
 }
 
-/// Which display socket to connect to: the session's own, else an absolute socket path. The
-/// session's own is first asked of the compositor as a connection handed to this portal
+/// Which display socket to connect to: the session's own, else an absolute socket path.
+///
+/// The session's own is first asked of the compositor as a connection handed to this portal
 /// ([`DisplayName::with_portal_line`]).
 #[derive(Clone, Debug)]
 pub struct DisplayName(Target);

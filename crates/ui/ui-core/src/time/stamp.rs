@@ -5,8 +5,10 @@ use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
 
 /// A monotonic instant in whole milliseconds since an arbitrary origin (a daemon's or a hook's
-/// start). Machines take it as an argument and never read a clock; only the code that feeds a
-/// machine turns a clock reading into one, with [`FrameClock`].
+/// start).
+///
+/// Machines take it as an argument and never read a clock; only the code that feeds a machine turns
+/// a clock reading into one, with [`FrameClock`].
 ///
 /// Milliseconds, not a `Duration`: every timer the machines ask for (hover intent, a hold, a
 /// deadline) is specified in milliseconds, and a whole number compares and serialises exactly.

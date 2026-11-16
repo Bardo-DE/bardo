@@ -1,7 +1,10 @@
-//! The real porter link: the accounts service's launcher interface (`account_client_dbus::Launcher`) and its
-//! `org.bardo.Inference1.Agents` (`OpenEndpoint`, `CloseEndpoint`) over the bus. Built only with
-//! the `dbus` feature. A secret passes through here once, from the bus reply into the caller's
-//! hands, and is in no log: `SecretText`'s `Debug` shows nothing, and no error carries a value.
+//! The real porter link: the accounts service's launcher interface
+//! (`account_client_dbus::Launcher`) and its `org.bardo.Inference1.Agents` (`OpenEndpoint`,
+//! `CloseEndpoint`) over the bus.
+//!
+//! Built only with the `dbus` feature. A secret passes through here once, from the bus reply into
+//! the caller's hands, and is in no log: `SecretText`'s `Debug` shows nothing, and no error carries
+//! a value.
 
 use crate::accounts::{
     AccountFault, Accounts, AskKind, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish,

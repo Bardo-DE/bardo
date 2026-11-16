@@ -1,7 +1,9 @@
-//! The words of the keys and chords a client sends: the brightness and volume keys (`Request::Display`),
-//! and the switcher's and the workspaces' words, which the command line turns into actions. The
-//! shell's own actions (lock, a screenshot, the dock's pins, the switcher's chord, the workspaces)
-//! are `Request::Do`.
+//! The words of the keys and chords a client sends: the brightness and volume keys
+//! (`Request::Display`), and the switcher's and the workspaces' words, which the command line turns
+//! into actions.
+//!
+//! The shell's own actions (lock, a screenshot, the dock's pins, the switcher's chord, the
+//! workspaces) are `Request::Do`.
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
@@ -48,9 +50,10 @@ pub enum VolumeRequest {
     ToggleMute,
 }
 
-/// The words of `bardo-shell switcher ...`: the window switcher shortcuts run
-/// `next` / `prev`; `cancel` and `commit` are for scripts and for a compositor
-/// that tells bardo-shell about the modifier's release some other way.
+/// The words of `bardo-shell switcher ...`.
+///
+/// The window switcher shortcuts run `next` / `prev`; `cancel` and `commit` are for scripts and for
+/// a compositor that tells bardo-shell about the modifier's release some other way.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 pub enum SwitcherRequest {

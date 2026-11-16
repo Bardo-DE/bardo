@@ -20,10 +20,11 @@ const FINISH_MS: (u64, u64) = (100, 400);
 const BAND_CAP: i32 = 250;
 
 /// Which way a lift commits, from the distance `p` travelled since the gesture's Space and the
-/// lift's velocity `v` (both positive toward later Spaces): `1`, `-1`, or `0` to return. Past
-/// half a page (`|p| >= 500`) it commits in `p`'s direction unless a reverse flick
-/// (`v × sign(p) <= -1500`); under half a page only on a forward flick (`v × sign(p) >= 1500`).
-/// No movement commits nothing, and it never commits more than one Space.
+/// lift's velocity `v` (both positive toward later Spaces): `1`, `-1`, or `0` to return.
+///
+/// Past half a page (`|p| >= 500`) it commits in `p`'s direction unless a reverse flick (`v ×
+/// sign(p) <= -1500`); under half a page only on a forward flick (`v × sign(p) >= 1500`). No
+/// movement commits nothing, and it never commits more than one Space.
 #[must_use]
 pub fn commit(p: PageMilli, v: PagesPerSecMilli) -> i32 {
     let direction = p.0.signum();
@@ -48,9 +49,10 @@ pub fn finish_duration(dp: PageMilli, v: PagesPerSecMilli) -> Duration {
     Duration::from_millis(ms.clamp(FINISH_MS.0, FINISH_MS.1))
 }
 
-/// Where the row is drawn for a raw position `p` on a row whose Spaces run from `first` to
-/// `last`: inside the row, `p` itself; past an end, `bound + 0.25 (p − bound)`, at most a quarter
-/// page past it (half a page past shows an eighth).
+/// Where the row is drawn for a raw position `p` on a row whose Spaces run from `first` to `last`.
+///
+/// Inside the row, `p` itself; past an end, `bound + 0.25 (p − bound)`, at most a quarter page past
+/// it (half a page past shows an eighth).
 #[must_use]
 pub fn rubber(p: PageMilli, first: u32, last: u32) -> PageMilli {
     let (low, high) = (PageMilli::of_space(first), PageMilli::of_space(last));

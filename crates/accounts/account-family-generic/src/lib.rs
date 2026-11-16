@@ -25,7 +25,7 @@ fn fault(error: account_generic_proto::Error) -> account_sheet::SignInFault {
         account_generic_proto::Error::Unreachable | account_generic_proto::Error::Insecure => {
             SignInFault::Unreachable
         }
-        _ => SignInFault::Unreadable,
+        account_generic_proto::Error::Unreadable => SignInFault::Unreadable,
     }
 }
 
@@ -76,6 +76,7 @@ impl<L> GenericProvider<L> {
     /// The same provider that tries a typed password at the mail server through `connect`
     /// (default: TCP and TLS over the platform's roots). A test's is a connector that trusts a
     /// scratch CA.
+    #[must_use]
     pub fn with_connect(self, connect: impl account_proxy::Connect + 'static) -> Self {
         Self {
             login: login::SharedLogin::new(connect),

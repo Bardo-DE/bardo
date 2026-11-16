@@ -29,9 +29,10 @@ pub enum Job {
     Undo,
 }
 
-/// Where the queue sends its reports, each with the tag its job was submitted with. Any
-/// `Fn(&T, OpEvent)` that can be shared between threads is one. An [`OpEvent::Asking`] waits for
-/// an answer sent with [`Worker::answer`].
+/// Where the queue sends its reports, each with the tag its job was submitted with.
+///
+/// Any `Fn(&T, OpEvent)` that can be shared between threads is one. An [`OpEvent::Asking`] waits
+/// for an answer sent with [`Worker::answer`].
 pub trait Sink<T>: Send + Sync {
     /// Takes one event of the job tagged `tag`; called from the queue's thread.
     fn send(&self, tag: &T, event: OpEvent);
@@ -43,9 +44,11 @@ impl<T, F: Fn(&T, OpEvent) + Send + Sync> Sink<T> for F {
     }
 }
 
-/// A queue of work on a thread of its own. Every job carries a tag of the caller's choosing (the
-/// tab that asked, say), and every event of that job is sent to the [`Sink`] with it. Dropping the
-/// queue lets the thread finish what it is doing and end.
+/// A queue of work on a thread of its own.
+///
+/// Every job carries a tag of the caller's choosing (the tab that asked, say), and every event of
+/// that job is sent to the [`Sink`] with it. Dropping the queue lets the thread finish what it is
+/// doing and end.
 #[derive(Debug)]
 pub struct Worker<T> {
     jobs: Sender<(Job, T)>,

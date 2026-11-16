@@ -42,9 +42,10 @@ pub(crate) enum Kind {
     Whole,
 }
 
-/// A stamp of the text: two stamps are equal exactly when no edit lies between them (an undo
-/// that comes back to a text has its stamp again). The saved text has one, so "has unsaved
-/// changes" is a comparison.
+/// A stamp of the text: two stamps are equal exactly when no edit lies between them (an undo that
+/// comes back to a text has its stamp again).
+///
+/// The saved text has one, so "has unsaved changes" is a comparison.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct Revision(u64);
 

@@ -1,6 +1,7 @@
-//! `companion.*`: the summon and the confirmation (design/22 §3.30). The double tap's window and
-//! how long a focused app has to take a summon are the machines' own constants; the service
-//! reads [`params`] once per load.
+//! `companion.*`: the summon and the confirmation (design/22 §3.30).
+//!
+//! The double tap's window and how long a focused app has to take a summon are the machines' own
+//! constants; the service reads [`params`] once per load.
 
 use std::time::Duration;
 

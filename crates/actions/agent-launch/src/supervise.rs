@@ -1,8 +1,9 @@
-//! The launcher's long-running duties: register the programs, then listen. A revocation ends the
-//! process that holds the credential (accountd cannot reach the child's copy of a key). A login
-//! or logout request runs the agent's own command visibly and reports only the coarse outcome.
-//! A login waits on a person, so each runs in a task of its own under a deadline: a revocation
-//! is handled the moment it is heard, never behind one.
+//! The launcher's long-running duties: register the programs, then listen.
+//!
+//! A revocation ends the process that holds the credential (accountd cannot reach the child's copy
+//! of a key). A login or logout request runs the agent's own command visibly and reports only the
+//! coarse outcome. A login waits on a person, so each runs in a task of its own under a deadline: a
+//! revocation is handled the moment it is heard, never behind one.
 
 use crate::accounts::{Accounts, Heard, LoginAsk};
 use crate::child::Registry;

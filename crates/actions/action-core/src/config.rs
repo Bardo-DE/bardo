@@ -57,9 +57,11 @@ pub const TASK_POLICY_MAX: Seconds = Seconds(3600);
 /// How long the undo history keeps what the assistant did (24 hours).
 pub const UNDO_KEEP: Seconds = Seconds(24 * 3600);
 
-/// What one session may spend. The spend cap (`agent.budget.spend_microusd`) starts at nothing:
-/// the turn after any reported charge stops. A cap compares the charges providers reported and
-/// stops the next turn, never the current one; a turn that reported no charge never meets it.
+/// What one session may spend.
+///
+/// The spend cap (`agent.budget.spend_microusd`) starts at nothing: the turn after any reported
+/// charge stops. A cap compares the charges providers reported and stops the next turn, never the
+/// current one; a turn that reported no charge never meets it.
 pub const STANDARD_BUDGET: Budget = Budget {
     calls: Count(200),
     writes: Count(100),
@@ -76,9 +78,10 @@ pub const STANDARD_BUDGET: Budget = Budget {
     }),
 };
 
-/// How many tokens each section of the planner's working set may use
-/// (`companion.budget.*`, measured against the real tokenizer later). The sections run from
-/// most stable to least so the engine reuses its cached prefix.
+/// How many tokens each section of the planner's working set may use (`companion.budget.*`,
+/// measured against the real tokenizer later).
+///
+/// The sections run from most stable to least so the engine reuses its cached prefix.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct AssemblerBudget {
     /// 1: rules, persona and the action cards (2500).

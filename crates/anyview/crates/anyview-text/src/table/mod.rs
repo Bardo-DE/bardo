@@ -64,10 +64,12 @@ pub enum HeaderMode {
     Absent,
 }
 
-/// A table. A delimited file read with [`Table::read`] is not held: its rows are parsed from the
-/// file a window at a time, and a row that cannot be read (the file went away) reads as empty.
-/// Rows keep the cells they were written with: a short row stays short, so [`Table::cell`] is the
-/// way to read a position that may not exist.
+/// A table.
+///
+/// A delimited file read with [`Table::read`] is not held: its rows are parsed from the file a
+/// window at a time, and a row that cannot be read (the file went away) reads as empty. Rows keep
+/// the cells they were written with: a short row stays short, so [`Table::cell`] is the way to read
+/// a position that may not exist.
 #[derive(Debug, Clone)]
 pub struct Table {
     separator: Separator,

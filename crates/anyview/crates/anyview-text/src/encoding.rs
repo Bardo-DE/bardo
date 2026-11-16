@@ -113,9 +113,11 @@ pub enum Coverage {
     Prefix,
 }
 
-/// The encoding of a file whose first bytes are `head`: a byte-order mark if there is one, else
-/// UTF-8 when the bytes are valid UTF-8, else the legacy encoding `chardetng` guesses from the first
-/// [`DETECT_BYTES`] of them (Windows-1252 when they say nothing more).
+/// The encoding of a file whose first bytes are `head`.
+///
+/// A byte-order mark if there is one, else UTF-8 when the bytes are valid UTF-8, else the legacy
+/// encoding `chardetng` guesses from the first [`DETECT_BYTES`] of them (Windows-1252 when they say
+/// nothing more).
 #[must_use]
 pub fn detect(head: &[u8], coverage: Coverage) -> Detected {
     const MARKS: &[(&[u8], TextEncoding)] = &[

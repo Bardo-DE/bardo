@@ -1,6 +1,8 @@
-//! The agent's environment, built from nothing. The launcher's own environment is never
-//! inherited: the child gets a fixed base, the entry's plain `set` variables, and the one model
-//! variable pair its route needs. The key is put in the child only, by the route:
+//! The agent's environment, built from nothing.
+//!
+//! The launcher's own environment is never inherited: the child gets a fixed base, the entry's
+//! plain `set` variables, and the one model variable pair its route needs. The key is put in the
+//! child only, by the route:
 //!
 //! - endpoint (P4): the base URL and inferd's per-session token. Never the account's key.
 //! - handoff (P2): the key under `key_env`.

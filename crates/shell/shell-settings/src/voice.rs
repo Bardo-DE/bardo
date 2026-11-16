@@ -1,7 +1,9 @@
-//! `voice.*`: hold-to-talk with the companion. `hold_to_talk` is the one control; `consent` is the
-//! answer to the first-use sheet, state rather than a control, and `voiced` reads both from this
-//! file on every hold (its `[voice]` table), so their forms are its contract
-//! ([`VoiceConsent`]'s serde). The service reads them through [`params`].
+//! `voice.*`: hold-to-talk with the companion.
+//!
+//! `hold_to_talk` is the one control; `consent` is the answer to the first-use sheet, state rather
+//! than a control, and `voiced` reads both from this file on every hold (its `[voice]` table), so
+//! their forms are its contract ([`VoiceConsent`]'s serde). The service reads them through
+//! [`params`].
 
 use serde::{Deserialize, Serialize};
 use shell_model::voice::VoiceParams;

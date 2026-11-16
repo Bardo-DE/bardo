@@ -5,9 +5,10 @@ use anyview_core::{
     TextSource,
 };
 
-/// The jobs that write `choice` for the text file `file`: a PDF is its page laid out (a source
-/// file is printed highlighted), plain text is the file as it is. A kind that has no text
-/// document (a picture, a recording) has no jobs.
+/// The jobs that write `choice` for the text file `file`: a PDF is its page laid out (a source file
+/// is printed highlighted), plain text is the file as it is.
+///
+/// A kind that has no text document (a picture, a recording) has no jobs.
 #[must_use]
 pub fn plan_export(file: &FilePath, sniffed: &Sniffed, choice: TextExport) -> Vec<ExportJob> {
     match choice {

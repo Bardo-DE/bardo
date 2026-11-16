@@ -138,9 +138,10 @@ pub fn page_hits(html: &str, needle: &Needle, keep: usize) -> PageHits {
     found
 }
 
-/// `html` with every hit of `needle` wrapped in `<mark>`, the one numbered `current` (counting
-/// from zero, as [`page_hits`] counts) marked `data-current` with that number, so a page marked for
-/// another hit is told from it.
+/// `html` with every hit of `needle` wrapped in `<mark>`.
+///
+/// The one numbered `current` (counting from zero, as [`page_hits`] counts) is marked
+/// `data-current` with that number, so a page marked for another hit is told from it.
 #[must_use]
 pub fn mark_page(html: &str, needle: &Needle, current: Option<usize>) -> String {
     let mut out = String::with_capacity(html.len() + 64);

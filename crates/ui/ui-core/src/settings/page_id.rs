@@ -4,9 +4,11 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-/// A page's id: `dock`, `wallpaper`, `mouse-and-gestures`. Lower-case words joined by hyphens;
-/// the id is the page's address in a deep link (`page:wallpaper`) and in a schema's `[[page]]`
-/// table. A third-party program's page is named by its app id.
+/// A page's id: `dock`, `wallpaper`, `mouse-and-gestures`.
+///
+/// Lower-case words joined by hyphens; the id is the page's address in a deep link
+/// (`page:wallpaper`) and in a schema's `[[page]]` table. A third-party program's page is named by
+/// its app id.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct PageId(pub String);

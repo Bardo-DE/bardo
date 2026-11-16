@@ -3,9 +3,10 @@
 //! Palette derivation needs this at runtime, and the legibility tests measure every token pair
 //! with it.
 
-/// The WCAG 2.1 contrast ratio between two literal hex colours (`#rgb` or `#rrggbb`,
-/// any case). `None` when either is not one: the caller must treat that as a failure
-/// naming the token, never as a pair to skip.
+/// The WCAG 2.1 contrast ratio between two literal hex colours (`#rgb` or `#rrggbb`, any case).
+///
+/// `None` when either is not one: the caller must treat that as a failure naming the token, never
+/// as a pair to skip.
 #[must_use]
 pub fn ratio(fore: &str, back: &str) -> Option<f64> {
     let fore = relative_luminance(fore)?;

@@ -1,6 +1,8 @@
-//! What a preset (`profile` in `agents.toml`) adds to a run to confine what a program brings of
-//! its own: environment variables, and extra `_meta` for `session/new`. The router never knows
-//! which program it is; `agent_acp_host` only carries the `_meta` the launcher hands back.
+//! What a preset (`profile` in `agents.toml`) adds to a run to confine what a program brings of its
+//! own: environment variables, and extra `_meta` for `session/new`.
+//!
+//! The router never knows which program it is; `agent_acp_host` only carries the `_meta` the
+//! launcher hands back.
 //!
 //! Claude Code reads no managed-settings file outside its hosted mode (its
 //! `CLAUDE_CODE_MANAGED_SETTINGS_PATH` is ignored), so the settings go the way its ACP adapter

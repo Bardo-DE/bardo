@@ -101,11 +101,12 @@ pub enum PaletteOut {
     Run(PaletteIndex),
 }
 
-/// How many rows the query now in the field lists. Matching and ranking happen outside, each time
-/// the query changes; the palette only walks the list, in the order the caller gives it. A caller
-/// with a fixed order (a new-tab bar: open tabs, then history, then search) puts its rows in that
-/// order and the palette keeps it; rows that arrive later from a provider are the next params,
-/// followed by [`PaletteIn::Refreshed`].
+/// How many rows the query now in the field lists.
+///
+/// Matching and ranking happen outside, each time the query changes; the palette only walks the
+/// list, in the order the caller gives it. A caller with a fixed order (a new-tab bar: open tabs,
+/// then history, then search) puts its rows in that order and the palette keeps it; rows that
+/// arrive later from a provider are the next params, followed by [`PaletteIn::Refreshed`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct PaletteParams {
     /// How many ranked rows there are.

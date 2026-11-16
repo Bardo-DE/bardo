@@ -70,9 +70,10 @@ fn locale_hours(locale: &str) -> ResolvedHours {
     }
 }
 
-/// The locale name the session uses for times, by POSIX precedence: `LC_ALL`, then `LC_TIME`,
-/// then `LANG`, each ignored when empty; `C` when none is set. The caller reads the environment
-/// and hands the three values in.
+/// The locale name the session uses for times, by POSIX precedence: `LC_ALL`, then `LC_TIME`, then
+/// `LANG`, each ignored when empty; `C` when none is set.
+///
+/// The caller reads the environment and hands the three values in.
 #[must_use]
 pub fn time_locale<'a>(
     lc_all: Option<&'a str>,

@@ -1,9 +1,10 @@
-//! The agent's own login, run where the person can see it. accountd asks; we run the command the
-//! entry names for that program (a terminal emulator running the agent's `login`, say), outside
-//! the agent sandbox, as the person's own program, with stdio nowhere: docket reads no output, no
-//! URL, no code and no token. The report is a coarse outcome from a closed set, and `Ready`
-//! means only that the command ended well; whether the agent is signed in is the agent's word,
-//! found when a session starts.
+//! The agent's own login, run where the person can see it.
+//!
+//! accountd asks; we run the command the entry names for that program (a terminal emulator running
+//! the agent's `login`, say), outside the agent sandbox, as the person's own program, with stdio
+//! nowhere: docket reads no output, no URL, no code and no token. The report is a coarse outcome
+//! from a closed set, and `Ready` means only that the command ended well; whether the agent is
+//! signed in is the agent's word, found when a session starts.
 
 use crate::accounts::AskKind;
 use crate::config::Entry;

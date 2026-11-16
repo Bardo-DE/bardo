@@ -1,6 +1,7 @@
-//! How much a module may send. A module is another program: a reply that carries a million rows or
-//! a megabyte label would stall a page that draws one widget per row, so the client refuses what
-//! no real module sends.
+//! How much a module may send.
+//!
+//! A module is another program: a reply that carries a million rows or a megabyte label would stall
+//! a page that draws one widget per row, so the client refuses what no real module sends.
 
 use super::{LiveError, LiveSchema};
 use crate::schema::{KeyKind, KeySpec};

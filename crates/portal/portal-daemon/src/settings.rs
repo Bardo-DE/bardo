@@ -1,6 +1,8 @@
 //! `org.freedesktop.impl.portal.Settings`: the appearance apps ask for (light or dark, accent,
-//! contrast). The values and their wire numbers are `portal_core::settings_values`; the
-//! appearance itself comes from the desktop's settings through [`AppearanceSource`].
+//! contrast).
+//!
+//! The values and their wire numbers are `portal_core::settings_values`; the appearance itself
+//! comes from the desktop's settings through [`AppearanceSource`].
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -98,9 +100,10 @@ const ACCENTS: [(&str, [u8; 3]); 8] = [
     ("graphite", [142, 142, 147]),
 ];
 
-/// The appearance a document's `[appearance]` table holds: `theme` (`light`, `dark`, anything
-/// else follows the desktop's default) and `accent` (one of the eight accent words). Every other
-/// line, table and bad value is ignored, so a half-written file never fails a read.
+/// The appearance a document's `[appearance]` table holds: `theme` (`light`, `dark`, anything else
+/// follows the desktop's default) and `accent` (one of the eight accent words).
+///
+/// Every other line, table and bad value is ignored, so a half-written file never fails a read.
 #[must_use]
 pub fn parse_appearance(text: &str) -> Appearance {
     let mut found = UNCHOSEN;

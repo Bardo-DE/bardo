@@ -25,8 +25,10 @@ fn set(vars: &mut Vec<EnvVar>, name: &str, value: &str) {
 }
 
 /// The confined run of `entry`'s command with `args` added and `env` set over its variables, in
-/// `folder`. None for an entry whose model comes from a key or an endpoint (it has no sign-in of
-/// its own to run), or one whose paths do not fit the sandbox.
+/// `folder`.
+///
+/// None for an entry whose model comes from a key or an endpoint (it has no sign-in of its own to
+/// run), or one whose paths do not fit the sandbox.
 #[must_use]
 pub fn login_run(
     entry: &Entry,

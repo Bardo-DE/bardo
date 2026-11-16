@@ -7,9 +7,10 @@ use crate::schema::KeyPath;
 
 pub use ui_peer::{SenderName, Verdict};
 
-/// Who is calling: the sender's bus name and the connection that received the call, so the
-/// implementer can resolve the peer's role its own way (accountd's `Peer` registry, or the bus's
-/// connection credentials).
+/// Who is calling: the sender's bus name and the connection that received the call.
+///
+/// The implementer can then resolve the peer's role its own way (accountd's `Peer` registry, or the
+/// bus's connection credentials).
 #[derive(Debug, Clone)]
 pub struct Caller {
     pub sender: SenderName,

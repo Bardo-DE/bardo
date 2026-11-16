@@ -65,8 +65,9 @@ fn report(loaded: &Loaded<AppearanceFile>) {
 }
 
 /// Load the settings `store` holds, read the desktop's preferences from `system`, and keep both
-/// live, their watches running on `spawner`. Unknown and invalid keys in the file are printed to
-/// stderr as they are read.
+/// live, their watches running on `spawner`.
+///
+/// Unknown and invalid keys in the file are printed to stderr as they are read.
 ///
 /// The person's own file comes first: it is published at once and watched before the desktop is
 /// asked anything, so a portal that is slow, wedged or absent never delays the appearance the

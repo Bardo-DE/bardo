@@ -24,7 +24,7 @@ use account_sheet::{FieldAnswer, Manual, SignInFault, parse_manual};
 fn outgoing_changed(current: &Manual, typed: &Manual, password: Option<&SecretText>) -> bool {
     let outgoing = |manual: &Manual| match manual {
         Manual::Imap(servers) | Manual::Pop3(servers) => Some(servers.outgoing.clone()),
-        _ => None,
+        Manual::Jmap(_) => None,
     };
     password.is_some() || outgoing(current) != outgoing(typed) || current.login() != typed.login()
 }

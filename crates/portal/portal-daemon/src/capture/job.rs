@@ -7,13 +7,14 @@ use portal_core::{CastSource, OutputFacts};
 use super::wl::{Link, Wire};
 use super::{CaptureError, DisplayName};
 
-/// One job of capturing: a screenshot, the lookups and streams of one screen-cast start. The
-/// compositor limits how often one caller may ask for a connection, so a job asks for one, on its
-/// first step, and runs every step on it: listing the sources, reading the outputs, and each
+/// One job of capturing: a screenshot, the lookups and streams of one screen-cast start.
+///
+/// The compositor limits how often one caller may ask for a connection, so a job asks for one, on
+/// its first step, and runs every step on it: listing the sources, reading the outputs, and each
 /// output or window it captures ([`ExtCapture::open`](super::ExtCapture::open)). Where the
 /// compositor hands none out, the session's own display is used instead, and that is likewise
-/// decided once for the job, not once per step. A capture that goes on running (a share) keeps
-/// the connection open for as long as it runs.
+/// decided once for the job, not once per step. A capture that goes on running (a share) keeps the
+/// connection open for as long as it runs.
 #[derive(Debug)]
 pub struct Job {
     display: DisplayName,

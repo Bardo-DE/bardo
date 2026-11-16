@@ -1,7 +1,9 @@
-//! Which rows of a list or a table are selected, and how a click or a key changes it (Finder's
-//! list view, Numbers, `NSTableView`). Pure arithmetic over row indexes, so any app's table can
-//! use it and a table of a million rows stays cheap: the selection is a handful of ranges, never
-//! one entry per row, and "is this row selected" is a binary search.
+//! Which rows of a list or a table are selected, and how a click or a key changes it (Finder's list
+//! view, Numbers, `NSTableView`).
+//!
+//! Pure arithmetic over row indexes, so any app's table can use it and a table of a million rows
+//! stays cheap: the selection is a handful of ranges, never one entry per row, and "is this row
+//! selected" is a binary search.
 //!
 //! A selection has an anchor (where a shift-click or shift-arrow measures from) and a cursor (the
 //! row the keys rest on, and the one that moved last). A [`Pick`] says which row was reached and

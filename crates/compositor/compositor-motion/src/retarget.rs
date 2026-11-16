@@ -35,10 +35,12 @@ pub fn retarget(
     retarget_driven(book, from, to, cause, level, now, &BTreeSet::new())
 }
 
-/// [`retarget`] while a swipe drives the Space strips of the outputs in `driven`: the renderer
-/// draws those rows at the swipe's own position (its rubber band and its ease-out finish), so
-/// their strip legs go to the new target at once instead of sliding as well, and a commit does
-/// not slide twice. Windows and the other outputs' strips travel as `retarget` has them.
+/// [`retarget`] while a swipe drives the Space strips of the outputs in `driven`.
+///
+/// The renderer draws those rows at the swipe's own position (its rubber band and its ease-out
+/// finish), so their strip legs go to the new target at once instead of sliding as well, and a
+/// commit does not slide twice. Windows and the other outputs' strips travel as `retarget` has
+/// them.
 #[must_use]
 pub fn retarget_driven(
     book: MotionBook,

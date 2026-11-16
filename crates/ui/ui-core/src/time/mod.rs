@@ -1,5 +1,6 @@
-//! Time, the one way the design system reads it: [`now`] for "when is it", [`sleep`] for "wait
-//! this long", never `Instant::now()` or an ad-hoc thread sleep (ARCHITECTURE.md "Repo rules").
+//! Time, the one way the design system reads it: [`now`] for "when is it", [`sleep`] for "wait this
+//! long", never `Instant::now()` or an ad-hoc thread sleep (ARCHITECTURE.md "Repo rules").
+//!
 //! Spawning the task that waits is `ui_style::task`.
 //!
 //! Both read the clock installed on this thread: the wall clock by default, or a
@@ -19,7 +20,8 @@ use std::time::Duration;
 /// last frame of the animation it waits for is painted.
 pub const FRAME_SLACK: Duration = Duration::from_millis(34);
 
-/// One frame at 60 Hz, rounded down: how often a motion driven from Rust (a battery ring's
-/// sweep, `use_level_run`) recomputes what it draws. Not a design duration: the
-/// motion's length comes from its token; this is only the sampling rate.
+/// One frame at 60 Hz, rounded down: how often a motion driven from Rust (a battery ring's sweep,
+/// `use_level_run`) recomputes what it draws.
+///
+/// Not a design duration: the motion's length comes from its token; this is only the sampling rate.
 pub const FRAME_TICK: Duration = Duration::from_millis(16);

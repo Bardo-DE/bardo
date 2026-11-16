@@ -8,8 +8,10 @@ use portal_core::{DeviceKinds, Keep, PersistMode};
 use crate::access::Question;
 
 /// The question the person sees: which app, which input it would take over, and how long a yes
-/// lasts. `remembered` is what a yes will be kept for (`DoNot` for an app that is asked every
-/// time), so the person never gives a lasting yes without being told.
+/// lasts.
+///
+/// `remembered` is what a yes will be kept for (`DoNot` for an app that is asked every time), so
+/// the person never gives a lasting yes without being told.
 #[must_use]
 pub fn remote_control_question(
     app_label: &str,

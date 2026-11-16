@@ -21,8 +21,10 @@ use table::LineTable;
 pub const LINE_CUT: char = '\u{2026}';
 
 /// A text file indexed for windowing: its encoding, its line count, and the means to read any run
-/// of lines. Opening streams the file once; asking for lines afterwards reads only those lines
-/// and, at worst, the 63 before them.
+/// of lines.
+///
+/// Opening streams the file once; asking for lines afterwards reads only those lines and, at worst,
+/// the 63 before them.
 #[derive(Debug, Clone)]
 pub struct TextLines<B: ReadAt> {
     bytes: B,

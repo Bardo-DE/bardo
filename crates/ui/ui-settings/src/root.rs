@@ -84,9 +84,11 @@ const DESKTOP_LEVEL: &str = "bardo";
 const FOREIGN_PROGRAMS: &[&str] = &["mailo"];
 
 /// The folder of the program named by the first part of a settings file id (`shell` of
-/// `shell/settings.toml`) inside `base`: the same place [`AppName::under`] gives, for a name only
-/// known at run time. `bardo` is the desktop-wide level; a program of [`FOREIGN_PROGRAMS`] sits
-/// directly in `base`; every other one is a program of the desktop.
+/// `shell/settings.toml`) inside `base`.
+///
+/// It is the same place [`AppName::under`] gives, for a name only known at run time. `bardo` is the
+/// desktop-wide level; a program of [`FOREIGN_PROGRAMS`] sits directly in `base`; every other one
+/// is a program of the desktop.
 #[must_use]
 pub fn app_folder(base: &Path, app: &str) -> PathBuf {
     if app == DESKTOP_LEVEL {

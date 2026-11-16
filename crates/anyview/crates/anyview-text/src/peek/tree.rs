@@ -31,10 +31,12 @@ pub struct TreePeeked {
     pub encoding: TextCodec,
 }
 
-/// The peek of the kind `Tree`. The file is scanned as far as the budget reaches, never parsed
-/// whole: a JSON document larger than the budget shows the top-level keys and items that fit, and
-/// counts them as a lower bound. Only a document that is one value larger than the budget (a
-/// single enormous string) is refused with [`TextError::JsonOverBudget`].
+/// The peek of the kind `Tree`.
+///
+/// The file is scanned as far as the budget reaches, never parsed whole: a JSON document larger
+/// than the budget shows the top-level keys and items that fit, and counts them as a lower bound.
+/// Only a document that is one value larger than the budget (a single enormous string) is refused
+/// with [`TextError::JsonOverBudget`].
 #[derive(Debug, Clone, Copy)]
 pub struct TreePeek;
 

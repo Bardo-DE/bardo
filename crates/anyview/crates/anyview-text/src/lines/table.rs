@@ -12,11 +12,12 @@ use std::ops::Range;
 /// Lines between two recorded offsets.
 const STRIDE: u32 = 64;
 
-/// The most bytes of one line a window holds; the rest of a longer line is read past and dropped, so
-/// a file that is one enormous line costs this much memory rather than its size. A person writes
-/// lines of a few hundred bytes, and a minified bundle or an inlined data URI that passes a
-/// mebibyte (the same size as the span [`DETECT_BYTES`](crate::DETECT_BYTES) reads to name the encoding) is not read
-/// line by line anyway. Even, so a UTF-16 unit never splits.
+/// The most bytes of one line a window holds; the rest of a longer line is read past and dropped,
+/// so a file that is one enormous line costs this much memory rather than its size.
+///
+/// A person writes lines of a few hundred bytes, and a minified bundle or an inlined data URI that
+/// passes a mebibyte (the same size as the span [`DETECT_BYTES`](crate::DETECT_BYTES) reads to name
+/// the encoding) is not read line by line anyway. Even, so a UTF-16 unit never splits.
 pub const MAX_LINE_BYTES: usize = 1 << 20;
 
 /// Bytes read at a time while scanning. A multiple of 2 so a UTF-16 unit never splits.

@@ -21,9 +21,10 @@ impl OutputLayout for FixedLayout {
     }
 }
 
-/// The layout the compositor reports now. Each call reads the outputs that exist at that moment,
-/// so a screen plugged in or out, moved or rescaled since the last screenshot is accounted for
-/// without any state to keep current.
+/// The layout the compositor reports now.
+///
+/// Each call reads the outputs that exist at that moment, so a screen plugged in or out, moved or
+/// rescaled since the last screenshot is accounted for without any state to keep current.
 #[derive(Clone, Copy, Debug)]
 pub struct LiveLayout;
 

@@ -1,9 +1,11 @@
-//! The standard shortcuts: every combination the platform reserves for a meaning, and the few
-//! this desktop reserves for itself (design/27-HIG-PARITY.md section 6.2; design/06-INTERACTIONS.md
-//! section 2). The actions and their chords are chordkit's (`StandardAction`, its conventions
-//! table); this file binds them to the design vocabulary: [`Shortcut::standard`] is an action's
-//! chord on this desktop, written in Mac terms (Command is [`ShortcutKey::Super`], drawn `⌘`), and
-//! [`Shortcut::custom`] asks chordkit's registration whether an app may take a combination.
+//! The standard shortcuts: every combination the platform reserves for a meaning, and the few this
+//! desktop reserves for itself.
+//!
+//! See design/27-HIG-PARITY.md section 6.2 and design/06-INTERACTIONS.md section 2. The actions and
+//! their chords are chordkit's (`StandardAction`, its conventions table); this file binds them to
+//! the design vocabulary: [`Shortcut::standard`] is an action's chord on this desktop, written in
+//! Mac terms (Command is [`ShortcutKey::Super`], drawn `⌘`), and [`Shortcut::custom`] asks
+//! chordkit's registration whether an app may take a combination.
 
 use crate::vocab::{Shortcut, ShortcutKey};
 use keymap::{AppAction, AppId, Convention, ConventionTable, Desktop, Keymap, Platform};

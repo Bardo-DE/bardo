@@ -1,7 +1,8 @@
 //! The words of the panels a client opens and closes: how a panel changes, the launcher's seeded
-//! open and close, the companion's summon and hold-to-talk. Each panel opens on the output the
-//! daemon picks (the output under the pointer is not known to the daemon), which is the first with
-//! that surface.
+//! open and close, the companion's summon and hold-to-talk.
+//!
+//! Each panel opens on the output the daemon picks (the output under the pointer is not known to
+//! the daemon), which is the first with that surface.
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;

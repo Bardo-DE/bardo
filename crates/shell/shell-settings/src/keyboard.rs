@@ -1,6 +1,8 @@
-//! `keyboard.*`: how bardo-shell treats the keyboard per app (design/22 §3.25). One key, a list of
-//! tables: the keycap profile each app's keys are drawn with. The file keeps the person's text;
-//! [`overrides`] turns it into the typed values the keycap service reads, once per load.
+//! `keyboard.*`: how bardo-shell treats the keyboard per app (design/22 §3.25).
+//!
+//! One key, a list of tables: the keycap profile each app's keys are drawn with. The file keeps the
+//! person's text; [`overrides`] turns it into the typed values the keycap service reads, once per
+//! load.
 
 use key_remap_proto::ProfileName;
 use serde::{Deserialize, Serialize};
@@ -104,8 +106,9 @@ fn dropped(reason: &str) -> InvalidKey {
     }
 }
 
-/// The typed overrides `settings` holds, and a line for every row that did not become one: a
-/// row whose `profile` is not a profile name or whose `app` is empty is dropped, and when two
+/// The typed overrides `settings` holds, and a line for every row that did not become one.
+///
+/// A row whose `profile` is not a profile name or whose `app` is empty is dropped, and when two
 /// rows name one app the last wins. The keycap service never sees a string.
 #[must_use]
 pub fn overrides(settings: &KeyboardSettings) -> (UserOverrides, Vec<InvalidKey>) {

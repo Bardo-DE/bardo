@@ -33,10 +33,12 @@ fn stored_words<T: Word + Serialize>() -> Vec<String> {
         .collect()
 }
 
-/// The `KeyKind` for a field whose type is the closed enum `T` (design/22-SETTINGS.md section
-/// 9.1's widget-by-arity rule, `super::key::kind_from_variants`). The struct derive's only call
-/// for an enum-shaped field: a field type that is neither a shape the derive knows by name (text,
-/// a colour, a list, a number with `range`) nor a `Word` fails to compile here.
+/// The `KeyKind` for a field whose type is the closed enum `T` (design/22-SETTINGS.md section 9.1's
+/// widget-by-arity rule, `super::key::kind_from_variants`).
+///
+/// The struct derive's only call for an enum-shaped field: a field type that is neither a shape the
+/// derive knows by name (text, a colour, a list, a number with `range`) nor a `Word` fails to
+/// compile here.
 #[must_use]
 pub fn kind_of<T: Word + Serialize>() -> KeyKind {
     kind_from_variants(stored_words::<T>())
@@ -57,10 +59,12 @@ pub trait SettingsRow {
     fn columns() -> Vec<Column>;
 }
 
-/// What `Vec<Self>` is as a settings key: the one seam the struct derive codes against for any
-/// list whose element is not text. A closed [`Word`] enum is a list of that enum's words; a
-/// `SettingsRow` struct is a list of tables. Implemented by `#[derive(SettingsRow)]` for rows
-/// and by the blanket impl for words, never by hand.
+/// What `Vec<Self>` is as a settings key: the one seam the struct derive codes against for any list
+/// whose element is not text.
+///
+/// A closed [`Word`] enum is a list of that enum's words; a `SettingsRow` struct is a list of
+/// tables. Implemented by `#[derive(SettingsRow)]` for rows and by the blanket impl for words,
+/// never by hand.
 pub trait ListElement {
     /// The key kind of a `Vec<Self>` field.
     fn list_kind() -> KeyKind;

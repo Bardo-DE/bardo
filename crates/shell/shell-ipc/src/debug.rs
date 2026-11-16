@@ -1,8 +1,10 @@
 //! Development probes, the IPC form of layer-shell-host's per-surface debug commands and of the
-//! made-up inputs an acceptance script drives the daemon with. A made-up input is the real
-//! `shell-model` value the service would have received (a `Posting`, a `FakeRequest`, a
-//! `FakeVerdict`). The names of surfaces, points and buttons are this wire's own words for
-//! layer-shell-host's: this crate may not depend on layer-shell-host (`scripts/check-boundary.sh`).
+//! made-up inputs an acceptance script drives the daemon with.
+//!
+//! A made-up input is the real `shell-model` value the service would have received (a `Posting`, a
+//! `FakeRequest`, a `FakeVerdict`). The names of surfaces, points and buttons are this wire's own
+//! words for layer-shell-host's: this crate may not depend on layer-shell-host
+//! (`scripts/check-boundary.sh`).
 
 use std::path::PathBuf;
 
@@ -121,8 +123,9 @@ pub enum PointerButton {
 pub struct SurfaceName(pub String);
 
 /// A key in layer-shell-host's spelling: a W3C key name or `Space`, then `+shift`, `+ctrl`, `+alt`
-/// or `+super` (`Tab`, `ArrowDown`, `k+ctrl`, `Tab+shift`). Parsed by the daemon, which answers a
-/// failure for a name it does not know.
+/// or `+super` (`Tab`, `ArrowDown`, `k+ctrl`, `Tab+shift`).
+///
+/// Parsed by the daemon, which answers a failure for a name it does not know.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct KeySpec(pub String);
@@ -147,9 +150,11 @@ pub struct Point {
     pub y: i32,
 }
 
-/// The launcher as shown on the output it is open on (`bardo-shell debug launcher-rows`): each section
-/// with its row titles, the selection, and the preview pane. Answered only by a daemon built
-/// with `debug`; clipboard rows' titles are replaced by `"<clipboard>"`.
+/// The launcher as shown on the output it is open on (`bardo-shell debug launcher-rows`): each
+/// section with its row titles, the selection, and the preview pane.
+///
+/// Answered only by a daemon built with `debug`; clipboard rows' titles are replaced by
+/// `"<clipboard>"`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LauncherRows {
     pub query: String,

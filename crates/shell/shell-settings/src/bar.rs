@@ -1,6 +1,7 @@
-//! `bar.*` (design/22 §3.4; design/13 §13.3.1). `bar.autohide` is Basic, on the Appearance page
-//! beside the menu bar's other keys (the Mac's Control Centre pane has no page here); the rest
-//! are Advanced (§5).
+//! `bar.*` (design/22 §3.4; design/13 §13.3.1).
+//!
+//! `bar.autohide` is Basic, on the Appearance page beside the menu bar's other keys (the Mac's
+//! Control Centre pane has no page here); the rest are Advanced (§5).
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;

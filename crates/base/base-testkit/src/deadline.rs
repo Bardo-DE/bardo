@@ -9,11 +9,12 @@
 
 use std::time::{Duration, Instant};
 
-/// How long a test waits for something the daemon has to do. The daemons work slowly, never
-/// wrongly, on a loaded machine (load average over a hundred, swap full: a connection made in
-/// 20 ms idle took seconds); a test that waits for less than this would fail the daemon for the
-/// machine's sake. A wait whose condition holds returns at once, so this costs only a failing
-/// test.
+/// How long a test waits for something the daemon has to do.
+///
+/// The daemons work slowly, never wrongly, on a loaded machine (load average over a hundred, swap
+/// full: a connection made in 20 ms idle took seconds); a test that waits for less than this would
+/// fail the daemon for the machine's sake. A wait whose condition holds returns at once, so this
+/// costs only a failing test.
 pub const GENEROUS: Duration = Duration::from_secs(120);
 
 /// A point in time a wait ends at, or, for the idle form, a limit on how long a wait may go on

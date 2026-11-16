@@ -1,6 +1,7 @@
-//! The genie's strip geometry: a pure function of the window's rectangle, the dock tile's
-//! rectangle and how far along the flight is. The renderer cuts the window into horizontal
-//! strips and draws each one where this says.
+//! The genie's strip geometry: a pure function of the window's rectangle, the dock tile's rectangle
+//! and how far along the flight is.
+//!
+//! The renderer cuts the window into horizontal strips and draws each one where this says.
 //!
 //! A row of the window (`v` from 0 at the top to 1 at the bottom) has gone a fraction of the way
 //! to the tile, and the lower rows lead: the bottom narrows toward the tile's width first, along

@@ -7,9 +7,11 @@
 
 use super::key::{AgentSetting, KeySpec};
 
-/// The keys proposed as agent-settable: appearance (theme, accent, look, file icons), dock size and magnification, the
-/// launcher's web search, and Do Not Disturb. Each is cosmetic or a convenience the person undoes
-/// in one click; none reaches data, accounts, the network beyond a search link, or a lock.
+/// The keys proposed as agent-settable: appearance (theme, accent, look, file icons), dock size and
+/// magnification, the launcher's web search, and Do Not Disturb.
+///
+/// Each is cosmetic or a convenience the person undoes in one click; none reaches data, accounts,
+/// the network beyond a search link, or a lock.
 pub const AGENT_SETTABLE_PROPOSED: &[&str] = &[
     "appearance.theme",
     "appearance.accent",
@@ -23,12 +25,14 @@ pub const AGENT_SETTABLE_PROPOSED: &[&str] = &[
     "notifications.dnd",
 ];
 
-/// Key-path prefixes no schema may mark agent-settable: the companion's own limits, the memory
-/// and computer-use switches, model and spend choices, anything that locks or signs in, and the
-/// privacy, network and security switches (what is shared, what is reachable, what is checked).
-/// A key under one of these is hands-off however it is annotated: [`Schema::from_toml`]
-/// rejects a schema that marks one settable, and `#[derive(SettingsSchema)]` fails to compile
-/// for a field that does (both through [`is_never_settable`]).
+/// Key-path prefixes no schema may mark agent-settable.
+///
+/// They are the companion's own limits, the memory and computer-use switches, model and spend
+/// choices, anything that locks or signs in, and the privacy, network and security switches (what
+/// is shared, what is reachable, what is checked). A key under one of these is hands-off however it
+/// is annotated: [`Schema::from_toml`] rejects a schema that marks one settable, and
+/// `#[derive(SettingsSchema)]` fails to compile for a field that does (both through
+/// [`is_never_settable`]).
 ///
 /// [`Schema::from_toml`]: super::Schema::from_toml
 pub const AGENT_NEVER_SETTABLE: &[&str] = &[
@@ -87,9 +91,11 @@ pub const fn is_never_settable(path: &str) -> bool {
 }
 
 /// The first key of `keys` that is marked [`AgentSetting::Settable`] under an
-/// [`AGENT_NEVER_SETTABLE`] prefix, if any. The one check behind [`Schema::from_toml`] and a
-/// live module's schema (`ui_settings::live::LiveSchema::check`), so a file schema and a
-/// D-Bus-served one are refused for the same reason.
+/// [`AGENT_NEVER_SETTABLE`] prefix, if any.
+///
+/// The one check behind [`Schema::from_toml`] and a live module's schema
+/// (`ui_settings::live::LiveSchema::check`), so a file schema and a D-Bus-served one are refused
+/// for the same reason.
 ///
 /// [`Schema::from_toml`]: super::Schema::from_toml
 #[must_use]

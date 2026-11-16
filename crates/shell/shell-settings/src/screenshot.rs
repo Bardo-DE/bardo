@@ -1,6 +1,7 @@
-//! `screenshot.*`: the floating thumbnail after a screenshot (design/20 §1.13), which folders are
-//! watched for new screenshots. macOS keeps its screenshot
-//! shortcuts under Keyboard, hence `Page::KeyboardAndShortcuts`. All Advanced.
+//! `screenshot.*`: the floating thumbnail after a screenshot and the folders watched for new ones.
+//!
+//! The thumbnail is design/20 §1.13. macOS keeps its screenshot shortcuts under Keyboard, hence
+//! `Page::KeyboardAndShortcuts`. All Advanced.
 
 use serde::{Deserialize, Serialize};
 use ui_settings::schema::Page;

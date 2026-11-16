@@ -35,9 +35,10 @@ pub struct WindowLook {
     pub frame: FrameHint,
 }
 
-/// The frame at `now`: every window's quantised position, size and opacity grouped by output
-/// (in key order, windows bottom of the stack first) with each output's strip offset, and
-/// whether anything still moves.
+/// The frame at `now`.
+///
+/// Every window's quantised position, size and opacity grouped by output (in key order, windows
+/// bottom of the stack first) with each output's strip offset, and whether anything still moves.
 #[must_use]
 pub fn sample(
     book: &MotionBook,

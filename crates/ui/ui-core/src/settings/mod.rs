@@ -1,8 +1,10 @@
 //! Where in Settings a link points, and the names it is made of: a page id, a key path, an account
-//! and an Extension id. Pure text types with no schema behind them, so a compositor or a shell that
-//! never reads a settings file can still hold, parse and print a target. `ui-settings` re-exports
-//! all of them (`ui_settings::target::*`, `ui_settings::schema::{PageId, KeyPath}`) and keeps
-//! everything that needs its schema data.
+//! and an Extension id.
+//!
+//! Pure text types with no schema behind them, so a compositor or a shell that never reads a
+//! settings file can still hold, parse and print a target. `ui-settings` re-exports all of them
+//! (`ui_settings::target::*`, `ui_settings::schema::{PageId, KeyPath}`) and keeps everything that
+//! needs its schema data.
 
 mod key_path;
 mod page_id;

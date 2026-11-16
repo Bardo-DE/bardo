@@ -55,9 +55,10 @@ pub trait Mounts {
     fn unmount(&self, path: &Path) -> io::Result<()>;
 }
 
-/// Mounts with the system's setuid `fusermount3`, as fuser's own mount without libfuse does:
-/// `fusermount3 -o <options> -- <path>` with `_FUSE_COMMFD` naming one end of a socket pair, on
-/// which it sends back the `/dev/fuse` fd it opened and mounted.
+/// Mounts with the system's setuid `fusermount3`, as fuser's own mount without libfuse does.
+///
+/// That is `fusermount3 -o <options> -- <path>` with `_FUSE_COMMFD` naming one end of a socket
+/// pair, on which it sends back the `/dev/fuse` fd it opened and mounted.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Fusermount {
     /// The program: its path, or a name the host chose to leave to the system to find.

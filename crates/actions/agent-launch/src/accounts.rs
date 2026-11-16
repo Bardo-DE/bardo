@@ -1,7 +1,9 @@
-//! What a launcher asks of porter, behind a seam: accountd (sessions, grants, process
-//! credentials, the agent's login) and inferd (the per-session model endpoint, P4). The real link
-//! is `dbus::DbusAccounts`; `fake::FakeAccounts` stands in for it in tests. Methods take `&self`
-//! because one link serves every session and the supervisor listens on it at the same time.
+//! What a launcher asks of porter, behind a seam: accountd (sessions, grants, process credentials,
+//! the agent's login) and inferd (the per-session model endpoint, P4).
+//!
+//! The real link is `dbus::DbusAccounts`; `fake::FakeAccounts` stands in for it in tests. Methods
+//! take `&self` because one link serves every session and the supervisor listens on it at the same
+//! time.
 //!
 //! The types are ours so this file names no bus: a secret is porter's `SecretText` (its `Debug`
 //! shows nothing).

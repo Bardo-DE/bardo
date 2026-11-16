@@ -161,9 +161,10 @@ pub(crate) fn call_failed(error: zbus::Error) -> ShellError {
     ShellError::Call(error.to_string())
 }
 
-/// Whether the bus said nobody can answer: the shell is not on the bus (no owner, nothing to
-/// start), or it is there but does not serve the picker yet (it has not exported the object, or
-/// does not know the method).
+/// Whether the bus said nobody can answer.
+///
+/// Either the shell is not on the bus (no owner, nothing to start), or it is there but does not
+/// serve the picker yet (it has not exported the object, or does not know the method).
 #[must_use]
 pub fn nobody_answers(error: &zbus::Error) -> bool {
     const GONE: [&str; 5] = [
@@ -187,9 +188,11 @@ pub fn nobody_answers(error: &zbus::Error) -> bool {
     }
 }
 
-/// What a missing picker means for sharing: nobody was asked, so nobody said yes. An answer that
-/// could not be had because there is nobody to ask (see [`ShellError::is_refusal`]) becomes a cancel, which shares nothing and
-/// is the portal's plain "the person said no". Any other failure is still a failure.
+/// What a missing picker means for sharing: nobody was asked, so nobody said yes.
+///
+/// An answer that could not be had because there is nobody to ask (see [`ShellError::is_refusal`])
+/// becomes a cancel, which shares nothing and is the portal's plain "the person said no". Any other
+/// failure is still a failure.
 pub fn unavailable_is_cancel(
     answer: Result<Option<Choice>, ShellError>,
 ) -> Result<Option<Choice>, ShellError> {

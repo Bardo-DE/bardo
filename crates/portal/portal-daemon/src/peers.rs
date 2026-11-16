@@ -166,9 +166,10 @@ impl Creator {
     }
 }
 
-/// The guard of a method that only one program may call: the caller must hold `role`, proved at
-/// the strongest level (its image and its unit, as the unit manager states it). Before
-/// [`crate::serve`] has attached the means of telling callers apart, nobody passes.
+/// The guard of a method that only one program may call: the caller must hold `role`, proved at the
+/// strongest level (its image and its unit, as the unit manager states it).
+///
+/// Before [`crate::serve`] has attached the means of telling callers apart, nobody passes.
 ///
 /// Every portal method starts with the [`RoleGuard::frontend`] guard; the few that list and take
 /// back what the portal remembers use [`RoleGuard::settings`] (only the Settings app).
@@ -262,9 +263,10 @@ async fn owner_of(connection: &Connection, name: &str) -> Option<String> {
     dbus.get_name_owner(name).await.ok().map(|o| o.to_string())
 }
 
-/// Which unique name a change of name ownership takes off the bus, if any: a unique name that lost
-/// its owner (the peer left), or the frontend's well-known name changing hands (the old owner is
-/// no longer the frontend, whether or not it is still connected).
+/// Which unique name a change of name ownership takes off the bus, if any.
+///
+/// That is a unique name that lost its owner (the peer left), or the frontend's well-known name
+/// changing hands (the old owner is no longer the frontend, whether or not it is still connected).
 pub fn departed(name: &str, old_owner: Option<&str>, new_owner: Option<&str>) -> Option<String> {
     if name.starts_with(':') && new_owner.is_none() {
         return Some(name.to_owned());

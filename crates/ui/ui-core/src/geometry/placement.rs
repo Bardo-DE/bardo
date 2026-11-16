@@ -98,9 +98,11 @@ pub fn place(anchor: Rect, content: Size, bounds: Rect, want: Placement, gap: Px
 }
 
 /// How tall a surface may stand on `side` of `anchor` and still end 8 px inside `bounds`, `gap`
-/// away from the anchor: the room between the anchor and the bounds' edge it opens toward, less
-/// the margin. A surface on the left or right of its anchor has the bounds' whole height less the
-/// margins. Never negative.
+/// away from the anchor.
+///
+/// That is the room between the anchor and the bounds' edge it opens toward, less the margin. A
+/// surface on the left or right of its anchor has the bounds' whole height less the margins. Never
+/// negative.
 #[must_use]
 pub fn room_on_side(anchor: Rect, bounds: Rect, side: Side, gap: Px) -> Px {
     let room = match side {

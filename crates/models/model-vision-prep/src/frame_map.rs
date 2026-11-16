@@ -22,9 +22,11 @@ pub enum MapError {
     GridMismatch,
 }
 
-/// One step's frame geometry: the window the model acts on, the image it was shown, and where
-/// the dialect's points live. `x_window = round_half_up(x * window.w / image.w)` in `u64`, and
-/// the result must be below `window.w`; the grid rule is the same with `max` as the divisor.
+/// One step's frame geometry: the window the model acts on, the image it was shown, and where the
+/// dialect's points live.
+///
+/// `x_window = round_half_up(x * window.w / image.w)` in `u64`, and the result must be below
+/// `window.w`; the grid rule is the same with `max` as the divisor.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FrameMap {
     pub window: Size<WindowSpace>,
