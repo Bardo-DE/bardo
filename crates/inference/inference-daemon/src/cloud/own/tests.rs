@@ -86,14 +86,14 @@ fn a_key_is_a_bearer_over_tls_or_this_computer_and_an_empty_key_is_none() {
             .endpoint(key, LIST_WAIT)
             .auth
     };
-    let bearer = |text: &str| AuthHeader::Bearer(Secret(text.to_owned()));
+    let bearer = |text: &str| AuthHeader::Bearer(SecretText::new(text));
     assert_eq!(
         auth("https://a.test/v1", Tls::Implicit, &key("k")),
         bearer("k")
     );
     assert_eq!(
         auth("http://127.0.0.1:1/v1", Tls::Plain, &key("k")),
-        AuthHeader::LoopbackBearer(Secret("k".to_owned()))
+        AuthHeader::LoopbackBearer(SecretText::new("k"))
     );
     assert_eq!(auth("http://studio/v1", Tls::Plain, &key("k")), bearer("k"));
     for url in ["https://a.test/v1", "http://127.0.0.1:1/v1"] {

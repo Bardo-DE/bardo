@@ -14,6 +14,7 @@ use crate::settings::SpendLine;
 use account_core::AccountId;
 use account_core::AppId;
 use base_fs::atomic::AtomicWrite;
+use base_fs::{ReadCap, ReadError, move_aside, read_text_capped};
 use base_time::UnixSeconds;
 use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TokenUsage, spend_verdict};
 use model_provider::Money;
@@ -154,12 +155,12 @@ impl Ledger {
     /// A ledger kept in `file`: what it holds is read now and every record is written back. A
     /// file that is missing starts it empty. A file that is there and cannot be read is not
     /// quietly forgotten (that would reset every cap to nothing spent): it is moved aside as
-    /// `<name>.corrupt-<seconds>`, and the day and month `now` is in count as unknown, so a cap
+    /// `<name>.bad-<seconds>`, and the day and month `now` is in count as unknown, so a cap
     /// of either stops requests until that period ends.
     pub fn open_at(file: PathBuf, now: UnixSeconds) -> Self {
-        let read = match std::fs::read_to_string(&file) {
+        let read = match read_text_capped(&file, ReadCap::mib(8)) {
             Ok(text) => read_document(&text),
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Document::default()),
+            Err(ReadError::NotFound { .. }) => Ok(Document::default()),
             Err(_) => Err(()),
         };
         let (document, lost) = match read {
@@ -345,22 +346,17 @@ pub fn written(money: Money) -> String {
     format!("{} {}", money.amount.normalize(), money.currency.code())
 }
 
-/// Moves a ledger file that could not be read out of the way, to `<name>.corrupt-<seconds>`, so
-/// it can be looked at and the next save does not write over it.
+/// Moves a ledger file that could not be read out of the way (`base_fs::move_aside`), so it can be
+/// looked at and the next save does not write over it.
 fn set_aside(file: &std::path::Path, now: UnixSeconds) {
-    let name = file.file_name().map_or_else(
-        || "spend.json".into(),
-        |name| name.to_string_lossy().into_owned(),
-    );
-    let aside = file.with_file_name(format!("{name}.corrupt-{}", now.0));
-    match std::fs::rename(file, &aside) {
-        Ok(()) => eprintln!(
+    match move_aside(file, now) {
+        Ok(aside) => eprintln!(
             "inferd: spend: {} could not be read; moved to {}. Spending limits stop requests \
              until the day and the month end.",
             file.display(),
             aside.display()
         ),
-        Err(why) => eprintln!("inferd: spend: {}: {why}", file.display()),
+        Err(why) => eprintln!("inferd: spend: {why}"),
     }
 }
 

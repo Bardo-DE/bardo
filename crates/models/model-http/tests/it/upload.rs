@@ -3,6 +3,7 @@
 //! reply reaches the sink, and a refusal is `Rejected` with its body in the sink.
 #![cfg(feature = "client")]
 
+use base_secret::SecretText;
 use std::ops::ControlFlow;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -11,7 +12,7 @@ use std::time::Duration;
 
 use model_http::{
     AuthHeader, BodySink, ContentType, Framing, HttpClient, HttpEndpoint, HttpError, HttpStatus,
-    HttpTarget, Proxy, RawBody, ResponseHead, RouteRoot, Secret, Timeouts, Upload, UploadTransport,
+    HttpTarget, Proxy, RawBody, ResponseHead, RouteRoot, Timeouts, Upload, UploadTransport,
     UrlPath, WaitMs,
 };
 use proptest::prelude::*;
@@ -164,7 +165,7 @@ async fn the_bytes_arrive_exactly_under_the_content_type_that_names_them() {
     let mut seen = Seen::default();
     let ct = "multipart/form-data; boundary=b";
     let status = run(
-        endpoint(target, AuthHeader::Bearer(Secret("tok".into()))),
+        endpoint(target, AuthHeader::Bearer(SecretText::new("tok"))),
         &upload(ct, body.clone()),
         &mut seen,
     )

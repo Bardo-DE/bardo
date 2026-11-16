@@ -138,20 +138,26 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
         AuthHeader::None => {}
         AuthHeader::Bearer(token) => {
             allow_key(&endpoint.target, Loopback::Refused)?;
-            keyed.push(secret(AUTHORIZATION, &format!("Bearer {}", token.0))?);
+            keyed.push(secret(
+                AUTHORIZATION,
+                &format!("Bearer {}", token.expose()),
+            )?);
         }
         AuthHeader::LoopbackBearer(token) => {
             allow_key(&endpoint.target, Loopback::Allowed)?;
-            keyed.push(secret(AUTHORIZATION, &format!("Bearer {}", token.0))?);
+            keyed.push(secret(
+                AUTHORIZATION,
+                &format!("Bearer {}", token.expose()),
+            )?);
         }
         AuthHeader::Header { name, value } => {
             let name = WireName::from_bytes(name.0.as_bytes()).map_err(|_| HttpError::Connect)?;
-            keyed.push(secret(name, &value.0)?);
+            keyed.push(secret(name, value.expose())?);
         }
     }
     for extra in &endpoint.headers {
         let name = WireName::from_bytes(extra.name.0.as_bytes()).map_err(|_| HttpError::Connect)?;
-        keyed.push(secret(name, &extra.value.0)?);
+        keyed.push(secret(name, extra.value.expose())?);
     }
     for (name, value) in keyed {
         headers.append(name, value);

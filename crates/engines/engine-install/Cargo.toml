@@ -13,6 +13,7 @@ name = "bardo-engine-helper"
 path = "src/bin/bardo-engine-helper.rs"
 
 [dependencies]
+base-secret = { path = "../../base/base-secret" }
 engine-manifest = {path = "../engine-manifest"}
 engine-probe = {path = "../engine-probe"}
 engine-spec = {path = "../engine-spec"}

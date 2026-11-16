@@ -295,7 +295,7 @@ fn a_file_that_does_not_read_is_set_aside_and_the_caps_stop_until_the_period_end
     let through = account("openrouter");
     let ledger = Ledger::open_at(file.clone(), LEAP_NOON);
     // The unreadable file is kept, under a name that says when.
-    let aside = dir.join(format!("spend.json.corrupt-{}", LEAP_NOON.0));
+    let aside = dir.join(format!("spend.json.bad-{}", LEAP_NOON.0));
     assert_eq!(std::fs::read_to_string(&aside).expect("kept"), "not json");
     // Nothing is known to be spent, and a cap stops all the same.
     let scope = SpendScope::App(who.clone());
@@ -339,10 +339,7 @@ fn a_monthly_cap_stays_stopped_to_the_end_of_the_month_and_a_missing_file_is_jus
         fresh.verdict(line(10), &who, &through, LEAP_NOON),
         SpendVerdict::Within
     );
-    assert!(
-        !dir.join(format!("spend.json.corrupt-{}", LEAP_NOON.0))
-            .exists()
-    );
+    assert!(!dir.join(format!("spend.json.bad-{}", LEAP_NOON.0)).exists());
     // A directory where the file should be cannot be read either: lost, not new.
     let blocked_root = scratch("monthly-dir");
     let blocked = blocked_root.join("spend.json");

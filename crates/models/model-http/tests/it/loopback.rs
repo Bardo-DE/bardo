@@ -6,6 +6,7 @@
 //! `127.0.0.1` with an ephemeral port; nothing leaves the machine.
 #![cfg(feature = "client")]
 
+use base_secret::SecretText;
 use std::ops::ControlFlow;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
@@ -15,7 +16,7 @@ use std::time::Duration;
 use model_http::{
     AuthHeader, BodyKind, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName,
     HttpClient, HttpEndpoint, HttpError, HttpStatus, HttpTarget, JsonBody, Port, Progress, Proxy,
-    ResponseHead, RouteRoot, Secret, Timeouts, Transport, UrlPath, Verb, WaitMs,
+    ResponseHead, RouteRoot, Timeouts, Transport, UrlPath, Verb, WaitMs,
 };
 use tokio::io::{AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::net::{TcpListener, UnixListener};
@@ -398,10 +399,10 @@ async fn the_request_is_what_the_endpoint_says() {
     )
     .await;
     let mut ep = endpoint(server.target.clone());
-    ep.auth = AuthHeader::Bearer(Secret("sk-test-token".into()));
+    ep.auth = AuthHeader::Bearer(SecretText::new("sk-test-token"));
     ep.headers = vec![ExtraHeader {
         name: HeaderName("x-route".into()),
-        value: Secret("local".into()),
+        value: SecretText::new("local"),
     }];
     let mut seen = Seen::default();
     let result = run(ep, &post("/chat/completions", Framing::Sse), &mut seen).await;
@@ -436,7 +437,7 @@ async fn a_route_at_the_server_root_skips_the_base_and_a_vendor_header_authentic
     let mut ep = endpoint(server.target.clone());
     ep.auth = AuthHeader::Header {
         name: HeaderName("x-api-key".into()),
-        value: Secret("k".into()),
+        value: SecretText::new("k"),
     };
     let ex = Exchange {
         verb: Verb::Get,
@@ -679,7 +680,7 @@ async fn nothing_listening_is_connect() {
 
 #[tokio::test(flavor = "current_thread")]
 async fn a_key_over_plain_http_needs_the_loopback_opt_in_and_a_loopback_host() {
-    let key = || Secret("sk-test-token".into());
+    let key = || SecretText::new("sk-test-token");
     // `Bearer` alone is refused on plain Tcp, even to a loopback server: nothing is sent.
     let server = serve(Wire::Tcp, vec![]).await;
     let mut ep = endpoint(server.target.clone());
@@ -734,7 +735,7 @@ async fn a_key_over_plain_http_needs_the_loopback_opt_in_and_a_loopback_host() {
 async fn a_header_that_cannot_be_written_is_a_request_never_sent() {
     let server = serve(Wire::Unix, vec![]).await;
     let mut ep = endpoint(server.target.clone());
-    ep.auth = AuthHeader::Bearer(Secret("bad\ntoken".into()));
+    ep.auth = AuthHeader::Bearer(SecretText::new("bad\ntoken"));
     let result = run(
         ep,
         &post("/chat/completions", Framing::Sse),

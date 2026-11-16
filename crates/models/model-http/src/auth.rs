@@ -1,30 +1,10 @@
 //! Credentials for a request, kept out of logs.
 //!
 //! Nothing here serializes: a key is read from where it is kept (a key file, the keyring) into a
-//! [`Secret`], never written back out as part of an endpoint, a config echo or a cassette.
+//! [`SecretText`], never written back out as part of an endpoint, a config echo or a cassette.
 
-use core::fmt;
-
+use base_secret::SecretText;
 use serde::{Deserialize, Serialize};
-use zeroize::Zeroize;
-
-/// A secret string. `Debug` prints nothing of it, it has no `Serialize`, and its text is wiped
-/// when it drops.
-#[derive(Clone, PartialEq, Eq, Deserialize)]
-#[serde(transparent)]
-pub struct Secret(pub String);
-
-impl Drop for Secret {
-    fn drop(&mut self) {
-        self.0.zeroize();
-    }
-}
-
-impl fmt::Debug for Secret {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("Secret(<redacted>)")
-    }
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -37,15 +17,15 @@ pub enum AuthHeader {
     None,
     /// `Authorization: Bearer <secret>`. Refused (`HttpError::Insecure`) on a plain `Tcp` target:
     /// a key goes over TLS or a Unix socket.
-    Bearer(Secret),
+    Bearer(SecretText),
     /// `Authorization: Bearer <secret>` to a `Tcp` target on this machine (`localhost`, `127.0.0.0/8`,
     /// `::1`): the explicit opt-in to send a key over plain http on the loopback interface. Any
     /// other plain `Tcp` host is still refused.
-    LoopbackBearer(Secret),
+    LoopbackBearer(SecretText),
     /// A vendor's own header (`x-api-key`).
     Header {
         name: HeaderName,
-        value: Secret,
+        value: SecretText,
     },
 }
 
@@ -53,5 +33,5 @@ pub enum AuthHeader {
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct ExtraHeader {
     pub name: HeaderName,
-    pub value: Secret,
+    pub value: SecretText,
 }

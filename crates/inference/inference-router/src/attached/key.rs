@@ -1,10 +1,10 @@
 //! The bearer token of an attached engine (vLLM's `--api-key`), read from a file at each connect.
 //! The file is the person's own and private to them: a file any other user could read is refused,
-//! and so is one another user owns. The token is held in [`Secret`] (whose `Debug` says nothing)
+//! and so is one another user owns. The token is held in [`SecretText`] (whose `Debug` says nothing)
 //! and goes nowhere but the `Authorization` header: no log line, error or `Debug` output of this
 //! module holds it.
 
-use model_http::Secret;
+use base_secret::SecretText;
 use std::io::Read;
 use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
@@ -56,7 +56,7 @@ impl KeyFile {
     /// The token in the file now. It is opened once and looked at through that handle, so the
     /// file that was checked is the file that is read; a symlink is followed to the file it names
     /// (and that file is checked).
-    pub fn read(&self) -> Result<Secret, KeyFileProblem> {
+    pub fn read(&self) -> Result<SecretText, KeyFileProblem> {
         let mut file = std::fs::File::open(&self.0).map_err(|e| match e.kind() {
             std::io::ErrorKind::NotFound => KeyFileProblem::Missing,
             kind => KeyFileProblem::Unreadable(kind),
@@ -85,7 +85,7 @@ impl KeyFile {
             && u64::try_from(token.len()).is_ok_and(|len| len <= LONGEST)
             && token.chars().all(|c| c.is_ascii_graphic());
         match fits {
-            true => Ok(Secret(token.to_owned())),
+            true => Ok(SecretText::new(token)),
             false => Err(KeyFileProblem::Unusable),
         }
     }

@@ -40,7 +40,7 @@ mod target;
 #[cfg(feature = "client")]
 mod transport;
 
-pub use auth::{AuthHeader, ExtraHeader, HeaderName, Secret};
+pub use auth::{AuthHeader, ExtraHeader, HeaderName};
 pub use client::{
     BodySink, ContentType, DerCertificate, HttpClient, HttpError, HttpStatus, JsonBody, Progress,
     RawBody, TlsRoots,

@@ -8,12 +8,13 @@
 
 use crate::pinned_url::PinnedUrl;
 use crate::progress::{CancelToken, Meter};
+use base_secret::SecretText;
 use engine_manifest::{Artifact, hex};
 use engine_probe::file_digest;
 use model_http::{
     AuthHeader, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName, HttpClient,
-    HttpEndpoint, HttpError, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts,
-    TlsRoots, Transport, UrlPath, Verb, WaitMs,
+    HttpEndpoint, HttpError, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots,
+    Transport, UrlPath, Verb, WaitMs,
 };
 use sha2::{Digest, Sha256};
 use std::ffi::OsString;
@@ -129,7 +130,7 @@ impl Fetcher {
         let wait = WaitMs(u32::try_from(self.idle.as_millis()).unwrap_or(u32::MAX));
         let range = (have > 0).then(|| ExtraHeader {
             name: HeaderName("range".to_owned()),
-            value: Secret(format!("bytes={have}-")),
+            value: SecretText::new(format!("bytes={have}-")),
         });
         HttpEndpoint {
             target: HttpTarget::Tls {

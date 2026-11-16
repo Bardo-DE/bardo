@@ -1,6 +1,6 @@
 use super::*;
+use base_secret::SecretText;
 use base_testkit::Scratch;
-use model_http::Secret;
 use std::os::unix::fs::PermissionsExt;
 
 fn file_with(scratch: &Scratch, text: &[u8], mode: u32) -> KeyFile {
@@ -14,10 +14,10 @@ fn file_with(scratch: &Scratch, text: &[u8], mode: u32) -> KeyFile {
 fn a_private_file_is_the_token_without_its_line_break() {
     let scratch = Scratch::new("key");
     let key = file_with(&scratch, b"sk-lab-1234\n", 0o600);
-    assert_eq!(key.read(), Ok(Secret("sk-lab-1234".into())));
+    assert_eq!(key.read(), Ok(SecretText::new("sk-lab-1234")));
     // Read at each connect: a rotated token is the one the next read gives.
     let key = file_with(&scratch, b"sk-lab-5678", 0o600);
-    assert_eq!(key.read(), Ok(Secret("sk-lab-5678".into())));
+    assert_eq!(key.read(), Ok(SecretText::new("sk-lab-5678")));
 }
 
 #[test]

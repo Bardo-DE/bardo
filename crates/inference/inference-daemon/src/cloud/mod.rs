@@ -37,7 +37,7 @@ use model_catalog::{ModelEntry, ProviderId, Wire};
 use model_http::TlsRoots;
 use model_http::{
     AuthHeader, ExtraHeader, HeaderName, HostName, HttpClient, HttpEndpoint, HttpTarget, Port,
-    Proxy, Secret, Timeouts,
+    Proxy, Timeouts,
 };
 use model_http::{UrlPath, WaitMs};
 use models::{RemoteModel, remote_entries, remote_models};
@@ -245,7 +245,7 @@ impl Cloud {
         extra: Vec<(String, String)>,
     ) -> Option<HttpClient> {
         let door = self.0.doors.of(provider)?;
-        let secret = Secret(key.expose().to_owned());
+        let secret = key.clone();
         let endpoint = HttpEndpoint {
             target: HttpTarget::Tls {
                 host: HostName(door.host.clone()),
@@ -264,7 +264,7 @@ impl Cloud {
                 .into_iter()
                 .map(|(name, value)| ExtraHeader {
                     name: HeaderName(name),
-                    value: Secret(value),
+                    value: SecretText::new(value),
                 })
                 .collect(),
             timeouts: TIMEOUTS,

@@ -4,7 +4,7 @@
 //! field). The shaping is inferd's and stays here; the connection, the handshake and the
 //! certificate and name checks are stoker's and always on.
 //!
-//! The key is in the endpoint's `AuthHeader::Bearer`, whose `Secret` prints nothing. One transport
+//! The key is in the endpoint's `AuthHeader::Bearer`, whose `SecretText` prints nothing. One transport
 //! is built for one turn and dropped with it.
 
 use super::wire::BodyShape;

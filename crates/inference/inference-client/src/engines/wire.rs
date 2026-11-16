@@ -12,7 +12,7 @@ use account_core::SecretText;
 use inference_turns::local::{RETRY, TokioSleep};
 use model_http::{
     AuthHeader, BodySink, Exchange, HostName, HttpClient, HttpEndpoint, HttpError, HttpStatus,
-    HttpTarget, JsonBody, Port, Proxy, Secret, Timeouts, Transport, UrlPath, WaitMs,
+    HttpTarget, JsonBody, Port, Proxy, Timeouts, Transport, UrlPath, WaitMs,
 };
 use model_openai_compat::OpenAiCodec;
 use model_provider::Retrying;
@@ -80,12 +80,8 @@ fn endpoint(engine: &Engine, key: Option<&SecretText>) -> HttpEndpoint {
         auth: match (engine.key, key, engine.url.scheme) {
             // Over plain http a key goes only to this machine's loopback (the client refuses any
             // other host); over TLS anywhere.
-            (KeyUse::Bearer, Some(key), Scheme::Http) => {
-                AuthHeader::LoopbackBearer(Secret(key.expose().to_owned()))
-            }
-            (KeyUse::Bearer, Some(key), Scheme::Https) => {
-                AuthHeader::Bearer(Secret(key.expose().to_owned()))
-            }
+            (KeyUse::Bearer, Some(key), Scheme::Http) => AuthHeader::LoopbackBearer(key.clone()),
+            (KeyUse::Bearer, Some(key), Scheme::Https) => AuthHeader::Bearer(key.clone()),
             _ => AuthHeader::None,
         },
         headers: Vec::new(),
@@ -94,7 +90,7 @@ fn endpoint(engine: &Engine, key: Option<&SecretText>) -> HttpEndpoint {
 }
 
 /// The provider for one turn on `engine`, authenticated with `key` (copied once into the
-/// endpoint's bearer header, whose `Secret` prints nothing, and dropped with the provider).
+/// endpoint's bearer header, whose `SecretText` prints nothing, and dropped with the provider).
 pub(crate) fn provider(
     engine: &Engine,
     key: Option<&SecretText>,

@@ -30,8 +30,8 @@ use inference_router::catalog::{capabilities_of, parse_entry_text};
 use model_catalog::{Locality, ModelEntry, Reach};
 use model_http::{
     AuthHeader, BodySink, Exchange, Framing, HostName, HttpClient, HttpEndpoint, HttpStatus,
-    HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Secret, Timeouts, TlsRoots, Transport,
-    UrlPath, Verb, WaitMs,
+    HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots, Transport, UrlPath, Verb,
+    WaitMs,
 };
 use std::collections::BTreeMap;
 use std::ops::ControlFlow;
@@ -125,7 +125,7 @@ impl Place {
             Link::Tls => HttpTarget::Tls { host, port },
             Link::PlainLoopback | Link::Plain => HttpTarget::Tcp { host, port },
         };
-        let secret = Secret(key.expose().to_owned());
+        let secret = key.clone();
         let auth = match (key.expose().is_empty(), self.link) {
             (true, _) => AuthHeader::None,
             (false, Link::PlainLoopback) => AuthHeader::LoopbackBearer(secret),

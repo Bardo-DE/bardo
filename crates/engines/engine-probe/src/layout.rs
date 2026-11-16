@@ -5,6 +5,7 @@
 //! `.<name>.partial/` and renamed into place whole, so a directory without a leading dot is a
 //! finished install.
 
+use base_fs::atomic::AtomicWrite;
 use engine_manifest::{Row, engine_from_slug};
 use model_catalog::EngineKind;
 use serde::{Deserialize, Serialize};
@@ -177,15 +178,15 @@ impl Record {
         serde_json::from_slice(&text).map_err(|_| RecordError::Malformed)
     }
 
-    /// Writes the record at `path`: to a file beside it first, then renamed over it.
+    /// Writes the record at `path`, whole (`base_fs`'s atomic write).
     ///
     /// # Errors
     /// See [`RecordError`].
     pub fn write(&self, path: &Path) -> Result<(), RecordError> {
         let text = serde_json::to_vec_pretty(self).map_err(|_| RecordError::Malformed)?;
-        let staged = path.with_extension("json.new");
-        std::fs::write(&staged, text).map_err(|e| RecordError::Io(e.kind()))?;
-        std::fs::rename(&staged, path).map_err(|e| RecordError::Io(e.kind()))
+        AtomicWrite::SHARED
+            .write(path, &text)
+            .map_err(|e| RecordError::Io(e.kind()))
     }
 }
 

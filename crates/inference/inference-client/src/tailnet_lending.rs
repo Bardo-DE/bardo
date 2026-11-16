@@ -29,6 +29,7 @@
 //! ```
 
 use base_fs::atomic::AtomicWrite;
+use base_xdg::Xdg;
 use std::ffi::OsString;
 use std::future::Future;
 use std::io;
@@ -87,22 +88,13 @@ impl LendingConfig {
     /// `XDG_DATA_DIRS` (a host passes `|name| std::env::var_os(name)`; the library reads no
     /// environment), or `None` when there is no home folder to put the file in.
     pub fn from_lookup(var: impl Fn(&str) -> Option<OsString>) -> Option<Self> {
-        let absolute = |name: &str| {
-            var(name)
-                .map(PathBuf::from)
-                .filter(|path| path.is_absolute())
-        };
-        let home = absolute("HOME");
-        let config =
-            absolute("XDG_CONFIG_HOME").or_else(|| Some(home.as_ref()?.join(".config")))?;
-        let data_home =
-            absolute("XDG_DATA_HOME").or_else(|| Some(home.as_ref()?.join(".local/share")));
-        let data_dirs = var("XDG_DATA_DIRS")
-            .filter(|dirs| !dirs.is_empty())
-            .unwrap_or_else(|| OsString::from("/usr/local/share:/usr/share"));
-        let candidates: Vec<PathBuf> = data_home
+        let xdg = Xdg::new(|name: &str| var(name).and_then(|value| value.into_string().ok()));
+        let config = xdg.config_home().ok()?;
+        let candidates: Vec<PathBuf> = xdg
+            .data_home()
+            .ok()
             .into_iter()
-            .chain(std::env::split_paths(&data_dirs).filter(|path| path.is_absolute()))
+            .chain(xdg.data_dirs())
             .map(|dir| dir.join("bardo/inference").join(SHIPPED_NAME))
             .collect();
         let shipped = candidates

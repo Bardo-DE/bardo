@@ -1,6 +1,7 @@
+use base_secret::SecretText;
 use model_http::{
     AuthHeader, ContentType, Exchange, ExtraHeader, Framing, HeaderName, JsonBody, RawBody,
-    RequestId, RouteRoot, Secret, Upload, UrlPath, Verb,
+    RequestId, RouteRoot, Upload, UrlPath, Verb,
 };
 
 #[test]
@@ -15,7 +16,7 @@ fn a_request_id_is_checked_where_it_enters() {
 #[test]
 fn secrets_and_bodies_do_not_print() {
     {
-        let auth = AuthHeader::Bearer(Secret("sk-very-secret".into()));
+        let auth = AuthHeader::Bearer(SecretText::new("sk-very-secret"));
         assert!(!format!("{auth:?}").contains("sk-very-secret"));
         assert_eq!(
             format!("{:?}", JsonBody("{\"a\":1}".into())),
@@ -25,7 +26,7 @@ fn secrets_and_bodies_do_not_print() {
     {
         let header = ExtraHeader {
             name: HeaderName("x-routing".into()),
-            value: Secret("tenant-secret".into()),
+            value: SecretText::new("tenant-secret"),
         };
         assert!(!format!("{header:?}").contains("tenant-secret"));
         let json = r#"{"name":"x-routing","value":"tenant-secret"}"#;

@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 engine-manifest = {path = "../engine-manifest"}
 engine-spec = {path = "../engine-spec"}
 model-catalog = {path = "../../models/model-catalog"}

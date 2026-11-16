@@ -20,7 +20,7 @@ tls = ["client", "reqwest/rustls-no-provider", "dep:rustls"]
 
 [dependencies]
 serde = { workspace = true, features = ["derive"] }
-zeroize = { workspace = true }
+base-secret = { path = "../../base/base-secret" }
 thiserror = { workspace = true }
 reqwest = { workspace = true, optional = true }
 rustls = { workspace = true, features = ["ring", "std", "tls12"], optional = true }
