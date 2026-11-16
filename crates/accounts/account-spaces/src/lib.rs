@@ -172,6 +172,10 @@ impl SpaceBook {
     }
 
     /// Makes a Space for `app`, and answers its new id.
+    ///
+    /// # Errors
+    /// [`SpaceFault::TooMany`] when `app` made too many Spaces within the window;
+    /// [`SpaceFault::Unsaved`] when the file cannot be written or the id counter is full.
     pub async fn create(
         &mut self,
         app: &AppName,
@@ -206,6 +210,10 @@ impl SpaceBook {
     /// registered is left as it is, name and look included (the person may have renamed it), so
     /// a compositor registers every workspace again at each start; only a new one counts toward
     /// the per-app limit. It answers whether the Space is new.
+    ///
+    /// # Errors
+    /// [`SpaceFault::TooMany`] when a new Space is over `app`'s limit;
+    /// [`SpaceFault::Unsaved`] when the file cannot be written.
     pub async fn register(
         &mut self,
         app: &AppName,
@@ -234,16 +242,28 @@ impl SpaceBook {
     }
 
     /// Renames a Space.
+    ///
+    /// # Errors
+    /// [`SpaceFault::NotThere`] when no Space has `id`; [`SpaceFault::Unsaved`] when the file
+    /// cannot be written.
     pub async fn rename(&mut self, id: &DesktopSpace, name: SpaceName) -> Result<(), SpaceFault> {
         self.change(id, |record| record.name = name).await
     }
 
     /// Gives a Space a new look.
+    ///
+    /// # Errors
+    /// [`SpaceFault::NotThere`] when no Space has `id`; [`SpaceFault::Unsaved`] when the file
+    /// cannot be written.
     pub async fn set_look(&mut self, id: &DesktopSpace, look: SpaceLook) -> Result<(), SpaceFault> {
         self.change(id, |record| record.look = look).await
     }
 
     /// Removes a Space.
+    ///
+    /// # Errors
+    /// [`SpaceFault::NotThere`] when no Space has `id`; [`SpaceFault::Unsaved`] when the file
+    /// cannot be written.
     pub async fn remove(&mut self, id: &DesktopSpace) -> Result<(), SpaceFault> {
         let mut doc = self.doc.clone();
         let before = doc.spaces.len();
@@ -274,7 +294,8 @@ impl SpaceBook {
         base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
-            .map_err(|_| SpaceFault::Unsaved)
+            .ok()
+            .ok_or(SpaceFault::Unsaved)
     }
 }
 
