@@ -4,6 +4,7 @@
 //! states are written and painted by the row's own rules; and a rename field drawn as the row's
 //! `content` takes the title's place and moves nothing.
 
+use crate::support::probe::pixel;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::base::vocab::RowState;
@@ -218,8 +219,8 @@ fn the_drop_states_are_written_and_painted_by_the_rows_own_rules() {
     let target = harness.rect(ARCHIVE).expect("archive");
     let image = harness.render().expect("a frame");
     let sample = |rect: Rect| {
-        let x = (rect.origin.x + rect.size.width - Px(40.0)).0 as u32;
-        let y = (rect.origin.y + Px(rect.size.height.0 / 2.0)).0 as u32;
+        let x = pixel((rect.origin.x + rect.size.width - Px(40.0)).0);
+        let y = pixel((rect.origin.y + Px(rect.size.height.0 / 2.0)).0);
         *image.get_pixel(x, y)
     };
     assert_ne!(

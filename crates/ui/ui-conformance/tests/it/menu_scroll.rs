@@ -3,6 +3,7 @@
 //! the pointer on a strip scrolls the list and the strip goes once its end is reached; a key
 //! brings the highlighted row into view. A menu that fits shows no strip.
 
+use crate::support::probe::length;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::host::measure::Anchor;
@@ -46,12 +47,18 @@ fn menu_of(count: u8) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Long() -> Element {
     menu_of(30)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Short() -> Element {
     menu_of(4)
 }
@@ -84,7 +91,7 @@ fn a_long_menu_grows_to_the_window_edge_and_scrolls_by_its_strips() {
         menu.size.height.0
     );
     assert!(
-        menu.origin.y.0 + menu.size.height.0 <= VIEW.height as f32 - MARGIN + 0.5,
+        menu.origin.y.0 + menu.size.height.0 <= length(VIEW.height) - MARGIN + 0.5,
         "the menu stops 8 px short of the window's edge: {menu:?}"
     );
     assert_eq!(harness.count(END), 1, "rows lie below: {}", harness.html());

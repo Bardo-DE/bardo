@@ -47,7 +47,10 @@ pub fn next_check(last: Option<Attempt>, now: UnixSeconds, seed: u64) -> Due {
     let Some(last) = last else { return Due::Now };
     let jitter = i64::try_from(seed % JITTER_SECS).unwrap_or(0);
     let (wait, slack) = match last.outcome {
-        Outcome::Succeeded => (PERIOD_SECS + jitter, PERIOD_SECS + JITTER_SECS as i64),
+        Outcome::Succeeded => (
+            PERIOD_SECS + jitter,
+            PERIOD_SECS + i64::try_from(JITTER_SECS).unwrap_or(0),
+        ),
         Outcome::Failed => (RETRY_SECS, RETRY_SECS),
     };
     let due = last.at.0.saturating_add(wait);

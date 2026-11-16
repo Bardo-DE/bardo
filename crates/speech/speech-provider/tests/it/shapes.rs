@@ -168,7 +168,7 @@ fn frames_are_length_prefixed_and_capped() {
             len: MAX_FRAME_BYTES + 1
         })
     );
-    frame_length((MAX_FRAME_BYTES as u32).to_be_bytes()).unwrap();
+    frame_length(u32::try_from(MAX_FRAME_BYTES).unwrap().to_be_bytes()).unwrap();
     assert!(matches!(
         decode_frame::<HostIn>(b"{nope"),
         Err(FrameError::Json(_))

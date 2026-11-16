@@ -48,12 +48,32 @@ pub fn keep(frame: &RgbaImage, name: &str) {
     frame.save(&path).ok();
 }
 
+/// A layout coordinate as the index of the frame pixel it falls in: cut down to a whole pixel,
+/// and 0 for one left of or above the frame.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a float to int `as` saturates (a negative or NaN coordinate gives 0), and a frame is far narrower than u32"
+)]
+pub fn pixel(coord: f32) -> u32 {
+    coord.max(0.0) as u32
+}
+
+/// A size in whole pixels as a layout length.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a window or frame side in pixels is far below 2^24, where f32 stops being exact"
+)]
+pub fn length(pixels: u32) -> f32 {
+    pixels as f32
+}
+
 /// The pixels inside `rect`, inset by `inset` on every side.
 pub fn pixels(frame: &RgbaImage, rect: Rect, inset: f32) -> Vec<[u8; 4]> {
-    let x0 = (rect.origin.x.0 + inset).max(0.0) as u32;
-    let y0 = (rect.origin.y.0 + inset).max(0.0) as u32;
-    let x1 = ((rect.origin.x.0 + rect.size.width.0 - inset) as u32).min(frame.width());
-    let y1 = ((rect.origin.y.0 + rect.size.height.0 - inset) as u32).min(frame.height());
+    let x0 = pixel((rect.origin.x.0 + inset).max(0.0));
+    let y0 = pixel((rect.origin.y.0 + inset).max(0.0));
+    let x1 = pixel(rect.origin.x.0 + rect.size.width.0 - inset).min(frame.width());
+    let y1 = pixel(rect.origin.y.0 + rect.size.height.0 - inset).min(frame.height());
     (y0..y1)
         .flat_map(|y| (x0..x1).map(move |x| (x, y)))
         .map(|(x, y)| frame.get_pixel(x, y).0)

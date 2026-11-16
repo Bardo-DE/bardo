@@ -569,7 +569,7 @@ impl Filesystem for Mounted {
 
     fn open(&self, _req: &Request, ino: INodeNo, flags: OpenFlags, reply: ReplyOpen) {
         let write = flags.acc_mode() != OpenAccMode::O_RDONLY;
-        let truncate = rustix::fs::OFlags::from_bits_retain(flags.0 as u32)
+        let truncate = rustix::fs::OFlags::from_bits_retain(flags.0.cast_unsigned())
             .contains(rustix::fs::OFlags::TRUNC);
         let fs = std::sync::Arc::clone(&self.0);
         self.0.runtime.spawn(async move {

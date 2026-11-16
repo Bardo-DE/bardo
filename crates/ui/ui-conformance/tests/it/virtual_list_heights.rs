@@ -21,6 +21,16 @@ const LIST: f32 = 200.0;
 /// The component's default.
 const OVERSCAN: usize = 4;
 
+/// The overscan as a row index step.
+fn overscan() -> u32 {
+    u32::try_from(OVERSCAN).expect("a few rows")
+}
+
+/// The rows past `shown` that are mounted too, as a row index bound.
+fn overscanned(shown: usize) -> u32 {
+    u32::try_from(shown + OVERSCAN).expect("a few rows")
+}
+
 thread_local! {
     /// The keys `row` was called for, on this test's thread.
     static BUILT: RefCell<HashSet<u32>> = RefCell::new(HashSet::new());
@@ -43,7 +53,10 @@ fn top_of(key: u32) -> f32 {
     (0..key).map(height_of).sum()
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut keys = use_signal(|| (0..ROWS).collect::<Vec<u32>>());
     let mut cursor = use_signal(|| None::<u32>);
@@ -100,6 +113,10 @@ fn mounted(harness: &Harness) -> Vec<u32> {
 }
 
 /// How far the scroller element is scrolled.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a scroll offset in CSS pixels is far inside what an f32 holds"
+)]
 fn scrolled(harness: &Harness) -> f32 {
     harness
         .with_doc(|doc| {
@@ -138,10 +155,7 @@ fn rows_of_two_heights_are_laid_out_at_their_own_heights() {
 fn only_the_window_and_its_overscan_are_mounted_and_built() {
     let harness = harness();
     // Rows 0 to 3 start above 200 px; row 4 starts at 240.
-    assert_eq!(
-        mounted(&harness),
-        (0..(4 + OVERSCAN) as u32).collect::<Vec<_>>()
-    );
+    assert_eq!(mounted(&harness), (0..overscanned(4)).collect::<Vec<_>>());
     assert_eq!(built(), 4 + OVERSCAN, "row was called for those only");
 }
 
@@ -181,7 +195,7 @@ fn the_wheel_scrolls_by_the_sum_of_the_heights_above() {
     // 600 px down is inside row 10, which starts at 580.
     assert_eq!(placed(&harness, 10), (top_of(10) - 600.0, 70.0));
     let rows = mounted(&harness);
-    assert_eq!(rows.first().copied(), Some(10 - OVERSCAN as u32));
+    assert_eq!(rows.first().copied(), Some(10 - overscan()));
 }
 
 #[test]

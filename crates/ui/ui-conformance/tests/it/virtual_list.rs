@@ -21,6 +21,16 @@ const SHOWN: usize = 10;
 /// The component's default.
 const OVERSCAN: usize = 4;
 
+/// The overscan as a row index step.
+fn overscan() -> u32 {
+    u32::try_from(OVERSCAN).expect("a few rows")
+}
+
+/// The rows past `shown` that are mounted too, as a row index bound.
+fn overscanned(shown: usize) -> u32 {
+    u32::try_from(shown + OVERSCAN).expect("a few rows")
+}
+
 thread_local! {
     /// The keys `row` was called for, on this test's thread.
     static BUILT: RefCell<HashSet<u32>> = RefCell::new(HashSet::new());
@@ -30,7 +40,10 @@ fn built() -> usize {
     BUILT.with(|built| built.borrow().len())
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut keys = use_signal(|| (0..ROWS).collect::<Vec<u32>>());
     let mut cursor = use_signal(|| None::<u32>);
@@ -90,7 +103,7 @@ fn mounted(harness: &Harness) -> Vec<u32> {
 fn only_the_window_and_its_overscan_are_mounted_and_built() {
     let harness = harness();
     let rows = mounted(&harness);
-    assert_eq!(rows, (0..(SHOWN + OVERSCAN) as u32).collect::<Vec<_>>());
+    assert_eq!(rows, (0..overscanned(SHOWN)).collect::<Vec<_>>());
     assert_eq!(harness.count(".ds-list-item"), SHOWN + OVERSCAN);
     assert_eq!(built(), SHOWN + OVERSCAN, "row was called for those only");
 }
@@ -102,8 +115,8 @@ fn a_cursor_far_away_is_scrolled_into_view_and_the_window_follows() {
     // Row 5000 is below the view, so its bottom edge is aligned with the view's: rows 4991 to
     // 5000 show, with the overscan on each side.
     let rows = mounted(&harness);
-    assert_eq!(rows.first().copied(), Some(4991 - OVERSCAN as u32));
-    assert_eq!(rows.last().copied(), Some(5000 + OVERSCAN as u32));
+    assert_eq!(rows.first().copied(), Some(4991 - overscan()));
+    assert_eq!(rows.last().copied(), Some(5000 + overscan()));
     assert_eq!(rows.len(), SHOWN + 2 * OVERSCAN);
     assert!(built() < 100, "{} rows built of {ROWS}", built());
 
@@ -120,7 +133,7 @@ fn the_wheel_moves_the_window() {
     // Ten rows of 20 px.
     harness.send(Input::wheel(at, Px(0.0), Px(-200.0)));
     let rows = mounted(&harness);
-    assert_eq!(rows.first().copied(), Some(10 - OVERSCAN as u32));
+    assert_eq!(rows.first().copied(), Some(10 - overscan()));
     assert_eq!(rows.len(), SHOWN + 2 * OVERSCAN);
 }
 

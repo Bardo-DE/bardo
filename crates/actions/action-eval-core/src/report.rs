@@ -90,6 +90,11 @@ pub fn wilson(n: Count, k: Count) -> Rate95 {
     let denom = 1.0 + z2 / nf;
     let centre = (p + z2 / (2.0 * nf)) / denom;
     let half = Z * (p * (1.0 - p) / nf + z2 / (4.0 * nf * nf)).sqrt() / denom;
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "clamped to 0..=1 and scaled to 0..=1000"
+    )]
     let milli = |x: f64| Permille((x.clamp(0.0, 1.0) * 1000.0).round() as u32);
     Rate95 {
         point: milli(p),

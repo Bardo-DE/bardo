@@ -7,7 +7,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use image::RgbaImage;
-use probe::{distance, keep, rect};
+use probe::{distance, keep, pixel, rect};
 use std::cell::Cell;
 use std::time::Duration;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
@@ -32,7 +32,10 @@ const VIEW: Viewport = Viewport {
 /// The rail is 200 px wide from x 60 (room for the rubber band either side).
 const PROBE_CSS: &str = ".bar{margin:30px 0 0 60px;width:200px}";
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Level() -> Element {
     rsx! {
         Ds {
@@ -70,16 +73,16 @@ fn painted(harness: &mut Harness, name: &str) -> u32 {
     keep(&frame, name);
     // Below the glyph's ink (the glyph is centred in the capsule: 16 px in the 28 Regular one),
     // 5 px above the capsule's bottom edge, where the round end cuts a few px off the run.
-    let row = (track.origin.y.0 + track.size.height.0 - 5.0) as u32;
-    run_from(&frame, track.origin.x.0 as u32, row)
+    let row = pixel(track.origin.y.0 + track.size.height.0 - 5.0);
+    run_from(&frame, pixel(track.origin.x.0), row)
 }
 
 fn run_from(frame: &RgbaImage, left: u32, row: u32) -> u32 {
     let fill = frame.get_pixel(left + 6, row).0;
-    (left + 6..frame.width())
+    let run = (left + 6..frame.width())
         .take_while(|&x| distance(frame.get_pixel(x, row).0, fill) <= 16)
-        .count() as u32
-        + 6
+        .count();
+    u32::try_from(run).expect("a run along a frame row fits u32") + 6
 }
 
 /// The level the control last reported, read inside the app's runtime.
@@ -126,7 +129,7 @@ fn a_level_set_from_outside_slides_over_t_quick() {
         on_the_curve(500)
     );
     // The painted run ends where the knob starts, half a knob short of the fill's edge.
-    let knob_left = |level: f32| (fill_at(level) - HALF_KNOB).round() as u32;
+    let knob_left = |level: f32| pixel((fill_at(level) - HALF_KNOB).round());
     assert!(
         before.abs_diff(knob_left(0.2)) <= 4,
         "20 % of 200 px: {before}"
@@ -177,7 +180,7 @@ fn under_the_pointer_the_fill_follows_with_no_easing() {
         (moved - fill_at(0.7)).abs() <= 1.0,
         "16 ms after the move the fill is where the pointer is: {moved}"
     );
-    let knob_left = (fill_at(0.7) - HALF_KNOB).round() as u32;
+    let knob_left = pixel((fill_at(0.7) - HALF_KNOB).round());
     assert!(followed.abs_diff(knob_left) <= 4, "painted {followed}");
 }
 

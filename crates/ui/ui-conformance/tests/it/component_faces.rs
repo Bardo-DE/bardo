@@ -7,7 +7,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use image::RgbaImage;
-use probe::{distance, keep, modal, pixels, rect};
+use probe::{distance, keep, modal, pixel, pixels, rect};
 use std::time::Duration;
 use ui_components::components::app::space_editor::DotIndex;
 use ui_components::components::controls::button_model::Bezel;
@@ -139,21 +139,37 @@ const GROUND: [u8; 4] = [0xf3, 0xf4, 0xf1, 0xff];
 /// How many pixels from `(x, y)` stepping by `(dx, dy)` stand out from the ground, stopping
 /// at the first that does not.
 fn run(frame: &RgbaImage, (x, y): (i64, i64), (dx, dy): (i64, i64), by: u8) -> i64 {
-    (1..)
+    let stands_out = |(px, py): (i64, i64)| match (u32::try_from(px), u32::try_from(py)) {
+        (Ok(px), Ok(py)) => distance(frame.get_pixel(px, py).0, GROUND) > by,
+        _ => false,
+    };
+    let count = (1..)
         .map(|n| (x + dx * n, y + dy * n))
-        .take_while(|&(px, py)| {
-            px >= 0 && py >= 0 && distance(frame.get_pixel(px as u32, py as u32).0, GROUND) > by
-        })
-        .count() as i64
+        .take_while(|&at| stands_out(at))
+        .count();
+    i64::try_from(count).expect("a run along a frame fits i64")
+}
+
+/// A device pixel coordinate known to be inside the frame.
+fn pixel_at(coord: i64) -> u32 {
+    u32::try_from(coord).expect("the centre of a dot is inside the frame")
 }
 
 /// A dot's width and height in device pixels, measured through its centre: the dot in column
 /// `column` and row `row` of the grid, which starts 4.5 px inside the field's border and steps
 /// every 9 px (`space_editor.css`), at a scale of `scale`.
 fn dot_size(frame: &RgbaImage, field: Rect, column: u32, row: u32, scale: f32) -> (i64, i64) {
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        reason = "a dot's grid index and device pixel are small whole numbers, far inside what an f32 and an i64 hold"
+    )]
     let at = |origin: f32, index: u32| ((origin + 1.0 + 4.5 + 9.0 * index as f32) * scale) as i64;
     let centre = (at(field.origin.x.0, column), at(field.origin.y.0, row));
-    let ink = distance(frame.get_pixel(centre.0 as u32, centre.1 as u32).0, GROUND);
+    let ink = distance(
+        frame.get_pixel(pixel_at(centre.0), pixel_at(centre.1)).0,
+        GROUND,
+    );
     assert!(ink > 20, "no dot at {centre:?}: the centre is the ground");
     // Half the centre's contrast: the anti-aliased rim counts where it is mostly dot.
     let by = ink / 2;
@@ -173,7 +189,7 @@ fn dots_are_round(app: fn() -> Element, name: &str) {
     keep(&frame, name);
     let field = rect(&harness, ".ds-field");
     // Three dots away from the handles: the first column, a middle one, and near the end.
-    let last = ((field.size.width.0 - 2.0 - 4.5) / 9.0) as u32 - 1;
+    let last = pixel((field.size.width.0 - 2.0 - 4.5) / 9.0) - 1;
     for (column, row) in [(0, 2), (last / 2, 15), (last, 8)] {
         let (width, height) = dot_size(&frame, field, column, row, 2.0);
         assert!(

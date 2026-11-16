@@ -7,7 +7,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use image::{Rgba, RgbaImage};
-use probe::{keep, rect};
+use probe::{keep, pixel, rect};
 use std::time::Duration;
 use ui_components::prelude::*;
 use ui_components::style::icon::family::PlateFamily;
@@ -32,7 +32,10 @@ fn tint(space: usize) -> Tint {
 
 /// Row `scheme`, each Space's tinted plate then an untinted one. A hollow glyph (`Square`, outline)
 /// leaves the plate's centre to the gradient.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Plates() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -65,10 +68,7 @@ fn at(
     d: (f32, f32),
 ) -> Rgba<u8> {
     let plate = rect(harness, &format!(".{} .{which} .ds-plate", scheme.slug()));
-    *frame.get_pixel(
-        (plate.origin.x.0 + d.0) as u32,
-        (plate.origin.y.0 + d.1) as u32,
-    )
+    *frame.get_pixel(pixel(plate.origin.x.0 + d.0), pixel(plate.origin.y.0 + d.1))
 }
 
 /// A pixel's `OKLCh` hue and chroma (chroma capped at 0.07, which none of these reach).

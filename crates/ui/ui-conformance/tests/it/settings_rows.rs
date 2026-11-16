@@ -5,6 +5,7 @@
 //! reaches the host first; a grouped list after a `FieldRow` in one `FormSection` has the hairline
 //! between them; a neutral family tile turns dark with the scheme and its glyph shows on it.
 
+use crate::support::probe::{length, pixel};
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_blitz::Extent;
@@ -317,7 +318,7 @@ fn a_wide_control_wraps_inside_the_row_instead_of_overflowing() {
     let control = harness.rect(".ds-field-row-control").expect("control");
     let right = control.origin.x.0 + control.size.width.0;
     assert!(
-        right <= NARROW.width as f32,
+        right <= length(NARROW.width),
         "the control ends at {right}, past the window"
     );
     assert!(
@@ -367,9 +368,9 @@ fn a_grouped_list_after_a_field_row_has_the_hairline_between_them() {
         .expect("the list in the group");
     let picture = harness.render_over(Backdrop::Scheme).expect("a picture");
     // Across the row's width, right of its words: the group's ground, and the line on its top edge.
-    let top = list.origin.y.0.round() as u32;
+    let top = pixel(list.origin.y.0.round());
     let columns = || {
-        let start = (list.origin.x.0 + list.size.width.0 * 0.5) as u32;
+        let start = pixel(list.origin.x.0 + list.size.width.0 * 0.5);
         start..start + 40
     };
     let green = |x: u32, y: u32| i64::from(picture.get_pixel(x, y)[1]);
@@ -406,8 +407,8 @@ fn a_neutral_tile_is_dark_paper_in_the_dark_and_its_glyph_shows() {
     let mut harness = on_virtual(NeutralTileInDark);
     let tile = harness.rect(".ds-icon-tile").expect("the tile");
     let picture = harness.render_over(Backdrop::Scheme).expect("a picture");
-    let (left, top) = (tile.origin.x.0.ceil() as u32, tile.origin.y.0.ceil() as u32);
-    let side = tile.size.width.0.floor() as u32;
+    let (left, top) = (pixel(tile.origin.x.0.ceil()), pixel(tile.origin.y.0.ceil()));
+    let side = pixel(tile.size.width.0.floor());
     // The inner square, clear of the corners and the rim.
     let greens: Vec<u32> = (top + 3..top + side - 3)
         .flat_map(|y| (left + 3..left + side - 3).map(move |x| (x, y)))

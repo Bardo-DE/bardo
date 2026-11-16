@@ -3,6 +3,7 @@
 //! while leaving, it is present at once and never reports; and a centred sheet in a viewport root
 //! stands in the middle of it.
 
+use crate::support::probe::length;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::overlays::sheet_attach::Attach;
@@ -22,7 +23,10 @@ fn fading(motion: Motion) -> Harness {
         static MOTION: std::cell::Cell<Motion> = const { std::cell::Cell::new(Motion::Standard) };
     }
     MOTION.with(|cell| cell.set(motion));
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Fading() -> Element {
         let motion = MOTION.with(std::cell::Cell::get);
         rsx! {
@@ -35,7 +39,10 @@ fn fading(motion: Motion) -> Harness {
 }
 
 /// A power menu the page shows and hides from a context signal, logging `on_hidden`.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let shown = use_context_provider(|| Signal::new(true));
     let mut log = use_signal(Vec::<&'static str>::new);
@@ -133,11 +140,14 @@ fn a_centred_sheet_stands_in_the_middle_of_its_root() {
     let sheet = harness.rect(".ds-sheet").expect("the sheet is laid out");
     let middle = sheet.origin.y.0 + sheet.size.height.0 / 2.0;
     assert!(
-        (middle - VIEW.height as f32 / 2.0).abs() <= 1.0,
+        (middle - length(VIEW.height) / 2.0).abs() <= 1.0,
         "the sheet's middle is at {middle}: {sheet:?}"
     );
     let across = sheet.origin.x.0 + sheet.size.width.0 / 2.0;
-    assert!((across - VIEW.width as f32 / 2.0).abs() <= 1.0, "{sheet:?}");
+    assert!(
+        (across - length(VIEW.width) / 2.0).abs() <= 1.0,
+        "{sheet:?}"
+    );
 }
 
 #[test]

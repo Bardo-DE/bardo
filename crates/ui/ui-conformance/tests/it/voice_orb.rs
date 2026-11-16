@@ -2,6 +2,7 @@
 //! back from the pixels), it turns only while it is active, holds where it stands when it stops,
 //! stays still under Reduced motion, and an idle orb wakes the document for nothing.
 
+use crate::support::probe::pixel;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::content::voice_orb::view::VoiceOrb;
@@ -19,7 +20,10 @@ static ACTIVITY: GlobalSignal<bool> = Signal::global(|| false);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
 /// A 192 px orb (a 20 s turn) on the window ground, its activity and motion set from outside.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Stage() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,
@@ -122,7 +126,7 @@ fn a_reduced_orb_does_not_turn() {
 fn orb_pixels(harness: &mut Harness) -> (image::RgbaImage, u32, u32) {
     let frame = harness.render_over(Backdrop::Clear).expect("paints");
     let at = harness.rect(".ds-voice-orb").expect("the orb is laid out");
-    (frame, at.origin.x.0 as u32, at.origin.y.0 as u32)
+    (frame, pixel(at.origin.x.0), pixel(at.origin.y.0))
 }
 
 #[test]
@@ -141,6 +145,11 @@ fn the_orb_paints_a_round_field_of_colour() {
         .flat_map(|dy| (0..192).map(move |dx| (dx, dy)))
         .filter(|(dx, dy)| alpha(*dx, *dy) > 0)
         .count();
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "the area of a 96 px disc is a positive 28 953.x"
+    )]
     let disc = (std::f32::consts::PI * 96.0 * 96.0) as usize;
     assert!(
         painted * 100 > disc * 60,

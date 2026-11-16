@@ -16,7 +16,10 @@ const VIEW: Viewport = Viewport {
 /// The list is 200 px tall: ten 20 px rows show.
 const SHOWN: usize = 10;
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     // Keys count down from 999 to 100 so a row's key is stable and a prepend is a smaller key.
     let mut keys = use_signal(|| (100..1000u32).rev().collect::<Vec<u32>>());
@@ -79,6 +82,10 @@ fn mounted(harness: &Harness) -> Vec<u32> {
 }
 
 /// How far the list is scrolled.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a scroll offset in CSS pixels is far inside what an f32 holds"
+)]
 fn offset(harness: &Harness) -> f32 {
     harness.with_doc(|doc| {
         doc.query_selector(".ds-scroller")

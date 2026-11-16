@@ -5,6 +5,7 @@
 //! pointer moves: a press there reaches the button below and the hold runs; after a move onto it
 //! the toast holds and its Undo takes the press.
 
+use crate::support::probe::length;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::prelude::*;
@@ -168,7 +169,7 @@ fn with_no_sheet_the_toast_stays_at_the_bottom() {
         Some("bottom")
     );
     let toast = harness.rect(".ds-toast").expect("the toast");
-    assert!(toast.origin.y.0 > VIEW.height as f32 / 2.0, "{toast:?}");
+    assert!(toast.origin.y.0 > length(VIEW.height) / 2.0, "{toast:?}");
 }
 
 #[test]

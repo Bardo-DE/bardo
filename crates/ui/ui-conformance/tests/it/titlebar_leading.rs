@@ -3,6 +3,7 @@
 //! no window move, and it keeps the title where each placement puts it (centred in the bar, or in
 //! the room between the leading and trailing controls).
 
+use crate::support::probe::length;
 use crate::window_frame_controls::{BAR, Stub, VIEW, at, centre, drag, log, ms, start};
 use dioxus::prelude::*;
 use std::rc::Rc;
@@ -11,7 +12,10 @@ use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
 use ui_harness::Input;
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Led() -> Element {
     let log = use_signal(Vec::<String>::new);
     let mut picked = use_signal(|| 0u32);
@@ -36,13 +40,19 @@ fn Led() -> Element {
 }
 
 /// A bare titlebar with a wide leading control and a trailing one, the title centred.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn BarCentred() -> Element {
     bar(TitleRoom::Centred)
 }
 
 /// The same bar with the title kept to the room between the two controls.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn BarBeside() -> Element {
     bar(TitleRoom::Beside)
 }
@@ -72,7 +82,7 @@ fn the_leading_slot_is_drawn_after_the_lights_and_before_the_title() {
         .expect("leading slot");
     let title = html.find("class=\"ds-titlebar-title").expect("title area");
     assert!(lights < slot && slot < title, "{html}");
-    assert!(centre(&harness, ".ds-titlebar-leading .side").x.0 < VIEW.width as f32 / 4.0);
+    assert!(centre(&harness, ".ds-titlebar-leading .side").x.0 < length(VIEW.width) / 4.0);
 }
 
 #[test]
@@ -107,7 +117,7 @@ fn a_press_on_the_leading_slot_does_not_begin_a_move() {
 fn a_centred_title_stays_in_the_middle_of_the_bar_whatever_leads() {
     let harness = start(BarCentred);
     let title = centre(&harness, ".ds-titlebar-title").x.0;
-    assert!((title - VIEW.width as f32 / 2.0).abs() < 1.5, "{title}");
+    assert!((title - length(VIEW.width) / 2.0).abs() < 1.5, "{title}");
 }
 
 #[test]
@@ -119,5 +129,5 @@ fn a_beside_title_is_centred_between_the_leading_and_trailing_controls() {
     assert!(side < title && title < mode, "{side} {title} {mode}");
     // The leading control is wider than the trailing one, so the room's middle lies right of the
     // bar's middle by half the difference of their widths (80 px) and the title follows it.
-    assert!(title > VIEW.width as f32 / 2.0, "{title}");
+    assert!(title > length(VIEW.width) / 2.0, "{title}");
 }

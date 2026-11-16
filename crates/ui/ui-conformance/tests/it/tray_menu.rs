@@ -7,7 +7,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use image::{ImageFormat, Rgba, RgbaImage};
-use probe::{distance, keep, modal, pixels, rect};
+use probe::{distance, keep, modal, pixel, pixels, rect};
 use std::io::Cursor;
 use std::time::Duration;
 use ui_components::base::press::{PointerButton, Press};
@@ -141,8 +141,8 @@ fn a_symbolic_mask_takes_the_ink_and_an_image_keeps_its_colour() {
     let ground = modal(&pixels(&frame, rect(&harness, ".ink-host"), 1.0));
     let corner = frame
         .get_pixel(
-            symbolic.origin.x.0 as u32 + 1,
-            symbolic.origin.y.0 as u32 + 1,
+            pixel(symbolic.origin.x.0) + 1,
+            pixel(symbolic.origin.y.0) + 1,
         )
         .0;
     assert!(

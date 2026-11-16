@@ -28,7 +28,7 @@ fn Root(children: Element) -> Element {
 
 use crate::support::probe;
 
-use probe::{centred, distance, ink, keep, pixels, rect};
+use probe::{centred, distance, ink, keep, pixel, pixels, rect};
 
 // ---- 1. TextField is one line tall ----------------------------------------------------------
 
@@ -354,8 +354,8 @@ fn the_space_editor_field_paints_and_its_presets_are_22_px() {
     );
     let centre = frame
         .get_pixel(
-            (field.origin.x.0 + field.size.width.0 / 2.0) as u32,
-            (field.origin.y.0 + field.size.height.0 / 2.0) as u32,
+            pixel(field.origin.x.0 + field.size.width.0 / 2.0),
+            pixel(field.origin.y.0 + field.size.height.0 / 2.0),
         )
         .0;
     // Light `--paper` is #e9ece6 (design/03-COLOR.md): the field's centre is the plane, not the

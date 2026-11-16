@@ -43,6 +43,10 @@ enum Placing {
 }
 
 /// The pointer's client point as a zero-size rect.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a pointer position in CSS pixels is far inside what an f32 holds"
+)]
 fn at_pointer(event: &PointerEvent) -> Rect {
     let point = event.client_coordinates();
     Rect {
@@ -121,17 +125,26 @@ fn Page(placing: Placing) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn ByElement() -> Element {
     rsx! { Ds { appearance: Appearance::default(), material: Material::Window, Page { placing: Placing::Element } } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn ByPoint() -> Element {
     rsx! { Ds { appearance: Appearance::default(), material: Material::Window, Page { placing: Placing::Point } } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Unplaced() -> Element {
     rsx! { Ds { appearance: Appearance::default(), material: Material::Window, Page { placing: Placing::Unplaced } } }
 }

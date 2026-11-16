@@ -68,7 +68,10 @@ fn Hung(held: Option<bool>) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
@@ -76,7 +79,10 @@ fn Page() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Held() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
@@ -84,7 +90,10 @@ fn Held() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Open() -> Element {
     use_context_provider(|| Signal::new(true));
     rsx! {
@@ -95,6 +104,10 @@ fn Open() -> Element {
 /// A rect as whole pixels, `x,y,width,height`: how the page writes what `on_layout` reported and
 /// how the test reads what is drawn, so rounding in either reading is not a difference.
 fn whole(rect: Rect) -> String {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a laid-out coordinate is far inside what an i32 holds"
+    )]
     let n = |px: Px| px.0.round() as i32;
     format!(
         "{},{},{},{}",

@@ -7,7 +7,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use image::RgbaImage;
-use probe::rect;
+use probe::{length, rect};
 use std::time::Duration;
 use ui_components::components::menus::palette::palette_group::PaletteGroup;
 use ui_components::components::menus::palette::palette_group::PaletteRow;
@@ -57,7 +57,10 @@ fn nth_row(n: usize) -> String {
 
 /// A launcher panel logging the palette's selection and row rects; typing into the field
 /// gives the field an operator token, which moves the list down without moving the selection.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Rows() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut query = use_signal(String::new);
@@ -183,12 +186,18 @@ fn TabPage(takes: TakesTab) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn TabConsumed() -> Element {
     rsx! { TabPage { takes: TakesTab::Consumes } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn TabPassed() -> Element {
     rsx! { TabPage { takes: TakesTab::Passes } }
 }
@@ -263,7 +272,10 @@ fn KeptPage() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn KeptFresh() -> Element {
     rsx! { KeptPage {} }
 }
@@ -274,6 +286,11 @@ fn toggle(harness: &mut Harness) {
 }
 
 /// How many pixels inside `area` differ between two frames.
+/// A pixel count as a number of pixels.
+fn count(pixels: usize) -> u32 {
+    u32::try_from(pixels).expect("a count of pixels in a card fits u32")
+}
+
 fn differing(a: &RgbaImage, b: &RgbaImage, area: Rect) -> usize {
     probe::pixels(a, area, 0.0)
         .into_iter()
@@ -366,12 +383,12 @@ fn a_kept_palette_replays_its_entrance_on_every_show() {
     for (name, mid) in [("first", &first_mid), ("second", &second_mid)] {
         let changed = differing(mid, &settled, card);
         assert!(
-            changed as f32 > area * 0.1,
+            length(count(changed)) > area * 0.1,
             "the {name} show is mid-entrance 40 ms in: {changed} pixels differ"
         );
     }
     assert!(
-        differing(&hidden, &settled, card) as f32 > area * 0.5,
+        length(count(differing(&hidden, &settled, card))) > area * 0.5,
         "the shown card is painted"
     );
     toggle(&mut harness);
@@ -414,12 +431,18 @@ fn trailing_page(trailing: bool) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn WithTrailing() -> Element {
     trailing_page(true)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn WithoutTrailing() -> Element {
     trailing_page(false)
 }

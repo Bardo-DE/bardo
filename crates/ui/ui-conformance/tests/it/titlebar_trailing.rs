@@ -2,6 +2,7 @@
 //! on it reaches the app's own control, and a press that travels over it begins no window move
 //! (while the same drag on the bar's empty middle still does).
 
+use crate::support::probe::length;
 use crate::window_frame_controls::{BAR, Stub, VIEW, at, centre, drag, log, ms, start};
 use dioxus::prelude::*;
 use std::rc::Rc;
@@ -9,7 +10,10 @@ use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
 use ui_harness::Input;
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Trailed() -> Element {
     let log = use_signal(Vec::<String>::new);
     let mut picked = use_signal(|| 0u32);
@@ -40,7 +44,7 @@ fn the_trailing_slot_is_drawn_inside_the_bar_after_the_title() {
     let title = bar.find("ds-titlebar-title").expect("title area");
     let slot = bar.find("ds-titlebar-trailing").expect("trailing slot");
     assert!(title < slot, "{bar}");
-    assert!(centre(&harness, ".ds-titlebar-trailing .mode").x.0 > VIEW.width as f32 / 2.0);
+    assert!(centre(&harness, ".ds-titlebar-trailing .mode").x.0 > length(VIEW.width) / 2.0);
 }
 
 #[test]

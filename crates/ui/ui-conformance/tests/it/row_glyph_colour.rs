@@ -5,6 +5,7 @@
 //! "A colour-only restyle"), which quire hid by remounting the leading span on every selection
 //! change.
 
+use crate::support::probe::pixel;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::base::vocab::RowState;
@@ -20,7 +21,10 @@ const VIEW: Viewport = Viewport {
 
 static SELECTION: GlobalSignal<bool> = Signal::global(|| false);
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -54,10 +58,10 @@ fn ink_against_ground(harness: &mut Harness) -> i32 {
         .rect(".ds-row-leading svg")
         .expect("the glyph is laid out");
     let image = harness.render_over(Backdrop::Scheme).expect("paints");
-    let (x0, y0) = (rect.origin.x.0 as u32, rect.origin.y.0 as u32);
+    let (x0, y0) = (pixel(rect.origin.x.0), pixel(rect.origin.y.0));
     let (x1, y1) = (
-        x0 + rect.size.width.0 as u32,
-        y0 + rect.size.height.0 as u32,
+        x0 + pixel(rect.size.width.0),
+        y0 + pixel(rect.size.height.0),
     );
     let ground = luma(image.get_pixel(x0.saturating_sub(2), y0.saturating_sub(2)));
     let image = &image;

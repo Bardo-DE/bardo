@@ -2,6 +2,7 @@
 //! it, on a real Blitz document: a floating surface stays 8 px inside the window, as an
 //! `NSMenu` does.
 
+use crate::support::probe::length;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
@@ -34,7 +35,10 @@ fn settled(app: fn() -> Element, scale_percent: u16) -> Harness {
     harness
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn LongMenu() -> Element {
     let items = (0..ROWS)
         .map(|value| MenuItem::Item {
@@ -63,7 +67,10 @@ fn LongMenu() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn LongPalette() -> Element {
     let rows = (0..ROWS)
         .map(|value| PaletteRow::new(value, format!("Command {value}")))
@@ -92,7 +99,7 @@ fn inside_window(harness: &Harness, selector: &str, what: &str) {
         .unwrap_or_else(|| panic!("{what} is not drawn:\n{}", harness.html()));
     let (top, bottom) = (rect.origin.y.0, rect.origin.y.0 + rect.size.height.0);
     assert!(
-        top >= MARGIN - 0.5 && bottom <= HEIGHT as f32 - MARGIN + 0.5,
+        top >= MARGIN - 0.5 && bottom <= length(HEIGHT) - MARGIN + 0.5,
         "{what} spans {top}..{bottom} in a {HEIGHT} px window"
     );
 }

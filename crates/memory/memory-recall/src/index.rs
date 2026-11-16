@@ -481,6 +481,10 @@ async fn embed_docs(
         .filter(|(slot, _)| !refused.contains(slot))
         .filter_map(|(_, (d, sum))| {
             sum.map(|(mut v, n)| {
+                #[expect(
+                    clippy::cast_precision_loss,
+                    reason = "a document has far fewer than 2^24 chunks, where f32 stops being exact"
+                )]
                 let n = n as f32;
                 v.iter_mut().for_each(|x| *x /= n);
                 (d.id.clone(), Vector(v))

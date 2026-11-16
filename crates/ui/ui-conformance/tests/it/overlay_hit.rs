@@ -133,7 +133,10 @@ fn Page(card: Card) -> Element {
 
 macro_rules! app {
     ($name:ident, $card:expr) => {
-        #[allow(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+        #[allow(
+            non_snake_case,
+            reason = "a Dioxus component function is named in CamelCase"
+        )]
         fn $name() -> Element {
             rsx! {
                 Ds { appearance: Appearance::default(), material: Material::Window,
@@ -215,6 +218,10 @@ fn MailRow(i: usize, log: Signal<Vec<String>>) -> Element {
             // mailo's `line_at`: the part's top-left corner and one line's height.
             let client = event.client_coordinates();
             let offset = event.element_coordinates();
+            #[expect(
+                clippy::cast_possible_truncation,
+                reason = "a pointer position in CSS pixels is far inside what an f32 holds"
+            )]
             let line = Rect {
                 origin: Point {
                     x: Px((client.x - offset.x) as f32),
@@ -293,7 +300,10 @@ fn MailPage() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn MailApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, MailPage {} }

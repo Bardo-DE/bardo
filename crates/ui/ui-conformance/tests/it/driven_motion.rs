@@ -30,7 +30,10 @@ fn virtual_harness(app: fn() -> Element) -> Harness {
 
 static LEVEL: GlobalSignal<Fraction> = Signal::global(|| Fraction(300));
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Level() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -79,6 +82,11 @@ fn a_slider_thrown_from_thirty_percent_lands_where_the_throw_projects() {
         velocity: Velocity(1500),
     }
     .projected();
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "clamped to 0..=1000 just before"
+    )]
     let want = ((projected.0 / width) * 1000.0).clamp(0.0, 1000.0).round() as u16;
     assert_eq!(
         want, 1000,
@@ -120,7 +128,10 @@ fn a_slider_let_go_while_still_keeps_its_value() {
 
 static WIFI: GlobalSignal<Check> = Signal::global(|| Check::Off);
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Wifi() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -163,7 +174,10 @@ fn a_toggle_clicked_again_mid_slide_turns_back_from_where_it_is() {
 
 static CELL: GlobalSignal<(f32, f32)> = Signal::global(|| (0.0, 0.0));
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Widget() -> Element {
     let (x, y) = CELL();
     let spec = SpringSpec::for_touch(Touch::Remote);

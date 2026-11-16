@@ -3,6 +3,7 @@
 //! nothing, while the same press on its enabled neighbour does, and it is drawn faded: its
 //! darkest ink is far lighter than the same button's enabled.
 
+use crate::support::probe::pixel;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
@@ -17,7 +18,10 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A power menu's row, and a row of the same actions disabled.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<&'static str>::new);
     rsx! {
@@ -88,10 +92,10 @@ fn a_press_on_a_disabled_button_fires_nothing() {
 /// The darkest channel sum inside `selector`'s box: its label's ink.
 fn darkest(harness: &Harness, frame: &image::RgbaImage, selector: &str) -> u32 {
     let rect = harness.rect(selector).expect("laid out");
-    let (x0, y0) = (rect.origin.x.0 as u32 + 2, rect.origin.y.0 as u32 + 2);
+    let (x0, y0) = (pixel(rect.origin.x.0) + 2, pixel(rect.origin.y.0) + 2);
     let (x1, y1) = (
-        (rect.origin.x.0 + rect.size.width.0) as u32 - 2,
-        (rect.origin.y.0 + rect.size.height.0) as u32 - 2,
+        pixel(rect.origin.x.0 + rect.size.width.0) - 2,
+        pixel(rect.origin.y.0 + rect.size.height.0) - 2,
     );
     (y0..y1)
         .flat_map(|y| (x0..x1).map(move |x| (x, y)))

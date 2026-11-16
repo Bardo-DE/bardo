@@ -5,7 +5,7 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
-use probe::rect;
+use probe::{pixel, rect};
 use std::time::Duration;
 use ui_blitz::FocusFallback;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
@@ -134,22 +134,34 @@ fn Panel(selection: Selection, give_back: GiveBack) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn OwnSelection() -> Element {
     rsx! { Panel { selection: Selection::Own, give_back: GiveBack::Yes } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn FollowedSelection() -> Element {
     rsx! { Panel { selection: Selection::Followed, give_back: GiveBack::Yes } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn PinnedSelection() -> Element {
     rsx! { Panel { selection: Selection::Pinned, give_back: GiveBack::Yes } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn KeptFocus() -> Element {
     rsx! { Panel { selection: Selection::Own, give_back: GiveBack::No } }
 }
@@ -350,7 +362,10 @@ fn red_png() -> Vec<u8> {
     bytes.into_inner()
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn AppIconRow() -> Element {
     let icon = IconSource::Image(ExternalIcon {
         url: IconUrl::png(&red_png()),
@@ -393,8 +408,8 @@ fn an_app_icon_fills_its_rows_tile() {
     assert_eq!(icon, tile, "the icon fills the tile");
     let frame = harness.render().expect("a frame");
     let centre = frame.get_pixel(
-        (icon.origin.x.0 + icon.size.width.0 / 2.0) as u32,
-        (icon.origin.y.0 + icon.size.height.0 / 2.0) as u32,
+        pixel(icon.origin.x.0 + icon.size.width.0 / 2.0),
+        pixel(icon.origin.y.0 + icon.size.height.0 / 2.0),
     );
     assert!(
         centre[0] > 200 && centre[1] < 60 && centre[2] < 60,

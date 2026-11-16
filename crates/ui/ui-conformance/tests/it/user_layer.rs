@@ -22,7 +22,10 @@ thread_local! {
         const { Cell::new(("", "", "")) };
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Desk() -> Element {
     let (app, look, user) = SHEETS.get();
     let styles = use_signal(|| Styles {
@@ -50,6 +53,11 @@ fn fill(app: &'static str, user: &'static str) -> [u8; 4] {
 }
 
 /// The same with a look between them.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a colour channel in 0..=1 times 255 is a whole number in 0..=255"
+)]
 fn fill_with_look(app: &'static str, look: &'static str, user: &'static str) -> [u8; 4] {
     SHEETS.set((app, look, user));
     let harness = Harness::new(Desk, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));

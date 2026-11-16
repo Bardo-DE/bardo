@@ -3,6 +3,7 @@
 //! slides out and `on_hidden` runs at `settle(PanelOut)`, not before, after which nothing is laid
 //! out; shown again while it leaves, the hide is taken back.
 
+use crate::support::probe::length;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::prelude::*;
@@ -18,7 +19,10 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Center() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, extent: RootExtent::Viewport,
@@ -52,11 +56,11 @@ fn shown_it_comes_to_rest_at_the_right_edge() {
         .expect("the panel is laid out");
     assert!((panel.size.width.0 - 384.0).abs() < 0.5, "{panel:?}");
     assert!(
-        (VIEW.width as f32 - panel.right().0 - 8.0).abs() < 0.5,
+        (length(VIEW.width) - panel.right().0 - 8.0).abs() < 0.5,
         "8 in from the right edge: {panel:?}"
     );
     assert!(
-        (panel.size.height.0 - (VIEW.height as f32 - 16.0)).abs() < 0.5,
+        (panel.size.height.0 - (length(VIEW.height) - 16.0)).abs() < 0.5,
         "full height, 8 in top and bottom: {panel:?}"
     );
 }

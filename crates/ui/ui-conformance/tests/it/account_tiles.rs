@@ -5,7 +5,7 @@
 use crate::support::probe;
 
 use dioxus::prelude::*;
-use probe::rect;
+use probe::{pixel, rect};
 use std::time::Duration;
 use ui_components::components::app::pin_tile::{PinFace, PinStatus};
 use ui_components::components::app::pin_tiles::{PinAdd, PinItem, PinMenu, PinTiles};
@@ -185,8 +185,8 @@ fn the_add_tile_has_no_plate_at_rest() {
     // `dy` down from the tile's top edge, at its middle: 3 is inside, -6 the padding above.
     let at = |selector: &str, dy: f32| {
         let tile = rect(&harness, selector);
-        let x = (tile.origin.x.0 + tile.size.width.0 / 2.0) as u32;
-        let y = (tile.origin.y.0 + dy) as u32;
+        let x = pixel(tile.origin.x.0 + tile.size.width.0 / 2.0);
+        let y = pixel(tile.origin.y.0 + dy);
         frame.get_pixel(x, y).0
     };
     let corner = |selector: &str| at(selector, 3.0);

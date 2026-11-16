@@ -44,12 +44,18 @@ fn page(theme: Theme) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Light() -> Element {
     page(Theme::Light)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Dark() -> Element {
     page(Theme::Dark)
 }
@@ -60,12 +66,15 @@ fn ink_box(harness: &Harness, frame: &image::RgbaImage, selector: &str) -> (u32,
     let area = probe::rect(harness, selector);
     let seen = probe::pixels(frame, area, 0.0);
     let ground = probe::modal(&seen);
-    let width = area.size.width.0 as u32;
+    let width = probe::pixel(area.size.width.0);
     let marks: Vec<(u32, u32)> = seen
         .iter()
         .enumerate()
         .filter(|(_, pixel)| probe::distance(**pixel, ground) > 60)
-        .map(|(at, _)| (at as u32 % width, at as u32 / width))
+        .map(|(at, _)| {
+            let at = u32::try_from(at).expect("a frame pixel index fits u32");
+            (at % width, at / width)
+        })
         .collect();
     let span = |value: fn(&(u32, u32)) -> u32| {
         let low = marks.iter().map(value).min().unwrap_or(0);

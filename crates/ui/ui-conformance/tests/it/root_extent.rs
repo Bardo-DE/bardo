@@ -2,6 +2,7 @@
 //! viewport. `RootExtent::Viewport` makes it the viewport's size, measured on a real Blitz
 //! document, and the sheet it hosts has that area to be placed in.
 
+use crate::support::probe::length;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_components::components::chrome::split_view::view::SplitView;
@@ -26,12 +27,18 @@ fn Overlay(extent: RootExtent) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Content() -> Element {
     rsx! { Overlay { extent: RootExtent::Content } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Full() -> Element {
     rsx! { Overlay { extent: RootExtent::Viewport } }
 }
@@ -61,20 +68,23 @@ fn a_viewport_root_is_the_viewports_size_and_its_sheet_is_placed_in_it() {
         Some("viewport")
     );
     let root = harness.rect(".ds").expect("the root is laid out");
-    assert_eq!(root.size.height.0, VIEW.height as f32, "{root:?}");
-    assert_eq!(root.size.width.0, VIEW.width as f32, "{root:?}");
+    assert_eq!(root.size.height.0, length(VIEW.height), "{root:?}");
+    assert_eq!(root.size.width.0, length(VIEW.width), "{root:?}");
     let sheet = harness.rect(".ds-sheet").expect("the sheet is laid out");
     assert!(
         sheet.size.height.0 > 20.0,
         "the sheet has its content's height: {sheet:?}"
     );
     assert!(
-        sheet.origin.y.0 + sheet.size.height.0 <= VIEW.height as f32,
+        sheet.origin.y.0 + sheet.size.height.0 <= length(VIEW.height),
         "the sheet is inside the viewport: {sheet:?}"
     );
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Window() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Window,
@@ -87,8 +97,8 @@ fn Window() -> Element {
 fn a_window_root_fills_the_window_so_a_full_height_child_needs_no_container() {
     let harness = laid_out(Window);
     let root = harness.rect(".ds").expect("the root is laid out");
-    assert_eq!(root.size.height.0, VIEW.height as f32, "{root:?}");
-    assert_eq!(root.size.width.0, VIEW.width as f32, "{root:?}");
+    assert_eq!(root.size.height.0, length(VIEW.height), "{root:?}");
+    assert_eq!(root.size.width.0, length(VIEW.width), "{root:?}");
     let split = harness.rect(".ds-split").expect("the split is laid out");
-    assert_eq!(split.size.height.0, VIEW.height as f32, "{split:?}");
+    assert_eq!(split.size.height.0, length(VIEW.height), "{split:?}");
 }

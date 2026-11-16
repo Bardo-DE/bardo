@@ -101,7 +101,8 @@ fn a_stale_exception_fails() {
 fn a_two_megabyte_single_line_page_reports_the_late_offence_position() {
     let filler = "<p class=\"ds-ok\">é</p>";
     let mut html = filler.repeat(2_000_000 / filler.len());
-    let late_column = html.chars().count() as u32 + 1;
+    let late_column =
+        u32::try_from(html.chars().count()).expect("a page of two million characters") + 1;
     html.push_str("<p class=\"nope\">x</p>");
     let offences = markup(&html, ".ds-ok{}", &LintConfig::new(&ui_components::kits()));
     assert_eq!(offences.len(), 1, "{offences:?}");

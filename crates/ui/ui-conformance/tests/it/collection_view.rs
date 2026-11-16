@@ -25,6 +25,11 @@ const VIEW: Viewport = Viewport {
 const TILES: u32 = 1_000;
 /// The grid's columns, fixed so the test does not depend on the measured width.
 const COLUMNS: usize = 4;
+
+/// One row of the grid as the step an arrow key moves.
+fn columns_step() -> i64 {
+    i64::try_from(COLUMNS).expect("a few columns")
+}
 /// Past the fade.
 const SETTLED: Duration = Duration::from_millis(700);
 /// The tile whose name is long enough to be clipped.
@@ -67,7 +72,7 @@ fn Page() -> Element {
                 CollectionView::<u32> {
                     label: "Files",
                     items,
-                    flow: Flow::Columns(COLUMNS as u8),
+                    flow: Flow::Columns(u8::try_from(COLUMNS).expect("a few columns")),
                     cursor: cursor(),
                     onreach: move |pick: Pick| {
                         REACHED.set(Some(pick));
@@ -128,8 +133,8 @@ fn the_arrows_move_the_cursor_by_a_tile_and_by_a_row_and_home_and_end_go_to_the_
     assert_eq!(harness.count(".ds-cv-item[aria-selected=true]"), 1);
     // (key, cursor after)
     let steps = [
-        (ShortcutKey::Down, COLUMNS as i64),
-        (ShortcutKey::Right, COLUMNS as i64 + 1),
+        (ShortcutKey::Down, columns_step()),
+        (ShortcutKey::Right, columns_step() + 1),
         (ShortcutKey::Up, 1),
         (ShortcutKey::Left, 0),
         (ShortcutKey::Left, 0),
@@ -278,7 +283,7 @@ fn FewPage() -> Element {
                 CollectionView::<u32> {
                     label: "Few",
                     items,
-                    flow: Flow::Columns(COLUMNS as u8),
+                    flow: Flow::Columns(u8::try_from(COLUMNS).expect("a few columns")),
                     cursor: cursor(),
                     onselect: move |at| {
                         cursor.set(Some(at));

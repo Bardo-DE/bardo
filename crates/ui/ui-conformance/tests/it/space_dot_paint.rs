@@ -34,7 +34,10 @@ fn cases() -> [usize; 2] {
 }
 
 /// Each dot at (40 + 60n, 30), its reference box at (40 + 60n, 70).
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Dots() -> Element {
     rsx! {
         Ds { sheet: Some(ui_shell::stylesheet()), appearance: Appearance::default(), material: Material::Popover,
@@ -60,7 +63,7 @@ fn Dots() -> Element {
 fn a_space_dot_paints_what_its_inline_gradient_painted() {
     let mut harness = Harness::new(Dots, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     let picture = harness.render().expect("renders");
-    for n in 0..cases().len() as u32 {
+    for n in 0..u32::try_from(cases().len()).expect("a few cases") {
         let x0 = 40 + 60 * n;
         let mut worst = 0u8;
         let mut coloured = 0;

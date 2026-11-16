@@ -15,7 +15,7 @@ use crate::support::probe;
 
 use dioxus::prelude::*;
 use image::RgbaImage;
-use probe::{distance, modal, rect};
+use probe::{distance, modal, pixel, rect};
 use std::time::Duration;
 use ui_components::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
 use ui_components::prelude::*;
@@ -30,7 +30,10 @@ const VIEW: Viewport = Viewport {
 
 /// One Small cap per arrow, plus a plain Small letter cap (`plain`) as the height baseline every
 /// arrow cap must still match, each in its own box so each can be probed alone.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let keys = [
         ("left", ShortcutKey::Left),
@@ -57,9 +60,9 @@ fn Page() -> Element {
 fn ink_box(harness: &Harness, frame: &RgbaImage, selector: &str) -> (u32, u32) {
     let cap = rect(harness, selector);
     // Inside the cap's border (1 px, 2 px at the bottom) so the rim is not ink.
-    let (x0, y0) = (cap.origin.x.0 as u32 + 2, cap.origin.y.0 as u32 + 2);
-    let x1 = (cap.origin.x.0 + cap.size.width.0) as u32 - 2;
-    let y1 = (cap.origin.y.0 + cap.size.height.0) as u32 - 3;
+    let (x0, y0) = (pixel(cap.origin.x.0) + 2, pixel(cap.origin.y.0) + 2);
+    let x1 = pixel(cap.origin.x.0 + cap.size.width.0) - 2;
+    let y1 = pixel(cap.origin.y.0 + cap.size.height.0) - 3;
     let seen: Vec<(u32, u32, [u8; 4])> = (y0..y1)
         .flat_map(|y| (x0..x1).map(move |x| (x, y)))
         .map(|(x, y)| (x, y, frame.get_pixel(x, y).0))
