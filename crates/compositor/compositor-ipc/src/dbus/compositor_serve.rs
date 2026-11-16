@@ -122,8 +122,10 @@ pub fn serve_compositor_at(
         .name("casement-compositor1".to_owned())
         .spawn(move || run(&address, calls, setup, &ready))
         .map_err(|error| IpcError::Bus(format!("the Compositor1 thread did not start: {error}")))?;
-    let connection = started.recv().ok().ok_or_else(|| {
-        IpcError::Bus("the Compositor1 thread ended before it connected".to_owned())
+    let connection = started.recv().map_err(|error| {
+        IpcError::Bus(format!(
+            "the Compositor1 thread ended before it connected: {error}"
+        ))
     })??;
     Ok((channel, connection))
 }

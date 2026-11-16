@@ -41,6 +41,9 @@ pub enum ShellCallError {
         what: &'static str,
         /// The text as given.
         text: String,
+        /// Why the bus rejects it.
+        #[source]
+        source: Box<dyn std::error::Error + Send + Sync>,
     },
     /// The call carries more string arguments than a binding may pass.
     #[error("a binding's call passes at most {most} arguments, this one has {given}")]
@@ -108,22 +111,21 @@ impl ZbusShellCalls {
 
 /// Checks the names in `call` the way the bus will, before anything is queued.
 fn checked(call: &DbusCall) -> Result<(), ShellCallError> {
-    let bad = |what: &'static str, text: &str| ShellCallError::BadName {
-        what,
-        text: text.to_owned(),
+    let bad = |what: &'static str, text: &str, source: Box<dyn std::error::Error + Send + Sync>| {
+        ShellCallError::BadName {
+            what,
+            text: text.to_owned(),
+            source,
+        }
     };
     BusName::try_from(call.service.as_str())
-        .ok()
-        .ok_or_else(|| bad("service", &call.service))?;
+        .map_err(|error| bad("service", &call.service, error.into()))?;
     ObjectPath::try_from(call.path.as_str())
-        .ok()
-        .ok_or_else(|| bad("path", &call.path))?;
+        .map_err(|error| bad("path", &call.path, error.into()))?;
     InterfaceName::try_from(call.interface.as_str())
-        .ok()
-        .ok_or_else(|| bad("interface", &call.interface))?;
+        .map_err(|error| bad("interface", &call.interface, error.into()))?;
     MemberName::try_from(call.method.as_str())
-        .ok()
-        .ok_or_else(|| bad("method", &call.method))?;
+        .map_err(|error| bad("method", &call.method, error.into()))?;
     match call.args.len() {
         given if given > MOST_ARGS => Err(ShellCallError::TooManyArgs {
             most: MOST_ARGS,
@@ -142,10 +144,13 @@ impl ShellCalls for ZbusShellCalls {
         let Some(worker) = &self.worker else {
             return Ok(());
         };
-        worker.send(call.clone()).ok().ok_or_else(|| {
+        if worker.send(call.clone()).is_err() {
             self.worker = None;
-            ShellCallError::Thread(std::io::Error::other("the thread has stopped"))
-        })
+            return Err(ShellCallError::Thread(std::io::Error::other(
+                "the thread has stopped",
+            )));
+        }
+        Ok(())
     }
 
     fn failures(&mut self) -> Vec<FailedCall> {
