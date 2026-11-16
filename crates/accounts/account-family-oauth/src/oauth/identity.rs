@@ -45,7 +45,11 @@ pub(crate) fn fault(status: u16) -> ProviderError {
 pub(crate) fn failure(failure: Failure) -> ProviderError {
     match failure {
         Failure::Status(status) => fault(status),
-        Failure::Unreadable => ProviderError::Unreadable,
+        Failure::Unreadable
+        | Failure::Address(_)
+        | Failure::Token(_)
+        | Failure::Request(_)
+        | Failure::Json(_) => ProviderError::Unreadable,
     }
 }
 

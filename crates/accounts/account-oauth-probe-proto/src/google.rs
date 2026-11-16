@@ -186,7 +186,7 @@ mod tests {
                 ..
             }
         ));
-        assert_eq!(claim(500).unwrap_err(), Failure::Status(500));
+        assert!(matches!(claim(500), Err(Failure::Status(500))));
     }
 
     #[test]

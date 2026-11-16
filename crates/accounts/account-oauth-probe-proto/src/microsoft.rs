@@ -55,9 +55,7 @@ struct Quota {
 /// not the expected JSON or names no address.
 pub fn address(answer: &Response<Vec<u8>>) -> Result<String, Failure> {
     let me: Me = match answer.status().as_u16() {
-        200..=299 => serde_json::from_slice(answer.body())
-            .ok()
-            .ok_or(Failure::Unreadable)?,
+        200..=299 => serde_json::from_slice(answer.body()).map_err(Failure::Json)?,
         status => return Err(Failure::Status(status)),
     };
     [me.mail, me.user_principal_name]
@@ -187,7 +185,10 @@ mod tests {
             Some("u@x.test")
         );
         assert_eq!(got(r"{}"), None);
-        assert_eq!(address(&answer(401, "")).unwrap_err(), Failure::Status(401));
+        assert!(matches!(
+            address(&answer(401, "")),
+            Err(Failure::Status(401))
+        ));
     }
 
     fn drive() -> Capability {
@@ -241,10 +242,10 @@ mod tests {
                 ..
             }
         ));
-        assert_eq!(
-            verdict(&drive(), true, &answer(500, "")).unwrap_err(),
-            Failure::Status(500)
-        );
+        assert!(matches!(
+            verdict(&drive(), true, &answer(500, "")),
+            Err(Failure::Status(500))
+        ));
     }
 
     #[test]

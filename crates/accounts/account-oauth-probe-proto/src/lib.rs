@@ -18,12 +18,26 @@ use http::header::{ACCEPT, AUTHORIZATION};
 use http::{HeaderValue, Method, Request};
 
 /// Why a read could not be built or its answer not used.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, thiserror::Error)]
 pub enum Failure {
     /// The server answered with this status, which the reading does not take as an answer.
+    #[error("the server answered with status {0}")]
     Status(u16),
-    /// The URL is not a web URL, or the answer is not what the API sends.
+    /// The answer is not what the API sends.
+    #[error("the answer is not what the API sends")]
     Unreadable,
+    /// The URL is not a web URL.
+    #[error("the address is not a web URL")]
+    Address(#[source] base_ids::IdError),
+    /// The token cannot be sent as a header value.
+    #[error("the token is not usable as a header value")]
+    Token(#[source] http::header::InvalidHeaderValue),
+    /// The request could not be built.
+    #[error("the request could not be built")]
+    Request(#[source] http::Error),
+    /// The answer is not JSON of the expected shape.
+    #[error("the answer is not the expected JSON")]
+    Json(#[source] serde_json::Error),
 }
 
 /// A JSON `GET` of `url` with `token` as the bearer. The header is marked sensitive.
@@ -33,10 +47,9 @@ pub enum Failure {
 /// [`Failure::Unreadable`] when `url` or `token` is not usable in a request, or the request cannot
 /// be built.
 pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, Failure> {
-    let url = WebUrl::parse(url).ok().ok_or(Failure::Unreadable)?;
+    let url = WebUrl::parse(url).map_err(Failure::Address)?;
     let mut bearer = HeaderValue::from_str(&format!("Bearer {token}"))
-        .ok()
-        .ok_or(Failure::Unreadable)?;
+        .map_err(Failure::Token)?;
     bearer.set_sensitive(true);
     Request::builder()
         .method(Method::GET)
@@ -44,8 +57,7 @@ pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, Failure> {
         .header(ACCEPT, "application/json")
         .header(AUTHORIZATION, bearer)
         .body(Vec::new())
-        .ok()
-        .ok_or(Failure::Unreadable)
+        .map_err(Failure::Request)
 }
 
 #[cfg(test)]
@@ -64,13 +76,13 @@ mod tests {
 
     #[test]
     fn a_url_that_is_not_a_web_url_builds_nothing() {
-        assert_eq!(
-            bearer_get("imaps://x.example.test", "t").unwrap_err(),
-            Failure::Unreadable
-        );
-        assert_eq!(
-            bearer_get("http://api.example.test/", "t").unwrap_err(),
-            Failure::Unreadable
-        );
+        assert!(matches!(
+            bearer_get("imaps://x.example.test", "t"),
+            Err(Failure::Address(_))
+        ));
+        assert!(matches!(
+            bearer_get("http://api.example.test/", "t"),
+            Err(Failure::Address(_))
+        ));
     }
 }

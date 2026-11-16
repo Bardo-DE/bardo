@@ -10,10 +10,12 @@ publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../account-capability"}
+base-ids = { path = "../../base/base-ids" }
 base-url = { path = "../../base/base-url" }
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+thiserror = { workspace = true }
 
 [lints]
 workspace = true
