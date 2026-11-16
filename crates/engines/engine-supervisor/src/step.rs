@@ -110,7 +110,9 @@ impl Supervisor {
     }
 }
 
-/// The only transition: `(state, input) -> (state, effects)`. Time arrives as `Tick`; every other
+/// The only transition: `(state, input) -> (state, effects)`.
+///
+/// Time arrives as `Tick`; every other
 /// input reads the last tick seen (the daemon ticks before it delivers anything late). The
 /// table is design: models §4.1. Beyond the table, entering `Ready` and `Backoff` and every
 /// `Tick` in `Ready` schedule a `WakeAt` (idle unload and the retry need a tick), a victim of
@@ -356,9 +358,9 @@ impl Supervisor {
             .filter(|id| matches!(self.state(id), Some(EngineState::Stopped)))
             .cloned()
             .collect();
-        pending
-            .iter()
-            .for_each(|id| self.evaluate(id, Attempt(1), cfg, out));
+        for id in &pending {
+            self.evaluate(id, Attempt(1), cfg, out);
+        }
     }
 
     fn probed(

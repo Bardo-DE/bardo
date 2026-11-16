@@ -219,9 +219,7 @@ impl Installer {
                 seal: seal.as_hex().to_owned(),
                 ..record
             };
-            record
-                .write(&record_at)
-                .map_err(|_| InstallError::Disk(std::io::ErrorKind::Other))
+            record.write(&record_at).map_err(InstallError::Record)
         })
         .await?;
         publish(&partial, dir)

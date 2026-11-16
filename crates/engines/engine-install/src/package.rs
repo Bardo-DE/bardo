@@ -23,6 +23,10 @@ fn refresh_args(manager: PackageManager) -> Option<&'static [&'static str]> {
 }
 
 async fn run(program: &Path, args: &[&str], cancel: &CancelToken) -> Result<(), Failure> {
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "`Failure` is the fixed category the helper reports to the person; the OS error has no place in it"
+    )]
     let mut child = Command::new(program)
         .args(args)
         .env_clear()

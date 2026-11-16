@@ -74,7 +74,7 @@ fn place<R: std::io::Read>(entry: &mut Entry<'_, R>, into: &Path) -> Result<(), 
         return Ok(());
     }
     // The top directory itself has nowhere to go.
-    let Some(relative) = stripped(&named).ok_or_else(refused)? else {
+    let Some(relative) = stripped(&named)? else {
         return Ok(());
     };
     no_link_on_the_way(into, &relative).ok_or_else(refused)?;
@@ -101,7 +101,7 @@ fn place<R: std::io::Read>(entry: &mut Entry<'_, R>, into: &Path) -> Result<(), 
                 .link_name()
                 .map_err(|e| ExtractError::Failed(e.to_string()))?
                 .ok_or_else(refused)?;
-            let source = stripped(&source).ok_or_else(refused)?.ok_or_else(refused)?;
+            let source = stripped(&source)?.ok_or_else(refused)?;
             no_link_on_the_way(into, &source).ok_or_else(refused)?;
             if std::fs::symlink_metadata(&at).is_ok_and(|meta| !meta.is_dir()) {
                 std::fs::remove_file(&at).map_err(|e| of_io(&e))?;
@@ -115,19 +115,21 @@ fn place<R: std::io::Read>(entry: &mut Entry<'_, R>, into: &Path) -> Result<(), 
     entry.unpack(&at).map(|_| ()).map_err(|e| of_io(&e))
 }
 
-/// `path` without its top directory: `None` when it is absolute or has a `..` (refused),
-/// `Some(None)` when nothing is left (skipped). A `.` is no component.
-fn stripped(path: &Path) -> Option<Option<PathBuf>> {
+/// `path` without its top directory: `Err` when it is absolute or has a `..` (refused),
+/// `Ok(None)` when nothing is left (skipped). A `.` is no component.
+fn stripped(path: &Path) -> Result<Option<PathBuf>, ExtractError> {
     let mut parts = Vec::new();
     for part in path.components() {
         match part {
             Component::Normal(name) => parts.push(name),
             Component::CurDir => {}
-            Component::RootDir | Component::Prefix(_) | Component::ParentDir => return None,
+            Component::RootDir | Component::Prefix(_) | Component::ParentDir => {
+                return Err(ExtractError::Refused(path.display().to_string()));
+            }
         }
     }
     let rest: PathBuf = parts.into_iter().skip(1).collect();
-    Some((!rest.as_os_str().is_empty()).then_some(rest))
+    Ok((!rest.as_os_str().is_empty()).then_some(rest))
 }
 
 /// `Some` when no directory between `into` and `relative` (both ends left out) is a link, so a

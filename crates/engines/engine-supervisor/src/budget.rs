@@ -35,7 +35,9 @@ pub enum BudgetVerdict {
     },
 }
 
-/// Pure. `free = total - used_by_others - sum(running)`. If `need + headroom <= free` the verdict
+/// Pure: whether `want` fits in the GPU's memory, and what to evict if not.
+///
+/// `free = total - used_by_others - sum(running)`. If `need + headroom <= free` the verdict
 /// is `Fits`; otherwise evict idle engines, least recently used first, until it fits; if that is
 /// still not enough, `NoRoom`. `running` carries each engine's memory and its last use.
 ///

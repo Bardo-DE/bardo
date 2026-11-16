@@ -47,11 +47,13 @@ pub enum ArgError {
 /// # Errors
 /// See [`ArgError`].
 pub fn parse_args<I: IntoIterator<Item = OsString>>(args: I) -> Result<Request, ArgError> {
-    let words: Vec<String> = args
+    let Ok(words) = args
         .into_iter()
         .map(OsString::into_string)
-        .collect::<Result<_, _>>()
-        .map_err(|_| ArgError::Usage)?;
+        .collect::<Result<Vec<String>, _>>()
+    else {
+        return Err(ArgError::Usage);
+    };
     let [verb, engine, backend] = &*words else {
         return Err(ArgError::Usage);
     };
@@ -233,6 +235,7 @@ mod tests {
 
     #[test]
     fn only_install_with_an_engine_and_a_backend_of_ours_is_accepted() {
+        use std::os::unix::ffi::OsStringExt;
         assert_eq!(
             parse_args(args(&["install", "llama_cpp", "vulkan"])),
             Ok(Request {
@@ -270,7 +273,6 @@ mod tests {
         for (given, why) in refused {
             assert_eq!(parse_args(given.clone()), Err(why), "{given:?}");
         }
-        use std::os::unix::ffi::OsStringExt;
         let raw = vec![OsString::from_vec(vec![0xff, 0xfe]); 3];
         assert_eq!(parse_args(raw), Err(ArgError::Usage));
     }

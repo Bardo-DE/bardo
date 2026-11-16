@@ -94,6 +94,9 @@ pub struct MissingProgram {
 
 /// Pure: the unit that runs `profile` for `entry`, listening on `socket`, with the window the
 /// entry serves. See [`command_with_window`].
+///
+/// # Errors
+/// Returns [`MissingProgram`] when the settings list no program for the entry's engine.
 pub fn command(
     entry: &ModelEntry,
     profile: &EngineProfile,
@@ -123,6 +126,9 @@ pub fn command(
 ///
 /// `memory_max` is host memory, not VRAM: the weights and overhead figures plus
 /// [`HOST_MEMORY_BASE`], which a CPU-only entry (all-zero figures) still gets.
+///
+/// # Errors
+/// Returns [`MissingProgram`] when the settings list no program for the engine of `profile`.
 pub fn command_with_window(
     entry: &ModelEntry,
     profile: &EngineProfile,

@@ -22,7 +22,9 @@ const STOP_GRACE: Duration = Duration::from_secs(10);
 /// not be authorised (127).
 const NOT_AUTHORISED: [i32; 2] = [126, 127];
 
-/// The program that starts the helper and the helper. The caller says where both are: this
+/// The program that starts the helper, and the helper.
+///
+/// The caller says where both are: this
 /// crate knows no install prefix. The polkit action that lets `pkexec` run the helper names the
 /// helper's path, so it is the installer's to keep in step with `program`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -49,6 +51,10 @@ enum Event {
 
 /// Runs the helper for `engine` and `backend` to its end. `meter` is out of 1000 and follows the
 /// helper's progress; `cancel` asks it to stop.
+///
+/// # Errors
+/// Returns the `Failure` the helper reported, or the one for a helper that could not be started,
+/// was not authorised, or was stopped.
 pub async fn install_for_everyone(
     helper: &HelperProgram,
     engine: EngineKind,

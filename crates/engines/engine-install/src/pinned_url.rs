@@ -17,7 +17,9 @@ impl PinnedUrl {
     /// # Errors
     /// [`NotPinned`] for text that is not a URL, is not `https`, or has no host.
     pub fn parse(text: &str) -> Result<Self, NotPinned> {
-        let url = Url::parse(text).map_err(|_| NotPinned)?;
+        let Ok(url) = Url::parse(text) else {
+            return Err(NotPinned);
+        };
         (url.scheme() == "https" && url.host_str().is_some())
             .then_some(Self(url))
             .ok_or(NotPinned)
@@ -28,7 +30,9 @@ impl PinnedUrl {
     /// # Errors
     /// [`NotPinned`] when it does not lead to an `https` address.
     pub fn join(&self, location: &str) -> Result<Self, NotPinned> {
-        let joined = self.0.join(location).map_err(|_| NotPinned)?;
+        let Ok(joined) = self.0.join(location) else {
+            return Err(NotPinned);
+        };
         Self::parse(joined.as_str())
     }
 

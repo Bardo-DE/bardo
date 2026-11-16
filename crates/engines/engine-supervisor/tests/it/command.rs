@@ -137,6 +137,10 @@ struct Pinned {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of engines with the unit each must give: a flat list of expectations"
+)]
 fn each_engine_gets_its_program_and_its_pinned_argv() {
     let holo = entry(HOLO);
     let nemotron = entry(NEMOTRON);
@@ -402,16 +406,16 @@ fn command_is_pure_and_total_over_arbitrary_text() {
         .run(
             &(".{0,40}", ".{0,40}", ".{0,40}", ".{0,40}"),
             |(repo, revision, arg, file)| {
-                let mut e = holo.clone();
+                let mut edited = holo.clone();
                 let model_catalog::WeightSource::HuggingFace {
-                    repo: r,
-                    revision: v,
-                } = &mut e.source
+                    repo: repo_id,
+                    revision: revision_id,
+                } = &mut edited.source
                 else {
                     panic!("the test entry is a Hugging Face entry");
                 };
-                r.0 = repo;
-                v.0 = revision;
+                repo_id.0 = repo;
+                revision_id.0 = revision;
                 let profile = EngineProfile {
                     kind: EngineKind::LlamaServer,
                     context_arg: None,
@@ -423,13 +427,17 @@ fn command_is_pure_and_total_over_arbitrary_text() {
                         mmproj: Some(FileName(file)),
                     },
                 };
-                let a = command(&e, &profile, &paths(), &socket("p"));
-                let b = command(&e, &profile, &paths(), &socket("p"));
-                prop_assert_eq!(&a, &b);
-                for path in &a.sandbox.read {
+                let first = command(&edited, &profile, &paths(), &socket("p"));
+                let second = command(&edited, &profile, &paths(), &socket("p"));
+                prop_assert_eq!(&first, &second);
+                for path in &first.sandbox.read {
                     prop_assert!(stays_inside(path));
                 }
-                for arg in a.args.iter().filter(|a| a.0.starts_with("/data/hf/hub")) {
+                for arg in first
+                    .args
+                    .iter()
+                    .filter(|a| a.0.starts_with("/data/hf/hub"))
+                {
                     prop_assert!(stays_inside(std::path::Path::new(&arg.0)), "{}", arg.0);
                 }
                 Ok(())

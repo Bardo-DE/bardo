@@ -26,11 +26,11 @@ async fn an_archive_installs_into_the_persons_directory_and_is_found_and_verifie
     let roots = roots(dir.path());
     let installer = Installer::new(fetcher(host.roots()), roots.clone());
     let meter = Meter::new(row.download_size());
-    let installed = installer
+    let place = installer
         .install(Scope::JustMe, row, &meter, &CancelToken::new())
         .await
         .expect("installed");
-    let program = installed.program(row);
+    let program = place.program(row);
     let mode = std::fs::metadata(&program)
         .expect("program")
         .permissions()
@@ -38,13 +38,10 @@ async fn an_archive_installs_into_the_persons_directory_and_is_found_and_verifie
     assert_ne!(mode & 0o111, 0, "the program runs");
     assert_eq!(meter.permille(), 1000);
     assert_eq!(
-        Record::read(&installed.record()).expect("record").seal,
+        Record::read(&place.record()).expect("record").seal,
         release.seal
     );
-    assert!(
-        !installed.partial().exists(),
-        "the partial directory is gone"
-    );
+    assert!(!place.partial().exists(), "the partial directory is gone");
     let manifest = Manifest::of(Box::leak(vec![*row].into_boxed_slice()));
     let found = Finder::new(roots.clone(), held)
         .with(manifest, Vec::new())
