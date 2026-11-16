@@ -4,9 +4,10 @@
 #[cfg(feature = "dev-rows")]
 use crate::devfile::{NodeInfo, NodeKind};
 use crate::owners::OwnerView;
+use base_fs::{ReadCap, ReadError};
 use caller_identity_core::Uid;
 use caller_identity_core::{FileTrust, Writer};
-use std::io::{self, Read};
+use std::io;
 use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 
@@ -66,17 +67,14 @@ fn trust_of_meta(meta: &std::fs::Metadata, owners: OwnerView) -> FileTrust {
 }
 
 fn capped(path: &Path, cap: u64) -> io::Result<Vec<u8>> {
-    let mut bytes = Vec::new();
-    std::fs::File::open(path)?
-        .take(cap.saturating_add(1))
-        .read_to_end(&mut bytes)?;
-    if u64::try_from(bytes.len()).is_ok_and(|n| n > cap) {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            "larger than the cap",
-        ));
-    }
-    Ok(bytes)
+    base_fs::read_capped(path, ReadCap::bytes(cap)).map_err(|error| match error {
+        ReadError::NotFound { .. } => io::Error::from(io::ErrorKind::NotFound),
+        ReadError::Io { source, .. } => source,
+        ReadError::TooBig { .. } => {
+            io::Error::new(io::ErrorKind::InvalidData, "larger than the cap")
+        }
+        other => io::Error::new(io::ErrorKind::InvalidData, other),
+    })
 }
 
 /// The real thing: a `/proc` mount and the machine's file system, with owners read as this

@@ -4,6 +4,7 @@
 use super::read::{Fallback, Loaded, Why, read};
 use super::text::{ReadFailure, ReadText};
 use super::{CuaSettings, SETTINGS_FILE};
+use base_xdg::Xdg;
 use std::path::{Path, PathBuf};
 
 /// The configuration directories, in order of precedence.
@@ -16,16 +17,13 @@ impl Locator {
     /// The directories named by `XDG_CONFIG_HOME` (else `$HOME/.config`) and `XDG_CONFIG_DIRS`
     /// (else `/etc/xdg`).
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Self {
-        let home = env("XDG_CONFIG_HOME")
-            .filter(|v| !v.is_empty())
-            .map(PathBuf::from)
-            .unwrap_or_else(|| PathBuf::from(env("HOME").unwrap_or_default()).join(".config"));
-        let rest = env("XDG_CONFIG_DIRS")
-            .filter(|v| !v.is_empty())
-            .unwrap_or_else(|| "/etc/xdg".to_owned());
+        let xdg = Xdg::new(env);
         Self {
-            dirs: std::iter::once(home)
-                .chain(rest.split(':').map(PathBuf::from))
+            dirs: xdg
+                .config_home()
+                .ok()
+                .into_iter()
+                .chain(xdg.config_dirs())
                 .map(|dir| dir.join("bardo"))
                 .collect(),
         }

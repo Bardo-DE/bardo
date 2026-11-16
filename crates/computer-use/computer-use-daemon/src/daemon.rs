@@ -5,6 +5,7 @@ use crate::{
     Apps, CuaSettings, CuadConfig, Locator, ServeError, SettingsWatch, Supervisor, SystemClock,
     WatchState, caller_identity, follow_settings, read_callers, serve_on_as,
 };
+use base_xdg::Xdg;
 use computer_use_host::{RULES_FILE, parse_rules, shipped_rules};
 use computer_use_run::Rules;
 use computer_use_system::{Links, ReachError, Reached, SystemSeams};
@@ -98,10 +99,7 @@ fn load_rules() -> Result<Rules, Fatal> {
 /// Moves what the daemon of the earlier release left in the person's configuration folder: the
 /// settings file of `cua/` and the person's callers file of `quire/`.
 fn move_pre_bardo_folders(env: &impl Fn(&str) -> Option<String>) {
-    let config = env("XDG_CONFIG_HOME")
-        .filter(|v| !v.is_empty())
-        .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(env("HOME").unwrap_or_default()).join(".config"));
+    let config = Xdg::new(env).config_home().unwrap_or_default();
     let new = config.join("bardo").join("computer-use");
     let files = [
         (

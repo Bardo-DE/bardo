@@ -336,7 +336,8 @@ impl<S: Seams> Supervisor<S> {
         }
         let (run, effects) = {
             let mut state = self.shared.state();
-            let (run, effects) = Run::start(id.clone(), task.clone(), env, self.shared.clock.stamp());
+            let (run, effects) =
+                Run::start(id.clone(), task.clone(), env, self.shared.clock.stamp());
             state.live.insert(
                 id.clone(),
                 LiveRun {
