@@ -47,13 +47,7 @@ fn a_file_others_can_read_is_refused_and_so_is_one_that_is_not_a_file() {
 #[test]
 fn an_empty_or_odd_token_is_not_used() {
     let scratch = Scratch::new("key");
-    for text in [
-        &b""[..],
-        b"  \n",
-        b"two words",
-        b"tab\there",
-        &[b'a'; 5000],
-    ] {
+    for text in [&b""[..], b"  \n", b"two words", b"tab\there", &[b'a'; 5000]] {
         assert_eq!(
             file_with(&scratch, text, 0o600).read(),
             Err(KeyFileProblem::Unusable),

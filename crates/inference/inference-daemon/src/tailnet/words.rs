@@ -44,17 +44,13 @@ pub fn refusal(refusal: &Refusal) -> &'static str {
 fn tailscale(error: &TailscaleError) -> &'static str {
     match error {
         TailscaleError::NotInstalled => "Tailscale isn't installed on this computer.",
-        TailscaleError::NotRunning(_) => {
-            "Tailscale isn't running on this computer."
-        }
+        TailscaleError::NotRunning(_) => "Tailscale isn't running on this computer.",
         TailscaleError::Refused => {
             "This computer's Tailscale doesn't let your accounts ask it yet."
         }
         TailscaleError::SignedOut => "Tailscale is signed out.",
         TailscaleError::NoSuchPeer => "Tailscale does not know that computer.",
-        TailscaleError::Malformed(_) => {
-            "Tailscale gave an answer that couldn't be read."
-        }
+        TailscaleError::Malformed(_) => "Tailscale gave an answer that couldn't be read.",
         TailscaleError::TimedOut => "Tailscale did not answer in time.",
     }
 }

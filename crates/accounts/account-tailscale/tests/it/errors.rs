@@ -39,7 +39,10 @@ async fn a_socket_nobody_listens_on_is_not_running() {
         tokio::time::sleep(std::time::Duration::from_millis(10)).await;
     }
     assert_eq!(api.status().await, Err(TailscaleError::NotRunning(None)));
-    assert_eq!(api.start_login().await, Err(TailscaleError::NotRunning(None)));
+    assert_eq!(
+        api.start_login().await,
+        Err(TailscaleError::NotRunning(None))
+    );
     // And it comes back where it was.
     fake.restart().expect("restart");
     api.status().await.unwrap();
