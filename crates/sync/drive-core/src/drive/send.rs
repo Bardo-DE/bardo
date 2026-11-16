@@ -775,23 +775,21 @@ async fn adopted(
     op: &Op,
     conflict: &Conflict,
 ) -> Option<Adopted> {
-    let (
-        (
-            Op::Folder { .. }
-            | Op::Upload {
-                to: UploadTo::New(_),
-                ..
-            },
-            RemoteSide::Exists(there, version),
-        )
-        | (
-            Op::Upload {
-                to: UploadTo::Replace(there),
-                ..
-            },
-            RemoteSide::Changed(version),
-        ),
-    ) = (op, &conflict.remote)
+    let ((
+        Op::Folder { .. }
+        | Op::Upload {
+            to: UploadTo::New(_),
+            ..
+        },
+        RemoteSide::Exists(there, version),
+    )
+    | (
+        Op::Upload {
+            to: UploadTo::Replace(there),
+            ..
+        },
+        RemoteSide::Changed(version),
+    )) = (op, &conflict.remote)
     else {
         return None;
     };
@@ -800,7 +798,7 @@ async fn adopted(
         | Op::Upload {
             to: UploadTo::New(place),
             ..
-        } => place.id.as_ref() == Some(there),
+        } => place.id.as_ref() == Some(&there),
         _ => false,
     };
     let made = Written {
@@ -815,7 +813,7 @@ async fn adopted(
     if !reserved && *op.id() != theirs && held(&inner.index).edits.contains_key(&theirs) {
         return None;
     }
-    let same = same_bytes(inner, sink, op, there).await;
+    let same = same_bytes(inner, sink, op, &there).await;
     match (same, reserved) {
         (Some(version), _) => Some(Adopted::Sent(Written {
             id: there.clone(),
