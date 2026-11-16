@@ -59,6 +59,10 @@ mod tests {
     use crate::appearance::theme::Scheme;
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn the_light_scheme_keeps_lightness_and_the_dark_one_bands_it() {
         #[rustfmt::skip]
         const CASES: &[(Tone, f64, f64)] = &[

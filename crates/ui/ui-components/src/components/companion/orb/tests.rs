@@ -3,6 +3,10 @@ use ui_core::word::Word;
 use ui_style::tokens::timing::DurationToken;
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn every_orb_size_has_its_own_width_and_they_grow() {
     const WIDTHS: &[(OrbSize, f32)] = &[
         (OrbSize::Inline, 14.0),

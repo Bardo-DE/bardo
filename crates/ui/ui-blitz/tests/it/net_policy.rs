@@ -103,6 +103,10 @@ fn width(harness: &Harness, selector: &str) -> f32 {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn the_app_document_reads_a_file_only_under_local_and_only_inside_its_roots() {
     let elsewhere = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let cases = [
@@ -144,6 +148,10 @@ fn the_app_document_reads_a_file_only_under_local_and_only_inside_its_roots() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_custom_handler_sees_the_app_documents_request_and_answers_it() {
     let cases = [(NetDecision::Allow, 7.0), (NetDecision::Deny, 0.0)];
     for (decision, want) in cases {
@@ -162,6 +170,10 @@ fn a_custom_handler_sees_the_app_documents_request_and_answers_it() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_custom_policy_still_serves_the_app_its_own_files_without_asking() {
     let recorder = Recorder::new(NetDecision::Deny);
     let config = HarnessConfig::new(VIEW)
@@ -200,6 +212,10 @@ fn frame_width(harness: &Harness, selector: &str) -> f32 {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_frames_file_request_is_denied_while_the_app_documents_succeeds() {
     let harness = Harness::new(
         Framed,
@@ -217,6 +233,10 @@ fn a_frames_file_request_is_denied_while_the_app_documents_succeeds() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_custom_handler_sees_the_frames_requests_with_the_frame_as_origin() {
     let recorder = Recorder::new(NetDecision::Allow);
     let config = HarnessConfig::new(VIEW)
@@ -242,6 +262,10 @@ fn a_custom_handler_sees_the_frames_requests_with_the_frame_as_origin() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_denied_frame_request_never_reaches_the_frame() {
     let recorder = Recorder::new(NetDecision::Deny);
     let config = HarnessConfig::new(VIEW)

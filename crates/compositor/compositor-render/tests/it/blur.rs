@@ -63,6 +63,10 @@ fn the_deepest_level_opens_its_taps_for_a_sigma_it_would_otherwise_fall_short_of
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_sigma_beyond_the_deepest_level_is_capped() {
     let plan = look(5000.0).plan(1.0);
     assert_eq!(plan.passes, 6);
@@ -77,6 +81,10 @@ fn no_blur_is_one_level_with_no_spread() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_look_keeps_its_saturation_and_clamps_its_grain() {
     let plan = BlurLook {
         noise: 3.0,

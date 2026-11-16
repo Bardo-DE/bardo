@@ -294,6 +294,10 @@ fn a_drag_out_with_no_host_is_refused_the_card_stays_and_the_hold_resumes() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn the_picture_is_the_preview_file_at_its_own_shape() {
     let mut running = start(file());
     one_up(&mut running);

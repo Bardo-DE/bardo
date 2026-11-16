@@ -134,6 +134,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_pause_ends_the_burst() {
         let mut accel = Accel::default();
         for n in 0..20 {
@@ -158,6 +162,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_fast_lift_glides_further_and_a_slow_one_as_it_is() {
         // name, lift speed px/s, gain
         let cases = [

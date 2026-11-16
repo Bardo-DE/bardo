@@ -44,6 +44,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn base_ratio_is_sixty_px_per_294_units() {
         assert!((raw_per_hi_res(Count(22), 1.0) - 294.0 / 120.0).abs() < 1e-12);
         assert!((px_of(294, 0.0) - 60.0).abs() < 1e-9);

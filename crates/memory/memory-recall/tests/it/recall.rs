@@ -123,6 +123,10 @@ fn chunk_table() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn exact_scan_nearest_orders_by_cosine() {
     let v = |x: &[f32]| Vector(x.to_vec());
     let items = vec![

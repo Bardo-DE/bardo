@@ -105,6 +105,10 @@ const AWAY: Point = Point {
 };
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn it_is_hidden_until_the_row_is_hovered() {
     let mut harness = settled(Three);
     assert_eq!(opacity(&harness), 0.0);
@@ -121,6 +125,10 @@ fn it_is_hidden_until_the_row_is_hovered() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn tab_reaches_it_and_shows_it() {
     let mut harness = settled(Three);
     for _ in 0..3 {
@@ -147,6 +155,10 @@ fn a_click_hands_over_its_rect_and_does_not_open_the_row() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn an_open_menu_keeps_it_visible_with_the_pointer_away() {
     let mut harness = settled(Open);
     harness.send(Input::pointer_move(AWAY));

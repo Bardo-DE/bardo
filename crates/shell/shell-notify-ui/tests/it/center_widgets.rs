@@ -3,6 +3,10 @@
 //! fake services.
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn the_center_draws_calendar_then_up_next_under_the_history() {
     let running = center_support::opened(center_support::two_apps());
     let h = &running.harness;

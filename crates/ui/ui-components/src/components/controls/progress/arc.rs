@@ -125,6 +125,10 @@ mod tests {
     use ui_core::vocab::Fraction;
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn an_arc_fills_its_share_of_the_span() {
         let cases = [
             (RingSpan::FULL, 0, 0.0),

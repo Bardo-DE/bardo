@@ -227,6 +227,10 @@ fn use_surface_scale_starts_at_the_published_scale_and_follows_each_change() {
 /// The hook runs exactly once per `resolve`, after layout, at the viewport's scale (what
 /// a device-grid snap reads), and never on a build or a poll.
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn resolve_runs_the_prepaint_hook_once_after_layout() {
     let (ping, _source) = calloop::ping::make_ping().expect("eventfd ping");
     let id = SurfaceId(11);

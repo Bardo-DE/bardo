@@ -185,6 +185,10 @@ fn under_the_pointer_the_fill_follows_with_no_easing() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_drag_past_the_end_never_stretches_the_track() {
     let mut harness = start(500, Motion::Standard);
     let rail = rect(&harness, ".ds-slider-rail");

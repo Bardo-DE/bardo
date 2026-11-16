@@ -42,6 +42,10 @@ mod tests {
     use crate::config::Config;
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn the_default_speed_is_one_to_one() {
         let speed = Config::default().scroll.speed;
         assert_eq!(multiplier(speed), 1.0);

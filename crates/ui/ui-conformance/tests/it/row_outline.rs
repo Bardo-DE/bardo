@@ -129,6 +129,10 @@ fn body(harness: &Harness, place: &str) -> f32 {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn the_triangle_asks_the_app_the_row_selects_and_the_trailing_button_acts_alone() {
     let mut harness = settled();
     assert!(body(&harness, PROJECTS) > 10.0, "Projects starts open");

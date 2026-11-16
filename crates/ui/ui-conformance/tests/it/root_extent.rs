@@ -50,6 +50,10 @@ fn laid_out(app: fn() -> Element) -> Harness {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_content_root_of_only_a_sheet_is_zero_tall() {
     let harness = laid_out(Content);
     let root = harness.rect(".ds").expect("the root is laid out");
@@ -61,6 +65,10 @@ fn a_content_root_of_only_a_sheet_is_zero_tall() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_viewport_root_is_the_viewports_size_and_its_sheet_is_placed_in_it() {
     let harness = laid_out(Full);
     assert_eq!(
@@ -94,6 +102,10 @@ fn Window() -> Element {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_window_root_fills_the_window_so_a_full_height_child_needs_no_container() {
     let harness = laid_out(Window);
     let root = harness.rect(".ds").expect("the root is laid out");

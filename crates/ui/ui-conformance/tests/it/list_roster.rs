@@ -123,6 +123,10 @@ fn ms(n: u64) -> Duration {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn one_row_leaves_and_the_rows_below_heal_by_its_height() {
     let mut harness = start(&[1, 2, 3, 4], Motion::Standard);
     let (before3, before4) = (top(&harness, 3), top(&harness, 4));
@@ -181,6 +185,10 @@ fn a_row_listed_again_while_it_leaves_stays() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn under_reduced_a_clear_settles_at_reduceds_length_and_rows_snap_into_place() {
     let mut harness = start(&[1, 2, 3], Motion::Reduced);
     let before3 = top(&harness, 3);

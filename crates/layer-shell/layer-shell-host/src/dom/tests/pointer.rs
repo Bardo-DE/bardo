@@ -130,6 +130,10 @@ fn a_press_without_prior_motion_clicks_its_target() {
 /// container, by Blitz's line height (20 px, `blitz-dom`'s own `Lines * 20`) and by the raw
 /// pixel amount respectively.
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn wheel_notches_scroll_by_lines_and_touchpads_by_pixels() {
     let mut doc = build();
     let scroller = node_id(&mut doc, "#scroller");

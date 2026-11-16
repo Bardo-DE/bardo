@@ -121,6 +121,10 @@ mod tests {
     use ui_style::tokens::control_size::ControlSize;
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn the_knob_travels_the_track_less_the_knob_and_its_insets() {
         const CASES: &[(ControlSize, f32)] = &[
             (ControlSize::Mini, 14.0),

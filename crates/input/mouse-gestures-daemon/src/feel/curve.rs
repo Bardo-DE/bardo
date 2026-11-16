@@ -85,6 +85,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_sample_uses_the_speed_estimate_of_a_short_gap() {
         assert_eq!(sample_gain(60, 0.0), 1.0, "no time: no gain");
         assert_eq!(sample_gain(600, 0.06), 1.0, "a pause: no gain");

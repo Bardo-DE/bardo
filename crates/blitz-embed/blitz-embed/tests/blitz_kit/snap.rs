@@ -47,6 +47,10 @@ fn at_a_fractional_scale_every_edge_lands_on_a_device_pixel() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn at_a_whole_scale_nothing_moves() {
     let (before, after) = measure(2.0, Scale120(240));
     assert_eq!(before, after);

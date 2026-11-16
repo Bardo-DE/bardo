@@ -205,6 +205,10 @@ fill = "symbol"
         clippy::cast_sign_loss,
         reason = "icon pixel coordinates, counts and sizes are non-negative and at most a few thousand, so each cast is exact or stays in range"
     )]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_dot_in_every_dialect() {
         let spec = parse_spec(DOT).expect("spec");
         let t = Template::default();

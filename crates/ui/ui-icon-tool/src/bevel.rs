@@ -168,6 +168,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn finish_lights_the_top_edge_and_shades_the_bottom() {
         let t = Template::default();
         let g = PlateGrid::for_canvas(512, &t);

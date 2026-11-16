@@ -413,6 +413,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_strip_with_no_whole_row_joins_the_next_and_a_last_one_the_one_before() {
         let strip = |top: f64, y: f64, h: f64, x: f64| Strip {
             top,

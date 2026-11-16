@@ -198,6 +198,10 @@ fn unknown_keys_are_ignored() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn scale_units() {
     assert_eq!(ScaleMilli::from_f64(1.5), ScaleMilli::new(1500));
     assert_eq!(ScaleMilli::from_f64(-2.0), ScaleMilli::new(0));

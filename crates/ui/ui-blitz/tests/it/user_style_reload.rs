@@ -120,6 +120,10 @@ fn a_changed_custom_property_override_restyles_the_probe() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn removing_every_rule_returns_to_the_default() {
     let mut harness = harness();
     for _ in 0..4 {
@@ -174,6 +178,10 @@ fn Surfaced() -> Element {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn an_unprefixed_attribute_selector_matches_a_dioxus_attribute() {
     let harness = Harness::new(
         Surfaced,

@@ -62,6 +62,10 @@ fn divider(harness: &Harness) -> Point {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn dragging_the_divider_sizes_the_pane_within_its_widths() {
     let mut harness = harness();
     assert_eq!(width(&harness), 240.0);
@@ -99,6 +103,10 @@ fn dragging_the_divider_sizes_the_pane_within_its_widths() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_drag_past_half_the_least_folds_the_pane_and_a_double_click_reopens_it() {
     let mut harness = harness();
     let from = divider(&harness);

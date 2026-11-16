@@ -89,6 +89,10 @@ fn a_narrow_view_squeezes_the_pane_to_its_least_before_the_rest() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn with_room_the_pane_keeps_its_width() {
     let harness = open(Kept, 900);
     assert_eq!(width_of(&harness, ".ds-split-pane"), 240.0);
@@ -96,6 +100,10 @@ fn with_room_the_pane_keeps_its_width() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn without_a_least_rest_the_pane_keeps_its_width_however_narrow() {
     let harness = open(Unkept, 560);
     assert_eq!(width_of(&harness, ".ds-split-pane"), 240.0);

@@ -64,12 +64,20 @@ fn spacing(harness: &Harness) -> f32 {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_gap_of_none_lets_children_touch_and_a_step_spaces_them() {
     assert_eq!(spacing(&start(Layout::Gapless)), 0.0);
     assert_eq!(spacing(&start(Layout::Stepped)), 20.0);
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_fill_column_is_as_tall_as_its_parent() {
     let harness = start(Layout::Filling);
     let column = harness.rect(".ds-column").expect("column");
@@ -78,6 +86,10 @@ fn a_fill_column_is_as_tall_as_its_parent() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_fixed_column_is_as_tall_as_a_control_of_its_size() {
     let harness = start(Layout::Fixed);
     let column = harness.rect(".ds-column").expect("column");

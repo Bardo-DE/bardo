@@ -41,6 +41,10 @@ fn rect(harness: &Harness, selector: &str) -> Rect {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn three_columns_share_the_width_and_full_spans_them_all() {
     let mut harness = Harness::new(Three, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.advance(TICK);

@@ -196,6 +196,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn natural_scrolling_of_11_8_item_15() {
         // A finger moving toward the user (+y) decreases the offset with Natural.
         assert_eq!(natural(10.0, NaturalScroll::Natural), -10.0);

@@ -188,6 +188,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_scrolled_viewport_moves_page_coordinates_only() {
         let pos = PointerPos { x: 10.0, y: 20.0 };
         let moved = scrolled(

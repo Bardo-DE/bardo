@@ -150,6 +150,10 @@ fn knob(harness: &Harness) -> f32 {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_toggle_clicked_again_mid_slide_turns_back_from_where_it_is() {
     let mut harness = virtual_harness(Wifi);
     harness.advance(Duration::ZERO);

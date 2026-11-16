@@ -172,6 +172,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_step_is_capped_at_200_ms() {
         let target = Target::default().push(5000.0, at(0));
         let (_, before) = target.advance(at(199));
@@ -182,6 +186,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_wheel_cap_shortens_the_step() {
         let target = Target::default().push_capped(5000.0, at(0), 0.06);
         let (done, whole) = target.advance(at(60));

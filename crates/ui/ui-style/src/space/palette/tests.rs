@@ -302,6 +302,10 @@ fn gradient_matches_the_mockup() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn half_rounds_the_way_javascript_does() {
     let cases = [
         (1.5, 2.0),

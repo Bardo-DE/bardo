@@ -68,6 +68,10 @@ fn set(harness: &mut Harness, shown: bool) {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn it_stands_closed_on_mount_and_opens_over_one_move() {
     let mut harness = virtual_harness(Standard);
     harness.advance(Duration::from_millis(50));
@@ -84,6 +88,10 @@ fn it_stands_closed_on_mount_and_opens_over_one_move() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_toggle_mid_move_reverses_from_where_it_is() {
     let mut harness = virtual_harness(Standard);
     harness.advance(Duration::from_millis(50));
@@ -103,6 +111,10 @@ fn a_toggle_mid_move_reverses_from_where_it_is() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn under_reduced_it_is_instant() {
     let mut harness = virtual_harness(Reduced);
     harness.advance(Duration::from_millis(50));

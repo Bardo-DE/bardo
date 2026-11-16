@@ -481,6 +481,10 @@ fn in_view(harness: &Harness, key: &str) -> bool {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn an_overflowing_row_keeps_the_selection_in_view() {
     let mut harness = switcher(14, 800.0, "display");
     assert!(

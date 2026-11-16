@@ -57,6 +57,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn an_axis_that_was_not_pushed_stays_put() {
         let eased = Eased::default().push(0.0, 60.0, at(0), f64::INFINITY);
         let (_, (dx, dy)) = eased.advance(at(30));

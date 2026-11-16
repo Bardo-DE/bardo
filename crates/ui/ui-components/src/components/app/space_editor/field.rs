@@ -177,6 +177,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn coverage_is_full_inside_and_empty_outside() {
         assert_eq!(coverage(9, 9, 9.0, 9.0), 1.0);
         assert_eq!(coverage(20, 9, 9.0, 9.0), 0.0);

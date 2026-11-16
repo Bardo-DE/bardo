@@ -123,6 +123,10 @@ fn chevron_rows_move_and_pick_by_keyboard() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_grouped_row_is_settings_high_and_the_group_is_a_borderless_card() {
     let harness = harness();
     let row = rect(&harness, ".ds-list-item:nth-child(2) > .ds-row");

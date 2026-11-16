@@ -233,6 +233,10 @@ mod tests {
         reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
     )]
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn coverage_is_one_inside_zero_outside_and_a_half_on_the_curve() {
         let on_curve = |r: f32| {
             let along = r / std::f32::consts::SQRT_2;
@@ -268,6 +272,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn the_curve_is_a_ramp_about_one_pixel_wide() {
         let shape = ClipShape::new(RECT, 10, Scale(120));
         // Along the diagonal of the right corner, from 0.7 px inside the curve to 0.7 px out.
@@ -320,6 +328,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_frameless_shape_rounds_all_four_corners_and_keeps_what_is_outside() {
         let shape = ClipShape::new(RECT, 10, Scale(120)).rounded(Rounding::Frameless);
         let table: [(&str, (f32, f32), f32); 8] = [

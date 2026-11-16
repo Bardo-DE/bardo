@@ -249,6 +249,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn the_corner_pixels_are_not_drawn_and_the_top_ones_are() {
         let clip = shape(0, 0, 120);
         let dst = Rectangle::new((0, 0).into(), (120, 80).into());
@@ -261,6 +265,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn only_the_damaged_part_is_drawn() {
         let clip = shape(0, 0, 120);
         let dst = Rectangle::new((0, 0).into(), (120, 80).into());
@@ -287,6 +295,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn a_surface_inside_the_window_gets_the_part_of_the_curve_it_covers() {
         // A subsurface in the bottom left of the window: its dst starts inside the square.
         let clip = shape(100, 50, 120);

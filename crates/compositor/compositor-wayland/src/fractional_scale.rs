@@ -157,6 +157,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn fractional_scales_are_exact_on_the_wire() {
         for numerator in [120_u32, 150, 180, 210, 240, 360] {
             let wire = (Scale(numerator).as_f64() * 120.0).round();

@@ -132,6 +132,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn units_convert_exactly() {
         assert_eq!(px_of(SubPx(240)), 2.0);
         assert_eq!(px_of(SubPx(-60)), -0.5);

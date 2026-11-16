@@ -80,6 +80,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::float_cmp,
+        reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+    )]
     fn identical_ends_have_no_progress() {
         let same = rect(10, 10, 100, 100);
         let ends = FlightEnds {

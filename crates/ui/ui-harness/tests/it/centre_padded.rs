@@ -28,6 +28,10 @@ fn Padded() -> Element {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_click_at_the_centre_of_a_child_under_padding_reaches_the_child() {
     let mut harness = Harness::new(Padded, VIEW);
     let child = harness.rect("#child").expect("the child");
@@ -104,6 +108,10 @@ fn Inline() -> Element {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn an_inline_box_under_a_padded_block_is_read_where_it_is_drawn() {
     let mut harness = Harness::new(Inline, VIEW);
     let inner = harness.rect("#btn").expect("the button");

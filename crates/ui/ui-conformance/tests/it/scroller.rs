@@ -61,6 +61,10 @@ fn click(harness: &mut Harness, selector: &str) {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn the_state_is_measured_and_follows_the_owners_scrolls_and_the_wheel() {
     let mut harness = Harness::new(App, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     assert_eq!(

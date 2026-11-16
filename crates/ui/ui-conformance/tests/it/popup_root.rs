@@ -68,6 +68,10 @@ fn laid_out(app: fn() -> Element) -> Harness {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_popup_root_is_the_size_of_its_card_at_the_origin() {
     let harness = laid_out(Fitted);
     assert_eq!(harness.attr(".ds", "data-extent").as_deref(), Some("popup"));

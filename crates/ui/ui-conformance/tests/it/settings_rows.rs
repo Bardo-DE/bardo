@@ -86,6 +86,10 @@ fn width(harness: &Harness, selector: &str) -> f32 {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_leading_tile_is_the_row_icon_tile() {
     let harness = on_virtual(Pane);
     assert_eq!(width(&harness, ".ds-field-row-leading .ds-icon-tile"), 28.0);
@@ -107,6 +111,10 @@ fn the_label_keeps_its_width_when_the_window_narrows() {
 }
 
 #[test]
+#[expect(
+    clippy::float_cmp,
+    reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
+)]
 fn a_grouped_row_keeps_its_height_and_vertical_padding() {
     let harness = on_virtual(Pane);
     let rows = ".ds-form-section-group > .ds-field-row";
