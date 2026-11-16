@@ -89,13 +89,13 @@ pub(crate) struct Table {
 }
 
 impl Table {
-    pub(crate) fn with(mut self, method: Method, url: &str, response: Response<Vec<u8>>) -> Self {
+    pub(crate) fn with(mut self, method: &Method, url: &str, response: Response<Vec<u8>>) -> Self {
         self.answers.insert(format!("{method} {url}"), response);
         self
     }
 
     pub(crate) fn get(self, url: &str, response: Response<Vec<u8>>) -> Self {
-        self.with(Method::GET, url, response)
+        self.with(&Method::GET, url, response)
     }
 
     pub(crate) fn seen(&self) -> Vec<String> {

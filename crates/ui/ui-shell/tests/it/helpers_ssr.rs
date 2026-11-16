@@ -21,6 +21,10 @@ struct StageProps {
 }
 
 #[expect(non_snake_case, reason = "a Dioxus component is named in CamelCase")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn Stage(props: StageProps) -> Element {
     let body = (SPECIMENS[props.specimen].1)();
     rsx! {

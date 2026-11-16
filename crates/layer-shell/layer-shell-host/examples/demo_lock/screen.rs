@@ -47,6 +47,10 @@ pub struct Screen {
     pub output: String,
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 pub fn lock_screen(screen: Screen) -> Element {
     let lock = use_lock();
     let phase = use_lock_phase();

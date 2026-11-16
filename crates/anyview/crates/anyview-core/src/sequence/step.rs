@@ -50,7 +50,7 @@ pub enum Heading {
 ///
 /// `None` when it was the only file.
 #[must_use]
-pub fn without_current(seq: Sequence, heading: Heading) -> Option<Sequence> {
+pub fn without_current(seq: &Sequence, heading: Heading) -> Option<Sequence> {
     let here = seq.at().index();
     let kept: Vec<FilePath> = seq
         .entries()

@@ -149,7 +149,7 @@ fn a_file_taken_out_leaves_the_walk_on_the_file_the_person_was_heading_for() {
         ("one file leaves none", 1, 0, Onward, None),
     ];
     for (name, len, at, heading, want) in CASES {
-        let after = without_current(sequence(*len, *at), *heading);
+        let after = without_current(&sequence(*len, *at), *heading);
         assert_eq!(after.as_ref().map(|seq| seq.at().index()), *want, "{name}");
         if let Some(after) = after {
             assert_eq!(after.entries().count().get(), len - 1, "{name} drops one");

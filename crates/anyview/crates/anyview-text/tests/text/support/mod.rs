@@ -142,7 +142,7 @@ pub fn workbook_of_xml(
         panic!("a zip's head asks to be looked inside");
     };
     let sniffed = anyview_core::sniff_zip(
-        probe,
+        &probe,
         &anyview_core::ZipEntries::new(["[Content_Types].xml", "xl/workbook.xml"], None),
     );
     (Source::new(FilePath::new(&path).unwrap(), stamp), sniffed)

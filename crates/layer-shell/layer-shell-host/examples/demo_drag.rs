@@ -93,6 +93,10 @@ fn spec(props: &Props) -> DragSpec {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn thumb(props: Props) -> Element {
     let surface = use_surface();
     let mut gesture = use_signal(|| Gesture::Idle);

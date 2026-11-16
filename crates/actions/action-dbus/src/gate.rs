@@ -29,6 +29,10 @@ impl GateSkeleton {
         clippy::unused_self,
         reason = "a zbus interface method takes `&self` whether or not it reads it"
     )]
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus interface method takes its arguments by value"
+    )]
     fn grant(&self, ask: String) -> fdo::Result<OwnedObjectPath> {
         let _ = ask;
         Err(crate::introspect::frozen())

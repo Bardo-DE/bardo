@@ -315,7 +315,7 @@ fn probe(file: &str) -> ZipProbe {
 fn sniff_zip_recognises_the_formats_inside_a_zip() {
     for case in ZIP_CASES {
         let entries = ZipEntries::new(case.entries.iter().copied(), case.mimetype);
-        let sniffed = sniff_zip(probe(case.file), &entries);
+        let sniffed = sniff_zip(&probe(case.file), &entries);
         assert_eq!(sniffed.kind(), case.kind, "{} kind", case.name);
         assert_eq!(sniffed.detail(), &case.detail, "{} detail", case.name);
     }
@@ -352,7 +352,7 @@ fn sniff_zip_states_the_media_type_of_what_it_found() {
     for (name, file, entries, mimetype, want) in CASES {
         let entries = ZipEntries::new(entries.iter().copied(), *mimetype);
         assert_eq!(
-            sniff_zip(probe(file), &entries).mime().as_str(),
+            sniff_zip(&probe(file), &entries).mime().as_str(),
             *want,
             "{name}"
         );
@@ -365,7 +365,10 @@ fn only_the_first_bytes_of_the_mimetype_entry_are_read() {
     long.extend(std::iter::repeat_n(b' ', 200));
     long.extend_from_slice(b"junk");
     let entries = ZipEntries::new(["mimetype"], Some(&long));
-    assert_eq!(sniff_zip(probe("b.zip"), &entries).kind(), FormatKind::Book);
+    assert_eq!(
+        sniff_zip(&probe("b.zip"), &entries).kind(),
+        FormatKind::Book
+    );
 }
 
 #[test]

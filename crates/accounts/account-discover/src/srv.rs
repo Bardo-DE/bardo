@@ -93,10 +93,10 @@ pub fn found_from_srv_with(
     report_pop3: bool,
 ) -> Result<Found, DiscoverFault> {
     let login = || LoginName(address.to_owned());
-    let incoming = best(&answers.imaps, Tls::Implicit, login(), imap_endpoint)
-        .or_else(|| best(&answers.imap, Tls::StartTls, login(), imap_endpoint));
-    let outgoing = best(&answers.submissions, Tls::Implicit, login(), smtp_endpoint)
-        .or_else(|| best(&answers.submission, Tls::StartTls, login(), smtp_endpoint));
+    let incoming = best(&answers.imaps, Tls::Implicit, &login(), imap_endpoint)
+        .or_else(|| best(&answers.imap, Tls::StartTls, &login(), imap_endpoint));
+    let outgoing = best(&answers.submissions, Tls::Implicit, &login(), smtp_endpoint)
+        .or_else(|| best(&answers.submission, Tls::StartTls, &login(), smtp_endpoint));
     let pop3 = if report_pop3 {
         pop3_servers(&answers.pop3s, address)
     } else {
@@ -137,7 +137,7 @@ fn pop3_servers(records: &[SrvRecord], address: &str) -> Vec<Pop3Server> {
 fn best(
     records: &[SrvRecord],
     tls: Tls,
-    login: LoginName,
+    login: &LoginName,
     build: fn(String, u16, Tls, LoginName) -> Option<ServiceEndpoint>,
 ) -> Option<ServiceEndpoint> {
     ordered(records)

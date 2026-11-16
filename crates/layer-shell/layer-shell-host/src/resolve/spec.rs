@@ -85,6 +85,10 @@ mod tests {
         ElementId::new("dock-pill")
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the lookup is passed where an `Fn(ElementId)` is expected"
+    )]
     fn lookup(id: ElementId) -> Option<Rect> {
         (id == pill()).then_some(PILL_RECT)
     }
@@ -174,6 +178,10 @@ mod tests {
     }
 
     /// Both `pill()` and `card()` resolve; anything else (the "missing" cases below) does not.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the lookup is passed where an `Fn(ElementId)` is expected"
+    )]
     fn lookup_two(id: ElementId) -> Option<Rect> {
         if id == pill() {
             Some(PILL_RECT)

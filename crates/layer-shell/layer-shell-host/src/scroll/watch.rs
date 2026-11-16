@@ -103,9 +103,9 @@ impl ScrollBoard {
 /// It is live state: re-rendered when its offset, extent or phase changes (at most once per frame).
 /// `ScrollState::default()` until the element has laid out.
 #[must_use]
-pub fn use_scroll(id: ElementId) -> ReadSignal<ScrollState> {
+pub fn use_scroll(id: &ElementId) -> ReadSignal<ScrollState> {
     let board = use_surface().scroll_board();
-    let live = use_hook(|| board.watch(&id));
+    let live = use_hook(|| board.watch(id));
     let mut latest = use_signal(|| live.get());
     use_hook(move || {
         let mut seen = live.changes();
@@ -150,7 +150,7 @@ mod tests {
 
     /// Shows a scroll box's offset as text, through `use_scroll`.
     fn watcher() -> Element {
-        let state = use_scroll(ElementId::new("box"));
+        let state = use_scroll(&ElementId::new("box"));
         let y = state.read().offset.y;
         rsx! {
             div { id: "box", style: "height:100px;overflow:auto",

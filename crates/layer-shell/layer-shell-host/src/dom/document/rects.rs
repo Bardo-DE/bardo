@@ -16,7 +16,7 @@ impl SurfaceDocument {
     /// before layout or when absent. What `RegionSpec::Element(s)` and `PopupAnchor::Element`
     /// resolve against, once per rendered frame, so a region follows a transform as it
     /// animates.
-    pub(crate) fn element_rect(&self, id: ElementId) -> Option<Rect> {
+    pub(crate) fn element_rect(&self, id: &ElementId) -> Option<Rect> {
         let inner = self.doc.inner();
         let node_id = inner.get_element_by_id(id.as_str())?;
         let bounds = painted_rect(&inner, node_id)?;

@@ -108,9 +108,9 @@ impl Clipboard {
     /// publishes it at once, so a paste in this process sees it without a round trip. The wire
     /// request (`wl_data_device.set_selection`, which needs a queue handle and the serial of a
     /// recent input event) is made by `handlers::data_device::claim_selection`.
-    pub(crate) fn copy(&mut self, text: String) {
+    pub(crate) fn copy(&mut self, text: &str) {
         let generation = self.selection.begin();
-        self.selection.publish(generation, Some(text.clone()));
+        self.selection.publish(generation, Some(text.to_owned()));
         self.own = Some(Arc::from(text.as_bytes()));
     }
 
@@ -205,7 +205,7 @@ mod tests {
     fn copying_publishes_at_once() {
         let mut clipboard = Clipboard::default();
         let provider = clipboard.selection.clone();
-        clipboard.copy("mine".into());
+        clipboard.copy("mine");
         assert_eq!(provider.text().as_deref(), Some("mine"));
     }
 }

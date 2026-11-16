@@ -33,6 +33,10 @@ mod tests {
         ElementId::new("dock-pill")
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the lookup is passed where an `Fn(ElementId)` is expected"
+    )]
     fn lookup(id: ElementId) -> Option<Rect> {
         (id == pill()).then_some(PILL_RECT)
     }

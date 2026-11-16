@@ -40,6 +40,10 @@ impl HickoryDns {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as the function of `map_err`, which hands the error over"
+)]
 fn fault(e: NetError) -> DnsFault {
     if e.is_no_records_found() {
         DnsFault::NoRecords

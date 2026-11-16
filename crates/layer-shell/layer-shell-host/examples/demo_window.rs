@@ -36,7 +36,7 @@ thread_local! {
     static WINDOW: RefCell<Option<SurfaceHandle>> = const { RefCell::new(None) };
 }
 
-fn print(value: serde_json::Value) {
+fn print(value: &serde_json::Value) {
     let mut out = std::io::stdout().lock();
     let _ = writeln!(out, "{value}");
     let _ = out.flush();
@@ -56,7 +56,7 @@ fn window() -> Element {
     });
     use_effect(move || {
         let s = state();
-        print(json!({"event": "state",
+        print(&json!({"event": "state",
             "maximized": format!("{:?}", s.maximized),
             "fullscreen": format!("{:?}", s.fullscreen),
             "activated": format!("{:?}", s.activated),
@@ -69,7 +69,7 @@ fn window() -> Element {
         div { class: "win",
             div {
                 class: "title",
-                onmousedown: move |_| print(grab_line("begin_move", drag.begin_move())),
+                onmousedown: move |_| print(&grab_line("begin_move", drag.begin_move())),
                 ondoubleclick: move |_| {
                     let next = match zoom.current_toplevel_state().maximized {
                         Maximize::Set => Maximize::Unset,
@@ -123,16 +123,16 @@ fn parse(line: &str) -> Option<Command> {
     }
 }
 
-fn apply(command: Command) {
+fn apply(command: &Command) {
     WINDOW.with(|slot| {
         let Some(window) = slot.borrow().clone() else {
             return;
         };
         match command {
-            Command::Move => print(grab_line("move", window.begin_move())),
-            Command::Resize(edge) => print(grab_line("resize", window.begin_resize(edge))),
-            Command::Maximize(maximize) => window.set_maximized(maximize),
-            Command::Fullscreen(fullscreen) => window.set_fullscreen(fullscreen),
+            Command::Move => print(&grab_line("move", window.begin_move())),
+            Command::Resize(edge) => print(&grab_line("resize", window.begin_resize(*edge))),
+            Command::Maximize(maximize) => window.set_maximized(*maximize),
+            Command::Fullscreen(fullscreen) => window.set_fullscreen(*fullscreen),
             Command::Minimize => window.set_minimized(),
             Command::Stats | Command::Quit => {}
         }
@@ -190,10 +190,10 @@ fn run() -> Result<(), String> {
         }
         HostEvent::App(Command::Stats) => {
             if let Some(stats) = id.and_then(|id| ctx.take_stats(id)) {
-                print(serde_json::to_value(&stats).unwrap_or_default());
+                print(&serde_json::to_value(&stats).unwrap_or_default());
             }
         }
-        HostEvent::App(command) => apply(command),
+        HostEvent::App(command) => apply(&command),
         _ => {}
     })
     .map_err(|e| e.to_string())

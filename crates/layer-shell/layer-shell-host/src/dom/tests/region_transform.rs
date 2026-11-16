@@ -42,7 +42,7 @@ fn a_transformed_elements_region_is_where_it_paints() {
     let mut doc = document(HostRoot::new(moved));
     doc.resolve(0.0);
     assert_eq!(
-        doc.element_rect(ElementId::new("card")),
+        doc.element_rect(&ElementId::new("card")),
         Some(rect(60, 0, 100, 40))
     );
 }
@@ -65,7 +65,7 @@ fn a_parents_scale_and_a_childs_translation_compose() {
     // Child laid out at (60, 0) 100x40; its translateY(10) -> (60, 10); the parent's
     // scale(0.5) about (20, 0) -> (40, 5) 50x20.
     assert_eq!(
-        doc.element_rect(ElementId::new("card")),
+        doc.element_rect(&ElementId::new("card")),
         Some(rect(40, 5, 50, 20))
     );
 }
@@ -91,7 +91,7 @@ fn the_rect_follows_an_animated_transform_every_frame() {
     for time in [0.0, 0.25, 0.5, 1.0, 2.0] {
         doc.resolve(time);
         let card = doc
-            .element_rect(ElementId::new("card"))
+            .element_rect(&ElementId::new("card"))
             .expect("the card is laid out"); // test-only
         seen.push(card.x);
         assert_eq!((card.width, card.height), (100, 40), "at {time}s");

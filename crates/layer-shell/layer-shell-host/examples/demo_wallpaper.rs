@@ -63,6 +63,10 @@ fn css() -> String {
 }
 
 /// The wallpaper document: the fallback, then `content` after `SWAP_DELAY`.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 fn wallpaper(content: Content) -> Element {
     let mut swapped = use_signal(|| false);
     use_hook(|| {

@@ -38,7 +38,7 @@ impl SurfaceScroll {
         let moves = self
             .scroll
             .key(doc, key, repeat_of(repeat), pointer, env.kit);
-        (moves.claim(), self.applied(moves, now))
+        (moves.claim(), self.applied(&moves, now))
     }
 
     /// A held scroll key was released.
@@ -46,7 +46,7 @@ impl SurfaceScroll {
         let tuning = self.tuning;
         let env = tuning.at(now);
         let moves = self.scroll.key_up(doc, env.kit);
-        self.applied(moves, now)
+        self.applied(&moves, now)
     }
 
     /// A programmatic scroll.
@@ -59,6 +59,6 @@ impl SurfaceScroll {
         let tuning = self.tuning;
         let env = tuning.at(now);
         let moves = self.scroll.command(doc, command, env.kit);
-        self.applied(moves, now)
+        self.applied(&moves, now)
     }
 }

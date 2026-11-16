@@ -91,12 +91,12 @@ impl SurfaceScroll {
     /// Step the engine with `input` and write what it says.
     fn run(&mut self, doc: &mut BaseDocument, input: ScrollIn, env: Env<'_>) -> Moved {
         let moves = self.scroll.run(doc, input, env.kit);
-        self.applied(moves, env.now)
+        self.applied(&moves, env.now)
     }
 
     /// Show the thumb for what `moves` wrote, and remember who drove the engine when it took the
     /// input.
-    fn applied(&mut self, moves: Moves, now: Elapsed) -> Moved {
+    fn applied(&mut self, moves: &Moves, now: Elapsed) -> Moved {
         for latch in moves.written() {
             self.indicator = self.indicator.changed(*latch, now);
         }

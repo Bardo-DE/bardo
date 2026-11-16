@@ -165,7 +165,7 @@ fn kind_of(path: &Path, name: &std::ffi::OsStr) -> Option<FormatKind> {
     let sniffed = match sniff(&FileHead::new(&head), &name) {
         SniffStep::Done(sniffed) => sniffed,
         SniffStep::LookInside(probe) => {
-            sniff_zip(probe, &ZipEntries::new(Vec::<String>::new(), None))
+            sniff_zip(&probe, &ZipEntries::new(Vec::<String>::new(), None))
         }
     };
     Some(sniffed.kind())

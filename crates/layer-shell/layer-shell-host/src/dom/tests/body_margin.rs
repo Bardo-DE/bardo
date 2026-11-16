@@ -50,7 +50,7 @@ fn resolved(app: fn() -> Element) -> SurfaceDocument {
 }
 
 fn fill_rect(doc: &SurfaceDocument) -> Rect {
-    doc.element_rect(ElementId::new("fill"))
+    doc.element_rect(&ElementId::new("fill"))
         .expect("#fill is laid out")
 }
 

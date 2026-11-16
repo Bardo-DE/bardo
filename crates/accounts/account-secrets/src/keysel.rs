@@ -118,6 +118,13 @@ impl Chosen {
     ///
     /// `KeysRefusal` when `selection` names a store this build cannot open: a key file that cannot
     /// be opened, or a file store in a build without the `test-keys` feature.
+    #[cfg_attr(
+        not(all(feature = "test-keys", unix)),
+        expect(
+            clippy::needless_pass_by_value,
+            reason = "only the key-file store, which a build without `test-keys` lacks, takes the selection by value"
+        )
+    )]
     pub fn open(
         selection: Selection,
         namespace: Namespace,

@@ -21,7 +21,7 @@ fn levers(google: Option<account_fake_servers::GoogleHandle>) -> Levers {
     }
 }
 
-fn post(levers: &Levers, target: &str, body: Value) -> (u16, Value) {
+fn post(levers: &Levers, target: &str, body: &Value) -> (u16, Value) {
     let request = Request::new("POST", target).with_body(body.to_string());
     let answer = levers.answer(&request);
     (answer.status, answer.json_body().unwrap_or(Value::Null))
@@ -33,7 +33,7 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
     let api = FakeGoogle::start(&issuer).await.expect("google");
     let levers = levers(Some((*api).clone()));
 
-    let (status, body) = post(&levers, "/google/seed?what=all", Value::Null);
+    let (status, body) = post(&levers, "/google/seed?what=all", &Value::Null);
     assert_eq!((status, &body["ok"]), (200, &json!(true)), "{body}");
     assert_eq!(api.events("cal-personal").len(), 4);
     assert_eq!(api.people().len(), 2);
@@ -45,7 +45,7 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         post(
             &levers,
             "/google/event?calendar=cal-work&id=ev-lunch",
-            event
+            &event
         )
         .0,
         200
@@ -55,7 +55,7 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         post(
             &levers,
             "/google/event-remove?calendar=cal-work&id=ev-lunch",
-            Value::Null
+            &Value::Null
         )
         .0,
         200
@@ -65,20 +65,20 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         post(
             &levers,
             "/google/calendar?id=cal-new&name=New&color=%23ff0000",
-            Value::Null
+            &Value::Null
         )
         .0,
         200
     );
     assert_eq!(
-        post(&levers, "/google/calendar-remove?id=cal-work", Value::Null).0,
+        post(&levers, "/google/calendar-remove?id=cal-work", &Value::Null).0,
         200
     );
     assert!(api.events("cal-work").is_empty());
 
     let person = json!({"names": [{"displayName": "Linus"}]});
     assert_eq!(
-        post(&levers, "/google/person?resource=people/c9", person).0,
+        post(&levers, "/google/person?resource=people/c9", &person).0,
         200
     );
     assert_eq!(api.people().len(), 3);
@@ -86,7 +86,7 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         post(
             &levers,
             "/google/person-remove?resource=people/c9",
-            Value::Null
+            &Value::Null
         )
         .0,
         200
@@ -97,14 +97,14 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         post(
             &levers,
             "/google/task-list?id=list-new&title=New",
-            Value::Null
+            &Value::Null
         )
         .0,
         200
     );
     let task = json!({"title": "Call"});
     assert_eq!(
-        post(&levers, "/google/task?list=list-new&id=t1", task).0,
+        post(&levers, "/google/task?list=list-new&id=t1", &task).0,
         200
     );
     assert_eq!(api.tasks("list-new").len(), 1);
@@ -112,17 +112,22 @@ async fn the_levers_seed_edit_and_remove_what_the_fake_google_holds() {
         post(
             &levers,
             "/google/task-remove?list=list-new&id=t1",
-            Value::Null
+            &Value::Null
         )
         .0,
         200
     );
     assert!(api.tasks("list-new").is_empty());
     assert_eq!(
-        post(&levers, "/google/task-list-remove?id=list-new", Value::Null).0,
+        post(
+            &levers,
+            "/google/task-list-remove?id=list-new",
+            &Value::Null
+        )
+        .0,
         200
     );
-    assert_eq!(post(&levers, "/google/expire-sync", Value::Null).0, 200);
+    assert_eq!(post(&levers, "/google/expire-sync", &Value::Null).0, 200);
 
     let hits = levers.answer(&Request::new("GET", "/google/hits"));
     assert_eq!(hits.status, 200);
@@ -152,5 +157,5 @@ async fn a_lever_with_a_missing_parameter_or_a_bad_body_or_no_fake_says_why() {
         assert_eq!(levers.answer(&request).status, want, "{target}");
     }
     let none = self::levers(None);
-    assert_eq!(post(&none, "/google/seed", Value::Null).0, 409);
+    assert_eq!(post(&none, "/google/seed", &Value::Null).0, 409);
 }

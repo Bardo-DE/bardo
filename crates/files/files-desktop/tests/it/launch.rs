@@ -114,7 +114,9 @@ fn strs(items: &[&str]) -> Vec<String> {
 fn each_default_app_starts_once_for_its_files_or_once_per_file() {
     let rig = rig(MIMEAPPS, FakeSpawn::new());
     let files = targets(&["/p/a.txt", "/p/c.png", "/p/b.txt", "/p/d.pdf"]);
-    rig.launcher.open(&files, AppChoice::Default, None).unwrap();
+    rig.launcher
+        .open(&files, &AppChoice::Default, None)
+        .unwrap();
     assert_eq!(
         argvs(&rig),
         vec![
@@ -130,7 +132,7 @@ fn a_chosen_app_opens_everything() {
     let rig = rig(MIMEAPPS, FakeSpawn::new());
     let files = targets(&["/p/a.txt", "/p/b.txt"]);
     let with = AppChoice::App(id("viewer.desktop"));
-    rig.launcher.open(&files, with, None).unwrap();
+    rig.launcher.open(&files, &with, None).unwrap();
     assert_eq!(
         argvs(&rig),
         vec![
@@ -145,10 +147,10 @@ fn the_token_reaches_the_started_program() {
     let rig = rig(MIMEAPPS, FakeSpawn::new());
     let token = ActivationToken::new("tok-9");
     rig.launcher
-        .open(&targets(&["/p/a.txt"]), AppChoice::Default, token)
+        .open(&targets(&["/p/a.txt"]), &AppChoice::Default, token.as_ref())
         .unwrap();
     rig.launcher
-        .open(&targets(&["/p/b.txt"]), AppChoice::Default, None)
+        .open(&targets(&["/p/b.txt"]), &AppChoice::Default, None)
         .unwrap();
     let spawned = rig.spawn.spawned();
     let pair = |name: &str| (name.to_owned(), "tok-9".to_owned());
@@ -164,7 +166,7 @@ fn quoted_commands_addresses_and_the_working_folder() {
     let rig = rig(MIMEAPPS, FakeSpawn::new());
     let with = AppChoice::App(id("quoted.desktop"));
     rig.launcher
-        .open(&targets(&["/p/a b.txt"]), with, None)
+        .open(&targets(&["/p/a b.txt"]), &with, None)
         .unwrap();
     assert_eq!(
         argvs(&rig),
@@ -182,7 +184,7 @@ fn a_bus_app_is_asked_over_the_bus_with_addresses_and_the_token() {
     let with = AppChoice::App(id("org.example.Bus.desktop"));
     let token = ActivationToken::new("tok-3");
     rig.launcher
-        .open(&targets(&["/p/a b.txt", "/p/c.txt"]), with, token.clone())
+        .open(&targets(&["/p/a b.txt", "/p/c.txt"]), &with, token.as_ref())
         .unwrap();
     assert!(rig.spawn.spawned().is_empty());
     assert_eq!(
@@ -198,10 +200,10 @@ fn a_bus_app_is_asked_over_the_bus_with_addresses_and_the_token() {
 #[test]
 fn what_cannot_be_opened_says_so_in_plain_words() {
     let rig = rig(MIMEAPPS, FakeSpawn::new());
-    let open = |paths: &[&str], with| rig.launcher.open(&targets(paths), with, None);
+    let open = |paths: &[&str], with: &AppChoice| rig.launcher.open(&targets(paths), with, None);
 
     // Nothing opens it; the first group still ran.
-    let error = open(&["/p/a.txt", "/p/x.zzz"], AppChoice::Default).unwrap_err();
+    let error = open(&["/p/a.txt", "/p/x.zzz"], &AppChoice::Default).unwrap_err();
     assert_eq!(error, LaunchError::NoApp("x.zzz".to_owned()));
     assert_eq!(
         error.to_string(),
@@ -210,14 +212,14 @@ fn what_cannot_be_opened_says_so_in_plain_words() {
     assert_eq!(argvs(&rig), vec![strs(&["editor", "/p/a.txt"])]);
 
     // Two types fit a name equally well: no guess, so the unknown-type default, which is none.
-    let error = open(&["/p/y.amb"], AppChoice::Default).unwrap_err();
+    let error = open(&["/p/y.amb"], &AppChoice::Default).unwrap_err();
     assert_eq!(error, LaunchError::NoApp("y.amb".to_owned()));
 
     let missing = AppChoice::App(id("gone.desktop"));
-    let error = open(&["/p/a.txt"], missing).unwrap_err();
+    let error = open(&["/p/a.txt"], &missing).unwrap_err();
     assert_eq!(error, LaunchError::NoApp("a.txt".to_owned()));
 
-    let error = open(&["/p/page.html"], AppChoice::Default).unwrap_err();
+    let error = open(&["/p/page.html"], &AppChoice::Default).unwrap_err();
     assert_eq!(error, LaunchError::NeedsTerminal("Vim".to_owned()));
     assert_eq!(argvs(&rig).len(), 1);
 }
@@ -227,7 +229,9 @@ fn a_name_the_database_cannot_place_goes_to_the_unknown_type_default() {
     let mimeapps = format!("{MIMEAPPS}application/octet-stream=editor.desktop\n");
     let rig = rig(&mimeapps, FakeSpawn::new());
     let files = targets(&["/p/x.zzz", "/p/y.amb"]);
-    rig.launcher.open(&files, AppChoice::Default, None).unwrap();
+    rig.launcher
+        .open(&files, &AppChoice::Default, None)
+        .unwrap();
     assert_eq!(argvs(&rig), vec![strs(&["editor", "/p/x.zzz", "/p/y.amb"])]);
 }
 
@@ -236,7 +240,7 @@ fn a_program_that_will_not_start_is_reported_with_the_app_and_why() {
     let rig = rig(MIMEAPPS, FakeSpawn::refusing("No such file or directory"));
     let error = rig
         .launcher
-        .open(&targets(&["/p/a.txt"]), AppChoice::Default, None)
+        .open(&targets(&["/p/a.txt"]), &AppChoice::Default, None)
         .unwrap_err();
     assert_eq!(
         error,

@@ -189,6 +189,10 @@ where
         .await
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as the function of `map_err`, which hands the error over"
+)]
 fn refused(error: oo7::Error) -> SecretsError {
     use oo7::dbus::Error as Bus;
     use oo7::file::Error as File;

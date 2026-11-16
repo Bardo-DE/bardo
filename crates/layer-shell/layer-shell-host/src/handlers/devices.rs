@@ -85,7 +85,7 @@ impl HostState {
         }
         self.cursor.current = None;
         if let Some(pointer) = self.input.pointer.take() {
-            release_pointer_object(pointer);
+            release_pointer_object(&pointer);
         }
         let focus = std::mem::replace(&mut self.input.pointer_focus, PointerFocus::Nowhere);
         if let Some(id) = focus.surface() {
@@ -106,7 +106,7 @@ impl HostState {
     /// repeating key stops, the modifiers are forgotten (the next keyboard sends its own).
     pub(crate) fn release_keyboard(&mut self) {
         if let Some(keyboard) = self.input.keyboard.take() {
-            release_keyboard_object(keyboard);
+            release_keyboard_object(&keyboard);
         }
         if let Some(id) = self.input.keyboard_focus.take() {
             self.events.push_back(HostEvent::KeyboardFocus {
@@ -121,13 +121,13 @@ impl HostState {
     }
 }
 
-fn release_pointer_object(pointer: wl_pointer::WlPointer) {
+fn release_pointer_object(pointer: &wl_pointer::WlPointer) {
     if pointer.version() >= RELEASE_SINCE {
         pointer.release();
     }
 }
 
-fn release_keyboard_object(keyboard: wl_keyboard::WlKeyboard) {
+fn release_keyboard_object(keyboard: &wl_keyboard::WlKeyboard) {
     if keyboard.version() >= RELEASE_SINCE {
         keyboard.release();
     }

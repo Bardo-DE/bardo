@@ -25,7 +25,7 @@ const REPOSITION_TOKEN: u32 = 1;
 /// Apply one queued request.
 pub(super) fn request<M: 'static>(ctx: &mut HostCtx<M>, request: Request) {
     match request {
-        Request::Apply { id, op } => apply(ctx, id, op),
+        Request::Apply { id, op } => apply(ctx, id, &op),
         Request::OpenPopup {
             parent,
             id,
@@ -53,7 +53,7 @@ pub(super) fn request<M: 'static>(ctx: &mut HostCtx<M>, request: Request) {
         Request::Redraw(id) => ctx.state.frame_input(id, FrameInput::Invalidate),
         Request::CopyText { text, .. } => {
             let qh = ctx.state.qh.clone();
-            claim_selection(&mut ctx.state, &qh, text);
+            claim_selection(&mut ctx.state, &qh, &text);
         }
         Request::ActivationToken {
             from,
@@ -77,28 +77,28 @@ pub(super) fn claim_copied<M: 'static>(ctx: &mut HostCtx<M>) {
         .collect();
     let qh = ctx.state.qh.clone();
     for text in copied {
-        claim_selection(&mut ctx.state, &qh, text);
+        claim_selection(&mut ctx.state, &qh, &text);
     }
 }
 
 /// Apply `op` to surface `id`: its Wayland requests now, its recorded state for the next paint,
 /// and an invalidation so that paint (and its commit) happens.
-pub(super) fn apply<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId, op: SurfaceOp) {
+pub(super) fn apply<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId, op: &SurfaceOp) {
     if let SurfaceOp::Common(CommonOp::SetVisibility(visibility)) = op {
-        set_visibility(ctx, id, visibility);
+        set_visibility(ctx, id, *visibility);
         return;
     }
     if let SurfaceOp::Window(WindowOp::RequestPlacement(placement)) = op {
-        ctx.state.request_placement(id, placement);
+        ctx.state.request_placement(id, *placement);
         return;
     }
     let state = &mut ctx.state;
     let Some(surface) = state.surfaces.get_mut(&id) else {
         return;
     };
-    surface.record(&op);
+    surface.record(op);
     if surface.visibility == Visibility::Shown {
-        send(state, id, &op);
+        send(state, id, op);
     }
     if op.repaint() == Repaint::Needed {
         state.frame_input(id, FrameInput::Invalidate);

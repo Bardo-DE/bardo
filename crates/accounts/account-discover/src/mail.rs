@@ -6,6 +6,10 @@ use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint, Tls};
 
 /// An IMAP endpoint at `host:port`, or `None` when the pieces do not make a coherent one.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed where a `fn(String, u16, Tls, LoginName)` is expected, as `best` and `pick` take it"
+)]
 pub(crate) fn imap_endpoint(
     host: String,
     port: u16,
@@ -17,10 +21,14 @@ pub(crate) fn imap_endpoint(
     } else {
         "imap"
     };
-    endpoint(Family::Imap, scheme, host, port, tls, login)
+    endpoint(Family::Imap, scheme, &host, port, tls, login)
 }
 
 /// An SMTP submission endpoint at `host:port`.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "passed where a `fn(String, u16, Tls, LoginName)` is expected, as `best` and `pick` take it"
+)]
 pub(crate) fn smtp_endpoint(
     host: String,
     port: u16,
@@ -32,13 +40,13 @@ pub(crate) fn smtp_endpoint(
     } else {
         "smtp"
     };
-    endpoint(Family::Smtp, scheme, host, port, tls, login)
+    endpoint(Family::Smtp, scheme, &host, port, tls, login)
 }
 
 fn endpoint(
     family: Family,
     scheme: &str,
-    host: String,
+    host: &str,
     port: u16,
     tls: Tls,
     login: LoginName,

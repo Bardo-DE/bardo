@@ -31,7 +31,7 @@ use serde_json::json;
 const CSS: &str =
     "html,body{margin:0;padding:0}.panel{width:160px;height:100px;background:rgb(90,60,200)}";
 
-fn print(value: serde_json::Value) {
+fn print(value: &serde_json::Value) {
     let mut out = std::io::stdout().lock();
     let _ = writeln!(out, "{value}");
     let _ = out.flush();
@@ -43,7 +43,7 @@ fn panel() -> Element {
     let modifiers = use_modifiers();
     use_effect(move || {
         let m = modifiers();
-        print(json!({
+        print(&json!({
             "event": "modifiers",
             "shift": format!("{:?}", m.shift),
             "ctrl": format!("{:?}", m.ctrl),
@@ -135,7 +135,7 @@ fn run() -> Result<(), String> {
             surface = None;
         }
         HostEvent::KeyboardFocus { id, focus } if Some(id) == surface => {
-            print(json!({ "event": "focus", "state": format!("{focus:?}") }));
+            print(&json!({ "event": "focus", "state": format!("{focus:?}") }));
         }
         HostEvent::App(Command::Quit) | HostEvent::QuitAsked => ctx.exit(),
         _ => {}

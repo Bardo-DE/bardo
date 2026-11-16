@@ -31,7 +31,7 @@ const CSS: &str = "html,body{margin:0;padding:0}\
 /// How far a release must have dragged the card for it to leave.
 const DISMISS_PX: f64 = 40.0;
 
-fn print(value: serde_json::Value) {
+fn print(value: &serde_json::Value) {
     let mut out = std::io::stdout().lock();
     let _ = writeln!(out, "{value}");
     let _ = out.flush();
@@ -83,7 +83,7 @@ fn banner() -> Element {
                     if let Some(start) = drag() {
                         let next = (event.client_coordinates().x - start).max(0.0);
                         dx.set(next);
-                        print(json!({"event": "drag", "dx": next}));
+                        print(&json!({"event": "drag", "dx": next}));
                     }
                 },
                 onmouseup: move |_| {
@@ -94,7 +94,7 @@ fn banner() -> Element {
                     } else {
                         dx.set(0.0);
                     }
-                    print(json!({"event": "released", "dx": dx(), "leaving": leaving}));
+                    print(&json!({"event": "released", "dx": dx(), "leaving": leaving}));
                 },
             }
         }

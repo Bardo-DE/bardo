@@ -194,12 +194,12 @@ impl DesktopLauncher {
     pub fn open(
         &self,
         targets: &[PathBuf],
-        with: AppChoice,
-        token: Option<ActivationToken>,
+        with: &AppChoice,
+        token: Option<&ActivationToken>,
     ) -> Result<(), LaunchError> {
-        let (jobs, mut failures) = self.plan(targets, &with);
+        let (jobs, mut failures) = self.plan(targets, with);
         for job in jobs {
-            if let Err(error) = self.run(job.app, &job.files, token.as_ref()) {
+            if let Err(error) = self.run(job.app, &job.files, token) {
                 failures.push(error);
             }
         }

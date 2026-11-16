@@ -21,16 +21,28 @@ impl FileManager1 {
 #[interface(name = "org.freedesktop.FileManager1")]
 impl FileManager1 {
     /// Open each folder in a window.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus interface method takes its arguments by value"
+    )]
     fn show_folders(&self, uris: Vec<String>, startup_id: String) {
         self.hand_over(ShowKind::Folders, &uris, &startup_id);
     }
 
     /// Open each file's folder with the file selected.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus interface method takes its arguments by value"
+    )]
     fn show_items(&self, uris: Vec<String>, startup_id: String) {
         self.hand_over(ShowKind::Items, &uris, &startup_id);
     }
 
     /// Show each file's information panel.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "a zbus interface method takes its arguments by value"
+    )]
     fn show_item_properties(&self, uris: Vec<String>, startup_id: String) {
         self.hand_over(ShowKind::Properties, &uris, &startup_id);
     }

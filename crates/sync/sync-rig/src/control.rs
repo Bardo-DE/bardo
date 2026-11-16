@@ -43,7 +43,7 @@ pub struct Levers {
     pub stop: Arc<Notify>,
 }
 
-fn ok(extra: Value) -> Response {
+fn ok(extra: &Value) -> Response {
     let mut body = json!({ "ok": true });
     if let (Some(into), Some(from)) = (body.as_object_mut(), extra.as_object()) {
         into.extend(from.clone());
@@ -79,7 +79,7 @@ impl Levers {
                     None => refused(400, "n is a number"),
                     Some(n) => {
                         issuer.refuse_refreshes(n);
-                        ok(json!({ "n": n }))
+                        ok(&json!({ "n": n }))
                     }
                 }
             }
@@ -90,7 +90,7 @@ impl Levers {
                 };
                 let sent = run(post_form(&address, "/revoke", &[("token", &token)]));
                 match sent {
-                    Ok(answer) if answer.status == 200 => ok(json!({})),
+                    Ok(answer) if answer.status == 200 => ok(&json!({})),
                     _ => refused(502, "the issuer did not take the revoke"),
                 }
             }
@@ -98,26 +98,26 @@ impl Levers {
                 None => refused(400, "path is required"),
                 Some(path) => {
                     graph.put_file(&path, &request.body);
-                    ok(json!({ "path": path, "size": request.body.len() }))
+                    ok(&json!({ "path": path, "size": request.body.len() }))
                 }
             },
             ("POST", "/graph/delete") => match query("path") {
                 None => refused(400, "path is required"),
                 Some(path) => {
                     graph.delete(&path);
-                    ok(json!({ "path": path }))
+                    ok(&json!({ "path": path }))
                 }
             },
             ("POST", "/graph/calendars-seed") => {
                 graph.seed_calendars();
-                ok(json!({}))
+                ok(&json!({}))
             }
             ("POST", "/graph/calendar") => match query("id") {
                 None => refused(400, "id is required"),
                 Some(id) => {
                     let name = query("name").unwrap_or_else(|| id.clone());
                     graph.set_calendar(&id, &name, &query("color").unwrap_or_default());
-                    ok(json!({ "id": id }))
+                    ok(&json!({ "id": id }))
                 }
             },
             ("POST", "/graph/event") => match (query("calendar"), query("id")) {
@@ -125,7 +125,7 @@ impl Levers {
                     match serde_json::from_slice::<Value>(&request.body) {
                         Ok(event) => {
                             graph.put_event(&calendar, &id, event);
-                            ok(json!({ "calendar": calendar, "id": id }))
+                            ok(&json!({ "calendar": calendar, "id": id }))
                         }
                         Err(_) => refused(400, "the body is not JSON"),
                     }
@@ -135,7 +135,7 @@ impl Levers {
             ("POST", "/graph/event-remove") => match (query("calendar"), query("id")) {
                 (Some(calendar), Some(id)) => {
                     graph.remove_event(&calendar, &id);
-                    ok(json!({ "calendar": calendar, "id": id }))
+                    ok(&json!({ "calendar": calendar, "id": id }))
                 }
                 _ => refused(400, "calendar and id are required"),
             },
@@ -152,11 +152,11 @@ impl Levers {
                     .into_iter()
                     .map(|(path, size)| json!({ "path": path, "size": size }))
                     .collect();
-                ok(json!({ "files": files }))
+                ok(&json!({ "files": files }))
             }
             ("POST", "/graph/expire-delta") => {
                 graph.expire_delta_tokens();
-                ok(json!({}))
+                ok(&json!({}))
             }
             ("GET", "/graph/hits") => {
                 let hits: Vec<Value> = graph
@@ -169,11 +169,11 @@ impl Levers {
                         })
                     })
                     .collect();
-                ok(json!({ "hits": hits }))
+                ok(&json!({ "hits": hits }))
             }
             ("POST", "/stop") => {
                 self.stop.notify_one();
-                ok(json!({}))
+                ok(&json!({}))
             }
             _ => refused(404, "no such lever"),
         }

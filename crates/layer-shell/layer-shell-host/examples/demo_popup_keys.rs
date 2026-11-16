@@ -39,7 +39,7 @@ const BUTTON: Rect = Rect {
     height: 24,
 };
 
-fn print(value: serde_json::Value) {
+fn print(value: &serde_json::Value) {
     let mut out = std::io::stdout().lock();
     let _ = writeln!(out, "{value}");
     let _ = out.flush();
@@ -92,7 +92,7 @@ fn bar() -> Element {
                     };
                     // The demo never closes the popup itself: the compositor's dismissal ends it.
                     let _ = surface.open_popup(popup_config(), placement, HostRoot::new(panel));
-                    print(json!({"event": "opened"}));
+                    print(&json!({"event": "opened"}));
                 },
             }
         }
@@ -102,7 +102,7 @@ fn bar() -> Element {
 fn panel() -> Element {
     let surface = use_surface();
     let modality = use_input_modality();
-    use_effect(move || print(json!({"event": "modality", "value": modality().slug()})));
+    use_effect(move || print(&json!({"event": "modality", "value": modality().slug()})));
     rsx! {
         style { "{CSS}" }
         div {
@@ -112,10 +112,10 @@ fn panel() -> Element {
                 let _ = event.set_focus(true).await;
             },
             onkeydown: move |event: KeyboardEvent| {
-                print(json!({"event": "key", "key": event.key().to_string()}));
+                print(&json!({"event": "key", "key": event.key().to_string()}));
                 if event.key() == Key::Escape {
                     surface.close();
-                    print(json!({"event": "closed"}));
+                    print(&json!({"event": "closed"}));
                 }
             },
         }

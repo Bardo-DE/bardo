@@ -56,7 +56,7 @@ pub struct Levers {
     pub stop: Arc<Notify>,
 }
 
-pub(super) fn ok(extra: Value) -> Response {
+pub(super) fn ok(extra: &Value) -> Response {
     let mut body = json!({ "ok": true });
     if let (Some(into), Some(from)) = (body.as_object_mut(), extra.as_object()) {
         into.extend(from.clone());
@@ -93,7 +93,7 @@ fn attempts(server: Option<&MailHandle>, name: &str) -> Response {
             })
         })
         .collect();
-    ok(json!({ "attempts": attempts }))
+    ok(&json!({ "attempts": attempts }))
 }
 
 impl Levers {
@@ -118,7 +118,7 @@ impl Levers {
                     (_, None) => refused(400, "n is a number"),
                     (Some(issuer), Some(n)) => {
                         issuer.refuse_refreshes(n);
-                        ok(json!({ "n": n }))
+                        ok(&json!({ "n": n }))
                     }
                 }
             }
@@ -132,7 +132,7 @@ impl Levers {
                 };
                 let sent = run(post_form(&address, "/revoke", &[("token", &token)]));
                 match sent {
-                    Ok(answer) if answer.status == 200 => ok(json!({})),
+                    Ok(answer) if answer.status == 200 => ok(&json!({})),
                     _ => refused(502, "the issuer did not take the revoke"),
                 }
             }
@@ -141,24 +141,24 @@ impl Levers {
             ("GET", "/pop3/attempts") => attempts(self.pop3.as_ref(), "the POP3 server"),
             ("POST", "/ollama/stop") => match self.ollama.as_ref() {
                 None => absent("the fake Ollama"),
-                Some(ollama) => ok(json!({ "stopped": run(ollama.stop()) })),
+                Some(ollama) => ok(&json!({ "stopped": run(ollama.stop()) })),
             },
             ("POST", "/ollama/start") => match self.ollama.as_ref() {
                 None => absent("the fake Ollama"),
                 Some(ollama) => match run(ollama.start()) {
-                    Ok(started) => ok(json!({ "started": started, "port": ollama.port() })),
+                    Ok(started) => ok(&json!({ "started": started, "port": ollama.port() })),
                     Err(why) => refused(500, &format!("cannot bind the old port: {why}")),
                 },
             },
             ("GET", "/ollama/status") => match self.ollama.as_ref() {
                 None => absent("the fake Ollama"),
-                Some(ollama) => ok(json!({
+                Some(ollama) => ok(&json!({
                     "running": ollama.is_running(), "chats": ollama.chats(), "port": ollama.port(),
                 })),
             },
             ("POST", "/stop") => {
                 self.stop.notify_one();
-                ok(json!({}))
+                ok(&json!({}))
             }
             (_, path) if path.starts_with("/google/") => self.google_lever(request),
             _ => refused(404, "no such lever"),

@@ -76,7 +76,7 @@ pub(super) fn popup_role(
         .get(&parent)
         .ok_or(HostError::NoSurface(parent))?;
     let anchor_rect = resolve_popup_anchor(&config.anchor, placement.anchor_rect, |element| {
-        parent_surface.document.element_rect(element)
+        parent_surface.document.element_rect(&element)
     });
     let positioner = positioner(
         state,

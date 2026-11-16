@@ -44,7 +44,7 @@ fn say(line: &str) {
 }
 
 fn app() -> Element {
-    let state = use_scroll(ElementId::new("list"));
+    let state = use_scroll(&ElementId::new("list"));
     let offset = state.read().offset.y;
     OFFSET.store(offset.to_bits(), Ordering::SeqCst);
     rsx! {

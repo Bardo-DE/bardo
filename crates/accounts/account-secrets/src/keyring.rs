@@ -156,6 +156,10 @@ fn resolve(namespace: &Namespace) -> Result<StoreSecrets, SecretsError> {
     Ok(StoreSecrets::new(store).in_namespace(namespace.clone()))
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as the function of `map_err`, which hands the error over"
+)]
 fn refused(error: Error) -> SecretsError {
     match error {
         Error::NoStorageAccess(_) => SecretsError::Locked,

@@ -112,6 +112,10 @@ fn run() -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the host hands each event to its closure by value"
+)]
 fn on_event(ctx: &mut HostCtx<Command>, demo: &mut Demo, event: HostEvent<Command>) {
     match event {
         HostEvent::Started => {

@@ -178,7 +178,7 @@ impl DataSourceHandler for HostState {
 /// event, and updates the cache `Clipboard::copy` maintains. Called by whoever drains
 /// `Request::CopyText` (`HostCtx`) — `Clipboard::copy` cannot make the wire request
 /// itself: its signature has neither a queue handle nor an input serial to give it.
-pub(crate) fn claim_selection(state: &mut HostState, qh: &QueueHandle<HostState>, text: String) {
+pub(crate) fn claim_selection(state: &mut HostState, qh: &QueueHandle<HostState>, text: &str) {
     state.clipboard.copy(text);
     let (Some(manager), Some(device)) = (&state.data_device, &state.input.data_device) else {
         return;

@@ -39,7 +39,7 @@ fn run(google: &GoogleHandle, request: &Request) -> Result<Response, Response> {
             if all || what == "tasks" {
                 google.seed_tasks();
             }
-            ok(json!({ "seeded": what }))
+            ok(&json!({ "seeded": what }))
         }
         ("POST", "/google/calendar") => {
             let id = q("id")?;
@@ -49,57 +49,57 @@ fn run(google: &GoogleHandle, request: &Request) -> Result<Response, Response> {
                 &name,
                 &request.query_value("color").unwrap_or_default(),
             );
-            ok(json!({ "id": id }))
+            ok(&json!({ "id": id }))
         }
         ("POST", "/google/calendar-remove") => {
             let id = q("id")?;
             google.remove_calendar(&id);
-            ok(json!({ "id": id }))
+            ok(&json!({ "id": id }))
         }
         ("POST", "/google/event") => {
             let (calendar, id) = (q("calendar")?, q("id")?);
             google.put_event(&calendar, &id, json_body(request)?);
-            ok(json!({ "calendar": calendar, "id": id }))
+            ok(&json!({ "calendar": calendar, "id": id }))
         }
         ("POST", "/google/event-remove") => {
             let (calendar, id) = (q("calendar")?, q("id")?);
             google.remove_event(&calendar, &id);
-            ok(json!({ "calendar": calendar, "id": id }))
+            ok(&json!({ "calendar": calendar, "id": id }))
         }
         ("POST", "/google/person") => {
             let resource = q("resource")?;
             google.put_person(&resource, json_body(request)?);
-            ok(json!({ "resource": resource }))
+            ok(&json!({ "resource": resource }))
         }
         ("POST", "/google/person-remove") => {
             let resource = q("resource")?;
             google.remove_person(&resource);
-            ok(json!({ "resource": resource }))
+            ok(&json!({ "resource": resource }))
         }
         ("POST", "/google/task-list") => {
             let id = q("id")?;
             let title = request.query_value("title").unwrap_or_else(|| id.clone());
             google.set_task_list(&id, &title);
-            ok(json!({ "id": id }))
+            ok(&json!({ "id": id }))
         }
         ("POST", "/google/task-list-remove") => {
             let id = q("id")?;
             google.remove_task_list(&id);
-            ok(json!({ "id": id }))
+            ok(&json!({ "id": id }))
         }
         ("POST", "/google/task") => {
             let (list, id) = (q("list")?, q("id")?);
             google.put_task(&list, &id, json_body(request)?);
-            ok(json!({ "list": list, "id": id }))
+            ok(&json!({ "list": list, "id": id }))
         }
         ("POST", "/google/task-remove") => {
             let (list, id) = (q("list")?, q("id")?);
             google.remove_task(&list, &id);
-            ok(json!({ "list": list, "id": id }))
+            ok(&json!({ "list": list, "id": id }))
         }
         ("POST", "/google/expire-sync") => {
             google.expire_sync_tokens();
-            ok(json!({}))
+            ok(&json!({}))
         }
         ("GET", "/google/hits") => {
             let hits: Vec<Value> = google
@@ -112,7 +112,7 @@ fn run(google: &GoogleHandle, request: &Request) -> Result<Response, Response> {
                     })
                 })
                 .collect();
-            ok(json!({ "hits": hits }))
+            ok(&json!({ "hits": hits }))
         }
         _ => refused(404, "no such lever"),
     })

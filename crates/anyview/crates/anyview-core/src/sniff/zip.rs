@@ -71,7 +71,7 @@ impl ZipEntries {
 /// `AndroidManifest.xml` with `classes.dex` is an APK; `META-INF/MANIFEST.MF` a JAR. A `.cbz` name
 /// holding an image is a comic. Everything else is `Archive`.
 #[must_use]
-pub fn sniff_zip(probe: ZipProbe, entries: &ZipEntries) -> Sniffed {
+pub fn sniff_zip(probe: &ZipProbe, entries: &ZipEntries) -> Sniffed {
     let extension = probe.name().extension();
     let by_extension = extension.and_then(from_extension::<OfficeFormat>);
 

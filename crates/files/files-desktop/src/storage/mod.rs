@@ -171,6 +171,10 @@ impl DesktopClouds {
 
 /// What a person's window learns of a failure: the service is out of reach, or answered in a way
 /// this version cannot read.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as the function of `map_err`, which hands the error over"
+)]
 fn failed(error: StorageError) -> CloudError {
     match error {
         StorageError::Bus(_) => CloudError::Unavailable,

@@ -30,7 +30,7 @@ impl SurfaceScroll {
         let moves = self
             .scroll
             .pointer(doc, source::classify(frame), view_point(pos), env.kit);
-        self.applied(moves, now)
+        self.applied(&moves, now)
     }
 
     /// A palmrest scroll event while the pointer is at `pos` on this surface.
@@ -83,7 +83,7 @@ impl SurfaceScroll {
                     at,
                 };
                 let moves = began.then(self.scroll.run(doc, changed, env.kit));
-                self.applied(moves, now)
+                self.applied(&moves, now)
             }
             PalmScroll::Ended { at } => {
                 self.palm = PalmGesture::Idle;

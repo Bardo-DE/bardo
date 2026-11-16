@@ -71,6 +71,10 @@ fn need_for(env: CuaEnv) -> Need {
 
 /// An unreachable inferd is worth retrying; a hung-up, confused or refusing one is not (a refused
 /// caller stays refused until inferd's caller table names cuad).
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as the function of `map_err`, which hands the error over"
+)]
 fn transport_failure(error: TransportError) -> CuaModelError {
     match error {
         TransportError::Unreachable => CuaModelError::Transient,
@@ -81,9 +85,9 @@ fn transport_failure(error: TransportError) -> CuaModelError {
 /// Why a turn ended without the reply it was waiting for. `blind` is the sentence inferd's
 /// notice that the chosen model cannot read images left: a refusal that follows it is that
 /// refusal, not a model that is merely not there.
-fn failed_turn(reply: InferReply, blind: Option<&str>) -> CuaModelError {
+fn failed_turn(reply: &InferReply, blind: Option<&str>) -> CuaModelError {
     match reply {
-        InferReply::Failed(error) => CuaStepFailure::ModelFailed(error).into(),
+        InferReply::Failed(error) => CuaStepFailure::ModelFailed(*error).into(),
         InferReply::Refused(InferRefusal::NoModelSeesScreen) => CuaModelError::CannotSeeScreen,
         InferReply::Refused(InferRefusal::Unavailable) if blind.is_some() => {
             CuaModelError::CannotSeeScreen
@@ -142,7 +146,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
                 InferEvent::Routed(served) => self.served = Some(served),
                 InferEvent::Declined(declined) => self.note_declined(&declined),
                 InferEvent::Finished(InferReply::CuaStep(ack)) if is_ack(&ack) => break,
-                InferEvent::Finished(other) => return Err(self.ended(other)),
+                InferEvent::Finished(other) => return Err(self.ended(&other)),
                 _ => {}
             }
         }
@@ -192,7 +196,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
                 Ok(InferEvent::Declined(declined)) => self.note_declined(&declined),
                 Ok(InferEvent::Usage(usage)) => self.usage = Some(usage),
                 Ok(InferEvent::Finished(InferReply::CuaStep(reply))) => return Ok(reply),
-                Ok(InferEvent::Finished(other)) => return Err(self.ended(other)),
+                Ok(InferEvent::Finished(other)) => return Err(self.ended(&other)),
                 Ok(_) => {}
                 Err(error) => return Err(self.lost(error)),
             }
@@ -240,7 +244,7 @@ fn sight_of(places: &[PlaceRow]) -> ModelSight {
 
 impl<T: Transport> InferdCuaModel<T> {
     /// A turn ended without its reply: sorted, and the sentence kept when it is about the screen.
-    fn ended(&mut self, reply: InferReply) -> CuaModelError {
+    fn ended(&mut self, reply: &InferReply) -> CuaModelError {
         if matches!(reply, InferReply::Refused(InferRefusal::NoModelSeesScreen)) {
             self.blind = Some(NO_MODEL_SEES_SCREEN.to_owned());
         }

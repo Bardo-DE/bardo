@@ -25,13 +25,13 @@ pub(super) fn send_regions(
     let inset = surface.inset;
     let document = &surface.document;
     let input = in_surface(
-        resolve(&surface.input, size, |id| document.element_rect(id)),
+        resolve(&surface.input, size, |id| document.element_rect(&id)),
         inset,
         band(surface.logical, inset),
     );
     let blur = match (&surface.blur, blur) {
         (BlurSpec::Region(spec), true) => in_surface(
-            resolve(spec, size, |id| document.element_rect(id)),
+            resolve(spec, size, |id| document.element_rect(&id)),
             inset,
             Vec::new(),
         ),
