@@ -4,6 +4,8 @@
 use action_accept::world::{Cgroup, MEMORY_CALLERS, SPACES};
 use std::path::Path;
 
+/// The inferd rows `up` always writes, ahead of anything the person adds.
+///
 /// The inferd rows `up` always writes, ahead of anything the person adds: no engine program is
 /// named (so none can be started or attached) and no local runtime port is probed (Ollama,
 /// llama.cpp, LM Studio). A local model on a small GPU once broke the owner's display; this
@@ -28,6 +30,10 @@ pub enum ExtraFault {
 }
 
 /// The `inferd.toml` of a root: the fixed rows, then the person's `extra` rows.
+///
+/// # Errors
+///
+/// Returns an [`ExtraFault`] when `extra` is not rows that can follow the fixed ones.
 pub fn inferd_toml(root: &Path, extra: &str) -> Result<String, ExtraFault> {
     let table: toml::Table = extra
         .parse()
@@ -52,6 +58,10 @@ pub fn inferd_callers() -> String {
 }
 
 /// The directories of a root, as a World makes them.
+///
+/// # Errors
+///
+/// Returns the I/O error when a directory cannot be made.
 pub fn layout(root: &Path) -> std::io::Result<()> {
     for sub in ["logs", "data", "config", "cache", "run", "keys", "proc"] {
         std::fs::create_dir_all(root.join(sub))?;
@@ -74,8 +84,13 @@ fn put(path: &Path, text: &str) -> std::io::Result<()> {
 }
 
 /// Puts process `pid` in the fake proc root `<root>/proc`, in `cgroup`; in a service unit it is
-/// that unit's main process (`proc/units/<name>.service`). The same rows `world::place` writes,
-/// with the errors returned.
+/// that unit's main process (`proc/units/<name>.service`).
+///
+/// The same rows `world::place` writes, with the errors returned.
+///
+/// # Errors
+///
+/// Returns the I/O error when a file cannot be written.
 pub fn place(root: &Path, pid: u32, cgroup: Cgroup<'_>) -> std::io::Result<()> {
     put(&root.join(format!("proc/{pid}/cgroup")), &cgroup.line())?;
     match cgroup {
@@ -93,9 +108,15 @@ pub fn place(root: &Path, pid: u32, cgroup: Cgroup<'_>) -> std::io::Result<()> {
 /// The unit the shell runs in.
 pub const SHELL_UNIT: &str = "bardo-shell";
 
+/// Writes the configuration files a World writes and puts the shell in the fake proc root.
+///
 /// Writes the configuration files a World writes (memoryd's callers and Spaces, inferd's
 /// configuration, the system callers files with accountd's among them), and puts the shell in the fake proc root. intentd and companiond read no
 /// file: without one they run on the configuration they ship.
+///
+/// # Errors
+///
+/// Returns the I/O error when a file cannot be written.
 pub fn files(root: &Path, shell_pid: u32, inferd_toml: &str) -> std::io::Result<()> {
     place(root, shell_pid, Cgroup::Unit(SHELL_UNIT))?;
     put(

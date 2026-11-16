@@ -1,6 +1,8 @@
-//! The labels the router computes itself. A model never vouches for what it passes: a value it
-//! supplies is trusted only if the router can trace it to the person's own words or to
-//! something the router showed it, and a handle brings back the label it was minted with.
+//! The labels the router computes itself.
+//!
+//! A model never vouches for what it passes: a value it supplies is trusted only if the router can
+//! trace it to the person's own words or to something the router showed it, and a handle brings
+//! back the label it was minted with.
 
 use crate::handles::HandleValue;
 use crate::session::SessionEvent;
@@ -90,6 +92,11 @@ pub fn fold_labels(labels: impl IntoIterator<Item = Label>) -> Option<Label> {
 
 /// Labels and resolves every argument: handles become the values they hold with their labels,
 /// and a plain value gets the label its speaker's voice earns.
+///
+/// # Errors
+///
+/// Returns the parameter name and the [`ArgFault`] of the first argument that cannot be labelled
+/// or resolved.
 pub fn label_args(
     session: &SessionRecord,
     voice: &Voice,
@@ -107,6 +114,10 @@ pub fn label_args(
 
 /// The target with every handle resolved to the thing it holds: a handle that is not held is
 /// unknown, one that holds words or a file is the wrong type.
+///
+/// # Errors
+///
+/// Returns an [`ArgFault`] when a handle in the target is not held or holds the wrong type.
 pub fn resolve_target(
     session: &SessionRecord,
     target: TargetValue,
@@ -164,7 +175,12 @@ fn relabel(
                 .into_iter()
                 .unzip();
             let (values, label) = split(parts, || {
-                claim(session, voice, &Value::Record(Default::default()), given)
+                claim(
+                    session,
+                    voice,
+                    &Value::Record(std::collections::BTreeMap::default()),
+                    given,
+                )
             });
             Ok(Labelled {
                 value: Value::Record(names.into_iter().zip(values).collect()),
@@ -210,9 +226,8 @@ fn trace(session: &SessionRecord, value: &Value) -> Label {
     };
     match value {
         Value::Text(t) | Value::Url(t) if spoken(t) => user_label(),
-        Value::Text(_) | Value::Url(_) => model_label(),
         Value::File(f) if spoken(f.as_str()) => user_label(),
-        Value::File(_) => model_label(),
+        Value::Text(_) | Value::Url(_) | Value::File(_) => model_label(),
         Value::Entity(e) if session.known.contains(e) => app_label(&e.app),
         Value::Entities(es) if !es.is_empty() && es.iter().all(|e| session.known.contains(e)) => {
             app_label(&es[0].app)

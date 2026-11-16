@@ -1,9 +1,11 @@
 //! Live to regression: the cassette of a live run that went wrong, kept beside the corpus as
-//! `eval/regress/<case id>.cassette.jsonl`. The gate replays each one with the model answering
-//! exactly as it did live, through the same case, and requires the case's expectation to hold:
-//! a failure seen against a real model is fixed once and stays fixed. The case itself is an
-//! ordinary corpus case (`eval/<corpus>/<id>.toml`); a scenario seen only in a companion run is
-//! written up as a new case first (the run's `<id>.case.toml` is the place to start).
+//! `eval/regress/<case id>.cassette.jsonl`.
+//!
+//! The gate replays each one with the model answering exactly as it did live, through the same
+//! case, and requires the case's expectation to hold: a failure seen against a real model is fixed
+//! once and stays fixed. The case itself is an ordinary corpus case (`eval/<corpus>/<id>.toml`); a
+//! scenario seen only in a companion run is written up as a new case first (the run's
+//! `<id>.case.toml` is the place to start).
 
 use action_eval_core::Case;
 use std::path::Path;
@@ -35,6 +37,10 @@ pub enum RegressError {
 
 /// Every cassette in `dir`, paired with the case of the same id among `cases`. None when the
 /// directory is not there.
+///
+/// # Errors
+///
+/// Returns a [`RegressError`] when a cassette cannot be read.
 pub fn load(dir: &Path, cases: &[Case]) -> Result<Vec<Regression>, RegressError> {
     if !dir.is_dir() {
         return Ok(Vec::new());

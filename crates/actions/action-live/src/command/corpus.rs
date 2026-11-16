@@ -108,7 +108,7 @@ fn corpus_agent(args: &CorpusArgs, spec: &AcpSpec) -> Result<ExitCode, CommandFa
     };
     let report = RunReport {
         version: env!("CARGO_PKG_VERSION").to_owned(),
-        per_corpus: Default::default(),
+        per_corpus: std::collections::BTreeMap::default(),
         attack: None,
     };
     let text = report.render(&note);
@@ -165,7 +165,7 @@ async fn corpus_live_planner(
     let metrics = LiveMetrics::from_scores(&ran.planner, &ran.scores);
     let report = RunReport {
         version: env!("CARGO_PKG_VERSION").to_owned(),
-        per_corpus: Default::default(),
+        per_corpus: std::collections::BTreeMap::default(),
         attack: None,
     };
     let text = report.render(&ran.note) + &metrics.render();
@@ -286,7 +286,9 @@ pub(super) async fn corpus(
                 .collect()
         })
         .unwrap_or_default();
-    over.iter().for_each(|line| eprintln!("agent-live: {line}"));
+    for line in &over {
+        eprintln!("agent-live: {line}");
+    }
     Ok(match (misses.is_empty(), over.is_empty()) {
         (true, true) => ExitCode::SUCCESS,
         _ => ExitCode::from(1),

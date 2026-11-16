@@ -109,8 +109,8 @@ fn the_scripted_person_allows_only_the_sheets_of_the_tasks_own_actions() {
             .now_or_never()
             .expect("at once");
         match (yes, answer) {
-            (true, ConfirmAnswer::Allowed { .. }) => {}
-            (false, ConfirmAnswer::Ended(ConfirmEnd::Refused)) => {}
+            (true, ConfirmAnswer::Allowed { .. })
+            | (false, ConfirmAnswer::Ended(ConfirmEnd::Refused)) => {}
             (_, other) => panic!("{app} {label}: {other:?}"),
         }
     }

@@ -46,7 +46,7 @@ mod tests {
             turn: None,
             steps: 0,
             pending: vec![],
-            guard: Default::default(),
+            guard: agent_loop::Guard::default(),
         }
     }
 

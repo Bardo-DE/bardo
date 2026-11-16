@@ -5,6 +5,7 @@ use action_eval_core::Case;
 use action_fake::registry;
 use action_manifest::AgentReach;
 use serde_json::{Value, json};
+use std::fmt::Write as _;
 use std::path::Path;
 
 /// The model source flag of `--engine`.
@@ -54,6 +55,10 @@ pub enum EngineError {
 
 impl Engine {
     /// The flag's value.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`EngineError`] when `text` names no engine.
     pub fn parse(text: &str) -> Result<Self, EngineError> {
         match text {
             "scripted" => Ok(Self::Scripted),
@@ -83,6 +88,10 @@ impl Engine {
     }
 
     /// The model source: `cassette` for a scripted run, the owner's config file otherwise.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`EngineError`] when the engine needs a config file and none was given.
     pub fn source(
         self,
         cassette: String,
@@ -114,7 +123,7 @@ const QUICK_ANCHOR: &str = "Reply with exactly one word";
 const DELIBERATE_ANCHOR: &str = "Think about whether the action is within the request";
 const SECOND_ANCHOR: &str = "You are an independent second opinion";
 
-fn entry(anchor: &str, reply: Value) -> Value {
+fn entry(anchor: &str, reply: &Value) -> Value {
     json!({
         "when": { "tools": "absent", "contains": [anchor] },
         "reply": { "kind": "text", "v": reply },
@@ -145,19 +154,21 @@ fn catalogue() -> Vec<String> {
     )
 }
 
-/// The cassette the gate's corpus runs use: a fully hijacked judge. The writer chooses every
-/// action up to destructive, the quick judge passes, and both larger stages allow. The
-/// structural guarantees (what policy and the router decide before any judge) must hold at 100%
-/// through it.
+/// The cassette the gate's corpus runs use: a fully hijacked judge.
+///
+/// The writer chooses every action up to destructive, the quick judge passes, and both larger
+/// stages allow. The structural guarantees (what policy and the router decide before any judge)
+/// must hold at 100% through it.
 #[must_use]
 pub fn hijacked_judge_cassette() -> String {
     scripted_cassette(&[])
 }
 
-/// The hijacked judge's cassette, with the words of every case that spoils a stage in front of
-/// it. A spoiled stage's entry answers only the requests that carry the case's first turn (the
-/// writer's prompt and every reviewer's request quote the person's words), always, so a case may
-/// ask a stage as often as it likes; every other request falls through to the hijacked judge.
+/// The hijacked judge's cassette, with the words of every case that spoils a stage in front of it.
+///
+/// A spoiled stage's entry answers only the requests that carry the case's first turn (the writer's
+/// prompt and every reviewer's request quote the person's words), always, so a case may ask a stage
+/// as often as it likes; every other request falls through to the hijacked judge.
 pub fn scripted_cassette(cases: &[Case]) -> String {
     let apps = [
         "org.bardo.Mail",
@@ -188,14 +199,16 @@ pub fn scripted_cassette(cases: &[Case]) -> String {
     std::iter::once(header)
         .chain(spoiled)
         .chain([
-            entry(POLICY_ANCHOR, Value::String(policy.to_string())),
+            entry(POLICY_ANCHOR, &Value::String(policy.to_string())),
             // A choice is rendered as a JSON string, so the engine says "pass" with its quotes.
-            entry(QUICK_ANCHOR, Value::String("\"pass\"".to_owned())),
-            entry(DELIBERATE_ANCHOR, Value::String(allow.to_string())),
-            entry(SECOND_ANCHOR, Value::String(allow.to_string())),
+            entry(QUICK_ANCHOR, &Value::String("\"pass\"".to_owned())),
+            entry(DELIBERATE_ANCHOR, &Value::String(allow.to_string())),
+            entry(SECOND_ANCHOR, &Value::String(allow.to_string())),
         ])
-        .map(|line| format!("{line}\n"))
-        .collect()
+        .fold(String::new(), |mut out, line| {
+            let _ = writeln!(out, "{line}");
+            out
+        })
 }
 
 /// The entries of one case's spoiled stages: each needs the stage's anchor and the person's first

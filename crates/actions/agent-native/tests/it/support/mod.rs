@@ -1,7 +1,10 @@
 //! A native host over the fakes: action-fake's router in process (the host's one identity plays
 //! the editor and the companion), a scripted planner model, a log shared by every router a test
 //! builds, and a clock the test never moves.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different part of this shared module"
+)]
 
 #[path = "../../../../companion-daemon/tests/it/support/infer.rs"]
 pub mod infer;

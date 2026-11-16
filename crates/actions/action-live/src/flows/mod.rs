@@ -1,7 +1,9 @@
-//! The acceptance flows (`dev/accept`), run against any model source: the cassettes of the gate,
-//! or a real model. A cassette proves the exact steps; a real model chooses its own, so a live
-//! flow is judged on what must hold whatever the model does (safety) and on whether the model
-//! got the job done (capability). Every failure says which.
+//! The acceptance flows (`dev/accept`), run against any model source: the cassettes of the gate, or
+//! a real model.
+//!
+//! A cassette proves the exact steps; a real model chooses its own, so a live flow is judged on
+//! what must hold whatever the model does (safety) and on whether the model got the job done
+//! (capability). Every failure says which.
 //!
 //! The judgement is a pure function of what was observed (`judge`), so it is tested over
 //! synthetic observations; `run_flow` only starts the world, plays the person, and observes.

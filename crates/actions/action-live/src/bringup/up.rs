@@ -1,3 +1,5 @@
+//! Starting the agent services on a bus that already exists.
+//!
 //! Starting the agent services on a bus that already exists: the same daemons, the same
 //! environment and the same fake proc root as an acceptance `World`, but as processes that
 //! outlive this one. Their pids and start times are recorded in the root for `down`.
@@ -117,6 +119,10 @@ fn check_binaries(binaries: &Binaries) -> Result<(), BringupError> {
 
 /// Starts accountd, inferd, memoryd, intentd and companiond on `args.bus`, rooted in `args.root`, and
 /// waits for each one's bus name. On any failure everything started so far is stopped again.
+///
+/// # Errors
+///
+/// Returns a [`BringupError`] when a daemon does not start or does not take its bus name.
 pub async fn up(
     args: &UpArgs,
     binaries: &Binaries,
@@ -184,7 +190,8 @@ pub async fn up(
             Ok(pid) => started.push(Started { name, pid }),
             Err(why) => {
                 for record in records.iter().rev() {
-                    down::stop(record);
+                    // The outcome only matters to `down`; on a failed start every process is stopped anyway.
+                    let _ = down::stop(record);
                 }
                 return Err(why);
             }

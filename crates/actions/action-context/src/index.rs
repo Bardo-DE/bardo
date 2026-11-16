@@ -1,3 +1,5 @@
+//! The shadow index of one app, kept by epochs (call lifecycle §4.6).
+//!
 //! The shadow index of one app (call lifecycle §4.6): `Reset(e)` starts an epoch, pushes in
 //! that epoch complete it, a push in another epoch is refused with a request to reset, and a
 //! stale signal or an app restart forgets everything.

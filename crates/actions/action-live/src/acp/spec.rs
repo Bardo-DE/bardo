@@ -1,9 +1,11 @@
-//! The external agent a run drives, as an `agents.toml` entry. It comes from the command line
-//! and the harness writes it into the scratch configuration; nothing is read from the person's
-//! own `agents.toml`. A path the agent keeps its state in is given relative to the scratch HOME,
-//! so the entry can never name a place in the person's real one.
+//! The external agent a run drives, as an `agents.toml` entry.
+//!
+//! It comes from the command line and the harness writes it into the scratch configuration; nothing
+//! is read from the person's own `agents.toml`. A path the agent keeps its state in is given
+//! relative to the scratch HOME, so the entry can never name a place in the person's real one.
 
 use sandbox::NetworkMode;
+use std::fmt::Write as _;
 use std::path::{Component, Path, PathBuf};
 
 /// Where Claude Code keeps its login, relative to HOME.
@@ -61,8 +63,10 @@ pub struct CredentialsSource {
 }
 
 /// An agent installed from the agent registry (`bardo-agents install`): which one, which pinned
-/// version, and the agents directory it lives in. Its sandbox home is the directory's, kept
-/// between runs, so the agent signs in there and nothing is copied from the real home.
+/// version, and the agents directory it lives in.
+///
+/// Its sandbox home is the directory's, kept between runs, so the agent signs in there and nothing
+/// is copied from the real home.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RegistryPick {
     /// The registry's id for it.
@@ -136,6 +140,10 @@ impl AcpSpec {
     }
 
     /// Checks everything the command line can get wrong.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`SpecFault`] for the first flag combination that is wrong.
     pub fn check(&self) -> Result<(), SpecFault> {
         let name_ok = !self.program.is_empty()
             && self
@@ -206,48 +214,50 @@ impl AcpSpec {
         let list = |items: Vec<String>| format!("[{}]", items.join(", "));
         let path = |p: &Path| quote(&p.display().to_string());
         let mut out = String::from("[[agent]]\n");
-        out.push_str(&format!("program = {}\n", quote(&self.program)));
+        let _ = writeln!(out, "program = {}", quote(&self.program));
         match &self.registry {
-            None => out.push_str(&format!("command = {}\n", path(&self.command))),
+            None => {
+                let _ = writeln!(out, "command = {}", path(&self.command));
+            }
             Some(pick) => {
-                out.push_str(&format!("registry = {}\n", quote(&pick.id)));
-                out.push_str(&format!("version = {}\n", quote(&pick.version)));
+                let _ = writeln!(out, "registry = {}", quote(&pick.id));
+                let _ = writeln!(out, "version = {}", quote(&pick.version));
             }
         }
-        out.push_str(&format!(
-            "args = {}\n",
+        let _ = writeln!(
+            out,
+            "args = {}",
             list(self.args.iter().map(|a| quote(a)).collect())
-        ));
+        );
         out.push_str("route = \"login\"\n");
-        out.push_str(&format!(
-            "network = {}\n",
-            quote(network_word(self.network))
-        ));
-        out.push_str(&format!(
-            "reads = {}\n",
+        let _ = writeln!(out, "network = {}", quote(network_word(self.network)));
+        let _ = writeln!(
+            out,
+            "reads = {}",
             list(self.reads.iter().map(|p| path(p)).collect())
-        ));
+        );
         if self.registry.is_none() {
-            out.push_str(&format!(
-                "state = {}\n",
+            let _ = writeln!(
+                out,
+                "state = {}",
                 list(self.state.iter().map(|s| path(&home.join(s))).collect())
-            ));
-            out.push_str(&format!("home = {}\n", path(home)));
+            );
+            let _ = writeln!(out, "home = {}", path(home));
         }
         out.push_str("tools = true\n");
         if let Some(profile) = &self.profile {
-            out.push_str(&format!("profile = {}\n", quote(profile)));
+            let _ = writeln!(out, "profile = {}", quote(profile));
         }
         if let Some(method) = &self.sign_in {
-            out.push_str(&format!("sign_in = {}\n", quote(method)));
+            let _ = writeln!(out, "sign_in = {}", quote(method));
         }
         if let Some(model) = &self.model {
-            out.push_str(&format!("model = {}\n", quote(model)));
+            let _ = writeln!(out, "model = {}", quote(model));
         }
         if !self.set.is_empty() {
             out.push_str("[agent.set]\n");
             for (name, value) in &self.set {
-                out.push_str(&format!("{name} = {}\n", quote(value)));
+                let _ = writeln!(out, "{name} = {}", quote(value));
             }
         }
         out
@@ -276,6 +286,10 @@ pub fn network_word(mode: NetworkMode) -> &'static str {
 }
 
 /// The network a flag names.
+///
+/// # Errors
+///
+/// Returns a [`SpecFault`] when `word` names no network.
 pub fn network_of(word: &str) -> Result<NetworkMode, SpecFault> {
     match word {
         "none" => Ok(NetworkMode::None),

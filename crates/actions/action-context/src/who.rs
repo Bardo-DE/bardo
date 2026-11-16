@@ -125,9 +125,20 @@ impl Who {
 }
 
 impl RouterState {
-    /// Who a `role` calling as `caller` is. The person's surfaces act directly; a companion
-    /// acts in the session it names, else its newest (a closed one refuses its calls, so a halt reads as a halt); MCP clients, terminals and apps act in a session of
-    /// their own, made when they first call.
+    /// Who a `role` calling as `caller` is.
+    ///
+    /// The person's surfaces act directly; a companion acts in the session it names, else its
+    /// newest (a closed one refuses its calls, so a halt reads as a halt); MCP clients, terminals
+    /// and apps act in a session of their own, made when they first call.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`WireRefusal`] when the named session is closed or the caller may not act in the
+    /// session it names.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one match over every caller role, each arm a short rule of who acts"
+    )]
     pub fn who_for(
         &mut self,
         caller: &CallerId,
@@ -192,7 +203,9 @@ impl RouterState {
                 });
             }
             CallerRole::Mcp => {
-                let client = ClientName::parse(app.as_str()).map_err(|_| WireRefusal::Malformed)?;
+                let client = ClientName::parse(app.as_str())
+                    .ok()
+                    .ok_or(WireRefusal::Malformed)?;
                 (
                     Actor::Mcp {
                         client: client.clone(),
@@ -218,9 +231,12 @@ impl RouterState {
             existing.clone()
         } else {
             let n = self.mint();
-            let session =
-                SessionId::parse(&format!("s-{n}")).map_err(|_| WireRefusal::Malformed)?;
-            let task = TaskId::parse(&format!("t-{n}")).map_err(|_| WireRefusal::Malformed)?;
+            let session = SessionId::parse(&format!("s-{n}"))
+                .ok()
+                .ok_or(WireRefusal::Malformed)?;
+            let task = TaskId::parse(&format!("t-{n}"))
+                .ok()
+                .ok_or(WireRefusal::Malformed)?;
             let mut record = SessionRecord::new(
                 task,
                 actor.clone(),

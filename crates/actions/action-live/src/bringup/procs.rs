@@ -1,8 +1,10 @@
-//! The processes `up` started, one line each in `<root>/procs`: `name pid start`, where `start`
-//! is field 22 of `/proc/<pid>/stat` (the process's start time in clock ticks since boot). A pid
-//! is only ever signalled while its start time still matches, so a pid the system reused for
+//! The processes `up` started, one line each in `<root>/procs`: `name pid start`, where `start` is
+//! field 22 of `/proc/<pid>/stat` (the process's start time in clock ticks since boot).
+//!
+//! A pid is only ever signalled while its start time still matches, so a pid the system reused for
 //! another program is never touched.
 
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 /// The file's place in a root.
@@ -42,9 +44,10 @@ impl State {
     }
 }
 
-/// The state letter and start time out of the text of a `/proc/<pid>/stat`. The command name is
-/// in parentheses and may hold spaces and parentheses, so the fields are counted after the LAST
-/// closing parenthesis: the state is field 3, the start time field 22.
+/// The state letter and start time out of the text of a `/proc/<pid>/stat`.
+///
+/// The command name is in parentheses and may hold spaces and parentheses, so the fields are
+/// counted after the LAST closing parenthesis: the state is field 3, the start time field 22.
 #[must_use]
 pub fn parse_stat(text: &str) -> Option<(char, u64)> {
     let after = text.rsplit_once(')')?.1;
@@ -67,7 +70,7 @@ impl Record {
     /// The state this record is in, given the text of its pid's `stat` (none: no such process).
     pub fn state_in(&self, stat: Option<&str>) -> State {
         match stat.and_then(parse_stat) {
-            Some((letter, start)) if start == self.start && !matches!(letter, 'Z' | 'X') => {
+            Some((letter, began)) if began == self.start && !matches!(letter, 'Z' | 'X') => {
                 State::Running
             }
             _ => State::Gone,
@@ -95,13 +98,17 @@ pub enum ProcsFault {
 /// The text of the file for `records`.
 #[must_use]
 pub fn render(records: &[Record]) -> String {
-    records
-        .iter()
-        .map(|r| format!("{} {} {}\n", r.name, r.pid, r.start))
-        .collect()
+    records.iter().fold(String::new(), |mut out, r| {
+        let _ = writeln!(out, "{} {} {}", r.name, r.pid, r.start);
+        out
+    })
 }
 
 /// The records in `text`.
+///
+/// # Errors
+///
+/// Returns a [`ProcsFault`] when a line is not a record.
 pub fn parse(text: &str) -> Result<Vec<Record>, ProcsFault> {
     let line = |line: &str| {
         let mut words = line.split_whitespace();
@@ -123,6 +130,10 @@ pub fn parse(text: &str) -> Result<Vec<Record>, ProcsFault> {
 }
 
 /// The records of `root` (none when it has no file).
+///
+/// # Errors
+///
+/// Returns a [`ProcsFault`] when the file cannot be read or is not records.
 pub fn read(root: &Path) -> Result<Vec<Record>, ProcsFault> {
     let path = file(root);
     match std::fs::read_to_string(&path) {
@@ -133,6 +144,10 @@ pub fn read(root: &Path) -> Result<Vec<Record>, ProcsFault> {
 }
 
 /// Replaces the file of `root` with `records`.
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be written.
 pub fn write(root: &Path, records: &[Record]) -> std::io::Result<()> {
     std::fs::write(file(root), render(records))
 }

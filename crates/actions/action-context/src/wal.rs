@@ -146,6 +146,10 @@ impl Writer {
     }
 
     /// Appends `entry` after, if it needs one, the taint entry it must not precede.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`LogFault`] of the log when an append is not acknowledged.
     pub async fn put<L: SessionLog>(
         &mut self,
         log: &L,
@@ -166,6 +170,10 @@ impl Writer {
     }
 
     /// Appends one entry at the writer's position; the position moves only on an ack.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`LogFault`] of the log when the append is not acknowledged.
     pub async fn append<L: SessionLog>(
         &mut self,
         log: &L,

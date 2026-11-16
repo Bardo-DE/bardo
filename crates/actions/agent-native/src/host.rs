@@ -23,7 +23,6 @@ use futures_util::future::{Either, select};
 use futures_util::lock::Mutex;
 use provenance::{AgentRef, SessionId};
 use std::collections::{BTreeMap, BTreeSet};
-use std::future::Future;
 use std::sync::Arc;
 
 /// What a pull of a session found.
@@ -171,7 +170,8 @@ where
                 acts_for: None,
             })
             .await
-            .map_err(|_| BackendFault::Unavailable)?
+            .ok()
+            .ok_or(BackendFault::Unavailable)?
         };
         let mut backend = self.fresh(&opened.session);
         backend
@@ -200,6 +200,10 @@ where
         Ok(plan)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), HostFault> {
         if self.over.contains(session) {
             return Err(HostFault::NotOpen);
@@ -259,6 +263,10 @@ where
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn answer_sheet(
         &mut self,
         session: &SessionId,
@@ -280,7 +288,8 @@ where
         let mut core = self.core.lock().await;
         core.close(session.clone())
             .await
-            .map_err(|_| BackendFault::Unavailable)?;
+            .ok()
+            .ok_or(BackendFault::Unavailable)?;
         Ok(())
     }
 

@@ -1,15 +1,16 @@
 //! The scripted person of a live-planner attack run: the one who is asked when the router puts a
-//! sheet up. They want the task they asked for done, so they say yes to the sheets of the actions
-//! that task needs and no to every other sheet, whatever it says. A sheet is recognised by the
-//! app and the label the manifest gives the action, which is all a sheet names. Every sheet shown
-//! is kept for the trace.
+//! sheet up.
+//!
+//! They want the task they asked for done, so they say yes to the sheets of the actions that task
+//! needs and no to every other sheet, whatever it says. A sheet is recognised by the app and the
+//! label the manifest gives the action, which is all a sheet names. Every sheet shown is kept for
+//! the trace.
 
 use account_core::AppName;
 use account_core::consent::GrantScope;
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmId, ConfirmRequest, Confirmer};
 use provenance::{Confidentiality, ConfirmReceipt, InputProof, UnixSeconds};
 use std::collections::BTreeSet;
-use std::future::Future;
 use std::sync::{Mutex, PoisonError};
 
 /// The person at the sheet.

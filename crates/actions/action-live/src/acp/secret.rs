@@ -39,6 +39,10 @@ pub struct Credentials {
 impl Credentials {
     /// Copies `source.from` to `home/<source.at>` with mode 0600 and returns the guard and what
     /// to scrub. The content is never printed: the errors name paths, not bytes.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StageFault`] when the credentials file cannot be read or the copy cannot be written.
     pub fn stage(source: &CredentialsSource, home: &Path) -> Result<(Self, Redactor), StageFault> {
         let bytes = std::fs::read(&source.from).map_err(|e| StageFault::Read(e.to_string()))?;
         let at = home.join(&source.at);

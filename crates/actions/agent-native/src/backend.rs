@@ -1,6 +1,8 @@
 //! `NativeBackend`: one session's turns run by the planner loop of a `Companion`, behind the
-//! `SessionBackend` trait. The backend holds no authority and writes no entry: every call goes to
-//! the router, which gates it and records it, and the host writes the rest.
+//! `SessionBackend` trait.
+//!
+//! The backend holds no authority and writes no entry: every call goes to the router, which gates
+//! it and records it, and the host writes the rest.
 //!
 //! Two rules of the trait are kept here and tested (`tests/it/contract.rs`):
 //! `next_event` is cancel-safe (the turn lives in a stored `Flight`; a dropped pull loses and
@@ -113,6 +115,10 @@ where
 {
     /// Records `said` with the router (which numbers it and derives the task's policy, and may
     /// ask the person about it) and runs the turn, all inside the flight.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`BackendFault`] when the router refuses the turn or the turn cannot be run.
     pub fn record_and_turn(&mut self, turn: UserTurn, said: TurnIn) -> Result<(), BackendFault> {
         self.begin(turn, Recording::Pending(said))
     }
@@ -124,7 +130,9 @@ where
         if self.flight.is_some() {
             return Err(BackendFault::Busy);
         }
-        let window = WindowKey::parse(EDITOR_WINDOW).map_err(|_| BackendFault::Unavailable)?;
+        let window = WindowKey::parse(EDITOR_WINDOW)
+            .ok()
+            .ok_or(BackendFault::Unavailable)?;
         let core = Arc::clone(&self.core);
         let session = self.session.clone();
         self.flight = Some(Flight::of(|mut tap| {
@@ -208,13 +216,18 @@ where
             if core.task_of(&self.session).is_none() {
                 core.adopt_stored(&self.session, plan)
                     .await
-                    .map_err(|_| BackendFault::Unavailable)?;
+                    .ok()
+                    .ok_or(BackendFault::Unavailable)?;
             }
         }
         self.bind().await?;
         Ok(Resumed::Restored)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendFault> {
         self.begin(turn, Recording::Done)
     }

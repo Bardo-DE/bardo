@@ -1,7 +1,9 @@
-//! One writer per thing. A helper's job owns the things it was given (its seat names them): while
-//! its session lives and its task has not ended, a write to one of them from any other session is
-//! refused with `DenyCode::OwnedByAnotherJob`. The person's own acts through an app are not calls
-//! to the router and are not held back, and a read of an owned thing is free to anyone.
+//! One writer per thing.
+//!
+//! A helper's job owns the things it was given (its seat names them): while its session lives and
+//! its task has not ended, a write to one of them from any other session is refused with
+//! `DenyCode::OwnedByAnotherJob`. The person's own acts through an app are not calls to the router
+//! and are not held back, and a read of an owned thing is free to anyone.
 
 use crate::session::SessionState;
 use crate::state::{RouterState, SessionRecord};

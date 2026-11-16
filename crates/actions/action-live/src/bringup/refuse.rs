@@ -1,6 +1,7 @@
-//! What `up` refuses before it touches anything: a root that is a checkout or the home
-//! directory, and a bus that is the real one. Pure: the facts about the current process arrive
-//! as an [`Own`], so a table of cases tests it.
+//! What `up` refuses before it touches anything: a root that is a checkout or the home directory,
+//! and a bus that is the real one.
+//!
+//! Pure: the facts about the current process arrive as an [`Own`], so a table of cases tests it.
 
 use std::path::{Component, Path, PathBuf};
 
@@ -60,6 +61,10 @@ pub enum Refusal {
 }
 
 /// Checks the scratch root.
+///
+/// # Errors
+///
+/// Returns a [`Refusal`] when the root is one the harness does not own.
 pub fn check_root(root: &Path, own: &Own) -> Result<(), Refusal> {
     if !root.is_absolute() {
         return Err(Refusal::RootNotAbsolute(root.to_owned()));
@@ -97,6 +102,10 @@ fn real_path(path: &str) -> bool {
 }
 
 /// Checks the bus address.
+///
+/// # Errors
+///
+/// Returns a [`Refusal`] when the address is one the harness does not own.
 pub fn check_bus(bus: &str, own: &Own) -> Result<(), Refusal> {
     if !bus.starts_with("unix:") {
         return Err(Refusal::BusNotUnix(bus.to_owned()));

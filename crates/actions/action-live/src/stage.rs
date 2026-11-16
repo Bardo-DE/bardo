@@ -1,7 +1,8 @@
-//! Which part of the stack a model exchange belongs to, from the exchange alone: the policy
-//! writer, a review stage, the planner, or the reader. A tap line says who asked and what; this
-//! reads the rest from the words, because the reviewer's and the writer's instructions are fixed
-//! text (`action-review`'s render, `intentd`'s writer).
+//! Which part of the stack a model exchange belongs to, from the exchange alone: the policy writer,
+//! a review stage, the planner, or the reader.
+//!
+//! A tap line says who asked and what; this reads the rest from the words, because the reviewer's
+//! and the writer's instructions are fixed text (`action-review`'s render, `intentd`'s writer).
 
 use action_core::ModelExchange;
 use permission_core::Stage;

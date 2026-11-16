@@ -28,7 +28,7 @@ fn opening() -> Opening {
         cwd: Some(Workspace::parse("/work/a").expect("cwd")),
         started_from: None,
         label: None,
-        rewind: Default::default(),
+        rewind: action_core::Rewind::default(),
     }
 }
 
@@ -63,7 +63,7 @@ async fn entries(log: &Arc<MemoryLog>, s: &provenance::SessionId) -> Vec<Session
         .into_iter()
         .filter_map(|r| match r.read {
             Read::Entry(e) => Some(*e),
-            _ => None,
+            Read::Unreadable(_) => None,
         })
         .collect()
 }

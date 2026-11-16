@@ -115,7 +115,9 @@ async fn open(
         .map(|pick| agent_registry::dirs::AgentsDir::at(&pick.dir));
     let file = AgentsFile::parse_in(&entry, dir.as_ref())
         .map_err(|why| PlayFault::Entry(why.to_string()))?;
-    let program = ProgramName::parse(&spec.program).map_err(|_| PlayFault::ProgramName)?;
+    let program = ProgramName::parse(&spec.program)
+        .ok()
+        .ok_or(PlayFault::ProgramName)?;
     // The agent host is its own process to the daemons (bardo-agent's scope), as it is on a
     // desktop; the harness process stays the shell.
     let bus = world
@@ -158,6 +160,10 @@ async fn open(
 
 /// The models the agent offers for a session opened in `world`, and the one in use; none when it
 /// offers no choice. The session is closed again without a turn.
+///
+/// # Errors
+///
+/// Returns a [`PlayFault`] when the agent cannot be started or the session cannot be opened.
 pub async fn offered_models(
     world: &World,
     binaries: &Binaries,

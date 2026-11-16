@@ -15,9 +15,12 @@ use agent_session::SheetChoice;
 use agent_session::TurnEnd;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, FooterWire};
 use serde_json::json;
+use std::fmt::Write as _;
 use std::path::PathBuf;
 use std::time::Duration;
 
+/// The cassette an agent run plays when the engine is `scripted`.
+///
 /// The cassette an agent run plays when the engine is `scripted`: the policy writer allows Mail
 /// up to outbound (what the flows ask) and the host's own actions up to reads, and the judges
 /// pass. The agent chooses its own calls, so nothing else of a flow's cassette applies.
@@ -70,8 +73,10 @@ pub fn agent_cassette() -> String {
         entry("You are an independent second opinion", allow.to_string()),
     ]
     .into_iter()
-    .map(|line| format!("{line}\n"))
-    .collect()
+    .fold(String::new(), |mut out, line| {
+        let _ = writeln!(out, "{line}");
+        out
+    })
 }
 
 /// What an agent's flow came to.
@@ -146,9 +151,11 @@ fn person_for(flow: Flow) -> ByEffect {
     })
 }
 
-/// Plays `flow` with the agent `spec` in a fresh world over `model`, with the model tap on and
-/// the scratch root kept under `keep_in`. The login of the spec, if any, is staged for the run and
-/// removed when this returns (or unwinds); everything written is scrubbed of it.
+/// Plays `flow` with the agent `spec` in a fresh world over `model`, with the model tap on and the
+/// scratch root kept under `keep_in`.
+///
+/// The login of the spec, if any, is staged for the run and removed when this returns (or unwinds);
+/// everything written is scrubbed of it.
 pub async fn run_flow_acp(
     binaries: &Binaries,
     flow: Flow,
@@ -216,25 +223,21 @@ pub async fn run_flow_acp(
         });
     }
     let mut text = transcript_of(flow.slug(), flow.prompt(), &found, &judged.failures);
-    text.push_str(&format!(
-        "\nagent {}: {}\n",
-        spec.program,
-        describe(&played.end)
-    ));
+    let _ = writeln!(text, "\nagent {}: {}", spec.program, describe(&played.end));
     text.push_str("agent said:\n");
     for words in &played.words {
-        text.push_str(&format!("  {words:?}\n"));
+        let _ = writeln!(text, "  {words:?}");
     }
     text.push_str("calls the host announced:\n");
     for call in &played.calls {
-        text.push_str(&format!("  {call}\n"));
+        let _ = writeln!(text, "  {call}");
     }
     text.push_str("\nnot applicable in this mode:\n");
     if judged.not_applicable.is_empty() {
         text.push_str("  none\n");
     }
     for check in &judged.not_applicable {
-        text.push_str(&format!("  {check}\n"));
+        let _ = writeln!(text, "  {check}");
     }
     // The login goes first from the files, then from the text the caller will write.
     redactor.sweep(world.dir.path());
@@ -249,6 +252,10 @@ pub async fn run_flow_acp(
 
 /// Opens the agent in a fresh world and says which models it offers: one line per model, the
 /// current one marked, or why nothing could be listed. No turn is taken.
+///
+/// # Errors
+///
+/// Returns a [`PlayFault`] when the agent cannot be started or the session cannot be opened.
 pub async fn list_models_acp(
     binaries: &Binaries,
     spec: &AcpSpec,

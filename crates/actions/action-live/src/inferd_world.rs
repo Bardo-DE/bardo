@@ -1,3 +1,5 @@
+//! The smallest world a corpus run needs: a private bus, accountd and inferd.
+//!
 //! The smallest world a corpus run needs: a private bus, the packaged accountd (inferd asks it for
 //! the AI keys) and inferd, and this
 //! process placed in the fake proc root as `bardo-actiond.service` so inferd serves it as
@@ -38,6 +40,11 @@ impl std::fmt::Debug for InferdWorld {
 impl InferdWorld {
     /// Starts the bus, accountd and inferd (replaying or live, as `model` says) and waits for
     /// their names.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the scratch directory cannot be made or a daemon does not start: this is a test
+    /// harness, and a world that is not up has nothing to run.
     pub async fn start(binaries: &Binaries, model: &ModelSource, options: &Options) -> Self {
         let dir = Scratch::made(options.keep_in.as_deref()).expect("scratch");
         let root = dir.path();

@@ -1,7 +1,10 @@
 //! Shared by the live-harness tests: where the daemon binaries are. The daemons are
 //! `action-accept`'s (`accept-actiond` and the rest), built into the same target directory as this
 //! test: `cargo build -p action-accept --bins` builds them (a workspace test run does).
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different part of this shared module"
+)]
 
 use action_accept::world::{Binaries, Cassette};
 use std::path::PathBuf;

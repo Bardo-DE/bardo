@@ -1,8 +1,9 @@
-//! `agent-bringup`: the agent services (accountd, inferd, memoryd, intentd, companiond) on a bus that
-//! already exists, for a demo shell whose companion pane should really answer. It reuses the
-//! acceptance world's pieces: the same daemons, `env_clear` plus the scratch environment, the
-//! same fake proc root and configuration files. Unlike a world, the daemons outlive this
-//! process; `<root>/procs` records their pids and start times for `down` and `status`.
+//! `agent-bringup`: the agent services (accountd, inferd, memoryd, intentd, companiond) on a bus
+//! that already exists, for a demo shell whose companion pane should really answer.
+//!
+//! It reuses the acceptance world's pieces: the same daemons, `env_clear` plus the scratch
+//! environment, the same fake proc root and configuration files. Unlike a world, the daemons
+//! outlive this process; `<root>/procs` records their pids and start times for `down` and `status`.
 //!
 //! No local model engine is ever configured: the `inferd.toml` it writes names no engine and
 //! probes no local runtime port (see [`seed::NO_LOCAL_ENGINE`]). Nothing here opens a key file.
@@ -93,9 +94,9 @@ pub fn add_command(root: &Path, accountd: &Path) -> String {
 }
 
 fn say_up(args: &cli::UpArgs, binaries: &Binaries, started: &[up::Started]) {
-    started
-        .iter()
-        .for_each(|s| println!("{} {} ok", s.name, s.pid));
+    for s in started {
+        println!("{} {} ok", s.name, s.pid);
+    }
     if args.keys_home.is_none() {
         println!(
             "Cloud models need a key in this root; skip this if you already added one. To add it, stop the services (agent-bringup down --root {}), then type the key at accountd's own prompt:\n  {}\nthen run up again.",
@@ -143,9 +144,11 @@ fn run_command(
     Ok(())
 }
 
-/// The whole program: parses `args` (without the program's name), runs the command and prints
-/// its lines. `exe` is the program's own path (the daemons are beside it) and `env` the environment
-/// `main` hands in. Exit code 2 for a wrong command line, 1 for a failure.
+/// The whole program: parses `args` (without the program's name), runs the command and prints its
+/// lines.
+///
+/// `exe` is the program's own path (the daemons are beside it) and `env` the environment `main`
+/// hands in. Exit code 2 for a wrong command line, 1 for a failure.
 pub fn run_cli(args: &[String], exe: &Path, env: &impl Fn(&str) -> Option<String>) -> ExitCode {
     let command = match cli::parse(args) {
         Ok(command) => command,

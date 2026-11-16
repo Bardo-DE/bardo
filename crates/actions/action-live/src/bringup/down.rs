@@ -83,6 +83,10 @@ pub fn stop(record: &Record) -> Outcome {
 }
 
 /// Stops every process `root` recorded, the last started first. The root stays on disk.
+///
+/// # Errors
+///
+/// Returns a [`ProcsFault`] when the records cannot be read.
 pub fn down(root: &Path) -> Result<Vec<Stopped>, ProcsFault> {
     let records = procs::read(root)?;
     Ok(records
@@ -96,6 +100,10 @@ pub fn down(root: &Path) -> Result<Vec<Stopped>, ProcsFault> {
 }
 
 /// Every recorded process and whether it is still the one that was started.
+///
+/// # Errors
+///
+/// Returns a [`ProcsFault`] when the records cannot be read.
 pub fn status(root: &Path) -> Result<Vec<(Record, State)>, ProcsFault> {
     Ok(procs::read(root)?
         .into_iter()

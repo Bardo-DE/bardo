@@ -1,3 +1,5 @@
+//! The two commands of `agent-live`: `corpus` and `smoke`.
+//!
 //! The two commands of `agent-live`: `corpus` plays the eval corpora through the router with the
 //! real policy writer and reviewer cascade over a model; `smoke` plays the acceptance flows with
 //! every daemon against a model. The binary only parses its command line and hands the command here.
@@ -78,6 +80,10 @@ pub enum CommandFault {
 
 /// Runs `command` against the daemons in `binaries`. The error is what the program says before it
 /// exits with code 2.
+///
+/// # Errors
+///
+/// Returns a [`CommandFault`] when the command cannot be run to its end.
 pub async fn run(command: Command, binaries: &Binaries) -> Result<ExitCode, CommandFault> {
     match command {
         Command::Corpus(args) => Box::pin(corpus::corpus(args, binaries)).await,

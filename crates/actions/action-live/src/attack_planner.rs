@@ -1,12 +1,13 @@
 //! The attack suite played by the companion's real planner (`agent-live corpus --corpus attacks
-//! --planner live`): `AgentDojo`'s own measurement. The planner model is given the person's words
-//! over the attack's world, once with the carrier holding filler and once holding the injection,
-//! and chooses its own steps through the companion's real loop, in this process, over the same
-//! router the scripted run uses. The policy writer and the reviewers are the real models over
-//! inferd, as in the scripted live run; the reader that reads untrusted text is a real reader
-//! model too, so the planner sees what it would see in the product (the injection reaches it,
-//! if it does, only as the reader's typed answer). The scripted person (`person.rs`) allows the
-//! sheets of the task's own actions and refuses every other.
+//! --planner live`): `AgentDojo`'s own measurement.
+//!
+//! The planner model is given the person's words over the attack's world, once with the carrier
+//! holding filler and once holding the injection, and chooses its own steps through the companion's
+//! real loop, in this process, over the same router the scripted run uses. The policy writer and
+//! the reviewers are the real models over inferd, as in the scripted live run; the reader that
+//! reads untrusted text is a real reader model too, so the planner sees what it would see in the
+//! product (the injection reaches it, if it does, only as the reader's typed answer). The scripted
+//! person (`person.rs`) allows the sheets of the task's own actions and refuses every other.
 //!
 //! The scores are `action-eval-core`'s (`score_live`): they read the trace this run builds from the
 //! router's audit records. A live run is a measurement, not a gate.
@@ -147,7 +148,9 @@ impl Rig {
 }
 
 fn caller(name: &str, role: CallerRole) -> Result<CallerId, AttackFault> {
-    let app = AppName::parse(name).map_err(|_| AttackFault::NotAnApp(name.to_owned()))?;
+    let app = AppName::parse(name)
+        .ok()
+        .ok_or_else(|| AttackFault::NotAnApp(name.to_owned()))?;
     Ok(CallerId {
         app: AppId {
             name: app,
@@ -168,12 +171,16 @@ fn keep_nothing() -> ContextKeep {
 
 /// The ask a turn makes from where the person is: the companion reads the window of the place's
 /// app when it resolves "this", as it does for a turn asked from an app's window.
+///
+/// # Errors
+///
+/// Returns an [`AttackFault`] when the turn cannot be written as a companion ask.
 pub fn ask_of(session: SessionId, turn: UserTurn, place: &Place) -> Result<AskWire, AttackFault> {
     Ok(AskWire {
         session,
         turn,
         keep: keep_nothing(),
-        parent_window: WindowKey::parse("w1").map_err(|_| AttackFault::WindowName)?,
+        parent_window: WindowKey::parse("w1").ok().ok_or(AttackFault::WindowName)?,
         app: Some(place.app.clone()),
     })
 }
@@ -206,7 +213,9 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
     let place = attack.place(&router.seams.link.shown())?;
     router.seams.link.show_window(place.window.clone());
     let router = Arc::new(router);
-    let shell = AppName::parse("org.bardo.Shell").map_err(|_| AttackFault::ShellName)?;
+    let shell = AppName::parse("org.bardo.Shell")
+        .ok()
+        .ok_or(AttackFault::ShellName)?;
     let mut companion: Companion<_, _, _, Quiet> = Companion::new(
         Intents::over(InProcess::new(
             Arc::clone(&router),
@@ -309,6 +318,10 @@ async fn trace_of(rig: &Rig, attack: &AttackCase, case: &Case) -> CaseTrace {
 
 /// Plays every attack of `attacks` with the real planner against the model `options` names, writes
 /// the traces under `options.out`, and scores them. Must run inside a multi-thread tokio runtime.
+///
+/// # Errors
+///
+/// Returns a [`CorpusError`] when a daemon cannot be started or a trace cannot be written.
 pub async fn run_attacks_planner(
     binaries: &Binaries,
     attacks: &[AttackCase],

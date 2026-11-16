@@ -1,7 +1,8 @@
-//! The handle table. When the router hands anything to a companion session (context, search
-//! hits, read outcomes, previews), every untrusted text is replaced by a handle; the text reaches
-//! only the reader, and the screen through `Session.Display`. A model cannot forge taint: the
-//! router computes it.
+//! The handle table.
+//!
+//! When the router hands anything to a companion session (context, search hits, read outcomes,
+//! previews), every untrusted text is replaced by a handle; the text reaches only the reader, and
+//! the screen through `Session.Display`. A model cannot forge taint: the router computes it.
 
 use action_core::{HandleCard, HandleShape, Reveal, size_of};
 use action_vocab::{FileRef, Handle};
@@ -10,16 +11,18 @@ use provenance::{EntityId, Integrity, Label, Labelled, Measured, Quarantined, So
 use std::collections::BTreeMap;
 use std::hash::{DefaultHasher, Hash, Hasher};
 
-/// The most handles one session holds. An app is the source of what fills a table (a search can
-/// return thousands of things); a session that reaches this refuses the next result with
-/// [`HandleLimit::Handles`] rather than dropping an older handle a planner may still name. A task
-/// that needs more starts a new session.
+/// The most handles one session holds.
+///
+/// An app is the source of what fills a table (a search can return thousands of things); a session
+/// that reaches this refuses the next result with [`HandleLimit::Handles`] rather than dropping an
+/// older handle a planner may still name. A task that needs more starts a new session.
 pub const MAX_HANDLES: usize = 4096;
 
-/// The most text handles the context view holds at once. Beyond this a new text of the view
-/// evicts the oldest text handle the current view does not use; the evicted number is never
-/// reused, and naming it refuses as an unknown handle. A view is bounded by what an app reports
-/// (a capped list of things), so the current view always fits.
+/// The most text handles the context view holds at once.
+///
+/// Beyond this a new text of the view evicts the oldest text handle the current view does not use;
+/// the evicted number is never reused, and naming it refuses as an unknown handle. A view is
+/// bounded by what an app reports (a capped list of things), so the current view always fits.
 pub const MAX_VIEW_TEXTS: usize = 512;
 
 /// The most things one session may have been shown (`SessionRecord::known`), for the same
@@ -124,6 +127,10 @@ impl HandleTable {
     }
 
     /// [`mint`](Self::mint), refused when the table is full. Nothing is evicted.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HandleLimit`] when the table is full.
     pub fn try_mint(
         &mut self,
         value: Labelled<HandleValue>,
@@ -228,6 +235,10 @@ impl HandleTable {
     }
 
     /// [`mint_entity`](Self::mint_entity), refused when the thing is new and the table is full.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HandleLimit`] when the thing is new and the table is full.
     pub fn try_mint_entity(
         &mut self,
         thing: EntityId,
@@ -273,9 +284,14 @@ impl HandleTable {
         handle
     }
 
-    /// Holds a text and returns its handle: the one it already has when the same text is held
-    /// with the same label and source, so a thing a planner was shown keeps its number across
-    /// turns. Refused when the text is new and the table is full.
+    /// Holds a text and returns its handle: the one it already has when the same text is held with
+    /// the same label and source, so a thing a planner was shown keeps its number across turns.
+    ///
+    /// Refused when the text is new and the table is full.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HandleLimit`] when the text is new and the table is full.
     pub fn try_mint_text(
         &mut self,
         text: Labelled<String>,

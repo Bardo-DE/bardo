@@ -128,7 +128,15 @@ fn queued(plan: &ResumePlan, lines: &[StepLine]) -> Vec<SessionEntry> {
 }
 
 /// The session `plan` describes, as of `now`.
+///
+/// # Panics
+///
+/// Panics if the fixed fallback app name is not a valid app name, which it always is.
 #[must_use]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one pass that rebuilds each part of a session from the plan, in order"
+)]
 pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
     let opening = &plan.opening;
     let agent = opening.agent.clone().unwrap_or(AgentRef::Companion);
@@ -229,9 +237,9 @@ pub fn rebuild(id: &SessionId, plan: &ResumePlan, now: UnixSeconds) -> Rebuilt {
     record.wal = match &plan.standing {
         Standing::Open | Standing::Paused(_) => {
             let mut wal = Wal::on(plan.taint);
-            queued(plan, &cut_off)
-                .into_iter()
-                .for_each(|entry| wal.note(entry));
+            for entry in queued(plan, &cut_off) {
+                wal.note(entry);
+            }
             wal
         }
         Standing::Closed(_) | Standing::Blocked(_) => Wal::Off,
@@ -283,9 +291,7 @@ mod tests {
     use super::*;
     use action_core::Rewind;
     use action_vocab::CallId;
-    use agent_session::{
-        BackendKind, CallOpen, EndCause, Interrupted, Opening, ResumedBudget, TaintCause,
-    };
+    use agent_session::{BackendKind, CallOpen, EndCause, Interrupted, Opening, ResumedBudget};
     use permission_core::BreakerTrip;
     use provenance::{ActionName, Effect, SpaceId, TaskId};
 

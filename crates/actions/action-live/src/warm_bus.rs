@@ -71,6 +71,10 @@ impl Prepare for BusPrepare {
 
 /// Warms every model `source` routes to over `connection` (a cassette routes to none, and this
 /// does nothing), printing each as it is ready. The caller is placed as intentd.
+///
+/// # Errors
+///
+/// Returns a [`WarmFault`] when a model does not come up.
 pub async fn warm_up(
     source: &ModelSource,
     connection: zbus::Connection,
@@ -83,6 +87,8 @@ pub async fn warm_up(
         .map(drop)
 }
 
+/// Runs `work` with the harness process standing in as the intentd unit, then puts both back.
+///
 /// Runs `work` with the harness process standing in as the intentd unit, then puts both back:
 /// the harness in the shell's unit, and the unit's main pid with the daemon that really is
 /// intentd (a service caller is known by its unit's main pid, so leaving the harness there would
@@ -99,6 +105,10 @@ pub async fn as_intentd<T>(world: &World, work: impl std::future::Future<Output 
 
 /// Warms a smoke world's models. The harness process stands in for sill there; for the warm-up
 /// it is placed as intentd (the identity inferd serves a run's models to) and put back after.
+///
+/// # Errors
+///
+/// Returns a [`WarmFault`] when a model does not come up.
 pub async fn warm_world(
     world: &World,
     source: &ModelSource,

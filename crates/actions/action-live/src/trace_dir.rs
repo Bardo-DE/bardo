@@ -1,7 +1,8 @@
 //! The directory a run's traces go in: one transcript per case, the cassette that replays the
-//! case's model exchanges, the case itself as a file, and an index. The cassette and the case
-//! file are what turn a failure seen live into a deterministic gate test (`eval/regress`, see
-//! `docs/live-eval.md`).
+//! case's model exchanges, the case itself as a file, and an index.
+//!
+//! The cassette and the case file are what turn a failure seen live into a deterministic gate test
+//! (`eval/regress`, see `docs/live-eval.md`).
 
 use action_core::ModelExchange;
 use action_eval::cassette_from;
@@ -39,6 +40,10 @@ fn io(path: &Path, e: &std::io::Error) -> TraceDirError {
 
 impl TraceDir {
     /// Makes the directory.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TraceDirError`] when the directory cannot be made.
     pub fn create(path: &Path) -> Result<Self, TraceDirError> {
         std::fs::create_dir_all(path).map_err(|e| io(path, &e))?;
         Ok(Self {
@@ -58,6 +63,10 @@ impl TraceDir {
     }
 
     /// Writes one case's transcript, cassette and case file; returns the transcript's name.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TraceDirError`] when a file cannot be written.
     pub fn write_case(
         &self,
         case: &Case,
@@ -77,6 +86,10 @@ impl TraceDir {
     }
 
     /// Writes `index.txt`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TraceDirError`] when the file cannot be written.
     pub fn write_index(
         &self,
         header: &str,

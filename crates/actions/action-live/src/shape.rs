@@ -1,3 +1,5 @@
+//! Shape checks on what the companion said, whichever flow it answers.
+//!
 //! Shape checks on what the companion said, whichever flow it answers: short, the right words in
 //! it, none of the words that give away the machinery, and no identifier a developer would
 //! recognise (an action id, a tool name). Pure, so a flow only says which shape it wants.

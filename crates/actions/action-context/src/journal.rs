@@ -19,7 +19,10 @@ impl UndoJournal {
     }
 
     /// Records a change that can be undone, and returns its row.
-    #[allow(clippy::too_many_arguments)]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "a journal row is these fields, each given by the caller"
+    )]
     pub fn record(
         &mut self,
         at: UnixSeconds,

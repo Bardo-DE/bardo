@@ -147,7 +147,8 @@ impl From<SpecFault> for UsageError {
 
 fn number<T: std::str::FromStr>(flag: &str, text: &str) -> Result<T, UsageError> {
     text.parse()
-        .map_err(|_| UsageError::Number(flag.to_owned(), text.to_owned()))
+        .ok()
+        .ok_or_else(|| UsageError::Number(flag.to_owned(), text.to_owned()))
 }
 
 fn engine(text: Option<String>) -> Result<Engine, UsageError> {
@@ -231,6 +232,14 @@ fn usage_of(error: &clap::Error) -> UsageError {
 }
 
 /// Reads the arguments after the program's name.
+///
+/// # Errors
+///
+/// Returns a [`UsageError`] when the arguments are not a command.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one flag loop whose arms each read one option"
+)]
 pub fn parse(args: &[String]) -> Result<Command, UsageError> {
     let raw = Raw::try_parse_from(args).map_err(|e| usage_of(&e))?;
     let sub = raw.subcommand.ok_or(UsageError::Subcommand)?;
@@ -292,7 +301,7 @@ pub fn parse(args: &[String]) -> Result<Command, UsageError> {
             )));
         }
     };
-    let agent = raw.acp.agent(raw.agent_word)?;
+    let agent = raw.acp.agent(raw.agent_word.as_deref())?;
     if planner == PlannerMode::Live && matches!(agent, Agent::Acp(_)) {
         return Err(UsageError::Planner(
             "--planner live plays the companion's own planner; it does not go with --agent acp"
@@ -390,8 +399,8 @@ impl AcpFlags {
 
     /// The agent the options ask for: the planner unless `--agent acp`, and then the spec,
     /// checked. `--acp-*` options without `--agent acp` are a mistake, not an ignored line.
-    fn agent(self, word: Option<String>) -> Result<Agent, UsageError> {
-        match word.as_deref() {
+    fn agent(self, word: Option<&str>) -> Result<Agent, UsageError> {
+        match word {
             None | Some("planner") if !self.given() => Ok(Agent::Planner),
             None | Some("planner") => Err(UsageError::Acp(
                 "--acp-* options need --agent acp".to_owned(),

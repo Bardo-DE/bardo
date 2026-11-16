@@ -1,7 +1,9 @@
-//! The everyday flows: the small asks a person makes all day (a fact, a thing to remember, what
-//! is remembered, a mail to find). A cassette proves the wiring in the gate; a live model is
-//! judged on what it called and on the shape of what it said (`shape`), so a model can be picked
-//! by measurement. They are played on the mail fixture; only the last uses it.
+//! The everyday flows: the small asks a person makes all day (a fact, a thing to remember, what is
+//! remembered, a mail to find).
+//!
+//! A cassette proves the wiring in the gate; a live model is judged on what it called and on the
+//! shape of what it said (`shape`), so a model can be picked by measurement. They are played on the
+//! mail fixture; only the last uses it.
 
 use crate::flows::{Evidence, capability, safety};
 use crate::pattern::Checked;

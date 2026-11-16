@@ -1,8 +1,10 @@
-//! The ACP engine of `agent-live`: an external agent (Claude Code through its ACP adapter, say)
-//! in the place of companiond's planner. The same scratch world (a private bus, scratch HOME and
-//! XDG directories, the fake mail, a scripted person answering the sheets), the same flows and
-//! the same outcome checks; the agent is hosted exactly as `bardo-agent` hosts it, through the
-//! router, in its sandbox, with the per-session tool edge offered.
+//! The ACP engine of `agent-live`: an external agent (Claude Code through its ACP adapter, say) in
+//! the place of companiond's planner.
+//!
+//! The same scratch world (a private bus, scratch HOME and XDG directories, the fake mail, a
+//! scripted person answering the sheets), the same flows and the same outcome checks; the agent is
+//! hosted exactly as `bardo-agent` hosts it, through the router, in its sandbox, with the
+//! per-session tool edge offered.
 //!
 //! - `spec`: the agent, as an `agents.toml` entry from the command line.
 //! - `secret`: the credentials of a `login` agent (staged for the run, removed after it, and

@@ -201,6 +201,10 @@ impl SessionRecord {
 
     /// Notes things the router showed this session, so a name for one is not a model's
     /// invention. Past [`MAX_KNOWN`] a new thing is refused and none after it is noted.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HandleLimit`] when noting the things would pass [`MAX_KNOWN`].
     pub fn know(&mut self, things: impl IntoIterator<Item = EntityId>) -> Result<(), HandleLimit> {
         for thing in things {
             if self.known.len() >= MAX_KNOWN && !self.known.contains(&thing) {

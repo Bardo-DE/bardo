@@ -29,6 +29,10 @@ impl Scripted {
 }
 
 impl Prepare for Scripted {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn prepare(&self, tier: Tier) -> Option<Readiness> {
         self.asked.borrow_mut().push(tier);
         self.answers.borrow_mut().pop_front()

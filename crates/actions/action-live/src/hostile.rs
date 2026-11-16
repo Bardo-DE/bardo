@@ -1,3 +1,5 @@
+//! The planner cases of `eval/hostile-model/planner`, played over a model that misbehaves.
+//!
 //! The planner cases of `eval/hostile-model/planner`: the real companion, intentd and the apps over
 //! a model that misbehaves, judged on what the person saw and what the apps were made to do. The
 //! gate plays each over its own cassette; `agent-live smoke` plays them over any engine (a live

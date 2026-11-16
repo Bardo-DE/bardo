@@ -1,3 +1,5 @@
+//! A corpus run over a model, through the router with the real policy writer and reviewers.
+//!
 //! A corpus run over a model: every case plays through the router with the real policy writer
 //! and the real reviewer cascade (`agent-models`' `TransportWriter` and `action-review`'s `InferReviewer`)
 //! asking a real inferd on a private bus, over action-fake's apps. Each case is judged, traced
@@ -161,6 +163,10 @@ fn all_exchanges(trace: &CaseTrace) -> Vec<ModelExchange> {
 
 /// Runs `cases` against the model `options` names, writes the traces under `options.out`, and
 /// returns the report. Must run inside a multi-thread tokio runtime.
+///
+/// # Errors
+///
+/// Returns a [`CorpusError`] when a daemon cannot be started or a trace cannot be written.
 pub async fn run_corpus_live(
     binaries: &Binaries,
     cases: &[Case],

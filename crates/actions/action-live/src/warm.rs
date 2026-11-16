@@ -1,13 +1,13 @@
-//! Warming a live engine before a run starts. A local model's first request waits for its load
-//! (75 to 200 s for an 8B on vLLM), longer than any product timeout; the run asks inferd to
-//! prepare every routed model first and waits for each to answer, so a flow measures what the
-//! model decides and not how fast the disk is. The plan and the wait are pure: the bus is a
-//! [`Prepare`] seam, a test hands in a scripted one.
+//! Warming a live engine before a run starts.
+//!
+//! A local model's first request waits for its load (75 to 200 s for an 8B on vLLM), longer than
+//! any product timeout; the run asks inferd to prepare every routed model first and waits for each
+//! to answer, so a flow measures what the model decides and not how fast the disk is. The plan and
+//! the wait are pure: the bus is a [`Prepare`] seam, a test hands in a scripted one.
 
 use account_capability::Tier;
 use action_accept::world::ModelSource;
 use inference_core::Readiness;
-use std::future::Future;
 use std::time::Duration;
 
 /// How long to wait between two asks of one model.
@@ -76,9 +76,14 @@ pub trait Prepare {
     fn now(&self) -> Duration;
 }
 
-/// The models to bring up for `source`, in the order to ask: a cassette needs none. A model that
-/// two tiers share is asked once, under the first tier named. Models that cannot be resident
-/// together evict one another, so the tier the first request uses (fast) is asked last.
+/// The models to bring up for `source`, in the order to ask: a cassette needs none.
+///
+/// A model that two tiers share is asked once, under the first tier named. Models that cannot be
+/// resident together evict one another, so the tier the first request uses (fast) is asked last.
+///
+/// # Errors
+///
+/// Returns a [`WarmFault`] when a tier names a model that cannot be warmed.
 pub fn plan(source: &ModelSource) -> Result<Vec<WarmStep>, WarmFault> {
     let ModelSource::Live(body) = source else {
         return Ok(Vec::new());
@@ -147,6 +152,10 @@ async fn warm_one(
 
 /// Brings every step up in order; stops at the first model that does not come up. `said` hears
 /// each one as it is ready.
+///
+/// # Errors
+///
+/// Returns the [`WarmFault`] of the first model that does not come up.
 pub async fn warm_all(
     steps: &[WarmStep],
     inferd: &impl Prepare,

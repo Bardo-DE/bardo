@@ -21,6 +21,10 @@ impl ReportFault {
 }
 
 /// Writes `text` to `path`, making the parent directory first.
+///
+/// # Errors
+///
+/// Returns a [`ReportFault`] when the directory or the file cannot be written.
 pub fn write_report(path: &Path, text: &str) -> Result<(), ReportFault> {
     if let Some(dir) = path.parent().filter(|dir| !dir.as_os_str().is_empty()) {
         std::fs::create_dir_all(dir).map_err(ReportFault::at(dir))?;

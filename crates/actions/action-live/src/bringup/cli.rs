@@ -86,6 +86,10 @@ fn absolute(flag: &'static str, path: PathBuf) -> Result<PathBuf, UsageError> {
 }
 
 /// Reads the arguments after the program's name.
+///
+/// # Errors
+///
+/// Returns a [`UsageError`] when the arguments are not a command.
 pub fn parse(args: &[String]) -> Result<Command, UsageError> {
     let (sub, rest) = args.split_first().ok_or(UsageError::Subcommand)?;
     let allowed: &[&str] = match sub.as_str() {
