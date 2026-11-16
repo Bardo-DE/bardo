@@ -28,6 +28,10 @@ enum Call<'a> {
 ///
 /// An index may start a second call once its first is done (servers reuse indices); a delta for
 /// an index whose call is done and not restarted is `AfterDone`.
+///
+/// # Errors
+///
+/// The [`StreamFault`] that says how the first impossible event breaks the stream.
 pub fn check_sequence(events: &[TurnEvent]) -> Result<(), StreamFault> {
     let mut calls: BTreeMap<CallIndex, Call<'_>> = BTreeMap::new();
     for event in events {

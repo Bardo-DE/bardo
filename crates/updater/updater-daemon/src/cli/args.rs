@@ -44,6 +44,10 @@ pub enum Command {
 pub struct UsageError(pub String);
 
 /// Reads the arguments after the program name.
+///
+/// # Errors
+///
+/// [`UsageError`] when no command is given, the command is unknown, or an argument is extra.
 pub fn parse<I: IntoIterator<Item = String>>(args: I) -> Result<Command, UsageError> {
     let mut args = args.into_iter();
     let first = args

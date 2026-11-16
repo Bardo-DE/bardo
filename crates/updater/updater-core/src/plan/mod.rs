@@ -71,6 +71,10 @@ pub enum PlanError {
 
 /// The steps that install `target` over `installed`. A target not newer than the current release
 /// is refused: a downgrade is only ever a rollback.
+///
+/// # Errors
+///
+/// [`PlanError::NotNewer`] when `target` is not newer than the installed release.
 pub fn plan_install(installed: &Installed, target: &Version) -> Result<Vec<Step>, PlanError> {
     if let Some(current) = &installed.current
         && standing(current, target) != Standing::Newer
@@ -105,6 +109,11 @@ pub fn plan_install(installed: &Installed, target: &Version) -> Result<Vec<Step>
 
 /// The steps that go back to the previous release. The release being left becomes `previous`, so
 /// a rollback can itself be undone.
+///
+/// # Errors
+///
+/// [`PlanError::NothingInstalled`] when no release is current, [`PlanError::NoPrevious`] when there
+/// is no earlier release still installed to go back to.
 pub fn plan_rollback(installed: &Installed) -> Result<Vec<Step>, PlanError> {
     let current = installed
         .current

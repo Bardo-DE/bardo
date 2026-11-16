@@ -112,12 +112,22 @@ fn read<T: DeserializeOwned + Default>(path: &Path) -> Result<T, ConfigError> {
 impl Config {
     /// Reads `path`; a missing file means all defaults. This is what the privileged helper does with
     /// the system file.
+    ///
+    /// # Errors
+    ///
+    /// [`ConfigError`] when the file cannot be read or does not parse; a missing file gives the
+    /// defaults.
     pub fn load(path: &Path) -> Result<Self, ConfigError> {
         read(path)
     }
 
     /// The settings the daemon and the command line use: the system file `system` first, then the
     /// person's file `user` for the two display settings it may change. A blank value is ignored.
+    ///
+    /// # Errors
+    ///
+    /// [`ConfigError`] when either file cannot be read or does not parse; a missing file is
+    /// skipped.
     pub fn load_layered(system: &Path, user: &Path) -> Result<Self, ConfigError> {
         let config = Self::load(system)?;
         Ok(config.with_user(read(user)?))

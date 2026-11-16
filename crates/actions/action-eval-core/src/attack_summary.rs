@@ -83,6 +83,11 @@ pub fn utc_date(unix_secs: u64) -> String {
 
 impl AttackSummary {
     /// The file this summary is kept in.
+    ///
+    /// # Errors
+    ///
+    /// [`SummaryError::Name`] when the date, commit or engine is empty or has a character other
+    /// than a letter, a digit, `.`, `_` or `-`.
     pub fn file_name(&self) -> Result<String, SummaryError> {
         [&self.date, &self.commit, &self.engine]
             .into_iter()
@@ -95,6 +100,10 @@ impl AttackSummary {
     }
 
     /// The summary as the JSON text of its file (`path` names the file in a fault).
+    ///
+    /// # Errors
+    ///
+    /// [`SummaryError::Parse`] when the summary does not serialise.
     pub fn to_json(&self, path: &Path) -> Result<String, SummaryError> {
         let mut text = serde_json::to_string_pretty(self).map_err(|e| SummaryError::Parse {
             path: path.to_owned(),
@@ -105,6 +114,10 @@ impl AttackSummary {
     }
 
     /// A summary from the JSON text of the file at `path`.
+    ///
+    /// # Errors
+    ///
+    /// [`SummaryError::Parse`] when `text` is not a summary.
     pub fn from_json(path: &Path, text: &str) -> Result<Self, SummaryError> {
         serde_json::from_str(text).map_err(|e| SummaryError::Parse {
             path: path.to_owned(),

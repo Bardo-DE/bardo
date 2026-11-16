@@ -59,12 +59,21 @@ pub fn root(server: &EndpointUrl, service: &Service) -> Root {
 }
 
 /// The request for a `.well-known` URL.
+///
+/// # Errors
+///
+/// [`Error::Insecure`] when `url` is plain `http` to another computer, [`Error::Unreadable`] when
+/// it is not a web address or the request cannot be built.
 pub fn well_known_request(url: &EndpointUrl) -> Result<Request<Vec<u8>>, Error> {
     bodiless(Method::GET, url, None)
 }
 
 /// The PROPFIND that asks `url` for its principal with the account's `authorization`, and the
 /// walk that reads the answer ([`accepted`]).
+///
+/// # Errors
+///
+/// As [`well_known_request`]: the URL is insecure or not a web address.
 pub fn probe(
     url: &EndpointUrl,
     authorization: HeaderValue,
@@ -77,6 +86,11 @@ pub fn probe(
 
 /// Whether the server answered the probe: `true` for a success (whatever it put in the body),
 /// `false` when it does not speak DAV there, a refusal or a failure as the error.
+///
+/// # Errors
+///
+/// [`Error::Refused`] when the server refused the credential and [`Error::Unreachable`] when it
+/// failed with a 5xx.
 pub fn accepted(walk: &mut Walk, response: &Response<Vec<u8>>) -> Result<bool, Error> {
     match walk.advance(response) {
         Ok(_) | Err(WalkError::Unreadable) => Ok(true),

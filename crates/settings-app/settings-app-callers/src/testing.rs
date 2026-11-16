@@ -15,6 +15,10 @@ pub fn private_peers(connection: &Connection) -> BusPeers {
 
 /// Makes `owner` (a unique name) stand as the service holding `role`, proved in full, as if the
 /// caller table had matched it.
+///
+/// # Panics
+///
+/// Panics if `role` does not make a valid service standing, which no role of the table does.
 pub fn introduce_service(peers: &BusPeers, owner: &str, role: &RoleName) {
     let standing = introduced_service(
         "org.bardo.Test",

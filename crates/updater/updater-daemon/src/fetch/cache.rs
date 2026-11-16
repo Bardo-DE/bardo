@@ -8,6 +8,11 @@ use std::path::Path;
 /// Removes every version folder in `cache` except `keep`: earlier downloads that were superseded, or
 /// that never finished, would otherwise pile up (a bundle is hundreds of megabytes). Anything in the
 /// cache that is not a folder named like a version is left alone.
+///
+/// # Errors
+///
+/// The I/O error when the cache folder cannot be read or an old release cannot be removed; a
+/// missing cache is not an error.
 pub fn prune_cache(cache: &Path, keep: &Version) -> io::Result<()> {
     let entries = match std::fs::read_dir(cache) {
         Ok(entries) => entries,

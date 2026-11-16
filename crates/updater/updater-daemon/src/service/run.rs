@@ -28,6 +28,11 @@ pub enum RunError {
 }
 
 /// Runs the service until interrupted or terminated.
+///
+/// # Errors
+///
+/// [`RunError::Bus`] when the session bus cannot be reached or the name cannot be taken,
+/// [`RunError::Signal`] when waiting for the stop signal fails.
 pub async fn run(ctx: Context) -> Result<(), RunError> {
     let health = on_start(&ctx.layout, &ctx.store, &*ctx.elevate, &ctx.login);
     let settings_command = ctx.config.settings_command.clone();

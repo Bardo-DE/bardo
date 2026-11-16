@@ -157,6 +157,10 @@ impl SpeechCassette {
         write_jsonl(&self.header, &self.interactions)
     }
 
+    /// # Errors
+    ///
+    /// [`CassetteError`] when the file is empty, a line does not parse or the header is of another
+    /// version.
     pub fn from_jsonl(text: &str) -> Result<SpeechCassette, CassetteError> {
         let (header, interactions) = read_jsonl(text)?;
         Ok(SpeechCassette {
@@ -528,6 +532,11 @@ impl TextToSpeech for SpeechReplay {
 
 /// A sink for recorded speech interactions, injected so the crate itself writes no files.
 pub trait SpeechCassetteSink: Send + Sync {
+    /// Records one speech interaction.
+    ///
+    /// # Errors
+    ///
+    /// [`SinkError`] when the sink refuses the line.
     fn write(&self, line: &SpeechInteraction) -> Result<(), SinkError>;
 }
 

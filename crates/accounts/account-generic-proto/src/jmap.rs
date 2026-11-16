@@ -8,11 +8,20 @@ use account_core::{EndpointUrl, LoginName, ServiceEndpoint};
 use http::{HeaderValue, Method, Request, Response};
 
 /// The session request, with the account's `authorization`.
+///
+/// # Errors
+///
+/// [`Error::Insecure`] or [`Error::Unreadable`] when `url` is not a secure web address.
 pub fn request(url: &EndpointUrl, authorization: HeaderValue) -> Result<Request<Vec<u8>>, Error> {
     bodiless(Method::GET, url, Some(authorization))
 }
 
 /// The session document of the `response`, when the server answered with one.
+///
+/// # Errors
+///
+/// [`Error::Refused`] for a 401 or 403, [`Error::Unreachable`] for a 5xx, [`Error::Unreadable`] for
+/// any other status or a body that is not UTF-8.
 pub fn session_text(response: &Response<Vec<u8>>) -> Result<&str, Error> {
     match response.status().as_u16() {
         401 | 403 => return Err(Error::Refused),

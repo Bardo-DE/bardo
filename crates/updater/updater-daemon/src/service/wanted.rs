@@ -14,6 +14,10 @@ pub struct Wanted(Version);
 
 impl Wanted {
     /// The version named by `text`, or [`Problem::NotAVersion`] when it is too long or not a version.
+    ///
+    /// # Errors
+    ///
+    /// [`Problem::NotAVersion`] when `text` is too long or not a version.
     pub fn parse(text: &str) -> Result<Self, Problem> {
         if text.len() > MAX_VERSION_BYTES {
             return Err(Problem::NotAVersion);
@@ -24,6 +28,10 @@ impl Wanted {
     }
 
     /// Whether `offered` is the version that was shown; [`Problem::VersionChanged`] when it is not.
+    ///
+    /// # Errors
+    ///
+    /// [`Problem::VersionChanged`] when `offered` is not the version that was shown.
     pub fn accepts(&self, offered: &Version) -> Result<(), Problem> {
         if self.0 == *offered {
             Ok(())

@@ -44,6 +44,10 @@ fn endpoint(family: Family, hop: &Hop, login: &LoginName) -> Option<ServiceEndpo
 /// The servers a person typed for an IMAP or POP3 account (`incoming`): that protocol and SMTP at
 /// the hosts, ports and securities given, both logged in as the typed login name, or as the
 /// address when there is none.
+///
+/// # Errors
+///
+/// [`Error::Unreadable`] when a typed host, port or security does not make a server address.
 pub fn typed(
     incoming: Family,
     servers: &MailServers,
@@ -112,6 +116,10 @@ fn tls_of_scheme(url: &EndpointUrl) -> Option<Tls> {
 /// The servers a provider file with `discovery = "fixed"` names: one endpoint per capability row
 /// that has a URL, its family and TLS from the row and its scheme, logged in as the address. The
 /// claims are the file's, once each (an SMTP row repeats its IMAP row's mail capability).
+///
+/// # Errors
+///
+/// [`Error::Unreadable`] when a row's URL does not parse or its scheme names no TLS mode.
 pub fn fixed(
     address: &str,
     spec: &ProviderSpec,

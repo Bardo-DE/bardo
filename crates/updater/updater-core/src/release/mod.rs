@@ -84,6 +84,11 @@ struct Raw {
 impl Release {
     /// Parses and validates the bytes of a `release.toml`. Call it only on bytes whose signature
     /// has been checked.
+    ///
+    /// # Errors
+    ///
+    /// [`ReleaseError::Unreadable`] when `bytes` are too large, not text or not a release index, or
+    /// the release they describe is invalid.
     pub fn parse(bytes: &[u8]) -> Result<Self, ReleaseError> {
         if bytes.len() > MAX_INDEX_BYTES {
             return Err(ReleaseError::Unreadable("it is too large".to_owned()));

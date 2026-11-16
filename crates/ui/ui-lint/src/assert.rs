@@ -14,6 +14,10 @@ use crate::rule::Offence;
 ///
 /// Warnings ([`super::Severity::Warning`]) never fail it: they are printed to stderr, and an
 /// exception that suppresses only a warning is not stale.
+///
+/// # Panics
+///
+/// Panics when an offence is not excused or an exception suppressed nothing.
 pub fn assert_clean(css: &str, config: &LintConfig) {
     let (unexcused, suppressed) = config.partition(every_offence(css, config));
     let (offences, warnings) = severity::split(unexcused);

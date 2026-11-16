@@ -71,18 +71,30 @@ impl Gate {
     }
 
     /// `Ok` when `sender` may start an update; otherwise the sentence to refuse with.
+    ///
+    /// # Errors
+    ///
+    /// The [`Problem`] to refuse with when `sender` is unknown or is not allowed to install.
     pub async fn install(&self, sender: Option<&str>) -> Result<(), Problem> {
         self.require(sender, &may_install(), Problem::InstallNotFromHere)
             .await
     }
 
     /// `Ok` when `sender` may ask to go back; otherwise the sentence to refuse with.
+    ///
+    /// # Errors
+    ///
+    /// The [`Problem`] to refuse with when `sender` is unknown or is not allowed to roll back.
     pub async fn rollback(&self, sender: Option<&str>) -> Result<(), Problem> {
         self.require(sender, &may_roll_back(), Problem::RollbackNotFromHere)
             .await
     }
 
     /// `Ok` when `sender` can be told apart from any other program on the bus.
+    ///
+    /// # Errors
+    ///
+    /// [`Problem::CallerUnknown`] when `sender` is absent or the bus cannot say who it is.
     pub async fn check(&self, sender: Option<&str>) -> Result<(), Problem> {
         let Some(sender) = sender else {
             return Err(Problem::CallerUnknown);

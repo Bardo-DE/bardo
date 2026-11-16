@@ -85,6 +85,11 @@ impl Engine {
     }
 
     /// Starts `job` in the background. Refused while other work is in progress.
+    ///
+    /// # Errors
+    ///
+    /// [`Problem::Busy`] when other work is in progress, and the [`Problem`] from
+    /// [`Wanted::accepts`] when the version on offer is not the one asked for.
     pub async fn begin(self: &Arc<Self>, job: Job) -> Result<(), Problem> {
         let first = match &job {
             Job::Check => Phase::Checking,

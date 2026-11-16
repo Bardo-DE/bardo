@@ -96,6 +96,10 @@ impl WireCassette {
         write_jsonl(&self.header, &self.exchanges)
     }
 
+    /// # Errors
+    ///
+    /// [`CassetteError`] when the file is empty, a line does not parse or the header is of another
+    /// version.
     pub fn from_jsonl(text: &str) -> Result<WireCassette, CassetteError> {
         let (header, exchanges) = read_jsonl(text)?;
         Ok(WireCassette { header, exchanges })
@@ -124,6 +128,11 @@ pub struct ByteStep(pub u32);
 
 /// Where recorded exchanges go: a file in a dev script, a `Vec` in a test.
 pub trait WireSink: Send + Sync {
+    /// Records one wire exchange.
+    ///
+    /// # Errors
+    ///
+    /// [`SinkError`] when the sink refuses the exchange.
     fn write(&self, exchange: &WireExchange) -> Result<(), SinkError>;
 }
 

@@ -164,6 +164,10 @@ pub fn is_allowed_system_path(path: &str) -> bool {
 
 impl SystemFile {
     /// The bundle path the contents travel at: `system` followed by the destination.
+    ///
+    /// # Errors
+    ///
+    /// [`ReleaseError`] when the destination does not make a valid bundle path.
     pub fn source(&self) -> Result<BundlePath, ReleaseError> {
         Ok(BundlePath::parse(&format!("{SYSTEM_TREE}{}", self.path))?)
     }

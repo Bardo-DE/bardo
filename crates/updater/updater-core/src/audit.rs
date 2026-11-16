@@ -85,6 +85,11 @@ impl<'a> Audit<'a> {
     }
 
     /// A directory entry. Allowed when it is the root or holds listed files.
+    ///
+    /// # Errors
+    ///
+    /// [`AuditError::BadPath`] when the path is not a valid bundle path, [`AuditError::Mixed`] when
+    /// it is also listed as a file, [`AuditError::UnlistedDir`] when it holds no listed file.
     pub fn admit_dir(&mut self, raw: &str) -> Result<(), AuditError> {
         let Some(path) = normalise(raw) else {
             return Ok(());
@@ -103,6 +108,12 @@ impl<'a> Audit<'a> {
 
     /// The release's entry for a file about to be unpacked: it must be listed and not yet seen.
     /// Call it before writing anything for the file.
+    ///
+    /// # Errors
+    ///
+    /// [`AuditError::Mixed`] for a name ending in `/`, [`AuditError::BadPath`] for a path that is
+    /// empty or not valid, [`AuditError::Unlisted`] when the file is not listed,
+    /// [`AuditError::Duplicate`] when it was seen already.
     pub fn listing(&self, raw: &str) -> Result<&'a FileEntry, AuditError> {
         if raw.ends_with('/') {
             return Err(AuditError::Mixed(raw.to_owned()));
@@ -122,6 +133,11 @@ impl<'a> Audit<'a> {
 
     /// A regular file entry whose contents hash to `digest`. Returns the release's entry for it
     /// (the mode to give it).
+    ///
+    /// # Errors
+    ///
+    /// Those of [`Self::listing`], and [`AuditError::DigestMismatch`] when `digest` is not the
+    /// listed one.
     pub fn admit_file(
         &mut self,
         raw: &str,
@@ -145,6 +161,10 @@ impl<'a> Audit<'a> {
     }
 
     /// Ends the check: every listed file must have been seen.
+    ///
+    /// # Errors
+    ///
+    /// [`AuditError::Missing`] naming a listed file that was never seen.
     pub fn finish(self) -> Result<(), AuditError> {
         match self.listed.keys().find(|k| !self.seen.contains(*k)) {
             Some(missing) => Err(AuditError::Missing((*missing).to_owned())),

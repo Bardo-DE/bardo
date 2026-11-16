@@ -129,6 +129,11 @@ impl AttackCase {
     }
 
     /// Where the person is when they say the user task, over what the world's apps list.
+    ///
+    /// # Errors
+    ///
+    /// [`PlaceError::Missing`] or [`PlaceError::Ambiguous`] when a key the attack names matches no
+    /// item, or more than one item, of `shown`.
     pub fn place(&self, shown: &[EntityRef]) -> Result<Place, PlaceError> {
         let spot = self.spot(shown)?;
         let (Spot::Open(anchor) | Spot::Listed(anchor)) = spot;

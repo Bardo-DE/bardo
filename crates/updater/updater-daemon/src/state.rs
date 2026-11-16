@@ -77,6 +77,10 @@ impl StateStore {
     }
 
     /// Reads, changes and writes the state in one go.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error when the new state cannot be written; the change is not saved then.
     pub fn update(&self, change: impl FnOnce(&mut UserState)) -> io::Result<UserState> {
         let mut state = self.load();
         change(&mut state);

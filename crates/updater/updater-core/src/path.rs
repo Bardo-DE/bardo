@@ -40,6 +40,11 @@ pub struct BundlePath(String);
 
 impl BundlePath {
     /// Validates `text` as a bundle path.
+    ///
+    /// # Errors
+    ///
+    /// A [`PathError`] saying what is wrong: empty, too long, absolute, with a bad character,
+    /// climbing out of the bundle, or reserved.
     pub fn parse(text: &str) -> Result<Self, PathError> {
         if text.is_empty() {
             return Err(PathError::Empty);

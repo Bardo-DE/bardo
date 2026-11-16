@@ -81,11 +81,19 @@ fn canonical(key: &str, value: &str) -> Result<String, ConfirmError> {
 
 impl Confirmations {
     /// The confirmations in the store's text.
+    ///
+    /// # Errors
+    ///
+    /// [`ConfirmError::Store`] when `text` is not valid TOML for the store.
     pub fn parse(text: &str) -> Result<Self, ConfirmError> {
         toml::from_str(text).map_err(|e| ConfirmError::Store(e.to_string()))
     }
 
     /// The store's text.
+    ///
+    /// # Errors
+    ///
+    /// [`ConfirmError::Store`] when the confirmations do not serialise.
     pub fn to_toml(&self) -> Result<String, ConfirmError> {
         toml::to_string(self).map_err(|e| ConfirmError::Store(e.to_string()))
     }
@@ -98,6 +106,11 @@ impl Confirmations {
 
     /// These confirmations with `values` added over them. Every pair is checked first: one that is
     /// refused refuses them all and nothing is added.
+    ///
+    /// # Errors
+    ///
+    /// The first [`ConfirmError`] for a pair that is refused: an unknown key or a value the key
+    /// does not take.
     pub fn with(&self, values: &BTreeMap<String, String>) -> Result<Self, ConfirmError> {
         let checked = values
             .iter()

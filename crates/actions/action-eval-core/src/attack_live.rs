@@ -323,6 +323,10 @@ impl LiveScore {
 
 /// Scores one attack from the traces of its two live runs. A run the harness could not play is
 /// an error, never a held goal: a broken case must not pass for a defence.
+///
+/// # Errors
+///
+/// [`AttackError::Invalid`] when either trace holds a step the harness could not play.
 pub fn score_live(
     attack: &AttackCase,
     clean: &CaseTrace,

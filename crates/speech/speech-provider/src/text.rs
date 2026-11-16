@@ -16,6 +16,12 @@ pub struct LangError;
 pub struct Lang(String);
 
 impl Lang {
+    /// A language tag from `text`.
+    ///
+    /// # Errors
+    ///
+    /// [`LangError`] when `text` is empty, over 35 bytes, or has a character other than a letter, a
+    /// digit or `-`.
     pub fn new(text: impl Into<String>) -> Result<Self, LangError> {
         let text = text.into();
         let ok = !text.is_empty()
@@ -64,6 +70,11 @@ pub struct VoiceIdError;
 pub struct VoiceId(String);
 
 impl VoiceId {
+    /// A voice id from `id`.
+    ///
+    /// # Errors
+    ///
+    /// [`VoiceIdError`] when `id` is not 1 to 64 bytes of letters, digits, `_`, `.` and `-`.
     pub fn new(id: impl Into<String>) -> Result<Self, VoiceIdError> {
         let id = id.into();
         let ok = (1..=64).contains(&id.len())
@@ -106,6 +117,11 @@ pub struct SpokenText(String);
 impl SpokenText {
     pub const MAX_BYTES: usize = 4096;
 
+    /// Text to speak, from `text`.
+    ///
+    /// # Errors
+    ///
+    /// [`SpokenTextError`] when `text` is empty or longer than [`Self::MAX_BYTES`] bytes.
     pub fn new(text: impl Into<String>) -> Result<Self, SpokenTextError> {
         let text = text.into();
         if (1..=Self::MAX_BYTES).contains(&text.len()) {

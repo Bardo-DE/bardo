@@ -109,6 +109,11 @@ impl Cassette {
         write_jsonl(&self.header, &self.interactions)
     }
 
+    /// # Errors
+    ///
+    /// [`CassetteError::Empty`] for an empty file, [`CassetteError::BadLine`] for a line that does
+    /// not parse, [`CassetteError::Version`] for a header of another version,
+    /// [`CassetteError::BadSequence`] for events that are not a possible stream.
     pub fn from_jsonl(text: &str) -> Result<Cassette, CassetteError> {
         let (header, interactions) = read_jsonl(text)?;
         let cassette = Cassette {
@@ -121,6 +126,11 @@ impl Cassette {
 
     /// Runs `check_sequence` over every interaction's events: `BadSequence` names the line
     /// (the header is line 1). `from_jsonl` calls it once the file is built.
+    ///
+    /// # Errors
+    ///
+    /// [`CassetteError::BadSequence`] naming the line of the first interaction whose events are not
+    /// a possible stream.
     pub fn check_sequences(&self) -> Result<(), CassetteError> {
         self.interactions
             .iter()

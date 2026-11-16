@@ -89,6 +89,11 @@ pub fn vendor_copies(path: &str) -> Vec<String> {
 }
 
 /// The system files of `release`, each with its digest and mode taken from the listed bundle file.
+///
+/// # Errors
+///
+/// [`ReleaseError`] when a system file's source is not a valid bundle path or is not listed in the
+/// release.
 pub fn placements(release: &Release) -> Result<Vec<Placement>, ReleaseError> {
     release
         .system

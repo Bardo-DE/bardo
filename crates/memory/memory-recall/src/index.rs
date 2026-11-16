@@ -123,6 +123,10 @@ impl<V: VectorIndex> Index<V> {
 
     /// The documents of the given facet kinds and trust tier (`None` is any), as the allow-list
     /// of a search.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn allow_kinds(
         &self,
         kinds: &[&str],
@@ -145,6 +149,11 @@ impl<V: VectorIndex> Index<V> {
 
     /// Clears and rebuilds from `docs`, embedding in the background. Lexical search works as soon
     /// as the documents are in; a lost embedder leaves the index `LexicalOnly` and returns `Ok`.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::CardMismatch`] when `e` is not the embedder the index was built with,
+    /// [`IndexError::Sqlite`] when the store fails; an embedder that is away is not an error.
     pub async fn rebuild(
         &mut self,
         docs: impl Iterator<Item = Doc>,
@@ -190,6 +199,11 @@ impl<V: VectorIndex> Index<V> {
     /// or still without a vector (an embedder that was away, a class it refused) are embedded,
     /// and documents the truth no longer has are removed. Anything else (no recorded space, a
     /// different model, length or prefix) is a full [`Index::rebuild`].
+    ///
+    /// # Errors
+    ///
+    /// As [`Index::rebuild`]: [`IndexError::CardMismatch`] for a different embedder,
+    /// [`IndexError::Sqlite`] when the store fails.
     pub async fn sync(
         &mut self,
         docs: impl Iterator<Item = Doc>,
@@ -248,6 +262,11 @@ impl<V: VectorIndex> Index<V> {
 
     /// Adds or replaces documents. The lexical half is written first; if embedding then fails
     /// with a Retry-class error the index is `LexicalOnly` and the call succeeds.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::CardMismatch`] when `e` is not the embedder the index was built with,
+    /// [`IndexError::Sqlite`] when the store fails; an embedder that is away is not an error.
     pub async fn upsert(&mut self, docs: &[Doc], e: &impl Embedder) -> Result<(), IndexError> {
         self.same_space(e)?;
         self.fts.upsert(docs)?;
@@ -268,6 +287,10 @@ impl<V: VectorIndex> Index<V> {
     }
 
     /// Removes documents from both halves.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when either half's store fails.
     pub fn remove(&mut self, ids: &[DocId]) -> Result<u32, IndexError> {
         let lexical = self.fts.remove(ids)?;
         let semantic = self.vectors.remove(ids)?;
@@ -275,6 +298,11 @@ impl<V: VectorIndex> Index<V> {
     }
 
     /// Fused lexical and semantic results.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails; an embedder that is not the index's, or is
+    /// away, leaves the lexical results alone.
     pub async fn search(
         &self,
         q: &SearchQuery,
@@ -318,6 +346,10 @@ impl<V: VectorIndex> Index<V> {
     }
 
     /// The lexical half's list for `q`, for callers that fuse themselves.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn lexical(&self, q: &SearchQuery) -> Result<Vec<Ranked>, IndexError> {
         self.fts.search(&q.text, q.k, &q.allow)
     }

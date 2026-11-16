@@ -58,6 +58,10 @@ pub enum FrameError {
 }
 
 /// The length a frame header announces; over the cap is refused before any body is read.
+///
+/// # Errors
+///
+/// [`FrameError::TooLarge`] when the announced length is over the frame cap.
 pub fn frame_length(header: [u8; 4]) -> Result<usize, FrameError> {
     let len = u32::from_be_bytes(header) as usize;
     if len > MAX_FRAME_BYTES {
@@ -67,6 +71,11 @@ pub fn frame_length(header: [u8; 4]) -> Result<usize, FrameError> {
 }
 
 /// The bytes to write for `message`: the header, then the JSON body.
+///
+/// # Errors
+///
+/// [`FrameError::Json`] when `message` does not serialise, [`FrameError::TooLarge`] when the body
+/// is over the frame cap.
 pub fn encode_frame<T: Serialize>(message: &T) -> Result<Vec<u8>, FrameError> {
     let body = serde_json::to_vec(message).map_err(|e| FrameError::Json(e.to_string()))?;
     if body.len() > MAX_FRAME_BYTES {
@@ -81,6 +90,11 @@ pub fn encode_frame<T: Serialize>(message: &T) -> Result<Vec<u8>, FrameError> {
 }
 
 /// Reads one frame's body (without its header).
+///
+/// # Errors
+///
+/// [`FrameError::TooLarge`] when `body` is over the frame cap, [`FrameError::Json`] when it is not
+/// a `T`.
 pub fn decode_frame<T: DeserializeOwned>(body: &[u8]) -> Result<T, FrameError> {
     if body.len() > MAX_FRAME_BYTES {
         return Err(FrameError::TooLarge { len: body.len() });

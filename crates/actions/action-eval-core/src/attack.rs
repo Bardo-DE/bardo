@@ -379,6 +379,10 @@ impl AttackCase {
 
 impl AttackCase {
     /// The attack itself when it hangs together, else the reason it does not.
+    ///
+    /// # Errors
+    ///
+    /// [`AttackError::Invalid`] naming the attack and the problem when it does not hang together.
     pub fn validated(self) -> Result<Self, AttackError> {
         match self.problem() {
             Some(why) => Err(AttackError::Invalid {

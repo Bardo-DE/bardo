@@ -15,6 +15,10 @@ use std::path::Path;
 /// Records the version `root/current` names as confirmed. Does nothing when no release is
 /// installed under the root (a computer not updated by bardo-updater). Returns whether a release is installed.
 /// Already confirmed means nothing is written.
+///
+/// # Errors
+///
+/// The I/O error from writing the state when the confirmation could not be saved.
 pub fn confirm(root: &Path, store: &StateStore) -> std::io::Result<bool> {
     let Some(version) = current_version(root) else {
         return Ok(false);

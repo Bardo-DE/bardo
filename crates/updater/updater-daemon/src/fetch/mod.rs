@@ -50,11 +50,19 @@ impl std::fmt::Debug for Download {
 /// Something that can open a URL. The real one is [`UreqFetch`]; tests serve from memory.
 pub trait Fetch: Send + Sync {
     /// Opens `url` for reading.
+    ///
+    /// # Errors
+    ///
+    /// [`FetchError`] when the site cannot be reached or refuses.
     fn open(&self, url: &str) -> Result<Download, FetchError>;
 
     /// Opens `url` for reading from byte `offset` on, to resume a download. The default opens it from
     /// the start and throws the first `offset` bytes away, which is right for a server that cannot
     /// resume; one that can overrides it.
+    ///
+    /// # Errors
+    ///
+    /// [`FetchError`] when the site cannot be reached or refuses, or the body ends before `offset`.
     fn open_from(&self, url: &str, offset: u64) -> Result<Download, FetchError> {
         let mut download = self.open(url)?;
         skip(&mut download.body, offset)?;
@@ -63,6 +71,10 @@ pub trait Fetch: Send + Sync {
 }
 
 /// Reads and drops the next `count` bytes of `reader`; a body that ends sooner is an unreachable site.
+///
+/// # Errors
+///
+/// [`FetchError::Unreachable`] when the body ends before `count` bytes or cannot be read.
 pub fn skip(reader: &mut (impl Read + ?Sized), count: u64) -> Result<(), FetchError> {
     let skipped = io::copy(&mut reader.take(count), &mut io::sink())
         .map_err(|e| FetchError::Unreachable(e.to_string()))?;
@@ -103,6 +115,10 @@ impl Source {
 }
 
 /// Reads at most `limit` bytes of an open download into memory.
+///
+/// # Errors
+///
+/// [`FetchError::TooLarge`] when the body is longer than `limit`, or the error of reading it.
 pub fn read_small(download: Download, limit: u64) -> Result<Vec<u8>, FetchError> {
     let mut bytes = Vec::new();
     download.body.take(limit + 1).read_to_end(&mut bytes)?;

@@ -49,6 +49,10 @@ impl Fts5 {
     }
 
     /// Creates the tables of [`SCHEMA_V1`] in an empty database.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the tables cannot be created, for instance because they exist.
     pub fn create(&self) -> Result<(), IndexError> {
         self.conn.execute_batch(SCHEMA_V1)?;
         self.conn.execute(
@@ -59,6 +63,10 @@ impl Fts5 {
     }
 
     /// Inserts or replaces documents.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails; nothing is written then.
     pub fn upsert(&mut self, docs: &[Doc]) -> Result<(), IndexError> {
         let tx = self.conn.transaction()?;
         {
@@ -82,6 +90,10 @@ impl Fts5 {
     }
 
     /// Removes documents; how many were there.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails; nothing is removed then.
     pub fn remove(&mut self, ids: &[DocId]) -> Result<u32, IndexError> {
         let tx = self.conn.transaction()?;
         let mut removed = 0usize;
@@ -96,6 +108,10 @@ impl Fts5 {
     }
 
     /// The `k` best lexical matches (bm25, ties by id) among the allowed documents.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn search(&self, text: &str, k: TopK, allow: &Allow) -> Result<Vec<Ranked>, IndexError> {
         let Some(expression) = match_expression(text) else {
             return Ok(Vec::new());
@@ -130,6 +146,10 @@ impl Fts5 {
 
     /// The vector space the index says its vectors are in: `None` for a file that never recorded
     /// one (so its vectors cannot be trusted).
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn recorded_space(&self) -> Result<Option<String>, IndexError> {
         if !self.has_space_column()? {
             return Ok(None);
@@ -146,6 +166,10 @@ impl Fts5 {
     }
 
     /// Records that the vectors being stored are `card`'s.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn record_space(&self, card: &EmbedderCard) -> Result<(), IndexError> {
         if !self.has_space_column()? {
             self.conn
@@ -166,6 +190,10 @@ impl Fts5 {
     }
 
     /// Every document the lexical half holds, without its class (which is not stored).
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn stored(&self) -> Result<Vec<StoredDoc>, IndexError> {
         let mut statement = self
             .conn
@@ -192,6 +220,10 @@ impl Fts5 {
 
     /// The ids of the documents whose `kind` is one of `kinds` and, when `trust` is given, whose
     /// trust tier is that one.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn ids_of(
         &self,
         kinds: &[&str],
@@ -212,6 +244,10 @@ impl Fts5 {
     }
 
     /// Removes everything.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     pub fn clear(&mut self) -> Result<(), IndexError> {
         self.conn.execute("DELETE FROM docs", [])?;
         Ok(())

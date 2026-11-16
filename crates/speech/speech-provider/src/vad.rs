@@ -17,6 +17,11 @@ pub struct FrameLenError(pub usize);
 pub struct Frame512([i16; FRAME_SAMPLES]);
 
 impl Frame512 {
+    /// A frame from exactly one frame of `samples`.
+    ///
+    /// # Errors
+    ///
+    /// [`FrameLenError`] when `samples` is not exactly one frame long.
     pub fn new(samples: &[i16]) -> Result<Self, FrameLenError> {
         <[i16; FRAME_SAMPLES]>::try_from(samples)
             .map(Self)

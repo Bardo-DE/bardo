@@ -20,6 +20,10 @@ pub enum SignError {
 /// [`PublicKey`]; tests supply their own.
 pub trait Authenticator: Send + Sync {
     /// `Ok` when `signature` (minisign text) is a valid signature of `message`.
+    ///
+    /// # Errors
+    ///
+    /// [`SignError`] when `signature` is not a valid signature of `message` by the trusted key.
     fn authenticate(&self, message: &[u8], signature: &str) -> Result<(), SignError>;
 }
 
@@ -30,6 +34,10 @@ pub struct PublicKey(minisign_verify::PublicKey);
 impl PublicKey {
     /// Reads a key from the text of a `.pub` file (comment line, then the key) or from the bare
     /// base64 key on one line.
+    ///
+    /// # Errors
+    ///
+    /// [`SignError::BadKey`] when `text` is not a minisign public key.
     pub fn parse(text: &str) -> Result<Self, SignError> {
         let trimmed = text.trim();
         let key = if trimmed.lines().count() >= 2 {

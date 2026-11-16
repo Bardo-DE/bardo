@@ -174,6 +174,11 @@ impl Provider for ReplayProvider {
 
 /// A sink for recorded interactions, injected so the crate itself writes no files.
 pub trait CassetteSink: Send + Sync {
+    /// Records one interaction.
+    ///
+    /// # Errors
+    ///
+    /// [`SinkError`] when the sink refuses the line.
     fn write(&self, line: &Interaction) -> Result<(), SinkError>;
 }
 

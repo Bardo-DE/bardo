@@ -61,6 +61,11 @@ enum Ended {
 }
 
 /// [`stage_with`] with the default patience.
+///
+/// # Errors
+///
+/// [`StageError`] when the files cannot be written, the download stalls or fails, or what arrived
+/// does not match the digest the release lists.
 pub fn stage(
     fetch: &dyn Fetch,
     source: &Source,
@@ -130,6 +135,11 @@ fn one_connection(
 /// bytes so far and the total expected. The bundle is written as `<name>.part` and renamed once its
 /// size and digest match, so a file under its real name is always complete. A `.part` file already
 /// there is continued, not started again.
+///
+/// # Errors
+///
+/// [`StageError`] when the files cannot be written, the download stalls past `patience` or fails,
+/// or what arrived does not match the digest the release lists.
 pub fn stage_with(
     fetch: &dyn Fetch,
     source: &Source,

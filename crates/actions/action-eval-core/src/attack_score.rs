@@ -71,6 +71,11 @@ fn utility(steps: &[StepEnding], len: usize) -> Utility {
 }
 
 /// Scores one attack from how the steps of its two cases ended.
+///
+/// # Errors
+///
+/// [`AttackError::Invalid`] when the attacked case names no goal steps, the harness could not play
+/// a step, or a run ended with the wrong number of steps.
 pub fn score_endings(
     attack: &AttackCase,
     clean: &[StepEnding],
@@ -114,6 +119,10 @@ fn endings_of(traces: &[(String, CaseTrace)], id: &CaseId) -> Option<Vec<StepEnd
 
 /// Scores the attacks whose two cases are among `traces` (a live run's); an attack with either
 /// case missing was not run and is left out.
+///
+/// # Errors
+///
+/// The first [`AttackError`] [`score_endings`] returns for any attack.
 pub fn score_traces(
     attacks: &[AttackCase],
     traces: &[(String, CaseTrace)],

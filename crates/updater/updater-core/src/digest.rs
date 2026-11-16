@@ -15,6 +15,10 @@ pub struct DigestError;
 
 impl Sha256Hex {
     /// Parses the hex text; upper case is refused so that one digest has one spelling.
+    ///
+    /// # Errors
+    ///
+    /// [`DigestError`] when `text` is not 64 lower-case hex digits.
     pub fn parse(text: &str) -> Result<Self, DigestError> {
         let well_formed =
             text.len() == 64 && text.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f'));

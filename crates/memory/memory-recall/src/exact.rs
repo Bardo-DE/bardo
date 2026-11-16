@@ -12,14 +12,36 @@ pub trait VectorIndex: Send {
     /// Which vector space the stored vectors live in.
     fn card(&self) -> &EmbedderCard;
     /// Inserts or replaces vectors.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::CardMismatch`] when a vector's length is not the embedder's dimensions,
+    /// [`IndexError::Sqlite`] when the store fails.
     fn upsert(&mut self, items: &[(DocId, Vector)]) -> Result<(), IndexError>;
     /// Removes vectors; how many were there.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     fn remove(&mut self, ids: &[DocId]) -> Result<u32, IndexError>;
     /// The `k` nearest to `q` among the allowed documents, best first.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::CardMismatch`] when `q` is not of the index's dimensions,
+    /// [`IndexError::Sqlite`] when the store fails.
     fn nearest(&self, q: &Vector, k: TopK, allow: &Allow) -> Result<Vec<Ranked>, IndexError>;
     /// Removes everything.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     fn clear(&mut self) -> Result<(), IndexError>;
     /// The ids that have a vector.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the store fails.
     fn ids(&self) -> Result<BTreeSet<DocId>, IndexError>;
 }
 
@@ -37,6 +59,10 @@ impl ExactScan {
     }
 
     /// A private in-memory database with the schema, for tests.
+    ///
+    /// # Errors
+    ///
+    /// [`IndexError::Sqlite`] when the database cannot be opened or the schema cannot be created.
     pub fn in_memory(card: EmbedderCard) -> Result<Self, IndexError> {
         let conn = rusqlite::Connection::open_in_memory()?;
         conn.execute_batch(SCHEMA_V1)?;

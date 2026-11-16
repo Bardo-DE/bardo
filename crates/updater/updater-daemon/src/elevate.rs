@@ -41,14 +41,30 @@ pub enum Recovery {
 /// Something that can install a staged release, go back, or keep the health record, with privilege.
 pub trait Elevate: Send + Sync {
     /// Installs the release staged in `staged`.
+    ///
+    /// # Errors
+    ///
+    /// [`ApplyFailure`] when the helper refuses or fails to install the release.
     fn install(&self, staged: &Path) -> Result<Report, ApplyFailure>;
     /// Goes back to the previous release because the person asked to (the system asks for the
     /// administrator's password).
+    ///
+    /// # Errors
+    ///
+    /// [`ApplyFailure`] when the helper is refused, not authorised or fails.
     fn rollback(&self) -> Result<Report, ApplyFailure>;
     /// Notes a start of the current release and goes back to the previous one if it has failed to start
     /// in too many boots (no password: the helper decides from what only it can see).
+    ///
+    /// # Errors
+    ///
+    /// [`ApplyFailure`] when the helper fails.
     fn recover(&self) -> Result<Recovery, ApplyFailure>;
     /// Records that the session started well on the current release.
+    ///
+    /// # Errors
+    ///
+    /// [`ApplyFailure`] when the helper fails.
     fn confirmed(&self) -> Result<(), ApplyFailure>;
 }
 

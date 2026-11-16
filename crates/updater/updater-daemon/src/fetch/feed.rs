@@ -53,6 +53,11 @@ fn get(
 }
 
 /// The newest release's description, verified.
+///
+/// # Errors
+///
+/// [`FeedError`] when the index or its signature cannot be fetched, the signature does not verify,
+/// or the index is not a release.
 pub fn latest(
     fetch: &dyn Fetch,
     source: &Source,
@@ -67,6 +72,11 @@ pub fn latest(
 }
 
 /// One version's description, verified.
+///
+/// # Errors
+///
+/// As [`latest`]: [`FeedError`] when the fetch fails, the signature does not verify, or the index
+/// is not a release.
 pub fn of_version(
     fetch: &dyn Fetch,
     source: &Source,
