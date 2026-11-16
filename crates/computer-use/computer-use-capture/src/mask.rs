@@ -80,9 +80,10 @@ fn device_edge(logical: u32, scale: Scale120) -> u64 {
     (u64::from(logical) * u64::from(scale.0) + 60) / 120
 }
 
-/// Blacks the exact device pixels of `regions` (the rounding is `round(logical * scale / 120)`
-/// per edge, so a 2-lpx region at 1.5 becomes exactly 3 device pixels) and returns a new buffer
-/// and the regions as applied, clamped to the buffer's logical size. A region wholly outside the
+/// Blacks the exact device pixels of `regions` and returns a new buffer.
+///
+/// The rounding is `round(logical * scale / 120)` per edge, so a 2-lpx region at 1.5 becomes
+/// exactly 3 device pixels. It also returns the regions as applied, clamped to the buffer's logical size. A region wholly outside the
 /// buffer is not applied and not reported. Pure.
 #[must_use]
 pub fn apply_masks(

@@ -7,7 +7,6 @@ use companion_core::{EventAsk, Seen, UnitFile};
 use companion_model::helper::{HelperName, JobId};
 use companion_model::routine::{JobEnd, RoutineRecord, RunRequest, Zone};
 use provenance::{HelperId, SpaceId, UnixSeconds};
-use std::future::Future;
 
 /// The scheduler's surroundings.
 pub trait Host: Send + Sync + 'static {

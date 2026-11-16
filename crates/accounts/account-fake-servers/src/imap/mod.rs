@@ -17,7 +17,6 @@ use account_core::{Family, Tls};
 use account_fake::{FakeAddress, FakeServer};
 use account_provider::ProviderSpec;
 use commands::{fetch, read_args, select};
-use std::future::Future;
 use std::io;
 use std::sync::Arc;
 use tokio::io::{AsyncRead, AsyncWrite};

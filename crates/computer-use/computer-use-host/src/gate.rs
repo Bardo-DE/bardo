@@ -190,7 +190,7 @@ mod tests {
     use action_wire::WireRefusal;
     use computer_use_action::{CuaAction, RunMode, WindowSpace, WindowTrust};
     use provenance::ConfirmId;
-    use provenance::{Effect, Label, RunId, SpaceId};
+    use provenance::{Effect, Label};
     use std::collections::VecDeque;
     use std::sync::Mutex;
 

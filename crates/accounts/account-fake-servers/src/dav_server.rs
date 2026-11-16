@@ -9,7 +9,6 @@ use crate::shipped::point;
 use account_core::Family;
 use account_fake::{FakeAddress, FakeServer};
 use account_provider::ProviderSpec;
-use std::future::Future;
 use std::io;
 use std::sync::{Arc, Mutex};
 

@@ -1,5 +1,7 @@
-//! One sign-in conversation for every family: a family writes a [`Flow`] (what it says and asks,
-//! and what it does with the answer) and [`Conversation`] is its `SignIn`. The rules every family
+//! One sign-in conversation for every family.
+//!
+//! A family writes a [`Flow`] (what it says and asks, and what it does with the answer) and
+//! [`Conversation`] is its `SignIn`. The rules every family
 //! shared by pasting are written once here: `Cancel` ends the conversation at any step, `Start`
 //! begins it (again, after a step back), a review waits for `Confirm` (any other input shows it
 //! again), an answer before `Start` cannot be read, and a conversation that has ended answers
@@ -8,7 +10,6 @@
 use account_provider::{SignIn, SignInStep, Signed};
 use account_sheet::{SignInFault, SignInInput};
 use std::fmt::Debug;
-use std::future::Future;
 
 /// What a family's flow does next.
 #[derive(Debug)]
@@ -146,10 +147,18 @@ mod tests {
     impl Flow for Script {
         type Mid = ();
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "`Flow::start` is an async trait method; this script has nothing to await"
+        )]
         async fn start(&mut self) -> Move<()> {
             Move::Next(SignInStep::Waiting, ())
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "`Flow::resume` is an async trait method; this script has nothing to await"
+        )]
         async fn resume(&mut self, (): (), _input: SignInInput) -> Move<()> {
             Move::Review(signed())
         }

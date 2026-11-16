@@ -7,7 +7,6 @@ use ui_components::components::fields::field_row::FieldRow;
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::hex::Hex;
 
 /// The pages of the specimen.

@@ -4,7 +4,6 @@
 use crate::axes::{Axes, Showcase};
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::components::menus::pop_up_button::{PopUpButton, PopUpKind};
 use ui_components::host::measure::{Anchor, MountedRef};
 use ui_components::prelude::*;

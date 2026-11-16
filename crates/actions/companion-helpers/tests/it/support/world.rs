@@ -137,7 +137,7 @@ fn world_all(
 /// Standing consent: the companion may use Mail's classes and its own built-in provider
 /// (starting a task) in `in_space`, always.
 fn grant_mail(router: &Router<FakeSeams>, in_space: &str) {
-    use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use account_core::consent::{Decision, Grant, Usage};
     use action_router::GrantStore;
     let uses = [
         ("org.bardo.Mail", DataClass::Mail),

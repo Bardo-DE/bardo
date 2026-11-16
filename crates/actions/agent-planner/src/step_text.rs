@@ -480,8 +480,7 @@ fn step_line_raw(step: &StepLine, seen: &Seen<'_>) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use action_core::HandleShape;
-    use action_vocab::{ActionRef, CallId, CharCount, Handle};
+    use action_vocab::{ActionRef, CallId, CharCount};
     use provenance::{ActionName, Effect, Source};
 
     fn step(end: StepEnd) -> StepLine {

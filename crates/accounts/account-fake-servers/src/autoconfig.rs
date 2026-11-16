@@ -9,7 +9,6 @@ use account_discover::{Dns, DnsFault, MxRecord, SrvRecord};
 use account_fake::{FakeAddress, FakeServer};
 use account_provider::{DomainName, ProviderSpec};
 use std::collections::HashMap;
-use std::future::Future;
 use std::io;
 use std::sync::{Arc, Mutex};
 

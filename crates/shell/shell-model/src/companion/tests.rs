@@ -14,7 +14,7 @@ use computer_use_action::RunMode;
 use computer_use_bus::{CuaOutcome, RunStateSlug};
 use provenance::{
     ActionName, AppName, Effect, EntityId, EntityKey, EntityKind, Label, Labelled, RunId,
-    SessionId, TaskId,
+    TaskId,
 };
 use shell_launcher::{Generation, LauncherMode, WindowKey};
 use ui_core::time::stamp::Stamp;

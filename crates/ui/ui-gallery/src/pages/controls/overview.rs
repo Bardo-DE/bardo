@@ -18,8 +18,6 @@ use ui_components::components::controls::chip::{Chip, ChipVariant};
 use ui_components::components::controls::chip_dot::ChipDot;
 use ui_components::components::controls::command_line::CommandLine;
 use ui_components::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
-use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
-use ui_components::components::controls::progress::view::ProgressIndicator;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;

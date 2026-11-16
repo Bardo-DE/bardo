@@ -6,7 +6,6 @@
 use crate::pages::Section;
 use dioxus::prelude::*;
 use ui_components::base::selection::RowSelection;
-use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::lists::column_browser::{
     BrowserColumn, BrowserRow, BrowserRowKind, ColumnBrowser, ColumnPick,
 };

@@ -3,7 +3,6 @@
 
 use crate::pages::Section;
 use dioxus::prelude::*;
-use ui_components::components::content::picture::{Picture, PictureShape};
 use ui_components::prelude::*;
 
 /// A wide image (a sunset's bands), as a `data:` URI.

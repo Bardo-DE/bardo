@@ -3,10 +3,6 @@
 
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
-use ui_components::components::controls::progress::view::ProgressIndicator;
-use ui_components::motion::detail::operation::Operation;
-use ui_components::motion::detail::operation::PendingToken;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 

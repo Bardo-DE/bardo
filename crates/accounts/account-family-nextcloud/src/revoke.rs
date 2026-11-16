@@ -18,8 +18,8 @@ pub(super) async fn revoke(
     password: &SecretText,
 ) -> Result<RevokeOutcome, ProviderError> {
     let authorization =
-        sensitive(&basic(&login.0, password)).map_err(|_| ProviderError::Unreadable)?;
-    let request = revoke::request(server, authorization).map_err(|_| ProviderError::Unreadable)?;
+        sensitive(&basic(&login.0, password)).map_err(|HttpError::Malformed| ProviderError::Unreadable)?;
+    let request = revoke::request(server, authorization).ok().ok_or(ProviderError::Unreadable)?;
     let response = io
         .http
         .send(request)

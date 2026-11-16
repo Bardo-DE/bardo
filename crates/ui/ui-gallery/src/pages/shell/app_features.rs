@@ -18,7 +18,6 @@ use ui_components::components::menus::palette::palette_group::{
     GroupOrder, PaletteGroup, PaletteRow,
 };
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::hex::{Colour, Hex};
 use ui_components::style::tokens::shape::{Corner, Radius};

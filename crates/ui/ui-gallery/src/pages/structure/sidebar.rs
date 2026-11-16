@@ -4,7 +4,6 @@ use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
 use ui_components::components::chrome::sidebar::Sidebar;
 use ui_components::components::chrome::sidebar_model::SidebarSection;
-use ui_components::components::forms::icon_tile::TileFace;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::control_size::SidebarSize;

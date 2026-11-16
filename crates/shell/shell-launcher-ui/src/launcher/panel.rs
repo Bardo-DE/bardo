@@ -17,7 +17,6 @@ use shell_search::preview::clip_image;
 use ui_components::components::menus::palette::palette_claim::FieldKey;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::shape::Corner;
 
 use crate::launcher::card::{CardKey, Foot, use_card_hit};

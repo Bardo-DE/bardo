@@ -6,7 +6,6 @@ use action_core::{ContextKeep, Keep, Reveal};
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, FooterWire, RefusalWire};
 use provenance::TaskId;
 
-use super::no_model::{CHOOSE_MODEL_LABEL, NO_MODEL_LINE, lacks_model};
 use super::*;
 
 pub(super) fn task() -> TaskId {

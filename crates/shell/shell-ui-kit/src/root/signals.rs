@@ -24,8 +24,9 @@ fn to_ds(modality: SeatModality) -> bool {
     matches!(modality, SeatModality::Keyboard)
 }
 
-/// Provides `ui_components::prelude::HostSignals` to this component and everything under it, kept live from
-/// layer-shell-host's per-seat [`layer_shell_host::use_input_modality`] and the surface's
+/// Provides `HostSignals` to this component and everything under it.
+///
+/// The signals are `ui_components::prelude::HostSignals`, kept live from layer-shell-host's per-seat [`layer_shell_host::use_input_modality`] and the surface's
 /// [`layer_shell_host::use_surface_scale`]. Nothing is provided on a component with no `SurfaceHandle`.
 pub fn use_host_signals() {
     let hosted = use_hook(try_consume_context::<SurfaceHandle>);

@@ -244,11 +244,10 @@ impl<M: MemoryTransport, I: IntentsTransport> MessageLink for DaemonLinks<M, I> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_core::DataClass;
     use base_ids::Count;
     use computer_use_bus::{CancelledBy, CuaOutcome};
     use inference_core::ChargeTotal;
-    use provenance::{ActorKind, Confidentiality, Integrity, RunId, Source};
+    use provenance::{ActorKind, Confidentiality, Integrity};
     use std::collections::BTreeSet;
 
     fn ctx() -> RecordContext {

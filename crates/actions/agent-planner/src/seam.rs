@@ -12,7 +12,6 @@ use crate::voice::Voice;
 use action_core::PlannerView;
 use agent_loop::SummaryInput;
 use inference_core::{ChatReply, ChatRequest};
-use std::future::Future;
 
 /// What drives a task: the catalogue and voice it is configured with, and the turns it asks.
 pub trait Planner: Send + Sync {

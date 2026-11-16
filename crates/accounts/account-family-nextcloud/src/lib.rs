@@ -34,7 +34,7 @@ fn fault(error: account_nextcloud_proto::Error) -> SignInFault {
         account_nextcloud_proto::Error::Unreachable | account_nextcloud_proto::Error::Insecure => {
             SignInFault::Unreachable
         }
-        _ => SignInFault::Unreadable,
+        account_nextcloud_proto::Error::Unreadable => SignInFault::Unreadable,
     }
 }
 
@@ -120,6 +120,10 @@ impl Provider for NextcloudProvider {
             })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Provider::open` is an async trait method; a password session opens without I/O"
+    )]
     async fn open(
         &self,
         account: &AccountId,
@@ -150,6 +154,10 @@ impl Provider for NextcloudProvider {
 }
 
 impl ProviderSession for NextcloudSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`ProviderSession::access_token` is an async trait method; this family never mints one"
+    )]
     async fn access_token(&self, _audience: &Audience) -> Result<IssuedToken, ProviderError> {
         // An app password is never handed to an app; the relay presents it.
         Err(ProviderError::Forbidden)

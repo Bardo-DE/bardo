@@ -2,7 +2,7 @@
 //! a fake answered.
 
 use super::{
-    AsyncBufReadExt, AsyncRead, AsyncWrite, AsyncWriteExt, BufReader, FakeAddress, Request,
+    AsyncRead, AsyncWrite, AsyncWriteExt, BufReader, FakeAddress, Request,
     Response, dial, io, read_body, read_head, tls,
 };
 

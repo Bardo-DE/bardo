@@ -4,7 +4,6 @@
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
 use ui_components::components::controls::disclosure::Disclosure;
-use ui_components::components::lists::section_header::HeaderAction;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 

@@ -12,7 +12,6 @@
 //! weaker, never flaky). The runtime is also released when the [`HeldRuntime`] is dropped, so a
 //! test that panics does not leave the thread waiting.
 
-use std::future::Future;
 use std::pin::pin;
 use std::sync::mpsc;
 use std::thread::JoinHandle;

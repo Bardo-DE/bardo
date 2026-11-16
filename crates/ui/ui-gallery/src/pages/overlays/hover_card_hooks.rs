@@ -5,7 +5,6 @@
 use crate::pages::Section;
 use dioxus::prelude::*;
 use ui_components::components::controls::button_model::Bezel;
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::components::overlays::hover_card::intent::{HoverAnchor, use_hover_intent};
 use ui_components::components::overlays::hover_card::parts::HoverCardPart;
 use ui_components::host::measure::Anchor;

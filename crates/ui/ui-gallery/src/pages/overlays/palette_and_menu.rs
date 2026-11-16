@@ -5,7 +5,6 @@
 use crate::axes::{Axes, Showcase};
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::components::menus::palette::palette_group::{PaletteGroup, PaletteRow};
 use ui_components::host::measure::{Anchor, use_rect};
 use ui_components::prelude::*;

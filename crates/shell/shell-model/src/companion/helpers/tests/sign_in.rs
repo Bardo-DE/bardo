@@ -6,7 +6,6 @@ use companion_wire::SignInChoice;
 use provenance::AgentProgram;
 
 use super::*;
-use crate::companion::helpers::sign_in::program_name;
 
 fn program(slug: &str) -> AgentProgram {
     AgentProgram::parse(slug).unwrap_or_else(|e| panic!("{e}"))

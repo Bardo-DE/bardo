@@ -1,7 +1,6 @@
 use speech_wire::{
-    CancelCause, HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent as Frame,
-    VoiceFault, VoiceRefusal, VoiceTrigger,
-};
+    HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent as Frame,
+    VoiceFault, VoiceRefusal, };
 
 use super::*;
 

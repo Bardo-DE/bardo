@@ -14,7 +14,6 @@ use ui_components::edit::pointer::EditPointer;
 use ui_components::host::captured::PointerPhase;
 use ui_components::host::position::{EditKind, TextPosition};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::spell::lang::Spell;
 
 /// The edit page.

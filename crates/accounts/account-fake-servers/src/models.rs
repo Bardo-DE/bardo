@@ -10,7 +10,6 @@ use account_core::Family;
 use account_fake::{FakeAddress, FakeServer};
 use account_provider::ProviderSpec;
 use serde_json::{Value, json};
-use std::future::Future;
 use std::io;
 use std::sync::{Arc, Mutex};
 

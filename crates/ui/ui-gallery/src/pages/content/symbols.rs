@@ -6,7 +6,6 @@ use crate::pages::Section;
 use crate::pages::details::overview::{Cell, mini};
 use dioxus::prelude::*;
 use ui_components::prelude::*;
-use ui_core::word::Word;
 
 /// The icons a whole-icon effect plays on.
 const WHOLE: [Icon; 3] = [Icon::Inbox, Icon::Settings, Icon::Search];

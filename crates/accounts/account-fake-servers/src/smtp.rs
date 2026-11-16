@@ -13,7 +13,6 @@ use crate::tls;
 use account_core::{Family, Tls};
 use account_fake::{FakeAddress, FakeServer};
 use account_provider::ProviderSpec;
-use std::future::Future;
 use std::io;
 use tokio::io::{AsyncRead, AsyncWrite};
 

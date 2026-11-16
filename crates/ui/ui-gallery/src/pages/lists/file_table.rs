@@ -8,7 +8,6 @@
 use crate::pages::Section;
 use dioxus::prelude::*;
 use ui_components::base::selection::{Pick, RowSelection};
-use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::name_cell::NameCell;
 use ui_components::components::lists::table::model::TableColumn;

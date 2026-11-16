@@ -12,7 +12,6 @@ use account_fake::{FakeAddress, FakeServer};
 use account_provider::ProviderSpec;
 use serde_json::json;
 use std::collections::HashSet;
-use std::future::Future;
 use std::io;
 use std::sync::{Arc, Mutex};
 

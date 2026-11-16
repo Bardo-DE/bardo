@@ -3,7 +3,6 @@
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
 
 /// The Label section.

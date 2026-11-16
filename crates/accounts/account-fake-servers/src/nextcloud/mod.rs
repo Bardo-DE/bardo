@@ -15,7 +15,6 @@ use account_fake::{FakeAddress, FakeServer};
 use account_provider::ProviderSpec;
 use login::Logins;
 use notes::Notes;
-use std::future::Future;
 use std::io;
 use std::sync::{Arc, Mutex};
 

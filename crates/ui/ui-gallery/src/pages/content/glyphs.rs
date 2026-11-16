@@ -6,9 +6,7 @@ use dioxus::prelude::*;
 use ui_components::components::companion::effect::view::EffectTag;
 use ui_components::prelude::*;
 use ui_components::style::icon::render::{Glyph, IconPx};
-use ui_components::style::icon::style::GlyphStyle;
 use ui_core::vocab::EffectMark;
-use ui_core::word::Word;
 
 /// The sets in `Icon::ALL`'s order, each with its heading.
 const SETS: [(&str, &[Icon]); 4] = [

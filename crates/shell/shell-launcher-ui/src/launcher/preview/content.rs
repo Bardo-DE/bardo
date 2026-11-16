@@ -15,7 +15,7 @@ use shell_services::CompanionService;
 use shell_ui_kit::companion::{ViewCx, answer_view, without_actions};
 use shell_ui_kit::hooks::use_service;
 use ui_components::components::companion::answer::view::AnswerCard;
-use ui_components::components::content::image_source::{ImageSize, ImageSource};
+use ui_components::components::content::image_source::{ImageSize};
 use ui_components::components::lists::preview::content::PaneContent;
 use ui_components::prelude::*;
 

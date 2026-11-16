@@ -4,7 +4,6 @@ use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName, ExtraClass};
 use ui_components::style::icon::render::Glyph;
 use ui_components::style::tokens::control_size::ControlSize;

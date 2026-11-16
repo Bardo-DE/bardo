@@ -1,6 +1,7 @@
-//! What the two password families (Nextcloud's app password, a generic server's password) share:
-//! the form fields, reading what was typed, server addresses, HTTP Basic, and the session a
-//! password account opens.
+//! What the two password families share.
+//!
+//! These are Nextcloud's app password and a generic server's password. They share the form fields,
+//! reading what was typed, server addresses, HTTP Basic, and the session a password account opens.
 //!
 //! A password never leaves accountd, so a session of these families mints no token: an app
 //! reaches its servers through an authenticated relay (`OpenAuthenticated`), which reads the
@@ -103,14 +104,22 @@ pub fn basic(login: &str, password: &SecretText) -> String {
 
 /// `value` as a header value marked sensitive, so a request's `Debug` never shows it. A value
 /// that cannot be a header's is `Malformed`.
+///
+/// # Errors
+/// [`HttpError::Malformed`] when `value` is not a valid header value.
 pub fn sensitive(value: &str) -> Result<HeaderValue, HttpError> {
-    let mut value = HeaderValue::from_str(value).map_err(|_| HttpError::Malformed)?;
+    let mut value = HeaderValue::from_str(value)
+        .ok()
+        .ok_or(HttpError::Malformed)?;
     value.set_sensitive(true);
     Ok(value)
 }
 
 /// Puts `value` on a built request as its `Authorization`, marked sensitive so the request's
 /// `Debug` never shows it. A value that cannot be a header's is `Malformed`.
+///
+/// # Errors
+/// [`HttpError::Malformed`] when `value` is not a valid header value.
 pub fn authorize(request: &mut Request<Vec<u8>>, value: &str) -> Result<(), HttpError> {
     request
         .headers_mut()
@@ -119,6 +128,9 @@ pub fn authorize(request: &mut Request<Vec<u8>>, value: &str) -> Result<(), Http
 }
 
 /// The password an account presents: the credential, when it is one.
+///
+/// # Errors
+/// `Unauthorized` when nothing is presented, `Unreadable` when the credential is not a password.
 pub fn password_of(presented: &Presented) -> Result<&SecretText, ProviderError> {
     match presented {
         Presented::Credential(Credential::Password(password)) => Ok(password),
@@ -128,6 +140,10 @@ pub fn password_of(presented: &Presented) -> Result<&SecretText, ProviderError> 
 }
 
 /// The secret a generic account presents: a password, or a bearer token the person pasted.
+///
+/// # Errors
+/// As [`password_of`]: `Unauthorized` when nothing is presented, `Unreadable` for another kind
+/// of credential.
 pub fn secret_presented(presented: &Presented) -> Result<&SecretText, ProviderError> {
     match presented {
         Presented::Credential(Credential::Bearer(token)) => Ok(token),

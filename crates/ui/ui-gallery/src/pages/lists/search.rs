@@ -6,9 +6,7 @@ use crate::pages::Section;
 use dioxus::prelude::*;
 use ui_components::components::app::hover_strip::{ActionId, HoverStrip, StripAction};
 use ui_components::components::app::thread_row::ThreadRow;
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_core::vocab::RowState;
 

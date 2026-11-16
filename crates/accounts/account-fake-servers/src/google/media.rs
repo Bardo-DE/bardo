@@ -9,7 +9,6 @@ use crate::net::{Bind, Listener};
 use crate::seen::{Running, Seen, lock};
 use account_fake::{FakeAddress, FakeServer};
 use account_provider::ProviderSpec;
-use std::future::Future;
 use std::io;
 use std::sync::Arc;
 

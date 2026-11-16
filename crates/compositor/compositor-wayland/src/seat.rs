@@ -218,9 +218,10 @@ where
     Ok(())
 }
 
-/// Delivers a key to the focused client through smithay's keyboard `input`, which counts it
-/// and sends the modifiers first when the key changed them (so the order on the wire is
-/// `enter`, `modifiers`, `key`). `filter` sees the modifiers and the key's symbol first and may
+/// Delivers a key to the focused client through smithay's keyboard `input`.
+///
+/// It counts the key and sends the modifiers first when the key changed them (so the order on the
+/// wire is `enter`, `modifiers`, `key`). `filter` sees the modifiers and the key's symbol first and may
 /// intercept it (a binding): its answer is returned, `None` when the key was forwarded. A key
 /// that is forwarded goes the way `forward` says.
 pub fn apply_key<D, T>(

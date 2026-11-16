@@ -95,9 +95,10 @@ fn press_route(origin: &Origin, device: DeviceId, facts: RouteFacts) -> bool {
     }
 }
 
-/// Sends `delivery` to every keyboard the focused client bound, the seat's modifiers first (the
-/// grab took the real modifier keys, so the client has not heard them), the way smithay sends a
-/// focused client its keys. No focus, or a focus whose client is gone, hears nothing.
+/// Sends `delivery` to every keyboard the focused client bound.
+///
+/// The seat's modifiers go first (the grab took the real modifier keys, so the client has not
+/// heard them), the way smithay sends a focused client its keys. No focus, or a focus whose client is gone, hears nothing.
 pub fn deliver_past_grab<D>(seat: &Seat<D>, delivery: &KeyDelivery)
 where
     D: SeatHandler<KeyboardFocus = WlSurface> + 'static,

@@ -13,8 +13,6 @@ use ui_components::components::content::avatar::{AvatarSize, AvatarTone};
 use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::components::controls::key_equivalent::{KeyEquivalent, KeyStyle};
 use ui_components::components::overlays::hover_card::target::{HoverTarget, TargetElement};
-use ui_components::motion::detail::operation::Operation;
-use ui_components::motion::detail::operation::PendingToken;
 use ui_components::prelude::*;
 use ui_components::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
 use ui_components::stack::toast_hub::{ToastAction, UndoToken, use_toast_hub};

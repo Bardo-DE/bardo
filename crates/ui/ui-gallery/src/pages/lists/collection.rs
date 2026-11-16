@@ -6,8 +6,6 @@ use crate::pages::Section;
 use crate::pages::content::picture::wide_image;
 use dioxus::prelude::*;
 use ui_components::base::selection::RowSelection;
-use ui_components::components::content::file_icon::FileIconChoice;
-use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::lists::collection_view::{
     CollectionExtent, CollectionItem, CollectionSize, CollectionView, Flow, ThumbAspect, Thumbnail,
 };
