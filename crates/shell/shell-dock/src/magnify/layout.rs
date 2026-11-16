@@ -45,6 +45,7 @@ pub fn rest_centers(count: usize, p: &MagnifyParams) -> Vec<Cpx> {
 
 /// Where the pointer sits: in a slot at a fraction of its width, or in a wider gap between two
 /// slots (which keeps its rest position).
+#[derive(Debug, Clone, Copy)]
 enum Anchor {
     Slot { index: usize, fraction: f64 },
     GapAfter { index: usize },
@@ -83,19 +84,28 @@ pub fn magnify(centers: &[Cpx], pointer_x: Cpx, progress: Permille, p: &MagnifyP
     let pill_right = left[n - 1] + widths[n - 1] + f64::from(p.pad.0) - gap / 2.0;
     let shift = clamp_shift(pill_left, pill_right, p);
 
-    let round = |v: f64| Cpx((v + shift).round() as i32);
+    let round = |v: f64| cpx_of(v + shift);
     Layout {
         tiles: left
             .iter()
             .zip(&widths)
             .map(|(&l, &w)| TileBox {
                 left: round(l + gap / 2.0),
-                size: Cpx((w - gap).round() as i32),
+                size: cpx_of(w - gap),
             })
             .collect(),
         pill_left: round(pill_left),
         pill_right: round(pill_right),
     }
+}
+
+/// `v` rounded to a whole `Cpx`, kept within `i32`.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "clamped to i32's range before the cast"
+)]
+pub(super) fn cpx_of(v: f64) -> Cpx {
+    Cpx(v.round().clamp(f64::from(i32::MIN), f64::from(i32::MAX)) as i32)
 }
 
 /// Which slot or gap `x` is in.

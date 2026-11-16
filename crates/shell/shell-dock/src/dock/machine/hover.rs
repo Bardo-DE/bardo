@@ -154,12 +154,12 @@ pub(crate) fn step(
         DockEvent::PointerEnter { at, hit } | DockEvent::PointerMove { at, hit, .. }
             if hit != Hit::Outside =>
         {
-            moved(dock, at.x, now, p, out)
+            moved(&dock, at.x, now, p, out)
         }
-        DockEvent::DndMotion { x, hit } if hit != Hit::Outside => moved(dock, x, now, p, out),
-        DockEvent::PointerLeave | DockEvent::DndLeave => left(dock, now, p, out),
-        DockEvent::PointerMove { .. } if dock.pointer_inside => left(dock, now, p, out),
-        DockEvent::Frame => settle(dock, now, p),
+        DockEvent::DndMotion { x, hit } if hit != Hit::Outside => moved(&dock, x, now, p, out),
+        DockEvent::PointerLeave | DockEvent::DndLeave => left(&dock, now, p, out),
+        DockEvent::PointerMove { .. } if dock.pointer_inside => left(&dock, now, p, out),
+        DockEvent::Frame => settle(&dock, now, p),
         DockEvent::MenuClosed if !dock.menu_open => match dock.hover {
             Hover::Frozen {
                 cause: FreezeCause::Menu,
@@ -172,7 +172,7 @@ pub(crate) fn step(
 }
 
 fn moved(
-    dock: DockState,
+    dock: &DockState,
     x: Cpx,
     now: Stamp,
     p: &DockParams,
@@ -181,7 +181,7 @@ fn moved(
     if matches!(dock.hover, Hover::Frozen { .. }) {
         return DockState {
             pointer_inside: true,
-            ..dock
+            ..*dock
         };
     }
     let changed = x != dock.x;
@@ -204,11 +204,11 @@ fn moved(
         pointer_inside: true,
         x,
         hover,
-        ..dock
+        ..*dock
     }
 }
 
-fn left(dock: DockState, now: Stamp, p: &DockParams, out: &mut Vec<DockEffect>) -> DockState {
+fn left(dock: &DockState, now: Stamp, p: &DockParams, out: &mut Vec<DockEffect>) -> DockState {
     let hover = match dock.hover {
         Hover::Entering { .. } | Hover::Tracking { .. } => {
             out.push(DockEffect::RequestFrames);
@@ -222,11 +222,11 @@ fn left(dock: DockState, now: Stamp, p: &DockParams, out: &mut Vec<DockEffect>) 
     DockState {
         pointer_inside: false,
         hover,
-        ..dock
+        ..*dock
     }
 }
 
-fn settle(dock: DockState, now: Stamp, p: &DockParams) -> DockState {
+fn settle(dock: &DockState, now: Stamp, p: &DockParams) -> DockState {
     let hover = match dock.hover {
         Hover::Entering { .. } if linear(&dock.hover, now, p) == Permille::ONE => {
             Hover::Tracking { pending: true }
@@ -234,7 +234,7 @@ fn settle(dock: DockState, now: Stamp, p: &DockParams) -> DockState {
         Hover::Leaving { .. } if linear(&dock.hover, now, p) == Permille::ZERO => Hover::Rest,
         other => other,
     };
-    DockState { hover, ..dock }
+    DockState { hover, ..*dock }
 }
 
 #[cfg(test)]

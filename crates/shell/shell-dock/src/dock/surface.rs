@@ -37,10 +37,10 @@ impl Surface for Dock {
     fn layer(output: &OutputInfo, settings: &ShellFile, (): ()) -> LayerConfig {
         // The shipped tokens: the surface has no document yet; `dock` follows its layer with the
         // resolved ones once it is mounted.
-        layer(output, settings, &DockTokens::default())
+        layer(output, settings, DockTokens::default())
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {
-        dock(output)
+        dock(&output)
     }
 }

@@ -72,6 +72,10 @@ fn acts(p: &DockParams, events: &[(u64, DockEvent)]) -> (DockState, Vec<DockEffe
     (dock, keep)
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of the design's click rules (10.3.6), a row per case"
+)]
 #[test]
 fn clicks_do_what_design_10_3_6_says() {
     use Button::{Middle, Primary};

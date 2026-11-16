@@ -34,6 +34,10 @@ fn run(events: &[(u64, DockEvent)]) -> (DockState, Vec<DockEffect>) {
     )
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of the design's hover transitions, a row per case, read top to down"
+)]
 #[test]
 fn hover_transitions_follow_the_design_table() {
     let enter = (

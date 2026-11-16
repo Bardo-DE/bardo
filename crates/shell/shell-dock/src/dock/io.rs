@@ -191,7 +191,7 @@ fn handle(
         machine.set(next);
     }
     for effect in effects {
-        apply(slots, deps, outward, clock, now, effect);
+        apply(slots, deps, outward, clock, now, &effect);
     }
 }
 
@@ -201,11 +201,11 @@ fn apply(
     outward: &Outward,
     clock: FrameClock,
     now: Stamp,
-    effect: DockEffect,
+    effect: &DockEffect,
 ) {
     let mut drive = slots.drive;
     let mut drawn = slots.drawn;
-    match &effect {
+    match effect {
         DockEffect::Redraw => drawn.set(now),
         DockEffect::RequestFrames => {
             if drive.peek().is_none()
@@ -255,7 +255,7 @@ fn apply(
                 pins: &deps.world.pins,
                 workspace: deps.world.workspace,
             };
-            send_all(outward, effect_commands(&effect, &ctx));
+            send_all(outward, effect_commands(effect, &ctx));
         }
     }
 }

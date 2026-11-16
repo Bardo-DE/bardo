@@ -114,6 +114,10 @@ fn world() -> World {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one case per outward effect, in the order of the effect enum"
+)]
 #[test]
 fn every_outward_effect_becomes_its_commands() {
     let w = world();

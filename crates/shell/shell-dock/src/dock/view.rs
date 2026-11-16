@@ -49,12 +49,16 @@ use shell_ui_kit::root::use_root_style;
 pub const DOCK_CSS: &str = include_str!("style.css");
 
 /// The dock on `output`.
-pub(super) fn dock(output: OutputInfo) -> Element {
+#[expect(
+    clippy::too_many_lines,
+    reason = "one render: the services are read in hook order, the frame is laid out, then the pill is declared; the rsx tree is half of it and cannot leave without a prop struct"
+)]
+pub(super) fn dock(output: &OutputInfo) -> Element {
     let file = use_settings()();
     let environment = use_appearance()();
     let root = use_root_style();
     let on = output.name.clone().map(OutputName);
-    let look = use_active_look(&output);
+    let look = use_active_look(output);
     let workspace = active_workspace(
         &use_service_part::<WindowsService, _>(|wl| wl.workspaces.clone())(),
         on.as_ref(),
@@ -91,7 +95,7 @@ pub(super) fn dock(output: OutputInfo) -> Element {
         use_callback(move |shown: Shown| feed.call(DockInput::Event(DockEvent::Edge(shown)))),
     );
     let services = use_services();
-    use_follow_layer(layer(&output, &file, &tokens));
+    use_follow_layer(layer(output, &file, tokens));
     let machine = session.machine.read().clone();
     let label = LabelShown(match machine.label {
         Label::Shown { tile } => Some(tile),
@@ -115,12 +119,12 @@ pub(super) fn dock(output: OutputInfo) -> Element {
     let at = (session.drawn)();
     let (progress, x) = displayed(&machine, at, &params);
     let width = output.logical.width;
-    let shown = frame(&items, &file.dock, &tokens, width, progress, x);
+    let shown = frame(&items, &file.dock, tokens, width, progress, x);
     let slide = slide_offset(&machine.reveal, at, &params);
     let rest = frame(
         &items,
         &file.dock,
-        &tokens,
+        tokens,
         width,
         shell_model::units::Permille::ZERO,
         x,
@@ -146,7 +150,7 @@ pub(super) fn dock(output: OutputInfo) -> Element {
     });
     let platform = use_platform();
     let send = move |input: PointerInput| feed.call(DockInput::Pointer(input));
-    let rows = Rows::new(&file.dock, &tokens);
+    let rows = Rows::new(&file.dock, tokens);
     let strip = strip_area(&rest, &rows, i32::from(autohide::TRIGGER_STRIP_PX), slide);
     rsx! {
         div {
@@ -159,7 +163,7 @@ pub(super) fn dock(output: OutputInfo) -> Element {
                 system: environment.system,
                 look,
                 material: Material::Dock,
-                radius: Some(pill_corner(&tokens)),
+                radius: Some(pill_corner(tokens)),
                 ground: Some(Ground::Paper),
                 blur: true,
                 surface: root.surface,

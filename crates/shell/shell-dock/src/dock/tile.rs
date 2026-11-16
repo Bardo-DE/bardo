@@ -52,6 +52,11 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
         (ItemKind::Trash, None) => "Trash".to_owned(),
     };
     let side = px(size);
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a tile side is at most a few hundred pixels, which f32 holds exactly"
+    )]
+    let side_px = Px(side as f32);
     let sizes = TileSizes::new(side, &dock);
     let look = try_use_context::<Signal<TileLook>>().map_or_else(TileLook::default, |look| look());
     let cx = IconContext {
@@ -62,10 +67,10 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
     let icon = drawn(tile_art(&item.kind, app), sizes, &cx);
     let tokens =
         try_use_context::<Signal<DockTokens>>().map_or_else(DockTokens::default, |tokens| tokens());
-    let rows = Rows::new(&dock, &tokens);
+    let rows = Rows::new(&dock, tokens);
     let top = px(rows.baseline) - side;
     // How far the plate's top is below the tile's: the label stands above it.
-    let rise = (side - f64::from(plate_side(Px(side as f32)).0)) / 2.0;
+    let rise = (side - f64::from(plate_side(side_px).0)) / 2.0;
     let running = item.app != TileApp::NotRunning && dock.indicators;
     let label = try_use_context::<Signal<LabelShown>>().map_or(LabelShown(None), |shown| shown());
     let shown = label.0 == Some(item.tile);
@@ -80,7 +85,7 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
                 badge: badge.and_then(|b| b.shown_count()).map(count),
                 progress: badge.and_then(|b| b.shown_progress()).map(fraction),
                 running,
-                side: Px(side as f32),
+                side: side_px,
                 label: name.clone(),
                 // Never quire's own: its card is placed in the pill-sized root's coordinates and
                 // lands the pill's origin away from its tile. The label is drawn below, in the

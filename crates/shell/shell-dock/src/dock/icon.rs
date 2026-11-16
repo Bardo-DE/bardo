@@ -76,6 +76,10 @@ impl TileSizes {
 
 /// `art` drawn at `sizes` in `cx`, filling the tile.
 pub fn drawn(art: TileArt, sizes: TileSizes, cx: &IconContext) -> IconSource {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a tile side is at most a few hundred pixels, which f32 holds exactly"
+    )]
     let plate_icon = |side: f64| f64::from(plate_side(Px(side as f32)).0);
     match art {
         TileArt::Glyph(icon) => IconSource::Glyph(icon),
@@ -102,12 +106,22 @@ fn external(path: &Path, side: f64) -> Option<ExternalIcon> {
 }
 
 /// `side` in whole pixels (at least one).
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "rounded and clamped to 1..=255, so the cast to u8 is exact"
+)]
 fn whole(side: f64) -> IconSize {
     // Rounded and clamped to u8's range, so the cast is exact.
     IconSize::Px(IconPx(side.round().clamp(1.0, 255.0) as u8))
 }
 
 /// `side` as a logical size, rounded.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "rounded and clamped to 1..=u16::MAX, so the cast to u16 is exact"
+)]
 fn logical(side: f64) -> LogicalPx {
     // Rounded and clamped to u16's range, so the cast is exact.
     LogicalPx(side.round().clamp(1.0, f64::from(u16::MAX)) as u16)

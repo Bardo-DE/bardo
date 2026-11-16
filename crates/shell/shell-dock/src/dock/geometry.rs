@@ -21,13 +21,17 @@ pub fn dock_metrics(dock: &DockSettings) -> DockMetrics {
 
 /// The pill's corner: a squircle of nominal radius `--shell-dock-pill-radius` (quire's
 /// `Corner::Squircle`; its extent is capped at half the pill's height).
-pub fn pill_corner(tokens: &DockTokens) -> Corner {
+pub fn pill_corner(tokens: DockTokens) -> Corner {
     Corner::Squircle(Px(f32::from(tokens.pill_radius)))
 }
 
 /// The blur region's corner radius for the pill: the circle the squircle's shadows follow,
 /// which touches it at 45 degrees (`Corner::css`'s radius), in whole pixels.
-pub fn pill_blur_radius(tokens: &DockTokens) -> i32 {
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a radius is at most u16::MAX, so the rounded product fits an i32"
+)]
+pub fn pill_blur_radius(tokens: DockTokens) -> i32 {
     let share = ui_components::style::tokens::plate::shadow_radius_share();
     // A radius is at most u16::MAX, so the rounded product fits an i32.
     (f64::from(tokens.pill_radius) * share).round() as i32
@@ -39,7 +43,7 @@ const INFLUENCE_RADIUS_PX: i32 = 72;
 /// `MagnifyParams` for `dock` on an output `output_width_px` wide.
 pub fn magnify_params(
     dock: &DockSettings,
-    tokens: &DockTokens,
+    tokens: DockTokens,
     output_width_px: i32,
 ) -> MagnifyParams {
     let px = |v: u16| Cpx::px(i32::from(v));
@@ -62,7 +66,7 @@ mod tests {
     fn the_pill_blurs_under_the_squircles_shadow_circle() {
         use super::{pill_blur_radius, pill_corner};
         let tokens = DockTokens::default();
-        assert_eq!(pill_corner(&tokens).css(), "19.45px", "0.884 x 22");
-        assert_eq!(pill_blur_radius(&tokens), 19);
+        assert_eq!(pill_corner(tokens).css(), "19.45px", "0.884 x 22");
+        assert_eq!(pill_blur_radius(tokens), 19);
     }
 }

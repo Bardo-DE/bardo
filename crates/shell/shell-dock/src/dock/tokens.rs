@@ -1,5 +1,6 @@
-//! The dock's geometry tokens as the layout maths reads them. Each is a tuned token in
-//! `shell_kit::tokens::dock::DockToken` (`--dock-gap`, `--dock-pad`,
+//! The dock's geometry tokens as the layout maths reads them.
+//!
+//! Each is a tuned token in `shell_kit::tokens::dock::DockToken` (`--dock-gap`, `--dock-pad`,
 //! `--shell-dock-pill-radius`, `--shell-dock-edge-clamp`), a look or the person's style sheet may
 //! move it, and the maths needs the number before the first layout. [`DockTokens::read`] takes
 //! the resolved length of a custom property (`ui_blitz::Resolved::length` on the surface's
@@ -47,6 +48,11 @@ impl DockTokens {
     /// The values `length` resolves (a property name to its length), the shipped constant for
     /// each it does not.
     pub fn read(length: impl Fn(&str) -> Option<Px>) -> DockTokens {
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "rounded and clamped to 0..=u16::MAX, so the cast to u16 is exact"
+        )]
         let one = |token: DockToken, shipped: u16| {
             length(token.input().as_str()).map_or(shipped, |px| {
                 px.0.round().clamp(0.0, f32::from(u16::MAX)) as u16

@@ -45,7 +45,7 @@ pub fn gate(dock: &DockState) -> LabelGate {
 
 /// The label half of [`super::step`].
 pub(crate) fn step(
-    dock: DockState,
+    dock: &DockState,
     event: &DockEvent,
     now: Stamp,
     p: &DockParams,
@@ -53,7 +53,7 @@ pub(crate) fn step(
 ) -> DockState {
     let label = match *event {
         DockEvent::Press { .. } => hide(dock.label, out),
-        _ if gate(&dock) == LabelGate::Quiet => hide(dock.label, out),
+        _ if gate(dock) == LabelGate::Quiet => hide(dock.label, out),
         DockEvent::PointerEnter { hit, .. } | DockEvent::PointerMove { hit, .. } => {
             hovered(dock.label, hit, now, p, out)
         }
@@ -61,7 +61,7 @@ pub(crate) fn step(
         DockEvent::Frame | DockEvent::Tick => timed(dock.label, now, p, out),
         _ => dock.label,
     };
-    DockState { label, ..dock }
+    DockState { label, ..*dock }
 }
 
 fn hide(label: Label, out: &mut Vec<DockEffect>) -> Label {
@@ -71,6 +71,10 @@ fn hide(label: Label, out: &mut Vec<DockEffect>) -> Label {
     Label::Idle
 }
 
+#[expect(
+    clippy::match_same_arms,
+    reason = "an idle label, a label pending for another tile and a cold warm label each start the delay for their own reason; they only coincide in what they do"
+)]
 fn hovered(label: Label, hit: Hit, now: Stamp, p: &DockParams, out: &mut Vec<DockEffect>) -> Label {
     let Some(tile) = hit.tile() else {
         return match label {

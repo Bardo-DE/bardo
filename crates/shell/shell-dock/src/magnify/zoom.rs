@@ -3,14 +3,24 @@
 //! The appendix transcribes Plank as `1 + (1 - q^2)(M P - 1)`, which shrinks tiles at `P = 0`;
 //! the doc's form (used here) gives exactly 1 at `P = 0`.
 
+use super::layout::cpx_of;
 use crate::magnify::MagnifyParams;
 use shell_model::units::{Cpx, Permille};
 
 /// The zoom of the tile centred at `center` for pointer `x` at progress `progress`, in
 /// thousandths (1000 = rest).
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "clamped to u32's range before the cast"
+)]
 pub fn zoom(center: Cpx, x: Cpx, progress: Permille, p: &MagnifyParams) -> Permille {
-    Permille((factor(center, x, progress, p) * 1000.0).round() as u32)
+    Permille(
+        (factor(center, x, progress, p) * 1000.0)
+            .round()
+            .clamp(0.0, f64::from(u32::MAX)) as u32,
+    )
 }
 
 /// Every tile's magnified size.
@@ -18,7 +28,7 @@ pub fn zoom(center: Cpx, x: Cpx, progress: Permille, p: &MagnifyParams) -> Permi
 pub fn sizes(centers: &[Cpx], x: Cpx, progress: Permille, p: &MagnifyParams) -> Vec<Cpx> {
     centers
         .iter()
-        .map(|&c| Cpx((f64::from(p.tile.0) * factor(c, x, progress, p)).round() as i32))
+        .map(|&c| cpx_of(f64::from(p.tile.0) * factor(c, x, progress, p)))
         .collect()
 }
 
@@ -83,7 +93,6 @@ mod tests {
 
     #[test]
     fn zoom_falls_with_distance_to_one_at_the_radius() {
-        let c = Cpx::px(500);
         const CASES: &[(i32, u32)] = &[
             (0, 2000),
             (24, 1938),
@@ -93,6 +102,7 @@ mod tests {
             (200, 1000),
             (-52, 1707),
         ];
+        let c = Cpx::px(500);
         for &(d, want) in CASES {
             assert_eq!(
                 zoom(c, Cpx::px(500 + d), Permille::ONE, &p()),

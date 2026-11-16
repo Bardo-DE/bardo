@@ -93,35 +93,11 @@ pub(crate) fn step(
             DockEvent::PointerMove { at, zone, .. },
         ) if manhattan(origin, at) > p.drag_threshold.0 => {
             out.push(DockEffect::RequestFrames);
-            dragged(
-                DockState {
-                    press: Press::Dragging {
-                        tile,
-                        origin,
-                        over: zone,
-                    },
-                    ..dock
-                },
-                zone,
-                now,
-                p,
-                out,
-            )
+            drag(dock, tile, origin, zone, now, p, out)
         }
-        (Press::Dragging { tile, origin, .. }, DockEvent::PointerMove { zone, .. }) => dragged(
-            DockState {
-                press: Press::Dragging {
-                    tile,
-                    origin,
-                    over: zone,
-                },
-                ..dock
-            },
-            zone,
-            now,
-            p,
-            out,
-        ),
+        (Press::Dragging { tile, origin, .. }, DockEvent::PointerMove { zone, .. }) => {
+            drag(dock, tile, origin, zone, now, p, out)
+        }
         (Press::Down { tile, button, .. }, DockEvent::Release { hit, modifier, .. }) => {
             let dock = DockState {
                 press: Press::Up,
@@ -139,25 +115,11 @@ pub(crate) fn step(
                 DropZone::Remove => out.push(DockEffect::Unpin { tile }),
                 DropZone::Slot(to) => out.push(DockEffect::Reorder { tile, to }),
             }
-            hover::thaw(
-                DockState {
-                    press: Press::Up,
-                    ..dock
-                },
-                now,
-                out,
-            )
+            drag_ended(dock, now, out)
         }
         (Press::Dragging { .. }, DockEvent::Key(DockKey::Escape)) => {
             out.push(DockEffect::RequestFrames);
-            hover::thaw(
-                DockState {
-                    press: Press::Up,
-                    ..dock
-                },
-                now,
-                out,
-            )
+            drag_ended(dock, now, out)
         }
         (
             Press::Down {
@@ -177,19 +139,33 @@ pub(crate) fn step(
             p,
             out,
         ),
-        (_, DockEvent::MenuClosed) => DockState {
+        _ => beside_press(dock, event, now, p, out),
+    }
+}
+
+/// The events that no phase of the press takes: a menu closing and the spring-loading of a tile a
+/// drag from elsewhere rests on.
+fn beside_press(
+    dock: DockState,
+    event: &DockEvent,
+    now: Stamp,
+    p: &DockParams,
+    out: &mut Vec<DockEffect>,
+) -> DockState {
+    match *event {
+        DockEvent::MenuClosed => DockState {
             menu_open: false,
             ..dock
         },
-        (_, DockEvent::DndMotion { hit, .. }) => DockState {
+        DockEvent::DndMotion { hit, .. } => DockState {
             spring: spring(dock.spring, hit, now, p, out),
             ..dock
         },
-        (_, DockEvent::DndLeave | DockEvent::Drop) => DockState {
+        DockEvent::DndLeave | DockEvent::Drop => DockState {
             spring: Spring::Idle,
             ..dock
         },
-        (_, DockEvent::Frame | DockEvent::Tick) => match dock.spring {
+        DockEvent::Frame | DockEvent::Tick => match dock.spring {
             Spring::Resting { tile, since } if now.since(since) >= p.spring_load_ms.0 => {
                 out.push(DockEffect::SpringOpen { tile });
                 DockState {
@@ -201,6 +177,44 @@ pub(crate) fn step(
         },
         _ => dock,
     }
+}
+
+/// `dock` with `tile` dragged from `origin` over `zone`.
+fn drag(
+    dock: DockState,
+    tile: TileId,
+    origin: Point,
+    zone: DropZone,
+    now: Stamp,
+    p: &DockParams,
+    out: &mut Vec<DockEffect>,
+) -> DockState {
+    dragged(
+        DockState {
+            press: Press::Dragging {
+                tile,
+                origin,
+                over: zone,
+            },
+            ..dock
+        },
+        zone,
+        now,
+        p,
+        out,
+    )
+}
+
+/// The press ends with the drag: magnification resumes.
+fn drag_ended(dock: DockState, now: Stamp, out: &mut Vec<DockEffect>) -> DockState {
+    hover::thaw(
+        DockState {
+            press: Press::Up,
+            ..dock
+        },
+        now,
+        out,
+    )
 }
 
 fn pressed(

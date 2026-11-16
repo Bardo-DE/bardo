@@ -64,7 +64,7 @@ pub struct Rows {
 
 impl Rows {
     /// The rows for `dock`'s sizes and the pill's padding token.
-    pub fn new(dock: &DockSettings, tokens: &DockTokens) -> Rows {
+    pub fn new(dock: &DockSettings, tokens: DockTokens) -> Rows {
         let px = |v: u32| Cpx::px(i32::try_from(v).unwrap_or(i32::MAX / 100));
         let tile = u32::from(dock.tile_size_px.0);
         let magnified = u32::from(dock.magnified_size_px.0);
@@ -115,7 +115,7 @@ pub fn centers(items: &[DockItem], p: &MagnifyParams) -> Vec<Cpx> {
 pub fn frame(
     items: &[DockItem],
     dock: &DockSettings,
-    tokens: &DockTokens,
+    tokens: DockTokens,
     output_width_px: i32,
     progress: Permille,
     x: Cpx,
@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn the_rows_are_design_10s_geometry() {
-        let rows = Rows::new(&DockSettings::default(), &DockTokens::default());
+        let rows = Rows::new(&DockSettings::default(), DockTokens::default());
         assert_eq!(rows.surface, Cpx::px(134));
         assert_eq!(rows.baseline, Cpx::px(120), "gut + pad above the bottom");
         assert_eq!(rows.pill_top, Cpx::px(66));
@@ -217,7 +217,7 @@ mod tests {
         let f = frame(
             &items(7, false),
             &DockSettings::default(),
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ZERO,
             Cpx(0),
@@ -235,7 +235,7 @@ mod tests {
         let f = frame(
             &items(6, true),
             &DockSettings::default(),
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ZERO,
             Cpx(0),
@@ -252,7 +252,7 @@ mod tests {
         let rest = frame(
             &items(7, false),
             &DockSettings::default(),
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ZERO,
             Cpx(0),
@@ -261,7 +261,7 @@ mod tests {
         let f = frame(
             &items(7, false),
             &DockSettings::default(),
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ONE,
             x,
@@ -281,7 +281,7 @@ mod tests {
         let rest = frame(
             &items,
             &dock,
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ZERO,
             Cpx(0),
@@ -290,7 +290,7 @@ mod tests {
         let near = frame(
             &items,
             &dock,
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ONE,
             Cpx(under),

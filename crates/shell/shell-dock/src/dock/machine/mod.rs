@@ -1,5 +1,6 @@
-//! The dock's state machine (design/10 §10.4): pure, `now` an argument, effects returned. The
-//! component hit-tests pointer events against the frame's layout and feeds them here; it
+//! The dock's state machine (design/10 §10.4): pure, `now` an argument, effects returned.
+//!
+//! The component hit-tests pointer events against the frame's layout and feeds them here; it
 //! applies the effects and draws [`displayed`] with `crate::magnify`.
 //!
 //! Differences from the doc's sketch: pointer events carry the
@@ -43,7 +44,7 @@ pub fn step(
         reveal::Gate::Dock => {
             let dock = reveal::step(dock, &event, now, p, &mut out);
             let dock = press::step(dock, &event, now, p, &mut out);
-            let dock = label::step(dock, &event, now, p, &mut out);
+            let dock = label::step(&dock, &event, now, p, &mut out);
             hover::step(dock, &event, now, p, &mut out)
         }
     };

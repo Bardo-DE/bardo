@@ -108,7 +108,7 @@ mod tests {
         let f = frame(
             &items,
             &DockSettings::default(),
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ZERO,
             Cpx(0),
@@ -142,7 +142,7 @@ mod tests {
         let f = frame(
             &items,
             &DockSettings::default(),
-            &DockTokens::default(),
+            DockTokens::default(),
             1920,
             Permille::ZERO,
             Cpx(0),

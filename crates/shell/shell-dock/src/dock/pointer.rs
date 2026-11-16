@@ -79,9 +79,20 @@ fn zone(frame: &Frame, items: &[DockItem], dock: &DockState, at: Point, remove: 
 pub(crate) fn point(event: &MouseData) -> Point {
     let at = event.client_coordinates();
     Point {
-        x: Cpx((at.x * 100.0).round() as i32),
-        y: Cpx((at.y * 100.0).round() as i32),
+        x: hundredths(at.x),
+        y: hundredths(at.y),
     }
+}
+
+/// `pixels` in hundredths of a pixel, rounded and kept within `i32`.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "clamped to i32's range before the cast"
+)]
+fn hundredths(pixels: f64) -> Cpx {
+    Cpx((pixels * 100.0)
+        .round()
+        .clamp(f64::from(i32::MIN), f64::from(i32::MAX)) as i32)
 }
 
 /// The button a press or release is about; a button the dock has no use for is none.

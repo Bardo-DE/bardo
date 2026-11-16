@@ -23,13 +23,13 @@ pub fn app_rects(
         if item.kind == ItemKind::Trash {
             continue;
         }
-        let rect = rect_of(area);
+        let placed = rect_of(area);
         let entry = item.kind.app_id().map(|id| id.0.clone());
         let windows = item_windows(&item.kind, toplevels, index)
             .into_iter()
             .map(|window| window.app_id.clone());
         for name in entry.into_iter().chain(windows) {
-            rects.0.entry(name).or_insert(rect);
+            rects.0.entry(name).or_insert(placed);
         }
     }
     rects

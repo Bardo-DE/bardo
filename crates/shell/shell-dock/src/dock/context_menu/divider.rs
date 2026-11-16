@@ -1,5 +1,6 @@
-//! The dock's own menu, on its separator or empty background (design/10 §10.3.7): Turn Hiding
-//! On / Off, Turn Magnification On / Off, then Dock Settings. The Mac's Position on Screen and
+//! The dock's own menu, on its separator or empty background (design/10 §10.3.7).
+//!
+//! Its rows are Turn Hiding On / Off, Turn Magnification On / Off, then Dock Settings. The Mac's Position on Screen and
 //! Minimise Windows Using rows are not here: the dock has no setting for either (it stays at the
 //! bottom, and has one minimise effect).
 

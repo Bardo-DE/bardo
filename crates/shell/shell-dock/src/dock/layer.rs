@@ -22,7 +22,7 @@ use shell_ui_kit::surface::namespace;
 pub const GUTTER_PX: u32 = 8;
 
 /// The dock's layer configuration on `output`.
-pub fn layer(output: &OutputInfo, settings: &ShellFile, tokens: &DockTokens) -> LayerConfig {
+pub fn layer(output: &OutputInfo, settings: &ShellFile, tokens: DockTokens) -> LayerConfig {
     let dock = &settings.dock;
     let tile = u32::from(dock.tile_size_px.0);
     let magnified = u32::from(dock.magnified_size_px.0);
@@ -77,7 +77,7 @@ mod tests {
         let config = layer(
             &output(Some("DP-1")),
             &ShellFile::default(),
-            &DockTokens::default(),
+            DockTokens::default(),
         );
         assert_eq!(config.namespace, "shell-dock-DP-1");
         assert_eq!(config.layer, LayerLevel::Top);
@@ -93,7 +93,7 @@ mod tests {
             },
             ..ShellFile::default()
         };
-        let config = layer(&output(Some("DP-1")), &hiding, &DockTokens::default());
+        let config = layer(&output(Some("DP-1")), &hiding, DockTokens::default());
         assert_eq!(config.exclusive, ExclusiveZone::Reserve(0));
         assert_eq!(config.blur, BlurSpec::None);
     }
@@ -108,9 +108,6 @@ mod tests {
         after.logical.height *= 2;
         let file = ShellFile::default();
         let tokens = DockTokens::default();
-        assert_eq!(
-            layer(&before, &file, &tokens),
-            layer(&after, &file, &tokens)
-        );
+        assert_eq!(layer(&before, &file, tokens), layer(&after, &file, tokens));
     }
 }
