@@ -150,7 +150,7 @@ fn mod_codes(keymap: &Keymap, mods: &BTreeSet<Modifier>) -> Result<Vec<Keycode>,
 }
 
 /// `inner` between the modifiers going down (in order) and up (in reverse).
-fn bracketed(codes: Vec<Keycode>, inner: Vec<InputOp>) -> Vec<InputOp> {
+fn bracketed(codes: &[Keycode], inner: Vec<InputOp>) -> Vec<InputOp> {
     let down = codes.iter().map(|c| key(*c, Press::Down));
     let up = codes.iter().rev().map(|c| key(*c, Press::Up));
     down.chain(inner).chain(up).collect()
@@ -227,7 +227,7 @@ fn chord_ops(chord: &Chord, repeat: Repeat, keymap: &Keymap) -> Result<Vec<Input
             .chain([key(main, Press::Down), key(main, Press::Up)])
     });
     Ok(bracketed(
-        mod_codes(keymap, &chord.mods)?,
+        &mod_codes(keymap, &chord.mods)?,
         strokes.collect(),
     ))
 }
@@ -248,7 +248,7 @@ fn char_ops(c: char, keymap: &Keymap) -> Result<Vec<InputOp>, PlanError> {
     let strokes = vec![key(code, Press::Down), key(code, Press::Up)];
     match level {
         ShiftLevel::Plain => Ok(strokes),
-        ShiftLevel::Shifted => Ok(bracketed(vec![code_for(keymap, &Key::Shift)?], strokes)),
+        ShiftLevel::Shifted => Ok(bracketed(&[code_for(keymap, &Key::Shift)?], strokes)),
     }
 }
 
@@ -298,7 +298,7 @@ pub fn plan(
             let point = resolve(at, one(&action.at), window)?;
             let inner = [InputOp::MoveTo(point)];
             let codes = mod_codes(keymap, mods)?;
-            let clicking = bracketed(codes, click_ops(*button, *count));
+            let clicking = bracketed(&codes, click_ops(*button, *count));
             Ok(inner.into_iter().chain(clicking).collect())
         }
         CuaAction::MoveTo { at } => {

@@ -206,29 +206,29 @@ fn nothing_in(value: &Value) -> bool {
 /// What an end came to, given the last comparable answer; the new last answer comes with it. A
 /// handle returned by a call known to only read is an answer held; one from any other call
 /// cannot be compared.
-fn judged(end: &StepEnd, last: &Option<Print>, effect: Option<Effect>) -> (Answer, Option<Print>) {
+fn judged(end: &StepEnd, last: Option<&Print>, effect: Option<Effect>) -> (Answer, Option<Print>) {
     use action_core::Reveal;
     match end {
         // A call that may change something (any effect but `Read`, or one not known) is done once;
         // so is one that answered in words and gave no value back, which was made for what it
         // does (gave a job, started a task) and not for an answer to read.
-        StepEnd::Done { .. } if effect != Some(Effect::Read) => (Answer::Done, last.clone()),
+        StepEnd::Done { .. } if effect != Some(Effect::Read) => (Answer::Done, last.cloned()),
         StepEnd::Done {
             said: Some(_),
             value: None,
             ..
-        } => (Answer::Done, last.clone()),
+        } => (Answer::Done, last.cloned()),
         StepEnd::Done { said, value, undo } => {
             let plain = match value {
                 Some(Reveal::Handle(_)) if effect == Some(Effect::Read) && undo.is_none() => {
-                    return (Answer::Answered, last.clone());
+                    return (Answer::Answered, last.cloned());
                 }
-                Some(Reveal::Handle(_)) => return (Answer::Opaque, last.clone()),
+                Some(Reveal::Handle(_)) => return (Answer::Opaque, last.cloned()),
                 Some(Reveal::Plain(v)) => Some(v),
                 None => None,
             };
             if undo.is_some() {
-                return (Answer::Opaque, last.clone());
+                return (Answer::Opaque, last.cloned());
             }
             // An empty value is nothing whatever the app said of it ("Found threads"); no value
             // at all is nothing only when the app said nothing either.
@@ -237,10 +237,10 @@ fn judged(end: &StepEnd, last: &Option<Print>, effect: Option<Effect>) -> (Answe
                 None => said.is_none() && value.is_none(),
             };
             if nothing {
-                return (Answer::Empty, last.clone());
+                return (Answer::Empty, last.cloned());
             }
             let print = Print(serde_json::to_string(&(said, plain)).unwrap_or_default());
-            let answer = if last.as_ref() == Some(&print) {
+            let answer = if last == Some(&print) {
                 Answer::Unchanged
             } else {
                 Answer::Fresh
@@ -248,14 +248,14 @@ fn judged(end: &StepEnd, last: &Option<Print>, effect: Option<Effect>) -> (Answe
             (answer, Some(print))
         }
         StepEnd::Refused(CallRefusal::BadArgs { .. } | CallRefusal::NoSuchAction(_)) => {
-            (Answer::Refused, last.clone())
+            (Answer::Refused, last.cloned())
         }
-        StepEnd::Held(Held::Running) => (Answer::Parked, last.clone()),
+        StepEnd::Held(Held::Running) => (Answer::Parked, last.cloned()),
         StepEnd::Refused(_)
         | StepEnd::Unconfirmed(_)
         | StepEnd::Held(_)
         | StepEnd::Unread(_)
-        | StepEnd::Interrupted => (Answer::Opaque, last.clone()),
+        | StepEnd::Interrupted => (Answer::Opaque, last.cloned()),
     }
 }
 
@@ -401,7 +401,7 @@ impl Guard {
             .into_iter()
             .map(|s| match s.answer {
                 Answer::Waiting(w) if w == id => {
-                    let (answer, last) = judged(end, &s.last, s.effect);
+                    let (answer, last) = judged(end, s.last.as_ref(), s.effect);
                     let (declined, reason) = match end {
                         StepEnd::Refused(CallRefusal::App(refusal)) => {
                             (s.declined.saturating_add(1), declined_words(refusal))

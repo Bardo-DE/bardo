@@ -99,6 +99,10 @@ pub struct Opening {
 }
 
 /// Whether `rewind` is the default, which a log leaves out.
+#[expect(
+    clippy::trivially_copy_pass_by_ref,
+    reason = "serde's `skip_serializing_if` calls the function with a reference"
+)]
 fn keeps_docket(rewind: &Rewind) -> bool {
     *rewind == Rewind::Docket
 }

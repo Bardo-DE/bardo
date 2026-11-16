@@ -127,6 +127,10 @@ fn Rooted(root: SharedRoot) -> Element {
     non_snake_case,
     reason = "a Dioxus component function is named in CamelCase"
 )]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "a Dioxus component takes its props by value"
+)]
 pub(crate) fn Host(props: HostProps) -> Element {
     let window = use_window();
     let signals = use_context_provider(|| HostSignals {

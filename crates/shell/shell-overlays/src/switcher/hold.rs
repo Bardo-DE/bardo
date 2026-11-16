@@ -45,7 +45,7 @@ pub fn tick_input(state: Phase, hold: Hold) -> SwIn {
 
 /// The chord's state in `modifiers`: held while Alt (which Toshy holds for Cmd) or the logo key
 /// is.
-pub fn chord_of(modifiers: &Modifiers) -> Chord {
+pub fn chord_of(modifiers: Modifiers) -> Chord {
     match (modifiers.alt, modifiers.logo) {
         (Modifier::Released, Modifier::Released) => Chord::Released,
         _ => Chord::Held,
@@ -94,7 +94,7 @@ mod tests {
             (Modifiers::default(), Chord::Released),
         ];
         for (modifiers, want) in cases {
-            assert_eq!(chord_of(&modifiers), want, "{modifiers:?}");
+            assert_eq!(chord_of(modifiers), want, "{modifiers:?}");
         }
     }
 

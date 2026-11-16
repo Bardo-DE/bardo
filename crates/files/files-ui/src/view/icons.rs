@@ -31,6 +31,10 @@ fn thumbnail_of(choice: FileIconChoice) -> Thumbnail {
 /// The picture of the tile of `entry`: its thumbnail once it has one, else its icon; and, for a
 /// file that may have a thumbnail and has not been given its answer, the wish for one, which
 /// lasts as long as the tile is drawn.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn picture_of(
     browse: Browse,
     state: &Browser,
@@ -50,6 +54,10 @@ fn picture_of(
 
 /// The tile of `entry`: its thumbnail or glyph over its name, or its name field while it is being
 /// renamed.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn item_of(
     browse: Browse,
     state: &Browser,

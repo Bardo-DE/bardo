@@ -9,7 +9,8 @@ use crate::launch::Launch;
 
 /// The icons for the pack `provided` names, as a signal the views read. The standard set draws
 /// until the pack has been found.
-pub(super) fn use_file_icons(launch: &Launch, provided: Provided) -> Signal<Icons> {
+pub(super) fn use_file_icons(launch: &Launch, provided: &Provided) -> Signal<Icons> {
+    let provided = provided.clone();
     let sources = launch.file_icons.clone();
     let places = launch.places.clone();
     let store = launch.appearance.store.clone();

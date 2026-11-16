@@ -34,7 +34,7 @@ pub(super) const GRANT_ID: &str = "permission-grant";
 pub(super) const DENY_ID: &str = "permission-deny";
 
 pub(super) fn permission_sheet(output: OutputInfo) -> Element {
-    let stage = use_stage(output.clone());
+    let stage = use_stage(&output);
     let drawn = stage()
         .drawn()
         .map(|(asking, shown)| (asking.clone(), shown));
@@ -118,15 +118,12 @@ fn QuestionCard(
 }
 
 /// The stage on `output`, following the question and the sheets' output.
-fn use_stage(output: OutputInfo) -> Signal<SheetStage<PermissionAsking>> {
+fn use_stage(output: &OutputInfo) -> Signal<SheetStage<PermissionAsking>> {
+    let id = output.id;
     let asking = use_service_part::<CaptureService, _>(|picker| picker.permission.clone());
     let shows = use_sheet_output();
     use_sheet_stage(super::surface::PRESET, move || {
         let current = asking();
-        shows
-            .read()
-            .shows_on(output.id)
-            .then_some(current)
-            .flatten()
+        shows.read().shows_on(id).then_some(current).flatten()
     })
 }

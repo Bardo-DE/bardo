@@ -36,6 +36,10 @@ pub(super) fn point_of(event: &MouseEvent) -> Point {
 
 /// The Open With submenu: the apps that open the selection, the default first, then a rule and
 /// "Other\u{2026}", which lists every installed app.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn open_with(browse: Browse) -> Vec<MenuItem<Pick>> {
     let mut lines: Vec<MenuItem<Pick>> = app_lines(browse.apps_for_selection())
         .into_iter()
@@ -69,6 +73,10 @@ fn check_of(kept: KeptMark) -> Check {
     }
 }
 
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn items(browse: Browse, over: Over) -> Vec<MenuItem<Pick>> {
     let groups = groups_for(&browse.state.read(), over);
     let kept = browse.state.read().cloud_menu().map(|menu| menu.kept);

@@ -33,7 +33,7 @@ use shell_ui_kit::root::SurfaceRoot;
 use shell_ui_kit::sheet_stage::{SheetStage, settle, use_sheet_stage};
 
 pub(super) fn confirm_sheet(output: OutputInfo) -> Element {
-    let stage = use_stage(output.clone());
+    let stage = use_stage(&output);
     let drawn = stage().drawn().map(|(view, shown)| (view.clone(), shown));
     rsx! {
         SurfaceRoot {
@@ -304,15 +304,12 @@ fn waiting_words(count: usize) -> String {
 }
 
 /// The stage on `output`, following the queue and the sheets' output.
-fn use_stage(output: OutputInfo) -> Signal<SheetStage<SheetView>> {
+fn use_stage(output: &OutputInfo) -> Signal<SheetStage<SheetView>> {
+    let id = output.id;
     let sheets = use_service_part::<IntentsService, _>(|intents| sheet_view(&intents.sheets));
     let shows = use_sheet_output();
     use_sheet_stage(super::surface::PRESET, move || {
         let current = sheets();
-        shows
-            .read()
-            .shows_on(output.id)
-            .then_some(current)
-            .flatten()
+        shows.read().shows_on(id).then_some(current).flatten()
     })
 }

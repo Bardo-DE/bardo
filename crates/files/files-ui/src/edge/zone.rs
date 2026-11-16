@@ -25,8 +25,8 @@ impl Zone {
             return NONE.to_owned();
         };
         match self {
-            Zone::Local => date_words(DateTime::<Local>::from(at)),
-            Zone::Utc => date_words(DateTime::<Utc>::from(at)),
+            Zone::Local => date_words(&DateTime::<Local>::from(at)),
+            Zone::Utc => date_words(&DateTime::<Utc>::from(at)),
         }
     }
 }

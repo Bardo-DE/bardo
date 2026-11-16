@@ -35,6 +35,6 @@ impl Surface for HotCorners {
     }
 
     fn root(output: OutputInfo, corner: Corner) -> Element {
-        hot_corner(output, corner)
+        hot_corner(&output, corner)
     }
 }

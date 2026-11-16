@@ -73,7 +73,7 @@ pub(super) struct Thumbnails {
 impl Thumbnails {
     /// Starts the threads over `thumbnailer`; their answers go to `heard`. If the system would
     /// not start them, no tile gets a picture.
-    pub(super) fn start(thumbnailer: Thumbnailer, heard: UnboundedSender<Heard>) -> Thumbnails {
+    pub(super) fn start(thumbnailer: Thumbnailer, heard: &UnboundedSender<Heard>) -> Thumbnails {
         let shared = Arc::new(Shared::default());
         let thumbnailer = Arc::new(thumbnailer);
         for _ in 0..WORKERS {

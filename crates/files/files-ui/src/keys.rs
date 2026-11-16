@@ -139,6 +139,10 @@ pub(crate) fn use_registered() -> Keys {
 
 /// Answers a key press in the window. A key the window takes is consumed; the rest goes on to
 /// the focused control.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 pub(crate) fn pressed(
     keys: Keys,
     browse: Browse,
@@ -164,6 +168,10 @@ pub(crate) fn pressed(
 }
 
 /// Carries out `action`, when the window answers it.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> bool {
     let send = |input: Input| {
         browse.send(input);
@@ -206,6 +214,10 @@ fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> bool {
 
 /// A letter, digit or symbol typed with no command key held jumps to the name that starts with
 /// what has been typed.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn type_ahead(browse: Browse, event: &KeyboardEvent) -> bool {
     let key = event.key();
     if !types_text(&key, event.modifiers()) {
@@ -234,6 +246,10 @@ fn sheet_up(state: &Browser) -> bool {
 
 /// Escape puts away what is up over the folder: a sheet of Go to Folder or of apps, Get Info,
 /// else Quick Look. With nothing up the key goes on to whoever has it.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn escape(browse: Browse) -> bool {
     let input = {
         let state = browse.state.read();

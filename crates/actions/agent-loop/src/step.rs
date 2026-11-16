@@ -177,9 +177,9 @@ pub fn agent_step(state: LoopState, input: LoopInput) -> (LoopState, Vec<LoopEff
             woken(state, &note)
         }
         (_, LoopInput::Completed(note)) => (state, completion_effects(&note)),
-        (Idle, LoopInput::Messaged) => ask_for_message(state),
-        (Idle, LoopInput::Asked(turn)) => ask_planner(state, turn),
-        (Planning, LoopInput::Asked(turn)) => ask_planner(state, turn),
+        (Idle, LoopInput::Messaged) => ask_for_message(&state),
+        (Idle, LoopInput::Asked(turn)) => ask_planner(&state, turn),
+        (Planning, LoopInput::Asked(turn)) => ask_planner(&state, turn),
         (_, LoopInput::Asked(turn)) => stay(LoopState {
             turn: Some(turn),
             ..state
@@ -211,13 +211,13 @@ fn with_phase(state: LoopState, phase: LoopPhase) -> LoopState {
     LoopState { phase, ..state }
 }
 
-fn ask_planner(state: LoopState, turn: TurnId) -> (LoopState, Vec<LoopEffect>) {
+fn ask_planner(state: &LoopState, turn: TurnId) -> (LoopState, Vec<LoopEffect>) {
     let next = LoopState {
         phase: LoopPhase::Planning,
         turn: Some(turn),
         pending: vec![],
         guard: Guard::default(),
-        ..state
+        ..*state
     };
     (
         next,
@@ -228,12 +228,12 @@ fn ask_planner(state: LoopState, turn: TurnId) -> (LoopState, Vec<LoopEffect>) {
     )
 }
 
-fn ask_for_message(state: LoopState) -> (LoopState, Vec<LoopEffect>) {
+fn ask_for_message(state: &LoopState) -> (LoopState, Vec<LoopEffect>) {
     let next = LoopState {
         phase: LoopPhase::Planning,
         pending: vec![],
         guard: Guard::default(),
-        ..state
+        ..*state
     };
     (
         next,
@@ -251,7 +251,7 @@ fn woken(state: LoopState, note: &CompletionNote) -> (LoopState, Vec<LoopEffect>
     if noted.is_empty() {
         return stay(state);
     }
-    let (next, effects) = ask_for_message(state);
+    let (next, effects) = ask_for_message(&state);
     (next, [noted, effects].concat())
 }
 

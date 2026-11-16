@@ -45,7 +45,7 @@ pub(super) fn Window() -> Element {
     let mut sidebar = use_signal(|| true);
     let mut menu = use_signal(|| None::<ContextAt>);
     // Files dropped from outside on the window (not on a folder row) land in the folder shown.
-    let drop = use_file_drop(move |files: FileDrop| browse.send(dropped(files, None)));
+    let drop = use_file_drop(move |files: FileDrop| browse.send(dropped(&files, None)));
     let title = title_words(browse.state.read().location());
     use_window_title(title);
     // The key box, kept so the keyboard can be put back on it: a tab coming to the front draws

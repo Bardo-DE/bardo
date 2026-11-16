@@ -54,7 +54,7 @@ pub enum SheetInput {
 pub fn advance(
     menu: MenuSession,
     input: SheetInput,
-    session: &Session,
+    session: Session,
 ) -> (MenuSession, ExitOut<Then>) {
     let Some(input) = exit_input(input, session) else {
         return (menu, ExitOut::Nothing);
@@ -64,7 +64,7 @@ pub fn advance(
 }
 
 /// The exit machine's input for `input`; `None` for a press of an action not offered.
-fn exit_input(input: SheetInput, session: &Session) -> Option<ExitIn<Then>> {
+fn exit_input(input: SheetInput, session: Session) -> Option<ExitIn<Then>> {
     match input {
         SheetInput::Pressed(action) if offered(session, action) => {
             Some(ExitIn::Leave(Then::Run(action)))
@@ -100,66 +100,60 @@ mod tests {
             suspend: Offer::Unavailable,
             ..all
         };
-        let cases: Vec<(
-            MenuSession,
-            SheetInput,
-            &Session,
-            MenuSession,
-            ExitOut<Then>,
-        )> = vec![
+        let cases: Vec<(MenuSession, SheetInput, Session, MenuSession, ExitOut<Then>)> = vec![
             (
                 menu(PowerOff, Open),
                 SheetInput::Pressed(LogOut),
-                &all,
+                all,
                 menu(PowerOff, Leaving(Then::Run(LogOut))),
                 ExitOut::Left,
             ),
             (
                 menu(PowerOff, Open),
                 SheetInput::Pressed(Suspend),
-                &no_suspend,
+                no_suspend,
                 menu(PowerOff, Open),
                 ExitOut::Nothing,
             ),
             (
                 menu(PowerOff, Open),
                 SheetInput::Dismissed,
-                &all,
+                all,
                 menu(PowerOff, Leaving(Then::Close)),
                 ExitOut::Left,
             ),
             (
                 menu(Restart, Leaving(Then::Run(Restart))),
                 SheetInput::Pressed(Restart),
-                &all,
+                all,
                 menu(Restart, Leaving(Then::Run(Restart))),
                 ExitOut::Nothing,
             ),
             (
                 menu(Restart, Leaving(Then::Run(Restart))),
                 SheetInput::Settled,
-                &all,
+                all,
                 menu(Restart, Leaving(Then::Run(Restart))),
                 ExitOut::Finished(Then::Run(Restart)),
             ),
             (
                 menu(PowerOff, Open),
                 SheetInput::Settled,
-                &all,
+                all,
                 menu(PowerOff, Open),
                 ExitOut::Nothing,
             ),
             (
                 menu(Restart, Leaving(Then::Run(Restart))),
                 SheetInput::Reshown,
-                &all,
+                all,
                 menu(Restart, Open),
                 ExitOut::Nothing,
             ),
             (
                 menu(Restart, Open),
                 SheetInput::Reshown,
-                &all,
+                all,
                 menu(Restart, Open),
                 ExitOut::Nothing,
             ),

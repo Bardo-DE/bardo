@@ -82,6 +82,10 @@ pub fn use_tokens() -> Tokens {
 
 impl Tokens {
     /// Remember the element whose tokens this reads.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "`onmounted` handlers hand over an owned event, and callers across the shell pass it straight on"
+    )]
     pub fn mounted(mut self, event: MountedEvent) {
         self.element.set(Some(event.data()));
     }
@@ -188,6 +192,10 @@ impl<T: PartialEq + Clone + 'static> ResolvedTokens<T> {
     }
 
     /// Start reading the element `event` names, replacing a reading of an earlier element.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "`onmounted` handlers hand over an owned event, and callers across the shell pass it straight on"
+    )]
     pub fn mounted(mut self, event: MountedEvent) {
         let Some(after) = self.after.peek().clone() else {
             return;

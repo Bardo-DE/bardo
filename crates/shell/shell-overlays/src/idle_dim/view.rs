@@ -10,7 +10,7 @@ use shell_ui_kit::hooks::use_appearance;
 use shell_ui_kit::root::use_root_style;
 
 /// The dim on `output`.
-pub(super) fn idle_dim(output: OutputInfo) -> Element {
+pub(super) fn idle_dim(output: &OutputInfo) -> Element {
     let _ = output;
     let scene = use_dim();
     let environment = use_appearance()();

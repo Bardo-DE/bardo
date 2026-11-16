@@ -98,6 +98,10 @@ pub(super) fn switcher(output: OutputInfo) -> Element {
 
 /// An opening follows the modifiers on a host surface (`use_modifiers` needs one), for the
 /// compositor's apps.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "SwitcherCtx is a Copy handle of signals, and a component takes its props by value"
+)]
 fn chord_watch(host: Option<&SurfaceHandle>, session: &Session, ctx: SwitcherCtx) -> Element {
     match (host, session.windows) {
         (Some(_), Windows::Live) => rsx! { ChordWatch { ctx } },

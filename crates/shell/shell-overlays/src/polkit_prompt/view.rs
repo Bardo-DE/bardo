@@ -26,7 +26,7 @@ use shell_ui_kit::root::SurfaceRoot;
 use shell_ui_kit::sheet_stage::{SheetStage, settle, use_sheet_stage};
 
 pub(super) fn polkit_prompt(output: OutputInfo) -> Element {
-    let stage = use_stage(output.clone());
+    let stage = use_stage(&output);
     let control = use_control::<PolkitAgentService>();
     let mut caps = use_signal(|| CapsLock::Off);
     let drawn = stage().drawn().map(|(view, shown)| (view.clone(), shown));
@@ -93,13 +93,14 @@ fn prompt(
 }
 
 /// The stage on `output`, following the agent and the sheets' output.
-fn use_stage(output: OutputInfo) -> Signal<SheetStage<PolkitPromptView>> {
+fn use_stage(output: &OutputInfo) -> Signal<SheetStage<PolkitPromptView>> {
+    let id = output.id;
     let polkit = use_service::<PolkitAgentService>();
     let shows = use_sheet_output();
     use_sheet_stage(super::surface::PRESET, move || {
         shows
             .read()
-            .shows_on(output.id)
+            .shows_on(id)
             .then(|| prompt_view(&polkit.read()))
             .flatten()
     })

@@ -34,7 +34,7 @@ impl Surface for Osd {
     fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
         // The shipped tokens: the surface has no document yet; `osd` follows its margin with the
         // resolved ones once it is mounted.
-        layer(output, &OsdTokens::default())
+        layer(output, OsdTokens::default())
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {

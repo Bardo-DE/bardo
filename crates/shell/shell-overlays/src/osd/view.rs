@@ -32,7 +32,7 @@ const LOOK: LevelStyle = LevelStyle::Discrete;
 pub(super) fn osd(output: OutputInfo) -> Element {
     let on = output.name.clone().map(OutputName);
     let resolved = use_surface_tokens::<OsdTokens>();
-    let place = layer(&output, &resolved.get());
+    let place = layer(&output, resolved.get());
     use_follow_place(place.size, place.margin);
     let link = use_context::<OsdLink>();
     let drawn = use_osd(&link, output.id, times());

@@ -20,7 +20,7 @@ use std::sync::mpsc;
 use std::time::Duration;
 
 /// Runs the daemon: returns only when setup or the reader's `poll` fails.
-pub(crate) fn run(env: Env) -> Result<(), String> {
+pub(crate) fn run(env: &Env) -> Result<(), String> {
     let notifier =
         Notifier::new(env.notify_socket.as_deref()).map_err(|e| format!("notify socket: {e}"))?;
     let source = Source::detect(&env.device_service);
@@ -46,7 +46,7 @@ pub(crate) fn run(env: Env) -> Result<(), String> {
     .map_err(|e| format!("socket thread: {e}"))?;
     eprintln!("keycap: listening on {}", path.display());
     let _devices = watch_devices(&env.dev_input, &inbox)?;
-    let (layers, _config) = load_config(&env, &inbox);
+    let (layers, _config) = load_config(env, &inbox);
     let _keymap = watch_keymap(&env.config_dir, &socket);
     Reader::new(Wiring {
         mailbox,
@@ -54,7 +54,7 @@ pub(crate) fn run(env: Env) -> Result<(), String> {
         emitter,
         notifier,
         watchdog: env.watchdog,
-        roots: Roots::of(&env),
+        roots: Roots::of(env),
         layers,
     })
     .run()

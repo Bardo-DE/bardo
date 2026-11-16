@@ -17,7 +17,7 @@ use super::words::service_of;
 /// The consent alert's answer; `session` is the launcher session the ask was made inside, which
 /// "This Session Only" grants.
 pub(super) fn consent(
-    answer: ConsentAnswer,
+    answer: &ConsentAnswer,
     session: Option<&SessionToken>,
 ) -> Option<SheetAction> {
     match answer {

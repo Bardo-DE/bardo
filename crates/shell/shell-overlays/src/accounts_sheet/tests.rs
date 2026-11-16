@@ -537,18 +537,18 @@ fn this_session_only_grants_the_session_the_ask_came_from() {
         scope: AllowScope::Session,
     };
     assert_eq!(
-        events::consent(answer.clone(), Some(&session)),
+        events::consent(&answer, Some(&session)),
         Some(SheetAction::Allow(GrantScope::Session(session)))
     );
     // Without a session the alert does not offer it; a stray answer is no action.
-    assert_eq!(events::consent(answer, None), None);
+    assert_eq!(events::consent(&answer, None), None);
 }
 
 #[test]
 fn events_become_what_the_person_did() {
     assert_eq!(
         events::consent(
-            ConsentAnswer::Allow {
+            &ConsentAnswer::Allow {
                 account: ChoiceKey("home".to_owned()),
                 scope: AllowScope::Always
             },
@@ -557,15 +557,15 @@ fn events_become_what_the_person_did() {
         Some(SheetAction::Allow(GrantScope::Always))
     );
     assert_eq!(
-        events::consent(ConsentAnswer::Deny, None),
+        events::consent(&ConsentAnswer::Deny, None),
         Some(SheetAction::Deny)
     );
     assert_eq!(
-        events::consent(ConsentAnswer::Dismiss, None),
+        events::consent(&ConsentAnswer::Dismiss, None),
         Some(SheetAction::Cancel)
     );
     assert_eq!(
-        events::consent(ConsentAnswer::AddAccount, None),
+        events::consent(&ConsentAnswer::AddAccount, None),
         Some(SheetAction::AddAccount)
     );
     assert_eq!(

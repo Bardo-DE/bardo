@@ -37,6 +37,10 @@ fn about(title: String, rows: Vec<(String, String)>) -> PaneContent {
 }
 
 /// The pane of one item: the card (or its name until the card arrives) over its facts.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn one(
     browse: Browse,
     zone: Zone,

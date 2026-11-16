@@ -34,6 +34,10 @@ enum Body {
 
 /// The drive the folder is in when it has nothing to show because the drive needs signing in or
 /// has gone wrong.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn trouble_of(browse: Browse) -> Option<CloudDrive> {
     let state = browse.state.read();
     let drive = state.drive_here()?;
@@ -43,6 +47,10 @@ fn trouble_of(browse: Browse) -> Option<CloudDrive> {
 }
 
 /// The drive the folder is in, and how many rows it shows, for the status line.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn status_of(browse: Browse) -> Option<(CloudDrive, usize)> {
     let state = browse.state.read();
     let drive = state.drive_here()?;
@@ -50,6 +58,10 @@ fn status_of(browse: Browse) -> Option<(CloudDrive, usize)> {
 }
 
 /// What the browser's listing means for the pane.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn body_of(browse: Browse) -> Body {
     if trouble_of(browse).is_some() {
         return Body::Trouble;

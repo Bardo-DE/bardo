@@ -62,12 +62,12 @@ fn run() -> Result<(), String> {
             }
             for output in ctx.outputs() {
                 if done.insert(output.id) {
-                    spawn_wallpaper(ctx, output, &services, &wallpaper_control);
+                    spawn_wallpaper(ctx, &output, &services, &wallpaper_control);
                 }
             }
         }
         HostEvent::OutputAdded(output) if done.insert(output.id) => {
-            spawn_wallpaper(ctx, output, &services, &wallpaper_control);
+            spawn_wallpaper(ctx, &output, &services, &wallpaper_control);
         }
         _ => {}
     })
@@ -79,7 +79,7 @@ fn run() -> Result<(), String> {
 /// it.
 fn spawn_wallpaper(
     ctx: &mut HostCtx<()>,
-    output: OutputInfo,
+    output: &OutputInfo,
     services: &Services,
     wallpaper_control: &Control<WallpaperCommand>,
 ) {
@@ -100,7 +100,7 @@ fn spawn_wallpaper(
     if let Err(error) = sent {
         eprintln!("wallpaper_demo: preparing {:?}: {error}", output.name);
     }
-    let config = Wallpaper::layer(&output, &ShellFile::default(), ());
+    let config = Wallpaper::layer(output, &ShellFile::default(), ());
     let root = HostRoot::with_props(
         mount::<Wallpaper>,
         MountProps::<Wallpaper>::new(output.clone(), ()),

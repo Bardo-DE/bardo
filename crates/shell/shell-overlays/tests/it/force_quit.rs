@@ -41,8 +41,8 @@ fn start(rows: &[ForceQuitRow]) -> Running {
 }
 
 /// The panel open over `rows`, once its sheet has settled.
-fn opened(rows: Vec<ForceQuitRow>) -> Running {
-    let mut running = start(&rows);
+fn opened(rows: &[ForceQuitRow]) -> Running {
+    let mut running = start(rows);
     running.link.open(fake::output().id);
     running.harness.advance(Duration::from_millis(600));
     running
@@ -76,7 +76,7 @@ fn hidden_it_draws_nothing() {
 
 #[test]
 fn open_it_lists_the_apps_and_says_which_do_not_answer() {
-    let running = opened(hung_and_well());
+    let running = opened(&hung_and_well());
     let html = running.harness.html();
     assert_eq!(running.harness.count(".shell-fq"), 1);
     assert_eq!(running.harness.count(".ds-row"), 2);
@@ -87,7 +87,7 @@ fn open_it_lists_the_apps_and_says_which_do_not_answer() {
 
 #[test]
 fn force_quit_asks_first_and_the_hung_app_is_the_one_asked_about() {
-    let mut running = opened(hung_and_well());
+    let mut running = opened(&hung_and_well());
     assert!(!asking(&running.harness), "no question before the press");
     press(&mut running.harness, "#force-quit-button");
     assert!(asking(&running.harness));
@@ -103,7 +103,7 @@ fn force_quit_asks_first_and_the_hung_app_is_the_one_asked_about() {
 
 #[test]
 fn confirming_writes_the_app_and_cancelling_does_not() {
-    let mut running = opened(hung_and_well());
+    let mut running = opened(&hung_and_well());
     press(&mut running.harness, "#force-quit-button");
     press(&mut running.harness, "#force-quit-cancel");
     assert!(!asking(&running.harness), "Cancel answers the question");
@@ -122,14 +122,14 @@ fn confirming_writes_the_app_and_cancelling_does_not() {
 
 #[test]
 fn nothing_hung_nothing_selected_so_force_quit_asks_nothing() {
-    let mut running = opened(vec![row("mail", Standing::Responding)]);
+    let mut running = opened(&[row("mail", Standing::Responding)]);
     press(&mut running.harness, "#force-quit-button");
     assert!(!asking(&running.harness));
 }
 
 #[test]
 fn escape_answers_the_question_first_and_then_closes_the_panel() {
-    let mut running = opened(hung_and_well());
+    let mut running = opened(&hung_and_well());
     press(&mut running.harness, "#force-quit-button");
     running.harness.send(Input::key(ShortcutKey::Escape));
     running.harness.advance(Duration::from_millis(600));

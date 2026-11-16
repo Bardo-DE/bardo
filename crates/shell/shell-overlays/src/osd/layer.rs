@@ -40,7 +40,7 @@ pub fn anchor() -> Anchor {
 }
 
 /// The margin that puts the card `--osd-margin` from the bar's reserve and from the right edge.
-pub fn margin(tokens: &OsdTokens) -> Margin {
+pub fn margin(tokens: OsdTokens) -> Margin {
     let gap = i32::from(tokens.margin) - i32::try_from(ROOM).unwrap_or(i32::MAX);
     Margin {
         top: gap,
@@ -50,7 +50,7 @@ pub fn margin(tokens: &OsdTokens) -> Margin {
 }
 
 /// The indicator's layer configuration on `output`.
-pub fn layer(output: &OutputInfo, tokens: &OsdTokens) -> LayerConfig {
+pub fn layer(output: &OutputInfo, tokens: OsdTokens) -> LayerConfig {
     LayerConfig {
         namespace: namespace("osd", output),
         layer: LayerLevel::Overlay,
@@ -83,7 +83,7 @@ mod tests {
 
     #[test]
     fn the_indicator_floats_over_its_edge_and_takes_nothing() {
-        let config = layer(&output(Some("DP-1")), &OsdTokens::default());
+        let config = layer(&output(Some("DP-1")), OsdTokens::default());
         assert_eq!(config.namespace, "shell-osd-DP-1");
         assert_eq!(config.layer, LayerLevel::Overlay);
         assert_eq!(config.exclusive, ExclusiveZone::Auto);
@@ -112,9 +112,9 @@ mod tests {
             (with(40), Margin::ZERO),
         ];
         for (tokens, want) in cases {
-            assert_eq!(margin(&tokens), want, "{tokens:?}");
+            assert_eq!(margin(tokens), want, "{tokens:?}");
         }
-        assert_eq!(margin(&OsdTokens::default()).top, -16);
+        assert_eq!(margin(OsdTokens::default()).top, -16);
         assert_eq!(anchor(), Anchor::TOP | Anchor::RIGHT);
     }
 }

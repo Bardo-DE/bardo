@@ -1,7 +1,10 @@
 //! The scenario harness: scripts of inputs through `Remapper::step`, a model wire that rejects
 //! impossible writes, and a compact rendering of what was written ("+leftctrl +c SYN").
 
-#![allow(dead_code, reason = "shared test helpers: each test file uses only some of them")]
+#![allow(
+    dead_code,
+    reason = "shared test helpers: each test file uses only some of them"
+)]
 
 use std::collections::BTreeSet;
 
@@ -83,6 +86,7 @@ pub fn render(outs: &[RemapOut]) -> String {
     let one = |out: &RemapOut| match out {
         RemapOut::Write(events) => events
             .iter()
+            .copied()
             .map(render_event)
             .collect::<Vec<_>>()
             .join(" "),
@@ -93,7 +97,7 @@ pub fn render(outs: &[RemapOut]) -> String {
     outs.iter().map(one).collect::<Vec<_>>().join("; ")
 }
 
-fn render_event(event: &OutEvent) -> String {
+fn render_event(event: OutEvent) -> String {
     match event {
         OutEvent::Key {
             key,

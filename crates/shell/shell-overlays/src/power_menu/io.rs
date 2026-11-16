@@ -58,7 +58,7 @@ pub(super) fn use_menu(output: OutputId) -> MenuCtx {
             .map_or(Pointer::PassesThrough, |menu| menu.phase.pointer())
     });
     use_openings(ctx.clone(), shown, output);
-    use_offers_arriving(ctx.clone());
+    use_offers_arriving(&ctx);
     ctx
 }
 
@@ -84,11 +84,11 @@ fn use_openings(ctx: MenuCtx, shown: ReadSignal<Reveal<PowerMenuOpening>>, outpu
         let now = *menu.peek();
         match (follow(opening.as_ref(), now), opening) {
             (Follow::Start, Some(opening)) => {
-                let default = initial(opening.preselect, &ctx.offers.peek());
+                let default = initial(opening.preselect, *ctx.offers.peek());
                 menu.set(Some(MenuSession::opened(opening.serial, default)));
                 let _gone_is_inert = ctx.control.send(SessionCommand::Refresh);
                 eprintln!("power_menu.opened default={}", action_label(default));
-                eprintln!("power_menu.offers={}", offered_labels(&ctx.offers.peek()));
+                eprintln!("power_menu.offers={}", offered_labels(*ctx.offers.peek()));
             }
             (Follow::Reshow, _) => {
                 ctx.input(SheetInput::Reshown);
@@ -105,15 +105,16 @@ fn use_openings(ctx: MenuCtx, shown: ReadSignal<Reveal<PowerMenuOpening>>, outpu
 /// fresh session can come late): when the offers change under an open menu, say so and, if the
 /// action it is about is not offered, move it to one that is, so the buttons never wait on a
 /// reopen.
-fn use_offers_arriving(ctx: MenuCtx) {
+fn use_offers_arriving(ctx: &MenuCtx) {
     let mut menu = ctx.menu;
+    let arriving = ctx.offers;
     use_effect(move || {
-        let offers = *ctx.offers.read();
+        let offers = *arriving.read();
         let Some(now) = *menu.peek() else {
             return;
         };
-        eprintln!("power_menu.offers={}", offered_labels(&offers));
-        let about = initial(Preselect::Action(now.default), &offers);
+        eprintln!("power_menu.offers={}", offered_labels(offers));
+        let about = initial(Preselect::Action(now.default), offers);
         if about != now.default && now.phase == SheetExit::Open {
             menu.set(Some(MenuSession {
                 default: about,
@@ -151,7 +152,7 @@ fn use_follow_visibility(shown: ReadSignal<Reveal<PowerMenuOpening>>, output: Ou
 
 /// The actions `session` offers, in the buttons' order, as their labels joined by commas (the
 /// log line `dev/accept/power-menu.sh` reads the arrows' path from).
-fn offered_labels(session: &Session) -> String {
+fn offered_labels(session: Session) -> String {
     SessionAction::POWER_MENU
         .into_iter()
         .filter(|action| offered(session, *action))
@@ -166,7 +167,7 @@ impl MenuCtx {
         let Some(current) = *self.menu.peek() else {
             return;
         };
-        let (next, effect) = advance(current, input, &self.offers.peek());
+        let (next, effect) = advance(current, input, *self.offers.peek());
         if next != current {
             let mut menu = self.menu;
             menu.set(Some(next));

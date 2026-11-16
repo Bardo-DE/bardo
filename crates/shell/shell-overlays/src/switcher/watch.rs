@@ -28,13 +28,13 @@ enum Read {
 pub(super) fn ChordWatch(ctx: SwitcherCtx) -> Element {
     let modifiers = use_modifiers();
     let baseline = use_hook(move || {
-        let baseline = chord_of(&modifiers.peek());
+        let baseline = chord_of(*modifiers.peek());
         ctx.watched(baseline);
         baseline
     });
     let mut read = use_hook(|| CopyValue::new(Read::Baseline));
     use_effect(move || {
-        let chord = chord_of(&modifiers());
+        let chord = chord_of(modifiers());
         let before = *read.peek();
         read.set(Read::Published);
         match (before, chord, baseline) {

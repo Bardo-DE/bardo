@@ -32,6 +32,6 @@ impl Surface for IdleDim {
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {
-        idle_dim(output)
+        idle_dim(&output)
     }
 }

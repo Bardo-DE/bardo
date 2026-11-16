@@ -52,7 +52,7 @@ pub fn App() -> Element {
         spawner,
     );
     let now = env();
-    let icons = use_file_icons(&launch, now.settings.appearance.file_icons.clone());
+    let icons = use_file_icons(&launch, &now.settings.appearance.file_icons);
     use_context_provider(|| icons);
     rsx! {
         Ds {

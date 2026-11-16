@@ -27,7 +27,7 @@ pub(crate) fn concerns_us(path: &Path) -> bool {
 /// What a filesystem event means for one path. A permission change counts as an appearance:
 /// udev creates a node as root-only and opens it to the `input` group a moment later, so the
 /// first sight may not yet be readable. The consumer treats a repeated `Appeared` as a no-op.
-pub(crate) fn hotplug_of(kind: &EventKind, path: &Path) -> Option<Hotplug> {
+pub(crate) fn hotplug_of(kind: EventKind, path: &Path) -> Option<Hotplug> {
     if !concerns_us(path) {
         return None;
     }
@@ -53,7 +53,7 @@ pub(crate) fn hotplugs_of(result: &notify::Result<notify::Event>) -> Vec<Hotplug
         Ok(ev) => ev
             .paths
             .iter()
-            .filter_map(|p| hotplug_of(&ev.kind, p))
+            .filter_map(|p| hotplug_of(ev.kind, p))
             .collect(),
     }
 }

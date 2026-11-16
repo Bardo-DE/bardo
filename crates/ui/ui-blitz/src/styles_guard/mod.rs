@@ -124,6 +124,10 @@ impl StylesGuard {
 /// Call it once in the root component, passing the guard it currently holds; a new guard (after
 /// [`StylesGuard::changed`]) starts a new wait. The wait is a sleeping thread, so it needs no async
 /// runtime.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the hook watches the guard the caller holds this render, which `use_reactive` clones to compare"
+)]
 pub fn use_styles_guard(guard: StylesGuard) {
     use_effect(use_reactive!(|guard| {
         if guard.load() {

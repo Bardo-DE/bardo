@@ -540,7 +540,7 @@ fn hotplug_table() {
         ),
     ];
     for (name, kind, path, want) in cases {
-        assert_eq!(hotplug_of(&kind, path), want, "{name}");
+        assert_eq!(hotplug_of(kind, path), want, "{name}");
     }
 }
 

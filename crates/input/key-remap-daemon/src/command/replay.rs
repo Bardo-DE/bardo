@@ -14,6 +14,7 @@ pub(super) fn render(outs: &[RemapOut]) -> String {
     let one = |out: &RemapOut| match out {
         RemapOut::Write(events) => events
             .iter()
+            .copied()
             .map(render_event)
             .collect::<Vec<_>>()
             .join(" "),
@@ -24,7 +25,7 @@ pub(super) fn render(outs: &[RemapOut]) -> String {
     outs.iter().map(one).collect::<Vec<_>>().join("; ")
 }
 
-fn render_event(event: &OutEvent) -> String {
+fn render_event(event: OutEvent) -> String {
     match event {
         OutEvent::Key {
             key,

@@ -10,7 +10,7 @@ use shell_ui_kit::links::Preselect;
 /// as macOS's dialog focuses) when logind offers it (`Available` or `NeedsAuth`), else the
 /// first offered one in `SessionAction::POWER_MENU` order, else the preselected one anyway (no
 /// action is then offered and the alert only says so and cancels).
-pub fn initial(preselect: Preselect, session: &Session) -> SessionAction {
+pub fn initial(preselect: Preselect, session: Session) -> SessionAction {
     let wanted = match preselect {
         Preselect::Action(action) => action,
         Preselect::Default => SessionAction::PowerOff,
@@ -26,7 +26,7 @@ pub fn initial(preselect: Preselect, session: &Session) -> SessionAction {
 }
 
 /// The action the alert answers with besides Cancel: `default`, when logind offers it.
-pub fn answers(default: SessionAction, session: &Session) -> Vec<SessionAction> {
+pub fn answers(default: SessionAction, session: Session) -> Vec<SessionAction> {
     offered(session, default)
         .then_some(default)
         .into_iter()
@@ -34,7 +34,7 @@ pub fn answers(default: SessionAction, session: &Session) -> Vec<SessionAction> 
 }
 
 /// Whether logind will carry `action` out (polkit asking first counts).
-pub(crate) fn offered(session: &Session, action: SessionAction) -> bool {
+pub(crate) fn offered(session: Session, action: SessionAction) -> bool {
     matches!(session.offer(action), Offer::Available | Offer::NeedsAuth)
 }
 
@@ -82,7 +82,7 @@ mod tests {
             (Preselect::Default, Session::default(), PowerOff),
         ];
         for (preselect, session, want) in cases {
-            assert_eq!(initial(preselect, &session), want, "{preselect:?}");
+            assert_eq!(initial(preselect, session), want, "{preselect:?}");
         }
     }
 
@@ -92,12 +92,12 @@ mod tests {
         let all = session(Offer::Available);
         let no_suspend = session(Offer::Unavailable);
         let none = Session::default();
-        let cases: Vec<(SessionAction, &Session, Vec<SessionAction>)> = vec![
-            (PowerOff, &all, vec![PowerOff]),
-            (LogOut, &all, vec![LogOut]),
-            (Restart, &no_suspend, vec![Restart]),
-            (Suspend, &no_suspend, Vec::new()),
-            (PowerOff, &none, Vec::new()),
+        let cases: Vec<(SessionAction, Session, Vec<SessionAction>)> = vec![
+            (PowerOff, all, vec![PowerOff]),
+            (LogOut, all, vec![LogOut]),
+            (Restart, no_suspend, vec![Restart]),
+            (Suspend, no_suspend, Vec::new()),
+            (PowerOff, none, Vec::new()),
         ];
         for (default, session, want) in cases {
             assert_eq!(answers(default, session), want, "{default:?}");

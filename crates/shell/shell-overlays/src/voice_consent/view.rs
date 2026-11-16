@@ -32,7 +32,7 @@ pub(super) const ALLOW_ID: &str = "voice-consent-allow";
 pub(super) const NOT_NOW_ID: &str = "voice-consent-not-now";
 
 pub(super) fn voice_consent(output: OutputInfo) -> Element {
-    let stage = use_stage(output.clone());
+    let stage = use_stage(&output);
     let shown = stage().drawn().map(|(_, shown)| shown);
     rsx! {
         SurfaceRoot {
@@ -98,11 +98,12 @@ fn ConsentCard(shown: bool, stage: Signal<SheetStage<Asked>>) -> Element {
 }
 
 /// The stage on `output`, following the service and the sheets' output.
-fn use_stage(output: OutputInfo) -> Signal<SheetStage<Asked>> {
+fn use_stage(output: &OutputInfo) -> Signal<SheetStage<Asked>> {
+    let id = output.id;
     let sheet = use_service_part::<VoiceService, _>(|voice| voice.sheet);
     let shows = use_sheet_output();
     use_sheet_stage(super::surface::PRESET, move || {
-        let asking = shows.read().shows_on(output.id) && sheet();
+        let asking = shows.read().shows_on(id) && sheet();
         asking.then_some(Asked)
     })
 }

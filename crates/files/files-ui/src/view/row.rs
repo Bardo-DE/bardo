@@ -13,7 +13,7 @@ use crate::state::Browse;
 
 /// The input for files let go from outside the window, on the folder row `onto` or, with `None`,
 /// on the folder shown. quire offers the drop as a copy to the source, so it is a copy.
-pub(super) fn dropped(files: FileDrop, onto: Option<FileName>) -> Input {
+pub(super) fn dropped(files: &FileDrop, onto: Option<FileName>) -> Input {
     let sources = files
         .paths
         .iter()
@@ -28,6 +28,10 @@ pub(super) fn dropped(files: FileDrop, onto: Option<FileName>) -> Input {
 
 /// A right click on the row `name`: the row is selected first if it is not (as Finder does), then
 /// the menu is asked for.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn asked(browse: Browse, mut menu: Signal<Option<ContextAt>>, name: &FileName, event: &MouseEvent) {
     // A name being typed has its own menu, which is the field's.
     if browse.renaming() {
@@ -90,7 +94,7 @@ fn FolderCell(
 ) -> Element {
     let target = name.clone();
     let drop = use_file_drop(move |files: FileDrop| {
-        browse.send(dropped(files, Some(target.clone())));
+        browse.send(dropped(&files, Some(target.clone())));
     });
     rsx! {
         div {

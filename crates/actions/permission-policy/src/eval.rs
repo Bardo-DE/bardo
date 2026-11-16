@@ -36,10 +36,10 @@ fn number<T: Serialize>(value: &T) -> u64 {
 }
 
 /// "ok", or the slug of the budget that would be over.
-fn budget_slug(budget: &BudgetFact) -> String {
+fn budget_slug(budget: BudgetFact) -> String {
     match budget {
         BudgetFact::Within => "ok".to_owned(),
-        BudgetFact::Over(kind) => slug(kind),
+        BudgetFact::Over(kind) => slug(&kind),
     }
 }
 
@@ -68,7 +68,7 @@ fn context_json(c: &PolicyContext) -> Value {
         },
         "impact": slug(&c.impact),
         "halt": slug(&c.halt),
-        "budget": budget_slug(&c.budget),
+        "budget": budget_slug(c.budget),
         "repeat": if c.repeat { "repeated" } else { "fresh" },
         "limit": slug(&c.limit),
         "taint": if c.taint { "tainted" } else { "clean" },
@@ -113,7 +113,8 @@ fn entities(
         HashMap::from([("kind".to_owned(), string(slug(&request.principal.kind)))]),
         HashSet::new(),
     )
-    .ok().ok_or(FaultCause::Entities)?;
+    .ok()
+    .ok_or(FaultCause::Entities)?;
     let act_entity = Entity::new(
         act.clone(),
         HashMap::from([
@@ -124,10 +125,12 @@ fn entities(
         ]),
         HashSet::from([app.clone()]),
     )
-    .ok().ok_or(FaultCause::Entities)?;
+    .ok()
+    .ok_or(FaultCause::Entities)?;
     let app_entity = Entity::new_no_attrs(app, HashSet::new());
     let all = Entities::from_entities([caller_entity, act_entity, app_entity], Some(schema))
-        .ok().ok_or(FaultCause::Entities)?;
+        .ok()
+        .ok_or(FaultCause::Entities)?;
     Ok((caller, act, all))
 }
 
@@ -157,9 +160,11 @@ fn query(
     let action_uid = uid("Quire::Action", action).ok_or_else(|| fault(FaultCause::Action))?;
     let context =
         Context::from_json_value(context_json(&request.context), Some((schema, &action_uid)))
-            .ok().ok_or_else(|| fault(FaultCause::Context))?;
+            .ok()
+            .ok_or_else(|| fault(FaultCause::Context))?;
     let cedar = Request::new(caller, action_uid, act, context, Some(schema))
-        .ok().ok_or_else(|| fault(FaultCause::Request))?;
+        .ok()
+        .ok_or_else(|| fault(FaultCause::Request))?;
     let response = Authorizer::new().is_authorized(&cedar, policies, &entities);
     let errors = response.diagnostics().errors().count();
     if errors > 0 {
@@ -271,12 +276,12 @@ impl Queries<'_> {
     }
 }
 
-fn permitted(answer: &Option<Answer>) -> bool {
+fn permitted(answer: Option<&Answer>) -> bool {
     matches!(answer, Some(a) if a.decision == Decision::Allow)
 }
 
-fn whys_of(answer: &Option<Answer>) -> BTreeMap<PolicyId, String> {
-    answer.as_ref().map(|a| a.whys.clone()).unwrap_or_default()
+fn whys_of(answer: Option<&Answer>) -> BTreeMap<PolicyId, String> {
+    answer.map(|a| a.whys.clone()).unwrap_or_default()
 }
 
 fn ids_of(answer: Option<Answer>) -> Vec<PolicyId> {
@@ -304,7 +309,7 @@ pub(crate) fn decide(policies: &PolicySet, schema: &Schema, request: &PolicyRequ
             Op::Undo => "undo",
             Op::IndexPush => "index_push",
         });
-        let ruling = if permitted(&answer) {
+        let ruling = if permitted(answer.as_ref()) {
             Ruling::AllowFinal(ids_of(answer))
         } else {
             Ruling::Deny(ids_of(answer))
@@ -312,14 +317,14 @@ pub(crate) fn decide(policies: &PolicySet, schema: &Schema, request: &PolicyRequ
         return q.done(ruling);
     }
     let perform = q.run("perform");
-    if !permitted(&perform) {
+    if !permitted(perform.as_ref()) {
         return q.done(Ruling::Deny(ids_of(perform)));
     }
     let unasked = q.run("perform_unasked");
-    if !permitted(&unasked) {
+    if !permitted(unasked.as_ref()) {
         let c = &request.context;
         let faulted = q.faults.iter().any(|f| f.query == "perform_unasked");
-        let whys = whys_of(&unasked);
+        let whys = whys_of(unasked.as_ref());
         let mut reasons: Vec<AskReason> = ids_of(unasked)
             .iter()
             .map(|id| ask_reason(id, c, &whys))
@@ -341,7 +346,7 @@ pub(crate) fn decide(policies: &PolicySet, schema: &Schema, request: &PolicyRequ
         return q.done(Ruling::Ask(why));
     }
     let unjudged = q.run("perform_unjudged");
-    let ruling = if permitted(&unjudged) {
+    let ruling = if permitted(unjudged.as_ref()) {
         Ruling::AllowFinal(ids_of(unjudged))
     } else {
         Ruling::AllowJudged(ids_of(unasked))

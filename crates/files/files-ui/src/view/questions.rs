@@ -36,6 +36,10 @@ pub(super) fn Questions(browse: Browse) -> Element {
 }
 
 /// "Are you sure you want to permanently erase ...?" with the destructive button and Cancel.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn erase(browse: Browse, title: String, action: &str) -> Element {
     let confirm = EventHandler::new(move |()| browse.send(Input::Confirm));
     let cancel = EventHandler::new(move |()| browse.send(Input::Dismiss));
@@ -54,6 +58,10 @@ fn erase(browse: Browse, title: String, action: &str) -> Element {
 
 /// A rename that changes a file's extension: use the new name or keep the old extension, which is
 /// the default.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn extension(browse: Browse, change: &ExtensionChange) -> Element {
     let confirm = EventHandler::new(move |()| browse.send(Input::Confirm));
     let keep = EventHandler::new(move |()| browse.send(Input::Dismiss));
@@ -72,6 +80,10 @@ fn extension(browse: Browse, change: &ExtensionChange) -> Element {
 }
 
 /// A disk in use: Force Eject (destructive) or Cancel, which is the default.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn force_eject(browse: Browse, busy: &BusyDisk) -> Element {
     let confirm = EventHandler::new(move |()| browse.send(Input::Confirm));
     let cancel = EventHandler::new(move |()| browse.send(Input::Dismiss));

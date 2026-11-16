@@ -133,7 +133,7 @@ impl Edge {
         let clouds = clouds::CloudDrives::start(Arc::clone(&seams.clouds), heard.clone());
         let maker = Arc::new(Anyview::new(Arc::clone(&seams.thumbnails)));
         let thumbnailer = Thumbnailer::new(Arc::clone(&seams.thumbnails), maker);
-        let thumbs = thumbs::Thumbnails::start(thumbnailer, heard.clone());
+        let thumbs = thumbs::Thumbnails::start(thumbnailer, &heard);
         let edge = Edge {
             seams,
             heard,

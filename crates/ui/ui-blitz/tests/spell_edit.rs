@@ -78,7 +78,7 @@ impl Model {
     }
 
     /// A suggestion: one edit, one undo step.
-    fn replace(&mut self, replace: SpellReplace) {
+    fn replace(&mut self, replace: &SpellReplace) {
         self.remember();
         let (start, end) = (replace.range.anchor.offset.0, replace.range.focus.offset.0);
         self.text.replace_range(start..end, &replace.text);
@@ -86,7 +86,10 @@ impl Model {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Editor() -> Element {
     let dir = DICT
         .with(|dict| dict.borrow().clone())
@@ -112,7 +115,7 @@ fn Editor() -> Element {
                     spell: Spell::On { lang: None },
                     caret: Some(TextPosition::new("p0", caret)),
                     on_input: move |input| model.write().input(input),
-                    on_replace: move |replace| model.write().replace(replace),
+                    on_replace: move |replace| model.write().replace(&replace),
                     p { id: "p0", "data-edit-node": "p0", style: "margin:0; min-height:20px", "{text}" }
                 }
             }

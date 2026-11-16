@@ -34,6 +34,6 @@ impl Surface for WindowMenu {
     }
 
     fn root(output: OutputInfo, (): ()) -> Element {
-        window_menu(output)
+        window_menu(&output)
     }
 }

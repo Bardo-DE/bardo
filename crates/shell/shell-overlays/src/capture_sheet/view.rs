@@ -37,7 +37,7 @@ use shell_ui_kit::root::SurfaceRoot;
 use shell_ui_kit::sheet_stage::{SheetStage, settle, use_sheet_stage};
 
 pub(super) fn capture_sheet(output: OutputInfo) -> Element {
-    let stage = use_stage(output.clone());
+    let stage = use_stage(&output);
     let drawn = stage()
         .drawn()
         .map(|(asking, shown)| (asking.clone(), shown));
@@ -235,15 +235,12 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
 }
 
 /// The stage on `output`, following the request and the sheets' output.
-fn use_stage(output: OutputInfo) -> Signal<SheetStage<Asking>> {
+fn use_stage(output: &OutputInfo) -> Signal<SheetStage<Asking>> {
+    let id = output.id;
     let asking = use_service_part::<CaptureService, _>(|picker| picker.asking.clone());
     let shows = use_sheet_output();
     use_sheet_stage(super::surface::PRESET, move || {
         let current = asking();
-        shows
-            .read()
-            .shows_on(output.id)
-            .then_some(current)
-            .flatten()
+        shows.read().shows_on(id).then_some(current).flatten()
     })
 }

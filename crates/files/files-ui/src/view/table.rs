@@ -39,6 +39,10 @@ fn column(id: Column, location: &Location) -> TableColumn<Column> {
 
 /// What the Name column shows for `entry`: its name field while it is being renamed, else its
 /// icon and name.
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn name_cell(browse: Browse, state: &Browser, entry: &Entry) -> Element {
     if let Rename::Editing {
         name,
@@ -71,6 +75,10 @@ fn origin_words(entry: &Entry) -> String {
 }
 
 /// `content` in the shell every cell of the row shares (context menu, drops).
+#[expect(
+    clippy::large_types_passed_by_value,
+    reason = "Browse is a Copy handle of signals, handed to handlers by value by design"
+)]
 fn shell(
     browse: Browse,
     menu: Signal<Option<ContextAt>>,

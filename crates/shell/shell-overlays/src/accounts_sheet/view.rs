@@ -25,7 +25,7 @@ use super::props::{Purpose, Step};
 use super::stage::{Drawn, drawn};
 
 pub(super) fn accounts_sheet(output: OutputInfo) -> Element {
-    let shown = use_drawn(output.clone());
+    let shown = use_drawn(&output);
     let current = shown();
     rsx! {
         SurfaceRoot {
@@ -95,7 +95,7 @@ fn body(step: Step, io: Io) -> Element {
                 choices: props.choices,
                 chosen: props.chosen,
                 on_choose: move |key| act(events::chosen(&key)),
-                on_answer: move |answer| act(events::consent(answer, session.as_ref())),
+                on_answer: move |answer| act(events::consent(&answer, session.as_ref())),
             }
         },
         Step::Consent(props) => rsx! {
@@ -106,7 +106,7 @@ fn body(step: Step, io: Io) -> Element {
                 choices: props.choices,
                 chosen: props.chosen,
                 on_choose: move |key| act(events::chosen(&key)),
-                on_answer: move |answer| act(events::consent(answer, session.as_ref())),
+                on_answer: move |answer| act(events::consent(&answer, session.as_ref())),
             }
         },
         Step::Providers(props) => rsx! {
@@ -210,10 +210,11 @@ fn body(step: Step, io: Io) -> Element {
 
 /// The step on screen on `output`, following the service and the sheets' output, and the
 /// surface's mapping following it.
-fn use_drawn(output: OutputInfo) -> Memo<Option<Drawn>> {
+fn use_drawn(output: &OutputInfo) -> Memo<Option<Drawn>> {
+    let id = output.id;
     let sheets: ReadSignal<AccountsSheets> = use_service::<AccountsSheetService>();
     let placed = use_sheet_output();
-    let shown = use_memo(move || drawn(&sheets.read(), placed.read().shows_on(output.id)));
+    let shown = use_memo(move || drawn(&sheets.read(), placed.read().shows_on(id)));
     use_follow_visibility(move || Drawn::mapped(shown.read().as_ref()).visibility());
     shown
 }

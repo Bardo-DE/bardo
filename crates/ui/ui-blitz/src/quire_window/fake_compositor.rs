@@ -75,7 +75,7 @@ impl Fake {
         let stop = Arc::new(AtomicBool::new(false));
         let thread = {
             let (seen, stop) = (Arc::clone(&seen), Arc::clone(&stop));
-            std::thread::spawn(move || serve(offer, server, seen, stop))
+            std::thread::spawn(move || serve(offer, server, seen, &stop))
         };
         let fake = Fake {
             seen,
@@ -100,7 +100,7 @@ impl Drop for Fake {
     }
 }
 
-fn serve(offer: Offer, stream: UnixStream, seen: Arc<Mutex<Log>>, stop: Arc<AtomicBool>) {
+fn serve(offer: Offer, stream: UnixStream, seen: Arc<Mutex<Log>>, stop: &AtomicBool) {
     let mut display = Display::<State>::new().expect("a display");
     let mut handle = display.handle();
     handle.create_global::<State, WlCompositor, ()>(1, ());

@@ -40,14 +40,14 @@ pub(super) fn power_menu(output: OutputInfo) -> Element {
             extent: RootExtent::Viewport,
             AppStyle { css: POWER_MENU_CSS }
             if let Some(menu) = menu {
-                {alert(&ctx, menu, &offers, left)}
+                {alert(&ctx, menu, offers, left)}
             }
         }
     }
 }
 
 /// The alert for one opening.
-fn alert(ctx: &MenuCtx, menu: MenuSession, offers: &Session, left: u32) -> Element {
+fn alert(ctx: &MenuCtx, menu: MenuSession, offers: Session, left: u32) -> Element {
     let (hidden, catch) = (ctx.clone(), ctx.clone());
     let buttons = buttons(ctx, menu, offers);
     let (title, message) = if answers(menu.default, offers).is_empty() {
@@ -80,7 +80,7 @@ fn alert(ctx: &MenuCtx, menu: MenuSession, offers: &Session, left: u32) -> Eleme
 }
 
 /// The alert's answers, as macOS's: Cancel, then the opening's action, the default on the right.
-fn buttons(ctx: &MenuCtx, menu: MenuSession, offers: &Session) -> Vec<AlertButton> {
+fn buttons(ctx: &MenuCtx, menu: MenuSession, offers: Session) -> Vec<AlertButton> {
     let action = answers(menu.default, offers).into_iter().map(|action| {
         let press = ctx.clone();
         AlertButton::new(
@@ -111,7 +111,7 @@ fn use_countdown(ctx: &MenuCtx) -> u32 {
         let offers = *ctx.offers.peek();
         let wanted = menu.filter(|menu| {
             menu.phase == SheetExit::Open
-                && !answers(menu.default, &offers).is_empty()
+                && !answers(menu.default, offers).is_empty()
                 && countdown(menu.default, COUNTDOWN_SECONDS).is_some()
         });
         let now = *running.peek();

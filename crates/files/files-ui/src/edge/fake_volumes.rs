@@ -94,7 +94,8 @@ impl Volumes for FakeVolumes {
             return Err(failure);
         }
         let folder = FolderPath::new(format!("/run/media/fake/{}", id.as_str()))
-            .ok().ok_or(MountFailure::Other)?;
+            .ok()
+            .ok_or(MountFailure::Other)?;
         let volume = state
             .volumes
             .iter_mut()

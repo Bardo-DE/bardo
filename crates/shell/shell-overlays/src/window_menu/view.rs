@@ -12,10 +12,10 @@ use shell_ui_kit::menu::use_popup_look;
 use shell_ui_kit::root::use_root_style;
 
 /// The window menu surface on `output`.
-pub(super) fn window_menu(output: OutputInfo) -> Element {
+pub(super) fn window_menu(output: &OutputInfo) -> Element {
     let link = use_context::<WindowMenuLink>();
     let look = use_popup_look();
-    use_window_menu(&link, &output, look);
+    use_window_menu(&link, output, look);
     let environment = use_appearance()();
     let root = use_root_style();
     rsx! {
