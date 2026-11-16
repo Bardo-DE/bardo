@@ -179,8 +179,7 @@ impl FrameSink for PipewireSink {
         let mut slot = self
             .latest
             .lock()
-            .ok()
-            .ok_or_else(|| SinkError::Pipewire("the frame slot was poisoned".to_owned()))?;
+            .map_err(|e| SinkError::Pipewire(format!("the frame slot was poisoned: {e}")))?;
         *slot = Slot {
             picture: Some(Arc::new(pending)),
             sent_at: None,
@@ -192,10 +191,11 @@ impl FrameSink for PipewireSink {
         if let Ok(mut slot) = self.latest.lock() {
             *slot = Slot::default();
         }
-        self.commands
-            .send(Command::Resize(size))
-            .ok()
-            .ok_or(SinkError::NoReader)
+        // A refused send hands the command back and says nothing else: the reader is gone.
+        if self.commands.send(Command::Resize(size)).is_err() {
+            return Err(SinkError::NoReader);
+        }
+        Ok(())
     }
 }
 

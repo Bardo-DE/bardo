@@ -30,13 +30,14 @@ struct StandIn;
 /// The shell's own rule: only the owner of the portal's name may ask.
 async fn from_portal(connection: &Connection, header: &Header<'_>) -> fdo::Result<()> {
     let denied = || fdo::Error::AccessDenied("only the portal backend asks".to_owned());
+    let no_owner =
+        |e: fdo::Error| fdo::Error::AccessDenied(format!("only the portal backend asks: {e}"));
     let name = BusName::try_from(BUS_NAME).map_err(|e| fdo::Error::Failed(e.to_string()))?;
     let owner = fdo::DBusProxy::new(connection)
         .await?
         .get_name_owner(name)
         .await
-        .ok()
-        .ok_or_else(denied)?;
+        .map_err(no_owner)?;
     match header.sender() {
         Some(sender) if sender.as_str() == owner.as_str() => Ok(()),
         _ => Err(denied()),

@@ -280,30 +280,17 @@ pub fn compose(shots: &[Placed]) -> Result<Canvas, ShotError> {
         .map(|s| i64::from(s.origin.y) + i64::from(s.size.height))
         .max()
         .unwrap_or(top);
-    let width = u32::try_from(right - left)
-        .ok()
-        .ok_or(ShotError::TooLarge)?;
-    let height = u32::try_from(bottom - top)
-        .ok()
-        .ok_or(ShotError::TooLarge)?;
+    let width = fit::<u32, _>(right - left)?;
+    let height = fit::<u32, _>(bottom - top)?;
     let pixels = u64::from(width) * u64::from(height);
     if pixels == 0 || pixels > MAX_PIXELS {
         return Err(ShotError::TooLarge);
     }
-    let mut rgba = vec![
-        0u8;
-        usize::try_from(pixels * 4)
-            .ok()
-            .ok_or(ShotError::TooLarge)?
-    ];
+    let mut rgba = vec![0u8; fit::<usize, _>(pixels * 4)?];
     for shot in shots {
         let origin = (
-            usize::try_from(i64::from(shot.origin.x) - left)
-                .ok()
-                .ok_or(ShotError::TooLarge)?,
-            usize::try_from(i64::from(shot.origin.y) - top)
-                .ok()
-                .ok_or(ShotError::TooLarge)?,
+            fit::<usize, _>(i64::from(shot.origin.x) - left)?,
+            fit::<usize, _>(i64::from(shot.origin.y) - top)?,
         );
         paint(&mut rgba, width as usize, origin, shot.size, &shot.frame)?;
     }
@@ -312,6 +299,15 @@ pub fn compose(shots: &[Placed]) -> Result<Canvas, ShotError> {
         height,
         rgba,
     })
+}
+
+/// `value` as a `T`, or `TooLarge`: an integer conversion fails only by not fitting, and its
+/// error says no more.
+fn fit<T: TryFrom<U>, U>(value: U) -> Result<T, ShotError> {
+    match T::try_from(value) {
+        Ok(fits) => Ok(fits),
+        Err(_) => Err(ShotError::TooLarge),
+    }
 }
 
 /// Copy one frame onto the canvas at `origin`, as opaque RGBA, stretched (nearest pixel) to

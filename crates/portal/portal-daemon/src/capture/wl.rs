@@ -139,6 +139,15 @@ impl std::fmt::Debug for Link {
     }
 }
 
+/// `value` as the `i32` a Wayland request takes, or `Unsupported`: an integer conversion fails
+/// only by not fitting, and its error says no more.
+fn to_i32<T: TryInto<i32>>(value: T) -> Result<i32, CaptureError> {
+    match value.try_into() {
+        Ok(fits) => Ok(fits),
+        Err(_) => Err(CaptureError::Unsupported),
+    }
+}
+
 fn broken(error: impl std::fmt::Display) -> CaptureError {
     CaptureError::Connection(error.to_string())
 }
@@ -425,15 +434,14 @@ impl Copier {
         if bytes > MAX_FRAME_BYTES {
             return Err(CaptureError::TooLarge);
         }
-        let len = usize::try_from(bytes).ok().ok_or(CaptureError::TooLarge)?;
+        // An integer conversion fails only by not fitting, and its error says no more.
+        let Ok(len) = usize::try_from(bytes) else {
+            return Err(CaptureError::TooLarge);
+        };
         let file = scratch_file(len)?;
-        let to_i32 = |v: u32| i32::try_from(v).ok().ok_or(CaptureError::Unsupported);
-        let pool = self.shm.create_pool(
-            file.as_fd(),
-            i32::try_from(len).ok().ok_or(CaptureError::Unsupported)?,
-            &self.link.qh,
-            (),
-        );
+        let pool = self
+            .shm
+            .create_pool(file.as_fd(), to_i32(len)?, &self.link.qh, ());
         let buffer = pool.create_buffer(
             0,
             to_i32(width)?,
