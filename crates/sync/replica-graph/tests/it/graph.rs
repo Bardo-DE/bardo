@@ -141,6 +141,7 @@ async fn a_deleted_folder_is_one_change_and_the_files_it_held_get_tombstones() {
 }
 
 #[tokio::test]
+#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
 async fn a_file_is_one_put_up_to_the_threshold_and_a_session_in_chunks_past_it() {
     let server = Server::start().await;
     let replica = server.replica("", 50, Uploads::new(10, CHUNK_UNIT));
@@ -283,10 +284,10 @@ async fn a_remote_edit_between_the_listing_and_the_write_is_a_conflict_never_an_
 #[tokio::test]
 async fn an_expired_anchor_lists_again_and_sends_nothing_a_second_time() {
     let server = Server::start().await;
-    for i in 0..12 {
+    for i in 0_u8..12 {
         server
             .graph
-            .put_file(&format!("2026/{:02}/IMG_{i}.jpg", i % 3), &[i as u8; 8]);
+            .put_file(&format!("2026/{:02}/IMG_{i}.jpg", i % 3), &[i; 8]);
     }
     let replica = server.replica("", 5, Uploads::default());
     let mut at = Cursor::Start;

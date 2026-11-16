@@ -403,6 +403,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(clippy::cast_precision_loss, reason = "a pixel or item count far below the float's exact integer range")]
     fn the_systems_momentum_is_heard_one_to_one_with_no_glide_of_ours() {
         let physics = physics();
         let (mut coast, mut said, lifted) = flick(30.0, 6, &physics);

@@ -51,6 +51,7 @@ fn Player() -> Element {
 }
 
 /// Write a frame about every 16 ms, and exit after `LIFETIME`.
+#[expect(clippy::cast_possible_truncation, reason = "the coordinates are taken modulo SIDE, 256, and the elapsed time is a small shift; wrapping bytes are the effect")]
 fn play(frame: &TextureHandle) {
     let started = Instant::now();
     let mut frames = 0u32;

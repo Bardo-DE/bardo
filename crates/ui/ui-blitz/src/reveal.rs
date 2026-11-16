@@ -33,6 +33,7 @@ pub(crate) fn reveal(scroller: &MountedData, item: &MountedData) -> Scrolled {
 
 /// The list's new scroll offset, `Some(None)` when the item is in view already; `None` when the
 /// nodes are gone or the item is not inside the list.
+#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
 fn wanted_offset(doc: &BaseDocument, list: NodeId, item: NodeId) -> Option<Option<(f64, f64)>> {
     let scroller = doc.get_node(list)?;
     let layout = scroller.final_layout();
@@ -51,6 +52,7 @@ fn wanted_offset(doc: &BaseDocument, list: NodeId, item: NodeId) -> Option<Optio
 
 /// Where `node`'s border box starts in `ancestor`'s content at no scroll: its layout offsets
 /// summed up the layout tree, less the scroll of every scroller between the two.
+#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
 fn content_top(doc: &BaseDocument, node: NodeId, ancestor: NodeId) -> Option<f32> {
     let mut top = 0.0;
     let mut at = node;

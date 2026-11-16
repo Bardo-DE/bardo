@@ -148,6 +148,7 @@ impl State {
     }
 
     /// The pointer's place as the gestures report it (the corner until it has moved).
+    #[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
     fn point(&self) -> Point {
         let at = self.pointer.unwrap_or_default();
         Point {
@@ -159,6 +160,7 @@ impl State {
 
 /// The gesture an eased listener hears for `heard` from `source`, with the pointer and the
 /// modifiers as they are.
+#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
 fn scroll_gesture(state: &State, source: ScrollSource, heard: Heard) -> Gesture {
     Gesture::Scroll {
         source,

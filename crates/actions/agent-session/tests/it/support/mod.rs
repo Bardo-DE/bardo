@@ -62,6 +62,7 @@ pub fn opening() -> Opening {
     }
 }
 
+#[expect(clippy::cast_possible_wrap, reason = "a small test id")]
 pub fn turn(id: u64, text: &str) -> UserTurn {
     UserTurn {
         id: TurnId(id),

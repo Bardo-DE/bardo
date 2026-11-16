@@ -230,7 +230,8 @@ impl SessionLog for MemoryLog {
     ) -> Result<LogPage, LogFault> {
         let all = self.bodies.lock().map_err(|_| LogFault::Unavailable)?;
         let rows = all.get(session).map(Vec::as_slice).unwrap_or_default();
-        let start = from.map_or(0, |s| s.0 as usize).min(rows.len());
+        let start = from.map_or(0, |s| usize::try_from(s.0).unwrap_or(usize::MAX))
+            .min(rows.len());
         let take = size.0.0 as usize;
         let end = start.saturating_add(take).min(rows.len());
         let logged: Vec<Logged> = rows[start..end]

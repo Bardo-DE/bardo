@@ -52,6 +52,7 @@ pub fn image_under(top: &BaseDocument, at: Point) -> Option<ImageUnder> {
 }
 
 /// `at` in `top`'s page coordinates.
+#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
 fn page(top: &BaseDocument, at: Point) -> (f32, f32) {
     let scroll = top.viewport_scroll();
     (at.x.0 + scroll.x as f32, at.y.0 + scroll.y as f32)
@@ -60,6 +61,7 @@ fn page(top: &BaseDocument, at: Point) -> (f32, f32) {
 /// Hit-test `doc` at page point `(x, y)`, going into the frame hit if there is one, and `find`
 /// what the node hit inside a frame is; `frame` is the frame `doc` is, or `None` for the app's
 /// document.
+#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
 fn descend<T>(
     doc: &BaseDocument,
     (x, y): (f32, f32),

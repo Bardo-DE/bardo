@@ -73,6 +73,7 @@ enum Op {
     Close,
 }
 
+#[expect(clippy::cast_possible_truncation, reason = "n counts the few ops of a scripted run, far below u32::MAX")]
 fn entry_of(op: Op, n: u64) -> SessionEntry {
     match op {
         Op::Turn => SessionEntry::Turn(turn(n, "words")),

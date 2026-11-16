@@ -43,6 +43,7 @@ pub(crate) fn visible_source(
 }
 
 /// The draws that put `source` into a box of `area` device pixels, `(width, height)`.
+#[expect(clippy::cast_possible_truncation, clippy::cast_precision_loss, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact; a pixel or item count far below the float's exact integer range")]
 pub(crate) fn place(fit: TextureFit, source: TexelRect, area: (f64, f64)) -> Vec<Draw> {
     let (box_w, box_h) = area;
     let (src_w, src_h) = (f64::from(source.width.0), f64::from(source.height.0));

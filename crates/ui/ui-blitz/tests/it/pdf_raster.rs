@@ -41,6 +41,7 @@ fn app() -> Element {
 
 /// Mean absolute channel difference, and the share of pixels differing by more than a quarter
 /// of the range in any channel.
+#[expect(clippy::cast_precision_loss, reason = "a pixel or item count far below the float's exact integer range")]
 fn difference(a: &[u8], b: &[u8]) -> (f64, f64) {
     let pixels = a.len() / 4;
     let total: u64 = a

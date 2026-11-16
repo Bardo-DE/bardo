@@ -85,6 +85,7 @@ fn content_extent(width: u32, bottom: f32, least: Extent, screen: Option<Extent>
 
 /// `px` rounded up to a whole pixel, so a fractional edge is never cut; nothing for a length that
 /// is not a positive number.
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn whole_px(px: f32) -> u32 {
     if px.is_finite() && px > 0.0 {
         // The cast saturates, and a window's height fits a u32 many times over.

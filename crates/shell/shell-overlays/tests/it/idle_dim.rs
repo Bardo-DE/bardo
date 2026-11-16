@@ -59,6 +59,7 @@ fn publish(run: &mut Running, dim: DimShown) {
 }
 
 /// The scrim's opacity in thousandths, from its inline style.
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn scrim(run: &Running) -> u32 {
     let style = run.harness.attr(SCRIM, "style").unwrap_or_default();
     let value = style

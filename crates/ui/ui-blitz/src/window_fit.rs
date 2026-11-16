@@ -52,6 +52,7 @@ impl Extent {
     }
 
     /// This extent scaled down, shape kept, until it fits in `cap`; unchanged if it already does.
+    #[expect(clippy::cast_possible_truncation, reason = "the scaled side is at most the cap, which is a u32")]
     fn shrunk_within(self, cap: Extent) -> Extent {
         let fits = self.width <= cap.width && self.height <= cap.height;
         if fits || self.width == 0 || self.height == 0 {
@@ -71,6 +72,7 @@ impl Extent {
 
     /// `physical` pixels at `scale` (physical per logical), as logical pixels rounded to the
     /// nearest; `None` for a scale that is not a positive number.
+    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
     pub(crate) fn logical_at(self, scale: f64) -> Option<Extent> {
         let valid = scale.is_finite() && scale > 0.0;
         valid.then(|| {
@@ -80,6 +82,7 @@ impl Extent {
     }
 
     /// This logical extent as physical pixels at `scale`, rounded to the nearest.
+    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
     pub(crate) fn physical_at(self, scale: f64) -> Extent {
         let per = |pixels: u32| (f64::from(pixels) * scale).round() as u32;
         Extent::new(per(self.width), per(self.height))

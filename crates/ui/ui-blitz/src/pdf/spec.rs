@@ -130,6 +130,7 @@ pub(crate) struct ContentBox {
 
 impl ContentBox {
     /// The content box of `spec`, or why it has none.
+    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
     pub(crate) fn of(spec: PageSpec) -> Result<Self, PdfError> {
         let (width, height) = spec.size.dimensions();
         let Margins {
@@ -153,6 +154,7 @@ impl ContentBox {
 
     /// Blitz's viewport for laying the document out: one page wide and one page tall (so `vh`
     /// means a page), at scale 1 (a CSS pixel is a layout pixel), light.
+    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
     pub(crate) fn viewport(self) -> BlitzViewport {
         BlitzViewport::new(
             self.width,
@@ -163,6 +165,7 @@ impl ContentBox {
     }
 
     /// The same box in whole logical pixels, for building a harness at page width.
+    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
     pub(crate) fn logical(self) -> ContentPx {
         ContentPx {
             width: self.width,

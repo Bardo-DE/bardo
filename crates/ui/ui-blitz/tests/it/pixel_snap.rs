@@ -105,6 +105,7 @@ const FAINT: u8 = 48;
 const FULL: u8 = 240;
 
 /// The inked device pixels along `line`, each as (device coordinate, ink).
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn inked(frame: &RgbaImage, line: &Line, scale: f32) -> Vec<(u32, u8)> {
     let device = |logical: f32| (logical * scale).floor() as u32;
     (device(line.span.start)..device(line.span.end))
@@ -213,6 +214,7 @@ fn menu_separators_are_whole_device_rows_at_every_scale() {
 /// The plus glyph's horizontal bar (grid y 12, 8 px down a 16 px glyph), walked down a column
 /// between its left end and the vertical bar: an even number of device rows at full ink.
 #[test]
+#[expect(clippy::cast_possible_truncation, reason = "a small test row count")]
 fn a_16_px_glyph_stroke_is_whole_device_rows_at_fractional_scales() {
     for scale in [125, 150, 175] {
         let (_, frame) = render(scale);

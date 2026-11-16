@@ -28,6 +28,7 @@ pub(crate) fn rasterise(bytes: Vec<u8>, fit: DeviceBox) -> PdfPage {
         .unwrap_or(PdfPage::Failed(PdfTrouble::Unreadable))
 }
 
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn first_page(bytes: Vec<u8>, fit: DeviceBox) -> PdfPage {
     let doc = match Document::from_bytes(bytes) {
         Ok(doc) => doc,

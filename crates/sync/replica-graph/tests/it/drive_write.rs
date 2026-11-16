@@ -178,6 +178,7 @@ async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base
 }
 
 #[tokio::test]
+#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
 async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_replica() {
     let server = Server::start().await;
     let dir = Scratch::new("graph-drive-resume");
@@ -219,6 +220,7 @@ async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_repli
 }
 
 #[tokio::test]
+#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
 async fn a_session_replacing_a_file_changed_meanwhile_is_given_up_before_its_last_chunk() {
     let server = Server::start().await;
     let dir = Scratch::new("graph-drive-changed");
@@ -269,6 +271,7 @@ async fn a_session_replacing_a_file_changed_meanwhile_is_given_up_before_its_las
 }
 
 #[tokio::test]
+#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
 async fn a_resumed_session_asks_first_whether_the_file_it_replaces_changed() {
     let server = Server::start().await;
     let dir = Scratch::new("graph-drive-resume-changed");

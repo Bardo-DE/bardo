@@ -50,6 +50,7 @@ mod document {
     }
 
     #[test]
+    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
     fn the_frames_text_is_painted_in_its_own_colour() {
         let mut harness = Harness::new(Reader, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
         let frame = harness.render().expect("renders");

@@ -719,6 +719,7 @@ mod fingers {
     }
 
     #[test]
+    #[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
     fn a_fast_lift_glides_further_than_its_own_speed_and_a_gentle_one_as_it_is() {
         use blitz_embed::scroll::config::ScrollSettings;
         use blitz_embed::scroll::engine::Physics;
@@ -838,6 +839,7 @@ mod native {
     }
 
     /// A flick of `steps` strokes of 30 px up the page (winit's sign: negative), lifted.
+    #[expect(clippy::cast_precision_loss, reason = "a pixel or item count far below the float's exact integer range")]
     fn flick(harness: &mut Harness, steps: usize) -> f64 {
         for n in 0..steps {
             let phase = if n == 0 {

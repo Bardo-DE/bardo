@@ -27,6 +27,7 @@ fn Layered() -> Element {
     }
 }
 
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn fill(harness: &Harness, selector: &str) -> [u8; 4] {
     let Srgba(c) = harness.fill_of(selector, Part::Element).expect("fill");
     c.map(|v| (v * 255.0).round() as u8)

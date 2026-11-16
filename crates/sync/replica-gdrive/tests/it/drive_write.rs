@@ -183,6 +183,7 @@ async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
 }
 
 #[tokio::test]
+#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
 async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_replica() {
     let server = Server::start().await;
     let dir = Scratch::new("gdrive-drive-resume");
@@ -291,6 +292,7 @@ async fn an_item_made_under_a_reserved_id_is_found_again_and_never_made_twice() 
 }
 
 #[tokio::test]
+#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
 async fn a_session_replacing_a_file_changed_meanwhile_stops_before_its_last_chunk() {
     let server = Server::start().await;
     let dir = Scratch::new("gdrive-drive-changed");

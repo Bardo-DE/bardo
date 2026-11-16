@@ -138,6 +138,7 @@ impl TitleRaster {
         self.shape(&cut(keep), scale)
     }
 
+    #[expect(clippy::cast_possible_truncation, clippy::cast_precision_loss, clippy::cast_sign_loss, reason = "layout and pointer lengths are far inside f32's exact range; a pixel or item count far below the float's exact integer range; a rounded pixel length, small and non-negative; the saturating cast is exact")]
     fn draw(&mut self, key: &TitleKey) -> Result<RasterImage, TitleError> {
         let (w, h) = key.device_size();
         let too_large = TitleError::TooLarge {

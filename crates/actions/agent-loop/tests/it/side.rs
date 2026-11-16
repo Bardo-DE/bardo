@@ -5,6 +5,7 @@ use agent_loop::*;
 use memory_core::EpisodeKind;
 
 #[test]
+#[expect(clippy::cast_sign_loss, reason = "a small non-negative test counter")]
 fn a_side_conversation_ends_on_row_close_or_after_two_idle_minutes() {
     let told = |t: i64, text: &str| SideInput::Told {
         to: worker("t-9"),

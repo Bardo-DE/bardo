@@ -10,6 +10,7 @@ use ui_components::host::captured::{CapturedPointer, PointerPhase};
 use ui_components::prelude::*;
 
 /// The capture event a winit event makes, at display scale `scale`, with `held` modifiers.
+#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
 pub(crate) fn captured_of(
     event: &WindowEvent,
     scale: f64,

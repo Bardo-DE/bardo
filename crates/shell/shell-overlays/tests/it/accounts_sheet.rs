@@ -527,6 +527,7 @@ fn many_providers(count: usize) -> String {
 }
 
 #[test]
+#[expect(clippy::cast_possible_truncation, reason = "the test viewport is a few hundred pixels tall")]
 fn a_long_provider_list_scrolls_inside_the_window_and_keeps_cancel_in_view() {
     let mut run = start();
     run.open(&many_providers(25));

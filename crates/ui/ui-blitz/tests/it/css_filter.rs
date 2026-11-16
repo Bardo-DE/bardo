@@ -217,6 +217,7 @@ const PAGES: [fn() -> Element; 13] = [
 ];
 
 /// The pixel of `swatch`'s filtered box or its control (`row` 0 or 1).
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn probe(frame: &RgbaImage, harness: &Harness, swatch: &Swatch, row: u32) -> [u8; 3] {
     let at = harness
         .rect(&format!(".{}-{row}", swatch.name))

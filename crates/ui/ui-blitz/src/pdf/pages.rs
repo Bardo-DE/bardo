@@ -59,6 +59,7 @@ pub(crate) fn print_from(
 }
 
 /// The stretch `band` of `doc`, recorded, and where it goes on its sheet.
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn page(doc: &mut BaseDocument, content: ContentBox, band: Span) -> Page {
     let (width, height) = content.sheet;
     let (left, top) = content.origin;

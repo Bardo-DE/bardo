@@ -123,6 +123,7 @@ fn pixels(page: &PdfPage) -> image::RgbaImage {
 }
 
 /// Standard base64, no dependency for one test.
+#[expect(clippy::cast_possible_truncation, reason = "an index into the 64-entry base64 alphabet")]
 fn base64(text: &str) -> Vec<u8> {
     const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     let values: Vec<u8> = text
@@ -294,6 +295,7 @@ fn Broken() -> Element {
 }
 
 #[test]
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn on_a_document_it_loads_then_paints_the_page() {
     SHOWN_PATH.get_or_init(|| file("shown.pdf", &letter(RED)));
     let mut harness = Harness::new(Shown, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));

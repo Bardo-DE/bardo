@@ -69,6 +69,7 @@ fn next(harness: &mut Harness) {
     harness.advance(Duration::from_millis(50));
 }
 
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn fill(harness: &Harness) -> [u8; 4] {
     let Srgba(c) = harness
         .fill_of(".probe", Part::Element)
@@ -77,6 +78,7 @@ fn fill(harness: &Harness) -> [u8; 4] {
 }
 
 /// The painted pixel in the middle of the probe.
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn pixel(harness: &mut Harness) -> [u8; 4] {
     let at: Point = harness.centre(".probe").expect("probe on screen");
     let image = harness.render().expect("paint");

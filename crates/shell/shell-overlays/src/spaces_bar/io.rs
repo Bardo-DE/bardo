@@ -143,6 +143,7 @@ fn tile_of(
 
 /// `rect`, in whole logical pixels, moved to the desktop by the surface's `origin`; `None` before
 /// layout gave it an area.
+#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
 fn whole(origin: (i32, i32), rect: Rect) -> Option<WholeRect> {
     let side = |px: f32| px.round().max(0.0) as u32;
     let (width, height) = (side(rect.size.width.0), side(rect.size.height.0));

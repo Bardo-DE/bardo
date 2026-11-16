@@ -364,6 +364,7 @@ fn assembled_view_keeps_untrusted_text_behind_handles() {
     );
 }
 
+#[expect(clippy::cast_possible_wrap, reason = "a small test id")]
 fn long_turn(n: u64) -> UserTurn {
     UserTurn {
         id: TurnId(n),

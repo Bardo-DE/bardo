@@ -18,6 +18,7 @@ pub const BREAK_HEADING: &str = "Second message";
 pub const SCREEN_ONLY: &str = "Shown on screen only";
 
 /// A 320 x 200 photo-like JPEG (quality 80).
+#[expect(clippy::cast_possible_truncation, clippy::cast_precision_loss, clippy::cast_sign_loss, reason = "pixel coordinates of a 320 x 200 image, a sine wave within 80 and channel values clamped or scaled into 0..=255")]
 pub fn jpeg() -> Vec<u8> {
     let photo = RgbImage::from_fn(320, 200, |x, y| {
         let wave = ((x as f32 / 9.0).sin() * 40.0 + (y as f32 / 7.0).cos() * 40.0) as i32;
@@ -35,6 +36,7 @@ pub fn jpeg() -> Vec<u8> {
 }
 
 /// A 120 x 40 PNG with an alpha ramp.
+#[expect(clippy::cast_possible_truncation, reason = "the channel values are scaled into 0..=255")]
 pub fn png() -> Vec<u8> {
     let chart = RgbaImage::from_fn(120, 40, |x, y| {
         Rgba([30, (y * 6) as u8, 200, (55 + x * 200 / 120) as u8])
