@@ -11,7 +11,6 @@
 //!
 //! Any step that fails is a refusal ([`ShellError::is_refusal`]), never a yes.
 
-use std::future::Future;
 
 use caller_identity_dbus::OwnerWatch;
 use caller_identity_dbus::caller_identity_core::roles;

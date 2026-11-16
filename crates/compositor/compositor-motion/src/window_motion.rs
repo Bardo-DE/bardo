@@ -157,7 +157,6 @@ mod tests {
     use super::*;
     use compositor_core::OutputName;
     use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
-    use compositor_core::time::Mono;
     use std::time::Duration;
     use ui_core::press::Press;
     use ui_motion::detail::touch::{Contact, Touch};

@@ -1,7 +1,6 @@
 //! The client side: what the Settings app (bardo-settings) uses to read and set a live module.
 
 use std::collections::{BTreeMap, HashMap};
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll};

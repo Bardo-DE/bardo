@@ -42,7 +42,6 @@ pub mod settings;
 pub mod shell;
 pub mod table;
 
-use std::future::Future;
 use std::pin::Pin;
 
 pub use error::TransomError;

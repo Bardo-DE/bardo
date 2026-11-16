@@ -1,6 +1,6 @@
 use super::*;
 use anyview_core::work::Stop;
-use anyview_core::{FileName, TreePath};
+use anyview_core::FileName;
 
 fn json(text: &str) -> Tree {
     Tree::parse(text, TreeFormat::Json).unwrap()

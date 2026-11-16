@@ -1,7 +1,6 @@
 //! What a daemon implements to serve a live module. The daemon owns the state; this crate only
 //! carries the calls (the stateless-library rule of the quire refactor).
 
-use std::future::Future;
 
 use super::{LiveError, LiveSchema, Snapshot};
 use crate::schema::KeyPath;

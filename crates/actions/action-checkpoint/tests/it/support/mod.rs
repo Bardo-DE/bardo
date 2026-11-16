@@ -2,7 +2,6 @@
 
 use action_checkpoint::{EntryId, TreeListing};
 use action_core::WorkPath;
-use std::future::Future;
 use std::pin::pin;
 use std::task::{Context, Poll, Waker};
 

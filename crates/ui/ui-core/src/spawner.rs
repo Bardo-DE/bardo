@@ -2,7 +2,6 @@
 //! [`Spawner`] it was given, and never names a runtime. `ui-blitz`'s `launch` owns the runtime and
 //! provides the implementor; a test drives an inline one.
 
-use std::future::Future;
 use std::pin::Pin;
 
 /// Runs tasks on the program's runtime.

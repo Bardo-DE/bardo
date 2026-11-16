@@ -10,7 +10,6 @@ use base_ids::Count;
 use model_provider::{ChoiceText, Field, FieldName, Shape};
 use provenance::{EntityId, Quarantined, SessionId};
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 
 /// What the planner asks the reader to do.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

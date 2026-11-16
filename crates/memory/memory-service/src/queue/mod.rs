@@ -22,7 +22,6 @@ use crate::service::MemoryService;
 use claim::claim_under;
 use memory_core::{ExportOptions, MemoryReply, MemoryRequest, Refusal, SpaceId, SweepReport};
 use std::collections::BTreeSet;
-use std::future::Future;
 use std::io::Write;
 
 impl<B: Backend> MemoryService<B> {

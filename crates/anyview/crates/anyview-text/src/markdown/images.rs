@@ -119,7 +119,6 @@ impl<'a> Inliner<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::collections::HashMap;
 
     /// A document directory held in a map.
     struct Files(HashMap<String, Vec<u8>>);

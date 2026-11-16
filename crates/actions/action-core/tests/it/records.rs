@@ -12,7 +12,7 @@ use permission_core::{
     Stage, VerdictKind, Withheld,
 };
 use provenance::{
-    Address, AgentRef, ConfirmId, Effect, MessageKind, MessageText, ReportStatus, TaskId,
+    Address, AgentRef, Effect, MessageKind, MessageText, ReportStatus, TaskId,
 };
 use serde::{Serialize, de::DeserializeOwned};
 use std::collections::BTreeSet;

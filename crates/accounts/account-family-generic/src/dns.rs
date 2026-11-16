@@ -3,7 +3,6 @@
 
 use account_discover::{Dns, DnsFault, MxRecord, SrvRecord};
 use account_provider::DomainName;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 

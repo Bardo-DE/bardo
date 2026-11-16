@@ -14,7 +14,6 @@ use permission_core::LimitNote;
 use provenance::{Actor, ClientName, ConfirmReceipt, Effect, SessionId, Source, SpaceId};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
-use std::future::Future;
 
 pub use provenance::ConfirmId;
 

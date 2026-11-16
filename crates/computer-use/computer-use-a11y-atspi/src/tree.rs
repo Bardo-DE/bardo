@@ -2,7 +2,6 @@
 
 use computer_use_a11y_tree::A11yError;
 use computer_use_desktop::Pid;
-use std::future::Future;
 
 /// Where an object is on the screen, as the toolkit reports it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

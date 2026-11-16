@@ -10,7 +10,6 @@ use crate::config::EndpointKind;
 use account_capability::{AgentProgram, AgentProtocol};
 use account_capability::{LoginOutcome, LoginRequestId};
 use account_core::{AccountId, DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
-use std::future::Future;
 
 /// Why a call to porter failed. Coarse on purpose: nothing of the other side's wording is kept.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]

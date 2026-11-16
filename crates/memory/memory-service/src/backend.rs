@@ -7,7 +7,6 @@ use memory_core::{ReplicaId, SpaceId, SpaceMeta};
 use memory_seal::{KeyError, KeyStore, SpaceKey};
 use memory_store::{Embedder, IndexFailure, LogError, LogWrite, SearchIndex, Vault, VaultError};
 use memory_tidy::Consolidator;
-use std::future::Future;
 
 /// Why a backend could not open a Space's stores.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

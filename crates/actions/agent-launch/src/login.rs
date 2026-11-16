@@ -8,7 +8,6 @@
 use crate::accounts::AskKind;
 use crate::config::Entry;
 use account_capability::{LoginFault, LoginOutcome};
-use std::future::Future;
 use std::process::Stdio;
 use tokio::process::Command;
 

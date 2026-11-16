@@ -4,7 +4,6 @@
 
 use crate::support;
 
-use std::future::Future;
 use std::pin::Pin;
 use std::time::Duration;
 use support::Scratch;

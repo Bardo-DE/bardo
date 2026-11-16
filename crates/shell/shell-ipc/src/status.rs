@@ -169,7 +169,6 @@ mod tests {
     use shell_launcher::{ClipKey, UnixTime};
     use shell_model::clipboard::{ClipContent, ClipEntry, ClipProtocol, ClipText, HistoryMode};
     use shell_model::notifications::{NameHolder, NameOwner, ServerMode};
-    use shell_model::polkit_agent::Registration;
 
     use super::*;
 

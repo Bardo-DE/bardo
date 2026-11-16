@@ -13,7 +13,6 @@ use account_core::stream::ByteStream;
 use account_core::{Credential, RelayPlan, ServiceEndpoint};
 use account_proxy::{Connect, RelayEnd, RelayFault, RustlsConnect, relay};
 use account_sheet::SignInFault;
-use std::future::Future;
 use std::io;
 use std::pin::Pin;
 use std::sync::Arc;

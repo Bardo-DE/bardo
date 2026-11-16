@@ -2,7 +2,7 @@
 
 use crate::support::*;
 use memory_core::*;
-use memory_service::space::{self, BUFFER_LIMIT};
+use memory_service::space::self;
 use memory_service::*;
 
 #[test]

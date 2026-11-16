@@ -1,5 +1,4 @@
 use crate::time::clock::{VirtualClock, install_wall, now, sleep, wall_sleeps_finished};
-use std::future::Future;
 use std::pin::pin;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};

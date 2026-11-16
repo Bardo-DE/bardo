@@ -2,7 +2,6 @@
 //! `Mutex`, a version and the waiting task's `Waker`. Every consumer of a settings change is an
 //! async task somewhere (a Dioxus future, a Tokio task), so the wake-up is all this needs.
 
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::task::{Context, Poll, Waker};

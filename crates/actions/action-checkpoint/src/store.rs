@@ -5,7 +5,6 @@ use action_core::{CheckpointId, PlanDigest, RestorePlan};
 use base_ids::Count;
 use base_time::UnixSeconds;
 use provenance::SessionId;
-use std::future::Future;
 
 /// Why a store could not do what it was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

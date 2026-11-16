@@ -2,7 +2,6 @@
 
 use crate::support::*;
 use memory_core::*;
-use memory_service::forget::PLAN_TTL_SECONDS;
 use memory_service::*;
 
 fn digest(n: u8) -> PlanDigest {

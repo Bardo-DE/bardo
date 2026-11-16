@@ -3,7 +3,6 @@
 
 use memory_core::{MemoryReply, MemoryRequest};
 use provenance::SpaceId;
-use std::future::Future;
 
 use crate::AuditRecord;
 

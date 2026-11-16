@@ -108,7 +108,6 @@ impl Drop for Place {
 mod tests {
     use super::*;
     use memory_core::SpaceId;
-    use std::future::Future;
     use std::pin::Pin;
 
     type Entry<'a> = Pin<Box<dyn Future<Output = Place> + 'a>>;

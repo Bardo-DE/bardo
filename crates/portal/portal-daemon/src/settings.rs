@@ -303,7 +303,7 @@ pub fn spawn_watch(connection: zbus::Connection) {
 // property-change methods, which the crate's `missing_docs` would flag on a public impl.
 mod interface {
     use super::{
-        AppearanceSource, Duration, Namespaces, OwnedValue, PORTAL_PATH, PortalError,
+        Duration, Namespaces, OwnedValue, PORTAL_PATH, PortalError,
         SettingsService, SignalEmitter, TransomError, read_namespaces, read_setting, refused,
         wire_value,
     };

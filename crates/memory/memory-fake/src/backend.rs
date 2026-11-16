@@ -10,7 +10,6 @@ use memory_seal::{MemoryKeys, Purpose, SpaceKey, derive};
 use memory_service::{Backend, BackendError, Listing, MemoryService, RegistryError};
 use memory_store::{Vault, VaultError, VaultPath};
 use std::collections::{BTreeMap, BTreeSet};
-use std::future::Future;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 

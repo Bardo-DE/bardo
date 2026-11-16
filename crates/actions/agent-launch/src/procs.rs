@@ -6,7 +6,6 @@
 use agent_acp_server::capped_lines;
 use agent_client_protocol::{Agent, Client, ConnectTo, Error};
 use sandbox::{AgentRun, BwrapSandbox, LandlockLevel, StartFault};
-use std::future::Future;
 use std::path::PathBuf;
 use std::process::Stdio;
 use std::sync::atomic::{AtomicU64, Ordering};
