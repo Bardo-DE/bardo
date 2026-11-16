@@ -7,6 +7,5 @@ Apps declare their own actions with a portable default chord and handle actions.
 - `chordkit`: the pure core (no I/O, no async).
 - `keymap-kde`: reads kdeglobals.
 - `keymap-gnome`: reads a dconf dump.
-- `keymap-macos`: the NSUserKeyEquivalents value syntax and menu-title table (no platform calls).
 
 See `ARCHITECTURE.md` for the map, `CONSUMING.md` for how a toolkit and an app use it, and `FINDINGS.md` for open items.

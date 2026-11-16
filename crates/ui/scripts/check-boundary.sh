@@ -24,8 +24,6 @@ cd "$(dirname "$0")/.."
 # ui-desktop (the capability probe) names zbus only through its opt-in `dbus` feature and dioxus
 # only through `dioxus`, so a build without them links neither; the rule below checks the default
 # build. Its all-features edges are none of ours.
-# ui-settings-page draws a schema (ui-settings' types) with ds's rows and controls; neither of those
-# may name the other, so the page is a crate of its own, and no D-Bus client or runtime comes with it.
 # ui-blitz reaches D-Bus only through its opt-in `print` and `menus` features, so an app that
 # never prints or exports a menu builds no D-Bus client for it, and pdfrum only through `pdf`; ui-harness inherits both rules
 # (it turns on `pdf` only for its own `pdf` feature). pdfrum-anyrender (a git dependency
@@ -48,7 +46,6 @@ RULES=(
   "ui-shell: zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-components: keymap-kde keymap-gnome zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-settings: dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ui-settings-page: zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-extensions: dioxus zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-helpers: dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-desktop: zbus dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
@@ -99,7 +96,6 @@ EDGES=(
   "ui-components: ui-core ui-intents ui-motion ui-style"
   "ui-shell: ui-components ui-core ui-motion ui-style"
   "ui-settings: old-folders ui-core ui-helpers ui-peer ui-style ui-settings-derive"
-  "ui-settings-page: ui-components ui-settings"
   "ui-extensions: ui-core ui-helpers ui-settings ui-style"
   "ui-peer:"
   "ui-helpers: ui-peer"

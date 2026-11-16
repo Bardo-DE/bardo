@@ -3,11 +3,10 @@
 # below, with no default features, must `cargo check`, and nothing in their trees may be a
 # Linux-only or desktop-bus crate. Needs no network (cargo reads the lockfile and the cache).
 #
-# The portable core is the in-app agent: the vocabulary, the router and its Cedar policy point,
+# The portable core is the vocabulary, the router and its Cedar policy point,
 # the reviewer, the agent loop, the planner over any inference-client Transport, skills, the red
 # team's suite, the fakes, the model-backed reviewer and policy writer (`agent-models`), the
-# quarantined reader (`agent-reader`), the memory seam (`companion-memory`), and `agent-inapp`,
-# which hosts them in one app. The desktop extras
+# quarantined reader (`agent-reader`), the memory seam (`companion-memory`). The desktop extras
 # (action-dbus, intentd, companiond, readerd, voiced, bardo-do, bardo-actions-mcp, the acceptance
 # crate and everything that names a bus) are not on this list on purpose.
 #
@@ -19,7 +18,7 @@ cd "$(dirname "$0")/.."
 PORTABLE=(
   action-vocab action-manifest permission-core companion-model action-core action-gate-wire action-wire agent-skills agent-skills-disk permission-policy action-review action-context action-gate action-router
   action-tools companion-wire companion-core agent-loop agent-planner companion-tasks agent-native agent-session action-checkpoint agent-acp-server action-client action-fake action-eval action-eval-core
-  agent-models agent-reader companion-memory-core companion-memory agent-registry action-host agent-inapp speech-wire speech-loop speech-audio
+  agent-models agent-reader companion-memory-core companion-memory agent-registry action-host speech-wire speech-loop speech-audio
 )
 # What must never be in a portable crate's tree: a bus, or a Linux-only kernel interface.
 FORBIDDEN='zbus|zvariant|inotify|landlock|pipewire|notify|libspa'

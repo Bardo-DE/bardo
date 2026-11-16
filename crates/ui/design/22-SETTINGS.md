@@ -1201,7 +1201,7 @@ reads one entry. `Describe`, `Get`, `Set` and `Changed` keep their signatures.
 - No program renders its own settings UI for keys the schema covers (mailo's appearance
   picker becomes the appearance picker component bound to `bardo/appearance.toml`); an app
   may still embed the Settings app's rendering of its own schema in-app via the shared
-  `SettingsPage` component (built: crate `ui-settings-page`, moved whole from mailo's
+  `SettingsPage` component (was a crate, `ui-settings-page`, since deleted; moved whole from mailo's
   settings_window/keys.rs). It is a crate of its own because it needs `ds` and `ui-settings`,
   which may not name each other. API:
 

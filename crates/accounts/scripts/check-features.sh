@@ -43,8 +43,6 @@ BUILDS=(
   "account-oauth (no features: mailo) :: -p account-oauth --no-default-features"
   "account-oauth (io: mailo mail-runtime) :: -p account-oauth --no-default-features --features io"
   "account-proxy (io: mailo mail-runtime, its link tests) :: -p account-proxy --no-default-features --features io"
-  "account-calendar (no features: mailo) :: -p account-calendar"
-  "account-calendar (eds: the Linux desktops) :: -p account-calendar --features eds"
 )
 
 logs="${CARGO_TARGET_DIR:-target}/check-features"

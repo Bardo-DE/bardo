@@ -82,7 +82,6 @@ LAYERS=(
   "action-trace:C"
   # app / daemon / test binary
   "agent-acp-bin:A"
-  "agent-inapp:A"
   "action-eval:A"
   "action-testbus:A"
   "action-accept:A"
@@ -90,7 +89,6 @@ LAYERS=(
   "action-live:A"
   "action-mcp:A"
   "action-cli:A"
-  "action-ui-adapter:A"
   "action-daemon:A"
   "companion-daemon:A"
   "agent-reader-daemon:A"
@@ -349,8 +347,6 @@ RULES=(
   # `dbus` and `socket` features reaches no runtime), so inferd over D-Bus is companiond's
   # choice of transport, never the planner's.
   "agent-planner: $EFFECTS"
-  # The in-app agent: the router (and with it Cedar) hosted in one app, no bus, no runtime, no
-  # HTTP, no watcher. action-client only behind `in_process`, never `dbus`.
   # The task model is portable: the companion's tasks over any router link and any `Planner`,
   # a clock and a surface that are passed in; no bus, no runtime (the daemon's surface is the
   # one that holds tokio).
@@ -379,15 +375,14 @@ RULES=(
   # Starts the external agents: the bus is the `dbus` feature's, the runtime is its processes'; no
   # HTTP, desktop stack, database, Cedar or MCP SDK, and nothing that links a sandbox library.
   "agent-launch: reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy landlock libseccomp"
-  "agent-inapp: $NO_CEDAR"
   # The host side of a confirm sheet: values, a oneshot channel and the session seam; no bus, runtime, network or toml.
   "action-host: $EFFECTS toml"
   # The /proc reads (terminal scope, own uid) under an injected root: files only, no bus, runtime, network or Cedar.
   "action-procroot: $EFFECTS toml"
   # The bardo-agent-acp process (and `bardo-agent`, the host of an external coding agent): the router
   # and the companion hosted in it, over the bus (zbus, tokio) and nothing else of the desktop. It
-  # is wiring over clients: it reaches neither the in-app agent nor the router.
-  "agent-acp-bin: agent-inapp action-router reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
+  # is wiring over clients: it reaches no router.
+  "agent-acp-bin: action-router reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
   # The models, the quarantined reader and the memory seam are portable too (moved out of
   # intentd and readerd): they ask any inference-client or memory-client Transport, never a bus or
   # a runtime; memory-client hosts its service only behind `in_process` (a dev-dependency here)
@@ -425,7 +420,6 @@ RULES=(
   # cascade or Cedar: a terminal has no way around intentd's gate.
   "companion-client: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
   "action-cli: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
-  "action-ui-adapter: zbus zvariant tokio reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify rmcp"
   # The edge reaches rmcp, tokio and, as a bus client of intentd (action-client `dbus`), zbus; nothing else of the effects.
   "action-mcp: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify"
   # The settings reader is pure but for reading the file: no bus, no runtime, no watcher (intentd

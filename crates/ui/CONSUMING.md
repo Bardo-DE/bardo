@@ -48,7 +48,6 @@ path, the way `examples/consumer/Cargo.toml` does:
 ds          = { path = "ui-components" }
 ui-settings = { path = "ui-settings", features = ["dioxus"] }  # `dioxus`: `use_environment`; `tokio`: zbus on tokio
 ui-blitz    = { path = "ui-blitz" }    # only if you run on Blitz; features `pdf`, `print`, `spell`; `debug-probe` for scenario builds only
-ui-settings-page = { path = "ui-settings-page" }  # only an app that draws a settings page from a schema (SettingsPage)
 ui-extensions = { path = "ui-extensions" }  # only a program that finds, lists or reads Extensions (a look, file icons, anyview's plugins)
 ui-shell    = { path = "ui-shell" }    # only an app that shows the account sheets, the consent alert or the missing-helper sheet
 
@@ -1766,36 +1765,6 @@ next to your `.desktop` file. `KeyKind` picks the widget for you — a two-varia
 `ds_settings::schema::KeyKind::widget` (design/22-SETTINGS.md section 9.1) for the full table; you
 never choose a widget yourself. quire's own schema is written the same way by the `ui-settings`
 example: `cargo run -p ui-settings --example write_schema -- --write-schema target/schema`.
-
-### Drawing the schema in your own settings window: `SettingsPage`
-
-`ui-settings-page` draws one page from one or more schemas, the way the Settings app does: a
-titled `FormSection` per schema section, a `FieldRow` per key, the control `KeyKind` picks (a
-switch, segments, a pop-up button; a kind not drawn yet is shown read-only). It holds no values
-and saves nothing: you pass the file's TOML in `values` and apply each `SettingEdit` it hands back
-through your own `Store`. No key is known by name.
-
-```rust,ignore
-use ds_settings_page::{SectionRows, SettingEdit, SettingsPage};
-
-let mut values = use_signal(|| store.read_toml());               // your Store's content as toml::Value
-rsx! {
-    SettingsPage {
-        schemas: vec![ReaderSettings::schema()],
-        values: values(),
-        onedit: move |edit: SettingEdit| {
-            values.set(edit.applied_to(values()));
-            store.save(&values());                                // your save, not the page's
-        },
-        // Your own rows: at the end of the section of that title, or a section of their own.
-        extras: vec![SectionRows::new("Shortcuts", rsx! { ShortcutRow { .. } }).footer("Per window.")],
-    }
-}
-```
-
-A page made only of your own rows is `SettingsPage { extras }` (or `SettingsPage { FormSection { .. } }`
-with no schemas): the same `Form` and `FormSection` look. Opening or raising the settings window at
-a page is window plumbing and stays in each app.
 
 ### Extensions: finding, choosing and reading them
 

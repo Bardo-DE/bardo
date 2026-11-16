@@ -375,7 +375,7 @@ the real daemons or a real keyboard.
   same panel (no remount, no flash) becomes the prompt; the field is empty and the rows are the
   assistant's. Escape puts `mail` back in the search with its rows. Tap Cmd twice again from a fresh
   prompt: it closes.
-- [ ] **A summon over an app that serves the assistant** (mailo with action-ui-adapter): with mailo focused,
+- [ ] **A summon over an app that serves the assistant**: with mailo focused,
   tap Cmd twice: mailo's own search field becomes the prompt and the launcher stays shut; with a
   window that is not a quire app, the launcher opens instead, within a blink of `app_wait`.
 - [ ] **Ask from the launcher** (flows (a) and (b), real companiond): ask "what is on my calendar

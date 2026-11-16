@@ -15,7 +15,6 @@ cd "$(dirname "$0")/.."
 # only through their named I/O feature (`io`). reqwest is named by one crate, account-http-reqwest
 # (see ONE CLIENT below), and reached through it by the families that send directly. account-families reaches none with default features;
 # each of its family features is checked on its own in FAMILY_FORBIDS below.
-# account-calendar reaches zbus only through its `eds` feature.
 EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
 RULES=(
   "account-ids: $EFFECTS toml"
@@ -48,7 +47,6 @@ RULES=(
   "account-daemon-support: $EFFECTS"
   "account-tailscale: $EFFECTS"
   "account-dav-proto: $EFFECTS"
-  "account-calendar: $EFFECTS"
   "account-nextcloud-proto: $EFFECTS"
   "account-generic-proto: $EFFECTS"
   "account-oauth-probe-proto: $EFFECTS"
@@ -318,7 +316,6 @@ EDGES=(
   "account-discover: account-core account-capability account-ids account-http account-provider"
   "account-tailscale: account-ids"
   "account-dav-proto:"
-  "account-calendar: account-dav-proto account-http account-ids"
   "account-nextcloud-proto: account-core account-capability account-ids"
   "account-oauth-probe-proto: account-capability account-ids"
   "account-generic-proto: account-dav-proto account-core account-capability account-ids account-provider account-sheet"

@@ -11,11 +11,10 @@ the resolver. `CONVENTIONS.md` points to the shared style guides,
 | `chordkit` | `crates/chordkit` | the pure core | `thiserror`; `serde` behind the `serde` feature |
 | `keymap-kde` | `crates/chordkit-kde` | `KdeSource`, `parse_kdeglobals` | `chordkit` |
 | `keymap-gnome` | `crates/chordkit-gnome` | `GnomeSource`, `parse_dconf_dump`, `parse_accelerator` | `chordkit` |
-| `keymap-macos` | `crates/chordkit-macos` | `parse_key_equivalent`, `ENGLISH` menu titles, `import_user_key_equivalents` | `chordkit` |
 
 Edges: every source crate depends on `chordkit` (and a file-reading one on `base-fs`); `chordkit` depends on no
 workspace crate. The core is I/O-free by design and the boundary script keeps it so.
-`scripts/check-boundary.sh` asserts the core and `keymap-macos` reach no I/O, runtime, bus,
+`scripts/check-boundary.sh` asserts the core reaches no I/O, runtime, bus,
 file-watching or plist crate (nor `base-fs`). The only file reads are in `KdeSource::load` and
 `GnomeSource::load` (a path injected by the caller), and both go through `base_fs::read_text_capped`. Our desktop's source is not here: keycap implements
 `KeymapSource` in its own repo.
