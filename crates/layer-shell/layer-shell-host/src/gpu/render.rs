@@ -119,12 +119,10 @@ pub(crate) fn paint_document(
 
 /// An empty scene of exactly the render size (`vello_hybrid` wants the two equal).
 fn fit_scene(scene: &mut vello_hybrid::Scene, width: u32, height: u32) -> Result<()> {
-    let w = u16::try_from(width)
-        .ok()
-        .ok_or_else(|| too_large(width, height))?;
-    let h = u16::try_from(height)
-        .ok()
-        .ok_or_else(|| too_large(width, height))?;
+    // The error holds no more than "does not fit", which `too_large` says with the sizes.
+    let (Ok(w), Ok(h)) = (u16::try_from(width), u16::try_from(height)) else {
+        return Err(too_large(width, height));
+    };
     if scene.width() == w && scene.height() == h {
         scene.reset();
     } else {

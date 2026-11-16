@@ -51,7 +51,7 @@ pub enum CommandError {
         needs: &'static str,
     },
     #[error("{0:?} is not an integer coordinate")]
-    NotACoordinate(String),
+    NotACoordinate(String, #[source] std::num::ParseIntError),
     #[error("{0:?} is not a key (a W3C key name, or Space, optionally +shift/ctrl/alt/super)")]
     NotAKey(String),
     #[error("{0:?} is not a modifier (shift, ctrl, alt or super)")]
@@ -135,8 +135,7 @@ fn point(verb: &'static str, args: &[&str]) -> Result<Point, CommandError> {
     };
     let coord = |s: &str| {
         s.parse()
-            .ok()
-            .ok_or_else(|| CommandError::NotACoordinate(s.to_owned()))
+            .map_err(|e| CommandError::NotACoordinate(s.to_owned(), e))
     };
     Ok(Point {
         x: coord(x)?,
@@ -357,7 +356,10 @@ mod tests {
             ),
             (
                 "dock hover 1.5 2",
-                Err(CommandError::NotACoordinate("1.5".into())),
+                Err(CommandError::NotACoordinate(
+                    "1.5".into(),
+                    "1.5".parse::<i32>().unwrap_err(),
+                )),
             ),
             (
                 "dock click 1 2 sideways",

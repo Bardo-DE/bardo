@@ -55,12 +55,10 @@ impl<M: 'static> HostCtx<M> {
         if let Some(active) = &self.state.lock {
             return Err(LockError::InProgress(active.id));
         }
-        let lock = self
-            .state
-            .session_lock
-            .lock(&self.state.qh)
-            .ok()
-            .ok_or(LockError::Unsupported)?;
+        // The only way to fail is the protocol being absent or too old: that is `Unsupported`.
+        let Ok(lock) = self.state.session_lock.lock(&self.state.qh) else {
+            return Err(LockError::Unsupported);
+        };
         let id = self.state.lock_ids.next();
         let (machine, actions) = machine::start(self.outputs().into_iter().map(|info| info.id));
         self.state.lock = Some(ActiveLock {

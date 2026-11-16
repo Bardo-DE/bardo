@@ -58,7 +58,11 @@ impl<M> HostHandle<M> {
 
     /// The channel is closed exactly when the loop (and with it the receiver) is gone.
     fn post(&self, msg: HostMsg<M>) -> Result<()> {
-        self.sender.send(msg).ok().ok_or(HostError::HostGone)
+        // A refused send hands the message back and says nothing else: the loop is gone.
+        if self.sender.send(msg).is_err() {
+            return Err(HostError::HostGone);
+        }
+        Ok(())
     }
 }
 

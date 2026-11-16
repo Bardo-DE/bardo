@@ -49,13 +49,12 @@ pub(crate) fn first_present(host_adapter: &wgpu::Adapter) -> Result<()> {
     let (globals, mut queue) =
         registry_queue_init::<Probe>(&conn).map_err(|e| HostError::Connect(e.to_string()))?;
     let qh = queue.handle();
-    let compositor: WlCompositor =
-        globals
-            .bind(&qh, 4..=6, ())
-            .ok()
-            .ok_or(HostError::MissingGlobal {
-                global: "wl_compositor",
-            })?;
+    // Binding fails only when the global is absent or older than version 4.
+    let Ok(compositor): Result<WlCompositor, _> = globals.bind(&qh, 4..=6, ()) else {
+        return Err(HostError::MissingGlobal {
+            global: "wl_compositor",
+        });
+    };
     let surface = compositor.create_surface(&qh, ());
     let region = compositor.create_region(&qh, ());
     surface.set_input_region(Some(&region));
