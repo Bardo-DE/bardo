@@ -170,8 +170,7 @@ fn scan(words: &[String]) -> Result<Scan, Failure> {
 
 fn session_word(word: &str) -> Result<SessionId, Failure> {
     SessionId::parse(word)
-        .ok()
-        .ok_or_else(|| Failure::usage(format!("{word:?} is not a session id")))
+        .map_err(|e| Failure::usage_because(format!("{word:?} is not a session id"), &e))
 }
 
 fn command(scan: &Scan) -> Result<Command, Failure> {
@@ -205,8 +204,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 space: match scan.space.as_deref() {
                     None => SpaceId::desktop(),
                     Some(id) => SpaceId::parse(id)
-                        .ok()
-                        .ok_or_else(|| Failure::usage("--space is not a Space id"))?,
+                        .map_err(|e| Failure::usage_because("--space is not a Space id", &e))?,
                 },
             })
         }),
@@ -220,8 +218,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 [] => None,
                 [(name, row)] if name == "at" => Some(
                     row.parse::<u64>()
-                        .ok()
-                        .ok_or_else(|| Failure::usage("--at is not a row number"))?,
+                        .map_err(|e| Failure::usage_because("--at is not a row number", &e))?,
                 ),
                 _ => {
                     return Err(Failure::usage(
@@ -240,8 +237,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
         ["undo", id] => id
             .parse::<u64>()
             .map(|n| Command::Undo(UndoWhich::Entry(n)))
-            .ok()
-            .ok_or_else(|| Failure::usage(format!("{id:?} is not an undo id"))),
+            .map_err(|e| Failure::usage_because(format!("{id:?} is not an undo id"), &e)),
         ["undo", ..] => Err(Failure::usage("usage: bardo-do undo <undo-id> | --last")),
         [app] if scan.has("list") => Ok(Command::List {
             app: (*app).to_owned(),
@@ -266,8 +262,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 .as_deref()
                 .map(SessionId::parse)
                 .transpose()
-                .ok()
-                .ok_or_else(|| Failure::usage("--session is not a session id"))?,
+                .map_err(|e| Failure::usage_because("--session is not a session id", &e))?,
             params: scan.params.clone(),
             targets: targets.iter().map(|t| (*t).to_owned()).collect(),
         })),

@@ -71,6 +71,18 @@ impl Exit {
     }
 }
 
+/// An error's text followed by the text of each cause beneath it, joined by `: `.
+fn chain(error: &dyn std::error::Error) -> String {
+    let mut text = error.to_string();
+    let mut next = error.source();
+    while let Some(source) = next {
+        text.push_str(": ");
+        text.push_str(&source.to_string());
+        next = source.source();
+    }
+    text
+}
+
 /// A run that did not end in `Exit::Done`: the code, a sentence for the terminal, and the
 /// router's own words (a serialised refusal) for a program reading `--json`.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
@@ -92,6 +104,25 @@ impl Failure {
             what: what.into(),
             detail: Value::Null,
         }
+    }
+
+    /// A failure with a sentence and the cause that explains it, as `what: cause: deeper cause`.
+    pub fn because(
+        exit: Exit,
+        what: impl std::fmt::Display,
+        cause: &dyn std::error::Error,
+    ) -> Self {
+        Failure::new(exit, format!("{what}: {}", chain(cause)))
+    }
+
+    /// A usage error that has a cause, as [`Failure::because`] writes it.
+    pub fn usage_because(what: impl std::fmt::Display, cause: &dyn std::error::Error) -> Self {
+        Failure::because(Exit::Usage, what, cause)
+    }
+
+    /// A usage error that is its cause's own words, with the causes beneath it.
+    pub fn usage_of(cause: &dyn std::error::Error) -> Self {
+        Failure::usage(chain(cause))
     }
 
     /// A usage error: the command line is wrong.

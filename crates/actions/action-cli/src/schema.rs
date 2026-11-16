@@ -48,10 +48,11 @@ fn shape_of_type(ty: &ParamType) -> Shape {
 }
 
 fn field(param: &ParamDecl) -> Result<Field, Failure> {
-    let name = FieldName::new(param.name.as_str()).ok().ok_or_else(|| {
-        Failure::new(
+    let name = FieldName::new(param.name.as_str()).map_err(|e| {
+        Failure::because(
             Exit::Usage,
             format!("{} cannot be described as a schema field", param.name),
+            &e,
         )
     })?;
     let shape = shape_of_type(&param.ty);
@@ -88,8 +89,7 @@ pub fn shape(action: &ActionDecl) -> Result<Shape, Failure> {
 pub fn json_schema(action: &ActionDecl) -> Result<Value, Failure> {
     let rendered = shape(action)?.to_json_schema(SchemaDialect::Plain);
     serde_json::from_str(rendered.0.as_str())
-        .ok()
-        .ok_or_else(|| Failure::new(Exit::Usage, "the schema did not render"))
+        .map_err(|e| Failure::because(Exit::Usage, "the schema did not render", &e))
 }
 
 fn type_word(ty: &ParamType) -> &'static str {

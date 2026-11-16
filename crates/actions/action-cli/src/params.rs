@@ -90,8 +90,7 @@ fn entity(kind: &EntityKind, reading: &Reading<'_>, raw: &str) -> Result<EntityI
         .owner_of(kind, reading.owner)
         .ok_or_else(|| Failure::usage(format!("no installed app declares {kind}")))?;
     let key = EntityKey::parse(key)
-        .ok()
-        .ok_or_else(|| Failure::usage(format!("{key:?} is not a key of a {kind}")))?;
+        .map_err(|e| Failure::usage_because(format!("{key:?} is not a key of a {kind}"), &e))?;
     Ok(EntityId {
         app,
         kind: kind.clone(),
@@ -157,16 +156,16 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
             .ok_or_else(|| usage(format!("expected a whole number from {min} to {max}"))),
         ParamType::Decimal { scale } => when::decimal(raw, *scale)
             .map(Value::Decimal)
-            .map_err(|e| usage(e.to_string())),
+            .map_err(|e| Failure::usage_of(&e)),
         ParamType::Date => when::date(raw)
             .map(Value::Date)
-            .map_err(|e| usage(e.to_string())),
+            .map_err(|e| Failure::usage_of(&e)),
         ParamType::DateTime => when::instant(raw)
             .map(Value::DateTime)
-            .map_err(|e| usage(e.to_string())),
+            .map_err(|e| Failure::usage_of(&e)),
         ParamType::Duration => when::duration(raw)
             .map(Value::Duration)
-            .map_err(|e| usage(e.to_string())),
+            .map_err(|e| Failure::usage_of(&e)),
         ParamType::Choice(options) => options
             .iter()
             .find(|o| o.id.as_str() == raw)
@@ -180,8 +179,7 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
         ParamType::File => file(raw).map(Value::File),
         ParamType::Url => Url::parse(raw)
             .map(|_| Value::Url(raw.to_owned()))
-            .ok()
-            .ok_or_else(|| usage("expected a link such as https://example.org".to_owned())),
+            .map_err(|e| Failure::usage_because("expected a link such as https://example.org", &e)),
     }
 }
 
@@ -193,11 +191,9 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
 /// says what is wrong.
 pub fn file(raw: &str) -> Result<FileRef, Failure> {
     let path = std::path::absolute(raw)
-        .ok()
-        .ok_or_else(|| Failure::usage(format!("{raw:?} is not a path")))?;
+        .map_err(|e| Failure::usage_because(format!("{raw:?} is not a path"), &e))?;
     FileRef::parse(&path.to_string_lossy())
-        .ok()
-        .ok_or_else(|| Failure::usage(format!("{raw:?} is not a usable path")))
+        .map_err(|e| Failure::usage_because(format!("{raw:?} is not a usable path"), &e))
 }
 
 /// What the action acts on, from the words after its name.

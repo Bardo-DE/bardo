@@ -51,15 +51,13 @@ async fn rows<T: Transport>(
         {
             StoredView::Rows { rows, next } => {
                 for row in rows {
-                    let logged =
-                        serde_json::from_str::<Logged>(&row.json)
-                            .ok()
-                            .ok_or_else(|| {
-                                Failure::new(
-                                    crate::exit::Exit::Unavailable,
-                                    "a stored row is unreadable",
-                                )
-                            })?;
+                    let logged = serde_json::from_str::<Logged>(&row.json).map_err(|e| {
+                        Failure::because(
+                            crate::exit::Exit::Unavailable,
+                            "a stored row is unreadable",
+                            &e,
+                        )
+                    })?;
                     all.push(logged);
                 }
                 match next {
