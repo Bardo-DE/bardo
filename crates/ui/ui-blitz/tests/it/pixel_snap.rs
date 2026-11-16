@@ -34,7 +34,10 @@ const FIXTURE_CSS: &str = ".ds.ds{--line-soft:#000000}\
       border:1px solid #000000}\
     .icon{position:absolute;left:41px;top:81px;display:flex;color:#000000}";
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Fixture() -> Element {
     let item = |value: i32, title: &str| MenuItem::Item {
         value,
@@ -105,7 +108,11 @@ const FAINT: u8 = 48;
 const FULL: u8 = 240;
 
 /// The inked device pixels along `line`, each as (device coordinate, ink).
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn inked(frame: &RgbaImage, line: &Line, scale: f32) -> Vec<(u32, u8)> {
     let device = |logical: f32| (logical * scale).floor() as u32;
     (device(line.span.start)..device(line.span.end))

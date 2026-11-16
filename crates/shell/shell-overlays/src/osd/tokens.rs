@@ -30,7 +30,11 @@ impl Default for OsdTokens {
 impl OsdTokens {
     /// The values `length` resolves (a property name to its length), the shipped constant for
     /// each it does not.
-    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+    )]
     pub fn read(length: impl Fn(&str) -> Option<Px>) -> OsdTokens {
         let margin = length(OsdToken::Margin.input().as_str()).map_or(MARGIN, |px| {
             px.0.round().clamp(0.0, f32::from(u16::MAX)) as u16

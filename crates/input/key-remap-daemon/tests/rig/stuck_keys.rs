@@ -17,7 +17,10 @@ impl Xorshift {
         self.0
     }
 
-    #[expect(clippy::cast_possible_truncation, reason = "the remainder is below n, a usize, and below(2) is 0 or 1")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the remainder is below n, a usize, and below(2) is 0 or 1"
+    )]
     fn below(&mut self, n: usize) -> usize {
         (self.next() % n as u64) as usize
     }
@@ -56,7 +59,10 @@ const KEYS: &[&str] = &[
 const PROFILES: &[&str] = &["default", "terminal", "unknown"];
 
 /// Device 0 is an Apple keyboard, device 1 a PC one.
-#[expect(clippy::cast_possible_truncation, reason = "the remainder is below n, a usize, and below(2) is 0 or 1")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the remainder is below n, a usize, and below(2) is 0 or 1"
+)]
 fn key_input(rng: &mut Xorshift) -> RemapInput {
     let dev = rng.below(2) as u32;
     let key = *rng.pick(KEYS);
@@ -69,7 +75,10 @@ fn key_input(rng: &mut Xorshift) -> RemapInput {
     }
 }
 
-#[expect(clippy::cast_possible_truncation, reason = "the remainder is below n, a usize, and below(2) is 0 or 1")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the remainder is below n, a usize, and below(2) is 0 or 1"
+)]
 fn input(rng: &mut Xorshift) -> RemapInput {
     match rng.below(40) {
         0 => focus(rng.pick(PROFILES)),

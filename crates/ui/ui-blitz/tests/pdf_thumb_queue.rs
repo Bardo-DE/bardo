@@ -80,7 +80,11 @@ fn app() -> Element {
 }
 
 #[test]
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn twenty_quick_requests_run_a_few_rasters_and_show_the_last() {
     let files = files();
     let mut harness = Harness::new(app, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));

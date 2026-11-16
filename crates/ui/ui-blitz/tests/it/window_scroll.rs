@@ -40,7 +40,10 @@ mod eased {
 
     /// A list that scrolls 3000 px of content in 300 px, a capturing element beside it that takes the
     /// wheel itself, and listeners for the wheel's gestures.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Page() -> Element {
         use_gestures(|gesture| {
             if let Gesture::Scroll { by, .. } = gesture {
@@ -285,7 +288,10 @@ mod same_frame {
     }
 
     /// A bar as tall as the detents the listener has heard: content the app moves itself.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Follower() -> Element {
         let mut moved = use_signal(|| 0.0_f32);
         use_gestures_with(WheelDelivery::Eased, move |gesture| {
@@ -367,7 +373,10 @@ mod frames {
 
     /// A 300 px scroller holding the frame and 1000 px more below it, and a box beside it that
     /// scrolls nothing but listens for the wheel.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Page() -> Element {
         rsx! {
             div { style: "position:relative; width:380px; height:380px; margin:0",
@@ -542,7 +551,10 @@ mod fingers {
         }
     }
 
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Page() -> Element {
         use_gestures(|gesture| hear(&AS_RECEIVED, gesture));
         use_gestures_with(WheelDelivery::Eased, |gesture| hear(&EASED, gesture));
@@ -719,7 +731,10 @@ mod fingers {
     }
 
     #[test]
-    #[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout and pointer lengths are far inside f32's exact range"
+    )]
     fn a_fast_lift_glides_further_than_its_own_speed_and_a_gentle_one_as_it_is() {
         use blitz_embed::scroll::config::ScrollSettings;
         use blitz_embed::scroll::engine::Physics;
@@ -782,7 +797,10 @@ mod native {
     };
 
     /// A list of 3000 px of content in 300, and what a component watching its scroll state reads.
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Page() -> Element {
         let host = use_document_host();
         let handle = use_scroll_handle();
@@ -839,7 +857,10 @@ mod native {
     }
 
     /// A flick of `steps` strokes of 30 px up the page (winit's sign: negative), lifted.
-    #[expect(clippy::cast_precision_loss, reason = "a pixel or item count far below the float's exact integer range")]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "a pixel or item count far below the float's exact integer range"
+    )]
     fn flick(harness: &mut Harness, steps: usize) -> f64 {
         for n in 0..steps {
             let phase = if n == 0 {

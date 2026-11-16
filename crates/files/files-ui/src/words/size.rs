@@ -32,7 +32,10 @@ pub fn entry_size_words(entry: &Entry) -> String {
 }
 
 /// `bytes` (a thousand or more) in kilobytes or a bigger unit.
-#[expect(clippy::cast_precision_loss, reason = "a byte count shown rounded to three digits; precision past 2^53 does not change the text")]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a byte count shown rounded to three digits; precision past 2^53 does not change the text"
+)]
 fn scaled(bytes: u64) -> String {
     let mut value = bytes as f64 / 1000.0;
     let mut unit = 0;

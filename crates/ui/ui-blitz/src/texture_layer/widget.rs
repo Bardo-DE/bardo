@@ -107,7 +107,10 @@ impl Widget for LayerWidget {
         self.props.borrow().pace == Pace::EveryFrame
     }
 
-    #[expect(clippy::cast_precision_loss, reason = "a pixel or item count far below the float's exact integer range")]
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "a pixel or item count far below the float's exact integer range"
+    )]
     fn intrinsic_sizes(&self) -> IntrinsicSizes {
         let props = self.props.borrow();
         let ratio = props

@@ -22,7 +22,10 @@ pub(super) struct ContextAt {
 }
 
 /// The pointer's place in a press, as quire's placement takes it.
-#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout and pointer lengths are far inside f32's exact range"
+)]
 pub(super) fn point_of(event: &MouseEvent) -> Point {
     let at = event.client_coordinates();
     Point {

@@ -22,7 +22,10 @@ const STEPS: [&str; 5] = [
     "",
 ];
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn App() -> Element {
     let mut step = use_signal(|| 0usize);
     let text = STEPS[step()];
@@ -37,7 +40,10 @@ fn App() -> Element {
 
 /// The root as `Ds` draws it: the `<style>` exists only while the style has text, so an emptied
 /// file removes the element and the next edit adds one back.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Toggled() -> Element {
     let mut step = use_signal(|| 0usize);
     let text = TOGGLES[step()];
@@ -69,7 +75,11 @@ fn next(harness: &mut Harness) {
     harness.advance(Duration::from_millis(50));
 }
 
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn fill(harness: &Harness) -> [u8; 4] {
     let Srgba(c) = harness
         .fill_of(".probe", Part::Element)
@@ -78,7 +88,11 @@ fn fill(harness: &Harness) -> [u8; 4] {
 }
 
 /// The painted pixel in the middle of the probe.
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn pixel(harness: &mut Harness) -> [u8; 4] {
     let at: Point = harness.centre(".probe").expect("probe on screen");
     let image = harness.render().expect("paint");
@@ -142,7 +156,10 @@ fn removing_the_style_element_returns_to_the_default_and_adding_one_restyles() {
 
 /// A user rule written with an unprefixed attribute selector (`[data-surface=bar]`, the form
 /// `ui_components::selectors` lists) matches the attribute Dioxus wrote; `[*|data-surface=bar]` still does.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Surfaced() -> Element {
     rsx! {
         div { class: "ds",

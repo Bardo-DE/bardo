@@ -56,7 +56,11 @@ pub struct ThumbKey {
 impl ThumbRequest {
     /// The room in device pixels, each side rounded up and held to 1..=2048.
     #[must_use]
-    #[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+    )]
     pub fn device_box(&self) -> DeviceBox {
         let side = |px: f32| {
             let device = (f64::from(px) * self.scale.as_f64()).ceil();

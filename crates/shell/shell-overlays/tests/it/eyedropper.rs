@@ -26,7 +26,10 @@ const VIEWPORT: Viewport = Viewport {
 };
 
 /// A picture of 192 by 108 pixels whose pixel `(x, y)` is `(x, y, 7)`: every pixel names itself.
-#[expect(clippy::cast_possible_truncation, reason = "x < 192 and y < 108 fit a byte")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "x < 192 and y < 108 fit a byte"
+)]
 fn shot() -> OutputShot {
     let image = RgbaImage::from_fn(192, 108, |x, y| Rgba([x as u8, y as u8, 7, 255]));
     let mut png = std::io::Cursor::new(Vec::new());

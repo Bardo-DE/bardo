@@ -123,7 +123,10 @@ fn Rooted(root: SharedRoot) -> Element {
 }
 
 /// The app with the host's modality, net provider and scheme around it.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 pub(crate) fn Host(props: HostProps) -> Element {
     let window = use_window();
     let signals = use_context_provider(|| HostSignals {
@@ -375,7 +378,11 @@ fn document_zoom(document: Option<&NodeHandle>) -> f64 {
 }
 
 /// A winit scale factor in 120ths, the unit `ui_components::prelude::Scale` shares with the Wayland protocol.
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn scale_of(factor: f64) -> Scale {
     Scale((factor * f64::from(Scale::DENOMINATOR)).round().max(1.0) as u32)
 }

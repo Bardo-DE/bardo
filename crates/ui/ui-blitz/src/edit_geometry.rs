@@ -110,7 +110,10 @@ fn segment_rects(
 }
 
 /// A parley box of inline root `node`'s layout, at display scale `scale`, in logical pixels.
-#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout and pointer lengths are far inside f32's exact range"
+)]
 fn to_logical(doc: &BaseDocument, node: &Node, scale: f32, bounds: BoundingBox) -> Rect {
     let (x, y) = content_origin(doc, node);
     let scale = f64::from(scale.max(f32::EPSILON));
@@ -128,7 +131,12 @@ fn to_logical(doc: &BaseDocument, node: &Node, scale: f32, bounds: BoundingBox) 
 
 /// `line` as wide as the `--caret-w` token at the document's scale (whole device pixels), from
 /// the insertion point rightwards, so an app draws the caret the rect describes.
-#[expect(clippy::cast_possible_truncation, clippy::cast_precision_loss, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact; a pixel or item count far below the float's exact integer range")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact; a pixel or item count far below the float's exact integer range"
+)]
 fn caret_wide(doc: &BaseDocument, line: Rect) -> Rect {
     let scale = Scale((doc.viewport().scale() * Scale::DENOMINATOR as f32).round() as u32);
     let width = PixelToken::CaretW.logical(scale).unwrap_or(Px(1.0));
@@ -169,7 +177,10 @@ fn border_origin(doc: &BaseDocument, node: &Node) -> (f32, f32) {
 }
 
 /// A length to the layout unit (a 64th of a pixel), as Blitz's client rects are.
-#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout and pointer lengths are far inside f32's exact range"
+)]
 fn snap(value: f64) -> f32 {
     ((value * 64.0).round() / 64.0) as f32
 }

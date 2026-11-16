@@ -89,7 +89,10 @@ fn item(path: &str, bytes: Vec<u8>) -> PutItem {
     }
 }
 
-#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "reduced modulo 251 first, so it fits a byte"
+)]
 fn big() -> Vec<u8> {
     (0..CHUNK_UNIT * 5 / 2).map(|i| (i % 251) as u8).collect()
 }

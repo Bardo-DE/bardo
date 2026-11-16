@@ -123,7 +123,10 @@ fn pixels(page: &PdfPage) -> image::RgbaImage {
 }
 
 /// Standard base64, no dependency for one test.
-#[expect(clippy::cast_possible_truncation, reason = "an index into the 64-entry base64 alphabet")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "an index into the 64-entry base64 alphabet"
+)]
 fn base64(text: &str) -> Vec<u8> {
     const ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     let values: Vec<u8> = text
@@ -274,7 +277,10 @@ static SHOWN_PATH: OnceLock<PathBuf> = OnceLock::new();
 static BROKEN_PATH: OnceLock<PathBuf> = OnceLock::new();
 static PANE_PATH: OnceLock<PathBuf> = OnceLock::new();
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Shown() -> Element {
     let path = SHOWN_PATH.get().cloned().unwrap_or_default();
     rsx! {
@@ -284,7 +290,10 @@ fn Shown() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Broken() -> Element {
     let path = BROKEN_PATH.get().cloned().unwrap_or_default();
     rsx! {
@@ -295,7 +304,11 @@ fn Broken() -> Element {
 }
 
 #[test]
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn on_a_document_it_loads_then_paints_the_page() {
     SHOWN_PATH.get_or_init(|| file("shown.pdf", &letter(RED)));
     let mut harness = Harness::new(Shown, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
@@ -339,7 +352,10 @@ fn a_broken_file_lands_on_the_plate() {
 /// The preview pane's pattern: a component that calls `use_pdf_page` on every
 /// render, with the path only while its content is a PDF, and hands the page to
 /// `PaneContent::Pdf`. Starts on a web row, then turns to the PDF.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn PanePreview() -> Element {
     let mut pdf = use_signal(|| false);
     let path = pdf().then(|| PANE_PATH.get().cloned().unwrap_or_default());

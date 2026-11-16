@@ -30,7 +30,10 @@ impl WindowDrop {
     /// The inputs `event` makes, at `scale` device pixels per logical pixel, with `held` the
     /// modifier keys the window tracks (a drop event carries none). Entering asks the platform
     /// for the paths.
-    #[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout and pointer lengths are far inside f32's exact range"
+    )]
     pub(crate) fn inputs(
         &mut self,
         event: &WindowEvent,

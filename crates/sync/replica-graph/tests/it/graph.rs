@@ -141,7 +141,10 @@ async fn a_deleted_folder_is_one_change_and_the_files_it_held_get_tombstones() {
 }
 
 #[tokio::test]
-#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "reduced modulo 251 first, so it fits a byte"
+)]
 async fn a_file_is_one_put_up_to_the_threshold_and_a_session_in_chunks_past_it() {
     let server = Server::start().await;
     let replica = server.replica("", 50, Uploads::new(10, CHUNK_UNIT));

@@ -36,7 +36,11 @@ fn app() -> Element {
 }
 
 /// Coloured pixels (channel spread over 60) inside `selector`'s box.
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact; pixel positions of a small test image")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact; pixel positions of a small test image"
+)]
 fn coloured(harness: &Harness, shot: &image::RgbaImage, selector: &str) -> u32 {
     let rect = harness.rect(selector).expect("laid out");
     let xs = rect.left().0 as u32..(rect.left().0 + rect.size.width.0) as u32;
@@ -70,7 +74,11 @@ fn the_macs_bitmap_emoji_paint_in_colour() {
 
 /// Each emoji of [`app`] is coloured, and the text under `.ds-emoji-text` is Inter's. The picture
 /// goes to `$EMOJI_OUT/<name>.png` when that is set.
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn paints_in_colour(name: &str) {
     let mut harness = Harness::new(app, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     harness.advance(Duration::from_millis(100));

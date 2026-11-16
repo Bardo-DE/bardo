@@ -7,7 +7,10 @@ use ui_components::host::phase::PhaseWrite;
 use ui_components::prelude::{Point, Px, Rect, Size};
 
 /// `node`'s border box in logical pixels; `None` when the node is gone.
-#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout and pointer lengths are far inside f32's exact range"
+)]
 pub(crate) fn border_box(doc: &BaseDocument, node: NodeId) -> Option<Rect> {
     if !crate::layout_chain::placeable(doc, node) {
         return None;
@@ -28,7 +31,10 @@ pub(crate) fn border_box(doc: &BaseDocument, node: NodeId) -> Option<Rect> {
 /// `node`'s own scroll state: the offset, the height it shows (its border box less its borders) and
 /// the content's length, which is the height plus how far the content can scroll. `None` when the
 /// node is gone.
-#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout and pointer lengths are far inside f32's exact range"
+)]
 pub(crate) fn scroll_of(doc: &BaseDocument, node: NodeId) -> Option<Scroll> {
     let found = doc.get_node(node)?;
     let layout = found.final_layout();

@@ -35,7 +35,10 @@ impl WindowHover {
     /// The crossings `event` makes at `scale` device pixels per logical pixel: a move over the
     /// document's frames, or the pointer leaving the window (off any link). A document the
     /// renderer is holding is skipped; the next move catches up.
-    #[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout and pointer lengths are far inside f32's exact range"
+    )]
     pub(crate) fn crossings(
         &mut self,
         event: &WindowEvent,
@@ -96,7 +99,10 @@ impl WindowHover {
 }
 
 /// Where `event` releases `which`, in logical points at `scale` device pixels per point.
-#[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout and pointer lengths are far inside f32's exact range"
+)]
 fn released(event: &WindowEvent, scale: f64, which: MouseButton) -> Option<Point> {
     let WindowEvent::PointerButton {
         state: ElementState::Released,

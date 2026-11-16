@@ -48,7 +48,10 @@ impl FakeBackend {
     }
 }
 
-#[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
+#[expect(
+    clippy::unused_async_trait_impl,
+    reason = "the trait method is async and this fake never waits"
+)]
 impl SessionBackend for FakeBackend {
     fn kind(&self) -> BackendKind {
         BackendKind::Fake
@@ -189,7 +192,10 @@ impl Default for MemoryLog {
     }
 }
 
-#[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
+#[expect(
+    clippy::unused_async_trait_impl,
+    reason = "the trait method is async and this fake never waits"
+)]
 impl SessionLog for MemoryLog {
     async fn append(
         &self,
@@ -230,7 +236,8 @@ impl SessionLog for MemoryLog {
     ) -> Result<LogPage, LogFault> {
         let all = self.bodies.lock().map_err(|_| LogFault::Unavailable)?;
         let rows = all.get(session).map(Vec::as_slice).unwrap_or_default();
-        let start = from.map_or(0, |s| usize::try_from(s.0).unwrap_or(usize::MAX))
+        let start = from
+            .map_or(0, |s| usize::try_from(s.0).unwrap_or(usize::MAX))
             .min(rows.len());
         let take = size.0.0 as usize;
         let end = start.saturating_add(take).min(rows.len());

@@ -198,7 +198,10 @@ impl WheelInput {
 
     /// The gesture a listener hears for it.
     #[must_use]
-    #[expect(clippy::cast_possible_truncation, reason = "layout and pointer lengths are far inside f32's exact range")]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout and pointer lengths are far inside f32's exact range"
+    )]
     pub fn gesture(&self, at: Point, held: Modifiers, detent_px: f64) -> Gesture {
         let (x, y) = self.motion(detent_px);
         Gesture::Scroll {

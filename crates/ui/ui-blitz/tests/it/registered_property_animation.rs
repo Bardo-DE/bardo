@@ -39,7 +39,11 @@ const YELLOW: [u8; 3] = [255, 255, 0];
 
 /// The pixel 30 px from a square's centre at 60 degrees clockwise from the top, which the
 /// gradient paints red at rest and yellow once turned a quarter.
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn probe(harness: &mut Harness, id: &str) -> [u8; 3] {
     let frame = harness.render().expect("paints");
     let at = harness.rect(&format!("#{id}")).expect("laid out");

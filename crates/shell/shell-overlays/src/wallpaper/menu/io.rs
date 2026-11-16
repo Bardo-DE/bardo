@@ -57,7 +57,10 @@ fn open_wallpaper_page(surface: Option<&SurfaceHandle>, actions: Option<&ActionL
 
 /// A press of the secondary button on the wallpaper opens the desktop's menu with its corner
 /// there; any other button does nothing here.
-#[expect(clippy::cast_possible_truncation, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 pub(in crate::wallpaper) fn secondary_press(
     event: &Event<MouseData>,
     open: Callback<DesktopPoint>,

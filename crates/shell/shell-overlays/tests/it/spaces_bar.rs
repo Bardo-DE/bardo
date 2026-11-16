@@ -184,7 +184,11 @@ fn a_picture_that_arrived_is_on_its_tile_and_a_drag_over_a_tile_lights_it() {
 }
 
 /// `selector`'s element as drawn, in whole logical pixels.
-#[expect(clippy::cast_possible_truncation, clippy::cast_sign_loss, reason = "a rounded pixel length, small and non-negative; the saturating cast is exact")]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length, small and non-negative; the saturating cast is exact"
+)]
 fn drawn(running: &Running, selector: &str) -> (i32, i32, u32, u32) {
     let rect = running
         .harness

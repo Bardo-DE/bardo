@@ -7,7 +7,10 @@ use std::borrow::Cow;
 
 /// `pixels` as premultiplied RGBA8: premultiplied RGBA as it is (borrowed), RGB with an opaque
 /// alpha, straight RGBA with each colour channel multiplied by its alpha and rounded to nearest.
-#[expect(clippy::cast_possible_truncation, reason = "(channel * alpha + 127) / 255 is at most 255 for byte inputs")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "(channel * alpha + 127) / 255 is at most 255 for byte inputs"
+)]
 pub(crate) fn premultiplied<'a>(pixels: &Pixels<'a>) -> Cow<'a, [u8]> {
     let bytes = pixels.bytes();
     match pixels.format() {
@@ -75,7 +78,8 @@ mod tests {
             ),
         ];
         for (name, format, bytes, want) in CASES {
-            let width = u32::try_from(bytes.len() / format.bytes_per_pixel()).expect("a narrow test picture");
+            let width = u32::try_from(bytes.len() / format.bytes_per_pixel())
+                .expect("a narrow test picture");
             let pixels = Pixels::new(*format, width, 1, bytes).expect("a valid picture");
             assert_eq!(&*premultiplied(&pixels), *want, "{name}");
         }

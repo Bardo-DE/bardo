@@ -184,7 +184,10 @@ async fn an_anchor_that_is_not_ours_or_that_drive_refuses_is_expired() {
 }
 
 #[tokio::test]
-#[expect(clippy::cast_possible_truncation, reason = "reduced modulo 251 first, so it fits a byte")]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "reduced modulo 251 first, so it fits a byte"
+)]
 async fn a_small_file_is_one_multipart_request_and_a_large_one_a_resumable_session() {
     let server = Server::start().await;
     let replica = server.replica("", 10, Uploads::new(1_000, 2 * CHUNK_UNIT));
