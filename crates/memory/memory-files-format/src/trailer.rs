@@ -13,6 +13,7 @@
 
 use chrono::{DateTime, SecondsFormat, Utc};
 use memory_core::{Actor, Fact, FactId, FactText, Label, Link, UnixSeconds, Validity};
+use std::sync::Arc;
 
 const OPEN: &str = "  <!-- ";
 const CLOSE: &str = " -->";
@@ -37,8 +38,27 @@ pub enum TrailerFault {
     Duplicate(&'static str),
     /// A value is not well-formed.
     #[error("bad value for {0}")]
-    BadValue(&'static str),
+    BadValue(&'static str, #[source] Option<Cause>),
 }
+
+/// The error that made a value bad. Two causes are equal when they say the same.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(transparent)]
+pub struct Cause(Arc<dyn std::error::Error + Send + Sync>);
+
+impl Cause {
+    pub(crate) fn of(error: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self(Arc::new(error))
+    }
+}
+
+impl PartialEq for Cause {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.to_string() == other.0.to_string()
+    }
+}
+
+impl Eq for Cause {}
 
 fn escape(text: &str) -> String {
     text.replace('%', "%25")
@@ -136,15 +156,13 @@ impl Fields {
     fn into_fact(self, text: FactText) -> Result<Fact, TrailerFault> {
         let need = |v: Option<String>, k| v.ok_or(TrailerFault::MissingKey(k));
         let id = FactId::parse(&need(self.id, "fact")?)
-            .ok()
-            .ok_or(TrailerFault::BadValue("fact"))?;
+            .map_err(|e| TrailerFault::BadValue("fact", Some(Cause::of(e))))?;
         let at = need(self.at, "at")?;
         let parsed = DateTime::parse_from_rfc3339(&at)
-            .ok()
-            .ok_or(TrailerFault::BadValue("at"))?
+            .map_err(|e| TrailerFault::BadValue("at", Some(Cause::of(e))))?
             .with_timezone(&Utc);
         if render_at(parsed) != at {
-            return Err(TrailerFault::BadValue("at"));
+            return Err(TrailerFault::BadValue("at", None));
         }
         let by: Actor = from_json(&need(self.by, "by")?, "by")?;
         let label: Label = from_json(&need(self.label, "label")?, "label")?;
@@ -171,9 +189,7 @@ fn from_json<T: serde::de::DeserializeOwned>(
     text: &str,
     key: &'static str,
 ) -> Result<T, TrailerFault> {
-    serde_json::from_str(text)
-        .ok()
-        .ok_or(TrailerFault::BadValue(key))
+    serde_json::from_str(text).map_err(|e| TrailerFault::BadValue(key, Some(Cause::of(e))))
 }
 
 fn escaped_json<T: serde::Serialize>(value: &T) -> String {

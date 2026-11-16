@@ -9,4 +9,4 @@ mod trailer;
 
 pub use store::{MemfilesError, PRIMER_MAX_LINES, Primer, PrimerEntry, Store};
 pub use topic::{Block, FORMAT_LINE, ParseError, TopicFile, parse_topic, render_topic};
-pub use trailer::{TrailerFault, parse_trailer, render_trailer};
+pub use trailer::{Cause, TrailerFault, parse_trailer, render_trailer};

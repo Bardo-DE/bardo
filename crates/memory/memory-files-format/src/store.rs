@@ -17,11 +17,12 @@ pub enum MemfilesError {
     #[error("vault: {0}")]
     Vault(#[from] VaultError),
     /// A file did not parse.
-    #[error("{path}: {err}")]
+    #[error("{path} did not parse")]
     Parse {
         /// Which file.
         path: VaultPath,
         /// Why.
+        #[source]
         err: ParseError,
     },
     /// The fact is not in `pending/`.
@@ -247,9 +248,7 @@ impl<V: Vault> Store<V> {
             path: path.clone(),
             err,
         };
-        let text = String::from_utf8(bytes)
-            .ok()
-            .ok_or_else(|| parse_err(ParseError::MissingFrontMatter))?;
+        let text = String::from_utf8(bytes).map_err(|e| parse_err(ParseError::NotText(e)))?;
         parse_topic(&text).map(Some).map_err(parse_err)
     }
 

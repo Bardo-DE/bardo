@@ -19,7 +19,7 @@
 //! `Block::Verbatim`. Contract: `render_topic(&parse_topic(s)?, tz) == s` for any `s` that
 //! `render_topic` produced.
 
-use crate::trailer::{TrailerFault, parse_trailer, render_trailer, timestamp};
+use crate::trailer::{Cause, TrailerFault, parse_trailer, render_trailer, timestamp};
 use chrono::FixedOffset;
 use memory_core::{Fact, FactText, TopicPath};
 use std::fmt::Write as _;
@@ -61,6 +61,9 @@ pub enum ParseError {
     /// The file does not start with `---`.
     #[error("missing front matter")]
     MissingFrontMatter,
+    /// The file is not text.
+    #[error("not text")]
+    NotText(#[source] std::string::FromUtf8Error),
     /// The front matter has no closing `---`.
     #[error("front matter is not closed")]
     UnclosedFrontMatter,
@@ -75,7 +78,7 @@ pub enum ParseError {
     UnknownKey(String),
     /// The topic is not a topic path.
     #[error("bad topic {0:?}")]
-    BadTopic(String),
+    BadTopic(String, #[source] Cause),
     /// A bullet's trailer was refused (1-based line of the trailer).
     #[error("line {line}: {fault}")]
     BadTrailer {
@@ -89,6 +92,9 @@ pub enum ParseError {
     BadFactText {
         /// Where.
         line: usize,
+        /// Why the text is refused.
+        #[source]
+        source: Cause,
     },
 }
 
@@ -137,8 +143,7 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
     }
     let topic_text = topic.ok_or(ParseError::MissingKey("topic"))?;
     let topic = TopicPath::parse(topic_text)
-        .ok()
-        .ok_or_else(|| ParseError::BadTopic(topic_text.to_owned()))?;
+        .map_err(|e| ParseError::BadTopic(topic_text.to_owned(), Cause::of(e)))?;
     let title = title.ok_or(ParseError::MissingKey("title"))?.to_owned();
     let mut blocks = Vec::new();
     let mut i = close + 1;
@@ -154,9 +159,10 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
         };
         match lines.get(i).filter(|next| next.starts_with("  <!-- fact:")) {
             Some(trailer) => {
-                let fact_text = FactText::parse(bullet)
-                    .ok()
-                    .ok_or(ParseError::BadFactText { line: i })?;
+                let fact_text = FactText::parse(bullet).map_err(|e| ParseError::BadFactText {
+                    line: i,
+                    source: Cause::of(e),
+                })?;
                 let fact = parse_trailer(trailer, fact_text)
                     .map_err(|fault| ParseError::BadTrailer { line: i + 1, fault })?;
                 blocks.push(Block::Fact(fact));
