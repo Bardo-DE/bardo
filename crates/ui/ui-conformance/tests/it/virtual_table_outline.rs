@@ -4,8 +4,8 @@
 //! Left on the cursor's row. `NameCell` writes a glyph and a name cut from the middle to the room
 //! it was given.
 
-use std::fmt::Write as _;
 use dioxus::prelude::*;
+use std::fmt::Write as _;
 use ui_components::base::press::PointerButton;
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::name_cell::NameCell;
@@ -61,7 +61,8 @@ fn Page() -> Element {
                     outline,
                     ontoggle: move |toggle: OutlineToggle| {
                         log.with_mut(|log| {
-                            write!(log, 
+                            write!(
+                                log,
                                 "{}:{:?}:{:?},",
                                 toggle.row, toggle.shown, toggle.reach
                             ).expect("writing to a String cannot fail");

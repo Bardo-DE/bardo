@@ -1,7 +1,7 @@
 //! The one call a consumer's test makes.
 
-use std::fmt::Write as _;
 use std::collections::BTreeMap;
+use std::fmt::Write as _;
 
 use super::rule::{Exception, LintConfig, Rule};
 use super::severity;
@@ -52,10 +52,12 @@ fn offence_text(offences: &[Offence]) -> String {
     let mut message = format!("quire lint found {} offence(s):\n", offences.len());
     for (rule, group) in &by_rule {
         for offence in group {
-            writeln!(message, 
+            writeln!(
+                message,
                 "  {rule:?} {}:{}: {}",
                 offence.line, offence.column, offence.text
-            ).expect("writing to a String cannot fail");
+            )
+            .expect("writing to a String cannot fail");
         }
     }
     message
@@ -91,10 +93,12 @@ fn stale_text(stale: &[&Exception]) -> String {
         stale.len()
     );
     for exception in stale {
-        writeln!(text, 
+        writeln!(
+            text,
             "  {:?} on {} ({})",
             exception.rule, exception.selector, exception.reason
-        ).expect("writing to a String cannot fail");
+        )
+        .expect("writing to a String cannot fail");
     }
     text
 }
@@ -113,10 +117,12 @@ fn suppressed_counts(config: &LintConfig, suppressed: &[Offence]) -> String {
             .iter()
             .filter(|offence| exception.covers(offence))
             .count();
-        writeln!(text, 
+        writeln!(
+            text,
             "  {count} x {:?} on {} ({})",
             exception.rule, exception.selector, exception.reason
-        ).expect("writing to a String cannot fail");
+        )
+        .expect("writing to a String cannot fail");
     }
     text
 }

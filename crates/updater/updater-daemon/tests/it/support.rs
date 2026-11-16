@@ -1,7 +1,7 @@
 //! Building signed-looking bundles and a sandbox to install them into.
 
-use std::fmt::Write as _;
 use semver::Version;
+use std::fmt::Write as _;
 use std::path::PathBuf;
 use tempfile::TempDir;
 use updater_core::{Authenticator, Sha256Hex, SignError};
@@ -118,14 +118,20 @@ pub fn describe(
         bundle.len()
     );
     for (path, content) in listed {
-        write!(text, 
+        write!(
+            text,
             "[[file]]\npath = \"{path}\"\nsha256 = \"{}\"\nmode = {}\n",
             Sha256Hex::of(content.as_bytes()),
             mode_of(path)
-        ).expect("writing to a String cannot fail");
+        )
+        .expect("writing to a String cannot fail");
     }
     for (link, target) in exports {
-        write!(text, "[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n").expect("writing to a String cannot fail");
+        write!(
+            text,
+            "[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n"
+        )
+        .expect("writing to a String cannot fail");
     }
     for path in system {
         write!(text, "[[system]]\npath = \"{path}\"\n").expect("writing to a String cannot fail");

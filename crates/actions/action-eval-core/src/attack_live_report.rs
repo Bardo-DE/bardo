@@ -141,7 +141,8 @@ impl LiveMetrics {
                 .collect::<Vec<_>>()
                 .join(", "),
         };
-        write!(out, 
+        write!(
+            out,
             "\nGoals reached that are not known holes: {}\nKnown holes that held this time (a live model may only have been lucky): {}\n",
             list(b.surprises()),
             list(b.closed_holes())
@@ -151,7 +152,8 @@ impl LiveMetrics {
 }
 
 fn split_table(out: &mut String, head: &str, rows: &[(String, &ThreeRates)]) {
-    write!(out, 
+    write!(
+        out,
         "\n| {head} | n | utility | utility under attack | attack success rate |\n| --- | --- | --- | --- | --- |\n"
     ).expect("writing to a String cannot fail");
     for (name, r) in rows {

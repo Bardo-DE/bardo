@@ -70,18 +70,25 @@ impl Doc {
             self.bundle_size
         );
         for file in &self.files {
-            write!(text, 
+            write!(
+                text,
                 "[[file]]\npath = \"{}\"\nsha256 = \"{}\"\nmode = {}\n",
                 file.path,
                 Sha256Hex::of(file.content.as_bytes()),
                 file.mode
-            ).expect("writing to a String cannot fail");
+            )
+            .expect("writing to a String cannot fail");
         }
         for (link, target) in &self.exports {
-            write!(text, "[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n").expect("writing to a String cannot fail");
+            write!(
+                text,
+                "[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n"
+            )
+            .expect("writing to a String cannot fail");
         }
         for path in &self.system {
-            write!(text, "[[system]]\npath = \"{path}\"\n").expect("writing to a String cannot fail");
+            write!(text, "[[system]]\npath = \"{path}\"\n")
+                .expect("writing to a String cannot fail");
         }
         text
     }

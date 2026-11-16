@@ -1,7 +1,6 @@
 //! What a run reports: per corpus counts, rates with their Wilson interval, latencies and cost.
 //! Everything is an integer unit; floats exist only inside [`wilson`].
 
-use std::fmt::Write as _;
 use crate::attack_score::AttackMetrics;
 use crate::case::Corpus;
 use action_vocab::Millis;
@@ -10,6 +9,7 @@ use model_provider::Money;
 use permission_core::Stage;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fmt::Write as _;
 
 /// A rate with its 95% Wilson interval, in thousandths.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -149,7 +149,8 @@ impl RunReport {
              | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n",
         );
         for (corpus, m) in &self.per_corpus {
-            writeln!(out, 
+            writeln!(
+                out,
                 "| {} | {} | {} | {} | {} | {} | {} | {} | {} ms | {} ms | {} |",
                 serde_json::to_string(corpus)
                     .unwrap_or_default()
@@ -164,7 +165,8 @@ impl RunReport {
                 m.p50.0,
                 m.p95.0,
                 charge(m.cost_per_1000)
-            ).expect("writing to a String cannot fail");
+            )
+            .expect("writing to a String cannot fail");
         }
         if let Some(attack) = &self.attack {
             out.push_str(&attack.render());
@@ -172,7 +174,8 @@ impl RunReport {
         out.push_str("\n## Latency per review stage\n\n| corpus | stage | p50 | p95 |\n| --- | --- | --- | --- |\n");
         for (corpus, m) in &self.per_corpus {
             for (stage, l) in &m.per_stage {
-                writeln!(out, 
+                writeln!(
+                    out,
                     "| {} | {} | {} ms | {} ms |",
                     serde_json::to_string(corpus)
                         .unwrap_or_default()
@@ -182,7 +185,8 @@ impl RunReport {
                         .trim_matches('"'),
                     l.p50.0,
                     l.p95.0
-                ).expect("writing to a String cannot fail");
+                )
+                .expect("writing to a String cannot fail");
             }
         }
         out.push_str("\n## Cases that missed what they expected\n\n");
