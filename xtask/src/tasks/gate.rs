@@ -69,10 +69,12 @@ struct TestsRoot {
 }
 
 impl TestsRoot {
+    /// Under `/tmp` with a short name, not under the build folder: tests bind Unix sockets (private
+    /// buses, compositors) inside their throwaway folders, and a socket path has at most 107 bytes.
+    /// A root under `/mnt/data/cargo/<lane>/` left too little room and ~270 tests could not start a
+    /// bus ("Socket name too long").
     fn new(root: &Path) -> Result<Self> {
-        let base =
-            std::env::var_os("CARGO_TARGET_DIR").map_or_else(|| root.join("target"), PathBuf::from);
-        let dir = base.join(format!("gate-tests-{}", std::process::id()));
+        let dir = PathBuf::from(format!("/tmp/bardo-gate-{}", std::process::id()));
         std::fs::create_dir_all(&dir)?;
         Ok(Self {
             dir,
