@@ -84,7 +84,8 @@ pub fn call(
 
 fn window_id(text: &str) -> Result<u64, CommandError> {
     text.parse()
-        .map_err(|_| bad(format!("--window: not a window id: {text}")))
+        .ok()
+        .ok_or_else(|| bad(format!("--window: not a window id: {text}")))
 }
 
 /// `X,Y,W,H`: a point (may be negative) and a size (not empty).

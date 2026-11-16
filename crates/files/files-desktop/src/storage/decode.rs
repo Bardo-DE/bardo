@@ -54,7 +54,9 @@ fn wire_state(word: Option<String>) -> DriveState {
 pub(super) fn drive(id: String, details: &Details) -> Result<CloudDrive, StorageError> {
     let provider = text(details, DRIVE_KEY_PROVIDER).ok_or(StorageError::Missing("provider"))?;
     let path = text(details, DRIVE_KEY_PATH).ok_or(StorageError::Missing("folder"))?;
-    let folder = FolderPath::new(&path).map_err(|_| StorageError::Path(path))?;
+    let folder = FolderPath::new(&path)
+        .ok()
+        .ok_or(StorageError::Path(path))?;
     let usage = Usage {
         used: number(details, DRIVE_KEY_USED).map(ByteSize),
         total: number(details, DRIVE_KEY_TOTAL).map(ByteSize),
@@ -101,7 +103,9 @@ fn kind_of(word: &str) -> Result<CloudKind, StorageError> {
 }
 
 fn item_ref(path: &str) -> Result<ItemRef, StorageError> {
-    ItemRef::from_path(std::path::Path::new(path)).map_err(|_| StorageError::Path(path.to_owned()))
+    ItemRef::from_path(std::path::Path::new(path))
+        .ok()
+        .ok_or_else(|| StorageError::Path(path.to_owned()))
 }
 
 /// One entry of `Items` or `ItemsChanged`: a path and its details.

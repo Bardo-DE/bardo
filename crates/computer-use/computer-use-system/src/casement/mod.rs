@@ -64,7 +64,8 @@ impl CasementDesktop {
             .map_err(protocol)?;
         answer
             .await
-            .map_err(|_| protocol("the desktop client stopped before it was ready"))?
+            .ok()
+            .ok_or_else(|| protocol("the desktop client stopped before it was ready"))?
             .map_err(|error| protocol(watch::chain(&error)))?;
         Ok(Self {
             door,

@@ -135,9 +135,10 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
         session
             .send(ClientFrame::Request(InferRequest::CuaBegin(begin)))
             .await
-            .map_err(|_| CuaModelError::Fatal)?;
+            .ok()
+            .ok_or(CuaModelError::Fatal)?;
         loop {
-            match session.next().await.map_err(|_| CuaModelError::Fatal)? {
+            match session.next().await.ok().ok_or(CuaModelError::Fatal)? {
                 InferEvent::Routed(served) => self.served = Some(served),
                 InferEvent::Declined(declined) => self.note_declined(&declined),
                 InferEvent::Finished(InferReply::CuaStep(ack)) if is_ack(&ack) => break,
@@ -164,7 +165,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
             size: frame.0.size,
             stride: frame.0.stride,
         };
-        let fd = frame_fd(&frame).map_err(|_| CuaModelError::Fatal)?;
+        let fd = frame_fd(&frame).ok().ok_or(CuaModelError::Fatal)?;
         self.usage = None;
         let sent = session
             .send_attached(

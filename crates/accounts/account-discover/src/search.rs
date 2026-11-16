@@ -264,7 +264,8 @@ async fn document<H: Http>(
 async fn fetch<H: Http>(http: &H, url: &WebUrl) -> Result<String, Miss> {
     let asked = request(Method::GET, url)
         .body(Vec::new())
-        .map_err(|_| Miss::Malformed)?;
+        .ok()
+        .ok_or(Miss::Malformed)?;
     let response = http.send(asked).await.map_err(|e| match e {
         HttpError::TooLarge | HttpError::Malformed => Miss::Malformed,
         // unreachable, TLS, timed out, not granted, and a failure a later account-http adds
@@ -274,7 +275,9 @@ async fn fetch<H: Http>(http: &H, url: &WebUrl) -> Result<String, Miss> {
         404 | 410 => Err(Miss::Absent),
         _ if !response.status().is_success() => Err(Miss::Malformed),
         _ if response.body().len() > MAX_DOCUMENT => Err(Miss::Malformed),
-        _ => String::from_utf8(response.into_body()).map_err(|_| Miss::Malformed),
+        _ => String::from_utf8(response.into_body())
+            .ok()
+            .ok_or(Miss::Malformed),
     }
 }
 

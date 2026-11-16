@@ -124,7 +124,9 @@ fn redirect_target(
     } else {
         location.to_owned()
     };
-    let url = EndpointUrl::parse(&text).map_err(|_| DiscoverFault::Unreadable)?;
+    let url = EndpointUrl::parse(&text)
+        .ok()
+        .ok_or(DiscoverFault::Unreadable)?;
     if url.origin().scheme == base_url::UrlScheme::Https {
         Ok(url)
     } else {
@@ -176,11 +178,15 @@ struct Session {
 /// `DiscoverFault::Unreadable` when `json` is not a JMAP session or its `apiUrl` is not an endpoint
 /// URL.
 pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
-    let session: Session = serde_json::from_str(json).map_err(|_| DiscoverFault::Unreadable)?;
+    let session: Session = serde_json::from_str(json)
+        .ok()
+        .ok_or(DiscoverFault::Unreadable)?;
     if !session.capabilities.contains_key(CORE) {
         return Err(DiscoverFault::Unreadable);
     }
-    let url = EndpointUrl::parse(&session.api_url).map_err(|_| DiscoverFault::Unreadable)?;
+    let url = EndpointUrl::parse(&session.api_url)
+        .ok()
+        .ok_or(DiscoverFault::Unreadable)?;
     let tls = if url.origin().scheme == base_url::UrlScheme::Https {
         Tls::Implicit
     } else {
@@ -192,7 +198,7 @@ pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
         tls,
         login: LoginName(session.username),
     };
-    endpoint.check().map_err(|_| DiscoverFault::NoServers)?;
+    endpoint.check().ok().ok_or(DiscoverFault::NoServers)?;
     let has = |name: &str| session.capabilities.contains_key(name);
     let send = has(SUBMISSION);
     let claims = [

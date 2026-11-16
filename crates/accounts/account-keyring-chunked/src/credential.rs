@@ -101,8 +101,9 @@ impl<S: CredentialStoreApi + Send + Sync + ?Sized + 'static> ChunkedCredential<S
         match form {
             Form::Password => {
                 // Every piece is cut at a character boundary of a `&str`.
-                let text =
-                    std::str::from_utf8(value).map_err(|_| Error::BadEncoding(Vec::new()))?;
+                let text = std::str::from_utf8(value)
+                    .ok()
+                    .ok_or_else(|| Error::BadEncoding(Vec::new()))?;
                 entry.set_password(text)
             }
             Form::Secret => entry.set_secret(value),
@@ -123,7 +124,7 @@ impl<S: CredentialStoreApi + Send + Sync + ?Sized + 'static> ChunkedCredential<S
         let Some(count) = head.strip_prefix(self.store.marker.as_bytes()) else {
             return Ok(None);
         };
-        let count = std::str::from_utf8(count).map_err(|_| ChunkError::BadHead)?;
+        let count = std::str::from_utf8(count).ok().ok_or(ChunkError::BadHead)?;
         match count.parse::<usize>() {
             Ok(count) if (2..=MOST_PARTS).contains(&count) => Ok(Some(count)),
             _ => Err(ChunkError::BadHead),
@@ -160,8 +161,9 @@ impl<S: CredentialStoreApi + Send + Sync + ?Sized + 'static> ChunkedCredential<S
         let before = self.count(form)?.unwrap_or(0);
         let mut parts: Vec<&[u8]> = match form {
             Form::Password => {
-                let text =
-                    std::str::from_utf8(value).map_err(|_| Error::BadEncoding(value.to_vec()))?;
+                let text = std::str::from_utf8(value)
+                    .ok()
+                    .ok_or_else(|| Error::BadEncoding(value.to_vec()))?;
                 pieces::text(text, self.store.limit)
                     .into_iter()
                     .map(str::as_bytes)

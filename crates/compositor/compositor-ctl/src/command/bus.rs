@@ -46,7 +46,9 @@ pub enum Answer {
 
 /// The connection to the private bus named by `$DBUS_SESSION_BUS_ADDRESS`.
 pub async fn connect() -> Result<Connection, BusError> {
-    let address = std::env::var("DBUS_SESSION_BUS_ADDRESS").map_err(|_| BusError::NoBus)?;
+    let address = std::env::var("DBUS_SESSION_BUS_ADDRESS")
+        .ok()
+        .ok_or(BusError::NoBus)?;
     Ok(zbus::connection::Builder::address(address.as_str())?
         .build()
         .await?)
@@ -62,7 +64,8 @@ pub async fn make(connection: &Connection, call: Call) -> Result<Answer, BusErro
     let sent = send(&proxy, call);
     tokio::time::timeout(patience, sent)
         .await
-        .map_err(|_| BusError::TimedOut(patience))?
+        .ok()
+        .ok_or(BusError::TimedOut(patience))?
 }
 
 async fn send(proxy: &Proxy<'_>, call: Call) -> Result<Answer, BusError> {

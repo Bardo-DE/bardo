@@ -231,14 +231,18 @@ fn write_index(
     if purposes.is_empty() {
         return store.remove(&name);
     }
-    let json = serde_json::to_string(purposes).map_err(|_| SecretsError::Unreadable)?;
+    let json = serde_json::to_string(purposes)
+        .ok()
+        .ok_or(SecretsError::Unreadable)?;
     store.write(&name, &json)
 }
 
 impl StoreSecrets {
     // JSON rather than a bare string so an OAuth credential keeps its expiry and refresh token.
     fn put_now(&self, key: &SecretKey, value: &Credential) -> Result<(), SecretsError> {
-        let encoded = serde_json::to_string(value).map_err(|_| SecretsError::Unreadable)?;
+        let encoded = serde_json::to_string(value)
+            .ok()
+            .ok_or(SecretsError::Unreadable)?;
         self.write(&entry_name(key), &encoded)?;
         let purpose = attributes(key).purpose;
         let mut listed = purposes(self, &key.account);
@@ -265,7 +269,9 @@ impl StoreSecrets {
 
     fn get_now(&self, key: &SecretKey) -> Result<Credential, SecretsError> {
         let stored = self.read(&entry_name(key))?.ok_or(SecretsError::Missing)?;
-        serde_json::from_str(&stored).map_err(|_| SecretsError::Unreadable)
+        serde_json::from_str(&stored)
+            .ok()
+            .ok_or(SecretsError::Unreadable)
     }
 
     fn delete_now(&self, key: &SecretKey) -> Result<(), SecretsError> {

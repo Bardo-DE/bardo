@@ -59,7 +59,8 @@ impl<M: 'static> HostCtx<M> {
             .state
             .session_lock
             .lock(&self.state.qh)
-            .map_err(|_| LockError::Unsupported)?;
+            .ok()
+            .ok_or(LockError::Unsupported)?;
         let id = self.state.lock_ids.next();
         let (machine, actions) = machine::start(self.outputs().into_iter().map(|info| info.id));
         self.state.lock = Some(ActiveLock {

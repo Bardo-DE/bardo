@@ -50,7 +50,7 @@ pub trait ReadAt: Debug + Send + Sync {
             self.read_at(range.start, &mut [])?;
             return Ok(Vec::new());
         }
-        let mut out = vec![0; usize::try_from(wanted).map_err(|_| ErrorKind::OutOfMemory)?];
+        let mut out = vec![0; usize::try_from(wanted).ok().ok_or(ErrorKind::OutOfMemory)?];
         let mut filled = 0;
         while filled < out.len() {
             match self.read_at(range.start + filled as u64, &mut out[filled..]) {
@@ -145,7 +145,8 @@ impl Seek for ReadAtStream {
             SeekFrom::End(delta) => (self.bytes.len().0, i128::from(delta)),
         };
         self.at = u64::try_from(i128::from(base) + delta)
-            .map_err(|_| Error::from(ErrorKind::InvalidInput))?;
+            .ok()
+            .ok_or(Error::from(ErrorKind::InvalidInput))?;
         Ok(self.at)
     }
 }

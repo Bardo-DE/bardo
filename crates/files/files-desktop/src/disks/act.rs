@@ -41,9 +41,9 @@ impl Disks {
     /// `MountFailure::Gone` when the disk is no longer there, and `Other` when the service refuses
     /// or gives no usable folder.
     pub async fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
-        let filesystem = self.filesystem(id).await.map_err(|_| MountFailure::Gone)?;
+        let filesystem = self.filesystem(id).await.ok().ok_or(MountFailure::Gone)?;
         match filesystem.mount(HashMap::new()).await {
-            Ok(path) => FolderPath::new(path).map_err(|_| MountFailure::Other),
+            Ok(path) => FolderPath::new(path).ok().ok_or(MountFailure::Other),
             Err(error) => match Said::from_error(&error) {
                 Said::AlreadyMounted => self.mounted_at(id).await.ok_or(MountFailure::Other),
                 said @ (Said::Busy | Said::NotAllowed | Said::NotMounted | Said::Other) => {
@@ -78,7 +78,7 @@ impl Disks {
 
     /// `force`: unmount even though something has the disk open.
     async fn eject_with(&self, id: &VolumeId, force: bool) -> Result<(), EjectFailure> {
-        let filesystem = self.filesystem(id).await.map_err(|_| EjectFailure::Gone)?;
+        let filesystem = self.filesystem(id).await.ok().ok_or(EjectFailure::Gone)?;
         let mounts = self.mounts_of(id).await;
         match filesystem.unmount(unmount_options(force)).await {
             Ok(()) => {}
@@ -129,10 +129,12 @@ impl Disks {
         };
         let proxy = DriveProxy::builder(&self.connection)
             .path(drive.path)
-            .map_err(|_| EjectFailure::Other)?
+            .ok()
+            .ok_or(EjectFailure::Other)?
             .build()
             .await
-            .map_err(|_| EjectFailure::Other)?;
+            .ok()
+            .ok_or(EjectFailure::Other)?;
         let done = match (drive.can_power_off, drive.ejectable) {
             (true, _) => proxy.power_off(HashMap::new()).await,
             (false, true) => proxy.eject(HashMap::new()).await,

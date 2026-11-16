@@ -86,7 +86,8 @@ impl Trash for FakeTrash {
                     .any(|h| h.item.stored_name().as_ref() == Some(name))
             };
             let stored_name = keep_both(&original.name, Split::Extension, taken)
-                .map_err(|_| TrashError::Other)?;
+                .ok()
+                .ok_or(TrashError::Other)?;
             let stored = self.files().join(stored_name.as_os_str());
             fs::rename(original.path(), &stored).map_err(|e| TrashError::of_io(&e))?;
             state.clock += 1;

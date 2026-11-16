@@ -44,7 +44,8 @@ fn bad(message: impl Into<String>) -> CommandError {
 
 fn number(what: &str, text: &str) -> Result<u32, CommandError> {
     text.parse()
-        .map_err(|_| bad(format!("{what}: not a number: {text}")))
+        .ok()
+        .ok_or_else(|| bad(format!("{what}: not a number: {text}")))
 }
 
 impl Call {
@@ -175,7 +176,8 @@ fn scale120(text: &str) -> Result<String, CommandError> {
     let (whole, fraction) = text.split_once('.').unwrap_or((text, ""));
     let whole: u32 = whole
         .parse()
-        .map_err(|_| bad(format!("--scale: not a number: {text}")))?;
+        .ok()
+        .ok_or_else(|| bad(format!("--scale: not a number: {text}")))?;
     let dangling_dot = text.contains('.') && fraction.is_empty();
     if dangling_dot || fraction.len() > 6 || !fraction.bytes().all(|b| b.is_ascii_digit()) {
         return Err(bad(format!("--scale: not a number: {text}")));

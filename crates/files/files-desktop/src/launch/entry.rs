@@ -37,8 +37,9 @@ impl AppEntry {
     /// `EntryError::Unreadable` when `text` is not a desktop file, and the errors of
     /// `AppEntry::from_file`.
     pub fn from_text(id: DesktopId, path: &Path, text: &str) -> Result<AppEntry, EntryError> {
-        let file =
-            DesktopFile::parse(text, DESKTOP_ENTRY_CAP).map_err(|_| EntryError::Unreadable)?;
+        let file = DesktopFile::parse(text, DESKTOP_ENTRY_CAP)
+            .ok()
+            .ok_or(EntryError::Unreadable)?;
         AppEntry::from_file(id, path, &file)
     }
 

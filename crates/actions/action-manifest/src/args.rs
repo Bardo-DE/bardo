@@ -91,9 +91,9 @@ fn handle(json: &Json) -> Option<Handle> {
 fn entity(kind: &EntityKind, json: &Json) -> Read<EntityId> {
     let object = json.as_object().filter(|o| o.len() == 3).ok_or(Why::Type)?;
     let text = |name: &str| object.get(name).and_then(Json::as_str).ok_or(Why::Type);
-    let app = AppName::parse(text("app")?).map_err(|_| Why::Range)?;
-    let named = EntityKind::parse(text("kind")?).map_err(|_| Why::Range)?;
-    let key = EntityKey::parse(text("key")?).map_err(|_| Why::Range)?;
+    let app = AppName::parse(text("app")?).ok().ok_or(Why::Range)?;
+    let named = EntityKind::parse(text("kind")?).ok().ok_or(Why::Range)?;
+    let key = EntityKey::parse(text("key")?).ok().ok_or(Why::Range)?;
     if &named == kind {
         Ok(EntityId {
             app,
@@ -125,7 +125,7 @@ fn integer(json: &Json) -> Read<i64> {
 }
 
 fn small<T: TryFrom<i64>>(n: i64) -> Read<T> {
-    T::try_from(n).map_err(|_| Why::Range)
+    T::try_from(n).ok().ok_or(Why::Range)
 }
 
 fn field(object: &Map<String, Json>, name: &str) -> Read<i64> {
@@ -160,7 +160,8 @@ fn date(json: &Json) -> Read<CivilDate> {
 fn url(raw: &str) -> Read<String> {
     Url::parse(raw)
         .map(|_| raw.to_owned())
-        .map_err(|_| Why::Range)
+        .ok()
+        .ok_or(Why::Range)
 }
 
 /// One JSON value as a `ty`.
@@ -202,7 +203,7 @@ fn value(ty: &ParamType, json: &Json) -> Read<Value> {
         ParamType::File => json
             .as_str()
             .ok_or(Why::Type)
-            .and_then(|p| FileRef::parse(p).map_err(|_| Why::Range))
+            .and_then(|p| FileRef::parse(p).ok().ok_or(Why::Range))
             .map(Value::File),
         ParamType::Url => json.as_str().ok_or(Why::Type).and_then(url).map(Value::Url),
     }
@@ -243,7 +244,7 @@ fn files(json: &Json) -> Read<Vec<FileRef>> {
         .map(|item| {
             item.as_str()
                 .ok_or(Why::Type)
-                .and_then(|p| FileRef::parse(p).map_err(|_| Why::Range))
+                .and_then(|p| FileRef::parse(p).ok().ok_or(Why::Range))
         })
         .collect()
 }

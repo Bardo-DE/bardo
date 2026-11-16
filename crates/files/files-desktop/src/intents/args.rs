@@ -57,7 +57,9 @@ fn path(args: &Args, name: &str) -> Result<PathBuf, AppRefusal> {
 }
 
 fn folder(args: &Args, name: &str) -> Result<FolderPath, AppRefusal> {
-    FolderPath::new(path(args, name)?).map_err(|_| failed("give the folder in full"))
+    FolderPath::new(path(args, name)?)
+        .ok()
+        .ok_or_else(|| failed("give the folder in full"))
 }
 
 fn items(target: &TargetValue) -> Result<Vec<ItemRef>, AppRefusal> {
@@ -68,7 +70,8 @@ fn items(target: &TargetValue) -> Result<Vec<ItemRef>, AppRefusal> {
         .iter()
         .map(|file| ItemRef::from_path(Path::new(file.as_str())))
         .collect::<Result<_, _>>()
-        .map_err(|_| failed("give each file in full, from the root"))?;
+        .ok()
+        .ok_or_else(|| failed("give each file in full, from the root"))?;
     if items.is_empty() {
         return Err(failed("name the files to work on"));
     }

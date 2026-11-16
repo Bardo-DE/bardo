@@ -8,7 +8,9 @@ use account_fake_servers::http::{Request, Response};
 use serde_json::{Value, json};
 
 fn json_body(request: &Request) -> Result<Value, Response> {
-    serde_json::from_slice(&request.body).map_err(|_| refused(400, "the body is not JSON"))
+    serde_json::from_slice(&request.body)
+        .ok()
+        .ok_or_else(|| refused(400, "the body is not JSON"))
 }
 
 /// The value of query parameter `name`, or the `400` that says it is missing.

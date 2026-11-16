@@ -21,7 +21,9 @@ const ENCODE_ROOM: usize = 16 * 1024;
 /// them into its own `Secret`, which wipes itself too.
 fn encoded(value: &Credential) -> Result<Zeroizing<Vec<u8>>, SecretsError> {
     let mut buffer = Zeroizing::new(Vec::with_capacity(ENCODE_ROOM));
-    serde_json::to_writer(&mut *buffer, value).map_err(|_| SecretsError::Unreadable)?;
+    serde_json::to_writer(&mut *buffer, value)
+        .ok()
+        .ok_or(SecretsError::Unreadable)?;
     Ok(buffer)
 }
 
@@ -271,7 +273,9 @@ impl Secrets for Oo7KeyringSecrets {
             .map_err(refused)?;
         let item = items.first().ok_or(SecretsError::Missing)?;
         let secret = item.secret().await.map_err(refused)?;
-        serde_json::from_slice(secret.as_bytes()).map_err(|_| SecretsError::Unreadable)
+        serde_json::from_slice(secret.as_bytes())
+            .ok()
+            .ok_or(SecretsError::Unreadable)
     }
 
     async fn delete(&self, key: &SecretKey) -> Result<(), SecretsError> {

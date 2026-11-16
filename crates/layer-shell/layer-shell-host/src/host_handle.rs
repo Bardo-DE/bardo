@@ -58,7 +58,7 @@ impl<M> HostHandle<M> {
 
     /// The channel is closed exactly when the loop (and with it the receiver) is gone.
     fn post(&self, msg: HostMsg<M>) -> Result<()> {
-        self.sender.send(msg).map_err(|_| HostError::HostGone)
+        self.sender.send(msg).ok().ok_or(HostError::HostGone)
     }
 }
 

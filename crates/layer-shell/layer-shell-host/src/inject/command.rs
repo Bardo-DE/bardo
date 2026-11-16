@@ -135,7 +135,8 @@ fn point(verb: &'static str, args: &[&str]) -> Result<Point, CommandError> {
     };
     let coord = |s: &str| {
         s.parse()
-            .map_err(|_| CommandError::NotACoordinate(s.to_owned()))
+            .ok()
+            .ok_or_else(|| CommandError::NotACoordinate(s.to_owned()))
     };
     Ok(Point {
         x: coord(x)?,

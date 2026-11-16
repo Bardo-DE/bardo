@@ -85,7 +85,7 @@ pub fn parse_autoconfig_with(
     address: &str,
     options: &SearchOptions,
 ) -> Result<Found, DiscoverFault> {
-    let config = config::parse(xml).map_err(|_| DiscoverFault::Unreadable)?;
+    let config = config::parse(xml).ok().ok_or(DiscoverFault::Unreadable)?;
     select(&config, address, options)
 }
 

@@ -67,7 +67,9 @@ pub fn server_address(
     text: &str,
     is_own: impl Fn(&str) -> bool,
 ) -> Result<ServerAddress, ServerAddressFault> {
-    let url = EndpointUrl::parse(text.trim()).map_err(|_| ServerAddressFault::NotAnAddress)?;
+    let url = EndpointUrl::parse(text.trim())
+        .ok()
+        .ok_or(ServerAddressFault::NotAnAddress)?;
     let origin = url.origin();
     match origin.scheme {
         UrlScheme::Https => Ok(ServerAddress {
@@ -96,7 +98,9 @@ pub fn server_address(
 /// # Errors
 /// [`ServerAddressFault::NotAnAddress`] for text that is not an `http` or `https` address.
 pub fn server_address_shape(text: &str) -> Result<EndpointUrl, ServerAddressFault> {
-    let url = EndpointUrl::parse(text.trim()).map_err(|_| ServerAddressFault::NotAnAddress)?;
+    let url = EndpointUrl::parse(text.trim())
+        .ok()
+        .ok_or(ServerAddressFault::NotAnAddress)?;
     match url.origin().scheme {
         UrlScheme::Https | UrlScheme::Http => Ok(url),
         _ => Err(ServerAddressFault::NotAnAddress),

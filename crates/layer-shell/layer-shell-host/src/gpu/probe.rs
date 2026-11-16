@@ -52,7 +52,8 @@ pub(crate) fn first_present(host_adapter: &wgpu::Adapter) -> Result<()> {
     let compositor: WlCompositor =
         globals
             .bind(&qh, 4..=6, ())
-            .map_err(|_| HostError::MissingGlobal {
+            .ok()
+            .ok_or_else(|| HostError::MissingGlobal {
                 global: "wl_compositor",
             })?;
     let surface = compositor.create_surface(&qh, ());

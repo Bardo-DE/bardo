@@ -39,7 +39,8 @@ pub struct Ask {
 /// A message naming `text` when it is not one of the words of `T`.
 pub fn word<T: DeserializeOwned>(text: &str) -> Result<T, String> {
     serde_json::from_value(Value::String(text.to_owned()))
-        .map_err(|_| format!("`{text}` is not one of the words"))
+        .ok()
+        .ok_or_else(|| format!("`{text}` is not one of the words"))
 }
 
 fn failure(why: impl std::fmt::Display) -> Value {
