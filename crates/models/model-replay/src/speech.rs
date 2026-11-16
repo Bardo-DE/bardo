@@ -556,8 +556,7 @@ impl<P, C: SpeechCassetteSink> RecordingSpeech<P, C> {
     fn write(&self, line: &SpeechInteraction) -> Result<(), ProviderError> {
         self.sink
             .write(line)
-            .ok()
-            .ok_or_else(|| ProviderError::Unreadable("the cassette sink refused the write".into()))
+            .map_err(|e| ProviderError::Unreadable(e.to_string()))
     }
 }
 

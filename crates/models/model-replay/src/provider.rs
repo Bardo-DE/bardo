@@ -257,9 +257,9 @@ impl<P: Provider, C: CassetteSink> Provider for RecordingProvider<P, C> {
                 events: tee.seen,
                 end: end.clone(),
             };
-            self.sink.write(&interaction).ok().ok_or_else(|| {
-                ProviderError::Unreadable("the cassette sink refused the write".into())
-            })?;
+            self.sink
+                .write(&interaction)
+                .map_err(|e| ProviderError::Unreadable(e.to_string()))?;
             end
         }
     }

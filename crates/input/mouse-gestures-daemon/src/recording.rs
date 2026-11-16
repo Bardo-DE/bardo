@@ -156,7 +156,9 @@ fn records(body: &[u8], offset: usize) -> Result<Vec<Record>, RecordingError> {
     while at < body.len() {
         let err = RecordingError::Truncated(offset + at);
         let head = body.get(at..at + 10).ok_or_else(|| err.clone())?;
-        let ns = u64::from_le_bytes(head[..8].try_into().ok().ok_or_else(|| err.clone())?);
+        let mut stamp = [0u8; 8];
+        stamp.copy_from_slice(&head[..8]);
+        let ns = u64::from_le_bytes(stamp);
         let len = usize::from(u16::from_le_bytes([head[8], head[9]]));
         let data = body.get(at + 10..at + 10 + len).ok_or(err)?;
         records.push(Record {

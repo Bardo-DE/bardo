@@ -164,6 +164,8 @@ pub enum BadMessage {
     TooLong,
     /// It is not UTF-8 fields each ended by NUL.
     NotFields,
+    /// It is not UTF-8.
+    NotText(std::str::Utf8Error),
     /// A version this side does not know.
     Version(String),
     /// Not a request or reply of this format.
@@ -177,6 +179,7 @@ impl std::fmt::Display for BadMessage {
         match self {
             BadMessage::TooLong => write!(f, "the message is longer than {MAX_MESSAGE} bytes"),
             BadMessage::NotFields => f.write_str("the message is not NUL-ended UTF-8 fields"),
+            BadMessage::NotText(_) => f.write_str("the message is not UTF-8 text"),
             BadMessage::Version(v) => write!(f, "version {v:?} is not known"),
             BadMessage::Unknown(what) => write!(f, "{what:?} is not a message of this format"),
             BadMessage::Name(why) => why.fmt(f),
@@ -184,7 +187,18 @@ impl std::fmt::Display for BadMessage {
     }
 }
 
-impl std::error::Error for BadMessage {}
+impl std::error::Error for BadMessage {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            BadMessage::NotText(why) => Some(why),
+            BadMessage::TooLong
+            | BadMessage::Name(_)
+            | BadMessage::NotFields
+            | BadMessage::Version(_)
+            | BadMessage::Unknown(_) => None,
+        }
+    }
+}
 
 fn encode(fields: &[&str]) -> Vec<u8> {
     let mut out = Vec::new();
@@ -199,9 +213,7 @@ fn fields(bytes: &[u8]) -> Result<Vec<&str>, BadMessage> {
     if bytes.len() > MAX_MESSAGE {
         return Err(BadMessage::TooLong);
     }
-    let text = std::str::from_utf8(bytes)
-        .ok()
-        .ok_or(BadMessage::NotFields)?;
+    let text = std::str::from_utf8(bytes).map_err(BadMessage::NotText)?;
     let body = text.strip_suffix('\0').ok_or(BadMessage::NotFields)?;
     Ok(body.split('\0').collect())
 }
@@ -454,7 +466,12 @@ mod tests {
             (b"1\0mount\0..\0ro\0", BadMessage::Name(BadName::NotOneName)),
             (b"1\0unmount\0", BadMessage::Unknown("unmount".into())),
             (b"1\0mount\0OneDrive\0ro", BadMessage::NotFields),
-            (b"1\0mount\0\xff\0ro\0", BadMessage::NotFields),
+            (
+                b"1\0mount\0\xff\0ro\0",
+                BadMessage::NotText(
+                    std::str::from_utf8(b"1\0mount\0\xff\0ro\0").expect_err("not text"),
+                ),
+            ),
         ];
         for (bytes, why) in cases {
             assert_eq!(Request::decode(bytes), Err(why), "{bytes:?}");

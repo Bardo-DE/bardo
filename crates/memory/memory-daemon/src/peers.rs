@@ -77,8 +77,7 @@ impl Peers for ProcPeers {
         // An identity lookup that does not finish is a refusal, never a wait.
         let caller = tokio::time::timeout(LOOKUP_WAIT, self.callers.caller_of(sender))
             .await
-            .ok()
-            .ok_or(Refusal::NotAllowed)?
+            .unwrap_or_default()
             .map(caller_for)
             .ok_or(Refusal::NotAllowed)?;
         self.seen
