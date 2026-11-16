@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # Nothing the desktop ships lets the person, or a group, open /dev/uinput. A program that can make input devices can type
-# into any window, past every question the desktop asks, so the node belongs to root and one service (turnstile) makes the
+# into any window, past every question the desktop asks, so the node belongs to root and one service (bardo-input-broker) makes the
 # devices for the two programs that need them. This reads what is shipped and fails on:
 #
 #   - a device rule that mentions uinput and is not exactly "root, 0600, and no `uaccess` tag" (a rule may remove the tag
 #     with TAG-=; it may not add it);
 #   - a service that lets itself open the node (`DeviceAllow=/dev/uinput`) other than bardo-input-broker.service, or a drop-in for
-#     any service that does (keycap's stand-alone `bardo-key-remap.uinput.conf` / `10-uinput.conf`);
-#   - an install or release script that places keycap's stand-alone pieces (`70-bardo-key-remap.rules`, `bardo-key-remap.uinput.conf`,
+#     any service that does (bardo-key-remap's stand-alone `bardo-key-remap.uinput.conf` / `10-uinput.conf`);
+#   - an install or release script that places bardo-key-remap's stand-alone pieces (`70-bardo-key-remap.rules`, `bardo-key-remap.uinput.conf`,
 #     `10-uinput.conf`, `bardo-key-remap-modules.conf`, `bardo-mouse-gestures-modules.conf`), which only a machine without the input service needs.
 #
 #   gate/check-no-uinput-access.sh [--crates DIR] [--stage DIR]...
 #
 #   --crates DIR  the component crate folders (crates/<name> of this tree): the rule and service files the scripts name (`dist/<file>`) are read from
-#                   turnstile, keycap, palmrest and sill there (default: crates/ of this tree)
+#                   bardo-input-broker, bardo-key-remap, bardo-mouse-gestures and bardo-shell there (default: crates/ of this tree)
 #   --stage DIR     also read a staged tree (a release stage/, or an installer's --destdir): every *.rules, *.service and
 #                   *.service.d/*.conf in it. May be given more than once.
 # Not a proof: it reads rule text, it does not run udev. A rule that reaches the node without naming it is not seen.
@@ -124,7 +124,7 @@ for stage in stages:
             if name.endswith((".rules", ".service")) or parent.endswith(".service.d"):
                 check_file(path, os.path.relpath(path, stage))
             if name in STANDALONE and name != "bardo-key-remap-modules.conf" and name != "bardo-mouse-gestures-modules.conf":
-                bad(f"{os.path.relpath(path, stage)}: a stand-alone piece of keycap is in what is shipped")
+                bad(f"{os.path.relpath(path, stage)}: a stand-alone piece of bardo-key-remap is in what is shipped")
 
 if found:
     for line in found:

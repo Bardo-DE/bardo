@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# No stand-in ships. Several crates (turnstile, peephole, keycap, palmrest) carry a `fake` feature: a fake kernel, a
+# No stand-in ships. Several crates (bardo-input-broker, peephole, bardo-key-remap, bardo-mouse-gestures) carry a `fake` feature: a fake kernel, a
 # made-up caller identity. It exists for tests, and a program built with it would let anything pass as anyone, so no
 # command that builds what the desktop ships may switch it on. Two places are read:
 #
@@ -47,7 +47,7 @@ def bad(message):
 
 # 1. The build and install scripts and workflows.
 RUNS_CARGO = re.compile(r"\bcargo(_in)?\b|\bbuild_tree\b|\bbuild_parts\b|\bcargo-[a-z]+\b")
-# The stand-in features: peephole/turnstile/keycap/palmrest `fake`, and peephole's `dev-rows` (a person's own rows
+# The stand-in features: peephole/bardo-input-broker/bardo-key-remap/bardo-mouse-gestures `fake`, and peephole's `dev-rows` (a person's own rows
 # file naming services).
 STAND_INS = {"fake", "dev-rows"}
 NAMES_FAKE = re.compile(r"\bfake\b|\bdev-rows\b|--all-features")

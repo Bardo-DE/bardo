@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Every unit of a trusted service, and the drop-in for the portal frontend's own unit, throws away all the loader variables.
 # peephole proves a service at `Full` only when its unit's `UnsetEnvironment=` holds every name of LOADER_VARIABLES (caller-identity-core
-# src/facts.rs), and casement and the portal backend (transom) require `Full` for the services they trust: a unit that lacks one
+# src/facts.rs), and bardo-compositor and the portal backend (bardo-portal) require `Full` for the services they trust: a unit that lacks one
 # name is refused at run time, so the screen cannot be shared, the shell is not trusted. The list is peephole's constant, read from
 # its source here; nothing in this repository copies it by hand except the drop-in, which this check compares.
 #
@@ -95,7 +95,7 @@ with open(table, "rb") as f:
         if u and u != "xdg-desktop-portal.service" and u not in units:
             units.append(u)
 if "bardo-input-broker.service" not in units:
-    units.append("bardo-input-broker.service")  # the input service is not a table row but root runs it and keycap trusts the socket
+    units.append("bardo-input-broker.service")  # the input service is not a table row but root runs it and bardo-key-remap trusts the socket
 
 found = {}
 for repo in sorted(os.listdir(crates_dir)):
