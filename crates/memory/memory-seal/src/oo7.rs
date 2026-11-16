@@ -51,10 +51,15 @@ async fn secret_of(item: &Item) -> Result<SpaceKey, KeyError> {
         item.unlock().await.map_err(failure)?;
     }
     let secret = item.secret().await.map_err(failure)?;
-    <[u8; 32]>::try_from(secret.as_bytes())
+    let bytes = secret.as_bytes();
+    <[u8; 32]>::try_from(bytes)
         .map(SpaceKey::from_bytes)
-        .ok()
-        .ok_or_else(|| KeyError::Store("the stored key is not 32 bytes".to_owned()))
+        .map_err(|e| {
+            KeyError::Store(format!(
+                "the stored key is {} bytes, not 32: {e}",
+                bytes.len()
+            ))
+        })
 }
 
 /// The Space's key in `keyring`.
