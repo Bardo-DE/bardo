@@ -183,6 +183,7 @@ members = [
     "crates/input/key-remap-devtest",
     "crates/input/key-remap-proto",
     "crates/input/key-remap-evdev",
+    "crates/platform/old-folders",
     "crates/platform/service-locator",
     "crates/input/mouse-gestures-daemon",
     "crates/input/mouse-gestures-proto",
