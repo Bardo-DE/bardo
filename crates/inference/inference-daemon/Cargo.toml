@@ -15,6 +15,7 @@ publish.workspace = true
 test-proc-root = ["account-callers/test-proc-root"]
 
 [dependencies]
+tracing = { workspace = true }
 base-xdg = { path = "../../base/base-xdg" }
 zbus-ready = { path = "../../zbus-ready" }
 account-core = {path = "../../accounts/account-core"}

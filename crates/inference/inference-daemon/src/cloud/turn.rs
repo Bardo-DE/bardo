@@ -131,9 +131,10 @@ impl<'a> CloudModel<'a> {
         if cloud.spend(pin.line, &pin.app, &pin.model) == SpendVerdict::Stop {
             return Err(InferRefusal::OverBudget.into());
         }
-        let frames = Frames::read(attachments)
-            .ok()
-            .ok_or(ModelError::Unreadable)?;
+        let frames = Frames::read(attachments).map_err(|error| {
+            tracing::warn!(%error, "could not read the attached frames");
+            ModelError::Unreadable
+        })?;
         Ok(Self {
             cloud,
             pin,

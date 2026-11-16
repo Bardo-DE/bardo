@@ -296,11 +296,10 @@ impl Transcriber for Ears {
         else {
             return Err(ModelError::Unreachable);
         };
-        self.engines
-            .want(model)
-            .await
-            .ok()
-            .ok_or(ModelError::Unreachable)?;
+        self.engines.want(model).await.map_err(|failed| {
+            tracing::warn!(cause = ?failed.cause, "the speech engine could not be brought up");
+            ModelError::Unreachable
+        })?;
         runner.transcribe(begin, audio, sink).await
     }
 }

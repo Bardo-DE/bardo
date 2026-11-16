@@ -145,8 +145,10 @@ impl<T: Transport> PolicyWriter for TransportWriter<T> {
             .transport
             .open(&need(&request), request.class, request.tier)
             .await
-            .ok()
-            .ok_or(ReviewError::Unavailable)?;
+            .map_err(|error| {
+                tracing::warn!(%error, "could not open an inference session for the policy writer");
+                ReviewError::Unavailable
+            })?;
         let reply = turn(&mut session, InferRequest::Chat(request), &mut Discard)
             .await
             .map_err(failed)?;
@@ -156,9 +158,16 @@ impl<T: Transport> PolicyWriter for TransportWriter<T> {
             inference_core::StopReason::MaxTokens => return Err(ReviewError::OutOfRoom),
             _ => return Err(ReviewError::Unparseable),
         }
-        let draft: Draft = serde_json::from_str(&chat.text)
-            .ok()
-            .ok_or(ReviewError::Unparseable)?;
+        // Only the kind and place of the failure are logged: the text is the model's output.
+        let draft: Draft = serde_json::from_str(&chat.text).map_err(|error| {
+            tracing::warn!(
+                category = ?error.classify(),
+                line = error.line(),
+                column = error.column(),
+                "the policy writer's reply did not parse"
+            );
+            ReviewError::Unparseable
+        })?;
         Ok(policy_of(&draft, task, turns, catalogue, space))
     }
 }

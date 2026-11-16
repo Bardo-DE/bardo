@@ -178,8 +178,10 @@ impl<T: Transport> Model for TransportModel<T> {
             .transport
             .open(&chat_need(request), request.class, request.tier)
             .await
-            .ok()
-            .ok_or(ModelError::Unreachable)?;
+            .map_err(|error| {
+                tracing::warn!(%error, "could not open an inference session");
+                ModelError::Unreachable
+            })?;
         chat_turn(turn(&mut session, InferRequest::Chat(request.clone()), sink).await?)
     }
 
@@ -203,8 +205,10 @@ impl<T: Transport> Model for TransportModel<T> {
             .transport
             .open(&need, request.class, account_capability::Tier::Fast)
             .await
-            .ok()
-            .ok_or(ModelError::Unreachable)?;
+            .map_err(|error| {
+                tracing::warn!(%error, "could not open an inference session");
+                ModelError::Unreachable
+            })?;
         chat_turn(turn(&mut session, InferRequest::Task(request.clone()), sink).await?)
     }
 
@@ -217,8 +221,10 @@ impl<T: Transport> Model for TransportModel<T> {
             .transport
             .open(&need, request.class, account_capability::Tier::Fast)
             .await
-            .ok()
-            .ok_or(ModelError::Unreachable)?;
+            .map_err(|error| {
+                tracing::warn!(%error, "could not open an inference session");
+                ModelError::Unreachable
+            })?;
         let reply = turn(
             &mut session,
             InferRequest::Embed(request.clone()),

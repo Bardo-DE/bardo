@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+tracing = { workspace = true }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
