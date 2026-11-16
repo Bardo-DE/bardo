@@ -18,6 +18,8 @@
 //! (a gallery example that restyles it and a `lint::user_stylesheet` case that accepts it come
 //! with the row).
 
+use std::fmt::Write as _;
+
 /// The version of the public styling surface this table describes.
 ///
 /// It is bumped when a public name is renamed or removed, and not when one is added: a look made
@@ -424,12 +426,14 @@ pub fn markdown() -> String {
          re-theme every surface consistently, and every token variable\n\
          (`--<prefix><slug>`) is public.\n\n",
     );
-    page.push_str(&format!(
+    let _ = write!(
+        page,
         "The surface is version {SURFACE}: it is bumped when a listed name is renamed or removed.\n\n"
-    ));
-    page.push_str(&format!(
+    );
+    let _ = write!(
+        page,
         "## Surfaces\n\n`[{SURFACE_ATTRIBUTE}=<name>]` is on every surface root.\n\n"
-    ));
+    );
     page.push_str("## Components\n\n| Component | Root | Parts |\n| --- | --- | --- |\n");
     for component in COMPONENTS {
         let parts = component.part_selectors();
@@ -442,26 +446,28 @@ pub fn markdown() -> String {
                 .collect::<Vec<_>>()
                 .join(", ")
         };
-        page.push_str(&format!(
-            "| {} | `{}` | {parts} |\n",
+        let _ = writeln!(
+            page,
+            "| {} | `{}` | {parts} |",
             component.component,
             component.root_selector()
-        ));
+        );
     }
     let renames: Vec<&PartRename> = RENAMES.iter().collect();
     if !renames.is_empty() {
         page.push_str("\n## Renamed this release\n\n| Old | New |\n| --- | --- |\n");
         for rename in renames {
-            page.push_str(&format!(
-                "| `.{}` | `.{}` |\n",
+            let _ = writeln!(
+                page,
+                "| `.{}` | `.{}` |",
                 rename.old_class(),
                 rename.new_class()
-            ));
+            );
         }
     }
     page.push_str("\n## Attributes\n\n| Attribute | Meaning |\n| --- | --- |\n");
     for axis in AXES {
-        page.push_str(&format!("| `{}` | {} |\n", axis.attribute, axis.meaning));
+        let _ = writeln!(page, "| `{}` | {} |", axis.attribute, axis.meaning);
     }
     page
 }

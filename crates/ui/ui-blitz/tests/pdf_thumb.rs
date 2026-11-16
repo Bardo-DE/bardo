@@ -82,7 +82,7 @@ fn no_pages() -> Vec<u8> {
     write!(out, "xref\n0 {}\n0000000000 65535 f \n", objects.len() + 1)
         .expect("a String takes any write");
     for offset in offsets {
-        write!(out, "{offset:010} 00000 n \n").expect("a String takes any write");
+        writeln!(out, "{offset:010} 00000 n ").expect("a String takes any write");
     }
     write!(
         out,

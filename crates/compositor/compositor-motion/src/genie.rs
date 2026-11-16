@@ -180,10 +180,11 @@ pub fn whole_rows(strips: Vec<Strip>, row: impl Fn(f64) -> i32) -> Vec<Strip> {
             _ => kept.push(strip),
         }
     }
-    if kept.len() > 1 && kept.last().is_some_and(|last| rows_of(last) <= 0) {
-        if let (Some(last), Some(before)) = (kept.pop(), kept.pop()) {
-            kept.push(joined(before, last));
-        }
+    if kept.len() > 1
+        && kept.last().is_some_and(|last| rows_of(last) <= 0)
+        && let (Some(last), Some(before)) = (kept.pop(), kept.pop())
+    {
+        kept.push(joined(before, last));
     }
     kept
 }

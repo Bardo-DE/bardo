@@ -212,7 +212,7 @@ fn tailnet_engines(
 ) -> Result<Vec<Attached>, &'static str> {
     let node = NodeId::parse(node)
         .ok()
-        .ok_or_else(|| "not a computer on Tailscale")?;
+        .ok_or("not a computer on Tailscale")?;
     let socket = relay_socket(sockets, &node).ok_or("the way to it is too long")?;
     Ok(computer
         .models

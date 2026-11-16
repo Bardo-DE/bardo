@@ -19,7 +19,7 @@ fn a_fake_serves_its_frames_in_order_then_ends() {
                 assert_eq!(bytes.len(), 32);
                 assert!(bytes.iter().all(|b| u64::from(*b) == n));
             }
-            other => panic!("{other:?}"),
+            other @ FrameData::Dmabuf(_) => panic!("{other:?}"),
         }
     }
     assert_eq!(cap.remaining(), 0);

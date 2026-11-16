@@ -120,6 +120,10 @@ impl ConfirmObject {
 }
 
 #[zbus::interface(name = "org.bardo.Intents1.Request")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl RequestObject {
     fn close(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
         match header.sender() {

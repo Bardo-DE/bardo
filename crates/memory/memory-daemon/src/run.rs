@@ -229,7 +229,7 @@ async fn run(
     let mut duties = Duties::default();
     let keyring_daemon = Arc::clone(&daemon);
     duties.spawn("keyring", async move {
-        keyring_daemon.follow_keyring(changes).await
+        keyring_daemon.follow_keyring(changes).await;
     });
     let following = Arc::clone(&daemon);
     let blind = matches!(watched.state(), WatchState::Blind { .. });

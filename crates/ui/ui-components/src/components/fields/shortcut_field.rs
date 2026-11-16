@@ -116,13 +116,7 @@ pub fn ShortcutField(
                         }
                     });
                 },
-                onkeydown: move |event: KeyboardEvent| if !listening() {
-                    if live && activates(&event, ActivationKeys::ReturnAndSpace) {
-                        event.prevent_default();
-                        event.stop_propagation();
-                        listening.set(true);
-                    }
-                } else {
+                onkeydown: move |event: KeyboardEvent| if listening() {
                     let heard = hear(platform, single_keys, &event.key(), event.modifiers());
                     if heard == Heard::Leave {
                         return;
@@ -135,6 +129,10 @@ pub fn ShortcutField(
                         Heard::Cancel => finish(ShortcutRecorded::Cancelled),
                         Heard::Wait | Heard::Leave => {}
                     }
+                } else if live && activates(&event, ActivationKeys::ReturnAndSpace) {
+                    event.prevent_default();
+                    event.stop_propagation();
+                    listening.set(true);
                 },
                 onmounted: move |event| {
                     well.set(Some(event.data()));

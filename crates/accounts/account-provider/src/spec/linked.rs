@@ -57,13 +57,13 @@ impl LinkedOrigin {
         };
         let host = match host.strip_prefix("*.") {
             Some(suffix) => {
-                let name = DomainName::parse(suffix).ok().ok_or_else(|| bad())?;
+                let name = DomainName::parse(suffix).ok().ok_or_else(bad)?;
                 if !name.as_str().contains('.') {
                     return Err(bad());
                 }
                 LinkedHost::Under(name)
             }
-            None => LinkedHost::Exactly(DomainName::parse(host).ok().ok_or_else(|| bad())?),
+            None => LinkedHost::Exactly(DomainName::parse(host).ok().ok_or_else(bad)?),
         };
         Ok(Self { host, port })
     }

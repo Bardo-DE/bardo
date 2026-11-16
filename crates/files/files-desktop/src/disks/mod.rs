@@ -65,10 +65,9 @@ impl Changes {
     /// Waits for the next change; `None` once the connection is gone.
     pub async fn next(&mut self) -> Option<()> {
         loop {
-            match self.messages.next().await? {
-                Ok(_) => return Some(()),
-                // A message that could not be read says nothing about the disks.
-                Err(_) => {}
+            // A message that could not be read says nothing about the disks.
+            if self.messages.next().await?.is_ok() {
+                return Some(());
             }
         }
     }

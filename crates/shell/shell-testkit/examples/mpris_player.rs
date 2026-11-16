@@ -82,6 +82,10 @@ struct Player {
 }
 
 #[interface(interface = "org.mpris.MediaPlayer2.Player")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus calls every method and property getter on the interface object, whatever it holds"
+)]
 impl Player {
     async fn play_pause(&mut self, #[zbus(signal_emitter)] emitter: SignalEmitter<'_>) {
         self.playback = if self.playback == PLAYING {

@@ -41,10 +41,6 @@ pub enum ForgetScope {
 /// A request to memoryd. Who may send which is `memory-service::allowed`.
 // One request is built and sent per call, and the wire form is the serde of this enum as it
 // stands: boxing `Record` would only complicate every match for no saving.
-#[expect(
-    clippy::large_enum_variant,
-    reason = "one request is built and sent per call, and the wire form is the serde of this enum as it stands"
-)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 #[non_exhaustive]

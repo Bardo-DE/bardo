@@ -89,6 +89,11 @@ impl Agent {
 }
 
 #[zbus::interface(name = "org.bluez.Agent1")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::unused_self,
+    reason = "zbus calls every method on the interface object, and its methods answer with `fdo::Result` so a service can refuse, whatever this one holds or does"
+)]
 impl Agent {
     fn release(&self) {}
 

@@ -251,6 +251,10 @@ struct StandInUtterance {
 }
 
 #[zbus::interface(name = "org.bardo.Voice1.Utterance")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInUtterance {
     fn release(&self) {
         self.script.push("release");

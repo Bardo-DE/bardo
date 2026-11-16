@@ -562,14 +562,13 @@ fn reduce_split(shell: &mut Shell, event: ShellEvent) {
                 choice.candidates.push(window);
             }
         }
-        ShellEvent::SplitChoiceEnd(first) => {
+        ShellEvent::SplitChoiceEnd(first)
             if shell
                 .split_choice
                 .as_ref()
-                .is_some_and(|c| c.first == first)
-            {
-                shell.split_choice = None;
-            }
+                .is_some_and(|c| c.first == first) =>
+        {
+            shell.split_choice = None;
         }
         _ => {}
     }

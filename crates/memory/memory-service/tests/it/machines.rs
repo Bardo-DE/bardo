@@ -2,7 +2,6 @@
 
 use crate::support::*;
 use memory_core::*;
-use memory_service::space;
 use memory_service::*;
 
 #[test]

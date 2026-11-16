@@ -227,13 +227,17 @@ fn trace(session: &SessionRecord, value: &Value) -> Label {
     match value {
         Value::Text(t) | Value::Url(t) if spoken(t) => user_label(),
         Value::File(f) if spoken(f.as_str()) => user_label(),
-        Value::Text(_) | Value::Url(_) | Value::File(_) => model_label(),
+        Value::Text(_)
+        | Value::Url(_)
+        | Value::File(_)
+        | Value::Handle(_)
+        | Value::List(_)
+        | Value::Record(_) => model_label(),
         Value::Entity(e) if session.known.contains(e) => app_label(&e.app),
         Value::Entities(es) if !es.is_empty() && es.iter().all(|e| session.known.contains(e)) => {
             app_label(&es[0].app)
         }
         Value::Entity(_) | Value::Entities(_) => model_label(),
-        Value::Handle(_) | Value::List(_) | Value::Record(_) => model_label(),
         Value::Integer(_)
         | Value::Decimal(_)
         | Value::Date(_)

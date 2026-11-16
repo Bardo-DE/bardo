@@ -22,7 +22,7 @@ impl SleepHandler for Linked {
         match self.0.paused(LET_GO_WITHIN) {
             SleepSettled::Done | SleepSettled::Gone => {}
             SleepSettled::TimedOut => {
-                tracing::warn!("the displays were not given back before the sleep")
+                tracing::warn!("the displays were not given back before the sleep");
             }
         }
     }

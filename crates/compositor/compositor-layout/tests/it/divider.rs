@@ -6,9 +6,7 @@ use compositor_core::WindowId;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::space::SplitPair;
 use compositor_core::window::SizeLimits;
-use compositor_layout::{
-    DividerTarget, RustScene, SceneLayout, SceneSpec, SpaceArrangement, WindowPlacement,
-};
+use compositor_layout::{DividerTarget, RustScene, SceneLayout, SpaceArrangement, WindowPlacement};
 use ui_core::vocab::Fraction;
 
 fn min_width(w: u32) -> SizeLimits {

@@ -85,6 +85,11 @@ struct Held {
 struct StandInControl(Arc<Mutex<Held>>);
 
 #[interface(name = "org.bardo.Intents1.Control")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInControl {
     fn terminal_grants(&self) -> fdo::Result<String> {
         let held = self.0.lock().unwrap_or_else(|e| panic!("{e}"));

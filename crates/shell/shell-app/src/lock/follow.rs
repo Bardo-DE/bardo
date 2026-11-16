@@ -37,7 +37,7 @@ pub fn follow(latch: Latch, lock: Lock, auth: &Auth) -> (Latch, LockWish, Send) 
     };
     let wish = match latch {
         Latch::Unlocking => LockWish::Released,
-        Latch::Free => lock_wish(&lock, &auth),
+        Latch::Free => lock_wish(&lock, auth),
     };
     let send = match (latch, wish) {
         (Latch::Unlocking, LockWish::Released) => Send::AfterBackstop,

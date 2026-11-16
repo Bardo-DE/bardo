@@ -112,7 +112,7 @@ impl Thumbnails {
     /// names it (the name the cache's writer gives).
     fn file_of(&self, file: &FilePath) -> PathBuf {
         let mut name = String::new();
-        for byte in Md5::digest(file_uri(file).as_bytes()).iter() {
+        for byte in &Md5::digest(file_uri(file).as_bytes()) {
             let _ = write!(name, "{byte:02x}");
         }
         self.folder().join(format!("{name}.png"))

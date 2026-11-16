@@ -386,10 +386,10 @@ pub fn encode_png(canvas: Canvas) -> Result<Vec<u8>, ShotError> {
 ///
 /// Returns [`ShotError::RelativePath`] when `path` is not absolute.
 pub fn file_uri(path: &Path) -> Result<String, ShotError> {
+    const HEX_DIGITS: &[u8; 16] = b"0123456789ABCDEF";
     if !path.is_absolute() {
         return Err(ShotError::RelativePath);
     }
-    const HEX_DIGITS: &[u8; 16] = b"0123456789ABCDEF";
     let mut uri = String::from("file://");
     for &byte in path.as_os_str().as_encoded_bytes() {
         match byte {

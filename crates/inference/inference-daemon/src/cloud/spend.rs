@@ -106,7 +106,7 @@ impl Default for Document {
 
 /// What a ledger file holds.
 fn read_document(text: &str) -> Result<Document, ()> {
-    let document: Document = serde_json::from_str(text).ok().ok_or_else(|| ())?;
+    let document: Document = serde_json::from_str(text).ok().ok_or(())?;
     // A format a later inferd wrote: not guessed at.
     if document.format == FORMAT {
         Ok(document)

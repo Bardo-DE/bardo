@@ -34,8 +34,7 @@ use smithay::wayland::shell::xdg::ToplevelSurface;
 pub fn grab_proven(record: Option<&PressRecord>, any_press: bool) -> bool {
     match (record.map(|press| (press.kind, press.origin)), any_press) {
         (None, _)
-        | (Some((_, Origin::Agent(_))), false)
-        | (Some((PressKind::Key | PressKind::Release, _)), false) => false,
+        | (Some((_, Origin::Agent(_)) | (PressKind::Key | PressKind::Release, _)), false) => false,
         (Some(_), _) => true,
     }
 }

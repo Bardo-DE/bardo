@@ -162,12 +162,12 @@ impl Transaction {
     }
 
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "the zbus interface macro reads the argument by this name"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
     async fn resolve(
         &self,
-        _filter: u64,
+        filter: u64,
         packages: Vec<String>,
         #[zbus(header)] header: Header<'_>,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,

@@ -26,7 +26,7 @@ impl Frame512 {
         <[i16; FRAME_SAMPLES]>::try_from(samples)
             .map(Self)
             .ok()
-            .ok_or_else(|| FrameLenError(samples.len()))
+            .ok_or(FrameLenError(samples.len()))
     }
 
     #[must_use]

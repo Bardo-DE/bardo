@@ -432,7 +432,7 @@ fn remember(bits: u32, token: Option<&RestoreToken>) -> Dict {
 
 /// Opens a session for an app that gives no id, selects, and begins.
 async fn begin_with(service: &RemoteDesktopService, n: u32, options: &Dict) -> (u32, Dict) {
-    open_session(&service, key(n), "");
+    open_session(service, key(n), "");
     service.select(&key(n), options);
     service.begin(&key(n)).await
 }

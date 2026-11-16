@@ -95,7 +95,7 @@ pub(crate) fn route(
                     skipping: false,
                     ..frame
                 },
-                (true, _) => frame,
+                (true, _) | (false, Decoded::Other) => frame,
                 (false, Decoded::Key(key, edge)) => frame.flush().remap(RemapInput::Key {
                     device,
                     layout,
@@ -105,7 +105,6 @@ pub(crate) fn route(
                 }),
                 (false, Decoded::Pointer(pointer)) => frame.point(pointer),
                 (false, Decoded::Sync) => frame.flush(),
-                (false, Decoded::Other) => frame,
             }
         })
         .flush();

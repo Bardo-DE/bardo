@@ -99,6 +99,10 @@ struct Item {
 }
 
 #[interface(name = "org.kde.StatusNotifierItem")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus calls every method and property getter on the interface object, whatever it holds"
+)]
 impl Item {
     fn activate(&self, x: i32, y: i32) {
         self.log.line(&format!("Activate {x} {y}"));
@@ -164,6 +168,10 @@ struct Menu {
 }
 
 #[interface(name = "com.canonical.dbusmenu")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus calls every method and property getter on the interface object, whatever it holds"
+)]
 impl Menu {
     fn get_layout(
         &self,

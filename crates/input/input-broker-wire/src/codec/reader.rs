@@ -84,5 +84,5 @@ pub(crate) fn check_len(what: &'static str, got: usize, max: usize) -> Result<u8
     }
     u8::try_from(got)
         .ok()
-        .ok_or_else(|| WireError::TooMany { what, got, max })
+        .ok_or(WireError::TooMany { what, got, max })
 }

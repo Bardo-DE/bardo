@@ -3,6 +3,13 @@
 
 use crate::env::Env;
 use crate::files::{Edit, Files, apply};
+#[cfg_attr(
+    test,
+    expect(
+        redundant_imports,
+        reason = "the library build has no `toml` of its own; only the test build, which has it as a dev-dependency, finds this import redundant"
+    )
+)]
 use settings_app_model::external::toml;
 
 /// inferd's row that keeps AI on this computer.

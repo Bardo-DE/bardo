@@ -258,14 +258,10 @@ impl<R: BrowserIssuer, H: Http + 'static> Flow for BrowserFlow<R, H> {
         self.begin().await.unwrap_or_else(Move::Fail)
     }
 
-    async fn resume(
-        &mut self,
-        browser: Browser,
-        input: account_sheet::SignInInput,
-    ) -> Move<Browser> {
+    async fn resume(&mut self, mid: Browser, input: account_sheet::SignInInput) -> Move<Browser> {
         // The browser drives the flow; nothing the person types is read.
         let _ = input;
-        self.await_browser(browser).await.unwrap_or_else(Move::Fail)
+        self.await_browser(mid).await.unwrap_or_else(Move::Fail)
     }
 }
 

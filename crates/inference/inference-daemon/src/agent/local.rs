@@ -153,7 +153,7 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
         .want(model_ref.clone())
         .await
         .ok()
-        .ok_or_else(|| gone())?;
+        .ok_or_else(gone)?;
     let served = ServedBy {
         account: card.account.clone(),
         model: card.model.clone(),

@@ -63,11 +63,7 @@ fn tier_of(word: &str) -> Result<Tier, FlagError> {
     }
 }
 
-fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
-    #[expect(
-        clippy::similar_names,
-        reason = "`argv` is the input and `args` the parsed result"
-    )]
+fn parse(mut flags: impl Iterator<Item = String>) -> Result<Args, ArgError> {
     let mut args = Args {
         dir: PathBuf::from("eval"),
         entry: PathBuf::new(),
@@ -79,9 +75,10 @@ fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
         repeat: 1,
         max_steps: 400,
     };
-    while let Some(flag) = argv.next() {
+    while let Some(flag) = flags.next() {
         let mut value = || {
-            argv.next()
+            flags
+                .next()
                 .ok_or_else(|| FlagError::NeedsValue(flag.clone()))
         };
         match flag.as_str() {

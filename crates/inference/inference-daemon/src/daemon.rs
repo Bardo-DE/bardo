@@ -569,7 +569,7 @@ impl Daemon {
         .spawn();
         let reload = Reload::new(file, engines.clone()).with_programs(live_programs.clone());
         // The watch task runs for the life of the daemon; nothing waits for it.
-        let _ = reload.clone().watch(RELOAD_EVERY);
+        drop(reload.clone().watch(RELOAD_EVERY));
         // Which engine programs this computer has, and where each came from.
         let found = config.engines_with(&dirs, &programs);
         let local_engines = LocalEngines::of(&found)

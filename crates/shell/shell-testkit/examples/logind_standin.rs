@@ -47,10 +47,10 @@ impl Manager {
         reason = "zbus calls every method and property getter on the interface object"
     )]
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "zbus's generated code reads every parameter; the underscore only says the body does not"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
-    fn get_session_by_pid(&self, _pid: u32) -> fdo::Result<OwnedObjectPath> {
+    fn get_session_by_pid(&self, pid: u32) -> fdo::Result<OwnedObjectPath> {
         session_path()
     }
 
@@ -59,10 +59,10 @@ impl Manager {
         reason = "zbus calls every method and property getter on the interface object"
     )]
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "zbus's generated code reads every parameter; the underscore only says the body does not"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
-    fn get_session(&self, _id: String) -> fdo::Result<OwnedObjectPath> {
+    fn get_session(&self, id: String) -> fdo::Result<OwnedObjectPath> {
         session_path()
     }
 
@@ -71,14 +71,14 @@ impl Manager {
         reason = "a zbus method receives its arguments by value"
     )]
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "zbus's generated code reads every parameter; the underscore only says the body does not"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
     fn inhibit(
         &self,
         what: String,
-        _who: String,
-        _why: String,
+        who: String,
+        why: String,
         mode: String,
     ) -> fdo::Result<OwnedFd> {
         say(&format!("inhibit {what} {mode}"));

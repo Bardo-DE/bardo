@@ -258,7 +258,7 @@ impl Buffer {
                 continue;
             }
             let within = self.piece_bytes(piece, 0..offset - at);
-            return before + count_breaks(&within);
+            return before + count_breaks(within);
         }
         before
     }

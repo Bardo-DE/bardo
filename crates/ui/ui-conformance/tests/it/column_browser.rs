@@ -209,11 +209,13 @@ fn a_long_name_is_cut_from_the_middle_and_keeps_its_extension() {
     let shown = harness
         .text_of(&format!("{} .ds-name-text", row(1, 1)))
         .expect("the name");
-    #[expect(
-        clippy::case_sensitive_file_extension_comparisons,
-        reason = "the fixture spells its own extension in lower case"
-    )]
-    assert!(shown.contains('…') && shown.ends_with(".png"), "{shown}");
+    assert!(
+        shown.contains('…')
+            && std::path::Path::new(&shown)
+                .extension()
+                .is_some_and(|ext| ext.eq_ignore_ascii_case("png")),
+        "{shown}"
+    );
 }
 
 #[test]

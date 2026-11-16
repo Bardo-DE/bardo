@@ -189,33 +189,30 @@ where
         _dhandle: &DisplayHandle,
         data_init: &mut DataInit<'_, D>,
     ) {
-        match request {
-            bardo_window_manager_v1::Request::GetWindow { id, toplevel } => {
-                let window = state.window_of_toplevel(&toplevel);
-                // The new id is always initialised (smithay's dispatch requires it), even when
-                // the request is an error.
-                let object = data_init.init(id, QuireWindowData { toplevel, window });
-                let Some(window) = window else {
-                    return;
-                };
-                if state.quire_window_part().windows.contains_key(&window) {
-                    resource.post_error(
-                        bardo_window_manager_v1::Error::AlreadyConstructed,
-                        "the toplevel already has a bardo_window_v1 object",
-                    );
-                    return;
-                }
-                let events = on_get_window(state.quire_window_part(), window, object.clone());
-                if let Some(facts) = state.window_facts(window) {
-                    send_emphasis(&object, facts.emphasis);
-                    send_placement(&object, facts.mark);
-                    state.quire_window_part().marks.insert(window, facts.mark);
-                    hook_commits(state, window, &facts.surface);
-                }
-                state.quire_window_events(events);
+        // `Destroy`, and a request a later protocol adds: nothing to do.
+        if let bardo_window_manager_v1::Request::GetWindow { id, toplevel } = request {
+            let window = state.window_of_toplevel(&toplevel);
+            // The new id is always initialised (smithay's dispatch requires it), even when
+            // the request is an error.
+            let object = data_init.init(id, QuireWindowData { toplevel, window });
+            let Some(window) = window else {
+                return;
+            };
+            if state.quire_window_part().windows.contains_key(&window) {
+                resource.post_error(
+                    bardo_window_manager_v1::Error::AlreadyConstructed,
+                    "the toplevel already has a bardo_window_v1 object",
+                );
+                return;
             }
-            // `Destroy`, and a request a later protocol adds: nothing to do.
-            _ => {}
+            let events = on_get_window(state.quire_window_part(), window, object.clone());
+            if let Some(facts) = state.window_facts(window) {
+                send_emphasis(&object, facts.emphasis);
+                send_placement(&object, facts.mark);
+                state.quire_window_part().marks.insert(window, facts.mark);
+                hook_commits(state, window, &facts.surface);
+            }
+            state.quire_window_events(events);
         }
     }
 

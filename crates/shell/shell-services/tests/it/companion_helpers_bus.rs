@@ -79,6 +79,11 @@ struct StandInHelpers {
 }
 
 #[interface(name = "org.bardo.Companion1.Helpers2")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInHelpers {
     fn list(&self, after: u64) -> fdo::Result<String> {
         self.log.push(format!("list {after}"));

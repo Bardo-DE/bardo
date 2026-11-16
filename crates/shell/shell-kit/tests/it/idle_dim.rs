@@ -20,7 +20,6 @@ static LEVEL: GlobalSignal<Percent> = Signal::global(|| Percent(60));
 static PHASE: GlobalSignal<IdleDimPhase> = Signal::global(|| IdleDimPhase::Awake);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Overlay() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,
@@ -29,7 +28,6 @@ fn Overlay() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 #[component]
 fn OverlayBody() -> Element {
     rsx! {

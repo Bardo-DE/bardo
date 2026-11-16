@@ -42,6 +42,7 @@ pub(crate) fn u32_f32(value: u32) -> f32 {
 }
 
 /// A small signed integer as `f32`.
+#[cfg(test)]
 #[expect(
     clippy::cast_precision_loss,
     reason = "the integers converted are far under 2^24, where f32 is exact"

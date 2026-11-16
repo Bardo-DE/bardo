@@ -65,10 +65,7 @@ mod tests {
     use ui_settings::IconsSettings;
 
     fn icons(style: ui_settings::IconStyle) -> IconsSettings {
-        IconsSettings {
-            style,
-            ..IconsSettings::default()
-        }
+        IconsSettings { style }
     }
 
     fn hue_near(tint: Tint, hue: f32) -> bool {

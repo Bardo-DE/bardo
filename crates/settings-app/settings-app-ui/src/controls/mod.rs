@@ -19,6 +19,13 @@ use menu::MenuControl;
 use picture::PictureControl;
 use rows::RowsControl;
 use segmented::SegmentedKey;
+#[cfg_attr(
+    test,
+    expect(
+        redundant_imports,
+        reason = "the library build has no `toml` of its own; only the test build, which has it as a dev-dependency, finds this import redundant"
+    )
+)]
 use settings_app_model::external::toml;
 use settings_app_model::{Control as Kind, KeyEntry};
 use slider::SliderControl;

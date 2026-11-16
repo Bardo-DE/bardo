@@ -71,6 +71,12 @@ impl<P: Planner, I: IntentsTransport, K: Clock> Root<P, I, K> {
 }
 
 #[zbus::interface(name = "org.bardo.Companion1")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::unused_self,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse, calls every method and property getter on the interface object and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static> Root<P, I, K> {
     fn prepare(&self, options: Details) -> fdo::Result<()> {
         let _ = options;

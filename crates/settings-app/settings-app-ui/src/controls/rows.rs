@@ -2,6 +2,13 @@
 //! to add one. An edit that does not fit its column is not stored.
 
 use dioxus::prelude::*;
+#[cfg_attr(
+    test,
+    expect(
+        redundant_imports,
+        reason = "the library build has no `toml` of its own; only the test build, which has it as a dev-dependency, finds this import redundant"
+    )
+)]
 use settings_app_model::external::toml;
 use settings_app_model::{Columns, humanize};
 use ui_components::components::controls::button_model::Bezel;

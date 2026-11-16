@@ -54,6 +54,11 @@ async fn from_intentd(callers: &impl Callers, header: &Header<'_>) -> fdo::Resul
 }
 
 #[zbus::interface(name = "org.bardo.IntentProvider1")]
+#[expect(
+    clippy::unused_self,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro calls every method and property getter on the interface object and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl<P, C, S, K> ProviderObject<P, C, S, K>
 where
     P: IntentProvider + 'static,

@@ -12,7 +12,6 @@ fn descending_icons() -> FolderPrefs {
             key: SortKey::Name,
             order: SortOrder::Descending,
         },
-        ..FolderPrefs::default()
     }
 }
 

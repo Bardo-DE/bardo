@@ -3,6 +3,13 @@
 use super::theme_picture::{SIDE, picture_of};
 use crate::marked::marked;
 use dioxus::prelude::*;
+#[cfg_attr(
+    test,
+    expect(
+        redundant_imports,
+        reason = "the library build has no `toml` of its own; only the test build, which has it as a dev-dependency, finds this import redundant"
+    )
+)]
 use settings_app_model::external::toml;
 use settings_app_model::word_label;
 use ui_components::components::controls::radio_group::Arrangement;

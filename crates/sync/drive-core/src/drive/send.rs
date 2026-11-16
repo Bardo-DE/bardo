@@ -775,23 +775,25 @@ async fn adopted(
     op: &Op,
     conflict: &Conflict,
 ) -> Option<Adopted> {
-    let (there, version) = match (op, &conflict.remote) {
+    let (
         (
             Op::Folder { .. }
             | Op::Upload {
                 to: UploadTo::New(_),
                 ..
             },
-            RemoteSide::Exists(id, version),
+            RemoteSide::Exists(there, version),
         )
         | (
             Op::Upload {
-                to: UploadTo::Replace(id),
+                to: UploadTo::Replace(there),
                 ..
             },
             RemoteSide::Changed(version),
-        ) => (id, version),
-        _ => return None,
+        ),
+    ) = (op, &conflict.remote)
+    else {
+        return None;
     };
     let reserved = match op {
         Op::Folder { place, .. }

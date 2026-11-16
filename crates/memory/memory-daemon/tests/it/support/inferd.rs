@@ -73,15 +73,15 @@ impl FakeInferd {
     #[expect(
         clippy::unused_async,
         clippy::unused_async_trait_impl,
-        clippy::used_underscore_binding,
-        reason = "a zbus interface method: the macro makes it async and names its arguments, with leading underscores for the ones it ignores"
+        unused_variables,
+        reason = "a zbus interface method: the macro makes it async and names its arguments, whose names are the wire names of arguments the stand-in ignores"
     )]
     async fn open(
         &self,
-        _need: NeedArg,
+        need: NeedArg,
         class: String,
-        _tier: String,
-        _options: Details,
+        tier: String,
+        options: Details,
     ) -> fdo::Result<OwnedFd> {
         self.seen.lock().expect("lock").opens.push(class.clone());
         let (ours, theirs) = StdStream::pair().map_err(|e| fdo::Error::Failed(e.to_string()))?;

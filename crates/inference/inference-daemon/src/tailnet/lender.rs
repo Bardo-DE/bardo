@@ -256,7 +256,7 @@ impl Lender {
         let ctx = Ctx {
             program: AgentProgram::parse("computer")
                 .ok()
-                .ok_or_else(|| unavailable())?,
+                .ok_or_else(unavailable)?,
             app: guest_app(node),
             route: Route {
                 target: Target::Model(id.clone()),

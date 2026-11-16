@@ -129,13 +129,13 @@ fn body_for(request: &Request, shape: Shape, stream: bool) -> Result<String, Fai
     if shape == Shape::OpenAi && stream {
         let mut root: Value = serde_json::from_slice(&request.body)
             .ok()
-            .ok_or_else(|| invalid())?;
+            .ok_or_else(invalid)?;
         root["stream_options"] = serde_json::json!({ "include_usage": true });
         return Ok(root.to_string());
     }
     String::from_utf8(request.body.clone())
         .ok()
-        .ok_or_else(|| invalid())
+        .ok_or_else(invalid)
 }
 
 /// The headers the Anthropic API wants beside the key: the version the agent asked for, and its

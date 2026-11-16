@@ -222,7 +222,7 @@ pub(crate) fn lines_of(fixture: &mut Fixture, id: ClientId, prefixes: &[&str]) -
                 (true, "configure") | (false, "ping") => "<serial>".to_owned(),
                 _ => line.args.join(", "),
             };
-            let _ = write!(out, "{}.{}({args})\n", line.object, line.event);
+            let _ = writeln!(out, "{}.{}({args})", line.object, line.event);
             out
         })
 }

@@ -137,8 +137,8 @@ pub fn EditSurface(
             if let (Some(edit), Some(listener)) = (host.edit(), state.listener.take()) {
                 edit.ime().forget(listener);
             }
-        })
-    };
+        });
+    }
 
     let mounted = {
         let ctx = ctx.clone();

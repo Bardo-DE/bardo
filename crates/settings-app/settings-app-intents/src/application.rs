@@ -96,10 +96,10 @@ impl Application {
     #[expect(
         clippy::unused_async,
         clippy::unused_async_trait_impl,
-        clippy::used_underscore_binding,
+        unused_variables,
         reason = "the interface macro exports `open` as an async method with these named arguments, and Settings opens no files"
     )]
-    async fn open(&self, _uris: Vec<String>, _platform_data: PlatformData) -> fdo::Result<()> {
+    async fn open(&self, uris: Vec<String>, platform_data: PlatformData) -> fdo::Result<()> {
         Err(fdo::Error::NotSupported(
             "Settings does not open files".to_owned(),
         ))

@@ -163,7 +163,7 @@ fn run<T: Transport>(
 ) -> Result<Vec<Step>, ProviderError> {
     let mut steps = Vec::new();
     for (n, tag) in frames.iter().enumerate() {
-        let mut request: TurnRequest = session.request(
+        let mut request = session.request(
             &obs(u32::try_from(n).expect("a test has few steps")),
             map,
             frame(tag),

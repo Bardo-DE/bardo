@@ -46,7 +46,7 @@ impl PointerHandler for HostState {
             // `PointerEventKind` is `Clone` but not `Copy`; `event` is only borrowed.
             match event.kind.clone() {
                 PointerEventKind::Enter { serial } => {
-                    self.pointer_entered(pointer, id, pos, serial)
+                    self.pointer_entered(pointer, id, pos, serial);
                 }
                 PointerEventKind::Leave { .. } => {
                     // A leave the compositor sends is always a leave for the document, even

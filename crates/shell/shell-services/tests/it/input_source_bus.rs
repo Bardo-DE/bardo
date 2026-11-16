@@ -29,8 +29,8 @@ struct Controller(Heard);
 #[interface(name = "org.fcitx.Fcitx.Controller1")]
 #[expect(
     clippy::unused_self,
-    clippy::used_underscore_binding,
-    reason = "zbus interface methods take `&self`, owned arguments and the wire names of unused arguments, whatever the stand-in does with them"
+    unused_variables,
+    reason = "zbus interface methods take `&self`, owned arguments and the wire names of arguments the stand-in ignores, whatever the stand-in does with them"
 )]
 impl Controller {
     fn current_input_method(&self) -> String {
@@ -41,7 +41,7 @@ impl Controller {
         "Default".to_owned()
     }
 
-    fn input_method_group_info(&self, _group: String) -> (String, Vec<(String, String)>) {
+    fn input_method_group_info(&self, group: String) -> (String, Vec<(String, String)>) {
         let entry = |name: &str| (name.to_owned(), String::new());
         (
             "us".to_owned(),

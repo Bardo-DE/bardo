@@ -249,9 +249,7 @@ fn command_line_table() {
         (vec!["check", "now"], Err(())),
     ];
     for (args, expected) in table {
-        let got = parse(args.iter().map(|a| (*a).to_owned()))
-            .ok()
-            .ok_or_else(|| ());
+        let got = parse(args.iter().map(|a| (*a).to_owned())).ok().ok_or(());
         assert_eq!(got, expected, "{args:?}");
     }
 }

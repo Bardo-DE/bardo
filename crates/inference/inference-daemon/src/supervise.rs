@@ -302,7 +302,7 @@ impl Supervised {
         self.commands
             .send(Command::Want(id.clone(), ack))
             .ok()
-            .ok_or_else(|| Failed::unknown())?;
+            .ok_or_else(Failed::unknown)?;
         match done.await {
             Err(_) => return Err(Failed::unknown()),
             Ok(Err(cause)) => return Err(Failed { cause }),
@@ -336,11 +336,7 @@ impl Supervised {
             if let Some(verdict) = verdict {
                 return verdict;
             }
-            state
-                .changed()
-                .await
-                .ok()
-                .ok_or_else(|| Failed::unknown())?;
+            state.changed().await.ok().ok_or_else(Failed::unknown)?;
         }
     }
 
@@ -402,7 +398,7 @@ impl Changes {
     ///
     /// Returns [`Failed`] when the supervisor is gone.
     pub async fn next(&mut self) -> Result<(), Failed> {
-        self.0.changed().await.ok().ok_or_else(|| Failed::unknown())
+        self.0.changed().await.ok().ok_or_else(Failed::unknown)
     }
 }
 

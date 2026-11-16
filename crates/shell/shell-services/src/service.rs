@@ -106,11 +106,11 @@ impl<S: Service> Handle<S> {
 /// looks at its commands (it ends some other way) does not hold its keeper.
 const WIND_DOWN: Duration = Duration::from_secs(5);
 
-/// Start `S` on `rt` against `env`'s seams, reading or driving `deps`, and keep it running: a
-/// task that panics, returns an error, or ends cleanly after running a while, while its
-/// [`Control`]s are still held, is started again
-/// after a growing wait, up to `RESTARTS_MAX` times in a row (`restart.rs`), and each
-/// ending is logged with the service's name. A restarted service starts from the state it last
+/// Start `S` on `rt` against `env`'s seams, reading or driving `deps`, and keep it running.
+///
+/// A task that panics, returns an error, or ends cleanly after running a while, while its
+/// [`Control`]s are still held, is started again after a growing wait, up to `RESTARTS_MAX`
+/// times in a row (`restart.rs`), and each ending is logged with the service's name. A restarted service starts from the state it last
 /// published; commands sent while it was down wait for it.
 pub fn spawn<S: Service>(rt: &tokio::runtime::Handle, env: &Env, deps: S::Deps) -> Handle<S> {
     spawn_with(rt, env, deps, Tries::default())
@@ -244,12 +244,12 @@ mod tests {
         )]
         fn run(
             env: &Env,
-            runs: Arc<AtomicU32>,
+            deps: Arc<AtomicU32>,
             mut io: ServiceIo<Self>,
         ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
             let _ = env;
             async move {
-                let run = runs.fetch_add(1, Ordering::SeqCst) + 1;
+                let run = deps.fetch_add(1, Ordering::SeqCst) + 1;
                 assert!(run > 1, "the first run panics");
                 io.state.send_replace(run);
                 while let Some(command) = io.commands.recv().await {
@@ -276,13 +276,13 @@ mod tests {
         )]
         fn run(
             env: &Env,
-            runs: Arc<AtomicU32>,
+            deps: Arc<AtomicU32>,
             io: ServiceIo<Self>,
         ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
             let _ = env;
             drop(io);
             async move {
-                runs.fetch_add(1, Ordering::SeqCst);
+                deps.fetch_add(1, Ordering::SeqCst);
                 panic!("every run panics");
             }
         }

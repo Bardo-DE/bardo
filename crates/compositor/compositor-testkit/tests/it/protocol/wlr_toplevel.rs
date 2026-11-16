@@ -354,7 +354,7 @@ pub(crate) fn flow(
             } else {
                 line.args.join(", ")
             };
-            let _ = write!(out, "{}.{}({args})\n", line.object, line.event);
+            let _ = writeln!(out, "{}.{}({args})", line.object, line.event);
             out
         });
     normalised(&text)

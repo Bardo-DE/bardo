@@ -114,6 +114,10 @@ impl FakeInferd {
 }
 
 #[zbus::interface(name = "org.bardo.Inference1")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl FakeInferd {
     fn prepare(
         &self,

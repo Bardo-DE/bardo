@@ -16,9 +16,9 @@ pub fn html(dir: &Path, shots: &[Shot]) -> std::io::Result<String> {
             .filter(|shot| shot.page == entry.page)
             .map(|shot| figure(dir, *shot))
             .collect::<std::io::Result<String>>()?;
-        let _ = write!(
+        let _ = writeln!(
             body,
-            "<section id=\"{slug}\"><h2>{title}</h2><p>{lede}</p><div class=\"row\">{figures}</div></section>\n",
+            "<section id=\"{slug}\"><h2>{title}</h2><p>{lede}</p><div class=\"row\">{figures}</div></section>",
             slug = entry.page.slug(),
             title = escape(entry.title),
             lede = escape(entry.lede),

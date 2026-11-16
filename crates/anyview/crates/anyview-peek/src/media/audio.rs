@@ -48,9 +48,9 @@ impl Read for Stream {
 }
 
 impl Seek for Stream {
-    fn seek(&mut self, to: SeekFrom) -> std::io::Result<u64> {
+    fn seek(&mut self, pos: SeekFrom) -> std::io::Result<u64> {
         self.check()?;
-        self.inner.seek(to)
+        self.inner.seek(pos)
     }
 }
 

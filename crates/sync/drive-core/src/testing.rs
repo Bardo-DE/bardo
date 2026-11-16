@@ -657,7 +657,7 @@ impl Sink for MemorySink {
                     .content
                     .read(at, self.chunk)
                     .ok()
-                    .ok_or_else(|| PutRefused::Transient(RetryAfter(0)))?;
+                    .ok_or(PutRefused::Transient(RetryAfter(0)))?;
                 {
                     let mut state = held(&self.state);
                     state.largest = state.largest.max(chunk.len() as u64);

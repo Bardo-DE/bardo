@@ -15,7 +15,6 @@
 use account_core::store::{Persisted, StoreFault};
 use account_core::store::{RegistryStore, StoreError};
 use base_fs::atomic::AtomicFile;
-use std::io;
 use std::path::{Path, PathBuf};
 
 /// The registry file's name inside the store's directory.
@@ -108,7 +107,7 @@ impl FileStore {
 
     /// The first half of a save, alone (a crash before the rename).
     #[cfg(test)]
-    fn stage(&self, text: &str) -> io::Result<PathBuf> {
+    fn stage(&self, text: &str) -> std::io::Result<PathBuf> {
         self.file.stage(text)
     }
 

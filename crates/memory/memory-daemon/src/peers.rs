@@ -73,10 +73,6 @@ impl ProcPeers {
 }
 
 impl Peers for ProcPeers {
-    #[expect(
-        clippy::unused_async_trait_impl,
-        reason = "`Peers::caller_of` is an async trait method; the table is read without awaiting"
-    )]
     async fn caller_of(&self, sender: &str) -> Result<Caller, Refusal> {
         // An identity lookup that does not finish is a refusal, never a wait.
         let caller = tokio::time::timeout(LOOKUP_WAIT, self.callers.caller_of(sender))
@@ -128,6 +124,10 @@ impl TablePeers {
 }
 
 impl Peers for TablePeers {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Peers::caller_of` is an async trait method; the table is read without awaiting"
+    )]
     async fn caller_of(&self, sender: &str) -> Result<Caller, Refusal> {
         self.0
             .lock()

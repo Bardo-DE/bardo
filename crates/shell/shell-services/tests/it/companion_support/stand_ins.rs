@@ -26,6 +26,11 @@ use provenance::{MessageId, ThreadId};
 pub struct StandInSession(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Session")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInSession {
     fn turn(&self, session: String, turn: String, options: Details) -> fdo::Result<u64> {
         let _ = options;
@@ -68,6 +73,11 @@ pub struct StandInModeSession {
 }
 
 #[interface(name = "org.bardo.Intents1.Session")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInModeSession {
     fn turn(&self, session: String, turn: String, options: Details) -> fdo::Result<u64> {
         let _ = options;
@@ -107,6 +117,11 @@ pub const MAIL_HANDLE: u64 = 9;
 pub struct StandInOlderSession(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Session")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInOlderSession {
     fn turn(&self, session: String, turn: String, options: Details) -> fdo::Result<u64> {
         let _ = options;
@@ -124,6 +139,11 @@ impl StandInOlderSession {
 pub struct StandInMessage(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Message")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInMessage {
     fn send(&self, session: String, draft: String, options: Details) -> fdo::Result<String> {
         let _ = options;
@@ -160,6 +180,11 @@ pub struct StandInSearch {
 }
 
 #[interface(name = "org.bardo.Intents1.Search")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInSearch {
     fn query(&self, text: String, scope: String, generation: u64) -> fdo::Result<String> {
         let _ = scope;
@@ -175,6 +200,11 @@ impl StandInSearch {
 pub struct StandInControl(pub Arc<Mutex<Vec<UndoEntry>>>);
 
 #[interface(name = "org.bardo.Intents1.Control")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInControl {
     fn journal(&self, filter: String) -> fdo::Result<String> {
         let _ = filter;
@@ -188,6 +218,10 @@ impl StandInControl {
 pub struct StandInRun(pub Log);
 
 #[interface(name = "org.bardo.Intents1.Run")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInRun {
     fn perform(
         &self,
@@ -275,6 +309,11 @@ pub struct StandInCompanion {
 }
 
 #[interface(name = "org.bardo.Companion1")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInCompanion {
     fn prepare(&self, options: Details) {
         let _ = options;
@@ -339,6 +378,10 @@ pub struct StandInAnswer {
 }
 
 #[interface(name = "org.bardo.Companion1.Answer")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInAnswer {
     fn act(&self, action: String) -> fdo::Result<OwnedObjectPath> {
         self.log.push(format!("act {action}"));
@@ -427,6 +470,10 @@ pub struct StandInRunObject {
 }
 
 #[interface(name = "org.bardo.ComputerUse1.Run")]
+#[expect(
+    clippy::unused_self,
+    reason = "zbus calls every method and property getter on the interface object, whatever it holds"
+)]
 impl StandInRunObject {
     fn pause(&self) {
         self.log.push(format!("pause {}", self.id));
@@ -497,6 +544,11 @@ pub struct StandInWaiting {
 }
 
 #[interface(name = "org.bardo.Memory1.Control")]
+#[expect(
+    clippy::unused_self,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro calls every method and property getter on the interface object and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandInWaiting {
     fn timeline(&self, space: String, query: String) -> String {
         let _ = (space, query);

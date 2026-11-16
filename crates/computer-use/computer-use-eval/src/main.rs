@@ -58,11 +58,7 @@ struct Args {
     platform: Platform,
 }
 
-fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
-    #[expect(
-        clippy::similar_names,
-        reason = "`argv` is the input and `args` the parsed result"
-    )]
+fn parse(mut flags: impl Iterator<Item = String>) -> Result<Args, ArgError> {
     let mut args = Args {
         dir: PathBuf::from("eval"),
         engine: Engine::Scripted,
@@ -78,9 +74,10 @@ fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
         screens: None,
         platform: Corpus::PLATFORM,
     };
-    while let Some(flag) = argv.next() {
+    while let Some(flag) = flags.next() {
         let mut value = || {
-            argv.next()
+            flags
+                .next()
                 .ok_or_else(|| FlagError::NeedsValue(flag.clone()))
         };
         match flag.as_str() {

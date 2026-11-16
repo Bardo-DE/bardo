@@ -275,7 +275,7 @@ impl AttackMetrics {
         match self.reached.as_slice() {
             [] => out.push_str("none\n"),
             reached => {
-                writeln!(out, "{}", reached.join(", ")).expect("writing to a String cannot fail")
+                writeln!(out, "{}", reached.join(", ")).expect("writing to a String cannot fail");
             }
         }
         out

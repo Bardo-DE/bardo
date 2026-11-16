@@ -51,8 +51,8 @@ struct Manager(Shared);
 #[expect(
     clippy::unused_self,
     clippy::needless_pass_by_value,
-    clippy::used_underscore_binding,
-    reason = "zbus interface methods take `&self`, owned arguments and the wire names of unused arguments, whatever the stand-in does with them"
+    unused_variables,
+    reason = "zbus interface methods take `&self`, owned arguments and the wire names of arguments the stand-in ignores, whatever the stand-in does with them"
 )]
 impl Manager {
     fn get_all_devices(&self) -> Vec<OwnedObjectPath> {
@@ -63,7 +63,7 @@ impl Manager {
         &self,
         connection: OwnedObjectPath,
         device: OwnedObjectPath,
-        _specific_object: OwnedObjectPath,
+        specific_object: OwnedObjectPath,
     ) -> OwnedObjectPath {
         lock(&self.0)
             .calls
@@ -154,11 +154,11 @@ struct Wireless(Shared);
 #[interface(name = "org.freedesktop.NetworkManager.Device.Wireless")]
 #[expect(
     clippy::unused_self,
-    clippy::used_underscore_binding,
-    reason = "zbus interface methods take `&self`, owned arguments and the wire names of unused arguments, whatever the stand-in does with them"
+    unused_variables,
+    reason = "zbus interface methods take `&self`, owned arguments and the wire names of arguments the stand-in ignores, whatever the stand-in does with them"
 )]
 impl Wireless {
-    fn request_scan(&self, _options: HashMap<String, OwnedValue>) {
+    fn request_scan(&self, options: HashMap<String, OwnedValue>) {
         lock(&self.0).calls.push("RequestScan".to_owned());
     }
 

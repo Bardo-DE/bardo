@@ -156,7 +156,7 @@ impl SignalHandler for Edge {
         match self.link.paused(self.wait) {
             SleepSettled::Done | SleepSettled::Gone => {}
             SleepSettled::TimedOut => {
-                tracing::warn!("the session was paused but the devices were not let go in time")
+                tracing::warn!("the session was paused but the devices were not let go in time");
             }
         }
     }

@@ -101,12 +101,12 @@ struct Filesystem {
 #[interface(name = "org.freedesktop.UDisks2.Filesystem")]
 impl Filesystem {
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "the zbus interface macro reads the argument by its name"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
     async fn mount(
         &self,
-        _options: HashMap<String, OwnedValue>,
+        options: HashMap<String, OwnedValue>,
         #[zbus(signal_emitter)] emitter: SignalEmitter<'_>,
     ) -> Result<String, Refused> {
         let at = {
@@ -172,20 +172,20 @@ struct Drive {
 #[interface(name = "org.freedesktop.UDisks2.Drive")]
 impl Drive {
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "the zbus interface macro reads the argument by its name"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
-    fn eject(&self, _options: HashMap<String, OwnedValue>) {
+    fn eject(&self, options: HashMap<String, OwnedValue>) {
         locked(&self.world)
             .calls
             .push(format!("eject {}", self.spec.node));
     }
 
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "the zbus interface macro reads the argument by its name"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
-    fn power_off(&self, _options: HashMap<String, OwnedValue>) {
+    fn power_off(&self, options: HashMap<String, OwnedValue>) {
         locked(&self.world)
             .calls
             .push(format!("power_off {}", self.spec.node));

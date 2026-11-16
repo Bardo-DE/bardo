@@ -105,7 +105,7 @@ pub(super) fn popup_role(
     };
     let popup = Popup::from_surface(parent_xdg, &positioner, &state.qh, wl, &state.xdg_shell)
         .ok()
-        .ok_or_else(|| HostError::MissingGlobal {
+        .ok_or(HostError::MissingGlobal {
             global: "xdg_wm_base",
         })?;
     if let Role::Layer { surface, .. } = &parent_surface.role {
@@ -122,12 +122,11 @@ pub(super) fn popup_role(
 /// An `xdg_positioner` set up with `params`. Sizes are clamped to 1 px, since a zero size is a
 /// protocol error.
 pub(crate) fn positioner(state: &HostState, params: &PositionerParams) -> Result<XdgPositioner> {
-    let positioner =
-        XdgPositioner::new(&state.xdg_shell)
-            .ok()
-            .ok_or_else(|| HostError::MissingGlobal {
-                global: "xdg_wm_base",
-            })?;
+    let positioner = XdgPositioner::new(&state.xdg_shell)
+        .ok()
+        .ok_or(HostError::MissingGlobal {
+            global: "xdg_wm_base",
+        })?;
     let rect = params.anchor_rect;
     positioner.set_size(params.size.width.max(1), params.size.height.max(1));
     positioner.set_anchor_rect(rect.x, rect.y, rect.width.max(1), rect.height.max(1));

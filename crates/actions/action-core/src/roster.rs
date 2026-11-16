@@ -242,7 +242,6 @@ trusted_text!(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::planner::StepLine;
 
     fn space(s: &str) -> SpaceId {
         SpaceId::parse(s).expect("space")

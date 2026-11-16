@@ -26,10 +26,6 @@ const SKIP: bool = false;
 const ARMED: bool = true;
 const DISARMED: bool = false;
 
-#[expect(
-    clippy::type_complexity,
-    reason = "a table of rows: name, state, input, expected state, expected action"
-)]
 #[rustfmt::skip]
 const CASES: &[(&str, FrameState, FrameInput, FrameState, FrameAction)] = &[
     // Invalidate

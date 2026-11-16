@@ -63,7 +63,7 @@ pub fn ProgressIndicator(
             role: "progressbar",
             "data-style": style.slug(),
             "data-size": size.slug(),
-            "data-gap": (style == ProgressStyle::Ring).then(|| if notched { "notched" } else { "closed" }),
+            "data-gap": (style == ProgressStyle::Ring).then_some(if notched { "notched" } else { "closed" }),
             "data-pending": if known { None } else { Some(frame.slug()) },
             "aria-label": common.aria_label.clone(),
             "aria-valuemin": known.then_some("0"),

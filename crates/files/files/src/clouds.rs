@@ -5,7 +5,6 @@ use std::sync::Arc;
 
 use files_core::OnlineUrl;
 use files_desktop::{Bus, DesktopClouds, Storage, open_url, session};
-use files_ui::OpenFailure;
 use tokio::runtime::Handle;
 
 /// Opens an online document's address in the person's browser, through the desktop portal.

@@ -187,7 +187,7 @@ fn a_hiding_bar_follows_the_pointer_the_popups_and_the_timer() {
     ];
     for mode in hiding {
         for (name, script, want) in &cases {
-            assert_eq!(phase(mode, &script), *want, "{mode:?}: {name}");
+            assert_eq!(phase(mode, script), *want, "{mode:?}: {name}");
         }
     }
 }

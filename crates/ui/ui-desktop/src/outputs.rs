@@ -87,10 +87,6 @@ impl Outputs {
     /// Outputs from the property's wire rows: at most [`MAX_ROWS`] of them, and a row with a
     /// frame or work area of no size, or a scale of zero, is dropped (windows fitted into
     /// nothing are worse than no answer: the caller then keeps the window system's own size).
-    #[cfg_attr(
-        not(feature = "dbus"),
-        expect(dead_code, reason = "only the bus watcher reads wire rows")
-    )]
     pub(crate) fn of_wire(rows: Vec<Wire>) -> Outputs {
         Outputs {
             areas: rows

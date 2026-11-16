@@ -324,7 +324,6 @@ pub fn rebuild_from(stored: Option<Vec<ReplayEvent>>, recent: Vec<ReplayEvent>) 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use companion_wire::SessionRecord;
     use provenance::{AgentRef, TaskId};
 
     fn opened(task: &str, at: i64) -> ReplayEvent {

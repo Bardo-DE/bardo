@@ -71,12 +71,11 @@ fn a_title_too_long_for_the_titlebar_ends_in_an_ellipsis_in_the_middle() {
         LONG.starts_with(head) && !head.is_empty(),
         "the start stays: {shown:?}"
     );
-    #[expect(
-        clippy::case_sensitive_file_extension_comparisons,
-        reason = "the fixture spells its own extension in lower case"
-    )]
     assert!(
-        LONG.ends_with(tail) && tail.ends_with(".png"),
+        LONG.ends_with(tail)
+            && std::path::Path::new(tail)
+                .extension()
+                .is_some_and(|ext| ext.eq_ignore_ascii_case("png")),
         "the end and the extension stay: {shown:?}"
     );
     let title = harness.rect(".ds-titlebar-title").expect("the title area");

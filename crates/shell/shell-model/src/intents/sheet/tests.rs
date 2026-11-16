@@ -186,7 +186,7 @@ mod view_tests {
     use action_core::{ArgLine, ConfirmDetail, ConfirmOffer, Gesture, Shown, TaintNote};
     use action_vocab::{EntityRef, LabelText};
     use companion_model::helper::HelperName;
-    use provenance::{AppName, Effect, Label, Labelled, Source};
+    use provenance::{Effect, Label, Labelled, Source};
 
     use super::super::words::{app_words, asker_words, why_words};
     use super::super::{Pending, Serial, Sheets, sheet_view};

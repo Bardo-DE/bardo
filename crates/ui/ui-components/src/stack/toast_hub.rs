@@ -290,7 +290,7 @@ pub fn use_toast_hub() -> ToastHub {
 
 #[cfg(test)]
 mod tests {
-    use super::{ToastAction, ToastHub, UndoToken, use_toast_hub_provider};
+    use super::{ToastAction, UndoToken, use_toast_hub_provider};
     use dioxus::prelude::*;
     use std::cell::RefCell;
     use std::rc::Rc;

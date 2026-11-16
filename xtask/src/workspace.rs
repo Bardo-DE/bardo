@@ -1,7 +1,7 @@
 //! The workspace as plain data, loaded once from `cargo metadata`.
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 use cargo_metadata::MetadataCommand;
@@ -70,7 +70,7 @@ impl Workspace {
 
     /// The directory of `name` relative to the root, if it is a member.
     #[cfg(test)]
-    pub fn dir_of(&self, name: &str) -> Option<&Path> {
+    pub fn dir_of(&self, name: &str) -> Option<&std::path::Path> {
         self.dirs.get(name).map(PathBuf::as_path)
     }
 }
@@ -99,6 +99,6 @@ mod tests {
         );
         assert_eq!(ws.rdeps.get("a").map(BTreeSet::len), Some(1));
         assert!(!ws.rdeps.contains_key("serde"));
-        assert_eq!(ws.dir_of("b"), Some(Path::new("crates/b")));
+        assert_eq!(ws.dir_of("b"), Some(std::path::Path::new("crates/b")));
     }
 }

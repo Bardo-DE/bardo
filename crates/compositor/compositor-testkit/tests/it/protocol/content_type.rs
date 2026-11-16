@@ -38,9 +38,9 @@ fn check(name: &str, client: &TestClient, skip: &[&str]) {
                 .any(|iface| line.object.starts_with(&format!("{iface}#")))
         })
         .fold(String::new(), |mut out, line| {
-            let _ = write!(
+            let _ = writeln!(
                 out,
-                "{}.{}({})\n",
+                "{}.{}({})",
                 line.object,
                 line.event,
                 line.args.join(", ")

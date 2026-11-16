@@ -1,6 +1,13 @@
 //! A colour: the accent swatch row.
 
 use dioxus::prelude::*;
+#[cfg_attr(
+    test,
+    expect(
+        redundant_imports,
+        reason = "the library build has no `toml` of its own; only the test build, which has it as a dev-dependency, finds this import redundant"
+    )
+)]
 use settings_app_model::external::toml;
 use ui_components::components::controls::radio_group::Arrangement;
 use ui_components::prelude::*;

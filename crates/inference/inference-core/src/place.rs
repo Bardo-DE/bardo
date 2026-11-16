@@ -195,13 +195,13 @@ impl PlaceId {
             return ComputerName::parse(name)
                 .map(|name| Self::computer(&name))
                 .ok()
-                .ok_or_else(|| bad());
+                .ok_or_else(bad);
         }
         if let Some(account) = text.strip_prefix(ACCOUNT_PREFIX) {
             return AccountId::parse(account)
                 .map(|account| Self::account(&account))
                 .ok()
-                .ok_or_else(|| bad());
+                .ok_or_else(bad);
         }
         Err(bad())
     }

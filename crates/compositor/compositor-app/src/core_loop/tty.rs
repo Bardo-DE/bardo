@@ -160,7 +160,7 @@ fn configure(state: &mut State, device: &FedDevice) {
             );
         }
         Applied::Refused => {
-            tracing::debug!(device = device.name.0, "a device did not take the settings")
+            tracing::debug!(device = device.name.0, "a device did not take the settings");
         }
     }
 }
@@ -182,7 +182,7 @@ pub(crate) fn reconfigure_pointers(state: &mut State, pointer: &PointerSettings)
                 );
             }
             Applied::Refused => {
-                tracing::debug!(device = device.0, "a device did not take the new settings")
+                tracing::debug!(device = device.0, "a device did not take the new settings");
             }
         }
     }

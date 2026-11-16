@@ -222,7 +222,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             },
             (Ok(()), LoopPhase::Paused(_)) => (JobEnding::Failed(JobFault::Refused), None),
             // A run that failed, or ended in a phase the loop does not finish in.
-            (Err(_), _) | (Ok(()), _) => (JobEnding::Failed(JobFault::Crashed), None),
+            (Err(_) | Ok(()), _) => (JobEnding::Failed(JobFault::Crashed), None),
         };
         if let JobEnding::Failed(fault) = &ending {
             tracing::info!(

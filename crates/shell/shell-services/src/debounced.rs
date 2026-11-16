@@ -126,14 +126,14 @@ impl Debounced {
                     let _ = wake.send(());
                 }
             })?;
-        let mut watched = 0_usize;
+        let mut armed = 0_usize;
         for (folder, mode) in places.iter().filter_map(Place::folder) {
             match watcher.watch(&folder, mode) {
-                Ok(()) => watched += 1,
+                Ok(()) => armed += 1,
                 Err(error) => eprintln!("bardo-shell: watching {}: {error}", folder.display()),
             }
         }
-        if watched == 0 {
+        if armed == 0 {
             return Err(notify::Error::generic("no place could be watched").into());
         }
         Ok(Debounced {

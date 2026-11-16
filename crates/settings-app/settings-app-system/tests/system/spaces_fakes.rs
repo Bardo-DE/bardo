@@ -22,6 +22,11 @@ fn owned(value: Value<'_>) -> OwnedValue {
 }
 
 #[zbus::interface(name = "org.bardo.Spaces1")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl Registry {
     fn list(&self) -> Vec<(String, Details)> {
         let rows = self.rows.lock().expect("rows").clone();
@@ -57,6 +62,10 @@ struct Control {
 }
 
 #[zbus::interface(name = "org.bardo.Memory1.Control")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl Control {
     fn remove_space(&self, space: String, removal: String) -> String {
         self.log

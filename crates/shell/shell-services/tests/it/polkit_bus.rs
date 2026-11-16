@@ -58,16 +58,21 @@ fn heard(verb: &'static str, (kind, details): Subject, path: String) -> Heard {
 }
 
 #[interface(name = "org.freedesktop.PolicyKit1.Authority")]
+#[expect(
+    clippy::unnecessary_wraps,
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro has methods answer with `fdo::Result` so a service can refuse and hands a method its arguments by value, whatever this one holds or does"
+)]
 impl StandIn {
     #[expect(
-        clippy::used_underscore_binding,
-        reason = "zbus passes the locale argument by position; the stand-in ignores it"
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
     )]
     fn register_authentication_agent(
         &self,
         #[zbus(header)] header: Header<'_>,
         subject: Subject,
-        _locale: String,
+        locale: String,
         object_path: String,
     ) -> zbus::fdo::Result<()> {
         if let Ok(mut agent) = self.agent.lock() {

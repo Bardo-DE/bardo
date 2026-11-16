@@ -223,9 +223,9 @@ impl Dispatch<ExtSessionLockSurfaceV1, WlSurface> for State {
         state: &mut Self,
         proxy: &ExtSessionLockSurfaceV1,
         event: ext_session_lock_surface_v1::Event,
-        surface: &WlSurface,
+        data: &WlSurface,
         _: &Connection,
-        handle: &QueueHandle<Self>,
+        qhandle: &QueueHandle<Self>,
     ) {
         let ext_session_lock_surface_v1::Event::Configure {
             serial,
@@ -236,14 +236,14 @@ impl Dispatch<ExtSessionLockSurfaceV1, WlSurface> for State {
             return;
         };
         proxy.ack_configure(serial);
-        match painted_buffer(&state.shm, handle, width, height) {
+        match painted_buffer(&state.shm, qhandle, width, height) {
             Ok(buffer) => {
-                surface.attach(Some(&buffer), 0, 0);
-                surface.damage_buffer(0, 0, i32::MAX, i32::MAX);
-                surface.commit();
+                data.attach(Some(&buffer), 0, 0);
+                data.damage_buffer(0, 0, i32::MAX, i32::MAX);
+                data.commit();
                 state.buffers.push(buffer);
             }
-            Err(why) => eprintln!("session_locker: painting a lock surface: {why}"),
+            Err(why) => eprintln!("session_locker: painting a lock data: {why}"),
         }
     }
 }

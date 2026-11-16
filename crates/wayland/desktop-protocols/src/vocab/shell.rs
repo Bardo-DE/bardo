@@ -204,8 +204,8 @@ impl WindowEntries {
 }
 
 impl FromIterator<WindowEntry> for WindowEntries {
-    fn from_iter<I: IntoIterator<Item = WindowEntry>>(entries: I) -> WindowEntries {
-        WindowEntries(entries.into_iter().collect())
+    fn from_iter<I: IntoIterator<Item = WindowEntry>>(iter: I) -> WindowEntries {
+        WindowEntries(iter.into_iter().collect())
     }
 }
 

@@ -4,6 +4,13 @@ use crate::env::Env;
 use crate::reported::Reported;
 use dioxus::prelude::{ReadableExt, Signal, WritableExt};
 use settings_app_client::{FileValues, FilesError, load, save};
+#[cfg_attr(
+    test,
+    expect(
+        redundant_imports,
+        reason = "the library build has no `toml` of its own; only the test build, which has it as a dev-dependency, finds this import redundant"
+    )
+)]
 use settings_app_model::external::toml;
 use settings_app_model::{ConfigFile, FileSpec, KeyEntry};
 use std::collections::{BTreeMap, BTreeSet};

@@ -162,7 +162,7 @@ where
     let mut tracker = OutputDamageTracker::new(mode, scale.as_f64(), Transform::Normal);
     let elements = crate::damage::routed(renderer, elements);
     let mut framebuffer = renderer.bind(target).map_err(|e| fault(&e))?;
-    let rendered = tracker
+    let drawn = tracker
         .render_output(
             renderer,
             &mut framebuffer,
@@ -174,7 +174,7 @@ where
             DamageError::Rendering(error) => fault(&error),
             DamageError::OutputNoMode(_) => RenderError::NoTarget,
         })?;
-    rendered
+    drawn
         .sync
         .wait()
         .ok()
