@@ -107,9 +107,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     async fn brief_job(&mut self, spec: &JobSpec, opened: &OpenedJob) -> Result<(), JobFault> {
-        let role = role_text(&spec.card, &spec.job)
-            .ok()
-            .ok_or(JobFault::Crashed)?;
+        let role = role_text(&spec.card, &spec.job).map_err(|cause| {
+            tracing::warn!(%cause, "a helper's role could not be written");
+            JobFault::Crashed
+        })?;
         self.planner.set_role(role);
         // The person's own words give the policy; a planner's words never do, so a job its giver
         // wrote has only its giver's policy, cut to the helper's reach.
@@ -156,7 +157,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             let sent = self.intents.send(input.from.clone(), draft).await;
             best_effort("message.send.input", &input.from, sent);
         }
-        self.pull().await.ok().ok_or(JobFault::Crashed)?;
+        self.pull().await.map_err(|cause| {
+            tracing::warn!(%cause, "a helper's inputs could not be pulled");
+            JobFault::Crashed
+        })?;
         Ok(())
     }
 

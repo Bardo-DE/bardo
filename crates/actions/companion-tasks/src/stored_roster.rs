@@ -80,11 +80,11 @@ pub fn events_of(rows: &[Logged]) -> Vec<ReplayEvent> {
 ///
 /// # Errors
 ///
-/// Returns [`ReplayFault::Unavailable`] when the log cannot list its sessions.
+/// Returns [`ReplayFault::Log`] when the log cannot list its sessions.
 pub async fn stored_events<L: SessionLog>(
     log: &L,
 ) -> Result<Option<Vec<ReplayEvent>>, ReplayFault> {
-    let sessions = log.sessions().await.ok().ok_or(ReplayFault::Unavailable)?;
+    let sessions = log.sessions().await.map_err(ReplayFault::Log)?;
     if sessions.is_empty() {
         return Ok(None);
     }

@@ -42,6 +42,12 @@ pub enum ReplayFault {
     /// The router or memoryd is not there.
     #[error("the record is not available")]
     Unavailable,
+    /// The router did not answer a request for the records.
+    #[error("the router could not give the records")]
+    Router(#[source] action_client::ClientError),
+    /// The session log could not list its sessions.
+    #[error("the session log could not list its sessions")]
+    Log(#[source] agent_session::LogFault),
     /// A record is not in the form its owner writes.
     #[error("a stored record is malformed")]
     Malformed,
@@ -80,8 +86,7 @@ impl<I: action_client::Transport> RecentSource for RouterRecent<'_, I> {
             .intents
             .session_recall(self.session.clone(), action_wire::RecallAsk::Recent(query))
             .await
-            .ok()
-            .ok_or(ReplayFault::Unavailable)?;
+            .map_err(ReplayFault::Router)?;
         let action_wire::RecallView::Recent(lines) = view else {
             return Err(ReplayFault::Unavailable);
         };

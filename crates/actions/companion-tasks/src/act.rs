@@ -69,9 +69,10 @@ impl Acting {
 ///
 /// Returns [`ServeFault::NoSuchCard`] when `text` names no card.
 pub fn card_id(text: &str) -> Result<CardActionId, ServeFault> {
+    // Text that is neither form names no card: a lookup that missed, not a failure with a cause.
     serde_json::from_str::<CardActionId>(text)
-        .or_else(|_| CardActionId::parse(text))
         .ok()
+        .or_else(|| CardActionId::parse(text).ok())
         .ok_or(ServeFault::NoSuchCard)
 }
 
