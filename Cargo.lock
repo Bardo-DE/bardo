@@ -1584,12 +1584,12 @@ dependencies = [
  "action-provider",
  "action-vocab",
  "action-wire",
- "agent-voice-wire",
  "base-ids",
  "companion-wire",
  "inference-core",
  "permission-core",
  "provenance",
+ "speech-wire",
  "thiserror 2.0.21",
  "ui-intents",
 ]
@@ -2171,102 +2171,6 @@ dependencies = [
  "agent-skills",
  "tempfile",
  "toml",
-]
-
-[[package]]
-name = "agent-voice-audio"
-version = "0.1.0"
-dependencies = [
- "agent-voice-audio",
- "futures-util",
- "serde",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "agent-voice-daemon"
-version = "0.1.0"
-dependencies = [
- "account-capability",
- "account-core",
- "account-match",
- "action-dbus",
- "action-log",
- "action-procroot",
- "action-testbus",
- "action-vocab",
- "action-wire",
- "agent-voice-audio",
- "agent-voice-dbus",
- "agent-voice-loop",
- "agent-voice-pipewire",
- "agent-voice-wire",
- "base-time",
- "clap",
- "futures-util",
- "inference-client",
- "inference-core",
- "serde",
- "serde_json",
- "speech-provider",
- "speech-vad",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "toml",
- "tracing",
- "zbus",
- "zbus-ready",
-]
-
-[[package]]
-name = "agent-voice-dbus"
-version = "0.1.0"
-dependencies = [
- "zbus",
-]
-
-[[package]]
-name = "agent-voice-loop"
-version = "0.1.0"
-dependencies = [
- "account-capability",
- "account-core",
- "action-wire",
- "agent-voice-wire",
- "inference-core",
- "serde",
- "serde_json",
- "speech-provider",
-]
-
-[[package]]
-name = "agent-voice-pipewire"
-version = "0.1.0"
-dependencies = [
- "agent-voice-audio",
- "pipewire",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
-name = "agent-voice-wire"
-version = "0.1.0"
-dependencies = [
- "account-capability",
- "account-core",
- "action-vocab",
- "action-wire",
- "base-ids",
- "base-time",
- "inference-core",
- "proptest",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -13350,7 +13254,6 @@ name = "shell-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "agent-voice-wire",
  "base-xdg",
  "caller-identity-dbus",
  "clap",
@@ -13377,6 +13280,7 @@ dependencies = [
  "shell-testkit",
  "shell-ui-kit",
  "shell-verbs",
+ "speech-wire",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -13544,7 +13448,6 @@ dependencies = [
  "action-manifest",
  "action-vocab",
  "action-wire",
- "agent-voice-wire",
  "base-ids",
  "base-secret",
  "base-time",
@@ -13564,6 +13467,7 @@ dependencies = [
  "serde",
  "serde_json",
  "shell-launcher",
+ "speech-wire",
  "thiserror 2.0.21",
  "toml",
  "ui-core",
@@ -13677,8 +13581,6 @@ dependencies = [
  "action-router",
  "action-vocab",
  "action-wire",
- "agent-voice-dbus",
- "agent-voice-wire",
  "anyview-core",
  "anyview-platform",
  "async-trait",
@@ -13725,6 +13627,8 @@ dependencies = [
  "shell-model",
  "shell-testkit",
  "smithay-client-toolkit 0.20.0",
+ "speech-dbus",
+ "speech-wire",
  "sync-bus",
  "system-tray",
  "thiserror 2.0.21",
@@ -14077,6 +13981,60 @@ dependencies = [
 ]
 
 [[package]]
+name = "speech-audio"
+version = "0.1.0"
+dependencies = [
+ "futures-util",
+ "serde",
+ "speech-audio",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "speech-daemon"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-match",
+ "action-dbus",
+ "action-log",
+ "action-procroot",
+ "action-testbus",
+ "action-vocab",
+ "action-wire",
+ "base-time",
+ "clap",
+ "futures-util",
+ "inference-client",
+ "inference-core",
+ "serde",
+ "serde_json",
+ "speech-audio",
+ "speech-dbus",
+ "speech-loop",
+ "speech-pipewire",
+ "speech-provider",
+ "speech-vad",
+ "speech-wire",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml",
+ "tracing",
+ "zbus",
+ "zbus-ready",
+]
+
+[[package]]
+name = "speech-dbus"
+version = "0.1.0"
+dependencies = [
+ "zbus",
+]
+
+[[package]]
 name = "speech-host"
 version = "0.1.0"
 dependencies = [
@@ -14100,6 +14058,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "speech-loop"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "action-wire",
+ "inference-core",
+ "serde",
+ "serde_json",
+ "speech-provider",
+ "speech-wire",
+]
+
+[[package]]
+name = "speech-pipewire"
+version = "0.1.0"
+dependencies = [
+ "pipewire",
+ "serde",
+ "serde_json",
+ "speech-audio",
+ "tokio",
+]
+
+[[package]]
 name = "speech-provider"
 version = "0.1.0"
 dependencies = [
@@ -14119,6 +14102,24 @@ dependencies = [
  "serde",
  "serde_json",
  "speech-provider",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "speech-wire"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "action-vocab",
+ "action-wire",
+ "base-ids",
+ "base-time",
+ "inference-core",
+ "proptest",
+ "serde",
+ "serde_json",
+ "speech-vad",
  "thiserror 2.0.21",
 ]
 
