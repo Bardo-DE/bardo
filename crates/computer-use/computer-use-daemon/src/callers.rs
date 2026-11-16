@@ -7,7 +7,7 @@
 
 use action_dbus::callers::{
     Caller, CallerFileError, CallerTable, Callers, INTENTD, Identity, Role, SHELL, Standing,
-    read_table_at_in, read_table_in, table_from_toml,
+    read_table_in, table_from_toml,
 };
 use computer_use_bus::CuaCaller;
 use std::path::PathBuf;

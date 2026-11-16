@@ -101,7 +101,7 @@ fn main() {
     let root = workspace_root(Path::new(&var("CARGO_MANIFEST_DIR")));
     for sibling in &SIBLINGS {
         let binary = build(sibling, &root, &target.join(sibling.bin));
-        let name = sibling.bin.to_uppercase();
+        let name = sibling.bin.trim_start_matches("bardo-").to_uppercase();
         println!("cargo:rustc-env=BARDO_ACCEPT_{name}={}", binary.display());
     }
 }
