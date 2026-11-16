@@ -1,6 +1,8 @@
 //! fuser's calls over a drive.
 
-use drive_core::{Drive, NodeId, NodeKind, ROOT_INO, ReadError, WriteError, WriteHandle};
+use drive_core::{
+    Drive, DriveError, NodeId, NodeKind, ROOT_INO, ReadError, WriteError, WriteHandle,
+};
 use fuser::{
     BsdFileFlags, Errno, FileAttr, FileHandle, FileType, Filesystem, FopenFlags, Generation,
     INodeNo, InitFlags, KernelConfig, LockOwner, OpenAccMode, OpenFlags, RenameFlags, ReplyAttr,
@@ -65,6 +67,13 @@ pub fn errno_of(error: ReadError) -> Errno {
         ReadError::Folder => Errno::EISDIR,
         _ => Errno::EIO,
     }
+}
+
+/// The errno a listing that could not be read answers; the cause goes to standard error, where the
+/// mount's other problems go.
+fn listing_errno(error: DriveError) -> Errno {
+    eprintln!("ferry-drive-fuse: the listing could not be read: {error}");
+    Errno::EIO
 }
 
 /// The errno a refused change answers.
@@ -169,8 +178,7 @@ impl DriveFs {
         let (folder, name) = self.named(parent, name)?;
         self.drive
             .lookup(&folder, name)
-            .ok()
-            .ok_or(Errno::EIO)?
+            .map_err(listing_errno)?
             .map(|node| node.id)
             .ok_or(Errno::ENOENT)
     }
@@ -186,8 +194,7 @@ impl DriveFs {
         let attrs = self
             .drive
             .attrs(id)
-            .ok()
-            .ok_or(Errno::EIO)?
+            .map_err(listing_errno)?
             .ok_or(Errno::ENOENT)?;
         Ok(Attr {
             ino: self.drive.ino(id),
@@ -208,8 +215,7 @@ impl DriveFs {
         let node = self
             .drive
             .lookup(&folder, name)
-            .ok()
-            .ok_or(Errno::EIO)?
+            .map_err(listing_errno)?
             .ok_or(Errno::ENOENT)?;
         self.attr_of(&node.id)
     }
@@ -254,7 +260,7 @@ impl DriveFs {
                 name: "..".into(),
             },
         ];
-        for node in self.drive.children(&id).ok().ok_or(Errno::EIO)? {
+        for node in self.drive.children(&id).map_err(listing_errno)? {
             entries.push(DirEntry {
                 ino: self.drive.ino(&node.id),
                 folder: node.kind == NodeKind::Folder,
@@ -407,8 +413,7 @@ impl DriveFs {
             && self
                 .drive
                 .lookup(&folder, new_name)
-                .ok()
-                .ok_or(Errno::EIO)?
+                .map_err(listing_errno)?
                 .is_some()
         {
             return Err(Errno::EEXIST);
