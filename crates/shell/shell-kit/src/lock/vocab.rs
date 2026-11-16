@@ -1,5 +1,6 @@
-//! What the lock screen and the polkit prompt say about a password being asked for
-//! (design/20-SURFACES.md sections 1.9 and 1.10; design/04-COMPONENTS.md section 42): whose it
+//! What the lock screen and the polkit prompt say about a password being asked for.
+//!
+//! The vocabulary (design/20-SURFACES.md sections 1.9 and 1.10; design/04-COMPONENTS.md section 42): whose it
 //! is, how the asking is going, whether caps lock is on, and where the Space's colour reaches.
 
 use crate::user_picture::picture::UserPicture;
@@ -20,7 +21,9 @@ pub enum LockLook {
     Space,
 }
 
-/// How the asking is going. The caller moves it: `Checking` while the password is tried,
+/// How the asking is going.
+///
+/// The caller moves it: `Checking` while the password is tried,
 /// `Wrong` when it failed (the field shakes once and clears), `LockedOut` after too many tries,
 /// `Accepted` once it was right (the picture plays its accept beat before the host unlocks).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]

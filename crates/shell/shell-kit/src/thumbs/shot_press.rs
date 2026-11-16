@@ -1,4 +1,6 @@
-//! A press on the screenshot thumbnail's picture, as a pure machine: a press that
+//! A press on the screenshot thumbnail's picture, as a pure machine.
+//!
+//! A press that
 //! travels [`DRAG_THRESHOLD`] becomes a drag, told to the caller once, and the click that ends
 //! it does not open the picture; one that stays under the threshold opens on its click. The
 //! host does the drag itself (a data source and a drag icon are the compositor's), so quire's

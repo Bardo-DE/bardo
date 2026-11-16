@@ -1,4 +1,6 @@
-//! The OSD card's margin token: the gap from the bar's reserve to the card at the top right, or
+//! The OSD card's margin token.
+//!
+//! It is the gap from the bar's reserve to the card at the top right, or
 //! from the dock's at the bottom centre. A tuned token a look or the person's style sheet may
 //! move; the indicator's layer surface reads it before layout (`shell_overlays::osd::tokens`).
 

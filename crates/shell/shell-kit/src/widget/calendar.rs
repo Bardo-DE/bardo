@@ -1,4 +1,6 @@
-//! The month widget on the widget contract (design/23-WIDGETS.md sections 5, 5.2 and 9.6), laid
+//! The month widget on the widget contract (design/23-WIDGETS.md sections 5, 5.2 and 9.6).
+//!
+//! It is laid
 //! out as the reference's calendar widgets are rather than one grid stretched over the card:
 //! Small, the compact month filling the card at its own pitch; Medium, a today column (the
 //! weekday in the accent, the date large, the next event or the quiet line) beside the compact

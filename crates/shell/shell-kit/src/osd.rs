@@ -1,4 +1,5 @@
 //! `Osd`: the on-screen display's card and its fade (design/20 section 1.7).
+//!
 //! One card, a title line over a [`LevelIndicator`], in the Osd material with the
 //! Space gradient at its tint, styled as a control-center module (`--r-tile`, the grid's padding,
 //! design/13 section 13.3.7). It fades in with `Anim::PaletteFade` and fades out with `Anim::OsdOut`, and calls

@@ -1,4 +1,6 @@
-//! The control center's geometry on the size ladder (design/29-SIZING.md sections 7 and 13): a
+//! The control center's geometry on the size ladder (design/29-SIZING.md sections 7 and 13).
+//!
+//! A
 //! 320 panel, 10 of padding and 10 between modules, modules rounded 8 inside a panel rounded 18
 //! (8 + 10, R6), a toggle tile two Large controls tall, and a level module that is its padding,
 //! a 16 header, a 6 gap and a Regular capsule. bardo-shell sizes its popup from these (R9) rather than

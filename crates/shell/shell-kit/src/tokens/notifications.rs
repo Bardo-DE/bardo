@@ -1,4 +1,6 @@
-//! The notification parts' geometry tokens (design/13 section 13.3.6): the banner's width,
+//! The notification parts' geometry tokens (design/13 section 13.3.6).
+//!
+//! They are the banner's width,
 //! floor, padding and icon, the close button, the gap between stacked banners, the offset of a
 //! group's layers, the notification center's width and where the banner column sits, each a
 //! tuned token a look or the person's style sheet may move (its `input`, the default behind

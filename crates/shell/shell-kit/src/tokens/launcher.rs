@@ -1,4 +1,6 @@
-//! The launcher panel's placement tokens (design/13 §13.5: `top = max(bar_h + gap, round(0.4 H -
+//! The launcher panel's placement tokens.
+//!
+//! They follow (design/13 §13.5: `top = max(bar_h + gap, round(0.4 H -
 //! bias))`), each a tuned token a look or the person's style sheet may move. The panel's layer
 //! surface is placed from them before it has a layout (`shell_launcher_ui`'s `LauncherTokens`).
 

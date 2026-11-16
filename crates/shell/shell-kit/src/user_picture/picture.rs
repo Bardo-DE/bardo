@@ -1,4 +1,6 @@
-//! A user's picture, any kind (design/25-EMOJI.md section 7): the letter disc, an animated
+//! A user's picture, any kind (design/25-EMOJI.md section 7).
+//!
+//! It is the letter disc, an animated
 //! emoji they picked, or their own photo (the freedesktop `~/.face` or AccountsService's icon).
 //! A surface takes a [`UserPicture`] and draws it with [`super::UserPortrait`], so switching a
 //! person from one kind to another changes data, not markup.

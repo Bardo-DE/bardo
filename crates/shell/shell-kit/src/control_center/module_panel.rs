@@ -1,4 +1,6 @@
-//! `ModulePanel`: a control-center module that holds content of its own (the Sound and Display
+//! `ModulePanel`: a control-center module that holds content of its own.
+//!
+//! It puts content (the Sound and Display
 //! levels, Now Playing, Appearance, Battery) on a `ModuleTile`'s frame, so a consumer draws no
 //! plate of its own (design/13-BEHAVIOUR-menus-windows.md section 13.3.7).
 //!

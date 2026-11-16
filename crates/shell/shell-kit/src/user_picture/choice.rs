@@ -32,7 +32,9 @@ pub enum FaceFile {
     Missing,
 }
 
-/// What to draw for `choice`, given whether a photo was found (`face`) and the letter disc the
+/// What to draw for `choice`.
+///
+/// It is given whether a photo was found (`face`) and the letter disc the
 /// user's name gives (`letter`). A choice that needs a photo falls back to the letter when there
 /// is none, so a picture is always drawn.
 #[must_use]

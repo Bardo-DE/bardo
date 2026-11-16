@@ -1,5 +1,7 @@
 //! `BatteryRing`: a battery's charge as a ring (design/30 section 2.10, design/23-WIDGETS.md
-//! section 4.1), drawn flat and bright as the reference widget measures: a `ProgressIndicator`
+//! section 4.1).
+//!
+//! It is drawn flat and bright as the reference widget measures: a `ProgressIndicator`
 //! ring (one arc geometry: a thick round-capped arc from twelve, clockwise, as far as the
 //! level, over a full track) with the device's glyph centred in it, in `--battery-fill`
 //! (`--battery-low` while the battery reads low); while charging, the ring is notched at twelve

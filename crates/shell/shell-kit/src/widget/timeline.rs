@@ -1,4 +1,6 @@
-//! A widget's timeline (design/23-WIDGETS.md section 9.2): the entries a provider hands over at
+//! A widget's timeline (design/23-WIDGETS.md section 9.2).
+//!
+//! It is the entries a provider hands over at
 //! once, each from its date on, and when to ask for the next timeline. The logic here is pure: it
 //! takes "now" as an argument, so a table test needs no clock;
 //! [`crate::widget::use_widget::use_widget`] reads the

@@ -1,4 +1,5 @@
 //! Animated emoji: the user's picture as an emoji they pick, moving (design/25-EMOJI.md).
+//!
 //! The frames are Noto Animated Emoji (CC BY 4.0, `assets/emoji/ATTRIBUTION.txt`),
 //! pre-rendered into sprite sheets by `tools/emoji`, because the renderer draws one frame of an
 //! image and plays no Lottie; quire plays them by moving the sheet's `background-position`

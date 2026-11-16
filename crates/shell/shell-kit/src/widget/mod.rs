@@ -1,4 +1,6 @@
-//! The widget interface (design/23-WIDGETS.md section 9): the notification center's widgets plug
+//! The widget interface (design/23-WIDGETS.md section 9).
+//!
+//! The notification center's widgets plug
 //! in through one trait, [`Widget`], and are drawn only through [`WidgetCard`], which owns the
 //! card. A provider hands a [`Timeline`] of dated entries and a refresh policy; [`use_widget`]
 //! picks the entry for now on the design system's clock.

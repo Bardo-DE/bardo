@@ -29,7 +29,9 @@ pub static KIT: Kit = Kit {
     vocabulary: Vocabulary::NONE,
 };
 
-/// Every kit the shell is drawn with: the design system's (style, motion, the components), the
+/// Every kit the shell is drawn with.
+///
+/// They are the design system's (style, motion, the components), the
 /// shell's, and the app-facing parts' (`ui_shell`). The shell's come first among the shell-rank
 /// kits, so the cascade is the one the stylesheet had when it was one kit.
 #[must_use]

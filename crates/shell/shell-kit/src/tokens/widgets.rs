@@ -1,4 +1,6 @@
-//! The widget grid's unit (design/20-SURFACES.md section 1.14): a cell's side and the gap
+//! The widget grid's unit (design/20-SURFACES.md section 1.14).
+//!
+//! It is a cell's side and the gap
 //! between cells, which a host sets on an element around its widgets (the notification center
 //! writes 160 and 16). A `WidgetFrame` sizes itself from both.
 

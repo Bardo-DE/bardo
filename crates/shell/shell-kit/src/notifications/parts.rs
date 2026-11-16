@@ -18,7 +18,9 @@ pub struct AppMark {
     pub name: TextLine,
 }
 
-/// How many layers show behind a grouped card, each `--notifications-group-offset` (4) lower
+/// How many layers show behind a grouped card.
+///
+/// Each is `--notifications-group-offset` (4) lower
 /// than the one above it and a little narrower (design/13 section 13.3.6 draws two). Held to
 /// [`StackLayers::MAX`]: more would read as a pile, not a group.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
