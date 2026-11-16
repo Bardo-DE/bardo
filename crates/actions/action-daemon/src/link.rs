@@ -54,12 +54,30 @@ fn budget(latency: Latency) -> Duration {
     }
 }
 
+/// `fault` as the answer to an error, with the error itself going to the log: the fault is all a
+/// caller can tell apart, the cause is what a person reading the journal needs.
+fn because<E: std::fmt::Display>(
+    what: &'static str,
+    fault: LinkFault,
+) -> impl FnOnce(E) -> LinkFault {
+    move |why| {
+        eprintln!("bardo-actions: {what}: {why}");
+        fault
+    }
+}
+
 fn json<T: Serialize>(value: &T) -> Result<String, LinkFault> {
-    serde_json::to_string(value).map_err(|_| LinkFault::Malformed)
+    serde_json::to_string(value).map_err(because(
+        "an invocation could not be written",
+        LinkFault::Malformed,
+    ))
 }
 
 fn read<T: DeserializeOwned>(text: &str) -> Result<T, LinkFault> {
-    serde_json::from_str(text).map_err(|_| LinkFault::Malformed)
+    serde_json::from_str(text).map_err(because(
+        "an app answered with text that is not a reply",
+        LinkFault::Malformed,
+    ))
 }
 
 /// A bus error that means the app is not there, or something else.
@@ -76,7 +94,10 @@ fn fault_of(error: &zbus::Error) -> LinkFault {
             LinkFault::Unavailable
         }
         zbus::Error::InputOutput(_) => LinkFault::Unavailable,
-        _ => LinkFault::Malformed,
+        other => {
+            eprintln!("bardo-actions: an app's call failed: {other}");
+            LinkFault::Malformed
+        }
     }
 }
 
@@ -87,14 +108,17 @@ fn gone() -> AppRefusal {
 /// Checks that the owner of `name` is the person's own process: the identity every call to a
 /// provider (and every question about its live reach) is made on.
 pub(crate) async fn owned_by_us(dbus: &DBusProxy<'_>, name: &BusName<'_>) -> Result<(), LinkFault> {
-    let owner = dbus
-        .get_name_owner(name.clone())
-        .await
-        .map_err(|_| LinkFault::Unavailable)?;
+    let owner = dbus.get_name_owner(name.clone()).await.map_err(because(
+        "an app's bus name has no owner",
+        LinkFault::Unavailable,
+    ))?;
     let credentials = dbus
         .get_connection_credentials(BusName::Unique(owner.into()))
         .await
-        .map_err(|_| LinkFault::Unavailable)?;
+        .map_err(because(
+            "an app's owner could not be identified",
+            LinkFault::Unavailable,
+        ))?;
     match own_uid() {
         Some(ours) if credentials.unix_user_id() != Some(ours) => Err(LinkFault::Unavailable),
         _ => Ok(()),
@@ -114,17 +138,24 @@ impl DbusLink {
         app: &AppName,
         wake: Wake,
     ) -> Result<IntentProviderProxy<'static>, LinkFault> {
-        let dbus = DBusProxy::new(&self.connection)
-            .await
-            .map_err(|_| LinkFault::Unavailable)?;
-        let name = BusName::try_from(app.to_string()).map_err(|_| LinkFault::Malformed)?;
+        let dbus = DBusProxy::new(&self.connection).await.map_err(because(
+            "the bus could not be asked",
+            LinkFault::Unavailable,
+        ))?;
+        let name = BusName::try_from(app.to_string()).map_err(because(
+            "an app's name is not a bus name",
+            LinkFault::Malformed,
+        ))?;
         let owned = dbus.name_has_owner(name.clone()).await.unwrap_or(false);
         if !owned && wake == Wake::IfRunning {
             return Err(LinkFault::Unavailable);
         }
         if !owned {
             let started = dbus.start_service_by_name(
-                name.clone().try_into().map_err(|_| LinkFault::Malformed)?,
+                name.clone().try_into().map_err(because(
+                    "an app's name is not a service name",
+                    LinkFault::Malformed,
+                ))?,
                 0,
             );
             match tokio::time::timeout(ACTIVATION, started).await {
@@ -135,7 +166,10 @@ impl DbusLink {
         owned_by_us(&dbus, &name).await?;
         IntentProviderProxy::builder(&self.connection)
             .destination(app.to_string())
-            .map_err(|_| LinkFault::Malformed)?
+            .map_err(because(
+                "an app's name is not a destination",
+                LinkFault::Malformed,
+            ))?
             .build()
             .await
             .map_err(|e| fault_of(&e))
@@ -189,7 +223,7 @@ impl AppLink for DbusLink {
         inv: Invocation,
     ) -> Result<action_vocab::CallClass, action_vocab::ClassifyFault> {
         use action_vocab::ClassifyFault as Fault;
-        let text = json(&inv).map_err(|_| Fault::Unavailable)?;
+        let text = json(&inv).map_err(|_logged| Fault::Unavailable)?;
         let answered = self
             .ask(app, Wake::Start, READ, |p| async move {
                 p.classify(&text, &Details::new()).await
@@ -197,8 +231,11 @@ impl AppLink for DbusLink {
             .await;
         match answered {
             Ok(text) => read::<Result<action_vocab::CallClass, AppRefusal>>(&text)
-                .map_err(|_| Fault::Unavailable)?
-                .map_err(|_| Fault::Refused),
+                .map_err(|_logged| Fault::Unavailable)?
+                .map_err(|refusal| {
+                    eprintln!("bardo-actions: an app refused to classify a call: {refusal:?}");
+                    Fault::Refused
+                }),
             Err(LinkFault::Timeout) => Err(Fault::TimedOut),
             Err(LinkFault::Unavailable | LinkFault::Malformed) => Err(Fault::Unavailable),
         }
@@ -217,7 +254,7 @@ impl AppLink for DbusLink {
             activation,
             classified,
         };
-        let text = json(&delivered).map_err(|_| AppRefusal::Unsupported)?;
+        let text = json(&delivered).map_err(|_logged| AppRefusal::Unsupported)?;
         let answered = self
             .ask(app, Wake::Start, budget(within), |p| async move {
                 p.perform(&text, &Details::new()).await
@@ -225,7 +262,7 @@ impl AppLink for DbusLink {
             .await;
         match answered {
             Ok(text) => read::<Result<Outcome, AppRefusal>>(&text)
-                .map_err(|_| AppFault::Refused(gone()))?
+                .map_err(|_logged| AppFault::Refused(gone()))?
                 .map_err(AppFault::Refused),
             Err(LinkFault::Timeout) => Err(AppFault::TimedOut),
             Err(LinkFault::Unavailable) => Err(AppFault::Unavailable),
@@ -234,14 +271,14 @@ impl AppLink for DbusLink {
     }
 
     async fn dry_run(&self, app: &AppName, inv: Invocation) -> Result<Preview, AppRefusal> {
-        let text = json(&inv).map_err(|_| AppRefusal::Unsupported)?;
+        let text = json(&inv).map_err(|_logged| AppRefusal::Unsupported)?;
         let answered = self
             .ask(app, Wake::Start, QUICK, |p| async move {
                 p.dry_run(&text, &Details::new()).await
             })
             .await;
         match answered {
-            Ok(text) => read::<Result<Preview, AppRefusal>>(&text).map_err(|_| gone())?,
+            Ok(text) => read::<Result<Preview, AppRefusal>>(&text).map_err(|_logged| gone())?,
             Err(_) => Err(gone()),
         }
     }
@@ -257,7 +294,7 @@ impl AppLink for DbusLink {
             .await;
         match answered {
             Ok(text) => {
-                read::<Result<(), UndoFault>>(&text).map_err(|_| UndoFault::AppUnavailable)?
+                read::<Result<(), UndoFault>>(&text).map_err(|_logged| UndoFault::AppUnavailable)?
             }
             Err(_) => Err(UndoFault::AppUnavailable),
         }

@@ -121,7 +121,13 @@ impl Edge {
     pub fn new(seams: Seams) -> (Edge, UnboundedReceiver<Heard>) {
         let (heard, inbox) = unbounded_channel();
         let sink = ops::sink(heard.clone());
-        let ops = Worker::start(Arc::clone(&seams.trash), sink).ok();
+        // A queue that would not start leaves `ops` empty: every change then says it could not be
+        // made (see `submit`), and the cause is logged here, once.
+        let ops = Worker::start(Arc::clone(&seams.trash), sink)
+            .inspect_err(|why| {
+                eprintln!("bardo-files: the queue of changes could not start: {why}")
+            })
+            .ok();
         let prefs = prefs::Prefs::start(Arc::clone(&seams.prefs), heard.clone());
         let disks = volumes::Disks::start(Arc::clone(&seams.volumes), heard.clone());
         let clouds = clouds::CloudDrives::start(Arc::clone(&seams.clouds), heard.clone());
