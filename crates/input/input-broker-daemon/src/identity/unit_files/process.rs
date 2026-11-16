@@ -14,7 +14,7 @@ use caller_identity_linux::ProcFs;
 pub const STATUS_CAP: u64 = 16 * 1024;
 
 /// Why the process does not show what a real unit's process shows.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ProcessFault {
     /// Another process traces it.
     #[error("another process is tracing it")]
@@ -22,6 +22,12 @@ pub enum ProcessFault {
     /// A file about it could not be read, or is not what that file looks like.
     #[error("{0} could not be read")]
     Unreadable(&'static str),
+    /// The file about it could not be read.
+    #[error("its status could not be read")]
+    Read(#[source] std::sync::Arc<std::io::Error>),
+    /// The file about it is not text.
+    #[error("its status is not text")]
+    NotText(#[source] std::string::FromUtf8Error),
 }
 
 /// The `TracerPid:` of a status file; `None` when there is no such line.
@@ -39,11 +45,8 @@ pub fn check<P: ProcFs>(fs: &P, pid: Pid) -> Result<(), ProcessFault> {
             &fs.proc_root().join(pid.to_string()).join("status"),
             STATUS_CAP,
         )
-        .ok()
-        .ok_or(ProcessFault::Unreadable("its status"))?;
-    let status = String::from_utf8(status)
-        .ok()
-        .ok_or(ProcessFault::Unreadable("its status"))?;
+        .map_err(|e| ProcessFault::Read(std::sync::Arc::new(e)))?;
+    let status = String::from_utf8(status).map_err(ProcessFault::NotText)?;
     match tracer_of(&status) {
         Some(0) => Ok(()),
         Some(_) => Err(ProcessFault::Traced),

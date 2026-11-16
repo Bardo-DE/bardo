@@ -64,7 +64,7 @@ const USER_DIRS: [&str; 7] = [
 const TRANSIENT_DIR: &str = "/run/systemd/transient";
 
 /// Why a caller could not be shown to be the real unit.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum NotUnit {
     /// The control group's last part is not a service.
     #[error("not in a service's control group")]
@@ -225,8 +225,7 @@ impl UnitText {
                     .read_capped(path, UNIT_FILE_CAP)
                     .map_err(|e| read_fault(path, &e))?;
                 let text = String::from_utf8(bytes)
-                    .ok()
-                    .ok_or_else(|| NotUnit::Read(format!("{} is not text", path.display())))?;
+                    .map_err(|e| NotUnit::Read(format!("{} is not text: {e}", path.display())))?;
                 Ok(acc.fold(&text))
             })
     }

@@ -32,8 +32,7 @@ fn read_pointer(r: &mut Reader<'_>) -> Result<PointerCaps, WireError> {
         return Err(WireError::Label);
     }
     let label = std::str::from_utf8(r.take(label_len)?)
-        .ok()
-        .ok_or(WireError::Label)?
+        .map_err(WireError::LabelText)?
         .to_owned();
     Ok(PointerCaps {
         label,

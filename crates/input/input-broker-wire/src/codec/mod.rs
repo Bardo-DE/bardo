@@ -49,6 +49,9 @@ pub enum WireError {
     /// The label is not plain text of the allowed length.
     #[error("the label is not plain text of at most 62 bytes")]
     Label,
+    /// The label is not text.
+    #[error("the label is not text")]
+    LabelText(#[source] std::str::Utf8Error),
     /// The encoded message would not fit one datagram.
     #[error("a message of {0} bytes does not fit one datagram")]
     Oversize(usize),

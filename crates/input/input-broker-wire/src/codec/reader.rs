@@ -82,7 +82,9 @@ pub(crate) fn check_len(what: &'static str, got: usize, max: usize) -> Result<u8
     if got > max {
         return Err(WireError::TooMany { what, got, max });
     }
-    u8::try_from(got)
-        .ok()
-        .ok_or(WireError::TooMany { what, got, max })
+    // A count past a byte is over every cap, which `TooMany` already says with the numbers.
+    let Ok(count) = u8::try_from(got) else {
+        return Err(WireError::TooMany { what, got, max });
+    };
+    Ok(count)
 }

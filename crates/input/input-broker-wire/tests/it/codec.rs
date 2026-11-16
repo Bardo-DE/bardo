@@ -185,10 +185,10 @@ fn a_pointer_label_must_be_short_plain_text() {
         b
     };
     decode_request(&with_label(b"ok")).unwrap();
-    assert_eq!(
+    assert!(matches!(
         decode_request(&with_label(&[0xff, 0xfe])),
-        Err(WireError::Label)
-    );
+        Err(WireError::LabelText(_))
+    ));
     assert_eq!(
         decode_request(&with_label(b"tab\there")),
         Err(WireError::Label)
