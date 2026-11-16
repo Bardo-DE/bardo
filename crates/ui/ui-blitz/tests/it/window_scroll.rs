@@ -40,7 +40,7 @@ mod eased {
 
     /// A list that scrolls 3000 px of content in 300 px, a capturing element beside it that takes the
     /// wheel itself, and listeners for the wheel's gestures.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Page() -> Element {
         use_gestures(|gesture| {
             if let Gesture::Scroll { by, .. } = gesture {
@@ -285,7 +285,7 @@ mod same_frame {
     }
 
     /// A bar as tall as the detents the listener has heard: content the app moves itself.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Follower() -> Element {
         let mut moved = use_signal(|| 0.0_f32);
         use_gestures_with(WheelDelivery::Eased, move |gesture| {
@@ -367,7 +367,7 @@ mod frames {
 
     /// A 300 px scroller holding the frame and 1000 px more below it, and a box beside it that
     /// scrolls nothing but listens for the wheel.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Page() -> Element {
         rsx! {
             div { style: "position:relative; width:380px; height:380px; margin:0",
@@ -542,7 +542,7 @@ mod fingers {
         }
     }
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Page() -> Element {
         use_gestures(|gesture| hear(&AS_RECEIVED, gesture));
         use_gestures_with(WheelDelivery::Eased, |gesture| hear(&EASED, gesture));
@@ -781,7 +781,7 @@ mod native {
     };
 
     /// A list of 3000 px of content in 300, and what a component watching its scroll state reads.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Page() -> Element {
         let host = use_document_host();
         let handle = use_scroll_handle();

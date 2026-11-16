@@ -1,5 +1,5 @@
 //! A scripted model and the fixture request, shared by the reviewer tests.
-#![allow(dead_code)]
+#![allow(dead_code, reason = "shared test helpers: each test file uses only some of them")]
 
 use account_capability::{Billing, Locality, ModelId};
 use account_core::AccountId;

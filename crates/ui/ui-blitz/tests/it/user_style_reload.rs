@@ -22,7 +22,7 @@ const STEPS: [&str; 5] = [
     "",
 ];
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     let mut step = use_signal(|| 0usize);
     let text = STEPS[step()];
@@ -37,7 +37,7 @@ fn App() -> Element {
 
 /// The root as `Ds` draws it: the `<style>` exists only while the style has text, so an emptied
 /// file removes the element and the next edit adds one back.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Toggled() -> Element {
     let mut step = use_signal(|| 0usize);
     let text = TOGGLES[step()];
@@ -140,7 +140,7 @@ fn removing_the_style_element_returns_to_the_default_and_adding_one_restyles() {
 
 /// A user rule written with an unprefixed attribute selector (`[data-surface=bar]`, the form
 /// `ui_components::selectors` lists) matches the attribute Dioxus wrote; `[*|data-surface=bar]` still does.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Surfaced() -> Element {
     rsx! {
         div { class: "ds",

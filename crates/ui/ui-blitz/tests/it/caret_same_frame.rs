@@ -25,7 +25,7 @@ thread_local! {
 }
 
 /// A surface over one paragraph the app edits, and the caret the app draws at the end of it.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Editor() -> Element {
     let handle = use_edit_handle();
     HANDLE.with(|slot| *slot.borrow_mut() = Some(handle));

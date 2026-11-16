@@ -37,7 +37,7 @@ enum Style {
 }
 
 /// A surface with a format bubble drawn over its text (a sibling, absolutely positioned).
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Editor() -> Element {
     let handle: EditHandle = use_edit_handle();
     let mut style = use_signal(|| Style::Plain);

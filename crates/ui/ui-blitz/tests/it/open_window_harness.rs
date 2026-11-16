@@ -14,12 +14,12 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Other() -> Element {
     rsx! { p { "another window" } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Asks() -> Element {
     let answer = use_hook(|| {
         match open_window(WindowSpec::new("Other", WindowSize::new(100, 100)), Other) {
@@ -36,7 +36,7 @@ fn the_harness_has_no_event_loop_to_open_a_window_on() {
     assert_eq!(harness.text_of(".answer").as_deref(), Some("no host"));
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Reads() -> Element {
     let found = use_window_handle().is_some();
     rsx! { p { class: "found", "{found}" } }

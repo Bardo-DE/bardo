@@ -27,7 +27,7 @@ mod keep {
     }
 
     /// A key-handling shell around plain text, a field and an edit surface, logging what it hears.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Shell() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut note = move |line: String| log.with_mut(|log| log.push(line));
@@ -156,7 +156,7 @@ mod kept_click {
         scale_percent: 100,
     };
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Page() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut note = move |entry: &str| log.with_mut(|log| log.push(entry.to_owned()));
@@ -275,7 +275,7 @@ mod kept_click {
 
     /// One folder being renamed, another beside it; `.app` logs its pointer-ups, as mailo's ends a
     /// drag there.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Renaming() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut note = move |entry: &str| log.with_mut(|log| log.push(entry.to_owned()));
@@ -493,7 +493,7 @@ mod removed {
 
     /// A shell holding a pane (itself focusable) holding a field that removes itself on Enter, as
     /// a rename field does when it commits.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn FieldPage() -> Element {
         let mut log = use_signal(Vec::<String>::new);
         let mut editing = use_signal(|| true);
@@ -700,22 +700,22 @@ mod field_handle {
         }
     }
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn ByHandle() -> Element {
         rsx! { Page { reach: Reach::Handle } }
     }
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn BySelector() -> Element {
         rsx! { Page { reach: Reach::Selector(".rename input") } }
     }
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn ByUnknown() -> Element {
         rsx! { Page { reach: Reach::Selector("#nothing-here") } }
     }
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn ByGarbage() -> Element {
         rsx! { Page { reach: Reach::Selector("[[") } }
     }
@@ -781,7 +781,7 @@ mod field_handle {
 
     /// A field asked for twice by selector, 300 ms apart, as a palette's does on each open; its text
     /// echoed below.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Refocused() -> Element {
         let mut text = use_signal(|| "Invoice".to_owned());
         rsx! {
@@ -949,7 +949,7 @@ mod select {
 
     /// A rename field on "Archive", focused with select-all on mount and by the button; a second
     /// field to move away to; the value echoed below.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Rename() -> Element {
         let mut name = use_signal(|| "Archive".to_owned());
         let request = use_focus_request().with_select_all();
@@ -974,7 +974,7 @@ mod select {
     }
 
     /// The same field, controlled but without select-all.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Plain() -> Element {
         let request = use_focus_request();
         rsx! {
@@ -1040,7 +1040,7 @@ mod select {
     }
 
     /// An app's own focusable element, focused through the public seam from a button.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Shell() -> Element {
         let mut shell = use_signal(|| None::<Rc<MountedData>>);
         rsx! {

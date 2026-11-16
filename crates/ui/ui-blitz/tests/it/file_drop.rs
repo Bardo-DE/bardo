@@ -17,7 +17,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A composer taking files, a chip inside it that takes its own, and plain space outside both.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Window() -> Element {
     let log = use_signal(Vec::<String>::new);
     rsx! {
@@ -31,7 +31,6 @@ fn Window() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
 #[component]
 fn Composer(log: Signal<Vec<String>>) -> Element {
     let drop = use_file_drop(move |files: FileDrop| {
@@ -47,7 +46,6 @@ fn Composer(log: Signal<Vec<String>>) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
 #[component]
 fn Chip(log: Signal<Vec<String>>) -> Element {
     let drop = use_file_drop(move |files: FileDrop| {

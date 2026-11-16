@@ -26,7 +26,7 @@ fn main() -> Result<(), ui_blitz::LaunchError> {
     )
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     use_hook(|| {
         spawn(async {
@@ -48,7 +48,7 @@ fn App() -> Element {
 }
 
 /// The controls, inside the root so they can reach its toast hub.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Demo() -> Element {
     let mut open = use_signal(|| Check::Off);
     let toasts = use_toast_hub();

@@ -73,7 +73,7 @@ fn an_animation_removed_midway_leaves_nothing() {
 
 static SHOWN: GlobalSignal<bool> = Signal::global(|| true);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Center() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, extent: RootExtent::Viewport,

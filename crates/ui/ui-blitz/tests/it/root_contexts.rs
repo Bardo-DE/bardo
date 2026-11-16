@@ -23,7 +23,7 @@ struct Store {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct Start(u32);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Reader() -> Element {
     let store = use_context::<Arc<Store>>();
     let Start(thread) = use_context::<Start>();

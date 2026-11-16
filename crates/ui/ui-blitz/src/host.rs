@@ -117,14 +117,13 @@ impl PartialEq for SharedRoot {
     }
 }
 
-#[allow(non_snake_case)] // A component: rsx names it like a type.
 #[component]
 fn Rooted(root: SharedRoot) -> Element {
     (root.0)()
 }
 
 /// The app with the host's modality, net provider and scheme around it.
-#[allow(non_snake_case)] // A component: rsx and launch name it like a type.
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 pub(crate) fn Host(props: HostProps) -> Element {
     let window = use_window();
     let signals = use_context_provider(|| HostSignals {

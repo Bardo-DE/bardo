@@ -86,7 +86,7 @@ impl Model {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Editor() -> Element {
     let dir = DICT
         .with(|dict| dict.borrow().clone())

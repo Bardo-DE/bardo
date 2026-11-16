@@ -26,7 +26,7 @@ fn main() -> Result<(), ui_blitz::LaunchError> {
     )
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, Player {} }
@@ -34,7 +34,7 @@ fn App() -> Element {
 }
 
 /// The player: one handle, one thread writing frames into it.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Player() -> Element {
     let gpu = use_gpu();
     let frame = use_hook(|| {

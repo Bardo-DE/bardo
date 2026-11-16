@@ -190,7 +190,7 @@ mod tests {
     #[derive(Clone)]
     struct Seen(Rc<RefCell<Option<WindowHandle>>>);
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Probe() -> Element {
         let seen = use_context::<Seen>();
         seen.0.replace(use_window_handle());

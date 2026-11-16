@@ -1,7 +1,7 @@
 //! The scenario harness: scripts of inputs through `Remapper::step`, a model wire that rejects
 //! impossible writes, and a compact rendering of what was written ("+leftctrl +c SYN").
 
-#![allow(dead_code)]
+#![allow(dead_code, reason = "shared test helpers: each test file uses only some of them")]
 
 use std::collections::BTreeSet;
 

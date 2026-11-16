@@ -23,7 +23,7 @@ mod document {
     <script>document.body.innerHTML = '<p class=\"pwned\">rewritten</p>';</script>\
     </body></html>";
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Reader() -> Element {
         rsx! {
             p { class: "outer", "The app's own text" }
@@ -90,7 +90,7 @@ mod links {
     <a class='link' href='https://example.org/offer' style='display:block; font-size:40px'>Offer</a>\
     </body>";
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Reader() -> Element {
         rsx! {
             iframe { class: "body", srcdoc: BODY, style: "width: 300px; height: 150px; border: 0" }
@@ -213,7 +213,7 @@ mod link_text {
     <a class='offer' href='https://example.org/offer' style='display:block'>Offer</a>\
     </body>";
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Reader() -> Element {
         rsx! {
             div { class: "above", style: "height: 40px", "Subject" }
@@ -423,7 +423,7 @@ mod link_menu {
     <p class='plain' style='margin:0'>Nothing here</p>\
     </body>";
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Reader() -> Element {
         let mut asked = use_signal(|| 0u32);
         rsx! {
@@ -553,7 +553,7 @@ mod image_click {
     <p class='plain' style='margin:0; font-size:30px'>Nothing here</p>\
     </body>";
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Reader() -> Element {
         rsx! {
             iframe {
@@ -696,7 +696,7 @@ mod tags {
     <a class='link' href='https://example.org/two' style='display:block; font-size:40px'>Two</a>\
     </body>";
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Reader() -> Element {
         rsx! {
             iframe {
@@ -801,7 +801,7 @@ mod phase {
     };
 
     /// A box that grows when its button is pressed, watched through the host.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Growing() -> Element {
         let host = use_document_host();
         let mut wide = use_signal(|| false);
@@ -873,7 +873,7 @@ mod phase {
     }
 
     /// A scroller of 1000 px of content in 100, and buttons that queue writes to it.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Scrolling() -> Element {
         let host = use_document_host();
         let mut scroller = use_signal(|| None::<MountedRef>);
@@ -921,7 +921,7 @@ mod phase {
 
     /// A scroller whose scroll state is watched through the host, and a button that scrolls it by a
     /// queued write: the document dispatches no `scroll` event for that, so only the phase sees it.
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Watched() -> Element {
         let host = use_document_host();
         let mut scroller = use_signal(|| None::<MountedRef>);

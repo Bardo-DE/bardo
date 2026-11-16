@@ -83,7 +83,7 @@ mod tests {
     #[derive(Clone)]
     struct Asked(Rc<Cell<u32>>, Rc<Cell<bool>>);
 
-    #[allow(non_snake_case)]
+    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
     fn Guarded() -> Element {
         let Asked(asked, answer) = use_context::<Asked>();
         use_close_request(move || {

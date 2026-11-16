@@ -39,7 +39,7 @@ impl FrameParser {
     ) -> Arc<dyn HtmlParserProvider> {
         // Blitz's `DocumentConfig` holds the parser as an `Arc` though parsers are not `Send`;
         // it never leaves the document's thread.
-        #[allow(clippy::arc_with_non_send_sync)]
+        #[expect(clippy::arc_with_non_send_sync, reason = "the parser never leaves the document thread; Blitz asks for an Arc")]
         let parser = Arc::new(FrameParser { inner, net, nav });
         parser
     }

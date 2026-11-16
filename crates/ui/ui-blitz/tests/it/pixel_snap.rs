@@ -34,7 +34,7 @@ const FIXTURE_CSS: &str = ".ds.ds{--line-soft:#000000}\
       border:1px solid #000000}\
     .icon{position:absolute;left:41px;top:81px;display:flex;color:#000000}";
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Fixture() -> Element {
     let item = |value: i32, title: &str| MenuItem::Item {
         value,

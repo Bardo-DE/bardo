@@ -14,7 +14,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Tokens() -> Element {
     rsx! {
         style { ".ds {{ --t: 10px; --n: 1.5; --twice: calc(6px * 2); --em: 2em }}" }
@@ -71,7 +71,7 @@ fn a_token_reads_back_as_a_length_or_a_number_and_else_none() {
 
 static READER: GlobalSignal<Option<ui_blitz::Tokens>> = Signal::global(|| None);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Mounted() -> Element {
     let tokens = ui_blitz::use_tokens();
     use_hook(|| *READER.write() = Some(tokens));
@@ -98,7 +98,7 @@ fn a_component_reads_the_tokens_its_element_sees() {
 static GAP: GlobalSignal<Option<Px>> = Signal::global(|| None);
 static SHEET: GlobalSignal<&'static str> = Signal::global(|| ".ds { --gap: 7px }");
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Sized() -> Element {
     let gap = ui_blitz::use_resolved(|tokens| tokens.length("--gap"));
     // Render reads the published value: no document borrow, no timer.

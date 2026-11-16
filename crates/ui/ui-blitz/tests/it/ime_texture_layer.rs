@@ -25,7 +25,7 @@ thread_local! {
     static SEEN: RefCell<Option<Seen>> = const { RefCell::new(None) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Canvas() -> Element {
     let host = use_document_host();
     let common = Common {

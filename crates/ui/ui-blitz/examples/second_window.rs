@@ -82,7 +82,7 @@ fn seams(window: &str) -> String {
     )
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn App() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, First {} }
@@ -105,7 +105,7 @@ fn open_message(subject: &str) -> Option<WindowHandle> {
     })
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn First() -> Element {
     let mut opened = use_signal(Vec::<WindowHandle>::new);
     use_hook(|| {
@@ -171,7 +171,6 @@ fn window_host_here() -> Option<WindowHost> {
     try_consume_context::<WindowHost>()
 }
 
-#[allow(non_snake_case)]
 #[component]
 fn Message(subject: String) -> Element {
     let opens = use_context::<Opens>();

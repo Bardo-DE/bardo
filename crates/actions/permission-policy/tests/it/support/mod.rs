@@ -1,5 +1,5 @@
 //! Shared rows and helpers of the policy grid tests.
-#![allow(dead_code)]
+#![allow(dead_code, reason = "shared test helpers: each test file uses only some of them")]
 
 use account_core::consent::Usage;
 use account_core::{AppName, DataClass, Isolation};

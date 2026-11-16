@@ -273,7 +273,7 @@ static SHOWN_PATH: OnceLock<PathBuf> = OnceLock::new();
 static BROKEN_PATH: OnceLock<PathBuf> = OnceLock::new();
 static PANE_PATH: OnceLock<PathBuf> = OnceLock::new();
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Shown() -> Element {
     let path = SHOWN_PATH.get().cloned().unwrap_or_default();
     rsx! {
@@ -283,7 +283,7 @@ fn Shown() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn Broken() -> Element {
     let path = BROKEN_PATH.get().cloned().unwrap_or_default();
     rsx! {
@@ -337,7 +337,7 @@ fn a_broken_file_lands_on_the_plate() {
 /// The preview pane's pattern: a component that calls `use_pdf_page` on every
 /// render, with the path only while its content is a PDF, and hands the page to
 /// `PaneContent::Pdf`. Starts on a web row, then turns to the PDF.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
 fn PanePreview() -> Element {
     let mut pdf = use_signal(|| false);
     let path = pdf().then(|| PANE_PATH.get().cloned().unwrap_or_default());

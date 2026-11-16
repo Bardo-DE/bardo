@@ -1,5 +1,5 @@
 //! Fixtures: a canonical session log and the rows around it. Scripted, no clock, no network.
-#![allow(dead_code)]
+#![allow(dead_code, reason = "shared test helpers: each test file uses only some of them")]
 
 use account_core::{AppName, DataClass};
 use action_core::{HandleShape, Ledger, StepEnd, StepLine, StepShown, TurnVia, UserTurn};
