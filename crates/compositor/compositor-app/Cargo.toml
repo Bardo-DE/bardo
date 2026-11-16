@@ -1,12 +1,12 @@
 [package]
 name = "compositor-app"
 description = "casement, the desktop's Wayland compositor: the composition root (State, the smithay delegates, the protocol handlers, exec, the clock, the settings document) and the binary."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/casement"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 path = "src/lib.rs"
@@ -43,20 +43,20 @@ old-folders = {path = "../../platform/old-folders"}
 # A14's feature list, the union the binary links (xwayland off until the Q-C5 gate). The device
 # backends (drm, gbm, libinput, udev, libseat) come with the `tty` and `libinput` features below.
 smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "backend_libei", "backend_vulkan", "backend_winit", "desktop", "renderer_gl", "renderer_multi", "renderer_pixman", "use_system_lib", "wayland_frontend"]}
-calloop = {version = "0.14"}
-jiff = {version = "0.2"}
-x11rb = {version = "0.13", features = ["res"]}
-nix = {version = "0.31", default-features = false, features = ["socket"]}
+calloop = { workspace = true }
+jiff = { workspace = true }
+x11rb = { workspace = true, features = ["res"] }
+nix = { workspace = true, features = ["socket"] }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
-tracing = {version = "0.1"}
-tracing-subscriber = {version = "0.3", default-features = false, features = ["fmt", "std", "env-filter"]}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
 
 [dev-dependencies]
-tempfile = {version = "3"}
-toml = {version = "1"}
+tempfile = { workspace = true }
+toml = { workspace = true }
 
 [features]
 # The real session (A2): the tty backend's adapters (libseat, udev, DRM, GBM) and libinput. On by
@@ -72,7 +72,5 @@ testing = ["compositor-render/testing", "compositor-backend/testing", "composito
 # bardo-compositorctl's Debug1 on the private bus (B10); the same refusals as `testing`.
 debug-inject = ["compositor-ipc/debug-inject", "compositor-backend/debug-inject", "compositor-ipc/dev-rows"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

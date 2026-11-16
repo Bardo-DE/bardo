@@ -1,18 +1,18 @@
 [package]
 name = "caller-identity-linux"
 description = "Which program is calling: a pinned process (pidfd), the facts /proc states about it, and the judgement against a root-owned table."
-version = "0.1.11"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/peephole"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 caller-identity-core = {path = "../caller-identity-core"}
-nix = {version = "0.31", default-features = false, features = ["socket"]}
+nix = { workspace = true, features = ["socket"] }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "net", "process"]}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 
 [features]
 # Test seams: a pinned process that is only a claim (`Pinned::introduced`) and ready-made
@@ -28,6 +28,5 @@ name = "it"
 path = "tests/it/main.rs"
 required-features = ["fake"]
 
-[lints.rust]
-unsafe_code = "forbid"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

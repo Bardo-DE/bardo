@@ -1,25 +1,24 @@
 [package]
 name = "computer-use-capture"
 description = "Masked per-window capture: frames, masks, digests, settling and the capture seams. The ext-image-copy-capture backend is `computer-use-capture-wayland`."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/cua"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 computer-use-types = {path = "../computer-use-types"}
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
-base64 = {version = "0.22"}
-blake3 = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+base64 = { workspace = true }
+blake3 = { workspace = true }
 
 [dev-dependencies]
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,18 +1,18 @@
 [package]
 name = "ui-helpers"
 description = "Missing helpers: apps declare the distro tools they run, probe for them, and ask PackageKit to install one at the moment of use."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 ui-peer = {path = "../ui-peer"}
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
-toml = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+toml = { workspace = true }
 zbus = {version = "5.19", optional = true}
 
 # `update_atomic` locks a sidecar file between programs.
@@ -35,6 +35,5 @@ default = ["quire-desktop"]
 # (design/36 section 2); `PackageKit::on` is absent, since it takes a zbus connection.
 quire-desktop = ["dep:zbus"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "account-callers"
 description = "Who is calling a daemon: a bus connection's sender to an app and a role (peephole's judgement of the process, then the caller table), the table read from its files, and which /proc and which system tables a daemon reads them from."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-core = {path = "../account-core"}
@@ -14,11 +14,11 @@ caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 caller-identity-core = {default-features = false, features = ["toml"], path = "../../identity/caller-identity-core"}
 caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 # The table's reader, behind the feature that only the daemons turn on.
-toml = {version = "1", optional = true}
+toml = { workspace = true, optional = true }
 
 [features]
 # The caller table read from `callers.toml` files (`load_callers`): accountd's and syncd's.
@@ -33,6 +33,5 @@ test-proc-root = ["caller-identity-linux/fake"]
 base-testkit = {path = "../../base/base-testkit"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

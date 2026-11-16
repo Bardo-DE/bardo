@@ -1,27 +1,26 @@
 [package]
 name = "ui-shell"
 description = "The design system's app-facing parts above ds: the account sheets and consent alert, the missing-helper sheet and the confirm card, with their sheets."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 ui-components = {path = "../ui-components"}
 ui-core = {path = "../ui-core"}
 ui-motion = {path = "../ui-motion", features = ["dioxus"]}
 ui-style = {path = "../ui-style", default-features = false, features = ["dioxus"]}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 # `accounts::Hidden` wipes a typed secret when it is dropped.
-zeroize = {version = "1"}
+zeroize = { workspace = true }
 
 [dev-dependencies]
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 ui-lint = {path = "../ui-lint"}
 ui-core = {path = "../ui-core", features = ["testing"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "action-dbus"
 description = "org.bardo.Intents1, IntentProvider1, Confirm1, Companion1 and Reader1 as zbus proxies and skeletons, their introspection, bus names and the error mapping."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
@@ -22,10 +22,10 @@ inference-client = {features = ["dbus"], optional = true, path = "../../inferenc
 inference-dbus = {path = "../../inference/inference-dbus"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {optional = true, path = "../../inference/inference-core"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 old-folders = {path = "../../platform/old-folders"}
 
 [features]
@@ -39,8 +39,7 @@ fixture-callers = ["account-callers/test-proc-root"]
 
 [dev-dependencies]
 action-dbus = { path = ".", features = ["fixture-callers"] }
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

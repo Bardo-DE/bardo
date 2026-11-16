@@ -7,12 +7,12 @@ description = "The viewer's light tier: one peek per kind of file, the registry 
 # `pane` (on by default) is everything that draws or rasterises: the `Card` component (dioxus) and a
 # PDF's first page (ui-blitz, which brings the renderer). Off, a headless caller (a mail client
 # peeking at attachments, a terminal) builds none of that, and a PDF is peeked as facts only.
-version = "0.1.0-beta.1"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/anyview"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 [features]
 default = []
 media = ["dep:symphonia", "dep:mp4parse", "dep:matroska-demuxer"]
@@ -29,19 +29,19 @@ anyview-fs = {path = "../anyview-fs"}
 anyview-text = {path = "../anyview-text"}
 ui-core = {path = "../../../ui/ui-core"}
 # A look that panics or is refused is logged; the binary installs the logger.
-log = {version = "0.4"}
+log = { workspace = true }
 # The `pane` feature: the component, and the PDF page cache. Nothing outside `card/` names a type of
 # `ds` or dioxus, so a headless build links neither.
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"], optional = true}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 ui-components = {optional = true, path = "../../../ui/ui-components"}
 # `pdf`: `pdf_thumb_blocking`, the first page of a PDF rasterised by pdfrum and cached. pdfrum is
 # reached only through it.
 ui-blitz = {features = ["pdf"], optional = true, path = "../../../ui/ui-blitz"}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 # The `media` feature: pure-Rust readers of a recording's header (never a decoder).
-matroska-demuxer = {version = "0.8", optional = true}
-mp4parse = {version = "0.17", optional = true}
-symphonia = {version = "0.6", default-features = false, features = ["aac", "aiff", "alac", "flac", "id3v1", "id3v2", "ape", "isomp4", "mp3", "ogg", "pcm", "vorbis", "wav"], optional = true}
+matroska-demuxer = { workspace = true, optional = true }
+mp4parse = { workspace = true, optional = true }
+symphonia = { workspace = true, features = ["aac", "aiff", "alac", "flac", "id3v1", "id3v2", "ape", "isomp4", "mp3", "ogg", "pcm", "vorbis", "wav"], optional = true }
 
 [dev-dependencies]
 ui-components = {path = "../../../ui/ui-components"}
@@ -49,16 +49,10 @@ ui-components = {path = "../../../ui/ui-components"}
 anyview-core = {path = "../anyview-core", features = ["testing"]}
 ui-harness = {features = ["pdf"], path = "../../../ui/ui-harness"}
 ui-lint = {path = "../../../ui/ui-lint"}
-dioxus-ssr = {version = "0.7"}
-tempfile = {version = "3"}
+dioxus-ssr = { workspace = true }
+tempfile = { workspace = true }
 # Builds the zip the archive peek reads (a test fixture, never a normal dependency).
-zip = {version = "9", default-features = false, features = ["deflate"]}
+zip = { workspace = true, features = ["deflate"] }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
-[lints.clippy]
-unwrap_used = "deny"
-wildcard_enum_match_arm = "deny"
-match_wildcard_for_single_variants = "deny"
+[lints]
+workspace = true

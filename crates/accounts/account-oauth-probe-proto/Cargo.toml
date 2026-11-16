@@ -1,20 +1,19 @@
 [package]
 name = "account-oauth-probe-proto"
 description = "What an OAuth token shows, with no IO: the bearer read of an API and the readings of Google's and Microsoft Graph's answers as claims about the account's services (present, turned off, refused by the tenant, not on the server)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../account-capability"}
 account-ids = {path = "../account-ids"}
-http = {version = "1"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+http = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

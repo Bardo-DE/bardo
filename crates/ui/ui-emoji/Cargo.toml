@@ -1,12 +1,15 @@
 [package]
 name = "ui-emoji"
 description = "Finds the colour emoji face on this machine and puts it first in a fontique collection. No renderer, no toolkit."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-fontique = {version = "0.11.1", default-features = false, features = ["std", "system"]}
+fontique = { workspace = true, features = ["std", "system"] }
+
+[lints]
+workspace = true

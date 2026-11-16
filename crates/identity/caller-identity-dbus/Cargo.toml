@@ -1,19 +1,19 @@
 [package]
 name = "caller-identity-dbus"
 description = "Which program is calling, over the session or system bus: a sender's pinned process, its unit as the unit manager states it, and the check a method makes."
-version = "0.1.11"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/peephole"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 caller-identity-linux = {path = "../caller-identity-linux"}
 caller-identity-core = {path = "../caller-identity-core"}
 zbus = {version = "5.19", default-features = false}
-futures-timer = {version = "3"}
-thiserror = {version = "2"}
+futures-timer = { workspace = true }
+thiserror = { workspace = true }
 tokio = {version = "1", default-features = false, features = ["rt"], optional = true}
 
 [features]
@@ -31,7 +31,7 @@ dev-rows = ["caller-identity-linux/dev-rows"]
 
 [dev-dependencies]
 caller-identity-linux = {path = "../caller-identity-linux", features = ["fake"]}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 zbus-ready = { path = "../../zbus-ready" }
 
 # One integration binary that needs the `fake` seams (an introduced standing, a fixture tree).
@@ -40,6 +40,5 @@ name = "it"
 path = "tests/it/main.rs"
 required-features = ["fake"]
 
-[lints.rust]
-unsafe_code = "forbid"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

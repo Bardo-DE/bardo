@@ -1,12 +1,12 @@
 [package]
 name = "agent-models"
 description = "The models docket asks, portable: a inference-core `Model` over any inference-client Transport (`TransportModel`), the task-policy writer (`TransportWriter`) and the reviewer cascade's placeholder set. No bus, no runtime: intentd's `InferdModel` and `InferdWriter` are thin adapters over these."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
@@ -20,18 +20,17 @@ inference-client = {path = "../../inference/inference-client"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 provenance = {path = "../../provenance/provenance"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 [dev-dependencies]
 account-wire = {path = "../../accounts/account-wire"}
 model-provider = {path = "../../models/model-provider"}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
 action-fake = {path = "../action-fake"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 # The scripted model transport of companiond's tests is included by path (one file, not a copy).
 inference-client = {path = "../../inference/inference-client"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "action-provider"
 description = "The app side of org.bardo.Intents1: the IntentProvider, ContextSource and SummonTarget traits an app implements, and (behind the dbus feature) serve and serve_on, which answer org.bardo.IntentProvider1 on the app's own bus name. The caller side is action-client."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 action-core = {path = "../action-core"}
@@ -14,11 +14,11 @@ action-wire = {path = "../action-wire"}
 action-manifest = {path = "../action-manifest"}
 action-vocab = {path = "../action-vocab"}
 action-dbus = {path = "../action-dbus", optional = true}
-futures-util = {version = "0.3", default-features = false, features = ["std"], optional = true}
+futures-util = { workspace = true, features = ["std"], optional = true }
 provenance = {path = "../../provenance/provenance"}
-serde = {version = "1", features = ["derive"], optional = true}
-serde_json = {version = "1", optional = true}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }
+thiserror = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
 zbus-ready = {path = "../../zbus-ready", optional = true}
 
@@ -26,6 +26,5 @@ zbus-ready = {path = "../../zbus-ready", optional = true}
 # `serve` and `serve_on`: the provider on the session bus (Linux, the desktop's intentd calls it).
 dbus = ["dep:action-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus", "dep:zbus-ready"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

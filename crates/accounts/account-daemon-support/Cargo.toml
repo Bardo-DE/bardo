@@ -1,12 +1,12 @@
 [package]
 name = "account-daemon-support"
 description = "What every desktop daemon shares and has no bus for: the choice of the /proc a daemon reads its callers from, a watch on a settings file, and the XDG base directories."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 default = ["watch"]
@@ -15,12 +15,11 @@ default = ["watch"]
 watch = ["dep:notify"]
 
 [dependencies]
-notify = {version = "8", optional = true}
-thiserror = {version = "2"}
+notify = { workspace = true, optional = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "agent-acp-bin"
 description = "The bardo-agent-acp process: the ACP server edge on stdio, hosting its own companion (agent-native NativeHost) over the session bus. Refuses to serve unless agent.acp.expose is on. The lib is what the acceptance harness runs under its own name."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 name = "agent_acp_bin"
@@ -57,25 +57,24 @@ action-settings = {path = "../action-settings"}
 clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
 sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}
 companion-tasks = {path = "../companion-tasks"}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
+futures-util = { workspace = true, features = ["std"] }
 account-core = {path = "../../accounts/account-core"}
 account-callers = {path = "../../accounts/account-callers"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 provenance = {path = "../../provenance/provenance"}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
 action-fake = {path = "../action-fake"}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
 [features]
 # What the acceptance harness needs to host an agent in its own process (`harness`). Only dev-dependencies
 # and the harness crates turn it on; no packaged binary does.
 testing = []
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

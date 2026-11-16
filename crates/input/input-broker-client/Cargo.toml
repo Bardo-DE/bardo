@@ -1,12 +1,12 @@
 [package]
 name = "input-broker-client"
 description = "turnstile: what palmrest and keycap link to ask the input-device service for a device"
-version = "0.1.1"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/turnstile"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # The stand-in for the service, for the callers' tests; a shipped build never enables it.
@@ -15,12 +15,10 @@ fake = []
 [dependencies]
 rustix = {version = "1.1", default-features = false, features = ["event", "net", "std"]}
 input-broker-wire = {path = "../input-broker-wire"}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 
 [dev-dependencies]
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "forbid"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,28 +1,28 @@
 [package]
 name = "ui-style"
 description = "The design system's appearance: tokens and the Token trait, materials, Space palettes, fonts, icons, the stylesheet's sections and the Kit seam."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 ui-core = {path = "../ui-core"}
 ui-core-derive = {path = "../ui-core-derive"}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"], optional = true}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 # Decoding a status icon's PNG to decide symbolic or image (design/08-ICONS.md section 1.5), behind
 # `icon-classify`.
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"], optional = true}
+image = { workspace = true, features = ["png", "jpeg"], optional = true }
 
 [dev-dependencies]
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 ui-core = {path = "../ui-core", features = ["testing"]}
 # Reading the shipped faces' cmaps in the key-glyph test.
-skrifa = {version = "0.44"}
+skrifa = { workspace = true }
 ui-style = {path = ".", default-features = false, features = ["dioxus", "icon-classify"]}
 
 [features]
@@ -36,6 +36,5 @@ icon-classify = ["dep:image"]
 # name the appearance enums without linking Dioxus.
 dioxus = ["dep:dioxus"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

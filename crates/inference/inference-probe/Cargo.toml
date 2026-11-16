@@ -1,23 +1,22 @@
 [package]
 name = "inference-probe"
 description = "The port probe inferd's local-engine discovery uses: which runtime (Ollama, llama.cpp, LM Studio, another OpenAI-compatible server) answers on a loopback port, and what models it offers. Pure over the Http seam."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/steward"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
 account-http = {path = "../../accounts/account-http"}
 account-ids = {path = "../../accounts/account-ids"}
 account-provider = {path = "../../accounts/account-provider"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
 [dev-dependencies]
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

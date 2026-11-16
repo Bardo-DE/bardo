@@ -1,12 +1,12 @@
 [package]
 name = "bluez-proxy"
 description = "Typed zbus proxies for BlueZ's D-Bus API: adapters, devices, batteries and the agent manager."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/airwaves"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 zbus = {version = "5.19", default-features = false}
@@ -22,7 +22,5 @@ tokio = ["zbus/tokio"]
 name = "it"
 path = "tests/it/main.rs"
 
-[lints.rust]
-unsafe_code = "forbid"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

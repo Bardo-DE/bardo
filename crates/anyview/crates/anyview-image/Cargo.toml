@@ -1,12 +1,12 @@
 [package]
 name = "anyview-image"
 description = "Raster and vector images for the viewer: decode, downscaled peek, EXIF facts and orientation, encode for export, lossless JPEG rotation."
-version = "0.1.0-beta.1"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/anyview"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # AVIF decoding needs the dav1d C library (BSD-2-Clause, linked dynamically) and pkg-config.
@@ -22,28 +22,22 @@ encode = ["dep:ravif", "dep:img-parts"]
 anyview-core = {path = "../anyview-core"}
 ui-core = {path = "../../../ui/ui-core"}
 # The pinned block enables png and jpeg; the other formats the viewer opens are added here.
-image = {version = "0.25.6", default-features = false, features = ["bmp", "exr", "gif", "hdr", "ico", "jpeg", "png", "qoi", "tga", "tiff", "webp"]}
-img-parts = {version = "0.4", optional = true}
-png = {version = "0.18"}
-tiff = {version = "0.11"}
-icns = {version = "0.3", default-features = false}
-psd = {version = "0.3.5"}
-jxl-oxide = {version = "0.12"}
-kamadak-exif = {version = "0.6"}
-ravif = {version = "0.13", default-features = false, optional = true}
-resvg = {version = "0.48", default-features = false}
-thiserror = {version = "2"}
+image = { workspace = true, features = ["bmp", "exr", "gif", "hdr", "ico", "jpeg", "png", "qoi", "tga", "tiff", "webp"] }
+img-parts = { workspace = true, optional = true }
+png = { workspace = true }
+tiff = { workspace = true }
+icns = { workspace = true }
+psd = { workspace = true }
+jxl-oxide = { workspace = true }
+kamadak-exif = { workspace = true }
+ravif = { workspace = true, optional = true }
+resvg = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 # `OnDisk`: the input of a fixture on disk (core opens no file).
 anyview-fs = {path = "../anyview-fs"}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
-[lints.clippy]
-unwrap_used = "deny"
-wildcard_enum_match_arm = "deny"
-match_wildcard_for_single_variants = "deny"
+[lints]
+workspace = true

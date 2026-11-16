@@ -1,12 +1,12 @@
 [package]
 name = "key-remap-devtest"
-publish = false
+publish.workspace = true
 description = "Test-only harness for keycap: fake keyboards on /dev/uinput, the daemon as a child process, its output device and its socket. Creates input devices; run only through the gated device tests"
-version = "0.1.0"
-edition = "2024"
-rust-version = "1.91"
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/Bardo-DE/keycap"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [dependencies]
 key-remap-proto = { path = "../key-remap-proto" }
@@ -14,5 +14,5 @@ key-remap-client = { path = "../key-remap-client" }
 key-remap-evdev = { path = "../key-remap-evdev" }
 rustix = {version = "1", features = ["event", "fs", "net", "pipe", "process", "time"]}
 
-[lints.rust]
-unsafe_code = "forbid"
+[lints]
+workspace = true

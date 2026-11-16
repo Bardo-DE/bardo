@@ -1,16 +1,16 @@
 [package]
 name = "files"
 description = "Files: the desktop's file manager. Arguments, the environment, and the window."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/files"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 anyview-platform = {path = "../../anyview/crates/anyview-platform"}
-dirs = {version = "6"}
+dirs = { workspace = true }
 ui-extensions = {path = "../../ui/ui-extensions"}
 ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
 ui-settings = {path = "../../ui/ui-settings"}
@@ -20,23 +20,15 @@ files-fs = {path = "../files-fs"}
 files-model = {path = "../files-model"}
 files-trash = {path = "../files-trash"}
 files-ui = {path = "../files-ui"}
-freedesktop-icons = {version = "0.4"}
+freedesktop-icons = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
 
 [dev-dependencies]
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
 [[bin]]
 name = "bardo-files"
 path = "src/main.rs"
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-missing_docs = "warn"
-
-[lints.clippy]
-unwrap_used = "deny"
-expect_used = "deny"
-wildcard_enum_match_arm = "deny"
-match_wildcard_for_single_variants = "deny"
+[lints]
+workspace = true

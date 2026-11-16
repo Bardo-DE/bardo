@@ -1,12 +1,12 @@
 [package]
 name = "settings-app-model"
 description = "Pure model of the Settings app: schema discovery, page and section grouping, controls per key kind, search."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/detent"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 action-manifest = {path = "../../actions/action-manifest"}
@@ -25,13 +25,12 @@ ui-settings = {path = "../../ui/ui-settings"}
 key-remap-client = {path = "../../input/key-remap-client"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
-regex = {version = "1", default-features = false, features = ["std", "perf", "unicode"]}
-toml = {version = "1"}
+regex = { workspace = true, features = ["std", "perf", "unicode"] }
+toml = { workspace = true }
 
 [dev-dependencies]
 settings-app-testkit = {path = "../settings-app-testkit"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

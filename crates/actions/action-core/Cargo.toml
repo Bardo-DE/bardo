@@ -1,12 +1,12 @@
 [package]
 name = "action-core"
 description = "docket's vocabulary above action-vocab and action-manifest: context, previews, calls, refusals, undo, confirmation, budgets, the planner and reader contract, the roster, audit records, and the memory and event-log seams (`MemoryLink`, `EventSink`). Ids, units, values and the `Clock` seam are in action-vocab; the manifest, its validation and the JSON argument reader are in action-manifest."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
@@ -20,12 +20,11 @@ inference-core = {path = "../../inference/inference-core"}
 provenance = {path = "../../provenance/provenance"}
 memory-core = {path = "../../memory/memory-core"}
 model-provider = {path = "../../models/model-provider"}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
-iso_currency = {version = "0.7", features = ["with-serde"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
+iso_currency = { workspace = true, features = ["with-serde"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

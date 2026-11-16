@@ -1,12 +1,12 @@
 [package]
 name = "shell-services"
 description = "Effectful services behind watch channels: power, network, displays, sessions, notifications, launching and the compositor's windows."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # `bardo-shell run --dev-callers FILE`: callers named in a person's own rows file are let in at
@@ -58,33 +58,33 @@ inference-client = {path = "../../inference/inference-client", default-features 
 account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
-toml = {version = "1"}
+toml = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-nix = {version = "0.31", default-features = false, features = ["user"]}
-async-trait = {version = "0.1"}
+nix = { workspace = true, features = ["user"] }
+async-trait = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 networkmanager-proxy = {default-features = false, features = ["tokio"], path = "../../network/networkmanager-proxy"}
 bluez-proxy = {default-features = false, features = ["tokio"], path = "../../network/bluez-proxy"}
-smithay-client-toolkit = {version = "0.20", default-features = false, features = ["calloop", "xkbcommon"]}
-wayland-client = {version = "0.31"}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
+smithay-client-toolkit = { workspace = true, features = ["calloop", "xkbcommon"] }
+wayland-client = { workspace = true }
+wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
 upower_dbus = {git = "https://github.com/pop-os/dbus-settings-bindings", rev = "eed01dd3609e90e3c8cd043656734c500956c793"}
-libpulse-binding = {version = "2.30"}
-system-tray = {version = "0.8.9"}
-freedesktop-icons = {version = "0.4"}
-notify = {version = "8.2"}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
-logind-zbus = {version = "5"}
-dirs = {version = "6"}
-jiff = {version = "0.2"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
-ddc = {version = "0.2"}
-ddc-i2c = {version = "0.2.2", default-features = false, features = ["with-linux"]}
-nonstick = {version = "0.1.2"}
-percent-encoding = {version = "2.3"}
+libpulse-binding = { workspace = true }
+system-tray = { workspace = true }
+freedesktop-icons = { workspace = true }
+notify = { workspace = true }
+image = { workspace = true, features = ["png", "jpeg", "webp"] }
+logind-zbus = { workspace = true }
+dirs = { workspace = true }
+jiff = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ddc = { workspace = true }
+ddc-i2c = { workspace = true, features = ["with-linux"] }
+nonstick = { workspace = true }
+percent-encoding = { workspace = true }
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
@@ -100,6 +100,5 @@ action-fake = {path = "../../actions/action-fake"}
 action-checkpoint = {path = "../../actions/action-checkpoint"}
 permission-policy = {path = "../../actions/permission-policy"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

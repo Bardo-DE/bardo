@@ -1,21 +1,20 @@
 [package]
 name = "quickxorhash"
 description = "Microsoft's QuickXorHash, the content hash OneDrive and Graph report for each file, as a RustCrypto `digest` hasher."
-version = "0.1.0"
-license = "MIT OR Apache-2.0"
+version.workspace = true
+license.workspace = true
 keywords = ["quickxorhash", "onedrive", "hash", "digest", "graph"]
 categories = ["algorithms", "cryptography"]
-publish = false
-edition = "2024"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/ferry"
+publish.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
 
 [dependencies]
-digest = {version = "0.10"}
+digest = { workspace = true }
 
 [dev-dependencies]
-hex = {version = "0.4"}
+hex = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

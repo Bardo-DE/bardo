@@ -1,16 +1,16 @@
 [package]
 name = "ui-desktop"
 description = "Which extras of our desktop are here: a capability probe over D-Bus name ownership, with a Dioxus hook. Everything is Absent without the dbus feature."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 ui-peer = {path = "../ui-peer"}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"], optional = true}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 zbus = {version = "5.19", optional = true}
 
 [dev-dependencies]
@@ -29,6 +29,5 @@ dioxus = ["dep:dioxus"]
 name = "private_bus"
 required-features = ["dbus"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

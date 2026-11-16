@@ -1,12 +1,12 @@
 [package]
 name = "memory-fake"
 description = "Test-only: a fake MemoryService over in-memory seams, a stepped clock, a scripted consolidator and fixtures."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/almanac"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 memory-core = {path = "../memory-core"}
@@ -18,17 +18,16 @@ memory-recall = {path = "../memory-recall", features = ["testing"]}
 memory-service = {path = "../memory-service"}
 memory-tidy = {path = "../memory-tidy"}
 memory-files-format = {path = "../memory-files-format"}
-chrono = {version = "0.4", default-features = false, features = ["std"]}
-rusqlite = {version = "0.43", features = ["bundled-sqlcipher-vendored-openssl"]}
-tempfile = {version = "3"}
-serde_json = {version = "1"}
+chrono = { workspace = true, features = ["std"] }
+rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
+tempfile = { workspace = true }
+serde_json = { workspace = true }
 
 [dev-dependencies]
 memory-settings = {path = "../memory-settings"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tar = {version = "0.4"}
-toml = {version = "1"}
+toml = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

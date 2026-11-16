@@ -1,25 +1,25 @@
 [package]
 name = "blitz-embed"
 description = "Portable Blitz repairs and helpers: hover sync, local net provider, shared fonts, adapter choice, painted rects, pixel snap, the scroll engine."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/blitz-kit"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 # Feature `blitz` (default): the modules that work on a Blitz document.
 blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"], optional = true}
 blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", optional = true}
-parley = {version = "0.11.1", default-features = false, features = ["std"], optional = true}
+parley = { workspace = true, features = ["std"], optional = true }
 # `scroll::keys` names the keys a scroll responds to.
 keyboard-types = {version = "0.7", optional = true}
 # `net::LocalNet` reads files on the caller's blocking pool.
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"], optional = true}
 # Feature `adapter`: the ranking of GPU adapters, and `AdapterPref` (a shell's serialized setting).
-wgpu = {version = "29", optional = true}
-serde = {version = "1", features = ["derive"], optional = true}
+wgpu = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
 
 [features]
 default = ["blitz"]
@@ -38,6 +38,5 @@ name = "blitz_kit"
 path = "tests/blitz_kit/main.rs"
 required-features = ["blitz"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

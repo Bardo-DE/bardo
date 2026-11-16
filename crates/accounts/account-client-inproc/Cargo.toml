@@ -1,12 +1,12 @@
 [package]
 name = "account-client-inproc"
 description = "The hosted transport of account-client: an app that runs the account service itself, with its own providers, secrets and sheet host."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../account-capability"}
@@ -43,6 +43,5 @@ default = []
 # with TLS and a runtime.
 relays = ["dep:account-proxy", "dep:tokio"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

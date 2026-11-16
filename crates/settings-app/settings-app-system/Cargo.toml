@@ -1,12 +1,12 @@
 [package]
 name = "settings-app-system"
 description = "Every service the Settings app reaches: one Link trait per service, the real zbus implementation, and an in-memory fake for tests."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/detent"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # The in-memory fakes of the links, for tests of the layers above.
@@ -30,7 +30,7 @@ settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
 ui-peer = {path = "../../ui/ui-peer"}
 ui-settings = {path = "../../ui/ui-settings", features = ["live", "tokio"]}
-md-5 = {version = "0.10"}
+md-5 = { workspace = true }
 engine-install = {path = "../../engines/engine-install"}
 engine-manifest = {path = "../../engines/engine-manifest"}
 engine-probe = {path = "../../engines/engine-probe"}
@@ -44,10 +44,10 @@ account-callers = {path = "../../accounts/account-callers"}
 sync-bus = {path = "../../sync/sync-bus"}
 account-dbus = {path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../../inference/inference-dbus"}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["macros", "net", "rt-multi-thread", "sync", "time"]}
-toml = {version = "1"}
+toml = { workspace = true }
 zbus = {version = "5.19", features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
@@ -57,6 +57,5 @@ settings-app-system = {path = ".", features = ["testing"]}
 settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
 ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "account-generic-proto"
 description = "A generic account's servers with no IO: the mail servers a person typed or a provider file names, the DAV and JMAP lookups as requests (http::Request<Vec<u8>>) and verdicts over the replies, and the plan of the password check at the incoming mail server."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-dav-proto = {path = "../account-dav-proto", features = ["discover"]}
@@ -15,9 +15,8 @@ account-capability = {path = "../account-capability"}
 account-ids = {path = "../account-ids"}
 account-provider = {path = "../account-provider"}
 account-sheet = {path = "../account-sheet"}
-http = {version = "1"}
-thiserror = {version = "2"}
+http = { workspace = true }
+thiserror = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

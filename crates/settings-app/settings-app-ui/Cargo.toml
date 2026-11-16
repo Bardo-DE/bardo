@@ -1,12 +1,12 @@
 [package]
 name = "settings-app-ui"
 description = "The Settings window: sidebar, pages and controls, drawn only with quire's components."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/detent"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 # The compiler is the fence: the window names only the client (its one door to the computer), the
@@ -14,7 +14,7 @@ publish = false
 # settings-app-system, porter-*, almanac-*, docket-* or zbus.
 settings-app-client = {path = "../settings-app-client"}
 settings-app-model = {path = "../settings-app-model"}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
@@ -31,10 +31,10 @@ account-capability = {path = "../../accounts/account-capability"}
 settings-app-system = {path = "../settings-app-system", features = ["testing"]}
 settings-app-testkit = {path = "../settings-app-testkit"}
 ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 ui-harness = {path = "../../ui/ui-harness"}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
-toml = {version = "1"}
+image = { workspace = true, features = ["png", "jpeg"] }
+toml = { workspace = true }
 # A stand-in service on a private bus is vouched for by `AnyOwner`, or by the role check over peers
 # a test introduces owners to (the squatter tests).
 settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
@@ -58,6 +58,5 @@ inference-client = {path = "../../inference/inference-client", features = ["lend
 keymap = {path = "../../keymap/keymap"}
 zbus-ready = { path = "../../zbus-ready" }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

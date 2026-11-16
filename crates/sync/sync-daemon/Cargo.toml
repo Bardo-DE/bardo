@@ -1,12 +1,12 @@
 [package]
 name = "sync-daemon"
 description = "ferry's sync daemon: org.bardo.Sync1 over sync-core replicas. The library holds the SQLite journal, the engine over a Replica and a Dataset, the pure scheduler, the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client); the binary resolves its paths and serves. Datasets: the calendar, contacts and tasks mirror (CalDAV, CardDAV, Microsoft Graph and Google), the storage folder (WebDAV, OneDrive and Google Drive app folders), the whole drives shown in Files, and Photos for an account whose Photos row is on."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/ferry"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 zbus-ready = { path = "../../zbus-ready" }
@@ -41,26 +41,26 @@ account-http = {path = "../../accounts/account-http"}
 account-http-relay = {path = "../../accounts/account-http-relay"}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
 clap = {version = "4", features = ["derive"]}
-rusqlite = {version = "0.43", features = ["bundled-sqlcipher-vendored-openssl"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-chrono = {version = "0.4", default-features = false, features = ["alloc"]}
-hex = {version = "0.4"}
+rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+chrono = { workspace = true, features = ["alloc"] }
+hex = { workspace = true }
 mime_guess = {version = "2", default-features = false}
-nanohtml2text = {version = "0.3"}
-sha2 = {version = "0.10"}
-thiserror = {version = "2"}
+nanohtml2text = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
 # `signal`: SIGTERM unmounts the drives before the process ends.
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
-toml = {version = "1"}
+toml = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
 sync-daemon = { path = ".", features = ["testing"] }
-base64 = {version = "0.22"}
-tempfile = {version = "3"}
+base64 = { workspace = true }
+tempfile = { workspace = true }
 sync-fake-graph = {path = "../sync-fake-graph"}
 # The account service hosted in the test process, as the in-process transport of account-client.
 account-client-inproc = {features = ["relays"], path = "../../accounts/account-client-inproc"}
@@ -93,10 +93,8 @@ testing = []
 # it). Off by default: no Photos app ships in v1.
 photos-picker = ["sync-bus/photos-picker"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
+[lints]
+workspace = true
 [[bin]]
 name = "bardo-syncd"
 path = "src/main.rs"

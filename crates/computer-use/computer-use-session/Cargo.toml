@@ -1,12 +1,12 @@
 [package]
 name = "computer-use-session"
 description = "The model side of one computer-use step: prompt assembly, parse with one repair, and mapping into window space. Pure."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/stoker"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../computer-use-action"}
@@ -14,8 +14,8 @@ model-vision-prep = {path = "../../models/model-vision-prep"}
 model-provider = {path = "../../models/model-provider"}
 computer-use-parse = {path = "../computer-use-parse"}
 computer-use-vendors = {path = "../computer-use-vendors"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 [dev-dependencies]
 model-provider = {path = "../../models/model-provider", features = ["testing"]}
@@ -23,10 +23,9 @@ model-http = {path = "../../models/model-http"}
 model-wire = {path = "../../models/model-wire"}
 model-replay = {path = "../../models/model-replay"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
-base64 = {version = "0.22"}
-proptest = {version = "1"}
+base64 = { workspace = true }
+proptest = { workspace = true }
 
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

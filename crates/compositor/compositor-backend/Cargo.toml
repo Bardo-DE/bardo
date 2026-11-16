@@ -1,12 +1,12 @@
 [package]
 name = "compositor-backend"
 description = "casement's backends: the headless backend (virtual outputs, vblank source, render-cost model, VirtualInput), winit, and the tty seams (session, udev, KMS, scanout, GPU nodes, libinput settings) with their thin real adapters behind the features tty and libinput."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/casement"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 compositor-core = {path = "../compositor-core"}
@@ -16,9 +16,9 @@ ui-core = {path = "../../ui/ui-core", default-features = false}
 smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "backend_session", "backend_winit", "renderer_gl", "renderer_multi", "renderer_pixman"]}
 # The KMS fixtures (`KmsResources` and its parts) are serde values, recorded and replayed by the
 # test kit's FakeKms.
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
-tracing = {version = "0.1"}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+tracing = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 
 [features]
@@ -39,7 +39,5 @@ tty = [
 # The real libinput adapter (`input/libinput_real.rs`), off by default for the same reason.
 libinput = ["smithay/backend_libinput"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,29 +1,29 @@
 [package]
 name = "memory-service"
 description = "memoryd's core over seams: authorisation, the Space and forget machines, the run that drives memory-tidy's fact and consolidation machines over a backend, retention, the readers (search itself is memory-search's), timeline assembly, export, the per-Space request queue, and MemoryService."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/almanac"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-const-hex = {version = "1.19"}
+const-hex = { workspace = true }
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal"}
 memory-search = {path = "../memory-search"}
 memory-settings = {path = "../memory-settings"}
 memory-tidy = {path = "../memory-tidy"}
-blake3 = {version = "1"}
-chrono = {version = "0.4", default-features = false, features = ["std"]}
+blake3 = { workspace = true }
+chrono = { workspace = true, features = ["std"] }
 memory-store = {path = "../memory-store"}
 memory-files-format = {path = "../memory-files-format"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 tar = {version = "0.4"}
-thiserror = {version = "2"}
-toml = {version = "1"}
+thiserror = { workspace = true }
+toml = { workspace = true }
 
 [dev-dependencies]
 memory-fake = {path = "../memory-fake"}
@@ -31,6 +31,5 @@ memory-seal = {path = "../memory-seal", features = ["testing"]}
 memory-eventlog = {path = "../memory-eventlog", features = ["testing"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

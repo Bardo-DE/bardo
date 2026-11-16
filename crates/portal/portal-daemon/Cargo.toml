@@ -1,12 +1,12 @@
 [package]
 name = "portal-daemon"
 description = "The Bardo desktop portal backend: Screenshot, ScreenCast, RemoteDesktop, Settings and Inhibit served on the session bus for xdg-desktop-portal."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/transom"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 name = "portal_daemon"
@@ -24,25 +24,23 @@ debug = ["caller-identity-dbus/dev-rows"]
 [dependencies]
 portal-core = {path = "../portal-core"}
 old-folders = {path = "../../platform/old-folders"}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-tracing = {version = "0.1"}
-tracing-subscriber = {version = "0.3", default-features = false, features = ["fmt", "std", "env-filter"]}
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
 # Named now so the fill lanes edit no manifest (P2-T1: image; P2-T2: the other three).
-wayland-client = {version = "0.31"}
+wayland-client = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "process"]}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging"]}
-pipewire = {version = "0.10"}
-image = {version = "0.25.6", default-features = false, features = ["png"]}
+wayland-protocols = { workspace = true, features = ["client", "staging"] }
+pipewire = { workspace = true }
+image = { workspace = true, features = ["png"] }
 
 [dev-dependencies]
 # `introduce` makes a test's connection stand as the frontend or the shell without looking at it.
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

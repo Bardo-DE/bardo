@@ -1,26 +1,25 @@
 [package]
 name = "account-spaces"
 description = "The registry of desktop-wide Spaces: the ids it mints, the per-app limit on making them, and spaces.json, kept with the same atomic save. The Spaces domain of the accounts daemon."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-core = {path = "../account-core"}
 account-ids = {path = "../account-ids"}
 account-fs = {path = "../account-fs", features = ["book"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

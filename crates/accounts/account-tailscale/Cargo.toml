@@ -1,21 +1,21 @@
 [package]
 name = "account-tailscale"
 description = "A client of Tailscale's LocalAPI: HTTP over the unix socket tailscaled serves, read for the status of this computer's tailnet, who a tailnet address belongs to, and Tailscale's own sign-in page. Typed Status and WhoIs; the socket I/O is behind the `io` feature."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../account-ids"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
-hyper = {version = "1", optional = true, features = ["client", "http1"]}
-hyper-util = {version = "0.1.21", optional = true, features = ["tokio"]}
-http-body-util = {version = "0.1", optional = true}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+hyper = { workspace = true, optional = true, features = ["client", "http1"] }
+hyper-util = { workspace = true, optional = true, features = ["tokio"] }
+http-body-util = { workspace = true, optional = true }
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"], optional = true}
 
 [dev-dependencies]
@@ -31,6 +31,5 @@ tokio ={version = "1", features = ["io-util", "macros", "net", "process", "rt", 
 # cannot read). Pulls in the runtime, so it is off by default: the pure build reaches none.
 io = ["dep:hyper", "dep:hyper-util", "dep:http-body-util", "dep:tokio"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

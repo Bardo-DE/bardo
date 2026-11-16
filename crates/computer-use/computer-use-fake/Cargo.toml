@@ -1,12 +1,12 @@
 [package]
 name = "computer-use-fake"
 description = "Test support for cua: a fake agent seat, an in-process EIS server, scripted capture, desktop, accessibility tree, model, gate and event sinks, and the harness that drives a run over them."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/cua"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 action-gate-wire = {path = "../../actions/action-gate-wire"}
@@ -26,17 +26,16 @@ inference-core = {path = "../../inference/inference-core"}
 model-replay = {path = "../../models/model-replay"}
 model-provider = {path = "../../models/model-provider"}
 computer-use-parse = {path = "../computer-use-parse"}
-reis = {version = "0.7"}
+reis = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-serde_json = {version = "1"}
-toml = {version = "1"}
-thiserror = {version = "2"}
+serde_json = { workspace = true }
+toml = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 permission-core = {path = "../../actions/permission-core"}
 account-capability = {path = "../../accounts/account-capability"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

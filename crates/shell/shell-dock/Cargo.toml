@@ -1,15 +1,15 @@
 [package]
 name = "shell-dock"
 description = "The dock: tiles, magnification, machines and its context menu."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 keymap = {path = "../../keymap/keymap"}
 ui-components = {path = "../../ui/ui-components"}
 ui-blitz = {path = "../../ui/ui-blitz"}
@@ -34,6 +34,5 @@ layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["de
 [[example]]
 name = "dock_demo"
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

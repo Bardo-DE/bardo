@@ -1,12 +1,12 @@
 [package]
 name = "account-family-nextcloud"
 description = "The Nextcloud family: Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV and the Notes API over one app password. A driver: account-nextcloud-proto builds the requests and reads the answers, account-dav-proto walks the principal, and this crate sends them."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-family-kit = {path = "../account-family-kit"}
@@ -18,6 +18,5 @@ account-sheet = {path = "../account-sheet"}
 account-provider = {path = "../account-provider"}
 account-http = {path = "../account-http"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

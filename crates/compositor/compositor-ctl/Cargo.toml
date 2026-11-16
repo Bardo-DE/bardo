@@ -1,12 +1,12 @@
 [package]
 name = "compositor-ctl"
 description = "bardo-compositorctl: drive a jailed casement over its private bus (debug inject, wait, clock, output, windows, scene, fault), take screenshots (P1) and print hardware reports (P5)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/casement"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 path = "src/lib.rs"
@@ -19,14 +19,12 @@ path = "src/main.rs"
 # The privacy book and the administrator's floor as casement reads them (`privacy list`).
 compositor-privacy = {path = "../compositor-privacy"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["client"]}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
-wayland-client = {version = "0.31"}
+image = { workspace = true, features = ["png", "jpeg"] }
+wayland-client = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

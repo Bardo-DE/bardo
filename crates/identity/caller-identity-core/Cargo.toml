@@ -1,17 +1,17 @@
 [package]
 name = "caller-identity-core"
 description = "Which program is calling: ids, the caller table, the facts about a process, and the pure judgement over them. No I/O."
-version = "0.1.11"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/peephole"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
-toml = {version = "1", optional = true}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+toml = { workspace = true, optional = true }
 
 [features]
 # `toml`: `Table::from_toml`, the caller table's text format. On by default; a vocabulary crate that
@@ -26,6 +26,5 @@ desktop = []
 # README "Developer rows".
 dev-rows = ["toml"]
 
-[lints.rust]
-unsafe_code = "forbid"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

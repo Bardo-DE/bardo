@@ -1,12 +1,12 @@
 [package]
 name = "inference-daemon"
 description = "steward's AI broker daemon: serves org.bardo.Inference1 over inference-core, with the router, the engine host, the model turns and the audit trail behind the session server's four seams."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/steward"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # TEST ONLY, off by default and never in dist: `BARDO_INFERD_PROC_ROOT=<dir>` makes the caller lookup read
@@ -48,8 +48,8 @@ inference-turns = {path = "../inference-turns"}
 inference-bridge = {path = "../inference-bridge"}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
 model-provider = {path = "../../models/model-provider"}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
-iso_currency = {version = "0.7", features = ["with-serde"]}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
+iso_currency = { workspace = true, features = ["with-serde"] }
 model-catalog = {path = "../../models/model-catalog"}
 # What differs between the engines, what is installed and pinned, and where an engine is found.
 engine-spec = {path = "../../engines/engine-spec"}
@@ -69,21 +69,21 @@ speech-provider = {path = "../../speech/speech-provider"}
 speech-host-client = {path = "../../speech/speech-host-client"}
 clap = {version = "4", features = ["derive"]}
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 # The stable short hash that names a computer written in a script with no letters or digits of
 # ASCII (`computers::slug_of`); std's hasher changes between Rust versions.
-sha2 = {version = "0.10"}
+sha2 = { workspace = true }
 # The agent token: its bytes from the system's random source, and its compare in constant time.
-getrandom = {version = "0.4.3"}
-chrono = {version = "0.4", default-features = false, features = ["alloc"]}
-hex = {version = "0.4"}
-subtle = {version = "2.6.1"}
-thiserror = {version = "2"}
+getrandom = { workspace = true }
+chrono = { workspace = true, features = ["alloc"] }
+hex = { workspace = true }
+subtle = { workspace = true }
+thiserror = { workspace = true }
 # `signal` is the one feature this crate adds to the pinned line: SIGTERM and SIGINT end the daemon
 # gracefully (`shutdown`).
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
-toml = {version = "1"}
+toml = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
@@ -103,10 +103,8 @@ account-fake-servers = {path = "../../accounts/account-fake-servers"}
 inference-router = {path = "../inference-router", features = ["testing"]}
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
+[lints]
+workspace = true
 [[bin]]
 name = "bardo-inferd"
 path = "src/main.rs"

@@ -1,12 +1,12 @@
 [package]
 name = "input-broker-daemon"
 description = "turnstile: the root service that makes palmrest's and keycap's virtual input devices, and no others"
-version = "0.1.1"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/turnstile"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 name = "input_broker_daemon"
@@ -28,10 +28,10 @@ fake = []
 [dependencies]
 rustix = {version = "1.1", default-features = false, features = ["event", "fs", "net", "std"]}
 input-broker-wire = {path = "../input-broker-wire"}
-thiserror = {version = "2"}
-input-linux = {version = "0.7", default-features = false}
-listenfd = {version = "1.0"}
-libc = {version = "0.2"}
+thiserror = { workspace = true }
+input-linux = { workspace = true }
+listenfd = { workspace = true }
+libc = { workspace = true }
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
 
@@ -39,9 +39,7 @@ caller-identity-core = {features = ["desktop"], path = "../../identity/caller-id
 # Test seams (a fixture file tree standing for /proc and the table files); never in a shipped build.
 caller-identity-linux = {features = ["fake"], path = "../../identity/caller-identity-linux"}
 input-broker-client = {path = "../input-broker-client"}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "forbid"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

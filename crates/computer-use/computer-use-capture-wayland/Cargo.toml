@@ -1,20 +1,20 @@
 [package]
 name = "computer-use-capture-wayland"
 description = "The capture backend of maskcap over a wayland connection: ext-image-copy-capture (the stock toplevel source and the quire masked source over an agent lease), and the pump that drives a connection from async code."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/cua"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 computer-use-capture = {path = "../computer-use-capture"}
 computer-use-action = {path = "../computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}
-thiserror = {version = "2"}
-wayland-client = {version = "0.31"}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
+thiserror = { workspace = true }
+wayland-client = { workspace = true }
+wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
 desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
 rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
@@ -22,12 +22,11 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 [dev-dependencies]
 account-ids = {path = "../../accounts/account-ids"}
 account-core = {path = "../../accounts/account-core"}
-wayland-server = {version = "0.31"}
+wayland-server = { workspace = true }
 # The compositor side of quire-agent-v1, for the fake compositor in the tests.
 desktop-protocols = {features = ["server"], path = "../../wayland/desktop-protocols"}
-wayland-protocols = {version = "0.32.13", features = ["client", "server", "staging", "unstable"]}
+wayland-protocols = { workspace = true, features = ["client", "server", "staging", "unstable"] }
 rustix = {version = "1.1", default-features = false, features = ["event", "fs", "std"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,32 +1,31 @@
 [package]
 name = "shell-kit"
 description = "The shell-only parts: lock, switcher, bar, dock, control center, notifications, OSD, batteries, emoji and the notification center's widgets, with the shell's tokens and sheets."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-core = {path = "../../ui/ui-core"}
 ui-shell = {path = "../../ui/ui-shell"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+image = { workspace = true, features = ["png", "jpeg", "webp"] }
 
 [dev-dependencies]
 shell-testkit = {path = "../shell-testkit"}
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-core = {path = "../../ui/ui-core", features = ["testing"]}
 ui-harness = {path = "../../ui/ui-harness"}
 ui-lint = {path = "../../ui/ui-lint"}
 ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

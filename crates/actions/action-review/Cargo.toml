@@ -1,12 +1,12 @@
 [package]
 name = "action-review"
 description = "The reviewer that may only tighten: the stripped review request, the cascade and its plan, `tighten`, the denial breaker, and the model-backed reviewer over inference-core."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
@@ -19,13 +19,12 @@ provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 model-provider = {path = "../../models/model-provider"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
-proptest = {version = "1"}
+proptest = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

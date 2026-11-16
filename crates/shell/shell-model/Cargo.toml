@@ -1,12 +1,12 @@
 [package]
 name = "shell-model"
 description = "The shell's pure vocabulary: units, ids, attempts, and every service's state, commands, events and pure step."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../../computer-use/computer-use-action"}
@@ -32,15 +32,14 @@ provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
-jiff = {version = "0.2"}
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
-zeroize = {version = "1"}
+jiff = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+zeroize = { workspace = true }
 
 [dev-dependencies]
-serde_json = {version = "1"}
-toml = {version = "1"}
+serde_json = { workspace = true }
+toml = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

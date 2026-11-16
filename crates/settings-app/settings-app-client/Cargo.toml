@@ -1,12 +1,12 @@
 [package]
 name = "settings-app-client"
 description = "The one door the Settings window uses: a live value per pane, and the commands the person gives it."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/detent"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 settings-app-files = {path = "../settings-app-files"}
@@ -16,7 +16,7 @@ ui-settings = {path = "../../ui/ui-settings", features = ["live", "tokio"]}
 inference-core = {path = "../../inference/inference-core"}
 account-provider = {path = "../../accounts/account-provider"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
-toml = {version = "1"}
+toml = { workspace = true }
 
 [dev-dependencies]
 memory-core = {path = "../../memory/memory-core"}
@@ -24,6 +24,5 @@ memory-core = {path = "../../memory/memory-core"}
 settings-app-system = {path = "../settings-app-system", features = ["testing"]}
 ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "action-router"
 description = "The pure router: `Router` and the seams the daemon passes in, over action-context (what it remembers) and action-gate (the pure steps of a call)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../../accounts/account-ids"}
@@ -27,23 +27,22 @@ action-review = {path = "../action-review"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 memory-core = {path = "../../memory/memory-core"}
-thiserror = {version = "2"}
-serde_json = {version = "1"}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
-tracing = {version = "0.1"}
+thiserror = { workspace = true }
+serde_json = { workspace = true }
+futures-util = { workspace = true, features = ["std"] }
+tracing = { workspace = true }
 
 [dev-dependencies]
 sandbox = {path = "../../sandbox/sandbox"}
 model-provider = {path = "../../models/model-provider"}
-toml = {version = "1"}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+toml = { workspace = true }
+rust_decimal = { workspace = true, features = ["std", "serde"] }
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-fake = {path = "../action-fake"}
 action-provider = {path = "../action-provider"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-proptest = {version = "1"}
+proptest = { workspace = true }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

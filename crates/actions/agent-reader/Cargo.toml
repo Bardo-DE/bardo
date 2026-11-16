@@ -1,12 +1,12 @@
 [package]
 name = "agent-reader"
 description = "The quarantined reader, portable: what the reader model is asked (`reader_request`), its reply read back as a typed value under the ask's schema (`answer_of`), and `read` / `TransportReader` over any inference-client Transport. readerd is the desktop's process around it; an app-hosted agent uses `TransportReader` in its own process."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
@@ -19,7 +19,7 @@ inference-client = {path = "../../inference/inference-client"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 provenance = {path = "../../provenance/provenance"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
 [dev-dependencies]
 account-wire = {path = "../../accounts/account-wire"}
@@ -27,8 +27,7 @@ action-fake = {path = "../action-fake"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 # The scripted model transport of companiond's tests is included by path (one file, not a copy).
 inference-client = {path = "../../inference/inference-client"}
-proptest = {version = "1"}
+proptest = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

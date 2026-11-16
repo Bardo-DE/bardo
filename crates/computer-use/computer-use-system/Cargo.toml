@@ -1,12 +1,12 @@
 [package]
 name = "computer-use-system"
 description = "The system adapters of computer use: the real seams of a running desktop (casement's desktop, capture over wayland, input over EIS, the AT-SPI tree), the model over inferd, and the links to the router's gate and memoryd. The daemon in cuad wires them."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/cua"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-match = {path = "../../accounts/account-match"}
@@ -27,15 +27,14 @@ account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 memory-client = {default-features = false, features = ["dbus"], path = "../../memory/memory-client"}
-wayland-client = {version = "0.31"}
+wayland-client = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
 computer-use-action = {path = "../computer-use-action"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

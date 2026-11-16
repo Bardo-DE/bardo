@@ -1,12 +1,12 @@
 [package]
 name = "ui-blitz"
 description = "Blitz glue for quire: launch, fonts, headless snapshots, PDF output and printing, test harness."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 ui-components = {path = "../ui-components"}
@@ -18,7 +18,7 @@ ui-emoji = {path = "../ui-emoji"}
 # Portable Blitz repairs shared with layer-shell-host: `data:` decoding, the local file read, hover sync,
 # fonts, pixel snap, adapter choice. `adapter`: `AdapterPref`, the GPU ranking.
 blitz-embed = {features = ["adapter"], path = "../../blitz-embed/blitz-embed"}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
 blitz-paint = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"]}
 blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
@@ -34,39 +34,39 @@ ui-peer = {path = "../ui-peer", optional = true}
 # `custom-widget`: the shell hands a texture layer's widget the renderer when it resumes and
 # unregisters a removed layer's texture from the renderer (`crate::texture_layer`).
 blitz-shell = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["custom-widget"]}
-dioxus-asset-resolver = {version = "0.7", features = ["native"]}
-webbrowser = {version = "1.0"}
+dioxus-asset-resolver = { workspace = true, features = ["native"] }
+webbrowser = { workspace = true }
 # `text/html` from the system clipboard for an edit surface's paste.
-arboard = {version = "3.6", default-features = false}
-anyrender = {version = "0.13"}
-anyrender_vello_hybrid = {version = "0.10"}
+arboard = { workspace = true }
+anyrender = { workspace = true }
+anyrender_vello_hybrid = { workspace = true }
 # `DeviceHandle`, the renderer's device that a texture layer's widget hands the window's `Gpu`.
-wgpu_context = {version = "0.9"}
-parley = {version = "0.11.1", default-features = false, features = ["std", "complex-scripts"]}
-wgpu = {version = "29"}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+wgpu_context = { workspace = true }
+parley = { workspace = true, features = ["std", "complex-scripts"] }
+wgpu = { workspace = true }
+image = { workspace = true, features = ["png", "jpeg"] }
 keyboard-types = {version = "0.7"}
 # The keymap (`AppConfig::with_keymap_source`) and the sources the detected default reads:
 # kdeglobals and a GNOME dconf dump. Only this I/O crate links the source crates.
 keymap = {path = "../../keymap/keymap"}
 keymap-kde = {path = "../../keymap/keymap-kde"}
 keymap-gnome = {path = "../../keymap/keymap-gnome"}
-peniko = {version = "0.6"}
+peniko = { workspace = true }
 # PDF output (the `pdf` feature): the painter, which writes through pdfrum.
-pdfrum-anyrender = {version = "0.5", optional = true}
-thiserror = {version = "2"}
+pdfrum-anyrender = { workspace = true, optional = true }
+thiserror = { workspace = true }
 # `menus`: the wire layout derives `Serialize`.
-serde = {version = "1", features = ["derive"], optional = true}
+serde = { workspace = true, features = ["derive"], optional = true }
 # The window's display and surface handles, for the activation token (Linux: `wayland_surface`).
-raw-window-handle = {version = "0.6"}
+raw-window-handle = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
 # PDF thumbnails (part of the `pdf` feature): pdfrum's reader and CPU rasteriser.
-pdfrum = {version = "0.5", default-features = false, features = ["vello-cpu"], optional = true}
+pdfrum = { workspace = true, features = ["vello-cpu"], optional = true }
 # A bitmap colour emoji glyph's PNG and bearings, for a printout (the `pdf` feature).
-skrifa = {version = "0.44", optional = true}
+skrifa = { workspace = true, optional = true }
 # Spellchecking (the `spell` feature): the checker, and XDG data for the user dictionary.
-spellbook = {version = "0.4", optional = true}
-dirs = {version = "6", optional = true}
+spellbook = { workspace = true, optional = true }
+dirs = { workspace = true, optional = true }
 # The user's learned words and a thumbnail's PDF are read through the capped reader
 # (`ds_helpers::read_text_capped`, `read_capped`).
 ui-helpers = {path = "../ui-helpers", default-features = false, optional = true}
@@ -75,14 +75,14 @@ ui-helpers = {path = "../ui-helpers", default-features = false, optional = true}
 # The print portal (the `print` feature): zbus with quire's async-io default (no executor is
 # forced on the app), and a sealed memfd for the PDF's file descriptor.
 zbus = {version = "5.19", optional = true}
-memfd = {version = "0.6", optional = true}
+memfd = { workspace = true, optional = true }
 # `WindowHandle::focus_with_token`: xdg-activation on the app's own Wayland connection, with the
 # window's `wl_surface` borrowed (`wayland_surface`, the one `unsafe`).
-wayland-client = {version = "0.31", optional = true}
-wayland-backend = {version = "0.3", features = ["client_system"], optional = true}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"], optional = true}
+wayland-client = { workspace = true, optional = true }
+wayland-backend = { workspace = true, features = ["client_system"], optional = true }
+wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"], optional = true }
 # `quire_window`: the client bindings of our own bardo_window_v1, generated from `protocols/` by macro.
-wayland-scanner = {version = "0.31", optional = true}
+wayland-scanner = { workspace = true, optional = true }
 # `menus::ShellOnly` (the `peephole` feature): which program is calling, by its pidfd and the unit
 # manager's facts. Its own repo, taken by tag; Linux only, because it reads `/proc` and the system
 # manager's bus. `desktop` adds the desktop's role names.
@@ -90,8 +90,8 @@ caller-identity-dbus = {features = ["desktop"], optional = true, path = "../../i
 
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 # The fake compositor `xdg_activation`'s tests talk to.
-wayland-server = {version = "0.31"}
-wayland-protocols = {version = "0.32.13", features = ["client", "server", "staging", "unstable"]}
+wayland-server = { workspace = true }
+wayland-protocols = { workspace = true, features = ["client", "server", "staging", "unstable"] }
 
 [features]
 default = ["quire-desktop"]
@@ -136,12 +136,12 @@ testing = []
 # The driver every host test in this crate runs through.
 ui-harness = {path = "../ui-harness", default-features = false, features = ["pdf"]}
 # Reading printouts back: text, fonts, images, and a page rasterised for the visual check.
-pdfrum = {version = "0.5", default-features = false, features = ["vello-cpu"]}
+pdfrum = { workspace = true, features = ["vello-cpu"] }
 # Writing PDFs for the thumbnail tests (a filled page, an encrypted one).
-pdfrum-edit = {version = "0.5", features = ["variable-fonts"]}
-pdfrum-common = {version = "0.5"}
+pdfrum-edit = { workspace = true, features = ["variable-fonts"] }
+pdfrum-common = { workspace = true }
 # Glyph ids from the cmap, for the colour-emoji and font-stack tests.
-skrifa = {version = "0.44"}
+skrifa = { workspace = true }
 
 [[example]]
 name = "window"
@@ -182,6 +182,5 @@ required-features = ["spell"]
 name = "pdf_thumb_queue"
 required-features = ["pdf"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

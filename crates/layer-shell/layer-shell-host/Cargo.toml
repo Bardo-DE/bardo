@@ -1,25 +1,25 @@
 [package]
 name = "layer-shell-host"
 description = "Blitz documents on Wayland layer-shell, xdg popups and toplevels, one GPU device for every surface."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/shell-host"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 # Wayland
-smithay-client-toolkit = {version = "0.20", default-features = false, features = ["calloop", "xkbcommon"]}
-wayland-client = {version = "0.31"}
+smithay-client-toolkit = { workspace = true, features = ["calloop", "xkbcommon"] }
+wayland-client = { workspace = true }
 # Named for its `client_system` feature: `Connection::backend().display_ptr()` (gpu::raw_handle).
-wayland-backend = {version = "0.3", features = ["client_system"]}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
-calloop = {version = "0.14"}
-calloop-wayland-source = {version = "0.4"}
-raw-window-handle = {version = "0.6"}
+wayland-backend = { workspace = true, features = ["client_system"] }
+wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
+calloop = { workspace = true }
+calloop-wayland-source = { workspace = true }
+raw-window-handle = { workspace = true }
 keyboard-types = {version = "0.7"}
-cursor-icon = {version = "1"}
+cursor-icon = { workspace = true }
 # `bardo_window_v1`'s client bindings and the wire vocab (`handlers::quire_window`).
 desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
 # Documents and rendering
@@ -28,33 +28,33 @@ blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c2
 blitz-paint = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"]}
 blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
 dioxus-native-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "accessibility"]}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
-dioxus-document = {version = "0.7"}
-anyrender = {version = "0.13"}
-anyrender_vello_hybrid = {version = "0.10"}
-anyrender_vello_cpu = {version = "0.17", features = ["multithreading", "filters"]}
-vello_hybrid = {version = "0.1"}
-wgpu = {version = "29"}
-wgpu_context = {version = "0.9"}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
+dioxus-document = { workspace = true }
+anyrender = { workspace = true }
+anyrender_vello_hybrid = { workspace = true }
+anyrender_vello_cpu = { workspace = true, features = ["multithreading", "filters"] }
+vello_hybrid = { workspace = true }
+wgpu = { workspace = true }
+wgpu_context = { workspace = true }
+image = { workspace = true, features = ["png", "jpeg"] }
 # Common
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
-thiserror = {version = "2"}
-serde = {version = "1", features = ["derive"]}
+thiserror = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 # The per-device image cache (`gpu::context`).
-rustc-hash = {version = "2"}
-vello_common = {version = "0.1"}
+rustc-hash = { workspace = true }
+vello_common = { workspace = true }
 # The debug-inject JSON stats lines.
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 # The palmrest socket's messages (`input::palmrest`).
 mouse-gestures-proto = {path = "../../input/mouse-gestures-proto"}
 # The overlay scroll thumb's shapes and colour (scroll::paint).
-peniko = {version = "0.6"}
+peniko = { workspace = true }
 # SOCK_SEQPACKET for the palmrest socket (std has no seqpacket, and unsafe is not allowed
 # here); in the pinned block since quire b45282a.
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
 # `SO_PEERPIDFD` for the palmrest socket's peer (rustix has no safe wrapper for it).
-nix = {version = "0.31", default-features = false, features = ["socket"]}
+nix = { workspace = true, features = ["socket"] }
 
 [features]
 default = []
@@ -114,8 +114,7 @@ name = "demo_popup_keys"
 name = "demo_swipe"
 [dev-dependencies]
 # The drag outcome's wire form in tests, and demo_drag's JSON lines.
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

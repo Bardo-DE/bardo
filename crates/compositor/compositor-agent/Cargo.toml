@@ -1,12 +1,12 @@
 [package]
 name = "compositor-agent"
 description = "casement's agent edge: the privileged-connection hand-out (P2), the agent seat, EIS, masked capture, the trusted surface and the kill chord (P4). A skeleton at P0."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/casement"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 compositor-core = {path = "../compositor-core"}
@@ -14,16 +14,14 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["wayland_frontend"]}
 # The remote EIS server (eis.rs; B14: no other crate names it). Already in the lock through
 # smithay; the calloop feature gives the event-loop source.
-reis = {version = "0.7", features = ["calloop"]}
+reis = { workspace = true, features = ["calloop"] }
 # Role names only (`roles::SHELL`, `AGENT_TIER`, `PORTAL`): what a caller proved on the bus,
 # no bus and no process reading in this crate.
 caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
 
 # The sealed memory file of a keyboard's keymap (eis_keymap.rs).
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
-tracing = {version = "0.1"}
+tracing = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

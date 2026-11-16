@@ -1,12 +1,12 @@
 [package]
 name = "agent-inapp"
 description = "The portable in-app agent: the router, policy point, reviewer and agent loop hosted inside one app over that app's own IntentProvider, with the app's own confirm sheet. No intentd, no bus, no daemon."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 action-review = {path = "../action-review"}
@@ -21,8 +21,8 @@ action-wire = {path = "../action-wire"}
 action-manifest = {path = "../action-manifest"}
 action-vocab = {path = "../action-vocab"}
 action-host = {path = "../action-host"}
-futures-channel = {version = "0.3", default-features = false, features = ["std"]}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
+futures-channel = { workspace = true, features = ["std"] }
+futures-util = { workspace = true, features = ["std"] }
 companion-memory = {path = "../companion-memory"}
 companion-memory-core = {path = "../companion-memory-core"}
 agent-models = {path = "../agent-models"}
@@ -39,8 +39,8 @@ permission-policy = {path = "../permission-policy"}
 inference-client = {path = "../../inference/inference-client"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 account-capability = {path = "../../accounts/account-capability"}
@@ -51,13 +51,12 @@ sandbox = {path = "../../sandbox/sandbox"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-fake = {path = "../action-fake"}
 inference-core = {path = "../../inference/inference-core"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 memory-client = {default-features = false, features = ["in_process"], path = "../../memory/memory-client"}
 memory-fake = {path = "../../memory/memory-fake"}
 memory-service = {path = "../../memory/memory-service"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

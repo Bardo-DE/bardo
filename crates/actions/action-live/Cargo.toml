@@ -1,12 +1,12 @@
 [package]
 name = "action-live"
 description = "Operator tools over the acceptance world: agent-live runs the eval corpora and the acceptance flows against a real model or a cassette on a private bus, and agent-bringup starts the agent services on a demo shell's bus. Not shipped; action-accept holds the world they run in."
-publish = false
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
+publish.workspace = true
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
 
 [[bin]]
 name = "agent-live"
@@ -53,20 +53,19 @@ action-eval-core = {path = "../action-eval-core"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 account-core = {path = "../../accounts/account-core"}
 model-provider = {path = "../../models/model-provider"}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
 inference-core = {path = "../../inference/inference-core"}
 provenance = {path = "../../provenance/provenance"}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-toml = {version = "1"}
+toml = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
 action-settings = {path = "../action-settings"}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
-tempfile = {version = "3"}
+futures-util = { workspace = true, features = ["std"] }
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

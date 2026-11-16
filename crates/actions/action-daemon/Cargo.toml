@@ -1,12 +1,12 @@
 [package]
 name = "action-daemon"
 description = "The daemon: builds the router over its seams (apps over D-Bus, the sheet, inferd, memoryd, the grant file) and serves org.bardo.Intents1; also hosts the built-in org.bardo.Memory and org.bardo.Companion providers. The binary is a skeleton."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 name = "action_daemon"
@@ -53,19 +53,19 @@ account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 memory-client = {default-features = false, features = ["dbus"], path = "../../memory/memory-client"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
-notify = {version = "8.2"}
-toml = {version = "1"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+futures-util = { workspace = true, features = ["std"] }
+notify = { workspace = true }
+toml = { workspace = true }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
 model-provider = {path = "../../models/model-provider"}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 memory-core = {path = "../../memory/memory-core"}
@@ -79,19 +79,18 @@ account-wire = {path = "../../accounts/account-wire"}
 memory-dbus = {path = "../../memory/memory-dbus"}
 memory-dbus-serve = {path = "../../memory/memory-dbus-serve"}
 agent-reader-daemon = {path = "../agent-reader-daemon"}
-proptest = {version = "1"}
+proptest = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
 action-provider = {path = "../action-provider", features = ["dbus"]}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
-serde_json = {version = "1"}
-tempfile = {version = "3"}
-toml = {version = "1"}
+serde_json = { workspace = true }
+tempfile = { workspace = true }
+toml = { workspace = true }
 action-gate-wire = {path = "../action-gate-wire"}
 
 [features]
 # Span export over OTLP (action-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.
 otlp = ["action-log/otlp"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

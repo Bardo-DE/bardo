@@ -1,18 +1,18 @@
 [package]
 name = "memory-client"
 description = "The app-facing memory API: Memory over a Transport (in process, absent, or D-Bus)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/almanac"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 memory-core = {path = "../memory-core"}
 memory-service = {path = "../memory-service", optional = true}
 memory-dbus = {path = "../memory-dbus", optional = true}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 
 [dev-dependencies]
 memory-fake = {path = "../memory-fake"}
@@ -31,6 +31,5 @@ in_process = ["dep:memory-service"]
 # The D-Bus transport (Linux, the desktop's memoryd).
 dbus = ["dep:memory-dbus"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

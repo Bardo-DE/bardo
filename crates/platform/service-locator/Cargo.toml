@@ -1,11 +1,12 @@
 [package]
+publish.workspace = true
 name = "service-locator"
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
 description = "Find this user's background agent, or start one. One logic, three platforms."
-repository = "https://github.com/Bardo-DE/latchkey"
+repository.workspace = true
 keywords = ["daemon", "agent", "ipc", "single-instance", "socket"]
 categories = ["os", "network-programming"]
 readme = "README.md"
@@ -14,7 +15,7 @@ readme = "README.md"
 # The transport, and only the transport. `interprocess` already unifies Unix domain sockets and
 # Windows named pipes behind one `Read + Write` stream, which is the half of this problem that
 # was solved; re-implementing it would be the mistake this crate exists to avoid making twice.
-interprocess = "2.4"
+interprocess.workspace = true
 
 # Unix only, and only for what `std` cannot say safely: who this process is, who the other end of a
 # socket is, and `O_NOFOLLOW`. Checking the owner of the directory and of the peer is what makes
@@ -28,10 +29,10 @@ caller-identity-core = {optional = true, path = "../../identity/caller-identity-
 
 # Windows only: the pipe's security descriptor, which `interprocess` takes as a wide C string.
 [target.'cfg(windows)'.dependencies]
-widestring = "1"
+widestring.workspace = true
 
 [dev-dependencies]
-tempfile = "3"
+tempfile.workspace = true
 # The test agent below is built only with this feature. Naming it here switches it on for this
 # crate's own tests, while `cargo install latchkey` (no dev-dependencies) never builds it.
 service-locator = { path = ".", features = ["test-agent", "guard"] }
@@ -46,15 +47,8 @@ test-agent = []
 # `latchkey::guard`: the guards of a socket that every local account can reach (Unix only).
 guard = ["dep:caller-identity-linux", "dep:caller-identity-core"]
 
-[lints.rust]
-unsafe_code = "forbid"
-missing_debug_implementations = "warn"
-
-# The agent the cross-process tests drive. A binary target rather than only the example because a
-# `cargo nextest archive` carries binary targets and drops examples, so the tests could not find
-# an example once the archive was extracted elsewhere. `examples/agent.rs` stays the user-facing
-# copy and includes this same source. `test = false`: it has no tests of its own.
-# `required-features`: without it `cargo install latchkey` put this binary on the user's PATH.
+[lints]
+workspace = true
 [[bin]]
 name = "service-locator-test-agent"
 path = "tests/support/agent.rs"

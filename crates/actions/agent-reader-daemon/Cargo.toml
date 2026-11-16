@@ -1,12 +1,12 @@
 [package]
 name = "agent-reader-daemon"
 description = "The quarantined reader: a separate process that reads untrusted text under a closed task and a schema, with no tools, and answers a typed value. The binary serves Reader1 on the session bus."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 name = "agent_reader_daemon"
@@ -27,12 +27,12 @@ account-core = {path = "../../accounts/account-core"}
 account-callers = {path = "../../accounts/account-callers"}
 inference-core = {path = "../../inference/inference-core"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
-thiserror = {version = "2"}
-serde_json = {version = "1"}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
+thiserror = { workspace = true }
+serde_json = { workspace = true }
+futures-util = { workspace = true, features = ["std"] }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-tracing = {version = "0.1"}
+tracing = { workspace = true }
 action-log = {path = "../action-log"}
 zbus-ready = { path = "../../zbus-ready" }
 
@@ -44,15 +44,14 @@ account-capability = {path = "../../accounts/account-capability"}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
 permission-core = {path = "../permission-core"}
 action-testbus = {path = "../action-testbus"}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
 action-fake = {path = "../action-fake"}
 inference-core = {features = ["testing"], path = "../../inference/inference-core"}
-proptest = {version = "1"}
+proptest = { workspace = true }
 action-context = {path = "../action-context"}
 action-router = {path = "../action-router"}
 action-wire = {path = "../action-wire"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "account-daemon"
 description = "porter's identity daemon: org.bardo.Accounts1 over account-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 zbus-ready = { path = "../../zbus-ready" }
@@ -37,12 +37,12 @@ account-store = {path = "../account-store"}
 account-tailscale = {path = "../account-tailscale", features = ["io"]}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
 clap = {version = "4", features = ["derive"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-sha2 = {version = "0.10"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-toml = {version = "1"}
+toml = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
@@ -73,10 +73,8 @@ test-proc-root = ["account-callers/test-proc-root"]
 # variable and says so once. tests/dist.rs and check-boundary.sh fail if this feature is default.
 test-keys = ["account-secrets/test-keys"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
+[lints]
+workspace = true
 [[bin]]
 name = "bardo-accountd"
 path = "src/main.rs"

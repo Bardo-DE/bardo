@@ -1,27 +1,26 @@
 [package]
 name = "engine-supervisor"
 description = "Engine lifecycle as a pure machine: start, readiness, idle unload, crash backoff and the VRAM budget; the seams the daemon fills."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/stoker"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 engine-spec = {path = "../engine-spec"}
 model-catalog = {path = "../../models/model-catalog"}
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
 
 [dev-dependencies]
-proptest = {version = "1"}
-serde_json = {version = "1"}
+proptest = { workspace = true }
+serde_json = { workspace = true }
 
 [features]
 # Scripted fakes of the three seams, for tests of the daemon and of porter's inferd.
 testing = []
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

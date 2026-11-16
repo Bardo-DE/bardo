@@ -1,12 +1,12 @@
 [package]
 name = "shell-app"
 description = "The bardo-shell daemon and command line."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 shell-model = {path = "../shell-model"}
@@ -18,7 +18,7 @@ ui-components = {path = "../../ui/ui-components"}
 ui-core = {path = "../../ui/ui-core"}
 ui-settings = {path = "../../ui/ui-settings", features = ["tokio"]}
 ui-extensions = {path = "../../ui/ui-extensions"}
-notify = {version = "8.2"}
+notify = { workspace = true }
 shell-kit = {path = "../shell-kit"}
 service-locator = {path = "../../platform/service-locator"}
 layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
@@ -34,15 +34,15 @@ shell-launcher-ui = {path = "../shell-launcher-ui", default-features = false}
 shell-dock = {path = "../shell-dock"}
 shell-notify-ui = {path = "../shell-notify-ui"}
 shell-overlays = {path = "../shell-overlays"}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
-serde = {version = "1", features = ["derive"]}
-toml = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+toml = { workspace = true }
 
 [dev-dependencies]
-tempfile = "3"
-serde_json = {version = "1"}
+tempfile.workspace = true
+serde_json = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 agent-voice-wire = {path = "../../actions/agent-voice-wire"}
 zbus-ready = {path = "../../zbus-ready"}
@@ -67,10 +67,8 @@ media = ["shell-launcher-ui/media"]
 # `bardo-shell run` the stand-in flags (`--fake-ddc`, `--dev-callers`, ...); a release build has none.
 debug = ["layer-shell-host/debug-inject", "shell-services/dev-callers"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
+[lints]
+workspace = true
 [[bin]]
 name = "bardo-shell"
 path = "src/main.rs"

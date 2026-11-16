@@ -1,12 +1,12 @@
 [package]
 name = "computer-use-bus"
 description = "What crosses cuad's bus and its event log: the Cua1 bodies, the Start task, run states and outcomes, CuaRecord, the control refusals and who may call which member. Serde bodies over the vocabulary of memory-core, action-core, account-core, inference-core, prov and computer-use-action; no capability crate (accessibility, input, capture) is linked; results are prov Report messages."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/cua"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 action-gate-wire = {path = "../../actions/action-gate-wire"}
@@ -21,14 +21,13 @@ provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 model-provider = {path = "../../models/model-provider"}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
-iso_currency = {version = "0.7", features = ["with-serde"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
+iso_currency = { workspace = true, features = ["with-serde"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 [dev-dependencies]
 account-capability = {path = "../../accounts/account-capability"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

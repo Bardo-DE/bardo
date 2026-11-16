@@ -1,13 +1,13 @@
 [package]
 name = "sandbox"
 description = "Run a command or an agent process confined by bubblewrap: read-only root, one writable directory, no network unless given, and a kill that takes the whole sandbox."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/bulkhead"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
 readme = "README.md"
-publish = false
+publish.workspace = true
 
 [[bin]]
 name = "bardo-sandbox-forward"
@@ -19,11 +19,11 @@ path = "src/bin/bardo-sandbox-enter.rs"
 required-features = ["landlock"]
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
-thiserror = "2"
+serde = { workspace = true, features = ["derive"] }
+thiserror.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]
-landlock = { version = "0.4", optional = true }
+landlock = { workspace = true, optional = true }
 
 [features]
 # The exec stage's Landlock calls (`enter::apply`, `enter::enter_main` and the `bardo-sandbox-enter`
@@ -32,8 +32,7 @@ landlock = { version = "0.4", optional = true }
 landlock = ["dep:landlock"]
 
 [dev-dependencies]
-tempfile = "3"
+tempfile.workspace = true
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

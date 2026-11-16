@@ -4,12 +4,12 @@ description = "The launcher: its panel, click catcher, rows, preview pane and ac
 
 # `media` (on by default) lets the preview pane read a recording's facts and, for audio, its cover
 # (pure-Rust header parsers). Off, a recording previews as its type, size and date.
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 [features]
 default = ["media"]
 media = ["anyview-peek/media"]
@@ -26,15 +26,15 @@ anyview-image = {path = "../../anyview/crates/anyview-image"}
 anyview-peek = {path = "../../anyview/crates/anyview-peek", default-features = false, features = ["pane"]}
 anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["quire-desktop"]}
 keymap = {path = "../../keymap/keymap"}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
-dirs = {version = "6"}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
+dirs = { workspace = true }
 action-core = {path = "../../actions/action-core"}
 ui-components = {path = "../../ui/ui-components"}
 ui-behaviour = {path = "../../ui/ui-behaviour"}
 ui-blitz = {path = "../../ui/ui-blitz", features = ["pdf"]}
-jiff = {version = "0.2"}
+jiff = { workspace = true }
 # The name of a file's thumbnail in the freedesktop cache is the MD5 of its address.
-md-5 = {version = "0.10"}
+md-5 = { workspace = true }
 provenance = {path = "../../provenance/provenance"}
 layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 shell-launcher = {path = "../shell-launcher"}
@@ -47,19 +47,18 @@ shell-kit = {path = "../shell-kit"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 
 [dev-dependencies]
-serde_json = {version = "1"}
-png = {version = "0.18"}
+serde_json = { workspace = true }
+png = { workspace = true }
 shell-testkit = {path = "../shell-testkit"}
 ui-harness = {path = "../../ui/ui-harness"}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
+image = { workspace = true, features = ["png", "jpeg", "webp"] }
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 ui-lint = {path = "../../ui/ui-lint"}
 layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["debug-inject"]}
 
 [[example]]
 name = "launcher_demo"
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

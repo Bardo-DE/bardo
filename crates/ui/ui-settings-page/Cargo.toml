@@ -1,23 +1,22 @@
 [package]
 name = "ui-settings-page"
 description = "SettingsPage: a settings schema drawn as grouped rows, one control per key kind, with room for an app's own rows."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 ui-components = {path = "../ui-components"}
 ui-settings = {path = "../ui-settings", default-features = false}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
-toml = {version = "1"}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
+toml = { workspace = true }
 
 [dev-dependencies]
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 ui-lint = {path = "../ui-lint"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

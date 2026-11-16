@@ -1,12 +1,12 @@
 [package]
 name = "anyview-core"
 description = "The viewer's pure vocabulary: kinds, sniffing, units, sequence, actions, edits, exports, view memory."
-version = "0.1.0-beta.1"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/anyview"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # `LocalZone::pin`, for tests whose expected text names a time: a time zone every machine shares.
@@ -16,21 +16,15 @@ testing = []
 # The actions and chords of the keymap: a file action's own id and default chord.
 keymap = {path = "../../../keymap/keymap"}
 ui-core = {path = "../../../ui/ui-core"}
-infer = {version = "0.19"}
-serde = {version = "1", features = ["derive"]}
-jiff = {version = "0.2"}
-thiserror = {version = "2"}
+infer = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+jiff = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 # `ds_core::testing::word_matches_serde`, for the stored `Word` enums.
 ui-core = {features = ["testing"], path = "../../../ui/ui-core"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
-[lints.clippy]
-unwrap_used = "deny"
-wildcard_enum_match_arm = "deny"
-match_wildcard_for_single_variants = "deny"
+[lints]
+workspace = true

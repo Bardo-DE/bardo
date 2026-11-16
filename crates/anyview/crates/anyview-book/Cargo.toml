@@ -1,31 +1,25 @@
 [package]
 name = "anyview-book"
 description = "Books for the viewer: EPUB packages (metadata, reading order, contents, a chapter as sealed HTML) and comic zips (pages in natural order), and their covers."
-version = "0.1.0-beta.1"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/anyview"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 anyview-archive = {path = "../anyview-archive"}
 anyview-core = {path = "../anyview-core"}
-roxmltree = {version = "0.21"}
-thiserror = {version = "2"}
+roxmltree = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 ui-core = {path = "../../../ui/ui-core"}
 # `OnDisk`: the input of a book in the scratch folder (core opens no file).
 anyview-fs = {path = "../anyview-fs"}
-tempfile = {version = "3"}
-zip = {version = "9", default-features = false, features = ["deflate"]}
+tempfile = { workspace = true }
+zip = { workspace = true, features = ["deflate"] }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
-[lints.clippy]
-unwrap_used = "deny"
-wildcard_enum_match_arm = "deny"
-match_wildcard_for_single_variants = "deny"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "compositor-testclient"
 description = "Typed wayland-client helpers per protocol for casement's tests, the Transcript every client keeps, test patterns and shm buffers; the compositor-probe and compositor-shell-exec binaries. Reaches no smithay (B9)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/casement"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [[bin]]
 name = "compositor-probe"
@@ -28,15 +28,15 @@ desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["clie
 # The capture helpers fold events with its reducer and read its Frame; no wire layer (a fixture
 # cannot answer its blocking round trips).
 desktop-client = {path = "../../wayland/desktop-client"}
-wayland-client = {version = "0.31"}
-wayland-backend = {version = "0.3", features = ["client_system"]}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
-wayland-protocols-wlr = {version = "0.3.12", features = ["client"]}
-wayland-protocols-misc = {version = "0.3.12", features = ["client"]}
+wayland-client = { workspace = true }
+wayland-backend = { workspace = true, features = ["client_system"] }
+wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
+wayland-protocols-wlr = { workspace = true, features = ["client"] }
+wayland-protocols-misc = { workspace = true, features = ["client"] }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
-x11rb = {version = "0.13", features = ["res"]}
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+x11rb = { workspace = true, features = ["res"] }
 # The probe's `shell-connect` and compositor-shell-exec ask org.bardo.Compositor1 for the shell
 # connection (quire/handout.rs).
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
@@ -47,7 +47,5 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 # allows; B9 reads normal edges only).
 compositor-testkit = {path = "../compositor-testkit"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

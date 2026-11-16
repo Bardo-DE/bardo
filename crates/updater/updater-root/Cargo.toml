@@ -4,12 +4,12 @@ description = "The three programs that run as root (install, roll back, health r
 
 # These programs run with the administrator's rights, so what they link is kept short and is checked by
 # scripts/check-boundary.sh: no network client, no bus, no async runtime, no logging framework.
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/slipway"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 [[bin]]
 name = "bardo-updater-apply"
 path = "src/bin/bardo_updater_apply.rs"
@@ -24,17 +24,15 @@ path = "src/bin/bardo_updater_health.rs"
 
 [dependencies]
 updater-core = {path = "../updater-core"}
-thiserror = {version = "2"}
-semver = {version = "1", features = ["serde"]}
-toml = {version = "0.9"}
+thiserror = { workspace = true }
+semver = { workspace = true, features = ["serde"] }
+toml = { workspace = true }
 rustix = {version = "1", default-features = false, features = ["std", "fs", "process"]}
 tar = {version = "0.4.46"}
-zstd = {version = "0.13"}
+zstd = { workspace = true }
 
 [dev-dependencies]
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

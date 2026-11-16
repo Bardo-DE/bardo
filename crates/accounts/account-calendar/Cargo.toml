@@ -1,20 +1,20 @@
 [package]
 name = "account-calendar"
 description = "One calendar store for every porter client: list calendars, put an event (as iCalendar for the stores that take it, as its fields for the ones that take JSON), find one by UID and remove one. Backends: CalDAV, Microsoft Graph, the Google Calendar API and JMAP over the HTTP seam, and Evolution Data Server over D-Bus (feature `eds`). Pure but for `eds`: no runtime, no socket."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-chrono = {version = "0.4", default-features = false, features = ["alloc"]}
+chrono = { workspace = true, features = ["alloc"] }
 account-dav-proto = {path = "../account-dav-proto", features = ["discover"]}
 account-http = {path = "../account-http"}
 account-ids = {path = "../account-ids"}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
 
 [features]
@@ -23,11 +23,10 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"], option
 eds = ["dep:zbus"]
 
 [dev-dependencies]
-base64 = {version = "0.22"}
+base64 = { workspace = true }
 account-fake-servers = {path = "../account-fake-servers"}
 account-http-relay = {path = "../account-http-relay"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

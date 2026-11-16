@@ -1,12 +1,12 @@
 [package]
 name = "companion-memory"
 description = "docket's memory seam over a transport, portable: `MemoryLink` and `SessionLog` over memory-client (any Transport: memoryd over D-Bus, or the service hosted in process), `MemoryProvider` (the org.bardo.Memory actions as an IntentProvider), and `AuditState`, which drains the audit queue into memory with retry accounting. No bus, no runtime."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../../accounts/account-ids"}
@@ -20,7 +20,7 @@ action-provider = {path = "../action-provider"}
 agent-session = {path = "../agent-session"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
 [dev-dependencies]
 permission-core = {path = "../permission-core"}
@@ -34,6 +34,5 @@ action-router = {path = "../action-router"}
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 action-wire = {path = "../action-wire"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

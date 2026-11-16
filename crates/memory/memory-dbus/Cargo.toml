@@ -1,20 +1,19 @@
 [package]
 name = "memory-dbus"
 description = "almanac's D-Bus API: org.bardo.Memory1 as zbus proxies, the argument codec, the errors and bus names. The daemon's half is memory-dbus-serve."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/almanac"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 memory-core = {path = "../memory-core"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

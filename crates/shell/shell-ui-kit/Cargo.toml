@@ -1,12 +1,12 @@
 [package]
 name = "shell-ui-kit"
 description = "What every surface shares: root, links, hooks, menus, status, notification cards, widget providers and the test harness."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../../computer-use/computer-use-action"}
@@ -15,7 +15,7 @@ action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
 account-capability = {path = "../../accounts/account-capability"}
 shell-model = {path = "../shell-model"}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-behaviour = {path = "../../ui/ui-behaviour"}
 keymap = {path = "../../keymap/keymap"}
@@ -40,16 +40,16 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 # App icons in the icon style (`app_icons`): decode and encode rasters, rasterise theme SVGs
 # (resvg is the renderer usvg/tiny-skia already in the tree belong to; MIT OR Apache-2.0),
 # and find `$XDG_CACHE_HOME`.
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg", "webp"]}
-resvg = { version = "0.48", default-features = false }
-dirs = {version = "6"}
+image = { workspace = true, features = ["png", "jpeg", "webp"] }
+resvg = { workspace = true }
+dirs = { workspace = true }
 # Civil dates for the calendar widgets' month grid and the world clock.
-jiff = {version = "0.2"}
-thiserror = {version = "2"}
+jiff = { workspace = true }
+thiserror = { workspace = true }
 # The widgets' entries are serde data (quire's `ds::Widget::Entry`); the desktop widgets' state
 # file is JSON.
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 [features]
 # Fake services and the values they start at, for tests and demos (`harness`).
@@ -61,8 +61,7 @@ shell-testkit = {path = "../shell-testkit"}
 shell-ui-kit = {path = ".", features = ["harness"]}
 # `lint` is off by default: only test builds need `ds::lint::markup`.
 ui-lint = {path = "../../ui/ui-lint"}
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "companion-daemon"
 description = "The companion daemon: one identity over many tasks, each its own docket session. Serves org.bardo.Companion1; the binary serves it on the session bus. It is the bus adapter and the daemon over companion-helpers (the helpers' hub and the routine timer); the decisions over values are companion-core's."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [lib]
 name = "companion_daemon"
@@ -34,16 +34,16 @@ action-client = {path = "../action-client", default-features = false, features =
 action-dbus = {path = "../action-dbus", features = ["inferd"]}
 action-procroot = {path = "../action-procroot"}
 action-settings = {path = "../action-settings"}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
+futures-util = { workspace = true, features = ["std"] }
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 account-callers = {path = "../../accounts/account-callers"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-toml = {version = "1"}
-tracing = {version = "0.1"}
+toml = { workspace = true }
+tracing = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
@@ -66,8 +66,7 @@ action-testbus = {path = "../action-testbus"}
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
 action-fake = {path = "../action-fake"}
 action-router = {path = "../action-router"}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

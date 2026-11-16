@@ -1,12 +1,12 @@
 [package]
 name = "computer-use-a11y-atspi"
 description = "The AT-SPI backend of the accessibility tree: finds the leased window by process and title on the session's accessibility bus and walks it breadth first to the node budget. The model and the seam are in computer-use-a11y-tree."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/cua"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../../accounts/account-ids"}
@@ -15,10 +15,9 @@ computer-use-action = {path = "../computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
-atspi = {version = "0.30", default-features = false, features = ["connection", "proxies", "tokio"]}
+atspi = { workspace = true, features = ["connection", "proxies", "tokio"] }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

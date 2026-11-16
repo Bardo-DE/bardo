@@ -107,7 +107,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "zbus",
 ]
 
@@ -243,7 +243,7 @@ dependencies = [
  "sha2 0.10.9",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-settings",
  "zbus",
  "zbus-ready",
@@ -309,7 +309,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -524,7 +524,7 @@ dependencies = [
  "account-fake-servers",
  "account-http",
  "account-ids",
- "reqwest 0.12.28",
+ "reqwest",
  "rustls",
  "tokio",
 ]
@@ -606,7 +606,7 @@ dependencies = [
  "subtle",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -631,7 +631,7 @@ dependencies = [
  "account-sheet",
  "serde",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -781,7 +781,7 @@ dependencies = [
  "account-provider",
  "account-service-core",
  "account-sheet",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-settings",
 ]
 
@@ -931,7 +931,7 @@ dependencies = [
  "const-hex",
  "provenance",
  "sandbox",
- "sha2 0.11.0",
+ "sha2 0.10.9",
  "thiserror 2.0.21",
 ]
 
@@ -1127,7 +1127,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "zbus",
  "zbus-ready",
 ]
@@ -1183,7 +1183,7 @@ dependencies = [
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -1201,7 +1201,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -1257,7 +1257,7 @@ dependencies = [
  "rust_decimal",
  "sandbox",
  "serde_json",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "tracing",
  "url",
 ]
@@ -1335,7 +1335,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "zbus",
 ]
 
@@ -1361,7 +1361,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "url",
 ]
 
@@ -1390,7 +1390,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "zbus",
 ]
 
@@ -1474,7 +1474,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "tracing",
 ]
 
@@ -1492,7 +1492,7 @@ dependencies = [
  "serde",
  "tempfile",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "toml_edit",
 ]
 
@@ -1530,7 +1530,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -1735,7 +1735,7 @@ dependencies = [
  "const-hex",
  "futures-channel",
  "futures-util",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "jsonschema",
  "permission-core",
  "provenance",
@@ -1917,7 +1917,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "tracing",
  "zbus",
 ]
@@ -2088,9 +2088,9 @@ dependencies = [
  "const-hex",
  "serde",
  "serde_json",
- "sha2 0.11.0",
+ "sha2 0.10.9",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -2127,7 +2127,7 @@ dependencies = [
  "provenance",
  "serde",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -2137,7 +2137,7 @@ dependencies = [
  "action-manifest",
  "agent-skills",
  "tempfile",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -2181,7 +2181,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "tracing",
  "zbus",
  "zbus-ready",
@@ -2477,7 +2477,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-archive"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
@@ -2497,7 +2497,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-book"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-archive",
  "anyview-core",
@@ -2511,7 +2511,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-core"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "infer",
  "jiff",
@@ -2524,7 +2524,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-font"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
@@ -2536,7 +2536,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-fs"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-core",
  "rustix 1.1.6",
@@ -2546,7 +2546,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-image"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
@@ -2567,7 +2567,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-peek"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-archive",
  "anyview-book",
@@ -2594,7 +2594,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-platform"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "account-core",
  "account-ids",
@@ -2622,7 +2622,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-core",
  "ui-extensions",
  "ui-helpers",
@@ -2632,7 +2632,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-plugin"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-plugin-protocol",
@@ -2643,7 +2643,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-plugin-protocol"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "plugin-host",
  "serde",
@@ -2653,7 +2653,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-store"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-core",
  "log",
@@ -2667,7 +2667,7 @@ dependencies = [
 
 [[package]]
 name = "anyview-text"
-version = "0.1.0-beta.1"
+version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
@@ -3592,16 +3592,16 @@ dependencies = [
 
 [[package]]
 name = "caller-identity-core"
-version = "0.1.11"
+version = "0.1.0"
 dependencies = [
  "serde",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
 name = "caller-identity-dbus"
-version = "0.1.11"
+version = "0.1.0"
 dependencies = [
  "caller-identity-core",
  "caller-identity-linux",
@@ -3615,7 +3615,7 @@ dependencies = [
 
 [[package]]
 name = "caller-identity-linux"
-version = "0.1.11"
+version = "0.1.0"
 dependencies = [
  "caller-identity-core",
  "nix 0.31.3",
@@ -4087,7 +4087,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "tracing",
  "zbus",
  "zbus-ready",
@@ -4280,7 +4280,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "tracing",
  "tracing-subscriber",
  "ui-core",
@@ -4326,7 +4326,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-behaviour",
  "ui-core",
  "ui-motion",
@@ -4373,7 +4373,7 @@ dependencies = [
  "desktop-protocols",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "tracing",
  "ui-core",
  "ui-settings",
@@ -4643,7 +4643,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "zbus",
 ]
 
@@ -4706,7 +4706,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -4726,7 +4726,7 @@ dependencies = [
  "rust_decimal",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "zbus",
 ]
 
@@ -4758,7 +4758,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -4790,7 +4790,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -4835,7 +4835,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -6473,7 +6473,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-helpers",
  "zbus",
  "zbus-ready",
@@ -6488,7 +6488,7 @@ dependencies = [
  "notify",
  "tempfile",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-helpers",
 ]
 
@@ -6542,7 +6542,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-blitz",
  "ui-components",
  "ui-extensions",
@@ -6935,10 +6935,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff2abc00be7fca6ebc474524697ae276ad847ad0a6b3faa4bcb027e9a4614ad0"
 dependencies = [
  "cfg-if",
- "js-sys",
  "libc",
  "wasi",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -7394,7 +7392,6 @@ dependencies = [
  "hyper",
  "hyper-util",
  "rustls",
- "rustls-native-certs",
  "tokio",
  "tokio-rustls",
  "tower-service",
@@ -7878,7 +7875,7 @@ dependencies = [
  "subtle",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-settings",
  "zbus",
  "zbus-ready",
@@ -7957,7 +7954,7 @@ dependencies = [
  "serde",
  "speech-provider",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -7977,7 +7974,7 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -8071,7 +8068,7 @@ dependencies = [
 
 [[package]]
 name = "input-broker-client"
-version = "0.1.1"
+version = "0.1.0"
 dependencies = [
  "input-broker-wire",
  "rustix 1.1.6",
@@ -8081,7 +8078,7 @@ dependencies = [
 
 [[package]]
 name = "input-broker-daemon"
-version = "0.1.1"
+version = "0.1.0"
 dependencies = [
  "caller-identity-core",
  "caller-identity-linux",
@@ -8097,7 +8094,7 @@ dependencies = [
 
 [[package]]
 name = "input-broker-wire"
-version = "0.1.1"
+version = "0.1.0"
 dependencies = [
  "thiserror 2.0.21",
 ]
@@ -8659,7 +8656,7 @@ version = "0.1.0"
 dependencies = [
  "key-remap-proto",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -9332,12 +9329,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lru-slab"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4050469837a6ff301cd14c1f8f24f88549e6d548f24f64e2148eb0f72cebc51f"
-
-[[package]]
 name = "lzma-rs"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9507,7 +9498,7 @@ dependencies = [
  "atomic-write-file",
  "blake3",
  "clap",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "inference-client",
  "inference-core",
  "inference-dbus",
@@ -9603,7 +9594,7 @@ dependencies = [
  "tar",
  "tempfile",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -9676,7 +9667,7 @@ dependencies = [
 name = "memory-local"
 version = "0.1.0"
 dependencies = [
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "memory-client",
  "memory-core",
  "memory-eventlog",
@@ -9715,7 +9706,7 @@ dependencies = [
  "blake3",
  "chacha20poly1305",
  "const-hex",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "memory-core",
  "memory-seal",
  "oo7",
@@ -9754,7 +9745,7 @@ dependencies = [
  "tar",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -9764,7 +9755,7 @@ dependencies = [
  "memory-core",
  "serde",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -9792,7 +9783,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -9907,7 +9898,7 @@ dependencies = [
  "serde_json",
  "speech-provider",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -9931,7 +9922,7 @@ version = "0.1.0"
 dependencies = [
  "proptest",
  "rcgen",
- "reqwest 0.13.5",
+ "reqwest",
  "rustls",
  "rustls-pki-types",
  "serde",
@@ -10050,7 +10041,7 @@ dependencies = [
  "serde_json",
  "service-locator",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -11475,14 +11466,14 @@ checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 
 [[package]]
 name = "plugin-host"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "rustix 1.1.6",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -11838,62 +11829,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "quinn"
-version = "0.11.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4051e23e9185c255a7e33ef59cdbca87a22d359052eecd22fc6b901fb37d9d11"
-dependencies = [
- "bytes",
- "cfg_aliases",
- "pin-project-lite",
- "quinn-proto",
- "quinn-udp",
- "rustc-hash 2.1.3",
- "rustls",
- "socket2",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
- "web-time",
-]
-
-[[package]]
-name = "quinn-proto"
-version = "0.11.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e750cca55fe4f0439a15d0bb529da9651e79993e8e72c61a899a36d462befbe"
-dependencies = [
- "bytes",
- "getrandom 0.4.3",
- "lru-slab",
- "rand 0.10.3",
- "rand_pcg",
- "ring",
- "rustc-hash 2.1.3",
- "rustls",
- "rustls-pki-types",
- "slab",
- "thiserror 2.0.21",
- "tinyvec",
- "tracing",
- "web-time",
-]
-
-[[package]]
-name = "quinn-udp"
-version = "0.5.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af66907df18639dcf4db56ca65490cabc4b27a97dbadd96f2926cca73298f016"
-dependencies = [
- "cfg_aliases",
- "libc",
- "once_cell",
- "socket2",
- "tracing",
- "windows-sys 0.61.2",
-]
-
-[[package]]
 name = "quote"
 version = "1.0.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -11989,15 +11924,6 @@ name = "rand_core"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "63b8176103e19a2643978565ca18b50549f6101881c443590420e4dc998a3c69"
-
-[[package]]
-name = "rand_pcg"
-version = "0.10.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "caa0f4137e1c0a72f4c651489402276c8e8e1cf081f3b0ba156d2cbeef09e86a"
-dependencies = [
- "rand_core 0.10.1",
-]
 
 [[package]]
 name = "rand_xorshift"
@@ -12368,44 +12294,6 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.12.28"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eddd3ca559203180a307f12d114c268abf583f59b03cb906fd0b3ff8646c1147"
-dependencies = [
- "base64 0.22.1",
- "bytes",
- "futures-core",
- "http",
- "http-body",
- "http-body-util",
- "hyper",
- "hyper-rustls",
- "hyper-util",
- "js-sys",
- "log",
- "percent-encoding",
- "pin-project-lite",
- "quinn",
- "rustls",
- "rustls-native-certs",
- "rustls-pki-types",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "sync_wrapper",
- "tokio",
- "tokio-rustls",
- "tower",
- "tower-http",
- "tower-service",
- "url",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
-]
-
-[[package]]
-name = "reqwest"
 version = "0.13.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "16a1cfa75cc186dd73d5818e510e042e40927bccc9c236b061cea97e1eb08029"
@@ -12657,7 +12545,6 @@ version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "102f35f7de7b06d8c61f1cff6592f5253e0dea431c74867aad5dfd70f44663fb"
 dependencies = [
- "web-time",
  "zeroize",
 ]
 
@@ -12982,18 +12869,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_urlencoded"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3491c14715ca2294c4d6a88f15e84739788c1d030eed8c110436aafdaa2f3fd"
-dependencies = [
- "form_urlencoded",
- "itoa",
- "ryu",
- "serde",
-]
-
-[[package]]
 name = "serde_with"
 version = "3.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13063,7 +12938,7 @@ dependencies = [
  "settings-app-ui",
  "tempfile",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-blitz",
  "ui-settings",
 ]
@@ -13091,7 +12966,7 @@ dependencies = [
  "settings-app-model",
  "settings-app-system",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-settings",
 ]
 
@@ -13109,7 +12984,7 @@ dependencies = [
  "settings-app-model",
  "settings-app-testkit",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "toml_edit",
  "ui-extensions",
  "ui-helpers",
@@ -13139,7 +13014,7 @@ dependencies = [
  "settings-app-testkit",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-peer",
  "ui-settings",
  "zbus",
@@ -13166,7 +13041,7 @@ dependencies = [
  "regex",
  "serde_json",
  "settings-app-testkit",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-helpers",
  "ui-settings",
 ]
@@ -13208,7 +13083,7 @@ dependencies = [
  "sync-bus",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-peer",
  "ui-settings",
  "zbus",
@@ -13243,7 +13118,7 @@ dependencies = [
  "settings-app-testkit",
  "sync-bus",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-blitz",
  "ui-components",
  "ui-harness",
@@ -13352,7 +13227,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-blitz",
  "ui-components",
  "ui-core",
@@ -13533,7 +13408,7 @@ dependencies = [
  "serde_json",
  "shell-launcher",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-core",
  "ui-helpers",
  "zeroize",
@@ -13691,7 +13566,7 @@ dependencies = [
  "system-tray",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-core",
  "ui-helpers",
  "ui-settings",
@@ -13712,7 +13587,7 @@ dependencies = [
  "shell-launcher",
  "shell-model",
  "shell-testkit",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-core",
  "ui-settings",
 ]
@@ -14331,7 +14206,7 @@ version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75e76005daba1feda388038f018ecbcdcddaabac66b02d1a10ad3379fdd1455d"
 dependencies = [
- "toml 1.1.6+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -14682,7 +14557,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-settings",
  "windows-zones",
  "zbus",
@@ -14820,7 +14695,7 @@ dependencies = [
  "cfg-expr",
  "heck",
  "pkg-config",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "version-compare",
 ]
 
@@ -15146,21 +15021,6 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.9.12+spec-1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf92845e79fc2e2def6a5d828f0801e29a2f8acc037becc5ab08595c7d5e9863"
-dependencies = [
- "indexmap 2.14.2",
- "serde_core",
- "serde_spanned",
- "toml_datetime 0.7.5+spec-1.1.0",
- "toml_parser",
- "toml_writer",
- "winnow 0.7.15",
-]
-
-[[package]]
-name = "toml"
 version = "1.1.6+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "920602543f0911ab71da12c50d59701da54c196d1a2bf5cb4b75667f137a406a"
@@ -15168,19 +15028,10 @@ dependencies = [
  "indexmap 2.14.2",
  "serde_core",
  "serde_spanned",
- "toml_datetime 1.1.1+spec-1.1.0",
+ "toml_datetime",
  "toml_parser",
  "toml_writer",
- "winnow 1.0.4",
-]
-
-[[package]]
-name = "toml_datetime"
-version = "0.7.5+spec-1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92e1cfed4a3038bc5a127e35a2d360f145e1f4b971b551a2ba5fd7aedf7e1347"
-dependencies = [
- "serde_core",
+ "winnow",
 ]
 
 [[package]]
@@ -15199,10 +15050,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1340ea94a5856333492c9064b02c778b191dd2c853778d9609debdcdfea3a614"
 dependencies = [
  "indexmap 2.14.2",
- "toml_datetime 1.1.1+spec-1.1.0",
+ "toml_datetime",
  "toml_parser",
  "toml_writer",
- "winnow 1.0.4",
+ "winnow",
 ]
 
 [[package]]
@@ -15211,7 +15062,7 @@ version = "1.1.3+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1d38ac1cf9b95face32296c0a3ede1fdc270627c9d9c02a7274dd6d960dc4d56"
 dependencies = [
- "winnow 1.0.4",
+ "winnow",
 ]
 
 [[package]]
@@ -15472,7 +15323,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-core",
  "ui-intents",
  "ui-lint",
@@ -15605,7 +15456,7 @@ dependencies = [
  "serde",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-peer",
  "zbus",
  "zbus-ready",
@@ -15619,7 +15470,7 @@ dependencies = [
  "image",
  "serde",
  "thiserror 2.0.21",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-components",
  "ui-settings",
  "ui-style",
@@ -15675,7 +15526,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "toml_edit",
  "ui-components",
  "ui-core",
@@ -15702,7 +15553,7 @@ version = "0.1.0"
 dependencies = [
  "dioxus",
  "dioxus-ssr",
- "toml 1.1.6+spec-1.1.0",
+ "toml",
  "ui-components",
  "ui-lint",
  "ui-settings",
@@ -15879,10 +15730,10 @@ dependencies = [
  "proptest",
  "semver",
  "serde",
- "sha2 0.11.0",
+ "sha2 0.10.9",
  "thiserror 2.0.21",
  "time",
- "toml 0.9.12+spec-1.1.0",
+ "toml",
 ]
 
 [[package]]
@@ -15897,7 +15748,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
- "toml 0.9.12+spec-1.1.0",
+ "toml",
  "tracing",
  "tracing-subscriber",
  "updater-core",
@@ -15917,7 +15768,7 @@ dependencies = [
  "tar",
  "tempfile",
  "thiserror 2.0.21",
- "toml 0.9.12+spec-1.1.0",
+ "toml",
  "updater-core",
  "zstd",
 ]
@@ -17511,12 +17362,6 @@ dependencies = [
 
 [[package]]
 name = "winnow"
-version = "0.7.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945"
-
-[[package]]
-name = "winnow"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81"
@@ -17690,7 +17535,7 @@ checksum = "ec7a2a501ed189703dba8b08142f057e887dfc4b2cc4db2d343ac6376ba3e0b9"
 
 [[package]]
 name = "xtask"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -17776,7 +17621,7 @@ dependencies = [
  "uds_windows",
  "uuid",
  "windows-sys 0.61.2",
- "winnow 1.0.4",
+ "winnow",
  "zbus_macros",
  "zbus_names",
  "zvariant",
@@ -17837,7 +17682,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8bf88b4a3ff53e883001e0e0115b297a9d53c31b9c1edd2bfdd853e3428624e"
 dependencies = [
  "serde",
- "winnow 1.0.4",
+ "winnow",
  "zvariant",
 ]
 
@@ -17848,7 +17693,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d1586c021a01ca0a9216dcd874e546382e156a5cbab5fab6cb5f10087e22682a"
 dependencies = [
  "serde",
- "winnow 1.0.4",
+ "winnow",
  "zbus_names",
  "zvariant",
 ]
@@ -18064,7 +17909,7 @@ dependencies = [
  "enumflags2",
  "serde",
  "serde_bytes",
- "winnow 1.0.4",
+ "winnow",
  "zcheapstr",
  "zvariant_derive",
  "zvariant_utils",
@@ -18093,5 +17938,5 @@ dependencies = [
  "quote",
  "serde",
  "syn 3.0.6",
- "winnow 1.0.4",
+ "winnow",
 ]

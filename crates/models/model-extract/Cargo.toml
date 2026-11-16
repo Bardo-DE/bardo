@@ -1,22 +1,21 @@
 [package]
 name = "model-extract"
 description = "Structured extraction as a pure machine: choose how to ask a model for a typed output, build the request, absorb the reply, repair once, or fail. No I/O."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/stoker"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 model-provider = {path = "../model-provider"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 
 [dev-dependencies]
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 model-vision-prep = {path = "../model-vision-prep"}
-proptest = {version = "1"}
+proptest = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

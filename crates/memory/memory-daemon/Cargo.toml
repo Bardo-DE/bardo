@@ -1,12 +1,12 @@
 [package]
 name = "memory-daemon"
 description = "almanac's memory daemon: serves org.bardo.Memory1 over memory-service, with the real seams (Secret Service keys, SQLCipher, sealed files, inferd models)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/almanac"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # `BARDO_MEMORYD_KEYS=file:<path>` selects a file-backed key store (`almanac_keyfile::FileKeys`), for a
@@ -35,7 +35,7 @@ memory-infer = {path = "../memory-infer"}
 memory-tidy = {path = "../memory-tidy"}
 memory-settings = {path = "../memory-settings"}
 memory-watch = {path = "../memory-watch"}
-atomic-write-file = {version = "0.3"}
+atomic-write-file = { workspace = true }
 memory-dbus = {path = "../memory-dbus"}
 memory-dbus-serve = {path = "../memory-dbus-serve"}
 account-core = {path = "../../accounts/account-core"}
@@ -45,15 +45,15 @@ account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 clap = {version = "4", features = ["derive"]}
-getrandom = {version = "0.3"}
-landlock = {version = "0.4"}
-rusqlite = {version = "0.43", features = ["bundled-sqlcipher-vendored-openssl"]}
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
+getrandom = { workspace = true }
+landlock = { workspace = true }
+rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-serde_json = {version = "1"}
-blake3 = {version = "1"}
+serde_json = { workspace = true }
+blake3 = { workspace = true }
 
 [dev-dependencies]
 account-wire = {path = "../../accounts/account-wire"}
@@ -69,13 +69,11 @@ memory-fake = {path = "../memory-fake"}
 memory-seal = {path = "../memory-seal", features = ["oo7", "testing"]}
 memory-recall = {path = "../memory-recall", features = ["testing"]}
 tar = {version = "0.4"}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 zbus-ready = { path = "../../zbus-ready" }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
+[lints]
+workspace = true
 [[bin]]
 name = "bardo-memoryd"
 path = "src/main.rs"

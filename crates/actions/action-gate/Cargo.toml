@@ -1,12 +1,12 @@
 [package]
 name = "action-gate"
 description = "The pure steps of a call's way through the router: the facts the policy reads, the gate's mapping from a ruling, the call lifecycle, classification, consent, turn start, argument checks, the call as prepared, what is driven, the confirmation sheet's facts, standing grants' context, the terminal's grants and the trace spans."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
@@ -24,14 +24,13 @@ model-provider = {path = "../../models/model-provider"}
 permission-policy = {path = "../permission-policy"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
-serde_json = {version = "1"}
-toml = {version = "1"}
-tracing = {version = "0.1"}
-url = {version = "2.5"}
+serde_json = { workspace = true }
+toml = { workspace = true }
+tracing = { workspace = true }
+url = { workspace = true }
 
 [dev-dependencies]
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

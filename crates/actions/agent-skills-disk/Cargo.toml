@@ -1,21 +1,20 @@
 [package]
 name = "agent-skills-disk"
 description = "Skill directories on the real disk: the one SkillFolder that lists and reads them with std::fs, for the daemons and tools that hand agent-skills a folder."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 agent-skills = {path = "../agent-skills"}
 
 [dev-dependencies]
 action-manifest = {path = "../action-manifest"}
-toml = {version = "1"}
-tempfile = {version = "3"}
+toml = { workspace = true }
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

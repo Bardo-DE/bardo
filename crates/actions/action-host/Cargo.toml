@@ -1,12 +1,12 @@
 [package]
 name = "action-host"
 description = "What a host that shows no interface of its own needs to ask its person: the confirm sheet seam (`ConfirmSheet`), `SheetConfirmer`, which turns a sheet's answer into the router's `ConfirmAnswer` and mints the receipt, and `EditorDesk`, the sheets waiting for an editor's choice. Used by the editor host (agent-acp-bin) and by the in-app agent (agent-inapp)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../../accounts/account-ids"}
@@ -14,13 +14,12 @@ action-core = {path = "../action-core"}
 permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 agent-session = {path = "../agent-session"}
-futures-channel = {version = "0.3", default-features = false, features = ["std"]}
+futures-channel = { workspace = true, features = ["std"] }
 provenance = {path = "../../provenance/provenance"}
 
 [dev-dependencies]
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
+futures-util = { workspace = true, features = ["std"] }
 account-core = {path = "../../accounts/account-core"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,21 +1,21 @@
 [package]
 name = "shell-ipc"
 description = "The bardo-shell IPC protocol: newline-delimited JSON requests and responses, one per connection."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 clap = {version = "4", features = ["derive"], optional = true}
 ui-core = {path = "../../ui/ui-core"}
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 shell-testkit = {path = "../shell-testkit"}
@@ -25,6 +25,5 @@ key-remap-proto = {path = "../../input/key-remap-proto"}
 # The command line parses straight into the request types (`bardo-shell` turns this on).
 cli = ["dep:clap"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

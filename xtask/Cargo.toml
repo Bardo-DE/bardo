@@ -1,12 +1,15 @@
 [package]
 name = "xtask"
-version = "0.0.0"
-edition = "2024"
-publish = false
-license = "MIT OR Apache-2.0"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
 description = "Repository tasks: `cargo xtask gate`, `cargo xtask check ...`."
 
 [dependencies]
-anyhow = "1"
-cargo_metadata = "0.23"
-lexopt = "0.3"
+anyhow.workspace = true
+cargo_metadata.workspace = true
+lexopt.workspace = true
+
+[lints]
+workspace = true

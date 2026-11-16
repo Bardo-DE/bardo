@@ -1,16 +1,16 @@
 [package]
 name = "agent-acp-core"
 description = "Our own rules for the Agent Client Protocol, pure: path confinement, the protocol errors, the gate's ruling on permission requests, taint, strikes, the tool-request mapping, the names of calls, what an agent reports, why a start failed, and the court seam. No connection, no IO, no clock and no wording; the connections are the official agent-client-protocol SDK's, in bardo-agent-acp and agent-acp-host."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../../accounts/account-ids"}
-agent-client-protocol = {version = "3.5", default-features = false}
+agent-client-protocol = { workspace = true }
 sandbox = {path = "../../sandbox/sandbox"}
 companion-model = {path = "../companion-model"}
 action-core = {path = "../action-core"}
@@ -19,13 +19,12 @@ permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 agent-session = {path = "../agent-session"}
 model-provider = {path = "../../models/model-provider"}
-iso_currency = {version = "0.7", features = ["with-serde"]}
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+iso_currency = { workspace = true, features = ["with-serde"] }
+rust_decimal = { workspace = true, features = ["std", "serde"] }
 provenance = {path = "../../provenance/provenance"}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
-tracing = {version = "0.1"}
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

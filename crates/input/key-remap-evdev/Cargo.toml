@@ -1,16 +1,17 @@
 [package]
+publish.workspace = true
 name = "key-remap-evdev"
 description = "The evdev and uinput calls keycap and its device-test harness share: ioctls through safe handles, and draining a nonblocking event node"
-version = "0.1.0"
-edition = "2024"
-rust-version = "1.91"
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/Bardo-DE/keycap"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [dependencies]
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
-input-linux = {version = "0.7", default-features = false}
+input-linux = { workspace = true }
 
-[lints.rust]
-unsafe_code = "forbid"
+[lints]
+workspace = true

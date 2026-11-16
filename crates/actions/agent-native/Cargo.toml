@@ -1,12 +1,12 @@
 [package]
 name = "agent-native"
 description = "The native durable-session backend: a companion-tasks Companion's planner loop behind agent-session's SessionBackend and SessionHost (NativeBackend, NativeHost), one cancel-safe flight per turn, sheets through a SheetDesk, fork and export over the log. The ACP edge's host in agent-acp-bin."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 agent-loop = {path = "../agent-loop"}
@@ -19,8 +19,8 @@ action-vocab = {path = "../action-vocab"}
 agent-planner = {path = "../agent-planner"}
 agent-session = {path = "../agent-session"}
 companion-tasks = {path = "../companion-tasks"}
-futures-channel = {version = "0.3", default-features = false, features = ["std"]}
-futures-util = {version = "0.3", default-features = false, features = ["std"]}
+futures-channel = { workspace = true, features = ["std"] }
+futures-util = { workspace = true, features = ["std"] }
 provenance = {path = "../../provenance/provenance"}
 
 [dev-dependencies]
@@ -36,9 +36,8 @@ action-router = {path = "../action-router"}
 account-core = {path = "../../accounts/account-core"}
 inference-client = {path = "../../inference/inference-client"}
 inference-core = {path = "../../inference/inference-core"}
-serde_json = {version = "1"}
+serde_json = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

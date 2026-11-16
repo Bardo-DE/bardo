@@ -1,12 +1,12 @@
 [package]
 name = "inference-bridge"
 description = "The one mapping between porter's wire types (inference-core) and stoker's provider types (model-provider): a chat, task or embedding request as a turn, a turn's events and end as porter's, a provider error as a ModelError. Pure: no runtime, no socket, no HTTP. inferd and inference-client's in-process engine host share it."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/steward"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 model-catalog = {path = "../../models/model-catalog"}
@@ -17,12 +17,11 @@ account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
 account-ids = {path = "../../accounts/account-ids"}
 inference-core = {path = "../inference-core"}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 model-vision-prep = {path = "../../models/model-vision-prep"}
 
 [dev-dependencies]
-rust_decimal = {version = "1", default-features = false, features = ["std", "serde"]}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

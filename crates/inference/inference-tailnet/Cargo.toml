@@ -1,24 +1,24 @@
 [package]
 name = "inference-tailnet"
 description = "Lending a computer's models to the person's other computers over their Tailscale network, and calling those of another: who may ask (judged from Tailscale's own answer about the caller), the computers the person said yes or no to, the hello a lending computer answers, and with the `io` feature the listeners that follow this computer's addresses, the dial that checks who it reaches, and the relay that gives a local engine a way to a computer on the network."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/steward"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../../accounts/account-ids"}
 account-fs = {optional = true, path = "../../accounts/account-fs"}
 account-tailscale = {path = "../../accounts/account-tailscale"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
-toml = {version = "1", optional = true}
-hyper = {version = "1", optional = true, features = ["client", "http1"]}
-hyper-util = {version = "0.1.21", optional = true, features = ["tokio"]}
-http-body-util = {version = "0.1", optional = true}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true, optional = true }
+hyper = { workspace = true, optional = true, features = ["client", "http1"] }
+hyper-util = { workspace = true, optional = true, features = ["tokio"] }
+http-body-util = { workspace = true, optional = true }
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"], optional = true}
 
 [dev-dependencies]
@@ -43,6 +43,5 @@ io = [
   "account-tailscale/io",
 ]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

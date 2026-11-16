@@ -1,12 +1,12 @@
 [package]
 name = "shell-testkit"
 description = "Dev only: a private bus, scratch folders, signal listeners and the stand-in programs the tests and dev scripts run against."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.91"
-repository = "https://github.com/Bardo-DE/sill"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
@@ -21,11 +21,11 @@ shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-search = {path = "../shell-search"}
 shell-services = {path = "../shell-services"}
-wayland-client = {version = "0.31"}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"]}
+wayland-client = { workspace = true }
+wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 # Stand-ins the tests and dev scripts start as child processes, each under its own bus name or
 # socket; none touches the person's session.
@@ -48,6 +48,5 @@ name = "logind_standin"
 [[example]]
 name = "screensaver_client"
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

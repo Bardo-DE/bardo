@@ -1,12 +1,12 @@
 [package]
 name = "ui-gallery"
 description = "Gallery of every quire component across theme, accent, motion and material."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 keymap = {path = "../../keymap/keymap"}
@@ -18,22 +18,20 @@ ui-settings = {path = "../ui-settings", default-features = false}
 # `pdf`: so a workspace build compiles and tests `PdfFileThumb` (its tests need it).
 ui-blitz = {path = "../ui-blitz", default-features = false, features = ["pdf", "spell"]}
 ui-harness = {path = "../ui-harness", default-features = false}
-dioxus = {version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"]}
-image = {version = "0.25.6", default-features = false, features = ["png", "jpeg"]}
-thiserror = {version = "2"}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
+image = { workspace = true, features = ["png", "jpeg"] }
+thiserror = { workspace = true }
 
 [dev-dependencies]
-dioxus-ssr = {version = "0.7"}
+dioxus-ssr = { workspace = true }
 
 [features]
 default = ["quire-desktop"]
 # Desktop integration of the quire crates this one uses (design/36 section 1).
 quire-desktop = ["ui-settings/quire-desktop", "ui-blitz/quire-desktop"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
+[lints]
+workspace = true
 [[bin]]
 name = "ds-gallery"
 path = "src/main.rs"

@@ -1,29 +1,28 @@
 [package]
 name = "action-checkpoint-git"
 description = "The git store of restore points: a hidden commit of the workspace per point, made through a private index and kept under a ref of docket's own. git runs as a process behind the GitRun seam; nothing here touches the person's index, branches or stash."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/docket"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-ids = {path = "../../accounts/account-ids"}
 sandbox = {path = "../../sandbox/sandbox"}
 action-checkpoint = {path = "../action-checkpoint"}
 action-core = {path = "../action-core"}
-percent-encoding = {version = "2.3"}
+percent-encoding = { workspace = true }
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
-thiserror = {version = "2"}
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-tracing = {version = "0.1"}
+tracing = { workspace = true }
 
 [dev-dependencies]
 action-checkpoint = {path = "../action-checkpoint", features = ["testing"]}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

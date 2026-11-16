@@ -1,11 +1,12 @@
 [package]
+publish.workspace = true
 name = "plugin-host"
-version = "0.2.0"
-edition = "2024"
-rust-version = "1.92"
-license = "MIT OR Apache-2.0"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
 description = "Run plugins as separate programs: manifests, discovery, a framed JSON wire, and process handling that contains crashes and hangs. Generic over the host's capability type."
-repository = "https://github.com/Bardo-DE/bayonet"
+repository.workspace = true
 readme = "README.md"
 keywords = ["plugin", "ipc", "subprocess", "manifest"]
 categories = ["development-tools", "os"]
@@ -20,10 +21,10 @@ host = ["dep:toml", "dep:rustix"]
 testing = []
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-thiserror = "2"
-toml = { version = "1", optional = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+thiserror.workspace = true
+toml = { workspace = true, optional = true }
 
 # Process groups and polling are Unix; the wire, manifests and the registry build everywhere.
 [target.'cfg(unix)'.dependencies]
@@ -45,16 +46,7 @@ path = "tests/bayonet/main.rs"
 required-features = ["host"]
 
 [dev-dependencies]
-tempfile = "3"
+tempfile.workspace = true
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-missing_docs = "warn"
-
-# Matching on our own enums names every variant, so adding one is a compile error wherever it
-# matters. Tests may unwrap (clippy.toml).
-[lints.clippy]
-unwrap_used = "deny"
-wildcard_enum_match_arm = "deny"
-match_wildcard_for_single_variants = "deny"
+[lints]
+workspace = true

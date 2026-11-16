@@ -1,12 +1,12 @@
 [package]
 name = "compositor-wayland"
 description = "casement's protocol edge: one module per Wayland protocol, each a sub-state (Part) plus on_* functions turning requests into core events and apply_* functions carrying effects onto the wire; smithay's bools and loose integers become our types here."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/casement"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 compositor-core = {path = "../compositor-core"}
@@ -17,8 +17,8 @@ ui-core = {path = "../../ui/ui-core", default-features = false}
 smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["desktop", "wayland_frontend"]}
 # The seat's keymap as text for the EIS keyboards (`seat_keymap::keymap_text`).
 xkbcommon = {version = "0.9", features = ["wayland"]}
-thiserror = {version = "2"}
-tracing = {version = "0.1"}
+thiserror = { workspace = true }
+tracing = { workspace = true }
 
 [features]
 # The private `quire_*` servers (`bardo_desktop_manager_v1`, `bardo_shell_v1`; A8): a consumer that
@@ -27,7 +27,5 @@ tracing = {version = "0.1"}
 default = ["quire"]
 quire = []
 
-[lints.rust]
-unsafe_code = "deny"
-missing_docs = "warn"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

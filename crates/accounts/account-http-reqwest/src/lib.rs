@@ -59,6 +59,9 @@ impl ReqwestHttp {
     /// A client trusting the platform's roots and these DER certificates (a private CA).
     /// A certificate that is not one is skipped.
     pub fn with_extra_roots(extra: Vec<Vec<u8>>) -> Self {
+        // reqwest's rustls takes the process's provider: ring, installed once (a second install, or one
+        // another crate made first, is refused and harmless).
+        let _ = rustls::crypto::ring::default_provider().install_default();
         let builder = extra
             .iter()
             .filter_map(|der| Certificate::from_der(der).ok())

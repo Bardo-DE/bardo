@@ -2,13 +2,12 @@
 name = "windows-zones"
 description = "Windows time zone names, as Outlook, Exchange and Microsoft Graph write them, to IANA names: CLDR's territory-001 table, std only."
 keywords = ["timezone", "windows", "iana", "cldr"]
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/ferry"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

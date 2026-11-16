@@ -1,12 +1,12 @@
 [package]
 name = "account-families"
 description = "The registry of the protocol families: DynProvider is account-provider's Provider as a trait object, the family that serves each provider file, and the small families (an API key, a coding agent that signs itself in, Tailscale). The families with a protocol of their own are account-family-oauth, -generic and -nextcloud."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-family-kit = {path = "../account-family-kit"}
@@ -22,7 +22,7 @@ account-http = {path = "../account-http"}
 account-http-reqwest = {path = "../account-http-reqwest", optional = true}
 account-discover = {path = "../account-discover", optional = true}
 account-tailscale = {path = "../account-tailscale", optional = true}
-thiserror = {version = "2", optional = true}
+thiserror = { workspace = true, optional = true }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
@@ -40,9 +40,9 @@ account-discover = {path = "../account-discover"}
 account-oauth = {path = "../account-oauth", features = ["io"]}
 account-proxy = {path = "../account-proxy", features = ["tls"]}
 account-dav-proto = {path = "../account-dav-proto"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-base64 = {version = "0.22"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+base64 = { workspace = true }
 
 [features]
 # `set`: which provider files a daemon serves and the family of each (`set::load_specs`,
@@ -67,6 +67,5 @@ agent_login = []
 # Tailscale on this computer: asked over its unix socket, no credential held.
 tailnet = ["dep:account-tailscale", "account-tailscale/io"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

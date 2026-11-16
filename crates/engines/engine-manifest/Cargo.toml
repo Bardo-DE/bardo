@@ -1,19 +1,18 @@
 [package]
 name = "engine-manifest"
 description = "The engines that run models on this computer (llama.cpp, vLLM, Strata) as data: a pinned manifest of what to download for which hardware, the host value that picks a row, the distro packages, the tree seal's line format and the failure codes of an install. Pure: no disk, no network, no runtime."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/stoker"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 engine-spec = {path = "../engine-spec"}
 model-catalog = {path = "../../models/model-catalog"}
-serde_json = {version = "1"}
-sha2 = {version = "0.10"}
+serde_json = { workspace = true }
+sha2 = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

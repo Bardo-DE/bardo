@@ -1,26 +1,26 @@
 [package]
 name = "desktop-protocols"
 description = "The desktop's private Wayland protocols (quire_*_v1): the XML, the pure wire vocabulary, and wayland-scanner bindings behind the `client` and `server` features."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/casement-protocols"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-serde = {version = "1", features = ["derive"]}
-thiserror = {version = "2"}
-wayland-scanner = {version = "0.31", optional = true}
-wayland-backend = {version = "0.3", features = ["client_system"], optional = true}
-wayland-client = {version = "0.31", optional = true}
-wayland-server = {version = "0.31", optional = true}
-wayland-protocols = {version = "0.32.13", features = ["client", "staging", "unstable"], optional = true}
-bitflags = {version = "2", optional = true}
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+wayland-scanner = { workspace = true, optional = true }
+wayland-backend = { workspace = true, features = ["client_system"], optional = true }
+wayland-client = { workspace = true, optional = true }
+wayland-server = { workspace = true, optional = true }
+wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"], optional = true }
+bitflags = { workspace = true, optional = true }
 
 [dev-dependencies]
-serde_json = {version = "1"}
-quick-xml = {version = "0.41"}
+serde_json = { workspace = true }
+quick-xml = { workspace = true }
 
 [features]
 default = []
@@ -41,6 +41,5 @@ server = [
   "wayland-protocols/server",
 ]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

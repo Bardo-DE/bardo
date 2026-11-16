@@ -1,27 +1,27 @@
 [package]
 name = "memory-seal"
 description = "almanac's per-Space keys, subkey derivation, the sealed-file format and the key store seam."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/almanac"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-const-hex = {version = "1.19"}
+const-hex = { workspace = true }
 memory-core = {path = "../memory-core"}
-blake3 = {version = "1"}
-chacha20poly1305 = {version = "0.10"}
-getrandom = {version = "0.3"}
-thiserror = {version = "2"}
-zeroize = {version = "1"}
-oo7 = {version = "0.6", optional = true}
+blake3 = { workspace = true }
+chacha20poly1305 = { workspace = true }
+getrandom = { workspace = true }
+thiserror = { workspace = true }
+zeroize = { workspace = true }
+oo7 = { workspace = true, optional = true }
 
 [dev-dependencies]
 memory-seal = { path = ".", features = ["testing", "oo7"] }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
 [features]
 # `MemoryKeys`, for tests and memory-fake.
@@ -33,6 +33,5 @@ oo7 = ["dep:oo7"]
 # compiler for the target. Off by default: the desktop keeps blake3's fast paths.
 pure-hash = ["blake3/pure"]
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "ui-intents"
 description = "The companion's presentational context: the marks a quire app reports (a thing, a chip, a summon) and nothing of the agent's wire."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/quire"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 ui-core = {path = "../ui-core"}
@@ -14,6 +14,5 @@ ui-core = {path = "../ui-core"}
 [dev-dependencies]
 ui-core = {path = "../ui-core", features = ["testing"]}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

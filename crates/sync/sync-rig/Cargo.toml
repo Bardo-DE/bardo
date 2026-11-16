@@ -1,12 +1,12 @@
 [package]
 name = "sync-rig"
 description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives ferry with. sync-rig-servers starts the Microsoft Graph fake (the drive and the calendars) behind porter's fake OAuth issuer on loopback, plants known tokens and serves the scenario's levers; sync-rig-client acts as an app over the session bus and talks to syncd's org.bardo.Sync1. Nothing shipped depends on it."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/ferry"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [[bin]]
 name = "sync-rig-servers"
@@ -25,8 +25,8 @@ account-fake-servers = {path = "../../accounts/account-fake-servers"}
 # shapes of rig.json.
 account-rig = {path = "../../accounts/account-rig"}
 clap = {version = "4", features = ["derive"]}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 # `signal` is what this crate adds to the pinned line: SIGTERM ends the servers cleanly.
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
@@ -40,6 +40,5 @@ account-ids = {path = "../../accounts/account-ids"}
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
 base-testkit = {path = "../../base/base-testkit"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

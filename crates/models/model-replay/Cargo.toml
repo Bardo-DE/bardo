@@ -1,28 +1,27 @@
 [package]
 name = "model-replay"
 description = "Record and replay for tests, at two layers: typed turn cassettes (a replaying provider and a recording wrapper) and wire cassettes recorded and replayed at the Transport seam, both over an injected sink."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/stoker"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 model-http = {path = "../model-http"}
 model-provider = {path = "../model-provider"}
 speech-provider = {path = "../../speech/speech-provider"}
 model-vision-prep = {path = "../model-vision-prep"}
-blake3 = {version = "1"}
-serde = {version = "1", features = ["derive"]}
-serde_json = {version = "1"}
-thiserror = {version = "2"}
+blake3 = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 model-provider = {path = "../model-provider", features = ["testing"]}
-proptest = {version = "1"}
+proptest = { workspace = true }
 
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

@@ -1,12 +1,12 @@
 [package]
 name = "account-settings"
 description = "The rows of an account in a daemon's settings module: the AccountRow trait, one unit struct per row every account has (its label, place, state, how it signs in, its provider and group, and the actions to sign in again and to remove it), and the paths they live under. accountd and inferd list their accounts through it and only host the module."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-core = {path = "../account-core"}
@@ -16,11 +16,10 @@ account-sheet = {path = "../account-sheet"}
 account-provider = {path = "../account-provider"}
 account-service-core = {path = "../account-service-core"}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
-toml = {version = "1"}
+toml = { workspace = true }
 
 [dev-dependencies]
 account-fake = {path = "../account-fake"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

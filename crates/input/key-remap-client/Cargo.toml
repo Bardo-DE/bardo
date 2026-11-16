@@ -1,11 +1,12 @@
 [package]
+publish.workspace = true
 name = "key-remap-client"
 description = "A program's end of keycap: the socket client, and KeycapSource, this desktop's chordkit keymap source (conventions, the desktop's own bindings and the person's keymap file)"
-version = "0.1.0"
-edition = "2024"
-rust-version = "1.91"
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/Bardo-DE/keycap"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [dependencies]
 key-remap-proto = { path = "../key-remap-proto" }
@@ -16,7 +17,7 @@ rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 
 [dev-dependencies]
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
-[lints.rust]
-unsafe_code = "forbid"
+[lints]
+workspace = true

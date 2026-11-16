@@ -1,20 +1,19 @@
 [package]
 name = "account-http"
 description = "porter's HTTP seam: the `Http` trait over the `http` crate's request and response, which every family, discovery and OAuth call goes through; the clients are account-http-reqwest (direct) and account-http-relay (over an accountd relay)."
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/porter"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
 account-core = {path = "../account-core"}
 account-ids = {path = "../account-ids"}
-http = {version = "1"}
-httpdate = {version = "1"}
-thiserror = {version = "2"}
+http = { workspace = true }
+httpdate = { workspace = true }
+thiserror = { workspace = true }
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
+[lints]
+workspace = true

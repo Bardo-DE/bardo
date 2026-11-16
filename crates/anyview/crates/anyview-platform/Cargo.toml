@@ -1,12 +1,12 @@
 [package]
 name = "anyview-platform"
 description = "The platform edge: single instance, media session, thumbnail cache, print, share, reveal and window stacking, each a trait with a Linux implementation and a fake."
-version = "0.1.0-beta.1"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-rust-version = "1.92"
-repository = "https://github.com/Bardo-DE/anyview"
-publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [features]
 # The Linux desktop's services: D-Bus (single instance with bus activation, the media session, the
@@ -26,25 +26,25 @@ anyview-core = {path = "../anyview-core"}
 anyview-plugin = {path = "../anyview-plugin"}
 anyview-plugin-protocol = {path = "../anyview-plugin-protocol"}
 plugin-host = {default-features = false, features = ["host"], path = "../../../plugin/plugin-host"}
-dirs = {version = "6"}
+dirs = { workspace = true }
 ui-core = {path = "../../../ui/ui-core"}
 # The folder scan of Extensions and the file that turns some off; ui-settings without its D-Bus client reads that file.
 ui-extensions = {path = "../../../ui/ui-extensions"}
 ui-settings = {default-features = false, path = "../../../ui/ui-settings"}
 service-locator = {path = "../../../platform/service-locator"}
-log = {version = "0.4"}
-md-5 = {version = "0.10"}
-percent-encoding = {version = "2"}
-png = {version = "0.18"}
-serde_json = {version = "1"}
-tempfile = {version = "3", optional = true}
-thiserror = {version = "2"}
+log = { workspace = true }
+md-5 = { workspace = true }
+percent-encoding = { workspace = true }
+png = { workspace = true }
+serde_json = { workspace = true }
+tempfile = { workspace = true, optional = true }
+thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 # Only a Linux build has a session bus and the freedesktop entries; `quire-desktop` names them.
 [target.'cfg(target_os = "linux")'.dependencies]
-futures-util = {version = "0.3", default-features = false, optional = true}
-memfd = {version = "0.6", optional = true}
+futures-util = { workspace = true, optional = true }
+memfd = { workspace = true, optional = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
 action-provider = {features = ["dbus"], optional = true, path = "../../../actions/action-provider"}
 action-core = {optional = true, path = "../../../actions/action-core"}
@@ -55,23 +55,17 @@ action-wire = {optional = true, path = "../../../actions/action-wire"}
 provenance = {optional = true, path = "../../../provenance/provenance"}
 account-core = {optional = true, path = "../../../accounts/account-core"}
 account-ids = {optional = true, path = "../../../accounts/account-ids"}
-toml = {version = "1", optional = true}
+toml = { workspace = true, optional = true }
 
 [dev-dependencies]
 # The integration tests use the fakes and, with `quire-desktop`, the private bus behind `testing`.
 anyview-platform = { path = ".", default-features = false, features = ["testing"] }
-tempfile = {version = "3"}
+tempfile = { workspace = true }
 
 # The agent tests stand in for intentd with a fixture /proc, which action-dbus reads only with
 # `fixture-callers`: a test build's feature, never a shipped one (check-boundary.sh).
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 action-dbus = {features = ["fixture-callers"], path = "../../../actions/action-dbus"}
 
-[lints.rust]
-unsafe_code = "deny"
-missing_debug_implementations = "warn"
-
-[lints.clippy]
-unwrap_used = "deny"
-wildcard_enum_match_arm = "deny"
-match_wildcard_for_single_variants = "deny"
+[lints]
+workspace = true
