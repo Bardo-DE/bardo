@@ -89,10 +89,10 @@ impl ViewerIntents {
         };
         let files = existing_files(refs)?;
         let count = files.len();
-        self.sender
-            .send(Request::Open(files))
-            .ok()
-            .ok_or(AppRefusal::Busy)?;
+        self.sender.send(Request::Open(files)).map_err(|e| {
+            log::warn!("the viewer's window takes no more requests: {e}");
+            AppRefusal::Busy
+        })?;
         Ok(Outcome {
             value: None,
             said: LabelText::parse(&said(count)).ok(),
@@ -119,8 +119,8 @@ fn existing_files(refs: &[FileRef]) -> Result<Vec<FilePath>, AppRefusal> {
     }
     refs.iter()
         .map(|file| {
-            let path = FilePath::new(file.as_str()).ok().ok_or_else(|| {
-                AppRefusal::Failed(FailText("give each file as an absolute path".to_owned()))
+            let path = FilePath::new(file.as_str()).map_err(|e| {
+                AppRefusal::Failed(FailText(format!("give each file as an absolute path: {e}")))
             })?;
             match Path::new(file.as_str()).try_exists() {
                 Ok(true) => Ok(path),

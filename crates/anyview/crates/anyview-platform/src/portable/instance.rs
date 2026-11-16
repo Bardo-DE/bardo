@@ -14,7 +14,7 @@ use std::io::{BufRead, BufReader, Read, Write};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
-use std::sync::mpsc::{Sender, channel};
+use std::sync::mpsc::{SendError, Sender, channel};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
@@ -114,8 +114,7 @@ impl Instance for LatchkeyInstance {
             tokio::task::spawn_blocking(move || settle(agent, sender, &request)),
         )
         .await
-        .ok()
-        .ok_or_else(|| failed("reach the running viewer", &"it did not answer in time"))?
+        .map_err(|elapsed| failed("reach the running viewer", &elapsed))?
         .map_err(|error| failed("claim the viewer's socket", &error))??;
         Ok(match settled {
             Settled::Primary(door) => Claim::Primary(Primary::new(requests, Box::new(door))),
@@ -292,8 +291,13 @@ fn serve(stream: Stream, sender: &Sender<Request>) {
     let mut line = String::new();
     let read = (&mut reader).take(MAX_LINE).read_line(&mut line);
     let result = match read {
-        Ok(_) if line.ends_with('\n') => frame::decode(line.trim_end())
-            .and_then(|request| sender.send(request).ok().ok_or(FrameError::Closing)),
+        Ok(_) if line.ends_with('\n') => {
+            frame::decode(line.trim_end()).and_then(|request| match sender.send(request) {
+                Ok(()) => Ok(()),
+                // The only fault of a send is that the window's end is gone: that is `Closing`.
+                Err(SendError(_)) => Err(FrameError::Closing),
+            })
+        }
         Ok(_) => Err(FrameError::CutShort),
         Err(error) => Err(FrameError::Unreadable(error.to_string())),
     };

@@ -173,8 +173,7 @@ impl Service {
     fn hand_over(&self, request: Request) -> fdo::Result<()> {
         self.sender
             .send(request)
-            .ok()
-            .ok_or_else(|| fdo::Error::Failed("the viewer is closing".to_owned()))
+            .map_err(|e| fdo::Error::Failed(format!("the viewer is closing: {e}")))
     }
 }
 
