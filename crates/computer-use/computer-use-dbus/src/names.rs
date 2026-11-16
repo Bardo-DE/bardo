@@ -6,7 +6,7 @@ use provenance::RunId;
 pub const CUA_BUS: &str = "org.bardo.ComputerUse1";
 /// cuad's root object (`Manager`).
 pub const CUA_PATH: &str = "/org/bardo/ComputerUse1";
-/// The bus name cuad also owns, as the provider of the `cua.run.start` action
+/// The bus name cuad also owns, as the provider of the `computeruse.run.start` action
 /// (`org.bardo.IntentProvider1` at docket's `PROVIDER_PATH`).
 pub const PROVIDER_BUS: &str = "org.bardo.ComputerUse";
 

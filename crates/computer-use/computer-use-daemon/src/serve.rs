@@ -1,5 +1,5 @@
 //! cuad on the bus: `org.bardo.ComputerUse1` for the shell, the planner and the router, and
-//! `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` with the one action `cua.run.start`.
+//! `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` with the one action `computeruse.run.start`.
 
 use crate::bus::ManagerObject;
 use crate::provider::CuaProvider;

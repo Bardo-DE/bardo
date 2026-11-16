@@ -605,7 +605,7 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
 - `RunBudget { steps, active, stall_frames, actions_per_min, model_failures, spend }` (no `denials`); `GateAnswer::Refused(Paused(_))` → `Finished(Blocked(PolicyDenials))`; `Refused(Halted(_))` → `Paused`.
 - `computer-use-bus` (new, serde-only): `RunStateSlug`, `CuaTask` (the `Start` body), `CuaResult`, `CuaOutcome`, `CuaRecord` (actor `prov::Actor::Companion{role: Cua{run}}`, served_by `porter_infer::ServedBy`), `ControlRefusal`, plus the `Cua1` XML (cua.md §3.8, unchanged; ux's `Replay`/`UndoAll` additions rejected: undo is `Intents1.Run.UndoAll(Run(id))`).
 - cuad also serves `IntentProvider1` as app **`org.bardo.ComputerUse`** with one action
-  `cua.run.start { goal: Text(sink Body), target: Entity(desktop.window) | app: Text, mode: Choice }`,
+  `computeruse.run.start { goal: Text(sink Body), target: Entity(desktop.window) | app: Text, mode: Choice }`,
   `effect: Read`, `latency: Long`, `reach: Hidden` while `cua.enabled = off`. Each pixel step is gated on its own.
 
 ---
@@ -703,11 +703,11 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | # | Step | Owner |
 |---|---|---|
 | 1 | Launcher companion mode → sill records `Session.Turn` (role launcher) → `Companion1.Ask` | ux, docket |
-| 2 | agent-loop tier rule: typed action → hook (D-Bus/portal/MPRIS) → CUA. No typed action for Firefox → `Run.Perform(org.bardo.ComputerUse: cua.run.start{goal, app, mode})` (Read, AllowFinal; Hidden unless `cua.enabled`) | docket |
+| 2 | agent-loop tier rule: typed action → hook (D-Bus/portal/MPRIS) → CUA. No typed action for Firefox → `Run.Perform(org.bardo.ComputerUse: computeruse.run.start{goal, app, mode})` (Read, AllowFinal; Hidden unless `cua.enabled`) | docket |
 | 3 | cuad: `Gate.Grant(firefox, space)` → first use Ask (Confirm1, OnceOrAlways unless a sensitive class) → lease (AgentWorkspace on the fork; stock: in place, HandsOff) → `Cua1.RunAdded` → sill run row | cua, docket, ux |
 | 4 | Observe: masked capture (cuad on stock, compositor on fork), a11y snapshot, `Inference1.Open(ComputerUse, Screen, tier)` → `CuaBegin`, `CuaStep` (memfd frame, tree text) → `CuaStepReply` in WindowSpace; `ActionProposed` → glow | cua, models (stoker in inferd) |
 | 5 | Each action: `classify_effect` → `Gate.Check(CuaAsk)` → router Ruling with screen taint (always Untrusted): clicks in an ordinary window AllowJudged → reviewer Quick; typing into a compose window = Outbound → Ask → `Progress(Confirming)` → cuad suspends EI (stock) → `Proceed` → Confirm1 → answer → `GateAnswer` | cua, docket |
-| 6 | Inject via EI; settle on damage; loop; `Finish{extracted}` → `CuaResult` (summary and extracted labelled Untrusted(Screen)) becomes the `cua.run.start` Outcome value; the planner sees handles | cua, docket |
+| 6 | Inject via EI; settle on damage; loop; `Finish{extracted}` → `CuaResult` (summary and extracted labelled Untrusted(Screen)) becomes the `computeruse.run.start` Outcome value; the planner sees handles | cua, docket |
 | 7 | `CuaRecord`s → `Memory1.Record` (Area{Cua}); a downloaded file is recorded by memory's watcher with why = the run | cua, almanac |
 | 8 | Kill chord (fork) → `Control.Halt(Any, KillChord)` + `Cua1.StopAll`; ⌘. → `Halt(space, StopKey)` → gate refuses → runs Pause | cua fork, ux, docket |
 

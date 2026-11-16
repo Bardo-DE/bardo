@@ -1,4 +1,4 @@
-//! The words a refused `cua.run.start` gives the person (and the planner, as the app's own
+//! The words a refused `computeruse.run.start` gives the person (and the planner, as the app's own
 //! reason): one plain sentence, what is wrong and where to put it right when there is a place.
 //! No ids, no developer words.
 

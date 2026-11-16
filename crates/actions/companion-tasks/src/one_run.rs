@@ -1,4 +1,4 @@
-//! One run at a time. An on-screen run (`cua.run.start`, the `Tier::Cua` way in) holds its window
+//! One run at a time. An on-screen run (`computeruse.run.start`, the `Tier::Cua` way in) holds its window
 //! until it reports back, and a second start only reaches the person as another sheet before the
 //! run daemon refuses it as busy. So a planner that already holds a live run of its own is
 //! refused here, before the call is made: no sheet, no call, and the history says busy, which the
@@ -29,7 +29,7 @@ use provenance::{AgentRef, MessageKind, ReportStatus};
 /// The app whose runs are on screen.
 const CUA_APP: &str = "org.bardo.ComputerUse";
 /// The action that starts one.
-const RUN_START: &str = "cua.run.start";
+const RUN_START: &str = "computeruse.run.start";
 
 /// How many runs a task started in this process that have not reported back.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -200,7 +200,7 @@ mod tests {
             ("another action done", other, done(), done()),
             (
                 "another action of the app",
-                action(CUA_APP, "cua.run.stop"),
+                action(CUA_APP, "computeruse.run.stop"),
                 done(),
                 done(),
             ),
@@ -249,7 +249,10 @@ mod tests {
             ),
             (
                 "another action of the app",
-                task(vec![line(action(CUA_APP, "cua.run.stop"), done())], vec![]),
+                task(
+                    vec![line(action(CUA_APP, "computeruse.run.stop"), done())],
+                    vec![],
+                ),
                 false,
             ),
         ];

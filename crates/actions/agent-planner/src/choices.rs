@@ -70,7 +70,7 @@ mod tests {
         ParamChoices::new(
             ActionRef {
                 app: account_core::AppName::parse("org.bardo.ComputerUse").expect("app"),
-                name: ActionName::parse("cua.run.start").expect("action"),
+                name: ActionName::parse("computeruse.run.start").expect("action"),
             },
             ParamName::parse("app").expect("param"),
             keys.iter().map(|k| (*k).to_owned()).collect(),

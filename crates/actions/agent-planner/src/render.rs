@@ -430,7 +430,7 @@ mod tests {
         let labelled = ActionCard {
             label: LabelText::parse("Do this on screen").expect("label"),
             ..crate::accepts::fixtures::card(
-                "cua.run.start",
+                "computeruse.run.start",
                 action_manifest::TargetKind::Nothing,
                 &[],
             )
@@ -443,7 +443,7 @@ mod tests {
             space: provenance::SpaceId::desktop(),
             ended: provenance::UnixSeconds(1),
             outcome: memory_core::EpisodeOutcome::Done,
-            skeleton: SkeletonText("asked: tidy up\nstep: cua.run.start  done".to_owned()),
+            skeleton: SkeletonText("asked: tidy up\nstep: computeruse.run.start  done".to_owned()),
             narrative: None,
         };
         let roster = RosterLine {
@@ -475,7 +475,7 @@ mod tests {
             roster_line(&refused),
             "- an on-screen run in desktop [failed: could not take the window]: "
         );
-        for banned in ["t-179", "r-1", "cua.run.start", "cua", "companion"] {
+        for banned in ["t-179", "r-1", "computeruse.run.start", "cua", "companion"] {
             assert!(!text.to_lowercase().contains(banned), "{banned} in {text}");
         }
     }

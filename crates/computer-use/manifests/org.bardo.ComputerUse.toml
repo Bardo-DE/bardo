@@ -21,7 +21,7 @@ titles = { kind = "third_party", v = { kind = "screen", v = { app = "org.bardo.C
 props = []
 
 [[actions]]
-name = "cua.run.start"
+name = "computeruse.run.start"
 label = "Do this on screen"
 on = { kind = "nothing" }
 effect = "read"
@@ -51,7 +51,7 @@ sink = "inert"
 [[actions.params]]
 name = "app"
 label = "App"
-ty = { kind = "dynamic", v = "cua.run.start" }
+ty = { kind = "dynamic", v = "computeruse.run.start" }
 need = { kind = "optional" }
 sink = "inert"
 

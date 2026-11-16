@@ -80,8 +80,8 @@ mod tests {
     #[test]
     fn the_persons_own_keymap_file_is_laid_over_the_conventions() {
         let home = tempfile::tempdir().expect("a scratch directory");
-        let dir = home.path().join("keycap");
-        std::fs::create_dir_all(&dir).expect("the keycap directory");
+        let dir = home.path().join("bardo/key-remap");
+        std::fs::create_dir_all(&dir).expect("the key-remap directory");
         std::fs::write(dir.join("keymap"), "copy = Primary+Alt+C\n").expect("the keymap file");
         let root = home.path().to_string_lossy().into_owned();
         let lookup = |name: &str| match name {

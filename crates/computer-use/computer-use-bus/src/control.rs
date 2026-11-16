@@ -46,7 +46,7 @@ impl ControlRefusal {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CuaCaller {
-    /// intentd: the router, acting for a `cua.run.start` call.
+    /// intentd: the router, acting for a `computeruse.run.start` call.
     Router,
     /// companiond: the planner.
     Companion,

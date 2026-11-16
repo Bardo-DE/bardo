@@ -63,7 +63,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     assert!(started.is_ok(), "{started:?}");
     assert_eq!(
         computer_use_daemon::reach_json(sup.settings().enabled),
-        r#"{"cua.run.start":"offered"}"#,
+        r#"{"computeruse.run.start":"offered"}"#,
         "the live reach follows the file"
     );
 
@@ -79,7 +79,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     );
     assert_eq!(
         computer_use_daemon::reach_json(sup.settings().enabled),
-        r#"{"cua.run.start":"hidden"}"#
+        r#"{"computeruse.run.start":"hidden"}"#
     );
 }
 

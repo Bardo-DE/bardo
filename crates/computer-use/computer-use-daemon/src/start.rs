@@ -1,4 +1,4 @@
-//! Turning a `cua.run.start` into a task: which window or app the run works in, and the apps to
+//! Turning a `computeruse.run.start` into a task: which window or app the run works in, and the apps to
 //! choose from when none was named that is open.
 
 use crate::provider::{OpenAppsAsk, StartRefusal, StartRequest};
@@ -76,7 +76,7 @@ fn choose_app(windows: &[ToplevelInfo], allows: &Apps) -> TaskRefusal {
     }
 }
 
-/// The task a `cua.run.start` asks for: the window it names (its app is the window's), the app
+/// The task a `computeruse.run.start` asks for: the window it names (its app is the window's), the app
 /// alone when one of its windows is open, or the window the person is in when it names neither;
 /// the mode with `auto` resolved by the setting and the backend, the settings' budget, and a
 /// report back to the requester.

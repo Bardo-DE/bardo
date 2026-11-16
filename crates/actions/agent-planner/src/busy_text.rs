@@ -68,7 +68,7 @@ mod tests {
     fn action(app: &str) -> ActionRef {
         ActionRef {
             app: account_core::AppName::parse(app).expect("app"),
-            name: ActionName::parse("cua.run.start").expect("name"),
+            name: ActionName::parse("computeruse.run.start").expect("name"),
         }
     }
 

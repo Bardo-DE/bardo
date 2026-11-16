@@ -343,7 +343,7 @@ fn invocation(
     let words = |value| provenance::Labelled::new(value, provenance::Label::trusted_user());
     action_core::Invocation {
         call: CallId(1),
-        action: provenance::ActionName::parse("cua.run.start").unwrap(),
+        action: provenance::ActionName::parse("computeruse.run.start").unwrap(),
         target: TargetValue::Nothing,
         args: args
             .iter()
@@ -657,7 +657,7 @@ async fn suggest_apps(fx: &Fixture, typed: &str, param: &str) -> Vec<String> {
     let ask = action_core::SuggestAsk {
         action: action_vocab::ActionRef {
             app: account_core::AppName::parse("org.bardo.ComputerUse").unwrap(),
-            name: provenance::ActionName::parse("cua.run.start").unwrap(),
+            name: provenance::ActionName::parse("computeruse.run.start").unwrap(),
         },
         param: action_vocab::ParamName::parse(param).unwrap(),
         typed: typed.to_owned(),

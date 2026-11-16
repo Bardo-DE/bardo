@@ -61,7 +61,7 @@ pub struct ReportRoute {
     pub in_reply_to: Option<MessageId>,
 }
 
-/// The `Start` body: everything a run needs, built by cuad from the `cua.run.start` call.
+/// The `Start` body: everything a run needs, built by cuad from the `computeruse.run.start` call.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CuaTask {
     /// The app of the window the run works in (the per-app consent and the records name it).

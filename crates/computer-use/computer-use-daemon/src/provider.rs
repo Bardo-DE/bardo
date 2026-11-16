@@ -1,4 +1,4 @@
-//! `org.bardo.ComputerUse`: cuad as an intent provider, with one action, `cua.run.start`.
+//! `org.bardo.ComputerUse`: cuad as an intent provider, with one action, `computeruse.run.start`.
 
 use account_core::AppName;
 use action_core::{
@@ -30,7 +30,7 @@ pub enum ProviderError {
     Invalid(ManifestError),
 }
 
-/// The provider's manifest for a setting: `cua.run.start` is `Hidden` from agents while
+/// The provider's manifest for a setting: `computeruse.run.start` is `Hidden` from agents while
 /// computer use is off, `Offered` once it is on. The per-app consent is asked by the router at
 /// the first use either way.
 pub fn manifest_for(enabled: bool) -> Result<ValidManifest, ProviderError> {
@@ -62,7 +62,7 @@ pub enum StartRefusal {
     NeedsApp(Vec<AppName>),
 }
 
-/// What `cua.run.start` asked for, as the daemon needs it to make a [`computer_use_bus::CuaTask`].
+/// What `computeruse.run.start` asked for, as the daemon needs it to make a [`computer_use_bus::CuaTask`].
 #[derive(Debug)]
 pub struct StartRequest {
     /// What to do: the planner's words, with their label.
@@ -325,7 +325,7 @@ impl IntentProvider for CuaProvider {
 
     async fn suggest(&self, ask: SuggestAsk) -> Vec<EntityRef> {
         let asks_for_app =
-            ask.action.name.as_str() == "cua.run.start" && ask.param.as_str() == "app";
+            ask.action.name.as_str() == "computeruse.run.start" && ask.param.as_str() == "app";
         let Some(asks) = self.open_apps.as_ref().filter(|_| asks_for_app) else {
             return Vec::new();
         };
@@ -364,7 +364,7 @@ mod tests {
                 "{enabled:?}: no entity but the one"
             );
             let start = &manifest.actions[0];
-            assert_eq!(start.name.as_str(), "cua.run.start");
+            assert_eq!(start.name.as_str(), "computeruse.run.start");
             assert_eq!(start.effect, Effect::Read);
             assert_eq!(start.lasting, Lasting::No);
             let goal = start

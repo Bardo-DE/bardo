@@ -1,4 +1,4 @@
-//! `org.bardo.IntentReach1` on the provider's object: whether `cua.run.start` is on now.
+//! `org.bardo.IntentReach1` on the provider's object: whether `computeruse.run.start` is on now.
 //!
 //! The installed manifest (`manifests/org.bardo.ComputerUse.toml`) declares the action `hidden`, as it is
 //! while `cua.enabled = off`; intentd only knows installed files, so cuad says the live value
@@ -17,9 +17,9 @@ use std::sync::Arc;
 use zbus::object_server::SignalEmitter;
 
 /// The one action cuad provides.
-const ACTION: &str = "cua.run.start";
+const ACTION: &str = "computeruse.run.start";
 
-/// `{ "cua.run.start": "offered" | "hidden" }` for the setting.
+/// `{ "computeruse.run.start": "offered" | "hidden" }` for the setting.
 pub fn reach_json(enabled: bool) -> String {
     let word = if enabled { "offered" } else { "hidden" };
     serde_json::json!({ ACTION: word }).to_string()
@@ -76,8 +76,14 @@ mod tests {
         let said = |enabled| -> serde_json::Value {
             serde_json::from_str(&reach_json(enabled)).expect("json")
         };
-        assert_eq!(said(true), serde_json::json!({"cua.run.start": "offered"}));
-        assert_eq!(said(false), serde_json::json!({"cua.run.start": "hidden"}));
+        assert_eq!(
+            said(true),
+            serde_json::json!({"computeruse.run.start": "offered"})
+        );
+        assert_eq!(
+            said(false),
+            serde_json::json!({"computeruse.run.start": "hidden"})
+        );
     }
 
     #[test]

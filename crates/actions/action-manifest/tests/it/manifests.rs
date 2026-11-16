@@ -340,13 +340,13 @@ fn defaults_must_fit_their_type() {
         (
             "an offered key as text",
             Value::Text("app.zen_browser.zen".to_owned()),
-            ParamType::Dynamic(ActionName::parse("cua.run.start").expect("name")),
+            ParamType::Dynamic(ActionName::parse("computeruse.run.start").expect("name")),
             true,
         ),
         (
             "text of two lines for an offered key",
             Value::Text("app.one\napp.two".to_owned()),
-            ParamType::Dynamic(ActionName::parse("cua.run.start").expect("name")),
+            ParamType::Dynamic(ActionName::parse("computeruse.run.start").expect("name")),
             false,
         ),
     ];
