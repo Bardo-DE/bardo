@@ -195,6 +195,10 @@ const SETTLED: u32 = 4;
 
 /// The centre of tile `i`, in surface-local logical px: the pill is centred in the dock with
 /// 8 px padding, 48 px tiles and 8 px gaps.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a tile index is a dozen at most"
+)]
 fn tile_centre(i: usize) -> f64 {
     let pill = 12.0 * 48.0 + 11.0 * 8.0 + 16.0;
     let left = (f64::from(DOCK_WIDTH) - pill) / 2.0;
@@ -202,6 +206,11 @@ fn tile_centre(i: usize) -> f64 {
 }
 
 /// The scales the tiles move towards with the pointer at `x` (none: at rest).
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "`lift` is clamped to 0..=1, so the value lies between 1000 and PEAK"
+)]
 fn targets(x: Option<f64>) -> Scales {
     let Some(x) = x else { return REST };
     std::array::from_fn(|i| {
@@ -215,6 +224,11 @@ fn targets(x: Option<f64>) -> Scales {
 /// `target`, at least one thousandth, and snaps once within `SETTLED`. The one-unit floor is
 /// what makes it settle at any tick rate: rounded to thousandths, a 1 ms tick (a
 /// compositor that calls back at once) would otherwise move nothing once the gap is under 30.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "`k` lies in 0..=1, so the rounded product with a `u32` gap fits a `u32`"
+)]
 fn step(now: Scales, target: Scales, dt: Duration) -> Scales {
     let k = 1.0 - (-dt.as_secs_f64() / TIME_CONSTANT.as_secs_f64()).exp();
     std::array::from_fn(|i| {

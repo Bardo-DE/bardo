@@ -9,7 +9,8 @@
 
 use blitz_dom::{BaseDocument, LocalName};
 
-use crate::region::{Px, Rect};
+use crate::geometry::px_of;
+use crate::region::Rect;
 
 /// Whether the focused field is secret: a password field's text never goes to the input
 /// method, and the field is declared as one (`handlers::text_input`). An
@@ -65,10 +66,10 @@ pub(crate) fn focused_field(doc: &BaseDocument) -> Option<Rect> {
     let origin = node.absolute_position(0.0, 0.0);
     let layout = node.final_layout();
     Some(Rect {
-        x: (origin.x + layout.content_box_x()).round() as Px,
-        y: (origin.y + layout.content_box_y()).round() as Px,
-        width: layout.content_box_width().round() as Px,
-        height: layout.content_box_height().round() as Px,
+        x: px_of(f64::from(origin.x + layout.content_box_x())),
+        y: px_of(f64::from(origin.y + layout.content_box_y())),
+        width: px_of(f64::from(layout.content_box_width())),
+        height: px_of(f64::from(layout.content_box_height())),
     })
 }
 

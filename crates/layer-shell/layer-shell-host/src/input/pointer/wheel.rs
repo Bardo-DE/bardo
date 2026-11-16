@@ -66,6 +66,10 @@ pub(crate) fn wheel_event(
     buttons: MouseEventButtons,
     mods: Modifiers,
 ) -> UiEvent {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "Blitz takes coordinates as `f32` logical pixels, far inside its range"
+    )]
     let (x, y) = (pos.x as f32, pos.y as f32);
     UiEvent::Wheel(BlitzWheelEvent {
         delta,
@@ -86,6 +90,10 @@ pub(crate) fn wheel_event(
 /// `event` with its page coordinates moved by the viewport's `scroll` from its client
 /// coordinates: Blitz hit-tests page coordinates, and the host's events are surface-local, so
 /// once the engine scrolls the viewport the two differ.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the scroll offset is far inside the range of `f32`"
+)]
 pub(crate) fn scrolled(event: UiEvent, scroll: (f64, f64)) -> UiEvent {
     let shift = |coords: &mut PointerCoords| {
         coords.page_x = coords.client_x + scroll.0 as f32;

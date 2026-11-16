@@ -57,6 +57,10 @@ pub(in crate::ctx) fn viewport(
     let content = content_px(buffer_size(logical, scale), inset, scale);
     let px = |v: i32| u32::try_from(v).unwrap_or(0).max(1);
     // Blitz takes the scale as f32; 120ths are exact in it.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a scale in 120ths is at most a few times 1, exact in `f32`"
+    )]
     let factor = scale.factor() as f32;
     Viewport::new(px(content.width), px(content.height), factor, scheme)
 }

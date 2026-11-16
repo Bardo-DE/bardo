@@ -182,6 +182,10 @@ mod tests {
     use super::*;
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a table of command lines and what they parse to"
+    )]
     fn commands_parse_per_surface() {
         let on = |surface: &str, action| DebugCommand::On {
             surface: SurfaceName(surface.to_owned()),

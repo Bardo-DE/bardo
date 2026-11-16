@@ -12,6 +12,8 @@
 
 pub use blitz_embed::element_id::ElementId;
 
+use crate::geometry::px_of;
+
 /// A logical-pixel coordinate or extent, surface-local.
 pub type Px = i32;
 
@@ -120,7 +122,7 @@ pub(crate) fn rounded_strips(rr: RoundedRect) -> Vec<Rect> {
         return vec![rr.rect];
     }
 
-    let mut strips = Vec::with_capacity(2 * r as usize + 1);
+    let mut strips = Vec::with_capacity(2 * usize::try_from(r).unwrap_or(0) + 1);
 
     // One row per unit of the corner band, top then bottom. `row` counts down from the flat
     // edge of the rect into the corner (row 0 is the outermost row, row r-1 the row closest to
@@ -183,7 +185,7 @@ fn corner_inset(r: Px, row: Px) -> Px {
     let dy = r - f64::from(row) - 0.5;
     let reach_sq = (r * r - dy * dy).max(0.0);
     let bound = r - 0.5 - reach_sq.sqrt();
-    bound.max(0.0).ceil() as Px
+    px_of(bound.max(0.0).ceil())
 }
 
 #[cfg(test)]

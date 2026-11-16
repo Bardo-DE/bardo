@@ -20,7 +20,8 @@ use calloop::ping::Ping;
 use cursor_icon::CursorIcon;
 
 use crate::clipboard::SharedSelection;
-use crate::region::{Px, Rect};
+use crate::geometry::px_of;
+use crate::region::Rect;
 
 /// A surface's shell provider.
 #[derive(Debug)]
@@ -134,10 +135,10 @@ impl ShellProvider for HostShellProvider {
 
     fn set_ime_cursor_area(&self, x: f32, y: f32, width: f32, height: f32) {
         let cursor_area = Rect {
-            x: x.round() as Px,
-            y: y.round() as Px,
-            width: width.round() as Px,
-            height: height.round() as Px,
+            x: px_of(f64::from(x)),
+            y: px_of(f64::from(y)),
+            width: px_of(f64::from(width)),
+            height: px_of(f64::from(height)),
         };
         *self.ime.lock().unwrap_or_else(PoisonError::into_inner) = Some(cursor_area);
     }

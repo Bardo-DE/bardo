@@ -58,6 +58,10 @@ fn fill_rect(doc: &SurfaceDocument) -> Rect {
 type Case = (&'static str, fn() -> Element, (i32, i32), i32, Option<i32>);
 
 #[test]
+#[expect(
+    clippy::cast_possible_wrap,
+    reason = "WIDTH and HEIGHT are small constants, far inside `i32`"
+)]
 fn the_body_reset_puts_a_box_at_the_corner_unless_the_document_sets_its_own_margin() {
     let cases: &[Case] = &[
         (

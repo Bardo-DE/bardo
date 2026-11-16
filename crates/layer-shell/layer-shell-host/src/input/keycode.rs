@@ -13,6 +13,7 @@
 use keyboard_types::Code;
 
 /// The physical key for evdev code `scancode`.
+#[expect(clippy::too_many_lines, reason = "a table: one arm per evdev code")]
 pub(crate) fn code_from_evdev(scancode: u32) -> Code {
     match scancode {
         1 => Code::Escape,

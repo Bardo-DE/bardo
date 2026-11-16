@@ -8,6 +8,10 @@ impl SurfaceDocument {
     /// Whether the element at a surface-local point, or an ancestor, carries
     /// `data-first-mouse` (design/13 §13.3.8): it opted into receiving the click that
     /// activates its window.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "Blitz takes surface-local coordinates as `f32`; a point on a surface is far inside its range"
+    )]
     pub(crate) fn wants_first_mouse(&self, x: f64, y: f64) -> bool {
         let (scroll_x, scroll_y) = self.viewport_scroll();
         let inner = self.doc.inner();

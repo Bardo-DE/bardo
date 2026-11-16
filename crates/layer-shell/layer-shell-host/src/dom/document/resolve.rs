@@ -64,6 +64,10 @@ impl SurfaceDocument {
 
     /// Ask for the IME a text field focused before its first layout could not ask for itself
     /// (`dom::ime_focus`).
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "logical pixels are far below 2^24, where `f32` stops being exact"
+    )]
     fn repair_ime(&self) {
         let focused = ime_focus::focused_field(&self.doc.inner());
         if let Some(cursor_area) = ime_focus::repair(self.shell.ime(), focused) {

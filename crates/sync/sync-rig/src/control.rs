@@ -63,9 +63,8 @@ fn run<T>(work: impl std::future::Future<Output = T>) -> T {
 impl Levers {
     /// Answers one request.
     pub fn answer(&self, request: &Request) -> Response {
-        let query = |name: &str| request.query_value(name);
-        let (issuer, graph) = (&self.issuer, &self.graph);
-        match (request.method.as_str(), request.path()) {
+        let path = request.path();
+        match (request.method.as_str(), path) {
             ("GET", "/rig") => {
                 let text = self
                     .rig
@@ -74,6 +73,21 @@ impl Levers {
                     .clone();
                 Response::new(200).typed("application/json", text)
             }
+            ("POST", "/stop") => {
+                self.stop.notify_one();
+                ok(&json!({}))
+            }
+            (_, path) if path.starts_with("/issuer/") => self.issuer_lever(request),
+            (_, path) if path.starts_with("/graph/") => self.graph_lever(request),
+            _ => refused(404, "no such lever"),
+        }
+    }
+
+    /// The levers on the OAuth issuer.
+    fn issuer_lever(&self, request: &Request) -> Response {
+        let query = |name: &str| request.query_value(name);
+        let issuer = &self.issuer;
+        match (request.method.as_str(), request.path()) {
             ("POST", "/issuer/refuse-refreshes") => {
                 match query("n").and_then(|n| n.parse::<u32>().ok()) {
                     None => refused(400, "n is a number"),
@@ -94,6 +108,15 @@ impl Levers {
                     _ => refused(502, "the issuer did not take the revoke"),
                 }
             }
+            _ => refused(404, "no such lever"),
+        }
+    }
+
+    /// The levers on the Graph fake.
+    fn graph_lever(&self, request: &Request) -> Response {
+        let query = |name: &str| request.query_value(name);
+        let graph = &self.graph;
+        match (request.method.as_str(), request.path()) {
             ("POST", "/graph/put") => match query("path") {
                 None => refused(400, "path is required"),
                 Some(path) => {
@@ -170,10 +193,6 @@ impl Levers {
                     })
                     .collect();
                 ok(&json!({ "hits": hits }))
-            }
-            ("POST", "/stop") => {
-                self.stop.notify_one();
-                ok(&json!({}))
             }
             _ => refused(404, "no such lever"),
         }

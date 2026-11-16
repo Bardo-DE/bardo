@@ -232,6 +232,7 @@ mod tests {
     ];
 
     #[test]
+    #[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
     fn a_family_serves_the_kinds_its_endpoints_are_for() {
         const CASES: &[(&str, Family, CapabilityKind, bool)] = &[
             ("imap for mail", Family::Imap, CapabilityKind::Mail, true),

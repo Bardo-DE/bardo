@@ -195,9 +195,14 @@ fn run(args: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+/// A surface size as the protocol's signed integer; a size past `i32::MAX` is clamped.
+fn signed(size: u32) -> i32 {
+    i32::try_from(size).unwrap_or(i32::MAX)
+}
+
 impl Probe {
     fn set_region(&self) {
-        let (w, h) = (self.size.0 as i32, self.size.1 as i32);
+        let (w, h) = (signed(self.size.0), signed(self.size.1));
         let rects: Vec<(i32, i32, i32, i32)> = match self.region {
             RegionKind::Whole => vec![(0, 0, w, h)],
             RegionKind::Rect => vec![(0, 0, 300.min(w), h)],
@@ -234,7 +239,7 @@ impl Probe {
         };
         let Ok((buffer, canvas)) =
             self.pool
-                .create_buffer(w as i32, h as i32, w as i32 * 4, format)
+                .create_buffer(signed(w), signed(h), signed(w) * 4, format)
         else {
             return;
         };
@@ -245,7 +250,7 @@ impl Probe {
         if self.frames == 0 && self.order == Order::Before {
             self.set_region();
         }
-        surface.damage_buffer(0, 0, w as i32, h as i32);
+        surface.damage_buffer(0, 0, signed(w), signed(h));
         let _ = buffer.attach_to(&surface);
         surface.frame(qh, surface.clone());
         surface.commit();

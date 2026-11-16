@@ -42,8 +42,14 @@ fn main() {
 
 /// The buffer size for a logical size at a scale in 120ths (round half up).
 fn buffer_size(logical: (u32, u32), scale120: u32) -> (u32, u32) {
-    let f = |v: u32| ((u64::from(v) * u64::from(scale120) + 60) / 120) as u32;
+    let f =
+        |v: u32| u32::try_from((u64::from(v) * u64::from(scale120) + 60) / 120).unwrap_or(u32::MAX);
     (f(logical.0).max(1), f(logical.1).max(1))
+}
+
+/// A surface size as the protocol's signed integer; a size past `i32::MAX` is clamped.
+fn signed(size: u32) -> i32 {
+    i32::try_from(size).unwrap_or(i32::MAX)
 }
 
 struct Probe {
@@ -159,23 +165,24 @@ fn run(args: &[String]) -> Result<(), String> {
 impl Probe {
     fn draw(&mut self, qh: &QueueHandle<Self>) {
         let (w, h) = buffer_size(self.logical, self.scale120);
-        let stride = w as i32 * 4;
+        let stride = signed(w) * 4;
         let Ok((buffer, canvas)) =
             self.pool
-                .create_buffer(w as i32, h as i32, stride, wl_shm::Format::Xrgb8888)
+                .create_buffer(signed(w), signed(h), stride, wl_shm::Format::Xrgb8888)
         else {
             return;
         };
         for (i, px) in canvas.as_chunks_mut::<4>().0.iter_mut().enumerate() {
-            let (x, y) = (i as u32 % w, i as u32 / w);
+            let index = u32::try_from(i).unwrap_or(u32::MAX);
+            let (x, y) = (index % w, index / w);
             px.copy_from_slice(&checker(x, y, self.cell));
         }
         let surface = self.window.wl_surface();
         match &self.viewport {
-            Some(vp) => vp.set_destination(self.logical.0 as i32, self.logical.1 as i32),
+            Some(vp) => vp.set_destination(signed(self.logical.0), signed(self.logical.1)),
             None => surface.set_buffer_scale(1),
         }
-        surface.damage_buffer(0, 0, w as i32, h as i32);
+        surface.damage_buffer(0, 0, signed(w), signed(h));
         let _ = buffer.attach_to(surface);
         let _ = qh;
         surface.commit();

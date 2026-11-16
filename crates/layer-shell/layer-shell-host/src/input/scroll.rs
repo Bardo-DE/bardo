@@ -13,12 +13,11 @@ use smithay_client_toolkit::seat::pointer::AxisScroll;
 use wayland_client::protocol::wl_pointer;
 
 use crate::event::HostEvent;
-use crate::geometry::Point;
+use crate::geometry::{Point, px_of};
 use crate::id::SurfaceId;
 use crate::input::focus::PointerFocus;
 use crate::input::palmrest::route::{Route, route};
 use crate::input::pointer::{self, PointerPos};
-use crate::region::Px;
 use crate::scroll::source::AxisSource;
 use crate::scroll::suppress::Suppress;
 use crate::scroll::surface::{Moved, PalmScroll};
@@ -86,8 +85,8 @@ impl HostState {
         };
         let context = WheelContext {
             at: Point {
-                x: at.x.round() as Px,
-                y: at.y.round() as Px,
+                x: px_of(at.x),
+                y: px_of(at.y),
             },
             held,
             detent_px,

@@ -104,6 +104,10 @@ fn tiles_added_after_the_first_layout_paint_and_hit_where_layout_put_them() {
     assert_eq!(differing, 0, "pixels that differ between frame and capture");
 
     let base = doc.base();
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "a few hundred pixels, exact in `f32`"
+    )]
     let y = (TILE * 2 + BODY_TOP + BODY_HEIGHT / 2) as f32;
     let hit = base.element_from_point(50.0, y);
     let body = base.get_element_by_id("body2");

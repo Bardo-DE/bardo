@@ -14,6 +14,7 @@ use smithay_client_toolkit::seat::keyboard::Keysym;
 
 /// The named key for `keysym`, or `None` when the keysym stands for text (or for nothing we
 /// name).
+#[expect(clippy::too_many_lines, reason = "a table: one arm per keysym")]
 pub(crate) fn named_key(keysym: Keysym) -> Option<Key> {
     let key = match keysym {
         // TTY function keys

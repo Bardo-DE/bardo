@@ -164,6 +164,10 @@ mod tests {
     /// The capture writer (what `HostCtx::inject` calls after its offscreen render) writes a PNG
     /// that decodes to the same pixels and returns the path and the pixel size.
     #[test]
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "`x % 256` and `y % 256` fit a `u8`"
+    )]
     fn a_capture_is_written_as_a_png_and_reports_its_size() {
         let frame = image::RgbaImage::from_fn(240, 160, |x, y| {
             image::Rgba([(x % 256) as u8, (y % 256) as u8, 64, 255])

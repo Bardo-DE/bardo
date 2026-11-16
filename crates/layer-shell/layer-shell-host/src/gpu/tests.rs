@@ -165,10 +165,14 @@ fn gpu() -> MutexGuard<'static, GpuContext> {
     .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a scale in 120ths is a few times 1, exact in `f32`"
+)]
 fn document(app: fn() -> Element, buffer: Size, scale: Scale120) -> DioxusDocument {
     let viewport = Viewport::new(
-        buffer.width as u32,
-        buffer.height as u32,
+        buffer.width.unsigned_abs(),
+        buffer.height.unsigned_abs(),
         scale.factor() as f32,
         ColorScheme::Light,
     );

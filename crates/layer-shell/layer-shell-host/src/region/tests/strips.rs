@@ -89,12 +89,16 @@ fn strips_lie_inside_the_rounded_rect_and_cover_at_least_99_percent_of_it() {
             .count();
         let covered: usize = rounded_strips(rr)
             .into_iter()
-            .map(|s| (s.width * s.height) as usize)
+            .map(|s| usize::try_from(s.width * s.height).unwrap_or(0))
             .sum();
         assert!(
             covered <= total_inside,
             "case {rr:?}: strips cover more than the oracle says exists"
         );
+        #[expect(
+            clippy::cast_precision_loss,
+            reason = "pixel counts are far below 2^52, where `f64` stops being exact"
+        )]
         let coverage = covered as f64 / total_inside as f64;
         assert!(
             coverage >= 0.99,

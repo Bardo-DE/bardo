@@ -80,12 +80,17 @@ impl ShmBuffers {
             .map_err(|e| HostError::Render(format!("attach: {e}")))?;
         attached
             .surface
-            .damage_buffer(0, 0, width as i32, height as i32);
+            .damage_buffer(0, 0, signed(width), signed(height));
         attached.surface.commit();
         attached.current = Some(buffer);
         self.buffer = target.buffer;
         Ok(())
     }
+}
+
+/// A surface size as the protocol's signed integer; a size past `i32::MAX` is clamped.
+fn signed(size: u32) -> i32 {
+    i32::try_from(size).unwrap_or(i32::MAX)
 }
 
 /// `last` if the compositor has released it and it has the right size, else a new buffer
@@ -96,17 +101,17 @@ fn free_buffer(
     width: u32,
     height: u32,
 ) -> Result<Buffer> {
-    let stride = width as i32 * 4;
+    let stride = signed(width) * 4;
     if let Some(buffer) = last
-        && buffer.height() == height as i32
+        && buffer.height() == signed(height)
         && buffer.stride() == stride
         && pool.canvas(&buffer).is_some()
     {
         return Ok(buffer);
     }
     pool.create_buffer(
-        width as i32,
-        height as i32,
+        signed(width),
+        signed(height),
         stride,
         wl_shm::Format::Argb8888,
     )

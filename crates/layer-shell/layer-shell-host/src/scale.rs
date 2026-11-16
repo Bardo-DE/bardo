@@ -3,6 +3,7 @@
 
 pub use blitz_embed::units::Scale120;
 
+use crate::geometry::px_of;
 use crate::live::Live;
 use crate::region::Px;
 
@@ -76,13 +77,13 @@ pub(crate) fn buffer_mapping(
 ) -> BufferMapping {
     match preferred {
         Some(_) => BufferMapping::Viewport(logical),
-        None => BufferMapping::Integer(scale.factor().round().max(1.0) as i32),
+        None => BufferMapping::Integer(px_of(scale.factor().max(1.0))),
     }
 }
 
 fn round_half_away_from_zero(value: f64) -> Px {
     // `f64::round` already rounds halves away from zero, matching the protocol's rule.
-    value.round() as Px
+    px_of(value)
 }
 
 #[cfg(test)]

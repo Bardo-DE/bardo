@@ -14,6 +14,7 @@ fn endpoint(family: Family, text: &str, tls: Tls) -> ServiceEndpoint {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn urls_parse_to_their_origin() {
     const CASES: &[(&str, &str, UrlScheme, &str, u16, &str)] = &[
         (
@@ -154,6 +155,7 @@ fn origins_compare_whole_hosts_not_suffixes() {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn an_endpoint_must_be_coherent() {
     type Case = (
         &'static str,

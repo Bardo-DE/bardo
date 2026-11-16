@@ -82,6 +82,11 @@ fn strip_config() -> LayerConfig {
 fn counting_hook() -> Prepaint {
     Prepaint::hook(|doc| {
         HOOK_CALLS.fetch_add(1, Ordering::Relaxed);
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "a surface scale is positive and a few times 120"
+        )]
         let scale120 = (doc.viewport().scale_f64() * 120.0).round() as u32;
         HOOK_SCALE120.store(scale120, Ordering::Relaxed);
     })

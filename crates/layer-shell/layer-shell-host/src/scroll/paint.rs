@@ -35,6 +35,10 @@ fn pill(area: Area, radius: f64) -> RoundedRect {
 
 /// Paint `thumbs` into `scene`: document px scaled by `scale`, offset by the content origin
 /// `(x, y)` in buffer px.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "an opacity is 0 to 1, exact enough in `f32`"
+)]
 pub(crate) fn paint(
     scene: &mut impl PaintScene,
     thumbs: &[ThumbPaint],
@@ -92,6 +96,12 @@ mod tests {
     }
 
     /// The RGBA at `(x, y)` of a 100 x 100 white document painted at `scale` with `thumbs`.
+    #[expect(
+        clippy::cast_possible_wrap,
+        clippy::cast_sign_loss,
+        clippy::cast_possible_truncation,
+        reason = "a few hundred pixels and a scale of a few times 1, far inside every range"
+    )]
     fn pixel(
         thumbs: Vec<ThumbPaint>,
         scheme: ColorScheme,

@@ -28,6 +28,10 @@ pub(crate) fn pointer_event(
     mods: Modifiers,
 ) -> BlitzPointerEvent {
     // Blitz stores coordinates as f32 logical px; the narrowing is the boundary's.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "Blitz takes coordinates as `f32` logical pixels, far inside its range"
+    )]
     let (x, y) = (pos.x as f32, pos.y as f32);
     BlitzPointerEvent {
         id: BlitzPointerId::Mouse,

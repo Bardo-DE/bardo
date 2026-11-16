@@ -124,6 +124,10 @@ struct Case {
     want_location: Location,
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of key cases, one entry each"
+)]
 fn cases() -> Vec<Case> {
     vec![
         Case {

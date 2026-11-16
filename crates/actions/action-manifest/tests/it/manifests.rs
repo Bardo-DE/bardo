@@ -63,6 +63,10 @@ fn companion_task_actions_only_read() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table with one row per validation rule"
+)]
 fn validate_rejects_one_row_per_rule() {
     use ManifestError as E;
     let recipient = text_param("to", ArgSink::Recipient, ParamNeed::Required);

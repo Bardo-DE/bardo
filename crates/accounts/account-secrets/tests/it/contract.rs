@@ -27,6 +27,10 @@ trait Fixture {
     async fn filed(&self, account: &str, purpose: &str) -> Option<bool>;
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one contract walked through in order against each store"
+)]
 async fn contract<F: Fixture>(fixture: F) {
     let store = fixture.store();
 

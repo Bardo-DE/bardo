@@ -46,24 +46,7 @@ impl PointerHandler for HostState {
             // `PointerEventKind` is `Clone` but not `Copy`; `event` is only borrowed.
             match event.kind.clone() {
                 PointerEventKind::Enter { serial } => {
-                    self.input.pointer_focus = focus::enter(id, serial);
-                    self.forget_buttons();
-                    self.input.grab.update(|facts| facts.focus = Some(id));
-                    self.input.position = pos;
-                    self.input.zone = self.zone_of(id, pos);
-                    // The enter carries a position and no motion follows it: a pointer that
-                    // reaches the surface in one motion, or a surface mapped under a still
-                    // pointer, would hover nothing until the next motion. Deliver the move
-                    // here, as a press is preceded by one (`input::pointer`); it also gives
-                    // the document's cursor to the `show_cursor` below. Some compositors send
-                    // no enter at all to a surface mapped under a still pointer;
-                    // there the press's own move still covers the click.
-                    self.pointer_moved(id, pos);
-                    // A fresh `enter` invalidates any earlier serial, even for the same shape:
-                    // force `Cursor::set` past its no-op-when-unchanged check.
-                    self.cursor.current = None;
-                    self.show_cursor(pointer, id);
-                    self.palmrest.pointer_over(true);
+                    self.pointer_entered(pointer, id, pos, serial)
                 }
                 PointerEventKind::Leave { .. } => {
                     // A leave the compositor sends is always a leave for the document, even
@@ -83,59 +66,9 @@ impl PointerHandler for HostState {
                     self.show_cursor(pointer, id);
                 }
                 PointerEventKind::Press { button, serial, .. } => {
-                    self.input.last_serial = serial;
-                    // Any press, the band's and a swallowed first mouse's too: the person
-                    // reached for the pointer.
-                    self.note_stroke(Stroke::PointerPress);
-                    let Some(btn) = pointer::button_from_evdev(button) else {
-                        continue;
-                    };
-                    self.input.position = pos;
-                    let held_before = self.input.buttons;
-                    self.input.zone = self.zone_while_held(id, pos);
-                    self.input.buttons = pointer::buttons_after(held_before, btn, true);
-                    self.input.grab.update(|facts| {
-                        facts.press = Some(Press {
-                            surface: id,
-                            serial,
-                        });
-                    });
-                    // The element is asked only when the click would be swallowed.
-                    let swallow = self.first_mouse(id) && !self.first_mouse_opted_in(id, pos);
-                    let route = decide::press_route(self.input.zone, btn, swallow);
-                    match route {
-                        // The band is the host's: the press starts the resize, whether or not
-                        // the window is active, and the document never hears of it.
-                        PressRoute::Resize(edge) => self.resize_from_band(id, edge),
-                        // Absorbed: the band's. Swallowed: this is the click that activates the
-                        // window, not a click on anything in it; the press still counts as
-                        // having happened (buttons updated above).
-                        PressRoute::Absorbed | PressRoute::Swallowed => {}
-                        PressRoute::Deliver => {
-                            let at = self.document_pos(id, pos);
-                            let events =
-                                pointer::press_events(at, btn, held_before, self.input.modifiers);
-                            self.deliver(id, events);
-                        }
-                    }
+                    self.pointer_pressed(id, pos, button, serial);
                 }
-                PointerEventKind::Release { button, .. } => {
-                    let Some(btn) = pointer::button_from_evdev(button) else {
-                        continue;
-                    };
-                    self.input.position = pos;
-                    let held_before = self.input.buttons;
-                    self.input.buttons = pointer::buttons_after(held_before, btn, false);
-                    if self.input.buttons == MouseEventButtons::None {
-                        self.input.grab.update(|facts| facts.press = None);
-                    }
-                    if decide::reaches_document(self.input.zone) {
-                        let at = self.document_pos(id, pos);
-                        let event =
-                            pointer::release_event(at, btn, held_before, self.input.modifiers);
-                        self.deliver(id, [event]);
-                    }
-                }
+                PointerEventKind::Release { button, .. } => self.pointer_released(id, pos, button),
                 PointerEventKind::Axis {
                     horizontal,
                     vertical,
@@ -151,6 +84,92 @@ impl PointerHandler for HostState {
                     self.scroll_axis(id, (horizontal, vertical), source, at);
                 }
             }
+        }
+    }
+}
+
+impl HostState {
+    /// Enter: focus, zone, the move to its position and the cursor.
+    fn pointer_entered(
+        &mut self,
+        pointer: &WlPointer,
+        id: SurfaceId,
+        pos: PointerPos,
+        serial: u32,
+    ) {
+        self.input.pointer_focus = focus::enter(id, serial);
+        self.forget_buttons();
+        self.input.grab.update(|facts| facts.focus = Some(id));
+        self.input.position = pos;
+        self.input.zone = self.zone_of(id, pos);
+        // The enter carries a position and no motion follows it: a pointer that
+        // reaches the surface in one motion, or a surface mapped under a still
+        // pointer, would hover nothing until the next motion. Deliver the move
+        // here, as a press is preceded by one (`input::pointer`); it also gives
+        // the document's cursor to the `show_cursor` below. Some compositors send
+        // no enter at all to a surface mapped under a still pointer;
+        // there the press's own move still covers the click.
+        self.pointer_moved(id, pos);
+        // A fresh `enter` invalidates any earlier serial, even for the same shape:
+        // force `Cursor::set` past its no-op-when-unchanged check.
+        self.cursor.current = None;
+        self.show_cursor(pointer, id);
+        self.palmrest.pointer_over(true);
+    }
+
+    /// Press: the grab record, the first-mouse filter, then the resize band or the document.
+    fn pointer_pressed(&mut self, id: SurfaceId, pos: PointerPos, button: u32, serial: u32) {
+        self.input.last_serial = serial;
+        // Any press, the band's and a swallowed first mouse's too: the person
+        // reached for the pointer.
+        self.note_stroke(Stroke::PointerPress);
+        let Some(btn) = pointer::button_from_evdev(button) else {
+            return;
+        };
+        self.input.position = pos;
+        let held_before = self.input.buttons;
+        self.input.zone = self.zone_while_held(id, pos);
+        self.input.buttons = pointer::buttons_after(held_before, btn, true);
+        self.input.grab.update(|facts| {
+            facts.press = Some(Press {
+                surface: id,
+                serial,
+            });
+        });
+        // The element is asked only when the click would be swallowed.
+        let swallow = self.first_mouse(id) && !self.first_mouse_opted_in(id, pos);
+        let route = decide::press_route(self.input.zone, btn, swallow);
+        match route {
+            // The band is the host's: the press starts the resize, whether or not
+            // the window is active, and the document never hears of it.
+            PressRoute::Resize(edge) => self.resize_from_band(id, edge),
+            // Absorbed: the band's. Swallowed: this is the click that activates the
+            // window, not a click on anything in it; the press still counts as
+            // having happened (buttons updated above).
+            PressRoute::Absorbed | PressRoute::Swallowed => {}
+            PressRoute::Deliver => {
+                let at = self.document_pos(id, pos);
+                let events = pointer::press_events(at, btn, held_before, self.input.modifiers);
+                self.deliver(id, events);
+            }
+        }
+    }
+
+    /// Release: the buttons held, the grab record, and the document when it was pressed on.
+    fn pointer_released(&mut self, id: SurfaceId, pos: PointerPos, button: u32) {
+        let Some(btn) = pointer::button_from_evdev(button) else {
+            return;
+        };
+        self.input.position = pos;
+        let held_before = self.input.buttons;
+        self.input.buttons = pointer::buttons_after(held_before, btn, false);
+        if self.input.buttons == MouseEventButtons::None {
+            self.input.grab.update(|facts| facts.press = None);
+        }
+        if decide::reaches_document(self.input.zone) {
+            let at = self.document_pos(id, pos);
+            let event = pointer::release_event(at, btn, held_before, self.input.modifiers);
+            self.deliver(id, [event]);
         }
     }
 }

@@ -95,7 +95,10 @@ impl Dispatch<ZwpTextInputV3, ()> for HostState {
                 let cursor = if cursor_begin == -1 && cursor_end == -1 {
                     None
                 } else {
-                    Some((cursor_begin.max(0) as usize, cursor_end.max(0) as usize))
+                    Some((
+                        usize::try_from(cursor_begin).unwrap_or(0),
+                        usize::try_from(cursor_end).unwrap_or(0),
+                    ))
                 };
                 state.ime.pending.preedit = Some(Preedit {
                     text: text.unwrap_or_default(),

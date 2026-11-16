@@ -114,7 +114,7 @@ fn resolve_output_info(id: OutputId, facts: OutputFacts) -> OutputInfo {
         .unwrap_or((0, 0));
     let refresh_mhz = facts
         .current_mode_refresh_mhz
-        .map_or(0, |r| r.max(0) as u32);
+        .map_or(0, |r| u32::try_from(r).unwrap_or(0));
     OutputInfo {
         id,
         name: facts.name,

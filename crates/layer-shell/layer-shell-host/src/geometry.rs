@@ -6,6 +6,17 @@
 
 use crate::region::{Px, Rect};
 
+/// `value` logical pixels as a [`Px`]: rounded to the nearest, halves away from zero, and
+/// saturating at the ends of `Px`.
+#[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout measures are logical pixels, far inside `i32`; a float-to-int `as` saturates"
+)]
+pub(crate) fn px_of(value: f64) -> Px {
+    value.round() as Px
+}
+
 /// A surface-local position in logical pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Point {
@@ -41,10 +52,10 @@ pub(crate) fn enclosing_rect(x: f64, y: f64, width: f64, height: f64) -> Rect {
     let right = (x + width.max(0.0)).ceil();
     let bottom = (y + height.max(0.0)).ceil();
     Rect {
-        x: left as Px,
-        y: top as Px,
-        width: (right - left) as Px,
-        height: (bottom - top) as Px,
+        x: px_of(left),
+        y: px_of(top),
+        width: px_of(right - left),
+        height: px_of(bottom - top),
     }
 }
 

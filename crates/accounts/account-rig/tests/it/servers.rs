@@ -19,6 +19,10 @@ fn json(text: &str) -> Value {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that follows one scenario from start to SIGTERM"
+)]
 async fn the_rig_starts_lists_what_it_planted_serves_its_levers_and_ends_on_sigterm() {
     let dir = Scratch::new("rig-servers");
     let mut rig = Proc::spawn(
