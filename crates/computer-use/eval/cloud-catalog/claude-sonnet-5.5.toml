@@ -1,4 +1,4 @@
-# TRIAL ENTRY for the cloud eval (crates/cua-eval-cloud); stoker's catalogue has claude-opus-5.5 and
+# TRIAL ENTRY for the cloud eval (crates/computer-use/computer-use-eval-cloud); stoker's catalogue has claude-opus-5.5 and
 # claude-haiku-4.5 but not this one.
 # Claude Sonnet 5.5, the frontier reference, reached through OpenRouter (inferd speaks no Messages
 # wire yet), driven with OUR action tools (the Holo 3.1 function schema the session prompt declares),
