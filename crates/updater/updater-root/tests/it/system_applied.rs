@@ -149,6 +149,7 @@ fn a_unit_that_was_an_export_link_becomes_a_plain_file_and_the_old_release_is_un
 
 #[test]
 fn a_stale_link_into_the_install_root_is_replaced_and_any_other_link_is_not() {
+    type Target = fn(&Sandbox) -> PathBuf;
     let into_root = |sandbox: &Sandbox| {
         sandbox
             .layout
@@ -158,7 +159,6 @@ fn a_stale_link_into_the_install_root_is_replaced_and_any_other_link_is_not() {
     };
     let elsewhere = |sandbox: &Sandbox| sandbox.tmp.path().join("elsewhere");
     // (case, where the link points, replaced)
-    type Target = fn(&Sandbox) -> PathBuf;
     let table: [(&str, Target, bool); 3] = [
         ("into the install root", into_root, true),
         ("somewhere else", elsewhere, false),
@@ -360,6 +360,15 @@ impl RunProgram for &Fake {
 
 #[test]
 fn relabelling_runs_restorecon_only_where_selinux_is_in_use_and_never_fails_an_install() {
+    type Case = (
+        &'static str,
+        PathBuf,
+        Vec<(&'static str, Ran)>,
+        Vec<PathBuf>,
+        Reach,
+        Relabeled,
+        usize,
+    );
     let tmp = tempfile::tempdir().expect("tempdir");
     let on = tmp.path().join("enforce");
     std::fs::write(&on, "1").expect("status");
@@ -373,15 +382,6 @@ fn relabelling_runs_restorecon_only_where_selinux_is_in_use_and_never_fails_an_i
     let root = vec![PathBuf::from("/opt/bardo")];
 
     // (case, status file, what the tools answer, paths, reach, outcome, calls made)
-    type Case = (
-        &'static str,
-        PathBuf,
-        Vec<(&'static str, Ran)>,
-        Vec<PathBuf>,
-        Reach,
-        Relabeled,
-        usize,
-    );
     let table: Vec<Case> = vec![
         (
             "SELinux not in use",

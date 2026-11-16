@@ -3,7 +3,6 @@
 use crate::error::PlatformError;
 use anyview_core::{FilePath, Resume, Sequence};
 use std::any::Any;
-use std::future::Future;
 use std::sync::mpsc::Receiver;
 use std::time::Duration;
 
@@ -58,8 +57,11 @@ impl Primary {
     /// that knocks after this is told the viewer is closing, so none is answered and then lost.
     #[must_use]
     pub fn close(self) -> Vec<Request> {
-        let Primary { requests, _held } = self;
-        drop(_held);
+        let Primary {
+            requests,
+            _held: held,
+        } = self;
+        drop(held);
         requests.try_iter().collect()
     }
 }

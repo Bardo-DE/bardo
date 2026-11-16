@@ -51,14 +51,16 @@ use std::time::Duration;
 const DRAIN_EVERY: Duration = Duration::from_secs(5);
 
 /// How often the restore points past their keeping are forgotten (once at start, then daily).
-const PRUNE_EVERY: Duration = Duration::from_secs(24 * 60 * 60);
+const PRUNE_EVERY: Duration = Duration::from_hours(24);
 
 /// How long the daemon waits before following accountd's Spaces again after losing it.
 const SPACES_RETRY: Duration = Duration::from_secs(10);
 
 /// What only the acceptance harness's mains choose: where callers' cgroups are read from and
-/// whether the inferd watch writes to a file. The shipped `main` passes the default (the system's
-/// `/proc`, no watch) and no environment variable can change either.
+/// whether the inferd watch writes to a file.
+///
+/// The shipped `main` passes the default (the system's `/proc`, no watch) and no environment
+/// variable can change either.
 #[derive(Debug, Clone)]
 pub struct HarnessSeams {
     /// Where callers' cgroups are read.
@@ -180,6 +182,11 @@ fn state(why: PathError) -> DaemonFault {
 impl Setup {
     /// Reads the configuration (the first `bardo/actions/actiond.toml` of the configuration
     /// directories, else the shipped one) and the manifests of the data directories.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DaemonFault`] when a directory is not absolute, the configuration or the callers
+    /// file cannot be used, or the policy set does not load.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, DaemonFault> {
         let xdg = Xdg::new(env);
         let config_home = xdg.config_home().map_err(state)?;
@@ -286,9 +293,18 @@ impl Running {
     }
 }
 
-/// Builds the router over the seams of `session`, serves `org.bardo.Intents1` on it, drains the
-/// audit queue and, when `system` is given, ends the terminal's grants when logind removes the
-/// person's session.
+/// Builds the router over the seams of `session` and serves `org.bardo.Intents1` on it.
+///
+/// It drains the audit queue and, when `system` is given, ends the terminal's grants when logind
+/// removes the person's session.
+///
+/// # Errors
+///
+/// Returns a [`DaemonFault`] when the bus name cannot be served or a background duty cannot start.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one start-up sequence: each step needs what the one before made, so there is no part to lift out"
+)]
 pub async fn start(
     session: &BusConnection,
     system: Option<&BusConnection>,
@@ -338,7 +354,8 @@ pub async fn start(
     )
     .map_err(|e| DaemonFault::Policy(e.to_string()))?;
     let kept = AbsPath::parse(&checkpoints.to_string_lossy())
-        .map_err(|_| DaemonFault::State(checkpoints.display().to_string()))?;
+        .ok()
+        .ok_or_else(|| DaemonFault::State(checkpoints.display().to_string()))?;
     let seams = SystemSeams {
         link,
         confirmer,
@@ -553,11 +570,21 @@ fn placed_by<S: Seams>(router: &Router<S>, record: &AuditRecord) -> Option<Space
 /// The daemon: the session bus, the system bus for logind (absent, it is not watched), the
 /// files `env` names (the process's environment, which its `main` passes in). Returns when the bus
 /// closes.
+///
+/// # Errors
+///
+/// Returns a [`DaemonFault`] when setup fails (configuration, callers, floor or policies) or the
+/// bus fails while serving.
 pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonFault> {
     run_with(HarnessSeams::default(), env).await
 }
 
 /// [`run`] with the seams the acceptance harness's mains choose.
+///
+/// # Errors
+///
+/// Returns a [`DaemonFault`] when setup fails (configuration, callers, floor or policies) or the
+/// bus fails while serving.
 pub async fn run_with(
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,

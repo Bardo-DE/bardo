@@ -9,9 +9,9 @@ macro_rules! client_protocol {
     ($(#[$doc:meta])* $name:ident, $path:literal, [$($imports:path),*]) => {
         $(#[$doc])*
         pub mod $name {
-            #![allow(dead_code, non_camel_case_types, unused_unsafe, unused_variables)]
-            #![allow(non_upper_case_globals, non_snake_case, unused_imports)]
-            #![allow(missing_docs, missing_debug_implementations, clippy::all)]
+            #![allow(dead_code, non_camel_case_types, unused_unsafe, unused_variables, reason = "wayland-scanner output defines every item of the protocol, used or not")]
+            #![allow(non_upper_case_globals, non_snake_case, unused_imports, reason = "wayland-scanner output keeps the protocol XML's names and imports")]
+            #![allow(missing_docs, missing_debug_implementations, clippy::all, reason = "wayland-scanner output is generated, not written by hand")]
 
             use wayland_client;
             use wayland_client::protocol::*;

@@ -26,10 +26,15 @@ pub struct Probed {
     pub sniffed: Sniffed,
 }
 
-/// Looks at `src`, a path (`&FilePath`, `&Source`) or any bytes a host injects: a folder is a
-/// folder; a file is sniffed from its head and, when it is a zip or a compound file, from its
-/// entries or directory (an unreadable
-/// zip is a plain archive, which a peek then reports on). Blocking: run it on a worker.
+/// Looks at `src`, a path (`&FilePath`, `&Source`) or any bytes a host injects.
+///
+/// A folder is a folder; a file is sniffed from its head and, when it is a zip or a compound file,
+/// from its entries or directory (an unreadable zip is a plain archive, which a peek then reports
+/// on). Blocking: run it on a worker.
+///
+/// # Errors
+///
+/// Returns a [`PeekError`] when the file or folder cannot be read or listed.
 pub fn probe(src: impl Into<Input>) -> Result<Probed, PeekError> {
     let input = src.into();
     let fault = |error: &Error| {
@@ -70,7 +75,7 @@ pub fn probe(src: impl Into<Input>) -> Result<Probed, PeekError> {
             SniffStep::LookInside(inside) => {
                 let entries = zip_entries(&input, ZIP_INDEX)
                     .unwrap_or_else(|_| ZipEntries::new(Vec::<String>::new(), None));
-                sniff_zip(inside, &entries)
+                sniff_zip(&inside, &entries)
             }
         }
     };

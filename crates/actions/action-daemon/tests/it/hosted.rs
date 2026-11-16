@@ -7,7 +7,7 @@ use crate::support::bus::PrivateBus;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::world::introduce;
 use account_core::AppName;
-use account_core::consent::{Decision, Grant, GrantScope, Usage};
+use account_core::consent::{Decision, Grant, Usage};
 use action_client::{DbusTransport, Intents};
 use action_core::*;
 use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
@@ -88,9 +88,10 @@ impl Desk {
         let env = |key: &str| match key {
             "HOME" => Some(home.clone()),
             "XDG_DATA_HOME" => Some(dir.path().join("data").display().to_string()),
-            "XDG_DATA_DIRS" => Some(dir.path().join("none").display().to_string()),
             "XDG_CONFIG_HOME" => Some(dir.path().join("config").display().to_string()),
-            "XDG_CONFIG_DIRS" => Some(dir.path().join("none").display().to_string()),
+            "XDG_DATA_DIRS" | "XDG_CONFIG_DIRS" => {
+                Some(dir.path().join("none").display().to_string())
+            }
             _ => None,
         };
         let mut setup = Setup::from_env(&env).expect("setup");

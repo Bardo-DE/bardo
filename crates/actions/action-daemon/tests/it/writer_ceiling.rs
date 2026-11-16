@@ -58,7 +58,7 @@ async fn derive(draft: serde_json::Value, said: &str) -> Result<Derived, ReviewE
         .await
 }
 
-fn draft(actions: &[&str], apps: serde_json::Value, ceiling: &str) -> serde_json::Value {
+fn draft(actions: &[&str], apps: &serde_json::Value, ceiling: &str) -> serde_json::Value {
     let actions: Vec<String> = actions.iter().map(|a| key(a)).collect();
     json!({
         "actions": actions, "apps": apps, "kinds": ["mail.thread"], "ceiling": ceiling,
@@ -69,7 +69,7 @@ fn draft(actions: &[&str], apps: serde_json::Value, ceiling: &str) -> serde_json
 #[tokio::test]
 async fn archive_with_a_read_ceiling_is_raised_to_undoable_write_and_says_so() {
     let derived = derive(
-        draft(&["mail.thread.archive"], json!([]), "read"),
+        draft(&["mail.thread.archive"], &json!([]), "read"),
         "archive the newsletters",
     )
     .await
@@ -89,7 +89,7 @@ async fn forward_with_a_read_ceiling_is_raised_to_outbound() {
     let derived = derive(
         draft(
             &["mail.thread.read", "mail.message.forward"],
-            json!([]),
+            &json!([]),
             "read",
         ),
         "forward the Lisbon receipts",
@@ -103,7 +103,7 @@ async fn forward_with_a_read_ceiling_is_raised_to_outbound() {
 #[tokio::test]
 async fn a_ceiling_higher_than_needed_is_cut_as_before_and_is_no_correction() {
     let derived = derive(
-        draft(&["mail.thread.archive"], json!([]), "destructive"),
+        draft(&["mail.thread.archive"], &json!([]), "destructive"),
         "archive the newsletters",
     )
     .await
@@ -111,7 +111,7 @@ async fn a_ceiling_higher_than_needed_is_cut_as_before_and_is_no_correction() {
     assert_eq!(derived.policy.ceiling, Effect::UndoableWrite);
     assert!(derived.corrected.is_empty());
     let enough = derive(
-        draft(&["mail.thread.archive"], json!([]), "undoable_write"),
+        draft(&["mail.thread.archive"], &json!([]), "undoable_write"),
         "archive the newsletters",
     )
     .await
@@ -123,7 +123,7 @@ async fn a_ceiling_higher_than_needed_is_cut_as_before_and_is_no_correction() {
 async fn raising_adds_no_action_and_never_widens_an_app_grant() {
     let apps = json!([{ "app": "org.bardo.Mail", "up_to": "read" }]);
     let derived = derive(
-        draft(&["mail.thread.archive"], apps, "read"),
+        draft(&["mail.thread.archive"], &apps, "read"),
         "archive the newsletters",
     )
     .await
@@ -144,7 +144,7 @@ async fn raising_adds_no_action_and_never_widens_an_app_grant() {
 #[tokio::test]
 async fn an_app_grant_alone_is_not_a_floor_for_the_ceiling() {
     let apps = json!([{ "app": "org.bardo.Mail", "up_to": "undoable_write" }]);
-    let derived = derive(draft(&[], apps, "read"), "tidy my inbox")
+    let derived = derive(draft(&[], &apps, "read"), "tidy my inbox")
         .await
         .expect("policy");
     assert_eq!(derived.policy.ceiling, Effect::Read);

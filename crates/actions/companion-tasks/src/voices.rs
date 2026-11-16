@@ -31,6 +31,7 @@ pub(crate) struct Speaking {
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S> {
     /// The same companion, driving the conversations `voices` names in their helper's voice and
     /// every other session in the voice it has now.
+    #[must_use]
     pub fn with_voices(mut self, voices: Arc<dyn Voices>) -> Self {
         self.speaking = Some(Speaking {
             voices,

@@ -68,8 +68,6 @@ fn compound(streams: &[&str]) -> Vec<u8> {
 
 #[test]
 fn a_compound_file_is_told_by_the_streams_in_its_directory() {
-    let dir = tempfile::tempdir().unwrap();
-    // name, file name, streams, kind, format
     type Case = (
         &'static str,
         &'static str,
@@ -77,6 +75,8 @@ fn a_compound_file_is_told_by_the_streams_in_its_directory() {
         FormatKind,
         Option<OfficeFormat>,
     );
+    let dir = tempfile::tempdir().unwrap();
+    // name, file name, streams, kind, format
     let cases: Vec<Case> = vec![
         (
             "excel",
@@ -193,6 +193,7 @@ fn a_zip_is_told_from_a_document_by_what_is_inside() {
 
 #[test]
 fn a_missing_path_is_missing_and_an_unreadable_one_is_unreadable() {
+    use std::os::unix::fs::PermissionsExt;
     let dir = tempfile::tempdir().unwrap();
     let absent = FilePath::new(dir.path().join("absent.png"))
         .unwrap()
@@ -204,7 +205,6 @@ fn a_missing_path_is_missing_and_an_unreadable_one_is_unreadable() {
     );
     let locked = dir.path().join("locked.txt");
     std::fs::write(&locked, "secret").unwrap();
-    use std::os::unix::fs::PermissionsExt;
     std::fs::set_permissions(&locked, std::fs::Permissions::from_mode(0o000)).unwrap();
     let got = probe(FilePath::new(&locked).unwrap().on_disk());
     // A process that ignores permissions (root) reads it; anyone else is refused.

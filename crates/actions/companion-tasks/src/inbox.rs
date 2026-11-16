@@ -75,6 +75,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// `Intents1.Message.Arrived`: reads the inbox and feeds each message to the right task as
     /// input (a request is evaluated under that task's own policy; nothing in it widens it), then
     /// runs what the messages started.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn arrived(&mut self) -> Result<(), ServeFault> {
         self.pull().await?;
         self.drain().await
@@ -124,7 +128,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         if let AgentRef::Worker { task } = agent {
             return self.runtimes.contains_key(task).then(|| task.clone());
         }
-        let live = |t: &TaskId| {
+        let is_live = |t: &TaskId| {
             self.tasks
                 .get(t)
                 .is_some_and(|s| !matches!(s.phase, LoopPhase::Finished(_)))
@@ -136,11 +140,11 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
                 .get(t)
                 .is_some_and(|rt| rt.agent == AgentRef::Companion && rt.space == line.to.space)
         };
-        let front = self.front.iter().filter(|t| live(t) && fits(t)).cloned();
+        let front = self.front.iter().filter(|t| is_live(t) && fits(t)).cloned();
         let newest = self
             .runtimes
             .iter()
-            .filter(|(t, _)| live(t) && fits(t))
+            .filter(|(t, _)| is_live(t) && fits(t))
             .max_by_key(|(_, rt)| rt.started)
             .map(|(t, _)| t.clone());
         front.chain(newest).next()
@@ -240,7 +244,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// The run daemon said why the run that sent `report` ended: its roster line says it now, when
     /// the report was already seen (otherwise the report finds the reason when it comes).
     pub fn run_ended(&mut self, report: provenance::MessageId, why: action_core::EndWhy) {
-        let Some(agent) = self.run_ends.learned(report, why) else {
+        let Some(agent) = self.run_ends.learned(&report, why) else {
             return;
         };
         if let Some(RosterDetail::Full(full)) = self.known.get_mut(&agent).map(|l| &mut l.detail) {
@@ -319,7 +323,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// The answer of `companion.task.start` as the planner reads it: the new task as a handle of
     /// kind `companion.task`, in the app's own trusted words, without the session it runs in.
-    pub(crate) fn outcome_text(&self, started: Outcome) -> Outcome {
+    pub(crate) fn outcome_text(started: Outcome) -> Outcome {
         let label = AppName::parse("org.bardo.Companion")
             .map_or_else(|_| agent_planner::planner_label(), app_label);
         let value = started_of(&started).map(|s| Value::Handle(s.handle));
@@ -333,6 +337,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// stamps the sender from the task's session and labels the message with what the task has
     /// read, so taint travels with it; it is delivered as input and grants the receiver nothing,
     /// and across Spaces it grants no memory read.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn message(
         &mut self,
         from: &TaskId,

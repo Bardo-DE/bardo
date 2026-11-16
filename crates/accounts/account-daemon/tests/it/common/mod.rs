@@ -1,7 +1,10 @@
 //! The rig every bus test of accountd uses: a private bus, accountd's front end over the real
 //! `AccountService` with the fake providers, a hand-written sheet host, and clients introduced
 //! by unique name. Nothing here reaches the real session, Secret Service or network.
-#![allow(dead_code, reason = "helpers shared by the test files; each file uses some of them")]
+#![allow(
+    dead_code,
+    reason = "helpers shared by the test files; each file uses some of them"
+)]
 
 pub mod bus;
 pub mod host;

@@ -57,7 +57,7 @@ impl Verifier {
         let changed = Verdict::Changed(engine);
         let row = self.manifest.row_in_dir(engine, &name).ok_or(changed)?;
         let dir = self.roots.dir(scope, row);
-        let record = Record::read(&dir.record()).map_err(|_| changed)?;
+        let record = Record::read(&dir.record()).ok().ok_or(changed)?;
         let matches = record.engine == engine_spec::engine(engine).disk_word()
             && record.version == row.version
             && record.backend == row.backend.slug();
@@ -114,6 +114,10 @@ fn entry_set_holds(dir: &InstallDir, env: &PythonEnv, record: &Record) -> bool {
 
 /// Whether `rel` (relative to the tree, with `/`) is a file that can run code when the
 /// environment's Python starts or that is the engine's own.
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "Python's `site` module matches the suffix `.pth` case-sensitively, and so must this check"
+)]
 fn is_entry(rel: &str, package: &str) -> bool {
     let name = rel.rsplit('/').next().unwrap_or(rel);
     rel.starts_with("venv/bin/")

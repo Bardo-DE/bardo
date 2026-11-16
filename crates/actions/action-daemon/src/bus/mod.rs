@@ -19,7 +19,6 @@ use action_router::Watch;
 use action_wire::{CallerId, IntentsReply, IntentsRequest};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
@@ -54,7 +53,7 @@ impl std::fmt::Debug for Gateway {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Gateway")
             .field("peers", &self.peers)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -86,7 +85,9 @@ pub(crate) fn parsed<T, E>(
     text: &str,
     parse: impl FnOnce(&str) -> Result<T, E>,
 ) -> Result<T, IntentsError> {
-    parse(text).map_err(|_| IntentsError::Malformed(format!("not an id: {text}")))
+    parse(text)
+        .ok()
+        .ok_or_else(|| IntentsError::Malformed(format!("not an id: {text}")))
 }
 
 impl Gateway {

@@ -56,7 +56,9 @@ fn fault(fault: SpaceFault) -> RefusedError {
 }
 
 fn space_arg(id: &str) -> Result<DesktopSpace, RefusedError> {
-    DesktopSpace::parse(id).ok().ok_or_else(|| RefusedError::invalid("There is no such Space."))
+    DesktopSpace::parse(id)
+        .ok()
+        .ok_or_else(|| RefusedError::invalid("There is no such Space."))
 }
 
 fn name_arg(text: &str) -> Result<SpaceName, RefusedError> {
@@ -67,7 +69,8 @@ fn name_arg(text: &str) -> Result<SpaceName, RefusedError> {
 
 fn look_arg(text: &str) -> Result<SpaceLook, RefusedError> {
     SpaceLook::parse(text)
-        .ok().ok_or_else(|| RefusedError::invalid("A Space's look must be at most 1024 bytes."))
+        .ok()
+        .ok_or_else(|| RefusedError::invalid("A Space's look must be at most 1024 bytes."))
 }
 
 impl<H: Host, C: Callers> SpacesObject<H, C> {

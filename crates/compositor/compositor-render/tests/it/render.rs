@@ -245,6 +245,10 @@ proptest! {
     }
 }
 
+#[expect(
+    clippy::cast_possible_wrap,
+    reason = "a margin or size of a few pixels, far below i32::MAX"
+)]
 #[test]
 fn an_unchanged_frame_damages_nothing() {
     let ids = Ids {
@@ -263,13 +267,13 @@ fn an_unchanged_frame_damages_nothing() {
     let mut target = renderer.target(SIZE);
     let mut tracker = tracker(SIZE, 1.0);
     let first = mixed(&ids, still, &mut renderer);
-    let (rendered, _) = renderer.draw(&mut target, &mut tracker, SIZE, &first, 0);
-    assert!(!rendered.damage.is_empty());
-    assert_eq!(rendered.sync, RenderSync::Done);
+    let (drawn, _) = renderer.draw(&mut target, &mut tracker, SIZE, &first, 0);
+    assert!(!drawn.damage.is_empty());
+    assert_eq!(drawn.sync, RenderSync::Done);
     let again = mixed(&ids, still, &mut renderer);
-    let (rendered, _) = renderer.draw(&mut target, &mut tracker, SIZE, &again, 1);
+    let (drawn, _) = renderer.draw(&mut target, &mut tracker, SIZE, &again, 1);
     assert_eq!(
-        rendered.damage,
+        drawn.damage,
         Vec::new(),
         "the cursor raster, cover and blur keep their ids"
     );
@@ -281,8 +285,8 @@ fn an_unchanged_frame_damages_nothing() {
         },
         &mut renderer,
     );
-    let (rendered, _) = renderer.draw(&mut target, &mut tracker, SIZE, &moved, 1);
-    let bounds = rendered
+    let (drawn, _) = renderer.draw(&mut target, &mut tracker, SIZE, &moved, 1);
+    let bounds = drawn
         .damage
         .iter()
         .fold((i32::MAX, i32::MIN), |(lo, hi), r| {
@@ -291,6 +295,6 @@ fn an_unchanged_frame_damages_nothing() {
     assert!(
         bounds.0 >= 290 && bounds.1 <= 340,
         "only the cursor's old and new places: {:?}",
-        rendered.damage
+        drawn.damage
     );
 }

@@ -53,6 +53,7 @@ impl Registration {
     }
 
     /// Forgoes each of `actions`.
+    #[must_use]
     pub fn forgo_all(mut self, actions: impl IntoIterator<Item = StandardAction>) -> Registration {
         self.forgone.extend(actions);
         self

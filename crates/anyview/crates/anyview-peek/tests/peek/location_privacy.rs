@@ -61,7 +61,6 @@ fn the_peek_lists_the_camera_but_neither_the_place_nor_a_serial_number() {
 mod pane {
     use super::*;
     use anyview_peek::{AnyPeeked, Card};
-    use dioxus::core::VirtualDom;
     use dioxus::prelude::*;
     use std::sync::Arc;
     use ui_components::assembly::ds::Inject;
@@ -72,7 +71,7 @@ mod pane {
         peeked: Arc<AnyPeeked>,
     }
 
-    #[allow(non_snake_case)]
+    #[allow(non_snake_case, reason = "a Dioxus component is named in CamelCase")]
     fn Root(setup: Setup) -> Element {
         let peeked = setup.peeked;
         rsx! {

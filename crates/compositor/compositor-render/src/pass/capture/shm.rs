@@ -39,7 +39,7 @@ pub(super) struct Layout {
 impl Layout {
     /// The layout `data` describes, or `Layout` if a number is negative.
     pub(super) fn of(data: &BufferData) -> Result<Layout, ShmWriteError> {
-        let number = |n: i32| usize::try_from(n).map_err(|_| ShmWriteError::Layout);
+        let number = |n: i32| usize::try_from(n).ok().ok_or(ShmWriteError::Layout);
         Ok(Layout {
             offset: number(data.offset)?,
             stride: number(data.stride)?,
@@ -60,6 +60,11 @@ impl Layout {
 /// let _ = write_frame(buffer, frame);
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// Returns a [`ShmWriteError`] when the buffer is not shared memory, has a format a capture does
+/// not produce, has a layout outside its pool, or is smaller than the frame.
 pub fn write_frame(buffer: &WlBuffer, frame: &CapturedFrame) -> Result<(), ShmWriteError> {
     with_shm_pool_mut(buffer, |pool, data| {
         let layout = Layout::of(&data)?;

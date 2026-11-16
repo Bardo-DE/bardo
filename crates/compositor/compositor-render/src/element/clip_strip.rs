@@ -37,7 +37,7 @@ impl<R: Renderer> fmt::Debug for ClipStripElement<R> {
         f.debug_struct("ClipStripElement")
             .field("id", &self.id)
             .field("shape", &self.shape)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 

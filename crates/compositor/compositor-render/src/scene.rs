@@ -191,14 +191,19 @@ pub enum CursorShape {
     NotAllowed,
 }
 
-/// The elements of one output's frame, front first (smithay's order): chrome (cursor, lock
-/// covers), overlay layers, the surfaces an edge reveal raised, full-screen windows, top layers,
-/// the frame's other windows top of the stack first with their popups, bottom and background
-/// layers. Windows and layers missing from `book` are skipped.
+/// The elements of one output's frame, front first (smithay's order).
+///
+/// They are chrome (cursor, lock covers), overlay layers, the surfaces an edge reveal raised,
+/// full-screen windows, top layers, the frame's other windows top of the stack first with their
+/// popups, bottom and background layers. Windows and layers missing from `book` are skipped.
 ///
 /// A locked output (one with a lock surface in `book`, or listed in `chrome.covers`) shows the
 /// cursor, its lock surface if any, and under it an opaque cover over the whole output; nothing
 /// of the session is drawn, so a translucent, small or dead locker reveals nothing.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one pass over the layers in paint order, all of which share the frame's state"
+)]
 pub fn output_elements<R: Compositor>(
     frame: &OutputFrame,
     view: &OutputView,
@@ -325,27 +330,24 @@ pub fn output_elements<R: Compositor>(
                         y: placed.at.y.round_logical(),
                     },
                 );
-                match flight {
-                    FlightDraw::Still => {
-                        elements.extend(popup_elements(&entry.root, origin, view, renderer));
-                    }
+                if flight == FlightDraw::Still {
+                    elements.extend(popup_elements(&entry.root, origin, view, renderer));
+                } else {
                     // A Scale flight: the popups shrink about the window's corner and fade
                     // with it.
-                    _ => {
-                        let about = LogicalPoint {
-                            x: placed.at.x.round_logical(),
-                            y: placed.at.y.round_logical(),
-                        };
-                        let ratio = flight_ratio(placed, &entry.root);
-                        let ride = PopupRide::new(about, ratio, alpha(placed.opacity));
-                        elements.extend(popup_elements_riding(
-                            &entry.root,
-                            origin,
-                            ride,
-                            view,
-                            renderer,
-                        ));
-                    }
+                    let about = LogicalPoint {
+                        x: placed.at.x.round_logical(),
+                        y: placed.at.y.round_logical(),
+                    };
+                    let ratio = flight_ratio(placed, &entry.root);
+                    let ride = PopupRide::new(about, ratio, alpha(placed.opacity));
+                    elements.extend(popup_elements_riding(
+                        &entry.root,
+                        origin,
+                        ride,
+                        view,
+                        renderer,
+                    ));
                 }
                 // The frame goes round the content as it is drawn: shrunk, for a window
                 // that flies scaled.
@@ -397,7 +399,7 @@ pub fn output_elements<R: Compositor>(
                 {
                     let visual =
                         style.map_or(content, |style| shown_outline(style.metrics, content, full));
-                    elements.extend(ring_elements(visual, view, look));
+                    elements.extend(ring_elements(visual, view, *look));
                     elements.extend(hover.label.as_ref().and_then(|(size, draw)| {
                         let clear = icon.map(|(_, place)| place.at);
                         let at = label_place(visual, *size, clear);
@@ -455,7 +457,7 @@ pub fn output_elements<R: Compositor>(
     }
     draw_windows(&others, &mut elements, renderer);
     if let Some(OverviewDraw { look, .. }) = &layers.overview {
-        elements.extend(dim_elements(view, book, look));
+        elements.extend(dim_elements(view, book, *look));
     }
     draw_level(&layers.bottom, &mut elements, renderer);
     draw_level(&layers.background, &mut elements, renderer);

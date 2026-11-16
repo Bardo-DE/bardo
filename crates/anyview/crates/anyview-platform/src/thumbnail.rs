@@ -71,6 +71,11 @@ impl ThumbPixels {
 pub trait ThumbnailCache {
     /// The thumbnail of `file` as it was at `stamp`, or `None` when there is none, or it was
     /// made for a different version of the file, or it is damaged. Blocking.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PlatformError`] when the thumbnail cache cannot be read, or a file in it cannot
+    /// be a PNG.
     fn lookup(
         &self,
         file: &FilePath,
@@ -79,6 +84,11 @@ pub trait ThumbnailCache {
     ) -> Result<Option<ThumbPixels>, PlatformError>;
 
     /// Keep `pixels` as the thumbnail of `file` at `stamp`, replacing any earlier one. Blocking.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PlatformError`] when the thumbnail cannot be written, or the pixels cannot be a
+    /// PNG.
     fn store(
         &self,
         file: &FilePath,
@@ -94,16 +104,16 @@ mod tests {
 
     #[test]
     fn pixels_must_be_four_bytes_a_pixel_and_not_empty() {
-        let size = |w, h| PixelSize {
-            width: PixelLen(w),
-            height: PixelLen(h),
-        };
         const CASES: &[(&str, u32, u32, usize, bool)] = &[
             ("exact", 2, 1, 8, true),
             ("short", 2, 1, 7, false),
             ("long", 2, 1, 9, false),
             ("empty", 0, 1, 0, false),
         ];
+        let size = |w, h| PixelSize {
+            width: PixelLen(w),
+            height: PixelLen(h),
+        };
         for (name, w, h, len, valid) in CASES {
             assert_eq!(
                 ThumbPixels::new(size(*w, *h), vec![0; *len]).is_some(),

@@ -60,7 +60,7 @@ impl ColorTransform {
     pub fn for_gamut(gamut: Gamut) -> Option<ColorTransform> {
         match gamut {
             Gamut::Srgb => None,
-            wide => Some(ColorTransform {
+            wide @ Gamut::Wide(_) => Some(ColorTransform {
                 matrix: srgb_to_panel(wide),
                 source: TransferCurve::Srgb,
             }),
@@ -81,6 +81,11 @@ impl ColorTransform {
     }
 
     /// Premultiplied 8-bit RGBA pixels (`pixels` is groups of four) converted in place.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a colour channel: rounded, within 0..=255 by construction or by the clamp before it"
+    )]
     pub fn apply_premultiplied(&self, pixels: &mut [u8]) {
         for pixel in pixels.as_chunks_mut::<4>().0 {
             let alpha = f64::from(pixel[3]) / 255.0;

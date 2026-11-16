@@ -90,7 +90,7 @@ impl TaskRuntime {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use action_core::{InboundLine, StepShown};
+    use action_core::StepShown;
     use action_vocab::CallId;
     use provenance::{ActionName, Address, Effect, MessageId, SpaceId, TaskId, ThreadId};
 
@@ -142,7 +142,10 @@ mod tests {
         }
     }
 
-    fn task(history: Vec<action_core::StepLine>, inbox: Vec<InboundLine>) -> TaskRuntime {
+    fn task(
+        history: impl IntoIterator<Item = action_core::StepLine>,
+        inbox: impl IntoIterator<Item = InboundLine>,
+    ) -> TaskRuntime {
         let mut rt = TaskRuntime::new(
             provenance::SessionId::parse("s-1").expect("session"),
             SpaceId::desktop(),
@@ -152,11 +155,11 @@ mod tests {
             None,
             provenance::UnixSeconds(0),
         );
-        for step in &history {
+        for step in history {
             rt.note_step(&step.action, &step.end);
         }
-        for message in &inbox {
-            rt.note_message(message);
+        for message in inbox {
+            rt.note_message(&message);
         }
         rt
     }

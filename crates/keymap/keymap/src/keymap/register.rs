@@ -20,6 +20,11 @@ impl Keymap {
     /// chord the platform reserves, a standard action owns, or another action holds is refused.
     /// A person's own changes never refuse a registration; they simply win later. This is
     /// `register_with` for an app that forgoes nothing and has no fallbacks.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Conflict`] naming the first default chord the platform already gives another
+    /// action; nothing is registered then.
     pub fn register(
         &mut self,
         app: &AppId,
@@ -36,6 +41,11 @@ impl Keymap {
     /// Registers what `registration` declares, all or nothing, as `register` does. Standard
     /// actions it forgoes stop holding their chords in this keymap (a universal one is refused).
     /// A refused app action is remembered, so a person's own chord for it still binds.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Conflict`] naming the first default chord the platform already gives another
+    /// action; nothing is registered then.
     pub fn register_with(&mut self, registration: &Registration) -> Result<(), Conflict> {
         let app = registration.app();
         if let Some(foreign) = registration.rows().iter().find(|r| r.action.app() != *app) {
@@ -167,7 +177,7 @@ fn clash(shown: String, held: Action, wanting: &Action) -> Conflict {
             meaning: action.label(),
             wanted_by: wanting.id(),
         },
-        other => Conflict::Taken {
+        other @ Action::App(_) => Conflict::Taken {
             shown,
             held_by: other.id(),
             wanted_by: wanting.id(),

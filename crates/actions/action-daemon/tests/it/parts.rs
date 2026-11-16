@@ -3,13 +3,12 @@
 
 use account_core::AppName;
 use action_core::*;
-use action_core::{EventSink, LinkFault, MemoryLink};
 use action_daemon::*;
 use action_vocab::CallerRole;
 use companion_memory_core::{QueuedSink, kind_tag_of};
 use memory_client::Absent;
 use permission_core::BreakerTrip;
-use provenance::{ConfirmId, Effect, SpaceScope, UnixSeconds};
+use provenance::{Effect, SpaceScope, UnixSeconds};
 use std::path::PathBuf;
 
 fn fixture() -> String {

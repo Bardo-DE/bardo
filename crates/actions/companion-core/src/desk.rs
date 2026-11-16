@@ -26,6 +26,10 @@ pub const PROPOSED_STEPS: Count = Count(12);
 const LONGEST_WHY: usize = 200;
 
 /// A name no other card has: `except` is the card being edited, which may keep its own.
+///
+/// # Errors
+///
+/// Returns [`Refusal::NameTaken`] when another card has the name.
 pub fn name_free(
     board: &Board,
     name: &HelperName,
@@ -42,6 +46,10 @@ pub fn name_free(
 
 /// The card the person confirmed, from the form: the reach is built from the apps named, over
 /// the apps installed.
+///
+/// # Errors
+///
+/// Returns a [`Refusal`] saying why not.
 pub fn card_draft(
     form: HelperForm,
     space: &SpaceId,
@@ -63,6 +71,11 @@ pub fn card_draft(
 
 /// The form for a helper the assistant proposes: its own planner, no model until the person
 /// chooses, the apps named by their names.
+///
+/// # Errors
+///
+/// Returns a [`Refusal`] when the name or role is empty or too long, or an app named is not one the
+/// person has.
 pub fn helper_form(
     name: &str,
     role: &str,
@@ -76,7 +89,9 @@ pub fn helper_form(
     let apps = apps
         .iter()
         .map(|app| {
-            AppName::parse(app).map_err(|_| Refusal::Reach(ReachFault::NoSuchApp(app.clone())))
+            AppName::parse(app)
+                .ok()
+                .ok_or_else(|| Refusal::Reach(ReachFault::NoSuchApp(app.clone())))
         })
         .collect::<Result<Vec<AppName>, Refusal>>()?;
     Ok(HelperForm {
@@ -92,6 +107,10 @@ pub fn helper_form(
 }
 
 /// The first card made among `effects`.
+///
+/// # Errors
+///
+/// Returns [`Refusal::HelperNotMade`] when no card was made among `effects`.
 pub fn created(effects: &[BoardEffect]) -> Result<HelperId, Refusal> {
     effects
         .iter()
@@ -103,6 +122,11 @@ pub fn created(effects: &[BoardEffect]) -> Result<HelperId, Refusal> {
 }
 
 /// What a job asked for came to: the job made, or why not.
+///
+/// # Errors
+///
+/// Returns the [`Refusal`] the board gave when no job was made, or [`Refusal::JobNotGiven`] when it
+/// said nothing.
 pub fn posted(effects: &[BoardEffect]) -> Result<JobId, Refusal> {
     for effect in effects {
         match effect {
@@ -115,6 +139,11 @@ pub fn posted(effects: &[BoardEffect]) -> Result<JobId, Refusal> {
 }
 
 /// The job the person gives `helper`, in their words, for the things it alone may write.
+///
+/// # Errors
+///
+/// Returns [`Refusal::NoGoal`] when `goal` is empty or too long, or the [`Refusal`] the job
+/// refused.
 pub fn person_job(
     board: &Board,
     helper: &HelperId,
@@ -124,7 +153,7 @@ pub fn person_job(
     if board.card(helper).is_none() {
         return Err(Refusal::Job(JobRefusal::NoSuchHelper));
     }
-    let goal = GoalText::parse(goal).map_err(|_| Refusal::NoGoal)?;
+    let goal = GoalText::parse(goal).ok().ok_or(Refusal::NoGoal)?;
     Ok(NewJob {
         to: helper.clone(),
         goal,
@@ -136,7 +165,7 @@ pub fn person_job(
 }
 
 /// A job a planner gives a helper by its name.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct PlannerJob<'a> {
     /// The name of the helper it is for.
     pub helper: &'a str,
@@ -170,10 +199,15 @@ fn latest_answer(board: &Board, name: &str) -> Option<JobId> {
 
 /// The job a planner gives a helper. The router refused this unless the planner had read nothing
 /// untrusted; the board asks again.
+///
+/// # Errors
+///
+/// Returns [`Refusal::NoGoal`] when the goal is empty or too long, or the [`Refusal`] the job
+/// refused.
 pub fn planner_job(board: &Board, gift: PlannerJob<'_>) -> Result<NewJob, Refusal> {
     let card =
         named_in(board, gift.helper, gift.space).ok_or(Refusal::Job(JobRefusal::NoSuchHelper))?;
-    let goal = GoalText::parse(gift.goal).map_err(|_| Refusal::NoGoal)?;
+    let goal = GoalText::parse(gift.goal).ok().ok_or(Refusal::NoGoal)?;
     let with = match gift.after {
         None => Vec::new(),
         Some(name) => vec![
@@ -191,7 +225,7 @@ pub fn planner_job(board: &Board, gift: PlannerJob<'_>) -> Result<NewJob, Refusa
 }
 
 /// Which helper a proposed routine is for.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum RoutineWho<'a> {
     /// The one named, by the name the person gave it, in the proposer's Space.
     Named(&'a str, &'a SpaceId),
@@ -200,7 +234,7 @@ pub enum RoutineWho<'a> {
 }
 
 /// A routine a proposer suggests.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct RoutineWish<'a> {
     /// Who it is for.
     pub who: RoutineWho<'a>,
@@ -214,6 +248,11 @@ pub struct RoutineWish<'a> {
 
 /// The routine a proposer suggests, as the form the person would confirm, with its why. Nothing
 /// is made: the goal, the time and the why are a model's words, shown to the person as data.
+///
+/// # Errors
+///
+/// Returns a [`Refusal`] when the goal or schedule is not valid, the proposal comes without a why,
+/// or too many proposals wait.
 pub fn routine_wish(
     board: &Board,
     wish: RoutineWish<'_>,
@@ -223,7 +262,7 @@ pub fn routine_wish(
         RoutineWho::Itself(id) => board.card(id),
     }
     .ok_or(Refusal::Job(JobRefusal::NoSuchHelper))?;
-    let goal = GoalText::parse(wish.goal).map_err(|_| Refusal::NoGoal)?;
+    let goal = GoalText::parse(wish.goal).ok().ok_or(Refusal::NoGoal)?;
     let when = wish.when.trim();
     Schedule::parse(when).map_err(Refusal::Schedule)?;
     let why = wish.why.trim();
@@ -242,6 +281,11 @@ pub fn routine_wish(
 
 /// Whether the person may talk with `card` in a conversation of docket's: a helper that runs its
 /// own app is talked with there.
+///
+/// # Errors
+///
+/// Returns [`Refusal::RunsItsOwnApp`] when the helper runs its own app, so the person talks with it
+/// there.
 pub fn talkable(card: &HelperCard) -> Result<(), Refusal> {
     match card.kind.program() {
         Some(_) => Err(Refusal::RunsItsOwnApp(card.name.clone())),
@@ -250,6 +294,10 @@ pub fn talkable(card: &HelperCard) -> Result<(), Refusal> {
 }
 
 /// What a helper's turn in its conversation answered: its words, or why it did not.
+///
+/// # Errors
+///
+/// Returns [`Refusal::SayFailed`] when the helper's turn did not finish.
 pub fn say_outcome(card: &HelperCard, report: JobReport) -> Result<String, Refusal> {
     let JobReport { ending, why, .. } = report;
     match ending {

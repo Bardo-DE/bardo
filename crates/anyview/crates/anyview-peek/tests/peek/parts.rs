@@ -6,7 +6,6 @@
 use crate::support;
 
 use anyview_peek::{AnyPeeked, Card, Part, Parts, peek};
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use std::sync::Arc;
 use support::{Home, fixture, pane_budget};
@@ -19,7 +18,7 @@ struct Setup {
     parts: Option<Parts>,
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "a Dioxus component is named in CamelCase")]
 fn Root(setup: Setup) -> Element {
     let peeked = setup.peeked;
     rsx! {

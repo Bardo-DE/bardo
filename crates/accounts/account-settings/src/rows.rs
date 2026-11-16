@@ -151,7 +151,10 @@ impl AccountRow for Reauth {
             ),
             // Tailscale keeps its own sign-in, and an agent signs out from its own row. A program on
             // this computer signs in with nothing: there is nothing to sign in to.
-            AuthKind::OwnProgram | AuthKind::AgentLogin | AuthKind::LocalRuntime | AuthKind::None => {
+            AuthKind::OwnProgram
+            | AuthKind::AgentLogin
+            | AuthKind::LocalRuntime
+            | AuthKind::None => {
                 return Vec::new();
             }
             _ => ("Sign in again", ""),

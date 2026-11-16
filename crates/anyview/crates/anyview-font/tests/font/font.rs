@@ -193,7 +193,11 @@ fn a_font_needing_more_than_the_budget_is_refused_and_a_web_font_is_named_not_op
 }
 
 /// `ttf` with one more table, `tag`, of `length` zeros; the directory stays sorted by tag.
-fn with_table(ttf: &[u8], tag: &[u8; 4], length: usize) -> Vec<u8> {
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a test font has a few tables and small offsets"
+)]
+fn with_table(ttf: &[u8], tag: [u8; 4], length: usize) -> Vec<u8> {
     let count = u16::from_be_bytes([ttf[4], ttf[5]]) as usize;
     let mut tables: Vec<([u8; 4], [u8; 4], Vec<u8>)> = (0..count)
         .map(|index| {
@@ -207,7 +211,7 @@ fn with_table(ttf: &[u8], tag: &[u8; 4], length: usize) -> Vec<u8> {
             )
         })
         .collect();
-    tables.push((*tag, [0; 4], vec![0; length]));
+    tables.push((tag, [0; 4], vec![0; length]));
     tables.sort_by_key(|(tag, ..)| *tag);
     let mut out = ttf[..4].to_vec();
     out.extend_from_slice(&(tables.len() as u16).to_be_bytes());
@@ -233,7 +237,7 @@ fn a_font_is_read_by_its_directory_so_tables_the_peek_ignores_cost_nothing() {
     let ttf = std::fs::read(fixture("blocks.ttf")).unwrap();
     let dir = tempfile::tempdir().unwrap();
     let fat = dir.path().join("fat.ttf");
-    std::fs::write(&fat, with_table(&ttf, b"GPOS", 4 << 20)).unwrap();
+    std::fs::write(&fat, with_table(&ttf, *b"GPOS", 4 << 20)).unwrap();
     let (src, sniffed) = opened(&fat, "fat.ttf");
     assert!(src.stamp().len.0 > 4 << 20);
     // The file is four times the budget, and the face is the same as without the table.
@@ -252,6 +256,10 @@ fn bytes_that_are_not_a_font_are_malformed() {
 }
 
 /// `ttf` wrapped as a WOFF: every table zlib-compressed where that makes it smaller.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a test font has a few tables and small offsets"
+)]
 fn woff_of(ttf: &[u8]) -> Vec<u8> {
     let count = u16::from_be_bytes([ttf[4], ttf[5]]) as usize;
     let mut entries = Vec::new();

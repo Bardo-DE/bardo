@@ -90,9 +90,14 @@ impl Instance for DbusInstance {
     }
 }
 
-/// Call the running viewer with `request`, on a connection to the session bus the caller owns
-/// (the launcher has its own). The bus starts the viewer for the call when none runs and the
-/// activation file is installed.
+/// Call the running viewer with `request`, on a connection to the session bus the caller owns (the
+/// launcher has its own).
+///
+/// The bus starts the viewer for the call when none runs and the activation file is installed.
+///
+/// # Errors
+///
+/// Returns a [`PlatformError`] when the running viewer cannot be called or does not answer.
 pub async fn forward_over(
     connection: &zbus::Connection,
     request: &Request,
@@ -168,13 +173,18 @@ impl Service {
     fn hand_over(&self, request: Request) -> fdo::Result<()> {
         self.sender
             .send(request)
-            .map_err(|_| fdo::Error::Failed("the viewer is closing".to_owned()))
+            .ok()
+            .ok_or_else(|| fdo::Error::Failed("the viewer is closing".to_owned()))
     }
 }
 
 #[interface(name = "org.bardo.Anyview1")]
 impl Service {
     /// Open files in the window; an empty list shows the window.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "zbus decodes the arguments of a method call into owned values"
+    )]
     fn open(&self, files: Vec<String>) -> fdo::Result<()> {
         let files = files
             .iter()
@@ -184,11 +194,19 @@ impl Service {
     }
 
     /// Show a file in the quick-look window.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "zbus decodes the arguments of a method call into owned values"
+    )]
     fn peek(&self, file: String) -> fdo::Result<()> {
         self.hand_over(Request::Peek(parse_path(&file)?))
     }
 
     /// Open a file and start it playing.
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "zbus decodes the arguments of a method call into owned values"
+    )]
     fn play(&self, file: String) -> fdo::Result<()> {
         self.hand_over(Request::Play(parse_path(&file)?))
     }

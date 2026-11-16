@@ -49,8 +49,9 @@ pub(crate) fn read(bytes: &[u8]) -> Result<(Face, u32), FontError> {
     }
     // skrifa indexes into glyph data it has not fully checked, so a font that breaks it is
     // reported as damaged instead of taking the worker down.
-    let face =
-        catch_unwind(AssertUnwindSafe(|| face_of(&font))).map_err(|_| FontError::Malformed {
+    let face = catch_unwind(AssertUnwindSafe(|| face_of(&font)))
+        .ok()
+        .ok_or_else(|| FontError::Malformed {
             reason: "the font is damaged".to_owned(),
         })?;
     Ok((face, faces))

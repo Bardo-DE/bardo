@@ -109,12 +109,12 @@ impl<S: Surface> Shared<S> {
     }
 
     /// Sets an answer, saying whether it is new or changed.
-    pub fn set_answer(&self, answer: AnswerWire) {
+    pub fn set_answer(&self, answer: &AnswerWire) {
         let task = answer.task.clone();
         let was = self.with(|s| s.answers.insert(task.clone(), answer.clone()));
         match was {
             None => self.tell(Change::AnswerAdded(task)),
-            Some(old) if old != answer => self.tell(Change::AnswerChanged(task)),
+            Some(old) if old != *answer => self.tell(Change::AnswerChanged(task)),
             Some(_) => {}
         }
     }

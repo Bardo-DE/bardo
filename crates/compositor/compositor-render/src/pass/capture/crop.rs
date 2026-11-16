@@ -18,13 +18,13 @@ impl CapturedFrame {
     /// ```
     #[must_use]
     pub fn cropped(&self, rect: PhysicalRect) -> Option<CapturedFrame> {
-        let from_i32 = |n: i32| usize::try_from(n).ok();
-        let from_u32 = |n: u32| usize::try_from(n).ok();
-        let (x, y) = (from_i32(rect.x)?, from_i32(rect.y)?);
-        let (w, h) = (from_u32(rect.w)?, from_u32(rect.h)?);
-        let stride = from_u32(self.stride)?;
-        if x.saturating_add(w) > from_u32(self.area.w)?
-            || y.saturating_add(h) > from_u32(self.area.h)?
+        let signed = |n: i32| usize::try_from(n).ok();
+        let unsigned = |n: u32| usize::try_from(n).ok();
+        let (x, y) = (signed(rect.x)?, signed(rect.y)?);
+        let (w, h) = (unsigned(rect.w)?, unsigned(rect.h)?);
+        let stride = unsigned(self.stride)?;
+        if x.saturating_add(w) > unsigned(self.area.w)?
+            || y.saturating_add(h) > unsigned(self.area.h)?
         {
             return None;
         }

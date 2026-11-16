@@ -85,6 +85,11 @@ impl ArgbImage {
     /// let _ = ArgbImage::from_shm(buffer);
     /// # }
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ReadError`] when the buffer is not shared memory, has another format, or a
+    /// layout outside its pool.
     pub fn from_shm(buffer: &WlBuffer) -> Result<ArgbImage, ReadError> {
         with_shm_pool(buffer, |pool, data| {
             // `xrgb8888`: the alpha byte is unused, the pixel is opaque.
@@ -93,7 +98,7 @@ impl ArgbImage {
                 Format::Xrgb8888 => true,
                 other => return Err(ReadError::Format(other)),
             };
-            let layout = Layout::of(&data).map_err(|_| ReadError::Layout)?;
+            let layout = Layout::of(&data).ok().ok_or(ReadError::Layout)?;
             unpack(pool, layout, opaque)
         })?
     }
@@ -205,7 +210,7 @@ fn unpack(pool: &[u8], layout: Layout, opaque: bool) -> Result<ArgbImage, ReadEr
             .iter_mut()
             .for_each(|pixel| pixel[3] = 255);
     }
-    let side = |n: usize| u32::try_from(n).map_err(|_| ReadError::Layout);
+    let side = |n: usize| u32::try_from(n).ok().ok_or(ReadError::Layout);
     Ok(ArgbImage {
         size: PhysicalSize {
             w: side(layout.width)?,

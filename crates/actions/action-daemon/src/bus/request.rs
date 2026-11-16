@@ -9,7 +9,6 @@ use action_dbus::{IntentsError, request_path};
 use action_router::{Flag, Watch};
 use action_vocab::CallId;
 use action_wire::{IntentsReply, IntentsRequest, WireRefusal};
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
@@ -51,9 +50,10 @@ pub(crate) struct RequestObject {
 
 impl RequestObject {
     fn owned_by(&self, header: &Header<'_>) -> Result<(), IntentsError> {
-        match header.sender().is_some_and(|s| s.as_str() == self.owner) {
-            true => Ok(()),
-            false => Err(IntentsError::NotAllowed("not your request".into())),
+        if header.sender().is_some_and(|s| s.as_str() == self.owner) {
+            Ok(())
+        } else {
+            Err(IntentsError::NotAllowed("not your request".into()))
         }
     }
 }
@@ -80,7 +80,7 @@ impl RequestObject {
         Ok(())
     }
 
-    async fn proceed(&self, #[zbus(header)] header: Header<'_>) -> Result<(), IntentsError> {
+    fn proceed(&self, #[zbus(header)] header: Header<'_>) -> Result<(), IntentsError> {
         self.owned_by(&header)?;
         match &self.steer {
             Some(steer) => {

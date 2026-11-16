@@ -122,13 +122,18 @@ impl CapturedFrame {
 }
 
 /// Reads `request.area` of `target`, which the last render drew into.
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the area does not fit a target, or the renderer cannot read it
+/// back.
 pub fn capture_output<R: Compositor + ExportMem>(
     renderer: &mut R,
     target: &R::Framebuffer<'_>,
     request: &CaptureRequest,
 ) -> Result<CapturedFrame, RenderError> {
     let area = request.area;
-    let side = |n: u32| i32::try_from(n).map_err(|_| RenderError::NoTarget);
+    let side = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
     let region = Rectangle::<i32, Buffer>::new(
         (area.x, area.y).into(),
         (side(area.w)?, side(area.h)?).into(),

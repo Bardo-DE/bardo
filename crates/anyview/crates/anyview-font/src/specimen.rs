@@ -5,9 +5,11 @@
 //! Lines are set with each glyph's advance width and no kerning or shaping, which is enough for a
 //! glance at a face's character.
 
+// Writing to a `String` cannot fail, so the results of `write!` are dropped below.
 use skrifa::instance::{LocationRef, Size};
 use skrifa::outline::{DrawSettings, OutlinePen};
 use skrifa::{FontRef, GlyphId, MetadataProvider};
+use std::fmt::Write as _;
 
 /// Units to the em in a specimen's coordinates, whatever the font's own.
 pub const EM: u32 = 1000;
@@ -144,6 +146,10 @@ pub(crate) fn specimen(font: &FontRef<'_>, title: &str) -> Specimen {
 const OWN_SCAN: usize = 2000;
 
 /// `glyphs` set in a row.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn set(font: &FontRef<'_>, glyphs: &[(char, GlyphId)]) -> SpecimenLine {
     let metrics = font.metrics(Size::unscaled(), LocationRef::default());
     let per_em = f32::from(metrics.units_per_em.max(1));
@@ -178,6 +184,15 @@ fn set(font: &FontRef<'_>, glyphs: &[(char, GlyphId)]) -> SpecimenLine {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "rounded, then clamped to the u32 range first"
+)]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "the clamp bound `u32::MAX` is only a bound; the nearest f32 is as good"
+)]
 fn whole(value: f32) -> u32 {
     // Rounded and clamped to what a u32 holds, so the cast cannot wrap.
     value.round().clamp(0.0, u32::MAX as f32) as u32
@@ -193,6 +208,10 @@ struct PathPen {
 }
 
 impl PathPen {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a rounded pixel coordinate of a specimen, far inside i32"
+    )]
     fn point(&self, x: f32, y: f32) -> String {
         let px = (self.origin + x * self.scale).round() as i32;
         let py = (self.baseline - y * self.scale).round() as i32;
@@ -203,22 +222,22 @@ impl PathPen {
 impl OutlinePen for PathPen {
     fn move_to(&mut self, x: f32, y: f32) {
         let at = self.point(x, y);
-        self.path.push_str(&format!("M{at}"));
+        let _ = write!(self.path, "M{at}");
     }
 
     fn line_to(&mut self, x: f32, y: f32) {
         let at = self.point(x, y);
-        self.path.push_str(&format!("L{at}"));
+        let _ = write!(self.path, "L{at}");
     }
 
     fn quad_to(&mut self, cx0: f32, cy0: f32, x: f32, y: f32) {
         let (control, at) = (self.point(cx0, cy0), self.point(x, y));
-        self.path.push_str(&format!("Q{control} {at}"));
+        let _ = write!(self.path, "Q{control} {at}");
     }
 
     fn curve_to(&mut self, cx0: f32, cy0: f32, cx1: f32, cy1: f32, x: f32, y: f32) {
         let (first, second, at) = (self.point(cx0, cy0), self.point(cx1, cy1), self.point(x, y));
-        self.path.push_str(&format!("C{first} {second} {at}"));
+        let _ = write!(self.path, "C{first} {second} {at}");
     }
 
     fn close(&mut self) {
@@ -236,12 +255,6 @@ mod tests {
 
     #[test]
     fn the_sample_is_chosen_from_what_the_font_covers() {
-        let latin = |c: char| c.is_ascii();
-        let cjk = |c: char| ('\u{4e00}'..='\u{9fff}').contains(&c);
-        let symbols = |c: char| ('\u{2460}'..='\u{2473}').contains(&c);
-        let ideographs = "你好世界東京都大阪府中華人民共和国日本語文字の見本を表示します";
-        let circled = "\u{2460}\u{2461}\u{2462}\u{2463}\u{2464}";
-        // name, covers, the font's own characters, the title, then what is said
         type Case<'a> = (
             &'a str,
             &'a dyn Fn(char) -> bool,
@@ -249,6 +262,12 @@ mod tests {
             &'a str,
             Plan,
         );
+        let latin = |c: char| c.is_ascii();
+        let cjk = |c: char| ('\u{4e00}'..='\u{9fff}').contains(&c);
+        let symbols = |c: char| ('\u{2460}'..='\u{2473}').contains(&c);
+        let ideographs = "你好世界東京都大阪府中華人民共和国日本語文字の見本を表示します";
+        let circled = "\u{2460}\u{2461}\u{2462}\u{2463}\u{2464}";
+        // name, covers, the font's own characters, the title, then what is said
         let cases: Vec<Case> = vec![
             (
                 "latin",

@@ -46,6 +46,10 @@ fn fault_of(error: &ClientError) -> LogFault {
 }
 
 impl<I: IntentsTransport, H: Borrow<Intents<I>> + Send + Sync> SessionLog for RouterLog<I, H> {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn append(
         &self,
         _session: &SessionId,
@@ -70,7 +74,11 @@ impl<I: IntentsTransport, H: Borrow<Intents<I>> + Send + Sync> SessionLog for Ro
             Ok(StoredView::Rows { rows, next }) => Ok(LogPage {
                 rows: rows
                     .iter()
-                    .map(|r| serde_json::from_str::<Logged>(&r.json).map_err(|_| LogFault::Encode))
+                    .map(|r| {
+                        serde_json::from_str::<Logged>(&r.json)
+                            .ok()
+                            .ok_or(LogFault::Encode)
+                    })
                     .collect::<Result<_, _>>()?,
                 next: next.map(Seq),
             }),

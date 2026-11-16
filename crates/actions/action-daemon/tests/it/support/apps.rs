@@ -1,7 +1,10 @@
 //! The other processes on the private bus: a mail app (action-fake's `FakeMail` behind
 //! `action_provider::serve_on`, so the app side of `IntentProvider1` is the real one) and sill's
 //! `Confirm1` with scripted answers. Shared by intentd's tests and `bardo-do`'s end-to-end test.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "helpers shared by the test files; each file uses some of them"
+)]
 
 use account_core::AppName;
 use action_core::{
@@ -269,7 +272,7 @@ impl ConfirmServer {
         OwnedObjectPath::try_from(path).map_err(|e| fdo::Error::Failed(e.to_string()))
     }
 
-    async fn cancel(&self, id: String) -> fdo::Result<()> {
+    fn cancel(&self, id: String) -> fdo::Result<()> {
         locked(&self.0.script).cancelled.push(id);
         Ok(())
     }

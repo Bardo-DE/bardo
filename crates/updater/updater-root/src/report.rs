@@ -1,6 +1,7 @@
-//! What the privileged helper tells the update service when it succeeds: which release is now current,
-//! which links and system files it left alone because something else was in the way, and what did not
-//! work but did not stop the update.
+//! What the privileged helper tells the update service when it succeeds.
+//!
+//! It says which release is now current, which links and system files it left alone because
+//! something else was in the way, and what did not work but did not stop the update.
 //!
 //! The helper prints it on its standard output, one line each (`current <version>`, `left-alone <path>`,
 //! `warning <text>`), and the service parses it. A helper that succeeds with something to say is not
@@ -8,6 +9,8 @@
 //! be told that the new release's table was not put in place.
 
 use semver::Version;
+// Writing to a `String` cannot fail, so the results of `write!` are dropped below.
+use std::fmt::Write as _;
 
 const CURRENT: &str = "current ";
 const LEFT_ALONE: &str = "left-alone ";
@@ -37,13 +40,13 @@ impl Report {
     pub fn render(&self) -> String {
         let mut text = String::new();
         if let Some(version) = &self.version {
-            text += &format!("{CURRENT}{version}\n");
+            let _ = writeln!(text, "{CURRENT}{version}");
         }
         for path in &self.conflicts {
-            text += &format!("{LEFT_ALONE}{}\n", one_line(path));
+            let _ = writeln!(text, "{LEFT_ALONE}{}", one_line(path));
         }
         for warning in &self.warnings {
-            text += &format!("{WARNING}{}\n", one_line(warning));
+            let _ = writeln!(text, "{WARNING}{}", one_line(warning));
         }
         text
     }

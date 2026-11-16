@@ -88,11 +88,11 @@ impl ClosingBody {
         };
         let shape = ClipShape::new(area, radius, scale);
         let argb = bake(rgba, size, shape)?;
-        let side = |n: u32| i32::try_from(n).ok();
+        let edge = |n: u32| i32::try_from(n).ok();
         let buffer = MemoryRenderBuffer::from_slice(
             &argb,
             Fourcc::Argb8888,
-            (side(size.w)?, side(size.h)?),
+            (edge(size.w)?, edge(size.h)?),
             1,
             Transform::Normal,
             None,
@@ -184,6 +184,15 @@ impl ClosingBody {
 /// `rgba` as Argb8888 bytes (B, G, R, A), every pixel the shape leaves out of its corners
 /// weighted by the shape's coverage (premultiplied, so all four channels scale). `None` when
 /// `rgba` is not `size` pixels or `size` is empty.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a colour channel: rounded, within 0..=255 by construction or by the clamp before it"
+)]
 fn bake(rgba: &[u8], size: PhysicalSize, shape: ClipShape) -> Option<Vec<u8>> {
     let width = usize::try_from(size.w).ok().filter(|w| *w > 0)?;
     let height = usize::try_from(size.h).ok().filter(|h| *h > 0)?;

@@ -30,6 +30,10 @@ const CHECKPOINTS: &str = include_str!("../../manifests/org.bardo.Checkpoints.to
 
 /// The built-in manifests, validated: Memory, Companion, the external agents' pseudo-app, then
 /// Checkpoints.
+///
+/// # Errors
+///
+/// Returns a [`ManifestFileError`] when a built-in manifest does not parse or validate.
 pub fn builtin_manifests() -> Result<Vec<ValidManifest>, ManifestFileError> {
     [MEMORY, COMPANION, ACP_AGENT, CHECKPOINTS]
         .into_iter()
@@ -37,10 +41,12 @@ pub fn builtin_manifests() -> Result<Vec<ValidManifest>, ManifestFileError> {
         .collect()
 }
 
-/// Whether `app` is one of the four names whose declarations are the built-in ones: no
-/// installed file may declare them. Memory, Companion and Checkpoints are answered in process; the external
-/// agents' pseudo-app (`org.bardo.AcpAgent`) is answered by the host that launched the agent, on
-/// that bus name, like an installed app.
+/// Whether `app` is one of the four names whose declarations are the built-in ones: no installed
+/// file may declare them.
+///
+/// Memory, Companion and Checkpoints are answered in process; the external agents' pseudo-app
+/// (`org.bardo.AcpAgent`) is answered by the host that launched the agent, on that bus name, like
+/// an installed app.
 #[must_use]
 pub fn is_builtin(app: &AppName) -> bool {
     matches!(
@@ -59,6 +65,10 @@ pub struct HostedLink<T: MemoryTransport> {
 impl<T: MemoryTransport> HostedLink<T> {
     /// Hosts the built-ins beside `apps`: Memory over `transport`, Companion through `port`,
     /// Checkpoints through `checkpoints`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ManifestFileError`] when a built-in manifest does not parse or validate.
     pub fn new(
         apps: DbusLink,
         transport: T,
@@ -66,9 +76,11 @@ impl<T: MemoryTransport> HostedLink<T> {
         checkpoints: CheckpointsPort,
     ) -> Result<Self, ManifestFileError> {
         let [memory, companion, _agents, restore] =
-            <[ValidManifest; 4]>::try_from(builtin_manifests()?).map_err(|_| {
-                ManifestFileError::Toml("the built-in manifests are not four".to_owned())
-            })?;
+            <[ValidManifest; 4]>::try_from(builtin_manifests()?)
+                .ok()
+                .ok_or_else(|| {
+                    ManifestFileError::Toml("the built-in manifests are not four".to_owned())
+                })?;
         Ok(Self {
             apps,
             builtins: Chain(

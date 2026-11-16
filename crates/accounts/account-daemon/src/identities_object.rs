@@ -81,7 +81,9 @@ fn may_use(role: CallerRole) -> bool {
 }
 
 fn identity_arg(text: &str) -> Result<IdentityId, RefusedError> {
-    IdentityId::parse(text).ok().ok_or_else(|| RefusedError::invalid("There is no such identity."))
+    IdentityId::parse(text)
+        .ok()
+        .ok_or_else(|| RefusedError::invalid("There is no such identity."))
 }
 
 /// What a use that could not be saved is told, in plain words.

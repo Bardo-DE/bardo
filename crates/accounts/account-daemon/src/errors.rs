@@ -65,28 +65,28 @@ impl RefusedError {
 
     /// An argument that is not what the interface says.
     pub(crate) fn invalid(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::InvalidArgs(why.to_string()))
+        Self::bus(&fdo::Error::InvalidArgs(why.into()))
     }
 
     /// A caller the daemon will not answer.
     pub(crate) fn access_denied(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::AccessDenied(why.to_string()))
+        Self::bus(&fdo::Error::AccessDenied(why.into()))
     }
 
     /// An object that does not exist for this caller.
     pub(crate) fn unknown_object(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::UnknownObject(why.to_string()))
+        Self::bus(&fdo::Error::UnknownObject(why.into()))
     }
 
     /// A caller that already has what it asks for under way (a sheet of that kind open):
     /// `org.freedesktop.DBus.Error.LimitsExceeded`.
     pub(crate) fn busy(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::LimitsExceeded(why.to_string()))
+        Self::bus(&fdo::Error::LimitsExceeded(why.into()))
     }
 
     /// Something the daemon could not do.
     pub(crate) fn failed(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::Failed(why.to_string()))
+        Self::bus(&fdo::Error::Failed(why.into()))
     }
 
     /// The error's D-Bus name.

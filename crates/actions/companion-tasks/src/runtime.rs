@@ -179,7 +179,7 @@ pub fn idle_state() -> LoopState {
         turn: None,
         steps: 0,
         pending: vec![],
-        guard: Default::default(),
+        guard: agent_loop::Guard::default(),
     }
 }
 
@@ -228,6 +228,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// The same companion, with the helpers `desk` keeps.
+    #[must_use]
     pub fn with_desk(self, desk: Arc<dyn HelperDesk>) -> Self {
         Self {
             desk: Some(desk),
@@ -254,6 +255,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// The same companion, handing a turn to the coding agent the person chose through `hand`.
+    #[must_use]
     pub fn with_handoff(self, hand: Arc<dyn Handoff>) -> Self {
         Self {
             hand: Some(hand),
@@ -267,11 +269,13 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// The same companion, waiting on its peers as `waits` says.
+    #[must_use]
     pub fn with_waits(self, waits: action_store::Waits) -> Self {
         Self { waits, ..self }
     }
 
     /// The same companion, writing no roster notes: the host of an editor's sessions.
+    #[must_use]
     pub fn without_notes(self) -> Self {
         Self {
             notes: Notes::Silent,
@@ -281,6 +285,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// The installed skills this companion may offer (those that pass the format; the manifests
     /// decide which are reachable). Skills only teach: nothing here grants anything.
+    #[must_use]
     pub fn with_skills(self, skill_files: Vec<agent_skills::Skill>) -> Self {
         Self {
             skill_files,
@@ -307,6 +312,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// `Companion1.Open`: opens a session for the front conversation.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router refuses the session or does not answer.
     pub async fn open(&mut self, open: SessionOpen) -> Result<SessionOpened, ServeFault> {
         self.refresh_catalogue().await;
         let opened = self
@@ -357,6 +366,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// `Companion1.Close`: ends a session. A task still working is cancelled first. A finished
     /// task's answer is dismissed: its router session, held open so handles could still be shown,
     /// closes now.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ServeFault::UnknownSession`] when no task runs on `session`.
     pub async fn close(&mut self, session: SessionId) -> Result<(), ServeFault> {
         let task = self.task_of(&session).ok_or(ServeFault::UnknownSession)?;
         let live = self
@@ -399,6 +412,11 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// `Companion1.Ask`: starts the loop for a turn the UI already recorded and answers the
     /// object path of its answer, once the task has run as far as it can alone.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ServeFault::UnknownSession`] when no task runs on the session,
+    /// [`ServeFault::Finished`] when it is over, or a [`ServeFault`] from the router.
     pub async fn ask(&mut self, ask: AskWire) -> Result<String, ServeFault> {
         let begun = self.begin_ask(ask)?;
         self.record(&begun.session, &begun.asked).await;
@@ -408,6 +426,11 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// The first half of `ask`: the turn is the task's and the answer exists, thinking. The bus
     /// answers the path here and runs the rest in the background.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ServeFault::UnknownSession`] when no task runs on the session, or
+    /// [`ServeFault::Finished`] when it is over.
     pub fn begin_ask(&mut self, ask: AskWire) -> Result<Begun, ServeFault> {
         let task = self
             .task_of(&ask.session)
@@ -453,6 +476,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// Runs what `begin_ask` began.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn run_begun(&mut self, begun: Begun) -> Result<(), ServeFault> {
         self.record(&begun.session, &begun.asked).await;
         self.run_interactive(&begun.task, begun.first).await
@@ -556,7 +583,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         if let Some(rt) = self.runtimes.get(task) {
             self.shared.set_session(task, rt.session.clone());
             self.shared.set_route(task, rt.route.clone());
-            self.shared.set_answer(rt.answer(task));
+            self.shared.set_answer(&rt.answer(task));
         }
         self.publish();
     }

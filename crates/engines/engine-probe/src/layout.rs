@@ -189,7 +189,9 @@ impl Record {
     /// See [`RecordError`].
     pub fn read(path: &Path) -> Result<Self, RecordError> {
         let text = std::fs::read(path).map_err(|e| RecordError::Io(e.kind()))?;
-        serde_json::from_slice(&text).map_err(|_| RecordError::Malformed)
+        serde_json::from_slice(&text)
+            .ok()
+            .ok_or(RecordError::Malformed)
     }
 
     /// Writes the record at `path`, whole (`base_fs`'s atomic write).
@@ -197,7 +199,9 @@ impl Record {
     /// # Errors
     /// See [`RecordError`].
     pub fn write(&self, path: &Path) -> Result<(), RecordError> {
-        let text = serde_json::to_vec_pretty(self).map_err(|_| RecordError::Malformed)?;
+        let text = serde_json::to_vec_pretty(self)
+            .ok()
+            .ok_or(RecordError::Malformed)?;
         AtomicWrite::SHARED
             .write(path, &text)
             .map_err(|e| RecordError::Io(e.kind()))

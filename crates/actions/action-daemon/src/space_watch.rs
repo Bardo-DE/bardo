@@ -52,12 +52,12 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
         match settled {
             Ok(ended) => {
                 let at = self.router.seams.clock().now();
-                ended.into_iter().for_each(|ended| {
+                for ended in ended {
                     self.router
                         .seams
                         .sink()
                         .append(AuditRecord::GrantsEnded { at, ended });
-                });
+                }
             }
             Err(why) => eprintln!("intentd: {why}"),
         }

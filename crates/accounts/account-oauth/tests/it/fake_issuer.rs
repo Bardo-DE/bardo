@@ -21,8 +21,9 @@ struct LoopbackHttp;
 
 impl Http for LoopbackHttp {
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
-        let (address, target) =
-            split_loopback(&request.uri().to_string()).ok().ok_or(HttpError::Unreachable)?;
+        let (address, target) = split_loopback(&request.uri().to_string())
+            .ok()
+            .ok_or(HttpError::Unreachable)?;
         let (head, body) = request.into_parts();
         let mut wire =
             account_fake_servers::http::Request::new(head.method.as_str(), &target).with_body(body);
@@ -32,7 +33,8 @@ impl Http for LoopbackHttp {
         }
         let response = send(&address, Scheme::Http, &wire)
             .await
-            .ok().ok_or(HttpError::Unreachable)?;
+            .ok()
+            .ok_or(HttpError::Unreachable)?;
         let answer = response.headers.iter().fold(
             account_http::http::Response::builder().status(response.status),
             |answer, (name, value)| answer.header(name.as_str(), value.as_str()),

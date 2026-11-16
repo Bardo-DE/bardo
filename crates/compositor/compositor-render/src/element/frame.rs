@@ -147,8 +147,10 @@ pub fn frame_elements<R: Compositor>(
 }
 
 /// The shadow `style` casts behind a window that draws its own frame: round its content (no
-/// titlebar), at `opacity`, with the corners of `style.look.radius`. `content` and `full` are as
-/// in [`FrameDraw`]: a `content` smaller than `full` shrinks the shadow with the window.
+/// titlebar), at `opacity`, with the corners of `style.look.radius`.
+///
+/// `content` and `full` are as in [`FrameDraw`]: a `content` smaller than `full` shrinks the shadow
+/// with the window.
 pub fn client_shadow_elements<R: Compositor>(
     window: WindowId,
     style: &FrameStyle,
@@ -168,9 +170,11 @@ pub fn client_shadow_elements<R: Compositor>(
     )
 }
 
-/// The outline (titlebar and content) of a frame with `metrics` round `content`, a window whose
-/// own size is `full`, as [`frame_elements`] draws it: the frame shrunk with the window, about
-/// the content's top-left corner. The same as the frame's own outline when `content` is `full`.
+/// The outline (titlebar and content) of a frame with `metrics` round `content`, a window whose own
+/// size is `full`.
+///
+/// It is as [`frame_elements`] draws it: the frame shrunk with the window, about the content's
+/// top-left corner. The same as the frame's own outline when `content` is `full`.
 ///
 /// ```
 /// use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
@@ -457,14 +461,14 @@ fn element_at<R: Compositor>(
     alpha: f32,
     buffer: &MemoryRenderBuffer,
 ) -> Option<MemoryRenderBufferRenderElement<R>> {
-    let side = |n: u32| i32::try_from(n).unwrap_or(i32::MAX);
+    let edge = |n: u32| i32::try_from(n).unwrap_or(i32::MAX);
     MemoryRenderBufferRenderElement::from_buffer(
         renderer,
         location,
         buffer,
         Some(alpha),
         Some(src),
-        Some(Size::<i32, Logical>::from((side(size.w), side(size.h)))),
+        Some(Size::<i32, Logical>::from((edge(size.w), edge(size.h)))),
         Kind::Unspecified,
     )
     .ok()

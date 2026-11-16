@@ -1,7 +1,5 @@
 //! The integration tests of anyview-peek, in one binary so they link once.
 
-#![allow(clippy::unwrap_used)]
-
 mod book;
 mod deadline;
 mod frames;

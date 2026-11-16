@@ -127,8 +127,9 @@ impl<H: Http> WebDavReplica<H> {
         match response.status().as_u16() {
             207 => {
                 let text = String::from_utf8_lossy(response.body());
-                let status =
-                    parse_multistatus(&text).ok().ok_or_else(|| PutRefused::Transient(RetryAfter(30)))?;
+                let status = parse_multistatus(&text)
+                    .ok()
+                    .ok_or(PutRefused::Transient(RetryAfter(30)))?;
                 Ok(entries(&self.root, &status)
                     .into_iter()
                     .find(|e| e.id == *id && e.kind == Kind::File)

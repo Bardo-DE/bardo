@@ -60,13 +60,13 @@ fn receipt_hit() -> RecallHit {
 }
 
 struct Desk {
-    _dir: tempfile::TempDir,
+    dir: tempfile::TempDir,
     bus: PrivateBus,
     intentd_connection: action_dbus::BusConnection,
     companion: Intents<DbusTransport>,
     inferd: ScriptedInferd,
     who: Arc<Identity>,
-    _connections: Vec<action_dbus::BusConnection>,
+    connections: Vec<action_dbus::BusConnection>,
     _intentd: action_daemon::Running,
 }
 
@@ -85,9 +85,10 @@ impl Desk {
         let env = |key: &str| match key {
             "HOME" => Some(home.clone()),
             "XDG_DATA_HOME" => Some(dir.path().join("data").display().to_string()),
-            "XDG_DATA_DIRS" => Some(dir.path().join("none").display().to_string()),
             "XDG_CONFIG_HOME" => Some(dir.path().join("config").display().to_string()),
-            "XDG_CONFIG_DIRS" => Some(dir.path().join("none").display().to_string()),
+            "XDG_DATA_DIRS" | "XDG_CONFIG_DIRS" => {
+                Some(dir.path().join("none").display().to_string())
+            }
             _ => None,
         };
         let mut setup = Setup::from_env(&env).expect("setup");
@@ -115,13 +116,13 @@ impl Desk {
             .expect("name");
         introduce(&who, &companion_connection, &config(), &[COMPANIOND]);
         Desk {
-            _dir: dir,
+            dir,
             bus,
             intentd_connection: daemon_connection.clone(),
             companion: Intents::over(DbusTransport::new(companion_connection.clone())),
             inferd: ScriptedInferd::away(),
             who,
-            _connections: vec![memory_connection, daemon_connection, companion_connection],
+            connections: vec![memory_connection, daemon_connection, companion_connection],
             _intentd: intentd,
         }
     }
@@ -141,7 +142,7 @@ impl Desk {
         let reader_who = Arc::new(Identity::on_fixture(
             connection.clone(),
             agent_reader_daemon::shipped_callers(),
-            self._dir.path().join("proc-readerd"),
+            self.dir.path().join("proc-readerd"),
         ));
         reader_who.introduce_app(&self.intentd_connection, "org.bardo.Intents", Role::Agent);
         let service = ReaderService::new(
@@ -152,7 +153,7 @@ impl Desk {
         serve_on(&connection, Arc::new(service), reader_who)
             .await
             .expect("readerd serves");
-        self._connections.push(connection);
+        self.connections.push(connection);
         self
     }
 

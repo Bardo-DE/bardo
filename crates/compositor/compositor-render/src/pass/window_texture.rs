@@ -13,17 +13,23 @@ use smithay::backend::renderer::{Bind, Color32F, Frame, Offscreen, Renderer};
 use smithay::utils::{Buffer, Physical, Rectangle, Size, Transform};
 use ui_core::geometry::scale::Scale;
 
-/// Draws `elements` (front first, a window's tree as `window_tree` builds it) into a new texture
-/// of `size` at `scale`, transparent where nothing draws, its bottom corners cut by `radius`
+/// Draws `elements` (front first, a window's tree as `window_tree` builds it) into a new texture of
+/// `size` at `scale`.
+///
+/// The texture is transparent where nothing draws, and its bottom corners are cut by `radius`
 /// logical pixels. Returns once the GPU is done; the texture stays on the GPU.
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the texture cannot be made or the draw is interrupted.
 pub fn render_window_texture(
     renderer: &mut GlesRenderer,
     elements: &[CasementElement<GlesRenderer>],
     size: PhysicalSize,
     (scale, radius): (Scale, u32),
 ) -> Result<GlesTexture, RenderError> {
-    let side = |n: u32| i32::try_from(n).map_err(|_| RenderError::NoTarget);
-    let (w, h) = (side(size.w)?, side(size.h)?);
+    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let (w, h) = (edge(size.w)?, edge(size.h)?);
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let image = |renderer: &mut GlesRenderer| -> Result<GlesTexture, RenderError> {
         Offscreen::<GlesTexture>::create_buffer(
@@ -88,7 +94,7 @@ fn cut_corners(
 ) -> Result<(), RenderError> {
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let rect = shape.rect();
-    let side = |n: u32| i32::try_from(n).map_err(|_| RenderError::NoTarget);
+    let side = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
     let whole = Rectangle::<i32, Physical>::from_size(Size::from((side(rect.w)?, side(rect.h)?)));
     let mut framebuffer = renderer.bind(target).map_err(|e| fault(&e))?;
     let mut frame = renderer
@@ -100,5 +106,6 @@ fn cut_corners(
     bake_corners(&mut frame, from, shape).map_err(|e| fault(&e))?;
     let done = frame.finish().map_err(|e| fault(&e))?;
     done.wait()
-        .map_err(|_| RenderError::Renderer("the window image draw was interrupted".to_owned()))
+        .ok()
+        .ok_or_else(|| RenderError::Renderer("the window image draw was interrupted".to_owned()))
 }

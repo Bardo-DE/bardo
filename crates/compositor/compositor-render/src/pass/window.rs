@@ -42,9 +42,11 @@ pub fn window_capture_size(content: LogicalSize, scale: Scale) -> PhysicalSize {
     buffer_size(content, scale)
 }
 
-/// The elements of `root`'s surface tree (subsurfaces, then the root), placed so that the
-/// window geometry's top-left is the image's top-left, drawn at `scale` and full opacity.
-/// `content` is the window geometry's size. Nothing of the screen is in it.
+/// The elements of `root`'s surface tree (subsurfaces, then the root), placed so that the window
+/// geometry's top-left is the image's top-left.
+///
+/// They are drawn at `scale` and full opacity. `content` is the window geometry's size. Nothing of
+/// the screen is in it.
 pub fn window_tree<R: Compositor>(
     root: &WlSurface,
     content: LogicalSize,
@@ -74,9 +76,15 @@ pub fn window_tree<R: Compositor>(
 }
 
 /// Draws `elements` (front first) into `target`, an image of `size` the caller created in
-/// `Abgr8888`, and reads it back: `size.w x size.h` rows of R, G, B, A bytes, top row first.
-/// Where nothing draws the image is transparent. Every call draws everything: the tracker is
-/// new and the buffer age is 0.
+/// `Abgr8888`, and reads it back.
+///
+/// The result is `size.w x size.h` rows of R, G, B, A bytes, top row first. Where nothing draws the
+/// image is transparent. Every call draws everything: the tracker is new and the buffer age is 0.
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the target cannot be bound, the draw fails or the pixels cannot
+/// be read back.
 pub fn render_window<R, T>(
     renderer: &mut R,
     target: &mut T,
@@ -87,8 +95,8 @@ pub fn render_window<R, T>(
 where
     R: Compositor + Bind<T> + ExportMem,
 {
-    let side = |n: u32| i32::try_from(n).map_err(|_| RenderError::NoTarget);
-    let mode = Size::from((side(size.w)?, side(size.h)?));
+    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let mode = Size::from((edge(size.w)?, edge(size.h)?));
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let mut tracker = OutputDamageTracker::new(mode, scale.as_f64(), Transform::Normal);
     let elements = crate::damage::routed(renderer, elements);
@@ -113,9 +121,10 @@ where
     Ok(bytes.to_vec())
 }
 
-/// Draws `elements` (front first) straight into `target`, a client's dma-buf of exactly `size`,
-/// and returns once the renderer has finished: the GPU path of window capture, where no pixel
-/// is read back. As [`render_window`]: a new tracker at age 0, transparent where nothing draws.
+/// Draws `elements` (front first) straight into `target`, a client's dma-buf of exactly `size`.
+///
+/// It returns once the renderer has finished: the GPU path of window capture, where no pixel is
+/// read back. As [`render_window`]: a new tracker at age 0, transparent where nothing draws.
 ///
 /// ```no_run
 /// use compositor_core::geometry::PhysicalSize;
@@ -129,6 +138,10 @@ where
 /// let _ = render_window_dmabuf(renderer, buffer, &[], size, Scale(120));
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the buffer cannot be bound or the draw is interrupted.
 pub fn render_window_dmabuf<R>(
     renderer: &mut R,
     target: &mut Dmabuf,
@@ -139,8 +152,8 @@ pub fn render_window_dmabuf<R>(
 where
     R: Compositor + Bind<Dmabuf>,
 {
-    let side = |n: u32| i32::try_from(n).map_err(|_| RenderError::NoTarget);
-    let mode = Size::<i32, Physical>::from((side(size.w)?, side(size.h)?));
+    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
+    let mode = Size::<i32, Physical>::from((edge(size.w)?, edge(size.h)?));
     let held = target.size();
     if (held.w, held.h) != (mode.w, mode.h) {
         return Err(RenderError::NoTarget);
@@ -164,7 +177,8 @@ where
     rendered
         .sync
         .wait()
-        .map_err(|_| RenderError::Renderer("the dma-buf draw was interrupted".to_owned()))
+        .ok()
+        .ok_or_else(|| RenderError::Renderer("the dma-buf draw was interrupted".to_owned()))
 }
 
 #[cfg(test)]

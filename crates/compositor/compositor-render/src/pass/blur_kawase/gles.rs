@@ -278,8 +278,8 @@ fn up_uniforms(
 
 /// One texel of a texture of `size`, in texture coordinates.
 fn texel(size: Size<i32, BufferCoords>) -> (f32, f32) {
-    let side = |n: i32| 1.0 / f32::from(u16::try_from(n.max(1)).unwrap_or(u16::MAX));
-    (side(size.w), side(size.h))
+    let edge = |n: i32| 1.0 / f32::from(u16::try_from(n.max(1)).unwrap_or(u16::MAX));
+    (edge(size.w), edge(size.h))
 }
 
 /// Runs `run` on the renderer behind `frame`; the output's target is restored afterwards.

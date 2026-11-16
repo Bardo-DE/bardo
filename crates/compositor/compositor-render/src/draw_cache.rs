@@ -166,7 +166,7 @@ impl DrawCache {
 mod tests {
     use super::*;
     use crate::element::shadow_key;
-    use compositor_core::window::{FrameColour, FrameLook, LightDraw, ShadowLayer};
+    use compositor_core::window::{FrameColour, LightDraw, ShadowLayer};
     use ui_core::geometry::scale::Scale;
 
     fn look() -> FrameLook {
@@ -222,12 +222,12 @@ mod tests {
         let cache = DrawCache::default();
         let look = look();
         let made = std::cell::Cell::new(0);
-        let make = || {
+        let build = || {
             made.set(made.get() + 1);
             crate::element::shadow_tiles(&look, Scale::ONE)
         };
-        let a = cache.shadow(WindowId(1), shadow_key(&look, Scale::ONE), make);
-        let b = cache.shadow(WindowId(2), shadow_key(&look, Scale::ONE), make);
+        let a = cache.shadow(WindowId(1), shadow_key(&look, Scale::ONE), build);
+        let b = cache.shadow(WindowId(2), shadow_key(&look, Scale::ONE), build);
         assert_eq!(made.get(), 1);
         assert!(!Rc::ptr_eq(&a, &b));
     }

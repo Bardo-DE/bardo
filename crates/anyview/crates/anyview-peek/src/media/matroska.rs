@@ -53,6 +53,15 @@ impl<R: Seek> Seek for Bounded<R> {
 }
 
 /// What the header of the Matroska file `src` says.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a tick count and a timestamp scale are exact in f64 for any real file"
+)]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a duration in microseconds, never negative (`max(0.0)`) and far below u64::MAX"
+)]
 pub fn read(src: &Input, deadline: Deadline) -> Result<Recording, PeekError> {
     let reader = Bounded {
         inner: BufReader::new(super::opened(src)?),
@@ -88,7 +97,7 @@ pub fn read(src: &Input, deadline: Deadline) -> Result<Recording, PeekError> {
             TrackType::Audio => {
                 counts.audio += 1;
                 if recording.audio.is_none() {
-                    recording.audio = audio_of(track);
+                    recording.audio = Some(audio_of(track));
                 }
             }
             TrackType::Subtitle => counts.subtitles += 1,
@@ -143,15 +152,20 @@ fn video_of(track: &TrackEntry) -> Option<VideoStream> {
     })
 }
 
-fn audio_of(track: &TrackEntry) -> Option<AudioStream> {
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a sampling frequency is a small positive number, and the cast saturates"
+)]
+fn audio_of(track: &TrackEntry) -> AudioStream {
     let audio = track.audio();
-    Some(AudioStream {
+    AudioStream {
         codec: codec_name(track.codec_id()),
         channels: audio.and_then(|audio| u16::try_from(audio.channels().get()).ok()),
         sample_rate: audio
             .map(|audio| audio.sampling_frequency() as u32)
             .filter(|rate| *rate > 0),
-    })
+    }
 }
 
 /// A Matroska codec id as the name a person knows: `V_MPEG4/ISO/AVC` is `h264`.

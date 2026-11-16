@@ -37,9 +37,9 @@ impl RunEnds {
 
     /// The daemon said why the run that sent `report` ended: the agent whose report was already
     /// seen, so its roster line can say it now.
-    pub(crate) fn learned(&mut self, report: MessageId, why: EndWhy) -> Option<AgentRef> {
+    pub(crate) fn learned(&mut self, report: &MessageId, why: EndWhy) -> Option<AgentRef> {
         self.why.insert(report.clone(), why);
-        self.reported.get(&report).cloned()
+        self.reported.get(report).cloned()
     }
 }
 
@@ -71,11 +71,11 @@ mod tests {
         let mut late = RunEnds::default();
         assert_eq!(late.reported(report.clone(), run.clone()), None);
         assert_eq!(
-            late.learned(report.clone(), EndWhy::WindowRefused),
+            late.learned(&report, EndWhy::WindowRefused),
             Some(run.clone())
         );
         let mut early = RunEnds::default();
-        assert_eq!(early.learned(report.clone(), EndWhy::WindowRefused), None);
+        assert_eq!(early.learned(&report, EndWhy::WindowRefused), None);
         assert_eq!(early.reported(report, run), Some(EndWhy::WindowRefused));
     }
 }

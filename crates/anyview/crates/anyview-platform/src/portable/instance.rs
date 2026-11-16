@@ -114,7 +114,8 @@ impl Instance for LatchkeyInstance {
             tokio::task::spawn_blocking(move || settle(agent, sender, &request)),
         )
         .await
-        .map_err(|_| failed("reach the running viewer", &"it did not answer in time"))?
+        .ok()
+        .ok_or_else(|| failed("reach the running viewer", &"it did not answer in time"))?
         .map_err(|error| failed("claim the viewer's socket", &error))??;
         Ok(match settled {
             Settled::Primary(door) => Claim::Primary(Primary::new(requests, Box::new(door))),
@@ -292,7 +293,7 @@ fn serve(stream: Stream, sender: &Sender<Request>) {
     let read = (&mut reader).take(MAX_LINE).read_line(&mut line);
     let result = match read {
         Ok(_) if line.ends_with('\n') => frame::decode(line.trim_end())
-            .and_then(|request| sender.send(request).map_err(|_| FrameError::Closing)),
+            .and_then(|request| sender.send(request).ok().ok_or(FrameError::Closing)),
         Ok(_) => Err(FrameError::CutShort),
         Err(error) => Err(FrameError::Unreadable(error.to_string())),
     };

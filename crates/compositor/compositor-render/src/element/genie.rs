@@ -42,14 +42,20 @@ use smithay::utils::{Physical, Point, Rectangle};
 /// How far off a whole column an edge may be and still count as on it (float noise).
 const EDGE_NOISE: f64 = 1e-6;
 
-/// The strips of the window whose visible rectangle (frame included) is `visual` at `progress`
-/// (0 to 1) of the flight to `tile`, in `view`'s physical pixels. Empty when the window has no
-/// area. Pure arithmetic.
+/// The strips of the window whose visible rectangle (frame included) is `visual` at `progress` (0
+/// to 1) of the flight to `tile`, in `view`'s physical pixels.
+///
+/// Empty when the window has no area. Pure arithmetic.
 ///
 /// The cut is finer where the curve is steep (`strips_fine`), but never finer than one strip
 /// per physical row of the window. Two strips share one rounded edge between them, so they
 /// meet without a gap and without an overlap. Each band is the whole columns its strip touches
 /// (`StripPlan::edges` says how much of the first and last the window covers).
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 #[must_use]
 pub fn strip_plans(
     visual: LogicalRect,
@@ -195,6 +201,10 @@ fn part_elements<R: Compositor>(
 
 /// The genie's elements, front first: each strip's titlebar and surfaces, the blur, then the
 /// shadow's strips.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 pub fn genie_elements<R: Compositor>(
     parts: GenieParts<R>,
     view: &OutputView,
@@ -265,7 +275,7 @@ fn halo(position: usize, last: usize, reach: i32) -> Margins {
 }
 
 /// What a window in a Genie flight is drawn from.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct GenieWindow<'a> {
     /// The window as the frame places it (the genie cuts it as it stands at rest).
     pub placed: &'a PlacedWindow,

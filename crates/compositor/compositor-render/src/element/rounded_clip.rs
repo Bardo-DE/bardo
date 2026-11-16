@@ -74,7 +74,7 @@ impl<R: Renderer> fmt::Debug for RoundedClipElement<R> {
         f.debug_struct("RoundedClipElement")
             .field("id", &self.id)
             .field("shape", &self.shape)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -93,6 +93,7 @@ impl<R: Renderer + ImportAll> RoundedClipElement<R> {
     /// The same element stretched by `ratio` about `about` (the window geometry's corner, output
     /// pixels): the surface is laid out at its real size and drawn at the stretched one, as a
     /// window in a Scale flight is. `shape` is then the stretched window's.
+    #[must_use]
     pub fn stretched(
         self,
         about: Point<i32, Physical>,

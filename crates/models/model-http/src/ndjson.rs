@@ -30,6 +30,11 @@ impl NdjsonDecoder {
 
     /// Feeds one chunk; returns the complete, non-blank lines it finished (a `\r` before the
     /// `\n` is dropped).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LineError::LineTooLong`] when a line grows past the longest the decoder buffers,
+    /// and [`LineError::NotUtf8`] when a finished line is not UTF-8.
     pub fn feed(&mut self, bytes: &[u8]) -> Result<Vec<String>, LineError> {
         self.pending.extend_from_slice(bytes);
         let mut lines = Vec::new();
@@ -63,7 +68,7 @@ fn line(raw: &[u8]) -> Result<Option<String>, LineError> {
     if raw.len() > LINE_MAX {
         return Err(LineError::LineTooLong);
     }
-    let text = std::str::from_utf8(raw).map_err(|_| LineError::NotUtf8)?;
+    let text = std::str::from_utf8(raw).ok().ok_or(LineError::NotUtf8)?;
     let text = text.strip_suffix('\r').unwrap_or(text);
     Ok((!text.trim().is_empty()).then(|| text.to_owned()))
 }

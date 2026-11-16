@@ -40,24 +40,28 @@ impl TextureBook {
     }
 
     /// The book with `window` drawn from `entry`.
+    #[must_use]
     pub fn with_window(mut self, window: WindowId, entry: SurfaceEntry) -> TextureBook {
         self.windows.insert(window, entry);
         self
     }
 
     /// The book without `window`.
+    #[must_use]
     pub fn without_window(mut self, window: &WindowId) -> TextureBook {
         self.windows.remove(window);
         self
     }
 
     /// The book with `layer` drawn from `entry`.
+    #[must_use]
     pub fn with_layer(mut self, layer: LayerKey, entry: SurfaceEntry) -> TextureBook {
         self.layers.insert(layer, entry);
         self
     }
 
     /// The book without `layer`.
+    #[must_use]
     pub fn without_layer(mut self, layer: &LayerKey) -> TextureBook {
         self.layers.remove(layer);
         self
@@ -65,6 +69,7 @@ impl TextureBook {
 
     /// The book with every layer surface's committed size read again by `size_of` (a layer
     /// surface's buffer arrives on a commit that changes nothing the model hears about).
+    #[must_use]
     pub fn with_layers_sized(mut self, size_of: impl Fn(&WlSurface) -> LogicalSize) -> TextureBook {
         self.layers
             .values_mut()
@@ -73,18 +78,21 @@ impl TextureBook {
     }
 
     /// The book with `output`'s lock surface drawn from `entry`.
+    #[must_use]
     pub fn with_lock(mut self, output: OutputKey, entry: SurfaceEntry) -> TextureBook {
         self.locks.insert(output, entry);
         self
     }
 
     /// The book without any lock surface.
+    #[must_use]
     pub fn without_locks(mut self) -> TextureBook {
         self.locks.clear();
         self
     }
 
     /// The book with the client cursor surface `cursor` (or none).
+    #[must_use]
     pub fn with_cursor(mut self, cursor: Option<WlSurface>) -> TextureBook {
         self.cursor = cursor;
         self

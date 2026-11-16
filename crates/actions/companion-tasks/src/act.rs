@@ -54,20 +54,34 @@ impl Acting {
     }
 
     /// The next thing the router says of the call.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ClientError`] when the router stops answering or refuses the call.
     pub async fn event(&mut self) -> Result<PerformEvent, ClientError> {
         self.watch.next().await
     }
 }
 
 /// The card named by the text `Act` was given: the id itself or its JSON string.
+///
+/// # Errors
+///
+/// Returns [`ServeFault::NoSuchCard`] when `text` names no card.
 pub fn card_id(text: &str) -> Result<CardActionId, ServeFault> {
     serde_json::from_str::<CardActionId>(text)
         .or_else(|_| CardActionId::parse(text))
-        .map_err(|_| ServeFault::NoSuchCard)
+        .ok()
+        .ok_or(ServeFault::NoSuchCard)
 }
 
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S> {
     /// Starts the card's call and shows it as a step. The answer must offer the card.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ServeFault::NoSuchCard`] when the answer offers no card by that id, or a
+    /// [`ServeFault`] from the router.
     pub async fn begin_act(
         &mut self,
         task: &TaskId,
@@ -112,6 +126,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// A draft or a proposal is the answer now: its cards may be acted on.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the task is unknown or finished.
     pub fn propose(
         &mut self,
         task: &TaskId,

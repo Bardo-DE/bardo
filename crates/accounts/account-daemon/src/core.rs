@@ -170,10 +170,7 @@ async fn register_objects<H: Host, C: Callers>(
 ) -> zbus::Result<()> {
     let server = connection.object_server();
     server
-        .at(
-            ACCOUNTS_PATH,
-            ManagerServed(Manager::new(Arc::clone(core))),
-        )
+        .at(ACCOUNTS_PATH, ManagerServed(Manager::new(Arc::clone(core))))
         .await?;
     server
         .at(

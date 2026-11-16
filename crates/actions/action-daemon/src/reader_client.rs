@@ -22,21 +22,31 @@ impl ReaderClient {
     /// `Session.Resolve` (the inputs stay in intentd's handle table) and answers a value that
     /// fits the schema, as the JSON of `Result<Value, ReaderError>`. A reader that is not on the
     /// bus is `ModelUnavailable`: never a value, never a panic.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ReaderError`] when readerd cannot be reached, refuses, or answers something that
+    /// is not valid or does not fit the schema.
     pub async fn extract_in(
         &self,
         session: &SessionId,
         ask: &ReaderAsk,
     ) -> Result<Value, ReaderError> {
-        let ask = serde_json::to_string(ask).map_err(|_| ReaderError::Unparseable)?;
+        let ask = serde_json::to_string(ask)
+            .ok()
+            .ok_or(ReaderError::Unparseable)?;
         let proxy = ReaderProxy::new(&self.connection)
             .await
-            .map_err(|_| ReaderError::ModelUnavailable)?;
+            .ok()
+            .ok_or(ReaderError::ModelUnavailable)?;
         let answer = proxy
             .extract(session.as_str(), &ask, &Details::new())
             .await
-            .map_err(|_| ReaderError::ModelUnavailable)?;
+            .ok()
+            .ok_or(ReaderError::ModelUnavailable)?;
         serde_json::from_str::<Result<Value, ReaderError>>(&answer)
-            .map_err(|_| ReaderError::Unparseable)?
+            .ok()
+            .ok_or(ReaderError::Unparseable)?
     }
 }
 

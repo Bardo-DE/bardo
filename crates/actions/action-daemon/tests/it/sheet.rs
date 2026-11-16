@@ -12,7 +12,7 @@ use action_dbus::callers::{Identity, Role};
 use action_vocab::{LabelText, Seconds};
 use base_ids::Count;
 use permission_core::{ACP_AGENT_APP, AskReason};
-use provenance::{Actor, ConfirmId, ConfirmReceipt, Effect, InputProof, SpaceId, UnixSeconds};
+use provenance::{Actor, ConfirmReceipt, Effect, InputProof, SpaceId, UnixSeconds};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -30,7 +30,7 @@ fn request(id: &str, expires: u32) -> ConfirmRequest {
         why: vec![AskReason::FromTerminal],
         taint: TaintNote::Clean,
         offer: ConfirmOffer::OnceOrFromTerminal,
-        always: Default::default(),
+        always: permission_core::AlwaysOffer::default(),
         limits: SheetLimits::default(),
         gesture: Gesture::Press,
         anchor: Anchor::Centre,

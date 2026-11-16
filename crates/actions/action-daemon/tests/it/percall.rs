@@ -197,7 +197,7 @@ async fn desk(answers: usize) -> Desk {
         reader: ScriptedReader::default(),
     };
     {
-        use account_core::consent::{Decision, Grant, GrantScope, Usage};
+        use account_core::consent::{Decision, Grant, Usage};
         use action_router::GrantStore;
         for (n, usage) in [Usage::Interactive, Usage::Background]
             .into_iter()
@@ -358,12 +358,13 @@ async fn a_lying_provider_is_clamped_and_a_failed_classify_means_the_ceiling() {
     desk.menu
         .0
         .script("Adjust", MenuItem::effect(Effect::Destructive));
-    run(&desk, call("menu.item.adjust", "Adjust")).await.ok();
+    // Whether the call is refused does not matter here; what was classified is checked.
+    let _ = run(&desk, call("menu.item.adjust", "Adjust")).await;
     let c = classified(&desk);
     assert_eq!(c[0].used, Effect::UndoableWrite);
     assert_eq!(c[0].sent, CallClass::Effect(Effect::UndoableWrite));
     // An item the provider refuses to classify (it does not know it): the ceiling, an ask.
-    run(&desk, call("menu.item.activate", "Unknown")).await.ok();
+    let _ = run(&desk, call("menu.item.activate", "Unknown")).await;
     let c = classified(&desk);
     assert_eq!(
         c[1].answer,

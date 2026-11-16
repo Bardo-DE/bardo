@@ -4,7 +4,6 @@
 
 use crate::shared::Change;
 use provenance::TaskId;
-use std::future::Future;
 
 /// Where the tasks are shown: what is told when state changes, how an interactive request cuts
 /// into background work, and what an answer is called out there.

@@ -269,7 +269,8 @@ fn read_tokens_detailed(response: &Response<Vec<u8>>) -> Result<TokenResponse, E
     let fault = match response.status().as_u16() {
         200..=299 => {
             return serde_json::from_slice(response.body())
-                .ok().ok_or_else(|| ExchangeFault::Unreadable.into());
+                .ok()
+                .ok_or_else(|| ExchangeFault::Unreadable.into());
         }
         401 => ExchangeFault::Refused,
         400 if oauth_error(response).as_deref() == Some("invalid_grant") => ExchangeFault::Refused,
@@ -290,14 +291,17 @@ async fn send_form<H: Http>(
     pairs: &[(&str, &str)],
 ) -> Result<Response<Vec<u8>>, ExchangeFault> {
     let request = request_to(Method::POST, url)
-        .ok().ok_or(ExchangeFault::Unreachable)?
+        .ok()
+        .ok_or(ExchangeFault::Unreachable)?
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .header(ACCEPT, "application/json")
         .body(form::body(pairs).into_bytes())
-        .ok().ok_or(ExchangeFault::Unreachable)?;
+        .ok()
+        .ok_or(ExchangeFault::Unreachable)?;
     http.send(request)
         .await
-        .ok().ok_or(ExchangeFault::Unreachable)
+        .ok()
+        .ok_or(ExchangeFault::Unreachable)
 }
 
 #[cfg(test)]

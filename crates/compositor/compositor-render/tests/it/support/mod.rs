@@ -108,8 +108,8 @@ pub fn render_once<R: Offscreen1>(
 
 /// `bytes` (R, G, B, A rows) as an image.
 pub fn image_of(size: (i32, i32), bytes: Vec<u8>) -> RgbaImage {
-    let side = |n: i32| u32::try_from(n).expect("positive size");
-    RgbaImage::from_raw(side(size.0), side(size.1), bytes).expect("a whole frame")
+    let edge = |n: i32| u32::try_from(n).expect("positive size");
+    RgbaImage::from_raw(edge(size.0), edge(size.1), bytes).expect("a whole frame")
 }
 
 /// Images side by side, top-aligned (outputs placed next to each other).

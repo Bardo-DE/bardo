@@ -5,7 +5,6 @@
 use crate::support::apps::{Blank, answering_intentd, serve_mail};
 use crate::support::bus::PrivateBus;
 use crate::support::world::app;
-use action_core::LinkFault;
 use action_core::*;
 use action_daemon::DbusLink;
 use action_dbus::{INTENTS_BUS, IntentProviderProxy};
@@ -172,18 +171,38 @@ impl IntentProvider for Slow {
         tokio::time::sleep(Duration::from_secs(3)).await;
         Err(AppRefusal::Busy)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn dry_run(&self, _: Invocation) -> Result<Preview, AppRefusal> {
         Ok(Preview::None)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn undo(&self, _: UndoToken, _: Actor) -> Result<(), UndoFault> {
         Ok(())
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn search(&self, _: &str) -> Vec<Hit> {
         vec![]
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn preview(&self, _: &EntityId) -> Preview {
         Preview::None
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn suggest(&self, _: SuggestAsk) -> Vec<EntityRef> {
         vec![]
     }
@@ -285,7 +304,6 @@ async fn a_provider_answers_nobody_but_intentd() {
 }
 
 /// `Blank` keeps `ContextSource` and `SummonTarget` in scope for the slow app above.
-#[allow(dead_code)]
 fn _seams<T: ContextSource + SummonTarget>() {}
 
 /// An app that keeps the activation token it is handed (and refuses the call).
@@ -298,10 +316,18 @@ impl IntentProvider for Keeps {
     fn manifest(&self) -> &ValidManifest {
         &self.0
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn perform(&self, _: Invocation) -> Result<Outcome, AppRefusal> {
         self.1.lock().expect("log").push(None);
         Err(AppRefusal::Busy)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn perform_activated(
         &self,
         _: Invocation,
@@ -310,18 +336,38 @@ impl IntentProvider for Keeps {
         self.1.lock().expect("log").push(activation);
         Err(AppRefusal::Busy)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn dry_run(&self, _: Invocation) -> Result<Preview, AppRefusal> {
         Ok(Preview::None)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn undo(&self, _: UndoToken, _: Actor) -> Result<(), UndoFault> {
         Ok(())
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn search(&self, _: &str) -> Vec<Hit> {
         vec![]
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn preview(&self, _: &EntityId) -> Preview {
         Preview::None
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn suggest(&self, _: SuggestAsk) -> Vec<EntityRef> {
         vec![]
     }

@@ -32,7 +32,7 @@ pub fn events_of(rows: &[Logged]) -> Vec<ReplayEvent> {
                 SessionEntry::Turn(turn) => Some(turn.at),
                 _ => None,
             },
-            _ => None,
+            Read::Unreadable(_) => None,
         })
         .unwrap_or(UnixSeconds(0));
     let mut agent = AgentRef::Companion;
@@ -74,12 +74,17 @@ pub fn events_of(rows: &[Logged]) -> Vec<ReplayEvent> {
 }
 
 /// The events of every session `log` lists, oldest session first; `None` when it lists none (a
-/// router with no session log, or a log that has just begun). A session whose rows cannot be
-/// read adds nothing; a log that cannot list is unavailable.
+/// router with no session log, or a log that has just begun).
+///
+/// A session whose rows cannot be read adds nothing; a log that cannot list is unavailable.
+///
+/// # Errors
+///
+/// Returns [`ReplayFault::Unavailable`] when the log cannot list its sessions.
 pub async fn stored_events<L: SessionLog>(
     log: &L,
 ) -> Result<Option<Vec<ReplayEvent>>, ReplayFault> {
-    let sessions = log.sessions().await.map_err(|_| ReplayFault::Unavailable)?;
+    let sessions = log.sessions().await.ok().ok_or(ReplayFault::Unavailable)?;
     if sessions.is_empty() {
         return Ok(None);
     }
@@ -112,7 +117,7 @@ mod tests {
             cwd: cwd.map(|c| Workspace::parse(c).expect("workspace")),
             started_from: None,
             label: None,
-            rewind: Default::default(),
+            rewind: action_core::Rewind::default(),
         })
     }
 

@@ -51,6 +51,11 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     /// planner's role, the policy cut from the person's words (or the giver's) and the helper's
     /// reach, and the answers it is handed waiting in its inbox. A session that cannot be briefed
     /// is closed again.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`JobFault`] when the planner's session cannot be opened or briefed, or the app it
+    /// runs cannot be used here.
     pub async fn open_job(&mut self, spec: &JobSpec) -> Result<OpenedJob, JobFault> {
         self.refresh_catalogue().await;
         self.config.budget.calls = steps_for(spec.card.budget.steps, spec.job.steps);
@@ -102,7 +107,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     async fn brief_job(&mut self, spec: &JobSpec, opened: &OpenedJob) -> Result<(), JobFault> {
-        let role = role_text(&spec.card, &spec.job).map_err(|_| JobFault::Crashed)?;
+        let role = role_text(&spec.card, &spec.job)
+            .ok()
+            .ok_or(JobFault::Crashed)?;
         self.planner.set_role(role);
         // The person's own words give the policy; a planner's words never do, so a job its giver
         // wrote has only its giver's policy, cut to the helper's reach.
@@ -149,7 +156,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             let sent = self.intents.send(input.from.clone(), draft).await;
             best_effort("message.send.input", &input.from, sent);
         }
-        self.pull().await.map_err(|_| JobFault::Crashed)?;
+        self.pull().await.ok().ok_or(JobFault::Crashed)?;
         Ok(())
     }
 
@@ -191,7 +198,6 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             }
         };
         let (ending, why) = match (ran, state.phase) {
-            (Err(_), _) => (JobEnding::Failed(JobFault::Crashed), None),
             (Ok(()), LoopPhase::Finished(FinishedAs::Done)) => {
                 (JobEnding::Done { words: words() }, None)
             }
@@ -215,7 +221,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
                 ),
             },
             (Ok(()), LoopPhase::Paused(_)) => (JobEnding::Failed(JobFault::Refused), None),
-            (Ok(()), _) => (JobEnding::Failed(JobFault::Crashed), None),
+            // A run that failed, or ended in a phase the loop does not finish in.
+            (Err(_), _) | (Ok(()), _) => (JobEnding::Failed(JobFault::Crashed), None),
         };
         if let JobEnding::Failed(fault) = &ending {
             tracing::info!(

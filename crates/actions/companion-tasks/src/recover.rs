@@ -16,7 +16,6 @@ use companion_wire::{SESSION_KIND_PREFIX, SessionRecord};
 use memory_core::{BodyMode, Episode, KindPattern, RecentEntry, RecentQuery, TrustFilter};
 use provenance::{Message, RunId, SpaceId, UnixSeconds};
 use std::collections::BTreeMap;
-use std::future::Future;
 
 /// The kind of a message the router delivered.
 const MESSAGE_KIND: &str = "companion.message";
@@ -57,10 +56,11 @@ pub trait RecentSource: Send + Sync {
     ) -> impl Future<Output = Result<Vec<RecentEntry>, ReplayFault>> + Send;
 }
 
-/// `Recent` through the router: `Session.Recall` in a session of the Space to read. The router
-/// hands over a body only for an entry whose label is trusted (a message that carries what a worker
-/// read, or a narrated episode, comes without one and says nothing here), and the Space is the
-/// session's: a restart reads each Space it knows through a session of its own.
+/// `Recent` through the router: `Session.Recall` in a session of the Space to read.
+///
+/// The router hands over a body only for an entry whose label is trusted (a message that carries
+/// what a worker read, or a narrated episode, comes without one and says nothing here), and the
+/// Space is the session's: a restart reads each Space it knows through a session of its own.
 #[derive(Debug)]
 pub struct RouterRecent<'a, I: action_client::Transport> {
     intents: &'a action_client::Intents<I>,
@@ -80,7 +80,8 @@ impl<I: action_client::Transport> RecentSource for RouterRecent<'_, I> {
             .intents
             .session_recall(self.session.clone(), action_wire::RecallAsk::Recent(query))
             .await
-            .map_err(|_| ReplayFault::Unavailable)?;
+            .ok()
+            .ok_or(ReplayFault::Unavailable)?;
         let action_wire::RecallView::Recent(lines) = view else {
             return Err(ReplayFault::Unavailable);
         };
@@ -249,6 +250,10 @@ fn run_of(
 
 /// The rebuild's events from `Recent`'s entries (newest first in, oldest first out). Entries of
 /// other kinds are skipped; one of ours that does not parse is `Malformed`.
+///
+/// # Errors
+///
+/// Returns [`ReplayFault::Malformed`] when an entry is not in the form its owner writes.
 pub fn replay_of(entries: &[RecentEntry]) -> Result<Vec<ReplayEvent>, ReplayFault> {
     let mut events = Vec::new();
     let mut spaces = BTreeMap::new();
@@ -269,6 +274,10 @@ pub fn replay_of(entries: &[RecentEntry]) -> Result<Vec<ReplayEvent>, ReplayFaul
 
 /// The events `source` holds since `since`: session notes, messages, episodes and runs, oldest
 /// first.
+///
+/// # Errors
+///
+/// Returns a [`ReplayFault`] when the router or memoryd is not there, or a record is malformed.
 pub async fn recent_events<S: RecentSource>(
     source: &S,
     since: UnixSeconds,
@@ -279,6 +288,10 @@ pub async fn recent_events<S: RecentSource>(
 /// Rebuilds the roster and the front task from what `source` holds since `since`, session notes
 /// included (the sessions the router stores come from `stored_events`, and `rebuild_from` joins
 /// the two).
+///
+/// # Errors
+///
+/// Returns a [`ReplayFault`] when the router or memoryd is not there, or a record is malformed.
 pub async fn recover<S: RecentSource>(
     source: &S,
     since: UnixSeconds,
@@ -287,10 +300,12 @@ pub async fn recover<S: RecentSource>(
 }
 
 /// Rebuilds from the sessions the router stores (`stored`: `None` when it stores none) and the
-/// records memory holds, in time order. The session notes in memory count only when the router
-/// stores no sessions; otherwise the stored sessions are the truth, and an editor's session
-/// (left out of them) is not brought back by an older note. A session's events come first among
-/// equals: its own records are older than the episode that ends it.
+/// records memory holds, in time order.
+///
+/// The session notes in memory count only when the router stores no sessions; otherwise the stored
+/// sessions are the truth, and an editor's session (left out of them) is not brought back by an
+/// older note. A session's events come first among equals: its own records are older than the
+/// episode that ends it.
 #[must_use]
 pub fn rebuild_from(stored: Option<Vec<ReplayEvent>>, recent: Vec<ReplayEvent>) -> Rebuilt {
     let mut events = match stored {

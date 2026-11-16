@@ -88,6 +88,10 @@ fn disjoint(region: &RegionAttributes) -> Vec<Rectangle<i32, Logical>> {
 
 /// A surface-local rectangle of a surface at `origin` stretched by `ratio`, in `view`'s
 /// physical pixels (each edge rounded, so neighbours stay touching).
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 fn placed(
     rect: Rectangle<i32, Logical>,
     origin: SubPoint,
@@ -227,6 +231,7 @@ impl BlurV0Element {
 
     /// The same blur over the rectangles `map` makes of each of this one's (a window cut into
     /// strips has its blur cut the same way); the id, the stand-in and the alpha are kept.
+    #[must_use]
     pub fn remapped<I: IntoIterator<Item = PhysicalRect>>(
         &self,
         map: impl Fn(PhysicalRect) -> I,

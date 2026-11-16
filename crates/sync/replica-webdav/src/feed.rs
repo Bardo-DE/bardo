@@ -408,7 +408,8 @@ impl<H: Http> WebDavReplica<H> {
             207 => {
                 let text = String::from_utf8_lossy(response.body());
                 let status = parse_multistatus(&text)
-                    .ok().ok_or_else(|| ReplicaError::Transient(RetryAfter(30)))?;
+                    .ok()
+                    .ok_or(ReplicaError::Transient(RetryAfter(30)))?;
                 Ok(entries(&self.root, &status))
             }
             404 if *folder != self.root.folder() => Ok(Vec::new()),

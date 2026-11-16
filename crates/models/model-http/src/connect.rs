@@ -53,7 +53,8 @@ fn build(endpoint: &HttpEndpoint, roots: &TlsRoots) -> Result<Client, HttpError>
     };
     secure(builder, &endpoint.target, roots)?
         .build()
-        .map_err(|_| HttpError::Connect)
+        .ok()
+        .ok_or(HttpError::Connect)
 }
 
 #[cfg(feature = "tls")]
@@ -86,7 +87,8 @@ fn secure(
                 .iter()
                 .map(|cert| reqwest::Certificate::from_der(&cert.0))
                 .collect::<Result<Vec<_>, _>>()
-                .map_err(|_| HttpError::Tls)?;
+                .ok()
+                .ok_or(HttpError::Tls)?;
             Ok(builder.tls_certs_only(certs))
         }
     }

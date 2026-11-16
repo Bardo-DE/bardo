@@ -130,6 +130,10 @@ impl Pair {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one test that sets a scenario up and checks it step by step"
+)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn every_member_over_the_bus_answers_what_the_router_answers() {
     let world = World::serving(mail_router(), everything_config()).await;
@@ -668,9 +672,4 @@ async fn a_request_that_the_bus_cannot_carry_to_intentd_is_closed_not_a_hang() {
         matches!(reply, Err(TransportError::Closed | TransportError::Bus(_))),
         "{reply:?}"
     );
-}
-
-#[allow(dead_code)]
-fn session_id(text: &str) -> SessionId {
-    SessionId::parse(text).expect("session")
 }

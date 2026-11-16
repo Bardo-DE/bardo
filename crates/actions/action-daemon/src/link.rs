@@ -14,7 +14,6 @@ use action_vocab::{EntityRef, UndoToken};
 use provenance::{Actor, EntityId};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
-use std::future::Future;
 use std::time::Duration;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;

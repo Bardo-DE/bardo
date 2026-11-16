@@ -12,7 +12,6 @@ use crate::support;
 use anyview_core::FormatKind;
 use anyview_peek::{AnyPeeked, Body, Card, PageLook, PdfPeeked, STYLE, peek};
 use anyview_text::{TokenClass, TokenLine, TokenSpan};
-use dioxus::core::VirtualDom;
 use dioxus::prelude::*;
 use std::sync::{Arc, OnceLock};
 use support::{Home, fixture, pane_budget};
@@ -64,7 +63,7 @@ struct Setup {
     peeked: Arc<AnyPeeked>,
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "a Dioxus component is named in CamelCase")]
 fn Root(setup: Setup) -> Element {
     rsx! {
         Ds {
@@ -272,6 +271,11 @@ fn the_pane_in_a_real_document_lists_the_file_and_its_facts() {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a laid-out pane rectangle in pixels is non-negative and small"
+)]
 #[test]
 fn the_specimen_is_inked_in_a_real_document_with_the_panes_ink() {
     let mut harness = harness(body("font"));
@@ -318,6 +322,10 @@ fn hosted() -> Element {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the host is a few hundred pixels tall"
+)]
 #[test]
 fn the_pane_fits_the_box_it_is_given_and_shows_its_name_and_every_fact() {
     let names = [

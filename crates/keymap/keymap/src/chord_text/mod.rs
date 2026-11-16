@@ -125,7 +125,8 @@ fn parse_key(token: &str) -> Result<Key, ChordError> {
         _ => token
             .parse::<NamedKey>()
             .map(Key::Named)
-            .map_err(|_| ChordError::UnknownKey(token.to_owned())),
+            .ok()
+            .ok_or_else(|| ChordError::UnknownKey(token.to_owned())),
     }
 }
 

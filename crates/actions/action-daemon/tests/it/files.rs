@@ -75,8 +75,7 @@ fn the_environment_says_where_everything_is() {
         "XDG_DATA_HOME" => Some(data.display().to_string()),
         // An empty value means the system defaults (/usr/local/share, /etc/xdg): name a missing
         // directory instead, so the machine's own manifests are never read.
-        "XDG_DATA_DIRS" => Some(home.path().join("none").display().to_string()),
-        "XDG_CONFIG_DIRS" => Some(home.path().join("none").display().to_string()),
+        "XDG_DATA_DIRS" | "XDG_CONFIG_DIRS" => Some(home.path().join("none").display().to_string()),
         "XDG_SESSION_ID" => Some("c3".into()),
         "HOME" => Some(home.path().display().to_string()),
         _ => None,
@@ -114,6 +113,7 @@ fn the_environment_says_where_everything_is() {
 
 #[test]
 fn the_shipped_configuration_gives_a_terminal_the_cli_role_and_sill_the_rest() {
+    use action_vocab::CallerRole as R;
     let config = action_daemon::IntentdConfig::shipped().expect("shipped");
     let roles = |name: &str| {
         config
@@ -121,7 +121,6 @@ fn the_shipped_configuration_gives_a_terminal_the_cli_role_and_sill_the_rest() {
             .into_iter()
             .collect::<Vec<_>>()
     };
-    use action_vocab::CallerRole as R;
     assert_eq!(roles("org.bardo.Do"), [R::Cli]);
     assert_eq!(
         roles("org.bardo.Temor"),

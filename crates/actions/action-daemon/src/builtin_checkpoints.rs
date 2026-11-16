@@ -12,7 +12,6 @@ use action_router::{Router, Seams};
 use action_vocab::{EntityRef, UndoToken};
 use provenance::{Actor, EntityId};
 use std::fmt;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, OnceLock, Weak};
 
@@ -117,21 +116,37 @@ impl IntentProvider for CheckpointsProvider {
         self.port.dry_run(inv).await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn undo(&self, token: UndoToken, actor: Actor) -> Result<(), UndoFault> {
         let _ = (token, actor);
         Err(UndoFault::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn search(&self, text: &str) -> Vec<Hit> {
         let _ = text;
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn preview(&self, id: &EntityId) -> Preview {
         let _ = id;
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn suggest(&self, ask: SuggestAsk) -> Vec<EntityRef> {
         let _ = ask;
         Vec::new()

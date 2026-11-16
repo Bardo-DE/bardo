@@ -11,7 +11,6 @@ use action_dbus::callers::Identity;
 use action_dbus::{BusConnection, INTENTS_BUS};
 use action_router::{Router, Seams, Watch, acting_role};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, Member};
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use zbus::fdo::{RequestNameFlags, RequestNameReply};
@@ -24,6 +23,10 @@ pub enum ServeFault {
     Bus(String),
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn bus(error: zbus::Error) -> ServeFault {
     ServeFault::Bus(error.to_string())
 }
@@ -61,9 +64,15 @@ fn search_port<S: Seams + 'static>(router: Arc<Router<S>>) -> IndexedSearch {
 }
 
 /// Exports every interface of `org.bardo.Intents1` on `connection` over `router` and claims the
-/// name; the roles of the callers are `config`'s, and the processes behind them are named by the
-/// shipped `actiond-callers.toml` over the system's `/proc`. Returns once the name is ours and the
+/// name.
+///
+/// The roles of the callers are `config`'s, and the processes behind them are named by the shipped
+/// `actiond-callers.toml` over the system's `/proc`. Returns once the name is ours and the
 /// connection keeps serving until it closes.
+///
+/// # Errors
+///
+/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
 pub async fn serve_on<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
@@ -74,6 +83,10 @@ pub async fn serve_on<S: Seams + 'static>(
 
 /// As [`serve_on`], naming callers by the cgroups under `proc_root` (the system's `/proc` unless
 /// a test build chose a fixture tree).
+///
+/// # Errors
+///
+/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
 pub async fn serve_on_with<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
@@ -100,6 +113,10 @@ pub async fn serve_on_with<S: Seams + 'static>(
 /// As [`serve_on_with`], with callers named by `who` (the daemon's table) and `org.bardo.Acp` an
 /// app only while `acp` shows the setting on. With an `index` store, what each app pushes is kept
 /// in it.
+///
+/// # Errors
+///
+/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
 pub async fn serve_on_gated<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
@@ -129,9 +146,14 @@ pub async fn serve_on_gated<S: Seams + 'static>(
     }
 }
 
-/// Claims `org.bardo.Intents1` on the session bus and serves every interface of it over
-/// `router`, deriving each caller's identity and role from the connection (never from a body)
-/// by `config`'s roles, until the connection closes.
+/// Claims `org.bardo.Intents1` on the session bus and serves every interface of it over `router`.
+///
+/// Each caller's identity and role are derived from the connection (never from a body) by
+/// `config`'s roles, until the connection closes.
+///
+/// # Errors
+///
+/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
 pub async fn serve<S: Seams + 'static>(
     router: Arc<Router<S>>,
     config: Arc<IntentdConfig>,

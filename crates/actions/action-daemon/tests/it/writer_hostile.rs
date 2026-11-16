@@ -56,7 +56,7 @@ async fn derive(reply: &str, said: &str) -> Result<TaskPolicy, ReviewError> {
         .map(|derived| derived.policy)
 }
 
-fn with(extra: serde_json::Value) -> String {
+fn with(extra: &serde_json::Value) -> String {
     let mut base = json!({
         "actions": [], "apps": [], "kinds": [], "ceiling": "read", "max_count": 5,
         "recipients": [], "destinations": [], "paths": [],
@@ -71,7 +71,7 @@ fn with(extra: serde_json::Value) -> String {
 async fn a_recipient_is_kept_only_as_a_whole_word_the_person_wrote() {
     let said = "send the receipts to alice@example.com.";
     let kept = |recipients: serde_json::Value| async move {
-        derive(&with(json!({ "recipients": recipients })), said)
+        derive(&with(&json!({ "recipients": recipients })), said)
             .await
             .expect("policy")
             .recipients
@@ -110,7 +110,7 @@ async fn a_recipient_is_kept_only_as_a_whole_word_the_person_wrote() {
 async fn a_path_is_kept_only_whole_and_never_the_root() {
     let said = "move report.pdf to /home/me/docs/archive please";
     let kept = |paths: serde_json::Value| async move {
-        derive(&with(json!({ "paths": paths })), said)
+        derive(&with(&json!({ "paths": paths })), said)
             .await
             .expect("policy")
             .paths
@@ -133,7 +133,7 @@ async fn a_path_is_kept_only_whole_and_never_the_root() {
 
 #[tokio::test]
 async fn a_count_and_a_ceiling_are_bounded_and_unknown_actions_drop() {
-    let reply = with(json!({
+    let reply = with(&json!({
         "actions": ["org.bardo.Banking bank.transfer.send", "org.bardo.Mail mail.thread.nuke", "org.bardo.Mail mail.thread.read"],
         "apps": [{ "app": "org.bardo.Banking", "up_to": "destructive" }],
         "ceiling": "destructive",
@@ -158,7 +158,7 @@ async fn a_count_and_a_ceiling_are_bounded_and_unknown_actions_drop() {
 
 #[tokio::test]
 async fn replies_outside_the_shape_are_no_policy() {
-    let good = with(json!({}));
+    let good = with(&json!({}));
     let table: Vec<(&str, String)> = vec![
         ("empty", String::new()),
         ("fenced", format!("```json\n{good}\n```")),
@@ -166,15 +166,15 @@ async fn replies_outside_the_shape_are_no_policy() {
         ("leading words", format!("Here: {good}")),
         ("null", "null".into()),
         ("an array of drafts", format!("[{good}]")),
-        ("a negative count", with(json!({ "max_count": -1 }))),
+        ("a negative count", with(&json!({ "max_count": -1 }))),
         (
             "a count that is words",
-            with(json!({ "max_count": "many" })),
+            with(&json!({ "max_count": "many" })),
         ),
-        ("a fractional count", with(json!({ "max_count": 1.5 }))),
+        ("a fractional count", with(&json!({ "max_count": 1.5 }))),
         (
             "a ceiling that is not an effect",
-            with(json!({ "ceiling": "root" })),
+            with(&json!({ "ceiling": "root" })),
         ),
         (
             "a key twice",
@@ -185,11 +185,11 @@ async fn replies_outside_the_shape_are_no_policy() {
         ),
         (
             "recipients as one string",
-            with(json!({ "recipients": "eve@evil.test" })),
+            with(&json!({ "recipients": "eve@evil.test" })),
         ),
         (
             "actions as objects",
-            with(json!({ "actions": [{ "a": 1 }] })),
+            with(&json!({ "actions": [{ "a": 1 }] })),
         ),
     ];
     for (name, reply) in table {
@@ -204,7 +204,7 @@ async fn replies_outside_the_shape_are_no_policy() {
 #[tokio::test]
 async fn a_very_large_reply_is_read_in_full_or_refused_never_half_believed() {
     let padding = "x".repeat(2_000_000);
-    let big = with(json!({ "kinds": [padding] }));
+    let big = with(&json!({ "kinds": [padding] }));
     // Whatever the length, the answer is a policy with the bounded fields or an error: the
     // kinds that do not parse as kinds are dropped.
     let policy = derive(&big, "summarise this thread").await.expect("policy");

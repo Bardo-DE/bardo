@@ -259,6 +259,11 @@ fn hevc_in(header: &[u8]) -> Option<&'static str> {
         .then_some("hevc")
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "guarded by `>= 1.0`, and a sample rate is far below u32::MAX"
+)]
 fn audio_of(track: &Track) -> Option<AudioStream> {
     let entry: &AudioSampleEntry =
         track
@@ -297,18 +302,17 @@ fn audio_of(track: &Track) -> Option<AudioStream> {
 }
 
 #[cfg(test)]
-#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
     use std::fs::File;
 
     /// A box of `kind` holding `body`.
-    fn boxed(kind: &[u8; 4], body: &[u8]) -> Vec<u8> {
+    fn boxed(kind: [u8; 4], body: &[u8]) -> Vec<u8> {
         let mut out = u32::try_from(body.len() + 8)
             .unwrap()
             .to_be_bytes()
             .to_vec();
-        out.extend_from_slice(kind);
+        out.extend_from_slice(&kind);
         out.extend_from_slice(body);
         out
     }
@@ -325,9 +329,9 @@ mod tests {
         v1.extend_from_slice(&1000_u32.to_be_bytes());
         v1.extend_from_slice(&2500_u64.to_be_bytes());
         let cases: [(&str, Vec<u8>, Option<u64>); 3] = [
-            ("version 0", boxed(b"mvhd", &v0), Some(3_000_000)),
-            ("version 1", boxed(b"mvhd", &v1), Some(2_500_000)),
-            ("none", boxed(b"free", &[0; 8]), None),
+            ("version 0", boxed(*b"mvhd", &v0), Some(3_000_000)),
+            ("version 1", boxed(*b"mvhd", &v1), Some(2_500_000)),
+            ("none", boxed(*b"free", &[0; 8]), None),
         ];
         for (name, moov, want) in cases {
             assert_eq!(movie_micros(&moov), want, "{name}");
@@ -338,7 +342,7 @@ mod tests {
     fn a_truncated_box_is_refused_rather_than_read() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("cut.mp4");
-        let mut bytes = boxed(b"ftyp", b"isom\0\0\0\0");
+        let mut bytes = boxed(*b"ftyp", b"isom\0\0\0\0");
         bytes.extend_from_slice(&1000_u32.to_be_bytes());
         bytes.extend_from_slice(b"moov");
         std::fs::write(&path, &bytes).unwrap();

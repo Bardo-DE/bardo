@@ -1,7 +1,10 @@
 //! A scripted inferd for the daemons' model tests: a inference-client `Transport` whose sessions
 //! are account-fake's scripted ones, wrapped so the test can read what was opened (the need, the
 //! data class, the tier) and every frame the code under test sent. No bus, no engine, no GPU.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "helpers shared by the test files; each file uses some of them"
+)]
 
 use account_capability::Tier;
 use account_core::DataClass;
@@ -84,6 +87,10 @@ impl InferSession for LoggedSession {
 impl Transport for ScriptedInferd {
     type Session = LoggedSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn open_with(
         &self,
         need: &Need,

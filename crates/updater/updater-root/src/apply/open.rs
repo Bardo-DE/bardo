@@ -14,16 +14,20 @@ use std::path::Path;
 /// The `open` flags that refuse a link in the last place and never block on a pipe.
 #[must_use]
 pub fn untrusted_flags() -> i32 {
-    (OFlags::NOFOLLOW | OFlags::NONBLOCK).bits() as i32
+    (OFlags::NOFOLLOW | OFlags::NONBLOCK).bits().cast_signed()
 }
 
 /// The `open` flag that refuses a link in the last place.
 #[must_use]
 pub fn no_follow() -> i32 {
-    OFlags::NOFOLLOW.bits() as i32
+    OFlags::NOFOLLOW.bits().cast_signed()
 }
 
 /// Opens `path` for reading if, and only if, it is a regular file.
+///
+/// # Errors
+///
+/// Returns the I/O error when `path` cannot be opened, or is not a regular file.
 pub fn open_regular(path: &Path) -> io::Result<File> {
     let file = OpenOptions::new()
         .read(true)
@@ -49,6 +53,10 @@ pub enum Capped {
 }
 
 /// Reads the regular file `path`, at most `limit` bytes.
+///
+/// # Errors
+///
+/// Returns the I/O error when `path` cannot be opened, is not a regular file, or cannot be read.
 pub fn read_capped(path: &Path, limit: usize) -> io::Result<Capped> {
     let mut bytes = Vec::new();
     open_regular(path)?

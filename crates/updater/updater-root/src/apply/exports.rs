@@ -40,7 +40,8 @@ pub(super) fn recorded(
         MAX_SIGNATURE_BYTES,
         version,
     )?)
-    .map_err(|_| StagedError::Signature(SignError::BadSignature))?;
+    .ok()
+    .ok_or(StagedError::Signature(SignError::BadSignature))?;
     auth.authenticate(&bytes, &signature)
         .map_err(StagedError::Signature)?;
     Ok(Release::parse(&bytes).map_err(StagedError::Release)?)

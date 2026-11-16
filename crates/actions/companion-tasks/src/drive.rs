@@ -31,9 +31,10 @@ use permission_core::TASK_START;
 use provenance::{Effect, TaskId};
 use std::collections::VecDeque;
 
-/// How many tasks may stand above one that starts a task. The router lets only the assistant start
-/// tasks, so this is never reached in a run; it keeps a bug elsewhere from nesting worker runs
-/// until the stack is gone.
+/// How many tasks may stand above one that starts a task.
+///
+/// The router lets only the assistant start tasks, so this is never reached in a run; it keeps a
+/// bug elsewhere from nesting worker runs until the stack is gone.
 pub const MOST_TASK_DEPTH: usize = 3;
 
 /// What a call to the router came to, as the loop is told.
@@ -92,7 +93,7 @@ fn idle_loop() -> LoopState {
         turn: None,
         steps: 0,
         pending: vec![],
-        guard: Default::default(),
+        guard: agent_loop::Guard::default(),
     }
 }
 
@@ -554,7 +555,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         let result = match performed {
             Err(refusal) => Err(refusal),
             Ok(started) => match self.adopt_worker(task, &started).await {
-                Ok(_) => Ok(self.outcome_text(started)),
+                Ok(_) => Ok(Self::outcome_text(started)),
                 Err(error) => Err(match error {
                     ServeFault::Router(error) => refusal_of(error),
                     _ => CallRefusal::Timeout,

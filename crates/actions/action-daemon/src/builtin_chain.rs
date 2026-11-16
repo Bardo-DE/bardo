@@ -7,7 +7,6 @@ use action_manifest::ValidManifest;
 use action_provider::IntentProvider;
 use action_vocab::{EntityRef, UndoToken};
 use provenance::{Actor, EntityId};
-use std::future::Future;
 
 /// What a chain of in-process providers answers. Every method but `serves` and `manifests` is
 /// called only for an app `serves` accepted.

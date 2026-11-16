@@ -18,8 +18,10 @@ use smithay::backend::renderer::{
 use smithay::utils::{Buffer, Physical, Rectangle, Size, Transform};
 
 /// Draws `frame` into `target`, a client's dma-buf, with `renderer`: at the buffer's top-left
-/// corner, 1:1, over a cleared (transparent) buffer. The buffer may be larger than the frame.
-/// Returns once the renderer has finished, so the client may read the buffer.
+/// corner, 1:1, over a cleared (transparent) buffer.
+///
+/// The buffer may be larger than the frame. Returns once the renderer has finished, so the client
+/// may read the buffer.
 ///
 /// ```no_run
 /// use compositor_render::pass::{CapturedFrame, write_dmabuf};
@@ -30,6 +32,10 @@ use smithay::utils::{Buffer, Physical, Rectangle, Size, Transform};
 /// let _ = write_dmabuf(renderer, buffer, frame);
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the buffer cannot be drawn into or the draw is interrupted.
 pub fn write_dmabuf<R>(
     renderer: &mut R,
     target: &mut Dmabuf,
@@ -38,12 +44,12 @@ pub fn write_dmabuf<R>(
 where
     R: Renderer + ImportMem + Bind<Dmabuf>,
 {
-    let side = |n: u32| i32::try_from(n).map_err(|_| RenderError::NoTarget);
+    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     if frame.format != CaptureFormat::Argb8888 || frame.stride != frame.area.w.saturating_mul(4) {
         return Err(RenderError::NoTarget);
     }
-    let size = Size::<i32, Buffer>::from((side(frame.area.w)?, side(frame.area.h)?));
+    let size = Size::<i32, Buffer>::from((edge(frame.area.w)?, edge(frame.area.h)?));
     let texture = renderer
         .import_memory(&frame.bytes, Fourcc::Argb8888, size, false)
         .map_err(|e| fault(&e))?;
@@ -57,10 +63,12 @@ where
 }
 
 /// Draws `from`, a part of `texture` (a frame that stays on the GPU), into `target`, a client's
-/// dma-buf: at the buffer's top-left corner, 1:1, over a cleared (transparent) buffer, and
-/// returns once the renderer has finished. No byte of the frame is read by the CPU: this is the
-/// whole of a direct capture that is not a window (the texture is the output's last frame, drawn
-/// by the renderer that draws here). The buffer may be larger than `from`.
+/// dma-buf.
+///
+/// It draws at the buffer's top-left corner, 1:1, over a cleared (transparent) buffer, and returns
+/// once the renderer has finished. No byte of the frame is read by the CPU: this is the whole of a
+/// direct capture that is not a window (the texture is the output's last frame, drawn by the
+/// renderer that draws here). The buffer may be larger than `from`.
 ///
 /// ```no_run
 /// use compositor_core::geometry::PhysicalRect;
@@ -73,6 +81,10 @@ where
 /// let _ = blit_texture(renderer, frame, whole, buffer);
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the buffer cannot be drawn into or the draw is interrupted.
 pub fn blit_texture<R>(
     renderer: &mut R,
     texture: &<R as RendererSuper>::TextureId,
@@ -82,10 +94,10 @@ pub fn blit_texture<R>(
 where
     R: Renderer + Bind<Dmabuf>,
 {
-    let side = |n: u32| i32::try_from(n).map_err(|_| RenderError::NoTarget);
+    let edge = |n: u32| i32::try_from(n).ok().ok_or(RenderError::NoTarget);
     let fault = |error: &dyn std::fmt::Display| RenderError::Renderer(error.to_string());
     let (x, y) = (from.x, from.y);
-    let size = Size::<i32, Physical>::from((side(from.w)?, side(from.h)?));
+    let size = Size::<i32, Physical>::from((edge(from.w)?, edge(from.h)?));
     let held = texture.size();
     let out = target.size();
     let inside = x >= 0
@@ -118,7 +130,8 @@ where
         .map_err(|e| fault(&e))?;
     let done = drawing.finish().map_err(|e| fault(&e))?;
     done.wait()
-        .map_err(|_| RenderError::Renderer("the dma-buf draw was interrupted".to_owned()))
+        .ok()
+        .ok_or_else(|| RenderError::Renderer("the dma-buf draw was interrupted".to_owned()))
 }
 
 /// Reads `source`, a client's dma-buf (a cursor surface's buffer), through `renderer`.
@@ -132,6 +145,10 @@ where
 /// let _ = read_dmabuf(renderer, buffer);
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// Returns a [`RenderError`] when the dma-buf cannot be imported or read back.
 pub fn read_dmabuf<R>(renderer: &mut R, source: &Dmabuf) -> Result<ArgbImage, RenderError>
 where
     R: Renderer + ImportDma + ExportMem,
@@ -146,11 +163,11 @@ where
         .copy_texture(&texture, region, Fourcc::Abgr8888)
         .map_err(|e| fault(&e))?;
     let rgba = renderer.map_texture(&mapping).map_err(|e| fault(&e))?;
-    let side = |n: i32| u32::try_from(n).map_err(|_| RenderError::NoTarget);
+    let edge = |n: i32| u32::try_from(n).ok().ok_or(RenderError::NoTarget);
     Ok(ArgbImage::from_rgba(
         PhysicalSize {
-            w: side(size.w)?,
-            h: side(size.h)?,
+            w: edge(size.w)?,
+            h: edge(size.h)?,
         },
         rgba,
     ))

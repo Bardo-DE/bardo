@@ -160,7 +160,6 @@ pub(super) fn understand(line: &str) -> Result<(), FrameError> {
 }
 
 #[cfg(test)]
-#[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
     use crate::instance::Handoff;

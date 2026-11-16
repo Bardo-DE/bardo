@@ -50,8 +50,10 @@ pub fn scale_ratio(content: LogicalSize, size: SubSize) -> (f64, f64) {
 }
 
 /// Where `placed`'s content is drawn under `effect`, given where it is at its real size
-/// (`content`): the same place at the sampled size when it is [`FlightDraw::Scaled`], else
-/// `content`. The frame is drawn round this, and the title is made for its titlebar.
+/// (`content`).
+///
+/// It is the same place at the sampled size when it is [`FlightDraw::Scaled`], else `content`. The
+/// frame is drawn round this, and the title is made for its titlebar.
 #[must_use]
 pub fn drawn_content(
     placed: &PlacedWindow,
@@ -64,13 +66,13 @@ pub fn drawn_content(
 /// `content` for a window drawn as `draw`: at the sampled `size` when it is scaled.
 #[must_use]
 pub fn scaled_content(draw: FlightDraw, content: LogicalRect, size: SubSize) -> LogicalRect {
-    let side = |px: SubPx| u32::try_from(SubPx(px.0.max(0)).round_logical()).unwrap_or(0);
+    let edge = |px: SubPx| u32::try_from(SubPx(px.0.max(0)).round_logical()).unwrap_or(0);
     match draw {
         FlightDraw::Scaled => LogicalRect::new(
             content.origin,
             LogicalSize {
-                w: side(size.w),
-                h: side(size.h),
+                w: edge(size.w),
+                h: edge(size.h),
             },
         ),
         FlightDraw::Still | FlightDraw::Genie(_) => content,
@@ -93,14 +95,14 @@ pub fn at_rest(placed: &PlacedWindow, flight: &Flight) -> PlacedWindow {
 /// Where the window of `flight` stands at rest, and its size, in sub-pixels.
 #[must_use]
 pub fn rest_place(flight: &Flight) -> (SubPoint, SubSize) {
-    let side = |n: u32| SubPx::of_logical(i32::try_from(n).unwrap_or(i32::MAX));
+    let edge = |n: u32| SubPx::of_logical(i32::try_from(n).unwrap_or(i32::MAX));
     let at = SubPoint {
         x: SubPx::of_logical(flight.window.origin.x),
         y: SubPx::of_logical(flight.window.origin.y),
     };
     let size = SubSize {
-        w: side(flight.window.size.w),
-        h: side(flight.window.size.h),
+        w: edge(flight.window.size.w),
+        h: edge(flight.window.size.h),
     };
     (at, size)
 }

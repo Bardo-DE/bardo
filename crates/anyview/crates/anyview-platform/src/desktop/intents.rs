@@ -91,7 +91,8 @@ impl ViewerIntents {
         let count = files.len();
         self.sender
             .send(Request::Open(files))
-            .map_err(|_| AppRefusal::Busy)?;
+            .ok()
+            .ok_or(AppRefusal::Busy)?;
         Ok(Outcome {
             value: None,
             said: LabelText::parse(&said(count)).ok(),
@@ -118,7 +119,7 @@ fn existing_files(refs: &[FileRef]) -> Result<Vec<FilePath>, AppRefusal> {
     }
     refs.iter()
         .map(|file| {
-            let path = FilePath::new(file.as_str()).map_err(|_| {
+            let path = FilePath::new(file.as_str()).ok().ok_or_else(|| {
                 AppRefusal::Failed(FailText("give each file as an absolute path".to_owned()))
             })?;
             match Path::new(file.as_str()).try_exists() {
@@ -136,6 +137,10 @@ impl IntentProvider for ViewerIntents {
         &self.manifest
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
         match inv.action.as_str() {
             OPEN_FILES => self.open(&inv.target),
@@ -143,22 +148,42 @@ impl IntentProvider for ViewerIntents {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn dry_run(&self, _inv: Invocation) -> Result<Preview, AppRefusal> {
         Err(AppRefusal::Unsupported)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn undo(&self, _token: UndoToken, _actor: Actor) -> Result<(), UndoFault> {
         Err(UndoFault::Gone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn search(&self, _text: &str) -> Vec<Hit> {
         Vec::new()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn preview(&self, _id: &EntityId) -> Preview {
         Preview::None
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn suggest(&self, _ask: SuggestAsk) -> Vec<EntityRef> {
         Vec::new()
     }

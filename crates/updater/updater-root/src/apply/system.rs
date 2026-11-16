@@ -81,7 +81,12 @@ fn contents(layout: &Layout, to: &Version, item: &Placement) -> Result<Vec<u8>, 
     let source = layout.release_dir(to).join(item.source.as_path());
     let what = format!("reading the contents of {}", item.path);
     let changed = || ApplyError::Changed(item.path.clone());
-    match read_capped(&source, MAX_SYSTEM_FILE_BYTES as usize).map_err(ApplyError::io(what))? {
+    match read_capped(
+        &source,
+        usize::try_from(MAX_SYSTEM_FILE_BYTES).unwrap_or(usize::MAX),
+    )
+    .map_err(ApplyError::io(what))?
+    {
         Capped::Bytes(bytes) if Sha256Hex::of(&bytes) == item.sha256 => Ok(bytes),
         Capped::Bytes(_) | Capped::TooLarge => Err(changed()),
     }

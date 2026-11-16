@@ -12,7 +12,6 @@
 //! runs between chunks of the body. The sink's `deadline` bounds the whole exchange, connect
 //! included.
 
-use std::future::Future;
 use std::ops::ControlFlow;
 use std::time::Duration;
 
@@ -68,7 +67,7 @@ async fn send<K: BodySink>(
 
 /// Runs `future` for at most `wait`; an overrun is `HttpError::Timeout`.
 async fn within<T>(wait: Duration, future: impl Future<Output = T>) -> Result<T, HttpError> {
-    timeout(wait, future).await.map_err(|_| HttpError::Timeout)
+    timeout(wait, future).await.ok().ok_or(HttpError::Timeout)
 }
 
 /// Runs `future` within `total` when there is one.

@@ -95,7 +95,9 @@ fn url_of(target: &HttpTarget, path: &str) -> Result<Url, HttpError> {
         HttpTarget::Tls { host, port } => ("https", authority(&host.0, port.0), HttpError::Tls),
         HttpTarget::Unix(_) => ("http", "localhost".to_owned(), HttpError::Connect),
     };
-    Url::parse(&format!("{scheme}://{authority}{path}")).map_err(|_| wrong)
+    Url::parse(&format!("{scheme}://{authority}{path}"))
+        .ok()
+        .ok_or(wrong)
 }
 
 /// `host:port`, with a bare IPv6 address in brackets.
@@ -122,7 +124,9 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
     let mut headers = HeaderMap::new();
     headers.append(ACCEPT, HeaderValue::from_static(accept));
     if let Some(content_type) = parts.content_type {
-        let value = HeaderValue::from_str(content_type).map_err(|_| HttpError::Connect)?;
+        let value = HeaderValue::from_str(content_type)
+            .ok()
+            .ok_or(HttpError::Connect)?;
         headers.append(CONTENT_TYPE, value);
     }
     let secret = |name: WireName, value: &str| {
@@ -131,7 +135,8 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
                 value.set_sensitive(true);
                 (name, value)
             })
-            .map_err(|_| HttpError::Connect)
+            .ok()
+            .ok_or(HttpError::Connect)
     };
     let mut keyed = Vec::new();
     match &endpoint.auth {
@@ -151,12 +156,16 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
             )?);
         }
         AuthHeader::Header { name, value } => {
-            let name = WireName::from_bytes(name.0.as_bytes()).map_err(|_| HttpError::Connect)?;
+            let name = WireName::from_bytes(name.0.as_bytes())
+                .ok()
+                .ok_or(HttpError::Connect)?;
             keyed.push(secret(name, value.expose())?);
         }
     }
     for extra in &endpoint.headers {
-        let name = WireName::from_bytes(extra.name.0.as_bytes()).map_err(|_| HttpError::Connect)?;
+        let name = WireName::from_bytes(extra.name.0.as_bytes())
+            .ok()
+            .ok_or(HttpError::Connect)?;
         keyed.push(secret(name, extra.value.expose())?);
     }
     for (name, value) in keyed {

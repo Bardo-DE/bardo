@@ -13,8 +13,10 @@ use smithay::backend::renderer::utils::CommitCounter;
 use ui_core::vocab::Fraction;
 
 /// The colours Mission Control draws with, premultiplied: the dimming over the picture and the
-/// hovered window's ring. The composition root makes them from quire's tokens (the scrim and the
-/// accent, in the person's scheme); this crate holds no colour of its own for them.
+/// hovered window's ring.
+///
+/// The composition root makes them from quire's tokens (the scrim and the accent, in the person's
+/// scheme); this crate holds no colour of its own for them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct OverviewLook {
     /// The dimming over the picture.
@@ -76,7 +78,7 @@ const THICKNESS: u32 = 3;
 pub fn dim_elements<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
-    look: &OverviewLook,
+    look: OverviewLook,
 ) -> Vec<CasementElement<R>> {
     let area = PhysicalRect {
         x: 0,
@@ -97,7 +99,7 @@ pub fn dim_elements<R: Compositor>(
 pub fn ring_elements<R: Compositor>(
     inner: LogicalRect,
     view: &OutputView,
-    look: &OverviewLook,
+    look: OverviewLook,
 ) -> Vec<CasementElement<R>> {
     let t = i32::try_from(THICKNESS).unwrap_or(3);
     let out = LogicalRect::new(
@@ -155,10 +157,11 @@ pub fn ring_elements<R: Compositor>(
         .collect()
 }
 
-/// `rect` on `view`, in its physical pixels: both corners rounded the way every element's are,
-/// so the bars meet without a seam.
-/// Moves the items `is_lifted` picks to the end of `items`, keeping every other order: the
-/// front of a list that is back first.
+/// `rect` on `view`, in its physical pixels: both corners rounded the way every element's are, so
+/// the bars meet without a seam.
+///
+/// Moves the items `is_lifted` picks to the end of `items`, keeping every other order: the front of
+/// a list that is back first.
 ///
 /// ```
 /// use compositor_render::lift_last;

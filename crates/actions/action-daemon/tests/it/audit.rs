@@ -6,7 +6,6 @@
 use crate::support::bus::PrivateBus;
 use crate::support::memoryd::{FakeMemoryd, record_fault};
 use account_core::AppName;
-use action_core::EventSink;
 use action_core::*;
 use action_daemon::AuditLog;
 use action_vocab::{ActionRef, CallId, Millis, UndoId};
@@ -18,7 +17,7 @@ use permission_core::{
     VerdictKind,
 };
 use provenance::{
-    Actor, Address, AgentRef, ConfirmId, Effect, EntityId, EntityKey, EntityKind, Label, MessageId,
+    Actor, Address, AgentRef, Effect, EntityId, EntityKey, EntityKind, Label, MessageId,
     MessageKind, MessageText, SessionId, SpaceId, SpaceScope, SystemPart, TaskId, ThreadId,
     UnixSeconds,
 };
@@ -46,6 +45,7 @@ fn planner() -> Actor {
     }
 }
 
+#[expect(clippy::cast_possible_wrap, reason = "a test queues a few events")]
 fn call(n: u64, in_space: &str) -> AuditRecord {
     AuditRecord::Call {
         at: at(10 + n as i64),
@@ -301,6 +301,11 @@ fn what_could_not_be_written_goes_back_in_front_of_what_came_since() {
 proptest::proptest! {
     /// Whatever is appended and put back, the queue never holds more than its limit, keeps the
     /// newest, and counts exactly what it dropped.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_possible_wrap,
+        reason = "a test queues a few events",
+    )]
     #[test]
     fn the_queue_never_outgrows_its_limit_and_keeps_the_newest(
         limit in 1usize..8,

@@ -87,7 +87,8 @@ fn unpack<'a>(entry: &Entry<'a>) -> Result<Table<'a>, FontError> {
         entry.stored.to_vec()
     } else {
         miniz_oxide::inflate::decompress_to_vec_zlib_with_limit(entry.stored, entry.original)
-            .map_err(|_| malformed("a WOFF table does not unpack"))?
+            .ok()
+            .ok_or_else(|| malformed("a WOFF table does not unpack"))?
     };
     if data.len() != entry.original {
         return Err(malformed("a WOFF table unpacked to the wrong length"));

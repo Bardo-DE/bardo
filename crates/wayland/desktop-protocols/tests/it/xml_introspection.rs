@@ -421,7 +421,8 @@ fn every_enum_entry_has_a_distinct_code() {
                 let unique: BTreeSet<u32> = bits.iter().copied().collect();
                 assert_eq!(unique.len(), bits.len(), "{what}: {codes:?}");
             } else {
-                let dense: Vec<u32> = (0..codes.len() as u32).collect();
+                let dense: Vec<u32> =
+                    (0..u32::try_from(codes.len()).expect("a few codes")).collect();
                 assert_eq!(codes, dense, "{what}: codes run 0, 1, 2, ... in order");
             }
         }

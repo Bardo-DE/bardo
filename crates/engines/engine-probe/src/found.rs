@@ -143,10 +143,11 @@ fn is_program(path: &Path) -> bool {
         .is_ok_and(|meta| meta.is_file() && meta.permissions().mode() & 0o111 != 0)
 }
 
-/// An engine run from a folder the person points at (Strata): it counts when the folder holds
-/// the engine's marker file and its own program (`Engine::pointed` says where). The engine's
-/// release is read from the folder's build record when there is one. `None` for an engine that
-/// is not run from a folder.
+/// An engine run from a folder the person points at (Strata): it counts when the folder holds the
+/// engine's marker file and its own program (`Engine::pointed` says where).
+///
+/// The engine's release is read from the folder's build record when there is one. `None` for an
+/// engine that is not run from a folder.
 #[must_use]
 pub fn pointed(engine: EngineKind, folder: &Path) -> Option<Found> {
     let layout = engine_spec::engine(engine).pointed()?;
@@ -193,7 +194,7 @@ mod tests {
             version: "b1".into(),
             backend: "cpu".into(),
             seal: String::new(),
-            entries: Default::default(),
+            entries: std::collections::BTreeMap::default(),
             venv_seal: None,
         };
         record.write(&dir.join("installed.json")).expect("record");

@@ -13,7 +13,7 @@ pub const KEPT_ANSWERS: usize = 16;
 /// The answers kept, the oldest dropped first, and why jobs stopped (as many, the oldest first).
 #[derive(Debug, Default)]
 pub struct Answers {
-    answers: BTreeMap<JobId, Answer>,
+    by_job: BTreeMap<JobId, Answer>,
     kept: VecDeque<JobId>,
     /// Why a job stopped, as it was told, for its line on the card.
     whys: BTreeMap<JobId, String>,
@@ -23,12 +23,12 @@ impl Answers {
     /// Keeps a finished job's answer for the jobs that are handed it. The oldest answers beyond
     /// the most kept are dropped; the sessions the hub must close for them are returned.
     pub fn keep(&mut self, job: JobId, answer: Answer) -> Vec<SessionId> {
-        self.answers.insert(job, answer);
+        self.by_job.insert(job, answer);
         self.kept.push_back(job);
         let mut old = Vec::new();
         while self.kept.len() > KEPT_ANSWERS {
             if let Some(oldest) = self.kept.pop_front()
-                && let Some(gone) = self.answers.remove(&oldest)
+                && let Some(gone) = self.by_job.remove(&oldest)
                 && gone.hold == Hold::Close
             {
                 old.push(gone.session);
@@ -48,7 +48,7 @@ impl Answers {
     /// The words a finished job answered, while they are kept.
     #[must_use]
     pub fn words(&self, job: JobId) -> Option<&str> {
-        self.answers.get(&job).map(|a| a.words.as_str())
+        self.by_job.get(&job).map(|a| a.words.as_str())
     }
 
     /// Why a job stopped, while that is kept.
@@ -61,7 +61,7 @@ impl Answers {
     pub fn inputs_for(&self, job: &Job) -> Vec<JobInput> {
         job.with
             .iter()
-            .filter_map(|earlier| self.answers.get(earlier))
+            .filter_map(|earlier| self.by_job.get(earlier))
             .map(|a| JobInput {
                 from: a.session.clone(),
                 text: a.words.clone(),

@@ -6,7 +6,6 @@
 use action_core::StepLine;
 use agent_session::CallOpen;
 use companion_wire::NeedsYou;
-use std::future::Future;
 
 /// What the gate says of a call.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

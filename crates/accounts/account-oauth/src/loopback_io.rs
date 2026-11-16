@@ -123,7 +123,8 @@ impl LoopbackServer {
             .listener
             .accept()
             .await
-            .ok().ok_or(LoopbackFault::Malformed)?;
+            .ok()
+            .ok_or(LoopbackFault::Malformed)?;
         drop(self.listener);
         serve(&mut socket, expected).await
     }
@@ -135,7 +136,8 @@ impl LoopbackServer {
                 .listener
                 .accept()
                 .await
-                .ok().ok_or(LoopbackFault::Malformed)?;
+                .ok()
+                .ok_or(LoopbackFault::Malformed)?;
             let limit = Duration::from_secs(STRAY_READ_SECONDS);
             let outcome = tokio::time::timeout(limit, serve(&mut socket, expected))
                 .await

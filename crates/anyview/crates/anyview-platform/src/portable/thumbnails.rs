@@ -9,6 +9,7 @@ use crate::thumbnail::{ThumbPixels, ThumbSize, ThumbnailCache};
 use crate::uri::file_uri;
 use anyview_core::{FilePath, FileStamp, PixelLen, PixelSize};
 use md5::{Digest, Md5};
+use std::fmt::Write as _;
 use std::fs::DirBuilder;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
@@ -35,7 +36,11 @@ impl FreedesktopThumbnails {
     /// Where the thumbnail of `file` at `size` lives.
     fn path(&self, file: &FilePath, size: ThumbSize) -> PathBuf {
         let digest = Md5::digest(file_uri(file).as_bytes());
-        let name: String = digest.iter().map(|byte| format!("{byte:02x}")).collect();
+        let mut name = String::new();
+        for byte in digest {
+            // Writing to a `String` cannot fail.
+            let _ = write!(name, "{byte:02x}");
+        }
         self.root.join(size.directory()).join(format!("{name}.png"))
     }
 }
@@ -219,6 +224,10 @@ mod tests {
         }
     }
 
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a test pattern: the bytes wrap on purpose"
+    )]
     fn pixels(width: u32) -> ThumbPixels {
         let rgba = (0..width * 2 * 4).map(|i| i as u8).collect();
         let size = PixelSize {
@@ -265,6 +274,11 @@ mod tests {
 
     #[test]
     fn a_stored_thumbnail_comes_back_for_the_same_version_only() {
+        const MISSES: &[(&str, &str, i64, ThumbSize)] = &[
+            ("edited", "/pics/cat.png", 101, ThumbSize::Normal),
+            ("other file", "/pics/dog.png", 100, ThumbSize::Normal),
+            ("other size", "/pics/cat.png", 100, ThumbSize::Large),
+        ];
         let scratch = tempfile::tempdir().unwrap();
         let cache = cache(&scratch);
         let path = file("/pics/cat.png");
@@ -274,11 +288,6 @@ mod tests {
             .unwrap();
         let found = cache.lookup(&path, &stamp(100), ThumbSize::Normal).unwrap();
         assert_eq!(found, Some(held));
-        const MISSES: &[(&str, &str, i64, ThumbSize)] = &[
-            ("edited", "/pics/cat.png", 101, ThumbSize::Normal),
-            ("other file", "/pics/dog.png", 100, ThumbSize::Normal),
-            ("other size", "/pics/cat.png", 100, ThumbSize::Large),
-        ];
         for (name, path, seconds, size) in MISSES {
             let found = cache.lookup(&file(path), &stamp(*seconds), *size).unwrap();
             assert_eq!(found, None, "{name}");

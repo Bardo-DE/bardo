@@ -78,6 +78,11 @@ impl SseDecoder {
     }
 
     /// Feeds one chunk; returns the events it completed.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SseError::LineTooLong`] when a line or an event grows past the limit, and
+    /// [`SseError::NotUtf8`] when a line is not UTF-8.
     pub fn feed(&mut self, bytes: &[u8]) -> Result<Vec<SseEvent>, SseError> {
         self.pending.extend_from_slice(bytes);
         self.drain(Stream::Open)
@@ -107,8 +112,9 @@ impl SseDecoder {
         let mut used = 0;
         while let Some((end, next)) = line_end(&self.pending, used, self.scanned.max(used), stream)
         {
-            let line =
-                std::str::from_utf8(&self.pending[used..end]).map_err(|_| SseError::NotUtf8)?;
+            let line = std::str::from_utf8(&self.pending[used..end])
+                .ok()
+                .ok_or(SseError::NotUtf8)?;
             let event = Self::absorb(&mut self.event, &mut self.data, &mut self.data_len, line)?;
             events.extend(event);
             used = next;

@@ -4,14 +4,16 @@
 //! the router may record anything but a `Memory` body, a message must be sent by its recording
 //! actor, an episode's skeleton must be trusted and in the record's Space, and a record's label
 //! must cover its documents'), and answers every caller as `Caller::Router`.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "helpers shared by the test files; each file uses some of them"
+)]
 
 use base_ids::Count;
 use memory_core::{EventBody, EventRef, MemoryReply, MemoryRequest, Record, ReplicaId, Seq};
 use memory_dbus::{Call, MemoryError, decode_request, encode_reply};
 use memory_dbus_serve::{Serve, serve_on};
 use provenance::{Integrity, Label};
-use std::future::Future;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};
 
@@ -118,7 +120,10 @@ impl FakeMemoryd {
         drop(stored);
         let first = self.event();
         if batch {
-            MemoryReply::RecordedBatch(first, Count(records.len() as u32))
+            MemoryReply::RecordedBatch(
+                first,
+                Count(u32::try_from(records.len()).unwrap_or(u32::MAX)),
+            )
         } else {
             MemoryReply::Recorded(first)
         }

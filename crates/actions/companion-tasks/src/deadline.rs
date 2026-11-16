@@ -9,7 +9,6 @@ use crate::shared::Shared;
 use action_store::{Stop, stop_after, until, within};
 use action_vocab::{Clock, Millis};
 use provenance::TaskId;
-use std::future::Future;
 use std::time::Duration;
 
 /// `work`, ended early by a cancel of `task` or by `span` running out.

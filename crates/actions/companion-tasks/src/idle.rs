@@ -81,6 +81,10 @@ enum Narrated {
 
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S> {
     /// Time passed, as the clock says.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn tick(&mut self) -> Result<(), ServeFault> {
         let now = self.clock.now();
         self.tick_at(now).await
@@ -88,6 +92,10 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// Ends the side conversations that went quiet and starts a narrative when the person is
     /// away.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
     pub async fn tick_at(&mut self, now: UnixSeconds) -> Result<(), ServeFault> {
         let (side, effects) = side_step(
             std::mem::take(&mut self.side),
@@ -186,10 +194,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         match effect {
             IdleEffect::Start(job) => self.narrate(job).await,
             // Cancelling is dropping the future of the stream; there is nothing left to do here.
-            IdleEffect::Cancel(_) => {}
             // Fact candidates come from the narrative; none are extracted in this pass, so
             // nothing goes to `memory.propose`.
-            IdleEffect::ProposeFacts(_) => {}
+            IdleEffect::Cancel(_) | IdleEffect::ProposeFacts(_) => {}
         }
     }
 

@@ -6,7 +6,10 @@
 //! client-drawn cursor); every other GL pass goes through
 //! smithay's safe shader API. A new `unsafe` block here needs a reviewed interface ask
 //! (ARCHITECTURE.md section 6).
-#![allow(unsafe_code)]
+#![expect(
+    unsafe_code,
+    reason = "the reviewed GL interface of this module (ARCHITECTURE.md section 6)"
+)]
 
 use crate::damage::RenderError;
 use smithay::backend::egl::native::{EGLNativeDisplay, EGLSurfacelessDisplay};
@@ -17,17 +20,27 @@ use smithay::wayland::shm::{
     BufferAccessError, BufferData, with_buffer_contents, with_buffer_contents_mut,
 };
 
-/// A GLES renderer on the EGL surfaceless platform: no DRM node, no window system. In the jail
-/// this is Mesa's llvmpipe (the jail pins the Mesa EGL vendor), the headless backend's
+/// A GLES renderer on the EGL surfaceless platform: no DRM node, no window system.
+///
+/// In the jail this is Mesa's llvmpipe (the jail pins the Mesa EGL vendor), the headless backend's
 /// `SoftRenderer::Llvmpipe` and the tier-L goldens' renderer (SP2).
+///
+/// # Errors
+///
+/// Returns a [`RenderError::Renderer`] when no EGL display or GLES context can be made.
 pub fn surfaceless_gles() -> Result<GlesRenderer, RenderError> {
     gles_on(EGLSurfacelessDisplay)
 }
 
-/// A GLES renderer on the EGL display of `native` (a GBM device of a KMS node: the tty
-/// backend's renderer for the outputs that device scans out, P1-T). The same two constructors
-/// as [`surfaceless_gles`], over any native display, so this module still owns exactly two
-/// `unsafe` calls.
+/// A GLES renderer on the EGL display of `native` (a GBM device of a KMS node: the tty backend's
+/// renderer for the outputs that device scans out, P1-T).
+///
+/// The same two constructors as [`surfaceless_gles`], over any native display, so this module still
+/// owns exactly two `unsafe` calls.
+///
+/// # Errors
+///
+/// Returns a [`RenderError::Renderer`] when no EGL display or GLES context can be made on `native`.
 pub fn gles_on<N: EGLNativeDisplay + 'static>(native: N) -> Result<GlesRenderer, RenderError> {
     // SAFETY: `EGLDisplay::new` is unsafe because a display obtained elsewhere through
     // `eglGetPlatformDisplay` with the same parameters could be terminated behind smithay's

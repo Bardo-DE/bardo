@@ -133,6 +133,11 @@ fn check_stream(
 impl Staged {
     /// Reads `release.toml` and `release.toml.minisig` from `dir`; checks the signature first, then
     /// parses. The bundle is not looked at.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StagedError`] when a file cannot be read, the signature is wrong, or the signed
+    /// description is not a valid release.
     pub fn describe(dir: &Path, auth: &dyn Authenticator) -> Result<Self, StagedError> {
         let release_bytes = read_limited(
             &dir.join(RECORD_RELEASE),
@@ -144,7 +149,8 @@ impl Staged {
             MAX_SIGNATURE_BYTES,
             "reading the signature",
         )?)
-        .map_err(|_| StagedError::Signature(SignError::BadSignature))?;
+        .ok()
+        .ok_or(StagedError::Signature(SignError::BadSignature))?;
         auth.authenticate(&release_bytes, &signature)?;
         let release = Release::parse(&release_bytes)?;
         let bundle = dir.join(&release.bundle.name);
@@ -158,6 +164,11 @@ impl Staged {
 
     /// [`Staged::describe`], then the bundle's size and digest in place. For the unprivileged side, which
     /// only wants to know whether a download is whole; the helper uses [`Staged::seal`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StagedError`] when a file cannot be read, the signature is wrong, the
+    /// description is not a valid release, or the bundle's size or digest is not the one it lists.
     pub fn read(dir: &Path, auth: &dyn Authenticator) -> Result<Self, StagedError> {
         let staged = Self::describe(dir, auth)?;
         let file = open_regular(&staged.bundle).map_err(io_err("reading the bundle"))?;
@@ -168,6 +179,11 @@ impl Staged {
     /// Copies the bundle into a private file under `vault_dir` while hashing it, and checks the size and
     /// digest of that one read. Nothing the caller does to the staged file afterwards changes what is
     /// unpacked.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StagedError`] when the bundle cannot be copied, there is no room, or its size or
+    /// digest is not the one the release lists.
     pub fn seal(self, vault_dir: &Path) -> Result<Sealed, StagedError> {
         let needed = self.release.bundle.size.saturating_mul(SPACE_FACTOR);
         let free = free_bytes(vault_dir).map_err(io_err("looking at the free space"))?;

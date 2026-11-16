@@ -401,7 +401,7 @@ pub fn roster_state(state: Option<&LoopState>, phase: &AnswerPhase) -> action_co
 mod tests {
     use super::*;
     use action_core::{CallProgress, ConfirmId};
-    use action_vocab::{CallId, LabelText};
+    use action_vocab::LabelText;
     use provenance::ActionName;
 
     fn runtime() -> TaskRuntime {

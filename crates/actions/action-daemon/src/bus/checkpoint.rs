@@ -112,9 +112,10 @@ impl CheckpointBus {
         agent: String,
         #[zbus(header)] header: Header<'_>,
     ) -> Result<String, IntentsError> {
-        let agent: Option<WatchedAgent> = match agent.is_empty() {
-            true => None,
-            false => json(&agent)?,
+        let agent: Option<WatchedAgent> = if agent.is_empty() {
+            None
+        } else {
+            json(&agent)?
         };
         let request = IntentsRequest::CheckpointHandover {
             session: parsed(&session, SessionId::parse)?,

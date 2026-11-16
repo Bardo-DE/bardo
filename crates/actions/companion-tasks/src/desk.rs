@@ -13,15 +13,15 @@ use companion_wire::{
 };
 use provenance::{EntityId, HelperId, SessionId, SpaceId, TaskId};
 use std::fmt;
-use std::future::Future;
 use std::pin::Pin;
 
 /// A call that has not finished.
 pub type Pending<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
-/// A job the assistant (or another helper's planner) gives to a helper by its name. The router
-/// has already refused it unless the goal came from a planner that had read nothing untrusted, or
-/// lies inside a brief the person confirmed (`origin` says which).
+/// A job the assistant (or another helper's planner) gives to a helper by its name.
+///
+/// The router has already refused it unless the goal came from a planner that had read nothing
+/// untrusted, or lies inside a brief the person confirmed (`origin` says which).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PostFromPlanner {
     /// The name of the helper it is for.

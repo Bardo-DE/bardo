@@ -1,7 +1,10 @@
 //! Loading fixtures the way the viewer meets files: an `Input` on disk and what sniffing made of it.
 //! The image and text fixtures are the back-end crates' own; this crate adds a PDF.
 // Each test crate uses some of these helpers, and none of them is a `#[test]` function.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "helpers shared by the test files; each file uses some of them"
+)]
 
 use anyview_core::{
     ByteLen, FileHead, FileName, FilePath, FileStamp, Input, ModTime, PeekBudget, PixelArea,
@@ -39,7 +42,7 @@ pub fn sniffed(bytes: &[u8], name: &str) -> Sniffed {
     match sniff(&FileHead::new(head), &FileName::new(name).unwrap()) {
         SniffStep::Done(sniffed) => sniffed,
         SniffStep::LookInside(probe) => {
-            sniff_zip(probe, &ZipEntries::new(Vec::<String>::new(), None))
+            sniff_zip(&probe, &ZipEntries::new(Vec::<String>::new(), None))
         }
     }
 }

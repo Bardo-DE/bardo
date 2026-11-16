@@ -1,6 +1,8 @@
 //! Building signed-looking bundles and a sandbox to install them into.
 
+// Writing to a `String` cannot fail, so the results of `write!` are dropped below.
 use semver::Version;
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use tempfile::TempDir;
 use updater_core::{Authenticator, Sha256Hex, SignError};
@@ -139,17 +141,21 @@ pub fn describe(
         bundle.len()
     );
     for (path, content) in listed {
-        text += &format!(
+        let _ = write!(
+            text,
             "[[file]]\npath = \"{path}\"\nsha256 = \"{}\"\nmode = {}\n",
             Sha256Hex::of(content.as_bytes()),
             mode_of(path)
         );
     }
     for (link, target) in exports {
-        text += &format!("[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n");
+        let _ = write!(
+            text,
+            "[[export]]\nlink = \"{link}\"\ntarget = \"{target}\"\n"
+        );
     }
     for path in system {
-        text += &format!("[[system]]\npath = \"{path}\"\n");
+        let _ = write!(text, "[[system]]\npath = \"{path}\"\n");
     }
     text
 }

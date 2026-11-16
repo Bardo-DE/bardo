@@ -78,9 +78,10 @@ impl Desk {
         let env = |key: &str| match key {
             "HOME" => Some(home.clone()),
             "XDG_DATA_HOME" => Some(dir.path().join("data").display().to_string()),
-            "XDG_DATA_DIRS" => Some(dir.path().join("none").display().to_string()),
             "XDG_CONFIG_HOME" => Some(dir.path().join("config").display().to_string()),
-            "XDG_CONFIG_DIRS" => Some(dir.path().join("none").display().to_string()),
+            "XDG_DATA_DIRS" | "XDG_CONFIG_DIRS" => {
+                Some(dir.path().join("none").display().to_string())
+            }
             _ => None,
         };
         let mut setup = Setup::from_env(&env).expect("setup");

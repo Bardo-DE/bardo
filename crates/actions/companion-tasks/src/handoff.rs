@@ -23,7 +23,6 @@ use companion_wire::{RefusalWire, RouteNote, WhyWord};
 use inference_core::{AGENT_ACCOUNT, DeclinedBecause, ModelLabel, ServedBy, StageRole};
 use permission_core::ProgramName;
 use provenance::TaskId;
-use std::future::Future;
 use std::pin::Pin;
 
 /// What gives a turn to the agent's host.
@@ -78,14 +77,14 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         program: ProgramName,
     ) -> Vec<LoopInput> {
         let Some(hand) = self.hand.clone() else {
-            return self.not_handed(task, HandRefusal::NotSetUp);
+            return self.not_handed(task, &HandRefusal::NotSetUp);
         };
         let Some((turn, space)) = self
             .runtimes
             .get(task)
             .and_then(|rt| Some((rt.turns.last()?.clone(), rt.space.clone())))
         else {
-            return self.not_handed(task, HandRefusal::NotSetUp);
+            return self.not_handed(task, &HandRefusal::NotSetUp);
         };
         let ask = HandOver {
             program: program.clone(),
@@ -104,7 +103,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             Err(Stop::Cancelled) => vec![LoopInput::Cancelled],
             Err(Stop::TimedOut) => self.not_handed(
                 task,
-                HandRefusal::Failed {
+                &HandRefusal::Failed {
                     message: "The coding agent took too long to answer.".to_owned(),
                 },
             ),
@@ -119,16 +118,16 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
                     LoopInput::Planned(ModelOutput::Finish),
                 ]
             }
-            Ok(HandReply::Refused(refusal)) => self.not_handed(task, refusal),
+            Ok(HandReply::Refused(refusal)) => self.not_handed(task, &refusal),
         }
     }
 
     /// The turn ended because the agent did not take it. A switched-off or missing agent asks the
     /// person to choose a model (the picker shows why that row can't be used); the rest say what
     /// happened.
-    fn not_handed(&mut self, task: &TaskId, refusal: HandRefusal) -> Vec<LoopInput> {
+    fn not_handed(&mut self, task: &TaskId, refusal: &HandRefusal) -> Vec<LoopInput> {
         tracing::warn!(%task, why = ?refusal, "the coding agent did not take the turn");
-        let (shown, fault) = match &refusal {
+        let (shown, fault) = match refusal {
             HandRefusal::TurnedOff | HandRefusal::NotSetUp => {
                 (RefusalWire::NoModel, PlanFault::NoModelChosen)
             }

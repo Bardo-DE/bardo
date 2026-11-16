@@ -55,6 +55,10 @@ impl StripPlan {
     /// own scale): a shadow's halo is outside the window's rectangle, so the strips that carry
     /// it are wider than the rows they cut, and the top and bottom strips reach past the
     /// window. The band moves with the shift, so the halo lands round the strip.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+    )]
     #[must_use]
     pub fn widened(self, by: Margins) -> StripPlan {
         let grow = |n: i32, scale: f64| (f64::from(n) * scale).round() as i32;
@@ -73,6 +77,10 @@ impl StripPlan {
     /// Where the rows of `rect` (a rectangle of the window at rest, output pixels) that this
     /// strip shows are drawn; `None` when it shows none of them. The rows are held to the
     /// strip's own drawn band, so two strips never claim the same pixel.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+    )]
     #[must_use]
     pub fn mapped(&self, rect: PhysicalRect) -> Option<PhysicalRect> {
         let top = f64::from(rect.y).max(self.source.0);
@@ -133,7 +141,7 @@ impl<E> fmt::Debug for StripElement<E> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("StripElement")
             .field("id", &self.id)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -234,7 +242,6 @@ impl<R: Renderer, E: RenderElement<R>> RenderElement<R> for StripElement<E> {
 mod tests {
     use super::*;
     use crate::element::{Rgba8, solid_rect};
-    use compositor_core::geometry::PhysicalRect;
     use smithay::backend::renderer::element::solid::SolidColorRenderElement;
 
     fn solid() -> SolidColorRenderElement {
@@ -312,11 +319,11 @@ mod tests {
 
     #[test]
     fn a_rows_rectangle_lands_in_the_strips_band_and_nowhere_else() {
+        type Rect = (i32, i32, u32, u32);
         let band = Rectangle::new((100, 100).into(), (100, 50).into());
         let plan = plan(0, band);
         // (x, y, w, h) at rest -> drawn; the strip shows rows 100..150, is halved across about
         // x 100 and moved by (10, 20)
-        type Rect = (i32, i32, u32, u32);
         let cases: &[(&str, Rect, Option<Rect>)] = &[
             ("whole", (100, 100, 200, 50), Some((110, 120, 100, 50))),
             ("a part", (120, 120, 40, 10), Some((120, 140, 20, 10))),

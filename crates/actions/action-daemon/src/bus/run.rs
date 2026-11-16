@@ -32,9 +32,10 @@ impl RunBus {
     ) -> Result<OwnedObjectPath, IntentsError> {
         // A caller that watches is told how far the call is (`Reviewing`, `Previewing`,
         // `Confirming`, `Dispatched`); nothing waits for it.
-        let watching = match options.contains_key(action_dbus::OPTION_WATCH) {
-            true => Watching::Listening,
-            false => Watching::No,
+        let watching = if options.contains_key(action_dbus::OPTION_WATCH) {
+            Watching::Listening
+        } else {
+            Watching::No
         };
         let request = IntentsRequest::Perform {
             call: json(&call)?,
@@ -142,9 +143,10 @@ impl GateBus {
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &zbus::Connection,
     ) -> Result<OwnedObjectPath, IntentsError> {
-        let watching = match options.contains_key(action_dbus::OPTION_WATCH) {
-            true => Watching::Yes,
-            false => Watching::No,
+        let watching = if options.contains_key(action_dbus::OPTION_WATCH) {
+            Watching::Yes
+        } else {
+            Watching::No
         };
         self.0
             .start_as(

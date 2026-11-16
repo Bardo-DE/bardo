@@ -32,7 +32,7 @@ fn pixel(bytes: &[u8], x: usize, y: usize) -> [u8; 4] {
 }
 
 fn drawn(opacity: u16) -> Vec<u8> {
-    let mut renderer: PixmanRenderer = pixman();
+    let mut renderer = pixman();
     let content = LogicalRect::new(LogicalPoint { x: 2, y: 1 }, LogicalSize { w: 4, h: 4 });
     let element: CasementElement<PixmanRenderer> = body([200, 40, 90, 255])
         .element(content, Fraction(opacity), &VIEW, &mut renderer)
