@@ -8,27 +8,30 @@ use super::cassette::{Cassette, Reply, Seen};
 use model_replay::CassetteError;
 use serde_json::Value;
 use std::path::Path;
-use std::sync::{Mutex, PoisonError};
+use std::sync::{Arc, Mutex, PoisonError};
 
 /// Why a replay engine cannot answer. Every case is data: the engine turns it into an HTTP error
 /// body or refuses to start, it never panics and never reaches for the network.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ReplayError {
     /// The file could not be read.
-    #[error("replay cassette {path}: {kind}")]
+    #[error("replay cassette {path} could not be read")]
     Unreadable {
         /// The path `inferd.toml` named.
         path: String,
-        /// What the operating system said.
-        kind: std::io::ErrorKind,
+        /// What the operating system said (shared: the error is cloned to each user of the
+        /// engine).
+        #[source]
+        source: Arc<std::io::Error>,
     },
     /// The file is not a cassette.
-    #[error("replay cassette {path}: {why}")]
+    #[error("replay cassette {path} is not a cassette")]
     Malformed {
         /// The path `inferd.toml` named.
         path: String,
-        /// What is wrong with it.
-        why: CassetteError,
+        /// What is wrong with it (shared, as above).
+        #[source]
+        why: Arc<CassetteError>,
     },
     /// No entry admits the request, or every one that does has been used.
     #[error("replay: no entry answers this request ({answered} of {entries} entries used)")]
@@ -78,11 +81,14 @@ impl Replayer {
         let shown = path.display().to_string();
         let text = std::fs::read_to_string(path).map_err(|e| ReplayError::Unreadable {
             path: shown.clone(),
-            kind: e.kind(),
+            source: Arc::new(e),
         })?;
         Cassette::parse(&text)
             .map(Self::new)
-            .map_err(|why| ReplayError::Malformed { path: shown, why })
+            .map_err(|why| ReplayError::Malformed {
+                path: shown,
+                why: Arc::new(why),
+            })
     }
 
     /// The cassette's header and entries.

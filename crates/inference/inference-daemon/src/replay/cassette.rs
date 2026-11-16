@@ -162,8 +162,7 @@ impl Cassette {
             .filter(|(_, line)| !line.trim().is_empty());
         let (_, first) = lines.next().ok_or(CassetteError::Empty)?;
         let header: CassetteHeader = serde_json::from_str(first)
-            .ok()
-            .ok_or(CassetteError::BadLine { line: 1 })?;
+            .map_err(|source| CassetteError::BadLine { line: 1, source })?;
         if header.vocab != CassetteVersion::CURRENT {
             return Err(CassetteError::Version {
                 found: header.vocab,
@@ -172,11 +171,10 @@ impl Cassette {
         }
         let entries = lines
             .map(|(at, line)| {
-                serde_json::from_str(line)
-                    .ok()
-                    .ok_or_else(|| CassetteError::BadLine {
-                        line: u32::try_from(at + 1).unwrap_or(u32::MAX),
-                    })
+                serde_json::from_str(line).map_err(|source| CassetteError::BadLine {
+                    line: u32::try_from(at + 1).unwrap_or(u32::MAX),
+                    source,
+                })
             })
             .collect::<Result<Vec<Entry>, _>>()?;
         Ok(Self { header, entries })

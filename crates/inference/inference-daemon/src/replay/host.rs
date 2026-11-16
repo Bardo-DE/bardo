@@ -60,12 +60,14 @@ impl<H> ReplayHost<H> {
     }
 
     fn start(&self, id: &EngineId, replaying: &Replaying) -> Result<(), HostError> {
-        let replayer = replaying.replayer.clone().ok().ok_or(HostError::Refused)?;
+        let replayer = replaying
+            .replayer
+            .clone()
+            .map_err(|e| HostError::Start(Box::new(e)))?;
         // A socket left by an earlier run is ours to replace.
         let _ = std::fs::remove_file(&replaying.socket);
-        let listener = UnixListener::bind(&replaying.socket)
-            .ok()
-            .ok_or(HostError::Refused)?;
+        let listener =
+            UnixListener::bind(&replaying.socket).map_err(|e| HostError::Start(Box::new(e)))?;
         let (exit, _) = watch::channel(None);
         let task = tokio::spawn(serve(listener, replayer, replaying.record.clone()));
         if let Some(old) = self.live().insert(id.clone(), Live { task, exit }) {

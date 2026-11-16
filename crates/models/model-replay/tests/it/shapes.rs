@@ -105,21 +105,24 @@ fn cassette_round_trips_as_jsonl() {
 
 #[test]
 fn bad_files_name_the_line() {
-    assert_eq!(Cassette::from_jsonl(""), Err(CassetteError::Empty));
+    assert!(matches!(
+        Cassette::from_jsonl(""),
+        Err(CassetteError::Empty)
+    ));
     let mut text = cassette().to_jsonl();
     text.push_str("{not json}\n");
-    assert_eq!(
+    assert!(matches!(
         Cassette::from_jsonl(&text),
-        Err(CassetteError::BadLine { line: 4 })
-    );
+        Err(CassetteError::BadLine { line: 4, .. })
+    ));
     let old = text.replacen(r#""vocab":1"#, r#""vocab":9"#, 1);
-    assert_eq!(
+    assert!(matches!(
         Cassette::from_jsonl(&old),
         Err(CassetteError::Version {
             found: CassetteVersion(9),
-            want: CassetteVersion::CURRENT
+            ..
         })
-    );
+    ));
 }
 
 mod speech {
@@ -271,19 +274,22 @@ mod speech {
 
     #[test]
     fn bad_speech_files_name_the_line() {
-        assert_eq!(SpeechCassette::from_jsonl(""), Err(CassetteError::Empty));
+        assert!(matches!(
+            SpeechCassette::from_jsonl(""),
+            Err(CassetteError::Empty)
+        ));
         let mut text = cassette().to_jsonl();
         text.push_str("{not json}\n");
-        assert_eq!(
+        assert!(matches!(
             SpeechCassette::from_jsonl(&text),
-            Err(CassetteError::BadLine { line: 5 })
-        );
+            Err(CassetteError::BadLine { line: 5, .. })
+        ));
         // A chat interaction is not a speech one.
         let header = cassette().to_jsonl().lines().next().unwrap().to_owned();
         let chat = format!("{header}\n{{\"request\":{{}}}}\n");
-        assert_eq!(
+        assert!(matches!(
             SpeechCassette::from_jsonl(&chat),
-            Err(CassetteError::BadLine { line: 2 })
-        );
+            Err(CassetteError::BadLine { line: 2, .. })
+        ));
     }
 }

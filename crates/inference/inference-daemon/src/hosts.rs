@@ -281,7 +281,7 @@ impl EngineHost for ProcessHost {
                     kind: e.kind(),
                 },
             );
-            HostError::Refused
+            HostError::Start(Box::new(e))
         })?;
         let reader = child
             .stderr
@@ -500,14 +500,10 @@ impl NvidiaSmi {
 ///
 /// # Errors
 ///
-/// Returns a [`GpuError`] when the text has no total.
+/// Returns a [`GpuError`] when the text has no total or the total is not a number.
 pub fn parse_total(text: &str) -> Result<MiB, GpuError> {
-    text.lines()
-        .next()
-        .map(str::trim)
-        .and_then(|line| line.parse::<u32>().ok())
-        .map(MiB)
-        .ok_or(GpuError::Unreadable)
+    let line = text.lines().next().ok_or(GpuError::Unreadable)?.trim();
+    line.parse::<u32>().map(MiB).map_err(GpuError::BadTotal)
 }
 
 impl GpuProbe for NvidiaSmi {
@@ -517,8 +513,7 @@ impl GpuProbe for NvidiaSmi {
             .stdin(Stdio::null())
             .output()
             .await
-            .ok()
-            .ok_or(GpuError::Unavailable)?;
+            .map_err(GpuError::Run)?;
         if !output.status.success() {
             return Err(GpuError::Unavailable);
         }

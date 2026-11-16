@@ -11,36 +11,33 @@ fn file(lines: &[&str]) -> String {
 #[test]
 fn a_cassette_reads_or_says_why_not() {
     let entry = r#"{"when":{"tools":"present"},"reply":{"kind":"text","v":"hi"}}"#;
-    let cases: Vec<(&str, String, Result<usize, CassetteError>)> = vec![
+    // An error is named by its kind and the line it points at.
+    let cases: Vec<(&str, String, Result<usize, &str>)> = vec![
         ("one entry", file(&[entry]), Ok(1)),
         ("a blank line is skipped", file(&["", entry, ""]), Ok(1)),
         ("header only", file(&[]), Ok(0)),
-        ("empty", String::new(), Err(CassetteError::Empty)),
-        (
-            "bad header",
-            "{}".to_owned(),
-            Err(CassetteError::BadLine { line: 1 }),
-        ),
-        (
-            "bad entry",
-            file(&["{\"when\":1}"]),
-            Err(CassetteError::BadLine { line: 2 }),
-        ),
+        ("empty", String::new(), Err("empty")),
+        ("bad header", "{}".to_owned(), Err("bad line 1")),
+        ("bad entry", file(&["{\"when\":1}"]), Err("bad line 2")),
         (
             "unknown version",
             TEST_HEADER.replace("\"vocab\":1", "\"vocab\":9"),
-            Err(CassetteError::Version {
-                found: CassetteVersion(9),
-                want: CassetteVersion::CURRENT,
-            }),
+            Err("version 9"),
         ),
     ];
     for (name, text, want) in cases {
-        assert_eq!(
-            Cassette::parse(&text).map(|c| c.entries.len()),
-            want,
-            "{name}"
-        );
+        let got = Cassette::parse(&text)
+            .map(|c| c.entries.len())
+            .map_err(|error| match error {
+                CassetteError::Empty => "empty".to_owned(),
+                CassetteError::BadLine { line, .. } => format!("bad line {line}"),
+                CassetteError::BadSequence { line, .. } => format!("bad sequence {line}"),
+                CassetteError::Version { found, want } => {
+                    assert_eq!(want, CassetteVersion::CURRENT, "{name}");
+                    format!("version {}", found.0)
+                }
+            });
+        assert_eq!(got, want.map_err(str::to_owned), "{name}");
     }
 }
 

@@ -6,7 +6,7 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use speech_provider::SpeechCaps;
 
-use crate::{PrintHash, RequestPrint, check_sequence};
+use crate::{PrintHash, RequestPrint, StreamFault, check_sequence};
 
 /// The format version of a cassette file.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -86,15 +86,23 @@ pub struct Cassette {
 }
 
 /// A cassette file that does not read.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum CassetteError {
     #[error("the file is empty")]
     Empty,
     #[error("line {line} does not parse")]
-    BadLine { line: u32 },
+    BadLine {
+        line: u32,
+        #[source]
+        source: serde_json::Error,
+    },
     /// The events of an interaction are not a possible stream (`check_sequence`).
     #[error("line {line} holds events that are not a possible stream")]
-    BadSequence { line: u32 },
+    BadSequence {
+        line: u32,
+        #[source]
+        source: StreamFault,
+    },
     #[error("the cassette is version {found:?}, this build reads {want:?}")]
     Version {
         found: CassetteVersion,
@@ -136,11 +144,9 @@ impl Cassette {
             .iter()
             .enumerate()
             .try_for_each(|(at, interaction)| {
-                if check_sequence(&interaction.events).is_ok() {
-                    return Ok(());
-                }
-                Err(CassetteError::BadSequence {
+                check_sequence(&interaction.events).map_err(|source| CassetteError::BadSequence {
                     line: u32::try_from(at + 2).unwrap_or(u32::MAX),
+                    source,
                 })
             })
     }
@@ -167,9 +173,8 @@ pub(crate) fn read_jsonl<I: DeserializeOwned>(
         .enumerate()
         .filter(|(_, l)| !l.trim().is_empty());
     let (_, first) = lines.next().ok_or(CassetteError::Empty)?;
-    let header: CassetteHeader = serde_json::from_str(first)
-        .ok()
-        .ok_or(CassetteError::BadLine { line: 1 })?;
+    let header: CassetteHeader =
+        serde_json::from_str(first).map_err(|source| CassetteError::BadLine { line: 1, source })?;
     if header.vocab != CassetteVersion::CURRENT {
         return Err(CassetteError::Version {
             found: header.vocab,
@@ -178,11 +183,10 @@ pub(crate) fn read_jsonl<I: DeserializeOwned>(
     }
     let items = lines
         .map(|(at, line)| {
-            serde_json::from_str(line)
-                .ok()
-                .ok_or_else(|| CassetteError::BadLine {
-                    line: u32::try_from(at + 1).unwrap_or(u32::MAX),
-                })
+            serde_json::from_str(line).map_err(|source| CassetteError::BadLine {
+                line: u32::try_from(at + 1).unwrap_or(u32::MAX),
+                source,
+            })
         })
         .collect::<Result<Vec<I>, _>>()?;
     Ok((header, items))

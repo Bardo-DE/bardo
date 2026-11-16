@@ -96,11 +96,14 @@ fn a_wire_cassette_round_trips_as_jsonl() {
 
 #[test]
 fn bad_wire_files_name_the_line() {
-    assert_eq!(WireCassette::from_jsonl(""), Err(CassetteError::Empty));
+    assert!(matches!(
+        WireCassette::from_jsonl(""),
+        Err(CassetteError::Empty)
+    ));
     let mut text = cassette().to_jsonl();
     text.push_str("{nope}\n");
-    assert_eq!(
+    assert!(matches!(
         WireCassette::from_jsonl(&text),
-        Err(CassetteError::BadLine { line: 4 })
-    );
+        Err(CassetteError::BadLine { line: 4, .. })
+    ));
 }

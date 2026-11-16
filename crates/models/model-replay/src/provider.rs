@@ -71,7 +71,10 @@ impl ReplayProvider {
     }
 
     fn pick(&self, got: &RequestPrint) -> Result<Interaction, ReplayError> {
-        let mut cursor = self.cursor.lock().ok().ok_or(ReplayError::Exhausted)?;
+        let mut cursor = self
+            .cursor
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let picked = pick(&self.cassette.interactions, self.mode, &mut cursor, got);
         if let Err(miss) = &picked {
             cursor.misses.push(miss.clone());

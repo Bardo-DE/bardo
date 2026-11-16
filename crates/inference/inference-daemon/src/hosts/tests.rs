@@ -31,22 +31,26 @@ fn id(name: &str) -> EngineId {
 #[test]
 fn the_total_is_the_first_line_of_the_csv() {
     let cases = [
-        ("16303\n", Ok(MiB(16303))),
-        ("16303", Ok(MiB(16303))),
-        (" 12288 \n24576\n", Ok(MiB(12288))),
-        ("", Err(GpuError::Unreadable)),
-        ("N/A\n", Err(GpuError::Unreadable)),
-        ("16303 MiB\n", Err(GpuError::Unreadable)),
+        ("16303\n", MiB(16303)),
+        ("16303", MiB(16303)),
+        (" 12288 \n24576\n", MiB(12288)),
     ];
     for (text, expected) in cases {
-        assert_eq!(parse_total(text), expected, "{text:?}");
+        assert_eq!(parse_total(text).expect("a total"), expected, "{text:?}");
+    }
+    assert!(matches!(parse_total(""), Err(GpuError::Unreadable)));
+    for text in ["N/A\n", "16303 MiB\n"] {
+        assert!(
+            matches!(parse_total(text), Err(GpuError::BadTotal(_))),
+            "{text:?}"
+        );
     }
 }
 
 #[tokio::test]
-async fn nvidia_smi_that_is_not_there_is_unavailable() {
+async fn nvidia_smi_that_is_not_there_cannot_run() {
     let smi = NvidiaSmi::new(PathBuf::from("/nonexistent/nvidia-smi"));
-    assert_eq!(smi.memory().await, Err(GpuError::Unavailable));
+    assert!(matches!(smi.memory().await, Err(GpuError::Run(_))));
 }
 
 #[tokio::test]
@@ -59,7 +63,10 @@ async fn a_child_process_is_started_stopped_and_its_exit_seen() {
     // A killed process has no exit code of its own.
     assert_eq!(host.exited(&id("a")).await, ExitCode(-1));
     // It is stopped once; the second stop finds nothing to stop.
-    assert_eq!(host.stop(&id("a")).await, Err(HostError::NotRunning));
+    assert!(matches!(
+        host.stop(&id("a")).await,
+        Err(HostError::NotRunning)
+    ));
 }
 
 #[tokio::test]
@@ -74,11 +81,11 @@ async fn a_process_that_ends_on_its_own_reports_its_code() {
 #[tokio::test]
 async fn a_program_that_is_not_there_is_refused_and_an_unknown_engine_has_not_exited_well() {
     let host = ProcessHost::new();
-    assert_eq!(
+    assert!(matches!(
         host.spawn(&id("c"), &unit("/nonexistent/engine", &[]))
             .await,
-        Err(HostError::Refused)
-    );
+        Err(HostError::Start(_))
+    ));
     assert_eq!(host.exited(&id("never-started")).await, ExitCode(-1));
 }
 
@@ -290,11 +297,11 @@ async fn a_stale_socket_is_gone_by_the_time_the_program_runs() {
 #[tokio::test]
 async fn a_program_that_cannot_be_run_says_which() {
     let host = ProcessHost::new();
-    assert_eq!(
+    assert!(matches!(
         host.spawn(&id("nope"), &unit("/nonexistent/engine", &[]))
             .await,
-        Err(HostError::Refused)
-    );
+        Err(HostError::Start(_))
+    ));
     assert_eq!(
         host.diagnostics().refusal(&id("nope")),
         Some(Cause::CannotSpawn {
@@ -322,10 +329,10 @@ impl LaunchGuard for Refuses {
 #[tokio::test]
 async fn a_program_the_guard_refuses_is_not_started_and_the_cause_is_its_own() {
     let host = ProcessHost::new().with_guard(Arc::new(Refuses("changed")));
-    assert_eq!(
+    assert!(matches!(
         host.spawn(&id("g"), &unit("/opt/changed", &[])).await,
         Err(HostError::Refused)
-    );
+    ));
     assert_eq!(
         host.diagnostics().refusal(&id("g")),
         Some(Cause::ProgramChanged {

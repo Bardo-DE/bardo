@@ -290,15 +290,18 @@ fn check_sequence_table() {
 fn a_bad_sequence_names_its_line() {
     let mut c = cassette();
     c.interactions[1].events = vec![started(0, "a")];
-    assert_eq!(
+    assert!(matches!(
         c.check_sequences(),
-        Err(CassetteError::BadSequence { line: 3 })
-    );
-    assert_eq!(
+        Err(CassetteError::BadSequence { line: 3, .. })
+    ));
+    assert!(matches!(
         Cassette::from_jsonl(&c.to_jsonl()),
-        Err(CassetteError::BadSequence { line: 3 })
+        Err(CassetteError::BadSequence { line: 3, .. })
+    ));
+    assert_eq!(
+        Cassette::from_jsonl(&cassette().to_jsonl()).expect("a checked cassette reads back"),
+        cassette()
     );
-    assert_eq!(Cassette::from_jsonl(&cassette().to_jsonl()), Ok(cassette()));
 }
 
 #[test]

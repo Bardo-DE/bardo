@@ -86,11 +86,15 @@ impl Replays {
         self.engines
             .iter()
             .filter_map(|(id, replaying)| {
-                replaying
-                    .replayer
-                    .as_ref()
-                    .err()
-                    .map(|why| format!("{}: {why}", id.0))
+                replaying.replayer.as_ref().err().map(|why| {
+                    let mut line = format!("{}: {why}", id.0);
+                    let mut cause = std::error::Error::source(why);
+                    while let Some(inner) = cause {
+                        line = format!("{line}: {inner}");
+                        cause = inner.source();
+                    }
+                    line
+                })
             })
             .collect()
     }
