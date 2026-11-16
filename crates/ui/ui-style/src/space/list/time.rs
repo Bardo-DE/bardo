@@ -85,10 +85,8 @@ pub const IDLE: Duration = Duration::from_secs(12 * 60 * 60);
 impl Epoch {
     /// The wall clock now.
     pub fn now() -> Epoch {
-        let secs = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_or(0, |since| since.as_secs());
-        Epoch(i64::try_from(secs).unwrap_or(i64::MAX))
+        use base_time::Clock as _;
+        Epoch(base_time::SystemClock.now().0)
     }
 
     /// `self` moved later by `by`.
