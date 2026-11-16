@@ -69,7 +69,7 @@ fn host(socket: &Path, reply: impl Fn(&EdgeRequest) -> EdgeReply + Send + Sync +
             let Ok((stream, _)) = listener.accept().await else {
                 return;
             };
-            let (record, reply) = (Arc::clone(&record), reply.clone());
+            let (record, reply) = (Arc::clone(&record), Arc::clone(&reply));
             tokio::spawn(async move {
                 let (read, mut write) = stream.into_split();
                 let mut lines = BufReader::new(read).lines();
@@ -158,7 +158,7 @@ async fn a_call_is_one_line_with_the_tool_and_the_arguments_as_given() {
             assert_eq!(tool, "mail__mail_thread_read");
             assert_eq!(sent, &arguments);
         }
-        other => panic!("{other:?}"),
+        other @ EdgeOp::List => panic!("{other:?}"),
     }
 }
 

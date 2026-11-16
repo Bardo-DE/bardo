@@ -1,7 +1,7 @@
 //! The edge end to end, in process: an rmcp client over a duplex pipe, the edge as its server,
 //! the router and the fake mail app behind it. No bus, no process, no network.
 
-use account_core::consent::{Decision, Grant, GrantScope, Usage};
+use account_core::consent::{Decision, Grant, Usage};
 use account_core::{AppId, AppName, Isolation};
 use action_client::{InProcess, Intents, Transport, TransportError};
 use action_core::*;

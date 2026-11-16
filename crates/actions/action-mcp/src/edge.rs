@@ -51,6 +51,7 @@ impl<T: Transport> McpEdge<T> {
     }
 
     /// The same edge with `expose` (the person's setting).
+    #[must_use]
     pub fn with_expose(self, expose: bool) -> Self {
         Self {
             expose: Source::Fixed(expose),
@@ -60,6 +61,7 @@ impl<T: Transport> McpEdge<T> {
 
     /// The same edge following the person's setting: `read` is asked at every listing and call, so
     /// a change in the Settings app applies to the next request.
+    #[must_use]
     pub fn with_expose_read(self, read: impl Fn() -> bool + Send + Sync + 'static) -> Self {
         Self {
             expose: Source::Read(Arc::new(read)),
@@ -75,6 +77,10 @@ impl<T: Transport> McpEdge<T> {
         }
     }
 
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "any transport failure means the same fixed `Unavailable` fault"
+    )]
     async fn registry(&self) -> Result<Vec<ValidManifest>, ToolFault> {
         self.intents
             .manifests()
@@ -83,6 +89,9 @@ impl<T: Transport> McpEdge<T> {
     }
 
     /// The tools offered right now, each with its description: nothing while the edge is off.
+    ///
+    /// # Errors
+    /// Returns [`ToolFault::Unavailable`] when the router's registry cannot be read.
     pub async fn listing(&self) -> Result<Vec<(ToolSpec, String)>, ToolFault> {
         if !self.expose() {
             return Ok(Vec::new());
@@ -96,6 +105,10 @@ impl<T: Transport> McpEdge<T> {
     /// answers the outcome or the coarse refusal. A confirmation the router asks for is never
     /// answered here: the person answers it on the sheet. An argument that does not fit its
     /// declaration is refused before the router is asked anything.
+    ///
+    /// # Errors
+    /// Returns a [`ToolFault`] when the edge is off, the tool or its arguments are refused, the
+    /// router refuses the call, or the router is unavailable.
     pub async fn call(&self, tool: &str, arguments: Json) -> Result<Json, ToolFault> {
         if !self.expose() {
             return Err(ToolFault::Off);
@@ -131,7 +144,7 @@ pub(crate) fn listed(tools: Vec<Tool>) -> ListToolsResult {
         .with_cache_scope(CacheScope::Private)
 }
 
-pub(crate) fn rmcp_tool(tool: ToolSpec, description: String) -> Option<Tool> {
+pub(crate) fn rmcp_tool(tool: &ToolSpec, description: String) -> Option<Tool> {
     let schema = tool.schema.0.as_object()?.clone();
     let mut listed = Tool::new(tool.name.to_string(), description, Arc::new(schema));
     listed.annotations = Some(annotations(tool.annotations));
@@ -159,7 +172,7 @@ impl<T: Transport + 'static> ServerHandler for McpEdge<T> {
         Ok(listed(
             listing
                 .into_iter()
-                .filter_map(|(tool, description)| rmcp_tool(tool, description))
+                .filter_map(|(tool, description)| rmcp_tool(&tool, description))
                 .collect(),
         ))
     }

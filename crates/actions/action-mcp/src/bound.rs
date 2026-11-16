@@ -40,6 +40,9 @@ impl BoundEdge {
     }
 
     /// A bridge to `socket` with the token the environment names.
+    ///
+    /// # Errors
+    /// Returns [`NoToken`] when the environment has no token or it is not a session token.
     pub fn from_env(
         socket: PathBuf,
         env: &impl Fn(&str) -> Option<String>,
@@ -51,6 +54,10 @@ impl BoundEdge {
     }
 
     /// One request and its reply. Any trouble with the socket is the router being unavailable.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "every socket or codec failure means the same fixed `Unavailable` fault"
+    )]
     async fn ask(&self, op: EdgeOp) -> Result<EdgeReply, ToolFault> {
         let request = EdgeRequest {
             token: self.token.clone(),
@@ -93,7 +100,7 @@ impl ServerHandler for BoundEdge {
         Ok(listed(
             tools
                 .into_iter()
-                .filter_map(|t| rmcp_tool(t.tool, t.description))
+                .filter_map(|t| rmcp_tool(&t.tool, t.description))
                 .collect(),
         ))
     }

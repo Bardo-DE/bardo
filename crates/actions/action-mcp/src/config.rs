@@ -40,17 +40,26 @@ impl Default for McpConfig {
 
 impl McpConfig {
     /// Reads the file.
+    ///
+    /// # Errors
+    /// Returns [`ConfigError`] when `text` is not valid configuration TOML.
     pub fn parse(text: &str) -> Result<Self, ConfigError> {
         toml::from_str(text).map_err(|e| ConfigError(e.to_string()))
     }
 
     /// The configuration the package ships (`dist/actions-mcp.toml`): off.
+    ///
+    /// # Errors
+    /// Returns [`ConfigError`] when the shipped file does not parse.
     pub fn shipped() -> Result<Self, ConfigError> {
         Self::parse(SHIPPED)
     }
 
     /// The first `actions/actions-mcp.toml` of the `bardo` folders of the configuration directories (`$XDG_CONFIG_HOME`,
     /// then `$XDG_CONFIG_DIRS`), else the shipped one; the switch from the settings file.
+    ///
+    /// # Errors
+    /// Returns [`ConfigError`] when the file found (or the shipped one) does not parse.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, ConfigError> {
         let found = settings::config_dirs(env)
             .into_iter()

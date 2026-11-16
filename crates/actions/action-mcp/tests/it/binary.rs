@@ -4,7 +4,7 @@
 //! the daemon's environment is cleared, and the child is killed when the test ends.
 
 use account_core::AppName;
-use account_core::consent::{Decision, Grant, GrantScope, Usage};
+use account_core::consent::{Decision, Grant, Usage};
 use action_core::*;
 use action_daemon::{IntentdConfig, ProcRoot, serve_on_with};
 use action_fake::{MailThread, fake_router};

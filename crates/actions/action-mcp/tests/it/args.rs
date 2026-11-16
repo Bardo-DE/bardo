@@ -35,7 +35,7 @@ fn action(on: TargetKind, params: Vec<ParamDecl>) -> ActionDecl {
         on,
         params,
         effect: Effect::Read,
-        classes: Default::default(),
+        classes: std::collections::BTreeSet::default(),
         undo: false,
         reach: AgentReach::Offered,
         latency: Latency::Instant,
@@ -63,7 +63,7 @@ fn entity_json(key: &str) -> Json {
     json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key })
 }
 
-fn one(ty: ParamType, given: Json) -> Result<Value, ArgsFault> {
+fn one(ty: ParamType, given: &Json) -> Result<Value, ArgsFault> {
     let decl = action(
         TargetKind::Nothing,
         vec![param("p", ty, ParamNeed::Required)],
@@ -157,7 +157,7 @@ fn each_declared_type_reads_its_json() {
         ),
     ];
     for (ty, given, want) in rows {
-        assert_eq!(one(ty.clone(), given.clone()), Ok(want), "{ty:?} {given}");
+        assert_eq!(one(ty.clone(), &given), Ok(want), "{ty:?} {given}");
     }
 }
 
@@ -171,7 +171,7 @@ fn a_handle_stands_in_where_the_schema_allows_one() {
         ParamType::Url,
     ] {
         assert_eq!(
-            one(ty.clone(), held.clone()),
+            one(ty.clone(), &held),
             Ok(Value::Handle(Handle(4))),
             "{ty:?}"
         );
@@ -181,14 +181,10 @@ fn a_handle_stands_in_where_the_schema_allows_one() {
         ParamType::Entities(kind("mail.thread")),
         ParamType::Date,
     ] {
-        assert_eq!(
-            one(ty.clone(), held.clone()),
-            Err(wrong(Why::Type)),
-            "{ty:?}"
-        );
+        assert_eq!(one(ty.clone(), &held), Err(wrong(Why::Type)), "{ty:?}");
     }
     let extra = json!({ "handle": 4, "also": 1 });
-    assert_eq!(one(text(9, false), extra), Err(wrong(Why::Type)));
+    assert_eq!(one(text(9, false), &extra), Err(wrong(Why::Type)));
 }
 
 #[test]
@@ -227,11 +223,7 @@ fn a_value_that_does_not_fit_is_refused_with_its_parameter() {
         (ParamType::File, json!(""), Why::Range),
     ];
     for (ty, given, why) in rows {
-        assert_eq!(
-            one(ty.clone(), given.clone()),
-            Err(wrong(why)),
-            "{ty:?} {given}"
-        );
+        assert_eq!(one(ty.clone(), &given), Err(wrong(why)), "{ty:?} {given}");
     }
 }
 

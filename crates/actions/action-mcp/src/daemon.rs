@@ -61,9 +61,15 @@ impl From<rmcp::service::ServerInitializeError> for DaemonFault {
     }
 }
 
-/// Takes the `mcp` role's bus name. intentd derives a caller's roles from the names its connection
-/// owns, so this process is `Actor::Mcp` only while it holds it; a second edge finds it taken and
-/// stops (several clients share one edge through the socket).
+/// Takes the `mcp` role's bus name.
+///
+/// intentd derives a caller's roles from the names its connection owns, so this process is
+/// `Actor::Mcp` only while it holds it; a second edge finds it taken and stops (several clients
+/// share one edge through the socket).
+///
+/// # Errors
+/// Returns [`DaemonFault::NameTaken`] when another edge holds the name, or a bus fault when the
+/// name request fails.
 pub async fn claim(connection: &BusConnection) -> Result<(), DaemonFault> {
     let reply = connection
         .request_name_with_flags(MCP_BUS, RequestNameFlags::DoNotQueue.into())
@@ -122,6 +128,10 @@ async fn over_socket(
 
 /// Serves the edge on `listen` over `connection` until the client goes (stdio) or forever (socket),
 /// switched as `config.expose` says for as long as it runs.
+///
+/// # Errors
+/// Returns a [`DaemonFault`] when the bus name is taken, the socket cannot be bound or accepted
+/// on, or the MCP session fails.
 pub async fn start(
     connection: &BusConnection,
     config: McpConfig,
@@ -139,6 +149,10 @@ pub async fn start(
 
 /// `start`, with the switch asked of `expose` at every request: the daemon hands it the person's
 /// settings file, read again each time.
+///
+/// # Errors
+/// Returns a [`DaemonFault`] when the bus name is taken, the socket cannot be bound or accepted
+/// on, or the MCP session fails.
 pub async fn start_following(
     connection: &BusConnection,
     config: McpConfig,
@@ -182,6 +196,10 @@ pub enum CommandLineFault {
 
 impl Args {
     /// Reads the arguments after the program name; an unknown one is an error.
+    ///
+    /// # Errors
+    /// Returns a [`CommandLineFault`] for a flag without its value, an unknown flag, or a
+    /// `--client` that is not a client name.
     pub fn parse(args: impl IntoIterator<Item = String>) -> Result<Self, CommandLineFault> {
         let mut args = args.into_iter();
         let mut parsed = Self::default();
@@ -197,7 +215,8 @@ impl Args {
                 "--client" => {
                     parsed.client = Some(
                         provenance::ClientName::parse(&value()?)
-                            .map_err(|_| CommandLineFault::NotAClient)?,
+                            .ok()
+                            .ok_or(CommandLineFault::NotAClient)?,
                     );
                 }
                 other => return Err(CommandLineFault::Unknown(other.to_owned())),
@@ -209,6 +228,10 @@ impl Args {
 
 /// The daemon: the configuration and the session bus from `env` (the process's environment, which
 /// its `main` passes in), the arguments from the command line.
+///
+/// # Errors
+/// Returns a [`DaemonFault`] when the configuration or bus cannot be read, the host token is
+/// missing, or serving fails.
 pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonFault> {
     if let Some(dir) = args.write_schema {
         return write_schema(&dir);
@@ -240,6 +263,9 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
 
 /// `--write-schema DIR`: `actions.settings.toml` into `DIR`, for a local install (design/22 section
 /// 9.2).
+///
+/// # Errors
+/// Returns a [`DaemonFault`] when the directory or the file cannot be written.
 pub fn write_schema(dir: &Path) -> Result<(), DaemonFault> {
     std::fs::create_dir_all(dir)?;
     std::fs::write(dir.join("actions.settings.toml"), crate::settings::SCHEMA)?;
