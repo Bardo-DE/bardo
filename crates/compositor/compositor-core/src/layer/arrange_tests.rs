@@ -101,6 +101,10 @@ fn placed(asks: &[Ask]) -> Vec<LogicalRect> {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one long scenario"
+)]
 fn layers_are_placed_in_what_the_earlier_zones_left() {
     let reserve = ExclusiveZone::Reserve;
     let margin_top = Margins { top: 6, ..NONE };

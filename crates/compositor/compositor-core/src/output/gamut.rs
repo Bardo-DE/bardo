@@ -123,6 +123,7 @@ impl Primaries {
         let high = &block[CHROMA_AT + 2..CHROMA_AT + 10];
         // Ten bits each: the high eight in their own byte, the low two packed four to a byte.
         let value = |index: usize| -> u32 {
+            #[expect(clippy::cast_possible_truncation, reason = "index % 4 is under 4")]
             let shift = 6 - 2 * (index % 4) as u32;
             let packed = u32::from(low[index / 4] >> shift) & 0b11;
             (u32::from(high[index]) << 2) | packed
@@ -158,7 +159,12 @@ mod tests {
         let mut bytes = vec![0u8; BASE_BLOCK];
         bytes[..8].copy_from_slice(&HEADER);
         for (index, value) in values.iter().enumerate() {
-            bytes[CHROMA_AT + 2 + index] = (value >> 2) as u8;
+            #[expect(
+                clippy::cast_possible_truncation,
+                reason = "a ten-bit chromaticity shifted right by two fits a byte"
+            )]
+            let high = (value >> 2) as u8;
+            bytes[CHROMA_AT + 2 + index] = high;
             bytes[CHROMA_AT + index / 4] |= ((value & 0b11) as u8) << (6 - 2 * (index % 4));
         }
         bytes

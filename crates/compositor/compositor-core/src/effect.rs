@@ -194,6 +194,10 @@ pub enum ConfigureSize {
 }
 
 /// The `xdg_toplevel` states a configure carries.
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one flag per xdg_toplevel state the protocol defines"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ToplevelStates {
     /// `activated`.
@@ -209,6 +213,10 @@ pub struct ToplevelStates {
 }
 
 /// Which edges of a toplevel touch a neighbour or the usable area's edge.
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one flag per edge, as xdg_toplevel's tiled_* states"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TiledEdges {
     /// `tiled_top`.

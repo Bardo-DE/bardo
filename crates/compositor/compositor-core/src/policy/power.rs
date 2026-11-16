@@ -16,8 +16,9 @@ pub fn power_of(global: GlobalKind) -> Option<Power> {
     global.entry().power
 }
 
-/// The powers a desktop service of `role` is trusted with, by identity, on the public socket:
-/// the shell with all of them, the portal with the screen and the windows (its screenshots,
+/// The powers a desktop service of `role` is trusted with, by identity, on the public socket.
+///
+/// The shell with all of them, the portal with the screen and the windows (its screenshots,
 /// recordings and window switcher). Every other role is trusted with none; its program is
 /// asked like any other.
 #[must_use]
@@ -61,7 +62,7 @@ impl PowerSet {
 }
 
 impl FromIterator<Power> for PowerSet {
-    fn from_iter<I: IntoIterator<Item = Power>>(powers: I) -> PowerSet {
-        PowerSet(powers.into_iter().collect())
+    fn from_iter<I: IntoIterator<Item = Power>>(iter: I) -> PowerSet {
+        PowerSet(iter.into_iter().collect())
     }
 }

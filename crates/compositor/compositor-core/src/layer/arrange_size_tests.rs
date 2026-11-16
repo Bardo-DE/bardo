@@ -19,9 +19,9 @@ fn sized(edges: &'static str, size: (u32, u32)) -> LayerSpec {
 
 #[test]
 fn a_surface_is_configured_to_what_it_asked_for_else_to_the_room() {
-    let full = rect(100, 50, 1920, 1080);
     // name, edges, asked, configured
     type Case = (&'static str, &'static str, (u32, u32), (u32, u32));
+    let full = rect(100, 50, 1920, 1080);
     let cases: [Case; 5] = [
         (
             "an unanchored surface keeps its size",

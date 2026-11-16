@@ -21,7 +21,7 @@ fn a_bad_key_in_one_rule_costs_only_that_rule() {
         ]
     "#;
     let (layer, warnings) = ConfigLayer::parse(text, ConfigSource::User);
-    const WARNED: &[&str] = &[
+    let warned = [
         "profile.t.modmap.command",
         "profile.t.rules[1].when",
         "profile.t.rules[2].when",
@@ -33,7 +33,7 @@ fn a_bad_key_in_one_rule_costs_only_that_rule() {
         "profile.t.rules[8].then[1]",
         "profile.t.rules[9].then",
     ];
-    assert_eq!(keys(&warnings), WARNED);
+    assert_eq!(keys(&warnings), warned);
     assert!(
         warnings
             .iter()

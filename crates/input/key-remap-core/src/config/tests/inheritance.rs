@@ -32,8 +32,7 @@ fn inheritance_flattens_transitively_child_over_parent() {
             control: OutMod::Ctrl
         }
     );
-    const CASES: &[(&str, &str)] = &[("left", "a"), ("right", "d"), ("up", "f"), ("down", "e")];
-    for &(when, then) in CASES {
+    for (when, then) in [("left", "a"), ("right", "d"), ("up", "f"), ("down", "e")] {
         assert_eq!(rule(leaf, when), Some(&map(then)), "{when}");
     }
     assert_eq!(profiles.resolve(&name("mid")).rules.len(), 4);

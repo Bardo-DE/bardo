@@ -178,11 +178,11 @@ mod tests {
 
     #[test]
     fn a_light_acts_on_release_inside() {
+        use ArmOutcome::{Fire, Nothing};
+        type Case = (&'static str, Vec<Step>, Vec<(ArmOutcome, Option<LightAt>)>);
         let red = at(1, Light::Close);
         let green = at(1, Light::Zoom);
         let other = at(2, Light::Close);
-        use ArmOutcome::{Fire, Nothing};
-        type Case = (&'static str, Vec<Step>, Vec<(ArmOutcome, Option<LightAt>)>);
         let cases: Vec<Case> = vec![
             (
                 "press shows pressed, release fires",

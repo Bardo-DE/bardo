@@ -19,6 +19,10 @@ use std::collections::BTreeMap;
 use support::{headless, space_id};
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one long scenario"
+)]
 fn activation_hiding_and_who_may_move_focus() {
     let b_idle = focus(Some(b()), None, None, vec![b(), a()], &[1, 2, 3]);
     let rows = vec![
@@ -209,6 +213,10 @@ fn a_lease_keys_the_window_it_holds() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one long scenario"
+)]
 fn spaces_and_sheets() {
     let on_s2 = |extra: Vec<Window>| windows(&[], extra);
     let rows = vec![

@@ -3,6 +3,7 @@
 //! the invariants; these corrupt the private fields.)
 
 use super::*;
+use crate::MappedToplevel;
 use crate::app::AppVisibility;
 use crate::focus::TokenCheck;
 use crate::geometry::{LogicalSize, PhysicalSize};
@@ -15,7 +16,6 @@ use crate::output::{EdidFacts, EdidSerial, Mode, PhysicalMm};
 use crate::space::{Space, SpaceContent, SpaceIndex, SplitPair};
 use crate::time::Millihertz;
 use crate::window::{SizeLimits, SpacePlace, StackRank, WindowOrigin, WindowState};
-use crate::{LayerKey, MappedToplevel};
 use account_core::{AppId, AppName, ClaimedId, Isolation, SpaceId};
 use desktop_protocols::vocab::{Emphasis, Modality, WindowRole};
 use std::time::Duration;
@@ -152,6 +152,10 @@ fn the_healthy_model_breaks_nothing() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a case table with one broken model per invariant"
+)]
 fn every_invariant_can_fail() {
     type Corrupt = fn(&mut Model);
     let cases: Vec<(&str, Corrupt, InvariantBreak)> = vec![

@@ -212,16 +212,16 @@ impl Model {
         let watch = match &event {
             Event::Input(input) if !matches!(input.kind, InputKind::Swipe(_)) => false,
             // Timers and ticks that change nothing a client is shown, at key-repeat and idle
-            // rates (CASC-03).
+            // rates (CASC-03); and consent, which changes nothing a window-list or desktop
+            // client is shown.
             Event::TimerFired(
                 TimerKey::KeyRepeat(_)
                 | TimerKey::IdleNotify(..)
                 | TimerKey::ImeHold
                 | TimerKey::AgentHold,
             )
-            | Event::NightLightTick(_) => false,
-            // Consent changes nothing a window-list or desktop client is shown.
-            Event::ClientStanding { .. }
+            | Event::NightLightTick(_)
+            | Event::ClientStanding { .. }
             | Event::PrivilegeUse { .. }
             | Event::PermissionAnswered { .. }
             | Event::PrivilegeEdited { .. }
@@ -235,6 +235,10 @@ impl Model {
     }
 
     /// Whether every invariant holds.
+    ///
+    /// # Errors
+    ///
+    /// The first invariant found broken, as an [`InvariantBreak`].
     pub fn check_invariants(&self) -> Result<(), InvariantBreak> {
         invariants::check(self)
     }
@@ -294,12 +298,12 @@ impl Model {
             Event::WindowDragEnded { window } => self.drag_ended(window),
             Event::WindowPlaced { window, rect } => self.placed_by_hand(window, rect),
             Event::WindowHint { window, hint } => self.hint(window, hint),
-            Event::LayerMapped { layer, spec } => self.map_layer(layer, spec),
-            Event::LayerChanged { layer, spec } => self.change_layer(layer, spec),
+            Event::LayerMapped { layer, spec } => self.map_layer(layer, &spec),
+            Event::LayerChanged { layer, spec } => self.change_layer(layer, &spec),
             Event::LayerPlaced { layer, at } => self.place_layer(layer, at),
             Event::LayerUnmapped { layer } => self.unmap_layer(layer),
             Event::Lock(event) => self.lock_event(event),
-            Event::Input(event) => self.input_seen().then(|model| model.swipe_input(event)),
+            Event::Input(event) => self.input_seen().then(|model| model.swipe_input(&event)),
             Event::OutputPlugged(facts) => self.plug(facts),
             Event::OutputUnplugged(output) => self.unplug(&output),
             Event::OutputConfigured { output, config } => self.configure_output(&output, config),
@@ -321,7 +325,7 @@ impl Model {
             }
             Event::SpacesLoaded(file) => self.restore_spaces(*file),
             Event::Desktop(request) => self.unless_locked(|model| model.desktop_request(request)),
-            Event::Shell(request) => self.shell_request(request),
+            Event::Shell(request) => self.shell_request(&request),
             Event::ClientStanding { client, standing } => {
                 self.privileged(Input::Standing { client, standing })
             }

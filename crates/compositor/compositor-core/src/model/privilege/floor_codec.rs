@@ -101,6 +101,12 @@ struct InFloor {
 impl Floor {
     /// The floor `text` holds; an empty text is the empty floor, keys it does not know are
     /// ignored.
+    ///
+    /// # Errors
+    ///
+    /// [`FloorError::TooLarge`] or [`FloorError::TooMany`] past the caps, [`FloorError::Parse`] when
+    /// the text is not this shape, [`FloorError::DefaultAllow`] for a default of "allow", and
+    /// [`FloorError::Subject`] for a program or app that is not well formed.
     pub fn from_toml(text: &str) -> Result<Floor, FloorError> {
         if text.len() > MAX_FILE_BYTES {
             return Err(FloorError::TooLarge);
@@ -126,8 +132,9 @@ impl Floor {
             .iter()
             .try_fold(floor, |floor, program| {
                 ProgramPath::parse(program)
+                    .ok()
                     .map(|path| floor.with_never_remembered(path))
-                    .map_err(|_| FloorError::Subject)
+                    .ok_or(FloorError::Subject)
             })?;
         file.rule.into_iter().try_fold(floor, |floor, rule| {
             let subject = rule.subject.subject().ok_or(FloorError::Subject)?;

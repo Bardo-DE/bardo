@@ -472,6 +472,10 @@ fn panel(level: LayerLevel, keyboard: KeyboardInteractivity) -> LayerSpec {
 /// A panel a person just opened takes the keyboard when it maps, over a key window, unless an
 /// exclusive layer or the lock holds it; it gives it back to the key window when it unmaps.
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one long scenario"
+)]
 fn an_on_demand_panel_takes_the_keyboard_on_mapping_and_gives_it_back() {
     let mail = proven("org.bardo.Mail");
     let on_demand = |level| panel(level, KeyboardInteractivity::OnDemand);

@@ -50,7 +50,6 @@ impl Model {
                     holder: LockHolder::Shell(None),
                 })
             }
-            (_, LockEvent::Restored) => Moved::of(self),
             (LockState::Unlocked, LockEvent::Requested { client }) => self
                 .begin_lock(client)
                 .then(|model| model.leave_overview(None)),
@@ -68,7 +67,7 @@ impl Model {
             (_, LockEvent::Requested { .. }) => {
                 Moved::of(self).with(Effect::Lock(LockReply::Finished))
             }
-            (LockState::Unlocked, _) => Moved::of(self),
+            (LockState::Unlocked, _) | (_, LockEvent::Restored) => Moved::of(self),
             (state, LockEvent::SurfaceCommitted { output }) => self.commit_surface(state, output),
             (state, LockEvent::SurfaceGone { output }) => self.lose_surface(state, &output),
             (state, LockEvent::Unlocked) => self.end_lock(&state),

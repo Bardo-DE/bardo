@@ -74,7 +74,7 @@ impl Model {
         let mut model = self;
         match ramp {
             GammaRamp::Table(_) => model.night.held.insert(output.clone()),
-            _ => model.night.held.remove(output),
+            GammaRamp::Identity => model.night.held.remove(output),
         };
         model.night.asked.insert(output.clone(), ramp.clone());
         model

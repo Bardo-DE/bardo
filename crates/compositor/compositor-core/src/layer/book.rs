@@ -157,11 +157,9 @@ fn holds(spec: &LayerSpec, role: ShellRole, output: &OutputKey) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::geometry::{LogicalPoint, LogicalSize};
+    use crate::geometry::LogicalSize;
     use crate::ids::OutputName;
-    use crate::layer::{
-        Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, Margins, ShellRoleTag,
-    };
+    use crate::layer::{Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, Margins};
     use crate::output::{EdidFacts, EdidSerial};
 
     fn output(name: &str) -> OutputKey {
@@ -207,6 +205,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a test that builds one long scenario"
+    )]
     fn exclusive_zones_shrink_the_usable_area() {
         let full = rect(0, 0, 1920, 1080);
         let top_margin = Margins {

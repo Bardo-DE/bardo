@@ -38,6 +38,11 @@ fn display(name: &str, modes: Vec<Mode>, mm: (u32, u32)) -> OutputFacts {
 }
 
 /// The panel size of a `diagonal_in` display whose pixels are square, to the millimetre.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a panel's millimetres are positive and far under u32::MAX"
+)]
 fn size_of(diagonal_in: f64, w: u32, h: u32) -> (u32, u32) {
     let diagonal_px = f64::from(w).hypot(f64::from(h));
     let mm_per_px = diagonal_in * 25.4 / diagonal_px;
@@ -52,6 +57,10 @@ fn size_of(diagonal_in: f64, w: u32, h: u32) -> (u32, u32) {
 type Row = (&'static str, (u32, u32), Option<(u32, u32)>, u16);
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of displays and the scale each gets"
+)]
 fn whole_like_mac_matches_sills_prefer_whole_table() {
     let rows: Vec<Row> = vec![
         (

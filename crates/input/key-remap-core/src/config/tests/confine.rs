@@ -19,6 +19,10 @@ fn rules_of(layer: &ConfigLayer) -> usize {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table-driven test: the rows are the length"
+)]
 fn a_user_rule_needs_a_modifier_and_writes_one_stroke_unless_the_system_file_says_otherwise() {
     const KEEP: usize = 1;
     const DROP: usize = 0;

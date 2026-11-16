@@ -45,6 +45,7 @@ impl RevealBook {
     }
 
     /// The book without the machines of outputs `keep` refuses (an output that was unplugged).
+    #[must_use]
     pub fn retain_outputs(self, keep: impl Fn(&OutputKey) -> bool) -> RevealBook {
         let RevealBook(mut machines) = self;
         machines.retain(|(output, _), _| keep(output));

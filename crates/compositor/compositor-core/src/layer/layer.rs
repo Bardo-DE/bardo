@@ -57,6 +57,10 @@ pub enum LayerLevel {
 }
 
 /// Which edges a layer surface is held to (`true`: held).
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one flag per screen edge, as zwlr_layer_surface_v1's anchor bits"
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Anchors {
     /// The top edge.

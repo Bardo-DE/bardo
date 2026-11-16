@@ -129,20 +129,22 @@ fn rekeyed(focus: Focus, lost: WindowId, view: &FocusView) -> Focus {
     }
 }
 
-/// The switcher, the dock, the launcher or an intent activated an app: the app's windows on
+/// The switcher, the dock, the launcher or an intent activated an app.
+///
+/// The app's windows on
 /// the shown Spaces come forward in its own order and its most recent one takes the key. An
 /// app, a third party or an unknown actor cannot move focus (A7): it asks for attention. An
 /// app with no window to show becomes active and windowless; the Space switch of rule S5 is
 /// the model's, and `SpaceShown` then keys the app's window.
-pub(super) fn activate_app(focus: Focus, app: AppKey, by: ActorKind, view: &FocusView) -> Outcome {
+pub(super) fn activate_app(focus: Focus, app: &AppKey, by: ActorKind, view: &FocusView) -> Outcome {
     if matches!(
         by,
         ActorKind::App | ActorKind::ThirdParty | ActorKind::Unknown
     ) {
-        return Outcome::asking(focus, vec![attention(&app)]);
+        return Outcome::asking(focus, vec![attention(app)]);
     }
     let shown: Vec<&Window> = view
-        .windows_of(&app)
+        .windows_of(app)
         .into_iter()
         .filter(|w| view.is_shown(w))
         .collect();
@@ -150,7 +152,7 @@ pub(super) fn activate_app(focus: Focus, app: AppKey, by: ActorKind, view: &Focu
         .latest(&shown)
         .map(|window| through_sheet(window, view));
     let raise = shown.iter().map(|w| w.id).collect();
-    Outcome::of(focus.activated(&app, key, view)).raising(raise)
+    Outcome::of(focus.activated(app, key, view)).raising(raise)
 }
 
 /// A live lease keys the window it holds (a run about to send keys): the window the person can

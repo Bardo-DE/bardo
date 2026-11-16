@@ -992,7 +992,7 @@ mod storms {
     fn standing_of(n: u64) -> ClientStanding {
         match n % 4 {
             0 => unverified(),
-            k => on_disk(PROGRAMS[(k - 1) as usize]),
+            k => on_disk(PROGRAMS[usize::try_from(k - 1).expect("k is 1 to 3")]),
         }
     }
 

@@ -6,6 +6,10 @@ use serde::{Deserialize, Deserializer, Serializer};
 use ui_core::geometry::scale::Scale;
 
 /// Writes `scale` as its numerator.
+#[expect(
+    clippy::trivially_copy_pass_by_ref,
+    reason = "serde's `with = ...` serialize functions must take `&T`"
+)]
 pub(crate) fn serialize<S: Serializer>(scale: &Scale, serializer: S) -> Result<S::Ok, S::Error> {
     serializer.serialize_u32(scale.0)
 }

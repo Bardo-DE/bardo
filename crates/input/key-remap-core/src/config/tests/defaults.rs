@@ -1,5 +1,5 @@
 use super::*;
-use crate::profile::{Hold, ModMap, Profile, RuleAction};
+use crate::profile::ModMap;
 use crate::role::{OutMod, OutMods};
 
 #[test]
@@ -131,7 +131,7 @@ fn no_layers_still_has_a_default() {
 }
 
 /// What `trigger` writes in `profile` when no rule rewrites it: each held role as its modifier.
-fn as_typed(profile: &Profile, trigger: &Trigger) -> RuleAction {
+fn as_typed(profile: &Profile, trigger: Trigger) -> RuleAction {
     let mods = trigger.roles.iter().fold(OutMods::EMPTY, |mods, role| {
         mods.with(profile.modmap.out(role))
     });
@@ -189,7 +189,7 @@ fn keymap_aware_rewrites_only_the_desktops_chords() {
         } else {
             assert_eq!(
                 *got,
-                as_typed(aware, trigger),
+                as_typed(aware, *trigger),
                 "{trigger:?} must pass as typed"
             );
         }

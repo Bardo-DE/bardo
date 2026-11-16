@@ -40,7 +40,7 @@ impl Reason {
 /// Whether `trigger` is a key typed with nothing but Shift, or nothing: ordinary typing. Shift is
 /// held for every capital letter and every shifted symbol, so a rule on `shift+a` would rewrite
 /// the text the person types; only Command, Option and Control make a key a shortcut.
-fn is_typing(trigger: &Trigger) -> bool {
+fn is_typing(trigger: Trigger) -> bool {
     trigger
         .roles
         .difference(Roles::EMPTY.with(Role::Shift))
@@ -48,7 +48,7 @@ fn is_typing(trigger: &Trigger) -> bool {
 }
 
 /// Why `action` on `trigger` may not stay in the user layer, if it may not.
-fn objection(trigger: &Trigger, action: &RuleAction, sequences: bool) -> Option<Reason> {
+fn objection(trigger: Trigger, action: &RuleAction, sequences: bool) -> Option<Reason> {
     match (action, sequences) {
         _ if is_typing(trigger) => Some(Reason::KeyAlone),
         (RuleAction::Sequence(_) | RuleAction::Swallow, false) => Some(Reason::StrokeList),
@@ -57,7 +57,7 @@ fn objection(trigger: &Trigger, action: &RuleAction, sequences: bool) -> Option<
 }
 
 /// `command+shift+z`, for a warning.
-fn chord_text(trigger: &Trigger) -> String {
+fn chord_text(trigger: Trigger) -> String {
     trigger
         .roles
         .iter()
@@ -72,6 +72,10 @@ impl ConfigLayer {
     /// [`MAX_USER_RULES`] rules is refused whole; otherwise each rule that
     /// the `sequences` setting or the modifier requirement forbids is dropped with a warning that names
     /// its chord. The machine file's layer is never passed through this.
+    ///
+    /// # Errors
+    ///
+    /// [`Oversize::UserRules`] when the layer has more than [`MAX_USER_RULES`] rules.
     pub fn confined(self, sequences: bool) -> Result<(ConfigLayer, Vec<Warning>), Oversize> {
         let found: usize = self.profiles.values().map(|p| p.rules.len()).sum();
         if found > MAX_USER_RULES {
@@ -87,7 +91,7 @@ impl ConfigLayer {
                 warnings.extend(dropped.into_iter().map(|(trigger, why)| {
                     warning(
                         &path,
-                        format!("\"{}\": {}", chord_text(&trigger), why.text()),
+                        format!("\"{}\": {}", chord_text(trigger), why.text()),
                     )
                 }));
                 (
@@ -110,7 +114,7 @@ fn keep_allowed(rules: Rules, sequences: bool) -> (Rules, Vec<(Trigger, Reason)>
     let mut kept = Rules::new();
     let mut dropped = Vec::new();
     for (trigger, action) in rules {
-        match objection(&trigger, &action, sequences) {
+        match objection(trigger, &action, sequences) {
             None => {
                 kept.insert(trigger, action);
             }

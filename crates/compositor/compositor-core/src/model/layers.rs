@@ -19,7 +19,7 @@ impl Model {
     /// holds it; when it unmaps the key window has it back. Another client's surface never takes
     /// the keyboard by mapping: the person has to press it (CASC-02). A surface on an output that
     /// is not plugged is not mapped.
-    pub(super) fn map_layer(self, layer: LayerKey, spec: LayerSpec) -> Moved {
+    pub(super) fn map_layer(self, layer: LayerKey, spec: &LayerSpec) -> Moved {
         if !self.outputs.0.contains_key(&spec.output) {
             return Moved::of(self);
         }
@@ -60,7 +60,7 @@ impl Model {
     }
 
     /// A layer surface changed what it asks for. One never mapped is not known.
-    pub(super) fn change_layer(self, layer: LayerKey, spec: LayerSpec) -> Moved {
+    pub(super) fn change_layer(self, layer: LayerKey, spec: &LayerSpec) -> Moved {
         match self.layers.get(&layer) {
             Some(_) if self.outputs.0.contains_key(&spec.output) => self.with_layer(layer, spec),
             _ => Moved::of(self),
@@ -99,7 +99,7 @@ impl Model {
     /// The model with `layer` as `spec`: told its size, the surfaces that avoid other zones
     /// told theirs when this one's zone moved them, and the scene laid out again when its
     /// exclusive zone, before or after, takes room.
-    fn with_layer(self, layer: LayerKey, spec: LayerSpec) -> Moved {
+    fn with_layer(self, layer: LayerKey, spec: &LayerSpec) -> Moved {
         let before = self.layers.get(&layer).cloned();
         let outputs: Vec<OutputKey> = before
             .iter()
@@ -115,7 +115,7 @@ impl Model {
         Moved::of(model)
             .with_all(size.map(|size| Effect::ConfigureLayer { layer, size }))
             .then(|model| model.reconfigured(&outputs, &sizes, Some(layer)))
-            .then(|model| model.laid_out_for(before.as_ref().unwrap_or(&spec), &spec))
+            .then(|model| model.laid_out_for(before.as_ref().unwrap_or(spec), spec))
     }
 
     /// The configured size of every layer surface on `outputs`: each takes its size from the

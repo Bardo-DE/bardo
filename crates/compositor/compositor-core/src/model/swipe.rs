@@ -113,7 +113,7 @@ impl Model {
     }
 
     /// A swipe step: whose it is, and what it drives.
-    pub(super) fn swipe_input(self, event: InputEvent) -> Moved {
+    pub(super) fn swipe_input(self, event: &InputEvent) -> Moved {
         let InputKind::Swipe(step) = event.kind else {
             return Moved::of(self);
         };

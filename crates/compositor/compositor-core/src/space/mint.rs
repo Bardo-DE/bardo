@@ -44,12 +44,24 @@ impl SpaceSeed {
     }
 }
 
-/// The Space id for 16 bytes of entropy: `s-` and 32 lowercase hex digits, a valid porter
+/// The Space id for 16 bytes of entropy.
+///
+/// It is `s-` and 32 lowercase hex digits, a valid porter
 /// [`SpaceId`] (it starts with a lowercase letter, holds only `[0-9a-f-]` and is 34 bytes, within
 /// the 64 every porter id allows).
+///
+/// # Panics
+///
+/// Never: the id it builds is always a valid porter slug.
 #[must_use]
 pub fn mint_space_id(entropy: [u8; 16]) -> SpaceId {
-    let hex: String = entropy.iter().map(|byte| format!("{byte:02x}")).collect();
+    use std::fmt::Write as _;
+    let hex = entropy
+        .iter()
+        .fold(String::with_capacity(32), |mut hex, byte| {
+            write!(hex, "{byte:02x}").expect("writing to a String cannot fail");
+            hex
+        });
     SpaceId::parse(&format!("s-{hex}"))
         .expect("`s-` and 32 hex digits is a porter slug (34 bytes, [a-z0-9-])")
 }

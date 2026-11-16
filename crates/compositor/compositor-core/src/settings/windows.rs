@@ -5,6 +5,10 @@ use std::time::Duration;
 use ui_core::word::Word;
 
 /// `windows.*`.
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "each bool is its own `windows.*` setting key"
+)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WindowSettings {
     /// `windows.minimise_effect`.

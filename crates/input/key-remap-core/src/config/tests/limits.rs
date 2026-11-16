@@ -1,4 +1,5 @@
 use super::*;
+use std::fmt::Write as _;
 
 /// `count` distinct `when` chords, each a role combination over a letter, digit or function key.
 fn chords(count: usize) -> Vec<String> {
@@ -37,16 +38,25 @@ fn profile_with_rules(name: &str, count: usize) -> String {
 }
 
 fn chain(links: usize) -> String {
-    (0..links)
-        .map(|i| {
-            let parent = if i == 0 {
-                "default".to_owned()
-            } else {
-                format!("p{}", i - 1)
-            };
-            format!("[profile.p{i}]\ninherits = \"{parent}\"\n")
-        })
-        .collect()
+    let mut text = String::new();
+    for i in 0..links {
+        let parent = if i == 0 {
+            "default".to_owned()
+        } else {
+            format!("p{}", i - 1)
+        };
+        writeln!(text, "[profile.p{i}]\ninherits = \"{parent}\"").expect("a String takes writes");
+    }
+    text
+}
+
+/// `count` profiles with nothing in them.
+fn empty_profiles(count: usize) -> String {
+    let mut text = String::new();
+    for i in 0..count {
+        writeln!(text, "[profile.p{i}]").expect("a String takes writes");
+    }
+    text
 }
 
 fn verdict(text: &str) -> Result<(), Oversize> {
@@ -57,9 +67,7 @@ fn verdict(text: &str) -> Result<(), Oversize> {
 fn what_is_within_the_limits_passes_and_the_built_in_defaults_are_far_inside() {
     let (defaults, _) = builtin();
     assert_eq!(within_limits(&[defaults]), Ok(()));
-    let many: String = (0..MAX_PROFILES)
-        .map(|i| format!("[profile.p{i}]\n"))
-        .collect();
+    let many = empty_profiles(MAX_PROFILES);
     assert_eq!(verdict(&many), Ok(()));
     assert_eq!(
         verdict(&profile_with_rules("big", MAX_RULES_PER_PROFILE)),
@@ -70,9 +78,7 @@ fn what_is_within_the_limits_passes_and_the_built_in_defaults_are_far_inside() {
 
 #[test]
 fn one_more_than_a_limit_is_refused_with_what_to_shorten() {
-    let too_many: String = (0..=MAX_PROFILES)
-        .map(|i| format!("[profile.p{i}]\n"))
-        .collect();
+    let too_many = empty_profiles(MAX_PROFILES + 1);
     assert_eq!(
         verdict(&too_many),
         Err(Oversize::Profiles {

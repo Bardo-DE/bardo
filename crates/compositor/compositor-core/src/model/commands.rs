@@ -22,6 +22,10 @@ impl Model {
     /// the feed and trusted surfaces: the reach table over this model's lock and leases). A
     /// lease's window includes the windows it opened over itself: a dialog or file chooser whose
     /// parent chain leads to the held window is reached as that window, and so are its popups.
+    ///
+    /// # Errors
+    ///
+    /// The [`Refusal`] that [`crate::input::reach`] gives for this model's lock and leases.
     pub fn reach(
         &self,
         origin: &Origin,
@@ -181,7 +185,7 @@ impl Model {
                 Some(app) => self.hide_app(&app),
                 None => Moved::of(self),
             },
-            DesktopCommand::HideOthers => self.hide_others(active),
+            DesktopCommand::HideOthers => self.hide_others(active.as_ref()),
             DesktopCommand::QuitActive => self.quit_app(active),
             DesktopCommand::ForceQuitPanel => self.force_quit_panel(),
             DesktopCommand::SwitchSpace(step) => match self.working_output() {
@@ -201,11 +205,11 @@ impl Model {
     }
 
     /// Every shown app but `keep` is hidden.
-    pub(super) fn hide_others(self, keep: Option<AppKey>) -> Moved {
+    pub(super) fn hide_others(self, keep: Option<&AppKey>) -> Moved {
         let others: Vec<AppKey> = self
             .apps
             .values()
-            .filter(|app| Some(&app.key) != keep.as_ref())
+            .filter(|app| Some(&app.key) != keep)
             .filter(|app| matches!(app.visibility, AppVisibility::Shown))
             .map(|app| app.key.clone())
             .collect();

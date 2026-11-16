@@ -27,6 +27,10 @@ type ReachCase<'a> = (
 );
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table-driven test: the rows are the length"
+)]
 fn the_reach_table() {
     let unlocked = LockState::Unlocked;
     let holder = LockHolder::Client(ClientKey(1));
@@ -225,23 +229,24 @@ fn chords_parse_in_any_order_and_print_in_the_macs() {
         }
     }
     Chord::parse("").unwrap_err();
-    // Texts that only need to parse, or not (names, case, repeated or missing parts).
-    const PARSES: &[(&str, bool)] = &[
-        ("cmd+plus", true),
-        ("ctrl+option+shift+cmd+fn+F12", true),
-        ("Cmd+SHIFT+a", true),
-        ("space", true),
-        ("cmd+cmd+a", false),
-        ("+a", false),
-        ("cmd++a", false),
-        ("cmd+shift", false),
-        ("cmd", false),
-        ("cmd+a+", false),
-    ];
     for (text, parses) in PARSES {
         assert_eq!(Chord::parse(text).is_ok(), *parses, "{text:?}");
     }
 }
+
+// Texts that only need to parse, or not (names, case, repeated or missing parts).
+const PARSES: &[(&str, bool)] = &[
+    ("cmd+plus", true),
+    ("ctrl+option+shift+cmd+fn+F12", true),
+    ("Cmd+SHIFT+a", true),
+    ("space", true),
+    ("cmd+cmd+a", false),
+    ("+a", false),
+    ("cmd++a", false),
+    ("cmd+shift", false),
+    ("cmd", false),
+    ("cmd+a+", false),
+];
 
 #[test]
 fn agent_remote_and_feed_never_fire_a_binding() {

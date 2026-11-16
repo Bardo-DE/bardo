@@ -129,7 +129,7 @@ impl Restore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::geometry::{LogicalPoint, LogicalSize};
+    use crate::geometry::LogicalPoint;
 
     fn rect() -> LogicalRect {
         LogicalRect::new(LogicalPoint { x: 1, y: 2 }, LogicalSize { w: 3, h: 4 })

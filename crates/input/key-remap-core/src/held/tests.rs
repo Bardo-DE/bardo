@@ -137,6 +137,16 @@ impl Xorshift {
     fn below(&mut self, n: u64) -> u64 {
         self.next() % n
     }
+
+    /// A number below `n`, as an index.
+    fn index_below(&mut self, n: u8) -> usize {
+        usize::try_from(self.below(u64::from(n))).expect("a number under 256 fits a usize")
+    }
+
+    /// A number below `n`, as a key code.
+    fn code_below(&mut self, n: u16) -> u16 {
+        u16::try_from(self.below(u64::from(n))).expect("a number below a u16 fits a u16")
+    }
 }
 
 /// The written stream as a device sees it: replays events and fails on an impossible one.
@@ -189,11 +199,11 @@ fn random_sequences_never_stick_or_double_write() {
         let mut wire = Wire::default();
         for step in 0..120 {
             let context = format!("seed {seed} step {step}");
-            let device = DEVICES[rng.below(2) as usize];
-            let phys = rng.below(6) as u16;
+            let device = DEVICES[rng.index_below(2)];
+            let phys = rng.code_below(6);
             let keys = |rng: &mut Xorshift| -> Vec<Logical> {
                 (0..rng.below(4))
-                    .map(|_| l(POOL[rng.below(4) as usize]))
+                    .map(|_| l(POOL[rng.index_below(4)]))
                     .collect()
             };
             let (next, events) = match rng.below(16) {
@@ -204,7 +214,7 @@ fn random_sequences_never_stick_or_double_write() {
                             if rng.below(3) == 0 {
                                 l(10 + phys)
                             } else {
-                                l(POOL[rng.below(4) as usize])
+                                l(POOL[rng.index_below(4)])
                             }
                         })
                         .collect();
@@ -214,9 +224,9 @@ fn random_sequences_never_stick_or_double_write() {
                 7 => held.extend(at(device, phys), keys(&mut rng)),
                 8 => held.unlift(at(device, phys)),
                 9 => held.release_record(at(device, phys)),
-                10..=12 => held.release(at(device, phys)),
                 13 => held.device_gone(device),
                 14 => held.drain(),
+                // 10 to 12, and 15.
                 _ => held.release(at(device, phys)),
             };
             held = next;

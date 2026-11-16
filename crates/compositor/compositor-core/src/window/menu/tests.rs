@@ -1,6 +1,6 @@
 use super::super::state::Restore;
 use super::*;
-use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
+use crate::geometry::LogicalSize;
 use account_core::SpaceId;
 
 fn rect() -> LogicalRect {
@@ -120,6 +120,10 @@ fn the_submenus_hold_the_entries_the_mac_groups() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one long scenario"
+)]
 fn the_menu_is_enabled_per_window_state() {
     let space = SpaceId::parse("s-1").expect("id");
     let free_moves = [

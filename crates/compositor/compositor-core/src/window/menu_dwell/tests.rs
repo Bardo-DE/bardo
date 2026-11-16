@@ -29,6 +29,10 @@ fn waiting(window: u64, since: u64) -> Dwell {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table-driven test: the rows are the length"
+)]
 fn the_dwell_machine_steps_by_table() {
     use DwellInput as I;
     use DwellOutcome as O;

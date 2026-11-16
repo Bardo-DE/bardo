@@ -1,4 +1,3 @@
-use super::model::KEYS_DOWN_BYTES;
 use super::*;
 
 fn bitmap(set: &[(usize, u8)]) -> KeysDown {

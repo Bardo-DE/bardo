@@ -30,6 +30,10 @@ type FocusCase = (
 );
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table-driven test: the rows are the length"
+)]
 fn the_focus_table() {
     let none = HeldMods::NONE;
     let cmd = HeldMods::COMMAND;

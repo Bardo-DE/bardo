@@ -12,11 +12,13 @@ macro_rules! bitset {
             pub const EMPTY: Self = Self(0);
 
             /// This set plus `member`.
+            #[must_use]
             pub const fn with(self, member: $elem) -> Self {
                 Self(self.0 | member.bit())
             }
 
             /// This set minus `member`.
+            #[must_use]
             pub const fn without(self, member: $elem) -> Self {
                 Self(self.0 & !member.bit())
             }
@@ -32,11 +34,13 @@ macro_rules! bitset {
             }
 
             /// Everything in `self` or `other`.
+            #[must_use]
             pub const fn union(self, other: Self) -> Self {
                 Self(self.0 | other.0)
             }
 
             /// Everything in `self` that is not in `other`.
+            #[must_use]
             pub const fn difference(self, other: Self) -> Self {
                 Self(self.0 & !other.0)
             }

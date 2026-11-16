@@ -28,7 +28,7 @@ impl Space {
             SpaceKind::Desktop => format!("Desktop {}", self.position.0.saturating_add(1)),
             SpaceKind::FullScreen => "Full Screen".to_owned(),
             SpaceKind::SplitView => "Split View".to_owned(),
-            _ => "Agent".to_owned(),
+            SpaceKind::Agent => "Agent".to_owned(),
         }
     }
 }

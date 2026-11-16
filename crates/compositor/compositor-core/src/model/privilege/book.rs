@@ -86,6 +86,7 @@ impl Book {
 
     /// The book with only the answers `keep` says yes to (the start-up pruning of programs
     /// that are no longer on disk).
+    #[must_use]
     pub fn retained(self, mut keep: impl FnMut(&Grant) -> bool) -> Book {
         let grants = self
             .grants

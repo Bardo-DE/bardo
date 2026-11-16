@@ -142,6 +142,7 @@ impl Floor {
 
     /// The floor of both: a refusing default wins, the programs never remembered and the rules
     /// of both are kept (up to the caps).
+    #[must_use]
     pub fn merge(self, other: Floor) -> Floor {
         let fallbacks =
             other

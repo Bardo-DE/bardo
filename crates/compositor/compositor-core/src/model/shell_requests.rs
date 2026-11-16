@@ -14,8 +14,8 @@ use desktop_protocols::vocab::{Motion, ShellRole};
 
 impl Model {
     /// The shell said something.
-    pub(super) fn shell_request(self, request: ShellRequest) -> Moved {
-        match request {
+    pub(super) fn shell_request(self, request: &ShellRequest) -> Moved {
+        match *request {
             ShellRequest::Role { layer, role } => self.with_shell_role(layer, role),
             ShellRequest::MinimiseTarget {
                 dock,

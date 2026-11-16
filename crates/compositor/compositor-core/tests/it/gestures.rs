@@ -37,11 +37,11 @@ fn settings(spaces: SwipeFingers, mission_control: SwipeFingers, natural: bool) 
 }
 
 /// The route after each step of `steps`, and whose each was.
-fn routed(steps: Vec<GestureStep<SubPoint>>, s: &GestureSettings) -> Vec<(Route, Fate)> {
+fn routed(steps: Vec<GestureStep<SubPoint>>, s: GestureSettings) -> Vec<(Route, Fate)> {
     steps
         .into_iter()
         .scan(Route::Idle, |state, step| {
-            let (next, fate) = route(*state, step, s);
+            let (next, fate) = route(*state, step, &s);
             *state = next;
             Some((next, fate))
         })
@@ -74,7 +74,7 @@ fn the_router_locks_an_axis_then_drives_whole_pixels() {
     let s = GestureSettings::defaults();
     let steps = routed(
         vec![begin(4), by(3, 1), by(3, 1), by(10, 0), by(0, 0), LIFT],
-        &s,
+        s,
     );
     let fates: Vec<Fate> = steps.into_iter().map(|(_, fate)| fate).collect();
     assert_eq!(
@@ -112,7 +112,7 @@ fn the_router_carries_the_sub_pixel_remainder() {
 #[test]
 fn natural_direction_off_reverses_the_spaces_but_not_mission_control() {
     let s = settings(SwipeFingers::Four, SwipeFingers::Four, false);
-    let sideways = routed(vec![begin(4), by(20, 0)], &s);
+    let sideways = routed(vec![begin(4), by(20, 0)], s);
     assert_eq!(
         sideways[1].1,
         Some(vec![
@@ -120,7 +120,7 @@ fn natural_direction_off_reverses_the_spaces_but_not_mission_control() {
             Drive::Moved(Axis::Horizontal, -20)
         ])
     );
-    let upward = routed(vec![begin(4), by(0, -20)], &s);
+    let upward = routed(vec![begin(4), by(0, -20)], s);
     assert_eq!(
         upward[1].1,
         Some(vec![
@@ -133,7 +133,7 @@ fn natural_direction_off_reverses_the_spaces_but_not_mission_control() {
 #[test]
 fn an_axis_nobody_wants_at_that_count_is_swallowed_to_its_end() {
     let s = settings(SwipeFingers::Three, SwipeFingers::Four, true);
-    let steps = routed(vec![begin(3), by(0, -30), by(0, -30), LIFT], &s);
+    let steps = routed(vec![begin(3), by(0, -30), by(0, -30), LIFT], s);
     assert_eq!(steps[1].0, Route::Dead);
     assert!(steps.iter().all(|(_, fate)| *fate == Some(vec![])));
     assert_eq!(steps[3].0, Route::Idle);
@@ -142,7 +142,7 @@ fn an_axis_nobody_wants_at_that_count_is_swallowed_to_its_end() {
 #[test]
 fn a_cancelled_swipe_is_cancelled() {
     let s = GestureSettings::defaults();
-    let steps = routed(vec![begin(4), by(30, 0), GestureStep::End(true)], &s);
+    let steps = routed(vec![begin(4), by(30, 0), GestureStep::End(true)], s);
     assert_eq!(steps[2].1, Some(vec![Drive::Cancelled(Axis::Horizontal)]));
 }
 

@@ -78,7 +78,9 @@ pub enum ChromeAction {
 }
 
 /// What clicking `hit` asks of a window in `state`, as the `clicks` count, the person's
-/// `double_click` setting and the `mods` held say. The green light goes full screen, and zooms
+/// `double_click` setting and the `mods` held say.
+///
+/// The green light goes full screen, and zooms
 /// (fills, or goes back) with Option held, as on the Mac; a double click on the title follows
 /// the setting. None for a press that is not on the frame.
 #[must_use]
@@ -108,7 +110,7 @@ pub fn chrome_action(
         (FrameHit::Titlebar, true) => Some(match double_click {
             TitleDoubleClick::Zoom | TitleDoubleClick::Fill => zoom(),
             TitleDoubleClick::Minimise => ChromeAction::Minimise,
-            _ => ChromeAction::Move,
+            TitleDoubleClick::Nothing => ChromeAction::Move,
         }),
         _ => None,
     }
@@ -153,13 +155,17 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a case table of hits, states and expected actions"
+    )]
     fn a_press_on_the_frame_asks_for_its_action() {
-        let rect = LogicalRect::new(at(0, 0), LogicalSize { w: 1, h: 1 });
-        let floating = WindowState::Floating(rect);
-        let filled = WindowState::Filled { restore: rect };
         use ChromeAction as A;
         use TitleDoubleClick as D;
         type Case<'a> = (&'a str, FrameHit, bool, D, &'a WindowState, Option<A>);
+        let rect = LogicalRect::new(at(0, 0), LogicalSize { w: 1, h: 1 });
+        let floating = WindowState::Floating(rect);
+        let filled = WindowState::Filled { restore: rect };
         let cases: &[Case] = &[
             (
                 "close",
@@ -261,11 +267,11 @@ mod tests {
 
     #[test]
     fn the_green_light_goes_full_screen_and_option_zooms() {
+        use ChromeAction as A;
+        type Case<'a> = (&'a str, HeldMods, &'a WindowState, Option<A>);
         let rect = LogicalRect::new(at(0, 0), LogicalSize { w: 1, h: 1 });
         let floating = WindowState::Floating(rect);
         let filled = WindowState::Filled { restore: rect };
-        use ChromeAction as A;
-        type Case<'a> = (&'a str, HeldMods, &'a WindowState, Option<A>);
         let cases: &[Case] = &[
             (
                 "plain click",
