@@ -1,4 +1,4 @@
-//! The entries apps ship: `quire/search/<AppName>.toml` under the data directories, read at
+//! The entries apps ship: `bardo/actions/search/<AppName>.toml` under the data directories, read at
 //! start with the same trust as the manifest beside it. Same order as the manifests: an earlier
 //! directory wins for the same app. A file of an app with no manifest is ignored, and one that
 //! is not a search file is said so and ignored.
@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 
 /// The directory a data directory keeps search files in.
 pub fn search_dir(data: &Path) -> PathBuf {
-    data.join("quire").join("search")
+    data.join("bardo").join("actions").join("search")
 }
 
 /// Installs the entries of every search file under `data_dirs`, first app wins.

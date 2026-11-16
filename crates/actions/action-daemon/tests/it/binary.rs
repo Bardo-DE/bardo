@@ -12,7 +12,7 @@ use zbus::fdo::DBusProxy;
 
 fn scratch_world(dir: &Path) -> (PathBuf, Vec<(String, String)>) {
     let data = dir.join("data");
-    let intents = data.join("quire/intents");
+    let intents = data.join("bardo/intents");
     std::fs::create_dir_all(&intents).expect("dirs");
     std::fs::write(
         intents.join("org.bardo.Mail.toml"),
@@ -45,7 +45,7 @@ impl Drop for Daemon {
 
 fn intentd(env: &[(String, String)], bus: &str) -> Daemon {
     Daemon(
-        Command::new(env!("CARGO_BIN_EXE_intentd"))
+        Command::new(env!("CARGO_BIN_EXE_bardo-actiond"))
             .env_clear()
             .envs(env.iter().map(|(k, v)| (k.as_str(), v.as_str())))
             .env("DBUS_SESSION_BUS_ADDRESS", bus)
@@ -126,7 +126,7 @@ async fn d_bus_activation_starts_the_binary_for_a_caller_and_a_second_intentd_ca
         services.join("org.bardo.Intents1.service"),
         format!(
             "[D-BUS Service]\nName=org.bardo.Intents1\nExec={}\n",
-            env!("CARGO_BIN_EXE_intentd")
+            env!("CARGO_BIN_EXE_bardo-actiond")
         ),
     )
     .expect("service file");
@@ -168,7 +168,7 @@ async fn said_about_the_proc_root(fixture: &Path) -> String {
     let me = bus.connect().await;
     let log = dir.path().join("intentd.log");
     let mut daemon = Daemon(
-        Command::new(env!("CARGO_BIN_EXE_intentd"))
+        Command::new(env!("CARGO_BIN_EXE_bardo-actiond"))
             .env_clear()
             .envs(env.iter().map(|(k, v)| (k.as_str(), v.as_str())))
             .env("DBUS_SESSION_BUS_ADDRESS", bus.address())

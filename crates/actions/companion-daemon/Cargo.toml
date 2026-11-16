@@ -13,7 +13,7 @@ name = "companion_daemon"
 path = "src/lib.rs"
 
 [[bin]]
-name = "companiond"
+name = "bardo-companiond"
 path = "src/main.rs"
 
 [dependencies]

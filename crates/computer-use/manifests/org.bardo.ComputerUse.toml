@@ -1,9 +1,9 @@
-# The `org.bardo.ComputerUse` provider, served by cuad: how the planner starts a computer-use run in a
+# The `org.bardo.ComputerUse` provider, served by bardo-computer-use: how the planner starts a computer-use run in a
 # third-party window. Starting a run is a read (it changes nothing by itself): every pixel step
 # the run takes is gated on its own through `Intents1.Gate.Check`, and the person's consent for
 # the app is asked through `Gate.Grant` on first use. The run's result is not this action's
 # value: it is a `prov::Message` of kind Report in the requester's inbox. This action returns the
-# run's id once the run has begun. `reach` is `hidden` while `cua.enabled` is off: cuad rewrites
+# run's id once the run has begun. `reach` is `hidden` while `cua.enabled` is off: bardo-computer-use rewrites
 # it when the setting is on. `app` is a dynamic parameter: its options are the open apps, by id,
 # which `Suggest` answers so the planner can offer them before it guesses one. Every field is
 # written (porter's provider-file rule).

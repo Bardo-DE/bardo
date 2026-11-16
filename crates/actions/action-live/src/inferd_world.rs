@@ -53,13 +53,13 @@ impl InferdWorld {
         action_accept::world::copy_catalog(options.catalog.as_deref(), root);
         let bus = PrivateBus::start(root);
         let client = bus.connect().await;
-        place(root, std::process::id(), Cgroup::Unit("intentd"));
+        place(root, std::process::id(), Cgroup::Unit("bardo-actiond"));
         action_accept::world::write_system_callers(root).expect("the system callers files");
         if let ModelSource::Scripted(cassette) = model {
             write(&root.join("cassette.jsonl"), cassette);
         }
         write(
-            &root.join("config/inferd/inferd.toml"),
+            &root.join("config/bardo/inference/inferd.toml"),
             &inferd_toml(root, model, None),
         );
         let keys = options.keys_home.as_ref().map(|home| {
@@ -77,8 +77,8 @@ impl InferdWorld {
             until_owned(&client, owns).await;
             daemon
         };
-        let accountd = start("accountd", &binaries.accountd, "org.bardo.Accounts1").await;
-        let inferd = start("inferd", &binaries.inferd, "org.bardo.Inference1").await;
+        let accountd = start("bardo-accountd", &binaries.accountd, "org.bardo.Accounts1").await;
+        let inferd = start("bardo-inferd", &binaries.inferd, "org.bardo.Inference1").await;
         Self {
             inferd,
             _accountd: accountd,
@@ -108,7 +108,7 @@ impl InferdWorld {
     /// Zero US dollars when nothing is reported or the ledger cannot be read.
     pub fn reported_charge(&self) -> Money {
         let none = Money::usd(Decimal::ZERO);
-        let file: PathBuf = self.root().join(".local/state/quire/inferd/spend.json");
+        let file: PathBuf = self.root().join(".local/state/bardo/inference/spend.json");
         let Ok(text) = std::fs::read_to_string(file) else {
             return none;
         };

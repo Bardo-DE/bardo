@@ -26,17 +26,17 @@ struct Sibling {
 const SIBLINGS: [Sibling; 3] = [
     Sibling {
         dir: "accounts/account-daemon",
-        bin: "accountd",
+        bin: "bardo-accountd",
         features: &["test-proc-root", "test-keys"],
     },
     Sibling {
         dir: "inference/inference-daemon",
-        bin: "inferd",
+        bin: "bardo-inferd",
         features: &["test-proc-root"],
     },
     Sibling {
         dir: "memory/memory-daemon",
-        bin: "memoryd",
+        bin: "bardo-memoryd",
         features: &["test-keys", "test-proc-root"],
     },
 ];

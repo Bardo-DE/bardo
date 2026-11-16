@@ -28,7 +28,7 @@ impl Drop for Daemon {
 fn companiond(dir: &Path, bus: &str) -> Daemon {
     let home = dir.display().to_string();
     Daemon(
-        Command::new(env!("CARGO_BIN_EXE_companiond"))
+        Command::new(env!("CARGO_BIN_EXE_bardo-companiond"))
             .env_clear()
             .env("HOME", &home)
             .env("XDG_CONFIG_HOME", dir.join("config"))
@@ -79,7 +79,7 @@ fn worker() -> String {
 async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
     let dir = tempfile::tempdir().expect("scratch");
     // The configuration names another shell than the shipped one.
-    let config = dir.path().join("config/quire");
+    let config = dir.path().join("config/bardo/actions");
     std::fs::create_dir_all(&config).expect("dirs");
     std::fs::write(
         config.join("companiond.toml"),

@@ -18,7 +18,7 @@ Usage:
 prefix (note.archive for notes.note.archive). Things are <kind>:<key>, or #<n> for text an
 earlier command held. A text parameter given as `-` reads standard input. Dates are RFC 3339.
 
-Every call goes through intentd's gate: a read runs, anything else asks the person on screen
+Every call goes through bardo-actiond's gate: a read runs, anything else asks the person on screen
 unless they chose "Allow from the terminal: this action, until logout" on that sheet. There is
 no flag that skips the question.
 

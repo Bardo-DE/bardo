@@ -20,8 +20,8 @@ fn has(shell: &str) -> bool {
 }
 
 #[test]
-fn the_three_files_ask_quire_do_what_to_offer() {
-    for name in ["bardo-do.bash", "_quire-do", "bardo-do.fish"] {
+fn the_three_files_ask_bardo_do_what_to_offer() {
+    for name in ["bardo-do.bash", "_bardo-do", "bardo-do.fish"] {
         let text = read(name);
         assert!(text.contains("bardo-do __complete"), "{name}");
         assert!(
@@ -29,14 +29,14 @@ fn the_three_files_ask_quire_do_what_to_offer() {
             "{name}: nothing here offers a way around the gate"
         );
     }
-    assert!(read("_quire-do").starts_with("#compdef bardo-do"));
+    assert!(read("_bardo-do").starts_with("#compdef bardo-do"));
 }
 
 #[test]
 fn installed_shells_accept_the_syntax() {
     for (shell, file, flag) in [
         ("bash", "bardo-do.bash", "-n"),
-        ("zsh", "_quire-do", "-n"),
+        ("zsh", "_bardo-do", "-n"),
         ("fish", "bardo-do.fish", "--no-execute"),
     ] {
         if !has(shell) {
@@ -57,7 +57,7 @@ fn installed_shells_accept_the_syntax() {
 }
 
 #[test]
-fn bash_hands_the_typed_words_to_quire_do() {
+fn bash_hands_the_typed_words_to_bardo_do() {
     if !has("bash") {
         return;
     }
@@ -67,7 +67,7 @@ bardo-do() {{ printf '%s\n' "$@"; }}
 source {}
 COMP_WORDS=(bardo-do mail thread.archive --)
 COMP_CWORD=3
-_quire_do
+_bardo_do
 printf '%s|' "${{COMPREPLY[@]}}"
 "#,
         dist("bardo-do.bash").display()

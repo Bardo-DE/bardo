@@ -31,7 +31,7 @@ fn locator_for(home: &str, dirs: &str) -> Locator {
 }
 
 fn at(dir: &str, shown: Option<String>) -> (PathBuf, Option<String>) {
-    (Path::new(dir).join(SETTINGS_FILE), shown)
+    (Path::new(dir).join("bardo").join(SETTINGS_FILE), shown)
 }
 
 #[test]
@@ -47,7 +47,10 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         ),
     ]);
     let locator = locator_for("/home", "/etc");
-    assert_eq!(locator.watch_dir(), Some(PathBuf::from("/home/cua")));
+    assert_eq!(
+        locator.watch_dir(),
+        Some(PathBuf::from("/home/bardo/computer-use"))
+    );
     let value = locator.read(&files, &base()).value;
     assert_eq!(
         value.config.budget.spend,

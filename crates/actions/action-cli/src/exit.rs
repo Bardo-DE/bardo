@@ -19,7 +19,7 @@ pub enum Exit {
     Declined,
     /// 5: the app failed the call.
     AppFailed,
-    /// 6: unavailable: intentd is down, or the app is not installed or does not start.
+    /// 6: unavailable: bardo-actiond is down, or the app is not installed or does not start.
     Unavailable,
     /// 7: halted or paused (the kill switch, the breaker).
     Halted,
@@ -178,13 +178,16 @@ fn slug<T: serde::Serialize>(value: &T) -> String {
 pub fn of_client(error: &ClientError) -> Failure {
     match error {
         ClientError::Transport(TransportError::Closed) => {
-            Failure::new(Exit::Unavailable, "intentd is not running")
+            Failure::new(Exit::Unavailable, "bardo-actiond is not running")
         }
         ClientError::Transport(TransportError::Bus(why)) => {
             Failure::new(Exit::Unavailable, format!("the bus failed: {why}"))
         }
         ClientError::Transport(TransportError::Malformed(_)) | ClientError::Unexpected => {
-            Failure::new(Exit::Unavailable, "intentd answered something unexpected")
+            Failure::new(
+                Exit::Unavailable,
+                "bardo-actiond answered something unexpected",
+            )
         }
         ClientError::Refused(WireRefusal::Call(refusal)) => of_refusal(refusal),
         ClientError::Refused(WireRefusal::NotAllowed) => {
@@ -194,13 +197,16 @@ pub fn of_client(error: &ClientError) -> Failure {
             Failure::new(Exit::Unavailable, "the terminal's session is gone")
         }
         ClientError::Refused(WireRefusal::Malformed) => {
-            Failure::new(Exit::Usage, "intentd could not read the request")
+            Failure::new(Exit::Usage, "bardo-actiond could not read the request")
         }
         ClientError::Refused(WireRefusal::Send(_) | WireRefusal::Read(_)) => {
             Failure::new(Exit::AppFailed, "the request was refused")
         }
         // A failure this build does not know yet: report the link as not answering properly.
-        _ => Failure::new(Exit::Unavailable, "intentd answered something unexpected"),
+        _ => Failure::new(
+            Exit::Unavailable,
+            "bardo-actiond answered something unexpected",
+        ),
     }
 }
 

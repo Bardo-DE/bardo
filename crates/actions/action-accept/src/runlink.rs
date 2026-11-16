@@ -45,7 +45,7 @@ mod tests {
         let name = short_run(long);
         assert_eq!(name, short_run(long));
         assert_ne!(name, short_run(Path::new("/elsewhere/world-5Vb5Za")));
-        let socket = name.join("inferd/vllm-qwen3-4b-instruct-2507-fp8.sock");
+        let socket = name.join("bardo/inference/vllm-qwen3-4b-instruct-2507-fp8.sock");
         assert!(socket.as_os_str().len() < 108, "{}", socket.display());
     }
 

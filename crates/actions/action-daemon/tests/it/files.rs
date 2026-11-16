@@ -28,7 +28,7 @@ fn grant(id: &str, action: &str, scope: GrantScope) -> ActionGrant {
 }
 
 fn write(dir: &Path, name: &str, text: &str) {
-    let folder = dir.join("quire/intents");
+    let folder = dir.join("bardo/intents");
     std::fs::create_dir_all(&folder).expect("dir");
     std::fs::write(folder.join(name), text).expect("write");
 }
@@ -88,10 +88,10 @@ fn the_environment_says_where_everything_is() {
         action_daemon::IntentdConfig::shipped().expect("shipped")
     );
     assert_eq!(setup.manifests.manifests.len(), 1);
-    assert_eq!(setup.grants, data.join("quire/intents/grants.json"));
+    assert_eq!(setup.grants, data.join("bardo/intents/grants.json"));
     assert_eq!(setup.session.as_deref(), Some("c3"));
     // A file of its own replaces the shipped one whole.
-    let folder = config.join("quire");
+    let folder = config.join("bardo/actions");
     std::fs::create_dir_all(&folder).expect("dir");
     let shipped = include_str!("../../../dist/actiond.toml");
     std::fs::write(
@@ -163,7 +163,7 @@ fn granted(v: &account_core::consent::Verdict) -> bool {
 fn with_defaults(text: &str) -> (tempfile::TempDir, FileGrants) {
     let data = tempfile::tempdir().expect("scratch");
     write(data.path(), action_daemon::DEFAULT_GRANTS_FILE, text);
-    let store = FileGrants::at(data.path().join("quire/intents/grants.json"))
+    let store = FileGrants::at(data.path().join("bardo/intents/grants.json"))
         .with_defaults(&[data.path().to_path_buf()]);
     (data, store)
 }
@@ -221,14 +221,14 @@ fn a_denial_the_person_records_wins_over_a_default_and_the_shipped_file_stays_as
     }
     let kept = std::fs::read_to_string(
         data.path()
-            .join("quire/intents")
+            .join("bardo/intents")
             .join(action_daemon::DEFAULT_GRANTS_FILE),
     )
     .expect("read");
     assert_eq!(kept, SHIPPED_DEFAULTS, "the shipped file is never written");
     // The revocation survives a restart, and an allowance given later brings the default's
     // effect back for that key.
-    let reopened = FileGrants::at(data.path().join("quire/intents/grants.json"))
+    let reopened = FileGrants::at(data.path().join("bardo/intents/grants.json"))
         .with_defaults(&[data.path().to_path_buf()]);
     assert_eq!(
         verdict(&reopened, &shell_key(Usage::Interactive)),

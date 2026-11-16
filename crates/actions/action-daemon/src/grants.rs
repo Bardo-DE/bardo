@@ -17,7 +17,7 @@ use permission_policy::Presets;
 use provenance::{Effect, SpaceId, SpaceScope, UnixSeconds};
 use std::path::{Path, PathBuf};
 
-/// Grants kept in `$XDG_DATA_HOME/quire/intents/grants.json`.
+/// Grants kept in `$XDG_DATA_HOME/bardo/intents/grants.json`.
 #[derive(Debug, Clone)]
 pub struct FileGrants {
     path: PathBuf,
@@ -53,7 +53,7 @@ impl FileGrants {
     }
 
     /// The same store with the shipped defaults of each data directory under it
-    /// (`quire/intents/default-grants.json`): the person's own entries, a denial included,
+    /// (`bardo/intents/default-grants.json`): the person's own entries, a denial included,
     /// always win over a default.
     pub fn with_defaults(self, data_dirs: &[PathBuf]) -> Self {
         Self {

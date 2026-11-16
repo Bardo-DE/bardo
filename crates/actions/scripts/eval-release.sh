@@ -29,7 +29,7 @@
 # report and the traces, then change the policy by hand.
 #
 # --catalog DIR: the model catalogue copied into the scratch world (default: ../models/catalog, absolute;
-# inferd there reads $XDG_DATA_HOME/stoker/catalog, which is scratch). Copied, never linked.
+# inferd there reads $XDG_DATA_HOME/bardo/models/catalog, which is scratch). Copied, never linked.
 # Exit: 0 every case met what it expected (and every target held), 1 not, 2 the run could not start.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -65,7 +65,7 @@ mkdir -p "$scratch/home" "$scratch/tmp" "$scratch/run"
 chmod 700 "$scratch/run"
 # vLLM, Triton and Inductor compile caches, kept across worlds and runs (a cold compile is
 # minutes; every world starts a fresh inferd). Engine build output only, never model input.
-engine_cache=${ENGINE_CACHE:-${TMPDIR:-/tmp}/docket-live-engine-cache}
+engine_cache=${ENGINE_CACHE:-${TMPDIR:-/tmp}/agent-live-engine-cache}
 mkdir -p "$engine_cache"
 report=$root/eval/reports/$label.md
 echo "eval-release: scratch $scratch; report $report" >&2

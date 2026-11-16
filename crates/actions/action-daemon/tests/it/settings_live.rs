@@ -10,7 +10,7 @@ use std::path::Path;
 
 /// What the Settings app does: a temp file, then a rename over the settings file.
 fn write_atomically(home: &Path, text: &str) {
-    let dir = home.join("docket");
+    let dir = home.join("bardo/actions");
     std::fs::create_dir_all(&dir).unwrap();
     let temp = dir.join("settings.toml.tmp");
     std::fs::write(&temp, text).unwrap();

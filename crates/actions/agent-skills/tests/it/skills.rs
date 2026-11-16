@@ -227,7 +227,7 @@ fn an_own_skill_overrides_a_shipped_one_and_a_bad_directory_is_reported() {
     let home = data.join("home");
     let sys = data.join("sys");
     let sys2 = data.join("sys2");
-    let skills = |d: &PathBuf| d.join("quire").join("skills");
+    let skills = |d: &PathBuf| d.join("bardo").join("skills");
     let mut folder = Memory::default();
     folder.write(
         &skills(&sys),
@@ -287,7 +287,7 @@ fn an_own_skill_overrides_a_shipped_one_and_a_bad_directory_is_reported() {
 }
 
 fn skills_path(root: &std::path::Path) -> PathBuf {
-    root.join("quire").join("skills")
+    root.join("bardo").join("skills")
 }
 
 #[test]
@@ -298,12 +298,12 @@ fn roots_read_the_xdg_variables() {
         _ => None,
     };
     let roots = Roots::from_env(&env);
-    assert_eq!(roots.own, Some(PathBuf::from("/h/quire/skills")));
+    assert_eq!(roots.own, Some(PathBuf::from("/h/bardo/skills")));
     assert_eq!(
         roots.shipped,
         vec![
-            PathBuf::from("/a/quire/skills"),
-            PathBuf::from("/b/quire/skills")
+            PathBuf::from("/a/bardo/skills"),
+            PathBuf::from("/b/bardo/skills")
         ]
     );
     let none = Roots::from_env(&|_| None);
@@ -311,7 +311,7 @@ fn roots_read_the_xdg_variables() {
     assert_eq!(
         none.shipped,
         vec![
-            PathBuf::from("/usr/local/share/quire/skills"),
+            PathBuf::from("/usr/local/share/bardo/skills"),
             PathBuf::from("/usr/share/bardo/skills")
         ]
     );

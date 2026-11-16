@@ -297,7 +297,7 @@ async fn the_timers_follow_the_routines_and_a_removed_routine_leaves_none() {
         .iter()
         .map(|unit| unit.name.clone())
         .collect();
-    assert_eq!(names, ["quire-routine-1.timer", "quire-routine-1.service"]);
+    assert_eq!(names, ["bardo-routine-1.timer", "bardo-routine-1.service"]);
     routines.remove(id).await;
     assert!(host.log().installed.last().expect("installed").is_empty());
 }
@@ -345,10 +345,21 @@ fn the_unit_directory_is_made_to_hold_exactly_the_wanted_units() {
     changed.sort();
     assert_eq!(
         changed,
-        ["quire-routine-2.service", "quire-routine-2.timer"]
+        ["bardo-routine-2.service", "bardo-routine-2.timer"]
     );
     assert!(
         dir.path().join("other.service").exists(),
         "not ours, not removed"
     );
+}
+
+#[test]
+fn a_routine_unit_of_the_earlier_release_is_removed_with_the_others() {
+    let scratch = tempfile::tempdir().expect("scratch dir");
+    let dir = UnitDir::new(scratch.path().join("systemd/user"));
+    std::fs::create_dir_all(dir.path()).expect("dir");
+    std::fs::write(dir.path().join("quire-routine-7.timer"), "old").expect("old unit");
+    let changed = dir.install(&[]).expect("install");
+    assert_eq!(changed, ["quire-routine-7.timer"]);
+    assert!(!dir.path().join("quire-routine-7.timer").exists());
 }

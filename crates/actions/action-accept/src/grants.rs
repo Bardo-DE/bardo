@@ -1,4 +1,4 @@
-//! The consent file intentd reads (`$XDG_DATA_HOME/quire/intents/grants.json`): the person's
+//! The consent file intentd reads (`$XDG_DATA_HOME/bardo/intents/grants.json`): the person's
 //! standing "always" for the companion to use an app's data in one Space.
 
 use crate::things::App;

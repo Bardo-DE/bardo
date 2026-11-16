@@ -6,8 +6,8 @@
 //! DIR/                           0700
 //!   accountd.keys                0600  the key file; only accountd opens it (BARDO_ACCOUNTD_KEYS=file:...)
 //!   accountd.keys.lock                 the key file's advisory lock
-//!   state/porter/registry.json         the registry (accounts and key permits; no secrets)
-//!   data/porter/providers/             the provider files `accountd add` used
+//!   state/bardo/accounts/registry.json         the registry (accounts and key permits; no secrets)
+//!   data/bardo/accounts/providers/             the provider files `accountd add` used
 //! ```
 //!
 //! This process never opens the key file: it only looks at its metadata. A world points accountd's
@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 /// The key file's name inside the home.
 pub const KEYS_FILE: &str = "accountd.keys";
 /// The registry accountd keeps (accounts and key permits), relative to the home.
-const REGISTRY: &str = "state/porter/registry.json";
+const REGISTRY: &str = "state/bardo/accounts/registry.json";
 
 /// Why a directory cannot be the home.
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
@@ -116,7 +116,7 @@ impl KeysHome {
     }
 
     /// Copies the non-secret records into a world's scratch root: accountd's state under
-    /// `.local/state` and the provider files under `data/porter/providers`.
+    /// `.local/state` and the provider files under `data/bardo/accounts/providers`.
     pub fn seed(&self, root: &Path) -> std::io::Result<()> {
         copy_tree(&self.0.join("state"), &root.join(".local/state"))?;
         copy_tree(&self.0.join("data"), &root.join("data"))

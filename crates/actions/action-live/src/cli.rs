@@ -305,7 +305,7 @@ pub fn parse(args: &[String]) -> Result<Command, UsageError> {
                 .to_owned(),
         ));
     }
-    let out = raw.out.unwrap_or_else(|| PathBuf::from("docket-live-out"));
+    let out = raw.out.unwrap_or_else(|| PathBuf::from("agent-live-out"));
     match sub.as_str() {
         "corpus" => Ok(Command::Corpus(CorpusArgs {
             engine,

@@ -3,6 +3,23 @@
 
 use std::process::ExitCode;
 
+/// Temporary: delete with the old-folders crate in the release after everyone has started once.
+///
+/// Moves the person's configuration of the earlier release (`quire/actions-mcp.toml`) into
+/// `bardo/actions`.
+fn move_pre_bardo_folders(env: &impl Fn(&str) -> Option<String>) {
+    use action_dbus::pre_bardo::{config_base, move_file};
+    let config = config_base(env);
+    move_file(
+        "bardo-actions-mcp",
+        &config.join("quire").join("actions-mcp.toml"),
+        &config
+            .join("bardo")
+            .join("actions")
+            .join("actions-mcp.toml"),
+    );
+}
+
 fn main() -> ExitCode {
     let args = match action_mcp::Args::parse(std::env::args().skip(1)) {
         Ok(args) => args,
@@ -22,6 +39,7 @@ fn main() -> ExitCode {
         }
     };
     let env = |key: &str| std::env::var(key).ok();
+    move_pre_bardo_folders(&env);
     match runtime.block_on(action_mcp::run(args, &env)) {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {

@@ -3,37 +3,38 @@
 #
 #   dist/install-dev.sh                       build (release, --locked) and install under ~/.local
 #   dist/install-dev.sh --prefix DIR          binaries in DIR/bin (default: $PREFIX, else ~/.local)
-#   dist/install-dev.sh --cloud               also let inferd reach the network (hosted models); without it inferd is offline
+#   dist/install-dev.sh --cloud               also let bardo-inferd reach the network (hosted models); without it inferd is offline
 #   dist/install-dev.sh --dry-run             print every action; write nothing, build nothing
 #   dist/install-dev.sh --uninstall           remove exactly what the last install put down
 #
-# The programs are crates of the tree this is in: porter (accountd), steward (inferd), almanac
-# (memoryd), stoker (the model catalog inferd reads) and docket (intentd, companiond, readerd,
-# bardo-actions-mcp, bardo-do, agent-eval), all built by one cargo run at the tree root. voiced (a skeleton), syncd and cuad are not installed.
+# The programs are crates of the tree this is in: the account, inference and memory daemons, the
+# model catalog inferd reads, and the actions programs (bardo-actiond, bardo-companiond, bardo-readerd,
+# bardo-actions-mcp, bardo-do, agent-eval), all built by one cargo run at the tree root. bardo-voiced (a skeleton), bardo-syncd and bardo-computer-use are not installed.
 #
 # What goes where (XDG_CONFIG_HOME and XDG_DATA_HOME are honoured):
 #   $PREFIX/bin/                              the binaries
 #   ~/.config/systemd/user/                   the units, ExecStart pointed at $PREFIX/bin; a drop-in
-#                                             for inferd and accountd (see "dev-only changes")
+#                                             for bardo-inferd and bardo-accountd (see "dev-only changes")
 #   ~/.local/share/dbus-1/services/           the activation files that start a service on demand, pointed at $PREFIX/bin
-#   ~/.local/share/quire/{intents,skills,settings,permissions}/   manifests, skills, settings schemas, policy presets
-#   ~/.local/share/porter/providers/          provider files (openrouter, ...): the AI keys and the identities accountd keeps
-#   ~/.local/share/stoker/catalog/            the model catalogue, for inferd
-#   ~/.config/quire/*.toml                    default configs, ONLY where absent (never overwritten)
-#   ~/.local/state/quire-dev/install-dev.manifest   what was installed, for --uninstall
+#   ~/.local/share/bardo/{intents,skills,settings}/   manifests, skills, settings schemas
+#   ~/.local/share/bardo/actions/permissions/   policy presets
+#   ~/.local/share/bardo/accounts/providers/  provider files (openrouter, ...): the AI keys and the identities accountd keeps
+#   ~/.local/share/bardo/models/catalog/     the model catalogue, for inferd
+#   ~/.config/bardo/actions/*.toml            default configs, ONLY where absent (never overwritten)
+#   ~/.local/state/bardo/dev/install-dev.manifest   what was installed, for --uninstall
 #
 # The units' private-view protections are drop-ins (<unit>.service.d/sandbox.conf), installed unless
 # this computer refuses them to user services (INSTALL_DEV_SANDBOX=auto, on or off). When they are
 # left out, drop-ins an earlier install put down are removed. Dev-only change to them: when the
 # prefix is under $HOME, the home folder is made read-only instead of hidden (hidden, the programs
-# could not start from there, and companiond could not read its config and skills). The porter units need nothing: they make their own
+# could not start from there, and bardo-companiond could not read its config and skills). The porter units need nothing: they make their own
 # directories. --cloud installs steward's dist/inferd-cloud.conf as bardo-inferd.service.d/cloud.conf (network
 # on); it is opt-in because local engines share inferd's sandbox, so an on-device-only setup keeps none.
 # memoryd has no unit in almanac/dist: almanac/dbus/bardo-memoryd.service is its unit, started by D-Bus
 # activation (org.bardo.Memory1.service names it), and that is what is installed.
 #
 # Needs root, and is printed but never run: /etc/bardo/accountd-callers.toml (the caller table accountd
-# reads, at startup only) and inferd's own. After it, restart both: systemctl --user restart accountd inferd.
+# reads, at startup only) and inferd's own. After it, restart both: systemctl --user restart bardo-accountd bardo-inferd.
 # AI keys are accountd's: add one with `accountd add <provider> --allow <app>` while accountd is
 # stopped.
 #
@@ -79,23 +80,23 @@ DATA="${XDG_DATA_HOME:-$HOME/.local/share}"
 STATE="${XDG_STATE_HOME:-$HOME/.local/state}"
 UNITS="$CONFIG/systemd/user"
 DBUS="$DATA/dbus-1/services"
-BARDO_CONFIG="$CONFIG/quire"
-MANIFEST="$STATE/quire-dev/install-dev.manifest"
+BARDO_CONFIG="$CONFIG/bardo/actions"
+MANIFEST="$STATE/bardo/dev/install-dev.manifest"
 
 # Binary -> the repo and package that builds it.
 BINARIES=(
-  "intentd docket action-daemon"
-  "companiond docket companion-daemon"
-  "readerd docket agent-reader-daemon"
+  "bardo-actiond docket action-daemon"
+  "bardo-companiond docket companion-daemon"
+  "bardo-readerd docket agent-reader-daemon"
   "bardo-actions-mcp docket action-mcp"
   "bardo-do docket action-cli"
   "agent-eval docket action-eval"
   "bardo-agent docket agent-acp-bin"
   "bardo-agent-net-forward docket agent-acp-bin"
   "bardo-agent-net-enter docket agent-acp-bin"
-  "memoryd almanac memory-daemon"
-  "inferd steward inference-daemon"
-  "accountd porter account-daemon"
+  "bardo-memoryd almanac memory-daemon"
+  "bardo-inferd steward inference-daemon"
+  "bardo-accountd porter account-daemon"
 )
 
 # The installed set: "kind source dest" per line. Kinds: bin (copied, mode 755), unit and dbus
@@ -145,27 +146,27 @@ build_plan() {
   plan_sandbox "$ALMANAC/dbus/bardo-memoryd.service"
   plan_dbus "$DOCKET/dist/dbus"; plan_dbus "$PORTER/dist/dbus"; plan_dbus "$STEWARD/dist/dbus"
   plan dbus "$ALMANAC/dbus/org.bardo.Memory1.service" "$DBUS/org.bardo.Memory1.service"
-  plan_tree data "$DOCKET/dist/skills" "$DATA/quire/skills"
-  plan_tree data "$DOCKET/policy/presets" "$DATA/quire/permissions"
+  plan_tree data "$DOCKET/dist/skills" "$DATA/bardo/skills"
+  plan_tree data "$DOCKET/policy/presets" "$DATA/bardo/actions/permissions"
   local dir
   for dir in "$DOCKET" "$ALMANAC" "$PORTER" "$STEWARD" "$CUA"; do
-    plan_tree data "$dir/dist/intents" "$DATA/quire/intents"
-    plan_tree data "$dir/dist/settings" "$DATA/quire/settings"
+    plan_tree data "$dir/dist/intents" "$DATA/bardo/intents"
+    plan_tree data "$dir/dist/settings" "$DATA/bardo/settings"
   done
-  plan data "$STEWARD/dist/inference.settings.toml" "$DATA/quire/settings/inference.settings.toml"
-  plan data "$ALMANAC/memory-settings/schema/memory.settings.toml" "$DATA/quire/settings/memory.settings.toml"
-  plan_tree data "$PORTER/providers" "$DATA/porter/providers"
-  plan_tree data "$STOKER/catalog" "$DATA/stoker/catalog"
+  plan data "$STEWARD/dist/inference.settings.toml" "$DATA/bardo/settings/inference.settings.toml"
+  plan data "$ALMANAC/memory-settings/schema/memory.settings.toml" "$DATA/bardo/settings/memory.settings.toml"
+  plan_tree data "$PORTER/providers" "$DATA/bardo/accounts/providers"
+  plan_tree data "$STOKER/catalog" "$DATA/bardo/models/catalog"
   local cfg
   for cfg in "$DOCKET"/dist/*.toml; do
-    # The callers files are the system's (sudo_step prints them): a fixed role (sill's sheet_host)
+    # The callers files are the system's (sudo_step prints them): a fixed role (the shell's sheet_host)
     # comes from /etc/bardo alone, and the one in the person's config is ignored.
     case "$(basename "$cfg")" in voiced.toml|*-callers.toml) continue ;; esac
     plan config "$cfg" "$BARDO_CONFIG/$(basename "$cfg")"
   done
   if [ "$CLOUD" = 1 ]; then plan dropin "$STEWARD/dist/inferd-cloud.conf" "$UNITS/bardo-inferd.service.d/cloud.conf"; fi
-  plan config "$STEWARD/dist/inferd.toml" "$CONFIG/inferd/inferd.toml"
-  plan config "$ALMANAC/dbus/memoryd-callers.toml" "$BARDO_CONFIG/memoryd-callers.toml"
+  plan config "$STEWARD/dist/inferd.toml" "$CONFIG/bardo/inference/inferd.toml"
+  plan config "$ALMANAC/dbus/memoryd-callers.toml" "$CONFIG/bardo/memoryd/callers.toml"
 }
 
 bin_source() { # name repo -> the file to install
@@ -200,7 +201,8 @@ act() { say "  $*"; }
 # ---- rewriting ----
 under_home() { case "$BIN" in "$HOME"|"$HOME"/*) return 0 ;; *) return 1 ;; esac; }
 rewrite_exec() { # the packaged /usr/libexec/bardo/<name> is now $BIN/<name>
-  sed -E -e "s|^(ExecStart=)/usr/libexec/bardo/|\1$BIN/|" -e "s|^(Exec=)/usr/libexec/bardo/|\1$BIN/|"
+  sed -E -e "s|^(ExecStart=)/usr/libexec/bardo/|\1$BIN/|" -e "s|^(Exec=)/usr/libexec/bardo/|\1$BIN/|" \
+    -e "s|^(ExecStart=)/usr/bin/bardo-|\1$BIN/bardo-|" -e "s|^(Exec=)/usr/bin/bardo-|\1$BIN/bardo-|"
 }
 # ProtectHome=yes and =tmpfs both hide the home folder, and the binary with it.
 hide_home_off() { sed -E -e 's|^ProtectHome=yes$|ProtectHome=read-only|' -e 's|^ProtectHome=tmpfs$|ProtectHome=read-only|'; }
@@ -330,7 +332,7 @@ sudo_step() {
   cat <<EOF
 
 One step needs root, and is not run here. accountd reads its caller table from
-/etc/bardo/accountd-callers.toml (rows of \$XDG_CONFIG_HOME/porter/callers.toml win, but the system
+/etc/bardo/accountd-callers.toml (rows of \$XDG_CONFIG_HOME/bardo/accounts/callers.toml win, but the system
 file is where bardo-inferd.service is named the AI broker, and where a machine that runs the agent
 launcher writes its row, role agent_launcher). inferd reads who is calling from
 /etc/bardo/inferd-callers.toml alone: a [callers] table in inferd.toml is ignored. They read them
@@ -340,8 +342,8 @@ only when they start:
   sudo install -D -m644 $STEWARD/dist/inferd-callers.toml /etc/bardo/inferd-callers.toml
 
 The agent daemons name their callers the same way, by the unit behind a connection, from
-/etc/bardo/<daemon>-callers.toml (the system's file alone can say which unit is sill, the shell;
-rows of ~/.config/quire/<daemon>-callers.toml are laid over it, but never give that role). Read
+/etc/bardo/<daemon>-callers.toml (the system's file alone can say which unit is the shell;
+rows of ~/.config/bardo/actions/<daemon>-callers.toml are laid over it, but never give that role). Read
 at startup, too:
 
   sudo install -D -m644 $DOCKET/dist/actiond-callers.toml /etc/bardo/actiond-callers.toml
@@ -351,10 +353,10 @@ at startup, too:
   sudo install -D -m644 $ALMANAC/dbus/memoryd-callers.toml /etc/bardo/memoryd-callers.toml
 
 Then:  systemctl --user daemon-reload
-       systemctl --user restart accountd inferd
+       systemctl --user restart bardo-accountd bardo-inferd
 
 To add an AI key (accountd holds them), with accountd stopped:
-       systemctl --user stop accountd; accountd add <provider> --allow <app>; systemctl --user start accountd
+       systemctl --user stop bardo-accountd; bardo-accountd add <provider> --allow <app>; systemctl --user start bardo-accountd
 EOF
 }
 
@@ -395,7 +397,7 @@ do_install() {
   [ "$DRY" = 1 ] || write_manifest
   [ "$DRY" = 1 ] || say "manifest: $MANIFEST"
   if [ "$SANDBOX_ON" = 0 ]; then say "note: this computer does not let user services have a private view of the files, so the private-view protections were left out; scripts/install.sh --help says how to turn them on"; fi
-  if under_home; then say "note: companiond and readerd see your home folder read-only instead of not at all, because $BIN is under \$HOME"; fi
+  if under_home; then say "note: bardo-companiond and bardo-readerd see your home folder read-only instead of not at all, because $BIN is under \$HOME"; fi
   sudo_step
 }
 
@@ -427,8 +429,8 @@ do_uninstall() {
       esac
     done <<<"$rows"
   done
-  say "Then:  systemctl --user daemon-reload   (and stop what is running: systemctl --user stop intentd companiond readerd memoryd inferd accountd)"
-  say "Not removed: /etc/bardo/accountd-callers.toml, /etc/bardo/inferd-callers.toml and /etc/bardo/*-callers.toml (sudo rm them), your accounts and keys, and ~/.local/state/quire."
+  say "Then:  systemctl --user daemon-reload   (and stop what is running: systemctl --user stop bardo-actiond bardo-companiond bardo-readerd bardo-memoryd bardo-inferd bardo-accountd)"
+  say "Not removed: /etc/bardo/accountd-callers.toml, /etc/bardo/inferd-callers.toml and /etc/bardo/*-callers.toml (sudo rm them), your accounts and keys, and ~/.local/state/bardo."
 }
 
 if [ "$UNINSTALL" = 1 ]; then do_uninstall; else do_install; fi

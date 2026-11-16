@@ -10,17 +10,17 @@ use std::path::{Path, PathBuf};
 /// The skill directories, in precedence order.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Roots {
-    /// The person's own: `$XDG_DATA_HOME/quire/skills`. Overrides the same id elsewhere.
+    /// The person's own: `$XDG_DATA_HOME/bardo/skills`. Overrides the same id elsewhere.
     pub own: Option<PathBuf>,
-    /// The shipped ones: `$XDG_DATA_DIRS/*/quire/skills`, earlier first.
+    /// The shipped ones: `$XDG_DATA_DIRS/*/bardo/skills`, earlier first.
     pub shipped: Vec<PathBuf>,
 }
 
 impl Roots {
     /// The roots for the given data directories (`$XDG_DATA_HOME` and the entries of
-    /// `$XDG_DATA_DIRS`): each gets `quire/skills` appended.
+    /// `$XDG_DATA_DIRS`): each gets `bardo/skills` appended.
     pub fn in_data_dirs(home: Option<&Path>, dirs: &[PathBuf]) -> Self {
-        let skills = |d: &Path| d.join("quire").join("skills");
+        let skills = |d: &Path| d.join("bardo").join("skills");
         Self {
             own: home.map(skills),
             shipped: dirs.iter().map(|d| skills(d)).collect(),

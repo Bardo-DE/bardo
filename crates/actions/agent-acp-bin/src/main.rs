@@ -8,6 +8,18 @@ use std::process::ExitCode;
 const USAGE: &str =
     "usage: bardo-agent-acp   (no arguments: the router knows this process by its bus name)";
 
+/// Temporary: delete with the old-folders crate in the release after everyone has started once.
+///
+/// Moves the person's callers file of the earlier release (`quire/acp-callers.toml`).
+fn move_pre_bardo_folders(env: &impl Fn(&str) -> Option<String>) {
+    action_dbus::pre_bardo::move_callers(
+        "bardo-agent-acp",
+        "acp-callers.toml",
+        "agent-acp-callers.toml",
+        env,
+    );
+}
+
 fn main() -> ExitCode {
     let env = |key: &str| std::env::var(key).ok();
     if std::env::args().nth(1).is_some() {
@@ -15,6 +27,7 @@ fn main() -> ExitCode {
         return ExitCode::from(2);
     }
     action_log::init("bardo-agent-acp");
+    move_pre_bardo_folders(&env);
     if !agent_acp_server::exposed_in(&env) {
         eprintln!("bardo-agent-acp: agent.acp.expose is off: bardo-agent-acp refuses to serve");
         return ExitCode::from(2);

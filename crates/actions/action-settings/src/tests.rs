@@ -59,7 +59,7 @@ fn doc(path: &str, value: toml::Value) -> String {
 #[test]
 fn the_schema_has_the_shape_the_settings_app_loads() {
     let schema = schema();
-    assert_eq!(schema["app"].as_str(), Some("docket"));
+    assert_eq!(schema["app"].as_str(), Some("actions"));
     assert_eq!(schema["file"].as_str(), Some(SETTINGS_FILE));
     assert_eq!(schema["version"].as_integer(), Some(1));
     let mut seen = BTreeSet::new();
@@ -409,7 +409,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
             "[agent.budget]\nspend_microusd = 9\n[agent.mcp]\nexpose = true\n",
         ),
     ] {
-        std::fs::create_dir_all(dir.path().join("docket")).unwrap();
+        std::fs::create_dir_all(dir.path().join("bardo/actions")).unwrap();
         std::fs::write(dir.path().join(SETTINGS_FILE), text).unwrap();
     }
     let env = |k: &str| match k {
@@ -418,7 +418,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         _ => None,
     };
     let locator = Locator::from_env(&env);
-    assert_eq!(locator.watch_dir(), Some(home.path().join("docket")));
+    assert_eq!(locator.watch_dir(), Some(home.path().join("bardo/actions")));
     let value = locator.read(AgentSettings::default()).value;
     assert_eq!(value.agent.budget.spend, micro_usd(5));
     // The first file wins whole: the later directory's other keys are not merged in.

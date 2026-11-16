@@ -1,10 +1,10 @@
-# voiced's systemd user unit. It has no [Install] section on purpose: the owner has not said it
+# bardo-voiced's systemd user unit. It has no [Install] section on purpose: the owner has not said it
 # may start with the session yet (voice.md section 5: nothing opens the microphone but a hold),
 # so `systemctl --user enable` has nothing to enable; start it by hand or by bus activation once
 # a dbus service file is added. It captures audio only between Begin and the end of the tail,
 # holds no files and no network. Each sandbox line says what it protects.
 [Unit]
-Description=Quire voice daemon (org.bardo.Voice1)
+Description=Bardo voice daemon (org.bardo.Voice1)
 
 [Service]
 Type=dbus

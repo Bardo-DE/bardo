@@ -1,14 +1,14 @@
-# Skeleton of cuad's systemd user unit: the computer-use daemon. It holds a Wayland connection
+# Skeleton of bardo-computer-use's systemd user unit: the computer-use daemon. It holds a Wayland connection
 # (capture of one leased window, the lease protocol), an EIS socket (the agent's input), the
 # accessibility bus, and talks D-Bus to the router, inferd and memoryd. It holds no files and
 # no network. Each sandbox line says what it protects. Computer use is off by default
 # (`cua.enabled`): the unit may be installed and idle.
 #
-# How the settings reach the daemon: cuad reads `computer-use/settings.toml` from `$XDG_CONFIG_HOME`
+# How the settings reach the daemon: bardo-computer-use reads `bardo/computer-use/settings.toml` from `$XDG_CONFIG_HOME`
 # (under the person's home), then from each of `$XDG_CONFIG_DIRS` (`/etc/xdg` by default). The
 # drop-in (bardo-computer-use.service.d/sandbox.conf) hides the home folder (`ProtectHome=tmpfs`) and binds
-# back only `$XDG_CONFIG_HOME/cua`, read-only, so the file the Settings app writes is read and
-# watched; the system-wide `/etc/xdg/computer-use/settings.toml` (readable: `ProtectSystem=strict` only
+# back only `$XDG_CONFIG_HOME/bardo/computer-use`, read-only, so the file the Settings app writes is read and
+# watched; the system-wide `/etc/xdg/bardo/computer-use/settings.toml` (readable: `ProtectSystem=strict` only
 # forbids writes) applies when the person has none. A file that exists and cannot be read is logged at start
 # and on every change ("settings: <path>: could not be read"), not skipped silently. Until a
 # file lists an app, no app is on (`cua.apps` starts empty), so an installed unit with no
@@ -18,12 +18,12 @@
 # of the router, the planner and the shell. The person's own file under their home is out of
 # reach here, which only narrows it: a user file can never give a fixed role anyway.
 [Unit]
-Description=Quire computer-use daemon (org.bardo.ComputerUse1)
+Description=Bardo computer-use daemon (org.bardo.ComputerUse1)
 
 [Service]
 Type=dbus
 BusName=org.bardo.ComputerUse1
-ExecStart=/usr/libexec/bardo/bardo-computer-use --config /etc/bardo/cuad.toml
+ExecStart=/usr/libexec/bardo/bardo-computer-use --config /etc/bardo/computer-use.toml
 # No loader variables from the session reach the daemon: porter gives its fixed caller role only
 # to a unit that unsets them (applied after the manager environment and Environment=).
 UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
@@ -64,7 +64,7 @@ SystemCallArchitectures=native
 # No capabilities at all.
 CapabilityBoundingSet=
 AmbientCapabilities=
-# Files cuad creates are private to it.
+# Files bardo-computer-use creates are private to it.
 UMask=0077
 
 [Install]

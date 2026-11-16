@@ -14,7 +14,7 @@ struct Daemon(Child);
 
 impl Daemon {
     fn start(bus: &PrivateBus, home: &Path, extra: &[(&str, &str)]) -> Self {
-        let child = Command::new(env!("CARGO_BIN_EXE_cuad"))
+        let child = Command::new(env!("CARGO_BIN_EXE_bardo-computer-use"))
             .env_clear()
             .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
             .env("HOME", home)
@@ -99,7 +99,7 @@ async fn cuad_stops_when_the_bus_goes_away() {
 async fn a_bad_configuration_is_a_start_failure_not_a_panic() {
     let dir = tempfile::tempdir().expect("dir");
     let bus = PrivateBus::start(dir.path());
-    let config = dir.path().join("cuad.toml");
+    let config = dir.path().join("computer-use.toml");
     std::fs::write(&config, "settings = 3").expect("config");
     let mut daemon = Daemon::start(
         &bus,

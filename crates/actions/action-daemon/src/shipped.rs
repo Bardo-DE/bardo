@@ -1,4 +1,4 @@
-//! The entries an app ships in `quire/search/<AppName>.toml`: fixed things the launcher finds
+//! The entries an app ships in `bardo/actions/search/<AppName>.toml`: fixed things the launcher finds
 //! without the app running (Settings' pages, say). Parsing only; `search_files` reads
 //! the files.
 

@@ -14,7 +14,7 @@ pub fn text() -> String {
                 Exit::Declined => "the person declined, or the confirmation timed out",
                 Exit::AppFailed => "the app failed the call",
                 Exit::Unavailable => {
-                    "unavailable: intentd is down, or the app is not installed or does not start"
+                    "unavailable: bardo-actiond is down, or the app is not installed or does not start"
                 }
                 Exit::Halted => "halted or paused (kill switch, breaker)",
                 Exit::NeedsYou => {

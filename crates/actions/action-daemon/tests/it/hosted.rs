@@ -452,7 +452,7 @@ async fn an_installed_manifest_appearing_changing_and_going_is_said_on_the_regis
         .receive_manifest_changed()
         .await
         .expect("subscribed");
-    let folder = desk.dir.path().join("data/quire/intents");
+    let folder = desk.dir.path().join("data/bardo/intents");
     std::fs::create_dir_all(&folder).expect("dir");
 
     std::fs::write(
@@ -492,7 +492,7 @@ async fn an_installed_manifest_appearing_changing_and_going_is_said_on_the_regis
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn a_file_cannot_declare_the_built_in_providers() {
     let desk = Desk::start(FakeMemoryd::recording()).await;
-    let folder = desk.dir.path().join("data/quire/intents");
+    let folder = desk.dir.path().join("data/bardo/intents");
     std::fs::create_dir_all(&folder).expect("dir");
     // A file that renames the memory actions' effects: the built-in declaration stands.
     let memory = include_str!("../../../manifests/org.bardo.Memory.toml")
@@ -604,7 +604,7 @@ async fn a_session_record_the_companion_notes_reaches_memory_as_a_companion_area
 }
 
 fn skill_dir(data: &std::path::Path, id: &str, uses: &str, body: &str) {
-    let dir = data.join("quire").join("skills").join(id);
+    let dir = data.join("bardo").join("skills").join(id);
     std::fs::create_dir_all(&dir).expect("dir");
     std::fs::write(
         dir.join("skill.toml"),

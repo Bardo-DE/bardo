@@ -1,8 +1,8 @@
-# readerd's systemd user unit: the quarantined reader, a separate process that sees
-# untrusted text and has no tools. It resolves handles through intentd and asks inferd for its
+# bardo-readerd's systemd user unit: the quarantined reader, a separate process that sees
+# untrusted text and has no tools. It resolves handles through bardo-actiond and asks inferd for its
 # model; nothing else. It is the tightest unit of the four: what it reads can be hostile.
 [Unit]
-Description=Quire quarantined reader (org.bardo.Reader1)
+Description=Bardo quarantined reader (org.bardo.Reader1)
 After=bardo-actiond.service
 Wants=bardo-actiond.service
 

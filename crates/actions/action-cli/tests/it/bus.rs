@@ -53,7 +53,7 @@ fn where_intentd_is_not_the_exit_is_6_and_nothing_is_sent() {
             text(&out.stderr)
         );
         assert!(
-            text(&out.stderr).contains("intentd is not running"),
+            text(&out.stderr).contains("bardo-actiond is not running"),
             "{}",
             text(&out.stderr)
         );

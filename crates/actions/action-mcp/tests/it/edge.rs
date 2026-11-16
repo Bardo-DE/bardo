@@ -350,10 +350,10 @@ async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
     })
     .await;
     let write = |text: &str| {
-        std::fs::create_dir_all(home.path().join("docket")).expect("dir");
-        let temp = home.path().join("actions/settings.toml.tmp");
+        std::fs::create_dir_all(home.path().join("bardo/actions")).expect("dir");
+        let temp = home.path().join("bardo/actions/settings.toml.tmp");
         std::fs::write(&temp, text).expect("write");
-        std::fs::rename(&temp, home.path().join("actions/settings.toml")).expect("rename");
+        std::fs::rename(&temp, home.path().join("bardo/actions/settings.toml")).expect("rename");
     };
     // No file: off.
     assert!(rig.client.list_all_tools().await.expect("list").is_empty());

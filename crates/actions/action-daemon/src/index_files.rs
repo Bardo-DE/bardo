@@ -1,4 +1,4 @@
-//! What apps pushed to the index, kept across logins: `quire/intents/index/<AppName>.json`
+//! What apps pushed to the index, kept across logins: `bardo/intents/index/<AppName>.json`
 //! under the person's data directory, one file per app, `{"version":1,"entries":[...]}`. Each
 //! write replaces the file whole (a temporary file in the same directory, mode 0600, synced,
 //! renamed), so a crash leaves the old file or the new one. The entries are not encrypted: they
@@ -43,7 +43,7 @@ pub struct IndexStore {
 }
 
 impl IndexStore {
-    /// The store under a data directory: `quire/intents/index`.
+    /// The store under a data directory: `bardo/intents/index`.
     pub fn under(data: &Path) -> Self {
         Self {
             dir: crate::manifests::intents_dir(data).join("index"),

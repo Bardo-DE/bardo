@@ -11,7 +11,7 @@ By default nothing leaves the machine: the spans are made and dropped. A daemon 
 
 ## Build
 
-`intentd` (where the router runs) and `companiond` each have an `otlp` feature that turns on
+`bardo-actiond` (where the router runs) and `bardo-companiond` each have an `otlp` feature that turns on
 `action-log/otlp`. It is off by default, and without it `action-log` depends on `tracing` alone.
 
 ```sh
@@ -50,7 +50,7 @@ Environment=OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
 Environment=OTEL_SERVICE_NAME=quire-intentd
 ```
 
-then `systemctl --user daemon-reload && systemctl --user restart intentd`.
+then `systemctl --user daemon-reload && systemctl --user restart bardo-actiond`.
 
 The shipped units allow Unix sockets only (`RestrictAddressFamilies=AF_UNIX`) and the sandbox
 drop-in gives the daemon a private network (`PrivateNetwork=yes`), so the daemon cannot reach a

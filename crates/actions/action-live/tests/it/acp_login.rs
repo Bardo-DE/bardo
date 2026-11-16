@@ -101,7 +101,7 @@ fn the_secret_and_every_token_in_it_are_scrubbed_but_short_words_are_not() {
 fn a_sweep_rewrites_the_files_that_hold_the_secret_and_leaves_the_others() {
     let dir = tempfile::tempdir().expect("scratch");
     std::fs::create_dir_all(dir.path().join("logs")).expect("dirs");
-    let dirty = dir.path().join("logs/intentd.log");
+    let dirty = dir.path().join("logs/bardo-actiond.log");
     let fine = dir.path().join("logs/other.log");
     std::fs::write(&dirty, format!("call args {SECRET}\n")).expect("dirty");
     std::fs::write(&fine, "all quiet\n").expect("fine");

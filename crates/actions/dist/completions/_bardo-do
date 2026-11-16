@@ -1,9 +1,9 @@
 #compdef bardo-do
 # zsh completion for bardo-do. What to offer is bardo-do's own answer (`bardo-do __complete`),
 # so apps, actions, parameter flags and choices follow the installed manifests.
-_quire_do() {
+_bardo_do() {
   local -a candidates
   candidates=("${(@f)$(bardo-do __complete "${(@)words[2,CURRENT]}" 2>/dev/null)}")
   compadd -a candidates
 }
-_quire_do "$@"
+_bardo_do "$@"

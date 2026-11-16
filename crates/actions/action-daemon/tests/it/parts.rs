@@ -158,7 +158,7 @@ async fn no_memory_on_the_desktop_is_an_unavailable_link_not_a_panic() {
 
 #[test]
 fn the_binary_with_no_bus_to_serve_on_says_so_and_exits_one() {
-    let exe = env!("CARGO_BIN_EXE_intentd");
+    let exe = env!("CARGO_BIN_EXE_bardo-actiond");
     let dir = tempfile::tempdir().expect("scratch");
     let nowhere = format!("unix:path={}", dir.path().join("none.sock").display());
     let output = std::process::Command::new(exe)
@@ -185,7 +185,7 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
     }
     assert!(
         units.len() >= 5,
-        "intentd, companiond, readerd, voiced and bardo-actions-mcp"
+        "bardo-actiond, bardo-companiond, bardo-readerd, bardo-voiced and bardo-actions-mcp"
     );
     for path in &units {
         let text = std::fs::read_to_string(path).expect("unit");
@@ -193,9 +193,7 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
         // its unit pass to the agents it starts, which reach their own service over the network
         // and run a JIT (Node), and bubblewrap needs namespace syscalls. It carries every line that
         // breaks none of that, and the agent is confined by the sandbox the host starts it in.
-        let host = path
-            .file_name()
-            .is_some_and(|n| n == "bardo-agent.service");
+        let host = path.file_name().is_some_and(|n| n == "bardo-agent.service");
         let lines: &[&str] = match host {
             true => &[
                 "NoNewPrivileges=yes",
@@ -262,14 +260,14 @@ fn intentds_unit_ends_with_the_graphical_session_and_makes_the_directory_it_may_
     // A read-write path that does not exist stops a sandboxed unit, so it is made first, outside
     // the sandbox.
     assert!(has(
-        "ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/quire/intents"
+        "ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/bardo/intents"
     ));
-    let dropin =
-        std::fs::read_to_string(dist.join("bardo-actiond.service.d/sandbox.conf")).expect("drop-in");
+    let dropin = std::fs::read_to_string(dist.join("bardo-actiond.service.d/sandbox.conf"))
+        .expect("drop-in");
     assert!(
         dropin
             .lines()
-            .any(|l| l == "ReadWritePaths=%h/.local/share/quire/intents")
+            .any(|l| l == "ReadWritePaths=%h/.local/share/bardo/intents")
     );
     let activation = std::fs::read_to_string(dist.join("dbus/org.bardo.Intents1.service"))
         .expect("activation file");

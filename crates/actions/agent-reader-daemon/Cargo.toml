@@ -13,7 +13,7 @@ name = "agent_reader_daemon"
 path = "src/lib.rs"
 
 [[bin]]
-name = "readerd"
+name = "bardo-readerd"
 path = "src/main.rs"
 
 [dependencies]

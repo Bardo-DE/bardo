@@ -91,33 +91,33 @@ impl World {
         // Files the daemons read: memoryd's callers, its Spaces, intentd's manifest and consent.
         // The test process is the shell (sill): the fake proc root says so.
         let record = options.record.then(|| root.join("record.jsonl"));
-        place(root, std::process::id(), Cgroup::Unit("sill"));
+        place(root, std::process::id(), Cgroup::Unit("bardo-shell"));
         write(
-            &root.join("config/quire/memoryd-callers.toml"),
+            &root.join("config/bardo/memoryd/callers.toml"),
             MEMORY_CALLERS,
         );
-        write(&root.join("data/quire/memory/spaces.toml"), SPACES);
+        write(&root.join("data/bardo/memory/spaces.toml"), SPACES);
         write_system_callers(root).expect("the system callers files");
         if let ModelSource::Scripted(cassette) = model {
             write(&root.join("cassette.jsonl"), cassette);
         }
         write(
-            &root.join("config/inferd/inferd.toml"),
+            &root.join("config/bardo/inference/inferd.toml"),
             &inferd_toml(root, model, record.as_deref()),
         );
         write(
-            &root.join(format!("data/quire/intents/{}.toml", options.app.name())),
+            &root.join(format!("data/bardo/intents/{}.toml", options.app.name())),
             options.app.manifest(),
         );
         if consent == Consent::Standing {
             write(
-                &root.join("data/quire/intents/grants.json"),
+                &root.join("data/bardo/intents/grants.json"),
                 &crate::grants::standing_json("work", options.app),
             );
         }
 
         write(
-            &root.join("config/actions/settings.toml"),
+            &root.join("config/bardo/actions/settings.toml"),
             &settings_toml(options.acp),
         );
         copy_catalog(options.catalog.as_deref(), root);
@@ -141,10 +141,10 @@ impl World {
         if let Some(home) = &options.keys_home {
             home.seed(root).expect("the key home's records are copied");
         }
-        start("accountd", &binaries.accountd, "org.bardo.Accounts1").await;
-        start("inferd", &binaries.inferd, "org.bardo.Inference1").await;
-        start("memoryd", &binaries.memoryd, "org.bardo.Memory1").await;
-        start("intentd", &binaries.intentd, "org.bardo.Intents1").await;
+        start("bardo-accountd", &binaries.accountd, "org.bardo.Accounts1").await;
+        start("bardo-inferd", &binaries.inferd, "org.bardo.Inference1").await;
+        start("bardo-memoryd", &binaries.memoryd, "org.bardo.Memory1").await;
+        start("bardo-actiond", &binaries.intentd, "org.bardo.Intents1").await;
 
         // The app's provider: its own connection, its own name, the manifest's wire.
         let provider_connection =
@@ -192,8 +192,13 @@ impl World {
             }
         };
 
-        start("readerd", &binaries.readerd, "org.bardo.Reader1").await;
-        start("companiond", &binaries.companiond, "org.bardo.Companion1").await;
+        start("bardo-readerd", &binaries.readerd, "org.bardo.Reader1").await;
+        start(
+            "bardo-companiond",
+            &binaries.companiond,
+            "org.bardo.Companion1",
+        )
+        .await;
         World {
             daemons,
             sheet,

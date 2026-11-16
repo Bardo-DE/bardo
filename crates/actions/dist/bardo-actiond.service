@@ -1,16 +1,16 @@
-# intentd's systemd user unit: the router, the one decision point for every action the person's
-# terminal, the companion, an MCP client or computer use takes. It talks D-Bus to apps, sill,
-# inferd, readerd and memoryd, watches logind on the system bus for the end of the person's
+# bardo-actiond's systemd user unit: the router, the one decision point for every action the person's
+# terminal, the companion, an MCP client or computer use takes. It talks D-Bus to apps, the shell,
+# inferd, bardo-readerd and memoryd, watches logind on the system bus for the end of the person's
 # session (the terminal's "allow until logout" grants end with it), and writes one file (the
 # person's standing consent). Each sandbox line says what it protects.
 #
 # Install: the binary at /usr/libexec/bardo/bardo-actiond, this unit in /usr/lib/systemd/user/, the
 # activation file dist/dbus/org.bardo.Intents1.service in /usr/share/dbus-1/services/, and the
-# default configuration dist/actiond.toml at /etc/xdg/bardo/actiond.toml (a file of the
-# person's own at ~/.config/quire/actiond.toml replaces it whole).
+# default configuration dist/actiond.toml at /etc/xdg/bardo/actions/actiond.toml (a file of the
+# person's own at ~/.config/bardo/actions/actiond.toml replaces it whole).
 # scripts/install.sh does all of this, and the sandbox drop-in bardo-actiond.service.d/sandbox.conf beside it.
 [Unit]
-Description=Quire action router (org.bardo.Intents1)
+Description=Bardo action router (org.bardo.Intents1)
 # It lives and dies with the graphical session, so what it holds in memory (the terminal's
 # standing grants, the undo journal, the breaker) never outlives the person's login.
 PartOf=graphical-session.target
@@ -31,8 +31,13 @@ UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULE
 # that refuses private namespaces for user units.
 RestrictAddressFamilies=AF_UNIX
 # The consent file's directory is made before the sandbox is set up (`+`: outside it), because a
-# read-write path that does not exist stops the unit; the path itself is in the drop-in.
-ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/quire/intents
+# read-write path that does not exist stops the unit; the path itself is in the drop-in. An earlier
+# release kept it in `quire/intents` and its configuration in `quire/actiond.toml`; they move once, here,
+# because the sandbox leaves the home folder read-only for the daemon (`mv -n` never replaces a new one).
+ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/bardo %E/bardo/actions
+ExecStartPre=-+/usr/bin/mv -nT %h/.local/share/quire/intents %h/.local/share/bardo/intents
+ExecStartPre=-+/usr/bin/mv -n %E/quire/intentd.toml %E/bardo/actions/actiond.toml
+ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/bardo/intents
 # No setuid gain, no writable-and-executable memory (no JIT, no injected code).
 NoNewPrivileges=yes
 MemoryDenyWriteExecute=yes

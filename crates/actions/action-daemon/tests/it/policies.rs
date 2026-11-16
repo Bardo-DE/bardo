@@ -40,7 +40,7 @@ impl Scratch {
         PolicyDirs {
             data_home: self.mine.path().to_path_buf(),
             system_data: vec![self.system.path().to_path_buf()],
-            person: self.config.path().join("quire/permissions"),
+            person: self.config.path().join("bardo/actions/permissions"),
             admin: self.admin.path().to_path_buf(),
         }
     }
@@ -68,7 +68,7 @@ fn every_layer_is_read_in_name_order_and_the_first_preset_wins() {
         [Layer::Core],
         "nothing installed: the built-in preset stands"
     );
-    let preset = |root: &Path| root.join("quire/permissions/default");
+    let preset = |root: &Path| root.join("bardo/actions/permissions/default");
     put(&preset(scratch.system.path()), "grid.cedar", PRESET);
     put(
         &preset(scratch.mine.path()),
@@ -136,7 +136,7 @@ fn a_rebuild_is_put_in_force_on_the_router_and_a_failed_one_leaves_it_alone() {
 fn the_preset_is_read_from_its_folder_and_says_whose_it_is() {
     let scratch = Scratch::new();
     let dirs = scratch.dirs();
-    let folder = |root: &Path, name: &str| root.join("quire/permissions").join(name);
+    let folder = |root: &Path, name: &str| root.join("bardo/actions/permissions").join(name);
     let loaded = load_policies(&dirs).expect("loads");
     assert_eq!(loaded.preset, PresetOrigin::BuiltIn);
     put(
@@ -170,7 +170,13 @@ fn the_preset_is_read_from_its_folder_and_says_whose_it_is() {
 fn an_edited_auto_or_manual_folder_is_not_read_and_is_named_as_unused() {
     let scratch = Scratch::new();
     let dirs = scratch.dirs();
-    let folder = |name: &str| scratch.mine.path().join("quire/permissions").join(name);
+    let folder = |name: &str| {
+        scratch
+            .mine
+            .path()
+            .join("bardo/actions/permissions")
+            .join(name)
+    };
     // An old edit of the Auto grid forbids every read; if it were read, reads would ask.
     put(&folder("auto"), "grid.cedar", NO_READS);
     put(&folder("manual"), "grid.cedar", NO_READS);

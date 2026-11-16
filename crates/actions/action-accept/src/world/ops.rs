@@ -54,7 +54,7 @@ impl World {
         std::fs::read_to_string(
             self.dir
                 .path()
-                .join(".local/state/quire/inferd/audit.jsonl"),
+                .join(".local/state/bardo/inference/audit.jsonl"),
         )
         .unwrap_or_default()
         .lines()

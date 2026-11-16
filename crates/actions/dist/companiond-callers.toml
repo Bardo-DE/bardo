@@ -1,10 +1,10 @@
-# Who may speak for the person to companiond (org.bardo.Companion1). A caller is the systemd unit
+# Who may speak for the person to bardo-companiond (org.bardo.Companion1). A caller is the systemd unit
 # behind the bus connection (the bus names its process, /proc/<pid>/cgroup names the unit, and a
 # service's role goes only to the unit's main process). Install as /etc/bardo/companiond-callers.toml;
-# the user's ~/.config/quire/companiond-callers.toml is laid over it, and its fixed-role rows are
+# the user's ~/.config/bardo/actions/companiond-callers.toml is laid over it, and its fixed-role rows are
 # ignored (a scope never has one).
 #
-#   role "sheet_host" + app org.bardo.Shell -> sill: opens, asks, closes, presses a card, tells a subagent
+#   role "sheet_host" + app org.bardo.Shell -> the shell: opens, asks, closes, presses a card, tells a subagent
 #   role "agent"      + app org.bardo.Acp   -> our editor bridge (bardo-agent-acp): reads the helpers and their
 #                                              conversations, nothing else; its scope row names its program
 #
@@ -15,7 +15,7 @@
 app = "org.bardo.Shell"
 unit = "bardo-shell.service"
 role = "sheet_host"
-exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/bardo-shell"]
 
 # Our own editor bridge, started by an editor in a scope of its own (`systemd-run --user --scope
 # --unit=bardo-agent-acp`): a scope has no main process, so the row names the program it runs.

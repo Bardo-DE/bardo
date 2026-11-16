@@ -5,7 +5,7 @@
 #
 # DIR       absolute, outside every git work tree; made 0700 here. Holds accountd.keys (0600), which
 #           only accountd opens, and accountd's non-secret records (state/, data/): the registry with
-#           the key permits is state/porter/registry.json.
+#           the key permits is state/bardo/accounts/registry.json.
 # ACCOUNTD  porter's accountd built with `--features test-keys` (it runs `accountd add`).
 # --key-file FILE   a 0600 file holding the OpenRouter key on one line, outside every git work
 #           tree. It is piped to accountd's standard input (never put in argv or the environment,
@@ -46,9 +46,9 @@ if [ -n "$keyfile" ]; then
   ! loose "$keyfile" || die "$keyfile has group or other permission bits; chmod 600 it"
 fi
 
-mkdir -p "$home/state" "$home/config" "$home/data/porter/providers" "$home/run"
+mkdir -p "$home/state" "$home/config" "$home/data/bardo/accounts/providers" "$home/run"
 chmod 700 "$home/run"
-cp "$providers/openrouter.toml" "$home/data/porter/providers/"
+cp "$providers/openrouter.toml" "$home/data/bardo/accounts/providers/"
 
 add=(add openrouter --allow org.bardo.Intents --allow org.bardo.Companion --allow org.bardo.Reader)
 run() {

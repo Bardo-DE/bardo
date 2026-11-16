@@ -1,6 +1,6 @@
 # The administrator's floor for the agents on this machine. Not installed by default: copy it to
 # /etc/bardo/actions-floor.toml to turn it on. With no file there is no floor. A file that exists
-# and cannot be read stops intentd from starting; it is never skipped.
+# and cannot be read stops bardo-actiond from starting; it is never skipped.
 #
 # The floor binds agents only. It never touches what the person does themselves from the
 # launcher, and nothing in the person's own files or settings can loosen it.

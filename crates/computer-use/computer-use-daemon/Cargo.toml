@@ -13,7 +13,7 @@ name = "computer_use_daemon"
 path = "src/lib.rs"
 
 [[bin]]
-name = "cuad"
+name = "bardo-computer-use"
 path = "src/main.rs"
 
 [features]
@@ -46,6 +46,7 @@ action-dbus = {path = "../../actions/action-dbus"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 account-daemon-support = {path = "../../accounts/account-daemon-support"}
+old-folders = {path = "../../platform/old-folders"}
 serde = {version = "1", features = ["derive"]}
 serde_json = {version = "1"}
 toml = {version = "1"}

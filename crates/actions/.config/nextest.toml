@@ -1,12 +1,12 @@
 # A test that runs 30 s is flagged slow; after 4 such periods (2 minutes) it is killed. A hang
 # (see FINDINGS.md, "action-accept hostile hang"; those tests are `agent-live`'s now) then fails the run instead of idling for hours.
-# The acceptance harness has its own deadlines (`docket_accept::world::within`, 60 s) that fire
+# The acceptance harness has its own deadlines (`action_accept::world::within`, 60 s) that fire
 # first and name what was waited for. Tests normally take under 5 s, so no crate needs a larger
 # limit.
 [profile.default]
 slow-timeout = { period = "30s", terminate-after = 4 }
 
-# The hostile corpus starts a whole world (companiond, intentd, the apps, inferd) per case. Thirty at
+# The hostile corpus starts a whole world (bardo-companiond, bardo-actiond, the apps, inferd) per case. Thirty at
 # once starved the bus calls past the harness deadline in a full gate (Companion1.Open went unanswered
 # for 60 s, though it passes in about a second alone), so at most six of them run together.
 [test-groups]

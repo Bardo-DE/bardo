@@ -1,4 +1,4 @@
-//! The installed manifests: `quire/intents/<AppName>.toml` under the data directories. An
+//! The installed manifests: `bardo/intents/<AppName>.toml` under the data directories. An
 //! earlier directory wins over a later one for the same app (the person's own over the
 //! system's), and a file that is not a manifest is skipped with its reason, never fatal: one
 //! broken app must not take every other app's actions away.
@@ -20,10 +20,10 @@ pub struct Loaded {
 
 /// The directory a data directory keeps manifests in.
 pub fn intents_dir(data: &Path) -> PathBuf {
-    data.join("quire").join("intents")
+    data.join("bardo").join("intents")
 }
 
-/// Reads every `*.toml` of `quire/intents` under each of `data_dirs`, in order, first app wins.
+/// Reads every `*.toml` of `bardo/intents` under each of `data_dirs`, in order, first app wins.
 pub fn load_manifests(data_dirs: &[PathBuf]) -> Loaded {
     let mut loaded = Loaded::default();
     let mut seen = BTreeSet::new();

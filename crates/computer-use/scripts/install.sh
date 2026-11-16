@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh: install cua's computer-use daemon (cuad), for the whole machine or for one user.
+# install.sh: install the computer-use daemon (bardo-computer-use), for the whole machine or for one user.
 #
 #   scripts/install.sh                   build (release, --locked) and install under /usr/local;
 #                                        the steps that need root use $SUDO, else sudo, else doas,
@@ -9,8 +9,8 @@
 #                                        With --user it moves the programs only: settings, units and
 #                                        shared files go to your own standard folders (~/.config, ~/.local/share)
 #   --destdir DIR                        put everything under DIR, for a package; nothing asks for root
-#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/quire/ and
-#                                        DIR/xdg/quire/; a release stages them elsewhere and places them later
+#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/bardo/ and
+#                                        DIR/xdg/bardo/computer-use/; a release stages them elsewhere and places them later
 #   --no-build                           install what is already in target/release
 #   --bin-dir DIR                        install programs already built in DIR instead of building
 #   --dry-run                            print every action; build and write nothing
@@ -21,29 +21,29 @@
 #                                        /etc/os-release; ubuntu counts as debian)
 #
 # What goes where (system install; --user puts the same in your own folders, see --prefix):
-#   PREFIX/libexec/quire/cuad            the daemon
+#   PREFIX/libexec/bardo/bardo-computer-use  the daemon
 #   PREFIX/lib/systemd/user/             bardo-computer-use.service, pointed at the prefix, and
 #                                        bardo-computer-use.service.d/sandbox.conf, its protections
 #   PREFIX/share/dbus-1/services/        the activation files; interfaces/ has the interface XML
-#   PREFIX/share/quire/settings/         the Settings schema
-#   PREFIX/share/quire/cua/              screen-rules.toml: the phrases, window classes and words the
-#                                        screen check uses. cuad has the same file built in; this copy
+#   PREFIX/share/bardo/settings/         the Settings schema
+#   PREFIX/share/bardo/computer-use/    screen-rules.toml: the phrases, window classes and words the
+#                                        screen check uses. bardo-computer-use has the same file built in; this copy
 #                                        is the reference. To change them, put your own whole
-#                                        screen-rules.toml in SYSCONFDIR/quire/ (read at start)
-#   SYSCONFDIR/quire/computer-use-callers.toml   which units may call cuad. It is the machine's security table:
+#                                        screen-rules.toml in SYSCONFDIR/bardo/ (read at start)
+#   SYSCONFDIR/bardo/computer-use-callers.toml   which units may call bardo-computer-use. It is the machine's security table:
 #                                        always replaced, reset on every install. Needs root; read at
-#                                        start, so restart cuad after
+#                                        start, so restart bardo-computer-use after
 # Computer use reads other programs' windows through the accessibility service; the installer
 # checks that it is there.
 set -euo pipefail
 
-REPO_NAME="cua"
+REPO_NAME="computer-use"
 NEEDS_GIT=1
-FIRST_SERVICE="cuad"
+FIRST_SERVICE="bardo-computer-use"
 CARGO_EXTRA=()
 SANDBOX_NOTE=""
 # name|cargo package|libexec or bin
-BINARIES=("cuad|cuad|libexec")
+BINARIES=("bardo-computer-use|computer-use-daemon|libexec")
 
 extra_arg() { return 1; }
 extra_build_tools() { :; }
@@ -53,8 +53,8 @@ install_rest() {
   put 644 "$ROOT/dist/dbus/org.bardo.ComputerUse1.service" "$SHARE/dbus-1/services/org.bardo.ComputerUse1.service" unit
   put 644 "$ROOT/dist/dbus/org.bardo.ComputerUse.service" "$SHARE/dbus-1/services/org.bardo.ComputerUse.service" unit
   put_tree 644 "$ROOT/dbus" "$SHARE/dbus-1/interfaces"
-  put_tree 644 "$ROOT/dist/settings" "$SHARE/quire/settings"
-  put 644 "$ROOT/dist/screen-rules.toml" "$SHARE/quire/cua/screen-rules.toml" copy
+  put_tree 644 "$ROOT/dist/settings" "$SHARE/bardo/settings"
+  put 644 "$ROOT/dist/screen-rules.toml" "$SHARE/bardo/computer-use/screen-rules.toml" copy
   install_callers "$ROOT/dist/computer-use-callers.toml" computer-use-callers.toml
 }
 
@@ -70,7 +70,7 @@ runtime_checks() {
     [ -e "$f" ] && return 0
   done
   say ""
-  say "The accessibility service was not found. Without it cuad cannot read other programs' windows."
+  say "The accessibility service was not found. Without it bardo-computer-use cannot read other programs' windows."
   case "$FAMILY" in
     fedora|debian|arch) say "Install it:  $(install_cmd) at-spi2-core" ;;
     *) say "Install the package named at-spi2-core (your system may call it something close)." ;;
@@ -172,18 +172,18 @@ case "$DESTDIR" in ""|/*) ;; *) die "--destdir must be an absolute path: $DESTDI
 case "$SYSCONFDIR" in /*) ;; *) die "--sysconfdir must be an absolute path: $SYSCONFDIR" ;; esac
 case "$SYSCONFDIR" in *[\|\&\\\ ]*) die "--sysconfdir cannot contain spaces, |, & or \\: $SYSCONFDIR" ;; esac
 
-LIBEXEC="$PREFIX/libexec/quire"
+LIBEXEC="$PREFIX/libexec/bardo"
 BINDIR="$PREFIX/bin"
 if [ "$MODE" = user ]; then
   UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
   SHARE="${XDG_DATA_HOME:-$HOME/.local/share}"
-  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/quire"
+  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bardo/computer-use"
 else
   UNIT_DIR="$PREFIX/lib/systemd/user"
   SHARE="$PREFIX/share"
-  CONF_DIR="$SYSCONFDIR/xdg/quire"
+  CONF_DIR="$SYSCONFDIR/xdg/bardo/computer-use"
 fi
-SYS_QUIRE="$SYSCONFDIR/quire"
+SYS_BARDO="$SYSCONFDIR/bardo"
 
 under_home() { case "$PREFIX" in "$HOME"|"$HOME"/*) return 0 ;; *) return 1 ;; esac; }
 
@@ -434,7 +434,7 @@ install_bins() {
   done
 }
 install_callers() { # SOURCE NAME: the system's table, read by the daemon at start
-  put 644 "$1" "$SYS_QUIRE/$2" copy
+  put 644 "$1" "$SYS_BARDO/$2" copy
 }
 
 finish() {

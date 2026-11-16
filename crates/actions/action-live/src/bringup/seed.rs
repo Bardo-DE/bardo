@@ -90,7 +90,7 @@ pub fn place(root: &Path, pid: u32, cgroup: Cgroup<'_>) -> std::io::Result<()> {
 }
 
 /// The unit the shell runs in.
-pub const SHELL_UNIT: &str = "sill";
+pub const SHELL_UNIT: &str = "bardo-shell";
 
 /// Writes the configuration files a World writes (memoryd's callers and Spaces, inferd's
 /// configuration, the system callers files with accountd's among them), and puts the shell in the fake proc root. intentd and companiond read no
@@ -98,11 +98,14 @@ pub const SHELL_UNIT: &str = "sill";
 pub fn files(root: &Path, shell_pid: u32, inferd_toml: &str) -> std::io::Result<()> {
     place(root, shell_pid, Cgroup::Unit(SHELL_UNIT))?;
     put(
-        &root.join("config/quire/memoryd-callers.toml"),
+        &root.join("config/bardo/memoryd/callers.toml"),
         MEMORY_CALLERS,
     )?;
-    put(&root.join("data/quire/memory/spaces.toml"), SPACES)?;
+    put(&root.join("data/bardo/memory/spaces.toml"), SPACES)?;
     action_accept::world::write_system_callers(root)?;
     put(&root.join("system/inferd-callers.toml"), &inferd_callers())?;
-    put(&root.join("config/inferd/inferd.toml"), inferd_toml)
+    put(
+        &root.join("config/bardo/inference/inferd.toml"),
+        inferd_toml,
+    )
 }

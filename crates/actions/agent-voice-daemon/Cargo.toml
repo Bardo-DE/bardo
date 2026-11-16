@@ -45,7 +45,7 @@ default = ["pipewire"]
 pipewire = ["dep:agent-voice-pipewire"]
 
 [[bin]]
-name = "voiced"
+name = "bardo-voiced"
 path = "src/main.rs"
 required-features = ["pipewire"]
 

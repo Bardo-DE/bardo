@@ -1,4 +1,4 @@
-# The built-in `org.bardo.Companion` provider, served by intentd: how the companion starts a
+# The built-in `org.bardo.Companion` provider, served by bardo-actiond: how the companion starts a
 # worker task and talks to another agent. Starting a task is a read: the child task runs in its
 # own session under a task policy never wider than its parent's, and every call it makes is
 # gated on its own. A message grants nothing (see action-core's `message` module).

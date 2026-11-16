@@ -38,15 +38,31 @@ pub fn config_home(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
         })
 }
 
-/// The daemon's table: `/etc/bardo/<file>` with `<config>/quire/<file>` laid over it. A file that
-/// is missing is an empty table (nobody is identified); a file that does not parse is an error.
+/// The person's folder of one domain: `<config>/bardo/<domain>`.
+pub fn user_dir(domain: &str, env: &impl Fn(&str) -> Option<String>) -> PathBuf {
+    config_home(env).join("bardo").join(domain)
+}
+
+/// The daemon's table: `/etc/bardo/<file>` with `<config>/bardo/actions/<file>` laid over it. A
+/// file that is missing is an empty table (nobody is identified); a file that does not parse is an
+/// error.
 pub fn read_table(
+    file: &str,
+    env: &impl Fn(&str) -> Option<String>,
+) -> Result<CallerTable, CallerFileError> {
+    read_table_in("actions", file, env)
+}
+
+/// As [`read_table`], for a daemon of another domain: the person's file is
+/// `<config>/bardo/<domain>/<file>`.
+pub fn read_table_in(
+    domain: &str,
     file: &str,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<CallerTable, CallerFileError> {
     load_callers(
         &Path::new(SYSTEM_DIR).join(file),
-        &config_home(env).join("quire").join(file),
+        &user_dir(domain, env).join(file),
     )
 }
 
@@ -57,7 +73,17 @@ pub fn read_table_at(
     file: &str,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<CallerTable, CallerFileError> {
-    load_callers(system, &config_home(env).join("quire").join(file))
+    read_table_at_in("actions", system, file, env)
+}
+
+/// As [`read_table_at`], for a daemon of another domain.
+pub fn read_table_at_in(
+    domain: &str,
+    system: &Path,
+    file: &str,
+    env: &impl Fn(&str) -> Option<String>,
+) -> Result<CallerTable, CallerFileError> {
+    load_callers(system, &user_dir(domain, env).join(file))
 }
 
 /// What a method asks of its caller: the app its row names and the role the system's table gives

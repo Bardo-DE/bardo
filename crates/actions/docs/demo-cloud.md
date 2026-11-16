@@ -57,14 +57,14 @@ systemctl --user start bardo-accountd.service
 to narrow a permit to some kinds of data; without it, every class is allowed, and `ai.floor` in step 4 still
 decides which may leave the computer.
 
-`org.bardo.Companion` is the planner. `org.bardo.Intents` is intentd's policy writer and reviewers, which
+`org.bardo.Companion` is the planner. `org.bardo.Intents` is bardo-actiond's policy writer and reviewers, which
 also ask inferd; without it a write cannot get a task policy (reads still work). Add `--allow org.bardo.Reader`
 if you will have it read mail.
 
 ## 4. Let prompts leave the computer
 
 The defaults keep every class on this computer (`ai.local_only = true`, floors at `on_device`). The companion,
-the policy writer and the reviewers all send the class `prompt`, and only that; readerd sends the class of what
+the policy writer and the reviewers all send the class `prompt`, and only that; bardo-readerd sends the class of what
 it reads. Append this to `~/.config/inferd/inferd.toml` (inferd rereads the file within a moment, no restart):
 
 ```toml
@@ -110,16 +110,16 @@ and nothing is saved. That is the gate working, not a failure.
 ## 7. Logs, and undoing it all
 
 ```sh
-journalctl --user -u inferd -u companiond -u intentd -u accountd -u memoryd -f
-systemctl --user status inferd companiond intentd
+journalctl --user -u inferd -u bardo-companiond -u bardo-actiond -u accountd -u memoryd -f
+systemctl --user status inferd bardo-companiond bardo-actiond
 ```
 
-inferd's audit trail (which app asked which model, never the text) is `~/.local/state/quire/inferd/audit.jsonl`.
+inferd's audit trail (which app asked which model, never the text) is `~/.local/state/bardo/inference/audit.jsonl`.
 
 To undo:
 
 ```sh
-systemctl --user stop companiond readerd intentd memoryd inferd accountd
+systemctl --user stop bardo-companiond bardo-readerd bardo-actiond memoryd inferd accountd
 cd ~/docket && dist/install-dev.sh --uninstall   # removes exactly what the install put down; keeps an edited config
 sudo rm /etc/bardo/accountd-callers.toml /etc/bardo/inferd-callers.toml
 systemctl --user daemon-reload

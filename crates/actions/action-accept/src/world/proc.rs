@@ -63,7 +63,7 @@ pub async fn as_app<T>(world: &World, app: &str, work: impl std::future::Future<
     let (root, pid) = (world.dir.path(), std::process::id());
     place(root, pid, Cgroup::AppScope(app));
     let done = work.await;
-    place(root, pid, Cgroup::Unit("sill"));
+    place(root, pid, Cgroup::Unit("bardo-shell"));
     done
 }
 

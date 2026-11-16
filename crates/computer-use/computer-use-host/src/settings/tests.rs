@@ -72,7 +72,7 @@ fn words(v: &toml::Table) -> Vec<&str> {
 #[test]
 fn the_schema_has_the_shape_the_settings_app_loads() {
     let schema = schema();
-    assert_eq!(schema["app"].as_str(), Some("cua"));
+    assert_eq!(schema["app"].as_str(), Some("computer-use"));
     assert_eq!(schema["file"].as_str(), Some(SETTINGS_FILE));
     assert_eq!(schema["version"].as_integer(), Some(1));
     let mut seen = BTreeSet::new();

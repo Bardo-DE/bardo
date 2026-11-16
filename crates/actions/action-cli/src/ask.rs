@@ -1,6 +1,6 @@
 //! `bardo-do ask "<text>"`: the person at a terminal talks to the companion, the way sill's
-//! launcher does. Open a conversation, record the turn with intentd (`Session.Turn`, which a
-//! terminal may make: it is recorded as `Caller::terminal()`), hand it to companiond, and
+//! launcher does. Open a conversation, record the turn with bardo-actiond (`Session.Turn`, which a
+//! terminal may make: it is recorded as `Caller::terminal()`), hand it to bardo-companiond, and
 //! follow the answer object until it settles.
 //!
 //! `bardo-do` is not `Confirm1`: when the answer needs the person for a confirmation it prints
@@ -37,7 +37,7 @@ fn unavailable(error: &TransportError) -> Failure {
     match error {
         TransportError::Closed => Failure::new(
             Exit::Unavailable,
-            "the assistant is not running (companiond is not installed, or did not start)",
+            "the assistant is not running (bardo-companiond is not installed, or did not start)",
         ),
         other => Failure::new(Exit::Unavailable, format!("the assistant: {other}")),
     }

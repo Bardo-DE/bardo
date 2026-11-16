@@ -59,7 +59,7 @@ impl Default for CuadConfig {
 
 /// Why a configuration did not read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("cuad.toml: {0}")]
+#[error("computer-use.toml: {0}")]
 pub struct ConfigError(pub String);
 
 impl CuadConfig {

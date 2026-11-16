@@ -26,7 +26,12 @@ const SECRET_PAIRS: &[(&str, &str)] = &[
     (".config", "google-chrome"),
     (".local", "share/keyrings"),
     // The accounts service's state: the AI key registry, its audit and, in a test-keys build, the
-    // plain key file. inferd's old state stays listed while inferd still copies the old files.
+    // plain key file. The folders of the earlier release stay listed until the services have moved
+    // their files out of them.
+    (".config", "bardo/accounts"),
+    (".local", "share/bardo/accounts"),
+    (".local", "state/bardo/accounts"),
+    (".local", "state/bardo/inference"),
     (".local", "state/porter"),
     (".local", "state/quire/accountd"),
     (".local", "state/quire/inferd"),
@@ -193,12 +198,15 @@ mod tests {
             "/home/u/proj/.local/state/quire/inferd",
             "/home/u/proj/.local/state/porter/registry.json",
             "/home/u/proj/.local/state/quire/accountd/audit.jsonl",
+            "/home/u/proj/.local/state/bardo/inference/keys/registry.json",
+            "/home/u/proj/.local/state/bardo/accounts/audit.jsonl",
+            "/home/u/proj/.config/bardo/accounts/clients.toml",
         ] {
             assert_eq!(confine(&scope, abs(p), abs(p)), Err(Refusal::Secret), "{p}");
         }
         for fine in [
             "/home/u/proj/.config/app/x",
-            "/home/u/proj/.local/state/quire/notes/x",
+            "/home/u/proj/.local/state/bardo/notes/x",
         ] {
             let fine = abs(fine);
             assert!(confine(&scope, fine.clone(), fine).is_ok());

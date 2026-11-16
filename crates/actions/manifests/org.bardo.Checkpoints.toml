@@ -1,5 +1,5 @@
-# The built-in `org.bardo.Checkpoints` provider, served by intentd: putting a session's workspace
-# back to one of its restore points. The declarations are intentd's own (no installed file may
+# The built-in `org.bardo.Checkpoints` provider, served by bardo-actiond: putting a session's workspace
+# back to one of its restore points. The declarations are bardo-actiond's own (no installed file may
 # declare them).
 #
 # Notes on the declaration:

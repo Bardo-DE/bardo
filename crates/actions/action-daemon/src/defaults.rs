@@ -1,4 +1,4 @@
-//! Shipped consent: a read-only `quire/intents/default-grants.json` under each data directory,
+//! Shipped consent: a read-only `bardo/intents/default-grants.json` under each data directory,
 //! layered under the person's own grants file.
 //!
 //! A default is a grant dated the epoch, so the person's own entry for the same key (newer by
@@ -15,7 +15,7 @@ use permission_core::ActionGrant;
 use provenance::UnixSeconds;
 use std::path::{Path, PathBuf};
 
-/// The file name of the shipped defaults, in `quire/intents` of a data directory.
+/// The file name of the shipped defaults, in `bardo/intents` of a data directory.
 pub const DEFAULT_GRANTS_FILE: &str = "default-grants.json";
 
 /// Where a data directory keeps the shipped defaults.

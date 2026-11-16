@@ -1,7 +1,7 @@
 //! `bardo-do`: every app we ship is drivable from a command line generated from its intents
 //! manifest. This crate is a thin client over `action-client` with caller role `cli`: it lists
 //! the installed manifests, maps `--param value` words onto the manifest's declared types, and
-//! asks intentd to perform, dry-run, search, read context or undo. It never talks to an app, never
+//! asks bardo-actiond to perform, dry-run, search, read context or undo. It never talks to an app, never
 //! decides, and has no way around the gate: a terminal cannot tell the person from an agent typing
 //! in it, so every argument is untrusted and every act that is not a read asks the person.
 //!
@@ -96,7 +96,7 @@ impl Report {
     }
 }
 
-/// Whether a command line needs intentd at all: help, the version and a command line that does
+/// Whether a command line needs bardo-actiond at all: help, the version and a command line that does
 /// not parse are answered without a bus.
 pub fn needs_bus(words: &[String]) -> bool {
     !matches!(
@@ -108,7 +108,7 @@ pub fn needs_bus(words: &[String]) -> bool {
     )
 }
 
-/// The transport of a run that must not reach intentd: every request finds it closed.
+/// The transport of a run that must not reach bardo-actiond: every request finds it closed.
 #[derive(Debug, Clone, Copy)]
 pub struct NoBus;
 
@@ -145,7 +145,7 @@ async fn command<T: Transport>(
         Command::Undo(which) => exec::undo(intents, *which).await,
         Command::Ask { .. } => Err(Failure::new(
             Exit::Unavailable,
-            "ask talks to the assistant, not to intentd: it needs the assistant's bus",
+            "ask talks to the assistant, not to bardo-actiond: it needs the assistant's bus",
         )),
         Command::Sessions(SessionsCmd::List) => sessions::list(intents).await,
         Command::Sessions(SessionsCmd::Load(id)) => sessions::load(intents, id).await,
@@ -176,7 +176,7 @@ pub async fn run<T: Transport>(intents: &Intents<T>, invocation: Invocation) -> 
     run_in(intents, invocation, &agent_skills::Roots::default()).await
 }
 
-/// The whole program: parse the command line, ask intentd, print, and say how it ended. `roots`
+/// The whole program: parse the command line, ask bardo-actiond, print, and say how it ended. `roots`
 /// are the skill directories `main` read from the environment, for `skills`.
 pub async fn run_in<T: Transport>(
     intents: &Intents<T>,

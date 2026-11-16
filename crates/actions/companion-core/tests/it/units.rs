@@ -22,10 +22,10 @@ fn the_timer_text_is_a_calendar_that_does_not_make_up_missed_times() {
     assert_eq!(
         names,
         [
-            "quire-routine-3.timer",
-            "quire-routine-3.service",
-            "quire-routine-4.timer",
-            "quire-routine-4.service"
+            "bardo-routine-3.timer",
+            "bardo-routine-3.service",
+            "bardo-routine-4.timer",
+            "bardo-routine-4.service"
         ]
     );
     let timer = &units[0].text;
@@ -34,7 +34,7 @@ fn the_timer_text_is_a_calendar_that_does_not_make_up_missed_times() {
         "{timer}"
     );
     assert!(timer.contains("Persistent=false\n"), "{timer}");
-    assert!(timer.contains("Unit=quire-routine-3.service\n"), "{timer}");
+    assert!(timer.contains("Unit=bardo-routine-3.service\n"), "{timer}");
     assert!(timer.contains("WantedBy=timers.target\n"), "{timer}");
     assert!(units[2].text.contains("OnCalendar=*-*-* 0/2:00:00\n"));
     let service = &units[1].text;

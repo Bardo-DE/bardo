@@ -93,7 +93,11 @@ fn spawn_as_the_unit(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
     let slice = "0::/user.slice/user-1000.slice/user@1000.service/app.slice";
     let at = dir.join("proc").join(pid.to_string());
     std::fs::create_dir_all(&at).expect("fake proc");
-    std::fs::write(at.join("cgroup"), format!("{slice}/bardo-actions-mcp.service\n")).expect("cgroup");
+    std::fs::write(
+        at.join("cgroup"),
+        format!("{slice}/bardo-actions-mcp.service\n"),
+    )
+    .expect("cgroup");
     let units = dir.join("proc/units");
     std::fs::create_dir_all(&units).expect("units");
     std::fs::write(units.join("bardo-actions-mcp.service"), pid.to_string()).expect("main pid");
@@ -101,14 +105,14 @@ fn spawn_as_the_unit(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
 }
 
 fn configure(dir: &Path, text: &str) {
-    let config = dir.join("config/quire");
+    let config = dir.join("config/bardo/actions");
     std::fs::create_dir_all(&config).expect("dirs");
-    std::fs::write(config.join("bardo-actions-mcp.toml"), text).expect("config");
+    std::fs::write(config.join("actions-mcp.toml"), text).expect("config");
 }
 
 /// The person switches the edge on in docket's settings.
 fn switch_on(dir: &Path) {
-    let config = dir.join("config/docket");
+    let config = dir.join("config/bardo/actions");
     std::fs::create_dir_all(&config).expect("dirs");
     std::fs::write(config.join("settings.toml"), "[agent.mcp]\nexpose = true\n").expect("settings");
 }

@@ -1,9 +1,9 @@
 # bardo-agent's systemd user unit: the host of outside coding agents when the assistant hands
-# them a turn (org.bardo.AgentHost1). The bus starts it when companiond first calls
+# them a turn (org.bardo.AgentHost1). The bus starts it when bardo-companiond first calls
 # (dist/dbus/org.bardo.AcpAgent.service); it holds the chosen agent's session open between turns
 # and ends after a quiet while, and the next call starts it again. It is the same program as
 # `bardo-agent` on a terminal, and plays the same role (org.bardo.AcpAgent): it alone opens the
-# agent's session at intentd and makes the agent's calls there, each ruled like any agent's.
+# agent's session at bardo-actiond and makes the agent's calls there, each ruled like any agent's.
 # Off unless agent.acp.agents = "on" in the settings; the programs come from agents.toml.
 #
 # Fewer sandbox lines than the other units, on purpose (owner 2026-10-17): the limits of this unit
@@ -12,7 +12,7 @@
 # that breaks none of that, here and in bardo-agent.service.d/sandbox.conf; the agent itself is
 # confined by its bubblewrap sandbox.
 [Unit]
-Description=Quire host of coding agents (org.bardo.AcpAgent)
+Description=Bardo host of coding agents (org.bardo.AcpAgent)
 After=bardo-actiond.service
 Wants=bardo-actiond.service
 

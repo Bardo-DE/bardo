@@ -344,7 +344,7 @@ the machine under it. What was decided:
   its timer, as `Exec` does); `at` is on the caller's clock (`with_clock`, cuad passes its own).
 - **cua-system.** `SystemSeams` is built: `SystemDesktop` (`Absent`: `Backend = none`, empty
   `Modes`, no windows, no lease), `CaptureBackend::Unavailable`, `SeatBackend::Ei(EiSeat)`,
-  `SystemA11y` (`Unavailable` by default: `cuad.toml` `a11y = "off"`; `"atspi"` selects
+  `SystemA11y` (`Unavailable` by default: `computer-use.toml` `a11y = "off"`; `"atspi"` selects
   `AtspiSource`, whose `snapshot` is still `todo!()`, so nothing turns it on). The binary reads
   `--config`/`$CUAD_CONFIG` (missing file: defaults, `cua.enabled` off; malformed: exit 2),
   tries the compositor (none is not fatal), serves `org.quire.Cua1` and `org.quire.Cua`, and
@@ -375,7 +375,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 3. **The reader is `cuad::settings`** (`read(text, base)`, `Locator`). The file is
    `$XDG_CONFIG_HOME/cua/settings.toml` (then `$XDG_CONFIG_DIRS`; the first file that reads wins whole). A value
    of the wrong type, out of range or not a word of its key falls back **to the base value of that key**
-   (cuad.toml's `settings` table, itself the shipped defaults) and is logged (`cuad: settings: cua.budget.spend_microusd: outside 0..=1000000000; using the previous value`). A file that is not TOML keeps every base value; a
+   (computer-use.toml's `settings` table, itself the shipped defaults) and is logged (`cuad: settings: cua.budget.spend_microusd: outside 0..=1000000000; using the previous value`). A file that is not TOML keeps every base value; a
    key the file stops setting is its base again. Unknown keys are listed and ignored.
 4. **cuad follows the file live** (`settings/watch.rs`: a `notify` watch on `$XDG_CONFIG_HOME/cua`, 30 ms
    debounce, the whole file read again, `Supervisor::follow` applies it). `Supervisor::settings()` is read
@@ -545,7 +545,7 @@ a real desktop. The model-time figures are wall time on a shared machine and are
   role) gives the role. The router is docket's `INTENTD` (`org.quire.Intents`, `agent`), the planner
   is `org.quire.Companion1` (`agent`), the shell is docket's `SHELL` (`org.quire.Shell`,
   `sheet_host`); everything else, an app scope called like any of them included, is `Other`.
-  `CallerNames` and `CuadConfig::callers` are gone (an old `callers` key in `cuad.toml` is ignored).
+  `CallerNames` and `CuadConfig::callers` are gone (an old `callers` key in `computer-use.toml` is ignored).
 - **Shell-only signals** (`ThoughtDelta`, `ActionProposed`, `ActionDone`, `AskUser`) go to the owner
   of `org.quire.Shell` only if that owner's process holds `SHELL`; otherwise nothing is emitted.
 - **Provider.** `org.quire.Cua` still answers intentd's unit alone (`docket_client::serve_on`).
@@ -700,7 +700,7 @@ gate are `bool`/`Option`; `GlowDraw`, `KeyWorld` (chordkit's `Platform` is used 
 `Stalls` twins are deleted; the phrase, window-class, commit-word and sensitive-title tables are
 `dist/screen-rules.toml` (built into cuad, replaced whole by `/etc/quire/screen-rules.toml`),
 handed to `cua-run` as `Rules` through `Parts`. Left as they were, each with its reason: the
-`A11yChoice` of `cuad.toml` (stored words `off`/`atspi`), `ConsentGuard` (read by the
+`A11yChoice` of `computer-use.toml` (stored words `off`/`atspi`), `ConsentGuard` (read by the
 authorise step), `Verb` (serialised in the run track: F18),
 `CuaSignal` against `StepEvent` (the proposed action is re-targeted, not re-typed: F16),
 `AxRole` (`Role` is adjacently tagged, so a TOML string cannot read it: F15), `Drivable` (an

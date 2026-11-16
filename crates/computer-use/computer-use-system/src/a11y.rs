@@ -1,4 +1,4 @@
-//! The accessibility source of the running daemon. With no tree (`cuad.toml` `a11y = "off"`) the
+//! The accessibility source of the running daemon. With no tree (`computer-use.toml` `a11y = "off"`) the
 //! seam is `None`, and cuad still starts, answers the bus, and says what is missing.
 
 use computer_use_a11y_atspi::AtspiSource;

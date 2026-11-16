@@ -13,10 +13,13 @@ use companion_wire::AnswerPhase;
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn after_the_warm_up_the_real_intentd_is_still_the_intentd_unit() {
     let world = World::start(&binaries(), Consent::Standing, FLOW_A).await;
-    let before = unit_main(world.dir.path(), "intentd");
-    let during = as_intentd(&world, async { unit_main(world.dir.path(), "intentd") }).await;
+    let before = unit_main(world.dir.path(), "bardo-actiond");
+    let during = as_intentd(&world, async {
+        unit_main(world.dir.path(), "bardo-actiond")
+    })
+    .await;
     assert_ne!(during, before, "the harness is the unit while it warms");
-    assert_eq!(unit_main(world.dir.path(), "intentd"), before);
+    assert_eq!(unit_main(world.dir.path(), "bardo-actiond"), before);
 
     // The proof is the run itself: calls are recorded and the audit reaches memoryd.
     world.sheet.will(SheetChoice::Once);

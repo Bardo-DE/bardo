@@ -11,7 +11,7 @@ two scripts. The gate runs the same code with `--engine scripted` (a cassette): 
 | Script | What it runs |
 |---|---|
 | `scripts/eval-release.sh` | every case of `eval/` through the router with the **real policy writer and reviewer cascade** over a real inferd, per-corpus metrics in `eval/reports/<label>.md`, a transcript per case |
-| `dev/live-smoke.sh` | the `dev/accept` flows with **every daemon real** (intentd, companiond, readerd, memoryd, inferd), PASS or FAIL per flow with the transcript's path |
+| `dev/live-smoke.sh` | the `dev/accept` flows with **every daemon real** (bardo-actiond, bardo-companiond, bardo-readerd, memoryd, inferd), PASS or FAIL per flow with the transcript's path |
 
 ## The model source
 
@@ -24,7 +24,7 @@ Both scripts take `--engine`:
 | `cloud` | inferd with network and the hosted models that file names by catalogue id | yes, and it says so (and waits five seconds) before it starts |
 
 `--inferd-config FILE` is read from the path you give and nowhere else. It must not contain a
-`[callers]` table (the world writes inferd's callers file for intentd, companiond, readerd and memoryd). Examples:
+`[callers]` table (the world writes inferd's callers file for bardo-actiond, bardo-companiond, bardo-readerd and memoryd). Examples:
 `dev/live/inferd.local.example.toml` and `dev/live/inferd.cloud.example.toml`; copy one to
 `dev/live/inferd.local.toml` or `dev/live/inferd.cloud.toml` (git ignores both).
 
@@ -47,15 +47,15 @@ Both scripts take `--engine`:
 ## What is real in each script
 
 `eval-release.sh` plays the router in the `agent-live` process: `Router` over action-fake's providers
-(mail, files) with intentd's `InferdWriter` and action-review's `InferReviewer` asking inferd over the
+(mail, files) with bardo-actiond's `InferdWriter` and action-review's `InferReviewer` asking inferd over the
 private bus, and the system clock (so review deadlines are real). The scripted planner steps of a case
 mint handles in the router's session state, which the bus cannot do, so the cases do not go through
-intentd's bus API; intentd, readerd, companiond and memoryd are not started for it. The `local` and
+bardo-actiond's bus API; bardo-actiond, bardo-readerd, bardo-companiond and memoryd are not started for it. The `local` and
 `cloud` runs therefore measure what the models decide (the writer's policy, each review stage), not the
 wiring of the daemons: the smoke script measures that.
 
 `live-smoke.sh` starts all five daemons and plays the person through the launcher's calls. The planner
-is the real companiond; the model plans.
+is the real bardo-companiond; the model plans.
 
 ## Commands
 
@@ -414,7 +414,7 @@ misbehaves. Three kinds of case, all deterministic in the gate and playable agai
 |---|---|---|---|
 | reviewer and writer replies | `eval/hostile-model/*.toml` (`corpus = "hostile_model"`, a `[model]` table) | the real writer and cascade over inferd, the stage's raw reply replaced by the case's | an ask (or a refusal): never a run on a reply outside the shape |
 | a planner that misbehaves at the router | `eval/hostile-model/*.toml` (no `[model]`; `times`, `unminted` arguments) | the scripted planner's calls through the router: invented actions, handles never minted, loops | refused, asked, or cut off by the breaker and the budgets |
-| the companion over a hostile cassette | `eval/hostile-model/planner/<id>.toml` beside `<id>.cassette.jsonl` | the real companiond, intentd and the apps over inferd's replay engine: a call left in the words, an invented tool, a loop, a cut stream, a very large reply, a claim of consent | a typed failure the person reads, an ask, or a bounded answer; nothing sent |
+| the companion over a hostile cassette | `eval/hostile-model/planner/<id>.toml` beside `<id>.cassette.jsonl` | the real bardo-companiond, bardo-actiond and the apps over inferd's replay engine: a call left in the words, an invented tool, a loop, a cut stream, a very large reply, a claim of consent | a typed failure the person reads, an ask, or a bounded answer; nothing sent |
 
 On a live engine (`local`, `cloud`) neither runner plays these cases unless asked by name (`--corpus
 hostile-model`, `--case <id>`, `--flow <id>`): their expectation is the spoiled reply itself, and a live
@@ -433,7 +433,7 @@ and the router cases over the fake router, with no daemon. A planner case is jud
 ## An external agent instead of the planner (`--agent acp`)
 
 `agent-live` can play the companion's part with an external ACP agent (Claude Code through its ACP adapter, say)
-instead of companiond's planner, so that using an agent over ACP is measured the way the API model is. The world is the
+instead of bardo-companiond's planner, so that using an agent over ACP is measured the way the API model is. The world is the
 same (private bus, scratch HOME and XDG, the fake mail, the scripted person answering the sheets), the flows are the same,
 the outcome checks are the same and so are the PASS/FAIL lines and the trace per flow. The agent is hosted as
 `bardo-agent` hosts it: in bubblewrap, every call it makes a router call, the desktop's actions offered to it as an MCP

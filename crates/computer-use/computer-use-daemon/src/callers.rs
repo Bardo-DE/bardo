@@ -7,12 +7,12 @@
 
 use action_dbus::callers::{
     Caller, CallerFileError, CallerTable, Callers, INTENTD, Identity, Role, SHELL, Standing,
-    read_table, table_from_toml,
+    read_table_at_in, read_table_in, table_from_toml,
 };
 use computer_use_bus::CuaCaller;
 use std::path::PathBuf;
 
-/// The file name, under `/etc/bardo` and the person's configuration directory.
+/// The file name, under `/etc/bardo` and the person's `bardo/computer-use` configuration folder.
 pub const FILE: &str = "computer-use-callers.toml";
 
 const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
@@ -43,9 +43,9 @@ pub fn shipped() -> CallerTable {
 pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, CallerFileError> {
     #[cfg(feature = "fixture-callers")]
     if let Some(system) = env(SYSTEM_CALLERS_VAR) {
-        return action_dbus::callers::read_table_at(std::path::Path::new(&system), FILE, env);
+        return read_table_at_in("computer-use", std::path::Path::new(&system), FILE, env);
     }
-    read_table(FILE, env)
+    read_table_in("computer-use", FILE, env)
 }
 
 /// The test build's callers file in place of the system's (`fixture-callers` only).

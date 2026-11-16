@@ -1,12 +1,12 @@
-//! The policy files on disk: `quire/permissions/` under the data, configuration and system
+//! The policy files on disk: `bardo/actions/permissions/` under the data, configuration and system
 //! directories. The loader and its rules are `permission-policy`'s (pure); this reads the files.
 //!
-//! - the preset `default`, the one grid both modes use: `<data dir>/quire/permissions/default/*.cedar`;
+//! - the preset `default`, the one grid both modes use: `<data dir>/bardo/actions/permissions/default/*.cedar`;
 //!   the first data directory that has one wins, like the manifests, so a copy under
 //!   `$XDG_DATA_HOME` is the person's own edit of it. An edited `auto` or `manual` folder from
 //!   before the two modes shared a grid is not read; it is named as unused.
-//! - person: `$XDG_CONFIG_HOME/quire/permissions/*.cedar`.
-//! - assistant: `$XDG_CONFIG_HOME/quire/permissions/assistant/*.cedar` (forbids only).
+//! - person: `$XDG_CONFIG_HOME/bardo/actions/permissions/*.cedar`.
+//! - assistant: `$XDG_CONFIG_HOME/bardo/actions/permissions/assistant/*.cedar` (forbids only).
 //! - administrator: `/etc/bardo/permissions/*.cedar` (forbids only, never skipped).
 //!
 //! Files are read in name order. A file that cannot be read is handed to the loader as an
@@ -19,7 +19,7 @@ use permission_policy::{
 use std::fmt;
 use std::path::{Path, PathBuf};
 
-/// The folder of the preset under `quire/permissions/`.
+/// The folder of the preset under `bardo/actions/permissions/`.
 const PRESET_FOLDER: &str = "default";
 
 /// The folders of the two presets from before the modes shared one grid.
@@ -56,7 +56,7 @@ pub struct PolicyDirs {
     pub data_home: PathBuf,
     /// The system data directories, in search order after the person's.
     pub system_data: Vec<PathBuf>,
-    /// The person's `quire/permissions` under the configuration directory.
+    /// The person's `bardo/actions/permissions` under the configuration directory.
     pub person: PathBuf,
     /// The administrator's directory.
     pub admin: PathBuf,
@@ -69,7 +69,10 @@ impl PolicyDirs {
         let system = self.system_data.iter().map(|d| (d, PresetOrigin::System));
         mine.chain(system).map(|(d, origin)| {
             (
-                d.join("quire").join("permissions").join(PRESET_FOLDER),
+                d.join("bardo")
+                    .join("actions")
+                    .join("permissions")
+                    .join(PRESET_FOLDER),
                 origin,
             )
         })
@@ -95,7 +98,13 @@ impl PolicyDirs {
     pub fn unused_presets(&self) -> Vec<PathBuf> {
         OLD_FOLDERS
             .iter()
-            .map(|name| self.data_home.join("quire").join("permissions").join(name))
+            .map(|name| {
+                self.data_home
+                    .join("bardo")
+                    .join("actions")
+                    .join("permissions")
+                    .join(name)
+            })
             .filter(|dir| !cedar_files(dir).is_empty())
             .collect()
     }

@@ -1,11 +1,11 @@
 # Who may call bardo-agent-acp and bardo-agent on the bus. Same rules as the other callers files: the
 # unit behind the connection, its main process only, the system's file alone gives a fixed role.
-# Install as /etc/bardo/agent-acp-callers.toml; the user's ~/.config/quire/agent-acp-callers.toml is laid over it.
+# Install as /etc/bardo/agent-acp-callers.toml; the user's ~/.config/bardo/actions/agent-acp-callers.toml is laid over it.
 #
-#   intentd     may ask or withdraw a sheet (org.bardo.Confirm1, under their own names)
-#   companiond  may hand bardo-agent a turn (org.bardo.AgentHost1.HandOver): only what the person
+#   bardo-actiond     may ask or withdraw a sheet (org.bardo.Confirm1, under their own names)
+#   bardo-companiond  may hand bardo-agent a turn (org.bardo.AgentHost1.HandOver): only what the person
 #               typed to the assistant, for the agent they chose. bardo-agent, as
-#               org.bardo.AcpAgent, opens that agent's session and makes its calls; companiond
+#               org.bardo.AcpAgent, opens that agent's session and makes its calls; bardo-companiond
 #               opens no session of an outside agent.
 
 [[caller]]

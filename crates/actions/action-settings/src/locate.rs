@@ -1,5 +1,5 @@
-//! Where the settings file is: `$XDG_CONFIG_HOME/actions/settings.toml`, then each of
-//! `$XDG_CONFIG_DIRS` (design/22 section 2). The first file that reads wins.
+//! Where the settings file is: `$XDG_CONFIG_HOME/bardo/actions/settings.toml`, then the
+//! same under each of `$XDG_CONFIG_DIRS` (design/22 section 2). The first file that reads wins.
 
 use crate::read::{Loaded, read};
 use crate::{AgentSettings, SETTINGS_FILE};
@@ -25,16 +25,17 @@ impl Locator {
         Self {
             dirs: std::iter::once(home)
                 .chain(rest.split(':').map(PathBuf::from))
+                .map(|dir| dir.join("bardo"))
                 .collect(),
         }
     }
 
-    /// The configuration directories, the person's first.
+    /// The `bardo` folders of the configuration directories, the person's first.
     pub fn dirs(&self) -> &[PathBuf] {
         &self.dirs
     }
 
-    /// The directory a live watch looks at: the person's own `docket` directory, where the
+    /// The directory a live watch looks at: the person's own `bardo/actions` directory, where the
     /// Settings app writes.
     pub fn watch_dir(&self) -> Option<PathBuf> {
         let person = self.dirs.first()?;

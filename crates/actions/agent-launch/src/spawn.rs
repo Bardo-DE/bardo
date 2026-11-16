@@ -139,7 +139,7 @@ fn session_dir<A: Accounts, P: Proc>(
     if let Some(dir) = &release.dir {
         return Ok(dir.clone());
     }
-    let dir = run_dir.join(format!("docket-agent-{}", session.as_str()));
+    let dir = run_dir.join(format!("bardo-agent-{}", session.as_str()));
     std::fs::DirBuilder::new().mode(0o700).create(&dir)?;
     release.dir = Some(dir.clone());
     Ok(dir)

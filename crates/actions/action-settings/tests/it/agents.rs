@@ -341,7 +341,7 @@ fn a_listed_name_an_odd_name_or_an_unlisted_agent_writes_nothing() {
 #[test]
 fn the_first_agent_makes_the_file_and_the_last_one_out_leaves_it_valid() {
     let tmp = tempfile::tempdir().expect("tmp");
-    let path = tmp.path().join("docket").join("agents.toml");
+    let path = tmp.path().join("bardo/actions").join("agents.toml");
     write_agent_add(&path, &agy("agy")).expect("add");
     let text = std::fs::read_to_string(&path).expect("read");
     assert!(text.contains("[[agent]]") && text.contains("program = \"agy\""));

@@ -72,9 +72,9 @@ pub(crate) fn run_playback(
         *pw::keys::MEDIA_TYPE => "Audio",
         *pw::keys::MEDIA_CATEGORY => "Playback",
         *pw::keys::MEDIA_ROLE => "Communication",
-        *pw::keys::NODE_NAME => "voiced-playback",
+        *pw::keys::NODE_NAME => "bardo-voiced-playback",
     };
-    let stream = pw::stream::StreamBox::new(&core, "voiced-playback", props)?;
+    let stream = pw::stream::StreamBox::new(&core, "bardo-voiced-playback", props)?;
     let _listener = stream
         .add_local_listener_with_user_data((shared, Some(started)))
         .state_changed(|_, (_, started), _, new| {

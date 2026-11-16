@@ -15,7 +15,7 @@
 # --entry     the trial catalogue entry of the model (eval/cloud-catalog/<id>.toml).
 # --catalog   the directory whose entries inferd is given (default eval/cloud-catalog).
 # --cents     inferd's [ai.spend] daily cap on the account and on the app (default 300).
-# The eval runs as the intentd unit of inferd's caller table (the account's grant names org.bardo.Intents).
+# The eval runs as the bardo-actiond unit of inferd's caller table (the account's grant names org.bardo.Intents).
 set -euo pipefail
 
 die() { echo "cloud-eval: $*" >&2; exit 2; }
@@ -50,19 +50,19 @@ entry=$(cd "$(dirname "$entry")" && pwd -P)/$(basename "$entry")
 # The world: short paths, because a bus socket path is limited.
 world=$(mktemp -d /tmp/cw.XXXXXX)
 chmod 700 "$world"
-mkdir -p "$world"/{logs,data/stoker/catalog,config/quire,config/inferd,config/porter,cache,run,proc/units,none}
+mkdir -p "$world"/{logs,data/bardo/models/catalog,config/bardo/inference,config/bardo/accounts,cache,run,proc/units,none}
 chmod 700 "$world/run"
-cp "$catalog"/*.toml "$world/data/stoker/catalog/"
+cp "$catalog"/*.toml "$world/data/bardo/models/catalog/"
 # accountd's non-secret records (the registry and the provider file) are copied in; the key file is not.
 [ -d "$home/state" ] && { mkdir -p "$world/.local/state"; cp -r "$home/state/." "$world/.local/state/"; }
 [ -d "$home/data" ] && cp -r "$home/data/." "$world/data/"
-cat > "$world/config/porter/callers.toml" <<'TOML'
+cat > "$world/config/bardo/accounts/callers.toml" <<'TOML'
 [[caller]]
 app = "org.bardo.Inference"
 unit = "bardo-inferd.service"
 role = "ai_broker"
 TOML
-cat > "$world/config/inferd/inferd.toml" <<TOML
+cat > "$world/config/bardo/inference/inferd.toml" <<TOML
 [ai]
 local_only = false
 
@@ -91,7 +91,7 @@ place() { # pid unit
 world_env=(HOME="$world" PATH=/usr/bin:/bin XDG_DATA_HOME="$world/data" XDG_DATA_DIRS="$world/none"
   XDG_CONFIG_HOME="$world/config" XDG_CONFIG_DIRS="$world/none" XDG_CACHE_HOME="$world/cache"
   XDG_RUNTIME_DIR="$world/run")
-ledger=$world/.local/state/quire/inferd/spend.json
+ledger=$world/.local/state/bardo/inference/spend.json
 
 # Everything below `inner` runs inside dbus-run-session, so it is written to a script.
 cleanup() {
@@ -109,20 +109,20 @@ wait_name() { # bus-address name
 inner() {
   local addr=$DBUS_SESSION_BUS_ADDRESS
   # accountd: the one process with the key file named.
-  ( place "$BASHPID" accountd
+  ( place "$BASHPID" bardo-accountd
     exec env -i "${world_env[@]}" DBUS_SESSION_BUS_ADDRESS="$addr" DBUS_SYSTEM_BUS_ADDRESS="$addr" \
       BARDO_ACCOUNTD_KEYS="file:$HOMEDIR/accountd.keys" BARDO_ACCOUNTD_PROC_ROOT="$WORLD/proc" \
       "$ACCOUNTD" >"$WORLD/logs/accountd.log" 2>&1 ) &
   pids+=($!)
   wait_name "$addr" org.bardo.Accounts1
-  ( place "$BASHPID" inferd
+  ( place "$BASHPID" bardo-inferd
     exec env -i "${world_env[@]}" DBUS_SESSION_BUS_ADDRESS="$addr" DBUS_SYSTEM_BUS_ADDRESS="$addr" \
       BARDO_INFERD_PROC_ROOT="$WORLD/proc" "$INFERD" >"$WORLD/logs/inferd.log" 2>&1 ) &
   pids+=($!)
   wait_name "$addr" org.bardo.Inference1
   echo "cloud-eval: accountd and inferd are up on the private bus"
-  # The eval: no key variable, no key file; placed as the intentd unit.
-  ( place "$BASHPID" intentd
+  # The eval: no key variable, no key file; placed as the bardo-actiond unit.
+  ( place "$BASHPID" bardo-actiond
     exec env -i "${world_env[@]}" DBUS_SESSION_BUS_ADDRESS="$addr" \
       "$EVALBIN" --entry "$ENTRY" --label "$LABEL" --tier "$TIER" "$@" )
 }

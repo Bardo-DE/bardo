@@ -88,11 +88,11 @@ pub async fn warm_up(
 /// make memoryd refuse every record of the real intentd).
 pub async fn as_intentd<T>(world: &World, work: impl std::future::Future<Output = T>) -> T {
     let (root, pid) = (world.dir.path(), std::process::id());
-    let daemon = unit_main(root, "intentd");
-    place(root, pid, Cgroup::Unit("intentd"));
+    let daemon = unit_main(root, "bardo-actiond");
+    place(root, pid, Cgroup::Unit("bardo-actiond"));
     let done = work.await;
-    place(root, pid, Cgroup::Unit("sill"));
-    restore_unit(root, "intentd", daemon);
+    place(root, pid, Cgroup::Unit("bardo-shell"));
+    restore_unit(root, "bardo-actiond", daemon);
     done
 }
 

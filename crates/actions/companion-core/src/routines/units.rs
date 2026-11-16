@@ -28,7 +28,7 @@ fn timer(entry: &TimerEntry) -> UnitFile {
     let text = format!(
         "# Written by the assistant for a routine; rewritten whenever the routines change.\n\
          [Unit]\n\
-         Description=Quire routine {id}: wake the assistant at its time\n\
+         Description=Bardo routine {id}: wake the assistant at its time\n\
          \n\
          [Timer]\n\
          OnCalendar={calendar}\n\
@@ -51,7 +51,7 @@ fn service(entry: &TimerEntry) -> UnitFile {
     let text = format!(
         "# Written by the assistant for a routine; rewritten whenever the routines change.\n\
          [Unit]\n\
-         Description=Quire routine {id}: start the assistant\n\
+         Description=Bardo routine {id}: start the assistant\n\
          \n\
          [Service]\n\
          Type=oneshot\n\

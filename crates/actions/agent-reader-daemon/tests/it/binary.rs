@@ -26,7 +26,7 @@ impl Drop for Daemon {
 fn readerd(dir: &Path, bus: &str) -> Daemon {
     let home = dir.display().to_string();
     Daemon(
-        Command::new(env!("CARGO_BIN_EXE_readerd"))
+        Command::new(env!("CARGO_BIN_EXE_bardo-readerd"))
             .env_clear()
             .env("HOME", &home)
             .env("XDG_CONFIG_HOME", dir.join("config"))

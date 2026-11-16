@@ -29,6 +29,7 @@ mod inference_daemon;
 mod introspect;
 mod message;
 mod names;
+pub mod pre_bardo;
 mod provider;
 mod reach;
 mod reader;

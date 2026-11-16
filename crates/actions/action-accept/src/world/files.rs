@@ -49,7 +49,7 @@ const SYSTEM_CALLERS: [(&str, &str); 7] = [
 
 /// Writes the shipped callers files into `<root>/system/`: the harness is its own system, and only
 /// the system's file can give a fixed role (the shell's `sheet_host`), so these are the daemons'
-/// system files, not the person's (`<root>/config/quire`).
+/// system files, not the person's (`<root>/config/bardo/actions`).
 pub fn write_system_callers(root: &Path) -> std::io::Result<()> {
     let dir = root.join("system");
     std::fs::create_dir_all(&dir)?;

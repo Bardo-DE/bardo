@@ -35,7 +35,7 @@ impl FileUse {
         Self { path }
     }
 
-    /// `$XDG_CONFIG_HOME/shell/settings.toml`, or `~/.config/shell/settings.toml`.
+    /// `$XDG_CONFIG_HOME/bardo/shell/settings.toml`, or `~/.config/bardo/shell/settings.toml`.
     ///
     /// `env` answers a variable by name (a daemon's main passes `|k| std::env::var(k).ok()`).
     pub fn sill_default(env: impl Fn(&str) -> Option<String>) -> Self {
@@ -43,7 +43,7 @@ impl FileUse {
             .map(PathBuf::from)
             .or_else(|| env("HOME").map(|home| PathBuf::from(home).join(".config")))
             .unwrap_or_default();
-        Self::new(base.join("shell/settings.toml"))
+        Self::new(base.join("bardo/shell/settings.toml"))
     }
 }
 
@@ -101,13 +101,16 @@ mod tests {
     #[test]
     fn the_default_path_follows_the_injected_environment() {
         let table = [
-            (vec![("XDG_CONFIG_HOME", "/x")], "/x/shell/settings.toml"),
-            (vec![("HOME", "/h")], "/h/.config/shell/settings.toml"),
+            (
+                vec![("XDG_CONFIG_HOME", "/x")],
+                "/x/bardo/shell/settings.toml",
+            ),
+            (vec![("HOME", "/h")], "/h/.config/bardo/shell/settings.toml"),
             (
                 vec![("XDG_CONFIG_HOME", "/x"), ("HOME", "/h")],
-                "/x/shell/settings.toml",
+                "/x/bardo/shell/settings.toml",
             ),
-            (vec![], "shell/settings.toml"),
+            (vec![], "bardo/shell/settings.toml"),
         ];
         for (vars, want) in table {
             let env = |k: &str| {

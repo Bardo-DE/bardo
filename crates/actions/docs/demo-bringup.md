@@ -1,6 +1,6 @@
 # Bringing up the agent services under a demo shell
 
-`agent-bringup` starts accountd, inferd, memoryd, intentd and companiond on a bus that already exists (the nested
+`agent-bringup` starts accountd, inferd, memoryd, bardo-actiond and bardo-companiond on a bus that already exists (the nested
 demo's private bus), so the companion pane answers. It is the acceptance `World`'s setup (same daemons, same
 `env_clear` scratch environment, same fake proc root) with daemons that outlive the command. Logic:
 `crates/agent-live/src/bringup`; the binary is a thin wrapper.
@@ -25,14 +25,14 @@ agent-bringup status --root <dir>
 agent-bringup down --root <dir>
 ```
 
-`up` prints one line per daemon, `accountd 4120 ok`, in start order (accountd, inferd, memoryd, intentd,
-companiond), after each has its bus name (`org.bardo.Accounts1`, `Inference1`, `Memory1`, `Intents1`,
+`up` prints one line per daemon, `accountd 4120 ok`, in start order (accountd, inferd, memoryd, bardo-actiond,
+bardo-companiond), after each has its bus name (`org.bardo.Accounts1`, `Inference1`, `Memory1`, `Intents1`,
 `Companion1`). On any failure it stops
 what it started and exits 1 (2 for a wrong command line). `status` prints `name pid running|gone`. `down`
 prints `name pid stopped|killed|gone`, last started first, and leaves the root on disk.
 
 - `--shell-pid` is the demo shell. The fake proc root (`<root>/proc`) puts it in `bardo-shell.service`, the unit
-  memoryd gives the `sheet_host` role. Bus names give intentd and companiond their roles
+  memoryd gives the `sheet_host` role. Bus names give bardo-actiond and bardo-companiond their roles
   (`org.bardo.Shell`), so the shell must own those names on `--bus`.
 - Root layout: `data config cache run keys proc logs`, plus `procs`. Daemon logs: `<root>/logs/<name>.log`.
 - `<root>/procs` has `name pid start-time` lines (field 22 of `/proc/<pid>/stat`). `down` signals only a pid

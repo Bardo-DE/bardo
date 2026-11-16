@@ -74,12 +74,12 @@ pub(crate) fn run_capture(
         *pw::keys::MEDIA_TYPE => "Audio",
         *pw::keys::MEDIA_CATEGORY => "Capture",
         *pw::keys::MEDIA_ROLE => "Communication",
-        *pw::keys::NODE_NAME => "voiced-capture",
+        *pw::keys::NODE_NAME => "bardo-voiced-capture",
         *pw::keys::NODE_LATENCY => latency.as_str(),
     };
     // `target.object`: the physical source by name (the key's constant needs a newer feature).
     props.insert("target.object", target.as_str());
-    let stream = pw::stream::StreamBox::new(&core, "voiced-capture", props)?;
+    let stream = pw::stream::StreamBox::new(&core, "bardo-voiced-capture", props)?;
     let _listener = stream
         .add_local_listener_with_user_data(data)
         .state_changed(|_, data, _, new| {

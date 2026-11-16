@@ -52,7 +52,8 @@ impl Places {
             .filter(|v| !v.is_empty())
             .map(PathBuf::from)
             .unwrap_or_else(|| PathBuf::from(get("HOME").unwrap_or_default()).join(".local/share"))
-            .join("docket");
+            .join("bardo")
+            .join("actions");
         Self {
             locator: Locator::from_env(&get),
             data,
@@ -82,7 +83,7 @@ impl Places {
         self.locator.dirs().first().cloned().unwrap_or_default()
     }
 
-    /// docket's data directory.
+    /// The actions data directory (`bardo/actions` under `$XDG_DATA_HOME`).
     pub fn data_dir(&self) -> &Path {
         &self.data
     }

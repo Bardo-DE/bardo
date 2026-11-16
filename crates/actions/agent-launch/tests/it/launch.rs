@@ -99,11 +99,14 @@ async fn the_endpoint_route_gives_the_child_a_base_url_and_a_token_and_nothing_e
         panic!("{:?}", run.net)
     };
     assert_eq!(bind.port, 41999);
-    assert_eq!(bind.forwarder.as_str(), "/opt/docket/bardo-agent-net-forward");
+    assert_eq!(
+        bind.forwarder.as_str(),
+        "/opt/docket/bardo-agent-net-forward"
+    );
 
     // The bridge's socket lives in a directory only the user can enter, for as long as the
     // session does.
-    let dir = rig.dir.path().join("docket-agent-acp-s-1");
+    let dir = rig.dir.path().join("bardo-agent-acp-s-1");
     assert!(dir.join("ep.sock").exists());
     assert_eq!(
         std::fs::metadata(&dir).expect("dir").permissions().mode() & 0o777,
@@ -215,7 +218,10 @@ async fn an_allowlist_agent_gets_a_filter_on_its_socket_for_the_life_of_the_sess
         panic!("{:?}", run.net)
     };
     assert_eq!(bind.port, 3128);
-    assert_eq!(bind.forwarder.as_str(), "/opt/docket/bardo-agent-net-forward");
+    assert_eq!(
+        bind.forwarder.as_str(),
+        "/opt/docket/bardo-agent-net-forward"
+    );
     for name in ["HTTPS_PROXY", "HTTP_PROXY", "https_proxy", "http_proxy"] {
         assert_eq!(env_of(run, name), Some("http://127.0.0.1:3128"), "{name}");
     }
@@ -229,7 +235,7 @@ async fn an_allowlist_agent_gets_a_filter_on_its_socket_for_the_life_of_the_sess
         Some("/opt/docket/bardo-agent-net-enter")
     );
 
-    let dir = rig.dir.path().join("docket-agent-acp-s-6");
+    let dir = rig.dir.path().join("bardo-agent-acp-s-6");
     assert!(dir.join("ep.sock").exists(), "the filter is listening");
     child.close().await;
     assert!(rig.procs.killed(0));
@@ -337,7 +343,7 @@ async fn a_failure_part_way_undoes_what_was_done() {
         rig.accounts.calls()[2..],
         [Call::Close("ep-1".into()), Call::End("acp-s-1".into())]
     );
-    assert!(!rig.dir.path().join("docket-agent-acp-s-1").exists());
+    assert!(!rig.dir.path().join("bardo-agent-acp-s-1").exists());
 }
 
 fn rig_down() -> super::support::Rig {

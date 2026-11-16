@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Try `bardo-do` by hand against a real intentd, on a private bus that is not your session's:
-# a scratch dbus-daemon, a scratch HOME and XDG directories, intentd, a fake mail app
-# (org.bardo.Mail) and a fake sill sheet that asks on THIS terminal. Nothing of your real
+# Try `bardo-do` by hand against a real bardo-actiond, on a private bus that is not your session's:
+# a scratch dbus-daemon, a scratch HOME and XDG directories, bardo-actiond, a fake mail app
+# (org.bardo.Mail) and a fake shell sheet that asks on THIS terminal. Nothing of your real
 # session bus or ~/.config is named.
 #
-#   scripts/try-quire-do.sh          # starts it all; prints what to run in a second terminal
+#   scripts/try-bardo-do.sh          # starts it all; prints what to run in a second terminal
 #
 # In the second terminal (the script prints the exact `source` line):
 #   bardo-do apps
@@ -29,9 +29,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$world/data/quire/intents" "$world/config" "$world/bin"
-cp action-fake/fixtures/manifests/org.bardo.Mail.intents.toml "$world/data/quire/intents/org.bardo.Mail.toml"
-cp manifests/org.bardo.Memory.toml "$world/data/quire/intents/org.bardo.Memory.toml"
+mkdir -p "$world/data/bardo/intents" "$world/config" "$world/bin"
+cp action-fake/fixtures/manifests/org.bardo.Mail.intents.toml "$world/data/bardo/intents/org.bardo.Mail.toml"
+cp manifests/org.bardo.Memory.toml "$world/data/bardo/intents/org.bardo.Memory.toml"
 cat > "$world/bus.conf" <<CONF
 <!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
@@ -57,7 +57,7 @@ scratch=(env -i HOME="$world" PATH="$PATH" XDG_RUNTIME_DIR="$world" XDG_DATA_HOM
   XDG_DATA_DIRS="$world/none" XDG_CONFIG_HOME="$world/config" XDG_CONFIG_DIRS="$world/none"
   DBUS_SESSION_BUS_ADDRESS="$bus" DBUS_SYSTEM_BUS_ADDRESS="$bus")
 
-"${scratch[@]}" "$bin/intentd" &
+"${scratch[@]}" "$bin/bardo-actiond" &
 pids+=($!)
 ln -s "$bin/bardo-do" "$world/bin/bardo-do"
 cat > "$world/env" <<ENV

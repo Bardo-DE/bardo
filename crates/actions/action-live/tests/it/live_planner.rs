@@ -58,7 +58,7 @@ fn the_catalogue_paths() {
     );
     assert_eq!(
         world_dir(Path::new("/s")),
-        Path::new("/s/data/stoker/catalog")
+        Path::new("/s/data/bardo/models/catalog")
     );
 }
 

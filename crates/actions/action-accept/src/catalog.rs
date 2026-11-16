@@ -1,4 +1,4 @@
-//! The model catalogue a harness world's inferd reads. inferd looks in `$XDG_DATA_HOME/stoker/catalog`
+//! The model catalogue a harness world's inferd reads. inferd looks in `$XDG_DATA_HOME/bardo/models/catalog`
 //! (the user's) and `/usr/share/bardo/models/catalog`; a harness world's XDG_DATA_HOME is scratch, so the
 //! entries are copied there from a directory the run names (default: the sibling stoker checkout's
 //! `catalog/`). Copied, never linked: nothing in the real tree can be written through the world.
@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 /// Where the world's inferd finds its user catalogue, under the scratch root.
 pub fn world_dir(scratch: &Path) -> PathBuf {
-    scratch.join("data/stoker/catalog")
+    scratch.join("data/bardo/models/catalog")
 }
 
 /// The default source: `../stoker/catalog` beside the docket checkout whose `eval/` is

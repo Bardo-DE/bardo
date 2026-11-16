@@ -1,4 +1,4 @@
-//! `$XDG_CONFIG_HOME/quire/companiond.toml`: which bus name speaks for the person, which Spaces a
+//! `$XDG_CONFIG_HOME/bardo/actions/companiond.toml`: which bus name speaks for the person, which Spaces a
 //! restart reads, and the proposed values. Every key is optional.
 
 use account_core::AppName;
@@ -59,7 +59,7 @@ impl CompaniondConfig {
         Self::parse(SHIPPED)
     }
 
-    /// The first `quire/companiond.toml` of the configuration directories (`$XDG_CONFIG_HOME`,
+    /// The first `bardo/actions/companiond.toml` of the configuration directories (`$XDG_CONFIG_HOME`,
     /// then `$XDG_CONFIG_DIRS`), else the shipped one.
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, ConfigError> {
         let home = env("XDG_CONFIG_HOME")
@@ -71,7 +71,7 @@ impl CompaniondConfig {
             .unwrap_or_else(|| "/etc/xdg".to_owned());
         let found = std::iter::once(home)
             .chain(rest.split(':').map(PathBuf::from))
-            .map(|d| d.join("quire").join("companiond.toml"))
+            .map(|d| d.join("bardo").join("actions").join("companiond.toml"))
             .find_map(|path| std::fs::read_to_string(path).ok());
         let mut config = match found {
             Some(text) => Self::parse(&text),

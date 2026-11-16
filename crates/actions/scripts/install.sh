@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh: install docket's programs (the action router, the companion, the reader, the tool
+# install.sh: install the actions programs (the action router, the companion, the reader, the tool
 # server and the bardo-do command), for the whole machine or for one user.
 #
 #   scripts/install.sh                   build (release, --locked) and install under /usr/local;
@@ -10,8 +10,8 @@
 #                                        With --user it moves the programs only: settings, units and
 #                                        shared files go to your own standard folders (~/.config, ~/.local/share)
 #   --destdir DIR                        put everything under DIR, for a package; nothing asks for root
-#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/quire/ and
-#                                        DIR/xdg/quire/; a release stages them elsewhere and places them later
+#   --sysconfdir DIR                     where the machine-wide files go (default /etc): DIR/bardo/ and
+#                                        DIR/xdg/bardo/actions/; a release stages them elsewhere and places them later
 #   --no-build                           install what is already in target/release
 #   --bin-dir DIR                        install programs already built in DIR instead of building
 #   --dry-run                            print every action; build and write nothing
@@ -21,51 +21,51 @@
 #                                        it does not or cannot be asked
 #   --distro debian|fedora|arch          the family of Linux, for package names (default: read from
 #                                        /etc/os-release; ubuntu counts as debian)
-#   --with-voice                         also build and install voiced, the voice daemon (needs the
+#   --with-voice                         also build and install bardo-voiced, the voice daemon (needs the
 #                                        sound and clang compiler development packages)
 #
 # What goes where (system install; --user puts the same in your own folders, see --prefix):
-#   PREFIX/libexec/quire/                the daemons; PREFIX/bin/ has bardo-do and bardo-agent-acp
+#   PREFIX/libexec/bardo/               the daemons; PREFIX/bin/ has bardo-do and bardo-agent-acp
 #   PREFIX/lib/systemd/user/             the units, pointed at the prefix, and
 #                                        <unit>.service.d/sandbox.conf, their protections
 #   PREFIX/share/dbus-1/services/        activation files; interfaces/ has the interface XML
-#   PREFIX/share/quire/{settings,skills,intents,permissions}/
-#   SYSCONFDIR/xdg/quire/                default configuration (never replaces a file already there)
-#   SYSCONFDIR/quire/*-callers.toml      which units may call each daemon. They are the machine's
+#   PREFIX/share/bardo/{settings,skills,intents}/ and PREFIX/share/bardo/actions/permissions/
+#   SYSCONFDIR/xdg/bardo/actions/                default configuration (never replaces a file already there)
+#   SYSCONFDIR/bardo/*-callers.toml     which units may call each daemon. They are the machine's
 #                                        security tables: always replaced, reset on every install.
 #                                        Need root; read when a daemon starts, so restart them after
 #
 # install-dev.sh stays the way to install the whole agent stack (with porter and almanac) for one user.
 set -euo pipefail
 
-REPO_NAME="docket"
+REPO_NAME="actions"
 NEEDS_GIT=1
-FIRST_SERVICE="intentd"
+FIRST_SERVICE="bardo-actiond"
 CARGO_EXTRA=()
 SANDBOX_NOTE=""
 # name|cargo package|libexec or bin
 BINARIES=(
-  "intentd|intentd|libexec"
-  "companiond|companiond|libexec"
-  "readerd|readerd|libexec"
-  "bardo-actions-mcp|bardo-actions-mcp|libexec"
+  "bardo-actiond|action-daemon|libexec"
+  "bardo-companiond|companion-daemon|libexec"
+  "bardo-readerd|agent-reader-daemon|libexec"
+  "bardo-actions-mcp|action-mcp|libexec"
   "bardo-do|action-cli|bin"
   "bardo-agent-acp|agent-acp-bin|bin"
   "bardo-agent|agent-acp-bin|bin"
   "bardo-agent-net-forward|agent-acp-bin|bin"
   "bardo-agent-net-enter|agent-acp-bin|bin"
 )
-UNITS=(intentd companiond readerd bardo-actions-mcp bardo-agent)
+UNITS=(bardo-actiond bardo-companiond bardo-readerd bardo-actions-mcp bardo-agent)
 DBUS_NAMES=(Companion1 Intents1 Reader1 AcpAgent)
-CALLERS=(intentd companiond readerd acp)
+CALLERS=(actiond companiond readerd agent-acp)
 WITH_VOICE=0
 
 extra_arg() {
   case "$1" in
     --with-voice)
       WITH_VOICE=1
-      BINARIES+=("voiced|voiced|libexec")
-      UNITS+=(voiced); DBUS_NAMES+=(Voice1); CALLERS+=(voiced) ;;
+      BINARIES+=("bardo-voiced|agent-voice-daemon|libexec")
+      UNITS+=(bardo-voiced); DBUS_NAMES+=(Voice1); CALLERS+=(voiced) ;;
     *) return 1 ;;
   esac
 }
@@ -81,16 +81,16 @@ install_rest() {
     put 644 "$ROOT/dist/dbus/org.bardo.$name.service" "$SHARE/dbus-1/services/org.bardo.$name.service" unit
   done
   put_tree 644 "$ROOT/dbus" "$SHARE/dbus-1/interfaces"
-  put_tree 644 "$ROOT/dist/settings" "$SHARE/quire/settings"
-  put_tree 644 "$ROOT/dist/skills" "$SHARE/quire/skills"
-  put_tree 644 "$ROOT/dist/intents" "$SHARE/quire/intents"
-  put_tree 644 "$ROOT/policy/presets" "$SHARE/quire/permissions"
-  for name in intentd companiond bardo-actions-mcp; do
+  put_tree 644 "$ROOT/dist/settings" "$SHARE/bardo/settings"
+  put_tree 644 "$ROOT/dist/skills" "$SHARE/bardo/skills"
+  put_tree 644 "$ROOT/dist/intents" "$SHARE/bardo/intents"
+  put_tree 644 "$ROOT/policy/presets" "$SHARE/bardo/actions/permissions"
+  for name in actiond companiond bardo-actions-mcp; do
     put 644 "$ROOT/dist/$name.toml" "$CONF_DIR/$name.toml" copy keep
   done
-  if [ "$WITH_VOICE" = 1 ]; then put 644 "$ROOT/dist/voiced.toml" "$SYS_QUIRE/voiced.toml" copy keep; fi
+  if [ "$WITH_VOICE" = 1 ]; then put 644 "$ROOT/dist/voiced.toml" "$SYS_BARDO/voiced.toml" copy keep; fi
   put 644 "$ROOT/dist/completions/bardo-do.bash" "$SHARE/bash-completion/completions/bardo-do" copy
-  put 644 "$ROOT/dist/completions/_quire-do" "$SHARE/zsh/site-functions/_quire-do" copy
+  put 644 "$ROOT/dist/completions/_bardo-do" "$SHARE/zsh/site-functions/_bardo-do" copy
   put 644 "$ROOT/dist/completions/bardo-do.fish" "$SHARE/fish/vendor_completions.d/bardo-do.fish" copy
   for name in "${CALLERS[@]}"; do install_callers "$ROOT/dist/$name-callers.toml" "$name-callers.toml"; done
 }
@@ -194,18 +194,18 @@ case "$DESTDIR" in ""|/*) ;; *) die "--destdir must be an absolute path: $DESTDI
 case "$SYSCONFDIR" in /*) ;; *) die "--sysconfdir must be an absolute path: $SYSCONFDIR" ;; esac
 case "$SYSCONFDIR" in *[\|\&\\\ ]*) die "--sysconfdir cannot contain spaces, |, & or \\: $SYSCONFDIR" ;; esac
 
-LIBEXEC="$PREFIX/libexec/quire"
+LIBEXEC="$PREFIX/libexec/bardo"
 BINDIR="$PREFIX/bin"
 if [ "$MODE" = user ]; then
   UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
   SHARE="${XDG_DATA_HOME:-$HOME/.local/share}"
-  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/quire"
+  CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/bardo/actions"
 else
   UNIT_DIR="$PREFIX/lib/systemd/user"
   SHARE="$PREFIX/share"
-  CONF_DIR="$SYSCONFDIR/xdg/quire"
+  CONF_DIR="$SYSCONFDIR/xdg/bardo/actions"
 fi
-SYS_QUIRE="$SYSCONFDIR/quire"
+SYS_BARDO="$SYSCONFDIR/bardo"
 
 under_home() { case "$PREFIX" in "$HOME"|"$HOME"/*) return 0 ;; *) return 1 ;; esac; }
 
@@ -247,7 +247,8 @@ priv() {
 
 # ---- text rewrites ----
 rewrite_exec() { # the shipped /usr/libexec/bardo is now under the prefix
-  sed -E -e "s|^(ExecStart=)/usr/libexec/bardo/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/bardo/|\1$LIBEXEC/|"
+  sed -E -e "s|^(ExecStart=)/usr/libexec/bardo/|\1$LIBEXEC/|" -e "s|^(Exec=)/usr/libexec/bardo/|\1$LIBEXEC/|" \
+    -e "s|^(ExecStart=)/usr/bin/bardo-|\1$BINDIR/bardo-|" -e "s|^(Exec=)/usr/bin/bardo-|\1$BINDIR/bardo-|"
 }
 render() { # kind source -> text on stdout
   case "$1" in
@@ -456,7 +457,7 @@ install_bins() {
   done
 }
 install_callers() { # SOURCE NAME: the system's table, read by the daemon at start
-  put 644 "$1" "$SYS_QUIRE/$2" copy
+  put 644 "$1" "$SYS_BARDO/$2" copy
 }
 
 finish() {

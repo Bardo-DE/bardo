@@ -10,15 +10,15 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 const BINARIES: [&str; 12] = [
-    "intentd",
-    "companiond",
-    "readerd",
+    "bardo-actiond",
+    "bardo-companiond",
+    "bardo-readerd",
     "bardo-actions-mcp",
     "bardo-do",
     "agent-eval",
-    "memoryd",
-    "inferd",
-    "accountd",
+    "bardo-memoryd",
+    "bardo-inferd",
+    "bardo-accountd",
     "bardo-agent",
     "bardo-agent-net-forward",
     "bardo-agent-net-enter",
@@ -96,12 +96,12 @@ impl Jail {
             .expect("bash runs")
     }
 
-    /// `scripts/install.sh` into a package root inside HOME: prefix `/opt/quire-test`, fake programs.
+    /// `scripts/install.sh` into a package root inside HOME: prefix `/opt/bardo-test`, fake programs.
     fn run_system(&self, args: &[&str]) -> Output {
         let script = Path::new(env!("CARGO_MANIFEST_DIR")).join("../scripts/install.sh");
         Command::new("bash")
             .arg(script)
-            .args(["--prefix", "/opt/quire-test", "--destdir"])
+            .args(["--prefix", "/opt/bardo-test", "--destdir"])
             .arg(self.home().join("root"))
             .arg("--bin-dir")
             .arg(self.dir.path().join("fakes"))
@@ -166,13 +166,13 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
         has(&format!(".local/bin/{name}"));
     }
     for unit in [
-        "intentd",
-        "companiond",
-        "readerd",
+        "bardo-actiond",
+        "bardo-companiond",
+        "bardo-readerd",
         "bardo-actions-mcp",
-        "inferd",
-        "accountd",
-        "memoryd",
+        "bardo-inferd",
+        "bardo-accountd",
+        "bardo-memoryd",
     ] {
         has(&format!(".config/systemd/user/{unit}.service"));
     }
@@ -188,17 +188,18 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
             ".local/share/dbus-1/services/org.bardo.{name}.service"
         ));
     }
-    has(".local/share/quire/skills/desktop-basics/SKILL.md");
-    has(".local/share/quire/permissions/default/grid.cedar");
-    has(".local/share/quire/settings/actions.settings.toml");
-    has(".local/share/quire/settings/memory.settings.toml");
-    has(".local/share/quire/settings/inference.settings.toml");
-    has(".local/share/porter/providers/openrouter.toml");
-    has(".local/share/stoker/catalog/claude-haiku-4.5.toml");
-    for config in ["intentd", "companiond", "memory-callers", "bardo-actions-mcp"] {
-        has(&format!(".config/quire/{config}.toml"));
+    has(".local/share/bardo/skills/desktop-basics/SKILL.md");
+    has(".local/share/bardo/actions/permissions/default/grid.cedar");
+    has(".local/share/bardo/settings/actions.settings.toml");
+    has(".local/share/bardo/settings/memory.settings.toml");
+    has(".local/share/bardo/settings/inference.settings.toml");
+    has(".local/share/bardo/accounts/providers/openrouter.toml");
+    has(".local/share/bardo/models/catalog/claude-haiku-4.5.toml");
+    for config in ["actiond", "companiond", "actions-mcp"] {
+        has(&format!(".config/bardo/actions/{config}.toml"));
     }
-    has(".config/inferd/inferd.toml");
+    has(".config/bardo/memoryd/callers.toml");
+    has(".config/bardo/inference/inferd.toml");
     // Offline unless asked: no drop-in that opens inferd's network (its sandbox drop-in, which
     // only narrows it, is checked below).
     assert!(
@@ -209,19 +210,19 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
     );
     // The mount-namespace protections ride along as drop-ins.
     for unit in [
-        "intentd",
-        "companiond",
-        "readerd",
+        "bardo-actiond",
+        "bardo-companiond",
+        "bardo-readerd",
         "bardo-actions-mcp",
-        "memoryd",
-        "inferd",
+        "bardo-memoryd",
+        "bardo-inferd",
     ] {
         has(&format!(
             ".config/systemd/user/{unit}.service.d/sandbox.conf"
         ));
     }
-    has(".local/state/quire-dev/install-dev.manifest");
-    // Nothing for voiced (a skeleton), syncd or cuad, and nothing outside HOME.
+    has(".local/state/bardo/dev/install-dev.manifest");
+    // Nothing for bardo-voiced (a skeleton), bardo-syncd or bardo-computer-use, and nothing outside HOME.
     assert!(
         !tree
             .iter()
@@ -244,14 +245,12 @@ fn an_install_puts_every_piece_where_the_session_reads_it() {
         "{out}"
     );
     assert!(
-        !tree
-            .iter()
-            .any(|p| p.contains("-callers.toml") && !p.contains("memory-callers")),
+        !tree.iter().any(|p| p.contains("-callers.toml")),
         "{tree:#?}"
     );
     // The daemons read the table only at startup, so the printed steps restart them.
     assert!(
-        out.contains("systemctl --user restart accountd inferd"),
+        out.contains("systemctl --user restart bardo-accountd bardo-inferd"),
         "{out}"
     );
 }
@@ -266,10 +265,10 @@ fn the_exec_lines_name_the_prefix_and_a_home_prefix_keeps_the_binary_reachable()
     let bin = jail.prefix().join("bin");
     let bin = bin.display();
     for (unit, name) in [
-        ("companiond", "companiond"),
-        ("intentd", "intentd"),
-        ("inferd", "inferd"),
-        ("memoryd", "memoryd"),
+        ("bardo-companiond", "bardo-companiond"),
+        ("bardo-actiond", "bardo-actiond"),
+        ("bardo-inferd", "bardo-inferd"),
+        ("bardo-memoryd", "bardo-memoryd"),
     ] {
         let text = jail.read(&format!(".config/systemd/user/{unit}.service"));
         assert!(
@@ -283,9 +282,12 @@ fn the_exec_lines_name_the_prefix_and_a_home_prefix_keeps_the_binary_reachable()
         );
     }
     let dbus = jail.read(".local/share/dbus-1/services/org.bardo.Companion1.service");
-    assert!(dbus.contains(&format!("Exec={bin}/companiond\n")), "{dbus}");
+    assert!(
+        dbus.contains(&format!("Exec={bin}/bardo-companiond\n")),
+        "{dbus}"
+    );
     // With the binary under HOME, `ProtectHome=yes` would hide it from its own unit.
-    for unit in ["companiond", "readerd"] {
+    for unit in ["bardo-companiond", "bardo-readerd"] {
         let text = jail.read(&format!(
             ".config/systemd/user/{unit}.service.d/sandbox.conf"
         ));
@@ -293,7 +295,7 @@ fn the_exec_lines_name_the_prefix_and_a_home_prefix_keeps_the_binary_reachable()
         assert!(text.contains("\nProtectHome=read-only"), "{unit}");
     }
     let mode = std::os::unix::fs::PermissionsExt::mode(
-        &std::fs::metadata(jail.prefix().join("bin/inferd"))
+        &std::fs::metadata(jail.prefix().join("bin/bardo-inferd"))
             .expect("meta")
             .permissions(),
     );
@@ -306,12 +308,12 @@ fn a_config_of_the_persons_own_is_never_overwritten_and_a_second_run_changes_not
         return;
     }
     let jail = Jail::new();
-    let mine = jail.config().join("inferd/inferd.toml");
+    let mine = jail.config().join("bardo/inference/inferd.toml");
     std::fs::create_dir_all(mine.parent().expect("dir")).expect("dir");
     std::fs::write(&mine, "# mine\n[ai]\nlocal_only = false\n").expect("mine");
     jail.ok(&[]);
     assert_eq!(
-        jail.read(".config/inferd/inferd.toml"),
+        jail.read(".config/bardo/inference/inferd.toml"),
         "# mine\n[ai]\nlocal_only = false\n"
     );
     let first = jail.tree();
@@ -319,7 +321,7 @@ fn a_config_of_the_persons_own_is_never_overwritten_and_a_second_run_changes_not
     assert_eq!(jail.tree(), first, "idempotent");
     assert!(again.contains("kept (yours)"), "{again}");
     assert_eq!(
-        jail.read(".config/inferd/inferd.toml"),
+        jail.read(".config/bardo/inference/inferd.toml"),
         "# mine\n[ai]\nlocal_only = false\n"
     );
 }
@@ -334,10 +336,10 @@ fn a_dry_run_prints_every_action_and_writes_nothing() {
     assert!(jail.tree().is_empty(), "{:#?}", jail.tree());
     for expect in [
         "install -m 755",
-        "intentd",
+        "bardo-actiond",
         "dbus-1/services/org.bardo.Companion1.service",
-        "quire/skills/desktop-basics/SKILL.md",
-        "porter/providers/openrouter.toml",
+        "bardo/skills/desktop-basics/SKILL.md",
+        "bardo/accounts/providers/openrouter.toml",
         "sudo install -D -m644",
     ] {
         assert!(out.contains(expect), "{expect}\n{out}");
@@ -363,7 +365,7 @@ fn an_uninstall_removes_exactly_what_was_installed_and_keeps_what_is_the_persons
     jail.ok(&[]);
     assert_ne!(jail.tree(), before);
     // The runbook edits inferd.toml: that edit survives.
-    let inferd = jail.config().join("inferd/inferd.toml");
+    let inferd = jail.config().join("bardo/inference/inferd.toml");
     let edited = format!(
         "{}\n[ai]\nlocal_only = false\n",
         std::fs::read_to_string(&inferd).expect("read")
@@ -376,8 +378,9 @@ fn an_uninstall_removes_exactly_what_was_installed_and_keeps_what_is_the_persons
         .into_iter()
         .chain([
             ".config/".to_owned(),
-            ".config/inferd/".to_owned(),
-            ".config/inferd/inferd.toml".to_owned(),
+            ".config/bardo/".to_owned(),
+            ".config/bardo/inference/".to_owned(),
+            ".config/bardo/inference/inferd.toml".to_owned(),
         ])
         .collect();
     assert_eq!(left, expected, "only the person's own files remain");
@@ -391,7 +394,7 @@ fn an_uninstall_removes_exactly_what_was_installed_and_keeps_what_is_the_persons
 #[test]
 fn a_missing_binary_stops_the_install_before_anything_is_written() {
     let jail = Jail::new();
-    std::fs::remove_file(jail.dir.path().join("fakes/memoryd")).expect("remove");
+    std::fs::remove_file(jail.dir.path().join("fakes/bardo-memoryd")).expect("remove");
     let out = jail.run(&[]);
     assert!(!out.status.success());
     assert!(
@@ -446,24 +449,24 @@ fn the_system_installer_puts_each_piece_under_the_prefix_and_the_protections_are
     assert!(out.status.success(), "{out:?}");
     let tree = jail.tree();
     let has = |rel: &str| assert!(tree.contains(rel), "missing {rel}\n{tree:#?}");
-    has("root/opt/quire-test/libexec/quire/intentd");
-    has("root/opt/quire-test/bin/bardo-do");
-    has("root/opt/quire-test/lib/systemd/user/bardo-actiond.service");
-    has("root/opt/quire-test/lib/systemd/user/bardo-actiond.service.d/sandbox.conf");
-    has("root/opt/quire-test/share/dbus-1/services/org.bardo.Intents1.service");
-    has("root/opt/quire-test/share/dbus-1/interfaces/org.bardo.Intents1.xml");
-    has("root/opt/quire-test/share/quire/settings/actions.settings.toml");
-    has("root/etc/xdg/quire/actiond.toml");
-    has("root/etc/quire/actiond-callers.toml");
-    let unit = jail.read("root/opt/quire-test/lib/systemd/user/bardo-actiond.service");
+    has("root/opt/bardo-test/libexec/bardo/bardo-actiond");
+    has("root/opt/bardo-test/bin/bardo-do");
+    has("root/opt/bardo-test/lib/systemd/user/bardo-actiond.service");
+    has("root/opt/bardo-test/lib/systemd/user/bardo-actiond.service.d/sandbox.conf");
+    has("root/opt/bardo-test/share/dbus-1/services/org.bardo.Intents1.service");
+    has("root/opt/bardo-test/share/dbus-1/interfaces/org.bardo.Intents1.xml");
+    has("root/opt/bardo-test/share/bardo/settings/actions.settings.toml");
+    has("root/etc/xdg/bardo/actions/actiond.toml");
+    has("root/etc/bardo/actiond-callers.toml");
+    let unit = jail.read("root/opt/bardo-test/lib/systemd/user/bardo-actiond.service");
     assert!(
-        unit.contains("\nExecStart=/opt/quire-test/libexec/quire/intentd\n"),
+        unit.contains("\nExecStart=/opt/bardo-test/libexec/bardo/bardo-actiond\n"),
         "{unit}"
     );
     let activation =
-        jail.read("root/opt/quire-test/share/dbus-1/services/org.bardo.Intents1.service");
+        jail.read("root/opt/bardo-test/share/dbus-1/services/org.bardo.Intents1.service");
     assert!(
-        activation.contains("Exec=/opt/quire-test/libexec/quire/intentd\n"),
+        activation.contains("Exec=/opt/bardo-test/libexec/bardo/bardo-actiond\n"),
         "{activation}"
     );
     // Off: the same install again, with no drop-ins, and the ones the first left are removed.
@@ -477,7 +480,7 @@ fn the_system_installer_puts_each_piece_under_the_prefix_and_the_protections_are
     );
     assert!(
         bare.tree()
-            .contains("root/opt/quire-test/lib/systemd/user/bardo-actiond.service")
+            .contains("root/opt/bardo-test/lib/systemd/user/bardo-actiond.service")
     );
 }
 

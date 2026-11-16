@@ -36,7 +36,7 @@ impl Drop for Rig {
 async fn rig() -> Rig {
     let dir = tempfile::tempdir().expect("scratch");
     let data: PathBuf = dir.path().join("data");
-    let intents = data.join("quire").join("intents");
+    let intents = data.join("bardo").join("intents");
     std::fs::create_dir_all(&intents).expect("intents dir");
     std::fs::write(intents.join("org.bardo.Mail.toml"), MAIL_MANIFEST).expect("manifest");
     let bus = PrivateBus::start(dir.path());

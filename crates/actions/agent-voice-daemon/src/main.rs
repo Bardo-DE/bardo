@@ -8,7 +8,7 @@ use std::process::ExitCode;
 
 /// The voice daemon.
 #[derive(Debug, Parser)]
-#[command(name = "voiced", about = "The voice daemon (org.bardo.Voice1)")]
+#[command(name = "bardo-voiced", about = "The voice daemon (org.bardo.Voice1)")]
 struct Args {
     /// Path of voiced.toml.
     #[arg(long, default_value = "/etc/bardo/voiced.toml")]
@@ -35,8 +35,22 @@ fn load(path: &std::path::Path) -> Result<VoicedConfig, LoadFault> {
     Ok(VoicedConfig::parse(&text)?)
 }
 
+/// Temporary: delete with the old-folders crate in the release after everyone has started once.
+///
+/// Moves the person's callers file of the earlier release (`quire/voiced-callers.toml`) into
+/// `bardo/actions`.
+fn move_pre_bardo_folders(env: &impl Fn(&str) -> Option<String>) {
+    action_dbus::pre_bardo::move_callers(
+        "bardo-voiced",
+        "voiced-callers.toml",
+        "voiced-callers.toml",
+        env,
+    );
+}
+
 fn main() -> ExitCode {
     action_log::init("voiced");
+    move_pre_bardo_folders(&|name: &str| std::env::var(name).ok());
     let args = Args::parse();
     let config = match load(&args.config) {
         Ok(config) => config,

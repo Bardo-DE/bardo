@@ -1,11 +1,11 @@
-# intentd's configuration as the package ships it: $XDG_CONFIG_HOME/quire/actiond.toml (or
-# /etc/xdg/bardo/actiond.toml) replaces it whole. Which bus names play which role: the name is a
+# bardo-actiond's configuration as the package ships it: $XDG_CONFIG_HOME/bardo/actions/actiond.toml (or
+# /etc/xdg/bardo/actions/actiond.toml) replaces it whole. Which bus names play which role: the name is a
 # well-known name the connection owns, or the app a nameless connection's cgroup scope names.
 # `org.bardo.Do` is owned by no process: a nameless connection in a terminal's scope (vte-spawn-*,
 # tmux-spawn-*, a login session-*) is named `org.bardo.Do` and plays `cli`. A terminal that runs in
 # an app scope (konsole's `app-org.kde.konsole-<n>.scope`) is named after the app: list it under
-# `cli` to let its children use bardo-do. sill owns org.bardo.Shell (and
-# org.bardo.Confirm1) and is the launcher, the only Confirm1 server intentd trusts, and the
+# `cli` to let its children use bardo-do. the shell owns org.bardo.Shell (and
+# org.bardo.Confirm1) and is the launcher, the only Confirm1 server bardo-actiond trusts, and the
 # control centre. No reviewer models are named here: until the person chooses a set, a call that
 # would be reviewed asks instead.
 [roles]

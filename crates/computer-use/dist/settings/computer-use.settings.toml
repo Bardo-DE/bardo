@@ -1,15 +1,15 @@
 # cua's settings schema in the design/22 format (section 9.2). Installed to
-# $XDG_DATA_DIRS/quire/settings/computer-use.settings.toml; `cuad --write-schema <dir>` writes it for a local
-# install. The values live in $XDG_CONFIG_HOME/computer-use/settings.toml, for example `[cua]` then
-# `enabled = true`; cuad reads them live (crates/computer-use/computer-use-daemon/src/settings). Every row is hands-off
+# $XDG_DATA_DIRS/bardo/settings/computer-use.settings.toml; `bardo-computer-use --write-schema <dir>` writes it for a local
+# install. The values live in $XDG_CONFIG_HOME/bardo/computer-use/settings.toml, for example `[cua]` then
+# `enabled = true`; bardo-computer-use reads them live (crates/computer-use/computer-use-daemon/src/settings). Every row is hands-off
 # for an agent (no `agent = "settable"`): cua.* is never agent-settable, so the companion can never
 # switch computer use on for itself. The rows design/22 section 5 puts on the Intelligence page are
 # Computer use's four; the spending cap is Advanced. Not here, because nothing reads them yet:
 # `cua.screens.keep` and `cua.screens.keep_days` (FINDINGS).
 # The schema carries no live note, so the warning that no model reads images while computer use
-# is on is cuad's `SightNote` property (org.bardo.ComputerUse1.Manager), which the shell shows beside
+# is on is the daemon's `SightNote` property (org.bardo.ComputerUse1.Manager), which the shell shows beside
 # `cua.enabled`.
-app = "cua"
+app = "computer-use"
 file = "computer-use/settings.toml"
 version = 1
 

@@ -1,6 +1,6 @@
-# What cua treats as suspicious or sensitive on a screen, as data. cuad reads this file; the pure
+# What cua treats as suspicious or sensitive on a screen, as data. bardo-computer-use reads this file; the pure
 # crate computer-use-run gets it as `cua_run::Rules`. Shipped in the binary and installed as
-# /usr/share/bardo/cua/screen-rules.toml (reference copy); the administrator's own
+# /usr/share/bardo/computer-use/screen-rules.toml (reference copy); the administrator's own
 # /etc/bardo/screen-rules.toml, when there is one, replaces it whole. To cover a new phrase, app,
 # title or word (in any language), add a line here: no code changes.
 #

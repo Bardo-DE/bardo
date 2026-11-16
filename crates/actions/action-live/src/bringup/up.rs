@@ -33,15 +33,27 @@ pub struct Started {
 fn plan(binaries: &Binaries) -> [(&'static str, &Path, &'static str); 5] {
     [
         (
-            "accountd",
+            "bardo-accountd",
             binaries.accountd.as_path(),
             "org.bardo.Accounts1",
         ),
-        ("inferd", binaries.inferd.as_path(), "org.bardo.Inference1"),
-        ("memoryd", binaries.memoryd.as_path(), "org.bardo.Memory1"),
-        ("intentd", binaries.intentd.as_path(), "org.bardo.Intents1"),
         (
-            "companiond",
+            "bardo-inferd",
+            binaries.inferd.as_path(),
+            "org.bardo.Inference1",
+        ),
+        (
+            "bardo-memoryd",
+            binaries.memoryd.as_path(),
+            "org.bardo.Memory1",
+        ),
+        (
+            "bardo-actiond",
+            binaries.intentd.as_path(),
+            "org.bardo.Intents1",
+        ),
+        (
+            "bardo-companiond",
             binaries.companiond.as_path(),
             "org.bardo.Companion1",
         ),
@@ -134,7 +146,7 @@ pub async fn up(
             .map_err(|e| BringupError::Config(format!("catalogue {}: {e}", from.display())))?;
     }
     if let Some(from) = &args.providers {
-        action_accept::catalog::copy_entries(from, &root.join("data/porter/providers"))
+        action_accept::catalog::copy_entries(from, &root.join("data/bardo/accounts/providers"))
             .map_err(|e| BringupError::Config(format!("providers {}: {e}", from.display())))?;
     }
     if let Some(home) = &keys {

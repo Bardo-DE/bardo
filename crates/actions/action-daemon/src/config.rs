@@ -1,4 +1,4 @@
-//! `$XDG_CONFIG_HOME/quire/actiond.toml`: which bus names play which role, the reviewer models
+//! `$XDG_CONFIG_HOME/bardo/actions/actiond.toml`: which bus names play which role, the reviewer models
 //! and the proposed values. The serde form is the file; every key is written.
 
 use account_core::AppName;

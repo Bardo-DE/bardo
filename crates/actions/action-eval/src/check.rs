@@ -13,7 +13,7 @@
 //! not fail it.
 //!
 //! A manifest is `*.toml` under a directory named `intents` (what is installed under
-//! `$XDG_DATA_DIRS/quire/intents/`) or `*.intents.toml`; test fixtures (`tests`, `fixtures`,
+//! `$XDG_DATA_DIRS/bardo/intents/`) or `*.intents.toml`; test fixtures (`tests`, `fixtures`,
 //! `testdata`), build output and hidden directories are not part of the app.
 
 use crate::ui::{UiFile, check_ui};

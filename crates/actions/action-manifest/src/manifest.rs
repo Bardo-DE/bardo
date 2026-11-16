@@ -1,4 +1,4 @@
-//! The app manifest: `$XDG_DATA_DIRS/quire/intents/<AppName>.toml`, installed beside the app's
+//! The app manifest: `$XDG_DATA_DIRS/bardo/intents/<AppName>.toml`, installed beside the app's
 //! `dbus-1/services/<AppName>.service`. Its serde form is the file format and every field is
 //! written (porter's provider-file rule). TOML is read by `parse`, behind the `manifest-file`
 //! feature.

@@ -60,7 +60,7 @@ async fn what_an_app_pushed_is_found_again_by_a_fresh_router() {
     }
     store.save(&router, &mail);
 
-    let file = data.path().join("quire/intents/index/org.bardo.Mail.json");
+    let file = data.path().join("bardo/intents/index/org.bardo.Mail.json");
     let mode = std::fs::metadata(&file)
         .expect("the file")
         .permissions()
@@ -80,7 +80,7 @@ fn a_file_of_an_app_that_is_not_installed_is_removed_and_a_broken_one_is_left() 
     store
         .write(&app("com.gone.App"), vec![entry("g1", "Gone")])
         .expect("written");
-    let dir = data.path().join("quire/intents/index");
+    let dir = data.path().join("bardo/intents/index");
     std::fs::write(dir.join("org.bardo.Mail.json"), "not json").expect("write");
     store.restore(&router());
     assert!(!dir.join("com.gone.App.json").exists());
@@ -88,7 +88,7 @@ fn a_file_of_an_app_that_is_not_installed_is_removed_and_a_broken_one_is_left() 
 }
 
 fn ship(data: &std::path::Path, name: &str, text: &str) {
-    let dir = data.join("quire/search");
+    let dir = data.join("bardo/actions/search");
     std::fs::create_dir_all(&dir).expect("dir");
     std::fs::write(dir.join(name), text).expect("write");
 }

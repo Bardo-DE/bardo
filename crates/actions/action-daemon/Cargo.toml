@@ -13,7 +13,7 @@ name = "action_daemon"
 path = "src/lib.rs"
 
 [[bin]]
-name = "intentd"
+name = "bardo-actiond"
 path = "src/main.rs"
 
 [dependencies]

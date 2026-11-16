@@ -1,11 +1,11 @@
-# docket's settings schema in the design/22 format (section 9.2). Installed to
-# $XDG_DATA_DIRS/quire/settings/actions.settings.toml; `bardo-actions-mcp --write-schema <dir>` writes it
-# for a local install. The values live in $XDG_CONFIG_HOME/actions/settings.toml, for example
+# The actions settings schema in the design/22 format (section 9.2). Installed to
+# $XDG_DATA_DIRS/bardo/settings/actions.settings.toml; `bardo-actions-mcp --write-schema <dir>` writes it
+# for a local install. The values live in $XDG_CONFIG_HOME/bardo/actions/settings.toml, for example
 # `[agent.mcp] expose = true`; the daemons read them live (crates/actions/action-settings). Every row is
 # hands-off for an agent (no `agent = "settable"`): agent.* is never agent-settable, so the
 # companion can never loosen its own limits. The main page has the Assistant rows and the Auto and Manual
 # sections; the rest are Advanced (Limits).
-app = "docket"
+app = "actions"
 file = "actions/settings.toml"
 version = 1
 

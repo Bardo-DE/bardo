@@ -2,7 +2,7 @@
 # the agent (`bardo-agent`) makes every call the agent asks of it as a router call of one of these
 # actions, so the policy point, the reviewers, taint, the breaker, the budgets and the audit all
 # apply, and it performs a call only after the router has allowed it. The host serves the actions
-# on this bus name; the declarations are intentd's own (no installed file may declare them).
+# on this bus name; the declarations are bardo-actiond's own (no installed file may declare them).
 #
 # Notes on the declarations:
 # - Files are the call's target, so a standing grant scopes to a directory (`Files`), and a

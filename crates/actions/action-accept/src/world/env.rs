@@ -59,7 +59,7 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
             .to_string()
     };
     match name {
-        "memoryd" => vec![
+        "bardo-memoryd" => vec![
             (
                 "BARDO_MEMORYD_KEYS",
                 format!("file:{}", dir.join("keys/memoryd.keys").display()),
@@ -68,12 +68,12 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
             // The shell's `sheet_host` role is a fixed one: memoryd's table gives it from the
             // system's file alone, never the user's. memoryd reads `/etc/bardo` for that file
             // until it honours this variable (a test build, with the fixture `/proc`).
-            ("BARDO_MEMORYD_SYSTEM_CALLERS", system("memory")),
+            ("BARDO_MEMORYD_SYSTEM_CALLERS", system("memoryd")),
         ],
         // accountd holds the AI keys: the home's key file for a cloud run, else a file in the
         // scratch root (a build with the `test-keys` feature; see docs/live-eval.md). Its Tailscale
         // socket is a scratch path, so it never reaches the real one.
-        "accountd" => vec![
+        "bardo-accountd" => vec![
             ("BARDO_ACCOUNTD_PROC_ROOT", proc_root),
             // Who is calling comes from this system file alone.
             ("BARDO_ACCOUNTD_SYSTEM_CALLERS", system("accountd")),
@@ -90,7 +90,7 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
             ),
         ],
         // inferd asks accountd for the keys; its engines inherit its environment.
-        "inferd" => [
+        "bardo-inferd" => [
             ("BARDO_INFERD_PROC_ROOT", proc_root),
             // Who is calling comes from this system file alone (not `inferd.toml`).
             ("BARDO_INFERD_CALLERS", system("inferd")),
@@ -98,27 +98,27 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
         .into_iter()
         .chain(engine_cache(daemon.engine_cache))
         .collect(),
-        // intentd, companiond, readerd and bardo-agent-acp name their callers by the units and cgroups of
+        // bardo-actiond, bardo-companiond, bardo-readerd and bardo-agent-acp name their callers by the units and cgroups of
         // the scratch root's fake proc, and read the system's callers file from the scratch
         // root's own system directory.
-        "intentd" => vec![
+        "bardo-actiond" => vec![
             (crate::seams::INTENTD_PROC_ROOT_VAR, proc_root),
-            (crate::seams::INTENTD_SYSTEM_CALLERS_VAR, system("intentd")),
+            (crate::seams::INTENTD_SYSTEM_CALLERS_VAR, system("actiond")),
         ],
-        "companiond" => vec![
+        "bardo-companiond" => vec![
             (crate::seams::COMPANIOND_PROC_ROOT_VAR, proc_root),
             (
                 crate::seams::COMPANIOND_SYSTEM_CALLERS_VAR,
                 system("companiond"),
             ),
         ],
-        "readerd" => vec![
+        "bardo-readerd" => vec![
             (crate::seams::READERD_PROC_ROOT_VAR, proc_root),
             (crate::seams::READERD_SYSTEM_CALLERS_VAR, system("readerd")),
         ],
         "bardo-agent-acp" => vec![
             (crate::seams::ACP_PROC_ROOT_VAR, proc_root),
-            (crate::seams::ACP_SYSTEM_CALLERS_VAR, system("acp")),
+            (crate::seams::ACP_SYSTEM_CALLERS_VAR, system("agent-acp")),
         ],
         _ => Vec::new(),
     }

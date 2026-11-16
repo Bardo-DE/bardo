@@ -74,7 +74,7 @@ impl Desk {
     async fn start() -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
         let data = dir.path().join("data");
-        let manifests = data.join("quire/intents");
+        let manifests = data.join("bardo/intents");
         std::fs::create_dir_all(&manifests).expect("manifest dir");
         std::fs::write(
             manifests.join("org.bardo.Mail.toml"),
@@ -366,7 +366,7 @@ async fn with_intentd_stopped_every_call_exits_6_and_sends_nothing() {
         let out = desk.quire(&words).await;
         assert_eq!(code(&out), 6, "{words:?}: {}", say(&out));
         assert!(
-            text(&out.stderr).contains("intentd is not running"),
+            text(&out.stderr).contains("bardo-actiond is not running"),
             "{}",
             say(&out)
         );

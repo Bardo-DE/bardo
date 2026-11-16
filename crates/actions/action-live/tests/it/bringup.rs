@@ -227,7 +227,10 @@ fn inferd_is_never_given_a_local_engine() {
     assert_eq!(shell[0].as_str(), Some("bardo-shell.service"));
     assert!(callers["places"].is_array());
     // cuad may open a computer-use session, as on an install.
-    assert_eq!(callers["cua"][0].as_str(), Some("bardo-computer-use.service"));
+    assert_eq!(
+        callers["cua"][0].as_str(),
+        Some("bardo-computer-use.service")
+    );
 
     // The person's own rows are kept, but cannot bring an engine, a probe or other callers back.
     let extra = "[ai]\nlocal_only = false\n";
@@ -270,12 +273,13 @@ fn the_shell_is_sill_in_the_fake_proc_root() {
     let cgroup = std::fs::read_to_string(root.join("proc/4242/cgroup")).expect("cgroup row");
     assert!(cgroup.starts_with("0::/user.slice/"), "{cgroup}");
     assert!(cgroup.ends_with("/bardo-shell.service\n"), "{cgroup}");
-    let main = std::fs::read_to_string(root.join("proc/units/bardo-shell.service")).expect("unit row");
+    let main =
+        std::fs::read_to_string(root.join("proc/units/bardo-shell.service")).expect("unit row");
     assert_eq!(main, "4242");
 
     // memoryd gives that unit the shell's role.
     let callers = parsed(
-        &std::fs::read_to_string(root.join("config/quire/memoryd-callers.toml")).expect("callers"),
+        &std::fs::read_to_string(root.join("config/bardo/memoryd/callers.toml")).expect("callers"),
     );
     let shell = callers["caller"]
         .as_array()
@@ -285,9 +289,10 @@ fn the_shell_is_sill_in_the_fake_proc_root() {
         .expect("a bardo-shell.service row");
     assert_eq!(shell["app"].as_str(), Some("org.bardo.Shell"));
     assert_eq!(shell["role"].as_str(), Some("sheet_host"));
-    assert!(root.join("data/quire/memory/spaces.toml").is_file());
+    assert!(root.join("data/bardo/memory/spaces.toml").is_file());
     assert_eq!(
-        std::fs::read_to_string(root.join("config/inferd/inferd.toml")).expect("inferd.toml"),
+        std::fs::read_to_string(root.join("config/bardo/inference/inferd.toml"))
+            .expect("inferd.toml"),
         text
     );
     assert_eq!(
@@ -308,7 +313,10 @@ fn the_shell_is_sill_in_the_fake_proc_root() {
             .and_then(|row| row["role"].as_str())
             .map(str::to_owned)
     };
-    assert_eq!(role_of("bardo-inferd.service").as_deref(), Some("ai_broker"));
+    assert_eq!(
+        role_of("bardo-inferd.service").as_deref(),
+        Some("ai_broker")
+    );
     assert_eq!(
         role_of("bardo-agent-acp.service").as_deref(),
         Some("agent_launcher")
@@ -320,7 +328,10 @@ fn the_key_command_targets_the_root() {
     let line = add_command(Path::new("/tmp/demo root"), Path::new("/opt/accountd"));
     assert!(line.starts_with("env -i "), "{line}");
     assert!(line.contains("'HOME=/tmp/demo root'"), "{line}");
-    assert!(line.contains("BARDO_ACCOUNTD_KEYS=file:/tmp/demo"), "{line}");
+    assert!(
+        line.contains("BARDO_ACCOUNTD_KEYS=file:/tmp/demo"),
+        "{line}"
+    );
     assert!(
         line.ends_with(
             "/opt/accountd add openrouter --allow org.bardo.Companion --allow org.bardo.Intents"

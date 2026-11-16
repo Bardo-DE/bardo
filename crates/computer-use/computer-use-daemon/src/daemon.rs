@@ -53,7 +53,11 @@ fn command(args: &[String], env: &impl Fn(&str) -> Option<String>) -> Command {
         return Command::WriteSchema(PathBuf::from(dir));
     }
     let named = after(args, "--config").cloned();
-    Command::Serve(named.or_else(|| env("BARDO_COMPUTER_USE_CONFIG")).map(PathBuf::from))
+    Command::Serve(
+        named
+            .or_else(|| env("BARDO_COMPUTER_USE_CONFIG"))
+            .map(PathBuf::from),
+    )
 }
 
 fn write_schema(dir: &Path) -> Result<(), Fatal> {
@@ -89,6 +93,44 @@ fn load_rules() -> Result<Rules, Fatal> {
     }
 }
 
+/// Temporary: delete with the old-folders crate in the release after everyone has started once.
+///
+/// Moves what the daemon of the earlier release left in the person's configuration folder: the
+/// settings file of `cua/` and the person's callers file of `quire/`.
+fn move_pre_bardo_folders(env: &impl Fn(&str) -> Option<String>) {
+    let config = env("XDG_CONFIG_HOME")
+        .filter(|v| !v.is_empty())
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(env("HOME").unwrap_or_default()).join(".config"));
+    let new = config.join("bardo").join("computer-use");
+    let files = [
+        (
+            config.join("cua").join("settings.toml"),
+            new.join("settings.toml"),
+        ),
+        (
+            config.join("quire").join("cuad-callers.toml"),
+            new.join(crate::callers::FILE),
+        ),
+    ];
+    for (old, new) in files {
+        match old_folders::move_file_once(&old, &new) {
+            Ok(true) => eprintln!(
+                "bardo-computer-use: moved {} to {}",
+                old.display(),
+                new.display()
+            ),
+            Ok(false) => {}
+            Err(why) => eprintln!(
+                "bardo-computer-use: could not move {}: {why}",
+                old.display()
+            ),
+        }
+    }
+    // The settings folder is empty once its file has moved.
+    let _ = std::fs::remove_dir(config.join("cua"));
+}
+
 /// Runs the daemon for the command line `args` (without the program name), reading the
 /// environment through `env`. It connects to the session bus, tries the compositor (no
 /// compositor is not a failure: the backend reads `none`), serves `org.bardo.ComputerUse1` and
@@ -101,6 +143,7 @@ pub async fn run(
         Command::WriteSchema(dir) => return write_schema(&dir),
         Command::Serve(path) => path,
     };
+    move_pre_bardo_folders(&env);
     let config = load_config(config_path.as_deref())?;
     let rules = load_rules()?;
     // The desktop's shortcut conventions, read once and told to every run's model.
@@ -187,5 +230,22 @@ mod tests {
             ),
             Command::WriteSchema(PathBuf::from("/out"))
         );
+    }
+
+    #[test]
+    fn the_settings_file_of_the_earlier_release_moves_once_into_the_bardo_folder() {
+        let scratch = tempfile::tempdir().expect("scratch");
+        let config = scratch.path().join("config");
+        std::fs::create_dir_all(config.join("cua")).expect("old folder");
+        std::fs::write(config.join("cua/settings.toml"), "old").expect("old file");
+        let root = config.display().to_string();
+        let env = |key: &str| (key == "XDG_CONFIG_HOME").then(|| root.clone());
+        move_pre_bardo_folders(&env);
+        let moved = config.join("bardo/computer-use/settings.toml");
+        assert_eq!(std::fs::read_to_string(&moved).expect("moved"), "old");
+        assert!(!config.join("cua").exists());
+        // A second start finds nothing to move and keeps what is there.
+        move_pre_bardo_folders(&env);
+        assert_eq!(std::fs::read_to_string(&moved).expect("kept"), "old");
     }
 }
