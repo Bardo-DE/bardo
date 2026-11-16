@@ -53,6 +53,10 @@ pub struct LogPage {
 }
 
 /// Every row of `session`, oldest first, read page by page.
+///
+/// # Errors
+///
+/// Returns the `LogFault` of the first page that cannot be read.
 pub async fn read_all<L: SessionLog>(
     log: &L,
     session: &SessionId,

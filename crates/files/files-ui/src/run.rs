@@ -10,6 +10,10 @@ use crate::view::App;
 pub const APP_ID: &str = "org.bardo.Files";
 
 /// Opens the window on `launch` and runs until it closes.
+///
+/// # Errors
+///
+/// Returns `LaunchError` when the app's runtime or event loop cannot run.
 pub fn run(launch: Launch) -> Result<(), LaunchError> {
     // The least the layout fits: the sidebar at its least, and room for the table beside it.
     let size = WindowSize::new(960, 600).with_least(640, 360);

@@ -33,6 +33,10 @@ pub trait SheetDesk: Send + Sync {
 
     /// Answers `id` with the person's choice. The router's own offer decides what an "always"
     /// covers; the choice names no scope.
+    ///
+    /// # Errors
+    ///
+    /// Returns `DeskFault::NoSuchSheet` when the desk holds no open sheet by that id.
     fn answer(&self, id: &ConfirmId, choice: SheetChoice) -> Result<(), DeskFault>;
 }
 

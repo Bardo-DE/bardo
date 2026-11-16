@@ -83,6 +83,10 @@ impl AppHandle {
     /// window opens the next time the event loop runs, which this wakes. It returns once the
     /// request is queued, with no handle to the window: close it from its own frame or from
     /// inside its document.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AppEnded` when the app's event loop has ended.
     pub fn open_window(&self, spec: WindowSpec, root: fn() -> Element) -> Result<(), AppEnded> {
         self.push(Remote::Open {
             spec,
@@ -92,6 +96,10 @@ impl AppHandle {
 
     /// Open a window rendering `root` with `props`, as `open_window_with` does. The props cross
     /// threads, so they are `Send`; `root` builds from them on the event loop's thread.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AppEnded` when the app's event loop has ended.
     pub fn open_window_with<P: Clone + Send + 'static>(
         &self,
         spec: WindowSpec,
@@ -106,6 +114,10 @@ impl AppHandle {
 
     /// Ask every window to repaint, and wake the event loop: the proxy a worker thread uses to
     /// have the UI thread look again.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AppEnded` when the app's event loop has ended.
     pub fn redraw(&self) -> Result<(), AppEnded> {
         self.push(Remote::Redraw)
     }
@@ -115,6 +127,10 @@ impl AppHandle {
     /// [`screen_area`](AppHandle::screen_area) answers with the shell's work area and scale
     /// where it matches the monitor (`WorkBasis::Desktop`); empty outputs return it to the
     /// window system's own size.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AppEnded` when the app's event loop has ended.
     pub fn set_desktop_outputs(&self, outputs: Outputs) -> Result<(), AppEnded> {
         self.lock().desktop = outputs;
         self.push(Remote::Screen)
@@ -122,6 +138,10 @@ impl AppHandle {
 
     /// End the app: every window is dropped and `launch` returns, whatever the
     /// `LastWindowClosed` policy says.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AppEnded` when the app's event loop has ended.
     pub fn quit(&self) -> Result<(), AppEnded> {
         self.push(Remote::Quit)
     }
@@ -130,6 +150,10 @@ impl AppHandle {
     /// program that plays with no window holds the loop while it does. The `LastWindowClosed`
     /// policy applies again once the last hold is gone and no window is open (its linger starts
     /// then). It fails once the app has ended.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AppEnded` once the app has ended.
     pub fn hold(&self) -> Result<AppHold, AppEnded> {
         self.push(Remote::Hold)?;
         Ok(AppHold(self.clone()))

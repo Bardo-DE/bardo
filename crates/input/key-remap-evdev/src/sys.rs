@@ -83,6 +83,11 @@ pub enum GrabError {
 }
 
 /// Takes the exclusive grab on an evdev fd.
+///
+/// # Errors
+///
+/// Returns `GrabError::Busy` when another program already holds the device, and another `GrabError`
+/// when the ioctl fails.
 pub fn grab(fd: impl AsFd) -> Result<(), GrabError> {
     evdev(&fd).grab(true).map_err(|e| match e.kind() {
         io::ErrorKind::ResourceBusy => GrabError::Busy,
@@ -91,11 +96,19 @@ pub fn grab(fd: impl AsFd) -> Result<(), GrabError> {
 }
 
 /// Releases the exclusive grab on an evdev fd.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails, for example because the device is gone.
 pub fn release(fd: impl AsFd) -> io::Result<()> {
     evdev(&fd).grab(false)
 }
 
 /// The keys the kernel believes are down on the device, as its bitmap.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails, for example because the device is gone.
 pub fn key_state(fd: impl AsFd) -> io::Result<[u8; KEY_STATE_BYTES]> {
     let mut bytes = [0u8; KEY_STATE_BYTES];
     evdev(&fd).key_state(&mut bytes)?;
@@ -103,6 +116,10 @@ pub fn key_state(fd: impl AsFd) -> io::Result<[u8; KEY_STATE_BYTES]> {
 }
 
 /// The LEDs the kernel believes are lit on the device, as its little-endian bitmap.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails, for example because the device is gone.
 pub fn leds_lit(fd: impl AsFd) -> io::Result<[u8; LED_STATE_BYTES]> {
     let mut bytes = [0u8; LED_STATE_BYTES];
     evdev(&fd).led_state(&mut bytes)?;
@@ -110,6 +127,11 @@ pub fn leds_lit(fd: impl AsFd) -> io::Result<[u8; LED_STATE_BYTES]> {
 }
 
 /// The range and resolution of absolute axis `axis` (`EVIOCGABS`).
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails, for example because the device is gone or has no
+/// such axis.
 pub fn abs_info(fd: impl AsFd, axis: u16) -> io::Result<AbsInfo> {
     let axis = AbsoluteAxis::from_code(axis).map_err(out_of_range)?;
     evdev(&fd).absolute_info(axis)
@@ -127,6 +149,11 @@ pub enum Capability {
 /// A device's capability bitmap as the kernel's bytes: `EVIOCGBIT` for keys and axes,
 /// `EVIOCGPROP` for the input properties. Little-endian 64-bit words, as `Bits::from_bytes`
 /// reads them.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails, for example because the device does not have that
+/// capability.
 pub fn capability_bits(fd: impl AsFd, capability: Capability) -> io::Result<Vec<u8>> {
     let handle = evdev(&fd);
     let bits = |kind, len| {
@@ -156,6 +183,11 @@ pub enum BitSet {
 }
 
 /// Enables one capability bit on a uinput fd before the device is created.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails, for example because the device does not support
+/// that bit.
 pub fn set_bit(fd: impl AsFd, set: BitSet, code: u16) -> io::Result<()> {
     let handle = uinput(&fd);
     match set {
@@ -170,6 +202,10 @@ pub fn set_bit(fd: impl AsFd, set: BitSet, code: u16) -> io::Result<()> {
 
 /// Declares the device's identity and absolute axes, then creates it: `UI_DEV_SETUP`, one
 /// `UI_ABS_SETUP` per axis, `UI_DEV_CREATE`. The capability bits are already set.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails, for example because the setup is refused.
 pub fn dev_create(fd: impl AsFd, setup: UinputSetup, abs: &[AbsSetup]) -> io::Result<()> {
     let abs = abs
         .iter()
@@ -179,12 +215,20 @@ pub fn dev_create(fd: impl AsFd, setup: UinputSetup, abs: &[AbsSetup]) -> io::Re
 }
 
 /// Destroys the device.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails.
 pub fn dev_destroy(fd: impl AsFd) -> io::Result<()> {
     uinput(&fd).dev_destroy()
 }
 
 /// The sysfs name (`inputN`) of the created device, which names its directory under
 /// `/sys/class/input` whatever else is registered under the same device name.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the ioctl fails or the name cannot be read.
 pub fn sysname(fd: impl AsFd) -> io::Result<String> {
     let bytes = uinput(&fd).sys_name()?;
     let end = bytes.iter().position(|&b| b == 0).unwrap_or(bytes.len());

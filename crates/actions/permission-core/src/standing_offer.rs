@@ -171,6 +171,11 @@ pub fn holds_standing(caller: &GrantCaller) -> bool {
 }
 
 /// The narrowest scope that covers this call, or why there is none.
+///
+/// # Errors
+///
+/// Returns the `Withheld` reason when no standing scope covers the call, for example because it has
+/// no path, command or recipient to scope a grant to.
 pub fn scope_for(call: &CallFacts) -> Result<StandingScope, Withheld> {
     let action = call.action.clone();
     let scope = match &call.args {

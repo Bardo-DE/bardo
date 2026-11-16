@@ -200,6 +200,11 @@ impl Fold {
 }
 
 /// The plan a session resumes from, or why there is none.
+///
+/// # Errors
+///
+/// Returns `PlanRefusal::Empty` when there are no entries and `PlanRefusal::NoOpening` when the
+/// first entry is not `Opened`.
 pub fn resume_plan(rows: &[Logged]) -> Result<ResumePlan, PlanRefusal> {
     let first = rows.first().ok_or(PlanRefusal::Empty)?;
     let Read::Entry(entry) = &first.read else {

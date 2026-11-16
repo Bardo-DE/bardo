@@ -88,6 +88,12 @@ impl TitleRaster {
 
     /// The pixels of the title `key` describes: the same ones, cheaply, while the key is kept.
     /// An error means the frame is drawn without a title.
+    ///
+    /// # Errors
+    ///
+    /// Returns `TitleError::Empty` when the title has no visible text, `TitleError::NoRoom` when
+    /// the lights and the edge leave no room for it, and `TitleError::TooLarge` when the titlebar
+    /// is larger than a raster can be.
     pub fn render(&mut self, key: &TitleKey) -> Result<RasterImage, TitleError> {
         if let Some(kept) = self.kept.get(key) {
             return Ok(kept);

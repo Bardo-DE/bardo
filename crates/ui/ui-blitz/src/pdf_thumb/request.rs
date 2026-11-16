@@ -69,6 +69,10 @@ impl ThumbRequest {
 
     /// The cache key, reading the file's modification time; an unreadable file (missing, no
     /// permission) is [`PdfTrouble::Unreadable`].
+    ///
+    /// # Errors
+    ///
+    /// Returns `PdfTrouble::Unreadable` when the file's modification time cannot be read.
     pub fn key(&self) -> Result<ThumbKey, PdfTrouble> {
         let modified = std::fs::metadata(&self.path)
             .and_then(|meta| meta.modified())

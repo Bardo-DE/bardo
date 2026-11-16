@@ -45,19 +45,40 @@ impl fmt::Debug for WatchGuard {
 /// own, never the window's.
 pub trait Volumes: Send + Sync {
     /// The disks now.
+    ///
+    /// # Errors
+    ///
+    /// Returns `VolumeError` when this computer has no service that lists disks or it does not
+    /// answer.
     fn list(&self) -> Result<Vec<Volume>, VolumeError>;
 
     /// Opens (mounts) the disk, giving the folder it is at.
+    ///
+    /// # Errors
+    ///
+    /// Returns `MountFailure` when the disk could not be opened.
     fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure>;
 
     /// Ejects the disk: unmounts it and, when it can be, powers it off.
+    ///
+    /// # Errors
+    ///
+    /// Returns `EjectFailure` when the disk could not be ejected.
     fn eject(&self, id: &VolumeId) -> Result<(), EjectFailure>;
 
     /// Ejects the disk although programs may be using it: unmounts it by force, then powers it off
     /// as `eject` does. The person has been asked.
+    ///
+    /// # Errors
+    ///
+    /// Returns `EjectFailure` when the disk could not be ejected even by force.
     fn force_eject(&self, id: &VolumeId) -> Result<(), EjectFailure>;
 
     /// Calls `changed` whenever a disk came, went, was opened or closed, until the guard drops.
+    ///
+    /// # Errors
+    ///
+    /// Returns `VolumeError` when the disks cannot be watched.
     fn watch(&self, changed: Changed) -> Result<WatchGuard, VolumeError>;
 }
 

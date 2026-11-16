@@ -25,6 +25,10 @@ fn concerns(p: &Path, name: &str) -> bool {
 
 /// Watches `dir` on a thread of its own and sends every settled reload of the system layer to
 /// `out`. Returns the watcher, which must be kept alive; dropping it ends the thread.
+///
+/// # Errors
+///
+/// Returns the `notify::Error` when `dir` cannot be watched.
 pub fn spawn(
     dir: PathBuf,
     out: Sender<(ConfigLayer, Vec<Warning>)>,

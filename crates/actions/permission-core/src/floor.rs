@@ -92,6 +92,10 @@ impl Floor {
     }
 
     /// The floor a file describes.
+    ///
+    /// # Errors
+    ///
+    /// Returns `FloorFault::ActionWithoutApp` when an entry names an action but not its app.
     pub fn from_file(file: FloorFile) -> Result<Self, FloorFault> {
         let locked = file
             .locked

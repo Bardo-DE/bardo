@@ -9,6 +9,11 @@ use crate::provider::{ContextSource, IntentProvider, SummonTarget};
 ///
 /// The router calls it only after checking that the name's owner derives to the same `AppId`; every
 /// member but `Summon` refuses any caller that is not intentd.
+///
+/// # Errors
+///
+/// Returns `ServeError::Bus` when the session bus cannot be reached or refuses the export, and
+/// `ServeError::Taken` when another process already owns the app's bus name.
 pub async fn serve<P, C, S>(provider: P, context: C, summon: S) -> Result<(), ServeError>
 where
     P: IntentProvider + 'static,

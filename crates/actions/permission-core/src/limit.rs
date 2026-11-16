@@ -162,6 +162,10 @@ pub struct SaidFault;
 
 impl Said {
     /// `text` as a saying.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SaidFault` when `text` is not a valid saying.
     pub fn parse(text: &str) -> Result<Self, SaidFault> {
         let text = text.trim();
         // The words are drawn on a sheet and in the activity view: the same marks that a
@@ -364,6 +368,10 @@ pub fn limits_without(mut limits: Vec<Limit>, id: &StandingGrantId) -> (Vec<Limi
 }
 
 /// The limits a file's text holds: an empty text is none.
+///
+/// # Errors
+///
+/// Returns the `serde_json::Error` when a non-empty text is not a list of limits.
 pub fn decode_limits(text: &str) -> Result<Vec<Limit>, serde_json::Error> {
     match text.trim() {
         "" => Ok(Vec::new()),
@@ -372,6 +380,10 @@ pub fn decode_limits(text: &str) -> Result<Vec<Limit>, serde_json::Error> {
 }
 
 /// The text of a list of limits. An error is never turned into an empty list.
+///
+/// # Errors
+///
+/// Returns the `serde_json::Error` when the limits cannot be written as JSON.
 pub fn encode_limits(limits: &[Limit]) -> Result<String, serde_json::Error> {
     serde_json::to_string_pretty(limits)
 }

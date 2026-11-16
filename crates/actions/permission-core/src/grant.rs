@@ -92,6 +92,10 @@ pub struct ProgramNameError;
 
 impl ProgramName {
     /// `text` as a program name.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ProgramNameError` when `text` is not a program name.
     pub fn parse(text: &str) -> Result<Self, ProgramNameError> {
         if text.is_empty() || text.len() > 64 || text.chars().any(char::is_control) {
             Err(ProgramNameError)

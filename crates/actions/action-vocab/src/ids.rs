@@ -16,6 +16,10 @@ macro_rules! text_id {
 
         impl $name {
             /// The id written as `text`, or why it is not one.
+            ///
+            /// # Errors
+            ///
+            /// Returns `CoreError` when `text` is not a valid id.
             pub fn parse(text: &str) -> Result<Self, CoreError> {
                 let ok: fn(&str) -> bool = $ok;
                 if ok(text) {
@@ -262,6 +266,10 @@ pub struct NoteSlugError;
 
 impl NoteSlug {
     /// `text` as a slug.
+    ///
+    /// # Errors
+    ///
+    /// Returns `NoteSlugError` when `text` is not a valid slug.
     pub fn parse(text: &str) -> Result<Self, NoteSlugError> {
         let mut chars = text.chars();
         let first = chars.next().is_some_and(|c| c.is_ascii_lowercase());

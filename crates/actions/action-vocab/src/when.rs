@@ -48,6 +48,10 @@ fn read(text: &str) -> Result<Read, NotRfc3339> {
 }
 
 /// A calendar date: `2026-10-03`, or the date part of an RFC 3339 instant as written.
+///
+/// # Errors
+///
+/// Returns `NotRfc3339` when `text` is not an RFC 3339 date.
 pub fn date(text: &str) -> Result<CivilDate, NotRfc3339> {
     let date = match read(text)? {
         Read::Day(date) => date,
@@ -62,6 +66,10 @@ pub fn date(text: &str) -> Result<CivilDate, NotRfc3339> {
 
 /// An instant: RFC 3339, or a bare date taken as midnight UTC. A leap second (`:60`) counts as
 /// the second after `:59`.
+///
+/// # Errors
+///
+/// Returns `NotRfc3339` when `text` is neither an RFC 3339 instant nor a bare date.
 pub fn instant(text: &str) -> Result<UnixSeconds, NotRfc3339> {
     Ok(UnixSeconds(match read(text)? {
         Read::Day(date) => date.and_time(chrono::NaiveTime::MIN).and_utc().timestamp(),

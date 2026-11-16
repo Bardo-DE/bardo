@@ -102,6 +102,10 @@ pub struct Answer {
 
 impl Answer {
     /// Waits for the window's reading; an error when the window closed first.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ReadError` when the window closed before it answered.
     pub async fn wait(self) -> Result<Reading, ReadError> {
         self.inbox.await.map_err(|_| ReadError)
     }
@@ -128,6 +132,10 @@ impl RequestSender {
     }
 
     /// Asks the window `query`; an error when the window is already closed.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ReadError` when the window is already closed.
     pub fn ask(&self, query: Query) -> Result<Answer, ReadError> {
         let (reply, inbox) = oneshot::channel();
         self.0

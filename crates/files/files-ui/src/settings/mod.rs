@@ -116,6 +116,10 @@ fn with_word_labels(mut key: KeySpec) -> KeySpec {
 }
 
 /// `files --write-schema <dir>`: writes `files.settings.toml` into `dir` and says where it went.
+///
+/// # Errors
+///
+/// Returns the `io::Error` when the file cannot be written.
 pub fn write_schema(dir: &Path) -> io::Result<PathBuf> {
     schema().write_to(dir)
 }

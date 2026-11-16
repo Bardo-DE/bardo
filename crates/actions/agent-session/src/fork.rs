@@ -53,6 +53,12 @@ pub fn forks_of(parent: &SessionId, all: &[SessionId]) -> usize {
 /// so write-ahead holds for every handle after it), then the parent's entries up to and including
 /// `at`, minus `Opened`, `Taint`, `Budget`, `Closed`, `Checkpoint` (the child owns none of the
 /// parent's restore points) and `Unknown`.
+///
+/// # Errors
+///
+/// Returns `ForkFault::PastEnd` when the parent has no entry at `at`, `ForkFault::NotWhole` when
+/// the kept entries have a gap or one that cannot be read, and `ForkFault::Plan` when they are not
+/// a session.
 pub fn fork(
     parent: &SessionId,
     rows: &[Logged],

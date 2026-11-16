@@ -32,6 +32,11 @@ use spec::ContentBox;
 
 /// `html` (a whole document) as a PDF on `spec`'s pages. The network is sealed: only `data:`
 /// URLs load, so a printout fetches nothing and reads no file.
+///
+/// # Errors
+///
+/// Returns `PdfError::NoContentArea` when the margins leave no room for content, and
+/// `PdfError::Write` when the PDF cannot be written.
 pub fn pdf(html: &str, spec: PageSpec) -> Result<Vec<u8>, PdfError> {
     let content = ContentBox::of(spec)?;
     let mut doc = html::document(html, content);
@@ -39,17 +44,30 @@ pub fn pdf(html: &str, spec: PageSpec) -> Result<Vec<u8>, PdfError> {
 }
 
 /// The logical size of `spec`'s content box: the viewport a document is laid out at to be printed.
+///
+/// # Errors
+///
+/// Returns `PdfError::NoContentArea` when the margins leave no room for content.
 pub fn content_size(spec: PageSpec) -> Result<ContentPx, PdfError> {
     Ok(ContentBox::of(spec)?.logical())
 }
 
 /// The viewport `spec`'s content box asks of a document that is laid out to be printed.
+///
+/// # Errors
+///
+/// Returns `PdfError::NoContentArea` when the margins leave no room for content.
 pub fn print_viewport(spec: PageSpec) -> Result<Viewport, PdfError> {
     Ok(ContentBox::of(spec)?.viewport())
 }
 
 /// `doc`, already laid out on [`print_viewport`] with `@media print` applied, as a PDF on
 /// `spec`'s pages.
+///
+/// # Errors
+///
+/// Returns `PdfError::NoContentArea` when the margins leave no room for content, and
+/// `PdfError::Write` when the PDF cannot be written.
 pub fn print_document(doc: &mut BaseDocument, spec: PageSpec) -> Result<Vec<u8>, PdfError> {
     let content = ContentBox::of(spec)?;
     pages::print(doc, content).map(|printed| printed.bytes)

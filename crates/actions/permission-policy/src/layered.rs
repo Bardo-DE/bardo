@@ -127,6 +127,12 @@ impl Pdp {
     /// A source that is refused is handled by its layer: person and assistant sources are left
     /// out and listed in `skipped` (the limit rules Quire generated in them are kept one by one); any bad preset source drops the whole preset for the built-in
     /// one (listed too); a bad core, built-in or administrator source is an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns `LayerError::Schema` when the schema does not parse, `LayerError::Core`,
+    /// `LayerError::BuiltIn` or `LayerError::Admin` when a source of that layer is refused, and
+    /// `LayerError::Merged` when the merged set does not validate against the schema.
     pub fn layered(schema: &str, sources: &[PolicySource]) -> Result<Layered, LayerError> {
         let (schema, _warnings) =
             Schema::from_cedarschema_str(schema).map_err(|e| LayerError::Schema(e.to_string()))?;

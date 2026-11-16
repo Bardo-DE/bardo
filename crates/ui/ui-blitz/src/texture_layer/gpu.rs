@@ -174,6 +174,11 @@ impl Gpu {
     }
 
     /// A handle showing `pixels` uploaded to a new texture.
+    ///
+    /// # Errors
+    ///
+    /// Returns `GpuError::NotReady` when the window has no GPU device yet, and `GpuError::TooLarge`
+    /// when the picture is larger than the device's largest texture.
     pub fn upload(&self, pixels: &Pixels<'_>) -> Result<TextureHandle, GpuError> {
         let handle = self.handle();
         handle.update(pixels)?;
@@ -357,6 +362,11 @@ impl TextureHandle {
     /// Show `pixels` from now on, and repaint. A picture of the size already shown is written
     /// into the same texture; another size makes a new one. Straight alpha is multiplied and RGB
     /// made opaque here (`PixelFormat`), so what the GPU holds is always premultiplied.
+    ///
+    /// # Errors
+    ///
+    /// Returns `GpuError::NotReady` when the window has no GPU device yet, and `GpuError::TooLarge`
+    /// when the picture is larger than the device's largest texture.
     pub fn update(&self, pixels: &Pixels<'_>) -> Result<(), GpuError> {
         let (device, queue, generation) = {
             let state = lock(&self.inner.gpu.state);

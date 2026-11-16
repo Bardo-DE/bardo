@@ -77,6 +77,11 @@ pub trait Clipboard {
     /// The text on `target`.
     fn read_from(&self, target: ClipboardTarget) -> Option<String>;
     /// Put `text` on `target`, or say why it was not put.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ClipboardError` when this is not called inside a document, the document has no
+    /// window shell, or the system clipboard refuses.
     fn write_to(&self, target: ClipboardTarget, text: &str) -> Result<(), ClipboardError>;
     /// The text on the regular clipboard.
     fn read_text(&self) -> Option<String> {
@@ -86,6 +91,11 @@ pub trait Clipboard {
     /// text.
     fn read_html(&self) -> Option<Pasted>;
     /// Put `text` on the regular clipboard, or say why it was not put.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ClipboardError` when this is not called inside a document, the document has no
+    /// window shell, or the system clipboard refuses.
     fn write_text(&self, text: &str) -> Result<(), ClipboardError> {
         self.write_to(ClipboardTarget::Clipboard, text)
     }
@@ -96,6 +106,11 @@ pub trait Clipboard {
     }
     /// Put `files` on the regular clipboard, or say why it was not put. The default writes their
     /// paths as text.
+    ///
+    /// # Errors
+    ///
+    /// Returns `ClipboardError` when this is not called inside a document, the document has no
+    /// window shell, or the system clipboard refuses.
     fn write_files(&self, files: &ClipboardFiles) -> Result<(), ClipboardError> {
         self.write_text(&files.to_text())
     }
@@ -233,11 +248,21 @@ pub fn write_to(target: ClipboardTarget, text: &str) -> Result<(), ClipboardErro
 }
 
 /// The text on `target`. Call it from a handler inside a ui-blitz document.
+///
+/// # Errors
+///
+/// Returns `ClipboardError` when this is not called inside a document, or the system clipboard
+/// refuses or holds no text.
 pub fn read_from(target: ClipboardTarget) -> Result<String, ClipboardError> {
     host()?.read_from(target).ok_or(ClipboardError::Unavailable)
 }
 
 /// The text on the clipboard. Call it from a handler inside a ui-blitz document.
+///
+/// # Errors
+///
+/// Returns `ClipboardError` when this is not called inside a document, or the system clipboard
+/// refuses or holds no text.
 pub fn read_text() -> Result<String, ClipboardError> {
     host()?.read_text().ok_or(ClipboardError::Unavailable)
 }
@@ -252,11 +277,21 @@ pub fn write_files(files: &ClipboardFiles) -> Result<(), ClipboardError> {
 }
 
 /// The files on the clipboard. Call it from a handler inside a ui-blitz document.
+///
+/// # Errors
+///
+/// Returns `ClipboardError` when this is not called inside a document, or the system clipboard
+/// refuses or holds no files.
 pub fn read_files() -> Result<ClipboardFiles, ClipboardError> {
     host()?.read_files().ok_or(ClipboardError::Unavailable)
 }
 
 /// The clipboard's `text/html`. Call it from a handler inside a ui-blitz document.
+///
+/// # Errors
+///
+/// Returns `ClipboardError` when this is not called inside a document, or the system clipboard
+/// refuses or holds no HTML.
 pub fn read_html() -> Result<String, ClipboardError> {
     match host()?.read_html() {
         Some(Pasted::Html { html, .. }) => Ok(html),

@@ -16,6 +16,11 @@ const MAX_REASON: usize = 200;
 /// reason. Unknown words, long reasons, reasons that carry control or reordering characters and
 /// codes that contradict the verdict are `OutOfVocabulary`; anything that is not the stage's shape
 /// at all is `Unparseable`. A failure is never an allow.
+///
+/// # Errors
+///
+/// Returns the `ReviewError` for a reply that is not in the stage's shape (`Unparseable`) or uses a
+/// word, a reason or a code outside the vocabulary (`OutOfVocabulary`).
 pub fn parse_verdict(raw: &str, stage: Stage) -> Result<ReviewVerdict, ReviewError> {
     let raw = raw.trim();
     match stage {

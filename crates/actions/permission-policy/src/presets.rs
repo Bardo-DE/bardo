@@ -19,6 +19,11 @@ pub struct Presets {
 impl Presets {
     /// The built-in core and preset: no files are read, so tests and the fake router get the
     /// same grid whatever is installed.
+    ///
+    /// # Errors
+    ///
+    /// Returns `PolicyError` if the built-in schema or policies fail to load, which is a bug in the
+    /// build.
     pub fn built_in() -> Result<Presets, PolicyError> {
         Ok(Presets {
             pdp: Pdp::built_in()?,
@@ -28,6 +33,11 @@ impl Presets {
     /// The built-in core and preset with the text of the person's and the assistant's rules
     /// files on top: what the files make when they hold exactly this. A source the layers refuse
     /// is left out, like a file on disk would be.
+    ///
+    /// # Errors
+    ///
+    /// Returns `LayerError` when the layers cannot make a policy set; a refused person or assistant
+    /// source is left out, not an error.
     pub fn with_rules(person: &str, assistant: &str) -> Result<Presets, LayerError> {
         let sources = [
             PolicySource::core(),

@@ -23,10 +23,19 @@ pub enum OpenAs {
 pub trait Opener: Send + Sync {
     /// Opens `targets` as `with` says. A failure comes back in words a person reads and the
     /// window tells it as a toast.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OpenFailure`, in words a person reads, when the files cannot be opened.
     fn open(&self, targets: Vec<PathBuf>, with: OpenAs) -> Result<(), OpenFailure>;
 
     /// Opens Accounts in Settings, for a cloud drive that needs signing in. An opener that cannot
     /// says so in words.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OpenFailure`, in words a person reads, when Accounts cannot be opened; the
+    /// default always fails.
     fn open_accounts(&self) -> Result<(), OpenFailure> {
         Err(OpenFailure(
             "Accounts can\u{2019}t be opened from here. Open Settings and choose Accounts."
@@ -36,6 +45,11 @@ pub trait Opener: Send + Sync {
 
     /// Opens an online document's address in the person's browser. An opener that cannot says
     /// so in words.
+    ///
+    /// # Errors
+    ///
+    /// Returns an `OpenFailure`, in words a person reads, when the address cannot be opened; the
+    /// default always fails.
     fn open_url(&self, _url: &OnlineUrl) -> Result<(), OpenFailure> {
         Err(OpenFailure(
             "Online documents can\u{2019}t be opened from here.".to_owned(),

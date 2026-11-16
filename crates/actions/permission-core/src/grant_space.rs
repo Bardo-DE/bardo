@@ -129,6 +129,11 @@ pub struct GrantListFault(pub String);
 /// An entry whose Space is not an id porter reads is dropped and counted (never read as "every
 /// Space"); an entry that is wrong in any other way makes the whole file a fault, so a damaged file
 /// is left alone and never rewritten.
+///
+/// # Errors
+///
+/// Returns `GrantListFault` when the text is not a list of grants, or an entry is wrong in any way
+/// other than an unreadable Space.
 pub fn decode_grants(text: &str) -> Result<Reconciled, GrantListFault> {
     let entries: Vec<serde_json::Value> =
         serde_json::from_str(text).map_err(|why| GrantListFault(why.to_string()))?;

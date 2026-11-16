@@ -45,6 +45,11 @@ impl std::fmt::Debug for Pdp {
 
 impl Pdp {
     /// Loads a schema and a policy set, validating the policies strictly against the schema.
+    ///
+    /// # Errors
+    ///
+    /// Returns `PolicyError` when the schema or a policy does not parse, or a policy does not
+    /// validate against the schema.
     pub fn load(schema: &str, policies: &str) -> Result<Pdp, PolicyError> {
         let (schema, _warnings) =
             Schema::from_cedarschema_str(schema).map_err(|e| PolicyError::Schema(e.to_string()))?;
@@ -69,6 +74,11 @@ impl Pdp {
 
     /// Loads the shipped schema with the built-in core and the built-in preset: no files are
     /// read, so tests and the fake router get the same grid whatever is installed.
+    ///
+    /// # Errors
+    ///
+    /// Returns `PolicyError` if the built-in schema or policies fail to load, which is a bug in the
+    /// build.
     pub fn built_in() -> Result<Pdp, PolicyError> {
         let sources = [PolicySource::core(), PolicySource::preset()];
         Pdp::layered(SCHEMA, &sources)

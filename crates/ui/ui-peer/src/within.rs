@@ -34,6 +34,10 @@ impl NotAnswering {
 /// `peer` is the plain name a screen would use for whoever is being waited on ("The installer",
 /// "Accounts"); it starts with a capital and names no protocol. The call is dropped, and so
 /// cancelled at its next await, when the deadline passes.
+///
+/// # Errors
+///
+/// Returns `NotAnswering` when `work` does not finish before the deadline.
 pub async fn within<T>(
     deadline: Deadline,
     peer: &'static str,

@@ -15,6 +15,10 @@ pub struct WorkspaceError;
 
 impl Workspace {
     /// `text` as a workspace.
+    ///
+    /// # Errors
+    ///
+    /// Returns `WorkspaceError` when `text` is not a valid workspace.
     pub fn parse(text: &str) -> Result<Self, WorkspaceError> {
         if text.starts_with('/') && text.len() <= 4096 && !text.chars().any(char::is_control) {
             Ok(Self(text.to_owned()))

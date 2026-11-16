@@ -163,6 +163,11 @@ pub struct Pixels<'a> {
 
 impl<'a> Pixels<'a> {
     /// `bytes` as a `width` by `height` picture in `format`.
+    ///
+    /// # Errors
+    ///
+    /// Returns `PixelsError::Empty` when the width or the height is zero, and `PixelsError::Length`
+    /// when `bytes` is not `width * height` pixels of `format` long.
     pub fn new(
         format: PixelFormat,
         width: u32,

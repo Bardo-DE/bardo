@@ -36,6 +36,11 @@ pub enum ExportFault {
 }
 
 /// The export of `session`'s rows.
+///
+/// # Errors
+///
+/// Returns `ExportFault::Unreadable` when a row cannot be read: an export that dropped it would say
+/// less than the log.
 pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, ExportFault> {
     let mut entries = Vec::new();
     for row in rows {
@@ -53,12 +58,21 @@ pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, Exp
 
 /// The document as JSON text: field order is the struct's, set order is `BTreeSet`'s, so the
 /// same export is the same bytes.
+///
+/// # Errors
+///
+/// Returns `ExportFault` when the document cannot be written as JSON.
 pub fn to_json(export: &SessionExport) -> Result<String, ExportFault> {
     serde_json::to_string_pretty(export).map_err(|_| ExportFault::Malformed)
 }
 
 /// The export in `json`; the version is read before the rest, so a newer document is
 /// `UnknownVersion`, not `Malformed`.
+///
+/// # Errors
+///
+/// Returns `ExportFault::UnknownVersion` for a document version this crate does not know, and
+/// `ExportFault::Malformed` when `json` is not a valid document of this form.
 pub fn from_json(json: &str) -> Result<SessionExport, ExportFault> {
     let doc: serde_json::Value = serde_json::from_str(json).map_err(|_| ExportFault::Malformed)?;
     let version = doc

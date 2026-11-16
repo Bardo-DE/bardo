@@ -49,6 +49,10 @@ thread_local! {
 /// The caller holds the returned guard for as long as a spawned task must keep working there.
 /// Guards may drop in any order; the runtime stays entered until the last one on the thread is
 /// gone.
+///
+/// # Errors
+///
+/// Returns the `std::io::Error` when the thread's runtime cannot be built.
 pub fn enter_runtime() -> std::io::Result<RuntimeGuard> {
     ENTRY.with(|entry| {
         let mut entry = entry.borrow_mut();

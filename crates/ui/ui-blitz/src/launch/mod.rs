@@ -264,6 +264,11 @@ fn layered(
 ///
 /// Windows it opens with [`crate::open_window`] or an [`AppHandle`] are independent of the first:
 /// closing any one closes only it.
+///
+/// # Errors
+///
+/// Returns `LaunchError::Runtime` when no tokio runtime can be started, and
+/// `LaunchError::EventLoop` when the windowing event loop cannot run.
 pub fn launch(app: fn() -> Element, config: AppConfig) -> Result<(), LaunchError> {
     run(Some(app), config)
 }
@@ -274,6 +279,11 @@ pub fn launch(app: fn() -> Element, config: AppConfig) -> Result<(), LaunchError
 /// title and size of the `config` are not used; its application id, decorations and contexts are
 /// every window's defaults). It returns when the app's policy or `AppHandle::quit` ends the loop;
 /// with [`LastWindowClosed::StayFor`] the loop's linger counts from the start.
+///
+/// # Errors
+///
+/// Returns `LaunchError::Runtime` when no tokio runtime can be started, and
+/// `LaunchError::EventLoop` when the windowing event loop cannot run.
 pub fn launch_idle(config: AppConfig) -> Result<(), LaunchError> {
     run(None, config)
 }

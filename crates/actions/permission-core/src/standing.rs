@@ -24,6 +24,10 @@ pub struct DomainFault;
 
 impl Domain {
     /// `text` as a domain.
+    ///
+    /// # Errors
+    ///
+    /// Returns `DomainFault` when `text` is not a host name.
     pub fn parse(text: &str) -> Result<Self, DomainFault> {
         let lower = text.trim_end_matches('.').to_ascii_lowercase();
         let ok = !lower.is_empty()
@@ -78,6 +82,10 @@ pub struct AddressFault;
 
 impl Recipient {
     /// `text` as an address.
+    ///
+    /// # Errors
+    ///
+    /// Returns `AddressFault` when `text` is not an address.
     pub fn address(text: &str) -> Result<Self, AddressFault> {
         let lower = text.trim().to_ascii_lowercase();
         match lower.split_once('@') {
@@ -140,6 +148,11 @@ fn plain(text: &str) -> bool {
 
 impl CommandPrefix {
     /// `text` as a prefix.
+    ///
+    /// # Errors
+    ///
+    /// Returns `CommandFault` when `text` is empty or holds a control character or a shell
+    /// operator.
     pub fn parse(text: &str) -> Result<Self, CommandFault> {
         if !plain(text) {
             return Err(CommandFault::Shell);
@@ -299,6 +312,10 @@ impl StandingGrantId {
     }
 
     /// `text` as an id.
+    ///
+    /// # Errors
+    ///
+    /// Returns `StandingIdFault` when `text` is not a standing grant id.
     pub fn parse(text: &str) -> Result<Self, StandingIdFault> {
         match text.strip_prefix("sg-") {
             Some(hex)
@@ -390,6 +407,10 @@ pub enum StandingFileFault {
 }
 
 /// The grants a file's text holds: an empty text is none.
+///
+/// # Errors
+///
+/// Returns `StandingFileFault::Decode` when a non-empty text is not a list of standing grants.
 pub fn decode_standing(text: &str) -> Result<Vec<StandingGrant>, StandingFileFault> {
     match text.trim() {
         "" => Ok(Vec::new()),
@@ -401,6 +422,10 @@ pub fn decode_standing(text: &str) -> Result<Vec<StandingGrant>, StandingFileFau
 
 /// The text of a list of grants. An error is never turned into an empty list: that would
 /// overwrite every grant held.
+///
+/// # Errors
+///
+/// Returns `StandingFileFault::Encode` when the grants cannot be turned into text.
 pub fn encode_standing(grants: &[StandingGrant]) -> Result<String, StandingFileFault> {
     serde_json::to_string_pretty(grants).map_err(|why| StandingFileFault::Encode(why.to_string()))
 }

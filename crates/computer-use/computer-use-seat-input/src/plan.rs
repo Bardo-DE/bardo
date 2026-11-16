@@ -276,6 +276,12 @@ fn type_ops(
 /// up, a chord is modifiers down, key down and up (repeated), modifiers up. Refuses a point outside
 /// the window. A `Target::Centre` is the centre of `action.window` (`centre_of`); a node is the
 /// point the caller resolved in `action.at`. Pure.
+///
+/// # Errors
+///
+/// Returns `PlanError` when the action is not input, a target lies outside the window or is an
+/// accessibility node the caller did not resolve to a point, or a character or chord key cannot be
+/// typed with the keymap.
 pub fn plan(
     action: &PlannedAction,
     keymap: &Keymap,

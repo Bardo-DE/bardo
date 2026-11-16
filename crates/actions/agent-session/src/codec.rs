@@ -45,6 +45,10 @@ pub struct Encoded {
 pub struct EncodeFault;
 
 /// An entry at position `seq` in the stored form.
+///
+/// # Errors
+///
+/// Returns `EncodeFault` when the entry cannot be written as JSON.
 pub fn encode(seq: Seq, entry: &SessionEntry) -> Result<Encoded, EncodeFault> {
     if matches!(entry, SessionEntry::Unknown(_)) {
         return Err(EncodeFault);

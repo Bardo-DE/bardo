@@ -148,6 +148,10 @@ impl Keymap {
     /// codes are evdev codes (an xkb keycode is the evdev code plus 8). Rows come in key code
     /// order, a key's plain row before its shifted one. The parse reads no file and no
     /// environment variable.
+    ///
+    /// # Errors
+    ///
+    /// Returns `KeymapError::Malformed` when `text` is not an xkb keymap.
     pub fn parse_xkb(text: &str) -> Result<Keymap, KeymapError> {
         let context =
             xkb::Context::new(xkb::CONTEXT_NO_DEFAULT_INCLUDES | xkb::CONTEXT_NO_ENVIRONMENT_NAMES);

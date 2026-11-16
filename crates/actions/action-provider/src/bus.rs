@@ -177,6 +177,11 @@ where
 ///
 /// Only intentd's unit (`bardo-actiond.service`, by its main process, over the system's `/proc`) is
 /// answered. Returns once the name is ours; the connection keeps serving.
+///
+/// # Errors
+///
+/// Returns `ServeError::Bus` when the bus refuses or fails, and `ServeError::Taken` when another
+/// process already owns the app's bus name.
 pub async fn serve_on<P, C, S>(
     connection: &BusConnection,
     provider: P,
@@ -194,6 +199,10 @@ where
 
 /// [`serve_on`], answering the process that `callers` names as intentd (a test's fake proc root,
 /// or a host with a table of its own).
+///
+/// # Errors
+///
+/// Returns the same errors as `serve_on`.
 pub async fn serve_on_with<P, C, S, K>(
     connection: &BusConnection,
     provider: P,
