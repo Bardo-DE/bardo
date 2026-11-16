@@ -268,7 +268,7 @@ fn entries_that_are_not_apps_are_refused() {
             EntryError::NotAnApp(_) => "NotAnApp",
             EntryError::NoCommand(_) => "NoCommand",
             EntryError::NoEntry => "NoEntry",
-            EntryError::Unreadable => "Unreadable",
+            EntryError::Unreadable(_) => "Unreadable",
         };
         assert_eq!(kind, want, "{text}");
     }

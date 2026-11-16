@@ -59,8 +59,7 @@ async fn serve<W: Window>(
 ) -> Result<(), IntentError> {
     let manifest = load_manifest()?;
     let app = AppName::parse(APP_BUS_NAME)
-        .ok()
-        .ok_or_else(|| IntentError::Manifest("bad app name".to_owned()))?;
+        .map_err(|e| IntentError::Manifest(format!("bad app name: {e}")))?;
     let provider = Files { manifest, window };
     serve_on_with(
         connection,

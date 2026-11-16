@@ -178,7 +178,7 @@ impl DesktopClouds {
 fn failed(error: StorageError) -> CloudError {
     match error {
         StorageError::Bus(_) => CloudError::Unavailable,
-        StorageError::Missing(_) | StorageError::Unknown { .. } | StorageError::Path(_) => {
+        StorageError::Missing(_) | StorageError::Unknown { .. } | StorageError::Path { .. } => {
             CloudError::Unreadable
         }
     }

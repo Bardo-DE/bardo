@@ -18,6 +18,12 @@ pub enum StorageError {
         word: String,
     },
     /// An answer names a path that is not a full path.
-    #[error("A cloud answer holds {0:?}, which is not a full path.")]
-    Path(String),
+    #[error("A cloud answer holds {path:?}, which is not a full path.")]
+    Path {
+        /// The text of the path.
+        path: String,
+        /// Why it is not one.
+        #[source]
+        source: Box<dyn std::error::Error + Send + Sync>,
+    },
 }
