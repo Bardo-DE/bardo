@@ -62,6 +62,10 @@ impl<E: Ports> Accounts<'_, E> {
         let Ok(id) = AccountId::parse(provider.as_str()) else {
             return Err(LocalFault::UnknownProvider);
         };
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "Refusal carries nothing beyond the failure; transact has logged why the registry could not be saved"
+        )]
         self.ctx
             .transact(|registry| {
                 let capabilities = registry.effective_for(&id, &models);
@@ -87,8 +91,7 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((Vec::new(), ()))
             })
             .await
-            .ok()
-            .ok_or(LocalFault::Unavailable)?;
+            .map_err(|_| LocalFault::Unavailable)?;
         Ok(id)
     }
 }

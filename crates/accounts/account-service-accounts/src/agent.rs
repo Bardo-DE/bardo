@@ -27,6 +27,10 @@ impl<E: Ports> Accounts<'_, E> {
         account: &AccountId,
         state: AccountState,
     ) -> Result<bool, AgentFault> {
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "Refusal carries nothing beyond the failure; transact has logged why the registry could not be saved"
+        )]
         let written = self
             .ctx
             .transact(|registry| {
@@ -49,8 +53,7 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((lines, Ok(changed)))
             })
             .await
-            .ok()
-            .ok_or(AgentFault::Unavailable)?;
+            .map_err(|_| AgentFault::Unavailable)?;
         written.value
     }
 }

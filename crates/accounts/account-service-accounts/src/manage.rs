@@ -221,6 +221,10 @@ impl<E: Ports> Accounts<'_, E> {
         // deleted. A wipe dropped while it awaits the secrets therefore leaves no account
         // without its credentials; at worst credentials with no account, which nothing reads.
         // A registry that cannot be saved ends the wipe before anything is deleted.
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "Refusal carries nothing beyond the failure; transact has logged why the registry could not be saved"
+        )]
         let taken = self
             .ctx
             .transact(|registry| {
@@ -239,8 +243,7 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((Vec::new(), (gone, dropped, off)))
             })
             .await
-            .ok()
-            .ok_or(SecretsError::Unavailable)?;
+            .map_err(|_| SecretsError::Unavailable)?;
         if let Err(why) = self.ctx.secrets().delete_account(id).await {
             let (accounts, grants, toggles) = taken.value;
             // Put back, unless another sign-in has made the id its own meanwhile. If that cannot

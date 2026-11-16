@@ -507,9 +507,11 @@ fn hop(
 
 fn session_url(answers: &[FieldAnswer]) -> Result<EndpointUrl, FieldProblem> {
     let typed = text(answers, FieldKind::SessionUrl).ok_or(missing(FieldKind::SessionUrl))?;
-    let url = EndpointUrl::parse(&typed)
-        .ok()
-        .ok_or(invalid(FieldKind::SessionUrl))?;
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a field problem names the field and what is wrong with the typed text, not why the parse refused it"
+    )]
+    let url = EndpointUrl::parse(&typed).map_err(|_| invalid(FieldKind::SessionUrl))?;
     let origin = url.origin();
     match origin.scheme {
         UrlScheme::Https => Ok(url),
