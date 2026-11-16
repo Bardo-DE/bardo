@@ -30,9 +30,7 @@ pub fn session_text(response: &Response<Vec<u8>>) -> Result<&str, Error> {
         500..=599 => return Err(Error::Unreachable),
         _ => return Err(Error::Unreadable),
     }
-    std::str::from_utf8(response.body())
-        .ok()
-        .ok_or(Error::Unreadable)
+    std::str::from_utf8(response.body()).map_err(Error::Text)
 }
 
 /// The session's endpoints, logged in as `login`: the session names the login it knows the
@@ -68,23 +66,35 @@ mod tests {
         assert_eq!(request.method(), "GET");
         assert!(request.headers().contains_key(http::header::AUTHORIZATION));
         let plain = EndpointUrl::parse("http://jmap.example.test/").unwrap();
-        assert_eq!(
+        assert!(matches!(
             super::request(&plain, HeaderValue::from_static("x")).unwrap_err(),
             Error::Insecure
-        );
+        ));
     }
 
     #[test]
     fn a_reply_is_a_session_text_a_refusal_or_a_failure() {
-        assert_eq!(session_text(&reply(200, b"{}")), Ok("{}"));
-        assert_eq!(session_text(&reply(401, b"")), Err(Error::Refused));
-        assert_eq!(session_text(&reply(403, b"")), Err(Error::Refused));
-        assert_eq!(session_text(&reply(502, b"")), Err(Error::Unreachable));
-        assert_eq!(session_text(&reply(404, b"")), Err(Error::Unreadable));
-        assert_eq!(
-            session_text(&reply(200, &[0xff, 0xfe])),
+        assert!(matches!(session_text(&reply(200, b"{}")), Ok("{}")));
+        assert!(matches!(
+            session_text(&reply(401, b"")),
+            Err(Error::Refused)
+        ));
+        assert!(matches!(
+            session_text(&reply(403, b"")),
+            Err(Error::Refused)
+        ));
+        assert!(matches!(
+            session_text(&reply(502, b"")),
+            Err(Error::Unreachable)
+        ));
+        assert!(matches!(
+            session_text(&reply(404, b"")),
             Err(Error::Unreadable)
-        );
+        ));
+        assert!(matches!(
+            session_text(&reply(200, &[0xff, 0xfe])),
+            Err(Error::Text(_))
+        ));
     }
 
     #[test]

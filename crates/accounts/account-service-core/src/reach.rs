@@ -70,12 +70,16 @@ pub fn declared_endpoint(
         .find(|e| bare && e.url.origin().scheme == dialled.scheme && names(e))
         .ok_or(Refusal::EndpointNotGranted)?;
     let endpoint = ServiceEndpoint {
-        url: EndpointUrl::parse(&dialled.to_string())
-            .ok()
-            .ok_or(Refusal::EndpointNotGranted)?,
+        url: EndpointUrl::parse(&dialled.to_string()).map_err(|error| {
+            tracing::warn!(%error, "the dialled address is not an endpoint url");
+            Refusal::EndpointNotGranted
+        })?,
         ..home.clone()
     };
-    endpoint.check().ok().ok_or(Refusal::EndpointNotGranted)?;
+    endpoint.check().map_err(|error| {
+        tracing::warn!(%error, "the dialled endpoint is not usable");
+        Refusal::EndpointNotGranted
+    })?;
     Ok(endpoint)
 }
 

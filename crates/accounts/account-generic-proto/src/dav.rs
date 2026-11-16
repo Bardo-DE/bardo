@@ -79,7 +79,7 @@ pub fn probe(
     url: &EndpointUrl,
     authorization: HeaderValue,
 ) -> Result<(Walk, Request<Vec<u8>>), Error> {
-    let uri: Uri = web(url)?.as_str().parse().ok().ok_or(Error::Unreadable)?;
+    let uri: Uri = web(url)?.as_str().parse().map_err(Error::Uri)?;
     let (walk, mut request) = Walk::start(uri, Reach::Principal, &[], Scope::SameOrigin);
     request.headers_mut().insert(AUTHORIZATION, authorization);
     Ok((walk, request))
@@ -94,7 +94,7 @@ pub fn probe(
 /// failed with a 5xx.
 pub fn accepted(walk: &mut Walk, response: &Response<Vec<u8>>) -> Result<bool, Error> {
     match walk.advance(response) {
-        Ok(_) | Err(WalkError::Unreadable) => Ok(true),
+        Ok(_) | Err(WalkError::Unreadable(_)) => Ok(true),
         Err(WalkError::Unauthorized) => Err(Error::Refused),
         Err(WalkError::Status(500..=599)) => Err(Error::Unreachable),
         Err(_) => Ok(false),

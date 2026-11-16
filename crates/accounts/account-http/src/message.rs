@@ -26,7 +26,10 @@ pub fn request(method: Method, url: &WebUrl) -> Builder {
 /// # Errors
 /// [`HttpError::Malformed`] when the URL is not one the `http` crate takes as a URI.
 pub fn uri(url: &WebUrl) -> Result<Uri, HttpError> {
-    url.as_str().parse().ok().ok_or(HttpError::Malformed)
+    url.as_str().parse().map_err(|error| {
+        tracing::warn!(%error, "the url is not a uri");
+        HttpError::Malformed
+    })
 }
 
 /// A request to an endpoint's URL. A scheme that is not HTTP is `Malformed`, and plain `http`
@@ -46,12 +49,13 @@ pub fn request_to(method: Method, url: &EndpointUrl) -> Result<Builder, HttpErro
 /// [`HttpError::Malformed`] when the scheme is not HTTP; [`HttpError::Tls`] for plain `http` to
 /// another computer.
 pub fn web_url(url: &EndpointUrl) -> Result<WebUrl, HttpError> {
-    WebUrl::try_from(url)
-        .ok()
-        .ok_or_else(|| match url.origin().scheme {
+    WebUrl::try_from(url).map_err(|error| {
+        tracing::warn!(%error, "the endpoint is not a web url");
+        match url.origin().scheme {
             UrlScheme::Http => HttpError::Tls,
             _ => HttpError::Malformed,
-        })
+        }
+    })
 }
 
 /// A header whose value is a credential: marked sensitive, so the request's `Debug` shows

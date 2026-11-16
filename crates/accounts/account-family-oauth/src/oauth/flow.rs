@@ -159,7 +159,12 @@ impl AuthorizePlan {
             &self.grant.scopes,
             ask,
         );
-        WebUrl::parse(&target).ok().ok_or(SignInFault::Unreadable)
+        // The URL carries the PKCE challenge and state, so its text stays out of the log.
+        let Ok(url) = WebUrl::parse(&target) else {
+            tracing::warn!("the authorize address is not a web url");
+            return Err(SignInFault::Unreadable);
+        };
+        Ok(url)
     }
 }
 
@@ -184,10 +189,10 @@ impl<R: BrowserIssuer, H: Http + 'static> BrowserFlow<R, H> {
             self.env.channel,
             random,
         )?;
-        let server = LoopbackServer::bind()
-            .await
-            .ok()
-            .ok_or(SignInFault::Unreachable)?;
+        let server = LoopbackServer::bind().await.map_err(|error| {
+            tracing::warn!(%error, "could not open the loopback listener");
+            SignInFault::Unreachable
+        })?;
         let redirect = server.redirect_uri();
         let url = plan.authorize(&redirect, &AuthorizeAsk::of(&self.start))?;
         let expected: OAuthState = plan.pkce.state.clone();

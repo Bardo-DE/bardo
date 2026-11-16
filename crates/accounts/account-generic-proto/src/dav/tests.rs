@@ -40,14 +40,14 @@ fn the_probe_asks_for_the_principal_with_the_credential() {
         body.contains("current-user-principal") && !body.contains("home-set"),
         "{body}"
     );
-    assert_eq!(
+    assert!(matches!(
         probe(
             &url("http://dav.example.test"),
             HeaderValue::from_static("x")
         )
         .unwrap_err(),
         Error::Insecure
-    );
+    ));
 }
 
 #[test]
@@ -60,13 +60,16 @@ fn the_probe_is_accepted_by_any_success_refused_or_failed_by_its_status() {
         .unwrap();
         accepted(&mut walk, &reply(status, body))
     };
-    assert_eq!(answer(207, "<d:multistatus xmlns:d=\"DAV:\"/>"), Ok(true));
-    assert_eq!(answer(200, "<html/>"), Ok(true));
-    assert_eq!(answer(401, ""), Err(Error::Refused));
-    assert_eq!(answer(403, ""), Err(Error::Refused));
-    assert_eq!(answer(503, ""), Err(Error::Unreachable));
-    assert_eq!(answer(404, ""), Ok(false));
-    assert_eq!(answer(301, ""), Ok(false));
+    assert!(matches!(
+        answer(207, "<d:multistatus xmlns:d=\"DAV:\"/>"),
+        Ok(true)
+    ));
+    assert!(matches!(answer(200, "<html/>"), Ok(true)));
+    assert!(matches!(answer(401, ""), Err(Error::Refused)));
+    assert!(matches!(answer(403, ""), Err(Error::Refused)));
+    assert!(matches!(answer(503, ""), Err(Error::Unreachable)));
+    assert!(matches!(answer(404, ""), Ok(false)));
+    assert!(matches!(answer(301, ""), Ok(false)));
 }
 
 #[test]

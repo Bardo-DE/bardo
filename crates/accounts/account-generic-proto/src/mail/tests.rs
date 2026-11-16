@@ -128,10 +128,10 @@ fn plain_is_for_loopback_only() {
         hop("smtp.example.org", 587, Tls::StartTls),
         None,
     );
-    assert_eq!(
+    assert!(matches!(
         typed(Family::Imap, &elsewhere, "ada@example.org", &spec()).err(),
         Some(Error::Unreadable)
-    );
+    ));
 }
 
 #[test]

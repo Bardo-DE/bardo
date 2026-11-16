@@ -25,7 +25,12 @@ fn fault(error: account_generic_proto::Error) -> account_sheet::SignInFault {
         account_generic_proto::Error::Unreachable | account_generic_proto::Error::Insecure => {
             SignInFault::Unreachable
         }
-        account_generic_proto::Error::Unreadable => SignInFault::Unreadable,
+        account_generic_proto::Error::Unreadable
+        | account_generic_proto::Error::Url(_)
+        | account_generic_proto::Error::Uri(_)
+        | account_generic_proto::Error::Request(_)
+        | account_generic_proto::Error::Text(_)
+        | account_generic_proto::Error::Endpoint(_) => SignInFault::Unreadable,
     }
 }
 

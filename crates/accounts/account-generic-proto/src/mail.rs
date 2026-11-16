@@ -133,18 +133,14 @@ pub fn fixed(
         .iter()
         .filter_map(|row| row.endpoint.as_ref().map(|url| (row.family, url)))
         .map(|(family, url)| {
-            let url = EndpointUrl::parse(url).ok().ok_or(Error::Unreadable)?;
+            let url = EndpointUrl::parse(url).map_err(Error::Url)?;
             let endpoint = ServiceEndpoint {
                 family,
                 tls: tls_of_scheme(&url).ok_or(Error::Unreadable)?,
                 url,
                 login: login.clone(),
             };
-            endpoint
-                .check()
-                .map(|()| endpoint)
-                .ok()
-                .ok_or(Error::Unreadable)
+            endpoint.check().map(|()| endpoint).map_err(Error::Endpoint)
         })
         .collect::<Result<Vec<_>, _>>()?;
     if endpoints.is_empty() {

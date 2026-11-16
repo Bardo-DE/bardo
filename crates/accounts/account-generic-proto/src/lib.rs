@@ -19,14 +19,14 @@ pub mod jmap;
 pub mod mail;
 
 use account_capability::{Claim, Offer, Provenance, Subject};
-use account_core::EndpointUrl;
+use account_core::{CoreError, EndpointFault, EndpointUrl};
 use account_provider::ProviderSpec;
 use base_url::{UrlScheme, WebUrl};
 use http::header::AUTHORIZATION;
 use http::{HeaderValue, Request};
 
 /// Why a request could not be built or a reply could not be used.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// The server refused the credential (401 or 403).
     #[error("the server refused the account")]
@@ -40,16 +40,29 @@ pub enum Error {
     /// A reply, an address or a form that is not what the protocol says.
     #[error("not what the protocol says")]
     Unreadable,
+    /// An address that is not a URL an endpoint can use.
+    #[error("not an address the account can use")]
+    Url(#[source] CoreError),
+    /// A URL that is not a URI the `http` crate takes.
+    #[error("not a URI")]
+    Uri(#[source] http::uri::InvalidUri),
+    /// A request the `http` crate would not build.
+    #[error("the request could not be built")]
+    Request(#[source] http::Error),
+    /// A reply that is not text.
+    #[error("the reply is not text")]
+    Text(#[source] std::str::Utf8Error),
+    /// An endpoint whose security does not go with its address.
+    #[error("not an endpoint the account can use")]
+    Endpoint(#[source] EndpointFault),
 }
 
 /// `url` as a web URL: `https`, or `http` to this computer.
 pub(crate) fn web(url: &EndpointUrl) -> Result<WebUrl, Error> {
-    WebUrl::try_from(url)
-        .ok()
-        .ok_or_else(|| match url.origin().scheme {
-            UrlScheme::Http => Error::Insecure,
-            _ => Error::Unreadable,
-        })
+    WebUrl::try_from(url).map_err(|error| match url.origin().scheme {
+        UrlScheme::Http => Error::Insecure,
+        _ => Error::Url(error.into()),
+    })
 }
 
 /// A `GET` or other bodiless request to `url`, with `authorization` when given.
@@ -63,8 +76,7 @@ pub(crate) fn bodiless(
         .method(method)
         .uri(url.as_str())
         .body(Vec::new())
-        .ok()
-        .ok_or(Error::Unreadable)?;
+        .map_err(Error::Request)?;
     if let Some(authorization) = authorization {
         request.headers_mut().insert(AUTHORIZATION, authorization);
     }

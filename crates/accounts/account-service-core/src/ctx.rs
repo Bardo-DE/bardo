@@ -334,11 +334,10 @@ impl<E: Ports> Ctx<E> {
                 changed: false,
             });
         }
-        self.store
-            .save(&after.persisted())
-            .await
-            .ok()
-            .ok_or(Refusal::Unavailable)?;
+        self.store.save(&after.persisted()).await.map_err(|error| {
+            tracing::warn!(%error, "could not save the accounts");
+            Refusal::Unavailable
+        })?;
         let listeners: Vec<Told> = self
             .committed
             .lock()

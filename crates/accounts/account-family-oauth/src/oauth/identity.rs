@@ -21,9 +21,10 @@ pub(crate) async fn userinfo_address<H: Http>(
 ) -> Result<String, ProviderError> {
     let answer = get(http, userinfo.as_str(), token).await?;
     let info: UserInfo = match answer.status().as_u16() {
-        200..=299 => serde_json::from_slice(answer.body())
-            .ok()
-            .ok_or(ProviderError::Unreadable)?,
+        200..=299 => serde_json::from_slice(answer.body()).map_err(|error| {
+            tracing::warn!(%error, "the userinfo answer is not json");
+            ProviderError::Unreadable
+        })?,
         status => return Err(fault(status)),
     };
     info.email
@@ -60,10 +61,10 @@ pub(crate) async fn get<H: Http>(
     token: &str,
 ) -> Result<Response<Vec<u8>>, ProviderError> {
     let request = bearer_get(url, token).map_err(failure)?;
-    http.send(request)
-        .await
-        .ok()
-        .ok_or(ProviderError::Unreachable)
+    http.send(request).await.map_err(|error| {
+        tracing::warn!(%error, "the userinfo request failed");
+        ProviderError::Unreachable
+    })
 }
 
 #[cfg(test)]
