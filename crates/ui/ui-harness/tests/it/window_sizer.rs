@@ -5,8 +5,7 @@
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_blitz::{
-    Extent, Reserve, ScreenArea, ScreenOf, SizeOrigin, SizeRequest, WindowSizer, WorkBasis,
-    use_window_sizer,
+    Extent, Reserve, ScreenArea, ScreenOf, SizeOrigin, SizeRequest, WorkBasis, use_window_sizer,
 };
 use ui_harness::{Clock, Harness, HarnessConfig, Input, SizerAck, Viewport, WindowScreen};
 
@@ -25,7 +24,7 @@ fn ms(n: u64) -> Duration {
 
 /// Two buttons that each ask for a size, and what the sizer says about the request and the
 /// origin, drawn so a re-render is visible.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Sizing() -> Element {
     let Some(sizer) = use_window_sizer() else {
         return rsx! { p { id: "sizer", "absent" } };
@@ -275,6 +274,6 @@ fn the_window_reports_the_output_the_test_chose() {
         Sizing,
         HarnessConfig::new(VIEW).with_window_screen(WindowScreen::Area(panel)),
     );
-    let sizer: WindowSizer = given.window_sizer();
+    let sizer = given.window_sizer();
     assert_eq!(sizer.screen(), Some(panel));
 }

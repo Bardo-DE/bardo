@@ -325,14 +325,15 @@ fn opening_refreshing_closing_and_clearing_are_per_space() {
     assert!(live(&today, 0, at(5)).is_empty());
 }
 
+#[expect(clippy::cast_possible_wrap, reason = "test hours are small")]
 #[test]
 fn entries_expire_twelve_hours_after_they_were_opened_and_parked_things_never_do() {
+    const CASES: &[(u64, usize)] = &[(0, 1), (11, 1), (12, 1)];
     let mut today: Today<u32, u8> = Today::default();
     today.opened(SpaceId(0), 1, at(0));
     today.park(SpaceId(0), 9, "Draft", at(0));
     let hours = |h: u64| at((h * 3600) as i64);
     // (now, entries live, left)
-    const CASES: &[(u64, usize)] = &[(0, 1), (11, 1), (12, 1)];
     for &(h, count) in CASES {
         assert_eq!(today.live(SpaceId(0), hours(h)).len(), count, "{h} h");
     }

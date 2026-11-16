@@ -1,14 +1,16 @@
 //! A Space's colours handed to one of quire's own dots as custom properties, so the stylesheet
-//! paints them. Writing `background:linear-gradient(…#hex…)` inline was a literal
-//! colour past the stylesheet, which quire's own markup lint flags (`Rule::HexColour`); a
-//! custom property on a `ds-*` element is how quire hands a per-instance value to its sheet,
-//! as `FrameVars` does for `--f-*`.
+//! paints them.
+//!
+//! Writing `background:linear-gradient(…#hex…)` inline was a literal colour past the stylesheet,
+//! which quire's own markup lint flags (`Rule::HexColour`); a custom property on a `ds-*` element
+//! is how quire hands a per-instance value to its sheet, as `FrameVars` does for `--f-*`.
 //!
 //! The stops are `--dot-c1`, `--dot-c2`, `--dot-c3`, and `data-stops` says how many there are,
 //! so the sheet draws the same `135deg` gradient [`super::gradient`] writes: one colour flat,
 //! two at 0 % and 100 %, three at 0 %, 50 % and 100 %.
 
 use crate::tokens::name::VarName;
+use std::fmt::Write as _;
 
 /// The custom properties a dot's paint writes, in order.
 pub(crate) const DOT_VARS: [VarName; 3] = [
@@ -70,8 +72,11 @@ impl DotPaint {
         DOT_VARS
             .iter()
             .zip(colours)
-            .map(|(var, colour)| format!("{}:{colour};", var.as_str()))
-            .collect()
+            .fold(String::new(), |mut out, (var, colour)| {
+                // Writing to a `String` cannot fail.
+                let _ = write!(out, "{}:{colour};", var.as_str());
+                out
+            })
     }
 }
 

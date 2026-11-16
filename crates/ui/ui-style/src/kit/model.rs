@@ -31,8 +31,9 @@ pub struct Section {
     pub css: fn(&Kits) -> Cow<'static, str>,
 }
 
-/// One component's stylesheet, contributed by a crate that owns components the `components`
-/// section does not list, and placed in it right after the sheet called `after` (or after another
+/// One component's stylesheet, contributed by a crate that owns components the list lacks.
+///
+/// It is placed in the `components` section right after the sheet called `after` (or after another
 /// contributed sheet of that name). The place is the cascade order the sheet had when it was one of
 /// the components' own, so a crate above `ds` adds sheets without changing what wins.
 #[derive(Debug, Clone, Copy)]

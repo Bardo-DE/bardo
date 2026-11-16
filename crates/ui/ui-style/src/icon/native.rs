@@ -1,6 +1,8 @@
 //! The owner's per-glyph style picks (2026-10-09, design/08-ICONS.md section 1.2): how each
-//! [`Icon`] is drawn when a caller does not say. One row per glyph, in `Icon`'s own order; a
-//! test walks `Icon::ALL` and fails on a glyph with no row.
+//! [`Icon`] is drawn when a caller does not say.
+//!
+//! One row per glyph, in `Icon`'s own order; a test walks `Icon::ALL` and fails on a glyph with no
+//! row.
 
 use super::Icon;
 use super::drawn;

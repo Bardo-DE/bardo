@@ -1,6 +1,7 @@
-//! Shadows (design/03-COLOR.md section 10 and 17.2): the two elevation tokens, the plan's
-//! `--shadow-pop` and `--shadow-sheet`, C's `--shadow-drag`, and the one-off literals
-//! design/04-COMPONENTS.md O-3 says the table must absorb.
+//! Shadows (design/03-COLOR.md section 10 and 17.2).
+//!
+//! The two elevation tokens, the plan's `--shadow-pop` and `--shadow-sheet`, C's `--shadow-drag`,
+//! and the one-off literals design/04-COMPONENTS.md O-3 says the table must absorb.
 //!
 //! Values are design/03-COLOR.md section 10 (`S`) and C's `--shadow-drag` (section 16);
 //! `--shadow-pop` and `--shadow-sheet` take section 17.2's proposed values, and the names past

@@ -142,6 +142,10 @@ const PILL_LIGHT: &str = "rgba(255,255,255,.72)";
 ///
 /// An empty list is the neutral dot (hue 250, chroma 0.06), the same grey as
 /// the last of the eight presets. `scheme` selects the light or the dark frame.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a dot or stop index is a few dozen at most, exact in f64, and a stop's percent is 0..=100"
+)]
 #[must_use]
 pub fn derive(dots: &[Dot], scheme: Scheme) -> Palette {
     let dark = scheme == Scheme::Dark;
@@ -229,6 +233,11 @@ pub fn derive(dots: &[Dot], scheme: Scheme) -> Palette {
 /// The Space's own accent: the settled band at its first dot's hue, weighted by that
 /// dot's chroma, so a grey Space lends a grey-blue (design/03-COLOR.md section 20). The one
 /// derivation every accent shares; it replaced mailo's `oklch(aL, .045 + .035k, h0)`.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a dot's hue is clamped to 0..360 and its chroma to 0..=1 before the casts"
+)]
 fn space_accent(hue: f64, chroma: f64, scheme: Scheme) -> AccentRoles {
     // A dot's hue is 0..360 and its chroma 0..1; both land in range after the clamp.
     let degrees = hue.rem_euclid(360.0).round() as u16 % 360;
@@ -261,6 +270,11 @@ pub fn swatch(dot: Dot, scheme: Scheme) -> String {
 ///
 /// One stop is repeated, so a single-colour Space is still a gradient. Several
 /// stops are spread from 0% to 100%.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    reason = "a dot or stop index is a few dozen at most, exact in f64, and a stop's percent is 0..=100"
+)]
 pub fn gradient(palette: &Palette) -> String {
     let stops = &palette.stops;
     if stops.len() <= 1 {

@@ -1,6 +1,8 @@
-//! The standard file-icon set as data (design/08-ICONS.md section 2.12, the customization
-//! design's section 6.1): the closed list of file kinds with a mark and a colour each, the
-//! special folders with the glyph embossed on the folder, and the extension label.
+//! The standard file-icon set as data (design/08-ICONS.md section 2.12, the customization design's
+//! section 6.1).
+//!
+//! The closed list of file kinds with a mark and a colour each, the special folders with the glyph
+//! embossed on the folder, and the extension label.
 //!
 //! Pure data. `ui_components::FileIcon` draws it; the lookup from a MIME type to a kind is in [`super::mime`].
 

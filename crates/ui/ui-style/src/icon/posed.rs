@@ -1,8 +1,9 @@
 //! A glyph drawn with its parts moved: the frame of a part effect or a draw-on, as an `svg` whose
-//! moving shapes sit in a `g` carrying the pose (design/35-SYMBOL-EFFECTS.md). Blitz's stylesheet
-//! does not reach inside an SVG, so motion that moves a piece of one is written as attributes,
-//! frame by frame, like `MorphGlyph`'s slash. The glyph is solid: its parts are the filled
-//! shapes of [`Icon::solid_parts`], and a draw-on wipes it in from the left.
+//! moving shapes sit in a `g` carrying the pose (design/35-SYMBOL-EFFECTS.md).
+//!
+//! Blitz's stylesheet does not reach inside an SVG, so motion that moves a piece of one is written
+//! as attributes, frame by frame, like `MorphGlyph`'s slash. The glyph is solid: its parts are the
+//! filled shapes of [`Icon::solid_parts`], and a draw-on wipes it in from the left.
 
 use super::Icon;
 use super::parts::{Part, Tenths};
@@ -90,6 +91,10 @@ fn transform(part: &Part, pose: PartPose) -> Option<String> {
 /// `icon` at `size` with each of its [`Icon::parts`] at the pose given in the same order (a part
 /// past the poses rests), wiped in from the left `drawn` thousandths of the way. The shapes in no
 /// part never move.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "the draw share is clamped to 0..=1000, exact in f32"
+)]
 #[component]
 pub fn PosedGlyph(
     icon: Icon,

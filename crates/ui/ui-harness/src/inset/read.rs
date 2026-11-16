@@ -23,7 +23,7 @@ pub fn read(doc: &BaseDocument) -> Scene {
     let root = doc.root_element().id;
     walk.visit(
         root,
-        Around {
+        &Around {
             ground: Ground::page(),
             opacity: 1.0,
             owner: None,
@@ -60,7 +60,7 @@ struct Walk<'a> {
 }
 
 impl Walk<'_> {
-    fn visit(&mut self, id: NodeId, around: Around) {
+    fn visit(&mut self, id: NodeId, around: &Around) {
         let Some(node) = self.doc.get_node(id) else {
             return;
         };
@@ -121,11 +121,15 @@ impl Walk<'_> {
             self.layouts.push((id, (inner.owner, inner.placed)));
         }
         for &child in &node.children {
-            self.visit(child, inner.clone());
+            self.visit(child, &inner);
         }
     }
 
     /// `around` with the box `node` makes, if it paints an edge.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout rectangles are in logical pixels, far inside f32's range and precision"
+    )]
     fn boxed(&mut self, id: NodeId, node: &Node, around: Around) -> Around {
         let Some(found) = painted(node, &around.ground) else {
             return around;
@@ -162,6 +166,10 @@ impl Walk<'_> {
         }
     }
 
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout rectangles are in logical pixels, far inside f32's range and precision"
+    )]
     fn glyph(&mut self, id: NodeId, node: &Node, owner: Option<usize>, path: &str) {
         let (Some(owner), Some(rect)) = (owner, self.doc.get_client_bounding_rect(id)) else {
             return;

@@ -1,6 +1,8 @@
-//! The spacing scale (design/01-LAYOUT.md section 2): every padding, gap and margin in `S`'s
-//! app surfaces is one of these steps. The scale is dense, not a geometric ramp, so each token
-//! is named by its own pixel value: `--s-8` is 8 px, `--s-1-5` is 1.5 px.
+//! The spacing scale (design/01-LAYOUT.md section 2): every padding, gap and margin in `S`'s app
+//! surfaces is one of these steps.
+//!
+//! The scale is dense, not a geometric ramp, so each token is named by its own pixel value: `--s-8`
+//! is 8 px, `--s-1-5` is 1.5 px.
 //!
 //! The eighteen common steps (design/34-MODERN-LOOK.md section 2.4 adds 20, 24, 28, 32, 40 and 48 for the larger Look's margins and group gaps), plus the three values 04-COMPONENTS quotes exactly for a quire
 //! component and the common steps miss: 1.5 (the chip's and the image provider mark's
@@ -100,6 +102,11 @@ pub enum SpacingToken {
 
 impl SpacingToken {
     /// The step in tenths of a pixel: `15` is `1.5px`, read from the token's own value.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a spacing step in tenths of a pixel is far inside u16"
+    )]
     #[must_use]
     pub fn tenths(self) -> u16 {
         let value = self.css_value(TokenScope::BASE);

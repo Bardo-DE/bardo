@@ -31,9 +31,9 @@ pub fn stroke_width(size: IconSize, scale: Scale) -> String {
 /// (`2 * side / 24 * n / 120`) rounded to the nearest even count, halves up, never below one.
 #[must_use]
 pub fn stroke_device_pixels(size: IconSize, scale: Scale) -> u64 {
-    let side = u64::from(size.px());
+    let edge = u64::from(size.px());
     let per = GRID * u64::from(Scale::DENOMINATOR);
-    let exact = DESIGN * side * u64::from(scale.numerator());
+    let exact = DESIGN * edge * u64::from(scale.numerator());
     (2 * ((exact + per) / (2 * per))).max(1)
 }
 

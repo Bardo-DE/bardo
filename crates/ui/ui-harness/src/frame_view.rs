@@ -81,6 +81,10 @@ impl<'h> FrameView<'h> {
 
     /// The width of the frame's first element matching `selector`, in logical pixels: whether
     /// an image in the frame loaded.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout rectangles are in logical pixels, far inside f32's range and precision"
+    )]
     #[must_use]
     pub fn width(&self, selector: &str) -> Option<Px> {
         self.read(|doc| {
@@ -92,6 +96,10 @@ impl<'h> FrameView<'h> {
 
     /// The centre of the frame's first element matching `selector`, in the app document's
     /// coordinates: where a test clicks it with [`Input::click`](crate::Input::click).
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout rectangles are in logical pixels, far inside f32's range and precision"
+    )]
     #[must_use]
     pub fn centre(&self, selector: &str) -> Option<Point> {
         self.harness.with_doc(|doc| {

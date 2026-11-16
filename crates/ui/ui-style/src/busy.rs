@@ -12,7 +12,6 @@
 //! at the same instant, every run; only a document still busy after those waits a frame.
 
 use dioxus::core::queue_effect;
-use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use ui_core::time::{FRAME_SLACK, clock::sleep};

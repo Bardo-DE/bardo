@@ -1,6 +1,8 @@
-//! The window chrome's fixed geometry (design/04-COMPONENTS.md "Window frame"; design/13
-//! section 13.3.11): the numbers the window frame's stylesheet reads as `--chrome-*` and a
-//! compositor that draws the chrome itself reads as lengths, so the two cannot drift.
+//! The window chrome's fixed geometry (design/04-COMPONENTS.md "Window frame"; design/13 section
+//! 13.3.11).
+//!
+//! The numbers the window frame's stylesheet reads as `--chrome-*` and a compositor that draws the
+//! chrome itself reads as lengths, so the two cannot drift.
 
 use crate::tokens::size_scale::WholePx;
 

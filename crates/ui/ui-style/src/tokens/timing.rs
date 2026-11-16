@@ -11,9 +11,10 @@ use std::time::Duration;
 use ui_core::word::Word;
 
 /// Whether Reduced motion shortens a [`DurationToken`] to `--t-quick`, or the token times a held
-/// state a person must still be able to register regardless of motion level. Data on the
-/// token (`DurationToken::kind`) rather than a special case in its duration table, so a new
-/// hold is one match arm, not a second code path.
+/// state a person must still be able to register regardless of motion level.
+///
+/// Data on the token (`DurationToken::kind`) rather than a special case in its duration table, so a
+/// new hold is one match arm, not a second code path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DurationKind {
     /// Shortened to `--t-quick` under Reduced, like every other transition.
@@ -81,6 +82,10 @@ impl DurationToken {
     /// Whether Reduced shortens this token to 60 ms like every other transition, or the token
     /// is a held state a person must still be able to register and so keeps its Standard value
     /// (data on the token rather than a special case in [`Self::millis`]).
+    #[expect(
+        clippy::match_same_arms,
+        reason = "each token is its own design value, and equal values are a coincidence that merging the arms would turn into a tie"
+    )]
     #[must_use]
     pub fn kind(self) -> DurationKind {
         match self {
@@ -98,6 +103,10 @@ impl DurationToken {
     }
 
     /// The table, in milliseconds.
+    #[expect(
+        clippy::match_same_arms,
+        reason = "each token is its own design value, and equal values are a coincidence that merging the arms would turn into a tie"
+    )]
     fn millis(self, level: MotionLevel) -> u64 {
         if level == MotionLevel::Reduced && self.kind() == DurationKind::Motion {
             return DurationToken::Quick.millis(MotionLevel::Standard);

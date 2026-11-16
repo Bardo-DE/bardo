@@ -1,11 +1,13 @@
 //! How the stylesheet is laid out as text: a header, each section under `/* == name == */`, each
-//! component sheet under `/* -- name -- */`. The assembly decides which sections and sheets go
-//! in, and in what order.
+//! component sheet under `/* -- name -- */`.
+//!
+//! The assembly decides which sections and sheets go in, and in what order.
 
 use crate::css::grain::grain_uri;
 use crate::css::{UTILITIES, layers};
 use crate::emit::{property, rule};
 use crate::kit::Sheet;
+use std::fmt::Write as _;
 
 /// The whole stylesheet: the header, the order of the layers, every `(section, body)` of
 /// `layered` inside `@layer ds { ... }`, then each of `unlayered` after it (a user kit's, which
@@ -15,7 +17,8 @@ pub(crate) fn document(layered: &[(&str, String)], unlayered: &[(&str, String)])
     let mut css = String::from(
         "/* ui_components::stylesheet(), generated from the token table. Do not edit. */\n",
     );
-    css.push_str(&format!("{}\n@layer {} {{\n", layers::ORDER, layers::DS));
+    // Writing to a `String` cannot fail.
+    let _ = write!(css, "{}\n@layer {} {{\n", layers::ORDER, layers::DS);
     push_sections(&mut css, layered);
     css.push_str("}\n");
     push_sections(&mut css, unlayered);
@@ -24,13 +27,15 @@ pub(crate) fn document(layered: &[(&str, String)], unlayered: &[(&str, String)])
 
 fn push_sections(css: &mut String, sections: &[(&str, String)]) {
     for (name, body) in sections {
-        css.push_str(&format!("/* == {name} == */\n{}\n", body.trim_end()));
+        let _ = writeln!(css, "/* == {name} == */\n{}", body.trim_end());
     }
 }
 
-/// `own`, in its order, with each of `extra` placed right after the sheet it names, the sheets
-/// that name it after it in turn. A sheet whose anchor is in neither list goes last, so it is
-/// still styled, and `unplaced` names it for a test to catch.
+/// `own`, in its order, with each of `extra` placed right after the sheet it names, the sheets that
+/// name it after it in turn.
+///
+/// A sheet whose anchor is in neither list goes last, so it is still styled, and `unplaced` names
+/// it for a test to catch.
 #[must_use]
 pub fn placed(
     own: &[(&'static str, &'static str)],
@@ -65,10 +70,10 @@ pub fn unplaced<'a>(
 /// Component sheets, each under its marker, in the order given.
 #[must_use]
 pub fn sheets(sheets: &[(&str, &str)]) -> String {
-    sheets
-        .iter()
-        .map(|(name, css)| format!("/* -- {name} -- */\n{}\n", css.trim_end()))
-        .collect()
+    sheets.iter().fold(String::new(), |mut out, (name, css)| {
+        let _ = writeln!(out, "/* -- {name} -- */\n{}", css.trim_end());
+        out
+    })
 }
 
 /// `.ds-truncate` and the other utilities, then the grain tile on `.ds-grain`.

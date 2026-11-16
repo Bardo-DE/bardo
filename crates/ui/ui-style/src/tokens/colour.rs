@@ -28,7 +28,8 @@ const fn alpha(rgb: u32, thousandths: u16) -> Colour {
 
 /// `0xRRGGBB` as a [`Hex`]; the shifts keep each byte.
 const fn rgb_hex(rgb: u32) -> Hex {
-    Hex([(rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8])
+    let [_, red, green, blue] = rgb.to_be_bytes();
+    Hex([red, green, blue])
 }
 
 /// One card colour token.
@@ -208,6 +209,10 @@ impl ColourToken {
     /// tertiary levels sit at about 87, 64 and 48 % (dark: 91, 64 and 52 %), a little firmer than
     /// macOS's 85, 55 and 25 %, because the legibility gates (design/03-COLOR.md section 6)
     /// hold them to 4.5:1 over a blurred backdrop and the faint metadata to 3:1.
+    #[expect(
+        clippy::match_same_arms,
+        reason = "each token is its own design value, and equal values are a coincidence that merging the arms would turn into a tie"
+    )]
     fn mac(self) -> (Colour, Colour) {
         const WHITE: Colour = solid(0x00FF_FFFF);
         match self {

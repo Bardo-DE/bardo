@@ -25,6 +25,9 @@ pub struct Removed<P> {
 impl<P, R> Spaces<P, R> {
     /// Remove `id`. When it was on screen, the Space that slides into its place (else the new
     /// last) is. The app also calls `Today::drop_space` with the same id.
+    ///
+    /// # Errors
+    /// `Refused::Missing` when `id` is not in the list, `Refused::Last` when it is the only Space.
     pub fn remove(&mut self, id: SpaceId) -> Result<Removed<P>, Refused> {
         let index = self.index_of(id).ok_or(Refused::Missing)?;
         if self.list.len() <= 1 {

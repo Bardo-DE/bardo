@@ -7,10 +7,6 @@ use image::RgbaImage;
 use std::time::Duration;
 use ui_blitz::FileRoots;
 use ui_components::components::controls::button_model::Answers;
-use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
-use ui_components::components::controls::progress::view::ProgressIndicator;
-use ui_components::motion::detail::operation::Operation;
-use ui_components::motion::detail::operation::PendingToken;
 use ui_components::motion::pulse_key::PulseKey;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
@@ -23,7 +19,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 200,
 };
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn ButtonApp() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -43,7 +39,8 @@ fn colours(frame: &RgbaImage) -> usize {
 
 fn keep(frame: &RgbaImage, name: &str) {
     let path = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!("{name}.png"));
-    frame.save(&path).ok();
+    // A picture that cannot be kept is no failure of the test that took it.
+    let _ = frame.save(&path);
 }
 
 #[test]
@@ -55,7 +52,7 @@ fn a_snapshot_has_the_viewport_size_in_device_pixels() {
 }
 
 /// An ink square playing `fade`: a CSS motion that `snapshot_at` measures exactly.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn FadeApp() -> Element {
     let (class, alias) = PulseKey::rest(Anim::Fade)
         .fired()
@@ -85,7 +82,7 @@ fn a_fade_at_two_motion_moments() {
     assert_ne!(frames[0], frames[1], "nothing moved between 0 and 125 ms");
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn SpinApp() -> Element {
     let operation = use_hook(|| Operation::Running(PendingToken::start()));
     rsx! {
@@ -129,7 +126,7 @@ fn green_file() -> std::path::PathBuf {
     std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("green.svg")
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn ImageApp() -> Element {
     let encoded = GREEN_SVG
         .replace('<', "%3C")

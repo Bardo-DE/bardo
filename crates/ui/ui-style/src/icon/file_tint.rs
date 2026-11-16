@@ -13,6 +13,7 @@ use crate::appearance::theme::Scheme;
 use crate::tokens::file_icon::FileIconColour;
 use crate::tokens::hex::Hex;
 use crate::tokens::name::VarName;
+use std::fmt::Write as _;
 use ui_core::word::Word;
 
 /// How a file icon is coloured.
@@ -50,10 +51,15 @@ impl FileIconStyle {
     pub fn style_attribute(self) -> String {
         match self {
             FileIconStyle::Colour => String::new(),
-            FileIconStyle::Monochrome(tint) => tint_vars(tint)
-                .into_iter()
-                .map(|(name, colour)| format!("{}:{};", name.as_str(), colour.css()))
-                .collect(),
+            FileIconStyle::Monochrome(tint) => {
+                tint_vars(tint)
+                    .into_iter()
+                    .fold(String::new(), |mut out, (name, colour)| {
+                        // Writing to a `String` cannot fail.
+                        let _ = write!(out, "{}:{};", name.as_str(), colour.css());
+                        out
+                    })
+            }
         }
     }
 }

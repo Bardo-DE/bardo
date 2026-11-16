@@ -1,6 +1,7 @@
-//! The faces, shipped inside the binary as bytes (design/02-TYPE.md section 2): Inter and Inter
-//! Display (the interface's faces), Space Mono (the code face), Noto Serif, and Bricolage
-//! Grotesque and Karla (the faces the Editorial look Extension names, with Space Mono).
+//! The faces, shipped inside the binary as bytes (design/02-TYPE.md section 2).
+//!
+//! Inter and Inter Display (the interface's faces), Space Mono (the code face), Noto Serif, and
+//! Bricolage Grotesque and Karla (the faces the Editorial look Extension names, with Space Mono).
 //!
 //! On Blitz the bytes are registered with the renderer's font context once (`ui-blitz`'s
 //! `register_fonts`); nothing about fonts is in the stylesheet.

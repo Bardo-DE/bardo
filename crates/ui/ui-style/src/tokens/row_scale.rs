@@ -1,6 +1,8 @@
-//! The list row's fixed sizes (design/30-CATALOGUE.md section 1.6: "table and list rows 24
-//! (compact) / 44 (settings)"; design/29-SIZING.md section 4: the settings row is 44 with a 34
-//! leading avatar). design/34-MODERN-LOOK.md section 2.3 (step 2) moves the settings row to 48, the compact row to 32,
+//! The list row's fixed sizes.
+//!
+//! These follow design/30-CATALOGUE.md section 1.6: "table and list rows 24 (compact) / 44
+//! (settings)"; design/29-SIZING.md section 4: the settings row is 44 with a 34
+//! leading avatar. design/34-MODERN-LOOK.md section 2.3 (step 2) moves the settings row to 48, the compact row to 32,
 //! the avatar to 32 and adds the 28 icon tile and the 12 gap to the label. `Row` and `SkeletonRow` both read these, so a placeholder row is exactly as
 //! tall as the row it stands in for (design/30 R3: one implementation per concept).
 
@@ -74,8 +76,9 @@ fn row_size_css(token: RowSize, _scope: TokenScope) -> CssValue {
     CssValue::computed(size.css())
 }
 
-/// A source list's row height and icon tile at each [`SidebarSize`], as tokens, so the list's
-/// stylesheet reads the ladder (design/34 section 2.2: rows of 28, 32, 36; a tile sits 4 px in
+/// A source list's row height and icon tile at each [`SidebarSize`], as tokens.
+///
+/// The list's stylesheet reads the ladder (design/34 section 2.2: rows of 28, 32, 36; a tile sits 4 px in
 /// from the row's top and bottom: 20, 24, 28).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "", kind = fixed, css = sidebar_css)]

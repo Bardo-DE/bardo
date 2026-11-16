@@ -22,6 +22,10 @@ pub(crate) struct Run {
 
 /// The runs of `layout`, whose clusters index into `text`, with the layout's content box at
 /// (`x`, `y`) in the document.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout rectangles are in logical pixels, far inside f32's range and precision"
+)]
 pub(crate) fn runs(layout: &Layout<TextBrush>, text: &str, x: f64, y: f64) -> Vec<Run> {
     let scale = f64::from(layout.scale());
     let mut found = Vec::new();

@@ -73,7 +73,8 @@ impl HueShades {
 }
 
 const fn hex(value: u32) -> Hex {
-    Hex([(value >> 16) as u8, (value >> 8) as u8, value as u8])
+    let [_, red, green, blue] = value.to_be_bytes();
+    Hex([red, green, blue])
 }
 
 const fn shades(light: u32, light_increased: u32, dark: u32, dark_increased: u32) -> HueShades {

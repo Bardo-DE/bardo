@@ -1,6 +1,7 @@
-//! How a selected row is painted (design/30-CATALOGUE.md section 3.2, "Selection"): `--sel-bg`
-//! under an active window's selection, `--sel-bg-quiet` under the same selection when the window
-//! is inactive, and `--sel-ink` for the text on either.
+//! How a selected row is painted (design/30-CATALOGUE.md section 3.2, "Selection").
+//!
+//! `--sel-bg` under an active window's selection, `--sel-bg-quiet` under the same selection when
+//! the window is inactive, and `--sel-ink` for the text on either.
 //!
 //! The selection fills the row with the accent and writes accent ink over it, and greys it when
 //! the window loses focus. Each value names the accent's own properties, so it follows the

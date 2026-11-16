@@ -1,8 +1,9 @@
-//! The widgets' paints (design/23-WIDGETS.md section 2, "Flat, bright, measured"): the battery
-//! ring's fill, its low tone and its track, and the world clock's faces, their ink and the
-//! seconds hand. Each has a light and a dark value, measured from the reference widgets
-//! (design/23 section 1.1): a bright green ring on a track that is the plate darkened, a red
-//! ring when low, white day dials and dark night dials with an orange seconds hand.
+//! The widgets' paints (design/23-WIDGETS.md section 2, "Flat, bright, measured").
+//!
+//! The battery ring's fill, its low tone and its track, and the world clock's faces, their ink and
+//! the seconds hand. Each has a light and a dark value, measured from the reference widgets
+//! (design/23 section 1.1): a bright green ring on a track that is the plate darkened, a red ring
+//! when low, white day dials and dark night dials with an orange seconds hand.
 
 use crate::tokens::token::Token;
 use ui_core::word::Word;

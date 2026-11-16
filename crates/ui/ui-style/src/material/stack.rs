@@ -1,10 +1,11 @@
-//! Material stack v2 (the macOS polish pass, 2026-09-24; design/03-COLOR.md section 17.4): the
-//! layers macOS stacks on every chrome material and quire lacked, and the tokens that tune
+//! Material stack v2 (the macOS polish pass, 2026-09-24; design/03-COLOR.md section 17.4).
+//!
+//! The layers macOS stacks on every chrome material and quire lacked, and the tokens that tune
 //! them. From the outside in: a 0.5 px dark outer hairline (`--m-hairline`), the tight contact
-//! shadow (`--m-shadow-contact`) and the wide ambient one (`--m-shadow-ambient`), then inside
-//! the 1 px top highlight (`--m-highlight`) over the tint, whose colour carries the vibrancy
-//! boost (`vibrancy.rs`). Each input is a stylesheet token with its default in the material
-//! blocks; a look or the person's own sheet sets it on the root or on any element around a surface.
+//! shadow (`--m-shadow-contact`) and the wide ambient one (`--m-shadow-ambient`), then inside the 1
+//! px top highlight (`--m-highlight`) over the tint, whose colour carries the vibrancy boost
+//! (`vibrancy.rs`). Each input is a stylesheet token with its default in the material blocks; a
+//! look or the person's own sheet sets it on the root or on any element around a surface.
 
 use crate::tokens::name::VarName;
 

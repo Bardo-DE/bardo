@@ -64,6 +64,10 @@ impl Radius {
     /// assert_eq!(Radius::Window.px(), 10);
     /// assert_eq!(Radius::Window.value(), "10px");
     /// ```
+    #[expect(
+        clippy::match_same_arms,
+        reason = "each token is its own design value, and equal values are a coincidence that merging the arms would turn into a tie"
+    )]
     #[must_use]
     pub fn px(self) -> u16 {
         match self {
@@ -90,10 +94,11 @@ impl Radius {
 /// The smallest radius a concentric inner shape takes (design/34-MODERN-LOOK.md section 2.1).
 pub const CONCENTRIC_FLOOR: ui_core::geometry::units::Px = ui_core::geometry::units::Px(4.0);
 
-/// The concentric rule (design/34 section 2.1, WWDC25 "concentric shapes"): the radius of a
-/// shape inset `inset` inside an outer corner of radius `outer` is the outer radius less the
-/// inset, never below [`CONCENTRIC_FLOOR`]. A capsule's radius is half its height and never goes
-/// through here.
+/// The concentric rule (design/34 section 2.1, WWDC25 "concentric shapes").
+///
+/// The radius of a shape inset `inset` inside an outer corner of radius `outer` is the outer radius
+/// less the inset, never below [`CONCENTRIC_FLOOR`]. A capsule's radius is half its height and
+/// never goes through here.
 #[must_use]
 pub fn concentric(
     outer: ui_core::geometry::units::Px,
@@ -107,9 +112,10 @@ fn radius_css(token: Radius, _: TokenScope) -> CssValue {
     CssValue::computed(token.value())
 }
 
-/// A material's corner, overriding the radius its recipe gives it (`--m-radius`): a radius
-/// token, a length a settings key names (`dock.pill_radius_px`), or a
-/// continuous-curvature squircle corner of that nominal radius (the macOS polish pass).
+/// A material's corner, overriding the radius its recipe gives it (`--m-radius`).
+///
+/// A radius token, a length a settings key names (`dock.pill_radius_px`), or a continuous-curvature
+/// squircle corner of that nominal radius (the macOS polish pass).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Corner {
     /// One of the radius tokens.

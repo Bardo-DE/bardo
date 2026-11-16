@@ -121,7 +121,10 @@ impl GpuPainter {
             gpu,
             renderer,
             resources: Resources::new(),
-            scene: Scene::new(width as u16, height as u16),
+            scene: Scene::new(
+                u16::try_from(width).unwrap_or(u16::MAX),
+                u16::try_from(height).unwrap_or(u16::MAX),
+            ),
             images: FxHashMap::default(),
             bindings: FxHashMap::default(),
             target,
@@ -205,7 +208,10 @@ impl GpuPainter {
         let device = &self.handle.device;
         if (self.target.width, self.target.height) != (canvas.width, canvas.height) {
             self.target = Target::new(device, canvas.width, canvas.height);
-            self.scene = Scene::new(canvas.width as u16, canvas.height as u16);
+            self.scene = Scene::new(
+                u16::try_from(canvas.width).unwrap_or(u16::MAX),
+                u16::try_from(canvas.height).unwrap_or(u16::MAX),
+            );
         }
         self.scene.reset();
         let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -228,7 +234,7 @@ impl GpuPainter {
             );
             draw(&mut painter, doc, canvas);
         };
-        let encoded = started.elapsed();
+        let encode_time = started.elapsed();
         let mut textures = TextureBindings::new();
         for (resource, view) in &self.bindings {
             textures.insert(vello_hybrid::TextureId(resource.into_ffi()), view.clone());
@@ -248,7 +254,7 @@ impl GpuPainter {
                 &textures,
             )
             .map_err(|error| HarnessError::Renderer(format!("vello_hybrid: {error:?}")))?;
-        Ok((encoder, encoded))
+        Ok((encoder, encode_time))
     }
 
     /// Submit `encoder` and wait until the GPU has run it.

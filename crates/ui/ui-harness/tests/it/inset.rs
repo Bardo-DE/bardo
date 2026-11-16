@@ -23,19 +23,19 @@ fn padded(padding: &str) -> Element {
 }
 
 #[component]
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn TwoPx() -> Element {
     padded("2px")
 }
 
 #[component]
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn EightPx() -> Element {
     padded("8px")
 }
 
 #[component]
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn IconButton() -> Element {
     rsx! {
         div { style: "padding:20px;background:#fff",
@@ -51,7 +51,7 @@ fn IconButton() -> Element {
 }
 
 #[component]
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Nested() -> Element {
     rsx! {
         div { style: "padding:20px;background:#fff",
@@ -63,7 +63,7 @@ fn Nested() -> Element {
 }
 
 #[component]
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn CornerMark() -> Element {
     rsx! {
         div { style: "padding:20px;background:#fff",

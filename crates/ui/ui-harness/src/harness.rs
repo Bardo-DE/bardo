@@ -1,6 +1,8 @@
 //! Driving a quire app in a test the way a user would: pointer, keys, and time, against a real
-//! Blitz document (no window). Timers run on the harness's clock, so a test advances 450 ms and
-//! sees the hover card open, not before.
+//! Blitz document (no window).
+//!
+//! Timers run on the harness's clock, so a test advances 450 ms and sees the hover card open, not
+//! before.
 //!
 //! Time. quire's timers are `futures-timer` sleeps and its hover intent reads `Instant::now()`,
 //! both on the wall clock, so a harness cannot fake time: [`Harness::advance`] really lets it
@@ -70,6 +72,9 @@ impl Harness {
     /// render its first frame. A [`Backend::Hybrid`](crate::Backend::Hybrid) harness with no
     /// GPU device to open returns the error from every picture; [`Harness::try_new`] returns it
     /// at once.
+    ///
+    /// # Panics
+    /// when the harness's tokio runtime cannot start.
     pub fn new(app: fn() -> Element, config: impl Into<HarnessConfig>) -> Self {
         let config = config.into();
         // Entered before `Headless::new`, whose `initial_build` runs `app`'s first render and
@@ -216,6 +221,9 @@ impl Harness {
 
     /// Paint the document as it is now over `backdrop`: [`Backdrop::Clear`] shows what a shell
     /// surface would, where every pixel the document leaves unpainted has alpha 0.
+    ///
+    /// # Errors
+    /// `HarnessError` when the renderer is unavailable or the frame cannot be painted.
     pub fn render_over(&mut self, backdrop: Backdrop) -> Result<image::RgbaImage, HarnessError> {
         self.doc.paint(backdrop)
     }
@@ -298,7 +306,7 @@ impl Harness {
     /// Deliver `input` and bring the document up to date.
     pub fn send(&mut self, input: Input) {
         match input {
-            Input::Pointer(pointer) => self.pointer(pointer),
+            Input::Pointer(pointer) => self.pointer(&pointer),
             Input::Key(key) => self.key(key),
             Input::Wheel { at, dx, dy } => self.wheel(at, dx, dy),
             Input::Detents { at, x, y, held } => self.detents(at, x, y, held),
@@ -317,6 +325,9 @@ impl Harness {
     }
 
     /// Paint the document as it is now.
+    ///
+    /// # Errors
+    /// `HarnessError` when the renderer is unavailable or the frame cannot be painted.
     pub fn render(&mut self) -> Result<image::RgbaImage, HarnessError> {
         self.doc.paint(Backdrop::Scheme)
     }

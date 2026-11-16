@@ -35,7 +35,7 @@ fn virtual_harness(app: fn() -> Element) -> Harness {
 
 // ---- The scenario: a panel entering, a hover card, a toast ------------------------------
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Scene() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -44,7 +44,7 @@ fn Scene() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn SceneContent() -> Element {
     let hub = use_hover_hub();
     let toasts = use_toasts();
@@ -223,7 +223,7 @@ fn the_same_scenario_gives_the_same_frames_idle_or_under_load() {
 
 // ---- an entrance timer against a stalled first frame -------------------------
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Center() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, extent: RootExtent::Viewport,

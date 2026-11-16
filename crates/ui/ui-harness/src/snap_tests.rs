@@ -29,7 +29,7 @@ const FIXTURE_CSS: &str = ".a{position:absolute;left:11px;top:11px;width:61px;he
     background:var(--line)}\
     .e{position:absolute;left:21px;top:5px;width:9px;height:10.3px;background:var(--line)}";
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Fixture() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

@@ -1,6 +1,8 @@
 //! One `.ds[data-accent=…]` block per accent and scheme, and one more of each under
-//! `data-contrast=high` (the desktop asks for increased contrast), which sets the same seven
-//! properties from the increased-contrast shade of the hue.
+//! `data-contrast=high`.
+//!
+//! The high-contrast blocks apply when the desktop asks for increased contrast, and set the same
+//! seven properties from the increased-contrast shade of the hue.
 //!
 //! The dark blocks carry `data-theme=dark` as well, one attribute more specific than both the
 //! light accent blocks and the dark token block, so a dark root takes its accent's dark quad

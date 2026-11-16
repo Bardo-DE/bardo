@@ -176,6 +176,10 @@ fn derive_matches_the_mockup() {
     );
 }
 
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "test steps and hues are small and non-negative"
+)]
 #[test]
 fn every_pick_is_legible() {
     use ui_core::colour::contrast::ratio;

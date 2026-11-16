@@ -14,6 +14,7 @@ use super::retint::{IconStyle, Tint, recolour};
 use super::tone_band::Tone;
 use crate::appearance::theme::Scheme;
 use crate::tokens::{hex::Hex, name::VarName};
+use std::fmt::Write as _;
 use ui_core::word::Word;
 
 /// How a plate is re-coloured: `icons.style` when it is not Colour.
@@ -123,8 +124,11 @@ pub fn tint_style(family: PlateFamily, tint: PlateTint) -> String {
             let stops = PlateStops::of(family, scheme).tinted_in(tint, scheme);
             names.into_iter().zip([stops.base, stops.deep, stops.ink])
         })
-        .map(|(name, colour)| format!("{}:{};", name.as_str(), colour.css()))
-        .collect()
+        .fold(String::new(), |mut out, (name, colour)| {
+            // Writing to a `String` cannot fail.
+            let _ = write!(out, "{}:{};", name.as_str(), colour.css());
+            out
+        })
 }
 
 #[cfg(test)]

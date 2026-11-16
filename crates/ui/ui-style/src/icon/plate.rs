@@ -12,6 +12,7 @@
 use crate::icon::url::IconUrl;
 use crate::tokens::plate::EXPONENT;
 use std::f64::consts::FRAC_PI_2;
+use std::fmt::Write as _;
 use ui_core::word::Word;
 
 /// Samples per quadrant for a corner mask, and for each quadrant of the plate.
@@ -76,12 +77,16 @@ fn quadrant_points(quadrant: Quadrant) -> Vec<(f64, f64)> {
 
 /// A closed polygon as SVG path data, to two decimals.
 fn path(points: &[(f64, f64)]) -> String {
-    let steps = points
+    let mut steps = points
         .iter()
         .enumerate()
-        .map(|(i, (x, y))| format!("{}{x:.2} {y:.2}", if i == 0 { "M" } else { "L" }))
-        .collect::<String>();
-    format!("{steps}Z")
+        .fold(String::new(), |mut out, (i, (x, y))| {
+            // Writing to a `String` cannot fail.
+            let _ = write!(out, "{}{x:.2} {y:.2}", if i == 0 { "M" } else { "L" });
+            out
+        });
+    steps.push('Z');
+    steps
 }
 
 /// An SVG document filling `d` in the mask's opaque colour, stretched to whatever box it masks.
@@ -129,9 +134,9 @@ mod tests {
         if x >= k || y >= k {
             return true;
         }
-        let u = (k - x) / k;
-        let v = (k - y) / k;
-        u.powf(EXPONENT) + v.powf(EXPONENT) <= 1.0
+        let from_x = (k - x) / k;
+        let from_y = (k - y) / k;
+        from_x.powf(EXPONENT) + from_y.powf(EXPONENT) <= 1.0
     }
 
     #[test]

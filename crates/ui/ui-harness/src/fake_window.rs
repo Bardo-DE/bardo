@@ -123,6 +123,11 @@ impl FakeWindow {
 }
 
 /// `logical` px as physical ones at `scale`, rounded to the nearest.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a window size in device pixels is far inside u32"
+)]
 fn physical(logical: Extent, scale: Scale) -> Extent {
     let per = |px: u32| (f64::from(px) * scale.as_f64()).round() as u32;
     Extent::new(per(logical.width), per(logical.height))

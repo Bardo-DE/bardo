@@ -1,6 +1,7 @@
-//! The type values that belong to the faces (design/02-TYPE.md sections 2 and 5): tracking, weight
-//! and size where another set of faces wants different numbers for the same role, so a look that
-//! names other faces (the Editorial look Extension) sets these with them.
+//! The type values that belong to the faces (design/02-TYPE.md sections 2 and 5).
+//!
+//! Tracking, weight and size where another set of faces wants different numbers for the same role,
+//! so a look that names other faces (the Editorial look Extension) sets these with them.
 //!
 //! Inter is tracked by its own dynamic metrics (tight at display sizes, zero at body), and the
 //! calendar month title needs 600 to hold the line.

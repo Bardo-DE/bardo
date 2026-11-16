@@ -46,7 +46,8 @@ impl FileIconColour {
             Scheme::Light => light,
             Scheme::Dark => dark,
         };
-        Hex([(value >> 16) as u8, (value >> 8) as u8, value as u8])
+        let [_, red, green, blue] = value.to_be_bytes();
+        Hex([red, green, blue])
     }
 }
 

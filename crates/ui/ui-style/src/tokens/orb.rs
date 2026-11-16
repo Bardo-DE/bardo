@@ -1,7 +1,8 @@
 //! The custom properties the voice orb writes inline for its stylesheet to read: its size, the
-//! size-derived look values and the turn (design/30 section 2.9). The four colours are the
-//! `--orb-*` colour tokens ([`super::colour::ColourToken`]), written inline only when the caller
-//! brings its own.
+//! size-derived look values and the turn (design/30 section 2.9).
+//!
+//! The four colours are the `--orb-*` colour tokens ([`super::colour::ColourToken`]), written
+//! inline only when the caller brings its own.
 
 use super::name::VarName;
 

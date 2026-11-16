@@ -22,6 +22,11 @@ impl From<Srgb> for Hex {
 
 impl Hex {
     /// `self` at `alpha` over the opaque `back`, blended per 8-bit channel as a browser does.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a blend of two bytes stays within 0..=255 and is clamped just before the cast"
+    )]
     #[must_use]
     pub fn over(self, alpha: Alpha, back: Hex) -> Hex {
         let weight = f64::from(alpha.0.min(1000)) / 1000.0;

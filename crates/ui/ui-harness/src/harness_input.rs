@@ -76,9 +76,9 @@ pub(crate) fn pointer(
         button,
         buttons,
         mods,
-        details: Default::default(),
-        element: Default::default(),
-        active_pointers: Default::default(),
+        details: blitz_traits::events::PointerDetails::default(),
+        element: blitz_traits::events::Point::<f32>::default(),
+        active_pointers: std::sync::Arc::default(),
     }
 }
 

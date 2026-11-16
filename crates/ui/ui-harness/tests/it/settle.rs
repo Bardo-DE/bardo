@@ -23,7 +23,7 @@ fn virtual_harness(app: fn() -> Element) -> Harness {
 
 /// A held sleep longer than `QUIET`, in the same shape as the check mark's `SettleHold`: starts
 /// on mount, then flips `#hold`'s `data-fired` once it is due.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn LongHold() -> Element {
     let mut fired = use_signal(|| false);
     use_hook(|| {
@@ -57,7 +57,7 @@ fn assert_settles_to_zero_frames_drains_a_pending_900ms_sleep_on_the_virtual_clo
 }
 
 /// A sleep that is not a multiple of `settle_until`'s 10 ms step.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn OddHold() -> Element {
     let mut fired = use_signal(|| false);
     use_hook(|| {

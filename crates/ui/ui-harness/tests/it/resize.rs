@@ -11,7 +11,7 @@ const NARROW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Fill() -> Element {
     rsx! { div { id: "fill", style: "width:100%;height:100px;" } }
 }

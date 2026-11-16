@@ -1,8 +1,9 @@
-//! The traffic lights and their colours: the disc and the ink of its mark, from the table of
-//! macOS's own light colours (`light_paint.rs`), which is also what the stylesheet's
-//! `--light-close`, `--light-minimize`, `--light-zoom` (with `-rim` and `-mark`) are written from.
-//! `window_frame.css` paints the disc, rim and mark with those; [`light_hue`] and [`light_rim`]
-//! give a compositor the same numbers.
+//! The traffic lights and their colours.
+//!
+//! The disc and the ink of its mark, from the table of macOS's own light colours
+//! (`light_paint.rs`), which is also what the stylesheet's `--light-close`, `--light-minimize`,
+//! `--light-zoom` (with `-rim` and `-mark`) are written from. `window_frame.css` paints the disc,
+//! rim and mark with those; [`light_hue`] and [`light_rim`] give a compositor the same numbers.
 
 use super::light_paint::light_colours;
 use crate::appearance::theme::Scheme;

@@ -4,9 +4,11 @@
 use std::time::Duration;
 use ui_core::word::Word;
 
-/// How long a tooltip waits before it opens cold (design/30-CATALOGUE.md section 1.2): an app-wide
-/// choice made on the `Ds` root; tips are instant unless the app asks for `Standard`. Warm hover (another hover UI open or closed within
-/// [`DelayToken::HoverWarm`]) opens a tip at once either way.
+/// How long a tooltip waits before it opens cold (design/30-CATALOGUE.md section 1.2).
+///
+/// An app-wide choice made on the `Ds` root; tips are instant unless the app asks for `Standard`.
+/// Warm hover (another hover UI open or closed within [`DelayToken::HoverWarm`]) opens a tip at
+/// once either way.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum TipDelay {
     /// The pointer rests for [`DelayToken::TipOpen`] (1000 ms) first; an app opts in.
@@ -29,8 +31,10 @@ impl TipDelay {
 }
 
 /// A timer length only Rust reads: intent and reading time, never scaled by the level
-/// (design/30-CATALOGUE.md section 1.2). Each is the default of a settings key of the same
-/// name where one exists; the settings override it, this table is where the default lives.
+/// (design/30-CATALOGUE.md section 1.2).
+///
+/// Each is the default of a settings key of the same name where one exists; the settings override
+/// it, this table is where the default lives.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum DelayToken {
     /// 1000 ms: a tooltip opens after the pointer rests, when the app opts in with
@@ -86,6 +90,10 @@ pub enum DelayToken {
 
 impl DelayToken {
     /// How long it lasts.
+    #[expect(
+        clippy::match_same_arms,
+        reason = "each token is its own design value, and equal values are a coincidence that merging the arms would turn into a tie"
+    )]
     #[must_use]
     pub fn delay(self) -> Duration {
         Duration::from_millis(match self {

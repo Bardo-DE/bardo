@@ -8,9 +8,14 @@ use blitz_dom::MediaType;
 use dioxus::prelude::*;
 use ui_blitz::{PageSpec, PdfError, content_size, print_document, print_viewport};
 
-/// `app` as a PDF on `spec`'s pages: built as `config` says (its contexts and net policy; the
-/// viewport is the page's content box), rendered until its mount-time work and images have
-/// landed, as a snapshot is, then printed with [`Harness::pdf`].
+/// `app` as a PDF on `spec`'s pages.
+///
+/// Built as `config` says (its contexts and net policy; the viewport is the page's content box),
+/// rendered until its mount-time work and images have landed, as a snapshot is, then printed with
+/// [`Harness::pdf`].
+///
+/// # Errors
+/// `PdfError` when the page has no content box, or the document cannot be printed.
 pub fn pdf_app(
     app: fn() -> Element,
     config: HarnessConfig,
@@ -31,6 +36,9 @@ impl Harness {
     /// The document as a PDF on `spec`'s pages. For the printout it is laid out at the page's
     /// content width with `@media print` applied; afterwards its own viewport and media come
     /// back, so the harness carries on as before.
+    ///
+    /// # Errors
+    /// `PdfError` when the page has no content box, or the document cannot be printed.
     pub fn pdf(&mut self, spec: PageSpec) -> Result<Vec<u8>, PdfError> {
         let print = print_viewport(spec)?;
         let (viewport, media) = {

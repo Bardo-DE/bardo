@@ -1,6 +1,8 @@
-//! Solid forms drawn here: the Wi-Fi fan and the speaker with its waves (design/08-ICONS.md
-//! section 1.2.1). Neither Tabler nor Phosphor draws these as separate parts, and the animated
-//! glyphs (`PosedGlyph`, the status glyphs, the level glyph) light them one by one.
+//! Solid forms drawn here: the Wi-Fi fan and the speaker with its waves (design/08-ICONS.md section
+//! 1.2.1).
+//!
+//! Neither Tabler nor Phosphor draws these as separate parts, and the animated glyphs
+//! (`PosedGlyph`, the status glyphs, the level glyph) light them one by one.
 //!
 //! The speaker body is Lucide `volume`'s path (ISC, `LICENSE-lucide.txt`) filled; the fan's arcs
 //! are three concentric annular sectors on (12, 20) at radii 5, 10 and 15, 2.6 thick, and the

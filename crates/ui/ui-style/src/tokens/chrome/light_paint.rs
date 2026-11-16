@@ -1,8 +1,9 @@
-//! The traffic lights' own colours, as macOS (Sonoma, Sequoia) draws them: they are not label
-//! hues. Per light and scheme there are three: the disc, the slightly darker hairline rim macOS
-//! draws round it, and the ink of the mark (x, minus, arrows) shown while the pointer is over the
-//! group. The table is written as `--light-close`, `--light-close-rim`, `--light-close-mark` and
-//! so on, and `window_frame.css` reads those; a compositor asks [`light_colours`].
+//! The traffic lights' own colours, as macOS (Sonoma, Sequoia) draws them: they are not label hues.
+//!
+//! Per light and scheme there are three: the disc, the slightly darker hairline rim macOS draws
+//! round it, and the ink of the mark (x, minus, arrows) shown while the pointer is over the group.
+//! The table is written as `--light-close`, `--light-close-rim`, `--light-close-mark` and so on,
+//! and `window_frame.css` reads those; a compositor asks [`light_colours`].
 //!
 //! The values were observed on macOS Sonoma. The mark inks are the opaque colour of the
 //! translucent dark mark over its disc.

@@ -40,7 +40,7 @@ thread_local! {
 /// How long the page shows an ask for before it answers: a timer started at the ask.
 const ANSWER_AFTER: Duration = Duration::from_millis(150);
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Listener() -> Element {
     let mut heard = use_signal(|| None::<Instant>);
     let mut answered = use_signal(|| None::<Instant>);
@@ -97,7 +97,7 @@ fn an_ask_between_advances_runs_at_the_instant_it_was_asked() {
 /// A page whose field asks for the keyboard as it mounts while the same mount re-renders the
 /// page (the switcher's key target): the ask's task is woken in the turn the page is dirty, so
 /// dioxus polls it inside the renderer's pass, where the host's write finds the document busy.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Mounting() -> Element {
     let mut mounts = use_signal(|| 0_u32);
     rsx! {
@@ -115,7 +115,7 @@ fn Mounting() -> Element {
 }
 
 /// A page that shows the field on a press, re-rendering a sibling in the same handler.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Shown() -> Element {
     let mut open = use_signal(|| false);
     let mut presses = use_signal(|| 0_u32);
@@ -190,7 +190,7 @@ fn item(value: u8, title: &str) -> PaletteRow<u8> {
 
 static ROW: GlobalSignal<Option<Rect>> = Signal::global(|| None);
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Palette() -> Element {
     let field = use_focus_request();
     rsx! {

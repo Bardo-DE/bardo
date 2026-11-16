@@ -35,21 +35,21 @@ fn Zone(surface: Element) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Layer() -> Element {
     rsx! { Zone { surface: rsx! {
         div { style: "width: 300px; height: 200px", TextureLayer {} }
     } } }
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Frame() -> Element {
     rsx! { Zone { surface: rsx! {
         iframe { class: "page", srcdoc: FRAME_BODY, style: "width: 300px; height: 200px; border: 0" }
     } } }
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Text() -> Element {
     rsx! { Zone { surface: rsx! {
         p { style: "margin: 0; font-size: 30px", "Selectable words that a hand drifts across" }

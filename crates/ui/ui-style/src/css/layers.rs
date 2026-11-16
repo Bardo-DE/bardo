@@ -1,8 +1,9 @@
-//! The cascade layers of a document (ARCHITECTURE.md section 10). The design-system stylesheet
-//! is `@layer ds`; a consumer's own sheets are `@layer app`; the chosen look is `@layer look`;
-//! the person's own stylesheets are unlayered. An unlayered rule beats every layered one whatever
-//! its specificity, and a later layer beats an earlier one, so the order is the person's, then
-//! the look, then app, then ds.
+//! The cascade layers of a document (ARCHITECTURE.md section 10).
+//!
+//! The design-system stylesheet is `@layer ds`; a consumer's own sheets are `@layer app`; the
+//! chosen look is `@layer look`; the person's own stylesheets are unlayered. An unlayered rule
+//! beats every layered one whatever its specificity, and a later layer beats an earlier one, so the
+//! order is the person's, then the look, then app, then ds.
 
 /// The layer every design-system rule is in.
 pub const DS: &str = "ds";

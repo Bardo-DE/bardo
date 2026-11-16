@@ -1,8 +1,10 @@
 //! The size ladder's geometry (design/29-SIZING.md section 6, the numbers of design/30 section
-//! 1.6): one [`SizeScale`] per [`ControlSize`](super::ControlSize) holds the numbers the
-//! reference gives (height, rounded-rectangle radius, glyph, label, inset, the slider's knob, the
-//! checkbox, spinner and progress bar), and every other size is derived here by the rules, so the
-//! stylesheet cannot disagree with them:
+//! 1.6).
+//!
+//! One [`SizeScale`] per [`ControlSize`](super::ControlSize) holds the numbers the reference gives
+//! (height, rounded-rectangle radius, glyph, label, inset, the slider's knob, the checkbox, spinner
+//! and progress bar), and every other size is derived here by the rules, so the stylesheet cannot
+//! disagree with them:
 //!
 //! - R1 heights are whole pixels and come from the ladder, never from padding;
 //! - R2 a capsule's radius is half its height;
@@ -150,6 +152,10 @@ fn inside(height: WholePx) -> WholePx {
 }
 
 /// `numerator / denominator` rounded to the nearest even whole pixel.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the result is a control size in pixels, far inside u16"
+)]
 fn round_even(numerator: u16, denominator: u16) -> WholePx {
     let halves = (u32::from(numerator) + u32::from(denominator)) / (2 * u32::from(denominator));
     WholePx((halves * 2) as u16)

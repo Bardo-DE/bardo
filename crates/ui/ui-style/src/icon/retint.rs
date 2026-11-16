@@ -71,6 +71,10 @@ impl Tint {
 
     /// Any `#RRGGBB` (an accent's): its hue and chroma, capped. `None`
     /// when the text is not a hex colour.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a hue in degrees and a chroma below 0.4 are exact enough in f32"
+    )]
     #[must_use]
     pub fn from_hex(hex: &str) -> Option<Tint> {
         let digits = hex.strip_prefix('#')?;
@@ -78,11 +82,8 @@ impl Tint {
             return None;
         }
         let v = u32::from_str_radix(digits, 16).ok()?;
-        let lch = Oklch::from(Oklab::from(Srgb([
-            (v >> 16) as u8,
-            (v >> 8) as u8,
-            v as u8,
-        ])));
+        let [_, red, green, blue] = v.to_be_bytes();
+        let lch = Oklch::from(Oklab::from(Srgb([red, green, blue])));
         Some(Tint {
             hue: lch.h.to_degrees().rem_euclid(360.0) as f32,
             chroma: (lch.c as f32).min(TINT_CHROMA_MAX),
@@ -91,14 +92,17 @@ impl Tint {
 }
 
 /// Re-colours `pixels` (RGBA8, straight alpha) in place for `style`, lightness kept (the light
-/// scheme's rule; [`retint_in`] for the dark one). A trailing partial pixel is left alone.
+/// scheme's rule; [`retint_in`] for the dark one).
+///
+/// A trailing partial pixel is left alone.
 pub fn retint(pixels: &mut [u8], style: IconStyle, tint: Tint) {
     retint_in(pixels, style, tint, Scheme::Light);
 }
 
-/// Re-colours `pixels` (RGBA8, straight alpha) in place for `style` in `scheme`: in the dark,
-/// Muted and Monochrome lift the art's lightness into the tone band (`L' = .62 + .34 L`) so it
-/// stays above its plate. A trailing partial pixel is left alone.
+/// Re-colours `pixels` (RGBA8, straight alpha) in place for `style` in `scheme`.
+///
+/// In the dark, Muted and Monochrome lift the art's lightness into the tone band (`L' = .62 + .34
+/// L`) so it stays above its plate. A trailing partial pixel is left alone.
 pub fn retint_in(pixels: &mut [u8], style: IconStyle, tint: Tint, scheme: Scheme) {
     if style == IconStyle::Colour {
         return;

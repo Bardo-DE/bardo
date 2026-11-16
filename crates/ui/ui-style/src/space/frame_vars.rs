@@ -14,6 +14,7 @@
 use super::look::{Grain, SpaceLook};
 use super::palette::{derive, gradient};
 use crate::appearance::theme::Scheme;
+use std::fmt::Write as _;
 
 /// Every frame variable one Space paints in one scheme, as CSS values.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -71,8 +72,11 @@ impl FrameVars {
     pub fn style_attr(&self) -> String {
         self.pairs()
             .iter()
-            .map(|(name, value)| format!("{name}:{value};"))
-            .collect()
+            .fold(String::new(), |mut out, (name, value)| {
+                // Writing to a `String` cannot fail.
+                let _ = write!(out, "{name}:{value};");
+                out
+            })
     }
 
     /// The variable names the attribute writes, in order (the lint registers them).

@@ -1,13 +1,17 @@
-//! Where an external icon's pixels come from: a `data:` or `file:` URL the document loads,
-//! written so it can always sit inside a quoted CSS `url("…")`.
+//! Where an external icon's pixels come from.
+//!
+//! A `data:` or `file:` URL the document loads, written so it can always sit inside a quoted CSS
+//! `url("…")`.
 
+use std::fmt::Write as _;
 use std::path::Path;
 use ui_core::base64;
 use ui_core::error::DsError;
 
-/// Where an external icon's pixels come from: a `data:` or `file:` URL, the two schemes a
-/// quire document's net provider answers. Parsed once, so what reaches the stylesheet can
-/// always sit inside a quoted CSS `url("…")`.
+/// Where an external icon's pixels come from: a `data:` or `file:` URL, the two schemes a quire
+/// document's net provider answers.
+///
+/// Parsed once, so what reaches the stylesheet can always sit inside a quoted CSS `url("…")`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct IconUrl(String);
 
@@ -15,6 +19,9 @@ impl IconUrl {
     /// `url`, which must be `data:` or `file:` (any case). A character that would end or break
     /// the CSS string (`"`, `\`, a control character) is percent-encoded, which leaves the URL
     /// meaning the same thing.
+    ///
+    /// # Errors
+    /// `DsError::IconScheme` when `url` is not `data:` or `file:`.
     pub fn parse(url: &str) -> Result<Self, DsError> {
         let scheme = url
             .split_once(':')
@@ -44,6 +51,9 @@ impl IconUrl {
     }
 
     /// An absolute path as a `file://` URL, percent-encoded.
+    ///
+    /// # Errors
+    /// `DsError::IconPathRelative` when `path` is not absolute.
     pub fn file(path: &Path) -> Result<Self, DsError> {
         if !path.is_absolute() {
             return Err(DsError::IconPathRelative {
@@ -90,8 +100,11 @@ fn escape_for_css(url: &str) -> String {
                 let mut bytes = [0u8; 4];
                 c.encode_utf8(&mut bytes)
                     .bytes()
-                    .map(|byte| format!("%{byte:02X}"))
-                    .collect()
+                    .fold(String::new(), |mut out, byte| {
+                        // Writing to a `String` cannot fail.
+                        let _ = write!(out, "%{byte:02X}");
+                        out
+                    })
             } else {
                 c.to_string()
             }

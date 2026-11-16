@@ -100,6 +100,10 @@ pub(crate) fn first(doc: &BaseDocument, selector: &str) -> Option<NodeId> {
 }
 
 /// The border-box rect of `node`.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "layout rectangles are in logical pixels, far inside f32's range and precision"
+)]
 pub(crate) fn rect_of(doc: &BaseDocument, node: NodeId) -> Option<Rect> {
     let found = doc.get_client_bounding_rect(node)?;
     Some(Rect {

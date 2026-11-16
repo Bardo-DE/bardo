@@ -54,6 +54,10 @@ impl Harness {
     /// (or of its `::before`) carried through the part's own `transform` and every transformed
     /// ancestor's (`blitz_embed::paint_rect`): a box that slides by `translateX` is read where it
     /// appears. [`Harness::rect`](crate::Harness::rect) reads the layout box with transforms left out.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "layout rectangles are in logical pixels, far inside f32's range and precision"
+    )]
     #[must_use]
     pub fn painted_rect(&self, selector: &str, part: Part) -> Option<Rect> {
         self.with_doc(|doc| {

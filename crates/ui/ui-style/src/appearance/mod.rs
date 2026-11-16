@@ -2,7 +2,10 @@
 //! desktop says (system preferences), and what the two resolve to on a `.ds` root.
 
 pub mod accent;
-#[allow(clippy::module_inception)] // The layout names the file for its one concept.
+#[allow(
+    clippy::module_inception,
+    reason = "the layout names the file for its one concept"
+)]
 pub mod appearance;
 pub mod blur;
 pub mod material;

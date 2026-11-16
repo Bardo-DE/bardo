@@ -1,9 +1,10 @@
-//! Each material's tint, edge, shadow and radius per scheme: the `--m-*` tokens
-//! (design/03-COLOR.md section 17.2, every value proposed, tuned in the gallery). Four
-//! translucent alphas were raised in the smallest .02 steps that hold the card's ink at 4.5:1
+//! Each material's tint, edge, shadow and radius per scheme: the `--m-*` tokens (design/03-COLOR.md
+//! section 17.2, every value proposed, tuned in the gallery).
+//!
+//! Four translucent alphas were raised in the smallest .02 steps that hold the card's ink at 4.5:1
 //! over a pure black or white backdrop (`tests/legibility.rs`), and, since 2026-09-24, six more
-//! (settled: the dark bar, both dock schemes, the dark OSD and both widget schemes) were raised
-//! the same way to clear 4.5:1 over blur too, closing the shortfall FINDINGS "Bar gaps" and
+//! (settled: the dark bar, both dock schemes, the dark OSD and both widget schemes) were raised the
+//! same way to clear 4.5:1 over blur too, closing the shortfall FINDINGS "Bar gaps" and
 //! design/21-SPACES.md section 3 recorded (`tests/legibility.rs`,
 //! `the_tinted_chrome_holds_its_ink_over_blur`).
 //!

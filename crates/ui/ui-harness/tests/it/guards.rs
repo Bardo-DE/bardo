@@ -16,7 +16,7 @@ const VIEW: Viewport = Viewport {
 /// Far enough from the wall clock that no scheduling jitter can confuse the two.
 const HOUR: Duration = Duration::from_secs(3600);
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Empty() -> Element {
     rsx! { div { "idle" } }
 }

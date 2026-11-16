@@ -21,9 +21,10 @@ pub enum GlyphStyle {
     Outline,
 }
 
-/// How the on half of a pair is drawn: outline, like the off half (owner, 2026-10-09), so a star,
-/// heart, pin or bell is outline in both states and only its colour marks the on state. Set it to
-/// `Solid` to fill the on half again.
+/// How the on half of a pair is drawn.
+///
+/// Outline, like the off half (owner, 2026-10-09), so a star, heart, pin or bell is outline in both
+/// states and only its colour marks the on state. Set it to `Solid` to fill the on half again.
 pub const PAIR_ON: GlyphStyle = GlyphStyle::Outline;
 
 impl GlyphStyle {

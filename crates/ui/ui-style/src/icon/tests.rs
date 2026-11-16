@@ -17,7 +17,7 @@ fn markup_in(icon: Icon, style: GlyphStyle) -> String {
             icon,
             size: IconSize::Base,
             style,
-            cut: Default::default(),
+            cut: super::posed::Thousandths::default(),
         },
     );
     dom.rebuild_in_place();

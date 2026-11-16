@@ -367,7 +367,6 @@ mod tests {
 
     #[test]
     fn every_tint_scales_its_own_alpha_by_the_key() {
-        let css = materials_css();
         const WANT: &[&str] = &[
             ".ds[*|data-material=bar]{--m-tint:color-mix(in srgb,rgba(252,253,249,calc(.7*var(--m-tint-alpha,.8)/.8)) calc(var(--m-vibrancy,1)*100%),rgba(248,249,246,calc(.7*var(--m-tint-alpha,.8)/.8)));--m-tint-solid:color-mix(in srgb,rgba(252,253,249,.94) calc(var(--m-vibrancy,1)*100%),rgba(248,249,246,.94));",
             ".ds[*|data-theme=dark][*|data-material=widget]{--m-tint:color-mix(in srgb,rgba(20,24,19,calc(.55*var(--m-tint-alpha,.8)/.8))",
@@ -384,6 +383,7 @@ mod tests {
             ".ds[*|data-material][*|data-chrome=transparent]{background:transparent;box-shadow:none;}",
             ".ds[*|data-material][*|data-chrome=transparent] .ds-popover,.ds[*|data-material][*|data-chrome=transparent] .ds-capsule,.ds[*|data-material][*|data-chrome=transparent] .ds-sheet,.ds[*|data-material][*|data-chrome=transparent] .ds-notification-plate,.ds[*|data-material][*|data-chrome=transparent] .ds-notification-layer,.ds[*|data-material][*|data-chrome=transparent] .ds-side-panel,.ds[*|data-material][*|data-chrome=transparent] .ds-widget[*|data-host=desktop],.ds[*|data-material][*|data-chrome=transparent] .ds-shot-plate{background:var(--m-tint-solid);border-color:transparent;box-shadow:var(--m-box);}",
         ];
+        let css = materials_css();
         for want in WANT {
             assert!(css.contains(want), "missing {want}\n{css}");
         }

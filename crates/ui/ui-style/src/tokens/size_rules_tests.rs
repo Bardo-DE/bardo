@@ -66,6 +66,11 @@ fn numbers(scale: SizeScale) -> [u16; 17] {
     ]
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the result is a control size in pixels, far inside u16"
+)]
 #[test]
 fn every_size_obeys_the_rules() {
     let inset = KNOB_INSET.0;

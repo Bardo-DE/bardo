@@ -34,6 +34,10 @@ pub struct Appearance {
     pub transparency: Transparency,
 }
 
+#[expect(
+    clippy::trivially_copy_pass_by_ref,
+    reason = "serde's `skip_serializing_if` calls the function with a reference"
+)]
 fn is_system(transparency: &Transparency) -> bool {
     *transparency == Transparency::System
 }

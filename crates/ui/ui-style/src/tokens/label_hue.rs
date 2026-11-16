@@ -121,7 +121,8 @@ impl LabelHue {
             HueMember::Deep => deep,
             HueMember::Soft => soft,
         };
-        Hex([(rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8])
+        let [_, red, green, blue] = rgb.to_be_bytes();
+        Hex([red, green, blue])
     }
 
     /// Base, deep and soft as `0xRRGGBB` (design/03-COLOR.md section 15).

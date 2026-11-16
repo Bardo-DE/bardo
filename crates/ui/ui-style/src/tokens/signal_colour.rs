@@ -1,5 +1,6 @@
-//! The colours that mean one thing each (`--signal-success` and its four siblings): the mark
-//! of a finished step, of something waiting for a person, of a failure, of a git branch or
+//! The colours that mean one thing each (`--signal-success` and its four siblings).
+//!
+//! The mark of a finished step, of something waiting for a person, of a failure, of a git branch or
 //! repository, and of a folder.
 //!
 //! Each meaning has one colour and no other meaning borrows it: success is green, waiting for

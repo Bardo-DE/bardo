@@ -91,6 +91,10 @@ impl PixelToken {
     /// The token's length at `scale` in logical pixels (whole device pixels divided by the
     /// scale), for a host that reports geometry in it: `EditSurface`'s caret rect is
     /// `CaretW.logical(scale)` wide. `None` for `--dpr`.
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "device pixel counts and the scale numerator are far below 2^24, so f32 is exact"
+    )]
     #[must_use]
     pub fn logical(self, scale: Scale) -> Option<Px> {
         let device = self.device_pixels(scale)?;
@@ -98,6 +102,10 @@ impl PixelToken {
         Some(Px(device as f32 / per_logical.max(f32::EPSILON)))
     }
 
+    #[expect(
+        clippy::match_same_arms,
+        reason = "each token is its own design value, and equal values are a coincidence that merging the arms would turn into a tie"
+    )]
     fn snap(self) -> Option<Snap> {
         match self {
             PixelToken::Dpr => None,

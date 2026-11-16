@@ -14,16 +14,18 @@ use ui_core::time::clock::VirtualClock;
 /// is seen.
 pub const QUIET: Duration = Duration::from_millis(500);
 
-/// The most a settle may be stretched by a loaded machine before a test gives up: generous
-/// against contention, short enough that a genuinely broken settle still fails promptly. Only
-/// bounds the [`Clock::Wall`](crate::Clock::Wall) check; see [`VIRTUAL_DRAIN_BOUND`] for
+/// The most a settle may be stretched by a loaded machine before a test gives up.
+///
+/// Generous against contention, short enough that a genuinely broken settle still fails promptly.
+/// Only bounds the [`Clock::Wall`](crate::Clock::Wall) check; see [`VIRTUAL_DRAIN_BOUND`] for
 /// [`Clock::Virtual`](crate::Clock::Virtual).
 pub const SETTLE_BOUND: Duration = Duration::from_secs(3);
 
-/// How far [`assert_settles_to_zero_frames`] may drain the virtual clock's pending sleeps,
-/// earliest due first, before it gives up: generous against a long chain of holds, short enough
-/// that a component that keeps rescheduling itself (a retrigger loop) still fails promptly rather
-/// than hanging the test.
+/// How far [`assert_settles_to_zero_frames`] may drain the virtual clock's pending sleeps, earliest
+/// due first, before it gives up.
+///
+/// Generous against a long chain of holds, short enough that a component that keeps rescheduling
+/// itself (a retrigger loop) still fails promptly rather than hanging the test.
 pub const VIRTUAL_DRAIN_BOUND: Duration = Duration::from_secs(30);
 
 /// The step [`settle_until`] takes.
@@ -45,16 +47,21 @@ fn step(harness: &Harness) -> Duration {
 }
 
 /// Advance `harness` in 10 ms steps until `done` holds, for at most [`SETTLE_BOUND`] on the
-/// harness's clock (wall or virtual, `Harness::now`). Returns the instant `done` first held, read
-/// on that clock so a caller can compare it against other `Instant`s it took from `Harness::now` (e.g. "settled at least one full slide after it was
-/// asked for"). Panics with the document's HTML — the last state `done` saw — if `done` never
-/// holds within the bound, so a timeout is debuggable from the failure message alone.
+/// harness's clock (wall or virtual, `Harness::now`).
+///
+/// Returns the instant `done` first held, read on that clock so a caller can compare it against
+/// other `Instant`s it took from `Harness::now` (e.g. "settled at least one full slide after it was
+/// asked for"). Panics with the document's HTML — the last state `done` saw — if `done` never holds
+/// within the bound, so a timeout is debuggable from the failure message alone.
 ///
 /// **On [`Clock::Virtual`](crate::Clock::Virtual) the instant is exact when a timer ends the
 /// state**: a step never runs past a pending sleep's due instant, so `done` is looked at the
 /// moment the timer fired, and a test asserts the delay it measures with `assert_eq!`, not a
 /// wall-clock hedge (`>=`) that a delay growing from 500 ms to 900 ms would still pass. A state
 /// that only CSS time ends (an animation sampled between timers) is seen at the next 10 ms step.
+///
+/// # Panics
+/// when `done` never holds within the settle bound.
 pub fn settle_until(harness: &mut Harness, done: impl Fn(&Harness) -> bool) -> Instant {
     let started = harness.now();
     while harness.now().saturating_duration_since(started) < SETTLE_BOUND {
@@ -73,8 +80,9 @@ pub fn settle_until(harness: &mut Harness, done: impl Fn(&Harness) -> bool) -> I
     );
 }
 
-/// Assert the idle-frame rule (design/26-DETAILS.md R3) on whatever `harness` shows now: the
-/// document reaches a state where no CSS animation or transition runs (`is_animating() ==
+/// Assert the idle-frame rule (design/26-DETAILS.md R3) on whatever `harness` shows now.
+///
+/// The document reaches a state where no CSS animation or transition runs (`is_animating() ==
 /// false`) and no Rust timer wakes it for a whole [`QUIET`] window, and it stays that way. Every
 /// component with a `Detailed` state calls it at the end of each moment's test. Panics with the
 /// document's HTML if it never goes quiet.

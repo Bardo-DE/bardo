@@ -15,8 +15,8 @@ use ui_core::time::clock::now;
 
 impl Harness {
     /// Deliver one pointer input.
-    pub(crate) fn pointer(&mut self, input: PointerInput) {
-        let PointerInput { at, action, mods } = input;
+    pub(crate) fn pointer(&mut self, input: &PointerInput) {
+        let PointerInput { at, action, mods } = *input;
         match action {
             PointerAction::Move => self.move_to(at, mods),
             PointerAction::Down(button) => self.button_down(at, button, mods),
@@ -42,8 +42,9 @@ impl Harness {
         // The window's scrolling acts on a scroll key before the document hears it, and the
         // document hears it too.
         if let Some(scroll) = scroll_key(&key, input.mods) {
-            self.doc.scroll.key(scroll, KeyRepeat::First, now());
-            self.doc.scroll.key_up(now());
+            // The harness steps time itself, so whether the scroll wants a frame is not asked.
+            let _ = self.doc.scroll.key(scroll, KeyRepeat::First, now());
+            let _ = self.doc.scroll.key_up(now());
         }
         for state in [KeyState::Pressed, KeyState::Released] {
             let event = BlitzKeyEvent {

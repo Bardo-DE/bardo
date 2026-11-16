@@ -1,10 +1,11 @@
-//! The shell type scale (the macOS polish pass, 2026-09-24): the bar's items, text menus, the
-//! launcher and tooltips, each size a tuned token whose default is declared in the stylesheet
-//! (`var(--shell-menu-font,13px)`); a look or a style sheet overrides the input. The defaults are
-//! the macOS numbers design/13-BEHAVIOUR-menus-windows.md section 13.2 records (menu bar text
-//! 13 pt, menu rows about 22 pt, 13 pt menu text) and the launcher's Spotlight-like scale
-//! (design/13 section 13.3.9); `MenuBarItem`, `Menu`, `CommandPalette`
-//! in a surface and `Tooltip` read them, so a consumer gets them with no prop.
+//! The shell type scale (the macOS polish pass, 2026-09-24).
+//!
+//! The bar's items, text menus, the launcher and tooltips, each size a tuned token whose default is
+//! declared in the stylesheet (`var(--shell-menu-font,13px)`); a look or a style sheet overrides
+//! the input. The defaults are the macOS numbers design/13-BEHAVIOUR-menus-windows.md section 13.2
+//! records (menu bar text 13 pt, menu rows about 22 pt, 13 pt menu text) and the launcher's
+//! Spotlight-like scale (design/13 section 13.3.9); `MenuBarItem`, `Menu`, `CommandPalette` in a
+//! surface and `Tooltip` read them, so a consumer gets them with no prop.
 
 use crate::tokens::token::Token;
 use ui_core::word::Word;

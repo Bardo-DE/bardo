@@ -1,6 +1,7 @@
-//! The list of an app's Spaces: Arc-style tinted contexts (Work, Home...) as pure data. Generic
-//! over the app's payload `P` (what a Space holds that is the app's own: mail scope, a working
-//! directory) and over `R`, the place an app was left at in a Space.
+//! The list of an app's Spaces: Arc-style tinted contexts (Work, Home...) as pure data.
+//!
+//! Generic over the app's payload `P` (what a Space holds that is the app's own: mail scope, a
+//! working directory) and over `R`, the place an app was left at in a Space.
 //!
 //! Persistence is `ui_settings::SpacesStorage`; the hook and the views are `ui_components::components::app::spaces`.
 //! design/21-SPACES.md section 13.

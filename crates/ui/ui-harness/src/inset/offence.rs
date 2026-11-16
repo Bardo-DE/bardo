@@ -2,7 +2,7 @@
 
 use crate::inset::scene::Paint;
 use std::collections::BTreeMap;
-use std::fmt;
+use std::fmt::{self, Write as _};
 use ui_components::prelude::Px;
 
 /// Which edge of the box.
@@ -43,9 +43,9 @@ impl Offence {
 }
 
 impl fmt::Display for Offence {
-    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
-            out,
+            f,
             "{:?} gap {:.1}px (min {:.1}px) {:?}: {} :: {}",
             self.side,
             self.gap.0,
@@ -92,12 +92,14 @@ impl Findings {
             self.offences.len()
         );
         for (path, group) in by_box {
-            text.push_str(&format!("  {path}\n"));
+            // Writing to a `String` cannot fail.
+            let _ = writeln!(text, "  {path}");
             for offence in group {
-                text.push_str(&format!(
-                    "    {:?} {:.1}px < {:.1}px: {}\n",
+                let _ = writeln!(
+                    text,
+                    "    {:?} {:.1}px < {:.1}px: {}",
                     offence.side, offence.gap.0, offence.min.0, offence.content
-                ));
+                );
             }
         }
         text

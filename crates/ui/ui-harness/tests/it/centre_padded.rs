@@ -11,7 +11,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Padded() -> Element {
     let mut hits = use_signal(|| 0u32);
     rsx! {
@@ -40,7 +40,7 @@ fn a_click_at_the_centre_of_a_child_under_padding_reaches_the_child() {
     assert_eq!(harness.text_of("#hits").as_deref(), Some("1"));
 }
 
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Variants() -> Element {
     let mut hits = use_signal(String::new);
     rsx! {
@@ -90,7 +90,7 @@ fn a_scrolled_container_keeps_its_own_rect() {
 /// A button inside an inline-block inside a padded, bordered block: Blitz places each atomic inline
 /// box in its inline root's content box, so the padding of both roots lies between them and the
 /// window.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Inline() -> Element {
     let mut hits = use_signal(|| 0u32);
     rsx! {

@@ -18,9 +18,10 @@ use ui_blitz::RootContexts;
 use ui_blitz::seam::Setup;
 use ui_components::keys::KeySource;
 
-/// A headless document's size and providers: build it with [`HarnessConfig::new`] and the
-/// `with_*` methods, then pass it to [`Harness::new`](crate::Harness::new) or
-/// [`snapshot_with`](crate::snapshot::snapshot_with).
+/// A headless document's size and providers.
+///
+/// Build it with [`HarnessConfig::new`] and the `with_*` methods, then pass it to
+/// [`Harness::new`](crate::Harness::new) or [`snapshot_with`](crate::snapshot::snapshot_with).
 #[derive(Debug, Clone)]
 pub struct HarnessConfig {
     viewport: Viewport,
@@ -50,6 +51,7 @@ impl HarnessConfig {
     }
 
     /// Provide `value` at the root, read with `use_context::<T>()`.
+    #[must_use]
     pub fn with_context<T: Clone + Send + Sync + 'static>(mut self, value: T) -> Self {
         self.setup.contexts = self.setup.contexts.with(value);
         self

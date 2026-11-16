@@ -52,6 +52,7 @@ pub(crate) trait FontFiles {
 impl EmojiDirs {
     /// From the values of `XDG_DATA_DIRS`, `XDG_DATA_HOME` and `HOME`, by the XDG rules (empty
     /// counts as unset, a relative path is ignored).
+    #[cfg(test)]
     pub(crate) fn from_vars(
         xdg_data_dirs: Option<&str>,
         xdg_data_home: Option<&str>,
@@ -172,6 +173,10 @@ fn walk(dir: &Path, depth: usize, found: &mut Vec<PathBuf>) {
 }
 
 /// Whether the file name contains `COLRv1` (any case) and ends in `.ttf` or `.otf`.
+#[expect(
+    clippy::case_sensitive_file_extension_comparisons,
+    reason = "`name` is lowercased just above",
+)]
 fn named_for_colrv1(path: &Path) -> bool {
     let name = path
         .file_name()
@@ -216,13 +221,13 @@ mod tests {
         EmojiDirs::from_vars(data_dirs, data_home, home)
     }
 
-    fn strs(paths: Vec<PathBuf>) -> Vec<String> {
+    fn strs(paths: &[PathBuf]) -> Vec<String> {
         paths.iter().map(|p| p.display().to_string()).collect()
     }
 
     #[test]
     fn candidates_follow_the_data_dirs_then_the_user_then_the_packages() {
-        let got = strs(dirs(Some("/opt/a:/opt/b"), None, Some("/home/u")).candidates());
+        let got = strs(&dirs(Some("/opt/a:/opt/b"), None, Some("/home/u")).candidates());
         assert_eq!(
             got,
             [
@@ -238,7 +243,7 @@ mod tests {
     #[test]
     fn unset_or_empty_variables_take_their_defaults() {
         for unset in [None, Some("")] {
-            let got = strs(dirs(unset, unset, Some("/home/u")).candidates());
+            let got = strs(&dirs(unset, unset, Some("/home/u")).candidates());
             assert_eq!(
                 got[..3],
                 [
@@ -248,13 +253,13 @@ mod tests {
                 ]
             );
         }
-        let no_home = strs(dirs(None, None, None).candidates());
+        let no_home = strs(&dirs(None, None, None).candidates());
         assert_eq!(no_home.len(), 4, "no home, no user dir: {no_home:?}");
     }
 
     #[test]
     fn xdg_data_home_replaces_the_default_user_dir_and_repeats_collapse() {
-        let got = strs(dirs(Some("/usr/share"), Some("/usr/share"), Some("/home/u")).candidates());
+        let got = strs(&dirs(Some("/usr/share"), Some("/usr/share"), Some("/home/u")).candidates());
         let ours = "/usr/share/fonts/bardo/Noto-COLRv1.ttf";
         assert_eq!(got.iter().filter(|path| *path == ours).count(), 1);
         assert!(!got.iter().any(|path| path.starts_with("/home/u")));

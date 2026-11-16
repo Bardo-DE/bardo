@@ -41,6 +41,9 @@ impl Harness {
     /// Build `app` as `config` says and render its first frame, or the error that stops its
     /// renderer: a [`Backend::Hybrid`] harness with no GPU device to open, which a test skips
     /// on.
+    ///
+    /// # Errors
+    /// `HarnessError::Renderer` when a hybrid harness has no GPU device to open.
     pub fn try_new(app: fn() -> Element, config: HarnessConfig) -> Result<Self, HarnessError> {
         let harness = Harness::new(app, config);
         match &harness.doc.painter {
@@ -55,6 +58,9 @@ impl Harness {
     /// it, so the time is the whole frame's, GPU included, never just the recording. The
     /// document is not resolved here: style and layout (a scroll, a click) happen in the input
     /// call before, so time that separately.
+    ///
+    /// # Errors
+    /// `HarnessError` when the renderer is unavailable or the frame cannot be painted.
     pub fn paint_timed(&mut self) -> Result<PaintTime, HarnessError> {
         self.doc.paint_timed(Backdrop::Scheme)
     }

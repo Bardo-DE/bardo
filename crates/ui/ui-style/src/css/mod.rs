@@ -1,7 +1,8 @@
-//! The style layer's stylesheet sections, generated from the token table: the reset, tokens
-//! (`.ds`, `.ds[data-theme=dark]`), accents, materials, shapes, the frame ground and the
-//! utilities, and how the whole sheet is laid out as text. The keyframes are motion's and the
-//! order is the assembly's. Fonts are not in it: they are registered with the renderer
+//! The style layer's stylesheet sections, generated from the token table.
+//!
+//! The reset, tokens (`.ds`, `.ds[data-theme=dark]`), accents, materials, shapes, the frame ground
+//! and the utilities, and how the whole sheet is laid out as text. The keyframes are motion's and
+//! the order is the assembly's. Fonts are not in it: they are registered with the renderer
 //! (`crate::fonts`).
 
 pub mod accents_css;

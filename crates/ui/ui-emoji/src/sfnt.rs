@@ -32,7 +32,7 @@ mod tests {
     /// An sfnt header listing `tags` and nothing else.
     fn sfnt(tags: &[&[u8; 4]]) -> Vec<u8> {
         let mut data = vec![0, 1, 0, 0];
-        data.extend((tags.len() as u16).to_be_bytes());
+        data.extend(u16::try_from(tags.len()).expect("a few tags").to_be_bytes());
         data.extend([0; 6]);
         for tag in tags {
             data.extend(tag.iter());

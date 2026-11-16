@@ -386,6 +386,10 @@ pub enum Icon {
 impl Icon {
     /// The children of this glyph's outline, in the design's order. `solid_shapes` is its
     /// solid form and `shapes_in` picks by style.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one match from each glyph to its table of shapes"
+    )]
     #[must_use]
     pub fn shapes(self) -> &'static [Shape] {
         match self {

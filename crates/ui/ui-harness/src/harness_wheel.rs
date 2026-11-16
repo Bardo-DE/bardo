@@ -19,7 +19,7 @@ impl Harness {
     /// so the pointer is moved to `at` first, as a window has always delivered a move there) and
     /// carries no scroll phase: a gesture's end is only the deltas stopping.
     pub(crate) fn wheel(&mut self, at: Point, dx: Px, dy: Px) {
-        self.pointer(PointerInput {
+        self.pointer(&PointerInput {
             at,
             action: PointerAction::Move,
             mods: Modifiers::empty(),
@@ -41,7 +41,7 @@ impl Harness {
     /// there first. The engine scrolls for it and the document never sees the wheel, as in a
     /// window; over a `data-wheel="capture"` element the raw wheel goes to the document instead.
     pub(crate) fn detents(&mut self, at: Point, x: f64, y: f64, held: Modifiers) {
-        self.pointer(PointerInput {
+        self.pointer(&PointerInput {
             at,
             action: PointerAction::Move,
             mods: Modifiers::empty(),
@@ -62,7 +62,7 @@ impl Harness {
     /// `MouseWheel` with pixels: the engine takes it (or, with nothing to scroll under the pointer,
     /// the document gets the wheel), and the pointer is moved to `at` first.
     pub(crate) fn fingers(&mut self, at: Point, dx: Px, dy: Px, phase: GesturePhase) {
-        self.pointer(PointerInput {
+        self.pointer(&PointerInput {
             at,
             action: PointerAction::Move,
             mods: Modifiers::empty(),
@@ -99,7 +99,7 @@ impl Harness {
             },
             buttons: self.held_buttons().blitz(),
             mods: Modifiers::empty(),
-            element: Default::default(),
+            element: blitz_traits::events::Point::<f32>::default(),
         }));
     }
 

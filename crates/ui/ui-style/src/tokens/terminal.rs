@@ -19,7 +19,8 @@ use crate::tokens::token::{CssValue, Token, TokenScope};
 use ui_core::word::Word;
 
 const fn rgb(value: u32) -> Colour {
-    Colour::Solid(Hex([(value >> 16) as u8, (value >> 8) as u8, value as u8]))
+    let [_, red, green, blue] = value.to_be_bytes();
+    Colour::Solid(Hex([red, green, blue]))
 }
 
 /// One colour of the terminal palette.

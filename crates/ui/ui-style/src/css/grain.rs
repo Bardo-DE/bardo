@@ -41,6 +41,12 @@ fn grain_png() -> Vec<u8> {
 }
 
 /// The prototype's greys, in raster order, computed the way its JavaScript does.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "the seed is below 2^31, exact in f64, and rnd is below 1, so the floor of rnd * 255 is 0..=254"
+)]
 fn greys() -> Vec<u8> {
     let mut seed = SEED;
     (0..SIZE * SIZE)
@@ -54,6 +60,11 @@ fn greys() -> Vec<u8> {
 }
 
 /// A grey as black or white at an alpha: two bytes, grey then alpha.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "each branch bounds its value to 0..=255"
+)]
 fn pixel(grey: u8) -> [u8; 2] {
     let twice = i16::from(grey) * 2;
     if twice < 255 {

@@ -3,9 +3,10 @@
 use ui_components::prelude::Px;
 use ui_components::style::tokens::spacing::SpacingToken;
 
-/// The text inset of a menu item, a row, a card: `--s-8`, the least any content sits from the
-/// painted edge of its box unless an [`Allow`] says why not (design/34-MODERN-LOOK.md,
-/// 04-COMPONENTS.md sections 3 and 5).
+/// The text inset of a menu item, a row, a card.
+///
+/// `--s-8`, the least any content sits from the painted edge of its box unless an [`Allow`] says
+/// why not (design/34-MODERN-LOOK.md, 04-COMPONENTS.md sections 3 and 5).
 #[must_use]
 pub fn text_inset() -> Px {
     Px(f32::from(SpacingToken::S8.tenths()) / 10.0)

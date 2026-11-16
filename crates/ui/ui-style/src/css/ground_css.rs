@@ -61,12 +61,12 @@ mod tests {
 
     #[test]
     fn the_frame_redirects_the_paper_inks_and_overlays_take_them_back() {
-        let css = ground_css();
         const WANT: &[&str] = &[
             ".ds[*|data-ground=frame]{--ink:var(--f-ink);--ink-soft:var(--f-ink-soft);--ink-faint:var(--f-ink-faint);--surface:var(--f-pill-hover);--surface-2:var(--f-pill);",
             ".ds[*|data-ground=frame] .ds-overlay{--ink:#",
             ".ds[*|data-theme=dark][*|data-ground=frame] .ds-overlay{--ink:#",
         ];
+        let css = ground_css();
         for want in WANT {
             assert!(css.contains(want), "missing {want}\n{css}");
         }

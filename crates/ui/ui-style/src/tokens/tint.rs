@@ -18,6 +18,10 @@ pub(crate) fn tint(material: Material, scheme: Scheme) -> Option<(Hex, Alpha)> {
 ///
 /// Light tints are `--surface` (`rgba(248,249,246,…)`) and the popover's `--raise` white; dark
 /// tints are `--paper` (`rgba(21,24,20,…)`) and the popover's dark `--raise`.
+#[expect(
+    clippy::match_same_arms,
+    reason = "each token is its own design value, and equal values are a coincidence that merging the arms would turn into a tie"
+)]
 pub(crate) fn flat_tint(material: Material, scheme: Scheme) -> Option<(Hex, Alpha)> {
     const SURFACE: Hex = Hex([248, 249, 246]);
     const WHITE: Hex = Hex([255, 255, 255]);

@@ -1,7 +1,9 @@
-//! The slash across a glyph that is off, drawn solid: a capsule from the top left corner that
-//! grows towards the bottom right as it is drawn on, and the gap it cuts in the glyph under it
-//! (design/08-ICONS.md section 1.2, rule 8). The macOS speaker, Wi-Fi and Bluetooth slashes read
-//! the same way: a solid bar with a clear margin either side.
+//! The slash across a glyph that is off, drawn solid.
+//!
+//! A capsule from the top left corner that grows towards the bottom right as it is drawn on, and
+//! the gap it cuts in the glyph under it (design/08-ICONS.md section 1.2, rule 8). The macOS
+//! speaker, Wi-Fi and Bluetooth slashes read the same way: a solid bar with a clear margin either
+//! side.
 
 use super::posed::Thousandths;
 use super::shape::Shape;
@@ -42,6 +44,10 @@ fn capsule(from: (f32, f32), to: (f32, f32), width: f32) -> String {
 }
 
 /// The end of the slash when `drawn` thousandths of it is drawn.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "the draw share is clamped to 0..=1000, exact in f32"
+)]
 fn tip(drawn: Thousandths) -> (f32, f32) {
     let share = drawn.0.clamp(0, 1000) as f32 / 1000.0;
     (
@@ -62,6 +68,9 @@ pub const SLASH_SHAPE: Shape = Shape::Solid(
 );
 
 /// The slash as the `path` that paints it, in `currentColor`.
+///
+/// # Errors
+/// never in practice: `Element` is the framework's result type, and the slash always renders.
 pub fn slash_mark(drawn: Thousandths) -> Element {
     match slash_path(drawn) {
         Some(d) => rsx! { path { d, fill: "currentColor", "data-drawn": "{drawn.0.min(1000)}" } },

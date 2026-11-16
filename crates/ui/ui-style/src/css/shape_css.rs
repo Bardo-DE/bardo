@@ -317,7 +317,6 @@ mod tests {
 
     #[test]
     fn the_squircle_masks_the_paint_and_never_the_shadow() {
-        let css = shape_css();
         const WANT: &[&str] = &[
             ".ds[*|data-material][*|data-corner=squircle]{background:transparent;position:relative;z-index:var(--z-raise);border-radius:var(--r-squircle,var(--m-radius));}",
             ".ds[*|data-material][*|data-corner=squircle]::before{content:\"\";position:absolute;inset:0;z-index:var(--z-scene);border-radius:0;pointer-events:none;mask-image:url(\"data:image/svg+xml,",
@@ -331,6 +330,7 @@ mod tests {
             ".ds[*|data-theme=dark] .ds-plate[*|data-icon-style]{--plate-base:var(--plate-base-d);",
             ".ds-dock-floor{--dock-floor-fill:",
         ];
+        let css = shape_css();
         for want in WANT {
             assert!(css.contains(want), "missing {want}\n{css}");
         }

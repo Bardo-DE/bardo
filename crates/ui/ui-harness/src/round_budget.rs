@@ -51,7 +51,6 @@ impl RoundBudget {
 #[cfg(test)]
 mod tests {
     use super::{MAX_ROUNDS, MAX_TOTAL, RoundBudget};
-    use std::future::Future;
     use std::pin::pin;
     use std::task::{Context, Waker};
     use std::time::Duration;
@@ -87,7 +86,7 @@ mod tests {
     #[test]
     fn a_steady_timer_does_not_hide_a_loop_for_ever() {
         let mut budget = RoundBudget::new();
-        let rounds = (1..)
+        let rounds = (1..=usize::MAX)
             .find(|_| {
                 finish_a_sleep();
                 budget.spend()

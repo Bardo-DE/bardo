@@ -42,6 +42,9 @@ pub fn insets(harness: &Harness, policy: &Policy) -> Findings {
 
 /// Fail with the offences listed when any box has content closer to a painted edge than
 /// `policy` allows.
+///
+/// # Panics
+/// when any box has content closer to a painted edge than `policy` allows.
 pub fn assert_insets(harness: &Harness, policy: &Policy) {
     let findings = insets(harness, policy);
     assert!(findings.offences.is_empty(), "{}", findings.text());

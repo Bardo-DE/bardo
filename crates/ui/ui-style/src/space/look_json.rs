@@ -18,8 +18,8 @@ pub enum LookJsonError {
 }
 
 impl fmt::Display for LookJsonError {
-    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
-        out.write_str(match self {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
             LookJsonError::TooLong => "the look is longer than 1024 bytes",
             LookJsonError::Malformed => "the text is not a Space look",
         })
@@ -37,13 +37,17 @@ impl SpaceLook {
     }
 
     /// The look `text` holds, held to the dot limits. A key it lacks takes the neutral Space's.
+    ///
+    /// # Errors
+    /// `LookJsonError::TooLong` when `text` is over the limit, `Malformed` when it is not a look.
     pub fn from_json(text: &str) -> Result<SpaceLook, LookJsonError> {
         if text.len() > LOOK_JSON_MOST {
             return Err(LookJsonError::TooLong);
         }
         serde_json::from_str::<SpaceLook>(text)
             .map(clamp_look)
-            .map_err(|_| LookJsonError::Malformed)
+            .ok()
+            .ok_or(LookJsonError::Malformed)
     }
 }
 

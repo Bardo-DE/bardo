@@ -1,8 +1,9 @@
-//! The token table: every colour, duration, delay, easing, radius, spacing step,
-//! shadow, type size, layer and device-pixel line width, as Rust data. Each family is a `Token`
-//! (`#[derive(Word, Token)]`) listed in a kit, and the stylesheet's `.ds` blocks and the linter's
-//! vocabulary are written from those lists (`crate::kit`), so CSS and the Rust timers
-//! cannot drift (design/05-MOTION.md section 7.1).
+//! The token table: every colour, duration, delay, easing, radius, spacing step, shadow, type size,
+//! layer and device-pixel line width, as Rust data.
+//!
+//! Each family is a `Token` (`#[derive(Word, Token)]`) listed in a kit, and the stylesheet's `.ds`
+//! blocks and the linter's vocabulary are written from those lists (`crate::kit`), so CSS and the
+//! Rust timers cannot drift (design/05-MOTION.md section 7.1).
 
 pub mod accent_band;
 pub mod accent_table;

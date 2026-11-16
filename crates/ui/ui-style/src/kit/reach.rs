@@ -1,9 +1,10 @@
-//! What a stylesheet of the person's or a look's may fetch (customization design section 7.6):
+//! What a stylesheet of the person's or a look's may fetch (customization design section 7.6).
+//!
 //! `url()`, `@import` and `@font-face` may name `data:` or a file inside the sheet's own folder,
-//! and nothing else. Blitz gives a net provider no way to tell which sheet asked, so the rule is
-//! a rewrite of the text before it goes into `<style>`: a `url()` that reaches elsewhere becomes
-//! an empty `data:` URL (the rule around it stays valid) and an `@import` of such a target is
-//! removed. Each cut is recorded, with its line, for the notes.
+//! and nothing else. Blitz gives a net provider no way to tell which sheet asked, so the rule is a
+//! rewrite of the text before it goes into `<style>`: a `url()` that reaches elsewhere becomes an
+//! empty `data:` URL (the rule around it stays valid) and an `@import` of such a target is removed.
+//! Each cut is recorded, with its line, for the notes.
 
 use std::path::{Component, Path};
 

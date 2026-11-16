@@ -141,6 +141,10 @@ enum Keeper {
 impl Headless {
     /// Build `app` at `viewport` with the app's `setup` and run its first render (no layout
     /// yet).
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one ordered build of the headless document; each step is a short setup call"
+    )]
     pub(crate) fn new(
         app: fn() -> Element,
         viewport: Viewport,
@@ -395,9 +399,10 @@ impl Headless {
         // Before the renders, as the window loop runs it: a listener the scroll step hands eased
         // detents to writes its signal now, and this frame's renders show it.
         if self.layout != Layout::Held {
-            self.scroll.frame(now());
+            // The harness steps time itself, so whether the scroll wants a frame is not asked.
+            let _ = self.scroll.frame(now());
             // As the window does, so a component over a scroll offset renders this frame's.
-            self.phase.publish_scrolls();
+            let _ = self.phase.publish_scrolls();
         }
         let rendered = self.flush();
         // After the renders and tasks have run, so a component's own hand-back (a menu's
@@ -552,12 +557,21 @@ fn scale(viewport: Viewport) -> f64 {
 }
 
 /// The viewport in device pixels.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a window size in device pixels is far inside u32, and a scale of a few is exact in f32"
+)]
 pub(crate) fn physical(viewport: Viewport) -> (u32, u32) {
     let device = |logical: u32| (f64::from(logical) * scale(viewport)).round() as u32;
     (device(viewport.width), device(viewport.height))
 }
 
 /// Blitz's viewport for ours, light until the root says otherwise.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a window size in device pixels is far inside u32, and a scale of a few is exact in f32"
+)]
 fn blitz_viewport(viewport: Viewport) -> BlitzViewport {
     let (width, height) = physical(viewport);
     BlitzViewport::new(width, height, scale(viewport) as f32, ColorScheme::Light)

@@ -1,7 +1,8 @@
-//! What the traffic lights show (design/04-COMPONENTS.md "Window frame"), as a pure function of
-//! two facts: whether the window is the one the person works in, and whether the pointer is over
-//! the group. The window frame's stylesheet draws it; a compositor that draws the lights itself
-//! asks here.
+//! What the traffic lights show (design/04-COMPONENTS.md "Window frame"), as a pure function of two
+//! facts.
+//!
+//! Whether the window is the one the person works in, and whether the pointer is over the group.
+//! The window frame's stylesheet draws it; a compositor that draws the lights itself asks here.
 
 /// Whether the pointer is over any of the three lights.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -31,9 +32,10 @@ pub struct LightState {
     pub marks: bool,
 }
 
-/// The lights in the window `activity` describes, with the pointer as `hover` says: coloured in
-/// the key window and whenever the pointer is over the group, grey otherwise; the marks show only
-/// over the group.
+/// The lights in the window `activity` describes, with the pointer as `hover` says.
+///
+/// Coloured in the key window and whenever the pointer is over the group, grey otherwise; the marks
+/// show only over the group.
 #[must_use]
 pub fn light_state(activity: bool, hover: GroupHover) -> LightState {
     let fill = match (activity, hover) {

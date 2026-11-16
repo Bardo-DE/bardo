@@ -1,6 +1,8 @@
-//! Drawing a glyph: `svg.ds-ic` with the paint as attributes and `currentColor`, so the glyph
-//! takes its parent's text colour (design/08-ICONS.md sections 1.3-1.5). A solid glyph is
-//! `fill="currentColor"` with no stroke; an outline one is the 2 px stroke with no fill.
+//! Drawing a glyph: `svg.ds-ic` with the paint as attributes and `currentColor`, so the glyph takes
+//! its parent's text colour (design/08-ICONS.md sections 1.3-1.5).
+//!
+//! A solid glyph is `fill="currentColor"` with no stroke; an outline one is the 2 px stroke with no
+//! fill.
 //!
 //! The paint is written on the element, not by CSS.
 

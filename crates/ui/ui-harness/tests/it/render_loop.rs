@@ -13,7 +13,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// An effect that reads and writes the same signal re-runs, and re-renders, forever.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Spinner() -> Element {
     let mut turns = use_signal(|| 0_u64);
     use_effect(move || turns.set(turns() + 1));
@@ -21,7 +21,7 @@ fn Spinner() -> Element {
 }
 
 /// Settles after a few renders: more than one round, far below the cap.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Settler() -> Element {
     let mut turns = use_signal(|| 0_u64);
     use_effect(move || {
@@ -64,7 +64,7 @@ fn a_document_that_settles_after_a_few_rounds_is_not_a_loop() {
 /// tick, so a tick fires during every round and each round has a render to run. That is time
 /// passing on a machine slower than the timer, as under load, not a loop: it ends when the
 /// ticks do. Far more rounds than the cap, and no panic.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn Ticker() -> Element {
     let mut ticks = use_signal(|| 0_u32);
     use_hook(move || {
@@ -93,7 +93,7 @@ fn a_real_timer_that_fires_every_round_is_time_passing_not_a_loop() {
 
 /// An effect that loops while a real timer ticks beside it is still a loop: its rounds are the
 /// document's own.
-#[allow(non_snake_case)]
+#[allow(non_snake_case, reason = "components are named in PascalCase")]
 fn SpinnerBesideATimer() -> Element {
     use_hook(move || {
         spawn(async move {

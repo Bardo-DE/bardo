@@ -3,9 +3,10 @@
 
 use serde::{Deserialize, Serialize};
 
-/// The text of the person's `style.css`. An empty text is no style at all; the text is never
-/// parsed here, so a syntax error costs the rules after it and nothing else
-/// (`ui_lint::user_stylesheet` reports them).
+/// The text of the person's `style.css`.
+///
+/// An empty text is no style at all; the text is never parsed here, so a syntax error costs the
+/// rules after it and nothing else (`ui_lint::user_stylesheet` reports them).
 ///
 /// It lives beside [`super::KitRank::User`], which puts it last in the cascade, so `ds` can take
 /// it as a prop while `ui-settings` stores it.

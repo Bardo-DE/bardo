@@ -38,6 +38,9 @@ pub struct Viewport {
 }
 
 /// Render `app` once, after its fonts and images have landed, to an RGBA image.
+///
+/// # Errors
+/// `HarnessError` when the renderer is unavailable or no frame can be painted.
 pub fn snapshot(
     app: fn() -> Element,
     viewport: Viewport,
@@ -48,10 +51,14 @@ pub fn snapshot(
         .ok_or_else(|| HarnessError::Renderer("no frame rendered".into()))
 }
 
-/// Render `app` at each of `moments` of animation time (measured from its first frame, in
-/// order), after its fonts and images have landed and its mount-time waits have run: one image
-/// per moment, for pictures of a motion part-way through. Each moment's CSS time is exact; the
-/// settle only lets timers and fetches land first.
+/// Render `app` at each of `moments` of animation time (measured from its first frame, in order),
+/// after its fonts and images have landed and its mount-time waits have run.
+///
+/// One image per moment, for pictures of a motion part-way through. Each moment's CSS time is
+/// exact; the settle only lets timers and fetches land first.
+///
+/// # Errors
+/// `HarnessError` when the renderer is unavailable or a frame cannot be painted.
 pub fn snapshot_at(
     app: fn() -> Element,
     viewport: Viewport,
@@ -62,6 +69,9 @@ pub fn snapshot_at(
 
 /// As [`snapshot_at`], with the document built as `config` says: the app's own contexts and
 /// providers, so a component that reads `use_context` renders as it does in the window.
+///
+/// # Errors
+/// `HarnessError` when the renderer is unavailable or a frame cannot be painted.
 pub fn snapshot_with(
     app: fn() -> Element,
     config: HarnessConfig,
@@ -70,9 +80,14 @@ pub fn snapshot_with(
     snapshot_rounds(app, config, moments, 1)
 }
 
-/// As [`snapshot_at`], after waiting for placements to land: a hint or popover is hidden until
-/// its target and its own size are measured, each a frame after the last, so a page with such
-/// surfaces (the gallery's) waits several settle rounds before its first moment.
+/// As [`snapshot_at`], after waiting for placements to land.
+///
+/// A hint or popover is hidden until its target and its own size are measured, each a frame after
+/// the last, so a page with such surfaces (the gallery's) waits several settle rounds before its
+/// first moment.
+///
+/// # Errors
+/// `HarnessError` when the renderer is unavailable or a frame cannot be painted.
 pub fn snapshot_placed(
     app: fn() -> Element,
     viewport: Viewport,

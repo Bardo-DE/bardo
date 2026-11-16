@@ -1,7 +1,10 @@
 //! A control's size on the ladder (design/30-CATALOGUE.md section 1.6, macOS's
-//! `NSControl.ControlSize`): Mini 20, Small 24, Regular 28, Large 32, `ExtraLarge` 40 (design/34-MODERN-LOOK.md section 2.2,
-//! step 2, Tahoe; the heights are an M-low estimate, section 6 decision 1). Each size's whole geometry
-//! comes from [`SizeScale`], computed from its height by the design/29-SIZING.md section 6 rules.
+//! `NSControl.ControlSize`).
+//!
+//! Mini 20, Small 24, Regular 28, Large 32, `ExtraLarge` 40 (design/34-MODERN-LOOK.md section 2.2,
+//! step 2, Tahoe; the heights are an M-low estimate, section 6 decision 1). Each size's whole
+//! geometry comes from [`SizeScale`], computed from its height by the design/29-SIZING.md section 6
+//! rules.
 
 use super::size_scale::{SizeScale, WholePx};
 use ui_core::word::Word;

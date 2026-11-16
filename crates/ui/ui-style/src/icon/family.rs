@@ -1,7 +1,9 @@
-//! The plate gradient families (design/08-ICONS.md section 2.3): two stops at 135 degrees from
-//! the Candy shelf, and the glyph colour each takes. A plate is the whole `n = 5` superellipse
-//! (`plate.rs`) filled with its family's gradient, with the section 2.5 inner highlight and rim
-//! and a drop shadow; until the generated app icons arrive, a placeholder tile is a glyph on one.
+//! The plate gradient families (design/08-ICONS.md section 2.3): two stops at 135 degrees from the
+//! Candy shelf, and the glyph colour each takes.
+//!
+//! A plate is the whole `n = 5` superellipse (`plate.rs`) filled with its family's gradient, with
+//! the section 2.5 inner highlight and rim and a drop shadow; until the generated app icons arrive,
+//! a placeholder tile is a glyph on one.
 
 use crate::tokens::hex::Hex;
 use crate::tokens::token::Token;

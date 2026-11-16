@@ -1,7 +1,8 @@
-//! Symbolic or image: design/08-ICONS.md section 1.5 step 2. A status item's pixmap (or a
-//! non-symbolic themed icon) whose opaque pixels are all near-grey is monochrome and is
-//! recoloured to the text colour like a symbolic icon; anything with colour in it states a
-//! fact about its app and is shown as it is.
+//! Symbolic or image: design/08-ICONS.md section 1.5 step 2.
+//!
+//! A status item's pixmap (or a non-symbolic themed icon) whose opaque pixels are all near-grey is
+//! monochrome and is recoloured to the text colour like a symbolic icon; anything with colour in it
+//! states a fact about its app and is shown as it is.
 //!
 //! Near-grey is OKLCH chroma below a threshold (design/08 section 1.5 proposes 0.04). The
 //! limit is a constant, 0.04 (range 0.0..=0.2; there is no setting); [`classify_with`] takes the
@@ -46,6 +47,11 @@ impl TryFrom<f32> for ChromaLimit {
 
     /// `chroma` as a caller would carry it — plain OKLCH chroma, not thousandths — refusing
     /// anything outside `ChromaLimit::RANGE` (`0.0..=0.2`).
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "chroma is below 0.4, so its thousandths fit u16"
+    )]
     fn try_from(chroma: f32) -> Result<Self, DsError> {
         if !ChromaLimit::RANGE.contains(&chroma) {
             return Err(DsError::ChromaLimitRange {
@@ -61,9 +67,14 @@ impl TryFrom<f32> for ChromaLimit {
 /// too little of their colour to say anything about it.
 const OPAQUE_FROM: u8 = 128;
 
-/// Whether the PNG `png` is a symbolic or an image icon: symbolic when every pixel with at
-/// least half coverage has OKLCH chroma below `limit` (a fully transparent icon is symbolic).
-/// Needs the `icon-classify` feature (on by default), which links the PNG decoder.
+/// Whether the PNG `png` is a symbolic or an image icon.
+///
+/// Symbolic when every pixel with at least half coverage has OKLCH chroma below `limit` (a fully
+/// transparent icon is symbolic). Needs the `icon-classify` feature (on by default), which links
+/// the PNG decoder.
+///
+/// # Errors
+/// `DsError::IconDecode` when `png` is not a PNG the decoder can read.
 #[cfg(feature = "icon-classify")]
 pub fn classify_with(png: &[u8], limit: ChromaLimit) -> Result<IconKind, DsError> {
     let decoded = image::load_from_memory_with_format(png, image::ImageFormat::Png)

@@ -1,6 +1,8 @@
-//! The Space a `Ds` root draws, readable by everything under it: the look, and the frame
-//! variables it paints in the root's resolved scheme. An app that draws for itself (a canvas, a
-//! texture) restyles from these when the person switches Space or edits its look.
+//! The Space a `Ds` root draws, readable by everything under it: the look, and the frame variables
+//! it paints in the root's resolved scheme.
+//!
+//! An app that draws for itself (a canvas, a texture) restyles from these when the person switches
+//! Space or edits its look.
 
 use super::frame_vars::FrameVars;
 use super::look::SpaceLook;

@@ -1,5 +1,6 @@
-//! The solid forms of the icons a symbol effect animates by part (design/35-SYMBOL-EFFECTS.md):
-//! the shapes that stay and one list of shapes per [`super::parts::Part`], in the order
+//! The solid forms of the icons a symbol effect animates by part (design/35-SYMBOL-EFFECTS.md).
+//!
+//! The shapes that stay and one list of shapes per [`super::parts::Part`], in the order
 //! [`Icon::parts`] lists them. An icon whose whole drawing is its one part is its
 //! [`Icon::solid_shapes`]; the rest are drawn here (design/08-ICONS.md section 1.2.1).
 
