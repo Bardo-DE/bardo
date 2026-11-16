@@ -5,9 +5,9 @@
 //! a style preference: a rule that reads its own environment can only be checked on the machine
 //! it was written on, and for a cross-platform agent that is the one thing that must not be
 //! true. The macOS and Windows answers below are tested from whatever machine runs `cargo test`.
+
+use crate::Error;
 use base_xdg::Xdg;
-use crate::Error;
-use crate::Error;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
