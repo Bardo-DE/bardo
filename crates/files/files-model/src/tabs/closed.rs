@@ -26,7 +26,7 @@ impl Tabs {
                     }
                     Finish::Done | Finish::Stopped => Vec::new(),
                 };
-                (self.undoable(outcome.undo), told)
+                (self.undoable(outcome.undo.as_ref()), told)
             }
             OpEvent::Started(_) | OpEvent::Progress(_) => (self, Vec::new()),
         }

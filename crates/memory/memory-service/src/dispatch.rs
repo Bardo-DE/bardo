@@ -366,8 +366,8 @@ async fn run_in_space<B: Backend>(
     match request {
         R::ExplainFile(claim) => open.explain(cx, claim).await.map(|_| MemoryReply::Ok),
         R::Mark(mark) => open.mark(mark).map(|()| MemoryReply::Ok),
-        R::Search(q) => open.search(cx, q).await.map(MemoryReply::Hits),
-        R::Inject(q) => open.inject(cx, q).await.map(MemoryReply::Hits),
+        R::Search(q) => open.search(cx, &q).await.map(MemoryReply::Hits),
+        R::Inject(q) => open.inject(cx, &q).await.map(MemoryReply::Hits),
         R::Recent(_, q) => open.recent(cx, q).map(MemoryReply::Recent),
         R::Entries(_, q) => open.entries_page(cx, q).map(MemoryReply::Entries),
         R::Facts(q) => open.facts(cx, &q).map(MemoryReply::Facts),

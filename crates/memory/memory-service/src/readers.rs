@@ -43,7 +43,7 @@ impl<B: Backend> Open<B> {
     pub(crate) async fn search(
         &mut self,
         cx: &Cx<'_, B>,
-        q: RecallQuery,
+        q: &RecallQuery,
     ) -> Result<Vec<RecallHit>, Refusal> {
         let vector = self.query_vector(cx, q.text.as_str()).await;
         let hits = memory_search::search(&*self, vector.as_ref(), q)?;
@@ -55,7 +55,7 @@ impl<B: Backend> Open<B> {
     pub(crate) async fn inject(
         &mut self,
         cx: &Cx<'_, B>,
-        q: InjectQuery,
+        q: &InjectQuery,
     ) -> Result<Vec<RecallHit>, Refusal> {
         let vector = self.query_vector(cx, q.text.as_str()).await;
         let hits = memory_search::inject(&*self, vector.as_ref(), q)?;

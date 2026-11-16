@@ -205,7 +205,7 @@ pub fn run_case_traced<S: Rig>(
     });
     let records = seams.sink().records();
     let sheets = seams.confirmer().requests();
-    let trace = CaseTrace::assemble(case, &result, (setup, installed), records, sheets, cuts);
+    let trace = CaseTrace::assemble(case, &result, (setup, installed), &records, &sheets, cuts);
     (result, trace)
 }
 
