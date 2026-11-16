@@ -20,7 +20,7 @@ pub struct SseEvent {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum SseError {
     #[error("the stream is not valid UTF-8")]
-    NotUtf8,
+    NotUtf8(#[source] std::str::Utf8Error),
     #[error("a line is longer than the decoder accepts")]
     LineTooLong,
 }
@@ -112,9 +112,7 @@ impl SseDecoder {
         let mut used = 0;
         while let Some((end, next)) = line_end(&self.pending, used, self.scanned.max(used), stream)
         {
-            let line = std::str::from_utf8(&self.pending[used..end])
-                .ok()
-                .ok_or(SseError::NotUtf8)?;
+            let line = std::str::from_utf8(&self.pending[used..end]).map_err(SseError::NotUtf8)?;
             let event = Self::absorb(&mut self.event, &mut self.data, &mut self.data_len, line)?;
             events.extend(event);
             used = next;

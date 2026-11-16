@@ -161,7 +161,10 @@ fn a_multibyte_code_point_split_across_chunks_is_not_an_error() {
 
 #[test]
 fn a_complete_line_that_is_not_utf8_is_an_error() {
-    assert_eq!(sse(&[b"data: \xFF\xFE\n\n"]), Err(SseError::NotUtf8));
+    assert!(matches!(
+        sse(&[b"data: \xFF\xFE\n\n"]),
+        Err(SseError::NotUtf8(_))
+    ));
     // An incomplete one is not decoded yet, and a dropped trailing event never errors.
     assert_eq!(
         sse(&[b"data: a\n\ndata: \xFF"]).unwrap(),
@@ -277,7 +280,7 @@ fn ndjson_is_split_safe_and_strict() {
             "cut {cut}"
         );
     }
-    assert_eq!(ndjson(&[b"\xFF\n"]), Err(LineError::NotUtf8));
+    assert!(matches!(ndjson(&[b"\xFF\n"]), Err(LineError::NotUtf8(_))));
     assert_eq!(
         NdjsonDecoder::new().feed(&vec![b'a'; (4 << 20) + 1]),
         Err(LineError::LineTooLong)

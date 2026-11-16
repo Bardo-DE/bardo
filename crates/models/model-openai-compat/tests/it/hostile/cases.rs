@@ -110,7 +110,10 @@ fn content_and_calls_after_the_finish_reason_are_unreadable() {
 #[test]
 fn invalid_utf8_in_a_line_is_a_framing_error_and_split_characters_are_not() {
     let reply = run(&[b"data: {\"a\":\"\xff\xfe\"}\n\n"]);
-    assert_eq!(reply.end, Err(Refused::Framing(SseError::NotUtf8)));
+    assert!(matches!(
+        reply.end,
+        Err(Refused::Framing(SseError::NotUtf8(_)))
+    ));
     let body = sse(&scenario());
     let at = body.iter().position(|b| *b == 0xE4).unwrap();
     let split = run(&[&body[..=at], &body[at + 1..at + 2], &body[at + 2..]]);
