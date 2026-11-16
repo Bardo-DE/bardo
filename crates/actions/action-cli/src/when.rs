@@ -75,6 +75,11 @@ pub fn duration(text: &str) -> Result<Seconds, WhenFault> {
             's' => 1,
             _ => return Err(WhenFault::NotDuration),
         };
+        // A unit with no number before it (`soon`, `h`) is not a duration; digits that do not
+        // fit are one that is too large.
+        if number.is_empty() {
+            return Err(WhenFault::NotDuration);
+        }
         let n: u64 = number.parse().map_err(WhenFault::DurationNumber)?;
         total = total.saturating_add(n.saturating_mul(unit));
         number.clear();

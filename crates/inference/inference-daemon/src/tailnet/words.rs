@@ -44,7 +44,7 @@ pub fn refusal(refusal: &Refusal) -> &'static str {
 fn tailscale(error: &TailscaleError) -> &'static str {
     match error {
         TailscaleError::NotInstalled => "Tailscale isn't installed on this computer.",
-        TailscaleError::NotRunning | TailscaleError::Transport(_) => {
+        TailscaleError::NotRunning(_) => {
             "Tailscale isn't running on this computer."
         }
         TailscaleError::Refused => {
@@ -52,7 +52,7 @@ fn tailscale(error: &TailscaleError) -> &'static str {
         }
         TailscaleError::SignedOut => "Tailscale is signed out.",
         TailscaleError::NoSuchPeer => "Tailscale does not know that computer.",
-        TailscaleError::Malformed | TailscaleError::Unreadable(_) => {
+        TailscaleError::Malformed(_) => {
             "Tailscale gave an answer that couldn't be read."
         }
         TailscaleError::TimedOut => "Tailscale did not answer in time.",
@@ -105,7 +105,7 @@ mod tests {
     #[test]
     fn every_fault_reads_as_plain_words() {
         for it in [
-            DialError::Tailscale(TailscaleError::NotRunning),
+            DialError::Tailscale(TailscaleError::NotRunning(None)),
             DialError::Tailscale(TailscaleError::SignedOut),
             DialError::Tailscale(TailscaleError::Refused),
             DialError::NoSuchComputer,
@@ -121,7 +121,7 @@ mod tests {
     #[test]
     fn tailscale_is_said_in_the_words_the_person_knows() {
         assert_eq!(
-            fault(&DialError::Tailscale(TailscaleError::NotRunning)),
+            fault(&DialError::Tailscale(TailscaleError::NotRunning(None))),
             "Tailscale isn't running on this computer."
         );
     }

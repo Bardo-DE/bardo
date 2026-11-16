@@ -338,7 +338,7 @@ async fn quiet_for(
 /// Waits until nothing listens on the fake's socket any more (its server was stopped).
 async fn until_stopped(api: &LocalApi) {
     let deadline = Deadline::generous();
-    while api.status().await != Err(account_tailscale::TailscaleError::NotRunning) {
+    while api.status().await != Err(account_tailscale::TailscaleError::NotRunning(None)) {
         if deadline.passed() {
             deadline.fail("the stopped fake to refuse connections");
         }

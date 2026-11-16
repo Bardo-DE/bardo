@@ -36,7 +36,7 @@ impl Notice {
     /// Reads one line of the stream.
     ///
     /// # Errors
-    /// [`TailscaleError::Malformed`] when the line is not a JSON object of the expected shape.
+    /// [`TailscaleError::Malformed(_)`] when the line is not a JSON object of the expected shape.
     pub fn parse(line: &[u8]) -> Result<Self, TailscaleError> {
         let raw: RawNotice = crate::object::object(line)?;
         Ok(Self {
@@ -101,7 +101,7 @@ mod tests {
         for line in ["", "not json", "[1]", "3"] {
             assert_eq!(
                 Notice::parse(line.as_bytes()),
-                Err(TailscaleError::Malformed),
+                Err(TailscaleError::Malformed(None)),
                 "{line:?}"
             );
         }

@@ -52,7 +52,6 @@ fn an_empty_or_odd_token_is_not_used() {
         b"  \n",
         b"two words",
         b"tab\there",
-        b"\xff\xfe",
         &[b'a'; 5000],
     ] {
         assert_eq!(
@@ -61,4 +60,8 @@ fn an_empty_or_odd_token_is_not_used() {
             "{text:?}"
         );
     }
+    assert!(matches!(
+        file_with(&scratch, b"\xff\xfe", 0o600).read(),
+        Err(KeyFileProblem::NotText(_))
+    ));
 }

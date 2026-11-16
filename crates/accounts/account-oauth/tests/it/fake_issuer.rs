@@ -32,7 +32,7 @@ impl Http for LoopbackHttp {
         }
         let response = send(&address, Scheme::Http, &wire)
             .await
-            .expect("the fake issuer answers");
+            .map_err(HttpError::unreachable)?;
         let answer = response.headers.iter().fold(
             account_http::http::Response::builder().status(response.status),
             |answer, (name, value)| answer.header(name.as_str(), value.as_str()),

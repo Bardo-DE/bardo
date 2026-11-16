@@ -61,7 +61,7 @@ async fn the_watch_ends_when_tailscale_stops() {
         .expect("it ends");
     // Closed cleanly, or cut: either way the caller is told and goes to ask again.
     assert!(
-        matches!(end, Ok(None) | Err(TailscaleError::NotRunning)),
+        matches!(end, Ok(None) | Err(TailscaleError::NotRunning(_))),
         "{end:?}"
     );
 }

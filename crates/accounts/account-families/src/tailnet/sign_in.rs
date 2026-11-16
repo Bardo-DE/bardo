@@ -46,7 +46,7 @@ pub struct Waiting {
 fn fault_of(error: &TailscaleError) -> SignInFault {
     match error {
         TailscaleError::NotInstalled => SignInFault::NotInstalled,
-        TailscaleError::NotRunning | TailscaleError::Transport(_) | TailscaleError::TimedOut => {
+        TailscaleError::NotRunning(_) | TailscaleError::TimedOut => {
             SignInFault::NotRunning
         }
         TailscaleError::Refused => SignInFault::NotAllowed,
@@ -72,7 +72,7 @@ impl TailnetFlow {
             }
         }
         // Still starting after all that: nothing is answering for it.
-        Err(TailscaleError::NotRunning)
+        Err(TailscaleError::NotRunning(None))
     }
 
     fn signed(label: String) -> Signed {
@@ -181,11 +181,11 @@ mod tests {
     fn each_way_tailscale_cannot_be_asked_has_its_own_word() {
         let table = [
             (TailscaleError::NotInstalled, SignInFault::NotInstalled),
-            (TailscaleError::NotRunning, SignInFault::NotRunning),
+            (TailscaleError::NotRunning(None), SignInFault::NotRunning),
             (TailscaleError::TimedOut, SignInFault::NotRunning),
             (TailscaleError::Refused, SignInFault::NotAllowed),
             (TailscaleError::SignedOut, SignInFault::SignedOut),
-            (TailscaleError::Malformed, SignInFault::Unreadable),
+            (TailscaleError::Malformed(None), SignInFault::Unreadable),
             (TailscaleError::NoSuchPeer, SignInFault::Unreadable),
         ];
         for (error, fault) in table {

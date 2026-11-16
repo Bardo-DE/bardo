@@ -502,17 +502,19 @@ fn a_file_is_taken_for_editing_only_when_saving_it_back_changes_nothing_else() {
             Err(EditRefusal::NotUtf8),
         ),
         ("Latin-1 is refused", b"caf\xE9", Err(EditRefusal::NotUtf8)),
-        (
-            "bad bytes after a mark are refused",
-            b"\xEF\xBB\xBFa\xFFb",
-            Err(EditRefusal::NotUtf8),
-        ),
     ];
     for (name, bytes, want) in CASES {
         let got = EditText::from_bytes(bytes.to_vec()).map(|text| Session::open(text).file_bytes());
         let want = (*want).map(<[u8]>::to_vec);
         assert_eq!(got, want, "{name}");
     }
+    assert!(
+        matches!(
+            EditText::from_bytes(b"\xEF\xBB\xBFa\xFFb".to_vec()),
+            Err(EditRefusal::InvalidUtf8(_))
+        ),
+        "bad bytes after a mark are refused, with where they are"
+    );
     let mut s = Session::open(EditText::from_bytes(b"\xEF\xBB\xBFhi".to_vec()).unwrap());
     s.set_caret(2);
     s.type_text("!");

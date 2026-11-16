@@ -93,11 +93,11 @@ impl WhoIs {
     /// malformed.
     ///
     /// # Errors
-    /// [`TailscaleError::Malformed`] in those cases and when the body is not a JSON object.
+    /// [`TailscaleError::Malformed(_)`] in those cases and when the body is not a JSON object.
     pub fn parse(body: &[u8]) -> Result<Self, TailscaleError> {
         let raw: RawWhoIs = crate::object::object(body)?;
         let (Some(node), Some(user)) = (raw.node, raw.user) else {
-            return Err(TailscaleError::Malformed);
+            return Err(TailscaleError::Malformed(None));
         };
         Ok(Self {
             node: WhoIsNode {
@@ -180,7 +180,7 @@ mod tests {
         ] {
             assert_eq!(
                 WhoIs::parse(body.as_bytes()),
-                Err(TailscaleError::Malformed),
+                Err(TailscaleError::Malformed(None)),
                 "{body}"
             );
         }

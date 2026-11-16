@@ -96,6 +96,6 @@ async fn nothing_answering_and_tailscale_away_are_told_in_their_own_words() {
     fake.stop();
     assert_eq!(
         dialer.connect(&node("nPI")).await.map(|_| ()).unwrap_err(),
-        DialError::Tailscale(TailscaleError::NotRunning)
+        DialError::Tailscale(TailscaleError::NotRunning(None))
     );
 }

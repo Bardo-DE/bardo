@@ -112,7 +112,7 @@ fn the_judge_refuses_this_computer_the_unknown_the_unaskable_and_the_not_the_per
                 Ok(who("nPI", "pi.tail1234.ts.net", 1, own)),
             ),
             ("no peer for this address", Err(TailscaleError::NoSuchPeer)),
-            ("tailscale not running", Err(TailscaleError::NotRunning)),
+            ("tailscale not running", Err(TailscaleError::NotRunning(None))),
         ] {
             rows.push(Refused {
                 self_allowed: true,
@@ -139,11 +139,11 @@ fn the_judge_refuses_this_computer_the_unknown_the_unaskable_and_the_not_the_per
         Refusal::Unknown,
     ));
     for failure in [
-        TailscaleError::NotRunning,
+        TailscaleError::NotRunning(None),
         TailscaleError::NotInstalled,
         TailscaleError::Refused,
         TailscaleError::SignedOut,
-        TailscaleError::Malformed,
+        TailscaleError::Malformed(None),
         TailscaleError::TimedOut,
     ] {
         rows.push(refused(

@@ -92,7 +92,7 @@ async fn look(api: &LocalApi) -> Found {
             Standing::Changing => Found::Unsure,
         },
         Err(
-            TailscaleError::NotInstalled | TailscaleError::NotRunning | TailscaleError::Refused,
+            TailscaleError::NotInstalled | TailscaleError::NotRunning(_) | TailscaleError::Refused,
         ) => Found::Gone,
         Err(_) => Found::Unsure,
     }

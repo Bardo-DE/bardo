@@ -82,10 +82,10 @@ impl Dialer {
             Standing::Ready => status.me.clone(),
             Standing::SignedOut => return Err(DialError::Tailscale(TailscaleError::SignedOut)),
             Standing::Down | Standing::Changing => {
-                return Err(DialError::Tailscale(TailscaleError::NotRunning));
+                return Err(DialError::Tailscale(TailscaleError::NotRunning(None)));
             }
         }
-        .ok_or(DialError::Tailscale(TailscaleError::Malformed))?;
+        .ok_or(DialError::Tailscale(TailscaleError::Malformed(None)))?;
         let peer = status
             .peers
             .iter()

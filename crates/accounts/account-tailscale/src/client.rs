@@ -127,7 +127,7 @@ impl LocalApi {
         match error.kind() {
             ErrorKind::NotFound => {
                 if self.installed() {
-                    TailscaleError::NotRunning
+                    TailscaleError::NotRunning(None)
                 } else {
                     TailscaleError::NotInstalled
                 }
@@ -180,7 +180,7 @@ impl LocalApi {
                 let frame = frame.map_err(TailscaleError::transport)?;
                 if let Some(data) = frame.data_ref() {
                     if bytes.len() + data.len() > MAX_ANSWER {
-                        return Err(TailscaleError::Malformed);
+                        return Err(TailscaleError::Malformed(None));
                     }
                     bytes.extend_from_slice(data);
                 }
@@ -205,7 +205,7 @@ impl LocalApi {
         let answer = self.exchange(Method::GET, "/localapi/v0/status").await?;
         match answer.status {
             StatusCode::OK => Status::parse(&answer.body),
-            _ => Err(TailscaleError::Malformed),
+            _ => Err(TailscaleError::Malformed(None)),
         }
     }
 
@@ -220,7 +220,7 @@ impl LocalApi {
         match answer.status {
             StatusCode::OK => WhoIs::parse(&answer.body),
             StatusCode::NOT_FOUND => Err(TailscaleError::NoSuchPeer),
-            _ => Err(TailscaleError::Malformed),
+            _ => Err(TailscaleError::Malformed(None)),
         }
     }
 
@@ -238,7 +238,7 @@ impl LocalApi {
         if answer.status.is_success() {
             Ok(())
         } else {
-            Err(TailscaleError::Malformed)
+            Err(TailscaleError::Malformed(None))
         }
     }
 
@@ -258,7 +258,7 @@ impl LocalApi {
                 body: response.into_body(),
                 buffer: Vec::new(),
             }),
-            _ => Err(TailscaleError::Malformed),
+            _ => Err(TailscaleError::Malformed(None)),
         }
     }
 }
@@ -308,7 +308,7 @@ impl Watch {
                 Some(Ok(frame)) => {
                     if let Some(data) = frame.data_ref() {
                         if self.buffer.len() + data.len() > MAX_LINE {
-                            return Err(TailscaleError::Malformed);
+                            return Err(TailscaleError::Malformed(None));
                         }
                         self.buffer.extend_from_slice(data);
                     }

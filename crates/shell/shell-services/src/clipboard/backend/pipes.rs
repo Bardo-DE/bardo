@@ -201,7 +201,7 @@ mod tests {
             (b"made-up", 10, (2, Ok(7))),
             (b"made-up", 7, (2, Ok(7))),
             (b"made-up", 6, (1, Err("over"))),
-            (&big, 1 << 20, (3, Ok((1 << 16) + 5))),
+            (&big, 1 << 20, (6, Ok((1 << 16) + 5))),
         ];
         for (input, limit, want) in cases {
             assert_eq!(

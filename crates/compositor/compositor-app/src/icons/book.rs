@@ -351,8 +351,14 @@ mod tests {
                 .expect("a draw")
         };
         let plate_first = draw(&mut book);
-        // The plate is the same raster until the answer comes.
-        assert_eq!(draw(&mut book).id, plate_first.id);
+        let red_middle = |raster: &RasterImage| {
+            let middle = (32 * raster.width as usize + 32) * 4;
+            raster.rgba[middle..middle + 4] == [255, 0, 0, 255]
+        };
+        // The plate is the same raster until the answer comes; the thread may answer between
+        // two draws, and then the second is the icon.
+        let second = draw(&mut book);
+        assert!(second.id == plate_first.id || red_middle(&second));
         // Up to ten seconds for the thread; it takes a few milliseconds.
         let found = (0..2000)
             .find_map(|_| {
@@ -361,8 +367,7 @@ mod tests {
                 (now.id != plate_first.id).then_some(now)
             })
             .expect("the icon never came");
-        let middle = (32 * found.width as usize + 32) * 4;
-        assert_eq!(&found.rgba[middle..middle + 4], &[255, 0, 0, 255]);
+        assert!(red_middle(&found));
     }
 
     #[test]

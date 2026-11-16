@@ -22,7 +22,7 @@ async fn no_socket_but_the_program_is_there_is_not_running() {
     std::fs::create_dir_all(&bin).expect("bin");
     std::fs::write(bin.join("tailscaled"), b"#!/bin/sh\n").expect("program");
     let api = LocalApi::new(dir.join("tailscaled.sock")).with_program_dirs(vec![bin]);
-    assert_eq!(api.status().await, Err(TailscaleError::NotRunning));
+    assert_eq!(api.status().await, Err(TailscaleError::NotRunning(None)));
 }
 
 #[tokio::test]
@@ -38,8 +38,8 @@ async fn a_socket_nobody_listens_on_is_not_running() {
         }
         tokio::time::sleep(std::time::Duration::from_millis(10)).await;
     }
-    assert_eq!(api.status().await, Err(TailscaleError::NotRunning));
-    assert_eq!(api.start_login().await, Err(TailscaleError::NotRunning));
+    assert_eq!(api.status().await, Err(TailscaleError::NotRunning(None)));
+    assert_eq!(api.start_login().await, Err(TailscaleError::NotRunning(None)));
     // And it comes back where it was.
     fake.restart().expect("restart");
     api.status().await.unwrap();
@@ -96,7 +96,7 @@ async fn a_socket_that_is_not_tailscale_is_malformed() {
         }
     });
     let api = LocalApi::new(&path).with_program_dirs(Vec::new());
-    assert_eq!(api.status().await, Err(TailscaleError::Malformed));
+    assert_eq!(api.status().await, Err(TailscaleError::Malformed(None)));
 }
 
 #[tokio::test]

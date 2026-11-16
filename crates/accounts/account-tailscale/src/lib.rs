@@ -18,7 +18,7 @@ mod whois;
 #[cfg(feature = "io")]
 mod client;
 
-pub use error::TailscaleError;
+pub use error::{Cause, TailscaleError};
 pub use machine::{Machine, MachineOwner, NodeId};
 pub use notice::Notice;
 pub use status::{Backend, Node, Standing, Status, Tailnet, User, UserId};
