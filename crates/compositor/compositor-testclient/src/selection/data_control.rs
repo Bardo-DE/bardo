@@ -32,6 +32,11 @@ pub struct ExtControl {
 
 impl ExtControl {
     /// Binds the manager and gets the data-control device of `seat`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient, seat: &WlSeat) -> Result<ExtControl, ClientError> {
         let manager: ExtDataControlManagerV1 = client.bind(1..=1, ControlPlain)?;
         let device = manager.get_data_device(seat, &client.qh(), ControlPlain);
@@ -144,6 +149,11 @@ pub mod wlr {
 
     impl WlrControl {
         /// Binds the manager and gets the data-control device of `seat`.
+        ///
+        /// # Errors
+        ///
+        /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version
+        /// it accepts.
         pub fn bind(client: &TestClient, seat: &WlSeat) -> Result<WlrControl, ClientError> {
             let manager: ZwlrDataControlManagerV1 = client.bind(1..=2, WlrControlPlain)?;
             let device = manager.get_data_device(seat, &client.qh(), WlrControlPlain);

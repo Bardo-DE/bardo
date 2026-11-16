@@ -22,6 +22,11 @@ pub struct Relative {
 
 impl Relative {
     /// Binds the manager and gets the relative pointer of `pointer`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient, pointer: &Pointer) -> Result<Relative, ClientError> {
         let manager: ZwpRelativePointerManagerV1 = client.bind(1..=1, RelativePlain)?;
         let relative = manager.get_relative_pointer(pointer.pointer(), &client.qh(), RelativePlain);

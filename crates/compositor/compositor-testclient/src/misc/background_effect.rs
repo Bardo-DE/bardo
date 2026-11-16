@@ -35,16 +35,22 @@ pub struct BlurAsk {
 impl BlurAsk {
     /// Binds the manager, creates a surface and its background-effect object. The requests are
     /// flushed.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when the manager or `wl_compositor` is not advertised;
+    /// [`ClientError::Dispatch`] when the requests cannot be flushed.
     pub fn start(globals: &GlobalList) -> Result<BlurAsk, ClientError> {
         let (connection, queue) = side_queue::<Announced>(globals)?;
         let qh = queue.handle();
-        let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
+        let missing = ClientError::missing_global;
         let manager = globals
             .bind::<ExtBackgroundEffectManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("ext_background_effect_manager_v1"))?;
+            .map_err(|e| missing("ext_background_effect_manager_v1", &e))?;
         let compositor = globals
             .bind::<WlCompositor, _, _>(&qh, 1..=6, ())
-            .map_err(|_| missing("wl_compositor"))?;
+            .map_err(|e| missing("wl_compositor", &e))?;
         let surface = compositor.create_surface(&qh, ());
         let effect = manager.get_background_effect(&surface, &qh, ());
         connection
@@ -68,6 +74,10 @@ impl BlurAsk {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.announced)
     }
@@ -82,6 +92,10 @@ impl BlurAsk {
     }
 
     /// Asks for blur behind `rects` (surface-local logical rectangles); takes effect at commit.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn set_blur(&mut self, rects: &[LogicalRect]) -> Result<(), ClientError> {
         let qh = self.queue.handle();
         let region = self.compositor.create_region(&qh, ());
@@ -99,18 +113,30 @@ impl BlurAsk {
     }
 
     /// Asks for no blur (`set_blur_region(null)`); takes effect at commit.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn unset_blur(&mut self) -> Result<(), ClientError> {
         self.effect.set_blur_region(None);
         self.flush()
     }
 
     /// Commits the surface.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn commit(&mut self) -> Result<(), ClientError> {
         self.surface.commit();
         self.flush()
     }
 
     /// Destroys the background-effect object (the effect goes with it).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn destroy_effect(&mut self) -> Result<(), ClientError> {
         self.effect.destroy();
         self.flush()

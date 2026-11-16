@@ -1,5 +1,6 @@
-//! `zwp_input_method_v2`: the client side of an input method (what fcitx5 is). Filled by
-//! P0-H7. Self-contained like [`super::text_input`]: the client state's `Dispatch` impls turn each
+//! `zwp_input_method_v2`: the client side of an input method (what fcitx5 is).
+//!
+//! Filled by P0-H7. Self-contained like [`super::text_input`]: the client state's `Dispatch` impls turn each
 //! wire event into an [`InputMethodEvent`] with [`method_event`], [`grab_event`] and
 //! [`popup_event`].
 
@@ -135,6 +136,10 @@ pub fn method_event(event: zwp_input_method_v2::Event) -> Option<InputMethodEven
 
 /// The event the grabbed keyboard sent, if it is one this client records.
 #[must_use]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "`seen_dispatch!` hands every converter the owned event, as `method_event` consumes it"
+)]
 pub fn grab_event(event: zwp_input_method_keyboard_grab_v2::Event) -> Option<InputMethodEvent> {
     Some(match event {
         zwp_input_method_keyboard_grab_v2::Event::Keymap { size, .. } => {
@@ -162,6 +167,10 @@ pub fn grab_event(event: zwp_input_method_keyboard_grab_v2::Event) -> Option<Inp
 
 /// The event the popup surface got, if it is one this client records.
 #[must_use]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "`seen_dispatch!` hands every converter the owned event, as `method_event` consumes it"
+)]
 pub fn popup_event(event: zwp_input_popup_surface_v2::Event) -> Option<InputMethodEvent> {
     let zwp_input_popup_surface_v2::Event::TextInputRectangle {
         x,
@@ -181,6 +190,11 @@ pub fn popup_event(event: zwp_input_popup_surface_v2::Event) -> Option<InputMeth
 }
 
 /// Binds the input-method manager and asks for the method of `seat`.
+///
+/// # Errors
+///
+/// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+/// accepts.
 pub fn bind_input_method<S>(
     globals: &GlobalList,
     qh: &QueueHandle<S>,
@@ -191,7 +205,7 @@ where
 {
     let manager = globals
         .bind::<ZwpInputMethodManagerV2, S, ()>(qh, 1..=1, ())
-        .map_err(|_| ClientError::MissingGlobal("zwp_input_method_manager_v2".to_owned()))?;
+        .map_err(|e| ClientError::missing_global("zwp_input_method_manager_v2", &e))?;
     Ok(manager.get_input_method(seat, qh, MethodData))
 }
 

@@ -161,19 +161,24 @@ struct Live {
 impl OutputCapture {
     /// Binds the two managers, `wl_shm` and every `wl_output`. The outputs' names arrive at the
     /// fixture's next pump; the requests are flushed.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when a manager or `wl_shm` is not advertised.
     pub fn start(globals: &GlobalList) -> Result<OutputCapture, ClientError> {
         let (connection, queue) = side_queue::<Capturing>(globals)?;
         let qh = queue.handle();
-        let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
+        let missing = ClientError::missing_global;
         let sources = globals
             .bind::<ExtOutputImageCaptureSourceManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("ext_output_image_capture_source_manager_v1"))?;
+            .map_err(|e| missing("ext_output_image_capture_source_manager_v1", &e))?;
         let copies = globals
             .bind::<ExtImageCopyCaptureManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("ext_image_copy_capture_manager_v1"))?;
+            .map_err(|e| missing("ext_image_copy_capture_manager_v1", &e))?;
         let shm = globals
             .bind::<WlShm, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("wl_shm"))?;
+            .map_err(|e| missing("wl_shm", &e))?;
         let seat = globals.bind::<WlSeat, _, _>(&qh, 1..=1, ()).ok();
         let mut state = Capturing::default();
         for global in globals.contents().clone_list() {
@@ -208,6 +213,10 @@ impl OutputCapture {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.state)
     }
@@ -223,6 +232,11 @@ impl OutputCapture {
     }
 
     /// Makes a source of the output named `connector` and a session on it.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when no output is named `connector`;
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn open(&mut self, connector: &str, cursor: CursorMode) -> Result<(), ClientError> {
         let output = self
             .state
@@ -235,7 +249,7 @@ impl OutputCapture {
         let source = self.sources.create_source(&output, &qh, ());
         let options = match cursor {
             CursorMode::Painted => Options::PaintCursors,
-            _ => Options::empty(),
+            CursorMode::Hidden => Options::empty(),
         };
         let session = self.copies.create_session(&source, options, &qh, ());
         self.live = Some(Live {
@@ -249,6 +263,11 @@ impl OutputCapture {
 
     /// Makes a source of the Space `space` of the output named `connector`, from the shell's
     /// `get_space_capture_source` (`width` by `height` pixels), and a session on it.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when no output is named `connector`;
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn open_space(
         &mut self,
         shell: &desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::BardoShellV1,
@@ -297,6 +316,11 @@ impl OutputCapture {
     }
 
     /// Asks for a frame into a buffer of `ask`. The session's constraints must have arrived.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when no buffer constraints have arrived, the buffer cannot be
+    /// allocated or is too large for the wire, or the connection cannot be flushed.
     pub fn request(&mut self, ask: BufferAsk) -> Result<(), ClientError> {
         self.state.reopen();
         let kept = match ask {
@@ -396,6 +420,10 @@ impl OutputCapture {
     }
 
     /// Destroys the session and its source.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn close(&mut self) -> Result<(), ClientError> {
         if let Some(live) = self.live.take() {
             if let Some(frame) = live.frame {
@@ -419,7 +447,7 @@ fn flush(connection: &Connection) -> Result<(), ClientError> {
 
 /// `n` as a wire integer.
 fn fits(n: u32) -> Result<i32, ClientError> {
-    i32::try_from(n).map_err(|_| ClientError::Dispatch("buffer too large".to_owned()))
+    i32::try_from(n).map_err(|e| ClientError::Dispatch(format!("buffer too large: {e}")))
 }
 
 /// A wire enum's number, known or not.

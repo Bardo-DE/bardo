@@ -1,5 +1,6 @@
-//! A `wl_buffer` over a dma-buf the caller made, sent with `zwp_linux_buffer_params_v1.create_immed`
-//! (P0-H6). Making the dma-buf is `/dev/udmabuf`'s ioctl, which needs `unsafe` or smithay's
+//! A `wl_buffer` over a dma-buf the caller made.
+//!
+//! It is sent with `zwp_linux_buffer_params_v1.create_immed` (P0-H6). Making the dma-buf is `/dev/udmabuf`'s ioctl, which needs `unsafe` or smithay's
 //! wrapper of it; this crate has neither (B9, B18), so the test kit makes the dma-buf from a
 //! [`crate::udmabuf::UdmabufSource`] and hands its descriptor here.
 
@@ -57,6 +58,11 @@ impl DmabufBuffer {
 
 /// Imports the one plane of `fd` as a `wl_buffer` (`create_immed`, version 2 and up). The
 /// buffer is created at once: the compositor's answer to a refusal is a protocol error.
+///
+/// # Errors
+///
+/// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+/// accepts.
 pub fn import_dmabuf(
     client: &mut TestClient,
     fd: BorrowedFd<'_>,
@@ -65,13 +71,18 @@ pub fn import_dmabuf(
     let dmabuf: ZwpLinuxDmabufV1 = client.bind(2..=6, DmabufPlain)?;
     let params = dmabuf.create_params(&client.qh(), DmabufPlain);
     // The modifier travels as two 32-bit halves.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the modifier's low 32 bits are the wire's second half"
+    )]
+    let modifier_low = plane.modifier as u32;
     params.add(
         fd,
         0,
         0,
         plane.stride,
         (plane.modifier >> 32) as u32,
-        plane.modifier as u32,
+        modifier_low,
     );
     let buffer = params.create_immed(
         plane.width,

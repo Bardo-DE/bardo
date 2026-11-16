@@ -24,6 +24,11 @@ pub struct Inhibitor {
 
 impl Inhibitor {
     /// Asks for every key of `seat` while `surface` has the keyboard.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn create(
         client: &TestClient,
         surface: &WlSurface,

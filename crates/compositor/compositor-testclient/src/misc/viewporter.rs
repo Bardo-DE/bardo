@@ -21,6 +21,10 @@ pub struct Viewporter {
 
 impl Viewporter {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wp_viewporter`.
     #[must_use]
     pub fn bind(client: &TestClient) -> Viewporter {
         Viewporter {
@@ -73,6 +77,10 @@ pub struct SinglePixel {
 
 impl SinglePixel {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wp_single_pixel_buffer_manager_v1`.
     #[must_use]
     pub fn bind(client: &TestClient) -> SinglePixel {
         SinglePixel {
@@ -104,6 +112,10 @@ pub struct AlphaModifier {
 
 impl AlphaModifier {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wp_alpha_modifier_v1`.
     #[must_use]
     pub fn bind(client: &TestClient) -> AlphaModifier {
         AlphaModifier {

@@ -31,6 +31,11 @@ pub struct Gestures {
 
 impl Gestures {
     /// Binds the manager (version 3 when offered) and gets every gesture of `pointer`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient, pointer: &Pointer) -> Result<Gestures, ClientError> {
         let manager: ZwpPointerGesturesV1 = client.bind(1..=3, GesturePlain)?;
         let qh = client.qh();

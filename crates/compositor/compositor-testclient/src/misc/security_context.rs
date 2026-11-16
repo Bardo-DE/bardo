@@ -1,4 +1,6 @@
-//! `wp_security_context_manager_v1` as a client (P0-H8): a sandbox engine makes a listening
+//! `wp_security_context_manager_v1` as a client (P0-H8).
+//!
+//! A sandbox engine makes a listening
 //! socket, tells the compositor who is behind it and keeps the write end of a close pipe;
 //! clients that connect to the socket arrive sandboxed. Dropping the engine closes the pipe and
 //! the compositor stops listening.
@@ -44,6 +46,12 @@ pub struct Listener {
 impl Listener {
     /// Binds a socket at `dir/<name>`, creates a context for it with `facts` and commits it.
     /// The requests are flushed; the compositor starts listening at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed or the socket cannot be
+    /// bound; [`ClientError::MissingGlobal`] when the manager is not advertised;
+    /// [`ClientError::Dispatch`] when the requests cannot be flushed.
     pub fn commit(
         globals: &GlobalList,
         dir: &Path,
@@ -54,7 +62,7 @@ impl Listener {
         let qh = queue.handle();
         let manager = globals
             .bind::<WpSecurityContextManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| ClientError::MissingGlobal("wp_security_context_manager_v1".to_owned()))?;
+            .map_err(|e| ClientError::missing_global("wp_security_context_manager_v1", &e))?;
         let path = dir.join(name);
         let socket = UnixListener::bind(&path)
             .map_err(|error| ClientError::Connect(format!("{}: {error}", path.display())))?;
@@ -81,17 +89,29 @@ impl Listener {
 
     /// A new connection to the listening socket (the client end; the compositor accepts it at
     /// the fixture's next pump).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the socket cannot be connected to.
     pub fn connect(&self) -> Result<UnixStream, ClientError> {
         UnixStream::connect(&self.path)
             .map_err(|error| ClientError::Connect(format!("{}: {error}", self.path.display())))
     }
 
     /// Reads what arrived (nothing the helper keeps).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut Quiet)
     }
 
     /// Sends `commit` again: the context was used, so the compositor posts `already_used`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn commit_again(&mut self) -> Result<(), ClientError> {
         self.context.commit();
         self.connection
@@ -100,6 +120,10 @@ impl Listener {
     }
 
     /// Closes the pipe the compositor watches: the listener stops accepting.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the pipe cannot be closed.
     pub fn close(self) -> Result<(), ClientError> {
         self.close
             .shutdown(std::net::Shutdown::Both)

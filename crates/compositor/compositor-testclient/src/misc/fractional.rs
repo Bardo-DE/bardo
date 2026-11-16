@@ -16,6 +16,10 @@ pub struct FractionalScale {
 
 impl FractionalScale {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wp_fractional_scale_manager_v1`.
     #[must_use]
     pub fn bind(client: &TestClient) -> FractionalScale {
         FractionalScale {

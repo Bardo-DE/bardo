@@ -1,5 +1,6 @@
-//! `zwlr_screencopy_manager_v1` as a client (what `grim` speaks): one frame of an output, or of
-//! a region of it, into a shared-memory buffer. One [`ScreenCopy`] is one frame at a time, on
+//! `zwlr_screencopy_manager_v1` as a client (what `grim` speaks).
+//!
+//! One frame of an output, or of a region of it, into a shared-memory buffer. One [`ScreenCopy`] is one frame at a time, on
 //! its own queue next to the client's. Filled by the capture lane of wave 2026-10-15.
 
 use crate::misc::idle::{pump_queue, side_queue};
@@ -144,16 +145,21 @@ impl ScreenCopy {
     /// # let _ = copy;
     /// # }
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when the manager or `wl_shm` is not advertised.
     pub fn start(globals: &GlobalList) -> Result<ScreenCopy, ClientError> {
         let (connection, queue) = side_queue::<Copying>(globals)?;
         let qh = queue.handle();
-        let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
+        let missing = ClientError::missing_global;
         let manager = globals
             .bind::<ZwlrScreencopyManagerV1, _, _>(&qh, 1..=3, ())
-            .map_err(|_| missing("zwlr_screencopy_manager_v1"))?;
+            .map_err(|e| missing("zwlr_screencopy_manager_v1", &e))?;
         let shm = globals
             .bind::<WlShm, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("wl_shm"))?;
+            .map_err(|e| missing("wl_shm", &e))?;
         let mut state = Copying::default();
         for global in globals.contents().clone_list() {
             if global.interface == "wl_output" {
@@ -178,6 +184,10 @@ impl ScreenCopy {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.state)
     }
@@ -195,6 +205,11 @@ impl ScreenCopy {
     /// Asks for a frame of the output named `connector`, with the cursor in it or not
     /// (`overlay_cursor`; `grim` sends 1 for `-c`). The offered buffers arrive at the next
     /// pumps ([`ScreenCopy::offers`]).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when no output is named `connector`;
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn capture(
         &mut self,
         connector: &str,
@@ -215,7 +230,7 @@ impl ScreenCopy {
         self.state.damage.clear();
         let overlay = match cursor {
             CursorMode::Painted => 1,
-            _ => 0,
+            CursorMode::Hidden => 0,
         };
         let frame = match area {
             CopyArea::Output => self.manager.capture_output(overlay, &output, &qh, ()),
@@ -241,6 +256,11 @@ impl ScreenCopy {
     }
 
     /// Copies the frame into a buffer made to `offer`, with `kind`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the offer's format is unknown, the shm file cannot be
+    /// made or is too large for the wire, or the connection cannot be flushed.
     pub fn copy(&mut self, offer: Offer, kind: CopyKind) -> Result<(), ClientError> {
         let format = Format::try_from(offer.format)
             .map_err(|()| ClientError::Dispatch(format!("shm format {}", offer.format)))?;
@@ -252,7 +272,7 @@ impl ScreenCopy {
         ftruncate(&file, length).map_err(|error| ClientError::Dispatch(error.to_string()))?;
         let qh = self.queue.handle();
         let fits = |n: u32| {
-            i32::try_from(n).map_err(|_| ClientError::Dispatch("buffer too large".to_owned()))
+            i32::try_from(n).map_err(|e| ClientError::Dispatch(format!("buffer too large: {e}")))
         };
         let pool = self.shm.create_pool(
             file.as_fd(),
@@ -296,16 +316,25 @@ impl ScreenCopy {
         let length = usize::try_from(u64::from(offer.stride) * u64::from(offer.size.h)).ok()?;
         let mut bytes = vec![0_u8; length];
         let read = file.read_exact_at(&mut bytes, 0);
-        Some(read.map_err(|_| CopyFailure::Failed).map(|()| Copied {
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "an unreadable shm file is the one failure `CopyFailure::Failed` names; the io error adds nothing the test acts on"
+        )]
+        let copied = read.map_err(|_| CopyFailure::Failed).map(|()| Copied {
             size: offer.size,
             stride: offer.stride,
             bytes,
             damage: Some(std::mem::take(&mut self.state.damage)).filter(|rects| !rects.is_empty()),
             flags: self.state.flags,
-        }))
+        });
+        Some(copied)
     }
 
     /// Destroys the frame.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn close(&mut self) -> Result<(), ClientError> {
         if let Some(frame) = self.frame.take() {
             frame.destroy();
@@ -390,12 +419,12 @@ impl Dispatch<WlOutput, u32> for Copying {
         state: &mut Self,
         _: &WlOutput,
         event: wl_output::Event,
-        global: &u32,
+        data: &u32,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let wl_output::Event::Name { name } = event
-            && let Some(entry) = state.outputs.iter_mut().find(|(g, _, _)| g == global)
+            && let Some(entry) = state.outputs.iter_mut().find(|(g, _, _)| g == data)
         {
             entry.2 = Some(name);
         }

@@ -66,6 +66,11 @@ impl Layout {
 
 impl UdmabufSource {
     /// A sealed memfd of `size` holding `pattern`.
+    ///
+    /// # Errors
+    ///
+    /// [`UdmabufError`] when the memfd cannot be made, sized or sealed, or the pattern cannot
+    /// be written.
     pub fn new(size: PhysicalSize, pattern: Pattern) -> Result<UdmabufSource, UdmabufError> {
         let layout = Layout::of(size);
         let memfd = memfd_create(

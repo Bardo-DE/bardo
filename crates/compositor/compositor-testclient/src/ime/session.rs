@@ -1,5 +1,6 @@
-//! A text field and an input method on one connection, read on a side queue: what fcitx5 and a
-//! GTK entry do together. The session binds `wl_seat`, a `wl_keyboard` (the document's own
+//! A text field and an input method on one connection, read on a side queue.
+//!
+//! This is what fcitx5 and a GTK entry do together. The session binds `wl_seat`, a `wl_keyboard` (the document's own
 //! keyboard: the keys it sees are the ones the input method did not take), a text input and an
 //! input method; the test drives the steps and the compositor answers at the fixture's pumps.
 //!
@@ -13,6 +14,7 @@ use super::text_input::{TextInputData, TextInputEvent, bind_text_input, field_ev
 use crate::misc::idle::{pump_queue, side_queue};
 use crate::{ClientError, GlobalList};
 use compositor_core::time::Mono;
+use std::fmt::Write as _;
 use std::time::Duration;
 use wayland_client::protocol::wl_keyboard::{self, WlKeyboard};
 use wayland_client::protocol::wl_seat::{self, WlSeat};
@@ -169,6 +171,11 @@ pub struct ImeSession {
 impl ImeSession {
     /// Binds the seat, its keyboard, a text input and an input method. The requests are
     /// flushed; the compositor sees them at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`], [`ClientError::MissingGlobal`] or [`ClientError::Dispatch`] as
+    /// [`ImeSession::start_field`] and [`ImeSession::bind_method`] return them.
     pub fn start(globals: &GlobalList) -> Result<ImeSession, ClientError> {
         let mut session = ImeSession::start_field(globals)?;
         session.bind_method(globals)?;
@@ -177,12 +184,18 @@ impl ImeSession {
 
     /// Binds the seat, its keyboard and a text input only: an app whose input method (fcitx5)
     /// has not started yet. [`ImeSession::bind_method`] starts it later.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when the seat or the text-input manager is not
+    /// advertised; [`ClientError::Dispatch`] when the requests cannot be flushed.
     pub fn start_field(globals: &GlobalList) -> Result<ImeSession, ClientError> {
         let (connection, queue) = side_queue::<Seen>(globals)?;
         let qh = queue.handle();
         let seat = globals
             .bind::<WlSeat, _, _>(&qh, 1..=1, ())
-            .map_err(|_| ClientError::MissingGlobal("wl_seat".to_owned()))?;
+            .map_err(|e| ClientError::missing_global("wl_seat", &e))?;
         let keyboard = seat.get_keyboard(&qh, ());
         let field = bind_text_input(globals, &qh, &seat)?;
         let session = ImeSession {
@@ -204,16 +217,25 @@ impl ImeSession {
     }
 
     /// The input method starts: binds the input-method manager and asks for the seat's method.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when the seat or the input-method manager is not
+    /// advertised; [`ClientError::Dispatch`] when the requests cannot be flushed.
     pub fn bind_method(&mut self, globals: &GlobalList) -> Result<(), ClientError> {
         let qh = self.queue.handle();
         let seat = globals
             .bind::<WlSeat, _, _>(&qh, 1..=1, ())
-            .map_err(|_| ClientError::MissingGlobal("wl_seat".to_owned()))?;
+            .map_err(|e| ClientError::missing_global("wl_seat", &e))?;
         self.method = Some(bind_input_method(globals, &qh, &seat)?);
         self.flush()
     }
 
     /// The input method goes away (fcitx5 quits).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn destroy_method(&mut self) -> Result<(), ClientError> {
         if let Some(method) = self.method.take() {
             method.destroy();
@@ -228,6 +250,10 @@ impl ImeSession {
     }
 
     /// Reads what arrived, stamping it with `now` (the fixture's virtual instant).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
     pub fn pump(&mut self, now: Mono) -> Result<bool, ClientError> {
         self.seen.now = now;
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
@@ -235,6 +261,10 @@ impl ImeSession {
 
     /// The field enables text input and commits the state (the compositor then activates the
     /// input method).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn enable(&self) -> Result<(), ClientError> {
         self.field.enable();
         self.field.commit();
@@ -243,6 +273,10 @@ impl ImeSession {
 
     /// The field enables text input with its state: the text around the cursor, a content
     /// type and the cursor rectangle, all in one commit.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn enable_with_state(&self, text: &str, cursor: i32) -> Result<(), ClientError> {
         self.field.enable();
         self.field
@@ -255,6 +289,10 @@ impl ImeSession {
     }
 
     /// The input method grabs the keyboard.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn grab_keyboard(&mut self) -> Result<(), ClientError> {
         let qh = self.queue.handle();
         self.grab = self
@@ -265,6 +303,10 @@ impl ImeSession {
     }
 
     /// The input method lets the keyboard go (it has no field to work on).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn release_grab(&mut self) -> Result<(), ClientError> {
         if let Some(grab) = self.grab.take() {
             grab.release();
@@ -273,6 +315,10 @@ impl ImeSession {
     }
 
     /// The input method sets the preedit text.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn set_preedit(&self, text: &str, begin: i32, end: i32) -> Result<(), ClientError> {
         if let Some(method) = &self.method {
             method.set_preedit_string(text.to_owned(), begin, end);
@@ -281,6 +327,10 @@ impl ImeSession {
     }
 
     /// The input method commits text.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn commit_string(&self, text: &str) -> Result<(), ClientError> {
         if let Some(method) = &self.method {
             method.commit_string(text.to_owned());
@@ -290,6 +340,10 @@ impl ImeSession {
 
     /// The input method commits its batch, naming the last `done` it has read (the protocol's
     /// serial: how many `done` events the method has received).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn commit_batch(&self) -> Result<(), ClientError> {
         let dones = self
             .seen
@@ -324,18 +378,17 @@ impl ImeSession {
     /// The field's events as transcript lines: `<seconds>.<millis> zwp_text_input_v3.<event>(<args>)`.
     #[must_use]
     pub fn field_lines(&self) -> String {
-        self.seen
-            .field
-            .iter()
-            .map(|line| {
-                format!(
-                    "{}.{:03} zwp_text_input_v3.{}({})\n",
-                    line.at.0.as_secs(),
-                    line.at.0.subsec_millis(),
-                    line.event.name(),
-                    line.event.args().join(", ")
-                )
-            })
-            .collect()
+        let mut lines = String::new();
+        for line in &self.seen.field {
+            let _ = writeln!(
+                lines,
+                "{}.{:03} zwp_text_input_v3.{}({})",
+                line.at.0.as_secs(),
+                line.at.0.subsec_millis(),
+                line.event.name(),
+                line.event.args().join(", ")
+            );
+        }
+        lines
     }
 }

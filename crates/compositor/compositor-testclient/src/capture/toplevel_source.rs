@@ -64,19 +64,24 @@ pub struct WindowCapture {
 impl WindowCapture {
     /// Binds the window list, the two managers and `wl_shm`. The windows arrive at the
     /// fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when a manager or `wl_shm` is not advertised.
     pub fn start(globals: &GlobalList) -> Result<WindowCapture, ClientError> {
         let (connection, queue) = side_queue::<Wire>(globals)?;
         let qh = queue.handle();
-        let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
+        let missing = ClientError::missing_global;
         let sources = globals
             .bind::<ExtForeignToplevelImageCaptureSourceManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("ext_foreign_toplevel_image_capture_source_manager_v1"))?;
+            .map_err(|e| missing("ext_foreign_toplevel_image_capture_source_manager_v1", &e))?;
         let copies = globals
             .bind::<ExtImageCopyCaptureManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("ext_image_copy_capture_manager_v1"))?;
+            .map_err(|e| missing("ext_image_copy_capture_manager_v1", &e))?;
         let shm = globals
             .bind::<WlShm, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("wl_shm"))?;
+            .map_err(|e| missing("wl_shm", &e))?;
         let list = ToplevelList::start(globals)?;
         flush(&connection)?;
         Ok(WindowCapture {
@@ -92,6 +97,10 @@ impl WindowCapture {
     }
 
     /// Reads what arrived on both queues.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when either queue cannot be flushed, read or dispatched.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         let list = self.list.pump()?;
         let capture = pump_queue(&self.connection, &mut self.queue, &mut self.wire)?;
@@ -105,6 +114,11 @@ impl WindowCapture {
     }
 
     /// Makes a source of the window announced as `identifier` and a session on it.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when no window is announced as `identifier`;
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn open(&mut self, identifier: &str, cursor: CursorMode) -> Result<(), ClientError> {
         let handle = self
             .list
@@ -114,7 +128,7 @@ impl WindowCapture {
         let source = self.sources.create_source(&handle, &qh, ());
         let options = match cursor {
             CursorMode::Painted => Options::PaintCursors,
-            _ => Options::empty(),
+            CursorMode::Hidden => Options::empty(),
         };
         let session = self.copies.create_session(&source, options, &qh, ());
         self.live = Some(Live {
@@ -133,6 +147,12 @@ impl WindowCapture {
 
     /// Asks for a frame into a buffer of the size and format the session announced. The
     /// previous frame object is destroyed first (the protocol allows one at a time).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the session has announced no size or usable format, the
+    /// shm file cannot be made or is too large for the wire, or the connection cannot be
+    /// flushed.
     pub fn request(&mut self) -> Result<(), ClientError> {
         let dispatch = |text: &str| ClientError::Dispatch(text.to_owned());
         let (width, height) = self
@@ -151,7 +171,8 @@ impl WindowCapture {
         );
         ftruncate(&file, length).map_err(|error| ClientError::Dispatch(error.to_string()))?;
         let qh = self.queue.handle();
-        let fits = |n: u64| i32::try_from(n).map_err(|_| dispatch("buffer too large"));
+        let fits =
+            |n: u64| i32::try_from(n).map_err(|e| dispatch(&format!("buffer too large: {e}")));
         let pool = self.shm.create_pool(file.as_fd(), fits(length)?, &qh, ());
         let buffer = pool.create_buffer(
             0,
@@ -199,6 +220,10 @@ impl WindowCapture {
     }
 
     /// Destroys the session and its source.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn close(&mut self) -> Result<(), ClientError> {
         if let Some(live) = self.live.take() {
             if let Some(frame) = live.frame {

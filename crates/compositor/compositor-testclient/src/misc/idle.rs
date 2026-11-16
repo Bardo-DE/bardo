@@ -16,9 +16,14 @@ use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notifier_v1::{self, ExtIdleNotifierV1},
 };
 
-/// A second event queue on the connection `globals` came from, so a helper can bind and read
-/// its own objects without the client's core. Its events are read when [`pump_queue`] runs or
+/// A second event queue on the connection `globals` came from.
+///
+/// A helper can bind and read its own objects on it without the client's core. Its events are read when [`pump_queue`] runs or
 /// when the client itself reads the socket.
+///
+/// # Errors
+///
+/// [`ClientError::Connect`] when the connection `globals` came from is already closed.
 pub fn side_queue<S>(globals: &GlobalList) -> Result<(Connection, EventQueue<S>), ClientError> {
     let backend = globals
         .registry()
@@ -32,6 +37,10 @@ pub fn side_queue<S>(globals: &GlobalList) -> Result<(Connection, EventQueue<S>)
 
 /// Flushes `connection`, reads what is there without blocking and dispatches what `queue`
 /// holds into `state`; says whether anything was dispatched.
+///
+/// # Errors
+///
+/// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
 pub fn pump_queue<S>(
     connection: &Connection,
     queue: &mut EventQueue<S>,
@@ -96,6 +105,12 @@ pub struct IdleWatch {
 impl IdleWatch {
     /// Asks for a notification of `kind` after `timeout`. The request is flushed; the
     /// compositor sees it at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when the notifier or the seat is not advertised;
+    /// [`ClientError::Dispatch`] when the request cannot be flushed.
     pub fn start(
         globals: &GlobalList,
         kind: IdleKind,
@@ -103,17 +118,17 @@ impl IdleWatch {
     ) -> Result<IdleWatch, ClientError> {
         let (connection, queue) = side_queue::<Seen>(globals)?;
         let qh = queue.handle();
-        let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
+        let missing = ClientError::missing_global;
         let version = match kind {
             IdleKind::Inhibitable => 1,
             IdleKind::InputOnly => 2,
         };
         let notifier = globals
             .bind::<ExtIdleNotifierV1, _, _>(&qh, version..=2, ())
-            .map_err(|_| missing("ext_idle_notifier_v1"))?;
+            .map_err(|e| missing("ext_idle_notifier_v1", &e))?;
         let seat = globals
             .bind::<WlSeat, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("wl_seat"))?;
+            .map_err(|e| missing("wl_seat", &e))?;
         let millis = u32::try_from(timeout.as_millis()).unwrap_or(u32::MAX);
         let notification = match kind {
             IdleKind::Inhibitable => notifier.get_idle_notification(millis, &seat, &qh, ()),
@@ -134,6 +149,10 @@ impl IdleWatch {
     }
 
     /// Reads what arrived, stamping it with `now` (the fixture's virtual instant).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
     pub fn pump(&mut self, now: Mono) -> Result<bool, ClientError> {
         self.seen.now = now;
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
@@ -152,6 +171,10 @@ impl IdleWatch {
     }
 
     /// Destroys the notification (it stops counting).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn destroy(self) -> Result<(), ClientError> {
         self.notification.destroy();
         self.connection

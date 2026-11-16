@@ -19,6 +19,11 @@ pub struct TouchPlain;
 
 impl Touch {
     /// Binds the seat (version 9 when offered) and asks it for its touch.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient) -> Result<Touch, ClientError> {
         let seat: WlSeat = client.bind(1..=9, TouchPlain)?;
         let touch = seat.get_touch(&client.qh(), TouchPlain);

@@ -64,6 +64,11 @@ impl GlobalList {
 
     /// Binds the global of interface `I`, at the lower of the advertised version and
     /// `versions.end()`; an error when it is not advertised or only below `versions.start()`.
+    ///
+    /// # Errors
+    ///
+    /// [`BindError::NotPresent`] when `I` is not advertised and
+    /// [`BindError::UnsupportedVersion`] when it is advertised only below `versions.start()`.
     pub fn bind<I, State, U>(
         &self,
         qh: &QueueHandle<State>,
@@ -97,11 +102,11 @@ impl Dispatch<WlRegistry, GlobalListContents> for ClientState {
         _: &mut Self,
         _: &WlRegistry,
         event: wl_registry::Event,
-        contents: &GlobalListContents,
+        data: &GlobalListContents,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
-        let mut list = contents.lock();
+        let mut list = data.lock();
         match event {
             wl_registry::Event::Global {
                 name,

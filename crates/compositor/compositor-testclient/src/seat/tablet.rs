@@ -35,6 +35,11 @@ pub struct TabletSeat {
 
 impl TabletSeat {
     /// Binds the manager and asks it for the tablet seat of `seat`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient, seat: &WlSeat) -> Result<TabletSeat, ClientError> {
         let manager: ZwpTabletManagerV2 = client.bind(1..=1, TabletPlain)?;
         let seat = manager.get_tablet_seat(seat, &client.qh(), TabletPlain);

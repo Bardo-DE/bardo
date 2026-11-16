@@ -56,6 +56,11 @@ where
 }
 
 /// Binds the manager and creates a virtual keyboard on `seat`.
+///
+/// # Errors
+///
+/// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+/// accepts.
 pub fn bind_virtual_keyboard<S>(
     globals: &GlobalList,
     qh: &QueueHandle<S>,
@@ -68,18 +73,23 @@ where
 {
     let manager = globals
         .bind::<ZwpVirtualKeyboardManagerV1, S, ()>(qh, 1..=1, ())
-        .map_err(|_| ClientError::MissingGlobal("zwp_virtual_keyboard_manager_v1".to_owned()))?;
+        .map_err(|e| ClientError::missing_global("zwp_virtual_keyboard_manager_v1", &e))?;
     Ok(manager.create_virtual_keyboard(seat, qh, VirtualKeyboardData))
 }
 
 /// Sends `keymap` (XKB text) to `keyboard` through a memfd, as the protocol wants it.
+///
+/// # Errors
+///
+/// [`ClientError::Dispatch`] when the memfd cannot be made or written, or the keymap is too
+/// large for the wire.
 pub fn send_keymap(keyboard: &ZwpVirtualKeyboardV1, keymap: &str) -> Result<(), ClientError> {
     let fd: OwnedFd = memfd_create("keymap", MemfdFlags::CLOEXEC)
         .map_err(|error| ClientError::Dispatch(format!("memfd: {error}")))?;
     rustix::io::write(&fd, keymap.as_bytes())
         .map_err(|error| ClientError::Dispatch(format!("keymap write: {error}")))?;
     let size = u32::try_from(keymap.len())
-        .map_err(|_| ClientError::Dispatch("keymap too large".to_owned()))?;
+        .map_err(|e| ClientError::Dispatch(format!("keymap too large: {e}")))?;
     keyboard.keymap(
         KeymapFormat::XkbV1.into(),
         std::os::fd::AsFd::as_fd(&fd),
@@ -117,12 +127,18 @@ pub struct VirtualBoard {
 
 impl VirtualBoard {
     /// Creates a virtual keyboard on the seat. The request is flushed.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when the seat or the keyboard manager is not advertised;
+    /// [`ClientError::Dispatch`] when the request cannot be flushed.
     pub fn start(globals: &GlobalList) -> Result<VirtualBoard, ClientError> {
         let (connection, queue) = side_queue::<Quiet>(globals)?;
         let qh = queue.handle();
         let seat = globals
             .bind::<WlSeat, _, _>(&qh, 1..=1, ())
-            .map_err(|_| ClientError::MissingGlobal("wl_seat".to_owned()))?;
+            .map_err(|e| ClientError::missing_global("wl_seat", &e))?;
         let keyboard = bind_virtual_keyboard(globals, &qh, &seat)?;
         let board = VirtualBoard {
             connection,
@@ -140,6 +156,11 @@ impl VirtualBoard {
     }
 
     /// Sends `keymap` (XKB text).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the keymap cannot be sent or the connection cannot be
+    /// flushed.
     pub fn keymap(&self, keymap: &str) -> Result<(), ClientError> {
         send_keymap(&self.keyboard, keymap)?;
         self.flush()
@@ -147,6 +168,10 @@ impl VirtualBoard {
 
     /// Sends one key (`pressed`: `1`, released: `0`) with the client's own timestamp, which
     /// the compositor does not trust.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn key(&self, time: u32, key: u32, pressed: u32) -> Result<(), ClientError> {
         self.keyboard.key(time, key, pressed);
         self.flush()

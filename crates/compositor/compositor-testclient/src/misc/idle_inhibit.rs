@@ -1,5 +1,6 @@
-//! `zwp_idle_inhibit_manager_v1` as a client (P0-H8): a surface of its own holds idleness off
-//! until the inhibitor is destroyed. The surface has no role and no buffer, so it is alive but
+//! `zwp_idle_inhibit_manager_v1` as a client (P0-H8).
+//!
+//! A surface of its own holds idleness off until the inhibitor is destroyed. The surface has no role and no buffer, so it is alive but
 //! not shown; casement counts it all the same until the shown-Space lookup exists (the limit
 //! `IdleInhibitPart::inhibited` documents).
 //!
@@ -30,16 +31,22 @@ pub struct InhibitHold {
 
 impl InhibitHold {
     /// Creates a surface and an inhibitor on it. The requests are flushed.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when the connection is already closed;
+    /// [`ClientError::MissingGlobal`] when the manager or `wl_compositor` is not advertised;
+    /// [`ClientError::Dispatch`] when the requests cannot be flushed.
     pub fn start(globals: &GlobalList) -> Result<InhibitHold, ClientError> {
         let (connection, queue) = side_queue::<Quiet>(globals)?;
         let qh = queue.handle();
-        let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
+        let missing = ClientError::missing_global;
         let manager = globals
             .bind::<ZwpIdleInhibitManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("zwp_idle_inhibit_manager_v1"))?;
+            .map_err(|e| missing("zwp_idle_inhibit_manager_v1", &e))?;
         let compositor = globals
             .bind::<WlCompositor, _, _>(&qh, 1..=6, ())
-            .map_err(|_| missing("wl_compositor"))?;
+            .map_err(|e| missing("wl_compositor", &e))?;
         let surface = compositor.create_surface(&qh, ());
         let inhibitor = manager.create_inhibitor(&surface, &qh, ());
         connection
@@ -54,11 +61,19 @@ impl InhibitHold {
     }
 
     /// Reads what arrived (nothing the helper keeps).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed, read or dispatched.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut Quiet)
     }
 
     /// Destroys the inhibitor (and its surface).
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn release(self) -> Result<(), ClientError> {
         self.inhibitor.destroy();
         self.surface.destroy();

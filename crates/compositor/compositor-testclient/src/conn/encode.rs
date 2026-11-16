@@ -67,7 +67,7 @@ pub(super) fn build(desc: Option<&MessageDesc>, ints: &[i32], cx: &mut Context<'
                 let value = match (chosen, uints) {
                     (Some(global), 0) => global.name,
                     (Some(global), _) => version_for(global, &mut cursor),
-                    (None, _) => cursor.next() as u32,
+                    (None, _) => bits(cursor.next()),
                 };
                 uints += 1;
                 payload.extend(value.to_ne_bytes());
@@ -120,11 +120,21 @@ fn fresh(next_id: &mut u32) -> u32 {
     id
 }
 
+/// `n`'s bits as unsigned (fuzz input carries no sign).
+fn bits(n: i32) -> u32 {
+    u32::from_ne_bytes(n.to_ne_bytes())
+}
+
+/// A wire length, saturating (no argument here is anywhere near 4 GiB).
+fn length(n: usize) -> u32 {
+    u32::try_from(n).unwrap_or(u32::MAX)
+}
+
 fn version_for(global: &Global, cursor: &mut Cursor<'_>) -> u32 {
     match cursor.next().rem_euclid(3) {
         0 => global.version,
         1 => 1,
-        _ => cursor.next() as u32,
+        _ => bits(cursor.next()),
     }
 }
 
@@ -141,7 +151,7 @@ fn string(payload: &mut Vec<u8>, seed: i32) {
 
 /// A length-prefixed, NUL-terminated, padded string.
 fn bytes_string(payload: &mut Vec<u8>, text: &[u8]) {
-    payload.extend(((text.len() + 1) as u32).to_ne_bytes());
+    payload.extend(length(text.len() + 1).to_ne_bytes());
     payload.extend(text);
     payload.push(0);
     while !payload.len().is_multiple_of(4) {
@@ -155,7 +165,7 @@ fn array(payload: &mut Vec<u8>, seed: i32) {
         1 => seed.to_ne_bytes().to_vec(),
         _ => vec![0; 1024],
     };
-    payload.extend((body.len() as u32).to_ne_bytes());
+    payload.extend(length(body.len()).to_ne_bytes());
     payload.extend(&body);
     while !payload.len().is_multiple_of(4) {
         payload.push(0);
@@ -191,7 +201,7 @@ fn pick_object(objects: &Objects, wanted: Option<&str>, cursor: &mut Cursor<'_>)
             cursor.next(),
         )
         .unwrap_or(9999),
-        _ => cursor.next() as u32,
+        _ => bits(cursor.next()),
     }
 }
 

@@ -38,6 +38,10 @@ pub struct Presentation {
 
 impl Presentation {
     /// Binds the global at exactly `version`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wp_presentation`.
     #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> Presentation {
         Presentation {
@@ -75,14 +79,14 @@ pub fn feedback_events(
         .into_iter()
         .filter_map(|(event, args)| match (event.as_str(), args.as_slice()) {
             ("sync_output", [output]) => Some(FeedbackEvent::SyncOutput(output.clone())),
-            ("presented", [sec_hi, sec_lo, nsec, refresh, seq_hi, seq_lo, flags]) => {
+            ("presented", [sec_hi, sec_lo, nsec, refresh, count_hi, count_lo, flags]) => {
                 Some(FeedbackEvent::Presented {
                     at: Duration::new(
                         number(sec_hi) << 32 | number(sec_lo),
                         u32::try_from(number(nsec)).unwrap_or(0),
                     ),
                     refresh: u32::try_from(number(refresh)).unwrap_or(0),
-                    seq: number(seq_hi) << 32 | number(seq_lo),
+                    seq: number(count_hi) << 32 | number(count_lo),
                     flags: u32::try_from(number(flags)).unwrap_or(0),
                 })
             }

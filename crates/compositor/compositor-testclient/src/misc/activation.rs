@@ -24,6 +24,10 @@ pub struct Activation {
 
 impl Activation {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `xdg_activation_v1`.
     pub fn bind(client: &mut TestClient) -> Activation {
         Activation {
             activation: client
@@ -87,13 +91,13 @@ impl Dispatch<XdgActivationTokenV1, TokenText> for Host {
         _: &mut Self,
         _: &XdgActivationTokenV1,
         event: xdg_activation_token_v1::Event,
-        text: &TokenText,
+        data: &TokenText,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let xdg_activation_token_v1::Event::Done { token } = event {
             // The token is random: the transcript names it without its text.
-            text.with(|seen| *seen = Some(token));
+            data.with(|seen| *seen = Some(token));
         }
     }
 }

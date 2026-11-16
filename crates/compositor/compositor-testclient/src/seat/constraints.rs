@@ -32,6 +32,11 @@ pub enum Constraint {
 
 impl Constraint {
     /// Asks to lock `pointer` while it is over `surface`, for as long as the object lives.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn lock(
         client: &TestClient,
         surface: &WlSurface,
@@ -51,6 +56,11 @@ impl Constraint {
     }
 
     /// Asks to confine `pointer` to `surface`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn confine(
         client: &TestClient,
         surface: &WlSurface,

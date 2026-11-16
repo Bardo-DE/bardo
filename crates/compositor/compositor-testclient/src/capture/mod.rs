@@ -1,4 +1,6 @@
-//! Output capture as a client: `ext_output_image_capture_source_manager_v1` makes a source from
+//! Output capture as a client.
+//!
+//! `ext_output_image_capture_source_manager_v1` makes a source from
 //! a `wl_output`, `ext_image_copy_capture_manager_v1` a session on it and a frame into a shared
 //! memory buffer. One [`OutputCapture`] is one session, on its own queue next to the client's.
 //!

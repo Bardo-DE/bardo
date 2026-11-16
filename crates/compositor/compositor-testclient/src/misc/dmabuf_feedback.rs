@@ -1,6 +1,7 @@
-//! `zwp_linux_dmabuf_v1` default feedback (P0-H6): a probe that binds the global, asks for the
-//! default feedback and collects what the compositor says, so a test can assert the main
-//! device and the tranches. A self-contained helper over a [`Connection`] and the registry's
+//! `zwp_linux_dmabuf_v1` default feedback (P0-H6): a probe that binds the global and collects it.
+//!
+//! The probe asks for the default feedback and collects what the compositor says, so a test can
+//! assert the main device and the tranches. A self-contained helper over a [`Connection`] and the registry's
 //! [`GlobalList`] with its own event queue: P0-T-client's `TestClient` core was not there
 //! when this was written, and the probe asks it for nothing but those two handles. The
 //! udmabuf-backed buffers live in `crate::udmabuf` (P0-T-client's).
@@ -92,6 +93,11 @@ impl FeedbackProbe {
     /// Binds the global and requests its default feedback. The request is flushed; the events
     /// arrive when the connection is next read (the fixture's pump) and [`FeedbackProbe::report`]
     /// dispatches them.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when `zwp_linux_dmabuf_v1` is not advertised at version 4
+    /// or newer.
     pub fn start(
         connection: &Connection,
         globals: &GlobalList,
@@ -100,7 +106,7 @@ impl FeedbackProbe {
         let qh = queue.handle();
         let dmabuf = globals
             .bind::<ZwpLinuxDmabufV1, _, _>(&qh, 4..=6, ())
-            .map_err(|_| ClientError::MissingGlobal("zwp_linux_dmabuf_v1 version 4+".to_owned()))?;
+            .map_err(|e| ClientError::missing_global("zwp_linux_dmabuf_v1 version 4+", &e))?;
         let feedback = dmabuf.get_default_feedback(&qh, ());
         let _ = connection.flush();
         Ok(FeedbackProbe {

@@ -15,7 +15,7 @@ use wayland_client::{Connection, Dispatch, QueueHandle, WEnum};
 #[derive(Debug)]
 pub struct Pointer {
     seat: WlSeat,
-    pointer: WlPointer,
+    device: WlPointer,
     log: PointerLog,
 }
 
@@ -37,12 +37,21 @@ pub struct PointerPlain;
 
 impl Pointer {
     /// Binds the seat (version 9 when offered) and asks it for its pointer.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient) -> Result<Pointer, ClientError> {
         let seat: WlSeat = client.bind(1..=9, PointerPlain)?;
         let log = PointerLog::default();
         let pointer = seat.get_pointer(&client.qh(), log.clone());
         let _ = client.connection().flush();
-        Ok(Pointer { seat, pointer, log })
+        Ok(Pointer {
+            seat,
+            device: pointer,
+            log,
+        })
     }
 
     /// The serial of the latest button press this pointer received.
@@ -66,7 +75,7 @@ impl Pointer {
     /// The `wl_pointer`.
     #[must_use]
     pub fn pointer(&self) -> &WlPointer {
-        &self.pointer
+        &self.device
     }
 
     /// The `wl_seat`.
@@ -93,11 +102,11 @@ impl Dispatch<WlPointer, PointerLog> for ClientState {
         _: &mut Self,
         _: &WlPointer,
         event: wl_pointer::Event,
-        log: &PointerLog,
+        data: &PointerLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
-        let mut serials = log.0.lock().unwrap_or_else(PoisonError::into_inner);
+        let mut serials = data.0.lock().unwrap_or_else(PoisonError::into_inner);
         match event {
             wl_pointer::Event::Button {
                 serial,

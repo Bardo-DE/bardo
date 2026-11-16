@@ -112,6 +112,11 @@ pub fn field_event(event: zwp_text_input_v3::Event) -> Option<TextInputEvent> {
 }
 
 /// Binds the text-input manager and creates a field for `seat`.
+///
+/// # Errors
+///
+/// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+/// accepts.
 pub fn bind_text_input<S>(
     globals: &GlobalList,
     qh: &QueueHandle<S>,
@@ -122,7 +127,7 @@ where
 {
     let manager = globals
         .bind::<ZwpTextInputManagerV3, S, ()>(qh, 1..=1, ())
-        .map_err(|_| ClientError::MissingGlobal("zwp_text_input_manager_v3".to_owned()))?;
+        .map_err(|e| ClientError::missing_global("zwp_text_input_manager_v3", &e))?;
     Ok(manager.get_text_input(seat, qh, TextInputData))
 }
 

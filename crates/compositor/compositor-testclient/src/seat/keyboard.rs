@@ -21,6 +21,11 @@ pub struct KeyboardPlain;
 
 impl Keyboard {
     /// Binds the seat (version 9 when offered) and asks it for its keyboard.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient) -> Result<Keyboard, ClientError> {
         let seat: WlSeat = client.bind(1..=9, KeyboardPlain)?;
         let keyboard = seat.get_keyboard(&client.qh(), KeyboardPlain);

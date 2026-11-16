@@ -47,6 +47,10 @@ impl Pattern {
 
     /// The whole buffer, rows top to bottom, ARGB8888 little-endian (what `wl_shm` calls
     /// `argb8888`).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the buffer's pixel count does not fit in `usize`.
     #[must_use]
     pub fn bytes(self, size: PhysicalSize) -> Vec<u8> {
         if let Pattern::Solid(argb) = self {

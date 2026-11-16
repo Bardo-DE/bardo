@@ -31,6 +31,11 @@ pub struct DataDevice {
 impl DataDevice {
     /// Binds the manager and gets the data device of `seat`. With `accepts`, every offer that
     /// enters this client's surfaces is accepted for that mime type and the copy action.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(
         client: &TestClient,
         seat: &WlSeat,
@@ -102,7 +107,7 @@ impl Dispatch<WlDataDevice, Receives> for ClientState {
         _: &mut Self,
         _: &WlDataDevice,
         event: wl_data_device::Event,
-        receives: &Receives,
+        data: &Receives,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -111,7 +116,7 @@ impl Dispatch<WlDataDevice, Receives> for ClientState {
             id: Some(offer),
             ..
         } = event
-            && let Some(mime) = &receives.0
+            && let Some(mime) = &data.0
         {
             offer.accept(serial, Some(mime.clone()));
             offer.set_actions(DndAction::Copy, DndAction::Copy);

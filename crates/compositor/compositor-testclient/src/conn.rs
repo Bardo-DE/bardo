@@ -52,12 +52,12 @@ impl Dispatch<WlCallback, SyncDone> for ClientState {
         _: &mut Self,
         _: &WlCallback,
         event: wl_callback::Event,
-        done: &SyncDone,
+        data: &SyncDone,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let wl_callback::Event::Done { .. } = event {
-            done.0.store(true, Ordering::SeqCst);
+            data.0.store(true, Ordering::SeqCst);
         }
     }
 }
@@ -130,6 +130,13 @@ pub enum ClientError {
     MissingGlobal(String),
 }
 
+impl ClientError {
+    /// `MissingGlobal` for `name`, keeping why the bind failed.
+    pub(crate) fn missing_global(name: &str, cause: &dyn std::fmt::Display) -> Self {
+        Self::MissingGlobal(format!("{name}: {cause}"))
+    }
+}
+
 /// Poll rounds `connect_env` waits for its first roundtrip, 100 ms each.
 const CONNECT_ROUNDS: u32 = 100;
 
@@ -137,11 +144,21 @@ impl TestClient {
     /// A client over the client end of a fixture's socket pair. Non-blocking, so it cannot wait
     /// for the registry (the fixture serves the compositor on this same thread): it sends
     /// `get_registry` and returns, and [`TestClient::globals`] fills as the fixture pumps.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError`] when the registry request cannot be sent over `fd`.
     pub fn over(fd: OwnedFd) -> Result<TestClient, ClientError> {
         TestClient::tapped(UnixStream::from(fd))
     }
 
     /// A client of `$WAYLAND_DISPLAY` (the jailed binary), with a bounded roundtrip.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Connect`] when `WAYLAND_DISPLAY` or `XDG_RUNTIME_DIR` is unset or the
+    /// socket cannot be opened; [`ClientError::Dispatch`] when the compositor reports a
+    /// protocol error or the roundtrip does not finish.
     pub fn connect_env() -> Result<TestClient, ClientError> {
         let display = std::env::var_os("WAYLAND_DISPLAY")
             .ok_or_else(|| ClientError::Connect("WAYLAND_DISPLAY is not set".to_owned()))?;
@@ -282,6 +299,11 @@ impl TestClient {
     }
 
     /// Binds a global at a version in `versions`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind<I, U>(&self, versions: RangeInclusive<u32>, udata: U) -> Result<I, ClientError>
     where
         I: Proxy + 'static,
@@ -290,12 +312,17 @@ impl TestClient {
     {
         self.globals
             .bind(&self.qh(), versions, udata)
-            .map_err(|_| ClientError::MissingGlobal(I::interface().name.to_owned()))
+            .map_err(|e| ClientError::missing_global(I::interface().name, &e))
     }
 
     /// A new `wl_surface` (binding `wl_compositor` for it): the base the shell helpers build
     /// toplevels, popups and layer surfaces on. Its events are ignored here; the transcript
     /// has them, and a helper that wants them binds with its own user data.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn create_surface(&mut self) -> Result<WlSurface, ClientError> {
         let compositor: WlCompositor = self.bind(1..=6, BaseData)?;
         let surface = compositor.create_surface(&self.qh(), BaseData);
@@ -305,6 +332,10 @@ impl TestClient {
 
     /// Asks the compositor for a `wl_display.sync`; pump (the fixture's, or this client's)
     /// until [`SyncDone::is_done`].
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn sync(&mut self) -> Result<SyncDone, ClientError> {
         let done = SyncDone::default();
         self.connection.display().sync(&self.qh(), done.clone());

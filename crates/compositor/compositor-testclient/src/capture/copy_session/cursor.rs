@@ -39,6 +39,11 @@ impl OutputCapture {
     /// # Ok(())
     /// # }
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when no output is named `connector` or the seat has no
+    /// pointer; [`ClientError::Dispatch`] when the connection cannot be flushed.
     pub fn open_cursor(&mut self, connector: &str) -> Result<(), ClientError> {
         let output = self
             .state

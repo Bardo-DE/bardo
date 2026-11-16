@@ -28,6 +28,10 @@ pub struct ColorManagement {
 
 impl ColorManagement {
     /// Binds the global at exactly `version` (1 or 2).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wp_color_manager_v1`.
     #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> ColorManagement {
         ColorManagement {
@@ -78,7 +82,7 @@ impl ColorManagement {
 #[must_use]
 pub fn describe(
     client: &TestClient,
-    creator: WpImageDescriptionCreatorParamsV1,
+    creator: &WpImageDescriptionCreatorParamsV1,
     primaries: Primaries,
     transfer: TransferFunction,
 ) -> WpImageDescriptionV1 {

@@ -31,6 +31,11 @@ pub struct PrimaryDevice {
 
 impl PrimaryDevice {
     /// Binds the manager and gets the device of `seat`.
+    ///
+    /// # Errors
+    ///
+    /// [`ClientError::MissingGlobal`] when a global it needs is not advertised at a version it
+    /// accepts.
     pub fn bind(client: &TestClient, seat: &WlSeat) -> Result<PrimaryDevice, ClientError> {
         let manager: ZwpPrimarySelectionDeviceManagerV1 = client.bind(1..=1, PrimaryPlain)?;
         let device = manager.get_device(seat, &client.qh(), PrimaryPlain);
