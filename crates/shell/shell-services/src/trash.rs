@@ -1,4 +1,6 @@
-//! The home Trash, as the freedesktop Trash specification lays it out: `$XDG_DATA_HOME/Trash`
+//! The home Trash, as the freedesktop Trash specification lays it out.
+//!
+//! It is `$XDG_DATA_HOME/Trash`
 //! with `files/` (what was trashed) and `info/` (one `.trashinfo` per item). Emptying removes
 //! every entry of both, and the `directorysizes` cache. The per-volume `.Trash-$uid` folders of
 //! other mounts are not touched.
@@ -23,7 +25,12 @@ pub fn is_empty(dirs: &Dirs) -> bool {
     }
 }
 
-/// Remove everything in the Trash. Every entry is tried; the first failure is returned.
+/// Remove everything in the Trash.
+///
+/// Every entry is tried; the first failure is returned.
+///
+/// # Errors
+/// The first removal that failed, as a [`ServiceError`].
 pub fn empty(dirs: &Dirs) -> Result<(), ServiceError> {
     let root = root(dirs);
     let failures = [

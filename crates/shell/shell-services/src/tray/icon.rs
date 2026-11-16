@@ -1,4 +1,6 @@
-//! Turning a [`TrayIcon`] into the art the bar draws: a pixmap's PNG bytes, or the file a named
+//! Turning a [`TrayIcon`] into the art the bar draws.
+//!
+//! The art is a pixmap's PNG bytes, or the file a named
 //! icon resolves to in the installed theme, with what design/08-ICONS.md §1.5 can tell from
 //! the name alone (step 1: a freedesktop `*-symbolic` icon is symbolic). The chroma test for the
 //! rest (step 2) is quire's `ui_components::style::icon::classify::classify_with`, which the bar runs on the PNG bytes: this
@@ -23,7 +25,9 @@ pub enum IconArt {
     ImageFile(PathBuf),
 }
 
-/// `icon`'s art, a named icon resolved at `size_px` against the installed theme. `None` for
+/// `icon`'s art, a named icon resolved at `size_px` against the installed theme.
+///
+/// `None` for
 /// [`TrayIcon::None`], a pixmap that fails to encode, a name that is not a plain theme name
 /// ([`theme_icon_name`]: the lookup joins the name onto the theme's folders, so a path would
 /// leave them), a name the theme does not have, or a PNG that is not a regular file within

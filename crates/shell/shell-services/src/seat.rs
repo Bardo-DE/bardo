@@ -1,4 +1,6 @@
-//! The connection the shell holds at intentd. intentd names a caller's role from the well-known
+//! The connection the shell holds at intentd.
+//!
+//! intentd names a caller's role from the well-known
 //! names its connection owns, so everything bardo-shell says to intentd and the companion as the
 //! launcher (a turn, a search, an undo) must go out on the connection that owns `org.bardo.Shell`.
 //! The intents service claims the names and publishes that connection here; the companion
@@ -43,6 +45,9 @@ impl SeatView {
     }
 
     /// Resolves when the seat is taken or given up; an error once the intents service is gone.
+    ///
+    /// # Errors
+    /// The intents service (the publisher) was dropped.
     pub async fn changed(&mut self) -> Result<(), watch::error::RecvError> {
         self.0.changed().await
     }

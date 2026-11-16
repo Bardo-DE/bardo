@@ -8,9 +8,11 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
-/// The output volume as a [`Service`]: libpulse's standard mainloop on a thread of the blocking
-/// pool, asleep until the sound server or a command wakes it, its callbacks feeding `step`. Without a pulse server the state stays at `Volume::default()`
-/// (absent).
+/// The output volume as a [`Service`].
+///
+/// It is libpulse's standard mainloop on a thread of the blocking
+/// pool, asleep until the sound server or a command wakes it, its callbacks feeding `step`.
+/// Without a pulse server the state stays at `Volume::default()` (absent).
 #[derive(Debug)]
 pub enum VolumeService {}
 

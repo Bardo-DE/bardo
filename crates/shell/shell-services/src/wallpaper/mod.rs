@@ -1,4 +1,6 @@
-//! The wallpaper: one pre-resized PNG per output size and scheme, cached in
+//! The wallpaper: one pre-resized PNG per output size and scheme.
+//!
+//! They are cached in
 //! `$XDG_CACHE_HOME/bardo/shell/wallpaper/<hash>-<w>x<h>.png` (image 0.25 Lanczos3; light/dark cross-fade
 //! over t-big; renders only on change).
 //!

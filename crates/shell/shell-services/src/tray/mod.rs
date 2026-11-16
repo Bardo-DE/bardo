@@ -18,7 +18,9 @@ use crate::service::{Service, ServiceIo};
 
 pub use icon::{IconArt, icon_art};
 
-/// The tray host as a [`Service`], registering a `StatusNotifierWatcher` when none is on the bus
+/// The tray host as a [`Service`].
+///
+/// It registers a `StatusNotifierWatcher` when none is on the bus
 /// (`system_tray::client::Client::new`'s own `StatusNotifierWatcher::attach_to`: it tries to own
 /// `org.kde.StatusNotifierWatcher` and quietly defers when a desktop already does). Without a
 /// session bus the state stays at `Tray::default()`.

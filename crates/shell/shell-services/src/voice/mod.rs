@@ -1,4 +1,6 @@
-//! bardo-shell's seat at voiced: hold-to-talk (`org.bardo.Voice1`). A hold begins an utterance, the
+//! bardo-shell's seat at voiced: hold-to-talk (`org.bardo.Voice1`).
+//!
+//! A hold begins an utterance, the
 //! words come back on a stream, and what was said goes to the companion as the question
 //! (`CompanionCommand::Ask`, spoken). A refusal is a state the surfaces draw: the consent sheet
 //! for `NeedsConsent`, a plain line for the rest.

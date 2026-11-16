@@ -1,4 +1,6 @@
-//! The workspaces and their looks on the session bus: `org.bardo.Workspaces1`, the shell's answer
+//! The workspaces and their looks on the session bus: `org.bardo.Workspaces1`.
+//!
+//! It is the shell's answer
 //! to "which workspace is this window on, and how is it tinted" for an app that keeps its Spaces
 //! from the desktop.
 //!

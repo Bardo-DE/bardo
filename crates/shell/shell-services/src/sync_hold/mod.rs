@@ -1,4 +1,6 @@
-//! syncd (`org.bardo.Sync1`), as the shell hears it: when a dataset's replica loses most of its
+//! syncd (`org.bardo.Sync1`), as the shell hears it.
+//!
+//! When a dataset's replica loses most of its
 //! files, syncd holds the removal here and tells the shell, which says so in a notification
 //! whose action opens Settings at the account. The decision is Settings' (it alone may confirm
 //! the discard); the shell offers no removal. The notification is taken back when the hold ends.

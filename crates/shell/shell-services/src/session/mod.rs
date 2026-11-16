@@ -1,4 +1,6 @@
-//! The session: logind's power actions and what it currently allows. Every surface that offers
+//! The session: logind's power actions and what it currently allows.
+//!
+//! Every surface that offers
 //! them reads this service's state and sends to its control: the bar's system menu, the power
 //! menu (design/20 §1.8) and the launcher's System rows. Only this service asks logind.
 
@@ -17,7 +19,9 @@ use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 use quit_apps::Scopes;
 
-/// logind's power actions as a [`Service`]. Without logind the state stays at
+/// logind's power actions as a [`Service`].
+///
+/// Without logind the state stays at
 /// `Session::default()` (absent: nothing offered), and the power menu shows every button
 /// unavailable. Its `Deps` is [`SessionLinks`]: the locker, where `Run(Lock)` goes, and what Log Out,
 /// Restart and Shut Down use to quit the apps first; the actions themselves go to `env`'s
