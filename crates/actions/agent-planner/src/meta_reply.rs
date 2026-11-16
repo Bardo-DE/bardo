@@ -3,7 +3,9 @@
 //! words may carry.
 
 use crate::plain::without_ids;
-use crate::planner::{PlanFault, TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ, TOOL_RELATED};
+use crate::planner::{
+    PlanFault, TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ, TOOL_RELATED, log_unreadable,
+};
 use crate::read_ask::read_output;
 use account_core::AppName;
 use action_core::{HandleShape, OneOf, PlannerView, ReplyFault};
@@ -79,9 +81,10 @@ pub(crate) fn is_meta(name: &str) -> bool {
 /// The words of a `quire_answer`: plain, not empty, and not a call written as words. A reply
 /// that is none of these is unreadable, like a question that is none of them.
 pub(crate) fn answer_text(call: &ToolCallPart) -> Result<String, PlanFault> {
-    let args: Json = serde_json::from_str(call.args.as_str())
-        .ok()
-        .ok_or(PlanFault::Unreadable)?;
+    let args: Json = serde_json::from_str(call.args.as_str()).map_err(|error| {
+        log_unreadable("an answer's arguments", &error);
+        PlanFault::Unreadable
+    })?;
     let text = args
         .get("text")
         .and_then(Json::as_str)
@@ -98,11 +101,15 @@ pub(crate) fn meta_output(
     call: &ToolCallPart,
     view: &PlannerView,
 ) -> Result<ModelOutput, PlanFault> {
-    let Ok(args) = serde_json::from_str::<Json>(call.args.as_str()) else {
-        return match call.name.as_str() {
-            TOOL_READ | TOOL_RELATED => Ok(ModelOutput::Unread(ReplyFault::NotJson)),
-            _ => Err(PlanFault::Unreadable),
-        };
+    let args = match serde_json::from_str::<Json>(call.args.as_str()) {
+        Ok(args) => args,
+        Err(error) => {
+            log_unreadable("a meta call's arguments", &error);
+            return match call.name.as_str() {
+                TOOL_READ | TOOL_RELATED => Ok(ModelOutput::Unread(ReplyFault::NotJson)),
+                _ => Err(PlanFault::Unreadable),
+            };
+        }
     };
     match call.name.as_str() {
         TOOL_FINISH => Ok(ModelOutput::Finish),

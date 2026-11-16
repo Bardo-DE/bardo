@@ -386,9 +386,10 @@ impl<P: Transport> PlannerModel<P> {
             .catalogue
             .named(call.name.as_str())
             .ok_or_else(|| ReplyFault::NoSuchTool(plain_name(call.name.as_str())))?;
-        let json: Json = serde_json::from_str(call.args.as_str())
-            .ok()
-            .ok_or(ReplyFault::NotJson)?;
+        let json: Json = serde_json::from_str(call.args.as_str()).map_err(|error| {
+            log_unreadable("a call's arguments", &error);
+            ReplyFault::NotJson
+        })?;
         if let Some(fault) = outside_known(&known_values(&tool.action(), view), &json) {
             return Err(fault);
         }
@@ -469,6 +470,18 @@ fn not_chat(reply: &InferReply) -> String {
         InferReply::Cancelled => "cancelled".to_owned(),
         _ => "another kind of reply".to_owned(),
     }
+}
+
+/// Writes to the log why a reply of the model's did not read as JSON: the kind and the place of the
+/// failure, never the text (it is the model's own words).
+pub(crate) fn log_unreadable(what: &str, error: &serde_json::Error) {
+    tracing::warn!(
+        what,
+        category = ?error.classify(),
+        line = error.line(),
+        column = error.column(),
+        "the planner's reply did not read as JSON"
+    );
 }
 
 /// A model that could not be used: the daemon's log says at which stage and why (the porter

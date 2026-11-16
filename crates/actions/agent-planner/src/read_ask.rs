@@ -1,6 +1,7 @@
 //! The planner's `quire_read` call, read part by part so a model that gets one part wrong is told
 //! which one and what it looks like, instead of the turn failing on an unreadable reply.
 
+use crate::planner::log_unreadable;
 use crate::want::settle_want;
 use action_core::{HandleShape, ReadFault, ReaderAsk, ReaderTask, ReplyFault, ValueSchema};
 use action_vocab::Handle;
@@ -23,9 +24,11 @@ fn part<T: serde::de::DeserializeOwned>(
     name: &str,
     fault: ReadFault,
 ) -> Result<T, ReadFault> {
-    args.get(name)
-        .and_then(|v| serde_json::from_value(v.clone()).ok())
-        .ok_or(fault)
+    let value = args.get(name).ok_or_else(|| fault.clone())?;
+    serde_json::from_value(value.clone()).map_err(|error| {
+        log_unreadable(name, &error);
+        fault
+    })
 }
 
 fn read_ask(args: &Json) -> Result<ReaderAsk, ReadFault> {
@@ -35,9 +38,10 @@ fn read_ask(args: &Json) -> Result<ReaderAsk, ReadFault> {
     }
     let task: ReaderTask = part(args, "task", ReadFault::Task)?;
     let want: ValueSchema = match args.get("want") {
-        Some(want) => serde_json::from_value(settle_want(want)?)
-            .ok()
-            .ok_or(ReadFault::Want)?,
+        Some(want) => serde_json::from_value(settle_want(want)?).map_err(|error| {
+            log_unreadable("a read's want", &error);
+            ReadFault::Want
+        })?,
         None => return Err(ReadFault::Want),
     };
     Ok(ReaderAsk { inputs, want, task })

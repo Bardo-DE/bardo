@@ -3,7 +3,7 @@
 //! resolves as quoted content (`Session.Display`), so what a handle holds is never taken for the
 //! planner's words or for an instruction.
 
-use crate::planner::PlanFault;
+use crate::planner::{PlanFault, log_unreadable};
 use action_core::{HandleShape, PlannerView, ReplyFault};
 use action_manifest::{ArgsFault, Why};
 use action_vocab::{Handle, ParamName};
@@ -58,9 +58,10 @@ pub(crate) fn finish_output(
     call: &ToolCallPart,
     view: &PlannerView,
 ) -> Result<(ModelOutput, Vec<Handle>), PlanFault> {
-    let args: Json = serde_json::from_str(call.args.as_str())
-        .ok()
-        .ok_or(PlanFault::Unreadable)?;
+    let args: Json = serde_json::from_str(call.args.as_str()).map_err(|error| {
+        log_unreadable("a finish's arguments", &error);
+        PlanFault::Unreadable
+    })?;
     Ok(match shown(&args, view) {
         Ok(show) => (ModelOutput::Finish, show),
         Err(fault) => (ModelOutput::Unread(fault), Vec::new()),
