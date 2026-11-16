@@ -32,7 +32,7 @@ static TITLE: GlobalSignal<&'static str> = Signal::global(|| "Clair de lune");
 static AT: GlobalSignal<Duration> = Signal::global(|| Duration::from_millis(61_400));
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Player() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

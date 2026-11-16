@@ -11,7 +11,6 @@ use shell_kit::prelude::*;
 use shell_kit::user_picture::size::PictureSize;
 use std::collections::BTreeSet;
 use std::time::Duration;
-use ui_components::motion::epoch::Epoch;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
@@ -28,7 +27,7 @@ const LOOP: Duration = Duration::from_secs(4);
 static WAKE: GlobalSignal<Epoch> = Signal::global(Epoch::default);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Stage() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { theme: Theme::Light, motion: MOTION(), ..Appearance::default() }, material: Material::Window,
@@ -37,7 +36,7 @@ fn Stage() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn StillStage() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { theme: Theme::Light, ..Appearance::default() }, material: Material::Window,

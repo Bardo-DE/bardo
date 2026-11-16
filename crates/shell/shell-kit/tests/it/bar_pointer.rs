@@ -36,7 +36,7 @@ fn pointer(prefix: &'static str) -> BarPointer {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Bar() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Bar,

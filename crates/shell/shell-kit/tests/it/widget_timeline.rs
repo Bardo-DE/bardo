@@ -8,7 +8,7 @@
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
 use shell_kit::widget::REFRESH_FLOOR;
-use shell_kit::widget::contract::{NoIntent, Widget, WidgetContext, WidgetKind};
+use shell_kit::widget::contract::NoIntent;
 use shell_kit::widget::timeline::{Dated, EntryDate, Refresh, RefreshAsk, Timeline};
 use std::cell::RefCell;
 use std::time::Duration;
@@ -106,17 +106,17 @@ fn overdue() -> Timeline<String> {
     )
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn ThreeMinutes() -> Element {
     stage(three_minutes)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Later() -> Element {
     stage(later)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Overdue() -> Element {
     stage(overdue)
 }

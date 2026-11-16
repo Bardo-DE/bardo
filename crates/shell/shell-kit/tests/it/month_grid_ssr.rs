@@ -38,7 +38,11 @@ struct CaseProps {
     case: Case,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 fn Specimen(props: CaseProps) -> Element {
     let (theme, first, weeks) = match props.case {
         Case::Plain | Case::Pressable => (Theme::Light, First::Monday, false),

@@ -26,7 +26,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A month the header steps, and a log of every step and pick.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn MonthApp() -> Element {
     let mut month = use_signal(|| SEPTEMBER);
     let mut log = use_signal(Vec::<String>::new);

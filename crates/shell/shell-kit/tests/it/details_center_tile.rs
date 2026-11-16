@@ -33,7 +33,7 @@ fn flip((value, _): Lit) -> Lit {
     (value.flipped(), Availability::Enabled)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Tiles() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

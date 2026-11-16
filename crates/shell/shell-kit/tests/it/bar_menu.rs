@@ -85,12 +85,12 @@ fn MenuPage(setup: Setup) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn OpenMenu() -> Element {
     rsx! { MenuPage { setup: Setup { open: true } } }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn ClosedMenu() -> Element {
     rsx! { MenuPage { setup: Setup { open: false } } }
 }
@@ -291,7 +291,7 @@ fn a_menu_opens_with_no_entrance() {
 
 // ---- Where a press happened ---------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn PressAt() -> Element {
     let mut seen = use_signal(|| "none".to_string());
     rsx! {
@@ -314,12 +314,12 @@ fn PressAt() -> Element {
 /// A press carries its surface-local point, for SNI's `Activate(x, y)` and `ContextMenu(x, y)`.
 #[test]
 fn a_press_reports_where_it_happened() {
-    let mut harness = Harness::new(PressAt, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     // (point, button)
     const CASES: &[(f32, f32, PointerButton)] = &[
         (105.0, 25.0, PointerButton::Primary),
         (115.0, 35.0, PointerButton::Secondary),
     ];
+    let mut harness = Harness::new(PressAt, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
     for &(x, y, button) in CASES {
         harness.send(Input::press(Point { x: Px(x), y: Px(y) }, button));
         assert_eq!(
@@ -331,10 +331,11 @@ fn a_press_reports_where_it_happened() {
 
 // ---- The exported measurer ----------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn MeasuredRoot() -> Element {
     // What a layer-shell-host surface's root does, where `ui_blitz::launch` did not provide it.
-    ui_blitz::provide_host();
+    // Called for its side effect (installing the host context); the handle itself is not needed.
+    let _ = ui_blitz::provide_host();
     let probe = use_rect();
     let width = probe.rect().map_or(0.0, |rect| rect.size.width.0);
     rsx! {

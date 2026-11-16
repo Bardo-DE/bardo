@@ -24,7 +24,7 @@ thread_local! {
     static PRESSES: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Buttons() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -70,7 +70,7 @@ fn a_button_that_answers_escape_takes_space_and_leaves_return_to_the_dialog() {
     assert_eq!(PRESSES.get(), 100, "Space presses it");
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Choices() -> Element {
     let mut on = use_signal(|| Check::Off);
     let mut ticked = use_signal(|| Check::Off);
@@ -164,7 +164,7 @@ fn the_arrows_check_the_next_radio_button_and_the_group_has_one_tab_stop() {
     assert_eq!(state(&harness), "off off 0 0");
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Pills() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

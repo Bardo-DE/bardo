@@ -9,6 +9,7 @@ use shell_kit::emoji::id::EmojiId;
 use shell_kit::prelude::*;
 use shell_kit::user_picture::choice::{FaceFile, PictureChoice, resolve_picture};
 use shell_kit::user_picture::picture::UserPicture;
+use std::fmt::Write as _;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
@@ -65,7 +66,9 @@ fn redacted(html: &str) -> String {
         let end = tail.find(['"', '&', ')']).unwrap_or(tail.len());
         match &tail[..end] {
             "data:image/png;base64,AAAA" => out.push_str(&tail[..end]),
-            _ => out.push_str(&format!("data:image/png;base64,({end} chars)")),
+            _ => {
+                let _ = write!(out, "data:image/png;base64,({end} chars)");
+            }
         }
         rest = &tail[end..];
     }

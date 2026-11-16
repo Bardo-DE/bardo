@@ -6,9 +6,7 @@ use shell_kit::notifications::parts::{AppMark, CardAction, GroupCount, StackLaye
 use shell_kit::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::rich_text::{Rich, RichRun, RichText};
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 /// A specimen: its name and how it is made.
 pub type Specimen = (&'static str, fn() -> Element);

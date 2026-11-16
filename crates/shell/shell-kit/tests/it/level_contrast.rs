@@ -53,7 +53,7 @@ fn level() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Specimen() -> Element {
     let (ground, theme) = CASE.get();
     let appearance = Appearance {
@@ -120,9 +120,9 @@ fn measure(ground: Ground, theme: Theme) -> ([u8; 4], [u8; 4], f64) {
     );
     let frame = harness.render().expect("renders");
     probe::keep(&frame, &format!("level-contrast-{ground:?}-{theme:?}"));
-    let row = (track.origin.y.0 + track.size.height.0 / 2.0) as u32;
+    let row = probe::px(track.origin.y.0 + track.size.height.0 / 2.0);
     // The glyph sits in the first 30 px; the fill runs to half the track.
-    let at = |share: f32| (track.origin.x.0 + track.size.width.0 * share) as u32;
+    let at = |share: f32| probe::px(track.origin.x.0 + track.size.width.0 * share);
     let fill = frame.get_pixel(at(0.4), row).0;
     let well = frame.get_pixel(at(0.8), row).0;
     (fill, well, contrast(fill, well))

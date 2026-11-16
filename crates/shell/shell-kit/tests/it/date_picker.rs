@@ -27,7 +27,7 @@ fn start() -> DateValue {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Textual() -> Element {
     let mut value = use_signal(start);
     let said = format!("{:?}", value().day);
@@ -39,7 +39,7 @@ fn Textual() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Graphical() -> Element {
     let mut value = use_signal(start);
     let said = format!("{:?}", value().day);

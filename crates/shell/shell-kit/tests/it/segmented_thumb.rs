@@ -51,7 +51,7 @@ const FRAME: Duration = FRAME_TICK;
 /// Frames that let a Quick spring come to rest from two segments away.
 const SETTLE_FRAMES: usize = 40;
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Desk() -> Element {
     let (theme, accent) = CASE.get();
     let mut appearance = use_signal(|| Appearance {
@@ -295,9 +295,16 @@ fn scale_2_dark() {
 /// The pixel at CSS x `x`, at `seg`'s middle height, at `scale`.
 fn pixel(frame: &image::RgbaImage, seg: Rect, x: f32, scale: f32) -> [u8; 4] {
     let y = seg.origin.y.0 + seg.size.height.0 / 2.0;
-    frame.get_pixel((x * scale) as u32, (y * scale) as u32).0
+    frame
+        .get_pixel(probe::px(x * scale), probe::px(y * scale))
+        .0
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a colour channel in 0..=1 scaled to 0..=255"
+)]
 fn bytes(colour: Srgba) -> [u8; 4] {
     colour.0.map(|c| (c * 255.0).round() as u8)
 }

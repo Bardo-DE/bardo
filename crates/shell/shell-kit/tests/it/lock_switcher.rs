@@ -46,7 +46,7 @@ fn user() -> LockUser {
     )
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn EmojiLock() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,
@@ -62,7 +62,7 @@ fn EmojiLock() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Lock() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,
@@ -78,7 +78,7 @@ fn Lock() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Polkit() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Sheet,
@@ -400,7 +400,7 @@ const APPS: [(&str, Icon); 14] = [
     ("display", Icon::Monitor),
 ];
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Switcher() -> Element {
     let apps: Vec<SwitcherApp> = APPS
         .iter()

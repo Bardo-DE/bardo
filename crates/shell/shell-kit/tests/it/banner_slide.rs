@@ -27,7 +27,7 @@ const VIEW: Viewport = Viewport {
 
 static SHOWN: GlobalSignal<Vec<u32>> = Signal::global(Vec::new);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Stack() -> Element {
     let banners: Vec<Banner> = SHOWN()
         .into_iter()

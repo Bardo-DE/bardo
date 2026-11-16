@@ -13,12 +13,10 @@ use shell_kit::prelude::*;
 use std::time::Duration;
 use ui_components::base::geometry::placement::Align;
 use ui_components::base::geometry::placement::Side;
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::components::menus::palette::palette_group::PaletteGroup;
 use ui_components::components::menus::palette::palette_group::PaletteRow;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::shape::Corner;
 use ui_components::style::tokens::shell_type::ShellType;
@@ -42,7 +40,10 @@ fn luma(pixel: Rgba<u8>) -> i32 {
 /// The pixel at `(dx, dy)` from `selector`'s top-left corner.
 fn at(frame: &RgbaImage, harness: &Harness, selector: &str, dx: f32, dy: f32) -> Rgba<u8> {
     let box_ = rect(harness, selector);
-    *frame.get_pixel((box_.origin.x.0 + dx) as u32, (box_.origin.y.0 + dy) as u32)
+    *frame.get_pixel(
+        probe::px(box_.origin.x.0 + dx),
+        probe::px(box_.origin.y.0 + dy),
+    )
 }
 
 /// No hairline and no shadow, through the material tokens a look sets: only the shape paints
@@ -51,7 +52,7 @@ const BARE: &str = "--m-hairline-light:0; --m-hairline-dark:0; --m-shadow-streng
 
 // ---- A squircle corner is not a circle -------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Corners() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,
@@ -101,7 +102,7 @@ fn a_squircle_corner_is_fuller_than_a_circle_at_45_degrees() {
 
 // ---- The material stack ----------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Card() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,
@@ -143,7 +144,7 @@ fn a_card_stacks_a_hairline_a_highlight_and_two_shadows() {
 
 // ---- A plate --------------------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Plates() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,
@@ -184,7 +185,7 @@ fn a_plate_is_a_gradient_superellipse_with_its_glyph_at_56_percent() {
 
 // ---- Text menus and bar items ----------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Bar() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Bar,
@@ -208,22 +209,22 @@ fn an_open_bar_item_draws_its_pill() {
     // The frame's grain speckles single pixels, so compare the padding's mean.
     let padding = |selector: &str| {
         let item = rect(&harness, selector);
-        let seen = (4..20)
-            .flat_map(|dy| (2..8).map(move |dx| (dx, dy)))
+        let seen = (4_i16..20)
+            .flat_map(|dy| (2_i16..8).map(move |dx| (dx, dy)))
             .map(|(dx, dy)| {
                 luma(*frame.get_pixel(
-                    (item.origin.x.0 + dx as f32) as u32,
-                    (item.origin.y.0 + dy as f32) as u32,
+                    probe::px(item.origin.x.0 + f32::from(dx)),
+                    probe::px(item.origin.y.0 + f32::from(dy)),
                 ))
             })
             .collect::<Vec<_>>();
-        seen.iter().sum::<i32>() / seen.len() as i32
+        seen.iter().sum::<i32>() / i32::try_from(seen.len()).expect("a few samples")
     };
     let (open, shut) = (padding("#open"), padding("#shut"));
     assert!((open - shut).abs() > 4, "open {open} against closed {shut}");
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn SlimMenu() -> Element {
     let entries = vec![
         MenuItem::Item {
@@ -289,7 +290,7 @@ fn text_menu_rows_are_the_shell_menu_row() {
 
 // ---- The dock pill as a squircle root --------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn DockPill() -> Element {
     rsx! {
         div { style: "padding:40px",
@@ -343,7 +344,7 @@ fn a_squircle_dock_root_masks_its_frame_and_keeps_its_shadow() {
 
 // ---- The launcher card sizes to its content --------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Launcher() -> Element {
     let groups = vec![PaletteGroup::list(
         "Applications",
@@ -395,7 +396,7 @@ fn the_launcher_card_is_as_tall_as_its_content() {
 
 // ---- A popover fades before it goes ----------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Pop() -> Element {
     let mut open = use_signal(|| true);
     rsx! {

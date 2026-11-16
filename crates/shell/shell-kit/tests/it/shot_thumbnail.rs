@@ -43,7 +43,7 @@ fn picture() -> ImageSource {
     ImageSource::png(&bytes.into_inner())
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Thumb() -> Element {
     let actions = vec![ThumbAction {
         icon: Icon::Trash,
@@ -66,7 +66,7 @@ fn Thumb() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Swipeable() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,

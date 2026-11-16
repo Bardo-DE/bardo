@@ -5,6 +5,7 @@
 //! (`ui_blitz::seam::follow_scheme`). Read off the painted pixels: a computed colour cannot see a
 //! glyph painted in a stale one.
 
+use crate::support::probe;
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
 use std::collections::HashMap;
@@ -24,7 +25,7 @@ const VIEW: Viewport = Viewport {
 /// WCAG's floor for a graphic.
 const GRAPHIC: f32 = 3.0;
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Bar() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()),
@@ -54,7 +55,7 @@ fn peak_contrast(harness: &mut Harness, selector: &str) -> f32 {
     let image = harness.render_over(Backdrop::Scheme).expect("renders");
     let scale = f32::from(VIEW.scale_percent) / 100.0;
     let span = |from: f32, size: f32, limit: u32| {
-        ((from * scale) as u32)..((((from + size) * scale).ceil() as u32).min(limit))
+        probe::px(from * scale)..probe::px(((from + size) * scale).ceil()).min(limit)
     };
     let pixels: Vec<[u8; 3]> = span(rect.origin.y.0, rect.size.height.0, image.height())
         .flat_map(|y| span(rect.origin.x.0, rect.size.width.0, image.width()).map(move |x| (x, y)))

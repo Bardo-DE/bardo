@@ -30,6 +30,10 @@ impl PartialEq for HostProps {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 fn host(props: HostProps) -> Element {
     (props.make)()
 }

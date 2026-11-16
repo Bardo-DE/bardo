@@ -27,7 +27,7 @@ static MODULE: GlobalSignal<(Check, Availability)> =
     Signal::global(|| (Check::Off, Availability::Enabled));
 static PROMPT: GlobalSignal<PromptState> = Signal::global(|| PromptState::Idle);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Tile() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Popover,
@@ -81,7 +81,7 @@ fn user() -> LockUser {
     )
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Lock() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,

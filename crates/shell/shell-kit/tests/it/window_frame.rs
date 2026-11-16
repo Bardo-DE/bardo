@@ -77,12 +77,12 @@ fn window(look: SpaceLook, extra: &'static str) -> Element {
 
 // ---- The layers paint over the root ---------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Plain() -> Element {
     window(look(0, 0), "")
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Red() -> Element {
     window(look(0, 0), RED_LAYERS)
 }
@@ -105,12 +105,12 @@ fn the_frame_layers_paint_over_the_root() {
 
 // ---- The grain shows -----------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Grainless() -> Element {
     window(look(0, 0), "")
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Grainy() -> Element {
     window(look(0, 100), "")
 }
@@ -145,22 +145,22 @@ fn dark_window(look: SpaceLook) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn LightGrain0() -> Element {
     window(look(0, 0), "")
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn LightGrain55() -> Element {
     window(look(0, 55), "")
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn DarkGrain0() -> Element {
     dark_window(look(0, 0))
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn DarkGrain55() -> Element {
     dark_window(look(0, 55))
 }
@@ -173,8 +173,9 @@ fn variance(frame: &RgbaImage) -> f64 {
         .flat_map(|y| (0..64u32).map(move |x| (x, y)))
         .map(|(x, y)| f64::from(luma(pixel(frame, x, y))))
         .collect();
-    let mean = lumas.iter().sum::<f64>() / lumas.len() as f64;
-    lumas.iter().map(|l| (l - mean).powi(2)).sum::<f64>() / lumas.len() as f64
+    let count = f64::from(u32::try_from(lumas.len()).expect("4096 samples"));
+    let mean = lumas.iter().sum::<f64>() / count;
+    lumas.iter().map(|l| (l - mean).powi(2)).sum::<f64>() / count
 }
 
 /// Grain 55 roughens the frame where grain 0 leaves the smooth gradient, in both schemes; the
@@ -200,22 +201,22 @@ fn grain_55_has_more_pixel_variance_than_grain_0_in_both_schemes() {
 
 // ---- The quiet tint, kept for review --------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn WorkLight() -> Element {
     window(look(0, 35), "")
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn WorkDark() -> Element {
     dark_window(look(0, 35))
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn HomeLight() -> Element {
     window(look(1, 55), "")
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn HomeDark() -> Element {
     dark_window(look(1, 55))
 }
@@ -242,7 +243,7 @@ fn the_work_and_home_frames_are_kept_and_differ() {
 
 // ---- The cross-fade -------------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Switching() -> Element {
     let mut index = use_signal(|| 0usize);
     rsx! {
@@ -264,9 +265,16 @@ fn Switching() -> Element {
 fn quarter_of_the_curve() -> Duration {
     let length = DurationToken::Big.duration(MotionLevel::Standard);
     let curve = EasingToken::Out.easing();
-    let whole = length.as_millis() as u64;
+    let whole = u64::try_from(length.as_millis()).expect("a duration of a few hundred ms");
     let at = (1..=whole)
-        .find(|&at| curve.at(Fraction((at * 1000 / whole) as u16)).0 >= 250)
+        .find(|&at| {
+            curve
+                .at(Fraction(
+                    u16::try_from(at * 1000 / whole).expect("at most 1000"),
+                ))
+                .0
+                >= 250
+        })
         .unwrap_or(whole / 2);
     ms(at)
 }

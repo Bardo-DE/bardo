@@ -94,6 +94,10 @@ pub fn chevrons() -> Vec<(String, TileCase)> {
 }
 
 /// A tile in a Popover root of its scheme.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 pub fn tile(case: TileCase) -> Element {
     let on_detail = match case.detail {
         Detail::Chevron => Some(EventHandler::new(|_| {})),

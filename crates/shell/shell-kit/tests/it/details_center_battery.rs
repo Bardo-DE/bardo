@@ -32,7 +32,7 @@ fn virtual_harness(app: fn() -> Element) -> Harness {
 static LEVEL: GlobalSignal<Fraction> = Signal::global(|| Fraction(930));
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Module() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

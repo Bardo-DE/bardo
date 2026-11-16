@@ -23,7 +23,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A small desktop widget holding the month, as bardo-shell's calendar widget draws it.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn SmallCalendar() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Widget, chrome: Some(RootChrome::Transparent),
@@ -186,7 +186,7 @@ fn a_five_week_month_spreads_its_rows_over_the_height() {
 }
 
 /// The same widget on September, whose today (the 26th) is two digits.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn SmallSeptember() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Widget, chrome: Some(RootChrome::Transparent),
@@ -232,7 +232,7 @@ fn todays_compact_disc_is_a_circle_twice_its_number() {
 
 /// The small widget with the month inside a row flex wrapper that does not stretch it, as bardo-shell's
 /// `.shell-cal` places it: unstretched, the month's own height must still fit the content box.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn WrappedSmallCalendar() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Widget, chrome: Some(RootChrome::Transparent),

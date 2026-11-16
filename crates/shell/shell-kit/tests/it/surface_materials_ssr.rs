@@ -12,7 +12,6 @@ use ui_components::components::controls::badge::BadgeContent;
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::menus::palette::palette_group::PaletteGroups;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::icon::plate_tint::PlateTint;
 use ui_components::style::icon::retint::IconStyle;
@@ -44,6 +43,10 @@ impl PartialEq for HostProps {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 fn host(props: HostProps) -> Element {
     (props.make)()
 }

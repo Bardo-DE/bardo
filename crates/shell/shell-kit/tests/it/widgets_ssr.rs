@@ -26,6 +26,10 @@ impl PartialEq for HostProps {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 fn host(props: HostProps) -> Element {
     (props.make)()
 }
@@ -55,8 +59,8 @@ fn center(body: Element) -> Element {
     }
 }
 
-fn batteries() -> Option<WidgetTitle> {
-    Some(WidgetTitle::new(Icon::BatteryFull, "Batteries"))
+fn batteries() -> WidgetTitle {
+    WidgetTitle::new(Icon::BatteryFull, "Batteries")
 }
 
 type Case = (&'static str, fn() -> Element);
@@ -83,7 +87,7 @@ const CASES: &[Case] = &[
         center(rsx! { WidgetFrame { size: WidgetSize::Small, "84%" } })
     }),
     ("frame-medium-tile-titled", || {
-        center(rsx! { WidgetFrame { size: WidgetSize::Medium, title: batteries(), "84%" } })
+        center(rsx! { WidgetFrame { size: WidgetSize::Medium, title: Some(batteries()), "84%" } })
     }),
     ("frame-large-tile", || {
         center(rsx! { WidgetFrame { size: WidgetSize::Large, "Up next" } })

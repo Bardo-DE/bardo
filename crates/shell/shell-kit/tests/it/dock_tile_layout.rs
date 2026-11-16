@@ -23,8 +23,13 @@ const VIEW: Viewport = Viewport {
 /// The bounce's lift in whole pixels: the document may be built on another thread.
 static LIFT: AtomicU32 = AtomicU32::new(0);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Tile() -> Element {
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "the lift is a few pixels, exact in f32"
+    )]
+    let lift = Px(LIFT.load(Ordering::Relaxed) as f32);
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,
             div { style: "position:absolute; left:100px; top:100px",
@@ -33,7 +38,7 @@ fn Tile() -> Element {
                     plate: Some(PlateFamily::Blue),
                     running: true,
                     side: Px(48.0),
-                    lift: Px(LIFT.load(Ordering::Relaxed) as f32),
+                    lift,
                     label: "Files",
                     label_shown: Some(true),
                     onclick: |_| {},

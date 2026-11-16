@@ -35,15 +35,30 @@ pub fn rect(harness: &Harness, selector: &str) -> Rect {
 /// Keep `frame` in the test's scratch directory, for review.
 pub fn keep(frame: &RgbaImage, name: &str) {
     let path = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!("{name}.png"));
-    frame.save(&path).ok();
+    frame.save(&path).expect("saves the kept frame");
+}
+
+/// `value` as a pixel index: negative values clamp to 0, fractions drop.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "floored at 0 first; layout coordinates are far below u32::MAX"
+)]
+pub fn px(value: f32) -> u32 {
+    value.max(0.0) as u32
+}
+
+/// A pixel position or count as `f32`, exactly (it must fit `u16`).
+pub fn exact<T: TryInto<u16, Error: std::fmt::Debug>>(n: T) -> f32 {
+    f32::from(n.try_into().expect("a pixel position fits u16"))
 }
 
 /// The pixels inside `rect`, inset by `inset` on every side.
 pub fn pixels(frame: &RgbaImage, rect: Rect, inset: f32) -> Vec<[u8; 4]> {
-    let x0 = (rect.origin.x.0 + inset).max(0.0) as u32;
-    let y0 = (rect.origin.y.0 + inset).max(0.0) as u32;
-    let x1 = ((rect.origin.x.0 + rect.size.width.0 - inset) as u32).min(frame.width());
-    let y1 = ((rect.origin.y.0 + rect.size.height.0 - inset) as u32).min(frame.height());
+    let x0 = px(rect.origin.x.0 + inset);
+    let y0 = px(rect.origin.y.0 + inset);
+    let x1 = px(rect.origin.x.0 + rect.size.width.0 - inset).min(frame.width());
+    let y1 = px(rect.origin.y.0 + rect.size.height.0 - inset).min(frame.height());
     (y0..y1)
         .flat_map(|y| (x0..x1).map(move |x| (x, y)))
         .map(|(x, y)| frame.get_pixel(x, y).0)

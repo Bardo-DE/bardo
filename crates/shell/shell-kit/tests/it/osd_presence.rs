@@ -21,7 +21,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Card() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Osd, chrome: Some(RootChrome::Transparent),

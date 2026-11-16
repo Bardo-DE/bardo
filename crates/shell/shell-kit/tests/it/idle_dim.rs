@@ -20,7 +20,7 @@ static LEVEL: GlobalSignal<Percent> = Signal::global(|| Percent(60));
 static PHASE: GlobalSignal<IdleDimPhase> = Signal::global(|| IdleDimPhase::Awake);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Overlay() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,
@@ -29,7 +29,7 @@ fn Overlay() -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 #[component]
 fn OverlayBody() -> Element {
     rsx! {
@@ -38,6 +38,10 @@ fn OverlayBody() -> Element {
 }
 
 /// The overlay's opacity in permille, read from the style the component draws.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "an opacity in 0..=1 scaled to permille"
+)]
 fn read(harness: &Harness, selector: &str) -> i64 {
     harness
         .attr(selector, "style")

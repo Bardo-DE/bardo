@@ -16,7 +16,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// Three columns, gap 6, padding 10: a tile per column, then a Full tile.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Three() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Popover,

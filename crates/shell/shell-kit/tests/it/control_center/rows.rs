@@ -4,7 +4,6 @@
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
 use ui_components::base::vocab::RowState;
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
 
@@ -82,6 +81,10 @@ fn networks() -> Element {
 }
 
 /// A specimen in a Popover root.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 pub fn row(props: RowProps) -> Element {
     let theme = match props.case {
         RowCase::Networks(theme) => theme,

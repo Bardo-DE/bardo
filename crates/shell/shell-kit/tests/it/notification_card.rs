@@ -7,7 +7,6 @@ use dioxus::prelude::*;
 use shell_kit::notifications::parts::{AppMark, CardAction, Hover};
 use shell_kit::prelude::*;
 use ui_components::components::content::rich_text::{Rich, RichRun};
-use ui_components::components::content::text_runs::RunTone;
 use ui_components::prelude::*;
 use ui_harness::harness::settle_until;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
@@ -38,7 +37,7 @@ fn body() -> Rich {
     ])
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Card() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Toast,

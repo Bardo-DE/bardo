@@ -15,7 +15,6 @@ use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::icon::family::PlateFamily;
 
 fn user() -> LockUser {

@@ -17,6 +17,10 @@ pub struct PaneProps {
 pub const CASES: [(Pane, &str); 2] = [(Pane::Root, "panes-root"), (Pane::Detail, "panes-detail")];
 
 /// A switcher at rest on `shown`, mounted there.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 pub fn panes(props: PaneProps) -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Popover, stylesheet: Inject::Host,

@@ -15,7 +15,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -62,7 +62,7 @@ fn a_shown_hint_is_hidden_until_placed_and_never_at_the_origin() {
 
 static SHIFT: GlobalSignal<u32> = Signal::global(|| 0);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Moving() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,

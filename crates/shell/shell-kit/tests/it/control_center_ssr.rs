@@ -14,9 +14,9 @@ mod tiles;
 use dioxus::prelude::*;
 use ui_components::motion::pane_slide::Pane;
 use ui_components::prelude::*;
+use ui_components::style::icon::posed::Thousandths;
 use ui_components::style::icon::render::Glyph;
 use ui_components::style::icon::render::GlyphProps;
-use ui_components::style::icon::style::GlyphStyle;
 use ui_lint::{LintConfig, Profile, markup};
 
 /// `icon` at the bar's 22 px, rendered alone.
@@ -27,7 +27,7 @@ fn glyph(icon: Icon) -> String {
             icon,
             size: IconSize::Bar,
             style: GlyphStyle::default(),
-            cut: Default::default(),
+            cut: Thousandths::default(),
         },
     );
     dom.rebuild_in_place();

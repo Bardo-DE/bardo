@@ -21,6 +21,10 @@ impl PartialEq for HostProps {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 fn host(props: HostProps) -> Element {
     (props.make)()
 }
@@ -121,13 +125,13 @@ fn a_disabled_level_says_so_and_leaves_the_tab_order() {
 
 #[test]
 fn the_stylesheet_draws_the_disabled_level_apart() {
-    let css = shell_kit::stylesheet();
     const RULES: &[&str] = &[
         ".ds-slider[*|aria-disabled=true]{ cursor:not-allowed; }",
         ".ds-slider[*|aria-disabled=true] .ds-slider-rail{ opacity:.35; }",
         ".ds-slider[*|aria-disabled=true] .ds-slider-thumb{ display:none; }",
         ".ds-module-panel[*|aria-disabled=true] .ds-module-panel-trailing{ opacity:.35; }",
     ];
+    let css = shell_kit::stylesheet();
     for rule in RULES {
         assert!(css.contains(rule), "missing: {rule}");
     }

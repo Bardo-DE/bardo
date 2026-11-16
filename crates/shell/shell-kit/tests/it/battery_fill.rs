@@ -32,23 +32,28 @@ fn stage(motion: Motion, power: BatteryPower) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Stage() -> Element {
     stage(Motion::Standard, BatteryPower::Battery)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn ReducedStage() -> Element {
     stage(Motion::Reduced, BatteryPower::Battery)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn ChargingStage() -> Element {
     stage(Motion::Standard, BatteryPower::Charging)
 }
 
 /// How much of the circle the arc draws, in thousandths: 0 with no arc, 1000 for the whole
 /// circle, else its end's angle clockwise from twelve (the arc starts at twelve).
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a share of 360 degrees scaled to 0..=1000, rounded"
+)]
 fn drawn(harness: &Harness) -> u16 {
     let Some(d) = harness.attr(".ds-battery .ds-progress-fill path", "d") else {
         return 0;

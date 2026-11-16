@@ -8,6 +8,7 @@ use shell_kit::emoji::disc::{DiscHue, EmojiDisc};
 use shell_kit::emoji::id::EmojiId;
 use shell_kit::prelude::*;
 use shell_kit::user_picture::size::PictureSize;
+use std::fmt::Write as _;
 use ui_components::assembly::ds::Inject;
 use ui_components::prelude::*;
 
@@ -19,7 +20,11 @@ struct SpecimenProps {
     theme: Theme,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 fn Specimen(props: SpecimenProps) -> Element {
     rsx! {
         Ds { appearance: Appearance { theme: props.theme, ..Appearance::default() }, material: Material::Window, stylesheet: Inject::Host,
@@ -42,7 +47,7 @@ fn redacted(html: &str) -> String {
         out.push_str(&rest[..at]);
         let tail = &rest[at..];
         let end = tail.find(['"', '&', ')']).unwrap_or(tail.len());
-        out.push_str(&format!("data:image/png;base64,({end} chars)"));
+        let _ = write!(out, "data:image/png;base64,({end} chars)");
         rest = &tail[end..];
     }
     out.push_str(rest);

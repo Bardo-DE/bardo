@@ -26,7 +26,7 @@ thread_local! {
     static MOTION: Cell<Motion> = const { Cell::new(Motion::Standard) };
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Card() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance { motion: MOTION.with(Cell::get), ..Appearance::default() }, material: Material::Toast,

@@ -43,7 +43,7 @@ fn heard(what: &str, whom: &str) {
 
 /// A page holding a field and, beside it, an absolutely positioned block that can slide over
 /// the field's top-left corner.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Slider() -> Element {
     let (left, side) = match SLID() {
         Slide::Away => (320, 60),
@@ -151,7 +151,7 @@ fn a_block_covering_the_whole_field_is_still_entered() {
 /// The banners shown, by key.
 static SHOWN: GlobalSignal<Vec<u32>> = Signal::global(Vec::new);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Stack() -> Element {
     let banners: Vec<Banner> = SHOWN()
         .into_iter()

@@ -24,7 +24,7 @@ fn ms(n: u64) -> Duration {
 }
 
 /// Two dark dock pills on a light window: the material's own 22 px corner, and a square one.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Pills() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -50,7 +50,7 @@ fn Pills() -> Element {
 /// The pixel 2 px inside `selector`'s top-left corner.
 fn corner(frame: &RgbaImage, harness: &Harness, selector: &str) -> Rgba<u8> {
     let at = rect(harness, selector);
-    *frame.get_pixel(at.origin.x.0 as u32 + 2, at.origin.y.0 as u32 + 2)
+    *frame.get_pixel(probe::px(at.origin.x.0) + 2, probe::px(at.origin.y.0) + 2)
 }
 
 /// Luma, enough to tell a dark tint from a light ground.
@@ -75,7 +75,7 @@ fn a_surfaces_radius_overrides_its_materials_corner() {
 }
 
 /// Icons at the dock's sizes: a glyph at `Tile96`, an image at a caller's own pixel size.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn DockIcons() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -112,7 +112,7 @@ fn icons_take_the_docks_sizes() {
 
 /// Three tiles with a dock label each: one left to the pointer, one shown and one hidden by the
 /// caller.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Labels() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

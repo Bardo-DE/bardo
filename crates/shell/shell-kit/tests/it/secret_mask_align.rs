@@ -10,6 +10,7 @@
 //! the N-th dot, after Left x3 clear of both the eighth and the ninth dot, and an unfocused field
 //! paints no caret.
 
+use crate::support::probe;
 use dioxus::prelude::*;
 use image::RgbaImage;
 use shell_kit::lock::vocab::LockUser;
@@ -30,7 +31,7 @@ const VIEW: Viewport = Viewport {
 /// What is typed: eight characters, wider hidden than their dots, as in bardo-shell's capture.
 const TYPED: &str = "hunter2x";
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Polkit() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Sheet,
@@ -71,7 +72,7 @@ fn ink_columns(shot: &RgbaImage, field: Rect) -> Vec<u32> {
     let right = field.origin.x.0 + field.size.width.0 - inset;
     let top = field.origin.y.0 + inset;
     let bottom = field.origin.y.0 + field.size.height.0 - inset;
-    let to_px = |v: f32| v.round() as u32;
+    let to_px = |v: f32| probe::px(v.round());
     (to_px(left)..to_px(right))
         .filter(|&x| (to_px(top)..to_px(bottom)).any(|y| inked(*shot.get_pixel(x, y))))
         .map(|x| x - to_px(field.origin.x.0))
@@ -96,7 +97,7 @@ struct Band {
 impl Band {
     fn of(field: Rect) -> Self {
         let inset = 4.0;
-        let to_px = |v: f32| v.round() as u32;
+        let to_px = |v: f32| probe::px(v.round());
         Band {
             left: to_px(field.origin.x.0 + inset),
             right: to_px(field.origin.x.0 + field.size.width.0 - inset),
@@ -124,7 +125,7 @@ impl Band {
         let (mut sum, mut total) = (0.0, 0.0);
         for x in from..=to {
             let w = self.weight(shot, x, ground);
-            sum += w * (x as f32 + 0.5);
+            sum += w * (probe::exact(x) + 0.5);
             total += w;
         }
         sum / total
@@ -133,7 +134,7 @@ impl Band {
 
 fn luma(pixel: image::Rgba<u8>) -> f32 {
     let [r, g, b, _] = pixel.0;
-    (u32::from(r) + u32::from(g) + u32::from(b)) as f32 / 3.0
+    probe::exact(u32::from(r) + u32::from(g) + u32::from(b)) / 3.0
 }
 
 /// The painted caret's left edge in page pixels (its ink's centre less half its 1.5 px), or
@@ -232,8 +233,8 @@ const CARET_W: f32 = 1.5;
 /// before the dot's advance ends (the mask's padding plus n dot pitches).
 fn caret_after(dots: &[Dot], n: usize, text_start: f32) -> f32 {
     let (first, last) = (dots[0].centre, dots[dots.len() - 1].centre);
-    let pitch = (last - first) / (dots.len() - 1) as f32;
-    text_start + n as f32 * pitch - TRACKING / 2.0 - CARET_W / 2.0
+    let pitch = (last - first) / probe::exact(dots.len() - 1);
+    text_start + probe::exact(n) * pitch - TRACKING / 2.0 - CARET_W / 2.0
 }
 
 #[test]
@@ -261,7 +262,7 @@ fn the_drawn_caret_sits_at_the_end_of_the_last_dot() {
             (caret - want).abs() <= 1.0,
             "{n} typed: the caret is at {caret:.2}, half a gap after the last dot is {want:.2}"
         );
-        let gap = caret - dots[n - 1].right as f32;
+        let gap = caret - probe::exact(dots[n - 1].right);
         assert!(
             gap >= 1.0,
             "{n} typed: {gap:.2} px from the last dot's ink to the caret"
@@ -287,8 +288,8 @@ fn after_left_three_times_the_caret_stands_clear_between_the_eighth_and_ninth_do
     assert_eq!(dots.len(), n);
     let (eighth, ninth) = (dots[n - 4], dots[n - 3]);
     let (before, after) = (
-        caret - eighth.right as f32,
-        ninth.left as f32 - (caret + CARET_W),
+        caret - probe::exact(eighth.right),
+        probe::exact(ninth.left) - (caret + CARET_W),
     );
     assert!(
         before >= 1.0 && after >= 1.0,
@@ -333,7 +334,7 @@ fn a_typed_secret_draws_its_dots_from_the_leading_edge_in_a_centred_card() {
         first <= 16,
         "the first ink is {first} px into the field, not at its leading padding: {ink:?}"
     );
-    let third = (field.size.width.0 / 3.0) as u32;
+    let third = probe::px(field.size.width.0 / 3.0);
     assert!(
         last < third,
         "the last ink is {last} px into a {} px field, past its leading third: {ink:?}",

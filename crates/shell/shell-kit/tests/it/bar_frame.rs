@@ -67,6 +67,11 @@ fn look(index: usize) -> SpaceLook {
 }
 
 /// `colour` at `alpha` (thousandths) over white: what a tint over a white backdrop shows.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a blend of two channel values in 0..=255"
+)]
 fn over_white(colour: Hex, alpha: u16) -> [u8; 4] {
     let a = f64::from(alpha) / 1000.0;
     let [r, g, b] = colour
@@ -93,12 +98,12 @@ fn bar(blur: bool, index: usize) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn BarOverBlur() -> Element {
     bar(true, 0)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn BarSolid() -> Element {
     bar(false, 0)
 }
@@ -132,7 +137,7 @@ fn the_bar_at_rest_is_the_first_stop_at_the_material_alpha() {
 
 // ---- The cross-fade -------------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn SwitchingBar() -> Element {
     let mut index = use_signal(|| 0usize);
     rsx! {
@@ -157,9 +162,16 @@ fn SwitchingBar() -> Element {
 fn half_of_the_fade() -> Duration {
     let length = DurationToken::Big.duration(MotionLevel::Standard);
     let curve = EasingToken::Out.easing();
-    let whole = length.as_millis() as u64;
+    let whole = u64::try_from(length.as_millis()).expect("a duration of a few hundred ms");
     let half = (1..=whole)
-        .find(|&at| curve.at(Fraction((at * 1000 / whole) as u16)).0 >= 250)
+        .find(|&at| {
+            curve
+                .at(Fraction(
+                    u16::try_from(at * 1000 / whole).expect("at most 1000"),
+                ))
+                .0
+                >= 250
+        })
         .unwrap_or(whole / 2);
     ms(half)
 }
@@ -216,7 +228,7 @@ fn entries() -> Vec<MenuItem<u8>> {
         .into_iter()
         .enumerate()
         .map(|(value, title)| MenuItem::Item {
-            value: value as u8,
+            value: u8::try_from(value).expect("two entries"),
             title: title.to_owned(),
             image: None,
             key: None,
@@ -245,12 +257,12 @@ fn popup(chrome: Option<RootChrome>) -> Element {
     }
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn PopupRoot() -> Element {
     popup(None)
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn PaintedPopupRoot() -> Element {
     popup(Some(RootChrome::Painted))
 }
@@ -289,7 +301,7 @@ fn a_popover_roots_corner_outside_its_card_is_transparent() {
 
 // ---- The frame ground -----------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn GroundedBar() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: light(), look: look(0), material: Material::Bar,
@@ -336,7 +348,7 @@ fn the_frame_ground_draws_frame_inks_and_its_overlays_paper() {
 
 // ---- Status items ---------------------------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn StatusItems() -> Element {
     let large = "--bar-status-box:30px;--bar-status-glyph:24px;";
     rsx! {
@@ -357,9 +369,12 @@ fn StatusItems() -> Element {
 /// How wide the ink inside `box_rect` is: the glyph's drawn extent, not its element's.
 fn inked_width(frame: &RgbaImage, box_rect: Rect) -> u32 {
     let ground = modal(&pixels(frame, box_rect, 0.0));
-    let x0 = box_rect.origin.x.0 as u32;
-    let y0 = box_rect.origin.y.0 as u32;
-    let (w, h) = (box_rect.size.width.0 as u32, box_rect.size.height.0 as u32);
+    let x0 = probe::px(box_rect.origin.x.0);
+    let y0 = probe::px(box_rect.origin.y.0);
+    let (w, h) = (
+        probe::px(box_rect.size.width.0),
+        probe::px(box_rect.size.height.0),
+    );
     let columns: Vec<u32> = (x0..x0 + w)
         .filter(|&x| (y0..y0 + h).any(|y| distance(pixel(frame, x, y), ground) > 40))
         .collect();
@@ -374,6 +389,8 @@ fn inked_width(frame: &RgbaImage, box_rect: Rect) -> u32 {
 /// the properties, the keys' defaults 22 and 16.
 #[test]
 fn a_status_item_takes_its_box_and_glyph_from_the_properties() {
+    // (selector, box, glyph)
+    const CASES: &[(&str, f32, f32)] = &[(".large", 30.0, 24.0), (".plain", 22.0, 16.0)];
     let mut harness = Harness::new(
         StatusItems,
         HarnessConfig::new(BAR_VIEW).with_clock(Clock::Virtual),
@@ -381,8 +398,6 @@ fn a_status_item_takes_its_box_and_glyph_from_the_properties() {
     harness.advance(ms(50));
     let frame = harness.render().expect("renders");
     keep(&frame, "status-items");
-    // (selector, box, glyph)
-    const CASES: &[(&str, f32, f32)] = &[(".large", 30.0, 24.0), (".plain", 22.0, 16.0)];
     for &(scope, side, glyph) in CASES {
         let button = rect(&harness, &format!("{scope} .ds-menu-bar-item"));
         assert_eq!(
@@ -394,7 +409,7 @@ fn a_status_item_takes_its_box_and_glyph_from_the_properties() {
         assert_eq!(svg.size.width, Px(glyph), "{scope}");
         // The drawing scales with the element: the solid wifi spans 22 of its 24 units.
         let inked = inked_width(&frame, button);
-        let want = (glyph * 22.0 / 24.0).round() as u32;
+        let want = probe::px((glyph * 22.0 / 24.0).round());
         assert!(
             inked.abs_diff(want) <= 2,
             "{scope}: the glyph is drawn {inked} wide, want about {want}"
@@ -414,8 +429,8 @@ fn a_status_item_fills_under_the_pointer() {
     let corner = |frame: &RgbaImage| {
         pixel(
             frame,
-            button.origin.x.0 as u32 + 3,
-            button.origin.y.0 as u32 + 3,
+            probe::px(button.origin.x.0) + 3,
+            probe::px(button.origin.y.0) + 3,
         )
     };
     let rest = corner(&harness.render().expect("renders"));

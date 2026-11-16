@@ -19,7 +19,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A 320 px panel's grid: two tiles, then the Sound module.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Sound() -> Element {
     let percent = VALUE().0 / 10;
     rsx! {

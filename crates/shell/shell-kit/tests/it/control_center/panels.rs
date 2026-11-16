@@ -47,6 +47,10 @@ fn theme_of(case: PartCase) -> Theme {
 }
 
 /// `case` in a Popover root of its scheme.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "Dioxus component props are taken by value"
+)]
 pub fn part(props: PartProps) -> Element {
     let body = match props.case {
         PartCase::Panel(_) => rsx! {

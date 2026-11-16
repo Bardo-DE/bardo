@@ -54,7 +54,7 @@ static ITEM: GlobalSignal<StatusState> = Signal::global(|| {
     })
 });
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Bar() -> Element {
     let status = ITEM();
     rsx! {
@@ -141,7 +141,7 @@ fn the_status_item_plays_the_glyphs_own_moments() {
 
 // ---- the control center's slots ------------------------------------------------------
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Center() -> Element {
     let status = StatusState::Battery(battery(930, BatteryPower::Battery));
     let wifi = StatusState::Wifi(WifiState::Joined {
@@ -217,7 +217,7 @@ fn the_panel_header_holds_the_battery_and_the_disc_holds_the_wifi_glyph() {
 
 static VOLUME: GlobalSignal<VolumeState> = Signal::global(|| VolumeState::Muted);
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn Sound() -> Element {
     rsx! {
         Ds { sheet: Some(shell_kit::stylesheet()), appearance: Appearance::default(), material: Material::Window,

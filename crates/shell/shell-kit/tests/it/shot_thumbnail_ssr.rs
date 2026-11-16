@@ -12,7 +12,6 @@ use shell_kit::thumbs::shot_thumbnail::ThumbAction;
 use ui_components::assembly::ds::Inject;
 use ui_components::components::content::image_source::ImageSize;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 /// A picture's source: a stand-in URI, since only the markup is compared.
 fn picture() -> ImageSource {

@@ -16,7 +16,7 @@ const VIEW: Viewport = Viewport {
 };
 
 /// One Wi-Fi tile with a chevron; the page logs every toggle and every detail request.
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "Dioxus components are PascalCase functions")]
 fn TileApp() -> Element {
     let mut state = use_signal(|| Check::Off);
     let mut log = use_signal(Vec::<&'static str>::new);

@@ -7,7 +7,8 @@ use std::path::{Path, PathBuf};
 
 /// Every `.rs` file under `dir`, recursively.
 fn sources(dir: &Path) -> Vec<PathBuf> {
-    let entries = std::fs::read_dir(dir).unwrap_or_else(|error| panic!("{dir:?}: {error}"));
+    let entries =
+        std::fs::read_dir(dir).unwrap_or_else(|error| panic!("{}: {error}", dir.display()));
     entries
         .filter_map(Result::ok)
         .map(|entry| entry.path())
@@ -23,7 +24,8 @@ const FORBIDDEN: &[&str] = &["Instant::now", "futures_timer::", "Delay::new"];
 
 /// The offending lines of one file's non-test code, as `path:line: text`.
 fn offences(path: &Path) -> Vec<String> {
-    let text = std::fs::read_to_string(path).unwrap_or_else(|error| panic!("{path:?}: {error}"));
+    let text =
+        std::fs::read_to_string(path).unwrap_or_else(|error| panic!("{}: {error}", path.display()));
     text.lines()
         .enumerate()
         .take_while(|(_, line)| !line.trim_start().starts_with("#[cfg(test)]"))
