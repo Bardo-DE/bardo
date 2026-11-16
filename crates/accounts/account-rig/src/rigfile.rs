@@ -1,7 +1,8 @@
-//! `rig.json`: what `account-rig-servers` writes once everything it was asked for is listening,
-//! and what a scenario reads to learn addresses and secrets. Fields of a fake that was not
-//! started are absent. Written whole under a temporary name and renamed, so a reader that finds
-//! the file finds all of it.
+//! `rig.json`: what `account-rig-servers` writes once everything it was asked for is listening, and
+//! what a scenario reads to learn addresses and secrets.
+//!
+//! Fields of a fake that was not started are absent. Written whole under a temporary name and
+//! renamed, so a reader that finds the file finds all of it.
 
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};

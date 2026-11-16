@@ -17,10 +17,11 @@ use crate::toplevel::{Fullscreen, Maximize, ResizeEdge};
 use crate::window_placement::WindowPlacement;
 use blitz_embed::scroll::cmd::ScrollCmd;
 
-/// A change to one surface, grouped by the roles that can take it. Applied after the documents
-/// are polled and before painting, so a region change lands in the same commit as the frame
-/// that caused it. An op that does not fit the surface's role (a layer op on a popup) is
-/// ignored.
+/// A change to one surface, grouped by the roles that can take it.
+///
+/// Applied after the documents are polled and before painting, so a region change lands in the same
+/// commit as the frame that caused it. An op that does not fit the surface's role (a layer op on a
+/// popup) is ignored.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SurfaceOp {
     /// Any surface.

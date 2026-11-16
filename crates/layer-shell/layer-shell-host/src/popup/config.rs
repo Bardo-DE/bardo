@@ -77,9 +77,10 @@ pub enum PopupGrab {
 }
 
 /// A shift of the popup from where its anchor edge and gravity put it, in the parent's logical
-/// pixels: design/13 §13.3.2 places a bar menu at (-8, +6) from its title button. Applied to
-/// the anchor rectangle before it is sent, so it moves with the anchor and survives a flip
-/// or a reposition.
+/// pixels: design/13 §13.3.2 places a bar menu at (-8, +6) from its title button.
+///
+/// Applied to the anchor rectangle before it is sent, so it moves with the anchor and survives a
+/// flip or a reposition.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct PopupOffset {
     pub dx: Px,

@@ -50,9 +50,11 @@ pub fn answer_path(task: &TaskId) -> String {
     format!("{COMPANION_PATH}/answer/{segment}")
 }
 
-/// The session bus a daemon serves on: `$DBUS_SESSION_BUS_ADDRESS`, else the address of the bus
-/// that started this process by activation (`$DBUS_STARTER_ADDRESS`), else the default per-user
-/// socket. `env` reads the environment, so a test names its own bus.
+/// The session bus a daemon serves on.
+///
+/// It is `$DBUS_SESSION_BUS_ADDRESS`, else the address of the bus that started this process by
+/// activation (`$DBUS_STARTER_ADDRESS`), else the default per-user socket. `env` reads the
+/// environment, so a test names its own bus.
 ///
 /// # Errors
 ///

@@ -11,10 +11,11 @@ use std::os::fd::OwnedFd;
 #[error("cannot hand the frame over as a memfd: {0}")]
 pub struct FrameFdError(#[from] std::io::Error);
 
-/// The frame's pixels in a new memfd: written whole, the offset put back at the start (a
-/// descriptor sent with `SCM_RIGHTS` shares its offset with the receiver, who may `read` it), and
-/// sealed against writes and resizing so inferd can map it without a copy. The bytes never pass
-/// through JSON or the bus.
+/// The frame's pixels in a new memfd.
+///
+/// They are written whole, the offset put back at the start (a descriptor sent with `SCM_RIGHTS`
+/// shares its offset with the receiver, who may `read` it), and sealed against writes and resizing
+/// so inferd can map it without a copy. The bytes never pass through JSON or the bus.
 ///
 /// # Errors
 ///

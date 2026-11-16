@@ -5,8 +5,9 @@ use std::io::{self, Seek, Write};
 use std::os::fd::OwnedFd;
 
 /// `key` on an anonymous file, read position at the start, sealed against every change: no write,
-/// no growing, no shrinking, and no seal added or removed. A reader gets the key and cannot alter
-/// what another reader of the same file sees.
+/// no growing, no shrinking, and no seal added or removed.
+///
+/// A reader gets the key and cannot alter what another reader of the same file sees.
 ///
 /// # Errors
 ///

@@ -20,9 +20,11 @@ pub(super) fn load_manifest() -> Result<ValidManifest, IntentError> {
     validate(parsed).map_err(|error| IntentError::Manifest(error.to_string()))
 }
 
-/// Offers Files' actions on `connection`, answered by `window`. The connection keeps serving for
-/// as long as it lives. Only intentd is answered, known by its unit (`bardo-actiond.service`) as
-/// `/proc` reports it. `connection` is the one that owns `org.bardo.Files`.
+/// Offers Files' actions on `connection`, answered by `window`.
+///
+/// The connection keeps serving for as long as it lives. Only intentd is answered, known by its
+/// unit (`bardo-actiond.service`) as `/proc` reports it. `connection` is the one that owns
+/// `org.bardo.Files`.
 ///
 /// # Errors
 ///

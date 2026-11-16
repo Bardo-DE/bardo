@@ -8,10 +8,11 @@
 /// or book package writes, far below what a thread's stack holds.
 pub const MAX_XML_DEPTH: usize = 128;
 
-/// Whether `text` opens more than `limit` elements at once, counting from tags alone: comments,
-/// CDATA, processing instructions and declarations are skipped, quoted attribute values are not
-/// searched for tags, and an element that closes itself (`<a/>`) does not nest. A closing tag with
-/// nothing open is ignored; the parser reports the mismatch.
+/// Whether `text` opens more than `limit` elements at once, counting from tags alone.
+///
+/// Comments, CDATA, processing instructions and declarations are skipped, quoted attribute values
+/// are not searched for tags, and an element that closes itself (`<a/>`) does not nest. A closing
+/// tag with nothing open is ignored; the parser reports the mismatch.
 #[must_use]
 pub fn nests_deeper_than(text: &str, limit: usize) -> bool {
     let bytes = text.as_bytes();

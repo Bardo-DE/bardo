@@ -1,7 +1,8 @@
-//! The control endpoint: the scenario's levers on the fakes, a small HTTP server on loopback in
-//! the rig's own process. `curl` is enough to drive it. Every answer is JSON (`{"ok":true,..}`)
-//! except where a route says it returns bytes; an unknown route is `404`, a missing or bad
-//! parameter `400`.
+//! The control endpoint: the scenario's levers on the fakes, a small HTTP server on loopback in the
+//! rig's own process.
+//!
+//! `curl` is enough to drive it. Every answer is JSON (`{"ok":true,..}`) except where a route says
+//! it returns bytes; an unknown route is `404`, a missing or bad parameter `400`.
 //!
 //! | route | does |
 //! |---|---|

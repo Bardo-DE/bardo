@@ -89,9 +89,11 @@ pub enum Cardinality {
 }
 
 /// One relation of an entity kind: the app resolves it, for a thing of the kind, to things of
-/// another kind. The planner never reads untrusted content, so this is how it gets, as a handle,
-/// the sender of a thread or the owner of a file, to use where an action takes a thing of that
-/// kind. Resolving is a read of the kind's related action, so it goes through the whole gate.
+/// another kind.
+///
+/// The planner never reads untrusted content, so this is how it gets, as a handle, the sender of a
+/// thread or the owner of a file, to use where an action takes a thing of that kind. Resolving is a
+/// read of the kind's related action, so it goes through the whole gate.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RelationDecl {
     /// Its name, one of the kind's `relation` choices.
@@ -109,8 +111,9 @@ pub struct RelationDecl {
 }
 
 /// The name of the read action that resolves the relations of `kind` (`mail.thread` resolves by
-/// `mail.thread.related`). The router derives it from the declared relations; a manifest never
-/// declares it itself.
+/// `mail.thread.related`).
+///
+/// The router derives it from the declared relations; a manifest never declares it itself.
 #[must_use]
 pub fn related_name(kind: &EntityKind) -> Option<ActionName> {
     ActionName::parse(&format!("{}.related", kind.as_str())).ok()

@@ -19,9 +19,10 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 #[serde(transparent)]
 pub struct ByteLen(pub u64);
 
-/// A modification time as signed nanoseconds since the Unix epoch. An `i64` spans the years
-/// 1677 to 2262, which holds every time a file system reports; a time outside that span is
-/// clamped to its end by [`ModTime::from_system_time`].
+/// A modification time as signed nanoseconds since the Unix epoch.
+///
+/// An `i64` spans the years 1677 to 2262, which holds every time a file system reports; a time
+/// outside that span is clamped to its end by [`ModTime::from_system_time`].
 #[derive(
     Debug,
     Clone,

@@ -1,6 +1,8 @@
 //! What `sync-rig-client` does: one command as an app, over the session bus, answered as JSON
-//! lines. Each command emits one or more objects with a `result` or an `event` key; a failure
-//! is `{"result":"error", ...}` and the process exits 1.
+//! lines.
+//!
+//! Each command emits one or more objects with a `result` or an `event` key; a failure is
+//! `{"result":"error", ...}` and the process exits 1.
 //!
 //! The commands are the app side of the sync scenarios: list the datasets syncd shows this app,
 //! read one's status, settle a stored conflict, watch for conflicts. The app's identity is the

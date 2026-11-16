@@ -54,9 +54,10 @@ impl ServerAddress {
     }
 }
 
-/// The address `text` stands for, or why it is refused; `is_own` says whether a host (a name or
-/// an address, as it is written in the address) is one of the person's own computers on their
-/// tailnet, as far as the caller knows them.
+/// The address `text` stands for, or why it is refused.
+///
+/// `is_own` says whether a host (a name or an address, as it is written in the address) is one of
+/// the person's own computers on their tailnet, as far as the caller knows them.
 ///
 /// # Errors
 /// [`ServerAddressFault::NotAnAddress`] for text that is not an `http` or `https` address;
@@ -86,10 +87,11 @@ pub fn server_address(
     }
 }
 
-/// The address `text` stands for as far as the address alone says: `https`, or `http` to this
-/// computer, or `http` to a host that may be one of the person's own computers (which only the
-/// list of computers can tell). A form that cannot read the tailnet checks with this and leaves
-/// the rest to [`server_address`].
+/// The address `text` stands for as far as the address alone says.
+///
+/// That is `https`, or `http` to this computer, or `http` to a host that may be one of the person's
+/// own computers (which only the list of computers can tell). A form that cannot read the tailnet
+/// checks with this and leaves the rest to [`server_address`].
 ///
 /// # Errors
 /// [`ServerAddressFault::NotAnAddress`] for text that is not an `http` or `https` address.

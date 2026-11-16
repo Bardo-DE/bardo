@@ -20,9 +20,11 @@ use inference_core::{
 };
 use std::collections::BTreeSet;
 
-/// A [`CuaModel`] over one inferd session (`Need::ComputerUse`, class `Screen`): `CuaBegin`
-/// once, then a `CuaStep` per turn with the frame as a memfd attached to the session's fd,
-/// never base64 on the bus. The route is chosen once, so the session is pinned to one model.
+/// A [`CuaModel`] over one inferd session (`Need::ComputerUse`, class `Screen`).
+///
+/// It sends `CuaBegin` once, then a `CuaStep` per turn with the frame as a memfd attached to the
+/// session's fd, never base64 on the bus. The route is chosen once, so the session is pinned to one
+/// model.
 ///
 /// `begin` reads to the empty `CuaStepReply` that acknowledges it (the protocol has no other
 /// reply for a begin; one with actions in it is a protocol fault). `step` forwards each

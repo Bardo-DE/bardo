@@ -44,9 +44,10 @@ pub trait IntentReach {
     fn reach_changed(&self) -> zbus::Result<()>;
 }
 
-/// The provider's side: holds the answer and serves it. Clone it freely; the clones share one
-/// answer. Serve it with [`ReachServer::serve`], change it with [`ReachServer::replace`] and
-/// say so with [`ReachServer::announce`].
+/// The provider's side: holds the answer and serves it.
+///
+/// Clone it freely; the clones share one answer. Serve it with [`ReachServer::serve`], change it
+/// with [`ReachServer::replace`] and say so with [`ReachServer::announce`].
 #[derive(Debug, Clone, Default)]
 pub struct ReachServer {
     now: Arc<Mutex<BTreeMap<String, ReachNow>>>,

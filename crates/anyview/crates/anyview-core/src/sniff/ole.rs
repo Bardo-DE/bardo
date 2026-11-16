@@ -138,8 +138,9 @@ fn entry_name(entry: &[u8]) -> Option<String> {
 }
 
 /// What a compound file is: Excel with a `Workbook` (or, from Excel 5, `Book`) stream, Word with a
-/// `WordDocument` stream, `PowerPoint` with a `PowerPoint Document` stream. `None` for any other
-/// compound file, such as an installer.
+/// `WordDocument` stream, `PowerPoint` with a `PowerPoint Document` stream.
+///
+/// `None` for any other compound file, such as an installer.
 #[must_use]
 pub fn sniff_ole(streams: &OleStreams) -> Option<Sniffed> {
     let format = if streams.has("Workbook") || streams.has("Book") {

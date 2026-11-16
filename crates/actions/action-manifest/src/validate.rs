@@ -137,8 +137,10 @@ impl ValidManifest {
 }
 
 /// Whether an outside agent (an MCP client, an external ACP agent) may be offered `decl` of
-/// `manifest`: the action is `AgentReach::Offered` and the app is not host-only. The one rule the
-/// tools list and the router's gate both read, so what is listed and what is let through agree.
+/// `manifest`: the action is `AgentReach::Offered` and the app is not host-only.
+///
+/// The one rule the tools list and the router's gate both read, so what is listed and what is let
+/// through agree.
 #[must_use]
 pub fn is_offered(manifest: &ValidManifest, decl: &ActionDecl) -> bool {
     manifest.manifest().visibility == Visibility::Everyone && decl.reach == AgentReach::Offered
@@ -245,12 +247,15 @@ fn filled_fits(p: &ParamDecl) -> bool {
     pattern_ok && p.need == ParamNeed::Optional && matches!(p.ty, ParamType::Text { .. })
 }
 
-/// Checks a manifest. The rules: the vocabulary is not newer; names are unique; every action
-/// carries its app's prefix; a read declares no undo; an undoable write declares a token (a
-/// write without undo is declared destructive, and an outbound action may declare a token when
-/// the app holds the send); an outbound action declares a recipient or destination parameter;
-/// a defaulted value fits its type; a parameter the router fills is optional text; every indexed kind declares `<kind>.open` (one read of one
-/// thing of the kind, nothing required), and any `<kind>.open` has that shape. Kinds named by an action are checked by the registry.
+/// Checks a manifest.
+///
+/// The rules: the vocabulary is not newer; names are unique; every action carries its app's prefix;
+/// a read declares no undo; an undoable write declares a token (a write without undo is declared
+/// destructive, and an outbound action may declare a token when the app holds the send); an
+/// outbound action declares a recipient or destination parameter; a defaulted value fits its type;
+/// a parameter the router fills is optional text; every indexed kind declares `<kind>.open` (one
+/// read of one thing of the kind, nothing required), and any `<kind>.open` has that shape. Kinds
+/// named by an action are checked by the registry.
 ///
 /// # Errors
 ///

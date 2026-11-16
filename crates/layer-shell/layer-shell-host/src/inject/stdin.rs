@@ -1,6 +1,7 @@
-//! The demos' stdin protocol: each line is a [`DebugCommand`], mapped onto
-//! [`HostCtx::inject`], [`HostCtx::take_stats`] and [`HostCtx::exit`], and the result printed
-//! as one JSON object per line on stdout. This is the only place the feature prints.
+//! The demos' stdin protocol: each line is a [`DebugCommand`].
+//!
+//! Each is mapped onto [`HostCtx::inject`], [`HostCtx::take_stats`] and [`HostCtx::exit`], and the
+//! result printed as one JSON object per line on stdout. This is the only place the feature prints.
 //!
 //! Output: a `FrameStats` per surface for `stats` (the global `stats` first prints one
 //! `{"host": ..}` line with the compositor facts), and `{"capture": path, "ok": .., "err": ..}`

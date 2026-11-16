@@ -4,9 +4,11 @@ use super::{FileName, FilePath, FileStamp, ModTime, ReadAt, ReadAtStream};
 use std::path::Path;
 use std::sync::{Arc, OnceLock};
 
-/// A file to look at, wherever its bytes are: its name (which sniffing reads the extension from),
-/// the stamp of this version of it (which keys caches), the bytes, and the path they are at when
-/// they are in a file of their own. Cheap to clone; the bytes are shared.
+/// A file to look at, wherever its bytes are.
+///
+/// It holds its name (which sniffing reads the extension from), the stamp of this version of it
+/// (which keys caches), the bytes, and the path they are at when they are in a file of their own.
+/// Cheap to clone; the bytes are shared.
 ///
 /// Back ends that can only read a path (a PDF rasteriser, a folder listing) use [`Input::path`]
 /// and refuse cleanly when there is none, unless the caller spools the bytes to a file first.

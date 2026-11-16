@@ -1,6 +1,8 @@
-//! The secrets the rig plants: fixed, unmistakable strings, so a scenario's secret scan can grep
-//! a jail for them (a password that reaches a log, a file or an app's memory dump shows up as
-//! one of these). Every one is also listed in `rig.json` under `secrets`.
+//! The secrets the rig plants: fixed, unmistakable strings.
+//!
+//! A scenario's secret scan can grep a jail for them (a password that reaches a log, a file or an
+//! app's memory dump shows up as one of these). Every one is also listed in `rig.json` under
+//! `secrets`.
 
 /// The IMAP, SMTP and POP3 fakes' password.
 pub const MAIL_PASSWORD: &str = "RIG-SECRET-MAIL-PASSWORD-9d41c7";

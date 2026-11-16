@@ -1,8 +1,10 @@
-//! Who is calling a daemon. One way, for every daemon of the agent tier: porter's
-//! [`ProcCallers`] (the bus names the process behind a connection, `/proc/<pid>/cgroup` names the
-//! unit or app scope, the daemon's callers file names the role) and a check of the [`Standing`] a
-//! method asks for. A daemon never decides that a name it can see on the bus, the well-known name
-//! someone owns, or a uid alone is a role; a caller nothing identifies is refused.
+//! Who is calling a daemon.
+//!
+//! One way, for every daemon of the agent tier: porter's [`ProcCallers`] (the bus names the process
+//! behind a connection, `/proc/<pid>/cgroup` names the unit or app scope, the daemon's callers file
+//! names the role) and a check of the [`Standing`] a method asks for. A daemon never decides that a
+//! name it can see on the bus, the well-known name someone owns, or a uid alone is a role; a caller
+//! nothing identifies is refused.
 //!
 //! The roles come from the daemon's own file, `<daemon>-callers.toml`: the system's under
 //! `/etc/bardo` and the person's under their configuration directory, laid over it
@@ -97,8 +99,10 @@ pub fn read_table_at_in(
 }
 
 /// What a method asks of its caller: the app its row names and the role the system's table gives
-/// it. Both: a row cannot make an app the router by naming it, and an app scope that is called
-/// like the router is only a plain app.
+/// it.
+///
+/// Both: a row cannot make an app the router by naming it, and an app scope that is called like the
+/// router is only a plain app.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Standing {
     /// The app of the caller's row.

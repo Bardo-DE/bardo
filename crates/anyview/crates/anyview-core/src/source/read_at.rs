@@ -8,11 +8,12 @@ use std::sync::Arc;
 
 use super::{ByteLen, FileStamp};
 
-/// Bytes that can be read at an offset, from any thread. The built-in implementations are a byte
-/// slice, a `Vec` and an `Arc<[u8]>` (this crate opens no file: `anyview-store` has the one for a
-/// path); a host implements it for anything else (a
-/// blob in a database, a spool, an archive entry). A source must end: a FIFO or an endless stream
-/// is not one. Callers hold what they take to a budget; a source need not.
+/// Bytes that can be read at an offset, from any thread.
+///
+/// The built-in implementations are a byte slice, a `Vec` and an `Arc<[u8]>` (this crate opens no
+/// file: `anyview-store` has the one for a path); a host implements it for anything else (a blob in
+/// a database, a spool, an archive entry). A source must end: a FIFO or an endless stream is not
+/// one. Callers hold what they take to a budget; a source need not.
 pub trait ReadAt: Debug + Send + Sync {
     /// How many bytes there are now.
     fn len(&self) -> ByteLen;

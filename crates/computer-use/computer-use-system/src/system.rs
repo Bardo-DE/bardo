@@ -18,10 +18,12 @@ use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use wayland_client::{ConnectError, Connection};
 
-/// The daemon's seams: the desktop of casement when it is running (else none), EI for input, stock toplevel capture with
-/// masking in cuad, AT-SPI for the tree, inferd for the model, `Intents1.Gate` for the router,
-/// memoryd and the router's message path for records and reports, and the system clock. With no
-/// compositor the desktop and capture are `None` and the daemon says so on the bus.
+/// The daemon's seams to the desktop, input, capture, the model and the router.
+///
+/// They are the desktop of casement when it is running (else none), EI for input, stock toplevel
+/// capture with masking in cuad, AT-SPI for the tree, inferd for the model, `Intents1.Gate` for the
+/// router, memoryd and the router's message path for records and reports, and the system clock.
+/// With no compositor the desktop and capture are `None` and the daemon says so on the bus.
 #[derive(Debug)]
 pub struct SystemSeams;
 

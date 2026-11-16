@@ -1,8 +1,9 @@
-//! What accountd persists (porter PLAN §2.3): the registry as one JSON document. Once it is on
-//! disk a vocabulary bump costs something: the stored `vocab` says which version wrote it, and
-//! reading an older file goes through the migration table, one step per version that changed the
-//! document's shape. A version that did not change it has no row: the document is read as it
-//! was and only its version moves.
+//! What accountd persists (porter PLAN §2.3): the registry as one JSON document.
+//!
+//! Once it is on disk a vocabulary bump costs something: the stored `vocab` says which version
+//! wrote it, and reading an older file goes through the migration table, one step per version that
+//! changed the document's shape. A version that did not change it has no row: the document is read
+//! as it was and only its version moves.
 
 use crate::AccountId;
 use crate::account::Account;
@@ -70,9 +71,11 @@ pub enum StoreError {
     Unavailable,
 }
 
-/// Where the registry lives between runs (porter PLAN §2.3): a seam, so the daemon writes a JSON
-/// file atomically, an app hosting porter writes its platform state directory, and tests keep it
-/// in memory. Loads and saves the registry as one document.
+/// Where the registry lives between runs (porter PLAN §2.3).
+///
+/// It is a seam, so the daemon writes a JSON file atomically, an app hosting porter writes its
+/// platform state directory, and tests keep it in memory. Loads and saves the registry as one
+/// document.
 pub trait RegistryStore: Send + Sync {
     /// The stored registry; an empty one where nothing was stored yet.
     fn load(&self) -> impl Future<Output = Result<Persisted, StoreError>> + Send;

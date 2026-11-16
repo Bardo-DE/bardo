@@ -4,9 +4,10 @@ use super::NonEmpty;
 use crate::error::CoreError;
 use crate::source::FilePath;
 
-/// A place in a [`Sequence`]. Only a sequence makes one (`Sequence::position_at` and the
-/// accessors), and every move clamps it to its own sequence, so a position can never address an
-/// entry that does not exist.
+/// A place in a [`Sequence`].
+///
+/// Only a sequence makes one (`Sequence::position_at` and the accessors), and every move clamps it
+/// to its own sequence, so a position can never address an entry that does not exist.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct SequencePosition(usize);
 

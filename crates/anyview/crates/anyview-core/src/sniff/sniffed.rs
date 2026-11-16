@@ -3,9 +3,11 @@
 use crate::kind::{FormatDetail, FormatKind, Mime};
 use crate::source::FileName;
 
-/// A file whose type was established by `sniff`. Only this module's siblings can build one, so a
-/// loader that takes a `Sniffed` is never handed a kind that was guessed from a name alone, and it
-/// is not stored or sent: holding it means this process looked.
+/// A file whose type was established by `sniff`.
+///
+/// Only this module's siblings can build one, so a loader that takes a `Sniffed` is never handed a
+/// kind that was guessed from a name alone, and it is not stored or sent: holding it means this
+/// process looked.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Sniffed {
     kind: FormatKind,

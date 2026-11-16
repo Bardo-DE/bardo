@@ -1,7 +1,8 @@
-//! Starting the fakes: the OAuth issuer, with the tokens `account-rig` plants in it, and the
-//! Graph fake that accepts the tokens the issuer minted. Both listen on `127.0.0.1` on an
-//! ephemeral port (the OS gives ports from 32768 up, never below 1024), and everything of the rig
-//! lives in one scratch directory.
+//! Starting the fakes: the OAuth issuer, with the tokens `account-rig` plants in it, and the Graph
+//! fake that accepts the tokens the issuer minted.
+//!
+//! Both listen on `127.0.0.1` on an ephemeral port (the OS gives ports from 32768 up, never below
+//! 1024), and everything of the rig lives in one scratch directory.
 
 use crate::rigfile::RigFile;
 use account_fake_servers::{FakeIssuer, IssuerHandle, Running};

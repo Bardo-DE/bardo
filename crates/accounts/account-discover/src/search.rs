@@ -111,10 +111,11 @@ pub async fn discover_mail<H: Http, D: Dns>(
     discover_mail_with(http, dns, providers, address, &SearchOptions::default()).await
 }
 
-/// [`discover_mail`] under `options`. With `starttls_only`, a source whose servers need
-/// `STARTTLS` (a document, or SRV submission) is a miss and the next source is tried, as mailo
-/// did; with `report_pop3`, documents' POP3 servers come back on [`Found::pop3`] and a POP3-only
-/// document is a finding.
+/// [`discover_mail`] under `options`.
+///
+/// With `starttls_only`, a source whose servers need `STARTTLS` (a document, or SRV submission) is
+/// a miss and the next source is tried, as mailo did; with `report_pop3`, documents' POP3 servers
+/// come back on [`Found::pop3`] and a POP3-only document is a finding.
 ///
 /// # Errors
 ///

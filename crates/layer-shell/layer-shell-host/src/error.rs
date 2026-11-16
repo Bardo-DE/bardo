@@ -1,8 +1,10 @@
 //! The host's one error type, and the decision each error carries.
 
-/// What a caller should do about an error. This workspace's substitute for `Retryable`
-/// (plan "Conventions substitutions"): the host itself branches on it when choosing an adapter,
-/// and a shell branches on it when a surface fails to spawn.
+/// What a caller should do about an error.
+///
+/// This workspace's substitute for `Retryable` (plan "Conventions substitutions"): the host itself
+/// branches on it when choosing an adapter, and a shell branches on it when a surface fails to
+/// spawn.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Recovery {
     /// Transient; the same call may succeed later.

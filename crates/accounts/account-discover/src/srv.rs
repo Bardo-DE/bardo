@@ -77,10 +77,12 @@ pub fn found_from_srv(address: &str, answers: &SrvAnswers) -> Result<Found, Disc
     found_from_srv_with(address, answers, false)
 }
 
-/// [`found_from_srv`] under `report_pop3`. When it is on, the `_pop3s` servers are listed on
-/// [`Found::pop3`] (best first), and a domain with POP3 and submission records but no IMAP is a
-/// finding whose `endpoints` hold the submission server alone and whose `claims` are empty, as
-/// for a document. When it is off, nothing changes: such a domain is `NoServers`.
+/// [`found_from_srv`] under `report_pop3`.
+///
+/// When it is on, the `_pop3s` servers are listed on [`Found::pop3`] (best first), and a domain
+/// with POP3 and submission records but no IMAP is a finding whose `endpoints` hold the submission
+/// server alone and whose `claims` are empty, as for a document. When it is off, nothing changes:
+/// such a domain is `NoServers`.
 ///
 /// # Errors
 ///

@@ -41,8 +41,10 @@ impl SpaceName {
 base_ids::string_newtype!(SpaceName, CoreError);
 
 /// How a Space looks (a colour, a symbol), as quire's Spaces kit writes it (compact JSON of its
-/// `SpaceLook`). Opaque to porter: kept and handed back as it came, never parsed; only its
-/// length is checked (at most [`SPACE_LOOK_MAX_BYTES`]). Empty is the kit's default look.
+/// `SpaceLook`).
+///
+/// Opaque to porter: kept and handed back as it came, never parsed; only its length is checked (at
+/// most [`SPACE_LOOK_MAX_BYTES`]). Empty is the kit's default look.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct SpaceLook(String);

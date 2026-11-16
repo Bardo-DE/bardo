@@ -67,8 +67,10 @@ impl PagePoint {
 }
 
 /// A rectangle on a page as displayed: each edge a thousandth of the page's width (left, right) or
-/// height (top, bottom), from the top left, so 0 to 1000 spans the page. Always on the page and
-/// never reversed: the left edge is not past the right, nor the top past the bottom.
+/// height (top, bottom), from the top left, so 0 to 1000 spans the page.
+///
+/// Always on the page and never reversed: the left edge is not past the right, nor the top past the
+/// bottom.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct PageRect {
     left: Permille,

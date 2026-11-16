@@ -114,9 +114,10 @@ impl FrameTicks {
     }
 }
 
-/// Keeps a surface rendering one frame per compositor frame callback while alive. Returned by
-/// `SurfaceHandle::drive_frames`; dropping it stops the frame requests (the surface idles after
-/// its next callback unless its document is still animating).
+/// Keeps a surface rendering one frame per compositor frame callback while alive.
+///
+/// Returned by `SurfaceHandle::drive_frames`; dropping it stops the frame requests (the surface
+/// idles after its next callback unless its document is still animating).
 ///
 /// # Hold until settled
 ///

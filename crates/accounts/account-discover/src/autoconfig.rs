@@ -28,9 +28,11 @@ use base_url::WebUrl;
 pub const ISPDB: &str = "https://autoconfig.thunderbird.net/v1.1/";
 
 /// The URLs to try for an address at `domain`, in order: the domain's own `autoconfig` host, its
-/// `.well-known` path, then the ISP database. All HTTPS. The first two carry the address as
-/// mailo sends it, `?emailaddress=<address>` percent-encoded, because some hosts answer per
-/// mailbox; the ISP database is a third party's public service and is asked for the domain only.
+/// `.well-known` path, then the ISP database.
+///
+/// All HTTPS. The first two carry the address as mailo sends it, `?emailaddress=<address>` percent-
+/// encoded, because some hosts answer per mailbox; the ISP database is a third party's public
+/// service and is asked for the domain only.
 #[must_use]
 pub fn autoconfig_urls(domain: &DomainName, address: &str) -> Vec<WebUrl> {
     let query = format!(
@@ -66,11 +68,13 @@ pub fn parse_autoconfig(xml: &str, address: &str) -> Result<Found, DiscoverFault
     parse_autoconfig_with(xml, address, &SearchOptions::default())
 }
 
-/// [`parse_autoconfig`] under `options`: with `oauth_only_ok` a server that lists `OAuth2` is
-/// an endpoint though it takes no password; with `starttls_only` only implicit-TLS servers
-/// count (a document of `STARTTLS` servers is `NoServers`); with `report_pop3` the document's
-/// POP3 servers are listed, and a document with POP3 and SMTP but no IMAP is a finding whose
-/// `endpoints` hold the SMTP server alone and whose `claims` are empty.
+/// [`parse_autoconfig`] under `options`.
+///
+/// With `oauth_only_ok` a server that lists `OAuth2` is an endpoint though it takes no password;
+/// with `starttls_only` only implicit-TLS servers count (a document of `STARTTLS` servers is
+/// `NoServers`); with `report_pop3` the document's POP3 servers are listed, and a document with
+/// POP3 and SMTP but no IMAP is a finding whose `endpoints` hold the SMTP server alone and whose
+/// `claims` are empty.
 ///
 /// # Errors
 ///

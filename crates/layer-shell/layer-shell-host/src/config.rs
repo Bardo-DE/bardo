@@ -64,10 +64,12 @@ impl Default for HostConfig {
     }
 }
 
-/// The family names `config.fonts` actually resolves to once registered — built with no Wayland
-/// connection, so a shell can assert its own faces survive registration (e.g. that `"Inter"` is
-/// still present after a dependency bump) without connecting a host. Mirrors exactly what
-/// `Host::connect` does with `HostConfig::fonts` at startup, on a throwaway `SharedFonts::system`.
+/// The family names `config.fonts` actually resolves to once registered.
+///
+/// It is built with no Wayland connection, so a shell can assert its own faces survive registration
+/// (e.g. that `"Inter"` is still present after a dependency bump) without connecting a host.
+/// Mirrors exactly what `Host::connect` does with `HostConfig::fonts` at startup, on a throwaway
+/// `SharedFonts::system`.
 #[must_use]
 pub fn registered_families(config: &HostConfig) -> Vec<String> {
     let mut fonts = SharedFonts::system();

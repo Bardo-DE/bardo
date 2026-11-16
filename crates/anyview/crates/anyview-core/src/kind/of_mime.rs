@@ -27,10 +27,12 @@ const CODE: &[&str] = &[
     "application/x-ruby",
 ];
 
-/// What a file of type `mime` is, as far as the type says: a family's own types name their kind,
-/// `image/*`, `video/*`, `audio/*` and `font/*` name theirs, and text is plain unless it is
-/// source. A type that names nothing the viewer knows is [`FormatKind::Other`]. The bytes can
-/// say more (`sniff` is the authority once a file is open); this is for a row that has none.
+/// What a file of type `mime` is, as far as the type says.
+///
+/// A family's own types name their kind, `image/*`, `video/*`, `audio/*` and `font/*` name theirs,
+/// and text is plain unless it is source. A type that names nothing the viewer knows is
+/// [`FormatKind::Other`]. The bytes can say more (`sniff` is the authority once a file is open);
+/// this is for a row that has none.
 #[must_use]
 pub fn kind_of_mime(mime: &Mime) -> FormatKind {
     let text = mime.as_str();

@@ -1,6 +1,8 @@
 //! What `account-rig-client` does: one command as an app, over the session bus, answered as JSON
-//! lines. Each command emits one or more objects with a `result` or an `event` key; a failure
-//! is `{"result":"error", ...}` and the process exits 1.
+//! lines.
+//!
+//! Each command emits one or more objects with a `result` or an `event` key; a failure is
+//! `{"result":"error", ...}` and the process exits 1.
 //!
 //! The commands are the app side of the scenarios: list the identities and continue as one,
 //! ask for a permit to use the person's AI keys and add a key, run the agent launcher's calls.

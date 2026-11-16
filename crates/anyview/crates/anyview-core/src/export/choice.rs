@@ -3,10 +3,11 @@
 use super::extension::ExportExtension;
 use ui_core::word::Word;
 
-/// A format's closed set of exports, with the options each carries. Each format has its own
-/// implementation, so a combination that makes no sense (a page range on a photo) cannot be
-/// written. The export sheet is generic over it: a format list over [`ExportChoice::kinds`] plus the
-/// chosen variant's option fields.
+/// A format's closed set of exports, with the options each carries.
+///
+/// Each format has its own implementation, so a combination that makes no sense (a page range on a
+/// photo) cannot be written. The export sheet is generic over it: a format list over
+/// [`ExportChoice::kinds`] plus the chosen variant's option fields.
 pub trait ExportChoice: Clone + PartialEq + 'static {
     /// The variants without their options: what the dialog's format list shows.
     type Kind: Word;

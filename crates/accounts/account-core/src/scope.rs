@@ -1,7 +1,9 @@
-//! The name of the systemd scope a launcher starts an app in: `app-[<launcher>-]<app>-<run>.scope`
-//! (XDG "Desktop Entry / systemd integration"). sill writes one for each launch, Flatpak writes
-//! one for each run, and porter reads them to learn which app a process is (`identity_of`), so the
-//! writer and the reader are one type, [`ScopeName`], and what one writes the other reads back.
+//! The name of the systemd scope a launcher starts an app in.
+//!
+//! Its form is `app-[<launcher>-]<app>-<run>.scope` (XDG "Desktop Entry / systemd integration").
+//! sill writes one for each launch, Flatpak writes one for each run, and porter reads them to learn
+//! which app a process is (`identity_of`), so the writer and the reader are one type,
+//! [`ScopeName`], and what one writes the other reads back.
 //!
 //! The app id is escaped as a unit name component, the way `systemd-escape` does: every byte
 //! outside `[A-Za-z0-9:_.]`, and a leading `.`, becomes `\xHH`. A literal `-` in an id is
@@ -116,9 +118,11 @@ fn is_word(text: &str) -> bool {
     !text.is_empty() && text.bytes().all(|byte| byte.is_ascii_alphanumeric())
 }
 
-/// `text` as a unit name component: `\xHH` for each byte outside `[A-Za-z0-9:_.]` and for a
-/// leading `.`. Unlike `systemd-escape` a `/` is escaped too rather than written `-`, because
-/// this is a name and not a path, and a `-` here would split it.
+/// `text` as a unit name component: `\xHH` for each byte outside `[A-Za-z0-9:_.]` and for a leading
+/// `.`.
+///
+/// Unlike `systemd-escape` a `/` is escaped too rather than written `-`, because this is a name and
+/// not a path, and a `-` here would split it.
 #[must_use]
 pub fn escape(text: &str) -> String {
     let mut out = String::with_capacity(text.len());

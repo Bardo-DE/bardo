@@ -1,7 +1,9 @@
-//! Ordered async bytes, without a runtime: the seam an authenticated relay reads and writes
-//! (`account-proxy`), and an in-memory pair of ends for where there is no socketpair (an app
-//! hosting porter in process, Windows). Nothing here opens a socket or spawns a task; a host
-//! that has a runtime implements [`ByteStream`] over its own streams.
+//! Ordered async bytes, without a runtime.
+//!
+//! This is the seam an authenticated relay reads and writes (`account-proxy`), and an in-memory
+//! pair of ends for where there is no socketpair (an app hosting porter in process, Windows).
+//! Nothing here opens a socket or spawns a task; a host that has a runtime implements
+//! [`ByteStream`] over its own streams.
 
 use std::collections::VecDeque;
 use std::future::poll_fn;

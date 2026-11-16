@@ -46,8 +46,9 @@ pub enum Heading {
 }
 
 /// `seq` without the file it is on, now on the file that follows it (the one before when it was
-/// last); with `Heading::Back`, on the one before it (the one after when it was first). `None`
-/// when it was the only file.
+/// last); with `Heading::Back`, on the one before it (the one after when it was first).
+///
+/// `None` when it was the only file.
 #[must_use]
 pub fn without_current(seq: Sequence, heading: Heading) -> Option<Sequence> {
     let here = seq.at().index();

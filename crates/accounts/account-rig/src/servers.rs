@@ -1,7 +1,8 @@
-//! Starting the fakes: the one place that knows which `account-fake-servers` fake each
-//! `account-rig-servers` flag means, what is planted in it, and what `rig.json` says of it.
-//! Everything listens on `127.0.0.1` on an ephemeral port (the OS gives ports from 32768 up,
-//! never below 1024), and everything of the rig lives in one scratch directory.
+//! Starting the fakes: the one place that knows which `account-fake-servers` fake each `account-
+//! rig-servers` flag means, what is planted in it, and what `rig.json` says of it.
+//!
+//! Everything listens on `127.0.0.1` on an ephemeral port (the OS gives ports from 32768 up, never
+//! below 1024), and everything of the rig lives in one scratch directory.
 
 use crate::planted::{
     API_KEY, DAV_PASSWORD, DAV_USER, GOOGLE_CLIENT, GOOGLE_CLIENT_SECRET, MAIL_PASSWORD, MAIL_USER,

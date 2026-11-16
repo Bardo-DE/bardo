@@ -42,11 +42,12 @@ impl Decorations {
     pub const CLIENT: Decorations = Decorations::Client(ResizeMargin::DEFAULT);
 }
 
-/// The invisible grab band around a client-decorated window, in logical pixels: transparent
-/// surface area outside the visible frame whose only purpose is to catch a press that starts a
-/// resize, as macOS gives every window a few points of resize area outside its drawn edge. Our
-/// frames draw no border wide enough to aim at, so without it a window could be resized only
-/// through a compositor shortcut. The host owns the band: the document never sees input there,
+/// The invisible grab band around a client-decorated window, in logical pixels.
+///
+/// It is transparent surface area outside the visible frame whose only purpose is to catch a press
+/// that starts a resize, as macOS gives every window a few points of resize area outside its drawn
+/// edge. Our frames draw no border wide enough to aim at, so without it a window could be resized
+/// only through a compositor shortcut. The host owns the band: the document never sees input there,
 /// and the band disappears while the window is maximized, fullscreen or tiled.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ResizeMargin(pub u32);

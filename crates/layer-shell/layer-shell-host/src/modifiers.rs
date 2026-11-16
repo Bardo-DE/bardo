@@ -45,10 +45,11 @@ impl From<bool> for LockKey {
     }
 }
 
-/// The keyboard's modifiers, as of the focused surface's last `wl_keyboard.modifiers` (the
-/// compositor sends one right after `wl_keyboard.enter`, and again whenever the state changes
-/// with no key event, such as a bare Shift press). Empty for a surface that has never had
-/// keyboard focus, and reset to empty when it loses focus (`use_modifiers`).
+/// The keyboard's modifiers, as of the focused surface's last `wl_keyboard.modifiers`.
+///
+/// The compositor sends one right after `wl_keyboard.enter`, and again whenever the state changes
+/// with no key event, such as a bare Shift press. Empty for a surface that has never had keyboard
+/// focus, and reset to empty when it loses focus (`use_modifiers`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Modifiers {
     pub shift: Modifier,

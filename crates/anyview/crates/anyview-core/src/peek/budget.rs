@@ -4,9 +4,10 @@ use crate::source::ByteLen;
 use crate::units::PixelArea;
 use std::time::Duration;
 
-/// The limits a peek stays inside, so the launcher pane stays light whatever file it is pointed
-/// at. The values come from settings; this type only carries them. Start from
-/// [`PeekBudget::default`] and change a limit with the `with_*` methods.
+/// The limits a peek stays inside, so the launcher pane stays light whatever file it is pointed at.
+///
+/// The values come from settings; this type only carries them. Start from [`PeekBudget::default`]
+/// and change a limit with the `with_*` methods.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct PeekBudget {
     /// The most bytes it may read from the file.

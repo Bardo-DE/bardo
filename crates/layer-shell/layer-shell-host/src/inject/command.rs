@@ -62,13 +62,14 @@ pub enum CommandError {
     NotAButton(String),
 }
 
-/// Parse one line: `stats`, `quit`, or `<surface> hover X Y`, `<surface> press X Y [button]`,
-/// `<surface> release X Y [button]`, `<surface> click X Y [button]` (`button` is `primary`,
-/// `secondary` or `middle`; primary when omitted — a press, one or more `hover`s and a release
-/// script a drag), `<surface> leave`, `<surface> stats`, `<surface> capture PATH`,
-/// `<surface> focused`, `<surface> key <name>[+mods] [down|up]` (`Tab`, `k+ctrl`, `Tab+shift up`;
-/// a tap when neither `down` nor `up` is given).
-/// Global verbs win, so no surface may be named `stats` or `quit`.
+/// Parse one line of the stdin protocol.
+///
+/// A line is `stats`, `quit`, or `<surface> hover X Y`, `<surface> press X Y [button]`, `<surface>
+/// release X Y [button]`, `<surface> click X Y [button]` (`button` is `primary`, `secondary` or
+/// `middle`; primary when omitted — a press, one or more `hover`s and a release script a drag),
+/// `<surface> leave`, `<surface> stats`, `<surface> capture PATH`, `<surface> focused`, `<surface>
+/// key <name>[+mods] [down|up]` (`Tab`, `k+ctrl`, `Tab+shift up`; a tap when neither `down` nor
+/// `up` is given). Global verbs win, so no surface may be named `stats` or `quit`.
 ///
 /// # Errors
 ///

@@ -31,8 +31,9 @@ fn well_known_of(kind: CapabilityKind) -> Option<(&'static str, Family)> {
 }
 
 /// The `.well-known` URLs to try for `kind` at `domain`: `/.well-known/caldav` for calendars and
-/// tasks, `/.well-known/carddav` for contacts, `/.well-known/jmap` for mail. Empty for a kind
-/// with none. Always HTTPS.
+/// tasks, `/.well-known/carddav` for contacts, `/.well-known/jmap` for mail.
+///
+/// Empty for a kind with none. Always HTTPS.
 #[must_use]
 pub fn well_known_urls(domain: &DomainName, kind: CapabilityKind) -> Vec<EndpointUrl> {
     well_known_of(kind)
@@ -164,9 +165,11 @@ struct Session {
     capabilities: BTreeMap<String, serde_json::Value>,
 }
 
-/// The endpoints and capabilities a JMAP session resource names: the `apiUrl` as the JMAP
-/// endpoint, logged in as the session's `username`; mail (sending only when the submission
-/// capability is there), contacts and calendars when their capabilities are.
+/// The endpoints and capabilities a JMAP session resource names.
+///
+/// They are the `apiUrl` as the JMAP endpoint, logged in as the session's `username`; mail (sending
+/// only when the submission capability is there), contacts and calendars when their capabilities
+/// are.
 ///
 /// # Errors
 ///

@@ -204,9 +204,11 @@ pub fn actions_for(kind: FormatKind) -> &'static [FileAction] {
     profile_of(kind).actions
 }
 
-/// A media type a file of `kind` has, for a row that knows only the kind (a recently viewed
-/// file the history names): the commonest type of the kind. `kind_of_mime` of it is `kind`, except
-/// that code and plain text share `text/plain`, which names plain text.
+/// A media type a file of `kind` has, for a row that knows only the kind (a recently viewed file
+/// the history names): the commonest type of the kind.
+///
+/// `kind_of_mime` of it is `kind`, except that code and plain text share `text/plain`, which names
+/// plain text.
 #[must_use]
 pub fn mime_for(kind: FormatKind) -> Mime {
     Mime::known(profile_of(kind).mime)

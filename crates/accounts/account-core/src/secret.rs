@@ -79,10 +79,11 @@ pub enum Credential {
     },
 }
 
-/// The scopes an OAuth refresh token was granted, as the issuer's token answers said (their
-/// `scope`), kept with the token so they are replaced with it: a sign-in again, or one that asks
-/// for more, files both at once. A record from before porter kept them is unknown, which a family
-/// reads as "what sign-in asks was granted, and nothing asked later".
+/// The scopes an OAuth refresh token was granted, as the issuer's token answers said.
+///
+/// They are the answers' `scope`, kept with the token so they are replaced with it: a sign-in
+/// again, or one that asks for more, files both at once. A record from before porter kept them is
+/// unknown, which a family reads as "what sign-in asks was granted, and nothing asked later".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct GrantedScopes(Option<Vec<String>>);

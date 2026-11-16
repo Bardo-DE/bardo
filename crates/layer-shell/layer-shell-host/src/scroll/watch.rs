@@ -98,8 +98,10 @@ impl ScrollBoard {
 }
 
 /// The scroll state of the scroll container whose `id` attribute is `id` in this component's
-/// surface, as live state: re-rendered when its offset, extent or phase changes (at most once
-/// per frame). `ScrollState::default()` until the element has laid out.
+/// surface.
+///
+/// It is live state: re-rendered when its offset, extent or phase changes (at most once per frame).
+/// `ScrollState::default()` until the element has laid out.
 #[must_use]
 pub fn use_scroll(id: ElementId) -> ReadSignal<ScrollState> {
     let board = use_surface().scroll_board();

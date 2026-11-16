@@ -7,9 +7,10 @@ use keyboard_types::{Code, Key, Modifiers};
 use crate::geometry::Point;
 use crate::scale::Size;
 
-/// Something done to one surface as if the user had done it. Coordinates are the document's
-/// logical pixels: surface-local, except that a client-decorated window's document starts
-/// inside its resize band (`csd`), which injection never reaches.
+/// Something done to one surface as if the user had done it.
+///
+/// Coordinates are the document's logical pixels: surface-local, except that a client-decorated
+/// window's document starts inside its resize band (`csd`), which injection never reaches.
 ///
 /// `PointerDown`, `Pointer` and `PointerUp` script a drag through the same code path a real
 /// `wl_pointer` press, motion and release do (`handlers/pointer.rs`, `HostState::deliver`):
@@ -47,8 +48,9 @@ pub enum Inject {
 }
 
 /// A pointer button, as `Inject::Click` and `Inject::Click` name it: the Linux evdev codes
-/// `input::pointer::button_from_evdev` maps to a DOM button. `Primary` is `BTN_LEFT` (272),
-/// `Secondary` is `BTN_RIGHT` (273), `Middle` is `BTN_MIDDLE` (274).
+/// `input::pointer::button_from_evdev` maps to a DOM button.
+///
+/// `Primary` is `BTN_LEFT` (272), `Secondary` is `BTN_RIGHT` (273), `Middle` is `BTN_MIDDLE` (274).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum PointerButton {
     #[default]

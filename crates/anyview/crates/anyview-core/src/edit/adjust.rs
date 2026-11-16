@@ -13,9 +13,10 @@ pub struct PixelRect {
     pub size: PixelSize,
 }
 
-/// What has been done to a picture, in the order it is applied to the pixels of the file as it
-/// is decoded (already upright): cut to `crop`, mirrored, turned, then resized to `size`. Doing
-/// any of it again later folds into the same value, so a series of edits is one of these.
+/// What has been done to a picture, in the order it is applied to the pixels of the file as it is
+/// decoded (already upright): cut to `crop`, mirrored, turned, then resized to `size`.
+///
+/// Doing any of it again later folds into the same value, so a series of edits is one of these.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
 pub struct Adjust {
     /// The part of the picture that is kept; the whole of it when none.

@@ -1,8 +1,9 @@
-//! `rig.json`: what `sync-rig-servers` writes once the issuer and the Graph fake are listening,
-//! and what a scenario reads to learn addresses and secrets. The shapes of the entries are
-//! `account-rig`'s, so a scenario reads an issuer or an HTTP fake the same way in either rig.
-//! Written whole under a temporary name and renamed, so a reader that finds the file finds all of
-//! it.
+//! `rig.json`: what `sync-rig-servers` writes once the issuer and the Graph fake are listening, and
+//! what a scenario reads to learn addresses and secrets.
+//!
+//! The shapes of the entries are `account-rig`'s, so a scenario reads an issuer or an HTTP fake the
+//! same way in either rig. Written whole under a temporary name and renamed, so a reader that finds
+//! the file finds all of it.
 
 use account_rig::rigfile::{FILE, HttpAt, OauthAt};
 use serde::{Deserialize, Serialize};
