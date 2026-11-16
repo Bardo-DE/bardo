@@ -60,7 +60,7 @@ impl ClientValue {
     pub fn typed(&self, text: String) -> ClientText {
         match self {
             ClientValue::Text(_) => ClientText::Plain(text),
-            ClientValue::Secret { .. } => ClientText::Secret(SecretText::new(text.trim())),
+            ClientValue::Secret { .. } => ClientText::Secret(SecretText::new(text)),
         }
     }
 }
@@ -141,7 +141,9 @@ impl SignInClient {
                     Some(ClientChange::Key(text))
                 }
             }
-            (ClientValue::Secret { set }, ClientText::Secret(secret)) => {
+            (ClientValue::Secret { set }, ClientText::Secret(typed)) => {
+                // A key pasted with spaces around it is trimmed here, where every edit passes.
+                let secret = SecretText::new(typed.expose().trim());
                 if secret.expose().is_empty() {
                     None
                 } else if self.waits_for_key {
