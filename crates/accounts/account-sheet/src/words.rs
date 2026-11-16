@@ -1,4 +1,6 @@
-//! The sheet's declared vocabulary: the words a person reads for the values the sheet shows. They
+//! The sheet's declared vocabulary: the words a person reads for the values the sheet shows.
+//!
+//! They
 //! are functions over typed values of the lower crates, so those crates name no label: a program
 //! that words a value differently (an app with its own copy) takes the typed value and ignores
 //! these. What a daemon's settings page or the add-account sheet shows comes from here.
@@ -16,7 +18,9 @@ pub fn group_heading(group: ProviderGroup) -> &'static str {
     }
 }
 
-/// What this capability lets porter do with the account, in the words a sign-in that asks
+/// What this capability lets porter do with the account.
+///
+/// In the words a sign-in that asks
 /// for it shows ("See and change this account's files"), where those say more than the
 /// kind's name: today only a whole store does.
 #[must_use]

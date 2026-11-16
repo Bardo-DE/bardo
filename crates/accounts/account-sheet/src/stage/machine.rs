@@ -142,7 +142,7 @@ fn on_input(sheet: Sheet, input: SheetInput) -> (Sheet, Vec<SheetEffect>) {
             effects.splice(0..0, shown);
             (sheet, effects)
         }
-        (Stage::Asking { .. }, SheetInput::Submit(answers)) => submit(sheet, answers),
+        (Stage::Asking { .. }, SheetInput::Submit(answers)) => submit(sheet, &answers),
         (Stage::Reviewing { provider, .. }, SheetInput::Confirm(choices)) => {
             let provider = provider.clone();
             let feed = SheetEffect::Feed(SignInInput::Confirm(choices.clone()));
@@ -219,7 +219,7 @@ fn retryable(fault: SignInFault) -> bool {
 }
 
 /// The answers to fields that were asked, in the form's order, plain text trimmed.
-fn asked(fields: &[FieldSpec], answers: Vec<FieldAnswer>) -> Vec<FieldAnswer> {
+fn asked(fields: &[FieldSpec], answers: &[FieldAnswer]) -> Vec<FieldAnswer> {
     fields
         .iter()
         .filter_map(|spec| {
@@ -236,7 +236,7 @@ fn asked(fields: &[FieldSpec], answers: Vec<FieldAnswer>) -> Vec<FieldAnswer> {
         .collect()
 }
 
-fn submit(sheet: Sheet, answers: Vec<FieldAnswer>) -> (Sheet, Vec<SheetEffect>) {
+fn submit(sheet: Sheet, answers: &[FieldAnswer]) -> (Sheet, Vec<SheetEffect>) {
     let Stage::Asking {
         provider, fields, ..
     } = &sheet.stage
@@ -245,12 +245,12 @@ fn submit(sheet: Sheet, answers: Vec<FieldAnswer>) -> (Sheet, Vec<SheetEffect>) 
     };
     // The server form changes with its answers (JMAP has no outgoing server): what is checked
     // and sent is the form as the answers make it.
-    let fields = &manual::refit(fields, &answers);
-    let problem = manual::form_problem_among(fields, &answers, &sheet.own).or_else(|| {
+    let fields = &manual::refit(fields, answers);
+    let problem = manual::form_problem_among(fields, answers, &sheet.own).or_else(|| {
         // An account's servers are edited in the protocol it speaks.
         match &sheet.purpose {
             Purpose::EditServers { current, .. } => {
-                manual::parse_as(&answers, current.protocol()).err()
+                manual::parse_as(answers, current.protocol()).err()
             }
             _ => None,
         }
@@ -390,10 +390,10 @@ fn done(sheet: Sheet) -> (Sheet, Vec<SheetEffect>) {
             let store = SheetEffect::Store(choices.clone());
             (sheet, vec![store])
         }
-        // An edit that passed keeps nothing here: the host hands the servers back.
-        (Stage::Checking { .. }, _) => (sheet, vec![SheetEffect::Store(vec![])]),
-        // A sign-in again that needed a page or a code is done while the sheet still shows it.
-        (
+        // An edit that passed keeps nothing here: the host hands the servers back. So does a
+        // sign-in again that needed a page or a code, done while the sheet still shows it.
+        (Stage::Checking { .. }, _)
+        | (
             Stage::Working(_) | Stage::Browser { .. } | Stage::Code { .. },
             Purpose::Reauthenticate { .. },
         ) => (sheet, vec![SheetEffect::Store(vec![])]),

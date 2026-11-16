@@ -1,4 +1,6 @@
-//! The sheets' seam (porter PLAN G5): the host that draws for accountd. A consent is one call; a
+//! The sheets' seam (porter PLAN G5): the host that draws for accountd.
+//!
+//! A consent is one call; a
 //! conversation (add an account, sign in again, a device code) is a link accountd updates with
 //! views and reads the person's inputs from. accountd serves it over `org.bardo.AccountsSheet1`
 //! (sill draws), an app hosting porter in process draws it itself, tests script it.
@@ -6,7 +8,6 @@
 use crate::{SheetInput, SheetView};
 use account_core::consent::{ConsentAnswer, ConsentAsk};
 use account_wire::ParentWindow;
-use std::future::Future;
 
 /// What a conversation opens with.
 #[derive(Debug, Clone, PartialEq, Eq)]

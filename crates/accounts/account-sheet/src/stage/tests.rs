@@ -67,6 +67,10 @@ fn a_new_sheet_starts_where_the_purpose_says() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table with a case for each stage, each a few lines"
+)]
 fn every_stage_has_its_view() {
     let nextcloud = provider("nextcloud");
     let url = EndpointUrl::parse("https://cloud.example.org/login/v2/flow").expect("url");

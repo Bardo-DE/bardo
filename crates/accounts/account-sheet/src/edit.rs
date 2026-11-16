@@ -52,9 +52,11 @@ pub fn servers_fixed(auth: AuthKind) -> Option<ServersFixed> {
     }
 }
 
-/// What an app asks when it edits an account's servers: which account, what its servers are now
-/// (the form's prefill), whether to ask for the name shown in From, and the password it holds,
-/// when it wants an empty password field to mean "keep it".
+/// What an app asks when it edits an account's servers.
+///
+/// That is which account, what its servers are now (the form's prefill), whether to ask for the
+/// name shown in From, and the password it holds, when it wants an empty password field to mean
+/// "keep it".
 ///
 /// The password is private and `Debug` redacts it; it leaves by [`EditServers::into_parts`],
 /// once.
@@ -158,8 +160,9 @@ impl EditServers {
     }
 }
 
-/// What an edit of an account's servers came to, once the sign-in logged in at them. There is
-/// no `Clone` and no `PartialEq`, and the password has no accessor: it leaves by
+/// What an edit of an account's servers came to, once the sign-in logged in at them.
+///
+/// There is no `Clone` and no `PartialEq`, and the password has no accessor: it leaves by
 /// [`EditedServers::into_parts`], once. `Debug` redacts it and any token.
 #[derive(Debug)]
 pub struct EditedServers {

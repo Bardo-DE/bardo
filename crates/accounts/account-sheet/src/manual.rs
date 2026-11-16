@@ -211,7 +211,9 @@ const MANUAL_KINDS: [FieldKind; 10] = [
     FieldKind::Username,
 ];
 
-/// The form that edits an account's servers, prefilled from `current`: the name shown in From
+/// The form that edits an account's servers, prefilled from `current`.
+///
+/// The name shown in From
 /// first when `name` asks for one, then the server form of the account's protocol with its
 /// hosts, ports, security, login name and session URL, then an optional password (an app
 /// password for an account that signs in by one). Nothing secret is prefilled: an empty password
@@ -335,7 +337,9 @@ fn domain_hint(fields: &[FieldSpec]) -> Option<String> {
         .or_else(|| prefill(FieldKind::Server).and_then(|h| after_label(h, &GUESS_LABELS)))
 }
 
-/// The server form as `answers` shape it: the protocol decides which fields there are, and a
+/// The server form as `answers` shape it.
+///
+/// The protocol decides which fields there are, and a
 /// port that is empty or one of the usual ones follows protocol and security (one the person
 /// typed otherwise stays). Everything else typed stays as the prefill. A form that is not the
 /// server form is returned as it is.
@@ -503,7 +507,9 @@ fn hop(
 
 fn session_url(answers: &[FieldAnswer]) -> Result<EndpointUrl, FieldProblem> {
     let typed = text(answers, FieldKind::SessionUrl).ok_or(missing(FieldKind::SessionUrl))?;
-    let url = EndpointUrl::parse(&typed).map_err(|_| invalid(FieldKind::SessionUrl))?;
+    let url = EndpointUrl::parse(&typed)
+        .ok()
+        .ok_or(invalid(FieldKind::SessionUrl))?;
     let origin = url.origin();
     match origin.scheme {
         UrlScheme::Https => Ok(url),
@@ -520,8 +526,12 @@ fn login(answers: &[FieldAnswer]) -> Result<Option<String>, FieldProblem> {
     }
 }
 
-/// What the answers to the server form mean, or the first field (in form order) that is missing
-/// or cannot be right. An empty port is the usual one; an empty login name is the address.
+/// What the answers to the server form mean.
+///
+/// An empty port is the usual one; an empty login name is the address.
+///
+/// # Errors
+/// The first field (in form order) that is missing or cannot be right.
 pub fn parse_manual(answers: &[FieldAnswer]) -> Result<Manual, FieldProblem> {
     parse_in(answers, PROTOCOL_CHOICES)
 }
@@ -576,7 +586,9 @@ fn parse_in(answers: &[FieldAnswer], choices: &[&str]) -> Result<Manual, FieldPr
     }
 }
 
-/// What is wrong with a form's answers, if anything: the first required field left empty, then,
+/// What is wrong with a form's answers, if anything.
+///
+/// That is the first required field left empty, then,
 /// for the server form, the first answer that cannot be right. A host keeps Continue off while
 /// this is `Some`, and marks the field; the sheet's machine checks the same before it sends.
 ///
@@ -588,7 +600,9 @@ pub fn form_problem(fields: &[FieldSpec], answers: &[FieldAnswer]) -> Option<Fie
     problem_of(fields, answers, None)
 }
 
-/// [`form_problem`] with the person's computers on their tailnet known, so that an AI server's
+/// [`form_problem`] with the person's computers on their tailnet known.
+///
+/// So an AI server's
 /// address is checked by the whole rule (`server_address`): `https`, or `http` for this computer
 /// or one of `own`. The sheet's machine asks this when the person sends the form.
 #[must_use]

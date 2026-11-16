@@ -3,12 +3,8 @@
 
 use super::*;
 use crate::fields::{FieldAnswer, FieldKind, FieldSpec, FieldValue};
-use crate::input::SheetInput;
 use crate::manual::{Protocol, manual_form};
-use crate::progress::{Progress, SignInInput};
-use crate::view::{FieldProblem, ProblemKind, SheetView};
-use account_core::ProviderHint;
-use account_core::ProviderId;
+use crate::view::ProblemKind;
 
 fn provider() -> ProviderId {
     ProviderId::parse("generic-imap").expect("id")

@@ -26,6 +26,9 @@ pub struct MarkLetter(String);
 
 impl MarkLetter {
     /// The letter written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    /// [`MarkFaceError::Letter`] when `text` is not one or two visible characters.
     pub fn parse(text: &str) -> Result<Self, MarkFaceError> {
         let count = text.chars().count();
         let visible = text.chars().all(|c| !c.is_whitespace() && !c.is_control());
@@ -47,6 +50,9 @@ pub struct MarkColour(String);
 
 impl MarkColour {
     /// The colour written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    /// [`MarkFaceError::Colour`] when `text` is not `#` and six hex digits.
     pub fn parse(text: &str) -> Result<Self, MarkFaceError> {
         let digits = text.strip_prefix('#').unwrap_or("");
         if digits.len() == 6 && digits.bytes().all(|b| b.is_ascii_hexdigit()) {

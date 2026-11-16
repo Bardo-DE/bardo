@@ -5,14 +5,10 @@
 
 use super::*;
 use crate::fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue};
-use crate::input::SheetInput;
-use crate::progress::{
-    Progress, Review, ServiceRow, ServiceState, SignInFault, SignInInput, UserCode,
-};
-use crate::view::{FieldProblem, ProblemKind, ProviderKind, ProviderRow, RowKind, SheetView};
+use crate::progress::{ServiceRow, ServiceState};
+use crate::view::{ProblemKind, ProviderKind, RowKind};
 use account_capability::CapabilityKind;
 use account_core::AccountLabel;
-use account_core::ProviderHint;
 use account_core::SecretText;
 use proptest::prelude::*;
 
@@ -822,8 +818,7 @@ fn leaks(effect: &SheetEffect) -> bool {
         SheetEffect::Show(view) => serde_json::to_string(view).expect("view"),
         SheetEffect::Store(choices) => serde_json::to_string(choices).expect("choices"),
         SheetEffect::Close(end) => format!("{end:?}"),
-        SheetEffect::OpenBrowser => String::new(),
-        SheetEffect::Restart => String::new(),
+        SheetEffect::OpenBrowser | SheetEffect::Restart => String::new(),
         SheetEffect::Feed(SignInInput::Fields(_)) => return false,
         SheetEffect::Feed(other) => format!("{other:?}"),
     };
