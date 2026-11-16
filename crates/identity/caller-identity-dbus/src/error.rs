@@ -10,7 +10,7 @@ use zbus::fdo;
 pub enum WhoError {
     /// The sender is not a bus name.
     #[error("the sender is not a bus name")]
-    BadName,
+    BadName(#[source] zbus::names::Error),
     /// The bus did not answer in time.
     #[error("the bus did not answer in time")]
     Timeout,
@@ -23,6 +23,9 @@ pub enum WhoError {
     /// The bus gave no process id or user for the sender.
     #[error("the bus gave no credentials for the sender")]
     NoCredentials,
+    /// The bus gave a process handle that could not be duplicated.
+    #[error("the sender's process handle could not be duplicated")]
+    ProcessHandle(#[source] std::io::Error),
     /// The process could not be held.
     #[error("the process could not be held")]
     Pin(#[from] PinError),
@@ -31,7 +34,7 @@ pub enum WhoError {
     Changed,
     /// The work could not be run off the executor.
     #[error("the probe could not be run")]
-    Offload,
+    Offload(#[source] crate::Cancelled),
 }
 
 /// The unit manager's answer about a unit could not be had.
@@ -50,6 +53,21 @@ pub enum UnitError {
     /// The manager's answer is not shaped as expected.
     #[error("the unit manager's answer is malformed: {0}")]
     Malformed(&'static str),
+}
+
+impl UnitError {
+    /// What the manager's refusal of `GetUnit` means: a unit it does not know is not loaded, and
+    /// any other failure is the bus's.
+    pub(crate) fn from_get_unit(error: zbus::Error) -> UnitError {
+        match &error {
+            zbus::Error::MethodError(name, _, _)
+                if name.as_str() == "org.freedesktop.systemd1.NoSuchUnit" =>
+            {
+                UnitError::NotLoaded
+            }
+            _ => UnitError::Bus(error),
+        }
+    }
 }
 
 /// The refusal a method returns for `refused`: `AccessDenied` with the fixed text of the refusal

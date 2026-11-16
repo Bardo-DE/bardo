@@ -5,7 +5,7 @@ use crate::attest::Attest;
 use crate::error::{WhoError, access_denied};
 use crate::manager::{ManagerLink, SYSTEMD, UnitSource};
 use crate::offload::Offload;
-use crate::timeout::bounded;
+use crate::timeout::{TimedOut, bounded};
 use caller_identity_core::procinfo::parse_security_label;
 use caller_identity_core::{
     Facts, Pid, Proof, Refused, Requirement, SandboxFacts, Standing, Table, Uid, UnitFacts,
@@ -242,14 +242,13 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
 
     /// The unique name that owns `name` on the bus.
     pub(crate) async fn owner_name(&self, name: &str) -> Result<String, WhoError> {
-        let name = BusName::try_from(name).ok().ok_or(WhoError::BadName)?;
+        let name = BusName::try_from(name).map_err(WhoError::BadName)?;
         let bus = DBusProxy::new(&self.connection)
             .await
             .map_err(WhoError::Bus)?;
         let owner = bounded(bus.get_name_owner(name))
             .await
-            .ok()
-            .ok_or(WhoError::Timeout)?
+            .map_err(|TimedOut| WhoError::Timeout)?
             .map_err(bus_error)?;
         Ok(owner.as_str().to_owned())
     }
@@ -263,8 +262,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .offload
             .run(move || prober.probe(&who, None))
             .await
-            .ok()
-            .ok_or(WhoError::Offload)?;
+            .map_err(WhoError::Offload)?;
         let facts = match outcome {
             Ok(mut facts) => {
                 if let (SandboxFacts::Native, Some(snap)) = (&facts.sandbox, label) {
@@ -284,8 +282,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     ) -> Result<ConnectionCredentials, WhoError> {
         bounded(bus.get_connection_credentials(name.clone()))
             .await
-            .ok()
-            .ok_or(WhoError::Timeout)?
+            .map_err(|TimedOut| WhoError::Timeout)?
             .map_err(bus_error)
     }
 
@@ -295,7 +292,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     /// opened by the reported pid at once and the bus is asked again: the same pid and user
     /// must still be behind the connection (`Reopened`).
     async fn pin_of(&self, sender: &str) -> Result<(Pinned, Option<SandboxFacts>), WhoError> {
-        let name = BusName::try_from(sender).ok().ok_or(WhoError::BadName)?;
+        let name = BusName::try_from(sender).map_err(WhoError::BadName)?;
         let bus = DBusProxy::new(&self.connection)
             .await
             .map_err(WhoError::Bus)?;
@@ -315,8 +312,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .process_fd()
             .map(|fd| fd.as_fd().try_clone_to_owned())
             .transpose()
-            .ok()
-            .ok_or(WhoError::NoCredentials)?;
+            .map_err(WhoError::ProcessHandle)?;
         let held = if let Some(fd) = offered {
             Pinned::from_fd(fd, pid, uid)?
         } else {

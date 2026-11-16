@@ -9,7 +9,7 @@
 
 use crate::error::UnitError;
 use crate::manager::{SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH};
-use crate::timeout::bounded;
+use crate::timeout::{TimedOut, bounded};
 use caller_identity_core::{Pid, Uid};
 use std::sync::Mutex;
 use zbus::Connection;
@@ -38,8 +38,7 @@ impl SystemManager {
         }
         let connection = bounded(Connection::system())
             .await
-            .ok()
-            .ok_or(UnitError::Timeout)?
+            .map_err(|TimedOut| UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         *self
             .connection
@@ -62,13 +61,11 @@ impl SystemManager {
         let name = BusName::try_from(SYSTEMD).map_err(|e| UnitError::Bus(e.into()))?;
         let owner = bounded(bus.get_name_owner(name))
             .await
-            .ok()
-            .ok_or(UnitError::Timeout)?
+            .map_err(|TimedOut| UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))?;
         let owner_pid = bounded(bus.get_connection_unix_process_id(owner.clone().into()))
             .await
-            .ok()
-            .ok_or(UnitError::Timeout)?
+            .map_err(|TimedOut| UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))?;
         if owner_pid != 1 {
             return Err(UnitError::Malformed(
@@ -88,10 +85,8 @@ impl SystemManager {
         );
         let path: OwnedObjectPath = bounded(call)
             .await
-            .ok()
-            .ok_or(UnitError::Timeout)?
-            .ok()
-            .ok_or(UnitError::NotLoaded)?
+            .map_err(|TimedOut| UnitError::Timeout)?
+            .map_err(UnitError::from_get_unit)?
             .body()
             .deserialize()
             .map_err(UnitError::Bus)?;
@@ -125,8 +120,7 @@ async fn property(
         InterfaceName::from_static_str(interface).map_err(|e| UnitError::Bus(e.into()))?;
     let value = bounded(properties.get(interface, name))
         .await
-        .ok()
-        .ok_or(UnitError::Timeout)?
+        .map_err(|TimedOut| UnitError::Timeout)?
         .map_err(|e| UnitError::Bus(e.into()))?;
     Ok(Value::from(value))
 }

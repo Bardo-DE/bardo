@@ -3,7 +3,7 @@
 //! one. (Which `GetUnit` and properties it answers is systemd's interface, read here as documented.)
 
 use crate::error::UnitError;
-use crate::timeout::bounded;
+use crate::timeout::{TimedOut, bounded};
 use caller_identity_core::{
     DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
 };
@@ -58,8 +58,7 @@ impl<P: ProcFs> ManagerLink<P> {
         );
         let reply = bounded(call)
             .await
-            .ok()
-            .ok_or(UnitError::Timeout)?
+            .map_err(|TimedOut| UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         reply.body().deserialize().map_err(UnitError::Bus)
     }
@@ -80,8 +79,7 @@ impl<P: ProcFs> ManagerLink<P> {
         let interface = InterfaceName::try_from(interface).map_err(|e| UnitError::Bus(e.into()))?;
         bounded(proxy.get_all(interface))
             .await
-            .ok()
-            .ok_or(UnitError::Timeout)?
+            .map_err(|TimedOut| UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))
             .map(Props)
     }

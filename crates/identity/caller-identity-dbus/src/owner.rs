@@ -2,7 +2,7 @@
 
 use crate::error::WhoError;
 use crate::manager::UnitSource;
-use crate::timeout::bounded;
+use crate::timeout::{TimedOut, bounded};
 use crate::who::BusPeers;
 use caller_identity_core::{Refused, Requirement};
 use caller_identity_linux::ProcFs;
@@ -59,8 +59,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .map_err(WhoError::Bus)?;
         let stream = bounded(bus.receive_name_owner_changed_with_args(&[(0, name)]))
             .await
-            .ok()
-            .ok_or(WhoError::Timeout)?
+            .map_err(|TimedOut| WhoError::Timeout)?
             .map_err(WhoError::Bus)?;
         Ok(OwnerWatch { stream })
     }

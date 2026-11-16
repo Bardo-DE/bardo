@@ -2,8 +2,13 @@
 //! on a busy async executor moves it to a blocking pool by choosing [`Offload::Tokio`].
 
 /// The blocking work could not be run (the runtime shut down, or the work panicked).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Cancelled;
+#[derive(Debug, thiserror::Error)]
+pub enum Cancelled {
+    /// The blocking task did not finish.
+    #[cfg(feature = "tokio")]
+    #[error("the blocking task did not finish")]
+    Task(#[source] tokio::task::JoinError),
+}
 
 /// Where a closure runs. The set is closed by the crate's features.
 #[derive(Debug, Clone, Copy, Default)]
@@ -29,8 +34,7 @@ impl Offload {
             #[cfg(feature = "tokio")]
             Offload::Tokio => tokio::task::spawn_blocking(work)
                 .await
-                .ok()
-                .ok_or(Cancelled),
+                .map_err(Cancelled::Task),
         }
     }
 }
