@@ -345,7 +345,7 @@ async fn a_refused_account_is_told_to_sign_in_again_in_its_state_row() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_client_id_is_written_to_the_users_file_only_by_settings() {
     let dir = Scratch::new("accountd-clients");
-    let file = dir.join("porter/clients.toml");
+    let file = dir.join("bardo/accounts/clients.toml");
     let options = account_daemon::Options {
         clients: Some(file.clone()),
         ..Default::default()
@@ -412,8 +412,8 @@ async fn a_client_id_is_written_to_the_users_file_only_by_settings() {
 #[tokio::test(flavor = "multi_thread")]
 async fn the_clients_file_keeps_its_backup_and_a_damaged_one_is_refused_not_overwritten() {
     let dir = Scratch::new("accountd-clients-backup");
-    let file = dir.join("porter/clients.toml");
-    let backup = dir.join("porter/clients.toml.bak");
+    let file = dir.join("bardo/accounts/clients.toml");
+    let backup = dir.join("bardo/accounts/clients.toml.bak");
     let options = account_daemon::Options {
         clients: Some(file.clone()),
         ..Default::default()
@@ -454,7 +454,7 @@ async fn the_clients_file_keeps_its_backup_and_a_damaged_one_is_refused_not_over
 #[tokio::test(flavor = "multi_thread")]
 async fn a_google_key_and_its_secret_set_in_settings_are_the_families_google_client() {
     let dir = Scratch::new("accountd-google-client");
-    let file = dir.join("porter/clients.toml");
+    let file = dir.join("bardo/accounts/clients.toml");
     let options = account_daemon::Options {
         clients: Some(file.clone()),
         ..Default::default()

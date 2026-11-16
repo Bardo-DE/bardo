@@ -2,7 +2,7 @@
 //! [`StorageKind`]) and keeps one running mirror per granted account and kind.
 //!
 //! - `AppFolder` (`DataClass::Files`): the account's app folder as a two-way [`FolderDataset`]
-//!   at `$XDG_DATA_HOME/porter/storage/<account>/`, one dataset `<account>/storage_app_folder`
+//!   at `$XDG_DATA_HOME/bardo/sync/storage/<account>/`, one dataset `<account>/storage_app_folder`
 //!   (owner `org.bardo.Files`), over a [`graph_replica`] relay of the grant for a OneDrive
 //!   account or a [`gdrive_replica`] relay for a Google one. Which one is read from the
 //!   endpoint the account's candidate lists ([`app_folder_store`]), never from the provider.
@@ -10,7 +10,7 @@
 //!   `Photos/Metadata` of the app folder of a Microsoft account. The grant is the switch: the
 //!   account's Photos row in Settings makes it and takes it back.
 //! - `GooglePhotos` (`DataClass::Photos`, a `Photos`-kind grant): Google Photos, by the same
-//!   grant: the upload folder `$XDG_DATA_HOME/porter/photos/<account>/upload/` as the
+//!   grant: the upload folder `$XDG_DATA_HOME/bardo/sync/photos/<account>/upload/` as the
 //!   dataset `<account>/google_photos_upload` (owner `org.bardo.Photos`), and the picker the
 //!   Photos app imports through ([`StorageSupervisor::google_picker`]).
 //! - `Drive` (`DataClass::Files`, a grant that reaches the whole store): the whole drive's
@@ -953,12 +953,12 @@ mod tests {
         let _root_guard = crate::testing::scratch("held-drive");
         let root = _root_guard.path().to_owned();
         let paths = crate::paths::Paths {
-            journals: root.join("state/porter/sync"),
-            mirrors: root.join("data/porter/vdir"),
+            journals: root.join("state/bardo/sync"),
+            mirrors: root.join("data/bardo/sync/vdir"),
             callers_system: root.join("none"),
             callers_user: root.join("none"),
             cloud: root.join("Cloud"),
-            drive_cache: root.join("cache/porter/drives"),
+            drive_cache: root.join("cache/bardo/sync/drives"),
             settings: root.join("none"),
         };
         let account = AccountDir::parse("one").expect("account");

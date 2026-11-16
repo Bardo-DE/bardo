@@ -2,7 +2,7 @@
 //! (written only by Settings) laid over them.
 //!
 //! Nothing here finds a file: the caller passes the paths (`/usr/share/bardo/accounts/clients.toml`,
-//! `$XDG_CONFIG_HOME/porter/clients.toml`), so a test never reads the machine's. The Microsoft
+//! `$XDG_CONFIG_HOME/bardo/accounts/clients.toml`), so a test never reads the machine's. The Microsoft
 //! client is ours and is shipped in the first file; no Google client id is shipped (the owner
 //! registers one, docs/google.md), and a person may register their own. The mailo migration reads mailo's
 //! `OAuthRegistry` (`oauth.json`, `~/mailo/crates/mail-runtime/src/signin.rs`) so E4 can move

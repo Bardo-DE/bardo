@@ -36,7 +36,7 @@ fn scratch(bus: &PrivateBus, name: &str) -> PathBuf {
 
 fn spawn(bus: &PrivateBus, home: &Path, keys: Option<&str>) -> Daemon {
     let stderr = home.join("stderr.log");
-    let mut command = Command::new(env!("CARGO_BIN_EXE_accountd"));
+    let mut command = Command::new(env!("CARGO_BIN_EXE_bardo-accountd"));
     command
         .env_clear()
         .env("HOME", home)

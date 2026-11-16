@@ -4,7 +4,7 @@
 /// The kind of place a program of the desktop is installed in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Install {
-    /// A daemon, started by a unit or by D-Bus activation: `libexec/quire/<name>`.
+    /// A daemon, started by a unit or by D-Bus activation: `libexec/bardo/<name>`.
     Libexec,
     /// A program a person may also start: `bin/<name>`.
     Bin,
@@ -18,7 +18,7 @@ const ROOTS: [&str; 3] = ["/usr", "/usr/local", "/opt/bardo/releases/*"];
 /// The images of the program `name` installed as `install` under each of the roots.
 pub fn installed(install: Install, name: &str) -> Vec<String> {
     let folder = match install {
-        Install::Libexec => "libexec/quire",
+        Install::Libexec => "libexec/bardo",
         Install::Bin => "bin",
     };
     ROOTS
@@ -28,7 +28,7 @@ pub fn installed(install: Install, name: &str) -> Vec<String> {
 }
 
 /// The daemon a unit named `<name>.service` is, when `<name>` is lower case letters, digits and
-/// dashes (`inferd`, `bardo-agent-acp`); a dotted unit (`org.bardo.Settings.service`) is an app that
+/// dashes (`bardo-inferd`, `bardo-agent-acp`); a dotted unit (`org.bardo.Settings.service`) is an app that
 /// D-Bus activates, whose program the unit's name does not give.
 pub(super) fn daemon_name(unit: &str) -> Option<&str> {
     let name = unit.strip_suffix(".service")?;

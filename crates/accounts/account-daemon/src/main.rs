@@ -19,7 +19,7 @@ use std::process::ExitCode;
 
 /// porter's identity service (`org.bardo.Accounts1`).
 #[derive(Debug, Parser)]
-#[command(name = "accountd", version)]
+#[command(name = "bardo-accountd", version)]
 struct Args {
     /// A directory of provider files, in addition to the system and user ones; later
     /// directories win.

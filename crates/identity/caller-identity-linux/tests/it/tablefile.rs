@@ -8,7 +8,7 @@ const MAIN: &str = "/etc/bardo/desktop-callers.toml";
 const DIR: &str = "/etc/bardo/desktop-callers.d";
 
 const SHELL: &str = "[[peer]]\napp = \"org.bardo.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/usr/bin/bardo-shell\"]\nrole = \"shell\"\n";
-const EVIL_SHELL: &str = "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/tmp/sill\"]\nrole = \"shell\"\n";
+const EVIL_SHELL: &str = "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/tmp/bardo-shell\"]\nrole = \"shell\"\n";
 const EXTRA: &str =
     "[[peer]]\napp = \"org.local.Tool\"\nexe = [\"/usr/local/bin/tool\"]\nrole = \"tool\"\n";
 

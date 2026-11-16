@@ -6,7 +6,7 @@ use caller_identity_core::{
     RoleName, SandboxFacts, Standing, Transient, WhyNot, Writer, judge,
 };
 
-const SILL_IMAGE: &str = "/opt/quire/releases/1.2.3/bin/sill";
+const SILL_IMAGE: &str = "/opt/bardo/releases/1.2.3/bin/bardo-shell";
 
 fn service(role: &str, proof: Proof, pin: Pin) -> Standing {
     let app = match role {
@@ -68,7 +68,7 @@ fn anything_the_manager_cannot_confirm_stops_at_exe() {
     // The unit starts some other program than the table's.
     assert_eq!(with_unit(|u| u.exec = None), exe);
     assert_eq!(
-        with_unit(|u| u.exec = caller_identity_core::ExePath::new("/home/p/bin/sill").ok()),
+        with_unit(|u| u.exec = caller_identity_core::ExePath::new("/home/p/bin/bardo-shell").ok()),
         exe
     );
     // The manager answered for a different unit.
@@ -145,15 +145,15 @@ fn an_image_someone_can_write_is_never_remembered() {
         FileTrust::Writable(Writer::Owner(caller_identity_core::Uid::new(1000))),
     ] {
         // Even in the right unit, with the right name, a copied binary is nobody.
-        let f = facts(in_sill_unit(), read("/home/p/bin/sill", trust));
+        let f = facts(in_sill_unit(), read("/home/p/bin/bardo-shell", trust));
         assert_eq!(
             judge(&f, &table()),
-            unverified(Some("sill"), WhyNot::ImageWritable)
+            unverified(Some("bardo-shell"), WhyNot::ImageWritable)
         );
         let f = facts(in_sill_unit(), read("/usr/bin/bardo-shell", trust));
         assert_eq!(
             judge(&f, &table()),
-            unverified(Some("sill"), WhyNot::ImageWritable)
+            unverified(Some("bardo-shell"), WhyNot::ImageWritable)
         );
     }
 }
@@ -189,7 +189,7 @@ fn a_hidden_image_in_a_real_unit_is_proved_by_the_unit() {
             u.loader = Loader::Kept(vec!["LD_PRELOAD".to_owned()]);
         }),
         ("another program", |u| {
-            u.exec = caller_identity_core::ExePath::new("/home/p/bin/sill").ok();
+            u.exec = caller_identity_core::ExePath::new("/home/p/bin/bardo-shell").ok();
         }),
         ("a program the person can write", |u| {
             u.exec_trust = Some(FileTrust::Writable(Writer::Owner(
@@ -265,7 +265,7 @@ fn the_real_image_outside_its_unit_is_a_program_not_the_service() {
 fn a_program_row_matches_by_image_alone_and_tops_out_at_exe() {
     let f = facts(
         "/user.slice/app.slice/vte-spawn-1.scope",
-        root_only("/usr/bin/slipway"),
+        root_only("/usr/bin/bardo-updater"),
     );
     assert_eq!(
         judge(&f, &table()),
@@ -273,11 +273,11 @@ fn a_program_row_matches_by_image_alone_and_tops_out_at_exe() {
     );
     let f = facts(
         "/user.slice/app.slice/vte-spawn-1.scope",
-        user_writable("/home/p/slipway"),
+        user_writable("/home/p/bardo-updater"),
     );
     assert_eq!(
         judge(&f, &table()),
-        unverified(Some("slipway"), WhyNot::ImageWritable)
+        unverified(Some("bardo-updater"), WhyNot::ImageWritable)
     );
 }
 

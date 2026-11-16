@@ -1,6 +1,6 @@
 //! accountd's registry file (porter PLAN §2.3). The file store itself lives in the `account-store`
 //! library (`account_store::FileStore`), so an app can keep its own registry the same way;
-//! accountd resolves its directory once (the binary reads `$XDG_STATE_HOME/porter`; the store
+//! accountd resolves its directory once (the binary reads `$XDG_STATE_HOME/bardo/accounts`; the store
 //! reads no environment).
 
 /// The exit status of a daemon that refused the registry file (EX_CONFIG). `bardo-accountd.service`

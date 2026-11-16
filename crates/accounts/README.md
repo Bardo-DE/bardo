@@ -47,21 +47,21 @@ Installed by the script (under the prefix, `/usr` by default):
 
 | What | Where |
 | --- | --- |
-| The service | `libexec/quire/` |
+| The service | `libexec/bardo/` |
 | Its systemd user unit | `lib/systemd/user/` |
 | What lets the session bus start it | `share/dbus-1/services/` |
-| The providers porter knows (one file each) | `share/porter/providers/` |
-| The sign-in client ids for Microsoft and others, when some ship | `share/porter/clients.toml` |
+| The providers porter knows (one file each) | `share/bardo/accounts/providers/` |
+| The sign-in client ids for Microsoft and others, when some ship | `share/bardo/accounts/clients.toml` |
 | The table that says which app is Settings, which draws the sheets, which are the services (ferry's `syncd` among them) | `/etc/bardo/accountd-callers.toml` |
 
 Yours, made as you use porter:
 
 | What | Where |
 | --- | --- |
-| The accounts and your consent | `$XDG_STATE_HOME/porter/` (by default `~/.local/state/porter/`) |
-| The audit trail | `$XDG_STATE_HOME/quire/accountd/` |
-| Your own provider files, which win over the shipped ones | `$XDG_DATA_HOME/porter/providers/` |
-| Your own client ids (Settings writes this), and callers | `$XDG_CONFIG_HOME/porter/` |
+| The accounts and your consent | `$XDG_STATE_HOME/bardo/accounts/` (by default `~/.local/state/bardo/accounts/`) |
+| The audit trail | `$XDG_STATE_HOME/bardo/accounts/` |
+| Your own provider files, which win over the shipped ones | `$XDG_DATA_HOME/bardo/accounts/providers/` |
+| Your own client ids (Settings writes this), and callers | `$XDG_CONFIG_HOME/bardo/accounts/` |
 
 Secrets (passwords, keys, tokens) are in your keyring, never in these files.
 

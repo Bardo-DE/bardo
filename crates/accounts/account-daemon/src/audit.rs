@@ -14,7 +14,7 @@ pub struct FileAudit {
 }
 
 impl FileAudit {
-    /// Appends to `path` (`$XDG_STATE_HOME/quire/accountd/audit.jsonl`, resolved by the caller).
+    /// Appends to `path` (`$XDG_STATE_HOME/bardo/accounts/audit.jsonl`, resolved by the caller).
     pub fn new(path: PathBuf) -> Self {
         Self { path }
     }

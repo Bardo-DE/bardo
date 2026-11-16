@@ -10,13 +10,13 @@ use caller_identity_linux::{
 const PID: u32 = 4242;
 const SILL_CGROUP: &str =
     "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service\n";
-const IMAGE: &str = "/opt/quire/releases/1/bin/sill";
+const IMAGE: &str = "/opt/bardo/releases/1/bin/bardo-shell";
 
 const TABLE: &str = r#"
 [[peer]]
 app  = "org.bardo.Shell"
 unit = "bardo-shell.service"
-exe  = ["/opt/bardo/releases/*/bin/sill"]
+exe  = ["/opt/bardo/releases/*/bin/bardo-shell"]
 role = "shell"
 "#;
 
@@ -100,9 +100,9 @@ fn a_deleted_image_is_judged_by_the_running_inode_not_the_path() {
 
 #[test]
 fn the_walk_stops_at_the_first_directory_that_is_not_root_only() {
-    // /opt/quire/releases is the person's: the image below it is root-owned and still untrusted.
+    // /opt/bardo/releases is the person's: the image below it is root-owned and still untrusted.
     let tree = FixtureProc::new()
-        .dir("/opt/quire/releases", writable_by_owner())
+        .dir("/opt/bardo/releases", writable_by_owner())
         .process(process(
             SILL_CGROUP,
             FixtureImage::Present(IMAGE, FileTrust::RootOnly),
@@ -258,7 +258,7 @@ fn stand_judges_without_the_manager_so_a_service_tops_out_at_exe() {
     }
     // The same image under a user-writable directory is nobody.
     let tree = FixtureProc::new()
-        .dir("/opt/quire", writable_by_owner())
+        .dir("/opt/bardo", writable_by_owner())
         .process(process(
             SILL_CGROUP,
             FixtureImage::Present(IMAGE, FileTrust::RootOnly),
@@ -266,7 +266,7 @@ fn stand_judges_without_the_manager_so_a_service_tops_out_at_exe() {
     assert_eq!(
         Prober::new(tree).stand(&held(), &table),
         Standing::Unverified {
-            exe_name: Some("sill".into()),
+            exe_name: Some("bardo-shell".into()),
             scope_app: None,
             why: WhyNot::ImageWritable
         }
@@ -276,7 +276,7 @@ fn stand_judges_without_the_manager_so_a_service_tops_out_at_exe() {
 #[test]
 fn a_very_deep_path_is_refused_rather_than_walked() {
     let deep = format!(
-        "/{}/sill",
+        "/{}/bardo-shell",
         vec!["d"; caller_identity_linux::WALK_MAX + 1].join("/")
     );
     let tree = FixtureProc::new().process(process(

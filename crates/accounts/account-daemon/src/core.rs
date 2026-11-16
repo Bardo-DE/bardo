@@ -22,7 +22,7 @@ use zbus::{Connection, ObjectServer};
 /// What `serve_with` adds to the objects every accountd serves.
 #[derive(Default)]
 pub struct Options {
-    /// The user's `clients.toml` (`$XDG_CONFIG_HOME/porter/clients.toml`), which the settings
+    /// The user's `clients.toml` (`$XDG_CONFIG_HOME/bardo/accounts/clients.toml`), which the settings
     /// module writes; none refuses writes.
     pub clients: Option<std::path::PathBuf>,
     /// Where the settings module gets an app's display name; the default names no app, so every

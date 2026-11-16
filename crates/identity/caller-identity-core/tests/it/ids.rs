@@ -14,26 +14,26 @@ fn path(text: &str) -> ExePath {
 fn a_pattern_matches_whole_segments_and_one_star_per_segment() {
     let cases = [
         ("/usr/bin/bardo-shell", "/usr/bin/bardo-shell", true),
-        ("/usr/bin/bardo-shell", "/usr/bin/sill2", false),
+        ("/usr/bin/bardo-shell", "/usr/bin/bardo-shell2", false),
         (
-            "/opt/bardo/releases/*/bin/sill",
-            "/opt/quire/releases/0.4.1/bin/sill",
+            "/opt/bardo/releases/*/bin/bardo-shell",
+            "/opt/bardo/releases/0.4.1/bin/bardo-shell",
             true,
         ),
         // A star never crosses a slash.
         (
-            "/opt/bardo/releases/*/bin/sill",
-            "/opt/quire/releases/0.4/evil/bin/sill",
+            "/opt/bardo/releases/*/bin/bardo-shell",
+            "/opt/bardo/releases/0.4/evil/bin/bardo-shell",
             false,
         ),
         (
-            "/opt/bardo/releases/*/bin/sill",
-            "/opt/quire/releases/bin/sill",
+            "/opt/bardo/releases/*/bin/bardo-shell",
+            "/opt/bardo/releases/bin/bardo-shell",
             false,
         ),
-        ("/opt/*/bin/sill", "/opt/x/bin/sill", true),
-        ("/usr/bin/sill-*", "/usr/bin/sill-helper", true),
-        ("/usr/bin/sill-*", "/usr/bin/bardo-shell", false),
+        ("/opt/*/bin/bardo-shell", "/opt/x/bin/bardo-shell", true),
+        ("/usr/bin/bardo-shell-*", "/usr/bin/bardo-shell-helper", true),
+        ("/usr/bin/bardo-shell-*", "/usr/bin/bardo-shell", false),
         ("/usr/bin/*-sill", "/usr/bin/a-sill", true),
         ("/usr/bin/s*ll", "/usr/bin/bardo-shell", true),
         ("/usr/bin/s*ll", "/usr/bin/sl", false),
@@ -77,7 +77,7 @@ fn image_paths_are_absolute_plain_and_never_deleted() {
     ] {
         assert!(ExePath::new(bad).is_err(), "{bad:?}");
     }
-    assert_eq!(path("/usr/bin/bardo-shell").file_name(), Some("sill"));
+    assert_eq!(path("/usr/bin/bardo-shell").file_name(), Some("bardo-shell"));
 }
 
 #[test]

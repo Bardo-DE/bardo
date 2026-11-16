@@ -7,13 +7,13 @@ const GOLDEN: &str = r#"
 [[peer]]
 app  = "org.bardo.Shell"
 unit = "bardo-shell.service"
-exe  = ["/opt/bardo/releases/*/bin/sill", "/usr/bin/bardo-shell"]
+exe  = ["/opt/bardo/releases/*/bin/bardo-shell", "/usr/bin/bardo-shell"]
 role = "shell"
 name = "The shell"
 
 [[peer]]
 app  = "org.bardo.Updater"
-exe  = ["/usr/bin/slipway"]
+exe  = ["/usr/bin/bardo-updater"]
 role = "updater_cli"
 "#;
 
@@ -38,9 +38,9 @@ fn the_golden_table_reads_into_typed_rows() {
     assert_eq!(rows[0].name.as_deref(), Some("The shell"));
     assert_eq!(rows[0].exe.len(), 2);
     assert!(
-        rows[0].matches_image(&ExePath::new("/opt/quire/releases/9/bin/sill").expect("a path"))
+        rows[0].matches_image(&ExePath::new("/opt/bardo/releases/9/bin/bardo-shell").expect("a path"))
     );
-    assert!(!rows[0].matches_image(&ExePath::new("/usr/bin/slipway").expect("a path")));
+    assert!(!rows[0].matches_image(&ExePath::new("/usr/bin/bardo-updater").expect("a path")));
     assert_eq!(rows[1].unit, None);
     assert!(table.has_role(&RoleName::from_static("updater_cli")));
     assert!(

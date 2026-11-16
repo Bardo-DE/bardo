@@ -68,7 +68,7 @@ pub enum SkipReason {
 pub enum Layer {
     /// The system's (`/usr/share/bardo/accounts/providers`): what this install ships.
     Shipped,
-    /// The person's own (`$XDG_DATA_HOME/porter/providers`), which any program of theirs can
+    /// The person's own (`$XDG_DATA_HOME/bardo/accounts/providers`), which any program of theirs can
     /// write: it may add providers and reword a shipped one, but a file for a shipped provider
     /// that changes its sign-in, or reaches a server, an authenticated origin or a linked origin
     /// the shipped file does not, is skipped and the shipped one kept.

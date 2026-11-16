@@ -25,7 +25,7 @@ use sync_daemon::{Config, Daemon};
 
 /// ferry's sync service (`org.bardo.Sync1`).
 #[derive(Debug, Parser)]
-#[command(name = "syncd", version)]
+#[command(name = "bardo-syncd", version)]
 struct Args {}
 
 /// The daemon's one log path is standard error, prefixed with its name.

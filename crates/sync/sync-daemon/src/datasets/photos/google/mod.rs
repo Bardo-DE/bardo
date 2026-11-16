@@ -4,7 +4,7 @@
 //! on a Google account: the account's Photos row in Settings.
 //!
 //! - **Upload** (`upload`, `ledger`, `api`): the dataset `google_photos_upload`. The files
-//!   dropped into `$XDG_DATA_HOME/porter/photos/<account>/upload/` are sent to an album the app
+//!   dropped into `$XDG_DATA_HOME/bardo/sync/photos/<account>/upload/` are sent to an album the app
 //!   created (`albums.create`, then per file the bytes to `uploads` and the upload token to
 //!   `mediaItems:batchCreate`). It pulls nothing: the replica's feed is always empty, and a
 //!   local delete is not a delete in Google Photos (the scope could not do it). A file is
@@ -13,7 +13,7 @@
 //! - **Picker** (`picker`): [`PhotosPicker`], the typed API the Photos app calls. `start` opens a
 //!   Picker session and answers the `pickerUri` the app opens in the browser; `poll` says
 //!   whether the person has finished picking; `import` lists the picked items, downloads them
-//!   into `$XDG_DATA_HOME/porter/photos/<account>/picked/<session>/` and deletes the session.
+//!   into `$XDG_DATA_HOME/bardo/sync/photos/<account>/picked/<session>/` and deletes the session.
 //!   Nothing outside what the person picked is read.
 //! - **Wiring** (`wiring`): the HTTP of both over accountd's `OpenAuthenticated` relays (the
 //!   Photos upload and Picker endpoints are two rows of the provider file, two origins), so

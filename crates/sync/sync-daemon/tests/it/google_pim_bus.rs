@@ -253,13 +253,13 @@ async fn rig(kinds: &[PimKind]) -> Rig {
     let accounts = hosted.accounts;
     let root = bus.scratch().join("syncd");
     let paths = Paths {
-        journals: root.join("state/porter/sync"),
-        mirrors: root.join("data/porter/vdir"),
+        journals: root.join("state/bardo/sync"),
+        mirrors: root.join("data/bardo/sync/vdir"),
         callers_system: root.join("none"),
         callers_user: root.join("none"),
         cloud: root.join("Cloud"),
-        drive_cache: root.join("cache/porter/drives"),
-        settings: root.join("config/porter/syncd/syncd.toml"),
+        drive_cache: root.join("cache/bardo/sync/drives"),
+        settings: root.join("config/bardo/sync/syncd.toml"),
     };
     let hub = Hub::default();
     let (network_up, network) = watch::channel(Network::Unmetered);

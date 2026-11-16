@@ -13,6 +13,7 @@ zbus-ready = { path = "../../zbus-ready" }
 sync-bus = {path = "../sync-bus"}
 drive-core = {path = "../drive-core"}
 drive-fuse = {path = "../drive-fuse"}
+old-folders = {path = "../../platform/old-folders"}
 sync-core = {path = "../sync-core"}
 replica-gdrive = {path = "../replica-gdrive"}
 replica-graph = {path = "../replica-graph"}
@@ -82,7 +83,7 @@ tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-m
 # Test builds only, never default and never in dist: `BARDO_SYNCD_PROC_ROOT=<dir>` makes the binary
 # read caller identities from <dir> instead of /proc, because the jailed and acceptance tests run
 # processes outside service cgroups, and `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes it read that file as
-# the system caller table, because a jail cannot write /etc/porter. A release build ignores both
+# the system caller table, because a jail cannot write /etc/bardo. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
 # check-boundary.sh checks it too.
 test-proc-root = ["account-callers/test-proc-root"]
@@ -97,5 +98,5 @@ unsafe_code = "deny"
 missing_debug_implementations = "warn"
 
 [[bin]]
-name = "syncd"
+name = "bardo-syncd"
 path = "src/main.rs"

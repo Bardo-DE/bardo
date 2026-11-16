@@ -18,7 +18,7 @@ fn repo() -> PathBuf {
 fn stand_ins(root: &Path) -> PathBuf {
     let bins = root.join("bins");
     fs::create_dir_all(&bins).expect("bins");
-    for daemon in ["accountd", "bardo-engine-helper"] {
+    for daemon in ["bardo-accountd", "bardo-engine-helper"] {
         let file = bins.join(daemon);
         fs::write(&file, format!("#!/bin/sh\necho {daemon}\n")).expect("write");
         fs::set_permissions(&file, fs::Permissions::from_mode(0o755)).expect("chmod");
@@ -114,7 +114,10 @@ fn every_file_a_unit_or_an_activation_file_names_is_installed_at_the_path_it_nam
         let mut checked = 0;
         let text = fs::read_to_string(units.join("bardo-accountd.service")).expect("unit");
         let exec = value(&text, "ExecStart").expect("ExecStart");
-        assert_eq!(program(&exec), format!("{prefix}/libexec/quire/accountd"));
+        assert_eq!(
+            program(&exec),
+            format!("{prefix}/libexec/bardo/bardo-accountd")
+        );
         assert!(run.at(program(&exec)).is_file(), "{exec}");
         checked += 1;
         let activations = files_under(&run.at(&format!("{prefix}/share/dbus-1/services")));
@@ -196,7 +199,7 @@ fn a_second_run_changes_nothing_and_a_home_directory_is_never_written() {
     for path in files_under(&run.destdir) {
         let rel = path.strip_prefix(&run.destdir).expect("under destdir");
         assert!(
-            rel.starts_with("usr") || rel.starts_with("etc/porter"),
+            rel.starts_with("usr") || rel.starts_with("etc/bardo"),
             "{rel:?}"
         );
         assert!(!path.to_string_lossy().contains(".new."), "{path:?}");
@@ -246,7 +249,10 @@ fn a_caller_table_the_person_changed_is_kept_and_the_shipped_one_is_put_beside_i
     let table = run.at("/etc/bardo/accountd-callers.toml");
     fs::write(&table, "# mine\n").expect("edit");
     let out = run.install(&[]);
-    assert!(out.contains("kept /etc/bardo/accountd-callers.toml"), "{out}");
+    assert!(
+        out.contains("kept /etc/bardo/accountd-callers.toml"),
+        "{out}"
+    );
     assert_eq!(fs::read_to_string(&table).expect("read"), "# mine\n");
     assert_eq!(
         fs::read_to_string(run.at("/etc/bardo/accountd-callers.toml.dist")).expect("dist"),

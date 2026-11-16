@@ -173,7 +173,7 @@ pub enum DriveError {
 /// How a drive's cache is set up.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DriveConfig {
-    /// The cache directory (`$XDG_CACHE_HOME/porter/drives/<account>/`).
+    /// The cache directory (`$XDG_CACHE_HOME/bardo/sync/drives/<account>/`).
     pub cache: PathBuf,
     /// How many bytes one fetch asks for.
     pub chunk: u64,

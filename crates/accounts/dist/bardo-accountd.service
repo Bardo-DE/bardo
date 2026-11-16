@@ -4,14 +4,14 @@
 # time an app asks which identities there are. Sync's sign-ins are syncd's.
 #
 # accountd talks to the session bus, the Secret Service on it (items under `porter.accountd`),
-# the sheet host (sill) on it, and the network (provider sign-in and revocation, and the check of
+# the sheet host (the shell) on it, and the network (provider sign-in and revocation, and the check of
 # a new AI key). It reads /proc to know who is calling, so the unit must not hide other processes'
 # cgroups (no ProtectProc, no PrivatePID).
 #
 # A key goes to inferd, and to the launcher's processes, on a sealed memfd, so the unit needs no
 # directory to put a key in.
 [Unit]
-Description=quire identities (org.bardo.Accounts1)
+Description=Bardo identities (org.bardo.Accounts1)
 
 [Service]
 # Fixed role (peephole's LOADER_VARIABLES, checked by its `Full` proof): the manager's environment must not reach this unit.
@@ -32,13 +32,13 @@ TimeoutStopSec=20
 # The keys that need a mount namespace are in the drop-in sandbox.conf (see its header).
 # Unix sockets for the bus, and the internet for the providers.
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-# What accountd writes: the registry (porter/ under $XDG_STATE_HOME), its audit file
-# (quire/accountd/ there) and the user's clients file and caller table (porter/ under
-# $XDG_CONFIG_HOME; Settings writes them through accountd). systemd creates them before the
+# What accountd writes: the registry and its audit file (bardo/accounts/ under $XDG_STATE_HOME)
+# and the user's clients file and caller table (bardo/accounts/ under $XDG_CONFIG_HOME; Settings
+# writes them through accountd). systemd creates them before the
 # sandbox starts. The rest of the person's files are put out of reach by the mount-namespace keys
 # in sandbox.conf (dist/bardo-accountd.service.d).
-StateDirectory=porter quire/accountd
-ConfigurationDirectory=porter
+StateDirectory=bardo/accounts
+ConfigurationDirectory=bardo/accounts
 NoNewPrivileges=yes
 LockPersonality=yes
 MemoryDenyWriteExecute=yes

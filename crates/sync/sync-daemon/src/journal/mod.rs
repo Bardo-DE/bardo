@@ -1,5 +1,5 @@
 //! The SQLite journal of one dataset of one account (design/31 §6.1): items, the anchor,
-//! tombstones and conflicts, in one file under `$XDG_STATE_HOME/porter/sync/<account>/`.
+//! tombstones and conflicts, in one file under `$XDG_STATE_HOME/bardo/sync/<account>/`.
 //!
 //! Every change is an [`Op`] list applied in one transaction (`apply`), so the engine's steps
 //! are the unit of a crash: either a step's rows are all there or none are. The rows are

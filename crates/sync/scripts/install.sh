@@ -14,8 +14,8 @@
 #               install with --no-build as root)
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
-#   PREFIX/libexec/quire/syncd                        the daemon
-#   PREFIX/libexec/quire/bardo-drive-mount                the helper syncd asks to show a drive in
+#   PREFIX/libexec/bardo/bardo-syncd                  the daemon
+#   PREFIX/libexec/bardo/bardo-drive-mount            the helper syncd asks to show a drive in
 #                                                     ~/Cloud (runs fusermount3, which syncd's
 #                                                     sandbox refuses)
 #   PREFIX/lib/systemd/user/bardo-syncd.service             the user unit
@@ -146,7 +146,7 @@ mount_namespace_for_user_units() {
 }
 
 # --- The daemons ---------------------------------------------------------------------------------
-daemons="syncd"
+daemons="bardo-syncd"
 if [ -n "$bin_dir" ]; then
     built=$bin_dir
 else
@@ -211,7 +211,7 @@ for helper in bardo-drive-mount; do
 done
 
 # The files in dist/ name /usr/libexec/bardo; a different prefix changes that one path.
-libexec=$prefix/libexec/quire
+libexec=$prefix/libexec/bardo
 for daemon in $daemons; do
     put 755 "$built/$daemon" "$libexec/$daemon"
     put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/bardo "$libexec"

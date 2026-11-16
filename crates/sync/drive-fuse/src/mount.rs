@@ -85,7 +85,7 @@ impl Mounter {
     }
 
     /// Unmounts a drive's folder left at `path` (a crash leaves one that answers nothing), lazily.
-    /// Only a drive's folder (`fuse.porter`) is touched: a mount of anything else there, the
+    /// Only a drive's folder (`fuse.bardo`) is touched: a mount of anything else there, the
     /// person's own, is left as it is.
     pub fn clean(&self, path: &Path) {
         if ours_at(path).is_some() {
@@ -137,8 +137,8 @@ impl Mounter {
             MountOption::NoSuid,
             MountOption::NoDev,
             MountOption::NoAtime,
-            MountOption::FSName("porter".to_owned()),
-            MountOption::Subtype("porter".to_owned()),
+            MountOption::FSName("bardo".to_owned()),
+            MountOption::Subtype("bardo".to_owned()),
         ];
         let session =
             fuser::spawn_mount(Served(Arc::new(fs)), path, &config).map_err(MountError::Failed)?;
@@ -150,7 +150,7 @@ impl Mounter {
     }
 }
 
-/// The drive's folder (`fuse.porter`) at `path`, if one is mounted there.
+/// The drive's folder (`fuse.bardo`) at `path`, if one is mounted there.
 fn ours_at(path: &Path) -> Option<mountinfo::Entry> {
     mountinfo::at(&mountinfo::read(), path)
         .filter(|entry| entry.fstype == FSTYPE)

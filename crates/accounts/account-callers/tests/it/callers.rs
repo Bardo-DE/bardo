@@ -65,7 +65,7 @@ fn table() -> CallerTable {
         {"app": "org.bardo.Shell", "role": "sheet_host"},
         {"app": "org.bardo.Inference", "unit": "bardo-inferd.service", "role": "porter_daemon"},
         {"app": "org.example.Sheets", "role": "sheet_host"},
-        {"app": "org.bardo.Shell", "unit": "sill-shell.scope", "role": "sheet_host",
+        {"app": "org.bardo.Shell", "unit": "bardo-shell.scope", "role": "sheet_host",
          "exe": ["/usr/bin/bardo-shell"]},
         {"app": "org.bardo.Shell", "unit": "bardo-shell.service", "role": "sheet_host",
          "exe": ["/usr/bin/bardo-shell"]},
@@ -165,7 +165,11 @@ fn a_process_is_named_by_its_scope_or_unit() {
         ),
         (
             17,
-            got("org.bardo.ComputerUse", Isolation::Unsandboxed, CallerRole::Cua),
+            got(
+                "org.bardo.ComputerUse",
+                Isolation::Unsandboxed,
+                CallerRole::Cua,
+            ),
         ),
         (
             18,
@@ -192,7 +196,11 @@ fn a_scope_named_after_a_daemons_app_is_an_app() {
     let cases = [
         (
             30,
-            got("org.bardo.ComputerUse", Isolation::Unsandboxed, CallerRole::App),
+            got(
+                "org.bardo.ComputerUse",
+                Isolation::Unsandboxed,
+                CallerRole::App,
+            ),
         ),
         (
             31,
@@ -211,10 +219,10 @@ fn a_scope_named_after_a_daemons_app_is_an_app() {
 #[test]
 fn a_scope_a_row_names_as_its_unit_is_that_unit_exactly_and_no_more_than_an_app() {
     let s = Procs::new();
-    s.process(40, Some(&scope("sill-shell.scope")));
+    s.process(40, Some(&scope("bardo-shell.scope")));
     s.image(40, "/usr/bin/bardo-shell");
-    s.process(41, Some(&scope("sill-shell-2.scope")));
-    s.process(42, Some(&scope("xsill-shell.scope")));
+    s.process(41, Some(&scope("bardo-shell-2.scope")));
+    s.process(42, Some(&scope("xbardo-shell.scope")));
     // An app scope never takes a unit row's role, even one naming it exactly.
     s.process(43, Some(&scope("app-org.bardo.Trap-1.scope")));
     // A scope has no main process, so the row's fixed role is a plain app's.

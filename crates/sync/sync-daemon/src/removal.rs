@@ -1,9 +1,9 @@
 //! Removing an account: syncd forgets everything of it: its running datasets, its journals and
-//! anchors (`<state>/porter/sync/<account>`, the drive listing's `storage_drive` among them), its
-//! mirrors (`<data>/porter/vdir/<account>`), its
-//! photos library (`<data>/porter/photos/<account>`) and its app folder mirror
-//! (`<data>/porter/storage/<account>`), and its drive's downloaded files
-//! (`<cache>/porter/drives/<account>`).
+//! anchors (`<state>/bardo/sync/sync/<account>`, the drive listing's `storage_drive` among them), its
+//! mirrors (`<data>/bardo/sync/vdir/<account>`), its
+//! photos library (`<data>/bardo/sync/photos/<account>`) and its app folder mirror
+//! (`<data>/bardo/sync/storage/<account>`), and its drive's downloaded files
+//! (`<cache>/bardo/sync/drives/<account>`).
 //!
 //! The account is accountd's; syncd's copies of it are removed in its Settings rows
 //! (`crate::keep::Keep::remove` calls [`wipe`] and then takes back syncd's grants of it).
@@ -55,12 +55,12 @@ mod tests {
         let _root_guard = scratch("wipe");
         let root = _root_guard.path().to_owned();
         let paths = Paths {
-            journals: root.join("state/porter/sync"),
-            mirrors: root.join("data/porter/vdir"),
+            journals: root.join("state/bardo/sync"),
+            mirrors: root.join("data/bardo/sync/vdir"),
             callers_system: root.join("none"),
             callers_user: root.join("none"),
             cloud: root.join("Cloud"),
-            drive_cache: root.join("cache/porter/drives"),
+            drive_cache: root.join("cache/bardo/sync/drives"),
             settings: root.join("none"),
         };
         let (gone, kept) = (

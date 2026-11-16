@@ -15,7 +15,7 @@
 #               install with --no-build as root)
 #
 # What goes where (DESTDIR, when given, is in front of all of it):
-#   PREFIX/libexec/quire/accountd                     the daemon
+#   PREFIX/libexec/bardo/bardo-accountd               the daemon
 #   PREFIX/lib/systemd/user/bardo-accountd.service          the user unit
 #   PREFIX/lib/systemd/user/bardo-accountd.service.d/sandbox.conf
 #                                                            the part of the unit's sandbox that needs a
@@ -24,9 +24,9 @@
 #                                                            service one (Ubuntu 24.04's AppArmor restriction
 #                                                            on user namespaces); always installed with a destdir
 #   PREFIX/share/dbus-1/services/org.bardo.*.service         D-Bus activation
-#   PREFIX/share/porter/providers/*.toml                     the provider files
-#   PREFIX/share/porter/clients.toml                         only when dist/clients.toml exists
-#   SYSCONFDIR/porter/callers.toml                           the caller table (kept if the owner changed it)
+#   PREFIX/share/bardo/accounts/providers/*.toml             the provider files
+#   PREFIX/share/bardo/accounts/clients.toml                 only when dist/clients.toml exists
+#   SYSCONFDIR/bardo/accountd-callers.toml                   the caller table (kept if the owner changed it)
 #
 # The script is standalone: it knows nothing of any desktop. Run again, it changes nothing that is
 # already as it should be (a file is replaced only when its content differs). It writes nothing under
@@ -131,7 +131,7 @@ mount_namespace_for_user_units() {
 }
 
 # --- The daemons ---------------------------------------------------------------------------------
-daemons="accountd"
+daemons="bardo-accountd"
 if [ -n "$bin_dir" ]; then
     built=$bin_dir
 else
@@ -186,7 +186,7 @@ for daemon in $daemons; do
 done
 
 # The files in dist/ name /usr/libexec/bardo; a different prefix changes that one path.
-libexec=$prefix/libexec/quire
+libexec=$prefix/libexec/bardo
 for daemon in $daemons; do
     put 755 "$built/$daemon" "$libexec/$daemon"
     put 644 "$dist/$daemon.service" "$prefix/lib/systemd/user/$daemon.service" /usr/libexec/bardo "$libexec"
@@ -214,18 +214,18 @@ done
 
 # --- Data ----------------------------------------------------------------------------------------
 for provider in "$root"/providers/*.toml; do
-    put 644 "$provider" "$prefix/share/porter/providers/$(basename "$provider")"
+    put 644 "$provider" "$prefix/share/bardo/accounts/providers/$(basename "$provider")"
 done
 if [ -f "$dist/clients.toml" ]; then
-    put 644 "$dist/clients.toml" "$prefix/share/porter/clients.toml"
+    put 644 "$dist/clients.toml" "$prefix/share/bardo/accounts/clients.toml"
 fi
 
 # --- The caller tables ---------------------------------------------------------------------------
-# accountd's and syncd's (callers.toml); steward's install.sh installs the AI broker's own. It is the
+# accountd's and syncd's (dist/callers.toml, installed as accountd-callers.toml); steward's install.sh installs the AI broker's own. It is the
 # machine owner's to edit once installed: a copy that differs is kept, and the shipped one is left
 # beside it as <name>.dist for them to compare.
 for table in callers.toml; do
-    callers=$sysconfdir/porter/$table
+    callers=$sysconfdir/bardo/accountd-$table
     if [ -f "$destdir$callers" ] && ! cmp -s "$dist/$table" "$destdir$callers"; then
         echo "kept $callers (it differs from the shipped one; the shipped one is $callers.dist)"
         put 644 "$dist/$table" "$callers.dist"

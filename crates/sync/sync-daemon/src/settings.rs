@@ -414,23 +414,9 @@ impl<T, C> SyncSettings<T, C> {
     }
 }
 
-/// Where syncd kept its settings before they had a folder of their own: the same name one folder
-/// up (`$XDG_CONFIG_HOME/porter/syncd.toml` for `porter/syncd/syncd.toml`).
-fn earlier(file: &Path) -> Option<PathBuf> {
-    Some(file.parent()?.parent()?.join(file.file_name()?))
-}
-
-/// The text of the settings file `file`; while there is none, the one kept where it was before
-/// ([`earlier`]). That one is only read: the next save writes `file`, and the earlier one stays
-/// where it is, since syncd's unit may write only syncd's own folder and so cannot remove it.
+/// The text of the settings file `file`, when there is one.
 fn settings_text(file: &Path) -> Option<String> {
-    match std::fs::read_to_string(file) {
-        Ok(text) => Some(text),
-        Err(why) if why.kind() == std::io::ErrorKind::NotFound => {
-            std::fs::read_to_string(earlier(file)?).ok()
-        }
-        Err(_) => None,
-    }
+    std::fs::read_to_string(file).ok()
 }
 
 /// The cache limit `file` keeps (`[storage] cache_limit = "<bytes>"`); automatic when there is
@@ -955,7 +941,7 @@ mod tests {
     #[test]
     fn which_drives_are_kept_whole_is_saved_beside_the_rest_and_read_back() {
         let dir = base_testkit::Scratch::new("syncd-settings-keep-all");
-        let file = dir.join("porter/syncd/syncd.toml");
+        let file = dir.join("bardo/sync/syncd.toml");
         write_paused(&file, "one", true).expect("paused");
         write_keep_all(&file, "one", true).expect("save");
         write_keep_all(&file, "two", true).expect("save");
@@ -965,40 +951,6 @@ mod tests {
             read_paused(&file),
             BTreeSet::from(["one".to_owned()]),
             "kept"
-        );
-    }
-
-    #[test]
-    fn settings_kept_before_their_folder_are_read_and_the_next_save_moves_them() {
-        let dir = base_testkit::Scratch::new("syncd-settings-move");
-        let file = dir.join("porter/syncd/syncd.toml");
-        let before = dir.join("porter/syncd.toml");
-        assert_eq!(read_cache_limit(&file), CacheLimit::Automatic);
-        std::fs::create_dir_all(dir.join("porter")).expect("dir");
-        std::fs::write(
-            &before,
-            "[storage]\ncache_limit = \"5000000000\"\n[other]\nkept = true\n",
-        )
-        .expect("before");
-        assert_eq!(
-            read_cache_limit(&file),
-            CacheLimit::from_setting(5_000_000_000)
-        );
-        write_cache_limit(&file, CacheLimit::from_setting(3_000_000_000)).expect("save");
-        let saved = std::fs::read_to_string(&file).expect("saved at its own place");
-        assert!(
-            saved.contains("3000000000") && saved.contains("kept = true"),
-            "{saved}"
-        );
-        // The earlier file is left as it was, and no longer read.
-        assert!(
-            std::fs::read_to_string(&before)
-                .expect("left")
-                .contains("5000000000")
-        );
-        assert_eq!(
-            read_cache_limit(&file),
-            CacheLimit::from_setting(3_000_000_000)
         );
     }
 }

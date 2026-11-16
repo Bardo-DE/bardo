@@ -18,7 +18,7 @@ fn repo() -> PathBuf {
 fn stand_ins(root: &Path) -> PathBuf {
     let bins = root.join("bins");
     fs::create_dir_all(&bins).expect("bins");
-    for daemon in ["syncd", "bardo-drive-mount"] {
+    for daemon in ["bardo-syncd", "bardo-drive-mount"] {
         let file = bins.join(daemon);
         fs::write(&file, format!("#!/bin/sh\necho {daemon}\n")).expect("write");
         fs::set_permissions(&file, fs::Permissions::from_mode(0o755)).expect("chmod");
@@ -112,10 +112,10 @@ fn every_file_a_unit_or_an_activation_file_names_is_installed_at_the_path_it_nam
         run.install(&["--prefix", prefix]);
         let units = run.at(&format!("{prefix}/lib/systemd/user"));
         let mut checked = 0;
-        for unit in ["syncd", "bardo-drive-mount"] {
+        for unit in ["bardo-syncd", "bardo-drive-mount"] {
             let text = fs::read_to_string(units.join(format!("{unit}.service"))).expect("unit");
             let exec = value(&text, "ExecStart").expect("ExecStart");
-            assert_eq!(program(&exec), format!("{prefix}/libexec/quire/{unit}"));
+            assert_eq!(program(&exec), format!("{prefix}/libexec/bardo/{unit}"));
             assert!(run.at(program(&exec)).is_file(), "{exec}");
             checked += 1;
         }

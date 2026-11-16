@@ -98,6 +98,7 @@ impl Config {
     /// # Errors
     /// There is no home to keep state in, or the secret store the environment asks for is refused.
     pub fn from_env(provider_dirs: &[PathBuf]) -> Result<Self, StartError> {
+        crate::paths::move_pre_bardo_folders(|name| std::env::var(name).ok())?;
         let mut paths = Paths::resolve(|name| std::env::var(name).ok(), provider_dirs)?;
         // A test build may read another system caller table (a jail cannot write /etc).
         let system = account_callers::SystemCallers::choose(HONOURS_PROC_ROOT, |name| {

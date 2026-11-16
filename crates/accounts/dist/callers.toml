@@ -1,6 +1,6 @@
 # The caller table accountd and syncd read (`[[caller]]` rows of `app`, optional `unit`, `role`).
 # Install to /etc/bardo/accountd-callers.toml; a person's own rows go in
-# $XDG_CONFIG_HOME/porter/callers.toml and win over these. A caller is found by its process: a
+# $XDG_CONFIG_HOME/bardo/accounts/callers.toml and win over these. A caller is found by its process: a
 # Flatpak app by its sandbox's own metadata, a native app scope (`app-…-<app id>-N.scope`) by its
 # app id, a daemon by the unit named in its row (a service only as the unit's main process, as the
 # systemd manager says; a scope, which has none, as any process in it). A row with a unit gives
@@ -8,7 +8,7 @@
 # `settings` (the Settings app), `sheet_host` (draws the accounts sheets), `ai_broker` (inferd: the
 # one daemon that asks for the key behind a permit), `porter_daemon` (syncd), `agent`, `cua`,
 # `agent_launcher` (the launcher of external coding agents: see below), `terminal` (temor:
-# reads the person's computers from `org.bardo.Tailnet1` and nothing else), `compositor` (casement:
+# reads the person's computers from `org.bardo.Tailnet1` and nothing else), `compositor` (bardo-compositor:
 # lists the desktop-wide Spaces and registers the ids it mints for its workspaces through
 # `org.bardo.Spaces1.Register`, and nothing else); anything unlisted is an `app`.
 # `agent_launcher` (the launcher that runs external coding agents, bardo-agent-acp) may call accountd's
@@ -26,18 +26,18 @@
 # (`UnsetEnvironment=` of the 22 names of peephole's LOADER_VARIABLES, as steward's dist/bardo-inferd.service
 # does). Otherwise the caller is a plain app. A row names its programs with
 # `exe = ["/usr/bin/bardo-shell", ...]` (absolute paths, one `*` allowed per segment); a row for a daemon
-# unit (`bardo-inferd.service`) that names none runs `libexec/quire/<name>` under /usr, /usr/local or
+# unit (`bardo-inferd.service`) that names none runs `libexec/bardo/<name>` under /usr, /usr/local or
 # /opt/bardo/releases/*. A unit that is not named like a daemon and lists no `exe` is never more
 # than a process nobody knows: put its programs in the row.
 
-# The Settings app (detent), as the unit the desktop runs it in: any program may start an app
+# The Settings app (bardo-settings), as the unit the desktop runs it in: any program may start an app
 # scope called `app-org.bardo.Settings-N.scope`, so the role is not given by the app's name.
 [[caller]]
 app = "org.bardo.Settings"
 unit = "org.bardo.Settings.service"
 role = "settings"
 name = "Settings"
-exe = ["/usr/bin/bardo-settings", "/usr/local/bin/detent", "/opt/bardo/releases/*/bin/detent"]
+exe = ["/usr/bin/bardo-settings", "/usr/local/bin/bardo-settings", "/opt/bardo/releases/*/bin/bardo-settings"]
 
 # The shell that draws the accounts sheets, as the service the desktop session starts it in: only
 # that unit's main process.
@@ -46,7 +46,7 @@ app = "org.bardo.Shell"
 unit = "bardo-shell.service"
 role = "sheet_host"
 name = "Shell"
-exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"]
+exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/releases/*/bin/bardo-shell"]
 
 # inferd, the AI broker: asks what each app's permits say and for the key behind a permit, for
 # the models it runs, and reads the computers on the person's tailnet.
@@ -64,7 +64,7 @@ role = "porter_daemon"
 name = "Sync"
 
 # temor, the terminal: reads the person's computers (`Tailnet1.Machines`) and nothing else.
-# temor's unit is `org.bardo.Temor.service` (`Type=dbus`, as detent's `org.bardo.Settings.service`).
+# temor's unit is `org.bardo.Temor.service` (`Type=dbus`, as bardo-settings's `org.bardo.Settings.service`).
 # It is checked against the manager's main process like every unit row, so it matches only the
 # service temor runs in, and only with the program temor's unit starts (`ExecStart=/usr/bin/temor`;
 # /usr/local for a source install; the release form for when temor joins the desktop's bundle).
@@ -75,8 +75,8 @@ role = "terminal"
 name = "Terminal"
 exe = ["/usr/bin/temor", "/usr/local/bin/temor", "/opt/bardo/releases/*/bin/temor"]
 
-# The agents: intentd, the companion and the reader. `agent` is refused more than an app is
-# (no keys, no accounts added), but it is also who they are: docket and memoryd answer intentd by
+# The agents: bardo-actiond, the companion and the reader. `agent` is refused more than an app is
+# (no keys, no accounts added), but it is also who they are: the action daemon and memoryd answer bardo-actiond by
 # this row. A person's own file cannot add a row for an app named here (`CallerTable::layered`).
 [[caller]]
 app = "org.bardo.Intents"
@@ -116,10 +116,10 @@ unit = "bardo-voiced.service"
 role = "app"
 name = "Voice"
 
-# casement, the compositor: mints a desktop-wide Space id for each workspace and registers it
-# (`Spaces1.Register`); it may list the Spaces and nothing else. The row goes live once casement
+# bardo-compositor, the compositor: mints a desktop-wide Space id for each workspace and registers it
+# (`Spaces1.Register`); it may list the Spaces and nothing else. The row goes live once bardo-compositor
 # runs as its own unit (today bardo-session starts it as a plain child process, which proves no
-# role). Until then casement is an `app`, and `Register` refuses it.
+# role). Until then bardo-compositor is an `app`, and `Register` refuses it.
 #
 #   [[caller]]
 #   app = "org.bardo.Compositor"

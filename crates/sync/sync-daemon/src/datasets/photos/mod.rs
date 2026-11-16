@@ -19,7 +19,7 @@
 //! - `originals`, `metadata`: the two [`crate::dataset::Dataset`]s.
 //! - `run`: [`start`], which registers both in the hub.
 //!
-//! The library lives in `$XDG_DATA_HOME/porter/photos/<account>/` ([`crate::paths::Paths::photos_dir`]),
+//! The library lives in `$XDG_DATA_HOME/bardo/sync/photos/<account>/` ([`crate::paths::Paths::photos_dir`]),
 //! which `AccountRemoved` wipes with the journals and the PIM mirrors.
 //!
 //! Not here yet: purging the originals of deleted photos, the replica folders' creation on a

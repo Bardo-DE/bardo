@@ -1,15 +1,15 @@
 //! Which system caller table a daemon reads.
 //!
 //! The rows that give a fixed role (Settings, the sheet host, a porter daemon, cuad, the agent
-//! launcher) come only from a system table under `/etc/porter`, which a person cannot write:
+//! launcher) come only from a system table under `/etc/bardo`, which a person cannot write:
 //! accountd and syncd read [`CALLERS`], inferd reads [`INFERD_CALLERS`]. A jailed acceptance
 //! test cannot write `/etc` either, so a test build may be told to read another file instead.
 //! The switch is gated as the proc root is ([`Override`]): a build with the daemon's
 //! `test-proc-root` feature honours the file's variable, every other build ignores it and says so
 //! once at start. An empty value is the same as no value.
 //!
-//! A system table may be installed somewhere other than `/etc/porter` (a bundle under
-//! `/opt/quire` ships its own): without the variable, a daemon reads the first of
+//! A system table may be installed somewhere other than `/etc/bardo` (a bundle under
+//! `/opt/bardo` ships its own): without the variable, a daemon reads the first of
 //! [`TABLE_DIRS`] that holds the file and that root holds ([`root_held`]). The list is fixed: who
 //! may claim a fixed role never depends on the person's environment.
 
@@ -130,11 +130,11 @@ impl SystemCallers {
 /// Where a system caller table may be installed, the first that has one winning. Fixed, not
 /// `$XDG_*`: a trust input is never read from the person's environment.
 pub const TABLE_DIRS: [&str; 5] = [
-    "/etc/porter",
-    "/etc/xdg/porter",
-    "/usr/local/share/porter",
-    "/usr/share/porter",
-    "/opt/quire/share/porter",
+    "/etc/bardo",
+    "/etc/xdg/bardo",
+    "/usr/local/share/bardo",
+    "/usr/share/bardo",
+    "/opt/bardo/share/bardo",
 ];
 
 /// The first of [`TABLE_DIRS`] holding `file` that root holds, else `file.path`.
@@ -261,13 +261,13 @@ mod tests {
             PathBuf::from("/etc/bardo/inferd-callers.toml")
         );
         assert_eq!(
-            choose(&held_only("/opt/quire/share/porter/inferd-callers.toml")),
-            PathBuf::from("/opt/quire/share/porter/inferd-callers.toml")
+            choose(&held_only("/opt/bardo/share/bardo/inferd-callers.toml")),
+            PathBuf::from("/opt/bardo/share/bardo/inferd-callers.toml")
         );
         // The first of the list wins.
         assert_eq!(
             choose(&|path: &Path| path.starts_with("/usr")),
-            PathBuf::from("/usr/local/share/porter/inferd-callers.toml")
+            PathBuf::from("/usr/local/share/bardo/inferd-callers.toml")
         );
         // Nothing root holds, or only the person's directory: the usual path, read as empty.
         assert_eq!(
@@ -279,13 +279,13 @@ mod tests {
     #[test]
     fn a_table_the_person_could_have_written_is_not_root_held() {
         let dir = base_testkit::Scratch::new("held");
-        std::fs::create_dir_all(dir.join("porter")).expect("dir");
-        let table = dir.join("porter/callers.toml");
+        std::fs::create_dir_all(dir.join("bardo")).expect("dir");
+        let table = dir.join("bardo/callers.toml");
         std::fs::write(&table, "").expect("write");
         // Owned by whoever runs the test: refused even if that is root, since the
         // temporary directory is writable by everyone.
         assert!(!root_held(&table));
-        assert!(!root_held(&dir.join("porter/absent.toml")));
+        assert!(!root_held(&dir.join("bardo/absent.toml")));
         // A directory is not a table.
         assert!(!root_held(Path::new("/")));
     }

@@ -5,29 +5,28 @@
 
 pub use account_daemon_support::xdg::PathError;
 use account_daemon_support::xdg::Xdg;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 /// Every path the daemon uses.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Paths {
-    /// `$XDG_STATE_HOME/porter/sync`: one directory per account, one journal per dataset.
+    /// `$XDG_STATE_HOME/bardo/sync`: one directory per account, one journal per dataset.
     pub journals: PathBuf,
-    /// `$XDG_DATA_HOME/porter/vdir`: the PIM mirrors, one directory per account (W6e).
+    /// `$XDG_DATA_HOME/bardo/sync/vdir`: the PIM mirrors, one directory per account (W6e).
     pub mirrors: PathBuf,
     /// The system caller table, `/etc/bardo/accountd-callers.toml` (another file in a test build:
     /// [`account_callers::SystemCallers`]).
     pub callers_system: PathBuf,
-    /// The user's caller table, `$XDG_CONFIG_HOME/porter/callers.toml`; its rows win.
+    /// The user's caller table, `$XDG_CONFIG_HOME/bardo/accounts/callers.toml`; its rows win.
     pub callers_user: PathBuf,
     /// `~/Cloud`: where each drive the person shows in Files is a folder (`~/Cloud/OneDrive`).
     pub cloud: PathBuf,
-    /// `$XDG_CACHE_HOME/porter/drives`: each drive's downloaded files, one directory per account.
+    /// `$XDG_CACHE_HOME/bardo/sync/drives`: each drive's downloaded files, one directory per account.
     pub drive_cache: PathBuf,
-    /// `$XDG_CONFIG_HOME/porter/syncd/syncd.toml`: syncd's own settings (`storage.cache_limit`),
-    /// in a folder of its own so that syncd's unit may write it and nothing else of porter's
-    /// configuration (accountd's caller table sits in `porter/`). The file kept at
-    /// `porter/syncd.toml` before is read while this one is absent.
+    /// `$XDG_CONFIG_HOME/bardo/sync/syncd.toml`: syncd's own settings (`storage.cache_limit`),
+    /// in a folder of its own so that syncd's unit may write it and nothing else of the
+    /// configuration (accountd's caller table sits in `bardo/accounts/`).
     pub settings: PathBuf,
 }
 
@@ -41,13 +40,13 @@ impl Paths {
         let cache = xdg.dir("XDG_CACHE_HOME", ".cache")?;
         let home = xdg.home().ok_or(PathError)?.to_path_buf();
         Ok(Self {
-            journals: state.join("porter/sync"),
-            mirrors: data.join("porter/vdir"),
+            journals: state.join("bardo/sync"),
+            mirrors: data.join("bardo/sync/vdir"),
             callers_system: PathBuf::from(account_callers::SYSTEM_CALLERS),
-            callers_user: config.join("porter/callers.toml"),
+            callers_user: config.join("bardo/accounts/callers.toml"),
             cloud: home.join("Cloud"),
-            drive_cache: cache.join("porter/drives"),
-            settings: config.join("porter/syncd/syncd.toml"),
+            drive_cache: cache.join("bardo/sync/drives"),
+            settings: config.join("bardo/sync/syncd.toml"),
         })
     }
 
@@ -58,7 +57,7 @@ impl Paths {
             .join(format!("{dataset}.sqlite"))
     }
 
-    /// The Photos library of one account, `$XDG_DATA_HOME/porter/photos/<account>` (W6f): beside
+    /// The Photos library of one account, `$XDG_DATA_HOME/bardo/sync/photos/<account>` (W6f): beside
     /// the PIM mirrors, so `AccountRemoved` wipes it with them.
     pub fn photos_dir(&self, account: &AccountDir) -> PathBuf {
         self.mirrors
@@ -68,7 +67,7 @@ impl Paths {
             .join(account.as_str())
     }
 
-    /// The app folder mirror of one account, `$XDG_DATA_HOME/porter/storage/<account>`: beside
+    /// The app folder mirror of one account, `$XDG_DATA_HOME/bardo/sync/storage/<account>`: beside
     /// the PIM mirrors, so `AccountRemoved` wipes it with them.
     pub fn storage_dir(&self, account: &AccountDir) -> PathBuf {
         self.mirrors
@@ -79,14 +78,14 @@ impl Paths {
     }
 
     /// The folder whose files syncd uploads to the account's Google Photos,
-    /// `$XDG_DATA_HOME/porter/photos/<account>/upload`: inside the Photos library directory, so
+    /// `$XDG_DATA_HOME/bardo/sync/photos/<account>/upload`: inside the Photos library directory, so
     /// `AccountRemoved` wipes it with the rest.
     pub fn photos_upload_dir(&self, account: &AccountDir) -> PathBuf {
         self.photos_dir(account).join("upload")
     }
 
     /// Where the Google Photos picker puts what the person picked,
-    /// `$XDG_DATA_HOME/porter/photos/<account>/picked`; one folder per session below it.
+    /// `$XDG_DATA_HOME/bardo/sync/photos/<account>/picked`; one folder per session below it.
     pub fn photos_picked_dir(&self, account: &AccountDir) -> PathBuf {
         self.photos_dir(account).join("picked")
     }
@@ -99,7 +98,7 @@ impl Paths {
             .join("google_photos_upload.ledger.json")
     }
 
-    /// The downloaded files of one account's drive, `$XDG_CACHE_HOME/porter/drives/<account>`.
+    /// The downloaded files of one account's drive, `$XDG_CACHE_HOME/bardo/sync/drives/<account>`.
     pub fn drive_cache_dir(&self, account: &AccountDir) -> PathBuf {
         self.drive_cache.join(account.as_str())
     }
@@ -174,10 +173,123 @@ pub fn rescan(build: Build, value: Option<String>, default: Duration) -> Duratio
     }
 }
 
+/// Temporary: delete with the old-folders crate in the release after everyone has started once.
+///
+/// Moves what syncd kept under its pre-bardo folders into the ones [`Paths::resolve`] names, once,
+/// before anything is read: the journals (`$XDG_STATE_HOME/porter/sync` and
+/// `$XDG_STATE_HOME/quire/syncd`), the mirrors, app folders and photo libraries
+/// (`$XDG_DATA_HOME/porter/{vdir,storage,photos}`), the drives' cache
+/// (`$XDG_CACHE_HOME/porter/drives`) and its settings file (`$XDG_CONFIG_HOME/porter/syncd`).
+/// What moved is said on standard error.
+///
+/// # Errors
+/// There is no home to resolve the folders in.
+pub fn move_pre_bardo_folders(var: impl Fn(&str) -> Option<String>) -> Result<(), PathError> {
+    let xdg = Xdg::new(var);
+    move_under(
+        &xdg.dir("XDG_STATE_HOME", ".local/state")?,
+        &xdg.dir("XDG_CONFIG_HOME", ".config")?,
+        &xdg.dir("XDG_DATA_HOME", ".local/share")?,
+        &xdg.dir("XDG_CACHE_HOME", ".cache")?,
+    );
+    Ok(())
+}
+
+/// [`move_pre_bardo_folders`] over the four base directories.
+fn move_under(state: &Path, config: &Path, data: &Path, cache: &Path) {
+    let folders = [
+        (state.join("porter/sync"), state.join("bardo/sync")),
+        (state.join("quire/syncd"), state.join("bardo/sync")),
+        (data.join("porter/vdir"), data.join("bardo/sync/vdir")),
+        (data.join("porter/storage"), data.join("bardo/sync/storage")),
+        (data.join("porter/photos"), data.join("bardo/sync/photos")),
+        (cache.join("porter/drives"), cache.join("bardo/sync/drives")),
+    ];
+    for (old, new) in &folders {
+        match old_folders::move_once(old, new) {
+            Ok(done) if done.moved > 0 => eprintln!(
+                "syncd: moved {} from {} to {}",
+                done.moved,
+                old.display(),
+                new.display()
+            ),
+            Ok(_) => {}
+            Err(why) => eprintln!(
+                "syncd: could not move {} to {}: {why}",
+                old.display(),
+                new.display()
+            ),
+        }
+    }
+    let (old, new) = (
+        config.join("porter/syncd/syncd.toml"),
+        config.join("bardo/sync/syncd.toml"),
+    );
+    match old_folders::move_file_once(&old, &new) {
+        Ok(true) => eprintln!("syncd: moved {} to {}", old.display(), new.display()),
+        Ok(false) => {}
+        Err(why) => eprintln!(
+            "syncd: could not move {} to {}: {why}",
+            old.display(),
+            new.display()
+        ),
+    }
+    // What is left empty is not worth keeping; a folder with anything in it stays.
+    for old in [
+        config.join("porter/syncd"),
+        state.join("quire"),
+        data.join("porter"),
+        cache.join("porter"),
+    ] {
+        let _ = std::fs::remove_dir(old);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::path::Path;
+
+    #[test]
+    fn the_pre_bardo_folders_move_once_and_accountds_files_stay() {
+        let scratch = base_testkit::Scratch::new("syncd-old-folders");
+        let (state, config, data, cache) = (
+            scratch.join("state"),
+            scratch.join("config"),
+            scratch.join("data"),
+            scratch.join("cache"),
+        );
+        let write = |path: PathBuf| {
+            std::fs::create_dir_all(path.parent().expect("parent")).expect("dir");
+            std::fs::write(path, "x").expect("file");
+        };
+        write(state.join("porter/sync/a1/files.sqlite"));
+        write(state.join("porter/registry.json"));
+        write(state.join("quire/syncd/old.json"));
+        write(data.join("porter/vdir/a1/cal/one.ics"));
+        write(data.join("porter/providers/mine.toml"));
+        write(cache.join("porter/drives/a1/file"));
+        write(config.join("porter/syncd/syncd.toml"));
+        write(config.join("porter/callers.toml"));
+        move_under(&state, &config, &data, &cache);
+        move_under(&state, &config, &data, &cache);
+        for new in [
+            state.join("bardo/sync/a1/files.sqlite"),
+            state.join("bardo/sync/old.json"),
+            data.join("bardo/sync/vdir/a1/cal/one.ics"),
+            cache.join("bardo/sync/drives/a1/file"),
+            config.join("bardo/sync/syncd.toml"),
+            state.join("porter/registry.json"),
+            data.join("porter/providers/mine.toml"),
+            config.join("porter/callers.toml"),
+        ] {
+            assert!(new.exists(), "{}", new.display());
+        }
+        assert!(!state.join("porter/sync").exists());
+        assert!(!state.join("quire").exists());
+        assert!(!config.join("porter/syncd").exists());
+        assert!(!cache.join("porter").exists());
+    }
 
     #[test]
     fn the_rescan_variable_is_read_by_a_test_build_only_and_never_shortens_the_default() {
@@ -215,15 +327,15 @@ mod tests {
         let paths = Paths::resolve(env(&[("HOME", "/home/ada")])).expect("paths");
         assert_eq!(
             paths.journals,
-            Path::new("/home/ada/.local/state/porter/sync")
+            Path::new("/home/ada/.local/state/bardo/sync")
         );
         assert_eq!(
             paths.mirrors,
-            Path::new("/home/ada/.local/share/porter/vdir")
+            Path::new("/home/ada/.local/share/bardo/sync/vdir")
         );
         assert_eq!(
             paths.callers_user,
-            Path::new("/home/ada/.config/porter/callers.toml")
+            Path::new("/home/ada/.config/bardo/accounts/callers.toml")
         );
     }
 
@@ -235,10 +347,10 @@ mod tests {
             ("XDG_DATA_HOME", "relative/data"),
         ]))
         .expect("paths");
-        assert_eq!(paths.journals, Path::new("/scratch/state/porter/sync"));
+        assert_eq!(paths.journals, Path::new("/scratch/state/bardo/sync"));
         assert_eq!(
             paths.mirrors,
-            Path::new("/home/ada/.local/share/porter/vdir")
+            Path::new("/home/ada/.local/share/bardo/sync/vdir")
         );
         assert_eq!(Paths::resolve(env(&[])), Err(PathError));
     }
@@ -249,7 +361,7 @@ mod tests {
         let account = AccountDir::parse("a1").expect("segment");
         assert_eq!(
             paths.photos_dir(&account),
-            Path::new("/h/.local/share/porter/photos/a1")
+            Path::new("/h/.local/share/bardo/sync/photos/a1")
         );
     }
 
@@ -259,16 +371,16 @@ mod tests {
         let account = AccountDir::parse("67e55044_10b1").expect("segment");
         assert_eq!(
             paths.journal(&account, "files"),
-            Path::new("/h/.local/state/porter/sync/67e55044_10b1/files.sqlite")
+            Path::new("/h/.local/state/bardo/sync/67e55044_10b1/files.sqlite")
         );
         let [journals, mirrors] = paths.account_dirs(&account);
         assert_eq!(
             journals,
-            Path::new("/h/.local/state/porter/sync/67e55044_10b1")
+            Path::new("/h/.local/state/bardo/sync/67e55044_10b1")
         );
         assert_eq!(
             mirrors,
-            Path::new("/h/.local/share/porter/vdir/67e55044_10b1")
+            Path::new("/h/.local/share/bardo/sync/vdir/67e55044_10b1")
         );
     }
 

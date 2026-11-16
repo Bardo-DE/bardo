@@ -1,6 +1,6 @@
 //! The registry file (porter PLAN §2.3): `registry.json` in the directory the host names, the
 //! serde form of [`Persisted`]. The directory is an argument, never read from the environment
-//! here; accountd's binary resolves `$XDG_STATE_HOME/porter` once, and an app
+//! here; accountd's binary resolves `$XDG_STATE_HOME/bardo/accounts` once, and an app
 //! names its own.
 //!
 //! A save is atomic: the document goes to a temporary file in the same directory (a name of its
@@ -58,7 +58,7 @@ impl RegistryRefusal {
 
 impl FileStore {
     /// A store in `dir` (created on the first save). The host names the directory: accountd's
-    /// `Config::from_env` resolves `$XDG_STATE_HOME/porter`, and an app names its own.
+    /// `Config::from_env` resolves `$XDG_STATE_HOME/bardo/accounts`, and an app names its own.
     pub fn new(dir: impl Into<PathBuf>) -> Self {
         let dir = dir.into();
         Self {

@@ -102,7 +102,7 @@ Porter stores it in your clients file below, never in an account and never on th
 
 ## 5. Tell porter
 
-Create or edit `$XDG_CONFIG_HOME/porter/clients.toml` (`~/.config/porter/clients.toml`) and add
+Create or edit `$XDG_CONFIG_HOME/bardo/accounts/clients.toml` (`~/.config/bardo/accounts/clients.toml`) and add
 this row:
 
 ```toml
@@ -150,8 +150,8 @@ the account in Settings.
 | --- | --- | --- |
 | Calendar, Contacts, Tasks | Mirrors them for apps that hold a grant (Calendar, Contacts, Tasks apps read and change them through porter). | Share them with any app that holds no grant. |
 | Drive | Keeps one hidden **app data folder** that only porter can see, and mirrors it to a folder on this computer so apps can keep files there. With **Show in Files** on, lists all of your Drive in Files. | Read or list the rest of your Drive unless you turn on Show in Files: until then the scope is `drive.appdata` only. |
-| Photos, upload | Sends each **new photo or video you put in this account's upload folder** (`$XDG_DATA_HOME/porter/photos/<account>/upload`) to Google Photos, once, into an album porter makes. Settings > Accounts > the account > *Upload new photos from a folder on this computer to Google Photos* turns it on. | Read your library, delete a photo at Google, or delete a local file when it uploads. |
-| Photos, picker | The Photos app opens Google's own picker in your browser; what you pick is downloaded into `$XDG_DATA_HOME/porter/photos/<account>/picked/<session>/`. | See anything you did not pick. |
+| Photos, upload | Sends each **new photo or video you put in this account's upload folder** (`$XDG_DATA_HOME/bardo/sync/photos/<account>/upload`) to Google Photos, once, into an album porter makes. Settings > Accounts > the account > *Upload new photos from a folder on this computer to Google Photos* turns it on. | Read your library, delete a photo at Google, or delete a local file when it uploads. |
+| Photos, picker | The Photos app opens Google's own picker in your browser; what you pick is downloaded into `$XDG_DATA_HOME/bardo/sync/photos/<account>/picked/<session>/`. | See anything you did not pick. |
 | Mail | With `byo = true` only: IMAP and SMTP to Gmail, signed in with XOAUTH2 (the token never reaches the mail app). | Ask for the mailbox scope otherwise. |
 
 Granting is per service. If you tick only the picker on Google's consent page, porter offers

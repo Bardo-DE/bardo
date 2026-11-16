@@ -49,7 +49,7 @@ fn spawn_over(
     args: &[&std::ffi::OsStr],
 ) -> Daemon {
     let stderr = home.join("stderr.log");
-    let mut command = Command::new(env!("CARGO_BIN_EXE_accountd"));
+    let mut command = Command::new(env!("CARGO_BIN_EXE_bardo-accountd"));
     command
         .env_clear()
         .env("HOME", home)
@@ -154,7 +154,7 @@ fn seed(home: &Path) {
     stored.accounts.push(account);
     stored.accounts.push(key);
     stored.grants.push(grant);
-    let dir = home.join("state/porter");
+    let dir = home.join("state/bardo/accounts");
     std::fs::create_dir_all(&dir).expect("state dir");
     std::fs::write(dir.join("registry.json"), stored.to_json().expect("json")).expect("registry");
 }
@@ -193,7 +193,7 @@ async fn the_registry_is_read_as_it_is_and_no_copy_is_made() {
     let bus = PrivateBus::start();
     let home = scratch(&bus, "home");
     seed(&home);
-    let dir = home.join("state/porter");
+    let dir = home.join("state/bardo/accounts");
     let before = std::fs::read_to_string(dir.join("registry.json")).expect("the file");
     let mut daemon = spawn(&bus, &home, None);
     assert!(serving(&bus, &mut daemon).await, "{}", daemon.stderr());
@@ -253,7 +253,7 @@ async fn an_unknown_caller_is_refused_by_the_real_binary() {
 async fn a_registry_it_cannot_read_is_never_overwritten_and_the_daemon_does_not_start() {
     let bus = PrivateBus::start();
     let home = scratch(&bus, "home");
-    let dir = home.join("state/porter");
+    let dir = home.join("state/bardo/accounts");
     std::fs::create_dir_all(&dir).expect("state dir");
     std::fs::write(dir.join("registry.json"), "{ this is not a registry").expect("registry");
     std::fs::write(dir.join("registry.json.bak"), "the earlier copy").expect("backup");
@@ -282,7 +282,7 @@ async fn a_registry_it_cannot_read_is_never_overwritten_and_the_daemon_does_not_
 async fn a_caller_table_that_does_not_parse_stops_the_daemon_naming_the_file() {
     let bus = PrivateBus::start();
     let home = scratch(&bus, "home");
-    let config = home.join("config/porter");
+    let config = home.join("config/bardo/accounts");
     std::fs::create_dir_all(&config).expect("config dir");
     std::fs::write(
         config.join("callers.toml"),

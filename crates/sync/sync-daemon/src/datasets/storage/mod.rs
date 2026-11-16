@@ -5,7 +5,7 @@
 //! - `folder`: [`FolderDataset`], a plain directory as a two-way dataset.
 //! - `grants`: which accounts syncd holds a Storage grant for ([`StorageGrants`]).
 //! - `supervisor`: [`StorageSupervisor`], one mirror per granted account and kind
-//!   ([`StorageKind`]): the app folder at `$XDG_DATA_HOME/porter/storage/<account>/` (OneDrive's
+//!   ([`StorageKind`]): the app folder at `$XDG_DATA_HOME/bardo/sync/storage/<account>/` (OneDrive's
 //!   or Drive's, by the endpoint the account has), the Photos datasets over `Photos/Originals`
 //!   and `Photos/Metadata` of a Microsoft account, or Google Photos' upload folder and picker
 //!   for a Google one; and the whole drive's listing

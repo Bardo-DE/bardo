@@ -156,7 +156,7 @@ fn a_manager_that_disagrees_leaves_the_shell_at_exe() {
         },
         // The unit runs another program.
         FakeUnit {
-            exec: "/home/p/sill".to_owned(),
+            exec: "/home/p/bardo-shell".to_owned(),
             ..healthy()
         },
     ];
@@ -199,7 +199,7 @@ fn a_user_writable_image_is_unverified_whatever_the_manager_says() {
     assert_eq!(
         standing,
         Standing::Unverified {
-            exe_name: Some("sill".to_owned()),
+            exe_name: Some("bardo-shell".to_owned()),
             scope_app: None,
             why: WhyNot::ImageWritable
         }

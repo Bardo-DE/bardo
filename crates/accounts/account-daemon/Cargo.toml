@@ -21,6 +21,7 @@ account-fs = {path = "../account-fs"}
 account-callers = {path = "../account-callers", features = ["file"]}
 account-dbus = {path = "../account-dbus"}
 account-families = {path = "../account-families", features = ["set"]}
+old-folders = {path = "../../platform/old-folders"}
 account-family-oauth = {path = "../account-family-oauth"}
 account-provider = {path = "../account-provider"}
 account-proxy = {path = "../account-proxy", features = ["tls"]}
@@ -62,7 +63,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 # Test builds only, never default and never in dist: `BARDO_ACCOUNTD_PROC_ROOT=<dir>` makes the binary
 # read caller identities from <dir> instead of /proc, because the jailed and acceptance tests run
 # processes outside service cgroups, and `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes it read that file as
-# the system caller table, because a jail cannot write /etc/porter. A release build ignores both
+# the system caller table, because a jail cannot write /etc/bardo. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
 # check-boundary.sh checks it too.
 test-proc-root = ["account-callers/test-proc-root"]
@@ -77,5 +78,5 @@ unsafe_code = "deny"
 missing_debug_implementations = "warn"
 
 [[bin]]
-name = "accountd"
+name = "bardo-accountd"
 path = "src/main.rs"

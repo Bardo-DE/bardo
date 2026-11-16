@@ -44,7 +44,7 @@ they run the drive in memory and mount nothing.
    for Google, a Doc and a Sheet.
 3. `ls ~/Cloud/` lists the drive's folder; `ls -la ~/Cloud/OneDrive` (or `Google Drive`) lists
    the top of the drive with sizes and times as the drive gives them, before anything is
-   downloaded. `du -sh ~/.cache/porter/drives/` is still about nothing.
+   downloaded. `du -sh ~/.cache/bardo/sync/drives/` is still about nothing.
 4. Open a large file (a video) in a player and seek to the middle: it plays from there before the
    rest has come. `du` of the cache grows while it downloads.
 5. A Google Doc shows as `Name.gdoc`, a Sheet as `Name.gsheet`: `cat` gives
@@ -86,7 +86,7 @@ they run the drive in memory and mount nothing.
     asks. On a drive larger than the free disk, the row says "Not enough space to keep everything
     downloaded." and nothing more comes down; the line goes by itself once there is room again.
     Under the account, "Keep this account's files on this computer" is gone while it is off; its
-    folder in `~/.local/share/porter/storage/` is still there.
+    folder in `~/.local/share/bardo/sync/storage/` is still there.
 15. Turn "Show in Files" off: `~/Cloud/OneDrive` is no longer a mount (`mount | grep Cloud` says
     nothing). Do it again with a terminal sitting in the folder (`cd ~/Cloud/OneDrive`): it goes
     at once, syncd keeps answering, and the terminal's folder reads as gone. Turn it on and stop
@@ -116,15 +116,15 @@ keeps it.
 
 ## Where things are
 
-- The cache: `$XDG_CACHE_HOME/porter/drives/<account>/`: `content/` (one sparse file per item
+- The cache: `$XDG_CACHE_HOME/bardo/sync/drives/<account>/`: `content/` (one sparse file per item
   and version), `local/` (files made or changed here that are waiting to upload; never cleared
   for space), `index.json` (what is here, kept, and when each was last opened, and the changes
   made here not yet on the drive in the order they were made, with the version each was made
   against; written atomically with a `.bak`, after the content files it notes are synced) and
   `lock` (held by the one drive open over the directory). Removing the account
   removes it.
-- The limit: `[storage] cache_limit = "<bytes>"` in `$XDG_CONFIG_HOME/porter/syncd/syncd.toml`,
-  set by Settings (a `porter/syncd.toml` from before is read until the first save, and left).
+- The limit: `[storage] cache_limit = "<bytes>"` in `$XDG_CONFIG_HOME/bardo/sync/syncd.toml`,
+  set by Settings.
   Beside it, `[storage] paused` and `[storage] keep_all` list the drives (by account folder name)
   paused and kept downloaded whole.
 - The helper: `/usr/libexec/bardo/bardo-drive-mount`, its units `bardo-drive-mount.service` and

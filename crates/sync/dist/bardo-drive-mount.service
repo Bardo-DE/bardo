@@ -9,7 +9,7 @@
 #   - it answers only a caller of its own uid (SO_PEERCRED), on a 0600 socket;
 #   - a request names a folder, never a path: one plain name (no '/', NUL or leading dot), put in
 #     ~/Cloud; a folder that is a link or not a folder, or has files in it, is refused;
-#   - it mounts only fuse.porter (read-only, nosuid, nodev) and unmounts only a fuse.porter
+#   - it mounts only fuse.bardo (read-only, nosuid, nodev) and unmounts only a fuse.bardo
 #     mount; another file system at the folder, the person's own, is left alone.
 #
 # What it has: settings that keep NoNewPrivileges off and make no namespace, each checked on a
@@ -33,7 +33,7 @@
 #     hides /dev/fuse).
 #   - ProtectProc and PrivatePIDs: a namespace too, and the helper reads /proc/self/mountinfo.
 [Unit]
-Description=porter's helper that shows drives in ~/Cloud
+Description=Bardo's helper that shows drives in ~/Cloud
 Requires=bardo-drive-mount.socket
 After=bardo-drive-mount.socket
 

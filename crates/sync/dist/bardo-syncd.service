@@ -3,12 +3,12 @@
 # a dataset.
 #
 # syncd signs in for itself ("Continue as": the person picks one of the accounts accountd lists)
-# and keeps its own tokens: its registry under $XDG_STATE_HOME/quire/syncd and its secrets in the
+# and keeps its own tokens: its registry under $XDG_STATE_HOME/bardo/sync and its secrets in the
 # keyring under the namespace porter.syncd. It talks to the servers itself, so it may use the
 # network, and the sign-in's loopback listener needs the inet families. It reads /proc to know who
 # is calling, so the unit must not hide other processes' cgroups (no ProtectProc, no PrivatePID).
 [Unit]
-Description=quire sync engine (org.bardo.Sync1)
+Description=Bardo sync engine (org.bardo.Sync1)
 
 [Service]
 # Fixed role (peephole's LOADER_VARIABLES, checked by its `Full` proof): the manager's environment must not reach this unit.
@@ -25,18 +25,17 @@ TimeoutStopSec=20
 # The keys that need a mount namespace are in the drop-in sandbox.conf (see its header).
 # Unix sockets for the bus; the internet for the servers it syncs with and the sign-in's loopback.
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-# What syncd keeps: the journals (porter/sync under $XDG_STATE_HOME) and its own accounts
-# (quire/syncd under $XDG_STATE_HOME), which systemd creates, and what it keeps under the data
-# home: the PIM mirrors (porter/vdir), the app folder mirrors (porter/storage) and the photo
-# libraries (porter/photos); the drives' downloaded files (porter under $XDG_CACHE_HOME); and its
-# settings, porter/syncd/syncd.toml under $XDG_CONFIG_HOME, in a folder of their own since the
-# file is replaced by a rename there (porter/ itself, with accountd's caller table, stays
-# read-only).
+# What syncd keeps: the journals and its own accounts (bardo/sync under $XDG_STATE_HOME), which
+# systemd creates, and what it keeps under the data home: the PIM mirrors (bardo/sync/vdir), the
+# app folder mirrors (bardo/sync/storage) and the photo libraries (bardo/sync/photos); the drives'
+# downloaded files (bardo/sync under $XDG_CACHE_HOME); and its settings, bardo/sync/syncd.toml
+# under $XDG_CONFIG_HOME, in a folder of their own since the file is replaced by a rename there
+# (bardo/accounts/ itself, with accountd's caller table, stays read-only).
 # systemd has no data-directory setting, so the pre-start step, outside the sandbox, makes them;
-# sandbox.conf makes the porter directories writable. A drive's folder in ~/Cloud is not among
+# sandbox.conf makes the bardo/sync directories writable. A drive's folder in ~/Cloud is not among
 # them: bardo-drive-mount makes and mounts it, and syncd only serves the connection it hands back.
-StateDirectory=porter/sync quire/syncd
-ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/porter/vdir %h/.local/share/porter/storage %h/.local/share/porter/photos %h/.cache/porter %h/.config/porter/syncd
+StateDirectory=bardo/sync
+ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/bardo/sync/vdir %h/.local/share/bardo/sync/storage %h/.local/share/bardo/sync/photos %h/.cache/bardo/sync %h/.config/bardo/sync
 NoNewPrivileges=yes
 LockPersonality=yes
 MemoryDenyWriteExecute=yes

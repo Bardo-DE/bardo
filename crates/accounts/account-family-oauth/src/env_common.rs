@@ -29,7 +29,7 @@ pub type Random = Arc<dyn Fn() -> Option<([u8; 32], [u8; 16])> + Send + Sync>;
 pub struct ClientFiles {
     /// The shipped file (`/usr/share/bardo/accounts/clients.toml`).
     pub shipped: PathBuf,
-    /// The person's own (`$XDG_CONFIG_HOME/porter/clients.toml`).
+    /// The person's own (`$XDG_CONFIG_HOME/bardo/accounts/clients.toml`).
     pub own: PathBuf,
 }
 

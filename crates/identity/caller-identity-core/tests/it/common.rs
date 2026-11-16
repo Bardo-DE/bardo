@@ -12,12 +12,12 @@ pub const TABLE: &str = r#"
 [[peer]]
 app  = "org.bardo.Shell"
 unit = "bardo-shell.service"
-exe  = ["/opt/bardo/releases/*/bin/sill", "/usr/bin/bardo-shell"]
+exe  = ["/opt/bardo/releases/*/bin/bardo-shell", "/usr/bin/bardo-shell"]
 role = "shell"
 
 [[peer]]
 app  = "org.bardo.Updater"
-exe  = ["/usr/bin/slipway"]
+exe  = ["/usr/bin/bardo-updater"]
 role = "updater_cli"
 "#;
 

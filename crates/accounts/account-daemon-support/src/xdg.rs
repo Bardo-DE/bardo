@@ -73,7 +73,7 @@ impl<F: Fn(&str) -> Option<String>> Xdg<F> {
         search_list((self.var)("XDG_CONFIG_DIRS"), DEFAULT_CONFIG_DIRS)
     }
 
-    /// Where the system's copy of `relative` (`porter/providers`, `stoker/catalog`, ...) is: under
+    /// Where the system's copy of `relative` (`bardo/accounts/providers`, `bardo/models/catalog`, ...) is: under
     /// the first data directory that has it, so a package installed under `/usr/local` is found
     /// as one under `/usr` is; `/usr/share/<relative>` when none has it.
     pub fn shipped(&self, relative: &str) -> PathBuf {
@@ -180,12 +180,12 @@ mod tests {
         );
         assert_eq!(unset.config_dirs(), [PathBuf::from("/etc/xdg")]);
         let set = Xdg::new(env(&[
-            ("XDG_DATA_DIRS", "/opt/quire/share:relative:/usr/share"),
+            ("XDG_DATA_DIRS", "/opt/bardo/share:relative:/usr/share"),
             ("XDG_CONFIG_DIRS", ""),
         ]));
         assert_eq!(
             set.data_dirs(),
-            [PathBuf::from("/opt/quire/share"), "/usr/share".into()]
+            [PathBuf::from("/opt/bardo/share"), "/usr/share".into()]
         );
         assert_eq!(set.config_dirs(), [PathBuf::from("/etc/xdg")]);
     }
@@ -196,13 +196,16 @@ mod tests {
         let only = |there: &'static str| move |path: &Path| path == Path::new(there);
         assert_eq!(
             xdg.shipped_where(
-                "porter/providers",
-                only("/usr/local/share/porter/providers")
+                "bardo/accounts/providers",
+                only("/usr/local/share/bardo/accounts/providers")
             ),
-            PathBuf::from("/usr/local/share/porter/providers")
+            PathBuf::from("/usr/local/share/bardo/accounts/providers")
         );
         assert_eq!(
-            xdg.shipped_where("porter/providers", only("/usr/share/bardo/accounts/providers")),
+            xdg.shipped_where(
+                "bardo/accounts/providers",
+                only("/usr/share/bardo/accounts/providers")
+            ),
             PathBuf::from("/usr/share/bardo/accounts/providers")
         );
         // Nowhere: named under /usr/share, as before.

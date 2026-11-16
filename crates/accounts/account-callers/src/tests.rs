@@ -23,7 +23,11 @@ fn table() -> CallerTable {
                 CallerRole::PorterDaemon,
             ),
             row("org.bardo.Settings", None, CallerRole::Settings),
-            row("org.bardo.ComputerUse", Some("bardo-computer-use.service"), CallerRole::Cua),
+            row(
+                "org.bardo.ComputerUse",
+                Some("bardo-computer-use.service"),
+                CallerRole::Cua,
+            ),
         ],
     }
 }
@@ -35,9 +39,12 @@ fn a_unit_resolves_to_its_app_and_role() {
             "bardo-inferd.service",
             Some(("org.bardo.Inference", CallerRole::PorterDaemon)),
         ),
-        ("bardo-computer-use.service", Some(("org.bardo.ComputerUse", CallerRole::Cua))),
+        (
+            "bardo-computer-use.service",
+            Some(("org.bardo.ComputerUse", CallerRole::Cua)),
+        ),
         // A row without a unit names no unit.
-        ("detent.service", None),
+        ("bardo-settings.service", None),
         ("org.bardo.Settings", None),
     ];
     for (unit, want) in cases {
@@ -175,7 +182,9 @@ fn a_user_row_cannot_replace_a_fixed_system_row_with_another_fixed_role() {
     };
     let merged = CallerTable::layered(table(), user);
     assert_eq!(
-        merged.resolve_unit("bardo-computer-use.service").map(|c| c.role),
+        merged
+            .resolve_unit("bardo-computer-use.service")
+            .map(|c| c.role),
         Some(CallerRole::Cua)
     );
 }

@@ -29,7 +29,7 @@ const REQUEST_WITHIN: Duration = Duration::from_secs(5);
 pub enum At {
     /// Nothing is mounted there.
     Nothing,
-    /// A drive's folder (`fuse.porter`); `live` when its connection is still served.
+    /// A drive's folder (`fuse.bardo`); `live` when its connection is still served.
     Ours {
         /// Whether something still serves it.
         live: bool,

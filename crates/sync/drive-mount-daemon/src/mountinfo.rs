@@ -12,7 +12,7 @@ pub struct Entry {
     pub point: PathBuf,
     /// The device's major and minor numbers.
     pub device: (u32, u32),
-    /// The file system type (`fuse.porter` for a drive's folder).
+    /// The file system type (`fuse.bardo` for a drive's folder).
     pub fstype: String,
 }
 
@@ -97,7 +97,7 @@ mod tests {
     fn a_line_gives_its_point_and_type_with_escapes_read_back() {
         let table = "\
 36 35 98:0 / /mnt1 rw,noatime master:1 - ext3 /dev/root rw,errors=continue
-90 29 0:52 / /home/ada/Cloud/Google\\040Drive ro,nosuid,nodev,noatime shared:5 - fuse.porter porter ro,user_id=1000
+90 29 0:52 / /home/ada/Cloud/Google\\040Drive ro,nosuid,nodev,noatime shared:5 - fuse.bardo bardo ro,user_id=1000
 91 29 0:53 / /home/ada/Cloud/Google\\040Drive rw - fuse.sshfs host: rw
 ";
         let entries = parse(table);
@@ -105,7 +105,7 @@ mod tests {
         assert_eq!(entries[0].fstype, "ext3");
         let point = Path::new("/home/ada/Cloud/Google Drive");
         assert_eq!(entries[1].point, point);
-        assert_eq!(entries[1].fstype, "fuse.porter");
+        assert_eq!(entries[1].fstype, "fuse.bardo");
         assert_eq!(entries[1].connection(), 52);
         assert_eq!(entries[0].connection(), 98 << 20);
         assert_eq!(

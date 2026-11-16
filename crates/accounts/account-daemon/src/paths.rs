@@ -4,26 +4,26 @@
 pub use account_daemon_support::xdg::PathError;
 use account_daemon_support::{xdg::Xdg, xdg::absolute};
 use account_families::set::Layer;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// Every path the daemon uses.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Paths {
-    /// The directory of `registry.json`: `$XDG_STATE_HOME/porter`.
+    /// The directory of `registry.json`: `$XDG_STATE_HOME/bardo/accounts`.
     pub registry_dir: PathBuf,
-    /// `$XDG_STATE_HOME/quire/accountd/audit.jsonl`.
+    /// `$XDG_STATE_HOME/bardo/accounts/audit.jsonl`.
     pub audit: PathBuf,
     /// The system caller table, `/etc/bardo/accountd-callers.toml` (another file in a test build:
     /// [`account_callers::SystemCallers`]).
     pub callers_system: PathBuf,
-    /// The user's caller table, `$XDG_CONFIG_HOME/porter/callers.toml`; its rows win.
+    /// The user's caller table, `$XDG_CONFIG_HOME/bardo/accounts/callers.toml`; its rows win.
     pub callers_user: PathBuf,
-    /// The shipped clients: `porter/clients.toml` under the first data directory that has it.
+    /// The shipped clients: `bardo/accounts/clients.toml` under the first data directory that has it.
     pub clients_shipped: PathBuf,
-    /// The user's clients, `$XDG_CONFIG_HOME/porter/clients.toml` (Settings writes it).
+    /// The user's clients, `$XDG_CONFIG_HOME/bardo/accounts/clients.toml` (Settings writes it).
     pub clients_user: PathBuf,
     /// Provider file directories, later ones winning: the system's (under the first
-    /// data directory that has `porter/providers`), then the user's.
+    /// data directory that has `bardo/accounts/providers`), then the user's.
     pub provider_dirs: Vec<PathBuf>,
     /// The `applications` directories that hold desktop entries, the person's first:
     /// `$XDG_DATA_HOME/applications`, then each absolute `$XDG_DATA_DIRS` entry's (default
@@ -57,8 +57,8 @@ impl Paths {
         let config = xdg.dir("XDG_CONFIG_HOME", ".config")?;
         let data = xdg.dir("XDG_DATA_HOME", ".local/share")?;
         let mut provider_dirs = vec![
-            xdg.shipped("porter/providers"),
-            data.join("porter/providers"),
+            xdg.shipped("bardo/accounts/providers"),
+            data.join("bardo/accounts/providers"),
         ];
         provider_dirs.extend_from_slice(extra_providers);
         let applications = std::iter::once(data.clone())
@@ -66,12 +66,12 @@ impl Paths {
             .map(|dir| dir.join("applications"))
             .collect();
         Ok(Self {
-            registry_dir: state.join("porter"),
-            audit: state.join("quire/accountd/audit.jsonl"),
+            registry_dir: state.join("bardo/accounts"),
+            audit: state.join("bardo/accounts/audit.jsonl"),
             callers_system: PathBuf::from(account_callers::SYSTEM_CALLERS),
-            callers_user: config.join("porter/callers.toml"),
-            clients_shipped: xdg.shipped("porter/clients.toml"),
-            clients_user: config.join("porter/clients.toml"),
+            callers_user: config.join("bardo/accounts/callers.toml"),
+            clients_shipped: xdg.shipped("bardo/accounts/clients.toml"),
+            clients_user: config.join("bardo/accounts/clients.toml"),
             provider_dirs,
             applications,
             tailscale_socket,
@@ -105,10 +105,140 @@ impl Paths {
     }
 }
 
+/// Temporary: delete with the old-folders crate in the release after everyone has started once.
+///
+/// Moves what accountd kept under its pre-bardo folders into the ones [`Paths::resolve`] names,
+/// once, before anything is read: the registry and its neighbours (`$XDG_STATE_HOME/porter`, but
+/// not syncd's `sync` folder there), the audit file (`$XDG_STATE_HOME/quire/accountd`), the caller
+/// table and the clients file (`$XDG_CONFIG_HOME/porter`) and the person's provider files
+/// (`$XDG_DATA_HOME/porter/providers`). What moved is said on standard error.
+///
+/// # Errors
+/// There is no home to resolve the folders in.
+pub fn move_pre_bardo_folders(var: impl Fn(&str) -> Option<String>) -> Result<(), PathError> {
+    let xdg = Xdg::new(var);
+    move_under(
+        &xdg.dir("XDG_STATE_HOME", ".local/state")?,
+        &xdg.dir("XDG_CONFIG_HOME", ".config")?,
+        &xdg.dir("XDG_DATA_HOME", ".local/share")?,
+    );
+    Ok(())
+}
+
+/// [`move_pre_bardo_folders`] over the three base directories.
+fn move_under(state: &Path, config: &Path, data: &Path) {
+    let new_state = state.join("bardo/accounts");
+    // The registry's folder is shared with syncd's journals (`sync`), which are syncd's to move.
+    let old_state = state.join("porter");
+    if let Ok(entries) = std::fs::read_dir(&old_state) {
+        let names: Vec<_> = entries
+            .filter_map(Result::ok)
+            .map(|entry| entry.file_name())
+            .filter(|name| name != "sync")
+            .collect();
+        for name in names {
+            let (old, new) = (old_state.join(&name), new_state.join(&name));
+            if old.is_dir() {
+                moved(
+                    &old,
+                    &new,
+                    old_folders::move_once(&old, &new).map(|m| m.moved),
+                );
+            } else {
+                moved(
+                    &old,
+                    &new,
+                    old_folders::move_file_once(&old, &new).map(usize::from),
+                );
+            }
+        }
+        let _ = std::fs::remove_dir(&old_state);
+    }
+    let audit = state.join("quire/accountd");
+    moved(
+        &audit,
+        &new_state,
+        old_folders::move_once(&audit, &new_state).map(|m| m.moved),
+    );
+    let _ = std::fs::remove_dir(state.join("quire"));
+    for file in ["callers.toml", "clients.toml"] {
+        let (old, new) = (
+            config.join("porter").join(file),
+            config.join("bardo/accounts").join(file),
+        );
+        moved(
+            &old,
+            &new,
+            old_folders::move_file_once(&old, &new).map(usize::from),
+        );
+    }
+    let providers = data.join("porter/providers");
+    let new = data.join("bardo/accounts/providers");
+    moved(
+        &providers,
+        &new,
+        old_folders::move_once(&providers, &new).map(|m| m.moved),
+    );
+    let _ = std::fs::remove_dir(data.join("porter"));
+}
+
+/// Says on standard error what a move did.
+fn moved(old: &Path, new: &Path, done: std::io::Result<usize>) {
+    match done {
+        Ok(0) => {}
+        Ok(count) => eprintln!(
+            "accountd: moved {count} from {} to {}",
+            old.display(),
+            new.display()
+        ),
+        Err(why) => eprintln!(
+            "accountd: could not move {} to {}: {why}",
+            old.display(),
+            new.display()
+        ),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::path::Path;
+
+    #[test]
+    fn the_pre_bardo_folders_move_once_and_syncds_journals_stay() {
+        let scratch = base_testkit::Scratch::new("accountd-old-folders");
+        let (state, config, data) = (
+            scratch.join("state"),
+            scratch.join("config"),
+            scratch.join("data"),
+        );
+        let write = |path: PathBuf| {
+            std::fs::create_dir_all(path.parent().expect("parent")).expect("dir");
+            std::fs::write(path, "x").expect("file");
+        };
+        write(state.join("porter/registry.json"));
+        write(state.join("porter/sync/a1/files.sqlite"));
+        write(state.join("quire/accountd/audit.jsonl"));
+        write(config.join("porter/clients.toml"));
+        write(config.join("porter/syncd/syncd.toml"));
+        write(data.join("porter/providers/mine.toml"));
+        move_under(&state, &config, &data);
+        move_under(&state, &config, &data);
+        for new in [
+            state.join("bardo/accounts/registry.json"),
+            state.join("bardo/accounts/audit.jsonl"),
+            config.join("bardo/accounts/clients.toml"),
+            data.join("bardo/accounts/providers/mine.toml"),
+            state.join("porter/sync/a1/files.sqlite"),
+            config.join("porter/syncd/syncd.toml"),
+        ] {
+            assert!(new.exists(), "{}", new.display());
+        }
+        assert!(!state.join("porter/registry.json").exists());
+        assert!(!state.join("quire").exists());
+        assert!(!config.join("porter/clients.toml").exists());
+        assert!(!data.join("porter").exists());
+    }
 
     #[test]
     fn the_provider_layers_are_the_system_the_person_then_the_named() {
@@ -165,21 +295,21 @@ mod tests {
         .expect("paths");
         assert_eq!(
             paths.registry_dir,
-            Path::new("/home/ada/.local/state/porter")
+            Path::new("/home/ada/.local/state/bardo/accounts")
         );
         assert_eq!(
             paths.audit,
-            Path::new("/home/ada/.local/state/quire/accountd/audit.jsonl")
+            Path::new("/home/ada/.local/state/bardo/accounts/audit.jsonl")
         );
         assert_eq!(
             paths.callers_user,
-            Path::new("/home/ada/.config/porter/callers.toml")
+            Path::new("/home/ada/.config/bardo/accounts/callers.toml")
         );
         assert_eq!(
             paths.provider_dirs,
             vec![
                 PathBuf::from("/usr/share/bardo/accounts/providers"),
-                PathBuf::from("/home/ada/.local/share/porter/providers")
+                PathBuf::from("/home/ada/.local/share/bardo/accounts/providers")
             ]
         );
     }
@@ -196,7 +326,10 @@ mod tests {
         .expect("paths");
         let files = paths.client_files();
         assert_eq!(files.own, paths.clients_user);
-        assert_eq!(files.own, Path::new("/scratch/config/porter/clients.toml"));
+        assert_eq!(
+            files.own,
+            Path::new("/scratch/config/bardo/accounts/clients.toml")
+        );
         assert_eq!(files.shipped, paths.clients_shipped);
     }
 
@@ -211,10 +344,13 @@ mod tests {
             &[PathBuf::from("/extra")],
         )
         .expect("paths");
-        assert_eq!(paths.registry_dir, Path::new("/scratch/state/porter"));
+        assert_eq!(
+            paths.registry_dir,
+            Path::new("/scratch/state/bardo/accounts")
+        );
         assert_eq!(
             paths.clients_user,
-            Path::new("/home/ada/.config/porter/clients.toml")
+            Path::new("/home/ada/.config/bardo/accounts/clients.toml")
         );
         assert_eq!(paths.provider_dirs.last(), Some(&PathBuf::from("/extra")));
     }

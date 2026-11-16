@@ -743,12 +743,12 @@ mod tests {
 
     fn paths(dir: &base_testkit::Scratch) -> Paths {
         Paths {
-            journals: dir.join("state/porter/sync"),
-            mirrors: dir.join("data/porter/vdir"),
+            journals: dir.join("state/bardo/sync"),
+            mirrors: dir.join("data/bardo/sync/vdir"),
             callers_system: dir.join("none"),
             callers_user: dir.join("none"),
             cloud: dir.join("Cloud"),
-            drive_cache: dir.join("cache/porter/drives"),
+            drive_cache: dir.join("cache/bardo/sync/drives"),
             settings: dir.join("none"),
         }
     }

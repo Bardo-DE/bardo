@@ -38,7 +38,7 @@ fn scratch(bus: &PrivateBus, name: &str) -> PathBuf {
 
 fn spawn(bus: &PrivateBus, home: &Path, proc_root: Option<&Path>) -> Daemon {
     let stderr = home.join("stderr.log");
-    let mut command = Command::new(env!("CARGO_BIN_EXE_syncd"));
+    let mut command = Command::new(env!("CARGO_BIN_EXE_bardo-syncd"));
     command
         .env_clear()
         .env("HOME", home)
@@ -126,7 +126,7 @@ async fn a_test_build_reads_callers_from_the_proc_root_and_serves_an_empty_sync1
 async fn accountd_saying_an_account_is_gone_does_not_wipe_syncds_copy() {
     let bus = PrivateBus::start();
     let home = scratch(&bus, "home");
-    let journal = home.join("state/porter/sync/a1");
+    let journal = home.join("state/bardo/sync/a1");
     std::fs::create_dir_all(&journal).expect("dir");
     std::fs::write(journal.join("x"), "data").expect("file");
     let mut daemon = spawn(&bus, &home, None);
@@ -190,7 +190,7 @@ async fn a_release_build_ignores_the_proc_root_variable() {
 async fn a_caller_table_that_does_not_parse_stops_the_daemon_naming_the_file() {
     let bus = PrivateBus::start();
     let home = scratch(&bus, "home");
-    let config = home.join("config/porter");
+    let config = home.join("config/bardo/accounts");
     std::fs::create_dir_all(&config).expect("config dir");
     std::fs::write(
         config.join("callers.toml"),

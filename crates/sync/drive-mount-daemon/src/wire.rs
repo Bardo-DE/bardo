@@ -18,7 +18,7 @@
 //! most [`MAX_MESSAGE`] bytes, a reply too. The folder name is only a name ([`FolderName`]): the
 //! helper puts it under its own `~/Cloud`, so no request can name a path elsewhere. The access is
 //! the one choice a caller has about the mount; the helper always adds `nosuid`, `nodev`,
-//! `noatime` and `fsname=porter,subtype=porter` (so the mount lists as `fuse.porter`,
+//! `noatime` and `fsname=bardo,subtype=bardo` (so the mount lists as `fuse.bardo`,
 //! [`FSTYPE`]).
 
 use rustix::net::{
@@ -35,7 +35,7 @@ pub const VERSION: &str = "1";
 /// The most bytes a request or a reply may be.
 pub const MAX_MESSAGE: usize = 1024;
 /// The file system type a drive's folder lists as in `/proc/self/mountinfo`.
-pub const FSTYPE: &str = "fuse.porter";
+pub const FSTYPE: &str = "fuse.bardo";
 
 /// Where the helper listens, under the runtime directory `$XDG_RUNTIME_DIR`.
 pub fn socket_in(runtime_dir: &Path) -> PathBuf {
@@ -130,7 +130,7 @@ impl Access {
     /// has.
     pub fn options(self) -> String {
         format!(
-            "{},nosuid,nodev,noatime,fsname=porter,subtype=porter",
+            "{},nosuid,nodev,noatime,fsname=bardo,subtype=bardo",
             self.field()
         )
     }
@@ -415,7 +415,7 @@ mod tests {
         }
         assert_eq!(
             Access::ReadOnly.options(),
-            "ro,nosuid,nodev,noatime,fsname=porter,subtype=porter"
+            "ro,nosuid,nodev,noatime,fsname=bardo,subtype=bardo"
         );
         let writable = Request::Mount {
             name: FolderName::parse("OneDrive").expect("name"),
@@ -425,7 +425,7 @@ mod tests {
         assert_eq!(Request::decode(&writable.encode()), Ok(writable));
         assert_eq!(
             Access::ReadWrite.options(),
-            "rw,nosuid,nodev,noatime,fsname=porter,subtype=porter"
+            "rw,nosuid,nodev,noatime,fsname=bardo,subtype=bardo"
         );
     }
 

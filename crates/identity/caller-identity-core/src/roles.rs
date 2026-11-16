@@ -22,15 +22,15 @@ pub const UPDATER: RoleName = RoleName::from_static("updater");
 pub const UPDATER_CLI: RoleName = RoleName::from_static("updater_cli");
 /// The touchpad daemon (`palmrest`).
 pub const PAD_DAEMON: RoleName = RoleName::from_static("pad_daemon");
-/// The keymap daemon (`keycap`).
+/// The keymap daemon (`bardo-key-remap`).
 pub const KEYMAP_DAEMON: RoleName = RoleName::from_static("keymap_daemon");
-/// The accounts service (`accountd`).
+/// The accounts service (`bardo-accountd`).
 pub const ACCOUNTS: RoleName = RoleName::from_static("accounts");
-/// The model-access service (`inferd`).
+/// The model-access service (`bardo-inferd`).
 pub const INFERENCE: RoleName = RoleName::from_static("inference");
-/// The sync service (`syncd`).
+/// The sync service (`bardo-syncd`).
 pub const SYNC: RoleName = RoleName::from_static("sync");
-/// The intent router (`intentd`).
+/// The intent router (`bardo-actiond`).
 pub const ROUTER: RoleName = RoleName::from_static("router");
 /// The assistant companion (`companiond`).
 pub const COMPANION: RoleName = RoleName::from_static("companion");

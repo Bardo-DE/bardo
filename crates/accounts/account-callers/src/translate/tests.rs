@@ -34,12 +34,14 @@ fn a_daemon_unit_without_a_program_is_taken_to_be_installed_as_a_daemon() {
         CallerRole::PorterDaemon,
         &[],
     )]);
-    let found = table.row_for_unit(&unit("bardo-inferd.service")).expect("a row");
+    let found = table
+        .row_for_unit(&unit("bardo-inferd.service"))
+        .expect("a row");
     assert_eq!(found.app.as_str(), "org.bardo.Inference");
     assert_eq!(found.role.as_str(), "porter_daemon");
     assert_eq!(
         images_of(&table, "bardo-inferd.service"),
-        Some(installed(Install::Libexec, "inferd"))
+        Some(installed(Install::Libexec, "bardo-inferd"))
     );
 }
 
@@ -49,13 +51,16 @@ fn a_rows_own_programs_replace_the_convention() {
         "org.bardo.Shell",
         Some("bardo-shell.service"),
         CallerRole::SheetHost,
-        &["/usr/bin/bardo-shell", "/opt/bardo/releases/*/bin/sill"],
+        &[
+            "/usr/bin/bardo-shell",
+            "/opt/bardo/releases/*/bin/bardo-shell",
+        ],
     )]);
     assert_eq!(
         images_of(&table, "bardo-shell.service"),
         Some(vec![
             "/usr/bin/bardo-shell".to_owned(),
-            "/opt/bardo/releases/*/bin/sill".to_owned()
+            "/opt/bardo/releases/*/bin/bardo-shell".to_owned()
         ])
     );
 }
@@ -98,7 +103,12 @@ fn a_row_peephole_could_not_judge_is_left_out_and_the_others_stand() {
 #[test]
 fn the_first_row_for_a_unit_wins() {
     let table = table_of(vec![
-        row("org.bardo.ComputerUse", Some("bardo-computer-use.service"), CallerRole::Cua, &[]),
+        row(
+            "org.bardo.ComputerUse",
+            Some("bardo-computer-use.service"),
+            CallerRole::Cua,
+            &[],
+        ),
         row(
             "org.example.Mine",
             Some("bardo-computer-use.service"),
@@ -106,7 +116,9 @@ fn the_first_row_for_a_unit_wins() {
             &[],
         ),
     ]);
-    let found = table.row_for_unit(&unit("bardo-computer-use.service")).expect("a row");
+    let found = table
+        .row_for_unit(&unit("bardo-computer-use.service"))
+        .expect("a row");
     assert_eq!(
         (found.app.as_str(), found.role.as_str()),
         ("org.bardo.ComputerUse", "cua")

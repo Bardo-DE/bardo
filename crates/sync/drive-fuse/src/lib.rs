@@ -20,7 +20,7 @@
 //!   setuid `fusermount3`; the helper does and hands back the open connection, which fuser's
 //!   `Session::from_fd` serves), and else through the system's `fusermount3`, run as a separate
 //!   process (fuser with no default features links no libfuse). A stale drive's folder at the
-//!   path (`fuse.porter`), left by a crash, is unmounted first (`fusermount3 -u -z`); a mount of
+//!   path (`fuse.bardo`), left by a crash, is unmounted first (`fusermount3 -u -z`); a mount of
 //!   anything else there is never touched. No `/dev/fuse`, no `fusermount3`, a refusal, or a
 //!   mount that fails is a [`MountError`]. [`Mounted`] unmounts when
 //!   dropped and ends the connection, without waiting for the session.

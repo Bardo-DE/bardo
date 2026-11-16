@@ -1,6 +1,6 @@
 //! Registering the Photos dataset: two engines (originals, metadata) over two replicas, each in
 //! the hub as `<account>/photos_originals` and `<account>/photos_metadata`, each with its own
-//! journal under `<state>/porter/sync/<account>/`.
+//! journal under `<state>/bardo/sync/sync/<account>/`.
 //!
 //! The storage supervisor calls [`start`] for each account holding a Storage grant of class
 //! Photos, which the person makes with the account's Photos row in Settings

@@ -42,7 +42,7 @@
 //! [`CallerTable::layered`] drops a user row that claims a fixed role.
 //!
 //! Which files and which `/proc` a daemon reads its callers from is here too: the system's table
-//! under `/etc/porter` ([`CALLERS`], [`INFERD_CALLERS`], found by [`SystemCallers`]) and the
+//! under `/etc/bardo` ([`CALLERS`], [`INFERD_CALLERS`], found by [`SystemCallers`]) and the
 //! `/proc` tree ([`ProcRoot`]). Both can be moved by a variable in a test build only, never in a
 //! shipped one ([`Override`]), because they decide who a caller is. The library reads no
 //! environment variable: the daemon passes in how it looks one up.

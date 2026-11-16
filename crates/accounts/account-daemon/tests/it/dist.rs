@@ -86,11 +86,11 @@ fn holding_the_ai_keys_loosens_no_limit_and_adds_no_path() {
     let unit = dist("bardo-accountd.service");
     assert_eq!(value(&unit, "RuntimeDirectory"), None, "no place for a key");
     assert_eq!(value(&unit, "ReadWritePaths"), None);
+    assert_eq!(value(&unit, "StateDirectory"), Some("bardo/accounts"));
     assert_eq!(
-        value(&unit, "StateDirectory"),
-        Some("porter quire/accountd")
+        value(&unit, "ConfigurationDirectory"),
+        Some("bardo/accounts")
     );
-    assert_eq!(value(&unit, "ConfigurationDirectory"), Some("porter"));
     for (limit, want) in [
         ("MemoryDenyWriteExecute", "yes"),
         ("RestrictNamespaces", "yes"),
@@ -111,7 +111,7 @@ fn holding_the_ai_keys_loosens_no_limit_and_adds_no_path() {
     );
     let sandbox = dist("bardo-accountd.service.d/sandbox.conf");
     assert_eq!(value(&sandbox, "ProtectHome"), Some("read-only"));
-    assert_eq!(value(&sandbox, "ReadWritePaths"), None);
+    assert_eq!(value(&sandbox, "ReadWritePaths"), Some(MOVING_FROM));
 }
 
 #[test]
@@ -168,16 +168,21 @@ fn the_sample_caller_table_gives_settings_the_sheet_host_and_both_daemons_their_
 fn what_the_unit_writes_is_created_before_the_sandbox_starts() {
     let unit = dist("bardo-accountd.service");
     // A missing ReadWritePaths entry fails the unit; systemd's own directories cannot be missing.
+    assert_eq!(value(&unit, "StateDirectory"), Some("bardo/accounts"));
     assert_eq!(
-        value(&unit, "StateDirectory"),
-        Some("porter quire/accountd")
+        value(&unit, "ConfigurationDirectory"),
+        Some("bardo/accounts")
     );
-    assert_eq!(value(&unit, "ConfigurationDirectory"), Some("porter"));
     assert_eq!(value(&unit, "ReadWritePaths"), None);
     let sandbox = dist("bardo-accountd.service.d/sandbox.conf");
-    assert_eq!(value(&sandbox, "ReadWritePaths"), None);
+    assert_eq!(value(&sandbox, "ReadWritePaths"), Some(MOVING_FROM));
     assert_eq!(value(&sandbox, "ProtectHome"), Some("read-only"));
 }
+
+/// Temporary, with `paths::move_pre_bardo_folders`: the old folders the daemon may move out of.
+/// Delete with the old-folders crate.
+const MOVING_FROM: &str = "-%h/.local/state/porter -%h/.local/state/quire/accountd \
+-%h/.config/porter -%h/.local/share/porter/providers";
 
 /// What `[features] default` lists in a crate's manifest, and whether `feature` is declared.
 fn default_features(manifest: &str, feature: &str) -> (bool, Vec<String>) {

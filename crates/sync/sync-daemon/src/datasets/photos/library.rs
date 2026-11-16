@@ -1,7 +1,7 @@
 //! [`PhotoLibrary`]: the local library of one account, the small API the Photos app will call
 //! (`import`, `export`, the manifest reader and the edits), all behind the dataset.
 //!
-//! The library is `$XDG_DATA_HOME/porter/photos/<account>/`:
+//! The library is `$XDG_DATA_HOME/bardo/sync/photos/<account>/`:
 //!
 //! - `originals/<ab>/<sha256>`: one file per distinct photo, named by its content, so importing
 //!   the same bytes again stores nothing.
